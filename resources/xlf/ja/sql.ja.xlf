@@ -871,6 +871,10 @@
         <source xml:lang="en">Cannot start a session, the manager is not yet initialized</source>
         <target state="translated">セッションを開始できません。マネージャーがまだ初期化されていません</target>
       </trans-unit>
+      <trans-unit id="notebookMultipleRequestsError">
+        <source xml:lang="en">Cannot execute code cell. Another cell is currently being executed.</source>
+        <target state="translated">コード セルを実行できません。別のセルが現在実行されています。</target>
+      </trans-unit>
     </body>
   </file>
   <file original="src/sql/workbench/browser/actions" source-language="en" datatype="plaintext" target-language="ja">
@@ -943,13 +947,9 @@
         <source xml:lang="en">Designer is loaded</source>
         <target state="translated">デザイナーが読み込まれます</target>
       </trans-unit>
-      <trans-unit id="designer.newRowButtonAriaLabel">
-        <source xml:lang="en">Add new row to '{0}' table</source>
-        <target state="translated">`{0}` テーブルに新しい行を追加する</target>
-      </trans-unit>
-      <trans-unit id="designer.newRowText">
-        <source xml:lang="en">Add New</source>
-        <target state="translated">新規追加</target>
+      <trans-unit id="designer.moveRowText">
+        <source xml:lang="en">Move Row</source>
+        <target state="translated">行の移動</target>
       </trans-unit>
       <trans-unit id="designer.processing">
         <source xml:lang="en">Processing...</source>
@@ -983,7 +983,7 @@
         <source xml:lang="en">Scripts</source>
         <target state="translated">スクリプト</target>
       </trans-unit>
-      <trans-unit id="tableDesigner.unknownComponentType">
+      <trans-unit id="designer.unknownComponentType">
         <source xml:lang="en">The component type: {0} is not supported</source>
         <target state="translated">コンポーネントの種類: {0} はサポートされていません</target>
       </trans-unit>
@@ -994,6 +994,10 @@
       <trans-unit id="designer.IssueListAriaLabel">
         <source xml:lang="en">Issues</source>
         <target state="translated">問題</target>
+      </trans-unit>
+      <trans-unit id="designer.moreInfoLink">
+        <source xml:lang="en">More information</source>
+        <target state="translated">詳細情報</target>
       </trans-unit>
     </body>
   </file>
@@ -1015,6 +1019,42 @@
       <trans-unit id="designer.textEditorAriaLabel">
         <source xml:lang="en">Designer text editor.</source>
         <target state="translated">デザイナー テキスト エディター。</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/browser/designer/tableActions" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="designer.addColumnAction">
+        <source xml:lang="en">Add New</source>
+        <target state="translated">新規追加</target>
+      </trans-unit>
+      <trans-unit id="designer.insertAfterSelectedColumn">
+        <source xml:lang="en">Insert after</source>
+        <target state="translated">後に挿入</target>
+      </trans-unit>
+      <trans-unit id="designer.insertBeforeSelectedRow">
+        <source xml:lang="en">Insert before</source>
+        <target state="translated">前に挿入</target>
+      </trans-unit>
+      <trans-unit id="designer.moveRowDownAction">
+        <source xml:lang="en">Move Down</source>
+        <target state="translated">下へ移動</target>
+      </trans-unit>
+      <trans-unit id="designer.moveRowDownButtonAriaLabel">
+        <source xml:lang="en">Move selected row down one position</source>
+        <target state="translated">選択した行を 1 つ下の位置に移動します</target>
+      </trans-unit>
+      <trans-unit id="designer.moveRowUpAction">
+        <source xml:lang="en">Move Up</source>
+        <target state="translated">上へ移動</target>
+      </trans-unit>
+      <trans-unit id="designer.moveRowUpButtonAriaLabel">
+        <source xml:lang="en">Move selected row up one position</source>
+        <target state="translated">選択した行を 1 つ上の位置に移動します</target>
+      </trans-unit>
+      <trans-unit id="designer.newRowButtonAriaLabel">
+        <source xml:lang="en">Add new row to '{0}' table</source>
+        <target state="translated">`{0}` テーブルに新しい行を追加する</target>
       </trans-unit>
     </body>
   </file>
@@ -1537,8 +1577,12 @@
   <file original="src/sql/workbench/contrib/backup/browser/backup.component" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="addFile">
-        <source xml:lang="en">Add a file</source>
-        <target state="translated">ファイルを追加</target>
+        <source xml:lang="en">Add File</source>
+        <target state="translated">ファイルの追加</target>
+      </trans-unit>
+      <trans-unit id="addUrl">
+        <source xml:lang="en">Add URL</source>
+        <target state="translated">URL の追加</target>
       </trans-unit>
       <trans-unit id="backup.advancedConfiguration">
         <source xml:lang="en">Advanced Configuration</source>
@@ -1567,6 +1611,10 @@
       <trans-unit id="backup.backupType">
         <source xml:lang="en">Backup type</source>
         <target state="translated">バックアップの種類</target>
+      </trans-unit>
+      <trans-unit id="backup.backupUrl">
+        <source xml:lang="en">Backup URL</source>
+        <target state="translated">バックアップ URL</target>
       </trans-unit>
       <trans-unit id="backup.certificateOrAsymmetricKey">
         <source xml:lang="en">Certificate or Asymmetric key</source>
@@ -1652,6 +1700,10 @@
         <source xml:lang="en">Set backup retain days</source>
         <target state="translated">バックアップ保持日数の設定</target>
       </trans-unit>
+      <trans-unit id="backup.toUrl">
+        <source xml:lang="en">Save backup to URL</source>
+        <target state="translated">バックアップを URL に保存</target>
+      </trans-unit>
       <trans-unit id="backup.transactionLog">
         <source xml:lang="en">Transaction log</source>
         <target state="translated">トランザクション ログ</target>
@@ -1663,6 +1715,10 @@
       <trans-unit id="backup.verifyContainer">
         <source xml:lang="en">Verify backup when finished</source>
         <target state="translated">完了時にバックアップを検証する</target>
+      </trans-unit>
+      <trans-unit id="backupBrowseButton">
+        <source xml:lang="en">Browse</source>
+        <target state="translated">参照</target>
       </trans-unit>
       <trans-unit id="backupComponent.backup">
         <source xml:lang="en">Backup</source>
@@ -2052,10 +2108,6 @@
   </file>
   <file original="src/sql/workbench/contrib/connection/browser/connection.contribution" source-language="en" datatype="plaintext" target-language="ja">
     <body>
-      <trans-unit id="connection.parseClipboardForConnectionStringDescription">
-        <source xml:lang="en">Attempt to parse the contents of the clipboard when the connection dialog is opened or a paste is performed.</source>
-        <target state="translated">接続ダイアログが開いたり、解析が実行されたりするときにクリップボードの内容の解析を試行します。</target>
-      </trans-unit>
       <trans-unit id="connection.showUnsupportedServerVersionWarning">
         <source xml:lang="en">Whether to show the warning message when user connects to a server version that is not supported by Azure Data Studio.</source>
         <target state="translated">Azure Data Studio でサポートされていないサーバー バージョンにユーザーが接続した場合に警告メッセージを表示するかどうか。</target>
@@ -2108,6 +2160,10 @@
         <source xml:lang="en">Display Name for the provider</source>
         <target state="translated">プロバイダーの表示名</target>
       </trans-unit>
+      <trans-unit id="schema.enableConnectionStringOption">
+        <source xml:lang="en">Whether the provider supports connection string as an input option. The default value is false.</source>
+        <target state="translated">プロバイダーが入力オプションとして接続文字列をサポートするかどうか。既定値は false です。</target>
+      </trans-unit>
       <trans-unit id="schema.iconPath">
         <source xml:lang="en">Icon path for the server type</source>
         <target state="translated">サーバーの種類のアイコン パス</target>
@@ -2123,6 +2179,10 @@
       <trans-unit id="schema.providerId">
         <source xml:lang="en">Common id for the provider</source>
         <target state="translated">プロバイダーの共通 ID</target>
+      </trans-unit>
+      <trans-unit id="schema.useConnectionStringAsDefaultOption">
+        <source xml:lang="en">Whether the connection provider uses connection string as the default option to connect. The default value is false.</source>
+        <target state="translated">接続プロバイダーが接続するための既定オプションとして接続文字列を使用するかどうか。既定値は false です。</target>
       </trans-unit>
     </body>
   </file>
@@ -2363,6 +2423,10 @@
       <trans-unit id="azdata.extension.contributes.dashboard.tab.group">
         <source xml:lang="en">The unique identifier of the group this tab belongs to, value for home group: home.</source>
         <target state="translated">このタブが属しているグループの一意識別子。ホーム グループの値: home。</target>
+      </trans-unit>
+      <trans-unit id="azdata.extension.contributes.dashboard.tab.hideRefreshTask">
+        <source xml:lang="en">Flag used to show/hide refresh button in toolbar. By default, the value is false</source>
+        <target state="translated">ツール バーの [更新] ボタンの表示/非表示を切り替えるフラグです。既定では、値は false です</target>
       </trans-unit>
       <trans-unit id="azdata.extension.contributes.dashboard.tab.icon.dark">
         <source xml:lang="en">Icon path when a dark theme is used</source>
@@ -3214,16 +3278,132 @@
       </trans-unit>
     </body>
   </file>
-  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlan" source-language="en" datatype="plaintext" target-language="ja">
+  <file original="src/sql/workbench/contrib/executionPlan/browser/azdataGraphView" source-language="en" datatype="plaintext" target-language="ja">
     <body>
-      <trans-unit id="executionPlan.SaveFileDescription">
+      <trans-unit id="invalidExecutionPlanZoomError">
+        <source xml:lang="en">Zoom level cannot be 0 or negative</source>
+        <target state="translated">ズーム レベルを 0 または負の値にすることはできません</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/compareExecutionPlanInput" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="epCompare.editorName">
+        <source xml:lang="en">Compare Execution Plans</source>
+        <target state="translated">比較実行プラン</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditor" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="compareExecutionPlanEditor">
+        <source xml:lang="en">Compare Execution Plan Editor</source>
+        <target state="translated">比較実行プラン エディター</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="addExecutionPlanLabel">
+        <source xml:lang="en">Add execution plan</source>
+        <target state="translated">実行プランの追加</target>
+      </trans-unit>
+      <trans-unit id="epComapre.LoadingPlanCompleteMessage">
+        <source xml:lang="en">Execution plan successfully loaded</source>
+        <target state="translated">実行プランが正常に読み込まれました</target>
+      </trans-unit>
+      <trans-unit id="epComapre.LoadingPlanMessage">
+        <source xml:lang="en">Loading execution plan</source>
+        <target state="translated">実行プランを読み込んでいます</target>
+      </trans-unit>
+      <trans-unit id="epComapre.placeholderInfoboxText">
+        <source xml:lang="en">Add execution plans to compare</source>
+        <target state="translated">比較する実行プランの追加</target>
+      </trans-unit>
+      <trans-unit id="epCompare.FileFilterDescription">
         <source xml:lang="en">Execution Plan Files</source>
         <target state="translated">実行プラン ファイル</target>
       </trans-unit>
-      <trans-unit id="executionPlanCustomZoom">
-        <source xml:lang="en">Custom Zoom</source>
-        <target state="translated">ズームの指定</target>
+      <trans-unit id="epCompare.comparePropertiesAction">
+        <source xml:lang="en">Properties</source>
+        <target state="translated">プロパティ</target>
       </trans-unit>
+      <trans-unit id="epCompare.comparisonProgess">
+        <source xml:lang="en">Loading similar areas in compared plans</source>
+        <target state="translated">比較したプランの類似点を読み込んでいます</target>
+      </trans-unit>
+      <trans-unit id="epCompare.toggleOrientation">
+        <source xml:lang="en">Toggle Orientation</source>
+        <target state="translated">方向の切り替え</target>
+      </trans-unit>
+      <trans-unit id="epCompare.zoomInAction">
+        <source xml:lang="en">Zoom In</source>
+        <target state="translated">拡大</target>
+      </trans-unit>
+      <trans-unit id="epCompare.zoomOutAction">
+        <source xml:lang="en">Zoom Out</source>
+        <target state="translated">縮小</target>
+      </trans-unit>
+      <trans-unit id="epCompare.zoomReset">
+        <source xml:lang="en">Reset Zoom</source>
+        <target state="translated">ズームのリセット</target>
+      </trans-unit>
+      <trans-unit id="epCompare.zoomToFit">
+        <source xml:lang="en">Zoom to fit</source>
+        <target state="translated">ウィンドウのサイズに合わせて拡大</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="executionPlanComparisonPropertiesBottomOperation">
+        <source xml:lang="en">Bottom operation: {0}</source>
+        <target state="translated">下位の操作: {0}</target>
+      </trans-unit>
+      <trans-unit id="executionPlanComparisonPropertiesTopOperation">
+        <source xml:lang="en">Top operation: {0}</source>
+        <target state="translated">上位の操作: {0}</target>
+      </trans-unit>
+      <trans-unit id="executionPlanPropertiesEdgeOperationName">
+        <source xml:lang="en">Edge</source>
+        <target state="translated">Edge</target>
+      </trans-unit>
+      <trans-unit id="nodePropertyViewNameNameColumnHeader">
+        <source xml:lang="en">Name</source>
+        <target state="translated">名前</target>
+      </trans-unit>
+      <trans-unit id="nodePropertyViewNameValueColumnBottomHeader">
+        <source xml:lang="en">Value (Bottom Plan)</source>
+        <target state="translated">値 (下位プラン)</target>
+      </trans-unit>
+      <trans-unit id="nodePropertyViewNameValueColumnTopHeader">
+        <source xml:lang="en">Value (Top Plan)</source>
+        <target state="translated">値 (上位プラン)</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanContribution" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="executionPlanCompareCommandOriginalValue">
+        <source xml:lang="en">Compare execution plans</source>
+        <target state="translated">比較実行プラン</target>
+      </trans-unit>
+      <trans-unit id="executionPlanCompareCommandValue">
+        <source xml:lang="en">Compare execution plans</source>
+        <target state="translated">比較実行プラン</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanEditor" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="executionPlanEditor">
+        <source xml:lang="en">Query Execution Plan Editor</source>
+        <target state="translated">クエリ実行プラン エディター</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanFileView" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
       <trans-unit id="executionPlanFileLoadingComplete">
         <source xml:lang="en">Execution plans are generated</source>
         <target state="translated">実行プランが生成されます</target>
@@ -3231,6 +3411,90 @@
       <trans-unit id="executionPlanFileLoadingFailed">
         <source xml:lang="en">Failed to load execution plan</source>
         <target state="translated">実行プランを読み込めませんでした</target>
+      </trans-unit>
+      <trans-unit id="loadingExecutionPlanFile">
+        <source xml:lang="en">Generating execution plans</source>
+        <target state="translated">実行プランの生成</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="executionPlanPropertiesEdgeOperationName">
+        <source xml:lang="en">Edge</source>
+        <target state="translated">Edge</target>
+      </trans-unit>
+      <trans-unit id="nodePropertyViewNameNameColumnHeader">
+        <source xml:lang="en">Name</source>
+        <target state="translated">名前</target>
+      </trans-unit>
+      <trans-unit id="nodePropertyViewNameValueColumnHeader">
+        <source xml:lang="en">Value</source>
+        <target state="translated">値</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="executionPlanPropertyViewClose">
+        <source xml:lang="en">Close</source>
+        <target state="translated">閉じる</target>
+      </trans-unit>
+      <trans-unit id="executionPlanPropertyViewSortAlphabetically">
+        <source xml:lang="en">Alphabetical</source>
+        <target state="translated">アルファベット順</target>
+      </trans-unit>
+      <trans-unit id="executionPlanPropertyViewSortByDisplayOrder">
+        <source xml:lang="en">Categorized</source>
+        <target state="translated">項目別</target>
+      </trans-unit>
+      <trans-unit id="executionPlanPropertyViewSortReverseAlphabetically">
+        <source xml:lang="en">Reverse Alphabetical</source>
+        <target state="translated">逆アルファベット順</target>
+      </trans-unit>
+      <trans-unit id="nodePropertyViewTitle">
+        <source xml:lang="en">Properties</source>
+        <target state="translated">プロパティ</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanTab" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="executionPlanTitle">
+        <source xml:lang="en">Query Plan (Preview)</source>
+        <target state="translated">クエリ プラン (プレビュー)</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanView" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="executionPlan.SaveFileDescription">
+        <source xml:lang="en">Execution Plan Files</source>
+        <target state="translated">実行プラン ファイル</target>
+      </trans-unit>
+      <trans-unit id="executionPlanCompareExecutionPlanAction">
+        <source xml:lang="en">Compare execution plan</source>
+        <target state="translated">比較実行プラン</target>
+      </trans-unit>
+      <trans-unit id="executionPlanContextMenuDisableTooltip">
+        <source xml:lang="en">Disable Tooltips</source>
+        <target state="translated">ヒントを無効にする</target>
+      </trans-unit>
+      <trans-unit id="executionPlanContextMenuEnableTooltip">
+        <source xml:lang="en">Enable Tooltips</source>
+        <target state="translated">ツールヒントを有効にする</target>
+      </trans-unit>
+      <trans-unit id="executionPlanCustomZoom">
+        <source xml:lang="en">Custom Zoom</source>
+        <target state="translated">ズームのカスタマイズ</target>
+      </trans-unit>
+      <trans-unit id="executionPlanDisableTooltip">
+        <source xml:lang="en">Tooltips disabled</source>
+        <target state="translated">ヒントが無効になっています</target>
+      </trans-unit>
+      <trans-unit id="executionPlanEnableTooltip">
+        <source xml:lang="en">Tooltips enabled</source>
+        <target state="translated">ツールヒントが有効</target>
       </trans-unit>
       <trans-unit id="executionPlanFitGraphLabel">
         <source xml:lang="en">Zoom to fit</source>
@@ -3252,10 +3516,6 @@
         <source xml:lang="en">Find Node</source>
         <target state="translated">ノードの検索</target>
       </trans-unit>
-      <trans-unit id="executionPlanTitle">
-        <source xml:lang="en">Query Plan (Preview)</source>
-        <target state="translated">クエリ プラン (プレビュー)</target>
-      </trans-unit>
       <trans-unit id="executionPlanZoomInActionLabel">
         <source xml:lang="en">Zoom In</source>
         <target state="translated">拡大</target>
@@ -3264,57 +3524,13 @@
         <source xml:lang="en">Zoom Out</source>
         <target state="translated">縮小</target>
       </trans-unit>
-      <trans-unit id="loadingExecutionPlanFile">
-        <source xml:lang="en">Generating execution plans</source>
-        <target state="translated">実行プランの生成</target>
-      </trans-unit>
       <trans-unit id="openQueryAction">
         <source xml:lang="en">Open Query</source>
         <target state="translated">クエリを開く</target>
       </trans-unit>
     </body>
   </file>
-  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanEditor" source-language="en" datatype="plaintext" target-language="ja">
-    <body>
-      <trans-unit id="executionPlanEditor">
-        <source xml:lang="en">Query Execution Plan Editor</source>
-        <target state="translated">クエリ実行プラン エディター</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView" source-language="en" datatype="plaintext" target-language="ja">
-    <body>
-      <trans-unit id="executionPlanPropertiesEdgeOperationName">
-        <source xml:lang="en">Edge</source>
-        <target state="translated">Edge</target>
-      </trans-unit>
-      <trans-unit id="executionPlanPropertyViewClose">
-        <source xml:lang="en">Close</source>
-        <target state="translated">閉じる</target>
-      </trans-unit>
-      <trans-unit id="executionPlanPropertyViewSortAlphabetically">
-        <source xml:lang="en">Alphabetical</source>
-        <target state="translated">アルファベット順</target>
-      </trans-unit>
-      <trans-unit id="executionPlanPropertyViewSortByDisplayOrder">
-        <source xml:lang="en">Categorized</source>
-        <target state="translated">項目別</target>
-      </trans-unit>
-      <trans-unit id="nodePropertyViewNameNameColumnHeader">
-        <source xml:lang="en">Name</source>
-        <target state="translated">名前</target>
-      </trans-unit>
-      <trans-unit id="nodePropertyViewNameValueColumnHeader">
-        <source xml:lang="en">Value</source>
-        <target state="translated">値</target>
-      </trans-unit>
-      <trans-unit id="nodePropertyViewTitle">
-        <source xml:lang="en">Properties</source>
-        <target state="translated">プロパティ</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="src/sql/workbench/contrib/executionPlan/browser/planHeader" source-language="en" datatype="plaintext" target-language="ja">
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanViewHeader" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="planHeaderIndexAndCost">
         <source xml:lang="en">Query {0}: Query cost (relative to the script): {1}%</source>
@@ -4364,10 +4580,6 @@ Error: {1}</source>
         <source xml:lang="en">Run Cells failed - See error in output of the currently selected cell for more information.</source>
         <target state="translated">セルの実行に失敗しました。詳細については、現在選択されているセルの出力内のエラーをご覧ください。</target>
       </trans-unit>
-      <trans-unit id="code">
-        <source xml:lang="en">Code</source>
-        <target state="translated">コード</target>
-      </trans-unit>
       <trans-unit id="codeCellsPreview">
         <source xml:lang="en">Add cell</source>
         <target state="translated">セルの追加</target>
@@ -4396,17 +4608,9 @@ Error: {1}</source>
         <source xml:lang="en">&lt; Previous</source>
         <target state="translated">&lt; 前へ</target>
       </trans-unit>
-      <trans-unit id="runAll">
-        <source xml:lang="en">Run Cells</source>
-        <target state="translated">セルの実行</target>
-      </trans-unit>
       <trans-unit id="runAllPreview">
         <source xml:lang="en">Run all</source>
         <target state="translated">すべて実行</target>
-      </trans-unit>
-      <trans-unit id="text">
-        <source xml:lang="en">Text</source>
-        <target state="translated">テキスト</target>
       </trans-unit>
       <trans-unit id="textPreview">
         <source xml:lang="en">Text cell</source>
@@ -4771,6 +4975,10 @@ Error: {1}</source>
       <trans-unit id="trustLabel">
         <source xml:lang="en">Trusted</source>
         <target state="translated">信頼されています</target>
+      </trans-unit>
+      <trans-unit id="untitledNotSupported">
+        <source xml:lang="en">Run with parameters is not supported for Untitled notebooks. Please save the notebook before continuing. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).</source>
+        <target state="translated">パラメーターを使用した実行は、無題のノートブックではサポートされていません。続行する前にノートブックを保存してください。[Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization)。</target>
       </trans-unit>
       <trans-unit id="untrustLabel">
         <source xml:lang="en">Not Trusted</source>
@@ -6806,6 +7014,62 @@ Error: {1}</source>
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/services/backupRestoreUrlBrowser/browser/urlBrowserDialog" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="backupRestoreUrlBrowserDialog.account">
+        <source xml:lang="en">Azure Account</source>
+        <target state="translated">Azure アカウント</target>
+      </trans-unit>
+      <trans-unit id="backupRestoreUrlBrowserDialog.backupFile">
+        <source xml:lang="en">Backup file</source>
+        <target state="translated">バックアップ ファイル</target>
+      </trans-unit>
+      <trans-unit id="backupRestoreUrlBrowserDialog.blobContainer">
+        <source xml:lang="en">Blob container</source>
+        <target state="translated">BLOB コンテナー</target>
+      </trans-unit>
+      <trans-unit id="backupRestoreUrlBrowserDialog.linkAccount">
+        <source xml:lang="en">Link account</source>
+        <target state="translated">アカウントのリンク</target>
+      </trans-unit>
+      <trans-unit id="backupRestoreUrlBrowserDialog.sharedAccessSignature">
+        <source xml:lang="en">Shared access signature generated</source>
+        <target state="translated">Shared Access Signature が生成されました</target>
+      </trans-unit>
+      <trans-unit id="backupRestoreUrlBrowserDialog.sharedAccessSignatureButton">
+        <source xml:lang="en">Create Credentials</source>
+        <target state="translated">資格情報の作成</target>
+      </trans-unit>
+      <trans-unit id="backupRestoreUrlBrowserDialog.storageAccount">
+        <source xml:lang="en">Storage account</source>
+        <target state="translated">ストレージ アカウント</target>
+      </trans-unit>
+      <trans-unit id="backupRestoreUrlBrowserDialog.subscription">
+        <source xml:lang="en">Azure subscription</source>
+        <target state="translated">Azure サブスクリプション</target>
+      </trans-unit>
+      <trans-unit id="backupRestoreUrlBrowserDialog.tenant">
+        <source xml:lang="en">Azure AD Tenant</source>
+        <target state="translated">Azure AD テナント</target>
+      </trans-unit>
+      <trans-unit id="fileBrowser.discard">
+        <source xml:lang="en">Discard</source>
+        <target state="translated">破棄</target>
+      </trans-unit>
+      <trans-unit id="fileBrowser.ok">
+        <source xml:lang="en">OK</source>
+        <target state="translated">OK</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/services/backupRestoreUrlBrowser/browser/urlBrowserDialogService" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="filebrowser.selectBlob">
+        <source xml:lang="en">Select a blob</source>
+        <target state="translated">BLOB の選択</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/services/connection/browser/advancedPropertiesController" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="advancedProperties.discard">
@@ -6964,9 +7228,25 @@ Error: {1}</source>
         <source xml:lang="en">Connect</source>
         <target state="translated">接続</target>
       </trans-unit>
+      <trans-unit id="connectionDialog.connectionProviderNotSupported">
+        <source xml:lang="en">The extension that supports provider type '{0}' is not currently installed. Please install it and try again.</source>
+        <target state="translated">プロバイダー タイプ '{0}' をサポートする拡張機能は現在インストールされていません。それをインストールしてもう一度お試しください。</target>
+      </trans-unit>
+      <trans-unit id="connectionDialog.extensionNotInstalled">
+        <source xml:lang="en">The extension '{0}' is required in order to connect to this resource. Please install it and try again.</source>
+        <target state="translated">このリソースに接続するには、拡張機能 '{0}' が必要です。インストールしてから、もう一度お試しください。</target>
+      </trans-unit>
       <trans-unit id="connectionDialog.recentConnections">
         <source xml:lang="en">Recent Connections</source>
         <target state="translated">最近の接続</target>
+      </trans-unit>
+      <trans-unit id="connectionDialog.viewExtension">
+        <source xml:lang="en">View Extension</source>
+        <target state="translated">拡張機能の表示</target>
+      </trans-unit>
+      <trans-unit id="connectionDialog.viewExtensions">
+        <source xml:lang="en">View Extensions</source>
+        <target state="translated">拡張機能の表示</target>
       </trans-unit>
       <trans-unit id="noRecentConnections">
         <source xml:lang="en">No recent connection</source>
@@ -7048,9 +7328,17 @@ Error: {1}</source>
         <source xml:lang="en">Add an account...</source>
         <target state="translated">アカウントを追加する...</target>
       </trans-unit>
-      <trans-unit id="connectionWidget.fieldWillBeTrimmed">
-        <source xml:lang="en">{0} will be trimmed.</source>
-        <target state="translated">{0} がトリミングされます。</target>
+      <trans-unit id="connectionWidget.ConnectionStringError">
+        <source xml:lang="en">Failed to parse the connection string.</source>
+        <target state="translated">接続文字列を解析できませんでした。</target>
+      </trans-unit>
+      <trans-unit id="connectionWidget.Error">
+        <source xml:lang="en">Error</source>
+        <target state="translated">エラー</target>
+      </trans-unit>
+      <trans-unit id="connectionWidget.connectionString">
+        <source xml:lang="en">Connection string</source>
+        <target state="translated">接続文字列</target>
       </trans-unit>
       <trans-unit id="connectionWidget.invalidAzureAccount">
         <source xml:lang="en">You must select an account</source>
@@ -7431,6 +7719,18 @@ Error: {1}</source>
   </file>
   <file original="src/sql/workbench/services/notebook/browser/models/cell" source-language="en" datatype="plaintext" target-language="ja">
     <body>
+      <trans-unit id="cellExecutionComplete">
+        <source xml:lang="en">Cell execution is complete</source>
+        <target state="translated">セルの実行が完了しました</target>
+      </trans-unit>
+      <trans-unit id="cellExecutionStarted">
+        <source xml:lang="en">Cell execution started</source>
+        <target state="translated">セルの実行が開始されました</target>
+      </trans-unit>
+      <trans-unit id="codeCellLabel">
+        <source xml:lang="en">Code Cell {0}</source>
+        <target state="translated">コード セル {0}</target>
+      </trans-unit>
       <trans-unit id="commandSuccessful">
         <source xml:lang="en">Command executed successfully</source>
         <target state="translated">コマンドは正常に実行されました</target>
@@ -7438,6 +7738,10 @@ Error: {1}</source>
       <trans-unit id="executionCanceled">
         <source xml:lang="en">Query execution was canceled</source>
         <target state="translated">クエリの実行が取り消されました</target>
+      </trans-unit>
+      <trans-unit id="mdCellLabel">
+        <source xml:lang="en">Markdown Cell {0}</source>
+        <target state="translated">Markdown セル {0}</target>
       </trans-unit>
       <trans-unit id="noDefaultKernel">
         <source xml:lang="en">No kernel is available for this notebook</source>
@@ -8105,6 +8409,10 @@ Error: {1}</source>
         <source xml:lang="en">Backup sets to restore</source>
         <target state="translated">復元するバックアップ セット</target>
       </trans-unit>
+      <trans-unit id="backupUrl">
+        <source xml:lang="en">Backup URL</source>
+        <target state="translated">バックアップ URL</target>
+      </trans-unit>
       <trans-unit id="database">
         <source xml:lang="en">Database</source>
         <target state="translated">データベース</target>
@@ -8112,6 +8420,10 @@ Error: {1}</source>
       <trans-unit id="destination">
         <source xml:lang="en">Destination</source>
         <target state="translated">ターゲット</target>
+      </trans-unit>
+      <trans-unit id="enterBackupUrl">
+        <source xml:lang="en">Please enter URL</source>
+        <target state="translated">ユーザーを入力してください。</target>
       </trans-unit>
       <trans-unit id="fileType">
         <source xml:lang="en">File type</source>
@@ -8132,6 +8444,10 @@ Error: {1}</source>
       <trans-unit id="missingBackupFilePathError">
         <source xml:lang="en">Backup file path is required.</source>
         <target state="translated">バックアップ ファイルのパスが必須です。</target>
+      </trans-unit>
+      <trans-unit id="missingBackupUrlError">
+        <source xml:lang="en">Backup url is required.</source>
+        <target state="translated">Backup URL は必須です。</target>
       </trans-unit>
       <trans-unit id="multipleBackupFilePath">
         <source xml:lang="en">Please enter one or more file paths separated by commas</source>
@@ -8161,6 +8477,10 @@ Error: {1}</source>
         <source xml:lang="en">Backup file</source>
         <target state="translated">バックアップ ファイル</target>
       </trans-unit>
+      <trans-unit id="restoreDialog.browse">
+        <source xml:lang="en">Browse</source>
+        <target state="translated">参照</target>
+      </trans-unit>
       <trans-unit id="restoreDialog.cancel">
         <source xml:lang="en">Cancel</source>
         <target state="translated">キャンセル</target>
@@ -8180,6 +8500,14 @@ Error: {1}</source>
       <trans-unit id="restoreDialog.script">
         <source xml:lang="en">Script</source>
         <target state="translated">スクリプト</target>
+      </trans-unit>
+      <trans-unit id="restoreDialog.targetDatabaseAlreadyExists">
+        <source xml:lang="en">Target database already exists</source>
+        <target state="translated">データベースは既に存在します。</target>
+      </trans-unit>
+      <trans-unit id="restoreDialog.url">
+        <source xml:lang="en">URL</source>
+        <target state="translated">URL</target>
       </trans-unit>
       <trans-unit id="restoreFrom">
         <source xml:lang="en">Restore from</source>
@@ -8212,6 +8540,10 @@ Error: {1}</source>
       <trans-unit id="targetDatabase">
         <source xml:lang="en">Target database</source>
         <target state="translated">ターゲット データベース</target>
+      </trans-unit>
+      <trans-unit id="targetDatabaseTooltip">
+        <source xml:lang="en">Please enter target database name</source>
+        <target state="translated">ターゲット データベース名を入力してください</target>
       </trans-unit>
     </body>
   </file>
@@ -8253,6 +8585,10 @@ Error: {1}</source>
         <source xml:lang="en">Cancel</source>
         <target state="translated">キャンセル</target>
       </trans-unit>
+      <trans-unit id="serverGroup.colorValue">
+        <source xml:lang="en">Color: {0}</source>
+        <target state="translated">色: {0}</target>
+      </trans-unit>
       <trans-unit id="serverGroup.ok">
         <source xml:lang="en">OK</source>
         <target state="translated">OK</target>
@@ -8273,6 +8609,10 @@ Error: {1}</source>
   </file>
   <file original="src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput" source-language="en" datatype="plaintext" target-language="ja">
     <body>
+      <trans-unit id="designer.checkConstraint.description.description">
+        <source xml:lang="en">The description of the check constraint.</source>
+        <target state="translated">CHECK 制約の説明。</target>
+      </trans-unit>
       <trans-unit id="designer.checkConstraint.description.expression">
         <source xml:lang="en">The expression defining the check constraint.</source>
         <target state="translated">CHECK 制約を定義する式です。</target>
@@ -8280,6 +8620,10 @@ Error: {1}</source>
       <trans-unit id="designer.checkConstraint.description.name">
         <source xml:lang="en">The name of the check constraint.</source>
         <target state="translated">CHECK 制約の名前。</target>
+      </trans-unit>
+      <trans-unit id="designer.column.description.advancedType">
+        <source xml:lang="en">Displays the unified data type (including length, scale and precision) for the column</source>
+        <target state="translated">列の統合データ型 (長さ、小数部桁数、精度を含む) を表示します</target>
       </trans-unit>
       <trans-unit id="designer.column.description.allowNulls">
         <source xml:lang="en">Specifies whether the column may have a NULL value.</source>
@@ -8292,6 +8636,10 @@ Error: {1}</source>
       <trans-unit id="designer.column.description.defaultValueBinding">
         <source xml:lang="en">A predefined global default value for the column or binding.</source>
         <target state="translated">列またはバインドの定義済みのグローバルな既定値です。</target>
+      </trans-unit>
+      <trans-unit id="designer.column.description.description">
+        <source xml:lang="en">Displays the description of the column</source>
+        <target state="translated">列の説明を表示します</target>
       </trans-unit>
       <trans-unit id="designer.column.description.length">
         <source xml:lang="en">The maximum length (in characters) that can be stored in this database object.</source>
@@ -8317,6 +8665,10 @@ Error: {1}</source>
         <source xml:lang="en">The mapping between foreign key columns and primary key columns.</source>
         <target state="translated">外部キー列と主キー列の間のマッピング。</target>
       </trans-unit>
+      <trans-unit id="designer.foreignkey.description.description">
+        <source xml:lang="en">The description of the foreign key.</source>
+        <target state="translated">外部キーの説明。</target>
+      </trans-unit>
       <trans-unit id="designer.foreignkey.description.name">
         <source xml:lang="en">The name of the foreign key.</source>
         <target state="translated">外部キーの名前です。</target>
@@ -8341,6 +8693,10 @@ Error: {1}</source>
         <source xml:lang="en">The columns of the index.</source>
         <target state="translated">インデックスの列。</target>
       </trans-unit>
+      <trans-unit id="designer.index.description.description">
+        <source xml:lang="en">The description of the index.</source>
+        <target state="translated">インデックスの説明。</target>
+      </trans-unit>
       <trans-unit id="designer.index.description.name">
         <source xml:lang="en">The name of the index.</source>
         <target state="translated">インデックスの名前です。</target>
@@ -8360,6 +8716,10 @@ Error: {1}</source>
       <trans-unit id="designer.table.primaryKeyColumns.description">
         <source xml:lang="en">Columns in the primary key.</source>
         <target state="translated">主キーの列。</target>
+      </trans-unit>
+      <trans-unit id="designer.table.primaryKeyDescription.description">
+        <source xml:lang="en">The description of the primary key.</source>
+        <target state="translated">主キーの説明。</target>
       </trans-unit>
       <trans-unit id="designer.table.primaryKeyName.description">
         <source xml:lang="en">Name of the primary key.</source>
@@ -8417,6 +8777,10 @@ Error: {1}</source>
         <source xml:lang="en">New Index</source>
         <target state="translated">新しいインデックス</target>
       </trans-unit>
+      <trans-unit id="tableDesigner.checkConstraintDescriptionTitle">
+        <source xml:lang="en">Description</source>
+        <target state="translated">説明</target>
+      </trans-unit>
       <trans-unit id="tableDesigner.checkConstraintExpressionTitle">
         <source xml:lang="en">Expression</source>
         <target state="translated">式</target>
@@ -8433,6 +8797,10 @@ Error: {1}</source>
         <source xml:lang="en">Check Constraints</source>
         <target state="translated">チェック制約</target>
       </trans-unit>
+      <trans-unit id="tableDesigner.columnAdvancedTypeTitle">
+        <source xml:lang="en">Type</source>
+        <target state="translated">種類</target>
+      </trans-unit>
       <trans-unit id="tableDesigner.columnAllowNullTitle">
         <source xml:lang="en">Allow Nulls</source>
         <target state="translated">Null を許容</target>
@@ -8440,6 +8808,10 @@ Error: {1}</source>
       <trans-unit id="tableDesigner.columnDefaultValueTitle">
         <source xml:lang="en">Default Value</source>
         <target state="translated">既定値</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.columnDescriptionTitle">
+        <source xml:lang="en">Description</source>
+        <target state="translated">説明</target>
       </trans-unit>
       <trans-unit id="tableDesigner.columnIsPrimaryKeyTitle">
         <source xml:lang="en">Primary Key</source>
@@ -8478,7 +8850,7 @@ Error: {1}</source>
         <target state="translated">説明</target>
       </trans-unit>
       <trans-unit id="tableDesigner.errorInitializingTableDesigner">
-        <source xml:lang="en">An error occured while initializing the table designer: {0}</source>
+        <source xml:lang="en">An error occurred while initializing the table designer: {0}</source>
         <target state="translated">テーブル デザイナーの初期化中にエラーが発生しました: {0}</target>
       </trans-unit>
       <trans-unit id="tableDesigner.errorProcessingEdit">
@@ -8496,6 +8868,10 @@ Error: {1}</source>
       <trans-unit id="tableDesigner.foreignKeyColumns">
         <source xml:lang="en">Columns</source>
         <target state="translated">列</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.foreignKeyDescriptionTitle">
+        <source xml:lang="en">Description</source>
+        <target state="translated">説明</target>
       </trans-unit>
       <trans-unit id="tableDesigner.foreignKeyNameTitle">
         <source xml:lang="en">Name</source>
@@ -8518,7 +8894,7 @@ Error: {1}</source>
         <target state="translated">全般</target>
       </trans-unit>
       <trans-unit id="tableDesigner.generatePreviewReportError">
-        <source xml:lang="en">An error occured while generating preview report: {0}</source>
+        <source xml:lang="en">An error occurred while generating preview report: {0}</source>
         <target state="translated">プレビュー レポートの生成中にエラーが発生しました: {0}</target>
       </trans-unit>
       <trans-unit id="tableDesigner.generateScriptError">
@@ -8545,6 +8921,10 @@ Error: {1}</source>
         <source xml:lang="en">Columns</source>
         <target state="translated">列</target>
       </trans-unit>
+      <trans-unit id="tableDesigner.indexDescription">
+        <source xml:lang="en">Description</source>
+        <target state="translated">説明</target>
+      </trans-unit>
       <trans-unit id="tableDesigner.indexName">
         <source xml:lang="en">Name</source>
         <target state="translated">名前</target>
@@ -8564,6 +8944,10 @@ Error: {1}</source>
       <trans-unit id="tableDesigner.primaryKeyColumnsTitle">
         <source xml:lang="en">Primary Key Columns</source>
         <target state="translated">主キー列</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.primaryKeyDescriptionTitle">
+        <source xml:lang="en">Description</source>
+        <target state="translated">説明</target>
       </trans-unit>
       <trans-unit id="tableDesigner.primaryKeyNameTitle">
         <source xml:lang="en">Name</source>
@@ -8608,6 +8992,19 @@ Error: {1}</source>
       <trans-unit id="tableDesigner.previewDatabaseUpdates">
         <source xml:lang="en">Preview Database Updates</source>
         <target state="translated">データベース更新のプレビュー</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/services/tableDesigner/browser/tableDesignerService" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="TableDesigner.closeApplication">
+        <source xml:lang="en">&amp;&amp;Close Application</source>
+        <note>&amp;&amp; denotes a mnemonic</note>
+        <target state="translated">アプリケーションの終了(&amp;&amp;C)</target>
+      </trans-unit>
+      <trans-unit id="TableDesigner.saveBeforeExit">
+        <source xml:lang="en">There are unsaved changes in Table Designer that will be lost if you close the application. Do you want to close the application?</source>
+        <target state="translated">テーブル デザイナーに保存されていない変更があり、アプリケーションを閉じると失われます。アプリケーションを閉じますか?</target>
       </trans-unit>
     </body>
   </file>

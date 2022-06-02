@@ -871,6 +871,10 @@
         <source xml:lang="en">Cannot start a session, the manager is not yet initialized</source>
         <target state="translated">세션을 시작할 수 없습니다. 관리자가 아직 초기화되지 않았습니다.</target>
       </trans-unit>
+      <trans-unit id="notebookMultipleRequestsError">
+        <source xml:lang="en">Cannot execute code cell. Another cell is currently being executed.</source>
+        <target state="translated">코드 셀을 실행할 수 없습니다. 다른 셀이 현재 실행 중입니다.</target>
+      </trans-unit>
     </body>
   </file>
   <file original="src/sql/workbench/browser/actions" source-language="en" datatype="plaintext" target-language="ko">
@@ -943,13 +947,9 @@
         <source xml:lang="en">Designer is loaded</source>
         <target state="translated">디자이너가 로드되었습니다.</target>
       </trans-unit>
-      <trans-unit id="designer.newRowButtonAriaLabel">
-        <source xml:lang="en">Add new row to '{0}' table</source>
-        <target state="translated">'{0}' 테이블에 새 행 추가</target>
-      </trans-unit>
-      <trans-unit id="designer.newRowText">
-        <source xml:lang="en">Add New</source>
-        <target state="translated">새로 추가</target>
+      <trans-unit id="designer.moveRowText">
+        <source xml:lang="en">Move Row</source>
+        <target state="translated">행 이동</target>
       </trans-unit>
       <trans-unit id="designer.processing">
         <source xml:lang="en">Processing...</source>
@@ -983,7 +983,7 @@
         <source xml:lang="en">Scripts</source>
         <target state="translated">스크립트</target>
       </trans-unit>
-      <trans-unit id="tableDesigner.unknownComponentType">
+      <trans-unit id="designer.unknownComponentType">
         <source xml:lang="en">The component type: {0} is not supported</source>
         <target state="translated">구성 요소 형식: {0}이(가) 지원되지 않음</target>
       </trans-unit>
@@ -994,6 +994,10 @@
       <trans-unit id="designer.IssueListAriaLabel">
         <source xml:lang="en">Issues</source>
         <target state="translated">문제</target>
+      </trans-unit>
+      <trans-unit id="designer.moreInfoLink">
+        <source xml:lang="en">More information</source>
+        <target state="translated">추가 정보</target>
       </trans-unit>
     </body>
   </file>
@@ -1015,6 +1019,42 @@
       <trans-unit id="designer.textEditorAriaLabel">
         <source xml:lang="en">Designer text editor.</source>
         <target state="translated">디자이너 텍스트 편집기.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/browser/designer/tableActions" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="designer.addColumnAction">
+        <source xml:lang="en">Add New</source>
+        <target state="translated">새로 추가</target>
+      </trans-unit>
+      <trans-unit id="designer.insertAfterSelectedColumn">
+        <source xml:lang="en">Insert after</source>
+        <target state="translated">다음에 삽입</target>
+      </trans-unit>
+      <trans-unit id="designer.insertBeforeSelectedRow">
+        <source xml:lang="en">Insert before</source>
+        <target state="translated">앞에 삽입</target>
+      </trans-unit>
+      <trans-unit id="designer.moveRowDownAction">
+        <source xml:lang="en">Move Down</source>
+        <target state="translated">아래로 이동</target>
+      </trans-unit>
+      <trans-unit id="designer.moveRowDownButtonAriaLabel">
+        <source xml:lang="en">Move selected row down one position</source>
+        <target state="translated">선택한 행을 한 위치 아래로 이동</target>
+      </trans-unit>
+      <trans-unit id="designer.moveRowUpAction">
+        <source xml:lang="en">Move Up</source>
+        <target state="translated">이동</target>
+      </trans-unit>
+      <trans-unit id="designer.moveRowUpButtonAriaLabel">
+        <source xml:lang="en">Move selected row up one position</source>
+        <target state="translated">선택한 행을 한 위치 위로 이동</target>
+      </trans-unit>
+      <trans-unit id="designer.newRowButtonAriaLabel">
+        <source xml:lang="en">Add new row to '{0}' table</source>
+        <target state="translated">'{0}' 테이블에 새 행 추가</target>
       </trans-unit>
     </body>
   </file>
@@ -1537,8 +1577,12 @@
   <file original="src/sql/workbench/contrib/backup/browser/backup.component" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="addFile">
-        <source xml:lang="en">Add a file</source>
+        <source xml:lang="en">Add File</source>
         <target state="translated">파일 추가</target>
+      </trans-unit>
+      <trans-unit id="addUrl">
+        <source xml:lang="en">Add URL</source>
+        <target state="translated">URL 추가</target>
       </trans-unit>
       <trans-unit id="backup.advancedConfiguration">
         <source xml:lang="en">Advanced Configuration</source>
@@ -1567,6 +1611,10 @@
       <trans-unit id="backup.backupType">
         <source xml:lang="en">Backup type</source>
         <target state="translated">백업 유형</target>
+      </trans-unit>
+      <trans-unit id="backup.backupUrl">
+        <source xml:lang="en">Backup URL</source>
+        <target state="translated">백업 URL</target>
       </trans-unit>
       <trans-unit id="backup.certificateOrAsymmetricKey">
         <source xml:lang="en">Certificate or Asymmetric key</source>
@@ -1652,6 +1700,10 @@
         <source xml:lang="en">Set backup retain days</source>
         <target state="translated">백업 보존 기간(일) 설정</target>
       </trans-unit>
+      <trans-unit id="backup.toUrl">
+        <source xml:lang="en">Save backup to URL</source>
+        <target state="translated">URL에 백업 저장</target>
+      </trans-unit>
       <trans-unit id="backup.transactionLog">
         <source xml:lang="en">Transaction log</source>
         <target state="translated">트랜잭션 로그</target>
@@ -1663,6 +1715,10 @@
       <trans-unit id="backup.verifyContainer">
         <source xml:lang="en">Verify backup when finished</source>
         <target state="translated">완료되면 백업 확인</target>
+      </trans-unit>
+      <trans-unit id="backupBrowseButton">
+        <source xml:lang="en">Browse</source>
+        <target state="translated">검색</target>
       </trans-unit>
       <trans-unit id="backupComponent.backup">
         <source xml:lang="en">Backup</source>
@@ -2052,10 +2108,6 @@
   </file>
   <file original="src/sql/workbench/contrib/connection/browser/connection.contribution" source-language="en" datatype="plaintext" target-language="ko">
     <body>
-      <trans-unit id="connection.parseClipboardForConnectionStringDescription">
-        <source xml:lang="en">Attempt to parse the contents of the clipboard when the connection dialog is opened or a paste is performed.</source>
-        <target state="translated">연결 대화 상자가 열리거나 붙여넣기가 수행되면 클립보드의 내용을 구문 분석하려고 합니다.</target>
-      </trans-unit>
       <trans-unit id="connection.showUnsupportedServerVersionWarning">
         <source xml:lang="en">Whether to show the warning message when user connects to a server version that is not supported by Azure Data Studio.</source>
         <target state="translated">사용자가 Azure Data Studio에서 지원하지 않는 서버 버전에 연결할 때 경고 메시지를 표시할지 여부입니다.</target>
@@ -2108,6 +2160,10 @@
         <source xml:lang="en">Display Name for the provider</source>
         <target state="translated">공급자의 표시 이름</target>
       </trans-unit>
+      <trans-unit id="schema.enableConnectionStringOption">
+        <source xml:lang="en">Whether the provider supports connection string as an input option. The default value is false.</source>
+        <target state="translated">공급자가 연결 문자열을 입력 옵션으로 지원하는지 여부입니다. 기본값은 false입니다.</target>
+      </trans-unit>
       <trans-unit id="schema.iconPath">
         <source xml:lang="en">Icon path for the server type</source>
         <target state="translated">서버 유형의 아이콘 경로</target>
@@ -2123,6 +2179,10 @@
       <trans-unit id="schema.providerId">
         <source xml:lang="en">Common id for the provider</source>
         <target state="translated">공급자의 일반 ID</target>
+      </trans-unit>
+      <trans-unit id="schema.useConnectionStringAsDefaultOption">
+        <source xml:lang="en">Whether the connection provider uses connection string as the default option to connect. The default value is false.</source>
+        <target state="translated">연결 공급자가 연결 문자열을 기본 연결 옵션으로 사용하는지 여부입니다. 기본값은 false입니다.</target>
       </trans-unit>
     </body>
   </file>
@@ -2363,6 +2423,10 @@
       <trans-unit id="azdata.extension.contributes.dashboard.tab.group">
         <source xml:lang="en">The unique identifier of the group this tab belongs to, value for home group: home.</source>
         <target state="translated">이 탭이 속한 그룹의 고유 식별자이며 홈 그룹의 값은 home입니다.</target>
+      </trans-unit>
+      <trans-unit id="azdata.extension.contributes.dashboard.tab.hideRefreshTask">
+        <source xml:lang="en">Flag used to show/hide refresh button in toolbar. By default, the value is false</source>
+        <target state="translated">도구 모음에서 새로 고침 단추를 표시/숨기는 데 사용되는 플래그입니다. 기본적으로 값은 false입니다.</target>
       </trans-unit>
       <trans-unit id="azdata.extension.contributes.dashboard.tab.icon.dark">
         <source xml:lang="en">Icon path when a dark theme is used</source>
@@ -3214,16 +3278,132 @@
       </trans-unit>
     </body>
   </file>
-  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlan" source-language="en" datatype="plaintext" target-language="ko">
+  <file original="src/sql/workbench/contrib/executionPlan/browser/azdataGraphView" source-language="en" datatype="plaintext" target-language="ko">
     <body>
-      <trans-unit id="executionPlan.SaveFileDescription">
+      <trans-unit id="invalidExecutionPlanZoomError">
+        <source xml:lang="en">Zoom level cannot be 0 or negative</source>
+        <target state="translated">확대/축소 수준은 0 또는 음수일 수 없음</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/compareExecutionPlanInput" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="epCompare.editorName">
+        <source xml:lang="en">Compare Execution Plans</source>
+        <target state="translated">실행 계획 비교</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditor" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="compareExecutionPlanEditor">
+        <source xml:lang="en">Compare Execution Plan Editor</source>
+        <target state="translated">실행 계획 비교 편집기</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="addExecutionPlanLabel">
+        <source xml:lang="en">Add execution plan</source>
+        <target state="translated">실행 계획 추가</target>
+      </trans-unit>
+      <trans-unit id="epComapre.LoadingPlanCompleteMessage">
+        <source xml:lang="en">Execution plan successfully loaded</source>
+        <target state="translated">실행 계획을 로드했습니다.</target>
+      </trans-unit>
+      <trans-unit id="epComapre.LoadingPlanMessage">
+        <source xml:lang="en">Loading execution plan</source>
+        <target state="translated">실행 계획을 로드하는 중</target>
+      </trans-unit>
+      <trans-unit id="epComapre.placeholderInfoboxText">
+        <source xml:lang="en">Add execution plans to compare</source>
+        <target state="translated">비교할 실행 계획 추가</target>
+      </trans-unit>
+      <trans-unit id="epCompare.FileFilterDescription">
         <source xml:lang="en">Execution Plan Files</source>
         <target state="translated">실행 계획 파일</target>
       </trans-unit>
-      <trans-unit id="executionPlanCustomZoom">
-        <source xml:lang="en">Custom Zoom</source>
-        <target state="translated">사용자 지정 확대/축소</target>
+      <trans-unit id="epCompare.comparePropertiesAction">
+        <source xml:lang="en">Properties</source>
+        <target state="translated">속성</target>
       </trans-unit>
+      <trans-unit id="epCompare.comparisonProgess">
+        <source xml:lang="en">Loading similar areas in compared plans</source>
+        <target state="translated">비교하는 계획의 비슷한 영역 로드 중</target>
+      </trans-unit>
+      <trans-unit id="epCompare.toggleOrientation">
+        <source xml:lang="en">Toggle Orientation</source>
+        <target state="translated">방향 토글</target>
+      </trans-unit>
+      <trans-unit id="epCompare.zoomInAction">
+        <source xml:lang="en">Zoom In</source>
+        <target state="translated">확대</target>
+      </trans-unit>
+      <trans-unit id="epCompare.zoomOutAction">
+        <source xml:lang="en">Zoom Out</source>
+        <target state="translated">축소</target>
+      </trans-unit>
+      <trans-unit id="epCompare.zoomReset">
+        <source xml:lang="en">Reset Zoom</source>
+        <target state="translated">확대/축소 초기화</target>
+      </trans-unit>
+      <trans-unit id="epCompare.zoomToFit">
+        <source xml:lang="en">Zoom to fit</source>
+        <target state="translated">크기에 맞게 확대/축소</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="executionPlanComparisonPropertiesBottomOperation">
+        <source xml:lang="en">Bottom operation: {0}</source>
+        <target state="translated">맨 아래 작업: {0}</target>
+      </trans-unit>
+      <trans-unit id="executionPlanComparisonPropertiesTopOperation">
+        <source xml:lang="en">Top operation: {0}</source>
+        <target state="translated">맨 위 작업: {0}</target>
+      </trans-unit>
+      <trans-unit id="executionPlanPropertiesEdgeOperationName">
+        <source xml:lang="en">Edge</source>
+        <target state="translated">Edge</target>
+      </trans-unit>
+      <trans-unit id="nodePropertyViewNameNameColumnHeader">
+        <source xml:lang="en">Name</source>
+        <target state="translated">이름</target>
+      </trans-unit>
+      <trans-unit id="nodePropertyViewNameValueColumnBottomHeader">
+        <source xml:lang="en">Value (Bottom Plan)</source>
+        <target state="translated">값(맨 아래 계획)</target>
+      </trans-unit>
+      <trans-unit id="nodePropertyViewNameValueColumnTopHeader">
+        <source xml:lang="en">Value (Top Plan)</source>
+        <target state="translated">값(맨 위 플랜)</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanContribution" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="executionPlanCompareCommandOriginalValue">
+        <source xml:lang="en">Compare execution plans</source>
+        <target state="translated">실행 계획 비교</target>
+      </trans-unit>
+      <trans-unit id="executionPlanCompareCommandValue">
+        <source xml:lang="en">Compare execution plans</source>
+        <target state="translated">실행 계획 비교</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanEditor" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="executionPlanEditor">
+        <source xml:lang="en">Query Execution Plan Editor</source>
+        <target state="translated">실행 계획 편집기 쿼리</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanFileView" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
       <trans-unit id="executionPlanFileLoadingComplete">
         <source xml:lang="en">Execution plans are generated</source>
         <target state="translated">실행 계획을 생성합니다.</target>
@@ -3231,6 +3411,90 @@
       <trans-unit id="executionPlanFileLoadingFailed">
         <source xml:lang="en">Failed to load execution plan</source>
         <target state="translated">실행 계획을 로드하지 못함</target>
+      </trans-unit>
+      <trans-unit id="loadingExecutionPlanFile">
+        <source xml:lang="en">Generating execution plans</source>
+        <target state="translated">실행 계획을 생성하는 중</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="executionPlanPropertiesEdgeOperationName">
+        <source xml:lang="en">Edge</source>
+        <target state="translated">Edge</target>
+      </trans-unit>
+      <trans-unit id="nodePropertyViewNameNameColumnHeader">
+        <source xml:lang="en">Name</source>
+        <target state="translated">이름</target>
+      </trans-unit>
+      <trans-unit id="nodePropertyViewNameValueColumnHeader">
+        <source xml:lang="en">Value</source>
+        <target state="translated">값</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="executionPlanPropertyViewClose">
+        <source xml:lang="en">Close</source>
+        <target state="translated">닫기</target>
+      </trans-unit>
+      <trans-unit id="executionPlanPropertyViewSortAlphabetically">
+        <source xml:lang="en">Alphabetical</source>
+        <target state="translated">사전순</target>
+      </trans-unit>
+      <trans-unit id="executionPlanPropertyViewSortByDisplayOrder">
+        <source xml:lang="en">Categorized</source>
+        <target state="translated">항목별</target>
+      </trans-unit>
+      <trans-unit id="executionPlanPropertyViewSortReverseAlphabetically">
+        <source xml:lang="en">Reverse Alphabetical</source>
+        <target state="translated">사전순 반대로</target>
+      </trans-unit>
+      <trans-unit id="nodePropertyViewTitle">
+        <source xml:lang="en">Properties</source>
+        <target state="translated">속성</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanTab" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="executionPlanTitle">
+        <source xml:lang="en">Query Plan (Preview)</source>
+        <target state="translated">쿼리 계획(미리 보기)</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanView" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="executionPlan.SaveFileDescription">
+        <source xml:lang="en">Execution Plan Files</source>
+        <target state="translated">실행 계획 파일</target>
+      </trans-unit>
+      <trans-unit id="executionPlanCompareExecutionPlanAction">
+        <source xml:lang="en">Compare execution plan</source>
+        <target state="translated">실행 계획 비교</target>
+      </trans-unit>
+      <trans-unit id="executionPlanContextMenuDisableTooltip">
+        <source xml:lang="en">Disable Tooltips</source>
+        <target state="translated">도구 설명 비활성화</target>
+      </trans-unit>
+      <trans-unit id="executionPlanContextMenuEnableTooltip">
+        <source xml:lang="en">Enable Tooltips</source>
+        <target state="translated">도구 설명 활성화</target>
+      </trans-unit>
+      <trans-unit id="executionPlanCustomZoom">
+        <source xml:lang="en">Custom Zoom</source>
+        <target state="translated">사용자 지정 확대/축소</target>
+      </trans-unit>
+      <trans-unit id="executionPlanDisableTooltip">
+        <source xml:lang="en">Tooltips disabled</source>
+        <target state="translated">도구 설명 사용 안 함</target>
+      </trans-unit>
+      <trans-unit id="executionPlanEnableTooltip">
+        <source xml:lang="en">Tooltips enabled</source>
+        <target state="translated">도구 설명 활성화함</target>
       </trans-unit>
       <trans-unit id="executionPlanFitGraphLabel">
         <source xml:lang="en">Zoom to fit</source>
@@ -3252,10 +3516,6 @@
         <source xml:lang="en">Find Node</source>
         <target state="translated">노드 찾기</target>
       </trans-unit>
-      <trans-unit id="executionPlanTitle">
-        <source xml:lang="en">Query Plan (Preview)</source>
-        <target state="translated">쿼리 계획(미리 보기)</target>
-      </trans-unit>
       <trans-unit id="executionPlanZoomInActionLabel">
         <source xml:lang="en">Zoom In</source>
         <target state="translated">확대</target>
@@ -3264,57 +3524,13 @@
         <source xml:lang="en">Zoom Out</source>
         <target state="translated">축소</target>
       </trans-unit>
-      <trans-unit id="loadingExecutionPlanFile">
-        <source xml:lang="en">Generating execution plans</source>
-        <target state="translated">실행 계획을 생성하는 중</target>
-      </trans-unit>
       <trans-unit id="openQueryAction">
         <source xml:lang="en">Open Query</source>
         <target state="translated">쿼리 열기</target>
       </trans-unit>
     </body>
   </file>
-  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanEditor" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="executionPlanEditor">
-        <source xml:lang="en">Query Execution Plan Editor</source>
-        <target state="translated">실행 계획 편집기 쿼리</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="executionPlanPropertiesEdgeOperationName">
-        <source xml:lang="en">Edge</source>
-        <target state="translated">Edge</target>
-      </trans-unit>
-      <trans-unit id="executionPlanPropertyViewClose">
-        <source xml:lang="en">Close</source>
-        <target state="translated">닫기</target>
-      </trans-unit>
-      <trans-unit id="executionPlanPropertyViewSortAlphabetically">
-        <source xml:lang="en">Alphabetical</source>
-        <target state="translated">사전순</target>
-      </trans-unit>
-      <trans-unit id="executionPlanPropertyViewSortByDisplayOrder">
-        <source xml:lang="en">Categorized</source>
-        <target state="translated">항목별</target>
-      </trans-unit>
-      <trans-unit id="nodePropertyViewNameNameColumnHeader">
-        <source xml:lang="en">Name</source>
-        <target state="translated">이름</target>
-      </trans-unit>
-      <trans-unit id="nodePropertyViewNameValueColumnHeader">
-        <source xml:lang="en">Value</source>
-        <target state="translated">값</target>
-      </trans-unit>
-      <trans-unit id="nodePropertyViewTitle">
-        <source xml:lang="en">Properties</source>
-        <target state="translated">속성</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="src/sql/workbench/contrib/executionPlan/browser/planHeader" source-language="en" datatype="plaintext" target-language="ko">
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanViewHeader" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="planHeaderIndexAndCost">
         <source xml:lang="en">Query {0}: Query cost (relative to the script): {1}%</source>
@@ -4364,10 +4580,6 @@ Error: {1}</source>
         <source xml:lang="en">Run Cells failed - See error in output of the currently selected cell for more information.</source>
         <target state="translated">셀 실행 실패 - 자세한 내용은 현재 선택한 셀의 출력 오류를 참조하세요.</target>
       </trans-unit>
-      <trans-unit id="code">
-        <source xml:lang="en">Code</source>
-        <target state="translated">코드</target>
-      </trans-unit>
       <trans-unit id="codeCellsPreview">
         <source xml:lang="en">Add cell</source>
         <target state="translated">셀 추가</target>
@@ -4396,17 +4608,9 @@ Error: {1}</source>
         <source xml:lang="en">&lt; Previous</source>
         <target state="translated">&lt; 이전</target>
       </trans-unit>
-      <trans-unit id="runAll">
-        <source xml:lang="en">Run Cells</source>
-        <target state="translated">셀 실행</target>
-      </trans-unit>
       <trans-unit id="runAllPreview">
         <source xml:lang="en">Run all</source>
         <target state="translated">모두 실행</target>
-      </trans-unit>
-      <trans-unit id="text">
-        <source xml:lang="en">Text</source>
-        <target state="translated">텍스트</target>
       </trans-unit>
       <trans-unit id="textPreview">
         <source xml:lang="en">Text cell</source>
@@ -4771,6 +4975,10 @@ Error: {1}</source>
       <trans-unit id="trustLabel">
         <source xml:lang="en">Trusted</source>
         <target state="translated">신뢰할 수 있음</target>
+      </trans-unit>
+      <trans-unit id="untitledNotSupported">
+        <source xml:lang="en">Run with parameters is not supported for Untitled notebooks. Please save the notebook before continuing. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).</source>
+        <target state="translated">매개 변수로 실행은 제목 없는 전자 필기장에서 지원되지 않습니다. 계속하기 전에 전자 필기장을 저장하세요. [자세히 알아보기](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).</target>
       </trans-unit>
       <trans-unit id="untrustLabel">
         <source xml:lang="en">Not Trusted</source>
@@ -6806,6 +7014,62 @@ Error: {1}</source>
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/services/backupRestoreUrlBrowser/browser/urlBrowserDialog" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="backupRestoreUrlBrowserDialog.account">
+        <source xml:lang="en">Azure Account</source>
+        <target state="translated">Azure 계정</target>
+      </trans-unit>
+      <trans-unit id="backupRestoreUrlBrowserDialog.backupFile">
+        <source xml:lang="en">Backup file</source>
+        <target state="translated">백업 파일</target>
+      </trans-unit>
+      <trans-unit id="backupRestoreUrlBrowserDialog.blobContainer">
+        <source xml:lang="en">Blob container</source>
+        <target state="translated">Blob 컨테이너</target>
+      </trans-unit>
+      <trans-unit id="backupRestoreUrlBrowserDialog.linkAccount">
+        <source xml:lang="en">Link account</source>
+        <target state="translated">계정 연결</target>
+      </trans-unit>
+      <trans-unit id="backupRestoreUrlBrowserDialog.sharedAccessSignature">
+        <source xml:lang="en">Shared access signature generated</source>
+        <target state="translated">공유 액세스 서명 생성됨</target>
+      </trans-unit>
+      <trans-unit id="backupRestoreUrlBrowserDialog.sharedAccessSignatureButton">
+        <source xml:lang="en">Create Credentials</source>
+        <target state="translated">자격 증명 생성</target>
+      </trans-unit>
+      <trans-unit id="backupRestoreUrlBrowserDialog.storageAccount">
+        <source xml:lang="en">Storage account</source>
+        <target state="translated">스토리지 계정</target>
+      </trans-unit>
+      <trans-unit id="backupRestoreUrlBrowserDialog.subscription">
+        <source xml:lang="en">Azure subscription</source>
+        <target state="translated">Azure 구독</target>
+      </trans-unit>
+      <trans-unit id="backupRestoreUrlBrowserDialog.tenant">
+        <source xml:lang="en">Azure AD Tenant</source>
+        <target state="translated">Azure AD 테넌트</target>
+      </trans-unit>
+      <trans-unit id="fileBrowser.discard">
+        <source xml:lang="en">Discard</source>
+        <target state="translated">버리다</target>
+      </trans-unit>
+      <trans-unit id="fileBrowser.ok">
+        <source xml:lang="en">OK</source>
+        <target state="translated">확인</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/services/backupRestoreUrlBrowser/browser/urlBrowserDialogService" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="filebrowser.selectBlob">
+        <source xml:lang="en">Select a blob</source>
+        <target state="translated">얼룩 선택</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/services/connection/browser/advancedPropertiesController" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="advancedProperties.discard">
@@ -6964,9 +7228,25 @@ Error: {1}</source>
         <source xml:lang="en">Connect</source>
         <target state="translated">연결</target>
       </trans-unit>
+      <trans-unit id="connectionDialog.connectionProviderNotSupported">
+        <source xml:lang="en">The extension that supports provider type '{0}' is not currently installed. Please install it and try again.</source>
+        <target state="translated">'{0}' 공급자 유형을 지원하는 확장이 현재 설치되어 있지 않습니다. 설치하고 다시 시도하세요.</target>
+      </trans-unit>
+      <trans-unit id="connectionDialog.extensionNotInstalled">
+        <source xml:lang="en">The extension '{0}' is required in order to connect to this resource. Please install it and try again.</source>
+        <target state="translated">이 리소스에 연결하려면 '{0}' 확장이 필요합니다. 설치하고 다시 시도하세요.</target>
+      </trans-unit>
       <trans-unit id="connectionDialog.recentConnections">
         <source xml:lang="en">Recent Connections</source>
         <target state="translated">최근 연결</target>
+      </trans-unit>
+      <trans-unit id="connectionDialog.viewExtension">
+        <source xml:lang="en">View Extension</source>
+        <target state="translated">확장 보기</target>
+      </trans-unit>
+      <trans-unit id="connectionDialog.viewExtensions">
+        <source xml:lang="en">View Extensions</source>
+        <target state="translated">확장 보기</target>
       </trans-unit>
       <trans-unit id="noRecentConnections">
         <source xml:lang="en">No recent connection</source>
@@ -7048,9 +7328,17 @@ Error: {1}</source>
         <source xml:lang="en">Add an account...</source>
         <target state="translated">계정 추가...</target>
       </trans-unit>
-      <trans-unit id="connectionWidget.fieldWillBeTrimmed">
-        <source xml:lang="en">{0} will be trimmed.</source>
-        <target state="translated">{0}이(가) 잘립니다.</target>
+      <trans-unit id="connectionWidget.ConnectionStringError">
+        <source xml:lang="en">Failed to parse the connection string.</source>
+        <target state="translated">연결 문자열을 구문 분석하지 못했습니다.</target>
+      </trans-unit>
+      <trans-unit id="connectionWidget.Error">
+        <source xml:lang="en">Error</source>
+        <target state="translated">오류</target>
+      </trans-unit>
+      <trans-unit id="connectionWidget.connectionString">
+        <source xml:lang="en">Connection string</source>
+        <target state="translated">연결 문자열</target>
       </trans-unit>
       <trans-unit id="connectionWidget.invalidAzureAccount">
         <source xml:lang="en">You must select an account</source>
@@ -7431,6 +7719,18 @@ Error: {1}</source>
   </file>
   <file original="src/sql/workbench/services/notebook/browser/models/cell" source-language="en" datatype="plaintext" target-language="ko">
     <body>
+      <trans-unit id="cellExecutionComplete">
+        <source xml:lang="en">Cell execution is complete</source>
+        <target state="translated">셀 실행 완료됨</target>
+      </trans-unit>
+      <trans-unit id="cellExecutionStarted">
+        <source xml:lang="en">Cell execution started</source>
+        <target state="translated">셀 실행 시작함</target>
+      </trans-unit>
+      <trans-unit id="codeCellLabel">
+        <source xml:lang="en">Code Cell {0}</source>
+        <target state="translated">코드 셀 {0}</target>
+      </trans-unit>
       <trans-unit id="commandSuccessful">
         <source xml:lang="en">Command executed successfully</source>
         <target state="translated">명령이 실행됨</target>
@@ -7438,6 +7738,10 @@ Error: {1}</source>
       <trans-unit id="executionCanceled">
         <source xml:lang="en">Query execution was canceled</source>
         <target state="translated">쿼리 실행을 취소했습니다.</target>
+      </trans-unit>
+      <trans-unit id="mdCellLabel">
+        <source xml:lang="en">Markdown Cell {0}</source>
+        <target state="translated">Markdown 셀 {0}</target>
       </trans-unit>
       <trans-unit id="noDefaultKernel">
         <source xml:lang="en">No kernel is available for this notebook</source>
@@ -8105,6 +8409,10 @@ Error: {1}</source>
         <source xml:lang="en">Backup sets to restore</source>
         <target state="translated">복원할 백업 세트</target>
       </trans-unit>
+      <trans-unit id="backupUrl">
+        <source xml:lang="en">Backup URL</source>
+        <target state="translated">백업 URL</target>
+      </trans-unit>
       <trans-unit id="database">
         <source xml:lang="en">Database</source>
         <target state="translated">데이터베이스</target>
@@ -8112,6 +8420,10 @@ Error: {1}</source>
       <trans-unit id="destination">
         <source xml:lang="en">Destination</source>
         <target state="translated">대상</target>
+      </trans-unit>
+      <trans-unit id="enterBackupUrl">
+        <source xml:lang="en">Please enter URL</source>
+        <target state="translated">URL을 입력하세요.</target>
       </trans-unit>
       <trans-unit id="fileType">
         <source xml:lang="en">File type</source>
@@ -8132,6 +8444,10 @@ Error: {1}</source>
       <trans-unit id="missingBackupFilePathError">
         <source xml:lang="en">Backup file path is required.</source>
         <target state="translated">백업 파일 경로가 필요합니다.</target>
+      </trans-unit>
+      <trans-unit id="missingBackupUrlError">
+        <source xml:lang="en">Backup url is required.</source>
+        <target state="translated">백업 URL이 필요합니다.</target>
       </trans-unit>
       <trans-unit id="multipleBackupFilePath">
         <source xml:lang="en">Please enter one or more file paths separated by commas</source>
@@ -8161,6 +8477,10 @@ Error: {1}</source>
         <source xml:lang="en">Backup file</source>
         <target state="translated">백업 파일</target>
       </trans-unit>
+      <trans-unit id="restoreDialog.browse">
+        <source xml:lang="en">Browse</source>
+        <target state="translated">검색</target>
+      </trans-unit>
       <trans-unit id="restoreDialog.cancel">
         <source xml:lang="en">Cancel</source>
         <target state="translated">취소</target>
@@ -8180,6 +8500,14 @@ Error: {1}</source>
       <trans-unit id="restoreDialog.script">
         <source xml:lang="en">Script</source>
         <target state="translated">스크립트</target>
+      </trans-unit>
+      <trans-unit id="restoreDialog.targetDatabaseAlreadyExists">
+        <source xml:lang="en">Target database already exists</source>
+        <target state="translated">대상 데이터베이스가 이미 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="restoreDialog.url">
+        <source xml:lang="en">URL</source>
+        <target state="translated">URL</target>
       </trans-unit>
       <trans-unit id="restoreFrom">
         <source xml:lang="en">Restore from</source>
@@ -8212,6 +8540,10 @@ Error: {1}</source>
       <trans-unit id="targetDatabase">
         <source xml:lang="en">Target database</source>
         <target state="translated">대상 데이터베이스</target>
+      </trans-unit>
+      <trans-unit id="targetDatabaseTooltip">
+        <source xml:lang="en">Please enter target database name</source>
+        <target state="translated">대상 데이터베이스 이름을 입력하세요</target>
       </trans-unit>
     </body>
   </file>
@@ -8253,6 +8585,10 @@ Error: {1}</source>
         <source xml:lang="en">Cancel</source>
         <target state="translated">취소</target>
       </trans-unit>
+      <trans-unit id="serverGroup.colorValue">
+        <source xml:lang="en">Color: {0}</source>
+        <target state="translated">색: {0}</target>
+      </trans-unit>
       <trans-unit id="serverGroup.ok">
         <source xml:lang="en">OK</source>
         <target state="translated">확인</target>
@@ -8273,6 +8609,10 @@ Error: {1}</source>
   </file>
   <file original="src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput" source-language="en" datatype="plaintext" target-language="ko">
     <body>
+      <trans-unit id="designer.checkConstraint.description.description">
+        <source xml:lang="en">The description of the check constraint.</source>
+        <target state="translated">CHECK 제약 조건에 대한 설명입니다.</target>
+      </trans-unit>
       <trans-unit id="designer.checkConstraint.description.expression">
         <source xml:lang="en">The expression defining the check constraint.</source>
         <target state="translated">CHECK 제약 조건을 정의하는 식입니다.</target>
@@ -8280,6 +8620,10 @@ Error: {1}</source>
       <trans-unit id="designer.checkConstraint.description.name">
         <source xml:lang="en">The name of the check constraint.</source>
         <target state="translated">CHECK 제약 조건의 이름입니다.</target>
+      </trans-unit>
+      <trans-unit id="designer.column.description.advancedType">
+        <source xml:lang="en">Displays the unified data type (including length, scale and precision) for the column</source>
+        <target state="translated">열의 통합 데이터 형식(길이, 소수 자릿수 및 전체 자릿수 포함)을 표시합니다.</target>
       </trans-unit>
       <trans-unit id="designer.column.description.allowNulls">
         <source xml:lang="en">Specifies whether the column may have a NULL value.</source>
@@ -8292,6 +8636,10 @@ Error: {1}</source>
       <trans-unit id="designer.column.description.defaultValueBinding">
         <source xml:lang="en">A predefined global default value for the column or binding.</source>
         <target state="translated">열 또는 바인딩에 대해 미리 정의된 전역 기본값입니다.</target>
+      </trans-unit>
+      <trans-unit id="designer.column.description.description">
+        <source xml:lang="en">Displays the description of the column</source>
+        <target state="translated">열에 대한 설명을 표시합니다.</target>
       </trans-unit>
       <trans-unit id="designer.column.description.length">
         <source xml:lang="en">The maximum length (in characters) that can be stored in this database object.</source>
@@ -8317,6 +8665,10 @@ Error: {1}</source>
         <source xml:lang="en">The mapping between foreign key columns and primary key columns.</source>
         <target state="translated">외래 키 열과 기본 키 열 간의 매핑입니다.</target>
       </trans-unit>
+      <trans-unit id="designer.foreignkey.description.description">
+        <source xml:lang="en">The description of the foreign key.</source>
+        <target state="translated">외래 키에 대한 설명입니다.</target>
+      </trans-unit>
       <trans-unit id="designer.foreignkey.description.name">
         <source xml:lang="en">The name of the foreign key.</source>
         <target state="translated">외래 키의 이름입니다.</target>
@@ -8341,6 +8693,10 @@ Error: {1}</source>
         <source xml:lang="en">The columns of the index.</source>
         <target state="translated">인덱스의 열입니다.</target>
       </trans-unit>
+      <trans-unit id="designer.index.description.description">
+        <source xml:lang="en">The description of the index.</source>
+        <target state="translated">인덱스에 대한 설명입니다.</target>
+      </trans-unit>
       <trans-unit id="designer.index.description.name">
         <source xml:lang="en">The name of the index.</source>
         <target state="translated">인덱스 이름입니다.</target>
@@ -8360,6 +8716,10 @@ Error: {1}</source>
       <trans-unit id="designer.table.primaryKeyColumns.description">
         <source xml:lang="en">Columns in the primary key.</source>
         <target state="translated">기본 키의 열입니다.</target>
+      </trans-unit>
+      <trans-unit id="designer.table.primaryKeyDescription.description">
+        <source xml:lang="en">The description of the primary key.</source>
+        <target state="translated">기본 키에 대한 설명입니다.</target>
       </trans-unit>
       <trans-unit id="designer.table.primaryKeyName.description">
         <source xml:lang="en">Name of the primary key.</source>
@@ -8417,6 +8777,10 @@ Error: {1}</source>
         <source xml:lang="en">New Index</source>
         <target state="translated">새 인덱스</target>
       </trans-unit>
+      <trans-unit id="tableDesigner.checkConstraintDescriptionTitle">
+        <source xml:lang="en">Description</source>
+        <target state="translated">설명</target>
+      </trans-unit>
       <trans-unit id="tableDesigner.checkConstraintExpressionTitle">
         <source xml:lang="en">Expression</source>
         <target state="translated">식</target>
@@ -8433,6 +8797,10 @@ Error: {1}</source>
         <source xml:lang="en">Check Constraints</source>
         <target state="translated">CHECK 제약 조건</target>
       </trans-unit>
+      <trans-unit id="tableDesigner.columnAdvancedTypeTitle">
+        <source xml:lang="en">Type</source>
+        <target state="translated">형식</target>
+      </trans-unit>
       <trans-unit id="tableDesigner.columnAllowNullTitle">
         <source xml:lang="en">Allow Nulls</source>
         <target state="translated">Null 허용</target>
@@ -8440,6 +8808,10 @@ Error: {1}</source>
       <trans-unit id="tableDesigner.columnDefaultValueTitle">
         <source xml:lang="en">Default Value</source>
         <target state="translated">기본값</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.columnDescriptionTitle">
+        <source xml:lang="en">Description</source>
+        <target state="translated">설명</target>
       </trans-unit>
       <trans-unit id="tableDesigner.columnIsPrimaryKeyTitle">
         <source xml:lang="en">Primary Key</source>
@@ -8478,7 +8850,7 @@ Error: {1}</source>
         <target state="translated">설명</target>
       </trans-unit>
       <trans-unit id="tableDesigner.errorInitializingTableDesigner">
-        <source xml:lang="en">An error occured while initializing the table designer: {0}</source>
+        <source xml:lang="en">An error occurred while initializing the table designer: {0}</source>
         <target state="translated">테이블 디자이너를 초기화하는 동안 오류가 발생했습니다. {0}</target>
       </trans-unit>
       <trans-unit id="tableDesigner.errorProcessingEdit">
@@ -8496,6 +8868,10 @@ Error: {1}</source>
       <trans-unit id="tableDesigner.foreignKeyColumns">
         <source xml:lang="en">Columns</source>
         <target state="translated">열</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.foreignKeyDescriptionTitle">
+        <source xml:lang="en">Description</source>
+        <target state="translated">설명</target>
       </trans-unit>
       <trans-unit id="tableDesigner.foreignKeyNameTitle">
         <source xml:lang="en">Name</source>
@@ -8518,7 +8894,7 @@ Error: {1}</source>
         <target state="translated">일반</target>
       </trans-unit>
       <trans-unit id="tableDesigner.generatePreviewReportError">
-        <source xml:lang="en">An error occured while generating preview report: {0}</source>
+        <source xml:lang="en">An error occurred while generating preview report: {0}</source>
         <target state="translated">미리 보기 보고서를 생성하는 동안 오류가 발생했습니다. {0}</target>
       </trans-unit>
       <trans-unit id="tableDesigner.generateScriptError">
@@ -8545,6 +8921,10 @@ Error: {1}</source>
         <source xml:lang="en">Columns</source>
         <target state="translated">열</target>
       </trans-unit>
+      <trans-unit id="tableDesigner.indexDescription">
+        <source xml:lang="en">Description</source>
+        <target state="translated">설명</target>
+      </trans-unit>
       <trans-unit id="tableDesigner.indexName">
         <source xml:lang="en">Name</source>
         <target state="translated">이름</target>
@@ -8564,6 +8944,10 @@ Error: {1}</source>
       <trans-unit id="tableDesigner.primaryKeyColumnsTitle">
         <source xml:lang="en">Primary Key Columns</source>
         <target state="translated">기본 키 열</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.primaryKeyDescriptionTitle">
+        <source xml:lang="en">Description</source>
+        <target state="translated">설명</target>
       </trans-unit>
       <trans-unit id="tableDesigner.primaryKeyNameTitle">
         <source xml:lang="en">Name</source>
@@ -8608,6 +8992,19 @@ Error: {1}</source>
       <trans-unit id="tableDesigner.previewDatabaseUpdates">
         <source xml:lang="en">Preview Database Updates</source>
         <target state="translated">데이터베이스 업데이트 미리 보기</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/services/tableDesigner/browser/tableDesignerService" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="TableDesigner.closeApplication">
+        <source xml:lang="en">&amp;&amp;Close Application</source>
+        <note>&amp;&amp; denotes a mnemonic</note>
+        <target state="translated">애플리케이션 닫기(&amp;&amp;C)</target>
+      </trans-unit>
+      <trans-unit id="TableDesigner.saveBeforeExit">
+        <source xml:lang="en">There are unsaved changes in Table Designer that will be lost if you close the application. Do you want to close the application?</source>
+        <target state="translated">애플리케이션을 닫으면 손실될 테이블 디자이너에 저장되지 않은 변경 내용이 있습니다. 애플리케이션을 종료하시겠습니까?</target>
       </trans-unit>
     </body>
   </file>

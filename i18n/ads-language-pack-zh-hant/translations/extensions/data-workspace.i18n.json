@@ -10,6 +10,7 @@
 	"contents": {
 		"dist/common/constants": {
 			"AllProjectTypes": "所有專案類型",
+			"LocalDevInfo": "點擊 [深入了解] 按鈕以取得本機開發體驗的詳細資訊，以{0}",
 			"SelectProjectFileActionName": "選取",
 			"UnknownProjectTypeError": "找不到識別碼為 '{0}' 之專案類型的提供者",
 			"UnknownProjectsError": "找不到下列專案的提供者: {0}",

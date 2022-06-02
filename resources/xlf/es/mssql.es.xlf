@@ -210,6 +210,14 @@
         <source xml:lang="en">Execute</source>
         <target state="translated">Ejecutar</target>
       </trans-unit>
+      <trans-unit id="mssql.failedToFindAccount">
+        <source xml:lang="en">Failed to find azure account {0} when executing token refresh</source>
+        <target state="translated">No se pudo encontrar la cuenta de Azure {0} al ejecutar la actualización del token</target>
+      </trans-unit>
+      <trans-unit id="mssql.failedToFindTenants">
+        <source xml:lang="en">Failed to find tenant '{0}' in account '{1}' when refreshing security token</source>
+        <target state="translated">No se pudo encontrar el inquilino '{0}' en la cuenta '{1}' al actualizar el token de seguridad</target>
+      </trans-unit>
       <trans-unit id="mssql.group">
         <source xml:lang="en">Group</source>
         <target state="translated">Grupo</target>
@@ -257,6 +265,14 @@
       <trans-unit id="mssql.stickyHeader">
         <source xml:lang="en">Sticky Bit</source>
         <target state="translated">Sticky Bit</target>
+      </trans-unit>
+      <trans-unit id="mssql.tokenRefreshFailed">
+        <source xml:lang="en">{0} AAD token refresh failed, please reconnect to enable {0}</source>
+        <target state="translated">Error al actualizar el token de AAD {0}, vuelva a conectarse para habilitar {0}</target>
+      </trans-unit>
+      <trans-unit id="mssql.tokenRefreshFailedNoSecurityToken">
+        <source xml:lang="en">Editor token refresh failed, autocompletion will be disabled until the editor is disconnected and reconnected</source>
+        <target state="translated">Error al actualizar el token del editor; la función de autocompletar se deshabilitará hasta que el editor se desconecte y vuelva a conectarse</target>
       </trans-unit>
       <trans-unit id="mssql.userLabel">
         <source xml:lang="en">User</source>
@@ -1329,6 +1345,10 @@
       <trans-unit id="mssql.logRetentionMinutes">
         <source xml:lang="en">Number of minutes to retain log files for backend services. Default is 1 week.</source>
         <target state="translated">Número de minutos para conservar los archivos de registro para los servicios back-end. El valor predeterminado es 1 semana.</target>
+      </trans-unit>
+      <trans-unit id="mssql.parallelMessageProcessing">
+        <source xml:lang="en">[Experimental] Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Relaunch of ADS is required when the value is changed.</source>
+        <target state="translated">[Experimental] Si las solicitudes al servicio de herramientas SQL se deben controlar en paralelo. Esto se introduce para detectar los problemas que puede haber al controlar todas las solicitudes en paralelo. El valor predeterminado es false. Es necesario volver a iniciar los ADS cuando se cambia el valor.</target>
       </trans-unit>
       <trans-unit id="mssql.provider.displayName">
         <source xml:lang="en">Microsoft SQL Server</source>

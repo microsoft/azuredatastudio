@@ -10175,8 +10175,7 @@
 			"designer.issuesTabTitle": "Probleme ({0})",
 			"designer.loadingDesigner": "Designer wird geladen...",
 			"designer.loadingDesignerCompleted": "Designer ist geladen",
-			"designer.newRowButtonAriaLabel": "Neue Zeile zu Tabelle „{0}“ hinzufügen",
-			"designer.newRowText": "Neue/s/n hinzufügen",
+			"designer.moveRowText": "Zeile verschieben",
 			"designer.processing": "Verarbeitung wird ausgeführt...",
 			"designer.processingChanges": "Änderungen werden verarbeitet...",
 			"designer.processingChangesCompleted": "Änderungen wurden verarbeitet",
@@ -10185,7 +10184,7 @@
 			"designer.publishingChanges": "Änderungen werden veröffentlicht...",
 			"designer.removeRowText": "Entfernen",
 			"designer.scriptTabTitle": "Skripts",
-			"tableDesigner.unknownComponentType": "Komponententyp: {0} wird nicht unterstützt"
+			"designer.unknownComponentType": "Komponententyp: {0} wird nicht unterstützt"
 		},
 		"sql/workbench/browser/designer/designerPropertiesPane": {
 			"tableDesigner.propertiesPaneTitle": "Eigenschaften",
@@ -10350,6 +10349,7 @@
 		},
 		"sql/workbench/contrib/backup/browser/backup.component": {
 			"addFile": "Datei hinzufügen",
+			"addUrl": "URL hinzufügen",
 			"backup.advancedConfiguration": "Erweiterte Konfiguration",
 			"backup.algorithm": "Algorithmus",
 			"backup.backupDevice": "Sicherungsdateien",
@@ -10357,6 +10357,7 @@
 			"backup.backupName": "Backup-Name",
 			"backup.backupTail": "Sicherung des Protokollfragments",
 			"backup.backupType": "Sicherungstyp",
+			"backup.backupUrl": "Sicherungs-URL",
 			"backup.certificateOrAsymmetricKey": "Zertifikat oder asymmetrischer Schlüssel",
 			"backup.checksumContainer": "Vor dem Schreiben auf Medium Prüfsumme berechnen",
 			"backup.compression": "Komprimierung",
@@ -10378,9 +10379,11 @@
 			"backup.reliability": "Zuverlässigkeit",
 			"backup.setBackupCompression": "Sicherungskomprimierung festlegen",
 			"backup.setBackupRetainDays": "Aufbewahrungsdauer der Sicherung in Tagen festlegen",
+			"backup.toUrl": "Sicherung speichern unter URL",
 			"backup.transactionLog": "Transaktionsprotokoll",
 			"backup.truncateTransactionLog": "Transaktionsprotokoll abschneiden",
 			"backup.verifyContainer": "Sicherung nach Abschluss überprüfen",
+			"backupBrowseButton": "Durchsuchen",
 			"backupComponent.backup": "Sicherung",
 			"backupComponent.cancel": "Abbrechen",
 			"backupComponent.invalidInput": "Ungültige Eingabe. Wert muss größer oder gleich 0 sein.",
@@ -10493,7 +10496,6 @@
 			"workbench.configuration.upgradeWorkspace": "\"{0}\" wurde in Ihren Arbeitsbereichseinstellungen durch \"{1}\" ersetzt."
 		},
 		"sql/workbench/contrib/connection/browser/connection.contribution": {
-			"connection.parseClipboardForConnectionStringDescription": "Hiermit wird versucht, die Inhalte der Zwischenablage zu analysieren, wenn das Verbindungsdialogfeld geöffnet ist oder ein Element eingefügt wird.",
 			"connection.showUnsupportedServerVersionWarning": "Gibt an, ob die Warnmeldung angezeigt werden soll, wenn ein Benutzer eine Verbindung mit einer Serverversion herstellt, die von Azure Data Studio nicht unterstützt wird.",
 			"sql.defaultAuthenticationType.AzureMFA": "Azure Active Directory: universell mit MFA-Unterstützung",
 			"sql.defaultAuthenticationType.AzureMFAAndUser": "Azure Active Directory: Kennwort",
@@ -10509,10 +10511,12 @@
 		"sql/workbench/contrib/connection/common/connectionProviderExtension": {
 			"schema.connectionOptions": "Verbindungsoptionen",
 			"schema.displayName": "Anzeigename für den Anbieter",
+			"schema.enableConnectionStringOption": "Gibt an, ob der Anbieter Verbindungszeichenfolgen als Eingabeoption unterstützt. Der Standardwert ist FALSE.",
 			"schema.iconPath": "Symbolpfad für den Servertyp",
 			"schema.isQueryProvider": "Gibt an, ob der Anbieter auch ein Abfrageanbieter ist. Der Standardwert ist TRUE.",
 			"schema.notebookKernelAlias": "Notebook-Kernelalias für den Anbieter",
-			"schema.providerId": "Allgemeine ID für den Anbieter"
+			"schema.providerId": "Allgemeine ID für den Anbieter",
+			"schema.useConnectionStringAsDefaultOption": "Gibt an, ob der Verbindungsanbieter die Verbindungszeichenfolge als Standardoption für die Verbindungsherstellung verwendet. Der Standardwert ist FALSE."
 		},
 		"sql/workbench/contrib/connection/common/connectionTreeProviderExentionPoint": {
 			"connectionTreeProvider.schema.id": "Die ID für den Anbieter muss mit der ID übereinstimmen, die zur Registrierung des Strukturdatenanbieters verwendet wurde, und mit \"connectionDialog/\" beginnen.",
@@ -10586,6 +10590,7 @@
 			"azdata.extension.contributes.dashboard.tab.container": "Der Container, der auf dieser Registerkarte angezeigt wird.",
 			"azdata.extension.contributes.dashboard.tab.description": "Beschreibung dieser Registerkarte, die dem Benutzer angezeigt werden.",
 			"azdata.extension.contributes.dashboard.tab.group": "Der eindeutige Bezeichner der Gruppe, zu der diese Registerkarte gehört. Wert für Startgruppe: Start.",
+			"azdata.extension.contributes.dashboard.tab.hideRefreshTask": "Flag zum Ein-/Ausblenden der Aktualisierungsschaltfläche in der Symbolleiste. Standardmäßig ist der Wert FALSE.",
 			"azdata.extension.contributes.dashboard.tab.icon.dark": "Symbolpfad, wenn ein dunkles Design verwendet wird",
 			"azdata.extension.contributes.dashboard.tab.icon.light": "Symbolpfad, wenn ein helles Design verwendet wird",
 			"azdata.extension.contributes.dashboard.tab.id": "Eindeutiger Bezeichner für diese Registerkarte. Wird bei allen Anforderungen an die Erweiterung übergeben.",
@@ -11104,7 +11109,6 @@
 			"addTextLabel": "Text hinzufügen",
 			"cellNotFound": "Die Zelle mit dem URI \"{0}\" wurde in diesem Modell nicht gefunden.",
 			"cellRunFailed": "Fehler beim Ausführen von Zellen: Weitere Informationen finden Sie im Fehler in der Ausgabe der aktuell ausgewählten Zelle.",
-			"code": "Code",
 			"codeCellsPreview": "Zelle hinzufügen",
 			"codePreview": "Codezelle",
 			"createFile": "Datei erstellen",
@@ -11112,9 +11116,7 @@
 			"editor": "Editor",
 			"nextButtonLabel": "Weiter >",
 			"previousButtonLabel": "< Zurück",
-			"runAll": "Zellen ausführen",
 			"runAllPreview": "Alle ausführen",
-			"text": "Text",
 			"textPreview": "Textzelle",
 			"views": "Ansichten"
 		},
@@ -11208,6 +11210,7 @@
 			"runParameters": "Mit Parametern ausführen",
 			"selectConnection": "Verbindung auswählen",
 			"trustLabel": "Vertrauenswürdig",
+			"untitledNotSupported": "Die Ausführung mit Parametern wird für unbenannte Notebooks nicht unterstützt. Bitte speichern Sie das Notebook, bevor Sie fortfahren. [Weitere Informationen](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).",
 			"untrustLabel": "Nicht vertrauenswürdig",
 			"viewNotFound": "Ansicht nicht gefunden: {0}"
 		},
@@ -11823,7 +11826,11 @@
 			"connectionDetailsTitle": "Verbindungsdetails",
 			"connectionDialog.cancel": "Abbrechen",
 			"connectionDialog.connect": "Verbinden",
+			"connectionDialog.connectionProviderNotSupported": "Die Erweiterung, die den Anbietertyp „{0}“ unterstützt, ist derzeit nicht installiert. Installieren Sie sie, und versuchen Sie es noch einmal.",
+			"connectionDialog.extensionNotInstalled": "Die Erweiterung „{0}“ ist erforderlich, um eine Verbindung mit dieser Ressource herzustellen. Installieren Sie sie, und versuchen Sie es noch einmal.",
 			"connectionDialog.recentConnections": "Letzte Verbindungen",
+			"connectionDialog.viewExtension": "Erweiterung anzeigen",
+			"connectionDialog.viewExtensions": "Erweiterungen anzeigen",
 			"noRecentConnections": "Keine aktuelle Verbindung",
 			"recentConnectionTitle": "Zuletzt verwendet"
 		},
@@ -11846,7 +11853,9 @@
 			"connection.azureTenantDropdownLabel": "Azure AD-Mandant",
 			"connectionName": "Name (optional)",
 			"connectionWidget.AddAzureAccount": "Konto hinzufügen...",
-			"connectionWidget.fieldWillBeTrimmed": "\"{0}\" wird gekürzt.",
+			"connectionWidget.ConnectionStringError": "Fehler beim Analysieren der Verbindungszeichenfolge.",
+			"connectionWidget.Error": "Fehler",
+			"connectionWidget.connectionString": "Verbindungszeichenfolge",
 			"connectionWidget.invalidAzureAccount": "Sie müssen ein Konto auswählen.",
 			"connectionWidget.missingRequireField": "\"{0}\" ist erforderlich.",
 			"connectionWidget.refreshAzureCredentials": "Kontoanmeldeinformationen aktualisieren",
@@ -11957,8 +11966,12 @@
 			"sqlKernel": "SQL"
 		},
 		"sql/workbench/services/notebook/browser/models/cell": {
+			"cellExecutionComplete": "Zellenausführung ist abgeschlossen",
+			"cellExecutionStarted": "Zellenausführung wurde gestartet",
+			"codeCellLabel": "Codezelle{0}",
 			"commandSuccessful": "Der Befehl wurde erfolgreich ausgeführt.",
 			"executionCanceled": "Die Abfrageausführung wurde abgebrochen.",
+			"mdCellLabel": "Markdown-Zelle{0}",
 			"noDefaultKernel": "Für dieses Notebook ist kein Kernel verfügbar.",
 			"notebookNotReady": "Die Sitzung für dieses Notebook ist noch nicht bereit.",
 			"runCellCancelled": "Die Zellenausführung wurde abgebrochen.",
@@ -12151,13 +12164,16 @@
 			"RestoreDialogTitle": "Datenbank wiederherstellen",
 			"backupFilePath": "Pfad zur Sicherungsdatei",
 			"backupSetsToRestore": "Wiederherzustellende Sicherungssätze",
+			"backupUrl": "Sicherungs-URL",
 			"database": "Datenbank",
 			"destination": "Ziel",
+			"enterBackupUrl": "Geben Sie den Benutzer ein.",
 			"fileType": "Dateityp",
 			"filesTitle": "Dateien",
 			"generalTitle": "Allgemein",
 			"logicalFileName": "Logischer Dateiname",
 			"missingBackupFilePathError": "Sie müssen einen Pfad für die Sicherungsdatei angeben.",
+			"missingBackupUrlError": "Eine Sicherungs-URL ist erforderlich.",
 			"multipleBackupFilePath": "Geben Sie einen oder mehrere Dateipfade (durch Kommas getrennt) ein.",
 			"optionsTitle": "Optionen",
 			"originalFileName": "Ursprünglicher Dateiname",
@@ -12165,11 +12181,14 @@
 			"restoreDatabaseFileAs": "Datenbankdateien wiederherstellen als",
 			"restoreDatabaseFileDetails": "Details zu Datenbankdateien wiederherstellen",
 			"restoreDialog.backupFile": "Sicherungsdatei",
+			"restoreDialog.browse": "Durchsuchen",
 			"restoreDialog.cancel": "Abbrechen",
 			"restoreDialog.database": "Datenbank",
 			"restoreDialog.restore": "Wiederherstellen",
 			"restoreDialog.restoreTitle": "Datenbank wiederherstellen",
 			"restoreDialog.script": "Skript",
+			"restoreDialog.targetDatabaseAlreadyExists": "Die Zieldatenbank ist bereits vorhanden.",
+			"restoreDialog.url": "URL",
 			"restoreFrom": "Wiederherstellen aus",
 			"restoreOptions": "Wiederherstellungsoptionen",
 			"restorePlan": "Wiederherstellungsplan",
@@ -12177,7 +12196,8 @@
 			"serverConnection": "Serververbindungen",
 			"source": "Quelle",
 			"taillogBackup": "Sicherung des Protokollfragments",
-			"targetDatabase": "Zieldatenbank"
+			"targetDatabase": "Zieldatenbank",
+			"targetDatabaseTooltip": "Zieldatenbanknamen eingeben"
 		},
 		"sql/workbench/services/restore/common/constants": {
 			"backup.allFiles": "Alle Dateien",
@@ -12190,6 +12210,7 @@
 			"groupColor": "Gruppenfarbe",
 			"groupDescription": "Gruppenbeschreibung",
 			"serverGroup.cancel": "Abbrechen",
+			"serverGroup.colorValue": "Farbe: {0}",
 			"serverGroup.ok": "OK"
 		},
 		"sql/workbench/services/serverGroup/common/serverGroupViewModel": {
@@ -12197,28 +12218,34 @@
 			"serverGroup.editServerGroup": "Servergruppe bearbeiten"
 		},
 		"sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput": {
+			"designer.checkConstraint.description.description": "Die Beschreibung der Check-Einschränkung.",
 			"designer.checkConstraint.description.expression": "Der Ausdruck, durch den die CHECK-Einschränkung definiert wird.",
 			"designer.checkConstraint.description.name": "Der Name der Check-Einschränkung.",
+			"designer.column.description.advancedType": "Zeigt den einheitlichen Datentyp (einschließlich Länge, Skalierung und Genauigkeit) für die Spalte an.",
 			"designer.column.description.allowNulls": "Gibt an, ob die Spalte einen NULL-Wert aufweisen darf.",
 			"designer.column.description.dataType": "Zeigt den Datentypnamen für die Spalte an",
 			"designer.column.description.defaultValueBinding": "Ein vordefinierter globaler Standardwert für die Spalte oder Bindung.",
+			"designer.column.description.description": "Gibt die Beschreibung der Spalte an.",
 			"designer.column.description.length": "Die maximale Länge (in Zeichen), die in diesem Datenbankobjekt gespeichert werden kann.",
 			"designer.column.description.name": "Der Name des Spaltenobjekts.",
 			"designer.column.description.precision": "Für numerische Daten die maximale Anzahl von Dezimalstellen, die in diesem Datenbankobjekt gespeichert werden können.",
 			"designer.column.description.primaryKey": "Gibt an, ob die Spalte in den Primärschlüssel für die Tabelle eingeschlossen ist.",
 			"designer.column.description.scale": "Für numerische Daten die maximale Anzahl von Dezimalstellen, die in diesem Datenbankobjekt rechts vom Dezimaltrennzeichen gespeichert werden können.",
 			"designer.foreignkey.description.columnMapping": "Die Zuordnung zwischen Fremdschlüsselspalten und Primärschlüsselspalten.",
+			"designer.foreignkey.description.description": "Die Beschreibung des Fremdschlüssels.",
 			"designer.foreignkey.description.name": "Der Name des Fremdschlüssels.",
 			"designer.foreignkey.description.onDeleteAction": "Das Verhalten, wenn ein Benutzer versucht, eine Zeile mit Daten zu löschen, die an einer Fremdschlüsselbeziehung beteiligt sind.",
 			"designer.foreignkey.description.onUpdateAction": "Das Verhalten, wenn ein Benutzer versucht, eine Zeile mit Daten zu aktualisieren, die an einer Fremdschlüsselbeziehung beteiligt sind.",
 			"designer.foreignkey.description.primaryKeyTable": "Die Tabelle, die die PRIMARY KEY- oder UNIQUE KEY-Spalte enthält.",
 			"designer.index.column.description.name": "Der Name der Spalte.",
 			"designer.index.description.columns": "Die Spalten des Index.",
+			"designer.index.description.description": "Die Beschreibung des Indexers.",
 			"designer.index.description.name": "Der Name des Indexes.",
 			"designer.table.description.description": "Die Beschreibung der Tabelle.",
 			"designer.table.description.name": "Der Name des Tabellenobjekts.",
 			"designer.table.description.schema": "Das Schema, das die Tabelle enthält.",
 			"designer.table.primaryKeyColumns.description": "Spalten im Primärschlüssel.",
+			"designer.table.primaryKeyDescription.description": "Die Beschreibung des Primärschlüssels.",
 			"designer.table.primaryKeyName.description": "Name des Primärschlüssels.",
 			"tableDesigner.ErrorDialogTitle": "Fehler bei Tabellen-Designer",
 			"tableDesigner.ForeignKeyTypeName": "Fremdschlüssel",
@@ -12233,12 +12260,15 @@
 			"tableDesigner.addNewColumnToIndex": "Spalte hinzufügen",
 			"tableDesigner.addNewColumnToPrimaryKey": "Spalte hinzufügen",
 			"tableDesigner.addNewIndex": "Neuer Index",
+			"tableDesigner.checkConstraintDescriptionTitle": "Beschreibung",
 			"tableDesigner.checkConstraintExpressionTitle": "Ausdruck",
 			"tableDesigner.checkConstraintNameTitle": "Name",
 			"tableDesigner.checkConstraintTypeName": "Check-Einschränkung",
 			"tableDesigner.checkConstraintsTabTitle": "Einschränkungen überprüfen",
+			"tableDesigner.columnAdvancedTypeTitle": "Typ",
 			"tableDesigner.columnAllowNullTitle": "NULL-Werte zulassen",
 			"tableDesigner.columnDefaultValueTitle": "Standardwert",
+			"tableDesigner.columnDescriptionTitle": "Beschreibung",
 			"tableDesigner.columnIsPrimaryKeyTitle": "Primärschlüssel",
 			"tableDesigner.columnLengthTitle": "Länge",
 			"tableDesigner.columnNameTitle": "Name",
@@ -12248,11 +12278,12 @@
 			"tableDesigner.columnTypeTitle": "Typ",
 			"tableDesigner.columnsTabTitle": "Spalten",
 			"tableDesigner.descriptionTitle": "Beschreibung",
-			"tableDesigner.errorInitializingTableDesigner": "Fehler beim Initialisieren des Tabellen-Designers: {0}",
+			"tableDesigner.errorInitializingTableDesigner": "Beim Initialisieren des Tabellendesigners ist ein Fehler aufgetreten:{0}",
 			"tableDesigner.errorProcessingEdit": "Fehler beim Verarbeiten der Änderung: {0}",
 			"tableDesigner.foreignKey.column": "Spalte",
 			"tableDesigner.foreignKey.foreignColumn": "Fremdspalte",
 			"tableDesigner.foreignKeyColumns": "Spalten",
+			"tableDesigner.foreignKeyDescriptionTitle": "Beschreibung",
 			"tableDesigner.foreignKeyNameTitle": "Name",
 			"tableDesigner.foreignKeyOnDeleteAction": "Bei Löschvorgang",
 			"tableDesigner.foreignKeyOnUpdateAction": "Bei Updateaktion",
@@ -12265,11 +12296,13 @@
 			"tableDesigner.generatingScriptCompleted": "Das Skript wurde generiert.",
 			"tableDesigner.index.column.name": "Spalte",
 			"tableDesigner.indexColumns": "Spalten",
+			"tableDesigner.indexDescription": "Beschreibung",
 			"tableDesigner.indexName": "Name",
 			"tableDesigner.indexesTabTitle": "Indizes",
 			"tableDesigner.inputValidationError": "Fehler bei der Eingabeüberprüfung, Fehler: {0}",
 			"tableDesigner.nameTitle": "Tabellenname",
 			"tableDesigner.primaryKeyColumnsTitle": "Primärschlüsselspalten",
+			"tableDesigner.primaryKeyDescriptionTitle": "Beschreibung",
 			"tableDesigner.primaryKeyNameTitle": "Name",
 			"tableDesigner.publishChangeError": "Fehler beim Veröffentlichen von Änderungen: {0}",
 			"tableDesigner.publishChangeSuccess": "Die Änderungen wurden erfolgreich veröffentlicht.",
@@ -12287,7 +12320,8 @@
 			"showReleaseNotes": "\"Erste Schritte\" anzeigen"
 		},
 		"sql/workbench/api/common/notebooks/vscodeExecuteProvider": {
-			"errorStartBeforeReady": "Eine Sitzung kann nicht gestartet werden, der Manager wurde noch nicht initialisiert."
+			"errorStartBeforeReady": "Eine Sitzung kann nicht gestartet werden, der Manager wurde noch nicht initialisiert.",
+			"notebookMultipleRequestsError": "Die Codezelle kann nicht ausgeführt werden. Eine andere Zelle wird zurzeit ausgeführt."
 		},
 		"sql/workbench/contrib/tableDesigner/browser/tableDesignerEditor": {
 			"tableDesigner.PreviewFeature": "Previewfunktion"
@@ -12308,38 +12342,16 @@
 			"selectBox": "Auswahlfeld"
 		},
 		"sql/workbench/browser/designer/designerIssuesTabPanelView": {
-			"designer.IssueListAriaLabel": "Probleme"
-		},
-		"sql/workbench/contrib/executionPlan/browser/executionPlan": {
-			"executionPlan.SaveFileDescription": "Ausführungsplandateien",
-			"executionPlanCustomZoom": "Vergrößern/Verkleinern",
-			"executionPlanFileLoadingComplete": "Ausführungspläne werden generiert",
-			"executionPlanFileLoadingFailed": "Fehler beim Laden des Ausführungsplans",
-			"executionPlanFitGraphLabel": "Mit Zoom anpassen",
-			"executionPlanOpenGraphFile": "Abfrageplan-XML anzeigen",
-			"executionPlanPropertiesActionLabel": "Eigenschaften",
-			"executionPlanSavePlanXML": "Plandatei speichern",
-			"executionPlanSearchNodeAction": "Knoten suchen",
-			"executionPlanTitle": "Abfrageplan (Vorschau)",
-			"executionPlanZoomInActionLabel": "Vergrößern",
-			"executionPlanZoomOutActionLabel": "Verkleinern",
-			"loadingExecutionPlanFile": "Ausführungspläne werden generiert",
-			"openQueryAction": "Abfrage öffnen"
+			"designer.IssueListAriaLabel": "Probleme",
+			"designer.moreInfoLink": "Weitere Informationen"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanEditor": {
 			"executionPlanEditor": "Abfrageausführungsplan-Editor"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView": {
 			"executionPlanPropertiesEdgeOperationName": "Kante",
-			"executionPlanPropertyViewClose": "Schließen",
-			"executionPlanPropertyViewSortAlphabetically": "Alphabetisch",
-			"executionPlanPropertyViewSortByDisplayOrder": "Nach Kategorien",
 			"nodePropertyViewNameNameColumnHeader": "Name",
-			"nodePropertyViewNameValueColumnHeader": "Wert",
-			"nodePropertyViewTitle": "Eigenschaften"
-		},
-		"sql/workbench/contrib/executionPlan/browser/planHeader": {
-			"planHeaderIndexAndCost": "Abfrage {0}: Abfragekosten (in Relation zum Skript): {1} %"
+			"nodePropertyViewNameValueColumnHeader": "Wert"
 		},
 		"sql/workbench/contrib/executionPlan/browser/widgets/customZoomWidget": {
 			"cancelCustomZoomAction": "Schließen (Esc)",
@@ -12367,6 +12379,106 @@
 		},
 		"sql/base/browser/ui/table/plugins/contextMenuColumn.plugin": {
 			"table.showActions": "Aktionen anzeigen"
+		},
+		"sql/workbench/browser/designer/tableActions": {
+			"designer.addColumnAction": "Neu hinzufügen",
+			"designer.insertAfterSelectedColumn": "Einfügen nach",
+			"designer.insertBeforeSelectedRow": "Einfügen vor",
+			"designer.moveRowDownAction": "Nach unten",
+			"designer.moveRowDownButtonAriaLabel": "Ausgewählte Zeile um eine Position nach unten verschieben",
+			"designer.moveRowUpAction": "Nach oben",
+			"designer.moveRowUpButtonAriaLabel": "Ausgewählte Zeile um eine Position nach oben verschieben",
+			"designer.newRowButtonAriaLabel": "Neue Zeile zu Tabelle „{0}“ hinzufügen"
+		},
+		"sql/workbench/contrib/executionPlan/browser/azdataGraphView": {
+			"invalidExecutionPlanZoomError": "Der Zoomfaktor darf nicht 0 oder negativ sein."
+		},
+		"sql/workbench/contrib/executionPlan/browser/compareExecutionPlanInput": {
+			"epCompare.editorName": "Ausführungspläne vergleichen"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditor": {
+			"compareExecutionPlanEditor": "Ausführungsplan-Vergleichseditor"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView": {
+			"addExecutionPlanLabel": "Ausführungsplan hinzufügen",
+			"epComapre.LoadingPlanCompleteMessage": "Ausführungsplan erfolgreich geladen",
+			"epComapre.LoadingPlanMessage": "Ausführungsplan wird geladen",
+			"epComapre.placeholderInfoboxText": "Zu vergleichende Ausführungspläne hinzufügen",
+			"epCompare.FileFilterDescription": "Ausführungsplandateien",
+			"epCompare.comparePropertiesAction": "Eigenschaften",
+			"epCompare.comparisonProgess": "Ähnliche Bereiche in verglichenen Plänen werden geladen",
+			"epCompare.toggleOrientation": "Ausrichtung umschalten",
+			"epCompare.zoomInAction": "Vergrößern",
+			"epCompare.zoomOutAction": "Verkleinern",
+			"epCompare.zoomReset": "Zoom zurücksetzen",
+			"epCompare.zoomToFit": "An Fenstergröße anpassen"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView": {
+			"executionPlanComparisonPropertiesBottomOperation": "Unterer Vorgang: {0}",
+			"executionPlanComparisonPropertiesTopOperation": "Oberer Vorgang: {0}",
+			"executionPlanPropertiesEdgeOperationName": "Edge",
+			"nodePropertyViewNameNameColumnHeader": "Name",
+			"nodePropertyViewNameValueColumnBottomHeader": "Wert (unterer Plan)",
+			"nodePropertyViewNameValueColumnTopHeader": "Wert (oberer Plan)"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanContribution": {
+			"executionPlanCompareCommandOriginalValue": "Ausführungspläne vergleichen",
+			"executionPlanCompareCommandValue": "Ausführungspläne vergleichen"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanFileView": {
+			"executionPlanFileLoadingComplete": "Ausführungspläne werden generiert",
+			"executionPlanFileLoadingFailed": "Fehler beim Laden des Ausführungsplans",
+			"loadingExecutionPlanFile": "Ausführungspläne werden generiert"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase": {
+			"executionPlanPropertyViewClose": "Schließen",
+			"executionPlanPropertyViewSortAlphabetically": "Alphabetisch",
+			"executionPlanPropertyViewSortByDisplayOrder": "Nach Kategorien",
+			"executionPlanPropertyViewSortReverseAlphabetically": "Umgekehrt alphabetisch",
+			"nodePropertyViewTitle": "Eigenschaften"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanTab": {
+			"executionPlanTitle": "Abfrageplan (Vorschau)"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanView": {
+			"executionPlan.SaveFileDescription": "Ausführungsplandateien",
+			"executionPlanCompareExecutionPlanAction": "Ausführungsplan vergleichen",
+			"executionPlanContextMenuDisableTooltip": "Tooltips deaktivieren",
+			"executionPlanContextMenuEnableTooltip": "QuickInfos aktivieren",
+			"executionPlanCustomZoom": "Vergrößern/Verkleinern",
+			"executionPlanDisableTooltip": "QuickInfos deaktiviert",
+			"executionPlanEnableTooltip": "QuickInfos aktiviert",
+			"executionPlanFitGraphLabel": "Mit Zoom anpassen",
+			"executionPlanOpenGraphFile": "Abfrageplan-XML anzeigen",
+			"executionPlanPropertiesActionLabel": "Eigenschaften",
+			"executionPlanSavePlanXML": "Plandatei speichern",
+			"executionPlanSearchNodeAction": "Knoten suchen",
+			"executionPlanZoomInActionLabel": "Vergrößern",
+			"executionPlanZoomOutActionLabel": "Verkleinern",
+			"openQueryAction": "Abfrage öffnen"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanViewHeader": {
+			"planHeaderIndexAndCost": "Abfrage {0}: Abfragekosten (in Relation zum Skript): {1} %"
+		},
+		"sql/workbench/services/backupRestoreUrlBrowser/browser/urlBrowserDialog": {
+			"backupRestoreUrlBrowserDialog.account": "Azure-Konto",
+			"backupRestoreUrlBrowserDialog.backupFile": "Sicherungsdatei",
+			"backupRestoreUrlBrowserDialog.blobContainer": "Blobcontainer",
+			"backupRestoreUrlBrowserDialog.linkAccount": "Konto verknüpfen",
+			"backupRestoreUrlBrowserDialog.sharedAccessSignature": "Shared Access Signature wurde generiert",
+			"backupRestoreUrlBrowserDialog.sharedAccessSignatureButton": "Anmeldeinformationen erstellen",
+			"backupRestoreUrlBrowserDialog.storageAccount": "Speicherkonto",
+			"backupRestoreUrlBrowserDialog.subscription": "Azure-Abonnement",
+			"backupRestoreUrlBrowserDialog.tenant": "Azure AD-Mandant",
+			"fileBrowser.discard": "Verwerfen",
+			"fileBrowser.ok": "OK"
+		},
+		"sql/workbench/services/backupRestoreUrlBrowser/browser/urlBrowserDialogService": {
+			"filebrowser.selectBlob": "Blob auswählen"
+		},
+		"sql/workbench/services/tableDesigner/browser/tableDesignerService": {
+			"TableDesigner.closeApplication": "&&Schließe die Anwendung",
+			"TableDesigner.saveBeforeExit": "Es gibt nicht gespeicherte Änderungen im Tabellen-Designer, die verloren gehen, wenn Sie die Anwendung schließen. Möchten Sie die Anwendung schließen?"
 		}
 	}
 }
