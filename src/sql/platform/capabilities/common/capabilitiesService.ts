@@ -21,6 +21,16 @@ export const clientCapabilities = {
 };
 
 /**
+ * The map containing the connection provider names and the owning extensions.
+ * This is to workaround the issue that we don't have the ability to store and query the information from extension gallery.
+ */
+export const ConnectionProviderAndExtensionMap = new Map<string, string>([
+	['PGSQL', 'microsoft.azuredatastudio-postgresql'],
+	['KUSTO', 'microsoft.kusto'],
+	['LOGANALYTICS', 'microsoft.azuremonitor']
+]);
+
+/**
  * The connection string options for connection provider.
  */
 export interface ConnectionStringOptions {
