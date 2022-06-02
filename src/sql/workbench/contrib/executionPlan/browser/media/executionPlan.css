@@ -718,3 +718,7 @@ However we always want it to be the width of the container it is resizing.
 .eps-container .comparison-editor .properties .table-container {
 	overflow: hidden;
 }
+
+.eps-container .comparison-editor .editor-toolbar .action-item .codicon.action-label {
+	padding-left: 20px;
+}
