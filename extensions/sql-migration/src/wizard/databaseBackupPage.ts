@@ -594,8 +594,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			for (const [index, _db] of this.migrationStateModel._databasesForMigration.entries()) {
 				const BlobStorageDropdown = this._blobContainerStorageAccountDropdowns[index];
 				const ResourceGroupDropdownValue = this._blobContainerResourceGroupDropdowns[index].value;
-				if (ResourceGroupDropdownValue !== undefined && typeof ResourceGroupDropdownValue !== 'string') {
-					await this.updateBlobResourceGroup(index, ResourceGroupDropdownValue.displayName, BlobStorageDropdown);
+				if (ResourceGroupDropdownValue !== undefined) {
+					await this.updateBlobResourceGroup(index, ResourceGroupDropdownValue, BlobStorageDropdown);
 				}
 				const BlobContainerDropdown = this._blobContainerDropdowns[index];
 				const BlobStorageDropdownValue = this._blobContainerStorageAccountDropdowns[index].value;
@@ -1333,7 +1333,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	}
 
 	// Updates resource group dropdown and loads storage account dropdown for blob container backup
-	private async updateBlobResourceGroup(index: number, value: string, blobContainerStorageAccountDropdown: azdata.DropDownComponent): Promise<void> {
+	private async updateBlobResourceGroup(index: number, value: azdata.DropDownProperties['value'], blobContainerStorageAccountDropdown: azdata.DropDownComponent): Promise<void> {
 		if (value && value !== 'undefined' && this.migrationStateModel._resourceGroups) {
 			const valueString = this.dropdownValueToString(value);
 			const selectedResourceGroup = this.migrationStateModel._resourceGroups.find(rg => rg.name === valueString);
