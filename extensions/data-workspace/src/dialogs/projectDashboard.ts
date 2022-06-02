@@ -116,8 +116,8 @@ export class ProjectDashboard {
 				height: '20px'
 			}).component();
 
-		button.onDidClick(async () => {
-			await projectAction.run(this._treeItem);
+		button.onDidClick(() => {
+			projectAction.run(this._treeItem);
 		});
 
 		return button;

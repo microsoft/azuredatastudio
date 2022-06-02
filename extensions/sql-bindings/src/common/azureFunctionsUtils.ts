@@ -458,7 +458,6 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 					continue;
 				}
 
-				const listOfConnectionStringMethods = [constants.connectionProfile, constants.userConnectionString];
 				let selectedConnectionStringMethod: string | undefined;
 				let connectionString: string | undefined = '';
 				while (true) {
@@ -467,6 +466,7 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 						const localSettingsPath: string = path.join(projectFolder, constants.azureFunctionLocalSettingsFileName);
 
 						if (!connectionInfo) {
+							const listOfConnectionStringMethods = [constants.connectionProfile, constants.userConnectionString];
 							// show the connection string methods (user input and connection profile options)
 							selectedConnectionStringMethod = await vscode.window.showQuickPick(listOfConnectionStringMethods, {
 								canPickMany: false,
@@ -509,7 +509,6 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 							// user cancelled the prompts
 							return;
 						}
-
 						const success = await setLocalAppSetting(projectFolder, newConnectionStringSettingName, connectionString);
 						if (success) {
 							// exit both loops and insert binding
@@ -666,11 +665,20 @@ export async function promptSelectTable(connectionURI: string, bindingType: Bind
 	// Create query to get list of tables from database selected
 	let tableQuery = tablesQuery(selectedDatabase);
 	const params = { ownerUri: connectionURI, queryString: tableQuery };
-	// send SimpleExecuteRequest query to STS to get list of schema and tables based on the connection profile of the user
-	let queryResult: azureFunctionsContracts.SimpleExecuteResult = await vscodeMssqlApi.sendRequest(azureFunctionsContracts.SimpleExecuteRequest.type, params);
+	let queryResult: azureFunctionsContracts.SimpleExecuteResult | undefined;
+	// send SimpleExecuteRequest query to STS to get list of schema and tables based on the connection profile and database of the user
+	await vscode.window.withProgress(
+		{
+			location: vscode.ProgressLocation.Notification,
+			title: constants.tableListProgressTitle,
+			cancellable: false
+		}, async (_progress, _token) => {
+			queryResult = await vscodeMssqlApi.sendRequest(azureFunctionsContracts.SimpleExecuteRequest.type, params);
+		}
+	);
 
 	// Get schema and table names from query result rows
-	const tableNames = queryResult.rows.map(r => r[0].displayValue);
+	const tableNames = queryResult!.rows.map(r => r[0].displayValue);
 	// add manual entry option to table names list for user to choose from as well (with pencil icon)
 	let manuallyEnterObjectName = '$(pencil) ' + userObjectName;
 	tableNames.unshift(manuallyEnterObjectName);

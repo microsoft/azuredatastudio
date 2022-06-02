@@ -80,8 +80,9 @@ async function readConnectionString(xmlDoc: any): Promise<{ connectionId: string
 			const azdataApi = utils.getAzdataApi();
 			if (dataSource.integratedSecurity) {
 				if (azdataApi) {
-					const connection = await utils.getAzdataApi()!.connection.connect(connectionProfile, false, false);
-					connId = connection.connectionId;
+					const connectionResult = await utils.getAzdataApi()!.connection.connect(connectionProfile, false, false);
+					utils.throwIfNotConnected(connectionResult);
+					connId = connectionResult.connectionId!;
 				} else {
 					// TODO@chgagnon - hook up VS Code MSSQL
 				}
