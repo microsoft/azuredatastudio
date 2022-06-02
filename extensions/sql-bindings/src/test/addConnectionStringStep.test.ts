@@ -84,7 +84,7 @@ describe('Add Connection String Execute Step', () => {
 		should(addConnectionStringToConfigStub.notCalled.should.be.true('addConnectionStringToConfig should not be called'));
 	});
 
-	afterEach(async function (): Promise<void> {
+	afterEach(function (): void {
 		sinon.restore();
 	});
 });
