@@ -16,7 +16,7 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
 import { IEditorOpenContext } from 'vs/workbench/common/editor';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { PublishTableChangesAction } from 'sql/workbench/contrib/tableDesigner/browser/actions';
+import { SaveTableChangesAction } from 'sql/workbench/contrib/tableDesigner/browser/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { DesignerPaneSeparator } from 'sql/platform/theme/common/colorRegistry';
@@ -26,7 +26,7 @@ export class TableDesignerEditor extends EditorPane {
 	public static readonly ID: string = 'workbench.editor.tableDesigner';
 
 	private _designer: Designer;
-	private _publishChangesAction: PublishTableChangesAction;
+	private _saveChangesAction: SaveTableChangesAction;
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -45,7 +45,7 @@ export class TableDesignerEditor extends EditorPane {
 		await super.setInput(input, options, context, token);
 		const designerInput = input.getComponentInput();
 		this._designer.setInput(designerInput);
-		this._publishChangesAction.setContext(designerInput);
+		this._saveChangesAction.setContext(designerInput);
 	}
 
 	protected createEditor(parent: HTMLElement): void {
@@ -58,9 +58,9 @@ export class TableDesignerEditor extends EditorPane {
 		const designerContainer = container.appendChild(DOM.$('.designer-container'));
 		const actionbar = new ActionBar(actionbarContainer);
 		this._register(actionbar);
-		this._publishChangesAction = this._instantiationService.createInstance(PublishTableChangesAction);
-		this._publishChangesAction.enabled = false;
-		actionbar.push([this._publishChangesAction], { icon: true, label: false });
+		this._saveChangesAction = this._instantiationService.createInstance(SaveTableChangesAction);
+		this._saveChangesAction.enabled = false;
+		actionbar.push([this._saveChangesAction], { icon: true, label: false });
 
 		this._designer = this._instantiationService.createInstance(Designer, designerContainer);
 		this._register(attachDesignerStyler(this._designer, this.themeService));

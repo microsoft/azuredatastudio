@@ -544,6 +544,9 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		} else if (currentAuthType === AuthenticationType.SqlLogin) {
 			this._tableContainer.classList.remove('hide-username');
 			this._tableContainer.classList.remove('hide-password');
+			this._userNameInputBox.enable();
+			this._passwordInputBox.enable();
+			this._rememberPasswordCheckBox.enabled = true;
 		}
 	}
 

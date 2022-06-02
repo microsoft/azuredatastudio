@@ -529,6 +529,7 @@ export enum DatabaseProjectItemType {
 	folder = 'databaseProject.itemType.folder',
 	file = 'databaseProject.itemType.file',
 	externalStreamingJob = 'databaseProject.itemType.file.externalStreamingJob',
+	table = 'databaseProject.itemType.file.table',
 	referencesRoot = 'databaseProject.itemType.referencesRoot',
 	reference = 'databaseProject.itemType.reference',
 	dataSourceRoot = 'databaseProject.itemType.dataSourceRoot',
