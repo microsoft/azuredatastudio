@@ -187,7 +187,7 @@ export class MiaaModel extends ResourceModel {
 			if (!result.connected) {
 				throw new Error(result.errorMessage);
 			}
-			this._activeConnectionId = result.connectionId;
+			this._activeConnectionId = result.connectionId!;
 		}
 
 		const provider = azdata.dataprotocol.getProvider<azdata.MetadataProvider>(this._connectionProfile!.providerName, azdata.DataProviderType.MetadataProvider);

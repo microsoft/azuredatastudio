@@ -84,7 +84,7 @@ export class DeployService {
 
 			if (connectionString && profile.envVariableName) {
 				content.Values[profile.envVariableName] = connectionString;
-				await fse.writeFileSync(profile.appSettingFile, JSON.stringify(content, undefined, 4));
+				fse.writeFileSync(profile.appSettingFile, JSON.stringify(content, undefined, 4));
 				this.logToOutput(`app setting '${profile.appSettingFile}' has been updated. env variable name: ${profile.envVariableName} connection String: ${connectionString}`);
 
 			} else {
@@ -236,11 +236,11 @@ export class DeployService {
 	}
 
 	private async getConnectionString(connectionUri: string): Promise<string | undefined> {
-		const getAzdataApi = await utils.getAzdataApi();
-		if (getAzdataApi) {
-			const connection = await getAzdataApi.connection.getConnection(connectionUri);
+		const azdataApi = utils.getAzdataApi();
+		if (azdataApi) {
+			const connection = await azdataApi.connection.getConnection(connectionUri);
 			if (connection) {
-				return await getAzdataApi.connection.getConnectionString(connection.connectionId, true);
+				return await azdataApi.connection.getConnectionString(connection.connectionId, true);
 			}
 		}
 		// TODO: vscode connections string
@@ -251,9 +251,9 @@ export class DeployService {
 
 	// Connects to a database
 	private async connectToDatabase(profile: ISqlConnectionProperties, saveConnectionAndPassword: boolean, database: string): Promise<ConnectionResult | string | undefined> {
-		const getAzdataApi = await utils.getAzdataApi();
-		const vscodeMssqlApi = getAzdataApi ? undefined : await utils.getVscodeMssqlApi();
-		if (getAzdataApi) {
+		const azdataApi = utils.getAzdataApi();
+		const vscodeMssqlApi = azdataApi ? undefined : await utils.getVscodeMssqlApi();
+		if (azdataApi) {
 			const connectionProfile = {
 				password: profile.password,
 				serverName: `${profile.serverName},${profile.port}`,
@@ -267,7 +267,7 @@ export class DeployService {
 				options: [],
 				authenticationType: 'SqlLogin'
 			};
-			return await getAzdataApi.connection.connect(connectionProfile, saveConnectionAndPassword, false);
+			return await azdataApi.connection.connect(connectionProfile, saveConnectionAndPassword, false);
 		} else if (vscodeMssqlApi) {
 			const connectionProfile = {
 				password: profile.password,
@@ -326,14 +326,14 @@ export class DeployService {
 	// Validates the connection result. If using azdata API, verifies connection was successful and connection id is returns
 	// If using vscode API, verifies the connection url is returns
 	private async validateConnection(connection: ConnectionResult | string | undefined): Promise<utils.ValidationResult> {
-		const getAzdataApi = await utils.getAzdataApi();
+		const azdataApi = utils.getAzdataApi();
 		if (!connection) {
 			return { validated: false, errorMessage: constants.connectionFailedError('No result returned') };
-		} else if (getAzdataApi) {
+		} else if (azdataApi) {
 			const connectionResult = <ConnectionResult>connection;
 			if (connectionResult) {
 				const connected = connectionResult !== undefined && connectionResult.connected && connectionResult.connectionId !== undefined;
-				return { validated: connected, errorMessage: connected ? '' : constants.connectionFailedError(connectionResult?.errorMessage) };
+				return { validated: connected, errorMessage: connected ? '' : constants.connectionFailedError(connectionResult?.errorMessage!) };
 			} else {
 				return { validated: false, errorMessage: constants.connectionFailedError('') };
 			}
@@ -344,13 +344,13 @@ export class DeployService {
 
 	// Formats connection result to string to be able to add to log
 	private async formatConnectionResult(connection: ConnectionResult | string | undefined): Promise<string> {
-		const getAzdataApi = await utils.getAzdataApi();
-		const connectionResult = connection !== undefined && getAzdataApi ? <ConnectionResult>connection : undefined;
-		return connectionResult ? connectionResult.connectionId : <string>connection;
+		const azdataApi = utils.getAzdataApi();
+		const connectionResult = connection !== undefined && azdataApi ? <ConnectionResult>connection : undefined;
+		return connectionResult?.connected ? connectionResult.connectionId! : <string>connection;
 	}
 
 	public async getConnection(profile: ISqlConnectionProperties, saveConnectionAndPassword: boolean, database: string): Promise<string | undefined> {
-		const getAzdataApi = await utils.getAzdataApi();
+		const azdataApi = utils.getAzdataApi();
 		let connection = await utils.retry(
 			constants.connectingToSqlServerMessage,
 			async () => {
@@ -363,8 +363,9 @@ export class DeployService {
 
 		if (connection) {
 			const connectionResult = <ConnectionResult>connection;
-			if (getAzdataApi) {
-				return await getAzdataApi.connection.getUriForConnection(connectionResult.connectionId);
+			if (azdataApi) {
+				utils.throwIfNotConnected(connectionResult);
+				return azdataApi.connection.getUriForConnection(connectionResult.connectionId!);
 			} else {
 				return <string>connection;
 			}
@@ -374,11 +375,11 @@ export class DeployService {
 	}
 
 	private async executeTask<T>(taskName: string, task: () => Promise<T>): Promise<T> {
-		const getAzdataApi = await utils.getAzdataApi();
-		if (getAzdataApi) {
+		const azdataApi = utils.getAzdataApi();
+		if (azdataApi) {
 			return new Promise<T>((resolve, reject) => {
 				let msgTaskName = taskName;
-				getAzdataApi!.tasks.startBackgroundOperation({
+				azdataApi!.tasks.startBackgroundOperation({
 					displayName: msgTaskName,
 					description: msgTaskName,
 					isCancelable: false,
@@ -386,11 +387,11 @@ export class DeployService {
 						try {
 							let result: T = await task();
 
-							op.updateStatus(getAzdataApi!.TaskStatus.Succeeded);
+							op.updateStatus(azdataApi!.TaskStatus.Succeeded);
 							resolve(result);
 						} catch (error) {
 							let errorMsg = constants.taskFailedError(taskName, error ? error.message : '');
-							op.updateStatus(getAzdataApi!.TaskStatus.Failed, errorMsg);
+							op.updateStatus(azdataApi!.TaskStatus.Failed, errorMsg);
 							reject(errorMsg);
 						}
 					}

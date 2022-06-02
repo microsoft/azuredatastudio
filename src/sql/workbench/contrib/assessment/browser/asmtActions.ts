@@ -22,6 +22,8 @@ import * as path from 'vs/base/common/path';
 import { HTMLReportBuilder } from 'sql/workbench/contrib/assessment/common/htmlReportGenerator';
 import Severity from 'vs/base/common/severity';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 
 export interface SqlAssessmentResultInfo {
 	result: SqlAssessmentResult;
@@ -54,6 +56,7 @@ abstract class AsmtServerAction extends Action {
 		label: string,
 		private asmtType: AssessmentType,
 		@IConnectionManagementService private _connectionManagement: IConnectionManagementService,
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@ILogService protected _logService: ILogService,
 		@IAdsTelemetryService protected _telemetryService: IAdsTelemetryService
 	) {
@@ -66,7 +69,7 @@ abstract class AsmtServerAction extends Action {
 			context.component.showProgress(this.asmtType);
 			let serverResults = this.getServerItems(context.ownerUri);
 			let connectionUri: string = this._connectionManagement.getConnectionUriFromId(context.connectionId);
-			let connection = this._connectionManagement.getConnection(connectionUri);
+			let connection = this._connectionManagement.getConnectionProfile(connectionUri);
 			let databaseListResult = this._connectionManagement.listDatabases(connectionUri);
 			context.component.showInitialResults(await serverResults, this.asmtType);
 			let dbList = await databaseListResult;
@@ -76,7 +79,8 @@ abstract class AsmtServerAction extends Action {
 						break;
 					}
 					let dbName = dbList.databaseNames[nDbName];
-					let newUri = await this._connectionManagement.connectIfNotConnected(connection.cloneWithDatabase(dbName).clone());
+					const profile = ConnectionProfile.fromIConnectionProfile(this._capabilitiesService, connection);
+					let newUri = await this._connectionManagement.connectIfNotConnected(profile.cloneWithDatabase(dbName).clone());
 
 					this._logService.info(`Database ${dbName} assessment started`);
 					let dbResult = await this.getDatabaseItems(newUri);
@@ -101,6 +105,7 @@ export class AsmtServerSelectItemsAction extends AsmtServerAction {
 
 	constructor(
 		@IConnectionManagementService _connectionManagement: IConnectionManagementService,
+		@ICapabilitiesService _capabilitiesService: ICapabilitiesService,
 		@ILogService _logService: ILogService,
 		@IAssessmentService private _assessmentService: IAssessmentService,
 		@IAdsTelemetryService _telemetryService: IAdsTelemetryService
@@ -108,6 +113,7 @@ export class AsmtServerSelectItemsAction extends AsmtServerAction {
 		super(AsmtServerSelectItemsAction.ID, AsmtServerSelectItemsAction.LABEL,
 			AssessmentType.AvailableRules,
 			_connectionManagement,
+			_capabilitiesService,
 			_logService, _telemetryService);
 	}
 
@@ -150,11 +156,12 @@ export class AsmtServerInvokeItemsAction extends AsmtServerAction {
 
 	constructor(
 		@IConnectionManagementService _connectionManagement: IConnectionManagementService,
+		@ICapabilitiesService _capabilitiesService: ICapabilitiesService,
 		@ILogService _logService: ILogService,
 		@IAssessmentService private _assessmentService: IAssessmentService,
 		@IAdsTelemetryService _telemetryService: IAdsTelemetryService
 	) {
-		super(AsmtServerInvokeItemsAction.ID, AsmtServerInvokeItemsAction.LABEL, AssessmentType.InvokeAssessment, _connectionManagement, _logService, _telemetryService);
+		super(AsmtServerInvokeItemsAction.ID, AsmtServerInvokeItemsAction.LABEL, AssessmentType.InvokeAssessment, _connectionManagement, _capabilitiesService, _logService, _telemetryService);
 	}
 	getServerItems(ownerUri: string): Thenable<SqlAssessmentResult> {
 		this._logService.info(`Requesting server items`);

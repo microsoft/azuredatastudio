@@ -121,14 +121,26 @@ declare module 'sql-bindings' {
 		filePath: string;
 	}
 
+	export interface AzureFunction {
+		/**
+		 * The name of the function
+		 */
+		name: string;
+		/**
+		 * The route of the function if it has an HTTP trigger with a route specified
+		 */
+		route?: string | undefined;
+	}
+
 	/**
 	 * Result from a get Azure Functions request
 	 */
-	export interface GetAzureFunctionsResult extends ResultStatus {
+	export interface GetAzureFunctionsResult {
 		/**
-		 * Array of names of Azure Functions in the file
+		 * Array of Azure Functions in the file
+		 * Note : The string list response will eventually be deprecated and replaced completely with the AzureFunction list
 		 */
-		azureFunctions: string[];
+		azureFunctions: string[] | AzureFunction[];
 	}
 
 	/**

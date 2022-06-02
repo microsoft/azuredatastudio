@@ -96,7 +96,7 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 	}
 
 	public $getConnection(uri: string): Thenable<azdata.connection.ConnectionProfile> {
-		let profile = this._connectionManagementService.getConnection(uri);
+		const profile = this._connectionManagementService.getConnectionProfile(uri);
 		if (!profile) {
 			const p = this._connectionManagementService.getConnectionProfile(uri);
 			profile = ConnectionProfile.fromIConnectionProfile(this._capabilitiesService, p);
