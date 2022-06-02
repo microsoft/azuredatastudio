@@ -17,10 +17,12 @@
   resolved "https://registry.yarnpkg.com/@angular/compiler/-/compiler-4.1.3.tgz#d2dd30853b0cf4a54758b4a314632c231f9c94c3"
   integrity sha1-0t0whTsM9KVHWLSjFGMsIx+clMM=
 
-"@angular/core@~4.1.3":
-  version "4.1.3"
-  resolved "https://registry.yarnpkg.com/@angular/core/-/core-4.1.3.tgz#285498eb86ab7d0b6f982f8f9f487ef610013b35"
-  integrity sha1-KFSY64arfQtvmC+Pn0h+9hABOzU=
+"@angular/core@~11.0.5":
+  version "11.0.5"
+  resolved "https://registry.yarnpkg.com/@angular/core/-/core-11.0.5.tgz#b8c448c3cd4f6dae7327cc1ba4ee2aa29c8dbc26"
+  integrity sha512-XAXWQi7R3ucZXQwx9QK5jSKJeQyRJ53u2dQDpr7R5stzeCy1a5hrNOkZLg9zOTTPcth/6+FrOrRZP9SMdxtw3w==
+  dependencies:
+    tslib "^2.0.0"
 
 "@angular/forms@~4.1.3":
   version "4.1.3"
