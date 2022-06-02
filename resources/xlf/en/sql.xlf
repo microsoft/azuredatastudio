@@ -1094,7 +1094,10 @@
 </body></file>
   <file original="src/sql/workbench/contrib/backup/browser/backup.component" source-language="en" datatype="plaintext"><body>
     <trans-unit id="addFile">
-      <source xml:lang="en">Add a file</source>
+      <source xml:lang="en">Add File</source>
+    </trans-unit>
+    <trans-unit id="addUrl">
+      <source xml:lang="en">Add URL</source>
     </trans-unit>
     <trans-unit id="backup.advancedConfiguration">
       <source xml:lang="en">Advanced Configuration</source>
@@ -1116,6 +1119,9 @@
     </trans-unit>
     <trans-unit id="backup.backupType">
       <source xml:lang="en">Backup type</source>
+    </trans-unit>
+    <trans-unit id="backup.backupUrl">
+      <source xml:lang="en">Backup URL</source>
     </trans-unit>
     <trans-unit id="backup.certificateOrAsymmetricKey">
       <source xml:lang="en">Certificate or Asymmetric key</source>
@@ -1180,6 +1186,9 @@
     <trans-unit id="backup.setBackupRetainDays">
       <source xml:lang="en">Set backup retain days</source>
     </trans-unit>
+    <trans-unit id="backup.toUrl">
+      <source xml:lang="en">Save backup to URL</source>
+    </trans-unit>
     <trans-unit id="backup.transactionLog">
       <source xml:lang="en">Transaction log</source>
     </trans-unit>
@@ -1188,6 +1197,9 @@
     </trans-unit>
     <trans-unit id="backup.verifyContainer">
       <source xml:lang="en">Verify backup when finished</source>
+    </trans-unit>
+    <trans-unit id="backupBrowseButton">
+      <source xml:lang="en">Browse</source>
     </trans-unit>
     <trans-unit id="backupComponent.backup">
       <source xml:lang="en">Backup</source>
@@ -4892,6 +4904,46 @@ Error: {1}</source>
       <source xml:lang="en">Connection is required in order to interact with Assessment Service</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/services/backupRestoreUrlBrowser/browser/urlBrowserDialog" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="backupRestoreUrlBrowserDialog.account">
+      <source xml:lang="en">Azure Account</source>
+    </trans-unit>
+    <trans-unit id="backupRestoreUrlBrowserDialog.backupFile">
+      <source xml:lang="en">Backup file</source>
+    </trans-unit>
+    <trans-unit id="backupRestoreUrlBrowserDialog.blobContainer">
+      <source xml:lang="en">Blob container</source>
+    </trans-unit>
+    <trans-unit id="backupRestoreUrlBrowserDialog.linkAccount">
+      <source xml:lang="en">Link account</source>
+    </trans-unit>
+    <trans-unit id="backupRestoreUrlBrowserDialog.sharedAccessSignature">
+      <source xml:lang="en">Shared access signature generated</source>
+    </trans-unit>
+    <trans-unit id="backupRestoreUrlBrowserDialog.sharedAccessSignatureButton">
+      <source xml:lang="en">Create Credentials</source>
+    </trans-unit>
+    <trans-unit id="backupRestoreUrlBrowserDialog.storageAccount">
+      <source xml:lang="en">Storage account</source>
+    </trans-unit>
+    <trans-unit id="backupRestoreUrlBrowserDialog.subscription">
+      <source xml:lang="en">Azure subscription</source>
+    </trans-unit>
+    <trans-unit id="backupRestoreUrlBrowserDialog.tenant">
+      <source xml:lang="en">Azure AD Tenant</source>
+    </trans-unit>
+    <trans-unit id="fileBrowser.discard">
+      <source xml:lang="en">Discard</source>
+    </trans-unit>
+    <trans-unit id="fileBrowser.ok">
+      <source xml:lang="en">OK</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/services/backupRestoreUrlBrowser/browser/urlBrowserDialogService" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="filebrowser.selectBlob">
+      <source xml:lang="en">Select a blob</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/services/connection/browser/advancedPropertiesController" source-language="en" datatype="plaintext"><body>
     <trans-unit id="advancedProperties.discard">
       <source xml:lang="en">Discard</source>
@@ -5823,11 +5875,17 @@ Error: {1}</source>
     <trans-unit id="backupSetsToRestore">
       <source xml:lang="en">Backup sets to restore</source>
     </trans-unit>
+    <trans-unit id="backupUrl">
+      <source xml:lang="en">Backup URL</source>
+    </trans-unit>
     <trans-unit id="database">
       <source xml:lang="en">Database</source>
     </trans-unit>
     <trans-unit id="destination">
       <source xml:lang="en">Destination</source>
+    </trans-unit>
+    <trans-unit id="enterBackupUrl">
+      <source xml:lang="en">Please enter URL</source>
     </trans-unit>
     <trans-unit id="fileType">
       <source xml:lang="en">File type</source>
@@ -5843,6 +5901,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="missingBackupFilePathError">
       <source xml:lang="en">Backup file path is required.</source>
+    </trans-unit>
+    <trans-unit id="missingBackupUrlError">
+      <source xml:lang="en">Backup url is required.</source>
     </trans-unit>
     <trans-unit id="multipleBackupFilePath">
       <source xml:lang="en">Please enter one or more file paths separated by commas</source>
@@ -5865,6 +5926,9 @@ Error: {1}</source>
     <trans-unit id="restoreDialog.backupFile">
       <source xml:lang="en">Backup file</source>
     </trans-unit>
+    <trans-unit id="restoreDialog.browse">
+      <source xml:lang="en">Browse</source>
+    </trans-unit>
     <trans-unit id="restoreDialog.cancel">
       <source xml:lang="en">Cancel</source>
     </trans-unit>
@@ -5879,6 +5943,12 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="restoreDialog.script">
       <source xml:lang="en">Script</source>
+    </trans-unit>
+    <trans-unit id="restoreDialog.targetDatabaseAlreadyExists">
+      <source xml:lang="en">Target database already exists</source>
+    </trans-unit>
+    <trans-unit id="restoreDialog.url">
+      <source xml:lang="en">URL</source>
     </trans-unit>
     <trans-unit id="restoreFrom">
       <source xml:lang="en">Restore from</source>
@@ -5903,6 +5973,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="targetDatabase">
       <source xml:lang="en">Target database</source>
+    </trans-unit>
+    <trans-unit id="targetDatabaseTooltip">
+      <source xml:lang="en">Please enter target database name</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/restore/common/constants" source-language="en" datatype="plaintext"><body>
