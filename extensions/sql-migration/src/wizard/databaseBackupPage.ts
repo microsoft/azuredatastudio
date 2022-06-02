@@ -589,21 +589,25 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			})
 			.component();
 
-
-		// make
-		const refreshBlobTablePromises: Thenable<void>[] = [];
-		refreshBlobTablePromises.push(this.getSubscriptionValues());
-
-		// this.migrationStateModel._databasesForMigration.forEach((db, index) => {
-		// 	refreshBlobTablePromises.push(this.loadBlobStorageDropdown(index));
-		// 	refreshBlobTablePromises.push(this.loadBlobContainerDropdown(index));
-		// 	refreshBlobTablePromises.push(this.loadBlobLastBackupFileDropdown(index));
-		// });
-
-		// refreshBlobTablePromises.push(this.loadBlobStorageDropdown(0));
-
 		this._disposables.push(refreshBlobTable.onDidClick(async (event) => {
-			await Promise.all(refreshBlobTablePromises);
+			await this.getSubscriptionValues();
+			for (const [index, _db] of this.migrationStateModel._databasesForMigration.entries()) {
+				const BlobStorageDropdown = this._blobContainerStorageAccountDropdowns[index];
+				const ResourceGroupDropdownValue = this._blobContainerResourceGroupDropdowns[index].value;
+				if (ResourceGroupDropdownValue !== undefined && typeof ResourceGroupDropdownValue !== 'string') {
+					await this.updateBlobResourceGroup(index, ResourceGroupDropdownValue.displayName, BlobStorageDropdown);
+				}
+				const BlobContainerDropdown = this._blobContainerDropdowns[index];
+				const BlobStorageDropdownValue = this._blobContainerStorageAccountDropdowns[index].value;
+				if (BlobStorageDropdownValue !== undefined) {
+					await this.updateBlobStorageDropdown(index, BlobStorageDropdownValue, BlobContainerDropdown);
+				}
+				const BlobContainerLastBackupFileDropdown = this._blobContainerLastBackupFileDropdowns[index];
+				const BlobContainerDropdownValue = this._blobContainerDropdowns[index].value;
+				if (BlobContainerDropdownValue !== undefined) {
+					await this.updateBlobContainerDropdown(index, BlobContainerDropdownValue, BlobContainerLastBackupFileDropdown);
+				}
+			}
 		}));
 
 		this._blobTableContainer = this._view.modelBuilder.flexContainer().withItems([
@@ -1328,10 +1332,12 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		}
 	}
 
+	// Updates resource group dropdown and loads storage account dropdown for blob container backup
 	private async updateBlobResourceGroup(index: number, value: string, blobContainerStorageAccountDropdown: azdata.DropDownComponent): Promise<void> {
 		if (value && value !== 'undefined' && this.migrationStateModel._resourceGroups) {
-			const selectedResourceGroup = this.migrationStateModel._resourceGroups.find(rg => rg.name === value);
-			if (selectedResourceGroup && !blobResourceGroupErrorStrings.includes(value)) {
+			const valueString = this.dropdownValueToString(value);
+			const selectedResourceGroup = this.migrationStateModel._resourceGroups.find(rg => rg.name === valueString);
+			if (selectedResourceGroup && !blobResourceGroupErrorStrings.includes(valueString)) {
 				this.migrationStateModel._databaseBackup.blobs[index].resourceGroup = selectedResourceGroup;
 				await this.loadBlobStorageDropdown(index);
 				await blobContainerStorageAccountDropdown.updateProperties({ enabled: true });
@@ -1353,10 +1359,12 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		}
 	}
 
-	private async updateBlobStorageDropdown(index: number, value: string, blobContainerDropdown: azdata.DropDownComponent): Promise<void> {
+	// Updates storage account dropdown and loads blob container dropdown for blob container backup
+	private async updateBlobStorageDropdown(index: number, value: azdata.DropDownProperties['value'], blobContainerDropdown: azdata.DropDownComponent): Promise<void> {
 		if (value && value !== 'undefined') {
-			const selectedStorageAccount = this.migrationStateModel._storageAccounts.find(sa => sa.name === value);
-			if (selectedStorageAccount && !blobStorageAccountErrorStrings.includes(value)) {
+			const valueString = await this.dropdownValueToString(value);
+			const selectedStorageAccount = this.migrationStateModel._storageAccounts.find(sa => sa.name === valueString);
+			if (selectedStorageAccount && !blobStorageAccountErrorStrings.includes(valueString)) {
 				this.migrationStateModel._databaseBackup.blobs[index].storageAccount = selectedStorageAccount;
 				await this.loadBlobContainerDropdown(index);
 				await blobContainerDropdown.updateProperties({ enabled: true });
@@ -1379,10 +1387,12 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		}
 	}
 
-	private async updateBlobContainerDropdown(index: number, value: string, blobContainerLastBackupFileDropdown: azdata.DropDownComponent): Promise<void> {
+	// Updates blob container dropdown and loads last backup dropdown (offline migration only) for blob container backup
+	private async updateBlobContainerDropdown(index: number, value: any, blobContainerLastBackupFileDropdown: azdata.DropDownComponent): Promise<void> {
 		if (value && value !== 'undefined' && this.migrationStateModel._blobContainers) {
-			const selectedBlobContainer = this.migrationStateModel._blobContainers.find(blob => blob.name === value);
-			if (selectedBlobContainer && !blobContainerErrorStrings.includes(value)) {
+			const valueString = await this.dropdownValueToString(value);
+			const selectedBlobContainer = this.migrationStateModel._blobContainers.find(blob => blob.name === valueString);
+			if (selectedBlobContainer && !blobContainerErrorStrings.includes(valueString)) {
 				this.migrationStateModel._databaseBackup.blobs[index].blobContainer = selectedBlobContainer;
 				if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
 					await this.loadBlobLastBackupFileDropdown(index);
@@ -1407,15 +1417,30 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		}
 	}
 
-	private async updateBlobLastBackupFileDropdown(index: number, value: string): Promise<void> {
+	// Updates last backup file dropdown (offline migration only) for blob container backup
+	private async updateBlobLastBackupFileDropdown(index: number, value: any): Promise<void> {
 		if (value && value !== 'undefined') {
+			const valueString = await this.dropdownValueToString(value);
 			if (this.migrationStateModel._lastFileNames) {
-				const selectedLastBackupFile = this.migrationStateModel._lastFileNames.find(fileName => fileName.name === value);
-				if (selectedLastBackupFile && !blobFileErrorStrings.includes(value)) {
+				const selectedLastBackupFile = this.migrationStateModel._lastFileNames.find(fileName => fileName.name === valueString);
+				if (selectedLastBackupFile && !blobFileErrorStrings.includes(valueString)) {
 					this.migrationStateModel._databaseBackup.blobs[index].lastBackupFile = selectedLastBackupFile.name;
 				}
 			}
 		}
+	}
+
+	private dropdownValueToString(value: azdata.DropDownProperties['value']): string {
+		let valueString = '';
+		if (!value) {
+			value = 'undefined';
+		}
+		else if (typeof value === 'string') {
+			valueString = value;
+		} else {
+			valueString = value.displayName;
+		}
+		return valueString;
 	}
 
 	private shouldDisplayBlobDropdownError(v: azdata.DropDownComponent, errorStrings: string[]) {
