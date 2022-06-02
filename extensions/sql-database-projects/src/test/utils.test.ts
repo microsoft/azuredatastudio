@@ -7,7 +7,7 @@ import * as should from 'should';
 import * as path from 'path';
 import * as os from 'os';
 import { createDummyFileStructure } from './testUtils';
-import { exists, trimUri, removeSqlCmdVariableFormatting, formatSqlCmdVariable, isValidSqlCmdVariableName, timeConversion, validateSqlServerPortNumber, isEmptyString, detectCommandInstallation, isValidSQLPassword } from '../common/utils';
+import { exists, trimUri, removeSqlCmdVariableFormatting, formatSqlCmdVariable, isValidSqlCmdVariableName, timeConversion, validateSqlServerPortNumber, isEmptyString, detectCommandInstallation, isValidSQLPassword, findSqlVersionInImageName, findSqlVersionInTargetPlatform } from '../common/utils';
 import { Uri } from 'vscode';
 
 describe('Tests to verify utils functions', function (): void {
@@ -122,6 +122,21 @@ describe('Tests to verify utils functions', function (): void {
 		should(isValidSQLPassword('dF65$530')).equals(true, 'dF65$530 is valid password');
 		should(isValidSQLPassword('dFdf65$530')).equals(true, 'dF65$530 is valid password');
 		should(isValidSQLPassword('av1fgh533@')).equals(true, 'dF65$530 is valid password');
+	});
+
+	it('findSqlVersionInImageName should return the version correctly', () => {
+		should(findSqlVersionInImageName('2017-CU1-ubuntu')).equals(2017, 'invalid number returned for 2017-CU1-ubuntu');
+		should(findSqlVersionInImageName('2019-latest')).equals(2019, 'invalid number returned for 2019-latest');
+		should(findSqlVersionInImageName('latest')).equals(undefined, 'invalid number returned for latest');
+		should(findSqlVersionInImageName('latest-ubuntu')).equals(undefined, 'invalid number returned for latest-ubuntu');
+		should(findSqlVersionInImageName('2017-CU20-ubuntu-16.04')).equals(2017, 'invalid number returned for 2017-CU20-ubuntu-16.04');
+	});
+
+	it('findSqlVersionInTargetPlatform should return the version correctly', () => {
+		should(findSqlVersionInTargetPlatform('SQL Server 2012')).equals(2012, 'invalid number returned for SQL Server 2012');
+		should(findSqlVersionInTargetPlatform('SQL Server 2019')).equals(2019, 'invalid number returned for SQL Server 2019');
+		should(findSqlVersionInTargetPlatform('Azure SQL Database')).equals(undefined, 'invalid number returned for Azure SQL Database');
+		should(findSqlVersionInTargetPlatform('Azure Synapse Dedicated SQL Pool')).equals(undefined, 'invalid number returned for Azure Synapse Dedicated SQL Pool');
 	});
 });
 
