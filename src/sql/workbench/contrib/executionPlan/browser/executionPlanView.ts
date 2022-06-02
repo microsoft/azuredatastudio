@@ -287,7 +287,8 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 
 	public compareCurrentExecutionPlan() {
 		this._editorService.openEditor(this._instantiationService.createInstance(ExecutionPlanComparisonInput, {
-			topExecutionPlan: this._executionPlanFileView.graphs
+			topExecutionPlan: this._executionPlanFileView.graphs,
+			topPlanIndex: this._graphIndex - 1
 		}), {
 			pinned: true
 		});

@@ -244,7 +244,8 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
-.vs-dark .eps-container .ep-save-plan-icon {
+.vs-dark .eps-container .ep-save-plan-icon,
+.hc-black .eps-container .ep-save-plan-icon {
 	background-image: url(../images/actionIcons/saveDark.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -258,7 +259,8 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
-.vs-dark .eps-container .ep-open-properties-icon {
+.vs-dark .eps-container .ep-open-properties-icon,
+.hc-black .eps-container .ep-open-properties-icon {
 	background-image: url(../images/actionIcons/openPropertiesDark.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -272,7 +274,8 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
-.vs-dark .eps-container .ep-open-query-icon {
+.vs-dark .eps-container .ep-open-query-icon,
+.hc-black .eps-container .ep-open-query-icon {
 	background-image: url(../images/actionIcons/openQueryDark.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -286,7 +289,8 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
-.vs-dark .eps-container .ep-open-plan-file-icon {
+.vs-dark .eps-container .ep-open-plan-file-icon,
+.hc-black .eps-container .ep-open-plan-file-icon {
 	background-image: url(../images/actionIcons/openPlanFileDark.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -301,7 +305,8 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
-.vs-dark .eps-container .ep-search-icon {
+.vs-dark .eps-container .ep-search-icon,
+.hc-black .eps-container .ep-search-icon {
 	background-image: url(../images/actionIcons/searchDark.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -315,7 +320,8 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
-.vs-dark .eps-container .ep-sort-alphabetically-icon {
+.vs-dark .eps-container .ep-sort-alphabetically-icon,
+.hc-black .eps-container .ep-sort-alphabetically-icon {
 	background-image: url(../images/actionIcons/sortAlphabeticallyDark.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -329,7 +335,8 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
-.vs-dark .eps-container .ep-sort-reverse-alphabetically-icon {
+.vs-dark .eps-container .ep-sort-reverse-alphabetically-icon,
+.hc-black .eps-container .ep-sort-reverse-alphabetically-icon {
 	background-image: url(../images/actionIcons/sortReverseAlphabeticallyDark.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -343,7 +350,8 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
-.vs-dark .eps-container .ep-sort-display-order-icon {
+.vs-dark .eps-container .ep-sort-display-order-icon,
+.hc-black .eps-container .ep-sort-display-order-icon {
 	background-image: url(../images/actionIcons/sortByDisplayOrderDark.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -357,7 +365,8 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
-.vs-dark .eps-container .ep-zoom-in-icon {
+.vs-dark .eps-container .ep-zoom-in-icon,
+.hc-black .eps-container .ep-zoom-in-icon {
 	background-image: url(../images/actionIcons/zoomInDark.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -371,7 +380,8 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
-.vs-dark .eps-container .ep-zoom-out-icon {
+.vs-dark .eps-container .ep-zoom-out-icon,
+.hc-black .eps-container .ep-zoom-out-icon {
 	background-image: url(../images/actionIcons/zoomOutDark.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -385,7 +395,8 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
-.vs-dark .eps-container .ep-custom-zoom-icon {
+.vs-dark .eps-container .ep-custom-zoom-icon,
+.hc-black .eps-container .ep-custom-zoom-icon {
 	background-image: url(../images/actionIcons/customZoomDark.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -399,7 +410,8 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
-.vs-dark .eps-container .ep-zoom-to-fit-icon {
+.vs-dark .eps-container .ep-zoom-to-fit-icon,
+.hc-black .eps-container .ep-zoom-to-fit-icon {
 	background-image: url(../images/actionIcons/zoomToFitDark.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -427,7 +439,8 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
-.vs-dark .eps-container .ep-enable-tooltip-icon {
+.vs-dark .eps-container .ep-enable-tooltip-icon,
+.hc-black .eps-container .ep-enable-tooltip-icon {
 	background-image: url(../images/actionIcons/enableTooltipDark.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -441,7 +454,8 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
-.vs-dark .eps-container .ep-disable-tooltip-icon {
+.vs-dark .eps-container .ep-disable-tooltip-icon,
+.hc-black .eps-container .ep-disable-tooltip-icon {
 	background-image: url(../images/actionIcons/disableTooltipDark.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -455,7 +469,8 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
-.vs-dark .eps-container .ep-add-icon {
+.vs-dark .eps-container .ep-add-icon,
+.hc-black .eps-container .ep-add-icon {
 	background-image: url(../images/actionIcons/addDark.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -476,7 +491,8 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
-.vs-dark .ep-split-screen-horizontally-icon {
+.vs-dark .ep-split-screen-horizontally-icon,
+.hc-black .ep-split-screen-horizontally-icon {
 	background-image: url(../images/actionIcons/splitScreenHorizontallyDark.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -490,7 +506,8 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
-.vs-dark .eps-container .ep-split-screen-vertically-icon {
+.vs-dark .eps-container .ep-split-screen-vertically-icon,
+.hc-black .eps-container .ep-split-screen-vertically-icon {
 	background-image: url(../images/actionIcons/splitScreenVerticallyDark.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -504,7 +521,8 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
-.vs-dark .eps-container .ep-reset-zoom-icon {
+.vs-dark .eps-container .ep-reset-zoom-icon,
+.hc-black .eps-container .ep-reset-zoom-icon {
 	background-image: url(../images/actionIcons/resetZoomDark.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -519,7 +537,8 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
-.vs-dark .eps-container .ep-plan-compare-icon {
+.vs-dark .eps-container .ep-plan-compare-icon,
+.hc-black .eps-container .ep-plan-compare-icon {
 	background-image: url(../images/actionIcons/execution-plan-compareDark.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -555,7 +574,7 @@ However we always want it to be the width of the container it is resizing.
 }
 
 .eps-container .ep-properties-green-down-arrow {
-	background-image: url(../images/actionIcons/upArrowWorse.svg);
+	background-image: url(../images/actionIcons/downArrowBetter.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;

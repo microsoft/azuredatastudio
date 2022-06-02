@@ -297,7 +297,7 @@ export class ExecutionPlanComparisonEditorView {
 					graphFileContent: fileContent,
 					graphFileType: extname(fileURI.fsPath).replace('.', '')
 				});
-				await this.addExecutionPlanGraph(executionPlanGraphs.graphs);
+				await this.addExecutionPlanGraph(executionPlanGraphs.graphs, 0);
 			}
 			this._placeholderInfoboxContainer.style.display = '';
 			this._placeholderLoading.loading = false;
@@ -309,7 +309,7 @@ export class ExecutionPlanComparisonEditorView {
 
 	}
 
-	public async addExecutionPlanGraph(executionPlanGraphs: azdata.executionPlan.ExecutionPlanGraph[]): Promise<void> {
+	public async addExecutionPlanGraph(executionPlanGraphs: azdata.executionPlan.ExecutionPlanGraph[], preSelectIndex: number): Promise<void> {
 		if (!this._topPlanDiagramModels) {
 			this._topPlanDiagramModels = executionPlanGraphs;
 			this._topPlanDropdown.setOptions(executionPlanGraphs.map((e, index) => {
@@ -338,10 +338,7 @@ export class ExecutionPlanComparisonEditorView {
 				this.topPlanDiagrams.push(diagram);
 				graphContainer.style.display = 'none';
 			});
-
-			this._topPlanDiagramContainers[0].style.display = '';
-			this._topPlanRecommendations.recommendations = executionPlanGraphs[0].recommendations;
-			this.topPlanDiagrams[0].selectElement(undefined);
+			this._topPlanDropdown.select(preSelectIndex);
 			this._propertiesView.setTopElement(executionPlanGraphs[0].root);
 			this._propertiesAction.enabled = true;
 			this._zoomInAction.enabled = true;
@@ -376,10 +373,7 @@ export class ExecutionPlanComparisonEditorView {
 				this.bottomPlanDiagrams.push(diagram);
 				graphContainer.style.display = 'none';
 			});
-
-			this._bottomPlanDiagramContainers[0].style.display = '';
-			this._bottomPlanRecommendations.recommendations = executionPlanGraphs[0].recommendations;
-			this.bottomPlanDiagrams[0].selectElement(undefined);
+			this._bottomPlanDropdown.select(preSelectIndex);
 			this._propertiesView.setBottomElement(executionPlanGraphs[0].root);
 			this._addExecutionPlanAction.enabled = false;
 			await this.getSkeletonNodes();
