@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdataType from 'azdata';
+import type * as azdataType from 'azdata';
 import * as vscode from 'vscode';
 import * as vscodeMssql from 'vscode-mssql';
 import * as mssql from 'mssql';
@@ -19,6 +19,7 @@ import { SqlDatabaseProjectProvider } from '../projectProvider/projectProvider';
 import { GenerateProjectFromOpenApiSpecOptions, ItemType } from 'sqldbproj';
 import { TableFileNode } from '../models/tree/fileFolderTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
+import { getAzdataApi } from '../common/utils';
 
 /**
  * The main controller class that initializes the extension
@@ -94,7 +95,7 @@ export default class MainController implements vscode.Disposable {
 				const filePath = tableFileNode.fileSystemUri.fsPath;
 				const projectPath = projectNode.project.projectFilePath;
 				const targetVersion = projectNode.project.getProjectTargetVersion();
-				await azdataType.designers.openTableDesigner('MSSQL', {
+				await getAzdataApi()!.designers.openTableDesigner('MSSQL', {
 					title: tableFileNode.friendlyName,
 					tooltip: `${projectPath} - ${tableFileNode.friendlyName}`,
 					id: filePath,
