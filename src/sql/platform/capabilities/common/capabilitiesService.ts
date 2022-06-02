@@ -20,6 +20,20 @@ export const clientCapabilities = {
 	hostVersion: HOST_VERSION
 };
 
+/**
+ * The connection string options for connection provider.
+ */
+export interface ConnectionStringOptions {
+	/**
+	 * Whether the connection provider supports connection string as an input option. The default value is false.
+	 */
+	isEnabled?: boolean;
+	/**
+	 * Whether the connection provider uses connection string as the default option to connect. The default value is false.
+	 */
+	isDefault?: boolean;
+}
+
 export interface ConnectionProviderProperties {
 	providerId: string;
 	iconPath?: URI | IconPath | { id: string, path: IconPath, default?: boolean }[]
@@ -29,6 +43,7 @@ export interface ConnectionProviderProperties {
 	connectionOptions: azdata.ConnectionOption[];
 	isQueryProvider?: boolean;
 	supportedExecutionPlanFileExtensions?: string[];
+	connectionStringOptions?: ConnectionStringOptions;
 }
 
 export interface ProviderFeatures {
