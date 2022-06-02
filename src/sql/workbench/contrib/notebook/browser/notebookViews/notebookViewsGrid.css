@@ -30,6 +30,7 @@
 
 .nb-grid-stack > .grid-stack-item > .grid-stack-item-content {
 	margin: 0;
+	border: 0;
 	position: absolute;
 	width: auto;
 	overflow-x: hidden;
@@ -335,6 +336,7 @@
 	overflow-y: auto;
 	height: 100%;
 	cursor: auto;
+	padding: 0 10px;
 }
 .nb-grid-stack > .grid-stack-item .grid-stack-item-content ::-webkit-scrollbar {
 	width: 8px;

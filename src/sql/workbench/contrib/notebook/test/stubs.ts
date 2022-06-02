@@ -815,7 +815,10 @@ export class NotebookViewStub implements INotebookView {
 	hideCell(cell: ICellModel): void {
 		throw new Error('Method not implemented.');
 	}
-	moveCell(cell: ICellModel, x: number, y: number): void {
+	moveCard(card: INotebookViewCard, x: number, y: number): void {
+		throw new Error('Method not implemented.');
+	}
+	resizeCard(card: INotebookViewCard, width: number, height: number): void {
 		throw new Error('Method not implemented.');
 	}
 	resizeCell(cell: ICellModel, width: number, height: number): void {

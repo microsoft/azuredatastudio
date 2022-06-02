@@ -145,7 +145,7 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 			const viewToUpdate = notebookMetadata.views.findIndex(view => view.guid === currentView.guid);
 
 			if (viewToUpdate >= 0) {
-				const cardToUpdate = notebookMetadata.views[viewToUpdate].cards.findIndex(card => card.guid === cardData.guid);
+				const cardToUpdate = notebookMetadata.views[viewToUpdate].cards.findIndex(c => c.guid === card.guid);
 
 				if (cardToUpdate >= 0) {
 					notebookMetadata.views[viewToUpdate].cards[cardToUpdate] = override ? cardData : { ...notebookMetadata.views[viewToUpdate].cards[cardToUpdate], ...cardData };

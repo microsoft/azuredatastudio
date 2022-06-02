@@ -40,8 +40,9 @@ export interface INotebookView {
 	nameAvailable(name: string): boolean;
 	getCellMetadata(cell: ICellModel): INotebookViewCard;
 	hideCell(cell: ICellModel): void;
-	moveCell(cell: ICellModel, x: number, y: number): void;
+	moveCard(card: INotebookViewCard, x: number, y: number): void;
 	compactCells();
+	resizeCard(card: INotebookViewCard, width: number, height: number): void;
 	resizeCell(cell: ICellModel, width: number, height: number): void;
 	getCell(guid: string): Readonly<ICellModel>;
 	insertCell(cell: ICellModel): INotebookViewCard;

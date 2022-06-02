@@ -95,9 +95,6 @@ export class NotebookViewModel implements INotebookView {
 		if (isNew) {
 			this.initializeCards();
 		}
-
-		//const cells = this._notebookViews.notebook.cells;
-		//cells.forEach((cell, idx) => { this.initializeCell(cell, idx); });
 	}
 
 	public initializeCards() {
@@ -105,22 +102,18 @@ export class NotebookViewModel implements INotebookView {
 
 		let card: INotebookViewCard;
 		cells.forEach((cell, idx) => {
-			if (idx % 2 === 0) {
-				card = {
-					guid: this.guid,
-					y: idx * DEFAULT_VIEW_CARD_HEIGHT,
-					x: 0,
-					width: DEFAULT_VIEW_CARD_WIDTH,
-					height: DEFAULT_VIEW_CARD_HEIGHT,
-					tabs: []
-				};
-			}
+			card = {
+				guid: this.guid,
+				y: idx * DEFAULT_VIEW_CARD_HEIGHT,
+				x: 0,
+				width: DEFAULT_VIEW_CARD_WIDTH,
+				height: DEFAULT_VIEW_CARD_HEIGHT,
+				tabs: []
+			};
 
 			this.createTab(cell, card);
 
-			if (idx % 2 !== 0) {
-				this._cards.push(card);
-			}
+			this._cards.push(card);
 		});
 	}
 
@@ -132,29 +125,6 @@ export class NotebookViewModel implements INotebookView {
 		const newTab: ViewsTabConfig = { title: 'Untitled', id: generateUuid(), group: card.guid, cell: { guid: cell.cellGuid } };
 		card.tabs.push(new ViewsTab(newTab, cell));
 	}
-
-	/*
-	protected initializeCell(cell: ICellModel, idx: number) {
-		let meta = this._notebookViews.getExtensionCellMetadata(cell);
-
-		if (!meta) {
-			this._notebookViews.initializeCell(cell);
-			meta = this._notebookViews.getExtensionCellMetadata(cell);
-		}
-
-		// Ensure that we are not duplicting view entries in cell metadata
-		if (!meta.views.find(v => v.guid === this.guid)) {
-			meta.views.push({
-				guid: this.guid,
-				hidden: false,
-				y: idx * DEFAULT_VIEW_CARD_HEIGHT,
-				x: 0,
-				width: DEFAULT_VIEW_CARD_WIDTH,
-				height: DEFAULT_VIEW_CARD_HEIGHT
-			});
-		}
-	}
-	*/
 
 	public cellInitialized(cell: ICellModel): boolean {
 		return !!this.getCellMetadata(cell);
@@ -225,16 +195,35 @@ export class NotebookViewModel implements INotebookView {
 
 		this._onCellVisibilityChanged.fire(cell);
 
+		this.save();
+
 		return card;
 	}
 
 	public hideCell(cell: ICellModel) {
-		this.updateCell(cell, this, { hidden: true });
+		this._cards.forEach((card) => {
+			const updatedTabs = card.tabs.filter(t => t.cell.guid !== cell.cellGuid);
+			this._notebookViews.updateCard(card, { tabs: updatedTabs }, this);
+		});
 		this._onCellVisibilityChanged.fire(cell);
 	}
 
-	public moveCell(cell: ICellModel, x: number, y: number) {
-		this.updateCell(cell, this, { x, y });
+	public moveCard(card: INotebookViewCard, x: number, y: number) {
+		this._notebookViews.updateCard(card, { x, y }, this);
+	}
+
+	public resizeCard(card: INotebookViewCard, width?: number, height?: number) {
+		let data: INotebookViewCard = {};
+
+		if (width) {
+			data.width = width;
+		}
+
+		if (height) {
+			data.height = height;
+		}
+
+		this._notebookViews.updateCard(card, data, this);
 	}
 
 	public resizeCell(cell: ICellModel, width?: number, height?: number) {

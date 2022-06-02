@@ -32,7 +32,6 @@ import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { NotebookViewModel } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewModel';
-import { isUndefinedOrNull } from 'vs/base/common/types';
 import { SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
 
@@ -95,11 +94,10 @@ suite('NotebookViewModel', function (): void {
 	test('initialize', async function (): Promise<void> {
 		let notebookViews = await initializeNotebookViewsExtension(initialNotebookContent);
 		let viewModel = new NotebookViewModel(defaultViewName, notebookViews);
-		viewModel.initialize();
+		viewModel.initialize(true); //is new view
 
-		let cellsWithNewView = notebookViews.getCells().filter(cell => cell.views.find(v => v.guid === viewModel.guid));
 
-		assert.strictEqual(cellsWithNewView.length, 2);
+		assert.strictEqual(viewModel.cards.length, 2);
 		assert.strictEqual(viewModel.cells.length, 2);
 		assert.strictEqual(viewModel.name, defaultViewName);
 	});
@@ -107,11 +105,9 @@ suite('NotebookViewModel', function (): void {
 	test('initialize notebook with no metadata', async function (): Promise<void> {
 		let notebookViews = await initializeNotebookViewsExtension(notebookContentWithoutMeta);
 		let viewModel = new NotebookViewModel(defaultViewName, notebookViews);
-		viewModel.initialize();
+		viewModel.initialize(true);
 
-		let cellsWithNewView = notebookViews.getCells().filter(cell => cell.views.find(v => v.guid === viewModel.guid));
-
-		assert.strictEqual(cellsWithNewView.length, 2);
+		assert.strictEqual(viewModel.cards.length, 2);
 		assert.strictEqual(viewModel.cells.length, 2);
 		assert.strictEqual(viewModel.name, defaultViewName);
 	});
@@ -151,8 +147,7 @@ suite('NotebookViewModel', function (): void {
 
 	test('hide cell', async function (): Promise<void> {
 		let notebookViews = await initializeNotebookViewsExtension(initialNotebookContent);
-		let viewModel = new NotebookViewModel(defaultViewName, notebookViews);
-		viewModel.initialize();
+		let viewModel = notebookViews.createNewView(defaultViewName);
 
 		let cellToHide = viewModel.cells[0];
 
@@ -164,8 +159,7 @@ suite('NotebookViewModel', function (): void {
 
 	test('insert cell', async function (): Promise<void> {
 		let notebookViews = await initializeNotebookViewsExtension(initialNotebookContent);
-		let viewModel = new NotebookViewModel(defaultViewName, notebookViews);
-		viewModel.initialize();
+		let viewModel = notebookViews.createNewView(defaultViewName);
 
 		let cellToInsert = viewModel.cells[0];
 
@@ -176,44 +170,24 @@ suite('NotebookViewModel', function (): void {
 		assert(!viewModel.hiddenCells.includes(cellToInsert));
 	});
 
-	test('move cell', async function (): Promise<void> {
+	test('move card', async function (): Promise<void> {
 		let notebookViews = await initializeNotebookViewsExtension(initialNotebookContent);
-		let viewModel = new NotebookViewModel(defaultViewName, notebookViews);
-		viewModel.initialize();
+		let viewModel = notebookViews.createNewView(defaultViewName);
 
-		let cellToMove = viewModel.cells[0];
+		viewModel.moveCard(viewModel.cards[0], 98, 99);
 
-		viewModel.moveCell(cellToMove, 98, 99);
-		let cellMeta = viewModel.getCellMetadata(cellToMove);
-
-		assert.strictEqual(cellMeta.x, 98);
-		assert.strictEqual(cellMeta.y, 99);
+		assert.strictEqual(viewModel.cards[0].x, 98);
+		assert.strictEqual(viewModel.cards[0].y, 99);
 	});
 
-	test('resize cell', async function (): Promise<void> {
+	test('resize card', async function (): Promise<void> {
 		let notebookViews = await initializeNotebookViewsExtension(initialNotebookContent);
-		let viewModel = new NotebookViewModel(defaultViewName, notebookViews);
-		viewModel.initialize();
+		let viewModel = notebookViews.createNewView(defaultViewName);
 
-		let cellToResize = viewModel.cells[0];
+		viewModel.resizeCard(viewModel.cards[0], 3, 4);
 
-		viewModel.resizeCell(cellToResize, 3, 4);
-		let cellMeta = viewModel.getCellMetadata(cellToResize);
-
-		assert.strictEqual(cellMeta.width, 3);
-		assert.strictEqual(cellMeta.height, 4);
-	});
-
-	test('get cell metadata', async function (): Promise<void> {
-		let notebookViews = await initializeNotebookViewsExtension(initialNotebookContent);
-		let viewModel = new NotebookViewModel(defaultViewName, notebookViews);
-		viewModel.initialize();
-
-		let cell = viewModel.cells[0];
-		let cellMeta = notebookViews.getExtensionCellMetadata(cell);
-
-		assert(!isUndefinedOrNull(cellMeta.views.find(v => v.guid === viewModel.guid)));
-		assert.deepStrictEqual(viewModel.getCellMetadata(cell), cellMeta.views.find(v => v.guid === viewModel.guid));
+		assert.strictEqual(viewModel.cards[0].width, 3);
+		assert.strictEqual(viewModel.cards[0].height, 4);
 	});
 
 	test('delete', async function (): Promise<void> {
@@ -278,6 +252,9 @@ suite('NotebookViewModel', function (): void {
 		await model.loadContents();
 		await model.requestModelLoad();
 
-		return new NotebookViewsExtension(model);
+		const notebookViews = new NotebookViewsExtension(model);
+		notebookViews.initialize();
+
+		return notebookViews;
 	}
 });

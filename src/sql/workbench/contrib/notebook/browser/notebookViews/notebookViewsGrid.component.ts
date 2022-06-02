@@ -266,14 +266,6 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 					height: changedItem.h
 				};
 
-				/*
-				if (action === 'added') {
-					update.hidden = false;
-				} else if (action === 'removed') {
-					update.hidden = true;
-				}
-				*/
-
 				this.views.updateCard(item.metadata, update, this.activeView);
 			}
 		});
