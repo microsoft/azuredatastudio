@@ -677,11 +677,8 @@
     <trans-unit id="designer.loadingDesignerCompleted">
       <source xml:lang="en">Designer is loaded</source>
     </trans-unit>
-    <trans-unit id="designer.newRowButtonAriaLabel">
-      <source xml:lang="en">Add new row to '{0}' table</source>
-    </trans-unit>
-    <trans-unit id="designer.newRowText">
-      <source xml:lang="en">Add New</source>
+    <trans-unit id="designer.moveRowText">
+      <source xml:lang="en">Move Row</source>
     </trans-unit>
     <trans-unit id="designer.processing">
       <source xml:lang="en">Processing...</source>
@@ -707,7 +704,7 @@
     <trans-unit id="designer.scriptTabTitle">
       <source xml:lang="en">Scripts</source>
     </trans-unit>
-    <trans-unit id="tableDesigner.unknownComponentType">
+    <trans-unit id="designer.unknownComponentType">
       <source xml:lang="en">The component type: {0} is not supported</source>
     </trans-unit>
 </body></file>
@@ -728,6 +725,32 @@
   <file original="src/sql/workbench/browser/designer/designerScriptEditor" source-language="en" datatype="plaintext"><body>
     <trans-unit id="designer.textEditorAriaLabel">
       <source xml:lang="en">Designer text editor.</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/browser/designer/tableActions" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="designer.addColumnAction">
+      <source xml:lang="en">Add New</source>
+    </trans-unit>
+    <trans-unit id="designer.insertAfterSelectedColumn">
+      <source xml:lang="en">Insert after</source>
+    </trans-unit>
+    <trans-unit id="designer.insertBeforeSelectedRow">
+      <source xml:lang="en">Insert before</source>
+    </trans-unit>
+    <trans-unit id="designer.moveRowDownAction">
+      <source xml:lang="en">Move Down</source>
+    </trans-unit>
+    <trans-unit id="designer.moveRowDownButtonAriaLabel">
+      <source xml:lang="en">Move selected row down one position</source>
+    </trans-unit>
+    <trans-unit id="designer.moveRowUpAction">
+      <source xml:lang="en">Move Up</source>
+    </trans-unit>
+    <trans-unit id="designer.moveRowUpButtonAriaLabel">
+      <source xml:lang="en">Move selected row up one position</source>
+    </trans-unit>
+    <trans-unit id="designer.newRowButtonAriaLabel">
+      <source xml:lang="en">Add new row to '{0}' table</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/browser/editData/editDataInput" source-language="en" datatype="plaintext"><body>
