@@ -188,6 +188,8 @@ import { IFileBrowserService } from 'sql/workbench/services/fileBrowser/common/i
 import { FileBrowserService } from 'sql/workbench/services/fileBrowser/common/fileBrowserService';
 import { IFileBrowserDialogController } from 'sql/workbench/services/fileBrowser/common/fileBrowserDialogController';
 import { FileBrowserDialogController } from 'sql/workbench/services/fileBrowser/browser/fileBrowserDialogController';
+import { IBackupRestoreUrlBrowserDialogService } from 'sql/workbench/services/backupRestoreUrlBrowser/common/urlBrowserDialogService';
+import { BackupRestoreUrlBrowserDialogService } from 'sql/workbench/services/backupRestoreUrlBrowser/browser/urlBrowserDialogService';
 import { IInsightsDialogService } from 'sql/workbench/services/insights/browser/insightsDialogService';
 import { InsightsDialogService } from 'sql/workbench/services/insights/browser/insightsDialogServiceImpl';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
@@ -234,6 +236,7 @@ registerSingleton(IRestoreService, RestoreService);
 registerSingleton(IRestoreDialogController, RestoreDialogController);
 registerSingleton(IFileBrowserService, FileBrowserService);
 registerSingleton(IFileBrowserDialogController, FileBrowserDialogController);
+registerSingleton(IBackupRestoreUrlBrowserDialogService, BackupRestoreUrlBrowserDialogService);
 registerSingleton(IInsightsDialogService, InsightsDialogService);
 registerSingleton(INotebookService, NotebookService);
 registerSingleton(IAccountPickerService, AccountPickerService);

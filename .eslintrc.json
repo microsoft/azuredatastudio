@@ -555,6 +555,7 @@
 					"**/{vs,sql}/workbench/common/**",
 					"**/{vs,sql}/workbench/services/**/common/**",
 					"**/{vs,sql}/workbench/api/**/common/**",
+					"**/{vs,sql}/workbench/contrib/**/common/**",
 					"vs/workbench/contrib/files/common/editors/fileEditorInput", // this should be fine, it only accesses constants from contrib
 					"vscode-textmate",
 					"vscode-oniguruma",
@@ -592,6 +593,7 @@
 					"**/{vs,sql}/workbench/{common,browser}/**",
 					"**/{vs,sql}/workbench/api/{common,browser}/**",
 					"**/{vs,sql}/workbench/services/**/{common,browser}/**",
+					"**/{vs,sql}/workbench/contrib/**/common/**",
 					"vscode-textmate",
 					"vscode-oniguruma",
 					"iconv-lite-umd",

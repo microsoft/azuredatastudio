@@ -34,4 +34,20 @@ export class MainThreadAzureAccount extends Disposable implements MainThreadAzur
 		return this._proxy.$getSubscriptions(account, ignoreErrors, selectedOnly);
 	}
 
+	public getStorageAccounts(account: azurecore.AzureAccount, subscriptions: azurecore.azureResource.AzureResourceSubscription[], ignoreErrors?: boolean): Promise<azurecore.GetStorageAccountResult> {
+		return this._proxy.$getStorageAccounts(account, subscriptions, ignoreErrors);
+	}
+
+	public getBlobContainers(account: azurecore.AzureAccount, subscription: azurecore.azureResource.AzureResourceSubscription, storageAccount: azurecore.azureResource.AzureGraphResource, ignoreErrors?: boolean): Promise<azurecore.GetBlobContainersResult> {
+		return this._proxy.$getBlobContainers(account, subscription, storageAccount, ignoreErrors);
+	}
+
+	public getBlobs(account: azurecore.AzureAccount, subscription: azurecore.azureResource.AzureResourceSubscription, storageAccount: azurecore.azureResource.AzureGraphResource, containerName: string, ignoreErrors?: boolean): Promise<azurecore.GetBlobsResult> {
+		return this._proxy.$getBlobs(account, subscription, storageAccount, containerName, ignoreErrors);
+	}
+
+	public getStorageAccountAccessKey(account: azurecore.AzureAccount, subscription: azurecore.azureResource.AzureResourceSubscription, storageAccount: azurecore.azureResource.AzureGraphResource, ignoreErrors?: boolean): Promise<azurecore.GetStorageAccountAccessKeyResult> {
+		return this._proxy.$getStorageAccountAccessKey(account, subscription, storageAccount, ignoreErrors);
+	}
+
 }

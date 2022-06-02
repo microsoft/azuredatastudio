@@ -17,6 +17,7 @@ export const enum ModalDialogName {
 	Connection = 'Connection',
 	Backup = 'Backup',
 	FileBrowser = 'FileBrowser',
+	UrlBrowser = 'UrlBrowser',
 	Restore = 'Restore',
 	Insights = 'Insights',
 	Profiler = 'Profiler',
