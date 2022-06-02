@@ -3782,8 +3782,8 @@ Error: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/objectExplorer/browser/serverTreeView" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="serverTree.newConnection">
-      <source xml:lang="en">New Connection</source>
+    <trans-unit id="serverTree.addConnection">
+      <source xml:lang="en">Add Connection</source>
     </trans-unit>
     <trans-unit id="servers.noConnections">
       <source xml:lang="en">No connections found.</source>
