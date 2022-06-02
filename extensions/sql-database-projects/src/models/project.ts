@@ -13,7 +13,7 @@ import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 
 import { Uri, window } from 'vscode';
 import { ISqlProject, ItemType, SqlTargetPlatform } from 'sqldbproj';
-import { promises as fs, readFileSync } from 'fs';
+import { promises as fs } from 'fs';
 import { DataSource } from './dataSources/dataSources';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from './IDatabaseReferenceSettings';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
@@ -253,8 +253,8 @@ export class Project implements ISqlProject {
 			const fullPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(f));
 
 			if (await utils.exists(fullPath)) {
-				const fileContents = readFileSync(fullPath).toString();
-				containsCreateTableStatement = fileContents.toLowerCase().includes('create table');
+				const fileContents = await fs.readFile(fullPath);
+				containsCreateTableStatement = fileContents.toString().toLowerCase().includes('create table');
 			}
 
 			fileEntries.push(this.createFileProjectEntry(f, EntryType.File, typeEntry ? typeEntry.typeAttribute : undefined, containsCreateTableStatement));
