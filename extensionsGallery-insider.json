@@ -4698,8 +4698,8 @@
 				{
 					"extensionId": "92",
 					"extensionName": "azure-cosmosdb-ads-extension",
-					"displayName": "Azure CosmosDB API for MongoDB",
-					"shortDescription": "This extension provides support for Azure CosmosDB API for MongoDB and MongoDB databases",
+					"displayName": "Azure Cosmos DB API for MongoDB",
+					"shortDescription": "This extension provides support for Azure Cosmos DB API for MongoDB and MongoDB databases",
 					"publisher": {
 						"displayName": "Microsoft",
 						"publisherId": "Microsoft",
@@ -4714,7 +4714,7 @@
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/azure-cosmosdb-ads-extension/azure-cosmosdb-ads-extension-0.1.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/azure-cosmosdb-ads-extension/azure-cosmosdb-ads-extension-0.1.1.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
