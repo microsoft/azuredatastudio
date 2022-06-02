@@ -160,6 +160,9 @@
     <trans-unit id="sqlTableToUpsert">
       <source xml:lang="en">SQL table to upsert into</source>
     </trans-unit>
+    <trans-unit id="tableListProgressTitle">
+      <source xml:lang="en">Fetching tables for selected database...</source>
+    </trans-unit>
     <trans-unit id="timeoutAzureFunctionFileError">
       <source xml:lang="en">Timed out waiting for Azure Function file to be created</source>
     </trans-unit>

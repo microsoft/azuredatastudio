@@ -164,7 +164,7 @@ export class DeployedModelService {
 
 			// If database exist verify the table schema
 			//
-			if ((await databases).find(x => x === table.databaseName)) {
+			if (databases.find(x => x === table.databaseName)) {
 				const query = queries.getConfigTableVerificationQuery(table);
 				const result = await this._queryRunner.runWithDatabaseChange(connection, query, table.databaseName);
 				return result !== undefined && result.rows.length > 0 && result.rows[0][0].displayValue === '1';

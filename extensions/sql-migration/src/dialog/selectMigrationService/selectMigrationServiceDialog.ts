@@ -67,7 +67,7 @@ export class SelectMigrationServiceDialog {
 	async initialize(): Promise<void> {
 		this._serviceContext = await MigrationLocalStorage.getMigrationServiceContext();
 
-		await this._dialog.registerContent(async (view: azdata.ModelView) => {
+		this._dialog.registerContent(async (view: azdata.ModelView) => {
 			this._disposables.push(
 				view.onClosed(e => {
 					this._disposables.forEach(

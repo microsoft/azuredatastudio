@@ -114,7 +114,7 @@ export class ImportModelWizard extends ModelViewBase {
 
 			return true;
 		} catch (error) {
-			await this.showErrorMessage(`${constants.modelFailedToRegister} ${constants.getErrorMessage(error)}`);
+			this.showErrorMessage(`${constants.modelFailedToRegister} ${constants.getErrorMessage(error)}`);
 			return false;
 		}
 	}

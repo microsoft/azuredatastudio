@@ -228,7 +228,7 @@ describe('Project: sqlproj content operations', function (): void {
 		const project = await Project.openProject(projFilePath);
 
 		await project.changeTargetPlatform('invalidPlatform');
-		await testUtils.shouldThrowSpecificError(async () => await project.getSystemDacpacUri(constants.masterDacpac), constants.invalidDataSchemaProvider);
+		await testUtils.shouldThrowSpecificError(() => project.getSystemDacpacUri(constants.masterDacpac), constants.invalidDataSchemaProvider);
 	});
 
 	it('Should add system database references correctly', async function (): Promise<void> {
