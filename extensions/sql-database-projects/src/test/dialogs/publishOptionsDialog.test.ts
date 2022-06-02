@@ -13,12 +13,9 @@ import { PublishOptionsDialog } from '../../dialogs/publishOptionsDialog';
 import { PublishDatabaseDialog } from '../../dialogs/publishDatabaseDialog';
 import { Project } from '../../models/project';
 
-let testContext: testData.TestContext;
-
 describe('Publish Database Options Dialog', () => {
 	before(async function (): Promise<void> {
 		await baselines.loadBaselines();
-		testContext = testData.createContext();
 	});
 
 	it('Should open dialog successfully ', async function (): Promise<void> {
