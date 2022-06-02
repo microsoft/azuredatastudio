@@ -21,7 +21,8 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 				if (queryInfo && type === 'queryStop') {
 					const queryText = queryInfo.query ?? '';
 					const connProfile = await azdata.connection.getConnection(document.uri);
-					this._queryHistoryNodes.push(new QueryHistoryNode(queryText, '', queryText, connProfile?.connectionId ?? '', new Date(), 'sqltools2019-3', queryInfo.messages.find(m => m.isError) ? false : true));
+					const isError = queryInfo.messages.find(m => m.isError) ? false : true;
+					this._queryHistoryNodes.push(new QueryHistoryNode(queryText, connProfile?.connectionId ?? '', connProfile.providerId, '', new Date(), isError));
 					this._onDidChangeTreeData.fire(undefined);
 				}
 			}
@@ -44,6 +45,7 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 	}
 
 	public getChildren(element?: QueryHistoryNode): QueryHistoryNode[] {
+		// We only have top level items
 		return this._queryHistoryNodes;
 	}
 }
