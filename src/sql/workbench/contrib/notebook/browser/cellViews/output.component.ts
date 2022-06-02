@@ -153,10 +153,10 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 		);
 		this.errorText = undefined;
 		if (!mimeType) {
-			const mimeTypes = Object.keys(options.data).join(', ');
+			const mimeTypesWithoutRenderer = Object.keys(options.data).join(', ');
 			this.errorText = options.trusted ?
-				localize('noMimeTypeFound', "No renderer could be found for output. It has the following MIME types: {0}", mimeTypes) :
-				localize('noSafeMimeTypeFound', "No safe renderer could be found for output. It has the following MIME types: {0}", mimeTypes);
+				localize('noMimeTypeFound', "No renderer could be found for output. It has the following MIME types: {0}", mimeTypesWithoutRenderer) :
+				localize('noSafeMimeTypeFound', "No safe renderer could be found for output. It has the following MIME types: {0}", mimeTypesWithoutRenderer);
 			this.cellModel?.notebookModel?.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.MIMETypeRendererNotFound, { mime_types: mimeTypesWithoutRenderer });
 			return;
 		}
