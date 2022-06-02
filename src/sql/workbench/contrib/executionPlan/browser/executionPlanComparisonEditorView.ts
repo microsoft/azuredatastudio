@@ -103,6 +103,10 @@ export class ExecutionPlanComparisonEditorView {
 		return undefined;
 	}
 
+	private createQueryDropdownPrefixString(query: string, index: number, totalQueries: number): string {
+		return localize('queryDropdownPrefix', "Query {0} of {1}: {2}", index, totalQueries, query);
+	}
+
 	constructor(
 		parentContainer: HTMLElement,
 		@IInstantiationService private _instantiationService: IInstantiationService,
@@ -184,7 +188,9 @@ export class ExecutionPlanComparisonEditorView {
 		this._topPlanDropdown = new SelectBox(['option 1', 'option2'], 'option1', this.contextViewService, this._topPlanDropdownContainer);
 		this._topPlanDropdown.render(this._topPlanDropdownContainer);
 		this._topPlanDropdown.onDidSelect(async (e) => {
-			this._activeBottomPlanDiagram.clearSubtreePolygon();
+			if (this._activeBottomPlanDiagram) {
+				this._activeBottomPlanDiagram.clearSubtreePolygon();
+			}
 			this._activeTopPlanDiagram.clearSubtreePolygon();
 			this._topPlanDiagramContainers.forEach(c => {
 				c.style.display = 'none';
@@ -209,7 +215,9 @@ export class ExecutionPlanComparisonEditorView {
 		this._bottomPlanDropdown.render(this._bottomPlanDropdownContainer);
 		this._bottomPlanDropdown.onDidSelect(async (e) => {
 			this._activeBottomPlanDiagram.clearSubtreePolygon();
-			this._activeTopPlanDiagram.clearSubtreePolygon();
+			if (this._activeTopPlanDiagram) {
+				this._activeTopPlanDiagram.clearSubtreePolygon();
+			}
 			this._bottomPlanDiagramContainers.forEach(c => {
 				c.style.display = 'none';
 			});
@@ -304,9 +312,9 @@ export class ExecutionPlanComparisonEditorView {
 	public async addExecutionPlanGraph(executionPlanGraphs: azdata.executionPlan.ExecutionPlanGraph[]): Promise<void> {
 		if (!this._topPlanDiagramModels) {
 			this._topPlanDiagramModels = executionPlanGraphs;
-			this._topPlanDropdown.setOptions(executionPlanGraphs.map(e => {
+			this._topPlanDropdown.setOptions(executionPlanGraphs.map((e, index) => {
 				return {
-					text: e.query
+					text: this.createQueryDropdownPrefixString(e.query, index + 1, executionPlanGraphs.length)
 				};
 			}), 0);
 
@@ -343,9 +351,9 @@ export class ExecutionPlanComparisonEditorView {
 			this._toggleOrientationAction.enabled = true;
 		} else {
 			this._bottomPlanDiagramModels = executionPlanGraphs;
-			this._bottomPlanDropdown.setOptions(executionPlanGraphs.map(e => {
+			this._bottomPlanDropdown.setOptions(executionPlanGraphs.map((e, index) => {
 				return {
-					text: e.query
+					text: this.createQueryDropdownPrefixString(e.query, index + 1, executionPlanGraphs.length)
 				};
 			}), 0);
 			executionPlanGraphs.forEach((e, i) => {

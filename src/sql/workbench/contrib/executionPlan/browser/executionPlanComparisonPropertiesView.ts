@@ -46,7 +46,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		}
 		const titleText = localize('executionPlanComparisonPropertiesTopOperation', "Top operation: {0}", target);
 		this._topOperationNameContainer.innerText = titleText;
-		this._bottomOperationNameContainer.title = titleText;
+		this._topOperationNameContainer.title = titleText;
 		this.addDataToTable();
 	}
 
