@@ -81,7 +81,8 @@ export function setup(opts: minimist.ParsedArgs) {
 			await app.workbench.sqlNotebook.waitForActiveCellResults();
 		});
 
-		it('can add a new package from the Manage Packages wizard', async function () {
+		// Skip this test for now since it is not stable - the way that the wizard is initialized needs to be refactored
+		it.skip('can add a new package from the Manage Packages wizard', async function () {
 			const app = this.app as Application;
 			await app.workbench.sqlNotebook.newUntitledNotebook();
 			await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('SQL');
