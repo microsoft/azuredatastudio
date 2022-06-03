@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { ITaskbarContent, Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { AzdataGraphView } from 'sql/workbench/contrib/executionPlan/browser/azdataGraphView';
@@ -14,8 +15,6 @@ import { Action } from 'vs/base/common/actions';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IStorageService } from 'vs/platform/storage/common/storage';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IColorTheme, ICssStyleCollector, IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import * as DOM from 'vs/base/browser/dom';
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
@@ -31,7 +30,7 @@ import { ExecutionPlanViewHeader } from 'sql/workbench/contrib/executionPlan/bro
 import { attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
 import { IProgressService, ProgressLocation } from 'vs/platform/progress/common/progress';
 import { generateUuid } from 'vs/base/common/uuid';
-
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 export class ExecutionPlanComparisonEditorView {
 
@@ -110,9 +109,7 @@ export class ExecutionPlanComparisonEditorView {
 	constructor(
 		parentContainer: HTMLElement,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@ITelemetryService telemetryService: ITelemetryService,
 		@IThemeService private themeService: IThemeService,
-		@IStorageService storageService: IStorageService,
 		@IExecutionPlanService private _executionPlanService: IExecutionPlanService,
 		@IFileDialogService private _fileDialogService: IFileDialogService,
 		@IContextViewService readonly contextViewService: IContextViewService,
@@ -136,11 +133,11 @@ export class ExecutionPlanComparisonEditorView {
 
 		});
 		this._taskbar.context = this;
-		this._addExecutionPlanAction = new AddExecutionPlanAction();
+		this._addExecutionPlanAction = this._instantiationService.createInstance(AddExecutionPlanAction);
 		this._zoomOutAction = new ZoomOutAction();
 		this._zoomInAction = new ZoomInAction();
 		this._zoomToFitAction = new ZoomToFitAction();
-		this._propertiesAction = new PropertiesAction();
+		this._propertiesAction = this._instantiationService.createInstance(PropertiesAction);
 		this._toggleOrientationAction = new ToggleOrientation();
 		this._resetZoomAction = new ZoomReset();
 		const content: ITaskbarContent[] = [
@@ -540,11 +537,16 @@ export class ExecutionPlanComparisonEditorView {
 class AddExecutionPlanAction extends Action {
 	public static ID = 'ep.AddExecutionPlan';
 	public static LABEL = localize('addExecutionPlanLabel', "Add execution plan");
-	constructor() {
+
+	constructor(
+		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService
+	) {
 		super(AddExecutionPlanAction.ID, AddExecutionPlanAction.LABEL, addIconClassName);
 	}
 
 	public override async run(context: ExecutionPlanComparisonEditorView): Promise<void> {
+		this.telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.AddExecutionPlan);
+
 		await context.openAndAddExecutionPlanFile();
 	}
 
@@ -619,11 +621,19 @@ class ToggleOrientation extends Action {
 class PropertiesAction extends Action {
 	public static ID = 'epCompare.comparePropertiesAction';
 	public static LABEL = localize('epCompare.comparePropertiesAction', "Properties");
-	constructor() {
+
+	constructor(
+		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService
+	) {
 		super(PropertiesAction.ID, PropertiesAction.LABEL, openPropertiesIconClassNames);
 		this.enabled = false;
 	}
+
 	public override async run(context: ExecutionPlanComparisonEditorView): Promise<void> {
+		this.telemetryService
+			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.ViewExecutionPlanComparisonProperties)
+			.send();
+
 		context.togglePropertiesView();
 	}
 }

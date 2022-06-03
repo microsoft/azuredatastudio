@@ -33,6 +33,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 	private _onEditProcessed = new Emitter<DesignerEditProcessedEventArgs>();
 	private _onRefreshRequested = new Emitter<void>();
 	private _originalViewModel: DesignerViewModel;
+	private _tableDesignerView: azdata.designers.TableDesignerView;
 
 	public readonly onInitialized: Event<void> = this._onInitialized.event;
 	public readonly onEditProcessed: Event<DesignerEditProcessedEventArgs> = this._onEditProcessed.event;
@@ -79,6 +80,10 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 
 	get issues(): DesignerIssue[] | undefined {
 		return this._issues;
+	}
+
+	get tableDesignerView(): azdata.designers.TableDesignerView {
+		return this._tableDesignerView;
 	}
 
 	processEdit(edit: DesignerEdit): void {
@@ -177,6 +182,14 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		}
 	}
 
+	async save(): Promise<void> {
+		if (this.tableDesignerView?.useAdvancedSaveMode) {
+			await this.openPublishDialog();
+		} else {
+			await this.publishChanges();
+		}
+	}
+
 	async openPublishDialog(): Promise<void> {
 		const reportNotificationHandle = this._notificationService.notify({
 			severity: Severity.Info,
@@ -243,24 +256,28 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		}
 	}
 
-	initialize(): void {
+	async initialize(): Promise<void> {
 		if (this._view !== undefined || this.pendingAction === 'initialize') {
 			return;
 		}
 
 		this.updateState(this.valid, this.dirty, 'initialize');
-		this._provider.initializeTableDesigner(this.tableInfo).then(result => {
+		try {
+			const result = await this._provider.initializeTableDesigner(this.tableInfo);
 			this.doInitialization(result);
 			this._onInitialized.fire();
-		}, error => {
+		} catch (error) {
 			this._errorMessageService.showDialog(Severity.Error, ErrorDialogTitle, localize('tableDesigner.errorInitializingTableDesigner', "An error occurred while initializing the table designer: {0}", error?.message ?? error));
-		});
+		}
 	}
 
 	private doInitialization(designerInfo: azdata.designers.TableDesignerInfo): void {
+		this.tableInfo = designerInfo.tableInfo;
 		this.updateState(true, this.tableInfo.isNewTable);
 		this._viewModel = designerInfo.viewModel;
 		this._originalViewModel = this.tableInfo.isNewTable ? undefined : deepClone(this._viewModel);
+		this._tableDesignerView = designerInfo.view;
+		this._issues = designerInfo.issues;
 		this.setDesignerView(designerInfo.view);
 	}
 

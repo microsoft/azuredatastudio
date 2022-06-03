@@ -166,7 +166,7 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 			this._instantiationService.createInstance(ZoomToFitAction, 'ActionBar'),
 			this._instantiationService.createInstance(CustomZoomAction, 'ActionBar'),
 			this._instantiationService.createInstance(PropertiesAction, 'ActionBar'),
-			new CompareExecutionPlanAction(),
+			this._instantiationService.createInstance(CompareExecutionPlanAction, 'ActionBar'),
 			this.actionBarToggleTopTip
 		];
 		this._actionBar.pushAction(actionBarActions, { icon: true, label: false });
@@ -183,7 +183,7 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 			this._instantiationService.createInstance(ZoomToFitAction, 'ContextMenu'),
 			this._instantiationService.createInstance(CustomZoomAction, 'ContextMenu'),
 			this._instantiationService.createInstance(PropertiesAction, 'ContextMenu'),
-			new CompareExecutionPlanAction(),
+			this._instantiationService.createInstance(CompareExecutionPlanAction, 'ContextMenu'),
 			this.contextMenuToggleTooltipAction
 		];
 		const self = this;
@@ -533,11 +533,18 @@ export class CompareExecutionPlanAction extends Action {
 	public static ID = 'ep.tooltipToggleContextMenu';
 	public static COMPARE_PLAN = localize('executionPlanCompareExecutionPlanAction', "Compare execution plan");
 
-	constructor() {
+	constructor(private source: ExecutionPlanActionSource,
+		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService
+	) {
 		super(CompareExecutionPlanAction.COMPARE_PLAN, CompareExecutionPlanAction.COMPARE_PLAN, executionPlanCompareIconClassName);
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
+		this.telemetryService
+			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.CompareExecutionPlan)
+			.withAdditionalProperties({ source: this.source })
+			.send();
+
 		context.compareCurrentExecutionPlan();
 	}
 }
