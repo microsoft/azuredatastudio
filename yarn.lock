@@ -5241,15 +5241,15 @@ gulp-postcss@^9.0.0:
     postcss-load-config "^2.1.1"
     vinyl-sourcemaps-apply "^0.2.1"
 
-gulp-remote-retry-src@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/gulp-remote-retry-src/-/gulp-remote-retry-src-0.6.0.tgz#fdcb5d5c9e67c31ae378a2a886ddad3d47913bb1"
-  integrity sha512-lFxpwwbM/GEIdYiNumxiUcPHZUROFJaF1zTBne1H8b3Pwx6Te6O9uEYp++JZPP62jdheOWcHUTBREiMkpdbm4Q==
+gulp-remote-retry-src@^0.8.0:
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/gulp-remote-retry-src/-/gulp-remote-retry-src-0.8.0.tgz#223ab0fbf117549088c89f4a6b89f827eb5dc465"
+  integrity sha512-pyfehK32n209zYVfvgx8AArwOk3EuhwCgiFsGRNKW25N0XQ+710ix8rKPUvt1Vi2w0zEFPng55caJMa5e4b0mw==
   dependencies:
     event-stream "3.3.4"
     node.extend "~1.1.2"
-    request "^2.88.0"
-    requestretry "^4.0.0"
+    request "^2.88.2"
+    requestretry "^7.0.2"
     through2 "~2.0.3"
     vinyl "~2.0.1"
 
@@ -9128,7 +9128,7 @@ replacestream@^4.0.0:
     object-assign "^4.0.1"
     readable-stream "^2.0.2"
 
-"request@>= 2.44.0 < 3.0.0", request@^2.85.0:
+"request@>= 2.44.0 < 3.0.0", request@^2.85.0, request@^2.88.2:
   version "2.88.2"
   resolved "https://registry.yarnpkg.com/request/-/request-2.88.2.tgz#d73c918731cb5a87da047e207234146f664d12b3"
   integrity sha512-MsvtOrfG9ZcrOwAW+Qi+F6HbD0CWXEh9ou77uOb7FM2WPhwT7smM833PzanhJLsgXjN89Ir6V2PczXNnMpwKhw==
@@ -9154,7 +9154,7 @@ replacestream@^4.0.0:
     tunnel-agent "^0.6.0"
     uuid "^3.3.2"
 
-request@^2.86.0, request@^2.88.0:
+request@^2.86.0:
   version "2.88.0"
   resolved "https://registry.yarnpkg.com/request/-/request-2.88.0.tgz#9c2fca4f7d35b592efe57c7f0a55e81052124fef"
   integrity sha512-NAqBSrijGLZdM0WZNsInLJpkJokL72XYjUpnB0iwsRgxh7dB6COrHnTBNwN0E+lHDAJzu7kLAkDeY08z2/A0hg==
@@ -9180,14 +9180,13 @@ request@^2.86.0, request@^2.88.0:
     tunnel-agent "^0.6.0"
     uuid "^3.3.2"
 
-requestretry@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/requestretry/-/requestretry-4.0.0.tgz#4e9e7280a7d8561bf33e9925264cf026e2be3e89"
-  integrity sha512-ST8m0+5FQH2FA+gbzUQyOQjUwHf22kbPQnd6TexveR0p+2UV1YYBg+Roe7BnKQ1Bb/+LtJwwm0QzxK2NA20Cug==
+requestretry@^7.0.2:
+  version "7.1.0"
+  resolved "https://registry.yarnpkg.com/requestretry/-/requestretry-7.1.0.tgz#d16a1a57a95295211147841550603f3dc527541e"
+  integrity sha512-TqVDgp251BW4b8ddQ2ptaj/57Z3LZHLscAUT7v6qs70buqF2/IoOVjYbpjJ6HiW7j5+waqegGI8xKJ/+uzgDmw==
   dependencies:
     extend "^3.0.2"
-    lodash "^4.17.10"
-    when "^3.7.7"
+    lodash "^4.17.15"
 
 require-directory@^2.1.1:
   version "2.1.1"
@@ -11451,11 +11450,6 @@ whatwg-url@^5.0.0:
   dependencies:
     tr46 "~0.0.3"
     webidl-conversions "^3.0.0"
-
-when@^3.7.7:
-  version "3.7.8"
-  resolved "https://registry.yarnpkg.com/when/-/when-3.7.8.tgz#c7130b6a7ea04693e842cdc9e7a1f2aa39a39f82"
-  integrity sha1-xxMLan6gRpPoQs3J56Hyqjmjn4I=
 
 which-boxed-primitive@^1.0.2:
   version "1.0.2"
