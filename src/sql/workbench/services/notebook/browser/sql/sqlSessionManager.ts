@@ -320,7 +320,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	}
 
 	requestExecute(content: nb.IExecuteRequest, disposeOnDone?: boolean): nb.IFuture {
-		// Check if another cell is already running. We can't rely on queryRunner, since it can get cleared when changing the notebook connection.
+		// Check if another cell is already running.
 		if (this._future?.inProgress) {
 			throw new Error(notebookMultipleRequestsError);
 		}
@@ -328,12 +328,6 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		let canRun: boolean = true;
 		let code = this.getCodeWithoutCellMagic(content);
 		if (this._queryRunner && !this._newConnection) {
-			// Cancel any existing query
-			if (this._future && !this._queryRunner.hasCompleted) {
-				this._queryRunner.cancelQuery().then(ok => undefined, error => this._errorMessageService.showDialog(Severity.Error, sqlKernelError, error));
-				// TODO when we can just show error as an output, should show an "execution canceled" error in output
-				this._future.handleDone().catch(err => onUnexpectedError(err));
-			}
 			this._queryRunner.runQuery(code).catch(err => onUnexpectedError(err));
 		} else if (this._currentConnection && this._currentConnectionProfile) {
 			this._newConnection = false;
