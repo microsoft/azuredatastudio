@@ -27,6 +27,7 @@ import { getUriPrefix, uriPrefixes } from 'sql/platform/connection/common/utils'
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { FutureInternal, notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 import { tryMatchCellMagic } from 'sql/workbench/services/notebook/browser/utils';
+import { notebookMultipleRequestsError } from 'sql/workbench/common/constants';
 
 export const sqlKernelError: string = localize("sqlKernelError", "SQL kernel error");
 export const MAX_ROWS = 5000;
@@ -307,10 +308,11 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		return info;
 	}
 
+	private _newConnection: boolean;
 	public set connection(conn: IConnectionProfile) {
 		this._currentConnection = conn;
 		this._currentConnectionProfile = new ConnectionProfile(this._capabilitiesService, this._currentConnection);
-		this._queryRunner = undefined;
+		this._newConnection = true;
 	}
 
 	getSpec(): Thenable<nb.IKernelSpec> {
@@ -318,9 +320,14 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	}
 
 	requestExecute(content: nb.IExecuteRequest, disposeOnDone?: boolean): nb.IFuture {
+		// Check if another cell is already running. We can't rely on queryRunner, since it can get cleared when changing the notebook connection.
+		if (this._future?.inProgress) {
+			throw new Error(notebookMultipleRequestsError);
+		}
+
 		let canRun: boolean = true;
 		let code = this.getCodeWithoutCellMagic(content);
-		if (this._queryRunner) {
+		if (this._queryRunner && !this._newConnection) {
 			// Cancel any existing query
 			if (this._future && !this._queryRunner.hasCompleted) {
 				this._queryRunner.cancelQuery().then(ok => undefined, error => this._errorMessageService.showDialog(Severity.Error, sqlKernelError, error));
@@ -329,6 +336,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 			}
 			this._queryRunner.runQuery(code).catch(err => onUnexpectedError(err));
 		} else if (this._currentConnection && this._currentConnectionProfile) {
+			this._newConnection = false;
 			this._queryRunner = this._instantiationService.createInstance(QueryRunner, this._connectionPath);
 			this.addQueryEventListeners(this._queryRunner);
 			this._connectionManagementService.connect(this._currentConnectionProfile, this._connectionPath).then((result) => {
