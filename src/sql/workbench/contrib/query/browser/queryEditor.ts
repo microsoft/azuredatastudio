@@ -948,12 +948,6 @@ export class QueryEditor extends EditorPane {
 			}
 		}
 
-		// await Promise.all([
-		// 	super.setInput(newInput, options, context, token),
-		// 	this.currentTextEditor.setInput(newInput.text, options, context, token),
-		// 	this.resultsEditor.setInput(newInput.results, options, context)
-		// ]);
-
 		await Promise.all([
 			super.setInput(newInput, options, context, token),
 			this.currentTextEditor.setInput(newInput.text, options, context, token)
@@ -1094,10 +1088,6 @@ export class QueryEditor extends EditorPane {
 		if (this.resultsVisible || this.resultsEditorContainer.contains(document.activeElement)) {
 			this.focus();
 		}
-
-		// else {
-		// 	this.resultsEditor.focus();
-		// }
 	}
 
 	/**
@@ -1169,7 +1159,6 @@ export class QueryEditor extends EditorPane {
 			if (this.input && this.input.state) {
 				this.input.state.resultsVisible = true;
 			}
-
 		}
 	}
 
