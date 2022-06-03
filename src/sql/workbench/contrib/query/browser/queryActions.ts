@@ -339,7 +339,7 @@ export class ActualQueryPlanAction extends QueryTaskbarAction {
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService
 	) {
 		super(connectionManagementService, editor, ActualQueryPlanAction.ID, ActualQueryPlanAction.EnabledClass);
-		this.label = nls.localize('actualQueryPlan', "Actual");
+		this.label = nls.localize('actualQueryPlan', "Actual Plan");
 	}
 
 	public override async run(): Promise<void> {

@@ -244,12 +244,13 @@ export class QueryEditor extends EditorPane {
 		if (stateChangeEvent.connectingChange) {
 			this._runQueryAction.enabled = !this.input.state.connecting;
 			this._estimatedQueryPlanAction.enabled = !this.input.state.connecting;
-
+			this._actualQueryPlanAction.enabled = !this.input.state.connecting;
 		}
 
 		if (stateChangeEvent.executingChange) {
 			this._runQueryAction.enabled = !this.input.state.executing;
 			this._estimatedQueryPlanAction.enabled = !this.input.state.executing;
+			this._actualQueryPlanAction.enabled = !this.input.state.executing;
 			this._cancelQueryAction.enabled = this.input.state.executing;
 		}
 
@@ -322,6 +323,7 @@ export class QueryEditor extends EditorPane {
 			content.push(
 				{ element: Taskbar.createTaskbarSeparator() },
 				{ action: this._estimatedQueryPlanAction },
+				{ action: this._actualQueryPlanAction },
 				{ action: this._toggleSqlcmdMode },
 				{ action: this._exportAsNotebookAction }
 			);
