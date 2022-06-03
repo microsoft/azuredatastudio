@@ -299,7 +299,7 @@ export abstract class AbstractInstallAction extends ExtensionAction {
 			// {{SQL CARBON EDIT}}
 			// Prompt the user that the current ADS version is not compatible with the extension,
 			// return here as in this scenario it doesn't make sense for the user to download manually.
-			if (error && error.name === INSTALL_ERROR_INCOMPATIBLE) {
+			if (error && error.code === INSTALL_ERROR_INCOMPATIBLE) {
 				this.notificationService.error(error);
 				return undefined;
 			}
