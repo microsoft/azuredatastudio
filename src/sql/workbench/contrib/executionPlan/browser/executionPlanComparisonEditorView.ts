@@ -94,7 +94,7 @@ export class ExecutionPlanComparisonEditorView {
 	private _activeBottomPlanIndex: number = 0;
 	private _bottomPlanRecommendations: ExecutionPlanViewHeader;
 	private _bottomSimilarNode: Map<string, azdata.executionPlan.ExecutionGraphComparisonResult> = new Map();
-	private _currentRequestUuid: string;
+	private _latestRequestUuid: string;
 
 	private get _activeBottomPlanDiagram(): AzdataGraphView {
 		if (this.bottomPlanDiagrams.length > 0) {
@@ -398,11 +398,11 @@ export class ExecutionPlanComparisonEditorView {
 					this._topPlanDiagramModels[this._activeTopPlanIndex].graphFile.graphFileType = 'sqlplan';
 					this._bottomPlanDiagramModels[this._activeBottomPlanIndex].graphFile.graphFileType = 'sqlplan';
 
-					const semaphore = generateUuid();
-					this._currentRequestUuid = semaphore;
+					const currentRequestId = generateUuid();
+					this._latestRequestUuid = currentRequestId;
 					const result = await this._executionPlanService.compareExecutionPlanGraph(this._topPlanDiagramModels[this._activeTopPlanIndex].graphFile,
 						this._bottomPlanDiagramModels[this._activeBottomPlanIndex].graphFile);
-					if (semaphore !== this._currentRequestUuid) {
+					if (currentRequestId !== this._latestRequestUuid) {
 						return;
 					}
 					this.getSimilarSubtrees(result.firstComparisonResult);
