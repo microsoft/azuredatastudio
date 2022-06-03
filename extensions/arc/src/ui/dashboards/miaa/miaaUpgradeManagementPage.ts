@@ -36,7 +36,7 @@ export class MiaaUpgradeManagementPage extends DashboardPage {
 		return IconPathHelper.upgrade;
 	}
 	protected async refresh(): Promise<void> {
-		await Promise.resolve(this._controllerModel.refresh(false, this._controllerModel.info.resourceGroup, this._controllerModel.info.namespace));
+		await Promise.resolve(this._controllerModel.refresh(false, this._controllerModel.info.namespace));
 		this.handleTableUpdated();
 	}
 
@@ -160,7 +160,7 @@ export class MiaaUpgradeManagementPage extends DashboardPage {
 	private async getMiaaVersion(): Promise<string | undefined> {
 		try {
 			let miaaShowResult;
-			if (this._controllerModel.info.connectionMode === ConnectionMode.direct) {
+			if (this._controllerModel.info.connectionMode === ConnectionMode.direct || this._controllerModel.controllerConfig?.spec.settings.azure.connectionMode === ConnectionMode.direct) {
 				miaaShowResult = await this._azApi.az.sql.miarc.show(
 					this._miaaModel.info.name,
 					{
@@ -289,7 +289,7 @@ export class MiaaUpgradeManagementPage extends DashboardPage {
 								}
 
 								try {
-									await this._controllerModel.refresh(false, this._controllerModel.info.resourceGroup, this._controllerModel.info.namespace);
+									await this._controllerModel.refresh(false, this._controllerModel.info.namespace);
 								} catch (error) {
 									vscode.window.showErrorMessage(loc.refreshFailed(error));
 								}
