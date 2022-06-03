@@ -295,7 +295,7 @@ class MessagesTab implements IPanelTab {
 }
 
 /**
- * Editor that hosts 2 sub-editors: A TextResourceEditor for SQL file editing, and a QueryResultsEditor
+ * Editor that hosts 2 sub-editors: A TextResourceEditor for SQL file editing, and a Query Results Panel
  * for viewing and editing query results. This editor is based off SideBySideEditor.
  */
 export class QueryEditor extends EditorPane {
@@ -304,8 +304,6 @@ export class QueryEditor extends EditorPane {
 	public static LABEL = localize('queryEditor.name', "Query Editor");
 
 	private dimension: DOM.Dimension = new DOM.Dimension(0, 0);
-
-	//private resultsEditor: QueryResultsEditor;
 
 	private resultsEditorContainer: HTMLElement;
 

@@ -37,7 +37,7 @@ export class ResultsViewState {
 }
 
 /**
- * Input for the QueryResultsEditor. This input helps with logic for the viewing and editing of
+ * Input for the QueryEditor results. This input helps with logic for the viewing and editing of
  * data in the results grid.
  */
 export class QueryResultsInput extends EditorInput {

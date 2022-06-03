@@ -118,7 +118,7 @@ export class QueryEditorState extends Disposable {
 }
 
 /**
- * Input for the QueryEditor. This input is simply a wrapper around a QueryResultsInput for the QueryResultsEditor
+ * Input for the QueryEditor. This input is simply a wrapper around a QueryResultsInput for the QueryEditor
  * and a UntitledEditorInput for the SQL File Editor.
  */
 export abstract class QueryEditorInput extends EditorInput implements IConnectableInput, IDisposable {

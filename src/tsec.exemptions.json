@@ -44,7 +44,6 @@
 		"sql/workbench/contrib/query/browser/messagePanel.ts",
 		"sql/base/browser/ui/table/table.ts",
 		"sql/base/browser/ui/table/highPerf/tableWidget.ts",
-		"sql/workbench/contrib/query/browser/queryResultsEditor.ts",
 		"sql/workbench/services/objectExplorer/browser/iconRenderer.ts",
 		"sql/workbench/services/resourceProvider/browser/firewallRuleDialog.ts",
 		"sql/workbench/services/notebook/browser/outputs/renderers.ts",

@@ -14,8 +14,6 @@ import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/co
 import { ContextKeyExpr, ContextKeyEqualsExpr } from 'vs/platform/contextkey/common/contextkey';
 
 import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
-import { QueryResultsEditor } from 'sql/workbench/contrib/query/browser/queryResultsEditor';
-import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
 import * as queryContext from 'sql/workbench/contrib/query/common/queryContext';
 import {
 	RunQueryKeyboardAction, RunCurrentQueryKeyboardAction, CancelQueryKeyboardAction, RefreshIntellisenseKeyboardAction, ToggleQueryResultsKeyboardAction,
@@ -60,9 +58,6 @@ Registry.as<IEditorFactoryRegistry>(EditorExtensions.EditorFactory)
 
 Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations)
 	.registerLanguageAssociation(QueryEditorLanguageAssociation.languages, QueryEditorLanguageAssociation, QueryEditorLanguageAssociation.isDefault);
-
-Registry.as<IEditorPaneRegistry>(EditorExtensions.EditorPane)
-	.registerEditorPane(EditorPaneDescriptor.create(QueryResultsEditor, QueryResultsEditor.ID, localize('queryResultsEditor.name', "Query Results")), [new SyncDescriptor(QueryResultsInput)]);
 
 Registry.as<IEditorPaneRegistry>(EditorExtensions.EditorPane)
 	.registerEditorPane(EditorPaneDescriptor.create(QueryEditor, QueryEditor.ID, QueryEditor.LABEL), [new SyncDescriptor(FileQueryEditorInput), new SyncDescriptor(UntitledQueryEditorInput)]);
