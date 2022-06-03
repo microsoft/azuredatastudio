@@ -29,8 +29,8 @@ export class ConnectionService {
 	constructor(private _outputChannel: vscode.OutputChannel) {
 	}
 
-	private DefaultSqlRetryTimeoutInSec: number = 10;
-	private DefaultSqlNumberOfRetries: number = 3;
+	private defaultSqlRetryTimeoutInSec: number = 10;
+	private defaultSqlNumberOfRetries: number = 3;
 
 	/**
 	 * Connects to a database
@@ -168,7 +168,7 @@ export class ConnectionService {
 			this.validateConnection,
 			this.formatConnectionResult,
 			this._outputChannel,
-			this.DefaultSqlNumberOfRetries, profile.connectionRetryTimeout || this.DefaultSqlRetryTimeoutInSec);
+			this.defaultSqlNumberOfRetries, profile.connectionRetryTimeout || this.defaultSqlRetryTimeoutInSec);
 
 		if (connection) {
 			const connectionResult = <ConnectionResult>connection;
