@@ -404,7 +404,7 @@ const queryEditorConfiguration: IConfigurationNode = {
 		},
 		'queryEditor.results.showResultsInSeparateTab': {
 			'type': 'boolean',
-			'description': localize('queryEditor.results.showResultsInSeparateTab', "Show results and messages to their own tabs separate from text \n(Setting requires closing all editors and restart)"),
+			'description': localize('queryEditor.results.showResultsInSeparateTab', "Show results and messages to their own tabs separate from text \n(Setting requires a restart to take effect)"),
 			'default': false
 		},
 		'queryEditor.results.switchToResultsTab': {
