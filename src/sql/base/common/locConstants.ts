@@ -34,7 +34,7 @@ export function extensionsActionsInstallExtensionCompletedAndReloadRequired(exte
 export function extensionsActionsReinstallActionSuccessReload(extension: string): string { return localize('ReinstallAction.successReload', "Please reload Azure Data Studio to complete reinstalling the extension {0}.", extension); }
 export const extensionsViewletRecommendedExtensions = localize('recommendedExtensions', "Marketplace");
 export const extensionsViewsScenarioTypeUndefined = localize('scenarioTypeUndefined', 'The scenario type for extension recommendations must be provided.');
-export function extensionsWorkbenchServiceIncompatible(extension: string, version: string) { return localize('incompatible', "Unable to install extension '{0}' as it is not compatible with Azure Data Studio '{1}'.", extension, version); }
+export function extensionsWorkbenchServiceIncompatible(extension: string, version: string, requiredVersion: string) { return localize('incompatible', "Unable to install extension '{0}' as it is not compatible with Azure Data Studio '{1}'. Update to Azure Data Studio {3} to install the extension", extension, version, requiredVersion); }
 export const fileActionsContributionNewQuery = localize('newQuery', "New Query");
 export const fileActionsContributionMiNewQuery = localize({ key: 'miNewQuery', comment: ['&& denotes a mnemonic'] }, "New &&Query");
 export const fileActionsContributionMiNewNotebook = localize({ key: 'miNewNotebook', comment: ['&& denotes a mnemonic'] }, "&&New Notebook");

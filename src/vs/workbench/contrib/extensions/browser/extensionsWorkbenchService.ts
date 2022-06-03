@@ -1099,9 +1099,9 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		}
 
 		return this.galleryService.getCompatibleExtension(extension.gallery.identifier, version)
-			.then(gallery => {
+			.then(async (gallery) => {
 				if (!gallery) {
-					return Promise.reject(new Error(locConstants.extensionsWorkbenchServiceIncompatible(extension.gallery!.identifier.id, version))); // {{SQL CARBON EDIT}} Change vscode to ads
+					return Promise.reject(new Error(locConstants.extensionsWorkbenchServiceIncompatible(extension.gallery!.identifier.id, version, (await extension.getManifest(undefined)).engines.azdata))); // {{SQL CARBON EDIT}} Change vscode to ads
 				}
 				return this.installWithProgress(async () => {
 					const installed = await this.installFromGallery(extension, gallery);
