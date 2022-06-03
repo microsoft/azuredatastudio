@@ -612,10 +612,12 @@ class ToggleOrientation extends Action {
 class PropertiesAction extends Action {
 	public static ID = 'epCompare.comparePropertiesAction';
 	public static LABEL = localize('epCompare.comparePropertiesAction', "Properties");
+
 	constructor() {
 		super(PropertiesAction.ID, PropertiesAction.LABEL, openPropertiesIconClassNames);
 		this.enabled = false;
 	}
+
 	public override async run(context: ExecutionPlanComparisonEditorView): Promise<void> {
 		context.togglePropertiesView();
 	}
