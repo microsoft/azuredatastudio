@@ -529,6 +529,7 @@ export class ExecutionPlanComparisonEditorView {
 class AddExecutionPlanAction extends Action {
 	public static ID = 'ep.AddExecutionPlan';
 	public static LABEL = localize('addExecutionPlanLabel', "Add execution plan");
+
 	constructor() {
 		super(AddExecutionPlanAction.ID, AddExecutionPlanAction.LABEL, addIconClassName);
 	}
