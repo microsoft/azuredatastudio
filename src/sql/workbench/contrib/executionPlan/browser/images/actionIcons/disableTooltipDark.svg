@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+	<style>
+		.st0 {
+			opacity: 0
+		}
+
+		.st0,
+		.st1 {
+			fill: #0000
+		}
+
+		.st2 {
+			fill: #fff
+		}
+
+		.st3 {
+			fill: #0000
+		}
+		.icon-vs-action-red {
+			fill: #a1260d
+		}
+	</style>
+	<g id="outline">
+		<path class="st0" d="M0 0h16v16H0z" />
+		<path class="st1" d="M6.771 5L1.382 0H0v10.825l2.337-2.566L3 9.755V16h13V5z" />
+	</g>
+	<g id="icon_x5F_bg">
+		<path class="st2"
+			d="M8.4 12h2.2l.4 1h1l-2-5H9l-2 5h1l.4-1zm1.1-2.75l.7 1.75H8.8l.7-1.75zM4.955 8.463L3.869 5.998h2.518L1 1v7.231l1.629-1.789 1.137 2.562z" />
+		<path class="st2" d="M7.849 6l1.077 1H14v7H5V9.551l-1 .454V15h11V6z" />
+	</g>
+	<g id="icon_x5F_fg">
+		<path class="st3" d="M9.5 9.25L8.8 11h1.4z" />
+		<path class="st3"
+			d="M8.926 7l.008.008H5.402l.866 1.966L5 9.551V14h9V7H8.926zM11 13l-.4-1H8.4L8 13H7l2-5h1l2 5h-1z" />
+	</g>
+	<path class="icon-vs-action-red"
+	d="M13.03 12.03L15 14l-1.061 1.061-1.97-1.97L10 15.061 8.939 14l1.97-1.97-1.97-1.97L10 9l1.97 1.97L13.939 9 15 10.061l-1.97 1.969z"
+	id="colorAction" />
+</svg>
+
+

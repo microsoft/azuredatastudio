@@ -244,8 +244,24 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
+.vs-dark .eps-container .ep-save-plan-icon,
+.hc-black .eps-container .ep-save-plan-icon {
+	background-image: url(../images/actionIcons/saveDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
 .eps-container .ep-open-properties-icon {
 	background-image: url(../images/actionIcons/openProperties.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.vs-dark .eps-container .ep-open-properties-icon,
+.hc-black .eps-container .ep-open-properties-icon {
+	background-image: url(../images/actionIcons/openPropertiesDark.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
@@ -258,6 +274,14 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
+.vs-dark .eps-container .ep-open-query-icon,
+.hc-black .eps-container .ep-open-query-icon {
+	background-image: url(../images/actionIcons/openQueryDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
 .eps-container .ep-open-plan-file-icon {
 	background-image: url(../images/actionIcons/openPlanFile.svg);
 	background-size: 16px 16px;
@@ -265,8 +289,25 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
+.vs-dark .eps-container .ep-open-plan-file-icon,
+.hc-black .eps-container .ep-open-plan-file-icon {
+	background-image: url(../images/actionIcons/openPlanFileDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+
 .eps-container .ep-search-icon {
 	background-image: url(../images/actionIcons/search.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.vs-dark .eps-container .ep-search-icon,
+.hc-black .eps-container .ep-search-icon {
+	background-image: url(../images/actionIcons/searchDark.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
@@ -279,8 +320,24 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
+.vs-dark .eps-container .ep-sort-alphabetically-icon,
+.hc-black .eps-container .ep-sort-alphabetically-icon {
+	background-image: url(../images/actionIcons/sortAlphabeticallyDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
 .eps-container .ep-sort-reverse-alphabetically-icon {
 	background-image: url(../images/actionIcons/sortReverseAlphabetically.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.vs-dark .eps-container .ep-sort-reverse-alphabetically-icon,
+.hc-black .eps-container .ep-sort-reverse-alphabetically-icon {
+	background-image: url(../images/actionIcons/sortReverseAlphabeticallyDark.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
@@ -293,8 +350,24 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
+.vs-dark .eps-container .ep-sort-display-order-icon,
+.hc-black .eps-container .ep-sort-display-order-icon {
+	background-image: url(../images/actionIcons/sortByDisplayOrderDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
 .eps-container .ep-zoom-in-icon {
 	background-image: url(../images/actionIcons/zoomIn.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.vs-dark .eps-container .ep-zoom-in-icon,
+.hc-black .eps-container .ep-zoom-in-icon {
+	background-image: url(../images/actionIcons/zoomInDark.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
@@ -307,8 +380,24 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
+.vs-dark .eps-container .ep-zoom-out-icon,
+.hc-black .eps-container .ep-zoom-out-icon {
+	background-image: url(../images/actionIcons/zoomOutDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
 .eps-container .ep-custom-zoom-icon {
 	background-image: url(../images/actionIcons/customZoom.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.vs-dark .eps-container .ep-custom-zoom-icon,
+.hc-black .eps-container .ep-custom-zoom-icon {
+	background-image: url(../images/actionIcons/customZoomDark.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
@@ -321,8 +410,23 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
+.vs-dark .eps-container .ep-zoom-to-fit-icon,
+.hc-black .eps-container .ep-zoom-to-fit-icon {
+	background-image: url(../images/actionIcons/zoomToFitDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
 .eps-container .ep-zoom-icon {
 	background-image: url(../images/actionIcons/zoom.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.eps-container .ep-zoom-icon {
+	background-image: url(../images/actionIcons/zoomDark.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
@@ -335,6 +439,14 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
+.vs-dark .eps-container .ep-enable-tooltip-icon,
+.hc-black .eps-container .ep-enable-tooltip-icon {
+	background-image: url(../images/actionIcons/enableTooltipDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
 .eps-container .ep-disable-tooltip-icon {
 	background-image: url(../images/actionIcons/disableTooltip.svg);
 	background-size: 16px 16px;
@@ -342,8 +454,24 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
+.vs-dark .eps-container .ep-disable-tooltip-icon,
+.hc-black .eps-container .ep-disable-tooltip-icon {
+	background-image: url(../images/actionIcons/disableTooltipDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
 .eps-container .ep-add-icon {
 	background-image: url(../images/actionIcons/add.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.vs-dark .eps-container .ep-add-icon,
+.hc-black .eps-container .ep-add-icon {
+	background-image: url(../images/actionIcons/addDark.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
@@ -363,8 +491,24 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
+.vs-dark .ep-split-screen-horizontally-icon,
+.hc-black .ep-split-screen-horizontally-icon {
+	background-image: url(../images/actionIcons/splitScreenHorizontallyDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
 .eps-container .ep-split-screen-vertically-icon {
 	background-image: url(../images/actionIcons/splitScreenVertically.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.vs-dark .eps-container .ep-split-screen-vertically-icon,
+.hc-black .eps-container .ep-split-screen-vertically-icon {
+	background-image: url(../images/actionIcons/splitScreenVerticallyDark.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
@@ -377,11 +521,73 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
+.vs-dark .eps-container .ep-reset-zoom-icon,
+.hc-black .eps-container .ep-reset-zoom-icon {
+	background-image: url(../images/actionIcons/resetZoomDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+
 .eps-container .ep-plan-compare-icon {
 	background-image: url(../images/actionIcons/execution-plan-compare.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
+}
+
+.vs-dark .eps-container .ep-plan-compare-icon,
+.hc-black .eps-container .ep-plan-compare-icon {
+	background-image: url(../images/actionIcons/execution-plan-compareDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.eps-container .ep-properties-different {
+	background-image: url(../images/actionIcons/differentValues.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+	width: 16px;
+	height: auto;
+}
+
+.eps-container .ep-properties-red-down-arrow {
+	background-image: url(../images/actionIcons/downArrowWorse.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+	width: 16px;
+	height: auto;
+}
+
+.eps-container .ep-properties-green-down-arrow {
+	background-image: url(../images/actionIcons/downArrowBetter.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+	width: 16px;
+	height: auto;
+}
+
+.eps-container .ep-properties-red-up-arrow {
+	background-image: url(../images/actionIcons/upArrowWorse.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+	width: 16px;
+	height: auto;
+}
+
+.eps-container .ep-properties-green-down-arrow {
+	background-image: url(../images/actionIcons/downArrowBetter.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+	width: 16px;
+	height: auto;
 }
 
 .eps-container .comparison-editor {
@@ -521,4 +727,16 @@ However we always want it to be the width of the container it is resizing.
 
 .eps-container .comparison-editor .properties .table-container {
 	overflow: hidden;
+}
+
+.eps-container .comparison-editor .editor-toolbar .action-item .codicon.action-label {
+	padding-left: 20px;
+}
+
+.eps-container .comparison-editor .parent-row-styling {
+	font-weight: bold;
+}
+
+.eps-container .comparison-editor .default-bottom-column-cell-styling {
+	padding-left: 0px;
 }

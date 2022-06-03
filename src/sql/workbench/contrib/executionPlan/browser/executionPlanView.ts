@@ -36,6 +36,7 @@ import { AzdataGraphView } from 'sql/workbench/contrib/executionPlan/browser/azd
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ExecutionPlanComparisonInput } from 'sql/workbench/contrib/executionPlan/browser/compareExecutionPlanInput';
+import { ExecutionPlanFileView } from 'sql/workbench/contrib/executionPlan/browser/executionPlanFileView';
 
 export class ExecutionPlanView implements ISashLayoutProvider {
 
@@ -70,6 +71,7 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 	constructor(
 		private _parent: HTMLElement,
 		private _graphIndex: number,
+		private _executionPlanFileView: ExecutionPlanFileView,
 		@IInstantiationService public readonly _instantiationService: IInstantiationService,
 		@IThemeService private readonly _themeService: IThemeService,
 		@IContextViewService public readonly contextViewService: IContextViewService,
@@ -285,7 +287,8 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 
 	public compareCurrentExecutionPlan() {
 		this._editorService.openEditor(this._instantiationService.createInstance(ExecutionPlanComparisonInput, {
-			topExecutionPlan: [this._model]
+			topExecutionPlan: this._executionPlanFileView.graphs,
+			topPlanIndex: this._graphIndex - 1
 		}), {
 			pinned: true
 		});
