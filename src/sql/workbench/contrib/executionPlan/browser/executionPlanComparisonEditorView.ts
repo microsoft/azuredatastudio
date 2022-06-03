@@ -534,9 +534,7 @@ class AddExecutionPlanAction extends Action {
 	}
 
 	public override async run(context: ExecutionPlanComparisonEditorView): Promise<void> {
-		this.telemetryService
-			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.AddExecutionPlan)
-			.send();
+		this.telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.AddExecutionPlan);
 
 		await context.openAndAddExecutionPlanFile();
 	}
