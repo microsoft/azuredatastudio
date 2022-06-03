@@ -1042,7 +1042,7 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		// The check is added here because we want to fail fast instead of downloading the VSIX and then fail.
 		if (gallery.properties.engine && (!isEngineValid(gallery.properties.engine, this.productService.vscodeVersion, this.productService.date)
 			|| (gallery.properties.azDataEngine && !isEngineValid(gallery.properties.azDataEngine, this.productService.version, this.productService.date)))) {
-			const error = new ExtensionManagementError(nls.localize('incompatible2', "Unable to install version '{2}' of extension '{0}' as it is not compatible with Azure Data Studio '{1}'. Update to Azure Data Studio {3} to install the extension.", extension.gallery!.identifier.id, this.productService.version, gallery.version, gallery.properties.azDataEngine), INSTALL_ERROR_INCOMPATIBLE);
+			const error = new ExtensionManagementError(locConstants.extensionsWorkbenchServiceIncompatible(extension.gallery!.identifier.id, gallery.version, this.productService.version, gallery.properties.azDataEngine), INSTALL_ERROR_INCOMPATIBLE);
 			return Promise.reject(error);
 		}
 
@@ -1101,7 +1101,7 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		return this.galleryService.getCompatibleExtension(extension.gallery.identifier, version)
 			.then(async (gallery) => {
 				if (!gallery) {
-					return Promise.reject(new Error(locConstants.extensionsWorkbenchServiceIncompatible(extension.gallery!.identifier.id, version, (await extension.getManifest(undefined)).engines.azdata))); // {{SQL CARBON EDIT}} Change vscode to ads
+					return Promise.reject(new Error(locConstants.extensionsWorkbenchServiceIncompatible(extension.gallery!.identifier.id, extension.gallery.version, version, (await extension.getManifest(undefined)).engines.azdata))); // {{SQL CARBON EDIT}} Change vscode to ads
 				}
 				return this.installWithProgress(async () => {
 					const installed = await this.installFromGallery(extension, gallery);

@@ -115,7 +115,7 @@ export class ExtensionManagementService extends AbstractExtensionManagementServi
 			throw new Error(nls.localize('incompatible', "Unable to install extension '{0}' as it is not compatible with the current VS Code engine version '{1}'.", id, product.vscodeVersion));
 		}
 		if (manifest.engines?.azdata && !isEngineValid(manifest.engines.azdata, product.version, product.date)) {
-			throw new Error(extensionsWorkbenchServiceIncompatible(id, product.version, manifest.engines.azdata));
+			throw new Error(extensionsWorkbenchServiceIncompatible(id, manifest.version, product.version, manifest.engines.azdata));
 		}
 		/*
 		if (manifest.engines && manifest.engines.vscode && !isEngineValid(manifest.engines.vscode, product.version, product.date)) {
