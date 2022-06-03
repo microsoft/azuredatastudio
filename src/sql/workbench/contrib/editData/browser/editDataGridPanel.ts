@@ -59,8 +59,9 @@ export class EditDataGridPanel extends GridParentComponent {
 	private firstRender = true;
 	private firstLoad = true;
 	private enableEditing = true;
-	// Current selected cell state
+	// Current focused cell state
 	private currentCell: { row: number, column: number, isEditable: boolean, isDirty: boolean };
+	private justClickedCell: { row: number, column: number };
 	private currentEditCellValue: string;
 	private newRowVisible: boolean;
 	private removingNewRow: boolean;
@@ -303,10 +304,17 @@ export class EditDataGridPanel extends GridParentComponent {
 			return;
 		}
 
+		// get the cell we have just immediately clicked if its different as the active cell will be reset to the previous cell by slickgrid if rerendered.
+		if (row !== this.currentCell.row || column !== this.currentCell.column) {
+			this.justClickedCell = { row, column };
+		}
+
 		// Skip processing if the cell hasn't moved (eg, we reset focus to the previous cell after a failed update)
 		if (this.currentCell.row === row && this.currentCell.column === column && this.currentCell.isDirty === false) {
 			return;
 		}
+
+		this.disableEnableSelect(false, column);
 
 		let cellSelectTasks: Promise<void> = this.submitCurrentCellChange(
 			(result: EditUpdateCellResult) => {
@@ -317,6 +325,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			},
 			(error) => {
 				// Cell update failed, jump back to the last cell we were on
+				this.disableEnableSelect(true, column);
 				self.focusCell(self.currentCell.row, self.currentCell.column, true);
 				return Promise.reject(null);
 			});
@@ -332,6 +341,7 @@ export class EditDataGridPanel extends GridParentComponent {
 					return Promise.resolve();
 				}, error => {
 					// Committing failed, jump back to the last selected cell
+					this.disableEnableSelect(true, column);
 					self.focusCell(self.currentCell.row, self.currentCell.column);
 					return Promise.reject(null);
 				});
@@ -340,11 +350,23 @@ export class EditDataGridPanel extends GridParentComponent {
 
 		// At the end of a successful cell select, update the currently selected cell
 		cellSelectTasks = cellSelectTasks.then(() => {
+			this.disableEnableSelect(true, column);
 			self.setCurrentCell(row, column);
+			self.focusCell(row, column);
 		});
 
 		// Cap off any failed promises, since they'll be handled
-		cellSelectTasks.catch(() => { });
+		cellSelectTasks.catch(() => {
+		});
+	}
+
+	// Disables editing the column temporarily when clicking on a cell.
+	private disableEnableSelect(state: boolean, column: number) {
+		let columnArray = this.table.grid.getColumns();
+		let newColumn = columnArray[(column - 1)];
+		newColumn.focusable = state;
+		columnArray[(column - 1)] = newColumn;
+		this.table.grid.setColumns(columnArray);
 	}
 
 	handleComplete(self: EditDataGridPanel, event: any): void {
@@ -962,9 +984,20 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	handleChanges(changes: { [propName: string]: any }): void {
 		let columnDefinitionChanges = changes['columnDefinitions'];
-		let activeCell = this.table ? this.table.grid.getActiveCell() : undefined;
+		let activeCell = undefined;
 		let hasGridStructureChanges = false;
 		let wasEditing = this.table ? !!this.table.grid.getCellEditor() : false;
+
+		if (this.table) {
+			// Get the active cell we have just clicked to be the new active cell (This is done due to limitations with slickgrid).
+			if (this.justClickedCell) {
+				activeCell = { row: this.justClickedCell.row, cell: this.justClickedCell.column };
+			}
+			else {
+				// Get the last selected cell as the active cell as a backup.
+				activeCell = this.table.grid.getActiveCell();
+			}
+		}
 
 		if (columnDefinitionChanges && !equals(columnDefinitionChanges.previousValue, columnDefinitionChanges.currentValue)) {
 			if (!this.table) {
