@@ -24,6 +24,21 @@
 [linux-rpm]: https://go.microsoft.com/fwlink/?linkid=2193238
 [linux-deb]: https://go.microsoft.com/fwlink/?linkid=2193327
 
+## Version 1.36.2
+* Release date: May 20, 2022
+* Release status: General Availability
+## What's new in this version
+- Fix connectivity issue with PBI data source
+- Fix query plan zoom and icon issues
+- Issues fixed in this release https://github.com/microsoft/azuredatastudio/milestone/89?closed=1
+
+## Version 1.36.1
+* Release date: April 22, 2022
+* Release status: General Availability
+## What's new in this version
+* April Hotfix addressing these issues https://github.com/microsoft/azuredatastudio/milestone/88?closed=1.
+* Hotfix RCA - https://github.com/microsoft/azuredatastudio/wiki/ADS-April-2022-Hotfix-RCA
+
 ## Version 1.36.0
 * Release date: April 20, 2022
 * Release status: General Availability
