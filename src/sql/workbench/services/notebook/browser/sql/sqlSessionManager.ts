@@ -216,6 +216,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	private _executionCount: number = 0;
 	private _magicToExecutorMap = new Map<string, ExternalScriptMagic>();
 	private _connectionPath: string;
+	private _newConnection: boolean;
 
 	constructor(private _path: string,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
@@ -308,7 +309,6 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		return info;
 	}
 
-	private _newConnection: boolean;
 	public set connection(conn: IConnectionProfile) {
 		this._currentConnection = conn;
 		this._currentConnectionProfile = new ConnectionProfile(this._capabilitiesService, this._currentConnection);
