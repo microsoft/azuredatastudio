@@ -376,12 +376,14 @@ export class ExecutionPlanComparisonEditorView {
 			this._bottomPlanDropdown.select(preSelectIndex);
 			this._propertiesView.setBottomElement(executionPlanGraphs[0].root);
 			this._addExecutionPlanAction.enabled = false;
-			await this.getSkeletonNodes();
 		}
 		this.refreshSplitView();
 	}
 
 	private async getSkeletonNodes(): Promise<void> {
+		if (!this._activeBottomPlanDiagram) {
+			return;
+		}
 		this._progressService.withProgress(
 			{
 				location: ProgressLocation.Notification,
