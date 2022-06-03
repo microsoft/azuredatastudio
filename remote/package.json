@@ -30,7 +30,7 @@
     "jquery": "3.5.0",
     "jschardet": "3.0.0",
     "mark.js": "^8.11.1",
-    "minimist": "^1.2.5",
+    "minimist": "^1.2.6",
     "native-watchdog": "1.3.0",
     "ng2-charts": "^1.6.0",
     "node-pty": "0.11.0-beta7",
