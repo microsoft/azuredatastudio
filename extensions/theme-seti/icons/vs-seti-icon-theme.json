@@ -1553,6 +1553,12 @@
 		},
 		"table-graphedge": {
 			"iconPath": "./images/table-graphedge.svg"
+		},
+		"execution-plan": {
+			"iconPath": "./images/execution-plan.svg"
+		},
+		"execution-plan-compare": {
+			"iconPath": "./images/execution-plan-compare.svg"
 		}
 	},
 	"file": "_default",
@@ -1865,7 +1871,9 @@
 		"table-basic": "table-basic",
 		"table-temporal": "table-temporal",
 		"table-graphnode": "table-graphnode",
-		"table-graphedge": "table-graphedge"
+		"table-graphedge": "table-graphedge",
+		"execution-plan": "execution-plan",
+		"execution-plan-compare": "execution-plan-compare"
 	},
 	"languageIds": {
 		"bat": "_windows",
