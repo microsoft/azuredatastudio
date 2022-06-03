@@ -620,19 +620,10 @@ export async function getVirtualMachinesDropdownValues(virtualMachines: azure.Sq
 	if (location && resourceGroup) {
 		virtualMachines.forEach((virtualMachine) => {
 			if (virtualMachine.location.toLowerCase() === location.name.toLowerCase() && azure.getResourceGroupFromId(virtualMachine.id).toLowerCase() === resourceGroup.name.toLowerCase()) {
-				let virtualMachineValue: CategoryValue;
-				if (virtualMachine.properties.provisioningState === ProvisioningState.Succeeded) {
-					virtualMachineValue = {
-						name: virtualMachine.id,
-						displayName: virtualMachine.name
-					};
-				} else {
-					virtualMachineValue = {
-						name: virtualMachine.id,
-						displayName: constants.UNAVAILABLE_TARGET_PREFIX(virtualMachine.name)
-					};
-				}
-				virtualMachineValues.push(virtualMachineValue);
+				virtualMachineValues.push({
+					name: virtualMachine.id,
+					displayName: virtualMachine.name
+				});
 			}
 		});
 	}

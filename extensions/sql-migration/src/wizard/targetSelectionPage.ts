@@ -14,7 +14,6 @@ import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import * as utils from '../api/utils';
 import { azureResource } from 'azurecore';
 import { SqlVMServer } from '../api/azure';
-import { ProvisioningState } from '../models/migrationLocalStorage';
 
 export class TargetSelectionPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -404,7 +403,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 
 				switch (this.migrationStateModel._targetType) {
 					case MigrationTargetType.SQLVM:
-						const selectedVm = this.migrationStateModel._targetSqlVirtualMachines.find(vm => vm.name === value || constants.UNAVAILABLE_TARGET_PREFIX(vm.name) === value);
+						const selectedVm = this.migrationStateModel._targetSqlVirtualMachines.find(vm => vm.name === value);
 						if (selectedVm) {
 							this.migrationStateModel._targetServerInstance = utils.deepClone(selectedVm)! as SqlVMServer;
 						}
