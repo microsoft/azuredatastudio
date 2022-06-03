@@ -2,7 +2,7 @@
   "name": "sql-bindings",
   "displayName": "%displayName%",
   "description": "%description%",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "publisher": "Microsoft",
   "preview": true,
   "engines": {
@@ -64,8 +64,10 @@
   },
   "dependencies": {
     "@microsoft/ads-extension-telemetry": "^1.1.5",
+    "@microsoft/vscode-azext-utils": "^0.1.1",
     "fast-glob": "^3.2.7",
     "promisify-child-process": "^3.1.1",
+    "uuid": "^8.3.2",
     "vscode-nls": "^4.1.2",
     "vscode-languageclient": "5.2.1"
   },
@@ -75,8 +77,8 @@
     "should": "^13.2.1",
     "sinon": "^9.0.2",
     "typemoq": "^2.1.0",
-    "@microsoft/vscodetestcover": "^1.2.0",
-    "mocha": "^5.2.0",
+    "@microsoft/vscodetestcover": "^1.2.1",
+    "mocha": "^7.1.1",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7"
   }

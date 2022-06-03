@@ -217,7 +217,7 @@ export abstract class ModelViewBase extends ViewBase {
 	 * Stores the name of the table as recent config table for importing models
 	 */
 	public async storeImportConfigTable(): Promise<void> {
-		await this.sendRequest(StoreImportTableEventName, this.importTable);
+		this.sendRequest(StoreImportTableEventName, this.importTable);
 	}
 
 	/**

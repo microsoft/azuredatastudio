@@ -174,7 +174,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 		}).component();
 		this._chooseTargetComponent = await this.createChooseTargetComponent(view);
-		const _azureRecommendationsContainer = await this.createAzureRecommendationContainer(view);
+		const _azureRecommendationsContainer = this.createAzureRecommendationContainer(view);
 		this.assessmentGroupContainer = await this.createViewAssessmentsContainer();
 		this._formContainer = view.modelBuilder.formContainer().withFormItems(
 			[
@@ -466,7 +466,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				}
 			} catch (e) {
 				errors.push(constants.SKU_RECOMMENDATION_ASSESSMENT_UNEXPECTED_ERROR(serverName, e));
-				logError(TelemetryViews.MigrationWizardTaSkuRecommendationPage, 'SkuRecommendationUnexpectedError', e);
+				logError(TelemetryViews.MigrationWizardSkuRecommendationPage, 'SkuRecommendationUnexpectedError', e);
 			} finally {
 				this.migrationStateModel._runAssessments = errors.length > 0;
 				if (errors.length > 0) {

@@ -15,6 +15,7 @@ import { ControllerModel } from '../../models/controllerModel';
 export class UpgradeController extends InitializingComponent {
 	protected modelBuilder!: azdata.ModelBuilder;
 	private pitrSettings: UpgradeModel = [];
+	private upgradeControllerDialogName = 'UpgradeControllerDialog';
 
 	protected _completionPromise = new Deferred<UpgradeModel | undefined>();
 	protected disposables: vscode.Disposable[] = [];
@@ -23,7 +24,7 @@ export class UpgradeController extends InitializingComponent {
 	}
 
 	public showDialog(dialogTitle: string): azdata.window.Dialog {
-		const dialog = azdata.window.createModelViewDialog(dialogTitle, dialogTitle, 'narrow', 'flyout');
+		const dialog = azdata.window.createModelViewDialog(dialogTitle, this.upgradeControllerDialogName, 'narrow', 'flyout');
 		dialog.cancelButton.onClick(() => this.handleCancel());
 		dialog.registerContent(async view => {
 			this.modelBuilder = view.modelBuilder;
@@ -32,7 +33,7 @@ export class UpgradeController extends InitializingComponent {
 				CSSStyles: { ...cssStyles.title, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' },
 			}).component();
 			const areYouSureInfo = this.modelBuilder.text().withProps({
-				value: loc.upgradeDialog,
+				value: loc.upgradeDialogController,
 				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'max-width': 'auto' }
 			}).component();
 			const upgradeDialog = this.modelBuilder.flexContainer().withLayout({ flexWrap: 'wrap' }).component();

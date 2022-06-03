@@ -7,6 +7,7 @@
 declare module 'sql-bindings' {
 
 	import * as vscode from 'vscode';
+	import { IConnectionInfo } from 'vscode-mssql';
 
 	export const enum extension {
 		name = 'Microsoft.sql-bindings',
@@ -28,21 +29,33 @@ declare module 'sql-bindings' {
 		addSqlBinding(bindingType: BindingType, filePath: string, functionName: string, objectName: string, connectionStringSetting: string): Promise<ResultStatus>;
 
 		/**
-		 * Prompts the user to select type of binding and returns result or undefined if the user cancelled out of the prompt
+		 * Prompts the user for information to create an Azure Function with SQL Binding
 		 */
-		promptForBindingType(): Promise<BindingType | undefined>;
+		createAzureFunction(): Promise<void>;
+
+		/**
+		 * Prompts the user to select type of binding and returns result or undefined if the user cancelled out of the prompt
+		 * @param funcName (Optional) Name of the function we are adding the SQL Binding to
+		 */
+		promptForBindingType(funcName?: string): Promise<BindingType | undefined>;
 
 		/**
 		 * Prompts the user to enter object name for the SQL query
 		 * @param bindingType Type of SQL Binding
+		 * @param connectionInfo (optional) connection info from the selected connection profile
+		 * if left undefined we prompt to manually enter the object name
+		 * @returns the object name from user's input or menu choice
 		 */
-		promptForObjectName(bindingType: BindingType): Promise<string | undefined>;
+		promptForObjectName(bindingType: BindingType, connectionInfo?: IConnectionInfo): Promise<string | undefined>;
 
 		/**
 		 * Prompts the user to enter connection setting and updates it from AF project
 		 * @param projectUri Azure Function project uri
-		 */
-		promptAndUpdateConnectionStringSetting(projectUri: vscode.Uri | undefined): Promise<string | undefined>;
+		 * @param connectionInfo (optional) connection info from the user to update the connection string,
+		 * if left undefined we prompt the user for the connection info
+		 * @returns connection string setting name to be used for the createFunction API
+ 		 */
+		promptAndUpdateConnectionStringSetting(projectUri: vscode.Uri | undefined, connectionInfo?: IConnectionInfo): Promise<IConnectionStringInfo | undefined>;
 
 		/**
 		 * Gets the names of the Azure Functions in the file
@@ -108,14 +121,34 @@ declare module 'sql-bindings' {
 		filePath: string;
 	}
 
+	export interface AzureFunction {
+		/**
+		 * The name of the function
+		 */
+		name: string;
+		/**
+		 * The route of the function if it has an HTTP trigger with a route specified
+		 */
+		route?: string | undefined;
+	}
+
 	/**
 	 * Result from a get Azure Functions request
 	 */
-	export interface GetAzureFunctionsResult extends ResultStatus {
+	export interface GetAzureFunctionsResult {
 		/**
-		 * Array of names of Azure Functions in the file
+		 * Array of Azure Functions in the file
+		 * Note : The string list response will eventually be deprecated and replaced completely with the AzureFunction list
 		 */
-		azureFunctions: string[];
+		azureFunctions: string[] | AzureFunction[];
+	}
+
+	/**
+	 * Result from promptAndUpdateConnectionStringSetting
+	 */
+	export interface IConnectionStringInfo {
+		connectionStringSettingName: string;
+		connectionInfo: IConnectionInfo | undefined;
 	}
 
 }

@@ -858,6 +858,24 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/mssql/dist/localizedConstants.mssql.failedToFindAccount" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Failed to find azure account {0} when executing token refresh]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[토큰 새로 고침을 실행할 때 Azure 계정 {0}을(를) 찾지 못했습니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/dist/localizedConstants.mssql.failedToFindTenants" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Failed to find tenant '{0}' in account '{1}' when refreshing security token]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[보안 토큰을 새로 고칠 때 '{1}' 계정에서 '{0}' 테넌트를 찾지 못했습니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/mssql/dist/localizedConstants.mssql.group" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Group]]></Val>
@@ -966,6 +984,24 @@
           <Prev Cat="Text">
             <Val><![CDATA[Sticky]]></Val>
           </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/dist/localizedConstants.mssql.tokenRefreshFailed" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[{0} AAD token refresh failed, please reconnect to enable {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0} AAD 토큰 새로 고침에 실패했습니다. {0}을(를) 활성화하려면 다시 연결하세요.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/dist/localizedConstants.mssql.tokenRefreshFailedNoSecurityToken" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Editor token refresh failed, autocompletion will be disabled until the editor is disconnected and reconnected]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[편집기 토큰 새로 고침에 실패했습니다. 편집기 연결을 끊고 다시 연결할 때까지 자동 완성이 비활성화됩니다.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2900,6 +2936,15 @@
           <Val><![CDATA[Number of minutes to retain log files for backend services. Default is 1 week.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[백 엔드 서비스의 로그 파일을 유지하는 시간(분)입니다. 기본값은 1주일입니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/package.mssql.parallelMessageProcessing" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[[Experimental]5D; Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Relaunch of ADS is required when the value is changed.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[[실험적]5D; SQL 도구 서비스에 대한 요청을 병렬로 처리할지 여부입니다. 모든 요청을 병렬로 처리할 때 발생할 수 있는 문제를 검색하기 위해 도입되었습니다. 기본값은 false입니다. 값을 변경하면 ADS를 다시 시작해야 합니다.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

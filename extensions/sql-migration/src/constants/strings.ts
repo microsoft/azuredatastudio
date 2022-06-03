@@ -246,17 +246,17 @@ export function AZURE_SQL_TARGET_PAGE_DESCRIPTION(targetInstance: string = 'inst
 
 // Managed Instance
 export const AZURE_SQL_DATABASE_MANAGED_INSTANCE = localize('sql.migration.azure.sql.database.managed.instance', "Azure SQL Managed Instance");
-export const NO_MANAGED_INSTANCE_FOUND = localize('sql.migration.no.managedInstance.found', "No managed instance found.");
+export const NO_MANAGED_INSTANCE_FOUND = localize('sql.migration.no.managedInstance.found', "No managed instances found.");
 export const INVALID_MANAGED_INSTANCE_ERROR = localize('sql.migration.invalid.managedInstance.error', "To continue, select a valid managed instance.");
-export function UNAVAILABLE_MANAGED_INSTANCE_PREFIX(miName: string): string {
-	return localize('sql.migration.unavailable.managedInstance', "(Unavailable) {0}", miName);
+export function UNAVAILABLE_TARGET_PREFIX(targetName: string): string {
+	return localize('sql.migration.unavailable.target', "(Unavailable) {0}", targetName);
 }
 
 
 // Virtual Machine
 export const AZURE_SQL_DATABASE_VIRTUAL_MACHINE = localize('sql.migration.azure.sql.database.virtual.machine', "SQL Server on Azure Virtual Machines");
 export const AZURE_SQL_DATABASE_VIRTUAL_MACHINE_SHORT = localize('sql.migration.azure.sql.database.virtual.machine.short', "SQL Server on Azure VM");
-export const NO_VIRTUAL_MACHINE_FOUND = localize('sql.migration.no.virtualMachine.found', "No virtual machine found.");
+export const NO_VIRTUAL_MACHINE_FOUND = localize('sql.migration.no.virtualMachine.found', "No virtual machines found.");
 export const INVALID_VIRTUAL_MACHINE_ERROR = localize('sql.migration.invalid.virtualMachine.error', "To continue, select a valid virtual machine.");
 
 // Azure SQL Database
@@ -264,9 +264,15 @@ export const AZURE_SQL_DATABASE = localize('sql.migration.azure.sql.database', "
 
 // Target info tooltip
 export const TARGET_SUBSCRIPTION_INFO = localize('sql.migration.sku.subscription', "Subscription name for your Azure SQL target");
-export const TARGET_LOCATION_INFO = localize('sql.migration.sku.location', "Azure region for your Azure SQL target");
-export const TARGET_RESOURCE_GROUP_INFO = localize('sql.migration.sku.resource_group', "Resource group for your Azure SQL target");
+export const TARGET_LOCATION_INFO = localize('sql.migration.sku.location', "Azure region for your Azure SQL target. Only regions that contain a target eligible for migration will be shown.");
+export const TARGET_RESOURCE_GROUP_INFO = localize('sql.migration.sku.resource_group', "Resource group for your Azure SQL target. Only resource groups that contain a target eligible for migration will be shown.");
 export const TARGET_RESOURCE_INFO = localize('sql.migration.sku.resource', "Your Azure SQL target resource name");
+
+// DMS tooltip
+export const DMS_SUBSCRIPTION_INFO = localize('sql.migration.dms.subscription', "Subscription name for your Azure Database Migration Service");
+export const DMS_LOCATION_INFO = localize('sql.migration.dms.location', "Azure region for your Azure Database Migration Service. Only regions that contain a service will be shown.");
+export const DMS_RESOURCE_GROUP_INFO = localize('sql.migration.dms.resource_group', "Resource group for your Azure SQL target. Only resource groups that contain a service will be shown.");
+export const DMS_RESOURCE_INFO = localize('sql.migration.dms.resource', "Your Azure Database Migration Service resource name");
 
 // Accounts page
 export const ACCOUNTS_SELECTION_PAGE_TITLE = localize('sql.migration.wizard.account.title', "Azure account");
@@ -296,6 +302,9 @@ export function ACCOUNT_ACCESS_ERROR(account: AzureAccount, error: Error) {
 }
 export function MI_NOT_READY_ERROR(miName: string, state: string): string {
 	return localize('sql.migration.mi.not.ready', "The managed instance '{0}' is unavailable for migration because it is currently in the '{1}' state. To continue, select an available managed instance.", miName, state);
+}
+export function VM_NOT_READY_ERROR(miName: string, state: string): string {
+	return localize('sql.migration.vm.not.ready', "The virtual machine '{0}' is unavailable for migration because it is currently in the '{1}' state. To continue, select an available virtual machine.", miName, state);
 }
 
 export const SELECT_AN_ACCOUNT = localize('sql.migration.select.service.select.a.', "Sign into Azure and select an account");
@@ -352,10 +361,10 @@ export const DATABASE_BACKUP_MIGRATION_MODE_OFFLINE_LABEL = localize('sql.migrat
 export const DATABASE_BACKUP_MIGRATION_MODE_OFFLINE_DESCRIPTION = localize('sql.migration.database.migration.mode.offline.description', "Application downtime will start when the migration starts.");
 export const NETWORK_SHARE_PATH_FORMAT = localize('sql.migration.network.share.path.format', "\\\\Servername.domainname.com\\Backupfolder");
 export const WINDOWS_USER_ACCOUNT = localize('sql.migration.windows.user.account', "Domain\\username");
-export const NO_SUBSCRIPTIONS_FOUND = localize('sql.migration.no.subscription.found', "No subscription found.");
-export const NO_LOCATION_FOUND = localize('sql.migration.no.location.found', "No location found.");
+export const NO_SUBSCRIPTIONS_FOUND = localize('sql.migration.no.subscription.found', "No subscriptions found.");
+export const NO_LOCATION_FOUND = localize('sql.migration.no.location.found', "No locations found.");
 export const RESOURCE_GROUP_NOT_FOUND = localize('sql.migration.resource.group.not.found', "No resource groups found.");
-export const NO_STORAGE_ACCOUNT_FOUND = localize('sql.migration.no.storageAccount.found', "No storage account found.");
+export const NO_STORAGE_ACCOUNT_FOUND = localize('sql.migration.no.storageAccount.found', "No storage accounts found.");
 export const NO_FILESHARES_FOUND = localize('sql.migration.no.fileShares.found', "No file shares found.");
 export const NO_BLOBCONTAINERS_FOUND = localize('sql.migration.no.blobContainers.found', "No blob containers found.");
 export const NO_BLOBFILES_FOUND = localize('sql.migration.no.blobFiles.found', "No blob files found.");

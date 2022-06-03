@@ -35,6 +35,8 @@ import { CellOutputEdit, CellOutputDataEdit } from 'sql/workbench/services/noteb
 import { ILogService } from 'vs/platform/log/common/log';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { ICellMetadata } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { alert } from 'vs/base/browser/ui/aria/aria';
+import { CELL_URI_PATH_PREFIX } from 'sql/workbench/common/constants';
 
 let modelId = 0;
 const ads_execute_command = 'ads_execute_command';
@@ -332,7 +334,7 @@ export class CellModel extends Disposable implements ICellModel {
 	}
 
 	public set source(newSource: string | string[]) {
-		this.cleanUnusedAttachments(Array.isArray(newSource) ? newSource.join() : newSource);
+		this.updateAttachmentsFromSource(Array.isArray(newSource) ? newSource.join() : newSource);
 		newSource = this.attachImageFromSource(newSource);
 		newSource = this.getMultilineSource(newSource);
 		if (this._source !== newSource) {
@@ -356,12 +358,8 @@ export class CellModel extends Disposable implements ICellModel {
 		return newSource;
 	}
 
-	/**
-	 * Cleans up the attachments, removing any ones that aren't being currently used in the specified source string.
-	 * @param source The new source string to check for attachments being used
-	 */
-	private cleanUnusedAttachments(source: string): void {
-		const originalAttachments = this._attachments;
+	public updateAttachmentsFromSource(source: string, attachments?: nb.ICellAttachments): void {
+		const originalAttachments = attachments ? attachments : this._attachments;
 		this._attachments = {};
 		// Find existing attachments in the form ![...](attachment:...) so that we can make sure we keep those attachments
 		const attachmentRegex = /!\[.*?\]\(attachment:(.*?)\)/g;
@@ -605,6 +603,8 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public async runCell(notificationService?: INotificationService, connectionManagementService?: IConnectionManagementService): Promise<boolean> {
 		try {
+			// Allow screen reader to announce when cell execution is started
+			alert(localize('cellExecutionStarted', "Cell execution started"));
 			if (!this.active && this !== this.notebookModel.activeCell) {
 				this.notebookModel.updateActiveCell(this);
 				this.active = true;
@@ -713,6 +713,8 @@ export class CellModel extends Disposable implements ICellModel {
 			// Serialize cell output once the cell is done executing
 			this.sendChangeToNotebook(NotebookChangeType.CellOutputUpdated);
 			this.notifyExecutionComplete();
+			// Allow screen reader to announce when a cell is done running
+			alert(localize('cellExecutionComplete', "Cell execution is complete"));
 		}
 
 		return true;
@@ -1121,7 +1123,7 @@ export class CellModel extends Disposable implements ICellModel {
 	}
 
 	private createUri(): void {
-		let uri = URI.from({ scheme: Schemas.untitled, path: `notebook-editor-${this.id}` });
+		let uri = URI.from({ scheme: Schemas.untitled, path: `${CELL_URI_PATH_PREFIX}${this.id}` });
 		// Use this to set the internal (immutable) and public (shared with extension) uri properties
 		this.cellUri = uri;
 	}

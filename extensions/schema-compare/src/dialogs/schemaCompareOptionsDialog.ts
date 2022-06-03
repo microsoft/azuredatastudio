@@ -48,10 +48,10 @@ export class SchemaCompareOptionsDialog {
 		this.initializeDialog();
 
 		this.dialog.okButton.label = loc.OkButtonText;
-		this.dialog.okButton.onClick(async () => await this.execute());
+		this.dialog.okButton.onClick(() => this.execute());
 
 		this.dialog.cancelButton.label = loc.CancelButtonText;
-		this.dialog.cancelButton.onClick(async () => await this.cancel());
+		this.dialog.cancelButton.onClick(() => this.cancel());
 
 		let resetButton = azdata.window.createButton(loc.ResetButtonText);
 		resetButton.onClick(async () => await this.reset());
@@ -95,6 +95,9 @@ export class SchemaCompareOptionsDialog {
 		let result = await service.schemaCompareGetDefaultOptions();
 		this.optionsModel.deploymentOptions = result.defaultDeploymentOptions;
 		this.optionsChanged = true;
+
+		// This will update the Map table with default values
+		this.optionsModel.InitializeUpdateOptionsMapTable();
 
 		await this.updateOptionsTable();
 		this.optionsFlexBuilder.removeItem(this.optionsTable);

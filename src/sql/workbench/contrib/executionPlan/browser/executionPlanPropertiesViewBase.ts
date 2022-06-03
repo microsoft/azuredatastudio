@@ -4,8 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as DOM from 'vs/base/browser/dom';
-import { Table } from 'sql/base/browser/ui/table/table';
-import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { ActionBar } from 'sql/base/browser/ui/taskbar/actionbar';
 import { IColorTheme, ICssStyleCollector, IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { localize } from 'vs/nls';
@@ -16,8 +14,10 @@ import { sortAlphabeticallyIconClassNames, sortByDisplayOrderIconClassNames, sor
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { RESULTS_GRID_DEFAULTS } from 'sql/workbench/common/constants';
 import { contrastBorder, listHoverBackground } from 'vs/platform/theme/common/colorRegistry';
+import { TreeGrid } from 'sql/base/browser/ui/table/treeGrid';
+import { ISashEvent, IVerticalSashLayoutProvider, Orientation, Sash } from 'vs/base/browser/ui/sash/sash';
 
-export abstract class ExecutionPlanPropertiesViewBase {
+export abstract class ExecutionPlanPropertiesViewBase implements IVerticalSashLayoutProvider {
 	// Title bar with close button action
 	private _titleBarContainer!: HTMLElement;
 	private _titleBarTextContainer!: HTMLElement;
@@ -32,15 +32,15 @@ export abstract class ExecutionPlanPropertiesViewBase {
 	private _headerActions: ActionBar;
 
 	// Properties table
-	private _tableComponent: Table<Slick.SlickData>;
-	private _tableComponentDataView: TableDataView<Slick.SlickData>;
-	private _tableComponentDataModel: { [key: string]: string }[];
+	private _tableComponent: TreeGrid<Slick.SlickData>;
 	private _tableContainer!: HTMLElement;
 
 	private _tableWidth;
 	private _tableHeight;
 
 	public sortType: PropertiesSortType = PropertiesSortType.DisplayOrder;
+
+	public resizeSash: Sash;
 
 	constructor(
 		public _parentContainer: HTMLElement,
@@ -50,8 +50,28 @@ export abstract class ExecutionPlanPropertiesViewBase {
 		const sashContainer = DOM.$('.properties-sash');
 		this._parentContainer.appendChild(sashContainer);
 
+		this.resizeSash = new Sash(sashContainer, this, { orientation: Orientation.VERTICAL, size: 3 });
+		let originalWidth = 0;
+		this.resizeSash.onDidStart((e: ISashEvent) => {
+			originalWidth = this._parentContainer.clientWidth;
+		});
+		this.resizeSash.onDidChange((evt: ISashEvent) => {
+			const change = evt.startX - evt.currentX;
+			const newWidth = originalWidth + change;
+			if (newWidth < 200) {
+				return;
+			}
+			this._parentContainer.style.flex = `0 0 ${newWidth}px`;
+			propertiesContent.style.width = `${newWidth}px`;
+		});
+		this.resizeSash.onDidEnd(() => {
+		});
+
+		const propertiesContent = DOM.$('.properties-content');
+		this._parentContainer.appendChild(propertiesContent);
+
 		this._titleBarContainer = DOM.$('.title');
-		this._parentContainer.appendChild(this._titleBarContainer);
+		propertiesContent.appendChild(this._titleBarContainer);
 
 		this._titleBarTextContainer = DOM.$('h3');
 		this._titleBarTextContainer.classList.add('text');
@@ -67,10 +87,10 @@ export abstract class ExecutionPlanPropertiesViewBase {
 		this._titleActions.pushAction([new ClosePropertyViewAction()], { icon: true, label: false });
 
 		this._headerContainer = DOM.$('.header');
-		this._parentContainer.appendChild(this._headerContainer);
+		propertiesContent.appendChild(this._headerContainer);
 
 		this._headerActionsContainer = DOM.$('.table-action-bar');
-		this._parentContainer.appendChild(this._headerActionsContainer);
+		propertiesContent.appendChild(this._headerActionsContainer);
 		this._headerActions = new ActionBar(this._headerActionsContainer, {
 			orientation: ActionsOrientation.HORIZONTAL, context: this
 		});
@@ -78,15 +98,13 @@ export abstract class ExecutionPlanPropertiesViewBase {
 
 
 		this._tableContainer = DOM.$('.table-container');
-		this._parentContainer.appendChild(this._tableContainer);
+		propertiesContent.appendChild(this._tableContainer);
 
 		const table = DOM.$('.table');
 		this._tableContainer.appendChild(table);
 
-		this._tableComponentDataView = new TableDataView();
-		this._tableComponentDataModel = [];
-		this._tableComponent = new Table(table, {
-			dataProvider: this._tableComponentDataView, columns: []
+		this._tableComponent = new TreeGrid(table, {
+			columns: []
 		}, {
 			rowHeight: RESULTS_GRID_DEFAULTS.rowHeight,
 			forceFitColumns: true,
@@ -95,9 +113,19 @@ export abstract class ExecutionPlanPropertiesViewBase {
 		attachTableStyler(this._tableComponent, this._themeService);
 
 		new ResizeObserver((e) => {
+			this.resizeSash.layout();
 			this.resizeTable();
-		}).observe(this._parentContainer);
+		}).observe(_parentContainer);
+	}
 
+	getVerticalSashLeft(sash: Sash): number {
+		return 0;
+	}
+	getVerticalSashTop?(sash: Sash): number {
+		return 0;
+	}
+	getVerticalSashHeight?(sash: Sash): number {
+		return this._parentContainer.clientHeight;
 	}
 
 	public setTitle(v: string): void {
@@ -111,14 +139,12 @@ export abstract class ExecutionPlanPropertiesViewBase {
 	public set tableHeight(value: number) {
 		if (this.tableHeight !== value) {
 			this._tableHeight = value;
-			this.renderView();
 		}
 	}
 
 	public set tableWidth(value: number) {
 		if (this._tableWidth !== value) {
 			this._tableWidth = value;
-			this.renderView();
 		}
 	}
 
@@ -130,22 +156,16 @@ export abstract class ExecutionPlanPropertiesViewBase {
 		return this._tableHeight;
 	}
 
-	public abstract renderView();
+	public abstract addDataToTable();
 
 	public toggleVisibility(): void {
-		this._parentContainer.style.display = this._parentContainer.style.display === 'none' ? 'block' : 'none';
-		this.renderView();
+		this._parentContainer.style.display = this._parentContainer.style.display === 'none' ? 'flex' : 'none';
 	}
 
 	public populateTable(columns: Slick.Column<Slick.SlickData>[], data: { [key: string]: string }[]) {
 		this._tableComponent.columns = columns;
 		this._tableContainer.scrollTo(0, 0);
-		this._tableComponentDataView.clear();
-		this._tableComponentDataModel = data;
-		this._tableComponentDataView.push(this._tableComponentDataModel);
-		this._tableComponent.setData(this._tableComponentDataView);
-		this._tableComponent.autosizeColumns();
-		this._tableComponent.updateRowCount();
+		this._tableComponent.setData(data);
 		this.resizeTable();
 	}
 
@@ -187,7 +207,7 @@ export class SortPropertiesAlphabeticallyAction extends Action {
 
 	public override async run(context: ExecutionPlanPropertiesViewBase): Promise<void> {
 		context.sortType = PropertiesSortType.Alphabetical;
-		context.renderView();
+		context.addDataToTable();
 	}
 }
 
@@ -201,7 +221,7 @@ export class SortPropertiesReverseAlphabeticallyAction extends Action {
 
 	public override async run(context: ExecutionPlanPropertiesViewBase): Promise<void> {
 		context.sortType = PropertiesSortType.ReverseAlphabetical;
-		context.renderView();
+		context.addDataToTable();
 	}
 }
 
@@ -215,7 +235,7 @@ export class SortPropertiesByDisplayOrderAction extends Action {
 
 	public override async run(context: ExecutionPlanPropertiesViewBase): Promise<void> {
 		context.sortType = PropertiesSortType.DisplayOrder;
-		context.renderView();
+		context.addDataToTable();
 	}
 }
 

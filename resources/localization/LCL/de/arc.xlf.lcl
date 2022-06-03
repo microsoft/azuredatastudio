@@ -889,6 +889,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/arc/dist/localizedConstants.arc.errorGettingConnectionMode" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Error getting data controller connection mode.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Fehler beim Abrufen des Datencontroller-Verbindungsmodus.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.errorListingLogAnalyticsWorkspaces" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error listing Log Analytics workspaces {0}]]></Val>
@@ -1453,6 +1462,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/arc/dist/localizedConstants.arc.miaaVersionError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Error getting SQL managed instance version number.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Fehler beim Abrufen der Versionsnummer der SQL Managed Instance.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.missingExtension" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The {0} extension is required to view engine settings. Do you wish to install it now?]]></Val>
@@ -1719,6 +1737,15 @@
           <Val><![CDATA[Currently, only upgrading to the next immediate version is supported.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Derzeit werden nur Upgrades auf die nächsthöhere Version unterstützt.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/dist/localizedConstants.arc.onlyNextImmediateVersionMiaa" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The version of a SQL Managed Instance can not be newer than the version of its data controller. Currently, only upgrading to the next immediate version is supported.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Die Version einer SQL Managed Instance darf nicht neuer als die Version des Datencontrollers sein. Derzeit werden nur Upgrades auf die nächsthöhere Version unterstützt.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2455,6 +2482,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/arc/dist/localizedConstants.arc.showMiaaError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Error showing details of SQL managed instance.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Fehler beim Anzeigen von Details zur SQL Managed Instance.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.sourceDatabase" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Source database]]></Val>
@@ -2647,11 +2683,20 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/arc/dist/localizedConstants.arc.upgradeDialog" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/arc/dist/localizedConstants.arc.upgradeDialogController" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[During a data controller upgrade, portions of the data control plane such as Custom Resource Definitions (CRDs) and containers may be upgraded. An upgrade of the data controller will not cause downtime for the data services (SQL Managed Instance or PostgreSQL server).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Während des Upgrades eines Datencontrollers kann ein Upgrade für Teile der Datensteuerungsebene, z. B. benutzerdefinierte Ressourcendefinitionen (Custom Resource Definitions, CRDs) und Container durchgeführt werden. Ein Upgrade des Datencontrollers führt nicht zu Downtime für die Datendienste (SQL Managed Instance oder PostgreSQL Hyperscale-Server).]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/dist/localizedConstants.arc.upgradeDialogMiaa" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[During a SQL managed instance upgrade, portions of the data control plane such as Custom Resource Definitions (CRDs) and containers may be upgraded. An upgrade of the SQL managed instance will not cause downtime for the data services (SQL Managed Instance or PostgreSQL server).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Während eines SQL Managed Instance-Upgrades können Teile der Datensteuerungsebene, z. B. benutzerdefinierte Ressourcendefinitionen (CRDs) und Container, upgegradet werden. Ein Upgrade der SQL Managed Instance führt nicht zu Downtime für die Datendienste (SQL Managed Instance oder PostgreSQL-Server).]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2665,11 +2710,29 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/arc/dist/localizedConstants.arc.upgrading" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/arc/dist/localizedConstants.arc.upgradeMiaa" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Upgrade SQL Managed Instance]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL Managed Instance-Upgrade]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/dist/localizedConstants.arc.upgradingController" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Data controller is being upgraded. You can check the status of the upgrade by running the following command: 'kubectl get datacontrollers -A']]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Der Datencontroller wird upgegradet. Sie können den Status des Upgrades überprüfen, indem Sie den folgenden Befehl ausführen: “kubectl get datacontrollers -A”]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/dist/localizedConstants.arc.upgradingMiaa" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[SQL managed instance is being upgraded. You can check the status of the upgrade by running the following command: 'kubectl get sqlmi -A']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Die SQL Managed Instance wird upgegradet. Sie können den Status des Upgrades überprüfen, indem Sie den folgenden Befehl ausführen: „kubectl get sqlmi -A“]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4509,12 +4572,12 @@
       </Item>
       <Item ItemId=";extensions/arc/package.arc.sql.service.tier.business.critical" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[[PREVIEW]5D; Business Critical (Unlimited vCores and RAM, advanced high availability)]]></Val>
+          <Val><![CDATA[Business Critical (Unlimited vCores and RAM, advanced high availability)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[[VORSCHAU]5D; Unternehmenskritisch (Unbegrenzte virtuelle Kerne und RAM, erweiterte Hochverfügbarkeit)]]></Val>
+            <Val><![CDATA[Unternehmenskritisch (Unbegrenzte virtuelle Kerne und RAM, erweiterte Hochverfügbarkeit)]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[BusinessCritical]]></Val>
+            <Val><![CDATA[[PREVIEW]5D; Business Critical (Unlimited vCores and RAM, advanced high availability)]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />

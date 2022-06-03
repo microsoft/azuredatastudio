@@ -19,7 +19,7 @@ export class ManagePackagesDialog extends Dialog {
 		await this.waitForNewDialog();
 	}
 
-	async addNewPackage(packageName: string): Promise<void> {
+	async addNewPackage(packageName: string): Promise<string> {
 		const addNewTab = `${ManagePackagesDialog.dialogPage} div[class="tab-header"][aria-controls="dialogPane.Manage Packages.1"]`;
 		await this.code.waitAndClick(addNewTab);
 
@@ -37,6 +37,13 @@ export class ManagePackagesDialog extends Dialog {
 		const searchButton = `${ManagePackagesDialog.dialogPage} a[class="monaco-button monaco-text-button"][aria-label="Search"][aria-disabled="false"]`;
 		await this.code.waitAndClick(searchButton);
 
+		const packageNameSelector = `${ManagePackagesDialog.dialogPage} div[id="textContainer"] span`;
+		await this.code.waitForTextContent(packageNameSelector, packageName);
+
+		// Get the latest package version
+		const versionSelectBox = `${ManagePackagesDialog.dialogPage} select[aria-label^="Supported Package Versions for Python"] option`;
+		let packageVersion = await this.code.waitForTextContent(versionSelectBox);
+
 		const installButton = `${ManagePackagesDialog.dialogPage} a[class="monaco-button monaco-text-button"][aria-label="Install"][aria-disabled="false"]`;
 		await this.code.waitAndClick(installButton);
 
@@ -49,5 +56,8 @@ export class ManagePackagesDialog extends Dialog {
 
 		const closeButton = '.modal .modal-footer a[class="monaco-button monaco-text-button"][aria-label="Close"][aria-disabled="false"]';
 		await this.code.waitAndClick(closeButton);
+		await this.waitForDialogGone();
+
+		return packageVersion;
 	}
 }

@@ -341,15 +341,22 @@ export const availableUpgrades = localize('arc.availableUpgrades', "Available Up
 export const availableUpgradesDescription = localize('arc.availableUpgradesDescription', "Available upgrades for this resource are listed below. You can apply upgrades by clicking the upgrade button.");
 export const versionLog = localize('arc.versionLog', "Learn more about each release here.");
 export const onlyNextImmediateVersion = localize('arc.onlyNextImmediateVersion', "Currently, only upgrading to the next immediate version is supported.");
+export const onlyNextImmediateVersionMiaa = localize('arc.onlyNextImmediateVersionMiaa', "The version of a SQL Managed Instance can not be newer than the version of its data controller. Currently, only upgrading to the next immediate version is supported.");
 export const version = localize('arc.version', "Version");
 export const releaseDate = localize('arc.releaseDate', "Release Date");
 export const releaseNotes = localize('arc.releaseNotes', "Release Notes");
 export const upgrade = localize('arc.upgrade', "Upgrade");
 export const upgradeDataController = localize('arc.upgradeDataController', "Upgrade Data Controller");
+export const upgradeMiaa = localize('arc.upgradeMiaa', "Upgrade SQL Managed Instance");
 export const areYouSure = localize('arc.areYouSure', "Are you sure you want to apply the selected upgrade?");
-export const upgradeDialog = localize('arc.upgradeDialog', "During a data controller upgrade, portions of the data control plane such as Custom Resource Definitions (CRDs) and containers may be upgraded. An upgrade of the data controller will not cause downtime for the data services (SQL Managed Instance or PostgreSQL server).");
+export const upgradeDialogController = localize('arc.upgradeDialogController', "During a data controller upgrade, portions of the data control plane such as Custom Resource Definitions (CRDs) and containers may be upgraded. An upgrade of the data controller will not cause downtime for the data services (SQL Managed Instance or PostgreSQL server).");
+export const upgradeDialogMiaa = localize('arc.upgradeDialogMiaa', "During a SQL managed instance upgrade, portions of the data control plane such as Custom Resource Definitions (CRDs) and containers may be upgraded. An upgrade of the SQL managed instance will not cause downtime for the data services (SQL Managed Instance or PostgreSQL server).");
 export const monitorUpgrade = localize('arc.monitorUpgrade', "You can check the status of the upgrade by running the following command:");
 export function errorListingLogAnalyticsWorkspaces(error: any): string { return localize('arc.errorListingLogAnalyticsWorkspaces', "Error listing Log Analytics workspaces {0}", getErrorMessage(error, true)); }
 export const noUpgrades = localize('arc.noUpgrades', 'The current version is the latest version. No upgrades available.');
-export const upgrading = localize('arc.upgrading', "Data controller is being upgraded. You can check the status of the upgrade by running the following command: 'kubectl get datacontrollers -A'"); // 'kubectl get datacontrollers -A' should not be localized.
+export function upgradingController(param: any): string { return localize('arc.upgradingController', "Data controller is being upgraded. You can check the status of the upgrade by running the following command: 'kubectl get datacontrollers -A'", param); }
+export function upgradingMiaa(param: any): string { return localize('arc.upgradingMiaa', "SQL managed instance is being upgraded. You can check the status of the upgrade by running the following command: 'kubectl get sqlmi -A'", param); }
 export const currentVersion = localize('arc.currentVersion', "Current version");
+export const showMiaaError = localize('arc.showMiaaError', "Error showing details of SQL managed instance.");
+export const miaaVersionError = localize('arc.miaaVersionError', "Error getting SQL managed instance version number.");
+export const errorGettingConnectionMode = localize('arc.errorGettingConnectionMode', "Error getting data controller connection mode.");

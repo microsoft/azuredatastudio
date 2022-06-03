@@ -37,6 +37,8 @@ import { SqlInstanceArcProvider } from './azureResource/providers/sqlinstanceArc
 import { SqlInstanceArcResourceService } from './azureResource/providers/sqlinstanceArc/sqlInstanceArcService';
 import { PostgresServerArcProvider } from './azureResource/providers/postgresArcServer/postgresServerProvider';
 import { PostgresServerArcService } from './azureResource/providers/postgresArcServer/postgresServerService';
+import { CosmosDbMongoProvider } from './azureResource/providers/cosmosdb/mongo/cosmosDbMongoProvider';
+import { CosmosDbMongoService } from './azureResource/providers/cosmosdb/mongo/cosmosDbMongoService';
 import * as azurecore from 'azurecore';
 import * as azureResourceUtils from './azureResource/utils';
 import * as utils from './utils';
@@ -134,6 +136,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 				new AzureResourceDatabaseProvider(new AzureResourceDatabaseService(), extensionContext),
 				new SqlInstanceProvider(new SqlInstanceResourceService(), extensionContext),
 				new PostgresServerProvider(new PostgresServerService(), extensionContext),
+				new CosmosDbMongoProvider(new CosmosDbMongoService(), extensionContext)
 			];
 			if (arcFeaturedEnabled) {
 				providers.push(

@@ -109,24 +109,34 @@ However we always want it to be the width of the container it is resizing.
 	position: relative;
 }
 
-/* Properties view in execution plan */
-.eps-container .execution-plan .properties {
+.eps-container .properties {
 	flex: 0 0 500px;
+	flex-direction: row;
+}
+
+.eps-container .properties-sash {
+	position: relative;
+	height: 100%;
+	width: 1px;
+}
+
+/* Properties view in execution plan */
+.eps-container .properties .properties-content {
 	overflow: hidden;
 	width: 500px;
-	height: calc( 100% - 2px );
+	height: calc(100% - 2px);
 	display: flex;
 	flex-direction: column;
-	border-left: 1px solid;
+	border-left: 3px solid;
+	border-color: var(--separator-border)
 }
 
 /* Title container of the properties view */
-.eps-container .execution-plan .properties .title {
+.eps-container .properties .title {
 	line-height: 30px;
 	height: 22px;
 	font-size: 11px;
 	font-weight: bold;
-	text-transform: uppercase;
 	overflow: hidden;
 	display: flex;
 	align-items: center;
@@ -137,7 +147,7 @@ However we always want it to be the width of the container it is resizing.
 }
 
 /* text in title container of properties view */
-.eps-container .execution-plan .properties .title .text {
+.eps-container .properties .title .text {
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	overflow: hidden;
@@ -148,7 +158,7 @@ However we always want it to be the width of the container it is resizing.
 }
 
 /* action bar in the title container for the properties view. This contains the close icon */
-.eps-container .execution-plan .properties .title .action-bar {
+.eps-container .properties .title .action-bar {
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	overflow: hidden;
@@ -160,7 +170,7 @@ However we always want it to be the width of the container it is resizing.
 }
 
 /* Operation name styling in the properties view. */
-.eps-container .execution-plan .properties .operation-name {
+.eps-container .properties .operation-name {
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	overflow: hidden;
@@ -174,8 +184,8 @@ However we always want it to be the width of the container it is resizing.
 }
 
 /* Properties table container in properties view */
-.eps-container .execution-plan .properties .table-container {
-	overflow-y: scroll;
+.eps-container .properties .table-container {
+	overflow: hidden;
 	flex: 1;
 	flex-grow: 1;
 }
@@ -183,6 +193,7 @@ However we always want it to be the width of the container it is resizing.
 /* Action bar for the execution plan */
 .eps-container .execution-plan .action-bar-container {
 	flex: 0 0 25px;
+	border-left: 1px solid var(--separator-border);
 }
 
 /* styling for the column headers in the properties table */
@@ -195,7 +206,6 @@ However we always want it to be the width of the container it is resizing.
 	-webkit-margin-before: 0;
 	-webkit-margin-after: 0;
 	font-weight: bold;
-	text-transform: uppercase;
 }
 
 .eps-container .properties-header {
@@ -227,107 +237,288 @@ However we always want it to be the width of the container it is resizing.
 	z-index: 3;
 }
 
-.ep-save-plan-icon {
+.eps-container .ep-save-plan-icon {
 	background-image: url(../images/actionIcons/save.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.ep-open-properties-icon {
+.eps-container .ep-open-properties-icon {
 	background-image: url(../images/actionIcons/openProperties.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.ep-open-query-icon {
+.eps-container .ep-open-query-icon {
 	background-image: url(../images/actionIcons/openQuery.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.ep-open-plan-file-icon {
+.eps-container .ep-open-plan-file-icon {
 	background-image: url(../images/actionIcons/openPlanFile.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.ep-search-icon {
+.eps-container .ep-search-icon {
 	background-image: url(../images/actionIcons/search.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.ep-sort-alphabetically-icon {
+.eps-container .ep-sort-alphabetically-icon {
 	background-image: url(../images/actionIcons/sortAlphabetically.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.ep-sort-reverse-alphabetically-icon {
+.eps-container .ep-sort-reverse-alphabetically-icon {
 	background-image: url(../images/actionIcons/sortReverseAlphabetically.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.ep-sort-display-order-icon {
+.eps-container .ep-sort-display-order-icon {
 	background-image: url(../images/actionIcons/sortByDisplayOrder.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.ep-zoom-in-icon {
+.eps-container .ep-zoom-in-icon {
 	background-image: url(../images/actionIcons/zoomIn.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.ep-zoom-out-icon {
+.eps-container .ep-zoom-out-icon {
 	background-image: url(../images/actionIcons/zoomOut.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.ep-custom-zoom-icon {
+.eps-container .ep-custom-zoom-icon {
 	background-image: url(../images/actionIcons/customZoom.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.ep-zoom-to-fit-icon {
+.eps-container .ep-zoom-to-fit-icon {
 	background-image: url(../images/actionIcons/zoomToFit.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.ep-zoom-icon {
+.eps-container .ep-zoom-icon {
 	background-image: url(../images/actionIcons/zoom.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.ep-enable-tooltip-icon {
+.eps-container .ep-enable-tooltip-icon {
 	background-image: url(../images/actionIcons/enableTooltip.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
-.ep-disable-tooltip-icon {
+.eps-container .ep-disable-tooltip-icon {
 	background-image: url(../images/actionIcons/disableTooltip.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
+}
+
+.eps-container .ep-add-icon {
+	background-image: url(../images/actionIcons/add.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.eps-container .ep-settings-icon {
+	background-image: url(../images/actionIcons/settings.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.ep-split-screen-horizontally-icon {
+	background-image: url(../images/actionIcons/splitScreenHorizontally.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.eps-container .ep-split-screen-vertically-icon {
+	background-image: url(../images/actionIcons/splitScreenVertically.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.eps-container .ep-reset-zoom-icon {
+	background-image: url(../images/actionIcons/resetZoom.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.eps-container .ep-plan-compare-icon {
+	background-image: url(../images/actionIcons/execution-plan-compare.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.eps-container .comparison-editor {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+}
+
+.eps-container .comparison-editor .editor-toolbar {
+	width: 100%;
+	flex: 0 0 auto;
+	border-bottom: 2px solid;
+	border-color: var(--separator-border);
+}
+
+.eps-container .comparison-editor .plan-comparison-container {
+	width: 100%;
+	height: 100%;
+	flex: 1;
+	display: flex;
+	flex-direction: row;
+}
+
+.eps-container .comparison-editor .plan-comparison-container {
+	width: 100%;
+	height: 100%;
+	flex: 1;
+	display: flex;
+	flex-direction: row;
+}
+
+.eps-container .comparison-editor .plan-comparison-container {
+	width: 100%;
+	height: calc(100% - 25px);
+	flex: 1;
+	display: flex;
+	flex-direction: row;
+}
+
+.eps-container .comparison-editor .plan-comparison-container .split-view-container {
+	flex: 1;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+}
+
+.eps-container .comparison-editor .plan-comparison-container .split-view-container .plan-container {
+	flex: 1;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	position: relative;
+}
+
+.eps-container .comparison-editor .plan-comparison-container .split-view-container .plan-container .dropdown-container {
+	flex: 0;
+	padding: 3px;
+	border-bottom: 1px solid var(--separator-border);
+}
+
+/* each link in execution plan recommendations */
+.eps-container .comparison-editor .plan-comparison-container .split-view-container .plan-container .recommendations > a {
+	width: fit-content;
+	align-items: left;
+	text-align: left;
+}
+
+.eps-container .comparison-editor .plan-comparison-container .split-view-container .sash-container {
+	flex: 0 0 2px;
+	width: 100%;
+	position: relative;
+	background-color: var(--separator-border);
+}
+
+/*
+The actual sash element constructed by code. Important is used here because the width of the sash is fixed.
+However we always want it to be the width of the container it is resizing.
+*/
+.eps-container .comparison-editor .plan-comparison-container .split-view-container .sash-container .horizontal {
+	width: 100% !important;
+}
+
+.eps-container .comparison-editor .plan-comparison-container .split-view-container .sash-container .vertical {
+	height: 100% !important;
+}
+
+.eps-container .comparison-editor .plan-comparison-container .properties {
+	display: flex;
+	flex: 0 0 500px;
+	flex-direction: row;
+}
+
+.eps-container .comparison-editor .plan-comparison-container .split-view-container .placeholder {
+	flex: 1;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	position: relative;
+	justify-content: center;
+	align-items: center;
+}
+
+.eps-container .comparison-editor .plan-comparison-container .split-view-container .placeholder .infobox-container {
+	width: fit-content;
+	height: fit-content;
+}
+
+
+.eps-container .comparison-editor .plan-comparison-container .split-view-container .plan-container .plan-diagram {
+	flex: 1;
+	overflow: scroll;
+	display: flex;
+	flex-direction: column;
+	position: relative;
+}
+
+
+.eps-container .comparison-editor .plan-comparison-container .properties .compare-operation-name {
+	display: flex;
+	flex-direction: row;
+}
+
+.eps-container .comparison-editor .plan-comparison-container .properties .compare-operation-name-text {
+	flex: 1;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	font-size: 13px;
+	-webkit-margin-before: 0;
+	-webkit-margin-after: 0;
+	margin-top: 3px;
+	margin-bottom: 5px;
+	margin-left: 5px;
+}
+
+.eps-container .comparison-editor .properties .table-container {
+	overflow: hidden;
 }

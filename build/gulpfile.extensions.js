@@ -240,7 +240,7 @@ exports.compileExtensionsBuildTask = compileExtensionsBuildTask;
 //Get every extension in 'extensions' to create XLF files.
 const exportCompilations = glob.sync('**/package.json', {
 	cwd: extensionsPath,
-	ignore: ['**/out/**', '**/node_modules/**', 'package.json']
+	ignore: ['**/out/**', '**/node_modules/**', '**/sqltoolsservice/**',  'package.json']
 });
 
 //Run the localization packaging task on all extensions in ADS.

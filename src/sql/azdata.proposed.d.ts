@@ -735,29 +735,21 @@ declare module 'azdata' {
 		 */
 		export interface TableInfo {
 			/**
-			 * The server name.
+			 * Used as the table designer editor's tab header text.
 			 */
-			server: string;
+			title: string;
 			/**
-			 * The database name
+			 * Used as the table designer editor's tab header hover text.
 			 */
-			database: string;
-			/**
-			 * The schema name, only required for existing table.
-			 */
-			schema?: string;
-			/**
-			 * The table name, only required for existing table.
-			 */
-			name?: string;
-			/**
-			 * A boolean value indicates whether a new table is being designed.
-			 */
-			isNewTable: boolean;
+			tooltip: string;
 			/**
 			 * Unique identifier of the table. Will be used to decide whether a designer is already opened for the table.
 			 */
 			id: string;
+			/**
+			 * A boolean value indicates whether a new table is being designed.
+			 */
+			isNewTable: boolean;
 			/**
 			 * Extension can store additional information that the provider needs to uniquely identify a table.
 			 */
@@ -781,6 +773,14 @@ declare module 'azdata' {
 			 * The initial state of the designer.
 			 */
 			viewModel: DesignerViewModel;
+			/**
+			 * The new table info after initialization.
+			 */
+			tableInfo: TableInfo;
+			/**
+			 * The issues.
+			 */
+			issues?: DesignerIssue[];
 		}
 
 		/**
@@ -933,6 +933,10 @@ declare module 'azdata' {
 			 * Additional primary key properties. Common primary key properties: primaryKeyName, primaryKeyDescription.
 			 */
 			additionalPrimaryKeyProperties?: DesignerDataPropertyInfo[];
+			/**
+			 * Whether to use advanced save mode. for advanced save mode, a publish changes dialog will be opened with preview of changes.
+			 */
+			useAdvancedSaveMode: boolean;
 		}
 
 		export interface TableDesignerBuiltInTableViewOptions extends DesignerTablePropertiesBase {
@@ -1016,6 +1020,14 @@ declare module 'azdata' {
 			 */
 			canRemoveRows?: boolean;
 			/**
+			 * Whether user can move rows from one index to another. The default value is true.
+			 */
+			canMoveRows?: boolean;
+			/**
+			 * Whether user can insert rows at a given index to the table. The default value is true.
+			 */
+			canInsertRows?: boolean;
+			/**
 			 * Whether to show confirmation when user removes a row. The default value is false.
 			 */
 			showRemoveRowConfirmation?: boolean;
@@ -1081,7 +1093,11 @@ declare module 'azdata' {
 			/**
 			 * Update a property.
 			 */
-			Update = 2
+			Update = 2,
+			/**
+			 * Change the position of an item in the collection.
+			 */
+			Move = 3
 		}
 
 		/**
@@ -1095,7 +1111,7 @@ declare module 'azdata' {
 			/**
 			 * the path of the edit target.
 			 */
-			path: DesignerEditPath;
+			path: DesignerPropertyPath;
 			/**
 			 * the new value.
 			 */
@@ -1103,7 +1119,7 @@ declare module 'azdata' {
 		}
 
 		/**
-		 * The path of the edit target.
+		 * The path of the property.
 		 * Below are the 3 scenarios and their expected path.
 		 * Note: 'index-{x}' in the description below are numbers represent the index of the object in the list.
 		 * 1. 'Add' scenario
@@ -1117,7 +1133,7 @@ declare module 'azdata' {
 		 *     a. ['propertyName1',index-1]. Example: remove a column from the columns property: ['columns',0'].
 		 *     b. ['propertyName1',index-1,'propertyName2',index-2]. Example: remove a column mapping from a foreign key's column mapping table: ['foreignKeys',0,'mappings',0].
 		 */
-		export type DesignerEditPath = (string | number)[];
+		export type DesignerPropertyPath = (string | number)[];
 
 		/**
 		 * Severity of the messages returned by the provider after processing an edit.
@@ -1126,6 +1142,28 @@ declare module 'azdata' {
 		 * 'information': Informational message.
 		 */
 		export type DesignerIssueSeverity = 'error' | 'warning' | 'information';
+
+		/**
+		 * Represents the issue in the designer
+		 */
+		export interface DesignerIssue {
+			/**
+			 * Severity of the issue.
+			 */
+			severity: DesignerIssueSeverity,
+			/**
+			 * Path of the property that is associated with the issue.
+			 */
+			propertyPath?: DesignerPropertyPath,
+			/**
+			 * Description of the issue.
+			 */
+			description: string,
+			/**
+			 * Url to a web page that has the explaination of the issue.
+			 */
+			moreInfoLink?: string;
+		}
 
 		/**
 		 * The result returned by the table designer provider after handling an edit request.
@@ -1146,7 +1184,7 @@ declare module 'azdata' {
 			/**
 			 * Issues of current state.
 			 */
-			issues?: { severity: DesignerIssueSeverity, description: string, propertyPath?: DesignerEditPath }[];
+			issues?: DesignerIssue[];
 			/**
 			 * The input validation error.
 			 */
@@ -1220,6 +1258,10 @@ declare module 'azdata' {
 		}
 
 		export interface ExecutionPlanNode {
+			/**
+			 * Unique id given to node by the provider
+			 */
+			id: string;
 			/**
 			 * Type of the node. This property determines the icon that is displayed for it
 			 */
@@ -1353,6 +1395,10 @@ declare module 'azdata' {
 			 * File type for execution plan. This will be the file type of the editor when the user opens the graph file
 			 */
 			graphFileType: string;
+			/**
+			 * Index of the execution plan in the file content
+			 */
+			planIndexInFile?: number;
 		}
 
 		export interface GetExecutionPlanResult extends ResultStatus {
@@ -1379,7 +1425,7 @@ declare module 'azdata' {
 			/**
 			 * List of matching nodes for the ExecutionGraphComparisonResult.
 			 */
-			matchingNodes: ExecutionGraphComparisonResult[];
+			matchingNodesId: number[];
 			/**
 			 * The parent of the ExecutionGraphComparisonResult.
 			 */

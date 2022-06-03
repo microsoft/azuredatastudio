@@ -16,7 +16,7 @@ import { IconPathHelper } from '../common/iconHelper';
 import { cssStyles } from '../common/uiConstants';
 import { getAgreementDisplayText, getConnectionName, getDockerBaseImages, getPublishServerName } from './utils';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
-import { IDeployProfile } from '../models/deploy/deployProfile';
+import { ILocalDbDeployProfile } from '../models/deploy/deployProfile';
 import { Deferred } from '../common/promise';
 
 interface DataSourceDropdownValue extends azdataType.CategoryValue {
@@ -62,7 +62,7 @@ export class PublishDatabaseDialog {
 	private toDispose: vscode.Disposable[] = [];
 
 	public publish: ((proj: Project, profile: IDeploySettings) => any) | undefined;
-	public publishToContainer: ((proj: Project, profile: IDeployProfile) => any) | undefined;
+	public publishToContainer: ((proj: Project, profile: ILocalDbDeployProfile) => any) | undefined;
 	public generateScript: ((proj: Project, profile: IDeploySettings) => any) | undefined;
 	public readPublishProfile: ((profileUri: vscode.Uri) => any) | undefined;
 
@@ -194,7 +194,9 @@ export class PublishDatabaseDialog {
 				const connProfile: azdataType.IConnectionProfile = dataSource.getConnectionProfile();
 
 				if (dataSource.integratedSecurity) {
-					connId = (await utils.getAzdataApi()!.connection.connect(connProfile, false, false)).connectionId;
+					const connResult = await utils.getAzdataApi()!.connection.connect(connProfile, false, false);
+					utils.throwIfNotConnected(connResult);
+					connId = connResult.connectionId!;
 				}
 				else {
 					connId = (await utils.getAzdataApi()!.connection.openConnectionDialog(undefined, connProfile)).connectionId;
@@ -207,7 +209,6 @@ export class PublishDatabaseDialog {
 
 				connId = this.connectionId;
 			}
-
 			return await utils.getAzdataApi()!.connection.getUriForConnection(connId);
 		}
 		catch (err) {
@@ -232,7 +233,7 @@ export class PublishDatabaseDialog {
 			const dockerBaseImage = this.getBaseDockerImageName();
 			const baseImages = getDockerBaseImages(this.project.getProjectTargetVersion());
 			const imageInfo = baseImages.find(x => x.name === dockerBaseImage);
-			const settings: IDeployProfile = {
+			const settings: ILocalDbDeployProfile = {
 				localDbSetting: {
 					dbName: this.targetDatabaseName,
 					dockerBaseImage: dockerBaseImage,

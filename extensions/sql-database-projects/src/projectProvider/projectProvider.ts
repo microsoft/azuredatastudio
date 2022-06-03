@@ -44,7 +44,8 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 				defaultTargetPlatform: sqldbproj.SqlTargetPlatform.sqlAzure,
 				icon: IconPathHelper.azureSqlDbProject,
 				sdkStyleOption: true,
-				sdkStyleLearnMoreUrl: constants.sdkLearnMoreUrl
+				sdkStyleLearnMoreUrl: constants.sdkLearnMoreUrl,
+				learnMoreUrl: constants.azureDevOpsLink
 			},
 			{
 				id: constants.emptySqlDatabaseProjectTypeId,
@@ -102,6 +103,10 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	 */
 	openProject(projectFilePath: string): Promise<sqldbproj.ISqlProject> {
 		return Project.openProject(projectFilePath);
+	}
+
+	public addItemPrompt(project: sqldbproj.ISqlProject, relativeFilePath: string, options?: sqldbproj.AddItemOptions): Promise<void> {
+		return this.projectController.addItemPrompt(project, relativeFilePath, options);
 	}
 
 	/**
@@ -208,5 +213,9 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	 */
 	async getProjectDatabaseSchemaProvider(projectFilePath: string): Promise<string> {
 		return await this.projectController.getProjectDatabaseSchemaProvider(projectFilePath);
+	}
+
+	async generateProjectFromOpenApiSpec(options?: sqldbproj.GenerateProjectFromOpenApiSpecOptions): Promise<sqldbproj.ISqlProject | undefined> {
+		return await this.projectController.generateProjectFromOpenApiSpec(options);
 	}
 }

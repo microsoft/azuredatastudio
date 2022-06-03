@@ -33,7 +33,7 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 
 	public set graphElement(element: azdata.executionPlan.ExecutionPlanNode | azdata.executionPlan.ExecutionPlanEdge) {
 		this._model.graphElement = element;
-		this.renderView();
+		this.addDataToTable();
 	}
 
 	public sortPropertiesAlphabetically(props: azdata.executionPlan.ExecutionPlanGraphElementProperty[]): azdata.executionPlan.ExecutionPlanGraphElementProperty[] {
@@ -79,7 +79,7 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 		});
 	}
 
-	public renderView(): void {
+	public addDataToTable(): void {
 		if (this._model.graphElement) {
 			const nodeName = (<azdata.executionPlan.ExecutionPlanNode>this._model.graphElement).name;
 			this._operationName.innerText = nodeName ? removeLineBreaks(nodeName) : localize('executionPlanPropertiesEdgeOperationName', "Edge"); //since edges do not have names like node, we set the operation name to 'Edge'
@@ -131,7 +131,7 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 		props.forEach((p, i) => {
 			let row = {};
 			rows.push(row);
-			row['name'] = '  '.repeat(indent) + p.name;
+			row['name'] = p.name;
 			row['parent'] = parentIndex;
 			if (!isString(p.value)) {
 				// Styling values in the parent row differently to make them more apparent and standout compared to the rest of the cells.
@@ -143,10 +143,11 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 					text: removeLineBreaks(p.displayValue, ' '),
 					style: parentRowCellStyling
 				};
+				row['tootltip'] = p.displayValue;
 				this.convertModelToTableRows(p.value, rows.length - 1, indent + 2, rows);
 			} else {
-				row['value'] = removeLineBreaks(p.value, ' ');
-				row['tooltip'] = p.value;
+				row['value'] = removeLineBreaks(p.displayValue, ' ');
+				row['tooltip'] = p.displayValue;
 			}
 		});
 		return rows;

@@ -32,7 +32,6 @@ import { IAdsTelemetryService, ITelemetryEventProperties } from 'sql/platform/te
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ITableDesignerService } from 'sql/workbench/services/tableDesigner/common/interface';
 import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
-
 /**
  * Main thread class for handling data protocol management registration.
  */
@@ -554,7 +553,8 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 
 	public $registerExecutionPlanProvider(providerId: string, handle: number): void {
 		this._executionPlanService.registerProvider(providerId, <azdata.executionPlan.ExecutionPlanProvider>{
-			getExecutionPlan: (planFile: azdata.executionPlan.ExecutionPlanGraphInfo) => this._proxy.$getExecutionPlan(handle, planFile)
+			getExecutionPlan: (planFile: azdata.executionPlan.ExecutionPlanGraphInfo) => this._proxy.$getExecutionPlan(handle, planFile),
+			compareExecutionPlanGraph: (firstPlanFile: azdata.executionPlan.ExecutionPlanGraphInfo, secondPlanFile: azdata.executionPlan.ExecutionPlanGraphInfo) => this._proxy.$compareExecutionPlanGraph(handle, firstPlanFile, secondPlanFile)
 		});
 	}
 

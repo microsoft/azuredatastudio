@@ -1212,6 +1212,8 @@ export interface IModelAddedData {
 	EOL: string;
 	modeId: string;
 	isDirty: boolean;
+	// {{SQL CARBON EDIT}}
+	notebookUri?: URI;
 }
 export interface ExtHostDocumentsShape {
 	$acceptModelModeChanged(strURL: UriComponents, newModeId: string): void;
