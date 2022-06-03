@@ -316,7 +316,7 @@ export class ExecutionPlanComparisonEditorView {
 				return {
 					text: this.createQueryDropdownPrefixString(e.query, index + 1, executionPlanGraphs.length)
 				};
-			}), 0);
+			}));
 
 			executionPlanGraphs.forEach((e, i) => {
 				const graphContainer = DOM.$('.plan-diagram');
@@ -352,7 +352,7 @@ export class ExecutionPlanComparisonEditorView {
 				return {
 					text: this.createQueryDropdownPrefixString(e.query, index + 1, executionPlanGraphs.length)
 				};
-			}), 0);
+			}));
 			executionPlanGraphs.forEach((e, i) => {
 				const graphContainer = DOM.$('.plan-diagram');
 				this._bottomPlanDiagramContainers.push(graphContainer);

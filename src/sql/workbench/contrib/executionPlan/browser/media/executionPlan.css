@@ -732,3 +732,11 @@ However we always want it to be the width of the container it is resizing.
 .eps-container .comparison-editor .editor-toolbar .action-item .codicon.action-label {
 	padding-left: 20px;
 }
+
+.eps-container .comparison-editor .parent-row-styling {
+	font-weight: bold;
+}
+
+.eps-container .comparison-editor .default-bottom-column-cell-styling {
+	padding-left: 0px;
+}

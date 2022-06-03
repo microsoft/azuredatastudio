@@ -7,13 +7,14 @@ import { ExecutionPlanPropertiesViewBase, PropertiesSortType } from 'sql/workben
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import * as azdata from 'azdata';
 import { localize } from 'vs/nls';
-import { iconCssFormatter, textFormatter } from 'sql/base/browser/ui/table/formatters';
+import { textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { isString } from 'vs/base/common/types';
 import { removeLineBreaks } from 'sql/base/common/strings';
 import * as DOM from 'vs/base/browser/dom';
 import { InternalExecutionPlanElement } from 'sql/workbench/contrib/executionPlan/browser/azdataGraphView';
 import { executionPlanComparisonPropertiesDifferent, executionPlanComparisonPropertiesGreenDownArrow, executionPlanComparisonPropertiesRedDownArrow, executionPlanComparisonPropertiesGreenUpArrow, executionPlanComparisonPropertiesRedUpArrow } from 'sql/workbench/contrib/executionPlan/browser/constants';
 import * as sqlExtHostType from 'sql/workbench/api/common/sqlExtHostTypes';
+import { TextWithIconColumn } from 'sql/base/browser/ui/table/plugins/textWithIconColumn';
 
 export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanPropertiesViewBase {
 	private _model: ExecutionPlanComparisonPropertiesViewModel;
@@ -90,15 +91,13 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 			});
 		}
 		if (this._model.bottomElement) {
-			columns.push({
+			columns.push(new TextWithIconColumn({
 				id: 'value',
 				name: localize('nodePropertyViewNameValueColumnBottomHeader', "Value (Bottom Plan)"),
 				field: 'value2',
 				width: 150,
-				editor: Slick.Editors.Text,
 				headerCssClass: 'prop-table-header',
-				formatter: iconCssFormatter
-			});
+			}).definition);
 		}
 
 		let topProps = [];
@@ -209,7 +208,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 
 			if (topProp && bottomProp) {
 				row['displayOrder'] = v.topProp.displayOrder;
-				let diffIconClass = '';
+				let diffIconClass = 'default-bottom-column-cell-styling';
 				if (v.topProp.displayValue !== v.bottomProp.displayValue) {
 					switch (v.topProp.betterValue) {
 						case sqlExtHostType.executionPlan.ExecutionPlanGraphElementPropertyBetterValue.None:
@@ -249,14 +248,13 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 					text: removeLineBreaks(v.topProp.displayValue, ' ')
 				};
 				row['value2'] = {
-					text: removeLineBreaks(v.bottomProp.displayValue, ' '),
 					iconCssClass: diffIconClass,
 					title: removeLineBreaks(v.bottomProp.displayValue, ' ')
 				};
 				if ((topProp && !isString(topProp.value)) || (bottomProp && !isString(bottomProp.value))) {
 					row['name'].style = parentRowCellStyling;
 					row['value1'].style = parentRowCellStyling;
-					row['value2'].style = parentRowCellStyling;
+					row['value2'].iconCssClass += ` parent-row-styling`;
 				}
 				rows.push(row);
 				if (!isString(topProp.value) && !isString(bottomProp.value)) {
@@ -280,12 +278,12 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 			} else if (!topProp && bottomProp) {
 				row['displayOrder'] = v.bottomProp.displayOrder;
 				row['value2'] = {
-					text: v.bottomProp.displayValue
+					title: v.bottomProp.displayValue
 				};
 				rows.push(row);
 				if (!isString(bottomProp.value)) {
 					row['name'].style = parentRowCellStyling;
-					row['value2'].style = parentRowCellStyling;
+					row['value2'].iconCssClass += ` parent-row-styling`;
 					this.convertPropertiesToTableRows(undefined, bottomProp.value, rows.length - 1, indent + 2, rows);
 				}
 			}
