@@ -15,7 +15,6 @@ import { Action } from 'vs/base/common/actions';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IColorTheme, ICssStyleCollector, IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import * as DOM from 'vs/base/browser/dom';
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
@@ -105,9 +104,7 @@ export class ExecutionPlanComparisonEditorView {
 	constructor(
 		parentContainer: HTMLElement,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
 		@IThemeService private themeService: IThemeService,
-		@IStorageService storageService: IStorageService,
 		@IExecutionPlanService private _executionPlanService: IExecutionPlanService,
 		@IFileDialogService private _fileDialogService: IFileDialogService,
 		@IContextViewService readonly contextViewService: IContextViewService,
