@@ -96,7 +96,7 @@ describe('ProjectsController', function (): void {
 					const project = new Project('FakePath');
 
 					should(project.files.length).equal(0);
-					await projController.addItemPrompt(new Project('FakePath'), '', ItemType.script);
+					await projController.addItemPrompt(new Project('FakePath'), '', { itemType: ItemType.script });
 					should(project.files.length).equal(0, 'Expected to return without throwing an exception or adding a file when an empty/undefined name is provided.');
 					should(showErrorMessageSpy.notCalled).be.true('showErrorMessage should not have been called');
 					showInputBoxStub.restore();
@@ -112,9 +112,9 @@ describe('ProjectsController', function (): void {
 				const project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
 
 				should(project.files.length).equal(0, 'There should be no files');
-				await projController.addItemPrompt(project, '', ItemType.script);
+				await projController.addItemPrompt(project, '', { itemType: ItemType.script });
 				should(project.files.length).equal(1, 'File should be successfully added');
-				await projController.addItemPrompt(project, '', ItemType.script);
+				await projController.addItemPrompt(project, '', { itemType: ItemType.script });
 				const msg = constants.fileAlreadyExists(tableName);
 				should(spy.calledOnce).be.true('showErrorMessage should have been called exactly once');
 				should(spy.calledWith(msg)).be.true(`showErrorMessage not called with expected message '${msg}' Actual '${spy.getCall(0).args[0]}'`);
@@ -327,13 +327,13 @@ describe('ProjectsController', function (): void {
 
 				sinon.stub(vscode.window, 'showInputBox').resolves(preDeployScriptName);
 				should(project.preDeployScripts.length).equal(0, 'There should be no pre deploy scripts');
-				await projController.addItemPrompt(project, '', ItemType.preDeployScript);
+				await projController.addItemPrompt(project, '', { itemType: ItemType.preDeployScript });
 				should(project.preDeployScripts.length).equal(1, `Pre deploy script should be successfully added. ${project.preDeployScripts.length}, ${project.files.length}`);
 
 				sinon.restore();
 				sinon.stub(vscode.window, 'showInputBox').resolves(postDeployScriptName);
 				should(project.postDeployScripts.length).equal(0, 'There should be no post deploy scripts');
-				await projController.addItemPrompt(project, '', ItemType.postDeployScript);
+				await projController.addItemPrompt(project, '', { itemType: ItemType.postDeployScript });
 				should(project.postDeployScripts.length).equal(1, 'Post deploy script should be successfully added');
 			});
 
