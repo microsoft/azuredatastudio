@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { extensionsWorkbenchServiceIncompatible } from 'sql/base/common/locConstants';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
 import { Schemas } from 'vs/base/common/network';
@@ -114,7 +115,7 @@ export class ExtensionManagementService extends AbstractExtensionManagementServi
 			throw new Error(nls.localize('incompatible', "Unable to install extension '{0}' as it is not compatible with the current VS Code engine version '{1}'.", id, product.vscodeVersion));
 		}
 		if (manifest.engines?.azdata && !isEngineValid(manifest.engines.azdata, product.version, product.date)) {
-			throw new Error(nls.localize('incompatibleAzdata', "Unable to install extension '{0}' as it is not compatible with Azure Data Studio '{1}'. Update to Azure Data Studio {2} to install the extension.", id, product.version, manifest.engines.azdata));
+			throw new Error(extensionsWorkbenchServiceIncompatible(id, product.version, manifest.engines.azdata));
 		}
 		/*
 		if (manifest.engines && manifest.engines.vscode && !isEngineValid(manifest.engines.vscode, product.version, product.date)) {
