@@ -94,8 +94,6 @@ export class AddNewPackageTab {
 				}]).component();
 
 			await view.initializeModel(formModel);
-
-			await this.resetPageFields();
 		});
 	}
 
