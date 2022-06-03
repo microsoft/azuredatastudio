@@ -148,7 +148,7 @@ export class PostgresModel extends ResourceModel {
 				if (!result.connected) {
 					throw new Error(result.errorMessage);
 				}
-				this._activeConnectionId = result.connectionId;
+				this._activeConnectionId = result.connectionId!;
 			}
 
 			// TODO Need to make separate calls for worker nodes and coordinator node

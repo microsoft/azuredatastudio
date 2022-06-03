@@ -111,7 +111,7 @@ export abstract class ConnectToSqlDialog extends InitializingComponent {
 		};
 		const result = await azdata.connection.connect(connectionProfile, false, false);
 		if (result.connected) {
-			connectionProfile.id = result.connectionId;
+			connectionProfile.id = result.connectionId!;
 			const credentialProvider = await azdata.credentials.getProvider(credentialNamespace);
 			if (connectionProfile.savePassword) {
 				await credentialProvider.saveCredential(createCredentialId(this._controllerModel.info.id, this._model.info.resourceType, this._model.info.name), connectionProfile.password);
