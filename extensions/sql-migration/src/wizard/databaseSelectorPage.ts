@@ -225,6 +225,9 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		// load unfiltered table list and pre-select list of databases saved in state
 		await this._filterTableList('', this.migrationStateModel._databasesForAssessment);
 
+		//
+		await this._filterTableList('', this.migrationStateModel._preselectedDatabaseNames);
+
 		const flex = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 			height: '100%',

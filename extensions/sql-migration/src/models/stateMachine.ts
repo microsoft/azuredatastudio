@@ -153,6 +153,8 @@ export interface SkuRecommendationSavedInfo {
 }
 
 export class MigrationStateModel implements Model, vscode.Disposable {
+	public _preselectedDatabaseNames: string[] = [];
+
 	public _azureAccounts!: azdata.Account[];
 	public _azureAccount!: azdata.Account;
 	public _accountTenants!: azurecore.Tenant[];

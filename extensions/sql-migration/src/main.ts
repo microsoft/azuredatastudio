@@ -15,6 +15,7 @@ import { DashboardWidget } from './dashboard/sqlServerDashboard';
 import { MigrationLocalStorage } from './models/migrationLocalStorage';
 import { MigrationStateModel, SavedInfo } from './models/stateMachine';
 import { SavedAssessmentDialog } from './dialog/assessmentResults/savedAssessmentDialog';
+import { UriHandlerService } from './api/uriHandlerService';
 
 class SQLMigration {
 
@@ -28,13 +29,14 @@ class SQLMigration {
 
 	async start(): Promise<void> {
 		await this.registerCommands();
+		// this.registerUriHandler();
 	}
 
 	async registerCommands(): Promise<void> {
 		const commandDisposables: vscode.Disposable[] = [ // Array of disposables returned by registerCommand
 			vscode.commands.registerCommand(
 				'sqlmigration.start',
-				async () => await this.launchMigrationWizard()),
+				async (databases: string) => await this.launchMigrationWizard(databases)),
 			vscode.commands.registerCommand(
 				'sqlmigration.openNotebooks',
 				async () => {
@@ -63,7 +65,7 @@ class SQLMigration {
 				}),
 			azdata.tasks.registerTask(
 				'sqlmigration.start',
-				async () => await this.launchMigrationWizard()),
+				async () => await this.launchMigrationWizard("")),
 			azdata.tasks.registerTask(
 				'sqlmigration.newsupportrequest',
 				async () => await this.launchNewSupportRequest()),
@@ -85,7 +87,15 @@ class SQLMigration {
 		this.context.subscriptions.push(...commandDisposables);
 	}
 
-	async launchMigrationWizard(): Promise<void> {
+	registerUriHandler(): void {
+		const uriHandlerService = new UriHandlerService();
+		vscode.window.registerUriHandler(uriHandlerService);
+
+		console.log('URI handler registered');
+		void vscode.window.showInformationMessage('URI handler registered');
+	}
+
+	async launchMigrationWizard(selectedDatabases: string): Promise<void> {
 		let activeConnection = await azdata.connection.getCurrentConnection();
 		let connectionId: string = '';
 		let serverName: string = '';
@@ -104,6 +114,9 @@ class SQLMigration {
 			if (api) {
 				this.stateModel = new MigrationStateModel(this.context, connectionId, api.sqlMigration);
 				this.context.subscriptions.push(this.stateModel);
+				if (selectedDatabases) {
+					this.stateModel._preselectedDatabaseNames = selectedDatabases.split(',');
+				}
 				const savedInfo = this.checkSavedInfo(serverName);
 				if (savedInfo) {
 					this.stateModel.savedInfo = savedInfo;
@@ -148,6 +161,7 @@ let widget: DashboardWidget;
 export async function activate(context: vscode.ExtensionContext) {
 	sqlMigration = new SQLMigration(context);
 	await sqlMigration.registerCommands();
+	sqlMigration.registerUriHandler();
 	widget = new DashboardWidget(context);
 	widget.register();
 }
