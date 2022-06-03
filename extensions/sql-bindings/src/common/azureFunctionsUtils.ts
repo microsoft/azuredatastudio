@@ -237,7 +237,7 @@ export function waitForNewHostFile(): IFileFunctionObject {
  * @param selectedProjectFile is the users selected project file path
  */
 export async function addNugetReferenceToProjectFile(selectedProjectFile: string): Promise<void> {
-	await utils.executeCommand(`dotnet add ${selectedProjectFile} package ${constants.sqlExtensionPackageName} --prerelease`);
+	await utils.executeCommand(`dotnet add "${selectedProjectFile}" package ${constants.sqlExtensionPackageName} --prerelease`);
 }
 
 /**
