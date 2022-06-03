@@ -57,7 +57,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 	}
 
 	protected async refresh(): Promise<void> {
-		await this._controllerModel.refresh(false, this._controllerModel.info.namespace);
+		await this._controllerModel.refresh(false, this._controllerModel.info.resourceGroup, this._controllerModel.info.namespace);
 	}
 
 	public get container(): azdata.Component {

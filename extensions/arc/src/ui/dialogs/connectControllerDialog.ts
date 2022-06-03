@@ -196,7 +196,7 @@ export class ConnectToControllerDialog extends ControllerDialogBase {
 		const controllerModel = new ControllerModel(this.treeDataProvider, controllerInfo);
 		try {
 			// Validate that we can connect to the controller, this also populates the controllerRegistration from the connection response.
-			await controllerModel.refresh(false, this.namespaceInputBox.value);
+			await controllerModel.refresh(false, this.resourceGroup, this.namespaceInputBox.value);
 			// default info.name to the name of the controller instance if the user did not specify their own and to a pre-canned default if for some weird reason controller endpoint returned instanceName is also not a valid value
 			controllerModel.info.name = controllerModel.info.name || controllerModel.controllerConfig?.metadata.name || loc.defaultControllerName;
 			controllerModel.info.resourceGroup = <string>controllerModel.controllerConfig?.spec.settings.azure.resourceGroup;

@@ -178,8 +178,25 @@ export class AzTool implements azExt.IAzApi {
 			delete: (name: string, namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<void>> => {
 				return this.executeCommand<void>(['sql', 'mi-arc', 'delete', '-n', name, '--k8s-namespace', namespace, '--use-k8s'], additionalEnvVars);
 			},
-			list: (namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.SqlMiListResult[]>> => {
-				return this.executeCommand<azExt.SqlMiListResult[]>(['sql', 'mi-arc', 'list', '--k8s-namespace', namespace, '--use-k8s'], additionalEnvVars);
+			list: (
+				args: {
+					// Direct mode arguments
+					resourceGroup?: string,
+					// Indirect mode arguments
+					namespace?: string
+					// Additional arguments
+				},
+				additionalEnvVars?: azExt.AdditionalEnvVars
+			): Promise<azExt.AzOutput<azExt.SqlMiListResult[]>> => {
+				const argsArray = ['sql', 'mi-arc', 'list'];
+				if (args.resourceGroup) {
+					argsArray.push('--resource-group', args.resourceGroup);
+				}
+				if (args.namespace) {
+					argsArray.push('--k8s-namespace', args.namespace);
+					argsArray.push('--use-k8s');
+				}
+				return this.executeCommand<azExt.SqlMiListResult[]>(argsArray, additionalEnvVars);
 			},
 			show: (
 				name: string,

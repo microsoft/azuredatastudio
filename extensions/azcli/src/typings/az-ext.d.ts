@@ -567,7 +567,16 @@ declare module 'az-ext' {
 		sql: {
 			miarc: {
 				delete(name: string, namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<void>>,
-				list(namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<SqlMiListResult[]>>,
+				list(
+					args: {
+					// Direct mode arguments
+					resourceGroup?: string,
+					// Indirect mode arguments
+					namespace?: string
+					},
+					// Additional arguments
+					additionalEnvVars?: AdditionalEnvVars
+				): Promise<AzOutput<SqlMiListResult[]>>,
 				show(
 					name: string,
 					args: {
