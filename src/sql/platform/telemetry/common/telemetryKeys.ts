@@ -55,6 +55,7 @@ export const enum TelemetryError {
 }
 
 export const enum TelemetryAction {
+	AddExecutionPlan = 'AddExecutionPlan',
 	AddServerGroup = 'AddServerGroup',
 	adsCommandExecuted = 'adsCommandExecuted',
 	ConnectToServer = 'ConnectToServer',
