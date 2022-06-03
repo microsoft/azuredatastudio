@@ -149,10 +149,6 @@ export class TargetSelectionPage extends MigrationWizardPage {
 						errors.push(constants.INVALID_VIRTUAL_MACHINE_ERROR);
 						break;
 					}
-					if (targetVm.properties.provisioningState !== ProvisioningState.Succeeded) {
-						errors.push(constants.VM_NOT_READY_ERROR(targetVm.name, targetVm.properties.provisioningState));
-						break;
-					}
 					break;
 				}
 			}
@@ -411,18 +407,6 @@ export class TargetSelectionPage extends MigrationWizardPage {
 						const selectedVm = this.migrationStateModel._targetSqlVirtualMachines.find(vm => vm.name === value || constants.UNAVAILABLE_TARGET_PREFIX(vm.name) === value);
 						if (selectedVm) {
 							this.migrationStateModel._targetServerInstance = utils.deepClone(selectedVm)! as SqlVMServer;
-
-							if (this.migrationStateModel._targetServerInstance.properties.provisioningState !== ProvisioningState.Succeeded) {
-								this.wizard.message = {
-									text: constants.VM_NOT_READY_ERROR(this.migrationStateModel._targetServerInstance.name, this.migrationStateModel._targetServerInstance.properties.provisioningState),
-									level: azdata.window.MessageLevel.Error
-								};
-							} else {
-								this.wizard.message = {
-									text: '',
-									level: azdata.window.MessageLevel.Error
-								};
-							}
 						}
 						break;
 
