@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { createSqlMigrationService, getSqlMigrationService, getSqlMigrationServiceAuthKeys, getSqlMigrationServiceMonitoringData, SqlMigrationService } from '../../api/azure';
+import { createSqlMigrationService, getResourceName, getSqlMigrationService, getSqlMigrationServiceAuthKeys, getSqlMigrationServiceMonitoringData, SqlMigrationService } from '../../api/azure';
 import { MigrationStateModel, NetworkContainerType } from '../../models/stateMachine';
 import { logError, TelemetryViews } from '../../telemtery';
 import * as constants from '../../constants/strings';
@@ -499,7 +499,8 @@ export class CreateSqlMigrationServiceDialog {
 
 	private async refreshStatus(): Promise<void> {
 		const subscription = this._model._targetSubscription;
-		const resourceGroup = (this.migrationServiceResourceGroupDropdown.value as azdata.CategoryValue).name;
+		const resourceGroupId = (this.migrationServiceResourceGroupDropdown.value as azdata.CategoryValue).name;
+		const resourceGroup = getResourceName(resourceGroupId);
 		const location = this._model._targetServerInstance.location;
 
 		const maxRetries = 5;
@@ -562,7 +563,8 @@ export class CreateSqlMigrationServiceDialog {
 	}
 	private async refreshAuthTable(): Promise<void> {
 		const subscription = this._model._targetSubscription;
-		const resourceGroup = (this.migrationServiceResourceGroupDropdown.value as azdata.CategoryValue).name;
+		const resourceGroupId = (this.migrationServiceResourceGroupDropdown.value as azdata.CategoryValue).name;
+		const resourceGroup = getResourceName(resourceGroupId);
 		const location = this._model._targetServerInstance.location;
 		const keys = await getSqlMigrationServiceAuthKeys(
 			this._model._azureAccount,
