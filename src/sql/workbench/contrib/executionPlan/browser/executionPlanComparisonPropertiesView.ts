@@ -205,10 +205,9 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 			const topProp = v.topProp;
 			const bottomProp = v.bottomProp;
 			const parentRowCellStyling = 'font-weight: bold';
-
+			let diffIconClass = 'default-bottom-column-cell-styling';
 			if (topProp && bottomProp) {
 				row['displayOrder'] = v.topProp.displayOrder;
-				let diffIconClass = 'default-bottom-column-cell-styling';
 				if (v.topProp.displayValue !== v.bottomProp.displayValue) {
 					switch (v.topProp.betterValue) {
 						case sqlExtHostType.executionPlan.ExecutionPlanGraphElementPropertyBetterValue.None:
@@ -278,7 +277,8 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 			} else if (!topProp && bottomProp) {
 				row['displayOrder'] = v.bottomProp.displayOrder;
 				row['value2'] = {
-					title: v.bottomProp.displayValue
+					title: v.bottomProp.displayValue,
+					iconCssClass: diffIconClass
 				};
 				rows.push(row);
 				if (!isString(bottomProp.value)) {
