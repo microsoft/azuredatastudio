@@ -132,7 +132,7 @@ export class ExecutionPlanComparisonEditorView {
 		this._zoomOutAction = new ZoomOutAction();
 		this._zoomInAction = new ZoomInAction();
 		this._zoomToFitAction = new ZoomToFitAction();
-		this._propertiesAction = new PropertiesAction();
+		this._propertiesAction = this._instantiationService.createInstance(PropertiesAction);
 		this._toggleOrientationAction = new ToggleOrientation();
 		this._resetZoomAction = new ZoomReset();
 		const content: ITaskbarContent[] = [
@@ -613,12 +613,18 @@ class PropertiesAction extends Action {
 	public static ID = 'epCompare.comparePropertiesAction';
 	public static LABEL = localize('epCompare.comparePropertiesAction', "Properties");
 
-	constructor() {
+	constructor(
+		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService
+	) {
 		super(PropertiesAction.ID, PropertiesAction.LABEL, openPropertiesIconClassNames);
 		this.enabled = false;
 	}
 
 	public override async run(context: ExecutionPlanComparisonEditorView): Promise<void> {
+		this.telemetryService
+			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.ViewExecutionPlanComparisonProperties)
+			.send();
+
 		context.togglePropertiesView();
 	}
 }
