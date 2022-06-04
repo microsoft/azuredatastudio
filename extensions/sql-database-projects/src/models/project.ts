@@ -1264,7 +1264,7 @@ export class Project implements ISqlProject {
 	 */
 	private async undoExcludeFileFromProjFile(xmlTag: string, relativePath: string): Promise<void> {
 		const nodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(xmlTag);
-		if (await this.removeNode(relativePath, nodes, true)) {
+		if (this.removeNode(relativePath, nodes, true)) {
 			await this.serializeToProjFile(this.projFileXmlDoc!);
 		}
 	}

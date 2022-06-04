@@ -69,11 +69,11 @@ describe('NetCoreTool: Net core tests', function (): void {
 			should(text.toString().trim()).equal('test');
 		}
 		finally {
-			await fs.exists(dummyFile, async (existBool) => {
-				if (existBool) {
-					await fs.promises.unlink(dummyFile);
-				}
-			});
+			try {
+				await fs.promises.unlink(dummyFile);
+			} catch (err) {
+				console.warn(`Failed to clean up ${dummyFile}`);
+			}
 		}
 	});
 });
