@@ -83,11 +83,11 @@ export class AddNewPackageTab {
 					component: this.newPackagesNameLoader,
 					title: localize('managePackages.packageNameTitle', "Package Name")
 				}, {
-					component: this.newPackagesVersionsLoader,
-					title: localize('managePackages.packageVersionTitle', "Package Version")
-				}, {
 					component: this.newPackagesSummaryLoader,
 					title: localize('managePackages.packageSummaryTitle', "Package Summary")
+				}, {
+					component: this.newPackagesVersionsLoader,
+					title: localize('managePackages.packageVersionTitle', "Supported Package Versions for Python {0}", this.jupyterInstallation.installedPythonVersion)
 				}, {
 					component: this.packageInstallButton,
 					title: ''
