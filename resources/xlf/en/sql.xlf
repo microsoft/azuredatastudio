@@ -790,9 +790,6 @@
     <trans-unit id="tableDesigner.OperationInProgressWarning">
       <source xml:lang="en">The operation cannot be performed while another operation is in progress.</source>
     </trans-unit>
-    <trans-unit id="tableDesigner.newTable">
-      <source xml:lang="en">New Table</source>
-    </trans-unit>
 </body></file>
   <file original="src/sql/workbench/browser/modal/modal" source-language="en" datatype="plaintext"><body>
     <trans-unit id="closeMessage">
@@ -3175,13 +3172,13 @@ Error: {1}</source>
       <source xml:lang="en">Error rendering component: {0}</source>
     </trans-unit>
     <trans-unit id="noMimeTypeFound">
-      <source xml:lang="en">No {0}renderer could be found for output. It has the following MIME types: {1}</source>
+      <source xml:lang="en">No renderer could be found for output. It has the following MIME types: {0}</source>
+    </trans-unit>
+    <trans-unit id="noSafeMimeTypeFound">
+      <source xml:lang="en">No safe renderer could be found for output. It has the following MIME types: {0}</source>
     </trans-unit>
     <trans-unit id="noSelectorFound">
       <source xml:lang="en">No component could be found for selector {0}</source>
-    </trans-unit>
-    <trans-unit id="safe">
-      <source xml:lang="en">safe </source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/notebook/browser/cellViews/placeholderCell.component" source-language="en" datatype="plaintext"><body>
@@ -3782,8 +3779,8 @@ Error: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/objectExplorer/browser/serverTreeView" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="serverTree.addConnection">
-      <source xml:lang="en">Add Connection</source>
+    <trans-unit id="serverTree.newConnection">
+      <source xml:lang="en">New Connection</source>
     </trans-unit>
     <trans-unit id="servers.noConnections">
       <source xml:lang="en">No connections found.</source>
@@ -4533,11 +4530,11 @@ Error: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/tableDesigner/browser/actions" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="tableDesigner.generateScript">
-      <source xml:lang="en">Generate Script</source>
-    </trans-unit>
     <trans-unit id="tableDesigner.publishTableChanges">
       <source xml:lang="en">Publish Changes...</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.saveTableChanges">
+      <source xml:lang="en">Save</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/tableDesigner/browser/tableDesignerEditor" source-language="en" datatype="plaintext"><body>
