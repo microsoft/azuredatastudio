@@ -180,10 +180,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 			this._data = new TableDataView<T>(data);
 		}
 		this._grid.setData(this._data, true);
-		if (!(data instanceof AsyncDataProvider)) {
-			// AsyncDataProvider does not support filtering currently.
-			this._data.filter(this._grid.getColumns());
-		}
+		this._data.filter(this._grid.getColumns());
 	}
 
 	getData(): IDisposableDataProvider<T> {

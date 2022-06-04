@@ -497,8 +497,12 @@ export class EditDataGridPanel extends GridParentComponent {
 			this.firstLoad = false;
 		}
 		else {
-
-			this.table.setData(this.gridDataProvider);
+			try {
+				this.table.setData(this.gridDataProvider);
+			}
+			catch (e) {
+				this.logService.error('Error encountered while setting or filtering data: ' + e);
+			}
 			this.handleChanges({
 				['dataRows']: { currentValue: this.dataSet.dataRows, firstChange: this.firstLoad, previousValue: this.oldDataRows }
 			});
