@@ -597,7 +597,9 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 			};
 
 			const executionPlan: typeof azdata.executionPlan = {
-				BadgeType: sqlExtHostTypes.executionPlan.BadgeType
+				BadgeType: sqlExtHostTypes.executionPlan.BadgeType,
+				ExecutionPlanGraphElementPropertyDataType: sqlExtHostTypes.executionPlan.ExecutionPlanGraphElementPropertyDataType,
+				ExecutionPlanGraphElementPropertyBetterValue: sqlExtHostTypes.executionPlan.ExecutionPlanGraphElementPropertyBetterValue
 			};
 
 			return {
