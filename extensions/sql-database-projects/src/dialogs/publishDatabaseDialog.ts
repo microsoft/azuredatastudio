@@ -684,7 +684,7 @@ export class PublishDatabaseDialog {
 			requiredIndicator: true,
 			width: cssStyles.publishDialogLabelWidth
 		}).component();
-		const itemLayout = { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } };
+		const itemLayout = { flex: '0 0 auto', CSSStyles: { 'margin-right': '12px' } };
 		if (this.databaseRow === undefined) {
 			this.databaseRow = view.modelBuilder.flexContainer().withItems([databaseLabel, <azdataType.Component>databaseComponent], itemLayout).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 		} else {
@@ -911,7 +911,7 @@ export class PublishDatabaseDialog {
 			width: 120
 		}).component();
 
-		const optionsRow = view.modelBuilder.flexContainer().withItems([this.optionsButton], { CSSStyles: { flex: '0 0 auto', 'margin': '6px 0 0 290px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+		const optionsRow = view.modelBuilder.flexContainer().withItems([this.optionsButton], { CSSStyles: { flex: '0 0 auto', 'margin': '6px 0 0 287px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		this.toDispose.push(this.optionsButton.onDidClick(async () => {
 			TelemetryReporter.sendActionEvent(TelemetryViews.SqlProjectPublishDialog, TelemetryActions.publishConfigureOptionsClicked);
