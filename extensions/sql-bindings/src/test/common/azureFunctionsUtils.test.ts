@@ -236,7 +236,7 @@ describe('AzureFunctionUtils', function (): void {
 		});
 	});
 
-	afterEach(async function (): Promise<void> {
+	afterEach(function (): void {
 		sinon.restore();
 	});
 });
