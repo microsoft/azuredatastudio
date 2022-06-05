@@ -13,7 +13,6 @@ import { localize } from 'vs/nls';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 import { CellChangeEvent, INotebookView, INotebookViewCard } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
-import { generateLayout } from 'sql/workbench/services/notebook/browser/notebookViews/autodash';
 
 export interface INotebookViewsGridOptions {
 	cellHeight?: number;
@@ -95,11 +94,6 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 				this._grid = undefined;
 			}
 		}
-
-		if (this.model?.activeCell?.id !== this._activeCell?.id) {
-			this._activeCell = this.model.activeCell;
-			this.detectChanges();
-		}
 	}
 
 	ngAfterViewChecked() {
@@ -177,9 +171,17 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 		this._items.forEach((i: NotebookViewsCardComponent) => {
 			if (i.elementRef) {
 				const cellHeight = this._options.cellHeight;
+				let maxTabHeight = 30;
 
-				const naturalHeight = i.elementRef.nativeElement.clientHeight;
-				const heightInCells = Math.ceil(naturalHeight / cellHeight);
+				const cardContainers: HTMLCollection = i.elementRef.nativeElement.getElementsByClassName('card-container');
+				if (cardContainers) {
+					maxTabHeight = Array.from(cardContainers).reduce((accum, cardContainer) => {
+						return Math.max(cardContainer.children[0]?.clientHeight ?? 0, accum);
+					}, maxTabHeight);
+				}
+
+				const cardNaturalHeight = i.elementRef.nativeElement.clientHeight + maxTabHeight;
+				const heightInCells = Math.ceil(cardNaturalHeight / cellHeight);
 
 				const update: INotebookViewCard = {
 					height: heightInCells
@@ -193,7 +195,11 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 	private runAutoLayout(view: INotebookView): void {
 		//Resize the cells before regenerating layout so that we know the natural height of the cells
 		this.resizeCards();
-		generateLayout(view);
+		//generateLayout(view);
+	}
+
+	trackByCardId(index, item) {
+		return item ? item.guid : undefined;
 	}
 
 	private detectChanges(): void {

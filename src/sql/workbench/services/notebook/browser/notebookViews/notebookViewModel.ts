@@ -103,7 +103,7 @@ export class NotebookViewModel implements INotebookView {
 		let card: INotebookViewCard;
 		cells.forEach((cell, idx) => {
 			card = {
-				guid: this.guid,
+				guid: generateUuid(),
 				y: idx * DEFAULT_VIEW_CARD_HEIGHT,
 				x: 0,
 				width: DEFAULT_VIEW_CARD_WIDTH,
@@ -246,22 +246,21 @@ export class NotebookViewModel implements INotebookView {
 	}
 
 	public compactCells() {
-		let cellsPlaced: INotebookViewCard[] = [];
+		let cardsPlaced: INotebookViewCard[] = [];
 
-		this.displayedCells.forEach((cell: ICellModel) => {
-			const c1 = this.getCellMetadata(cell);
+		this.cards.forEach((card: INotebookViewCard) => {
 
 			for (let i = 0; ; i++) {
 				const row = i % GRID_COLUMNS;
 				const column = Math.floor(i / GRID_COLUMNS);
 
-				if (row + c1.width > GRID_COLUMNS) {
+				if (row + card.width > GRID_COLUMNS) {
 					continue;
 				}
 
-				if (!cellsPlaced.find((c2) => cellCollides(c2, { ...c1, x: row, y: column }))) {
-					this._notebookViews.updateCell(cell, this, { x: row, y: column });
-					cellsPlaced.push({ ...c1, x: row, y: column });
+				if (!cardsPlaced.find((c2) => cellCollides(c2, { ...card, x: row, y: column }))) {
+					this._notebookViews.updateCard(card, { x: row, y: column }, this);
+					cardsPlaced.push({ ...card, x: row, y: column });
 					break;
 				}
 			}
