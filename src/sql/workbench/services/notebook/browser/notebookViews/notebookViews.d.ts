@@ -15,6 +15,12 @@ export type CellChangeEvent = {
 	event: CellChangeEventType
 };
 
+export interface INotebookViewsExtensionUpgrade {
+	readonly version: number;
+	versionCheck(version: number): boolean;
+	apply(notebook: INotebookModel): void;
+}
+
 export interface INotebookViews {
 	onActiveViewChanged: Event<void>;
 	createNewView(name?: string): INotebookView;

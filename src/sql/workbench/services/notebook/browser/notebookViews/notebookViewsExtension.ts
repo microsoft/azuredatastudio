@@ -16,7 +16,7 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 	static readonly extension = 'notebookviews';
 
 	readonly maxNameIterationAttempts = 100;
-	override readonly version = 1;
+	override readonly version: number = 2;
 
 	protected _metadata: INotebookViewMetadata | undefined;
 	private _initialized: boolean = false;
@@ -30,6 +30,54 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 
 	public load(): void {
 		this._metadata = this.getExtensionMetadata();
+
+		if (this._metadata.version === 1) {
+			const extensions = this.notebook.getMetaValue('extensions');
+			const notebookviews = extensions['notebookviews'];
+			const views = notebookviews['views'];
+
+			const newmeta = {
+				version: 2,
+				activeView: null,
+				views: []
+			};
+
+			views.forEach((view, viewIdx) => {
+				const viewData = {
+					guid: view.guid,
+					name: view.name,
+					cards: []
+				};
+
+				const cells = this.notebook.cells;
+				cells.forEach((cell) => {
+					const cellmeta = cell.metadata['extensions']?.['notebookviews']?.['views']?.[viewIdx];
+					if (cellmeta && !cellmeta?.hidden) {
+						const card = {
+							guid: generateUuid(),
+							y: cellmeta.y,
+							x: cellmeta.x,
+							width: cellmeta.width,
+							height: cellmeta.height,
+							tabs: [{
+								title: 'Untitled',
+								guid: generateUuid(),
+								cell: {
+									guid: cell.cellGuid
+								}
+							}]
+						};
+
+						viewData.cards.push(card);
+					}
+				});
+
+				newmeta.views.push(viewData);
+			});
+
+			this.setExtensionMetadata(this.notebook, newmeta);
+			this._metadata = this.getExtensionMetadata();
+		}
 
 		if (this._metadata) {
 			this._metadata.views = this._metadata.views.map(view => NotebookViewModel.load(view.guid, this));
