@@ -142,16 +142,7 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 	public removeView(guid: string) {
 		let viewToRemove = this._metadata?.views.findIndex(view => view.guid === guid);
 		if (viewToRemove >= 0) {
-			let removedView = this._metadata?.views.splice(viewToRemove, 1);
-
-			// Remove view data for each cell
-			if (removedView.length === 1) {
-				this._notebook?.cells.forEach((cell) => {
-					let meta = this.getExtensionCellMetadata(cell);
-					meta.views = meta.views.filter(x => x.guid !== removedView[0].guid);
-					this.setExtensionCellMetadata(cell, meta);
-				});
-			}
+			this._metadata?.views.splice(viewToRemove, 1);
 		}
 
 		if (guid === this._metadata?.activeView) {
