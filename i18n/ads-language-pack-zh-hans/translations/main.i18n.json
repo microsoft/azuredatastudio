@@ -10175,8 +10175,7 @@
 			"designer.issuesTabTitle": "问题({0})",
 			"designer.loadingDesigner": "正在加载设计器...",
 			"designer.loadingDesignerCompleted": "已加载设计器",
-			"designer.newRowButtonAriaLabel": "将新行添加到 \\\"{0}\\\" 表",
-			"designer.newRowText": "新增",
+			"designer.moveRowText": "移动行",
 			"designer.processing": "正在处理...",
 			"designer.processingChanges": "正在处理更改...",
 			"designer.processingChangesCompleted": "已处理更改",
@@ -10185,7 +10184,7 @@
 			"designer.publishingChanges": "正在发布更改...",
 			"designer.removeRowText": "删除",
 			"designer.scriptTabTitle": "脚本",
-			"tableDesigner.unknownComponentType": "组件类型: 不支持 {0}"
+			"designer.unknownComponentType": "组件类型: 不支持 {0}"
 		},
 		"sql/workbench/browser/designer/designerPropertiesPane": {
 			"tableDesigner.propertiesPaneTitle": "属性",
@@ -10350,6 +10349,7 @@
 		},
 		"sql/workbench/contrib/backup/browser/backup.component": {
 			"addFile": "添加文件",
+			"addUrl": "添加 URL",
 			"backup.advancedConfiguration": "高级配置",
 			"backup.algorithm": "算法",
 			"backup.backupDevice": "备份文件",
@@ -10357,6 +10357,7 @@
 			"backup.backupName": "备份名称",
 			"backup.backupTail": "备份日志的末尾",
 			"backup.backupType": "备份类型",
+			"backup.backupUrl": "备份 URL",
 			"backup.certificateOrAsymmetricKey": "证书或非对称密钥",
 			"backup.checksumContainer": "在写入到媒体前执行校验和",
 			"backup.compression": "压缩",
@@ -10378,9 +10379,11 @@
 			"backup.reliability": "可靠性",
 			"backup.setBackupCompression": "设置备份压缩",
 			"backup.setBackupRetainDays": "设置备份保留天数",
+			"backup.toUrl": "将备份保存到 URL",
 			"backup.transactionLog": "事务日志",
 			"backup.truncateTransactionLog": "截断事务日志",
 			"backup.verifyContainer": "完成后验证备份",
+			"backupBrowseButton": "浏览",
 			"backupComponent.backup": "备份",
 			"backupComponent.cancel": "取消",
 			"backupComponent.invalidInput": "输入无效。值必须大于或等于 0。",
@@ -10493,7 +10496,6 @@
 			"workbench.configuration.upgradeWorkspace": "{0} 已被替换为工作区设置中的 {1}。"
 		},
 		"sql/workbench/contrib/connection/browser/connection.contribution": {
-			"connection.parseClipboardForConnectionStringDescription": "在打开连接对话框或执行粘贴时尝试分析剪贴板的内容。",
 			"connection.showUnsupportedServerVersionWarning": "当用户连接到 Azure Data Studio 不支持的服务器版本时是否显示警告消息。",
 			"sql.defaultAuthenticationType.AzureMFA": "Azure Active Directory - 支持 MFA 的通用目录",
 			"sql.defaultAuthenticationType.AzureMFAAndUser": "Azure Active Directory - 密码",
@@ -10509,10 +10511,12 @@
 		"sql/workbench/contrib/connection/common/connectionProviderExtension": {
 			"schema.connectionOptions": "连接选项",
 			"schema.displayName": "提供程序的显示名称",
+			"schema.enableConnectionStringOption": "提供程序是否支持连接字符串作为输入选项。默认值为 false。",
 			"schema.iconPath": "服务器类型的图标路径",
 			"schema.isQueryProvider": "提供程序是否也是查询提供程序。默认值为 true。",
 			"schema.notebookKernelAlias": "提供程序的笔记本内核别名",
-			"schema.providerId": "提供程序的公用 ID"
+			"schema.providerId": "提供程序的公用 ID",
+			"schema.useConnectionStringAsDefaultOption": "连接提供程序是否使用连接字符串作为默认连接选项。默认值为 false。"
 		},
 		"sql/workbench/contrib/connection/common/connectionTreeProviderExentionPoint": {
 			"connectionTreeProvider.schema.id": "提供程序的 ID，必须与注册树数据提供程序时的 ID 相同，且必须以 \"connectionDialog/\" 开头",
@@ -10586,6 +10590,7 @@
 			"azdata.extension.contributes.dashboard.tab.container": "将在此选项卡中显示的容器。",
 			"azdata.extension.contributes.dashboard.tab.description": "将向用户显示的此选项卡的说明。",
 			"azdata.extension.contributes.dashboard.tab.group": "此选项卡所属组的唯一标识符，主页组的值: 主页。",
+			"azdata.extension.contributes.dashboard.tab.hideRefreshTask": "用于在工具栏中显示/隐藏刷新按钮的标志。默认情况下，该值为 false",
 			"azdata.extension.contributes.dashboard.tab.icon.dark": "使用深色主题时的图标路径",
 			"azdata.extension.contributes.dashboard.tab.icon.light": "使用浅色主题时的图标路径",
 			"azdata.extension.contributes.dashboard.tab.id": "此选项卡的唯一标识符。将传递到任何请求的扩展。",
@@ -11104,7 +11109,6 @@
 			"addTextLabel": "添加文本",
 			"cellNotFound": "未在此模型中找到具有 URI {0} 的单元格",
 			"cellRunFailed": "单元格运行失败 - 有关详细信息，请参阅当前所选单元格输出中的错误。",
-			"code": "代码",
 			"codeCellsPreview": "添加单元格",
 			"codePreview": "代码单元格",
 			"createFile": "创建文件",
@@ -11112,9 +11116,7 @@
 			"editor": "编辑器",
 			"nextButtonLabel": "下一步 >",
 			"previousButtonLabel": "< 上一步",
-			"runAll": "运行单元格",
 			"runAllPreview": "全部运行",
-			"text": "文本",
 			"textPreview": "文本单元格",
 			"views": "视图"
 		},
@@ -11208,6 +11210,7 @@
 			"runParameters": "使用参数运行",
 			"selectConnection": "选择连接",
 			"trustLabel": "受信任",
+			"untitledNotSupported": "无标题笔记本不支持使用参数运行。请先保存笔记本，然后再继续。[了解详细信息](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization)。",
 			"untrustLabel": "不受信任",
 			"viewNotFound": "找不到视图: {0}"
 		},
@@ -11823,7 +11826,11 @@
 			"connectionDetailsTitle": "连接详细信息",
 			"connectionDialog.cancel": "取消",
 			"connectionDialog.connect": "连接",
+			"connectionDialog.connectionProviderNotSupported": "当前未安装支持提供程序类型 \\\"{0}\\\" 的扩展。请安装它，然后重试。",
+			"connectionDialog.extensionNotInstalled": "若要连接到此资源，需要扩展 \\\"{0}\\\"。请安装它，然后重试。",
 			"connectionDialog.recentConnections": "最近的连接",
+			"connectionDialog.viewExtension": "查看扩展",
+			"connectionDialog.viewExtensions": "查看扩展",
 			"noRecentConnections": "没有最近的连接",
 			"recentConnectionTitle": "最近"
 		},
@@ -11846,7 +11853,9 @@
 			"connection.azureTenantDropdownLabel": "Azure AD 租户",
 			"connectionName": "名称(可选)",
 			"connectionWidget.AddAzureAccount": "添加帐户…",
-			"connectionWidget.fieldWillBeTrimmed": "将剪裁 {0}。",
+			"connectionWidget.ConnectionStringError": "无法分析连接字符串。",
+			"connectionWidget.Error": "错误",
+			"connectionWidget.connectionString": "连接字符串",
 			"connectionWidget.invalidAzureAccount": "必须选择一个帐户",
 			"connectionWidget.missingRequireField": "{0} 是必需的。",
 			"connectionWidget.refreshAzureCredentials": "刷新帐户凭据",
@@ -11957,8 +11966,12 @@
 			"sqlKernel": "SQL"
 		},
 		"sql/workbench/services/notebook/browser/models/cell": {
+			"cellExecutionComplete": "单元格执行已完成",
+			"cellExecutionStarted": "单元格执行已开始",
+			"codeCellLabel": "代码单元格 {0}",
 			"commandSuccessful": "已成功执行命令",
 			"executionCanceled": "查询执行已取消",
+			"mdCellLabel": "Markdown 单元格 {0}",
 			"noDefaultKernel": "此笔记本没有可用的内核",
 			"notebookNotReady": "此笔记本的会话尚未准备就绪",
 			"runCellCancelled": "单元格执行已取消",
@@ -12151,13 +12164,16 @@
 			"RestoreDialogTitle": "还原数据库",
 			"backupFilePath": "备份文件路径",
 			"backupSetsToRestore": "要还原的备份集",
+			"backupUrl": "备份 URL",
 			"database": "数据库",
 			"destination": "目标",
+			"enterBackupUrl": "请输入 URL",
 			"fileType": "文件类型",
 			"filesTitle": "文件",
 			"generalTitle": "常规",
 			"logicalFileName": "逻辑文件名",
 			"missingBackupFilePathError": "需要备份文件路径。",
+			"missingBackupUrlError": "需要备份 URL。",
 			"multipleBackupFilePath": "请输入一个或多个用逗号分隔的文件路径",
 			"optionsTitle": "选项",
 			"originalFileName": "原始文件名",
@@ -12165,11 +12181,14 @@
 			"restoreDatabaseFileAs": "将数据库文件还原为",
 			"restoreDatabaseFileDetails": "还原数据库文件详细信息",
 			"restoreDialog.backupFile": "备份文件",
+			"restoreDialog.browse": "浏览",
 			"restoreDialog.cancel": "取消",
 			"restoreDialog.database": "数据库",
 			"restoreDialog.restore": "还原",
 			"restoreDialog.restoreTitle": "还原数据库",
 			"restoreDialog.script": "脚本",
+			"restoreDialog.targetDatabaseAlreadyExists": "目标数据库已存在",
+			"restoreDialog.url": "URL",
 			"restoreFrom": "还原自",
 			"restoreOptions": "还原选项",
 			"restorePlan": "还原计划",
@@ -12177,7 +12196,8 @@
 			"serverConnection": "服务器连接",
 			"source": "源",
 			"taillogBackup": "结尾日志备份",
-			"targetDatabase": "目标数据库"
+			"targetDatabase": "目标数据库",
+			"targetDatabaseTooltip": "请输入目标数据库名称"
 		},
 		"sql/workbench/services/restore/common/constants": {
 			"backup.allFiles": "所有文件",
@@ -12190,6 +12210,7 @@
 			"groupColor": "组颜色",
 			"groupDescription": "组描述",
 			"serverGroup.cancel": "取消",
+			"serverGroup.colorValue": "颜色: {0}",
 			"serverGroup.ok": "确定"
 		},
 		"sql/workbench/services/serverGroup/common/serverGroupViewModel": {
@@ -12197,28 +12218,34 @@
 			"serverGroup.editServerGroup": "编辑服务器组"
 		},
 		"sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput": {
+			"designer.checkConstraint.description.description": "CHECK 约束的说明。",
 			"designer.checkConstraint.description.expression": "定义 CHECK 约束的表达式。",
 			"designer.checkConstraint.description.name": "CHECK 约束的名称。",
+			"designer.column.description.advancedType": "显示列的统一数据类型(包括长度、小数位数、精度)",
 			"designer.column.description.allowNulls": "指定列是否可以有 NULL 值。",
 			"designer.column.description.dataType": "显示列的数据类型名称",
 			"designer.column.description.defaultValueBinding": "列或绑定的预定义的全局默认值。",
+			"designer.column.description.description": "显示列的说明",
 			"designer.column.description.length": "可以存储在此数据库对象中的最大长度(字符)。",
 			"designer.column.description.name": "列对象的名称。",
 			"designer.column.description.precision": "对于数值数据，可以存储在此数据库对象中的最大小数位数。",
 			"designer.column.description.primaryKey": "指定该列是否包含在表的主键中。",
 			"designer.column.description.scale": "对于数值数据，可以存储在此数据库对象中的小数点右侧的最大小数位数。",
 			"designer.foreignkey.description.columnMapping": "外键列和主键列之间的映射。",
+			"designer.foreignkey.description.description": "外键的说明。",
 			"designer.foreignkey.description.name": "外键的名称。",
 			"designer.foreignkey.description.onDeleteAction": "用户尝试删除以下行时的行为: 该行包含外键关系中涉及的数据。",
 			"designer.foreignkey.description.onUpdateAction": "用户尝试更新以下行时的行为: 该行包含外键关系中涉及的数据。",
 			"designer.foreignkey.description.primaryKeyTable": "包含主键列或唯一键列的表。",
 			"designer.index.column.description.name": "列的名称。",
 			"designer.index.description.columns": "索引的列。",
+			"designer.index.description.description": "索引的说明。",
 			"designer.index.description.name": "索引的名称。",
 			"designer.table.description.description": "表的说明。",
 			"designer.table.description.name": "表对象的名称。",
 			"designer.table.description.schema": "包含该表的架构。",
 			"designer.table.primaryKeyColumns.description": "主键中的列。",
+			"designer.table.primaryKeyDescription.description": "主键的说明。",
 			"designer.table.primaryKeyName.description": "主键的名称。",
 			"tableDesigner.ErrorDialogTitle": "表设计器错误",
 			"tableDesigner.ForeignKeyTypeName": "外键",
@@ -12233,12 +12260,15 @@
 			"tableDesigner.addNewColumnToIndex": "添加列",
 			"tableDesigner.addNewColumnToPrimaryKey": "添加列",
 			"tableDesigner.addNewIndex": "新建索引",
+			"tableDesigner.checkConstraintDescriptionTitle": "说明",
 			"tableDesigner.checkConstraintExpressionTitle": "表达式",
 			"tableDesigner.checkConstraintNameTitle": "名称",
 			"tableDesigner.checkConstraintTypeName": "CHECK 约束",
 			"tableDesigner.checkConstraintsTabTitle": "检查约束",
+			"tableDesigner.columnAdvancedTypeTitle": "类型",
 			"tableDesigner.columnAllowNullTitle": "允许 Null",
 			"tableDesigner.columnDefaultValueTitle": "默认值",
+			"tableDesigner.columnDescriptionTitle": "说明",
 			"tableDesigner.columnIsPrimaryKeyTitle": "主键",
 			"tableDesigner.columnLengthTitle": "长度",
 			"tableDesigner.columnNameTitle": "名称",
@@ -12253,6 +12283,7 @@
 			"tableDesigner.foreignKey.column": "列",
 			"tableDesigner.foreignKey.foreignColumn": "外列",
 			"tableDesigner.foreignKeyColumns": "列",
+			"tableDesigner.foreignKeyDescriptionTitle": "说明",
 			"tableDesigner.foreignKeyNameTitle": "名称",
 			"tableDesigner.foreignKeyOnDeleteAction": "当删除操作发生时",
 			"tableDesigner.foreignKeyOnUpdateAction": "当更新操作发生时",
@@ -12265,11 +12296,13 @@
 			"tableDesigner.generatingScriptCompleted": "生成的脚本。",
 			"tableDesigner.index.column.name": "列",
 			"tableDesigner.indexColumns": "列",
+			"tableDesigner.indexDescription": "说明",
 			"tableDesigner.indexName": "名称",
 			"tableDesigner.indexesTabTitle": "索引",
 			"tableDesigner.inputValidationError": "输入验证失败，出现错误: {0}",
 			"tableDesigner.nameTitle": "表名",
 			"tableDesigner.primaryKeyColumnsTitle": "主键列",
+			"tableDesigner.primaryKeyDescriptionTitle": "说明",
 			"tableDesigner.primaryKeyNameTitle": "名称",
 			"tableDesigner.publishChangeError": "发布更改时出错: {0}",
 			"tableDesigner.publishChangeSuccess": "更改已成功发布。",
@@ -12287,7 +12320,8 @@
 			"showReleaseNotes": "显示入门指南"
 		},
 		"sql/workbench/api/common/notebooks/vscodeExecuteProvider": {
-			"errorStartBeforeReady": "无法启动会话，管理器尚未初始化"
+			"errorStartBeforeReady": "无法启动会话，管理器尚未初始化",
+			"notebookMultipleRequestsError": "无法执行代码单元格。当前正在执行另一个单元格。"
 		},
 		"sql/workbench/contrib/tableDesigner/browser/tableDesignerEditor": {
 			"tableDesigner.PreviewFeature": "预览功能"
@@ -12308,38 +12342,16 @@
 			"selectBox": "选择框"
 		},
 		"sql/workbench/browser/designer/designerIssuesTabPanelView": {
-			"designer.IssueListAriaLabel": "问题"
-		},
-		"sql/workbench/contrib/executionPlan/browser/executionPlan": {
-			"executionPlan.SaveFileDescription": "执行计划文件",
-			"executionPlanCustomZoom": "自定义显示比例",
-			"executionPlanFileLoadingComplete": "已生成执行计划",
-			"executionPlanFileLoadingFailed": "未能加载执行计划",
-			"executionPlanFitGraphLabel": "缩放到合适大小",
-			"executionPlanOpenGraphFile": "显示查询计划 XML",
-			"executionPlanPropertiesActionLabel": "属性",
-			"executionPlanSavePlanXML": "保存计划文件",
-			"executionPlanSearchNodeAction": "查找节点",
-			"executionPlanTitle": "查询计划(预览)",
-			"executionPlanZoomInActionLabel": "放大",
-			"executionPlanZoomOutActionLabel": "缩小",
-			"loadingExecutionPlanFile": "正在生成执行计划",
-			"openQueryAction": "打开查询"
+			"designer.IssueListAriaLabel": "问题",
+			"designer.moreInfoLink": "详细信息"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanEditor": {
 			"executionPlanEditor": "查询执行计划编辑器"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView": {
 			"executionPlanPropertiesEdgeOperationName": "边缘",
-			"executionPlanPropertyViewClose": "关闭",
-			"executionPlanPropertyViewSortAlphabetically": "按字母顺序",
-			"executionPlanPropertyViewSortByDisplayOrder": "按分类顺序",
 			"nodePropertyViewNameNameColumnHeader": "名称",
-			"nodePropertyViewNameValueColumnHeader": "值",
-			"nodePropertyViewTitle": "属性"
-		},
-		"sql/workbench/contrib/executionPlan/browser/planHeader": {
-			"planHeaderIndexAndCost": "查询 {0}: 查询成本(相对于脚本): {1}%"
+			"nodePropertyViewNameValueColumnHeader": "值"
 		},
 		"sql/workbench/contrib/executionPlan/browser/widgets/customZoomWidget": {
 			"cancelCustomZoomAction": "关闭(转义)",
@@ -12367,6 +12379,106 @@
 		},
 		"sql/base/browser/ui/table/plugins/contextMenuColumn.plugin": {
 			"table.showActions": "显示操作"
+		},
+		"sql/workbench/browser/designer/tableActions": {
+			"designer.addColumnAction": "新增",
+			"designer.insertAfterSelectedColumn": "在其后插入",
+			"designer.insertBeforeSelectedRow": "在其前插入",
+			"designer.moveRowDownAction": "下移",
+			"designer.moveRowDownButtonAriaLabel": "将所选行下移一个位置",
+			"designer.moveRowUpAction": "上移",
+			"designer.moveRowUpButtonAriaLabel": "将所选行上移一个位置",
+			"designer.newRowButtonAriaLabel": "将新行添加到 \\\"{0}\\\" 表"
+		},
+		"sql/workbench/contrib/executionPlan/browser/azdataGraphView": {
+			"invalidExecutionPlanZoomError": "缩放级别不能为 0 或负数"
+		},
+		"sql/workbench/contrib/executionPlan/browser/compareExecutionPlanInput": {
+			"epCompare.editorName": "比较执行计划"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditor": {
+			"compareExecutionPlanEditor": "比较执行计划编辑器"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView": {
+			"addExecutionPlanLabel": "添加执行计划",
+			"epComapre.LoadingPlanCompleteMessage": "已成功加载执行计划",
+			"epComapre.LoadingPlanMessage": "正在加载执行计划",
+			"epComapre.placeholderInfoboxText": "添加要比较的执行计划",
+			"epCompare.FileFilterDescription": "执行计划文件",
+			"epCompare.comparePropertiesAction": "属性",
+			"epCompare.comparisonProgess": "在比较的计划中加载类似区域",
+			"epCompare.toggleOrientation": "切换方向",
+			"epCompare.zoomInAction": "放大",
+			"epCompare.zoomOutAction": "缩小",
+			"epCompare.zoomReset": "重置缩放",
+			"epCompare.zoomToFit": "缩放到合适大小"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView": {
+			"executionPlanComparisonPropertiesBottomOperation": "底部操作: {0}",
+			"executionPlanComparisonPropertiesTopOperation": "热门操作: {0}",
+			"executionPlanPropertiesEdgeOperationName": "边缘",
+			"nodePropertyViewNameNameColumnHeader": "名称",
+			"nodePropertyViewNameValueColumnBottomHeader": "值(底部计划)",
+			"nodePropertyViewNameValueColumnTopHeader": "值(顶级计划)"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanContribution": {
+			"executionPlanCompareCommandOriginalValue": "比较执行计划",
+			"executionPlanCompareCommandValue": "比较执行计划"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanFileView": {
+			"executionPlanFileLoadingComplete": "已生成执行计划",
+			"executionPlanFileLoadingFailed": "未能加载执行计划",
+			"loadingExecutionPlanFile": "正在生成执行计划"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase": {
+			"executionPlanPropertyViewClose": "关闭",
+			"executionPlanPropertyViewSortAlphabetically": "按字母顺序",
+			"executionPlanPropertyViewSortByDisplayOrder": "按分类顺序",
+			"executionPlanPropertyViewSortReverseAlphabetically": "按反向字母顺序",
+			"nodePropertyViewTitle": "属性"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanTab": {
+			"executionPlanTitle": "查询计划(预览)"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanView": {
+			"executionPlan.SaveFileDescription": "执行计划文件",
+			"executionPlanCompareExecutionPlanAction": "比较执行计划",
+			"executionPlanContextMenuDisableTooltip": "禁用工具提示",
+			"executionPlanContextMenuEnableTooltip": "启用工具提示",
+			"executionPlanCustomZoom": "自定义显示比例",
+			"executionPlanDisableTooltip": "已禁用工具提示",
+			"executionPlanEnableTooltip": "已启用工具提示",
+			"executionPlanFitGraphLabel": "缩放到合适大小",
+			"executionPlanOpenGraphFile": "显示查询计划 XML",
+			"executionPlanPropertiesActionLabel": "属性",
+			"executionPlanSavePlanXML": "保存计划文件",
+			"executionPlanSearchNodeAction": "查找节点",
+			"executionPlanZoomInActionLabel": "放大",
+			"executionPlanZoomOutActionLabel": "缩小",
+			"openQueryAction": "打开查询"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanViewHeader": {
+			"planHeaderIndexAndCost": "查询 {0}: 查询成本(相对于脚本): {1}%"
+		},
+		"sql/workbench/services/backupRestoreUrlBrowser/browser/urlBrowserDialog": {
+			"backupRestoreUrlBrowserDialog.account": "Azure 帐户",
+			"backupRestoreUrlBrowserDialog.backupFile": "备份文件",
+			"backupRestoreUrlBrowserDialog.blobContainer": "Blob 容器",
+			"backupRestoreUrlBrowserDialog.linkAccount": "链接帐户",
+			"backupRestoreUrlBrowserDialog.sharedAccessSignature": "已生成共享访问签名",
+			"backupRestoreUrlBrowserDialog.sharedAccessSignatureButton": "更新凭据",
+			"backupRestoreUrlBrowserDialog.storageAccount": "存储帐户",
+			"backupRestoreUrlBrowserDialog.subscription": "Azure 订阅",
+			"backupRestoreUrlBrowserDialog.tenant": "Azure AD 租户",
+			"fileBrowser.discard": "放弃",
+			"fileBrowser.ok": "确定"
+		},
+		"sql/workbench/services/backupRestoreUrlBrowser/browser/urlBrowserDialogService": {
+			"filebrowser.selectBlob": "选择 blob"
+		},
+		"sql/workbench/services/tableDesigner/browser/tableDesignerService": {
+			"TableDesigner.closeApplication": "关闭应用程序(&&C)",
+			"TableDesigner.saveBeforeExit": "如果关闭应用程序，表设计器中未保存的更改会丢失。是否要关闭应用程序?"
 		}
 	}
 }

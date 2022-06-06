@@ -180,7 +180,6 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 			this._data = new TableDataView<T>(data);
 		}
 		this._grid.setData(this._data, true);
-		this._data.filter(this._grid.getColumns());
 	}
 
 	getData(): IDisposableDataProvider<T> {
