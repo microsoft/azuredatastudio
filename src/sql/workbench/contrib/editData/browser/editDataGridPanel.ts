@@ -514,7 +514,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		if (this.firstLoad) {
 			this.handleChanges({
 				['dataRows']: { currentValue: this.dataSet.dataRows, firstChange: this.firstLoad, previousValue: undefined },
-				['columnDefinitions']: { currentValue: this.dataSet.columnDefinitions, firstChange: this.firstLoad, previousValue: undefined }
+				['columnDefinitions']: { currentValue: this.dataSet.columnDefinitions, firstChange: this.firstLoad, previousValue: this.dataSet.columnDefinitions }
 			});
 			this.handleInitializeTable();
 			this.firstLoad = false;
@@ -559,7 +559,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		this.renderedDataSets = tempRenderedDataSets;
 		this.handleChanges({
 			['dataRows']: { currentValue: this.renderedDataSets[0].dataRows, firstChange: this.firstLoad, previousValue: undefined },
-			['columnDefinitions']: { currentValue: this.renderedDataSets[0].columnDefinitions, firstChange: this.firstLoad, previousValue: undefined }
+			['columnDefinitions']: { currentValue: this.renderedDataSets[0].columnDefinitions, firstChange: this.firstLoad, previousValue: this.dataSet.columnDefinitions }
 		});
 	}
 
