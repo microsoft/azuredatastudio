@@ -1053,6 +1053,9 @@
     <trans-unit id="sqlDatabaseProjects.openContainingFolder">
       <source xml:lang="en">Open Containing Folder</source>
     </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.openInDesigner">
+      <source xml:lang="en">Open in Designer</source>
+    </trans-unit>
     <trans-unit id="sqlDatabaseProjects.properties">
       <source xml:lang="en">Properties</source>
     </trans-unit>

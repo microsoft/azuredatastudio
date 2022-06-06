@@ -47,6 +47,7 @@ import { ILocalDbDeployProfile, ISqlDbDeployProfile } from '../models/deploy/dep
 import { EntryType, FileProjectEntry, IDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry } from '../models/projectEntry';
 import { UpdateProjectAction, UpdateProjectDataModel } from '../models/api/updateProject';
 import { AzureSqlClient } from '../models/deploy/azureSqlClient';
+import { ConnectionService } from '../models/connections/connectionService';
 
 const maxTableLength = 10;
 
@@ -74,6 +75,7 @@ export class ProjectsController {
 	private buildInfo: DashboardData[] = [];
 	private publishInfo: PublishData[] = [];
 	private deployService: DeployService;
+	private connectionService: ConnectionService;
 	private azureSqlClient: AzureSqlClient;
 	private autorestHelper: AutorestHelper;
 
@@ -84,6 +86,7 @@ export class ProjectsController {
 		this.buildHelper = new BuildHelper();
 		this.azureSqlClient = new AzureSqlClient();
 		this.deployService = new DeployService(this.azureSqlClient, this._outputChannel);
+		this.connectionService = new ConnectionService(this._outputChannel);
 		this.autorestHelper = new AutorestHelper(this._outputChannel);
 	}
 
@@ -293,7 +296,7 @@ export class ProjectsController {
 						if (deployProfile.sqlDbSetting) {
 
 							// Connecting to the deployed db to add the profile to connection viewlet
-							await this.deployService.getConnection(deployProfile.sqlDbSetting, true, deployProfile.sqlDbSetting.dbName);
+							await this.connectionService.getConnection(deployProfile.sqlDbSetting, true, deployProfile.sqlDbSetting.dbName);
 						}
 						void vscode.window.showInformationMessage(constants.publishProjectSucceed);
 					} else {
@@ -335,7 +338,7 @@ export class ProjectsController {
 					const publishResult = await this.publishOrScriptProject(project, deployProfile.deploySettings, true);
 					if (publishResult && publishResult.success) {
 						if (deployProfile.localDbSetting) {
-							await this.deployService.getConnection(deployProfile.localDbSetting, true, deployProfile.localDbSetting.dbName);
+							await this.connectionService.getConnection(deployProfile.localDbSetting, true, deployProfile.localDbSetting.dbName);
 						}
 						void vscode.window.showInformationMessage(constants.publishProjectSucceed);
 					} else {
