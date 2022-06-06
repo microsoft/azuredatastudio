@@ -187,7 +187,7 @@ suite('NotebookViewModel', function (): void {
 		viewModel.resizeCard(viewModel.cards[0], 3, 4);
 
 		assert.strictEqual(viewModel.cards[0].width, 3, 'Card width did not update on resize');
-		assert.strictEqual(viewModel.cards[0].height, 'Card height did not update on resize');
+		assert.strictEqual(viewModel.cards[0].height, 4, 'Card height did not update on resize');
 	});
 
 	test('delete', async function (): Promise<void> {

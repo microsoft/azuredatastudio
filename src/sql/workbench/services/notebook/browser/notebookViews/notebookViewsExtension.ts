@@ -37,14 +37,14 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 	public load(): void {
 		this._metadata = this.getExtensionMetadata();
 
-		NotebookViewsExtension.upgrades.forEach(upgrade => {
-			if (upgrade.versionCheck(this._metadata.version)) {
-				upgrade.apply(this);
-				this._metadata = this.getExtensionMetadata();
-			}
-		});
-
 		if (this._metadata) {
+			NotebookViewsExtension.upgrades.forEach(upgrade => {
+				if (upgrade.versionCheck(this._metadata.version)) {
+					upgrade.apply(this);
+					this._metadata = this.getExtensionMetadata();
+				}
+			});
+
 			this._metadata.views = this._metadata.views.map(view => NotebookViewModel.load(view.guid, this));
 			this._initialized = true;
 		}
