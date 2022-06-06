@@ -1583,13 +1583,14 @@ export class Project implements ISqlProject {
 				const suppressMissingDependenciesErrorNode = currentNode.getElementsByTagName(constants.SuppressMissingDependenciesErrors);
 				const suppressMissingDependences = suppressMissingDependenciesErrorNode[0].childNodes[0].nodeValue === constants.True;
 
-
-
-				// delete ItemGroup if there aren't any other children
+				// TODO Two issues here :
+				// 1. If there are multiple ItemGroups with ArtifactReference items then we won't clean up until all items are removed
+				// 2. If the ItemGroup has other non-ArtifactReference items in it then those will be deleted
+				// Right now we assume that this ItemGroup is not manually edited so it's safe to ignore these
 				if (this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ArtifactReference).length === 1) {
+					// delete entire ItemGroup if there aren't any other children
 					this.projFileXmlDoc!.documentElement.removeChild(currentNode.parentNode!);
 				} else {
-					// remove this node
 					this.projFileXmlDoc!.documentElement.removeChild(currentNode);
 				}
 
