@@ -994,7 +994,8 @@ export class EditDataGridPanel extends GridParentComponent {
 		let wasEditing = this.table ? !!this.table.grid.getCellEditor() : false;
 
 		if (this.table) {
-			// Get the active cell we have just clicked to be the new active cell (This is done due to limitations with slickgrid).
+			// Get the active cell we have just clicked to be the new active cell
+			// (This is done due to limitations with slickgrid, especially when adding a new row).
 			if (this.justClickedCell) {
 				activeCell = { row: this.justClickedCell.row, cell: this.justClickedCell.column };
 			}
