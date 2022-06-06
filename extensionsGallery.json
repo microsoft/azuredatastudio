@@ -4516,14 +4516,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.0.3175020",
-							"lastUpdated": "4/13/2022",
+							"version": "1.0.3255010",
+							"lastUpdated": "6/6/2022",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/dotnet-interactive-vscode/dotnet-interactive-vscode-1.0.3175020.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/dotnet-interactive-vscode/dotnet-interactive-vscode-1.0.3255010.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
