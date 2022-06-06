@@ -14,7 +14,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import Severity from 'vs/base/common/severity';
 import { append, $ } from 'vs/base/browser/dom';
 
-import { QueryExecutionOptions } from 'azdata';
+import { ExecutionPlanOptions, QueryExecutionOptions } from 'azdata';
 import {
 	IConnectionManagementService,
 	IConnectionParams,
@@ -300,7 +300,7 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService
 	) {
 		super(connectionManagementService, editor, EstimatedQueryPlanAction.ID, EstimatedQueryPlanAction.EnabledClass);
-		this.label = nls.localize('estimatedQueryPlan', "Explain");
+		this.label = nls.localize('estimatedQueryPlan', "Create Plan");
 	}
 
 	public override async run(): Promise<void> {
@@ -323,10 +323,50 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
 		}
 
 		if (this.isConnected(editor)) {
-			editor.input.runQuery(editor.getSelection(), {
-				displayEstimatedQueryPlan: true
-			});
+			let planOptions: ExecutionPlanOptions = editor?.input?.state?.isActualExecutionPlanMode ? { displayActualQueryPlan: true } : { displayEstimatedQueryPlan: true };
+			editor.input.runQuery(editor.getSelection(), planOptions);
 		}
+	}
+}
+
+/**
+ * Action class that toggles the actual execution plan mode for the editor
+ */
+export class ToggleActualExecutionPlanModeAction extends QueryTaskbarAction {
+	public static EnabledClass = 'estimatedQueryPlan';
+	public static ID = 'toggleActualQueryPlanModeAction';
+
+	private _enableActualPlanLabel = nls.localize('enableActualPlanLabel', "Enable Actual Plan");
+	private _disableActualPlanLabel = nls.localize('disableActualPlanLabel', "Disable Actual Plan");
+
+	constructor(
+		editor: QueryEditor,
+		private _isActualPlanMode: boolean,
+		@IQueryManagementService protected readonly queryManagementService: IQueryManagementService,
+		@IConfigurationService protected readonly configurationService: IConfigurationService,
+		@IConnectionManagementService connectionManagementService: IConnectionManagementService
+	) {
+		super(connectionManagementService, editor, ToggleActualExecutionPlanModeAction.ID, ToggleActualExecutionPlanModeAction.EnabledClass);
+		this.updateLabel();
+	}
+
+	public get isActualExecutionPlanMode(): boolean {
+		return this._isActualPlanMode;
+	}
+
+	public set isActualExecutionPlanMode(value: boolean) {
+		this._isActualPlanMode = value;
+		this.updateLabel();
+	}
+
+	private updateLabel(): void {
+		// show option to disable actual plan mode if already enabled
+		this.label = this.isActualExecutionPlanMode ? this._disableActualPlanLabel : this._enableActualPlanLabel;
+	}
+
+	public override async run(): Promise<void> {
+		const toActualPlanState = !this.isActualExecutionPlanMode;
+		this.editor.input.state.isActualExecutionPlanMode = toActualPlanState;
 	}
 }
 
@@ -522,6 +562,7 @@ export class ToggleSqlCmdModeAction extends QueryTaskbarAction {
 
 	private _enablesqlcmdLabel = nls.localize('enablesqlcmdLabel', "Enable SQLCMD");
 	private _disablesqlcmdLabel = nls.localize('disablesqlcmdLabel', "Disable SQLCMD");
+
 	constructor(
 		editor: QueryEditor,
 		private _isSqlCmdMode: boolean,
