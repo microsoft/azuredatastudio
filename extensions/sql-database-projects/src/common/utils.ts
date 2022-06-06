@@ -352,16 +352,27 @@ export function getPackageInfo(packageJson?: any): IPackageInfo | undefined {
 		packageJson = require('../../package.json');
 	}
 
-	if (packageJson) {
-		return {
-			name: packageJson.name,
-			fullName: `${packageJson.publisher}.${packageJson.name}`,
-			version: packageJson.version,
-			aiKey: packageJson.aiKey
-		};
+	const vscodePackageJson = require('../../package.vscode.json');
+	const azdataApi = getAzdataApi();
+
+	if (!packageJson || !azdataApi && !vscodePackageJson) {
+		return undefined;
 	}
 
-	return undefined;
+	// when the extension is packaged, the extension.js copies the content of package.json in place, but this happens before the package.vscode.json values
+	// get replaced in the package.json for the sql-database-projects-vscode extension
+	const extensionName = azdataApi ? packageJson.name : vscodePackageJson.name;
+	const publisher = azdataApi ? packageJson.publisher : vscodePackageJson.publisher;
+
+	console.error('ext name: ' + extensionName);
+	console.error('publisher: ' + publisher);
+
+	return {
+		name: extensionName,
+		fullName: `${publisher}.${extensionName}`,
+		version: packageJson.version,
+		aiKey: packageJson.aiKey
+	};
 }
 
 /**
