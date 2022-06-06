@@ -279,6 +279,11 @@ export const splitScreenHorizontallyIconClassName = 'ep-split-screen-horizontall
 export const splitScreenVerticallyIconClassName = 'ep-split-screen-vertically-icon';
 export const resetZoomIconClassName = 'ep-reset-zoom-icon';
 export const executionPlanCompareIconClassName = 'ep-plan-compare-icon';
+export const executionPlanComparisonPropertiesDifferent = 'ep-properties-different';
+export const executionPlanComparisonPropertiesRedDownArrow = 'ep-properties-red-down-arrow';
+export const executionPlanComparisonPropertiesGreenDownArrow = 'ep-properties-green-down-arrow';
+export const executionPlanComparisonPropertiesRedUpArrow = 'ep-properties-red-up-arrow';
+export const executionPlanComparisonPropertiesGreenUpArrow = 'ep-properties-green-up-arrow';
 
 /**
  * Plan comparison polygon border colors

@@ -29,6 +29,7 @@ import { errorForeground, listHoverBackground, textLinkForeground } from 'vs/pla
 import { ExecutionPlanViewHeader } from 'sql/workbench/contrib/executionPlan/browser/executionPlanViewHeader';
 import { attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
 import { IProgressService, ProgressLocation } from 'vs/platform/progress/common/progress';
+import { generateUuid } from 'vs/base/common/uuid';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 export class ExecutionPlanComparisonEditorView {
@@ -92,13 +93,17 @@ export class ExecutionPlanComparisonEditorView {
 	private _activeBottomPlanIndex: number = 0;
 	private _bottomPlanRecommendations: ExecutionPlanViewHeader;
 	private _bottomSimilarNode: Map<string, azdata.executionPlan.ExecutionGraphComparisonResult> = new Map();
-
+	private _latestRequestUuid: string;
 
 	private get _activeBottomPlanDiagram(): AzdataGraphView {
 		if (this.bottomPlanDiagrams.length > 0) {
 			return this.bottomPlanDiagrams[this._activeBottomPlanIndex];
 		}
 		return undefined;
+	}
+
+	private createQueryDropdownPrefixString(query: string, index: number, totalQueries: number): string {
+		return localize('queryDropdownPrefix', "Query {0} of {1}: {2}", index, totalQueries, query);
 	}
 
 	constructor(
@@ -180,7 +185,9 @@ export class ExecutionPlanComparisonEditorView {
 		this._topPlanDropdown = new SelectBox(['option 1', 'option2'], 'option1', this.contextViewService, this._topPlanDropdownContainer);
 		this._topPlanDropdown.render(this._topPlanDropdownContainer);
 		this._topPlanDropdown.onDidSelect(async (e) => {
-			this._activeBottomPlanDiagram.clearSubtreePolygon();
+			if (this._activeBottomPlanDiagram) {
+				this._activeBottomPlanDiagram.clearSubtreePolygon();
+			}
 			this._activeTopPlanDiagram.clearSubtreePolygon();
 			this._topPlanDiagramContainers.forEach(c => {
 				c.style.display = 'none';
@@ -205,7 +212,9 @@ export class ExecutionPlanComparisonEditorView {
 		this._bottomPlanDropdown.render(this._bottomPlanDropdownContainer);
 		this._bottomPlanDropdown.onDidSelect(async (e) => {
 			this._activeBottomPlanDiagram.clearSubtreePolygon();
-			this._activeTopPlanDiagram.clearSubtreePolygon();
+			if (this._activeTopPlanDiagram) {
+				this._activeTopPlanDiagram.clearSubtreePolygon();
+			}
 			this._bottomPlanDiagramContainers.forEach(c => {
 				c.style.display = 'none';
 			});
@@ -285,7 +294,7 @@ export class ExecutionPlanComparisonEditorView {
 					graphFileContent: fileContent,
 					graphFileType: extname(fileURI.fsPath).replace('.', '')
 				});
-				await this.addExecutionPlanGraph(executionPlanGraphs.graphs);
+				await this.addExecutionPlanGraph(executionPlanGraphs.graphs, 0);
 			}
 			this._placeholderInfoboxContainer.style.display = '';
 			this._placeholderLoading.loading = false;
@@ -297,14 +306,14 @@ export class ExecutionPlanComparisonEditorView {
 
 	}
 
-	public async addExecutionPlanGraph(executionPlanGraphs: azdata.executionPlan.ExecutionPlanGraph[]): Promise<void> {
+	public async addExecutionPlanGraph(executionPlanGraphs: azdata.executionPlan.ExecutionPlanGraph[], preSelectIndex: number): Promise<void> {
 		if (!this._topPlanDiagramModels) {
 			this._topPlanDiagramModels = executionPlanGraphs;
-			this._topPlanDropdown.setOptions(executionPlanGraphs.map(e => {
+			this._topPlanDropdown.setOptions(executionPlanGraphs.map((e, index) => {
 				return {
-					text: e.query
+					text: this.createQueryDropdownPrefixString(e.query, index + 1, executionPlanGraphs.length)
 				};
-			}), 0);
+			}));
 
 			executionPlanGraphs.forEach((e, i) => {
 				const graphContainer = DOM.$('.plan-diagram');
@@ -326,10 +335,7 @@ export class ExecutionPlanComparisonEditorView {
 				this.topPlanDiagrams.push(diagram);
 				graphContainer.style.display = 'none';
 			});
-
-			this._topPlanDiagramContainers[0].style.display = '';
-			this._topPlanRecommendations.recommendations = executionPlanGraphs[0].recommendations;
-			this.topPlanDiagrams[0].selectElement(undefined);
+			this._topPlanDropdown.select(preSelectIndex);
 			this._propertiesView.setTopElement(executionPlanGraphs[0].root);
 			this._propertiesAction.enabled = true;
 			this._zoomInAction.enabled = true;
@@ -339,11 +345,11 @@ export class ExecutionPlanComparisonEditorView {
 			this._toggleOrientationAction.enabled = true;
 		} else {
 			this._bottomPlanDiagramModels = executionPlanGraphs;
-			this._bottomPlanDropdown.setOptions(executionPlanGraphs.map(e => {
+			this._bottomPlanDropdown.setOptions(executionPlanGraphs.map((e, index) => {
 				return {
-					text: e.query
+					text: this.createQueryDropdownPrefixString(e.query, index + 1, executionPlanGraphs.length)
 				};
-			}), 0);
+			}));
 			executionPlanGraphs.forEach((e, i) => {
 				const graphContainer = DOM.$('.plan-diagram');
 				this._bottomPlanDiagramContainers.push(graphContainer);
@@ -364,18 +370,17 @@ export class ExecutionPlanComparisonEditorView {
 				this.bottomPlanDiagrams.push(diagram);
 				graphContainer.style.display = 'none';
 			});
-
-			this._bottomPlanDiagramContainers[0].style.display = '';
-			this._bottomPlanRecommendations.recommendations = executionPlanGraphs[0].recommendations;
-			this.bottomPlanDiagrams[0].selectElement(undefined);
+			this._bottomPlanDropdown.select(preSelectIndex);
 			this._propertiesView.setBottomElement(executionPlanGraphs[0].root);
 			this._addExecutionPlanAction.enabled = false;
-			await this.getSkeletonNodes();
 		}
 		this.refreshSplitView();
 	}
 
 	private async getSkeletonNodes(): Promise<void> {
+		if (!this._activeBottomPlanDiagram) {
+			return;
+		}
 		this._progressService.withProgress(
 			{
 				location: ProgressLocation.Notification,
@@ -389,8 +394,14 @@ export class ExecutionPlanComparisonEditorView {
 				if (this._topPlanDiagramModels && this._bottomPlanDiagramModels) {
 					this._topPlanDiagramModels[this._activeTopPlanIndex].graphFile.graphFileType = 'sqlplan';
 					this._bottomPlanDiagramModels[this._activeBottomPlanIndex].graphFile.graphFileType = 'sqlplan';
+
+					const currentRequestId = generateUuid();
+					this._latestRequestUuid = currentRequestId;
 					const result = await this._executionPlanService.compareExecutionPlanGraph(this._topPlanDiagramModels[this._activeTopPlanIndex].graphFile,
 						this._bottomPlanDiagramModels[this._activeBottomPlanIndex].graphFile);
+					if (currentRequestId !== this._latestRequestUuid) {
+						return;
+					}
 					this.getSimilarSubtrees(result.firstComparisonResult);
 					this.getSimilarSubtrees(result.secondComparisonResult, true);
 					let colorIndex = 0;

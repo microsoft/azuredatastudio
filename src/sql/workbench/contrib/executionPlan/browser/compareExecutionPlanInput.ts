@@ -53,5 +53,7 @@ export class ExecutionPlanComparisonInput extends EditorInput {
 
 export interface ExecutionPlanComparisonEditorModel {
 	topExecutionPlan?: azdata.executionPlan.ExecutionPlanGraph[];
+	topPlanIndex?: number;
 	bottomExecutionPlan?: azdata.executionPlan.ExecutionPlanGraph[];
+	bottomPlanIndex?: number;
 }
