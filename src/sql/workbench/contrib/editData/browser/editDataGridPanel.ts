@@ -314,7 +314,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			return;
 		}
 
-		this.disableEnableSelect(false, column);
+		this.disableEnableSelect(false);
 
 		let cellSelectTasks: Promise<void> = this.submitCurrentCellChange(
 			(result: EditUpdateCellResult) => {
@@ -325,7 +325,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			},
 			(error) => {
 				// Cell update failed, jump back to the last cell we were on
-				this.disableEnableSelect(true, column);
+				this.disableEnableSelect(true);
 				self.focusCell(self.currentCell.row, self.currentCell.column, true);
 				return Promise.reject(null);
 			});
@@ -341,7 +341,7 @@ export class EditDataGridPanel extends GridParentComponent {
 					return Promise.resolve();
 				}, error => {
 					// Committing failed, jump back to the last selected cell
-					this.disableEnableSelect(true, column);
+					this.disableEnableSelect(true);
 					self.focusCell(self.currentCell.row, self.currentCell.column);
 					return Promise.reject(null);
 				});
@@ -350,7 +350,7 @@ export class EditDataGridPanel extends GridParentComponent {
 
 		// At the end of a successful cell select, update the currently selected cell
 		cellSelectTasks = cellSelectTasks.then(() => {
-			this.disableEnableSelect(true, column);
+			this.disableEnableSelect(true);
 			self.setCurrentCell(row, column);
 			self.focusCell(row, column);
 		});
@@ -360,12 +360,13 @@ export class EditDataGridPanel extends GridParentComponent {
 		});
 	}
 
-	// Disables editing the column temporarily when clicking on a cell (to allow for any processing tasks to be finished first such as adding a new row).
-	private disableEnableSelect(state: boolean, column: number) {
+	// Disables editing the grid temporarily when clicking on a cell (to allow for any processing tasks to be finished first such as adding a new row).
+	private disableEnableSelect(state: boolean) {
 		let columnArray = this.table.grid.getColumns();
-		let newColumn = columnArray[(column - 1)];
-		newColumn.focusable = state;
-		columnArray[(column - 1)] = newColumn;
+
+		for (let i = 0; i < columnArray.length; i++) {
+			columnArray[i].focusable = state;
+		}
 		this.table.grid.setColumns(columnArray);
 	}
 
