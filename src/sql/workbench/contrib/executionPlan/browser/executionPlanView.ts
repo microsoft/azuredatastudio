@@ -36,6 +36,7 @@ import { AzdataGraphView } from 'sql/workbench/contrib/executionPlan/browser/azd
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ExecutionPlanComparisonInput } from 'sql/workbench/contrib/executionPlan/browser/compareExecutionPlanInput';
+import { ExecutionPlanFileView } from 'sql/workbench/contrib/executionPlan/browser/executionPlanFileView';
 
 export class ExecutionPlanView implements ISashLayoutProvider {
 
@@ -70,6 +71,7 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 	constructor(
 		private _parent: HTMLElement,
 		private _graphIndex: number,
+		private _executionPlanFileView: ExecutionPlanFileView,
 		@IInstantiationService public readonly _instantiationService: IInstantiationService,
 		@IThemeService private readonly _themeService: IThemeService,
 		@IContextViewService public readonly contextViewService: IContextViewService,
@@ -164,7 +166,7 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 			this._instantiationService.createInstance(ZoomToFitAction, 'ActionBar'),
 			this._instantiationService.createInstance(CustomZoomAction, 'ActionBar'),
 			this._instantiationService.createInstance(PropertiesAction, 'ActionBar'),
-			new CompareExecutionPlanAction(),
+			this._instantiationService.createInstance(CompareExecutionPlanAction, 'ActionBar'),
 			this.actionBarToggleTopTip
 		];
 		this._actionBar.pushAction(actionBarActions, { icon: true, label: false });
@@ -181,7 +183,7 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 			this._instantiationService.createInstance(ZoomToFitAction, 'ContextMenu'),
 			this._instantiationService.createInstance(CustomZoomAction, 'ContextMenu'),
 			this._instantiationService.createInstance(PropertiesAction, 'ContextMenu'),
-			new CompareExecutionPlanAction(),
+			this._instantiationService.createInstance(CompareExecutionPlanAction, 'ContextMenu'),
 			this.contextMenuToggleTooltipAction
 		];
 		const self = this;
@@ -285,7 +287,8 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 
 	public compareCurrentExecutionPlan() {
 		this._editorService.openEditor(this._instantiationService.createInstance(ExecutionPlanComparisonInput, {
-			topExecutionPlan: [this._model]
+			topExecutionPlan: this._executionPlanFileView.graphs,
+			topPlanIndex: this._graphIndex - 1
 		}), {
 			pinned: true
 		});
@@ -530,11 +533,18 @@ export class CompareExecutionPlanAction extends Action {
 	public static ID = 'ep.tooltipToggleContextMenu';
 	public static COMPARE_PLAN = localize('executionPlanCompareExecutionPlanAction', "Compare execution plan");
 
-	constructor() {
+	constructor(private source: ExecutionPlanActionSource,
+		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService
+	) {
 		super(CompareExecutionPlanAction.COMPARE_PLAN, CompareExecutionPlanAction.COMPARE_PLAN, executionPlanCompareIconClassName);
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
+		this.telemetryService
+			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.CompareExecutionPlan)
+			.withAdditionalProperties({ source: this.source })
+			.send();
+
 		context.compareCurrentExecutionPlan();
 	}
 }

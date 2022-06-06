@@ -6,6 +6,7 @@
 import { RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import * as glob from 'vs/base/common/glob';
 import { SearchSortOrder } from 'vs/workbench/services/search/common/search';
+import * as nls from 'vs/nls';
 
 export const FindInNotebooksActionId = 'workbench.action.findInNotebooks';
 export const FocusActiveEditorCommandId = 'notebookSearch.action.focusActiveEditor';
@@ -84,3 +85,5 @@ export const RESULTS_GRID_DEFAULTS = {
 	cellPadding: [5, 8, 4],
 	rowHeight: 24
 };
+
+export const notebookMultipleRequestsError = nls.localize('notebookMultipleRequestsError', "Cannot execute code cell. Another cell is currently being executed.");
