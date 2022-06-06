@@ -480,7 +480,7 @@
     "vscode-nls": "^4.1.2",
     "which": "^2.0.2",
     "xml-formatter": "2.1.0",
-    "xmldom": "^0.6.0"
+    "@xmldom/xmldom": "^0.8.2"
   },
   "devDependencies": {
     "@types/fs-extra": "^5.0.0",
@@ -488,7 +488,6 @@
     "@types/sinon": "^9.0.4",
     "@types/which": "^2.0.1",
     "@types/xml-formatter": "^1.1.0",
-    "@types/xmldom": "^0.1.29",
     "mocha": "^7.1.1",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
