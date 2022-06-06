@@ -654,7 +654,7 @@ export class PublishDatabaseDialog {
 				this.targetDatabaseTextBox = view.modelBuilder.inputBox().withProps({
 					ariaLabel: constants.databaseNameLabel,
 					required: true,
-					width: cssStyles.publishDialogTextboxWidth,
+					width: cssStyles.publishDialogDropdownWidth,
 					value: this.getDefaultDatabaseName()
 				}).component();
 			}
@@ -666,7 +666,7 @@ export class PublishDatabaseDialog {
 					value: this.getDefaultDatabaseName(),
 					ariaLabel: constants.databaseNameLabel,
 					required: true,
-					width: cssStyles.publishDialogTextboxWidth,
+					width: cssStyles.publishDialogDropdownWidth,
 					editable: true,
 					fireOnTextChange: true
 				}).component();
@@ -684,7 +684,7 @@ export class PublishDatabaseDialog {
 			requiredIndicator: true,
 			width: cssStyles.publishDialogLabelWidth
 		}).component();
-		const itemLayout = { flex: '0 0 auto', CSSStyles: { 'margin-right': '12px' } };
+		const itemLayout = { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } };
 		if (this.databaseRow === undefined) {
 			this.databaseRow = view.modelBuilder.flexContainer().withItems([databaseLabel, <azdataType.Component>databaseComponent], itemLayout).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 		} else {
@@ -908,7 +908,7 @@ export class PublishDatabaseDialog {
 		this.optionsButton = view.modelBuilder.button().withProps({
 			label: constants.publishingOptions,
 			secondary: true,
-			width: 120
+			width: cssStyles.PublishingOptionsButtonWidth
 		}).component();
 
 		const optionsRow = view.modelBuilder.flexContainer().withItems([this.optionsButton], { CSSStyles: { flex: '0 0 auto', 'margin': '6px 0 0 287px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
