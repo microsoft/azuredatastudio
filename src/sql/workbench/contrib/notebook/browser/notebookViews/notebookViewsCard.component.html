@@ -21,15 +21,15 @@
 				<div class="grid-stack-header" ></div>
 				<div class="grid-stack-content-wrapper-inner">
 					<!--<div #actionbar [style.display]="showActionBar ? 'block' : 'none'" class="actionbar"></div>-->
-					<panel (onTabChange)="handleTabChange($event)">
-						<tab [visibilityType]="'visibility'" *ngFor="let tab of tabs" [title]="tab.title" class="fullsize" [identifier]="tab.id" [type]="'tab'">
+					<panel (onTabChange)="handleTabChange($event)" (onTabClose)="handleTabClose($event)">
+						<tab [visibilityType]="'visibility'" *ngFor="let tab of tabs" [title]="tab.title" class="fullsize" [identifier]="tab.id" [type]="'tab'" [canClose]="true">
 							<ng-template>
 								<ng-container>
 									<div #container class="card-container">
 										<div *ngIf="tab.cellModel !== undefined">
-											<views-code-cell-component *ngIf="tab.cellModel.cellType === 'code'" [cellModel]="tab.cellModel" [model]="model" [activeCellId]="tab.cellModel.id + 000" [visible]="visible">
+											<views-code-cell-component *ngIf="tab.cellModel.cellType === 'code'" [cellModel]="tab.cellModel" [model]="model" [activeCellId]="tab.cellModel.id" [visible]="visible">
 											</views-code-cell-component>
-											<text-cell-component *ngIf="tab.cellModel.cellType === 'markdown'" [cellModel]="tab.cellModel" [model]="model" [activeCellId]="tab.cellModel.id + 000">
+											<text-cell-component *ngIf="tab.cellModel.cellType === 'markdown'" [cellModel]="tab.cellModel" [model]="model" [activeCellId]="tab.cellModel.id">
 											</text-cell-component>
 										</div>
 									</div>

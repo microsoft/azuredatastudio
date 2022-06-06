@@ -122,7 +122,7 @@ export class NotebookViewModel implements INotebookView {
 			throw new Error('A card must be specified to create a tab');
 		}
 
-		const newTab: ViewsTabConfig = { title: 'Untitled', id: generateUuid(), group: card.guid, cell: { guid: cell.cellGuid } };
+		const newTab: ViewsTabConfig = { title: localize('Untitled', 'Untitled'), id: generateUuid(), group: card.guid, cell: { guid: cell.cellGuid } };
 		card.tabs.push(new ViewsTab(newTab, cell));
 	}
 
@@ -172,10 +172,6 @@ export class NotebookViewModel implements INotebookView {
 	}
 
 	public updateCell(cell: ICellModel, currentView: INotebookView, cellData: INotebookViewCard, override: boolean = false) {
-		if (!this.cellInitialized(cell)) {
-			//this.initializeCell(cell, 0);
-		}
-
 		this._notebookViews.updateCell(cell, currentView, cellData, override);
 	}
 
@@ -201,9 +197,19 @@ export class NotebookViewModel implements INotebookView {
 	}
 
 	public hideCell(cell: ICellModel) {
-		this._cards.forEach((card) => {
+		this.cards.forEach((card) => {
 			const updatedTabs = card.tabs.filter(t => t.cell.guid !== cell.cellGuid);
 			this._notebookViews.updateCard(card, { tabs: updatedTabs }, this);
+
+			// If there are no tabs left in the card, delete the card
+			if (!updatedTabs.length) {
+				const index = this.cards.findIndex(c => c.guid === card.guid);
+				const removedCard = this._cards.splice(index, 1);
+				if (removedCard.length === 1) {
+					this.compactCells();
+					this.save();
+				}
+			}
 		});
 		this._onCellVisibilityChanged.fire(cell);
 	}

@@ -83,6 +83,16 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 		}
 	}
 
+	handleTabClose(selectedTab: TabComponent) {
+		const tab = this.tabs.find(t => t.id === selectedTab.identifier);
+		if (tab) {
+			const cell = this.cells.find(c => c.cellGuid === tab.cell.guid);
+			if (cell) {
+				this.activeView.hideCell(cell);
+			}
+		}
+	}
+
 	override ngOnDestroy() {
 		if (this._actionbar) {
 			this._actionbar.dispose();
@@ -262,6 +272,16 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 			border-right: 1px solid ${tabBorder.toString()};
 			background-color: ${tabBackground.toString()};
 			margin: 0;
+		}
+
+		.notebook-cell .tabbedPanel.horizontal > .title .tabList a.action-label.codicon.close {
+			background-size: 9px 9px !important;
+			margin-top: -1px;
+		}
+
+		.notebook-cell .tabbedPanel.horizontal > .title .tabList .actions-container {
+			margin-right: 0px;
+			margin-left: 8px;
 		}
 		`);
 	}
