@@ -86,6 +86,26 @@
         <source xml:lang="en">New SQL project name</source>
         <target state="translated">Name des neuen SQL-Projekts</target>
       </trans-unit>
+      <trans-unit id="azureAccounts">
+        <source xml:lang="en">Azure accounts</source>
+        <target state="translated">Azure-Konten</target>
+      </trans-unit>
+      <trans-unit id="azureAddAccount">
+        <source xml:lang="en">Add an Account...</source>
+        <target state="translated">Konto hinzufügen...</target>
+      </trans-unit>
+      <trans-unit id="azureServerName">
+        <source xml:lang="en">Azure SQL server name</source>
+        <target state="translated">Azure SQL-Servername</target>
+      </trans-unit>
+      <trans-unit id="azureSqlServerCreated">
+        <source xml:lang="en">Azure SQL Server '{0}' created</source>
+        <target state="translated">Azure SQL Server \"{0}\" erstellt</target>
+      </trans-unit>
+      <trans-unit id="azureSubscription">
+        <source xml:lang="en">Azure subscription</source>
+        <target state="translated">Azure-Abonnement</target>
+      </trans-unit>
       <trans-unit id="baseDockerImage">
         <source xml:lang="en">Base {0} Docker image</source>
         <target state="translated">Basis- {0} Docker-Image</target>
@@ -162,7 +182,7 @@
         <source xml:lang="en">Confirm {0} admin password</source>
         <target state="translated">Bestätigen Sie das {0} -Administratorkennwort</target>
       </trans-unit>
-      <trans-unit id="connectingToSqlServerOnDockerMessage">
+      <trans-unit id="connectingToSqlServerMessage">
         <source xml:lang="en">Connecting to SQL Server</source>
         <target state="translated">Eine Verbindung mit SQL Server wird hergestellt</target>
       </trans-unit>
@@ -180,7 +200,7 @@
       </trans-unit>
       <trans-unit id="convertToSdkStyleConfirmation">
         <source xml:lang="en">The project '{0}' will not be fully compatible with SSDT after conversion. A backup copy of the project file will be created in the project folder prior to conversion. More information is available at https://aka.ms/sqlprojsdk. Continue with converting to SDK-style project?</source>
-        <target state="new">The project '{0}' will not be fully compatible with SSDT after conversion. A backup copy of the project file will be created in the project folder prior to conversion. More information is available at https://aka.ms/sqlprojsdk. Continue with converting to SDK-style project?</target>
+        <target state="translated">Das Projekt „{0}“ wird nach der Konvertierung nicht vollständig mit SSDT kompatibel sein. Vor der Konvertierung wird eine Sicherungskopie der Projektdatei im Projektordner erstellt. Weitere Informationen sind unter https://aka.ms/sqlprojsdk verfügbar. Wollen Sie mit der Konvertierung in ein Projekt im SDK-Stil fortfahren?</target>
       </trans-unit>
       <trans-unit id="createNew">
         <source xml:lang="en">Create New</source>
@@ -197,6 +217,10 @@
       <trans-unit id="createProjectSettings">
         <source xml:lang="en">Settings</source>
         <target state="translated">Einstellungen</target>
+      </trans-unit>
+      <trans-unit id="creatingAzureSqlServer">
+        <source xml:lang="en">Creating Azure SQL Server '{0}' ...</source>
+        <target state="translated">Azure SQL Server \"{0}\" wird erstellt ...</target>
       </trans-unit>
       <trans-unit id="creatingDeploymentSettingsMessage">
         <source xml:lang="en">Creating deployment settings ...</source>
@@ -306,6 +330,10 @@
         <source xml:lang="en">DatabaseProject</source>
         <target state="translated">DatabaseProject</target>
       </trans-unit>
+      <trans-unit id="defaultQuickPickItem">
+        <source xml:lang="en">Default - image defined as default in the container registry</source>
+        <target state="translated">Standard – Image, das in der Containerregistrierung als Standard definiert ist</target>
+      </trans-unit>
       <trans-unit id="deleteAction">
         <source xml:lang="en">Delete</source>
         <target state="translated">Löschen</target>
@@ -369,6 +397,10 @@
       <trans-unit id="dockerImageMessage">
         <source xml:lang="en">Docker Image:</source>
         <target state="translated">Docker-Image:</target>
+      </trans-unit>
+      <trans-unit id="dockerImagesPlaceHolder">
+        <source xml:lang="en">Use {0} on local arm64/Apple Silicon</source>
+        <target state="translated">Verwenden Sie {0} auf dem lokalen Arm64/Apple Silicon</target>
       </trans-unit>
       <trans-unit id="dockerLogMessage">
         <source xml:lang="en">Docker logs: '{0}'</source>
@@ -457,6 +489,10 @@
       <trans-unit id="enterSystemDbName">
         <source xml:lang="en">Enter a database name for this system database</source>
         <target state="translated">Geben Sie einen Datenbanknamen für diese Systemdatenbank ein.</target>
+      </trans-unit>
+      <trans-unit id="enterUser">
+        <source xml:lang="en">Enter {0} admin user name</source>
+        <target state="translated">Administratorbenutzername \"{0}\" eingeben</target>
       </trans-unit>
       <trans-unit id="equalComparison">
         <source xml:lang="en">The project is already up to date with the database.</source>
@@ -600,9 +636,13 @@
         <source xml:lang="en">Cannot access provided database project. Only valid, open database projects can be reloaded.</source>
         <target state="translated">Auf das angegebene Datenbankprojekt kann nicht zugegriffen werden. Nur gültige, geöffnete Datenbankprojekte können neu geladen werden.</target>
       </trans-unit>
-      <trans-unit id="invalidPropertyValue">
+      <trans-unit id="invalidPropertyValueInSqlProj">
         <source xml:lang="en">Invalid value specified for the property '{0}' in .sqlproj file</source>
-        <target state="translated">Für die Eigenschaft "{0}" in der SQLPROJ-Datei wurde ein ungültiger Wert angegeben.</target>
+        <target state="translated">Für die Eigenschaft „{0}“ in der SQLPROJ-Datei wurde ein ungültiger Wert angegeben.</target>
+      </trans-unit>
+      <trans-unit id="invalidPropertyValueProvided">
+        <source xml:lang="en">Project property value '{0} is invalid</source>
+        <target state="translated">Der Eigenschaftswert “{0}” ist ungültig</target>
       </trans-unit>
       <trans-unit id="invalidSQLPassword">
         <source xml:lang="en">{0} password doesn't meet the password complexity requirement. For more information see https://docs.microsoft.com/sql/relational-databases/security/password-policy</source>
@@ -844,6 +884,10 @@
         <source xml:lang="en">Publish Target</source>
         <target state="translated">Ziel veröffentlichen</target>
       </trans-unit>
+      <trans-unit id="publishToAzureEmulator">
+        <source xml:lang="en">Publish to new Azure SQL Database emulator</source>
+        <target state="translated">In neuem Azure SQL-Datenbank Emulator veröffentlichen</target>
+      </trans-unit>
       <trans-unit id="publishToContainerFailed">
         <source xml:lang="en">Failed to publish to container. {0}</source>
         <target state="translated">Fehler beim Veröffentlichen im Container. {0}</target>
@@ -855,6 +899,14 @@
       <trans-unit id="publishToExistingServer">
         <source xml:lang="en">Publish to an existing {0}</source>
         <target state="translated">In einem vorhandenen {0} veröffentlichen</target>
+      </trans-unit>
+      <trans-unit id="publishToNewAzureServer">
+        <source xml:lang="en">Publish to new Azure SQL logical server</source>
+        <target state="translated">Auf neuem Azure SQL logischen Server veröffentlichen</target>
+      </trans-unit>
+      <trans-unit id="publishToNewAzureServerFailed">
+        <source xml:lang="en">Failed to publish to new Azure SQL server. {0}</source>
+        <target state="translated">Fehler beim Veröffentlichen auf dem neuen Azure SQL Server. {0}</target>
       </trans-unit>
       <trans-unit id="publishingProjectMessage">
         <source xml:lang="en">Publishing project in a container...</source>
@@ -880,13 +932,17 @@
         <source xml:lang="en">Reset all variables</source>
         <target state="translated">Alle Variablen zurücksetzen</target>
       </trans-unit>
+      <trans-unit id="resourceGroup">
+        <source xml:lang="en">Resource group</source>
+        <target state="translated">Ressourcengruppe</target>
+      </trans-unit>
       <trans-unit id="retryFailedMessage">
         <source xml:lang="en">Operation '{0}' failed. Re-trying... Current Result: {1}. Error: '{2}'</source>
         <target state="translated">Fehler beim Vorgang "{0}". Versuchen Sie es erneut... Aktuelles Ergebnis: {1}. Fehler: "{2}"</target>
       </trans-unit>
       <trans-unit id="retryMessage">
-        <source xml:lang="en">Operation '{0}' failed. Re-trying... Error: '{1}'</source>
-        <target state="translated">Fehler beim Vorgang "{0}". Versuchen Sie es erneut... Fehler: "{1}"</target>
+        <source xml:lang="en">Operation '{0}' failed. Re-trying... Error: '{1}' </source>
+        <target state="translated">Fehler beim Vorgang \"{0}\". Versuchen Sie es erneut... Fehler: \"{1}\" </target>
       </trans-unit>
       <trans-unit id="retryRunMessage">
         <source xml:lang="en">Running operation '{2}' Attempt {0} of {1}</source>
@@ -936,6 +992,10 @@
         <source xml:lang="en">Script</source>
         <target state="translated">Skript</target>
       </trans-unit>
+      <trans-unit id="sdkLearnMorePlaceholder">
+        <source xml:lang="en">Click "Learn More" button for more information about SDK-style projects</source>
+        <target state="translated">Klicken Sie auf die Schaltfläche „Weitere Informationen“, um weitere Informationen zu Projekten im SDK-Stil zu erhalten.</target>
+      </trans-unit>
       <trans-unit id="sdkStyleProject">
         <source xml:lang="en">SDK-style project (Preview)</source>
         <target state="translated">Projekte im SDK-Stil (Vorschau)</target>
@@ -968,6 +1028,10 @@
         <source xml:lang="en">Select folder structure</source>
         <target state="translated">Ordnerstruktur auswählen</target>
       </trans-unit>
+      <trans-unit id="selectImageTag">
+        <source xml:lang="en">Select the image tag or press enter to use the default value</source>
+        <target state="translated">Wählen Sie das Imagetag aus, oder drücken Sie die EINGABETASTE, um den Standardwert zu verwenden.</target>
+      </trans-unit>
       <trans-unit id="selectProfile">
         <source xml:lang="en">Select Profile</source>
         <target state="translated">Profil auswählen</target>
@@ -999,6 +1063,10 @@
       <trans-unit id="server">
         <source xml:lang="en">Server</source>
         <target state="translated">Server</target>
+      </trans-unit>
+      <trans-unit id="serverCreated">
+        <source xml:lang="en">Server created</source>
+        <target state="translated">Server erstellt</target>
       </trans-unit>
       <trans-unit id="serverName">
         <source xml:lang="en">Server name</source>
@@ -1179,6 +1247,10 @@
       <trans-unit id="viewFriendlyName">
         <source xml:lang="en">View</source>
         <target state="translated">Anzeigen</target>
+      </trans-unit>
+      <trans-unit id="yesRecommended">
+        <source xml:lang="en">Yes (Recommended)</source>
+        <target state="translated">Ja (empfohlen)</target>
       </trans-unit>
       <trans-unit id="yesString">
         <source xml:lang="en">Yes</source>

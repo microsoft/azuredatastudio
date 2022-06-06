@@ -22,9 +22,21 @@
         <source xml:lang="en">Azure Arc Resources</source>
         <target state="translated">Azure Arc-Ressourcen</target>
       </trans-unit>
+      <trans-unit id="arc.areYouSure">
+        <source xml:lang="en">Are you sure you want to apply the selected upgrade?</source>
+        <target state="translated">Wollen Sie wirklich das ausgewählte Upgrade anwenden?</target>
+      </trans-unit>
       <trans-unit id="arc.available">
         <source xml:lang="en">Available</source>
         <target state="translated">Verfügbar</target>
+      </trans-unit>
+      <trans-unit id="arc.availableUpgrades">
+        <source xml:lang="en">Available Upgrades</source>
+        <target state="translated">Verfügbare Upgrades</target>
+      </trans-unit>
+      <trans-unit id="arc.availableUpgradesDescription">
+        <source xml:lang="en">Available upgrades for this resource are listed below. You can apply upgrades by clicking the upgrade button.</source>
+        <target state="translated">Verfügbare Upgrades für diese Ressource sind unten aufgeführt. Sie können Upgrades anwenden, indem Sie auf die Upgrade-Schaltfläche klicken.</target>
       </trans-unit>
       <trans-unit id="arc.backup">
         <source xml:lang="en">Backup</source>
@@ -102,10 +114,6 @@
         <source xml:lang="en">Confirm the new password</source>
         <target state="translated">Bestätigen Sie das neue Kennwort</target>
       </trans-unit>
-      <trans-unit id="arc.connecToServer">
-        <source xml:lang="en">Connect to Server</source>
-        <target state="translated">Mit Server verbinden</target>
-      </trans-unit>
       <trans-unit id="arc.connect">
         <source xml:lang="en">Connect</source>
         <target state="translated">Verbinden</target>
@@ -137,6 +145,10 @@
       <trans-unit id="arc.connectToPostgresDescription">
         <source xml:lang="en">A connection to the server is required to show and set database engine settings, which will require the PostgreSQL Extension to be installed.</source>
         <target state="translated">Zum Anzeigen und Festlegen der Datenbankmodul-Einstellungen, für die die PostgreSQL-Erweiterung installiert werden muss, ist eine Verbindung mit dem Server erforderlich.</target>
+      </trans-unit>
+      <trans-unit id="arc.connectToServer">
+        <source xml:lang="en">Connect to Server</source>
+        <target state="translated">Mit Server verbinden</target>
       </trans-unit>
       <trans-unit id="arc.connectionMode">
         <source xml:lang="en">Connection Mode</source>
@@ -269,6 +281,10 @@
         <source xml:lang="en">New Instance</source>
         <target state="translated">Neue Instanz</target>
       </trans-unit>
+      <trans-unit id="arc.currentVersion">
+        <source xml:lang="en">Current version</source>
+        <target state="translated">Aktuelle Version</target>
+      </trans-unit>
       <trans-unit id="arc.dataController">
         <source xml:lang="en">Data controller</source>
         <target state="translated">Datencontroller</target>
@@ -372,6 +388,10 @@
       <trans-unit id="arc.errorConnectingToController">
         <source xml:lang="en">Error connecting to controller. {0}</source>
         <target state="translated">Fehler beim Verbinden mit dem Controller. {0}</target>
+      </trans-unit>
+      <trans-unit id="arc.errorGettingConnectionMode">
+        <source xml:lang="en">Error getting data controller connection mode.</source>
+        <target state="translated">Fehler beim Abrufen des Datencontroller-Verbindungsmodus.</target>
       </trans-unit>
       <trans-unit id="arc.errorListingLogAnalyticsWorkspaces">
         <source xml:lang="en">Error listing Log Analytics workspaces {0}</source>
@@ -621,6 +641,10 @@
         <source xml:lang="en">SQL managed instance - Azure Arc</source>
         <target state="translated">Verwaltete SQL-Instanz – Azure Arc</target>
       </trans-unit>
+      <trans-unit id="arc.miaaVersionError">
+        <source xml:lang="en">Error getting SQL managed instance version number.</source>
+        <target state="translated">Fehler beim Abrufen der Versionsnummer der SQL Managed Instance.</target>
+      </trans-unit>
       <trans-unit id="arc.missingExtension">
         <source xml:lang="en">The {0} extension is required to view engine settings. Do you wish to install it now?</source>
         <target state="translated">Die Erweiterung "{0}" ist zum Anzeigen der Engine-Einstellungen erforderlich. Möchten Sie sie jetzt installieren?</target>
@@ -628,6 +652,10 @@
       <trans-unit id="arc.monitor">
         <source xml:lang="en">Monitor</source>
         <target state="translated">Monitor</target>
+      </trans-unit>
+      <trans-unit id="arc.monitorUpgrade">
+        <source xml:lang="en">You can check the status of the upgrade by running the following command:</source>
+        <target state="translated">Sie können den Status des Upgrades überprüfen, indem Sie den folgenden Befehl ausführen:</target>
       </trans-unit>
       <trans-unit id="arc.name">
         <source xml:lang="en">Name</source>
@@ -672,6 +700,10 @@
       <trans-unit id="arc.noPodIssuesDetected">
         <source xml:lang="en">There aren’t any known issues affecting this PostgreSQL Hyperscale instance.</source>
         <target state="translated">Es liegen keine bekannten Probleme vor, die sich auf diese PostgreSQL Hyperscale-Instanz auswirken.</target>
+      </trans-unit>
+      <trans-unit id="arc.noUpgrades">
+        <source xml:lang="en">The current version is the latest version. No upgrades available.</source>
+        <target state="translated">Die aktuelle Version ist die neueste Version. Keine Upgrades verfügbar.</target>
       </trans-unit>
       <trans-unit id="arc.noWorkerPods">
         <source xml:lang="en">No worker pods in this configuration.</source>
@@ -728,6 +760,14 @@
       <trans-unit id="arc.online">
         <source xml:lang="en">Online</source>
         <target state="translated">Online</target>
+      </trans-unit>
+      <trans-unit id="arc.onlyNextImmediateVersion">
+        <source xml:lang="en">Currently, only upgrading to the next immediate version is supported.</source>
+        <target state="translated">Derzeit werden nur Upgrades auf die nächsthöhere Version unterstützt.</target>
+      </trans-unit>
+      <trans-unit id="arc.onlyNextImmediateVersionMiaa">
+        <source xml:lang="en">The version of a SQL Managed Instance can not be newer than the version of its data controller. Currently, only upgrading to the next immediate version is supported.</source>
+        <target state="translated">Die Version einer SQL Managed Instance darf nicht neuer als die Version des Datencontrollers sein. Derzeit werden nur Upgrades auf die nächsthöhere Version unterstützt.</target>
       </trans-unit>
       <trans-unit id="arc.openDashboardFailed">
         <source xml:lang="en">Error opening dashboard. {0}</source>
@@ -909,6 +949,14 @@
         <source xml:lang="en">Region</source>
         <target state="translated">Region</target>
       </trans-unit>
+      <trans-unit id="arc.releaseDate">
+        <source xml:lang="en">Release Date</source>
+        <target state="translated">Releasedatum</target>
+      </trans-unit>
+      <trans-unit id="arc.releaseNotes">
+        <source xml:lang="en">Release Notes</source>
+        <target state="translated">Versionshinweise</target>
+      </trans-unit>
       <trans-unit id="arc.rememberPassword">
         <source xml:lang="en">Remember Password</source>
         <target state="translated">Kennwort speichern</target>
@@ -1041,6 +1089,10 @@
         <source xml:lang="en">Settings</source>
         <target state="translated">Einstellungen</target>
       </trans-unit>
+      <trans-unit id="arc.showMiaaError">
+        <source xml:lang="en">Error showing details of SQL managed instance.</source>
+        <target state="translated">Fehler beim Anzeigen von Details zur SQL Managed Instance.</target>
+      </trans-unit>
       <trans-unit id="arc.sourceDatabase">
         <source xml:lang="en">Source database</source>
         <target state="translated">Quelldatenbank</target>
@@ -1117,6 +1169,38 @@
         <source xml:lang="en">Updating instance '{0}'...</source>
         <target state="translated">Die Instanz "{0}" wird aktualisiert...</target>
       </trans-unit>
+      <trans-unit id="arc.upgrade">
+        <source xml:lang="en">Upgrade</source>
+        <target state="translated">Upgrade</target>
+      </trans-unit>
+      <trans-unit id="arc.upgradeDataController">
+        <source xml:lang="en">Upgrade Data Controller</source>
+        <target state="translated">Datencontroller upgraden</target>
+      </trans-unit>
+      <trans-unit id="arc.upgradeDialogController">
+        <source xml:lang="en">During a data controller upgrade, portions of the data control plane such as Custom Resource Definitions (CRDs) and containers may be upgraded. An upgrade of the data controller will not cause downtime for the data services (SQL Managed Instance or PostgreSQL server).</source>
+        <target state="translated">Während des Upgrades eines Datencontrollers kann ein Upgrade für Teile der Datensteuerungsebene, z. B. benutzerdefinierte Ressourcendefinitionen (Custom Resource Definitions, CRDs) und Container durchgeführt werden. Ein Upgrade des Datencontrollers führt nicht zu Downtime für die Datendienste (SQL Managed Instance oder PostgreSQL Hyperscale-Server).</target>
+      </trans-unit>
+      <trans-unit id="arc.upgradeDialogMiaa">
+        <source xml:lang="en">During a SQL managed instance upgrade, portions of the data control plane such as Custom Resource Definitions (CRDs) and containers may be upgraded. An upgrade of the SQL managed instance will not cause downtime for the data services (SQL Managed Instance or PostgreSQL server).</source>
+        <target state="translated">Während eines SQL Managed Instance-Upgrades können Teile der Datensteuerungsebene, z. B. benutzerdefinierte Ressourcendefinitionen (CRDs) und Container, upgegradet werden. Ein Upgrade der SQL Managed Instance führt nicht zu Downtime für die Datendienste (SQL Managed Instance oder PostgreSQL-Server).</target>
+      </trans-unit>
+      <trans-unit id="arc.upgradeManagement">
+        <source xml:lang="en">Upgrade Management</source>
+        <target state="translated">Upgradeverwaltung</target>
+      </trans-unit>
+      <trans-unit id="arc.upgradeMiaa">
+        <source xml:lang="en">Upgrade SQL Managed Instance</source>
+        <target state="translated">SQL Managed Instance-Upgrade</target>
+      </trans-unit>
+      <trans-unit id="arc.upgradingController">
+        <source xml:lang="en">Data controller is being upgraded. You can check the status of the upgrade by running the following command: 'kubectl get datacontrollers -A'</source>
+        <target state="translated">Der Datencontroller wird upgegradet. Sie können den Status des Upgrades überprüfen, indem Sie den folgenden Befehl ausführen: “kubectl get datacontrollers -A”</target>
+      </trans-unit>
+      <trans-unit id="arc.upgradingMiaa">
+        <source xml:lang="en">SQL managed instance is being upgraded. You can check the status of the upgrade by running the following command: 'kubectl get sqlmi -A'</source>
+        <target state="translated">Die SQL Managed Instance wird upgegradet. Sie können den Status des Upgrades überprüfen, indem Sie den folgenden Befehl ausführen: „kubectl get sqlmi -A“</target>
+      </trans-unit>
       <trans-unit id="arc.userCancelledError">
         <source xml:lang="en">User cancelled the dialog</source>
         <target state="translated">Das Dialogfeld wurde vom Benutzer abgebrochen.</target>
@@ -1132,6 +1216,14 @@
       <trans-unit id="arc.value">
         <source xml:lang="en">Value</source>
         <target state="translated">Wert</target>
+      </trans-unit>
+      <trans-unit id="arc.version">
+        <source xml:lang="en">Version</source>
+        <target state="translated">Version</target>
+      </trans-unit>
+      <trans-unit id="arc.versionLog">
+        <source xml:lang="en">Learn more about each release here.</source>
+        <target state="translated">Erfahren Sie hier mehr über jede Version.</target>
       </trans-unit>
       <trans-unit id="arc.worker">
         <source xml:lang="en">Worker</source>
@@ -1922,8 +2014,8 @@
         <target state="translated">Zeitpunktaufbewahrung (Tage)</target>
       </trans-unit>
       <trans-unit id="arc.sql.service.tier.business.critical">
-        <source xml:lang="en">[PREVIEW] Business Critical (Unlimited vCores and RAM, advanced high availability)</source>
-        <target state="translated">[VORSCHAU] Unternehmenskritisch (Unbegrenzte virtuelle Kerne und RAM, erweiterte Hochverfügbarkeit)</target>
+        <source xml:lang="en">Business Critical (Unlimited vCores and RAM, advanced high availability)</source>
+        <target state="translated">Unternehmenskritisch (Unbegrenzte virtuelle Kerne und RAM, erweiterte Hochverfügbarkeit)</target>
       </trans-unit>
       <trans-unit id="arc.sql.service.tier.description">
         <source xml:lang="en">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical.</source>
