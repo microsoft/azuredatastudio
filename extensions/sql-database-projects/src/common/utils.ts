@@ -364,9 +364,6 @@ export function getPackageInfo(packageJson?: any): IPackageInfo | undefined {
 	const extensionName = azdataApi ? packageJson.name : vscodePackageJson.name;
 	const publisher = azdataApi ? packageJson.publisher : vscodePackageJson.publisher;
 
-	console.error('ext name: ' + extensionName);
-	console.error('publisher: ' + publisher);
-
 	return {
 		name: extensionName,
 		fullName: `${publisher}.${extensionName}`,
