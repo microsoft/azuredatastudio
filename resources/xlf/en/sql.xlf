@@ -735,10 +735,10 @@
       <source xml:lang="en">Add New</source>
     </trans-unit>
     <trans-unit id="designer.insertAfterSelectedColumn">
-      <source xml:lang="en">Insert after</source>
+      <source xml:lang="en">Insert After</source>
     </trans-unit>
     <trans-unit id="designer.insertBeforeSelectedRow">
-      <source xml:lang="en">Insert before</source>
+      <source xml:lang="en">Insert Before</source>
     </trans-unit>
     <trans-unit id="designer.moveRowDownAction">
       <source xml:lang="en">Move Down</source>
@@ -2380,6 +2380,9 @@
     <trans-unit id="epCompare.zoomToFit">
       <source xml:lang="en">Zoom to fit</source>
     </trans-unit>
+    <trans-unit id="queryDropdownPrefix">
+      <source xml:lang="en">Query {0} of {1}: {2}</source>
+    </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView" source-language="en" datatype="plaintext"><body>
     <trans-unit id="executionPlanComparisonPropertiesBottomOperation">
@@ -2444,7 +2447,7 @@
       <source xml:lang="en">Alphabetical</source>
     </trans-unit>
     <trans-unit id="executionPlanPropertyViewSortByDisplayOrder">
-      <source xml:lang="en">Categorized</source>
+      <source xml:lang="en">Importance</source>
     </trans-unit>
     <trans-unit id="executionPlanPropertyViewSortReverseAlphabetically">
       <source xml:lang="en">Reverse Alphabetical</source>
