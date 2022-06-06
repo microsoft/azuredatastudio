@@ -6,6 +6,7 @@
 import { TabConfig } from 'sql/workbench/browser/modelComponents/tabbedPanel.component';
 import { ICellModel, INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { ViewsTab } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewModel';
+import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 import { Event } from 'vs/base/common/event';
 
 export type CellChangeEventType = 'hide' | 'insert' | 'active' | 'execution' | 'update';
@@ -16,9 +17,10 @@ export type CellChangeEvent = {
 };
 
 export interface INotebookViewsExtensionUpgrade {
-	readonly version: number;
+	readonly sourceVersion: number;
+	readonly targetVersion: number;
 	versionCheck(version: number): boolean;
-	apply(notebook: INotebookModel): void;
+	apply(extension: NotebookViewsExtension): void;
 }
 
 export interface INotebookViews {

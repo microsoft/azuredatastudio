@@ -9,11 +9,17 @@ import { Emitter, Event } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
 import { NotebookViewModel } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewModel';
 import { NotebookExtension } from 'sql/workbench/services/notebook/browser/models/notebookExtension';
-import { INotebookView, INotebookViewCard, INotebookViewCellMetadata, INotebookViewMetadata, INotebookViews } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
+import { INotebookView, INotebookViewCard, INotebookViewCellMetadata, INotebookViewMetadata, INotebookViews, INotebookViewsExtensionUpgrade } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
+import { NotebookViewsUpgrades } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsUpgrades';
+
+
 
 export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetadata, INotebookViewCellMetadata> implements INotebookViews {
 	static readonly defaultViewName = localize('notebookView.untitledView', "Untitled View");
 	static readonly extension = 'notebookviews';
+	static readonly upgrades: Array<INotebookViewsExtensionUpgrade> = [
+		new NotebookViewsUpgrades.V1ToV2NotebookViewsExtensionUpgrade()
+	];
 
 	readonly maxNameIterationAttempts = 100;
 	override readonly version: number = 2;
@@ -31,53 +37,12 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 	public load(): void {
 		this._metadata = this.getExtensionMetadata();
 
-		if (this._metadata.version === 1) {
-			const extensions = this.notebook.getMetaValue('extensions');
-			const notebookviews = extensions['notebookviews'];
-			const views = notebookviews['views'];
-
-			const newmeta = {
-				version: 2,
-				activeView: null,
-				views: []
-			};
-
-			views.forEach((view, viewIdx) => {
-				const viewData = {
-					guid: view.guid,
-					name: view.name,
-					cards: []
-				};
-
-				const cells = this.notebook.cells;
-				cells.forEach((cell) => {
-					const cellmeta = cell.metadata['extensions']?.['notebookviews']?.['views']?.[viewIdx];
-					if (cellmeta && !cellmeta?.hidden) {
-						const card = {
-							guid: generateUuid(),
-							y: cellmeta.y,
-							x: cellmeta.x,
-							width: cellmeta.width,
-							height: cellmeta.height,
-							tabs: [{
-								title: 'Untitled',
-								guid: generateUuid(),
-								cell: {
-									guid: cell.cellGuid
-								}
-							}]
-						};
-
-						viewData.cards.push(card);
-					}
-				});
-
-				newmeta.views.push(viewData);
-			});
-
-			this.setExtensionMetadata(this.notebook, newmeta);
-			this._metadata = this.getExtensionMetadata();
-		}
+		NotebookViewsExtension.upgrades.forEach(upgrade => {
+			if (upgrade.versionCheck(this._metadata.version)) {
+				upgrade.apply(this);
+				this._metadata = this.getExtensionMetadata();
+			}
+		});
 
 		if (this._metadata) {
 			this._metadata.views = this._metadata.views.map(view => NotebookViewModel.load(view.guid, this));
