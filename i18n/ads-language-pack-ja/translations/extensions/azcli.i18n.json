@@ -9,6 +9,7 @@
 	"version": "1.0.0",
 	"contents": {
 		"dist/localizedConstants": {
+			"arc.releaseDateNotParsed": "リリース日を解析できませんでした。",
 			"az.accept": "承諾する",
 			"az.arcdataExtensionNotInstalled": "この拡張機能は、Azure CLI の拡張機能 'arcdata' がインストールされている必要があります。[こちら](https://docs.microsoft.com/azure/azure-arc/data/install-arcdata-extension) の手順に従って最新バージョンをインストールしてください。",
 			"az.arcdataInstalled": "Azure CLI arcdata 拡張機能が正常にインストールされました。構成を完了するには、Azure Studio を再起動する必要があります。この操作が完了するまで、機能はアクティブ化されません。",

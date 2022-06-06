@@ -54,7 +54,7 @@ declare module 'sql-bindings' {
 		 * @param connectionInfo (optional) connection info from the user to update the connection string,
 		 * if left undefined we prompt the user for the connection info
 		 * @returns connection string setting name to be used for the createFunction API
- 		 */
+		 */
 		promptAndUpdateConnectionStringSetting(projectUri: vscode.Uri | undefined, connectionInfo?: IConnectionInfo): Promise<IConnectionStringInfo | undefined>;
 
 		/**
@@ -127,9 +127,21 @@ declare module 'sql-bindings' {
 		 */
 		name: string;
 		/**
-		 * The route of the function if it has an HTTP trigger with a route specified
+		 * The HttpTrigger binding if one is specified
+		 */
+		httpTriggerBinding?: HttpTriggerBinding | undefined;
+
+	}
+
+	export interface HttpTriggerBinding {
+		/**
+		 * The route if specified
 		 */
 		route?: string | undefined;
+		/**
+		 * The operations (methods) if any are specified
+		 */
+		operations?: string[] | undefined;
 	}
 
 	/**

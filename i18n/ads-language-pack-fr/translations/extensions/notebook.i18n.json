@@ -152,7 +152,7 @@
 			"managePackages.noVersionsFound": "Les versions valides du package spécifié sont introuvables",
 			"managePackages.packageNameTitle": "Nom du package",
 			"managePackages.packageSummaryTitle": "Récapitulatif du package",
-			"managePackages.packageVersionTitle": "Version du package",
+			"managePackages.packageVersionTitle": "Versions de package prises en charge pour Python {0}",
 			"managePackages.searchBarPlaceholder": "Rechercher dans les packages {0}",
 			"managePackages.searchButtonLabel": "Recherche"
 		},
