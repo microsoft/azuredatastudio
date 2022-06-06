@@ -1583,12 +1583,14 @@ export class Project implements ISqlProject {
 				const suppressMissingDependenciesErrorNode = currentNode.getElementsByTagName(constants.SuppressMissingDependenciesErrors);
 				const suppressMissingDependences = suppressMissingDependenciesErrorNode[0].childNodes[0].nodeValue === constants.True;
 
-				// remove this node
-				this.projFileXmlDoc!.documentElement.removeChild(currentNode);
+
 
 				// delete ItemGroup if there aren't any other children
-				if (this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ArtifactReference).length === 0) {
+				if (this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ArtifactReference).length === 1) {
 					this.projFileXmlDoc!.documentElement.removeChild(currentNode.parentNode!);
+				} else {
+					// remove this node
+					this.projFileXmlDoc!.documentElement.removeChild(currentNode);
 				}
 
 				// remove from database references because it'll get added again later
