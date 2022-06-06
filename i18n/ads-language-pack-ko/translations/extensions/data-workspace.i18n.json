@@ -10,6 +10,7 @@
 	"contents": {
 		"dist/common/constants": {
 			"AllProjectTypes": "모든 프로젝트 형식",
+			"LocalDevInfo": "{0} 로컬 개발 환경에 대한 자세한 내용을 보려면 \"자세한 정보\" 단추를 클릭합니다.",
 			"SelectProjectFileActionName": "선택",
 			"UnknownProjectTypeError": "ID가 '{0}'인 프로젝트 형식에 대한 공급자를 찾을 수 없습니다.",
 			"UnknownProjectsError": "다음 프로젝트에 대한 공급자를 찾을 수 없습니다. {0}",

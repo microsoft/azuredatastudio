@@ -10,6 +10,7 @@
 	"contents": {
 		"dist/common/constants": {
 			"AllProjectTypes": "所有项目类型",
+			"LocalDevInfo": "单击“了解详细信息”按钮，以详细了解 {0} 的本地开发体验",
 			"SelectProjectFileActionName": "选择",
 			"UnknownProjectTypeError": "找不到 id 为“{0}”的项目类型的提供程序",
 			"UnknownProjectsError": "找不到以下项目的提供程序: {0}",

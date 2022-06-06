@@ -10,6 +10,7 @@
 	"contents": {
 		"dist/common/constants": {
 			"AllProjectTypes": "Все типы проектов",
+			"LocalDevInfo": "Нажмите кнопку \"Подробнее\", чтобы получить дополнительные сведения о локальном интерфейсе разработки для {0}",
 			"SelectProjectFileActionName": "Выбрать",
 			"UnknownProjectTypeError": "Не найден поставщик для типа проекта с идентификатором \"{0}\"",
 			"UnknownProjectsError": "Не найден поставщик для следующих проектов: {0}",
