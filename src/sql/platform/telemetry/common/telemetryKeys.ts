@@ -55,6 +55,7 @@ export const enum TelemetryError {
 }
 
 export const enum TelemetryAction {
+	AddExecutionPlan = 'AddExecutionPlan',
 	AddServerGroup = 'AddServerGroup',
 	adsCommandExecuted = 'adsCommandExecuted',
 	ConnectToServer = 'ConnectToServer',
@@ -73,6 +74,7 @@ export const enum TelemetryAction {
 	CancelQuery = 'CancelQuery',
 	ChartCreated = 'ChartCreated',
 	Click = 'Click',
+	CompareExecutionPlan = 'CompareExecutionPlan',
 	FindNode = 'FindNode',
 	FirewallRuleRequested = 'FirewallRuleCreated',
 	GenerateScript = 'GenerateScript',
@@ -97,6 +99,7 @@ export const enum TelemetryAction {
 	RunQueryString = 'RunQueryString',
 	ShowChart = 'ShowChart',
 	StopAgentJob = 'StopAgentJob',
+	ViewExecutionPlanComparisonProperties = 'ViewExecutionPlanComparisonProperties',
 	ViewTopOperations = 'ViewTopOperations',
 	WizardPagesNavigation = 'WizardPagesNavigation',
 	SearchStarted = 'SearchStarted',

@@ -69,10 +69,10 @@ export class ExecutionPlanComparisonEditor extends EditorPane {
 			input._executionPlanComparisonView = this._instantiationService.createInstance(ExecutionPlanComparisonEditorView, this._editorContainer);
 			if (this.input.preloadModel) {
 				if (this.input.preloadModel.topExecutionPlan) {
-					input._executionPlanComparisonView.addExecutionPlanGraph(this.input.preloadModel.topExecutionPlan);
+					input._executionPlanComparisonView.addExecutionPlanGraph(this.input.preloadModel.topExecutionPlan, this.input.preloadModel.topPlanIndex);
 				}
 				if (this.input.preloadModel.bottomExecutionPlan) {
-					input._executionPlanComparisonView.addExecutionPlanGraph(this.input.preloadModel.bottomExecutionPlan);
+					input._executionPlanComparisonView.addExecutionPlanGraph(this.input.preloadModel.bottomExecutionPlan, this.input.preloadModel.bottomPlanIndex);
 				}
 			}
 		} else { // Getting the cached comparison view from the input and adding it to the base editor node.
