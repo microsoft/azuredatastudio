@@ -360,7 +360,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		});
 	}
 
-	// Disables editing the column temporarily when clicking on a cell.
+	// Disables editing the column temporarily when clicking on a cell (to allow for any processing tasks to be finished first such as adding a new row).
 	private disableEnableSelect(state: boolean, column: number) {
 		let columnArray = this.table.grid.getColumns();
 		let newColumn = columnArray[(column - 1)];
@@ -519,8 +519,12 @@ export class EditDataGridPanel extends GridParentComponent {
 			this.firstLoad = false;
 		}
 		else {
-
-			this.table.setData(this.gridDataProvider);
+			try {
+				this.table.setData(this.gridDataProvider);
+			}
+			catch (e) {
+				this.logService.error('Error encountered while setting or filtering data:', e);
+			}
 			this.handleChanges({
 				['dataRows']: { currentValue: this.dataSet.dataRows, firstChange: this.firstLoad, previousValue: this.oldDataRows }
 			});
