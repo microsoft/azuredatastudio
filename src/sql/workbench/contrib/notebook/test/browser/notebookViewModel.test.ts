@@ -97,9 +97,9 @@ suite('NotebookViewModel', function (): void {
 		viewModel.initialize(true); //is new view
 
 
-		assert.strictEqual(viewModel.cards.length, 2);
-		assert.strictEqual(viewModel.cells.length, 2);
-		assert.strictEqual(viewModel.name, defaultViewName);
+		assert.strictEqual(viewModel.cards.length, 2, 'View model was not initialized with the correct number of cards');
+		assert.strictEqual(viewModel.cells.length, 2, 'View model was not initialized with the correct number of cells');
+		assert.strictEqual(viewModel.name, defaultViewName, 'View model was not inirialized with the correct name');
 	});
 
 	test('initialize notebook with no metadata', async function (): Promise<void> {
@@ -107,9 +107,9 @@ suite('NotebookViewModel', function (): void {
 		let viewModel = new NotebookViewModel(defaultViewName, notebookViews);
 		viewModel.initialize(true);
 
-		assert.strictEqual(viewModel.cards.length, 2);
-		assert.strictEqual(viewModel.cells.length, 2);
-		assert.strictEqual(viewModel.name, defaultViewName);
+		assert.strictEqual(viewModel.cards.length, 2, 'View model with no metadata was not initialized with the correct number of cards');
+		assert.strictEqual(viewModel.cells.length, 2, 'View model with no metadata was not initialized with the correct number of cells');
+		assert.strictEqual(viewModel.name, defaultViewName, 'View model with no metadata was not inirialized with the correct name');
 	});
 
 	test('rename', async function (): Promise<void> {
@@ -124,7 +124,7 @@ suite('NotebookViewModel', function (): void {
 			exceptionThrown = true;
 		}
 
-		assert.strictEqual(view.name, `${defaultViewName} 1`);
+		assert.strictEqual(view.name, `${defaultViewName} 1`, 'Rename did not result in expected name');
 		assert(!exceptionThrown);
 	});
 
@@ -142,7 +142,7 @@ suite('NotebookViewModel', function (): void {
 			exceptionThrown = true;
 		}
 
-		assert(exceptionThrown);
+		assert(exceptionThrown, 'Duplicating a view name should throw an exception');
 	});
 
 	test('hide cell', async function (): Promise<void> {
@@ -153,8 +153,8 @@ suite('NotebookViewModel', function (): void {
 
 		viewModel.hideCell(cellToHide);
 
-		assert.strictEqual(viewModel.hiddenCells.length, 1);
-		assert(viewModel.hiddenCells.includes(cellToHide));
+		assert.strictEqual(viewModel.hiddenCells.length, 1, 'Hiding a cell should add it to hiddenCells');
+		assert(viewModel.hiddenCells.includes(cellToHide), 'Hiding a cell should add it to hiddenCells');
 	});
 
 	test('insert cell', async function (): Promise<void> {
@@ -164,10 +164,10 @@ suite('NotebookViewModel', function (): void {
 		let cellToInsert = viewModel.cells[0];
 
 		viewModel.hideCell(cellToInsert);
-		assert(viewModel.hiddenCells.includes(cellToInsert));
+		assert(viewModel.hiddenCells.includes(cellToInsert), 'Expecting a hidden cell');
 
 		viewModel.insertCell(cellToInsert);
-		assert(!viewModel.hiddenCells.includes(cellToInsert));
+		assert(!viewModel.hiddenCells.includes(cellToInsert), 'Inserting a cell should remove it from hiddenCells');
 	});
 
 	test('move card', async function (): Promise<void> {
@@ -176,8 +176,8 @@ suite('NotebookViewModel', function (): void {
 
 		viewModel.moveCard(viewModel.cards[0], 98, 99);
 
-		assert.strictEqual(viewModel.cards[0].x, 98);
-		assert.strictEqual(viewModel.cards[0].y, 99);
+		assert.strictEqual(viewModel.cards[0].x, 98, 'Card x position did not update on move');
+		assert.strictEqual(viewModel.cards[0].y, 99, 'Card y position did not update on move');
 	});
 
 	test('resize card', async function (): Promise<void> {
@@ -186,8 +186,8 @@ suite('NotebookViewModel', function (): void {
 
 		viewModel.resizeCard(viewModel.cards[0], 3, 4);
 
-		assert.strictEqual(viewModel.cards[0].width, 3);
-		assert.strictEqual(viewModel.cards[0].height, 4);
+		assert.strictEqual(viewModel.cards[0].width, 3, 'Card width did not update on resize');
+		assert.strictEqual(viewModel.cards[0].height, 'Card height did not update on resize');
 	});
 
 	test('delete', async function (): Promise<void> {
