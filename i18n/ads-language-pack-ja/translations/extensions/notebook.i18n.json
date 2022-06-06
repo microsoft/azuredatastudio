@@ -152,7 +152,7 @@
 			"managePackages.noVersionsFound": "指定されたパッケージの有効なバージョンが見つかりませんでした",
 			"managePackages.packageNameTitle": "パッケージ名",
 			"managePackages.packageSummaryTitle": "パッケージの概要",
-			"managePackages.packageVersionTitle": "パッケージ バージョン",
+			"managePackages.packageVersionTitle": "Python {0} でサポートされているパッケージ バージョン",
 			"managePackages.searchBarPlaceholder": "{0} パッケージを検索します",
 			"managePackages.searchButtonLabel": "検索"
 		},

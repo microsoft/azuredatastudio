@@ -154,6 +154,7 @@
 .connection-dialog .use-connection-string .auth-type-row,
 .connection-dialog .use-connection-string .database-row,
 .connection-dialog .use-connection-string .advanced-button,
+.connection-dialog .use-connection-string .azure-account-row,
 .connection-dialog .connection-string-row {
 	display: none;
 }

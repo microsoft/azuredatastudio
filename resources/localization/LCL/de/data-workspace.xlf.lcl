@@ -19,6 +19,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/data-workspace/dist/common/constants.LocalDevInfo" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Click "Learn more" button for more information about local development experience to {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Klicken Sie auf die Schaltfläche „Weitere Informationen“, um weitere Informationen zur lokalen Entwicklungserfahrung bezüglich {0} zu erfahren]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.SelectProjectFileActionName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select]]></Val>

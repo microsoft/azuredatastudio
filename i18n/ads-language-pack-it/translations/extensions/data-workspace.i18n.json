@@ -10,6 +10,7 @@
 	"contents": {
 		"dist/common/constants": {
 			"AllProjectTypes": "Tutti tipi di progetto",
+			"LocalDevInfo": "Fare clic sul pulsante \"Altre informazioni\" per altre informazioni sull'esperienza di sviluppo locale per {0}",
 			"SelectProjectFileActionName": "Seleziona",
 			"UnknownProjectTypeError": "Non è stato trovato alcun provider per il tipo di progetto con ID: '{0}'",
 			"UnknownProjectsError": "Non è stato trovato alcun provider per i progetti seguenti: {0}",

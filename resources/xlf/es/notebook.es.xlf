@@ -549,8 +549,8 @@
         <target state="translated">Resumen del paquete</target>
       </trans-unit>
       <trans-unit id="managePackages.packageVersionTitle">
-        <source xml:lang="en">Package Version</source>
-        <target state="translated">Versión de paquete</target>
+        <source xml:lang="en">Supported Package Versions for Python {0}</source>
+        <target state="translated">Versiones de paquete admitidas para Python {0}</target>
       </trans-unit>
       <trans-unit id="managePackages.searchBarPlaceholder">
         <source xml:lang="en">Search {0} packages</source>

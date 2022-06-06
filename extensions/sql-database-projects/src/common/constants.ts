@@ -98,6 +98,7 @@ export const location = localize('location', "Location");
 export const reloadProject = localize('reloadProject', "Would you like to reload your database project?");
 export const learnMore = localize('learnMore', "Learn More");
 export const sdkLearnMoreUrl = 'https://aka.ms/sqlprojsdk';
+export const azureDevOpsLink = 'https://docs.microsoft.com/azure/azure-sql/database/local-dev-experience-overview?view=azuresql';
 export function newObjectNamePrompt(objectType: string) { return localize('newObjectNamePrompt', 'New {0} name:', objectType); }
 export function deleteConfirmation(toDelete: string) { return localize('deleteConfirmation', "Are you sure you want to delete {0}?", toDelete); }
 export function deleteConfirmationContents(toDelete: string) { return localize('deleteConfirmationContents', "Are you sure you want to delete {0} and all of its contents?", toDelete); }
@@ -535,6 +536,7 @@ export enum DatabaseProjectItemType {
 	folder = 'databaseProject.itemType.folder',
 	file = 'databaseProject.itemType.file',
 	externalStreamingJob = 'databaseProject.itemType.file.externalStreamingJob',
+	table = 'databaseProject.itemType.file.table',
 	referencesRoot = 'databaseProject.itemType.referencesRoot',
 	reference = 'databaseProject.itemType.reference',
 	dataSourceRoot = 'databaseProject.itemType.dataSourceRoot',

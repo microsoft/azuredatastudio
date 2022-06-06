@@ -46,7 +46,12 @@ export function setup(opts: minimist.ParsedArgs) {
 
 			// check for completion suggestions
 			await app.workbench.sqlNotebook.waitForSuggestionWidget();
-			await app.workbench.sqlNotebook.waitForSuggestionResult('SELECT');
+
+			// Docs pane might be visible in the completions list, so also check for a docs aria-label
+			await Promise.race([
+				app.workbench.sqlNotebook.waitForSuggestionResult('SELECT'),
+				app.workbench.sqlNotebook.waitForSuggestionResult('SELECT, docs: SELECT keyword')
+			]);
 			await app.code.dispatchKeybinding('tab');
 
 			const text2: string = ' * FROM employees';
@@ -81,8 +86,7 @@ export function setup(opts: minimist.ParsedArgs) {
 			await app.workbench.sqlNotebook.waitForActiveCellResults();
 		});
 
-		// Skip this test for now since it is not stable - the way that the wizard is initialized needs to be refactored
-		it.skip('can add a new package from the Manage Packages wizard', async function () {
+		it('can add a new package from the Manage Packages wizard', async function () {
 			const app = this.app as Application;
 			await app.workbench.sqlNotebook.newUntitledNotebook();
 			await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('SQL');
@@ -96,9 +100,9 @@ export function setup(opts: minimist.ParsedArgs) {
 
 			await app.workbench.sqlNotebook.notebookToolbar.managePackages();
 			await app.workbench.managePackagesDialog.waitForManagePackagesDialog();
-			await app.workbench.managePackagesDialog.addNewPackage('pyarrow', '7.0.0');
+			let packageVersion = await app.workbench.managePackagesDialog.addNewPackage('pyarrow');
 			await app.workbench.taskPanel.showTaskPanel();
-			await app.workbench.taskPanel.waitForTaskComplete('Installing pyarrow 7.0.0 succeeded');
+			await app.workbench.taskPanel.waitForTaskComplete(`Installing pyarrow ${packageVersion} succeeded`);
 
 			// There should be no error output when running the cell after pyarrow has been installed
 			await app.workbench.sqlNotebook.runActiveCell();

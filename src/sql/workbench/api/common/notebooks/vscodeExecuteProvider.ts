@@ -11,6 +11,7 @@ import { addExternalInteractiveKernelMetadata, convertToVSCodeNotebookCell } fro
 import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { VSCodeNotebookDocument } from 'sql/workbench/api/common/notebooks/vscodeNotebookDocument';
 import { URI } from 'vs/base/common/uri';
+import { notebookMultipleRequestsError } from 'sql/workbench/common/constants';
 
 class VSCodeFuture implements azdata.nb.IFuture {
 	private _inProgress = true;
@@ -149,7 +150,7 @@ class VSCodeKernel implements azdata.nb.IKernel {
 
 	requestExecute(content: azdata.nb.IExecuteRequest, disposeOnDone?: boolean): azdata.nb.IFuture {
 		if (this._activeRequest) {
-			throw new Error(nls.localize('notebookMultipleRequestsError', "Cannot execute code cell. Another cell is currently being executed."));
+			throw new Error(notebookMultipleRequestsError);
 		}
 		let executePromise: Promise<void>;
 		if (this._controller.executeHandler) {

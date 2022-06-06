@@ -245,10 +245,20 @@ export class Project implements ISqlProject {
 
 		// create a FileProjectEntry for each file
 		const fileEntries: FileProjectEntry[] = [];
-		filesSet.forEach(f => {
+		for (let f of Array.from(filesSet.values())) {
 			const typeEntry = entriesWithType.find(e => e.relativePath === f);
-			fileEntries.push(this.createFileProjectEntry(f, EntryType.File, typeEntry ? typeEntry.typeAttribute : undefined));
-		});
+			let containsCreateTableStatement;
+
+			// read file to check if it has a "Create Table" statement
+			const fullPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(f));
+
+			if (await utils.exists(fullPath)) {
+				const fileContents = await fs.readFile(fullPath);
+				containsCreateTableStatement = fileContents.toString().toLowerCase().includes('create table');
+			}
+
+			fileEntries.push(this.createFileProjectEntry(f, EntryType.File, typeEntry ? typeEntry.typeAttribute : undefined, containsCreateTableStatement));
+		}
 
 		return fileEntries;
 	}
@@ -1078,13 +1088,14 @@ export class Project implements ISqlProject {
 		return this.getCollectionProjectPropertyValue(constants.DatabaseSource);
 	}
 
-	public createFileProjectEntry(relativePath: string, entryType: EntryType, sqlObjectType?: string): FileProjectEntry {
+	public createFileProjectEntry(relativePath: string, entryType: EntryType, sqlObjectType?: string, containsCreateTableStatement?: boolean): FileProjectEntry {
 		let platformSafeRelativePath = utils.getPlatformSafeFileEntryPath(relativePath);
 		return new FileProjectEntry(
 			Uri.file(path.join(this.projectFolderPath, platformSafeRelativePath)),
 			utils.convertSlashesForSqlProj(relativePath),
 			entryType,
-			sqlObjectType);
+			sqlObjectType,
+			containsCreateTableStatement);
 	}
 
 	private findOrCreateItemGroup(containedTag?: string, prePostScriptExist?: { scriptExist: boolean; }): Element {
@@ -1264,7 +1275,7 @@ export class Project implements ISqlProject {
 	 */
 	private async undoExcludeFileFromProjFile(xmlTag: string, relativePath: string): Promise<void> {
 		const nodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(xmlTag);
-		if (await this.removeNode(relativePath, nodes, true)) {
+		if (this.removeNode(relativePath, nodes, true)) {
 			await this.serializeToProjFile(this.projFileXmlDoc!);
 		}
 	}

@@ -7,7 +7,7 @@
   "preview": true,
   "engines": {
     "vscode": "^1.30.1",
-    "azdata": ">=1.36.0"
+    "azdata": ">=1.37.0"
   },
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/sqlDatabaseProjects.png",
@@ -190,6 +190,11 @@
         "command": "sqlDatabaseProjects.convertToSdkStyleProject",
         "title": "%sqlDatabaseProjects.convertToSdkStyleProject%",
         "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.openInDesigner",
+        "title": "%sqlDatabaseProjects.openInDesigner%",
+        "category": "%sqlDatabaseProjects.displayName%"
       }
     ],
     "menus": {
@@ -305,6 +310,10 @@
         {
           "command": "sqlDatabaseProjects.convertToSdkStyleProject",
           "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.openInDesigner",
+          "when": "false"
         }
       ],
       "view/item/context": [
@@ -387,6 +396,11 @@
           "command": "sqlDatabaseProjects.validateExternalStreamingJob",
           "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.file.externalStreamingJob",
           "group": "5_dbProjects_streamingJob"
+        },
+        {
+          "command": "sqlDatabaseProjects.openInDesigner",
+          "when": "azdataAvailable && view == dataworkspace.views.main && viewItem == databaseProject.itemType.file.table && config.workbench.enablePreviewFeatures",
+          "group": "6_dbProjects_openInDesigner"
         },
         {
           "command": "sqlDatabaseProjects.exclude",

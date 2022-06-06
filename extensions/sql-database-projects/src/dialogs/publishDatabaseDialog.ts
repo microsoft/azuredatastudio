@@ -201,7 +201,9 @@ export class PublishDatabaseDialog {
 				const connProfile: azdataType.IConnectionProfile = dataSource.getConnectionProfile();
 
 				if (dataSource.integratedSecurity) {
-					connId = (await utils.getAzdataApi()!.connection.connect(connProfile, false, false)).connectionId;
+					const connResult = await utils.getAzdataApi()!.connection.connect(connProfile, false, false);
+					utils.throwIfNotConnected(connResult);
+					connId = connResult.connectionId!;
 				}
 				else {
 					connId = (await utils.getAzdataApi()!.connection.openConnectionDialog(undefined, connProfile)).connectionId;
@@ -214,7 +216,6 @@ export class PublishDatabaseDialog {
 
 				connId = this.connectionId;
 			}
-
 			return await utils.getAzdataApi()!.connection.getUriForConnection(connId);
 		}
 		catch (err) {

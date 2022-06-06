@@ -44,7 +44,8 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 				defaultTargetPlatform: sqldbproj.SqlTargetPlatform.sqlAzure,
 				icon: IconPathHelper.azureSqlDbProject,
 				sdkStyleOption: true,
-				sdkStyleLearnMoreUrl: constants.sdkLearnMoreUrl
+				sdkStyleLearnMoreUrl: constants.sdkLearnMoreUrl,
+				learnMoreUrl: constants.azureDevOpsLink
 			},
 			{
 				id: constants.emptySqlDatabaseProjectTypeId,

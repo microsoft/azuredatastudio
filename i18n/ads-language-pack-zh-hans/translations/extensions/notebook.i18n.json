@@ -152,7 +152,7 @@
 			"managePackages.noVersionsFound": "未找到指定包的任何有效版本",
 			"managePackages.packageNameTitle": "包名称",
 			"managePackages.packageSummaryTitle": "包摘要",
-			"managePackages.packageVersionTitle": "包版本",
+			"managePackages.packageVersionTitle": "Python {0} 支持的包版本",
 			"managePackages.searchBarPlaceholder": "搜索 {0} 包",
 			"managePackages.searchButtonLabel": "搜索"
 		},

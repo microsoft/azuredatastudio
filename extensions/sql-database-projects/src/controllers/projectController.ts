@@ -11,7 +11,6 @@ import * as utils from '../common/utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as templates from '../templates/templates';
 import * as vscode from 'vscode';
-import * as fse from 'fs-extra';
 import type * as azdataType from 'azdata';
 import * as dataworkspace from 'dataworkspace';
 import type * as mssqlVscode from 'vscode-mssql';
@@ -47,8 +46,8 @@ import { addDatabaseReferenceQuickpick } from '../dialogs/addDatabaseReferenceQu
 import { ILocalDbDeployProfile, ISqlDbDeployProfile } from '../models/deploy/deployProfile';
 import { EntryType, FileProjectEntry, IDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry } from '../models/projectEntry';
 import { UpdateProjectAction, UpdateProjectDataModel } from '../models/api/updateProject';
-import { targetPlatformToAssets } from '../projectProvider/projectAssets';
 import { AzureSqlClient } from '../models/deploy/azureSqlClient';
+import { ConnectionService } from '../models/connections/connectionService';
 
 const maxTableLength = 10;
 
@@ -76,6 +75,7 @@ export class ProjectsController {
 	private buildInfo: DashboardData[] = [];
 	private publishInfo: PublishData[] = [];
 	private deployService: DeployService;
+	private connectionService: ConnectionService;
 	private azureSqlClient: AzureSqlClient;
 	private autorestHelper: AutorestHelper;
 
@@ -86,6 +86,7 @@ export class ProjectsController {
 		this.buildHelper = new BuildHelper();
 		this.azureSqlClient = new AzureSqlClient();
 		this.deployService = new DeployService(this.azureSqlClient, this._outputChannel);
+		this.connectionService = new ConnectionService(this._outputChannel);
 		this.autorestHelper = new AutorestHelper(this._outputChannel);
 	}
 
@@ -200,20 +201,6 @@ export class ProjectsController {
 		await fs.mkdir(projectFolderPath, { recursive: true });
 		await fs.writeFile(newProjFilePath, newProjFileContents);
 
-		// Copy project readme
-		if (targetPlatformToAssets?.has(targetPlatform) && (targetPlatformToAssets?.get(targetPlatform)?.readmeFolder)) {
-			const readmeFolder = targetPlatformToAssets.get(targetPlatform)?.readmeFolder;
-
-			if (readmeFolder) {
-				const readmeFile = path.join(readmeFolder, 'README.md');
-				const folderExists = await utils.exists(readmeFile);
-				if (folderExists) {
-					await fs.copyFile(readmeFile, path.join(projectFolderPath, 'README.md'));
-					await fse.copy(path.join(readmeFolder, 'assets'), path.join(projectFolderPath, 'assets'));
-				}
-			}
-		}
-
 		await this.addTemplateFiles(newProjFilePath, creationParams.projectTypeId);
 
 		return newProjFilePath;
@@ -309,7 +296,7 @@ export class ProjectsController {
 						if (deployProfile.sqlDbSetting) {
 
 							// Connecting to the deployed db to add the profile to connection viewlet
-							await this.deployService.getConnection(deployProfile.sqlDbSetting, true, deployProfile.sqlDbSetting.dbName);
+							await this.connectionService.getConnection(deployProfile.sqlDbSetting, true, deployProfile.sqlDbSetting.dbName);
 						}
 						void vscode.window.showInformationMessage(constants.publishProjectSucceed);
 					} else {
@@ -351,7 +338,7 @@ export class ProjectsController {
 					const publishResult = await this.publishOrScriptProject(project, deployProfile.deploySettings, true);
 					if (publishResult && publishResult.success) {
 						if (deployProfile.localDbSetting) {
-							await this.deployService.getConnection(deployProfile.localDbSetting, true, deployProfile.localDbSetting.dbName);
+							await this.connectionService.getConnection(deployProfile.localDbSetting, true, deployProfile.localDbSetting.dbName);
 						}
 						void vscode.window.showInformationMessage(constants.publishProjectSucceed);
 					} else {
