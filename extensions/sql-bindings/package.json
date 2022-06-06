@@ -21,7 +21,7 @@
     "url": "https://github.com/Microsoft/azuredatastudio.git"
   },
   "extensionDependencies": [
-    "ms-mssql.mssql"
+    "Microsoft.mssql"
   ],
   "capabilities": {
     "virtualWorkspaces": false,
