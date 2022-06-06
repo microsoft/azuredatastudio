@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { QueryHistoryNode } from './queryHistoryNode';
 
-export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistoryNode> {
+export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistoryNode>, vscode.Disposable {
 
 	private _onDidChangeTreeData: vscode.EventEmitter<QueryHistoryNode | undefined> = new vscode.EventEmitter<QueryHistoryNode | undefined>();
 	readonly onDidChangeTreeData: vscode.Event<QueryHistoryNode | undefined> = this._onDidChangeTreeData.event;
@@ -15,8 +15,10 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 	private _queryHistoryNodes: QueryHistoryNode[] = [];
 	// private _queryHistoryLimit: number = 10;
 
+	private _disposables: vscode.Disposable[] = [];
+
 	constructor() {
-		azdata.queryeditor.registerQueryEventListener({
+		this._disposables.push(azdata.queryeditor.registerQueryEventListener({
 			onQueryEvent: async (type: azdata.queryeditor.QueryEventType, document: azdata.queryeditor.QueryDocument, args: azdata.ResultSetSummary | string | undefined, queryInfo?: azdata.queryeditor.IQueryInfo) => {
 				if (queryInfo && type === 'queryStop') {
 					const queryText = queryInfo.query ?? '';
@@ -26,7 +28,7 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 					this._onDidChangeTreeData.fire(undefined);
 				}
 			}
-		});
+		}));
 		// const config = this._vscodeWrapper.getConfiguration(Constants.extensionConfigSectionName);
 		// this._queryHistoryLimit = config.get(Constants.configQueryHistoryLimit);
 	}
@@ -47,5 +49,9 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 	public getChildren(element?: QueryHistoryNode): QueryHistoryNode[] {
 		// We only have top level items
 		return this._queryHistoryNodes;
+	}
+
+	public dispose(): void {
+		this._disposables.forEach(d => d.dispose());
 	}
 }

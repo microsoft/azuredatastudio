@@ -9,12 +9,8 @@ import { QueryHistoryNode } from './queryHistoryNode';
 import { QueryHistoryProvider } from './queryHistoryProvider';
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
-	// Currently all the functionality for this is contained within the core ADS
-	// code as the extensibility API doesn't currently support all the required
-	// functionality (such as contributing tab panels)
-	void vscode.commands.executeCommand('queryHistory.enableQueryHistory');
-
 	const provider = new QueryHistoryProvider();
+	context.subscriptions.push(provider);
 	context.subscriptions.push(vscode.window.registerTreeDataProvider('queryHistory', provider));
 	context.subscriptions.push(vscode.commands.registerCommand('queryHistory.open', async (node: QueryHistoryNode) => {
 		return azdata.queryeditor.openQueryDocument(
@@ -36,8 +32,4 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 	context.subscriptions.push(vscode.commands.registerCommand('queryHistory.clear', () => {
 		provider.clearAll();
 	}));
-}
-
-export async function deactivate(): Promise<void> {
-
 }

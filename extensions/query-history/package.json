@@ -125,7 +125,16 @@
         "view": "queryHistory",
         "contents": "%queryHistory.noEntries%"
       }
-    ]
+    ],
+    "viewsContainers": {
+      "panel": [
+        {
+          "id": "queryHistory",
+          "title": "%queryHistory.displayName%",
+          "icon": "./images/history.png"
+        }
+      ]
+    }
   },
   "dependencies": {},
   "devDependencies": {
