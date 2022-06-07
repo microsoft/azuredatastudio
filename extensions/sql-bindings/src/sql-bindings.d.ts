@@ -68,7 +68,7 @@ declare module 'sql-bindings' {
 		 * Adds the required nuget package to the project
 		 * @param selectedProjectFile is the users selected project file path
 		 */
-		addNugetReferenceToProjectFile(selectedProjectFile: string): Promise<void>
+		addSqlNugetReferenceToProjectFile(selectedProjectFile: string): Promise<void>
 	}
 
 	/**
