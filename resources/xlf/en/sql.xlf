@@ -179,7 +179,7 @@
       <source xml:lang="en">Sets the security policy for downloading extensions.</source>
     </trans-unit>
     <trans-unit id="incompatible">
-      <source xml:lang="en">Unable to install extension '{0}' as it is not compatible with Azure Data Studio '{1}'.</source>
+      <source xml:lang="en">Unable to install version '{0}' of extension '{1}' as it is not compatible with Azure Data Studio '{2}'. Update to Azure Data Studio {3} to install the extension.</source>
     </trans-unit>
     <trans-unit id="installExtensionCompletedAndReloadRequired">
       <source xml:lang="en">Installing extension {0} is completed. Please reload Azure Data Studio to enable it.</source>
@@ -623,9 +623,6 @@
     <trans-unit id="errorStartBeforeReady">
       <source xml:lang="en">Cannot start a session, the manager is not yet initialized</source>
     </trans-unit>
-    <trans-unit id="notebookMultipleRequestsError">
-      <source xml:lang="en">Cannot execute code cell. Another cell is currently being executed.</source>
-    </trans-unit>
 </body></file>
   <file original="src/sql/workbench/browser/actions" source-language="en" datatype="plaintext"><body>
     <trans-unit id="clearSavedAccounts">
@@ -944,6 +941,11 @@
     </trans-unit>
     <trans-unit id="updateOperationName">
       <source xml:lang="en">Update</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/common/constants" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="notebookMultipleRequestsError">
+      <source xml:lang="en">Cannot execute code cell. Another cell is currently being executed.</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/common/editor/query/queryEditorInput" source-language="en" datatype="plaintext"><body>
@@ -5637,6 +5639,9 @@ Error: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/notebook/browser/notebookViews/notebookViewModel" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="Untitled">
+      <source xml:lang="en">Untitled</source>
+    </trans-unit>
     <trans-unit id="notebookView.nameTaken">
       <source xml:lang="en">A view with the name {0} already exists in this notebook.</source>
     </trans-unit>
