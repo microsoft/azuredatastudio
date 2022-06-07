@@ -242,9 +242,14 @@ export class RunQueryAction extends QueryTaskbarAction {
 			if (runCurrentStatement && selection && this.isCursorPosition(selection)) {
 				editor.input.runQueryStatement(selection);
 			} else {
+				let runOptions = {};
+				if (editor.input.state.isActualExecutionPlanMode) {
+					runOptions = { displayActualQueryPlan: true };
+				}
+
 				// get the selection again this time with trimming
 				selection = editor.getSelection();
-				editor.input.runQuery(selection);
+				editor.input.runQuery(selection, runOptions);
 			}
 			return true;
 		}
@@ -300,7 +305,7 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService
 	) {
 		super(connectionManagementService, editor, EstimatedQueryPlanAction.ID, EstimatedQueryPlanAction.EnabledClass);
-		this.label = nls.localize('estimatedQueryPlan', "Explain");
+		this.label = nls.localize('estimatedQueryPlan', "Estimated Plan");
 	}
 
 	public override async run(): Promise<void> {
@@ -323,8 +328,7 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
 		}
 
 		if (this.isConnected(editor)) {
-			let planOptions: ExecutionPlanOptions = editor?.input?.state?.isActualExecutionPlanMode ? { displayActualQueryPlan: true } : { displayEstimatedQueryPlan: true };
-			editor.input.runQuery(editor.getSelection(), planOptions);
+			editor.input.runQuery(editor.getSelection(), { displayEstimatedQueryPlan: true });
 		}
 	}
 }
