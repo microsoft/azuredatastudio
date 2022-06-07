@@ -364,7 +364,9 @@ export class EditDataGridPanel extends GridParentComponent {
 	 */
 	private updateEnabledState(state: boolean): void {
 		//Need to suppress rerendering to avoid infinite loop when changing new row.
-		this.table.grid.setOptions({ editable: state }, true);
+		let newOptions = this.table.grid.getOptions();
+		newOptions.editable = state;
+		this.table.grid.setOptions(newOptions, true);
 	}
 
 	handleComplete(self: EditDataGridPanel, event: any): void {
@@ -511,7 +513,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		if (this.firstLoad) {
 			this.handleChanges({
 				['dataRows']: { currentValue: this.dataSet.dataRows, firstChange: this.firstLoad, previousValue: undefined },
-				['columnDefinitions']: { currentValue: this.dataSet.columnDefinitions, firstChange: this.firstLoad, previousValue: this.dataSet.columnDefinitions }
+				['columnDefinitions']: { currentValue: this.dataSet.columnDefinitions, firstChange: this.firstLoad, previousValue: undefined }
 			});
 			this.handleInitializeTable();
 			this.firstLoad = false;
