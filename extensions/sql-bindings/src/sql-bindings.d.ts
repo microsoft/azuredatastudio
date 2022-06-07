@@ -63,6 +63,12 @@ declare module 'sql-bindings' {
 		 * @returns array of names of Azure Functions in the file
 		 */
 		getAzureFunctions(filePath: string): Promise<GetAzureFunctionsResult>;
+
+		/**
+		 * Adds the required nuget package to the project
+		 * @param selectedProjectFile is the users selected project file path
+		 */
+		addSqlNugetReferenceToProjectFile(selectedProjectFile: string): Promise<void>
 	}
 
 	/**
