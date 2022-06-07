@@ -300,7 +300,7 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService
 	) {
 		super(connectionManagementService, editor, EstimatedQueryPlanAction.ID, EstimatedQueryPlanAction.EnabledClass);
-		this.label = nls.localize('estimatedQueryPlan', "Create Plan");
+		this.label = nls.localize('estimatedQueryPlan', "Explain");
 	}
 
 	public override async run(): Promise<void> {
