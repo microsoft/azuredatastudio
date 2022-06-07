@@ -29,7 +29,7 @@ export class TestChildProcessPromise<T> implements cp.ChildProcessPromise {
 	catch<TResult = never>(onRejected?: ((reason: any) => TResult | PromiseLike<TResult>) | null): Promise<T | TResult> {
 		return this._promise.catch(onRejected);
 	}
-	[Symbol.toStringTag]: string;
+	[Symbol.toStringTag]: string = '';
 	finally(onFinally?: (() => void) | null): Promise<T> {
 		return this._promise.finally(onFinally);
 	}

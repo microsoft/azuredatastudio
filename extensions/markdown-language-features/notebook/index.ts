@@ -178,9 +178,9 @@ export const activate: ActivationFunction<void> = (ctx) => {
 				previewNode.classList.remove('emptyMarkdownCell');
 
 				const unsanitizedRenderedMarkdown = markdownIt.render(text);
-				previewNode.innerHTML = ctx.workspace.isTrusted
+				previewNode.innerHTML = <any>(ctx.workspace.isTrusted
 					? unsanitizedRenderedMarkdown
-					: DOMPurify.sanitize(unsanitizedRenderedMarkdown, sanitizerOptions);
+					: DOMPurify.sanitize(unsanitizedRenderedMarkdown, sanitizerOptions));
 			}
 		},
 		extendMarkdownIt: (f: (md: typeof markdownIt) => void) => {
