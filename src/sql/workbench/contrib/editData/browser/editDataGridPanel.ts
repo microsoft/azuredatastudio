@@ -363,7 +363,8 @@ export class EditDataGridPanel extends GridParentComponent {
 	 * @param state The variable telling whether to enable selection of the table cells or not.
 	 */
 	private updateEnabledState(state: boolean): void {
-		this.table.grid.setOptions({ editable: state });
+		//Need to suppress rerendering to avoid infinite loop when changing new row.
+		this.table.grid.setOptions({ editable: state }, true);
 	}
 
 	handleComplete(self: EditDataGridPanel, event: any): void {
