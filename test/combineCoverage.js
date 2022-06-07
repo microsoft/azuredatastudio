@@ -34,3 +34,4 @@ const context = iLibReport.createContext({
 
 const tree = context.getTree('flat');
 tree.visit(iReports.create('lcov'), context);
+tree.visit(iReports.create('html'), context);
