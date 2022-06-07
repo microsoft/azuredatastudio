@@ -4686,6 +4686,71 @@
 					],
 					"statistics": [],
 					"flags": "preview"
+				},
+				{
+					"extensionId": "92",
+					"extensionName": "azure-cosmosdb-ads-extension",
+					"displayName": "Azure Cosmos DB API for MongoDB",
+					"shortDescription": "This extension provides support for Azure Cosmos DB API for MongoDB and MongoDB databases",
+					"publisher": {
+						"displayName": "Microsoft",
+						"publisherId": "Microsoft",
+						"publisherName": "Microsoft"
+					},
+					"versions": [
+						{
+							"version": "0.1.0",
+							"lastUpdated": "05/19/2022",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/azure-cosmosdb-ads-extension/azure-cosmosdb-ads-extension-0.1.1.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/Azure/azure-cosmosdb-ads-extension/main/resources/catalog/CosmosDBExtension.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/Azure/azure-cosmosdb-ads-extension/main/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
+									"source": "https://raw.githubusercontent.com/Azure/azure-cosmosdb-ads-extension/main/CHANGELOG.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/Azure/azure-cosmosdb-ads-extension/main/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/Azure/azure-cosmosdb-ads-extension/main/LICENSE"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": ">=1.35.0"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/Azure/azure-cosmosdb-ads-extension"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
 				}
 			],
 			"resultMetadata": [
@@ -4694,7 +4759,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 77
+							"count": 78
 						}
 					]
 				}
