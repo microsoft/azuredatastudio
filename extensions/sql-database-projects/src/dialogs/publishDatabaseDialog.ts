@@ -7,6 +7,7 @@ import type * as azdataType from 'azdata';
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
+import * as path from 'path';
 
 import { Project } from '../models/project';
 import { SqlConnectionDataSource } from '../models/dataSources/sqlConnectionStringSource';
@@ -59,6 +60,8 @@ export class PublishDatabaseDialog {
 	private serverName: string | undefined;
 	protected optionsButton: azdataType.ButtonComponent | undefined;
 	private publishOptionsDialog: PublishOptionsDialog | undefined;
+	private diagFileTextBox: azdataType.InputBoxComponent | undefined;
+	protected diagFileButton: azdataType.ButtonComponent | undefined;
 
 	private completionPromise: Deferred = new Deferred();
 
@@ -141,13 +144,15 @@ export class PublishDatabaseDialog {
 			const options = await this.getDefaultDeploymentOptions();
 			this.setDeploymentOptions(options);
 
+			const diagnosticLogsCheckBox = this.createDiagnosticLogsRow(view);
+
 			const profileRow = this.createProfileRow(view);
 			this.connectionRow = this.createConnectionRow(view);
 			this.databaseRow = this.createDatabaseRow(view);
 			const displayOptionsButton = this.createOptionsButton(view);
 
 			const horizontalFormSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
-			horizontalFormSection.addItems([profileRow, this.databaseRow, displayOptionsButton]);
+			horizontalFormSection.addItems([profileRow, this.databaseRow, displayOptionsButton, diagnosticLogsCheckBox]);
 
 			this.formBuilder = <azdataType.FormBuilder>view.modelBuilder.formContainer()
 				.withFormItems([
@@ -231,7 +236,8 @@ export class PublishDatabaseDialog {
 				connectionUri: await this.getConnectionUri(),
 				sqlCmdVariables: this.getSqlCmdVariablesForPublish(),
 				deploymentOptions: await this.getDeploymentOptions(),
-				profileUsed: this.profileUsed
+				profileUsed: this.profileUsed,
+				diagnosticsLogFilePath: this.getDiagnosticsLogPath()
 			};
 
 			utils.getAzdataApi()!.window.closeDialog(this.dialog);
@@ -256,7 +262,8 @@ export class PublishDatabaseDialog {
 					connectionUri: '',
 					sqlCmdVariables: this.getSqlCmdVariablesForPublish(),
 					deploymentOptions: await this.getDeploymentOptions(),
-					profileUsed: this.profileUsed
+					profileUsed: this.profileUsed,
+					diagnosticsLogFilePath: this.getDiagnosticsLogPath()
 				}
 			};
 
@@ -277,7 +284,8 @@ export class PublishDatabaseDialog {
 			connectionUri: await this.getConnectionUri(),
 			sqlCmdVariables: sqlCmdVars,
 			deploymentOptions: await this.getDeploymentOptions(),
-			profileUsed: this.profileUsed
+			profileUsed: this.profileUsed,
+			diagnosticsLogFilePath: this.getDiagnosticsLogPath()
 		};
 
 		utils.getAzdataApi()!.window.closeDialog(this.dialog);
@@ -936,6 +944,128 @@ export class PublishDatabaseDialog {
 	*/
 	public setDeploymentOptions(deploymentOptions: DeploymentOptions): void {
 		this.deploymentOptions = deploymentOptions;
+	}
+
+	private createDiagnosticLogsRow(view: azdataType.ModelView): azdataType.FlexContainer {
+		const diagnosticFileLabel = view.modelBuilder.text().withProps({
+			value: constants.enableDiagnosticsLogging,
+			width: cssStyles.publishDialogLabelWidth
+		}).component();
+
+		const loadDiagnosticFileCheckBox = view.modelBuilder.checkBox().withProps({
+			ariaLabel: constants.enableDiagnosticsLoggingCheckbox,
+			required: false
+		}).component();
+
+		const diagfileRow = view.modelBuilder.flexContainer().withItems([diagnosticFileLabel, loadDiagnosticFileCheckBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+
+		// GenerateS the diagnostic file text box for file path
+		const diagFileTextBoxcomponent = this.createDiagnosticFileTextBoxComponent(view);
+
+		loadDiagnosticFileCheckBox.onChanged(() => {
+			if (loadDiagnosticFileCheckBox?.checked) {
+				this.formBuilder!.insertFormItem({ component: diagFileTextBoxcomponent }, 4);
+
+				// Telemetry record for diagnostics log check box selection
+				TelemetryReporter.sendActionEvent(TelemetryViews.SqlProjectPublishDialog, TelemetryActions.enableDiagnosticsLoggingChecked);
+			} else {
+				this.formBuilder!.removeFormItem({ component: diagFileTextBoxcomponent });
+			}
+		});
+		return diagfileRow;
+	}
+
+	// Generates the diagnostic file text box for file path
+	private createDiagnosticFileTextBoxComponent(view: azdataType.ModelView): azdataType.Component {
+		const fileBrowserComponent = this.createFileBrowser(view);
+		const diagnosticFilePathLabel = view.modelBuilder.text().withProps({
+			value: constants.diagnosticslogFilePath,
+			width: cssStyles.publishDialogLabelWidth
+		}).component();
+
+		const diagFileTextBoxcomponent = view.modelBuilder.flexContainer().withItems([diagnosticFilePathLabel, this.diagFileTextBox!], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+
+		//Adds the file browser folder button icon next to the textbox
+		diagFileTextBoxcomponent.insertItem(fileBrowserComponent!, 2, { CSSStyles: { 'margin-right': '0px' } });
+
+		return diagFileTextBoxcomponent;
+	}
+
+	// Generates the file browser button
+	private createFileBrowser(view: azdataType.ModelView): azdataType.ButtonComponent | undefined {
+		this.createFileBrowserParts(view);
+
+		// default filepath
+		this.diagFileTextBox!.value = this.generateDefaultFileNameWithTimestamp();
+
+		this.diagFileButton!.onDidClick(async () => {
+			let fileUri = await vscode.window.showSaveDialog(
+				{
+					defaultUri: vscode.Uri.file(this.diagFileTextBox!.value ?? ''),
+					saveLabel: constants.save,
+					filters: {
+						'log Files': ['log', 'txt'],
+					}
+				}
+			);
+
+			if (!fileUri) {
+				return;
+			}
+
+			this.diagFileTextBox!.value = fileUri.fsPath;
+		});
+
+		return this.diagFileButton;
+	}
+
+	protected createFileBrowserParts(view: azdataType.ModelView) {
+		this.diagFileTextBox = view.modelBuilder.inputBox().withValidation(
+			component => utils.isValidBasename(component.value)
+		)
+			.withProps({
+				required: true,
+				ariaLive: 'polite',
+				width: cssStyles.publishDialogTextboxWidth
+			}).component();
+
+		// Set validation error message if file name is invalid
+		this.diagFileTextBox.onTextChanged(async (text) => {
+			const errorMessage: string = utils.isValidBasenameErrorMessage(text);
+			if (errorMessage) {
+				await this.diagFileTextBox!.updateProperty('validationErrorMessage', errorMessage);
+			}
+		});
+
+		this.diagFileTextBox.ariaLabel = constants.fileLocation;
+		this.diagFileButton = view.modelBuilder.button().withProps({
+			ariaLabel: constants.selectFile,
+			iconPath: IconPathHelper.folder_blue,
+		}).component();
+	}
+
+	// Generates the default file name with rootpath
+	protected generateDefaultFileNameWithTimestamp(): string {
+		let now = new Date();
+		const dateTime = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate() + '-' + now.getHours() + '-' + now.getMinutes();
+
+		return path.join(this.getDiagnosticsFileRootPath(), 'DiagnosticsLogFile' + '-' + dateTime + '.log');
+	}
+
+	// Gets the filepath
+	protected getDiagnosticsFileRootPath(): string {
+		// use previous file location if there was one
+		if (this.diagFileTextBox!.value && path.dirname(this.diagFileTextBox!.value)) {
+			return path.dirname(this.diagFileTextBox!.value);
+		} else { // otherwise use the default sql project root directory
+			let rootPath = utils.getWorkspaceFoldersPath()?.find(x => x.name === this.targetDatabaseName)?.uri.fsPath;
+			return rootPath ?? '';
+		}
+	}
+
+	// Gets the diagnostic file log path value
+	public getDiagnosticsLogPath(): string {
+		return this.diagFileTextBox?.value!;
 	}
 }
 

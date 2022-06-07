@@ -415,7 +415,7 @@ describe('ProjectsController', function (): void {
 				let builtDacpacPath = '';
 				let publishedDacpacPath = '';
 
-				testContext.dacFxService.setup(x => x.generateDeployScript(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(async (p) => {
+				testContext.dacFxService.setup(x => x.generateDeployScript(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(async (p) => {
 					publishedDacpacPath = p;
 					postCopyContents = (await fs.readFile(publishedDacpacPath)).toString();
 					return Promise.resolve(mockDacFxResult);

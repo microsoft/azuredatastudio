@@ -76,8 +76,8 @@ export class DacFxService implements mssql.IDacFxService {
 		);
 	}
 
-	public deployDacpac(packageFilePath: string, targetDatabaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: mssql.DeploymentOptions): Thenable<mssql.DacFxResult> {
-		const params: contracts.DeployParams = { packageFilePath: packageFilePath, databaseName: targetDatabaseName, upgradeExisting: upgradeExisting, sqlCommandVariableValues: sqlCommandVariableValues, deploymentOptions: deploymentOptions, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
+	public deployDacpac(packageFilePath: string, targetDatabaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: mssql.DeploymentOptions, diagnosticsLogFilePath?: string): Thenable<mssql.DacFxResult> {
+		const params: contracts.DeployParams = { packageFilePath: packageFilePath, databaseName: targetDatabaseName, upgradeExisting: upgradeExisting, sqlCommandVariableValues: sqlCommandVariableValues, deploymentOptions: deploymentOptions, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode, diagnosticsLogFilePath: diagnosticsLogFilePath };
 		return this.client.sendRequest(contracts.DeployRequest.type, params).then(
 			undefined,
 			e => {
@@ -87,8 +87,8 @@ export class DacFxService implements mssql.IDacFxService {
 		);
 	}
 
-	public generateDeployScript(packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: mssql.DeploymentOptions): Thenable<mssql.DacFxResult> {
-		const params: contracts.GenerateDeployScriptParams = { packageFilePath: packageFilePath, databaseName: targetDatabaseName, sqlCommandVariableValues: sqlCommandVariableValues, deploymentOptions: deploymentOptions, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
+	public generateDeployScript(packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: mssql.DeploymentOptions, diagnosticsLogFilePath?: string): Thenable<mssql.DacFxResult> {
+		const params: contracts.GenerateDeployScriptParams = { packageFilePath: packageFilePath, databaseName: targetDatabaseName, sqlCommandVariableValues: sqlCommandVariableValues, deploymentOptions: deploymentOptions, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode, diagnosticsLogFilePath: diagnosticsLogFilePath };
 		return this.client.sendRequest(contracts.GenerateDeployScriptRequest.type, params).then(
 			undefined,
 			e => {

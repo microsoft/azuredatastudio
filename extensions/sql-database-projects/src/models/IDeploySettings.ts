@@ -15,4 +15,5 @@ export interface IDeploySettings {
 	sqlCmdVariables?: Record<string, string>;
 	deploymentOptions?: DeploymentOptions;
 	profileUsed?: boolean;
+	diagnosticsLogFilePath?: string;
 }

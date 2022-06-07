@@ -73,6 +73,7 @@ describe('Publish Database Dialog', () => {
 		dialog.setup(x => x.getSqlCmdVariablesForPublish()).returns(() => proj.sqlCmdVariables);
 		dialog.setup(x => x.getDeploymentOptions()).returns(() => { return Promise.resolve(mockDacFxOptionsResult.deploymentOptions); });
 		dialog.setup(x => x.getServerName()).returns(() => 'MockServer');
+		dialog.setup(x => x.getDiagnosticsLogPath()).returns(() => 'MockDaignosticsLogFilePath');
 		dialog.object.publishToExistingServer = true;
 		dialog.callBase = true;
 
@@ -87,7 +88,8 @@ describe('Publish Database Dialog', () => {
 				'BackupDatabaseName': 'MyBackupDatabase'
 			},
 			deploymentOptions: mockDacFxOptionsResult.deploymentOptions,
-			profileUsed: false
+			profileUsed: false,
+			diagnosticsLogFilePath: 'MockDaignosticsLogFilePath'
 		};
 
 		dialog.object.publish = (_, prof) => { profile = prof; };
@@ -104,7 +106,8 @@ describe('Publish Database Dialog', () => {
 				'BackupDatabaseName': 'MyBackupDatabase'
 			},
 			deploymentOptions: mockDacFxOptionsResult.deploymentOptions,
-			profileUsed: false
+			profileUsed: false,
+			diagnosticsLogFilePath: 'MockDaignosticsLogFilePath'
 		};
 
 		dialog.object.generateScript = (_, prof) => { profile = prof; };
@@ -132,7 +135,8 @@ describe('Publish Database Dialog', () => {
 					'BackupDatabaseName': 'MyBackupDatabase'
 				},
 				deploymentOptions: mockDacFxOptionsResult.deploymentOptions,
-				profileUsed: false
+				profileUsed: false,
+				diagnosticsLogFilePath: 'MockDaignosticsLogFilePath'
 			}
 		};
 		dialog.object.publishToExistingServer = false;
