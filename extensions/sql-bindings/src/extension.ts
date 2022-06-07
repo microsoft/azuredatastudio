@@ -7,7 +7,7 @@ import { IConnectionInfo, ITreeNodeInfo } from 'vscode-mssql';
 import { IExtension, BindingType, GetAzureFunctionsResult, ResultStatus, IConnectionStringInfo } from 'sql-bindings';
 import { addSqlBinding, createAzureFunction, getAzureFunctions } from './services/azureFunctionsService';
 import { launchAddSqlBindingQuickpick } from './dialogs/addSqlBindingQuickpick';
-import { promptForBindingType, promptAndUpdateConnectionStringSetting, promptForObjectName } from './common/azureFunctionsUtils';
+import { promptForBindingType, promptAndUpdateConnectionStringSetting, promptForObjectName, addNugetReferenceToProjectFile } from './common/azureFunctionsUtils';
 
 export async function activate(context: vscode.ExtensionContext): Promise<IExtension> {
 	// register the add sql binding command
@@ -34,6 +34,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 		},
 		getAzureFunctions: async (filePath: string): Promise<GetAzureFunctionsResult> => {
 			return getAzureFunctions(filePath);
+		},
+		addNugetReferenceToProjectFile: async (projectFile: string): Promise<void> => {
+			return addNugetReferenceToProjectFile(projectFile);
 		}
 	};
 }
