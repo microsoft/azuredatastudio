@@ -303,9 +303,6 @@ export function ACCOUNT_ACCESS_ERROR(account: AzureAccount, error: Error) {
 export function MI_NOT_READY_ERROR(miName: string, state: string): string {
 	return localize('sql.migration.mi.not.ready', "The managed instance '{0}' is unavailable for migration because it is currently in the '{1}' state. To continue, select an available managed instance.", miName, state);
 }
-export function VM_NOT_READY_ERROR(miName: string, state: string): string {
-	return localize('sql.migration.vm.not.ready', "The virtual machine '{0}' is unavailable for migration because it is currently in the '{1}' state. To continue, select an available virtual machine.", miName, state);
-}
 
 export const SELECT_AN_ACCOUNT = localize('sql.migration.select.service.select.a.', "Sign into Azure and select an account");
 export const SELECT_A_TENANT = localize('sql.migration.select.service.select.a.tenant', "Select a tenant");
