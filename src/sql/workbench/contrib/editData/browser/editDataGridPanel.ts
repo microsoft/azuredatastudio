@@ -61,7 +61,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	private enableEditing = true;
 	// Current selected cell state
 	private currentCell: { row: number, column: number, isEditable: boolean, isDirty: boolean };
-	private justClickedCell: { row: number, column: number };
+	private lastClickedCell: { row: number, column: number };
 	private currentEditCellValue: string;
 	private newRowVisible: boolean;
 	private removingNewRow: boolean;
@@ -305,13 +305,14 @@ export class EditDataGridPanel extends GridParentComponent {
 		}
 
 		// get the cell we have just immediately clicked (to set as the new active cell in handleChanges).
-		this.justClickedCell = { row, column };
+		this.lastClickedCell = { row, column };
 
 		// Skip processing if the cell hasn't moved (eg, we reset focus to the previous cell after a failed update)
 		if (this.currentCell.row === row && this.currentCell.column === column && this.currentCell.isDirty === false) {
 			return;
 		}
 
+		// disable editing the grid temporarily as any text entered while the grid is being refreshed will be lost upon completion.
 		this.updateEnabledState(false);
 
 		let cellSelectTasks: Promise<void> = this.submitCurrentCellChange(
@@ -363,9 +364,11 @@ export class EditDataGridPanel extends GridParentComponent {
 	 * @param state The variable telling whether to enable selection of the table cells or not.
 	 */
 	private updateEnabledState(state: boolean): void {
-		//Need to suppress rerendering to avoid infinite loop when changing new row.
 		let newOptions = this.table.grid.getOptions();
 		newOptions.editable = state;
+		// Need to suppress rerendering to avoid infinite loop when changing new row.
+		// When setOptions is called with rerendering, it triggers an onCellSelect in our code (which is by design currently),
+		// and thus an infinite loop is caused.
 		this.table.grid.setOptions(newOptions, true);
 	}
 
@@ -989,9 +992,9 @@ export class EditDataGridPanel extends GridParentComponent {
 
 		if (this.table) {
 			// Get the active cell we have just clicked to be the new active cell (cell needs to be manually set as active in slickgrid).
-			if (this.justClickedCell) {
-				activeCell = { row: this.justClickedCell.row, cell: this.justClickedCell.column };
-				this.justClickedCell = undefined;
+			if (this.lastClickedCell) {
+				activeCell = { row: this.lastClickedCell.row, cell: this.lastClickedCell.column };
+				this.lastClickedCell = undefined;
 			}
 			else {
 				// Get the last selected cell as the active cell as a backup.
