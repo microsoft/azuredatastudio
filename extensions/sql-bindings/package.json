@@ -3,7 +3,7 @@
   "displayName": "%displayName%",
   "description": "%description%",
   "version": "0.2.0",
-  "publisher": "ms-mssql",
+  "publisher": "ms-mssql"
   "preview": true,
   "engines": {
     "vscode": "^1.30.1"
