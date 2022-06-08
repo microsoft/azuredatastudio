@@ -210,6 +210,14 @@
         <source xml:lang="en">Execute</source>
         <target state="translated">执行</target>
       </trans-unit>
+      <trans-unit id="mssql.failedToFindAccount">
+        <source xml:lang="en">Failed to find azure account {0} when executing token refresh</source>
+        <target state="translated">执行令牌刷新时找不到 Azure 帐户 {0}</target>
+      </trans-unit>
+      <trans-unit id="mssql.failedToFindTenants">
+        <source xml:lang="en">Failed to find tenant '{0}' in account '{1}' when refreshing security token</source>
+        <target state="translated">刷新安全令牌时，在帐户 \"{1}\" 中找不到租户 \"{0}\"</target>
+      </trans-unit>
       <trans-unit id="mssql.group">
         <source xml:lang="en">Group</source>
         <target state="translated">组</target>
@@ -257,6 +265,14 @@
       <trans-unit id="mssql.stickyHeader">
         <source xml:lang="en">Sticky Bit</source>
         <target state="translated">粘滞位</target>
+      </trans-unit>
+      <trans-unit id="mssql.tokenRefreshFailed">
+        <source xml:lang="en">{0} AAD token refresh failed, please reconnect to enable {0}</source>
+        <target state="translated">{0} AAD 令牌刷新失败，请重新连接以启用 {0}</target>
+      </trans-unit>
+      <trans-unit id="mssql.tokenRefreshFailedNoSecurityToken">
+        <source xml:lang="en">Editor token refresh failed, autocompletion will be disabled until the editor is disconnected and reconnected</source>
+        <target state="translated">编辑器令牌刷新失败，自动完成将被禁用，直到编辑器断开连接并重新连接</target>
       </trans-unit>
       <trans-unit id="mssql.userLabel">
         <source xml:lang="en">User</source>
@@ -1329,6 +1345,10 @@
       <trans-unit id="mssql.logRetentionMinutes">
         <source xml:lang="en">Number of minutes to retain log files for backend services. Default is 1 week.</source>
         <target state="translated">将后端服务的日志文件保留的时长(分钟数)。默认为 1 周。</target>
+      </trans-unit>
+      <trans-unit id="mssql.parallelMessageProcessing">
+        <source xml:lang="en">[Experimental] Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Relaunch of ADS is required when the value is changed.</source>
+        <target state="translated">[实验性]是否应并行处理对 SQL 工具服务的请求。引入此方法的目的是发现并行处理所有请求时可能存在的问题。默认值为 false。更改值时，需要重新启动 ADS。</target>
       </trans-unit>
       <trans-unit id="mssql.provider.displayName">
         <source xml:lang="en">Microsoft SQL Server</source>

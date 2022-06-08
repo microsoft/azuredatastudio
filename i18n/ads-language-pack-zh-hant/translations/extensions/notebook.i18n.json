@@ -152,7 +152,7 @@
 			"managePackages.noVersionsFound": "無法為指定的套件找到任何有效版本",
 			"managePackages.packageNameTitle": "套件名稱",
 			"managePackages.packageSummaryTitle": "套件摘要",
-			"managePackages.packageVersionTitle": "套件版本",
+			"managePackages.packageVersionTitle": "支援的 Python {0} 套件版本",
 			"managePackages.searchBarPlaceholder": "搜尋 {0} 個套件",
 			"managePackages.searchButtonLabel": "搜尋"
 		},

@@ -10175,8 +10175,7 @@
 			"designer.issuesTabTitle": "問題 ({0})",
 			"designer.loadingDesigner": "正在載入設計工具...",
 			"designer.loadingDesignerCompleted": "設計工具已載入",
-			"designer.newRowButtonAriaLabel": "將新資料列新增至 '{0}' 資料表",
-			"designer.newRowText": "新增",
+			"designer.moveRowText": "移動列",
 			"designer.processing": "正在處理...",
 			"designer.processingChanges": "正在處理變更...",
 			"designer.processingChangesCompleted": "已處理變更",
@@ -10185,7 +10184,7 @@
 			"designer.publishingChanges": "正在發佈變更...",
 			"designer.removeRowText": "移除",
 			"designer.scriptTabTitle": "指令碼",
-			"tableDesigner.unknownComponentType": "不支援元件類型 {0}"
+			"designer.unknownComponentType": "不支援元件類型 {0}"
 		},
 		"sql/workbench/browser/designer/designerPropertiesPane": {
 			"tableDesigner.propertiesPaneTitle": "屬性",
@@ -10349,7 +10348,8 @@
 			"azure.openInAzurePortal.title": "在 Azure 入口網站中開啟"
 		},
 		"sql/workbench/contrib/backup/browser/backup.component": {
-			"addFile": "增加檔案",
+			"addFile": "新增檔案",
+			"addUrl": "新增 URL",
 			"backup.advancedConfiguration": "進階組態",
 			"backup.algorithm": "演算法",
 			"backup.backupDevice": "備份檔案",
@@ -10357,6 +10357,7 @@
 			"backup.backupName": "備份名稱",
 			"backup.backupTail": "備份最後的記錄",
 			"backup.backupType": "備份類型",
+			"backup.backupUrl": "備份 URL",
 			"backup.certificateOrAsymmetricKey": "憑證或非對稱金鑰",
 			"backup.checksumContainer": "在寫入媒體前執行檢查碼",
 			"backup.compression": "壓縮",
@@ -10378,9 +10379,11 @@
 			"backup.reliability": "可靠性",
 			"backup.setBackupCompression": "設定備份壓縮",
 			"backup.setBackupRetainDays": "設定備份保留天數",
+			"backup.toUrl": "將備份儲存至 URL",
 			"backup.transactionLog": "交易記錄",
 			"backup.truncateTransactionLog": "截斷交易記錄",
 			"backup.verifyContainer": "完成後驗證備份",
+			"backupBrowseButton": "瀏覽",
 			"backupComponent.backup": "備份",
 			"backupComponent.cancel": "取消",
 			"backupComponent.invalidInput": "輸入無效。值必須大於或等於 0。",
@@ -10493,7 +10496,6 @@
 			"workbench.configuration.upgradeWorkspace": "您工作區設定中的 {1} 已取代 {0}。"
 		},
 		"sql/workbench/contrib/connection/browser/connection.contribution": {
-			"connection.parseClipboardForConnectionStringDescription": "嘗試在連線對話方塊開啟或已執行貼上時剖析剪貼簿的內容。",
 			"connection.showUnsupportedServerVersionWarning": "當使用者連接到 Azure Data Studio 不支援的伺服器版本時，是否要顯示警告訊息。",
 			"sql.defaultAuthenticationType.AzureMFA": "Azure Active Directory - MFA 通用支援",
 			"sql.defaultAuthenticationType.AzureMFAAndUser": "Azure Active Directory - 密碼",
@@ -10509,10 +10511,12 @@
 		"sql/workbench/contrib/connection/common/connectionProviderExtension": {
 			"schema.connectionOptions": "連線選項",
 			"schema.displayName": "提供者的顯示名稱",
+			"schema.enableConnectionStringOption": "提供者是否支援連接字串作為輸入選項。預設值為 false。",
 			"schema.iconPath": "伺服器類型的圖示路徑",
 			"schema.isQueryProvider": "提供者是否也是查詢提供者。預設值為 true。",
 			"schema.notebookKernelAlias": "提供者的筆記本核心別名",
-			"schema.providerId": "提供者的通用識別碼。"
+			"schema.providerId": "提供者的通用識別碼。",
+			"schema.useConnectionStringAsDefaultOption": "連接提供者是否使用連接字串作為連線的預設選項。預設值為 false。"
 		},
 		"sql/workbench/contrib/connection/common/connectionTreeProviderExentionPoint": {
 			"connectionTreeProvider.schema.id": "提供者的識別碼，必須與註冊樹狀資料提供者時的識別碼相同，而且必須以 `connectionDialog/` 開頭",
@@ -10586,6 +10590,7 @@
 			"azdata.extension.contributes.dashboard.tab.container": "將在此索引標籤中顯示的容器。",
 			"azdata.extension.contributes.dashboard.tab.description": "此索引標籤的描述將顯示給使用者。",
 			"azdata.extension.contributes.dashboard.tab.group": "此索引標籤所屬群組的唯一識別碼，常用 (群組) 的值: 常用。",
+			"azdata.extension.contributes.dashboard.tab.hideRefreshTask": "用於在工具列中顯示/隱藏重新整理按鈕的旗標。根據預設，此值為 False",
 			"azdata.extension.contributes.dashboard.tab.icon.dark": "使用暗色主題時的圖像路徑",
 			"azdata.extension.contributes.dashboard.tab.icon.light": "使用亮色主題時的圖示路徑",
 			"azdata.extension.contributes.dashboard.tab.id": "此索引標籤的唯一識別碼。將傳遞給任何要求的延伸模組。",
@@ -11104,7 +11109,6 @@
 			"addTextLabel": "新增文字",
 			"cellNotFound": "無法在此模型中找到 URI 為 {0} 的資料格",
 			"cellRunFailed": "執行資料格失敗 - 如需詳細資訊，請參閱目前所選資料格之輸出中的錯誤。",
-			"code": "程式碼",
 			"codeCellsPreview": "新增資料格",
 			"codePreview": "程式碼資料格",
 			"createFile": "建立檔案",
@@ -11112,9 +11116,7 @@
 			"editor": "編輯器",
 			"nextButtonLabel": "下一步 >",
 			"previousButtonLabel": "< 上一步",
-			"runAll": "執行資料格",
 			"runAllPreview": "全部執行",
-			"text": "文字",
 			"textPreview": "文字資料格",
 			"views": "檢視"
 		},
@@ -11208,6 +11210,7 @@
 			"runParameters": "執行 (設有參數)",
 			"selectConnection": "選取連線",
 			"trustLabel": "受信任",
+			"untitledNotSupported": "未命名的筆記本不支援使用參數執行。請先儲存筆記本再繼續。[深入了解](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization)。",
 			"untrustLabel": "不受信任",
 			"viewNotFound": "找不到檢視: {0}"
 		},
@@ -11823,7 +11826,11 @@
 			"connectionDetailsTitle": "連線詳細資料",
 			"connectionDialog.cancel": "取消",
 			"connectionDialog.connect": "連線",
+			"connectionDialog.connectionProviderNotSupported": "目前未安裝支援提供者類型 '{0}' 的延伸模組。請安裝並再試一次。",
+			"connectionDialog.extensionNotInstalled": "需要延伸模組 '{0}' 才能連線到此資源。請安裝並再試一次。",
 			"connectionDialog.recentConnections": "最近的連線",
+			"connectionDialog.viewExtension": "檢視延伸模組",
+			"connectionDialog.viewExtensions": "檢視延伸模組",
 			"noRecentConnections": "沒有最近使用的連線",
 			"recentConnectionTitle": "最近"
 		},
@@ -11846,7 +11853,9 @@
 			"connection.azureTenantDropdownLabel": "Azure AD 租用戶",
 			"connectionName": "名稱 (選用)",
 			"connectionWidget.AddAzureAccount": "新增帳戶...",
-			"connectionWidget.fieldWillBeTrimmed": "{0} 將受到修剪。",
+			"connectionWidget.ConnectionStringError": "無法剖析連接字串。",
+			"connectionWidget.Error": "錯誤",
+			"connectionWidget.connectionString": "連接字串",
 			"connectionWidget.invalidAzureAccount": "您必須選取帳戶",
 			"connectionWidget.missingRequireField": "{0} 為必要項。",
 			"connectionWidget.refreshAzureCredentials": "重新整理帳戶登入資訊",
@@ -11957,8 +11966,12 @@
 			"sqlKernel": "SQL"
 		},
 		"sql/workbench/services/notebook/browser/models/cell": {
+			"cellExecutionComplete": "完成儲存格執行",
+			"cellExecutionStarted": "儲存格執行已開始",
+			"codeCellLabel": "儲存格代碼 {0}",
 			"commandSuccessful": "已成功執行命令",
 			"executionCanceled": "已取消執行查詢",
+			"mdCellLabel": "Markdown 儲存格 {0}",
 			"noDefaultKernel": "沒有任何可供此筆記本使用的核心",
 			"notebookNotReady": "這個筆記本的工作階段尚未就緒",
 			"runCellCancelled": "已取消資料格執行",
@@ -12151,13 +12164,16 @@
 			"RestoreDialogTitle": "還原資料庫",
 			"backupFilePath": "備份檔案路徑",
 			"backupSetsToRestore": "要還原的備份組",
+			"backupUrl": "備份 URL",
 			"database": "資料庫",
 			"destination": "目的地",
+			"enterBackupUrl": "請輸入 URL",
 			"fileType": "檔案類型",
 			"filesTitle": "檔案",
 			"generalTitle": "一般",
 			"logicalFileName": "邏輯檔案名稱",
 			"missingBackupFilePathError": "需要備份檔案路徑。",
+			"missingBackupUrlError": "需要備份 URL。",
 			"multipleBackupFilePath": "請輸入一或多個用逗號分隔的檔案路徑",
 			"optionsTitle": "選項",
 			"originalFileName": "原始檔案名稱",
@@ -12165,11 +12181,14 @@
 			"restoreDatabaseFileAs": "將資料庫檔案還原為",
 			"restoreDatabaseFileDetails": "還原資料庫檔詳細資訊",
 			"restoreDialog.backupFile": "備份檔案",
+			"restoreDialog.browse": "瀏覽",
 			"restoreDialog.cancel": "取消",
 			"restoreDialog.database": "資料庫",
 			"restoreDialog.restore": "還原",
 			"restoreDialog.restoreTitle": "還原資料庫",
 			"restoreDialog.script": "指令碼",
+			"restoreDialog.targetDatabaseAlreadyExists": "目標資料庫已存在",
+			"restoreDialog.url": "URL",
 			"restoreFrom": "還原自",
 			"restoreOptions": "還原選項",
 			"restorePlan": "還原計劃",
@@ -12177,7 +12196,8 @@
 			"serverConnection": "伺服器連線",
 			"source": "來源",
 			"taillogBackup": "結尾記錄備份",
-			"targetDatabase": "目標資料庫"
+			"targetDatabase": "目標資料庫",
+			"targetDatabaseTooltip": "請輸入目標資料庫名稱"
 		},
 		"sql/workbench/services/restore/common/constants": {
 			"backup.allFiles": "所有檔案",
@@ -12190,6 +12210,7 @@
 			"groupColor": "群組色彩",
 			"groupDescription": "群組描述",
 			"serverGroup.cancel": "取消",
+			"serverGroup.colorValue": "色彩: {0}",
 			"serverGroup.ok": "確定"
 		},
 		"sql/workbench/services/serverGroup/common/serverGroupViewModel": {
@@ -12197,28 +12218,34 @@
 			"serverGroup.editServerGroup": "編輯伺服器群組"
 		},
 		"sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput": {
+			"designer.checkConstraint.description.description": "檢查條件約束的描述。",
 			"designer.checkConstraint.description.expression": "定義檢查條件約束的運算式。",
 			"designer.checkConstraint.description.name": "檢查條件約束的名稱。",
+			"designer.column.description.advancedType": "顯示統一資料類型 (包括資料行的長度、比例與精確度)",
 			"designer.column.description.allowNulls": "指定資料行能否含有 NULL 值。",
 			"designer.column.description.dataType": "顯示資料行的資料類型名稱",
 			"designer.column.description.defaultValueBinding": "資料行或繫結的預先定義全域預設值。",
+			"designer.column.description.description": "顯示資料行的描述",
 			"designer.column.description.length": "可儲存在這個資料庫物件中的長度上限 (位元數)。",
 			"designer.column.description.name": "資料行物件的名稱。",
 			"designer.column.description.precision": "針對數值資料，可儲存在此資料庫物件中的最大十進位數。",
 			"designer.column.description.primaryKey": "指定資料行是否包含在資料表的主索引鍵中。",
 			"designer.column.description.scale": "針對數值資料，可儲存在此資料庫物件中小數點右邊的最大十進位數字。",
 			"designer.foreignkey.description.columnMapping": "外部索引鍵資料行與主索引鍵資料行之間的對應。",
+			"designer.foreignkey.description.description": "外部索引鍵的描述。",
 			"designer.foreignkey.description.name": "外部索引鍵的名稱。",
 			"designer.foreignkey.description.onDeleteAction": "使用者嘗試刪除資料列時的行為，此資料列內含外部索引鍵關聯性中涉及的資料。",
 			"designer.foreignkey.description.onUpdateAction": "使用者嘗試更新資料列時的行為，此資料列內含外部索引鍵關聯性中涉及的資料。",
 			"designer.foreignkey.description.primaryKeyTable": "包含主索引鍵或唯一索引鍵資料行的資料表。",
 			"designer.index.column.description.name": "資料行的名稱。",
 			"designer.index.description.columns": "索引的資料行。",
+			"designer.index.description.description": "索引子的描述。",
 			"designer.index.description.name": "索引的名稱。",
 			"designer.table.description.description": "資料表的描述。",
 			"designer.table.description.name": "資料表物件的名稱。",
 			"designer.table.description.schema": "包含資料表的結構描述。",
 			"designer.table.primaryKeyColumns.description": "主鍵中的資料行。",
+			"designer.table.primaryKeyDescription.description": "主索引鍵的描述。",
 			"designer.table.primaryKeyName.description": "主鍵的名稱。",
 			"tableDesigner.ErrorDialogTitle": "資料表設計工具錯誤",
 			"tableDesigner.ForeignKeyTypeName": "外部索引鍵",
@@ -12233,12 +12260,15 @@
 			"tableDesigner.addNewColumnToIndex": "加入資料行",
 			"tableDesigner.addNewColumnToPrimaryKey": "加入資料行",
 			"tableDesigner.addNewIndex": "新增索引",
+			"tableDesigner.checkConstraintDescriptionTitle": "描述",
 			"tableDesigner.checkConstraintExpressionTitle": "運算式",
 			"tableDesigner.checkConstraintNameTitle": "名稱",
 			"tableDesigner.checkConstraintTypeName": "檢查條件約束",
 			"tableDesigner.checkConstraintsTabTitle": "檢查條件約束",
+			"tableDesigner.columnAdvancedTypeTitle": "類型",
 			"tableDesigner.columnAllowNullTitle": "允許 Null 值",
 			"tableDesigner.columnDefaultValueTitle": "預設值",
+			"tableDesigner.columnDescriptionTitle": "描述",
 			"tableDesigner.columnIsPrimaryKeyTitle": "主索引鍵",
 			"tableDesigner.columnLengthTitle": "長度",
 			"tableDesigner.columnNameTitle": "名稱",
@@ -12253,6 +12283,7 @@
 			"tableDesigner.foreignKey.column": "資料行",
 			"tableDesigner.foreignKey.foreignColumn": "外部資料行",
 			"tableDesigner.foreignKeyColumns": "資料行",
+			"tableDesigner.foreignKeyDescriptionTitle": "描述",
 			"tableDesigner.foreignKeyNameTitle": "名稱",
 			"tableDesigner.foreignKeyOnDeleteAction": "刪除動作時",
 			"tableDesigner.foreignKeyOnUpdateAction": "更新動作時",
@@ -12265,11 +12296,13 @@
 			"tableDesigner.generatingScriptCompleted": "已產生指令碼。",
 			"tableDesigner.index.column.name": "資料行",
 			"tableDesigner.indexColumns": "資料行",
+			"tableDesigner.indexDescription": "描述",
 			"tableDesigner.indexName": "名稱",
 			"tableDesigner.indexesTabTitle": "索引",
 			"tableDesigner.inputValidationError": "輸入驗證失敗，錯誤為: {0}",
 			"tableDesigner.nameTitle": "資料表名稱",
 			"tableDesigner.primaryKeyColumnsTitle": "主索引鍵資料行",
+			"tableDesigner.primaryKeyDescriptionTitle": "描述",
 			"tableDesigner.primaryKeyNameTitle": "名稱",
 			"tableDesigner.publishChangeError": "發佈變更時發生錯誤: {0}",
 			"tableDesigner.publishChangeSuccess": "已成功發佈變更。",
@@ -12287,7 +12320,8 @@
 			"showReleaseNotes": "顯示入門指南"
 		},
 		"sql/workbench/api/common/notebooks/vscodeExecuteProvider": {
-			"errorStartBeforeReady": "無法啟動工作階段，管理員尚未初始化"
+			"errorStartBeforeReady": "無法啟動工作階段，管理員尚未初始化",
+			"notebookMultipleRequestsError": "無法執行程式碼儲存格。目前正在執行另一個儲存格。"
 		},
 		"sql/workbench/contrib/tableDesigner/browser/tableDesignerEditor": {
 			"tableDesigner.PreviewFeature": "預覽功能"
@@ -12308,38 +12342,16 @@
 			"selectBox": "選取方塊"
 		},
 		"sql/workbench/browser/designer/designerIssuesTabPanelView": {
-			"designer.IssueListAriaLabel": "問題"
-		},
-		"sql/workbench/contrib/executionPlan/browser/executionPlan": {
-			"executionPlan.SaveFileDescription": "執行計畫檔案",
-			"executionPlanCustomZoom": "自訂縮放",
-			"executionPlanFileLoadingComplete": "產生執行計畫",
-			"executionPlanFileLoadingFailed": "無法載入執行計畫",
-			"executionPlanFitGraphLabel": "縮放至適當比例",
-			"executionPlanOpenGraphFile": "顯示查詢計劃 XML",
-			"executionPlanPropertiesActionLabel": "屬性",
-			"executionPlanSavePlanXML": "儲存計畫檔案",
-			"executionPlanSearchNodeAction": "尋找節點",
-			"executionPlanTitle": "查詢計劃 (預覽)",
-			"executionPlanZoomInActionLabel": "放大",
-			"executionPlanZoomOutActionLabel": "縮小",
-			"loadingExecutionPlanFile": "產生執行計畫",
-			"openQueryAction": "開啟查詢"
+			"designer.IssueListAriaLabel": "問題",
+			"designer.moreInfoLink": "詳細資訊"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanEditor": {
 			"executionPlanEditor": "查詢執行計畫編輯器"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView": {
 			"executionPlanPropertiesEdgeOperationName": "邊緣",
-			"executionPlanPropertyViewClose": "關閉",
-			"executionPlanPropertyViewSortAlphabetically": "字母順序",
-			"executionPlanPropertyViewSortByDisplayOrder": "已分類",
 			"nodePropertyViewNameNameColumnHeader": "名稱",
-			"nodePropertyViewNameValueColumnHeader": "值",
-			"nodePropertyViewTitle": "屬性"
-		},
-		"sql/workbench/contrib/executionPlan/browser/planHeader": {
-			"planHeaderIndexAndCost": "查詢 {0}: 查詢成本 (相對於指令碼): {1}%"
+			"nodePropertyViewNameValueColumnHeader": "值"
 		},
 		"sql/workbench/contrib/executionPlan/browser/widgets/customZoomWidget": {
 			"cancelCustomZoomAction": "關閉 (逸出)",
@@ -12367,6 +12379,106 @@
 		},
 		"sql/base/browser/ui/table/plugins/contextMenuColumn.plugin": {
 			"table.showActions": "顯示動作"
+		},
+		"sql/workbench/browser/designer/tableActions": {
+			"designer.addColumnAction": "新增",
+			"designer.insertAfterSelectedColumn": "插入此項目之後",
+			"designer.insertBeforeSelectedRow": "插入此項目之前",
+			"designer.moveRowDownAction": "下移",
+			"designer.moveRowDownButtonAriaLabel": "將選取的列下移一個位置",
+			"designer.moveRowUpAction": "上移",
+			"designer.moveRowUpButtonAriaLabel": "將選取的列上移一個位置",
+			"designer.newRowButtonAriaLabel": "將新資料列新增至 '{0}' 資料表"
+		},
+		"sql/workbench/contrib/executionPlan/browser/azdataGraphView": {
+			"invalidExecutionPlanZoomError": "縮放比例不可以是 0 或負數"
+		},
+		"sql/workbench/contrib/executionPlan/browser/compareExecutionPlanInput": {
+			"epCompare.editorName": "比較執行計畫"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditor": {
+			"compareExecutionPlanEditor": "比較執行計畫編輯器"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView": {
+			"addExecutionPlanLabel": "新增執行計畫",
+			"epComapre.LoadingPlanCompleteMessage": "已成功載入執行計畫",
+			"epComapre.LoadingPlanMessage": "正在載入執行計畫",
+			"epComapre.placeholderInfoboxText": "新增執行計畫以進行比較",
+			"epCompare.FileFilterDescription": "執行計畫檔案",
+			"epCompare.comparePropertiesAction": "屬性",
+			"epCompare.comparisonProgess": "在比較計畫中載入類似區域",
+			"epCompare.toggleOrientation": "切換方向",
+			"epCompare.zoomInAction": "放大",
+			"epCompare.zoomOutAction": "縮小",
+			"epCompare.zoomReset": "重設縮放",
+			"epCompare.zoomToFit": "縮放至適當比例"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView": {
+			"executionPlanComparisonPropertiesBottomOperation": "基本作業: {0}",
+			"executionPlanComparisonPropertiesTopOperation": "最主要作業: {0}",
+			"executionPlanPropertiesEdgeOperationName": "邊緣",
+			"nodePropertyViewNameNameColumnHeader": "名稱",
+			"nodePropertyViewNameValueColumnBottomHeader": "值 (基本計畫)",
+			"nodePropertyViewNameValueColumnTopHeader": "值 (主要計畫)"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanContribution": {
+			"executionPlanCompareCommandOriginalValue": "比較執行計畫",
+			"executionPlanCompareCommandValue": "比較執行計畫"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanFileView": {
+			"executionPlanFileLoadingComplete": "產生執行計畫",
+			"executionPlanFileLoadingFailed": "無法載入執行計畫",
+			"loadingExecutionPlanFile": "產生執行計畫"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase": {
+			"executionPlanPropertyViewClose": "關閉",
+			"executionPlanPropertyViewSortAlphabetically": "字母順序",
+			"executionPlanPropertyViewSortByDisplayOrder": "已分類",
+			"executionPlanPropertyViewSortReverseAlphabetically": "反向字母順序",
+			"nodePropertyViewTitle": "屬性"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanTab": {
+			"executionPlanTitle": "查詢計劃 (預覽)"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanView": {
+			"executionPlan.SaveFileDescription": "執行計畫檔案",
+			"executionPlanCompareExecutionPlanAction": "比較執行計畫",
+			"executionPlanContextMenuDisableTooltip": "停用工具提示",
+			"executionPlanContextMenuEnableTooltip": "啟用工具提示",
+			"executionPlanCustomZoom": "自訂縮放",
+			"executionPlanDisableTooltip": "已停用工具提示",
+			"executionPlanEnableTooltip": "已啟用工具提示",
+			"executionPlanFitGraphLabel": "縮放至適當比例",
+			"executionPlanOpenGraphFile": "顯示查詢計劃 XML",
+			"executionPlanPropertiesActionLabel": "屬性",
+			"executionPlanSavePlanXML": "儲存計畫檔案",
+			"executionPlanSearchNodeAction": "尋找節點",
+			"executionPlanZoomInActionLabel": "放大",
+			"executionPlanZoomOutActionLabel": "縮小",
+			"openQueryAction": "開啟查詢"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanViewHeader": {
+			"planHeaderIndexAndCost": "查詢 {0}: 查詢成本 (相對於指令碼): {1}%"
+		},
+		"sql/workbench/services/backupRestoreUrlBrowser/browser/urlBrowserDialog": {
+			"backupRestoreUrlBrowserDialog.account": "Azure 帳戶",
+			"backupRestoreUrlBrowserDialog.backupFile": "備份檔案",
+			"backupRestoreUrlBrowserDialog.blobContainer": "Blob 容器",
+			"backupRestoreUrlBrowserDialog.linkAccount": "連結帳戶",
+			"backupRestoreUrlBrowserDialog.sharedAccessSignature": "已產生共用存取簽章",
+			"backupRestoreUrlBrowserDialog.sharedAccessSignatureButton": "建立認證",
+			"backupRestoreUrlBrowserDialog.storageAccount": "儲存體帳戶",
+			"backupRestoreUrlBrowserDialog.subscription": "Azure 訂用帳戶",
+			"backupRestoreUrlBrowserDialog.tenant": "Azure AD 租用戶",
+			"fileBrowser.discard": "捨棄",
+			"fileBrowser.ok": "確定"
+		},
+		"sql/workbench/services/backupRestoreUrlBrowser/browser/urlBrowserDialogService": {
+			"filebrowser.selectBlob": "選取 Blob"
+		},
+		"sql/workbench/services/tableDesigner/browser/tableDesignerService": {
+			"TableDesigner.closeApplication": "關閉應用程式(&&C)",
+			"TableDesigner.saveBeforeExit": "若關閉應用程式，資料表設計工具中將會遺失未儲存的變更。是否關閉應用程式嗎?"
 		}
 	}
 }

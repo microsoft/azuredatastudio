@@ -9,6 +9,7 @@
 	"version": "1.0.0",
 	"contents": {
 		"dist/localizedConstants": {
+			"arc.releaseDateNotParsed": "Non è stato possibile analizzare la data di rilascio.",
 			"az.accept": "Accetto",
 			"az.arcdataExtensionNotInstalled": "Questa estensione richiede l'installazione dell'estensione 'arcdata' dell'interfaccia della riga di comando di Azure. Installare la versione più recente seguendo le istruzioni riportate [qui](https://docs.microsoft.com/azure/azure-arc/data/install-arcdata-extension).",
 			"az.arcdataInstalled": "L'estensione arcdata dell'interfaccia della riga di comando di Azure è stata installata. Il riavvio di Azure Studio è necessario per completare la configurazione. Le funzionalità non verranno attivate fino a quando l’operazione non sarà completata.",
