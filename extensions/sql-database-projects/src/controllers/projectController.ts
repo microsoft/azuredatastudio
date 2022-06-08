@@ -319,9 +319,12 @@ export class ProjectsController {
 	 */
 	public async publishToDockerContainer(context: Project | dataworkspace.WorkspaceTreeItem, deployProfile: ILocalDbDeployProfile): Promise<void> {
 		const project: Project = this.getProjectFromContext(context);
+		// Removing the path separator from the image base name to be able to add that in the telemetry. With the separator the name is flagged as user path which is not true
+		// We only need to know the image base parts so it's ok to use a different separator when adding to telemetry
+		const dockerImageNameForTelemetry = deployProfile.localDbSetting?.dockerBaseImage ? deployProfile.localDbSetting.dockerBaseImage.replace(/\//gi, '_') : '';
 		try {
 			TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.publishToContainer)
-				.withAdditionalProperties({ dockerBaseImage: deployProfile.localDbSetting!.dockerBaseImage })
+				.withAdditionalProperties({ dockerBaseImage: dockerImageNameForTelemetry })
 				.send();
 
 			if (deployProfile && deployProfile.deploySettings) {
@@ -351,7 +354,7 @@ export class ProjectsController {
 		} catch (error) {
 			void utils.showErrorMessageWithOutputChannel(constants.publishToContainerFailed, error, this._outputChannel);
 			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.publishToContainer)
-				.withAdditionalProperties({ dockerBaseImage: deployProfile.localDbSetting!.dockerBaseImage })
+				.withAdditionalProperties({ dockerBaseImage: dockerImageNameForTelemetry })
 				.send();
 		}
 		return;
