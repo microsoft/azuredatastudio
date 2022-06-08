@@ -449,18 +449,16 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			}
 		}));
 
-		const refreshResourceButton = this._view.modelBuilder.button()
-			.withProps({
-				iconPath: IconPathHelper.refresh,
-				label: constants.REFRESH_BUTTON_LABEL,
-				width: 90,
-				height: 24,
-				CSSStyles: {
-					...styles.BODY_CSS,
-					'margin': '12px 0 4px 0'
-				}
-			})
-		.component();
+		const refreshResourceButton = this._view.modelBuilder.button().withProps({
+			iconPath: IconPathHelper.refresh,
+			label: constants.REFRESH_BUTTON_LABEL,
+			width: 90,
+			height: 24,
+			CSSStyles: {
+				...styles.BODY_CSS,
+				'margin': '12px 0 4px 0'
+			}
+		}).component();
 
 		this._disposables.push(refreshResourceButton.onDidClick(async (event) => {
 			await this.populateSubscriptionDropdown();
