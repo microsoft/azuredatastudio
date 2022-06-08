@@ -271,6 +271,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	public async getToken(tenant: Tenant, resource: Resource, postData: AuthorizationCodePostData | TokenPostData | RefreshTokenPostData): Promise<OAuthTokenResponse> {
 		Logger.verbose('Fetching token');
 		const tokenUrl = `${this.loginEndpointUrl}${tenant.id}/oauth2/token`;
+		// TODO: makePostRequest no longer needed, will just be able to call acquireTokenByCode
 		const response = await this.makePostRequest(tokenUrl, postData);
 		Logger.pii('Token: ', [{ name: 'access token', objOrArray: response.data }, { name: 'refresh token', objOrArray: response.data }],
 			[{ name: 'access token', value: response.data.access_token }, { name: 'refresh token', value: response.data.refresh_token }]);

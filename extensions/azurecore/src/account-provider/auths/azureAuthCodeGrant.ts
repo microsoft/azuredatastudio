@@ -17,6 +17,7 @@ import * as path from 'path';
 import * as http from 'http';
 import * as qs from 'qs';
 import { promises as fs } from 'fs';
+import * as msal from '@azure/msal-node';
 
 const localize = nls.loadMessageBundle();
 
@@ -70,6 +71,8 @@ export class AzureAuthCodeGrant extends AzureAuth {
 	 * @param tenant
 	 * @param resource
 	 */
+
+	//TODO: change resource to scope
 	private async getTokenWithAuthorizationCode(tenant: Tenant, resource: Resource, { authCode, redirectUri, codeVerifier }: AuthCodeResponse): Promise<OAuthTokenResponse | undefined> {
 		const postData: AuthorizationCodePostData = {
 			grant_type: 'authorization_code',
@@ -154,6 +157,38 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		}
 		const { nonce, codeVerifier, codeChallenge } = this.createCryptoValues();
 		const state = `${serverPort},${encodeURIComponent(nonce)}`;
+		const MSAL_CONFIG = {
+			auth: {
+				// response_type: 'code',
+				// response_mode: 'query',
+				clientId: this.clientId,
+				redirect_uri: this.redirectUri,
+				// TODO: add authority
+				// state,
+				// prompt: 'select_account',
+				// code_challenge_method: 'S256',
+				// code_challenge: codeChallenge,
+				// scope: 'https://management.core.windows.net//.default'
+			}
+		};
+
+		// Node auth options:
+		// clientId: string;
+		// authority?: string;
+		// clientSecret?: string;
+		// clientAssertion?: string;
+		// clientCertificate?: {
+		//     thumbprint: string;
+		//     privateKey: string;
+		//     x5c?: string;
+		// };
+		// knownAuthorities?: Array<string>;
+		// cloudDiscoveryMetadata?: string;
+		// authorityMetadata?: string;
+		// clientCapabilities?: Array<string>;
+		// protocolMode?: ProtocolMode;
+		// azureCloudOptions?: AzureCloudOptions;
+
 		const loginQuery = {
 			response_type: 'code',
 			response_mode: 'query',
@@ -165,14 +200,37 @@ export class AzureAuthCodeGrant extends AzureAuth {
 			code_challenge: codeChallenge,
 			resource: resource.endpoint
 		};
-		const loginUrl = `${this.loginEndpointUrl}${tenant.id}/oauth2/authorize?${qs.stringify(loginQuery)}`;
-		await vscode.env.openExternal(vscode.Uri.parse(`http://localhost:${serverPort}/signin?nonce=${encodeURIComponent(nonce)}`));
-		const authCode = await this.addServerListeners(this.server, nonce, loginUrl, authCompletePromise);
-		return {
-			authCode,
-			codeVerifier,
-			redirectUri: this.redirectUri
-		};
+
+
+		try {
+			const msalInstance = new msal.PublicClientApplication(MSAL_CONFIG);
+
+			let request: msal.AuthorizationUrlRequest;
+			request = {
+				scopes: ['https://management.core.windows.net//default'],
+				redirectUri: this.redirectUri,
+				codeChallenge: codeChallenge,
+				codeChallengeMethod: 'S256'
+			};
+			let authCodeUrl = await msalInstance.getAuthCodeUrl(request);
+			const loginUrl = `${this.loginEndpointUrl}${tenant.id}/oauth2/authorize?${qs.stringify(loginQuery)}`;
+			console.log(authCodeUrl);
+			// let authResult = await msalInstance.acquireTokenByUsernamePassword(request);
+
+			await vscode.env.openExternal(vscode.Uri.parse(`http://localhost:${serverPort}/signin?nonce=${encodeURIComponent(nonce)}`));
+			const authCode = await this.addServerListeners(this.server, nonce, authCodeUrl, authCompletePromise);
+
+			return {
+				authCode,
+				codeVerifier,
+				redirectUri: this.redirectUri
+			};
+		}
+
+		catch (e) {
+			console.log(e);
+		}
+
 
 	}
 
