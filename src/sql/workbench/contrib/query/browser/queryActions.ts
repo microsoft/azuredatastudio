@@ -15,7 +15,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import Severity from 'vs/base/common/severity';
 import { append, $ } from 'vs/base/browser/dom';
 
-import { ExecutionPlanOptions, QueryExecutionOptions } from 'azdata';
+import { QueryExecutionOptions } from 'azdata';
 import {
 	IConnectionManagementService,
 	IConnectionParams,
@@ -200,8 +200,8 @@ export class RunQueryAction extends QueryTaskbarAction {
 		editor: QueryEditor,
 		@IQueryModelService protected readonly queryModelService: IQueryModelService,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
-		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService,
-		@ICommandService private readonly commandService?: ICommandService
+		@ICommandService private readonly commandService?: ICommandService,
+		@IAdsTelemetryService private readonly telemetryService?: IAdsTelemetryService,
 	) {
 		super(connectionManagementService, editor, RunQueryAction.ID, RunQueryAction.EnabledClass);
 		this.label = nls.localize('runQueryLabel', "Run");
@@ -247,7 +247,7 @@ export class RunQueryAction extends QueryTaskbarAction {
 			} else {
 				let runOptions = {};
 				if (editor.input.state.isActualExecutionPlanMode) {
-					this.telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.ToggleOnActualQueryExecutionPlan);
+					this.telemetryService?.sendActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.ToggleOnActualQueryExecutionPlan);
 					runOptions = { displayActualQueryPlan: true };
 				}
 
