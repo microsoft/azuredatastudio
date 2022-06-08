@@ -152,7 +152,7 @@ export class PublishDatabaseDialog {
 			const displayOptionsButton = this.createOptionsButton(view);
 
 			const horizontalFormSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
-			horizontalFormSection.addItems([profileRow, this.databaseRow, displayOptionsButton, diagnosticLogsCheckBox]);
+			horizontalFormSection.addItems([profileRow, this.databaseRow]);
 
 			this.formBuilder = <azdataType.FormBuilder>view.modelBuilder.formContainer()
 				.withFormItems([
@@ -176,6 +176,14 @@ export class PublishDatabaseDialog {
 								title: constants.selectConnectionRadioButtonsTitle,
 								component: selectConnectionRadioButtons
 							},*/
+							{
+								component: diagnosticLogsCheckBox,
+								title: ''
+							},
+							{
+								component: displayOptionsButton,
+								title: ''
+							},
 						]
 					}
 				], {
@@ -920,7 +928,7 @@ export class PublishDatabaseDialog {
 			width: cssStyles.PublishingOptionsButtonWidth
 		}).component();
 
-		const optionsRow = view.modelBuilder.flexContainer().withItems([this.optionsButton], { CSSStyles: { flex: '0 0 auto', 'margin': '6px 0 0 287px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+		const optionsRow = view.modelBuilder.flexContainer().withItems([this.optionsButton], { CSSStyles: { flex: '0 0 auto', 'margin': '-8px 0 0 287px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		this.toDispose.push(this.optionsButton.onDidClick(async () => {
 			TelemetryReporter.sendActionEvent(TelemetryViews.SqlProjectPublishDialog, TelemetryActions.publishConfigureOptionsClicked);
@@ -957,14 +965,14 @@ export class PublishDatabaseDialog {
 			required: false
 		}).component();
 
-		const diagfileRow = view.modelBuilder.flexContainer().withItems([diagnosticFileLabel, loadDiagnosticFileCheckBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+		const diagfileRow = view.modelBuilder.flexContainer().withItems([diagnosticFileLabel, loadDiagnosticFileCheckBox], { flex: '0 0 auto', CSSStyles: { 'margin': '-21px 10px 0 0' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		// GenerateS the diagnostic file text box for file path
 		const diagFileTextBoxcomponent = this.createDiagnosticFileTextBoxComponent(view);
 
 		loadDiagnosticFileCheckBox.onChanged(() => {
 			if (loadDiagnosticFileCheckBox?.checked) {
-				this.formBuilder!.insertFormItem({ component: diagFileTextBoxcomponent }, 4);
+				this.formBuilder!.insertFormItem({ component: diagFileTextBoxcomponent }, 5);
 
 				// Telemetry record for diagnostics log check box selection
 				TelemetryReporter.sendActionEvent(TelemetryViews.SqlProjectPublishDialog, TelemetryActions.enableDiagnosticsLoggingChecked);
@@ -983,7 +991,7 @@ export class PublishDatabaseDialog {
 			width: cssStyles.publishDialogLabelWidth
 		}).component();
 
-		const diagFileTextBoxcomponent = view.modelBuilder.flexContainer().withItems([diagnosticFilePathLabel, this.diagFileTextBox!], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+		const diagFileTextBoxcomponent = view.modelBuilder.flexContainer().withItems([diagnosticFilePathLabel, this.diagFileTextBox!], { flex: '0 0 auto', CSSStyles: { 'margin': '-21px 10px 0 0' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		//Adds the file browser folder button icon next to the textbox
 		diagFileTextBoxcomponent.insertItem(fileBrowserComponent!, 2, { CSSStyles: { 'margin-right': '0px' } });
