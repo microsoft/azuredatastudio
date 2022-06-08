@@ -1420,7 +1420,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	// Updates last backup file dropdown (offline migration only) for blob container backup
 	private async updateBlobLastBackupFileDropdown(index: number, value: any): Promise<void> {
 		if (value && value !== 'undefined') {
-			const valueString = await this.dropdownValueToString(value);
+			const valueString = this.dropdownValueToString(value);
 			if (this.migrationStateModel._lastFileNames) {
 				const selectedLastBackupFile = this.migrationStateModel._lastFileNames.find(fileName => fileName.name === valueString);
 				if (selectedLastBackupFile && !blobFileErrorStrings.includes(valueString)) {
