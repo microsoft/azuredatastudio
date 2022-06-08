@@ -1362,7 +1362,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	// Updates storage account dropdown and loads blob container dropdown for blob container backup
 	private async updateBlobStorageDropdown(index: number, value: azdata.DropDownProperties['value'], blobContainerDropdown: azdata.DropDownComponent): Promise<void> {
 		if (value && value !== 'undefined') {
-			const valueString = await this.dropdownValueToString(value);
+			const valueString = this.dropdownValueToString(value);
 			const selectedStorageAccount = this.migrationStateModel._storageAccounts.find(sa => sa.name === valueString);
 			if (selectedStorageAccount && !blobStorageAccountErrorStrings.includes(valueString)) {
 				this.migrationStateModel._databaseBackup.blobs[index].storageAccount = selectedStorageAccount;
@@ -1390,7 +1390,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	// Updates blob container dropdown and loads last backup dropdown (offline migration only) for blob container backup
 	private async updateBlobContainerDropdown(index: number, value: any, blobContainerLastBackupFileDropdown: azdata.DropDownComponent): Promise<void> {
 		if (value && value !== 'undefined' && this.migrationStateModel._blobContainers) {
-			const valueString = await this.dropdownValueToString(value);
+			const valueString = this.dropdownValueToString(value);
 			const selectedBlobContainer = this.migrationStateModel._blobContainers.find(blob => blob.name === valueString);
 			if (selectedBlobContainer && !blobContainerErrorStrings.includes(valueString)) {
 				this.migrationStateModel._databaseBackup.blobs[index].blobContainer = selectedBlobContainer;
