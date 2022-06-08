@@ -20,6 +20,7 @@ import { GenerateProjectFromOpenApiSpecOptions, ItemType } from 'sqldbproj';
 import { TableFileNode } from '../models/tree/fileFolderTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { getAzdataApi } from '../common/utils';
+import { EntryType } from '../models/projectEntry';
 
 /**
  * The main controller class that initializes the extension
@@ -102,7 +103,8 @@ export default class MainController implements vscode.Disposable {
 					isNewTable: false,
 					tableScriptPath: filePath,
 					projectFilePath: projectPath,
-					allScripts: projectNode.project.files.map(entry => entry.fsUri.fsPath),
+					allScripts: projectNode.project.files.filter(entry => entry.type === EntryType.File && path.extname(entry.fsUri.fsPath).toLowerCase() === constants.sqlFileExtension)
+						.map(entry => entry.fsUri.fsPath),
 					targetVersion: targetVersion
 				}, {
 					'ProjectTargetVersion': targetVersion
