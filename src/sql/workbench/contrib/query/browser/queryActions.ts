@@ -5,6 +5,7 @@
 
 import 'vs/css!./media/queryActions';
 import * as nls from 'vs/nls';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { Action, IAction, IActionRunner } from 'vs/base/common/actions';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
@@ -46,6 +47,7 @@ import { getErrorMessage, onUnexpectedError } from 'vs/base/common/errors';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { gen3Version, sqlDataWarehouse } from 'sql/platform/connection/common/constants';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 /**
  * Action class that query-based Actions will extend. This base class automatically handles activating and
@@ -198,6 +200,7 @@ export class RunQueryAction extends QueryTaskbarAction {
 		editor: QueryEditor,
 		@IQueryModelService protected readonly queryModelService: IQueryModelService,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
+		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService,
 		@ICommandService private readonly commandService?: ICommandService
 	) {
 		super(connectionManagementService, editor, RunQueryAction.ID, RunQueryAction.EnabledClass);
@@ -244,6 +247,7 @@ export class RunQueryAction extends QueryTaskbarAction {
 			} else {
 				let runOptions = {};
 				if (editor.input.state.isActualExecutionPlanMode) {
+					this.telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.ToggleOnActualQueryExecutionPlan);
 					runOptions = { displayActualQueryPlan: true };
 				}
 
