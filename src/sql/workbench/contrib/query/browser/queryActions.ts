@@ -343,7 +343,7 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
  * Action class that toggles the actual execution plan mode for the editor
  */
 export class ToggleActualExecutionPlanModeAction extends QueryTaskbarAction {
-	public static EnabledClass = 'estimatedQueryPlan';
+	public static EnabledClass = 'enabledActualExecutionPlan';
 	public static ID = 'toggleActualExecutionPlanModeAction';
 
 	private _enableActualPlanLabel = nls.localize('enableActualPlanLabel', "Enable Actual Plan");
