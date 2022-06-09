@@ -247,7 +247,7 @@ export class RunQueryAction extends QueryTaskbarAction {
 				editor.input.runQueryStatement(selection);
 			} else {
 				if (editor.input.state.isActualExecutionPlanMode) {
-					this.telemetryService?.sendActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.ToggleOnActualQueryExecutionPlan);
+					this.telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.ToggleOnActualQueryExecutionPlan);
 					selection = editor.getSelection();
 					editor.input.runQuery(selection, { displayActualQueryPlan: true });
 				}
