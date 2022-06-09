@@ -101,7 +101,7 @@ export const enum TelemetryAction {
 	SearchStarted = 'SearchStarted',
 	ShowChart = 'ShowChart',
 	StopAgentJob = 'StopAgentJob',
-	ToggleOnActualExecutionPlan = 'ToggleOnActualExecutionPlan',
+	ToggleActualExecutionPlan = 'ToggleActualExecutionPlan',
 	ViewExecutionPlanComparisonProperties = 'ViewExecutionPlanComparisonProperties',
 	ViewTopOperations = 'ViewTopOperations',
 	WizardPagesNavigation = 'WizardPagesNavigation',

@@ -376,8 +376,8 @@ export class ToggleActualExecutionPlanModeAction extends QueryTaskbarAction {
 		const toActualPlanState = !this.isActualExecutionPlanMode;
 		this.editor.input.state.isActualExecutionPlanMode = toActualPlanState;
 
-		this.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.ToggleOnActualExecutionPlan)
-			.withAdditionalProperties({ actualExecutionPlanModeOn: this.isActualExecutionPlanMode })
+		this.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.Click, 'ToggleActualExecutionPlan')
+			.withAdditionalProperties({ actualExecutionPlanMode: this.isActualExecutionPlanMode })
 			.send();
 	}
 }
