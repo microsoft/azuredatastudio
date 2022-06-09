@@ -936,6 +936,7 @@ export class PublishDatabaseDialog {
 	*/
 	public setDeploymentOptions(deploymentOptions: DeploymentOptions): void {
 		this.deploymentOptions = deploymentOptions;
+		this.deploymentOptions.optionsMapTable = JSON.parse(JSON.stringify(Object.fromEntries(Object.entries(this.deploymentOptions.optionsMapTable).map((x) => [x[0].charAt(0).toUpperCase() + x[0].slice(1), x[1]]))));
 	}
 }
 
