@@ -200,7 +200,6 @@ export class RunQueryAction extends QueryTaskbarAction {
 		editor: QueryEditor,
 		@IQueryModelService protected readonly queryModelService: IQueryModelService,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
-		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService,
 		@ICommandService private readonly commandService?: ICommandService
 	) {
 		super(connectionManagementService, editor, RunQueryAction.ID, RunQueryAction.EnabledClass);
@@ -246,7 +245,6 @@ export class RunQueryAction extends QueryTaskbarAction {
 				editor.input.runQueryStatement(selection);
 			} else {
 				if (editor.input.state.isActualExecutionPlanMode) {
-					this.telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.ToggleOnActualExecutionPlan);
 					selection = editor.getSelection();
 					editor.input.runQuery(selection, { displayActualQueryPlan: true });
 				}
@@ -353,7 +351,8 @@ export class ToggleActualExecutionPlanModeAction extends QueryTaskbarAction {
 		private _isActualPlanMode: boolean,
 		@IQueryManagementService protected readonly queryManagementService: IQueryManagementService,
 		@IConfigurationService protected readonly configurationService: IConfigurationService,
-		@IConnectionManagementService connectionManagementService: IConnectionManagementService
+		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
+		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService
 	) {
 		super(connectionManagementService, editor, ToggleActualExecutionPlanModeAction.ID, ToggleActualExecutionPlanModeAction.EnabledClass);
 		this.updateLabel();
@@ -376,6 +375,10 @@ export class ToggleActualExecutionPlanModeAction extends QueryTaskbarAction {
 	public override async run(): Promise<void> {
 		const toActualPlanState = !this.isActualExecutionPlanMode;
 		this.editor.input.state.isActualExecutionPlanMode = toActualPlanState;
+
+		this.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.ToggleOnActualExecutionPlan)
+			.withAdditionalProperties({ actualExecutionPlanModeOn: this.isActualExecutionPlanMode })
+			.send();
 	}
 }
 
