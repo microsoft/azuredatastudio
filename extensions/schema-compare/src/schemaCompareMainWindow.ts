@@ -347,6 +347,7 @@ export class SchemaCompareMainWindow {
 
 	public setDeploymentOptions(deploymentOptions: mssql.DeploymentOptions): void {
 		this.deploymentOptions = deploymentOptions;
+		this.deploymentOptions.optionsMapTable = JSON.parse(JSON.stringify(Object.fromEntries(Object.entries(this.deploymentOptions.optionsMapTable).map((x) => [x[0].charAt(0).toUpperCase() + x[0].slice(1), x[1]]))));
 	}
 
 	private async populateProjectScripts(endpointInfo: mssql.SchemaCompareEndpointInfo): Promise<void> {

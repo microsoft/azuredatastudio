@@ -134,7 +134,7 @@ export class SchemaCompareOptionsDialog {
 				let row = this.optionsTable.selectedRows[0];
 				let label = this.optionsModel.optionsLabels[row];
 				await this.descriptionText.updateProperties({
-					value: this.optionsModel.getDescription(label)
+					value: this.optionsModel.getOptionsDescription(label)
 				});
 			}));
 
@@ -142,7 +142,7 @@ export class SchemaCompareOptionsDialog {
 				let checkboxState = <azdata.ICheckboxCellActionEventArgs>rowState;
 				if (checkboxState && checkboxState.row !== undefined) {
 					let label = this.optionsModel.optionsLabels[checkboxState.row];
-					this.optionsModel.optionsLookup[label] = checkboxState.checked;
+					this.optionsModel.optionsLookup.set(label, checkboxState.checked);
 					this.optionsChanged = true;
 				}
 			}));
@@ -175,7 +175,7 @@ export class SchemaCompareOptionsDialog {
 				let checkboxState = <azdata.ICheckboxCellActionEventArgs>rowState;
 				if (checkboxState && checkboxState.row !== undefined) {
 					let label = this.optionsModel.objectTypeLabels[checkboxState.row];
-					this.optionsModel.objectsLookup[label] = checkboxState.checked;
+					this.optionsModel.objectsLookup.set(label, checkboxState.checked);
 					this.optionsChanged = true;
 				}
 			}));
