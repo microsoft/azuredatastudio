@@ -28,6 +28,7 @@ import { TestInstantiationService } from 'vs/platform/instantiation/test/common/
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
+import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 
 suite('SQL QueryEditor Tests', () => {
 	let instantiationService: TypeMoq.Mock<InstantiationService>;
@@ -58,7 +59,7 @@ suite('SQL QueryEditor Tests', () => {
 			return new Promise((resolve) => resolve(mockEditor));
 		});
 		instantiationService.setup(x => x.createInstance(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((input) => {
-			return new Promise((resolve) => resolve(new RunQueryAction(undefined, undefined, undefined)));
+			return new Promise((resolve) => resolve(new RunQueryAction(undefined, undefined, undefined, new NullAdsTelemetryService())));
 		});
 		// Setup hook to capture calls to create the listDatabase action
 		instantiationService.setup(x => x.createInstance(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((classDef, editor, action) => {
@@ -68,7 +69,7 @@ suite('SQL QueryEditor Tests', () => {
 				}
 			}
 			// Default
-			return new RunQueryAction(undefined, undefined, undefined);
+			return new RunQueryAction(undefined, undefined, undefined, new NullAdsTelemetryService());
 		});
 
 		// Mock EditorDescriptorService to give us a mock editor description
@@ -285,7 +286,7 @@ suite('SQL QueryEditor Tests', () => {
 
 			queryActionInstantiationService.setup(x => x.createInstance(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((input) => {
 				// Default
-				return new RunQueryAction(undefined, undefined, undefined);
+				return new RunQueryAction(undefined, undefined, undefined, new NullAdsTelemetryService());
 			});
 
 			// Setup hook to capture calls to create the listDatabase action
@@ -296,7 +297,7 @@ suite('SQL QueryEditor Tests', () => {
 						return item;
 					}
 					// Default
-					return new RunQueryAction(undefined, undefined, undefined);
+					return new RunQueryAction(undefined, undefined, undefined, new NullAdsTelemetryService());
 				});
 
 			const workbenchinstantiationService = workbenchInstantiationService();

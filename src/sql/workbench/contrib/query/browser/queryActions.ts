@@ -200,8 +200,9 @@ export class RunQueryAction extends QueryTaskbarAction {
 		editor: QueryEditor,
 		@IQueryModelService protected readonly queryModelService: IQueryModelService,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
-		@ICommandService private readonly commandService?: ICommandService,
-		@IAdsTelemetryService private readonly telemetryService?: IAdsTelemetryService,
+		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService,
+		@ICommandService private readonly commandService?: ICommandService
+
 	) {
 		super(connectionManagementService, editor, RunQueryAction.ID, RunQueryAction.EnabledClass);
 		this.label = nls.localize('runQueryLabel', "Run");
