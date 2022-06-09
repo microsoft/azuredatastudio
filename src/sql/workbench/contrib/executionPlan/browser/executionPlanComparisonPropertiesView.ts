@@ -205,7 +205,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 			const topProp = v.topProp;
 			const bottomProp = v.bottomProp;
 			const parentRowCellStyling = 'font-weight: bold';
-			let diffIconClass = 'default-bottom-column-cell-styling';
+			let diffIconClass = '';
 			if (topProp && bottomProp) {
 				row['displayOrder'] = v.topProp.displayOrder;
 				if (v.topProp.displayValue !== v.bottomProp.displayValue) {
