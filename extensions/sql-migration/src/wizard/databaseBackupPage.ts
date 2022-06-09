@@ -46,7 +46,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private _blobContainerDropdowns!: azdata.DropDownComponent[];
 	private _blobContainerLastBackupFileDropdowns!: azdata.DropDownComponent[];
 	private _blobContainerBackup: azdata.ButtonComponent[] = [];
-	private _blobContainerBackupSpinner: azdata.LoadingComponent[] = [];
+	private _blobContainerBackupLoading: azdata.LoadingComponent[] = [];
+	private _blobContainerBackupCancel: azdata.ButtonComponent[] = [];
 
 	private _networkShareStorageAccountDetails!: azdata.FlexContainer;
 	private _networkShareContainerSubscription!: azdata.TextComponent;
@@ -593,10 +594,17 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					headerCssStyles: headerCssStyles,
 					isReadOnly: true,
 					width: WIZARD_TABLE_COLUMN_WIDTH,
-					hidden: true
+					//hidden: true
 				},
 				{
 					displayName: 'Backup',
+					valueType: azdata.DeclarativeDataType.component,
+					rowCssStyles: rowCssStyle,
+					headerCssStyles: headerCssStyles,
+					isReadOnly: true,
+					width: '50px'
+				}, {
+					displayName: 'Cancel',
 					valueType: azdata.DeclarativeDataType.component,
 					rowCssStyles: rowCssStyle,
 					headerCssStyles: headerCssStyles,
@@ -896,8 +904,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					this.migrationStateModel._targetDatabaseNames = [];
 					this.migrationStateModel._databaseBackup.networkShares = [];
 					this.migrationStateModel._databaseBackup.blobs = [];
+					this.migrationStateModel._databaseBackup.taskIds = {};
 				}
-
 				this.migrationStateModel._databasesForMigration.forEach((db, index) => {
 					let targetDatabaseName = db;
 					let networkShare = <NetworkShare>{};
@@ -983,8 +991,29 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						enabled: false
 					}).component();
 					this._disposables.push(networkShareBackupButton.onDidClick(async () => {
+						const taskServicesProvider = azdata.dataprotocol.getProvider<azdata.TaskServicesProvider>(
+							(await this.migrationStateModel.getSourceConnectionProfile()).providerId,
+							azdata.DataProviderType.TaskServicesProvider);
+						taskServicesProvider.registerOnTaskCreated(async (taskInfo) => {
+							console.log(taskInfo);
+						});
+						taskServicesProvider.registerOnTaskStatusChanged(async (progressInfo) => {
+							console.log(progressInfo);
+							if (progressInfo.script) {
+								const dbName = progressInfo.script.substring(progressInfo.script.indexOf('[') + 1, progressInfo.script.indexOf(']'));
+								this.migrationStateModel._databaseBackup.taskIds[progressInfo.taskId] = dbName;
+							}
+							else if (progressInfo.status !== azdata.TaskStatus.NotStarted && progressInfo.status !== azdata.TaskStatus.InProgress) {
+								const dbIndex: number = this.migrationStateModel._databasesForMigration.indexOf(
+									this.migrationStateModel._databaseBackup.taskIds[progressInfo.taskId]);
+								await this._networkShareBackupLoading[dbIndex].updateCssStyles({ 'display': 'none' });
+								await this._networkShareBackup[dbIndex].updateProperty('enabled', true);
+								await this._networkShareBackupCancel[dbIndex].updateProperty('enabled', false);
+							}
+						});
 						await networkShareBackupSpinner.updateCssStyles({ 'display': 'inline' });
 						await networkShareBackupButton.updateProperty('enabled', false);
+						await networkShareBackupCancel.updateProperty('enabled', true);
 						const backupProvider = azdata.dataprotocol.getProvider<azdata.BackupProvider>(
 							(await this.migrationStateModel.getSourceConnectionProfile()).providerId,
 							azdata.DataProviderType.BackupProvider);
@@ -992,11 +1021,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 							this.migrationStateModel.sourceConnectionId));
 						const backupLocation = this.migrationStateModel._databaseBackup.networkShares[index]?.networkShareLocation;
 						const databaseName = this.migrationStateModel._databasesForMigration[index];
-						await backupProvider.backup(ownerURI, this.getBackupInfo(PhysicalDeviceType.Disk, ownerURI, databaseName, backupLocation), azdata.TaskExecutionMode.executeAndScript);
-						//this.migrationStateModel._databaseBackup.taskIds['networkShareBackup' + databaseName] = backup.taskId;
-						await networkShareBackupSpinner.updateCssStyles({ 'display': 'none' });
-						await networkShareBackupButton.updateProperty('enabled', true);
-						//indicate backup finish
+						await backupProvider.backup(ownerURI, this.getBackupInfo(PhysicalDeviceType.Disk, ownerURI + '|backupId:' + index, databaseName, backupLocation), azdata.TaskExecutionMode.executeAndScript);
+						console.log(this.getBackupInfo(PhysicalDeviceType.Disk, ownerURI + '|backupId:' + index, databaseName, backupLocation));
 					}));
 					this._networkShareBackup.push(networkShareBackupButton);
 					const networkShareBackupSpinner = this._view.modelBuilder.loadingComponent().withProps({
@@ -1008,8 +1034,18 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					this._networkShareBackupLoading.push(networkShareBackupSpinner);
 					const networkShareBackupCancel = this._view.modelBuilder.button().withProps({
 						label: 'cancel',
-						width: '50px'
+						width: '50px',
+						enabled: false
 					}).component();
+					this._disposables.push(networkShareBackupCancel.onDidClick(async () => {
+						//const taskServicesProvider = azdata.dataprotocol.getProvider<azdata.TaskServicesProvider>(
+						//	(await this.migrationStateModel.getSourceConnectionProfile()).providerId,
+						//	azdata.DataProviderType.TaskServicesProvider);
+						//taskServicesProvider.cancelTask({ taskId: this.migrationStateModel._databaseBackup.taskIds[index] });
+						await this._networkShareBackupLoading[index].updateCssStyles({ 'display': 'none' });
+						await this._networkShareBackup[index].updateProperty('enabled', true);
+						await this._networkShareBackupCancel[index].updateProperty('enabled', false);
+					}));
 					this._networkShareBackupCancel.push(networkShareBackupCancel);
 					const blobTargetDatabaseInput = this._view.modelBuilder.inputBox().withProps({
 						required: true,
@@ -1111,9 +1147,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 							}
 						}
 					}));
-					/*this._disposables.push(blobContainerDropdown.onValidityChanged(async (isValid) => {
-						await blobContainerBackupButton.updateProperty('enabled', isValid);
-					}));*/
 					this._blobContainerDropdowns.push(blobContainerDropdown);
 
 					const blobContainerBackupButton = this._view.modelBuilder.button().withProps({
@@ -1135,33 +1168,45 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 							this.migrationStateModel._azureAccount,
 							this.migrationStateModel._databaseBackup.subscription,
 							storageAccount)).keyName1;
-						const sasKey = getContainerSas(containerName, storageAccount.name, accountKey).toString();
+						const sasKey = this.getContainerSas(containerName, storageAccount.name, accountKey).toString();
 						const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(providerId, azdata.DataProviderType.QueryProvider);
 						const url = 'https://' + storageAccount.name + '.blob.core.windows.net/' + containerName;
 						let query = 'IF NOT EXISTS (SELECT * FROM sys.credentials' +
 							' WHERE name = \'' + url + '\')' +
-							' CREATE CREDENTIAL [' + url + ']' +
+							' BEGIN CREATE CREDENTIAL [' + url + ']' +
 							' WITH IDENTITY = \'SHARED ACCESS SIGNATURE\',' +
-							' SECRET = \'' + sasKey + '\'';
+							' SECRET = \'' + sasKey + '\'' +
+							'END ELSE BEGIN ' +
+							'ALTER CREDENTIAL [' + url + ']' +
+							'WITH IDENTITY = \'SHARED ACCESS SIGNATURE\',' +
+							'SECRET = \'' + sasKey + '\' END';
 						await queryProvider.runQueryString(ownerURI, query);
 						await backupProvider.backup(ownerURI,
 							this.getBackupInfo(PhysicalDeviceType.Url,
 								ownerURI,
 								this.migrationStateModel._databasesForMigration[index], url),
 							azdata.TaskExecutionMode.executeAndScript);
-						await blobContainerBackupSpinner.updateCssStyles({ 'display': 'none' }); //stop before the backup complete need fixing
-						await blobContainerBackupButton.updateProperty('enabled', true);
-						this.migrationStateModel._databaseBackup.blobs[index].lastBackupFile = this.migrationStateModel._databasesForMigration[index] + '.bak';
 					}));
 					this._blobContainerBackup.push(blobContainerBackupButton);
-
+					const blobContainerBackupCancel = this._view.modelBuilder.button().withProps({
+						label: 'cancel',
+						width: '50px',
+						enabled: false
+					}).component();
+					this._disposables.push(blobContainerBackupCancel.onDidClick(async () => {
+						//taskServicesProvider.cancelTask({taskId: this.migrationStateModel._databaseBackup.taskIds[index]});
+						await this._blobContainerBackupLoading[index].updateCssStyles({ 'display': 'none' });
+						await this._blobContainerBackup[index].updateProperty('enabled', true);
+						await this._blobContainerBackupCancel[index].updateProperty('enabled', false);
+					}));
+					this._blobContainerBackupCancel.push(blobContainerBackupCancel);
 					const blobContainerBackupSpinner = this._view.modelBuilder.loadingComponent().withProps({
 						width: '25px',
 						CSSStyles: {
 							'display': 'none',
 						}
 					}).component();
-					this._blobContainerBackupSpinner.push(blobContainerBackupSpinner);
+					this._blobContainerBackupLoading.push(blobContainerBackupSpinner);
 					if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
 						this._disposables.push(blobContainerLastBackupFileDropdown.onValueChanged(value => {
 							if (value && value !== 'undefined') {
@@ -1229,7 +1274,10 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						value: this._blobContainerBackup[index]
 					});
 					targetRow.push({
-						value: this._blobContainerBackupSpinner[index]
+						value: this._blobContainerBackupCancel[index]
+					});
+					targetRow.push({
+						value: this._blobContainerBackupLoading[index]
 					});
 					data.push(targetRow);
 				});
@@ -1565,15 +1613,18 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	}
 
 	private getBackupInfo(physicalDeviceType: PhysicalDeviceType, ownerURI: string, databaseName: string, backupLocation: string): Object {
+		const backupSetName = databaseName + '-full-' + new Date().toJSON().slice(0, 5);
 		let pathDevice = PhysicalDeviceType.Disk;
 		if (physicalDeviceType === PhysicalDeviceType.Disk) {
-			backupLocation = backupLocation + '\\' + databaseName + '.bak';
+			backupLocation = backupLocation + '\\' + backupSetName + '.bak';
 		} else {
 			backupLocation = backupLocation + '/' + databaseName + '.bak';
 			pathDevice = PhysicalDeviceType.Tape;
 		}
-		//else
-		//	backupLocation = url
+		const param = ownerURI.split('|');
+		param[3] += databaseName;
+		param.splice(6, 0, 'databaseDisplayName:master');
+		ownerURI = param.join('|');
 		let backupInfo = {
 			ownerUri: ownerURI,
 			databaseName: databaseName,
@@ -1581,7 +1632,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			backupComponent: 0,
 			backupDeviceType: physicalDeviceType,
 			selectedFiles: undefined,
-			backupsetName: databaseName,
+			backupsetName: backupSetName,
 			selectedFileGroup: undefined,
 
 			// List of {key: backup path, value: device type}
@@ -1607,7 +1658,24 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		};
 		return backupInfo;
 	}
-
+	private getContainerSas(containerName: string, storageAccountName: string, storageAccountKey: string) {
+		let permissions = storageBlob.ContainerSASPermissions.parse('r');
+		permissions.add = true;
+		permissions.create = true;
+		permissions.execute = true;
+		permissions.write = true;
+		permissions.read = true;
+		const today = new Date();
+		const sasOptions = {
+			containerName: containerName,
+			permissions: permissions,
+			startsOn: today,
+			expiresOn: new Date(new Date(today.getFullYear() + 1, today.getMonth(), today.getDate()))
+		};
+		const sasToken = storageBlob.generateBlobSASQueryParameters(sasOptions, new storageBlob.StorageSharedKeyCredential(storageAccountName, storageAccountKey)).toString();
+		console.log(`SAS token for blob container is: ${sasToken}`);
+		return `${sasToken}`;
+	}
 }
 
 enum PhysicalDeviceType {
@@ -1621,21 +1689,3 @@ enum PhysicalDeviceType {
 	Unknown = 100
 }
 
-function getContainerSas(containerName: string, storageAccountName: string, storageAccountKey: string) {
-	let permissions = storageBlob.ContainerSASPermissions.parse('r');
-	permissions.add = true;
-	permissions.create = true;
-	permissions.execute = true;
-	permissions.write = true;
-	permissions.read = true;
-	const today = new Date();
-	const sasOptions = {
-		containerName: containerName,
-		permissions: permissions,
-		startsOn: today,
-		expiresOn: new Date(new Date(today.getFullYear() + 1, today.getMonth(), today.getDate()))
-	};
-	const sasToken = storageBlob.generateBlobSASQueryParameters(sasOptions, new storageBlob.StorageSharedKeyCredential(storageAccountName, storageAccountKey)).toString();
-	console.log(`SAS token for blob container is: ${sasToken}`);
-	return `${sasToken}`;
-}

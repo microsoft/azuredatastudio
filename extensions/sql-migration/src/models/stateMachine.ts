@@ -89,6 +89,7 @@ export interface DatabaseBackupModel {
 	networkShares: NetworkShare[];
 	subscription: azurecore.azureResource.AzureResourceSubscription;
 	blobs: Blob[];
+	taskIds: { [taskId: string]: any; };
 }
 
 export interface NetworkShare {
