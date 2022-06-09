@@ -33,7 +33,7 @@
 The actual sash element constructed by code. Important is used here because the width of the sash is fixed.
 However we always want it to be the width of the container it is resizing.
 */
-.eps-container .execution-plan-sash > div {
+.eps-container .execution-plan-sash>div {
 	width: 100% !important;
 }
 
@@ -70,12 +70,12 @@ However we always want it to be the width of the container it is resizing.
 }
 
 /* input bar styling in search node action view */
-.eps-container .execution-plan .plan .plan-action-container .search-node-widget .select-container{
+.eps-container .execution-plan .plan .plan-action-container .search-node-widget .select-container {
 	margin-left: 5px;
 }
 
 /* styling for select element in search node action view */
-.eps-container .execution-plan .plan .plan-action-container .search-node-widget .select-container > select{
+.eps-container .execution-plan .plan .plan-action-container .search-node-widget .select-container>select {
 	height: 100%;
 }
 
@@ -94,8 +94,18 @@ However we always want it to be the width of the container it is resizing.
 	font-weight: bolder;
 }
 
+/* execution plan header that contains the relative query cost, query statement and recommendations */
+.eps-container .execution-plan .plan .header .query-row {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-line-clamp: 1;
+	line-clamp: 1;
+	-webkit-box-orient: vertical;
+}
+
 /* each link in execution plan recommendations */
-.eps-container .execution-plan .plan .header .recommendations > a {
+.eps-container .execution-plan .plan .header .recommendations>a {
 	width: fit-content;
 	align-items: left;
 	text-align: left;
@@ -651,7 +661,7 @@ However we always want it to be the width of the container it is resizing.
 }
 
 /* each link in execution plan recommendations */
-.eps-container .comparison-editor .plan-comparison-container .split-view-container .plan-container .recommendations > a {
+.eps-container .comparison-editor .plan-comparison-container .split-view-container .plan-container .recommendations>a {
 	width: fit-content;
 	align-items: left;
 	text-align: left;
