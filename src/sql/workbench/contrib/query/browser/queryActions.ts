@@ -310,7 +310,7 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService
 	) {
 		super(connectionManagementService, editor, EstimatedQueryPlanAction.ID, EstimatedQueryPlanAction.EnabledClass);
-		this.label = nls.localize('estimatedQueryPlan', "Show Estimated Plan");
+		this.label = nls.localize('estimatedQueryPlan', "Estimated Plan");
 	}
 
 	public override async run(): Promise<void> {
@@ -345,8 +345,8 @@ export class ToggleActualExecutionPlanModeAction extends QueryTaskbarAction {
 	public static EnabledClass = 'enabledActualExecutionPlan';
 	public static ID = 'toggleActualExecutionPlanModeAction';
 
-	private _enableActualPlanLabel = nls.localize('enableActualPlanLabel', "Include Actual Plan: On");
-	private _disableActualPlanLabel = nls.localize('disableActualPlanLabel', "Include Actual Plan: Off");
+	private _enableActualPlanLabel = nls.localize('enableActualPlanLabel', "Show Actual Plan");
+	private _disableActualPlanLabel = nls.localize('disableActualPlanLabel', "Hide Actual Plan");
 
 	constructor(
 		editor: QueryEditor,
