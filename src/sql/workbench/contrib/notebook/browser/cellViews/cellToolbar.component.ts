@@ -40,6 +40,7 @@ export class CellToolbarComponent {
 
 	private _actionBar: Taskbar;
 	private _editCellAction: EditCellAction;
+	private _cellContext: CellContext;
 	public _cellToggleMoreActions: CellToggleMoreActions;
 
 	constructor(
@@ -51,14 +52,24 @@ export class CellToolbarComponent {
 
 	ngOnInit() {
 		this.initActionBar();
+		this.model.onCellTypeChanged(cell => {
+			if (cell === this.cellModel) {
+				this.setupActions();
+			}
+		});
 	}
 
+
 	protected initActionBar(): void {
-		let context = new CellContext(this.model, this.cellModel);
+		this._cellContext = new CellContext(this.model, this.cellModel);
 		let taskbar = <HTMLElement>this.celltoolbar.nativeElement;
 		this._actionBar = new Taskbar(taskbar);
-		this._actionBar.context = context;
+		this._actionBar.context = this._cellContext;
 
+		this.setupActions();
+	}
+
+	private setupActions(): void {
 		let addCellsButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddCodeCell', localize('codeCellsPreview', "Add cell"), 'masked-pseudo code');
 
 		let addCodeCellButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddCodeCell', localize('codePreview', "Code cell"), 'masked-pseudo code');
@@ -71,14 +82,14 @@ export class CellToolbarComponent {
 		let moveCellUpButton = this.instantiationService.createInstance(MoveCellAction, 'notebook.MoveCellUp', 'masked-icon move-up', this.buttonMoveUp);
 
 		let splitCellButton = this.instantiationService.createInstance(SplitCellAction, 'notebook.SplitCellAtCursor', this.buttonSplitCell, 'masked-icon icon-split-cell');
-		splitCellButton.setListener(context);
+		splitCellButton.setListener(this._cellContext);
 		splitCellButton.enabled = this.cellModel.cellType !== 'markdown';
 
 		let deleteButton = this.instantiationService.createInstance(DeleteCellAction, 'notebook.DeleteCell', 'masked-icon delete', this.buttonDelete);
 
 		let moreActionsContainer = DOM.$('li.action-item');
 		this._cellToggleMoreActions = this.instantiationService.createInstance(CellToggleMoreActions);
-		this._cellToggleMoreActions.onInit(moreActionsContainer, context);
+		this._cellToggleMoreActions.onInit(moreActionsContainer, this._cellContext);
 
 		this._editCellAction = this.instantiationService.createInstance(EditCellAction, 'notebook.EditCell', true, this.cellModel.isEditMode);
 		this._editCellAction.enabled = true;
@@ -97,10 +108,10 @@ export class CellToolbarComponent {
 			undefined
 		);
 		dropdownMenuActionViewItem.render(addCellDropdownContainer);
-		dropdownMenuActionViewItem.setActionContext(context);
+		dropdownMenuActionViewItem.setActionContext(this._cellContext);
 
 		let taskbarContent: ITaskbarContent[] = [];
-		if (this.cellModel?.cellType === CellTypes.Markdown) {
+		if (this.cellModel.cellType === CellTypes.Markdown) {
 			taskbarContent.push(
 				{ action: this._editCellAction }
 			);
