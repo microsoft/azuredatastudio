@@ -7,7 +7,6 @@ import * as assert from 'assert';
 import { nb } from 'azdata';
 import * as op from 'sql/workbench/contrib/notebook/browser/models/outputProcessor';
 import { nbformat as nbformat } from 'sql/workbench/services/notebook/common/nbformat';
-import { shouldIncludeHeaders } from 'sql/workbench/services/query/common/queryRunner';
 
 suite('OutputProcessor functions', function (): void {
 	const text = 'An arbitrary text input:!@#$%^&*()_+~`:;,.-_=';
