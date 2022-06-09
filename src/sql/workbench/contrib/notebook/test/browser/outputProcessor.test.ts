@@ -7,6 +7,7 @@ import * as assert from 'assert';
 import { nb } from 'azdata';
 import * as op from 'sql/workbench/contrib/notebook/browser/models/outputProcessor';
 import { nbformat as nbformat } from 'sql/workbench/services/notebook/common/nbformat';
+import { shouldIncludeHeaders } from 'sql/workbench/services/query/common/queryRunner';
 
 suite('OutputProcessor functions', function (): void {
 	const text = 'An arbitrary text input:!@#$%^&*()_+~`:;,.-_=';
@@ -67,6 +68,20 @@ suite('OutputProcessor functions', function (): void {
 				verifyGetDataForStreamOutput(output);
 			});
 		}
+
+		// unknown output types
+		test('Should report an error for unknown output types', () => {
+			const output = {
+				output_type: 'unknown',
+				data: {
+					'text/html': 'Test text'
+				},
+				metadata: {}
+			};
+			const result = op.getData(<any>output);
+			assert(result['application/vnd.jupyter.stderr'] !== undefined, 'Should set an error message after receiving unknown output type.');
+			assert(result['text/html'] === undefined, 'Should not add any data after receiving unknown output type.');
+		});
 	});
 
 	suite('getMetadata', function (): void {
