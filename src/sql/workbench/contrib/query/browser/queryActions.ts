@@ -202,7 +202,6 @@ export class RunQueryAction extends QueryTaskbarAction {
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
 		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService,
 		@ICommandService private readonly commandService?: ICommandService
-
 	) {
 		super(connectionManagementService, editor, RunQueryAction.ID, RunQueryAction.EnabledClass);
 		this.label = nls.localize('runQueryLabel', "Run");
@@ -247,7 +246,7 @@ export class RunQueryAction extends QueryTaskbarAction {
 				editor.input.runQueryStatement(selection);
 			} else {
 				if (editor.input.state.isActualExecutionPlanMode) {
-					this.telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.ToggleOnActualQueryExecutionPlan);
+					this.telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.ToggleOnActualExecutionPlan);
 					selection = editor.getSelection();
 					editor.input.runQuery(selection, { displayActualQueryPlan: true });
 				}
@@ -311,7 +310,7 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService
 	) {
 		super(connectionManagementService, editor, EstimatedQueryPlanAction.ID, EstimatedQueryPlanAction.EnabledClass);
-		this.label = nls.localize('estimatedQueryPlan', "Estimated Plan");
+		this.label = nls.localize('estimatedQueryPlan', "Show Estimated Plan");
 	}
 
 	public override async run(): Promise<void> {
@@ -346,8 +345,8 @@ export class ToggleActualExecutionPlanModeAction extends QueryTaskbarAction {
 	public static EnabledClass = 'enabledActualExecutionPlan';
 	public static ID = 'toggleActualExecutionPlanModeAction';
 
-	private _enableActualPlanLabel = nls.localize('enableActualPlanLabel', "Enable Actual Plan");
-	private _disableActualPlanLabel = nls.localize('disableActualPlanLabel', "Disable Actual Plan");
+	private _enableActualPlanLabel = nls.localize('enableActualPlanLabel', "Include Actual Plan: On");
+	private _disableActualPlanLabel = nls.localize('disableActualPlanLabel', "Include Actual Plan: Off");
 
 	constructor(
 		editor: QueryEditor,
