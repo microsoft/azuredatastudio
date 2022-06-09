@@ -245,15 +245,16 @@ export class RunQueryAction extends QueryTaskbarAction {
 			if (runCurrentStatement && selection && this.isCursorPosition(selection)) {
 				editor.input.runQueryStatement(selection);
 			} else {
-				let runOptions = {};
 				if (editor.input.state.isActualExecutionPlanMode) {
 					this.telemetryService?.sendActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.ToggleOnActualQueryExecutionPlan);
-					runOptions = { displayActualQueryPlan: true };
+					selection = editor.getSelection();
+					editor.input.runQuery(selection, { displayActualQueryPlan: true });
 				}
-
-				// get the selection again this time with trimming
-				selection = editor.getSelection();
-				editor.input.runQuery(selection, runOptions);
+				else {
+					// get the selection again this time with trimming
+					selection = editor.getSelection();
+					editor.input.runQuery(selection);
+				}
 			}
 			return true;
 		}
