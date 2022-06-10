@@ -5,6 +5,7 @@
 
 import 'vs/css!./media/queryActions';
 import * as nls from 'vs/nls';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { Action, IAction, IActionRunner } from 'vs/base/common/actions';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
@@ -46,6 +47,7 @@ import { getErrorMessage, onUnexpectedError } from 'vs/base/common/errors';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { gen3Version, sqlDataWarehouse } from 'sql/platform/connection/common/constants';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 /**
  * Action class that query-based Actions will extend. This base class automatically handles activating and
@@ -242,9 +244,15 @@ export class RunQueryAction extends QueryTaskbarAction {
 			if (runCurrentStatement && selection && this.isCursorPosition(selection)) {
 				editor.input.runQueryStatement(selection);
 			} else {
-				// get the selection again this time with trimming
-				selection = editor.getSelection();
-				editor.input.runQuery(selection);
+				if (editor.input.state.isActualExecutionPlanMode) {
+					selection = editor.getSelection();
+					editor.input.runQuery(selection, { displayActualQueryPlan: true });
+				}
+				else {
+					// get the selection again this time with trimming
+					selection = editor.getSelection();
+					editor.input.runQuery(selection);
+				}
 			}
 			return true;
 		}
@@ -300,7 +308,7 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService
 	) {
 		super(connectionManagementService, editor, EstimatedQueryPlanAction.ID, EstimatedQueryPlanAction.EnabledClass);
-		this.label = nls.localize('estimatedQueryPlan', "Explain");
+		this.label = nls.localize('estimatedQueryPlan', "Estimated Plan");
 	}
 
 	public override async run(): Promise<void> {
@@ -323,10 +331,54 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
 		}
 
 		if (this.isConnected(editor)) {
-			editor.input.runQuery(editor.getSelection(), {
-				displayEstimatedQueryPlan: true
-			});
+			editor.input.runQuery(editor.getSelection(), { displayEstimatedQueryPlan: true });
 		}
+	}
+}
+
+/**
+ * Action class that toggles the actual execution plan mode for the editor
+ */
+export class ToggleActualExecutionPlanModeAction extends QueryTaskbarAction {
+	public static EnabledClass = 'enabledActualExecutionPlan';
+	public static ID = 'toggleActualExecutionPlanModeAction';
+
+	private _enableActualPlanLabel = nls.localize('enableActualPlanLabel', "Include Actual Plan");
+	private _disableActualPlanLabel = nls.localize('disableActualPlanLabel', "Exclude Actual Plan");
+
+	constructor(
+		editor: QueryEditor,
+		private _isActualPlanMode: boolean,
+		@IQueryManagementService protected readonly queryManagementService: IQueryManagementService,
+		@IConfigurationService protected readonly configurationService: IConfigurationService,
+		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
+		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService
+	) {
+		super(connectionManagementService, editor, ToggleActualExecutionPlanModeAction.ID, ToggleActualExecutionPlanModeAction.EnabledClass);
+		this.updateLabel();
+	}
+
+	public get isActualExecutionPlanMode(): boolean {
+		return this._isActualPlanMode;
+	}
+
+	public set isActualExecutionPlanMode(value: boolean) {
+		this._isActualPlanMode = value;
+		this.updateLabel();
+	}
+
+	private updateLabel(): void {
+		// show option to disable actual plan mode if already enabled
+		this.label = this.isActualExecutionPlanMode ? this._disableActualPlanLabel : this._enableActualPlanLabel;
+	}
+
+	public override async run(): Promise<void> {
+		const toActualPlanState = !this.isActualExecutionPlanMode;
+		this.editor.input.state.isActualExecutionPlanMode = toActualPlanState;
+
+		this.telemetryService.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.Click, 'ToggleActualExecutionPlan')
+			.withAdditionalProperties({ actualExecutionPlanMode: this.isActualExecutionPlanMode })
+			.send();
 	}
 }
 
@@ -522,6 +574,7 @@ export class ToggleSqlCmdModeAction extends QueryTaskbarAction {
 
 	private _enablesqlcmdLabel = nls.localize('enablesqlcmdLabel', "Enable SQLCMD");
 	private _disablesqlcmdLabel = nls.localize('disablesqlcmdLabel', "Disable SQLCMD");
+
 	constructor(
 		editor: QueryEditor,
 		private _isSqlCmdMode: boolean,
