@@ -87,9 +87,7 @@ async function validateResults(galleryFilePath, resultsJson) {
     if (!resultsJson.extensions || !resultsJson.extensions.length) {
         throw new Error(`${galleryFilePath} - No extensions\n${JSON.stringify(resultsJson)}`)
     }
-    for (const extension of resultsJson.extensions) {
-        await validateExtension(galleryFilePath, extension);
-    }
+    await Promise.all(resultsJson.extensions.map(e => validateExtension(galleryFilePath, e)));
 
     if (!resultsJson.resultMetadata || !resultsJson.resultMetadata.length) {
         throw new Error(`${galleryFilePath} - No resultMetadata\n${JSON.stringify(resultsJson)}`)
