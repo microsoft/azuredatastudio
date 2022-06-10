@@ -88,6 +88,7 @@ export class ExecutionPlanViewHeader {
 	private renderQueryText(): void {
 		if (this._query) {
 			this._queryContainer.innerText = this._query;
+			this._queryContainer.title = this._query;
 		}
 	}
 
