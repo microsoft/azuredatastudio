@@ -17,8 +17,7 @@ import { DropdownMenuActionViewItem } from 'sql/base/browser/ui/buttonMenu/butto
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
-import { Action } from 'vs/base/common/actions';
-import { IDisposable } from 'vs/base/common/lifecycle';
+import { DisposableStore, IDisposable } from 'vs/base/common/lifecycle';
 
 export const CELL_TOOLBAR_SELECTOR: string = 'cell-toolbar-component';
 
@@ -41,7 +40,7 @@ export class CellToolbarComponent {
 	@Input() model: NotebookModel;
 
 	private _actionBar: Taskbar;
-	private _disposableActions: Action[];
+	private _disposableActions: DisposableStore;
 	private _editCellAction: EditCellAction;
 	private _cellContext: CellContext;
 	private _typeChangedListener: IDisposable;
@@ -52,6 +51,7 @@ export class CellToolbarComponent {
 		@Inject(IContextMenuService) private contextMenuService: IContextMenuService
 	) {
 		this._cellToggleMoreActions = this.instantiationService.createInstance(CellToggleMoreActions);
+		this._disposableActions = new DisposableStore();
 	}
 
 	ngOnInit() {
@@ -77,26 +77,31 @@ export class CellToolbarComponent {
 	}
 
 	private setupActions(): void {
-		if (this._disposableActions) {
-			this._disposableActions.forEach(action => action.dispose());
-			this._disposableActions = undefined;
-		}
+		this._disposableActions.clear();
+
 		let addCellsButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddCodeCell', localize('codeCellsPreview', "Add cell"), 'masked-pseudo code');
+		this._disposableActions.add(addCellsButton);
 
 		let addCodeCellButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddCodeCell', localize('codePreview', "Code cell"), 'masked-pseudo code');
 		addCodeCellButton.cellType = CellTypes.Code;
+		this._disposableActions.add(addCodeCellButton);
 
 		let addTextCellButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddTextCell', localize('textPreview', "Text cell"), 'masked-pseudo markdown');
 		addTextCellButton.cellType = CellTypes.Markdown;
+		this._disposableActions.add(addTextCellButton);
 
 		let moveCellDownButton = this.instantiationService.createInstance(MoveCellAction, 'notebook.MoveCellDown', 'masked-icon move-down', this.buttonMoveDown);
 		let moveCellUpButton = this.instantiationService.createInstance(MoveCellAction, 'notebook.MoveCellUp', 'masked-icon move-up', this.buttonMoveUp);
+		this._disposableActions.add(moveCellDownButton);
+		this._disposableActions.add(moveCellUpButton);
 
 		let splitCellButton = this.instantiationService.createInstance(SplitCellAction, 'notebook.SplitCellAtCursor', this.buttonSplitCell, 'masked-icon icon-split-cell');
 		splitCellButton.setListener(this._cellContext);
 		splitCellButton.enabled = this.cellModel.cellType !== 'markdown';
+		this._disposableActions.add(splitCellButton);
 
 		let deleteButton = this.instantiationService.createInstance(DeleteCellAction, 'notebook.DeleteCell', 'masked-icon delete', this.buttonDelete);
+		this._disposableActions.add(deleteButton);
 
 		let moreActionsContainer = DOM.$('li.action-item');
 		this._cellToggleMoreActions = this.instantiationService.createInstance(CellToggleMoreActions);
@@ -104,8 +109,7 @@ export class CellToolbarComponent {
 
 		this._editCellAction = this.instantiationService.createInstance(EditCellAction, 'notebook.EditCell', true, this.cellModel.isEditMode);
 		this._editCellAction.enabled = true;
-
-		this._disposableActions = [addCellsButton, addCodeCellButton, addTextCellButton, moveCellDownButton, moveCellUpButton, splitCellButton, deleteButton, this._editCellAction];
+		this._disposableActions.add(this._editCellAction);
 
 		let addCellDropdownContainer = DOM.$('li.action-item');
 		addCellDropdownContainer.setAttribute('role', 'presentation');
