@@ -991,7 +991,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						enabled: false
 					}).component();
 					this._disposables.push(networkShareBackupButton.onDidClick(async () => {
-						const taskServicesProvider = azdata.dataprotocol.getProvider<azdata.TaskServicesProvider>(
+						/*const taskServicesProvider = azdata.dataprotocol.getProvider<azdata.TaskServicesProvider>(
 							(await this.migrationStateModel.getSourceConnectionProfile()).providerId,
 							azdata.DataProviderType.TaskServicesProvider);
 						taskServicesProvider.registerOnTaskCreated(async (taskInfo) => {
@@ -1011,6 +1011,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 								await this._networkShareBackupCancel[dbIndex].updateProperty('enabled', false);
 							}
 						});
+						*/
 						await networkShareBackupSpinner.updateCssStyles({ 'display': 'inline' });
 						await networkShareBackupButton.updateProperty('enabled', false);
 						await networkShareBackupCancel.updateProperty('enabled', true);
