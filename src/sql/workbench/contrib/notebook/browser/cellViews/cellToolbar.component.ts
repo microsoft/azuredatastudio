@@ -18,6 +18,7 @@ import { ICellModel } from 'sql/workbench/services/notebook/browser/models/model
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 import { Action } from 'vs/base/common/actions';
+import { IDisposable } from 'vs/base/common/lifecycle';
 
 export const CELL_TOOLBAR_SELECTOR: string = 'cell-toolbar-component';
 
@@ -43,6 +44,7 @@ export class CellToolbarComponent {
 	private _disposableActions: Action[];
 	private _editCellAction: EditCellAction;
 	private _cellContext: CellContext;
+	private _typeChangedListener: IDisposable;
 	public _cellToggleMoreActions: CellToggleMoreActions;
 
 	constructor(
@@ -54,11 +56,15 @@ export class CellToolbarComponent {
 
 	ngOnInit() {
 		this.initActionBar();
-		this.model.onCellTypeChanged(cell => {
+		this._typeChangedListener = this.model.onCellTypeChanged(cell => {
 			if (cell === this.cellModel) {
 				this.setupActions();
 			}
 		});
+	}
+
+	ngOnDestroy() {
+		this._typeChangedListener.dispose();
 	}
 
 	protected initActionBar(): void {
