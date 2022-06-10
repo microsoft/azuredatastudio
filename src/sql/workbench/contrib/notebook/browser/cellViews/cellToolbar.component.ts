@@ -17,6 +17,7 @@ import { DropdownMenuActionViewItem } from 'sql/base/browser/ui/buttonMenu/butto
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
+import { Action } from 'vs/base/common/actions';
 
 export const CELL_TOOLBAR_SELECTOR: string = 'cell-toolbar-component';
 
@@ -39,6 +40,7 @@ export class CellToolbarComponent {
 	@Input() model: NotebookModel;
 
 	private _actionBar: Taskbar;
+	private _disposableActions: Action[];
 	private _editCellAction: EditCellAction;
 	private _cellContext: CellContext;
 	public _cellToggleMoreActions: CellToggleMoreActions;
@@ -59,7 +61,6 @@ export class CellToolbarComponent {
 		});
 	}
 
-
 	protected initActionBar(): void {
 		this._cellContext = new CellContext(this.model, this.cellModel);
 		let taskbar = <HTMLElement>this.celltoolbar.nativeElement;
@@ -70,6 +71,10 @@ export class CellToolbarComponent {
 	}
 
 	private setupActions(): void {
+		if (this._disposableActions) {
+			this._disposableActions.forEach(action => action.dispose());
+			this._disposableActions = undefined;
+		}
 		let addCellsButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddCodeCell', localize('codeCellsPreview', "Add cell"), 'masked-pseudo code');
 
 		let addCodeCellButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddCodeCell', localize('codePreview', "Code cell"), 'masked-pseudo code');
@@ -93,6 +98,8 @@ export class CellToolbarComponent {
 
 		this._editCellAction = this.instantiationService.createInstance(EditCellAction, 'notebook.EditCell', true, this.cellModel.isEditMode);
 		this._editCellAction.enabled = true;
+
+		this._disposableActions = [addCellsButton, addCodeCellButton, addTextCellButton, moveCellDownButton, moveCellUpButton, splitCellButton, deleteButton, this._editCellAction];
 
 		let addCellDropdownContainer = DOM.$('li.action-item');
 		addCellDropdownContainer.setAttribute('role', 'presentation');
