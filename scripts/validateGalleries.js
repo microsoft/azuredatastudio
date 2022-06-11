@@ -400,9 +400,15 @@ function validatePackageJson(extensionJson, packageJson) {
     const extensionAzdataEngine = extensionJson.versions[0].properties.find(p => p.key === MICROSOFT_AZDATAENGINE)?.value;
     const packageAzdataEngine = packageJson.engines?.azdata;
     validateEngineVersionMatches(MICROSOFT_AZDATAENGINE, 'azdata', extensionAzdataEngine, packageAzdataEngine);
+
+    // Check that if gallery has preview flag the package.json does as well
+    // (note that currently multiple flags aren't supported by ADS so we can just check for strict equals on the gallery)
     if (extensionJson.flags === 'preview' && packageJson.preview != true) {
         throw new Error(`Gallery has preview flag but package.json does not have preview property set to true`);
     }
+
+    // Check that if the gallery doesn't have the preview flag the package.json doesn't either
+    // (note that currently multiple flags aren't supported by ADS so we can just check for strict equals on the gallery)
     if (extensionJson.flags !== 'preview' && packageJson.preview === true) {
         throw new Error(`Gallery does not have preview flag but package.json has preview property set to true`);
     }
