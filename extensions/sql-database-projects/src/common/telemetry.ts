@@ -40,5 +40,6 @@ export enum TelemetryActions {
 	updateProjectFromDatabase = 'updateProjectFromDatabase',
 	publishToContainer = 'publishToContainer',
 	publishToNewAzureServer = 'publishToNewAzureServer',
-	generateProjectFromOpenApiSpec = 'generateProjectFromOpenApiSpec'
+	generateProjectFromOpenApiSpec = 'generateProjectFromOpenApiSpec',
+	publishConfigureOptionsClicked = 'PublishConfigureOptionsClicked'
 }

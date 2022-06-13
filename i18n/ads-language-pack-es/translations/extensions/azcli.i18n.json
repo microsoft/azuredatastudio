@@ -9,6 +9,7 @@
 	"version": "1.0.0",
 	"contents": {
 		"dist/localizedConstants": {
+			"arc.releaseDateNotParsed": "No se pudo analizar la fecha de lanzamiento.",
 			"az.accept": "Aceptar",
 			"az.arcdataExtensionNotInstalled": "Esta extensión requiere la instalación de la extensión \\\"arcdata\\\" de la CLI de Azure. Instale la última versión siguiendo las instrucciones de [aquí](https://docs.microsoft.com/azure/azure-arc/data/install-arcdata-extension).",
 			"az.arcdataInstalled": "La extensión arcdata de la CLI de Azure se ha instalado correctamente. Es necesario reiniciar Azure Studio para completar la configuración; las funciones no se activarán hasta que se realice esta acción.",

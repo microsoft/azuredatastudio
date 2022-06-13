@@ -210,6 +210,14 @@
         <source xml:lang="en">Execute</source>
         <target state="translated">実行</target>
       </trans-unit>
+      <trans-unit id="mssql.failedToFindAccount">
+        <source xml:lang="en">Failed to find azure account {0} when executing token refresh</source>
+        <target state="translated">トークンの更新時に Azure アカウント {0} が見つかりませんでした</target>
+      </trans-unit>
+      <trans-unit id="mssql.failedToFindTenants">
+        <source xml:lang="en">Failed to find tenant '{0}' in account '{1}' when refreshing security token</source>
+        <target state="translated">セキュリティ トークンの更新時にアカウント '{1}' にテナント '{0}' が見つかりませんでした</target>
+      </trans-unit>
       <trans-unit id="mssql.group">
         <source xml:lang="en">Group</source>
         <target state="translated">グループ</target>
@@ -257,6 +265,14 @@
       <trans-unit id="mssql.stickyHeader">
         <source xml:lang="en">Sticky Bit</source>
         <target state="translated">スティッキー ビット</target>
+      </trans-unit>
+      <trans-unit id="mssql.tokenRefreshFailed">
+        <source xml:lang="en">{0} AAD token refresh failed, please reconnect to enable {0}</source>
+        <target state="translated">{0} AAD トークンの更新が失敗しました。再接続して {0} を有効にしてください</target>
+      </trans-unit>
+      <trans-unit id="mssql.tokenRefreshFailedNoSecurityToken">
+        <source xml:lang="en">Editor token refresh failed, autocompletion will be disabled until the editor is disconnected and reconnected</source>
+        <target state="translated">エディター トークンの更新が失敗しました。エディターが切断されて再接続されるまで、オートコンプリートは無効になります</target>
       </trans-unit>
       <trans-unit id="mssql.userLabel">
         <source xml:lang="en">User</source>
@@ -1329,6 +1345,10 @@
       <trans-unit id="mssql.logRetentionMinutes">
         <source xml:lang="en">Number of minutes to retain log files for backend services. Default is 1 week.</source>
         <target state="translated">バックエンド サービスのログ ファイルを保持する分単位の時間。既定値は 1 週間です。</target>
+      </trans-unit>
+      <trans-unit id="mssql.parallelMessageProcessing">
+        <source xml:lang="en">[Experimental] Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Relaunch of ADS is required when the value is changed.</source>
+        <target state="translated">[試験段階] SQL Tools Service への要求を並列で処理する必要があるかどうか。これは、すべての要求を並行して処理するときに発生する可能性がある問題を検出するために導入されています。既定値は false です。値が変更された場合は、ADS の再起動が必要です。</target>
       </trans-unit>
       <trans-unit id="mssql.provider.displayName">
         <source xml:lang="en">Microsoft SQL Server</source>

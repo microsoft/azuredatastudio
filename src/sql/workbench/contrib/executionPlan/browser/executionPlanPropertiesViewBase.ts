@@ -227,7 +227,7 @@ export class SortPropertiesReverseAlphabeticallyAction extends Action {
 
 export class SortPropertiesByDisplayOrderAction extends Action {
 	public static ID = 'ep.propertiesView.sortByDisplayOrder';
-	public static LABEL = localize('executionPlanPropertyViewSortByDisplayOrder', "Categorized");
+	public static LABEL = localize('executionPlanPropertyViewSortByDisplayOrder', "Importance");
 
 	constructor() {
 		super(SortPropertiesByDisplayOrderAction.ID, SortPropertiesByDisplayOrderAction.LABEL, sortByDisplayOrderIconClassNames);

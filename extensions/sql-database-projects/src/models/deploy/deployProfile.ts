@@ -6,6 +6,7 @@
 import { IDeploySettings } from '../IDeploySettings';
 import type * as azdataType from 'azdata';
 import { IAzureAccountSession } from 'vscode-mssql';
+import { ISqlConnectionProperties } from '../connections/connectionService';
 
 export enum AppSettingType {
 	None,
@@ -38,17 +39,7 @@ export interface ILocalDbSetting extends ISqlConnectionProperties {
 	dockerBaseImageEula: string,
 }
 
-export interface ISqlConnectionProperties {
-	tenantId?: string,
-	accountId?: string
-	serverName: string,
-	userName: string,
-	password: string,
-	port: number,
-	dbName: string,
-	profileName?: string,
-	connectionRetryTimeout?: number
-}
+
 
 export interface DockerImageInfo {
 	name: string,

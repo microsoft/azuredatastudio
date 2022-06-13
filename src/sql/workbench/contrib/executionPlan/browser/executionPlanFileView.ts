@@ -19,7 +19,7 @@ export class ExecutionPlanFileView {
 	private _loadingSpinner: LoadingSpinner;
 	private _loadingErrorInfoBox: InfoBox;
 	private _executionPlanViews: ExecutionPlanView[] = [];
-	private _graphs?: azdata.executionPlan.ExecutionPlanGraph[] = [];
+	public graphs?: azdata.executionPlan.ExecutionPlanGraph[] = [];
 	private _container = DOM.$('.eps-container');
 
 	private _planCache: Map<string, azdata.executionPlan.ExecutionPlanGraph[]> = new Map();
@@ -56,10 +56,10 @@ export class ExecutionPlanFileView {
 	public addGraphs(newGraphs: azdata.executionPlan.ExecutionPlanGraph[] | undefined) {
 		if (newGraphs) {
 			newGraphs.forEach(g => {
-				const ep = this.instantiationService.createInstance(ExecutionPlanView, this._container, this._executionPlanViews.length + 1);
+				const ep = this.instantiationService.createInstance(ExecutionPlanView, this._container, this._executionPlanViews.length + 1, this);
 				ep.model = g;
 				this._executionPlanViews.push(ep);
-				this._graphs.push(g);
+				this.graphs.push(g);
 				this.updateRelativeCosts();
 			});
 		}
@@ -104,7 +104,7 @@ export class ExecutionPlanFileView {
 	}
 
 	private updateRelativeCosts() {
-		const sum = this._graphs.reduce((prevCost: number, cg) => {
+		const sum = this.graphs.reduce((prevCost: number, cg) => {
 			return prevCost += cg.root.subTreeCost + cg.root.cost;
 		}, 0);
 

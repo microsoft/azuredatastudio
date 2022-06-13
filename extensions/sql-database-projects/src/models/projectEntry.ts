@@ -27,12 +27,14 @@ export class FileProjectEntry extends ProjectEntry implements IFileProjectEntry 
 	fsUri: Uri;
 	relativePath: string;
 	sqlObjectType: string | undefined;
+	containsCreateTableStatement: boolean | undefined;
 
-	constructor(uri: Uri, relativePath: string, entryType: EntryType, sqlObjectType?: string) {
+	constructor(uri: Uri, relativePath: string, entryType: EntryType, sqlObjectType?: string, containsCreateTableStatement?: boolean) {
 		super(entryType);
 		this.fsUri = uri;
 		this.relativePath = relativePath;
 		this.sqlObjectType = sqlObjectType;
+		this.containsCreateTableStatement = containsCreateTableStatement;
 	}
 
 	public override toString(): string {

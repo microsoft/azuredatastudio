@@ -47,6 +47,7 @@ import { ILocalDbDeployProfile, ISqlDbDeployProfile } from '../models/deploy/dep
 import { EntryType, FileProjectEntry, IDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry } from '../models/projectEntry';
 import { UpdateProjectAction, UpdateProjectDataModel } from '../models/api/updateProject';
 import { AzureSqlClient } from '../models/deploy/azureSqlClient';
+import { ConnectionService } from '../models/connections/connectionService';
 
 const maxTableLength = 10;
 
@@ -74,6 +75,7 @@ export class ProjectsController {
 	private buildInfo: DashboardData[] = [];
 	private publishInfo: PublishData[] = [];
 	private deployService: DeployService;
+	private connectionService: ConnectionService;
 	private azureSqlClient: AzureSqlClient;
 	private autorestHelper: AutorestHelper;
 
@@ -84,6 +86,7 @@ export class ProjectsController {
 		this.buildHelper = new BuildHelper();
 		this.azureSqlClient = new AzureSqlClient();
 		this.deployService = new DeployService(this.azureSqlClient, this._outputChannel);
+		this.connectionService = new ConnectionService(this._outputChannel);
 		this.autorestHelper = new AutorestHelper(this._outputChannel);
 	}
 
@@ -293,7 +296,7 @@ export class ProjectsController {
 						if (deployProfile.sqlDbSetting) {
 
 							// Connecting to the deployed db to add the profile to connection viewlet
-							await this.deployService.getConnection(deployProfile.sqlDbSetting, true, deployProfile.sqlDbSetting.dbName);
+							await this.connectionService.getConnection(deployProfile.sqlDbSetting, true, deployProfile.sqlDbSetting.dbName);
 						}
 						void vscode.window.showInformationMessage(constants.publishProjectSucceed);
 					} else {
@@ -316,9 +319,12 @@ export class ProjectsController {
 	 */
 	public async publishToDockerContainer(context: Project | dataworkspace.WorkspaceTreeItem, deployProfile: ILocalDbDeployProfile): Promise<void> {
 		const project: Project = this.getProjectFromContext(context);
+		// Removing the path separator from the image base name to be able to add that in the telemetry. With the separator the name is flagged as user path which is not true
+		// We only need to know the image base parts so it's ok to use a different separator when adding to telemetry
+		const dockerImageNameForTelemetry = deployProfile.localDbSetting?.dockerBaseImage ? deployProfile.localDbSetting.dockerBaseImage.replace(/\//gi, '_') : '';
 		try {
 			TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.publishToContainer)
-				.withAdditionalProperties({ dockerBaseImage: deployProfile.localDbSetting!.dockerBaseImage })
+				.withAdditionalProperties({ dockerBaseImage: dockerImageNameForTelemetry })
 				.send();
 
 			if (deployProfile && deployProfile.deploySettings) {
@@ -335,7 +341,7 @@ export class ProjectsController {
 					const publishResult = await this.publishOrScriptProject(project, deployProfile.deploySettings, true);
 					if (publishResult && publishResult.success) {
 						if (deployProfile.localDbSetting) {
-							await this.deployService.getConnection(deployProfile.localDbSetting, true, deployProfile.localDbSetting.dbName);
+							await this.connectionService.getConnection(deployProfile.localDbSetting, true, deployProfile.localDbSetting.dbName);
 						}
 						void vscode.window.showInformationMessage(constants.publishProjectSucceed);
 					} else {
@@ -348,7 +354,7 @@ export class ProjectsController {
 		} catch (error) {
 			void utils.showErrorMessageWithOutputChannel(constants.publishToContainerFailed, error, this._outputChannel);
 			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.publishToContainer)
-				.withAdditionalProperties({ dockerBaseImage: deployProfile.localDbSetting!.dockerBaseImage })
+				.withAdditionalProperties({ dockerBaseImage: dockerImageNameForTelemetry })
 				.send();
 		}
 		return;

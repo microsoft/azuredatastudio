@@ -179,7 +179,7 @@
       <source xml:lang="en">Sets the security policy for downloading extensions.</source>
     </trans-unit>
     <trans-unit id="incompatible">
-      <source xml:lang="en">Unable to install extension '{0}' as it is not compatible with Azure Data Studio '{1}'.</source>
+      <source xml:lang="en">Unable to install version '{0}' of extension '{1}' as it is not compatible with Azure Data Studio '{2}'. Update to Azure Data Studio {3} to install the extension.</source>
     </trans-unit>
     <trans-unit id="installExtensionCompletedAndReloadRequired">
       <source xml:lang="en">Installing extension {0} is completed. Please reload Azure Data Studio to enable it.</source>
@@ -623,9 +623,6 @@
     <trans-unit id="errorStartBeforeReady">
       <source xml:lang="en">Cannot start a session, the manager is not yet initialized</source>
     </trans-unit>
-    <trans-unit id="notebookMultipleRequestsError">
-      <source xml:lang="en">Cannot execute code cell. Another cell is currently being executed.</source>
-    </trans-unit>
 </body></file>
   <file original="src/sql/workbench/browser/actions" source-language="en" datatype="plaintext"><body>
     <trans-unit id="clearSavedAccounts">
@@ -735,10 +732,10 @@
       <source xml:lang="en">Add New</source>
     </trans-unit>
     <trans-unit id="designer.insertAfterSelectedColumn">
-      <source xml:lang="en">Insert after</source>
+      <source xml:lang="en">Insert After</source>
     </trans-unit>
     <trans-unit id="designer.insertBeforeSelectedRow">
-      <source xml:lang="en">Insert before</source>
+      <source xml:lang="en">Insert Before</source>
     </trans-unit>
     <trans-unit id="designer.moveRowDownAction">
       <source xml:lang="en">Move Down</source>
@@ -789,9 +786,6 @@
   <file original="src/sql/workbench/browser/editor/tableDesigner/tableDesignerInput" source-language="en" datatype="plaintext"><body>
     <trans-unit id="tableDesigner.OperationInProgressWarning">
       <source xml:lang="en">The operation cannot be performed while another operation is in progress.</source>
-    </trans-unit>
-    <trans-unit id="tableDesigner.newTable">
-      <source xml:lang="en">New Table</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/browser/modal/modal" source-language="en" datatype="plaintext"><body>
@@ -947,6 +941,11 @@
     </trans-unit>
     <trans-unit id="updateOperationName">
       <source xml:lang="en">Update</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/common/constants" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="notebookMultipleRequestsError">
+      <source xml:lang="en">Cannot execute code cell. Another cell is currently being executed.</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/common/editor/query/queryEditorInput" source-language="en" datatype="plaintext"><body>
@@ -2383,6 +2382,9 @@
     <trans-unit id="epCompare.zoomToFit">
       <source xml:lang="en">Zoom to fit</source>
     </trans-unit>
+    <trans-unit id="queryDropdownPrefix">
+      <source xml:lang="en">Query {0} of {1}: {2}</source>
+    </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView" source-language="en" datatype="plaintext"><body>
     <trans-unit id="executionPlanComparisonPropertiesBottomOperation">
@@ -2447,7 +2449,7 @@
       <source xml:lang="en">Alphabetical</source>
     </trans-unit>
     <trans-unit id="executionPlanPropertyViewSortByDisplayOrder">
-      <source xml:lang="en">Categorized</source>
+      <source xml:lang="en">Importance</source>
     </trans-unit>
     <trans-unit id="executionPlanPropertyViewSortReverseAlphabetically">
       <source xml:lang="en">Reverse Alphabetical</source>
@@ -3175,13 +3177,13 @@ Error: {1}</source>
       <source xml:lang="en">Error rendering component: {0}</source>
     </trans-unit>
     <trans-unit id="noMimeTypeFound">
-      <source xml:lang="en">No {0}renderer could be found for output. It has the following MIME types: {1}</source>
+      <source xml:lang="en">No renderer could be found for output. It has the following MIME types: {0}</source>
+    </trans-unit>
+    <trans-unit id="noSafeMimeTypeFound">
+      <source xml:lang="en">No safe renderer could be found for output. It has the following MIME types: {0}</source>
     </trans-unit>
     <trans-unit id="noSelectorFound">
       <source xml:lang="en">No component could be found for selector {0}</source>
-    </trans-unit>
-    <trans-unit id="safe">
-      <source xml:lang="en">safe </source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/notebook/browser/cellViews/placeholderCell.component" source-language="en" datatype="plaintext"><body>
@@ -3244,6 +3246,11 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="title.matchesCountLimit">
       <source xml:lang="en">Your search returned a large number of results, only the first 999 matches will be highlighted.</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/notebook/browser/models/outputProcessor" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="notebookInvalidOutputTypeError">
+      <source xml:lang="en">Output type '{0}' not recognized.</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/notebook/browser/notebook.component" source-language="en" datatype="plaintext"><body>
@@ -3782,8 +3789,8 @@ Error: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/objectExplorer/browser/serverTreeView" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="serverTree.addConnection">
-      <source xml:lang="en">Add Connection</source>
+    <trans-unit id="serverTree.newConnection">
+      <source xml:lang="en">New Connection</source>
     </trans-unit>
     <trans-unit id="servers.noConnections">
       <source xml:lang="en">No connections found.</source>
@@ -4049,6 +4056,9 @@ Error: {1}</source>
     <trans-unit id="copyQueryWithResultsKeyboardAction">
       <source xml:lang="en">Copy Query With Results</source>
     </trans-unit>
+    <trans-unit id="estimatedExecutionPlanKeyboardAction">
+      <source xml:lang="en">Display Estimated Execution Plan</source>
+    </trans-unit>
     <trans-unit id="focusOnCurrentQueryKeyboardAction">
       <source xml:lang="en">Focus on Current Query</source>
     </trans-unit>
@@ -4193,17 +4203,23 @@ Error: {1}</source>
     <trans-unit id="connectDatabaseLabel">
       <source xml:lang="en">Connect</source>
     </trans-unit>
+    <trans-unit id="disableActualPlanLabel">
+      <source xml:lang="en">Exclude Actual Plan</source>
+    </trans-unit>
     <trans-unit id="disablesqlcmdLabel">
       <source xml:lang="en">Disable SQLCMD</source>
     </trans-unit>
     <trans-unit id="disconnectDatabaseLabel">
       <source xml:lang="en">Disconnect</source>
     </trans-unit>
+    <trans-unit id="enableActualPlanLabel">
+      <source xml:lang="en">Include Actual Plan</source>
+    </trans-unit>
     <trans-unit id="enablesqlcmdLabel">
       <source xml:lang="en">Enable SQLCMD</source>
     </trans-unit>
     <trans-unit id="estimatedQueryPlan">
-      <source xml:lang="en">Explain</source>
+      <source xml:lang="en">Estimated Plan</source>
     </trans-unit>
     <trans-unit id="newQueryTask.newQuery">
       <source xml:lang="en">New Query</source>
@@ -4533,11 +4549,11 @@ Error: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/tableDesigner/browser/actions" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="tableDesigner.generateScript">
-      <source xml:lang="en">Generate Script</source>
-    </trans-unit>
     <trans-unit id="tableDesigner.publishTableChanges">
       <source xml:lang="en">Publish Changes...</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.saveTableChanges">
+      <source xml:lang="en">Save</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/tableDesigner/browser/tableDesignerEditor" source-language="en" datatype="plaintext"><body>
@@ -5637,6 +5653,9 @@ Error: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/notebook/browser/notebookViews/notebookViewModel" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="Untitled">
+      <source xml:lang="en">Untitled</source>
+    </trans-unit>
     <trans-unit id="notebookView.nameTaken">
       <source xml:lang="en">A view with the name {0} already exists in this notebook.</source>
     </trans-unit>
@@ -5683,12 +5702,6 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="unknownCellType">
       <source xml:lang="en">Cell type {0} unknown</source>
-    </trans-unit>
-    <trans-unit id="unrecognizedOutput">
-      <source xml:lang="en">Output type {0} not recognized</source>
-    </trans-unit>
-    <trans-unit id="unrecognizedOutputType">
-      <source xml:lang="en">Output type {0} not recognized</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/notebook/common/notebookRegistry" source-language="en" datatype="plaintext"><body>

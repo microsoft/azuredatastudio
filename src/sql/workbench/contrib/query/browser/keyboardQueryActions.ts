@@ -206,6 +206,27 @@ export class CopyQueryWithResultsKeyboardAction extends Action {
 	}
 }
 
+export class EstimatedExecutionPlanKeyboardAction extends Action {
+	public static ID = 'estimatedExecutionPlanKeyboardAction';
+	public static LABEL = nls.localize('estimatedExecutionPlanKeyboardAction', "Display Estimated Execution Plan");
+
+	constructor(
+		id: string,
+		label: string,
+		@IEditorService private _editorService: IEditorService
+	) {
+		super(id, label);
+		this.enabled = true;
+	}
+
+	public override async run(): Promise<void> {
+		const editor = this._editorService.activeEditorPane;
+		if (editor instanceof QueryEditor) {
+			editor.input.runQuery(editor.getSelection(), { displayEstimatedQueryPlan: true });
+		}
+	}
+}
+
 export class RunCurrentQueryWithActualPlanKeyboardAction extends Action {
 	public static ID = 'runCurrentQueryWithActualPlanKeyboardAction';
 	public static LABEL = nls.localize('runCurrentQueryWithActualPlanKeyboardAction', "Run Current Query with Actual Plan");

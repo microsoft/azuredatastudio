@@ -10,6 +10,7 @@
 	"contents": {
 		"dist/common/constants": {
 			"AllProjectTypes": "すべてのプロジェクトの種類",
+			"LocalDevInfo": "{0}するローカル開発エクスペリエンスの詳細については、[詳細情報] ボタンをクリックしてください",
 			"SelectProjectFileActionName": "選択",
 			"UnknownProjectTypeError": "ID: '{0}' のプロジェクトの種類のプロバイダーが見つかりませんでした",
 			"UnknownProjectsError": "次のプロジェクトのプロバイダーが見つかりませんでした: {0}",

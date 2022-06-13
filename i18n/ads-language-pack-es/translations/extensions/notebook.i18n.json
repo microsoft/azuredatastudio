@@ -152,7 +152,7 @@
 			"managePackages.noVersionsFound": "No se pudo encontrar ninguna versión válida para el paquete especificado",
 			"managePackages.packageNameTitle": "Nombre del paquete",
 			"managePackages.packageSummaryTitle": "Resumen del paquete",
-			"managePackages.packageVersionTitle": "Versión de paquete",
+			"managePackages.packageVersionTitle": "Versiones de paquete admitidas para Python {0}",
 			"managePackages.searchBarPlaceholder": "Buscar {0} paquetes",
 			"managePackages.searchButtonLabel": "Buscar"
 		},

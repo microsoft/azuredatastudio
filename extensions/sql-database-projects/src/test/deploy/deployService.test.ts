@@ -11,14 +11,13 @@ import { DeployService } from '../../models/deploy/deployService';
 import { Project } from '../../models/project';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import { AppSettingType, ILocalDbDeployProfile, ISqlDbDeployProfile } from '../../models/deploy/deployProfile';
+import { ILocalDbDeployProfile, ISqlDbDeployProfile } from '../../models/deploy/deployProfile';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
-import * as fse from 'fs-extra';
-import * as path from 'path';
 import * as constants from '../../common/constants';
 import { ShellExecutionHelper } from '../../tools/shellExecutionHelper';
 import * as TypeMoq from 'typemoq';
 import { AzureSqlClient } from '../../models/deploy/azureSqlClient';
+import { ConnectionService } from '../../models/connections/connectionService';
 
 export interface TestContext {
 	outputChannel: vscode.OutputChannel;
@@ -140,123 +139,15 @@ describe('deploy service', function (): void {
 		const shellExecutionHelper = TypeMoq.Mock.ofType(ShellExecutionHelper);
 		shellExecutionHelper.setup(x => x.runStreamedCommand(TypeMoq.It.isAny(),
 			undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('id'));
-		const deployService = new DeployService(testContext.azureSqlClient.object, testContext.outputChannel, shellExecutionHelper.object);
+		const connectionService = new ConnectionService(testContext.outputChannel);
 		let connectionStub = sandbox.stub(azdata.connection, 'connect');
 		connectionStub.onFirstCall().returns(Promise.resolve(mockFailedConnectionResult));
 		connectionStub.onSecondCall().returns(Promise.resolve(mockConnectionResult));
 		sandbox.stub(azdata.connection, 'getUriForConnection').returns(Promise.resolve('connection'));
 		sandbox.stub(azdata.tasks, 'startBackgroundOperation').callThrough();
 
-		let connection = await deployService.getConnection(localDbSettings, false, 'master');
+		let connection = await connectionService.getConnection(localDbSettings, false, 'master');
 		should(connection).equals('connection');
-	});
-
-	it('Should update app settings successfully', async function (): Promise<void> {
-		const testContext = createContext();
-		const projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
-		const project1 = await Project.openProject(vscode.Uri.file(projFilePath).fsPath);
-		const jsondData =
-		{
-			IsEncrypted: false,
-			Values: {
-				AzureWebJobsStorage: 'UseDevelopmentStorage=true',
-				FUNCTIONS_WORKER_RUNTIME: 'dotnet'
-			}
-		};
-		let settingContent = JSON.stringify(jsondData, undefined, 4);
-		const expected =
-		{
-			IsEncrypted: false,
-			Values: {
-				AzureWebJobsStorage: 'UseDevelopmentStorage=true',
-				FUNCTIONS_WORKER_RUNTIME: 'dotnet',
-				SQLConnectionString: 'Data Source=localhost,1433;Initial Catalog=test;User id=sa;Password=PLACEHOLDER;'
-			}
-		};
-		const filePath = path.join(project1.projectFolderPath, 'local.settings.json');
-		await fse.writeFile(filePath, settingContent);
-
-		const deployProfile: ILocalDbDeployProfile = {
-			localDbSetting: {
-				dbName: 'test',
-				password: 'PLACEHOLDER',
-				port: 1433,
-				serverName: 'localhost',
-				userName: 'sa',
-				dockerBaseImage: 'image',
-				dockerBaseImageEula: ''
-			}
-		};
-
-		const appInteg = {
-			appSettingType: AppSettingType.AzureFunction,
-			appSettingFile: filePath,
-			deploySettings: undefined,
-			envVariableName: 'SQLConnectionString'
-		};
-
-		const shellExecutionHelper = TypeMoq.Mock.ofType(ShellExecutionHelper);
-		shellExecutionHelper.setup(x => x.runStreamedCommand(TypeMoq.It.isAny(),
-			undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('id'));
-		const deployService = new DeployService(testContext.azureSqlClient.object, testContext.outputChannel, shellExecutionHelper.object);
-
-		await deployService.updateAppSettings(appInteg, deployProfile);
-		let newContent = JSON.parse(fse.readFileSync(filePath, 'utf8'));
-		should(newContent).deepEqual(expected);
-
-	});
-
-	it('Should update app settings using connection uri if there are no local settings', async function (): Promise<void> {
-		const testContext = createContext();
-		const projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
-		const project1 = await Project.openProject(vscode.Uri.file(projFilePath).fsPath);
-		const jsondData =
-		{
-			IsEncrypted: false,
-			Values: {
-				AzureWebJobsStorage: 'UseDevelopmentStorage=true',
-				FUNCTIONS_WORKER_RUNTIME: 'dotnet'
-			}
-		};
-		let settingContent = JSON.stringify(jsondData, undefined, 4);
-		const expected =
-		{
-			IsEncrypted: false,
-			Values: {
-				AzureWebJobsStorage: 'UseDevelopmentStorage=true',
-				FUNCTIONS_WORKER_RUNTIME: 'dotnet',
-				SQLConnectionString: 'connectionString'
-			}
-		};
-		const filePath = path.join(project1.projectFolderPath, 'local.settings.json');
-		await fse.writeFile(filePath, settingContent);
-
-		const deployProfile: ILocalDbDeployProfile = {
-
-			deploySettings: {
-				connectionUri: 'connection',
-				databaseName: 'test',
-				serverName: 'test'
-			},
-			localDbSetting: undefined
-		};
-
-		const appInteg = {
-			appSettingType: AppSettingType.AzureFunction,
-			appSettingFile: filePath,
-			envVariableName: 'SQLConnectionString',
-		};
-		const shellExecutionHelper = TypeMoq.Mock.ofType(ShellExecutionHelper);
-		shellExecutionHelper.setup(x => x.runStreamedCommand(TypeMoq.It.isAny(),
-			undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('id'));
-		const deployService = new DeployService(testContext.azureSqlClient.object, testContext.outputChannel, shellExecutionHelper.object);
-		let connection = new azdata.connection.ConnectionProfile();
-		sandbox.stub(azdata.connection, 'getConnection').returns(Promise.resolve(connection));
-
-		sandbox.stub(azdata.connection, 'getConnectionString').returns(Promise.resolve('connectionString'));
-		await deployService.updateAppSettings(appInteg, deployProfile);
-		let newContent = JSON.parse(fse.readFileSync(filePath, 'utf8'));
-		should(newContent).deepEqual(expected);
 	});
 
 	it('Should clean a list of docker images successfully', async function (): Promise<void> {

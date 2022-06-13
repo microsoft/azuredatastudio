@@ -760,7 +760,10 @@ class ExtensionsContributions extends Disposable implements IWorkbenchContributi
 						openLabel: mnemonicButtonLabel(localize({ key: 'installButton', comment: ['&& denotes a mnemonic'] }, "&&Install"))
 					});
 					if (vsixPaths) {
-						await commandService.executeCommand(INSTALL_EXTENSION_FROM_VSIX_COMMAND_ID, vsixPaths);
+						// {{SQL CARBON EDIT}} - Adding error handling
+						commandService.executeCommand(INSTALL_EXTENSION_FROM_VSIX_COMMAND_ID, vsixPaths).catch(e => {
+							notificationService.error(e);
+						});
 					}
 				}
 			});

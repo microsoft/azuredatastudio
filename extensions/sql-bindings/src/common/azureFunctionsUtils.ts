@@ -237,7 +237,7 @@ export function waitForNewHostFile(): IFileFunctionObject {
  * Adds the required nuget package to the project
  * @param selectedProjectFile is the users selected project file path
  */
-export async function addNugetReferenceToProjectFile(selectedProjectFile: string): Promise<void> {
+export async function addSqlNugetReferenceToProjectFile(selectedProjectFile: string): Promise<void> {
 	await utils.executeCommand(`dotnet add "${selectedProjectFile}" package ${constants.sqlExtensionPackageName} --prerelease`);
 }
 
@@ -531,7 +531,7 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 			}
 		}
 		// Add sql extension package reference to project. If the reference is already there, it doesn't get added again
-		await addNugetReferenceToProjectFile(projectUri.fsPath);
+		await addSqlNugetReferenceToProjectFile(projectUri.fsPath);
 	} else {
 		// if no AF project was found or there's more than one AF functions project in the workspace,
 		// ask for the user to input the setting name

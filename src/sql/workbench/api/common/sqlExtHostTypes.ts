@@ -1041,4 +1041,19 @@ export namespace executionPlan {
 		CriticalWarning = 1,
 		Parallelism = 2
 	}
+
+	export enum ExecutionPlanGraphElementPropertyDataType {
+		Number = 0,
+		String = 1,
+		Boolean = 2,
+		Nested = 3
+	}
+
+	export enum ExecutionPlanGraphElementPropertyBetterValue {
+		LowerNumber = 0,
+		HigherNumber = 1,
+		True = 2,
+		False = 3,
+		None = 4
+	}
 }

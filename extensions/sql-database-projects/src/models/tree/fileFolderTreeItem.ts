@@ -80,6 +80,15 @@ export class ExternalStreamingJobFileNode extends FileNode {
 	}
 }
 
+export class TableFileNode extends FileNode {
+	public override get treeItem(): vscode.TreeItem {
+		const treeItem = super.treeItem;
+		treeItem.contextValue = DatabaseProjectItemType.table;
+
+		return treeItem;
+	}
+}
+
 /**
  * Compares two folder/file tree nodes so that folders come before files, then alphabetically
  * @param a a folder or file tree node

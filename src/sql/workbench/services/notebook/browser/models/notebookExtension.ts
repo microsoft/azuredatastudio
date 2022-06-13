@@ -8,7 +8,7 @@ import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contr
 import { deepClone } from 'vs/base/common/objects';
 
 export class NotebookExtension<TNotebookMeta, TCellMeta> {
-	readonly version = 1;
+	readonly version: number = 1;
 	readonly extensionNamespace = 'extensions';
 
 	private _extensionName: string;

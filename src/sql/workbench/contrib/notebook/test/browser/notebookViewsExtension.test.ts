@@ -87,10 +87,8 @@ suite('NotebookViews', function (): void {
 	test('should not modify the notebook document until a view is created', async () => {
 		//Create some content
 		notebookViews.notebook.addCell(CellTypes.Code, 0);
-		const cell = notebookViews.notebook.cells[0];
 
 		assert.strictEqual(notebookViews.getExtensionMetadata(), undefined);
-		assert.strictEqual(notebookViews.getExtensionCellMetadata(cell), undefined);
 
 		//Check that the view is created
 		notebookViews.createNewView(defaultViewName);
@@ -101,11 +99,10 @@ suite('NotebookViews', function (): void {
 		assert.strictEqual(notebookViews.getViews().length, 0, 'notebook should not initially generate any views');
 
 		let newView = notebookViews.createNewView(defaultViewName);
-		let cellsWithMatchingGuid = newView.cells.filter(cell => newView.getCellMetadata(cell).guid === newView.guid);
 
+		assert.strictEqual(notebookViews.getViews().length, 1, 'only one view was created');
 		assert.strictEqual(newView.name, defaultViewName, 'view was not created with its given name');
 		assert.strictEqual(newView.cells.length, 2, 'view did not contain the same number of cells as the notebook used to create it');
-		assert.strictEqual(cellsWithMatchingGuid.length, newView.cells.length, 'cell metadata was not created for all cells in view');
 	});
 
 	test('remove view', async function (): Promise<void> {
@@ -113,10 +110,7 @@ suite('NotebookViews', function (): void {
 
 		notebookViews.removeView(newView.guid);
 
-		let cellsWithNewView = notebookViews.getCells().filter(cell => cell.views.find(v => v.guid === newView.guid));
-
 		assert.strictEqual(notebookViews.getViews().length, 0, 'view not removed from notebook metadata');
-		assert.strictEqual(cellsWithNewView.length, 0, 'view not removed from cells');
 	});
 
 	test('default view name', async function (): Promise<void> {
@@ -134,21 +128,20 @@ suite('NotebookViews', function (): void {
 		assert.strictEqual(notebookViews.getActiveView(), newView);
 	});
 
-	test('update cell', async function (): Promise<void> {
+	test('update card', async function (): Promise<void> {
 		let newView = notebookViews.createNewView();
-		let c1 = newView.cells[0];
+		let card = newView.cards[0];
 
-		let cellData = newView.getCellMetadata(c1);
-		cellData = { ...cellData, x: 0, y: 0, hidden: true, width: 0, height: 0 };
-		notebookViews.updateCell(c1, newView, cellData);
+		let cardData = { ...card, x: 0, y: 0, width: 0, height: 0 };
+		notebookViews.updateCard(card, cardData, newView);
 
-		cellData = { ...cellData, x: 1, y: 1, hidden: false, width: 1, height: 1 };
-		notebookViews.updateCell(c1, newView, cellData);
-		assert.deepStrictEqual(newView.getCellMetadata(c1), cellData, 'update did not set all values');
+		cardData = { ...cardData, x: 1, y: 1, width: 1, height: 1 };
+		notebookViews.updateCard(newView.cards[0], cardData, newView);
+		assert.deepStrictEqual(newView.cards[0], cardData, 'update did not set all values');
 
-		cellData = { ...cellData, x: 3 };
-		notebookViews.updateCell(c1, newView, { x: 3 });
-		assert.deepStrictEqual(newView.getCellMetadata(c1), cellData, 'update should only override set values');
+		cardData = { ...cardData, x: 3 };
+		notebookViews.updateCard(newView.cards[0], { x: 3 }, newView);
+		assert.deepStrictEqual(newView.cards[0], cardData, 'update should only override set values');
 	});
 
 	function setupServices() {

@@ -147,7 +147,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		if (!this._connectionManagementService.hasRegisteredServers()) {
 			this._buttonSection = append(container, $('.button-section'));
 			const connectButton = new Button(this._buttonSection);
-			connectButton.label = localize('serverTree.addConnection', "Add Connection");
+			connectButton.label = localize('serverTree.newConnection', "New Connection");
 			this._register(attachButtonStyler(connectButton, this._themeService));
 			this._register(connectButton.onDidClick(() => {
 				this._connectionManagementService.showConnectionDialog();

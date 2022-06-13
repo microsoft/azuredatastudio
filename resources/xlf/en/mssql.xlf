@@ -638,6 +638,11 @@
       <source xml:lang="en">Starting {0}</source>
     </trans-unit>
 </body></file>
+  <file original="extensions/mssql/dist/tableDesigner/tableDesigner" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="tableDesigner.NewTable">
+      <source xml:lang="en">New Table</source>
+    </trans-unit>
+</body></file>
   <file original="extensions/mssql/dist/telemetry" source-language="en" datatype="plaintext"><body>
     <trans-unit id="serviceCrashMessage">
       <source xml:lang="en">{0} component exited unexpectedly. Please restart Azure Data Studio.</source>

@@ -18,6 +18,7 @@ import { getAgreementDisplayText, getConnectionName, getDockerBaseImages, getPub
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { ILocalDbDeployProfile } from '../models/deploy/deployProfile';
 import { Deferred } from '../common/promise';
+import { PublishOptionsDialog } from './publishOptionsDialog';
 
 interface DataSourceDropdownValue extends azdataType.CategoryValue {
 	dataSource: SqlConnectionDataSource;
@@ -56,6 +57,8 @@ export class PublishDatabaseDialog {
 	private deploymentOptions: DeploymentOptions | undefined;
 	private profileUsed: boolean = false;
 	private serverName: string | undefined;
+	protected optionsButton: azdataType.ButtonComponent | undefined;
+	private publishOptionsDialog: PublishOptionsDialog | undefined;
 
 	private completionPromise: Deferred = new Deferred();
 
@@ -134,13 +137,17 @@ export class PublishDatabaseDialog {
 				title: constants.sqlCmdVariables
 			};
 
+			// Get the default deployment option and set
+			const options = await this.getDefaultDeploymentOptions();
+			this.setDeploymentOptions(options);
+
 			const profileRow = this.createProfileRow(view);
 			this.connectionRow = this.createConnectionRow(view);
 			this.databaseRow = this.createDatabaseRow(view);
+			const displayOptionsButton = this.createOptionsButton(view);
 
 			const horizontalFormSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
-			horizontalFormSection.addItems([profileRow, this.databaseRow]);
-
+			horizontalFormSection.addItems([profileRow, this.databaseRow, displayOptionsButton]);
 
 			this.formBuilder = <azdataType.FormBuilder>view.modelBuilder.formContainer()
 				.withFormItems([
@@ -281,8 +288,6 @@ export class PublishDatabaseDialog {
 	}
 
 	public async getDeploymentOptions(): Promise<DeploymentOptions> {
-		// eventually, database options will be configurable in this dialog
-		// but for now, just send the default DacFx deployment options if no options were loaded from a publish profile
 		if (!this.deploymentOptions) {
 			// We only use the dialog in ADS context currently so safe to cast to the mssql DeploymentOptions here
 			this.deploymentOptions = await utils.getDefaultPublishDeploymentOptions(this.project) as DeploymentOptions;
@@ -534,7 +539,7 @@ export class PublishDatabaseDialog {
 			width: cssStyles.publishDialogLabelWidth
 		}).component();
 
-		const connectionRow = view.modelBuilder.flexContainer().withItems([serverLabel, this.targetConnectionTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+		const connectionRow = view.modelBuilder.flexContainer().withItems([serverLabel, this.targetConnectionTextBox], { flex: '0 0 auto', CSSStyles: { 'margin': '-8px 10px -15px 0' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 		connectionRow.insertItem(selectConnectionButton, 2, { CSSStyles: { 'margin-right': '0px' } });
 
 		return connectionRow;
@@ -650,7 +655,7 @@ export class PublishDatabaseDialog {
 				this.targetDatabaseTextBox = view.modelBuilder.inputBox().withProps({
 					ariaLabel: constants.databaseNameLabel,
 					required: true,
-					width: cssStyles.publishDialogTextboxWidth,
+					width: cssStyles.publishDialogDropdownWidth,
 					value: this.getDefaultDatabaseName()
 				}).component();
 			}
@@ -662,7 +667,7 @@ export class PublishDatabaseDialog {
 					value: this.getDefaultDatabaseName(),
 					ariaLabel: constants.databaseNameLabel,
 					required: true,
-					width: cssStyles.publishDialogTextboxWidth,
+					width: cssStyles.publishDialogDropdownWidth,
 					editable: true,
 					fireOnTextChange: true
 				}).component();
@@ -895,6 +900,42 @@ export class PublishDatabaseDialog {
 		}
 
 		return true;
+	}
+
+	/*
+	 * Creates Display options container with a 'configure options' button
+	 */
+	private createOptionsButton(view: azdataType.ModelView): azdataType.FlexContainer {
+		this.optionsButton = view.modelBuilder.button().withProps({
+			label: constants.publishingOptions,
+			secondary: true,
+			width: cssStyles.PublishingOptionsButtonWidth
+		}).component();
+
+		const optionsRow = view.modelBuilder.flexContainer().withItems([this.optionsButton], { CSSStyles: { flex: '0 0 auto', 'margin': '6px 0 0 287px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+
+		this.toDispose.push(this.optionsButton.onDidClick(async () => {
+			TelemetryReporter.sendActionEvent(TelemetryViews.SqlProjectPublishDialog, TelemetryActions.publishConfigureOptionsClicked);
+			// Create fresh options dialog with default selections each time when creating the 'configure options' button
+			this.publishOptionsDialog = new PublishOptionsDialog(this.deploymentOptions!, this);
+			this.publishOptionsDialog.openDialog();
+		}));
+
+		return optionsRow;
+	}
+
+	/*
+	* Gets the default deployment options from the dacfx service
+	*/
+	public async getDefaultDeploymentOptions(): Promise<DeploymentOptions> {
+		return await utils.getDefaultPublishDeploymentOptions(this.project) as DeploymentOptions;
+	}
+
+	/*
+	* Sets the default deployment options to deployment options model object
+	*/
+	public setDeploymentOptions(deploymentOptions: DeploymentOptions): void {
+		this.deploymentOptions = deploymentOptions;
 	}
 }
 

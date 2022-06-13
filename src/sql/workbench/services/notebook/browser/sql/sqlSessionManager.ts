@@ -27,6 +27,7 @@ import { getUriPrefix, uriPrefixes } from 'sql/platform/connection/common/utils'
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { FutureInternal, notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 import { tryMatchCellMagic } from 'sql/workbench/services/notebook/browser/utils';
+import { notebookMultipleRequestsError } from 'sql/workbench/common/constants';
 
 export const sqlKernelError: string = localize("sqlKernelError", "SQL kernel error");
 export const MAX_ROWS = 5000;
@@ -215,6 +216,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	private _executionCount: number = 0;
 	private _magicToExecutorMap = new Map<string, ExternalScriptMagic>();
 	private _connectionPath: string;
+	private _newConnection: boolean;
 
 	constructor(private _path: string,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
@@ -310,7 +312,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	public set connection(conn: IConnectionProfile) {
 		this._currentConnection = conn;
 		this._currentConnectionProfile = new ConnectionProfile(this._capabilitiesService, this._currentConnection);
-		this._queryRunner = undefined;
+		this._newConnection = true;
 	}
 
 	getSpec(): Thenable<nb.IKernelSpec> {
@@ -318,17 +320,17 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	}
 
 	requestExecute(content: nb.IExecuteRequest, disposeOnDone?: boolean): nb.IFuture {
+		// Check if another cell is already running.
+		if (this._future?.inProgress) {
+			throw new Error(notebookMultipleRequestsError);
+		}
+
 		let canRun: boolean = true;
 		let code = this.getCodeWithoutCellMagic(content);
-		if (this._queryRunner) {
-			// Cancel any existing query
-			if (this._future && !this._queryRunner.hasCompleted) {
-				this._queryRunner.cancelQuery().then(ok => undefined, error => this._errorMessageService.showDialog(Severity.Error, sqlKernelError, error));
-				// TODO when we can just show error as an output, should show an "execution canceled" error in output
-				this._future.handleDone().catch(err => onUnexpectedError(err));
-			}
+		if (this._queryRunner && !this._newConnection) {
 			this._queryRunner.runQuery(code).catch(err => onUnexpectedError(err));
 		} else if (this._currentConnection && this._currentConnectionProfile) {
+			this._newConnection = false;
 			this._queryRunner = this._instantiationService.createInstance(QueryRunner, this._connectionPath);
 			this.addQueryEventListeners(this._queryRunner);
 			this._connectionManagementService.connect(this._currentConnectionProfile, this._connectionPath).then((result) => {

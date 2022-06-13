@@ -14,7 +14,7 @@ import { IPager, mapPager, singlePagePager } from 'vs/base/common/paging';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import {
 	IExtensionGalleryService, ILocalExtension, IGalleryExtension, IQueryOptions,
-	InstallExtensionEvent, DidUninstallExtensionEvent, IExtensionIdentifier, InstallOperation, DefaultIconPath, InstallOptions, WEB_EXTENSION_TAG, InstallExtensionResult
+	InstallExtensionEvent, DidUninstallExtensionEvent, IExtensionIdentifier, InstallOperation, DefaultIconPath, InstallOptions, WEB_EXTENSION_TAG, InstallExtensionResult, INSTALL_ERROR_INCOMPATIBLE, ExtensionManagementError
 } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { IWorkbenchExtensionEnablementService, EnablementState, IExtensionManagementServerService, IExtensionManagementServer, IWorkbenchExtensionManagementService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { getGalleryExtensionTelemetryData, getLocalExtensionTelemetryData, areSameExtensions, getMaliciousExtensionsSet, groupByExtension, ExtensionIdentifierWithVersion, getGalleryExtensionId } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
@@ -1042,7 +1042,8 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		// The check is added here because we want to fail fast instead of downloading the VSIX and then fail.
 		if (gallery.properties.engine && (!isEngineValid(gallery.properties.engine, this.productService.vscodeVersion, this.productService.date)
 			|| (gallery.properties.azDataEngine && !isEngineValid(gallery.properties.azDataEngine, this.productService.version, this.productService.date)))) {
-			return Promise.reject(new Error(nls.localize('incompatible2', "Unable to install version '{2}' of extension '{0}' as it is not compatible with Azure Data Studio '{1}'.", extension.gallery!.identifier.id, this.productService.version, gallery.version)));
+			const error = new ExtensionManagementError(locConstants.extensionsWorkbenchServiceIncompatible(extension.gallery!.identifier.id, gallery.version, this.productService.version, gallery.properties.azDataEngine), INSTALL_ERROR_INCOMPATIBLE);
+			return Promise.reject(error);
 		}
 
 		return this.installWithProgress(async () => {
@@ -1098,9 +1099,9 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		}
 
 		return this.galleryService.getCompatibleExtension(extension.gallery.identifier, version)
-			.then(gallery => {
+			.then(async (gallery) => {
 				if (!gallery) {
-					return Promise.reject(new Error(locConstants.extensionsWorkbenchServiceIncompatible(extension.gallery!.identifier.id, version))); // {{SQL CARBON EDIT}} Change vscode to ads
+					throw new ExtensionManagementError(locConstants.extensionsWorkbenchServiceIncompatible(extension.gallery!.identifier.id, extension.gallery.version, version, (await extension.getManifest(undefined)).engines.azdata), INSTALL_ERROR_INCOMPATIBLE); // {{SQL CARBON EDIT}} Change vscode to ads
 				}
 				return this.installWithProgress(async () => {
 					const installed = await this.installFromGallery(extension, gallery);

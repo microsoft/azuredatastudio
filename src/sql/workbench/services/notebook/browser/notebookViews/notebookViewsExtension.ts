@@ -9,14 +9,20 @@ import { Emitter, Event } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
 import { NotebookViewModel } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewModel';
 import { NotebookExtension } from 'sql/workbench/services/notebook/browser/models/notebookExtension';
-import { INotebookView, INotebookViewCell, INotebookViewCellMetadata, INotebookViewMetadata, INotebookViews } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
+import { INotebookView, INotebookViewCard, INotebookViewCellMetadata, INotebookViewMetadata, INotebookViews, INotebookViewsExtensionUpgrade } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
+import { NotebookViewsUpgrades } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsUpgrades';
+
+
 
 export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetadata, INotebookViewCellMetadata> implements INotebookViews {
 	static readonly defaultViewName = localize('notebookView.untitledView', "Untitled View");
 	static readonly extension = 'notebookviews';
+	static readonly upgrades: Array<INotebookViewsExtensionUpgrade> = [
+		new NotebookViewsUpgrades.V1ToV2NotebookViewsExtensionUpgrade()
+	];
 
 	readonly maxNameIterationAttempts = 100;
-	override readonly version = 1;
+	override readonly version: number = 2;
 
 	protected _metadata: INotebookViewMetadata | undefined;
 	private _initialized: boolean = false;
@@ -32,6 +38,13 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 		this._metadata = this.getExtensionMetadata();
 
 		if (this._metadata) {
+			NotebookViewsExtension.upgrades.forEach(upgrade => {
+				if (upgrade.versionCheck(this._metadata.version)) {
+					upgrade.apply(this);
+					this._metadata = this.getExtensionMetadata();
+				}
+			});
+
 			this._metadata.views = this._metadata.views.map(view => NotebookViewModel.load(view.guid, this));
 			this._initialized = true;
 		}
@@ -94,16 +107,7 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 	public removeView(guid: string) {
 		let viewToRemove = this._metadata?.views.findIndex(view => view.guid === guid);
 		if (viewToRemove >= 0) {
-			let removedView = this._metadata?.views.splice(viewToRemove, 1);
-
-			// Remove view data for each cell
-			if (removedView.length === 1) {
-				this._notebook?.cells.forEach((cell) => {
-					let meta = this.getExtensionCellMetadata(cell);
-					meta.views = meta.views.filter(x => x.guid !== removedView[0].guid);
-					this.setExtensionCellMetadata(cell, meta);
-				});
-			}
+			this._metadata?.views.splice(viewToRemove, 1);
 		}
 
 		if (guid === this._metadata?.activeView) {
@@ -127,7 +131,7 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 		return i <= this.maxNameIterationAttempts ? name : generateUuid();
 	}
 
-	public updateCell(cell: ICellModel, currentView: INotebookView, cellData: INotebookViewCell, override: boolean = false) {
+	public updateCell(cell: ICellModel, currentView: INotebookView, cellData: INotebookViewCard, override: boolean = false) {
 		const cellMetadata = this.getExtensionCellMetadata(cell);
 		if (cellMetadata) {
 			const viewToUpdate = cellMetadata.views.findIndex(view => view.guid === currentView.guid);
@@ -135,6 +139,22 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 			if (viewToUpdate >= 0) {
 				cellMetadata.views[viewToUpdate] = override ? cellData : { ...cellMetadata.views[viewToUpdate], ...cellData };
 				this.setExtensionCellMetadata(cell, cellMetadata);
+			}
+		}
+	}
+
+	public updateCard(card: INotebookViewCard, cardData: INotebookViewCard, currentView: INotebookView, override: boolean = false) {
+		const notebookMetadata = this.getExtensionMetadata();
+		if (notebookMetadata) {
+			const viewToUpdate = notebookMetadata.views.findIndex(view => view.guid === currentView.guid);
+
+			if (viewToUpdate >= 0) {
+				const cardToUpdate = notebookMetadata.views[viewToUpdate].cards.findIndex(c => c.guid === card.guid);
+
+				if (cardToUpdate >= 0) {
+					notebookMetadata.views[viewToUpdate].cards[cardToUpdate] = override ? cardData : { ...notebookMetadata.views[viewToUpdate].cards[cardToUpdate], ...cardData };
+					this.setExtensionMetadata(this._notebook, notebookMetadata);
+				}
 			}
 		}
 	}
