@@ -233,6 +233,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			await this.populateDms();
 		}));
 
+		// Button to reload migration service list
 		const refreshMigrationServiceButton = this._view.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.refresh,
 			label: constants.REFRESH_BUTTON_LABEL,

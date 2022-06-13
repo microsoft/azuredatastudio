@@ -576,7 +576,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				}
 			}).component();
 
-		const refreshBlobTable = this._view.modelBuilder.button()
+		// Button to reload resources in blob container table dropdowns
+		const refreshBlobTableButton = this._view.modelBuilder.button()
 			.withProps({
 				iconPath: IconPathHelper.refresh,
 				label: constants.REFRESH_BUTTON_LABEL,
@@ -589,13 +590,13 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			})
 			.component();
 
-		this._disposables.push(refreshBlobTable.onDidClick(async (event) => {
+		this._disposables.push(refreshBlobTableButton.onDidClick(async (event) => {
 			await this.getSubscriptionValues();
 			for (const [index, _db] of this.migrationStateModel._databasesForMigration.entries()) {
 				const BlobStorageDropdown = this._blobContainerStorageAccountDropdowns[index];
 				const ResourceGroupDropdownValue = this._blobContainerResourceGroupDropdowns[index].value;
 				if (ResourceGroupDropdownValue !== undefined) {
-					await this.updateBlobResourceGroup(index, ResourceGroupDropdownValue, BlobStorageDropdown);
+					await this.updateBlobResourceGroupDropdown(index, ResourceGroupDropdownValue, BlobStorageDropdown);
 				}
 				const BlobContainerDropdown = this._blobContainerDropdowns[index];
 				const BlobStorageDropdownValue = this._blobContainerStorageAccountDropdowns[index].value;
@@ -615,7 +616,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			allFieldsRequiredLabel,
 			azureStoragePrivateEndpointInfoBox,
 			this._blobContainerTargetDatabaseNamesTable,
-			refreshBlobTable
+			refreshBlobTableButton
 		]).withProps({
 			CSSStyles: {
 				'display': 'none',
@@ -1001,7 +1002,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					}).component();
 
 					this._disposables.push(blobContainerResourceDropdown.onValueChanged(async (value) => {
-						await this.updateBlobResourceGroup(index, value, blobContainerStorageAccountDropdown);
+						await this.updateBlobResourceGroupDropdown(index, value, blobContainerStorageAccountDropdown);
 					}));
 					this._blobContainerResourceGroupDropdowns.push(blobContainerResourceDropdown);
 
@@ -1333,7 +1334,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	}
 
 	// Updates resource group dropdown and loads storage account dropdown for blob container backup
-	private async updateBlobResourceGroup(index: number, value: azdata.DropDownProperties['value'], blobContainerStorageAccountDropdown: azdata.DropDownComponent): Promise<void> {
+	private async updateBlobResourceGroupDropdown(index: number, value: azdata.DropDownProperties['value'], blobContainerStorageAccountDropdown: azdata.DropDownComponent): Promise<void> {
 		if (value && value !== 'undefined' && this.migrationStateModel._resourceGroups) {
 			const valueString = this.dropdownValueToString(value);
 			const selectedResourceGroup = this.migrationStateModel._resourceGroups.find(rg => rg.name === valueString);

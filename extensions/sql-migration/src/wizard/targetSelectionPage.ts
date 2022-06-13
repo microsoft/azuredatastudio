@@ -449,7 +449,8 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			}
 		}));
 
-		const refreshResourceButton = this._view.modelBuilder.button().withProps({
+		// Button to reload target resources
+		const refreshTargetButton = this._view.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.refresh,
 			label: constants.REFRESH_BUTTON_LABEL,
 			width: 90,
@@ -460,7 +461,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			}
 		}).component();
 
-		this._disposables.push(refreshResourceButton.onDidClick(async (event) => {
+		this._disposables.push(refreshTargetButton.onDidClick(async (event) => {
 			await this.populateSubscriptionDropdown();
 			await this.populateLocationDropdown();
 			await this.populateResourceGroupDropdown();
@@ -477,7 +478,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 				this._azureResourceGroupDropdown,
 				this._azureResourceDropdownLabel,
 				this._azureResourceDropdown,
-				refreshResourceButton
+				refreshTargetButton
 			]
 		).withLayout({
 			flexFlow: 'column',
