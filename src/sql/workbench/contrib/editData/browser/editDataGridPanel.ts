@@ -65,6 +65,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	private currentEditCellValue: string;
 	private newRowVisible: boolean;
 	private removingNewRow: boolean;
+	private isProcessingCell: boolean;
 	private rowIdMappings: { [gridRowId: number]: number } = {};
 	private dirtyCells: number[] = [];
 	protected plugins = new Array<Slick.Plugin<any>>();
@@ -285,7 +286,6 @@ export class EditDataGridPanel extends GridParentComponent {
 	}
 
 	onCellSelect(event: Slick.OnActiveCellChangedEventArgs<any>): void {
-		let self = this;
 		let row = event.row;
 		let column = event.cell;
 
@@ -295,14 +295,35 @@ export class EditDataGridPanel extends GridParentComponent {
 			return;
 		}
 
-		// get the cell we have just immediately clicked (to set as the new active cell in handleChanges).
-		this.lastClickedCell = { row, column };
-
 		// Skip processing if the cell hasn't moved (eg, we reset focus to the previous cell after a failed update)
 		if (this.currentCell.row === row && this.currentCell.column === column && this.currentCell.isDirty === false) {
 			return;
 		}
 
+
+		// get the cell we have just immediately clicked (to set as the new active cell in handleChanges), only done if another cell is not currently being processed.
+		if (!this.isProcessingCell) {
+			this.lastClickedCell = { row, column };
+			this.addNewRowCellTask();
+		}
+	}
+
+	/**
+	 * Disables editing the grid temporarily when clicking on a cell (to allow for any processing tasks to be finished first such as adding a new row).
+	 * @param state The variable telling whether to enable selection of the table cells or not.
+	 */
+	private updateEnabledState(state: boolean): void {
+		let newOptions = this.table.grid.getOptions();
+		newOptions.editable = state;
+		// Need to suppress rerendering to avoid infinite loop when changing new row.
+		// When setOptions is called with rerendering, it triggers an onCellSelect in our code (which is by design currently),
+		// and thus an infinite loop is caused.
+		this.table.grid.setOptions(newOptions, true);
+	}
+
+	private addNewRowCellTask(): void {
+		let self = this;
+		this.isProcessingCell = true;
 		// disable editing the grid temporarily as any text entered while the grid is being refreshed will be lost upon completion.
 		this.updateEnabledState(false);
 
@@ -317,10 +338,11 @@ export class EditDataGridPanel extends GridParentComponent {
 				// Cell update failed, jump back to the last cell we were on
 				this.updateEnabledState(true);
 				self.focusCell(self.currentCell.row, self.currentCell.column, true);
+				this.isProcessingCell = false;
 				return Promise.reject(null);
 			});
 
-		if (this.currentCell.row !== row) {
+		if (this.currentCell.row !== this.lastClickedCell.row) {
 			// We're changing row, commit the changes
 			cellSelectTasks = cellSelectTasks.then(() => {
 				return self.dataService.commitEdit().then(result => {
@@ -333,6 +355,7 @@ export class EditDataGridPanel extends GridParentComponent {
 					// Committing failed, jump back to the last selected cell
 					this.updateEnabledState(true);
 					self.focusCell(self.currentCell.row, self.currentCell.column);
+					this.isProcessingCell = false;
 					return Promise.reject(null);
 				});
 			});
@@ -341,26 +364,14 @@ export class EditDataGridPanel extends GridParentComponent {
 		// At the end of a successful cell select, update the currently selected cell
 		cellSelectTasks = cellSelectTasks.then(() => {
 			this.updateEnabledState(true);
-			self.setCurrentCell(row, column);
-			self.focusCell(row, column);
+			self.setCurrentCell(this.lastClickedCell.row, this.lastClickedCell.column);
+			self.focusCell(this.lastClickedCell.row, this.lastClickedCell.column);
+			this.isProcessingCell = false;
 		});
 
 		// Cap off any failed promises, since they'll be handled
 		cellSelectTasks.catch(() => {
 		});
-	}
-
-	/**
-	 * Disables editing the grid temporarily when clicking on a cell (to allow for any processing tasks to be finished first such as adding a new row).
-	 * @param state The variable telling whether to enable selection of the table cells or not.
-	 */
-	private updateEnabledState(state: boolean): void {
-		let newOptions = this.table.grid.getOptions();
-		newOptions.editable = state;
-		// Need to suppress rerendering to avoid infinite loop when changing new row.
-		// When setOptions is called with rerendering, it triggers an onCellSelect in our code (which is by design currently),
-		// and thus an infinite loop is caused.
-		this.table.grid.setOptions(newOptions, true);
 	}
 
 	handleComplete(self: EditDataGridPanel, event: any): void {
