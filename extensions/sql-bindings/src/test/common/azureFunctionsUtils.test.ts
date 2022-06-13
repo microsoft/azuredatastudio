@@ -6,12 +6,14 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as should from 'should';
 import * as sinon from 'sinon';
-import { BindingType } from 'sql-bindings';
 import * as vscode from 'vscode';
-import { IConnectionInfo } from 'vscode-mssql';
 import * as azureFunctionsUtils from '../../common/azureFunctionsUtils';
 import * as constants from '../../common/constants';
 import * as utils from '../../common/utils';
+import * as azureFunctionsContracts from '../../contracts/azureFunctions/azureFunctionsContracts';
+
+import { BindingType } from 'sql-bindings';
+import { IConnectionInfo } from 'vscode-mssql';
 import { createTestCredentials, createTestUtils, TestUtils } from '../testUtils';
 
 const rootFolderPath = 'test';
@@ -321,6 +323,30 @@ describe('AzureFunctionUtils', function (): void {
 			let result = await azureFunctionsUtils.promptForObjectName(BindingType.input, connectionInfo);
 			should(promptStub.notCalled).be.true('showInputBox should not have been called');
 			should(result).be.equal(undefined);
+		});
+
+		it('Should successfully select object name', async () => {
+			sinon.stub(utils, 'getVscodeMssqlApi').resolves(testUtils.vscodeMssqlIExtension.object);
+			let connectionInfo: IConnectionInfo = createTestCredentials();// Mocks promptForConnection
+			let promptStub = sinon.stub(vscode.window, 'showInputBox');
+			// getConnectionURI stub
+			testUtils.vscodeMssqlIExtension.setup(x => x.connect(connectionInfo)).returns(() => Promise.resolve('testConnectionURI'));
+			// promptSelectDatabase stub
+			testUtils.vscodeMssqlIExtension.setup(x => x.listDatabases('testConnectionURI')).returns(() => Promise.resolve(['testDb']));
+			let quickPickStub = sinon.stub(vscode.window, 'showQuickPick').resolves('testDb' as any);
+			// get tables from selected database
+			const params = { ownerUri: 'testConnectionURI', queryString: azureFunctionsUtils.tablesQuery('testDb') };
+			testUtils.vscodeMssqlIExtension.setup(x => x.sendRequest(azureFunctionsContracts.SimpleExecuteRequest.type, params))
+				.returns(() => Promise.resolve({ rowCount: 1, columnInfo: [], rows: [['[schema].[testTable]']] }));
+			// select the schema.testTable from list of tables based on connection info and database
+			quickPickStub.onSecondCall().returns(Promise.resolve('[schema].[testTable]') as any);
+
+			let result = await azureFunctionsUtils.promptForObjectName(BindingType.input, connectionInfo);
+
+			should(promptStub.notCalled).be.true('showInputBox should not have been called');
+			should(result).be.equal('[schema].[testTable]');
+			should(quickPickStub.calledTwice).be.true('showQuickPick should have been called twice');
+			should(connectionInfo.database).be.equal('testDb');
 		});
 	});
 

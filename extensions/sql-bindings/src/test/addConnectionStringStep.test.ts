@@ -2,19 +2,19 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import * as vscode from 'vscode';
+import * as fs from 'fs';
+import * as path from 'path';
 import * as should from 'should';
 import * as sinon from 'sinon';
-import * as path from 'path';
-import * as fs from 'fs';
 import * as TypeMoq from 'typemoq';
-import * as constants from '../common/constants';
+import * as vscode from 'vscode';
 import * as azureFunctionUtils from '../common/azureFunctionsUtils';
+import * as constants from '../common/constants';
 import * as utils from '../common/utils';
 
+import { IConnectionInfo } from 'vscode-mssql';
 import { createAddConnectionStringStep } from '../createNewProject/addConnectionStringStep';
 import { createTestCredentials, createTestUtils, TestUtils } from './testUtils';
-import { IConnectionInfo } from 'vscode-mssql';
 
 const rootFolderPath = 'test';
 const localSettingsPath: string = path.join(rootFolderPath, 'local.settings.json');
