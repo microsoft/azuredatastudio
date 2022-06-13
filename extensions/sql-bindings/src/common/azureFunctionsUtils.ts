@@ -359,7 +359,6 @@ export async function promptForObjectName(bindingType: BindingType, connectionIn
  */
 export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.Uri | undefined, connectionInfo?: IConnectionInfo): Promise<IConnectionStringInfo | undefined> {
 	let connectionStringSettingName: string | undefined;
-	const vscodeMssqlApi = await utils.getVscodeMssqlApi();
 
 	// show the settings from project's local.settings.json if there's an AF functions project
 	if (projectUri) {
@@ -494,6 +493,7 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 								}
 							} else {
 								// Let user choose from existing connections to create connection string from
+								const vscodeMssqlApi = await utils.getVscodeMssqlApi();
 								connectionInfo = await vscodeMssqlApi.promptForConnection(true);
 							}
 						}

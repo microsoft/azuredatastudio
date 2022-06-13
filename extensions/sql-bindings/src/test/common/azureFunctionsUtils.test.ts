@@ -2,15 +2,16 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import * as vscode from 'vscode';
-import * as path from 'path';
 import * as fs from 'fs';
+import * as path from 'path';
 import * as should from 'should';
 import * as sinon from 'sinon';
-import * as constants from '../../common/constants';
-import * as azureFunctionsUtils from '../../common/azureFunctionsUtils';
-import * as utils from '../../common/utils';
+import { BindingType } from 'sql-bindings';
+import * as vscode from 'vscode';
 import { IConnectionInfo } from 'vscode-mssql';
+import * as azureFunctionsUtils from '../../common/azureFunctionsUtils';
+import * as constants from '../../common/constants';
+import * as utils from '../../common/utils';
 import { createTestCredentials, createTestUtils, TestUtils } from '../testUtils';
 
 const rootFolderPath = 'test';
@@ -233,6 +234,93 @@ describe('AzureFunctionUtils', function (): void {
 			should(warningSpy.calledOnce).be.true('showWarningMessage should have been called ');
 			// returned connection string should have the entered password
 			should(getConnectionString).equals(`Server=${connectionInfo.server};Initial Catalog=${connectionInfo.database};User ID=${connectionInfo.user};Password=${constants.passwordPlaceholder};`);
+		});
+	});
+
+	describe('Get Azure Function Files', function (): void {
+		it('Should return undefined if not azure function projects are found', async () => {
+			// set workspace folder for testing
+			sinon.replaceGetter(vscode.workspace, 'workspaceFolders', () => {
+				return <vscode.WorkspaceFolder[]>[{
+					uri: {
+						fsPath: '/temp/'
+					},
+				}];
+			});
+			let result = await azureFunctionsUtils.getAzureFunctionProject();
+			should(result).be.undefined();
+		});
+
+		it('Should return selectedProjectFile if only one azure function project is found', async () => {
+			// set workspace folder for testing
+			sinon.replaceGetter(vscode.workspace, 'workspaceFolders', () => {
+				return <vscode.WorkspaceFolder[]>[{
+					uri: {
+						fsPath: '/temp/'
+					},
+				}];
+			});
+			// only one azure function project found - hostFiles and csproj files stubs
+			let findFilesStub = sinon.stub(vscode.workspace, 'findFiles');
+			findFilesStub.onFirstCall().returns(Promise.resolve([vscode.Uri.file('/temp/host.json')]) as any);
+			findFilesStub.onSecondCall().returns(Promise.resolve([vscode.Uri.file('/temp/test.csproj')]) as any);
+			let result = await azureFunctionsUtils.getAzureFunctionProject();
+			should(result).be.equal('/temp/test.csproj');
+		});
+
+		it('Should return prompt to choose azure function project if multiple azure function projects are found', async () => {
+			// set workspace folder for testing
+			sinon.replaceGetter(vscode.workspace, 'workspaceFolders', () => {
+				return <vscode.WorkspaceFolder[]>[{
+					uri: {
+						fsPath: '/temp/'
+					},
+				}];
+			});
+			// multiple azure function projects found in workspace - hostFiles and project find files stubs
+			let findFilesStub = sinon.stub(vscode.workspace, 'findFiles');
+			findFilesStub.onFirstCall().returns(Promise.resolve([vscode.Uri.file('/temp/host.json'), vscode.Uri.file('/temp2/host.json')]) as any);
+			// we loop through the hostFiles to find the csproj in same directory
+			// first loop we use host of /temp/host.json
+			findFilesStub.onSecondCall().returns(Promise.resolve([vscode.Uri.file('/temp/test.csproj')]) as any);
+			// second loop we use host of /temp2/host.json
+			findFilesStub.onThirdCall().returns(Promise.resolve([vscode.Uri.file('/temp2/test.csproj')]) as any);
+			let quickPickStub = sinon.stub(vscode.window, 'showQuickPick').returns(Promise.resolve('/temp/test.csproj') as any);
+			let result = await azureFunctionsUtils.getAzureFunctionProject();
+			should(result).be.equal('/temp/test.csproj');
+			should(quickPickStub.calledOnce).be.true('showQuickPick should have been called');
+		});
+	});
+
+	describe('PromptForObjectName', function (): void {
+		it('Should prompt user to enter object name manually when no connection info given', async () => {
+			let promptStub = sinon.stub(vscode.window, 'showInputBox').onFirstCall().resolves('test');
+			let result = await azureFunctionsUtils.promptForObjectName(BindingType.input);
+			should(promptStub.calledOnce).be.true('showInputBox should have been called');
+			should(result).be.equal('test');
+		});
+
+		it('Should return undefined when mssql connection error', async () => {
+			sinon.stub(utils, 'getVscodeMssqlApi').resolves(testUtils.vscodeMssqlIExtension.object);
+			let connectionInfo: IConnectionInfo = createTestCredentials();// Mocks promptForConnection
+			let promptStub = sinon.stub(vscode.window, 'showInputBox');
+			sinon.stub(azureFunctionsUtils, 'getConnectionURI').resolves(undefined);
+
+			let result = await azureFunctionsUtils.promptForObjectName(BindingType.input, connectionInfo);
+			should(promptStub.notCalled).be.true('showInputBox should not have been called');
+			should(result).be.equal(undefined);
+		});
+
+		it('Should return undefined if no database selected', async () => {
+			sinon.stub(utils, 'getVscodeMssqlApi').resolves(testUtils.vscodeMssqlIExtension.object);
+			let connectionInfo: IConnectionInfo = createTestCredentials();// Mocks promptForConnection
+			let promptStub = sinon.stub(vscode.window, 'showInputBox');
+			testUtils.vscodeMssqlIExtension.setup(x => x.connect(connectionInfo)).returns(() => Promise.resolve('testConnectionURI'));
+			sinon.stub(vscode.window, 'showQuickPick').resolves(undefined);
+
+			let result = await azureFunctionsUtils.promptForObjectName(BindingType.input, connectionInfo);
+			should(promptStub.notCalled).be.true('showInputBox should not have been called');
+			should(result).be.equal(undefined);
 		});
 	});
 
