@@ -36,7 +36,7 @@ describe('Add SQL Binding quick pick', () => {
 		let connectionDetails = { options: connectionCreds };
 		// set test vscode-mssql API calls
 		testUtils.vscodeMssqlIExtension.setup(x => x.promptForConnection(true)).returns(() => Promise.resolve(connectionCreds));
-		testUtils.vscodeMssqlIExtension.setup(x => x.getConnectionString(connectionDetails, true, false)).returns(() => Promise.resolve('testConnectionString'));
+		testUtils.vscodeMssqlIExtension.setup(x => x.getConnectionString(connectionDetails, true, false)).returns(() => Promise.resolve('testConnectionString1'));
 		testUtils.vscodeMssqlIExtension.setup(x => x.connect(connectionCreds)).returns(() => Promise.resolve('testConnectionURI'));
 		testUtils.vscodeMssqlIExtension.setup(x => x.listDatabases('testConnectionURI')).returns(() => Promise.resolve(['testDb']));
 		const params = { ownerUri: 'testConnectionURI', queryString: azureFunctionUtils.tablesQuery('testDb') };
@@ -57,7 +57,7 @@ describe('Add SQL Binding quick pick', () => {
 					success: true,
 					errorMessage: ''
 				}));
-		const spy = sinon.spy(vscode.window, 'showErrorMessage');
+		const showErrorMessageSpy = sinon.spy(vscode.window, 'showErrorMessage');
 
 		// select Azure function
 		let quickpickStub = sinon.stub(vscode.window, 'showQuickPick').returns(Promise.resolve('af1') as any);
@@ -72,14 +72,14 @@ describe('Add SQL Binding quick pick', () => {
 		quickpickStub.onCall(4).returns(Promise.resolve(constants.yesString) as any);
 		// setLocalAppSetting fails if we dont set writeFile stub
 		sinon.stub(fs.promises, 'writeFile');
-		sinon.stub(azureFunctionUtils, 'setLocalAppSetting').withArgs(sinon.match.any, 'sqlConnectionString', 'testConnectionString').returns(Promise.resolve(true));
+		sinon.stub(azureFunctionUtils, 'setLocalAppSetting').withArgs(sinon.match.any, 'sqlConnectionString', 'testConnectionString1').returns(Promise.resolve(true));
 		sinon.stub(utils, 'executeCommand').resolves('downloaded nuget package');
 		quickpickStub.onCall(5).returns(Promise.resolve('testDb') as any);
 		quickpickStub.onCall(6).returns(Promise.resolve('[schema].[testTable]') as any);
 
 		await launchAddSqlBindingQuickpick(vscode.Uri.file('testUri'));
 
-		should(spy.notCalled).be.true('showErrorMessage should not be called');
+		should(showErrorMessageSpy.notCalled).be.true('showErrorMessage should not be called');
 	});
 
 	it('Should show error if adding SQL binding was not successful', async function (): Promise<void> {
@@ -88,7 +88,7 @@ describe('Add SQL Binding quick pick', () => {
 		let connectionDetails = { options: connectionCreds };
 		// set test vscode-mssql API calls
 		testUtils.vscodeMssqlIExtension.setup(x => x.promptForConnection(true)).returns(() => Promise.resolve(connectionCreds));
-		testUtils.vscodeMssqlIExtension.setup(x => x.getConnectionString(connectionDetails, true, false)).returns(() => Promise.resolve('testConnectionString'));
+		testUtils.vscodeMssqlIExtension.setup(x => x.getConnectionString(connectionDetails, true, false)).returns(() => Promise.resolve('testConnectionString2'));
 		testUtils.vscodeMssqlIExtension.setup(x => x.connect(connectionCreds)).returns(() => Promise.resolve('testConnectionURI'));
 		testUtils.vscodeMssqlIExtension.setup(x => x.listDatabases('testConnectionURI')).returns(() => Promise.resolve(['testDb']));
 		const params = { ownerUri: 'testConnectionURI', queryString: azureFunctionUtils.tablesQuery('testDb') };
@@ -110,7 +110,7 @@ describe('Add SQL Binding quick pick', () => {
 					success: false,
 					errorMessage: errormsg
 				}));
-		const spy = sinon.spy(vscode.window, 'showErrorMessage');
+		const showErrorMessageSpy = sinon.spy(vscode.window, 'showErrorMessage');
 
 		// select Azure function
 		let quickpickStub = sinon.stub(vscode.window, 'showQuickPick').returns(Promise.resolve('af1') as any);
@@ -125,15 +125,15 @@ describe('Add SQL Binding quick pick', () => {
 		quickpickStub.onCall(4).returns(Promise.resolve(constants.yesString) as any);
 		// setLocalAppSetting fails if we dont set writeFile stub
 		sinon.stub(fs.promises, 'writeFile');
-		sinon.stub(azureFunctionUtils, 'setLocalAppSetting').withArgs(sinon.match.any, 'sqlConnectionString', 'testConnectionString').returns(Promise.resolve(true));
+		sinon.stub(azureFunctionUtils, 'setLocalAppSetting').withArgs(sinon.match.any, 'sqlConnectionString', 'testConnectionString2').returns(Promise.resolve(true));
 		sinon.stub(utils, 'executeCommand').resolves('downloaded nuget package');
 		quickpickStub.onCall(5).returns(Promise.resolve('testDb') as any);
 		quickpickStub.onCall(6).returns(Promise.resolve('[schema].[testTable]') as any);
 
 		await launchAddSqlBindingQuickpick(vscode.Uri.file('testUri'));
 
-		should(spy.calledOnce).be.true('showErrorMessage should have been called exactly once');
-		should(spy.calledWith(errormsg)).be.true(`showErrorMessage not called with expected message '${errormsg}' Actual '${spy.getCall(0).args[0]}'`);
+		should(showErrorMessageSpy.calledOnce).be.true('showErrorMessage should have been called exactly once');
+		should(showErrorMessageSpy.calledWith(errormsg)).be.true(`showErrorMessage not called with expected message '${errormsg}' Actual '${showErrorMessageSpy.getCall(0).args[0]}'`);
 	});
 
 	it('Should show error if the file contains no Azure Functions', async function (): Promise<void> {
@@ -144,13 +144,13 @@ describe('Add SQL Binding quick pick', () => {
 				errorMessage: '',
 				azureFunctions: []
 			}));
-		const spy = sinon.spy(vscode.window, 'showErrorMessage');
+		const showErrorMessageSpy = sinon.spy(vscode.window, 'showErrorMessage');
 
 		await launchAddSqlBindingQuickpick(fileUri);
 
 		const msg = constants.noAzureFunctionsInFile;
-		should(spy.calledOnce).be.true('showErrorMessage should have been called exactly once');
-		should(spy.calledWith(msg)).be.true(`showErrorMessage not called with expected message '${msg}' Actual '${spy.getCall(0).args[0]}'`);
+		should(showErrorMessageSpy.calledOnce).be.true('showErrorMessage should have been called exactly once');
+		should(showErrorMessageSpy.calledWith(msg)).be.true(`showErrorMessage not called with expected message '${msg}' Actual '${showErrorMessageSpy.getCall(0).args[0]}'`);
 	});
 
 	it('Should show error when connection profile does not connect', async function (): Promise<void> {
@@ -189,7 +189,7 @@ describe('Add SQL Binding quick pick', () => {
 		await launchAddSqlBindingQuickpick(vscode.Uri.file('testUri'));
 
 		// should go back to the select connection string methods
-		should(quickpickStub.callCount === 4);
+		should(quickpickStub.callCount).be.equal(5,'showQuickPick should have been called 5 times');
 		should(quickpickStub.getCall(3).args).deepEqual([
 			[constants.connectionProfile, constants.userConnectionString],
 			{
@@ -225,7 +225,7 @@ describe('Add SQL Binding quick pick', () => {
 		await launchAddSqlBindingQuickpick(vscode.Uri.file('testUri'));
 
 		// should go back to the select connection string methods
-		should(quickpickStub.callCount === 3);
+		should(quickpickStub.callCount).be.equal(4,'showQuickPick should have been called 4 times');
 		should(quickpickStub.getCall(2).args).containDeepOrdered([
 			[{ label: constants.createNewLocalAppSettingWithIcon }],
 			{
@@ -267,7 +267,7 @@ describe('Add SQL Binding quick pick', () => {
 		await launchAddSqlBindingQuickpick(vscode.Uri.file('testUri'));
 
 		// should go back to the select connection string methods
-		should(quickpickStub.callCount === 5);
+		should(quickpickStub.callCount).be.equal(5,'showQuickPick should have been called 5 times');
 		should(quickpickStub.getCall(4).args).containDeepOrdered([
 			[constants.connectionProfile, constants.enterConnectionString],
 			{

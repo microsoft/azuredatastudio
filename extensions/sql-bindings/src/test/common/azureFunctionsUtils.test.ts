@@ -27,7 +27,7 @@ describe('AzureFunctionUtils', function (): void {
 
 	describe('Local.Settings.Json', function (): void {
 		it('Should correctly parse local.settings.json', async () => {
-			sinon.stub(fs, 'existsSync').withArgs(localSettingsPath).returns(true);
+			sinon.stub(fs.promises, 'access').onFirstCall().resolves();
 			sinon.stub(fs, 'readFileSync').withArgs(localSettingsPath).returns(
 				`{"IsEncrypted": false,
 			"Values": {"test1": "test1", "test2": "test2", "test3":"test3"}}`
@@ -38,7 +38,7 @@ describe('AzureFunctionUtils', function (): void {
 		});
 
 		it('setLocalAppSetting can update settings.json with new setting value', async () => {
-			sinon.stub(fs, 'existsSync').withArgs(localSettingsPath).returns(true);
+			sinon.stub(fs.promises, 'access').onFirstCall().resolves();
 			sinon.stub(fs, 'readFileSync').withArgs(localSettingsPath).returns(
 				`{"IsEncrypted": false,
 			"Values": {"test1": "test1", "test2": "test2", "test3":"test3"}}`
@@ -50,7 +50,7 @@ describe('AzureFunctionUtils', function (): void {
 		});
 
 		it('Should not overwrite setting if value already exists in local.settings.json', async () => {
-			sinon.stub(fs, 'existsSync').withArgs(localSettingsPath).returns(true);
+			sinon.stub(fs.promises, 'access').onFirstCall().resolves();
 			sinon.stub(fs, 'readFileSync').withArgs(localSettingsPath).returns(
 				`{"IsEncrypted": false,
 			"Values": {"test1": "test1", "test2": "test2", "test3":"test3"}}`
@@ -70,7 +70,7 @@ describe('AzureFunctionUtils', function (): void {
 		});
 
 		it('Should add connection string to local.settings.json', async () => {
-			sinon.stub(fs, 'existsSync').withArgs(localSettingsPath).returns(true);
+			sinon.stub(fs.promises, 'access').onFirstCall().resolves();
 			sinon.stub(fs, 'readFileSync').withArgs(localSettingsPath).returns(
 				`{"IsEncrypted": false,
 			"Values": {"test1": "test1", "test2": "test2", "test3":"test3"}}`
@@ -239,8 +239,8 @@ describe('AzureFunctionUtils', function (): void {
 		});
 	});
 
-	describe('Get Azure Function Files', function (): void {
-		it('Should return undefined if not azure function projects are found', async () => {
+	describe('Get Azure Function Project', function (): void {
+		it('Should return undefined if no azure function projects are found', async () => {
 			// set workspace folder for testing
 			sinon.replaceGetter(vscode.workspace, 'workspaceFolders', () => {
 				return <vscode.WorkspaceFolder[]>[{
@@ -249,8 +249,9 @@ describe('AzureFunctionUtils', function (): void {
 					},
 				}];
 			});
+
 			let result = await azureFunctionsUtils.getAzureFunctionProject();
-			should(result).be.undefined();
+			should(result).be.equal(undefined, 'Should be undefined since no azure function projects are found');
 		});
 
 		it('Should return selectedProjectFile if only one azure function project is found', async () => {
@@ -264,10 +265,11 @@ describe('AzureFunctionUtils', function (): void {
 			});
 			// only one azure function project found - hostFiles and csproj files stubs
 			let findFilesStub = sinon.stub(vscode.workspace, 'findFiles');
-			findFilesStub.onFirstCall().returns(Promise.resolve([vscode.Uri.file('/temp/host.json')]) as any);
+			findFilesStub.onFirstCall().resolves([vscode.Uri.file('/temp/host.json')]);
 			findFilesStub.onSecondCall().returns(Promise.resolve([vscode.Uri.file('/temp/test.csproj')]) as any);
+
 			let result = await azureFunctionsUtils.getAzureFunctionProject();
-			should(result).be.equal('/temp/test.csproj');
+			should(result).be.equal('/temp/test.csproj', 'Should return test.csproj since only one Azure function project is found');
 		});
 
 		it('Should return prompt to choose azure function project if multiple azure function projects are found', async () => {
@@ -288,18 +290,20 @@ describe('AzureFunctionUtils', function (): void {
 			// second loop we use host of /temp2/host.json
 			findFilesStub.onThirdCall().returns(Promise.resolve([vscode.Uri.file('/temp2/test.csproj')]) as any);
 			let quickPickStub = sinon.stub(vscode.window, 'showQuickPick').returns(Promise.resolve('/temp/test.csproj') as any);
+
 			let result = await azureFunctionsUtils.getAzureFunctionProject();
-			should(result).be.equal('/temp/test.csproj');
-			should(quickPickStub.calledOnce).be.true('showQuickPick should have been called');
+			should(result).be.equal('/temp/test.csproj', 'Should return test.csproj since user choose Azure function project');
+			should(quickPickStub.calledOnce).be.true('showQuickPick should have been called to choose between azure function projects');
 		});
 	});
 
 	describe('PromptForObjectName', function (): void {
 		it('Should prompt user to enter object name manually when no connection info given', async () => {
 			let promptStub = sinon.stub(vscode.window, 'showInputBox').onFirstCall().resolves('test');
+
 			let result = await azureFunctionsUtils.promptForObjectName(BindingType.input);
 			should(promptStub.calledOnce).be.true('showInputBox should have been called');
-			should(result).be.equal('test');
+			should(result).be.equal('test', 'Should return test since user manually entered object name');
 		});
 
 		it('Should return undefined when mssql connection error', async () => {
@@ -310,7 +314,7 @@ describe('AzureFunctionUtils', function (): void {
 
 			let result = await azureFunctionsUtils.promptForObjectName(BindingType.input, connectionInfo);
 			should(promptStub.notCalled).be.true('showInputBox should not have been called');
-			should(result).be.equal(undefined);
+			should(result).be.equal(undefined, 'Should return undefined due to mssql connection error');
 		});
 
 		it('Should return undefined if no database selected', async () => {
@@ -322,7 +326,7 @@ describe('AzureFunctionUtils', function (): void {
 
 			let result = await azureFunctionsUtils.promptForObjectName(BindingType.input, connectionInfo);
 			should(promptStub.notCalled).be.true('showInputBox should not have been called');
-			should(result).be.equal(undefined);
+			should(result).be.equal(undefined, 'Should return undefined due to no database selected');
 		});
 
 		it('Should successfully select object name', async () => {
@@ -344,9 +348,9 @@ describe('AzureFunctionUtils', function (): void {
 			let result = await azureFunctionsUtils.promptForObjectName(BindingType.input, connectionInfo);
 
 			should(promptStub.notCalled).be.true('showInputBox should not have been called');
-			should(result).be.equal('[schema].[testTable]');
 			should(quickPickStub.calledTwice).be.true('showQuickPick should have been called twice');
-			should(connectionInfo.database).be.equal('testDb');
+			should(connectionInfo.database).be.equal('testDb', 'Should have connectionInfo.database to testDb after user selects database');
+			should(result).be.equal('[schema].[testTable]', 'Should return [schema].[testTable] since user selected table');
 		});
 	});
 

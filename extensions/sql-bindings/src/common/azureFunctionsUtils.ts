@@ -36,7 +36,7 @@ export interface IFileFunctionObject {
  * @returns settings in local.settings.json. If no settings are found, returns default "empty" settings
  */
 export async function getLocalSettingsJson(localSettingsPath: string): Promise<ILocalSettingsJson> {
-	if (fs.existsSync(localSettingsPath)) {
+	if (await utils.exists(localSettingsPath)) {
 		const data: string = (fs.readFileSync(localSettingsPath)).toString();
 		try {
 			return JSON.parse(data);
@@ -281,7 +281,7 @@ export async function getAFProjectContainingFile(fileUri: vscode.Uri): Promise<v
 // Use 'host.json' as an indicator that this is a functions project
 // copied from verifyIsproject.ts in vscode-azurefunctions extension
 export async function isFunctionProject(folderPath: string): Promise<boolean> {
-	return fs.existsSync(path.join(folderPath, constants.hostFileName));
+	return await utils.exists(path.join(folderPath, constants.hostFileName));
 }
 
 /**
