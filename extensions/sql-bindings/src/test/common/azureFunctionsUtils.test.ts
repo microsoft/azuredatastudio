@@ -249,7 +249,9 @@ describe('AzureFunctionUtils', function (): void {
 					},
 				}];
 			});
-
+			let findFilesStub = sinon.stub(vscode.workspace, 'findFiles');
+			findFilesStub.onFirstCall().resolves([]);
+			findFilesStub.onSecondCall().resolves(undefined);
 			let result = await azureFunctionsUtils.getAzureFunctionProject();
 			should(result).be.equal(undefined, 'Should be undefined since no azure function projects are found');
 		});
