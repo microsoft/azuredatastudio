@@ -176,6 +176,9 @@ export class EditDataGridPanel extends GridParentComponent {
 		this.onActiveCellChanged = this.onCellSelect;
 
 		this.onCellEditEnd = (event: Slick.OnCellChangeEventArgs<any>): void => {
+			if (!this.isProcessingCell) {
+				this.addNewRowCellTask();
+			}
 			if (self.currentEditCellValue !== event.item[event.cell]) {
 				self.currentCell.isDirty = true;
 			}
@@ -928,7 +931,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			}
 
 			applyValue(item, state): void {
-				let activeRow = self.currentCell.row;
+				let activeRow = self.lastClickedCell.row;
 				let currentRow = self.dataSet.dataRows.at(activeRow);
 				let colIndex = self.getColumnIndex(this._args.column.name);
 				let dataLength: number = self.dataSet.dataRows.getLength();
@@ -986,7 +989,6 @@ export class EditDataGridPanel extends GridParentComponent {
 			// Get the active cell we have just clicked to be the new active cell (cell needs to be manually set as active in slickgrid).
 			if (this.lastClickedCell) {
 				activeCell = { row: this.lastClickedCell.row, cell: this.lastClickedCell.column };
-				this.lastClickedCell = undefined;
 			}
 			else {
 				// Get the last selected cell as the active cell as a backup.
