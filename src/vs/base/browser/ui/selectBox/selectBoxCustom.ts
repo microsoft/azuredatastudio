@@ -478,6 +478,22 @@ export class SelectBoxList extends Disposable implements ISelectBoxDelegate, ILi
 		this._currentSelection = this.selected;
 		this._isVisible = true;
 		this.selectElement.setAttribute('aria-expanded', 'true');
+
+		// {{SQL CARBON EDIT}}: Setting aria-selected attribute of dropdown items
+		this.options.forEach((option, index) => {
+			const selectedListRow = this.getSelectDropdownListRow(index);
+			if (selectedListRow) {
+				selectedListRow.ariaSelected = index === this.selected ? 'true' : 'false';
+			}
+		});
+	}
+
+	// {{SQL CARBON EDIT}} Getting dropdown list item by index
+	private getSelectDropdownListRow(index: number): HTMLElement {
+		if (this.selectDropDownListContainer) {
+			return this.selectDropDownListContainer.querySelector(`div[data-index="${index}"`);
+		}
+		return undefined;
 	}
 
 	private hideSelectDropDown(focusSelect: boolean) {
