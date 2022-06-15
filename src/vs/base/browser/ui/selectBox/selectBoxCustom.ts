@@ -128,7 +128,7 @@ export class SelectBoxList extends Disposable implements ISelectBoxDelegate, ILi
 		}
 
 		// {{SQL CARBON EDIT}}
-		if (this.selectBoxOptions.ariaDescription) {
+		if (typeof this.selectBoxOptions.ariaDescription === 'string') {
 			this.selectElement.setAttribute('aria-description', this.selectBoxOptions.ariaDescription);
 		}
 
