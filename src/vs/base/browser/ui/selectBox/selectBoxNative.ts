@@ -36,8 +36,7 @@ export class SelectBoxNative extends Disposable implements ISelectBoxDelegate {
 			this.selectElement.setAttribute('aria-label', this.selectBoxOptions.ariaLabel);
 		}
 
-		// {{SQL CARBON EDIT}}
-		if (typeof this.selectBoxOptions.ariaDescription === 'string') {
+		if (this.selectBoxOptions.ariaDescription) {
 			this.selectElement.setAttribute('aria-description', this.selectBoxOptions.ariaDescription);
 		}
 
