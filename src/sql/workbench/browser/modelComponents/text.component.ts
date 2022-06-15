@@ -51,7 +51,7 @@ const errorTextClass = 'error-text';
 			<p [title]="title" [ngStyle]="this.CSSStyles" [attr.role]="ariaRole" [attr.aria-hidden]="ariaHidden"></p>
 			<div #textContainer id="textContainer"></div>
 			<span *ngIf="requiredIndicator" style="color:red;margin-left:5px;">*</span>
-			<div *ngIf="description" tabindex="0" class="modelview-text-tooltip" [attr.aria-label]="description" role="img" (hover)="showTooltip($event)" (focus)="showTooltip($event)" (keydown)="onDescriptionKeyDown($event)">
+			<div *ngIf="description" tabindex="0" class="modelview-text-tooltip" [attr.aria-label]="description" role="img" (mouseenter)="showTooltip($event)" (focus)="showTooltip($event)" (keydown)="onDescriptionKeyDown($event)">
 				<div class="modelview-text-tooltip-content" [innerHTML]="description"></div>
 			</div>
 		</div>
