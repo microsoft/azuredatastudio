@@ -1,10 +1,28 @@
 # Change Log
 
-## Version 1.36.1
-* Release date: April 22, 2022
+## Version 1.37.0
+* Release date: June 15, 2022
 * Release status: General Availability
 ## What's new in this version
-- April Hotfix addressing these issues https://github.com/microsoft/azuredatastudio/milestone/88?closed=1.
+* New Features:
+    *  Backup & Restore - Backup & Restore to URL is now available in preview for Azure SQL Managed Instances.
+    *  Table Designer - Added API to support computed column capabilities on Table Designer.
+    *  Table Designer - Can now specify where to add new columns and columns can now be re-arranged by mouse dragging.
+    *  Table Designer - Table Designer is now supported by SQL Projects to add or modify database schema without need to be connected to a server instance.
+    *  Query Plan Viewer - Smart plan comparison is now available. Can now compare execution plans and view detailed differences between plans in the Properties Table.
+    *  Query Plan Viewer - Added toggle button to switch between estimated and actual execution plans.
+    *  Query Plan Viewer - Query Plan now comes with improved precision to operator costs for larger plans.
+    *  MongoDB Extension for Azure Cosmos DB (Preview) - This extension introduces support for access to Mongo resources for Cosmos DB.
+
+* Bug Fixes:
+    *  Table Designer - Fixed issue that caused app to not prompt user to save before closing.
+    *  Table Designer - Fixed issue that returned empty data set upon attempting to edit the first cell of a new row.
+    *  Table Designer - Improved resize to fit experience when zooming in on user interface as well as tab behavior issues.
+    *  Query Plan Viewer - Fixed bug that caused custom zoom level spinner to allow values outside valid range.
+    *  Schema Compare - Fixed issue with indexes not being added correctly when updating project from database.
+    *  Notebooks - Fixed inconsistencies with notebook cell behavior and toolbars.
+    *  Notebooks - Fixed issues with keyboard navigation.
+
 
 | Platform																|
 | ---------------------------------------	|
@@ -16,13 +34,13 @@
 | [Linux RPM][linux-rpm]									|
 | [Linux DEB][linux-deb]									|
 
-[win-user]: https://go.microsoft.com/fwlink/?linkid=2193235
-[win-system]: https://go.microsoft.com/fwlink/?linkid=2193326
-[win-zip]: https://go.microsoft.com/fwlink/?linkid=2193236
-[osx-zip]: https://go.microsoft.com/fwlink/?linkid=2192971
-[linux-zip]: https://go.microsoft.com/fwlink/?linkid=2193237
-[linux-rpm]: https://go.microsoft.com/fwlink/?linkid=2193238
-[linux-deb]: https://go.microsoft.com/fwlink/?linkid=2193327
+[win-user]: https://go.microsoft.com/fwlink/?linkid=2198663
+[win-system]: https://go.microsoft.com/fwlink/?linkid=2198878
+[win-zip]: https://go.microsoft.com/fwlink/?linkid=2198664
+[osx-zip]: https://go.microsoft.com/fwlink/?linkid=2198762
+[linux-zip]: https://go.microsoft.com/fwlink/?linkid=2198879
+[linux-rpm]: https://go.microsoft.com/fwlink/?linkid=2198880
+[linux-deb]: https://go.microsoft.com/fwlink/?linkid=2198763
 
 ## Version 1.36.2
 * Release date: May 20, 2022
