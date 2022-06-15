@@ -12,7 +12,6 @@
     *  Query Plan Viewer - Smart plan comparison is now available. Can now compare execution plans and view detailed differences between plans in the Properties Table.
     *  Query Plan Viewer - Added toggle button to switch between estimated and actual execution plans.
     *  Query Plan Viewer - Query Plan now comes with improved precision to operator costs for larger plans.
-    *  SQL Bindings - Support for Azure SQL Bindings is now available in preview for C#, JavaScript, and Python.
     *  MongoDB Extension for Azure Cosmos DB (Preview) - This extension introduces support for access to Mongo resources for Cosmos DB.
 
 * Bug Fixes:
