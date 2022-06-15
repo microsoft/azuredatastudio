@@ -364,8 +364,6 @@ export class EditDataGridPanel extends GridParentComponent {
 
 		// At the end of a successful cell select, update the currently selected cell
 		cellSelectTasks = cellSelectTasks.then(() => {
-			self.setCellDirtyState(cellToAdd.row, cellToAdd.column, false);
-			self.setRowDirtyState(cellToAdd.row, false);
 			this.updateEnabledState(true);
 			self.setCurrentCell(this.lastClickedCell.row, this.lastClickedCell.column);
 			self.focusCell(this.lastClickedCell.row, this.lastClickedCell.column);
