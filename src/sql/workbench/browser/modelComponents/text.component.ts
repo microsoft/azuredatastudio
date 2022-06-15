@@ -19,6 +19,8 @@ import * as DOM from 'vs/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { errorForeground } from 'vs/platform/theme/common/colorRegistry';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
 
 export enum TextType {
 	Normal = 'Normal',
@@ -49,7 +51,7 @@ const errorTextClass = 'error-text';
 			<p [title]="title" [ngStyle]="this.CSSStyles" [attr.role]="ariaRole" [attr.aria-hidden]="ariaHidden"></p>
 			<div #textContainer id="textContainer"></div>
 			<span *ngIf="requiredIndicator" style="color:red;margin-left:5px;">*</span>
-			<div *ngIf="description" tabindex="0" class="modelview-text-tooltip" [attr.aria-label]="description" role="img">
+			<div *ngIf="description" tabindex="0" class="modelview-text-tooltip" [attr.aria-label]="description" role="img" (hover)="showTooltip($event)" (focus)="showTooltip($event)" (keydown)="onDescriptionKeyDown($event)">
 				<div class="modelview-text-tooltip-content" [innerHTML]="description"></div>
 			</div>
 		</div>
@@ -225,6 +227,29 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 		element.style.fontSize = this.CSSStyles['font-size']?.toString();
 		element.style.fontWeight = this.CSSStyles['font-weight']?.toString();
 		return element;
+	}
+
+	public showTooltip(e: Event): void {
+		const descriptionDiv = <HTMLElement>e.target;
+		const tooltip = <HTMLElement>(descriptionDiv.querySelector('.modelview-text-tooltip-content'));
+		tooltip.style.display = '';
+	}
+
+	public onDescriptionKeyDown(e: Event): void {
+		if (e instanceof KeyboardEvent) {
+			let event = new StandardKeyboardEvent(e);
+			const descriptionDiv = <HTMLElement>e.target;
+			const tooltip = <HTMLElement>(descriptionDiv.querySelector('.modelview-text-tooltip-content'));
+			if (event.equals(KeyCode.Escape)) {
+				tooltip.style.display = 'none';
+				event.stopPropagation();
+				event.preventDefault();
+			} else if (event.equals(KeyCode.Enter)) {
+				tooltip.style.display = '';
+				event.stopPropagation();
+				event.preventDefault();
+			}
+		}
 	}
 }
 
