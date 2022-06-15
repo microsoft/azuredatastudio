@@ -15,25 +15,30 @@ export class PublishOptionsDialog {
 
 	public dialog!: azdataType.window.Dialog;
 	private optionsTab: azdataType.window.DialogTab | undefined;
+	private includeObjectTypesTab: azdataType.window.DialogTab | undefined;
 	private disposableListeners: vscode.Disposable[] = [];
 	private descriptionHeading: azdataType.TableComponent | undefined;
 	private descriptionText: azdataType.TextComponent | undefined;
 	private optionsTable: azdataType.TableComponent | undefined;
+	private includeObjectsTable: azdataType.TableComponent | undefined;
 	public optionsModel: DeployOptionsModel;
 	private optionsFlexBuilder: azdataType.FlexContainer | undefined;
+	private includeObjectTypesFlexBuilder: azdataType.FlexContainer | undefined;
 
 	constructor(defaultOptions: mssql.DeploymentOptions, private publish: PublishDatabaseDialog) {
 		this.optionsModel = new DeployOptionsModel(defaultOptions);
 	}
 
 	protected initializeDialog(): void {
-		this.optionsTab = utils.getAzdataApi()!.window.createTab(constants.publishOptions);
+		this.optionsTab = utils.getAzdataApi()!.window.createTab(constants.PublishingOptions);
+		this.includeObjectTypesTab = utils.getAzdataApi()!.window.createTab(constants.IncludeObjectTypesOptionsLabel);
 		this.intializeDeploymentOptionsDialogTab();
-		this.dialog.content = [this.optionsTab];
+		this.initializePublishingOptionsIncludeObjectTypesDialogTab();
+		this.dialog.content = [this.optionsTab, this.includeObjectTypesTab];
 	}
 
 	public openDialog(): void {
-		this.dialog = utils.getAzdataApi()!.window.createModelViewDialog(constants.publishOptions);
+		this.dialog = utils.getAzdataApi()!.window.createModelViewDialog(constants.PublishingOptions);
 
 		this.initializeDialog();
 
@@ -93,12 +98,36 @@ export class PublishOptionsDialog {
 					flexFlow: 'column'
 				}).component();
 
-			this.optionsFlexBuilder.addItem(this.optionsTable, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh' } });
+			this.optionsFlexBuilder.addItem(this.optionsTable, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh', 'padding-top': '2px' } });
 			this.optionsFlexBuilder.addItem(this.descriptionHeading, { CSSStyles: { 'font-weight': 'bold', 'height': '30px' } });
 			this.optionsFlexBuilder.addItem(this.descriptionText, { CSSStyles: { 'padding': '4px', 'margin-right': '10px', 'overflow': 'scroll', 'height': '10vh' } });
 			await view.initializeModel(this.optionsFlexBuilder);
 			// focus the first option
 			await this.optionsTable.focus();
+		});
+	}
+
+	private initializePublishingOptionsIncludeObjectTypesDialogTab(): void {
+		this.includeObjectTypesTab!.registerContent(async view => {
+			this.includeObjectTypesFlexBuilder = view.modelBuilder.flexContainer()
+				.withLayout({
+					flexFlow: 'column'
+				}).component();
+
+			this.includeObjectsTable = view.modelBuilder.table().component();
+			await this.updateObjectsTable();
+
+			this.disposableListeners.push(this.includeObjectsTable.onCellAction!((rowState) => {
+				let checkboxState = <azdataType.ICheckboxCellActionEventArgs>rowState;
+				if (checkboxState && checkboxState.row !== undefined) {
+					let label = this.optionsModel.includeObjectTypeLabels[checkboxState.row];
+					this.optionsModel.includeObjectsLookup?.set(label, checkboxState.checked);
+				}
+			}));
+
+			this.includeObjectTypesFlexBuilder.addItem(this.includeObjectsTable, { CSSStyles: { 'overflow': 'scroll', 'height': '80vh' } });
+
+			await view.initializeModel(this.includeObjectTypesFlexBuilder);
 		});
 	}
 
@@ -116,13 +145,41 @@ export class PublishOptionsDialog {
 					type: utils.getAzdataApi()!.ColumnType.checkBox,
 					action: utils.getAzdataApi()!.ActionOnCellCheckboxCheck.customAction,
 					headerCssClass: 'display-none',
-					cssClass: 'no-borders align-with-header',
+					cssClass: 'no-borders align-with-header align-with-text',
 					width: 50
 				},
 				{
 					value: constants.OptionName,
 					headerCssClass: 'display-none',
-					cssClass: 'no-borders align-with-header',
+					cssClass: 'no-borders align-with-header vertical-align-middle',
+					width: 50
+				}
+			],
+			ariaRowCount: data.length
+		});
+	}
+
+	/*
+	* Update the default options to the object types table area
+	*/
+	private async updateObjectsTable(): Promise<void> {
+		let data = this.optionsModel.getObjectsData();
+		await this.includeObjectsTable!.updateProperties({
+			data: data,
+			columns: [
+				<azdataType.CheckboxColumn>
+				{
+					value: constants.OptionInclude,
+					type: utils.getAzdataApi()!.ColumnType.checkBox,
+					action: utils.getAzdataApi()!.ActionOnCellCheckboxCheck.customAction,
+					headerCssClass: 'display-none',
+					cssClass: 'no-borders align-with-header align-with-text',
+					width: 50
+				},
+				{
+					value: constants.OptionName,
+					headerCssClass: 'display-none',
+					cssClass: 'no-borders align-with-header vertical-align-middle',
 					width: 50
 				}
 			],
@@ -135,6 +192,7 @@ export class PublishOptionsDialog {
 	*/
 	protected execute(): void {
 		this.optionsModel.setDeploymentOptions();
+		this.optionsModel.setIncludeObjectTypeOptions();
 		this.publish.setDeploymentOptions(this.optionsModel.deploymentOptions);
 		this.disposeListeners();
 	}
@@ -159,6 +217,10 @@ export class PublishOptionsDialog {
 		await this.updateOptionsTable();
 		this.optionsFlexBuilder?.removeItem(this.optionsTable!);
 		this.optionsFlexBuilder?.insertItem(this.optionsTable!, 0, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh' } });
+
+		await this.updateObjectsTable();
+		this.includeObjectTypesFlexBuilder?.removeItem(this.includeObjectsTable!);
+		this.includeObjectTypesFlexBuilder?.addItem(this.includeObjectsTable!, { CSSStyles: { 'overflow': 'scroll', 'height': '80vh' } });
 	}
 
 	private disposeListeners(): void {

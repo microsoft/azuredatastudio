@@ -292,7 +292,7 @@ export class PublishDatabaseDialog {
 			// We only use the dialog in ADS context currently so safe to cast to the mssql DeploymentOptions here
 			this.deploymentOptions = await utils.getDefaultPublishDeploymentOptions(this.project) as DeploymentOptions;
 		}
-
+		this.deploymentOptions.optionsMapTable = JSON.parse(JSON.stringify(Object.fromEntries(this.deploymentOptions.optionsMapTable)));
 		return this.deploymentOptions;
 	}
 
@@ -907,7 +907,7 @@ export class PublishDatabaseDialog {
 	 */
 	private createOptionsButton(view: azdataType.ModelView): azdataType.FlexContainer {
 		this.optionsButton = view.modelBuilder.button().withProps({
-			label: constants.publishingOptions,
+			label: constants.PublishingOptions,
 			secondary: true,
 			width: cssStyles.PublishingOptionsButtonWidth
 		}).component();
@@ -936,7 +936,6 @@ export class PublishDatabaseDialog {
 	*/
 	public setDeploymentOptions(deploymentOptions: DeploymentOptions): void {
 		this.deploymentOptions = deploymentOptions;
-		this.deploymentOptions.optionsMapTable = JSON.parse(JSON.stringify(Object.fromEntries(Object.entries(this.deploymentOptions.optionsMapTable).map((x) => [x[0].charAt(0).toUpperCase() + x[0].slice(1), x[1]]))));
 	}
 }
 
