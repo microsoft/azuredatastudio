@@ -182,6 +182,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 				try {
 					this.editCores();
 					this.editMemory();
+					this.editSyncSecondaryToCommit();
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.pageDiscardFailed(error));
 				} finally {
