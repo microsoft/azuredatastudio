@@ -395,7 +395,6 @@ function validatePackageJson(extensionJson, packageJson) {
     const packageVsCodeEngine = packageJson.engines?.vscode;
     validateEngineVersionMatches(MICROSOFT_VISUALSTUDIO_CODE_ENGINE, 'vscode', extensionVsCodeEngine, packageVsCodeEngine);
 
-
     // Check azdata engine matches
     const extensionAzdataEngine = extensionJson.versions[0].properties.find(p => p.key === MICROSOFT_AZDATAENGINE)?.value;
     const packageAzdataEngine = packageJson.engines?.azdata;
