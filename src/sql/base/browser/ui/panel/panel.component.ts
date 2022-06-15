@@ -183,6 +183,7 @@ export class PanelComponent extends Disposable implements IThemable {
 		this.dispose();
 	}
 
+
 	/**
 	 * Select a tab based on index (unrecommended)
 	 * @param index index of tab in the html
@@ -235,6 +236,9 @@ export class PanelComponent extends Disposable implements IThemable {
 					this.onTabChange.emit(tab);
 				});
 			}
+			this._tabHeaders.forEach((tabHeader, index) => {
+				tabHeader.nativeElement.tabIndex = tabHeader.active ? 0 : -1;
+			});
 		}
 	}
 
