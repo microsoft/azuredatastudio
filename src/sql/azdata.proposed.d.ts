@@ -1529,10 +1529,18 @@ declare module 'azdata' {
 	export namespace queryeditor {
 
 		export interface IQueryMessage {
-			batchId?: number;
-			isError: boolean;
-			time?: string;
+			/**
+			 * The message string
+			 */
 			message: string;
+			/**
+			 * Whether this message is an error message or not
+			 */
+			isError: boolean;
+			/**
+			 * The timestamp for when this message was sent
+			 */
+			time?: string;
 		}
 
 		/**
@@ -1549,14 +1557,19 @@ declare module 'azdata' {
 			query?: string;
 		}
 
-		/**
-		 * args for each event type
-		 * queryStart: undefined
-		 * queryStop: undefined
-		 * executionPlan: string
-		 * visualize: ResultSetSummary
-		 */
 		export interface QueryEventListener {
+			/**
+			 * An event that is fired for query events
+			 * @param type The type of query event
+			 * @param document The document this event was sent by
+			 * @param args The extra information for the event, if any
+			 * The args sent depend on the type of event :
+			 * queryStart: undefined
+			 * queryStop: undefined
+			 * executionPlan: string (the plan itself)
+			 * visualize: ResultSetSummary (the result set to be visualized)
+			 * @param queryInfo The information about the query that triggered this event
+			 */
 			onQueryEvent(type: QueryEventType, document: QueryDocument, args: ResultSetSummary | string | undefined, queryInfo: IQueryInfo): void;
 		}
 	}

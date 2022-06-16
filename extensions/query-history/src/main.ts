@@ -32,4 +32,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 	context.subscriptions.push(vscode.commands.registerCommand('queryHistory.clear', () => {
 		provider.clearAll();
 	}));
+	context.subscriptions.push(vscode.commands.registerCommand('queryHistory.disableCapture', async () => {
+		return provider.setCaptureEnabled(false);
+	}));
+	context.subscriptions.push(vscode.commands.registerCommand('queryHistory.enableCapture', async () => {
+		return provider.setCaptureEnabled(true);
+	}));
 }
