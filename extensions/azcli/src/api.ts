@@ -167,6 +167,7 @@ export function getAzApi(localAzDiscovered: Promise<IAzTool | undefined>, azTool
 						memoryLimit?: string;
 						memoryRequest?: string;
 						noWait?: boolean;
+						syncSecondaryToCommit?: string;
 					},
 					// Direct mode arguments
 					resourceGroup?: string,
