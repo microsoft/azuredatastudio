@@ -8,8 +8,8 @@ trigger:
     - extensions/rc1
   paths:
     include:
-      - "extensionsGallery.json"
-      - "extensionsGallery-insider.json"
+      - extensionsGallery.json
+      - extensionsGallery-insider.json
 
 steps:
 - task: AzureFileCopy@4
