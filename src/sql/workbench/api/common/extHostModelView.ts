@@ -347,6 +347,11 @@ class ContainerBuilderImpl<TComponent extends azdata.Component, TLayout, TItemLa
 		super(componentWrapper);
 	}
 
+	override withProps(properties: TPropertyBag): azdata.ContainerBuilder<TComponent, TLayout, TItemLayout, TPropertyBag> {
+		this._component.properties = Object.assign({}, this._component.properties, properties);
+		return this;
+	}
+
 	withLayout(layout: TLayout): azdata.ContainerBuilder<TComponent, TLayout, TItemLayout, TPropertyBag> {
 		this._component.layout = layout;
 		return this;
@@ -997,10 +1002,10 @@ class InputBoxWrapper extends ComponentWrapper implements azdata.InputBoxCompone
 		this.setProperty('value', v);
 	}
 
-	public get ariaLive(): string {
+	public get ariaLive(): 'off' | 'polite' | 'assertive' {
 		return this.properties['ariaLive'];
 	}
-	public set ariaLive(v: string) {
+	public set ariaLive(v: 'off' | 'polite' | 'assertive') {
 		this.setProperty('ariaLive', v);
 	}
 

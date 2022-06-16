@@ -256,8 +256,8 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 		this.setPropertyFromUI<string>((props, value) => props.value = value, newValue);
 	}
 
-	public get ariaLive() {
-		return this.getPropertyOrDefault<string>((props) => props.ariaLive, '');
+	public override get ariaLive() {
+		return this.getPropertyOrDefault<'off' | 'polite' | 'assertive'>((props) => props.ariaLive, undefined);
 	}
 
 	public get placeHolder(): string {

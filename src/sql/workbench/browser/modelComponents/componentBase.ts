@@ -201,6 +201,14 @@ export abstract class ComponentBase<TPropertyBag extends azdata.ComponentPropert
 		this.setPropertyFromUI<boolean>((props, value) => props.ariaHidden = value, newValue);
 	}
 
+	public get ariaLive(): 'off' | 'polite' | 'assertive' | undefined {
+		return this.getPropertyOrDefault<'off' | 'polite' | 'assertive'>((props) => props.ariaLive, undefined);
+	}
+
+	public set ariaLive(newValue: 'off' | 'polite' | 'assertive' | undefined) {
+		this.setPropertyFromUI<'off' | 'polite' | 'assertive'>((props, value) => props.ariaLive = value, newValue);
+	}
+
 	public get CSSStyles(): azdata.CssStyles {
 		return this.getPropertyOrDefault<azdata.CssStyles>((props) => props.CSSStyles, {});
 	}

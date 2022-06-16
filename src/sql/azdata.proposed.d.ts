@@ -1525,4 +1525,12 @@ declare module 'azdata' {
 		 */
 		link: LinkArea;
 	}
+
+	export interface ContainerBuilder<TComponent extends Component, TLayout, TItemLayout, TPropertyBag extends ComponentProperties> extends ComponentBuilder<TComponent, TPropertyBag> {
+		withProps(properties: TPropertyBag): ContainerBuilder<TComponent, TLayout, TItemLayout, TPropertyBag>;
+	}
+
+	export interface ComponentProperties {
+		ariaLive?: 'off' | 'polite' | 'assertive';
+	}
 }
