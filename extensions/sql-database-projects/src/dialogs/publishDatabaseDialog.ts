@@ -59,6 +59,7 @@ export class PublishDatabaseDialog {
 	private serverName: string | undefined;
 	protected optionsButton: azdataType.ButtonComponent | undefined;
 	private publishOptionsDialog: PublishOptionsDialog | undefined;
+	public fileUris: vscode.Uri[] | undefined;
 
 	private completionPromise: Deferred = new Deferred();
 
@@ -147,7 +148,7 @@ export class PublishDatabaseDialog {
 			const displayOptionsButton = this.createOptionsButton(view);
 
 			const horizontalFormSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
-			horizontalFormSection.addItems([profileRow, this.databaseRow, displayOptionsButton]);
+			horizontalFormSection.addItems([profileRow, this.databaseRow]);
 
 			this.formBuilder = <azdataType.FormBuilder>view.modelBuilder.formContainer()
 				.withFormItems([
@@ -171,6 +172,10 @@ export class PublishDatabaseDialog {
 								title: constants.selectConnectionRadioButtonsTitle,
 								component: selectConnectionRadioButtons
 							},*/
+							{
+								component: displayOptionsButton,
+								title: ''
+							},
 						]
 					}
 				], {
@@ -811,12 +816,12 @@ export class PublishDatabaseDialog {
 
 		loadProfileButton.onDidClick(async () => {
 			const fileUris = await promptForPublishProfile(this.project.projectFolderPath);
-
 			if (!fileUris || fileUris.length === 0) {
 				return;
 			}
 
 			if (this.readPublishProfile) {
+				this.fileUris = fileUris;
 				const result = await this.readPublishProfile(fileUris[0]);
 				// clear out old database dropdown values. They'll get populated later if there was a connection specified in the profile
 				this.targetDatabaseName = '';
@@ -828,6 +833,8 @@ export class PublishDatabaseDialog {
 				if (result.databaseName) {
 					this.targetDatabaseName = result.databaseName;
 				}
+
+				this.setDeploymentOptions(result.options);
 
 				if (Object.keys(result.sqlCmdVariables).length) {
 					// add SQLCMD Variables table if it wasn't there before and the profile had sqlcmd variables
@@ -912,7 +919,7 @@ export class PublishDatabaseDialog {
 			width: cssStyles.PublishingOptionsButtonWidth
 		}).component();
 
-		const optionsRow = view.modelBuilder.flexContainer().withItems([this.optionsButton], { CSSStyles: { flex: '0 0 auto', 'margin': '6px 0 0 287px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+		const optionsRow = view.modelBuilder.flexContainer().withItems([this.optionsButton], { CSSStyles: { flex: '0 0 auto', 'margin': '-8px 0 0 287px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		this.toDispose.push(this.optionsButton.onDidClick(async () => {
 			TelemetryReporter.sendActionEvent(TelemetryViews.SqlProjectPublishDialog, TelemetryActions.publishConfigureOptionsClicked);

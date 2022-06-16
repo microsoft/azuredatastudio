@@ -208,7 +208,14 @@ export class PublishOptionsDialog {
 	* Reset button click, resets all the options selection
 	*/
 	private async reset(): Promise<void> {
-		const result = await this.publish.getDefaultDeploymentOptions();
+		// Get the options from profiles if profile is loaded or default options
+		let profileOptions;
+		if (this.publish.fileUris !== undefined && this.publish.fileUris.length > 0) {
+			const profileResult = await this.publish.readPublishProfile!(this.publish.fileUris[0]);
+			profileOptions = profileResult.options;
+		}
+
+		const result = profileOptions ?? await this.publish.getDefaultDeploymentOptions();
 		this.optionsModel.deploymentOptions = result;
 
 		// This will update the Map table with default values
@@ -216,7 +223,7 @@ export class PublishOptionsDialog {
 
 		await this.updateOptionsTable();
 		this.optionsFlexBuilder?.removeItem(this.optionsTable!);
-		this.optionsFlexBuilder?.insertItem(this.optionsTable!, 0, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh' } });
+		this.optionsFlexBuilder?.insertItem(this.optionsTable!, 0, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh', 'padding-top': '2px' } });
 
 		await this.updateObjectsTable();
 		this.includeObjectTypesFlexBuilder?.removeItem(this.includeObjectsTable!);
