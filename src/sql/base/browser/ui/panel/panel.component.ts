@@ -60,7 +60,7 @@ let idPool = 0;
 					<div [style.display]="_tabExpanded ? 'flex': 'none'" [attr.aria-hidden]="_tabExpanded ? 'false': 'true'" class="tabList" role="tablist" (keydown)="onKey($event)">
 						<div role="presentation" *ngFor="let tab of _tabs">
 							<ng-container *ngIf="tab.type!=='group-header'">
-								<tab-header role="presentation" [active]="_activeTab === tab" [tab]="tab" [showIcon]="_options.showIcon" (onSelectTab)='selectTab($event)' (onCloseTab)='closeTab($event)'></tab-header>
+								<tab-header role="presentation" [active]="_activeTab === tab" [tabindex]="_activeTab === tab ? '0': '-1'" [tab]="tab" [showIcon]="_options.showIcon" (onSelectTab)='selectTab($event)' (onCloseTab)='closeTab($event)'></tab-header>
 							</ng-container>
 							<ng-container *ngIf="tab.type==='group-header' && _options.layout === NavigationBarLayout.vertical">
 								<div class="tab-group-header">
