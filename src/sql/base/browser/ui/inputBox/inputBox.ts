@@ -26,6 +26,7 @@ export interface IInputOptions extends vsIInputBoxOptions {
 	 */
 	requireForceValidations?: boolean;
 	required?: boolean;
+	ariaDescription?: string;
 }
 
 export class InputBox extends vsInputBox {
@@ -69,6 +70,10 @@ export class InputBox extends vsInputBox {
 			this._isTextAreaInput = true;
 		}
 		this.required = !!this._sqlOptions?.required;
+
+		if (this._sqlOptions.ariaDescription) {
+			this.inputElement.setAttribute('aria-description', this._sqlOptions.ariaDescription);
+		}
 	}
 
 	public override style(styles: IInputBoxStyles): void {

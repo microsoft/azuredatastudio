@@ -16,6 +16,7 @@ export interface ICheckboxOptions {
 	checked?: boolean;
 	onChange?: (val: boolean) => void;
 	ariaLabel?: string;
+	ariaDescription?: string;
 }
 
 export interface ICheckboxStyles {
@@ -43,6 +44,10 @@ export class Checkbox extends Widget {
 
 		if (opts.ariaLabel) {
 			this.ariaLabel = opts.ariaLabel;
+		}
+
+		if (opts.ariaDescription) {
+			this._el.setAttribute('aria-description', opts.ariaDescription);
 		}
 
 		this.onchange(this._el, e => {
