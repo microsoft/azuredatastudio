@@ -73,7 +73,7 @@
 		"msjsdiag.debugger-for-chrome": "workspace"
 	},
 	"gulp.autoDetect": "off",
-	"files.insertFinalNewline": true,
+	"files.insertFinalNewline": false,
 	"[plaintext]": {
 		"files.insertFinalNewline": false,
 	},
