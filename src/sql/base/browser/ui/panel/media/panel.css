@@ -50,16 +50,12 @@ panel {
 .tabbedPanel .tabList .tab {
 	cursor: pointer;
 	margin: auto;
-	flex-flow: row;
-}
-
-.tabbedPanel.vertical > .title .tabList .tab {
 	display: flex;
+	flex-flow: row;
 }
 
 .tabbedPanel.horizontal > .title .tabList .tab .tabLabel {
 	font-size: 12px;
-	max-width: 100px;
 }
 
 .tabbedPanel.vertical > .title .tabList .tab .tabLabel {
