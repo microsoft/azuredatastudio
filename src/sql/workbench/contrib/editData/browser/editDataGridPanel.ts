@@ -304,6 +304,10 @@ export class EditDataGridPanel extends GridParentComponent {
 			return;
 		}
 
+		if (this.previousSavedCell.row !== row && this.previousSavedCell.column !== column && this.firstRender) {
+			return;
+		}
+
 		let isEditable = true;
 
 		// get the cell we have just immediately clicked (to set as the new active cell in handleChanges), only done if another cell is not currently being processed.
@@ -333,22 +337,26 @@ export class EditDataGridPanel extends GridParentComponent {
 				// Cell update was successful, update the flags
 				self.setCellDirtyState(cellToSubmit.row, cellToSubmit.column, result.cell.isDirty);
 				self.setRowDirtyState(cellToSubmit.row, result.isRowDirty);
-				if (hasAddedRow) {
-					self.table.grid.navigateDown();
-				}
 				return Promise.resolve();
 			},
 			(error) => {
 				// Cell update failed, jump back to the last cell we were on
 				this.updateEnabledState(true);
-				self.focusCell(self.previousSavedCell.row, self.previousSavedCell.column, true);
+				self.focusCell(cellToSubmit.row, cellToSubmit.column, true);
+				//set the next cell to be the next row below once data has been fixed.
+				let nextRow = cellToSubmit;
+				nextRow.row += 1;
+				if (!this.isNullRow(nextRow)) {
+					this.lastClickedCell = { row: (cellToSubmit.row + 1), column: cellToSubmit.column, isEditable: true };
+				}
 				return Promise.reject(null);
 			});
 
-		if (this.lastClickedCell.row !== this.previousSavedCell.row) {
+		//Handle case where you edit the starting cell.
+		if (this.lastClickedCell === undefined || this.lastClickedCell.row !== cellToSubmit.row || this.isNullRow(cellToSubmit.row)) {
 			// We're changing row, commit the changes
-			cellSelectTasks = cellSelectTasks.then(function (): void {
-				self.dataService.commitEdit().then(function (): Promise<void> {
+			cellSelectTasks = cellSelectTasks.then(() => {
+				return self.dataService.commitEdit().then(function (): Promise<void> {
 					// Committing was successful, clean the grid
 					self.setGridClean();
 					self.rowIdMappings = {};
@@ -357,7 +365,13 @@ export class EditDataGridPanel extends GridParentComponent {
 				}, function (): Promise<void> {
 					// Committing failed, jump back to the last selected cell
 					self.updateEnabledState(true);
-					self.focusCell(self.previousSavedCell.row, self.previousSavedCell.column);
+					self.focusCell(cellToSubmit.row, cellToSubmit.column);
+					//set the next cell to be the next row below once data has been fixed.
+					let nextRow = cellToSubmit;
+					nextRow.row += 1;
+					if (!self.isNullRow(nextRow)) {
+						self.lastClickedCell = { row: (cellToSubmit.row + 1), column: cellToSubmit.column, isEditable: true };
+					}
 					return Promise.reject(null);
 				});
 			});
@@ -366,6 +380,9 @@ export class EditDataGridPanel extends GridParentComponent {
 		cellSelectTasks = cellSelectTasks.then(function (): void {
 			// At the end of a successful cell select, update the currently selected cell
 			self.updateEnabledState(true);
+			if (self.isNullRow(cellToSubmit)) {
+				self.lastClickedCell.row += 1;
+			}
 			self.setCurrentCell(self.lastClickedCell.row, self.lastClickedCell.column);
 			self.focusCell(self.lastClickedCell.row, self.lastClickedCell.column);
 		});
@@ -511,6 +528,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	private setActive() {
 		if (this.firstRender && this.table) {
 			this.table.setActiveCell(0, 1);
+			this.setCurrentCell(0, 1);
 			this.firstRender = false;
 		}
 	}
@@ -536,7 +554,14 @@ export class EditDataGridPanel extends GridParentComponent {
 		let handled: boolean = false;
 
 		if (e.keyCode === KeyCode.Escape) {
-			this.revertCurrentRow().catch(onUnexpectedError);
+			if (this.isNullRow(this.lastClickedCell.row)) {
+				document.execCommand('selectAll');
+				document.execCommand('delete');
+				document.execCommand('insertText', false, 'NULL');
+			}
+			else {
+				this.revertCurrentRow().catch(onUnexpectedError);
+			}
 			handled = true;
 		}
 		if (e.ctrlKey && e.keyCode === KeyCode.KEY_0) {
@@ -571,8 +596,9 @@ export class EditDataGridPanel extends GridParentComponent {
 	// Private Helper Functions ////////////////////////////////////////////////////////////////////////////
 
 	private async revertCurrentRow(): Promise<void> {
+		//TODO - dataSet totalRows needs to be updated after adding new row.
 		let currentNewRowIndex = this.dataSet.totalRows - 2;
-		if (this.newRowVisible && this.previousSavedCell.row === currentNewRowIndex) {
+		if (this.newRowVisible && this.lastClickedCell.row >= currentNewRowIndex) {
 			// revert our last new row
 			this.removingNewRow = true;
 
@@ -586,8 +612,8 @@ export class EditDataGridPanel extends GridParentComponent {
 		} else {
 			try {
 				// Perform a revert row operation
-				if (this.previousSavedCell && this.previousSavedCell.row !== undefined) {
-					await this.dataService.revertRow(this.previousSavedCell.row);
+				if (this.lastClickedCell && this.lastClickedCell.row !== undefined) {
+					await this.dataService.revertRow(this.lastClickedCell.row);
 				}
 			} finally {
 				// The operation may fail if there were no changes sent to the service to revert,
@@ -595,7 +621,7 @@ export class EditDataGridPanel extends GridParentComponent {
 				// do not refresh the whole dataset as it will move the focus away to the first row.
 				//
 				this.dirtyCells = [];
-				let row = this.previousSavedCell.row;
+				let row = this.lastClickedCell.row;
 				this.resetCurrentCell();
 
 				if (row !== undefined) {
@@ -931,7 +957,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			}
 
 			applyValue(item, state): void {
-				let activeRow = self.lastClickedCell.row;
+				let activeRow = self.previousSavedCell.row;
 				let currentRow = self.dataSet.dataRows.at(activeRow);
 				let colIndex = self.getColumnIndex(this._args.column.name);
 				let dataLength: number = self.dataSet.dataRows.getLength();
