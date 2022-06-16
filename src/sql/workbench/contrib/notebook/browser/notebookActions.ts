@@ -137,6 +137,7 @@ export class ClearAllOutputsAction extends TooltipFromLabelAction {
 
 	public override async run(context: URI): Promise<void> {
 		const editor = this._notebookService.findNotebookEditor(context);
+		editor.model.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.ClearResults);
 		await editor.clearAllOutputs();
 	}
 }
@@ -362,6 +363,9 @@ export class TrustedAction extends ToggleableAction {
 	public override async run(context: URI): Promise<void> {
 		const editor = this._notebookService.findNotebookEditor(context);
 		this.trusted = !this.trusted;
+		editor.model.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.TrustChanged, {
+			trust: this.trusted
+		});
 		editor.model.trustedMode = this.trusted;
 	}
 }
@@ -419,6 +423,7 @@ export class CollapseCellsAction extends ToggleableAction {
 
 	public override async run(context: URI): Promise<void> {
 		const editor = this._notebookService.findNotebookEditor(context);
+		editor.model.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.CollapseCells);
 		this.setCollapsed(!this.isCollapsed);
 		editor.cells.forEach(cell => {
 			cell.isCollapsed = this.isCollapsed;
@@ -472,6 +477,9 @@ export class RunParametersAction extends TooltipFromLabelAction {
 			});
 			return;
 		}
+		editor.model.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.RunWithParameters, {
+			kernel: editor.model.languageInfo.name
+		});
 		// Set defaultParameters to the parameter values in parameter cell
 		let defaultParameters = new Map<string, string>();
 		for (let cell of editor?.cells) {

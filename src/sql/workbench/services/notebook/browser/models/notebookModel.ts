@@ -1317,6 +1317,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 							this._onValidConnectionSelected.fire(false);
 						}
 					});
+				this.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.ConnectionChanged);
 			} else {
 				this._onValidConnectionSelected.fire(false);
 			}
