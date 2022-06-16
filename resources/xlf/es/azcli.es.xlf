@@ -2,6 +2,10 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file original="extensions/azcli/dist/localizedConstants" source-language="en" datatype="plaintext" target-language="es">
     <body>
+      <trans-unit id="arc.releaseDateNotParsed">
+        <source xml:lang="en">Release date could not be parsed.</source>
+        <target state="translated">No se pudo analizar la fecha de lanzamiento.</target>
+      </trans-unit>
       <trans-unit id="az.accept">
         <source xml:lang="en">Accept</source>
         <target state="translated">Aceptar</target>

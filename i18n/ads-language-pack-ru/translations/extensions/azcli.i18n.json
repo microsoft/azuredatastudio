@@ -9,6 +9,7 @@
 	"version": "1.0.0",
 	"contents": {
 		"dist/localizedConstants": {
+			"arc.releaseDateNotParsed": "Не удалось разобрать дату выпуска.",
 			"az.accept": "Принять",
 			"az.arcdataExtensionNotInstalled": "Для этого расширения требуется установленное расширение \\\"arcdata\\\" для Azure CLI. Установите последнюю версию, следуя инструкциям [здесь](https://docs.microsoft.com/azure/azure-arc/data/install-arcdata-extension).",
 			"az.arcdataInstalled": "Расширение arcdata для Azure CLI успешно установлено. Перезапуск Azure Studio необходим для завершения настройки — функции не будут активированы, пока это не будет сделано.",

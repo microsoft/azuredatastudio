@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as path from 'path';
-import * as xmldom from 'xmldom';
+import * as xmldom from '@xmldom/xmldom';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
 import * as xmlFormat from 'xml-formatter';
@@ -1583,12 +1583,15 @@ export class Project implements ISqlProject {
 				const suppressMissingDependenciesErrorNode = currentNode.getElementsByTagName(constants.SuppressMissingDependenciesErrors);
 				const suppressMissingDependences = suppressMissingDependenciesErrorNode[0].childNodes[0].nodeValue === constants.True;
 
-				// remove this node
-				this.projFileXmlDoc!.documentElement.removeChild(currentNode);
-
-				// delete ItemGroup if there aren't any other children
-				if (this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ArtifactReference).length === 0) {
+				// TODO Two issues here :
+				// 1. If there are multiple ItemGroups with ArtifactReference items then we won't clean up until all items are removed
+				// 2. If the ItemGroup has other non-ArtifactReference items in it then those will be deleted
+				// Right now we assume that this ItemGroup is not manually edited so it's safe to ignore these
+				if (this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ArtifactReference).length === 1) {
+					// delete entire ItemGroup if there aren't any other children
 					this.projFileXmlDoc!.documentElement.removeChild(currentNode.parentNode!);
+				} else {
+					this.projFileXmlDoc!.documentElement.removeChild(currentNode);
 				}
 
 				// remove from database references because it'll get added again later

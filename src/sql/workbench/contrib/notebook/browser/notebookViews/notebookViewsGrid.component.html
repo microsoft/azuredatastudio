@@ -5,8 +5,8 @@
  *--------------------------------------------------------------------------------------------*/
 -->
 <div class="nb-grid-stack grid-stack">
-	<ng-container *ngFor="let cell of cells">
-		<view-card-component #wrapper [ready]="loaded" [activeView]="activeView" [meta]="cell.metadata" [cell]="cell" [model]="model" (onChange)="onCellChanged($event)"></view-card-component>
+	<ng-container  #divContainer *ngFor="let card of cards; trackBy: trackByCardId">
+		<view-card-component #wrapper [activeView]="activeView" [card]="card" [model]="model" [cells]="cells"></view-card-component>
 		<ng-content *ngTemplateOutlet='wrapper.templateRef'></ng-content>
 	</ng-container>
 </div>

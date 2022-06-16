@@ -36,7 +36,7 @@ export interface IFileFunctionObject {
  * @returns settings in local.settings.json. If no settings are found, returns default "empty" settings
  */
 export async function getLocalSettingsJson(localSettingsPath: string): Promise<ILocalSettingsJson> {
-	if (fs.existsSync(localSettingsPath)) {
+	if (await utils.exists(localSettingsPath)) {
 		const data: string = (fs.readFileSync(localSettingsPath)).toString();
 		try {
 			return JSON.parse(data);
@@ -237,7 +237,7 @@ export function waitForNewHostFile(): IFileFunctionObject {
  * Adds the required nuget package to the project
  * @param selectedProjectFile is the users selected project file path
  */
-export async function addNugetReferenceToProjectFile(selectedProjectFile: string): Promise<void> {
+export async function addSqlNugetReferenceToProjectFile(selectedProjectFile: string): Promise<void> {
 	await utils.executeCommand(`dotnet add "${selectedProjectFile}" package ${constants.sqlExtensionPackageName} --prerelease`);
 }
 
@@ -281,7 +281,7 @@ export async function getAFProjectContainingFile(fileUri: vscode.Uri): Promise<v
 // Use 'host.json' as an indicator that this is a functions project
 // copied from verifyIsproject.ts in vscode-azurefunctions extension
 export async function isFunctionProject(folderPath: string): Promise<boolean> {
-	return fs.existsSync(path.join(folderPath, constants.hostFileName));
+	return await utils.exists(path.join(folderPath, constants.hostFileName));
 }
 
 /**
@@ -359,7 +359,6 @@ export async function promptForObjectName(bindingType: BindingType, connectionIn
  */
 export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.Uri | undefined, connectionInfo?: IConnectionInfo): Promise<IConnectionStringInfo | undefined> {
 	let connectionStringSettingName: string | undefined;
-	const vscodeMssqlApi = await utils.getVscodeMssqlApi();
 
 	// show the settings from project's local.settings.json if there's an AF functions project
 	if (projectUri) {
@@ -494,6 +493,7 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 								}
 							} else {
 								// Let user choose from existing connections to create connection string from
+								const vscodeMssqlApi = await utils.getVscodeMssqlApi();
 								connectionInfo = await vscodeMssqlApi.promptForConnection(true);
 							}
 						}
@@ -531,7 +531,7 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 			}
 		}
 		// Add sql extension package reference to project. If the reference is already there, it doesn't get added again
-		await addNugetReferenceToProjectFile(projectUri.fsPath);
+		await addSqlNugetReferenceToProjectFile(projectUri.fsPath);
 	} else {
 		// if no AF project was found or there's more than one AF functions project in the workspace,
 		// ask for the user to input the setting name

@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as xmldom from 'xmldom';
+import * as xmldom from '@xmldom/xmldom';
 import * as constants from '../../common/constants';
 import * as utils from '../../common/utils';
 import * as mssql from 'mssql';

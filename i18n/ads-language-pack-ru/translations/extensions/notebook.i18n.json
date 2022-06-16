@@ -152,7 +152,7 @@
 			"managePackages.noVersionsFound": "Не удалось найти допустимые версии для указанного пакета",
 			"managePackages.packageNameTitle": "Имя пакета",
 			"managePackages.packageSummaryTitle": "Сводка пакета",
-			"managePackages.packageVersionTitle": "Версия пакета",
+			"managePackages.packageVersionTitle": "Поддерживаемые версии пакетов для Python {0}",
 			"managePackages.searchBarPlaceholder": "Поиск пакетов: {0}",
 			"managePackages.searchButtonLabel": "Поиск"
 		},

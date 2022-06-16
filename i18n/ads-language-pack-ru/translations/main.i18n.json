@@ -10175,8 +10175,7 @@
 			"designer.issuesTabTitle": "Проблемы ({0})",
 			"designer.loadingDesigner": "Идет загрузка конструктора...",
 			"designer.loadingDesignerCompleted": "Конструктор загружен",
-			"designer.newRowButtonAriaLabel": "Добавить новую строку в таблицу «{0}»",
-			"designer.newRowText": "Добавить новый",
+			"designer.moveRowText": "Переместить строку",
 			"designer.processing": "Обработка…",
 			"designer.processingChanges": "Обработка изменений...",
 			"designer.processingChangesCompleted": "Изменения обработаны",
@@ -10185,7 +10184,7 @@
 			"designer.publishingChanges": "Публикация изменений…",
 			"designer.removeRowText": "Удалить",
 			"designer.scriptTabTitle": "Сценарии",
-			"tableDesigner.unknownComponentType": "Тип компонента {0} не поддерживается"
+			"designer.unknownComponentType": "Тип компонента {0} не поддерживается"
 		},
 		"sql/workbench/browser/designer/designerPropertiesPane": {
 			"tableDesigner.propertiesPaneTitle": "Свойства",
@@ -10350,6 +10349,7 @@
 		},
 		"sql/workbench/contrib/backup/browser/backup.component": {
 			"addFile": "Добавить файл",
+			"addUrl": "Добавить URL-адрес",
 			"backup.advancedConfiguration": "Расширенная конфигурация",
 			"backup.algorithm": "Алгоритм",
 			"backup.backupDevice": "Файл резервной копии",
@@ -10357,6 +10357,7 @@
 			"backup.backupName": "Имя резервной копии",
 			"backup.backupTail": "Резервное копирование заключительного фрагмента журнала",
 			"backup.backupType": "Тип резервной копии",
+			"backup.backupUrl": "Резервный URL-адрес",
 			"backup.certificateOrAsymmetricKey": "Сертификат или асимметричный ключ",
 			"backup.checksumContainer": "Рассчитать контрольную сумму перед записью на носитель",
 			"backup.compression": "Сжатие",
@@ -10378,9 +10379,11 @@
 			"backup.reliability": "Надежность",
 			"backup.setBackupCompression": "Настройка сжатия резервной копии",
 			"backup.setBackupRetainDays": "Установить время хранения резервной копии в днях",
+			"backup.toUrl": "Сохранить резервную копию в URL-адрес",
 			"backup.transactionLog": "Журнал транзакций",
 			"backup.truncateTransactionLog": "Усечь журнал транзакций",
 			"backup.verifyContainer": "Проверить резервную копию после завершения",
+			"backupBrowseButton": "Обзор",
 			"backupComponent.backup": "Резервное копирование",
 			"backupComponent.cancel": "Отмена",
 			"backupComponent.invalidInput": "Некорректные данные. Значение должно быть больше или равно 0.",
@@ -10493,7 +10496,6 @@
 			"workbench.configuration.upgradeWorkspace": "{0} был заменен на {1} в параметрах рабочей области."
 		},
 		"sql/workbench/contrib/connection/browser/connection.contribution": {
-			"connection.parseClipboardForConnectionStringDescription": "Попытка проанализировать содержимое буфера обмена, когда открыто диалоговое окно подключения или выполняется вставка.",
 			"connection.showUnsupportedServerVersionWarning": "Надо ли показывать предупреждающее сообщение при подключении пользователя к версии сервера, которую не поддерживает Azure Data Studio.",
 			"sql.defaultAuthenticationType.AzureMFA": "Azure Active Directory — универсальный с поддержкой MFA",
 			"sql.defaultAuthenticationType.AzureMFAAndUser": "Azure Active Directory — пароль",
@@ -10509,10 +10511,12 @@
 		"sql/workbench/contrib/connection/common/connectionProviderExtension": {
 			"schema.connectionOptions": "Параметры подключения",
 			"schema.displayName": "Отображаемое имя поставщика",
+			"schema.enableConnectionStringOption": "Указывает, поддерживает ли поставщик услуг строку подключения в качестве параметра подключения. Значение по умолчанию — false.",
 			"schema.iconPath": "Путь к значку для типа сервера",
 			"schema.isQueryProvider": "Является ли поставщик также поставщиком запросов. Значение по умолчанию — true (истина).",
 			"schema.notebookKernelAlias": "Псевдоним ядра записной книжки для поставщика",
-			"schema.providerId": "Общий идентификатор поставщика"
+			"schema.providerId": "Общий идентификатор поставщика",
+			"schema.useConnectionStringAsDefaultOption": "Указывает, использует ли поставщик услуг подключения строку подключения в качестве параметра подключения по умолчанию. Значение по умолчанию — false."
 		},
 		"sql/workbench/contrib/connection/common/connectionTreeProviderExentionPoint": {
 			"connectionTreeProvider.schema.id": "Идентификатор поставщика должен быть таким же, как при регистрации поставщика данных дерева и должен начинаться с connectionDialog/",
@@ -10586,6 +10590,7 @@
 			"azdata.extension.contributes.dashboard.tab.container": "Контейнер, который будет отображаться в этой вкладке.",
 			"azdata.extension.contributes.dashboard.tab.description": "Описание этой вкладки, которое будет показано пользователю.",
 			"azdata.extension.contributes.dashboard.tab.group": "Уникальный идентификатор группы, к которой принадлежит эта вкладка, значение для домашней группы: \"домашняя\".",
+			"azdata.extension.contributes.dashboard.tab.hideRefreshTask": "Флажок, используемый для отображения/скрытия кнопки обновления на панели инструментов. По умолчанию значение равно false",
 			"azdata.extension.contributes.dashboard.tab.icon.dark": "Путь к значку, когда используется темная тема",
 			"azdata.extension.contributes.dashboard.tab.icon.light": "Путь к значку, когда используется светлая тема",
 			"azdata.extension.contributes.dashboard.tab.id": "Уникальный идентификатор этой вкладки. Будет передаваться расширению при выполнении любых запросов.",
@@ -11104,7 +11109,6 @@
 			"addTextLabel": "Добавить текст",
 			"cellNotFound": "ячейка с URI {0} не найдена в этой модели",
 			"cellRunFailed": "Не удалось выполнить ячейки. Дополнительные сведения об ошибке см. в выходных данных текущей выбранной ячейки.",
-			"code": "Код",
 			"codeCellsPreview": "Добавить ячейку",
 			"codePreview": "Ячейка кода",
 			"createFile": "Создать файл",
@@ -11112,9 +11116,7 @@
 			"editor": "Редактор",
 			"nextButtonLabel": "Далее >",
 			"previousButtonLabel": "< Назад",
-			"runAll": "Выполнить ячейки",
 			"runAllPreview": "Выполнить все",
-			"text": "Текст",
 			"textPreview": "Текстовая ячейка",
 			"views": "Представления"
 		},
@@ -11208,6 +11210,7 @@
 			"runParameters": "Запустить с параметрами",
 			"selectConnection": "Выберите подключение",
 			"trustLabel": "Доверенный",
+			"untitledNotSupported": "Запуск с параметрами не поддерживается для записных книжек без названия. Сохраните записную книжку перед продолжением. [Дополнительные сведения](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).",
 			"untrustLabel": "Не доверенный",
 			"viewNotFound": "Не удается найти представление: {0}"
 		},
@@ -11823,7 +11826,11 @@
 			"connectionDetailsTitle": "Сведения о подключении",
 			"connectionDialog.cancel": "Отмена",
 			"connectionDialog.connect": "Подключиться",
+			"connectionDialog.connectionProviderNotSupported": "Расширение, поддерживающее тип “{0}” поставщика, в настоящее время не установлено. Установите его и повторите попытку.",
+			"connectionDialog.extensionNotInstalled": "Для подключения к этому ресурсу требуется расширение“{0}”. Установите его и повторите попытку.",
 			"connectionDialog.recentConnections": "Последние подключения",
+			"connectionDialog.viewExtension": "Просмотреть расширение",
+			"connectionDialog.viewExtensions": "Просмотреть расширения",
 			"noRecentConnections": "Недавние подключения отсутствуют",
 			"recentConnectionTitle": "Недавние"
 		},
@@ -11846,7 +11853,9 @@
 			"connection.azureTenantDropdownLabel": "Клиент Azure AD",
 			"connectionName": "Имя (необязательно)",
 			"connectionWidget.AddAzureAccount": "Добавить учетную запись…",
-			"connectionWidget.fieldWillBeTrimmed": "{0} будет обрезан.",
+			"connectionWidget.ConnectionStringError": "Не удалось проанализировать строку подключения.",
+			"connectionWidget.Error": "Ошибка",
+			"connectionWidget.connectionString": "Строка подключения",
 			"connectionWidget.invalidAzureAccount": "Необходимо выбрать учетную запись",
 			"connectionWidget.missingRequireField": "{0} является обязательным.",
 			"connectionWidget.refreshAzureCredentials": "Обновите учетные данные учетной записи",
@@ -11957,8 +11966,12 @@
 			"sqlKernel": "SQL"
 		},
 		"sql/workbench/services/notebook/browser/models/cell": {
+			"cellExecutionComplete": "Выполнение ячейки завершено",
+			"cellExecutionStarted": "Выполнение ячейки начато",
+			"codeCellLabel": "Ячейка кода {0}",
 			"commandSuccessful": "Команда выполнена",
 			"executionCanceled": "Выполнение запроса отменено",
+			"mdCellLabel": "Ячейка Markdown {0}",
 			"noDefaultKernel": "Ядро для этой записной книжки недоступно",
 			"notebookNotReady": "Сеанс для этой записной книжки еще не готов",
 			"runCellCancelled": "Выполнение ячейки отменено",
@@ -12151,13 +12164,16 @@
 			"RestoreDialogTitle": "Восстановление базы данных",
 			"backupFilePath": "Путь к файлу резервной копии",
 			"backupSetsToRestore": "Резервные наборы данных для восстановления",
+			"backupUrl": "Резервный URL-адрес",
 			"database": "База данных",
 			"destination": "Назначение",
+			"enterBackupUrl": "Укажите URL-адрес",
 			"fileType": "Тип файла",
 			"filesTitle": "Файлы",
 			"generalTitle": "Общие",
 			"logicalFileName": "Логическое имя файла",
 			"missingBackupFilePathError": "Требуется путь к файлу резервной копии.",
+			"missingBackupUrlError": "Необходимо указать резервный URL-адрес.",
 			"multipleBackupFilePath": "Пожалуйста, введите один или несколько путей файлов, разделенных запятыми",
 			"optionsTitle": "Параметры",
 			"originalFileName": "Исходное имя файла",
@@ -12165,11 +12181,14 @@
 			"restoreDatabaseFileAs": "Восстановить файлы базы данных как",
 			"restoreDatabaseFileDetails": "Восстановление сведений о файле базы данных",
 			"restoreDialog.backupFile": "Файл резервной копии",
+			"restoreDialog.browse": "Обзор",
 			"restoreDialog.cancel": "Отмена",
 			"restoreDialog.database": "База данных",
 			"restoreDialog.restore": "Восстановить",
 			"restoreDialog.restoreTitle": "Восстановление базы данных",
 			"restoreDialog.script": "Скрипт",
+			"restoreDialog.targetDatabaseAlreadyExists": "Целевая база данных уже существует",
+			"restoreDialog.url": "URL-адрес",
 			"restoreFrom": "Восстановить из",
 			"restoreOptions": "Параметры восстановления",
 			"restorePlan": "План восстановления",
@@ -12177,7 +12196,8 @@
 			"serverConnection": "Подключения к серверу",
 			"source": "Источник",
 			"taillogBackup": "Резервная копия заключительного фрагмента журнала",
-			"targetDatabase": "Целевая база данных"
+			"targetDatabase": "Целевая база данных",
+			"targetDatabaseTooltip": "Введите имя целевой базы данных"
 		},
 		"sql/workbench/services/restore/common/constants": {
 			"backup.allFiles": "Все файлы",
@@ -12190,6 +12210,7 @@
 			"groupColor": "Цвет группы",
 			"groupDescription": "Описание группы",
 			"serverGroup.cancel": "Отмена",
+			"serverGroup.colorValue": "Цвет: {0}",
 			"serverGroup.ok": "OK"
 		},
 		"sql/workbench/services/serverGroup/common/serverGroupViewModel": {
@@ -12197,28 +12218,34 @@
 			"serverGroup.editServerGroup": "Изменить группу серверов"
 		},
 		"sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput": {
+			"designer.checkConstraint.description.description": "Описание проверочного ограничения.",
 			"designer.checkConstraint.description.expression": "Выражение, определяющее проверочное ограничение.",
 			"designer.checkConstraint.description.name": "Имя проверочного ограничения.",
+			"designer.column.description.advancedType": "Отображает единый тип данных (включая длину, масштаб и точность) для столбца",
 			"designer.column.description.allowNulls": "Указывает, может ли столбец иметь значение NULL.",
 			"designer.column.description.dataType": "Отображает имя типа данных столбца.",
 			"designer.column.description.defaultValueBinding": "Предопределенное глобальное значение по умолчанию для столбца или привязки.",
+			"designer.column.description.description": "Указывает описание столбца.",
 			"designer.column.description.length": "Максимальная длина (в символах), которая может быть сохранена в этом объекте базы данных.",
 			"designer.column.description.name": "Имя объекта столбца.",
 			"designer.column.description.precision": "Для числовых данных максимальное количество десятичных знаков, которые могут быть сохранены в этом объекте базы данных.",
 			"designer.column.description.primaryKey": "Указывает, включен ли столбец в первичный ключ таблицы.",
 			"designer.column.description.scale": "Для числовых данных максимальное количество десятичных знаков, которые могут быть сохранены в этом объекте базы данных справа от десятичного разделителя.",
 			"designer.foreignkey.description.columnMapping": "Сопоставление столбцов внешних ключей и столбцов первичных ключей.",
+			"designer.foreignkey.description.description": "Описание внешнего ключа.",
 			"designer.foreignkey.description.name": "Имя внешнего ключа.",
 			"designer.foreignkey.description.onDeleteAction": "Поведение, которое реализуется при попытке пользователя удалить строку с данными, участвующую в связи по внешнему ключу.",
 			"designer.foreignkey.description.onUpdateAction": "Поведение, которое реализуется при попытке пользователя обновить строку с данными, участвующую в связи по внешнему ключу.",
 			"designer.foreignkey.description.primaryKeyTable": "Таблица, которая содержит первичный или уникальный ключевой столбец.",
 			"designer.index.column.description.name": "Имя столбца.",
 			"designer.index.description.columns": "Столбцы индекса.",
+			"designer.index.description.description": "Описание индекса.",
 			"designer.index.description.name": "Имя индекса.",
 			"designer.table.description.description": "Описание таблицы.",
 			"designer.table.description.name": "Имя объекта таблицы.",
 			"designer.table.description.schema": "Схема, содержащая таблицу.",
 			"designer.table.primaryKeyColumns.description": "Столбцы в первичном ключе.",
+			"designer.table.primaryKeyDescription.description": "Описание первичного ключа.",
 			"designer.table.primaryKeyName.description": "Имя первичного ключа.",
 			"tableDesigner.ErrorDialogTitle": "Ошибка конструктора таблиц",
 			"tableDesigner.ForeignKeyTypeName": "Внешний ключ",
@@ -12233,12 +12260,15 @@
 			"tableDesigner.addNewColumnToIndex": "Добавить столбец",
 			"tableDesigner.addNewColumnToPrimaryKey": "Добавить столбец",
 			"tableDesigner.addNewIndex": "Создание индекса",
+			"tableDesigner.checkConstraintDescriptionTitle": "Описание",
 			"tableDesigner.checkConstraintExpressionTitle": "Выражение",
 			"tableDesigner.checkConstraintNameTitle": "Имя",
 			"tableDesigner.checkConstraintTypeName": "Проверочное ограничение",
 			"tableDesigner.checkConstraintsTabTitle": "Проверочные ограничения",
+			"tableDesigner.columnAdvancedTypeTitle": "Тип",
 			"tableDesigner.columnAllowNullTitle": "Разрешить значения NULL",
 			"tableDesigner.columnDefaultValueTitle": "Значение по умолчанию",
+			"tableDesigner.columnDescriptionTitle": "Описание",
 			"tableDesigner.columnIsPrimaryKeyTitle": "Первичный ключ",
 			"tableDesigner.columnLengthTitle": "Длина",
 			"tableDesigner.columnNameTitle": "Имя",
@@ -12253,6 +12283,7 @@
 			"tableDesigner.foreignKey.column": "Столбец",
 			"tableDesigner.foreignKey.foreignColumn": "Внешний столбец",
 			"tableDesigner.foreignKeyColumns": "Столбцы",
+			"tableDesigner.foreignKeyDescriptionTitle": "Описание",
 			"tableDesigner.foreignKeyNameTitle": "Имя",
 			"tableDesigner.foreignKeyOnDeleteAction": "При действии удаления",
 			"tableDesigner.foreignKeyOnUpdateAction": "При действии обновления",
@@ -12265,11 +12296,13 @@
 			"tableDesigner.generatingScriptCompleted": "Сценарий создан.",
 			"tableDesigner.index.column.name": "Столбец",
 			"tableDesigner.indexColumns": "Столбцы",
+			"tableDesigner.indexDescription": "Описание",
 			"tableDesigner.indexName": "Имя",
 			"tableDesigner.indexesTabTitle": "Индексы",
 			"tableDesigner.inputValidationError": "Сбой проверки входных данных. Ошибка: {0}",
 			"tableDesigner.nameTitle": "Имя таблицы",
 			"tableDesigner.primaryKeyColumnsTitle": "Столбцы первичного ключа",
+			"tableDesigner.primaryKeyDescriptionTitle": "Описание",
 			"tableDesigner.primaryKeyNameTitle": "Имя",
 			"tableDesigner.publishChangeError": "Произошла ошибка при публикации изменений: {0}",
 			"tableDesigner.publishChangeSuccess": "Изменения опубликованы.",
@@ -12287,7 +12320,8 @@
 			"showReleaseNotes": "Показать раздел \"Начало работы\""
 		},
 		"sql/workbench/api/common/notebooks/vscodeExecuteProvider": {
-			"errorStartBeforeReady": "Не удается запустить сеанс, диспетчер еще не инициализирован"
+			"errorStartBeforeReady": "Не удается запустить сеанс, диспетчер еще не инициализирован",
+			"notebookMultipleRequestsError": "Невозможно выполнить ячейку кода. Выполняется другая ячейка."
 		},
 		"sql/workbench/contrib/tableDesigner/browser/tableDesignerEditor": {
 			"tableDesigner.PreviewFeature": "Предварительная версия функции"
@@ -12308,38 +12342,16 @@
 			"selectBox": "Поле выбора"
 		},
 		"sql/workbench/browser/designer/designerIssuesTabPanelView": {
-			"designer.IssueListAriaLabel": "Проблемы"
-		},
-		"sql/workbench/contrib/executionPlan/browser/executionPlan": {
-			"executionPlan.SaveFileDescription": "Файлы плана выполнения",
-			"executionPlanCustomZoom": "Пользовательское увеличение",
-			"executionPlanFileLoadingComplete": "Планы выполнения созданы",
-			"executionPlanFileLoadingFailed": "Не удалось загрузить план выполнения",
-			"executionPlanFitGraphLabel": "По размеру окна",
-			"executionPlanOpenGraphFile": "Показать XML-файл плана запроса",
-			"executionPlanPropertiesActionLabel": "Панель свойств",
-			"executionPlanSavePlanXML": "Сохранить файл плана",
-			"executionPlanSearchNodeAction": "Найти узел",
-			"executionPlanTitle": "План запроса (предварительная версия)",
-			"executionPlanZoomInActionLabel": "Увеличить",
-			"executionPlanZoomOutActionLabel": "Уменьшить",
-			"loadingExecutionPlanFile": "Создание планов выполнения",
-			"openQueryAction": "Открыть запрос"
+			"designer.IssueListAriaLabel": "Проблемы",
+			"designer.moreInfoLink": "Дополнительные сведения"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanEditor": {
 			"executionPlanEditor": "Редактор планов выполнения запросов"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView": {
 			"executionPlanPropertiesEdgeOperationName": "Edge",
-			"executionPlanPropertyViewClose": "Закрыть",
-			"executionPlanPropertyViewSortAlphabetically": "В алфавитном порядке",
-			"executionPlanPropertyViewSortByDisplayOrder": "По категориям",
 			"nodePropertyViewNameNameColumnHeader": "Имя",
-			"nodePropertyViewNameValueColumnHeader": "Значение",
-			"nodePropertyViewTitle": "Свойства"
-		},
-		"sql/workbench/contrib/executionPlan/browser/planHeader": {
-			"planHeaderIndexAndCost": "Запрос {0}: стоимость запроса (по отношению к сценарию): {1}%"
+			"nodePropertyViewNameValueColumnHeader": "Значение"
 		},
 		"sql/workbench/contrib/executionPlan/browser/widgets/customZoomWidget": {
 			"cancelCustomZoomAction": "Закрыть (ESC)",
@@ -12367,6 +12379,106 @@
 		},
 		"sql/base/browser/ui/table/plugins/contextMenuColumn.plugin": {
 			"table.showActions": "Показать действия"
+		},
+		"sql/workbench/browser/designer/tableActions": {
+			"designer.addColumnAction": "Добавить новый",
+			"designer.insertAfterSelectedColumn": "Вставить после",
+			"designer.insertBeforeSelectedRow": "Вставить до",
+			"designer.moveRowDownAction": "Переместить вниз",
+			"designer.moveRowDownButtonAriaLabel": "Переместить выбранную строку вниз на одну позицию",
+			"designer.moveRowUpAction": "Переместить вверх",
+			"designer.moveRowUpButtonAriaLabel": "Переместить выбранную строку вверх на одну позицию",
+			"designer.newRowButtonAriaLabel": "Добавить новую строку в таблицу «{0}»"
+		},
+		"sql/workbench/contrib/executionPlan/browser/azdataGraphView": {
+			"invalidExecutionPlanZoomError": "Масштаб не может быть отрицательным или равен нулю"
+		},
+		"sql/workbench/contrib/executionPlan/browser/compareExecutionPlanInput": {
+			"epCompare.editorName": "Сравнение планов выполнения"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditor": {
+			"compareExecutionPlanEditor": "Сравнение редактора плана выполнения"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView": {
+			"addExecutionPlanLabel": "Добавить план выполнения",
+			"epComapre.LoadingPlanCompleteMessage": "План выполнения успешно загружен",
+			"epComapre.LoadingPlanMessage": "Загрузка плана выполнения",
+			"epComapre.placeholderInfoboxText": "Добавьте планы выполнения для сравнения",
+			"epCompare.FileFilterDescription": "Файлы плана выполнения",
+			"epCompare.comparePropertiesAction": "Свойства",
+			"epCompare.comparisonProgess": "Загрузка похожих областей в сравниваемых планах",
+			"epCompare.toggleOrientation": "Переключить ориентацию",
+			"epCompare.zoomInAction": "Увеличить масштаб",
+			"epCompare.zoomOutAction": "Уменьшить масштаб",
+			"epCompare.zoomReset": "Сбросить масштаб",
+			"epCompare.zoomToFit": "Масштаб по размеру экрана"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView": {
+			"executionPlanComparisonPropertiesBottomOperation": "Нижняя операция: {0}",
+			"executionPlanComparisonPropertiesTopOperation": "Верхняя операция: {0}",
+			"executionPlanPropertiesEdgeOperationName": "Edge",
+			"nodePropertyViewNameNameColumnHeader": "Имя",
+			"nodePropertyViewNameValueColumnBottomHeader": "Значение (нижний план)",
+			"nodePropertyViewNameValueColumnTopHeader": "Значение (верхний план)"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanContribution": {
+			"executionPlanCompareCommandOriginalValue": "Сравнение планов выполнения",
+			"executionPlanCompareCommandValue": "Сравнение планов выполнения"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanFileView": {
+			"executionPlanFileLoadingComplete": "Планы выполнения созданы",
+			"executionPlanFileLoadingFailed": "Не удалось загрузить план выполнения",
+			"loadingExecutionPlanFile": "Создание планов выполнения"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase": {
+			"executionPlanPropertyViewClose": "Закрыть",
+			"executionPlanPropertyViewSortAlphabetically": "В алфавитном порядке",
+			"executionPlanPropertyViewSortByDisplayOrder": "По категориям",
+			"executionPlanPropertyViewSortReverseAlphabetically": "В обратном алфавитном порядке",
+			"nodePropertyViewTitle": "Свойства"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanTab": {
+			"executionPlanTitle": "План запроса (предварительная версия)"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanView": {
+			"executionPlan.SaveFileDescription": "Файлы плана выполнения",
+			"executionPlanCompareExecutionPlanAction": "Сравнение плана выполнения",
+			"executionPlanContextMenuDisableTooltip": "Отключить подсказки",
+			"executionPlanContextMenuEnableTooltip": "Включить подсказки",
+			"executionPlanCustomZoom": "Пользовательское увеличение",
+			"executionPlanDisableTooltip": "Подсказки отключены",
+			"executionPlanEnableTooltip": "Подсказки включены",
+			"executionPlanFitGraphLabel": "Масштаб по размеру экрана",
+			"executionPlanOpenGraphFile": "Показать XML-файл плана запроса",
+			"executionPlanPropertiesActionLabel": "Свойства",
+			"executionPlanSavePlanXML": "Сохранить файл плана",
+			"executionPlanSearchNodeAction": "Найти узел",
+			"executionPlanZoomInActionLabel": "Увеличить",
+			"executionPlanZoomOutActionLabel": "Уменьшить",
+			"openQueryAction": "Открыть запрос"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanViewHeader": {
+			"planHeaderIndexAndCost": "Запрос {0}: стоимость запроса (по отношению к сценарию): {1}%"
+		},
+		"sql/workbench/services/backupRestoreUrlBrowser/browser/urlBrowserDialog": {
+			"backupRestoreUrlBrowserDialog.account": "Учетная запись Azure",
+			"backupRestoreUrlBrowserDialog.backupFile": "Резервная копия",
+			"backupRestoreUrlBrowserDialog.blobContainer": "Контейнер BLOB-объектов",
+			"backupRestoreUrlBrowserDialog.linkAccount": "Связать учетную запись",
+			"backupRestoreUrlBrowserDialog.sharedAccessSignature": "Подписанный URL-адрес создан",
+			"backupRestoreUrlBrowserDialog.sharedAccessSignatureButton": "Создать учетные данные",
+			"backupRestoreUrlBrowserDialog.storageAccount": "Учетная запись хранения",
+			"backupRestoreUrlBrowserDialog.subscription": "Подписка Azure",
+			"backupRestoreUrlBrowserDialog.tenant": "Клиент Azure AD",
+			"fileBrowser.discard": "Отменить",
+			"fileBrowser.ok": "ОК"
+		},
+		"sql/workbench/services/backupRestoreUrlBrowser/browser/urlBrowserDialogService": {
+			"filebrowser.selectBlob": "Выбрать BLOB-объект"
+		},
+		"sql/workbench/services/tableDesigner/browser/tableDesignerService": {
+			"TableDesigner.closeApplication": "&&Закрыть приложение",
+			"TableDesigner.saveBeforeExit": "В конструкторе таблиц есть несохраненные изменения, которые будут потеряны, если вы закроете приложение. Хотите закрыть приложение?"
 		}
 	}
 }

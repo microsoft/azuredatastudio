@@ -876,8 +876,9 @@ declare namespace Slick {
 		/**
 		* Extends grid options with a given hash. If an there is an active edit, the grid will attempt to commit the changes and only continue if the attempt succeeds.
 		* @options An object with configuration options.
+		* @suppressRender A boolean telling setOptions to not rerender the grid upon options being changed.
 		**/
-		public setOptions(options: GridOptions<T>): void;
+		public setOptions(options: GridOptions<T>, suppressRender?: boolean): void;
 
 		/**
 		* Accepts an array of row indices and applies the current selectedCellCssClass to the cells in the row, respecting whether cells have been flagged as selectable.

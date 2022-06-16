@@ -13,6 +13,9 @@
     <trans-unit id="InProgress">
       <source xml:lang="en">In progress</source>
     </trans-unit>
+    <trans-unit id="Include">
+      <source xml:lang="en">Include</source>
+    </trans-unit>
     <trans-unit id="PublishHistory">
       <source xml:lang="en">Publish History</source>
     </trans-unit>
@@ -444,6 +447,9 @@
     <trans-unit id="folderStructureLabel">
       <source xml:lang="en">Folder structure</source>
     </trans-unit>
+    <trans-unit id="generalOptions">
+      <source xml:lang="en">General Options</source>
+    </trans-unit>
     <trans-unit id="generateScriptButtonText">
       <source xml:lang="en">Generate Script</source>
     </trans-unit>
@@ -576,6 +582,12 @@
     <trans-unit id="openEulaString">
       <source xml:lang="en">Open License Agreement</source>
     </trans-unit>
+    <trans-unit id="optionDescription">
+      <source xml:lang="en">Option Description</source>
+    </trans-unit>
+    <trans-unit id="optionName">
+      <source xml:lang="en">Option Name</source>
+    </trans-unit>
     <trans-unit id="outsideFolderPath">
       <source xml:lang="en">Items with absolute path outside project folder are not supported. Please make sure the paths in the project file are relative to project folder.</source>
     </trans-unit>
@@ -654,6 +666,9 @@
     <trans-unit id="publishDialogName">
       <source xml:lang="en">Publish project</source>
     </trans-unit>
+    <trans-unit id="publishOptions">
+      <source xml:lang="en">Publish Options</source>
+    </trans-unit>
     <trans-unit id="publishProjectSucceed">
       <source xml:lang="en">Database project published successfully</source>
     </trans-unit>
@@ -681,6 +696,9 @@
     <trans-unit id="publishToNewAzureServerFailed">
       <source xml:lang="en">Failed to publish to new Azure SQL server. {0}</source>
     </trans-unit>
+    <trans-unit id="publishingOptions">
+      <source xml:lang="en">Publishing Options</source>
+    </trans-unit>
     <trans-unit id="publishingProjectMessage">
       <source xml:lang="en">Publishing project in a container...</source>
     </trans-unit>
@@ -695,6 +713,9 @@
     </trans-unit>
     <trans-unit id="reloadValuesFromProjectButtonTitle">
       <source xml:lang="en">Reload values from project</source>
+    </trans-unit>
+    <trans-unit id="reset">
+      <source xml:lang="en">Reset</source>
     </trans-unit>
     <trans-unit id="resetAllVars">
       <source xml:lang="en">Reset all variables</source>
