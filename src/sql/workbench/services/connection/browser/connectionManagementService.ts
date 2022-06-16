@@ -892,40 +892,51 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			connection.options['azureAccountToken'] = tokenPromise.token;
 			return true;
 		}
+		let account = this.findAzureAccountFromProfile(accounts, connection);
+		if (account) {
+			this._logService.debug(`Getting security token for Azure account ${account.key.accountId}`);
+			if (account.isStale) {
+				this._logService.debug(`Account is stale - refreshing`);
+				try {
+					account = await this._accountManagementService.refreshAccount(account);
+				} catch (err) {
+					this._logService.info(`Exception refreshing stale account : ${toErrorMessage(err, true)}`);
+					// refreshAccount throws an error if the user cancels the dialog
+					return false;
+				}
+			}
+			const tenantId = connection.azureTenantId;
+			const token = await this._accountManagementService.getAccountSecurityToken(account, tenantId, azureResource);
+			this._logService.debug(`Got token for tenant ${token}`);
+			if (!token) {
+				this._logService.info(`No security tokens found for account`);
+			}
+			connection.options['azureAccountToken'] = token.token;
+			connection.options['expiresOn'] = token.expiresOn;
+			connection.options['password'] = '';
+			return true;
+		} else {
+			return false;
+		}
 
+	}
+
+	private findAzureAccountFromProfile(accounts: azdata.Account[], connection: interfaces.IConnectionProfile) {
+		let account: azdata.Account;
+		let accountId: string;
 		const azureAccounts = accounts.filter(a => a.key.providerId.startsWith('azure'));
 		if (azureAccounts && azureAccounts.length > 0) {
-			let accountId = (connection.authenticationType === Constants.azureMFA || connection.authenticationType === Constants.azureMFAAndUser) ? connection.azureAccount : connection.userName;
-			let account = azureAccounts.find(account => account.key.accountId === accountId);
-			if (account) {
-				this._logService.debug(`Getting security token for Azure account ${account.key.accountId}`);
-				if (account.isStale) {
-					this._logService.debug(`Account is stale - refreshing`);
-					try {
-						account = await this._accountManagementService.refreshAccount(account);
-					} catch (err) {
-						this._logService.info(`Exception refreshing stale account : ${toErrorMessage(err, true)}`);
-						// refreshAccount throws an error if the user cancels the dialog
-						return false;
-					}
-				}
-				const tenantId = connection.azureTenantId;
-				const token = await this._accountManagementService.getAccountSecurityToken(account, tenantId, azureResource);
-				this._logService.debug(`Got token for tenant ${token}`);
-				if (!token) {
-					this._logService.info(`No security tokens found for account`);
-				}
-				connection.options['azureAccountToken'] = token.token;
-				connection.options['expiresOn'] = token.expiresOn;
-				connection.options['password'] = '';
-				return true;
-			} else {
-				this._logService.info(`Could not find Azure account with name ${accountId}`);
-			}
+			accountId = (connection.authenticationType === Constants.azureMFA || connection.authenticationType === Constants.azureMFAAndUser) ? connection.azureAccount : connection.userName;
+			account = azureAccounts.find(account => account.key.accountId === accountId);
 		} else {
 			this._logService.info(`Could not find any Azure accounts from accounts : [${accounts.map(a => `${a.key.accountId} (${a.key.providerId})`).join(',')}]`);
 		}
-		return false;
+		if (account) {
+			return account;
+		} else {
+			this._logService.info(`Could not find Azure account with name ${accountId}`);
+			return null;
+		}
 	}
 
 	/**
@@ -938,11 +949,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		const profile = this._connectionStatusManager.getConnectionProfile(uri);
 		// find corresponding account for connection profile
 		const accounts = await this._accountManagementService.getAccounts();
-		const azureAccounts = accounts.filter(a => a.key.providerId.startsWith('azure'));
-		if (azureAccounts && azureAccounts.length > 0) {
-			let accountId = (profile.authenticationType === Constants.azureMFA || profile.authenticationType === Constants.azureMFAAndUser) ? profile.azureAccount : profile.userName;
-			account = azureAccounts.find(account => account.key.accountId === accountId);
-		}
+		account = this.findAzureAccountFromProfile(accounts, profile);
 		if (!profile) {
 			this._logService.warn(`Connection not found for uri ${uri}`);
 			return false;
