@@ -1279,6 +1279,7 @@ export class List<T> implements ISpliceable<T>, IThemable, IDisposable {
 		private _options: IListOptions<T> = DefaultOptions
 	) {
 		const role = this._options.accessibilityProvider && this._options.accessibilityProvider.getWidgetRole ? this._options.accessibilityProvider?.getWidgetRole() : 'list';
+		// {{SQL CARBON EDIT}} - Change the parameter from 'role !== listbox' to 'role !== list', according to the doc https://www.w3.org/WAI/PF/HTML/wiki/RoleAttribute, list role is non-interactive.
 		this.selection = new SelectionTrait(role !== 'list');
 
 		mixin(_options, defaultStyles, false);
