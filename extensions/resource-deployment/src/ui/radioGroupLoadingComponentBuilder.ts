@@ -12,7 +12,6 @@ export class RadioGroupLoadingComponentBuilder implements azdata.ComponentBuilde
 	private _optionsLoadingBuilder: azdata.LoadingComponentBuilder;
 	private _onValueChangedEmitter: vscode.EventEmitter<void> = new vscode.EventEmitter();
 	private _currentRadioOption!: azdata.RadioButtonComponent;
-	private _enabled: boolean = false;
 	constructor(private _view: azdata.ModelView, private _onNewDisposableCreated: (disposable: vscode.Disposable) => void, private _fieldInfo: FieldInfo) {
 		this._optionsDivContainer = this._view!.modelBuilder.divContainer().withProps({ clickable: false }).component();
 		this._optionsLoadingBuilder = this._view!.modelBuilder.loadingComponent().withItem(this._optionsDivContainer);
@@ -52,7 +51,7 @@ export class RadioGroupLoadingComponentBuilder implements azdata.ComponentBuilde
 					label: option.displayName,
 					value: option.name,
 					checked: option.displayName === defaultValue,
-					enabled: instanceOfDynamicEnablementInfo(this._fieldInfo.enabled) ? this._enabled : this._fieldInfo.enabled // Dynamic enablement is initially set to false
+					enabled: instanceOfDynamicEnablementInfo(this._fieldInfo.enabled) ? false : this._fieldInfo.enabled // Dynamic enablement is initially set to false
 				}).component();
 				if (radioOption.checked) {
 					this._currentRadioOption = radioOption;
@@ -91,7 +90,6 @@ export class RadioGroupLoadingComponentBuilder implements azdata.ComponentBuilde
 		this._optionsDivContainer.items.forEach(radioButton => {
 			radioButton.enabled = enabled;
 		});
-		this._enabled = enabled;
 	}
 
 	get onValueChanged(): vscode.Event<void> {
