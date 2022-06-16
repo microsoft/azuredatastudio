@@ -50,7 +50,6 @@ panel {
 .tabbedPanel .tabList .tab {
 	cursor: pointer;
 	margin: auto;
-	display: flex;
 	flex-flow: row;
 }
 
@@ -98,7 +97,7 @@ panel {
 	padding-left: 5px;
 	padding-right: 5px;
 	min-width: 65px;
-	flex: 0 0 auto;
+	/* flex: 0 0 auto; */
 }
 
 .tabbedPanel.horizontal > .title .tabList .tab-header {
