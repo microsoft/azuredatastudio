@@ -124,6 +124,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		this._register(this._onAddConnectionProfile);
 		this._register(this._onDeleteConnectionProfile);
 
+		// keeps azure tokens refreshed so temp tables do not expire after 10 minutes
 		const seconds = 600;
 
 		setInterval(() => {
@@ -910,6 +911,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			this._logService.debug(`Got token for tenant ${token}`);
 			if (!token) {
 				this._logService.info(`No security tokens found for account`);
+				return false;
 			}
 			connection.options['azureAccountToken'] = token.token;
 			connection.options['expiresOn'] = token.expiresOn;
