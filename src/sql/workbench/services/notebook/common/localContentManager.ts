@@ -155,8 +155,8 @@ namespace v4 {
 					traceback: output.traceback
 				};
 			default:
-				// Should never get here
-				throw new TypeError(localize('unrecognizedOutput', "Output type {0} not recognized", (<any>output).output_type));
+				// Unknown type, so return as is. If it's unsupported, then an error will be shown later when trying to render it.
+				return output;
 		}
 	}
 
@@ -272,6 +272,7 @@ namespace v3 {
 					name: name,
 					text: v4.demultiline(output.text)
 				};
+			case 'error':
 			case 'pyerr':
 				return <nb.IErrorResult>{
 					output_type: OutputTypes.Error,
@@ -280,7 +281,8 @@ namespace v3 {
 					traceback: output.traceback
 				};
 			default:
-				throw new TypeError(localize('unrecognizedOutputType', "Output type {0} not recognized", output.output_type));
+				// Unknown type, so return as is. If it's unsupported, then an error will be shown later when trying to render it.
+				return output;
 		}
 	};
 

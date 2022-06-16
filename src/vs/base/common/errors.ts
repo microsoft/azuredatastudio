@@ -111,7 +111,8 @@ export function transformErrorForSerialization(error: any): any {
 			name,
 			message,
 			stack,
-			errorCode
+			errorCode,
+			data: (<any>error).data // {{SQL CARBON EDIT}} Add data property.
 		};
 	}
 
