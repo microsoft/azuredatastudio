@@ -1531,6 +1531,6 @@ declare module 'azdata' {
 	}
 
 	export interface ComponentProperties {
-		ariaLive?: 'off' | 'polite' | 'assertive';
+		ariaLive?: string;
 	}
 }

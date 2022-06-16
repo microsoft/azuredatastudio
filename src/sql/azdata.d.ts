@@ -2764,6 +2764,7 @@ declare module 'azdata' {
 		withValidation(validation: (component: TComponent) => boolean | Thenable<boolean>): ComponentBuilder<TComponent, TPropertyBag>;
 	}
 	export interface ContainerBuilder<TComponent extends Component, TLayout, TItemLayout, TPropertyBag extends ComponentProperties> extends ComponentBuilder<TComponent, TPropertyBag> {
+		withProps(properties: TPropertyBag): ComponentBuilder<TComponent, TPropertyBag>;
 		withLayout(layout: TLayout): ContainerBuilder<TComponent, TLayout, TItemLayout, TPropertyBag>;
 		withItems(components: Array<Component>, itemLayout?: TItemLayout): ContainerBuilder<TComponent, TLayout, TItemLayout, TPropertyBag>;
 	}
@@ -3350,6 +3351,7 @@ declare module 'azdata' {
 
 	export interface InputBoxProperties extends ComponentProperties {
 		value?: string | undefined;
+		ariaLive?: string | undefined;
 		placeHolder?: string | undefined;
 		inputType?: InputBoxInputType | undefined;
 		required?: boolean | undefined;
