@@ -934,7 +934,15 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * @returns true if no need to refresh or successfully refreshed token
 	 */
 	public async refreshAzureAccountTokenIfNecessary(uri: string): Promise<boolean> {
+		let account: azdata.Account;
 		const profile = this._connectionStatusManager.getConnectionProfile(uri);
+		// find corresponding account for connection profile
+		const accounts = await this._accountManagementService.getAccounts();
+		const azureAccounts = accounts.filter(a => a.key.providerId.startsWith('azure'));
+		if (azureAccounts && azureAccounts.length > 0) {
+			let accountId = (profile.authenticationType === Constants.azureMFA || profile.authenticationType === Constants.azureMFAAndUser) ? profile.azureAccount : profile.userName;
+			account = azureAccounts.find(account => account.key.accountId === accountId);
+		}
 		if (!profile) {
 			this._logService.warn(`Connection not found for uri ${uri}`);
 			return false;
@@ -961,6 +969,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			const currentTime = new Date().getTime() / 1000;
 			const maxTolerance = 2 * 60; // two minutes
 			if (expiry - currentTime < maxTolerance) {
+				account.isStale = true;
+				this._accountManagementService.accountUpdated(account);
 				this._logService.info(`Access token expired for connection ${profile.id} with uri ${uri}`);
 				try {
 					const connectionResultPromise = this.connect(profile, uri);
