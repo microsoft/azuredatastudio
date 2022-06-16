@@ -598,7 +598,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	private async revertCurrentRow(): Promise<void> {
 		//TODO - dataSet totalRows needs to be updated after adding new row.
 		let currentNewRowIndex = this.dataSet.totalRows - 2;
-		if (this.newRowVisible && this.lastClickedCell.row >= currentNewRowIndex) {
+		if (this.newRowVisible && this.previousSavedCell.row === currentNewRowIndex) {
 			// revert our last new row
 			this.removingNewRow = true;
 
@@ -612,8 +612,8 @@ export class EditDataGridPanel extends GridParentComponent {
 		} else {
 			try {
 				// Perform a revert row operation
-				if (this.lastClickedCell && this.lastClickedCell.row !== undefined) {
-					await this.dataService.revertRow(this.lastClickedCell.row);
+				if (this.previousSavedCell && this.previousSavedCell.row !== undefined) {
+					await this.dataService.revertRow(this.previousSavedCell.row);
 				}
 			} finally {
 				// The operation may fail if there were no changes sent to the service to revert,
@@ -621,7 +621,7 @@ export class EditDataGridPanel extends GridParentComponent {
 				// do not refresh the whole dataset as it will move the focus away to the first row.
 				//
 				this.dirtyCells = [];
-				let row = this.lastClickedCell.row;
+				let row = this.previousSavedCell.row;
 				this.resetCurrentCell();
 
 				if (row !== undefined) {
