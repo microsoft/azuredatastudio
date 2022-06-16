@@ -7,8 +7,9 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { QueryHistoryNode } from './queryHistoryNode';
 
-const QueryHistoryConfigSection = 'queryHistory';
-const CaptureEnabledConfigSection = 'captureEnabled';
+const QUERY_HISTORY_CONFIG_SECTION = 'queryHistory';
+const CAPTURE_ENABLED_CONFIG_SECTION = 'captureEnabled';
+const DEFAULT_CAPTURE_ENABLED = true;
 
 export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistoryNode>, vscode.Disposable {
 
@@ -33,7 +34,12 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 				}
 			}
 		}));
-		this._captureEnabled = vscode.workspace.getConfiguration(QueryHistoryConfigSection).get(CaptureEnabledConfigSection) ?? true;
+		this.updateCaptureEnabled();
+		this._disposables.push(vscode.workspace.onDidChangeConfiguration(e => {
+			if (e.affectsConfiguration(QUERY_HISTORY_CONFIG_SECTION)) {
+				this.updateCaptureEnabled();
+			}
+		}));
 		// const config = this._vscodeWrapper.getConfiguration(Constants.extensionConfigSectionName);
 		// this._queryHistoryLimit = config.get(Constants.configQueryHistoryLimit);
 	}
@@ -60,6 +66,10 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 		this._disposables.forEach(d => d.dispose());
 	}
 
+	private updateCaptureEnabled(): void {
+		this._captureEnabled = vscode.workspace.getConfiguration(QUERY_HISTORY_CONFIG_SECTION).get(CAPTURE_ENABLED_CONFIG_SECTION) ?? DEFAULT_CAPTURE_ENABLED;
+	}
+
 	/**
 	 * Set whether query history capture is currently enabled
 	 * @param enabled Whether capture is currently enabled
@@ -67,6 +77,6 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 	 */
 	public async setCaptureEnabled(enabled: boolean): Promise<void> {
 		this._captureEnabled = enabled;
-		return vscode.workspace.getConfiguration(QueryHistoryConfigSection).update(CaptureEnabledConfigSection, this._captureEnabled, vscode.ConfigurationTarget.Global);
+		return vscode.workspace.getConfiguration(QUERY_HISTORY_CONFIG_SECTION).update(CAPTURE_ENABLED_CONFIG_SECTION, this._captureEnabled, vscode.ConfigurationTarget.Global);
 	}
 }
