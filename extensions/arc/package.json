@@ -1380,6 +1380,7 @@
                         "description": "%arc.sql.retention.days.description%",
                         "variableName": "AZDATA_NB_VAR_SQL_RETENTION_DAYS",
                         "type": "number",
+                        "default": 7,
                         "min": 1,
                         "max": 35,
                         "required": false

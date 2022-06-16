@@ -12,10 +12,11 @@ export class RadioGroupLoadingComponentBuilder implements azdata.ComponentBuilde
 	private _optionsLoadingBuilder: azdata.LoadingComponentBuilder;
 	private _onValueChangedEmitter: vscode.EventEmitter<void> = new vscode.EventEmitter();
 	private _currentRadioOption!: azdata.RadioButtonComponent;
-	private _enabled: boolean = false;
+	private _enabled: boolean;
 	constructor(private _view: azdata.ModelView, private _onNewDisposableCreated: (disposable: vscode.Disposable) => void, private _fieldInfo: FieldInfo) {
 		this._optionsDivContainer = this._view!.modelBuilder.divContainer().withProps({ clickable: false }).component();
 		this._optionsLoadingBuilder = this._view!.modelBuilder.loadingComponent().withItem(this._optionsDivContainer);
+		this._enabled = instanceOfDynamicEnablementInfo(this._fieldInfo.enabled) ? false : <boolean>this._fieldInfo.enabled;
 	}
 
 	component(): azdata.LoadingComponent {
