@@ -16,6 +16,7 @@ export class RadioGroupLoadingComponentBuilder implements azdata.ComponentBuilde
 	constructor(private _view: azdata.ModelView, private _onNewDisposableCreated: (disposable: vscode.Disposable) => void, private _fieldInfo: FieldInfo) {
 		this._optionsDivContainer = this._view!.modelBuilder.divContainer().withProps({ clickable: false }).component();
 		this._optionsLoadingBuilder = this._view!.modelBuilder.loadingComponent().withItem(this._optionsDivContainer);
+		// Dynamic enablement fields will default to false since they're calculated later
 		this._enabled = instanceOfDynamicEnablementInfo(this._fieldInfo.enabled) ? false : this._fieldInfo.enabled;
 	}
 
@@ -53,7 +54,6 @@ export class RadioGroupLoadingComponentBuilder implements azdata.ComponentBuilde
 					label: option.displayName,
 					value: option.name,
 					checked: option.displayName === defaultValue,
-					// Dynamic enablement fields will default to false since they're calculated later
 					enabled: this._enabled
 				}).component();
 				if (radioOption.checked) {
