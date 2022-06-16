@@ -1279,7 +1279,7 @@ export class List<T> implements ISpliceable<T>, IThemable, IDisposable {
 		private _options: IListOptions<T> = DefaultOptions
 	) {
 		const role = this._options.accessibilityProvider && this._options.accessibilityProvider.getWidgetRole ? this._options.accessibilityProvider?.getWidgetRole() : 'list';
-		this.selection = new SelectionTrait(role !== 'listbox');
+		this.selection = new SelectionTrait(role !== 'list');
 
 		mixin(_options, defaultStyles, false);
 
