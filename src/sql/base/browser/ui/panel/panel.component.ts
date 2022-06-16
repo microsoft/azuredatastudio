@@ -356,8 +356,9 @@ export class PanelComponent extends Disposable implements IThemable {
 
 	private focusOnTabHeader(index: number): void {
 		if (index >= 0 && index <= this._tabHeaders.length - 1) {
-			this._tabHeaders.toArray()[index].nativeElement.tabIndex = 0;
-			this._tabHeaders.toArray()[index].focusOnTabHeader();
+			const tabHeadersArray = this._tabHeaders.toArray();
+			tabHeadersArray[index].nativeElement.tabIndex = 0;
+			tabHeadersArray[index].focusOnTabHeader();
 		}
 	}
 
