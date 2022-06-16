@@ -97,6 +97,7 @@ panel {
 	padding-left: 5px;
 	padding-right: 5px;
 	min-width: 65px;
+	flex: 0 0 auto;
 }
 
 .tabbedPanel.horizontal > .title .tabList .tab-header {
@@ -109,7 +110,6 @@ panel {
 	line-height: 35px;
 	padding-left: 24px;
 	padding-right: 24px;
-	flex: 0 0 auto;
 }
 
 .tabbedPanel .tabList .tab .tabIcon.codicon {
