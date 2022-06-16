@@ -183,7 +183,6 @@ export class PanelComponent extends Disposable implements IThemable {
 		this.dispose();
 	}
 
-
 	/**
 	 * Select a tab based on index (unrecommended)
 	 * @param index index of tab in the html
@@ -236,9 +235,6 @@ export class PanelComponent extends Disposable implements IThemable {
 					this.onTabChange.emit(tab);
 				});
 			}
-			this._tabHeaders.forEach((tabHeader, index) => {
-				tabHeader.nativeElement.tabIndex = tabHeader.active ? 0 : -1;
-			});
 		}
 	}
 
@@ -341,6 +337,7 @@ export class PanelComponent extends Disposable implements IThemable {
 
 	private focusPreviousTab(): void {
 		const currentIndex = this.focusedTabHeaderIndex;
+		this._tabHeaders.toArray()[currentIndex].nativeElement.tabIndex = -1;
 		if (currentIndex !== -1) {
 			// Move to the previous tab, if we are at the first tab then move to the last tab.
 			this.focusOnTabHeader(currentIndex === 0 ? this._tabHeaders.length - 1 : currentIndex - 1);
@@ -349,14 +346,17 @@ export class PanelComponent extends Disposable implements IThemable {
 
 	private focusNextTab(): void {
 		const currentIndex = this.focusedTabHeaderIndex;
+		this._tabHeaders.toArray()[currentIndex].nativeElement.tabIndex = -1;
 		if (currentIndex !== -1) {
 			// Move to the next tab, if we are at the last tab then move to the first tab.
 			this.focusOnTabHeader(currentIndex === this._tabHeaders.length - 1 ? 0 : currentIndex + 1);
 		}
+
 	}
 
 	private focusOnTabHeader(index: number): void {
 		if (index >= 0 && index <= this._tabHeaders.length - 1) {
+			this._tabHeaders.toArray()[index].nativeElement.tabIndex = 0;
 			this._tabHeaders.toArray()[index].focusOnTabHeader();
 		}
 	}
@@ -376,20 +376,24 @@ export class PanelComponent extends Disposable implements IThemable {
 				}`);
 			}
 			if (styles.titleActiveBorder && styles.titleActiveForeground) {
-				content.push(`.tabbedPanel.horizontal > .title .tabList .tab-header:focus,
-					.tabbedPanel.horizontal > .title .tabList .tab-header.active {
+				content.push(`.tabbedPanel.horizontal > .title .tabList .tab-header.active {
 					border-color: ${styles.titleActiveBorder};
 					border-style: solid;
 					color: ${styles.titleActiveForeground}
 				}`);
 
-				content.push(`.tabbedPanel.horizontal > .title .tabList .tab-header:focus,
-					.tabbedPanel.horizontal > .title .tabList .tab-header.active {;
+				content.push(`.tabbedPanel.horizontal > .title .tabList .tab-header.active {;
 					border-width: 0 0 ${styles.activeTabContrastBorder ? '0' : '2'}px 0;
 				}`);
 
 				content.push(`.tabbedPanel.horizontal > .title .tabList .tab-header:hover {
 					color: ${styles.titleActiveForeground}
+				}`);
+
+				content.push(`.tabbedPanel.horizontal > .title .tabList .tab-header:focus {
+					outline: 1px solid;
+					outline-offset: 2px;
+					outline-color: ${styles.titleActiveBorder};
 				}`);
 			}
 
@@ -419,10 +423,6 @@ export class PanelComponent extends Disposable implements IThemable {
 					outline-color: ${styles.activeTabContrastBorder};
 				}
 			`);
-			} else {
-				content.push(`.tabbedPanel.horizontal > .title .tabList .tab-header:focus {
-					outline-width: 0px;
-				}`);
 			}
 
 			const newStyles = content.join('\n');
