@@ -308,35 +308,6 @@ export class EditDataGridPanel extends GridParentComponent {
 
 		// get the cell we have just immediately clicked (to set as the new active cell in handleChanges), only done if another cell is not currently being processed.
 		this.lastClickedCell = { row, column, isEditable };
-
-		let newPromise: Promise<void> = Promise.resolve();
-		if (this.lastClickedCell.row !== this.previousSavedCell.row) {
-			// We're changing row, commit the changes
-			newPromise = newPromise.then(() => {
-				this.dataService.commitEdit().then(result => {
-					// Committing was successful, clean the grid
-					this.setGridClean();
-					this.rowIdMappings = {};
-					this.newRowVisible = false;
-					return Promise.resolve();
-				}, error => {
-					// Committing failed, jump back to the last selected cell
-					this.updateEnabledState(true);
-					this.focusCell(this.previousSavedCell.row, this.previousSavedCell.column);
-					return Promise.reject(null);
-				});
-			});
-		}
-
-		// At the end of a successful cell select, update the currently selected cell
-		newPromise = newPromise.then(() => {
-			//Move to new row.
-			this.updateEnabledState(true);
-			this.setCurrentCell(this.lastClickedCell.row, this.lastClickedCell.column);
-			this.focusCell(this.lastClickedCell.row, this.lastClickedCell.column);
-		});
-
-		newPromise.catch(() => { });
 	}
 
 	/**
@@ -374,6 +345,30 @@ export class EditDataGridPanel extends GridParentComponent {
 				return Promise.reject(null);
 			});
 
+		if (this.lastClickedCell.row !== this.previousSavedCell.row) {
+			// We're changing row, commit the changes
+			cellSelectTasks = cellSelectTasks.then(function (): void {
+				self.dataService.commitEdit().then(function (): Promise<void> {
+					// Committing was successful, clean the grid
+					self.setGridClean();
+					self.rowIdMappings = {};
+					self.newRowVisible = false;
+					return Promise.resolve();
+				}, function (): Promise<void> {
+					// Committing failed, jump back to the last selected cell
+					self.updateEnabledState(true);
+					self.focusCell(self.previousSavedCell.row, self.previousSavedCell.column);
+					return Promise.reject(null);
+				});
+			});
+		}
+
+		cellSelectTasks = cellSelectTasks.then(function (): void {
+			// At the end of a successful cell select, update the currently selected cell
+			self.updateEnabledState(true);
+			self.setCurrentCell(self.lastClickedCell.row, self.lastClickedCell.column);
+			self.focusCell(self.lastClickedCell.row, self.lastClickedCell.column);
+		});
 
 		// Cap off any failed promises, since they'll be handled
 		cellSelectTasks.catch(() => {
@@ -827,8 +822,8 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	private resetCurrentCell() {
 		this.previousSavedCell = {
-			row: undefined,
-			column: undefined,
+			row: 0,
+			column: 1,
 			isEditable: false,
 			isDirty: false
 		};
