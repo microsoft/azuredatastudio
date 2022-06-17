@@ -60,7 +60,7 @@ let idPool = 0;
 					<div [style.display]="_tabExpanded ? 'flex': 'none'" [attr.aria-hidden]="_tabExpanded ? 'false': 'true'" class="tabList" role="tablist" (keydown)="onKey($event)">
 						<div role="presentation" *ngFor="let tab of _tabs">
 							<ng-container *ngIf="tab.type!=='group-header'">
-								<tab-header role="presentation" [active]="_activeTab === tab" [tab]="tab" [showIcon]="_options.showIcon" (onSelectTab)='selectTab($event)' (onCloseTab)='closeTab($event)'></tab-header>
+								<tab-header role="presentation" [selected]="_selectedTab === tab" [tab]="tab" [showIcon]="_options.showIcon" (onSelectTab)='selectTab($event)' (onCloseTab)='closeTab($event)'></tab-header>
 							</ng-container>
 							<ng-container *ngIf="tab.type==='group-header' && _options.layout === NavigationBarLayout.vertical">
 								<div class="tab-group-header">
@@ -102,7 +102,7 @@ export class PanelComponent extends Disposable implements IThemable {
 	@Output() public onTabChange = new EventEmitter<TabComponent>();
 	@Output() public onTabClose = new EventEmitter<TabComponent>();
 
-	private _activeTab?: TabComponent;
+	private _selectedTab?: TabComponent;
 	private _actionbar?: ActionBar;
 	private _mru: TabComponent[] = [];
 	private _tabExpanded: boolean = true;
@@ -218,22 +218,28 @@ export class PanelComponent extends Disposable implements IThemable {
 					}
 				});
 
-				if (this._activeTab && tab === this._activeTab) {
+				if (this._selectedTab && tab === this._selectedTab) {
 					this.onTabChange.emit(tab);
 					return;
 				}
 
 				this._zone.run(() => {
-					if (this._activeTab) {
-						this._activeTab.active = false;
+					if (this._selectedTab) {
+						this._selectedTab.selected = false;
 					}
 
-					this._activeTab = tab;
+					this._selectedTab = tab;
 					this.setMostRecentlyUsed(tab);
-					this._activeTab.active = true;
+					this._selectedTab.selected = true;
 
 					this.onTabChange.emit(tab);
 				});
+
+				if (this._tabHeaders) {
+					this._tabHeaders.forEach(th => {
+						th.tabIndex = th.tab.identifier === foundTab.identifier ? 0 : -1;
+					});
+				}
 			}
 		}
 	}
@@ -242,15 +248,15 @@ export class PanelComponent extends Disposable implements IThemable {
 	 * Get the id of the active tab
 	 */
 	public get getActiveTab(): string | undefined {
-		return this._activeTab?.identifier;
+		return this._selectedTab?.identifier;
 	}
 
 	/**
 	 * Select on the next tab
 	 */
 	public selectOnNextTab(): void {
-		let activeIndex = this._tabs.toArray().findIndex(i => i === this._activeTab);
-		let nextTabIndex = activeIndex + 1;
+		let selectedIndex = this._tabs.toArray().findIndex(i => i === this._selectedTab);
+		let nextTabIndex = selectedIndex + 1;
 		if (nextTabIndex === this._tabs.length) {
 			nextTabIndex = 0;
 		}
@@ -315,7 +321,7 @@ export class PanelComponent extends Disposable implements IThemable {
 	}
 
 	public layout() {
-		this._activeTab?.layout();
+		this._selectedTab?.layout();
 	}
 
 	onKey(e: KeyboardEvent): void {
@@ -337,6 +343,7 @@ export class PanelComponent extends Disposable implements IThemable {
 
 	private focusPreviousTab(): void {
 		const currentIndex = this.focusedTabHeaderIndex;
+		this._tabHeaders.toArray()[currentIndex].tabIndex = -1;
 		if (currentIndex !== -1) {
 			// Move to the previous tab, if we are at the first tab then move to the last tab.
 			this.focusOnTabHeader(currentIndex === 0 ? this._tabHeaders.length - 1 : currentIndex - 1);
@@ -345,6 +352,7 @@ export class PanelComponent extends Disposable implements IThemable {
 
 	private focusNextTab(): void {
 		const currentIndex = this.focusedTabHeaderIndex;
+		this._tabHeaders.toArray()[currentIndex].tabIndex = -1;
 		if (currentIndex !== -1) {
 			// Move to the next tab, if we are at the last tab then move to the first tab.
 			this.focusOnTabHeader(currentIndex === this._tabHeaders.length - 1 ? 0 : currentIndex + 1);
@@ -353,7 +361,9 @@ export class PanelComponent extends Disposable implements IThemable {
 
 	private focusOnTabHeader(index: number): void {
 		if (index >= 0 && index <= this._tabHeaders.length - 1) {
-			this._tabHeaders.toArray()[index].focusOnTabHeader();
+			const tabHeaderArray = this._tabHeaders.toArray();
+			tabHeaderArray[index].tabIndex = 0;
+			tabHeaderArray[index].focusOnTabHeader();
 		}
 	}
 
@@ -372,20 +382,24 @@ export class PanelComponent extends Disposable implements IThemable {
 				}`);
 			}
 			if (styles.titleActiveBorder && styles.titleActiveForeground) {
-				content.push(`.tabbedPanel.horizontal > .title .tabList .tab-header:focus,
-					.tabbedPanel.horizontal > .title .tabList .tab-header.active {
+				content.push(`.tabbedPanel.horizontal > .title .tabList .tab-header.active {
 					border-color: ${styles.titleActiveBorder};
 					border-style: solid;
 					color: ${styles.titleActiveForeground}
 				}`);
 
-				content.push(`.tabbedPanel.horizontal > .title .tabList .tab-header:focus,
-					.tabbedPanel.horizontal > .title .tabList .tab-header.active {;
+				content.push(`.tabbedPanel.horizontal > .title .tabList .tab-header.active {;
 					border-width: 0 0 ${styles.activeTabContrastBorder ? '0' : '2'}px 0;
 				}`);
 
 				content.push(`.tabbedPanel.horizontal > .title .tabList .tab-header:hover {
 					color: ${styles.titleActiveForeground}
+				}`);
+
+				content.push(`.tabbedPanel.horizontal > .title .tabList .tab-header:focus {
+					outline: 1px solid;
+					outline-offset: 2px;
+					outline-color: ${styles.titleActiveBorder};
 				}`);
 			}
 
@@ -415,10 +429,6 @@ export class PanelComponent extends Disposable implements IThemable {
 					outline-color: ${styles.activeTabContrastBorder};
 				}
 			`);
-			} else {
-				content.push(`.tabbedPanel.horizontal > .title .tabList .tab-header:focus {
-					outline-width: 0px;
-				}`);
 			}
 
 			const newStyles = content.join('\n');
