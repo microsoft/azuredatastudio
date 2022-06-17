@@ -105,6 +105,8 @@ export class EditDataGridPanel extends GridParentComponent {
 		this.nativeElement = document.createElement('div');
 		this.nativeElement.className = 'editDataGridPanel';
 		this.nativeElement.classList.add('slickgridContainer');
+		// Disable selecting the table until data has loaded otherwise data will be corrupt and the table will be unable to be updated..
+		this.nativeElement.classList.add('loadingRows');
 		this.dataService = dataService;
 		this.actionProvider = this.instantiationService.createInstance(EditDataGridActionProvider, this.dataService, this.onGridSelectAll(), this.onDeleteRow(), this.onRevertRow());
 		onRestoreViewState(() => this.restoreViewState());
@@ -511,6 +513,10 @@ export class EditDataGridPanel extends GridParentComponent {
 				}
 				if (this.firstRender) {
 					this.resetCurrentCell();
+					// Re-enable selecting once table has been loaded properly.
+					this.nativeElement.classList.remove('loadingRows');
+					// Need to resize table once its been unhidden.
+					this.onResize();
 					this.setActive();
 				}
 				else if (isManual) {
@@ -554,7 +560,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		let handled: boolean = false;
 
 		if (e.keyCode === KeyCode.Escape) {
-			if (this.isNullRow(this.lastClickedCell.row)) {
+			if (this.lastClickedCell && this.isNullRow(this.lastClickedCell.row)) {
 				document.execCommand('selectAll');
 				document.execCommand('delete');
 				document.execCommand('insertText', false, 'NULL');
