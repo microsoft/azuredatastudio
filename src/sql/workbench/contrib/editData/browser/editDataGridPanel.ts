@@ -559,7 +559,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		let handled: boolean = false;
 
 		if (e.keyCode === KeyCode.Escape) {
-			if (this.lastClickedCell && this.isNullRow(this.lastClickedCell.row)) {
+			if (this.previousSavedCell && this.isNullRow(this.previousSavedCell.row)) {
 				document.execCommand('selectAll');
 				document.execCommand('delete');
 				document.execCommand('insertText', false, 'NULL');
