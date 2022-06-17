@@ -2763,13 +2763,12 @@ declare module 'azdata' {
 		withProps(properties: TPropertyBag): ComponentBuilder<TComponent, TPropertyBag>;
 		withValidation(validation: (component: TComponent) => boolean | Thenable<boolean>): ComponentBuilder<TComponent, TPropertyBag>;
 	}
-	export interface ContainerBuilder<TComponent extends Component, TLayout, TItemLayout, TPropertyBag extends ComponentProperties> extends ComponentBuilder<TComponent, TPropertyBag> {
-		withProps(properties: TPropertyBag): ComponentBuilder<TComponent, TPropertyBag>;
+	export interface ContainerBuilder<TComponent extends Component, TLayout, TItemLayout, TPropertyBag extends ContainerProperties> extends ComponentBuilder<TComponent, TPropertyBag> {
 		withLayout(layout: TLayout): ContainerBuilder<TComponent, TLayout, TItemLayout, TPropertyBag>;
 		withItems(components: Array<Component>, itemLayout?: TItemLayout): ContainerBuilder<TComponent, TLayout, TItemLayout, TPropertyBag>;
 	}
 
-	export interface FlexBuilder extends ContainerBuilder<FlexContainer, FlexLayout, FlexItemLayout, ComponentProperties> {
+	export interface FlexBuilder extends ContainerBuilder<FlexContainer, FlexLayout, FlexItemLayout, ContainerProperties> {
 	}
 
 	// Building on top of flex item
@@ -3818,7 +3817,7 @@ declare module 'azdata' {
 		loadingCompletedText?: string | undefined;
 	}
 
-	export interface DivContainerProperties extends ComponentProperties {
+	export interface DivContainerProperties extends ContainerProperties {
 		/**
 		 * Matches the overflow-y CSS property and its available values.
 		 */

@@ -1526,11 +1526,18 @@ declare module 'azdata' {
 		link: LinkArea;
 	}
 
-	export interface ContainerBuilder<TComponent extends Component, TLayout, TItemLayout, TPropertyBag extends ComponentProperties> extends ComponentBuilder<TComponent, TPropertyBag> {
+	export interface ContainerBuilder<TComponent extends Component, TLayout, TItemLayout, TPropertyBag extends ContainerProperties> extends ComponentBuilder<TComponent, TPropertyBag> {
+		/**
+		 * Sets the initial set of properties for the container being created
+		 * @param properties The properties to apply to the container
+		 */
 		withProps(properties: TPropertyBag): ContainerBuilder<TComponent, TLayout, TItemLayout, TPropertyBag>;
 	}
 
-	export interface ComponentProperties {
+	export interface ContainerProperties extends ComponentProperties {
+		/**
+		 * Corresponds to the aria-live accessibility attribute for this component
+		 */
 		ariaLive?: string;
 	}
 }
