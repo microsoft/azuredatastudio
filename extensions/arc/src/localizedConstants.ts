@@ -223,6 +223,7 @@ export const coordinatorMemoryLimit = localize('arc.coordinatorMemoryLimit', "Co
 export const memoryRequest = localize('arc.memoryRequest', "Memory request (in GB)");
 export const workerMemoryRequest = localize('arc.workerMemoryRequest', "Worker Nodes Memory request (in GB)");
 export const coordinatorMemoryRequest = localize('arc.coordinatorMemoryRequest', "Coordinator Node Memory request (in GB)");
+export const syncSecondaryToCommit = localize('arc.syncSecondaryToCommit', "Sync Secondary To Commit");
 export const arcResources = localize('arc.arcResources', "Azure Arc Resources");
 export const enterANonEmptyPassword = localize('arc.enterANonEmptyPassword', "Enter a non empty password or press escape to exit.");
 export const thePasswordsDoNotMatch = localize('arc.thePasswordsDoNotMatch', "The passwords do not match. Confirm the password or press escape to exit.");

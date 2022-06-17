@@ -3,21 +3,21 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as should from 'should';
-import * as sinon from 'sinon';
-import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as should from 'should';
+import * as sinon from 'sinon';
 import * as TypeMoq from 'typemoq';
-import * as utils from '../../common/utils';
-import * as constants from '../../common/constants';
+import * as vscode from 'vscode';
 import * as azureFunctionUtils from '../../common/azureFunctionsUtils';
+import * as constants from '../../common/constants';
+import * as utils from '../../common/utils';
 import * as azureFunctionsContracts from '../../contracts/azureFunctions/azureFunctionsContracts';
 import * as azureFunctionService from '../../services/azureFunctionsService';
 
-import { createTestUtils, TestUtils, createTestCredentials, createTestTableNode } from '../testUtils';
-import { IConnectionInfo } from 'vscode-mssql';
 import { BindingType } from 'sql-bindings';
+import { IConnectionInfo } from 'vscode-mssql';
+import { createTestCredentials, createTestTableNode, createTestUtils, TestUtils } from '../testUtils';
 
 const rootFolderPath = 'test';
 const projectFilePath: string = path.join(rootFolderPath, 'test.csproj');
@@ -52,7 +52,7 @@ describe('AzureFunctionsService', () => {
 			let connectionDetails = { options: connectionInfo };
 			testUtils.vscodeMssqlIExtension.setup(x => x.getConnectionString(connectionDetails, true, false)).returns(() => Promise.resolve('testConnectionString'));
 
-			const spy = sinon.spy(vscode.window, 'showErrorMessage');
+			const showErrorMessageSpy = sinon.spy(vscode.window, 'showErrorMessage');
 
 			// select input or output binding
 			let quickpickStub = sinon.stub(vscode.window, 'showQuickPick').resolves(<any>{ label: constants.input, type: BindingType.input });
@@ -62,13 +62,13 @@ describe('AzureFunctionsService', () => {
 			testUtils.vscodeMssqlIExtension.setup(x => x.connect(connectionInfo)).returns(() => Promise.resolve('testConnectionURI'));
 			testUtils.vscodeMssqlIExtension.setup(x => x.listDatabases('testConnectionURI')).returns(() => Promise.resolve(['testDb']));
 			// select the testDB from list of databases based on connection info
-			quickpickStub.onSecondCall().returns(Promise.resolve('testDb') as any);
+			quickpickStub.onSecondCall().resolves(('testDb') as any);
 			// get tables from selected database
 			const params = { ownerUri: 'testConnectionURI', queryString: azureFunctionUtils.tablesQuery('testDb') };
 			testUtils.vscodeMssqlIExtension.setup(x => x.sendRequest(azureFunctionsContracts.SimpleExecuteRequest.type, params))
 				.returns(() => Promise.resolve({ rowCount: 1, columnInfo: [], rows: [['[schema].[testTable]']] }));
 			// select the schema.testTable from list of tables based on connection info and database
-			quickpickStub.onThirdCall().returns(Promise.resolve('[schema].[testTable]') as any);
+			quickpickStub.onThirdCall().resolves(('[schema].[testTable]') as any);
 
 			// set azure function name
 			let inputStub = sinon.stub(vscode.window, 'showInputBox').resolves('testFunctionName');
@@ -77,21 +77,21 @@ describe('AzureFunctionsService', () => {
 			quickpickStub.onCall(3).resolves(<any>{ label: constants.createNewLocalAppSettingWithIcon });
 			inputStub.onSecondCall().resolves('SqlConnectionString');
 			// promptConnectionStringPasswordAndUpdateConnectionString - tested in AzureFunctionUtils.test.ts
-			quickpickStub.onCall(4).returns(Promise.resolve(constants.yesString) as any);
+			quickpickStub.onCall(4).resolves((constants.yesString) as any);
 			testUtils.vscodeMssqlIExtension.setup(x => x.getConnectionString(connectionDetails, true, false)).returns(() => Promise.resolve('testConnectionString'));
 			// setLocalAppSetting with connection string setting name and connection string
 			// fails if we dont set writeFile stub
 			sinon.stub(fs.promises, 'writeFile');
-			sinon.stub(azureFunctionUtils, 'setLocalAppSetting').withArgs(sinon.match.any, 'SqlConnectionString', 'testConnectionString').returns(Promise.resolve(true));
+			sinon.stub(azureFunctionUtils, 'setLocalAppSetting').withArgs(sinon.match.any, 'SqlConnectionString', 'testConnectionString').resolves((true));
 			sinon.stub(utils, 'executeCommand').resolves('downloaded nuget package');
 
 			const testWatcher = TypeMoq.Mock.ofType<vscode.FileSystemWatcher>().object;
 			sinon.stub(azureFunctionUtils, 'waitForNewFunctionFile').withArgs(sinon.match.any).returns({ filePromise: Promise.resolve('TestFileCreated'), watcherDisposable: testWatcher });
 			await azureFunctionService.createAzureFunction();
 
-			should(spy.notCalled).be.true('showErrorMessage should not have been called');
+			should(showErrorMessageSpy.notCalled).be.true('showErrorMessage should not have been called');
 			// set the connection info to be the one the user selects from list of databases quickpick
-			should(connectionInfo.database).equal('testDb');
+			should(connectionInfo.database).equal('testDb',	'connectionInfo.database should be testDb after user selects testDb');
 		});
 
 		it('Should create azure function project using command via the sql server table OE', async function (): Promise<void> {
@@ -104,7 +104,7 @@ describe('AzureFunctionsService', () => {
 			let connectionDetails = { options: connectionInfo };
 			testUtils.vscodeMssqlIExtension.setup(x => x.getConnectionString(connectionDetails, true, false)).returns(() => Promise.resolve('testConnectionString'));
 
-			const spy = sinon.spy(vscode.window, 'showErrorMessage');
+			const showErrorMessageSpy = sinon.spy(vscode.window, 'showErrorMessage');
 
 			// select input or output binding
 			let quickpickStub = sinon.stub(vscode.window, 'showQuickPick').resolves(<any>{ label: constants.input, type: BindingType.input });
@@ -118,12 +118,12 @@ describe('AzureFunctionsService', () => {
 			quickpickStub.onSecondCall().resolves(<any>{ label: constants.createNewLocalAppSettingWithIcon });
 			inputStub.onSecondCall().resolves('SqlConnectionString');
 			// promptConnectionStringPasswordAndUpdateConnectionString - tested in AzureFunctionUtils.test.ts
-			quickpickStub.onThirdCall().returns(Promise.resolve(constants.yesString) as any);
+			quickpickStub.onThirdCall().resolves((constants.yesString) as any);
 			testUtils.vscodeMssqlIExtension.setup(x => x.getConnectionString(connectionDetails, true, false)).returns(() => Promise.resolve('testConnectionString'));
 			// setLocalAppSetting with connection string setting name and connection string
 			// fails if we dont set writeFile stub
 			sinon.stub(fs.promises, 'writeFile');
-			sinon.stub(azureFunctionUtils, 'setLocalAppSetting').withArgs(sinon.match.any, 'SqlConnectionString', 'testConnectionString').returns(Promise.resolve(true));
+			sinon.stub(azureFunctionUtils, 'setLocalAppSetting').withArgs(sinon.match.any, 'SqlConnectionString', 'testConnectionString').resolves((true));
 			sinon.stub(utils, 'executeCommand').resolves('downloaded nuget package');
 
 			const testWatcher = TypeMoq.Mock.ofType<vscode.FileSystemWatcher>().object;
@@ -131,9 +131,9 @@ describe('AzureFunctionsService', () => {
 
 			await azureFunctionService.createAzureFunction(tableTestNode);
 
-			should(spy.notCalled).be.true('showErrorMessage should not have been called');
+			should(showErrorMessageSpy.notCalled).be.true('showErrorMessage should not have been called');
 			// set the connection info to be the one used from the test table node from OE
-			should(connectionInfo.database).equal('testDb');
+			should(connectionInfo.database).equal('testDb','connectionInfo.database should be testDb after user selects testDb');
 		});
 
 		it('Should open link to learn more about SQL bindings when no azure function project found in folder or workspace', async function (): Promise<void> {
@@ -145,8 +145,8 @@ describe('AzureFunctionsService', () => {
 			let connectionDetails = { options: connectionInfo };
 			testUtils.vscodeMssqlIExtension.setup(x => x.getConnectionString(connectionDetails, true, false)).returns(() => Promise.resolve('testConnectionString'));
 
-			const executeCommandSpy = sinon.stub(vscode.commands, 'executeCommand').withArgs(sinon.match.any, sinon.match.any).returns(Promise.resolve());
-			const showErrorStub = sinon.stub(vscode.window, 'showErrorMessage').returns(Promise.resolve(constants.learnMore) as any);
+			const executeCommandSpy = sinon.stub(vscode.commands, 'executeCommand').withArgs(sinon.match.any, sinon.match.any).resolves();
+			const showErrorStub = sinon.stub(vscode.window, 'showErrorMessage').resolves((constants.learnMore) as any);
 			await azureFunctionService.createAzureFunction();
 
 			should(executeCommandSpy.calledOnce).be.true('showErrorMessage should have been called');
@@ -163,10 +163,10 @@ describe('AzureFunctionsService', () => {
 			testUtils.vscodeMssqlIExtension.setup(x => x.getConnectionString(connectionDetails, true, false)).returns(() => Promise.resolve('testConnectionString'));
 
 			// error since no project file found in workspace or folder
-			const showErrorStub = sinon.stub(vscode.window, 'showErrorMessage').returns(Promise.resolve(constants.createProject) as any);
+			const showErrorStub = sinon.stub(vscode.window, 'showErrorMessage').resolves((constants.createProject) as any);
 
 			// user chooses to browse for folder
-			let quickpickStub = sinon.stub(vscode.window, 'showQuickPick').returns(Promise.resolve(constants.browseEllipsisWithIcon) as any);
+			let quickpickStub = sinon.stub(vscode.window, 'showQuickPick').resolves((constants.browseEllipsisWithIcon) as any);
 
 			// stub out folder to be chosen (showOpenDialog)
 			sinon.stub(vscode.window, 'showOpenDialog').withArgs(sinon.match.any).resolves([vscode.Uri.file(projectFilePath)]);
@@ -182,12 +182,12 @@ describe('AzureFunctionsService', () => {
 			quickpickStub.onThirdCall().resolves(<any>{ label: constants.createNewLocalAppSettingWithIcon });
 			inputStub.onSecondCall().resolves('SqlConnectionString');
 			// promptConnectionStringPasswordAndUpdateConnectionString - tested in AzureFunctionUtils.test.ts
-			quickpickStub.onCall(3).returns(Promise.resolve(constants.yesString) as any);
+			quickpickStub.onCall(3).resolves((constants.yesString) as any);
 			testUtils.vscodeMssqlIExtension.setup(x => x.getConnectionString(connectionDetails, true, false)).returns(() => Promise.resolve('testConnectionString'));
 			// setLocalAppSetting with connection string setting name and connection string
 			// fails if we dont set writeFile stub
 			sinon.stub(fs.promises, 'writeFile');
-			sinon.stub(azureFunctionUtils, 'setLocalAppSetting').withArgs(sinon.match.any, 'SqlConnectionString', 'testConnectionString').returns(Promise.resolve(true));
+			sinon.stub(azureFunctionUtils, 'setLocalAppSetting').withArgs(sinon.match.any, 'SqlConnectionString', 'testConnectionString').resolves((true));
 			sinon.stub(utils, 'executeCommand').resolves('downloaded nuget package');
 
 			const testWatcher = TypeMoq.Mock.ofType<vscode.FileSystemWatcher>().object;

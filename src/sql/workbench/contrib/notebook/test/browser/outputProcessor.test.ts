@@ -67,6 +67,20 @@ suite('OutputProcessor functions', function (): void {
 				verifyGetDataForStreamOutput(output);
 			});
 		}
+
+		// unknown output types
+		test('Should report an error for unknown output types', () => {
+			const output = {
+				output_type: 'unknown',
+				data: {
+					'text/html': 'Test text'
+				},
+				metadata: {}
+			};
+			const result = op.getData(<any>output);
+			assert(result['application/vnd.jupyter.stderr'] !== undefined, 'Should set an error message after receiving unknown output type.');
+			assert(result['text/html'] === undefined, 'Should not add any data after receiving unknown output type.');
+		});
 	});
 
 	suite('getMetadata', function (): void {

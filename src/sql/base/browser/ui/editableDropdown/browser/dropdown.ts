@@ -51,6 +51,10 @@ export interface IDropdownOptions extends IDropdownStyles {
 	 * Value to use as aria-label for the input box
 	 */
 	ariaLabel?: string;
+	/**
+	 * Value to use as aria-description for the input box
+	 */
+	ariaDescription?: string;
 }
 
 export interface IDropdownStyles {
@@ -115,7 +119,8 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 				validation: v => this._inputValidator(v)
 			},
 			placeholder: this._options.placeholder,
-			ariaLabel: this._options.ariaLabel
+			ariaLabel: this._options.ariaLabel,
+			ariaDescription: this._options.ariaDescription
 		});
 
 		// Clear title from input box element (defaults to placeholder value) since we don't want a tooltip for the selected value
@@ -310,6 +315,8 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 
 	private _updateDropDownList(): void {
 		this._selectList.splice(0, this._selectList.length, this._dataSource.filteredValues.map(v => { return { text: v }; }));
+		const selectedIndex = this._dataSource.filteredValues.indexOf(this.value);
+		this._selectList.setSelection(selectedIndex !== -1 ? [selectedIndex] : []);
 
 		let width = this._inputContainer.clientWidth;
 
