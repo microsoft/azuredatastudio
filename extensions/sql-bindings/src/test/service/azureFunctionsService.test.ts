@@ -26,7 +26,7 @@ describe('AzureFunctionsService', () => {
 	beforeEach(function (): void {
 		testUtils = createTestUtils();
 	});
-	describe.skip('Create Azure Function with SQL Binding', () => {
+	describe('Create Azure Function with SQL Binding', () => {
 		it('Should show info message to install azure functions extension if not installed', async function (): Promise<void> {
 			const infoStub = sinon.stub(vscode.window, 'showInformationMessage').resolves(undefined);
 			await azureFunctionService.createAzureFunction();
@@ -75,7 +75,7 @@ describe('AzureFunctionsService', () => {
 			testUtils.vscodeMssqlIExtension.setup(x => x.getConnectionString(connectionDetails, true, false)).returns(() => Promise.resolve('testConnectionString'));
 			// setLocalAppSetting with connection string setting name and connection string
 			// fails if we dont set writeFile stub
-			sinon.stub(fs.promises, 'writeFile');
+			sinon.stub(fs.promises, 'writeFile').resolves();
 			sinon.stub(azureFunctionUtils, 'setLocalAppSetting').withArgs(sinon.match.any, 'SqlConnectionString', 'testConnectionString').resolves((true));
 			sinon.stub(utils, 'executeCommand').resolves('downloaded nuget package');
 
@@ -118,7 +118,7 @@ describe('AzureFunctionsService', () => {
 			testUtils.vscodeMssqlIExtension.setup(x => x.getConnectionString(connectionDetails, true, false)).returns(() => Promise.resolve('testConnectionString'));
 			// setLocalAppSetting with connection string setting name and connection string
 			// fails if we dont set writeFile stub
-			sinon.stub(fs.promises, 'writeFile');
+			sinon.stub(fs.promises, 'writeFile').resolves();
 			sinon.stub(azureFunctionUtils, 'setLocalAppSetting').withArgs(sinon.match.any, 'SqlConnectionString', 'testConnectionString').resolves((true));
 			sinon.stub(utils, 'executeCommand').resolves('downloaded nuget package');
 
@@ -183,7 +183,7 @@ describe('AzureFunctionsService', () => {
 			testUtils.vscodeMssqlIExtension.setup(x => x.getConnectionString(connectionDetails, true, false)).returns(() => Promise.resolve('testConnectionString'));
 			// setLocalAppSetting with connection string setting name and connection string
 			// fails if we dont set writeFile stub
-			sinon.stub(fs.promises, 'writeFile');
+			sinon.stub(fs.promises, 'writeFile').resolves();
 			sinon.stub(azureFunctionUtils, 'setLocalAppSetting').withArgs(sinon.match.any, 'SqlConnectionString', 'testConnectionString').resolves((true));
 			sinon.stub(utils, 'executeCommand').resolves('downloaded nuget package');
 
@@ -197,7 +197,7 @@ describe('AzureFunctionsService', () => {
 		});
 	});
 
-	describe.skip('Cancel/Error scenarios for Azure Function with SQL Binding ', function (): void {
+	describe('Cancel/Error scenarios for Azure Function with SQL Binding ', function (): void {
 		let quickPickStub: sinon.SinonStub;
 		beforeEach(function (): void {
 			sinon.stub(azureFunctionUtils, 'getAzureFunctionsExtensionApi').resolves(testUtils.azureFunctionsExtensionApi.object); // set azure functions extension api
