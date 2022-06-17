@@ -2692,7 +2692,7 @@ declare module 'azdata' {
 	 * Supports defining a model that can be instantiated as a view in the UI
 	 */
 	export interface ModelBuilder {
-		navContainer(): ContainerBuilder<NavContainer, any, any, ComponentProperties>;
+		navContainer(): ContainerBuilder<NavContainer, any, any, ContainerProperties>;
 		divContainer(): DivBuilder;
 		flexContainer(): FlexBuilder;
 		splitViewContainer(): SplitViewBuilder;
@@ -2772,7 +2772,7 @@ declare module 'azdata' {
 	}
 
 	// Building on top of flex item
-	export interface SplitViewBuilder extends ContainerBuilder<SplitViewContainer, SplitViewLayout, FlexItemLayout, ComponentProperties> {
+	export interface SplitViewBuilder extends ContainerBuilder<SplitViewContainer, SplitViewLayout, FlexItemLayout, ContainerProperties> {
 	}
 
 	export interface DivBuilder extends ContainerBuilder<DivContainer, DivLayout, DivItemLayout, DivContainerProperties> {
@@ -2781,8 +2781,8 @@ declare module 'azdata' {
 	export interface GroupBuilder extends ContainerBuilder<GroupContainer, GroupLayout, GroupItemLayout, GroupContainerProperties> {
 	}
 
-	export interface ToolbarBuilder extends ContainerBuilder<ToolbarContainer, ToolbarLayout, any, ComponentProperties> {
-		withToolbarItems(components: ToolbarComponent[]): ContainerBuilder<ToolbarContainer, ToolbarLayout, any, ComponentProperties>;
+	export interface ToolbarBuilder extends ContainerBuilder<ToolbarContainer, ToolbarLayout, any, ContainerProperties> {
+		withToolbarItems(components: ToolbarComponent[]): ContainerBuilder<ToolbarContainer, ToolbarLayout, any, ContainerProperties>;
 
 		/**
 		 * Creates a collection of child components and adds them all to this container
@@ -2807,7 +2807,7 @@ declare module 'azdata' {
 		withItem(component: Component): LoadingComponentBuilder;
 	}
 
-	export interface FormBuilder extends ContainerBuilder<FormContainer, FormLayout, FormItemLayout, ComponentProperties> {
+	export interface FormBuilder extends ContainerBuilder<FormContainer, FormLayout, FormItemLayout, ContainerProperties> {
 		withFormItems(components: (FormComponent | FormComponentGroup)[], itemLayout?: FormItemLayout): FormBuilder;
 
 		/**
@@ -3324,6 +3324,13 @@ declare module 'azdata' {
 		CSSStyles?: CssStyles | undefined;
 	}
 
+	/**
+	 * Common properties for container components such as {@link DivContainer} or {@link FlexContainer}
+	 */
+	export interface ContainerProperties extends ComponentProperties {
+
+	}
+
 	export type ThemedIconPath = { light: string | vscode.Uri; dark: string | vscode.Uri };
 	export type IconPath = string | vscode.Uri | ThemedIconPath;
 
@@ -3544,7 +3551,7 @@ declare module 'azdata' {
 	export interface ImageComponentProperties extends ComponentWithIconProperties {
 	}
 
-	export interface GroupContainerProperties extends ComponentProperties {
+	export interface GroupContainerProperties extends ContainerProperties {
 		collapsed: boolean;
 	}
 
@@ -4357,12 +4364,12 @@ declare module 'azdata' {
 	/**
 	 * Builder for TabbedPanelComponent
 	 */
-	export interface TabbedPanelComponentBuilder extends ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any, ComponentProperties> {
+	export interface TabbedPanelComponentBuilder extends ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any, ContainerProperties> {
 		/**
 		 * Add the tabs to the component
 		 * @param tabs tabs/tab groups to be added
 		 */
-		withTabs(tabs: (Tab | TabGroup)[]): ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any, ComponentProperties>;
+		withTabs(tabs: (Tab | TabGroup)[]): ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any, ContainerProperties>;
 	}
 
 	export interface SliderComponentProperties extends ComponentProperties {

@@ -348,7 +348,8 @@ class ContainerBuilderImpl<TComponent extends azdata.Component, TLayout, TItemLa
 	}
 
 	override withProps(properties: TPropertyBag): azdata.ContainerBuilder<TComponent, TLayout, TItemLayout, TPropertyBag> {
-		this._component.properties = Object.assign({}, this._component.properties, properties);
+		// We use the same basic logic to set the properties but return this so we can return the container object type
+		super.withProps(properties);
 		return this;
 	}
 
