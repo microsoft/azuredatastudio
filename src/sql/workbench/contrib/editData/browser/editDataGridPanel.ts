@@ -268,7 +268,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		return (index: number): void => {
 			// If the user is deleting a new row that hasn't been committed yet then use the revert code
 			if (self.newRowVisible && index === self.dataSet.dataRows.getLength() - 2) {
-				self.revertCurrentRow().catch(onUnexpectedError);
+				self.revertSelectedRow(index).catch(onUnexpectedError);
 			}
 			else if (self.isNullRow(index)) {
 				// Don't try to delete NULL (new) row since it doesn't actually exist and will throw an error
@@ -287,7 +287,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	onRevertRow(): () => void {
 		const self = this;
 		return (): void => {
-			self.revertCurrentRow().catch(onUnexpectedError);
+			self.revertSelectedRow(self.previousSavedCell.row).catch(onUnexpectedError);
 		};
 	}
 
@@ -559,13 +559,13 @@ export class EditDataGridPanel extends GridParentComponent {
 		let handled: boolean = false;
 
 		if (e.keyCode === KeyCode.Escape) {
-			if (this.previousSavedCell && this.isNullRow(this.previousSavedCell.row)) {
+			if ((this.lastClickedCell && this.isNullRow(this.lastClickedCell.row)) || (this.previousSavedCell && this.isNullRow(this.previousSavedCell.row))) {
 				document.execCommand('selectAll');
 				document.execCommand('delete');
 				document.execCommand('insertText', false, 'NULL');
 			}
 			else {
-				this.revertCurrentRow().catch(onUnexpectedError);
+				this.revertSelectedRow(this.previousSavedCell.row).catch(onUnexpectedError);
 			}
 			handled = true;
 		}
@@ -600,14 +600,15 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	// Private Helper Functions ////////////////////////////////////////////////////////////////////////////
 
-	private async revertCurrentRow(): Promise<void> {
-		let currentNewRowIndex = this.dataSet.totalRows - 1;
-		if (this.newRowVisible && this.previousSavedCell.row === currentNewRowIndex) {
+	private async revertSelectedRow(rowNumber: number): Promise<void> {
+		let currentNewRowIndex = this.dataSet.totalRows - 2;
+		if (this.newRowVisible && rowNumber === currentNewRowIndex) {
 			// revert our last new row
 			this.removingNewRow = true;
 
 			this.dataService.revertRow(this.rowIdMappings[currentNewRowIndex])
 				.then(() => {
+					this.rowIdMappings[currentNewRowIndex] = undefined;
 					return this.removeRow(currentNewRowIndex, true);
 				}).then(() => {
 					this.newRowVisible = false;
@@ -616,21 +617,15 @@ export class EditDataGridPanel extends GridParentComponent {
 		} else {
 			try {
 				// Perform a revert row operation
-				if (this.previousSavedCell && this.previousSavedCell.row !== undefined) {
-					await this.dataService.revertRow(this.previousSavedCell.row);
-				}
+				await this.dataService.revertRow(rowNumber);
 			} finally {
 				// The operation may fail if there were no changes sent to the service to revert,
 				// so clear any existing client-side edit and refresh on-screen data
 				// do not refresh the whole dataset as it will move the focus away to the first row.
 				//
 				this.dirtyCells = [];
-				let row = this.previousSavedCell.row;
 				this.resetCurrentCell();
-
-				if (row !== undefined) {
-					this.dataSet.dataRows.resetWindowsAroundIndex(row);
-				}
+				this.dataSet.dataRows.resetWindowsAroundIndex(rowNumber);
 			}
 		}
 	}
@@ -670,9 +665,7 @@ export class EditDataGridPanel extends GridParentComponent {
 					let errorPromise: Thenable<void> = Promise.resolve();
 					if (refreshGrid) {
 						// TODO - Need to figure out how to handle a new row with invalid values and to undo the addRow promise.
-						self.rowIdMappings[cellToAdd.row] = undefined;
-						self.newRowVisible = false;
-						errorPromise = self.dataService.deleteRow(cellToAdd.row).then(() => self.removeRow(cellToAdd.Row, false));
+						return this.revertSelectedRow(cellToAdd.row);
 					}
 					return errorPromise.then(() => { errorHandler(error); });
 				}
