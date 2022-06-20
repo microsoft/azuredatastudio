@@ -381,36 +381,36 @@ export class PanelComponent extends Disposable implements IThemable {
 	style(styles: ITabbedPanelStyles) {
 		if (this._styleElement) {
 			const content: string[] = [];
-			if (styles.titleInactiveForeground) {
+			if (styles.titleInSelectedForeground) {
 				content.push(`.tabbedPanel.horizontal > .title .tabList .tab-header {
-					color: ${styles.titleInactiveForeground}
+					color: ${styles.titleInSelectedForeground}
 				}`);
 			}
-			if (styles.titleActiveBorder && styles.titleActiveForeground) {
-				content.push(`.tabbedPanel.horizontal > .title .tabList .tab-header.active {
-					border-color: ${styles.titleActiveBorder};
+			if (styles.titleSelectedBorder && styles.titleSelectedForeground) {
+				content.push(`.tabbedPanel.horizontal > .title .tabList .tab-header.selected {
+					border-color: ${styles.titleSelectedBorder};
 					border-style: solid;
-					color: ${styles.titleActiveForeground}
+					color: ${styles.titleSelectedForeground}
 				}`);
 
-				content.push(`.tabbedPanel.horizontal > .title .tabList .tab-header.active {;
-					border-width: 0 0 ${styles.activeTabContrastBorder ? '0' : '2'}px 0;
+				content.push(`.tabbedPanel.horizontal > .title .tabList .tab-header.selected {;
+					border-width: 0 0 ${styles.selectedTabContrastBorder ? '0' : '2'}px 0;
 				}`);
 
 				content.push(`.tabbedPanel.horizontal > .title .tabList .tab-header:hover {
-					color: ${styles.titleActiveForeground}
+					color: ${styles.titleSelectedForeground}
 				}`);
 
 				content.push(`.tabbedPanel.horizontal > .title .tabList .tab-header:focus {
 					outline: 1px solid;
 					outline-offset: 2px;
-					outline-color: ${styles.titleActiveBorder};
+					outline-color: ${styles.titleSelectedBorder};
 				}`);
 			}
 
-			if (styles.activeBackgroundForVerticalLayout) {
-				content.push(`.tabbedPanel.vertical > .title .tabList .tab-header.active {
-					background-color:${styles.activeBackgroundForVerticalLayout}
+			if (styles.selectedBackgroundForVerticalLayout) {
+				content.push(`.tabbedPanel.vertical > .title .tabList .tab-header.selected {
+					background-color:${styles.selectedBackgroundForVerticalLayout}
 				}`);
 			}
 
@@ -426,12 +426,12 @@ export class PanelComponent extends Disposable implements IThemable {
 				}`);
 			}
 
-			if (styles.activeTabContrastBorder) {
+			if (styles.selectedTabContrastBorder) {
 				content.push(`
-				.tabbedPanel > .title .tabList .tab-header.active {
+				.tabbedPanel > .title .tabList .tab-header.selected {
 					outline: 1px solid;
 					outline-offset: -3px;
-					outline-color: ${styles.activeTabContrastBorder};
+					outline-color: ${styles.selectedTabContrastBorder};
 				}
 			`);
 			}

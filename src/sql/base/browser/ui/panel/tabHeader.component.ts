@@ -19,10 +19,10 @@ import { CloseTabAction } from 'sql/base/browser/ui/panel/tabActions';
 @Component({
 	selector: 'tab-header',
 	template: `
-		<div #actionHeader role="tab" [attr.aria-selected]="tab.selected" [attr.aria-label]="tab.title" class="tab-header" style="flex: 0 0; flex-direction: row;" [class.active]="tab.selected" [attr.tabindex] = "_tabIndex" (click)="selectTab(tab)" (keyup)="onKey($event)">
+		<div #actionHeader role="tab" [attr.aria-selected]="tab.selected" [attr.aria-label]="tab.title" class="tab-header" style="flex: 0 0; flex-direction: row;" [class.selected]="tab.selected" [attr.tabindex] = "_tabIndex" (click)="selectTab(tab)" (keyup)="onKey($event)">
 			<div class="tab" role="presentation">
 				<a #tabIcon *ngIf="showIcon && tab.iconClass" class="tabIcon codicon icon {{tab.iconClass}}"></a>
-				<a class="tabLabel" [class.active]="tab.selected" [title]="tab.title" #tabLabel>{{tab.title}}</a>
+				<a class="tabLabel" [class.selected]="tab.selected" [title]="tab.title" #tabLabel>{{tab.title}}</a>
 			</div>
 			<div #actionbar style="flex: 0 0 auto; align-self: end; margin-top: auto; margin-bottom: auto;" ></div>
 		</div>

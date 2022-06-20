@@ -1101,8 +1101,8 @@ export class Designer extends Disposable implements IThemable {
 	private saveUIState(): void {
 		if (this._input) {
 			this._input.designerUIState = {
-				activeContentTabId: this._contentTabbedPanel.activeTabId,
-				activeScriptTabId: this._scriptTabbedPannel.activeTabId
+				activeContentTabId: this._contentTabbedPanel.selectedTabId,
+				activeScriptTabId: this._scriptTabbedPannel.selectedTabId
 			};
 		}
 	}
