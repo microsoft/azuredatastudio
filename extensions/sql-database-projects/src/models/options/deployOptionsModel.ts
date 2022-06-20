@@ -18,7 +18,7 @@ export class DeployOptionsModel {
 	constructor(defaultOptions: mssql.DeploymentOptions) {
 		this.deploymentOptions = defaultOptions;
 		this.UpdateOptionsMapTable();
-		this.optionsLabels = Object.keys(Object.fromEntries(this.deploymentOptions.optionsMapTable)).sort() || Object.keys(this.deploymentOptions.optionsMapTable).sort();
+		this.optionsLabels = Object.keys(Object.fromEntries(this.deploymentOptions.optionsMapTable)).sort();
 		this.includeObjectTypeLabels = Object.keys(Object.fromEntries(this.deploymentOptions.includeObjectsTable)).sort();
 	}
 

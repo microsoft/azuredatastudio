@@ -334,16 +334,16 @@ export async function getDefaultPublishDeploymentOptions(project: Project): Prom
 	} else {
 		deploymentOptions.excludeObjectTypes.value = (deploymentOptions as vscodeMssql.DeploymentOptions).excludeObjectTypes.value?.filter(x => x !== deploymentOptions.includeObjectsTable.get('DatabaseScopedCredentials'));
 	}
-
 	// this option needs to be true for same database references validation to work
 	if (project.databaseReferences.length > 0) {
 		deploymentOptions.includeCompositeObjects.value = true;
 
 		// Updating optionsMapTable as this Map table is sending back the option values to the DacFx
-		let propVal = deploymentOptions.optionsMapTable.get('include Composite Objects');
+		const includeCompositeObjectDisplayName = 'Include composite objects';
+		let propVal = deploymentOptions.optionsMapTable.get(includeCompositeObjectDisplayName);
 		if (propVal !== undefined) {
 			propVal.value = true;
-			deploymentOptions.optionsMapTable.set('include Composite Objects', propVal);
+			deploymentOptions.optionsMapTable.set(includeCompositeObjectDisplayName, propVal);
 		}
 	}
 	return result.defaultDeploymentOptions;
