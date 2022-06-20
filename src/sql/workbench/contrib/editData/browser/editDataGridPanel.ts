@@ -314,27 +314,6 @@ export class EditDataGridPanel extends GridParentComponent {
 
 		// get the cell we have just immediately clicked (to set as the new active cell in handleChanges), only done if another cell is not currently being processed.
 		this.lastClickedCell = { row, column, isEditable };
-
-		let cellSelectTasks: Promise<void> = Promise.resolve();
-
-		//Handle case where you edit the starting cell.
-		if (this.lastClickedCell === undefined || this.lastClickedCell.row !== this.previousSavedCell.row || this.isNullRow(this.lastClickedCell.row)) {
-			// We're changing row, commit the changes
-			cellSelectTasks = cellSelectTasks.then(() => {
-				return this.commitEditTask();
-			});
-		}
-
-		cellSelectTasks = cellSelectTasks.then(() => {
-			// At the end of a successful cell select, update the currently selected cell
-			this.setCurrentCell(this.lastClickedCell.row, this.lastClickedCell.column);
-			this.updateEnabledState(true);
-			this.focusCell(this.lastClickedCell.row, this.lastClickedCell.column);
-		});
-
-		// Cap off any failed promises, since they'll be handled
-		cellSelectTasks.catch(() => {
-		});
 	}
 
 	private commitEditTask(): Thenable<void> {
@@ -374,10 +353,15 @@ export class EditDataGridPanel extends GridParentComponent {
 				// Cell update was successful, update the flags
 				self.setCellDirtyState(cellToSubmit.row, cellToSubmit.column, result.cell.isDirty);
 				self.setRowDirtyState(cellToSubmit.row, result.isRowDirty);
-				if (this.isNullRow((cellToSubmit.row + 1)) && this.lastClickedCell.row === cellToSubmit.row && this.lastClickedCell.column === cellToSubmit.column) {
+				let nullCommit = this.isNullRow(cellToSubmit.row + 1) && this.lastClickedCell.row === cellToSubmit.row && this.lastClickedCell.column === cellToSubmit.column;
+				let regularCommit = this.lastClickedCell.row !== cellToSubmit.row || this.lastClickedCell.column !== cellToSubmit.column;
+				if (regularCommit || nullCommit) {
 					this.commitEditTask().then(() => {
 						// At the end of a successful cell select, update the currently selected cell
-						this.lastClickedCell = { row: cellToSubmit.row + 1, column: cellToSubmit.column, isEditable: true };
+						if (this.lastClickedCell.row === cellToSubmit.row && this.lastClickedCell.column === cellToSubmit.column) {
+							this.lastClickedCell = { row: cellToSubmit.row + 1, column: cellToSubmit.column, isEditable: true };
+						}
+						// At the end of a successful cell select, update the currently selected cell
 						this.setCurrentCell(this.lastClickedCell.row, this.lastClickedCell.column);
 						this.updateEnabledState(true);
 						this.focusCell(this.lastClickedCell.row, this.lastClickedCell.column);
@@ -664,8 +648,12 @@ export class EditDataGridPanel extends GridParentComponent {
 				error => {
 					let errorPromise: Thenable<void> = Promise.resolve();
 					if (refreshGrid) {
-						// TODO - Need to figure out how to handle a new row with invalid values and to undo the addRow promise.
-						return this.revertSelectedRow(cellToAdd.row);
+						let message = 'Error: invalid value entered in new row, reverting changes, please enter a valid value.';
+						self.notificationService.notify({
+							severity: Severity.Error,
+							message: message
+						});
+						errorPromise = this.revertSelectedRow(cellToAdd.row);
 					}
 					return errorPromise.then(() => { errorHandler(error); });
 				}
