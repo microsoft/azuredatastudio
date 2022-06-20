@@ -493,12 +493,14 @@ declare module 'vscode-mssql' {
 		value: boolean;
 		description: string;
 		propertyName: string;
+		optionType: string;
 	}
 
 	export interface DacDeployOptionPropertyObject {
 		value: SchemaObjectType[];
 		description: string;
 		propertyName: string;
+		optionType: string;
 	}
 
 	export interface DeploymentOptions {
@@ -597,6 +599,7 @@ declare module 'vscode-mssql' {
 		ignoreSensitivityClassifications: DacDeployOptionPropertyBoolean;
 		doNotDropDatabaseWorkloadGroups: DacDeployOptionPropertyBoolean;
 		optionsMapTable: Map<string, DacDeployOptionPropertyBoolean>;
+		includeObjectsTable: Map<string, number>;
 	}
 
 	/**

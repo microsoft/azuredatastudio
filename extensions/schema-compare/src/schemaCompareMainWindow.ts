@@ -347,7 +347,14 @@ export class SchemaCompareMainWindow {
 
 	public setDeploymentOptions(deploymentOptions: mssql.DeploymentOptions): void {
 		this.deploymentOptions = deploymentOptions;
-		this.deploymentOptions.optionsMapTable = JSON.parse(JSON.stringify(Object.fromEntries(Object.entries(this.deploymentOptions.optionsMapTable).map((x) => [x[0].charAt(0).toUpperCase() + x[0].slice(1), x[1]]))));
+	}
+
+	public ConvertObjectToMapTable(deploymentOptions: mssql.DeploymentOptions): mssql.DeploymentOptions {
+		// Options are coming as lower case and converting the first character to upper case
+		deploymentOptions.optionsMapTable = new Map(Object.entries(deploymentOptions.optionsMapTable).map((x) => [x[0].charAt(0).toUpperCase() + x[0].slice(1), x[1]]));
+		deploymentOptions.includeObjectsTable = new Map(Object.entries(deploymentOptions.includeObjectsTable).map((x) => [x[0].charAt(0).toUpperCase() + x[0].slice(1), x[1]]));
+
+		return deploymentOptions;
 	}
 
 	private async populateProjectScripts(endpointInfo: mssql.SchemaCompareEndpointInfo): Promise<void> {
@@ -1103,6 +1110,7 @@ export class SchemaCompareMainWindow {
 		this.targetEndpointInfo = await this.constructEndpointInfo(result.targetEndpointInfo, loc.targetTitle);
 
 		this.updateSourceAndTarget();
+		result.deploymentOptions = this.ConvertObjectToMapTable(result.deploymentOptions);
 		this.setDeploymentOptions(result.deploymentOptions);
 		this.scmpSourceExcludes = result.excludedSourceElements;
 		this.scmpTargetExcludes = result.excludedTargetElements;
@@ -1236,6 +1244,7 @@ export class SchemaCompareMainWindow {
 		// Same as dacfx default options
 		const service = await this.getService();
 		let result = await service.schemaCompareGetDefaultOptions();
+		result.defaultDeploymentOptions = this.ConvertObjectToMapTable(result.defaultDeploymentOptions);
 		this.setDeploymentOptions(result.defaultDeploymentOptions);
 	}
 }

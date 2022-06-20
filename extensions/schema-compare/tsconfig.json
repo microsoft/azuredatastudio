@@ -5,8 +5,7 @@
 		"outDir": "./out",
 		"lib": [
 			"es6",
-			"es2015.promise",
-			"ES2019.Object"
+			"es2015.promise"
 		],
 		"sourceMap": true,
 		"emitDecoratorMetadata": true,
