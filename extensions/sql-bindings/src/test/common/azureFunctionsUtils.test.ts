@@ -44,7 +44,7 @@ describe('AzureFunctionUtils', function (): void {
 			"Values": {"test1": "test1", "test2": "test2", "test3":"test3"}}`
 			);
 
-			let writeFileStub = sinon.stub(fs.promises, 'writeFile');
+			let writeFileStub = sinon.stub(fs.promises, 'writeFile').resolves();
 			await azureFunctionsUtils.setLocalAppSetting(path.dirname(localSettingsPath), 'test4', 'test4');
 			should(writeFileStub.calledWithExactly(localSettingsPath, `{\n  "IsEncrypted": false,\n  "Values": {\n    "test1": "test1",\n    "test2": "test2",\n    "test3": "test3",\n    "test4": "test4"\n  }\n}`)).equals(true, 'writeFile should be called with the correct arguments');
 		});
@@ -77,7 +77,7 @@ describe('AzureFunctionUtils', function (): void {
 			);
 			const connectionString = 'testConnectionString';
 
-			let writeFileStub = sinon.stub(fs.promises, 'writeFile');
+			let writeFileStub = sinon.stub(fs.promises, 'writeFile').resolves();
 			await azureFunctionsUtils.addConnectionStringToConfig(connectionString, rootFolderPath);
 			should(writeFileStub.calledWithExactly(localSettingsPath, `{\n  "IsEncrypted": false,\n  "Values": {\n    "test1": "test1",\n    "test2": "test2",\n    "test3": "test3",\n    "SqlConnectionString": "testConnectionString"\n  }\n}`)).equals(true, 'writeFile should be called with the correct arguments');
 		});

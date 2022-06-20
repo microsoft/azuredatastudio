@@ -640,7 +640,7 @@ export async function promptSelectTable(connectionURI: string, bindingType: Bind
 	// Get schema and table names from query result rows
 	const tableNames = queryResult!.rows.map(r => r[0].displayValue);
 	// add manual entry option to table names list for user to choose from as well (with pencil icon)
-	let manuallyEnterObjectName = '$(pencil) ' + userObjectName;
+	let manuallyEnterObjectName = constants.manuallyEnterObjectName(userObjectName);
 	tableNames.unshift(manuallyEnterObjectName);
 	// prompt user to select table from list of tables options
 	while (true) {
