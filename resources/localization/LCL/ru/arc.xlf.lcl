@@ -2596,6 +2596,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.syncSecondaryToCommit" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Sync Secondary To Commit]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Синхронизировать получателя для фиксации]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4711,6 +4714,9 @@
       <Item ItemId=";extensions/arc/package.arc.sql.sync.secondaries.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The number of synchronous replicas required to commit a transaction before the primary replica is allowed to commit. Setting this value to -1 will set the number of required synchronized secondaries to '(# of replicas - 1) / 2', rounded down.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Количество синхронных реплик, необходимых для фиксации транзакции, прежде чем первичная реплика будет разрешена для фиксации. Если задано значение -1, количество обязательных синхронных получателей рассчитывается по формуле "(количество реплик – 1) / 2" (округляется в меньшую сторону).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
