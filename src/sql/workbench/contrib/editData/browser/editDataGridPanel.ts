@@ -897,6 +897,7 @@ export class EditDataGridPanel extends GridParentComponent {
 
 			if (dataSet.columnDefinitions) {
 				this.table = new Table(this.nativeElement.appendChild(newGridContainer), { dataProvider: this.gridDataProvider, columns: dataSet.columnDefinitions }, options);
+				this.table.autoScroll = true;
 				for (let plugin of this.plugins) {
 					this.table.registerPlugin(plugin);
 				}
@@ -907,6 +908,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		}
 		else {
 			this.table = new Table(this.nativeElement.appendChild(newGridContainer));
+			this.table.autoScroll = true;
 		}
 	}
 
@@ -1150,7 +1152,8 @@ export class EditDataGridPanel extends GridParentComponent {
 		/* tslint:disable:no-null-keyword */
 		let valueMissing = value === undefined || value === null || (Services.DBCellValue.isDBCellValue(value) && value.isNull) || value === 'NULL';
 		let isStringNull = (Services.DBCellValue.isDBCellValue(value) && !value.isNull && value.displayValue === 'NULL');
-		if (valueMissing) {
+		let isRerenderNull = (Services.DBCellValue.isDBCellValue(value) && !value.isNull && value.displayValue === '');
+		if (valueMissing || isRerenderNull) {
 			valueToDisplay = 'NULL';
 			cellClasses += ' missing-value';
 		}
