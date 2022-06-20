@@ -99,7 +99,7 @@ registerAction2(class extends Action2 {
 		const editorService = accessor.get(IEditorService);
 		const quickInputService = accessor.get(IQuickInputService);
 		const labelService = accessor.get(ILabelService);
-		// const logService = accessor.get(ILogService); {{SQL CARBON EDIT}} Remove unused
+		const logService = accessor.get(ILogService);
 		const paneCompositeService = accessor.get(IPaneCompositePartService);
 
 		let editor: INotebookEditor | undefined;
@@ -117,7 +117,7 @@ registerAction2(class extends Action2 {
 		}
 
 		if (!editor || !editor.hasModel()) {
-			return false; // {{SQL CARBON EDIT}} strict nulls
+			return false;
 		}
 		let controllerId = context && 'id' in context ? context.id : undefined;
 		let extensionId = context && 'extension' in context ? context.extension : undefined;
@@ -133,7 +133,7 @@ registerAction2(class extends Action2 {
 
 		if (selected && controllerId && selected.id === controllerId && ExtensionIdentifier.equals(selected.extension, extensionId)) {
 			// current kernel is wanted kernel -> done
-			return false; // {{SQL CARBON EDIT}} strict nulls
+			return true;
 		}
 
 		let newKernel: INotebookKernel | undefined;
@@ -226,8 +226,9 @@ registerAction2(class extends Action2 {
 
 		if (newKernel) {
 			notebookKernelService.selectKernelForNotebook(newKernel, notebook);
+			return true;
 		}
-		return true; // {{SQL CARBON EDIT}} strict nulls
+		return false;
 	}
 
 	private async _showKernelExtension(paneCompositePartService: IPaneCompositePartService, viewType: string) {

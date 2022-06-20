@@ -123,6 +123,7 @@ export interface IProductConfiguration {
 	readonly reportMarketplaceIssueUrl?: string;
 	readonly licenseUrl?: string;
 	readonly privacyStatementUrl?: string;
+	readonly telemetryOptOutUrl?: string; // {{SQL CARBON EDIT}} add back
 	readonly showTelemetryOptOut?: boolean;
 
 	readonly serverGreeting: string[];
