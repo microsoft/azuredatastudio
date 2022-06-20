@@ -20,9 +20,7 @@ import * as types from 'vs/base/common/types';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
 import EditQueryRunner from 'sql/workbench/services/editData/common/editQueryRunner';
-import { IRange, Range } from 'vs/editor/common/core/range';
-import { IModelService } from 'vs/editor/common/services/modelService';
-import { URI } from 'vs/base/common/uri';
+import { IRange } from 'vs/editor/common/core/range';
 
 const selectionSnippetMaxLen = 100;
 
@@ -84,8 +82,7 @@ export class QueryModelService implements IQueryModelService {
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@INotificationService private _notificationService: INotificationService,
-		@ILogService private _logService: ILogService,
-		@IModelService private _modelService: IModelService
+		@ILogService private _logService: ILogService
 	) {
 		this._queryInfoMap = new Map<string, QueryInfo>();
 		this._onRunQueryStart = new Emitter<string>();
@@ -290,29 +287,14 @@ export class QueryModelService implements IQueryModelService {
 		});
 		queryRunner.onQueryEnd(totalMilliseconds => {
 			this._onRunQueryComplete.fire(queryRunner.uri);
-			const uri: URI = URI.parse(queryRunner.uri);
-			const model = this._modelService.getModel(uri);
-			let queryText = '';
-			if (model) {
-				// VS Range is 1 based so offset values by 1. The endLine we get back from SqlToolsService is incremented
-				// by 1 from the original input range sent in as well so take that into account and don't modify
-				queryText = info.range?.length > 0 ?
-					model.getValueInRange(new Range(
-						info.range[0].startLineNumber,
-						info.range[0].startColumn,
-						info.range[0].endLineNumber,
-						info.range[0].endColumn)) :
-					// If no specific selection get the entire text
-					model.getValue();
-			}
 			// fire extensibility API event
 			let event: IQueryEvent = {
 				type: 'queryStop',
 				uri: queryRunner.uri,
 				queryInfo:
 				{
-					messages: info.queryRunner!.messages,
-					queryText
+					range: info.range!,
+					messages: info.queryRunner!.messages
 				}
 			};
 			this._onQueryEvent.fire(event);
@@ -329,6 +311,7 @@ export class QueryModelService implements IQueryModelService {
 				uri: queryRunner.uri,
 				queryInfo:
 				{
+					range: info.range!,
 					messages: info.queryRunner!.messages
 				}
 			};
@@ -344,6 +327,7 @@ export class QueryModelService implements IQueryModelService {
 				uri: queryRunner.uri,
 				queryInfo:
 				{
+					range: info.range!,
 					messages: info.queryRunner!.messages
 				}
 			};
@@ -359,6 +343,7 @@ export class QueryModelService implements IQueryModelService {
 				uri: planInfo.fileUri,
 				queryInfo:
 				{
+					range: info.range!,
 					messages: info.queryRunner!.messages
 				},
 				params: planInfo
@@ -373,6 +358,7 @@ export class QueryModelService implements IQueryModelService {
 				uri: qp2Info.fileUri,
 				queryInfo:
 				{
+					range: info.range!,
 					messages: info.queryRunner!.messages
 				},
 				params: qp2Info.planGraphs
@@ -386,6 +372,7 @@ export class QueryModelService implements IQueryModelService {
 				uri: queryRunner.uri,
 				queryInfo:
 				{
+					range: info.range!,
 					messages: info.queryRunner!.messages
 				},
 				params: resultSetInfo
@@ -527,6 +514,7 @@ export class QueryModelService implements IQueryModelService {
 					uri: ownerUri,
 					queryInfo:
 					{
+						range: info.range!,
 						messages: info.queryRunner!.messages
 					},
 				};
@@ -543,6 +531,7 @@ export class QueryModelService implements IQueryModelService {
 					uri: ownerUri,
 					queryInfo:
 					{
+						range: info.range!,
 						messages: info.queryRunner!.messages
 					},
 				};
