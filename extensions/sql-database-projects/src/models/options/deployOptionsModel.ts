@@ -94,7 +94,7 @@ export class DeployOptionsModel {
 	* Gets the selected/default value of the object type option
 	*/
 	public getIncludedObjectsUtil(label: string): boolean | undefined {
-		return (this.deploymentOptions.excludeObjectTypes.value.find(x => x === this.deploymentOptions.includeObjectsTable.get(label))) !== undefined ? false : true;
+		return (this.deploymentOptions.excludeObjectTypes.value?.find(x => x === this.deploymentOptions.includeObjectsTable.get(label))) !== undefined ? false : true;
 	}
 
 	/*
