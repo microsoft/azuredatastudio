@@ -70,15 +70,15 @@ panel {
 	font-weight: 600;
 }
 
-.tabbedPanel .tabList .tab-header:hover:not(.active) {
+.tabbedPanel .tabList .tab-header:hover:not(.selected) {
 	background-color: #dcdcdc;
 	outline: none;
 }
-.vs-dark .tabbedPanel .tabList .tab-header:hover:not(.active) {
+.vs-dark .tabbedPanel .tabList .tab-header:hover:not(.selected) {
 	background-color: #2a2d2e;
 	outline: none;
 }
-.hc-black .tabbedPanel .tabList .tab-header:hover:not(.active) {
+.hc-black .tabbedPanel .tabList .tab-header:hover:not(.selected) {
 	background-color: initial;
 	outline: 1px dashed #f38518;
 	outline-offset: -3px;
@@ -135,7 +135,7 @@ panel {
 	flex: 0 0 auto;
 }
 
-.tab > .tabLabel.active {
+.tab > .tabLabel.selected {
 	border-bottom: 1px solid;
 }
 

@@ -18,7 +18,7 @@ import { isUndefinedOrNull } from 'vs/base/common/types';
 export interface ITabbedPanelStyles {
 	titleSelectedForeground?: Color;
 	titleSelectedBorder?: Color;
-	titleInSelectedForeground?: Color;
+	titleUnSelectedForeground?: Color;
 	focusBorder?: Color;
 	outline?: Color;
 	selectedBackgroundForVerticalLayout?: Color;
@@ -339,10 +339,10 @@ export class TabbedPanel extends Disposable {
 			}`);
 		}
 
-		if (styles.titleInSelectedForeground) {
+		if (styles.titleUnSelectedForeground) {
 			content.push(`
 			.tabbedPanel > .title .tabList .tab .tabLabel {
-				color: ${styles.titleInSelectedForeground};
+				color: ${styles.titleUnSelectedForeground};
 			}`);
 		}
 

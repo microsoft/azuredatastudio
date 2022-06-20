@@ -381,9 +381,9 @@ export class PanelComponent extends Disposable implements IThemable {
 	style(styles: ITabbedPanelStyles) {
 		if (this._styleElement) {
 			const content: string[] = [];
-			if (styles.titleInSelectedForeground) {
+			if (styles.titleUnSelectedForeground) {
 				content.push(`.tabbedPanel.horizontal > .title .tabList .tab-header {
-					color: ${styles.titleInSelectedForeground}
+					color: ${styles.titleUnSelectedForeground}
 				}`);
 			}
 			if (styles.titleSelectedBorder && styles.titleSelectedForeground) {
