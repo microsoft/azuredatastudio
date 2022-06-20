@@ -1010,7 +1010,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	/**
 	 * Refresh Azure access token
-	 * @param uri connection uri
+	 * @param profile connection profile
 	 */
 	public async refreshAzureAccountTokens(profile: ConnectionProfile): Promise<void> {
 
