@@ -362,87 +362,43 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 
 	// show the settings from project's local.settings.json if there's an AF functions project
 	if (projectUri) {
-		let settings;
+		let existingSettings;
 		try {
-			settings = await getLocalSettingsJson(path.join(path.dirname(projectUri.fsPath!), constants.azureFunctionLocalSettingsFileName));
+			existingSettings = await getLocalSettingsJson(path.join(path.dirname(projectUri.fsPath!), constants.azureFunctionLocalSettingsFileName));
 		} catch (e) {
 			void vscode.window.showErrorMessage(utils.getErrorMessage(e));
 			return;
 		}
 
-		// Known Azure settings reference for Azure Functions
-		// https://docs.microsoft.com/en-us/azure/azure-functions/functions-app-settings
-		const knownSettings: string[] = [
-			'APPINSIGHTS_INSTRUMENTATIONKEY',
-			'APPLICATIONINSIGHTS_CONNECTION_STRING',
-			'AZURE_FUNCTION_PROXY_DISABLE_LOCAL_CALL',
-			'AZURE_FUNCTION_PROXY_BACKEND_URL_DECODE_SLASHES',
-			'AZURE_FUNCTIONS_ENVIRONMENT',
-			'AzureWebJobsDashboard',
-			'AzureWebJobsDisableHomepage',
-			'AzureWebJobsDotNetReleaseCompilation',
-			'AzureWebJobsFeatureFlags',
-			'AzureWebJobsKubernetesSecretName',
-			'AzureWebJobsSecretStorageKeyVaultClientId',
-			'AzureWebJobsSecretStorageKeyVaultClientSecret',
-			'AzureWebJobsSecretStorageKeyVaultName',
-			'AzureWebJobsSecretStorageKeyVaultTenantId',
-			'AzureWebJobsSecretStorageKeyVaultUri',
-			'AzureWebJobsSecretStorageSas',
-			'AzureWebJobsSecretStorageType',
-			'AzureWebJobsStorage',
-			'AzureWebJobs_TypeScriptPath',
-			'DOCKER_SHM_SIZE',
-			'FUNCTION_APP_EDIT_MODE',
-			'FUNCTIONS_EXTENSION_VERSION',
-			'FUNCTIONS_V2_COMPATIBILITY_MODE',
-			'FUNCTIONS_WORKER_PROCESS_COUNT',
-			'FUNCTIONS_WORKER_RUNTIME',
-			'FUNCTIONS_WORKER_SHARED_MEMORY_DATA_TRANSFER_ENABLED',
-			'MDMaxBackgroundUpgradePeriod',
-			'MDNewSnapshotCheckPeriod',
-			'MDMinBackgroundUpgradePeriod',
-			'PIP_EXTRA_INDEX_URL',
-			'PYTHON_ISOLATE_WORKER_DEPENDENCIES (Preview)',
-			'PYTHON_ENABLE_DEBUG_LOGGING',
-			'PYTHON_ENABLE_WORKER_EXTENSIONS',
-			'PYTHON_THREADPOOL_THREAD_COUNT',
-			'SCALE_CONTROLLER_LOGGING_ENABLED',
-			'SCM_LOGSTREAM_TIMEOUT',
-			'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING',
-			'WEBSITE_CONTENTOVERVNET',
-			'WEBSITE_CONTENTSHARE',
-			'WEBSITE_SKIP_CONTENTSHARE_VALIDATION',
-			'WEBSITE_DNS_SERVER',
-			'WEBSITE_ENABLE_BROTLI_ENCODING',
-			'WEBSITE_MAX_DYNAMIC_APPLICATION_SCALE_OUT',
-			'WEBSITE_NODE_DEFAULT_VERSION',
-			'WEBSITE_RUN_FROM_PACKAGE',
-			'WEBSITE_TIME_ZONE',
-			'WEBSITE_VNET_ROUTE_ALL'
-		];
-
 		// setup connetion string setting quickpick
 		let connectionStringSettings: (vscode.QuickPickItem)[] = [];
-		if (settings?.Values) {
-			connectionStringSettings = Object.keys(settings.Values).filter(setting => !knownSettings.includes(setting)).map(setting => { return { label: setting }; });
+		if (existingSettings?.Values) {
+			// add settings found in local.settings.json to quickpick list
+			connectionStringSettings = Object.keys(existingSettings.Values).filter(setting => !constants.knownSettings.includes(setting)).map(setting => { return { label: setting }; });
 		}
 
+		// add create new setting option to quickpick list
 		connectionStringSettings.unshift({ label: constants.createNewLocalAppSettingWithIcon });
-		let sqlConnectionStringSettingExists = connectionStringSettings.find(s => s.label === constants.sqlConnectionStringSetting);
 
 		while (!connectionStringSettingName) {
-			const selectedSetting = await vscode.window.showQuickPick(connectionStringSettings, {
-				canPickMany: false,
-				title: constants.selectSetting,
-				ignoreFocusOut: true
-			});
-			if (!selectedSetting) {
-				// User cancelled
-				return;
+			// prompt user to select a setting from the list or create a new one
+			// if no existing setting are found then we go
+			let selectedSetting: vscode.QuickPickItem | undefined;
+			if (existingSettings?.Values) {
+				selectedSetting = await vscode.window.showQuickPick(connectionStringSettings, {
+					canPickMany: false,
+					title: constants.selectSetting,
+					ignoreFocusOut: true
+				});
+				if (!selectedSetting) {
+					// User cancelled
+					return;
+				}
 			}
 
-			if (selectedSetting.label === constants.createNewLocalAppSettingWithIcon) {
+			// prompt user to enter connection string setting name if user selects create new setting or there is no existing setting in local.settings.json
+			if (selectedSetting?.label === constants.createNewLocalAppSettingWithIcon || existingSettings?.Values) {
+				let sqlConnectionStringSettingExists = connectionStringSettings.find(s => s.label === constants.sqlConnectionStringSetting);
 				const newConnectionStringSettingName = await vscode.window.showInputBox(
 					{
 						title: constants.enterConnectionStringSettingName,
@@ -452,9 +408,13 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 					}
 				) ?? '';
 
-				if (!newConnectionStringSettingName) {
-					// go back to select setting quickpick if user escapes from inputting the setting name in case they changed their mind
+				if (!newConnectionStringSettingName && existingSettings?.Values) {
+					// go back to select setting quickpick if user escapes from entering in the connection string setting name
+					// only go back if there are existing settings in local.settings.json
 					continue;
+				} else if (!existingSettings?.Values) {
+					// User cancelled out of the manually enter connection string prompt
+					return;
 				}
 
 				let selectedConnectionStringMethod: string | undefined;
@@ -527,7 +487,7 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 			} else {
 				// If user cancels out of this or doesn't want to overwrite an existing setting
 				// just return them to the select setting quickpick in case they changed their mind
-				connectionStringSettingName = selectedSetting.label;
+				connectionStringSettingName = selectedSetting?.label;
 			}
 		}
 		// Add sql extension package reference to project. If the reference is already there, it doesn't get added again

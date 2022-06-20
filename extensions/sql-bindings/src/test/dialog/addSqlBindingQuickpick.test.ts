@@ -64,7 +64,7 @@ describe('Add SQL Binding quick pick', () => {
 		// select input or output binding
 		quickpickStub.onSecondCall().resolves(<any>{ label: constants.input, type: BindingType.input });
 		sinon.stub(azureFunctionUtils, 'getAFProjectContainingFile').resolves(vscode.Uri.file('testUri'));
-		// select connection profile - create new
+		// select connection string setting method - create new
 		quickpickStub.onThirdCall().resolves(<any>{ label: constants.createNewLocalAppSettingWithIcon });
 		// give connection string setting name
 		sinon.stub(vscode.window, 'showInputBox').onFirstCall().resolves('sqlConnectionString');
