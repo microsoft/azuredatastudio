@@ -339,16 +339,8 @@ export class PanelComponent extends Disposable implements IThemable {
 		}
 	}
 
-	/**
-	 * 	The focus logic is form https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/tab_role#example
-	 *  We initially make the tabindex of the first tab as 0 and the rest of the tabs as -1. On press of right/down arrow key,
-	 *  we set the tab index of next tab as 0 and the current tab as -1 and move the focus to the next atb. If there are no next
-	 *  tabs, we circle back to first tab. On press of left/up arrow key, we set the tabindex of the previous tab as 0 and the
-	 *  current tab as -1 and move the focus to the previous tab. If there are no previous tabs, we circle back to the last tab.
-	 */
 	private focusPreviousTab(): void {
 		const currentIndex = this.focusedTabHeaderIndex;
-		this._tabHeaders.toArray()[currentIndex].tabIndex = -1;
 		if (currentIndex !== -1) {
 			// Move to the previous tab, if we are at the first tab then move to the last tab.
 			this.focusOnTabHeader(currentIndex === 0 ? this._tabHeaders.length - 1 : currentIndex - 1);
@@ -357,7 +349,6 @@ export class PanelComponent extends Disposable implements IThemable {
 
 	private focusNextTab(): void {
 		const currentIndex = this.focusedTabHeaderIndex;
-		this._tabHeaders.toArray()[currentIndex].tabIndex = -1;
 		if (currentIndex !== -1) {
 			// Move to the next tab, if we are at the last tab then move to the first tab.
 			this.focusOnTabHeader(currentIndex === this._tabHeaders.length - 1 ? 0 : currentIndex + 1);
@@ -366,9 +357,7 @@ export class PanelComponent extends Disposable implements IThemable {
 
 	private focusOnTabHeader(index: number): void {
 		if (index >= 0 && index <= this._tabHeaders.length - 1) {
-			const tabHeaderArray = this._tabHeaders.toArray();
-			tabHeaderArray[index].tabIndex = 0;
-			tabHeaderArray[index].focusOnTabHeader();
+			this._tabHeaders.toArray()[index].focusOnTabHeader();
 		}
 	}
 
