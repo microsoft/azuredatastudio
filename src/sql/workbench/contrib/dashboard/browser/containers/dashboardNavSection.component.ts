@@ -149,7 +149,7 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 
 	public layout() {
 		if (this._tabs) {
-			const activeTabId = this._panel.getActiveTab;
+			const activeTabId = this._panel.getSelectedTab;
 			const localtab = this._tabs.find(i => i.id === activeTabId);
 			this._cd.detectChanges();
 			localtab.layout();
