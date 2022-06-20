@@ -1525,4 +1525,52 @@ declare module 'azdata' {
 		 */
 		link: LinkArea;
 	}
+
+	export namespace queryeditor {
+
+		export interface IQueryMessage {
+			/**
+			 * The message string
+			 */
+			message: string;
+			/**
+			 * Whether this message is an error message or not
+			 */
+			isError: boolean;
+			/**
+			 * The timestamp for when this message was sent
+			 */
+			time?: string;
+		}
+
+		/**
+		 * Information about a query that was executed
+		 */
+		export interface IQueryInfo {
+			/**
+			 * Any messages that have been received from the query provider
+			 */
+			messages: IQueryMessage[];
+			/**
+			 * The text of the query statement
+			 */
+			queryText?: string;
+		}
+
+		export interface QueryEventListener {
+			/**
+			 * An event that is fired for query events
+			 * @param type The type of query event
+			 * @param document The document this event was sent by
+			 * @param args The extra information for the event, if any
+			 * The args sent depend on the type of event :
+			 * queryStart: undefined
+			 * queryStop: undefined
+			 * executionPlan: string (the plan itself)
+			 * visualize: ResultSetSummary (the result set to be visualized)
+			 * @param queryInfo The information about the query that triggered this event
+			 */
+			onQueryEvent(type: QueryEventType, document: QueryDocument, args: ResultSetSummary | string | undefined, queryInfo: IQueryInfo): void;
+		}
+	}
 }
