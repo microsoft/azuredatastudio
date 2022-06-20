@@ -1552,7 +1552,7 @@ declare module 'azdata' {
 			 */
 			messages: IQueryMessage[];
 			/**
-			 * The text of the query that triggered the event
+			 * The text of the query statement
 			 */
 			queryText?: string;
 		}
