@@ -160,7 +160,14 @@ export interface IWorkbenchLayoutService extends ILayoutService {
 	getDimension(part: Parts): Dimension | undefined;
 
 	/**
-	 * Set part hidden or not
+
+	/**
+	 * Set sidebar hidden or not
+	 */
+	setSideBarHidden(hidden: boolean): void;  // {{SQL CARBON EDIT}} - add this method back to interface
+
+	/**
+	 * Set panel part hidden or not
 	 */
 	setPartHidden(hidden: boolean, part: Exclude<Parts, Parts.STATUSBAR_PART | Parts.TITLEBAR_PART>): void;
 
