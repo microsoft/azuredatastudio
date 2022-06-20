@@ -964,7 +964,7 @@ export class Designer extends Disposable implements IThemable {
 						resizable: true,
 						isFontIcon: true
 					});
-					this._register(actionsColumn.onClick(async (e) => {
+					this._register(actionsColumn.onClick((e) => {
 						this.openContextMenu(table, e.row, e.position, propertyPath, view, tableProperties);
 					}));
 					table.registerPlugin(actionsColumn);
