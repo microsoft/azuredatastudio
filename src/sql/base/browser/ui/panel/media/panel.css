@@ -56,7 +56,6 @@ panel {
 
 .tabbedPanel.horizontal > .title .tabList .tab .tabLabel {
 	font-size: 12px;
-	max-width: 100px;
 }
 
 .tabbedPanel.vertical > .title .tabList .tab .tabLabel {

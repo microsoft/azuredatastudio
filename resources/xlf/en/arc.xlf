@@ -853,6 +853,9 @@
     <trans-unit id="arc.suspect">
       <source xml:lang="en">Suspect</source>
     </trans-unit>
+    <trans-unit id="arc.syncSecondaryToCommit">
+      <source xml:lang="en">Sync Secondary To Commit</source>
+    </trans-unit>
     <trans-unit id="arc.thePasswordsDoNotMatch">
       <source xml:lang="en">The passwords do not match. Confirm the password or press escape to exit.</source>
     </trans-unit>
@@ -1400,6 +1403,9 @@
     <trans-unit id="arc.sql.cost.summary.basics">
       <source xml:lang="en">Basics</source>
     </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.billable.replicas">
+      <source xml:lang="en">Billable replicas</source>
+    </trans-unit>
     <trans-unit id="arc.sql.cost.summary.business.critical">
       <source xml:lang="en">Business Critical</source>
     </trans-unit>
@@ -1502,6 +1508,12 @@
     <trans-unit id="arc.sql.pitr.retention.description">
       <source xml:lang="en">Configure retention for point-in-time backups. {0}</source>
     </trans-unit>
+    <trans-unit id="arc.sql.readable.secondaries.description">
+      <source xml:lang="en">The number of readable secondary replicas.</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.readable.secondaries.label">
+      <source xml:lang="en">Readable secondary replicas</source>
+    </trans-unit>
     <trans-unit id="arc.sql.retention.days.description">
       <source xml:lang="en">Specify how long you want to keep your point-in-time backups.</source>
     </trans-unit>
@@ -1537,6 +1549,12 @@
     </trans-unit>
     <trans-unit id="arc.sql.summary.arc.by.microsoft">
       <source xml:lang="en">by Microsoft</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.sync.secondaries.description">
+      <source xml:lang="en">The number of synchronous replicas required to commit a transaction before the primary replica is allowed to commit. Setting this value to -1 will set the number of required synchronized secondaries to '(# of replicas - 1) / 2', rounded down.</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.sync.secondaries.label">
+      <source xml:lang="en">Synchronized secondaries required to commit</source>
     </trans-unit>
     <trans-unit id="arc.sql.three.replicas">
       <source xml:lang="en">3 replicas</source>
