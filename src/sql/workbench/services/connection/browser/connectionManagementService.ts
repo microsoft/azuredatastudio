@@ -125,21 +125,21 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		this._register(this._onDeleteConnectionProfile);
 
 		// keeps azure tokens refreshed every 10 minutes
-		const seconds = 600;
+		const tokenRefreshInterval = 600;
 
 		setInterval(async () => {
-			try {
-				let connectionList = this.getActiveConnections();
-				connectionList.forEach(async connection => {
-					if (connection.authenticationType === AuthenticationType.AzureMFA) {
+			const connectionList = this.getActiveConnections();
+			connectionList.forEach(async connection => {
+				if (connection.authenticationType === AuthenticationType.AzureMFA) {
+					try {
 						await this.refreshAzureAccountTokens(connection);
+					} catch (error) {
+						this._logService.error(`Timed process failed to refresh azure token: ${error.toString()}`);
 					}
-				});
-			} catch {
-				throw new Error(nls.localize('connection.refreshAzureTokenFailed', "Timed process failed to refresh azure token"));
-			}
+				}
+			});
 
-		}, seconds * 1000);
+		}, tokenRefreshInterval * 1000);
 	}
 
 	/**
@@ -941,15 +941,15 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		if (account) {
 			return account;
 		} else {
-			this._logService.info(`Could not find Azure account with name ${accountId}`);
-			return null;
+			this._logService.info(`Could not find Azure account with id ${accountId}`);
+			return undefined;
 		}
 	}
 
 	/**
 	 * Refresh Azure access token if it's expired.
 	 * @param uri connection uri
-	 * @returns true if no need to refresh or successfully refreshed token
+	 * @returns void if no need to refresh or successfully refreshed token
 	 */
 	public async refreshAzureAccountTokenIfNecessary(uri: string): Promise<boolean> {
 		let account: azdata.Account;
@@ -1011,9 +1011,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	/**
 	 * Refresh Azure access token
 	 * @param uri connection uri
-	 * @returns true if no need to refresh or successfully refreshed token
 	 */
-	public async refreshAzureAccountTokens(profile: ConnectionProfile): Promise<boolean> {
+	public async refreshAzureAccountTokens(profile: ConnectionProfile): Promise<void> {
 
 		let uri = this.getConnectionUri(profile);
 		//wait for the pending reconnction promise if any
@@ -1024,7 +1023,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				const previousConnectionResult = await previousReconnectPromise;
 				if (previousConnectionResult && previousConnectionResult.connected) {
 					this._logService.info(`Previous pending reconnection for uri ${uri} succeeded.`);
-					return true;
+					return;
 				}
 				this._logService.info(`Previous pending reconnection for uri ${uri} failed.`);
 			} catch (err) {
@@ -1046,7 +1045,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				throw new Error(nls.localize('connection.refreshAzureTokenFailure', "Failed to refresh Azure account token for connection"));
 			}
 			this._logService.info(`Successfully refreshed token for connection ${profile.id} with uri ${uri}, result: ${connectionResult.connected} ${connectionResult.connectionProfile}, isConnected: ${this.isConnected(uri)}, ${this._connectionStatusManager.getConnectionProfile(uri)}`);
-			return true;
+			return;
 		} finally {
 			delete this._uriToReconnectPromiseMap[uri];
 		}
