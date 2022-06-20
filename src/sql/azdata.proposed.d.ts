@@ -1552,9 +1552,9 @@ declare module 'azdata' {
 			 */
 			messages: IQueryMessage[];
 			/**
-			 * The query text itself
+			 * The text of the query that triggered the event
 			 */
-			query?: string;
+			queryText?: string;
 		}
 
 		export interface QueryEventListener {

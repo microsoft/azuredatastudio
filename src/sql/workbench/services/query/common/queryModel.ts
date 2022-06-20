@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
-import { ICellValue, IQueryMessage, ResultSetSubset } from 'sql/workbench/services/query/common/query';
+import { ICellValue, ResultSetSubset } from 'sql/workbench/services/query/common/query';
 import { DataService } from 'sql/workbench/services/query/common/dataService';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { Event } from 'vs/base/common/event';
@@ -37,16 +37,10 @@ export interface IExecutionPlanInfo {
 	planGraphs: executionPlan.ExecutionPlanGraph[];
 }
 
-export interface IQueryInfo {
-	range: IRange[];
-	messages: IQueryMessage[];
-	query?: string;
-}
-
 export interface IQueryEvent {
 	type: queryeditor.QueryEventType;
 	uri: string;
-	queryInfo: IQueryInfo;
+	queryInfo: queryeditor.IQueryInfo;
 	params?: any;
 }
 

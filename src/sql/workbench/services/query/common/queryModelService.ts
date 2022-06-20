@@ -292,11 +292,11 @@ export class QueryModelService implements IQueryModelService {
 			this._onRunQueryComplete.fire(queryRunner.uri);
 			const uri: URI = URI.parse(queryRunner.uri);
 			const model = this._modelService.getModel(uri);
-			let query = '';
+			let queryText = '';
 			if (model) {
 				// VS Range is 1 based so offset values by 1. The endLine we get back from SqlToolsService is incremented
 				// by 1 from the original input range sent in as well so take that into account and don't modify
-				query = info.range?.length > 0 ?
+				queryText = info.range?.length > 0 ?
 					model.getValueInRange(new Range(
 						info.range[0].startLineNumber,
 						info.range[0].startColumn,
@@ -311,9 +311,8 @@ export class QueryModelService implements IQueryModelService {
 				uri: queryRunner.uri,
 				queryInfo:
 				{
-					range: info.range!,
 					messages: info.queryRunner!.messages,
-					query
+					queryText
 				}
 			};
 			this._onQueryEvent.fire(event);
@@ -330,7 +329,6 @@ export class QueryModelService implements IQueryModelService {
 				uri: queryRunner.uri,
 				queryInfo:
 				{
-					range: info.range!,
 					messages: info.queryRunner!.messages
 				}
 			};
@@ -346,7 +344,6 @@ export class QueryModelService implements IQueryModelService {
 				uri: queryRunner.uri,
 				queryInfo:
 				{
-					range: info.range!,
 					messages: info.queryRunner!.messages
 				}
 			};
@@ -362,7 +359,6 @@ export class QueryModelService implements IQueryModelService {
 				uri: planInfo.fileUri,
 				queryInfo:
 				{
-					range: info.range!,
 					messages: info.queryRunner!.messages
 				},
 				params: planInfo
@@ -377,7 +373,6 @@ export class QueryModelService implements IQueryModelService {
 				uri: qp2Info.fileUri,
 				queryInfo:
 				{
-					range: info.range!,
 					messages: info.queryRunner!.messages
 				},
 				params: qp2Info.planGraphs
@@ -391,7 +386,6 @@ export class QueryModelService implements IQueryModelService {
 				uri: queryRunner.uri,
 				queryInfo:
 				{
-					range: info.range!,
 					messages: info.queryRunner!.messages
 				},
 				params: resultSetInfo
@@ -533,7 +527,6 @@ export class QueryModelService implements IQueryModelService {
 					uri: ownerUri,
 					queryInfo:
 					{
-						range: info.range!,
 						messages: info.queryRunner!.messages
 					},
 				};
@@ -550,7 +543,6 @@ export class QueryModelService implements IQueryModelService {
 					uri: ownerUri,
 					queryInfo:
 					{
-						range: info.range!,
 						messages: info.queryRunner!.messages
 					},
 				};

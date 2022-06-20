@@ -4994,7 +4994,7 @@ declare module 'azdata' {
 
 		export interface QueryEventListener {
 			/**
-			 * An event that is fired for query events
+			 * A callback that is called whenever a query event occurs
 			 * @param type The type of query event
 			 * @param document The document this event was sent by
 			 * @param args The extra information for the event, if any

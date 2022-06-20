@@ -16,14 +16,14 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 		return azdata.queryeditor.openQueryDocument(
 			{
 				content: node.queryText
-			}, node.providerId);
+			}, node.connectionProfile?.providerId);
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('queryHistory.run', async (node: QueryHistoryNode) => {
 		const doc = await azdata.queryeditor.openQueryDocument(
 			{
 				content: node.queryText
-			}, node.providerId);
-		await azdata.queryeditor.connect(doc.uri, node.connectionId);
+			}, node.connectionProfile?.providerId);
+		await azdata.queryeditor.connect(doc.uri, node.connectionProfile?.connectionId || '');
 		azdata.queryeditor.runQuery(doc.uri);
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('queryHistory.delete', (node: QueryHistoryNode) => {
