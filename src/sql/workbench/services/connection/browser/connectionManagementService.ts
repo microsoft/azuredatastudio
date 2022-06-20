@@ -124,16 +124,21 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		this._register(this._onAddConnectionProfile);
 		this._register(this._onDeleteConnectionProfile);
 
-		// keeps azure tokens refreshed so temp tables do not expire after 10 minutes
+		// keeps azure tokens refreshed every 10 minutes
 		const seconds = 600;
 
-		setInterval(() => {
-			let connectionList = this.getActiveConnections();
-			connectionList.forEach(connection => {
-				if (connection.authenticationType === AuthenticationType.AzureMFA) {
-					this.refreshAzureAccountTokens(connection);
-				}
-			});
+		setInterval(async () => {
+			try {
+				let connectionList = this.getActiveConnections();
+				connectionList.forEach(async connection => {
+					if (connection.authenticationType === AuthenticationType.AzureMFA) {
+						await this.refreshAzureAccountTokens(connection);
+					}
+				});
+			} catch {
+				throw new Error(nls.localize('connection.refreshAzureTokenFailed', "Timed process failed to refresh azure token"));
+			}
+
 		}, seconds * 1000);
 	}
 
