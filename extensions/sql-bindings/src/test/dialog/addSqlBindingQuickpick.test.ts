@@ -71,7 +71,7 @@ describe('Add SQL Binding quick pick', () => {
 		quickpickStub.onCall(3).resolves((constants.connectionProfile) as any);
 		quickpickStub.onCall(4).resolves((constants.yesString) as any);
 		// setLocalAppSetting fails if we dont set writeFile stub
-		sinon.stub(fs.promises, 'writeFile');
+		sinon.stub(fs.promises, 'writeFile').resolves();
 		sinon.stub(azureFunctionUtils, 'setLocalAppSetting').withArgs(sinon.match.any, 'sqlConnectionString', 'testConnectionString1').resolves((true));
 		sinon.stub(utils, 'executeCommand').resolves('downloaded nuget package');
 		quickpickStub.onCall(5).resolves(('testDb') as any);
@@ -124,7 +124,7 @@ describe('Add SQL Binding quick pick', () => {
 		quickpickStub.onCall(3).resolves((constants.connectionProfile) as any);
 		quickpickStub.onCall(4).resolves((constants.yesString) as any);
 		// setLocalAppSetting fails if we dont set writeFile stub
-		sinon.stub(fs.promises, 'writeFile');
+		sinon.stub(fs.promises, 'writeFile').resolves();
 		sinon.stub(azureFunctionUtils, 'setLocalAppSetting').withArgs(sinon.match.any, 'sqlConnectionString', 'testConnectionString2').resolves((true));
 		sinon.stub(utils, 'executeCommand').resolves('downloaded nuget package');
 		quickpickStub.onCall(5).resolves(('testDb') as any);
