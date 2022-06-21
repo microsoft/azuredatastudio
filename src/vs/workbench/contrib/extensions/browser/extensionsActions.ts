@@ -248,7 +248,7 @@ export abstract class AbstractInstallAction extends ExtensionAction {
 		@IExtensionService private readonly runtimeExtensionService: IExtensionService,
 		@IWorkbenchThemeService private readonly workbenchThemeService: IWorkbenchThemeService,
 		@ILabelService private readonly labelService: ILabelService,
-		@INotificationService private readonly notificationService: INotificationService
+		@INotificationService private readonly notificationService: INotificationService // {{SQL CARBON EDIT} - add parameter
 	) {
 		super(id, label, cssClass, false);
 		this.update();
@@ -305,7 +305,7 @@ export abstract class AbstractInstallAction extends ExtensionAction {
 			// {{SQL CARBON EDIT}}
 			// Prompt the user that the current ADS version is not compatible with the extension,
 			// return here as in this scenario it doesn't make sense for the user to download manually.
-			if (error && error.code === INSTALL_ERROR_INCOMPATIBLE) {
+			if (error && error.code === ExtensionManagementErrorCode.Incompatible) {
 				this.notificationService.error(error);
 				return undefined;
 			}
@@ -357,7 +357,7 @@ export class InstallAction extends AbstractInstallAction {
 		@IWorkbenchExtensionManagementService private readonly workbenchExtensioManagementService: IWorkbenchExtensionManagementService,
 		@IUserDataAutoSyncEnablementService protected readonly userDataAutoSyncEnablementService: IUserDataAutoSyncEnablementService,
 		@IUserDataSyncResourceEnablementService protected readonly userDataSyncResourceEnablementService: IUserDataSyncResourceEnablementService,
-		@INotificationService readonly localNotificationService: INotificationService
+		@INotificationService readonly localNotificationService: INotificationService // {{SQL CARBON EDIT}}
 	) {
 		super(`extensions.installAndSync`, localize('install', "Install"), InstallAction.Class,
 			extensionsWorkbenchService, instantiationService, runtimeExtensionService, workbenchThemeService, labelService, localNotificationService);
@@ -410,7 +410,7 @@ export class InstallAndSyncAction extends AbstractInstallAction {
 		@IProductService productService: IProductService,
 		@IUserDataAutoSyncEnablementService private readonly userDataAutoSyncEnablementService: IUserDataAutoSyncEnablementService,
 		@IUserDataSyncResourceEnablementService private readonly userDataSyncResourceEnablementService: IUserDataSyncResourceEnablementService,
-		@INotificationService readonly localNotificationService: INotificationService
+		@INotificationService readonly localNotificationService: INotificationService // {{SQL CARBON EDIT}}
 	) {
 		super(`extensions.installAndSync`, localize('install', "Install"), InstallAndSyncAction.Class,
 			extensionsWorkbenchService, instantiationService, runtimeExtensionService, workbenchThemeService, labelService, localNotificationService);
@@ -695,7 +695,7 @@ export class UpdateAction extends ExtensionAction {
 	constructor(
 		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
-		@INotificationService private notificationService: INotificationService
+		@INotificationService private notificationService: INotificationService // {{SQL CARBON EDIT]]
 	) {
 		super(`extensions.update`, '', UpdateAction.DisabledClass, false);
 		this.update();
@@ -748,7 +748,7 @@ export class UpdateAction extends ExtensionAction {
 			// {{SQL CARBON EDIT}}
 			// Prompt the user that the current ADS version is not compatible with the extension,
 			// return here as in this scenario it doesn't make sense for the user to download manually.
-			if (err && err.code === INSTALL_ERROR_INCOMPATIBLE) {
+			if (err && err.code === ExtensionManagementErrorCode.Incompatible) {
 				return this.notificationService.error(err);
 			}
 
@@ -1572,29 +1572,6 @@ export class SetProductIconThemeAction extends ExtensionAction {
 	}
 }
 
-
-export class ShowInstalledExtensionsAction extends Action {
-
-	static readonly ID = 'workbench.extensions.action.showInstalledExtensions';
-	static readonly LABEL = localize('showInstalledExtensions', "Show Installed Extensions");
-
-	constructor(
-		id: string,
-		label: string,
-		@IViewletService private readonly viewletService: IViewletService
-	) {
-		super(id, label, undefined, true);
-	}
-
-	override run(): Promise<void> {
-		return this.viewletService.openViewlet(VIEWLET_ID, true)
-			.then(viewlet => viewlet?.getViewPaneContainer() as IExtensionsViewPaneContainer)
-			.then(viewlet => {
-				viewlet.search('@installed ');
-				viewlet.focus();
-			});
-	}
-}
 export class ShowRecommendedExtensionAction extends Action {
 
 	static readonly ID = 'workbench.extensions.action.showRecommendedExtension';

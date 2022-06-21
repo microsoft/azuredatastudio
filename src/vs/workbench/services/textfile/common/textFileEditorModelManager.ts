@@ -439,7 +439,7 @@ export class TextFileEditorModelManager extends Disposable implements ITextFileE
 	private joinPendingResolves(resource: URI): Promise<void> | undefined {
 		const pendingModelResolve = this.mapResourceToPendingModelResolvers.get(resource);
 		if (!pendingModelResolve) {
-			return;
+			return undefined;
 		}
 
 		return this.doJoinPendingResolves(resource);

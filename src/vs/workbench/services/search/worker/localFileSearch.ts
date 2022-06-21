@@ -86,7 +86,7 @@ export class LocalFileSearchSimpleWorker implements ILocalFileSearchSimpleWorker
 
 		await time('listDirectory', () => this.walkFolderQuery(handle, query, folderQuery, file => {
 			if (!filePatternMatcher(file.name)) {
-				return;
+				return undefined;
 			}
 
 			count++;
@@ -224,7 +224,7 @@ export class LocalFileSearchSimpleWorker implements ILocalFileSearchSimpleWorker
 				const entries: [string, FileSystemHandle][] = [];
 				const sibilings = new Set<string>();
 
-				for await (const entry of directory.entries()) {
+				for await (const entry of (<any>directory).entries()) {
 					entries.push(entry);
 					sibilings.add(entry[0]);
 				}
@@ -243,9 +243,9 @@ export class LocalFileSearchSimpleWorker implements ILocalFileSearchSimpleWorker
 					const hasSibling = (query: string) => sibilings.has(query);
 
 					if (handle.kind === 'directory' && !isFolderExcluded(path, basename, hasSibling)) {
-						dirs.push(processDirectory(handle, path + '/', ignoreFile));
+						dirs.push(processDirectory(<any>handle, path + '/', ignoreFile));
 					} else if (handle.kind === 'file' && isFileIncluded(path, basename, hasSibling)) {
-						files.push(proccessFile(handle, path));
+						files.push(proccessFile(<any>handle, path));
 					}
 				}
 				c([...await Promise.all(dirs), ...files]);
