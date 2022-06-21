@@ -294,6 +294,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	onCellSelect(event: Slick.OnActiveCellChangedEventArgs<any>): void {
 		let row = event.row;
 		let column = event.cell;
+		let isEditable = true;
 
 		// Skip processing if the newly selected cell is undefined or we don't have column
 		// definition for the column (ie, the selection was reset)
@@ -310,7 +311,19 @@ export class EditDataGridPanel extends GridParentComponent {
 			return;
 		}
 
-		let isEditable = true;
+		if (this.previousSavedCell.row !== row && this.isRowDirty(this.previousSavedCell.row) && !this.isNullRow(row)) {
+			this.updateEnabledState(false);
+			this.commitEditTask().then(() => {
+				this.updateEnabledState(true);
+				this.focusCell(row, column);
+				return Promise.resolve();
+			}, () => {
+				// Committing failed, jump back to the last selected cell
+				this.updateEnabledState(true);
+				this.focusCell(this.previousSavedCell.row, this.previousSavedCell.column);
+				return Promise.reject(null);
+			});
+		}
 
 		// get the cell we have just immediately clicked (to set as the new active cell in handleChanges), only done if another cell is not currently being processed.
 		this.lastClickedCell = { row, column, isEditable };
@@ -323,11 +336,6 @@ export class EditDataGridPanel extends GridParentComponent {
 			this.rowIdMappings = {};
 			this.newRowVisible = false;
 			return Promise.resolve();
-		}, () => {
-			// Committing failed, jump back to the last selected cell
-			this.updateEnabledState(true);
-			this.focusCell(this.previousSavedCell.row, this.previousSavedCell.column);
-			return Promise.reject(null);
 		});
 	}
 
@@ -344,30 +352,35 @@ export class EditDataGridPanel extends GridParentComponent {
 		this.table.grid.setOptions(newOptions, true);
 	}
 
-	private submitCellTask(cellToSubmit): void {
+	private async submitCellTask(cellToSubmit): Promise<void> {
 		let self = this;
 		// disable editing the grid temporarily as any text entered while the grid is being refreshed will be lost upon completion.
 		this.updateEnabledState(false);
-		this.submitCurrentCellChange(cellToSubmit,
-			(result: EditUpdateCellResult) => {
+		await this.submitCurrentCellChange(cellToSubmit,
+			async (result: EditUpdateCellResult) => {
 				// Cell update was successful, update the flags
 				self.setCellDirtyState(cellToSubmit.row, cellToSubmit.column, result.cell.isDirty);
 				self.setRowDirtyState(cellToSubmit.row, result.isRowDirty);
 				let nullCommit = this.isNullRow(cellToSubmit.row + 1) && this.lastClickedCell.row === cellToSubmit.row && this.lastClickedCell.column === cellToSubmit.column;
-				let regularCommit = this.lastClickedCell.row !== cellToSubmit.row || this.lastClickedCell.column !== cellToSubmit.column;
+				let regularCommit = this.lastClickedCell.row !== cellToSubmit.row;
 				if (regularCommit || nullCommit) {
-					this.commitEditTask().then(() => {
-						// At the end of a successful cell select, update the currently selected cell
+					await this.commitEditTask().then(() => {
 						if (this.lastClickedCell.row === cellToSubmit.row && this.lastClickedCell.column === cellToSubmit.column) {
 							this.lastClickedCell = { row: cellToSubmit.row + 1, column: cellToSubmit.column, isEditable: true };
 						}
-						// At the end of a successful cell select, update the currently selected cell
-						this.setCurrentCell(this.lastClickedCell.row, this.lastClickedCell.column);
-						this.updateEnabledState(true);
-						this.focusCell(this.lastClickedCell.row, this.lastClickedCell.column);
-					});
+					},
+						() => {
+							// Committing failed, jump back to the last selected cell
+							this.updateEnabledState(true);
+							this.setCurrentCell(cellToSubmit.row, cellToSubmit.column);
+							this.focusCell(cellToSubmit.row, cellToSubmit.column);
+							return Promise.reject(null);
+						});
 				}
-				return Promise.resolve();
+				// At the end of a successful cell select, update the currently selected cell
+				this.setCurrentCell(this.lastClickedCell.row, this.lastClickedCell.column);
+				this.updateEnabledState(true);
+				this.focusCell(this.lastClickedCell.row, this.lastClickedCell.column);
 			},
 			() => {
 				// Cell update failed, jump back to the last cell we were on
