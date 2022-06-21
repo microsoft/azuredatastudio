@@ -9,12 +9,16 @@ export class DeployOptionsModel {
 	public deploymentOptions: mssql.DeploymentOptions;
 
 	public optionsLookup: Record<string, boolean> = {};
+	public includeObjectsLookup: Map<string, boolean> = new Map<string, boolean>();
 	public optionsMapTable: Record<string, mssql.DacDeployOptionPropertyBoolean> = {};
+	public includeObjectTypeLabels: string[] = [];
+	public excludedObjectTypes: number[] = [];
 
 	constructor(defaultOptions: mssql.DeploymentOptions) {
 		this.deploymentOptions = defaultOptions;
 		this.InitializeUpdateOptionsMapTable();
 		this.InitializeOptionsLabels();
+		this.includeObjectTypeLabels = Object.keys(Object.fromEntries(this.deploymentOptions.includeObjectsTable)).sort();
 	}
 
 	/*
@@ -253,5 +257,43 @@ export class DeployOptionsModel {
 	*/
 	public getDescription(label: string): string {
 		return this.optionsMapTable[label]?.description;
+	}
+
+	/**
+	 * Gets the object type options checkbox check value
+	 * @returns string[][]
+	 */
+	public getObjectsData(): string[][] {
+		let data: any = [];
+		this.includeObjectsLookup = new Map<string, boolean>();
+		this.includeObjectTypeLabels.forEach(l => {
+			let checked: boolean | undefined = this.getIncludedObjectsUtil(l);
+			if (checked !== undefined) {
+				data.push([checked, l]);
+				this.includeObjectsLookup?.set(l, checked);
+			}
+		});
+		return data;
+	}
+
+	/*
+	* Gets the selected/default value of the object type option
+	*/
+	public getIncludedObjectsUtil(label: string): boolean | undefined {
+		return (this.deploymentOptions.excludeObjectTypes.value?.find(x => x === this.deploymentOptions.includeObjectsTable.get(label))) !== undefined ? false : true;
+	}
+
+	/*
+	* Sets the selected option checkbox value to the exclude object types
+	*/
+	public setIncludeObjectTypeOptions(): void {
+		for (let option of this.includeObjectsLookup) {
+			let optionNum = this.deploymentOptions.includeObjectsTable?.get(option[0]);
+			if (optionNum !== undefined && !option[1]) {
+				this.excludedObjectTypes.push(optionNum);
+			}
+		}
+
+		this.deploymentOptions.excludeObjectTypes.value = this.excludedObjectTypes;
 	}
 }

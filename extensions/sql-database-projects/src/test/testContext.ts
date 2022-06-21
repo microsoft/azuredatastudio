@@ -119,7 +119,11 @@ export function getDeploymentOptions(): mssql.DeploymentOptions {
 		doNotDropWorkloadClassifiers: { value: false, description: sampleDesc, displayName: sampleName },
 		ignoreWorkloadClassifiers: { value: false, description: sampleDesc, displayName: sampleName },
 		ignoreDatabaseWorkloadGroups: { value: false, description: sampleDesc, displayName: sampleName },
-		doNotDropDatabaseWorkloadGroups: { value: false, description: sampleDesc, displayName: sampleName }
+		doNotDropDatabaseWorkloadGroups: { value: false, description: sampleDesc, displayName: sampleName },
+		includeObjectsTable: new Map<string, number>([
+			['Sample Include Object1', 0],
+			['Sample Include Object2', 2]
+		])
 	};
 	return defaultOptions;
 }

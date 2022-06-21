@@ -325,12 +325,13 @@ export async function defaultAzureAccountServiceFactory(): Promise<vscodeMssql.I
 export async function getDefaultPublishDeploymentOptions(project: Project): Promise<mssql.DeploymentOptions | vscodeMssql.DeploymentOptions> {
 	const schemaCompareService = await getSchemaCompareService();
 	const result = await schemaCompareService.schemaCompareGetDefaultOptions();
-	const deploymentOptions = result.defaultDeploymentOptions;
+	let deploymentOptions = result.defaultDeploymentOptions;
+	deploymentOptions.includeObjectsTable = new Map(Object.entries(result.defaultDeploymentOptions.includeObjectsTable).map((x) => [x[0].charAt(0).toUpperCase() + x[0].slice(1), x[1]]));
 	// re-include database-scoped credentials
 	if (getAzdataApi()) {
-		deploymentOptions.excludeObjectTypes.value = (deploymentOptions as mssql.DeploymentOptions).excludeObjectTypes.value?.filter(x => x !== mssql.SchemaObjectType.DatabaseScopedCredentials);
+		deploymentOptions.excludeObjectTypes.value = (deploymentOptions as mssql.DeploymentOptions).excludeObjectTypes.value?.filter(x => x !== deploymentOptions.includeObjectsTable.get('DatabaseScopedCredentials'));
 	} else {
-		deploymentOptions.excludeObjectTypes.value = (deploymentOptions as vscodeMssql.DeploymentOptions).excludeObjectTypes.value?.filter(x => x !== vscodeMssql.SchemaObjectType.DatabaseScopedCredentials);
+		deploymentOptions.excludeObjectTypes.value = (deploymentOptions as vscodeMssql.DeploymentOptions).excludeObjectTypes.value?.filter(x => x !== deploymentOptions.includeObjectsTable.get('DatabaseScopedCredentials'));
 	}
 
 	// this option needs to be true for same database references validation to work

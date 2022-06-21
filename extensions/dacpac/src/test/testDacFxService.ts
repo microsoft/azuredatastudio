@@ -156,7 +156,11 @@ export class DacFxTestService implements mssql.IDacFxService {
 				doNotDropWorkloadClassifiers: { value: false, description: sampleDesc, displayName: sampleName },
 				ignoreWorkloadClassifiers: { value: false, description: sampleDesc, displayName: sampleName },
 				ignoreDatabaseWorkloadGroups: { value: false, description: sampleDesc, displayName: sampleName },
-				doNotDropDatabaseWorkloadGroups: { value: false, description: sampleDesc, displayName: sampleName }
+				doNotDropDatabaseWorkloadGroups: { value: false, description: sampleDesc, displayName: sampleName },
+				includeObjectsTable: new Map<string, number>([
+					['Sample Include Object Type1', 0],
+					['Sample Include Object Type2', 2]
+				])
 			}
 		};
 
