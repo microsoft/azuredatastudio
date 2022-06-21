@@ -127,12 +127,12 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		// keeps azure tokens refreshed every 10 minutes
 		const tokenRefreshInterval = 600;
 
-		setInterval(async () => {
+		setInterval(() => {
 			const connectionList = this.getActiveConnections();
 			connectionList.forEach(async connection => {
 				if (connection.authenticationType === AuthenticationType.AzureMFA) {
 					try {
-						await this.refreshAzureAccountTokens(connection);
+						await this.timedRefreshAzureAccountTokens(connection);
 					} catch (error) {
 						this._logService.error(`Timed process failed to refresh azure token: ${error.toString()}`);
 					}
@@ -952,7 +952,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * @returns void if no need to refresh or successfully refreshed token
 	 */
 	public async refreshAzureAccountTokenIfNecessary(uri: string): Promise<boolean> {
-		let account: azdata.Account;
+		let account: azdata.Account | undefined;
 		const profile = this._connectionStatusManager.getConnectionProfile(uri);
 		// find corresponding account for connection profile
 		const accounts = await this._accountManagementService.getAccounts();
@@ -1016,7 +1016,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * Refresh Azure access token
 	 * @param profile connection profile
 	 */
-	public async refreshAzureAccountTokens(profile: ConnectionProfile): Promise<void> {
+	public async timedRefreshAzureAccountTokens(profile: ConnectionProfile): Promise<void> {
 
 		let uri = this.getConnectionUri(profile);
 		//wait for the pending reconnction promise if any
