@@ -84,6 +84,24 @@ suite('SQL ConnectionManagementService tests', () => {
 		tabColorMode: 'fill'
 	};
 
+	let testKey: azdata.AccountKey = {
+		providerId: '123',
+		accountId: '123'
+	};
+	let testAccountDisplayInfo: azdata.AccountDisplayInfo = {
+		contextualDisplayName: 'test',
+		accountType: 'test',
+		displayName: 'test',
+		userId: 'test'
+	};
+	let account: azdata.Account = {
+		key: testKey,
+		displayInfo: testAccountDisplayInfo,
+		isStale: false,
+		properties: ''
+	};
+
+	let getAccountsReturnValue: Promise<azdata.Account[]> = Promise.resolve([account]);
 	let handleFirewallRuleResult: IHandleFirewallRuleResult;
 	let resolveHandleFirewallRuleDialog: boolean;
 	let isFirewallRuleAdded: boolean;
@@ -1511,6 +1529,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		};
 		mssqlConnectionProvider.setup(x => x.listDatabases(ownerUri)).returns(() => listDatabasesThenable(ownerUri));
 		mssqlConnectionProvider.setup(x => x.changeDatabase(ownerUri, newDbName)).returns(() => changeDatabasesThenable(ownerUri, newDbName));
+		accountManagementService.setup(x => x.getAccounts()).returns(() => { return getAccountsReturnValue; });
 		await connect(ownerUri, undefined, false, connectionProfileWithoutDb);
 		let listDatabasesResult = await connectionManagementService.listDatabases(ownerUri);
 		assert.strictEqual(listDatabasesResult.databaseNames.length, 1);
@@ -1522,6 +1541,7 @@ suite('SQL ConnectionManagementService tests', () => {
 
 	test('list and change database tests for invalid uris', async () => {
 		let badString = 'bad_string';
+		accountManagementService.setup(x => x.getAccounts()).returns(() => { return getAccountsReturnValue; });
 		let listDatabasesResult = await connectionManagementService.listDatabases(badString);
 		assert(!listDatabasesResult);
 		let changeDatabaseResult = await connectionManagementService.changeDatabase(badString, badString);

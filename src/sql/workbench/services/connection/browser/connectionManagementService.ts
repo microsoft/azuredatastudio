@@ -928,7 +928,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	}
 
-	private findAzureAccountFromProfile(accounts: azdata.Account[], connection: interfaces.IConnectionProfile) {
+	private findAzureAccountFromProfile(accounts: azdata.Account[], connection: interfaces.IConnectionProfile): azdata.Account | undefined {
 		let account: azdata.Account;
 		let accountId: string;
 		const azureAccounts = accounts.filter(a => a.key.providerId.startsWith('azure'));
@@ -957,6 +957,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		// find corresponding account for connection profile
 		const accounts = await this._accountManagementService.getAccounts();
 		account = this.findAzureAccountFromProfile(accounts, profile);
+		if (!account) {
+			this._logService.warn(`Account not found for uri ${uri}`);
+			return false;
+		}
 		if (!profile) {
 			this._logService.warn(`Connection not found for uri ${uri}`);
 			return false;
