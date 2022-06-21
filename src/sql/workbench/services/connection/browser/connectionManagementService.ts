@@ -1036,7 +1036,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 
 
-		this._logService.info(`Timed token refresh for connection ${profile.id} with uri ${uri}`);
+		this._logService.info(`Token refresh for connection ${profile.id} with uri ${uri}`);
 		try {
 			const connectionResultPromise = this.connect(profile, uri);
 			this._uriToReconnectPromiseMap[uri] = connectionResultPromise;
