@@ -57,7 +57,7 @@ let idPool = 0;
 					<div *ngIf="_options.layout === NavigationBarLayout.vertical" class="vertical-tab-action-container">
 						<button [attr.aria-expanded]="_tabExpanded" [title]="toggleTabPanelButtonAriaLabel" [attr.aria-label]="toggleTabPanelButtonAriaLabel" [ngClass]="toggleTabPanelButtonCssClass" tabindex="0" (click)="toggleTabPanel()"></button>
 					</div>
-					<div [style.display]="_tabExpanded ? 'flex': 'none'" [attr.aria-hidden]="_tabExpanded ? 'false': 'true'" class="tabList" role="tablist" (keydown)="onKey($event)">
+					<div [style.display]="_tabExpanded ? 'flex': 'none'" [attr.aria-hidden]="_tabExpanded ? 'false': 'true'" class="tabList" role="tablist" (keydown)="onKey($event)" (focusout)="onTabHeaderFocusOut($event)">
 						<div role="presentation" *ngFor="let tab of _tabs">
 							<ng-container *ngIf="tab.type!=='group-header'">
 								<tab-header role="presentation" [selected]="_selectedTab === tab" [tab]="tab" [showIcon]="_options.showIcon" (onSelectTab)='selectTab($event)' (onCloseTab)='closeTab($event)'></tab-header>
@@ -332,15 +332,25 @@ export class PanelComponent extends Disposable implements IThemable {
 			this.focusPreviousTab();
 			eventHandled = true;
 		}
-
 		if (eventHandled) {
 			event.preventDefault();
 			event.stopPropagation();
 		}
 	}
 
+	onTabHeaderFocusOut(e: Event): void {
+		if (!(<HTMLElement>e.currentTarget).contains((<any>e).relatedTarget)) {
+			this._tabHeaders.forEach(th => {
+				if (th.tab === this._selectedTab) {
+					th.tabIndex = 0;
+				}
+			});
+		}
+	}
+
 	private focusPreviousTab(): void {
 		const currentIndex = this.focusedTabHeaderIndex;
+		this._tabHeaders.toArray()[currentIndex].tabIndex = -1;
 		if (currentIndex !== -1) {
 			// Move to the previous tab, if we are at the first tab then move to the last tab.
 			this.focusOnTabHeader(currentIndex === 0 ? this._tabHeaders.length - 1 : currentIndex - 1);
@@ -349,6 +359,7 @@ export class PanelComponent extends Disposable implements IThemable {
 
 	private focusNextTab(): void {
 		const currentIndex = this.focusedTabHeaderIndex;
+		this._tabHeaders.toArray()[currentIndex].tabIndex = -1;
 		if (currentIndex !== -1) {
 			// Move to the next tab, if we are at the last tab then move to the first tab.
 			this.focusOnTabHeader(currentIndex === this._tabHeaders.length - 1 ? 0 : currentIndex + 1);
