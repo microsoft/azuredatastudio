@@ -551,6 +551,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			else {
 				this.revertSelectedRow(this.previousSavedCell.row).catch(onUnexpectedError);
 			}
+			this.table.grid.resetActiveCell();
 			handled = true;
 		}
 		if (e.ctrlKey && e.keyCode === KeyCode.KEY_0) {
@@ -590,7 +591,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			// revert our last new row
 			this.removingNewRow = true;
 
-			this.dataService.revertRow(this.rowIdMappings[currentNewRowIndex])
+			await this.dataService.revertRow(this.rowIdMappings[currentNewRowIndex])
 				.then(() => {
 					this.rowIdMappings[currentNewRowIndex] = undefined;
 					return this.removeRow(currentNewRowIndex, true);
@@ -653,7 +654,9 @@ export class EditDataGridPanel extends GridParentComponent {
 							severity: Severity.Error,
 							message: message
 						});
-						errorPromise = this.revertSelectedRow(cellToAdd.row);
+						errorPromise = this.revertSelectedRow(cellToAdd.row).then(() => {
+							this.lastClickedCell = { row: cellToAdd.row, column: cellToAdd.column, isEditable: true };
+						});
 					}
 					return errorPromise.then(() => { errorHandler(error); });
 				}
