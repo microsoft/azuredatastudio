@@ -146,6 +146,8 @@ export const done = localize('done', "Done");
 export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not be empty");
 
 // Publish Dialog options
+export const AdvancedOptionsButton = localize('advancedOptionsButton', 'Advanced...');
+export const AdvancedPublishOptions = localize('advancedPublishOptions', 'Advanced Publish Options');
 export const PublishingOptions = localize('publishingOptions', 'Publishing Options');
 export const IncludeObjectTypesOptionsLabel: string = localize('includeObjectTypesOptionsLabel', "Include Object Types");
 export const GeneralOptions: string = localize('generalOptions', "General Options");

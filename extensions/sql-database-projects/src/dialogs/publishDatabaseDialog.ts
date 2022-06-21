@@ -60,6 +60,7 @@ export class PublishDatabaseDialog {
 	protected optionsButton: azdataType.ButtonComponent | undefined;
 	private publishOptionsDialog: PublishOptionsDialog | undefined;
 	public fileUris: vscode.Uri[] | undefined;
+	public optionsChanged: boolean | undefined;
 
 	private completionPromise: Deferred = new Deferred();
 
@@ -914,12 +915,12 @@ export class PublishDatabaseDialog {
 	 */
 	private createOptionsButton(view: azdataType.ModelView): azdataType.FlexContainer {
 		this.optionsButton = view.modelBuilder.button().withProps({
-			label: constants.PublishingOptions,
+			label: constants.AdvancedOptionsButton,
 			secondary: true,
 			width: cssStyles.PublishingOptionsButtonWidth
 		}).component();
 
-		const optionsRow = view.modelBuilder.flexContainer().withItems([this.optionsButton], { CSSStyles: { flex: '0 0 auto', 'margin': '-8px 0 0 287px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+		const optionsRow = view.modelBuilder.flexContainer().withItems([this.optionsButton], { CSSStyles: { flex: '0 0 auto', 'margin': '-8px 0 0 307px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		this.toDispose.push(this.optionsButton.onDidClick(async () => {
 			TelemetryReporter.sendActionEvent(TelemetryViews.SqlProjectPublishDialog, TelemetryActions.publishConfigureOptionsClicked);

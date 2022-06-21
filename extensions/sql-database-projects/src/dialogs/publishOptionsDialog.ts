@@ -24,6 +24,8 @@ export class PublishOptionsDialog {
 	public optionsModel: DeployOptionsModel;
 	private optionsFlexBuilder: azdataType.FlexContainer | undefined;
 	private includeObjectTypesFlexBuilder: azdataType.FlexContainer | undefined;
+	private resetClicked: boolean | undefined;
+	public optionsChanged: boolean | undefined;
 
 	constructor(defaultOptions: mssql.DeploymentOptions, private publish: PublishDatabaseDialog) {
 		this.optionsModel = new DeployOptionsModel(defaultOptions);
@@ -38,7 +40,7 @@ export class PublishOptionsDialog {
 	}
 
 	public openDialog(): void {
-		this.dialog = utils.getAzdataApi()!.window.createModelViewDialog(constants.PublishingOptions);
+		this.dialog = utils.getAzdataApi()!.window.createModelViewDialog(constants.AdvancedPublishOptions);
 
 		this.initializeDialog();
 
@@ -50,6 +52,7 @@ export class PublishOptionsDialog {
 
 		let resetButton = utils.getAzdataApi()!.window.createButton(constants.ResetButton);
 		resetButton.onClick(async () => await this.reset());
+		resetButton.enabled = this.publish.optionsChanged!;
 		this.dialog.customButtons = [resetButton];
 
 		utils.getAzdataApi()!.window.openDialog(this.dialog);
@@ -90,6 +93,8 @@ export class PublishOptionsDialog {
 				if (checkboxState && checkboxState.row !== undefined) {
 					let label = this.optionsModel.optionsLabels[checkboxState.row];
 					this.optionsModel.optionsLookup?.set(label, checkboxState.checked);
+					this.optionsChanged = true;
+					this.dialog.customButtons[0].enabled = true;
 				}
 			}));
 
@@ -122,6 +127,8 @@ export class PublishOptionsDialog {
 				if (checkboxState && checkboxState.row !== undefined) {
 					let label = this.optionsModel.includeObjectTypeLabels[checkboxState.row];
 					this.optionsModel.includeObjectsLookup?.set(label, checkboxState.checked);
+					this.optionsChanged = true;
+					this.dialog.customButtons[0].enabled = true;
 				}
 			}));
 
@@ -194,6 +201,11 @@ export class PublishOptionsDialog {
 		this.optionsModel.setDeploymentOptions();
 		this.optionsModel.setIncludeObjectTypeOptions();
 		this.publish.setDeploymentOptions(this.optionsModel.deploymentOptions);
+		this.publish.optionsChanged = this.optionsChanged ?? this.publish.optionsChanged;
+		// Reset clicked and Ok
+		if (this.resetClicked) {
+			this.publish.optionsChanged = false;
+		}
 		this.disposeListeners();
 	}
 
@@ -201,6 +213,10 @@ export class PublishOptionsDialog {
 	* Cancels the deploy options table dialog and its changes will be disposed
 	*/
 	protected cancel(): void {
+		// If option changed and reset clicked but canceled, then we should honor the prev selection
+		if (this.optionsChanged && this.resetClicked) {
+			this.publish.optionsChanged = this.publish.optionsChanged;
+		}
 		this.disposeListeners();
 	}
 
@@ -228,9 +244,14 @@ export class PublishOptionsDialog {
 		await this.updateObjectsTable();
 		this.includeObjectTypesFlexBuilder?.removeItem(this.includeObjectsTable!);
 		this.includeObjectTypesFlexBuilder?.addItem(this.includeObjectsTable!, { CSSStyles: { 'overflow': 'scroll', 'height': '80vh' } });
+		this.resetClicked = true;
 	}
 
 	private disposeListeners(): void {
 		this.disposableListeners.forEach(x => x.dispose());
+	}
+
+	private ToggleRestButton(): void {
+		this.dialog.customButtons[0].enabled = this.publish.optionsChanged!;
 	}
 }
