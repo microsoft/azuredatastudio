@@ -156,13 +156,13 @@ declare module 'mssql' {
 	export interface DacDeployOptionPropertyBoolean {
 		value: boolean;
 		description: string;
-		displayName: string;
+		propertyName: string;
 	}
 
 	export interface DacDeployOptionPropertyObject {
-		value: SchemaObjectType[];
+		value: number[];
 		description: string;
-		displayName: string;
+		propertyName: string;
 	}
 
 	export interface DeploymentOptions {
@@ -259,6 +259,8 @@ declare module 'mssql' {
 		ignoreWorkloadClassifiers: DacDeployOptionPropertyBoolean;
 		ignoreDatabaseWorkloadGroups: DacDeployOptionPropertyBoolean;
 		doNotDropDatabaseWorkloadGroups: DacDeployOptionPropertyBoolean;
+		ignoreSensitivityClassifications: DacDeployOptionPropertyBoolean;
+		optionsMapTable: Map<string, DacDeployOptionPropertyBoolean>;
 	}
 
 	/**

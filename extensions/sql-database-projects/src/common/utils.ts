@@ -325,7 +325,9 @@ export async function defaultAzureAccountServiceFactory(): Promise<vscodeMssql.I
 export async function getDefaultPublishDeploymentOptions(project: Project): Promise<mssql.DeploymentOptions | vscodeMssql.DeploymentOptions> {
 	const schemaCompareService = await getSchemaCompareService();
 	const result = await schemaCompareService.schemaCompareGetDefaultOptions();
-	const deploymentOptions = result.defaultDeploymentOptions;
+	let deploymentOptions = result.defaultDeploymentOptions;
+	deploymentOptions.optionsMapTable = new Map(Object.entries(result.defaultDeploymentOptions.optionsMapTable).map((x) => [x[0].charAt(0).toUpperCase() + x[0].slice(1), x[1]]));
+
 	// re-include database-scoped credentials
 	if (getAzdataApi()) {
 		deploymentOptions.excludeObjectTypes.value = (deploymentOptions as mssql.DeploymentOptions).excludeObjectTypes.value?.filter(x => x !== mssql.SchemaObjectType.DatabaseScopedCredentials);
@@ -336,6 +338,13 @@ export async function getDefaultPublishDeploymentOptions(project: Project): Prom
 	// this option needs to be true for same database references validation to work
 	if (project.databaseReferences.length > 0) {
 		deploymentOptions.includeCompositeObjects.value = true;
+		// Updating optionsMapTable as this Map table is sending back the option values to the DacFx
+		const includeCompositeObjectDisplayName = 'Include composite objects';
+		let propVal = deploymentOptions.optionsMapTable.get(includeCompositeObjectDisplayName);
+		if (propVal !== undefined) {
+			propVal.value = true;
+			deploymentOptions.optionsMapTable.set(includeCompositeObjectDisplayName, propVal);
+		}
 	}
 	return result.defaultDeploymentOptions;
 }
