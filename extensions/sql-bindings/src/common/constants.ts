@@ -84,3 +84,4 @@ export function settingAlreadyExists(settingName: string): string { return local
 export function failedToParse(filename: string, error: any): string { return localize('failedToParse', 'Failed to parse "{0}": {1}.', filename, utils.getErrorMessage(error)); }
 export function addSqlBinding(functionName: string): string { return localize('addSqlBinding', 'Adding SQL Binding to function "{0}"...'), functionName; }
 export function errorNewAzureFunction(error: any): string { return localize('errorNewAzureFunction', 'Error creating new Azure Function: {0}', utils.getErrorMessage(error)); }
+export function manuallyEnterObjectName(userObjectName: string): string { return `$(pencil) ${userObjectName}`; }
