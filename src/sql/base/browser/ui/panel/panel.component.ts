@@ -338,6 +338,14 @@ export class PanelComponent extends Disposable implements IThemable {
 		}
 	}
 
+	/**
+	 * Making the selected tab header focusable when the focus leaves the tab header div.
+	 * This fixes an issue when users press up/left arrow in vertical tab header and move up to
+	 * the previous tab header. The next focus was being set to the selected tab and then the tab
+	 * contents. Now, the focus will directly move to tab contents. And, when users press
+	 * shift-tab on the first focusable element of tab content, the focus will move back to
+	 * selected tab header.
+	 */
 	onTabHeaderFocusOut(e: Event): void {
 		if (!(<HTMLElement>e.currentTarget).contains((<any>e).relatedTarget)) {
 			this._tabHeaders.forEach(th => {
