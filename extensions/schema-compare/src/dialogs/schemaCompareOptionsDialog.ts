@@ -10,6 +10,7 @@ import * as loc from '../localizedConstants';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
 import { isNullOrUndefined } from 'util';
 import { SchemaCompareOptionsModel } from '../models/schemaCompareOptionsModel';
+import { TelemetryReporter, TelemetryViews } from '../telemetry';
 
 export class SchemaCompareOptionsDialog {
 	public dialog: azdata.window.Dialog;
@@ -82,7 +83,10 @@ export class SchemaCompareOptionsDialog {
 					this.schemaComparison.startCompare();
 				}
 			});
+
+			TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareOptionsDialog, 'OptionsChanged').send();
 		}
+
 		this.disposeListeners();
 	}
 
@@ -106,6 +110,8 @@ export class SchemaCompareOptionsDialog {
 		await this.updateObjectsTable();
 		this.objectTypesFlexBuilder.removeItem(this.objectsTable);
 		this.objectTypesFlexBuilder.addItem(this.objectsTable, { CSSStyles: { 'overflow': 'scroll', 'height': '80vh' } });
+
+		TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareOptionsDialog, 'ResetOptions').send();
 	}
 
 	private initializeSchemaCompareOptionsDialogTab(): void {

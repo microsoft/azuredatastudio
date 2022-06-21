@@ -53,7 +53,7 @@ export class SchemaCompareMainWindow {
 	protected comparisonResult: mssql.SchemaCompareResult;
 	private sourceNameComponent: azdata.InputBoxComponent;
 	private targetNameComponent: azdata.InputBoxComponent;
-	private deploymentOptions: mssql.DeploymentOptions;
+	public deploymentOptions: mssql.DeploymentOptions;
 	private schemaCompareOptionDialog: SchemaCompareOptionsDialog;
 	private tablelistenersToDispose: vscode.Disposable[] = [];
 	private originalSourceExcludes = new Map<string, mssql.DiffEntry>();
