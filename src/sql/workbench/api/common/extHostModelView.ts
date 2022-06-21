@@ -50,7 +50,7 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 
 	flexContainer(): azdata.FlexBuilder {
 		let id = this.getNextComponentId();
-		let container: GenericContainerBuilder<azdata.FlexContainer, any, any, azdata.ComponentProperties> = new GenericContainerBuilder<azdata.FlexContainer, azdata.FlexLayout, azdata.FlexItemLayout, azdata.ComponentProperties>(this._proxy, this._handle, ModelComponentTypes.FlexContainer, id, this.logService);
+		let container: GenericContainerBuilder<azdata.FlexContainer, any, any, azdata.ContainerProperties> = new GenericContainerBuilder<azdata.FlexContainer, azdata.FlexLayout, azdata.FlexItemLayout, azdata.ContainerProperties>(this._proxy, this._handle, ModelComponentTypes.FlexContainer, id, this.logService);
 		this._componentBuilders.set(id, container);
 		return container;
 	}
@@ -342,9 +342,15 @@ class ComponentBuilderImpl<T extends azdata.Component, TPropertyBag extends azda
 	}
 }
 
-class ContainerBuilderImpl<TComponent extends azdata.Component, TLayout, TItemLayout, TPropertyBag extends azdata.ComponentProperties> extends ComponentBuilderImpl<TComponent, TPropertyBag> implements azdata.ContainerBuilder<TComponent, TLayout, TItemLayout, TPropertyBag> {
+class ContainerBuilderImpl<TComponent extends azdata.Component, TLayout, TItemLayout, TPropertyBag extends azdata.ContainerProperties> extends ComponentBuilderImpl<TComponent, TPropertyBag> implements azdata.ContainerBuilder<TComponent, TLayout, TItemLayout, TPropertyBag> {
 	constructor(componentWrapper: ComponentWrapper) {
 		super(componentWrapper);
+	}
+
+	override withProps(properties: TPropertyBag): azdata.ContainerBuilder<TComponent, TLayout, TItemLayout, TPropertyBag> {
+		// We use the same basic logic to set the properties but return this so we can return the container object type
+		super.withProps(properties);
+		return this;
 	}
 
 	withLayout(layout: TLayout): azdata.ContainerBuilder<TComponent, TLayout, TItemLayout, TPropertyBag> {
@@ -361,7 +367,7 @@ class ContainerBuilderImpl<TComponent extends azdata.Component, TLayout, TItemLa
 	}
 }
 
-class GenericContainerBuilder<T extends azdata.Component, TLayout, TItemLayout, TPropertyBag extends azdata.ComponentProperties> extends ContainerBuilderImpl<T, TLayout, TItemLayout, TPropertyBag> {
+class GenericContainerBuilder<T extends azdata.Component, TLayout, TItemLayout, TPropertyBag extends azdata.ContainerProperties> extends ContainerBuilderImpl<T, TLayout, TItemLayout, TPropertyBag> {
 	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string, logService: ILogService) {
 		super(new ComponentWrapper(proxy, handle, type, id, logService));
 	}
