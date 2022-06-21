@@ -7,9 +7,7 @@
 	cursor: pointer;
 	height: 100%;
 	text-align: center;
-	padding-right: 0px;
-	padding-top: 0px;
-	padding-bottom: 0px;
+	padding: 0px;
 }
 
 .slick-plugin-button:disabled {
@@ -31,4 +29,8 @@
 .slick-plugin-button.slick-plugin-image-only-button {
 	border-width: 0px;
 	background-color: transparent;
+}
+
+.slick-plugin-button-cell {
+	text-align: center;
 }
