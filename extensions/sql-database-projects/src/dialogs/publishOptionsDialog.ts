@@ -27,13 +27,13 @@ export class PublishOptionsDialog {
 	}
 
 	protected initializeDialog(): void {
-		this.optionsTab = utils.getAzdataApi()!.window.createTab(constants.publishOptions);
+		this.optionsTab = utils.getAzdataApi()!.window.createTab(constants.PublishingOptions);
 		this.intializeDeploymentOptionsDialogTab();
 		this.dialog.content = [this.optionsTab];
 	}
 
 	public openDialog(): void {
-		this.dialog = utils.getAzdataApi()!.window.createModelViewDialog(constants.publishOptions);
+		this.dialog = utils.getAzdataApi()!.window.createModelViewDialog(constants.AdvancedPublishOptions);
 
 		this.initializeDialog();
 
@@ -93,7 +93,7 @@ export class PublishOptionsDialog {
 					flexFlow: 'column'
 				}).component();
 
-			this.optionsFlexBuilder.addItem(this.optionsTable, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh' } });
+			this.optionsFlexBuilder.addItem(this.optionsTable, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh', 'padding-top': '2px' } });
 			this.optionsFlexBuilder.addItem(this.descriptionHeading, { CSSStyles: { 'font-weight': 'bold', 'height': '30px' } });
 			this.optionsFlexBuilder.addItem(this.descriptionText, { CSSStyles: { 'padding': '4px', 'margin-right': '10px', 'overflow': 'scroll', 'height': '10vh' } });
 			await view.initializeModel(this.optionsFlexBuilder);
@@ -116,13 +116,13 @@ export class PublishOptionsDialog {
 					type: utils.getAzdataApi()!.ColumnType.checkBox,
 					action: utils.getAzdataApi()!.ActionOnCellCheckboxCheck.customAction,
 					headerCssClass: 'display-none',
-					cssClass: 'no-borders align-with-header',
+					cssClass: 'no-borders align-with-header align-with-text',
 					width: 50
 				},
 				{
 					value: constants.OptionName,
 					headerCssClass: 'display-none',
-					cssClass: 'no-borders align-with-header',
+					cssClass: 'no-borders align-with-header vertical-align-middle',
 					width: 50
 				}
 			],
@@ -158,7 +158,7 @@ export class PublishOptionsDialog {
 
 		await this.updateOptionsTable();
 		this.optionsFlexBuilder?.removeItem(this.optionsTable!);
-		this.optionsFlexBuilder?.insertItem(this.optionsTable!, 0, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh' } });
+		this.optionsFlexBuilder?.insertItem(this.optionsTable!, 0, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh', 'padding-top': '2px' } });
 	}
 
 	private disposeListeners(): void {
