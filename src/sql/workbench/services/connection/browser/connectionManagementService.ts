@@ -913,7 +913,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			}
 			const tenantId = connection.azureTenantId;
 			const token = await this._accountManagementService.getAccountSecurityToken(account, tenantId, azureResource);
-			this._logService.debug(`Got token for tenant ${token}`);
+			this._logService.debug(`Got token for tenant ${tenantId}`);
 			if (!token) {
 				this._logService.info(`No security tokens found for account`);
 				return false;
