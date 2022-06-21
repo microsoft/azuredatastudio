@@ -595,6 +595,8 @@ declare module 'vscode-mssql' {
 		ignoreWorkloadClassifiers: DacDeployOptionPropertyBoolean;
 		ignoreDatabaseWorkloadGroups: DacDeployOptionPropertyBoolean;
 		doNotDropDatabaseWorkloadGroups: DacDeployOptionPropertyBoolean;
+		optionsMapTable: Map<string, DacDeployOptionPropertyBoolean>;
+		includeObjectsTable: Map<string, number>;
 	}
 
 	/**

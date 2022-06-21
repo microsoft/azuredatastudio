@@ -59,6 +59,7 @@ export class PublishDatabaseDialog {
 	private serverName: string | undefined;
 	protected optionsButton: azdataType.ButtonComponent | undefined;
 	private publishOptionsDialog: PublishOptionsDialog | undefined;
+	public fileUris: vscode.Uri[] | undefined;
 
 	private completionPromise: Deferred = new Deferred();
 
@@ -818,6 +819,7 @@ export class PublishDatabaseDialog {
 			}
 
 			if (this.readPublishProfile) {
+				this.fileUris = fileUris;
 				const result = await this.readPublishProfile(fileUris[0]);
 				// clear out old database dropdown values. They'll get populated later if there was a connection specified in the profile
 				this.targetDatabaseName = '';
@@ -829,6 +831,9 @@ export class PublishDatabaseDialog {
 				if (result.databaseName) {
 					this.targetDatabaseName = result.databaseName;
 				}
+
+				// Set profiles options to the deployment options
+				this.setDeploymentOptions(result.options);
 
 				if (Object.keys(result.sqlCmdVariables).length) {
 					// add SQLCMD Variables table if it wasn't there before and the profile had sqlcmd variables
