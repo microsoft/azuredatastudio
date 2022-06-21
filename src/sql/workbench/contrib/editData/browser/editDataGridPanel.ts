@@ -607,7 +607,8 @@ export class EditDataGridPanel extends GridParentComponent {
 			await this.dataService.revertRow(this.rowIdMappings[currentNewRowIndex])
 				.then(() => {
 					this.rowIdMappings[currentNewRowIndex] = undefined;
-					return this.removeRow(currentNewRowIndex, true);
+					return this.dataService.deleteRow(currentNewRowIndex).then(() => this.dataService.commitEdit())
+						.then(() => this.removeRow(currentNewRowIndex, true));
 				}).then(() => {
 					this.newRowVisible = false;
 					this.resetCurrentCell();
