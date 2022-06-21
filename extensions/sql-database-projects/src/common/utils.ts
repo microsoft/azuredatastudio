@@ -351,7 +351,6 @@ export async function getDefaultPublishDeploymentOptions(project: Project): Prom
 
 export interface IPackageInfo {
 	name: string;
-	fullName: string;
 	version: string;
 	aiKey: string;
 }
@@ -372,11 +371,9 @@ export function getPackageInfo(packageJson?: any): IPackageInfo | undefined {
 	// package.vscode.json values replace the corresponding values in the package.json for the sql-database-projects-vscode extension
 	// so we need to read these values directly from the package.vscode.json to get the correct extension and publisher names
 	const extensionName = azdataApi ? packageJson.name : vscodePackageJson.name;
-	const publisher = azdataApi ? packageJson.publisher : vscodePackageJson.publisher;
 
 	return {
 		name: extensionName,
-		fullName: `${publisher}.${extensionName}`,
 		version: packageJson.version,
 		aiKey: packageJson.aiKey
 	};

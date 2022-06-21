@@ -113,13 +113,13 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 
 		// Get connection string parameters and construct object name from prompt or connectionInfo given
 		let objectName: string | undefined;
-		const vscodeMssqlApi = await utils.getVscodeMssqlApi();
 		if (!node) {
 			// if user selects command in command palette we prompt user for information
 			telemetryStep = CreateAzureFunctionStep.launchFromCommandPalette;
 			// prompt user for connection profile to get connection info
 			while (true) {
 				try {
+					const vscodeMssqlApi = await utils.getVscodeMssqlApi();
 					connectionInfo = await vscodeMssqlApi.promptForConnection(true);
 				} catch (e) {
 					// user cancelled while creating connection profile

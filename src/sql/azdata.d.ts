@@ -2692,7 +2692,7 @@ declare module 'azdata' {
 	 * Supports defining a model that can be instantiated as a view in the UI
 	 */
 	export interface ModelBuilder {
-		navContainer(): ContainerBuilder<NavContainer, any, any, ComponentProperties>;
+		navContainer(): ContainerBuilder<NavContainer, any, any, ContainerProperties>;
 		divContainer(): DivBuilder;
 		flexContainer(): FlexBuilder;
 		splitViewContainer(): SplitViewBuilder;
@@ -2763,16 +2763,16 @@ declare module 'azdata' {
 		withProps(properties: TPropertyBag): ComponentBuilder<TComponent, TPropertyBag>;
 		withValidation(validation: (component: TComponent) => boolean | Thenable<boolean>): ComponentBuilder<TComponent, TPropertyBag>;
 	}
-	export interface ContainerBuilder<TComponent extends Component, TLayout, TItemLayout, TPropertyBag extends ComponentProperties> extends ComponentBuilder<TComponent, TPropertyBag> {
+	export interface ContainerBuilder<TComponent extends Component, TLayout, TItemLayout, TPropertyBag extends ContainerProperties> extends ComponentBuilder<TComponent, TPropertyBag> {
 		withLayout(layout: TLayout): ContainerBuilder<TComponent, TLayout, TItemLayout, TPropertyBag>;
 		withItems(components: Array<Component>, itemLayout?: TItemLayout): ContainerBuilder<TComponent, TLayout, TItemLayout, TPropertyBag>;
 	}
 
-	export interface FlexBuilder extends ContainerBuilder<FlexContainer, FlexLayout, FlexItemLayout, ComponentProperties> {
+	export interface FlexBuilder extends ContainerBuilder<FlexContainer, FlexLayout, FlexItemLayout, ContainerProperties> {
 	}
 
 	// Building on top of flex item
-	export interface SplitViewBuilder extends ContainerBuilder<SplitViewContainer, SplitViewLayout, FlexItemLayout, ComponentProperties> {
+	export interface SplitViewBuilder extends ContainerBuilder<SplitViewContainer, SplitViewLayout, FlexItemLayout, ContainerProperties> {
 	}
 
 	export interface DivBuilder extends ContainerBuilder<DivContainer, DivLayout, DivItemLayout, DivContainerProperties> {
@@ -2781,8 +2781,8 @@ declare module 'azdata' {
 	export interface GroupBuilder extends ContainerBuilder<GroupContainer, GroupLayout, GroupItemLayout, GroupContainerProperties> {
 	}
 
-	export interface ToolbarBuilder extends ContainerBuilder<ToolbarContainer, ToolbarLayout, any, ComponentProperties> {
-		withToolbarItems(components: ToolbarComponent[]): ContainerBuilder<ToolbarContainer, ToolbarLayout, any, ComponentProperties>;
+	export interface ToolbarBuilder extends ContainerBuilder<ToolbarContainer, ToolbarLayout, any, ContainerProperties> {
+		withToolbarItems(components: ToolbarComponent[]): ContainerBuilder<ToolbarContainer, ToolbarLayout, any, ContainerProperties>;
 
 		/**
 		 * Creates a collection of child components and adds them all to this container
@@ -2807,7 +2807,7 @@ declare module 'azdata' {
 		withItem(component: Component): LoadingComponentBuilder;
 	}
 
-	export interface FormBuilder extends ContainerBuilder<FormContainer, FormLayout, FormItemLayout, ComponentProperties> {
+	export interface FormBuilder extends ContainerBuilder<FormContainer, FormLayout, FormItemLayout, ContainerProperties> {
 		withFormItems(components: (FormComponent | FormComponentGroup)[], itemLayout?: FormItemLayout): FormBuilder;
 
 		/**
@@ -3324,6 +3324,13 @@ declare module 'azdata' {
 		CSSStyles?: CssStyles | undefined;
 	}
 
+	/**
+	 * Common properties for container components such as {@link DivContainer} or {@link FlexContainer}
+	 */
+	export interface ContainerProperties extends ComponentProperties {
+
+	}
+
 	export type ThemedIconPath = { light: string | vscode.Uri; dark: string | vscode.Uri };
 	export type IconPath = string | vscode.Uri | ThemedIconPath;
 
@@ -3544,7 +3551,7 @@ declare module 'azdata' {
 	export interface ImageComponentProperties extends ComponentWithIconProperties {
 	}
 
-	export interface GroupContainerProperties extends ComponentProperties {
+	export interface GroupContainerProperties extends ContainerProperties {
 		collapsed: boolean;
 	}
 
@@ -3817,7 +3824,7 @@ declare module 'azdata' {
 		loadingCompletedText?: string | undefined;
 	}
 
-	export interface DivContainerProperties extends ComponentProperties {
+	export interface DivContainerProperties extends ContainerProperties {
 		/**
 		 * Matches the overflow-y CSS property and its available values.
 		 */
@@ -4357,12 +4364,12 @@ declare module 'azdata' {
 	/**
 	 * Builder for TabbedPanelComponent
 	 */
-	export interface TabbedPanelComponentBuilder extends ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any, ComponentProperties> {
+	export interface TabbedPanelComponentBuilder extends ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any, ContainerProperties> {
 		/**
 		 * Add the tabs to the component
 		 * @param tabs tabs/tab groups to be added
 		 */
-		withTabs(tabs: (Tab | TabGroup)[]): ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any, ComponentProperties>;
+		withTabs(tabs: (Tab | TabGroup)[]): ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any, ContainerProperties>;
 	}
 
 	export interface SliderComponentProperties extends ComponentProperties {
@@ -4992,14 +4999,18 @@ declare module 'azdata' {
 			| 'executionPlan'
 			| 'visualize';
 
-		/**
-		 * args for each event type
-		 * queryStart: undefined
-		 * queryStop: undefined
-		 * executionPlan: string
-		 * visualize: ResultSetSummary
-		 */
 		export interface QueryEventListener {
+			/**
+			 * A callback that is called whenever a query event occurs
+			 * @param type The type of query event
+			 * @param document The document this event was sent by
+			 * @param args The extra information for the event, if any
+			 * The args sent depend on the type of event :
+			 * queryStart: undefined
+			 * queryStop: undefined
+			 * executionPlan: string (the plan itself)
+			 * visualize: ResultSetSummary (the result set to be visualized)
+			 */
 			onQueryEvent(type: QueryEventType, document: QueryDocument, args: ResultSetSummary | string | undefined): void;
 		}
 

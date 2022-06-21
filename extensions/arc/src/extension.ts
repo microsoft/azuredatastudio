@@ -89,6 +89,14 @@ export async function activate(context: vscode.ExtensionContext): Promise<arc.IE
 		}
 	}));
 
+	// Register valueprovider for getting the number of billable replicas.
+	context.subscriptions.push(rdApi.registerValueProvider({
+		id: 'params-to-billable-replicas',
+		getValue: async (mapping: { [key: string]: rd.InputValueType }) => {
+			return 'x ' + pricing.numBillableReplicas(mapping).toString();
+		}
+	}));
+
 	// Register valueprovider for getting the amount of hybrid benefit discount to be applied.
 	context.subscriptions.push(rdApi.registerValueProvider({
 		id: 'params-to-hybrid-benefit-discount',
