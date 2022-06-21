@@ -4999,14 +4999,18 @@ declare module 'azdata' {
 			| 'executionPlan'
 			| 'visualize';
 
-		/**
-		 * args for each event type
-		 * queryStart: undefined
-		 * queryStop: undefined
-		 * executionPlan: string
-		 * visualize: ResultSetSummary
-		 */
 		export interface QueryEventListener {
+			/**
+			 * A callback that is called whenever a query event occurs
+			 * @param type The type of query event
+			 * @param document The document this event was sent by
+			 * @param args The extra information for the event, if any
+			 * The args sent depend on the type of event :
+			 * queryStart: undefined
+			 * queryStop: undefined
+			 * executionPlan: string (the plan itself)
+			 * visualize: ResultSetSummary (the result set to be visualized)
+			 */
 			onQueryEvent(type: QueryEventType, document: QueryDocument, args: ResultSetSummary | string | undefined): void;
 		}
 

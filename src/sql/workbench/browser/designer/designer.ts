@@ -16,7 +16,7 @@ import { Orientation, Sizing, SplitView } from 'vs/base/browser/ui/splitview/spl
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { IInputBoxStyles, InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import 'vs/css!./media/designer';
-import { ITableMouseEvent, ITableStyles } from 'sql/base/browser/ui/table/interfaces';
+import { ITableStyles } from 'sql/base/browser/ui/table/interfaces';
 import { IThemable } from 'vs/base/common/styler';
 import { Checkbox, ICheckboxStyles } from 'sql/base/browser/ui/checkbox/checkbox';
 import { Table } from 'sql/base/browser/ui/table/table';
@@ -850,21 +850,15 @@ export class Designer extends Disposable implements IThemable {
 					this._actionsMap.get(taskbar).map(a => a.table = table);
 				}
 				const columns: Slick.Column<Slick.SlickData>[] = [];
-				if (tableProperties.canInsertRows || tableProperties.canMoveRows) {
-					// Add move context menu actions
-					this._register(table.onContextMenu((e) => {
-						this.openContextMenu(table, e, propertyPath, view, tableProperties);
-					}));
-				}
 				if (tableProperties.canMoveRows) {
 					// Add row move drag and drop
 					const moveRowsPlugin = new RowMoveManager({
 						cancelEditOnDrag: true,
 						id: 'moveRow',
 						iconCssClass: Codicon.grabber.classNames,
-						title: localize('designer.moveRowText', 'Move Row'),
-						width: 20,
-						resizable: false,
+						name: localize('designer.moveRowText', 'Move'),
+						width: 50,
+						resizable: true,
 						isFontIcon: true,
 						behavior: 'selectAndMove'
 					});
@@ -928,12 +922,14 @@ export class Designer extends Disposable implements IThemable {
 					}
 				}));
 				if (tableProperties.canRemoveRows) {
+					const removeText = localize('designer.removeRowText', "Remove");
 					const deleteRowColumn = new ButtonColumn({
 						id: 'deleteRow',
 						iconCssClass: Codicon.trash.classNames,
-						title: localize('designer.removeRowText', "Remove"),
-						width: 20,
-						resizable: false,
+						name: removeText,
+						title: removeText,
+						width: 60,
+						resizable: true,
 						isFontIcon: true,
 						enabledField: CanBeDeletedProperty
 					});
@@ -956,6 +952,27 @@ export class Designer extends Disposable implements IThemable {
 					});
 					table.registerPlugin(deleteRowColumn);
 					columns.push(deleteRowColumn.definition);
+				}
+				if (tableProperties.canInsertRows || tableProperties.canMoveRows) {
+					const moreActionsText = localize('designer.actions', "More Actions");
+					const actionsColumn = new ButtonColumn({
+						id: 'actions',
+						iconCssClass: Codicon.ellipsis.classNames,
+						name: moreActionsText,
+						title: moreActionsText,
+						width: 100,
+						resizable: true,
+						isFontIcon: true
+					});
+					this._register(actionsColumn.onClick((e) => {
+						this.openContextMenu(table, e.row, e.position, propertyPath, view, tableProperties);
+					}));
+					table.registerPlugin(actionsColumn);
+					columns.push(actionsColumn.definition);
+					// Add move context menu actions
+					this._register(table.onContextMenu((e) => {
+						this.openContextMenu(table, e.cell.row, e.anchor, propertyPath, view, tableProperties);
+					}));
 				}
 				table.columns = columns;
 				table.grid.onBeforeEditCell.subscribe((e, data): boolean => {
@@ -1029,12 +1046,12 @@ export class Designer extends Disposable implements IThemable {
 
 	private openContextMenu(
 		table: Table<Slick.SlickData>,
-		event: ITableMouseEvent,
+		rowIndex: number,
+		anchor: HTMLElement | { x: number, y: number },
 		propertyPath: DesignerPropertyPath,
 		view: DesignerUIArea,
 		tableProperties: DesignerTableProperties
 	): void {
-		const rowIndex = event.cell.row;
 		const tableActionContext: DesignerTableActionContext = {
 			table: table,
 			path: propertyPath,
@@ -1053,7 +1070,7 @@ export class Designer extends Disposable implements IThemable {
 			}
 		});
 		this._contextMenuService.showContextMenu({
-			getAnchor: () => event.anchor,
+			getAnchor: () => anchor,
 			getActions: () => actions,
 			getActionsContext: () => (tableActionContext)
 		});
