@@ -478,7 +478,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	public sendNotebookTelemetryActionEvent(action: TelemetryKeys.TelemetryAction | TelemetryKeys.NbTelemetryAction, additionalProperties: ITelemetryEventProperties = {}, connectionInfo: IConnectionProfile = undefined): void {
+	public sendNotebookTelemetryActionEvent(action: TelemetryKeys.TelemetryAction | TelemetryKeys.NbTelemetryAction, additionalProperties: ITelemetryEventProperties = {}, connectionInfo?: IConnectionProfile): void {
 		let properties: ITelemetryEventProperties = deepClone(additionalProperties);
 		properties['azdata_notebook_guid'] = this.getMetaValue('azdata_notebook_guid');
 		let event: ITelemetryEvent = this.adstelemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, action)
