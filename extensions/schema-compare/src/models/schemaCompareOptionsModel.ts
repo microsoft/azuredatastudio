@@ -48,13 +48,6 @@ export class SchemaCompareOptionsModel {
 		});
 		return data;
 	}
-	//#endregion
-
-	constructor(defaultOptions: mssql.DeploymentOptions) {
-		this.deploymentOptions = defaultOptions;
-		this.InitializeUpdateOptionsMapTable();
-		this.InitializeOptionsLabels();
-	}
 
 	public setDeploymentOptions() {
 		for (let option of this.optionsLookup) {

@@ -218,10 +218,6 @@ export class PublishOptionsDialog {
 	* Cancels the deploy options table dialog and its changes will be disposed
 	*/
 	protected cancel(): void {
-		// // If option changed and reset clicked but canceled, then we should honor the prev selection
-		// if (this.optionsChanged && this.resetClicked) {
-		// 	this.publish.optionsChanged = this.publish.optionsChanged;
-		// }
 		this.disposeListeners();
 	}
 
@@ -254,9 +250,5 @@ export class PublishOptionsDialog {
 
 	private disposeListeners(): void {
 		this.disposableListeners.forEach(x => x.dispose());
-	}
-
-	private ToggleRestButton(): void {
-		this.dialog.customButtons[0].enabled = this.publish.optionsChanged!;
 	}
 }
