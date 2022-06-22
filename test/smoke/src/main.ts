@@ -11,6 +11,7 @@ import * as minimist from 'minimist';
 import * as rimraf from 'rimraf';
 import * as mkdirp from 'mkdirp';
 import { ncp } from 'ncp';
+// {{SQL CARBON EDIT}}
 // import * as vscodetest from 'vscode-test';
 // import fetch from 'node-fetch';
 import { Quality, ApplicationOptions, MultiLogger, Logger, ConsoleLogger, FileLogger } from '../../automation';
@@ -243,6 +244,7 @@ async function ensureStableCode(): Promise<void> {
 		return;
 	}
 
+	// {{SQL CARBON EDIT}}
 	// let stableCodePath = opts['stable-build'];
 	// if (!stableCodePath) {
 	// 	const { major, minor } = parseVersion(version!);
