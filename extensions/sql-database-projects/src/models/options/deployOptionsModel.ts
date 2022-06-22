@@ -19,7 +19,7 @@ export class DeployOptionsModel {
 		this.deploymentOptions = defaultOptions;
 		this.UpdateOptionsMapTable();
 		this.optionsLabels = Object.keys(Object.fromEntries(this.deploymentOptions.optionsMapTable)).sort();
-		this.includeObjectTypeLabels = Object.keys(Object.fromEntries(this.deploymentOptions.includeObjectsTable)).sort();
+		this.includeObjectTypeLabels = Object.keys(Object.fromEntries(this.deploymentOptions.includeObjects)).sort();
 	}
 
 	public UpdateOptionsMapTable() {
@@ -94,7 +94,7 @@ export class DeployOptionsModel {
 	* Gets the selected/default value of the object type option
 	*/
 	public getIncludedObjectsUtil(label: string): boolean | undefined {
-		return (this.deploymentOptions.excludeObjectTypes.value?.find(x => x === this.deploymentOptions.includeObjectsTable.get(label))) !== undefined ? false : true;
+		return (this.deploymentOptions.excludeObjectTypes.value?.find(x => x === this.deploymentOptions.includeObjects.get(label))) !== undefined ? false : true;
 	}
 
 	/*
@@ -102,7 +102,7 @@ export class DeployOptionsModel {
 	*/
 	public setIncludeObjectTypeOptions(): void {
 		for (let option of this.includeObjectsLookup) {
-			let optionNum = this.deploymentOptions.includeObjectsTable?.get(option[0]);
+			let optionNum = this.deploymentOptions.includeObjects?.get(option[0]);
 			if (optionNum !== undefined && !option[1]) {
 				this.excludedObjectTypes.push(optionNum);
 			}

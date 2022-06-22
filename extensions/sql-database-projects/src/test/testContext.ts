@@ -123,11 +123,15 @@ export function getDeploymentOptions(): mssql.DeploymentOptions {
 		ignoreDatabaseWorkloadGroups: { value: false, description: sampleDesc, propertyName: sampleName, optiontype },
 		doNotDropDatabaseWorkloadGroups: { value: false, description: sampleDesc, propertyName: sampleName, optiontype },
 		optionsMapTable: new Map<string, mssql.DacDeployOptionPropertyBoolean>([
-			['Sample Display Name Option1', { value: false, description: sampleDesc, propertyName: sampleName, optiontype }],
-			['Sample Display Name Option2', { value: false, description: sampleDesc, propertyName: sampleName, optiontype }]
+			['Sample Display Name Option1', { value: false, description: sampleDesc, propertyName: sampleName }],
+			['Sample Display Name Option2', { value: false, description: sampleDesc, propertyName: sampleName }]
 		]),
-		includeObjectsTable: new Map<string, number>()
+		includeObjects: new Map<string, number>([
+			['Sample Include Object Type1', 0],
+			['Sample Include Object Type2', 2]
+		])
 	};
+
 	return defaultOptions;
 }
 

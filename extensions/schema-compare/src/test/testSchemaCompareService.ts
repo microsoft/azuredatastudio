@@ -5,6 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as mssql from 'mssql';
+import * as testUtils from './testUtils';
 
 export class SchemaCompareTestService implements mssql.ISchemaCompareService {
 

@@ -8,7 +8,6 @@ import * as vscode from 'vscode';
 import * as mssql from 'mssql';
 import * as loc from '../localizedConstants';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
-import { isNullOrUndefined } from 'util';
 import { SchemaCompareOptionsModel } from '../models/schemaCompareOptionsModel';
 import { TelemetryReporter, TelemetryViews } from '../telemetry';
 
@@ -64,7 +63,7 @@ export class SchemaCompareOptionsDialog {
 
 	protected execute(): void {
 		this.optionsModel.setDeploymentOptions();
-		this.optionsModel.setObjectTypeOptions();
+		this.optionsModel.setSchemaCompareIncludedObjectsUtil();
 		this.schemaComparison.setDeploymentOptions(this.optionsModel.deploymentOptions);
 
 		const yesItem: vscode.MessageItem = {
@@ -97,11 +96,12 @@ export class SchemaCompareOptionsDialog {
 	private async reset(): Promise<void> {
 		let service = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.IExtension).schemaCompare;
 		let result = await service.schemaCompareGetDefaultOptions();
+		result.defaultDeploymentOptions = this.schemaComparison.ConvertObjectToMapTable(result.defaultDeploymentOptions);
 		this.optionsModel.deploymentOptions = result.defaultDeploymentOptions;
 		this.optionsChanged = true;
 
 		// This will update the Map table with default values
-		this.optionsModel.InitializeUpdateOptionsMapTable();
+		this.optionsModel.UpdateOptionsMapTable();
 
 		await this.updateOptionsTable();
 		this.optionsFlexBuilder.removeItem(this.optionsTable);
@@ -158,7 +158,7 @@ export class SchemaCompareOptionsDialog {
 					flexFlow: 'column'
 				}).component();
 
-			this.optionsFlexBuilder.addItem(this.optionsTable, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh' } });
+			this.optionsFlexBuilder.addItem(this.optionsTable, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh', 'padding-top': '2px' } });
 			this.optionsFlexBuilder.addItem(this.descriptionHeading, { CSSStyles: { 'font-weight': 'bold', 'height': '30px' } });
 			this.optionsFlexBuilder.addItem(this.descriptionText, { CSSStyles: { 'padding': '4px', 'margin-right': '10px', 'overflow': 'scroll', 'height': '10vh' } });
 			await view.initializeModel(this.optionsFlexBuilder);
@@ -180,8 +180,8 @@ export class SchemaCompareOptionsDialog {
 			this.disposableListeners.push(this.objectsTable.onCellAction((rowState) => {
 				let checkboxState = <azdata.ICheckboxCellActionEventArgs>rowState;
 				if (checkboxState && checkboxState.row !== undefined) {
-					let label = this.optionsModel.objectTypeLabels[checkboxState.row];
-					this.optionsModel.objectsLookup[label] = checkboxState.checked;
+					let label = this.optionsModel.includeObjectTypeLabels[checkboxState.row];
+					this.optionsModel.includeObjectsLookup.set(label, checkboxState.checked);
 					this.optionsChanged = true;
 				}
 			}));
@@ -209,13 +209,13 @@ export class SchemaCompareOptionsDialog {
 					type: azdata.ColumnType.checkBox,
 					action: azdata.ActionOnCellCheckboxCheck.customAction,
 					headerCssClass: 'display-none',
-					cssClass: 'no-borders align-with-header',
+					cssClass: 'no-borders align-with-header align-with-text',
 					width: 50
 				},
 				{
 					value: 'Option Name',
 					headerCssClass: 'display-none',
-					cssClass: 'no-borders align-with-header',
+					cssClass: 'no-borders align-with-header vertical-align-middle',
 					width: 50
 				}
 			],
@@ -234,13 +234,13 @@ export class SchemaCompareOptionsDialog {
 					type: azdata.ColumnType.checkBox,
 					action: azdata.ActionOnCellCheckboxCheck.customAction,
 					headerCssClass: 'display-none',
-					cssClass: 'no-borders align-with-header',
+					cssClass: 'no-borders align-with-header align-with-text',
 					width: 50
 				},
 				{
 					value: 'Option Name',
 					headerCssClass: 'display-none',
-					cssClass: 'no-borders align-with-header',
+					cssClass: 'no-borders align-with-header vertical-align-middle',
 					width: 50
 				}
 			],
