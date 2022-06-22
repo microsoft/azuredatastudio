@@ -67,6 +67,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	private removingNewRow: boolean;
 	private rowIdMappings: { [gridRowId: number]: number } = {};
 	private dirtyCells: { row: number, column: number }[] = [];
+	private newRowCurrentlyUnderEdit: number;
 	protected plugins = new Array<Slick.Plugin<any>>();
 	private newlinePattern: string;
 	// List of column names with their indexes stored.
@@ -333,7 +334,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		return this.dataService.commitEdit().then(() => {
 			// Committing was successful, clean the grid
 			this.setGridClean();
-			this.rowIdMappings = {};
+			//this.rowIdMappings = {};
 			this.newRowVisible = false;
 			return Promise.resolve();
 		});
@@ -607,8 +608,8 @@ export class EditDataGridPanel extends GridParentComponent {
 			await this.dataService.revertRow(this.rowIdMappings[currentNewRowIndex])
 				.then(() => {
 					this.rowIdMappings[currentNewRowIndex] = undefined;
-					return this.dataService.deleteRow(currentNewRowIndex).then(() => this.dataService.commitEdit())
-						.then(() => this.removeRow(currentNewRowIndex, true));
+
+					return this.commitEditTask().then(() => this.removeRow(currentNewRowIndex, true));
 				}).then(() => {
 					this.newRowVisible = false;
 					this.resetCurrentCell();
@@ -634,12 +635,18 @@ export class EditDataGridPanel extends GridParentComponent {
 		let updateCellPromise: Promise<void> = Promise.resolve();
 		let refreshGrid = false;
 		if (cellToAdd && cellToAdd.isEditable && this.currentEditCellValue !== undefined && !this.removingNewRow) {
-			if (this.isNullRow(cellToAdd.row)) {
+
+			if (this.isNullRow(cellToAdd.row) && (!this.newRowCurrentlyUnderEdit || this.newRowCurrentlyUnderEdit !== cellToAdd.Row)) {
+				this.newRowCurrentlyUnderEdit = cellToAdd.row;
 				refreshGrid = true;
 				// We've entered the "new row", so we need to add a row and jump to it
 				updateCellPromise = updateCellPromise.then(() => {
 					return self.addRow(cellToAdd.row);
 				});
+			}
+			else if (!this.isNullRow(cellToAdd.row)) {
+				this.rowIdMappings[cellToAdd.row] = undefined;
+				this.newRowCurrentlyUnderEdit = undefined;
 			}
 			// We're exiting a read/write cell after having changed the value, update the cell value in the service
 			updateCellPromise = updateCellPromise.then(() => {
@@ -669,6 +676,7 @@ export class EditDataGridPanel extends GridParentComponent {
 							message: message
 						});
 						errorPromise = this.revertSelectedRow(cellToAdd.row).then(() => {
+							this.newRowCurrentlyUnderEdit = undefined;
 							this.lastClickedCell = { row: cellToAdd.row, column: cellToAdd.column, isEditable: true };
 						});
 					}
