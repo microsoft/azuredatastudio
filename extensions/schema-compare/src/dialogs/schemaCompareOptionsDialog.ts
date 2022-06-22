@@ -84,7 +84,7 @@ export class SchemaCompareOptionsDialog {
 				}
 			});
 
-			TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareOptionsDialog, 'OptionsChanged').send();
+			TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareOptionsDialog, 'OptionsChanged');
 		}
 
 		this.disposeListeners();
@@ -111,7 +111,7 @@ export class SchemaCompareOptionsDialog {
 		this.objectTypesFlexBuilder.removeItem(this.objectsTable);
 		this.objectTypesFlexBuilder.addItem(this.objectsTable, { CSSStyles: { 'overflow': 'scroll', 'height': '80vh' } });
 
-		TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareOptionsDialog, 'ResetOptions').send();
+		TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareOptionsDialog, 'ResetOptions');
 	}
 
 	private initializeSchemaCompareOptionsDialogTab(): void {

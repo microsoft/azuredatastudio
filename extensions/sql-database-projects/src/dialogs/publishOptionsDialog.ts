@@ -142,7 +142,7 @@ export class PublishOptionsDialog {
 		this.disposeListeners();
 
 		if (this.optionsChanged) {
-			TelemetryReporter.createActionEvent(TelemetryViews.PublishOptionsDialog, TelemetryActions.optionsChanged).send();
+			TelemetryReporter.sendActionEvent(TelemetryViews.PublishOptionsDialog, TelemetryActions.optionsChanged);
 		}
 	}
 
@@ -167,7 +167,7 @@ export class PublishOptionsDialog {
 		this.optionsFlexBuilder?.removeItem(this.optionsTable!);
 		this.optionsFlexBuilder?.insertItem(this.optionsTable!, 0, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh' } });
 
-		TelemetryReporter.createActionEvent(TelemetryViews.PublishOptionsDialog, TelemetryActions.resetOptions).send();
+		TelemetryReporter.sendActionEvent(TelemetryViews.PublishOptionsDialog, TelemetryActions.resetOptions);
 	}
 
 	private disposeListeners(): void {
