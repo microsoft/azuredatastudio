@@ -11,8 +11,8 @@ import * as minimist from 'minimist';
 import * as rimraf from 'rimraf';
 import * as mkdirp from 'mkdirp';
 import { ncp } from 'ncp';
-import * as vscodetest from 'vscode-test';
-import fetch from 'node-fetch';
+// import * as vscodetest from 'vscode-test';
+// import fetch from 'node-fetch';
 import { Quality, ApplicationOptions, MultiLogger, Logger, ConsoleLogger, FileLogger } from '../../automation';
 
 import { main as sqlMain, setup as sqlSetup } from './sql/main'; // {{SQL CARBON EDIT}}
@@ -243,47 +243,47 @@ async function ensureStableCode(): Promise<void> {
 		return;
 	}
 
-	let stableCodePath = opts['stable-build'];
-	if (!stableCodePath) {
-		const { major, minor } = parseVersion(version!);
-		const majorMinorVersion = `${major}.${minor - 1}`;
-		const versionsReq = await fetch('https://update.code.visualstudio.com/api/releases/stable', { headers: { 'x-api-version': '2' } });
+	// let stableCodePath = opts['stable-build'];
+	// if (!stableCodePath) {
+	// 	const { major, minor } = parseVersion(version!);
+	// 	const majorMinorVersion = `${major}.${minor - 1}`;
+	// 	const versionsReq = await fetch('https://update.code.visualstudio.com/api/releases/stable', { headers: { 'x-api-version': '2' } });
 
-		if (!versionsReq.ok) {
-			throw new Error('Could not fetch releases from update server');
-		}
+	// 	if (!versionsReq.ok) {
+	// 		throw new Error('Could not fetch releases from update server');
+	// 	}
 
-		const versions: { version: string }[] = await versionsReq.json();
-		const prefix = `${majorMinorVersion}.`;
-		const previousVersion = versions.find(v => v.version.startsWith(prefix));
+	// 	const versions: { version: string }[] = await versionsReq.json();
+	// 	const prefix = `${majorMinorVersion}.`;
+	// 	const previousVersion = versions.find(v => v.version.startsWith(prefix));
 
-		if (!previousVersion) {
-			throw new Error(`Could not find suitable stable version ${majorMinorVersion}`);
-		}
+	// 	if (!previousVersion) {
+	// 		throw new Error(`Could not find suitable stable version ${majorMinorVersion}`);
+	// 	}
 
-		console.log(`*** Found VS Code v${version}, downloading previous VS Code version ${previousVersion.version}...`);
+	// console.log(`*** Found VS Code v${version}, downloading previous VS Code version ${previousVersion.version}...`);
 
-		const stableCodeExecutable = await vscodetest.download({
-			cachePath: path.join(os.tmpdir(), 'vscode-test'),
-			version: previousVersion.version
-		});
+	// const stableCodeExecutable = await vscodetest.download({
+	// 	cachePath: path.join(os.tmpdir(), 'vscode-test'),
+	// 	version: previousVersion.version
+	// });
 
-		if (process.platform === 'darwin') {
-			// Visual Studio Code.app/Contents/MacOS/Electron
-			stableCodePath = path.dirname(path.dirname(path.dirname(stableCodeExecutable)));
-		} else {
-			// VSCode/Code.exe (Windows) | VSCode/code (Linux)
-			stableCodePath = path.dirname(stableCodeExecutable);
-		}
-	}
+	// if (process.platform === 'darwin') {
+	// 	// Visual Studio Code.app/Contents/MacOS/Electron
+	// 	stableCodePath = path.dirname(path.dirname(path.dirname(stableCodeExecutable)));
+	// } else {
+	// 	// VSCode/Code.exe (Windows) | VSCode/code (Linux)
+	// 	stableCodePath = path.dirname(stableCodeExecutable);
+	// }
+	// }
 
-	if (!fs.existsSync(stableCodePath)) {
-		throw new Error(`Can't find Stable VSCode at ${stableCodePath}.`);
-	}
+	// if (!fs.existsSync(stableCodePath)) {
+	// 	throw new Error(`Can't find Stable VSCode at ${stableCodePath}.`);
+	// }
 
-	console.log(`*** Using stable build ${stableCodePath} for migration tests`);
+	// console.log(`*** Using stable build ${stableCodePath} for migration tests`);
 
-	opts['stable-build'] = stableCodePath;
+	// opts['stable-build'] = stableCodePath;
 }
 
 async function setup(): Promise<void> {
