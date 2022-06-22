@@ -924,7 +924,7 @@ export class PublishDatabaseDialog {
 		const optionsRow = view.modelBuilder.flexContainer().withItems([this.optionsButton], { CSSStyles: { flex: '0 0 auto', 'margin': '-8px 0 0 307px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		this.toDispose.push(this.optionsButton.onDidClick(async () => {
-			TelemetryReporter.sendActionEvent(TelemetryViews.SqlProjectPublishDialog, TelemetryActions.publishConfigureOptionsClicked);
+			TelemetryReporter.sendActionEvent(TelemetryViews.SqlProjectPublishDialog, TelemetryActions.publishOptionsOpened);
 			// Create fresh options dialog with default selections each time when creating the 'configure options' button
 			this.publishOptionsDialog = new PublishOptionsDialog(this.deploymentOptions!, this);
 			this.publishOptionsDialog.openDialog();

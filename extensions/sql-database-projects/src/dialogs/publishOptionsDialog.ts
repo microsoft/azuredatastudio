@@ -10,6 +10,7 @@ import * as utils from '../common/utils';
 import type * as azdataType from 'azdata';
 import { PublishDatabaseDialog } from './publishDatabaseDialog';
 import { DeployOptionsModel } from '../models/options/deployOptionsModel';
+import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 
 export class PublishOptionsDialog {
 
@@ -207,6 +208,10 @@ export class PublishOptionsDialog {
 			this.publish.optionsChanged = false;
 		}
 		this.disposeListeners();
+
+		if (this.optionsChanged) {
+			TelemetryReporter.sendActionEvent(TelemetryViews.PublishOptionsDialog, TelemetryActions.optionsChanged);
+		}
 	}
 
 	/*
