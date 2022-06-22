@@ -343,8 +343,8 @@ export class ToggleActualExecutionPlanModeAction extends QueryTaskbarAction {
 	public static EnabledClass = 'enabledActualExecutionPlan';
 	public static ID = 'toggleActualExecutionPlanModeAction';
 
-	private _enableActualPlanLabel = nls.localize('enableActualPlanLabel', "Include Actual Plan");
-	private _disableActualPlanLabel = nls.localize('disableActualPlanLabel', "Exclude Actual Plan");
+	private _enableActualPlanLabel = nls.localize('enableActualPlanLabel', "Enable Actual Plan");
+	private _disableActualPlanLabel = nls.localize('disableActualPlanLabel', "Disable Actual Plan");
 
 	constructor(
 		editor: QueryEditor,
