@@ -362,15 +362,11 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 
 	// show the settings from project's local.settings.json if there's an AF functions project
 	if (projectUri) {
-		let existingSettings;
-		try {
-			existingSettings = await getLocalSettingsJson(path.join(path.dirname(projectUri.fsPath!), constants.azureFunctionLocalSettingsFileName));
-		} catch (e) {
-			void vscode.window.showErrorMessage(utils.getErrorMessage(e));
-			return;
-		}
+		// get existing connection string settings from project's local.settings.json file
+		// if an error occurs getLocalSettingsJson will throw an error
+		let existingSettings = await getLocalSettingsJson(path.join(path.dirname(projectUri.fsPath!), constants.azureFunctionLocalSettingsFileName));
 
-		// setup connetion string setting quickpick
+		// setup connection string setting quickpick
 		let connectionStringSettings: (vscode.QuickPickItem)[] = [];
 		if (existingSettings?.Values) {
 			// add settings found in local.settings.json to quickpick list
@@ -396,9 +392,10 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 				}
 			}
 
-			// prompt user to enter connection string setting name if user selects create new setting or there is no existing setting in local.settings.json
-			if (selectedSetting?.label === constants.createNewLocalAppSettingWithIcon || existingSettings?.Values) {
+			// prompt user to enter connection string setting name if user selects create new setting or there is no existing settings in local.settings.json
+			if (selectedSetting?.label === constants.createNewLocalAppSettingWithIcon || !existingSettings?.Values) {
 				let sqlConnectionStringSettingExists = connectionStringSettings.find(s => s.label === constants.sqlConnectionStringSetting);
+				// prompt user to enter connection string setting name manually
 				const newConnectionStringSettingName = await vscode.window.showInputBox(
 					{
 						title: constants.enterConnectionStringSettingName,
@@ -412,7 +409,7 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 					// go back to select setting quickpick if user escapes from entering in the connection string setting name
 					// only go back if there are existing settings in local.settings.json
 					continue;
-				} else if (!existingSettings?.Values) {
+				} else if (!newConnectionStringSettingName && !existingSettings?.Values) {
 					// User cancelled out of the manually enter connection string prompt
 					return;
 				}
@@ -437,7 +434,7 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 								return;
 							}
 							if (selectedConnectionStringMethod === constants.userConnectionString) {
-								// User chooses to enter connection string manually
+								// prompt user to enter connection string manually
 								connectionString = await vscode.window.showInputBox(
 									{
 										title: constants.enterConnectionString,
@@ -475,12 +472,12 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 							connectionStringSettingName = newConnectionStringSettingName;
 							break;
 						} else {
-							void vscode.window.showErrorMessage(constants.selectConnectionError());
+							void vscode.window.showErrorMessage(constants.failedToSetSetting());
 						}
 
 					} catch (e) {
 						// display error message and show select setting quickpick again
-						void vscode.window.showErrorMessage(constants.selectConnectionError(e));
+						void vscode.window.showErrorMessage(constants.failedToSetSetting(e));
 						continue;
 					}
 				}

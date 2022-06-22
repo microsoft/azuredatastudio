@@ -78,7 +78,7 @@ export const enterObjectName = localize('enterObjectName', 'Enter SQL table or v
 export const enterObjectNameToUpsert = localize('enterObjectNameToUpsert', 'Enter SQL table to upsert into');
 export const selectTable = localize('selectTable', 'Select table to use');
 export const tableListProgressTitle = localize('tableListProgressTitle', "Fetching tables for selected database...");
-export const selectConnectionError = (err?: any): string => err ? localize('selectConnectionError', "Failed to set connection string app setting: {0}", utils.getErrorMessage(err)) : localize('unableToSetConnectionString', "Failed to set connection string app setting");
+export const failedToSetSetting = (err?: any): string => err ? localize('failedToSetSetting', "Failed to set connection string app setting: {0}", utils.getErrorMessage(err)) : localize('unableToSetConnectionString', "Failed to set connection string app setting");
 export function selectBindingType(funcName?: string): string { return funcName ? localize('selectBindingTypeToSpecifiedFunction', "Select type of binding for the function '{0}'", funcName) : localize('selectBindingType', "Select type of binding"); }
 export function settingAlreadyExists(settingName: string): string { return localize('SettingAlreadyExists', 'Local app setting \'{0}\' already exists. Overwrite?', settingName); }
 export function failedToParse(filename: string, error: any): string { return localize('failedToParse', 'Failed to parse "{0}": {1}.', filename, utils.getErrorMessage(error)); }
