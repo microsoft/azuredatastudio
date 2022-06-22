@@ -137,7 +137,6 @@ export class ClearAllOutputsAction extends TooltipFromLabelAction {
 
 	public override async run(context: URI): Promise<void> {
 		const editor = this._notebookService.findNotebookEditor(context);
-		editor.model.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.ClearResults);
 		await editor.clearAllOutputs();
 	}
 }
@@ -423,7 +422,6 @@ export class CollapseCellsAction extends ToggleableAction {
 
 	public override async run(context: URI): Promise<void> {
 		const editor = this._notebookService.findNotebookEditor(context);
-		editor.model.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.CollapseCells);
 		this.setCollapsed(!this.isCollapsed);
 		editor.cells.forEach(cell => {
 			cell.isCollapsed = this.isCollapsed;
