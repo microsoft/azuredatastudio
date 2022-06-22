@@ -656,6 +656,9 @@
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/browser/designer/designer" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="designer.actions">
+      <source xml:lang="en">More Actions</source>
+    </trans-unit>
     <trans-unit id="designer.defaultRemoveRowConfirmationMessage">
       <source xml:lang="en">Are you sure you want to remove the row?</source>
     </trans-unit>
@@ -675,7 +678,7 @@
       <source xml:lang="en">Designer is loaded</source>
     </trans-unit>
     <trans-unit id="designer.moveRowText">
-      <source xml:lang="en">Move Row</source>
+      <source xml:lang="en">Move</source>
     </trans-unit>
     <trans-unit id="designer.processing">
       <source xml:lang="en">Processing...</source>
