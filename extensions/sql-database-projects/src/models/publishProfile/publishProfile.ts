@@ -59,7 +59,7 @@ export async function load(profileUri: vscode.Uri, dacfxService: utils.IDacFxSer
 	TelemetryReporter.createActionEvent(TelemetryViews.SqlProjectPublishDialog, TelemetryActions.profileLoaded)
 		.withAdditionalProperties({
 			hasTargetDbName: (targetDbName !== '').toString(),
-			hasConnectionString: (profileXmlDoc.documentElement.getElementsByTagName(constants.targetConnectionString).length > 0).toString(),
+			hasConnectionString: (connectionInfo.connectionId !== '').toString(),
 			hasSqlCmdVariables: (Object.keys(sqlCmdVariables).length > 0).toString()
 		}).send();
 
