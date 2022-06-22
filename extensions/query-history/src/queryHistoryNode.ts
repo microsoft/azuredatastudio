@@ -5,6 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import { removeNewLines } from './utils';
 
 export class QueryHistoryNode extends vscode.TreeItem {
 	constructor(
@@ -13,7 +14,7 @@ export class QueryHistoryNode extends vscode.TreeItem {
 		timestamp: Date,
 		isSuccess: boolean
 	) {
-		super(queryText, vscode.TreeItemCollapsibleState.None);
+		super(removeNewLines(queryText), vscode.TreeItemCollapsibleState.None);
 		this.iconPath = isSuccess ? new vscode.ThemeIcon('check', new vscode.ThemeColor('testing.iconPassed')) : new vscode.ThemeIcon('error', new vscode.ThemeColor('testing.iconFailed'));
 		this.tooltip = queryText;
 		this.description = connectionProfile ? `${connectionProfile.serverName}|${connectionProfile.databaseName} ${timestamp.toLocaleString()}` : timestamp.toLocaleString();
