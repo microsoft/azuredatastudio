@@ -647,6 +647,7 @@ export class EditDataGridPanel extends GridParentComponent {
 					});
 				},
 				error => {
+					self.currentEditCellValue = undefined;
 					let errorPromise: Thenable<void> = Promise.resolve();
 					if (refreshGrid) {
 						let message = 'Error: invalid value entered in new row, reverting changes, please enter a valid value.';
