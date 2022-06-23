@@ -124,9 +124,9 @@ export class PublishOptionsDialog {
 			await this.updateObjectsTable();
 
 			this.disposableListeners.push(this.includeObjectsTable.onCellAction!((rowState) => {
-				let checkboxState = <azdataType.ICheckboxCellActionEventArgs>rowState;
+				const checkboxState = <azdataType.ICheckboxCellActionEventArgs>rowState;
 				if (checkboxState && checkboxState.row !== undefined) {
-					let label = this.optionsModel.includeObjectTypeLabels[checkboxState.row];
+					const label = this.optionsModel.includeObjectTypeLabels[checkboxState.row];
 					this.optionsModel.includeObjectsLookup?.set(label, checkboxState.checked);
 					this.optionsChanged = true;
 					this.dialog.customButtons[0].enabled = true;
@@ -167,10 +167,10 @@ export class PublishOptionsDialog {
 	}
 
 	/*
-	* Update the default options to the object types table area
+	* Update the default options to the object types tab
 	*/
 	private async updateObjectsTable(): Promise<void> {
-		let data = this.optionsModel.getObjectsData();
+		const data = this.optionsModel.getObjectsData();
 		await this.includeObjectsTable!.updateProperties({
 			data: data,
 			columns: [
