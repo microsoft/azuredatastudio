@@ -10,7 +10,7 @@ import { format, compare, splitLines } from 'vs/base/common/strings';
 import { extname, basename, isEqual } from 'vs/base/common/resources';
 import { areFunctions, withNullAsUndefined, withUndefinedAsNull } from 'vs/base/common/types';
 import { URI } from 'vs/base/common/uri';
-import { Action, WorkbenchActionExecutedClassification, WorkbenchActionExecutedEvent } from 'vs/base/common/actions';
+import { Action } from 'vs/base/common/actions';
 import { Language } from 'vs/base/common/platform';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { IFileEditorInput, EditorResourceAccessor, IEditorPane, SideBySideEditor, EditorInputCapabilities } from 'vs/workbench/common/editor';
@@ -1233,17 +1233,44 @@ export class ChangeModeAction extends Action {
 					}
 				}
 
-				// Change mode
+				// Change language
 				if (typeof languageSelection !== 'undefined') {
-					return this.instantiationService.invokeFunction(setMode, modeSupport, activeEditor, languageSelection.languageIdentifier.language); // {{SQL CARBON EDIT}} @anthonydresser use custom setMode
+					//languageSupport.setLanguageId(languageSelection.languageId);
+					this.instantiationService.invokeFunction(setMode, modeSupport, activeEditor, languageSelection.languageId); // {{SQL CARBON EDIT}} @anthonydresser use custom setMode
+
+					if (resource?.scheme === Schemas.untitled) {
+						type SetUntitledDocumentLanguageEvent = { to: string; from: string; modelPreference: string };
+						type SetUntitledDocumentLanguageClassification = {
+							to: {
+								classification: 'SystemMetaData';
+								purpose: 'FeatureInsight';
+								owner: 'JacksonKearl';
+								comment: 'Help understand effectiveness of automatic language detection';
+							};
+							from: {
+								classification: 'SystemMetaData';
+								purpose: 'FeatureInsight';
+								owner: 'JacksonKearl';
+								comment: 'Help understand effectiveness of automatic language detection';
+							};
+							modelPreference: {
+								classification: 'SystemMetaData';
+								purpose: 'FeatureInsight';
+								owner: 'JacksonKearl';
+								comment: 'Help understand effectiveness of automatic language detection';
+							};
+						};
+						const modelPreference = this.configurationService.getValue<boolean>('workbench.editor.preferHistoryBasedLanguageDetection') ? 'history' : 'classic';
+						this.telemetryService.publicLog2<SetUntitledDocumentLanguageEvent, SetUntitledDocumentLanguageClassification>('setUntitledDocumentLanguage', {
+							to: languageSelection.languageId,
+							from: currentLanguageId ?? 'none',
+							modelPreference,
+						});
+					}
 				}
 			}
 
 			activeTextEditorControl.focus();
-			this.telemetryService.publicLog2<WorkbenchActionExecutedEvent, WorkbenchActionExecutedClassification>('workbenchActionExecuted', {
-				id: ChangeModeAction.ID,
-				from: data?.from || 'quick open'
-			});
 		}
 	}
 

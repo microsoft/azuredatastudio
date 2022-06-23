@@ -23,7 +23,7 @@ import { INativeEnvironmentService } from 'vs/platform/environment/common/enviro
 import { AbstractExtensionManagementService, AbstractExtensionTask, IInstallExtensionTask, IUninstallExtensionTask, joinErrors, UninstallExtensionTaskOptions } from 'vs/platform/extensionManagement/common/abstractExtensionManagementService';
 import {
 	ExtensionManagementError, ExtensionManagementErrorCode, getTargetPlatform, IExtensionGalleryService, IExtensionIdentifier, IExtensionManagementService, IGalleryExtension, IGalleryMetadata, ILocalExtension, InstallOperation, InstallOptions,
-	InstallVSIXOptions, TargetPlatform, INSTALL_ERROR_INCOMPATIBLE
+	InstallVSIXOptions, TargetPlatform
 } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { areSameExtensions, ExtensionIdentifierWithVersion, getGalleryExtensionId } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { ExtensionsDownloader } from 'vs/platform/extensionManagement/node/extensionDownloader';
@@ -140,11 +140,11 @@ export class ExtensionManagementService extends AbstractExtensionManagementServi
 		const manifest = await getManifest(path.resolve(downloadLocation.fsPath));
 		// {{SQL CARBON EDIT}} Do our own engine checks
 		const id = getGalleryExtensionId(manifest.publisher, manifest.name);
-		if (manifest.engines?.vscode && !isEngineValid(manifest.engines.vscode, product.vscodeVersion, product.date)) {
-			throw new Error(nls.localize('incompatible', "Unable to install extension '{0}' as it is not compatible with the current VS Code engine version '{1}'.", id, product.vscodeVersion));
+		if (manifest.engines?.vscode && !isEngineValid(manifest.engines.vscode, this.productService.vscodeVersion, this.productService.date)) {
+			throw new Error(nls.localize('incompatible', "Unable to install extension '{0}' as it is not compatible with the current VS Code engine version '{1}'.", id, this.productService.vscodeVersion));
 		}
-		if (manifest.engines?.azdata && !isEngineValid(manifest.engines.azdata, product.version, product.date)) {
-			throw new ExtensionManagementError(extensionsWorkbenchServiceIncompatible(id, manifest.version, product.version, manifest.engines.azdata), INSTALL_ERROR_INCOMPATIBLE);
+		if (manifest.engines?.azdata && !isEngineValid(manifest.engines.azdata, this.productService.version, this.productService.date)) {
+			throw new ExtensionManagementError(extensionsWorkbenchServiceIncompatible(id, manifest.version, this.productService.version, manifest.engines.azdata), ExtensionManagementErrorCode.Incompatible);
 		}
 		/*
 		if (manifest.engines && manifest.engines.vscode && !isEngineValid(manifest.engines.vscode, this.productService.version, this.productService.date)) {

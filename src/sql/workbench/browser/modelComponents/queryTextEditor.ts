@@ -64,7 +64,7 @@ export class QueryTextEditor extends BaseTextEditor<editorCommon.ICodeEditorView
 			options.inDiffEditor = false;
 			options.scrollBeyondLastLine = false;
 			options.folding = false;
-			options.renderIndentGuides = false;
+			options.guides = { indentation: false };
 			options.rulers = [];
 			options.glyphMargin = true;
 			options.minimap = {

@@ -28,7 +28,7 @@ export interface ILinkOptions {
 
 export class Link extends Disposable {
 
-	private el: HTMLAnchorElement;
+	readonly el: HTMLAnchorElement; // {{SQL CARBON EDIT}} - make public
 	private _enabled: boolean = true;
 
 	get enabled(): boolean {

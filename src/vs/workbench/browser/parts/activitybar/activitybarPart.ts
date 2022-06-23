@@ -72,7 +72,7 @@ interface ICachedViewContainer {
 
 export const settingsViewBarIcon = registerIcon('settings-view-bar-icon', Codicon.settingsGear, localize('settingsViewBarIcon', "Settings icon in the view bar.")); // {{SQL CARBON EDIT}} exporting to use it in getting started tour
 
-export class ActivitybarPart extends Part implements IActivityBarService {
+export class ActivitybarPart extends Part implements IPaneCompositeSelectorPart {
 
 	declare readonly _serviceBrand: undefined;
 

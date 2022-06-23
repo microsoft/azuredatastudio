@@ -140,7 +140,7 @@ actionRegistry.registerWorkbenchAction(
 		RunCurrentQueryWithActualPlanKeyboardAction,
 		RunCurrentQueryWithActualPlanKeyboardAction.ID,
 		RunCurrentQueryWithActualPlanKeyboardAction.LABEL,
-		{ primary: KeyMod.CtrlCmd | KeyCode.KEY_M }
+		{ primary: KeyMod.CtrlCmd | KeyCode.KeyM }
 	),
 	RunCurrentQueryWithActualPlanKeyboardAction.LABEL
 );
@@ -150,7 +150,7 @@ actionRegistry.registerWorkbenchAction(
 		CopyQueryWithResultsKeyboardAction,
 		CopyQueryWithResultsKeyboardAction.ID,
 		CopyQueryWithResultsKeyboardAction.LABEL,
-		{ primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyMod.CtrlCmd | KeyCode.KEY_V) }
+		{ primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KeyK, KeyMod.CtrlCmd | KeyCode.KeyV) }
 	),
 	CopyQueryWithResultsKeyboardAction.LABEL
 );
@@ -179,7 +179,7 @@ actionRegistry.registerWorkbenchAction(
 		FocusOnCurrentQueryKeyboardAction,
 		FocusOnCurrentQueryKeyboardAction.ID,
 		FocusOnCurrentQueryKeyboardAction.LABEL,
-		{ primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_O }
+		{ primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KeyO }
 	),
 	FocusOnCurrentQueryKeyboardAction.LABEL
 );
@@ -200,7 +200,7 @@ actionRegistry.registerWorkbenchAction(
 		ToggleQueryResultsKeyboardAction,
 		ToggleQueryResultsKeyboardAction.ID,
 		ToggleQueryResultsKeyboardAction.LABEL,
-		{ primary: KeyMod.WinCtrl | KeyMod.Shift | KeyCode.KEY_R },
+		{ primary: KeyMod.WinCtrl | KeyMod.Shift | KeyCode.KeyR },
 		QueryEditorVisibleCondition
 	),
 	ToggleQueryResultsKeyboardAction.LABEL
@@ -211,7 +211,7 @@ actionRegistry.registerWorkbenchAction(
 		ToggleFocusBetweenQueryEditorAndResultsAction,
 		ToggleFocusBetweenQueryEditorAndResultsAction.ID,
 		ToggleFocusBetweenQueryEditorAndResultsAction.LABEL,
-		{ primary: KeyMod.WinCtrl | KeyMod.Shift | KeyCode.KEY_F },
+		{ primary: KeyMod.WinCtrl | KeyMod.Shift | KeyCode.KeyF },
 		QueryEditorVisibleCondition
 	),
 	ToggleFocusBetweenQueryEditorAndResultsAction.LABEL
@@ -231,7 +231,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: gridActions.GRID_COPY_ID,
 	weight: KeybindingWeight.EditorContrib,
 	when: ResultsGridFocusCondition,
-	primary: KeyMod.CtrlCmd | KeyCode.KEY_C,
+	primary: KeyMod.CtrlCmd | KeyCode.KeyC,
 	handler: gridCommands.copySelection
 });
 
@@ -239,7 +239,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: gridActions.MESSAGES_SELECTALL_ID,
 	weight: KeybindingWeight.EditorContrib,
 	when: ResultsMessagesFocusCondition,
-	primary: KeyMod.CtrlCmd | KeyCode.KEY_A,
+	primary: KeyMod.CtrlCmd | KeyCode.KeyA,
 	handler: gridCommands.selectAllMessages
 });
 
@@ -247,7 +247,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: gridActions.GRID_SELECTALL_ID,
 	weight: KeybindingWeight.EditorContrib,
 	when: ResultsGridFocusCondition,
-	primary: KeyMod.CtrlCmd | KeyCode.KEY_A,
+	primary: KeyMod.CtrlCmd | KeyCode.KeyA,
 	handler: gridCommands.selectAll
 });
 
@@ -255,7 +255,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: gridActions.MESSAGES_COPY_ID,
 	weight: KeybindingWeight.EditorContrib,
 	when: ResultsMessagesFocusCondition,
-	primary: KeyMod.CtrlCmd | KeyCode.KEY_C,
+	primary: KeyMod.CtrlCmd | KeyCode.KeyC,
 	handler: gridCommands.copyMessagesSelection
 });
 
@@ -263,7 +263,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: gridActions.GRID_SAVECSV_ID,
 	weight: KeybindingWeight.EditorContrib,
 	when: ResultsGridFocusCondition,
-	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_R, KeyMod.CtrlCmd | KeyCode.KEY_C),
+	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KeyR, KeyMod.CtrlCmd | KeyCode.KeyC),
 	handler: gridCommands.saveAsCsv
 });
 
@@ -271,7 +271,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: gridActions.GRID_SAVEJSON_ID,
 	weight: KeybindingWeight.EditorContrib,
 	when: ResultsGridFocusCondition,
-	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_R, KeyMod.CtrlCmd | KeyCode.KEY_J),
+	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KeyR, KeyMod.CtrlCmd | KeyCode.KeyJ),
 	handler: gridCommands.saveAsJson
 });
 
@@ -279,7 +279,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: gridActions.GRID_SAVEEXCEL_ID,
 	weight: KeybindingWeight.EditorContrib,
 	when: ResultsGridFocusCondition,
-	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_R, KeyMod.CtrlCmd | KeyCode.KEY_E),
+	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KeyR, KeyMod.CtrlCmd | KeyCode.KeyE),
 	handler: gridCommands.saveAsExcel
 });
 
@@ -287,7 +287,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: gridActions.GRID_SAVEXML_ID,
 	weight: KeybindingWeight.EditorContrib,
 	when: ResultsGridFocusCondition,
-	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_R, KeyMod.CtrlCmd | KeyCode.KEY_X),
+	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KeyR, KeyMod.CtrlCmd | KeyCode.KeyX),
 	handler: gridCommands.saveAsXml
 });
 
@@ -295,7 +295,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: gridActions.GRID_VIEWASCHART_ID,
 	weight: KeybindingWeight.EditorContrib,
 	when: ResultsGridFocusCondition,
-	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_R, KeyMod.CtrlCmd | KeyCode.KEY_V),
+	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KeyR, KeyMod.CtrlCmd | KeyCode.KeyV),
 	handler: gridCommands.viewAsChart
 });
 
@@ -303,7 +303,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: gridActions.GRID_GOTONEXTGRID_ID,
 	weight: KeybindingWeight.EditorContrib,
 	when: ResultsGridFocusCondition,
-	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_R, KeyMod.CtrlCmd | KeyCode.KEY_N),
+	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KeyR, KeyMod.CtrlCmd | KeyCode.KeyN),
 	handler: gridCommands.goToNextGrid
 });
 
@@ -311,7 +311,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: gridActions.TOGGLERESULTS_ID,
 	weight: KeybindingWeight.EditorContrib,
 	when: QueryEditorVisibleCondition,
-	primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_R,
+	primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KeyR,
 	handler: gridCommands.toggleResultsPane
 });
 
@@ -319,7 +319,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: gridActions.TOGGLEMESSAGES_ID,
 	weight: KeybindingWeight.EditorContrib,
 	when: QueryEditorVisibleCondition,
-	primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_Y,
+	primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KeyY,
 	handler: gridCommands.toggleMessagePane
 });
 
@@ -327,7 +327,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: gridActions.GOTONEXTQUERYOUTPUTTAB_ID,
 	weight: KeybindingWeight.EditorContrib,
 	when: QueryEditorVisibleCondition,
-	primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_P,
+	primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KeyP,
 	handler: gridCommands.goToNextQueryOutputTab
 });
 
@@ -446,8 +446,8 @@ const queryEditorConfiguration: IConfigurationNode = {
 const initialShortcuts = [
 	{ name: 'sp_help', primary: KeyMod.Alt + KeyCode.F2 },
 	// Note: using Ctrl+Shift+N since Ctrl+N is used for "open editor at index" by default. This means it's different from SSMS
-	{ name: 'sp_who', primary: KeyMod.WinCtrl + KeyMod.Shift + KeyCode.KEY_1 },
-	{ name: 'sp_lock', primary: KeyMod.WinCtrl + KeyMod.Shift + KeyCode.KEY_2 }
+	{ name: 'sp_who', primary: KeyMod.WinCtrl + KeyMod.Shift + KeyCode.Digit1 },
+	{ name: 'sp_lock', primary: KeyMod.WinCtrl + KeyMod.Shift + KeyCode.Digit2 }
 ];
 
 const shortCutConfiguration: IConfigurationNode = {

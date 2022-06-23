@@ -82,7 +82,7 @@ export class DesignerScriptEditor extends BaseTextEditor<editorCommon.ICodeEdito
 			options.folding = false;
 			options.renderWhitespace = 'all';
 			options.wordWrap = 'off';
-			options.renderIndentGuides = false;
+			options.guides = { indentation: false };
 			options.rulers = [];
 			options.glyphMargin = true;
 		}

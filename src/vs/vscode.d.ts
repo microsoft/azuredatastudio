@@ -10346,6 +10346,14 @@ declare module 'vscode' {
 		readonly text: string;
 	}
 
+	export enum TextDocumentChangeReason {
+		/** The text change is caused by an undo operation. */
+		Undo = 1,
+
+		/** The text change is caused by an redo operation. */
+		Redo = 2,
+	}
+
 	/**
 	 * An event describing a transactional {@link TextDocument document} change.
 	 */

@@ -67,7 +67,9 @@ export class ProfilerResourceEditor extends BaseTextEditor<editorCommon.ICodeEdi
 			options.folding = false;
 			options.renderWhitespace = 'none';
 			options.wordWrap = 'on';
-			options.renderIndentGuides = false;
+			options.guides = {
+				indentation: false
+			},
 			options.rulers = [];
 			options.glyphMargin = true;
 			options.minimap = {

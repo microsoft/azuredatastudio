@@ -118,7 +118,7 @@ export class QueryHistoryWorkbenchContribution implements IWorkbenchContribution
 							ToggleQueryHistoryAction,
 							ToggleQueryHistoryAction.ID,
 							ToggleQueryHistoryAction.LABEL,
-							{ primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_T }),
+							{ primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KeyT }),
 						'View: Toggle Query history',
 						localize('viewCategory', "View")
 					);

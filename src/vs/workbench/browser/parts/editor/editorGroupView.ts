@@ -1197,7 +1197,7 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 		// Use the first editor as active editor
 		const firstEditor = firstOrDefault(editorsToOpen);
 		if (!firstEditor) {
-			return;
+			return undefined;
 		}
 
 		const openEditorsOptions: IInternalEditorOpenOptions = {
