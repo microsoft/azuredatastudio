@@ -11,11 +11,8 @@ import * as minimist from 'minimist';
 import * as rimraf from 'rimraf';
 import * as mkdirp from 'mkdirp';
 import { ncp } from 'ncp';
-// {{SQL CARBON EDIT}}
-/*
 import * as vscodetest from 'vscode-test';
 import fetch from 'node-fetch';
-*/
 import { Quality, ApplicationOptions, MultiLogger, Logger, ConsoleLogger, FileLogger } from '../../automation';
 
 import { main as sqlMain, setup as sqlSetup } from './sql/main'; // {{SQL CARBON EDIT}}
@@ -246,8 +243,6 @@ async function ensureStableCode(): Promise<void> {
 		return;
 	}
 
-	// {{SQL CARBON EDIT}}
-	/*
 	let stableCodePath = opts['stable-build'];
 	if (!stableCodePath) {
 		const { major, minor } = parseVersion(version!);
@@ -289,14 +284,14 @@ async function ensureStableCode(): Promise<void> {
 	console.log(`*** Using stable build ${stableCodePath} for migration tests`);
 
 	opts['stable-build'] = stableCodePath;
-	*/
 }
 
 async function setup(): Promise<void> {
 	console.log('*** Test data:', testDataPath);
 	console.log('*** Preparing smoketest setup...');
 
-	await ensureStableCode();
+	// {{SQL CARBON EDIT}} Smoketests no longer need to download VS Code since they run against ADS
+	// await ensureStableCode();
 	await setupRepository();
 
 	console.log('*** Smoketest setup done!\n');
