@@ -9,6 +9,7 @@ import { ControllerModel } from '../../../models/controllerModel';
 import { ControllerDashboardOverviewPage } from './controllerDashboardOverviewPage';
 import * as loc from '../../../localizedConstants';
 import { ControllerUpgradesPage } from './controllerUpgrades';
+import { ControllerActiveDirectoryPage } from './controllerActiveDirectory';
 
 export class ControllerDashboard extends Dashboard {
 
@@ -25,9 +26,11 @@ export class ControllerDashboard extends Dashboard {
 	protected async registerTabs(modelView: azdata.ModelView): Promise<(azdata.DashboardTab | azdata.DashboardTabGroup)[]> {
 		const overviewPage = new ControllerDashboardOverviewPage(modelView, this.dashboard, this._controllerModel);
 		const upgradesPage = new ControllerUpgradesPage(modelView, this.dashboard, this._controllerModel);
+		const activeDirectoryPage = new ControllerActiveDirectoryPage(modelView, this.dashboard, this._controllerModel);
 		return [
 			overviewPage.tab,
-			upgradesPage.tab
+			upgradesPage.tab,
+			activeDirectoryPage.tab
 		];
 	}
 

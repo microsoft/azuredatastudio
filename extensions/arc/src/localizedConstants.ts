@@ -361,3 +361,14 @@ export const currentVersion = localize('arc.currentVersion', "Current version");
 export const showMiaaError = localize('arc.showMiaaError', "Error showing details of SQL managed instance.");
 export const miaaVersionError = localize('arc.miaaVersionError', "Error getting SQL managed instance version number.");
 export const errorGettingConnectionMode = localize('arc.errorGettingConnectionMode', "Error getting data controller connection mode.");
+
+// Active Directory
+export const activeDirectory = localize('arc.activeDirectory', "Active Directory (Preview)");
+export const activeDirectoryDescription = localize('arc.activeDirectoryDescription', "You may choose to use Active Directory authentication for data services on this data controller. Enable AD authentication below and provide your Active Directory configuration details below to get started. You can only add one connector during data controller creation, but can add additional data controllers later. Learn more.");
+export const addConnector = localize('arc.addConnector', "Add Connector");
+export const activeDirectoryConnector = localize('arc.activeDirectoryConnector', "Active Directory connector");
+export const addConnectorDescription = localize('arc.addConnectorDescription', "To use Active Directory authentication for data services on this data controller, add a new connector by providing your Active Directory configuration details below. Learn more.");
+export const connectorName = localize('arc.connectorName', "Connector Name");
+export const accountProvisioning = localize('arc.accountProvisioning', "Account Provisioning");
+export const connectorNameInfo = localize('arc.connectorNameInfo', "The name of the Active Directory (AD) connector.");
+export const accountProvisioningInfo = localize('arc.accountProvisioningInfo', "Value indicating whether service account provisioning for data services should be automatic or manual. Valid values: manual, automatic.");
