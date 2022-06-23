@@ -97,15 +97,16 @@ export class SchemaCompareOptionsDialog {
 	private async reset(): Promise<void> {
 		let service = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.IExtension).schemaCompare;
 		let result = await service.schemaCompareGetDefaultOptions();
+		result.defaultDeploymentOptions = this.schemaComparison.ConvertObjectToMapTable(result.defaultDeploymentOptions);
 		this.optionsModel.deploymentOptions = result.defaultDeploymentOptions;
 		this.optionsChanged = true;
 
 		// This will update the Map table with default values
-		this.optionsModel.InitializeUpdateOptionsMapTable();
+		this.optionsModel.UpdateOptionsMapTable();
 
 		await this.updateOptionsTable();
 		this.optionsFlexBuilder.removeItem(this.optionsTable);
-		this.optionsFlexBuilder.insertItem(this.optionsTable, 0, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh' } });
+		this.optionsFlexBuilder.insertItem(this.optionsTable, 0, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh', 'padding-top': '2px' } });
 
 		await this.updateObjectsTable();
 		this.objectTypesFlexBuilder.removeItem(this.objectsTable);
@@ -209,13 +210,13 @@ export class SchemaCompareOptionsDialog {
 					type: azdata.ColumnType.checkBox,
 					action: azdata.ActionOnCellCheckboxCheck.customAction,
 					headerCssClass: 'display-none',
-					cssClass: 'no-borders align-with-header',
+					cssClass: 'no-borders align-with-header align-with-text',
 					width: 50
 				},
 				{
 					value: 'Option Name',
 					headerCssClass: 'display-none',
-					cssClass: 'no-borders align-with-header',
+					cssClass: 'no-borders align-with-header vertical-align-middle',
 					width: 50
 				}
 			],
