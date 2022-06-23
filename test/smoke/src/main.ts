@@ -290,8 +290,7 @@ async function setup(): Promise<void> {
 	console.log('*** Test data:', testDataPath);
 	console.log('*** Preparing smoketest setup...');
 
-	// {{SQL CARBON EDIT}} Smoketests no longer need to download VS Code since they run against ADS
-	// await ensureStableCode();
+	// await ensureStableCode(); {{SQL CARBON EDIT}} Smoketests no longer need to download VS Code since they run against ADS
 	await setupRepository();
 
 	console.log('*** Smoketest setup done!\n');
