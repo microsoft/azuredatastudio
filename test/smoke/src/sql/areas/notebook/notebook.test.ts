@@ -73,6 +73,8 @@ export function setup(opts: minimist.ParsedArgs) {
 					await app.workbench.configurePythonDialog.next();
 					await app.workbench.configurePythonDialog.waitForPageTwoLoaded();
 					await app.workbench.configurePythonDialog.install();
+					// Close notification toasts, since they can interfere with the Manage Packages Dialog test
+					await app.workbench.notificationToast.closeNotificationToasts();
 					pythonConfigured = true;
 				}
 			}
