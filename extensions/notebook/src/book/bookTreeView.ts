@@ -43,7 +43,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	private _bookViewer: vscode.TreeView<BookTreeItem>;
 	public viewId: string;
 	public books: BookModel[] = [];
-	public currentBook: BookModel;
+	public currentBook: BookModel | undefined;
 	supportedTypes = ['text/treeitems'];
 
 	constructor(workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext, openAsUntitled: boolean, view: string, public providerId: string) {
@@ -243,7 +243,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 			if (showPreview) {
 				this.currentBook = this.books.find(book => book.bookPath === bookPath);
-				await this._bookViewer.reveal(this.currentBook.bookItems[0], { expand: vscode.TreeItemCollapsibleState.Expanded, focus: true, select: true });
+				// Only attempt a reveal if current book has been found, but always try to preview the file
+				if (this.currentBook) {
+					await this._bookViewer.reveal(this.currentBook.bookItems[0], { expand: vscode.TreeItemCollapsibleState.Expanded, focus: true, select: true });
+				}
 				await this.showPreviewFile(urlToOpen);
 			}
 
@@ -688,7 +691,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	getChildren(element?: BookTreeItem): Thenable<BookTreeItem[]> {
 		if (element) {
-			if (element.sections) {
+			if (element.sections && this.currentBook) {
 				return Promise.resolve(this.currentBook.getSections(element));
 			} else {
 				return Promise.resolve([]);
@@ -709,9 +712,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	getUntitledNotebookUri(resource: string): vscode.Uri {
 		let untitledFileName = vscode.Uri.parse(`untitled:${resource}`);
-		if (this.currentBook && !this.currentBook.getAllNotebooks().get(untitledFileName.fsPath) && !this.currentBook.getAllNotebooks().get(path.basename(untitledFileName.fsPath))) {
-			let notebook = this.currentBook.getAllNotebooks().get(resource);
-			this.currentBook.getAllNotebooks().set(path.basename(untitledFileName.fsPath), notebook);
+		if (this.currentBook && !this.currentBook.getAllNotebooks().get(untitledFileName.fsPath)) {
+			let notebookTreeItem = this.currentBook.getAllNotebooks().get(resource);
+			this.currentBook.getAllNotebooks().set(path.basename(untitledFileName.fsPath), notebookTreeItem);
 		}
 		return untitledFileName;
 	}
