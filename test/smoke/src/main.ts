@@ -238,6 +238,7 @@ async function setupRepository(): Promise<void> {
 	}
 }
 
+// @ts-ignore ts6133 {{SQL CARBON EDIT}} Not used (see below)
 async function ensureStableCode(): Promise<void> {
 	if (opts.web || !opts['build']) {
 		return;
