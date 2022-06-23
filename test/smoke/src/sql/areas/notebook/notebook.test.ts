@@ -67,6 +67,7 @@ export function setup(opts: minimist.ParsedArgs) {
 		describe('Python notebooks', function () {
 			let pythonConfigured: boolean;
 			async function configurePython(app: Application): Promise<void> {
+				// Skip setting up python again if another test has already completed this configuration step
 				if (!pythonConfigured) {
 					await app.workbench.configurePythonDialog.waitForConfigurePythonDialog();
 					await app.workbench.configurePythonDialog.waitForPageOneLoaded();
