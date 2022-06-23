@@ -8,7 +8,6 @@ import * as vscode from 'vscode';
 import * as mssql from 'mssql';
 import * as loc from '../localizedConstants';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
-import { isNullOrUndefined } from 'util';
 import { SchemaCompareOptionsModel } from '../models/schemaCompareOptionsModel';
 import { TelemetryReporter, TelemetryViews } from '../telemetry';
 
@@ -64,7 +63,7 @@ export class SchemaCompareOptionsDialog {
 
 	protected execute(): void {
 		this.optionsModel.setDeploymentOptions();
-		this.optionsModel.setObjectTypeOptions();
+		this.optionsModel.setSchemaCompareIncludedObjectsUtil();
 		this.schemaComparison.setDeploymentOptions(this.optionsModel.deploymentOptions);
 
 		const yesItem: vscode.MessageItem = {
@@ -180,8 +179,8 @@ export class SchemaCompareOptionsDialog {
 			this.disposableListeners.push(this.objectsTable.onCellAction((rowState) => {
 				let checkboxState = <azdata.ICheckboxCellActionEventArgs>rowState;
 				if (checkboxState && checkboxState.row !== undefined) {
-					let label = this.optionsModel.objectTypeLabels[checkboxState.row];
-					this.optionsModel.objectsLookup[label] = checkboxState.checked;
+					let label = this.optionsModel.includeObjectTypeLabels[checkboxState.row];
+					this.optionsModel.includeObjectsLookup.set(label, checkboxState.checked);
 					this.optionsChanged = true;
 				}
 			}));
@@ -234,13 +233,13 @@ export class SchemaCompareOptionsDialog {
 					type: azdata.ColumnType.checkBox,
 					action: azdata.ActionOnCellCheckboxCheck.customAction,
 					headerCssClass: 'display-none',
-					cssClass: 'no-borders align-with-header',
+					cssClass: 'no-borders align-with-header align-with-text',
 					width: 50
 				},
 				{
 					value: 'Option Name',
 					headerCssClass: 'display-none',
-					cssClass: 'no-borders align-with-header',
+					cssClass: 'no-borders align-with-header vertical-align-middle',
 					width: 50
 				}
 			],

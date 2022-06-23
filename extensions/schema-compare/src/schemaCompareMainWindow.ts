@@ -349,6 +349,14 @@ export class SchemaCompareMainWindow {
 		this.deploymentOptions = deploymentOptions;
 	}
 
+	public ConvertObjectToMapTable(deploymentOptions: mssql.DeploymentOptions): mssql.DeploymentOptions {
+		if (deploymentOptions !== undefined) {
+			deploymentOptions.includeObjects = new Map(Object.entries(deploymentOptions.includeObjects).map((x) => [x[0].charAt(0).toUpperCase() + x[0].slice(1), x[1]]));
+		}
+
+		return deploymentOptions;
+	}
+
 	private async populateProjectScripts(endpointInfo: mssql.SchemaCompareEndpointInfo): Promise<void> {
 		if (endpointInfo.endpointType !== mssql.SchemaCompareEndpointType.Project) {
 			return;
@@ -1102,6 +1110,7 @@ export class SchemaCompareMainWindow {
 		this.targetEndpointInfo = await this.constructEndpointInfo(result.targetEndpointInfo, loc.targetTitle);
 
 		this.updateSourceAndTarget();
+		result.deploymentOptions = this.ConvertObjectToMapTable(result.deploymentOptions);
 		this.setDeploymentOptions(result.deploymentOptions);
 		this.scmpSourceExcludes = result.excludedSourceElements;
 		this.scmpTargetExcludes = result.excludedTargetElements;
@@ -1235,6 +1244,7 @@ export class SchemaCompareMainWindow {
 		// Same as dacfx default options
 		const service = await this.getService();
 		let result = await service.schemaCompareGetDefaultOptions();
+		result.defaultDeploymentOptions = this.ConvertObjectToMapTable(result.defaultDeploymentOptions);
 		this.setDeploymentOptions(result.defaultDeploymentOptions);
 	}
 }

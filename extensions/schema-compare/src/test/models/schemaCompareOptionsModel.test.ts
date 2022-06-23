@@ -14,21 +14,41 @@ describe('Schema Compare Options Model', () => {
 		should.notEqual(model.getObjectsData(), undefined, 'Objects shouldn\'t be undefined');
 
 		should.doesNotThrow(() => model.setDeploymentOptions());
-		should.doesNotThrow(() => model.setObjectTypeOptions());
+		should.doesNotThrow(() => model.setSchemaCompareIncludedObjectsUtil());
 
 		should(model.getSchemaCompareOptionUtil('')).equal(undefined, 'Should return undefined if an invalid option is passed in');
-		should(model.getSchemaCompareIncludedObjectsUtil('')).be.false('Should return false if invalid object name is passed in');
+		should(model.getSchemaCompareIncludedObjectsUtil('')).be.true('Should return true if invalid object name is passed in');
 	});
 
-	it('Should exclude objects', function (): void {
+	it('Should have no exclude objects but include objects', function (): void {
 		const model = new SchemaCompareOptionsModel(testUtils.getDeploymentOptions());
 		should(model.excludedObjectTypes.length).be.equal(0, 'There should be no excluded objects');
 
-		model.objectTypeLabels.forEach(l => {
-			model.setSchemaCompareIncludedObjectsUtil(l, false);
+		model.includeObjectTypeLabels.forEach(l => {
+			if(!model.getSchemaCompareIncludedObjectsUtil(l)){
+				model.excludedObjectTypes.push(model.deploymentOptions.includeObjects.get(l));
+			}
+		});
+		model.setSchemaCompareIncludedObjectsUtil();
+
+		// includeObjectTypes have two sample options, expected-0 and actual-2, should not equal
+		should(model.excludedObjectTypes.length).not.equal(model.includeObjectTypeLabels.length, 'All the object types should be excluded');
+	});
+
+	it('Should have exclude objects and matches with includeObjects', function (): void {
+		const model = new SchemaCompareOptionsModel(testUtils.getDeploymentOptions());
+		model.deploymentOptions.excludeObjectTypes.value = [0, 2];
+
+		should(model.excludedObjectTypes.length).be.equal(0, 'There should be no excluded objects');
+
+		model.includeObjectTypeLabels.forEach(l => {
+			if(!model.getSchemaCompareIncludedObjectsUtil(l)){
+				model.excludedObjectTypes.push(model.deploymentOptions.includeObjects.get(l));
+			}
 		});
 
-		should(model.excludedObjectTypes.length).be.equal(model.objectTypeLabels.length, 'All the object types should be excluded');
+		// includeObjectTypes have two sample options, expected-2 and actual-2, should not equal
+		should(model.excludedObjectTypes.length).be.equal(model.includeObjectTypeLabels.length, 'All the object types should be excluded');
 	});
 
 	it('Should get descriptions', function (): void {
