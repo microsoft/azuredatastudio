@@ -65,9 +65,9 @@ export class EditDataGridPanel extends GridParentComponent {
 	private currentEditCellValue: string;
 	private newRowVisible: boolean;
 	private removingNewRow: boolean;
+	private failedRow: number;
 	private rowIdMappings: { [gridRowId: number]: number } = {};
 	private dirtyCells: { row: number, column: number }[] = [];
-	private newRowCurrentlyUnderEdit: number;
 	protected plugins = new Array<Slick.Plugin<any>>();
 	private newlinePattern: string;
 	// List of column names with their indexes stored.
@@ -636,17 +636,12 @@ export class EditDataGridPanel extends GridParentComponent {
 		let refreshGrid = false;
 		if (cellToAdd && cellToAdd.isEditable && this.currentEditCellValue !== undefined && !this.removingNewRow) {
 
-			if (this.isNullRow(cellToAdd.row) && (!this.newRowCurrentlyUnderEdit || this.newRowCurrentlyUnderEdit !== cellToAdd.Row)) {
-				this.newRowCurrentlyUnderEdit = cellToAdd.row;
+			if (this.isNullRow(cellToAdd.row)) {
 				refreshGrid = true;
 				// We've entered the "new row", so we need to add a row and jump to it
 				updateCellPromise = updateCellPromise.then(() => {
 					return self.addRow(cellToAdd.row);
 				});
-			}
-			else if (!this.isNullRow(cellToAdd.row)) {
-				this.rowIdMappings[cellToAdd.row] = undefined;
-				this.newRowCurrentlyUnderEdit = undefined;
 			}
 			// We're exiting a read/write cell after having changed the value, update the cell value in the service
 			updateCellPromise = updateCellPromise.then(() => {
@@ -663,11 +658,17 @@ export class EditDataGridPanel extends GridParentComponent {
 					if (refreshGrid) {
 						refreshPromise = self.refreshGrid();
 					}
+					if (this.failedRow && this.failedRow < cellToAdd.row) {
+						this.rowIdMappings[this.failedRow] = undefined;
+						this.failedRow = undefined;
+					}
 					return refreshPromise.then(() => {
 						return resultHandler(result);
 					});
 				},
 				error => {
+					this.failedRow = cellToAdd.row;
+					self.currentEditCellValue = undefined;
 					let errorPromise: Thenable<void> = Promise.resolve();
 					if (refreshGrid) {
 						let message = 'Error: invalid value entered in new row, reverting changes, please enter a valid value.';
@@ -676,7 +677,6 @@ export class EditDataGridPanel extends GridParentComponent {
 							message: message
 						});
 						errorPromise = this.revertSelectedRow(cellToAdd.row).then(() => {
-							this.newRowCurrentlyUnderEdit = undefined;
 							this.lastClickedCell = { row: cellToAdd.row, column: cellToAdd.column, isEditable: true };
 						});
 					}
