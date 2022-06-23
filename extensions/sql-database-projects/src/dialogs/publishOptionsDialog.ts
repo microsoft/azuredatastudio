@@ -10,6 +10,7 @@ import * as utils from '../common/utils';
 import type * as azdataType from 'azdata';
 import { PublishDatabaseDialog } from './publishDatabaseDialog';
 import { DeployOptionsModel } from '../models/options/deployOptionsModel';
+import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 
 export class PublishOptionsDialog {
 
@@ -205,6 +206,10 @@ export class PublishOptionsDialog {
 			this.publish.optionsChanged = false;
 		}
 		this.disposeListeners();
+
+		if (this.optionsChanged) {
+			TelemetryReporter.sendActionEvent(TelemetryViews.PublishOptionsDialog, TelemetryActions.optionsChanged);
+		}
 	}
 
 	/*
@@ -236,6 +241,7 @@ export class PublishOptionsDialog {
 		this.includeObjectTypesFlexBuilder?.removeItem(this.includeObjectsTable!);
 		this.includeObjectTypesFlexBuilder?.addItem(this.includeObjectsTable!, { CSSStyles: { 'overflow': 'scroll', 'height': '80vh' } });
 		this.resetClicked = true;
+		TelemetryReporter.sendActionEvent(TelemetryViews.PublishOptionsDialog, TelemetryActions.resetOptions);
 	}
 
 	private disposeListeners(): void {

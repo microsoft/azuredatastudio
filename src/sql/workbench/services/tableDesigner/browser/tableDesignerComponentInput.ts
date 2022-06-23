@@ -183,6 +183,9 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 	}
 
 	async save(): Promise<void> {
+		if (!this.isDirty()) {
+			return;
+		}
 		if (this.tableDesignerView?.useAdvancedSaveMode) {
 			await this.openPublishDialog();
 		} else {

@@ -13,7 +13,7 @@ tab-header .action-item {
 	line-height: 1.4em;
 }
 
-tab-header .tab-header.active .action-label, 		/* always show it for active tab */
+tab-header .tab-header.selected .action-label, 		/* always show it for selected tab */
 tab-header .tab-header:hover .action-label,			/* always show it on hover */
 tab-header .tab-header:focus .action-label {		/* always show it on focus */
 	opacity: 1;
