@@ -10,6 +10,7 @@ import * as utils from '../common/utils';
 import type * as azdataType from 'azdata';
 import { PublishDatabaseDialog } from './publishDatabaseDialog';
 import { DeployOptionsModel } from '../models/options/deployOptionsModel';
+import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 
 export class PublishOptionsDialog {
 
@@ -21,6 +22,7 @@ export class PublishOptionsDialog {
 	private optionsTable: azdataType.TableComponent | undefined;
 	public optionsModel: DeployOptionsModel;
 	private optionsFlexBuilder: azdataType.FlexContainer | undefined;
+	private optionsChanged: boolean = false;
 
 	constructor(defaultOptions: mssql.DeploymentOptions, private publish: PublishDatabaseDialog) {
 		this.optionsModel = new DeployOptionsModel(defaultOptions);
@@ -85,6 +87,7 @@ export class PublishOptionsDialog {
 				if (checkboxState && checkboxState.row !== undefined) {
 					let label = this.optionsModel.optionsLabels[checkboxState.row];
 					this.optionsModel.optionsLookup?.set(label, checkboxState.checked);
+					this.optionsChanged = true;
 				}
 			}));
 
@@ -137,6 +140,10 @@ export class PublishOptionsDialog {
 		this.optionsModel.setDeploymentOptions();
 		this.publish.setDeploymentOptions(this.optionsModel.deploymentOptions);
 		this.disposeListeners();
+
+		if (this.optionsChanged) {
+			TelemetryReporter.sendActionEvent(TelemetryViews.PublishOptionsDialog, TelemetryActions.optionsChanged);
+		}
 	}
 
 	/*
@@ -159,6 +166,8 @@ export class PublishOptionsDialog {
 		await this.updateOptionsTable();
 		this.optionsFlexBuilder?.removeItem(this.optionsTable!);
 		this.optionsFlexBuilder?.insertItem(this.optionsTable!, 0, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh' } });
+
+		TelemetryReporter.sendActionEvent(TelemetryViews.PublishOptionsDialog, TelemetryActions.resetOptions);
 	}
 
 	private disposeListeners(): void {

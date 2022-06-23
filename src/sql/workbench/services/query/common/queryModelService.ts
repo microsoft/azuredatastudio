@@ -287,7 +287,6 @@ export class QueryModelService implements IQueryModelService {
 		});
 		queryRunner.onQueryEnd(totalMilliseconds => {
 			this._onRunQueryComplete.fire(queryRunner.uri);
-
 			// fire extensibility API event
 			let event: IQueryEvent = {
 				type: 'queryStop',
