@@ -44,6 +44,12 @@ export const serviceTierVarName = 'AZDATA_NB_VAR_SQL_SERVICE_TIER';
 export const devUseVarName = 'AZDATA_NB_VAR_SQL_DEV_USE';
 export const vcoresLimitVarName = 'AZDATA_NB_VAR_SQL_CORES_LIMIT';
 export const licenseTypeVarName = 'AZDATA_NB_VAR_SQL_LICENSE_TYPE';
+export const readableSecondaries = 'AZDATA_NB_VAR_READABLE_SECONDARIES';
+
+// Gets number of replicas charged
+export function numBillableReplicas(mapping: { [key: string]: InputValueType }): number {
+	return 1 + Math.max(0, <number>mapping[readableSecondaries] - 1);
+}
 
 // Estimated base price for one vCore.
 export function estimatedBasePriceForOneVCore(mapping: { [key: string]: InputValueType }): number {
@@ -87,12 +93,12 @@ export function numCores(mapping: { [key: string]: InputValueType }): number {
 
 // Full price for all selected vCores.
 export function vCoreFullPriceForAllCores(mapping: { [key: string]: InputValueType }): number {
-	return fullPriceForOneVCore(mapping) * numCores(mapping);
+	return fullPriceForOneVCore(mapping) * numCores(mapping) * numBillableReplicas(mapping);
 }
 
 // SQL Server License price for all vCores. This is shown on the cost summary card if customer has SQL server license.
 export function vCoreSqlServerLicensePriceForAllCores(mapping: { [key: string]: InputValueType }): number {
-	return estimatedSqlServerLicensePriceForOneVCore(mapping) * numCores(mapping);
+	return estimatedSqlServerLicensePriceForOneVCore(mapping) * numCores(mapping) * numBillableReplicas(mapping);
 }
 
 // If the customer doesn't already have SQL Server License, AHB discount is set to zero because the price will be included
