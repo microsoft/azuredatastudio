@@ -5014,31 +5014,20 @@ declare module 'azdata' {
 			onQueryEvent(type: QueryEventType, document: QueryDocument, args: ResultSetSummary | string | undefined): void;
 		}
 
+		// new extensibility interfaces
 		export interface QueryDocument {
-			/**
-			 * The ID of the connection provider for this query document
-			 */
 			providerId: string;
 
-			/**
-			 * The URI identifying this document
-			 */
 			uri: string;
 
-			/**
-			 * Set the document's execution options, which will be used whenever a query is executed.
-			 * @param options The execution options
-			 */
+			// set the document's execution options
 			setExecutionOptions(options: Map<string, any>): Thenable<void>;
 
 			// tab content is build using the modelview UI builder APIs
 			// probably should rename DialogTab class since it is useful outside dialogs
 			createQueryTab(tab: window.DialogTab): void;
 
-			/**
-			 * Connect the query document using the given connection profile
-			 * @param connectionProfile The profile to use as the connection
-			 */
+			// connect the query document using the given connection profile
 			connect(connectionProfile: connection.ConnectionProfile): Thenable<void>;
 		}
 
