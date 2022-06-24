@@ -3,21 +3,21 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as should from 'should';
-import * as sinon from 'sinon';
-import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as should from 'should';
+import * as sinon from 'sinon';
 import * as TypeMoq from 'typemoq';
-import * as utils from '../../common/utils';
-import * as constants from '../../common/constants';
+import * as vscode from 'vscode';
 import * as azureFunctionUtils from '../../common/azureFunctionsUtils';
+import * as constants from '../../common/constants';
+import * as utils from '../../common/utils';
 import * as azureFunctionsContracts from '../../contracts/azureFunctions/azureFunctionsContracts';
 import * as azureFunctionService from '../../services/azureFunctionsService';
 
-import { createTestUtils, TestUtils, createTestCredentials, createTestTableNode } from '../testUtils';
-import { IConnectionInfo } from 'vscode-mssql';
 import { BindingType } from 'sql-bindings';
+import { IConnectionInfo } from 'vscode-mssql';
+import { createTestCredentials, createTestTableNode, createTestUtils, TestUtils } from '../testUtils';
 
 const rootFolderPath = 'test';
 const projectFilePath: string = path.join(rootFolderPath, 'test.csproj');
