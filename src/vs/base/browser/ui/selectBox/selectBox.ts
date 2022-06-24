@@ -40,7 +40,7 @@ export interface ISelectBoxDelegate extends IDisposable {
 export interface ISelectBoxOptions {
 	useCustomDrawn?: boolean;
 	ariaLabel?: string;
-	ariaDescription?: string; // {{SQL CARBON EDIT}} - Add aria description
+	ariaDescription?: string;
 	minBottomMargin?: number;
 	optionsAsChildren?: boolean;
 }
