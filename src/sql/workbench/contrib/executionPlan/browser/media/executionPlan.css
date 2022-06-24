@@ -546,7 +546,7 @@ However we always want it to be the width of the container it is resizing.
 }
 
 .eps-container .ep-properties-different {
-	background-image: url(../images/actionIcons/differentValues.svg);
+	background-image: url(../images/actionIcons/different.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
@@ -554,8 +554,9 @@ However we always want it to be the width of the container it is resizing.
 	height: auto;
 }
 
-.eps-container .ep-properties-red-down-arrow {
-	background-image: url(../images/actionIcons/downArrowWorse.svg);
+.vs-dark .eps-container .ep-properties-different,
+.hc-black .eps-container .ep-properties-different {
+	background-image: url(../images/actionIcons/differentDark.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
@@ -563,8 +564,9 @@ However we always want it to be the width of the container it is resizing.
 	height: auto;
 }
 
-.eps-container .ep-properties-green-down-arrow {
-	background-image: url(../images/actionIcons/downArrowBetter.svg);
+
+.eps-container .ep-properties-down-arrow {
+	background-image: url(../images/actionIcons/downArrow.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
@@ -572,8 +574,9 @@ However we always want it to be the width of the container it is resizing.
 	height: auto;
 }
 
-.eps-container .ep-properties-red-up-arrow {
-	background-image: url(../images/actionIcons/upArrowWorse.svg);
+.vs-dark .eps-container .ep-properties-down-arrow,
+.hc-black .eps-container .ep-properties-down-arrow {
+	background-image: url(../images/actionIcons/downArrowDark.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
@@ -581,8 +584,18 @@ However we always want it to be the width of the container it is resizing.
 	height: auto;
 }
 
-.eps-container .ep-properties-green-down-arrow {
-	background-image: url(../images/actionIcons/downArrowBetter.svg);
+.eps-container .ep-properties-up-arrow {
+	background-image: url(../images/actionIcons/upArrow.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+	width: 16px;
+	height: auto;
+}
+
+.vs-dark .eps-container .ep-properties-up-arrow,
+.hc-black .eps-container .ep-properties-up-arrow {
+	background-image: url(../images/actionIcons/upArrowDark.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;
@@ -735,8 +748,4 @@ However we always want it to be the width of the container it is resizing.
 
 .eps-container .comparison-editor .parent-row-styling {
 	font-weight: bold;
-}
-
-.eps-container .comparison-editor .default-bottom-column-cell-styling {
-	padding-left: 0px;
 }
