@@ -41,6 +41,7 @@ export interface IQueryEditorStateChange {
 	executingChange?: boolean;
 	connectingChange?: boolean;
 	sqlCmdModeChanged?: boolean;
+	actualExecutionPlanModeChanged?: boolean;
 }
 
 export class QueryEditorState extends Disposable {
@@ -49,6 +50,7 @@ export class QueryEditorState extends Disposable {
 	private _resultsVisible = false;
 	private _executing = false;
 	private _connecting = false;
+	private _isActualExecutionPlanMode = false;
 
 	private _onChange = this._register(new Emitter<IQueryEditorStateChange>());
 	public onChange = this._onChange.event;
@@ -108,12 +110,24 @@ export class QueryEditorState extends Disposable {
 		return this._isSqlCmdMode;
 	}
 
+	public set isActualExecutionPlanMode(val: boolean) {
+		if (val !== this._isActualExecutionPlanMode) {
+			this._isActualExecutionPlanMode = val;
+			this._onChange.fire({ actualExecutionPlanModeChanged: true });
+		}
+	}
+
+	public get isActualExecutionPlanMode() {
+		return this._isActualExecutionPlanMode;
+	}
+
 	public setState(newState: QueryEditorState): void {
 		this.connected = newState.connected;
 		this.connecting = newState.connecting;
 		this.resultsVisible = newState.resultsVisible;
 		this.executing = newState.executing;
 		this.isSqlCmdMode = newState.isSqlCmdMode;
+		this.isActualExecutionPlanMode = newState.isActualExecutionPlanMode;
 	}
 }
 
