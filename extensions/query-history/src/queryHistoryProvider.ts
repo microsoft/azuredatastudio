@@ -27,6 +27,8 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 			onQueryEvent: async (type: azdata.queryeditor.QueryEventType, document: azdata.queryeditor.QueryDocument, args: azdata.ResultSetSummary | string | undefined, queryInfo?: azdata.queryeditor.QueryInfo) => {
 				if (this._captureEnabled && queryInfo && type === 'queryStop') {
 					const textDocuments = vscode.workspace.textDocuments;
+					// We need to compare URIs, but the event Uri comes in as string so while it should be in the same format as
+					// the textDocument uri.toString() we parse it into a vscode.Uri first to be absolutely sure.
 					const textDocument = textDocuments.find(e => e.uri.toString() === vscode.Uri.parse(document.uri).toString());
 					if (!textDocument) {
 						// If we couldn't find the document then we can't get the text so just log the error and move on
@@ -34,7 +36,7 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 						return;
 					}
 					// Combine all the text from the batches back together
-					const queryText = queryInfo.range.map(r => textDocument?.getText(r) ?? '').join(EOL);
+					const queryText = queryInfo.range.map(r => textDocument.getText(r) ?? '').join(EOL);
 					const connProfile = await azdata.connection.getConnection(document.uri);
 					const isError = queryInfo.messages.find(m => m.isError) ? false : true;
 					// Add to the front of the list so the new item appears at the top
