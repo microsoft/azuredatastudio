@@ -29,8 +29,6 @@ import { MockQuickInputService } from 'sql/workbench/contrib/notebook/test/commo
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { Separator } from 'vs/base/common/actions';
 import { INotebookView, INotebookViews } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
-import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
 
 class TestClientSession extends ClientSessionStub {
@@ -111,9 +109,6 @@ class TestNotebookModel extends NotebookModelStub {
 	public override getStandardKernelFromName(name: string): IStandardKernelWithProvider {
 		return this._standardKernelsMap.get(name);
 	}
-
-	public override sendNotebookTelemetryActionEvent(action: TelemetryKeys.TelemetryAction | TelemetryKeys.NbTelemetryAction, additionalProperties?: ITelemetryEventProperties): void {
-	}
 }
 
 suite('Notebook Actions', function (): void {
@@ -138,9 +133,10 @@ suite('Notebook Actions', function (): void {
 		let testCellType: CellType = 'code';
 		let actualCellType: CellType;
 
-
 		let action = new AddCellAction('TestId', 'TestLabel', 'TestClass', mockNotebookService.object);
 		action.cellType = testCellType;
+
+		mockNotebookEditor.setup(x => x.model).returns(() => testNotebookModel);
 
 		// Normal use case
 		mockNotebookEditor.setup(x => x.addCell(TypeMoq.It.isAny(), TypeMoq.It.isAnyNumber())).returns((cellType, index) => { actualCellType = cellType; });
@@ -154,12 +150,15 @@ suite('Notebook Actions', function (): void {
 
 		// Handle error case
 		mockNotebookEditor.reset();
+		mockNotebookEditor.setup(x => x.model).returns(() => testNotebookModel);
 		mockNotebookEditor.setup(x => x.addCell(TypeMoq.It.isAny(), TypeMoq.It.isAnyNumber())).throws(new Error('Test Error'));
 		await assert.rejects(action.run(URI.parse('untitled')));
 	});
 
 	test('Clear All Outputs Action', async function (): Promise<void> {
 		let action = new ClearAllOutputsAction('TestId', true, mockNotebookService.object);
+
+		mockNotebookEditor.setup(x => x.model).returns(() => testNotebookModel);
 
 		// Normal use case
 		mockNotebookEditor.setup(c => c.clearAllOutputs()).returns(() => Promise.resolve(true));
@@ -169,6 +168,7 @@ suite('Notebook Actions', function (): void {
 
 		// Handle failure case
 		mockNotebookEditor.reset();
+		mockNotebookEditor.setup(x => x.model).returns(() => testNotebookModel);
 		mockNotebookEditor.setup(c => c.clearAllOutputs()).returns(() => Promise.resolve(false));
 
 		await action.run(testUri);
@@ -182,11 +182,9 @@ suite('Notebook Actions', function (): void {
 		let action = new TrustedAction('TestId', true, mockNotebookService.object);
 		assert.strictEqual(action.trusted, false, 'Should not be trusted by default');
 
-		const testNotebookModel: INotebookModel = <INotebookModel>{
-			trustedMode: false
-		};
-
+		testNotebookModel.trustedMode = false;
 		mockNotebookEditor.setup(x => x.model).returns(() => testNotebookModel);
+
 		// Normal use case
 		await action.run(testUri);
 		assert.strictEqual(action.trusted, true, 'Should be trusted after toggling trusted state');
@@ -199,14 +197,13 @@ suite('Notebook Actions', function (): void {
 	});
 
 	test('Run All Cells Action', async function (): Promise<void> {
-		const testNotebookModel = TypeMoq.Mock.ofType<INotebookModel>(NotebookModelStub);
-		testNotebookModel.setup(x => x.getMetaValue(TypeMoq.It.isAny())).returns(() => undefined);
-		mockNotebookEditor.setup(x => x.model).returns(() => testNotebookModel.object);
 
 		let mockNotification = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService);
 		mockNotification.setup(n => n.notify(TypeMoq.It.isAny()));
 
 		let action = new RunAllCellsAction('TestId', 'TestLabel', 'TestClass', mockNotification.object, mockNotebookService.object);
+
+		mockNotebookEditor.setup(x => x.model).returns(() => testNotebookModel);
 
 		// Normal use case
 		mockNotebookEditor.setup(c => c.runAllCells()).returns(() => Promise.resolve(true));
@@ -216,6 +213,7 @@ suite('Notebook Actions', function (): void {
 
 		// Handle errors
 		mockNotebookEditor.reset();
+		mockNotebookEditor.setup(x => x.model).returns(() => testNotebookModel);
 		mockNotebookEditor.setup(c => c.runAllCells()).throws(new Error('Test Error'));
 
 		await action.run(testUri);
@@ -233,6 +231,7 @@ suite('Notebook Actions', function (): void {
 			isCollapsed: false
 		}];
 
+		mockNotebookEditor.setup(x => x.model).returns(() => testNotebookModel);
 		mockNotebookEditor.setup(x => x.cells).returns(() => testCells);
 
 		// Collapse cells case
