@@ -312,20 +312,6 @@ export class EditDataGridPanel extends GridParentComponent {
 			return;
 		}
 
-		if (this.previousSavedCell.row !== row && this.isRowDirty(this.previousSavedCell.row) && !this.isNullRow(row)) {
-			this.updateEnabledState(false);
-			this.commitEditTask().then(() => {
-				this.updateEnabledState(true);
-				this.focusCell(row, column);
-				return Promise.resolve();
-			}, () => {
-				// Committing failed, jump back to the last selected cell
-				this.updateEnabledState(true);
-				this.focusCell(this.previousSavedCell.row, this.previousSavedCell.column);
-				return Promise.reject(null);
-			});
-		}
-
 		// get the cell we have just immediately clicked (to set as the new active cell in handleChanges), only done if another cell is not currently being processed.
 		this.lastClickedCell = { row, column, isEditable };
 	}
@@ -363,7 +349,7 @@ export class EditDataGridPanel extends GridParentComponent {
 				self.setCellDirtyState(cellToSubmit.row, cellToSubmit.column, result.cell.isDirty);
 				self.setRowDirtyState(cellToSubmit.row, result.isRowDirty);
 				let nullCommit = this.isNullRow(cellToSubmit.row + 1) && this.lastClickedCell.row === cellToSubmit.row && this.lastClickedCell.column === cellToSubmit.column;
-				let regularCommit = this.lastClickedCell.row !== cellToSubmit.row;
+				let regularCommit = cellToSubmit.row !== this.lastClickedCell.row && this.isRowDirty(cellToSubmit.row);
 				if (regularCommit || nullCommit) {
 					await this.commitEditTask().then(() => {
 						if (this.lastClickedCell.row === cellToSubmit.row && this.lastClickedCell.column === cellToSubmit.column) {
