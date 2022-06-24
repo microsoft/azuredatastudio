@@ -41,7 +41,7 @@ export class QueryInfo {
 
 	// Notes if the angular components have obtained the DataService. If not, all messages sent
 	// via the data service will be lost.
-	public dataServiceReady?: boolean = false;
+	public dataServiceReady: boolean = false;
 
 	constructor() { }
 
