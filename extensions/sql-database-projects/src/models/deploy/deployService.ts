@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ILocalDbDeployProfile, ILocalDbSetting, ISqlDbDeployProfile } from './deployProfile';
+import { ISqlDbDeployProfile } from './deployProfile';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import { Project } from '../project';
 import * as constants from '../../common/constants';
@@ -12,6 +12,7 @@ import * as vscode from 'vscode';
 import { ShellExecutionHelper } from '../../tools/shellExecutionHelper';
 import { AzureSqlClient } from './azureSqlClient';
 import { ConnectionService } from '../connections/connectionService';
+import { publish } from 'sqldbproj';
 
 interface DockerImageSpec {
 	label: string;
@@ -89,7 +90,7 @@ export class DeployService {
 		return undefined;
 	}
 
-	public async deployToContainer(profile: ILocalDbDeployProfile, project: Project): Promise<string | undefined> {
+	public async deployToContainer(profile: publish.IPublishToDockerSettings, project: Project): Promise<string | undefined> {
 		return await this.executeTask(constants.deployDbTaskName, async () => {
 			if (!profile.localDbSetting) {
 				return undefined;
@@ -158,7 +159,7 @@ export class DeployService {
 		});
 	}
 
-	private async runDockerContainer(dockerImageSpec: DockerImageSpec, profile: ILocalDbSetting): Promise<string | undefined> {
+	private async runDockerContainer(dockerImageSpec: DockerImageSpec, profile: publish.ILocalDbSetting): Promise<string | undefined> {
 
 		// Sensitive data to remove from output console
 		const sensitiveData = [profile.password];

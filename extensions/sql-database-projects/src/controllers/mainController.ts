@@ -16,11 +16,10 @@ import { IconPathHelper } from '../common/iconHelper';
 import { WorkspaceTreeItem } from 'dataworkspace';
 import * as constants from '../common/constants';
 import { SqlDatabaseProjectProvider } from '../projectProvider/projectProvider';
-import { GenerateProjectFromOpenApiSpecOptions, ItemType } from 'sqldbproj';
+import { EntryType, GenerateProjectFromOpenApiSpecOptions, ItemType } from 'sqldbproj';
 import { TableFileNode } from '../models/tree/fileFolderTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { getAzdataApi } from '../common/utils';
-import { EntryType } from '../models/projectEntry';
 
 /**
  * The main controller class that initializes the extension

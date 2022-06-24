@@ -15,10 +15,9 @@ import * as TypeMoq from 'typemoq';
 import { PublishDatabaseDialog } from '../../dialogs/publishDatabaseDialog';
 import { Project } from '../../models/project';
 import { ProjectsController } from '../../controllers/projectController';
-import { IDeploySettings } from '../../models/IDeploySettings';
 import { emptySqlDatabaseProjectTypeId } from '../../common/constants';
 import { createContext, mockDacFxOptionsResult, TestContext } from '../testContext';
-import { ILocalDbDeployProfile } from '../../models/deploy/deployProfile';
+import { publish } from 'sqldbproj';
 
 let testContext: TestContext;
 describe('Publish Database Dialog', () => {
@@ -76,9 +75,9 @@ describe('Publish Database Dialog', () => {
 		dialog.object.publishToExistingServer = true;
 		dialog.callBase = true;
 
-		let profile: IDeploySettings | undefined;
+		let profile: publish.IDeploySettings | undefined;
 
-		const expectedPublish: IDeploySettings = {
+		const expectedPublish: publish.IDeploySettings = {
 			databaseName: 'MockDatabaseName',
 			serverName: 'MockServer',
 			connectionUri: 'Mock|Connection|Uri',
@@ -95,7 +94,7 @@ describe('Publish Database Dialog', () => {
 
 		should(profile).deepEqual(expectedPublish);
 
-		const expectedGenScript: IDeploySettings = {
+		const expectedGenScript: publish.IDeploySettings = {
 			databaseName: 'MockDatabaseName',
 			serverName: 'MockServer',
 			connectionUri: 'Mock|Connection|Uri',
@@ -112,7 +111,7 @@ describe('Publish Database Dialog', () => {
 
 		should(profile).deepEqual(expectedGenScript);
 
-		const expectedContainerPublishProfile: ILocalDbDeployProfile = {
+		const expectedContainerPublishProfile: publish.IPublishToDockerSettings = {
 			localDbSetting: {
 				dbName: 'MockDatabaseName',
 				dockerBaseImage: '',
@@ -136,7 +135,7 @@ describe('Publish Database Dialog', () => {
 			}
 		};
 		dialog.object.publishToExistingServer = false;
-		let deployProfile: ILocalDbDeployProfile | undefined;
+		let deployProfile: publish.IPublishToDockerSettings | undefined;
 		dialog.object.publishToContainer = (_, prof) => { deployProfile = prof; };
 		await dialog.object.publishClick();
 
