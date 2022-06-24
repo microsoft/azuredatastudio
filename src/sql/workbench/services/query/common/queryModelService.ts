@@ -35,23 +35,23 @@ export interface QueryEvent {
 export class QueryInfo {
 	public queryRunner?: EditQueryRunner;
 	public dataService?: DataService;
-	public queryEventQueue?: QueryEvent[];
-	public range?: Array<IRange>;
+	public queryEventQueue: QueryEvent[] = [];
+	public range: Array<IRange> = [];
 	public selectionSnippet?: string;
 
 	// Notes if the angular components have obtained the DataService. If not, all messages sent
 	// via the data service will be lost.
-	public dataServiceReady?: boolean;
+	public dataServiceReady?: boolean = false;
 
-	constructor() {
-		this.dataServiceReady = false;
-		this.queryEventQueue = [];
-		this.range = [];
-	}
+	constructor() { }
 
 	public set uri(newUri: string) {
-		this.queryRunner.uri = newUri;
-		this.dataService.uri = newUri;
+		if (this.queryRunner) {
+			this.queryRunner.uri = newUri;
+		}
+		if (this.dataService) {
+			this.dataService.uri = newUri;
+		}
 	}
 }
 
@@ -271,7 +271,7 @@ export class QueryModelService implements IQueryModelService {
 						text: strings.format(nls.localize('runQueryBatchStartLine', "Line {0}"), b.range.startLineNumber)
 					};
 				}
-				info.range!.push(b.range);
+				info.range.push(b.range);
 			}
 			let message = {
 				message: messageText,
@@ -293,7 +293,7 @@ export class QueryModelService implements IQueryModelService {
 				uri: queryRunner.uri,
 				queryInfo:
 				{
-					range: info.range!,
+					range: info.range,
 					messages: info.queryRunner!.messages
 				}
 			};
@@ -311,7 +311,7 @@ export class QueryModelService implements IQueryModelService {
 				uri: queryRunner.uri,
 				queryInfo:
 				{
-					range: info.range!,
+					range: info.range,
 					messages: info.queryRunner!.messages
 				}
 			};
@@ -327,7 +327,7 @@ export class QueryModelService implements IQueryModelService {
 				uri: queryRunner.uri,
 				queryInfo:
 				{
-					range: info.range!,
+					range: info.range,
 					messages: info.queryRunner!.messages
 				}
 			};
@@ -343,7 +343,7 @@ export class QueryModelService implements IQueryModelService {
 				uri: planInfo.fileUri,
 				queryInfo:
 				{
-					range: info.range!,
+					range: info.range,
 					messages: info.queryRunner!.messages
 				},
 				params: planInfo
@@ -358,7 +358,7 @@ export class QueryModelService implements IQueryModelService {
 				uri: qp2Info.fileUri,
 				queryInfo:
 				{
-					range: info.range!,
+					range: info.range,
 					messages: info.queryRunner!.messages
 				},
 				params: qp2Info.planGraphs
@@ -372,7 +372,7 @@ export class QueryModelService implements IQueryModelService {
 				uri: queryRunner.uri,
 				queryInfo:
 				{
-					range: info.range!,
+					range: info.range,
 					messages: info.queryRunner!.messages
 				},
 				params: resultSetInfo
@@ -514,7 +514,7 @@ export class QueryModelService implements IQueryModelService {
 					uri: ownerUri,
 					queryInfo:
 					{
-						range: info.range!,
+						range: info.range,
 						messages: info.queryRunner!.messages
 					},
 				};
@@ -531,7 +531,7 @@ export class QueryModelService implements IQueryModelService {
 					uri: ownerUri,
 					queryInfo:
 					{
-						range: info.range!,
+						range: info.range,
 						messages: info.queryRunner!.messages
 					},
 				};

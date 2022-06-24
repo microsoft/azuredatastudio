@@ -5,6 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
+import { EOL } from 'os';
 import { QueryHistoryNode } from './queryHistoryNode';
 
 const QUERY_HISTORY_CONFIG_SECTION = 'queryHistory';
@@ -23,9 +24,17 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 
 	constructor() {
 		this._disposables.push(azdata.queryeditor.registerQueryEventListener({
-			onQueryEvent: async (type: azdata.queryeditor.QueryEventType, document: azdata.queryeditor.QueryDocument, args: azdata.ResultSetSummary | string | undefined, queryInfo?: azdata.queryeditor.IQueryInfo) => {
+			onQueryEvent: async (type: azdata.queryeditor.QueryEventType, document: azdata.queryeditor.QueryDocument, args: azdata.ResultSetSummary | string | undefined, queryInfo?: azdata.queryeditor.QueryInfo) => {
 				if (this._captureEnabled && queryInfo && type === 'queryStop') {
-					const queryText = queryInfo.queryText ?? '';
+					const textDocuments = vscode.workspace.textDocuments;
+					const textDocument = textDocuments.find(e => e.uri.toString() === vscode.Uri.parse(document.uri).toString());
+					if (!textDocument) {
+						// If we couldn't find the document then we can't get the text so just log the error and move on
+						console.error(`Couldn't find text document with URI ${document.uri} for query event`);
+						return;
+					}
+					// Combine all the text from the batches back together
+					const queryText = queryInfo.range.map(r => textDocument?.getText(r) ?? '').join(EOL);
 					const connProfile = await azdata.connection.getConnection(document.uri);
 					const isError = queryInfo.messages.find(m => m.isError) ? false : true;
 					// Add to the front of the list so the new item appears at the top
