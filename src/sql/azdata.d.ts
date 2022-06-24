@@ -734,45 +734,45 @@ declare module 'azdata' {
 
 		defaultValue: string;
 
-		/// <summary>
-		/// Escaped identifier for the name of the column
-		/// </summary>
+		/**
+		 * Escaped identifier for the name of the column
+		 */
 		escapedName: string;
 
-		/// <summary>
-		/// Whether or not the column is computed
-		/// </summary>
+		/**
+		 * Whether or not the column is computed
+		 */
 		isComputed: boolean;
 
-		/// <summary>
-		/// Whether or not the column is deterministically computed
-		/// </summary>
+		/**
+		 * Whether or not the column is deterministically computed
+		 */
 		isDeterministic: boolean;
 
-		/// <summary>
-		/// Whether or not the column is an identity column
-		/// </summary>
+		/**
+		 * Whether or not the column is an identity column
+		 */
 		isIdentity: boolean;
 
-		/// <summary>
-		/// The ordinal ID of the column
-		/// </summary>
+		/**
+		 * The ordinal ID of the column
+		 */
 		ordinal: number;
 
-		/// <summary>
-		/// Whether or not the column is calculated on the server side. This could be a computed
-		/// column or a identity column.
-		/// </summary>
+		/**
+		 * Whether or not the column is calculated on the server side. This could be a computed
+		 * column or a identity column.
+		 */
 		isCalculated: boolean;
 
-		/// <summary>
-		/// Whether or not the column is used in a key to uniquely identify a row
-		/// </summary>
+		/**
+		 * Whether or not the column is used in a key to uniquely identify a row
+		 */
 		isKey: boolean;
 
-		/// <summary>
-		/// Whether or not the column can be trusted for uniqueness
-		/// </summary>
+		/**
+		 * Whether or not the column can be trusted for uniqueness
+		 */
 		isTrustworthyForUniqueness: boolean;
 	}
 
@@ -2364,7 +2364,9 @@ declare module 'azdata' {
 	}
 
 	export interface DidChangeAccountsParams {
-		// Updated accounts
+		/**
+		 * Updated accounts
+		 */
 		accounts: Account[];
 	}
 
@@ -3429,9 +3431,18 @@ declare module 'azdata' {
 	}
 
 	export enum ColumnSizingMode {
-		ForceFit = 0, // all columns will be sized to fit in viewable space, no horizontal scroll bar
-		AutoFit = 1, // columns will be ForceFit up to a certain number; currently 3.  At 4 or more the behavior will switch to NO force fit
-		DataFit = 2 // columns use sizing based on cell data, horizontal scroll bar present if more cells than visible in view area
+		/**
+		 * All columns will be sized to fit in viewable space, no horizontal scroll bar
+		 */
+		ForceFit = 0,
+		/**
+		 * Columns will be ForceFit up to a certain number; currently 3.  At 4 or more the behavior will switch to NO force fit
+		 */
+		AutoFit = 1,
+		/**
+		 * Columns use sizing based on cell data, horizontal scroll bar present if more cells than visible in view area
+		 */
+		DataFit = 2
 	}
 
 	export interface TableComponentProperties extends ComponentProperties {
@@ -5014,20 +5025,33 @@ declare module 'azdata' {
 			onQueryEvent(type: QueryEventType, document: QueryDocument, args: ResultSetSummary | string | undefined): void;
 		}
 
-		// new extensibility interfaces
 		export interface QueryDocument {
+			/**
+			 * The ID of the connection provider for this query document
+			 */
 			providerId: string;
 
+			/**
+			 * The URI identifying this document
+			 */
 			uri: string;
 
-			// set the document's execution options
+			/**
+			 * Set the document's execution options, which will be used whenever a query is executed.
+			 * @param options The execution options
+			 */
 			setExecutionOptions(options: Map<string, any>): Thenable<void>;
 
-			// tab content is build using the modelview UI builder APIs
-			// probably should rename DialogTab class since it is useful outside dialogs
+			/**
+			 * Adds a custom tab to the query editor results view
+			 * @param tab The tab to add
+			 */
 			createQueryTab(tab: window.DialogTab): void;
 
-			// connect the query document using the given connection profile
+			/**
+			 * Connect the query document using the given connection profile
+			 * @param connectionProfile The profile to use as the connection
+			 */
 			connect(connectionProfile: connection.ConnectionProfile): Thenable<void>;
 		}
 
