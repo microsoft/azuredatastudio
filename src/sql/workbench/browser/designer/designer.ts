@@ -744,6 +744,7 @@ export class Designer extends Disposable implements IThemable {
 				const input = new InputBox(inputContainer, this._contextViewProvider, {
 					ariaLabel: inputProperties.title,
 					type: inputProperties.inputType,
+					ariaDescription: componentDefinition.description
 				});
 				input.onLoseFocus((args) => {
 					if (args.hasChanged) {
@@ -768,8 +769,11 @@ export class Designer extends Disposable implements IThemable {
 				const dropdownProperties = componentDefinition.componentProperties as DropDownProperties;
 				let dropdown;
 				if (dropdownProperties.isEditable) {
-					dropdown = new Dropdown(dropdownContainer, this._contextViewProvider, { values: dropdownProperties.values as string[] || [] });
-					dropdown.ariaLabel = componentDefinition.componentProperties?.title;
+					dropdown = new Dropdown(dropdownContainer, this._contextViewProvider, {
+						values: dropdownProperties.values as string[] || [],
+						ariaLabel: componentDefinition.componentProperties?.title,
+						ariaDescription: componentDefinition.description
+					});
 					dropdown.onValueChange((value) => {
 						this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: value, source: view });
 					});
@@ -781,8 +785,10 @@ export class Designer extends Disposable implements IThemable {
 						}
 					});
 				} else {
-					dropdown = new SelectBox(dropdownProperties.values as string[] || [], undefined, this._contextViewProvider, undefined);
-					dropdown.setAriaLabel(componentDefinition.componentProperties?.title);
+					dropdown = new SelectBox(dropdownProperties.values as string[] || [], undefined, this._contextViewProvider, undefined, {
+						ariaLabel: componentDefinition.componentProperties?.title,
+						ariaDescription: componentDefinition.description
+					});
 					dropdown.render(dropdownContainer);
 					dropdown.selectElem.style.height = '25px';
 					dropdown.onDidSelect((e) => {
@@ -802,7 +808,7 @@ export class Designer extends Disposable implements IThemable {
 				container.appendChild(DOM.$('')).appendChild(DOM.$('span.component-label')).innerText = componentDefinition.componentProperties?.title ?? '';
 				const checkboxContainer = container.appendChild(DOM.$(''));
 				const checkboxProperties = componentDefinition.componentProperties as CheckBoxProperties;
-				const checkbox = new Checkbox(checkboxContainer, { label: '', ariaLabel: checkboxProperties.title });
+				const checkbox = new Checkbox(checkboxContainer, { label: '', ariaLabel: checkboxProperties.title, ariaDescription: componentDefinition.description });
 				checkbox.onChange((newValue) => {
 					this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: newValue, source: view });
 				});
