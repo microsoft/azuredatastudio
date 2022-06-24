@@ -249,10 +249,10 @@ class SharedProcessMain extends Disposable {
 			const { appRoot, extensionsPath, installSourcePath } = environmentService;
 
 			// Application Insights
-			if (productService.aiConfig && productService.aiConfig.asimovKey && telemetryLevel === TelemetryLevel.USER) {
+			if (productService.aiConfig && productService.aiConfig.asimovKey) {
 				const appInsightsAppender = new AppInsightsAppender('adsworkbench', null, productService.aiConfig.asimovKey); // {{SQL CARBON EDIT}} Use our own event prefix
 				this._register(toDisposable(() => appInsightsAppender.flush())); // Ensure the AI appender is disposed so that it flushes remaining data
-				telemetryAppender = combinedAppender(appInsightsAppender, telemetryAppender);
+				appenders.push(appInsightsAppender);
 			}
 
 			telemetryService = new TelemetryService({

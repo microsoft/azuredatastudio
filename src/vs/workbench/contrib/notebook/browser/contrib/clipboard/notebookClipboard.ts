@@ -47,7 +47,7 @@ function getFocusedWebviewDelegate(accessor: ServicesAccessor): Webview | undefi
 	const editor = getNotebookEditorFromEditorPane(editorService.activeEditorPane);
 	if (!editor) {
 		_log(loggerService, '[Revive Webview] No notebook editor found for active editor pane, bypass');
-		return;
+		return undefined; // {{SQL CARBON EDIT}} strict nulls
 	}
 
 	if (!editor.hasEditorFocus()) {

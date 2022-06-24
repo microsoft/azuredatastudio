@@ -28,7 +28,7 @@ import { NEW_UNTITLED_FILE_COMMAND_ID } from 'vs/workbench/contrib/files/browser
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachKeybindingLabelStyler } from 'vs/platform/theme/common/styler';
 import { ContextKeyExpression, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { TerminalContextKeys } from 'vs/workbench/contrib/terminal/common/terminalContextKey';
+// import { TerminalContextKeys } from 'vs/workbench/contrib/terminal/common/terminalContextKey';
 
 // {{SQL CARBON EDIT}}
 import { NewNotebookAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
@@ -60,10 +60,10 @@ const newUntitledFileMacOnly: WatermarkEntry = Object.assign({ mac: true }, newU
 const toggleTerminal: WatermarkEntry = { text: nls.localize({ key: 'watermark.toggleTerminal', comment: ['toggle is a verb here'] }, "Toggle Terminal"), id: TerminalCommandId.Toggle, when: TerminalContextKeys.processSupported };
 */
 const findInFiles: WatermarkEntry = { text: nls.localize('watermark.findInFiles', "Find in Files"), id: FindInFilesActionId };
-const toggleTerminal: WatermarkEntry = { text: nls.localize({ key: 'watermark.toggleTerminal', comment: ['toggle is a verb here'] }, "Toggle Terminal"), id: TerminalCommandId.Toggle, when: TerminalContextKeys.processSupported };
-const startDebugging: WatermarkEntry = { text: nls.localize('watermark.startDebugging', "Start Debugging"), id: DEBUG_START_COMMAND_ID, when: CONTEXT_DEBUGGERS_AVAILABLE };
-const toggleFullscreen: WatermarkEntry = { text: nls.localize({ key: 'watermark.toggleFullscreen', comment: ['toggle is a verb here'] }, "Toggle Full Screen"), id: 'workbench.action.toggleFullScreen', when: TerminalContextKeys.processSupported.toNegated() };
-const showSettings: WatermarkEntry = { text: nls.localize('watermark.showSettings', "Show Settings"), id: 'workbench.action.openSettings', when: TerminalContextKeys.processSupported.toNegated() };
+//const toggleTerminal: WatermarkEntry = { text: nls.localize({ key: 'watermark.toggleTerminal', comment: ['toggle is a verb here'] }, "Toggle Terminal"), id: TerminalCommandId.Toggle, when: TerminalContextKeys.processSupported };
+//const startDebugging: WatermarkEntry = { text: nls.localize('watermark.startDebugging', "Start Debugging"), id: DEBUG_START_COMMAND_ID, when: CONTEXT_DEBUGGERS_AVAILABLE };
+//const toggleFullscreen: WatermarkEntry = { text: nls.localize({ key: 'watermark.toggleFullscreen', comment: ['toggle is a verb here'] }, "Toggle Full Screen"), id: 'workbench.action.toggleFullScreen', when: TerminalContextKeys.processSupported.toNegated() };
+//const showSettings: WatermarkEntry = { text: nls.localize('watermark.showSettings', "Show Settings"), id: 'workbench.action.openSettings', when: TerminalContextKeys.processSupported.toNegated() };
 
 // {{SQL CARBON EDIT}} - Replace noFolderEntries and folderEntries
 const noFolderEntries = [
@@ -75,10 +75,7 @@ const noFolderEntries = [
 const folderEntries = [
 	newSqlFile,
 	newNotebook,
-	findInFiles,
-	toggleTerminal,
-	toggleFullscreen,
-	showSettings
+	findInFiles
 ];
 // {{SQL CARBON EDIT}} - End
 

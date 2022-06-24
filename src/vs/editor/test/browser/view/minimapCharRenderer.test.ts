@@ -57,7 +57,7 @@ suite('MinimapCharRenderer', () => {
 	}
 
 	function createFakeImageData(width: number, height: number): ImageData {
-		return {
+		return <any>{
 			width: width,
 			height: height,
 			data: new Uint8ClampedArray(width * height * Constants.RGBA_CHANNELS_CNT)

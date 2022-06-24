@@ -14,7 +14,7 @@ import { IPager, mapPager, singlePagePager } from 'vs/base/common/paging';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import {
 	IExtensionGalleryService, ILocalExtension, IGalleryExtension, IQueryOptions,
-	InstallExtensionEvent, DidUninstallExtensionEvent, IExtensionIdentifier, InstallOperation, DefaultIconPath, InstallOptions, WEB_EXTENSION_TAG, InstallExtensionResult, INSTALL_ERROR_INCOMPATIBLE, ExtensionManagementError
+	InstallExtensionEvent, DidUninstallExtensionEvent, IExtensionIdentifier, InstallOperation, DefaultIconPath, InstallOptions, WEB_EXTENSION_TAG, InstallExtensionResult, ExtensionManagementError, ExtensionManagementErrorCode
 } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { IWorkbenchExtensionEnablementService, EnablementState, IExtensionManagementServerService, IExtensionManagementServer, IWorkbenchExtensionManagementService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { getGalleryExtensionTelemetryData, getLocalExtensionTelemetryData, areSameExtensions, getMaliciousExtensionsSet, groupByExtension, ExtensionIdentifierWithVersion, getGalleryExtensionId } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
@@ -47,6 +47,8 @@ import { isBoolean } from 'vs/base/common/types';
 import { IExtensionManifestPropertiesService } from 'vs/workbench/services/extensions/common/extensionManifestPropertiesService';
 import { IExtensionService, IExtensionsStatus } from 'vs/workbench/services/extensions/common/extensions';
 import { ExtensionEditor } from 'vs/workbench/contrib/extensions/browser/extensionEditor';
+
+import * as locConstants from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}}
 
 interface IExtensionStateProvider<T> {
 	(extension: Extension): T;
@@ -1053,7 +1055,7 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		// The check is added here because we want to fail fast instead of downloading the VSIX and then fail.
 		if (gallery.properties.engine && (!isEngineValid(gallery.properties.engine, this.productService.vscodeVersion, this.productService.date)
 			|| (gallery.properties.azDataEngine && !isEngineValid(gallery.properties.azDataEngine, this.productService.version, this.productService.date)))) {
-			const error = new ExtensionManagementError(locConstants.extensionsWorkbenchServiceIncompatible(extension.gallery!.identifier.id, gallery.version, this.productService.version, gallery.properties.azDataEngine), INSTALL_ERROR_INCOMPATIBLE);
+			const error = new ExtensionManagementError(locConstants.extensionsWorkbenchServiceIncompatible(extension.gallery!.identifier.id, gallery.version, this.productService.version, gallery.properties.azDataEngine), ExtensionManagementErrorCode.Incompatible);
 			return Promise.reject(error);
 		}
 
@@ -1111,7 +1113,7 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 
 		const [gallery] = await this.galleryService.getExtensions([{ id: extension.gallery.identifier.id, version }], CancellationToken.None);
 		if (!gallery) {
-			throw new ExtensionManagementError(locConstants.extensionsWorkbenchServiceIncompatible(extension.gallery!.identifier.id, extension.gallery.version, version, (await extension.getManifest(undefined)).engines.azdata), INSTALL_ERROR_INCOMPATIBLE); // {{SQL CARBON EDIT}} Change vscode to ads
+			throw new ExtensionManagementError(locConstants.extensionsWorkbenchServiceIncompatible(extension.gallery!.identifier.id, extension.gallery.version, version, (await extension.getManifest(undefined)).engines.azdata), ExtensionManagementErrorCode.Incompatible); // {{SQL CARBON EDIT}} Change vscode to ads
 		}
 
 		return this.installWithProgress(async () => {

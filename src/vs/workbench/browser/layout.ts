@@ -1511,7 +1511,8 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 		]);
 	}
 
-	private setSideBarHidden(hidden: boolean, skipLayout?: boolean): void {
+	// {{SQL CARBON EDIT}} - make method public
+	public setSideBarHidden(hidden: boolean, skipLayout?: boolean): void {
 		this.state.sideBar.hidden = hidden;
 
 		// Adjust CSS

@@ -584,7 +584,7 @@ export class StoredFileWorkingCopyManager<M extends IStoredFileWorkingCopyModel>
 	private joinPendingResolves(resource: URI): Promise<void> | undefined {
 		const pendingWorkingCopyResolve = this.mapResourceToPendingWorkingCopyResolve.get(resource);
 		if (!pendingWorkingCopyResolve) {
-			return;
+			return undefined;
 		}
 
 		return this.doJoinPendingResolves(resource);

@@ -106,7 +106,7 @@ export class LocalFileSearchWorkerClient extends Disposable implements ISearchRe
 					}
 				}));
 
-				const folderResults = await proxy.searchDirectory(handle, query, fq, queryId);
+				const folderResults = await proxy.searchDirectory(<any>handle, query, fq, queryId);
 				for (const folderResult of folderResults.results) {
 					results.push(reviveMatch(folderResult));
 				}
@@ -148,7 +148,7 @@ export class LocalFileSearchWorkerClient extends Disposable implements ISearchRe
 					return;
 				}
 
-				const folderResults = await proxy.listDirectory(handle, query, fq, queryId);
+				const folderResults = await proxy.listDirectory(<any>handle, query, fq, queryId);
 				for (const folderResult of folderResults.results) {
 					results.push({ resource: URI.joinPath(fq.folder, folderResult) });
 				}

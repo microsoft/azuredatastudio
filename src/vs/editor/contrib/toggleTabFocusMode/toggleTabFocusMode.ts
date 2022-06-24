@@ -23,8 +23,8 @@ export class ToggleTabFocusModeAction extends EditorAction {
 			precondition: undefined,
 			kbOpts: {
 				kbExpr: null,
-				primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_M), // {{SQL CARBON EDIT}} We use Ctrl+M already so move this to an unused binding
-				mac: { primary: KeyMod.WinCtrl | KeyMod.Shift | KeyCode.KEY_M },
+				primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KeyK, KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KeyM), // {{SQL CARBON EDIT}} We use Ctrl+M already so move this to an unused binding
+				mac: { primary: KeyMod.WinCtrl | KeyMod.Shift | KeyCode.KeyM },
 				weight: KeybindingWeight.EditorContrib
 			}
 		});

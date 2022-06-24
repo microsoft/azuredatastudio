@@ -24,7 +24,7 @@ export async function setMode(accessor: ServicesAccessor, modeSupport: IModeSupp
 	const activeWidget = getCodeEditor(editorService.activeTextEditorControl);
 	const activeControl = editorService.activeEditorPane;
 	const textModel = activeWidget.getModel();
-	const oldLanguage = textModel.getLanguageIdentifier().language;
+	const oldLanguage = textModel.getLanguageId();
 	if (language !== oldLanguage) {
 		const oldInputCreator = languageAssociationRegistry.getAssociationForLanguage(oldLanguage); // who knows how to handle the current language
 		const newInputCreator = languageAssociationRegistry.getAssociationForLanguage(language); // who knows how to handle the requested language

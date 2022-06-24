@@ -24,7 +24,6 @@ import { GridOutputComponent } from 'sql/workbench/contrib/notebook/browser/outp
 import { PlotlyOutputComponent } from 'sql/workbench/contrib/notebook/browser/outputs/plotlyOutput.component';
 import { registerComponentType } from 'sql/workbench/contrib/notebook/browser/outputs/mimeRegistry';
 import { MimeRendererComponent } from 'sql/workbench/contrib/notebook/browser/outputs/mimeRenderer.component';
-import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { URI } from 'vs/base/common/uri';
 import { IWorkspaceEditingService } from 'vs/workbench/services/workspaces/common/workspaceEditing';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
@@ -65,6 +64,8 @@ import { useNewMarkdownRendererKey } from 'sql/workbench/contrib/notebook/common
 import { JUPYTER_PROVIDER_ID, NotebookLanguage } from 'sql/workbench/common/constants';
 import { INotebookProviderRegistry, NotebookProviderRegistryId } from 'sql/workbench/services/notebook/common/notebookRegistry';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
+import { IPaneCompositePartService } from 'vs/workbench/services/panecomposite/browser/panecomposite';
+import { IViewDescriptorService, ViewContainerLocation } from 'vs/workbench/common/views';
 
 Registry.as<IEditorFactoryRegistry>(EditorExtensions.EditorFactory)
 	.registerEditorSerializer(FileNotebookInput.ID, FileNoteBookEditorSerializer);
@@ -89,7 +90,7 @@ actionRegistry.registerWorkbenchAction(
 		NewNotebookAction,
 		NewNotebookAction.ID,
 		NewNotebookAction.LABEL,
-		{ primary: KeyMod.WinCtrl | KeyMod.Alt | KeyCode.KEY_N },
+		{ primary: KeyMod.WinCtrl | KeyMod.Alt | KeyCode.KeyN },
 
 	),
 	NewNotebookAction.LABEL
@@ -275,7 +276,8 @@ registerAction2(class extends Action2 {
 	}
 
 	run = async (accessor, options: { forceNewWindow: boolean, folderPath: URI }) => {
-		const viewletService = accessor.get(IViewletService);
+		const viewletService: IPaneCompositePartService = accessor.get(IPaneCompositePartService);
+		const viewDescriptorService: IViewDescriptorService = accessor.get(IViewDescriptorService);
 		const workspaceEditingService = accessor.get(IWorkspaceEditingService);
 		const hostService = accessor.get(IHostService);
 		let folders = [];
@@ -284,7 +286,8 @@ registerAction2(class extends Action2 {
 		}
 		folders.push(options.folderPath);
 		await workspaceEditingService.addFolders(folders.map(folder => ({ uri: folder })));
-		await viewletService.openViewlet(viewletService.getDefaultViewletId(), true);
+		await viewletService.openPaneComposite(viewDescriptorService.getDefaultViewContainer(ViewContainerLocation.Sidebar)?.id,
+			ViewContainerLocation.Sidebar, true);
 		if (options.forceNewWindow) {
 			return hostService.openWindow([{ folderUri: folders[0] }], { forceNewWindow: options.forceNewWindow });
 		}

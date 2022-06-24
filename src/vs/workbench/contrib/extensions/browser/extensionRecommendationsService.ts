@@ -77,7 +77,7 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 		this.dynamicWorkspaceRecommendations = instantiationService.createInstance(DynamicWorkspaceRecommendations);
 		this.keymapRecommendations = instantiationService.createInstance(KeymapRecommendations);
 		this.staticRecommendations = instantiationService.createInstance(StaticRecommendations); // {{SQL CARBON EDIT}} add ours
-		this.scenarioRecommendations = instantiationService.createInstance(ScenarioRecommendations); // {{SQL CARBON EDIT}} add ours		
+		this.scenarioRecommendations = instantiationService.createInstance(ScenarioRecommendations); // {{SQL CARBON EDIT}} add ours
 		this.languageRecommendations = instantiationService.createInstance(LanguageRecommendations);
 
 		if (!this.isEnabled()) {
@@ -176,8 +176,8 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 			...this.exeBasedRecommendations.otherRecommendations,
 			...this.dynamicWorkspaceRecommendations.recommendations,
 			...this.experimentalRecommendations.recommendations,
+			...this.webRecommendations.recommendations,
 			...this.staticRecommendations.recommendations // {{SQL CARBON EDIT}},
-			...this.webRecommendations.recommendations
 		];
 
 		const extensionIds = distinct(recommendations.map(e => e.extensionId))

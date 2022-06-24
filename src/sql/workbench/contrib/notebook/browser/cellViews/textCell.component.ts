@@ -63,12 +63,12 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		if (DOM.getActiveElement() === this.output?.nativeElement && this.isActive() && this.cellModel?.currentMode === CellEditModes.WYSIWYG) {
 			const keyEvent = new StandardKeyboardEvent(e);
 			// Select all text
-			if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KEY_A) {
+			if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KeyA) {
 				preventDefaultAndExecCommand(e, 'selectAll');
-			} else if ((keyEvent.metaKey && keyEvent.shiftKey && keyEvent.keyCode === KeyCode.KEY_Z) || (keyEvent.ctrlKey && keyEvent.keyCode === KeyCode.KEY_Y) && !this.markdownMode) {
+			} else if ((keyEvent.metaKey && keyEvent.shiftKey && keyEvent.keyCode === KeyCode.KeyZ) || (keyEvent.ctrlKey && keyEvent.keyCode === KeyCode.KeyY) && !this.markdownMode) {
 				// Redo text
 				this.redoRichTextChange();
-			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KEY_Z) {
+			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KeyZ) {
 				// Undo text
 				this.undoRichTextChange();
 			} else if (keyEvent.shiftKey && keyEvent.keyCode === KeyCode.Tab) {
@@ -77,19 +77,19 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			} else if (keyEvent.keyCode === KeyCode.Tab) {
 				// Indent text
 				preventDefaultAndExecCommand(e, 'indent');
-			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KEY_B) {
+			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KeyB) {
 				// Bold text
 				preventDefaultAndExecCommand(e, 'bold');
-			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KEY_I) {
+			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KeyI) {
 				// Italicize text
 				preventDefaultAndExecCommand(e, 'italic');
-			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KEY_U) {
+			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KeyU) {
 				// Underline text
 				preventDefaultAndExecCommand(e, 'underline');
-			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.shiftKey && keyEvent.keyCode === KeyCode.KEY_K) {
+			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.shiftKey && keyEvent.keyCode === KeyCode.KeyK) {
 				// Code Block
 				preventDefaultAndExecCommand(e, 'formatBlock', false, 'pre');
-			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.shiftKey && keyEvent.keyCode === KeyCode.KEY_H) {
+			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.shiftKey && keyEvent.keyCode === KeyCode.KeyH) {
 				// Highlight Text
 				DOM.EventHelper.stop(e, true);
 				highlightSelectedText();
