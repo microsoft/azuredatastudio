@@ -2596,6 +2596,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.syncSecondaryToCommit" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Sync Secondary To Commit]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[同步次要複本到認可]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4711,6 +4714,9 @@
       <Item ItemId=";extensions/arc/package.arc.sql.sync.secondaries.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The number of synchronous replicas required to commit a transaction before the primary replica is allowed to commit. Setting this value to -1 will set the number of required synchronized secondaries to '(# of replicas - 1) / 2', rounded down.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[允許認可主要複本之前認可交易所需的同步複本數目。將此值設定為 -1 會將所需的同步次要數設定為'(副本數 - 1) / 2'，並向下四捨五入。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
