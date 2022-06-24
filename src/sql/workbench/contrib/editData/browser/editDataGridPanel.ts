@@ -662,9 +662,7 @@ export class EditDataGridPanel extends GridParentComponent {
 							severity: Severity.Error,
 							message: message
 						});
-						errorPromise = this.revertSelectedRow(cellToAdd.row).then(() => {
-							this.lastClickedCell = { row: cellToAdd.row, column: cellToAdd.column, isEditable: true };
-						});
+						errorPromise = this.revertSelectedRow(cellToAdd.row);
 					}
 					return errorPromise.then(() => { errorHandler(error); });
 				}
