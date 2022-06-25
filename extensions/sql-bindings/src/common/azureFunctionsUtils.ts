@@ -368,19 +368,22 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 
 		// setup connection string setting quickpick
 		let connectionStringSettings: (vscode.QuickPickItem)[] = [];
-		if (existingSettings?.Values) {
+		let hasNonFilteredSettings: boolean = false;
+		if (existingSettings?.Values && Object.keys(existingSettings?.Values!).length > 0) {
 			// add settings found in local.settings.json to quickpick list
 			connectionStringSettings = Object.keys(existingSettings.Values).filter(setting => !constants.knownSettings.includes(setting)).map(setting => { return { label: setting }; });
+			// set boolean to true if there are non-filtered settings
+			hasNonFilteredSettings = connectionStringSettings.length > 0;
 		}
 
 		// add create new setting option to quickpick list
 		connectionStringSettings.unshift({ label: constants.createNewLocalAppSettingWithIcon });
 
 		while (!connectionStringSettingName) {
-			// prompt user to select a setting from the list or create a new one
-			// if no existing setting are found then we go
 			let selectedSetting: vscode.QuickPickItem | undefined;
-			if (existingSettings?.Values) {
+			// prompt user to select a setting from the list or create a new one
+			// only if there are existing setting values are found and has non-filtered settings
+			if (hasNonFilteredSettings) {
 				selectedSetting = await vscode.window.showQuickPick(connectionStringSettings, {
 					canPickMany: false,
 					title: constants.selectSetting,
@@ -393,7 +396,7 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 			}
 
 			// prompt user to enter connection string setting name if user selects create new setting or there is no existing settings in local.settings.json
-			if (selectedSetting?.label === constants.createNewLocalAppSettingWithIcon || !existingSettings?.Values) {
+			if (selectedSetting?.label === constants.createNewLocalAppSettingWithIcon || !hasNonFilteredSettings) {
 				let sqlConnectionStringSettingExists = connectionStringSettings.find(s => s.label === constants.sqlConnectionStringSetting);
 				// prompt user to enter connection string setting name manually
 				const newConnectionStringSettingName = await vscode.window.showInputBox(
@@ -405,11 +408,11 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 					}
 				) ?? '';
 
-				if (!newConnectionStringSettingName && existingSettings?.Values) {
+				if (!newConnectionStringSettingName && hasNonFilteredSettings) {
 					// go back to select setting quickpick if user escapes from entering in the connection string setting name
 					// only go back if there are existing settings in local.settings.json
 					continue;
-				} else if (!newConnectionStringSettingName && !existingSettings?.Values) {
+				} else if (!newConnectionStringSettingName && !hasNonFilteredSettings) {
 					// User cancelled out of the manually enter connection string prompt
 					return;
 				}

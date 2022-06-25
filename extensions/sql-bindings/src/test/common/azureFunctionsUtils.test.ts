@@ -369,7 +369,7 @@ describe('AzureFunctionUtils', function (): void {
 			);
 		});
 
-		it('Should prompt user to enter connection string setting name when no connection strings found in local.settings.json and no connection info given', async () => {
+		it('Should prompt user to enter connection string setting name when no local.settings.json and no connection info given', async () => {
 			// stubs for getLocalSettingsJson calls
 			// returns only IsEncrypted: False and not connection string values
 			let fileAccessStub = sinon.stub(fs.promises, 'access').onFirstCall().rejects();
@@ -402,7 +402,7 @@ describe('AzureFunctionUtils', function (): void {
 			should(result?.connectionStringSettingName).be.equal('testConnectionStringName', 'Should return testConnectionStringName from manually entered connection string name');
 		});
 
-		it('Should prompt user to enter connection string setting name when no connection strings found in local.settings.json with connection info given', async () => {
+		it('Should prompt user to enter connection string setting name when no local.settings.json with connection info given', async () => {
 			// stubs for getLocalSettingsJson calls
 			// returns only IsEncrypted: False and not connection string values
 			let fileAccessStub = sinon.stub(fs.promises, 'access').onFirstCall().rejects();
@@ -419,6 +419,74 @@ describe('AzureFunctionUtils', function (): void {
 
 			// setLocalAppSetting stubs
 			fileAccessStub.onSecondCall().rejects(); // getLocalSettingsJson stub
+			// fails if we dont set writeFile stub
+			sinon.stub(fs.promises, 'writeFile').resolves();
+			sinon.stub(azureFunctionsUtils, 'setLocalAppSetting').withArgs(sinon.match.any, 'testConnectionStringName', 'testConnectionString').resolves((true));
+			// addSqlNugetReferenceToProjectFile stub
+			sinon.stub(utils, 'executeCommand').resolves('downloaded nuget package');
+
+			let result = await azureFunctionsUtils.promptAndUpdateConnectionStringSetting(fileUri, connectionInfo);
+
+			should(inputBoxStub.calledOnce).be.true('showInputBox should have been called');
+			should(quickPickStub.callCount).be.equal(1, 'quickPickStub should have been called');
+			should(result?.connectionStringSettingName).be.equal('testConnectionStringName', 'Should return testConnectionStringName from manually entered connection string name');
+			should(result?.connectionInfo).be.equal(connectionInfo, 'Should return connectionInfo');
+		});
+
+		it('Should prompt user to enter connection string setting name when local.settings.json values are empty', async () => {
+			// create fake connection string settings for local.setting.json to be used
+			// getLocalSettingsJson stub
+			sinon.stub(fs.promises, 'access').resolves();
+			// empty values in local.settings.json
+			sinon.stub(fs, 'readFileSync').withArgs(sinon.match.any).returns(
+				`{"IsEncrypted": false,
+				"Values": {}}`
+			);
+
+			let inputBoxStub = sinon.stub(vscode.window, 'showInputBox').onFirstCall().resolves('testConnectionStringName'); // enter connection string setting name
+
+			// password prompt stub
+			sinon.stub(utils, 'getVscodeMssqlApi').resolves(testUtils.vscodeMssqlIExtension.object);
+			let quickPickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves((constants.yesString) as any);
+			// getConnectionString stubs - in password prompt logic
+			let connectionInfo: IConnectionInfo = createTestCredentials(); // create test connectionInfo
+			let connectionDetails = { options: connectionInfo };
+			testUtils.vscodeMssqlIExtension.setup(x => x.getConnectionString(connectionDetails, true, false)).returns(() => Promise.resolve('testConnectionString'));
+
+			// fails if we dont set writeFile stub
+			sinon.stub(fs.promises, 'writeFile').resolves();
+			sinon.stub(azureFunctionsUtils, 'setLocalAppSetting').withArgs(sinon.match.any, 'testConnectionStringName', 'testConnectionString').resolves((true));
+			// addSqlNugetReferenceToProjectFile stub
+			sinon.stub(utils, 'executeCommand').resolves('downloaded nuget package');
+
+			let result = await azureFunctionsUtils.promptAndUpdateConnectionStringSetting(fileUri, connectionInfo);
+
+			should(inputBoxStub.calledOnce).be.true('showInputBox should have been called');
+			should(quickPickStub.callCount).be.equal(1, 'quickPickStub should have been called');
+			should(result?.connectionStringSettingName).be.equal('testConnectionStringName', 'Should return testConnectionStringName from manually entered connection string name');
+			should(result?.connectionInfo).be.equal(connectionInfo, 'Should return connectionInfo');
+		});
+
+		it('Should prompt user to enter connection string setting name when local.settings.json values are known connection strings', async () => {
+			// create fake connection string settings for local.setting.json to be used
+			// getLocalSettingsJson stub
+			sinon.stub(fs.promises, 'access').resolves();
+			// empty values in local.settings.json
+			sinon.stub(fs, 'readFileSync').withArgs(sinon.match.any).returns(
+				`{"IsEncrypted": false,
+				"Values": {"AzureWebJobsStorage": "testWebJobStorage","WEBSITE_TIME_ZONE":"testTimeZone"}}`
+			);
+
+			let inputBoxStub = sinon.stub(vscode.window, 'showInputBox').onFirstCall().resolves('testConnectionStringName'); // enter connection string setting name
+
+			// password prompt stub
+			sinon.stub(utils, 'getVscodeMssqlApi').resolves(testUtils.vscodeMssqlIExtension.object);
+			let quickPickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves((constants.yesString) as any);
+			// getConnectionString stubs - in password prompt logic
+			let connectionInfo: IConnectionInfo = createTestCredentials(); // create test connectionInfo
+			let connectionDetails = { options: connectionInfo };
+			testUtils.vscodeMssqlIExtension.setup(x => x.getConnectionString(connectionDetails, true, false)).returns(() => Promise.resolve('testConnectionString'));
+
 			// fails if we dont set writeFile stub
 			sinon.stub(fs.promises, 'writeFile').resolves();
 			sinon.stub(azureFunctionsUtils, 'setLocalAppSetting').withArgs(sinon.match.any, 'testConnectionStringName', 'testConnectionString').resolves((true));
@@ -477,7 +545,7 @@ describe('AzureFunctionUtils', function (): void {
 			);
 
 			let inputBoxSpy = sinon.spy(vscode.window, 'showInputBox');
-			let quickPickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves({ label: 'test1' }); // user chooses to create new connection string setting name
+			let quickPickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves({ label: 'test1' }); // user chooses existing setting name
 
 			// addSqlNugetReferenceToProjectFile stub
 			sinon.stub(utils, 'executeCommand').resolves('downloaded nuget package');
@@ -487,7 +555,7 @@ describe('AzureFunctionUtils', function (): void {
 
 			should(inputBoxSpy.notCalled).be.true('showInputBox should not have been called');
 			should(quickPickStub.callCount).be.equal(1, 'showQuickPick should have been called');
-			should(result?.connectionStringSettingName).be.equal('test1', 'Should return testConnectionStringName from manually entered connection string name');
+			should(result?.connectionStringSettingName).be.equal('test1', 'Should return test1 setting chosen from quickpick');
 			should(result?.connectionInfo).be.equal(connectionInfo, 'Should return connectionInfo');
 		});
 
@@ -521,18 +589,69 @@ describe('AzureFunctionUtils', function (): void {
 			should(result?.connectionStringSettingName).be.equal('testConnectionStringName', 'Should return testConnectionStringName from manually entered connection string name');
 		});
 
-		it('Should return when user cancels out of manually entering connection string name prompt and has no existing connection string in local.settings.json', async () => {
-			// stubs for getLocalSettingsJson calls
-			// returns only IsEncrypted: False and not connection string values
-			sinon.stub(fs.promises, 'access').onFirstCall().rejects();
+		it('Should prompt connection string method when user cancels out of selecting connection profile', async () => {
+			// create fake connection string settings for local.setting.json to be used
+			// getLocalSettingsJson stub
+			sinon.stub(fs.promises, 'access').resolves();
+			sinon.stub(fs, 'readFileSync').withArgs(sinon.match.any).returns(
+				`{"IsEncrypted": false,
+				"Values": {"test1": "test1", "test2": "test2", "test3":"test3"}}`
+			);
 
-			let inputBoxStub = sinon.stub(vscode.window, 'showInputBox').onFirstCall().resolves(undefined); // user cancels out of connection string setting name
-			let quickPickSpy = sinon.spy(vscode.window, 'showQuickPick');
+			let quickPickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves({ label: constants.createNewLocalAppSettingWithIcon }); // user chooses to create new connection string setting name
+			let inputBoxStub = sinon.stub(vscode.window, 'showInputBox').onFirstCall().resolves('testConnectionStringName'); // enter connection string setting name
+
+			// user chooses to manually enter connection string
+			quickPickStub.onSecondCall().resolves((constants.userConnectionString) as any);
+			inputBoxStub.onSecondCall().resolves(undefined);
+
+			quickPickStub.onThirdCall().resolves(undefined);
 
 			let result = await azureFunctionsUtils.promptAndUpdateConnectionStringSetting(fileUri);
 
-			should(inputBoxStub.calledOnce).be.true('showInputBox should have been called');
-			should(quickPickSpy.callCount).be.equal(0, 'quickPickStub should have been called');
+			should(quickPickStub.getCall(1).args).containDeepOrdered([
+				[constants.connectionProfile, constants.userConnectionString],
+				{
+					canPickMany: false,
+					title: constants.selectConnectionString,
+					ignoreFocusOut: true
+				}]
+			);
+			should(inputBoxStub.callCount).be.equal(2, 'showInputBox should have been called twice');
+			should(quickPickStub.callCount).be.equal(3, 'showQuickPick should have been called three times');
+			should(result?.connectionStringSettingName).be.equal(undefined, 'Should return undefined since user cancelled out of connection string setting name prompt');
+		});
+
+		it('Should prompt connection string method when user cancels out of manually entering connection string', async () => {
+			// create fake connection string settings for local.setting.json to be used
+			// getLocalSettingsJson stub
+			sinon.stub(fs.promises, 'access').resolves();
+			sinon.stub(fs, 'readFileSync').withArgs(sinon.match.any).returns(
+				`{"IsEncrypted": false,
+				"Values": {"test1": "test1", "test2": "test2", "test3":"test3"}}`
+			);
+
+			let quickPickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves({ label: constants.createNewLocalAppSettingWithIcon }); // user chooses to create new connection string setting name
+			let inputBoxStub = sinon.stub(vscode.window, 'showInputBox').onFirstCall().resolves('testConnectionStringName'); // enter connection string setting name
+
+			// user chooses to manually enter connection string
+			quickPickStub.onSecondCall().resolves((constants.connectionProfile) as any);
+			sinon.stub(utils, 'getVscodeMssqlApi').resolves(testUtils.vscodeMssqlIExtension.object);
+			// user cancels out of connection profile prompt
+			testUtils.vscodeMssqlIExtension.setup(x => x.promptForConnection(true)).returns(() => Promise.resolve(undefined));
+
+			let result = await azureFunctionsUtils.promptAndUpdateConnectionStringSetting(fileUri);
+
+			should(quickPickStub.getCall(2).args).containDeepOrdered([
+				[constants.connectionProfile, constants.userConnectionString],
+				{
+					canPickMany: false,
+					title: constants.selectConnectionString,
+					ignoreFocusOut: true
+				}]
+			);
+			should(inputBoxStub.callCount).be.equal(1, 'showInputBox should have been called');
+			should(quickPickStub.callCount).be.equal(3, 'showQuickPick should have been called three times');
 			should(result?.connectionStringSettingName).be.equal(undefined, 'Should return undefined since user cancelled out of connection string setting name prompt');
 		});
 
@@ -563,6 +682,21 @@ describe('AzureFunctionUtils', function (): void {
 					ignoreFocusOut: true
 				}]
 			);
+			should(result?.connectionStringSettingName).be.equal(undefined, 'Should return undefined since user cancelled out of connection string setting name prompt');
+		});
+
+		it('Should return when user cancels out of manually entering connection string name prompt and has no existing connection string in local.settings.json', async () => {
+			// stubs for getLocalSettingsJson calls
+			// returns only IsEncrypted: False and not connection string values
+			sinon.stub(fs.promises, 'access').onFirstCall().rejects();
+
+			let inputBoxStub = sinon.stub(vscode.window, 'showInputBox').onFirstCall().resolves(undefined); // user cancels out of connection string setting name
+			let quickPickSpy = sinon.spy(vscode.window, 'showQuickPick');
+
+			let result = await azureFunctionsUtils.promptAndUpdateConnectionStringSetting(fileUri);
+
+			should(inputBoxStub.calledOnce).be.true('showInputBox should have been called');
+			should(quickPickSpy.callCount).be.equal(0, 'quickPickStub should have been called');
 			should(result?.connectionStringSettingName).be.equal(undefined, 'Should return undefined since user cancelled out of connection string setting name prompt');
 		});
 	});
