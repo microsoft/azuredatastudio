@@ -28,7 +28,7 @@ export class EditDataResultsInput extends EditorInput {
 	public css?: HTMLStyleElement;
 
 	public readonly onRestoreViewStateEmitter = new Emitter<void>();
-	public readonly onSaveViewStateEmitter = new Emitter<void>();
+	public readonly onSaveViewStateEmitter = new Emitter<boolean>();
 	private _editDataGridPanel?: IGridPanel;
 
 	constructor(private _uri: string) {

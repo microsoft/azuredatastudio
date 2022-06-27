@@ -748,7 +748,7 @@ export class EditDataEditor extends EditorPane {
 				editDataInput.savedViewState = this._sqlEditor.getControl().saveViewState();
 			}
 			if (editDataInput.results) {
-				editDataInput.results.onSaveViewStateEmitter.fire();
+				editDataInput.results.onSaveViewStateEmitter.fire(editDataInput.results.isDisposed());
 			}
 		}
 	}
