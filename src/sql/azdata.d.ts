@@ -734,45 +734,45 @@ declare module 'azdata' {
 
 		defaultValue: string;
 
-		/// <summary>
-		/// Escaped identifier for the name of the column
-		/// </summary>
+		/**
+		 * Escaped identifier for the name of the column
+		 */
 		escapedName: string;
 
-		/// <summary>
-		/// Whether or not the column is computed
-		/// </summary>
+		/**
+		 * Whether or not the column is computed
+		 */
 		isComputed: boolean;
 
-		/// <summary>
-		/// Whether or not the column is deterministically computed
-		/// </summary>
+		/**
+		 * Whether or not the column is deterministically computed
+		 */
 		isDeterministic: boolean;
 
-		/// <summary>
-		/// Whether or not the column is an identity column
-		/// </summary>
+		/**
+		 * Whether or not the column is an identity column
+		 */
 		isIdentity: boolean;
 
-		/// <summary>
-		/// The ordinal ID of the column
-		/// </summary>
+		/**
+		 * The ordinal ID of the column
+		 */
 		ordinal: number;
 
-		/// <summary>
-		/// Whether or not the column is calculated on the server side. This could be a computed
-		/// column or a identity column.
-		/// </summary>
+		/**
+		 * Whether or not the column is calculated on the server side. This could be a computed
+		 * column or a identity column.
+		 */
 		isCalculated: boolean;
 
-		/// <summary>
-		/// Whether or not the column is used in a key to uniquely identify a row
-		/// </summary>
+		/**
+		 * Whether or not the column is used in a key to uniquely identify a row
+		 */
 		isKey: boolean;
 
-		/// <summary>
-		/// Whether or not the column can be trusted for uniqueness
-		/// </summary>
+		/**
+		 * Whether or not the column can be trusted for uniqueness
+		 */
 		isTrustworthyForUniqueness: boolean;
 	}
 
@@ -2364,7 +2364,9 @@ declare module 'azdata' {
 	}
 
 	export interface DidChangeAccountsParams {
-		// Updated accounts
+		/**
+		 * Updated accounts
+		 */
 		accounts: Account[];
 	}
 
@@ -2692,7 +2694,7 @@ declare module 'azdata' {
 	 * Supports defining a model that can be instantiated as a view in the UI
 	 */
 	export interface ModelBuilder {
-		navContainer(): ContainerBuilder<NavContainer, any, any, ComponentProperties>;
+		navContainer(): ContainerBuilder<NavContainer, any, any, ContainerProperties>;
 		divContainer(): DivBuilder;
 		flexContainer(): FlexBuilder;
 		splitViewContainer(): SplitViewBuilder;
@@ -2763,16 +2765,16 @@ declare module 'azdata' {
 		withProps(properties: TPropertyBag): ComponentBuilder<TComponent, TPropertyBag>;
 		withValidation(validation: (component: TComponent) => boolean | Thenable<boolean>): ComponentBuilder<TComponent, TPropertyBag>;
 	}
-	export interface ContainerBuilder<TComponent extends Component, TLayout, TItemLayout, TPropertyBag extends ComponentProperties> extends ComponentBuilder<TComponent, TPropertyBag> {
+	export interface ContainerBuilder<TComponent extends Component, TLayout, TItemLayout, TPropertyBag extends ContainerProperties> extends ComponentBuilder<TComponent, TPropertyBag> {
 		withLayout(layout: TLayout): ContainerBuilder<TComponent, TLayout, TItemLayout, TPropertyBag>;
 		withItems(components: Array<Component>, itemLayout?: TItemLayout): ContainerBuilder<TComponent, TLayout, TItemLayout, TPropertyBag>;
 	}
 
-	export interface FlexBuilder extends ContainerBuilder<FlexContainer, FlexLayout, FlexItemLayout, ComponentProperties> {
+	export interface FlexBuilder extends ContainerBuilder<FlexContainer, FlexLayout, FlexItemLayout, ContainerProperties> {
 	}
 
 	// Building on top of flex item
-	export interface SplitViewBuilder extends ContainerBuilder<SplitViewContainer, SplitViewLayout, FlexItemLayout, ComponentProperties> {
+	export interface SplitViewBuilder extends ContainerBuilder<SplitViewContainer, SplitViewLayout, FlexItemLayout, ContainerProperties> {
 	}
 
 	export interface DivBuilder extends ContainerBuilder<DivContainer, DivLayout, DivItemLayout, DivContainerProperties> {
@@ -2781,8 +2783,8 @@ declare module 'azdata' {
 	export interface GroupBuilder extends ContainerBuilder<GroupContainer, GroupLayout, GroupItemLayout, GroupContainerProperties> {
 	}
 
-	export interface ToolbarBuilder extends ContainerBuilder<ToolbarContainer, ToolbarLayout, any, ComponentProperties> {
-		withToolbarItems(components: ToolbarComponent[]): ContainerBuilder<ToolbarContainer, ToolbarLayout, any, ComponentProperties>;
+	export interface ToolbarBuilder extends ContainerBuilder<ToolbarContainer, ToolbarLayout, any, ContainerProperties> {
+		withToolbarItems(components: ToolbarComponent[]): ContainerBuilder<ToolbarContainer, ToolbarLayout, any, ContainerProperties>;
 
 		/**
 		 * Creates a collection of child components and adds them all to this container
@@ -2807,7 +2809,7 @@ declare module 'azdata' {
 		withItem(component: Component): LoadingComponentBuilder;
 	}
 
-	export interface FormBuilder extends ContainerBuilder<FormContainer, FormLayout, FormItemLayout, ComponentProperties> {
+	export interface FormBuilder extends ContainerBuilder<FormContainer, FormLayout, FormItemLayout, ContainerProperties> {
 		withFormItems(components: (FormComponent | FormComponentGroup)[], itemLayout?: FormItemLayout): FormBuilder;
 
 		/**
@@ -3324,6 +3326,13 @@ declare module 'azdata' {
 		CSSStyles?: CssStyles | undefined;
 	}
 
+	/**
+	 * Common properties for container components such as {@link DivContainer} or {@link FlexContainer}
+	 */
+	export interface ContainerProperties extends ComponentProperties {
+
+	}
+
 	export type ThemedIconPath = { light: string | vscode.Uri; dark: string | vscode.Uri };
 	export type IconPath = string | vscode.Uri | ThemedIconPath;
 
@@ -3422,9 +3431,18 @@ declare module 'azdata' {
 	}
 
 	export enum ColumnSizingMode {
-		ForceFit = 0, // all columns will be sized to fit in viewable space, no horizontal scroll bar
-		AutoFit = 1, // columns will be ForceFit up to a certain number; currently 3.  At 4 or more the behavior will switch to NO force fit
-		DataFit = 2 // columns use sizing based on cell data, horizontal scroll bar present if more cells than visible in view area
+		/**
+		 * All columns will be sized to fit in viewable space, no horizontal scroll bar
+		 */
+		ForceFit = 0,
+		/**
+		 * Columns will be ForceFit up to a certain number; currently 3.  At 4 or more the behavior will switch to NO force fit
+		 */
+		AutoFit = 1,
+		/**
+		 * Columns use sizing based on cell data, horizontal scroll bar present if more cells than visible in view area
+		 */
+		DataFit = 2
 	}
 
 	export interface TableComponentProperties extends ComponentProperties {
@@ -3544,7 +3562,7 @@ declare module 'azdata' {
 	export interface ImageComponentProperties extends ComponentWithIconProperties {
 	}
 
-	export interface GroupContainerProperties extends ComponentProperties {
+	export interface GroupContainerProperties extends ContainerProperties {
 		collapsed: boolean;
 	}
 
@@ -3817,7 +3835,7 @@ declare module 'azdata' {
 		loadingCompletedText?: string | undefined;
 	}
 
-	export interface DivContainerProperties extends ComponentProperties {
+	export interface DivContainerProperties extends ContainerProperties {
 		/**
 		 * Matches the overflow-y CSS property and its available values.
 		 */
@@ -4357,12 +4375,12 @@ declare module 'azdata' {
 	/**
 	 * Builder for TabbedPanelComponent
 	 */
-	export interface TabbedPanelComponentBuilder extends ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any, ComponentProperties> {
+	export interface TabbedPanelComponentBuilder extends ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any, ContainerProperties> {
 		/**
 		 * Add the tabs to the component
 		 * @param tabs tabs/tab groups to be added
 		 */
-		withTabs(tabs: (Tab | TabGroup)[]): ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any, ComponentProperties>;
+		withTabs(tabs: (Tab | TabGroup)[]): ContainerBuilder<TabbedPanelComponent, TabbedPanelLayout, any, ContainerProperties>;
 	}
 
 	export interface SliderComponentProperties extends ComponentProperties {
@@ -4992,31 +5010,48 @@ declare module 'azdata' {
 			| 'executionPlan'
 			| 'visualize';
 
-		/**
-		 * args for each event type
-		 * queryStart: undefined
-		 * queryStop: undefined
-		 * executionPlan: string
-		 * visualize: ResultSetSummary
-		 */
 		export interface QueryEventListener {
+			/**
+			 * A callback that is called whenever a query event occurs
+			 * @param type The type of query event
+			 * @param document The document this event was sent by
+			 * @param args The extra information for the event, if any
+			 * The args sent depend on the type of event :
+			 * queryStart: undefined
+			 * queryStop: undefined
+			 * executionPlan: string (the plan itself)
+			 * visualize: ResultSetSummary (the result set to be visualized)
+			 */
 			onQueryEvent(type: QueryEventType, document: QueryDocument, args: ResultSetSummary | string | undefined): void;
 		}
 
-		// new extensibility interfaces
 		export interface QueryDocument {
+			/**
+			 * The ID of the connection provider for this query document
+			 */
 			providerId: string;
 
+			/**
+			 * The URI identifying this document
+			 */
 			uri: string;
 
-			// set the document's execution options
+			/**
+			 * Set the document's execution options, which will be used whenever a query is executed.
+			 * @param options The execution options
+			 */
 			setExecutionOptions(options: Map<string, any>): Thenable<void>;
 
-			// tab content is build using the modelview UI builder APIs
-			// probably should rename DialogTab class since it is useful outside dialogs
+			/**
+			 * Adds a custom tab to the query editor results view
+			 * @param tab The tab to add
+			 */
 			createQueryTab(tab: window.DialogTab): void;
 
-			// connect the query document using the given connection profile
+			/**
+			 * Connect the query document using the given connection profile
+			 * @param connectionProfile The profile to use as the connection
+			 */
 			connect(connectionProfile: connection.ConnectionProfile): Thenable<void>;
 		}
 

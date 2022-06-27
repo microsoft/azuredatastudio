@@ -45,14 +45,14 @@ export function attachPanelStyler(widget: IThemable, themeService: IThemeService
 
 export function attachTabbedPanelStyler(widget: IThemable, themeService: IThemeService) {
 	return attachStyler(themeService, {
-		titleActiveForeground: PANEL_ACTIVE_TITLE_FOREGROUND,
-		titleActiveBorder: PANEL_ACTIVE_TITLE_BORDER,
-		titleInactiveForeground: PANEL_INACTIVE_TITLE_FOREGROUND,
+		titleSelectedForeground: PANEL_ACTIVE_TITLE_FOREGROUND,
+		titleSelectedBorder: PANEL_ACTIVE_TITLE_BORDER,
+		titleUnSelectedForeground: PANEL_INACTIVE_TITLE_FOREGROUND,
 		focusBorder: cr.focusBorder,
 		outline: cr.activeContrastBorder,
-		activeBackgroundForVerticalLayout: VERTICAL_TAB_ACTIVE_BACKGROUND,
+		selectedBackgroundForVerticalLayout: VERTICAL_TAB_ACTIVE_BACKGROUND,
 		border: DASHBOARD_BORDER,
-		activeTabContrastBorder: cr.activeContrastBorder
+		selectedTabContrastBorder: cr.activeContrastBorder
 	}, widget);
 }
 

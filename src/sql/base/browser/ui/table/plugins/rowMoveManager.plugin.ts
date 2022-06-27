@@ -53,7 +53,8 @@ export class RowMoveManager<T extends Slick.SlickData> extends BaseClickableColu
 			resizable: this.options.resizable,
 			selectable: false,
 			behavior: this.options.behavior,
-			cssClass: this.options.iconCssClass
+			cssClass: this.options.iconCssClass,
+			toolTip: this.options.title
 		};
 	}
 

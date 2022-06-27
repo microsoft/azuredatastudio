@@ -44,6 +44,7 @@ panel {
 	white-space: nowrap;
 	flex: 1;
 	height: 100%;
+	overflow: auto;
 }
 
 .tabbedPanel .tabList .tab {
@@ -55,7 +56,6 @@ panel {
 
 .tabbedPanel.horizontal > .title .tabList .tab .tabLabel {
 	font-size: 12px;
-	max-width: 100px;
 }
 
 .tabbedPanel.vertical > .title .tabList .tab .tabLabel {
@@ -70,15 +70,15 @@ panel {
 	font-weight: 600;
 }
 
-.tabbedPanel .tabList .tab-header:hover:not(.active) {
+.tabbedPanel .tabList .tab-header:hover:not(.selected) {
 	background-color: #dcdcdc;
 	outline: none;
 }
-.vs-dark .tabbedPanel .tabList .tab-header:hover:not(.active) {
+.vs-dark .tabbedPanel .tabList .tab-header:hover:not(.selected) {
 	background-color: #2a2d2e;
 	outline: none;
 }
-.hc-black .tabbedPanel .tabList .tab-header:hover:not(.active) {
+.hc-black .tabbedPanel .tabList .tab-header:hover:not(.selected) {
 	background-color: initial;
 	outline: 1px dashed #f38518;
 	outline-offset: -3px;
@@ -97,6 +97,7 @@ panel {
 	padding-left: 5px;
 	padding-right: 5px;
 	min-width: 65px;
+	flex: 0 0 auto;
 }
 
 .tabbedPanel.horizontal > .title .tabList .tab-header {
@@ -134,7 +135,7 @@ panel {
 	flex: 0 0 auto;
 }
 
-.tab > .tabLabel.active {
+.tab > .tabLabel.selected {
 	border-bottom: 1px solid;
 }
 

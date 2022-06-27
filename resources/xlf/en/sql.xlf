@@ -656,6 +656,9 @@
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/browser/designer/designer" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="designer.actions">
+      <source xml:lang="en">More Actions</source>
+    </trans-unit>
     <trans-unit id="designer.defaultRemoveRowConfirmationMessage">
       <source xml:lang="en">Are you sure you want to remove the row?</source>
     </trans-unit>
@@ -675,7 +678,7 @@
       <source xml:lang="en">Designer is loaded</source>
     </trans-unit>
     <trans-unit id="designer.moveRowText">
-      <source xml:lang="en">Move Row</source>
+      <source xml:lang="en">Move</source>
     </trans-unit>
     <trans-unit id="designer.processing">
       <source xml:lang="en">Processing...</source>
@@ -4204,7 +4207,7 @@ Error: {1}</source>
       <source xml:lang="en">Connect</source>
     </trans-unit>
     <trans-unit id="disableActualPlanLabel">
-      <source xml:lang="en">Exclude Actual Plan</source>
+      <source xml:lang="en">Disable Actual Plan</source>
     </trans-unit>
     <trans-unit id="disablesqlcmdLabel">
       <source xml:lang="en">Disable SQLCMD</source>
@@ -4213,7 +4216,7 @@ Error: {1}</source>
       <source xml:lang="en">Disconnect</source>
     </trans-unit>
     <trans-unit id="enableActualPlanLabel">
-      <source xml:lang="en">Include Actual Plan</source>
+      <source xml:lang="en">Enable Actual Plan</source>
     </trans-unit>
     <trans-unit id="enablesqlcmdLabel">
       <source xml:lang="en">Enable SQLCMD</source>
@@ -4300,76 +4303,6 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="rowHeight">
       <source xml:lang="en">Controls the row height in pixels</source>
-    </trans-unit>
-</body></file>
-  <file original="src/sql/workbench/contrib/queryHistory/browser/queryHistoryActions" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="queryHistory.clearLabel">
-      <source xml:lang="en">Clear All History</source>
-    </trans-unit>
-    <trans-unit id="queryHistory.delete">
-      <source xml:lang="en">Delete</source>
-    </trans-unit>
-    <trans-unit id="queryHistory.disableCapture">
-      <source xml:lang="en">Pause Query History Capture</source>
-    </trans-unit>
-    <trans-unit id="queryHistory.enableCapture">
-      <source xml:lang="en">Start Query History Capture</source>
-    </trans-unit>
-    <trans-unit id="queryHistory.openQuery">
-      <source xml:lang="en">Open Query</source>
-    </trans-unit>
-    <trans-unit id="queryHistory.runQuery">
-      <source xml:lang="en">Run Query</source>
-    </trans-unit>
-    <trans-unit id="queryHistory.toggleCaptureLabel">
-      <source xml:lang="en">Toggle Query History capture</source>
-    </trans-unit>
-    <trans-unit id="toggleQueryHistory">
-      <source xml:lang="en">Toggle Query History</source>
-    </trans-unit>
-</body></file>
-  <file original="src/sql/workbench/contrib/queryHistory/browser/queryHistoryRenderer" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="failed">
-      <source xml:lang="en">failed</source>
-    </trans-unit>
-    <trans-unit id="succeeded">
-      <source xml:lang="en">succeeded</source>
-    </trans-unit>
-</body></file>
-  <file original="src/sql/workbench/contrib/queryHistory/browser/queryHistoryView" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="noQueriesMessage">
-      <source xml:lang="en">No queries to display.</source>
-    </trans-unit>
-    <trans-unit id="queryHistory.regTreeAriaLabel">
-      <source xml:lang="en">Query History</source>
-      <note>QueryHistory</note>
-    </trans-unit>
-</body></file>
-  <file original="src/sql/workbench/contrib/queryHistory/electron-browser/queryHistory" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="miViewQueryHistory">
-      <source xml:lang="en">&amp;&amp;Query History</source>
-      <note>&amp;&amp; denotes a mnemonic</note>
-    </trans-unit>
-    <trans-unit id="queryHistory">
-      <source xml:lang="en">Query History</source>
-    </trans-unit>
-    <trans-unit id="queryHistory.clearLabel">
-      <source xml:lang="en">Clear All History</source>
-    </trans-unit>
-    <trans-unit id="queryHistory.disableCapture">
-      <source xml:lang="en">Pause Query History Capture</source>
-    </trans-unit>
-    <trans-unit id="queryHistory.enableCapture">
-      <source xml:lang="en">Start Query History Capture</source>
-    </trans-unit>
-    <trans-unit id="queryHistoryCaptureEnabled">
-      <source xml:lang="en">Whether Query History capture is enabled. If false queries executed will not be captured.</source>
-    </trans-unit>
-    <trans-unit id="queryHistoryConfigurationTitle">
-      <source xml:lang="en">QueryHistory</source>
-    </trans-unit>
-    <trans-unit id="viewCategory">
-      <source xml:lang="en">View</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/queryPlan/browser/queryPlan" source-language="en" datatype="plaintext"><body>
