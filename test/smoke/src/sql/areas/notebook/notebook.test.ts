@@ -114,7 +114,7 @@ export function setup(opts: minimist.ParsedArgs) {
 				await app.workbench.sqlNotebook.waitForActiveCellResults();
 			});
 
-			it('can add a new package from the Manage Packages wizard', async function () {
+			it('can add and remove new package from the Manage Packages wizard', async function () {
 				// Use arrow package so that it's at the top of the packages list when uninstalling later
 				const testPackageName = 'arrow';
 
@@ -141,7 +141,9 @@ export function setup(opts: minimist.ParsedArgs) {
 				await app.workbench.sqlNotebook.runActiveCell();
 				await app.workbench.sqlNotebook.waitForActiveCellResultsGone();
 
-				// Uninstall package and check if it throws the expected import error
+				// Uninstall package and check if it throws the expected import error.
+				// This also functions as cleanup for subsequent test runs, since the test
+				// assumes the package isn't installed by default.
 				await app.workbench.sqlNotebook.notebookToolbar.managePackages();
 				await app.workbench.managePackagesDialog.waitForManagePackagesDialog();
 				await app.workbench.managePackagesDialog.removePackage(testPackageName);
