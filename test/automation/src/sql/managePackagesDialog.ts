@@ -71,7 +71,7 @@ export class ManagePackagesDialog extends Dialog {
 		await this.code.waitForElementGone(loadingSpinner);
 
 		// Click on package row in installed packages list to select it for uninstall
-		const packageRow = `${ManagePackagesDialog.dialogPage} .gridcell[aria-label="${packageName}"]`;
+		const packageRow = `${ManagePackagesDialog.dialogPage} div[role="gridcell"][aria-label="${packageName}"]`;
 		await this.code.waitAndClick(packageRow);
 
 		// Uninstall package
