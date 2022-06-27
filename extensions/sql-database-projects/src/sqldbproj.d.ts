@@ -259,6 +259,7 @@ declare module 'sqldbproj' {
 	export interface IProjectEntry {
 		type: EntryType;
 	}
+
 	/**
 	 * Represents an entry in a project file
 	 */
@@ -271,7 +272,6 @@ declare module 'sqldbproj' {
 	/**
 	 * Represents a database reference entry in a project file
 	 */
-
 	export interface IDatabaseReferenceProjectEntry extends IFileProjectEntry {
 		databaseName: string;
 		databaseVariableLiteralValue?: string;
@@ -291,6 +291,7 @@ declare module 'sqldbproj' {
 		sqlDW = 'Azure Synapse Dedicated SQL Pool',
 		sqlEdge = 'Azure SQL Edge'
 	}
+
 	export interface ISqlConnectionProperties {
 		tenantId?: string,
 		accountId?: string
