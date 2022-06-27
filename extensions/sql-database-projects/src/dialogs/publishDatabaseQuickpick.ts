@@ -11,12 +11,12 @@ import { promptForPublishProfile } from './publishDatabaseDialog';
 import { getDefaultPublishDeploymentOptions, getVscodeMssqlApi } from '../common/utils';
 import { IConnectionInfo, IFireWallRuleError } from 'vscode-mssql';
 import { getPublishServerName } from './utils';
-import { IDeploySettings, ISqlProject, SqlTargetPlatform } from 'sqldbproj';
+import { ISqlProjectPublishSettings, ISqlProject, SqlTargetPlatform } from 'sqldbproj';
 
 /**
  * Create flow for Publishing a database using only VS Code-native APIs such as QuickPick
  */
-export async function getPublishDatabaseSettings(project: ISqlProject, promptForConnection: boolean = true): Promise<IDeploySettings | undefined> {
+export async function getPublishDatabaseSettings(project: ISqlProject, promptForConnection: boolean = true): Promise<ISqlProjectPublishSettings | undefined> {
 
 	// 1. Select publish settings file (optional)
 	// Create custom quickpick so we can control stuff like displaying the loading indicator
@@ -207,7 +207,7 @@ export async function getPublishDatabaseSettings(project: ISqlProject, promptFor
 	}
 
 	// 6. Generate script/publish
-	let settings: IDeploySettings = {
+	let settings: ISqlProjectPublishSettings = {
 		databaseName: databaseName,
 		serverName: connectionProfile?.server || '',
 		connectionUri: connectionUri || '',
