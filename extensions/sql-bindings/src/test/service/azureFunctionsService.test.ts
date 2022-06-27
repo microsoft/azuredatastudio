@@ -26,6 +26,7 @@ describe('AzureFunctionsService', () => {
 	beforeEach(function (): void {
 		testUtils = createTestUtils();
 	});
+
 	describe('Create Azure Function with SQL Binding', () => {
 		it('Should show info message to install azure functions extension if not installed', async function (): Promise<void> {
 			const infoStub = sinon.stub(vscode.window, 'showInformationMessage').resolves(undefined);
@@ -41,7 +42,14 @@ describe('AzureFunctionsService', () => {
 			sinon.stub(azureFunctionUtils, 'getAzureFunctionProject').resolves(projectFilePath); //set azure function project to have one project
 			sinon.stub(utils, 'getVscodeMssqlApi').resolves(testUtils.vscodeMssqlIExtension.object);
 
-			let connectionInfo: IConnectionInfo = createTestCredentials();// create test connectionInfo
+			// create fake connection string settings for local.setting.json to be used
+			sinon.stub(fs.promises, 'access').onFirstCall().resolves();
+			sinon.stub(fs, 'readFileSync').withArgs(sinon.match.any).returns(
+				`{"IsEncrypted": false,
+				"Values": {"test1": "test1", "test2": "test2", "test3":"test3"}}`
+			);
+
+			let connectionInfo: IConnectionInfo = createTestCredentials(); // create test connectionInfo
 
 			let connectionDetails = { options: connectionInfo };
 			testUtils.vscodeMssqlIExtension.setup(x => x.getConnectionString(connectionDetails, true, false)).returns(() => Promise.resolve('testConnectionString'));
@@ -95,6 +103,13 @@ describe('AzureFunctionsService', () => {
 			sinon.stub(azureFunctionUtils, 'getAzureFunctionsExtensionApi').resolves(testUtils.azureFunctionsExtensionApi.object); // set azure functions extension api
 			sinon.stub(azureFunctionUtils, 'getAzureFunctionProject').resolves(projectFilePath); //set azure function project to have one project
 			sinon.stub(utils, 'getVscodeMssqlApi').resolves(testUtils.vscodeMssqlIExtension.object);
+
+			// create fake connection string settings for local.setting.json to be used
+			sinon.stub(fs.promises, 'access').onFirstCall().resolves();
+			sinon.stub(fs, 'readFileSync').withArgs(sinon.match.any).returns(
+				`{"IsEncrypted": false,
+				"Values": {"test1": "test1", "test2": "test2", "test3":"test3"}}`
+			);
 
 			let connectionInfo: IConnectionInfo = createTestCredentials();// create test connectionInfo
 			let connectionDetails = { options: connectionInfo };
