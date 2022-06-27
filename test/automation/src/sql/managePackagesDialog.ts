@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Code } from '../code';
+import { QuickInput } from '../quickinput';
 import { Dialog } from './dialog';
 
 const MANAGE_PACKAGES_DIALOG_TITLE = 'Manage Packages';
@@ -11,7 +12,7 @@ const MANAGE_PACKAGES_DIALOG_TITLE = 'Manage Packages';
 export class ManagePackagesDialog extends Dialog {
 	private static readonly dialogPage = '.modal .modal-body .dialogModal-pane';
 
-	constructor(code: Code) {
+	constructor(code: Code, private readonly quickInput: QuickInput) {
 		super(MANAGE_PACKAGES_DIALOG_TITLE, code);
 	}
 
@@ -81,7 +82,10 @@ export class ManagePackagesDialog extends Dialog {
 		await this.code.waitAndClick(uninstallButton);
 
 		// Click Yes on quick select
-		await this.code.waitAndClick('.quick-input-widget .quick-input-list .monaco-list-row[aria-label="Yes"]');
+		const quickInputAccept = 'Yes';
+		await this.quickInput.waitForQuickInputOpened();
+		await this.quickInput.waitForQuickInputElements(names => names[0] === quickInputAccept);
+		await this.quickInput.submit(quickInputAccept);
 
 		// Wait for uninstall loading spinner to disappear
 		await this.code.waitForElement(loadingSpinner);

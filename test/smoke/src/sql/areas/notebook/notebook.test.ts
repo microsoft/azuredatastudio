@@ -150,6 +150,14 @@ export function setup(opts: minimist.ParsedArgs) {
 				await app.workbench.taskPanel.showTaskPanel();
 				await app.workbench.taskPanel.waitForTaskComplete(`Uninstalling ${testPackageName} ${packageVersion} succeeded`);
 
+				// Open a new notebook to verify that the package is uninstalled, since the old notebook's
+				// python instance retains a cached copy of the successfully imported module.
+				await app.workbench.sqlNotebook.newUntitledNotebook();
+				await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('SQL');
+				await app.workbench.sqlNotebook.notebookToolbar.changeKernel('Python 3');
+				await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('Python 3');
+				await app.workbench.sqlNotebook.addCell('code');
+				await app.workbench.sqlNotebook.waitForTypeInEditor(importTestCode);
 				await app.workbench.sqlNotebook.runActiveCell();
 				await app.workbench.sqlNotebook.waitForJupyterErrorOutput();
 			});
