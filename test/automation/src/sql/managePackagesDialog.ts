@@ -60,4 +60,34 @@ export class ManagePackagesDialog extends Dialog {
 
 		return packageVersion;
 	}
+
+	async removePackage(packageName: string): Promise<void> {
+		const installedPkgTab = `${ManagePackagesDialog.dialogPage} div[class="tab-header"][aria-controls="dialogPane.Manage Packages.0"]`;
+		await this.code.waitAndClick(installedPkgTab);
+
+		// Wait for initial loading spinner to disappear
+		const loadingSpinner = `${ManagePackagesDialog.dialogPage} div.modelview-loadingComponent-spinner`;
+		await this.code.waitForElement(loadingSpinner);
+		await this.code.waitForElementGone(loadingSpinner);
+
+		// Click on package row in installed packages list to select it for uninstall
+		const packageRow = `${ManagePackagesDialog.dialogPage} .gridcell[aria-label="${packageName}"]`;
+		await this.code.waitAndClick(packageRow);
+
+		// Uninstall package
+		const uninstallButton = `${ManagePackagesDialog.dialogPage} .monaco-text-button[aria-label="Uninstall selected packages"]`;
+		await this.code.waitAndClick(uninstallButton);
+
+		// Click Yes on quick select
+		await this.code.waitAndClick('.quick-input-widget .quick-input-list .monaco-list-row[aria-label="Yes"]');
+
+		// Wait for uninstall loading spinner to disappear
+		await this.code.waitForElement(loadingSpinner);
+		await this.code.waitForElementGone(loadingSpinner);
+
+		// Close dialog
+		const closeButton = '.modal .modal-footer a[class="monaco-button monaco-text-button"][aria-label="Close"][aria-disabled="false"]';
+		await this.code.waitAndClick(closeButton);
+		await this.waitForDialogGone();
+	}
 }
