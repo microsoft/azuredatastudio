@@ -61,9 +61,11 @@ export class ManagePackagesDialog extends Dialog {
 		return packageVersion;
 	}
 
-	async removePackage(packageName: string): Promise<void> {
-		const installedPkgTab = `${ManagePackagesDialog.dialogPage} div[class="tab-header"][aria-controls="dialogPane.Manage Packages.0"]`;
-		await this.code.waitAndClick(installedPkgTab);
+	async removePackage(packageName: string, clickOnTab: boolean = false): Promise<void> {
+		if (clickOnTab) {
+			const installedPkgTab = `${ManagePackagesDialog.dialogPage} div[class="tab-header"][aria-controls="dialogPane.Manage Packages.0"]`;
+			await this.code.waitAndClick(installedPkgTab);
+		}
 
 		// Wait for initial loading spinner to disappear
 		const loadingSpinner = `${ManagePackagesDialog.dialogPage} div.modelview-loadingComponent-spinner`;
