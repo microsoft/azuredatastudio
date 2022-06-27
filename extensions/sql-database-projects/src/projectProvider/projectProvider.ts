@@ -14,6 +14,7 @@ import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProje
 import { ProjectsController } from '../controllers/projectController';
 import { Project } from '../models/project';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
+import { getPublishToDockerSettings } from '../dialogs/deployDatabaseQuickpick';
 
 export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvider, sqldbproj.IExtension {
 	constructor(private projectController: ProjectsController) {
@@ -211,11 +212,15 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	/**
 	 * Gets the Database Schema Provider version for a SQL project
 	 */
-	async getProjectDatabaseSchemaProvider(projectFilePath: string): Promise<string> {
+	public async getProjectDatabaseSchemaProvider(projectFilePath: string): Promise<string> {
 		return await this.projectController.getProjectDatabaseSchemaProvider(projectFilePath);
 	}
 
-	async generateProjectFromOpenApiSpec(options?: sqldbproj.GenerateProjectFromOpenApiSpecOptions): Promise<sqldbproj.ISqlProject | undefined> {
+	public async generateProjectFromOpenApiSpec(options?: sqldbproj.GenerateProjectFromOpenApiSpecOptions): Promise<sqldbproj.ISqlProject | undefined> {
 		return await this.projectController.generateProjectFromOpenApiSpec(options);
+	}
+
+	getPublishToDockerSettings(project: sqldbproj.ISqlProject): Promise<sqldbproj.IPublishToDockerSettings | undefined> {
+		return getPublishToDockerSettings(project);
 	}
 }
