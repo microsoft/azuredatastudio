@@ -15,10 +15,9 @@ import * as TypeMoq from 'typemoq';
 import { PublishDatabaseDialog } from '../../dialogs/publishDatabaseDialog';
 import { Project } from '../../models/project';
 import { ProjectsController } from '../../controllers/projectController';
-import { IDeploySettings } from '../../models/IDeploySettings';
 import { emptySqlDatabaseProjectTypeId } from '../../common/constants';
 import { createContext, mockDacFxOptionsResult, TestContext } from '../testContext';
-import { ILocalDbDeployProfile } from '../../models/deploy/deployProfile';
+import { IDeploySettings, IPublishToDockerSettings } from 'sqldbproj';
 
 let testContext: TestContext;
 describe('Publish Database Dialog', () => {
@@ -112,7 +111,7 @@ describe('Publish Database Dialog', () => {
 
 		should(profile).deepEqual(expectedGenScript);
 
-		const expectedContainerPublishProfile: ILocalDbDeployProfile = {
+		const expectedContainerPublishProfile: IPublishToDockerSettings = {
 			localDbSetting: {
 				dbName: 'MockDatabaseName',
 				dockerBaseImage: '',
@@ -136,7 +135,7 @@ describe('Publish Database Dialog', () => {
 			}
 		};
 		dialog.object.publishToExistingServer = false;
-		let deployProfile: ILocalDbDeployProfile | undefined;
+		let deployProfile: IPublishToDockerSettings | undefined;
 		dialog.object.publishToContainer = (_, prof) => { deployProfile = prof; };
 		await dialog.object.publishClick();
 
