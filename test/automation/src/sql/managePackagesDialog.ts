@@ -77,9 +77,11 @@ export class ManagePackagesDialog extends Dialog {
 		const packageRow = `${ManagePackagesDialog.dialogPage} div[role="gridcell"][aria-label="${packageName}"]`;
 		await this.code.waitAndClick(packageRow);
 
-		// Uninstall package
-		const uninstallButton = `${ManagePackagesDialog.dialogPage} .monaco-text-button[aria-label="Uninstall selected packages"]`;
-		await this.code.waitAndClick(uninstallButton);
+		// Tab over to uninstall button on the right side of the row. Can't select the uninstall button
+		// directly since it doesn't have any package name info associated with it.
+		await this.code.dispatchKeybinding('tab');
+		await this.code.dispatchKeybinding('tab');
+		await this.code.dispatchKeybinding('enter');
 
 		// Click Yes on quick select
 		const quickInputAccept = 'Yes';
