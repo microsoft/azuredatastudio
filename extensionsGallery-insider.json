@@ -2600,7 +2600,7 @@
 					"extensionId": "55",
 					"extensionName": "query-history",
 					"displayName": "Query History",
-					"shortDescription": "Adds a Query History treeview for viewing and running past executed queries.",
+					"shortDescription": "Adds a Query History view for viewing and running past executed queries.",
 					"publisher": {
 						"displayName": "Microsoft",
 						"publisherId": "Microsoft",
