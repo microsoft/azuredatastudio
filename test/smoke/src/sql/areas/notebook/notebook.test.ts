@@ -152,7 +152,7 @@ export function setup(opts: minimist.ParsedArgs) {
 
 				// Open a new notebook to verify that the package is uninstalled, since the old notebook's
 				// python instance retains a cached copy of the successfully imported module.
-				await app.workbench.sqlNotebook.newUntitledNotebook();
+				await app.workbench.sqlNotebook.newUntitledNotebook(1);
 				await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('SQL');
 				await app.workbench.sqlNotebook.notebookToolbar.changeKernel('Python 3');
 				await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('Python 3');
