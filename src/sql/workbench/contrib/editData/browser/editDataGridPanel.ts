@@ -65,7 +65,6 @@ export class EditDataGridPanel extends GridParentComponent {
 	private currentEditCellValue: string;
 	private newRowVisible: boolean;
 	private removingNewRow: boolean;
-	private failedRow: number;
 	private rowIdMappings: { [gridRowId: number]: number } = {};
 	private dirtyCells: { row: number, column: number }[] = [];
 	protected plugins = new Array<Slick.Plugin<any>>();
@@ -320,7 +319,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		return this.dataService.commitEdit().then(() => {
 			// Committing was successful, clean the grid
 			this.setGridClean();
-			//this.rowIdMappings = {};
+			this.rowIdMappings = {};
 			this.newRowVisible = false;
 			return Promise.resolve();
 		});
@@ -644,17 +643,14 @@ export class EditDataGridPanel extends GridParentComponent {
 					if (refreshGrid) {
 						refreshPromise = self.refreshGrid();
 					}
-					if (this.failedRow && this.failedRow < cellToAdd.row) {
-						this.rowIdMappings[this.failedRow] = undefined;
-						this.failedRow = undefined;
-					}
 					return refreshPromise.then(() => {
 						return resultHandler(result);
 					});
 				},
 				error => {
-					this.failedRow = cellToAdd.row;
 					self.currentEditCellValue = undefined;
+					// Switch lastClickedCell back to the cell to submit.
+					this.lastClickedCell = { row: cellToAdd.row, column: cellToAdd.column, isEditable: true };
 					let errorPromise: Thenable<void> = Promise.resolve();
 					if (refreshGrid) {
 						let message = 'Error: invalid value entered in new row, reverting changes, please enter a valid value.';
