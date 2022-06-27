@@ -145,6 +145,8 @@ export function setup(opts: minimist.ParsedArgs) {
 				await app.workbench.sqlNotebook.notebookToolbar.managePackages();
 				await app.workbench.managePackagesDialog.waitForManagePackagesDialog();
 				await app.workbench.managePackagesDialog.removePackage(testPackageName);
+				await app.workbench.taskPanel.showTaskPanel();
+				await app.workbench.taskPanel.waitForTaskComplete(`Uninstalling ${testPackageName} ${packageVersion} succeeded`);
 
 				await app.workbench.sqlNotebook.runActiveCell();
 				await app.workbench.sqlNotebook.waitForJupyterErrorOutput();
