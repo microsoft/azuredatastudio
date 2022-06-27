@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import type * as azdataType from 'azdata';
+import { IDeploySettings, ISqlConnectionProperties } from 'sqldbproj';
 import { IAzureAccountSession } from 'vscode-mssql';
-import { publish } from 'sqldbproj';
 
 export enum AppSettingType {
 	None,
@@ -14,7 +14,7 @@ export enum AppSettingType {
 
 export interface ISqlDbDeployProfile {
 	sqlDbSetting?: ISqlDbSetting;
-	deploySettings?: publish.IDeploySettings;
+	deploySettings?: IDeploySettings;
 }
 
 export interface IDeployAppIntegrationProfile {
@@ -23,7 +23,7 @@ export interface IDeployAppIntegrationProfile {
 	appSettingType: AppSettingType;
 }
 
-export interface ISqlDbSetting extends publish.ISqlConnectionProperties {
+export interface ISqlDbSetting extends ISqlConnectionProperties {
 	session: IAzureAccountSession
 	resourceGroupName: string,
 	location: string

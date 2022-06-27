@@ -18,7 +18,7 @@ import { ShellExecutionHelper } from '../../tools/shellExecutionHelper';
 import * as TypeMoq from 'typemoq';
 import { AzureSqlClient } from '../../models/deploy/azureSqlClient';
 import { ConnectionService } from '../../models/connections/connectionService';
-import { publish } from 'sqldbproj';
+import { IPublishToDockerSettings } from 'sqldbproj';
 
 export interface TestContext {
 	outputChannel: vscode.OutputChannel;
@@ -71,7 +71,7 @@ describe('deploy service', function (): void {
 
 	it('Should deploy a database to docker container successfully', async function (): Promise<void> {
 		const testContext = createContext();
-		const deployProfile: publish.IPublishToDockerSettings = {
+		const deployProfile: IPublishToDockerSettings = {
 			localDbSetting: {
 				dbName: 'test',
 				password: 'PLACEHOLDER',
@@ -101,7 +101,7 @@ describe('deploy service', function (): void {
 
 	it('Should fail the deploy if docker is not running', async function (): Promise<void> {
 		const testContext = createContext();
-		const deployProfile: publish.IPublishToDockerSettings = {
+		const deployProfile: IPublishToDockerSettings = {
 			localDbSetting: {
 				dbName: 'test',
 				password: 'PLACEHOLDER',

@@ -66,7 +66,7 @@ declare module 'sqldbproj' {
 		 */
 		addItemPrompt(project: ISqlProject, relativeFilePath: string, options?: AddItemOptions): Promise<void>;
 
-		getPublishToDockerSettings(project: ISqlProject): Promise<publish.IPublishToDockerSettings | undefined>;
+		getPublishToDockerSettings(project: ISqlProject): Promise<IPublishToDockerSettings | undefined>;
 
 	}
 
@@ -291,40 +291,36 @@ declare module 'sqldbproj' {
 		sqlDW = 'Azure Synapse Dedicated SQL Pool',
 		sqlEdge = 'Azure SQL Edge'
 	}
+	export interface ISqlConnectionProperties {
+		tenantId?: string,
+		accountId?: string
+		serverName: string,
+		userName: string,
+		password: string,
+		port: number,
+		dbName: string,
+		profileName?: string,
+		connectionRetryTimeout?: number
+	}
 
-	namespace publish {
+	export interface ILocalDbSetting extends ISqlConnectionProperties {
+		dockerBaseImage: string,
+		dockerBaseImageEula: string,
+	}
 
-		export interface ISqlConnectionProperties {
-			tenantId?: string,
-			accountId?: string
-			serverName: string,
-			userName: string,
-			password: string,
-			port: number,
-			dbName: string,
-			profileName?: string,
-			connectionRetryTimeout?: number
-		}
+	export interface IPublishToDockerSettings {
+		localDbSetting?: ILocalDbSetting;
+		deploySettings?: IDeploySettings;
+	}
 
-		export interface ILocalDbSetting extends ISqlConnectionProperties {
-			dockerBaseImage: string,
-			dockerBaseImageEula: string,
-		}
+	export type DeploymentOptions = mssqlDeploymentOptions | vscodeMssqlDeploymentOptions;
 
-		export interface IPublishToDockerSettings {
-			localDbSetting?: ILocalDbSetting;
-			deploySettings?: IDeploySettings;
-		}
-
-		export type DeploymentOptions = mssqlDeploymentOptions | vscodeMssqlDeploymentOptions;
-
-		export interface IDeploySettings {
-			databaseName: string;
-			serverName: string;
-			connectionUri: string;
-			sqlCmdVariables?: Record<string, string>;
-			deploymentOptions?: DeploymentOptions;
-			profileUsed?: boolean;
-		}
+	export interface IDeploySettings {
+		databaseName: string;
+		serverName: string;
+		connectionUri: string;
+		sqlCmdVariables?: Record<string, string>;
+		deploymentOptions?: DeploymentOptions;
+		profileUsed?: boolean;
 	}
 }

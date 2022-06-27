@@ -17,7 +17,7 @@ import { Project } from '../../models/project';
 import { ProjectsController } from '../../controllers/projectController';
 import { emptySqlDatabaseProjectTypeId } from '../../common/constants';
 import { createContext, mockDacFxOptionsResult, TestContext } from '../testContext';
-import { publish } from 'sqldbproj';
+import { IDeploySettings, IPublishToDockerSettings } from 'sqldbproj';
 
 let testContext: TestContext;
 describe('Publish Database Dialog', () => {
@@ -75,9 +75,9 @@ describe('Publish Database Dialog', () => {
 		dialog.object.publishToExistingServer = true;
 		dialog.callBase = true;
 
-		let profile: publish.IDeploySettings | undefined;
+		let profile: IDeploySettings | undefined;
 
-		const expectedPublish: publish.IDeploySettings = {
+		const expectedPublish: IDeploySettings = {
 			databaseName: 'MockDatabaseName',
 			serverName: 'MockServer',
 			connectionUri: 'Mock|Connection|Uri',
@@ -94,7 +94,7 @@ describe('Publish Database Dialog', () => {
 
 		should(profile).deepEqual(expectedPublish);
 
-		const expectedGenScript: publish.IDeploySettings = {
+		const expectedGenScript: IDeploySettings = {
 			databaseName: 'MockDatabaseName',
 			serverName: 'MockServer',
 			connectionUri: 'Mock|Connection|Uri',
@@ -111,7 +111,7 @@ describe('Publish Database Dialog', () => {
 
 		should(profile).deepEqual(expectedGenScript);
 
-		const expectedContainerPublishProfile: publish.IPublishToDockerSettings = {
+		const expectedContainerPublishProfile: IPublishToDockerSettings = {
 			localDbSetting: {
 				dbName: 'MockDatabaseName',
 				dockerBaseImage: '',
@@ -135,7 +135,7 @@ describe('Publish Database Dialog', () => {
 			}
 		};
 		dialog.object.publishToExistingServer = false;
-		let deployProfile: publish.IPublishToDockerSettings | undefined;
+		let deployProfile: IPublishToDockerSettings | undefined;
 		dialog.object.publishToContainer = (_, prof) => { deployProfile = prof; };
 		await dialog.object.publishClick();
 

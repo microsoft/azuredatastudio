@@ -8,7 +8,7 @@ import * as utils from '../../common/utils';
 import * as vscode from 'vscode';
 import { ConnectionResult } from 'azdata';
 import { IFireWallRuleError } from 'vscode-mssql';
-import { publish } from 'sqldbproj';
+import { ISqlConnectionProperties } from 'sqldbproj';
 
 /**
  * Includes methods to open connections and interact with connection views
@@ -28,7 +28,7 @@ export class ConnectionService {
 	 * @param database database name
 	 * @returns
 	 */
-	private async connectToDatabase(profile: publish.ISqlConnectionProperties, saveConnectionAndPassword: boolean, database: string): Promise<ConnectionResult | string | undefined> {
+	private async connectToDatabase(profile: ISqlConnectionProperties, saveConnectionAndPassword: boolean, database: string): Promise<ConnectionResult | string | undefined> {
 		const azdataApi = utils.getAzdataApi();
 		const vscodeMssqlApi = azdataApi ? undefined : await utils.getVscodeMssqlApi();
 		if (azdataApi) {
@@ -147,7 +147,7 @@ export class ConnectionService {
 	 * @param database database name
 	 * @returns connection id
 	 */
-	public async getConnection(profile: publish.ISqlConnectionProperties, saveConnectionAndPassword: boolean, database: string): Promise<string | undefined> {
+	public async getConnection(profile: ISqlConnectionProperties, saveConnectionAndPassword: boolean, database: string): Promise<string | undefined> {
 		const azdataApi = utils.getAzdataApi();
 		let connection = await utils.retry(
 			constants.connectingToSqlServerMessage,

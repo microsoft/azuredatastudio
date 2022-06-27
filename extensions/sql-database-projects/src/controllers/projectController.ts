@@ -38,7 +38,7 @@ import { DashboardData, PublishData, Status } from '../models/dashboardData/dash
 import { getPublishDatabaseSettings, launchPublishTargetOption } from '../dialogs/publishDatabaseQuickpick';
 import { launchCreateAzureServerQuickPick, getPublishToDockerSettings } from '../dialogs/deployDatabaseQuickpick';
 import { DeployService } from '../models/deploy/deployService';
-import { AddItemOptions, EntryType, GenerateProjectFromOpenApiSpecOptions, IDatabaseReferenceProjectEntry, ISqlProject, ItemType, publish, SqlTargetPlatform } from 'sqldbproj';
+import { AddItemOptions, EntryType, GenerateProjectFromOpenApiSpecOptions, IDatabaseReferenceProjectEntry, IDeploySettings, IPublishToDockerSettings, ISqlProject, ItemType, SqlTargetPlatform } from 'sqldbproj';
 import { AutorestHelper } from '../tools/autorestHelper';
 import { createNewProjectFromDatabaseWithQuickpick } from '../dialogs/createProjectFromDatabaseQuickpick';
 import { addDatabaseReferenceQuickpick } from '../dialogs/addDatabaseReferenceQuickpick';
@@ -316,7 +316,7 @@ export class ProjectsController {
 	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project or the Project itself
 	 * @param deployProfile
 	 */
-	public async publishToDockerContainer(context: Project | dataworkspace.WorkspaceTreeItem, deployProfile: publish.IPublishToDockerSettings): Promise<void> {
+	public async publishToDockerContainer(context: Project | dataworkspace.WorkspaceTreeItem, deployProfile: IPublishToDockerSettings): Promise<void> {
 		const project: Project = this.getProjectFromContext(context);
 		// Removing the path separator from the image base name to be able to add that in the telemetry. With the separator the name is flagged as user path which is not true
 		// We only need to know the image base parts so it's ok to use a different separator when adding to telemetry
@@ -414,7 +414,7 @@ export class ProjectsController {
 			}
 
 		} else {
-			let settings: publish.IDeploySettings | undefined = await getPublishDatabaseSettings(project);
+			let settings: IDeploySettings | undefined = await getPublishDatabaseSettings(project);
 
 			if (settings) {
 				// 5. Select action to take
@@ -436,7 +436,7 @@ export class ProjectsController {
 	 * @param publish Whether to publish the deployment or just generate a script
 	 * @returns The DacFx result of the deployment
 	 */
-	public async publishOrScriptProject(project: Project, settings: publish.IDeploySettings, publish: boolean): Promise<mssql.DacFxResult | undefined> {
+	public async publishOrScriptProject(project: Project, settings: IDeploySettings, publish: boolean): Promise<mssql.DacFxResult | undefined> {
 		const telemetryProps: Record<string, string> = {};
 		const telemetryMeasures: Record<string, number> = {};
 		const buildStartTime = new Date().getTime();

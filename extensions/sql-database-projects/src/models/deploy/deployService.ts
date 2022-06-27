@@ -12,7 +12,7 @@ import * as vscode from 'vscode';
 import { ShellExecutionHelper } from '../../tools/shellExecutionHelper';
 import { AzureSqlClient } from './azureSqlClient';
 import { ConnectionService } from '../connections/connectionService';
-import { publish } from 'sqldbproj';
+import { ILocalDbSetting, IPublishToDockerSettings } from 'sqldbproj';
 
 interface DockerImageSpec {
 	label: string;
@@ -90,7 +90,7 @@ export class DeployService {
 		return undefined;
 	}
 
-	public async deployToContainer(profile: publish.IPublishToDockerSettings, project: Project): Promise<string | undefined> {
+	public async deployToContainer(profile: IPublishToDockerSettings, project: Project): Promise<string | undefined> {
 		return await this.executeTask(constants.deployDbTaskName, async () => {
 			if (!profile.localDbSetting) {
 				return undefined;
@@ -159,7 +159,7 @@ export class DeployService {
 		});
 	}
 
-	private async runDockerContainer(dockerImageSpec: DockerImageSpec, profile: publish.ILocalDbSetting): Promise<string | undefined> {
+	private async runDockerContainer(dockerImageSpec: DockerImageSpec, profile: ILocalDbSetting): Promise<string | undefined> {
 
 		// Sensitive data to remove from output console
 		const sensitiveData = [profile.password];

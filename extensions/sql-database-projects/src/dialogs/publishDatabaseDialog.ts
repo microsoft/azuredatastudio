@@ -17,7 +17,7 @@ import { getAgreementDisplayText, getConnectionName, getDockerBaseImages, getPub
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { Deferred } from '../common/promise';
 import { PublishOptionsDialog } from './publishOptionsDialog';
-import { publish } from 'sqldbproj';
+import { IDeploySettings, IPublishToDockerSettings } from 'sqldbproj';
 
 interface DataSourceDropdownValue extends azdataType.CategoryValue {
 	dataSource: SqlConnectionDataSource;
@@ -63,9 +63,9 @@ export class PublishDatabaseDialog {
 
 	private toDispose: vscode.Disposable[] = [];
 
-	public publish: ((proj: Project, profile: publish.IDeploySettings) => any) | undefined;
-	public publishToContainer: ((proj: Project, profile: publish.IPublishToDockerSettings) => any) | undefined;
-	public generateScript: ((proj: Project, profile: publish.IDeploySettings) => any) | undefined;
+	public publish: ((proj: Project, profile: IDeploySettings) => any) | undefined;
+	public publishToContainer: ((proj: Project, profile: IPublishToDockerSettings) => any) | undefined;
+	public generateScript: ((proj: Project, profile: IDeploySettings) => any) | undefined;
 	public readPublishProfile: ((profileUri: vscode.Uri) => any) | undefined;
 
 	constructor(private project: Project) {
@@ -224,7 +224,7 @@ export class PublishDatabaseDialog {
 
 	public async publishClick(): Promise<void> {
 		if (this.existingServerSelected) {
-			const settings: publish.IDeploySettings = {
+			const settings: IDeploySettings = {
 				databaseName: this.targetDatabaseName,
 				serverName: this.getServerName(),
 				connectionUri: await this.getConnectionUri(),
@@ -239,7 +239,7 @@ export class PublishDatabaseDialog {
 			const dockerBaseImage = this.getBaseDockerImageName();
 			const baseImages = getDockerBaseImages(this.project.getProjectTargetVersion());
 			const imageInfo = baseImages.find(x => x.name === dockerBaseImage);
-			const settings: publish.IPublishToDockerSettings = {
+			const settings: IPublishToDockerSettings = {
 				localDbSetting: {
 					dbName: this.targetDatabaseName,
 					dockerBaseImage: dockerBaseImage,
@@ -270,7 +270,7 @@ export class PublishDatabaseDialog {
 		TelemetryReporter.sendActionEvent(TelemetryViews.SqlProjectPublishDialog, TelemetryActions.generateScriptClicked);
 
 		const sqlCmdVars = this.getSqlCmdVariablesForPublish();
-		const settings: publish.IDeploySettings = {
+		const settings: IDeploySettings = {
 			databaseName: this.targetDatabaseName,
 			serverName: this.getServerName(),
 			connectionUri: await this.getConnectionUri(),

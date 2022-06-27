@@ -14,7 +14,7 @@ import * as path from 'path';
 import * as fse from 'fs-extra';
 import { AzureSqlClient } from '../models/deploy/azureSqlClient';
 import { IAccount } from 'vscode-mssql';
-import { ISqlProject, publish } from 'sqldbproj';
+import { IDeploySettings, ILocalDbSetting, IPublishToDockerSettings, ISqlProject } from 'sqldbproj';
 
 /**
  * Create flow for Deploying a database using only VS Code-native APIs such as QuickPick
@@ -252,7 +252,7 @@ export async function launchCreateAzureServerQuickPick(project: Project, azureSq
 		return undefined;
 	}
 
-	let settings: publish.IDeploySettings | undefined = await getPublishDatabaseSettings(project, false);
+	let settings: IDeploySettings | undefined = await getPublishDatabaseSettings(project, false);
 
 	return {
 		// TODO add tenant
@@ -275,10 +275,10 @@ export async function launchCreateAzureServerQuickPick(project: Project, azureSq
 /**
  * Gets the settings for publishing a database to docker container using only VS Code-native APIs such as QuickPick
  */
-export async function getPublishToDockerSettings(project: ISqlProject): Promise<publish.IPublishToDockerSettings | undefined> {
+export async function getPublishToDockerSettings(project: ISqlProject): Promise<IPublishToDockerSettings | undefined> {
 	const target = project.getProjectTargetVersion();
 	const name = uiUtils.getPublishServerName(target);
-	let localDbSetting: publish.ILocalDbSetting | undefined;
+	let localDbSetting: ILocalDbSetting | undefined;
 	// Deploy to docker selected
 	let portNumber = await vscode.window.showInputBox({
 		title: constants.enterPortNumber(name),

@@ -220,7 +220,7 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 		return await this.projectController.generateProjectFromOpenApiSpec(options);
 	}
 
-	getPublishToDockerSettings(project: sqldbproj.ISqlProject): Promise<sqldbproj.publish.IPublishToDockerSettings | undefined> {
+	getPublishToDockerSettings(project: sqldbproj.ISqlProject): Promise<sqldbproj.IPublishToDockerSettings | undefined> {
 		return getPublishToDockerSettings(project);
 	}
 }
