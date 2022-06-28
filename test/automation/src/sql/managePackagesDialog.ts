@@ -63,6 +63,9 @@ export class ManagePackagesDialog extends Dialog {
 	}
 
 	async removePackage(packageName: string, clickOnTab: boolean = false): Promise<void> {
+		// When the dialog is first opened, the Installed Packages tab is already open, which causes
+		// clicking on its page tab to fail. So we skip clicking on the page tab by default, but can
+		// re-enable it if mixing install and uninstall operations in the same test.
 		if (clickOnTab) {
 			const installedPkgTab = `${ManagePackagesDialog.dialogPage} div[class="tab-header"][aria-controls="dialogPane.Manage Packages.0"]`;
 			await this.code.waitAndClick(installedPkgTab);
