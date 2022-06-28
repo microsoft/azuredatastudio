@@ -155,6 +155,8 @@ export const ResetButton: string = localize('reset', "Reset");
 export const OptionDescription: string = localize('optionDescription', "Option Description");
 export const OptionName: string = localize('optionName', "Option Name");
 export const OptionInclude: string = localize('Include', "Include");
+export const IncludeCompositeObjects: string = localize('IncludeCompositeObjectsOption', 'Include composite objects');
+export const DatabaseScopedCredentials: string = localize('DatabaseScopedCredentialsOption', 'DatabaseScopedCredentials');
 
 
 // Deploy

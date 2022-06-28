@@ -297,6 +297,7 @@ export class PublishDatabaseDialog {
 			// We only use the dialog in ADS context currently so safe to cast to the mssql DeploymentOptions here
 			this.deploymentOptions = await utils.getDefaultPublishDeploymentOptions(this.project) as DeploymentOptions;
 		}
+		// convert Map table into JSON object to send to STS
 		this.deploymentOptions.optionsMapTable = JSON.parse(JSON.stringify(Object.fromEntries(this.deploymentOptions.optionsMapTable)));
 		return this.deploymentOptions;
 	}

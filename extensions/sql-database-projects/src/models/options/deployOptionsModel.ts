@@ -27,7 +27,8 @@ export class DeployOptionsModel {
 	}
 
 	/**
-	 * Gets the options checkbox check value
+	 * Gets the options checkbox values by iterating through the labels and gets the default/changed value from the optionsMapTable
+	 * Returns data as [optionName, booleanValue], where these values are sending to the options table component
 	 * @returns string[][]
 	 */
 	public getOptionsData(): string[][] {
