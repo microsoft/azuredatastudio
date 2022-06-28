@@ -8,7 +8,7 @@ import { isNullOrUndefined } from 'util';
 
 export class SchemaCompareOptionsModel {
 	public deploymentOptions: mssql.DeploymentOptions;
-	public excludedObjectTypes: mssql.SchemaObjectType[] = [];
+	public excludedObjectTypes: number[] = [];
 	public optionsMapTable: Map<string, mssql.DacDeployOptionPropertyBoolean> = new Map<string, mssql.DacDeployOptionPropertyBoolean>();
 	public optionsLabels: string[] = [];
 
@@ -121,6 +121,9 @@ export class SchemaCompareOptionsModel {
 	}
 	//#endregion
 
+	/*
+	* Sets deployment options into optionsMapTable
+	*/
 	public setDeploymentOptions() {
 		for (let option of this.optionsLookup) {
 			let optionProp = this.optionsMapTable.get(option[0]);
@@ -131,16 +134,16 @@ export class SchemaCompareOptionsModel {
 		}
 	}
 
-	public setSchemaCompareOptionUtil(label: string, value: boolean) {
-		let optionProp = this.optionsMapTable.get(label);
-		optionProp.value = value;
-		return this.optionsMapTable.set(label, optionProp);
-	}
-
+	/*
+	* gets deployment options value from optionsMapTable
+	*/
 	public getSchemaCompareOptionUtil(label): boolean {
 		return this.optionsMapTable.get(label)?.value;
 	}
 
+	/*
+	* gets deployment options description from optionsMapTable
+	*/
 	public getDescription(label: string): string {
 		return this.optionsMapTable.get(label)?.description;
 	}

@@ -277,6 +277,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 
 		const deploymentOptionsResult = await schemaCompareService.schemaCompareGetDefaultOptions();
 		let deploymentOptions = deploymentOptionsResult.defaultDeploymentOptions;
+		deploymentOptions.optionsMapTable = new Map(Object.entries(deploymentOptions.optionsMapTable));
 		const schemaCompareResult = await schemaCompareService.schemaCompare(operationId, source, target, azdata.TaskExecutionMode.execute, deploymentOptions);
 		assertSchemaCompareResult(schemaCompareResult, operationId, 5);
 
@@ -507,6 +508,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 
 			const deploymentOptionsResult = await schemaCompareService.schemaCompareGetDefaultOptions();
 			let deploymentOptions = deploymentOptionsResult.defaultDeploymentOptions;
+			deploymentOptions.optionsMapTable = new Map(Object.entries(deploymentOptions.optionsMapTable));
 			deploymentOptions.excludeObjectTypes.value.push(mssql.SchemaObjectType.TableValuedFunctions);
 			const schemaCompareResult = await schemaCompareService.schemaCompare(operationId, source, target, azdata.TaskExecutionMode.execute, deploymentOptions);
 			assertSchemaCompareResult(schemaCompareResult, operationId, 3);
