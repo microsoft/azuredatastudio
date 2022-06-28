@@ -17,7 +17,7 @@ import { Project } from '../../models/project';
 import { ProjectsController } from '../../controllers/projectController';
 import { emptySqlDatabaseProjectTypeId } from '../../common/constants';
 import { createContext, mockDacFxOptionsResult, TestContext } from '../testContext';
-import { IDeploySettings, IPublishToDockerSettings } from 'sqldbproj';
+import { ISqlProjectPublishSettings, IPublishToDockerSettings } from 'sqldbproj';
 
 let testContext: TestContext;
 describe('Publish Database Dialog', () => {
@@ -75,9 +75,9 @@ describe('Publish Database Dialog', () => {
 		dialog.object.publishToExistingServer = true;
 		dialog.callBase = true;
 
-		let profile: IDeploySettings | undefined;
+		let profile: ISqlProjectPublishSettings | undefined;
 
-		const expectedPublish: IDeploySettings = {
+		const expectedPublish: ISqlProjectPublishSettings = {
 			databaseName: 'MockDatabaseName',
 			serverName: 'MockServer',
 			connectionUri: 'Mock|Connection|Uri',
@@ -94,7 +94,7 @@ describe('Publish Database Dialog', () => {
 
 		should(profile).deepEqual(expectedPublish);
 
-		const expectedGenScript: IDeploySettings = {
+		const expectedGenScript: ISqlProjectPublishSettings = {
 			databaseName: 'MockDatabaseName',
 			serverName: 'MockServer',
 			connectionUri: 'Mock|Connection|Uri',
@@ -112,7 +112,7 @@ describe('Publish Database Dialog', () => {
 		should(profile).deepEqual(expectedGenScript);
 
 		const expectedContainerPublishProfile: IPublishToDockerSettings = {
-			localDbSetting: {
+			dockerSettings: {
 				dbName: 'MockDatabaseName',
 				dockerBaseImage: '',
 				password: '',
@@ -122,7 +122,7 @@ describe('Publish Database Dialog', () => {
 				dockerBaseImageEula: ''
 
 			},
-			deploySettings: {
+			sqlProjectPublishSettings: {
 				databaseName: 'MockDatabaseName',
 				serverName: 'localhost',
 				connectionUri: '',
