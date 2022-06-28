@@ -11,13 +11,14 @@ import { DeployService } from '../../models/deploy/deployService';
 import { Project } from '../../models/project';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import { ILocalDbDeployProfile, ISqlDbDeployProfile } from '../../models/deploy/deployProfile';
+import { ISqlDbDeployProfile } from '../../models/deploy/deployProfile';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as constants from '../../common/constants';
 import { ShellExecutionHelper } from '../../tools/shellExecutionHelper';
 import * as TypeMoq from 'typemoq';
 import { AzureSqlClient } from '../../models/deploy/azureSqlClient';
 import { ConnectionService } from '../../models/connections/connectionService';
+import { IPublishToDockerSettings } from 'sqldbproj';
 
 export interface TestContext {
 	outputChannel: vscode.OutputChannel;
@@ -70,8 +71,8 @@ describe('deploy service', function (): void {
 
 	it('Should deploy a database to docker container successfully', async function (): Promise<void> {
 		const testContext = createContext();
-		const deployProfile: ILocalDbDeployProfile = {
-			localDbSetting: {
+		const deployProfile: IPublishToDockerSettings = {
+			dockerSettings: {
 				dbName: 'test',
 				password: 'PLACEHOLDER',
 				port: 1433,
@@ -100,8 +101,8 @@ describe('deploy service', function (): void {
 
 	it('Should fail the deploy if docker is not running', async function (): Promise<void> {
 		const testContext = createContext();
-		const deployProfile: ILocalDbDeployProfile = {
-			localDbSetting: {
+		const deployProfile: IPublishToDockerSettings = {
+			dockerSettings: {
 				dbName: 'test',
 				password: 'PLACEHOLDER',
 				port: 1433,

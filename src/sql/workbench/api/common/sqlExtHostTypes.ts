@@ -1057,14 +1057,3 @@ export namespace executionPlan {
 		None = 4
 	}
 }
-
-/**
- * Query event info to send to the extension host. This is a separate type from IQueryEvent
- * since this has the query text ranges converted into the actual query text.
- */
-export interface IExtHostQueryEvent {
-	type: azdata.queryeditor.QueryEventType;
-	uri: string;
-	queryInfo: azdata.queryeditor.IQueryInfo;
-	params?: any;
-}
