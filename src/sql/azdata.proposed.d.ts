@@ -1542,7 +1542,7 @@ declare module 'azdata' {
 	}
 	export namespace queryeditor {
 
-		export interface IQueryMessage {
+		export interface QueryMessage {
 			/**
 			 * The message string
 			 */
@@ -1560,15 +1560,15 @@ declare module 'azdata' {
 		/**
 		 * Information about a query that was executed
 		 */
-		export interface IQueryInfo {
+		export interface QueryInfo {
 			/**
 			 * Any messages that have been received from the query provider
 			 */
-			messages: IQueryMessage[];
+			messages: QueryMessage[];
 			/**
-			 * The text of the query statement
+			 * The ranges for each batch that has executed so far
 			 */
-			queryText?: string;
+			range: vscode.Range[];
 		}
 
 		export interface QueryEventListener {
@@ -1584,7 +1584,7 @@ declare module 'azdata' {
 			 * visualize: ResultSetSummary (the result set to be visualized)
 			 * @param queryInfo The information about the query that triggered this event
 			 */
-			onQueryEvent(type: QueryEventType, document: QueryDocument, args: ResultSetSummary | string | undefined, queryInfo: IQueryInfo): void;
+			onQueryEvent(type: QueryEventType, document: QueryDocument, args: ResultSetSummary | string | undefined, queryInfo: QueryInfo): void;
 		}
 	}
 }

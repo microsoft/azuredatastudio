@@ -70,6 +70,9 @@
     <trans-unit id="failedToParse">
       <source xml:lang="en">Failed to parse "{0}": {1}.</source>
     </trans-unit>
+    <trans-unit id="failedToSetSetting">
+      <source xml:lang="en">Failed to set connection string app setting: {0}</source>
+    </trans-unit>
     <trans-unit id="functionNameTitle">
       <source xml:lang="en">Function Name</source>
     </trans-unit>
@@ -135,9 +138,6 @@
     </trans-unit>
     <trans-unit id="selectButton">
       <source xml:lang="en">Select</source>
-    </trans-unit>
-    <trans-unit id="selectConnectionError">
-      <source xml:lang="en">Failed to set connection string app setting: {0}</source>
     </trans-unit>
     <trans-unit id="selectConnectionString">
       <source xml:lang="en">Select SQL connection string method</source>

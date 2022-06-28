@@ -44,5 +44,6 @@ export enum TelemetryActions {
 	generateProjectFromOpenApiSpec = 'generateProjectFromOpenApiSpec',
 	publishOptionsOpened = 'publishOptionsOpened',
 	resetOptions = 'resetOptions',
-	optionsChanged = 'optionsChanged'
+	optionsChanged = 'optionsChanged',
+	profileLoaded = 'profileLoaded'
 }
