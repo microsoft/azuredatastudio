@@ -227,9 +227,9 @@ export class EstimatedExecutionPlanKeyboardAction extends Action {
 	}
 }
 
-export class RunCurrentQueryWithActualPlanKeyboardAction extends Action {
-	public static ID = 'runCurrentQueryWithActualPlanKeyboardAction';
-	public static LABEL = nls.localize('runCurrentQueryWithActualPlanKeyboardAction', "Execution Plan: Enable/Disable Actual Execution Plan");
+export class ToggleActualPlanKeyboardAction extends Action {
+	public static ID = 'ToggleActualPlanKeyboardAction';
+	public static LABEL = nls.localize('ToggleActualPlanKeyboardAction', "Execution Plan: Enable/Disable Actual Execution Plan");
 
 	constructor(
 		id: string,
