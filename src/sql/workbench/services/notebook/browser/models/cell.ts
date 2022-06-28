@@ -602,7 +602,7 @@ export class CellModel extends Disposable implements ICellModel {
 	}
 
 	public async runCell(notificationService?: INotificationService, connectionManagementService?: IConnectionManagementService): Promise<boolean> {
-		let kernel;
+		let kernel: nb.IKernel | undefined;
 		try {
 			// Allow screen reader to announce when cell execution is started
 			alert(localize('cellExecutionStarted', "Cell execution started"));
@@ -706,7 +706,7 @@ export class CellModel extends Disposable implements ICellModel {
 			} else {
 				message = getErrorMessage(error);
 			}
-			this.notebookModel.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.CellExecutionFailed, { kernel: kernel, errorMessage: message });
+			this.notebookModel.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.CellExecutionFailed, { kernel: kernel, reason: error.message === 'Canceled' ? 'Canceled' : 'Other' });
 			this.sendNotification(notificationService, Severity.Error, message);
 			// TODO track error state for the cell
 		} finally {
