@@ -350,8 +350,8 @@ export class SchemaCompareMainWindow {
 	}
 	public ConvertObjectToMapTable(deploymentOptions: mssql.DeploymentOptions): mssql.DeploymentOptions {
 		if (deploymentOptions !== undefined) {
-			// Options are coming as lower case and converting the first character to upper case
-			deploymentOptions.optionsMapTable = new Map(Object.entries(deploymentOptions.optionsMapTable).map((x) => [x[0].charAt(0).toUpperCase() + x[0].slice(1), x[1]]));
+			// optionsMapTable is coming as an objects which needs to be converted to Map, and the first charater of all propertie's first char shoud also needs to be converted to uppercase.
+			deploymentOptions.optionsMapTable = new Map(Object.entries(deploymentOptions.optionsMapTable).map((option) => [option[0].charAt(0).toUpperCase() + option[0].slice(1), option[1]]));
 		}
 
 		return deploymentOptions;

@@ -18,6 +18,7 @@ export class SchemaCompareOptionsModel {
 	constructor(defaultOptions: mssql.DeploymentOptions) {
 		this.deploymentOptions = defaultOptions;
 		this.UpdateOptionsMapTable();
+		// Sorting the options labels alphabetically
 		this.optionsLabels = Array.from(this.deploymentOptions.optionsMapTable.keys()).sort();
 	}
 

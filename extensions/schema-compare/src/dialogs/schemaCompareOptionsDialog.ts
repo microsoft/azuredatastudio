@@ -106,7 +106,7 @@ export class SchemaCompareOptionsDialog {
 
 		await this.updateOptionsTable();
 		this.optionsFlexBuilder.removeItem(this.optionsTable);
-		this.optionsFlexBuilder.insertItem(this.optionsTable, 0, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh', 'padding-top': '2px' } });
+		this.optionsFlexBuilder.insertItem(this.optionsTable, 0, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh' } });
 
 		await this.updateObjectsTable();
 		this.objectTypesFlexBuilder.removeItem(this.objectsTable);
