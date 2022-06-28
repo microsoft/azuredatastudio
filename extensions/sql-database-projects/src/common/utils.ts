@@ -337,7 +337,6 @@ export async function getDefaultPublishDeploymentOptions(project: ISqlProject): 
 
 	// this option needs to be true for same database references validation to work
 	if (project.databaseReferences.length > 0) {
-		deploymentOptions.includeCompositeObjects.value = true;
 		// Updating optionsMapTable as this Map table is sending back the option values to the DacFx
 		const includeCompositeObjectDisplayName = 'Include composite objects';
 		let propVal = deploymentOptions.optionsMapTable.get(includeCompositeObjectDisplayName);
