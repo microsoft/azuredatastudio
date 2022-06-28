@@ -975,7 +975,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			}
 
 			applyValue(item, state): void {
-				let activeRow = self.previousSavedCell.row;
+				let activeRow = self.lastClickedCell.row;
 				let currentRow = self.dataSet.dataRows.at(activeRow);
 				let colIndex = self.getColumnIndex(this._args.column.name);
 				let dataLength: number = self.dataSet.dataRows.getLength();
