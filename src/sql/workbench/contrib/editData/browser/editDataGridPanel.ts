@@ -312,15 +312,20 @@ export class EditDataGridPanel extends GridParentComponent {
 		}
 
 		if (this.isRowDirty(this.previousSavedCell.row) && row !== this.previousSavedCell.row) {
-			await this.commitEditTask().then(() => { },
+			await this.commitEditTask().then(() => {
+				this.lastClickedCell = { row, column, isEditable };
+				return Promise.resolve();
+			},
 				() => {
+					this.lastClickedCell = { row: this.previousSavedCell.row, column: this.previousSavedCell.column, isEditable };
 					this.focusCell(this.previousSavedCell.row, this.previousSavedCell.column);
 					return Promise.reject(null);
 				});
 		}
-
-		// get the cell we have just immediately clicked (to set as the new active cell in handleChanges), only done if another cell is not currently being processed.
-		this.lastClickedCell = { row, column, isEditable };
+		else {
+			// get the cell we have just immediately clicked (to set as the new active cell in handleChanges), only done if another cell is not currently being processed.
+			this.lastClickedCell = { row, column, isEditable };
+		}
 	}
 
 	private commitEditTask(): Thenable<void> {
