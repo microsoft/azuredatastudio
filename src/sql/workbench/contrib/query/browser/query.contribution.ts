@@ -152,7 +152,8 @@ actionRegistry.registerWorkbenchAction(
 		ToggleActualPlanKeyboardAction.LABEL,
 		{ primary: KeyMod.CtrlCmd | KeyCode.KEY_M }
 	),
-	ToggleActualPlanKeyboardAction.LABEL
+	ToggleActualPlanKeyboardAction.LABEL,
+	localize('ExecutionPlan', 'Execution Plan')
 );
 
 actionRegistry.registerWorkbenchAction(
