@@ -35,7 +35,9 @@ export class SchemaCompareService implements mssql.ISchemaCompareService {
 	public schemaCompare(operationId: string, sourceEndpointInfo: mssql.SchemaCompareEndpointInfo, targetEndpointInfo: mssql.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: mssql.DeploymentOptions): Thenable<mssql.SchemaCompareResult> {
 		// Copying deploymentOptions into new variable and updating optionsMapTable like this will not affect scmp save
 		let options = { ...deploymentOptions };
-		options.optionsMapTable = JSON.parse(JSON.stringify(Object.fromEntries(options.optionsMapTable)));
+		if (options.optionsMapTable !== undefined) {
+			options.optionsMapTable = JSON.parse(JSON.stringify(Object.fromEntries(options.optionsMapTable)));
+		}
 		const params: contracts.SchemaCompareParams = { operationId: operationId, sourceEndpointInfo: sourceEndpointInfo, targetEndpointInfo: targetEndpointInfo, taskExecutionMode: taskExecutionMode, deploymentOptions: options };
 		return this.client.sendRequest(contracts.SchemaCompareRequest.type, params).then(
 			undefined,
@@ -115,7 +117,9 @@ export class SchemaCompareService implements mssql.ISchemaCompareService {
 	public schemaCompareSaveScmp(sourceEndpointInfo: mssql.SchemaCompareEndpointInfo, targetEndpointInfo: mssql.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: mssql.DeploymentOptions, scmpFilePath: string, excludedSourceObjects: mssql.SchemaCompareObjectId[], excludedTargetObjects: mssql.SchemaCompareObjectId[]): Thenable<azdata.ResultStatus> {
 		// Copying deploymentOptions into new variable and updating optionsMapTable like this will not affect the schema comparison
 		let options = { ...deploymentOptions };
-		options.optionsMapTable = JSON.parse(JSON.stringify(Object.fromEntries(options.optionsMapTable)));
+		if (options.optionsMapTable !== undefined) {
+			options.optionsMapTable = JSON.parse(JSON.stringify(Object.fromEntries(options.optionsMapTable)));
+		}
 		const params: contracts.SchemaCompareSaveScmpParams = { sourceEndpointInfo: sourceEndpointInfo, targetEndpointInfo: targetEndpointInfo, taskExecutionMode: taskExecutionMode, deploymentOptions: options, scmpFilePath: scmpFilePath, excludedSourceObjects: excludedSourceObjects, excludedTargetObjects: excludedTargetObjects };
 		return this.client.sendRequest(contracts.SchemaCompareSaveScmpRequest.type, params).then(
 			undefined,

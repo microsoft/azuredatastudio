@@ -92,7 +92,7 @@ export class PublishOptionsDialog {
 			this.disposableListeners.push(this.optionsTable.onCellAction!((rowState) => {
 				const checkboxState = <azdataType.ICheckboxCellActionEventArgs>rowState;
 				if (checkboxState && checkboxState.row !== undefined) {
-					let label = this.optionsModel.optionsLabels[checkboxState.row];
+					const label = this.optionsModel.optionsLabels[checkboxState.row];
 					this.optionsModel.optionsLookup?.set(label, checkboxState.checked);
 					this.optionsChanged = true;
 					this.dialog.customButtons[0].enabled = true;
@@ -124,9 +124,9 @@ export class PublishOptionsDialog {
 			await this.updateObjectsTable();
 
 			this.disposableListeners.push(this.includeObjectsTable.onCellAction!((rowState) => {
-				let checkboxState = <azdataType.ICheckboxCellActionEventArgs>rowState;
+				const checkboxState = <azdataType.ICheckboxCellActionEventArgs>rowState;
 				if (checkboxState && checkboxState.row !== undefined) {
-					let label = this.optionsModel.includeObjectTypeLabels[checkboxState.row];
+					const label = this.optionsModel.includeObjectTypeLabels[checkboxState.row];
 					this.optionsModel.includeObjectsLookup?.set(label, checkboxState.checked);
 					this.optionsChanged = true;
 					this.dialog.customButtons[0].enabled = true;
@@ -153,13 +153,13 @@ export class PublishOptionsDialog {
 					type: utils.getAzdataApi()!.ColumnType.checkBox,
 					action: utils.getAzdataApi()!.ActionOnCellCheckboxCheck.customAction,
 					headerCssClass: 'display-none',
-					cssClass: 'no-borders align-with-header align-with-text',
+					cssClass: 'no-borders align-with-header',
 					width: 50
 				},
 				{
 					value: constants.OptionName,
 					headerCssClass: 'display-none',
-					cssClass: 'no-borders align-with-header vertical-align-middle',
+					cssClass: 'no-borders align-with-header',
 					width: 50
 				}
 			],
@@ -171,7 +171,7 @@ export class PublishOptionsDialog {
 	* Update the default options to the object types table area
 	*/
 	private async updateObjectsTable(): Promise<void> {
-		let data = this.optionsModel.getObjectsData();
+		const data = this.optionsModel.getObjectsData();
 		await this.includeObjectsTable!.updateProperties({
 			data: data,
 			columns: [
@@ -187,7 +187,7 @@ export class PublishOptionsDialog {
 				{
 					value: constants.OptionName,
 					headerCssClass: 'display-none',
-					cssClass: 'no-borders align-with-header vertical-align-middle',
+					cssClass: 'no-borders align-with-header',
 					width: 50
 				}
 			],

@@ -29,13 +29,3 @@ modelview-table .context-menu-button {
 	vertical-align: middle;
 	cursor: pointer;
 }
-
-.align-with-text div
-{
-	padding-top: 4px;
-}
-
-.vertical-align-middle span
-{
-	vertical-align: middle;
-}
