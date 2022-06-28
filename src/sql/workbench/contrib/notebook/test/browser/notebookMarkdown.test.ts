@@ -110,6 +110,15 @@ suite('NotebookMarkdownRenderer', () => {
 
 		result = notebookMarkdownRenderer.renderMarkdown({ value: `![altText](attachment:ads.png)`, isTrusted: true }, { cellAttachments: JSON.parse('{"ads2.png":"image/png"}') });
 		assert.strictEqual(result.innerHTML, `<p><img src="attachment:ads.png" alt="altText"></p>`, 'Cell attachment no image data failed');
+
+		result = notebookMarkdownRenderer.renderMarkdown({ value: `![altText](attachment:ads with spaces.png)`, isTrusted: true }, { cellAttachments: JSON.parse('{"adswithspaces.png":"image/png"}') });
+		assert.strictEqual(result.innerHTML, `<p><img src="attachment:adswithspaces.png" alt="altText"></p>`, 'Cell attachment image name with spaces failed');
+
+		result = notebookMarkdownRenderer.renderMarkdown({ value: `![altText](attachment:ads.jpg)`, isTrusted: true }, { cellAttachments: JSON.parse('{"ads.jpg":"image/jpeg"}') });
+		assert.strictEqual(result.innerHTML, `<p><img src="attachment:ads.jpg" alt="altText"></p>`, 'Cell attachment jpg image data failed');
+
+		result = notebookMarkdownRenderer.renderMarkdown({ value: `![altText](attachment:ads!@#$%^&.jpg)`, isTrusted: true }, { cellAttachments: JSON.parse('{"ads!@#$%^&.jpg":"image/jpeg"}') });
+		assert.strictEqual(result.innerHTML, `<p><img src="attachment:ads!@#$%^&.jpg" alt="altText"></p>`, 'Cell attachment image name with symbols failed');
 	});
 
 	suite('Schema validation', function () {
