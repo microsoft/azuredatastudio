@@ -24,11 +24,11 @@ export class ControllerActiveDirectoryPage extends DashboardPage {
 	private readonly _azApi: azExt.IExtension;
 
 	public get title(): string {
-		return loc.upgradeManagement;
+		return loc.activeDirectory;
 	}
 
 	public get id(): string {
-		return 'upgrades';
+		return 'activeDirectory';
 	}
 
 	public get icon(): { dark: string, light: string } {
@@ -133,6 +133,21 @@ export class ControllerActiveDirectoryPage extends DashboardPage {
 	}
 
 	public get toolbarContainer(): azdata.ToolbarContainer {
+		// Add Connector
+		const addConnectorButton = this.modelView.modelBuilder.button().withProps({
+			label: loc.addConnector,
+			iconPath: IconPathHelper.add
+		}).component();
+		this.disposables.push(
+			addConnectorButton.onDidClick(async () => {
+				addConnectorButton.enabled = false;
+				try {
+					await this.refresh();
+				} finally {
+					addConnectorButton.enabled = true;
+				}
+			}));
+
 		// Refresh
 		const refreshButton = this.modelView.modelBuilder.button().withProps({
 			label: loc.refresh,
@@ -150,7 +165,8 @@ export class ControllerActiveDirectoryPage extends DashboardPage {
 
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems(
 			[
-				{ component: refreshButton, toolbarSeparatorAfter: true },
+				{ component: addConnectorButton, toolbarSeparatorAfter: true },
+				{ component: refreshButton, toolbarSeparatorAfter: true }
 
 			]
 		).component();
