@@ -101,7 +101,7 @@ MenuRegistry.appendMenuItem(MenuId.CommandPalette, {
 			value: localize('executionPlanCompareCommandValue', "Compare execution plans"),
 			original: localize('executionPlanCompareCommandOriginalValue', "Compare execution plans")
 		},
-		category: 'Execution Plan'
+		category: localize('ExecutionPlan', 'Execution Plan')
 	}
 });
 
