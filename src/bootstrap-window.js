@@ -43,7 +43,6 @@
 	 * }} [options]
 	 */
 	async function load(modulePaths, resultCallback, options) {
-
 		const isDev = !!safeProcess.env['VSCODE_DEV'];
 
 		// Error handler (TODO@sandbox non-sandboxed only)
@@ -59,11 +58,6 @@
 		const configuration = await preloadGlobals.context.resolveConfiguration();
 		performance.mark('code/didWaitForWindowConfig');
 		clearTimeout(timeout);
-
-		// Signal DOM modifications are now OK
-		if (typeof options?.canModifyDOM === 'function') {
-			options.canModifyDOM(configuration);
-		}
 
 		// Signal DOM modifications are now OK
 		if (typeof options?.canModifyDOM === 'function') {

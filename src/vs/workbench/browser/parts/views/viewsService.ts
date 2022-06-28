@@ -154,11 +154,19 @@ export class ViewsService extends Disposable implements IViewsService {
 	}
 
 	private async openComposite(compositeId: string, location: ViewContainerLocation, focus?: boolean): Promise<IPaneComposite | undefined> {
-		return this.paneCompositeService.openPaneComposite(compositeId, location, focus);
+		if (location !== ViewContainerLocation.Dialog) { // {{SQL CARBON EDIT}} - skip for dialog
+			return this.paneCompositeService.openPaneComposite(compositeId, location, focus);
+		} else {
+			return undefined;
+		}
 	}
 
 	private getComposite(compositeId: string, location: ViewContainerLocation): { id: string, name: string } | undefined {
-		return this.paneCompositeService.getPaneComposite(compositeId, location);
+		if (location !== ViewContainerLocation.Dialog) { // {{SQL CARBON EDIT}} - skip for dialog
+			return this.paneCompositeService.getPaneComposite(compositeId, location);
+		} else {
+			return undefined;
+		}
 	}
 
 	isViewContainerVisible(id: string): boolean {

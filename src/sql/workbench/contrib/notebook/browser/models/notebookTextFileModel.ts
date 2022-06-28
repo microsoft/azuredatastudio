@@ -255,7 +255,7 @@ export class NotebookTextFileModel {
 				let sourceBeforeColumn = textEditorModel.textEditorModel.getLineMaxColumn(sourceBeforeLineNumber);
 				if (sourceBeforeColumn) {
 					// Match the end of the source array
-					let sourceEnd = textEditorModel.textEditorModel.matchBracket({ column: sourceBeforeColumn - 1, lineNumber: sourceBeforeLineNumber });
+					let sourceEnd = textEditorModel.textEditorModel.bracketPairs.matchBracket({ column: sourceBeforeColumn - 1, lineNumber: sourceBeforeLineNumber });
 					if (sourceEnd?.length === 2) {
 						// Last quote in the source array will end the line before the source array
 						// e.g.
@@ -310,7 +310,7 @@ export class NotebookTextFileModel {
 				return undefined;
 			}
 		}
-		let outputsEnd = textEditorModel.textEditorModel.matchBracket({ column: outputsBegin.endColumn - 1, lineNumber: outputsBegin.endLineNumber });
+		let outputsEnd = textEditorModel.textEditorModel.bracketPairs.matchBracket({ column: outputsBegin.endColumn - 1, lineNumber: outputsBegin.endLineNumber });
 		if (!outputsEnd || outputsEnd.length < 2) {
 			return undefined;
 		}

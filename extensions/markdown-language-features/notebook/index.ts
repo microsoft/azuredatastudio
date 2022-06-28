@@ -19,7 +19,6 @@ export const activate: ActivationFunction<void> = (ctx) => {
 	addNamedHeaderRendering(markdownIt);
 
 	const style = document.createElement('style');
-	style.classList.add('markdown-style');
 	style.textContent = `
 		.emptyMarkdownCell::before {
 			content: "${document.documentElement.style.getPropertyValue('--notebook-cell-markup-empty-content')}";
@@ -145,7 +144,10 @@ export const activate: ActivationFunction<void> = (ctx) => {
 			white-space: pre-wrap;
 		}
 	`;
-	document.head.append(style);
+	const template = document.createElement('template');
+	template.classList.add('markdown-style');
+	template.content.appendChild(style);
+	document.head.appendChild(template);
 
 	return {
 		renderOutputItem: (outputInfo, element) => {
@@ -159,15 +161,19 @@ export const activate: ActivationFunction<void> = (ctx) => {
 				previewRoot.appendChild(defaultStyles.cloneNode(true));
 
 				// And then contributed styles
-				for (const markdownStyleNode of document.getElementsByClassName('markdown-style')) {
-					previewRoot.appendChild(markdownStyleNode.cloneNode(true));
+				for (const element of document.getElementsByClassName('markdown-style')) {
+					if (element instanceof HTMLTemplateElement) {
+						previewRoot.appendChild(element.content.cloneNode(true));
+					} else {
+						previewRoot.appendChild(element.cloneNode(true));
+					}
 				}
 
 				previewNode = document.createElement('div');
 				previewNode.id = 'preview';
 				previewRoot.appendChild(previewNode);
 			} else {
-				previewNode = element.shadowRoot.getElementById('preview')! as HTMLElement; // {{SQL CARBON EDIT}} Cast to fix compilation error
+				previewNode = element.shadowRoot.getElementById('preview')!;
 			}
 
 			const text = outputInfo.text();

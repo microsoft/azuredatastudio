@@ -21,7 +21,7 @@ import { KeymapRecommendations } from 'vs/workbench/contrib/extensions/browser/k
 import { LanguageRecommendations } from 'vs/workbench/contrib/extensions/browser/languageRecommendations';
 import { ExtensionRecommendation } from 'vs/workbench/contrib/extensions/browser/extensionRecommendations';
 import { ConfigBasedRecommendations } from 'vs/workbench/contrib/extensions/browser/configBasedRecommendations';
-import { StaticRecommendations } from 'sql/workbench/contrib/extensions/browser/staticRecommendations';
+import { StaticRecommendations } from 'sql/workbench/contrib/extensions/browser/staticRecommendations'; // {{SQL CARBON EDIT}} Custom extension recommendation
 import { ScenarioRecommendations } from 'sql/workbench/contrib/extensions/browser/scenarioRecommendations';
 import { IExtensionRecommendationNotificationService } from 'vs/platform/extensionRecommendations/common/extensionRecommendations';
 import { timeout } from 'vs/base/common/async';
@@ -76,9 +76,10 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 		this.exeBasedRecommendations = instantiationService.createInstance(ExeBasedRecommendations);
 		this.dynamicWorkspaceRecommendations = instantiationService.createInstance(DynamicWorkspaceRecommendations);
 		this.keymapRecommendations = instantiationService.createInstance(KeymapRecommendations);
+		this.webRecommendations = instantiationService.createInstance(WebRecommendations);
+		this.languageRecommendations = instantiationService.createInstance(LanguageRecommendations);
 		this.staticRecommendations = instantiationService.createInstance(StaticRecommendations); // {{SQL CARBON EDIT}} add ours
 		this.scenarioRecommendations = instantiationService.createInstance(ScenarioRecommendations); // {{SQL CARBON EDIT}} add ours
-		this.languageRecommendations = instantiationService.createInstance(LanguageRecommendations);
 
 		if (!this.isEnabled()) {
 			this.sessionSeed = 0;
@@ -279,8 +280,6 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 			await this.extensionRecommendationNotificationService.promptWorkspaceRecommendations(allowedRecommendations);
 		}
 	}
-
-
 
 	// {{SQL CARBON EDIT}}
 	promptRecommendedExtensionsByScenario(scenarioType: string): void {

@@ -140,7 +140,7 @@ actionRegistry.registerWorkbenchAction(
 		EstimatedExecutionPlanKeyboardAction,
 		EstimatedExecutionPlanKeyboardAction.ID,
 		EstimatedExecutionPlanKeyboardAction.LABEL,
-		{ primary: KeyMod.CtrlCmd | KeyCode.KEY_L }
+		{ primary: KeyMod.CtrlCmd | KeyCode.KeyL }
 	),
 	EstimatedExecutionPlanKeyboardAction.LABEL
 );

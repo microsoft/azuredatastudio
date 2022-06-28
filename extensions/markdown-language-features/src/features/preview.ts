@@ -522,7 +522,7 @@ export class StaticMarkdownPreview extends Disposable implements ManagedMarkdown
 		}));
 
 		this._register(this.preview.onScroll((scrollInfo) => {
-			topmostLineMonitor.setPreviousEditorLine(scrollInfo);
+			topmostLineMonitor.setPreviousStaticEditorLine(scrollInfo);
 		}));
 
 		this._register(topmostLineMonitor.onDidChanged(event => {
