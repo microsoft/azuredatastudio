@@ -38,7 +38,7 @@ import { DashboardData, PublishData, Status } from '../models/dashboardData/dash
 import { getPublishDatabaseSettings, launchPublishTargetOption } from '../dialogs/publishDatabaseQuickpick';
 import { launchCreateAzureServerQuickPick, getPublishToDockerSettings } from '../dialogs/deployDatabaseQuickpick';
 import { DeployService } from '../models/deploy/deployService';
-import { AddItemOptions, EntryType, GenerateProjectFromOpenApiSpecOptions, IDatabaseReferenceProjectEntry, IDeploySettings, IPublishToDockerSettings, ISqlProject, ItemType, SqlTargetPlatform } from 'sqldbproj';
+import { AddItemOptions, EntryType, GenerateProjectFromOpenApiSpecOptions, IDatabaseReferenceProjectEntry, ISqlProjectPublishSettings, IPublishToDockerSettings, ISqlProject, ItemType, SqlTargetPlatform } from 'sqldbproj';
 import { AutorestHelper } from '../tools/autorestHelper';
 import { createNewProjectFromDatabaseWithQuickpick } from '../dialogs/createProjectFromDatabaseQuickpick';
 import { addDatabaseReferenceQuickpick } from '../dialogs/addDatabaseReferenceQuickpick';
@@ -320,27 +320,27 @@ export class ProjectsController {
 		const project: Project = this.getProjectFromContext(context);
 		// Removing the path separator from the image base name to be able to add that in the telemetry. With the separator the name is flagged as user path which is not true
 		// We only need to know the image base parts so it's ok to use a different separator when adding to telemetry
-		const dockerImageNameForTelemetry = deployProfile.localDbSetting?.dockerBaseImage ? deployProfile.localDbSetting.dockerBaseImage.replace(/\//gi, '_') : '';
+		const dockerImageNameForTelemetry = deployProfile.dockerSettings?.dockerBaseImage ? deployProfile.dockerSettings.dockerBaseImage.replace(/\//gi, '_') : '';
 		try {
 			TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.publishToContainer)
 				.withAdditionalProperties({ dockerBaseImage: dockerImageNameForTelemetry })
 				.send();
 
-			if (deployProfile && deployProfile.deploySettings) {
+			if (deployProfile && deployProfile.sqlProjectPublishSettings) {
 				let connectionUri: string | undefined;
-				if (deployProfile.localDbSetting) {
+				if (deployProfile.dockerSettings) {
 					void utils.showInfoMessageWithOutputChannel(constants.publishingProjectMessage, this._outputChannel);
 					connectionUri = await this.deployService.deployToContainer(deployProfile, project);
 					if (connectionUri) {
-						deployProfile.deploySettings.connectionUri = connectionUri;
+						deployProfile.sqlProjectPublishSettings.connectionUri = connectionUri;
 					}
 				}
 
-				if (deployProfile.deploySettings.connectionUri) {
-					const publishResult = await this.publishOrScriptProject(project, deployProfile.deploySettings, true);
+				if (deployProfile.sqlProjectPublishSettings.connectionUri) {
+					const publishResult = await this.publishOrScriptProject(project, deployProfile.sqlProjectPublishSettings, true);
 					if (publishResult && publishResult.success) {
-						if (deployProfile.localDbSetting) {
-							await this.connectionService.getConnection(deployProfile.localDbSetting, true, deployProfile.localDbSetting.dbName);
+						if (deployProfile.dockerSettings) {
+							await this.connectionService.getConnection(deployProfile.dockerSettings, true, deployProfile.dockerSettings.dbName);
 						}
 						void vscode.window.showInformationMessage(constants.publishProjectSucceed);
 					} else {
@@ -400,7 +400,7 @@ export class ProjectsController {
 
 		if (publishTarget === constants.PublishTargetType.docker) {
 			const deployProfile = await getPublishToDockerSettings(project);
-			if (deployProfile?.deploySettings && deployProfile?.localDbSetting) {
+			if (deployProfile?.sqlProjectPublishSettings && deployProfile?.dockerSettings) {
 				await this.publishToDockerContainer(project, deployProfile);
 			}
 		} else if (publishTarget === constants.PublishTargetType.newAzureServer) {
@@ -414,7 +414,7 @@ export class ProjectsController {
 			}
 
 		} else {
-			let settings: IDeploySettings | undefined = await getPublishDatabaseSettings(project);
+			let settings: ISqlProjectPublishSettings | undefined = await getPublishDatabaseSettings(project);
 
 			if (settings) {
 				// 5. Select action to take
@@ -436,7 +436,7 @@ export class ProjectsController {
 	 * @param publish Whether to publish the deployment or just generate a script
 	 * @returns The DacFx result of the deployment
 	 */
-	public async publishOrScriptProject(project: Project, settings: IDeploySettings, publish: boolean): Promise<mssql.DacFxResult | undefined> {
+	public async publishOrScriptProject(project: Project, settings: ISqlProjectPublishSettings, publish: boolean): Promise<mssql.DacFxResult | undefined> {
 		const telemetryProps: Record<string, string> = {};
 		const telemetryMeasures: Record<string, number> = {};
 		const buildStartTime = new Date().getTime();

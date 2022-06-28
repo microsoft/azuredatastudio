@@ -12,7 +12,7 @@ import * as vscode from 'vscode';
 import { ShellExecutionHelper } from '../../tools/shellExecutionHelper';
 import { AzureSqlClient } from './azureSqlClient';
 import { ConnectionService } from '../connections/connectionService';
-import { ILocalDbSetting, IPublishToDockerSettings } from 'sqldbproj';
+import { IDockerSettings, IPublishToDockerSettings } from 'sqldbproj';
 
 interface DockerImageSpec {
 	label: string;
@@ -92,22 +92,22 @@ export class DeployService {
 
 	public async deployToContainer(profile: IPublishToDockerSettings, project: Project): Promise<string | undefined> {
 		return await this.executeTask(constants.deployDbTaskName, async () => {
-			if (!profile.localDbSetting) {
+			if (!profile.dockerSettings) {
 				return undefined;
 			}
 
 			await this.verifyDocker();
 			this.logToOutput(constants.dockerImageMessage);
-			this.logToOutput(profile.localDbSetting.dockerBaseImage);
+			this.logToOutput(profile.dockerSettings.dockerBaseImage);
 
 			this.logToOutput(constants.dockerImageEulaMessage);
-			this.logToOutput(profile.localDbSetting.dockerBaseImageEula);
+			this.logToOutput(profile.dockerSettings.dockerBaseImageEula);
 
-			const imageSpec = this.getDockerImageSpec(project.projectFileName, profile.localDbSetting.dockerBaseImage);
+			const imageSpec = this.getDockerImageSpec(project.projectFileName, profile.dockerSettings.dockerBaseImage);
 
 			// If profile name is not set use the docker name to have a unique name
-			if (!profile.localDbSetting.profileName) {
-				profile.localDbSetting.profileName = imageSpec.containerName;
+			if (!profile.dockerSettings.profileName) {
+				profile.dockerSettings.profileName = imageSpec.containerName;
 			}
 
 			this.logToOutput(constants.cleaningDockerImagesMessage);
@@ -128,7 +128,7 @@ export class DeployService {
 			this.logToOutput(constants.runningDockerMessage);
 			// Building the image and running the docker
 			//
-			const createdDockerId: string | undefined = await this.runDockerContainer(imageSpec, profile.localDbSetting);
+			const createdDockerId: string | undefined = await this.runDockerContainer(imageSpec, profile.dockerSettings);
 			this.logToOutput(`Docker container created. Id: ${createdDockerId}`);
 
 
@@ -145,7 +145,7 @@ export class DeployService {
 
 			if (runningDockerId) {
 				this.logToOutput(constants.dockerContainerCreatedMessage(runningDockerId));
-				return await this._connectionService.getConnection(profile.localDbSetting, false, 'master');
+				return await this._connectionService.getConnection(profile.dockerSettings, false, 'master');
 
 			} else {
 				this.logToOutput(constants.dockerContainerFailedToRunErrorMessage);
@@ -159,7 +159,7 @@ export class DeployService {
 		});
 	}
 
-	private async runDockerContainer(dockerImageSpec: DockerImageSpec, profile: ILocalDbSetting): Promise<string | undefined> {
+	private async runDockerContainer(dockerImageSpec: DockerImageSpec, profile: IDockerSettings): Promise<string | undefined> {
 
 		// Sensitive data to remove from output console
 		const sensitiveData = [profile.password];

@@ -304,19 +304,28 @@ declare module 'sqldbproj' {
 		connectionRetryTimeout?: number
 	}
 
-	export interface ILocalDbSetting extends ISqlConnectionProperties {
+	/**
+	 * Settings for creating the docker container a project is being published to
+	 */
+	export interface IDockerSettings extends ISqlConnectionProperties {
 		dockerBaseImage: string,
 		dockerBaseImageEula: string,
 	}
 
+	/**
+	 * Settings for publishing a SQL Project to a docker container
+	 */
 	export interface IPublishToDockerSettings {
-		localDbSetting?: ILocalDbSetting;
-		deploySettings?: IDeploySettings;
+		dockerSettings?: IDockerSettings;
+		sqlProjectPublishSettings?: ISqlProjectPublishSettings;
 	}
 
 	export type DeploymentOptions = mssqlDeploymentOptions | vscodeMssqlDeploymentOptions;
 
-	export interface IDeploySettings {
+	/**
+	 * Settings to use when publishing a SQL Project
+	 */
+	export interface ISqlProjectPublishSettings {
 		databaseName: string;
 		serverName: string;
 		connectionUri: string;
