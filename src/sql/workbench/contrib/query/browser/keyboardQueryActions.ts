@@ -229,7 +229,7 @@ export class EstimatedExecutionPlanKeyboardAction extends Action {
 
 export class ToggleActualPlanKeyboardAction extends Action {
 	public static ID = 'ToggleActualPlanKeyboardAction';
-	public static LABEL = nls.localize('ToggleActualPlanKeyboardAction', "Enable/Disable Actual Execution Plan");
+	public static LABEL = nls.localize('ToggleActualPlanKeyboardAction', "Display Actual Execution Plan");
 
 	constructor(
 		id: string,
