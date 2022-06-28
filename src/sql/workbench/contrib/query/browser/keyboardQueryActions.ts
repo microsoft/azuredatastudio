@@ -208,7 +208,7 @@ export class CopyQueryWithResultsKeyboardAction extends Action {
 
 export class EstimatedExecutionPlanKeyboardAction extends Action {
 	public static ID = 'estimatedExecutionPlanKeyboardAction';
-	public static LABEL = nls.localize('estimatedExecutionPlanKeyboardAction', "Execution Plan: Display Estimated Execution Plan");
+	public static LABEL = nls.localize('estimatedExecutionPlanKeyboardAction', "Display Estimated Execution Plan");
 
 	constructor(
 		id: string,

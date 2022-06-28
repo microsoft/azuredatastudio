@@ -142,7 +142,8 @@ actionRegistry.registerWorkbenchAction(
 		EstimatedExecutionPlanKeyboardAction.LABEL,
 		{ primary: KeyMod.CtrlCmd | KeyCode.KEY_L }
 	),
-	EstimatedExecutionPlanKeyboardAction.LABEL
+	EstimatedExecutionPlanKeyboardAction.LABEL,
+	localize('ExecutionPlan', 'Execution Plan')
 );
 
 actionRegistry.registerWorkbenchAction(
