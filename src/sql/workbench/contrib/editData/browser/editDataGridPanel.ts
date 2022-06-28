@@ -291,7 +291,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		};
 	}
 
-	onCellSelect(event: Slick.OnActiveCellChangedEventArgs<any>): void {
+	async onCellSelect(event: Slick.OnActiveCellChangedEventArgs<any>): Promise<void> {
 		let row = event.row;
 		let column = event.cell;
 		let isEditable = true;
@@ -309,6 +309,14 @@ export class EditDataGridPanel extends GridParentComponent {
 
 		if (this.previousSavedCell.row !== row && this.previousSavedCell.column !== column && this.firstRender) {
 			return;
+		}
+
+		if (this.isRowDirty(this.previousSavedCell.row) && row !== this.previousSavedCell.row) {
+			await this.commitEditTask().then(() => { },
+				() => {
+					this.focusCell(this.previousSavedCell.row, this.previousSavedCell.column);
+					return Promise.reject(null);
+				});
 		}
 
 		// get the cell we have just immediately clicked (to set as the new active cell in handleChanges), only done if another cell is not currently being processed.
@@ -351,7 +359,7 @@ export class EditDataGridPanel extends GridParentComponent {
 				let regularCommit = cellToSubmit.row !== this.lastClickedCell.row && this.isRowDirty(cellToSubmit.row);
 				if (regularCommit || nullCommit) {
 					await this.commitEditTask().then(() => {
-						if (this.lastClickedCell.row === cellToSubmit.row && this.lastClickedCell.column === cellToSubmit.column) {
+						if (nullCommit && this.lastClickedCell.row === cellToSubmit.row && this.lastClickedCell.column === cellToSubmit.column) {
 							this.lastClickedCell = { row: cellToSubmit.row + 1, column: cellToSubmit.column, isEditable: true };
 						}
 					},
@@ -771,7 +779,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		}
 	}
 
-	private focusCell(row: number, column: number, forceEdit: boolean = true): void {
+	private focusCell(row: number, column: number, forceEdit: boolean = false): void {
 		let slick: any = this.table;
 		let grid = slick._grid;
 		grid.gotoCell(row, column, forceEdit);
