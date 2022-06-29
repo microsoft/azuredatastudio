@@ -29,7 +29,7 @@ async function getClient(aiKey: string): Promise<TelemetryClient> {
 	}
 
 	if (aiKey.indexOf('AIF-') === 0) {
-		client.config.endpointUrl = 'https://vortex.data.microsoft.com/collect/v1';
+		client.config.endpointUrl = 'https://mobile.events.data.microsoft.com/collect/v1';
 	}
 	return client;
 }
