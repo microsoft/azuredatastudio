@@ -29,14 +29,14 @@ export function getDeploymentOptions(): mssql.DeploymentOptions {
 	const defaultOptions: mssql.DeploymentOptions = {
 		doNotDropObjectTypes: { value: [], description: sampleDesc, propertyName: sampleName },
 		excludeObjectTypes: { value: [], description: sampleDesc, propertyName: sampleName },
-		optionsMapTable: new Map<string, mssql.DacDeployOptionPropertyBoolean>([
-			['Sample Display Name Option1', { value: false, description: sampleDesc, propertyName: sampleName }],
-			['Sample Display Name Option2', { value: false, description: sampleDesc, propertyName: sampleName }]
-		]),
-		includeObjects: new Map<string, number>([
-			['Sample Include Object Type1', 0],
-			['Sample Include Object Type2', 2]
-		])
+		optionsMapTable: {
+			'Sample Display Name Option1': { value: false, description: sampleDesc, propertyName: sampleName },
+			'Sample Display Name Option2': { value: false, description: sampleDesc, propertyName: sampleName }
+		},
+		includeObjects: {
+			'Sample Include Object Type1': 0,
+			'Sample Include Object Type2': 2
+		}
 	};
 
 	return defaultOptions;

@@ -26,7 +26,7 @@ describe('Schema Compare Options Model', () => {
 
 		model.includeObjectTypeLabels.forEach(l => {
 			if(!model.getSchemaCompareIncludedObjectsUtil(l)){
-				model.excludedObjectTypes.push(model.deploymentOptions.includeObjects.get(l));
+				model.excludedObjectTypes.push(model.deploymentOptions.includeObjects[l]);
 			}
 		});
 		model.setSchemaCompareIncludedObjectsUtil();
@@ -43,7 +43,7 @@ describe('Schema Compare Options Model', () => {
 
 		model.includeObjectTypeLabels.forEach(l => {
 			if(!model.getSchemaCompareIncludedObjectsUtil(l)){
-				model.excludedObjectTypes.push(model.deploymentOptions.includeObjects.get(l));
+				model.excludedObjectTypes.push(model.deploymentOptions.includeObjects[l]);
 			}
 		});
 

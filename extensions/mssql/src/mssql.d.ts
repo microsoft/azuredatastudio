@@ -171,8 +171,8 @@ declare module 'mssql' {
 	export interface DeploymentOptions {
 		doNotDropObjectTypes: DacDeployOptionPropertyObject;
 		excludeObjectTypes: DacDeployOptionPropertyObject;
-		optionsMapTable: Map<string, DacDeployOptionPropertyBoolean>;
-		includeObjects: Map<string, number>;
+		optionsMapTable: { [key: string]: DacDeployOptionPropertyBoolean };
+		includeObjects: { [key: string]: number };
 	}
 
 	export interface SchemaCompareObjectId {

@@ -35,7 +35,7 @@ describe('Publish Dialog Deploy Options Model', () => {
 
 		model.includeObjectTypeLabels.forEach(l => {
 			if(!model.getIncludedObjectsUtil(l)){
-				model.excludedObjectTypes.push(model.deploymentOptions.includeObjects.get(l)!);
+				model.excludedObjectTypes.push(model.deploymentOptions.includeObjects[l]);
 			}
 		});
 		model.setIncludeObjectTypeOptions();
@@ -52,7 +52,7 @@ describe('Publish Dialog Deploy Options Model', () => {
 
 		model.includeObjectTypeLabels.forEach(l => {
 			if(!model.getIncludedObjectsUtil(l)){
-				model.excludedObjectTypes.push(model.deploymentOptions.includeObjects.get(l)!);
+				model.excludedObjectTypes.push(model.deploymentOptions.includeObjects[l]);
 			}
 		});
 

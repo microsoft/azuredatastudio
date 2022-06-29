@@ -96,7 +96,7 @@ export class SchemaCompareOptionsDialog {
 	private async reset(): Promise<void> {
 		let service = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.IExtension).schemaCompare;
 		let result = await service.schemaCompareGetDefaultOptions();
-		result.defaultDeploymentOptions = this.schemaComparison.ConvertObjectToMapTable(result.defaultDeploymentOptions);
+		result.defaultDeploymentOptions = this.schemaComparison.ConvertObjectKeysToUpperCase(result.defaultDeploymentOptions);
 		this.optionsModel.deploymentOptions = result.defaultDeploymentOptions;
 		this.optionsChanged = true;
 
@@ -148,7 +148,7 @@ export class SchemaCompareOptionsDialog {
 				let checkboxState = <azdata.ICheckboxCellActionEventArgs>rowState;
 				if (checkboxState && checkboxState.row !== undefined) {
 					let label = this.optionsModel.optionsLabels[checkboxState.row];
-					this.optionsModel.optionsLookup[label] = checkboxState.checked;
+					this.optionsModel.optionsLookup.set(label, checkboxState.checked);
 					this.optionsChanged = true;
 				}
 			}));

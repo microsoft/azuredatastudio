@@ -10,7 +10,7 @@ export class DeployOptionsModel {
 
 	public optionsLookup: Map<string, boolean> = new Map<string, boolean>();
 	public includeObjectsLookup: Map<string, boolean> = new Map<string, boolean>();
-	public optionsMapTable: Map<string, mssql.DacDeployOptionPropertyBoolean> = new Map<string, mssql.DacDeployOptionPropertyBoolean>();
+	public optionsMapTable: { [key: string]: mssql.DacDeployOptionPropertyBoolean } = {};
 	public optionsLabels: string[] = [];
 	public includeObjectTypeLabels: string[] = [];
 	public excludedObjectTypes: number[] = [];
@@ -18,8 +18,8 @@ export class DeployOptionsModel {
 	constructor(defaultOptions: mssql.DeploymentOptions) {
 		this.deploymentOptions = defaultOptions;
 		this.UpdateOptionsMapTable();
-		this.optionsLabels = Object.keys(Object.fromEntries(this.deploymentOptions.optionsMapTable)).sort();
-		this.includeObjectTypeLabels = Object.keys(Object.fromEntries(this.deploymentOptions.includeObjects)).sort();
+		this.optionsLabels = Object.keys(this.deploymentOptions.optionsMapTable).sort();
+		this.includeObjectTypeLabels = Object.keys(this.deploymentOptions.includeObjects).sort();
 	}
 
 	public UpdateOptionsMapTable() {
@@ -49,10 +49,10 @@ export class DeployOptionsModel {
 	*/
 	public setDeploymentOptions(): void {
 		for (let option of this.optionsLookup) {
-			let val = this.optionsMapTable?.get(option[0]);
+			let val = this.optionsMapTable[option[0]];
 			if (val !== undefined && val?.value !== option[1]) {
 				val.value = option[1];
-				this.optionsMapTable?.set(option[0], val);
+				this.optionsMapTable[option[0]] = val;
 			}
 		}
 
@@ -64,19 +64,19 @@ export class DeployOptionsModel {
 	* Gets the selected/default value of the option
 	*/
 	public getDeployOptionUtil(label: string): boolean | undefined {
-		return this.optionsMapTable.get(label)?.value;
+		return this.optionsMapTable[label]?.value;
 	}
 
 	/*
 	* Gets the description of the option selected
 	*/
 	public getDescription(label: string): string | undefined {
-		return this.optionsMapTable.get(label)?.description;
+		return this.optionsMapTable[label]?.description;
 	}
 
 	/**
-	 * Gets the object type options checkbox check value
-	 * @returns string[][]
+	 * Gets the options checkbox values by iterating through the labels and gets the default/changed value from the optionsMapTable
+	 * Returns data as [optionName, booleanValue], where these values are sending to the options table component
 	 */
 	public getObjectsData(): string[][] {
 		let data: any = [];
@@ -95,7 +95,7 @@ export class DeployOptionsModel {
 	* Gets the selected/default value of the object type option
 	*/
 	public getIncludedObjectsUtil(label: string): boolean | undefined {
-		return (this.deploymentOptions.excludeObjectTypes.value?.find(x => x === this.deploymentOptions.includeObjects.get(label))) !== undefined ? false : true;
+		return (this.deploymentOptions.excludeObjectTypes.value?.find(x => x === this.deploymentOptions.includeObjects[label])) !== undefined ? false : true;
 	}
 
 	/*
@@ -103,7 +103,7 @@ export class DeployOptionsModel {
 	*/
 	public setIncludeObjectTypeOptions(): void {
 		for (let option of this.includeObjectsLookup) {
-			let optionNum = this.deploymentOptions.includeObjects?.get(option[0]);
+			let optionNum = this.deploymentOptions.includeObjects[option[0]];
 			if (optionNum !== undefined && !option[1]) {
 				this.excludedObjectTypes.push(optionNum);
 			}

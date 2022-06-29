@@ -7,7 +7,7 @@ import * as mssql from 'mssql';
 export class SchemaCompareOptionsModel {
 	public deploymentOptions: mssql.DeploymentOptions;
 	public excludedObjectTypes: number[] = [];
-	public optionsMapTable: Map<string, mssql.DacDeployOptionPropertyBoolean> = new Map<string, mssql.DacDeployOptionPropertyBoolean>();
+	public optionsMapTable: { [key: string]: mssql.DacDeployOptionPropertyBoolean } = {};
 	public optionsLabels: string[] = [];
 	public includeObjectTypeLabels: string[] = [];
 
@@ -17,8 +17,8 @@ export class SchemaCompareOptionsModel {
 	constructor(defaultOptions: mssql.DeploymentOptions) {
 		this.deploymentOptions = defaultOptions;
 		this.UpdateOptionsMapTable();
-		this.optionsLabels = Array.from(this.deploymentOptions.optionsMapTable.keys()).sort();
-		this.includeObjectTypeLabels = Array.from(this.deploymentOptions.includeObjects.keys()).sort();
+		this.optionsLabels = Object.keys(this.deploymentOptions.optionsMapTable).sort();
+		this.includeObjectTypeLabels = Object.keys(this.deploymentOptions.includeObjects).sort();
 	}
 
 	public UpdateOptionsMapTable() {
@@ -51,35 +51,35 @@ export class SchemaCompareOptionsModel {
 
 	public setDeploymentOptions() {
 		for (let option of this.optionsLookup) {
-			let optionProp = this.optionsMapTable.get(option[0]);
+			let optionProp = this.optionsMapTable[option[0]];
 			if (optionProp.value !== option[1]) {
 				optionProp.value = option[1];
-				this.optionsMapTable.set(option[0], optionProp);
+				this.optionsMapTable[option[0]] = optionProp;
 			}
 		}
 	}
 
 	public setSchemaCompareOptionUtil(label: string, value: boolean) {
-		let optionProp = this.optionsMapTable.get(label);
+		let optionProp = this.optionsMapTable[label];
 		optionProp.value = value;
-		return this.optionsMapTable.set(label, optionProp);
+		return this.optionsMapTable[label] = optionProp;
 	}
 
 	public getSchemaCompareOptionUtil(label): boolean {
-		return this.optionsMapTable.get(label)?.value;
+		return this.optionsMapTable[label].value;
 	}
 
 	public getDescription(label: string): string {
-		return this.optionsMapTable.get(label)?.description;
+		return this.optionsMapTable[label]?.description;
 	}
 
 	public getSchemaCompareIncludedObjectsUtil(label: string): boolean {
-		return (this.deploymentOptions.excludeObjectTypes.value.find(x => x === this.deploymentOptions.includeObjects.get(label))) !== undefined ? false : true;
+		return (this.deploymentOptions.excludeObjectTypes.value.find(x => x === this.deploymentOptions.includeObjects[label])) !== undefined ? false : true;
 	}
 
 	public setSchemaCompareIncludedObjectsUtil() {
 		for (let option of this.includeObjectsLookup) {
-			let optionNum = this.deploymentOptions.includeObjects?.get(option[0]);
+			let optionNum = this.deploymentOptions.includeObjects[option[0]];
 			if (optionNum !== undefined && !option[1]) {
 				this.excludedObjectTypes.push(optionNum);
 			}
