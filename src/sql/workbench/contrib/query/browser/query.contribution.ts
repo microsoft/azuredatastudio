@@ -19,7 +19,7 @@ import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResult
 import * as queryContext from 'sql/workbench/contrib/query/common/queryContext';
 import {
 	RunQueryKeyboardAction, RunCurrentQueryKeyboardAction, CancelQueryKeyboardAction, RefreshIntellisenseKeyboardAction, ToggleQueryResultsKeyboardAction,
-	RunQueryShortcutAction, RunCurrentQueryWithActualPlanKeyboardAction, CopyQueryWithResultsKeyboardAction, FocusOnCurrentQueryKeyboardAction, ParseSyntaxAction, ToggleFocusBetweenQueryEditorAndResultsAction, EstimatedExecutionPlanKeyboardAction
+	RunQueryShortcutAction, ToggleActualPlanKeyboardAction, CopyQueryWithResultsKeyboardAction, FocusOnCurrentQueryKeyboardAction, ParseSyntaxAction, ToggleFocusBetweenQueryEditorAndResultsAction, EstimatedExecutionPlanKeyboardAction
 } from 'sql/workbench/contrib/query/browser/keyboardQueryActions';
 import * as gridActions from 'sql/workbench/contrib/editData/browser/gridActions';
 import * as gridCommands from 'sql/workbench/contrib/editData/browser/gridCommands';
@@ -148,12 +148,13 @@ actionRegistry.registerWorkbenchAction(
 
 actionRegistry.registerWorkbenchAction(
 	SyncActionDescriptor.create(
-		RunCurrentQueryWithActualPlanKeyboardAction,
-		RunCurrentQueryWithActualPlanKeyboardAction.ID,
-		RunCurrentQueryWithActualPlanKeyboardAction.LABEL,
+		ToggleActualPlanKeyboardAction,
+		ToggleActualPlanKeyboardAction.ID,
+		ToggleActualPlanKeyboardAction.LABEL,
 		{ primary: KeyMod.CtrlCmd | KeyCode.KEY_M }
 	),
-	RunCurrentQueryWithActualPlanKeyboardAction.LABEL
+	ToggleActualPlanKeyboardAction.LABEL,
+	CATEGORIES.ExecutionPlan.value
 );
 
 actionRegistry.registerWorkbenchAction(
