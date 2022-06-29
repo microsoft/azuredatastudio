@@ -5,6 +5,9 @@
 
 declare module 'sqldbproj' {
 	import * as vscode from 'vscode';
+	import { DeploymentOptions as mssqlDeploymentOptions } from 'mssql';
+	import { DeploymentOptions as vscodeMssqlDeploymentOptions } from 'vscode-mssql';
+
 	export const enum extension {
 		name = 'Microsoft.sql-database-projects',
 		vsCodeName = 'ms-mssql.sql-database-projects-vscode'
@@ -62,6 +65,8 @@ declare module 'sqldbproj' {
 		 * @param options The additional options to use
 		 */
 		addItemPrompt(project: ISqlProject, relativeFilePath: string, options?: AddItemOptions): Promise<void>;
+
+		getPublishToDockerSettings(project: ISqlProject): Promise<IPublishToDockerSettings | undefined>;
 
 	}
 
@@ -240,14 +245,37 @@ declare module 'sqldbproj' {
 		 * "None" scripts in this project (scripts ignored by the build)
 		 */
 		readonly noneDeployScripts: IFileProjectEntry[];
+
+		readonly databaseReferences: IDatabaseReferenceProjectEntry[];
+	}
+
+	export const enum EntryType {
+		File,
+		Folder,
+		DatabaseReference,
+		SqlCmdVariable
+	}
+
+	export interface IProjectEntry {
+		type: EntryType;
 	}
 
 	/**
 	 * Represents an entry in a project file
 	 */
-	export interface IFileProjectEntry {
+	export interface IFileProjectEntry extends IProjectEntry {
 		fsUri: vscode.Uri;
 		relativePath: string;
+		pathForSqlProj(): string;
+	}
+
+	/**
+	 * Represents a database reference entry in a project file
+	 */
+	export interface IDatabaseReferenceProjectEntry extends IFileProjectEntry {
+		databaseName: string;
+		databaseVariableLiteralValue?: string;
+		suppressMissingDependenciesErrors: boolean;
 	}
 
 	/**
@@ -262,5 +290,38 @@ declare module 'sqldbproj' {
 		sqlAzure = 'Azure SQL Database',
 		sqlDW = 'Azure Synapse Dedicated SQL Pool',
 		sqlEdge = 'Azure SQL Edge'
+	}
+
+	export interface ISqlConnectionProperties {
+		tenantId?: string,
+		accountId?: string
+		serverName: string,
+		userName: string,
+		password: string,
+		port: number,
+		dbName: string,
+		profileName?: string,
+		connectionRetryTimeout?: number
+	}
+
+	export interface ILocalDbSetting extends ISqlConnectionProperties {
+		dockerBaseImage: string,
+		dockerBaseImageEula: string,
+	}
+
+	export interface IPublishToDockerSettings {
+		localDbSetting?: ILocalDbSetting;
+		deploySettings?: IDeploySettings;
+	}
+
+	export type DeploymentOptions = mssqlDeploymentOptions | vscodeMssqlDeploymentOptions;
+
+	export interface IDeploySettings {
+		databaseName: string;
+		serverName: string;
+		connectionUri: string;
+		sqlCmdVariables?: Record<string, string>;
+		deploymentOptions?: DeploymentOptions;
+		profileUsed?: boolean;
 	}
 }

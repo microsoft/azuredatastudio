@@ -10,15 +10,14 @@ import * as utils from '../common/utils';
 
 import { Project } from '../models/project';
 import { SqlConnectionDataSource } from '../models/dataSources/sqlConnectionStringSource';
-import { IDeploySettings } from '../models/IDeploySettings';
 import { DeploymentOptions } from 'mssql';
 import { IconPathHelper } from '../common/iconHelper';
 import { cssStyles } from '../common/uiConstants';
 import { getAgreementDisplayText, getConnectionName, getDockerBaseImages, getPublishServerName } from './utils';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
-import { ILocalDbDeployProfile } from '../models/deploy/deployProfile';
 import { Deferred } from '../common/promise';
 import { PublishOptionsDialog } from './publishOptionsDialog';
+import { IDeploySettings, IPublishToDockerSettings } from 'sqldbproj';
 
 interface DataSourceDropdownValue extends azdataType.CategoryValue {
 	dataSource: SqlConnectionDataSource;
@@ -65,7 +64,7 @@ export class PublishDatabaseDialog {
 	private toDispose: vscode.Disposable[] = [];
 
 	public publish: ((proj: Project, profile: IDeploySettings) => any) | undefined;
-	public publishToContainer: ((proj: Project, profile: ILocalDbDeployProfile) => any) | undefined;
+	public publishToContainer: ((proj: Project, profile: IPublishToDockerSettings) => any) | undefined;
 	public generateScript: ((proj: Project, profile: IDeploySettings) => any) | undefined;
 	public readPublishProfile: ((profileUri: vscode.Uri) => any) | undefined;
 
@@ -240,7 +239,7 @@ export class PublishDatabaseDialog {
 			const dockerBaseImage = this.getBaseDockerImageName();
 			const baseImages = getDockerBaseImages(this.project.getProjectTargetVersion());
 			const imageInfo = baseImages.find(x => x.name === dockerBaseImage);
-			const settings: ILocalDbDeployProfile = {
+			const settings: IPublishToDockerSettings = {
 				localDbSetting: {
 					dbName: this.targetDatabaseName,
 					dockerBaseImage: dockerBaseImage,

@@ -7,14 +7,14 @@ import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
 import * as uiUtils from './utils';
-import { AppSettingType, DockerImageInfo, IDeployAppIntegrationProfile, ISqlDbDeployProfile, ILocalDbDeployProfile, ILocalDbSetting } from '../models/deploy/deployProfile';
+import { AppSettingType, DockerImageInfo, IDeployAppIntegrationProfile, ISqlDbDeployProfile } from '../models/deploy/deployProfile';
 import { Project } from '../models/project';
 import { getPublishDatabaseSettings } from './publishDatabaseQuickpick';
 import * as path from 'path';
 import * as fse from 'fs-extra';
 import { AzureSqlClient } from '../models/deploy/azureSqlClient';
-import { IDeploySettings } from '../models/IDeploySettings';
 import { IAccount } from 'vscode-mssql';
+import { IDeploySettings, ILocalDbSetting, IPublishToDockerSettings, ISqlProject } from 'sqldbproj';
 
 /**
  * Create flow for Deploying a database using only VS Code-native APIs such as QuickPick
@@ -256,7 +256,8 @@ export async function launchCreateAzureServerQuickPick(project: Project, azureSq
 
 	return {
 		// TODO add tenant
-		deploySettings: settings, sqlDbSetting: {
+		deploySettings: settings,
+		sqlDbSetting: {
 			tenantId: session.tenantId,
 			accountId: session.account.key.id,
 			serverName: serverName,
@@ -272,9 +273,9 @@ export async function launchCreateAzureServerQuickPick(project: Project, azureSq
 }
 
 /**
- * Create flow for publishing a database to docker container using only VS Code-native APIs such as QuickPick
+ * Gets the settings for publishing a database to docker container using only VS Code-native APIs such as QuickPick
  */
-export async function launchPublishToDockerContainerQuickpick(project: Project): Promise<ILocalDbDeployProfile | undefined> {
+export async function getPublishToDockerSettings(project: ISqlProject): Promise<IPublishToDockerSettings | undefined> {
 	const target = project.getProjectTargetVersion();
 	const name = uiUtils.getPublishServerName(target);
 	let localDbSetting: ILocalDbSetting | undefined;
