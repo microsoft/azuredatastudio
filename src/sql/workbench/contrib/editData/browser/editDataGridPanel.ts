@@ -186,7 +186,7 @@ export class EditDataGridPanel extends GridParentComponent {
 
 			let currentNewCell = { row: event.row, column: event.cell, isEditable: true, isDirty: isDirtyStatus };
 
-			this.submitCellTask(currentNewCell);
+			this.submitCellTask(currentNewCell).catch(onUnexpectedError);
 		};
 
 		this.overrideCellFn = (rowNumber, columnId, value?, data?): string => {
