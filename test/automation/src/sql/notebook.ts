@@ -34,9 +34,9 @@ export class Notebook {
 		await this.code.waitForElement('.notebookEditor');
 	}
 
-	async newUntitledNotebook(notebookNumber: number = 0): Promise<void> {
+	async newUntitledNotebook(): Promise<void> {
 		await this.code.dispatchKeybinding(`${constants.winOrCtrl}+Alt+n`);
-		await this.editors.waitForActiveTab(`Notebook-${notebookNumber}`);
+		await this.editors.waitForActiveTab(`Notebook-0`);
 		await this.code.waitForElement('.notebookEditor');
 	}
 
