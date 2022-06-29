@@ -12,7 +12,7 @@ import * as mssql from 'mssql';
 import * as loc from './localizedConstants';
 import { SchemaCompareOptionsDialog } from './dialogs/schemaCompareOptionsDialog';
 import { TelemetryReporter, TelemetryViews } from './telemetry';
-import { getTelemetryErrorType, getEndpointName, verifyConnectionAndGetOwnerUri, getRootPath, getSchemaCompareEndpointString, getDataWorkspaceExtensionApi } from './utils';
+import { getTelemetryErrorType, getEndpointName, verifyConnectionAndGetOwnerUri, getRootPath, getSchemaCompareEndpointString, getDataWorkspaceExtensionApi, convertKeysToUpperCase } from './utils';
 import { SchemaCompareDialog } from './dialogs/schemaCompareDialog';
 import { isNullOrUndefined } from 'util';
 
@@ -348,10 +348,10 @@ export class SchemaCompareMainWindow {
 	public setDeploymentOptions(deploymentOptions: mssql.DeploymentOptions): void {
 		this.deploymentOptions = deploymentOptions;
 	}
-	public ConvertObjectToMapTable(deploymentOptions: mssql.DeploymentOptions): mssql.DeploymentOptions {
+	public ConvertObjectKeysToUpperCase(deploymentOptions: mssql.DeploymentOptions): mssql.DeploymentOptions {
 		if (deploymentOptions !== undefined) {
-			// optionsMapTable is coming as an objects which needs to be converted to Map, and the first charater of all propertie's first char shoud also needs to be converted to uppercase.
-			deploymentOptions.optionsMapTable = new Map(Object.entries(deploymentOptions.optionsMapTable).map((option) => [option[0].charAt(0).toUpperCase() + option[0].slice(1), option[1]]));
+			// Options are coming as lower case and converting the first character to upper case
+			deploymentOptions.optionsMapTable = convertKeysToUpperCase<mssql.DacDeployOptionPropertyBoolean>(deploymentOptions.optionsMapTable);
 		}
 
 		return deploymentOptions;
@@ -1110,7 +1110,7 @@ export class SchemaCompareMainWindow {
 		this.targetEndpointInfo = await this.constructEndpointInfo(result.targetEndpointInfo, loc.targetTitle);
 
 		this.updateSourceAndTarget();
-		result.deploymentOptions = this.ConvertObjectToMapTable(result.deploymentOptions);
+		result.deploymentOptions = this.ConvertObjectKeysToUpperCase(result.deploymentOptions);
 		this.setDeploymentOptions(result.deploymentOptions);
 		this.scmpSourceExcludes = result.excludedSourceElements;
 		this.scmpTargetExcludes = result.excludedTargetElements;
@@ -1244,7 +1244,7 @@ export class SchemaCompareMainWindow {
 		// Same as dacfx default options
 		const service = await this.getService();
 		let result = await service.schemaCompareGetDefaultOptions();
-		result.defaultDeploymentOptions = this.ConvertObjectToMapTable(result.defaultDeploymentOptions);
+		result.defaultDeploymentOptions = this.ConvertObjectKeysToUpperCase(result.defaultDeploymentOptions);
 		this.setDeploymentOptions(result.defaultDeploymentOptions);
 	}
 }

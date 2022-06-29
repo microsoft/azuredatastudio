@@ -160,6 +160,9 @@ declare module 'mssql' {
 	}
 
 	export interface DacDeployOptionPropertyObject {
+		/**
+		 * represents array of numbers, ex: for Include object types options, the selected options are the enum numbers that the current property is holding
+		 */
 		value: number[];
 		description: string;
 		propertyName: string;
@@ -168,7 +171,7 @@ declare module 'mssql' {
 	export interface DeploymentOptions {
 		doNotDropObjectTypes: DacDeployOptionPropertyObject;
 		excludeObjectTypes: DacDeployOptionPropertyObject;
-		optionsMapTable: Map<string, DacDeployOptionPropertyBoolean>;
+		optionsMapTable: { [key: string]: DacDeployOptionPropertyBoolean };
 	}
 
 	/**

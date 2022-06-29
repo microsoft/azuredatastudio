@@ -9,7 +9,7 @@ import { isNullOrUndefined } from 'util';
 export class SchemaCompareOptionsModel {
 	public deploymentOptions: mssql.DeploymentOptions;
 	public excludedObjectTypes: number[] = [];
-	public optionsMapTable: Map<string, mssql.DacDeployOptionPropertyBoolean> = new Map<string, mssql.DacDeployOptionPropertyBoolean>();
+	public optionsMapTable: { [key: string]: mssql.DacDeployOptionPropertyBoolean } = {};
 	public optionsLabels: string[] = [];
 
 	public optionsLookup: Map<string, boolean> = new Map<string, boolean>();
@@ -19,7 +19,7 @@ export class SchemaCompareOptionsModel {
 		this.deploymentOptions = defaultOptions;
 		this.UpdateOptionsMapTable();
 		// Sorting the options labels alphabetically
-		this.optionsLabels = Array.from(this.deploymentOptions.optionsMapTable.keys()).sort();
+		this.optionsLabels = Object.keys(this.deploymentOptions.optionsMapTable).sort();
 	}
 
 	public UpdateOptionsMapTable() {
@@ -127,10 +127,10 @@ export class SchemaCompareOptionsModel {
 	*/
 	public setDeploymentOptions() {
 		for (let option of this.optionsLookup) {
-			let optionProp = this.optionsMapTable.get(option[0]);
+			let optionProp = this.optionsMapTable[option[0]];
 			if (optionProp.value !== option[1]) {
 				optionProp.value = option[1];
-				this.optionsMapTable.set(option[0], optionProp);
+				this.optionsMapTable[option[0]] = optionProp;
 			}
 		}
 	}
@@ -139,14 +139,14 @@ export class SchemaCompareOptionsModel {
 	* gets deployment options value from optionsMapTable
 	*/
 	public getSchemaCompareOptionUtil(label): boolean {
-		return this.optionsMapTable.get(label)?.value;
+		return this.optionsMapTable[label]?.value;
 	}
 
 	/*
 	* gets deployment options description from optionsMapTable
 	*/
 	public getDescription(label: string): string {
-		return this.optionsMapTable.get(label)?.description;
+		return this.optionsMapTable[label]?.description;
 	}
 
 	public setObjectTypeOptions() {
