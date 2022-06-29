@@ -15,7 +15,7 @@ import * as vscodeMssql from 'vscode-mssql';
 import * as fse from 'fs-extra';
 import * as which from 'which';
 import { promises as fs } from 'fs';
-import { Project } from '../models/project';
+import { ISqlProject } from 'sqldbproj';
 
 export interface ValidationResult {
 	errorMessage: string;
@@ -322,7 +322,7 @@ export async function defaultAzureAccountServiceFactory(): Promise<vscodeMssql.I
 /*
  * Returns the default deployment options from DacFx, filtered to appropriate options for the given project.
  */
-export async function getDefaultPublishDeploymentOptions(project: Project): Promise<mssql.DeploymentOptions | vscodeMssql.DeploymentOptions> {
+export async function getDefaultPublishDeploymentOptions(project: ISqlProject): Promise<mssql.DeploymentOptions | vscodeMssql.DeploymentOptions> {
 	const schemaCompareService = await getSchemaCompareService();
 	const result = await schemaCompareService.schemaCompareGetDefaultOptions();
 	const deploymentOptions = result.defaultDeploymentOptions;

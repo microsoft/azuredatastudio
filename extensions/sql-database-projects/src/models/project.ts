@@ -12,12 +12,12 @@ import * as os from 'os';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 
 import { Uri, window } from 'vscode';
-import { ISqlProject, ItemType, SqlTargetPlatform } from 'sqldbproj';
+import { EntryType, IDatabaseReferenceProjectEntry, IProjectEntry, ISqlProject, ItemType, SqlTargetPlatform } from 'sqldbproj';
 import { promises as fs } from 'fs';
 import { DataSource } from './dataSources/dataSources';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from './IDatabaseReferenceSettings';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
-import { DacpacReferenceProjectEntry, EntryType, FileProjectEntry, IDatabaseReferenceProjectEntry, ProjectEntry, SqlCmdVariableProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabase, SystemDatabaseReferenceProjectEntry } from './projectEntry';
+import { DacpacReferenceProjectEntry, FileProjectEntry, ProjectEntry, SqlCmdVariableProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabase, SystemDatabaseReferenceProjectEntry } from './projectEntry';
 
 /**
  * Class representing a Project, and providing functions for operating on it
@@ -1625,8 +1625,8 @@ export class Project implements ISqlProject {
 		await this.serializeToProjFile(this.projFileXmlDoc!);
 	}
 
-	private async removeFromProjFile(entries: ProjectEntry | ProjectEntry[]): Promise<void> {
-		if (entries instanceof ProjectEntry) {
+	private async removeFromProjFile(entries: IProjectEntry | IProjectEntry[]): Promise<void> {
+		if (!Array.isArray(entries)) {
 			entries = [entries];
 		}
 
