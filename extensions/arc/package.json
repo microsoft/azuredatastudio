@@ -331,10 +331,10 @@
                         },
                         {
                           "type": "text",
-                          "label": "%arc.data.controller.custom.location%",
-                          "description": "%arc.data.controller.custom.location.description%",
+                          "label": "%arc.data.controller.cluster.name%",
+                          "description": "%arc.data.controller.cluster.name.description%",
                           "required": true,
-                          "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CUSTOM_LOCATION",
+                          "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CLUSTER_NAME",
                           "enabled": {
                             "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
                             "value": "Direct"
@@ -342,10 +342,10 @@
                         },
                         {
                           "type": "text",
-                          "label": "%arc.data.controller.cluster.name%",
-                          "description": "%arc.data.controller.cluster.name.description%",
+                          "label": "%arc.data.controller.custom.location%",
+                          "description": "%arc.data.controller.custom.location.description%",
                           "required": true,
-                          "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CLUSTER_NAME",
+                          "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CUSTOM_LOCATION",
                           "enabled": {
                             "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
                             "value": "Direct"
