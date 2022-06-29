@@ -24,7 +24,7 @@ export class AddNewPackageTab {
 	private newPackagesSummary: azdata.TextComponent;
 	private newPackagesSummaryLoader: azdata.LoadingComponent;
 	private packageInstallButton: azdata.ButtonComponent;
-	private installProgressText: azdata.TextComponent;
+	private installProgressSpinner: azdata.LoadingComponent;
 
 	private readonly InvalidTextPlaceholder = localize('managePackages.invalidTextPlaceholder', "N/A");
 	private readonly SearchPlaceholder = (pkgType: string) => localize('managePackages.searchBarPlaceholder', "Search {0} packages", pkgType);
@@ -49,10 +49,12 @@ export class AddNewPackageTab {
 				await this.loadNewPackageInfo();
 			});
 
-			this.installProgressText = view.modelBuilder.text()
+			this.installProgressSpinner = view.modelBuilder.loadingComponent()
 				.withProps({
-					value: localize('managePackages.installProgressText', "Package installation in progress..."),
-					display: 'none'
+					loadingText: localize('managePackages.installProgressText', "Package installation in progress"),
+					showText: true,
+					loadingCompletedText: localize('managePackages.installCompleteText', "Package installation complete"),
+					loading: false
 				}).component();
 
 			this.newPackagesName = view.modelBuilder.text().withProps({ width: '400px' }).component();
@@ -99,7 +101,7 @@ export class AddNewPackageTab {
 					component: this.packageInstallButton,
 					title: ''
 				}, {
-					component: this.installProgressText,
+					component: this.installProgressSpinner,
 					title: ''
 				}]).component();
 
@@ -188,8 +190,6 @@ export class AddNewPackageTab {
 		}
 	}
 
-
-
 	private async doPackageInstall(): Promise<void> {
 		let packageName = this.newPackagesName.value as string;
 		let packageVersion = this.newPackagesVersions.value as string;
@@ -208,7 +208,7 @@ export class AddNewPackageTab {
 			isCancelable: false,
 			operation: op => {
 				this.packageInstallButton.enabled = false;
-				this.installProgressText.display = 'block';
+				this.installProgressSpinner.loading = true;
 				let installPromise: Promise<void>;
 				installPromise = this.dialog.model.installPackages([{ name: packageName, version: packageVersion }]);
 				installPromise
@@ -235,7 +235,7 @@ export class AddNewPackageTab {
 					})
 					.finally(() => {
 						this.packageInstallButton.enabled = true;
-						this.installProgressText.display = 'none';
+						this.installProgressSpinner.loading = false;
 					});
 			}
 		});
