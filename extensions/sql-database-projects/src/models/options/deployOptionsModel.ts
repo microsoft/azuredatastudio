@@ -9,13 +9,13 @@ export class DeployOptionsModel {
 	public deploymentOptions: mssql.DeploymentOptions;
 
 	public optionsLookup: Map<string, boolean> = new Map<string, boolean>();
-	public optionsMapTable: Map<string, mssql.DacDeployOptionPropertyBoolean> = new Map<string, mssql.DacDeployOptionPropertyBoolean>();
+	public optionsMapTable: { [key: string]: mssql.DacDeployOptionPropertyBoolean } = {};
 	public optionsLabels: string[] = [];
 
 	constructor(defaultOptions: mssql.DeploymentOptions) {
 		this.deploymentOptions = defaultOptions;
 		this.UpdateOptionsMapTable();
-		this.optionsLabels = Object.keys(Object.fromEntries(this.deploymentOptions.optionsMapTable)).sort();
+		this.optionsLabels = Object.keys(this.deploymentOptions.optionsMapTable).sort();
 	}
 
 	public UpdateOptionsMapTable() {
@@ -25,7 +25,6 @@ export class DeployOptionsModel {
 	/**
 	 * Gets the options checkbox values by iterating through the labels and gets the default/changed value from the optionsMapTable
 	 * Returns data as [optionName, booleanValue], where these values are sending to the options table component
-	 * @returns string[][]
 	 */
 	public getOptionsData(): string[][] {
 		let data: any = [];
@@ -45,10 +44,10 @@ export class DeployOptionsModel {
 	*/
 	public setDeploymentOptions(): void {
 		for (let option of this.optionsLookup) {
-			let val = this.optionsMapTable?.get(option[0]);
+			let val = this.optionsMapTable[option[0]];
 			if (val !== undefined && val?.value !== option[1]) {
 				val.value = option[1];
-				this.optionsMapTable?.set(option[0], val);
+				this.optionsMapTable[option[0]] = val;
 			}
 		}
 
@@ -60,13 +59,13 @@ export class DeployOptionsModel {
 	* Gets the selected/default value of the option
 	*/
 	public getDeployOptionUtil(label: string): boolean | undefined {
-		return this.optionsMapTable.get(label)?.value;
+		return this.optionsMapTable[label]?.value;
 	}
 
 	/*
 	* Gets the description of the option selected
 	*/
 	public getDescription(label: string): string | undefined {
-		return this.optionsMapTable.get(label)?.description;
+		return this.optionsMapTable[label]?.description;
 	}
 }

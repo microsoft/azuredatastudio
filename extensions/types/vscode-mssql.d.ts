@@ -507,7 +507,7 @@ declare module 'vscode-mssql' {
 	export interface DeploymentOptions {
 		doNotDropObjectTypes: DacDeployOptionPropertyObject;
 		excludeObjectTypes: DacDeployOptionPropertyObject;
-		optionsMapTable: Map<string, DacDeployOptionPropertyBoolean>;
+		optionsMapTable: { [key: string]: DacDeployOptionPropertyBoolean };
 	}
 
 	/**

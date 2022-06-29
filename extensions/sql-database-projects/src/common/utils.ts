@@ -326,9 +326,8 @@ export async function getDefaultPublishDeploymentOptions(project: ISqlProject): 
 	const schemaCompareService = await getSchemaCompareService();
 	const result = await schemaCompareService.schemaCompareGetDefaultOptions();
 	let deploymentOptions = result.defaultDeploymentOptions;
-	// optionsMapTable is coming as an objects which needs to be converted to Map, and the first charater of all properties shoud also needs to be converted to uppercase.
-	deploymentOptions.optionsMapTable = new Map(Object.entries(result.defaultDeploymentOptions.optionsMapTable).map((x) => [x[0].charAt(0).toUpperCase() + x[0].slice(1), x[1]]));
-
+	// optionsMapTable and includeObjects options are lowercase and the first charater of all properties should needs to be converted to uppercase.
+	deploymentOptions.optionsMapTable = convertKeysToUpperCase<mssql.DacDeployOptionPropertyBoolean>(deploymentOptions.optionsMapTable);
 	// re-include database-scoped credentials
 	if (getAzdataApi()) {
 		deploymentOptions.excludeObjectTypes.value = (deploymentOptions as mssql.DeploymentOptions).excludeObjectTypes.value?.filter(x => x !== mssql.SchemaObjectType.DatabaseScopedCredentials);
@@ -338,15 +337,21 @@ export async function getDefaultPublishDeploymentOptions(project: ISqlProject): 
 
 	// this option needs to be true for same database references validation to work
 	if (project.databaseReferences.length > 0) {
-		// Updating optionsMapTable as this Map table is sending back the option values to the DacFx
-		const includeCompositeObjectDisplayName = constants.IncludeCompositeObjects;
-		let propVal = deploymentOptions.optionsMapTable.get(includeCompositeObjectDisplayName);
-		if (propVal !== undefined) {
-			propVal.value = true;
-			deploymentOptions.optionsMapTable.set(includeCompositeObjectDisplayName, propVal);
-		}
+		deploymentOptions.optionsMapTable[constants.IncludeCompositeObjects].value = true;
 	}
 	return result.defaultDeploymentOptions;
+}
+
+/*
+* Converts first charater of each key to upper case
+*/
+export function convertKeysToUpperCase<T>(options: { [key: string]: T }): { [key: string]: T } {
+	let newObj: { [key: string]: T } = {};
+	Object.entries(options).forEach(function (option) {
+		const key = option[0].charAt(0).toUpperCase() + option[0].slice(1);
+		newObj[key] = option[1];
+	});
+	return newObj;
 }
 
 export interface IPackageInfo {

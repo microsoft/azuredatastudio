@@ -66,10 +66,10 @@ export class DacFxTestService implements mssql.IDacFxService {
 			deploymentOptions: {
 				doNotDropObjectTypes: { value: [], description: sampleDesc, propertyName: sampleName },
 				excludeObjectTypes: { value: [], description: sampleDesc, propertyName: sampleName },
-				optionsMapTable: new Map<string, mssql.DacDeployOptionPropertyBoolean>([
-					['Sample Display Name Option1', { value: false, description: sampleDesc, propertyName: sampleName }],
-					['Sample Display Name Option2', { value: false, description: sampleDesc, propertyName: sampleName }]
-				])
+				optionsMapTable: {
+					'Sample Display Name Option1': { value: false, description: sampleDesc, propertyName: sampleName },
+					'Sample Display Name Option2': { value: false, description: sampleDesc, propertyName: sampleName }
+				}
 			}
 		};
 
