@@ -654,7 +654,10 @@ export class EditDataGridPanel extends GridParentComponent {
 					self.currentEditCellValue = undefined;
 					let refreshPromise: Thenable<void> = Promise.resolve();
 					if (refreshGrid) {
-						refreshPromise = self.refreshGrid();
+						refreshPromise = self.refreshGrid().then(() => {
+							// Scroll to the newly added null row.
+							self.table.grid.scrollRowIntoView(cellToAdd.row + 1);
+						});
 					}
 					return refreshPromise.then(() => {
 						return resultHandler(result);
