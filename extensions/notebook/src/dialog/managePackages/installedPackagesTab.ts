@@ -113,9 +113,9 @@ export class InstalledPackagesTab {
 
 			this.uninstallProgressSpinner = view.modelBuilder.loadingComponent()
 				.withProps({
-					loadingText: localize('managePackages.uninstallProgressText', "Package uninstallation in progress"),
+					loadingText: localize('managePackages.uninstallProgressText', "Uninstalling package"),
 					showText: true,
-					loadingCompletedText: localize('managePackages.uninstallCompleteText', "Package uninstallation complete"),
+					loadingCompletedText: localize('managePackages.uninstallCompleteText', "Package uninstalled"),
 					loading: false
 				}).component();
 

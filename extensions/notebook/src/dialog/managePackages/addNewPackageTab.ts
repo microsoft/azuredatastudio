@@ -51,9 +51,9 @@ export class AddNewPackageTab {
 
 			this.installProgressSpinner = view.modelBuilder.loadingComponent()
 				.withProps({
-					loadingText: localize('managePackages.installProgressText', "Package installation in progress"),
+					loadingText: localize('managePackages.installProgressText', "Installing package"),
 					showText: true,
-					loadingCompletedText: localize('managePackages.installCompleteText', "Package installation complete"),
+					loadingCompletedText: localize('managePackages.installCompleteText', "Package installed"),
 					loading: false
 				}).component();
 
