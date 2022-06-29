@@ -80,9 +80,12 @@ export class AddCellAction extends Action {
 				context.model.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.AddCell, { cell_type: this.cellType });
 			}
 		} else {
-			//Add Cell after current selected cell.
+			// Add cell after currently selected cell, or at the end of the notebook if no cell is selected
 			const editor = this._notebookService.findNotebookEditor(context);
-			const index = editor.cells?.findIndex(cell => cell.active) ?? 0;
+			if (editor.cells) {
+				let currentCellIndex = editor.cells.findIndex(cell => cell.active);
+				index = currentCellIndex !== -1 ? currentCellIndex + 1 : editor.cells.length;
+			}
 			editor.addCell(this.cellType, index);
 			editor.model.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.AddCell, { cell_type: this.cellType });
 		}
@@ -359,6 +362,9 @@ export class TrustedAction extends ToggleableAction {
 	public override async run(context: URI): Promise<void> {
 		const editor = this._notebookService.findNotebookEditor(context);
 		this.trusted = !this.trusted;
+		editor.model.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.TrustChanged, {
+			trust: this.trusted
+		});
 		editor.model.trustedMode = this.trusted;
 	}
 }
@@ -469,6 +475,9 @@ export class RunParametersAction extends TooltipFromLabelAction {
 			});
 			return;
 		}
+		editor.model.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.RunWithParameters, {
+			kernel: editor.model.languageInfo.name
+		});
 		// Set defaultParameters to the parameter values in parameter cell
 		let defaultParameters = new Map<string, string>();
 		for (let cell of editor?.cells) {

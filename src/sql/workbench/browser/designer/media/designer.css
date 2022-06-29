@@ -80,7 +80,7 @@
 }
 
 .designer-component .designer-tab-view {
-	overflow: scroll;
+	overflow: auto;
 	width: 100%;
 	height: 100%;
 }

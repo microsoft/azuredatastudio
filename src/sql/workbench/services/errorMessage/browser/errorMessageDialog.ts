@@ -154,6 +154,9 @@ export class ErrorMessageDialog extends Modal {
 		} else {
 			this._copyButton!.element.style.visibility = 'hidden';
 		}
+		if (this._message) {
+			this._bodyContainer.setAttribute('aria-description', this._message);
+		}
 		this.resetActions();
 		if (actions && actions.length > 0) {
 			for (let i = 0; i < maxActions && i < actions.length; i++) {

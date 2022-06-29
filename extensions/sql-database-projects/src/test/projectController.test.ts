@@ -30,8 +30,8 @@ import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialo
 import { IDacpacReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { CreateProjectFromDatabaseDialog } from '../dialogs/createProjectFromDatabaseDialog';
 import { ImportDataModel } from '../models/api/import';
-import { ItemType, SqlTargetPlatform } from 'sqldbproj';
-import { SystemDatabaseReferenceProjectEntry, SystemDatabase, EntryType, FileProjectEntry } from '../models/projectEntry';
+import { EntryType, ItemType, SqlTargetPlatform } from 'sqldbproj';
+import { SystemDatabaseReferenceProjectEntry, SystemDatabase, FileProjectEntry } from '../models/projectEntry';
 
 let testContext: TestContext;
 

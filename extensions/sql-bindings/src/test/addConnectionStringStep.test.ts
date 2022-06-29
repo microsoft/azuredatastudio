@@ -2,19 +2,19 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import * as vscode from 'vscode';
+import * as fs from 'fs';
+import * as path from 'path';
 import * as should from 'should';
 import * as sinon from 'sinon';
-import * as path from 'path';
-import * as fs from 'fs';
 import * as TypeMoq from 'typemoq';
-import * as constants from '../common/constants';
+import * as vscode from 'vscode';
 import * as azureFunctionUtils from '../common/azureFunctionsUtils';
+import * as constants from '../common/constants';
 import * as utils from '../common/utils';
 
+import { IConnectionInfo } from 'vscode-mssql';
 import { createAddConnectionStringStep } from '../createNewProject/addConnectionStringStep';
 import { createTestCredentials, createTestUtils, TestUtils } from './testUtils';
-import { IConnectionInfo } from 'vscode-mssql';
 
 const rootFolderPath = 'test';
 const localSettingsPath: string = path.join(rootFolderPath, 'local.settings.json');
@@ -39,9 +39,9 @@ describe('Add Connection String Execute Step', () => {
 		// getConnectionString should return a connection string with the password
 		testUtils.vscodeMssqlIExtension.setup(x => x.getConnectionString(connectionDetails, true, false)).returns(() => Promise.resolve(testConnectionString));
 		// Include Password Prompt - Yes to include password
-		let quickPickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().returns(Promise.resolve(constants.yesString) as any);
+		let quickPickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves((constants.yesString) as any);
 		// setup stub for setting local app setting with connection string
-		sinon.stub(fs.promises, 'writeFile');
+		sinon.stub(fs.promises, 'writeFile').resolves();
 		sinon.stub(azureFunctionUtils, 'setLocalAppSetting').withArgs(sinon.match.any, sinon.match.any, sinon.match.any).resolves(true);
 
 		// call execute step on the AzureWizardExecuteStep
@@ -50,12 +50,12 @@ describe('Add Connection String Execute Step', () => {
 		should(quickPickStub.calledOnce).be.true('showQuickPick should have been called');
 		should(getSettingsFileSpy.calledOnce).be.true('GetSettingsFile method should be called once');
 		should(addConnectionStringSpy.calledOnce).be.true('addConnectionStringSpy method should be called once');
-		testExecuteStep.shouldExecute(TypeMoq.It.isAny()).should.be.true();
+		testExecuteStep.shouldExecute(TypeMoq.It.isAny()).should.be.true('Should execute should be true');
 	});
 
 	it('Should return if no settings file found when creating a new Azure Functions project', async () => {
 		// stubs and spies for methods in the execute step
-		let getSettingsFileSpy = sinon.stub(azureFunctionUtils, 'getSettingsFile').withArgs(rootFolderPath).returns(Promise.resolve(undefined));
+		let getSettingsFileSpy = sinon.stub(azureFunctionUtils, 'getSettingsFile').withArgs(rootFolderPath).resolves((undefined));
 		let connectionInfo: IConnectionInfo = createTestCredentials();// Mocks promptForConnection
 		let quickPickStub = sinon.spy(vscode.window, 'showQuickPick');
 		let addConnectionStringToConfigStub = sinon.spy(azureFunctionUtils, 'addConnectionStringToConfig');
@@ -73,7 +73,7 @@ describe('Add Connection String Execute Step', () => {
 		// stubs and spies for methods in the execute step
 		let getSettingsFileSpy = sinon.spy(azureFunctionUtils, 'getSettingsFile').withArgs(rootFolderPath);
 		let connectionInfo: IConnectionInfo = createTestCredentials();// Mocks promptForConnection
-		sinon.stub(azureFunctionUtils, 'promptConnectionStringPasswordAndUpdateConnectionString').withArgs(connectionInfo, localSettingsPath).returns(Promise.resolve(undefined));
+		sinon.stub(azureFunctionUtils, 'promptConnectionStringPasswordAndUpdateConnectionString').withArgs(connectionInfo, localSettingsPath).resolves((undefined));
 		let addConnectionStringToConfigStub = sinon.spy(azureFunctionUtils, 'addConnectionStringToConfig');
 
 		// call execute step on the AzureWizardExecuteStep

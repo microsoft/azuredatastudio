@@ -65,11 +65,29 @@
 	background-image: url('query-plan.svg');
 }
 
+.vs .codicon.disabledActualExecutionPlan {
+	background-image: url('disabled-actual-execution-plan.svg');
+}
+
+.vs .codicon.enabledActualExecutionPlan {
+	background-image: url('enabled-actual-execution-plan.svg');
+}
+
 .vs-dark .codicon.estimatedQueryPlan,
 .hc-black .codicon.estimatedQueryPlan,
 .vs-dark .codicon.actualQueryPlan,
 .hc-black .codicon.actualQueryPlan {
 	background-image: url('query-plan-inverse.svg');
+}
+
+.vs-dark .codicon.codicon.disabledActualExecutionPlan,
+.hc-black .codicon.codicon.disabledActualExecutionPlan {
+	background-image: url('disabled-actual-execution-plan-inverse.svg');
+}
+
+.vs-dark .codicon.codicon.enabledActualExecutionPlan,
+.hc-black .codicon.codicon.enabledActualExecutionPlan {
+	background-image: url('enabled-actual-execution-plan-inverse.svg');
 }
 
 .vs .codicon.createInsight {

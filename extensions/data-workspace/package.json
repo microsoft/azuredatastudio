@@ -2,7 +2,7 @@
   "name": "data-workspace",
   "displayName": "Data Workspace",
   "description": "Additional common functionality for database projects",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
@@ -178,7 +178,7 @@
   },
   "dependencies": {
     "fast-glob": "^3.2.7",
-    "@microsoft/ads-extension-telemetry": "^1.1.5",
+    "@microsoft/ads-extension-telemetry": "^1.2.0",
     "vscode-nls": "^4.0.0"
   },
   "devDependencies": {

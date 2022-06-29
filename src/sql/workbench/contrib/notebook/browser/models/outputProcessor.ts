@@ -8,6 +8,7 @@ import { nb } from 'azdata';
 import { JSONObject, isPrimitive } from 'sql/workbench/services/notebook/common/jsonext';
 import { nbformat } from 'sql/workbench/services/notebook/common/nbformat';
 import { MimeModel } from 'sql/workbench/services/notebook/browser/outputs/mimemodel';
+import * as nls from 'vs/nls';
 
 /**
  * A multiline string.
@@ -46,6 +47,8 @@ export function getData(output: nb.ICellOutput): JSONObject {
 		} else if (output.evalue) {
 			bundle['application/vnd.jupyter.stderr'] = output.ename ? `${output.ename}: ${output.evalue}` : `${output.evalue}`;
 		}
+	} else {
+		bundle['application/vnd.jupyter.stderr'] = nls.localize('notebookInvalidOutputTypeError', "Output type '{0}' not recognized.", output.output_type);
 	}
 	return convertBundle(bundle);
 }
