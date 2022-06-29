@@ -24,6 +24,12 @@ const fileUri = vscode.Uri.file('testUri');
 describe('Add SQL Binding quick pick', () => {
 	beforeEach(function (): void {
 		testUtils = createTestUtils();
+		// create fake connection string settings for local.setting.json to be used
+		sinon.stub(fs.promises, 'access').onFirstCall().resolves();
+		sinon.stub(fs, 'readFileSync').withArgs(sinon.match.any).returns(
+			`{"IsEncrypted": false,
+				"Values": {"test1": "test1", "test2": "test2", "test3":"test3"}}`
+		);
 	});
 
 	afterEach(function (): void {
@@ -64,7 +70,7 @@ describe('Add SQL Binding quick pick', () => {
 		// select input or output binding
 		quickpickStub.onSecondCall().resolves(<any>{ label: constants.input, type: BindingType.input });
 		sinon.stub(azureFunctionUtils, 'getAFProjectContainingFile').resolves(vscode.Uri.file('testUri'));
-		// select connection profile - create new
+		// select connection string setting method - create new
 		quickpickStub.onThirdCall().resolves(<any>{ label: constants.createNewLocalAppSettingWithIcon });
 		// give connection string setting name
 		sinon.stub(vscode.window, 'showInputBox').onFirstCall().resolves('sqlConnectionString');
@@ -189,7 +195,7 @@ describe('Add SQL Binding quick pick', () => {
 		await launchAddSqlBindingQuickpick(vscode.Uri.file('testUri'));
 
 		// should go back to the select connection string methods
-		should(quickpickStub.callCount).be.equal(5,'showQuickPick should have been called 5 times');
+		should(quickpickStub.callCount).be.equal(5, 'showQuickPick should have been called 5 times');
 		should(quickpickStub.getCall(3).args).deepEqual([
 			[constants.connectionProfile, constants.userConnectionString],
 			{
@@ -225,7 +231,7 @@ describe('Add SQL Binding quick pick', () => {
 		await launchAddSqlBindingQuickpick(vscode.Uri.file('testUri'));
 
 		// should go back to the select connection string methods
-		should(quickpickStub.callCount).be.equal(4,'showQuickPick should have been called 4 times');
+		should(quickpickStub.callCount).be.equal(4, 'showQuickPick should have been called 4 times');
 		should(quickpickStub.getCall(2).args).containDeepOrdered([
 			[{ label: constants.createNewLocalAppSettingWithIcon }],
 			{
@@ -267,7 +273,7 @@ describe('Add SQL Binding quick pick', () => {
 		await launchAddSqlBindingQuickpick(vscode.Uri.file('testUri'));
 
 		// should go back to the select connection string methods
-		should(quickpickStub.callCount).be.equal(5,'showQuickPick should have been called 5 times');
+		should(quickpickStub.callCount).be.equal(5, 'showQuickPick should have been called 5 times');
 		should(quickpickStub.getCall(4).args).containDeepOrdered([
 			[constants.connectionProfile, constants.enterConnectionString],
 			{
