@@ -17,7 +17,7 @@ import { getAgreementDisplayText, getConnectionName, getDockerBaseImages, getPub
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { Deferred } from '../common/promise';
 import { PublishOptionsDialog } from './publishOptionsDialog';
-import { IDeploySettings, IPublishToDockerSettings } from 'sqldbproj';
+import { ISqlProjectPublishSettings, IPublishToDockerSettings } from 'sqldbproj';
 
 interface DataSourceDropdownValue extends azdataType.CategoryValue {
 	dataSource: SqlConnectionDataSource;
@@ -63,9 +63,9 @@ export class PublishDatabaseDialog {
 
 	private toDispose: vscode.Disposable[] = [];
 
-	public publish: ((proj: Project, profile: IDeploySettings) => any) | undefined;
+	public publish: ((proj: Project, profile: ISqlProjectPublishSettings) => any) | undefined;
 	public publishToContainer: ((proj: Project, profile: IPublishToDockerSettings) => any) | undefined;
-	public generateScript: ((proj: Project, profile: IDeploySettings) => any) | undefined;
+	public generateScript: ((proj: Project, profile: ISqlProjectPublishSettings) => any) | undefined;
 	public readPublishProfile: ((profileUri: vscode.Uri) => any) | undefined;
 
 	constructor(private project: Project) {
@@ -224,7 +224,7 @@ export class PublishDatabaseDialog {
 
 	public async publishClick(): Promise<void> {
 		if (this.existingServerSelected) {
-			const settings: IDeploySettings = {
+			const settings: ISqlProjectPublishSettings = {
 				databaseName: this.targetDatabaseName,
 				serverName: this.getServerName(),
 				connectionUri: await this.getConnectionUri(),
@@ -240,7 +240,7 @@ export class PublishDatabaseDialog {
 			const baseImages = getDockerBaseImages(this.project.getProjectTargetVersion());
 			const imageInfo = baseImages.find(x => x.name === dockerBaseImage);
 			const settings: IPublishToDockerSettings = {
-				localDbSetting: {
+				dockerSettings: {
 					dbName: this.targetDatabaseName,
 					dockerBaseImage: dockerBaseImage,
 					dockerBaseImageEula: imageInfo?.agreementInfo?.link?.url || '',
@@ -249,7 +249,7 @@ export class PublishDatabaseDialog {
 					serverName: constants.defaultLocalServerName,
 					userName: constants.defaultLocalServerAdminName
 				},
-				deploySettings: {
+				sqlProjectPublishSettings: {
 					databaseName: this.targetDatabaseName,
 					serverName: constants.defaultLocalServerName,
 					connectionUri: '',
@@ -270,7 +270,7 @@ export class PublishDatabaseDialog {
 		TelemetryReporter.sendActionEvent(TelemetryViews.SqlProjectPublishDialog, TelemetryActions.generateScriptClicked);
 
 		const sqlCmdVars = this.getSqlCmdVariablesForPublish();
-		const settings: IDeploySettings = {
+		const settings: ISqlProjectPublishSettings = {
 			databaseName: this.targetDatabaseName,
 			serverName: this.getServerName(),
 			connectionUri: await this.getConnectionUri(),

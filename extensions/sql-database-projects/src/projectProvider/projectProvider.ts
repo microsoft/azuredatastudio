@@ -25,7 +25,7 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	 * Gets the project tree data provider
 	 * @param projectFilePath The project file Uri
 	 */
-	async getProjectTreeDataProvider(projectFilePath: vscode.Uri): Promise<vscode.TreeDataProvider<BaseProjectTreeItem>> {
+	public async getProjectTreeDataProvider(projectFilePath: vscode.Uri): Promise<vscode.TreeDataProvider<BaseProjectTreeItem>> {
 		const provider = new SqlDatabaseProjectTreeViewProvider();
 		const project = await Project.openProject(projectFilePath.fsPath);
 		provider.load([project]);
@@ -35,7 +35,7 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	/**
 	 * Gets the supported project types
 	 */
-	get supportedProjectTypes(): dataworkspace.IProjectType[] {
+	public get supportedProjectTypes(): dataworkspace.IProjectType[] {
 		return [
 			{
 				id: constants.emptyAzureDbSqlDatabaseProjectTypeId,
@@ -80,7 +80,7 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	 * @param sdkStyle whether project is sdk-style. Default is false
 	 * @returns Uri of the newly created project file
 	 */
-	async createProject(name: string, location: vscode.Uri, projectTypeId: string, targetPlatform?: sqldbproj.SqlTargetPlatform, sdkStyle: boolean = false): Promise<vscode.Uri> {
+	public async createProject(name: string, location: vscode.Uri, projectTypeId: string, targetPlatform?: sqldbproj.SqlTargetPlatform, sdkStyle: boolean = false): Promise<vscode.Uri> {
 
 		if (!targetPlatform) {
 			const projectType = this.supportedProjectTypes.find(x => x.id === projectTypeId);
@@ -102,7 +102,7 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	/**
 	 * Opens and loads a .sqlproj file
 	 */
-	openProject(projectFilePath: string): Promise<sqldbproj.ISqlProject> {
+	public openProject(projectFilePath: string): Promise<sqldbproj.ISqlProject> {
 		return Project.openProject(projectFilePath);
 	}
 
@@ -113,7 +113,7 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	/**
 	 * Gets the project actions to be placed on the dashboard toolbar
 	 */
-	get projectToolbarActions(): (dataworkspace.IProjectAction | dataworkspace.IProjectActionGroup)[] {
+	public get projectToolbarActions(): (dataworkspace.IProjectAction | dataworkspace.IProjectActionGroup)[] {
 		const addItemAction: dataworkspace.IProjectAction = {
 			id: constants.addItemAction,
 			icon: IconPathHelper.add,
@@ -152,7 +152,7 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	/**
 	 * Gets the data to be displayed in the project dashboard
 	 */
-	getDashboardComponents(projectFile: string): dataworkspace.IDashboardTable[] {
+	public getDashboardComponents(projectFile: string): dataworkspace.IDashboardTable[] {
 		const width = 200;
 		const publishInfo: dataworkspace.IDashboardTable = {
 			name: constants.PublishHistory,
@@ -177,11 +177,11 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 		return [publishInfo, buildInfo];
 	}
 
-	get image(): ThemedIconPath {
+	public get image(): ThemedIconPath {
 		return IconPathHelper.dashboardSqlProj;
 	}
 
-	async openSqlNewProjectDialog(allowedTargetPlatforms?: sqldbproj.SqlTargetPlatform[]): Promise<vscode.Uri | undefined> {
+	public openSqlNewProjectDialog(allowedTargetPlatforms?: sqldbproj.SqlTargetPlatform[]): Promise<vscode.Uri | undefined> {
 		let targetPlatforms = Array.from(constants.targetPlatformToVersion.keys());
 		if (allowedTargetPlatforms) {
 			targetPlatforms = targetPlatforms.filter(p => allowedTargetPlatforms.toString().includes(p));
@@ -205,22 +205,22 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	 * Gets the list of .sql scripts contained in a project
 	 * @param projectFilePath
 	 */
-	async getProjectScriptFiles(projectFilePath: string): Promise<string[]> {
-		return await this.projectController.getProjectScriptFiles(projectFilePath);
+	public getProjectScriptFiles(projectFilePath: string): Promise<string[]> {
+		return this.projectController.getProjectScriptFiles(projectFilePath);
 	}
 
 	/**
 	 * Gets the Database Schema Provider version for a SQL project
 	 */
-	public async getProjectDatabaseSchemaProvider(projectFilePath: string): Promise<string> {
-		return await this.projectController.getProjectDatabaseSchemaProvider(projectFilePath);
+	public getProjectDatabaseSchemaProvider(projectFilePath: string): Promise<string> {
+		return this.projectController.getProjectDatabaseSchemaProvider(projectFilePath);
 	}
 
-	public async generateProjectFromOpenApiSpec(options?: sqldbproj.GenerateProjectFromOpenApiSpecOptions): Promise<sqldbproj.ISqlProject | undefined> {
-		return await this.projectController.generateProjectFromOpenApiSpec(options);
+	public generateProjectFromOpenApiSpec(options?: sqldbproj.GenerateProjectFromOpenApiSpecOptions): Promise<sqldbproj.ISqlProject | undefined> {
+		return this.projectController.generateProjectFromOpenApiSpec(options);
 	}
 
-	getPublishToDockerSettings(project: sqldbproj.ISqlProject): Promise<sqldbproj.IPublishToDockerSettings | undefined> {
+	public getPublishToDockerSettings(project: sqldbproj.ISqlProject): Promise<sqldbproj.IPublishToDockerSettings | undefined> {
 		return getPublishToDockerSettings(project);
 	}
 }

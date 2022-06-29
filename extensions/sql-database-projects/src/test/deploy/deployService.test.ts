@@ -72,7 +72,7 @@ describe('deploy service', function (): void {
 	it('Should deploy a database to docker container successfully', async function (): Promise<void> {
 		const testContext = createContext();
 		const deployProfile: IPublishToDockerSettings = {
-			localDbSetting: {
+			dockerSettings: {
 				dbName: 'test',
 				password: 'PLACEHOLDER',
 				port: 1433,
@@ -102,7 +102,7 @@ describe('deploy service', function (): void {
 	it('Should fail the deploy if docker is not running', async function (): Promise<void> {
 		const testContext = createContext();
 		const deployProfile: IPublishToDockerSettings = {
-			localDbSetting: {
+			dockerSettings: {
 				dbName: 'test',
 				password: 'PLACEHOLDER',
 				port: 1433,
