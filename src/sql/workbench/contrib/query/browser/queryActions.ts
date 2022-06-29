@@ -893,3 +893,7 @@ export class ExportAsNotebookAction extends QueryTaskbarAction {
 		this._commandService.executeCommand('mssql.exportSqlAsNotebook', this.editor.input.uri);
 	}
 }
+
+export const CATEGORIES = {
+	ExecutionPlan: { value: nls.localize('ExecutionPlan', 'Execution Plan'), original: 'Execution Plan' }
+};
