@@ -321,8 +321,6 @@ export interface IConnectionManagementService {
 	 * @returns array of connections
 	 */
 	getConnections(activeConnectionsOnly?: boolean): ConnectionProfile[];
-
-	getConnection(uri: string): ConnectionProfile;
 }
 
 export enum RunQueryOnConnectionMode {

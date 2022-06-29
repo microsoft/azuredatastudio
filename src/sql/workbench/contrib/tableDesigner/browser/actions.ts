@@ -6,57 +6,56 @@
 import { TableDesignerComponentInput } from 'sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput';
 import { Action } from 'vs/base/common/actions';
 import { Codicon } from 'vs/base/common/codicons';
-import { IDisposable } from 'vs/base/common/lifecycle';
+import { DisposableStore } from 'vs/base/common/lifecycle';
 import { localize } from 'vs/nls';
 
-export abstract class TableChangesActionBase extends Action {
-	protected _input: TableDesignerComponentInput;
-	private _onStateChangeDisposable: IDisposable;
+const PublishChangesLabel = localize('tableDesigner.publishTableChanges', "Publish Changes...");
+const SaveChangesLabel = localize('tableDesigner.saveTableChanges', "Save");
 
-	constructor(id: string, label: string, iconClassNames: string) {
-		super(id, label, iconClassNames);
+export class SaveTableChangesAction extends Action {
+	public static ID = 'tableDesigner.publishTableChanges';
+	protected _input: TableDesignerComponentInput;
+	protected _inputDisposableStore: DisposableStore;
+
+	constructor() {
+		super(SaveTableChangesAction.ID);
+		this._inputDisposableStore = new DisposableStore();
 	}
 
 	public setContext(input: TableDesignerComponentInput): void {
 		this._input = input;
 		this.updateState();
-		this._onStateChangeDisposable?.dispose();
-		this._onStateChangeDisposable = input.onStateChange((e) => {
+		this.updateLabelAndIcon();
+		this._inputDisposableStore?.dispose();
+		this._inputDisposableStore = new DisposableStore();
+		this._inputDisposableStore.add(input.onStateChange((e) => {
 			this.updateState();
-		});
+		}));
+		this._inputDisposableStore.add(input.onInitialized(() => {
+			this.updateLabelAndIcon();
+		}));
 	}
 
 	private updateState(): void {
 		this.enabled = this._input.dirty && this._input.valid && this._input.pendingAction === undefined;
 	}
 
+	private updateLabelAndIcon(): void {
+		if (this._input?.tableDesignerView?.useAdvancedSaveMode) {
+			this.label = PublishChangesLabel;
+			this.class = Codicon.repoPush.classNames;
+		} else {
+			this.label = SaveChangesLabel;
+			this.class = Codicon.save.classNames;
+		}
+	}
+
+	public override async run(): Promise<void> {
+		await this._input.save();
+	}
+
 	override dispose() {
 		super.dispose();
-		this._onStateChangeDisposable?.dispose();
-	}
-}
-
-export class PublishTableChangesAction extends TableChangesActionBase {
-	public static ID = 'tableDesigner.publishTableChanges';
-	public static LABEL = localize('tableDesigner.publishTableChanges', "Publish Changes...");
-	constructor() {
-		super(PublishTableChangesAction.ID, PublishTableChangesAction.LABEL, Codicon.repoPush.classNames);
-	}
-
-	public override async run(): Promise<void> {
-		await this._input.openPublishDialog();
-	}
-}
-
-export class GenerateTableChangeScriptAction extends TableChangesActionBase {
-	public static ID = 'tableDesigner.generateScript';
-	public static LABEL = localize('tableDesigner.generateScript', "Generate Script");
-
-	constructor() {
-		super(GenerateTableChangeScriptAction.ID, GenerateTableChangeScriptAction.LABEL, Codicon.output.classNames);
-	}
-
-	public override async run(): Promise<void> {
-		await this._input.generateScript();
+		this._inputDisposableStore?.dispose();
 	}
 }

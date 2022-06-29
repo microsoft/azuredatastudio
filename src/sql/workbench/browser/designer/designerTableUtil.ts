@@ -9,7 +9,8 @@ import { deepClone } from 'vs/base/common/objects';
 
 export const TableRowHeight = 25;
 export const TableHeaderRowHeight = 28;
-const minHeight = getTableHeight(2);
+export const ScrollbarSize = 15;
+const minHeight = getTableHeight(1);
 
 /**
  * Layout the table, the height will be determined by the number of rows in it.
@@ -33,5 +34,5 @@ export function layoutDesignerTable(table: Table<Slick.SlickData>, width: number
 }
 
 function getTableHeight(rows: number): number {
-	return rows * TableRowHeight + TableHeaderRowHeight;
+	return rows * TableRowHeight + TableHeaderRowHeight + ScrollbarSize;
 }

@@ -90,7 +90,6 @@ export function textFormatter(row: number | undefined, cell: any | undefined, va
 	let valueToDisplay = '';
 	let titleValue = '';
 	let cellStyle = '';
-
 	if (DBCellValue.isDBCellValue(value)) {
 		valueToDisplay = 'NULL';
 		if (!value.isNull) {

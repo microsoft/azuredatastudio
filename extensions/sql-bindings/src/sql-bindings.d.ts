@@ -54,7 +54,7 @@ declare module 'sql-bindings' {
 		 * @param connectionInfo (optional) connection info from the user to update the connection string,
 		 * if left undefined we prompt the user for the connection info
 		 * @returns connection string setting name to be used for the createFunction API
- 		 */
+		 */
 		promptAndUpdateConnectionStringSetting(projectUri: vscode.Uri | undefined, connectionInfo?: IConnectionInfo): Promise<IConnectionStringInfo | undefined>;
 
 		/**
@@ -63,6 +63,12 @@ declare module 'sql-bindings' {
 		 * @returns array of names of Azure Functions in the file
 		 */
 		getAzureFunctions(filePath: string): Promise<GetAzureFunctionsResult>;
+
+		/**
+		 * Adds the required nuget package to the project
+		 * @param selectedProjectFile is the users selected project file path
+		 */
+		addSqlNugetReferenceToProjectFile(selectedProjectFile: string): Promise<void>
 	}
 
 	/**
@@ -121,14 +127,38 @@ declare module 'sql-bindings' {
 		filePath: string;
 	}
 
+	export interface AzureFunction {
+		/**
+		 * The name of the function
+		 */
+		name: string;
+		/**
+		 * The HttpTrigger binding if one is specified
+		 */
+		httpTriggerBinding?: HttpTriggerBinding | undefined;
+
+	}
+
+	export interface HttpTriggerBinding {
+		/**
+		 * The route if specified
+		 */
+		route?: string | undefined;
+		/**
+		 * The operations (methods) if any are specified
+		 */
+		operations?: string[] | undefined;
+	}
+
 	/**
 	 * Result from a get Azure Functions request
 	 */
-	export interface GetAzureFunctionsResult extends ResultStatus {
+	export interface GetAzureFunctionsResult {
 		/**
-		 * Array of names of Azure Functions in the file
+		 * Array of Azure Functions in the file
+		 * Note : The string list response will eventually be deprecated and replaced completely with the AzureFunction list
 		 */
-		azureFunctions: string[];
+		azureFunctions: string[] | AzureFunction[];
 	}
 
 	/**

@@ -549,8 +549,8 @@
         <target state="translated">Riepilogo del pacchetto</target>
       </trans-unit>
       <trans-unit id="managePackages.packageVersionTitle">
-        <source xml:lang="en">Package Version</source>
-        <target state="translated">Versione del pacchetto</target>
+        <source xml:lang="en">Supported Package Versions for Python {0}</source>
+        <target state="translated">Versioni dei pacchetti supportate per python {0}</target>
       </trans-unit>
       <trans-unit id="managePackages.searchBarPlaceholder">
         <source xml:lang="en">Search {0} packages</source>

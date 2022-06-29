@@ -1,6 +1,7 @@
 {
 	"rules": {
 		"no-cond-assign": 0,
-		"@typescript-eslint/explicit-function-return-type": ["off"]
+		"@typescript-eslint/explicit-function-return-type": ["off"],
+		"@typescript-eslint/await-thenable": ["off"]
 	}
 }

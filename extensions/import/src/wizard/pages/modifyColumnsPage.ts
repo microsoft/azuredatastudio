@@ -137,7 +137,7 @@ export class ModifyColumnsPage extends ImportPage {
 	}
 
 	override async onPageLeave(): Promise<boolean> {
-		await this.emptyTable();
+		this.emptyTable();
 		this.instance.changeNextButtonLabel(constants.nextText);
 		this.instance.registerNavigationValidator((info) => {
 			return true;

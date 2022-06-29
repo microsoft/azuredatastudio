@@ -404,7 +404,7 @@
       <source xml:lang="en">Package Summary</source>
     </trans-unit>
     <trans-unit id="managePackages.packageVersionTitle">
-      <source xml:lang="en">Package Version</source>
+      <source xml:lang="en">Supported Package Versions for Python {0}</source>
     </trans-unit>
     <trans-unit id="managePackages.searchBarPlaceholder">
       <source xml:lang="en">Search {0} packages</source>

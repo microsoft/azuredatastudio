@@ -909,6 +909,96 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
+      <Item ItemId=";@src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView.epComapre.LoadingPlanCompleteMe" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ssage" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Execution plan successfully loaded]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[План выполнения успешно загружен]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView.epCompare.comparePropertiesActi" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) on" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Properties]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Свойства]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView.executionPlanComparisonProp" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ertiesBottomOperation" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Bottom operation: {0}]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Нижняя операция: {0}]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+        <Item ItemId=";(...) ertiesTopOperation" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Top operation: {0}]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Верхняя операция: {0}]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView.executionPlanPropertiesEdge" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) OperationName" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Edge]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Edge]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView.nodePropertyViewNameNameCol" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) umnHeader" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Name]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Имя]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView.nodePropertyViewNameValueCo" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) lumnBottomHeader" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Value (Bottom Plan)]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Значение (нижний план)]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+        <Item ItemId=";(...) lumnTopHeader" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Value (Top Plan)]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Значение (верхний план)]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
       <Item ItemId=";@src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView.executionPlanPropertiesEdgeOperationN" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) ame" ItemType="0" PsrId="308" Leaf="true">
@@ -937,10 +1027,13 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) splayOrder" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[Categorized]]></Val>
+            <Val><![CDATA[Importance]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[По категориям]]></Val>
+              <Val><![CDATA[Важность]]></Val>
             </Tgt>
+            <Prev Cat="Text">
+              <Val><![CDATA[Categorized]]></Val>
+            </Prev>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -2081,10 +2174,13 @@
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.incompatible" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Unable to install extension '{0}' as it is not compatible with Azure Data Studio '{1}'.]]></Val>
+          <Val><![CDATA[Unable to install version '{0}' of extension '{1}' as it is not compatible with Azure Data Studio '{2}'. Update to Azure Data Studio {3} to install the extension.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Не удалось установить расширение "{0}", так как оно несовместимо с Azure Data Studio "{1}".]]></Val>
+            <Val><![CDATA[Не удается установить версию "{0}" расширения "{1}", так как она несовместима с Azure Data Studio "{2}". Обновите до Azure Data Studio {3}, чтобы установить расширение.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Unable to install extension '{0}' as it is not compatible with Azure Data Studio '{1}'.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3309,15 +3405,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/api/common/notebooks/vscodeExecuteProvider.notebookMultipleRequestsError" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Cannot execute code cell. Another cell is currently being executed.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Невозможно выполнить ячейку кода. Выполняется другая ячейка.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";src/sql/workbench/browser/actions.clearSavedAccounts" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Clear all saved accounts]]></Val>
@@ -3399,6 +3486,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/browser/designer/designer.designer.actions" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[More Actions]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Дополнительные действия]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/browser/designer/designer.designer.defaultRemoveRowConfirmationMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Are you sure you want to remove the row?]]></Val>
@@ -3455,10 +3551,13 @@
       </Item>
       <Item ItemId=";src/sql/workbench/browser/designer/designer.designer.moveRowText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Move Row]]></Val>
+          <Val><![CDATA[Move]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Переместить строку]]></Val>
+            <Val><![CDATA[Переместить]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Move Row]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3599,19 +3698,25 @@
       </Item>
       <Item ItemId=";src/sql/workbench/browser/designer/tableActions.designer.insertAfterSelectedColumn" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Insert after]]></Val>
+          <Val><![CDATA[Insert After]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Вставить после]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Insert after]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/browser/designer/tableActions.designer.insertBeforeSelectedRow" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Insert before]]></Val>
+          <Val><![CDATA[Insert Before]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Вставить до]]></Val>
+            <Val><![CDATA[Вставить перед]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Insert before]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3737,15 +3842,6 @@
           <Val><![CDATA[The operation cannot be performed while another operation is in progress.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Невозможно выполнить операцию, пока выполняется другая операция.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/browser/editor/tableDesigner/tableDesignerInput.tableDesigner.newTable" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[New Table]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Создать таблицу]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4133,6 +4229,15 @@
           <Val><![CDATA[Update]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Обновить]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/common/constants.notebookMultipleRequestsError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Cannot execute code cell. Another cell is currently being executed.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Невозможно выполнить ячейку кода. Выполняется другая ячейка.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -7152,6 +7257,141 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/compareExecutionPlanInput.epCompare.editorName" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Compare Execution Plans]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Сравнение планов выполнения]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditor.compareExecutionPlanEditor" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Compare Execution Plan Editor]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Сравнение редактора плана выполнения]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView.addExecutionPlanLabel" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Add execution plan]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Добавить план выполнения]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView.epComapre.LoadingPlanMessage" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Loading execution plan]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Загрузка плана выполнения]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView.epComapre.placeholderInfoboxText" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Add execution plans to compare]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Добавьте планы выполнения для сравнения]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView.epCompare.FileFilterDescription" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Execution Plan Files]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Файлы плана выполнения]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView.epCompare.comparisonProgess" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Loading similar areas in compared plans]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Загрузка похожих областей в сравниваемых планах]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView.epCompare.toggleOrientation" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Toggle Orientation]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Переключить ориентацию]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView.epCompare.zoomInAction" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Zoom In]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Увеличить масштаб]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView.epCompare.zoomOutAction" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Zoom Out]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Уменьшить масштаб]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView.epCompare.zoomReset" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Reset Zoom]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Сбросить масштаб]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView.epCompare.zoomToFit" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Zoom to fit]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Масштаб по размеру экрана]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView.queryDropdownPrefix" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Query {0} of {1}: {2}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Запрос {0} из {1}: {2}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanContribution.executionPlanCompareCommandOriginalValue" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Compare execution plans]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Сравнение планов выполнения]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanContribution.executionPlanCompareCommandValue" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Compare execution plans]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Сравнение планов выполнения]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanEditor.executionPlanEditor" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Query Execution Plan Editor]]></Val>
@@ -7238,6 +7478,15 @@
           <Val><![CDATA[Execution Plan Files]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Файлы плана выполнения]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanView.executionPlanCompareExecutionPlanAction" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Compare execution plan]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Сравнение плана выполнения]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -9161,9 +9410,21 @@
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/cellViews/output.component.noMimeTypeFound" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[No {0}renderer could be found for output. It has the following MIME types: {1}]]></Val>
+          <Val><![CDATA[No renderer could be found for output. It has the following MIME types: {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Не удается найти отрисовщик {0} для выходных данных. Он содержит следующие типы MIME: {1}]]></Val>
+            <Val><![CDATA[Не удается найти отрисовщик для выходных данных. Он содержит следующие типы MIME: {0}]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[No {0}renderer could be found for output. It has the following MIME types: {1}]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/notebook/browser/cellViews/output.component.noSafeMimeTypeFound" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[No safe renderer could be found for output. It has the following MIME types: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Не удалось найти безопасный модуль визуализации выходных данных. Он содержит следующие типы MIME: {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -9173,15 +9434,6 @@
           <Val><![CDATA[No component could be found for selector {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Не удалось найти компонент для селектора {0}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/notebook/browser/cellViews/output.component.safe" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[safe ]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[безопасный ]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -9347,6 +9599,15 @@
           <Val><![CDATA[Your search returned a large number of results, only the first 999 matches will be highlighted.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[В результате поиска было получено слишком большое число результатов. Будут показаны только первые 999 результатов.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/notebook/browser/models/outputProcessor.notebookInvalidOutputTypeError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Output type '{0}' not recognized.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Тип выходных данных {0} не распознан]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -10815,11 +11076,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/contrib/objectExplorer/browser/serverTreeView.serverTree.addConnection" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";src/sql/workbench/contrib/objectExplorer/browser/serverTreeView.serverTree.newConnection" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Add Connection]]></Val>
+          <Val><![CDATA[New Connection]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Добавить подключение]]></Val>
+            <Val><![CDATA[Новое подключение]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -11550,6 +11811,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/query/browser/keyboardQueryActions.estimatedExecutionPlanKeyboardAction" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Display Estimated Execution Plan]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Отобразить предполагаемый план выполнения]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/query/browser/keyboardQueryActions.focusOnCurrentQueryKeyboardAction" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Focus on Current Query]]></Val>
@@ -11973,6 +12243,18 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/query/browser/queryActions.disableActualPlanLabel" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Disable Actual Plan]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Отключить фактический план]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Exclude Actual Plan]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/query/browser/queryActions.disablesqlcmdLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Disable SQLCMD]]></Val>
@@ -11991,6 +12273,18 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/query/browser/queryActions.enableActualPlanLabel" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Enable Actual Plan]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Включить фактический план]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Include Actual Plan]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/query/browser/queryActions.enablesqlcmdLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enable SQLCMD]]></Val>
@@ -12002,10 +12296,13 @@
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/query/browser/queryActions.estimatedQueryPlan" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Explain]]></Val>
+          <Val><![CDATA[Estimated Plan]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Объяснить]]></Val>
+            <Val><![CDATA[Предполагаемый план]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Explain]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -12221,186 +12518,6 @@
           <Val><![CDATA[Controls the row height in pixels]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Определяет высоту строки в пикселах]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryHistory/browser/queryHistoryActions.queryHistory.clearLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Clear All History]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Очистить весь журнал]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryHistory/browser/queryHistoryActions.queryHistory.delete" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Delete]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Удалить]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryHistory/browser/queryHistoryActions.queryHistory.disableCapture" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Pause Query History Capture]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Приостановить ведение Журнала запросов]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryHistory/browser/queryHistoryActions.queryHistory.enableCapture" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Start Query History Capture]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Начать ведение Журнала запросов]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryHistory/browser/queryHistoryActions.queryHistory.openQuery" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Open Query]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Открыть запрос]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryHistory/browser/queryHistoryActions.queryHistory.runQuery" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Run Query]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Выполнить запрос]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryHistory/browser/queryHistoryActions.queryHistory.toggleCaptureLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Toggle Query History capture]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Включить или отключить ведение Журнала запросов]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryHistory/browser/queryHistoryActions.toggleQueryHistory" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Toggle Query History]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Включить или отключить журнал запросов]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryHistory/browser/queryHistoryRenderer.failed" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[failed]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Ошибка]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryHistory/browser/queryHistoryRenderer.succeeded" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[succeeded]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Выполнено]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryHistory/browser/queryHistoryView.noQueriesMessage" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[No queries to display.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Нет запросов для отображения.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryHistory/browser/queryHistoryView.queryHistory.regTreeAriaLabel" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Query History]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Журнал запросов]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryHistory/electron-browser/queryHistory.miViewQueryHistory" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[&&Query History]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[&&Журнал запросов]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryHistory/electron-browser/queryHistory.queryHistory" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Query History]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Журнал запросов]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryHistory/electron-browser/queryHistory.queryHistory.clearLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Clear All History]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Очистить весь журнал]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryHistory/electron-browser/queryHistory.queryHistory.disableCapture" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Pause Query History Capture]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Приостановить ведение Журнала запросов]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryHistory/electron-browser/queryHistory.queryHistory.enableCapture" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Start Query History Capture]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Начать ведение Журнала запросов]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryHistory/electron-browser/queryHistory.queryHistoryCaptureEnabled" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Whether Query History capture is enabled. If false queries executed will not be captured.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Включено ли ведение Журнала запросов. Если этот параметр имеет значение False, выполняемые запросы не будут записываться в истории.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryHistory/electron-browser/queryHistory.queryHistoryConfigurationTitle" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[QueryHistory]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[QueryHistory]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryHistory/electron-browser/queryHistory.viewCategory" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[View]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Вид]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -12819,20 +12936,20 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/contrib/tableDesigner/browser/actions.tableDesigner.generateScript" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Generate Script]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Создать сценарий]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";src/sql/workbench/contrib/tableDesigner/browser/actions.tableDesigner.publishTableChanges" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Publish Changes...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Опубликовать изменения…]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/tableDesigner/browser/actions.tableDesigner.saveTableChanges" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Save]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Сохранить]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -15672,6 +15789,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/services/notebook/browser/notebookViews/notebookViewModel.Untitled" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Untitled]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Без имени]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/services/notebook/browser/notebookViews/notebookViewModel.notebookView.nameTaken" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[A view with the name {0} already exists in this notebook.]]></Val>
@@ -15785,24 +15911,6 @@
           <Val><![CDATA[Cell type {0} unknown]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Неизвестный тип ячейки {0}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/services/notebook/common/localContentManager.unrecognizedOutput" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Output type {0} not recognized]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Тип выходных данных {0} не распознан]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/services/notebook/common/localContentManager.unrecognizedOutputType" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Output type {0} not recognized]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Тип выходных данных {0} не распознан]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

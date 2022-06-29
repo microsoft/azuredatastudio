@@ -57,10 +57,10 @@ let idPool = 0;
 					<div *ngIf="_options.layout === NavigationBarLayout.vertical" class="vertical-tab-action-container">
 						<button [attr.aria-expanded]="_tabExpanded" [title]="toggleTabPanelButtonAriaLabel" [attr.aria-label]="toggleTabPanelButtonAriaLabel" [ngClass]="toggleTabPanelButtonCssClass" tabindex="0" (click)="toggleTabPanel()"></button>
 					</div>
-					<div [style.display]="_tabExpanded ? 'flex': 'none'" [attr.aria-hidden]="_tabExpanded ? 'false': 'true'" class="tabList" role="tablist" (keydown)="onKey($event)">
+					<div [style.display]="_tabExpanded ? 'flex': 'none'" [attr.aria-hidden]="_tabExpanded ? 'false': 'true'" class="tabList" role="tablist" (keydown)="onKey($event)" (focusout)="onTabHeaderFocusOut($event)">
 						<div role="presentation" *ngFor="let tab of _tabs">
 							<ng-container *ngIf="tab.type!=='group-header'">
-								<tab-header role="presentation" [active]="_activeTab === tab" [tab]="tab" [showIcon]="_options.showIcon" (onSelectTab)='selectTab($event)' (onCloseTab)='closeTab($event)'></tab-header>
+								<tab-header role="presentation" [selected]="_selectedTab === tab" [tab]="tab" [showIcon]="_options.showIcon" (onSelectTab)='selectTab($event)' (onCloseTab)='closeTab($event)'></tab-header>
 							</ng-container>
 							<ng-container *ngIf="tab.type==='group-header' && _options.layout === NavigationBarLayout.vertical">
 								<div class="tab-group-header">
@@ -102,7 +102,7 @@ export class PanelComponent extends Disposable implements IThemable {
 	@Output() public onTabChange = new EventEmitter<TabComponent>();
 	@Output() public onTabClose = new EventEmitter<TabComponent>();
 
-	private _activeTab?: TabComponent;
+	private _selectedTab?: TabComponent;
 	private _actionbar?: ActionBar;
 	private _mru: TabComponent[] = [];
 	private _tabExpanded: boolean = true;
@@ -218,39 +218,43 @@ export class PanelComponent extends Disposable implements IThemable {
 					}
 				});
 
-				if (this._activeTab && tab === this._activeTab) {
+				if (this._selectedTab && tab === this._selectedTab) {
 					this.onTabChange.emit(tab);
 					return;
 				}
 
 				this._zone.run(() => {
-					if (this._activeTab) {
-						this._activeTab.active = false;
+					if (this._selectedTab) {
+						this._selectedTab.selected = false;
 					}
 
-					this._activeTab = tab;
+					this._selectedTab = tab;
 					this.setMostRecentlyUsed(tab);
-					this._activeTab.active = true;
+					this._selectedTab.selected = true;
 
 					this.onTabChange.emit(tab);
+				});
+
+				this._tabHeaders?.forEach(tabHeader => {
+					tabHeader.tabIndex = tabHeader.tab.identifier === foundTab.identifier ? 0 : -1;
 				});
 			}
 		}
 	}
 
 	/**
-	 * Get the id of the active tab
+	 * Get the id of the selected tab
 	 */
-	public get getActiveTab(): string | undefined {
-		return this._activeTab?.identifier;
+	public get getSelectedTab(): string | undefined {
+		return this._selectedTab?.identifier;
 	}
 
 	/**
 	 * Select on the next tab
 	 */
 	public selectOnNextTab(): void {
-		let activeIndex = this._tabs.toArray().findIndex(i => i === this._activeTab);
-		let nextTabIndex = activeIndex + 1;
+		let selectedIndex = this._tabs.toArray().findIndex(i => i === this._selectedTab);
+		let nextTabIndex = selectedIndex + 1;
 		if (nextTabIndex === this._tabs.length) {
 			nextTabIndex = 0;
 		}
@@ -315,7 +319,7 @@ export class PanelComponent extends Disposable implements IThemable {
 	}
 
 	public layout() {
-		this._activeTab?.layout();
+		this._selectedTab?.layout();
 	}
 
 	onKey(e: KeyboardEvent): void {
@@ -328,15 +332,34 @@ export class PanelComponent extends Disposable implements IThemable {
 			this.focusPreviousTab();
 			eventHandled = true;
 		}
-
 		if (eventHandled) {
 			event.preventDefault();
 			event.stopPropagation();
 		}
 	}
 
+	onTabHeaderFocusOut(e: Event): void {
+		/**
+		 * Making the selected tab header focusable when the focus leaves the tab header div.
+		 * This fixes an issue when users press up/left arrow in vertical tab header and move up to
+		 * the previous tab header. The next focus was being set to the selected tab and then the tab
+		 * contents. Now, the focus will directly move to tab contents. And, when users press
+		 * shift-tab on the first focusable element of tab content, the focus will move back to
+		 * selected tab header.
+		 */
+
+		if (!(<HTMLElement>e.currentTarget).contains((<any>e).relatedTarget)) {
+			this._tabHeaders.forEach(th => {
+				if (th.tab === this._selectedTab) {
+					th.tabIndex = 0;
+				}
+			});
+		}
+	}
+
 	private focusPreviousTab(): void {
 		const currentIndex = this.focusedTabHeaderIndex;
+		this._tabHeaders.toArray()[currentIndex].tabIndex = -1;
 		if (currentIndex !== -1) {
 			// Move to the previous tab, if we are at the first tab then move to the last tab.
 			this.focusOnTabHeader(currentIndex === 0 ? this._tabHeaders.length - 1 : currentIndex - 1);
@@ -345,6 +368,7 @@ export class PanelComponent extends Disposable implements IThemable {
 
 	private focusNextTab(): void {
 		const currentIndex = this.focusedTabHeaderIndex;
+		this._tabHeaders.toArray()[currentIndex].tabIndex = -1;
 		if (currentIndex !== -1) {
 			// Move to the next tab, if we are at the last tab then move to the first tab.
 			this.focusOnTabHeader(currentIndex === this._tabHeaders.length - 1 ? 0 : currentIndex + 1);
@@ -366,32 +390,36 @@ export class PanelComponent extends Disposable implements IThemable {
 	style(styles: ITabbedPanelStyles) {
 		if (this._styleElement) {
 			const content: string[] = [];
-			if (styles.titleInactiveForeground) {
+			if (styles.titleUnSelectedForeground) {
 				content.push(`.tabbedPanel.horizontal > .title .tabList .tab-header {
-					color: ${styles.titleInactiveForeground}
+					color: ${styles.titleUnSelectedForeground}
 				}`);
 			}
-			if (styles.titleActiveBorder && styles.titleActiveForeground) {
-				content.push(`.tabbedPanel.horizontal > .title .tabList .tab-header:focus,
-					.tabbedPanel.horizontal > .title .tabList .tab-header.active {
-					border-color: ${styles.titleActiveBorder};
+			if (styles.titleSelectedBorder && styles.titleSelectedForeground) {
+				content.push(`.tabbedPanel.horizontal > .title .tabList .tab-header.selected {
+					border-color: ${styles.titleSelectedBorder};
 					border-style: solid;
-					color: ${styles.titleActiveForeground}
+					color: ${styles.titleSelectedForeground}
 				}`);
 
-				content.push(`.tabbedPanel.horizontal > .title .tabList .tab-header:focus,
-					.tabbedPanel.horizontal > .title .tabList .tab-header.active {;
-					border-width: 0 0 ${styles.activeTabContrastBorder ? '0' : '2'}px 0;
+				content.push(`.tabbedPanel.horizontal > .title .tabList .tab-header.selected {;
+					border-width: 0 0 ${styles.selectedTabContrastBorder ? '0' : '2'}px 0;
 				}`);
 
 				content.push(`.tabbedPanel.horizontal > .title .tabList .tab-header:hover {
-					color: ${styles.titleActiveForeground}
+					color: ${styles.titleSelectedForeground}
+				}`);
+
+				content.push(`.tabbedPanel.horizontal > .title .tabList .tab-header:focus {
+					outline: 1px solid;
+					outline-offset: 2px;
+					outline-color: ${styles.titleSelectedBorder};
 				}`);
 			}
 
-			if (styles.activeBackgroundForVerticalLayout) {
-				content.push(`.tabbedPanel.vertical > .title .tabList .tab-header.active {
-					background-color:${styles.activeBackgroundForVerticalLayout}
+			if (styles.selectedBackgroundForVerticalLayout) {
+				content.push(`.tabbedPanel.vertical > .title .tabList .tab-header.selected {
+					background-color:${styles.selectedBackgroundForVerticalLayout}
 				}`);
 			}
 
@@ -407,18 +435,14 @@ export class PanelComponent extends Disposable implements IThemable {
 				}`);
 			}
 
-			if (styles.activeTabContrastBorder) {
+			if (styles.selectedTabContrastBorder) {
 				content.push(`
-				.tabbedPanel > .title .tabList .tab-header.active {
+				.tabbedPanel > .title .tabList .tab-header.selected {
 					outline: 1px solid;
 					outline-offset: -3px;
-					outline-color: ${styles.activeTabContrastBorder};
+					outline-color: ${styles.selectedTabContrastBorder};
 				}
 			`);
-			} else {
-				content.push(`.tabbedPanel.horizontal > .title .tabList .tab-header:focus {
-					outline-width: 0px;
-				}`);
 			}
 
 			const newStyles = content.join('\n');

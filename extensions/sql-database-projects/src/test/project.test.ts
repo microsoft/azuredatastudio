@@ -16,8 +16,8 @@ import { Project } from '../models/project';
 import { exists, convertSlashesForSqlProj, getWellKnownDatabaseSources } from '../common/utils';
 import { Uri, window } from 'vscode';
 import { IDacpacReferenceSettings, IProjectReferenceSettings, ISystemDatabaseReferenceSettings } from '../models/IDatabaseReferenceSettings';
-import { ItemType, SqlTargetPlatform } from 'sqldbproj';
-import { EntryType, SystemDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabase } from '../models/projectEntry';
+import { EntryType, ItemType, SqlTargetPlatform } from 'sqldbproj';
+import { SystemDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabase } from '../models/projectEntry';
 
 let projFilePath: string;
 
@@ -228,7 +228,7 @@ describe('Project: sqlproj content operations', function (): void {
 		const project = await Project.openProject(projFilePath);
 
 		await project.changeTargetPlatform('invalidPlatform');
-		await testUtils.shouldThrowSpecificError(async () => await project.getSystemDacpacUri(constants.masterDacpac), constants.invalidDataSchemaProvider);
+		await testUtils.shouldThrowSpecificError(() => project.getSystemDacpacUri(constants.masterDacpac), constants.invalidDataSchemaProvider);
 	});
 
 	it('Should add system database references correctly', async function (): Promise<void> {

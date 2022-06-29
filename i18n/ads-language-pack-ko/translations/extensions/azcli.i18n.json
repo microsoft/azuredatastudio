@@ -9,6 +9,7 @@
 	"version": "1.0.0",
 	"contents": {
 		"dist/localizedConstants": {
+			"arc.releaseDateNotParsed": "릴리스 날짜를 구문 분석할 수 없습니다.",
 			"az.accept": "수용하다",
 			"az.arcdataExtensionNotInstalled": "이 확장을 사용하려면 Azure CLI 확장 'arcdata'를 설치해야 합니다. [여기](https://docs.microsoft.com/azure/azure-arc/data/install-arcdata-extension)의 지침을 사용하여 최신 버전을 설치합니다.",
 			"az.arcdataInstalled": "Azure CLI arcdata 확장이 성공적으로 설치되었습니다. 구성을 완료하려면 Azure Studio를 다시 시작해야 합니다. 이 작업이 완료될 때까지 기능이 사용하도록 설정되지 않습니다.",

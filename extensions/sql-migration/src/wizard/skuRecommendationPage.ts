@@ -174,7 +174,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 		}).component();
 		this._chooseTargetComponent = await this.createChooseTargetComponent(view);
-		const _azureRecommendationsContainer = await this.createAzureRecommendationContainer(view);
+		const _azureRecommendationsContainer = this.createAzureRecommendationContainer(view);
 		this.assessmentGroupContainer = await this.createViewAssessmentsContainer();
 		this._formContainer = view.modelBuilder.formContainer().withFormItems(
 			[

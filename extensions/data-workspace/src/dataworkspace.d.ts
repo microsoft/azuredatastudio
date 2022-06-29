@@ -145,6 +145,11 @@ declare module 'dataworkspace' {
 		 * Location where clicking on the Learn More next to SDK style checkbox will go. sdkStyleOption needs to be set to true to use this
 		 */
 		readonly sdkStyleLearnMoreUrl?: string
+
+		/**
+		 * Location where clicking on the Learn More to know more about project type will go
+		 */
+		readonly learnMoreUrl?: string
 	}
 
 	/**

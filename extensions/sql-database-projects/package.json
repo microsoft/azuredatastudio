@@ -2,12 +2,12 @@
   "name": "sql-database-projects",
   "displayName": "SQL Database Projects",
   "description": "Enables users to develop and publish database schemas for MSSQL Databases",
-  "version": "0.17.0",
+  "version": "0.18.0",
   "publisher": "Microsoft",
   "preview": true,
   "engines": {
     "vscode": "^1.30.1",
-    "azdata": ">=1.36.0"
+    "azdata": ">=1.37.0"
   },
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/sqlDatabaseProjects.png",
@@ -190,6 +190,11 @@
         "command": "sqlDatabaseProjects.convertToSdkStyleProject",
         "title": "%sqlDatabaseProjects.convertToSdkStyleProject%",
         "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.openInDesigner",
+        "title": "%sqlDatabaseProjects.openInDesigner%",
+        "category": "%sqlDatabaseProjects.displayName%"
       }
     ],
     "menus": {
@@ -305,6 +310,10 @@
         {
           "command": "sqlDatabaseProjects.convertToSdkStyleProject",
           "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.openInDesigner",
+          "when": "false"
         }
       ],
       "view/item/context": [
@@ -389,6 +398,11 @@
           "group": "5_dbProjects_streamingJob"
         },
         {
+          "command": "sqlDatabaseProjects.openInDesigner",
+          "when": "azdataAvailable && view == dataworkspace.views.main && viewItem == databaseProject.itemType.file.table && config.workbench.enablePreviewFeatures",
+          "group": "6_dbProjects_openInDesigner"
+        },
+        {
           "command": "sqlDatabaseProjects.exclude",
           "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.folder || viewItem =~ /^databaseProject.itemType.file/",
           "group": "9_dbProjectsLast@1"
@@ -466,7 +480,7 @@
     "vscode-nls": "^4.1.2",
     "which": "^2.0.2",
     "xml-formatter": "2.1.0",
-    "xmldom": "^0.6.0"
+    "@xmldom/xmldom": "^0.8.2"
   },
   "devDependencies": {
     "@types/fs-extra": "^5.0.0",
@@ -474,7 +488,6 @@
     "@types/sinon": "^9.0.4",
     "@types/which": "^2.0.1",
     "@types/xml-formatter": "^1.1.0",
-    "@types/xmldom": "^0.1.29",
     "mocha": "^7.1.1",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",

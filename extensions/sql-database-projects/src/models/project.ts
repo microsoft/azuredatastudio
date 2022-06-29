@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as path from 'path';
-import * as xmldom from 'xmldom';
+import * as xmldom from '@xmldom/xmldom';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
 import * as xmlFormat from 'xml-formatter';
@@ -12,12 +12,12 @@ import * as os from 'os';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 
 import { Uri, window } from 'vscode';
-import { ISqlProject, ItemType, SqlTargetPlatform } from 'sqldbproj';
+import { EntryType, IDatabaseReferenceProjectEntry, IProjectEntry, ISqlProject, ItemType, SqlTargetPlatform } from 'sqldbproj';
 import { promises as fs } from 'fs';
 import { DataSource } from './dataSources/dataSources';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from './IDatabaseReferenceSettings';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
-import { DacpacReferenceProjectEntry, EntryType, FileProjectEntry, IDatabaseReferenceProjectEntry, ProjectEntry, SqlCmdVariableProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabase, SystemDatabaseReferenceProjectEntry } from './projectEntry';
+import { DacpacReferenceProjectEntry, FileProjectEntry, ProjectEntry, SqlCmdVariableProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabase, SystemDatabaseReferenceProjectEntry } from './projectEntry';
 
 /**
  * Class representing a Project, and providing functions for operating on it
@@ -245,10 +245,20 @@ export class Project implements ISqlProject {
 
 		// create a FileProjectEntry for each file
 		const fileEntries: FileProjectEntry[] = [];
-		filesSet.forEach(f => {
+		for (let f of Array.from(filesSet.values())) {
 			const typeEntry = entriesWithType.find(e => e.relativePath === f);
-			fileEntries.push(this.createFileProjectEntry(f, EntryType.File, typeEntry ? typeEntry.typeAttribute : undefined));
-		});
+			let containsCreateTableStatement;
+
+			// read file to check if it has a "Create Table" statement
+			const fullPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(f));
+
+			if (await utils.exists(fullPath)) {
+				const fileContents = await fs.readFile(fullPath);
+				containsCreateTableStatement = fileContents.toString().toLowerCase().includes('create table');
+			}
+
+			fileEntries.push(this.createFileProjectEntry(f, EntryType.File, typeEntry ? typeEntry.typeAttribute : undefined, containsCreateTableStatement));
+		}
 
 		return fileEntries;
 	}
@@ -1078,13 +1088,14 @@ export class Project implements ISqlProject {
 		return this.getCollectionProjectPropertyValue(constants.DatabaseSource);
 	}
 
-	public createFileProjectEntry(relativePath: string, entryType: EntryType, sqlObjectType?: string): FileProjectEntry {
+	public createFileProjectEntry(relativePath: string, entryType: EntryType, sqlObjectType?: string, containsCreateTableStatement?: boolean): FileProjectEntry {
 		let platformSafeRelativePath = utils.getPlatformSafeFileEntryPath(relativePath);
 		return new FileProjectEntry(
 			Uri.file(path.join(this.projectFolderPath, platformSafeRelativePath)),
 			utils.convertSlashesForSqlProj(relativePath),
 			entryType,
-			sqlObjectType);
+			sqlObjectType,
+			containsCreateTableStatement);
 	}
 
 	private findOrCreateItemGroup(containedTag?: string, prePostScriptExist?: { scriptExist: boolean; }): Element {
@@ -1264,7 +1275,7 @@ export class Project implements ISqlProject {
 	 */
 	private async undoExcludeFileFromProjFile(xmlTag: string, relativePath: string): Promise<void> {
 		const nodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(xmlTag);
-		if (await this.removeNode(relativePath, nodes, true)) {
+		if (this.removeNode(relativePath, nodes, true)) {
 			await this.serializeToProjFile(this.projFileXmlDoc!);
 		}
 	}
@@ -1572,12 +1583,15 @@ export class Project implements ISqlProject {
 				const suppressMissingDependenciesErrorNode = currentNode.getElementsByTagName(constants.SuppressMissingDependenciesErrors);
 				const suppressMissingDependences = suppressMissingDependenciesErrorNode[0].childNodes[0].nodeValue === constants.True;
 
-				// remove this node
-				this.projFileXmlDoc!.documentElement.removeChild(currentNode);
-
-				// delete ItemGroup if there aren't any other children
-				if (this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ArtifactReference).length === 0) {
+				// TODO Two issues here :
+				// 1. If there are multiple ItemGroups with ArtifactReference items then we won't clean up until all items are removed
+				// 2. If the ItemGroup has other non-ArtifactReference items in it then those will be deleted
+				// Right now we assume that this ItemGroup is not manually edited so it's safe to ignore these
+				if (this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ArtifactReference).length === 1) {
+					// delete entire ItemGroup if there aren't any other children
 					this.projFileXmlDoc!.documentElement.removeChild(currentNode.parentNode!);
+				} else {
+					this.projFileXmlDoc!.documentElement.removeChild(currentNode);
 				}
 
 				// remove from database references because it'll get added again later
@@ -1611,8 +1625,8 @@ export class Project implements ISqlProject {
 		await this.serializeToProjFile(this.projFileXmlDoc!);
 	}
 
-	private async removeFromProjFile(entries: ProjectEntry | ProjectEntry[]): Promise<void> {
-		if (entries instanceof ProjectEntry) {
+	private async removeFromProjFile(entries: IProjectEntry | IProjectEntry[]): Promise<void> {
+		if (!Array.isArray(entries)) {
 			entries = [entries];
 		}
 

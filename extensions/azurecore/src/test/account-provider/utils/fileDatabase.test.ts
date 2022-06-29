@@ -72,7 +72,7 @@ describe('AccountProvider.FileDatabase', function (): void {
 
 		await fileDatabase.deletePrefix('k');
 
-		x = await fileDatabase.get(k1);
+		x = fileDatabase.get(k1);
 		should(x).be.undefined();
 	});
 

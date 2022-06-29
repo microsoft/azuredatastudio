@@ -549,8 +549,8 @@
         <target state="translated">パッケージの概要</target>
       </trans-unit>
       <trans-unit id="managePackages.packageVersionTitle">
-        <source xml:lang="en">Package Version</source>
-        <target state="translated">パッケージ バージョン</target>
+        <source xml:lang="en">Supported Package Versions for Python {0}</source>
+        <target state="translated">Python {0} でサポートされているパッケージ バージョン</target>
       </trans-unit>
       <trans-unit id="managePackages.searchBarPlaceholder">
         <source xml:lang="en">Search {0} packages</source>

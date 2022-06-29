@@ -19,6 +19,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/data-workspace/dist/common/constants.LocalDevInfo" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Click "Learn more" button for more information about local development experience to {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[點擊 [深入了解]5D; 按鈕以取得本機開發體驗的詳細資訊，以{0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.SelectProjectFileActionName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select]]></Val>

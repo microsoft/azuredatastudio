@@ -71,6 +71,9 @@
 		"dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider": {
 			"azure.resource.providers.AzureMonitorContainerLabel": "Рабочая область Log Analytics"
 		},
+		"dist/azureResource/providers/cosmosdb/mongo/cosmosDbMongoTreeDataProvider": {
+			"azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel": "CosmosDB для Mongo"
+		},
 		"dist/azureResource/providers/database/databaseTreeDataProvider": {
 			"azure.resource.providers.database.treeDataProvider.databaseContainerLabel": "База данных SQL"
 		},

@@ -5,6 +5,8 @@
 
 import * as fs from 'fs';
 import type * as azdataType from 'azdata';
+import * as vscode from 'vscode';
+import * as constants from './constants';
 
 export async function directoryExist(directoryPath: string): Promise<boolean> {
 	const stats = await getFileStatus(directoryPath);
@@ -38,15 +40,23 @@ export interface IPackageInfo {
 }
 
 export function getPackageInfo(packageJson: any): IPackageInfo | undefined {
-	if (packageJson) {
-		return {
-			name: packageJson.name,
-			version: packageJson.version,
-			aiKey: packageJson.aiKey
-		};
+	const vscodePackageJson = require('../../package.vscode.json');
+	const azdataApi = getAzdataApi();
+
+	if (!packageJson || !azdataApi && !vscodePackageJson) {
+		return undefined;
 	}
 
-	return undefined;
+	// When the extension is compiled and packaged, the content of package.json get copied here in the extension.js. This happens before the
+	// package.vscode.json values replace the corresponding values in the package.json for the data-workspace-vscode extension
+	// so we need to read these values directly from the package.vscode.json to get the correct extension and publisher names
+	const extensionName = azdataApi ? packageJson.name : vscodePackageJson.name;
+
+	return {
+		name: extensionName,
+		version: packageJson.version,
+		aiKey: packageJson.aiKey
+	};
 }
 
 // Try to load the azdata API - but gracefully handle the failure in case we're running
@@ -68,4 +78,16 @@ try {
  */
 export function getAzdataApi(): typeof azdataType | undefined {
 	return azdataApi;
+}
+
+/**
+ * Shows a message with a "Learn More" button
+ * @param message Info message
+ * @param link Link to open when "Learn Button" is clicked
+ */
+export async function showInfoMessageWithLearnMoreLink(message: string, link: string): Promise<void> {
+	const result = await vscode.window.showInformationMessage(message, constants.LearnMore);
+	if (result === constants.LearnMore) {
+		void vscode.env.openExternal(vscode.Uri.parse(link));
+	}
 }

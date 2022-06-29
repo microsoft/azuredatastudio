@@ -1,0 +1,5 @@
+{
+	"parserOptions": {
+		"project": "./extensions/server-report/tsconfig.json"
+	}
+}

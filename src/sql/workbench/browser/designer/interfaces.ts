@@ -51,7 +51,7 @@ export interface DesignerComponentInput {
 	/**
 	 * Start initilizing the designer input object.
 	 */
-	initialize(): void;
+	initialize(): Promise<void>;
 
 	/**
 	 * Start processing the edit made in the designer, the OnEditProcessed event will be fired when the processing is done.

@@ -152,7 +152,7 @@ export class MoveRowDownAction extends DesignerTableAction {
 
 export class InsertBeforeSelectedRowAction extends Action {
 	public static ID = 'designer.insertBeforeSelectedRow';
-	public static LABEL = localize('designer.insertBeforeSelectedRow', 'Insert before');
+	public static LABEL = localize('designer.insertBeforeSelectedRow', 'Insert Before');
 
 	constructor(private designer: Designer) {
 		super(InsertBeforeSelectedRowAction.ID, InsertBeforeSelectedRowAction.LABEL, 'insertBeforeSelectedRow', true);
@@ -174,7 +174,7 @@ export class InsertBeforeSelectedRowAction extends Action {
 
 export class InsertAfterSelectedRowAction extends Action {
 	public static ID = 'designer.insertAfterSelectedColumn';
-	public static LABEL = localize('designer.insertAfterSelectedColumn', 'Insert after');
+	public static LABEL = localize('designer.insertAfterSelectedColumn', 'Insert After');
 
 	constructor(private designer: Designer) {
 		super(InsertAfterSelectedRowAction.ID, InsertAfterSelectedRowAction.LABEL, 'insertAfterSelectedColumn', true);

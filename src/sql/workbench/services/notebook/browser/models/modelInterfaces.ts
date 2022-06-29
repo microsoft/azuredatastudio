@@ -554,6 +554,13 @@ export interface ICellModel {
 	 * Returns the name of the attachment added to metadata.
 	 */
 	addAttachment(mimeType: string, base64Encoding: string, name: string): string;
+	/**
+	 * Updates the current cell attachments with the attachments provided.
+	 * If no attachments are passed in then it cleans up the current cell attachments and removes any ones that aren't being currently used in the specified source string.
+	 * @param source The new source string to check for attachments being used
+	 * @param attachments (Optional) The new attachments for the cell
+	 */
+	updateAttachmentsFromSource(source: string, attachments?: nb.ICellAttachments): void;
 	richTextCursorPosition: ICaretPosition;
 	markdownCursorPosition: IPosition;
 	/**

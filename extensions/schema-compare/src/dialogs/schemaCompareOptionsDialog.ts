@@ -10,6 +10,7 @@ import * as loc from '../localizedConstants';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
 import { isNullOrUndefined } from 'util';
 import { SchemaCompareOptionsModel } from '../models/schemaCompareOptionsModel';
+import { TelemetryReporter, TelemetryViews } from '../telemetry';
 
 export class SchemaCompareOptionsDialog {
 	public dialog: azdata.window.Dialog;
@@ -48,10 +49,10 @@ export class SchemaCompareOptionsDialog {
 		this.initializeDialog();
 
 		this.dialog.okButton.label = loc.OkButtonText;
-		this.dialog.okButton.onClick(async () => await this.execute());
+		this.dialog.okButton.onClick(() => this.execute());
 
 		this.dialog.cancelButton.label = loc.CancelButtonText;
-		this.dialog.cancelButton.onClick(async () => await this.cancel());
+		this.dialog.cancelButton.onClick(() => this.cancel());
 
 		let resetButton = azdata.window.createButton(loc.ResetButtonText);
 		resetButton.onClick(async () => await this.reset());
@@ -82,7 +83,10 @@ export class SchemaCompareOptionsDialog {
 					this.schemaComparison.startCompare();
 				}
 			});
+
+			TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareOptionsDialog, 'OptionsChanged');
 		}
+
 		this.disposeListeners();
 	}
 
@@ -106,6 +110,8 @@ export class SchemaCompareOptionsDialog {
 		await this.updateObjectsTable();
 		this.objectTypesFlexBuilder.removeItem(this.objectsTable);
 		this.objectTypesFlexBuilder.addItem(this.objectsTable, { CSSStyles: { 'overflow': 'scroll', 'height': '80vh' } });
+
+		TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareOptionsDialog, 'ResetOptions');
 	}
 
 	private initializeSchemaCompareOptionsDialogTab(): void {

@@ -216,6 +216,14 @@
       </trans-unit>
     </body>
   </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/cosmosdb/mongo/cosmosDbMongoTreeDataProvider" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel">
+        <source xml:lang="en">CosmosDB for Mongo</source>
+        <target state="translated">CosmosDB para Mongo</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/azurecore/dist/azureResource/providers/database/databaseTreeDataProvider" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="azure.resource.providers.database.treeDataProvider.databaseContainerLabel">

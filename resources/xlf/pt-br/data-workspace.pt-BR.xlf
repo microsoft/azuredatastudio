@@ -6,6 +6,10 @@
         <source xml:lang="en">All Project Types</source>
         <target state="translated">Todos os tipos de projeto</target>
       </trans-unit>
+      <trans-unit id="LocalDevInfo">
+        <source xml:lang="en">Click "Learn more" button for more information about local development experience to {0}</source>
+        <target state="translated">Clique no botão "Saiba mais" para obter mais informações sobre a experiência de desenvolvimento local para {0}</target>
+      </trans-unit>
       <trans-unit id="SelectProjectFileActionName">
         <source xml:lang="en">Select</source>
         <target state="translated">Selecionar</target>

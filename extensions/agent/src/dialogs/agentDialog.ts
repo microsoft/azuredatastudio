@@ -40,7 +40,7 @@ export abstract class AgentDialog<T extends IAgentDialogData> {
 			let event = dialogName ? dialogName : null;
 			this.dialog = azdata.window.createModelViewDialog(this.title, event);
 
-			await this.model.initialize();
+			this.model.initialize();
 
 			await this.initializeDialog(this.dialog);
 

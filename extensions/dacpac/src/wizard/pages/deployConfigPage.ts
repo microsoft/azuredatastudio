@@ -31,7 +31,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 		this.databaseComponent = await this.createDatabaseTextBox(loc.databaseName);
 		this.databaseDropdownComponent = await this.createDeployDatabaseDropdown();
 		this.databaseDropdownComponent.title = loc.databaseName;
-		let radioButtons = await this.createRadiobuttons();
+		let radioButtons = this.createRadiobuttons();
 
 		this.formBuilder = this.view.modelBuilder.formContainer()
 			.withFormItems(

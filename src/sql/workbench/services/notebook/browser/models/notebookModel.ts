@@ -25,7 +25,7 @@ import { uriPrefixes } from 'sql/platform/connection/common/utils';
 import { ILogService } from 'vs/platform/log/common/log';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
-import { IAdsTelemetryService, ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
+import { IAdsTelemetryService, ITelemetryEvent, ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 import { Deferred } from 'sql/base/common/promise';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -478,12 +478,15 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	public sendNotebookTelemetryActionEvent(action: TelemetryKeys.TelemetryAction | TelemetryKeys.NbTelemetryAction, additionalProperties: ITelemetryEventProperties = {}): void {
+	public sendNotebookTelemetryActionEvent(action: TelemetryKeys.TelemetryAction | TelemetryKeys.NbTelemetryAction, additionalProperties: ITelemetryEventProperties = {}, connectionInfo?: IConnectionProfile): void {
 		let properties: ITelemetryEventProperties = deepClone(additionalProperties);
 		properties['azdata_notebook_guid'] = this.getMetaValue('azdata_notebook_guid');
-		this.adstelemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, action)
-			.withAdditionalProperties(properties)
-			.send();
+		let event: ITelemetryEvent = this.adstelemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, action)
+			.withAdditionalProperties(properties);
+		if (connectionInfo) {
+			event.withConnectionInfo(connectionInfo);
+		}
+		event.send();
 	}
 
 	private loadContentMetadata(metadata: INotebookMetadataInternal): void {
@@ -570,10 +573,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				let range = model.getFullModelRange();
 				let selection = editorControl.getSelection();
 				let source = this.cells[index].source;
-				let newCell = undefined, tailCell = undefined, partialSource = undefined;
+				let newCell: ICellModel = undefined, tailCell: ICellModel = undefined, partialSource = undefined;
 				let newCellIndex = index;
 				let tailCellIndex = index;
 				let splitCells: SplitCell[] = [];
+				let attachments = {};
 
 				// Save UI state
 				let showMarkdown = this.cells[index].showMarkdown;
@@ -607,6 +611,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						partialSource = source.slice(selection.startLineNumber - 1, selection.startLineNumber)[0].slice(0, selection.startColumn - 1);
 						headsource = headsource.concat(partialSource.toString());
 					}
+					// Save attachments before updating cell contents
+					attachments = this.cells[index].attachments;
+					// No need to update attachments, since unused attachments are removed when updating the cell source
 					this.cells[index].source = headsource;
 					splitCells.push({ cell: this.cells[index], prefix: undefined });
 				}
@@ -628,6 +635,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					//If the selection is not from the start of the cell, create a new cell.
 					if (headContent.length) {
 						newCell = this.createCell(cellType, language);
+						newCell.updateAttachmentsFromSource(newSource.join(), attachments);
 						newCell.source = newSource;
 						newCellIndex++;
 						this.insertCell(newCell, newCellIndex, false);
@@ -651,6 +659,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					if (tailSource[0] === '\r\n' || tailSource[0] === '\n') {
 						newlinesBeforeTailCellContent = tailSource.splice(0, 1)[0];
 					}
+					tailCell.updateAttachmentsFromSource(tailSource.join(), attachments);
 					tailCell.source = tailSource;
 					tailCellIndex = newCellIndex + 1;
 					this.insertCell(tailCell, tailCellIndex, false);
@@ -684,6 +693,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		let firstCell = cells[0].cell;
 		// Append the other cell sources to the first cell
 		for (let i = 1; i < cells.length; i++) {
+			firstCell.attachments = { ...firstCell.attachments, ...cells[i].cell.attachments };
 			firstCell.source = cells[i].prefix ? [...firstCell.source, ...cells[i].prefix, ...cells[i].cell.source] : [...firstCell.source, ...cells[i].cell.source];
 		}
 		// Set newly created cell as active cell
@@ -1310,6 +1320,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 							this._onValidConnectionSelected.fire(false);
 						}
 					});
+				this.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.ConnectionChanged, undefined, newConnection.toIConnectionProfile());
 			} else {
 				this._onValidConnectionSelected.fire(false);
 			}

@@ -56,7 +56,7 @@ export class SavedAssessmentDialog {
 
 			dialog.registerCloseValidator(async () => {
 				if (this.stateModel.resumeAssessment) {
-					if (await !this.stateModel.loadSavedInfo()) {
+					if (!this.stateModel.loadSavedInfo()) {
 						void vscode.window.showInformationMessage(constants.OPEN_SAVED_INFO_ERROR);
 						return false;
 					}

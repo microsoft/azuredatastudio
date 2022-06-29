@@ -10,6 +10,7 @@
 	"contents": {
 		"dist/common/constants": {
 			"AllProjectTypes": "Todos los tipos de proyecto",
+			"LocalDevInfo": "Haga clic en el botón \"Más información\" para informarse sobre la experiencia de desarrollo local para {0}",
 			"SelectProjectFileActionName": "Seleccionar",
 			"UnknownProjectTypeError": "No se encontró ningún proveedor para el tipo de proyecto con id. \"{0}\".",
 			"UnknownProjectsError": "No se encontró ningún proveedor para los siguientes proyectos: {0}.",

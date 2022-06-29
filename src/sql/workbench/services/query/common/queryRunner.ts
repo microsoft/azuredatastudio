@@ -437,7 +437,6 @@ export default class QueryRunner extends Disposable {
 	}
 
 	public override dispose() {
-		this.logService.info(`Disposing the query runner of: '${this.uri}'', call stack: ${new Error().stack}`);
 		this._batchSets = undefined!;
 		super.dispose();
 		this._isDisposed = true;

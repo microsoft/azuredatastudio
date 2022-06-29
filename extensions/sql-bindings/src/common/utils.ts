@@ -116,7 +116,9 @@ export async function getUniqueFileName(fileName: string, folderPath?: string): 
 	let uniqueFileName = fileName;
 
 	while (count < maxCount) {
-		if (!fs.existsSync(path.join(folderPath, uniqueFileName + '.cs'))) {
+		// checks to see if file exists
+		let uniqueFilePath = path.join(folderPath, uniqueFileName + '.cs');
+		if (!(await exists(uniqueFilePath))) {
 			return uniqueFileName;
 		}
 		count += 1;
@@ -171,5 +173,14 @@ export function getErrorType(error: any): string | undefined {
 		return 'TimeoutError';
 	} else {
 		return 'UnknownError';
+	}
+}
+
+export async function exists(path: string): Promise<boolean> {
+	try {
+		await fs.promises.access(path);
+		return true;
+	} catch (e) {
+		return false;
 	}
 }

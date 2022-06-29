@@ -1467,9 +1467,6 @@ This may take some time.</source>
     <trans-unit id="sql.migration.view.select.button.label">
       <source xml:lang="en">View/Select</source>
     </trans-unit>
-    <trans-unit id="sql.migration.vm.not.ready">
-      <source xml:lang="en">The virtual machine '{0}' is unavailable for migration because it is currently in the '{1}' state. To continue, select an available virtual machine.</source>
-    </trans-unit>
     <trans-unit id="sql.migration.warning">
       <source xml:lang="en">Warning</source>
     </trans-unit>

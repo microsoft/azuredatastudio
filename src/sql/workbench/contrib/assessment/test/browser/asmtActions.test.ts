@@ -31,6 +31,7 @@ import { TestFileService, TestEnvironmentService, TestFileDialogService } from '
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { URI } from 'vs/base/common/uri';
 import { IFileService } from 'vs/platform/files/common/files';
+import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 /**
  * Class to test Assessment Management Actions
  */
@@ -120,7 +121,7 @@ suite('Assessment Actions', () => {
 		let connectionManagementService = TypeMoq.Mock.ofType<IConnectionManagementService>(TestConnectionManagementService);
 		connectionManagementService.setup(c => c.listDatabases(TypeMoq.It.isAny())).returns(() => Promise.resolve(dbListResult));
 		connectionManagementService.setup(c => c.getConnectionUriFromId(TypeMoq.It.isAny())).returns(() => '');
-		connectionManagementService.setup(c => c.getConnection(TypeMoq.It.isAny())).returns(() => connectionProfile.object);
+		connectionManagementService.setup(c => c.getConnectionProfile(TypeMoq.It.isAny())).returns(() => connectionProfile.object);
 		connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.isAny())).returns(() => Promise.resolve(''));
 
 		return connectionManagementService;
@@ -133,7 +134,12 @@ suite('Assessment Actions', () => {
 
 		const connectionManagementService = createConnectionManagementService(dbListResult);
 
-		const action = new AsmtServerSelectItemsAction(connectionManagementService.object, new NullLogService(), mockAssessmentService.object, new NullAdsTelemetryService());
+		const action = new AsmtServerSelectItemsAction(
+			connectionManagementService.object,
+			new TestCapabilitiesService(),
+			new NullLogService(),
+			mockAssessmentService.object,
+			new NullAdsTelemetryService());
 		assert.strictEqual(action.id, AsmtServerSelectItemsAction.ID, 'Get Server Rules id action mismatch');
 		assert.strictEqual(action.label, AsmtServerSelectItemsAction.LABEL, 'Get Server Rules label action mismatch');
 
@@ -156,7 +162,12 @@ suite('Assessment Actions', () => {
 
 		const connectionManagementService = createConnectionManagementService(dbListResult);
 
-		const action = new AsmtServerInvokeItemsAction(connectionManagementService.object, new NullLogService(), mockAssessmentService.object, new NullAdsTelemetryService());
+		const action = new AsmtServerInvokeItemsAction(
+			connectionManagementService.object,
+			new TestCapabilitiesService(),
+			new NullLogService(),
+			mockAssessmentService.object,
+			new NullAdsTelemetryService());
 		assert.strictEqual(action.id, AsmtServerInvokeItemsAction.ID, 'Invoke Server Assessment id action mismatch');
 		assert.strictEqual(action.label, AsmtServerInvokeItemsAction.LABEL, 'Invoke Server Assessment label action mismatch');
 

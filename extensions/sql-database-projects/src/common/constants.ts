@@ -76,7 +76,6 @@ export const vscodeOpenCommand = 'vscode.open';
 export const refreshDataWorkspaceCommand = 'dataworkspace.refresh';
 
 // UI Strings
-
 export const dataSourcesNodeName = localize('dataSourcesNodeName', "Data Sources");
 export const databaseReferencesNodeName = localize('databaseReferencesNodeName', "Database References");
 export const sqlConnectionStringFriendly = localize('sqlConnectionStringFriendly', "SQL connection string");
@@ -99,6 +98,7 @@ export const location = localize('location', "Location");
 export const reloadProject = localize('reloadProject', "Would you like to reload your database project?");
 export const learnMore = localize('learnMore', "Learn More");
 export const sdkLearnMoreUrl = 'https://aka.ms/sqlprojsdk';
+export const azureDevOpsLink = 'https://docs.microsoft.com/azure/azure-sql/database/local-dev-experience-overview?view=azuresql';
 export function newObjectNamePrompt(objectType: string) { return localize('newObjectNamePrompt', 'New {0} name:', objectType); }
 export function deleteConfirmation(toDelete: string) { return localize('deleteConfirmation', "Are you sure you want to delete {0}?", toDelete); }
 export function deleteConfirmationContents(toDelete: string) { return localize('deleteConfirmationContents', "Are you sure you want to delete {0} and all of its contents?", toDelete); }
@@ -110,7 +110,6 @@ export function convertToSdkStyleConfirmation(projectName: string) { return loca
 export function updatedToSdkStyleError(projectName: string) { return localize('updatedToSdkStyleError', "Converting the project {0} to SDK-style was unsuccessful. Changes to the .sqlproj have been rolled back.", projectName); }
 
 // Publish dialog strings
-
 export const publishDialogName = localize('publishDialogName', "Publish project");
 export const publish = localize('publish', "Publish");
 export const cancelButtonText = localize('cancelButtonText', "Cancel");
@@ -145,6 +144,16 @@ export const newText = localize('new', "New");
 export const selectDatabase = localize('selectDatabase', "Select database");
 export const done = localize('done', "Done");
 export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not be empty");
+
+// Publish Dialog options
+export const publishOptions = localize('publishOptions', 'Publish Options');
+export const publishingOptions = localize('publishingOptions', 'Publishing Options');
+export const GeneralOptions: string = localize('generalOptions', "General Options");
+export const ResetButton: string = localize('reset', "Reset");
+export const OptionDescription: string = localize('optionDescription', "Option Description");
+export const OptionName: string = localize('optionName', "Option Name");
+export const OptionInclude: string = localize('Include', "Include");
+
 
 // Deploy
 export const SqlServerName = 'SQL server';
@@ -272,7 +281,6 @@ export const dacpacNotOnSameDrive = (projectLocation: string): string => { retur
 export const referenceType = localize('referenceType', "Reference type");
 
 // Create Project From Database dialog strings
-
 export const createProjectFromDatabaseDialogName = localize('createProjectFromDatabaseDialogName', "Create project from database");
 export const createProjectDialogOkButtonText = localize('createProjectDialogOkButtonText', "Create");
 export const sourceDatabase = localize('sourceDatabase', "Source database");
@@ -528,6 +536,7 @@ export enum DatabaseProjectItemType {
 	folder = 'databaseProject.itemType.folder',
 	file = 'databaseProject.itemType.file',
 	externalStreamingJob = 'databaseProject.itemType.file.externalStreamingJob',
+	table = 'databaseProject.itemType.file.table',
 	referencesRoot = 'databaseProject.itemType.referencesRoot',
 	reference = 'databaseProject.itemType.reference',
 	dataSourceRoot = 'databaseProject.itemType.dataSourceRoot',

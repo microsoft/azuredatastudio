@@ -40,7 +40,7 @@ export default class CodeAdapter implements IPrompter {
 			let answers: Answers<T> = {};
 			questions.forEach(async (question: IQuestion) => {
 				this.fixQuestion(question);
-				const prompt = await PromptFactory.createPrompt(question, ignoreFocusOut);
+				const prompt = PromptFactory.createPrompt(question, ignoreFocusOut);
 				if (!question.shouldPrompt || question.shouldPrompt(answers) === true) {
 					const result = await prompt.render();
 					answers[question.name] = result;

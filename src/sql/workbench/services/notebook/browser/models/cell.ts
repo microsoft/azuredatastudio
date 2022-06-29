@@ -334,7 +334,7 @@ export class CellModel extends Disposable implements ICellModel {
 	}
 
 	public set source(newSource: string | string[]) {
-		this.cleanUnusedAttachments(Array.isArray(newSource) ? newSource.join() : newSource);
+		this.updateAttachmentsFromSource(Array.isArray(newSource) ? newSource.join() : newSource);
 		newSource = this.attachImageFromSource(newSource);
 		newSource = this.getMultilineSource(newSource);
 		if (this._source !== newSource) {
@@ -358,12 +358,8 @@ export class CellModel extends Disposable implements ICellModel {
 		return newSource;
 	}
 
-	/**
-	 * Cleans up the attachments, removing any ones that aren't being currently used in the specified source string.
-	 * @param source The new source string to check for attachments being used
-	 */
-	private cleanUnusedAttachments(source: string): void {
-		const originalAttachments = this._attachments;
+	public updateAttachmentsFromSource(source: string, attachments?: nb.ICellAttachments): void {
+		const originalAttachments = attachments ? attachments : this._attachments;
 		this._attachments = {};
 		// Find existing attachments in the form ![...](attachment:...) so that we can make sure we keep those attachments
 		const attachmentRegex = /!\[.*?\]\(attachment:(.*?)\)/g;

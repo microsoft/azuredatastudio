@@ -66,7 +66,7 @@ export class AzureResourceFilterComponent extends ModelViewBase implements IData
 		});
 		this._workspaces.onValueChanged(async (newValue) => {
 			if (newValue.selected !== (<azdata.CategoryValue>this._workspaces.value)?.name) {
-				await this.onWorkspaceSelectedChanged();
+				this.onWorkspaceSelectedChanged();
 			}
 		});
 

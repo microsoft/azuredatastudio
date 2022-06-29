@@ -109,7 +109,7 @@ export async function verifyConnectionAndGetOwnerUri(endpoint: mssql.SchemaCompa
 	let ownerUri = undefined;
 
 	if (endpoint.endpointType === mssql.SchemaCompareEndpointType.Database && endpoint.connectionDetails) {
-		let connectionProfile = await connectionInfoToConnectionProfile(endpoint.connectionDetails);
+		let connectionProfile = connectionInfoToConnectionProfile(endpoint.connectionDetails);
 		let connection = await azdata.connection.connect(connectionProfile, false, false);
 
 		if (connection) {

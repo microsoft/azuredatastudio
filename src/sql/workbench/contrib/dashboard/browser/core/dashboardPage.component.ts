@@ -31,7 +31,7 @@ import * as nls from 'vs/nls';
 import * as objects from 'vs/base/common/objects';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Action, IAction, SubmenuAction } from 'vs/base/common/actions';
-import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
+import { ConfigurationTarget, IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import Severity from 'vs/base/common/severity';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IContextKeyService, ContextKeyExpr, RawContextKey, IContextKey } from 'vs/platform/contextkey/common/contextkey';
@@ -54,9 +54,11 @@ import { LabeledMenuItemActionItem } from 'sql/platform/actions/browser/menuEntr
 import { DASHBOARD_BORDER, TOOLBAR_OVERFLOW_SHADOW } from 'sql/workbench/common/theme';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
 const homeTabGroupId = 'home';
+const zoomLevelConfiguration = 'window.zoomLevel';
 
 @Component({
 	selector: 'dashboard-page',
@@ -130,7 +132,8 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		@Inject(IContextKeyService) contextKeyService: IContextKeyService,
 		@Inject(IMenuService) private menuService: IMenuService,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
-		@Inject(IInstantiationService) private instantiationService: IInstantiationService
+		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
+		@Inject(IConfigurationService) private configurationService: IConfigurationService
 	) {
 		super();
 		this._tabName = DashboardPage.tabName.bindTo(contextKeyService);
@@ -172,6 +175,16 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		this._register(this.themeService.onDidColorThemeChange((event: IColorTheme) => {
 			this.updateTheme(event);
 		}));
+
+		// Workaround for issue: https://github.com/microsoft/azuredatastudio/issues/14128
+		// While the Angular loads the dashboard components, the Electron's zoom level will be reset without going through
+		// the setZoomLevel API in VSCode.
+		// Before a permanent fix is available, to workaround the issue, we can get the current zoom level and
+		// set it so that the electron's zoom level is consistent with the vscode configuration.
+		const currentZoom: number = this.configurationService.getValue(zoomLevelConfiguration);
+		this.configurationService.updateValue(zoomLevelConfiguration, currentZoom - 1).then(() => {
+			return this.configurationService.updateValue(zoomLevelConfiguration, currentZoom);
+		}).catch(onUnexpectedError);
 	}
 
 	private getContributedTasks(tabId: string): ITaskbarContent[] {

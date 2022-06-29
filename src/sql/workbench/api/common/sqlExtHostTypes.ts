@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { nb, IConnectionProfile } from 'azdata';
+import * as azdata from 'azdata';
 import * as vsExtTypes from 'vs/workbench/api/common/extHostTypes';
 import { URI } from 'vs/base/common/uri';
 
@@ -448,7 +448,7 @@ export enum AzureResource {
 }
 
 export class TreeItem extends vsExtTypes.TreeItem {
-	payload?: IConnectionProfile;
+	payload?: azdata.IConnectionProfile;
 	providerHandle?: string;
 }
 
@@ -613,7 +613,7 @@ export enum FutureMessageType {
 export interface INotebookFutureDone {
 	succeeded: boolean;
 	rejectReason: string;
-	message: nb.IShellMessage;
+	message: azdata.nb.IShellMessage;
 }
 
 export interface ICellRange {
@@ -686,7 +686,7 @@ export interface INotebookEditOperation {
 	/**
 	 * The cell metadata to use for the edit operation (only for some edit operations)
 	 */
-	cell: Partial<nb.ICellContents>;
+	cell: Partial<azdata.nb.ICellContents>;
 	/**
 	 * Whether to append the content to the existing content or replace it.
 	 */
@@ -1040,5 +1040,20 @@ export namespace executionPlan {
 		Warning = 0,
 		CriticalWarning = 1,
 		Parallelism = 2
+	}
+
+	export enum ExecutionPlanGraphElementPropertyDataType {
+		Number = 0,
+		String = 1,
+		Boolean = 2,
+		Nested = 3
+	}
+
+	export enum ExecutionPlanGraphElementPropertyBetterValue {
+		LowerNumber = 0,
+		HigherNumber = 1,
+		True = 2,
+		False = 3,
+		None = 4
 	}
 }

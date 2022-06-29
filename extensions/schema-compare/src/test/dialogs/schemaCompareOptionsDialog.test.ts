@@ -10,7 +10,7 @@ import { SchemaCompareOptionsDialog } from '../../dialogs/schemaCompareOptionsDi
 describe('Schema Compare Options Dialog', () => {
 	it('Should open dialog successfully ', async function (): Promise<void> {
 		const optionsDialog = new SchemaCompareOptionsDialog(testUtils.getDeploymentOptions(), undefined);
-		await optionsDialog.openDialog();
+		optionsDialog.openDialog();
 		should.notEqual(optionsDialog.dialog, undefined);
 	});
 });

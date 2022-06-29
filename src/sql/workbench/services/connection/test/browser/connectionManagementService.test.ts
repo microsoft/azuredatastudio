@@ -781,8 +781,8 @@ suite('SQL ConnectionManagementService tests', () => {
 
 		await connect(uri, options, true, profile);
 		// invalid uri check.
-		assert.strictEqual(connectionManagementService.getConnection(badString), undefined);
-		let returnedProfile = connectionManagementService.getConnection(uri);
+		assert.strictEqual(connectionManagementService.getConnectionProfile(badString), undefined);
+		let returnedProfile = connectionManagementService.getConnectionProfile(uri);
 		assert.strictEqual(returnedProfile.groupFullName, profile.groupFullName);
 		assert.strictEqual(returnedProfile.groupId, profile.groupId);
 	});

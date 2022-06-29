@@ -9,6 +9,7 @@
 	"version": "1.0.0",
 	"contents": {
 		"dist/localizedConstants": {
+			"arc.releaseDateNotParsed": "無法剖析發行日期。",
 			"az.accept": "接受",
 			"az.arcdataExtensionNotInstalled": "此延伸模組需要安裝 Azure CLI 延伸模組 'arcdata'。使用[此處](https://docs.microsoft.com/azure/azure-arc/data/install-arcdata-extension) 的指示安裝正確的版本。",
 			"az.arcdataInstalled": "已成功安裝 Azure CLI arcdata 延伸模組。需要重新啟動 Azure Studio 才能完成設定 - 除非完成此作業，否則功能將不會啟用。",

@@ -44,7 +44,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined):
 	}
 
 	// get all the Azure functions in the file
-	const azureFunctions = getAzureFunctionsResult.azureFunctions;
+	const azureFunctions = getAzureFunctionsResult.azureFunctions.map(af => typeof (af) === 'string' ? af : af.name);
 
 	if (azureFunctions.length === 0) {
 		void vscode.window.showErrorMessage(constants.noAzureFunctionsInFile);

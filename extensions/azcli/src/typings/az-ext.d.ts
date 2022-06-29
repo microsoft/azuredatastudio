@@ -142,7 +142,9 @@ declare module 'az-ext' {
 		spec: {
 			backup?: {
 				retentionPeriodInDays: number, // 1
-			}
+			},
+			readableSecondaries: string, // 0
+            syncSecondaryToCommit: string, // -1,
 			scheduling?: {
 				default?: {
 					resources?: {
@@ -150,10 +152,10 @@ declare module 'az-ext' {
 						requests?: SchedulingOptions
 					}
 				}
-			}
+			},
 			services: {
 				primary: ServiceSpec
-			}
+			},
 			storage: {
 				data: {
 					volumes: StorageVolume[]
@@ -188,7 +190,9 @@ declare module 'az-ext' {
 		spec: {
 			backup?: {
 				retentionPeriodInDays: number, // 1
-			}
+			},
+			readableSecondaries: string, // 0
+			syncSecondaryToCommit: string, // -1
 			scheduling?: {
 				default?: {
 					resources?: {
@@ -248,6 +252,8 @@ declare module 'az-ext' {
 				namespace: string, // namespace-name
 			  },
 			  replicas: number, // 1,
+			  readableSecondaries: string, // 0
+              syncSecondaryToCommit: string, // -1,
 			  scheduling: {
 				additionalProperties: string, // null,
 				default: {
@@ -607,6 +613,7 @@ declare module 'az-ext' {
 						memoryRequest?: string, //1Gi
 						noWait?: boolean, //true
 						retentionDays?: string, //5
+						syncSecondaryToCommit?: string //2
 					},
 					// Direct mode arguments
 					resourceGroup?: string,

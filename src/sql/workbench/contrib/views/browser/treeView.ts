@@ -183,7 +183,7 @@ export class TreeView extends Disposable implements ITreeView {
 				}
 
 				async getChildren(node: ITreeItem): Promise<ITreeItem[]> {
-					let children: ITreeItem[];
+					let children: ITreeItem[] | undefined = undefined;
 					if (node && node.children) {
 						children = node.children;
 					} else {
@@ -192,7 +192,7 @@ export class TreeView extends Disposable implements ITreeView {
 					}
 					if (node instanceof Root) {
 						const oldEmpty = this._isEmpty;
-						this._isEmpty = children.length === 0;
+						this._isEmpty = !children || children.length === 0;
 						if (oldEmpty !== this._isEmpty) {
 							this._onDidChangeEmpty.fire();
 						}

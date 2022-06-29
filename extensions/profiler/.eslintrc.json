@@ -1,4 +1,7 @@
 {
+	"parserOptions": {
+		"project": "./extensions/profiler/tsconfig.json"
+	},
 	"rules": {
 		// Disabled until the issues can be fixed
 		"@typescript-eslint/explicit-function-return-type": ["off"]
