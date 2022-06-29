@@ -284,13 +284,14 @@
                               "description": "%arc.data.controller.namespace.validation.description%"
                             }
                           ],
-                          "defaultValue": "arc",
+                          "defaultValue": "",
                           "required": true,
                           "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAMESPACE",
                           "enabled": {
                             "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
                             "value": "Indirect"
-                          }
+                          },
+                          "description": "%arc.data.controller.namespace.description%"
                         },
                         {
                           "type": "text",
@@ -327,6 +328,17 @@
                             "onpremises",
                             "other"
                           ]
+                        },
+                        {
+                          "type": "text",
+                          "label": "%arc.data.controller.cluster.name%",
+                          "description": "%arc.data.controller.cluster.name.description%",
+                          "required": true,
+                          "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CLUSTER_NAME",
+                          "enabled": {
+                            "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
+                            "value": "Direct"
+                          }
                         },
                         {
                           "type": "text",
@@ -572,6 +584,12 @@
                           "defaultValue": "$(AZDATA_NB_VAR_ARC_CLUSTER_CONTEXT)"
                         },
                         {
+                          "label": "%arc.data.controller.summary.cluster.name%",
+                          "type": "readonly_text",
+                          "isEvaluated": true,
+                          "defaultValue": "$(AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CLUSTER_NAME)"
+                        },
+                        {
                           "label": "%arc.data.controller.summary.profile%",
                           "type": "readonly_text",
                           "isEvaluated": true,
@@ -617,6 +635,12 @@
                           "type": "readonly_text",
                           "isEvaluated": true,
                           "defaultValue": "$(AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAMESPACE)"
+                        },
+                        {
+                          "label": "%arc.data.controller.summary.data.controller.custom.location%",
+                          "type": "readonly_text",
+                          "isEvaluated": true,
+                          "defaultValue": "$(AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CUSTOM_LOCATION)"
                         },
                         {
                           "label": "%arc.data.controller.summary.data.controller.name%",
