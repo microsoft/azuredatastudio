@@ -23,8 +23,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 		createAzureFunction: async (): Promise<void> => {
 			return createAzureFunction();
 		},
-		promptForBindingType: async (funcName?: string): Promise<BindingType | undefined> => {
-			return promptForBindingType(funcName);
+		promptForBindingType: async (objectType?: string, funcName?: string): Promise<BindingType | undefined> => {
+			return promptForBindingType(objectType, funcName);
 		},
 		promptForObjectName: async (bindingType: BindingType, connectionInfo?: IConnectionInfo): Promise<string | undefined> => {
 			return promptForObjectName(bindingType, connectionInfo);

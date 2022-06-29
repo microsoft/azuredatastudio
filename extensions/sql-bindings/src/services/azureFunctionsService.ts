@@ -99,23 +99,29 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 		// create a system file watcher for the project folder
 		newFunctionFileObject = azureFunctionsUtils.waitForNewFunctionFile(projectFolder);
 
-		// Prompt user for binding type
-		telemetryStep = CreateAzureFunctionStep.getBindingType;
-		let selectedBindingType: BindingType | undefined;
-		let selectedBinding = await azureFunctionsUtils.promptForBindingType();
-		if (!selectedBinding) {
-			return;
-		}
-		selectedBindingType = selectedBinding;
-		propertyBag.bindingType = selectedBindingType;
-		TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
-			.withAdditionalProperties(propertyBag).send();
-
 		// Get connection string parameters and construct object name from prompt or connectionInfo given
 		let objectName: string | undefined;
+		let selectedBindingType: BindingType | undefined;
 		if (!node) {
-			// if user selects command in command palette we prompt user for information
+			// user selects command in command palette we prompt user for information
 			telemetryStep = CreateAzureFunctionStep.launchFromCommandPalette;
+
+			let chosenObjectType = await azureFunctionsUtils.promptForObjectType();
+			if (!chosenObjectType) {
+				// User cancelled
+				return;
+			}
+
+			// Prompt user for binding type
+			telemetryStep = CreateAzureFunctionStep.getBindingType;
+			selectedBindingType = await azureFunctionsUtils.promptForBindingType(chosenObjectType);
+			if (!selectedBindingType) {
+				return;
+			}
+			propertyBag.bindingType = selectedBindingType;
+			TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
+				.withAdditionalProperties(propertyBag).send();
+
 			// prompt user for connection profile to get connection info
 			while (true) {
 				try {
@@ -135,7 +141,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 				telemetryStep = CreateAzureFunctionStep.getObjectName;
 
 				// prompt user for object name to create function from
-				objectName = await azureFunctionsUtils.promptForObjectName(selectedBinding, connectionInfo);
+				objectName = await azureFunctionsUtils.promptForObjectName(selectedBindingType, connectionInfo, chosenObjectType);
 				if (!objectName) {
 					// user cancelled
 					continue;
@@ -143,12 +149,12 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 				break;
 			}
 		} else {
-			// if user selects table in tree view we use connection info from Object Explorer node
+			// user selects table in tree view we use connection info from Object Explorer node
 			telemetryStep = CreateAzureFunctionStep.launchFromTable;
 			connectionInfo = node.connectionInfo;
 			TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
 				.withAdditionalProperties(propertyBag).withConnectionInfo(connectionInfo).send();
-			// set the database containing the selected table so it can be used
+			// set the database containing the selected table or view so it can be used
 			// for the initial catalog property of the connection string
 			let newNode: ITreeNodeInfo = node;
 			while (newNode) {
@@ -159,6 +165,18 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 					newNode = newNode.parentNode;
 				}
 			}
+
+			// Prompt user for binding type
+			telemetryStep = CreateAzureFunctionStep.getBindingType;
+			selectedBindingType = await azureFunctionsUtils.promptForBindingType(node.nodeType);
+			if (!selectedBindingType) {
+				return;
+			}
+
+			propertyBag.bindingType = selectedBindingType;
+			TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
+				.withAdditionalProperties(propertyBag).send();
+
 			objectName = utils.generateQuotedFullName(node.metadata.schema, node.metadata.name);
 			TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
 				.withAdditionalProperties(propertyBag).withConnectionInfo(connectionInfo).send();

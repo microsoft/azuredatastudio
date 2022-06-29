@@ -34,10 +34,12 @@ declare module 'sql-bindings' {
 		createAzureFunction(): Promise<void>;
 
 		/**
-		 * Prompts the user to select type of binding and returns result or undefined if the user cancelled out of the prompt
-		 * @param funcName (Optional) Name of the function we are adding the SQL Binding to
+		 * Prompts the user to select type of binding and returns result
+		 * @param objectType (Optional) The type of object user choose to insert/upsert into
+		 * @param funcName (Optional) Name of the function to which we are adding the SQL Binding
+		 * @returns binding type or undefined if the user cancelled out of the prompt
 		 */
-		promptForBindingType(funcName?: string): Promise<BindingType | undefined>;
+		promptForBindingType(objectType?: string, funcName?: string): Promise<BindingType | undefined>;
 
 		/**
 		 * Prompts the user to enter object name for the SQL query
