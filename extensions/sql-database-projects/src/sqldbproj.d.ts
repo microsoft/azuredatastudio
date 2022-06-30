@@ -316,8 +316,8 @@ declare module 'sqldbproj' {
 	 * Settings for publishing a SQL Project to a docker container
 	 */
 	export interface IPublishToDockerSettings {
-		dockerSettings?: IDockerSettings;
-		sqlProjectPublishSettings?: ISqlProjectPublishSettings;
+		dockerSettings: IDockerSettings;
+		sqlProjectPublishSettings: ISqlProjectPublishSettings;
 	}
 
 	export type DeploymentOptions = mssqlDeploymentOptions | vscodeMssqlDeploymentOptions;
