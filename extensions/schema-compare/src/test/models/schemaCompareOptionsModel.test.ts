@@ -10,8 +10,8 @@ import { SchemaCompareOptionsModel } from '../../models/schemaCompareOptionsMode
 describe('Schema Compare Options Model', () => {
 	it('Should create model and set options successfully', function (): void {
 		const model = new SchemaCompareOptionsModel(testUtils.getDeploymentOptions());
-		should.notEqual(model.getOptionsData(), undefined, 'Options shouldn\'t be undefined');
-		should.notEqual(model.getObjectsData(), undefined, 'Objects shouldn\'t be undefined');
+		should.notEqual(model.InitializeOptionsData(), undefined, 'Options shouldn\'t be undefined');
+		should.notEqual(model.InitializeObjectsData(), undefined, 'Objects shouldn\'t be undefined');
 
 		should.doesNotThrow(() => model.setDeploymentOptions());
 		should.doesNotThrow(() => model.setSchemaCompareIncludedObjectsUtil());

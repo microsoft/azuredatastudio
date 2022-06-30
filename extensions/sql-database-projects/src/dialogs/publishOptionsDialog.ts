@@ -82,9 +82,9 @@ export class PublishOptionsDialog {
 			// Get the description of the selected option
 			this.disposableListeners.push(this.optionsTable.onRowSelected(async () => {
 				const row = this.optionsTable?.selectedRows![0];
-				const label = this.optionsModel.optionsLabels[row!];
+				const label = this.optionsModel.convertLabeltoCamelCase(this.optionsModel.optionsLabels[row!]);
 				await this.descriptionText?.updateProperties({
-					value: this.optionsModel.getDescription(label)
+					value: this.optionsModel.getOptionDescription(label)
 				});
 			}));
 
@@ -92,7 +92,7 @@ export class PublishOptionsDialog {
 			this.disposableListeners.push(this.optionsTable.onCellAction!((rowState) => {
 				const checkboxState = <azdataType.ICheckboxCellActionEventArgs>rowState;
 				if (checkboxState && checkboxState.row !== undefined) {
-					const label = this.optionsModel.optionsLabels[checkboxState.row];
+					const label = this.optionsModel.convertLabeltoCamelCase(this.optionsModel.optionsLabels[checkboxState.row]);
 					this.optionsModel.optionsLookup?.set(label, checkboxState.checked);
 					this.optionsChanged = true;
 					this.dialog.customButtons[0].enabled = true;
@@ -126,7 +126,7 @@ export class PublishOptionsDialog {
 			this.disposableListeners.push(this.includeObjectsTable.onCellAction!((rowState) => {
 				const checkboxState = <azdataType.ICheckboxCellActionEventArgs>rowState;
 				if (checkboxState && checkboxState.row !== undefined) {
-					const label = this.optionsModel.includeObjectTypeLabels[checkboxState.row];
+					const label = this.optionsModel.convertLabeltoCamelCase(this.optionsModel.includeObjectTypeLabels[checkboxState.row]);
 					this.optionsModel.includeObjectsLookup?.set(label, checkboxState.checked);
 					this.optionsChanged = true;
 					this.dialog.customButtons[0].enabled = true;
@@ -143,7 +143,7 @@ export class PublishOptionsDialog {
 	* Update the default options to the options table area
 	*/
 	private async updateOptionsTable(): Promise<void> {
-		const data = this.optionsModel.getOptionsData();
+		const data = this.optionsModel.InitializeOptionsData();
 		await this.optionsTable?.updateProperties({
 			data: data,
 			columns: [
@@ -171,7 +171,7 @@ export class PublishOptionsDialog {
 	* Update the default options to the object types table area
 	*/
 	private async updateObjectsTable(): Promise<void> {
-		const data = this.optionsModel.getObjectsData();
+		const data = this.optionsModel.InitializeObjectsData();
 		await this.includeObjectsTable!.updateProperties({
 			data: data,
 			columns: [
@@ -236,7 +236,7 @@ export class PublishOptionsDialog {
 		this.optionsModel.deploymentOptions = result;
 
 		// This will update the Map table with default values
-		this.optionsModel.UpdateOptionsMapTable();
+		this.optionsModel.InitializeOptionsMapTable();
 
 		await this.updateOptionsTable();
 		this.optionsFlexBuilder?.removeItem(this.optionsTable!);

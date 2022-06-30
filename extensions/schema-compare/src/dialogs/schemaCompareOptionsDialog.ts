@@ -96,7 +96,6 @@ export class SchemaCompareOptionsDialog {
 	private async reset(): Promise<void> {
 		let service = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.IExtension).schemaCompare;
 		let result = await service.schemaCompareGetDefaultOptions();
-		result.defaultDeploymentOptions = this.schemaComparison.ConvertObjectKeysToUpperCase(result.defaultDeploymentOptions);
 		this.optionsModel.deploymentOptions = result.defaultDeploymentOptions;
 		this.optionsChanged = true;
 
@@ -138,7 +137,7 @@ export class SchemaCompareOptionsDialog {
 
 			this.disposableListeners.push(this.optionsTable.onRowSelected(async () => {
 				let row = this.optionsTable.selectedRows[0];
-				let label = this.optionsModel.optionsLabels[row];
+				let label = this.optionsModel.convertLabeltoCamelCase(this.optionsModel.optionsLabels[row]);
 				await this.descriptionText.updateProperties({
 					value: this.optionsModel.getDescription(label)
 				});
@@ -147,7 +146,7 @@ export class SchemaCompareOptionsDialog {
 			this.disposableListeners.push(this.optionsTable.onCellAction((rowState) => {
 				let checkboxState = <azdata.ICheckboxCellActionEventArgs>rowState;
 				if (checkboxState && checkboxState.row !== undefined) {
-					let label = this.optionsModel.optionsLabels[checkboxState.row];
+					let label = this.optionsModel.convertLabeltoCamelCase(this.optionsModel.optionsLabels[checkboxState.row]);
 					this.optionsModel.optionsLookup.set(label, checkboxState.checked);
 					this.optionsChanged = true;
 				}
@@ -180,7 +179,7 @@ export class SchemaCompareOptionsDialog {
 			this.disposableListeners.push(this.objectsTable.onCellAction((rowState) => {
 				let checkboxState = <azdata.ICheckboxCellActionEventArgs>rowState;
 				if (checkboxState && checkboxState.row !== undefined) {
-					let label = this.optionsModel.includeObjectTypeLabels[checkboxState.row];
+					let label = this.optionsModel.convertLabeltoCamelCase(this.optionsModel.includeObjectTypeLabels[checkboxState.row]);
 					this.optionsModel.includeObjectsLookup.set(label, checkboxState.checked);
 					this.optionsChanged = true;
 				}
@@ -199,7 +198,7 @@ export class SchemaCompareOptionsDialog {
 	}
 
 	private async updateOptionsTable(): Promise<void> {
-		let data = this.optionsModel.getOptionsData();
+		let data = this.optionsModel.InitializeOptionsData();
 		await this.optionsTable.updateProperties({
 			data: data,
 			columns: [
@@ -224,7 +223,7 @@ export class SchemaCompareOptionsDialog {
 	}
 
 	private async updateObjectsTable(): Promise<void> {
-		let data = this.optionsModel.getObjectsData();
+		let data = this.optionsModel.InitializeObjectsData();
 		await this.objectsTable.updateProperties({
 			data: data,
 			columns: [

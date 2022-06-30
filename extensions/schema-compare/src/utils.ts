@@ -188,15 +188,3 @@ export function getDataWorkspaceExtensionApi(): dataworkspace.IExtension {
 	const extension = vscode.extensions.getExtension(dataworkspace.extension.name)!;
 	return extension.exports;
 }
-
-/*
-* Converts first charater of each key to upper case
-*/
-export function convertKeysToUpperCase<T>(options: { [key: string]: T }): { [key: string]: T } {
-	let newObj: { [key: string]: T } = {};
-	Object.entries(options).forEach(function (option) {
-		const key = option[0].charAt(0).toUpperCase() + option[0].slice(1);
-		newObj[key] = option[1];
-	});
-	return newObj;
-}

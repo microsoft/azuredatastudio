@@ -17,28 +17,42 @@ export class DeployOptionsModel {
 
 	constructor(defaultOptions: mssql.DeploymentOptions) {
 		this.deploymentOptions = defaultOptions;
-		this.UpdateOptionsMapTable();
-		this.optionsLabels = Object.keys(this.deploymentOptions.optionsMapTable).sort();
-		this.includeObjectTypeLabels = Object.keys(this.deploymentOptions.includeObjects).sort();
+		this.InitializeOptionsMapTable();
+		this.optionsLabels = this.convertLabelstoPascalCase(Object.keys(this.deploymentOptions.optionsMapTable).sort());
+		this.includeObjectTypeLabels = this.convertLabelstoPascalCase(Object.keys(this.deploymentOptions.includeObjects).sort());
 	}
 
-	public UpdateOptionsMapTable() {
+	/*
+	* Converts labels to PascalCase to match with default option name
+	*/
+	public convertLabelstoPascalCase(optionsLabels: string[]): string[] {
+		return optionsLabels.map(label => { return label.charAt(0).toUpperCase() + label.slice(1); });
+	}
+
+	/*
+	* Converts label text to camelCase to match with default option name
+	*/
+	public convertLabeltoCamelCase(label: string): string {
+		return label.charAt(0).toLowerCase() + label.slice(1);
+	}
+
+	public InitializeOptionsMapTable() {
 		this.optionsMapTable = this.deploymentOptions.optionsMapTable;
 	}
 
 	/**
-	 * Gets the options checkbox values by iterating through the labels and gets the default/changed value from the optionsMapTable
-	 * Returns data as [optionName, booleanValue], where these values are sending to the options table component
-	 * @returns string[][]
+	 * Initialize options data from optionsMaptable for options table component, and Prepares optionsLookup Map for holding the onchange checkbox values
+	 * Returns data as [optionName, booleanValue]
 	 */
-	public getOptionsData(): string[][] {
+	public InitializeOptionsData(): string[][] {
 		let data: any = [];
 		this.optionsLookup = new Map<string, boolean>();
-		this.optionsLabels.forEach(l => {
-			let checked: boolean | undefined = this.getDeployOptionUtil(l);
+		this.optionsLabels.forEach(optionLabel => {
+			const label = this.convertLabeltoCamelCase(optionLabel);
+			let checked: boolean | undefined = this.getOptionValue(label);
 			if (checked !== undefined) {
-				data.push([checked, l]);
-				this.optionsLookup?.set(l, checked);
+				data.push([checked, optionLabel]);
+				this.optionsLookup?.set(label, checked);
 			}
 		});
 		return data;
@@ -46,6 +60,8 @@ export class DeployOptionsModel {
 
 	/*
 	* Sets the selected option checkbox value to the optionsMapTable
+	* option[0] - option label
+	* option[1] - checkedbox value
 	*/
 	public setDeploymentOptions(): void {
 		for (let option of this.optionsLookup) {
@@ -63,29 +79,31 @@ export class DeployOptionsModel {
 	/*
 	* Gets the selected/default value of the option
 	*/
-	public getDeployOptionUtil(label: string): boolean | undefined {
+	public getOptionValue(label: string): boolean | undefined {
 		return this.optionsMapTable[label]?.value;
 	}
 
 	/*
-	* Gets the description of the option selected
+	* Gets the description of the selected option
 	*/
-	public getDescription(label: string): string | undefined {
-		return this.optionsMapTable[label]?.description;
+	public getOptionDescription(label: string): string | undefined {
+		return this.optionsMapTable[label.charAt(0).toLowerCase() + label.slice(1)]?.description;
 	}
 
+
 	/**
-	 * Gets the options checkbox values by iterating through the labels and gets the default/changed value from the optionsMapTable
-	 * Returns data as [optionName, booleanValue], where these values are sending to the options table component
+	 * Initialize options data from includeObjects for options table component, and Prepares optionsLookup Map for holding the onchange checkbox values
+	 * Returns data as [optionName, booleanValue]
 	 */
-	public getObjectsData(): string[][] {
+	public InitializeObjectsData(): string[][] {
 		let data: any = [];
 		this.includeObjectsLookup = new Map<string, boolean>();
-		this.includeObjectTypeLabels.forEach(l => {
-			let checked: boolean | undefined = this.getIncludedObjectsUtil(l);
+		this.includeObjectTypeLabels.forEach(optionLabel => {
+			const label = this.convertLabeltoCamelCase(optionLabel);
+			let checked: boolean | undefined = this.getIncludedObjectsCheckedboxValue(label);
 			if (checked !== undefined) {
-				data.push([checked, l]);
-				this.includeObjectsLookup?.set(l, checked);
+				data.push([checked, optionLabel]);
+				this.includeObjectsLookup?.set(label, checked);
 			}
 		});
 		return data;
@@ -94,12 +112,14 @@ export class DeployOptionsModel {
 	/*
 	* Gets the selected/default value of the object type option
 	*/
-	public getIncludedObjectsUtil(label: string): boolean | undefined {
+	public getIncludedObjectsCheckedboxValue(label: string): boolean | undefined {
 		return (this.deploymentOptions.excludeObjectTypes.value?.find(x => x === this.deploymentOptions.includeObjects[label])) !== undefined ? false : true;
 	}
 
 	/*
 	* Sets the selected option checkbox value to the exclude object types
+	* option[0] - option label
+	* option[1] - checkedbox value
 	*/
 	public setIncludeObjectTypeOptions(): void {
 		for (let option of this.includeObjectsLookup) {

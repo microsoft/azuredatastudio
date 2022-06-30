@@ -12,7 +12,7 @@ import * as mssql from 'mssql';
 import * as loc from './localizedConstants';
 import { SchemaCompareOptionsDialog } from './dialogs/schemaCompareOptionsDialog';
 import { TelemetryReporter, TelemetryViews } from './telemetry';
-import { getTelemetryErrorType, getEndpointName, verifyConnectionAndGetOwnerUri, getRootPath, getSchemaCompareEndpointString, getDataWorkspaceExtensionApi, convertKeysToUpperCase } from './utils';
+import { getTelemetryErrorType, getEndpointName, verifyConnectionAndGetOwnerUri, getRootPath, getSchemaCompareEndpointString, getDataWorkspaceExtensionApi } from './utils';
 import { SchemaCompareDialog } from './dialogs/schemaCompareDialog';
 import { isNullOrUndefined } from 'util';
 
@@ -347,16 +347,6 @@ export class SchemaCompareMainWindow {
 
 	public setDeploymentOptions(deploymentOptions: mssql.DeploymentOptions): void {
 		this.deploymentOptions = deploymentOptions;
-	}
-
-	public ConvertObjectKeysToUpperCase(deploymentOptions: mssql.DeploymentOptions): mssql.DeploymentOptions {
-		if (deploymentOptions !== undefined) {
-			// Options are coming as lower case and converting the first character to upper case
-			deploymentOptions.optionsMapTable = convertKeysToUpperCase<mssql.DacDeployOptionPropertyBoolean>(deploymentOptions.optionsMapTable);
-			deploymentOptions.includeObjects = convertKeysToUpperCase<number>(deploymentOptions.includeObjects);
-		}
-
-		return deploymentOptions;
 	}
 
 	private async populateProjectScripts(endpointInfo: mssql.SchemaCompareEndpointInfo): Promise<void> {
@@ -1112,7 +1102,6 @@ export class SchemaCompareMainWindow {
 		this.targetEndpointInfo = await this.constructEndpointInfo(result.targetEndpointInfo, loc.targetTitle);
 
 		this.updateSourceAndTarget();
-		result.deploymentOptions = this.ConvertObjectKeysToUpperCase(result.deploymentOptions);
 		this.setDeploymentOptions(result.deploymentOptions);
 		this.scmpSourceExcludes = result.excludedSourceElements;
 		this.scmpTargetExcludes = result.excludedTargetElements;
@@ -1246,7 +1235,6 @@ export class SchemaCompareMainWindow {
 		// Same as dacfx default options
 		const service = await this.getService();
 		let result = await service.schemaCompareGetDefaultOptions();
-		result.defaultDeploymentOptions = this.ConvertObjectKeysToUpperCase(result.defaultDeploymentOptions);
 		this.setDeploymentOptions(result.defaultDeploymentOptions);
 	}
 }
