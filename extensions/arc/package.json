@@ -1181,7 +1181,7 @@
                       {
                         "label": "%arc.sql.readable.secondaries.label%",
                         "description": "%arc.sql.readable.secondaries.description%",
-                        "variableName": "AZDATA_NB_VAR_READABLE_SECONDARIES",
+                        "variableName": "AZDATA_NB_VAR_SQL_READABLE_SECONDARIES",
                         "type": "options",
                         "editable": false,
                         "options": {
@@ -1240,7 +1240,7 @@
                       {
                         "label": "%arc.sql.sync.secondaries.label%",
                         "description": "%arc.sql.sync.secondaries.description%",
-                        "variableName": "AZDATA_NB_VAR_SYNC_SECONDARY_TO_COMMIT",
+                        "variableName": "AZDATA_NB_VAR_SQL_SYNC_SECONDARY_TO_COMMIT",
                         "type": "options",
                         "editable": false,
                         "options": {
