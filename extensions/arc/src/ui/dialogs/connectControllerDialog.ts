@@ -206,7 +206,7 @@ export class ConnectToControllerDialog extends ControllerDialogBase {
 
 			if (controllerModel.info.connectionMode === ConnectionMode.direct) {
 				const rawCustomLocation = <string>controllerModel.controllerConfig?.metadata.annotations['management.azure.com/customLocation'];
-				const exp = /customlocations\/([\S]*)/;
+				const exp = /customLocations\/([\S]*)/;
 				controllerModel.info.customLocation = <string>exp.exec(rawCustomLocation)?.pop();
 			}
 		} catch (err) {
