@@ -131,13 +131,13 @@ export class DacFxService implements mssql.IDacFxService {
 		);
 	}
 
-	public parseTSqlScript(script: string, databaseSchemaProvider: string): Thenable<mssql.ParseTSqlScriptResult> {
-		const params: contracts.ParseTSqlScriptParams = { script, databaseSchemaProvider };
+	public parseTSqlScript(filePath: string, databaseSchemaProvider: string): Thenable<mssql.ParseTSqlScriptResult> {
+		const params: contracts.ParseTSqlScriptParams = { filePath, databaseSchemaProvider };
 		return this.client.sendRequest(contracts.ParseTSqlScriptRequest.type, params).then(
 			undefined,
 			e => {
 				this.client.logFailedRequest(contracts.ParseTSqlScriptRequest.type, e);
-				return Promise.resolve(undefined);
+				return Promise.reject(e);
 			}
 		);
 	}

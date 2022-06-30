@@ -546,7 +546,7 @@ export interface ValidateStreamingJobParams {
 }
 
 export interface ParseTSqlScriptParams {
-	script: string;
+	filePath: string;
 	databaseSchemaProvider: string;
 }
 

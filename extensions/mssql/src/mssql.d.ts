@@ -391,7 +391,7 @@ declare module 'mssql' {
 		generateDeployPlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<GenerateDeployPlanResult>;
 		getOptionsFromProfile(profilePath: string): Thenable<DacFxOptionsResult>;
 		validateStreamingJob(packageFilePath: string, createStreamingJobTsql: string): Thenable<ValidateStreamingJobResult>;
-		parseTSqlScript(script: string, databaseSchemaProvider: string): Thenable<ParseTSqlScriptResult>;
+		parseTSqlScript(filePath: string, databaseSchemaProvider: string): Thenable<ParseTSqlScriptResult>;
 	}
 
 	export interface DacFxResult extends azdata.ResultStatus {

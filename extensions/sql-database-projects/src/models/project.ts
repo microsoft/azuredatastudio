@@ -255,9 +255,12 @@ export class Project implements ISqlProject {
 
 			if (await utils.exists(fullPath) && utils.getAzdataApi()) {
 				const dacFxService = await utils.getDacFxService() as mssql.IDacFxService;
-				const fileContents = await fs.readFile(fullPath);
-				const result = await dacFxService.parseTSqlScript(fileContents.toString(), this.getProjectTargetVersion());
-				containsCreateTableStatement = result.containsCreateTableStatement;
+				try {
+					const result = await dacFxService.parseTSqlScript(fullPath, this.getProjectTargetVersion());
+					containsCreateTableStatement = result.containsCreateTableStatement;
+				} catch (e) {
+					console.error(utils.getErrorMessage(e));
+				}
 			}
 
 			fileEntries.push(this.createFileProjectEntry(f, EntryType.File, typeEntry ? typeEntry.typeAttribute : undefined, containsCreateTableStatement));
