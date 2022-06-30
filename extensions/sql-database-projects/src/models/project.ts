@@ -253,7 +253,7 @@ export class Project implements ISqlProject {
 			// read file to check if it has a "Create Table" statement
 			const fullPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(f));
 
-			if (await utils.exists(fullPath) && utils.getAzdataApi()) {
+			if (utils.getAzdataApi()) {
 				const dacFxService = await utils.getDacFxService() as mssql.IDacFxService;
 				try {
 					const result = await dacFxService.parseTSqlScript(fullPath, this.getProjectTargetVersion());
