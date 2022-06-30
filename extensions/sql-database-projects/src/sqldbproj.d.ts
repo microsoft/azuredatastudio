@@ -66,8 +66,25 @@ declare module 'sqldbproj' {
 		 */
 		addItemPrompt(project: ISqlProject, relativeFilePath: string, options?: AddItemOptions): Promise<void>;
 
+		/**
+		 * Gathers information required for publishing a project to a docker container, prompting the user as necessary
+		 * @param project The Project being published
+		 */
 		getPublishToDockerSettings(project: ISqlProject): Promise<IPublishToDockerSettings | undefined>;
 
+		/**
+		 * Gets the information required to start a docker container for publishing to
+		 * @param projectName The name of the project being published
+		 * @param baseImage The base docker image being deployed
+		 * @param imageUniqueId The unique ID to use in the name, default is a random GUID
+		 */
+		getDockerImageSpec(projectName: string, baseImage: string, imageUniqueId?: string): DockerImageSpec;
+
+		/**
+		 * Checks if any containers with the specified label already exist, and if they do prompt the user whether they want to clean them up
+		 * @param imageLabel The label of the container to search for
+		 */
+		cleanDockerObjectsIfNeeded(imageLabel: string): Promise<void>;
 	}
 
 	export interface AddItemOptions {
@@ -332,5 +349,11 @@ declare module 'sqldbproj' {
 		sqlCmdVariables?: Record<string, string>;
 		deploymentOptions?: DeploymentOptions;
 		profileUsed?: boolean;
+	}
+
+	interface DockerImageSpec {
+		label: string;
+		containerName: string;
+		tag: string
 	}
 }
