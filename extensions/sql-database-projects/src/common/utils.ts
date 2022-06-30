@@ -334,7 +334,7 @@ export async function getDefaultPublishDeploymentOptions(project: ISqlProject): 
 	// this option needs to be true for same database references validation to work
 	if (project.databaseReferences.length > 0) {
 		// Updating optionsMapTable as this Map table is sending back the option values to the DacFx
-		result.defaultDeploymentOptions.optionsMapTable[constants.IncludeCompositeObjects].value = true;
+		result.defaultDeploymentOptions.optionsMapTable.IncludeCompositeObjects.value = true;
 	}
 	return result.defaultDeploymentOptions;
 }

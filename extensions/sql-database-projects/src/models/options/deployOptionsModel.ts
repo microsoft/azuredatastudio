@@ -7,33 +7,37 @@ import * as mssql from 'mssql';
 
 export class DeployOptionsModel {
 	public deploymentOptions: mssql.DeploymentOptions;
-
-	public optionsLookup: Map<string, boolean> = new Map<string, boolean>();
-	public includeObjectsLookup: Map<string, boolean> = new Map<string, boolean>();
 	public optionsMapTable: { [key: string]: mssql.DacDeployOptionPropertyBoolean } = {};
 	public optionsLabels: string[] = [];
+	public optionsNameAndPropMap: { [key: string]: string } = {};
+	public optionsValueLookup: { [key: string]: boolean } = {};
+	public includeObjectsLookup: Map<string, boolean> = new Map<string, boolean>();
 	public includeObjectTypeLabels: string[] = [];
 	public excludedObjectTypes: number[] = [];
 
 	constructor(defaultOptions: mssql.DeploymentOptions) {
 		this.deploymentOptions = defaultOptions;
 		this.InitializeOptionsMapTable();
-		this.optionsLabels = this.convertLabelstoPascalCase(Object.keys(this.deploymentOptions.optionsMapTable).sort());
-		this.includeObjectTypeLabels = this.convertLabelstoPascalCase(Object.keys(this.deploymentOptions.includeObjects).sort());
+		this.optionsLabels = this.prepareOptionsNamesPropsMapAndGetSortedLabels();
+		this.includeObjectTypeLabels = Object.keys(this.deploymentOptions.includeObjects).sort();
 	}
 
 	/*
-	* Converts labels to PascalCase to match with default option name
+	* This method prepares
+	* a. Sorted array of option display names for indexing
+	* b. Map table to hold displayNames and corresponding propertyName, this will help to get the right key of selected option index
 	*/
-	public convertLabelstoPascalCase(optionsLabels: string[]): string[] {
-		return optionsLabels.map(label => { return label.charAt(0).toUpperCase() + label.slice(1); });
-	}
-
-	/*
-	* Converts label text to camelCase to match with default option name
-	*/
-	public convertLabeltoCamelCase(label: string): string {
-		return label.charAt(0).toLowerCase() + label.slice(1);
+	public prepareOptionsNamesPropsMapAndGetSortedLabels(): string[] {
+		let optionsLabels: string[] = [];
+		Object.entries(this.deploymentOptions.optionsMapTable).forEach(option => {
+			const optionDisplayName = option[1].displayName;
+			const propertyName = option[0];
+			// push to optionsLabels Array
+			optionsLabels.push(optionDisplayName);
+			// push to optionsNameAndPropMap
+			this.optionsNameAndPropMap[optionDisplayName] = propertyName;
+		});
+		return optionsLabels.sort();
 	}
 
 	public InitializeOptionsMapTable() {
@@ -41,19 +45,16 @@ export class DeployOptionsModel {
 	}
 
 	/**
-	 * Initialize options data from optionsMaptable for options table component, and Prepares optionsLookup Map for holding the onchange checkbox values
-	 * Returns data as [optionName, booleanValue]
+	 * Initialize options data from optionsMaptable for table component
+	 * also preparing optionsValueLookup Map holding onchange checkbox values
+	 * Returns data as [booleanValue, optionName]
 	 */
 	public InitializeOptionsData(): string[][] {
 		let data: any = [];
-		this.optionsLookup = new Map<string, boolean>();
 		this.optionsLabels.forEach(optionLabel => {
-			const label = this.convertLabeltoCamelCase(optionLabel);
-			let checked: boolean | undefined = this.getOptionValue(label);
-			if (checked !== undefined) {
-				data.push([checked, optionLabel]);
-				this.optionsLookup?.set(label, checked);
-			}
+			const checked = this.getOptionValue(optionLabel);
+			data.push([checked, optionLabel]);
+			this.optionsValueLookup[optionLabel] = checked;
 		});
 		return data;
 	}
@@ -64,13 +65,10 @@ export class DeployOptionsModel {
 	* option[1] - checkedbox value
 	*/
 	public setDeploymentOptions(): void {
-		for (let option of this.optionsLookup) {
-			let val = this.optionsMapTable[option[0]];
-			if (val !== undefined && val?.value !== option[1]) {
-				val.value = option[1];
-				this.optionsMapTable[option[0]] = val;
-			}
-		}
+		Object.entries(this.optionsValueLookup).forEach(option => {
+			const propertyName = this.optionsNameAndPropMap[option[0]];
+			this.optionsMapTable[propertyName].value = option[1];
+		});
 
 		// Set the deployment optionsMapTable with the updated optionsMapTable
 		this.deploymentOptions.optionsMapTable = this.optionsMapTable;
@@ -79,31 +77,33 @@ export class DeployOptionsModel {
 	/*
 	* Gets the selected/default value of the option
 	*/
-	public getOptionValue(label: string): boolean | undefined {
-		return this.optionsMapTable[label]?.value;
+	public getOptionValue(label: string): boolean {
+		const propertyName = this.optionsNameAndPropMap[label];
+		return this.optionsMapTable[propertyName]?.value;
 	}
 
 	/*
 	* Gets the description of the selected option
 	*/
-	public getOptionDescription(label: string): string | undefined {
-		return this.optionsMapTable[label.charAt(0).toLowerCase() + label.slice(1)]?.description;
+	public getOptionDescription(label: string): string {
+		const propertyName = this.optionsNameAndPropMap[label];
+		return this.optionsMapTable[propertyName]?.description;
 	}
 
 
 	/**
-	 * Initialize options data from includeObjects for options table component, and Prepares optionsLookup Map for holding the onchange checkbox values
-	 * Returns data as [optionName, booleanValue]
+	 * Initialize options data from includeObjects for options table component
+	 * also prepares optionsLookup Map holding the onchange checkbox values
+	 * Returns data as [booleanValue, optionName]
 	 */
 	public InitializeObjectsData(): string[][] {
 		let data: any = [];
 		this.includeObjectsLookup = new Map<string, boolean>();
 		this.includeObjectTypeLabels.forEach(optionLabel => {
-			const label = this.convertLabeltoCamelCase(optionLabel);
-			let checked: boolean | undefined = this.getIncludedObjectsCheckedboxValue(label);
+			let checked: boolean | undefined = this.getIncludedObjectsCheckedboxValue(optionLabel);
 			if (checked !== undefined) {
 				data.push([checked, optionLabel]);
-				this.includeObjectsLookup?.set(label, checked);
+				this.includeObjectsLookup?.set(optionLabel, checked);
 			}
 		});
 		return data;

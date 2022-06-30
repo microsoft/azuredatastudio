@@ -82,7 +82,7 @@ export class PublishOptionsDialog {
 			// Get the description of the selected option
 			this.disposableListeners.push(this.optionsTable.onRowSelected(async () => {
 				const row = this.optionsTable?.selectedRows![0];
-				const label = this.optionsModel.convertLabeltoCamelCase(this.optionsModel.optionsLabels[row!]);
+				const label = this.optionsModel.optionsLabels[row!];
 				await this.descriptionText?.updateProperties({
 					value: this.optionsModel.getOptionDescription(label)
 				});
@@ -92,8 +92,8 @@ export class PublishOptionsDialog {
 			this.disposableListeners.push(this.optionsTable.onCellAction!((rowState) => {
 				const checkboxState = <azdataType.ICheckboxCellActionEventArgs>rowState;
 				if (checkboxState && checkboxState.row !== undefined) {
-					const label = this.optionsModel.convertLabeltoCamelCase(this.optionsModel.optionsLabels[checkboxState.row]);
-					this.optionsModel.optionsLookup?.set(label, checkboxState.checked);
+					const label = this.optionsModel.optionsLabels[checkboxState.row];
+					this.optionsModel.optionsValueLookup[label] = checkboxState.checked;
 					this.optionsChanged = true;
 					this.dialog.customButtons[0].enabled = true;
 				}
@@ -126,7 +126,7 @@ export class PublishOptionsDialog {
 			this.disposableListeners.push(this.includeObjectsTable.onCellAction!((rowState) => {
 				const checkboxState = <azdataType.ICheckboxCellActionEventArgs>rowState;
 				if (checkboxState && checkboxState.row !== undefined) {
-					const label = this.optionsModel.convertLabeltoCamelCase(this.optionsModel.includeObjectTypeLabels[checkboxState.row]);
+					const label = this.optionsModel.includeObjectTypeLabels[checkboxState.row];
 					this.optionsModel.includeObjectsLookup?.set(label, checkboxState.checked);
 					this.optionsChanged = true;
 					this.dialog.customButtons[0].enabled = true;

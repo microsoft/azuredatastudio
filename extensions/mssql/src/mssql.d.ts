@@ -153,19 +153,23 @@ declare module 'mssql' {
 		defaultDeploymentOptions: DeploymentOptions;
 	}
 
+	/**
+	* Interface containing deployment options of boolean type
+	*/
 	export interface DacDeployOptionPropertyBoolean {
 		value: boolean;
 		description: string;
-		propertyName: string;
+		displayName: string;
 	}
 
+	/**
+	* Interface containing deployment options of integer type
+	*/
 	export interface DacDeployOptionPropertyObject {
-		/**
-		 * represents array of number, ex: for Include object types options, the selected options are the enum numbers that value is holding
-		 */
+
 		value: number[];
 		description: string;
-		propertyName: string;
+		displayName: string;
 	}
 
 	export interface DeploymentOptions {
