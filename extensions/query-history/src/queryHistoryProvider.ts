@@ -36,7 +36,7 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 						return;
 					}
 					// Combine all the text from the batches back together
-					const queryText = queryInfo.range.map(r => textDocument.getText(r) ?? '').join(EOL);
+					const queryText = queryInfo.batchRanges.map(r => textDocument.getText(r) ?? '').join(EOL);
 					const connProfile = await azdata.connection.getConnection(document.uri);
 					const isError = queryInfo.messages.find(m => m.isError) ? false : true;
 					// Add to the front of the list so the new item appears at the top

@@ -4050,6 +4050,9 @@ Error: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/query/browser/keyboardQueryActions" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="ToggleActualPlanKeyboardAction">
+      <source xml:lang="en">Enable/Disable Actual Execution Plan</source>
+    </trans-unit>
     <trans-unit id="ToggleFocusBetweenQueryEditorAndResultsAction">
       <source xml:lang="en">Toggle Focus Between Query And Results</source>
     </trans-unit>
@@ -4088,9 +4091,6 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="runCurrentQueryKeyboardAction">
       <source xml:lang="en">Run Current Query</source>
-    </trans-unit>
-    <trans-unit id="runCurrentQueryWithActualPlanKeyboardAction">
-      <source xml:lang="en">Run Current Query with Actual Plan</source>
     </trans-unit>
     <trans-unit id="runQueryKeyboardAction">
       <source xml:lang="en">Run Query</source>
@@ -4188,6 +4188,9 @@ Error: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/query/browser/queryActions" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="ExecutionPlan">
+      <source xml:lang="en">Execution Plan</source>
+    </trans-unit>
     <trans-unit id="actualQueryPlan">
       <source xml:lang="en">Actual</source>
     </trans-unit>

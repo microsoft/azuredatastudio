@@ -1568,7 +1568,7 @@ declare module 'azdata' {
 			/**
 			 * The ranges for each batch that has executed so far
 			 */
-			range: vscode.Range[];
+			batchRanges: vscode.Range[];
 		}
 
 		export interface QueryEventListener {
