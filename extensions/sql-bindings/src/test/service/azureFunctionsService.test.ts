@@ -135,7 +135,7 @@ describe('AzureFunctionsService', () => {
 
 			it('Should create azure function project using the command from command palette (no connection info)', async function (): Promise<void> {
 				// select table
-				let quickPickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves({ label: constants.sqlTable });
+				let quickPickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves(constants.sqlTable as any);
 				// select input or output binding
 				quickPickStub.onSecondCall().resolves(<any>{ label: constants.input, type: BindingType.input });
 
@@ -231,7 +231,7 @@ describe('AzureFunctionsService', () => {
 
 			it('Should create azure function project using the command from command palette (no connection info)', async function (): Promise<void> {
 				// select view
-				let quickPickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves({ label: constants.sqlView });
+				let quickPickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves(constants.sqlView as any);
 				// input binding should be used for views
 
 				// no table used for connection info so prompt user to get connection info
@@ -302,7 +302,7 @@ describe('AzureFunctionsService', () => {
 
 		it('Should prompt connection profile when user cancels selecting database', async function (): Promise<void> {
 			// select view for object type
-			quickPickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves(<any>{ label: constants.sqlView });
+			quickPickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves(constants.sqlView as any);
 
 			// This test will have an azure function project already in the project and the azure functions extension installed (stubbed)
 			let connectionInfo: IConnectionInfo = createTestCredentials();// create test connectionInfo
@@ -324,7 +324,7 @@ describe('AzureFunctionsService', () => {
 
 		it('Should prompt connection profile when user cancels selecting object from object lists', async function (): Promise<void> {
 			// select view for object type
-			quickPickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves(<any>{ label: constants.sqlView });
+			quickPickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves(constants.sqlView as any);
 
 			// This test will re-prompt the user to choose connection profile
 			let connectionInfo: IConnectionInfo = createTestCredentials();// create test connectionInfo
@@ -355,7 +355,7 @@ describe('AzureFunctionsService', () => {
 
 		it('Should prompt select table when user cancels out of manually entering table', async function (): Promise<void> {
 			// select view for object type
-			quickPickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves(<any>{ label: constants.sqlTable });
+			quickPickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves(constants.sqlTable as any);
 			quickPickStub.onSecondCall().resolves(<any>{ label: constants.input, type: BindingType.input });
 			// This test will have an azure function project already in the project and the azure functions extension installed (stubbed)
 			let connectionInfo: IConnectionInfo = createTestCredentials();// create test connectionInfo
@@ -373,7 +373,7 @@ describe('AzureFunctionsService', () => {
 			testUtils.vscodeMssqlIExtension.setup(x => x.sendRequest(azureFunctionsContracts.SimpleExecuteRequest.type, params))
 				.returns(() => Promise.resolve({ rowCount: 1, columnInfo: [], rows: [[{ displayValue: '[schema].[testTable]' }]] }));
 			// select the option to manually enter table name
-			let manuallyEnterObjectName = constants.manuallyEnterObjectName(constants.enterObjectName);
+			let manuallyEnterObjectName = constants.manuallyEnterObjectName(constants.enterSqlObjectName);
 			quickPickStub.onCall(3).resolves(manuallyEnterObjectName as any);
 			// cancel out of manually enter inputBox
 			sinon.stub(vscode.window, 'showInputBox').resolves(undefined);
@@ -397,7 +397,7 @@ describe('AzureFunctionsService', () => {
 
 		it('Should prompt select view when user cancels out of manually entering view', async function (): Promise<void> {
 			// select view for object type
-			quickPickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves(<any>{ label: constants.sqlView });
+			quickPickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves(constants.sqlView as any);
 			// This test will have an azure function project already in the project and the azure functions extension installed (stubbed)
 			let connectionInfo: IConnectionInfo = createTestCredentials();// create test connectionInfo
 
@@ -414,7 +414,7 @@ describe('AzureFunctionsService', () => {
 			testUtils.vscodeMssqlIExtension.setup(x => x.sendRequest(azureFunctionsContracts.SimpleExecuteRequest.type, params))
 				.returns(() => Promise.resolve({ rowCount: 1, columnInfo: [], rows: [[{ displayValue: '[schema].[testView]' }]] }));
 			// select the option to manually enter table name
-			let manuallyEnterObjectName = constants.manuallyEnterObjectName(constants.enterObjectName);
+			let manuallyEnterObjectName = constants.manuallyEnterObjectName(constants.enterViewsObjectName);
 			quickPickStub.onThirdCall().resolves(manuallyEnterObjectName as any);
 			// cancel out of manually enter inputBox
 			sinon.stub(vscode.window, 'showInputBox').resolves(undefined);
@@ -438,7 +438,7 @@ describe('AzureFunctionsService', () => {
 
 		it('Should prompt for connection profile if connection throws connection error', async function (): Promise<void> {
 			// select view for object type
-			quickPickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves(<any>{ label: constants.sqlView });
+			quickPickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves(constants.sqlView as any);
 
 			// no table used for connection info so prompt user to get connection info
 			// promptForConnection is selected first time for user and then set undefined in order to exit out of the createFunction

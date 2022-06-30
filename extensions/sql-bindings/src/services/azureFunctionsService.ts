@@ -118,6 +118,9 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			if (!selectedBindingType) {
 				return;
 			}
+
+			// send telemetry for chosen object type and binding type
+			propertyBag.objectType = chosenObjectType;
 			propertyBag.bindingType = selectedBindingType;
 			TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
 				.withAdditionalProperties(propertyBag).send();
@@ -150,7 +153,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			}
 		} else {
 			// user selects table in tree view we use connection info from Object Explorer node
-			telemetryStep = CreateAzureFunctionStep.launchFromTable;
+			telemetryStep = CreateAzureFunctionStep.launchFromObjectExplorer;
 			connectionInfo = node.connectionInfo;
 			TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
 				.withAdditionalProperties(propertyBag).withConnectionInfo(connectionInfo).send();
@@ -173,6 +176,8 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 				return;
 			}
 
+			// send telemetry for object type and binding type
+			propertyBag.objectType = node.nodeType;
 			propertyBag.bindingType = selectedBindingType;
 			TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
 				.withAdditionalProperties(propertyBag).send();
