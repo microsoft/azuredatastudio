@@ -278,7 +278,6 @@ export async function launchCreateAzureServerQuickPick(project: Project, azureSq
 export async function getPublishToDockerSettings(project: ISqlProject): Promise<IPublishToDockerSettings | undefined> {
 	const target = project.getProjectTargetVersion();
 	const name = uiUtils.getPublishServerName(target);
-	let dockerSettings: IDockerSettings | undefined;
 	// Deploy to docker selected
 	let portNumber = await vscode.window.showInputBox({
 		title: constants.enterPortNumber(name),
@@ -370,7 +369,7 @@ export async function getPublishToDockerSettings(project: ISqlProject): Promise<
 		imageName = `${imageName}:${imageTag.label}`;
 	}
 
-	dockerSettings = {
+	const dockerSettings: IDockerSettings = {
 		serverName: constants.defaultLocalServerName,
 		userName: constants.defaultLocalServerAdminName,
 		dbName: project.projectFileName,
