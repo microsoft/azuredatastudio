@@ -351,9 +351,21 @@ declare module 'sqldbproj' {
 		profileUsed?: boolean;
 	}
 
+	/**
+	 * Information for deploying a new docker container
+	 */
 	interface DockerImageSpec {
+		/**
+		 * The label to apply to the container
+		 */
 		label: string;
+		/**
+		 * The full name to give the container
+		 */
 		containerName: string;
+		/**
+		 * The tag to apply to the container
+		 */
 		tag: string
 	}
 }
