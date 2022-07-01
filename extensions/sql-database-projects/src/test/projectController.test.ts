@@ -366,8 +366,9 @@ describe('ProjectsController', function (): void {
 				let projController = TypeMoq.Mock.ofType(ProjectsController);
 				projController.callBase = true;
 				projController.setup(x => x.getPublishDialog(TypeMoq.It.isAny())).returns(() => publishDialog.object);
-
-				void projController.object.publishProject(new Project('FakePath'));
+				const proj = new Project('FakePath');
+				sinon.stub(proj, 'getProjectTargetVersion').returns('150');
+				void projController.object.publishProject(proj);
 				should(opened).equal(true);
 			});
 
@@ -603,6 +604,11 @@ describe('ProjectsController', function (): void {
 			const dataWorkspaceMock = TypeMoq.Mock.ofType<dataworkspace.IExtension>();
 			dataWorkspaceMock.setup(x => x.getProjectsInWorkspace(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve([vscode.Uri.file(project1.projectFilePath), vscode.Uri.file(project2.projectFilePath)]));
 			sinon.stub(vscode.extensions, 'getExtension').returns(<any>{ exports: dataWorkspaceMock.object });
+			sinon.stub(utils, 'getDacFxService').returns(<any>{
+				parseTSqlScript: (_: string, __: string) => {
+					return Promise.resolve({ containsCreateTableStatement: true });
+				}
+			});
 
 			// add project reference from project1 to project2
 			await projController.addDatabaseReferenceCallback(project1, {
@@ -633,7 +639,11 @@ describe('ProjectsController', function (): void {
 			const showErrorMessageSpy = sinon.spy(vscode.window, 'showErrorMessage');
 			const dataWorkspaceMock = TypeMoq.Mock.ofType<dataworkspace.IExtension>();
 			sinon.stub(vscode.extensions, 'getExtension').returns(<any>{ exports: dataWorkspaceMock.object });
-
+			sinon.stub(utils, 'getDacFxService').returns(<any>{
+				parseTSqlScript: (_: string, __: string) => {
+					return Promise.resolve({ containsCreateTableStatement: true });
+				}
+			});
 			// add dacpac reference to something in the same folder
 			should(project1.databaseReferences.length).equal(0, 'There should not be any database references to start with');
 
