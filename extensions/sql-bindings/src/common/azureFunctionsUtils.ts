@@ -637,7 +637,7 @@ export async function getConnectionURI(connectionInfo: IConnectionInfo): Promise
 	return connectionURI;
 }
 
-export async function promptSelectObject(connectionURI: string, bindingType: BindingType, selectedDatabase: string, objectType: string): Promise<string | undefined> {
+export async function promptSelectObject(connectionURI: string, bindingType: BindingType, selectedDatabase: string, objectType?: string): Promise<string | undefined> {
 	const vscodeMssqlApi = await utils.getVscodeMssqlApi();
 	let isView = (objectType === utils.ObjectType.View);
 
