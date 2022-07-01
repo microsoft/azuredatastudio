@@ -81,24 +81,24 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KEY_B) {
 				// Bold text
 				preventDefaultAndExecCommand(e, 'bold');
-				this.cellModel.notebookModel.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.WYSIWYGToolbarAction, { action: 'BOLD' });
+				this.cellModel.notebookModel.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.WYSIWYGKeyboardAction, { action: 'BOLD' });
 			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KEY_I) {
 				// Italicize text
 				preventDefaultAndExecCommand(e, 'italic');
-				this.cellModel.notebookModel.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.WYSIWYGToolbarAction, { action: 'ITALIC' });
+				this.cellModel.notebookModel.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.WYSIWYGKeyboardAction, { action: 'ITALIC' });
 			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KEY_U) {
 				// Underline text
 				preventDefaultAndExecCommand(e, 'underline');
-				this.cellModel.notebookModel.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.WYSIWYGToolbarAction, { action: 'UNDERLINE' });
+				this.cellModel.notebookModel.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.WYSIWYGKeyboardAction, { action: 'UNDERLINE' });
 			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.shiftKey && keyEvent.keyCode === KeyCode.KEY_K) {
 				// Code Block
 				preventDefaultAndExecCommand(e, 'formatBlock', false, 'pre');
-				this.cellModel.notebookModel.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.WYSIWYGToolbarAction, { action: 'CODE' });
+				this.cellModel.notebookModel.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.WYSIWYGKeyboardAction, { action: 'CODE' });
 			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.shiftKey && keyEvent.keyCode === KeyCode.KEY_H) {
 				// Highlight Text
 				DOM.EventHelper.stop(e, true);
 				highlightSelectedText();
-				this.cellModel.notebookModel.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.WYSIWYGToolbarAction, { action: 'HIGHLIGHT' });
+				this.cellModel.notebookModel.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.WYSIWYGKeyboardAction, { action: 'HIGHLIGHT' });
 			}
 		}
 	}
@@ -420,10 +420,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	public handleContentChanged(): void {
 		this.updatePreview();
-		if (this.model.firstTextCellEdit) {
-			this.model.firstTextCellEdit = false;
-			this.model.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.FirstTextCellEdit, { mode: this._previewMode ? 'SplitView' : 'MarkdownView' });
-		}
 	}
 
 	public handleHtmlChanged(): void {
@@ -431,10 +427,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this.addUndoElement(textOutputElement.innerHTML);
 
 		this.updateCellSource();
-		if (this.model.firstTextCellEdit) {
-			this.model.firstTextCellEdit = false;
-			this.model.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.FirstTextCellEdit, { mode: 'RichTextView' });
-		}
 	}
 
 	public toggleEditMode(editMode?: boolean): void {
