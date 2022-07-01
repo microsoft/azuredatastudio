@@ -141,8 +141,8 @@ class MockEditorService extends TestEditorService {
 		return {
 			getModel: () => {
 				return <any>{
-					getLanguageIdentifier: () => {
-						return { language: this.mode };
+					getLanguageId: () => {
+						return this.mode;
 					}
 				};
 			},

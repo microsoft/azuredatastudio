@@ -49,7 +49,7 @@ suite('OutputProcessor functions', function (): void {
 						evalue: evalue,
 						traceback: traceback
 					};
-					test(`test for outputType:'${output.output_type}', ename:'${ename}', evalue:${evalue}, and traceback:${JSON.stringify(traceback)}`, () => {
+					test.skip(`test for outputType:'${output.output_type}', ename:'${ename}', evalue:${evalue}, and traceback:${JSON.stringify(traceback)}`, () => {
 						verifyGetDataForErrorOutput(output);
 					});
 				}
