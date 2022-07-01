@@ -10,22 +10,22 @@ import { DeployOptionsModel } from '../../models/options/deployOptionsModel';
 describe('Publish Dialog Deploy Options Model', () => {
 	it('Should create model and set options successfully', function (): void {
 		const model = new DeployOptionsModel(testUtils.getDeploymentOptions());
-		should.notEqual(model.getOptionsData(), undefined, 'Options shouldn\'t be undefined');
+		should.notEqual(model.InitializeOptionsData(), undefined, 'Options shouldn\'t be undefined');
 
 		should.doesNotThrow(() => model.setDeploymentOptions());
 
-		should(model.getDeployOptionUtil('')).equal(undefined);
+		should(model.getOptionValue('')).equal(undefined);
 	});
 
 	it('Should get description', function (): void {
 		const model = new DeployOptionsModel(testUtils.getDeploymentOptions());
 		model.optionsLabels.forEach(l => {
-			should(model.getDescription(l)).not.equal(undefined);
+			should(model.getOptionDescription(l)).not.equal(undefined);
 		});
 	});
 
 	it('Should be undefined for null description', function (): void {
 		const model = new DeployOptionsModel(testUtils.getDeploymentOptions());
-		should(model.getDescription('')).equal(undefined);
+		should(model.getOptionDescription('')).equal(undefined);
 	});
 });

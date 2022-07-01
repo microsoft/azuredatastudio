@@ -77,7 +77,7 @@ export class PublishOptionsDialog {
 				const row = this.optionsTable?.selectedRows![0];
 				const label = this.optionsModel.optionsLabels[row!];
 				await this.descriptionText?.updateProperties({
-					value: this.optionsModel.getDescription(label)
+					value: this.optionsModel.getOptionDescription(label)
 				});
 			}));
 
@@ -86,7 +86,7 @@ export class PublishOptionsDialog {
 				const checkboxState = <azdataType.ICheckboxCellActionEventArgs>rowState;
 				if (checkboxState && checkboxState.row !== undefined) {
 					let label = this.optionsModel.optionsLabels[checkboxState.row];
-					this.optionsModel.optionsLookup?.set(label, checkboxState.checked);
+					this.optionsModel.optionsValueLookup[label] = checkboxState.checked;
 					this.optionsChanged = true;
 				}
 			}));
@@ -109,7 +109,7 @@ export class PublishOptionsDialog {
 	* Update the default options to the options table area
 	*/
 	private async updateOptionsTable(): Promise<void> {
-		const data = this.optionsModel.getOptionsData();
+		const data = this.optionsModel.InitializeOptionsData();
 		await this.optionsTable?.updateProperties({
 			data: data,
 			columns: [
@@ -161,7 +161,7 @@ export class PublishOptionsDialog {
 		this.optionsModel.deploymentOptions = result;
 
 		// This will update the Map table with default values
-		this.optionsModel.UpdateOptionsMapTable();
+		this.optionsModel.InitializeOptionsData();
 
 		await this.updateOptionsTable();
 		this.optionsFlexBuilder?.removeItem(this.optionsTable!);

@@ -7,65 +7,82 @@ import * as mssql from 'mssql';
 
 export class DeployOptionsModel {
 	public deploymentOptions: mssql.DeploymentOptions;
-
-	public optionsLookup: Map<string, boolean> = new Map<string, boolean>();
-	public optionsMapTable: { [key: string]: mssql.DacDeployOptionPropertyBoolean } = {};
+	public booleanOptionsMap: { [key: string]: mssql.DacDeployOptionPropertyBoolean } = {};
 	public optionsLabels: string[] = [];
+	public optionsNameAndPropMap: { [key: string]: string } = {};
+	public optionsValueLookup: { [key: string]: boolean } = {};
 
 	constructor(defaultOptions: mssql.DeploymentOptions) {
 		this.deploymentOptions = defaultOptions;
-		this.UpdateOptionsMapTable();
-		this.optionsLabels = Object.keys(this.deploymentOptions.optionsMapTable).sort();
+		this.InitializeBooleanOptionsDict();
+		this.optionsLabels = this.prepareOptionsNamesPropsMapAndGetSortedLabels();
 	}
 
-	public UpdateOptionsMapTable() {
-		this.optionsMapTable = this.deploymentOptions.optionsMapTable;
+	/*
+	* This method prepares
+	* a. Sorted array of option display names for indexing
+	* b. Map table to hold displayNames and corresponding propertyName, this will help to get the right key of selected option index
+	*/
+	public prepareOptionsNamesPropsMapAndGetSortedLabels(): string[] {
+		let optionsLabels: string[] = [];
+		Object.entries(this.deploymentOptions.booleanOptionsDict).forEach(option => {
+			const optionDisplayName = option[1].displayName;
+			const propertyName = option[0];
+			// push to optionsLabels Array
+			optionsLabels.push(optionDisplayName);
+			// push to optionsNameAndPropMap
+			this.optionsNameAndPropMap[optionDisplayName] = propertyName;
+		});
+		return optionsLabels.sort();
+	}
+
+	public InitializeBooleanOptionsDict() {
+		this.booleanOptionsMap = this.deploymentOptions.booleanOptionsDict;
 	}
 
 	/**
-	 * Gets the options checkbox values by iterating through the labels and gets the default/changed value from the optionsMapTable
-	 * Returns data as [optionName, booleanValue], where these values are sending to the options table component
+	 * Initialize options data from booleanOptionsMap for table component
+	 * also preparing optionsValueLookup Map holding onchange checkbox values
+	 * Returns data as [booleanValue, optionName]
 	 */
-	public getOptionsData(): string[][] {
+	public InitializeOptionsData(): string[][] {
 		let data: any = [];
-		this.optionsLookup = new Map<string, boolean>();
-		this.optionsLabels.forEach(l => {
-			let checked: boolean | undefined = this.getDeployOptionUtil(l);
-			if (checked !== undefined) {
-				data.push([checked, l]);
-				this.optionsLookup?.set(l, checked);
-			}
+		this.optionsLabels.forEach(optionLabel => {
+			const checked = this.getOptionValue(optionLabel);
+			data.push([checked, optionLabel]);
+			this.optionsValueLookup[optionLabel] = checked;
 		});
 		return data;
 	}
 
 	/*
-	* Sets the selected option checkbox value to the optionsMapTable
+	* Sets the selected option checkbox value to the booleanOptionsMap
+	* option[0] - option label
+	* option[1] - checkedbox value
 	*/
 	public setDeploymentOptions(): void {
-		for (let option of this.optionsLookup) {
-			let val = this.optionsMapTable[option[0]];
-			if (val !== undefined && val?.value !== option[1]) {
-				val.value = option[1];
-				this.optionsMapTable[option[0]] = val;
-			}
-		}
+		Object.entries(this.optionsValueLookup).forEach(option => {
+			const propertyName = this.optionsNameAndPropMap[option[0]];
+			this.booleanOptionsMap[propertyName].value = option[1];
+		});
 
-		// Set the deployment optionsMapTable with the updated optionsMapTable
-		this.deploymentOptions.optionsMapTable = this.optionsMapTable;
+		// Set the deployment booleanOptionsDict with the updated booleanOptionsMap
+		this.deploymentOptions.booleanOptionsDict = this.booleanOptionsMap;
 	}
 
 	/*
 	* Gets the selected/default value of the option
 	*/
-	public getDeployOptionUtil(label: string): boolean | undefined {
-		return this.optionsMapTable[label]?.value;
+	public getOptionValue(label: string): boolean {
+		const propertyName = this.optionsNameAndPropMap[label];
+		return this.booleanOptionsMap[propertyName]?.value;
 	}
 
 	/*
 	* Gets the description of the option selected
 	*/
-	public getDescription(label: string): string | undefined {
-		return this.optionsMapTable[label]?.description;
+	public getOptionDescription(label: string): string {
+		const propertyName = this.optionsNameAndPropMap[label];
+		return this.booleanOptionsMap[propertyName]?.description;
 	}
 }

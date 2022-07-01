@@ -153,27 +153,29 @@ declare module 'mssql' {
 		defaultDeploymentOptions: DeploymentOptions;
 	}
 
+	/**
+	* Interface containing deployment options of boolean type
+	*/
 	export interface DacDeployOptionPropertyBoolean {
 		value: boolean;
 		description: string;
-		propertyName: string;
+		displayName: string;
 	}
 
+	/**
+	* Interface containing deployment options of integer type and hold DacFx ObjectType enum values
+	*/
 	export interface DacDeployOptionPropertyObject {
-		/**
-		 * represents array of numbers, ex: for Include object types options, the selected options are the enum numbers that the current property is holding
-		 */
 		value: number[];
 		description: string;
-		propertyName: string;
+		displayName: string;
 	}
 
 	export interface DeploymentOptions {
 		doNotDropObjectTypes: DacDeployOptionPropertyObject;
 		excludeObjectTypes: DacDeployOptionPropertyObject;
-		optionsMapTable: { [key: string]: DacDeployOptionPropertyBoolean };
+		booleanOptionsDict: { [key: string]: DacDeployOptionPropertyBoolean };
 	}
-
 	/**
 	 * Values from <DacFx>\Product\Source\DeploymentApi\ObjectTypes.cs
 	 */
@@ -304,7 +306,6 @@ declare module 'mssql' {
 		generateDeployPlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<GenerateDeployPlanResult>;
 		getOptionsFromProfile(profilePath: string): Thenable<DacFxOptionsResult>;
 		validateStreamingJob(packageFilePath: string, createStreamingJobTsql: string): Thenable<ValidateStreamingJobResult>;
-		parseTSqlScript(filePath: string, databaseSchemaProvider: string): Thenable<ParseTSqlScriptResult>;
 	}
 
 	export interface DacFxResult extends azdata.ResultStatus {
@@ -320,10 +321,6 @@ declare module 'mssql' {
 	}
 
 	export interface ValidateStreamingJobResult extends azdata.ResultStatus {
-	}
-
-	export interface ParseTSqlScriptResult {
-		containsCreateTableStatement: boolean;
 	}
 
 	export interface ExportParams {

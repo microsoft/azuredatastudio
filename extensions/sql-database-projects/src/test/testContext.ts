@@ -25,13 +25,13 @@ export const mockDacFxResult = {
 /* Get the deployment options sample model */
 export function getDeploymentOptions(): mssql.DeploymentOptions {
 	const sampleDesc = 'Sample Description text';
-	const sampleName = 'Sample Property Name';
+	const sampleName = 'Sample Display Name';
 	const defaultOptions: mssql.DeploymentOptions = {
-		doNotDropObjectTypes: { value: [], description: sampleDesc, propertyName: sampleName },
-		excludeObjectTypes: { value: [], description: sampleDesc, propertyName: sampleName },
-		optionsMapTable: {
-			'Sample Display Name Option1': { value: false, description: sampleDesc, propertyName: sampleName },
-			'Sample Display Name Option2': { value: false, description: sampleDesc, propertyName: sampleName }
+		doNotDropObjectTypes: { value: [], description: sampleDesc, displayName: sampleName },
+		excludeObjectTypes: { value: [], description: sampleDesc, displayName: sampleName },
+		booleanOptionsDict: {
+			'SampleProperty1': { value: false, description: sampleDesc, displayName: sampleName },
+			'SampleProperty2': { value: false, description: sampleDesc, displayName: sampleName }
 		}
 	};
 	return defaultOptions;
