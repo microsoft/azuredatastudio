@@ -6,7 +6,6 @@
 import * as path from 'path';
 import * as os from 'os';
 import * as constants from '../common/constants';
-import * as templates from '../templates/templates';
 
 import { promises as fs } from 'fs';
 import should = require('should');
@@ -35,10 +34,6 @@ export async function createTestSqlProjFile(contents: string, folderPath?: strin
 }
 
 export async function createTestProject(contents: string, folderPath?: string): Promise<Project> {
-	const macroDict: Record<string, string> = {
-		'PROJECT_DSP': constants.defaultDSP
-	};
-	contents = templates.macroExpansion(contents, macroDict);
 	return await Project.openProject(await createTestSqlProjFile(contents, folderPath));
 }
 
