@@ -170,7 +170,4 @@ export class DacFxTestService implements mssql.IDacFxService {
 		};
 		return Promise.resolve(streamingJobValidationResult);
 	}
-	parseTSqlScript(filePath: string, databaseSchemaProvider: string): Thenable<mssql.ParseTSqlScriptResult> {
-		return Promise.resolve({ containsCreateTableStatement: true });
-	}
 }
