@@ -184,3 +184,8 @@ export async function exists(path: string): Promise<boolean> {
 		return false;
 	}
 }
+
+export enum ObjectType {
+	Table = 'Table',
+	View = 'View'
+}

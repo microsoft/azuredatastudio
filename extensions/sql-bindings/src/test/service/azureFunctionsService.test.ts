@@ -93,7 +93,7 @@ describe('AzureFunctionsService', () => {
 			const testWatcher = TypeMoq.Mock.ofType<vscode.FileSystemWatcher>().object;
 			sinon.stub(azureFunctionUtils, 'waitForNewFunctionFile').withArgs(sinon.match.any).returns({ filePromise: Promise.resolve('TestFileCreated'), watcherDisposable: testWatcher });
 
-			should(connectionInfo.database).equal('my_db', 'ConnectionInfo database should not be changed');
+			should(connectionInfo.database).equal('my_db', 'Initial ConnectionInfo database should be my_db');
 			await azureFunctionService.createAzureFunction(tableTestNode);
 
 			should(showErrorStub.calledOnce).be.true('showErrorMessage should have been called');
@@ -135,11 +135,11 @@ describe('AzureFunctionsService', () => {
 
 			it('Should create azure function project using the command from command palette (no connection info)', async function (): Promise<void> {
 				// select table
-				let quickPickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves(constants.sqlTable as any);
+				let quickPickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves(constants.table as any);
 				// select input or output binding
 				quickPickStub.onSecondCall().resolves(<any>{ label: constants.input, type: BindingType.input });
 
-				// no table used for connection info so prompt user to get connection info
+				// no connection node used for connection info so prompt user to get connection info
 				testUtils.vscodeMssqlIExtension.setup(x => x.promptForConnection(true)).returns(() => Promise.resolve(connectionInfo));
 				testUtils.vscodeMssqlIExtension.setup(x => x.connect(connectionInfo)).returns(() => Promise.resolve('testConnectionURI'));
 				testUtils.vscodeMssqlIExtension.setup(x => x.listDatabases('testConnectionURI')).returns(() => Promise.resolve(['testDb']));
@@ -162,11 +162,10 @@ describe('AzureFunctionsService', () => {
 				quickPickStub.onCall(5).resolves((constants.yesString) as any);
 				testUtils.vscodeMssqlIExtension.setup(x => x.getConnectionString(connectionDetails, true, false)).returns(() => Promise.resolve('testConnectionString'));
 
-				should(connectionInfo.database).equal('my_db', 'ConnectionInfo database should not be changed');
+				should(connectionInfo.database).equal('my_db', 'Initial ConnectionInfo database should be my_db');
 				await azureFunctionService.createAzureFunction();
 
 				should(showErrorMessageSpy.notCalled).be.true('showErrorMessage should not have been called');
-				// set the connection info to be the one the user selects from list of databases quickpick
 				should(connectionInfo.database).equal('testDb', 'connectionInfo.database should be testDb after user selects testDb');
 			});
 
@@ -186,12 +185,11 @@ describe('AzureFunctionsService', () => {
 				quickPickStub.onThirdCall().resolves((constants.yesString) as any);
 				testUtils.vscodeMssqlIExtension.setup(x => x.getConnectionString(connectionDetails, true, false)).returns(() => Promise.resolve('testConnectionString'));
 
-				should(connectionInfo.database).equal('my_db', 'ConnectionInfo database should not be changed');
+				should(connectionInfo.database).equal('my_db', 'Initial ConnectionInfo database should be my_db');
 				await azureFunctionService.createAzureFunction(tableTestNode);
 
 				should(showErrorMessageSpy.notCalled).be.true('showErrorMessage should not have been called');
-				// set the connection info to be the one used from the test table node from OE
-				should(connectionInfo.database).equal('testDb', 'connectionInfo.database should be testDb after user selects testDb');
+				should(connectionInfo.database).equal('testDb', 'connectionInfo.database should be testDb used from the test table node from OE');
 			});
 		});
 
@@ -231,16 +229,16 @@ describe('AzureFunctionsService', () => {
 
 			it('Should create azure function project using the command from command palette (no connection info)', async function (): Promise<void> {
 				// select view
-				let quickPickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves(constants.sqlView as any);
+				let quickPickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves(constants.view as any);
 				// input binding should be used for views
 
-				// no table used for connection info so prompt user to get connection info
+				// no connection node used for connection info so prompt user to get connection info
 				testUtils.vscodeMssqlIExtension.setup(x => x.promptForConnection(true)).returns(() => Promise.resolve(connectionInfo));
 				testUtils.vscodeMssqlIExtension.setup(x => x.connect(connectionInfo)).returns(() => Promise.resolve('testConnectionURI'));
 				testUtils.vscodeMssqlIExtension.setup(x => x.listDatabases('testConnectionURI')).returns(() => Promise.resolve(['testDb']));
 				// select the testDB from list of databases based on connection info
 				quickPickStub.onSecondCall().resolves(('testDb') as any);
-				// get tables from selected database
+				// get views from selected database
 				const params = { ownerUri: 'testConnectionURI', queryString: azureFunctionUtils.viewsQuery('testDb') };
 				testUtils.vscodeMssqlIExtension.setup(x => x.sendRequest(azureFunctionsContracts.SimpleExecuteRequest.type, params))
 					.returns(() => Promise.resolve({ rowCount: 1, columnInfo: [], rows: [[{ displayValue: '[schema].[testView]' }]] }));
@@ -257,11 +255,10 @@ describe('AzureFunctionsService', () => {
 				quickPickStub.onCall(4).resolves((constants.yesString) as any);
 				testUtils.vscodeMssqlIExtension.setup(x => x.getConnectionString(connectionDetails, true, false)).returns(() => Promise.resolve('testConnectionString'));
 
-				should(connectionInfo.database).equal('my_db', 'ConnectionInfo database should not be changed');
+				should(connectionInfo.database).equal('my_db', 'Initial ConnectionInfo database should be my_db');
 				await azureFunctionService.createAzureFunction();
 
 				should(showErrorMessageSpy.notCalled).be.true('showErrorMessage should not have been called');
-				// set the connection info to be the one the user selects from list of databases quickpick
 				should(connectionInfo.database).equal('testDb', 'connectionInfo.database should be testDb after user selects testDb');
 			});
 
@@ -279,15 +276,14 @@ describe('AzureFunctionsService', () => {
 				quickPickStub.onSecondCall().resolves((constants.yesString) as any);
 				testUtils.vscodeMssqlIExtension.setup(x => x.getConnectionString(connectionDetails, true, false)).returns(() => Promise.resolve('testConnectionString'));
 
-				should(connectionInfo.database).equal('my_db', 'ConnectionInfo database should not be changed');
+				should(connectionInfo.database).equal('my_db', 'Initial ConnectionInfo database should be my_db');
 
 				// table node used when creating azure function project
 				let tableTestNode = createTestTableNode(connectionInfo);
 				await azureFunctionService.createAzureFunction(tableTestNode);
 
 				should(showErrorMessageSpy.notCalled).be.true('showErrorMessage should not have been called');
-				// set the connection info to be the one used from the test table node from OE
-				should(connectionInfo.database).equal('testDb', 'connectionInfo.database should be testDb after user selects testDb');
+				should(connectionInfo.database).equal('testDb', 'connectionInfo.database should be testDb used from the test view node from OE');
 			});
 		});
 	});
@@ -302,7 +298,7 @@ describe('AzureFunctionsService', () => {
 
 		it('Should prompt connection profile when user cancels selecting database', async function (): Promise<void> {
 			// select view for object type
-			quickPickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves(constants.sqlView as any);
+			quickPickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves(constants.view as any);
 
 			// This test will have an azure function project already in the project and the azure functions extension installed (stubbed)
 			let connectionInfo: IConnectionInfo = createTestCredentials();// create test connectionInfo
@@ -324,7 +320,7 @@ describe('AzureFunctionsService', () => {
 
 		it('Should prompt connection profile when user cancels selecting object from object lists', async function (): Promise<void> {
 			// select view for object type
-			quickPickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves(constants.sqlView as any);
+			quickPickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves(constants.view as any);
 
 			// This test will re-prompt the user to choose connection profile
 			let connectionInfo: IConnectionInfo = createTestCredentials();// create test connectionInfo
@@ -337,7 +333,7 @@ describe('AzureFunctionsService', () => {
 			// select the testDB for promptForDatabase
 			quickPickStub.onSecondCall().resolves(('testDb') as any);
 
-			// get tables from selected database
+			// get views from selected database
 			const params = { ownerUri: 'testConnectionURI', queryString: azureFunctionUtils.viewsQuery('testDb') };
 			testUtils.vscodeMssqlIExtension.setup(x => x.sendRequest(azureFunctionsContracts.SimpleExecuteRequest.type, params))
 				.returns(() => Promise.resolve({ rowCount: 1, columnInfo: [], rows: [[{ displayValue: '[schema].[testView]' }]] }));
@@ -354,13 +350,13 @@ describe('AzureFunctionsService', () => {
 		});
 
 		it('Should prompt select table when user cancels out of manually entering table', async function (): Promise<void> {
-			// select view for object type
-			quickPickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves(constants.sqlTable as any);
+			// select table for object type
+			quickPickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves(constants.table as any);
 			quickPickStub.onSecondCall().resolves(<any>{ label: constants.input, type: BindingType.input });
 			// This test will have an azure function project already in the project and the azure functions extension installed (stubbed)
 			let connectionInfo: IConnectionInfo = createTestCredentials();// create test connectionInfo
 
-			// no table used for connection info so prompt user to get connection info
+			// no connection node used for connection info so prompt user to get connection info
 			// promptForConnection is set first time for user
 			let promptForConnectionStub = sinon.stub(testUtils.vscodeMssqlIExtension.object, 'promptForConnection').withArgs(true).onFirstCall().resolves(connectionInfo);
 			// setup listDatabases request with connectionURI
@@ -373,7 +369,7 @@ describe('AzureFunctionsService', () => {
 			testUtils.vscodeMssqlIExtension.setup(x => x.sendRequest(azureFunctionsContracts.SimpleExecuteRequest.type, params))
 				.returns(() => Promise.resolve({ rowCount: 1, columnInfo: [], rows: [[{ displayValue: '[schema].[testTable]' }]] }));
 			// select the option to manually enter table name
-			let manuallyEnterObjectName = constants.manuallyEnterObjectName(constants.enterSqlObjectName);
+			let manuallyEnterObjectName = constants.manuallyEnterObjectName(constants.enterTableName);
 			quickPickStub.onCall(3).resolves(manuallyEnterObjectName as any);
 			// cancel out of manually enter inputBox
 			sinon.stub(vscode.window, 'showInputBox').resolves(undefined);
@@ -381,7 +377,7 @@ describe('AzureFunctionsService', () => {
 			quickPickStub.onCall(4).resolves(undefined);
 			promptForConnectionStub.onSecondCall().resolves(undefined);
 
-			should(connectionInfo.database).equal('my_db', 'ConnectionInfo database should not be changed');
+			should(connectionInfo.database).equal('my_db', 'Initial ConnectionInfo database should be my_db');
 			await azureFunctionService.createAzureFunction();
 
 			should(connectionInfo.database).equal('testDb', 'ConnectionInfo database should be user selected database');
@@ -397,11 +393,11 @@ describe('AzureFunctionsService', () => {
 
 		it('Should prompt select view when user cancels out of manually entering view', async function (): Promise<void> {
 			// select view for object type
-			quickPickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves(constants.sqlView as any);
+			quickPickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves(constants.view as any);
 			// This test will have an azure function project already in the project and the azure functions extension installed (stubbed)
 			let connectionInfo: IConnectionInfo = createTestCredentials();// create test connectionInfo
 
-			// no table used for connection info so prompt user to get connection info
+			// no connection node used for connection info so prompt user to get connection info
 			// promptForConnection is set first time for user
 			let promptForConnectionStub = sinon.stub(testUtils.vscodeMssqlIExtension.object, 'promptForConnection').withArgs(true).onFirstCall().resolves(connectionInfo);
 			// setup listDatabases request with connectionURI
@@ -414,7 +410,7 @@ describe('AzureFunctionsService', () => {
 			testUtils.vscodeMssqlIExtension.setup(x => x.sendRequest(azureFunctionsContracts.SimpleExecuteRequest.type, params))
 				.returns(() => Promise.resolve({ rowCount: 1, columnInfo: [], rows: [[{ displayValue: '[schema].[testView]' }]] }));
 			// select the option to manually enter table name
-			let manuallyEnterObjectName = constants.manuallyEnterObjectName(constants.enterViewsObjectName);
+			let manuallyEnterObjectName = constants.manuallyEnterObjectName(constants.enterViewName);
 			quickPickStub.onThirdCall().resolves(manuallyEnterObjectName as any);
 			// cancel out of manually enter inputBox
 			sinon.stub(vscode.window, 'showInputBox').resolves(undefined);
@@ -422,7 +418,7 @@ describe('AzureFunctionsService', () => {
 			quickPickStub.onCall(3).resolves(undefined);
 			promptForConnectionStub.onSecondCall().resolves(undefined);
 
-			should(connectionInfo.database).equal('my_db', 'ConnectionInfo database should not be changed');
+			should(connectionInfo.database).equal('my_db', 'Initial ConnectionInfo database should be my_db');
 			await azureFunctionService.createAzureFunction();
 
 			should(connectionInfo.database).equal('testDb', 'ConnectionInfo database should be user selected database');
@@ -438,9 +434,9 @@ describe('AzureFunctionsService', () => {
 
 		it('Should prompt for connection profile if connection throws connection error', async function (): Promise<void> {
 			// select view for object type
-			quickPickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves(constants.sqlView as any);
+			quickPickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves(constants.view as any);
 
-			// no table used for connection info so prompt user to get connection info
+			// no connection node used for connection info so prompt user to get connection info
 			// promptForConnection is selected first time for user and then set undefined in order to exit out of the createFunction
 			let promptForConnectionStub = sinon.stub(testUtils.vscodeMssqlIExtension.object, 'promptForConnection').withArgs(true).throws('Error connecting to connection profile');
 			promptForConnectionStub.onSecondCall().resolves(undefined);

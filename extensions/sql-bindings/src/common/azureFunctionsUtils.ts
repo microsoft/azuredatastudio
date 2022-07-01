@@ -292,7 +292,7 @@ export async function isFunctionProject(folderPath: string): Promise<boolean> {
  */
 export async function promptForBindingType(objectType?: string, funcName?: string): Promise<BindingType | undefined> {
 	// check to see if objectType is view
-	let isView = (objectType === constants.sqlView || objectType === 'View');
+	let isView = (objectType === utils.ObjectType.View);
 	const inputOutputItems: (vscode.QuickPickItem & { type: BindingType })[] = [
 		{
 			label: constants.input,
@@ -320,7 +320,7 @@ export async function promptForBindingType(objectType?: string, funcName?: strin
  * Prompts the user to select to use a table or view as the object to query/upsert into
  */
 export async function promptForObjectType(): Promise<string | undefined> {
-	const objectTypes = [constants.sqlTable, constants.sqlView];
+	const objectTypes = [constants.table, constants.view];
 	const selectedObjectType = (await vscode.window.showQuickPick(objectTypes, {
 		canPickMany: false,
 		title: constants.selectSqlTableOrViewPrompt,
@@ -342,7 +342,6 @@ export async function promptForObjectName(bindingType: BindingType, connectionIn
 	// show the connection string methods (user input and connection profile options)
 	let connectionURI: string | undefined;
 	let selectedDatabase: string | undefined;
-	let isView = (objectType === constants.sqlView || objectType === 'View');
 
 	if (!connectionInfo) {
 		// prompt is shown when user selects an existing connection string setting
@@ -364,6 +363,7 @@ export async function promptForObjectName(bindingType: BindingType, connectionIn
 	}
 
 	connectionInfo.database = selectedDatabase;
+	let isView = (objectType === utils.ObjectType.View);
 
 	let selectedObjectName = await promptSelectObject(connectionURI, bindingType, selectedDatabase, isView);
 
@@ -640,7 +640,7 @@ export async function getConnectionURI(connectionInfo: IConnectionInfo): Promise
 
 export async function promptSelectObject(connectionURI: string, bindingType: BindingType, selectedDatabase: string, isView: boolean): Promise<string | undefined> {
 	const vscodeMssqlApi = await utils.getVscodeMssqlApi();
-	const userObjectName = isView ? constants.enterViewsObjectName : bindingType === BindingType.input ? constants.enterSqlObjectName : constants.enterSqlObjectNameToUpsert;
+	const userObjectName = isView ? constants.enterViewName : bindingType === BindingType.input ? constants.enterTableName : constants.enterTableNameToUpsert;
 
 	// Create query to get list of tables or views from selected database
 	let listQuery = isView ? viewsQuery(selectedDatabase) : tablesQuery(selectedDatabase);
@@ -696,7 +696,7 @@ export function viewsQuery(selectedDatabase: string): string {
 export async function promptToManuallyEnterObjectName(bindingType: BindingType): Promise<string | undefined> {
 	// user manually enters table or view to query or upsert into
 	let selectedObject = await vscode.window.showInputBox({
-		prompt: bindingType === BindingType.input ? constants.sqlTableOrViewToQuery : constants.sqlTableToUpsert,
+		prompt: bindingType === BindingType.input ? constants.sqlObjectToQuery : constants.sqlTableToUpsert,
 		placeHolder: constants.placeHolderObject,
 		validateInput: input => input ? undefined : constants.nameMustNotBeEmpty,
 		ignoreFocusOut: true
