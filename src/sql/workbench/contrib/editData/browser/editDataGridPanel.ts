@@ -313,10 +313,12 @@ export class EditDataGridPanel extends GridParentComponent {
 
 		if (this.isRowDirty(this.previousSavedCell.row) && row !== this.previousSavedCell.row) {
 			await this.commitEditTask().then(() => {
+				this.currentEditCellValue = undefined;
 				this.lastClickedCell = { row, column, isEditable };
 				return Promise.resolve();
 			},
 				() => {
+					this.currentEditCellValue = undefined;
 					this.lastClickedCell = { row: this.previousSavedCell.row, column: this.previousSavedCell.column, isEditable };
 					this.focusCell(this.previousSavedCell.row, this.previousSavedCell.column);
 					return Promise.reject(null);
@@ -559,11 +561,12 @@ export class EditDataGridPanel extends GridParentComponent {
 				document.execCommand('selectAll');
 				document.execCommand('delete');
 				document.execCommand('insertText', false, 'NULL');
+				this.focusCell(this.lastClickedCell.row, this.lastClickedCell.column);
 			}
 			else {
 				this.revertSelectedRow(this.previousSavedCell.row).catch(onUnexpectedError);
 			}
-			this.table.grid.resetActiveCell();
+			//this.table.grid.resetActiveCell();
 			handled = true;
 		}
 		if (e.ctrlKey && e.keyCode === KeyCode.KEY_0) {
@@ -1000,7 +1003,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			}
 
 			validate(): any {
-				let activeRow = self.previousSavedCell.row;
+				let activeRow = self.lastClickedCell.row;
 				let result: any = { valid: true, msg: undefined };
 				let colIndex: number = self.getColumnIndex(this._args.column.name);
 				let newValue: any = this._textEditor.getValue();
@@ -1120,6 +1123,7 @@ export class EditDataGridPanel extends GridParentComponent {
 				editor.setValue(oldValue);
 			}
 		}
+		this.focusCell(this.lastClickedCell.row, this.lastClickedCell.column);
 	}
 
 	private invalidateRange(start: number, end: number): void {
