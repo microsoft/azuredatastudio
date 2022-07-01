@@ -363,9 +363,8 @@ export async function promptForObjectName(bindingType: BindingType, connectionIn
 	}
 
 	connectionInfo.database = selectedDatabase;
-	let isView = (objectType === utils.ObjectType.View);
 
-	let selectedObjectName = await promptSelectObject(connectionURI, bindingType, selectedDatabase, isView);
+	let selectedObjectName = await promptSelectObject(connectionURI, bindingType, selectedDatabase, objectType);
 
 	return selectedObjectName;
 }
@@ -638,8 +637,10 @@ export async function getConnectionURI(connectionInfo: IConnectionInfo): Promise
 	return connectionURI;
 }
 
-export async function promptSelectObject(connectionURI: string, bindingType: BindingType, selectedDatabase: string, isView: boolean): Promise<string | undefined> {
+export async function promptSelectObject(connectionURI: string, bindingType: BindingType, selectedDatabase: string, objectType: string): Promise<string | undefined> {
 	const vscodeMssqlApi = await utils.getVscodeMssqlApi();
+	let isView = (objectType === utils.ObjectType.View);
+
 	const userObjectName = isView ? constants.enterViewName : bindingType === BindingType.input ? constants.enterTableName : constants.enterTableNameToUpsert;
 
 	// Create query to get list of tables or views from selected database
