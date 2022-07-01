@@ -561,12 +561,12 @@ export class EditDataGridPanel extends GridParentComponent {
 				document.execCommand('selectAll');
 				document.execCommand('delete');
 				document.execCommand('insertText', false, 'NULL');
+				// Focus called here as this revert does not trigger handleChanges (which focuses on last clicked cell at the end).
 				this.focusCell(this.lastClickedCell.row, this.lastClickedCell.column);
 			}
 			else {
 				this.revertSelectedRow(this.previousSavedCell.row).catch(onUnexpectedError);
 			}
-			//this.table.grid.resetActiveCell();
 			handled = true;
 		}
 		if (e.ctrlKey && e.keyCode === KeyCode.KEY_0) {
