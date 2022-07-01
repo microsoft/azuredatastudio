@@ -14,7 +14,7 @@ export class DeployOptionsModel {
 
 	constructor(defaultOptions: mssql.DeploymentOptions) {
 		this.deploymentOptions = defaultOptions;
-		this.InitializeBooleanOptionsDict();
+		this.InitializeBooleanOptionsMap();
 		this.optionsLabels = this.prepareOptionsNamesPropsMapAndGetSortedLabels();
 	}
 
@@ -36,7 +36,7 @@ export class DeployOptionsModel {
 		return optionsLabels.sort();
 	}
 
-	public InitializeBooleanOptionsDict() {
+	public InitializeBooleanOptionsMap() {
 		this.booleanOptionsMap = this.deploymentOptions.booleanOptionsDict;
 	}
 

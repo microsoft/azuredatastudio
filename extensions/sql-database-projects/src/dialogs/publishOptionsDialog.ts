@@ -160,8 +160,8 @@ export class PublishOptionsDialog {
 		const result = await this.publish.getDefaultDeploymentOptions();
 		this.optionsModel.deploymentOptions = result;
 
-		// This will update the Map table with default values
-		this.optionsModel.InitializeOptionsData();
+		// This will update the boolean options map with default values
+		this.optionsModel.InitializeBooleanOptionsMap();
 
 		await this.updateOptionsTable();
 		this.optionsFlexBuilder?.removeItem(this.optionsTable!);
