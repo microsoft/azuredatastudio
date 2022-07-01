@@ -8,7 +8,6 @@ import * as vscode from 'vscode';
 import * as mssql from 'mssql';
 import * as loc from '../localizedConstants';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
-import { isNullOrUndefined } from 'util';
 import { SchemaCompareOptionsModel } from '../models/schemaCompareOptionsModel';
 import { TelemetryReporter, TelemetryViews } from '../telemetry';
 
@@ -97,12 +96,11 @@ export class SchemaCompareOptionsDialog {
 	private async reset(): Promise<void> {
 		let service = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.IExtension).schemaCompare;
 		let result = await service.schemaCompareGetDefaultOptions();
-		result.defaultDeploymentOptions = this.schemaComparison.ConvertObjectKeysToUpperCase(result.defaultDeploymentOptions);
 		this.optionsModel.deploymentOptions = result.defaultDeploymentOptions;
 		this.optionsChanged = true;
 
-		// This will update the Map table with default values
-		this.optionsModel.UpdateOptionsMapTable();
+		// This will update the boolean options map with default values
+		this.optionsModel.InitializeBooleanOptionsMap();
 
 		await this.updateOptionsTable();
 		this.optionsFlexBuilder.removeItem(this.optionsTable);
@@ -141,7 +139,7 @@ export class SchemaCompareOptionsDialog {
 				let row = this.optionsTable.selectedRows[0];
 				let label = this.optionsModel.optionsLabels[row];
 				await this.descriptionText.updateProperties({
-					value: this.optionsModel.getDescription(label)
+					value: this.optionsModel.getOptionDescription(label)
 				});
 			}));
 
@@ -149,7 +147,7 @@ export class SchemaCompareOptionsDialog {
 				let checkboxState = <azdata.ICheckboxCellActionEventArgs>rowState;
 				if (checkboxState && checkboxState.row !== undefined) {
 					let label = this.optionsModel.optionsLabels[checkboxState.row];
-					this.optionsModel.optionsLookup.set(label, checkboxState.checked);
+					this.optionsModel.optionsValueLookup[label] = checkboxState.checked;
 					this.optionsChanged = true;
 				}
 			}));
@@ -200,7 +198,7 @@ export class SchemaCompareOptionsDialog {
 	}
 
 	private async updateOptionsTable(): Promise<void> {
-		let data = this.optionsModel.getOptionsData();
+		let data = this.optionsModel.InitializeOptionsData();
 		await this.optionsTable.updateProperties({
 			data: data,
 			columns: [
@@ -210,13 +208,13 @@ export class SchemaCompareOptionsDialog {
 					type: azdata.ColumnType.checkBox,
 					action: azdata.ActionOnCellCheckboxCheck.customAction,
 					headerCssClass: 'display-none',
-					cssClass: 'no-borders align-with-header align-with-text',
+					cssClass: 'no-borders align-with-header',
 					width: 50
 				},
 				{
 					value: 'Option Name',
 					headerCssClass: 'display-none',
-					cssClass: 'no-borders align-with-header vertical-align-middle',
+					cssClass: 'no-borders align-with-header',
 					width: 50
 				}
 			],

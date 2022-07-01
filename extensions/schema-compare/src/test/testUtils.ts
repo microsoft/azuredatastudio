@@ -155,13 +155,13 @@ export function setDatabaseEndpointInfo(): mssql.SchemaCompareEndpointInfo {
 
 export function getDeploymentOptions(): mssql.DeploymentOptions {
 	const sampleDesc = 'Sample Description text';
-	const sampleName = 'Sample Property Name';
+	const sampleName = 'Sample Display Name';
 	return {
-		doNotDropObjectTypes: { value: [], description: sampleDesc, propertyName: sampleName },
-		excludeObjectTypes: { value: [], description: sampleDesc, propertyName: sampleName },
-		optionsMapTable: {
-			'Sample Display Name Option1': { value: false, description: sampleDesc, propertyName: sampleName },
-			'Sample Display Name Option2': { value: false, description: sampleDesc, propertyName: sampleName }
+		doNotDropObjectTypes: { value: [], description: sampleDesc, displayName: sampleName },
+		excludeObjectTypes: { value: [], description: sampleDesc, displayName: sampleName },
+		booleanOptionsDict: {
+			'SampleDisplayOption1': { value: false, description: sampleDesc, displayName: sampleName },
+			'SampleDisplayOption2': { value: false, description: sampleDesc, displayName: sampleName }
 		}
 	};
 }

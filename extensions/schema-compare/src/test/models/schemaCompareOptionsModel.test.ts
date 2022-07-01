@@ -10,13 +10,13 @@ import { SchemaCompareOptionsModel } from '../../models/schemaCompareOptionsMode
 describe('Schema Compare Options Model', () => {
 	it('Should create model and set options successfully', function (): void {
 		const model = new SchemaCompareOptionsModel(testUtils.getDeploymentOptions());
-		should.notEqual(model.getOptionsData(), undefined, 'Options shouldn\'t be undefined');
+		should.notEqual(model.InitializeOptionsData(), undefined, 'Options shouldn\'t be undefined');
 		should.notEqual(model.getObjectsData(), undefined, 'Objects shouldn\'t be undefined');
 
 		should.doesNotThrow(() => model.setDeploymentOptions());
 		should.doesNotThrow(() => model.setObjectTypeOptions());
 
-		should(model.getSchemaCompareOptionUtil('')).equal(undefined, 'Should return undefined if an invalid option is passed in');
+		should(model.getOptionValue('')).equal(undefined, 'Should return undefined if an invalid option is passed in');
 		should(model.getSchemaCompareIncludedObjectsUtil('')).be.false('Should return false if invalid object name is passed in');
 	});
 
@@ -34,7 +34,7 @@ describe('Schema Compare Options Model', () => {
 	it('Should get descriptions', function (): void {
 		const model = new SchemaCompareOptionsModel(testUtils.getDeploymentOptions());
 		model.optionsLabels.forEach(l => {
-			should(model.getDescription(l)).not.equal(undefined);
+			should(model.getOptionDescription(l)).not.equal(undefined);
 		});
 	});
 });
