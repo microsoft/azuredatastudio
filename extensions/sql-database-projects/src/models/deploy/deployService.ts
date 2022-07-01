@@ -181,7 +181,12 @@ export class DeployService {
 		// Clean up existing docker image
 		const containerIds = await this.getCurrentDockerContainer(imageLabel);
 		if (containerIds.length > 0) {
-			const result = await vscode.window.showWarningMessage(constants.containerAlreadyExistForProject, constants.yesString, constants.noString);
+			// TODO - Fix this going away
+			const result = await vscode.window.showQuickPick([constants.yesString, constants.noString],
+				{
+					title: constants.containerAlreadyExistForProject,
+					ignoreFocusOut: true
+				});
 			if (result === constants.yesString) {
 				this.logToOutput(constants.cleaningDockerImagesMessage);
 				await this.cleanDockerObjects(containerIds, ['docker stop', 'docker rm']);
