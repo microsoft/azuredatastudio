@@ -15,7 +15,7 @@ export namespace QueryInfo {
 		}
 		return {
 			messages: queryInfo.messages,
-			range: queryInfo.range.map(r => typeConverters.Range.to(r))
+			batchRanges: queryInfo.batchRanges.map(r => typeConverters.Range.to(r))
 		};
 	}
 }

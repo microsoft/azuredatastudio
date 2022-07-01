@@ -92,10 +92,6 @@ export class DeployService {
 
 	public async deployToContainer(profile: IPublishToDockerSettings, project: Project): Promise<string | undefined> {
 		return await this.executeTask(constants.deployDbTaskName, async () => {
-			if (!profile.dockerSettings) {
-				return undefined;
-			}
-
 			await this.verifyDocker();
 			this.logToOutput(constants.dockerImageMessage);
 			this.logToOutput(profile.dockerSettings.dockerBaseImage);

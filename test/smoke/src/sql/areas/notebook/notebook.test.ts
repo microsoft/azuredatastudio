@@ -114,7 +114,10 @@ export function setup(opts: minimist.ParsedArgs) {
 				await app.workbench.sqlNotebook.waitForActiveCellResults();
 			});
 
-			it('can add a new package from the Manage Packages wizard', async function () {
+			it('can add and remove new package from the Manage Packages wizard', async function () {
+				// Use arrow package so that it's at the top of the packages list when uninstalling later
+				const testPackageName = 'arrow';
+
 				const app = this.app as Application;
 				await app.workbench.sqlNotebook.newUntitledNotebook();
 				await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('SQL');
@@ -122,20 +125,42 @@ export function setup(opts: minimist.ParsedArgs) {
 				await configurePython(app);
 				await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('Python 3');
 
+				const importTestCode = `import ${testPackageName}`;
 				await app.workbench.sqlNotebook.addCell('code');
-				await app.workbench.sqlNotebook.waitForTypeInEditor('import pyarrow');
+				await app.workbench.sqlNotebook.waitForTypeInEditor(importTestCode);
 				await app.workbench.sqlNotebook.runActiveCell();
 				await app.workbench.sqlNotebook.waitForJupyterErrorOutput();
 
 				await app.workbench.sqlNotebook.notebookToolbar.managePackages();
 				await app.workbench.managePackagesDialog.waitForManagePackagesDialog();
-				let packageVersion = await app.workbench.managePackagesDialog.addNewPackage('pyarrow');
+				let packageVersion = await app.workbench.managePackagesDialog.addNewPackage(testPackageName);
 				await app.workbench.taskPanel.showTaskPanel();
-				await app.workbench.taskPanel.waitForTaskComplete(`Installing pyarrow ${packageVersion} succeeded`);
+				await app.workbench.taskPanel.waitForTaskComplete(`Installing ${testPackageName} ${packageVersion} succeeded`);
 
 				// There should be no error output when running the cell after pyarrow has been installed
 				await app.workbench.sqlNotebook.runActiveCell();
 				await app.workbench.sqlNotebook.waitForActiveCellResultsGone();
+
+				// Uninstall package and check if it throws the expected import error.
+				// This also functions as cleanup for subsequent test runs, since the test
+				// assumes the package isn't installed by default.
+				await app.workbench.sqlNotebook.notebookToolbar.managePackages();
+				await app.workbench.managePackagesDialog.waitForManagePackagesDialog();
+				await app.workbench.managePackagesDialog.removePackage(testPackageName);
+				await app.workbench.taskPanel.showTaskPanel();
+				await app.workbench.taskPanel.waitForTaskComplete(`Uninstalling ${testPackageName} ${packageVersion} succeeded`);
+
+				// Open a new notebook to verify that the package is uninstalled, since the old notebook's
+				// python instance retains a cached copy of the successfully imported module.
+				await app.workbench.quickaccess.runCommand('workbench.action.revertAndCloseActiveEditor');
+				await app.workbench.sqlNotebook.newUntitledNotebook();
+				await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('SQL');
+				await app.workbench.sqlNotebook.notebookToolbar.changeKernel('Python 3');
+				await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('Python 3');
+				await app.workbench.sqlNotebook.addCell('code');
+				await app.workbench.sqlNotebook.waitForTypeInEditor(importTestCode);
+				await app.workbench.sqlNotebook.runActiveCell();
+				await app.workbench.sqlNotebook.waitForJupyterErrorOutput();
 			});
 
 			it('can open ipynb file, run all, and save notebook with outputs', async function () {
