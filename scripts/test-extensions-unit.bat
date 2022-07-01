@@ -57,85 +57,85 @@ if "%ADS_TEST_GREP%" == "" (
 
 set ALL_PLATFORMS_API_TESTS_EXTRA_ARGS=--disable-telemetry --crash-reporter-directory=%VSCODECRASHDIR% --no-cached-data --disable-updates --user-data-dir=%VSCODEUSERDATADIR% --remote-debugging-port=9222 --extensions-dir=%VSCODEEXTENSIONSDIR%
 
-echo ***************************************************
-echo *** starting admin tool extension windows tests ***
-echo ***************************************************
-call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\admin-tool-ext-win --extensionTestsPath=%~dp0\..\extensions\admin-tool-ext-win\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
+@REM echo ***************************************************
+@REM echo *** starting admin tool extension windows tests ***
+@REM echo ***************************************************
+@REM call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\admin-tool-ext-win --extensionTestsPath=%~dp0\..\extensions\admin-tool-ext-win\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
 
-echo ****************************
-echo *** starting agent tests ***
-echo ****************************
-call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\agent --extensionTestsPath=%~dp0\..\extensions\agent\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
+@REM echo ****************************
+@REM echo *** starting agent tests ***
+@REM echo ****************************
+@REM call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\agent --extensionTestsPath=%~dp0\..\extensions\agent\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
 
-echo **************************
-echo *** starting arc tests ***
-echo **************************
-call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\arc --extensionTestsPath=%~dp0\..\extensions\arc\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
+@REM echo **************************
+@REM echo *** starting arc tests ***
+@REM echo **************************
+@REM call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\arc --extensionTestsPath=%~dp0\..\extensions\arc\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
 
-echo *****************************
-echo *** starting azcli tests ***
-echo *****************************
-call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\azcli --extensionTestsPath=%~dp0\..\extensions\azcli\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
+@REM echo *****************************
+@REM echo *** starting azcli tests ***
+@REM echo *****************************
+@REM call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\azcli --extensionTestsPath=%~dp0\..\extensions\azcli\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
 
-echo ********************************
-echo *** starting azurecore tests ***
-echo ********************************
-call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\azurecore --extensionTestsPath=%~dp0\..\extensions\azurecore\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
+@REM echo ********************************
+@REM echo *** starting azurecore tests ***
+@REM echo ********************************
+@REM call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\azurecore --extensionTestsPath=%~dp0\..\extensions\azurecore\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
 
-echo **************************
-echo *** starting cms tests ***
-echo **************************
-call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\cms --extensionTestsPath=%~dp0\..\extensions\cms\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
+@REM echo **************************
+@REM echo *** starting cms tests ***
+@REM echo **************************
+@REM call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\cms --extensionTestsPath=%~dp0\..\extensions\cms\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
 
-echo *****************************
-echo *** starting dacpac tests ***
-echo *****************************
-call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\dacpac --extensionTestsPath=%~dp0\..\extensions\dacpac\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
+@REM echo *****************************
+@REM echo *** starting dacpac tests ***
+@REM echo *****************************
+@REM call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\dacpac --extensionTestsPath=%~dp0\..\extensions\dacpac\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
 
-echo *****************************
-echo *** starting import tests ***
-echo *****************************
-call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\import --extensionTestsPath=%~dp0\..\extensions\import\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
+@REM echo *****************************
+@REM echo *** starting import tests ***
+@REM echo *****************************
+@REM call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\import --extensionTestsPath=%~dp0\..\extensions\import\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
 
-echo *************************************
-echo *** starting schema compare tests ***
-echo *************************************
-call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\schema-compare --extensionTestsPath=%~dp0\..\extensions\schema-compare\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
+@REM echo *************************************
+@REM echo *** starting schema compare tests ***
+@REM echo *************************************
+@REM call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\schema-compare --extensionTestsPath=%~dp0\..\extensions\schema-compare\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
 
-echo *******************************
-echo *** starting notebook tests ***
-echo *******************************
-call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\notebook --extensionTestsPath=%~dp0\..\extensions\notebook\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
+@REM echo *******************************
+@REM echo *** starting notebook tests ***
+@REM echo *******************************
+@REM call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\notebook --extensionTestsPath=%~dp0\..\extensions\notebook\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
 
-echo ******************************************
-echo *** starting resource deployment tests ***
-echo ******************************************
-call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\resource-deployment --extensionTestsPath=%~dp0\..\extensions\resource-deployment\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
+@REM echo ******************************************
+@REM echo *** starting resource deployment tests ***
+@REM echo ******************************************
+@REM call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\resource-deployment --extensionTestsPath=%~dp0\..\extensions\resource-deployment\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
 
-echo *******************************
-echo *** starting machine-learning tests ***
-echo *******************************
-call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\machine-learning --extensionTestsPath=%~dp0\..\extensions\machine-learning\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
+@REM echo *******************************
+@REM echo *** starting machine-learning tests ***
+@REM echo *******************************
+@REM call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\machine-learning --extensionTestsPath=%~dp0\..\extensions\machine-learning\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
 
-REM echo ******************************************
-REM echo *** starting mssql tests ***
-REM echo ******************************************
-REM call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\mssql --extensionTestsPath=%~dp0\..\extensions\mssql\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
+@REM REM echo ******************************************
+@REM REM echo *** starting mssql tests ***
+@REM REM echo ******************************************
+@REM REM call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\mssql --extensionTestsPath=%~dp0\..\extensions\mssql\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
 
-echo ********************************************
-echo *** starting sql-bindings tests ***
-echo ********************************************
-call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\sql-bindings --extensionTestsPath=%~dp0\..\extensions\sql-bindings\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
+@REM echo ********************************************
+@REM echo *** starting sql-bindings tests ***
+@REM echo ********************************************
+@REM call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\sql-bindings --extensionTestsPath=%~dp0\..\extensions\sql-bindings\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
 
 echo ********************************************
 echo *** starting sql-database-projects tests ***
 echo ********************************************
 call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\sql-database-projects --extensionTestsPath=%~dp0\..\extensions\sql-database-projects\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
 
-echo ********************************************
-echo *** starting data-workspace tests ***
-echo ********************************************
-call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\data-workspace --extensionTestsPath=%~dp0\..\extensions\data-workspace\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
+@REM echo ********************************************
+@REM echo *** starting data-workspace tests ***
+@REM echo ********************************************
+@REM call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\data-workspace --extensionTestsPath=%~dp0\..\extensions\data-workspace\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 

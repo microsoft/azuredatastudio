@@ -10,7 +10,7 @@ import { DeployOptionsModel } from '../../models/options/deployOptionsModel';
 describe('Publish Dialog Deploy Options Model', () => {
 	it('Should create model and set options successfully', function (): void {
 		const model = new DeployOptionsModel(testUtils.getDeploymentOptions());
-		should.notEqual(model.InitializeOptionsData(), undefined, 'Options shouldn\'t be undefined');
+		should.notEqual(model.initializeOptionsData(), undefined, 'Options shouldn\'t be undefined');
 
 		should.doesNotThrow(() => model.setDeploymentOptions());
 

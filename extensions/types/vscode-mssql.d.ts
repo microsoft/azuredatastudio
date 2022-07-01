@@ -499,7 +499,7 @@ declare module 'vscode-mssql' {
 	}
 
 	/**
-	* Interface containing deployment options of integer type and hold DacFx ObjectType enum values
+	* Interface containing deployment options of integer type that holds DacFx 'ObjectType' enum values
 	*/
 	export interface DacDeployOptionPropertyObject {
 		value: number[];

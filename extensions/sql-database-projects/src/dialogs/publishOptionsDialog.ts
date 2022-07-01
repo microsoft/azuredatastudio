@@ -109,7 +109,7 @@ export class PublishOptionsDialog {
 	* Update the default options to the options table area
 	*/
 	private async updateOptionsTable(): Promise<void> {
-		const data = this.optionsModel.InitializeOptionsData();
+		const data = this.optionsModel.initializeOptionsData();
 		await this.optionsTable?.updateProperties({
 			data: data,
 			columns: [
@@ -137,7 +137,9 @@ export class PublishOptionsDialog {
 	* Ok button click, will update the deployment options with selections
 	*/
 	protected execute(): void {
+		// Update the model deploymentoptions with the updated table component values
 		this.optionsModel.setDeploymentOptions();
+		// Set the publish deploymentoptions with the updated table component values
 		this.publish.setDeploymentOptions(this.optionsModel.deploymentOptions);
 		this.disposeListeners();
 
@@ -159,9 +161,6 @@ export class PublishOptionsDialog {
 	private async reset(): Promise<void> {
 		const result = await this.publish.getDefaultDeploymentOptions();
 		this.optionsModel.deploymentOptions = result;
-
-		// This will update the boolean options map with default values
-		this.optionsModel.InitializeBooleanOptionsMap();
 
 		await this.updateOptionsTable();
 		this.optionsFlexBuilder?.removeItem(this.optionsTable!);
