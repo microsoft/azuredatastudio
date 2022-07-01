@@ -354,7 +354,7 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 
 export class CopyTableData extends Action {
 	public static ID = 'ep.CopyTableData';
-	public static LABEL = localize('ep.topOperationsCopyTableData', "Copy Ctrl+C");
+	public static LABEL = localize('ep.topOperationsCopyTableData', "Copy");
 
 	constructor(
 		@IClipboardService private _clipboardService: IClipboardService
@@ -386,7 +386,7 @@ export class CopyTableDataWithHeader extends Action {
 
 export class SelectAll extends Action {
 	public static ID = 'ep.SelectAllTableData';
-	public static LABEL = localize('ep.topOperationsSelectAll', "Select All Ctrl+A");
+	public static LABEL = localize('ep.topOperationsSelectAll', "Select All");
 
 	constructor(
 	) {
