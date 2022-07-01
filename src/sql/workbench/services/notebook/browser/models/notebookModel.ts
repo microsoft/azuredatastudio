@@ -121,6 +121,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _currentKernelAlias: string | undefined;
 	private _selectedKernelDisplayName: string | undefined;
 	private _multiConnectionMode: boolean = false;
+	private _firstTextCellEdit: boolean = true;
 
 	public requestConnectionHandler: (() => Promise<boolean>) | undefined;
 	private _isLoading: boolean = false;
@@ -256,6 +257,14 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public get multiConnectionMode(): boolean {
 		return this._multiConnectionMode;
+	}
+
+	public get firstTextCellEdit(): boolean {
+		return this._firstTextCellEdit;
+	}
+
+	public set firstTextCellEdit(firstTextCellEdit: boolean) {
+		this._firstTextCellEdit = firstTextCellEdit;
 	}
 
 	public set multiConnectionMode(isMultiConnection: boolean) {

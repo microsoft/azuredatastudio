@@ -17,6 +17,7 @@ import { Position } from 'vs/editor/common/core/position';
 import { MarkdownToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component';
 import { IEditor } from 'vs/editor/common/editorCommon';
 import { highlightSelectedText } from 'sql/workbench/contrib/notebook/browser/utils';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 
 export class TransformMarkdownAction extends Action {
 
@@ -35,6 +36,8 @@ export class TransformMarkdownAction extends Action {
 	public override async run(context: any): Promise<void> {
 		if (!context?.cellModel?.showMarkdown && context?.cellModel?.showPreview) {
 			this.transformDocumentCommand();
+			this._cellModel.notebookModel.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.WYSIWYGToolbarAction, { action: this._type });
+
 		} else {
 			let markdownTextTransformer = new MarkdownTextTransformer(this._notebookService, this._cellModel);
 			await markdownTextTransformer.transformText(this._type);
