@@ -37,7 +37,6 @@ export class TransformMarkdownAction extends Action {
 		if (!context?.cellModel?.showMarkdown && context?.cellModel?.showPreview) {
 			this.transformDocumentCommand();
 			this._cellModel.notebookModel.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.TextCellToolbarAction, { action: this._type, mode: 'RichTextView' });
-
 		} else {
 			let markdownTextTransformer = new MarkdownTextTransformer(this._notebookService, this._cellModel);
 			await markdownTextTransformer.transformText(this._type);
