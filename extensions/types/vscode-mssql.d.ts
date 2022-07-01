@@ -499,7 +499,7 @@ declare module 'vscode-mssql' {
 	}
 
 	/**
-	* Interface containing deployment options of boolean type
+	* Interface containing deployment options of integer type and hold DacFx ObjectType enum values
 	*/
 	export interface DacDeployOptionPropertyObject {
 		value: number[];
@@ -510,7 +510,7 @@ declare module 'vscode-mssql' {
 	export interface DeploymentOptions {
 		doNotDropObjectTypes: DacDeployOptionPropertyObject;
 		excludeObjectTypes: DacDeployOptionPropertyObject;
-		optionsMapTable: { [key: string]: DacDeployOptionPropertyBoolean };
+		booleanOptionsDict: { [key: string]: DacDeployOptionPropertyBoolean };
 		includeObjects: { [key: string]: number };
 	}
 

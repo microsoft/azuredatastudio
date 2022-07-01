@@ -100,7 +100,7 @@ export class SchemaCompareOptionsDialog {
 		this.optionsChanged = true;
 
 		// This will update the Map table with default values
-		this.optionsModel.UpdateOptionsMapTable();
+		this.optionsModel.InitializeOptionsMapTable();
 
 		await this.updateOptionsTable();
 		this.optionsFlexBuilder.removeItem(this.optionsTable);
@@ -137,17 +137,17 @@ export class SchemaCompareOptionsDialog {
 
 			this.disposableListeners.push(this.optionsTable.onRowSelected(async () => {
 				let row = this.optionsTable.selectedRows[0];
-				let label = this.optionsModel.convertLabeltoCamelCase(this.optionsModel.optionsLabels[row]);
+				let label = this.optionsModel.optionsLabels[row];
 				await this.descriptionText.updateProperties({
-					value: this.optionsModel.getDescription(label)
+					value: this.optionsModel.getOptionDescription(label)
 				});
 			}));
 
 			this.disposableListeners.push(this.optionsTable.onCellAction((rowState) => {
 				let checkboxState = <azdata.ICheckboxCellActionEventArgs>rowState;
 				if (checkboxState && checkboxState.row !== undefined) {
-					let label = this.optionsModel.convertLabeltoCamelCase(this.optionsModel.optionsLabels[checkboxState.row]);
-					this.optionsModel.optionsLookup.set(label, checkboxState.checked);
+					let label = this.optionsModel.optionsLabels[checkboxState.row];
+					this.optionsModel.optionsValueLookup[label] = checkboxState.checked;
 					this.optionsChanged = true;
 				}
 			}));
@@ -179,7 +179,7 @@ export class SchemaCompareOptionsDialog {
 			this.disposableListeners.push(this.objectsTable.onCellAction((rowState) => {
 				let checkboxState = <azdata.ICheckboxCellActionEventArgs>rowState;
 				if (checkboxState && checkboxState.row !== undefined) {
-					let label = this.optionsModel.convertLabeltoCamelCase(this.optionsModel.includeObjectTypeLabels[checkboxState.row]);
+					let label = this.optionsModel.includeObjectTypeLabels[checkboxState.row];
 					this.optionsModel.includeObjectsLookup.set(label, checkboxState.checked);
 					this.optionsChanged = true;
 				}

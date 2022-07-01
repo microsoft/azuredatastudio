@@ -7,7 +7,7 @@ import * as mssql from 'mssql';
 
 export class DeployOptionsModel {
 	public deploymentOptions: mssql.DeploymentOptions;
-	public optionsMapTable: { [key: string]: mssql.DacDeployOptionPropertyBoolean } = {};
+	public booleanOptionsMap: { [key: string]: mssql.DacDeployOptionPropertyBoolean } = {};
 	public optionsLabels: string[] = [];
 	public optionsNameAndPropMap: { [key: string]: string } = {};
 	public optionsValueLookup: { [key: string]: boolean } = {};
@@ -29,7 +29,7 @@ export class DeployOptionsModel {
 	*/
 	public prepareOptionsNamesPropsMapAndGetSortedLabels(): string[] {
 		let optionsLabels: string[] = [];
-		Object.entries(this.deploymentOptions.optionsMapTable).forEach(option => {
+		Object.entries(this.deploymentOptions.booleanOptionsDict).forEach(option => {
 			const optionDisplayName = option[1].displayName;
 			const propertyName = option[0];
 			// push to optionsLabels Array
@@ -41,7 +41,7 @@ export class DeployOptionsModel {
 	}
 
 	public InitializeOptionsMapTable() {
-		this.optionsMapTable = this.deploymentOptions.optionsMapTable;
+		this.booleanOptionsMap = this.deploymentOptions.booleanOptionsDict;
 	}
 
 	/**
@@ -60,18 +60,18 @@ export class DeployOptionsModel {
 	}
 
 	/*
-	* Sets the selected option checkbox value to the optionsMapTable
+	* Sets the selected option checkbox value to the booleanOptionsMap
 	* option[0] - option label
 	* option[1] - checkedbox value
 	*/
 	public setDeploymentOptions(): void {
 		Object.entries(this.optionsValueLookup).forEach(option => {
 			const propertyName = this.optionsNameAndPropMap[option[0]];
-			this.optionsMapTable[propertyName].value = option[1];
+			this.booleanOptionsMap[propertyName].value = option[1];
 		});
 
-		// Set the deployment optionsMapTable with the updated optionsMapTable
-		this.deploymentOptions.optionsMapTable = this.optionsMapTable;
+		// Set the deployment booleanOptionsDict with the updated booleanOptionsMap
+		this.deploymentOptions.booleanOptionsDict = this.booleanOptionsMap;
 	}
 
 	/*
@@ -79,7 +79,7 @@ export class DeployOptionsModel {
 	*/
 	public getOptionValue(label: string): boolean {
 		const propertyName = this.optionsNameAndPropMap[label];
-		return this.optionsMapTable[propertyName]?.value;
+		return this.booleanOptionsMap[propertyName]?.value;
 	}
 
 	/*
@@ -87,7 +87,7 @@ export class DeployOptionsModel {
 	*/
 	public getOptionDescription(label: string): string {
 		const propertyName = this.optionsNameAndPropMap[label];
-		return this.optionsMapTable[propertyName]?.description;
+		return this.booleanOptionsMap[propertyName]?.description;
 	}
 
 

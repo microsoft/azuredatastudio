@@ -163,10 +163,9 @@ declare module 'mssql' {
 	}
 
 	/**
-	* Interface containing deployment options of integer type
+	* Interface containing deployment options of integer type and hold DacFx ObjectType enum values
 	*/
 	export interface DacDeployOptionPropertyObject {
-
 		value: number[];
 		description: string;
 		displayName: string;
@@ -175,7 +174,7 @@ declare module 'mssql' {
 	export interface DeploymentOptions {
 		doNotDropObjectTypes: DacDeployOptionPropertyObject;
 		excludeObjectTypes: DacDeployOptionPropertyObject;
-		optionsMapTable: { [key: string]: DacDeployOptionPropertyBoolean };
+		booleanOptionsDict: { [key: string]: DacDeployOptionPropertyBoolean };
 		includeObjects: { [key: string]: number };
 	}
 

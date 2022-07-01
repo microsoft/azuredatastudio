@@ -29,7 +29,7 @@ export function getDeploymentOptions(): mssql.DeploymentOptions {
 	const defaultOptions: mssql.DeploymentOptions = {
 		doNotDropObjectTypes: { value: [], description: sampleDesc, displayName: sampleName },
 		excludeObjectTypes: { value: [], description: sampleDesc, displayName: sampleName },
-		optionsMapTable: {
+		booleanOptionsDict: {
 			'SampleProperty1': { value: false, description: sampleDesc, displayName: sampleName },
 			'SampleProperty2': { value: false, description: sampleDesc, displayName: sampleName }
 		},

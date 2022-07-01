@@ -1,0 +1,33 @@
+stash@{0}: On 'sai/SQL_DB_Options_MapTableFromSTS': booleanDict
+stash@{1}: On 'sai/SQL_DB_Options_MapTableFromSTS': TopropertyName
+stash@{2}: On 'sai/SC_OptionsMapTableChanges': SC_Code_updates
+stash@{3}: WIP on 'sai/mssql_optionsMapTableChanges': 42ad364eeaf Bump copy-props from 2.0.4 to 2.0.5 in /samples/sqlservices (#19837)
+stash@{4}: WIP on main: 42ad364eeaf Bump copy-props from 2.0.4 to 2.0.5 in /samples/sqlservices (#19837)
+stash@{5}: On 'sai/SQL_DB_Options_MapTableFromSTS': nono
+stash@{6}: On 'sai/SQL_DB_Options_MapTableFromSTS': beforeSCIncluded
+stash@{7}: On 'sai/SQL_DB_Options_MapTableFromSTS': includeSC
+stash@{8}: On 'sai/SQL_DB_Options_MapTableFromSTS': merge
+stash@{9}: On 'sai/SQL_DB_Options_MapTableFromSTS': temp
+stash@{10}: WIP on 'sai/SQL_DB_IncludeObjectTypeChanges': cd0c2abbbe1 Include Objects types are coming from DacFx Enum
+stash@{11}: WIP on 'sai/SQL_DB_OptionsMapTableChanges': 45016074886 OptionsMapTable logic to replace the deployment hardcoded values final
+stash@{12}: WIP on sai/ModelUpdates: f2c4e23f99a vbump STS (#19786)
+stash@{13}: On SC_Options_MapTableFromSTS': SC_changes
+stash@{14}: On SQL_DB_Options_MapTableFromSTS': publishDlgStyles
+stash@{15}: On SQL_DB_Options_MapTableFromSTS': 'sqlDB final changes'
+stash@{16}: On optionsMapTableFromSTS': All,sc,sqldb,dacpac,model
+stash@{17}: On optionsMapTableFromSTS': SC,model,dacpac final
+stash@{18}: On optionsMapTableFromSTS': SC_Model_MapTable_Final
+stash@{19}: On DfLog_SqlDB': dflog ui changes updates
+stash@{20}: On DeployOptionsMapTableFromSTS: "All working fine, todo:sai, refactor, remove displayname from prop"
+stash@{21}: On DisplayOptions_dbproj': NExtPR_With_STS_MapTableCode
+stash@{22}: On DisplayOptions_dbproj': OptionsMapTableExceptOneError
+stash@{23}: On DisplayOptions_dbproj': FC_Model_SC_DP
+stash@{24}: On DisplayOptions_dbproj': All_Model_SC_DP_ChangesHere_For_Testing
+stash@{25}: On DisplayOptions_dbproj': sqlDBREmoedFiles
+stash@{26}: On DeployOptions_SC': FC_Model_SC_Dacpac
+stash@{27}: On DeployOptions_SC': PRSTUFF
+stash@{28}: On DisplayOptions_dbproj': AddForDebug_ModelPlusSC
+stash@{29}: On DisplayOptions_dbproj': AddTheseForDebug_ModelChanges
+stash@{30}: On DacDeployModelUpdate': temputilfilefix
+stash@{31}: WIP on DisplayOptions_dbproj': e0bd8bb4f0 Options display name coming from API
+stash@{32}: On DisplayOptions_dbproj': modelUpdate12

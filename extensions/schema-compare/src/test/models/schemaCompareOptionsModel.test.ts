@@ -16,7 +16,7 @@ describe('Schema Compare Options Model', () => {
 		should.doesNotThrow(() => model.setDeploymentOptions());
 		should.doesNotThrow(() => model.setSchemaCompareIncludedObjectsUtil());
 
-		should(model.getSchemaCompareOptionUtil('')).equal(undefined, 'Should return undefined if an invalid option is passed in');
+		should(model.getOptionValue('')).equal(undefined, 'Should return undefined if an invalid option is passed in');
 		should(model.getSchemaCompareIncludedObjectsUtil('')).be.true('Should return true if invalid object name is passed in');
 	});
 
@@ -54,7 +54,7 @@ describe('Schema Compare Options Model', () => {
 	it('Should get descriptions', function (): void {
 		const model = new SchemaCompareOptionsModel(testUtils.getDeploymentOptions());
 		model.optionsLabels.forEach(l => {
-			should(model.getDescription(l)).not.equal(undefined);
+			should(model.getOptionDescription(l)).not.equal(undefined);
 		});
 	});
 });

@@ -6,33 +6,54 @@ import * as mssql from 'mssql';
 
 export class SchemaCompareOptionsModel {
 	public deploymentOptions: mssql.DeploymentOptions;
-	public excludedObjectTypes: number[] = [];
-	public optionsMapTable: { [key: string]: mssql.DacDeployOptionPropertyBoolean } = {};
+	public booleanOptionsMap: { [key: string]: mssql.DacDeployOptionPropertyBoolean } = {};
 	public optionsLabels: string[] = [];
+	public optionsNameAndPropMap: { [key: string]: string } = {};
+	public optionsValueLookup: { [key: string]: boolean } = {};
+	public excludedObjectTypes: number[] = [];
 	public includeObjectTypeLabels: string[] = [];
-
-	public optionsLookup: Map<string, boolean> = new Map<string, boolean>();
 	public includeObjectsLookup: Map<string, boolean> = new Map<string, boolean>();
 
 	constructor(defaultOptions: mssql.DeploymentOptions) {
 		this.deploymentOptions = defaultOptions;
-		this.UpdateOptionsMapTable();
-		this.optionsLabels = this.convertLabelstoPascalCase(Object.keys(this.deploymentOptions.optionsMapTable).sort());
-		this.includeObjectTypeLabels = this.convertLabelstoPascalCase(Object.keys(this.deploymentOptions.includeObjects).sort());
+		this.InitializeOptionsMapTable();
+		this.optionsLabels = this.prepareOptionsNamesPropsMapAndGetSortedLabels();
+		this.includeObjectTypeLabels = Object.keys(this.deploymentOptions.includeObjects).sort();
 	}
 
-	public UpdateOptionsMapTable() {
-		this.optionsMapTable = this.deploymentOptions.optionsMapTable;
+	/*
+	* This method prepares
+	* a. Sorted array of option display names for indexing
+	* b. Map table to hold displayNames and corresponding propertyName, this will help to get the right key of selected option index
+	*/
+	public prepareOptionsNamesPropsMapAndGetSortedLabels(): string[] {
+		let optionsLabels: string[] = [];
+		Object.entries(this.deploymentOptions.booleanOptionsDict).forEach(option => {
+			const optionDisplayName = option[1].displayName;
+			const propertyName = option[0];
+			// push to optionsLabels Array
+			optionsLabels.push(optionDisplayName);
+			// push to optionsNameAndPropMap
+			this.optionsNameAndPropMap[optionDisplayName] = propertyName;
+		});
+		return optionsLabels.sort();
 	}
 
+	public InitializeOptionsMapTable() {
+		this.booleanOptionsMap = this.deploymentOptions.booleanOptionsDict;
+	}
+
+	/*
+	* Initialize options data from optionsMaptable for table component
+	* also preparing optionsValueLookup Map holding onchange checkbox values
+	* Returns data as [booleanValue, optionName]
+	*/
 	public InitializeOptionsData(): string[][] {
 		let data = [];
-		this.optionsLookup = new Map<string, boolean>();
 		this.optionsLabels.forEach(optionLabel => {
-			const label = this.convertLabeltoCamelCase(optionLabel);
-			let checked: boolean = this.getSchemaCompareOptionUtil(label);
+			const checked = this.getOptionValue(optionLabel);
 			data.push([checked, optionLabel]);
-			this.optionsLookup.set(label, checked);
+			this.optionsValueLookup[optionLabel] = checked;
 		});
 		return data;
 	}
@@ -41,7 +62,7 @@ export class SchemaCompareOptionsModel {
 		let data: any = [];
 		this.includeObjectsLookup = new Map<string, boolean>();
 		this.includeObjectTypeLabels.forEach(optionLabel => {
-			const label = this.convertLabeltoCamelCase(optionLabel);
+			const label = optionLabel;
 			let checked: boolean | undefined = this.getSchemaCompareIncludedObjectsUtil(label);
 			if (checked !== undefined) {
 				data.push([checked, optionLabel]);
@@ -52,27 +73,29 @@ export class SchemaCompareOptionsModel {
 	}
 
 	public setDeploymentOptions() {
-		for (let option of this.optionsLookup) {
-			let optionProp = this.optionsMapTable[option[0]];
-			if (optionProp.value !== option[1]) {
-				optionProp.value = option[1];
-				this.optionsMapTable[option[0]] = optionProp;
-			}
-		}
+		Object.entries(this.optionsValueLookup).forEach(option => {
+			const propertyName = this.optionsNameAndPropMap[option[0]];
+			this.booleanOptionsMap[propertyName].value = option[1];
+		});
+
+		// Set the deployment booleanOptionsDict with the updated booleanOptionsMap
+		this.deploymentOptions.booleanOptionsDict = this.booleanOptionsMap;
 	}
 
-	public setSchemaCompareOptionUtil(label: string, value: boolean) {
-		let optionProp = this.optionsMapTable[label];
-		optionProp.value = value;
-		return this.optionsMapTable[label] = optionProp;
+	/*
+	* Gets the selected/default value of the option
+	*/
+	public getOptionValue(label: string): boolean {
+		const propertyName = this.optionsNameAndPropMap[label];
+		return this.booleanOptionsMap[propertyName]?.value;
 	}
 
-	public getSchemaCompareOptionUtil(label): boolean {
-		return this.optionsMapTable[label].value;
-	}
-
-	public getDescription(label: string): string {
-		return this.optionsMapTable[label]?.description;
+	/*
+	* Gets the description of the selected option
+	*/
+	public getOptionDescription(label: string): string {
+		const propertyName = this.optionsNameAndPropMap[label];
+		return this.booleanOptionsMap[propertyName]?.description;
 	}
 
 	public getSchemaCompareIncludedObjectsUtil(label: string): boolean {
@@ -88,18 +111,5 @@ export class SchemaCompareOptionsModel {
 		}
 
 		this.deploymentOptions.excludeObjectTypes.value = this.excludedObjectTypes;
-	}
-	/*
-	* Converts labels to PascalCase to match with default option name
-	*/
-	public convertLabelstoPascalCase(optionsLabels: string[]): string[] {
-		return optionsLabels.map(label => { return label.charAt(0).toUpperCase() + label.slice(1); });
-	}
-
-	/*
-	* Converts label text to camelCase to match with default option name
-	*/
-	public convertLabeltoCamelCase(label: string): string {
-		return label.charAt(0).toLowerCase() + label.slice(1);
 	}
 }

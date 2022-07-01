@@ -43,7 +43,7 @@ describe('Publish Database Options Dialog', () => {
 		// Verify the deployment options should exists
 		should.notEqual(optionsDialog.optionsModel.deploymentOptions, undefined);
 
-		Object.entries(optionsDialog.optionsModel.deploymentOptions.optionsMapTable).forEach(option => {
+		Object.entries(optionsDialog.optionsModel.deploymentOptions.booleanOptionsDict).forEach(option => {
 			// Validate the value and description as expected
 			should.equal(option[1].value, false);
 			should.equal(option[1].description, 'Sample Description text');
