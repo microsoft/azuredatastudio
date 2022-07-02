@@ -373,22 +373,29 @@ describe('ProjectsController', function (): void {
 			});
 
 			it('Callbacks are hooked up and called from Publish dialog', async function (): Promise<void> {
-				const projPath = path.dirname(await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline));
-				await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, projPath);
-				const proj = new Project(projPath);
+				const projectFile = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline)
+				const projFolder = path.dirname(projectFile);
+				await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, projFolder);
+				const proj = await Project.openProject(projectFile);
 
 				const publishHoller = 'hello from callback for publish()';
 				const generateHoller = 'hello from callback for generateScript()';
 
 				let holler = 'nothing';
 
-				let publishDialog = TypeMoq.Mock.ofType(PublishDatabaseDialog, undefined, undefined, proj);
-				publishDialog.callBase = true;
-				publishDialog.setup(x => x.getConnectionUri()).returns(() => Promise.resolve('fake|connection|uri'));
+				const setupPublishDialog = (): PublishDatabaseDialog => {
+					const dialog = new PublishDatabaseDialog(proj);
+					sinon.stub(dialog, 'getConnectionUri').returns(Promise.resolve('fake|connection|uri'));
+					return dialog;
+				};
+
+				let publishDialog = setupPublishDialog();
 
 				let projController = TypeMoq.Mock.ofType(ProjectsController);
 				projController.callBase = true;
-				projController.setup(x => x.getPublishDialog(TypeMoq.It.isAny())).returns(() => publishDialog.object);
+				projController.setup(x => x.getPublishDialog(TypeMoq.It.isAny())).returns(() => {
+					return publishDialog;
+				});
 				projController.setup(x => x.publishOrScriptProject(TypeMoq.It.isAny(), TypeMoq.It.isAny(), true)).returns(() => {
 					holler = publishHoller;
 					return Promise.resolve(undefined);
@@ -398,14 +405,15 @@ describe('ProjectsController', function (): void {
 					holler = generateHoller;
 					return Promise.resolve(undefined);
 				});
-				publishDialog.object.publishToExistingServer = true;
+				publishDialog.publishToExistingServer = true;
 				void projController.object.publishProject(proj);
-				await publishDialog.object.publishClick();
+				await publishDialog.publishClick();
 
 				should(holler).equal(publishHoller, 'executionCallback() is supposed to have been setup and called for Publish scenario');
 
+				publishDialog = setupPublishDialog();
 				void projController.object.publishProject(proj);
-				await publishDialog.object.generateScriptClick();
+				await publishDialog.generateScriptClick();
 
 				should(holler).equal(generateHoller, 'executionCallback() is supposed to have been setup and called for GenerateScript scenario');
 			});
