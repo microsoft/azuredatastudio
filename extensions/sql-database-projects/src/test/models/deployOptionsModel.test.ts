@@ -19,8 +19,9 @@ describe('Publish Dialog Deploy Options Model', () => {
 
 	it('Should get description', function (): void {
 		const model = new DeployOptionsModel(testUtils.getDeploymentOptions());
-		model.optionsLabels.forEach(l => {
-			should(model.getOptionDescription(l)).not.equal(undefined);
+		model.initializeOptionsData();
+		Object.entries(model.deploymentOptions.booleanOptionsDict).forEach(l => {
+			should(model.getOptionDescription(l[1].displayName)).not.equal(undefined);
 		});
 	});
 

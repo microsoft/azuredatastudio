@@ -75,7 +75,7 @@ export class PublishOptionsDialog {
 			// Get the description of the selected option
 			this.disposableListeners.push(this.optionsTable.onRowSelected(async () => {
 				const row = this.optionsTable?.selectedRows![0];
-				const label = this.optionsModel.optionsLabels[row!];
+				const label = this.optionsTable?.data[row!][1];
 				await this.descriptionText?.updateProperties({
 					value: this.optionsModel.getOptionDescription(label)
 				});
@@ -85,7 +85,7 @@ export class PublishOptionsDialog {
 			this.disposableListeners.push(this.optionsTable.onCellAction!((rowState) => {
 				const checkboxState = <azdataType.ICheckboxCellActionEventArgs>rowState;
 				if (checkboxState && checkboxState.row !== undefined) {
-					let label = this.optionsModel.optionsLabels[checkboxState.row];
+					let label = this.optionsTable?.data[checkboxState.row][1];
 					this.optionsModel.optionsValueLookup[label] = checkboxState.checked;
 					this.optionsChanged = true;
 				}

@@ -7,57 +7,43 @@ import * as mssql from 'mssql';
 
 export class DeployOptionsModel {
 	public deploymentOptions: mssql.DeploymentOptions;
-	public optionsLabels: string[] = [];
 	public optionsNameAndPropMap: { [key: string]: string } = {};
 	public optionsValueLookup: { [key: string]: boolean } = {};
 
 	constructor(private defaultOptions: mssql.DeploymentOptions) {
-		this.deploymentOptions = {...this.defaultOptions};
-		this.optionsLabels = this.prepareOptionsNamesPropsMapAndGetSortedLabels();
-	}
-
-	/*
-	* This method prepares
-	* a. Sorted array of option display names for indexing
-	* b. Map table to hold displayNames and corresponding propertyName, this will help to get the right key of selected option index
-	*/
-	public prepareOptionsNamesPropsMapAndGetSortedLabels(): string[] {
-		let optionsLabels: string[] = [];
-		Object.entries(this.deploymentOptions.booleanOptionsDict).forEach(option => {
-			const optionDisplayName = option[1].displayName;
-			const propertyName = option[0];
-			// push to optionsLabels Array
-			optionsLabels.push(optionDisplayName);
-			// push to optionsNameAndPropMap
-			this.optionsNameAndPropMap[optionDisplayName] = propertyName;
-		});
-		return optionsLabels.sort();
+		this.deploymentOptions = { ...this.defaultOptions };
 	}
 
 	/**
-	 * Initialize options data from booleanOptionsMap for table component
-	 * also preparing optionsValueLookup Map holding onchange checkbox values
+	 * Initialize options data from deployment options for table component
+	 * Also preparing optionsValueLookup Map holding onchange checkbox values and optionsNameAndPropMap to hold property name for the option
 	 * Returns data as [booleanValue, optionName]
 	 */
 	public initializeOptionsData(): any[][] {
 		let data: any[][] = [];
-		this.optionsLabels.forEach(optionLabel => {
-			const checked = this.getOptionValue(optionLabel);
-			data.push([checked, optionLabel]);
-			this.optionsValueLookup[optionLabel] = checked;
+		Object.entries(this.deploymentOptions.booleanOptionsDict).forEach(option => {
+			const optionDisplayName = option[1].displayName;
+			const propertyName = option[0];
+			const checkedValue = option[1].value;
+			// push to table array
+			data.push([checkedValue, optionDisplayName]);
+			// push to optionsNameAndPropMap
+			this.optionsNameAndPropMap[optionDisplayName] = propertyName;
+			// push to optionsValueLookup
+			this.optionsValueLookup[optionDisplayName] = checkedValue;
 		});
-		return data;
+
+		return data.sort((a, b) => a[1].localeCompare(b[1]));
 	}
 
 	/*
-	* Sets the selected option checkbox value to the booleanOptionsMap
+	* Sets the selected option checkbox value to the deployment options
 	* option[0] - option label
 	* option[1] - checkedbox value
 	*/
 	public setDeploymentOptions(): void {
 		Object.entries(this.optionsValueLookup).forEach(option => {
-			const propertyName = this.optionsNameAndPropMap[option[0]];
-			this.deploymentOptions.booleanOptionsDict[propertyName].value = option[1];
+			this.deploymentOptions.booleanOptionsDict[this.getPropertyNameByLabel(option[0])].value = option[1];
 		});
 	}
 
@@ -65,15 +51,20 @@ export class DeployOptionsModel {
 	* Gets the selected/default value of the option
 	*/
 	public getOptionValue(label: string): boolean {
-		const propertyName = this.optionsNameAndPropMap[label];
-		return this.deploymentOptions.booleanOptionsDict[propertyName]?.value;
+		return this.deploymentOptions.booleanOptionsDict[this.getPropertyNameByLabel(label)]?.value;
 	}
 
 	/*
-	* Gets the description of the option selected
+	* Gets the description of the selected option
 	*/
 	public getOptionDescription(label: string): string {
-		const propertyName = this.optionsNameAndPropMap[label];
-		return this.deploymentOptions.booleanOptionsDict[propertyName]?.description;
+		return this.deploymentOptions.booleanOptionsDict[this.getPropertyNameByLabel(label)]?.description;
+	}
+
+	/*
+	* Gets the property name by option display name
+	*/
+	public getPropertyNameByLabel(label: string): string {
+		return this.optionsNameAndPropMap[label];
 	}
 }
