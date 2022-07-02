@@ -53,6 +53,7 @@ export class MockDacFxService implements mssql.IDacFxService {
 	public generateDeployPlan(_: string, __: string, ___: string, ____: azdata.TaskExecutionMode): Thenable<mssql.GenerateDeployPlanResult> { return Promise.resolve(mockDacFxResult); }
 	public getOptionsFromProfile(_: string): Thenable<mssql.DacFxOptionsResult> { return Promise.resolve(mockDacFxOptionsResult); }
 	public validateStreamingJob(_: string, __: string): Thenable<mssql.ValidateStreamingJobResult> { return Promise.resolve(mockDacFxResult); }
+	public parseTSqlScript(_: string, __: string): Thenable<mssql.ParseTSqlScriptResult> { return Promise.resolve({ containsCreateTableStatement: true }); }
 }
 
 export function createContext(): TestContext {
