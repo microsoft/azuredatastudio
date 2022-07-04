@@ -110,6 +110,12 @@ suite('NotebookMarkdownRenderer', () => {
 
 		result = notebookMarkdownRenderer.renderMarkdown({ value: `![altText](attachment:ads.png)`, isTrusted: true }, { cellAttachments: JSON.parse('{"ads2.png":"image/png"}') });
 		assert.strictEqual(result.innerHTML, `<p><img src="attachment:ads.png" alt="altText"></p>`, 'Cell attachment no image data failed');
+
+		result = notebookMarkdownRenderer.renderMarkdown({ value: `![altText](attachment:ads.jpg)`, isTrusted: true }, { cellAttachments: JSON.parse('{"ads.jpg":{"image/jpeg":"iVBORw0KGgoAAAANSUhEUgAAAggg=="}}') });
+		assert.strictEqual(result.innerHTML, `<p><img src="data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAggg==" alt="altText"></p>`, 'Cell attachment jpg image data failed');
+
+		result = notebookMarkdownRenderer.renderMarkdown({ value: `![altText](attachment:ads!@#$%^&.jpg)`, isTrusted: true }, { cellAttachments: JSON.parse('{"ads!@#$%^&.jpg":{"image/jpeg":"iVBORw0KGgoAAAANSUhEUgAAAggg=="}}') });
+		assert.strictEqual(result.innerHTML, `<p><img src="data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAggg==" alt="altText"></p>`, 'Cell attachment image name with symbols failed');
 	});
 
 	suite('Schema validation', function () {

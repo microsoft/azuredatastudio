@@ -13,7 +13,8 @@ import * as utils from '../../common/utils';
 import { DatabaseReferencesTreeItem } from './databaseReferencesTreeItem';
 import { DatabaseProjectItemType, RelativeOuterPath, ExternalStreamingJob, sqlprojExtension } from '../../common/constants';
 import { IconPathHelper } from '../../common/iconHelper';
-import { EntryType, FileProjectEntry } from '../projectEntry';
+import { FileProjectEntry } from '../projectEntry';
+import { EntryType } from 'sqldbproj';
 
 /**
  * TreeNode root that represents an entire project

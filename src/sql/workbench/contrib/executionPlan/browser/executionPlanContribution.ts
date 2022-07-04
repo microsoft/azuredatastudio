@@ -22,6 +22,7 @@ import { MenuId, MenuRegistry } from 'vs/platform/actions/common/actions';
 import { localize } from 'vs/nls';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { CATEGORIES } from 'sql/workbench/contrib/query/browser/queryActions';
 
 // Execution Plan editor registration
 
@@ -101,7 +102,7 @@ MenuRegistry.appendMenuItem(MenuId.CommandPalette, {
 			value: localize('executionPlanCompareCommandValue', "Compare execution plans"),
 			original: localize('executionPlanCompareCommandOriginalValue', "Compare execution plans")
 		},
-		category: 'Execution Plan'
+		category: CATEGORIES.ExecutionPlan.value
 	}
 });
 

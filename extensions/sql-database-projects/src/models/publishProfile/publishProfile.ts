@@ -12,6 +12,7 @@ import * as vscode from 'vscode';
 
 import { promises as fs } from 'fs';
 import { SqlConnectionDataSource } from '../dataSources/sqlConnectionStringSource';
+import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../../common/telemetry';
 
 // only reading db name, connection string, and SQLCMD vars from profile for now
 export interface PublishProfile {
@@ -54,6 +55,13 @@ export async function load(profileUri: vscode.Uri, dacfxService: utils.IDacFxSer
 
 	// get all SQLCMD variables to include from the profile
 	const sqlCmdVariables = utils.readSqlCmdVariables(profileXmlDoc, true);
+
+	TelemetryReporter.createActionEvent(TelemetryViews.SqlProjectPublishDialog, TelemetryActions.profileLoaded)
+		.withAdditionalProperties({
+			hasTargetDbName: (!!targetDbName).toString(),
+			hasConnectionString: (!!connectionInfo?.connectionId).toString(),
+			hasSqlCmdVariables: (Object.keys(sqlCmdVariables).length > 0).toString()
+		}).send();
 
 	return {
 		databaseName: targetDbName,

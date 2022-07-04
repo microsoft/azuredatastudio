@@ -343,8 +343,8 @@ export class ToggleActualExecutionPlanModeAction extends QueryTaskbarAction {
 	public static EnabledClass = 'enabledActualExecutionPlan';
 	public static ID = 'toggleActualExecutionPlanModeAction';
 
-	private _enableActualPlanLabel = nls.localize('enableActualPlanLabel', "Include Actual Plan");
-	private _disableActualPlanLabel = nls.localize('disableActualPlanLabel', "Exclude Actual Plan");
+	private static readonly EnableActualPlanLabel = nls.localize('enableActualPlanLabel', "Enable Actual Plan");
+	private static readonly DisableActualPlanLabel = nls.localize('disableActualPlanLabel', "Disable Actual Plan");
 
 	constructor(
 		editor: QueryEditor,
@@ -369,7 +369,7 @@ export class ToggleActualExecutionPlanModeAction extends QueryTaskbarAction {
 
 	private updateLabel(): void {
 		// show option to disable actual plan mode if already enabled
-		this.label = this.isActualExecutionPlanMode ? this._disableActualPlanLabel : this._enableActualPlanLabel;
+		this.label = this.isActualExecutionPlanMode ? ToggleActualExecutionPlanModeAction.DisableActualPlanLabel : ToggleActualExecutionPlanModeAction.EnableActualPlanLabel;
 	}
 
 	public override async run(): Promise<void> {
@@ -893,3 +893,7 @@ export class ExportAsNotebookAction extends QueryTaskbarAction {
 		this._commandService.executeCommand('mssql.exportSqlAsNotebook', this.editor.input.uri);
 	}
 }
+
+export const CATEGORIES = {
+	ExecutionPlan: { value: nls.localize('ExecutionPlan', 'Execution Plan'), original: 'Execution Plan' }
+};
