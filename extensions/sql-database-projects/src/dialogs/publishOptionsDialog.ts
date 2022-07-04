@@ -119,13 +119,13 @@ export class PublishOptionsDialog {
 					type: utils.getAzdataApi()!.ColumnType.checkBox,
 					action: utils.getAzdataApi()!.ActionOnCellCheckboxCheck.customAction,
 					headerCssClass: 'display-none',
-					cssClass: 'no-borders align-with-header align-with-text',
+					cssClass: 'no-borders align-with-header',
 					width: 50
 				},
 				{
 					value: constants.OptionName,
 					headerCssClass: 'display-none',
-					cssClass: 'no-borders align-with-header vertical-align-middle',
+					cssClass: 'no-borders align-with-header',
 					width: 50
 				}
 			],
