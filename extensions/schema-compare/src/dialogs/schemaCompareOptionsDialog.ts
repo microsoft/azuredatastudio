@@ -62,8 +62,10 @@ export class SchemaCompareOptionsDialog {
 	}
 
 	protected execute(): void {
+		// Update the model deploymentoptions with the updated table component values
 		this.optionsModel.setDeploymentOptions();
 		this.optionsModel.setObjectTypeOptions();
+		// Set the publish deploymentoptions with the updated table component values
 		this.schemaComparison.setDeploymentOptions(this.optionsModel.deploymentOptions);
 
 		const yesItem: vscode.MessageItem = {
@@ -99,9 +101,6 @@ export class SchemaCompareOptionsDialog {
 		this.optionsModel.deploymentOptions = result.defaultDeploymentOptions;
 		this.optionsChanged = true;
 
-		// This will update the boolean options map with default values
-		this.optionsModel.InitializeBooleanOptionsMap();
-
 		await this.updateOptionsTable();
 		this.optionsFlexBuilder.removeItem(this.optionsTable);
 		this.optionsFlexBuilder.insertItem(this.optionsTable, 0, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh' } });
@@ -136,17 +135,17 @@ export class SchemaCompareOptionsDialog {
 			await this.updateOptionsTable();
 
 			this.disposableListeners.push(this.optionsTable.onRowSelected(async () => {
-				let row = this.optionsTable.selectedRows[0];
-				let label = this.optionsModel.optionsLabels[row];
+				const row = this.optionsTable.selectedRows[0];
+				const label = this.optionsTable?.data[row!][1];
 				await this.descriptionText.updateProperties({
 					value: this.optionsModel.getOptionDescription(label)
 				});
 			}));
 
 			this.disposableListeners.push(this.optionsTable.onCellAction((rowState) => {
-				let checkboxState = <azdata.ICheckboxCellActionEventArgs>rowState;
+				const checkboxState = <azdata.ICheckboxCellActionEventArgs>rowState;
 				if (checkboxState && checkboxState.row !== undefined) {
-					let label = this.optionsModel.optionsLabels[checkboxState.row];
+					const label = this.optionsTable?.data[checkboxState.row][1];
 					this.optionsModel.optionsValueLookup[label] = checkboxState.checked;
 					this.optionsChanged = true;
 				}
@@ -198,7 +197,7 @@ export class SchemaCompareOptionsDialog {
 	}
 
 	private async updateOptionsTable(): Promise<void> {
-		let data = this.optionsModel.InitializeOptionsData();
+		let data = this.optionsModel.initializeOptionsData();
 		await this.optionsTable.updateProperties({
 			data: data,
 			columns: [

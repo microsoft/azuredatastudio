@@ -8,54 +8,66 @@ import { isNullOrUndefined } from 'util';
 
 export class SchemaCompareOptionsModel {
 	public deploymentOptions: mssql.DeploymentOptions;
-	public booleanOptionsMap: { [key: string]: mssql.DacDeployOptionPropertyBoolean } = {};
-	public optionsLabels: string[] = [];
 	public optionsNameAndPropMap: { [key: string]: string } = {};
 	public optionsValueLookup: { [key: string]: boolean } = {};
 	public excludedObjectTypes: number[] = [];
 	public objectsLookup = {};
 
-	constructor(defaultOptions: mssql.DeploymentOptions) {
-		this.deploymentOptions = defaultOptions;
-		this.InitializeBooleanOptionsMap();
-		this.optionsLabels = this.prepareOptionsNamesPropsMapAndGetSortedLabels();
+	constructor(private defaultOptions: mssql.DeploymentOptions) {
+		this.deploymentOptions = { ...this.defaultOptions };
 	}
 
 	/*
-	* This method prepares
-	* a. Sorted array of option display names for indexing
-	* b. Map table to hold displayNames and corresponding propertyName, this will help to get the right key of selected option index
+	 * Initialize options data from deployment options for table component
+	 * Also preparing optionsValueLookup Map holding onchange checkbox values and optionsNameAndPropMap to hold property name for the option
+	 * Returns data as [booleanValue, optionName]
 	*/
-	public prepareOptionsNamesPropsMapAndGetSortedLabels(): string[] {
-		let optionsLabels: string[] = [];
+	public initializeOptionsData(): any[][] {
+		let data: any[][] = [];
 		Object.entries(this.deploymentOptions.booleanOptionsDict).forEach(option => {
 			const optionDisplayName = option[1].displayName;
 			const propertyName = option[0];
-			// push to optionsLabels Array
-			optionsLabels.push(optionDisplayName);
+			const checkedValue = option[1].value;
+			// push to table array
+			data.push([checkedValue, optionDisplayName]);
 			// push to optionsNameAndPropMap
 			this.optionsNameAndPropMap[optionDisplayName] = propertyName;
+			// push to optionsValueLookup
+			this.optionsValueLookup[optionDisplayName] = checkedValue;
 		});
-		return optionsLabels.sort();
-	}
-
-	public InitializeBooleanOptionsMap() {
-		this.booleanOptionsMap = this.deploymentOptions.booleanOptionsDict;
+		return data.sort((a, b) => a[1].localeCompare(b[1]));
 	}
 
 	/*
-	* Initialize options data from optionsMaptable for table component
-	* also preparing optionsValueLookup Map holding onchange checkbox values
-	* Returns data as [booleanValue, optionName]
+	* Sets the selected option checkbox value to the deployment options
+	* option[0] - option label
+	* option[1] - checkedbox value
 	*/
-	public InitializeOptionsData(): string[][] {
-		let data = [];
-		this.optionsLabels.forEach(optionLabel => {
-			const checked = this.getOptionValue(optionLabel);
-			data.push([checked, optionLabel]);
-			this.optionsValueLookup[optionLabel] = checked;
+	public setDeploymentOptions(): void {
+		Object.entries(this.optionsValueLookup).forEach(option => {
+			this.deploymentOptions.booleanOptionsDict[this.getPropertyNameByLabel(option[0])].value = option[1];
 		});
-		return data;
+	}
+
+	/*
+	* Gets the selected/default value of the option
+	*/
+	public getOptionValue(label: string): boolean {
+		return this.deploymentOptions.booleanOptionsDict[this.getPropertyNameByLabel(label)]?.value;
+	}
+
+	/*
+	* Gets the description of the selected option
+	*/
+	public getOptionDescription(label: string): string {
+		return this.deploymentOptions.booleanOptionsDict[this.getPropertyNameByLabel(label)]?.description;
+	}
+
+	/*
+	* Gets the property name by option display name
+	*/
+	public getPropertyNameByLabel(label: string): string {
+		return this.optionsNameAndPropMap[label];
 	}
 
 	//#region Schema Compare Objects
@@ -143,34 +155,6 @@ export class SchemaCompareOptionsModel {
 	}
 	//#endregion
 
-	/*
-	* Sets deployment options into booleanOptionsMap
-	*/
-	public setDeploymentOptions() {
-		Object.entries(this.optionsValueLookup).forEach(option => {
-			const propertyName = this.optionsNameAndPropMap[option[0]];
-			this.booleanOptionsMap[propertyName].value = option[1];
-		});
-
-		// Set the deployment booleanOptionsDict with the updated booleanOptionsMap
-		this.deploymentOptions.booleanOptionsDict = this.booleanOptionsMap;
-	}
-
-	/*
-	* Gets the selected/default value of the option
-	*/
-	public getOptionValue(label: string): boolean {
-		const propertyName = this.optionsNameAndPropMap[label];
-		return this.booleanOptionsMap[propertyName]?.value;
-	}
-
-	/*
-	* Gets the description of the selected option
-	*/
-	public getOptionDescription(label: string): string {
-		const propertyName = this.optionsNameAndPropMap[label];
-		return this.booleanOptionsMap[propertyName]?.description;
-	}
 
 	public setObjectTypeOptions() {
 		for (let option in this.objectsLookup) {

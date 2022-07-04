@@ -163,7 +163,7 @@ declare module 'mssql' {
 	}
 
 	/**
-	* Interface containing deployment options of integer type and hold DacFx ObjectType enum values
+	* Interface containing deployment options of integer type, value property holds values from <DacFx>\Product\Source\DeploymentApi\ObjectTypes.cs enum
 	*/
 	export interface DacDeployOptionPropertyObject {
 		value: number[];
