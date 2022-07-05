@@ -21,7 +21,7 @@ export class DeployOptionsModel {
 	 */
 	public initializeOptionsData(): any[][] {
 		let data: any[][] = [];
-		Object.entries(this.deploymentOptions.booleanOptionsDict).forEach(option => {
+		Object.entries(this.deploymentOptions.booleanOptionsDictionary).forEach(option => {
 			const optionDisplayName = option[1].displayName;
 			const propertyName = option[0];
 			const checkedValue = option[1].value;
@@ -43,7 +43,7 @@ export class DeployOptionsModel {
 	*/
 	public setDeploymentOptions(): void {
 		Object.entries(this.optionsValueLookup).forEach(option => {
-			this.deploymentOptions.booleanOptionsDict[this.getPropertyNameByLabel(option[0])].value = option[1];
+			this.deploymentOptions.booleanOptionsDictionary[this.getPropertyNameByLabel(option[0])].value = option[1];
 		});
 	}
 
@@ -51,14 +51,14 @@ export class DeployOptionsModel {
 	* Gets the selected/default value of the option
 	*/
 	public getOptionValue(label: string): boolean {
-		return this.deploymentOptions.booleanOptionsDict[this.getPropertyNameByLabel(label)]?.value;
+		return this.deploymentOptions.booleanOptionsDictionary[this.getPropertyNameByLabel(label)]?.value;
 	}
 
 	/*
 	* Gets the description of the selected option
 	*/
 	public getOptionDescription(label: string): string {
-		return this.deploymentOptions.booleanOptionsDict[this.getPropertyNameByLabel(label)]?.description;
+		return this.deploymentOptions.booleanOptionsDictionary[this.getPropertyNameByLabel(label)]?.description;
 	}
 
 	/*
