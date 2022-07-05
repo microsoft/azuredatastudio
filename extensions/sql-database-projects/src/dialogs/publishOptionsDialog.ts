@@ -29,7 +29,7 @@ export class PublishOptionsDialog {
 	}
 
 	protected initializeDialog(): void {
-		this.optionsTab = utils.getAzdataApi()!.window.createTab(constants.PublishingOptions);
+		this.optionsTab = utils.getAzdataApi()!.window.createTab(constants.PublishOptions);
 		this.intializeDeploymentOptionsDialogTab();
 		this.dialog.content = [this.optionsTab];
 	}

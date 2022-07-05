@@ -148,7 +148,7 @@ export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not 
 // Publish Dialog options
 export const AdvancedOptionsButton = localize('advancedOptionsButton', 'Advanced...');
 export const AdvancedPublishOptions = localize('advancedPublishOptions', 'Advanced Publish Options');
-export const PublishingOptions = localize('publishingOptions', 'Publishing Options');
+export const PublishOptions = localize('publishOptions', 'Publish Options');
 export const ResetButton: string = localize('reset', "Reset");
 export const OptionDescription: string = localize('optionDescription', "Option Description");
 export const OptionName: string = localize('optionName', "Option Name");
