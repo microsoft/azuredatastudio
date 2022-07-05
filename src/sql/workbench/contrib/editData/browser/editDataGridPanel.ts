@@ -59,7 +59,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	private firstRender = true;
 	private firstLoad = true;
 	private enableEditing = true;
-	private isAddingRow = false;
+	private noAutoSelectOnRender = false;
 	// Current selected cell state
 	private previousSavedCell: { row: number, column: number, isEditable: boolean, isDirty: boolean };
 	private lastClickedCell: { row: number, column: number, isEditable: boolean };
@@ -511,6 +511,7 @@ export class EditDataGridPanel extends GridParentComponent {
 				}
 				if (this.firstRender) {
 					this.resetCurrentCell();
+					this.lastClickedCell = { row: 0, column: 1, isEditable: true };
 					// Re-enable selecting once table has been loaded properly.
 					this.nativeElement.classList.remove('loadingRows');
 					// Need to resize table once its been unhidden.
@@ -566,7 +567,9 @@ export class EditDataGridPanel extends GridParentComponent {
 				this.focusCell(this.lastClickedCell.row, this.lastClickedCell.column);
 			}
 			else {
-				this.revertSelectedRow(this.previousSavedCell.row).catch(onUnexpectedError);
+				this.noAutoSelectOnRender = true;
+				this.revertSelectedCell(this.previousSavedCell.row, this.previousSavedCell.column).catch(onUnexpectedError);
+				this.table.grid.resetActiveCell();
 			}
 			handled = true;
 		}
@@ -631,6 +634,19 @@ export class EditDataGridPanel extends GridParentComponent {
 		}
 	}
 
+	// Private Helper Functions ////////////////////////////////////////////////////////////////////////////
+	private async revertSelectedCell(rowNumber: number, columnNumber: number): Promise<void> {
+		// Perform a revert row operation
+		await this.dataService.revertCell(rowNumber, columnNumber - 1);
+		// The operation may fail if there were no changes sent to the service to revert,
+		// so clear any existing client-side edit and refresh on-screen data
+		// do not refresh the whole dataset as it will move the focus away to the first row.
+		//
+		this.dirtyCells = [];
+		this.resetCurrentCell();
+		this.dataSet.dataRows.resetWindowsAroundIndex(rowNumber);
+	}
+
 	private submitCurrentCellChange(cellToAdd, resultHandler, errorHandler): Promise<void> {
 		let self = this;
 		let updateCellPromise: Promise<void> = Promise.resolve();
@@ -678,6 +694,9 @@ export class EditDataGridPanel extends GridParentComponent {
 							message: message
 						});
 						errorPromise = this.revertSelectedRow(cellToAdd.row);
+					}
+					else {
+						errorPromise = this.revertSelectedCell(cellToAdd.row, cellToAdd.column);
 					}
 					return errorPromise.then(() => { errorHandler(error); });
 				}
@@ -739,7 +758,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	// Then sets the focused call afterwards
 	private addRow(row: number): Thenable<void> {
 		let self = this;
-		this.isAddingRow = true;
+		this.noAutoSelectOnRender = true;
 
 		// Add a new row to the edit session in the tools service
 		return this.dataService.createRow()
@@ -1124,11 +1143,11 @@ export class EditDataGridPanel extends GridParentComponent {
 				editor.setValue(oldValue);
 			}
 		}
-		if (!this.isAddingRow) {
+		if (!this.noAutoSelectOnRender) {
 			this.focusCell(this.lastClickedCell.row, this.lastClickedCell.column);
 		}
 		else {
-			this.isAddingRow = false;
+			this.noAutoSelectOnRender = false;
 		}
 	}
 
