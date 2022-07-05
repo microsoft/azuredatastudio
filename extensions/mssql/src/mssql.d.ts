@@ -174,7 +174,7 @@ declare module 'mssql' {
 	export interface DeploymentOptions {
 		doNotDropObjectTypes: DacDeployOptionPropertyObject;
 		excludeObjectTypes: DacDeployOptionPropertyObject;
-		booleanOptionsDict: { [key: string]: DacDeployOptionPropertyBoolean };
+		booleanOptionsDictionary: { [key: string]: DacDeployOptionPropertyBoolean };
 	}
 
 	/**

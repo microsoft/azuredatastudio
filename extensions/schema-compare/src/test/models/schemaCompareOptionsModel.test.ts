@@ -34,7 +34,7 @@ describe('Schema Compare Options Model', () => {
 	it('Should get descriptions', function (): void {
 		const model = new SchemaCompareOptionsModel(testUtils.getDeploymentOptions());
 		model.initializeOptionsData();
-		Object.entries(model.deploymentOptions.booleanOptionsDict).forEach(l => {
+		Object.entries(model.deploymentOptions.booleanOptionsDictionary).forEach(l => {
 			should(model.getOptionDescription(l[1].displayName)).not.equal(undefined);
 		});
 	});
