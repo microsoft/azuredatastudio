@@ -8,7 +8,7 @@ import * as path from 'path';
 import * as utils from './utils';
 import * as constants from './constants';
 import * as azureFunctionsContracts from '../contracts/azureFunctions/azureFunctionsContracts';
-import { BindingType, IConnectionStringInfo } from 'sql-bindings';
+import { BindingType, IConnectionStringInfo, ObjectType } from 'sql-bindings';
 import { ConnectionDetails, IConnectionInfo } from 'vscode-mssql';
 // https://github.com/microsoft/vscode-azurefunctions/blob/main/src/vscode-azurefunctions.api.d.ts
 import { AzureFunctionsExtensionApi } from '../../../types/vscode-azurefunctions.api';
@@ -290,9 +290,9 @@ export async function isFunctionProject(folderPath: string): Promise<boolean> {
  * @param funcName (Optional) Name of the function to which we are adding the SQL Binding
  * @returns binding type or undefined if the user cancelled out of the prompt
  */
-export async function promptForBindingType(objectType?: string, funcName?: string): Promise<BindingType | undefined> {
+export async function promptForBindingType(objectType?: ObjectType, funcName?: string): Promise<BindingType | undefined> {
 	// check to see if objectType is view
-	let isView = (objectType === utils.ObjectType.View);
+	let isView = (objectType === ObjectType.View);
 	const inputOutputItems: (vscode.QuickPickItem & { type: BindingType })[] = [
 		{
 			label: constants.input,
@@ -319,15 +319,16 @@ export async function promptForBindingType(objectType?: string, funcName?: strin
 /**
  * Prompts the user to select to use a table or view as the object to query/upsert into
  */
-export async function promptForObjectType(): Promise<string | undefined> {
-	const objectTypes = [constants.table, constants.view];
+export async function promptForObjectType(): Promise<ObjectType | undefined> {
+	const objectTypes: (vscode.QuickPickItem & { type: ObjectType })[] =
+		[{ label: constants.table, type: ObjectType.Table }, { label: constants.view, type: ObjectType.View }];
 	const selectedObjectType = (await vscode.window.showQuickPick(objectTypes, {
 		canPickMany: false,
 		title: constants.selectSqlTableOrViewPrompt,
 		ignoreFocusOut: true
 	}));
 
-	return selectedObjectType;
+	return selectedObjectType?.type;
 }
 
 /**
@@ -338,7 +339,7 @@ export async function promptForObjectType(): Promise<string | undefined> {
  * @param objectType (optional) type of object to query/upsert into
  * @returns the object name from user's input or menu choice
  */
-export async function promptForObjectName(bindingType: BindingType, connectionInfo?: IConnectionInfo, objectType?: string): Promise<string | undefined> {
+export async function promptForObjectName(bindingType: BindingType, connectionInfo?: IConnectionInfo, objectType?: ObjectType): Promise<string | undefined> {
 	// show the connection string methods (user input and connection profile options)
 	let connectionURI: string | undefined;
 	let selectedDatabase: string | undefined;
@@ -639,7 +640,7 @@ export async function getConnectionURI(connectionInfo: IConnectionInfo): Promise
 
 export async function promptSelectObject(connectionURI: string, bindingType: BindingType, selectedDatabase: string, objectType?: string): Promise<string | undefined> {
 	const vscodeMssqlApi = await utils.getVscodeMssqlApi();
-	let isView = (objectType === utils.ObjectType.View);
+	let isView = (objectType === ObjectType.View);
 
 	const userObjectName = isView ? constants.enterViewName : bindingType === BindingType.input ? constants.enterTableName : constants.enterTableNameToUpsert;
 

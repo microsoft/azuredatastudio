@@ -11,7 +11,7 @@ import * as azureFunctionsUtils from '../common/azureFunctionsUtils';
 import * as constants from '../common/constants';
 import * as azureFunctionsContracts from '../contracts/azureFunctions/azureFunctionsContracts';
 import { CreateAzureFunctionStep, TelemetryActions, TelemetryReporter, TelemetryViews, ExitReason } from '../common/telemetry';
-import { AddSqlBindingParams, BindingType, GetAzureFunctionsParams, GetAzureFunctionsResult, IConnectionStringInfo, ResultStatus } from 'sql-bindings';
+import { AddSqlBindingParams, BindingType, GetAzureFunctionsParams, GetAzureFunctionsResult, IConnectionStringInfo, ObjectType, ResultStatus } from 'sql-bindings';
 import { IConnectionInfo, ITreeNodeInfo } from 'vscode-mssql';
 import { createAddConnectionStringStep } from '../createNewProject/addConnectionStringStep';
 
@@ -171,7 +171,8 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 
 			// Prompt user for binding type
 			telemetryStep = CreateAzureFunctionStep.getBindingType;
-			selectedBindingType = await azureFunctionsUtils.promptForBindingType(node.nodeType);
+			let nodeType = ObjectType.Table === node.nodeType ? ObjectType.Table : ObjectType.View;
+			selectedBindingType = await azureFunctionsUtils.promptForBindingType(nodeType);
 			if (!selectedBindingType) {
 				return;
 			}
