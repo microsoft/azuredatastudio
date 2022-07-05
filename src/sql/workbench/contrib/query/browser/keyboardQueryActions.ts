@@ -227,9 +227,9 @@ export class EstimatedExecutionPlanKeyboardAction extends Action {
 	}
 }
 
-export class RunCurrentQueryWithActualPlanKeyboardAction extends Action {
-	public static ID = 'runCurrentQueryWithActualPlanKeyboardAction';
-	public static LABEL = nls.localize('runCurrentQueryWithActualPlanKeyboardAction', "Run Current Query with Actual Plan");
+export class ToggleActualPlanKeyboardAction extends Action {
+	public static ID = 'ToggleActualPlanKeyboardAction';
+	public static LABEL = nls.localize('ToggleActualPlanKeyboardAction', "Enable/Disable Actual Execution Plan");
 
 	constructor(
 		id: string,
@@ -242,9 +242,12 @@ export class RunCurrentQueryWithActualPlanKeyboardAction extends Action {
 
 	public override run(): Promise<void> {
 		const editor = this._editorService.activeEditorPane;
+
 		if (editor instanceof QueryEditor) {
-			editor.runCurrentQueryWithActualPlan();
+			let toActualPlanState = !editor.input.state.isActualExecutionPlanMode;
+			editor.input.state.isActualExecutionPlanMode = toActualPlanState;
 		}
+
 		return Promise.resolve(null);
 	}
 }

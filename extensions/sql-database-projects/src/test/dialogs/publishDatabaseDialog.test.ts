@@ -39,7 +39,7 @@ describe('Publish Database Dialog', () => {
 			sdkStyle: false
 		});
 
-		const project = new Project(projFilePath);
+		const project = await Project.openProject(projFilePath);
 		const publishDatabaseDialog = new PublishDatabaseDialog(project);
 		publishDatabaseDialog.openDialog();
 		should.notEqual(publishDatabaseDialog.publishTab, undefined);
