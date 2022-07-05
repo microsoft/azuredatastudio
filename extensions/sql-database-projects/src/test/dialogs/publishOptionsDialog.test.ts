@@ -12,6 +12,7 @@ import * as TypeMoq from 'typemoq';
 import { PublishOptionsDialog } from '../../dialogs/publishOptionsDialog';
 import { PublishDatabaseDialog } from '../../dialogs/publishDatabaseDialog';
 import { Project } from '../../models/project';
+import sinon = require('sinon');
 
 describe('Publish Database Options Dialog', () => {
 	before(async function (): Promise<void> {
@@ -19,6 +20,8 @@ describe('Publish Database Options Dialog', () => {
 	});
 
 	it('Should open dialog successfully ', async function (): Promise<void> {
+		const proj = new Project('');
+		sinon.stub(proj, 'getProjectTargetVersion').returns('150');
 		const publishDatabaseDialog = new PublishDatabaseDialog(new Project(''));
 		const optionsDialog = new PublishOptionsDialog(testData.getDeploymentOptions(), publishDatabaseDialog);
 		optionsDialog.openDialog();
