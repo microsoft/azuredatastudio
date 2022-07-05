@@ -59,6 +59,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	private firstRender = true;
 	private firstLoad = true;
 	private enableEditing = true;
+	private isAddingRow = false;
 	// Current selected cell state
 	private previousSavedCell: { row: number, column: number, isEditable: boolean, isDirty: boolean };
 	private lastClickedCell: { row: number, column: number, isEditable: boolean };
@@ -739,6 +740,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	// Then sets the focused call afterwards
 	private addRow(row: number): Thenable<void> {
 		let self = this;
+		this.isAddingRow = true;
 
 		// Add a new row to the edit session in the tools service
 		return this.dataService.createRow()
@@ -1123,7 +1125,12 @@ export class EditDataGridPanel extends GridParentComponent {
 				editor.setValue(oldValue);
 			}
 		}
-		this.focusCell(this.lastClickedCell.row, this.lastClickedCell.column);
+		if (!this.isAddingRow) {
+			this.focusCell(this.lastClickedCell.row, this.lastClickedCell.column);
+		}
+		else {
+			this.isAddingRow = false;
+		}
 	}
 
 	private invalidateRange(start: number, end: number): void {
