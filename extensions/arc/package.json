@@ -2,7 +2,7 @@
   "name": "arc",
   "displayName": "%arc.displayName%",
   "description": "%arc.description%",
-  "version": "1.3.0",
+  "version": "1.3.2",
   "publisher": "Microsoft",
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/extension.png",
@@ -1181,7 +1181,7 @@
                       {
                         "label": "%arc.sql.readable.secondaries.label%",
                         "description": "%arc.sql.readable.secondaries.description%",
-                        "variableName": "AZDATA_NB_VAR_READABLE_SECONDARIES",
+                        "variableName": "AZDATA_NB_VAR_SQL_READABLE_SECONDARIES",
                         "type": "options",
                         "editable": false,
                         "options": {
@@ -1240,7 +1240,7 @@
                       {
                         "label": "%arc.sql.sync.secondaries.label%",
                         "description": "%arc.sql.sync.secondaries.description%",
-                        "variableName": "AZDATA_NB_VAR_SYNC_SECONDARY_TO_COMMIT",
+                        "variableName": "AZDATA_NB_VAR_SQL_SYNC_SECONDARY_TO_COMMIT",
                         "type": "options",
                         "editable": false,
                         "options": {
@@ -1552,6 +1552,7 @@
                         "description": "%arc.sql.retention.days.description%",
                         "variableName": "AZDATA_NB_VAR_SQL_RETENTION_DAYS",
                         "type": "number",
+                        "defaultValue": 7,
                         "min": 1,
                         "max": 35,
                         "required": false
