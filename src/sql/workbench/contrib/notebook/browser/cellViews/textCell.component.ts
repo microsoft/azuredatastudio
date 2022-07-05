@@ -81,24 +81,24 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KEY_B) {
 				// Bold text
 				preventDefaultAndExecCommand(e, 'bold');
-				this.cellModel.notebookModel.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.WYSIWYGKeyboardAction, { action: 'BOLD' });
+				this.cellModel.notebookModel.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.WYSIWYGKeyboardAction, { transformAction: 'BOLD' });
 			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KEY_I) {
 				// Italicize text
 				preventDefaultAndExecCommand(e, 'italic');
-				this.cellModel.notebookModel.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.WYSIWYGKeyboardAction, { action: 'ITALIC' });
+				this.cellModel.notebookModel.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.WYSIWYGKeyboardAction, { transformAction: 'ITALIC' });
 			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KEY_U) {
 				// Underline text
 				preventDefaultAndExecCommand(e, 'underline');
-				this.cellModel.notebookModel.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.WYSIWYGKeyboardAction, { action: 'UNDERLINE' });
+				this.cellModel.notebookModel.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.WYSIWYGKeyboardAction, { transformAction: 'UNDERLINE' });
 			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.shiftKey && keyEvent.keyCode === KeyCode.KEY_K) {
 				// Code Block
 				preventDefaultAndExecCommand(e, 'formatBlock', false, 'pre');
-				this.cellModel.notebookModel.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.WYSIWYGKeyboardAction, { action: 'CODE' });
+				this.cellModel.notebookModel.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.WYSIWYGKeyboardAction, { transformAction: 'CODE' });
 			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.shiftKey && keyEvent.keyCode === KeyCode.KEY_H) {
 				// Highlight Text
 				DOM.EventHelper.stop(e, true);
 				highlightSelectedText();
-				this.cellModel.notebookModel.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.WYSIWYGKeyboardAction, { action: 'HIGHLIGHT' });
+				this.cellModel.notebookModel.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.WYSIWYGKeyboardAction, { transformAction: 'HIGHLIGHT' });
 			}
 		}
 	}

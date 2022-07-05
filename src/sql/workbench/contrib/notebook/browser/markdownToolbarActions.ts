@@ -36,11 +36,11 @@ export class TransformMarkdownAction extends Action {
 	public override async run(context: any): Promise<void> {
 		if (!context?.cellModel?.showMarkdown && context?.cellModel?.showPreview) {
 			this.transformDocumentCommand();
-			this._cellModel.notebookModel.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.TextCellToolbarAction, { action: this._type, mode: 'RichTextView' });
+			this._cellModel.notebookModel.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.TextCellToolbarAction, { transformAction: this._type, mode: 'RichTextView' });
 		} else {
 			let markdownTextTransformer = new MarkdownTextTransformer(this._notebookService, this._cellModel);
 			await markdownTextTransformer.transformText(this._type);
-			this._cellModel.notebookModel.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.TextCellToolbarAction, { action: this._type, mode: context.cellModel.showPreview ? 'Splitview' : 'MarkdownView' });
+			this._cellModel.notebookModel.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.TextCellToolbarAction, { transformAction: this._type, mode: context.cellModel.showPreview ? 'Splitview' : 'MarkdownView' });
 		}
 	}
 
