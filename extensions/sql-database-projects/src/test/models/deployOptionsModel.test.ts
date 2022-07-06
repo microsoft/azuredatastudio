@@ -13,8 +13,6 @@ describe('Publish Dialog Deploy Options Model', () => {
 		should.notEqual(model.initializeOptionsData(), undefined, 'Options shouldn\'t be undefined');
 
 		should.doesNotThrow(() => model.setDeploymentOptions());
-
-		should(model.getOptionValue('')).equal(undefined);
 	});
 
 	it('Should get description', function (): void {

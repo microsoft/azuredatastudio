@@ -507,10 +507,21 @@ declare module 'vscode-mssql' {
 		displayName: string;
 	}
 
+	/**
+	* Interface containing deployment options of integer type, value property holds values from <DacFx>\Product\Source\DeploymentApi\ObjectTypes.cs enum
+	*/
 	export interface DeploymentOptions {
 		doNotDropObjectTypes: DacDeployOptionPropertyObject;
 		excludeObjectTypes: DacDeployOptionPropertyObject;
 		booleanOptionsDictionary: { [key: string]: DacDeployOptionPropertyBoolean };
+	}
+
+	/*
+	* Interface containing option value and option name
+	*/
+	export interface IOptionWithValue {
+		optionName: string;
+		checked: boolean;
 	}
 
 	/**

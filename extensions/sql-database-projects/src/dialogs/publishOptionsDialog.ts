@@ -73,6 +73,8 @@ export class PublishOptionsDialog {
 			await this.updateOptionsTable();
 
 			// Get the description of the selected option
+			// selectedRows[0] contains selected row number
+			// data[row][1] contains the option display name
 			this.disposableListeners.push(this.optionsTable.onRowSelected(async () => {
 				const row = this.optionsTable?.selectedRows![0];
 				const label = this.optionsTable?.data[row!][1];
@@ -82,11 +84,12 @@ export class PublishOptionsDialog {
 			}));
 
 			// Update deploy options value on checkbox onchange
+			// data[row][1] contains the option display name
 			this.disposableListeners.push(this.optionsTable.onCellAction!((rowState) => {
 				const checkboxState = <azdataType.ICheckboxCellActionEventArgs>rowState;
 				if (checkboxState && checkboxState.row !== undefined) {
 					let label = this.optionsTable?.data[checkboxState.row][1];
-					this.optionsModel.optionsValueLookup[label] = checkboxState.checked;
+					this.optionsModel.optionsValueNameLookup[label].checked = checkboxState.checked;
 					this.optionsChanged = true;
 				}
 			}));
