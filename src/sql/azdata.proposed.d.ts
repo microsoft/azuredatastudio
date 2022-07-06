@@ -1492,7 +1492,7 @@ declare module 'azdata' {
 			/**
 			 * Cell value for the top operation data item
 			 */
-			displayValue: string;
+			displayValue: string | number | boolean;
 		}
 	}
 

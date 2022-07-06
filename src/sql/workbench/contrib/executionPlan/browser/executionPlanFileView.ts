@@ -117,7 +117,7 @@ export class ExecutionPlanFileView {
 		}
 	}
 
-	public async scrollToNode(planId: number, nodeId: string) {
+	public scrollToNode(planId: number, nodeId: string): void {
 		this._executionPlanViews[planId].container.scrollIntoView(true);
 		const element = this._executionPlanViews[planId].executionPlanDiagram.getElementById(nodeId);
 		this._executionPlanViews[planId].executionPlanDiagram.centerElement(element);

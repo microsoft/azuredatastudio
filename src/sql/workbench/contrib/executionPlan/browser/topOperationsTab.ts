@@ -27,9 +27,7 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { Action } from 'vs/base/common/actions';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { ITableKeyboardEvent } from 'sql/base/browser/ui/table/interfaces';
-
-// import * as sqlExtHostType from 'sql/workbench/api/common/sqlExtHostTypes';
-
+import { Disposable } from 'vs/base/common/lifecycle';
 export class TopOperationsTab implements IPanelTab {
 	public readonly title = localize('topOperationsTabTitle', "Top Operations  (Preview)");
 	public readonly identifier: string = 'TopOperationsTab';
@@ -49,11 +47,11 @@ export class TopOperationsTab implements IPanelTab {
 	}
 }
 
-export class TopOperationsTabView implements IPanelView {
+export class TopOperationsTabView extends Disposable implements IPanelView {
 	private _container: HTMLElement = DOM.$('.top-operations-tab');
 	private _input: ExecutionPlanState;
 	private _topOperationsContainers: HTMLElement[] = [];
-	private _tables: Table<any>[] = [];
+	private _tables: Table<Slick.SlickData>[] = [];
 
 	constructor(
 		private _queryResultsView: QueryResultsView,
@@ -61,6 +59,7 @@ export class TopOperationsTabView implements IPanelView {
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
 	) {
+		super();
 	}
 
 	public scrollToIndex(index: number) {
@@ -98,7 +97,7 @@ export class TopOperationsTabView implements IPanelView {
 	}
 
 
-	public convertExecutionPlanGraphToTable(graph: azdata.executionPlan.ExecutionPlanGraph, index: number): Table<any> {
+	public convertExecutionPlanGraphToTable(graph: azdata.executionPlan.ExecutionPlanGraph, index: number): Table<Slick.SlickData> {
 
 		const dataMap: { [key: string]: any }[] = [];
 		const columnValues: string[] = [];
@@ -135,7 +134,7 @@ export class TopOperationsTabView implements IPanelView {
 			dataMap.push(row);
 		}
 		const columns = columnValues.map((c, i) => {
-			return <Slick.Column<any>>{
+			return <Slick.Column<Slick.SlickData>>{
 				id: c.toString(),
 				name: c,
 				field: c.toString(),
@@ -159,7 +158,7 @@ export class TopOperationsTabView implements IPanelView {
 		columns.unshift(rowNumberColumn.getColumnDefinition());
 
 		let copyHandler = new CopyKeybind<any>();
-		copyHandler.onCopy(e => {
+		this._register(copyHandler.onCopy(e => {
 
 			const selectedDataRange = selectionModel.getSelectedRanges()[0];
 			let csvString = '';
@@ -194,11 +193,11 @@ export class TopOperationsTabView implements IPanelView {
 			this._instantiationService.createInstance(CopyTableData).run({
 				selectedText: csvString
 			});
-		});
+		}));
 
-		const selectionModel = new CellSelectionModel<any>();
+		const selectionModel = new CellSelectionModel<Slick.SlickData>();
 
-		const table = new Table<any>(tableContainer, {
+		const table = new Table<Slick.SlickData>(tableContainer, {
 			columns: columns,
 			sorter: (args) => {
 				const column = args.sortCol.field;
@@ -246,7 +245,7 @@ export class TopOperationsTabView implements IPanelView {
 		table.registerPlugin(copyHandler);
 
 		table.setTableTitle(localize('topOperationsTableTitle', "Top Operations"));
-		table.onClick(e => {
+		this._register(table.onClick(e => {
 			if (e.cell.cell === 1) {
 				const row = table.getData().getItem(e.cell.row);
 				const nodeId = row['nodeId'];
@@ -254,7 +253,7 @@ export class TopOperationsTabView implements IPanelView {
 				this._queryResultsView.switchToExecutionPlanTab();
 				this._queryResultsView.focusOnNode(planId, nodeId);
 			}
-		});
+		}));
 		this._tables.push(table);
 		const contextMenuAction = [
 			this._instantiationService.createInstance(CopyTableData),
@@ -262,16 +261,16 @@ export class TopOperationsTabView implements IPanelView {
 			this._instantiationService.createInstance(SelectAll)
 		];
 
-		table.onKeyDown((evt: ITableKeyboardEvent) => {
+		this._register(table.onKeyDown((evt: ITableKeyboardEvent) => {
 			if (evt.event.ctrlKey && (evt.event.key === 'a' || evt.event.key === 'A')) {
 				selectionModel.setSelectedRanges([new Slick.Range(0, 1, table.getData().getLength() - 1, table.columns.length - 1)]);
 				table.focus();
 				evt.event.preventDefault();
 				evt.event.stopPropagation();
 			}
-		});
+		}));
 
-		table.onContextMenu(e => {
+		this._register(table.onContextMenu(e => {
 			const selectedDataRange = selectionModel.getSelectedRanges()[0];
 			let csvString = '';
 			let csvStringWithHeader = '';
@@ -315,7 +314,7 @@ export class TopOperationsTabView implements IPanelView {
 				})
 			});
 
-		});
+		}));
 		attachTableStyler(table, this._themeService);
 
 		new ResizeObserver((e) => {
@@ -400,7 +399,7 @@ export class SelectAll extends Action {
 
 interface ContextMenuModel {
 	selectedText?: string;
-	selectionModel?: CellSelectionModel<any>;
-	table?: Table<any>;
+	selectionModel?: CellSelectionModel<Slick.SlickData>;
+	table?: Table<Slick.SlickData>;
 	selectionTextWithHeader?: string;
 }
