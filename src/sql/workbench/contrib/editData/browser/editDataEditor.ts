@@ -107,8 +107,7 @@ export class EditDataEditor extends EditorPane {
 
 	private registerGroupListener(group: IEditorGroup): void {
 		const listener = group.onWillOpenEditor(e => {
-			// This is called when the editor is is being closed, so must not call saveEditorState when input is already disposed.
-			if (this.isVisible() && (e.editor !== this.input || group !== this.group) && !this.input.isDisposed()) {
+			if (this.isVisible() && (e.editor !== this.input || group !== this.group)) {
 				this.saveEditorViewState();
 			}
 		});
@@ -748,7 +747,8 @@ export class EditDataEditor extends EditorPane {
 			if (this._sqlEditor) {
 				editDataInput.savedViewState = this._sqlEditor.getControl().saveViewState();
 			}
-			if (editDataInput.results) {
+			// This is called when the editor is closed (will later be reused), so must not call saveEditorState when input is already disposed.
+			if (editDataInput.results && editDataInput.results.isDisposed()) {
 				editDataInput.results.onSaveViewStateEmitter.fire();
 			}
 		}

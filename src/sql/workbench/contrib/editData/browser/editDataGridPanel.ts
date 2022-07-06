@@ -158,10 +158,6 @@ export class EditDataGridPanel extends GridParentComponent {
 		// TODO add any Edit Data-specific shortcuts here
 	}
 
-	public onDestroy(): void {
-		this.baseDestroy();
-	}
-
 	handleStart(self: EditDataGridPanel, event: any): void {
 		self.dataSet = undefined;
 		self.oldDataRows = undefined;
@@ -1135,13 +1131,16 @@ export class EditDataGridPanel extends GridParentComponent {
 		let oldValue = editor ? editor.getValue() : undefined;
 		let wasValueChanged = editor ? editor.isValueChanged() : false;
 		this.invalidateRange(startIndex, startIndex + count);
-		let activeCell = this.previousSavedCell;
+		let activeCell = { row: -1, column: -1 };
+		if (this.previousSavedCell) {
+			activeCell = this.previousSavedCell;
+		}
 		if (editor && activeCell.row >= startIndex && activeCell.row < startIndex + count) {
 			if (oldValue && wasValueChanged) {
 				editor.setValue(oldValue);
 			}
 		}
-		if (!this.noAutoSelectOnRender) {
+		if (!this.noAutoSelectOnRender && !this.firstRender) {
 			this.focusCell(this.lastClickedCell.row, this.lastClickedCell.column);
 		}
 		else {
