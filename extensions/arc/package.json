@@ -1364,6 +1364,19 @@
                         "required": true
                       },
                       {
+                        "type": "readonly_text",
+                        "label": "%arc.storage-class.backups.warning%",
+                        "labelWidth": "600px",
+                        "enabled": true,
+                        "fieldHeight": "10px",
+                        "links": [
+                          {
+                            "text": "%arc.storage-class.backups.warning.link%",
+                            "url": "https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes"
+                          }
+                        ]
+                      },
+                      {
                         "label": "%arc.storage-class.backups.label%",
                         "description": "%arc.sql.storage-class.backups.description%",
                         "variableName": "AZDATA_NB_VAR_SQL_STORAGE_CLASS_BACKUPS",
