@@ -29,6 +29,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 	private _leftTitleText: string;
 	private _bottomTitleText: string;
 	private _rightTitleText: string;
+	private _orientation: 'horizontal' | 'vertical';
 
 	public constructor(
 		parentContainer: HTMLElement,
@@ -58,7 +59,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		this._topTitleText = localize('executionPlanComparisonPropertiesTopOperation', "Top operation: {0}", target);
 		this._primaryContainer.innerText = this._topTitleText;
 		this._primaryContainer.title = this._topTitleText;
-		this.refreshTable();
+		this.refreshPropertiesTable();
 	}
 
 	public setBottomElement(e: InternalExecutionPlanElement): void {
@@ -74,10 +75,10 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		this._bottomTitleText = localize('executionPlanComparisonPropertiesBottomOperation', "Bottom operation: {0}", target);
 		this._secondaryContainer.innerText = this._bottomTitleText;
 		this._secondaryContainer.title = this._bottomTitleText;
-		this.refreshTable();
+		this.refreshPropertiesTable();
 	}
 
-	public updatePropertyContainerTitles(orientation: 'horizontal' | 'vertical'): void {
+	private updatePropertyContainerTitles(orientation: 'horizontal' | 'vertical'): void {
 		if (orientation === 'horizontal') {
 			this._primaryContainer.innerText = this._topTitleText;
 			this._primaryContainer.title = this._topTitleText;
@@ -91,10 +92,10 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 			this._secondaryContainer.title = this._rightTitleText;
 		}
 
-		this.refreshTable(orientation);
+		this.refreshPropertiesTable(orientation);
 	}
 
-	public refreshTable(orientation: 'vertical' | 'horizontal' = 'vertical') {
+	public refreshPropertiesTable(orientation: 'horizontal' | 'vertical' = 'vertical') {
 		const columns: Slick.Column<Slick.SlickData>[] = [
 		];
 		if (this._model.topElement) {
@@ -316,6 +317,19 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 
 		});
 		return rows;
+	}
+
+	get orientation() {
+		return this._orientation;
+	}
+
+	set orientation(value: 'horizontal' | 'vertical') {
+		if (this._orientation === value) {
+			return;
+		}
+
+		this.updatePropertyContainerTitles(value);
+		this._orientation = value;
 	}
 }
 
