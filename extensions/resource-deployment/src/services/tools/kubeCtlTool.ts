@@ -76,6 +76,19 @@ export class KubeCtlTool extends ToolBase {
 		};
 	}
 
+	protected filterRWX(output: string): SemVer | undefined {
+		let version: SemVer | undefined = undefined;
+		if (output) {
+			const versionJson: KubeCtlVersion = JSON.parse(output);
+			if (versionJson && versionJson.clientVersion && versionJson.clientVersion.gitVersion) {
+				version = new SemVer(versionJson.clientVersion.gitVersion);
+			} else {
+				throw new Error(localize('resourceDeployment.invalidKubectlVersionOutput', "Unable to parse the kubectl version command output: \"{0}\"", output));
+			}
+		}
+		return version;
+	}
+
 	protected getVersionFromOutput(output: string): SemVer | undefined {
 		let version: SemVer | undefined = undefined;
 		if (output) {
