@@ -1380,7 +1380,7 @@
                         "label": "%arc.storage-class.backups.label%",
                         "description": "%arc.sql.storage-class.backups.description%",
                         "variableName": "AZDATA_NB_VAR_SQL_STORAGE_CLASS_BACKUPS",
-                        "type": "kube_storage_class",
+                        "type": "text",
                         "required": false
                       },
                       {
