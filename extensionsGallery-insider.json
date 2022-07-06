@@ -1230,14 +1230,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.10.0",
-							"lastUpdated": "04/08/2022",
+							"version": "1.10.1",
+							"lastUpdated": "7/6/2022",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/dacpac/dacpac-1.10.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/dacpac/dacpac-1.10.1.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -1474,14 +1474,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.14.0",
-							"lastUpdated": "6/9/2022",
+							"version": "1.14.1",
+							"lastUpdated": "7/6/2022",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/schema-compare/schema-compare-1.14.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/schema-compare/schema-compare-1.14.1.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -1718,14 +1718,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.0.3",
-							"lastUpdated": "8/11/2021",
+							"version": "0.0.4",
+							"lastUpdated": "7/6/2022",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/admin-tool-ext-win/admin-tool-ext-win-0.0.3.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/admin-tool-ext-win/admin-tool-ext-win-0.0.4.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -3434,14 +3434,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.17.1",
-							"lastUpdated": "6/9/2022",
+							"version": "0.17.2",
+							"lastUpdated": "7/6/2022",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-database-projects/sql-database-projects-0.17.1.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-database-projects/sql-database-projects-0.17.2.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
