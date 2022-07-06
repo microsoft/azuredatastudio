@@ -90,7 +90,7 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	constructor(
 		dataService: DataService,
-		onSaveViewState: Event<boolean>,
+		onSaveViewState: Event<void>,
 		onRestoreViewState: Event<void>,
 		@IInstantiationService protected instantiationService: IInstantiationService,
 		@INotificationService protected notificationService: INotificationService,
@@ -110,8 +110,8 @@ export class EditDataGridPanel extends GridParentComponent {
 		this.nativeElement.classList.add('loadingRows');
 		this.dataService = dataService;
 		this.actionProvider = this.instantiationService.createInstance(EditDataGridActionProvider, this.dataService, this.onGridSelectAll(), this.onDeleteRow(), this.onRevertRow());
-		onRestoreViewState(() => this.restoreViewState());
-		onSaveViewState(isDisposed => this.saveViewState(isDisposed));
+		this.toDispose.add(onRestoreViewState(() => this.restoreViewState()));
+		this.toDispose.add(onSaveViewState(() => this.saveViewState()));
 		this.onInit();
 	}
 
@@ -828,32 +828,30 @@ export class EditDataGridPanel extends GridParentComponent {
 			: this.getMaxHeight(rowCount);
 	}
 
-	private saveViewState(isDisposed: boolean): void {
-		if (!isDisposed) {
-			let grid = this.table;
-			let self = this;
-			if (grid) {
-				let gridSelections = grid.getSelectedRanges();
-				let gridObject = grid as any;
-				let viewport = (gridObject._grid.getCanvasNode() as HTMLElement).parentElement;
-				this.savedViewState = {
-					gridSelections,
-					scrollTop: viewport.scrollTop,
-					scrollLeft: viewport.scrollLeft
-				};
+	private saveViewState(): void {
+		let grid = this.table;
+		let self = this;
+		if (grid) {
+			let gridSelections = grid.getSelectedRanges();
+			let gridObject = grid as any;
+			let viewport = (gridObject._grid.getCanvasNode() as HTMLElement).parentElement;
+			this.savedViewState = {
+				gridSelections,
+				scrollTop: viewport.scrollTop,
+				scrollLeft: viewport.scrollLeft
+			};
 
-				// Save the cell that is currently being edited.
-				// Note: This is only updating the data in tools service, not saving the change to database.
-				// This is added to fix the data inconsistency: the updated value is displayed but won't be saved to the database
-				// when committing the changes for the row.
-				if (this.previousSavedCell.row !== undefined && this.previousSavedCell.column !== undefined && this.previousSavedCell.isEditable) {
-					gridObject._grid.getEditorLock().commitCurrentEdit();
-					this.submitCurrentCellChange(this.previousSavedCell, (result: EditUpdateCellResult) => {
-						self.setCellDirtyState(self.previousSavedCell.row, self.previousSavedCell.column, result.cell.isDirty);
-					}, (error: any) => {
-						self.notificationService.error(error);
-					}).catch(onUnexpectedError);
-				}
+			// Save the cell that is currently being edited.
+			// Note: This is only updating the data in tools service, not saving the change to database.
+			// This is added to fix the data inconsistency: the updated value is displayed but won't be saved to the database
+			// when committing the changes for the row.
+			if (this.previousSavedCell.row !== undefined && this.previousSavedCell.column !== undefined && this.previousSavedCell.isEditable) {
+				gridObject._grid.getEditorLock().commitCurrentEdit();
+				this.submitCurrentCellChange(this.previousSavedCell, (result: EditUpdateCellResult) => {
+					self.setCellDirtyState(self.previousSavedCell.row, self.previousSavedCell.column, result.cell.isDirty);
+				}, (error: any) => {
+					self.notificationService.error(error);
+				}).catch(onUnexpectedError);
 			}
 		}
 	}
