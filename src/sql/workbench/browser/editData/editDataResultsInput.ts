@@ -6,9 +6,8 @@
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
-import { Disposable } from 'vs/workbench/workbench.web.api';
 
-export interface IGridPanel extends Disposable {
+export interface IGridPanel {
 	readonly onRefreshComplete: Promise<void>;
 }
 
