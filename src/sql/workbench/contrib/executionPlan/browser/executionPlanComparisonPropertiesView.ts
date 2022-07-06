@@ -17,6 +17,11 @@ import * as sqlExtHostType from 'sql/workbench/api/common/sqlExtHostTypes';
 import { TextWithIconColumn } from 'sql/base/browser/ui/table/plugins/textWithIconColumn';
 
 export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanPropertiesViewBase {
+	private static readonly _topTitleColumnHeader = localize('nodePropertyViewNameValueColumnTopHeader', "Value (Top Plan)");
+	private static readonly _leftTitleColumnHeader = localize('nodePropertyViewNameValueColumnLeftHeader', "Value (Left Plan)");
+	private static readonly _BottomTitleColumnHeader = localize('nodePropertyViewNameValueColumnBottomHeader', "Value (Bottom Plan)");
+	private static readonly _rightTitleColumnHeader = localize('nodePropertyViewNameValueColumnRightHeader', "Value (Right Plan)");
+
 	private _model: ExecutionPlanComparisonPropertiesViewModel;
 	private _topOperationNameContainer: HTMLElement;
 	private _bottomOperationNameContainer: HTMLElement;
@@ -24,6 +29,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 	private _leftTitleText: string;
 	private _bottomTitleText: string;
 	private _rightTitleText: string;
+
 
 	public constructor(
 		parentContainer: HTMLElement,
@@ -85,9 +91,11 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 			this._bottomOperationNameContainer.innerText = this._rightTitleText;
 			this._bottomOperationNameContainer.title = this._rightTitleText;
 		}
+
+		this.addDataToTable(orientation);
 	}
 
-	public addDataToTable() {
+	public addDataToTable(orientation: 'vertical' | 'horizontal' = 'vertical') {
 		const columns: Slick.Column<Slick.SlickData>[] = [
 		];
 		if (this._model.topElement) {
@@ -102,7 +110,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 			});
 			columns.push({
 				id: 'value',
-				name: localize('nodePropertyViewNameValueColumnTopHeader', "Value (Top Plan)"),
+				name: this.getPropertyViewNameValueColumnTopHeaderForOrientation(orientation),
 				field: 'value1',
 				width: 150,
 				editor: Slick.Editors.Text,
@@ -113,7 +121,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		if (this._model.bottomElement) {
 			columns.push(new TextWithIconColumn({
 				id: 'value',
-				name: localize('nodePropertyViewNameValueColumnBottomHeader', "Value (Bottom Plan)"),
+				name: this.getPropertyViewNameValueColumnBottomHeaderForOrientation(orientation),
 				field: 'value2',
 				width: 150,
 				headerCssClass: 'prop-table-header',
@@ -130,6 +138,24 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		}
 
 		this.populateTable(columns, this.convertPropertiesToTableRows(topProps, bottomProps, -1, 0));
+	}
+
+	private getPropertyViewNameValueColumnTopHeaderForOrientation(orientation: 'horizontal' | 'vertical'): string {
+		if (orientation === 'horizontal') {
+			return ExecutionPlanComparisonPropertiesView._topTitleColumnHeader;
+		}
+		else {
+			return ExecutionPlanComparisonPropertiesView._leftTitleColumnHeader;
+		}
+	}
+
+	private getPropertyViewNameValueColumnBottomHeaderForOrientation(orientation: 'horizontal' | 'vertical'): string {
+		if (orientation === 'horizontal') {
+			return ExecutionPlanComparisonPropertiesView._BottomTitleColumnHeader;
+		}
+		else {
+			return ExecutionPlanComparisonPropertiesView._rightTitleColumnHeader;
+		}
 	}
 
 	public sortPropertiesAlphabetically(props: Map<string, TablePropertiesMapEntry>): Map<string, TablePropertiesMapEntry> {
