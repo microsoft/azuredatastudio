@@ -159,7 +159,7 @@ export function getDeploymentOptions(): mssql.DeploymentOptions {
 	return {
 		doNotDropObjectTypes: { value: [], description: sampleDesc, displayName: sampleName },
 		excludeObjectTypes: { value: [], description: sampleDesc, displayName: sampleName },
-		booleanOptionsDict: {
+		booleanOptionsDictionary: {
 			'SampleDisplayOption1': { value: false, description: sampleDesc, displayName: sampleName },
 			'SampleDisplayOption2': { value: false, description: sampleDesc, displayName: sampleName }
 		}

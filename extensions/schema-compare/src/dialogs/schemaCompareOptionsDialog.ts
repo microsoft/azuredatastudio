@@ -134,6 +134,9 @@ export class SchemaCompareOptionsDialog {
 			this.optionsTable = view.modelBuilder.table().component();
 			await this.updateOptionsTable();
 
+			// Get the description of the selected option
+			// selectedRows[0] contains selected row number
+			// data[row][1] contains the option display name
 			this.disposableListeners.push(this.optionsTable.onRowSelected(async () => {
 				const row = this.optionsTable.selectedRows[0];
 				const label = this.optionsTable?.data[row!][1];
@@ -142,11 +145,13 @@ export class SchemaCompareOptionsDialog {
 				});
 			}));
 
+			// Update deploy options value on checkbox onchange
+			// data[row][1] contains the option display name
 			this.disposableListeners.push(this.optionsTable.onCellAction((rowState) => {
 				const checkboxState = <azdata.ICheckboxCellActionEventArgs>rowState;
 				if (checkboxState && checkboxState.row !== undefined) {
 					const label = this.optionsTable?.data[checkboxState.row][1];
-					this.optionsModel.optionsValueLookup[label] = checkboxState.checked;
+					this.optionsModel.optionsValueNameLookup[label].checked = checkboxState.checked;
 					this.optionsChanged = true;
 				}
 			}));

@@ -171,10 +171,21 @@ declare module 'mssql' {
 		displayName: string;
 	}
 
+	/*
+	* Interface containing Deployment options from <DacFx>\Source\DeploymentApi\DacDeployOptions.cs
+	*/
 	export interface DeploymentOptions {
 		doNotDropObjectTypes: DacDeployOptionPropertyObject;
 		excludeObjectTypes: DacDeployOptionPropertyObject;
 		booleanOptionsDictionary: { [key: string]: DacDeployOptionPropertyBoolean };
+	}
+
+	/*
+	* Interface containing option value and option name
+	*/
+	export interface IOptionWithValue {
+		optionName: string;
+		checked: boolean;
 	}
 
 	/**

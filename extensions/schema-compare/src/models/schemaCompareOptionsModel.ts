@@ -8,8 +8,7 @@ import { isNullOrUndefined } from 'util';
 
 export class SchemaCompareOptionsModel {
 	public deploymentOptions: mssql.DeploymentOptions;
-	public optionsNameAndPropMap: { [key: string]: string } = {};
-	public optionsValueLookup: { [key: string]: boolean } = {};
+	public optionsValueNameLookup: { [key: string]: mssql.IOptionWithValue } = {};
 	public excludedObjectTypes: number[] = [];
 	public objectsLookup = {};
 
@@ -19,7 +18,7 @@ export class SchemaCompareOptionsModel {
 
 	/*
 	 * Initialize options data from deployment options for table component
-	 * Also preparing optionsValueLookup Map holding onchange checkbox values and optionsNameAndPropMap to hold property name for the option
+	 * Also preparing optionsValueNameLookup Map holding onchange checkbox values and property name
 	 * Returns data as [booleanValue, optionName]
 	*/
 	public initializeOptionsData(): any[][] {
@@ -28,12 +27,14 @@ export class SchemaCompareOptionsModel {
 			const optionDisplayName = option[1].displayName;
 			const propertyName = option[0];
 			const checkedValue = option[1].value;
+			const optionValue: mssql.IOptionWithValue = {
+				optionName: option[0],
+				checked: checkedValue
+			};
 			// push to table array
 			data.push([checkedValue, optionDisplayName]);
-			// push to optionsNameAndPropMap
-			this.optionsNameAndPropMap[optionDisplayName] = propertyName;
-			// push to optionsValueLookup
-			this.optionsValueLookup[optionDisplayName] = checkedValue;
+			// push to optionsValueNameLookup
+			this.optionsValueNameLookup[optionDisplayName] = optionValue;
 		});
 		return data.sort((a, b) => a[1].localeCompare(b[1]));
 	}
@@ -44,30 +45,17 @@ export class SchemaCompareOptionsModel {
 	* option[1] - checkedbox value
 	*/
 	public setDeploymentOptions(): void {
-		Object.entries(this.optionsValueLookup).forEach(option => {
-			this.deploymentOptions.booleanOptionsDictionary[this.getPropertyNameByLabel(option[0])].value = option[1];
+		Object.entries(this.optionsValueNameLookup).forEach(option => {
+			this.deploymentOptions.booleanOptionsDictionary[option[1].optionName].value = option[1].checked;
 		});
 	}
 
 	/*
-	* Gets the selected/default value of the option
-	*/
-	public getOptionValue(label: string): boolean {
-		return this.deploymentOptions.booleanOptionsDictionary[this.getPropertyNameByLabel(label)]?.value;
-	}
-
-	/*
-	* Gets the description of the selected option
+	* Gets the description of the selected option by getting the option name from the optionsValueNameLookup
 	*/
 	public getOptionDescription(label: string): string {
-		return this.deploymentOptions.booleanOptionsDictionary[this.getPropertyNameByLabel(label)]?.description;
-	}
-
-	/*
-	* Gets the property name by option display name
-	*/
-	public getPropertyNameByLabel(label: string): string {
-		return this.optionsNameAndPropMap[label];
+		const optionName = this.optionsValueNameLookup[label].optionName;
+		return this.deploymentOptions.booleanOptionsDictionary[optionName]?.description;
 	}
 
 	//#region Schema Compare Objects

@@ -16,7 +16,6 @@ describe('Schema Compare Options Model', () => {
 		should.doesNotThrow(() => model.setDeploymentOptions());
 		should.doesNotThrow(() => model.setObjectTypeOptions());
 
-		should(model.getOptionValue('')).equal(undefined, 'Should return undefined if an invalid option is passed in');
 		should(model.getSchemaCompareIncludedObjectsUtil('')).be.false('Should return false if invalid object name is passed in');
 	});
 
