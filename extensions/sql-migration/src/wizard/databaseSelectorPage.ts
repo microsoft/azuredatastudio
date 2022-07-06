@@ -222,11 +222,13 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			await this.updateValuesOnSelection();
 		}));
 
-		// load unfiltered table list and pre-select list of databases saved in state
-		await this._filterTableList('', this.migrationStateModel._databasesForAssessment);
-
-		//
-		await this._filterTableList('', this.migrationStateModel._preselectedDatabaseNames);
+		// load unfiltered table list and pre-select list of databases saved in state, including any preselected databases if launched via URI
+		if (!this.migrationStateModel._preselectAllDatabasesForAssessment) {
+			await this._filterTableList('', this.migrationStateModel._databasesForAssessment);
+		} else {
+			const allDatabases = this._databaseTableValues.map(database => database[2]);
+			await this._filterTableList('', allDatabases);
+		}
 
 		const flex = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',

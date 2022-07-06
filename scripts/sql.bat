@@ -36,7 +36,8 @@ set ELECTRON_ENABLE_STACK_DUMPING=1
 :: Use the following to get v8 tracing:
 :: %CODE% --js-flags="--trace-hydrogen --trace-phase=Z --trace-deopt --code-comments --hydrogen-track-positions --redirect-code-traces" . %*
 
-%CODE% . %* --remote-debugging-port=9222 -r --server=AALAB03-2K8 --integrated --command=sqlmigration.start
+%CODE% . %* --remote-debugging-port=9222
+:: -r --server=AALAB03-2K8 --integrated --command=sqlmigration.start
 
 popd
 

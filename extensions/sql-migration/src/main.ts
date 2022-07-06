@@ -29,14 +29,14 @@ class SQLMigration {
 
 	async start(): Promise<void> {
 		await this.registerCommands();
-		// this.registerUriHandler();
 	}
 
 	async registerCommands(): Promise<void> {
+		console.log('commands registered for sql-migration');
 		const commandDisposables: vscode.Disposable[] = [ // Array of disposables returned by registerCommand
 			vscode.commands.registerCommand(
 				'sqlmigration.start',
-				async (databases: string) => await this.launchMigrationWizard(databases)),
+				async (preselectedDatabases: string) => await this.launchMigrationWizard(preselectedDatabases)),
 			vscode.commands.registerCommand(
 				'sqlmigration.openNotebooks',
 				async () => {
@@ -65,7 +65,7 @@ class SQLMigration {
 				}),
 			azdata.tasks.registerTask(
 				'sqlmigration.start',
-				async () => await this.launchMigrationWizard("")),
+				async () => await this.launchMigrationWizard()),
 			azdata.tasks.registerTask(
 				'sqlmigration.newsupportrequest',
 				async () => await this.launchNewSupportRequest()),
@@ -90,12 +90,10 @@ class SQLMigration {
 	registerUriHandler(): void {
 		const uriHandlerService = new UriHandlerService();
 		vscode.window.registerUriHandler(uriHandlerService);
-
-		console.log('URI handler registered');
-		void vscode.window.showInformationMessage('URI handler registered');
+		console.log('URI handler for sql-migration successfully registered');
 	}
 
-	async launchMigrationWizard(selectedDatabases: string): Promise<void> {
+	async launchMigrationWizard(preselectedDatabases: string = ''): Promise<void> {
 		let activeConnection = await azdata.connection.getCurrentConnection();
 		let connectionId: string = '';
 		let serverName: string = '';
@@ -114,11 +112,15 @@ class SQLMigration {
 			if (api) {
 				this.stateModel = new MigrationStateModel(this.context, connectionId, api.sqlMigration);
 				this.context.subscriptions.push(this.stateModel);
-				if (selectedDatabases) {
-					this.stateModel._preselectedDatabaseNames = selectedDatabases.split(',');
+				if (preselectedDatabases) {
+					if (preselectedDatabases === '__all') {
+						this.stateModel._preselectAllDatabasesForAssessment = true;
+					} else {
+						this.stateModel._databasesForAssessment = preselectedDatabases.split(',');
+					}
 				}
 				const savedInfo = this.checkSavedInfo(serverName);
-				if (savedInfo) {
+				if (savedInfo && !preselectedDatabases) {
 					this.stateModel.savedInfo = savedInfo;
 					this.stateModel.serverName = serverName;
 					const savedAssessmentDialog = new SavedAssessmentDialog(
