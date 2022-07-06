@@ -2,7 +2,7 @@
   "name": "sql-bindings-vscode",
   "displayName": "%displayName%",
   "description": "%description%",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "publisher": "ms-mssql",
   "preview": true,
   "engines": {
@@ -63,7 +63,7 @@
     }
   },
   "dependencies": {
-    "@microsoft/ads-extension-telemetry": "^1.1.5",
+    "@microsoft/ads-extension-telemetry": "^1.2.0",
     "@microsoft/vscode-azext-utils": "^0.1.1",
     "fast-glob": "^3.2.7",
     "promisify-child-process": "^3.1.1",
