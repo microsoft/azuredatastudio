@@ -228,6 +228,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		} else {
 			const allDatabases = this._databaseTableValues.map(database => database[2]);
 			await this._filterTableList('', allDatabases);
+			// TO-DO: even though all rows are checked, the "check all" box isn't checked
 		}
 
 		const flex = view.modelBuilder.flexContainer().withLayout({
