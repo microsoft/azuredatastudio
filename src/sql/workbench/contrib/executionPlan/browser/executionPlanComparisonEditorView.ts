@@ -463,6 +463,8 @@ export class ExecutionPlanComparisonEditorView {
 			this._orientation = 'vertical';
 			this._toggleOrientationAction.class = splitScreenVerticallyIconClassName;
 		}
+
+		this._propertiesView.updatePropertyContainerTitles(this._orientation);
 		this._topPlanContainer.style.flex = '1';
 		this._bottomPlanContainer.style.flex = '1';
 	}

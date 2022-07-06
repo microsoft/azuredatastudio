@@ -20,6 +20,10 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 	private _model: ExecutionPlanComparisonPropertiesViewModel;
 	private _topOperationNameContainer: HTMLElement;
 	private _bottomOperationNameContainer: HTMLElement;
+	private _topTitleText: string;
+	private _leftTitleText: string;
+	private _bottomTitleText: string;
+	private _rightTitleText: string;
 
 	public constructor(
 		parentContainer: HTMLElement,
@@ -45,9 +49,10 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		} else {
 			target = localize('executionPlanPropertiesEdgeOperationName', "Edge");
 		}
-		const titleText = localize('executionPlanComparisonPropertiesTopOperation', "Top operation: {0}", target);
-		this._topOperationNameContainer.innerText = titleText;
-		this._topOperationNameContainer.title = titleText;
+		this._leftTitleText = localize('executionPlanComparisonPropertiesLeftOperation', "Left operation: {0}", target);
+		this._topTitleText = localize('executionPlanComparisonPropertiesTopOperation', "Top operation: {0}", target);
+		this._topOperationNameContainer.innerText = this._topTitleText;
+		this._topOperationNameContainer.title = this._topTitleText;
 		this.addDataToTable();
 	}
 
@@ -60,12 +65,27 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 			target = localize('executionPlanPropertiesEdgeOperationName', "Edge");
 		}
 
-		const titleText = localize('executionPlanComparisonPropertiesBottomOperation', "Bottom operation: {0}", target);
-		this._bottomOperationNameContainer.innerText = titleText;
-		this._bottomOperationNameContainer.title = titleText;
+		this._rightTitleText = localize('executionPlanComparisonPropertiesRightOperation', "Right operation: {0}", target);
+		this._bottomTitleText = localize('executionPlanComparisonPropertiesBottomOperation', "Bottom operation: {0}", target);
+		this._bottomOperationNameContainer.innerText = this._bottomTitleText;
+		this._bottomOperationNameContainer.title = this._bottomTitleText;
 		this.addDataToTable();
 	}
 
+	public updatePropertyContainerTitles(orientation: 'horizontal' | 'vertical'): void {
+		if (orientation === 'horizontal') {
+			this._topOperationNameContainer.innerText = this._topTitleText;
+			this._topOperationNameContainer.title = this._topTitleText;
+			this._bottomOperationNameContainer.innerText = this._bottomTitleText;
+			this._bottomOperationNameContainer.title = this._bottomTitleText;
+		}
+		else {
+			this._topOperationNameContainer.innerText = this._leftTitleText;
+			this._topOperationNameContainer.title = this._leftTitleText;
+			this._bottomOperationNameContainer.innerText = this._rightTitleText;
+			this._bottomOperationNameContainer.title = this._rightTitleText;
+		}
+	}
 
 	public addDataToTable() {
 		const columns: Slick.Column<Slick.SlickData>[] = [
