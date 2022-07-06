@@ -183,7 +183,7 @@ export class DeployService {
 		const containerIds = await this.getCurrentDockerContainer(imageLabel);
 		if (containerIds.length > 0) {
 			let shouldClean = forceClean;
-			if (!shouldClean) {
+			if (!forceClean) {
 				const result = await vscode.window.showQuickPick([constants.yesString, constants.noString],
 					{
 						title: constants.containerAlreadyExistForProject,
