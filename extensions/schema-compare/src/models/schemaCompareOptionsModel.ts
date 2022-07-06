@@ -25,7 +25,6 @@ export class SchemaCompareOptionsModel {
 		let data: any[][] = [];
 		Object.entries(this.deploymentOptions.booleanOptionsDictionary).forEach(option => {
 			const optionDisplayName = option[1].displayName;
-			const propertyName = option[0];
 			const checkedValue = option[1].value;
 			const optionValue: mssql.IOptionWithValue = {
 				optionName: option[0],
@@ -36,13 +35,14 @@ export class SchemaCompareOptionsModel {
 			// push to optionsValueNameLookup
 			this.optionsValueNameLookup[optionDisplayName] = optionValue;
 		});
+		// a[1] and b[1] are the options display names
 		return data.sort((a, b) => a[1].localeCompare(b[1]));
 	}
 
 	/*
 	* Sets the selected option checkbox value to the deployment options
 	* option[0] - option label
-	* option[1] - checkedbox value
+	* option[1] contains the checkedbox value and optionName
 	*/
 	public setDeploymentOptions(): void {
 		Object.entries(this.optionsValueNameLookup).forEach(option => {
