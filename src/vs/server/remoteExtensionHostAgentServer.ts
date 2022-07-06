@@ -1,5 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as crypto from 'crypto';
@@ -7,8 +8,6 @@ import * as fs from 'fs';
 import * as http from 'http';
 import * as net from 'net';
 import * as url from 'url';
-import * as path from 'path'; // {{SQL CARBON EDIT}}
-import * as cookie from 'cookie'; // {{SQL CARBON EDIT}}
 import { release, hostname } from 'os';
 import * as perf from 'vs/base/common/performance';
 import { performance } from 'perf_hooks';
@@ -34,10 +33,10 @@ import { ConfigurationService } from 'vs/platform/configuration/common/configura
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IRequestService } from 'vs/platform/request/common/request';
 import { RequestService } from 'vs/platform/request/node/requestService';
-import { NullTelemetryService, ITelemetryAppender, NullAppender } from 'vs/platform/telemetry/common/telemetryUtils';
+import { ITelemetryAppender, NullAppender } from 'vs/platform/telemetry/common/telemetryUtils';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IExtensionGalleryService, IExtensionManagementCLIService, IExtensionManagementService } from 'vs/platform/extensionManagement/common/extensionManagement';
-import { ExtensionGalleryService } from 'vs/platform/extensionManagement/common/extensionGalleryService';
+import { ExtensionGalleryServiceWithNoStorageService } from 'vs/platform/extensionManagement/common/extensionGalleryService';
 import { ExtensionManagementService } from 'vs/platform/extensionManagement/node/extensionManagementService';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { IDownloadService } from 'vs/platform/download/common/download';
@@ -45,7 +44,7 @@ import { DownloadServiceChannelClient } from 'vs/platform/download/common/downlo
 import { ILocalizationsService } from 'vs/platform/localizations/common/localizations';
 import { LocalizationsService } from 'vs/platform/localizations/node/localizations';
 import { AppInsightsAppender } from 'vs/platform/telemetry/node/appInsightsAppender';
-import { ITelemetryServiceConfig, TelemetryService } from 'vs/platform/telemetry/common/telemetryService';
+import { ITelemetryServiceConfig } from 'vs/platform/telemetry/common/telemetryService';
 import { resolveCommonProperties } from 'vs/platform/telemetry/common/commonProperties';
 import { getMachineId } from 'vs/base/node/id';
 import { FileService } from 'vs/platform/files/common/fileService';
@@ -56,7 +55,7 @@ import { RemoteAgentConnectionContext } from 'vs/platform/remote/common/remoteAg
 import { IPCServer, ClientConnectionEvent, IMessagePassingProtocol, StaticRouter } from 'vs/base/parts/ipc/common/ipc';
 import { Emitter, Event } from 'vs/base/common/event';
 import { RemoteAgentEnvironmentChannel } from 'vs/server/remoteAgentEnvironmentImpl';
-import { RemoteAgentFileSystemChannel } from 'vs/server/remoteAgentFileSystemImpl';
+import { RemoteAgentFileSystemProviderChannel } from 'vs/server/remoteFileSystemProviderIpc';
 import { REMOTE_FILE_SYSTEM_CHANNEL_NAME } from 'vs/workbench/services/remote/common/remoteAgentFileSystemChannel';
 import { RequestChannel } from 'vs/platform/request/common/requestIpc';
 import { ExtensionManagementChannel } from 'vs/platform/extensionManagement/common/extensionManagementIpc';
@@ -77,18 +76,9 @@ import { ExtensionManagementCLIService } from 'vs/platform/extensionManagement/c
 import { SpdLogLogger } from 'vs/platform/log/node/spdlogLog';
 import { IPtyService, TerminalSettingId } from 'vs/platform/terminal/common/terminal';
 import { PtyHostService } from 'vs/platform/terminal/node/ptyHostService';
+import { IRemoteTelemetryService, RemoteNullTelemetryService, RemoteTelemetryService } from 'vs/server/remoteTelemetryService';
 
 const SHUTDOWN_TIMEOUT = 5 * 60 * 1000;
-const license = `
-
-*
-* Visual Studio Code Server
-*
-* Reminder: You may only use this software with Visual Studio family products,
-* as described in the license https://aka.ms/vscode-remote/license
-*
-
-`;
 
 const eventPrefix = 'monacoworkbench';
 
@@ -200,6 +190,20 @@ class ServerLogService extends AbstractLogger implements ILogService {
 
 export type ServerListenOptions = { host?: string; port?: number; socketPath?: string };
 
+declare module vsda {
+	// the signer is a native module that for historical reasons uses a lower case class name
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	export class signer {
+		sign(arg: string): string;
+	}
+
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	export class validator {
+		createNewMessage(arg: string): string;
+		validate(arg: string): 'ok' | 'error';
+	}
+}
+
 export class RemoteExtensionHostAgentServer extends Disposable {
 
 	private readonly _logService: ILogService;
@@ -207,6 +211,7 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 	private readonly _uriTransformerCache: { [remoteAuthority: string]: IURITransformer; };
 	private readonly _extHostConnections: { [reconnectionToken: string]: ExtensionHostConnection; };
 	private readonly _managementConnections: { [reconnectionToken: string]: ManagementConnection; };
+	private readonly _allReconnectionTokens: Set<string>;
 	private readonly _webClientServer: WebClientServer | null;
 
 	private shutdownTimer: NodeJS.Timer | undefined;
@@ -224,16 +229,20 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 		const logService = getOrCreateSpdLogService(this._environmentService);
 		logService.trace(`Remote configuration data at ${REMOTE_DATA_FOLDER}`);
 		logService.trace('process arguments:', this._environmentService.args);
-		logService.info(license);
+		const serverGreeting = _productService.serverGreeting.join('\n');
+		if (serverGreeting) {
+			logService.info(`\n\n${serverGreeting}\n\n`);
+		}
 
 		this._logService = new MultiplexLogService([new ServerLogService(getLogLevel(this._environmentService)), logService]);
 		this._socketServer = new SocketServer<RemoteAgentConnectionContext>();
 		this._uriTransformerCache = Object.create(null);
 		this._extHostConnections = Object.create(null);
 		this._managementConnections = Object.create(null);
+		this._allReconnectionTokens = new Set<string>();
 
 		if (hasWebClient) {
-			this._webClientServer = new WebClientServer(this._connectionToken, this._environmentService, this._logService);
+			this._webClientServer = new WebClientServer(this._connectionToken, this._environmentService, this._logService, this._productService);
 		} else {
 			this._webClientServer = null;
 		}
@@ -272,25 +281,25 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 		services.set(IRequestService, new SyncDescriptor(RequestService));
 
 		let appInsightsAppender: ITelemetryAppender = NullAppender;
-		if (!this._environmentService.args['disable-telemetry'] && product.enableTelemetry) {
-			if (product.aiConfig && product.aiConfig.asimovKey) {
-				appInsightsAppender = new AppInsightsAppender(eventPrefix, null, product.aiConfig.asimovKey);
+		if (!this._environmentService.args['disable-telemetry'] && this._productService.enableTelemetry) {
+			if (this._productService.aiConfig && this._productService.aiConfig.asimovKey) {
+				appInsightsAppender = new AppInsightsAppender(eventPrefix, null, this._productService.aiConfig.asimovKey);
 				this._register(toDisposable(() => appInsightsAppender!.flush())); // Ensure the AI appender is disposed so that it flushes remaining data
 			}
 
 			const machineId = await getMachineId();
 			const config: ITelemetryServiceConfig = {
-				appender: appInsightsAppender,
-				commonProperties: resolveCommonProperties(fileService, release(), hostname(), process.arch, product.commit, product.version + '-remote', machineId, product.msftInternalDomains, this._environmentService.installSourcePath, 'remoteAgent'),
+				appenders: [appInsightsAppender],
+				commonProperties: resolveCommonProperties(fileService, release(), hostname(), process.arch, this._productService.commit, this._productService.version + '-remote', machineId, this._productService.msftInternalDomains, this._environmentService.installSourcePath, 'remoteAgent'),
 				piiPaths: [this._environmentService.appRoot]
 			};
 
-			services.set(ITelemetryService, new SyncDescriptor(TelemetryService, [config]));
+			services.set(IRemoteTelemetryService, new SyncDescriptor(RemoteTelemetryService, [config]));
 		} else {
-			services.set(ITelemetryService, NullTelemetryService);
+			services.set(IRemoteTelemetryService, RemoteNullTelemetryService);
 		}
 
-		services.set(IExtensionGalleryService, new SyncDescriptor(ExtensionGalleryService));
+		services.set(IExtensionGalleryService, new SyncDescriptor(ExtensionGalleryServiceWithNoStorageService));
 
 		const downloadChannel = this._socketServer.getChannel('download', router);
 		services.set(IDownloadService, new DownloadServiceChannelClient(downloadChannel, () => this._getUriTransformer('renderer') /* TODO: @Sandy @Joao need dynamic context based router */));
@@ -308,19 +317,18 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 			{
 				GraceTime: ProtocolConstants.ReconnectionGraceTime,
 				ShortGraceTime: ProtocolConstants.ReconnectionShortGraceTime,
-				scrollback: configurationService.getValue<number>(TerminalSettingId.PersistentSessionScrollback) ?? 100,
-				useExperimentalSerialization: configurationService.getValue<boolean>(TerminalSettingId.PersistentSessionExperimentalSerializer) ?? true,
+				scrollback: configurationService.getValue<number>(TerminalSettingId.PersistentSessionScrollback) ?? 100
 			}
 		);
 		services.set(IPtyService, ptyService);
 
 		return instantiationService.invokeFunction(accessor => {
-			const remoteExtensionEnvironmentChannel = new RemoteAgentEnvironmentChannel(this._connectionToken, this._environmentService, extensionManagementCLIService, this._logService, accessor.get(ITelemetryService), appInsightsAppender);
+			const remoteExtensionEnvironmentChannel = new RemoteAgentEnvironmentChannel(this._connectionToken, this._environmentService, extensionManagementCLIService, this._logService, accessor.get(IRemoteTelemetryService), appInsightsAppender, this._productService);
 			this._socketServer.registerChannel('remoteextensionsenvironment', remoteExtensionEnvironmentChannel);
 
-			this._socketServer.registerChannel(REMOTE_TERMINAL_CHANNEL_NAME, new RemoteTerminalChannel(this._environmentService, this._logService, ptyService));
+			this._socketServer.registerChannel(REMOTE_TERMINAL_CHANNEL_NAME, new RemoteTerminalChannel(this._environmentService, this._logService, ptyService, this._productService));
 
-			const remoteFileSystemChannel = new RemoteAgentFileSystemChannel(this._logService, this._environmentService);
+			const remoteFileSystemChannel = new RemoteAgentFileSystemProviderChannel(this._logService, this._environmentService);
 			this._socketServer.registerChannel(REMOTE_FILE_SYSTEM_CHANNEL_NAME, remoteFileSystemChannel);
 
 			this._socketServer.registerChannel('request', new RequestChannel(accessor.get(IRequestService)));
@@ -367,7 +375,7 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 		// Version
 		if (pathname === '/version') {
 			res.writeHead(200, { 'Content-Type': 'text/plain' });
-			return res.end(product.commit || '');
+			return res.end(this._productService.commit || '');
 		}
 
 		// Delay shutdown
@@ -388,42 +396,6 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 			if (typeof desiredPath !== 'string') {
 				return serveError(req, res, 400, `Bad request.`);
 			}
-
-			let filePath: string;
-			try {
-				filePath = URI.from({ scheme: Schemas.file, path: desiredPath }).fsPath;
-			} catch (err) {
-				return serveError(req, res, 400, `Bad request.`);
-			}
-
-			const responseHeaders: Record<string, string> = Object.create(null);
-			if (this._environmentService.isBuilt) {
-				if (isEqualOrParent(filePath, this._environmentService.builtinExtensionsPath, !platform.isLinux)
-					|| isEqualOrParent(filePath, this._environmentService.extensionsPath, !platform.isLinux)
-				) {
-					responseHeaders['Cache-Control'] = 'public, max-age=31536000';
-				}
-			}
-			return serveFile(this._logService, req, res, filePath, responseHeaders);
-		}
-
-		// {{SQL CARBON EDIT}} add local webview routing
-		if (pathname.startsWith('/webview/')) {
-			const cookies = cookie.parse(req.headers.cookie || '');
-			if (cookies['vscode-tkn'] !== this._connectionToken) {
-				return serveError(req, res, 403, `Forbidden.`);
-			}
-
-			const webviewPath = decodeURI(pathname.replace(/^\/webview\//, ''));
-
-			let desiredPath: string;
-			if (/^vscode-resource/.test(webviewPath)) {
-				// handling vscode resources like extenstion assets
-				desiredPath = webviewPath.replace(/^vscode-resource(\/file)?/, '');
-			} else {
-				desiredPath = path.join(__dirname, '/../workbench/contrib/webview/browser/pre/', webviewPath);
-			}
-			desiredPath = path.normalize(desiredPath);
 
 			let filePath: string;
 			try {
@@ -577,10 +549,12 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 		const logPrefix = `[${remoteAddress}][${reconnectionToken.substr(0, 8)}]`;
 		const protocol = new PersistentProtocol(socket);
 
-		let validator: any;
+		let validator: vsda.validator;
+		let signer: vsda.signer;
 		try {
-			const vsda = <any>require.__$__nodeRequire('vsda');
-			validator = new vsda.validator();
+			const vsdaMod = <typeof vsda>require.__$__nodeRequire('vsda');
+			validator = new vsdaMod.validator();
+			signer = new vsdaMod.signer();
 		} catch (e) {
 		}
 
@@ -615,7 +589,14 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 				}
 
 				// Send `sign` request
-				let someText = 'VS Code Headless is cool';
+				let signedData = generateUuid();
+				if (signer) {
+					try {
+						signedData = signer.sign(msg1.data);
+					} catch (e) {
+					}
+				}
+				let someText = generateUuid();
 				if (validator) {
 					try {
 						someText = validator.createNewMessage(someText);
@@ -624,7 +605,8 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 				}
 				const signRequest: SignRequest = {
 					type: 'sign',
-					data: someText
+					data: someText,
+					signedData: signedData
 				};
 				protocol.sendControl(VSBuffer.fromString(JSON.stringify(signRequest)));
 
@@ -646,7 +628,7 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 				}
 
 				const rendererCommit = msg2.commit;
-				const myCommit = product.commit;
+				const myCommit = this._productService.commit;
 				if (rendererCommit && myCommit) {
 					// Running in the built version where commits are defined
 					if (rendererCommit !== myCommit) {
@@ -655,11 +637,12 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 				}
 
 				let valid = false;
-
-				if (msg2.signedData === this._connectionToken) {
+				if (!validator) {
+					valid = true;
+				} else if (msg2.signedData === this._connectionToken) {
 					// web client
 					valid = true;
-				} else if (validator) {
+				} else {
 					try {
 						valid = validator.validate(msg2.signedData) === 'ok';
 					} catch (e) {
@@ -708,8 +691,13 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 			if (isReconnection) {
 				// This is a reconnection
 				if (!this._managementConnections[reconnectionToken]) {
-					// This is an unknown reconnection token
-					return this._rejectWebSocketConnection(logPrefix, protocol, `Unknown reconnection token`);
+					if (!this._allReconnectionTokens.has(reconnectionToken)) {
+						// This is an unknown reconnection token
+						return this._rejectWebSocketConnection(logPrefix, protocol, `Unknown reconnection token (never seen)`);
+					} else {
+						// This is a connection that was seen in the past, but is no longer valid
+						return this._rejectWebSocketConnection(logPrefix, protocol, `Unknown reconnection token (seen before)`);
+					}
 				}
 
 				protocol.sendControl(VSBuffer.fromString(JSON.stringify({ type: 'ok' })));
@@ -728,6 +716,7 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 				const con = new ManagementConnection(this._logService, reconnectionToken, remoteAddress, protocol);
 				this._socketServer.acceptConnection(con.protocol, con.onClose);
 				this._managementConnections[reconnectionToken] = con;
+				this._allReconnectionTokens.add(reconnectionToken);
 				con.onClose(() => {
 					delete this._managementConnections[reconnectionToken];
 				});
@@ -749,8 +738,13 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 			if (isReconnection) {
 				// This is a reconnection
 				if (!this._extHostConnections[reconnectionToken]) {
-					// This is an unknown reconnection token
-					return this._rejectWebSocketConnection(logPrefix, protocol, `Unknown reconnection token`);
+					if (!this._allReconnectionTokens.has(reconnectionToken)) {
+						// This is an unknown reconnection token
+						return this._rejectWebSocketConnection(logPrefix, protocol, `Unknown reconnection token (never seen)`);
+					} else {
+						// This is a connection that was seen in the past, but is no longer valid
+						return this._rejectWebSocketConnection(logPrefix, protocol, `Unknown reconnection token (seen before)`);
+					}
 				}
 
 				protocol.sendControl(VSBuffer.fromString(JSON.stringify(startParams.port ? { debugPort: startParams.port } : {})));
@@ -770,6 +764,7 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 				protocol.dispose();
 				const con = new ExtensionHostConnection(this._environmentService, this._logService, reconnectionToken, remoteAddress, socket, dataChunk);
 				this._extHostConnections[reconnectionToken] = con;
+				this._allReconnectionTokens.add(reconnectionToken);
 				con.onClose(() => {
 					delete this._extHostConnections[reconnectionToken];
 					this._onDidCloseExtHostConnection();
@@ -795,7 +790,7 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 		protocol.dispose();
 
 		remoteSocket.pause();
-		const localSocket = await this._connectTunnelSocket(tunnelStartParams.port);
+		const localSocket = await this._connectTunnelSocket(tunnelStartParams.host, tunnelStartParams.port);
 
 		if (dataChunk.byteLength > 0) {
 			localSocket.write(dataChunk.buffer);
@@ -812,13 +807,18 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 		remoteSocket.pipe(localSocket);
 	}
 
-	private _connectTunnelSocket(port: number): Promise<net.Socket> {
+	private _connectTunnelSocket(host: string, port: number): Promise<net.Socket> {
 		return new Promise<net.Socket>((c, e) => {
-			const socket = net.createConnection({ port: port }, () => {
-				socket.removeListener('error', e);
-				socket.pause();
-				c(socket);
-			});
+			const socket = net.createConnection(
+				{
+					host: host,
+					port: port
+				}, () => {
+					socket.removeListener('error', e);
+					socket.pause();
+					c(socket);
+				}
+			);
 
 			socket.once('error', e);
 		});

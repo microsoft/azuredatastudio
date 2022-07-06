@@ -1,5 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as cp from 'child_process';
@@ -18,10 +19,20 @@ import { IRemoteExtensionHostStartParams } from 'vs/platform/remote/common/remot
 import { IExtHostReadyMessage, IExtHostSocketMessage, IExtHostReduceGraceTimeMessage } from 'vs/workbench/services/extensions/common/extensionHostProtocol';
 import { IServerEnvironmentService } from 'vs/server/serverEnvironmentService';
 import { IProcessEnvironment, isWindows } from 'vs/base/common/platform';
+import { logRemoteEntry } from 'vs/workbench/services/extensions/common/remoteConsoleUtil';
+import { removeDangerousEnvVariables } from 'vs/base/node/processes';
 
 export async function buildUserEnvironment(startParamsEnv: { [key: string]: string | null } = {}, language: string, isDebug: boolean, environmentService: IServerEnvironmentService, logService: ILogService): Promise<IProcessEnvironment> {
 	const nlsConfig = await getNLSConfiguration(language, environmentService.userDataPath);
-	const userShellEnv = await resolveShellEnv(logService, environmentService.args, process.env);
+
+	let userShellEnv: typeof process.env | undefined = undefined;
+	try {
+		userShellEnv = await resolveShellEnv(logService, environmentService.args, process.env);
+	} catch (error) {
+		logService.error('ExtensionHostConnection#buildUserEnvironment resolving shell environment failed', error);
+		userShellEnv = {};
+	}
+
 	const binFolder = environmentService.isBuilt ? join(environmentService.appRoot, 'bin') : join(environmentService.appRoot, 'resources', 'server', 'bin-dev');
 	const processEnv = process.env;
 	let PATH = startParamsEnv['PATH'] || (userShellEnv ? userShellEnv['PATH'] : undefined) || processEnv['PATH'];
@@ -92,24 +103,28 @@ export class ExtensionHostConnection {
 		private readonly _logService: ILogService,
 		private readonly _reconnectionToken: string,
 		remoteAddress: string,
-		_socket: NodeSocket | WebSocketNodeSocket,
+		socket: NodeSocket | WebSocketNodeSocket,
 		initialDataChunk: VSBuffer
 	) {
 		this._disposed = false;
 		this._remoteAddress = remoteAddress;
 		this._extensionHostProcess = null;
-		this._connectionData = ExtensionHostConnection._toConnectionData(_socket, initialDataChunk);
+		this._connectionData = ExtensionHostConnection._toConnectionData(socket, initialDataChunk);
 		this._connectionData.socket.pause();
 
 		this._log(`New connection established.`);
 	}
 
+	private get _logPrefix(): string {
+		return `[${this._remoteAddress}][${this._reconnectionToken.substr(0, 8)}][ExtensionHostConnection] `;
+	}
+
 	private _log(_str: string): void {
-		this._logService.info(`[${this._remoteAddress}][${this._reconnectionToken.substr(0, 8)}][ExtensionHostConnection] ${_str}`);
+		this._logService.info(`${this._logPrefix}${_str}`);
 	}
 
 	private _logError(_str: string): void {
-		this._logService.error(`[${this._remoteAddress}][${this._reconnectionToken.substr(0, 8)}][ExtensionHostConnection] ${_str}`);
+		this._logService.error(`${this._logPrefix}${_str}`);
 	}
 
 	private static _toConnectionData(socket: NodeSocket | WebSocketNodeSocket, initialDataChunk: VSBuffer): ConnectionData {
@@ -177,6 +192,8 @@ export class ExtensionHostConnection {
 			}
 
 			const env = await buildUserEnvironment(startParams.env, startParams.language, !!startParams.debugId, this._environmentService, this._logService);
+			removeDangerousEnvVariables(env);
+
 			const opts = {
 				env,
 				execArgv,
@@ -198,16 +215,14 @@ export class ExtensionHostConnection {
 			this._extensionHostProcess.stderr!.setEncoding('utf8');
 			const onStdout = Event.fromNodeEventEmitter<string>(this._extensionHostProcess.stdout!, 'data');
 			const onStderr = Event.fromNodeEventEmitter<string>(this._extensionHostProcess.stderr!, 'data');
-			onStdout((e) => console.log(`EXTHOST-STDOUT::::::::` + e));
-			onStderr((e) => console.log(`EXTHOST-STDERR::::::::` + e));
+			onStdout((e) => this._log(`<${pid}> ${e}`));
+			onStderr((e) => this._log(`<${pid}><stderr> ${e}`));
 
 
 			// Support logging from extension host
 			this._extensionHostProcess.on('message', msg => {
 				if (msg && (<IRemoteConsoleLog>msg).type === '__$console') {
-					console.log(`EXTHOST-LOG:::::`);
-					console.log((<IRemoteConsoleLog>msg).arguments);
-					// this._logExtensionHostMessage(<IRemoteConsoleLog>msg);
+					logRemoteEntry(this._logService, (<IRemoteConsoleLog>msg), `${this._logPrefix}<${pid}>`);
 				}
 			});
 

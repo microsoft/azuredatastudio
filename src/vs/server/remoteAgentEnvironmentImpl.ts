@@ -1,5 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { Event } from 'vs/base/common/event';
@@ -9,10 +10,8 @@ import { URI } from 'vs/base/common/uri';
 import { createRemoteURITransformer } from 'vs/server/remoteUriTransformer';
 import { IRemoteAgentEnvironmentDTO, IGetEnvironmentDataArguments, IScanExtensionsArguments, IScanSingleExtensionArguments } from 'vs/workbench/services/remote/common/remoteAgentEnvironmentChannel';
 import * as nls from 'vs/nls';
-import * as fs from 'fs';
 import { FileAccess, Schemas } from 'vs/base/common/network';
 import { IServerEnvironmentService } from 'vs/server/serverEnvironmentService';
-import product from 'vs/platform/product/common/product';
 import { ExtensionScanner, ExtensionScannerInput, IExtensionResolver, IExtensionReference } from 'vs/workbench/services/extensions/node/extensionPoints';
 import { IServerChannel } from 'vs/base/parts/ipc/common/ipc';
 import { ExtensionIdentifier, IExtensionDescription } from 'vs/platform/extensions/common/extensions';
@@ -25,12 +24,14 @@ import { getMachineInfo, collectWorkspaceStats } from 'vs/platform/diagnostics/n
 import { IDiagnosticInfoOptions, IDiagnosticInfo } from 'vs/platform/diagnostics/common/diagnostics';
 import { basename, isAbsolute, join, normalize } from 'vs/base/common/path';
 import { ProcessItem } from 'vs/base/common/processes';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { ILog, Translations } from 'vs/workbench/services/extensions/common/extensionPoints';
 import { ITelemetryAppender } from 'vs/platform/telemetry/common/telemetryUtils';
 import { IBuiltInExtension } from 'vs/base/common/product';
 import { IExtensionManagementCLIService } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { cwd } from 'vs/base/common/process';
+import { IRemoteTelemetryService } from 'vs/server/remoteTelemetryService';
+import { Promises } from 'vs/base/node/pfs';
+import { IProductService } from 'vs/platform/product/common/productService';
 
 let _SystemExtensionsRoot: string | null = null;
 function getSystemExtensionsRoot(): string {
@@ -59,8 +60,9 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
 		private readonly environmentService: IServerEnvironmentService,
 		extensionManagementCLIService: IExtensionManagementCLIService,
 		private readonly logService: ILogService,
-		private readonly telemetryService: ITelemetryService,
-		private readonly telemetryAppender: ITelemetryAppender | null
+		private readonly telemetryService: IRemoteTelemetryService,
+		private readonly telemetryAppender: ITelemetryAppender | null,
+		private readonly productService: IProductService
 	) {
 		this._logger = new class implements ILog {
 			public error(source: string, message: string): void {
@@ -97,7 +99,7 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
 	async call(_: any, command: string, arg?: any): Promise<any> {
 		switch (command) {
 			case 'disableTelemetry': {
-				this.telemetryService.setEnabled(false);
+				this.telemetryService.permanentlyDisableTelemetry();
 				return;
 			}
 
@@ -223,8 +225,7 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
 	}
 
 	private static _massageWhenConditions(extensions: IExtensionDescription[]): void {
-		// We must massage "when" conditions which mention `resourceScheme`
-		// See https://github.com/Microsoft/vscode-remote/issues/663
+		// Massage "when" conditions which mention `resourceScheme`
 
 		interface WhenUser { when?: string; }
 
@@ -346,6 +347,7 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
 			workspaceStorageHome: this.environmentService.workspaceStorageHome,
 			userHome: this.environmentService.userHome,
 			os: platform.OS,
+			arch: process.arch,
 			marks: performance.getMarks(),
 			useHostProxy: (this.environmentService.args['use-host-proxy'] !== undefined)
 		};
@@ -355,7 +357,7 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
 		const config = await getNLSConfiguration(language, this.environmentService.userDataPath);
 		if (InternalNLSConfiguration.is(config)) {
 			try {
-				const content = await fs.promises.readFile(config._translationsConfigFile, 'utf8');
+				const content = await Promises.readFile(config._translationsConfigFile, 'utf8');
 				return JSON.parse(content);
 			} catch (err) {
 				return Object.create(null);
@@ -413,9 +415,9 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
 			const extDescsP = extensionDevelopmentPaths.map(extDevPath => {
 				return ExtensionScanner.scanOneOrMultipleExtensions(
 					new ExtensionScannerInput(
-						product.version,
-						product.date,
-						product.commit,
+						this.productService.version,
+						this.productService.date,
+						this.productService.commit,
 						language,
 						true, // dev mode
 						extDevPath,
@@ -438,9 +440,9 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
 	}
 
 	private _scanBuiltinExtensions(language: string, translations: Translations): Promise<IExtensionDescription[]> {
-		const version = product.version;
-		const commit = product.commit;
-		const date = product.date;
+		const version = this.productService.version;
+		const commit = this.productService.commit;
+		const date = this.productService.date;
 		const devMode = !!process.env['VSCODE_DEV'];
 
 		const input = new ExtensionScannerInput(version, date, commit, language, devMode, getSystemExtensionsRoot(), true, false, translations);
@@ -458,7 +460,7 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
 				}
 			}
 
-			const builtInExtensions = Promise.resolve(product.builtInExtensions || []);
+			const builtInExtensions = Promise.resolve(this.productService.builtInExtensions || []);
 
 			const input = new ExtensionScannerInput(version, date, commit, language, devMode, getExtraDevSystemExtensionsRoot(), true, false, {});
 			const extraBuiltinExtensions = builtInExtensions
@@ -474,9 +476,9 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
 	private _scanInstalledExtensions(language: string, translations: Translations): Promise<IExtensionDescription[]> {
 		const devMode = !!process.env['VSCODE_DEV'];
 		const input = new ExtensionScannerInput(
-			product.version,
-			product.date,
-			product.commit,
+			this.productService.version,
+			this.productService.date,
+			this.productService.commit,
 			language,
 			devMode,
 			this.environmentService.extensionsPath!,
@@ -491,9 +493,9 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
 	private _scanSingleExtension(extensionPath: string, isBuiltin: boolean, language: string, translations: Translations): Promise<IExtensionDescription | null> {
 		const devMode = !!process.env['VSCODE_DEV'];
 		const input = new ExtensionScannerInput(
-			product.version,
-			product.date,
-			product.commit,
+			this.productService.version,
+			this.productService.date,
+			this.productService.commit,
 			language,
 			devMode,
 			extensionPath,

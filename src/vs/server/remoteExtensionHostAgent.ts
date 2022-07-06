@@ -1,5 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as os from 'os';
@@ -61,10 +62,3 @@ export function spawnCli() {
 export function createServer(address: string | net.AddressInfo | null): Promise<IServerAPI> {
 	return doCreateServer(address, args, REMOTE_DATA_FOLDER);
 }
-
-
-// function reportStartupTimes(): void {
-// 	// use telemetry instead...
-// 	console.log(JSON.stringify(perf.getMarks(), undefined, 2));
-// }
-// setTimeout(reportStartupTimes, 3000);

@@ -1,5 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
@@ -12,7 +13,7 @@ import { RequestService } from 'vs/platform/request/node/requestService';
 import { NullTelemetryService } from 'vs/platform/telemetry/common/telemetryUtils';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IExtensionGalleryService, IExtensionManagementCLIService, IExtensionManagementService } from 'vs/platform/extensionManagement/common/extensionManagement';
-import { ExtensionGalleryService } from 'vs/platform/extensionManagement/common/extensionGalleryService';
+import { ExtensionGalleryServiceWithNoStorageService } from 'vs/platform/extensionManagement/common/extensionGalleryService';
 import { ExtensionManagementService } from 'vs/platform/extensionManagement/node/extensionManagementService';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -33,6 +34,8 @@ import { getErrorMessage } from 'vs/base/common/errors';
 import { URI } from 'vs/base/common/uri';
 import { isAbsolute, join } from 'vs/base/common/path';
 import { cwd } from 'vs/base/common/process';
+import { DownloadService } from 'vs/platform/download/common/downloadService';
+import { IDownloadService } from 'vs/platform/download/common/download';
 
 class CliMain extends Disposable {
 
@@ -87,8 +90,9 @@ class CliMain extends Disposable {
 		services.set(IConfigurationService, configurationService);
 
 		services.set(IRequestService, new SyncDescriptor(RequestService));
+		services.set(IDownloadService, new SyncDescriptor(DownloadService));
 		services.set(ITelemetryService, NullTelemetryService);
-		services.set(IExtensionGalleryService, new SyncDescriptor(ExtensionGalleryService));
+		services.set(IExtensionGalleryService, new SyncDescriptor(ExtensionGalleryServiceWithNoStorageService));
 		services.set(IExtensionManagementService, new SyncDescriptor(ExtensionManagementService));
 		services.set(IExtensionManagementCLIService, new SyncDescriptor(ExtensionManagementCLIService));
 		services.set(ILocalizationsService, new SyncDescriptor(LocalizationsService));

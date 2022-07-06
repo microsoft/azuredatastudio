@@ -1,12 +1,13 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 // @ts-check
 
 const perf = require('../base/common/performance');
 const performance = require('perf_hooks').performance;
+const product = require('../../../product.json');
 
 perf.mark('code/server/start');
 // @ts-ignore
@@ -76,6 +77,7 @@ function start() {
 			perf.mark('code/server/firstWebSocket');
 		}
 		const remoteExtensionHostAgentServer = await getRemoteExtensionHostAgentServer();
+		// @ts-ignore
 		return remoteExtensionHostAgentServer.handleUpgrade(req, socket);
 	});
 	server.on('error', async (err) => {
@@ -88,16 +90,8 @@ function start() {
 			: { host: parsedArgs['host'], port: parsePort(parsedArgs['port']) }
 	);
 	server.listen(nodeListenOptions, async () => {
-		let output = `
-
-*
-* Visual Studio Code Server
-*
-* Reminder: You may only use this software with Visual Studio family products,
-* as described in the license https://aka.ms/vscode-remote/license
-*
-
-`;
+		const serverGreeting = product.serverGreeting.join('\n');
+		let output = serverGreeting ? `\n\n${serverGreeting}\n\n` : ``;
 
 		if (typeof nodeListenOptions.port === 'number' && parsedArgs['print-ip-address']) {
 			const ifaces = os.networkInterfaces();

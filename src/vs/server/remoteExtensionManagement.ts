@@ -1,12 +1,13 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { PersistentProtocol, ProtocolConstants, ISocket } from 'vs/base/parts/ipc/common/ipc.net';
 import { ILogService } from 'vs/platform/log/common/log';
 import { Emitter, Event } from 'vs/base/common/event';
 import { VSBuffer } from 'vs/base/common/buffer';
-import { RunOnceScheduler } from 'vs/base/common/async';
+import { ProcessTimeRunOnceScheduler } from 'vs/base/common/async';
 import { NativeParsedArgs } from 'vs/platform/environment/common/argv';
 
 export interface IExtensionsManagementProcessInitData {
@@ -47,8 +48,8 @@ export class ManagementConnection {
 
 	public readonly protocol: PersistentProtocol;
 	private _disposed: boolean;
-	private _disconnectRunner1: RunOnceScheduler;
-	private _disconnectRunner2: RunOnceScheduler;
+	private _disconnectRunner1: ProcessTimeRunOnceScheduler;
+	private _disconnectRunner2: ProcessTimeRunOnceScheduler;
 
 	constructor(
 		private readonly _logService: ILogService,
@@ -62,11 +63,11 @@ export class ManagementConnection {
 
 		this.protocol = protocol;
 		this._disposed = false;
-		this._disconnectRunner1 = new RunOnceScheduler(() => {
+		this._disconnectRunner1 = new ProcessTimeRunOnceScheduler(() => {
 			this._log(`The reconnection grace time of ${printTime(this._reconnectionGraceTime)} has expired, so the connection will be disposed.`);
 			this._cleanResources();
 		}, this._reconnectionGraceTime);
-		this._disconnectRunner2 = new RunOnceScheduler(() => {
+		this._disconnectRunner2 = new ProcessTimeRunOnceScheduler(() => {
 			this._log(`The reconnection short grace time of ${printTime(this._reconnectionShortGraceTime)} has expired, so the connection will be disposed.`);
 			this._cleanResources();
 		}, this._reconnectionShortGraceTime);

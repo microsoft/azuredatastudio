@@ -1,5 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as os from 'os';
@@ -13,7 +14,6 @@ import { IURITransformer } from 'vs/base/common/uriIpc';
 import { IServerChannel } from 'vs/base/parts/ipc/common/ipc';
 import { createRandomIPCHandle } from 'vs/base/parts/ipc/node/ipc.net';
 import { ILogService } from 'vs/platform/log/common/log';
-import product from 'vs/platform/product/common/product';
 import { RemoteAgentConnectionContext } from 'vs/platform/remote/common/remoteAgentEnvironment';
 import { IPtyService, IShellLaunchConfig, ITerminalProfile, ITerminalsLayoutInfo } from 'vs/platform/terminal/common/terminal';
 import { IGetTerminalLayoutInfoArgs, ISetTerminalLayoutInfoArgs } from 'vs/platform/terminal/common/terminalProcess';
@@ -28,6 +28,7 @@ import * as terminalEnvironment from 'vs/workbench/contrib/terminal/common/termi
 import { AbstractVariableResolverService } from 'vs/workbench/services/configurationResolver/common/variableResolver';
 import { buildUserEnvironment } from 'vs/server/extensionHostConnection';
 import { IServerEnvironmentService } from 'vs/server/serverEnvironmentService';
+import { IProductService } from 'vs/platform/product/common/productService';
 
 class CustomVariableResolver extends AbstractVariableResolverService {
 	constructor(
@@ -87,7 +88,8 @@ export class RemoteTerminalChannel extends Disposable implements IServerChannel<
 	constructor(
 		private readonly _environmentService: IServerEnvironmentService,
 		private readonly _logService: ILogService,
-		private readonly _ptyService: IPtyService
+		private readonly _ptyService: IPtyService,
+		private readonly _productService: IProductService
 	) {
 		super();
 	}
@@ -124,10 +126,13 @@ export class RemoteTerminalChannel extends Disposable implements IServerChannel<
 			case '$getWslPath': return this._getWslPath(args[0]);
 			case '$getTerminalLayoutInfo': return this._getTerminalLayoutInfo(<IGetTerminalLayoutInfoArgs>args);
 			case '$setTerminalLayoutInfo': return this._setTerminalLayoutInfo(<ISetTerminalLayoutInfoArgs>args);
+			case '$serializeTerminalState': return this._ptyService.serializeTerminalState.apply(this._ptyService, args);
+			case '$reviveTerminalProcesses': return this._ptyService.reviveTerminalProcesses.apply(this._ptyService, args);
 			case '$reduceConnectionGraceTime': return this._reduceConnectionGraceTime();
 			case '$updateIcon': return this._ptyService.updateIcon.apply(this._ptyService, args);
 			case '$updateTitle': return this._ptyService.updateTitle.apply(this._ptyService, args);
-
+			case '$updateProperty': return this._ptyService.updateProperty.apply(this._ptyService, args);
+			case '$refreshProperty': return this._ptyService.refreshProperty.apply(this._ptyService, args);
 			case '$requestDetachInstance': return this._ptyService.requestDetachInstance(args[0], args[1]);
 			case '$acceptDetachedInstance': return this._ptyService.acceptDetachInstanceReply(args[0], args[1]);
 		}
@@ -143,17 +148,13 @@ export class RemoteTerminalChannel extends Disposable implements IServerChannel<
 			case '$onPtyHostResponsiveEvent': return this._ptyService.onPtyHostResponsive || Event.None;
 			case '$onPtyHostRequestResolveVariablesEvent': return this._ptyService.onPtyHostRequestResolveVariables || Event.None;
 			case '$onProcessDataEvent': return this._ptyService.onProcessData;
-			case '$onProcessExitEvent': return this._ptyService.onProcessExit;
 			case '$onProcessReadyEvent': return this._ptyService.onProcessReady;
+			case '$onProcessExitEvent': return this._ptyService.onProcessExit;
 			case '$onProcessReplayEvent': return this._ptyService.onProcessReplay;
-			case '$onProcessTitleChangedEvent': return this._ptyService.onProcessTitleChanged;
-			case '$onProcessShellTypeChangedEvent': return this._ptyService.onProcessShellTypeChanged;
-			case '$onProcessOverrideDimensionsEvent': return this._ptyService.onProcessOverrideDimensions;
-			case '$onProcessResolvedShellLaunchConfigEvent': return this._ptyService.onProcessResolvedShellLaunchConfig;
 			case '$onProcessOrphanQuestion': return this._ptyService.onProcessOrphanQuestion;
-			case '$onProcessDidChangeHasChildProcesses': return this._ptyService.onProcessDidChangeHasChildProcesses;
 			case '$onExecuteCommand': return this.onExecuteCommand;
 			case '$onDidRequestDetach': return this._ptyService.onDidRequestDetach || Event.None;
+			case '$onDidChangeProperty': return this._ptyService.onDidChangeProperty;
 			default:
 				break;
 		}
@@ -211,7 +212,7 @@ export class RemoteTerminalChannel extends Disposable implements IServerChannel<
 			shellLaunchConfig,
 			envFromConfig,
 			variableResolver,
-			product.version,
+			this._productService.version,
 			args.configuration['terminal.integrated.detectLocale'],
 			baseEnv
 		);

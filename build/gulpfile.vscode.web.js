@@ -14,9 +14,8 @@ const common = require('./lib/optimize');
 const product = require('../product.json');
 const rename = require('gulp-rename');
 const filter = require('gulp-filter');
-const json = require('gulp-json-editor');
 const _ = require('underscore');
-const deps = require('./lib/dependencies');
+const { getProductionDependencies } = require('./lib/dependencies');
 const vfs = require('vinyl-fs');
 const fs = require('fs');
 const packageJson = require('../package.json');
@@ -31,20 +30,23 @@ const commit = util.getVersion(REPO_ROOT);
 const quality = product.quality;
 const version = (quality && quality !== 'stable') ? `${packageJson.version}-${quality}` : packageJson.version;
 
-const productionDependencies = deps.getProductionDependencies(WEB_FOLDER);
-
 const vscodeWebResourceIncludes = [
 	// Workbench
-	'out-build/{vs,sql}/{base,platform,editor,workbench}/**/*.{svg,png,html}',
+	'out-build/vs/{base,platform,editor,workbench}/**/*.{svg,png,jpg}',
 	'out-build/vs/code/browser/workbench/*.html',
 	'out-build/vs/base/browser/ui/codicons/codicon/**/*.ttf',
 	'out-build/vs/**/markdown.css',
 
 	// Webview
 	'out-build/vs/workbench/contrib/webview/browser/pre/*.js',
+	'out-build/vs/workbench/contrib/webview/browser/pre/*.html',
 
 	// Extension Worker
-	'out-build/vs/workbench/services/extensions/worker/extensionHostWorkerMain.js'
+	'out-build/vs/workbench/services/extensions/worker/httpsWebWorkerExtensionHostIframe.html',
+	'out-build/vs/workbench/services/extensions/worker/httpWebWorkerExtensionHostIframe.html',
+
+	// Web node paths (needed for integration tests)
+	'out-build/vs/webPackagePaths.js',
 ];
 exports.vscodeWebResourceIncludes = vscodeWebResourceIncludes;
 
@@ -54,7 +56,7 @@ const vscodeWebResources = [
 	...vscodeWebResourceIncludes,
 
 	// Excludes
-	'!out-build/{vs,sql}/**/{node,electron-browser,electron-main}/**',
+	'!out-build/vs/**/{node,electron-browser,electron-main}/**',
 	'!out-build/vs/editor/standalone/**',
 	'!out-build/vs/workbench/**/*-tb.png',
 	'!**/test/**'
@@ -66,6 +68,9 @@ const vscodeWebEntryPoints = _.flatten([
 	buildfile.entrypoint('vs/workbench/workbench.web.api'),
 	buildfile.base,
 	buildfile.workerExtensionHost,
+	buildfile.workerNotebook,
+	buildfile.workerLanguageDetection,
+	buildfile.workerLocalFileSearch,
 	buildfile.keyboardMaps,
 	buildfile.workbenchWeb
 ]);
@@ -86,7 +91,7 @@ const createVSCodeWebFileContentMapper = (extensionsRoot) => {
 		if (path.endsWith('vs/platform/product/common/product.js')) {
 			const productConfiguration = JSON.stringify({
 				...product,
-				extensionAllowedProposedApi: [...product.extensionAllowedProposedApi, 'sandy081.999-test-github-issue-notebooks'],
+				extensionAllowedProposedApi: [...product.extensionAllowedProposedApi],
 				version,
 				commit,
 				date: buildDate
@@ -115,6 +120,7 @@ const optimizeVSCodeWebTask = task.define('optimize-vscode-web', task.series(
 		otherSources: [],
 		resources: vscodeWebResources,
 		loaderConfig: common.loaderConfig(),
+		externalLoaderInfo: util.createExternalLoaderConfig(product.webEndpointUrl, commit, quality),
 		out: 'out-vscode-web',
 		inlineAmdImages: true,
 		bundleInfo: undefined,
@@ -133,6 +139,8 @@ function packageTask(sourceFolderName, destinationFolderName) {
 	const destination = path.join(BUILD_ROOT, destinationFolderName);
 
 	return () => {
+		const json = require('gulp-json-editor');
+
 		const src = gulp.src(sourceFolderName + '/**', { base: '.' })
 			.pipe(rename(function (path) { path.dirname = path.dirname.replace(new RegExp('^' + sourceFolderName), 'out'); }));
 
@@ -145,8 +153,9 @@ function packageTask(sourceFolderName, destinationFolderName) {
 		const packageJsonStream = gulp.src(['remote/web/package.json'], { base: 'remote/web' })
 			.pipe(json({ name, version }));
 
-		const license = gulp.src(['remote/LICENSE'], { base: 'remote' });
+		const license = gulp.src(['remote/LICENSE'], { base: 'remote', allowEmpty: true });
 
+		const productionDependencies = getProductionDependencies(WEB_FOLDER);
 		const dependenciesSrc = _.flatten(productionDependencies.map(d => path.relative(REPO_ROOT, d.path)).map(d => [`${d}/**`, `!${d}/**/{test,tests}/**`, `!${d}/.bin/**`]));
 
 		const deps = gulp.src(dependenciesSrc, { base: 'remote/web', dot: true })
@@ -182,8 +191,9 @@ const compileWebExtensionsBuildTask = task.define('compile-web-extensions-build'
 	task.define('clean-web-extensions-build', util.rimraf('.build/web/extensions')),
 	task.define('bundle-web-extensions-build', () => extensions.packageLocalExtensionsStream(true).pipe(gulp.dest('.build/web'))),
 	task.define('bundle-marketplace-web-extensions-build', () => extensions.packageMarketplaceExtensionsStream(true).pipe(gulp.dest('.build/web'))),
+	task.define('bundle-web-extension-media-build', () => extensions.buildExtensionMedia(false, '.build/web/extensions')),
 ));
-
+gulp.task(compileWebExtensionsBuildTask);
 
 const dashed = (str) => (str ? `-${str}` : ``);
 
