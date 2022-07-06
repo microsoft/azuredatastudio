@@ -17,7 +17,8 @@
     "onCommand:sqlmigration.start",
     "onCommand:sqlmigration.newsupportrequest",
     "onCommand:sqlmigration.sendfeedback",
-    "onCommand:sqlmigration.openNotebooks"
+    "onCommand:sqlmigration.openNotebooks",
+    "onUri"
   ],
   "capabilities": {
     "virtualWorkspaces": false,
