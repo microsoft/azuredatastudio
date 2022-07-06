@@ -151,7 +151,7 @@
 	"arc.sql.storage-class.logs.description": "The storage class to be used for logs (/var/log). If no value is specified, the default storage class will be used.",
 	"arc.postgres.storage-class.logs.description": "The storage class to be used for logs persistent volumes",
 	"arc.storage-class.backups.label": "Storage Class (Backups)",
-	"arc.sql.storage-class.backups.description": "The storage class to be used for backup persistent volumes. If no value is specified, the default storage class will be used.",
+	"arc.sql.storage-class.backups.description": "The storage class to be used for backup persistent volumes. If no value is specified, the default storage class will be used. Must be a RWX capable storage class.",
 	"arc.sql.volume.size.data.label": "Volume Size in Gi (Data)",
 	"arc.sql.volume.size.data.description": "The size of the storage volume to be used for data in gibibytes.",
 	"arc.sql.volume.size.datalogs.label": "Volume Size in Gi (Database logs)",
