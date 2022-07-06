@@ -83,8 +83,9 @@ declare module 'sqldbproj' {
 		/**
 		 * Checks if any containers with the specified label already exist, and if they do prompt the user whether they want to clean them up
 		 * @param imageLabel The label of the container to search for
+		 * @param forceClean Whether to always clean up containers if needed, skipping prompting the user. Default is false.
 		 */
-		cleanDockerObjectsIfNeeded(imageLabel: string): Promise<void>;
+		cleanDockerObjectsIfNeeded(imageLabel: string, forceClean?: boolean): Promise<void>;
 	}
 
 	export interface AddItemOptions {

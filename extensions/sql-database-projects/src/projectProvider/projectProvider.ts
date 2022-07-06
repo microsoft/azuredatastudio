@@ -229,7 +229,7 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 		return getDockerImageSpec(projectName, baseImage, imageUniqueId);
 	}
 
-	public cleanDockerObjectsIfNeeded(imageLabel: string): Promise<void> {
-		return this.projectController.deployService.cleanDockerObjectsIfNeeded(imageLabel);
+	public cleanDockerObjectsIfNeeded(imageLabel: string, forceClean?: boolean): Promise<void> {
+		return this.projectController.deployService.cleanDockerObjectsIfNeeded(imageLabel, forceClean);
 	}
 }

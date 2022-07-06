@@ -175,18 +175,24 @@ export class DeployService {
 	/**
 	 * Checks if any containers with the specified label already exist, and if they do prompt the user whether they want to clean them up
 	 * @param imageLabel The label of the container to search for
+	 * @param forceClean Whether to always clean up containers if needed, skipping prompting the user. Default is false.
 	 */
-	public async cleanDockerObjectsIfNeeded(imageLabel: string): Promise<void> {
+	public async cleanDockerObjectsIfNeeded(imageLabel: string, forceClean: boolean = false): Promise<void> {
 		this.logToOutput(constants.cleaningDockerImagesMessage);
 		// Clean up existing docker image
 		const containerIds = await this.getCurrentDockerContainer(imageLabel);
 		if (containerIds.length > 0) {
-			const result = await vscode.window.showQuickPick([constants.yesString, constants.noString],
-				{
-					title: constants.containerAlreadyExistForProject,
-					ignoreFocusOut: true
-				});
-			if (result === constants.yesString) {
+			let shouldClean = forceClean;
+			if (!shouldClean) {
+				const result = await vscode.window.showQuickPick([constants.yesString, constants.noString],
+					{
+						title: constants.containerAlreadyExistForProject,
+						ignoreFocusOut: true
+					});
+				shouldClean = result === constants.yesString;
+			}
+
+			if (shouldClean) {
 				this.logToOutput(constants.cleaningDockerImagesMessage);
 				await this.cleanDockerObjects(containerIds, ['docker stop', 'docker rm']);
 			}
