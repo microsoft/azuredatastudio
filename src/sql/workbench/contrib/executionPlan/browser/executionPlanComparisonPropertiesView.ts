@@ -23,13 +23,12 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 	private static readonly _rightTitleColumnHeader = localize('nodePropertyViewNameValueColumnRightHeader', "Value (Right Plan)");
 
 	private _model: ExecutionPlanComparisonPropertiesViewModel;
-	private _topOperationNameContainer: HTMLElement;
-	private _bottomOperationNameContainer: HTMLElement;
+	private _primaryContainer: HTMLElement;
+	private _secondaryContainer: HTMLElement;
 	private _topTitleText: string;
 	private _leftTitleText: string;
 	private _bottomTitleText: string;
 	private _rightTitleText: string;
-
 
 	public constructor(
 		parentContainer: HTMLElement,
@@ -39,10 +38,10 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		this._model = <ExecutionPlanComparisonPropertiesViewModel>{};
 		this._parentContainer.style.display = 'none';
 		const header = DOM.$('.compare-operation-name');
-		this._topOperationNameContainer = DOM.$('.compare-operation-name-text');
-		header.appendChild(this._topOperationNameContainer);
-		this._bottomOperationNameContainer = DOM.$('.compare-operation-name-text');
-		header.appendChild(this._bottomOperationNameContainer);
+		this._primaryContainer = DOM.$('.compare-operation-name-text');
+		header.appendChild(this._primaryContainer);
+		this._secondaryContainer = DOM.$('.compare-operation-name-text');
+		header.appendChild(this._secondaryContainer);
 		this.setHeader(header);
 	}
 
@@ -57,9 +56,9 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		}
 		this._leftTitleText = localize('executionPlanComparisonPropertiesLeftOperation', "Left operation: {0}", target);
 		this._topTitleText = localize('executionPlanComparisonPropertiesTopOperation', "Top operation: {0}", target);
-		this._topOperationNameContainer.innerText = this._topTitleText;
-		this._topOperationNameContainer.title = this._topTitleText;
-		this.addDataToTable();
+		this._primaryContainer.innerText = this._topTitleText;
+		this._primaryContainer.title = this._topTitleText;
+		this.refreshTable();
 	}
 
 	public setBottomElement(e: InternalExecutionPlanElement): void {
@@ -73,29 +72,29 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 
 		this._rightTitleText = localize('executionPlanComparisonPropertiesRightOperation', "Right operation: {0}", target);
 		this._bottomTitleText = localize('executionPlanComparisonPropertiesBottomOperation', "Bottom operation: {0}", target);
-		this._bottomOperationNameContainer.innerText = this._bottomTitleText;
-		this._bottomOperationNameContainer.title = this._bottomTitleText;
-		this.addDataToTable();
+		this._secondaryContainer.innerText = this._bottomTitleText;
+		this._secondaryContainer.title = this._bottomTitleText;
+		this.refreshTable();
 	}
 
 	public updatePropertyContainerTitles(orientation: 'horizontal' | 'vertical'): void {
 		if (orientation === 'horizontal') {
-			this._topOperationNameContainer.innerText = this._topTitleText;
-			this._topOperationNameContainer.title = this._topTitleText;
-			this._bottomOperationNameContainer.innerText = this._bottomTitleText;
-			this._bottomOperationNameContainer.title = this._bottomTitleText;
+			this._primaryContainer.innerText = this._topTitleText;
+			this._primaryContainer.title = this._topTitleText;
+			this._secondaryContainer.innerText = this._bottomTitleText;
+			this._secondaryContainer.title = this._bottomTitleText;
 		}
 		else {
-			this._topOperationNameContainer.innerText = this._leftTitleText;
-			this._topOperationNameContainer.title = this._leftTitleText;
-			this._bottomOperationNameContainer.innerText = this._rightTitleText;
-			this._bottomOperationNameContainer.title = this._rightTitleText;
+			this._primaryContainer.innerText = this._leftTitleText;
+			this._primaryContainer.title = this._leftTitleText;
+			this._secondaryContainer.innerText = this._rightTitleText;
+			this._secondaryContainer.title = this._rightTitleText;
 		}
 
-		this.addDataToTable(orientation);
+		this.refreshTable(orientation);
 	}
 
-	public addDataToTable(orientation: 'vertical' | 'horizontal' = 'vertical') {
+	public refreshTable(orientation: 'vertical' | 'horizontal' = 'vertical') {
 		const columns: Slick.Column<Slick.SlickData>[] = [
 		];
 		if (this._model.topElement) {

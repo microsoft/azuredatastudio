@@ -156,7 +156,7 @@ export abstract class ExecutionPlanPropertiesViewBase implements IVerticalSashLa
 		return this._tableHeight;
 	}
 
-	public abstract addDataToTable();
+	public abstract refreshTable();
 
 	public toggleVisibility(): void {
 		this._parentContainer.style.display = this._parentContainer.style.display === 'none' ? 'flex' : 'none';
@@ -207,7 +207,7 @@ export class SortPropertiesAlphabeticallyAction extends Action {
 
 	public override async run(context: ExecutionPlanPropertiesViewBase): Promise<void> {
 		context.sortType = PropertiesSortType.Alphabetical;
-		context.addDataToTable();
+		context.refreshTable();
 	}
 }
 
@@ -221,7 +221,7 @@ export class SortPropertiesReverseAlphabeticallyAction extends Action {
 
 	public override async run(context: ExecutionPlanPropertiesViewBase): Promise<void> {
 		context.sortType = PropertiesSortType.ReverseAlphabetical;
-		context.addDataToTable();
+		context.refreshTable();
 	}
 }
 
@@ -235,7 +235,7 @@ export class SortPropertiesByDisplayOrderAction extends Action {
 
 	public override async run(context: ExecutionPlanPropertiesViewBase): Promise<void> {
 		context.sortType = PropertiesSortType.DisplayOrder;
-		context.addDataToTable();
+		context.refreshTable();
 	}
 }
 
