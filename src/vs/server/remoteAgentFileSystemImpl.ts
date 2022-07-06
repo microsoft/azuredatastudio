@@ -89,11 +89,9 @@ class SessionFileWatcher extends Disposable {
 
 export class RemoteAgentFileSystemChannel extends Disposable implements IServerChannel<RemoteAgentConnectionContext> {
 
-	private readonly BUFFER_SIZE = 256 * 1024; // slightly larger to reduce remote-communication overhead
-
 	private readonly uriTransformerCache = new Map<string, IURITransformer>();
 	private readonly fileWatchers = new Map<string, SessionFileWatcher>();
-	private readonly fsProvider = this._register(new DiskFileSystemProvider(this.logService, { bufferSize: this.BUFFER_SIZE }));
+	private readonly fsProvider = this._register(new DiskFileSystemProvider(this.logService));
 	private readonly watchRequests = new Map<string, IDisposable>();
 
 	constructor(
