@@ -576,6 +576,7 @@ export const targetPlatformToVersion: Map<string, string> = new Map<string, stri
 	[SqlTargetPlatform.sqlServer2016, '130'],
 	[SqlTargetPlatform.sqlServer2017, '140'],
 	[SqlTargetPlatform.sqlServer2019, '150'],
+	[SqlTargetPlatform.sqlServer2022, '160'],
 	[SqlTargetPlatform.sqlAzure, 'AzureV12'],
 	[SqlTargetPlatform.sqlDW, 'Dw']
 ]);
