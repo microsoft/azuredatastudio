@@ -4,14 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as mssql from 'mssql';
+import * as vscode from 'vscode';
+import * as constants from '../../common/constants';
 
 export class DeployOptionsModel {
-	public deploymentOptions: mssql.DeploymentOptions;
-	public optionsValueNameLookup: { [key: string]: mssql.IOptionWithValue } = {};
+	private optionsValueNameLookup: { [key: string]: mssql.IOptionWithValue } = {};
 
-
-	constructor(defaultOptions: mssql.DeploymentOptions) {
-		this.deploymentOptions = { ...defaultOptions };
+	constructor(public deploymentOptions: mssql.DeploymentOptions) {
 	}
 
 	/**
@@ -49,10 +48,20 @@ export class DeployOptionsModel {
 	}
 
 	/*
+	* Sets the checkbox value to the optionsValueNameLookup map
+	*/
+	public setOptionValue(label: string, checked: boolean): void {
+		this.optionsValueNameLookup[label].checked = checked;
+	}
+
+	/*
 	* Gets the description of the selected option by getting the option name from the optionsValueNameLookup
 	*/
 	public getOptionDescription(label: string): string {
-		const optionName = this.optionsValueNameLookup[label].optionName;
-		return this.deploymentOptions.booleanOptionsDictionary[optionName]?.description;
+		const optionName = this.optionsValueNameLookup[label];
+		if (optionName === undefined) {
+			void vscode.window.showWarningMessage(constants.optionNotFoundWarningMessage(label));
+		}
+		return optionName !== undefined ? this.deploymentOptions.booleanOptionsDictionary[optionName.optionName].description : '';
 	}
 }

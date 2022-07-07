@@ -173,10 +173,11 @@ declare module 'mssql' {
 
 	/*
 	* Interface containing Deployment options from <DacFx>\Source\DeploymentApi\DacDeployOptions.cs
+	* These property names should match with the properties defined in <sqltoolsservice>\src\Microsoft.SqlTools.ServiceLayer\DacFx\Contracts\DeploymentOptions.cs
 	*/
 	export interface DeploymentOptions {
-		doNotDropObjectTypes: DacDeployOptionPropertyObject;
 		excludeObjectTypes: DacDeployOptionPropertyObject;
+		// key will be the boolean option name
 		booleanOptionsDictionary: { [key: string]: DacDeployOptionPropertyBoolean };
 	}
 

@@ -29,7 +29,7 @@ export class PublishOptionsDialog {
 	}
 
 	protected initializeDialog(): void {
-		this.optionsTab = utils.getAzdataApi()!.window.createTab(constants.publishingOptions);
+		this.optionsTab = utils.getAzdataApi()!.window.createTab(constants.publishOptions);
 		this.intializeDeploymentOptionsDialogTab();
 		this.dialog.content = [this.optionsTab];
 	}
@@ -73,10 +73,10 @@ export class PublishOptionsDialog {
 			await this.updateOptionsTable();
 
 			// Get the description of the selected option
-			// selectedRows[0] contains selected row number
-			// data[row][1] contains the option display name
 			this.disposableListeners.push(this.optionsTable.onRowSelected(async () => {
+				// selectedRows[0] contains selected row number
 				const row = this.optionsTable?.selectedRows![0];
+				// data[row][1] contains the option display name
 				const label = this.optionsTable?.data[row!][1];
 				await this.descriptionText?.updateProperties({
 					value: this.optionsModel.getOptionDescription(label)
@@ -84,12 +84,12 @@ export class PublishOptionsDialog {
 			}));
 
 			// Update deploy options value on checkbox onchange
-			// data[row][1] contains the option display name
 			this.disposableListeners.push(this.optionsTable.onCellAction!((rowState) => {
 				const checkboxState = <azdataType.ICheckboxCellActionEventArgs>rowState;
 				if (checkboxState && checkboxState.row !== undefined) {
-					let label = this.optionsTable?.data[checkboxState.row][1];
-					this.optionsModel.optionsValueNameLookup[label].checked = checkboxState.checked;
+					// data[row][1] contains the option display name
+					const label = this.optionsTable?.data[checkboxState.row][1];
+					this.optionsModel.setOptionValue(label, checkboxState.checked);
 					this.optionsChanged = true;
 				}
 			}));

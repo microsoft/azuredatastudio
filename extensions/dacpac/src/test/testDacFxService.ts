@@ -64,7 +64,6 @@ export class DacFxTestService implements mssql.IDacFxService {
 			success: true,
 			errorMessage: '',
 			deploymentOptions: {
-				doNotDropObjectTypes: { value: [], description: sampleDesc, displayName: sampleName },
 				excludeObjectTypes: { value: [], description: sampleDesc, displayName: sampleName },
 				booleanOptionsDictionary: {
 					'SampleProperty1': { value: false, description: sampleDesc, displayName: sampleName },

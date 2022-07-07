@@ -27,7 +27,6 @@ export function getDeploymentOptions(): mssql.DeploymentOptions {
 	const sampleDesc = 'Sample Description text';
 	const sampleName = 'Sample Display Name';
 	const defaultOptions: mssql.DeploymentOptions = {
-		doNotDropObjectTypes: { value: [], description: sampleDesc, displayName: sampleName },
 		excludeObjectTypes: { value: [], description: sampleDesc, displayName: sampleName },
 		booleanOptionsDictionary: {
 			'SampleProperty1': { value: false, description: sampleDesc, displayName: sampleName },
