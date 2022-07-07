@@ -4,58 +4,72 @@
  *--------------------------------------------------------------------------------------------*/
 import * as loc from '../localizedConstants';
 import * as mssql from 'mssql';
+import * as vscode from 'vscode';
 import { isNullOrUndefined } from 'util';
 
 export class SchemaCompareOptionsModel {
-	public deploymentOptions: mssql.DeploymentOptions;
-	public optionsValueNameLookup: { [key: string]: mssql.IOptionWithValue } = {};
+	// key is the option display name and values are checkboxValue and optionName
+	private optionsValueNameLookup: { [key: string]: mssql.IOptionWithValue } = {};
 	public excludedObjectTypes: number[] = [];
 	public objectsLookup = {};
 
-	constructor(private defaultOptions: mssql.DeploymentOptions) {
-		this.deploymentOptions = { ...this.defaultOptions };
+	constructor(public deploymentOptions: mssql.DeploymentOptions) {
+		this.setOptionsToValueNameLookup();
+	}
+
+	/*
+	 * Sets deployment option's checkbox values and property name to the optionsValueNameLookup map
+	 */
+	public setOptionsToValueNameLookup(): void {
+		Object.entries(this.deploymentOptions.booleanOptionsDictionary).forEach(option => {
+			const optionValue: mssql.IOptionWithValue = {
+				optionName: option[0],
+				checked: option[1].value
+			};
+			this.optionsValueNameLookup[option[1].displayName] = optionValue;
+		});
 	}
 
 	/*
 	 * Initialize options data from deployment options for table component
-	 * Also preparing optionsValueNameLookup Map holding onchange checkbox values and property name
 	 * Returns data as [booleanValue, optionName]
-	*/
-	public initializeOptionsData(): any[][] {
+	 */
+	public getOptionsData(): any[][] {
 		let data: any[][] = [];
 		Object.entries(this.deploymentOptions.booleanOptionsDictionary).forEach(option => {
-			const optionDisplayName = option[1].displayName;
-			const checkedValue = option[1].value;
-			const optionValue: mssql.IOptionWithValue = {
-				optionName: option[0],
-				checked: checkedValue
-			};
-			// push to table array
-			data.push([checkedValue, optionDisplayName]);
-			// push to optionsValueNameLookup
-			this.optionsValueNameLookup[optionDisplayName] = optionValue;
+			// option[1] holds checkedbox value and displayName
+			data.push([option[1].value, option[1].displayName]);
 		});
-		// a[1] and b[1] are the options display names
+
 		return data.sort((a, b) => a[1].localeCompare(b[1]));
 	}
 
 	/*
 	* Sets the selected option checkbox value to the deployment options
-	* option[0] - option label
-	* option[1] contains the checkedbox value and optionName
 	*/
 	public setDeploymentOptions(): void {
 		Object.entries(this.optionsValueNameLookup).forEach(option => {
+			// option[1] holds checkedbox value and optionName
 			this.deploymentOptions.booleanOptionsDictionary[option[1].optionName].value = option[1].checked;
 		});
+	}
+
+	/*
+	* Sets the checkbox value to the optionsValueNameLookup map
+	*/
+	public setOptionValue(label: string, checked: boolean): void {
+		this.optionsValueNameLookup[label].checked = checked;
 	}
 
 	/*
 	* Gets the description of the selected option by getting the option name from the optionsValueNameLookup
 	*/
 	public getOptionDescription(label: string): string {
-		const optionName = this.optionsValueNameLookup[label].optionName;
-		return this.deploymentOptions.booleanOptionsDictionary[optionName]?.description;
+		const optionName = this.optionsValueNameLookup[label];
+		if (optionName === undefined) {
+			void vscode.window.showWarningMessage(loc.optionNotFoundWarningMessage(label));
+		}
+		return optionName !== undefined ? this.deploymentOptions.booleanOptionsDictionary[optionName.optionName].description : '';
 	}
 
 	//#region Schema Compare Objects

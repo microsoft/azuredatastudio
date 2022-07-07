@@ -24,7 +24,7 @@ export class SchemaCompareOptionsDialog {
 	private optionsTable: azdata.TableComponent;
 	private objectsTable: azdata.TableComponent;
 	private disposableListeners: vscode.Disposable[] = [];
-
+	private resetClicked: boolean = false;
 	private optionsChanged: boolean = false;
 
 	private optionsModel: SchemaCompareOptionsModel;
@@ -62,6 +62,10 @@ export class SchemaCompareOptionsDialog {
 	}
 
 	protected execute(): void {
+		if (this.resetClicked) {
+			// reset optionsvalueNameLookup with fresh deployment options
+			this.optionsModel.setOptionsToValueNameLookup();
+		}
 		// Update the model deploymentoptions with the updated table component values
 		this.optionsModel.setDeploymentOptions();
 		this.optionsModel.setObjectTypeOptions();
@@ -96,6 +100,7 @@ export class SchemaCompareOptionsDialog {
 	}
 
 	private async reset(): Promise<void> {
+		this.resetClicked = true;
 		let service = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.IExtension).schemaCompare;
 		let result = await service.schemaCompareGetDefaultOptions();
 		this.optionsModel.deploymentOptions = result.defaultDeploymentOptions;
@@ -135,10 +140,10 @@ export class SchemaCompareOptionsDialog {
 			await this.updateOptionsTable();
 
 			// Get the description of the selected option
-			// selectedRows[0] contains selected row number
-			// data[row][1] contains the option display name
 			this.disposableListeners.push(this.optionsTable.onRowSelected(async () => {
+				// selectedRows[0] contains selected row number
 				const row = this.optionsTable.selectedRows[0];
+				// data[row][1] contains the option display name
 				const label = this.optionsTable?.data[row!][1];
 				await this.descriptionText.updateProperties({
 					value: this.optionsModel.getOptionDescription(label)
@@ -146,12 +151,12 @@ export class SchemaCompareOptionsDialog {
 			}));
 
 			// Update deploy options value on checkbox onchange
-			// data[row][1] contains the option display name
 			this.disposableListeners.push(this.optionsTable.onCellAction((rowState) => {
 				const checkboxState = <azdata.ICheckboxCellActionEventArgs>rowState;
 				if (checkboxState && checkboxState.row !== undefined) {
+					// data[row][1] contains the option display name
 					const label = this.optionsTable?.data[checkboxState.row][1];
-					this.optionsModel.optionsValueNameLookup[label].checked = checkboxState.checked;
+					this.optionsModel.setOptionValue(label, checkboxState.checked);
 					this.optionsChanged = true;
 				}
 			}));
@@ -202,7 +207,7 @@ export class SchemaCompareOptionsDialog {
 	}
 
 	private async updateOptionsTable(): Promise<void> {
-		let data = this.optionsModel.initializeOptionsData();
+		let data = this.optionsModel.getOptionsData();
 		await this.optionsTable.updateProperties({
 			data: data,
 			columns: [

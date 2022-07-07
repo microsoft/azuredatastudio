@@ -169,6 +169,7 @@ export function cancelErrorMessage(errorMessage: string): string { return locali
 export function generateScriptErrorMessage(errorMessage: string): string { return localize('schemaCompare.generateScriptErrorMessage', "Generate script failed: '{0}'", (errorMessage) ? errorMessage : 'Unknown'); }
 export function applyErrorMessage(errorMessage: string): string { return localize('schemaCompare.updateErrorMessage', "Schema Compare Apply failed '{0}'", errorMessage ? errorMessage : 'Unknown'); }
 export function openScmpErrorMessage(errorMessage: string): string { return localize('schemaCompare.openScmpErrorMessage', "Open scmp failed: '{0}'", (errorMessage) ? errorMessage : 'Unknown'); }
+export function optionNotFoundWarningMessage(label: string) { return localize('OptionNotFoundWarningMessage', "label: {0} does not exist in the options value name lookup", label); }
 export const applyError: string = localize('schemaCompare.applyError', "There was an error updating the project");
 export const dspErrorSource: string = localize('schemaCompareDialog.dspErrorSource', "The source .sqlproj file does not specify a database schema component");
 export const dspErrorTarget: string = localize('schemaCompareDialog.dspErrorTarget', "The target .sqlproj file does not specify a database schema component");

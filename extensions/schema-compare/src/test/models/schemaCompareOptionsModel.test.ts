@@ -10,7 +10,7 @@ import { SchemaCompareOptionsModel } from '../../models/schemaCompareOptionsMode
 describe('Schema Compare Options Model', () => {
 	it('Should create model and set options successfully', function (): void {
 		const model = new SchemaCompareOptionsModel(testUtils.getDeploymentOptions());
-		should.notEqual(model.initializeOptionsData(), undefined, 'Options shouldn\'t be undefined');
+		should.notEqual(model.getOptionsData(), undefined, 'Options shouldn\'t be undefined');
 		should.notEqual(model.getObjectsData(), undefined, 'Objects shouldn\'t be undefined');
 
 		should.doesNotThrow(() => model.setDeploymentOptions());
@@ -23,8 +23,8 @@ describe('Schema Compare Options Model', () => {
 		const model = new SchemaCompareOptionsModel(testUtils.getDeploymentOptions());
 		should(model.excludedObjectTypes.length).be.equal(0, 'There should be no excluded objects');
 
-		model.objectTypeLabels.forEach(l => {
-			model.setSchemaCompareIncludedObjectsUtil(l, false);
+		model.objectTypeLabels.forEach(label => {
+			model.setSchemaCompareIncludedObjectsUtil(label, false);
 		});
 
 		should(model.excludedObjectTypes.length).be.equal(model.objectTypeLabels.length, 'All the object types should be excluded');
@@ -32,9 +32,14 @@ describe('Schema Compare Options Model', () => {
 
 	it('Should get descriptions', function (): void {
 		const model = new SchemaCompareOptionsModel(testUtils.getDeploymentOptions());
-		model.initializeOptionsData();
-		Object.entries(model.deploymentOptions.booleanOptionsDictionary).forEach(l => {
-			should(model.getOptionDescription(l[1].displayName)).not.equal(undefined);
+		model.getOptionsData();
+		Object.entries(model.deploymentOptions.booleanOptionsDictionary).forEach(option => {
+			should(model.getOptionDescription(option[1].displayName)).not.equal(undefined);
 		});
+	});
+
+	it('Should return empty string for null option ', function (): void {
+		const model = new SchemaCompareOptionsModel(testUtils.getDeploymentOptions());
+		should(model.getOptionDescription('')).equal('');
 	});
 });
