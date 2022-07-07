@@ -110,7 +110,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 			columns.push({
 				id: 'value',
 				name: getPropertyViewNameValueColumnTopHeaderForOrientation(orientation),
-				field: 'value1',
+				field: 'primary',
 				width: 150,
 				editor: Slick.Editors.Text,
 				headerCssClass: 'prop-table-header',
@@ -121,7 +121,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 			columns.push(new TextWithIconColumn({
 				id: 'value',
 				name: getPropertyViewNameValueColumnBottomHeaderForOrientation(orientation),
-				field: 'value2',
+				field: 'secondary',
 				width: 150,
 				headerCssClass: 'prop-table-header',
 			}).definition);
@@ -251,17 +251,17 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 							break;
 					}
 				}
-				row['value1'] = {
+				row['primary'] = {
 					text: removeLineBreaks(v.topProp.displayValue, ' ')
 				};
-				row['value2'] = {
+				row['secondary'] = {
 					iconCssClass: diffIconClass,
 					title: removeLineBreaks(v.bottomProp.displayValue, ' ')
 				};
 				if ((topProp && !isString(topProp.value)) || (bottomProp && !isString(bottomProp.value))) {
 					row['name'].style = parentRowCellStyling;
-					row['value1'].style = parentRowCellStyling;
-					row['value2'].iconCssClass += ` parent-row-styling`;
+					row['primary'].style = parentRowCellStyling;
+					row['secondary'].iconCssClass += ` parent-row-styling`;
 				}
 				rows.push(row);
 				if (!isString(topProp.value) && !isString(bottomProp.value)) {
@@ -273,25 +273,25 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 				}
 			} else if (topProp && !bottomProp) {
 				row['displayOrder'] = v.topProp.displayOrder;
-				row['value1'] = {
+				row['primary'] = {
 					text: v.topProp.displayValue
 				};
 				rows.push(row);
 				if (!isString(topProp.value)) {
 					row['name'].style = parentRowCellStyling;
-					row['value1'].style = parentRowCellStyling;
+					row['primary'].style = parentRowCellStyling;
 					this.convertPropertiesToTableRows(topProp.value, undefined, rows.length - 1, indent + 2, rows);
 				}
 			} else if (!topProp && bottomProp) {
 				row['displayOrder'] = v.bottomProp.displayOrder;
-				row['value2'] = {
+				row['secondary'] = {
 					title: v.bottomProp.displayValue,
 					iconCssClass: diffIconClass
 				};
 				rows.push(row);
 				if (!isString(bottomProp.value)) {
 					row['name'].style = parentRowCellStyling;
-					row['value2'].iconCssClass += ` parent-row-styling`;
+					row['secondary'].iconCssClass += ` parent-row-styling`;
 					this.convertPropertiesToTableRows(undefined, bottomProp.value, rows.length - 1, indent + 2, rows);
 				}
 			}
