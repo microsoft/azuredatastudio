@@ -21,11 +21,16 @@ const leftTitleColumnHeader = localize('nodePropertyViewNameValueColumnLeftHeade
 const rightTitleColumnHeader = localize('nodePropertyViewNameValueColumnRightHeader', "Value (Right Plan)");
 const bottomTitleColumnHeader = localize('nodePropertyViewNameValueColumnBottomHeader', "Value (Bottom Plan)");
 
+export enum PropertiesTableOrientation {
+	Horizontal = 'horizontal',
+	Vertical = 'vertical'
+}
+
 export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanPropertiesViewBase {
 	private _model: ExecutionPlanComparisonPropertiesViewModel;
 	private _primaryContainer: HTMLElement;
 	private _secondaryContainer: HTMLElement;
-	private _orientation: 'horizontal' | 'vertical';
+	private _orientation: PropertiesTableOrientation;
 	private _primaryTarget: string;
 	private _secondaryTarget: string;
 
@@ -73,11 +78,11 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		this.refreshPropertiesTable();
 	}
 
-	private updatePropertyContainerTitles(orientation: 'horizontal' | 'vertical'): void {
+	private updatePropertyContainerTitles(orientation: PropertiesTableOrientation): void {
 		let primaryTitleText = '';
 		let secondaryTitleText = '';
 
-		if (orientation === 'horizontal') {
+		if (orientation === PropertiesTableOrientation.Horizontal) {
 			primaryTitleText = localize('executionPlanComparisonPropertiesTopOperation', "Top operation: {0}", this._primaryTarget);
 			secondaryTitleText = localize('executionPlanComparisonPropertiesBottomOperation', "Bottom operation: {0}", this._secondaryTarget);
 		}
@@ -91,10 +96,10 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		this._secondaryContainer.innerText = secondaryTitleText;
 		this._secondaryContainer.title = secondaryTitleText;
 
-		this.refreshPropertiesTable(orientation);
+		this.refreshPropertiesTable();
 	}
 
-	public refreshPropertiesTable(orientation: 'horizontal' | 'vertical' = 'vertical') {
+	public refreshPropertiesTable() {
 		const columns: Slick.Column<Slick.SlickData>[] = [
 		];
 		if (this._model.topElement) {
@@ -109,7 +114,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 			});
 			columns.push({
 				id: 'value',
-				name: getPropertyViewNameValueColumnTopHeaderForOrientation(orientation),
+				name: getPropertyViewNameValueColumnTopHeaderForOrientation(this._orientation),
 				field: 'primary',
 				width: 150,
 				editor: Slick.Editors.Text,
@@ -120,7 +125,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		if (this._model.bottomElement) {
 			columns.push(new TextWithIconColumn({
 				id: 'value',
-				name: getPropertyViewNameValueColumnBottomHeaderForOrientation(orientation),
+				name: getPropertyViewNameValueColumnBottomHeaderForOrientation(this._orientation),
 				field: 'secondary',
 				width: 150,
 				headerCssClass: 'prop-table-header',
@@ -304,7 +309,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		return this._orientation;
 	}
 
-	set orientation(value: 'horizontal' | 'vertical') {
+	set orientation(value: PropertiesTableOrientation) {
 		if (this._orientation === value) {
 			return;
 		}
@@ -314,8 +319,8 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 	}
 }
 
-function getPropertyViewNameValueColumnTopHeaderForOrientation(orientation: 'horizontal' | 'vertical'): string {
-	if (orientation === 'horizontal') {
+function getPropertyViewNameValueColumnTopHeaderForOrientation(orientation: PropertiesTableOrientation): string {
+	if (orientation === PropertiesTableOrientation.Horizontal) {
 		return topTitleColumnHeader;
 	}
 	else {
@@ -323,8 +328,8 @@ function getPropertyViewNameValueColumnTopHeaderForOrientation(orientation: 'hor
 	}
 }
 
-function getPropertyViewNameValueColumnBottomHeaderForOrientation(orientation: 'horizontal' | 'vertical'): string {
-	if (orientation === 'horizontal') {
+function getPropertyViewNameValueColumnBottomHeaderForOrientation(orientation: PropertiesTableOrientation): string {
+	if (orientation === PropertiesTableOrientation.Horizontal) {
 		return bottomTitleColumnHeader;
 	}
 	else {

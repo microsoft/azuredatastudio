@@ -8,7 +8,7 @@ import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { ITaskbarContent, Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { AzdataGraphView } from 'sql/workbench/contrib/executionPlan/browser/azdataGraphView';
-import { ExecutionPlanComparisonPropertiesView } from 'sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView';
+import { ExecutionPlanComparisonPropertiesView, PropertiesTableOrientation } from 'sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView';
 import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
 import { IHorizontalSashLayoutProvider, ISashEvent, IVerticalSashLayoutProvider, Orientation, Sash } from 'vs/base/browser/ui/sash/sash';
 import { Action } from 'vs/base/common/actions';
@@ -464,7 +464,7 @@ export class ExecutionPlanComparisonEditorView {
 			this._toggleOrientationAction.class = splitScreenVerticallyIconClassName;
 		}
 
-		this._propertiesView.orientation = this._orientation;
+		this._propertiesView.orientation = <PropertiesTableOrientation>this._orientation;
 		this._topPlanContainer.style.flex = '1';
 		this._bottomPlanContainer.style.flex = '1';
 	}
