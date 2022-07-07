@@ -55,17 +55,17 @@ export class DeployOptionsModel {
 	/*
 	* Sets the checkbox value to the optionsValueNameLookup map
 	*/
-	public setOptionValue(label: string, checked: boolean): void {
-		this.optionsValueNameLookup[label].checked = checked;
+	public setOptionValue(displayName: string, checked: boolean): void {
+		this.optionsValueNameLookup[displayName].checked = checked;
 	}
 
 	/*
 	* Gets the description of the selected option by getting the option name from the optionsValueNameLookup
 	*/
-	public getOptionDescription(label: string): string {
-		const optionName = this.optionsValueNameLookup[label];
+	public getOptionDescription(displayName: string): string {
+		const optionName = this.optionsValueNameLookup[displayName];
 		if (optionName === undefined) {
-			void vscode.window.showWarningMessage(constants.OptionNotFoundWarningMessage(label));
+			void vscode.window.showWarningMessage(constants.OptionNotFoundWarningMessage(displayName));
 		}
 		return optionName !== undefined ? this.deploymentOptions.booleanOptionsDictionary[optionName.optionName].description : '';
 	}

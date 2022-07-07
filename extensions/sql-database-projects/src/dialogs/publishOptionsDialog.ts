@@ -77,9 +77,9 @@ export class PublishOptionsDialog {
 				// selectedRows[0] contains selected row number
 				const row = this.optionsTable?.selectedRows![0];
 				// data[row][1] contains the option display name
-				const label = this.optionsTable?.data[row!][1];
+				const displayName = this.optionsTable?.data[row!][1];
 				await this.descriptionText?.updateProperties({
-					value: this.optionsModel.getOptionDescription(label)
+					value: this.optionsModel.getOptionDescription(displayName)
 				});
 			}));
 
@@ -88,8 +88,8 @@ export class PublishOptionsDialog {
 				const checkboxState = <azdataType.ICheckboxCellActionEventArgs>rowState;
 				if (checkboxState && checkboxState.row !== undefined) {
 					// data[row][1] contains the option display name
-					const label = this.optionsTable?.data[checkboxState.row][1];
-					this.optionsModel.setOptionValue(label, checkboxState.checked);
+					const displayName = this.optionsTable?.data[checkboxState.row][1];
+					this.optionsModel.setOptionValue(displayName, checkboxState.checked);
 					this.optionsChanged = true;
 				}
 			}));
