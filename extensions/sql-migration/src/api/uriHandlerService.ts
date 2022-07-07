@@ -63,9 +63,13 @@ export class UriHandlerService implements vscode.UriHandler {
 				};
 
 				const conn = await connection.connect(connectionProfile, true, false);
-				console.log(conn.connectionId);
-
-				void vscode.commands.executeCommand('sqlmigration.start', databasesParam, conn.connectionId);
+				if (conn.connected) {
+					console.log(conn.connectionId);
+					void vscode.commands.executeCommand('sqlmigration.start', databasesParam, conn.connectionId);
+				} else {
+					void vscode.window.showInformationMessage('Unable to establish connection, please connect manually. Error: ' + conn.errorMessage);
+					void vscode.commands.executeCommand('sqlmigration.start', databasesParam);
+				}
 			} else {
 				void vscode.commands.executeCommand('sqlmigration.start', databasesParam);
 			}
