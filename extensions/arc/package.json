@@ -1365,10 +1365,25 @@
                       },
                       {
                         "type": "readonly_text",
+                        "label": "",
+                        "labelWidth": "600px",
+                        "enabled": true,
+                        "fieldHeight": "12px"
+                      },
+                      {
+                        "label": "%arc.storage-class.backups.label%",
+                        "description": "%arc.sql.storage-class.backups.description%",
+                        "variableName": "AZDATA_NB_VAR_SQL_STORAGE_CLASS_BACKUPS",
+                        "type": "text",
+                        "fieldHeight": "5px",
+                        "required": false
+                      },
+                      {
+                        "type": "readonly_text",
                         "label": "%arc.storage-class.backups.warning%",
                         "labelWidth": "600px",
                         "enabled": true,
-                        "fieldHeight": "10px",
+                        "fieldHeight": "1px",
                         "links": [
                           {
                             "text": "%arc.storage-class.backups.warning.link%",
@@ -1377,20 +1392,21 @@
                         ]
                       },
                       {
-                        "label": "%arc.storage-class.backups.label%",
-                        "description": "%arc.sql.storage-class.backups.description%",
-                        "variableName": "AZDATA_NB_VAR_SQL_STORAGE_CLASS_BACKUPS",
-                        "type": "text",
-                        "required": false
-                      },
-                      {
                         "label": "%arc.sql.volume.size.backups.label%",
                         "description": "%arc.sql.volume.size.backups.description%",
                         "variableName": "AZDATA_NB_VAR_SQL_VOLUME_SIZE_BACKUPS",
                         "type": "number",
                         "defaultValue": "5",
                         "min": 1,
-                        "required": true
+                        "required": true,
+                        "fieldHeight": "5px"
+                      },
+                      {
+                        "type": "readonly_text",
+                        "label": "",
+                        "labelWidth": "600px",
+                        "enabled": true,
+                        "fieldHeight": "12px"
                       },
                       {
                         "label": "%arc.cores-request.label%",
@@ -1506,7 +1522,7 @@
                         "valueProvider": {
                           "providerId": "params-to-billable-replicas",
                           "triggerFields": [
-                            "AZDATA_NB_VAR_READABLE_SECONDARIES"
+                            "AZDATA_NB_VAR_SQL_READABLE_SECONDARIES"
                           ]
                         }
                       },
@@ -1522,7 +1538,7 @@
                             "AZDATA_NB_VAR_SQL_DEV_USE",
                             "AZDATA_NB_VAR_SQL_SERVICE_TIER",
                             "AZDATA_NB_VAR_SQL_LICENSE_TYPE",
-                            "AZDATA_NB_VAR_READABLE_SECONDARIES"
+                            "AZDATA_NB_VAR_SQL_READABLE_SECONDARIES"
                           ]
                         }
                       },
@@ -1538,7 +1554,7 @@
                             "AZDATA_NB_VAR_SQL_DEV_USE",
                             "AZDATA_NB_VAR_SQL_SERVICE_TIER",
                             "AZDATA_NB_VAR_SQL_LICENSE_TYPE",
-                            "AZDATA_NB_VAR_READABLE_SECONDARIES"
+                            "AZDATA_NB_VAR_SQL_READABLE_SECONDARIES"
                           ]
                         }
                       }

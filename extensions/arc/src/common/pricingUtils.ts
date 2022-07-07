@@ -44,7 +44,7 @@ export const serviceTierVarName = 'AZDATA_NB_VAR_SQL_SERVICE_TIER';
 export const devUseVarName = 'AZDATA_NB_VAR_SQL_DEV_USE';
 export const vcoresLimitVarName = 'AZDATA_NB_VAR_SQL_CORES_LIMIT';
 export const licenseTypeVarName = 'AZDATA_NB_VAR_SQL_LICENSE_TYPE';
-export const readableSecondaries = 'AZDATA_NB_VAR_READABLE_SECONDARIES';
+export const readableSecondaries = 'AZDATA_NB_VAR_SQL_READABLE_SECONDARIES';
 
 // Gets number of replicas charged
 export function numBillableReplicas(mapping: { [key: string]: InputValueType }): number {
