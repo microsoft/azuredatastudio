@@ -28,7 +28,7 @@ import { Action } from 'vs/base/common/actions';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { ITableKeyboardEvent } from 'sql/base/browser/ui/table/interfaces';
 import { Disposable } from 'vs/base/common/lifecycle';
-export class TopOperationsTab implements IPanelTab {
+export class TopOperationsTab extends Disposable implements IPanelTab {
 	public readonly title = localize('topOperationsTabTitle', "Top Operations  (Preview)");
 	public readonly identifier: string = 'TopOperationsTab';
 	public readonly view: TopOperationsTabView;
@@ -37,10 +37,8 @@ export class TopOperationsTab implements IPanelTab {
 		private _queryResultsView: QueryResultsView,
 		@IInstantiationService instantiationService: IInstantiationService
 	) {
-		this.view = instantiationService.createInstance(TopOperationsTabView, this._queryResultsView);
-	}
-
-	public dispose() {
+		super();
+		this.view = this._register(instantiationService.createInstance(TopOperationsTabView, this._queryResultsView));
 	}
 
 	public clear() {
