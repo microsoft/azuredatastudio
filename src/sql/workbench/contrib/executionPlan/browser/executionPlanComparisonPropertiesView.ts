@@ -15,22 +15,18 @@ import { InternalExecutionPlanElement } from 'sql/workbench/contrib/executionPla
 import { executionPlanComparisonPropertiesDifferent, executionPlanComparisonPropertiesUpArrow, executionPlanComparisonPropertiesDownArrow } from 'sql/workbench/contrib/executionPlan/browser/constants';
 import * as sqlExtHostType from 'sql/workbench/api/common/sqlExtHostTypes';
 import { TextWithIconColumn } from 'sql/base/browser/ui/table/plugins/textWithIconColumn';
+import { ExecutionPlanCompareOrientation } from 'sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView';
 
 const topTitleColumnHeader = localize('nodePropertyViewNameValueColumnTopHeader', "Value (Top Plan)");
 const leftTitleColumnHeader = localize('nodePropertyViewNameValueColumnLeftHeader', "Value (Left Plan)");
 const rightTitleColumnHeader = localize('nodePropertyViewNameValueColumnRightHeader', "Value (Right Plan)");
 const bottomTitleColumnHeader = localize('nodePropertyViewNameValueColumnBottomHeader', "Value (Bottom Plan)");
 
-export enum PropertiesTableOrientation {
-	Horizontal = 'horizontal',
-	Vertical = 'vertical'
-}
-
 export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanPropertiesViewBase {
 	private _model: ExecutionPlanComparisonPropertiesViewModel;
 	private _primaryContainer: HTMLElement;
 	private _secondaryContainer: HTMLElement;
-	private _orientation: PropertiesTableOrientation = PropertiesTableOrientation.Horizontal;
+	private _orientation: ExecutionPlanCompareOrientation = ExecutionPlanCompareOrientation.Horizontal;
 	private _primaryTarget: string;
 	private _secondaryTarget: string;
 
@@ -81,7 +77,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		let primaryTitleText = '';
 		let secondaryTitleText = '';
 
-		if (this._orientation === PropertiesTableOrientation.Horizontal) {
+		if (this._orientation === ExecutionPlanCompareOrientation.Horizontal) {
 			primaryTitleText = localize('executionPlanComparisonPropertiesTopOperation', "Top operation: {0}", this._primaryTarget);
 			secondaryTitleText = localize('executionPlanComparisonPropertiesBottomOperation', "Bottom operation: {0}", this._secondaryTarget);
 		}
@@ -316,7 +312,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		return rows;
 	}
 
-	set orientation(value: PropertiesTableOrientation) {
+	set orientation(value: ExecutionPlanCompareOrientation) {
 		if (this._orientation === value) {
 			return;
 		}
@@ -325,8 +321,8 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 	}
 }
 
-function getPropertyViewNameValueColumnTopHeaderForOrientation(orientation: PropertiesTableOrientation): string {
-	if (orientation === PropertiesTableOrientation.Horizontal) {
+function getPropertyViewNameValueColumnTopHeaderForOrientation(orientation: ExecutionPlanCompareOrientation): string {
+	if (orientation === ExecutionPlanCompareOrientation.Horizontal) {
 		return topTitleColumnHeader;
 	}
 	else {
@@ -334,8 +330,8 @@ function getPropertyViewNameValueColumnTopHeaderForOrientation(orientation: Prop
 	}
 }
 
-function getPropertyViewNameValueColumnBottomHeaderForOrientation(orientation: PropertiesTableOrientation): string {
-	if (orientation === PropertiesTableOrientation.Horizontal) {
+function getPropertyViewNameValueColumnBottomHeaderForOrientation(orientation: ExecutionPlanCompareOrientation): string {
+	if (orientation === ExecutionPlanCompareOrientation.Horizontal) {
 		return bottomTitleColumnHeader;
 	}
 	else {
