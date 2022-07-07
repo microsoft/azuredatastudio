@@ -421,6 +421,7 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 				}
 			} else {
 				const textEditorModelReference = await this.textModelService.createModelReference(this.resource);
+				this._register(textEditorModelReference);
 				textEditorModelReference.object.textEditorModel.onBeforeAttached();
 				await textEditorModelReference.object.resolve();
 				textOrUntitledEditorModel = textEditorModelReference.object as TextFileEditorModel | TextResourceEditorModel;
