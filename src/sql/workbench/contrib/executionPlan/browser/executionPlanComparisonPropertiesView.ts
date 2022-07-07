@@ -109,7 +109,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 			});
 			columns.push({
 				id: 'value',
-				name: this.getPropertyViewNameValueColumnTopHeaderForOrientation(orientation),
+				name: getPropertyViewNameValueColumnTopHeaderForOrientation(orientation),
 				field: 'value1',
 				width: 150,
 				editor: Slick.Editors.Text,
@@ -120,7 +120,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		if (this._model.bottomElement) {
 			columns.push(new TextWithIconColumn({
 				id: 'value',
-				name: this.getPropertyViewNameValueColumnBottomHeaderForOrientation(orientation),
+				name: getPropertyViewNameValueColumnBottomHeaderForOrientation(orientation),
 				field: 'value2',
 				width: 150,
 				headerCssClass: 'prop-table-header',
@@ -137,24 +137,6 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		}
 
 		this.populateTable(columns, this.convertPropertiesToTableRows(topProps, bottomProps, -1, 0));
-	}
-
-	private getPropertyViewNameValueColumnTopHeaderForOrientation(orientation: 'horizontal' | 'vertical'): string {
-		if (orientation === 'horizontal') {
-			return topTitleColumnHeader;
-		}
-		else {
-			return leftTitleColumnHeader;
-		}
-	}
-
-	private getPropertyViewNameValueColumnBottomHeaderForOrientation(orientation: 'horizontal' | 'vertical'): string {
-		if (orientation === 'horizontal') {
-			return bottomTitleColumnHeader;
-		}
-		else {
-			return rightTitleColumnHeader;
-		}
 	}
 
 	public sortPropertiesAlphabetically(props: Map<string, TablePropertiesMapEntry>): Map<string, TablePropertiesMapEntry> {
@@ -329,6 +311,24 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 
 		this.updatePropertyContainerTitles(value);
 		this._orientation = value;
+	}
+}
+
+function getPropertyViewNameValueColumnTopHeaderForOrientation(orientation: 'horizontal' | 'vertical'): string {
+	if (orientation === 'horizontal') {
+		return topTitleColumnHeader;
+	}
+	else {
+		return leftTitleColumnHeader;
+	}
+}
+
+function getPropertyViewNameValueColumnBottomHeaderForOrientation(orientation: 'horizontal' | 'vertical'): string {
+	if (orientation === 'horizontal') {
+		return bottomTitleColumnHeader;
+	}
+	else {
+		return rightTitleColumnHeader;
 	}
 }
 
