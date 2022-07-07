@@ -91,15 +91,6 @@ describe('notebookUtils Tests', function (): void {
 			await notebookUtils.openNotebook();
 			should(showErrorMessageSpy.calledOnce).be.true('showErrorMessage should have been called');
 		});
-
-		it('closing and opening an untitled notebook shows correct contents', async function (): Promise<void> {
-			await notebookUtils.newNotebook();
-			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
-			let expectedContent = 'untitled notebook test';
-			let editor = await notebookUtils.newNotebook({ initialContent: expectedContent });
-			should(editor.document.cells.length).be.greaterThan(0);
-			should(editor.document.cells[0].contents.source).be.equal(expectedContent);
-		});
 	});
 
 	describe('runActiveCell', function () {
