@@ -36,7 +36,7 @@ class SQLMigration {
 		const commandDisposables: vscode.Disposable[] = [ // Array of disposables returned by registerCommand
 			vscode.commands.registerCommand(
 				'sqlmigration.start',
-				async (preselectedDatabases: string) => await this.launchMigrationWizard(preselectedDatabases)),
+				async (preselectedDatabases: string, connectionId: string) => await this.launchMigrationWizard(preselectedDatabases, connectionId)),
 			vscode.commands.registerCommand(
 				'sqlmigration.openNotebooks',
 				async () => {
@@ -93,20 +93,30 @@ class SQLMigration {
 		console.log('URI handler for sql-migration successfully registered');
 	}
 
-	async launchMigrationWizard(preselectedDatabases: string = ''): Promise<void> {
-		let activeConnection = await azdata.connection.getCurrentConnection();
+	async launchMigrationWizard(preselectedDatabases: string = '', existingConnectionId: string = ''): Promise<void> {
 		let connectionId: string = '';
 		let serverName: string = '';
-		if (!activeConnection) {
-			const connection = await azdata.connection.openConnectionDialog();
-			if (connection) {
-				connectionId = connection.connectionId;
-				serverName = connection.options.server;
+
+		if (!existingConnectionId) {
+			let activeConnection = await azdata.connection.getCurrentConnection();
+			if (!activeConnection) {
+				const connection = await azdata.connection.openConnectionDialog();
+				if (connection) {
+					connectionId = connection.connectionId;
+					serverName = connection.options.server;
+				}
+			} else {
+				connectionId = activeConnection.connectionId;
+				serverName = activeConnection.serverName;
 			}
 		} else {
-			connectionId = activeConnection.connectionId;
-			serverName = activeConnection.serverName;
+			const connections = await azdata.connection.getConnections();
+
+			connectionId = existingConnectionId;
+			serverName = connections.find(conn => conn.connectionId === connectionId)!.serverName;
 		}
+
+
 		if (serverName) {
 			const api = (await vscode.extensions.getExtension(mssql.extension.name)?.activate()) as mssql.IExtension;
 			if (api) {
