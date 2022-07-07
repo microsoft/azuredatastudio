@@ -171,14 +171,6 @@
                     {
                       "fields": [
                         {
-                          "type": "kube_cluster_context_picker",
-                          "label": "%arc.data.controller.kube.cluster.context%",
-                          "required": true,
-                          "inputWidth": "350px",
-                          "variableName": "AZDATA_NB_VAR_ARC_CLUSTER_CONTEXT",
-                          "configFileVariableName": "AZDATA_NB_VAR_ARC_CONFIG_FILE"
-                        },
-                        {
                           "type": "options",
                           "label": "%arc.data.controller.connectivity.mode%",
                           "required": true,
@@ -190,6 +182,18 @@
                             ],
                             "defaultValue": "Indirect",
                             "optionsType": "radio"
+                          }
+                        },
+                        {
+                          "type": "kube_cluster_context_picker",
+                          "label": "%arc.data.controller.kube.cluster.context%",
+                          "required": true,
+                          "inputWidth": "350px",
+                          "variableName": "AZDATA_NB_VAR_ARC_CLUSTER_CONTEXT",
+                          "configFileVariableName": "AZDATA_NB_VAR_ARC_CONFIG_FILE",
+                          "enabled": {
+                            "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
+                            "value": "Indirect"
                           }
                         }
                       ]
@@ -215,6 +219,10 @@
                             },
                             "defaultValue": "azure-arc-aks-default-storage",
                             "optionsType": "radio"
+                          },
+                          "enabled": {
+                            "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
+                            "value": "Indirect"
                           }
                         }
                       ]
