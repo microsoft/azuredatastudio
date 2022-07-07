@@ -10,14 +10,15 @@ import * as utils from '../common/utils';
 import * as xmlFormat from 'xml-formatter';
 import * as os from 'os';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
+import * as mssql from 'mssql';
 
 import { Uri, window } from 'vscode';
-import { ISqlProject, ItemType, SqlTargetPlatform } from 'sqldbproj';
+import { EntryType, IDatabaseReferenceProjectEntry, IProjectEntry, ISqlProject, ItemType, SqlTargetPlatform } from 'sqldbproj';
 import { promises as fs } from 'fs';
 import { DataSource } from './dataSources/dataSources';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from './IDatabaseReferenceSettings';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
-import { DacpacReferenceProjectEntry, EntryType, FileProjectEntry, IDatabaseReferenceProjectEntry, ProjectEntry, SqlCmdVariableProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabase, SystemDatabaseReferenceProjectEntry } from './projectEntry';
+import { DacpacReferenceProjectEntry, FileProjectEntry, ProjectEntry, SqlCmdVariableProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabase, SystemDatabaseReferenceProjectEntry } from './projectEntry';
 
 /**
  * Class representing a Project, and providing functions for operating on it
@@ -247,14 +248,19 @@ export class Project implements ISqlProject {
 		const fileEntries: FileProjectEntry[] = [];
 		for (let f of Array.from(filesSet.values())) {
 			const typeEntry = entriesWithType.find(e => e.relativePath === f);
-			let containsCreateTableStatement;
+			let containsCreateTableStatement = false;
 
 			// read file to check if it has a "Create Table" statement
 			const fullPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(f));
 
-			if (await utils.exists(fullPath)) {
-				const fileContents = await fs.readFile(fullPath);
-				containsCreateTableStatement = fileContents.toString().toLowerCase().includes('create table');
+			if (utils.getAzdataApi() && await utils.exists(fullPath)) {
+				const dacFxService = await utils.getDacFxService() as mssql.IDacFxService;
+				try {
+					const result = await dacFxService.parseTSqlScript(fullPath, this.getProjectTargetVersion());
+					containsCreateTableStatement = result.containsCreateTableStatement;
+				} catch (e) {
+					console.error(utils.getErrorMessage(e));
+				}
 			}
 
 			fileEntries.push(this.createFileProjectEntry(f, EntryType.File, typeEntry ? typeEntry.typeAttribute : undefined, containsCreateTableStatement));
@@ -1625,8 +1631,8 @@ export class Project implements ISqlProject {
 		await this.serializeToProjFile(this.projFileXmlDoc!);
 	}
 
-	private async removeFromProjFile(entries: ProjectEntry | ProjectEntry[]): Promise<void> {
-		if (entries instanceof ProjectEntry) {
+	private async removeFromProjFile(entries: IProjectEntry | IProjectEntry[]): Promise<void> {
+		if (!Array.isArray(entries)) {
 			entries = [entries];
 		}
 

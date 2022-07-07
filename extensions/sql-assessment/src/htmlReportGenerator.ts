@@ -97,7 +97,10 @@ export class HTMLReportBuilder {
 		<div>
 			<div class="target">${targetResults[0].targetType === azdata.sqlAssessment.SqlAssessmentTargetType.Server ? LocalizedStrings.RESULTS_FOR_INSTANCE : LocalizedStrings.RESULTS_FOR_DATABASE}: ${targetResults[0].targetName}</div>
 			${this.buildSeveritySection(LocalizedStrings.REPORT_ERROR, targetResults.filter(item => item.level === 'Error'))}
+			${this.buildSeveritySection(LocalizedStrings.REPORT_HIGH, targetResults.filter(item => item.level === 'High'))}
 			${this.buildSeveritySection(LocalizedStrings.REPORT_WARNING, targetResults.filter(item => item.level === 'Warning'))}
+			${this.buildSeveritySection(LocalizedStrings.REPORT_MEDIUM, targetResults.filter(item => item.level === 'Medium'))}
+			${this.buildSeveritySection(LocalizedStrings.REPORT_LOW, targetResults.filter(item => item.level === 'Low'))}
 			${this.buildSeveritySection(LocalizedStrings.REPORT_INFO, targetResults.filter(item => item.level === 'Information'))}
 		</div>`;
 		return content;

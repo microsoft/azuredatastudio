@@ -18,9 +18,6 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { ILogService } from 'vs/platform/log/common/log';
 import { URI } from 'vs/base/common/uri';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
-import { IModelService } from 'vs/editor/common/services/modelService';
-import { Range } from 'vs/editor/common/core/range';
-import { IExtHostQueryEvent } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadQueryEditor)
 export class MainThreadQueryEditor extends Disposable implements MainThreadQueryEditorShape {
@@ -35,8 +32,7 @@ export class MainThreadQueryEditor extends Disposable implements MainThreadQuery
 		@IEditorService private _editorService: IEditorService,
 		@IQueryManagementService private _queryManagementService: IQueryManagementService,
 		@ILogService private _logService: ILogService,
-		@IQueryEditorService private _queryEditorService: IQueryEditorService,
-		@IModelService private _modelService: IModelService
+		@IQueryEditorService private _queryEditorService: IQueryEditorService
 	) {
 		super();
 		if (extHostContext) {
@@ -121,35 +117,8 @@ export class MainThreadQueryEditor extends Disposable implements MainThreadQuery
 
 	public $registerQueryInfoListener(handle: number): void {
 		const disposable = this._queryModelService.onQueryEvent(event => {
-			let connectionProfile = this._connectionManagementService.getConnectionProfile(event.uri);
-			const uri: URI = URI.parse(event.uri);
-			const model = this._modelService.getModel(uri);
-			// Get the query text from the model - we do it here so we can send the query text for all events
-			// to the extension host from one place
-			let queryText: string | undefined = undefined;
-			if (model) {
-				// VS Range is 1 based so offset values by 1. The endLine we get back from SqlToolsService is incremented
-				// by 1 from the original input range sent in as well so take that into account and don't modify
-				queryText = event.queryInfo.range.length > 0 ?
-					model.getValueInRange(new Range(
-						event.queryInfo.range[0].startLineNumber,
-						event.queryInfo.range[0].startColumn,
-						event.queryInfo.range[0].endLineNumber,
-						event.queryInfo.range[0].endColumn)) :
-					// If no specific selection get the entire text
-					model.getValue();
-			}
-			// Convert into an IExtHostQueryEvent with the properties it expects
-			const extHostEvent: IExtHostQueryEvent = {
-				type: event.type,
-				uri: event.uri,
-				params: event.params,
-				queryInfo: {
-					messages: event.queryInfo.messages,
-					queryText
-				}
-			};
-			this._proxy.$onQueryEvent(connectionProfile?.providerName, handle, event.uri, extHostEvent);
+			const connectionProfile = this._connectionManagementService.getConnectionProfile(event.uri);
+			this._proxy.$onQueryEvent(connectionProfile?.providerName, handle, event.uri, event);
 		});
 		this._queryEventListenerDisposables.set(handle, disposable);
 	}
