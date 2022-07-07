@@ -169,11 +169,8 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 			this._instantiationService.createInstance(CustomZoomAction, 'ActionBar'),
 			this._instantiationService.createInstance(PropertiesAction, 'ActionBar'),
 			this._instantiationService.createInstance(CompareExecutionPlanAction, 'ActionBar'),
-			this._instantiationService.createInstance(TopOperationsAction),
 			this.actionBarToggleTopTip
 		];
-		this._actionBar.pushAction(actionBarActions, { icon: true, label: false });
-
 		// Setting up context menu
 		this.contextMenuToggleTooltipAction = new ContextMenuTooltipToggle();
 		const contextMenuAction = [
@@ -187,9 +184,16 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 			this._instantiationService.createInstance(CustomZoomAction, 'ContextMenu'),
 			this._instantiationService.createInstance(PropertiesAction, 'ContextMenu'),
 			this._instantiationService.createInstance(CompareExecutionPlanAction, 'ContextMenu'),
-			this._instantiationService.createInstance(TopOperationsAction),
 			this.contextMenuToggleTooltipAction
 		];
+
+		if (this._queryResultsView) {
+			actionBarActions.push(this._instantiationService.createInstance(TopOperationsAction));
+			contextMenuAction.push(this._instantiationService.createInstance(TopOperationsAction));
+		}
+
+		this._actionBar.pushAction(actionBarActions, { icon: true, label: false });
+
 		const self = this;
 		this.container.oncontextmenu = (e: MouseEvent) => {
 			if (contextMenuAction) {
