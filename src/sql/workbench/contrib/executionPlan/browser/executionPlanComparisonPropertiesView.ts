@@ -95,12 +95,32 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		this._secondaryContainer.innerText = secondaryTitleText;
 		this._secondaryContainer.title = secondaryTitleText;
 
-		this.refreshPropertiesTable();
+		this.updatePropertiesTableColumnHeaders();
+	}
+
+	public updatePropertiesTableColumnHeaders() {
+		const columns: Slick.Column<Slick.SlickData>[] = this.getPropertyTableColumns();
+
+		this.updateTableColumns(columns);
 	}
 
 	public refreshPropertiesTable() {
-		const columns: Slick.Column<Slick.SlickData>[] = [
-		];
+		const columns: Slick.Column<Slick.SlickData>[] = this.getPropertyTableColumns();
+
+		let topProps = [];
+		let bottomProps = [];
+		if (this._model.topElement?.properties) {
+			topProps = this._model.topElement.properties;
+		}
+		if (this._model.bottomElement?.properties) {
+			bottomProps = this._model.bottomElement.properties;
+		}
+
+		this.populateTable(columns, this.convertPropertiesToTableRows(topProps, bottomProps, -1, 0));
+	}
+
+	private getPropertyTableColumns() {
+		const columns: Slick.Column<Slick.SlickData>[] = [];
 
 		if (this._model.topElement) {
 			columns.push({
@@ -132,16 +152,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 			}).definition);
 		}
 
-		let topProps = [];
-		let bottomProps = [];
-		if (this._model.topElement?.properties) {
-			topProps = this._model.topElement.properties;
-		}
-		if (this._model.bottomElement?.properties) {
-			bottomProps = this._model.bottomElement.properties;
-		}
-
-		this.populateTable(columns, this.convertPropertiesToTableRows(topProps, bottomProps, -1, 0));
+		return columns;
 	}
 
 	public sortPropertiesAlphabetically(props: Map<string, TablePropertiesMapEntry>): Map<string, TablePropertiesMapEntry> {

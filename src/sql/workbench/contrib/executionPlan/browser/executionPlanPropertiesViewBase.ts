@@ -169,6 +169,10 @@ export abstract class ExecutionPlanPropertiesViewBase implements IVerticalSashLa
 		this.resizeTable();
 	}
 
+	public updateTableColumns(columns: Slick.Column<Slick.SlickData>[]) {
+		this._tableComponent.columns = columns;
+	}
+
 	private resizeTable(): void {
 		const spaceOccupied = (this._titleBarContainer.getBoundingClientRect().height
 			+ this._headerContainer.getBoundingClientRect().height
