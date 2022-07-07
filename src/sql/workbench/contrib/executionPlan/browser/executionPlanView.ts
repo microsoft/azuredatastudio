@@ -25,9 +25,9 @@ import { RunQueryOnConnectionMode } from 'sql/platform/connection/common/connect
 import { formatDocumentWithSelectedProvider, FormattingMode } from 'vs/editor/contrib/format/format';
 import { Progress } from 'vs/platform/progress/common/progress';
 import { CancellationToken } from 'vs/base/common/cancellation';
-import { Action } from 'vs/base/common/actions';
+import { Action, Separator } from 'vs/base/common/actions';
 import { localize } from 'vs/nls';
-import { customZoomIconClassNames, disableTooltipIconClassName, enableTooltipIconClassName, executionPlanCompareIconClassName, openPlanFileIconClassNames, openPropertiesIconClassNames, openQueryIconClassNames, savePlanIconClassNames, searchIconClassNames, zoomInIconClassNames, zoomOutIconClassNames, zoomToFitIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/constants';
+import { customZoomIconClassNames, disableTooltipIconClassName, enableTooltipIconClassName, executionPlanCompareIconClassName, executionPlanTopOperations, openPlanFileIconClassNames, openPropertiesIconClassNames, openQueryIconClassNames, savePlanIconClassNames, searchIconClassNames, zoomInIconClassNames, zoomOutIconClassNames, zoomToFitIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/constants';
 import { URI } from 'vs/base/common/uri';
 import { VSBuffer } from 'vs/base/common/buffer';
 import { CustomZoomWidget } from 'sql/workbench/contrib/executionPlan/browser/widgets/customZoomWidget';
@@ -37,6 +37,7 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ExecutionPlanComparisonInput } from 'sql/workbench/contrib/executionPlan/browser/compareExecutionPlanInput';
 import { ExecutionPlanFileView } from 'sql/workbench/contrib/executionPlan/browser/executionPlanFileView';
+import { QueryResultsView } from 'sql/workbench/contrib/query/browser/queryResultsView';
 
 export class ExecutionPlanView implements ISashLayoutProvider {
 
@@ -44,7 +45,7 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 	private _model?: azdata.executionPlan.ExecutionPlanGraph;
 
 	// container for the view
-	private _container: HTMLElement;
+	public container: HTMLElement;
 
 	// action bar for the view
 	private _actionBarContainer: HTMLElement;
@@ -72,6 +73,7 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 		private _parent: HTMLElement,
 		private _graphIndex: number,
 		private _executionPlanFileView: ExecutionPlanFileView,
+		private _queryResultsView: QueryResultsView,
 		@IInstantiationService public readonly _instantiationService: IInstantiationService,
 		@IThemeService private readonly _themeService: IThemeService,
 		@IContextViewService public readonly contextViewService: IContextViewService,
@@ -84,18 +86,18 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 		@IEditorService private _editorService: IEditorService
 	) {
 		// parent container for query plan.
-		this._container = DOM.$('.execution-plan');
-		this._parent.appendChild(this._container);
+		this.container = DOM.$('.execution-plan');
+		this._parent.appendChild(this.container);
 		const sashContainer = DOM.$('.execution-plan-sash');
 		this._parent.appendChild(sashContainer);
 
 		// resizing sash for the query plan.
 		const sash = new Sash(sashContainer, this, { orientation: Orientation.HORIZONTAL, size: 3 });
-		let originalHeight = this._container.offsetHeight;
+		let originalHeight = this.container.offsetHeight;
 		let originalTableHeight = 0;
 		let change = 0;
 		sash.onDidStart((e: ISashEvent) => {
-			originalHeight = this._container.offsetHeight;
+			originalHeight = this.container.offsetHeight;
 			originalTableHeight = this.propertiesView.tableHeight;
 		});
 
@@ -112,8 +114,8 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 			 * Since the parent container is flex, we will have
 			 * to change the flex-basis property to change the height.
 			 */
-			this._container.style.minHeight = '200px';
-			this._container.style.flex = `0 0 ${newHeight}px`;
+			this.container.style.minHeight = '200px';
+			this.container.style.flex = `0 0 ${newHeight}px`;
 		});
 
 		/**
@@ -124,7 +126,7 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 		});
 
 		this._planContainer = DOM.$('.plan');
-		this._container.appendChild(this._planContainer);
+		this.container.appendChild(this._planContainer);
 
 		// container that holds plan header info
 		this._planHeaderContainer = DOM.$('.header');
@@ -141,7 +143,7 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 
 		// container properties
 		this._propContainer = DOM.$('.properties');
-		this._container.appendChild(this._propContainer);
+		this.container.appendChild(this._propContainer);
 		this.propertiesView = new ExecutionPlanPropertiesView(this._propContainer, this._themeService);
 
 		this._widgetContainer = DOM.$('.plan-action-container');
@@ -150,7 +152,7 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 
 		// container that holds action bar icons
 		this._actionBarContainer = DOM.$('.action-bar-container');
-		this._container.appendChild(this._actionBarContainer);
+		this.container.appendChild(this._actionBarContainer);
 		this._actionBar = new ActionBar(this._actionBarContainer, {
 			orientation: ActionsOrientation.VERTICAL, context: this
 		});
@@ -160,34 +162,42 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 			new SavePlanFile(),
 			new OpenPlanFile(),
 			this._instantiationService.createInstance(OpenQueryAction, 'ActionBar'),
-			this._instantiationService.createInstance(SearchNodeAction, 'ActionBar'),
 			this._instantiationService.createInstance(ZoomInAction, 'ActionBar'),
 			this._instantiationService.createInstance(ZoomOutAction, 'ActionBar'),
 			this._instantiationService.createInstance(ZoomToFitAction, 'ActionBar'),
 			this._instantiationService.createInstance(CustomZoomAction, 'ActionBar'),
+			this._instantiationService.createInstance(SearchNodeAction, 'ActionBar'),
 			this._instantiationService.createInstance(PropertiesAction, 'ActionBar'),
 			this._instantiationService.createInstance(CompareExecutionPlanAction, 'ActionBar'),
 			this.actionBarToggleTopTip
 		];
-		this._actionBar.pushAction(actionBarActions, { icon: true, label: false });
-
 		// Setting up context menu
 		this.contextMenuToggleTooltipAction = new ContextMenuTooltipToggle();
 		const contextMenuAction = [
 			new SavePlanFile(),
 			new OpenPlanFile(),
 			this._instantiationService.createInstance(OpenQueryAction, 'ContextMenu'),
-			this._instantiationService.createInstance(SearchNodeAction, 'ContextMenu'),
+			new Separator(),
 			this._instantiationService.createInstance(ZoomInAction, 'ContextMenu'),
 			this._instantiationService.createInstance(ZoomOutAction, 'ContextMenu'),
 			this._instantiationService.createInstance(ZoomToFitAction, 'ContextMenu'),
 			this._instantiationService.createInstance(CustomZoomAction, 'ContextMenu'),
+			new Separator(),
+			this._instantiationService.createInstance(SearchNodeAction, 'ContextMenu'),
 			this._instantiationService.createInstance(PropertiesAction, 'ContextMenu'),
 			this._instantiationService.createInstance(CompareExecutionPlanAction, 'ContextMenu'),
 			this.contextMenuToggleTooltipAction
 		];
+
+		if (this._queryResultsView) {
+			actionBarActions.push(this._instantiationService.createInstance(TopOperationsAction));
+			contextMenuAction.push(this._instantiationService.createInstance(TopOperationsAction));
+		}
+
+		this._actionBar.pushAction(actionBarActions, { icon: true, label: false });
+
 		const self = this;
-		this._container.oncontextmenu = (e: MouseEvent) => {
+		this.container.oncontextmenu = (e: MouseEvent) => {
 			if (contextMenuAction) {
 				this._contextMenuService.showContextMenu({
 					getAnchor: () => {
@@ -202,7 +212,7 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 			}
 		};
 
-		this._container.onkeydown = (e: KeyboardEvent) => {
+		this.container.onkeydown = (e: KeyboardEvent) => {
 			if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
 				let searchNodeAction = self._instantiationService.createInstance(SearchNodeAction, 'HotKey');
 				searchNodeAction.run(self);
@@ -219,12 +229,13 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 		return 0;
 	}
 	getHorizontalSashWidth?(sash: Sash): number {
-		return this._container.clientWidth;
+		return this.container.clientWidth;
 	}
 
 	private createPlanDiagram(container: HTMLElement) {
 		this.executionPlanDiagram = this._instantiationService.createInstance(AzdataGraphView, container, this._model);
 		this.executionPlanDiagram.onElementSelected(e => {
+			container.focus();
 			this.propertiesView.graphElement = e;
 		});
 	}
@@ -292,6 +303,11 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 		}), {
 			pinned: true
 		});
+	}
+
+	public openTopOperations() {
+		this._queryResultsView.switchToTopOperationsTab();
+		this._queryResultsView.scrollToTable(this._graphIndex);
 	}
 }
 
@@ -546,5 +562,20 @@ export class CompareExecutionPlanAction extends Action {
 			.send();
 
 		context.compareCurrentExecutionPlan();
+	}
+}
+
+export class TopOperationsAction extends Action {
+
+	public static ID = 'ep.topOperationsAction';
+	public static LABEL = localize('executionPlanTopOperationsAction', "Top Operations");
+
+	constructor
+		() {
+		super(TopOperationsAction.ID, TopOperationsAction.LABEL, executionPlanTopOperations);
+	}
+
+	public override async run(context: ExecutionPlanView): Promise<void> {
+		context.openTopOperations();
 	}
 }

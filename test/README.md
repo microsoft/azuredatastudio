@@ -63,6 +63,10 @@ The same principle can be applied to the vscode/azdata APIs. The object in this 
 
 **IMPORTANT** When using Sinon make sure to call `sinon.restore()` after every test run (using `afterEach` typically) to ensure that the stub doesn't affect other tests.
 
+### azdata-test package
+
+The [@microsoft/azdata-test](https://www.npmjs.com/package/@microsoft/azdata-test) package contains a number of things that may be helpful to extension tests. These include stubs, mocks and general helper functions that many extensions may need to use - such as common patterns for mocking out parts of the extension API.
+
 ## Code Coverage
 
 To generate a report combining the code coverage for extensions + core run `node ./test/combineCoverage`. Currently this will combine coverage from the Core Unit Tests, Extension Unit Tests and Extension Integration tests - see above docs for instructions on how to run those to generate coverage.

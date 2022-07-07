@@ -77,7 +77,7 @@ export function hyperLinkFormatter(row: number | undefined, cell: any | undefine
 			cellClasses += ' missing-value';
 		}
 	} else if (isHyperlinkCellValue(value)) {
-		return `<a class="${cellClasses}" href="#" >${escape(value.displayText)}</a>`;
+		return `<a class="${cellClasses}" href="#" title="${escape(value.displayText)}">${escape(value.displayText)}</a>`;
 	}
 	return `<span title="${valueToDisplay}" class="${cellClasses}">${valueToDisplay}</span>`;
 }
