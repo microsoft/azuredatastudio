@@ -30,7 +30,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 	private _model: ExecutionPlanComparisonPropertiesViewModel;
 	private _primaryContainer: HTMLElement;
 	private _secondaryContainer: HTMLElement;
-	private _orientation: PropertiesTableOrientation;
+	private _orientation: PropertiesTableOrientation = PropertiesTableOrientation.Horizontal;
 	private _primaryTarget: string;
 	private _secondaryTarget: string;
 
@@ -48,7 +48,6 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		header.appendChild(this._secondaryContainer);
 		this.setHeader(header);
 	}
-
 
 	public setTopElement(e: InternalExecutionPlanElement): void {
 		this._model.topElement = e;
@@ -78,11 +77,11 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		this.refreshPropertiesTable();
 	}
 
-	private updatePropertyContainerTitles(orientation: PropertiesTableOrientation): void {
+	private updatePropertyContainerTitles(): void {
 		let primaryTitleText = '';
 		let secondaryTitleText = '';
 
-		if (orientation === PropertiesTableOrientation.Horizontal) {
+		if (this._orientation === PropertiesTableOrientation.Horizontal) {
 			primaryTitleText = localize('executionPlanComparisonPropertiesTopOperation', "Top operation: {0}", this._primaryTarget);
 			secondaryTitleText = localize('executionPlanComparisonPropertiesBottomOperation', "Bottom operation: {0}", this._secondaryTarget);
 		}
@@ -102,6 +101,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 	public refreshPropertiesTable() {
 		const columns: Slick.Column<Slick.SlickData>[] = [
 		];
+
 		if (this._model.topElement) {
 			columns.push({
 				id: 'name',
@@ -313,9 +313,8 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		if (this._orientation === value) {
 			return;
 		}
-
-		this.updatePropertyContainerTitles(value);
 		this._orientation = value;
+		this.updatePropertyContainerTitles();
 	}
 }
 
