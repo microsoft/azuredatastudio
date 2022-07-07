@@ -16,12 +16,12 @@ import { executionPlanComparisonPropertiesDifferent, executionPlanComparisonProp
 import * as sqlExtHostType from 'sql/workbench/api/common/sqlExtHostTypes';
 import { TextWithIconColumn } from 'sql/base/browser/ui/table/plugins/textWithIconColumn';
 
-export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanPropertiesViewBase {
-	private static readonly _topTitleColumnHeader = localize('nodePropertyViewNameValueColumnTopHeader', "Value (Top Plan)");
-	private static readonly _leftTitleColumnHeader = localize('nodePropertyViewNameValueColumnLeftHeader', "Value (Left Plan)");
-	private static readonly _BottomTitleColumnHeader = localize('nodePropertyViewNameValueColumnBottomHeader', "Value (Bottom Plan)");
-	private static readonly _rightTitleColumnHeader = localize('nodePropertyViewNameValueColumnRightHeader', "Value (Right Plan)");
+const topTitleColumnHeader = localize('nodePropertyViewNameValueColumnTopHeader', "Value (Top Plan)");
+const leftTitleColumnHeader = localize('nodePropertyViewNameValueColumnLeftHeader', "Value (Left Plan)");
+const rightTitleColumnHeader = localize('nodePropertyViewNameValueColumnRightHeader', "Value (Right Plan)");
+const bottomTitleColumnHeader = localize('nodePropertyViewNameValueColumnBottomHeader', "Value (Bottom Plan)");
 
+export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanPropertiesViewBase {
 	private _model: ExecutionPlanComparisonPropertiesViewModel;
 	private _primaryContainer: HTMLElement;
 	private _secondaryContainer: HTMLElement;
@@ -141,19 +141,19 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 
 	private getPropertyViewNameValueColumnTopHeaderForOrientation(orientation: 'horizontal' | 'vertical'): string {
 		if (orientation === 'horizontal') {
-			return ExecutionPlanComparisonPropertiesView._topTitleColumnHeader;
+			return topTitleColumnHeader;
 		}
 		else {
-			return ExecutionPlanComparisonPropertiesView._leftTitleColumnHeader;
+			return leftTitleColumnHeader;
 		}
 	}
 
 	private getPropertyViewNameValueColumnBottomHeaderForOrientation(orientation: 'horizontal' | 'vertical'): string {
 		if (orientation === 'horizontal') {
-			return ExecutionPlanComparisonPropertiesView._BottomTitleColumnHeader;
+			return bottomTitleColumnHeader;
 		}
 		else {
-			return ExecutionPlanComparisonPropertiesView._rightTitleColumnHeader;
+			return rightTitleColumnHeader;
 		}
 	}
 
