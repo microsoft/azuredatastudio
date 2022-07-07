@@ -24,7 +24,6 @@ export class SchemaCompareOptionsDialog {
 	private optionsTable: azdata.TableComponent;
 	private objectsTable: azdata.TableComponent;
 	private disposableListeners: vscode.Disposable[] = [];
-	private resetClicked: boolean = false;
 	private optionsChanged: boolean = false;
 
 	private optionsModel: SchemaCompareOptionsModel;
@@ -62,10 +61,6 @@ export class SchemaCompareOptionsDialog {
 	}
 
 	protected execute(): void {
-		if (this.resetClicked) {
-			// reset optionsvalueNameLookup with fresh deployment options
-			this.optionsModel.setOptionsToValueNameLookup();
-		}
 		// Update the model deploymentoptions with the updated table component values
 		this.optionsModel.setDeploymentOptions();
 		this.optionsModel.setObjectTypeOptions();
@@ -100,11 +95,13 @@ export class SchemaCompareOptionsDialog {
 	}
 
 	private async reset(): Promise<void> {
-		this.resetClicked = true;
 		let service = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.IExtension).schemaCompare;
 		let result = await service.schemaCompareGetDefaultOptions();
 		this.optionsModel.deploymentOptions = result.defaultDeploymentOptions;
 		this.optionsChanged = true;
+
+		// reset optionsvalueNameLookup with fresh deployment options
+		this.optionsModel.setOptionsToValueNameLookup();
 
 		await this.updateOptionsTable();
 		this.optionsFlexBuilder.removeItem(this.optionsTable);
@@ -144,9 +141,9 @@ export class SchemaCompareOptionsDialog {
 				// selectedRows[0] contains selected row number
 				const row = this.optionsTable.selectedRows[0];
 				// data[row][1] contains the option display name
-				const label = this.optionsTable?.data[row!][1];
+				const displayName = this.optionsTable?.data[row!][1];
 				await this.descriptionText.updateProperties({
-					value: this.optionsModel.getOptionDescription(label)
+					value: this.optionsModel.getOptionDescription(displayName)
 				});
 			}));
 
@@ -155,8 +152,8 @@ export class SchemaCompareOptionsDialog {
 				const checkboxState = <azdata.ICheckboxCellActionEventArgs>rowState;
 				if (checkboxState && checkboxState.row !== undefined) {
 					// data[row][1] contains the option display name
-					const label = this.optionsTable?.data[checkboxState.row][1];
-					this.optionsModel.setOptionValue(label, checkboxState.checked);
+					const displayName = this.optionsTable?.data[checkboxState.row][1];
+					this.optionsModel.setOptionValue(displayName, checkboxState.checked);
 					this.optionsChanged = true;
 				}
 			}));
