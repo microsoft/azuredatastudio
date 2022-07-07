@@ -305,10 +305,6 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		return rows;
 	}
 
-	get orientation() {
-		return this._orientation;
-	}
-
 	set orientation(value: PropertiesTableOrientation) {
 		if (this._orientation === value) {
 			return;
