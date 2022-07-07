@@ -2,7 +2,7 @@
   "name": "arc",
   "displayName": "%arc.displayName%",
   "description": "%arc.description%",
-  "version": "1.3.0",
+  "version": "1.3.2",
   "publisher": "Microsoft",
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/extension.png",
@@ -1040,7 +1040,7 @@
             "pages": [
               {
                 "title": "%arc.sql.wizard.page1.title%",
-                "labelWidth": "190px",
+                "labelWidth": "250px",
                 "inputWidth": "280px",
                 "sections": [
                   {
@@ -1364,11 +1364,32 @@
                         "required": true
                       },
                       {
+                        "type": "readonly_text",
+                        "label": "",
+                        "labelWidth": "600px",
+                        "enabled": true,
+                        "fieldHeight": "12px"
+                      },
+                      {
                         "label": "%arc.storage-class.backups.label%",
                         "description": "%arc.sql.storage-class.backups.description%",
                         "variableName": "AZDATA_NB_VAR_SQL_STORAGE_CLASS_BACKUPS",
-                        "type": "kube_storage_class",
+                        "type": "text",
+                        "fieldHeight": "5px",
                         "required": false
+                      },
+                      {
+                        "type": "readonly_text",
+                        "label": "%arc.storage-class.backups.warning%",
+                        "labelWidth": "600px",
+                        "enabled": true,
+                        "fieldHeight": "1px",
+                        "links": [
+                          {
+                            "text": "%arc.storage-class.backups.warning.link%",
+                            "url": "https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes"
+                          }
+                        ]
                       },
                       {
                         "label": "%arc.sql.volume.size.backups.label%",
@@ -1377,7 +1398,15 @@
                         "type": "number",
                         "defaultValue": "5",
                         "min": 1,
-                        "required": true
+                        "required": true,
+                        "fieldHeight": "5px"
+                      },
+                      {
+                        "type": "readonly_text",
+                        "label": "",
+                        "labelWidth": "600px",
+                        "enabled": true,
+                        "fieldHeight": "12px"
                       },
                       {
                         "label": "%arc.cores-request.label%",
@@ -1493,7 +1522,7 @@
                         "valueProvider": {
                           "providerId": "params-to-billable-replicas",
                           "triggerFields": [
-                            "AZDATA_NB_VAR_READABLE_SECONDARIES"
+                            "AZDATA_NB_VAR_SQL_READABLE_SECONDARIES"
                           ]
                         }
                       },
@@ -1509,7 +1538,7 @@
                             "AZDATA_NB_VAR_SQL_DEV_USE",
                             "AZDATA_NB_VAR_SQL_SERVICE_TIER",
                             "AZDATA_NB_VAR_SQL_LICENSE_TYPE",
-                            "AZDATA_NB_VAR_READABLE_SECONDARIES"
+                            "AZDATA_NB_VAR_SQL_READABLE_SECONDARIES"
                           ]
                         }
                       },
@@ -1525,7 +1554,7 @@
                             "AZDATA_NB_VAR_SQL_DEV_USE",
                             "AZDATA_NB_VAR_SQL_SERVICE_TIER",
                             "AZDATA_NB_VAR_SQL_LICENSE_TYPE",
-                            "AZDATA_NB_VAR_READABLE_SECONDARIES"
+                            "AZDATA_NB_VAR_SQL_READABLE_SECONDARIES"
                           ]
                         }
                       }
