@@ -15,7 +15,11 @@ import { InternalExecutionPlanElement } from 'sql/workbench/contrib/executionPla
 import { executionPlanComparisonPropertiesDifferent, executionPlanComparisonPropertiesUpArrow, executionPlanComparisonPropertiesDownArrow } from 'sql/workbench/contrib/executionPlan/browser/constants';
 import * as sqlExtHostType from 'sql/workbench/api/common/sqlExtHostTypes';
 import { TextWithIconColumn } from 'sql/base/browser/ui/table/plugins/textWithIconColumn';
-import { ExecutionPlanCompareOrientation } from 'sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView';
+
+export enum ExecutionPlanCompareOrientation {
+	Horizontal = 'horizontal',
+	Vertical = 'vertical'
+}
 
 const topTitleColumnHeader = localize('nodePropertyViewNameValueColumnTopHeader', "Value (Top Plan)");
 const leftTitleColumnHeader = localize('nodePropertyViewNameValueColumnLeftHeader', "Value (Left Plan)");
