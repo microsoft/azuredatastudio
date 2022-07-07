@@ -25,11 +25,9 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 	private _model: ExecutionPlanComparisonPropertiesViewModel;
 	private _primaryContainer: HTMLElement;
 	private _secondaryContainer: HTMLElement;
-	private _topTitleText: string;
-	private _leftTitleText: string;
-	private _bottomTitleText: string;
-	private _rightTitleText: string;
 	private _orientation: 'horizontal' | 'vertical';
+	private _primaryTarget: string;
+	private _secondaryTarget: string;
 
 	public constructor(
 		parentContainer: HTMLElement,
@@ -49,48 +47,49 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 
 	public setTopElement(e: InternalExecutionPlanElement): void {
 		this._model.topElement = e;
-		let target;
 		if ((<azdata.executionPlan.ExecutionPlanNode>e).name) {
-			target = removeLineBreaks((<azdata.executionPlan.ExecutionPlanNode>e).name);
+			this._primaryTarget = removeLineBreaks((<azdata.executionPlan.ExecutionPlanNode>e).name);
 		} else {
-			target = localize('executionPlanPropertiesEdgeOperationName', "Edge");
+			this._primaryTarget = localize('executionPlanPropertiesEdgeOperationName', "Edge");
 		}
-		this._leftTitleText = localize('executionPlanComparisonPropertiesLeftOperation', "Left operation: {0}", target);
-		this._topTitleText = localize('executionPlanComparisonPropertiesTopOperation', "Top operation: {0}", target);
-		this._primaryContainer.innerText = this._topTitleText;
-		this._primaryContainer.title = this._topTitleText;
+
+		let topTitleText = localize('executionPlanComparisonPropertiesTopOperation', "Top operation: {0}", this._primaryTarget);
+		this._primaryContainer.innerText = topTitleText;
+		this._primaryContainer.title = topTitleText;
 		this.refreshPropertiesTable();
 	}
 
 	public setBottomElement(e: InternalExecutionPlanElement): void {
 		this._model.bottomElement = e;
-		let target;
 		if ((<azdata.executionPlan.ExecutionPlanNode>e)?.name) {
-			target = removeLineBreaks((<azdata.executionPlan.ExecutionPlanNode>e).name);
+			this._secondaryTarget = removeLineBreaks((<azdata.executionPlan.ExecutionPlanNode>e).name);
 		} else {
-			target = localize('executionPlanPropertiesEdgeOperationName', "Edge");
+			this._secondaryTarget = localize('executionPlanPropertiesEdgeOperationName', "Edge");
 		}
 
-		this._rightTitleText = localize('executionPlanComparisonPropertiesRightOperation', "Right operation: {0}", target);
-		this._bottomTitleText = localize('executionPlanComparisonPropertiesBottomOperation', "Bottom operation: {0}", target);
-		this._secondaryContainer.innerText = this._bottomTitleText;
-		this._secondaryContainer.title = this._bottomTitleText;
+		let bottomTitleText = localize('executionPlanComparisonPropertiesBottomOperation', "Bottom operation: {0}", this._secondaryTarget);
+		this._secondaryContainer.innerText = bottomTitleText;
+		this._secondaryContainer.title = bottomTitleText;
 		this.refreshPropertiesTable();
 	}
 
 	private updatePropertyContainerTitles(orientation: 'horizontal' | 'vertical'): void {
+		let primaryTitleText = '';
+		let secondaryTitleText = '';
+
 		if (orientation === 'horizontal') {
-			this._primaryContainer.innerText = this._topTitleText;
-			this._primaryContainer.title = this._topTitleText;
-			this._secondaryContainer.innerText = this._bottomTitleText;
-			this._secondaryContainer.title = this._bottomTitleText;
+			primaryTitleText = localize('executionPlanComparisonPropertiesTopOperation', "Top operation: {0}", this._primaryTarget);
+			secondaryTitleText = localize('executionPlanComparisonPropertiesBottomOperation', "Bottom operation: {0}", this._secondaryTarget);
 		}
 		else {
-			this._primaryContainer.innerText = this._leftTitleText;
-			this._primaryContainer.title = this._leftTitleText;
-			this._secondaryContainer.innerText = this._rightTitleText;
-			this._secondaryContainer.title = this._rightTitleText;
+			primaryTitleText = localize('executionPlanComparisonPropertiesLeftOperation', "Left operation: {0}", this._primaryTarget);
+			secondaryTitleText = localize('executionPlanComparisonPropertiesRightOperation', "Right operation: {0}", this._secondaryTarget);
 		}
+
+		this._primaryContainer.innerText = primaryTitleText;
+		this._primaryContainer.title = primaryTitleText;
+		this._secondaryContainer.innerText = secondaryTitleText;
+		this._secondaryContainer.title = secondaryTitleText;
 
 		this.refreshPropertiesTable(orientation);
 	}
