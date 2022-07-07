@@ -119,8 +119,8 @@ However we always want it to be the width of the container it is resizing.
 	height: 100%;
 	overflow: scroll;
 	position: relative;
-	outline-offset: -5px;
-	outline-width: 5px;
+	outline-offset: -3px;
+	outline-width: 3px;
 }
 
 .eps-container .properties {

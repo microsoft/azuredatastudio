@@ -25,7 +25,7 @@ import { RunQueryOnConnectionMode } from 'sql/platform/connection/common/connect
 import { formatDocumentWithSelectedProvider, FormattingMode } from 'vs/editor/contrib/format/format';
 import { Progress } from 'vs/platform/progress/common/progress';
 import { CancellationToken } from 'vs/base/common/cancellation';
-import { Action } from 'vs/base/common/actions';
+import { Action, Separator } from 'vs/base/common/actions';
 import { localize } from 'vs/nls';
 import { customZoomIconClassNames, disableTooltipIconClassName, enableTooltipIconClassName, executionPlanCompareIconClassName, executionPlanTopOperations, openPlanFileIconClassNames, openPropertiesIconClassNames, openQueryIconClassNames, savePlanIconClassNames, searchIconClassNames, zoomInIconClassNames, zoomOutIconClassNames, zoomToFitIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/constants';
 import { URI } from 'vs/base/common/uri';
@@ -162,11 +162,11 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 			new SavePlanFile(),
 			new OpenPlanFile(),
 			this._instantiationService.createInstance(OpenQueryAction, 'ActionBar'),
-			this._instantiationService.createInstance(SearchNodeAction, 'ActionBar'),
 			this._instantiationService.createInstance(ZoomInAction, 'ActionBar'),
 			this._instantiationService.createInstance(ZoomOutAction, 'ActionBar'),
 			this._instantiationService.createInstance(ZoomToFitAction, 'ActionBar'),
 			this._instantiationService.createInstance(CustomZoomAction, 'ActionBar'),
+			this._instantiationService.createInstance(SearchNodeAction, 'ActionBar'),
 			this._instantiationService.createInstance(PropertiesAction, 'ActionBar'),
 			this._instantiationService.createInstance(CompareExecutionPlanAction, 'ActionBar'),
 			this.actionBarToggleTopTip
@@ -177,11 +177,13 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 			new SavePlanFile(),
 			new OpenPlanFile(),
 			this._instantiationService.createInstance(OpenQueryAction, 'ContextMenu'),
-			this._instantiationService.createInstance(SearchNodeAction, 'ContextMenu'),
+			new Separator(),
 			this._instantiationService.createInstance(ZoomInAction, 'ContextMenu'),
 			this._instantiationService.createInstance(ZoomOutAction, 'ContextMenu'),
 			this._instantiationService.createInstance(ZoomToFitAction, 'ContextMenu'),
 			this._instantiationService.createInstance(CustomZoomAction, 'ContextMenu'),
+			new Separator(),
+			this._instantiationService.createInstance(SearchNodeAction, 'ContextMenu'),
 			this._instantiationService.createInstance(PropertiesAction, 'ContextMenu'),
 			this._instantiationService.createInstance(CompareExecutionPlanAction, 'ContextMenu'),
 			this.contextMenuToggleTooltipAction

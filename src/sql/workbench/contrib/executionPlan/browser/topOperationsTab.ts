@@ -112,7 +112,7 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 				if (i === 0) {
 					row[d.columnName] = {
 						displayText: displayText,
-						linkOrCommand: 'placeholder',
+						linkOrCommand: ' ',
 						dataType: d.dataType
 					};
 				} else {
