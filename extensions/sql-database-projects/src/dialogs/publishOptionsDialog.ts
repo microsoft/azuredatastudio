@@ -23,7 +23,6 @@ export class PublishOptionsDialog {
 	public optionsModel: DeployOptionsModel;
 	private optionsFlexBuilder: azdataType.FlexContainer | undefined;
 	private optionsChanged: boolean = false;
-	private resetClicked: boolean = false;
 
 	constructor(defaultOptions: mssql.DeploymentOptions, private publish: PublishDatabaseDialog) {
 		this.optionsModel = new DeployOptionsModel(defaultOptions);
@@ -141,10 +140,6 @@ export class PublishOptionsDialog {
 	* Ok button click, will update the deployment options with selections
 	*/
 	protected execute(): void {
-		if (this.resetClicked) {
-			// reset optionsvalueNameLookup with fresh deployment options
-			this.optionsModel.setOptionsToValueNameLookup();
-		}
 		// Update the model deploymentoptions with the updated table component values
 		this.optionsModel.setDeploymentOptions();
 		// Set the publish deploymentoptions with the updated table component values
@@ -167,9 +162,11 @@ export class PublishOptionsDialog {
 	* Reset button click, resets all the options selection
 	*/
 	private async reset(): Promise<void> {
-		this.resetClicked = true;
 		const result = await this.publish.getDefaultDeploymentOptions();
 		this.optionsModel.deploymentOptions = result;
+
+		// reset optionsvalueNameLookup with default deployment options
+		this.optionsModel.setOptionsToValueNameLookup();
 
 		await this.updateOptionsTable();
 		this.optionsFlexBuilder?.removeItem(this.optionsTable!);

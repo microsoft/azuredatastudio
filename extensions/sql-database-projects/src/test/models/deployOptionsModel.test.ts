@@ -17,7 +17,6 @@ describe('Publish Dialog Deploy Options Model', () => {
 
 	it('Should get description', function (): void {
 		const model = new DeployOptionsModel(testUtils.getDeploymentOptions());
-		model.getOptionsData();
 		Object.entries(model.deploymentOptions.booleanOptionsDictionary).forEach(option => {
 			// option[1] contains the value, description and displayName
 			should(model.getOptionDescription(option[1].displayName)).not.equal(undefined);
