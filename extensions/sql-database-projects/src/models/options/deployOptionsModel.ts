@@ -8,29 +8,35 @@ import * as vscode from 'vscode';
 import * as constants from '../../common/constants';
 
 export class DeployOptionsModel {
+	// key is the option display name and values are checkboxValue and optionName
 	private optionsValueNameLookup: { [key: string]: mssql.IOptionWithValue } = {};
 
 	constructor(public deploymentOptions: mssql.DeploymentOptions) {
+		this.setOptionsToValueNameLookup();
 	}
 
-	/**
-	 * Initialize options data from deployment options for table component
-	 * Also preparing optionsValueNameLookup Map holding onchange checkbox values and property name
-	 * Returns data as [booleanValue, optionName]
+	/*
+	 * Sets deployment option's checkbox values and property name to the optionsValueNameLookup map
 	 */
-	public initializeOptionsData(): any[][] {
-		let data: any[][] = [];
+	setOptionsToValueNameLookup(): void {
 		Object.entries(this.deploymentOptions.booleanOptionsDictionary).forEach(option => {
-			const optionDisplayName = option[1].displayName;
-			const checkedValue = option[1].value;
 			const optionValue: mssql.IOptionWithValue = {
 				optionName: option[0],
-				checked: checkedValue
+				checked: option[1].value
 			};
-			// push to table data array
-			data.push([checkedValue, optionDisplayName]);
-			// push to optionsValueNameLookup
-			this.optionsValueNameLookup[optionDisplayName] = optionValue;
+			this.optionsValueNameLookup[option[1].displayName] = optionValue;
+		});
+	}
+
+	/*
+	 * Initialize options data from deployment options for table component
+	 * Returns data as [booleanValue, optionName]
+	 */
+	public getOptionsData(): any[][] {
+		let data: any[][] = [];
+		Object.entries(this.deploymentOptions.booleanOptionsDictionary).forEach(option => {
+			// option[1] holds checkedbox value and displayName
+			data.push([option[1].value, option[1].displayName]);
 		});
 
 		return data.sort((a, b) => a[1].localeCompare(b[1]));
@@ -38,11 +44,10 @@ export class DeployOptionsModel {
 
 	/*
 	* Sets the selected option checkbox value to the deployment options
-	* option[0] - option label
-	* option[1] - checkedbox value
 	*/
 	public setDeploymentOptions(): void {
 		Object.entries(this.optionsValueNameLookup).forEach(option => {
+			// option[1] holds checkedbox value and optionName
 			this.deploymentOptions.booleanOptionsDictionary[option[1].optionName].value = option[1].checked;
 		});
 	}

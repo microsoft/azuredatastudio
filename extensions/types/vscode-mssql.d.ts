@@ -516,14 +516,6 @@ declare module 'vscode-mssql' {
 		booleanOptionsDictionary: { [key: string]: DacDeployOptionPropertyBoolean };
 	}
 
-	/*
-	* Interface containing option value and option name
-	*/
-	export interface IOptionWithValue {
-		optionName: string;
-		checked: boolean;
-	}
-
 	/**
 	 * Values from <DacFx>\Product\Source\DeploymentApi\ObjectTypes.cs
 	 */
