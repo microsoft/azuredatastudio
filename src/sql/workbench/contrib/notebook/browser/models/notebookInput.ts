@@ -77,6 +77,7 @@ export class NotebookEditorModel extends EditorModel {
 				}, err => undefined);
 			}
 		}));
+		this._register(this.textEditorModel);
 		if (this.textEditorModel instanceof UntitledTextEditorModel) {
 			this._register(this.textEditorModel.onDidChangeDirty(e => {
 				let dirty = this.textEditorModel instanceof TextResourceEditorModel ? false : this.textEditorModel.isDirty();
@@ -102,7 +103,6 @@ export class NotebookEditorModel extends EditorModel {
 			}
 		}
 		this._dirty = this.textEditorModel instanceof TextResourceEditorModel ? false : this.textEditorModel.isDirty();
-		this._register(this.textEditorModel);
 	}
 
 	public get contentString(): string {
