@@ -18,7 +18,7 @@ export class DeployOptionsModel {
 	/*
 	 * Sets deployment option's checkbox values and property name to the optionsValueNameLookup map
 	 */
-	setOptionsToValueNameLookup(): void {
+	public setOptionsToValueNameLookup(): void {
 		Object.entries(this.deploymentOptions.booleanOptionsDictionary).forEach(option => {
 			const optionValue: mssql.IOptionWithValue = {
 				optionName: option[0],
@@ -65,7 +65,7 @@ export class DeployOptionsModel {
 	public getOptionDescription(label: string): string {
 		const optionName = this.optionsValueNameLookup[label];
 		if (optionName === undefined) {
-			void vscode.window.showWarningMessage(constants.optionNotFoundWarningMessage(label));
+			void vscode.window.showWarningMessage(constants.OptionNotFoundWarningMessage(label));
 		}
 		return optionName !== undefined ? this.deploymentOptions.booleanOptionsDictionary[optionName.optionName].description : '';
 	}
