@@ -747,7 +747,10 @@ export class EditDataEditor extends EditorPane {
 			if (this._sqlEditor) {
 				editDataInput.savedViewState = this._sqlEditor.getControl().saveViewState();
 			}
-			// This is called when the editor is closed (will later be reused), so must not call saveEditorState when input is already disposed.
+			/***
+			 * This is called whenever tab is changed, including when editor is closed (the editor will be reused).
+			 * Must not call saveEditorState when input is already disposed.
+			 * */
 			if (editDataInput.results?.isDisposed()) {
 				editDataInput.results.onSaveViewStateEmitter.fire();
 			}
