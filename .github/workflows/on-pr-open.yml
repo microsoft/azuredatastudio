@@ -3,16 +3,22 @@ on:
   pull_request:
     branches:
       - release/**
+      - main
 
 jobs:
-  add_port_label:
-    permissions:
-      contents: read
-      pull-requests: write
+  main:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/labeler@v4
-      with:
-        repo-token: "${{ secrets.GITHUB_TOKEN }}"
-        configuration-path: .github/port-labeler.yml
+      - name: Checkout Actions
+        uses: actions/checkout@v2
+        with:
+          repository: 'microsoft/azuredatastudio'
+          ref: main
+          path: ./actions
+      - name: Install Actions
+        run: npm install --production --prefix ./actions/build/actions
 
+      - name: Run Port Labeler
+        uses: ./actions/build/actions/auto-labeler
+        with:
+          label: "Port Request"
