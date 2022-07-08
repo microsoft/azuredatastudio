@@ -115,6 +115,9 @@ describe('notebookUtils Tests', function (): void {
 			});
 			let activeEditor = azdata.nb.activeNotebookEditor;
 			let cells = activeEditor.document.cells;
+			// We currently can't retrieve the cell source from the extension API, but all we care
+			// about is that the notebook doesn't open as empty again, so just check the number of
+			// cells here.
 			should(cells.length).be.greaterThan(0);
 		});
 	});
