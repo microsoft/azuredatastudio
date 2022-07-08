@@ -91,84 +91,6 @@ export const save: string = localize('schemaCompare.saveFile', "Save");
 export function getConnectionString(caller: string): string { return localize('schemaCompare.GetConnectionString', "Do you want to connect to {0}?", caller); }
 export const selectConnection: string = localize('schemaCompare.selectConnection', "Select connection");
 
-// options
-export const IgnoreTableOptions: string = localize('SchemaCompare.IgnoreTableOptions', "Ignore Table Options");
-export const IgnoreSemicolonBetweenStatements: string = localize('SchemaCompare.IgnoreSemicolonBetweenStatements', "Ignore Semicolon Between Statements");
-export const IgnoreRouteLifetime: string = localize('SchemaCompare.IgnoreRouteLifetime', "Ignore Route Lifetime");
-export const IgnoreRoleMembership: string = localize('SchemaCompare.IgnoreRoleMembership', "Ignore Role Membership");
-export const IgnoreQuotedIdentifiers: string = localize('SchemaCompare.IgnoreQuotedIdentifiers', "Ignore Quoted Identifiers");
-export const IgnorePermissions: string = localize('SchemaCompare.IgnorePermissions', "Ignore Permissions");
-export const IgnorePartitionSchemes: string = localize('SchemaCompare.IgnorePartitionSchemes', "Ignore Partition Schemes");
-export const IgnoreObjectPlacementOnPartitionScheme: string = localize('SchemaCompare.IgnoreObjectPlacementOnPartitionScheme', "Ignore Object Placement On Partition Scheme");
-export const IgnoreNotForReplication: string = localize('SchemaCompare.IgnoreNotForReplication', "Ignore Not For Replication");
-export const IgnoreLoginSids: string = localize('SchemaCompare.IgnoreLoginSids', "Ignore Login Sids");
-export const IgnoreLockHintsOnIndexes: string = localize('SchemaCompare.IgnoreLockHintsOnIndexes', "Ignore Lock Hints On Indexes");
-export const IgnoreKeywordCasing: string = localize('SchemaCompare.IgnoreKeywordCasing', "Ignore Keyword Casing");
-export const IgnoreIndexPadding: string = localize('SchemaCompare.IgnoreIndexPadding', "Ignore Index Padding");
-export const IgnoreIndexOptions: string = localize('SchemaCompare.IgnoreIndexOptions', "Ignore Index Options");
-export const IgnoreIncrement: string = localize('SchemaCompare.IgnoreIncrement', "Ignore Increment");
-export const IgnoreIdentitySeed: string = localize('SchemaCompare.IgnoreIdentitySeed', "Ignore Identity Seed");
-export const IgnoreUserSettingsObjects: string = localize('SchemaCompare.IgnoreUserSettingsObjects', "Ignore User Settings Objects");
-export const IgnoreFullTextCatalogFilePath: string = localize('SchemaCompare.IgnoreFullTextCatalogFilePath', "Ignore Full Text Catalog FilePath");
-export const IgnoreWhitespace: string = localize('SchemaCompare.IgnoreWhitespace', "Ignore Whitespace");
-export const IgnoreWithNocheckOnForeignKeys: string = localize('SchemaCompare.IgnoreWithNocheckOnForeignKeys', "Ignore With Nocheck On ForeignKeys");
-export const VerifyCollationCompatibility: string = localize('SchemaCompare.VerifyCollationCompatibility', "Verify Collation Compatibility");
-export const UnmodifiableObjectWarnings: string = localize('SchemaCompare.UnmodifiableObjectWarnings', "Unmodifiable Object Warnings");
-export const TreatVerificationErrorsAsWarnings: string = localize('SchemaCompare.TreatVerificationErrorsAsWarnings', "Treat Verification Errors As Warnings");
-export const ScriptRefreshModule: string = localize('SchemaCompare.ScriptRefreshModule', "Script Refresh Module");
-export const ScriptNewConstraintValidation: string = localize('SchemaCompare.ScriptNewConstraintValidation', "Script New Constraint Validation");
-export const ScriptFileSize: string = localize('SchemaCompare.ScriptFileSize', "Script File Size");
-export const ScriptDeployStateChecks: string = localize('SchemaCompare.ScriptDeployStateChecks', "Script Deploy StateChecks");
-export const ScriptDatabaseOptions: string = localize('SchemaCompare.ScriptDatabaseOptions', "Script Database Options");
-export const ScriptDatabaseCompatibility: string = localize('SchemaCompare.ScriptDatabaseCompatibility', "Script Database Compatibility");
-export const ScriptDatabaseCollation: string = localize('SchemaCompare.ScriptDatabaseCollation', "Script Database Collation");
-export const RunDeploymentPlanExecutors: string = localize('SchemaCompare.RunDeploymentPlanExecutors', "Run Deployment Plan Executors");
-export const RegisterDataTierApplication: string = localize('SchemaCompare.RegisterDataTierApplication', "Register DataTier Application");
-export const PopulateFilesOnFileGroups: string = localize('SchemaCompare.PopulateFilesOnFileGroups', "Populate Files On File Groups");
-export const NoAlterStatementsToChangeClrTypes: string = localize('SchemaCompare.NoAlterStatementsToChangeClrTypes', "No Alter Statements To Change Clr Types");
-export const IncludeTransactionalScripts: string = localize('SchemaCompare.IncludeTransactionalScripts', "Include Transactional Scripts");
-export const IncludeCompositeObjects: string = localize('SchemaCompare.IncludeCompositeObjects', "Include Composite Objects");
-export const AllowUnsafeRowLevelSecurityDataMovement: string = localize('SchemaCompare.AllowUnsafeRowLevelSecurityDataMovement', "Allow Unsafe Row Level Security Data Movement");
-export const IgnoreWithNocheckOnCheckConstraints: string = localize('SchemaCompare.IgnoreWithNocheckOnCheckConstraints', "Ignore With No check On Check Constraints");
-export const IgnoreFillFactor: string = localize('SchemaCompare.IgnoreFillFactor', "Ignore Fill Factor");
-export const IgnoreFileSize: string = localize('SchemaCompare.IgnoreFileSize', "Ignore File Size");
-export const IgnoreFilegroupPlacement: string = localize('SchemaCompare.IgnoreFilegroupPlacement', "Ignore Filegroup Placement");
-export const DoNotAlterReplicatedObjects: string = localize('SchemaCompare.DoNotAlterReplicatedObjects', "Do Not Alter Replicated Objects");
-export const DoNotAlterChangeDataCaptureObjects: string = localize('SchemaCompare.DoNotAlterChangeDataCaptureObjects', "Do Not Alter Change Data Capture Objects");
-export const DisableAndReenableDdlTriggers: string = localize('SchemaCompare.DisableAndReenableDdlTriggers', "Disable And Reenable Ddl Triggers");
-export const DeployDatabaseInSingleUserMode: string = localize('SchemaCompare.DeployDatabaseInSingleUserMode', "Deploy Database In Single User Mode");
-export const CreateNewDatabase: string = localize('SchemaCompare.CreateNewDatabase', "Create New Database");
-export const CompareUsingTargetCollation: string = localize('SchemaCompare.CompareUsingTargetCollation', "Compare Using Target Collation");
-export const CommentOutSetVarDeclarations: string = localize('SchemaCompare.CommentOutSetVarDeclarations', "Comment Out Set Var Declarations");
-export const BlockWhenDriftDetected: string = localize('SchemaCompare.BlockWhenDriftDetected', "Block When Drift Detected");
-export const BlockOnPossibleDataLoss: string = localize('SchemaCompare.BlockOnPossibleDataLoss', "Block On Possible Data Loss");
-export const BackupDatabaseBeforeChanges: string = localize('SchemaCompare.BackupDatabaseBeforeChanges', "Backup Database Before Changes");
-export const AllowIncompatiblePlatform: string = localize('SchemaCompare.AllowIncompatiblePlatform', "Allow Incompatible Platform");
-export const AllowDropBlockingAssemblies: string = localize('SchemaCompare.AllowDropBlockingAssemblies', "Allow Drop Blocking Assemblies");
-export const DropConstraintsNotInSource: string = localize('SchemaCompare.DropConstraintsNotInSource', "Drop Constraints Not In Source");
-export const DropDmlTriggersNotInSource: string = localize('SchemaCompare.DropDmlTriggersNotInSource', "Drop Dml Triggers Not In Source");
-export const DropExtendedPropertiesNotInSource: string = localize('SchemaCompare.DropExtendedPropertiesNotInSource', "Drop Extended Properties Not In Source");
-export const DropIndexesNotInSource: string = localize('SchemaCompare.DropIndexesNotInSource', "Drop Indexes Not In Source");
-export const IgnoreFileAndLogFilePath: string = localize('SchemaCompare.IgnoreFileAndLogFilePath', "Ignore File And Log File Path");
-export const IgnoreExtendedProperties: string = localize('SchemaCompare.IgnoreExtendedProperties', "Ignore Extended Properties");
-export const IgnoreDmlTriggerState: string = localize('SchemaCompare.IgnoreDmlTriggerState', "Ignore Dml Trigger State");
-export const IgnoreDmlTriggerOrder: string = localize('SchemaCompare.IgnoreDmlTriggerOrder', "Ignore Dml Trigger Order");
-export const IgnoreDefaultSchema: string = localize('SchemaCompare.IgnoreDefaultSchema', "Ignore Default Schema");
-export const IgnoreDdlTriggerState: string = localize('SchemaCompare.IgnoreDdlTriggerState', "Ignore Ddl Trigger State");
-export const IgnoreDdlTriggerOrder: string = localize('SchemaCompare.IgnoreDdlTriggerOrder', "Ignore Ddl Trigger Order");
-export const IgnoreCryptographicProviderFilePath: string = localize('SchemaCompare.IgnoreCryptographicProviderFilePath', "Ignore Cryptographic Provider FilePath");
-export const VerifyDeployment: string = localize('SchemaCompare.VerifyDeployment', "Verify Deployment");
-export const IgnoreComments: string = localize('SchemaCompare.IgnoreComments', "Ignore Comments");
-export const IgnoreColumnCollation: string = localize('SchemaCompare.IgnoreColumnCollation', "Ignore Column Collation");
-export const IgnoreAuthorizer: string = localize('SchemaCompare.IgnoreAuthorizer', "Ignore Authorizer");
-export const IgnoreAnsiNulls: string = localize('SchemaCompare.IgnoreAnsiNulls', "Ignore AnsiNulls");
-export const GenerateSmartDefaults: string = localize('SchemaCompare.GenerateSmartDefaults', "Generate SmartDefaults");
-export const DropStatisticsNotInSource: string = localize('SchemaCompare.DropStatisticsNotInSource', "Drop Statistics Not In Source");
-export const DropRoleMembersNotInSource: string = localize('SchemaCompare.DropRoleMembersNotInSource', "Drop Role Members Not In Source");
-export const DropPermissionsNotInSource: string = localize('SchemaCompare.DropPermissionsNotInSource', "Drop Permissions Not In Source");
-export const DropObjectsNotInSource: string = localize('SchemaCompare.DropObjectsNotInSource', "Drop Objects Not In Source");
-export const IgnoreColumnOrder: string = localize('SchemaCompare.IgnoreColumnOrder', "Ignore Column Order");
-
 // object types
 export const Aggregates: string = localize('SchemaCompare.Aggregates', "Aggregates");
 export const ApplicationRoles: string = localize('SchemaCompare.ApplicationRoles', "Application Roles");
@@ -247,6 +169,7 @@ export function cancelErrorMessage(errorMessage: string): string { return locali
 export function generateScriptErrorMessage(errorMessage: string): string { return localize('schemaCompare.generateScriptErrorMessage', "Generate script failed: '{0}'", (errorMessage) ? errorMessage : 'Unknown'); }
 export function applyErrorMessage(errorMessage: string): string { return localize('schemaCompare.updateErrorMessage', "Schema Compare Apply failed '{0}'", errorMessage ? errorMessage : 'Unknown'); }
 export function openScmpErrorMessage(errorMessage: string): string { return localize('schemaCompare.openScmpErrorMessage', "Open scmp failed: '{0}'", (errorMessage) ? errorMessage : 'Unknown'); }
+export function OptionNotFoundWarningMessage(label: string) { return localize('OptionNotFoundWarningMessage', "label: {0} does not exist in the options value name lookup", label); }
 export const applyError: string = localize('schemaCompare.applyError', "There was an error updating the project");
 export const dspErrorSource: string = localize('schemaCompareDialog.dspErrorSource', "The source .sqlproj file does not specify a database schema component");
 export const dspErrorTarget: string = localize('schemaCompareDialog.dspErrorTarget', "The target .sqlproj file does not specify a database schema component");

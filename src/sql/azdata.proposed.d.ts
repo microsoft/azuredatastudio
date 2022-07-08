@@ -1310,6 +1310,10 @@ declare module 'azdata' {
 			 * Warning/parallelism badges applicable to the current node
 			 */
 			badges: ExecutionPlanBadge[];
+			/**
+			 * Data to show in top operations table for the node.
+			 */
+			topOperationsData: TopOperationsDataItem[];
 		}
 
 		export interface ExecutionPlanBadge {
@@ -1475,6 +1479,21 @@ declare module 'azdata' {
 			 */
 			compareExecutionPlanGraph(firstPlanFile: ExecutionPlanGraphInfo, secondPlanFile: ExecutionPlanGraphInfo): Thenable<ExecutionPlanComparisonResult>;
 		}
+
+		export interface TopOperationsDataItem {
+			/**
+			 * Column name for the top operation data item
+			 */
+			columnName: string;
+			/**
+			 * Cell data type for the top operation data item
+			 */
+			dataType: ExecutionPlanGraphElementPropertyDataType;
+			/**
+			 * Cell value for the top operation data item
+			 */
+			displayValue: string | number | boolean;
+		}
 	}
 
 	/**
@@ -1542,7 +1561,7 @@ declare module 'azdata' {
 	}
 	export namespace queryeditor {
 
-		export interface IQueryMessage {
+		export interface QueryMessage {
 			/**
 			 * The message string
 			 */
@@ -1560,15 +1579,15 @@ declare module 'azdata' {
 		/**
 		 * Information about a query that was executed
 		 */
-		export interface IQueryInfo {
+		export interface QueryInfo {
 			/**
 			 * Any messages that have been received from the query provider
 			 */
-			messages: IQueryMessage[];
+			messages: QueryMessage[];
 			/**
-			 * The text of the query statement
+			 * The ranges for each batch that has executed so far
 			 */
-			queryText?: string;
+			batchRanges: vscode.Range[];
 		}
 
 		export interface QueryEventListener {
@@ -1584,7 +1603,7 @@ declare module 'azdata' {
 			 * visualize: ResultSetSummary (the result set to be visualized)
 			 * @param queryInfo The information about the query that triggered this event
 			 */
-			onQueryEvent(type: QueryEventType, document: QueryDocument, args: ResultSetSummary | string | undefined, queryInfo: IQueryInfo): void;
+			onQueryEvent(type: QueryEventType, document: QueryDocument, args: ResultSetSummary | string | undefined, queryInfo: QueryInfo): void;
 		}
 	}
 }

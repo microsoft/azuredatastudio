@@ -15,7 +15,7 @@ import * as vscodeMssql from 'vscode-mssql';
 import * as fse from 'fs-extra';
 import * as which from 'which';
 import { promises as fs } from 'fs';
-import { Project } from '../models/project';
+import { ISqlProject } from 'sqldbproj';
 
 export interface ValidationResult {
 	errorMessage: string;
@@ -322,20 +322,19 @@ export async function defaultAzureAccountServiceFactory(): Promise<vscodeMssql.I
 /*
  * Returns the default deployment options from DacFx, filtered to appropriate options for the given project.
  */
-export async function getDefaultPublishDeploymentOptions(project: Project): Promise<mssql.DeploymentOptions | vscodeMssql.DeploymentOptions> {
+export async function getDefaultPublishDeploymentOptions(project: ISqlProject): Promise<mssql.DeploymentOptions | vscodeMssql.DeploymentOptions> {
 	const schemaCompareService = await getSchemaCompareService();
 	const result = await schemaCompareService.schemaCompareGetDefaultOptions();
-	const deploymentOptions = result.defaultDeploymentOptions;
 	// re-include database-scoped credentials
 	if (getAzdataApi()) {
-		deploymentOptions.excludeObjectTypes.value = (deploymentOptions as mssql.DeploymentOptions).excludeObjectTypes.value?.filter(x => x !== mssql.SchemaObjectType.DatabaseScopedCredentials);
+		result.defaultDeploymentOptions.excludeObjectTypes.value = (result.defaultDeploymentOptions as mssql.DeploymentOptions).excludeObjectTypes.value?.filter(x => x !== mssql.SchemaObjectType.DatabaseScopedCredentials);
 	} else {
-		deploymentOptions.excludeObjectTypes.value = (deploymentOptions as vscodeMssql.DeploymentOptions).excludeObjectTypes.value?.filter(x => x !== vscodeMssql.SchemaObjectType.DatabaseScopedCredentials);
+		result.defaultDeploymentOptions.excludeObjectTypes.value = (result.defaultDeploymentOptions as vscodeMssql.DeploymentOptions).excludeObjectTypes.value?.filter(x => x !== vscodeMssql.SchemaObjectType.DatabaseScopedCredentials);
 	}
 
 	// this option needs to be true for same database references validation to work
 	if (project.databaseReferences.length > 0) {
-		deploymentOptions.includeCompositeObjects.value = true;
+		result.defaultDeploymentOptions.booleanOptionsDictionary.includeCompositeObjects.value = true;
 	}
 	return result.defaultDeploymentOptions;
 }

@@ -18,6 +18,7 @@ import { INotebookService } from 'sql/workbench/services/notebook/browser/notebo
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { CellEditModes, MoveDirection } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 const moreActionsLabel = localize('moreActionsLabel', "More");
 
 export class EditCellAction extends ToggleableAction {
@@ -105,6 +106,7 @@ export class MoveCellAction extends CellActionBase {
 		let moveDirection = this._cssClass.includes('move-down') ? MoveDirection.Down : MoveDirection.Up;
 		try {
 			context.model.moveCell(context.cell, moveDirection);
+			context.model.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.MoveCell, { moveDirection: moveDirection });
 		} catch (error) {
 			let message = getErrorMessage(error);
 

@@ -12,7 +12,7 @@ import { Project } from '../models/project';
 import { FolderNode, FileNode, sortFileFolderNodes } from '../models/tree/fileFolderTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { DatabaseProjectItemType } from '../common/constants';
-import { EntryType } from '../models/projectEntry';
+import { EntryType } from 'sqldbproj';
 
 describe('Project Tree tests', function (): void {
 	it('Should correctly order tree nodes by type, then by name', function (): void {

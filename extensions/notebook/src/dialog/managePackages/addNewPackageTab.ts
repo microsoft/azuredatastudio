@@ -24,6 +24,7 @@ export class AddNewPackageTab {
 	private newPackagesSummary: azdata.TextComponent;
 	private newPackagesSummaryLoader: azdata.LoadingComponent;
 	private packageInstallButton: azdata.ButtonComponent;
+	private installProgressSpinner: azdata.LoadingComponent;
 
 	private readonly InvalidTextPlaceholder = localize('managePackages.invalidTextPlaceholder', "N/A");
 	private readonly SearchPlaceholder = (pkgType: string) => localize('managePackages.searchBarPlaceholder', "Search {0} packages", pkgType);
@@ -47,6 +48,14 @@ export class AddNewPackageTab {
 			this.packagesSearchButton.onDidClick(async () => {
 				await this.loadNewPackageInfo();
 			});
+
+			this.installProgressSpinner = view.modelBuilder.loadingComponent()
+				.withProps({
+					loadingText: localize('managePackages.installProgressText', "Installing package"),
+					showText: true,
+					loadingCompletedText: localize('managePackages.installCompleteText', "Package installed"),
+					loading: false
+				}).component();
 
 			this.newPackagesName = view.modelBuilder.text().withProps({ width: '400px' }).component();
 			this.newPackagesNameLoader = view.modelBuilder.loadingComponent()
@@ -90,6 +99,9 @@ export class AddNewPackageTab {
 					title: localize('managePackages.packageVersionTitle', "Supported Package Versions for Python {0}", this.jupyterInstallation.installedPythonVersion)
 				}, {
 					component: this.packageInstallButton,
+					title: ''
+				}, {
+					component: this.installProgressSpinner,
 					title: ''
 				}]).component();
 
@@ -178,8 +190,6 @@ export class AddNewPackageTab {
 		}
 	}
 
-
-
 	private async doPackageInstall(): Promise<void> {
 		let packageName = this.newPackagesName.value as string;
 		let packageVersion = this.newPackagesVersions.value as string;
@@ -197,6 +207,8 @@ export class AddNewPackageTab {
 			description: taskName,
 			isCancelable: false,
 			operation: op => {
+				this.packageInstallButton.enabled = false;
+				this.installProgressSpinner.loading = true;
 				let installPromise: Promise<void>;
 				installPromise = this.dialog.model.installPackages([{ name: packageName, version: packageVersion }]);
 				installPromise
@@ -220,6 +232,10 @@ export class AddNewPackageTab {
 
 						op.updateStatus(azdata.TaskStatus.Failed, installFailedMsg);
 						this.jupyterInstallation.outputChannel.appendLine(installFailedMsg);
+					})
+					.finally(() => {
+						this.packageInstallButton.enabled = true;
+						this.installProgressSpinner.loading = false;
 					});
 			}
 		});

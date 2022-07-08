@@ -13,19 +13,18 @@ describe('Publish Dialog Deploy Options Model', () => {
 		should.notEqual(model.getOptionsData(), undefined, 'Options shouldn\'t be undefined');
 
 		should.doesNotThrow(() => model.setDeploymentOptions());
-
-		should(model.getDeployOptionUtil('')).equal(undefined);
 	});
 
 	it('Should get description', function (): void {
 		const model = new DeployOptionsModel(testUtils.getDeploymentOptions());
-		model.optionsLabels.forEach(l => {
-			should(model.getDescription(l)).not.equal(undefined);
+		Object.entries(model.deploymentOptions.booleanOptionsDictionary).forEach(option => {
+			// option[1] contains the value, description and displayName
+			should(model.getOptionDescription(option[1].displayName)).not.equal(undefined);
 		});
 	});
 
-	it('Should be undefined for null description', function (): void {
+	it('Should return empty string for null option ', function (): void {
 		const model = new DeployOptionsModel(testUtils.getDeploymentOptions());
-		should(model.getDescription('')).equal(undefined);
+		should(model.getOptionDescription('')).equal('');
 	});
 });

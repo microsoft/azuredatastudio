@@ -8,18 +8,7 @@ import * as utils from '../../common/utils';
 import * as vscode from 'vscode';
 import { ConnectionResult } from 'azdata';
 import { IFireWallRuleError } from 'vscode-mssql';
-
-export interface ISqlConnectionProperties {
-	tenantId?: string,
-	accountId?: string
-	serverName: string,
-	userName: string,
-	password: string,
-	port: number,
-	dbName: string,
-	profileName?: string,
-	connectionRetryTimeout?: number
-}
+import { ISqlConnectionProperties } from 'sqldbproj';
 
 /**
  * Includes methods to open connections and interact with connection views

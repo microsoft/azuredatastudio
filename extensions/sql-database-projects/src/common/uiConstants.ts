@@ -14,7 +14,7 @@ export namespace cssStyles {
 	export const publishDialogLabelWidth = '205px';
 	export const publishDialogTextboxWidth = '190px';
 	export const publishDialogDropdownWidth = '192px';
-	export const PublishingOptionsButtonWidth = '120px';
+	export const PublishingOptionsButtonWidth = '100px';
 
 	export const addDatabaseReferenceDialogLabelWidth = '215px';
 	export const addDatabaseReferenceInputboxWidth = '220px';
