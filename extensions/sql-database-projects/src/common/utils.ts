@@ -334,7 +334,7 @@ export async function getDefaultPublishDeploymentOptions(project: ISqlProject): 
 	}
 
 	// this option needs to be true for same database references validation to work
-	if (project.databaseReferences.length > 0) {
+	if (project.databaseReferences.length > 0 && deploymentOptions.includeCompositeObjects !== undefined) {
 		deploymentOptions.includeCompositeObjects.value = true;
 	}
 	return result.defaultDeploymentOptions;
