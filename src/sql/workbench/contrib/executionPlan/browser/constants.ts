@@ -258,8 +258,8 @@ export const badgeIconPaths = {
 };
 
 export const collapseExpandNodeIconPaths = {
-	collapse: imageBasePath + 'collapse-node.svg',
-	expand: imageBasePath + 'expand-node.svg'
+	collapse: imageBasePath + 'collapse.svg',
+	expand: imageBasePath + 'expand.svg'
 };
 
 export const savePlanIconClassNames = 'ep-save-plan-icon';
