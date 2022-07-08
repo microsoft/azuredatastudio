@@ -3,6 +3,6 @@
 		"type": "label",
 		"name": "port-request-label",
 		"action": "updateLabels",
-		"addLabel": "Port-Request"
+		"addLabel": "Port Request"
 	}
 ]
