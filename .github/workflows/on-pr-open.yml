@@ -21,6 +21,6 @@ jobs:
       uses: ./actions/commands
       with:
         config-path: port-request-commands.json
-        token: "${{ secrets.GITHUB_TOKEN }}"
+        token: ${{ secrets.GITHUB_TOKEN }}
 
 
