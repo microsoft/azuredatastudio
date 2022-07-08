@@ -455,6 +455,7 @@ export const Sdk: string = 'Sdk';
 export const DatabaseSource = 'DatabaseSource';
 export const VisualStudioVersion = 'VisualStudioVersion';
 export const SSDTExists = 'SSDTExists';
+export const OutputPath = 'OutputPath';
 
 export const BuildElements = localize('buildElements', "Build Elements");
 export const FolderElements = localize('folderElements', "Folder Elements");
@@ -492,6 +493,8 @@ export const RoundTripSqlDbPresentCondition = '\'$(NetCoreBuild)\' != \'true\' A
 export const RoundTripSqlDbNotPresentCondition = '\'$(NetCoreBuild)\' != \'true\' AND \'$(SQLDBExtensionsRefPath)\' == \'\'';
 export const DacpacRootPath = '$(DacPacRootPath)';
 export const ProjJsonToClean = '$(BaseIntermediateOutputPath)\\project.assets.json';
+
+export const defaultOutputPath = '.\\bin\\Debug\\';
 
 // Sqlproj VS property conditions
 export const VSVersionCondition = '\'$(VisualStudioVersion)\' == \'\'';
