@@ -213,7 +213,7 @@ steps:
     condition: always()
 
   - task: PublishTestResults@2
-    displayName: 'Publish Test Results test-results.xml'
+    displayName: 'Publish Test Results'
     inputs:
       testResultsFiles: "*-results.xml"
       searchFolder: "$(Build.ArtifactStagingDirectory)/test-results"
