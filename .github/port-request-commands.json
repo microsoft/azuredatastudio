@@ -1,7 +1,8 @@
 [
 	{
 		"type": "label",
-		"name": "Port Request Label",
+		"name": "port-request-label",
+		"action": "updateLabels",
 		"addLabel": "Port Request"
 	}
 ]
