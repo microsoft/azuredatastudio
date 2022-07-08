@@ -10,12 +10,12 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as os from 'os';
 import * as path from 'path';
+import * as azdataTest from '@microsoft/azdata-test';
 
 import { DataTierApplicationWizard, PageName } from '../wizard/dataTierApplicationWizard';
 import { DacFxDataModel } from '../wizard/api/models';
 import { TestContext, createContext } from './testContext';
 import { TestDeployConfigPage, TestExtractConfigPage, TestImportConfigPage } from './testDacFxConfigPages';
-import { mockConnectionProfile } from './testUtils';
 
 let wizard: DataTierApplicationWizard;
 let testContext: TestContext;
@@ -92,7 +92,7 @@ describe('Dacfx Wizard Pages', function (): void {
 		testContext = createContext();
 		wizard.setPages();
 
-		sinon.stub(azdata.connection, 'getConnections').resolves([mockConnectionProfile]);
+		sinon.stub(azdata.connection, 'getConnections').resolves([azdataTest.stubs.connectionProfile.createConnectionProfile()]);
 		sinon.stub(azdata.connection, 'listDatabases').resolves(['fakeDatabaseName']);
 		sinon.stub(vscode.window, 'showOpenDialog').resolves([vscode.Uri.file(dacpacPath)]);
 
@@ -112,7 +112,7 @@ describe('Dacfx Wizard Pages', function (): void {
 		testContext = createContext();
 		wizard.setPages();
 
-		sinon.stub(azdata.connection, 'getConnections').resolves([mockConnectionProfile]);
+		sinon.stub(azdata.connection, 'getConnections').resolves([azdataTest.stubs.connectionProfile.createConnectionProfile()]);
 		sinon.stub(azdata.connection, 'listDatabases').resolves(['fakeDatabaseName', 'master', 'msdb', 'tempdb', 'model']);
 
 		let extractConfigPage = new TestExtractConfigPage(wizard, wizard.pages.get(PageName.deployConfig).wizardPage, wizard.model, testContext.viewContext.view);

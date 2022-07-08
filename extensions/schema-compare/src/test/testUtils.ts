@@ -25,50 +25,6 @@ export const mockIConnectionProfile: azdata.IConnectionProfile = {
 	options: null
 };
 
-export const mockConnectionProfile: azdata.connection.ConnectionProfile = {
-	providerId: 'My Provider',
-	connectionId: 'My Id',
-	connectionName: 'My Connection',
-	serverName: 'My Server',
-	databaseName: 'My Database',
-	userName: 'My User',
-	password: 'My Pwd',
-	authenticationType: 'SqlLogin',
-	savePassword: false,
-	groupFullName: 'My groupName',
-	groupId: 'My GroupId',
-	saveProfile: true,
-	options: {
-		server: 'My Server',
-		database: 'My Database',
-		user: 'My User',
-		password: 'My Pwd',
-		authenticationType: 'SqlLogin'
-	}
-};
-
-export const mockConnectionProfile2: azdata.connection.ConnectionProfile = {
-	providerId: 'My Provider2',
-	connectionId: 'My Id2',
-	connectionName: 'My Connection2',
-	serverName: 'My Server2',
-	databaseName: 'My Database2',
-	userName: 'My User2',
-	password: 'My Pwd2',
-	authenticationType: 'SqlLogin',
-	savePassword: false,
-	groupFullName: 'My groupName2',
-	groupId: 'My GroupId2',
-	saveProfile: true,
-	options: {
-		server: 'My Server2',
-		database: 'My Database2',
-		user: 'My User2',
-		password: 'My Pwd2',
-		authenticationType: 'SqlLogin'
-	}
-};
-
 export const mockConnectionResult: azdata.ConnectionResult = {
 	connected: false,
 	connectionId: undefined,
