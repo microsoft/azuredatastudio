@@ -1310,6 +1310,10 @@ declare module 'azdata' {
 			 * Warning/parallelism badges applicable to the current node
 			 */
 			badges: ExecutionPlanBadge[];
+			/**
+			 * Data to show in top operations table for the node.
+			 */
+			topOperationsData: TopOperationsDataItem[];
 		}
 
 		export interface ExecutionPlanBadge {
@@ -1474,6 +1478,21 @@ declare module 'azdata' {
 			 * @param secondPlanFile file that contains the second execution plan.
 			 */
 			compareExecutionPlanGraph(firstPlanFile: ExecutionPlanGraphInfo, secondPlanFile: ExecutionPlanGraphInfo): Thenable<ExecutionPlanComparisonResult>;
+		}
+
+		export interface TopOperationsDataItem {
+			/**
+			 * Column name for the top operation data item
+			 */
+			columnName: string;
+			/**
+			 * Cell data type for the top operation data item
+			 */
+			dataType: ExecutionPlanGraphElementPropertyDataType;
+			/**
+			 * Cell value for the top operation data item
+			 */
+			displayValue: string | number | boolean;
 		}
 	}
 

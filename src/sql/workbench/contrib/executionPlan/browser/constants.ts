@@ -282,6 +282,7 @@ export const executionPlanCompareIconClassName = 'ep-plan-compare-icon';
 export const executionPlanComparisonPropertiesDifferent = 'ep-properties-different';
 export const executionPlanComparisonPropertiesDownArrow = 'ep-properties-down-arrow';
 export const executionPlanComparisonPropertiesUpArrow = 'ep-properties-up-arrow';
+export const executionPlanTopOperations = 'ep-top-operations';
 
 /**
  * Plan comparison polygon border colors

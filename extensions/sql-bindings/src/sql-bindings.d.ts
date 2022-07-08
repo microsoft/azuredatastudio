@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-
 declare module 'sql-bindings' {
 
 	import * as vscode from 'vscode';
@@ -12,6 +11,11 @@ declare module 'sql-bindings' {
 	export const enum extension {
 		name = 'Microsoft.sql-bindings',
 		vsCodeName = 'ms-mssql.sql-bindings-vscode'
+	}
+
+	export const enum ObjectType {
+		Table = 'Table',
+		View = 'View'
 	}
 
 	/**
@@ -34,19 +38,24 @@ declare module 'sql-bindings' {
 		createAzureFunction(): Promise<void>;
 
 		/**
-		 * Prompts the user to select type of binding and returns result or undefined if the user cancelled out of the prompt
-		 * @param funcName (Optional) Name of the function we are adding the SQL Binding to
+		 * Prompts the user to select type of binding and returns result
+		 * @param objectType (Optional) The type of object user choose to insert/upsert into
+		 * if left undefined we prompt user to choose between input or output binding types
+		 * @param funcName (Optional) Name of the function to which we are adding the SQL Binding
+		 * @returns binding type or undefined if the user cancelled out of the prompt
 		 */
-		promptForBindingType(funcName?: string): Promise<BindingType | undefined>;
+		promptForBindingType(objectType?: ObjectType, funcName?: string): Promise<BindingType | undefined>;
 
 		/**
 		 * Prompts the user to enter object name for the SQL query
 		 * @param bindingType Type of SQL Binding
 		 * @param connectionInfo (optional) connection info from the selected connection profile
 		 * if left undefined we prompt to manually enter the object name
+		 * @param objectType (optional) type of object to query/upsert into
+		 * if left undefined we prompt user to select table to use or manually enter object name
 		 * @returns the object name from user's input or menu choice
 		 */
-		promptForObjectName(bindingType: BindingType, connectionInfo?: IConnectionInfo): Promise<string | undefined>;
+		promptForObjectName(bindingType: BindingType, connectionInfo?: IConnectionInfo, objectType?: ObjectType): Promise<string | undefined>;
 
 		/**
 		 * Prompts the user to enter connection setting and updates it from AF project
@@ -168,5 +177,4 @@ declare module 'sql-bindings' {
 		connectionStringSettingName: string;
 		connectionInfo: IConnectionInfo | undefined;
 	}
-
 }
