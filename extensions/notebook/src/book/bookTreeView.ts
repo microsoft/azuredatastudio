@@ -137,7 +137,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		if (bookPathToUpdate) {
 			let pinStatusChanged = await this.bookPinManager.pinNotebook(bookTreeItem);
 			sendNotebookActionEvent(NbTelemetryView.Book, NbTelemetryAction.PinNotebook);
-
 			if (pinStatusChanged) {
 				bookTreeItem.contextValue = 'pinnedNotebook';
 			}
@@ -213,7 +212,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	 */
 	async moveTreeItems(treeItems: BookTreeItem[]): Promise<void> {
 		sendNotebookActionEvent(NbTelemetryView.Book, NbTelemetryAction.MoveNotebook);
-
 		const selectionResults = await this.bookSectionQuickPick();
 		if (selectionResults) {
 			let pickedSection = selectionResults.quickPickSection;
@@ -253,7 +251,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			}
 
 			sendNotebookActionEvent(NbTelemetryView.Book, NbTelemetryAction.OpenBook);
-
 		} catch (e) {
 			// if there is an error remove book from context
 			const index = this.books.findIndex(book => book.bookPath === bookPath);
@@ -321,7 +318,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				this._onDidChangeTreeData.fire(undefined);
 			}
 			sendNotebookActionEvent(NbTelemetryView.Book, NbTelemetryAction.CloseBook);
-
 		} catch (e) {
 			void vscode.window.showErrorMessage(loc.closeBookError(book.root, e instanceof Error ? e.message : e));
 		} finally {
@@ -407,7 +403,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				}
 			}
 			sendNotebookActionEvent(NbTelemetryView.Book, NbTelemetryAction.OpenNotebookFromBook);
-
 		} catch (e) {
 			void vscode.window.showErrorMessage(loc.openNotebookError(resource, e instanceof Error ? e.message : e));
 		}
