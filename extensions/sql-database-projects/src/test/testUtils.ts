@@ -31,14 +31,14 @@ export async function shouldThrowSpecificError(block: Function, expectedMessage:
 
 export async function createTestSqlProjFile(contents: string, folderPath?: string): Promise<string> {
 	folderPath = folderPath ?? path.join(await generateTestFolderPath(), 'TestProject');
-	return await createTestFile(contents, 'TestProject.sqlproj', folderPath);
-}
-
-export async function createTestProject(contents: string, folderPath?: string): Promise<Project> {
 	const macroDict: Record<string, string> = {
 		'PROJECT_DSP': constants.defaultDSP
 	};
 	contents = templates.macroExpansion(contents, macroDict);
+	return await createTestFile(contents, 'TestProject.sqlproj', folderPath);
+}
+
+export async function createTestProject(contents: string, folderPath?: string): Promise<Project> {
 	return await Project.openProject(await createTestSqlProjFile(contents, folderPath));
 }
 

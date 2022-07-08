@@ -71,7 +71,7 @@ export class ExecutionPlanEditor extends EditorPane {
 		} else {
 			// creating a new view for the new input
 			newInput._executionPlanFileViewUUID = generateUuid();
-			newView = this._register(this._instantiationService.createInstance(ExecutionPlanFileView));
+			newView = this._register(this._instantiationService.createInstance(ExecutionPlanFileView, undefined));
 			newView.onShow(this._parentContainer);
 			newView.loadGraphFile({
 				graphFileContent: await newInput.content(),
