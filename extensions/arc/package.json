@@ -195,16 +195,7 @@
                             "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
                             "value": "Indirect"
                           }
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "title": "%arc.data.controller.cluster.config.profile.title%",
-                  "sections": [
-                    {
-                      "fields": [
+                        },
                         {
                           "type": "options",
                           "label": "%arc.data.controller.cluster.config.profile%",
@@ -218,7 +209,7 @@
                               "loadingCompletedText": "%arc.data.controller.cluster.config.profile.loadingcompleted%"
                             },
                             "defaultValue": "azure-arc-aks-default-storage",
-                            "optionsType": "radio"
+                            "optionsType": "dropdown"
                           },
                           "enabled": {
                             "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
