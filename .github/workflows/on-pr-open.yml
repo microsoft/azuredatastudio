@@ -5,7 +5,7 @@ on:
       - main
 
 jobs:
-  triage:
+  Add Port Request Label:
     permissions:
       contents: read
       pull-requests: write
