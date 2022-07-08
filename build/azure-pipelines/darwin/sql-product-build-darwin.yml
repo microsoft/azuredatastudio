@@ -215,8 +215,8 @@ steps:
   - task: PublishTestResults@2
     displayName: 'Publish Test Results test-results.xml'
     inputs:
-      testResultsFiles: 'test-results.xml'
-      searchFolder: '$(Build.SourcesDirectory)'
+      testResultsFiles: "*-results.xml"
+      searchFolder: "$(Build.ArtifactStagingDirectory)/test-results"
     continueOnError: true
     condition: and(succeededOrFailed(), eq(variables['RUN_TESTS'], 'true'))
 
