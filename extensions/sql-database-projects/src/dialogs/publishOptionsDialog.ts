@@ -23,6 +23,7 @@ export class PublishOptionsDialog {
 	public optionsModel: DeployOptionsModel;
 	private optionsFlexBuilder: azdataType.FlexContainer | undefined;
 	private optionsChanged: boolean = false;
+	private isResetOptionsClicked: boolean = false;
 
 	constructor(defaultOptions: mssql.DeploymentOptions, private publish: PublishDatabaseDialog) {
 		this.optionsModel = new DeployOptionsModel(defaultOptions);
@@ -47,6 +48,8 @@ export class PublishOptionsDialog {
 
 		let resetButton = utils.getAzdataApi()!.window.createButton(constants.ResetButton);
 		resetButton.onClick(async () => await this.reset());
+		// If options values already modified then enable the reset button
+		resetButton.enabled = this.publish.publishOptionsModified!;
 		this.dialog.customButtons = [resetButton];
 
 		utils.getAzdataApi()!.window.openDialog(this.dialog);
@@ -91,6 +94,8 @@ export class PublishOptionsDialog {
 					const displayName = this.optionsTable?.data[checkboxState.row][1];
 					this.optionsModel.setOptionValue(displayName, checkboxState.checked);
 					this.optionsChanged = true;
+					// customButton[0] is the reset button, enablling it when option checkbox is changed
+					this.dialog.customButtons[0].enabled = true;
 				}
 			}));
 
@@ -145,10 +150,11 @@ export class PublishOptionsDialog {
 		// Set the publish deploymentoptions with the updated table component values
 		this.publish.setDeploymentOptions(this.optionsModel.deploymentOptions);
 		this.disposeListeners();
-
 		if (this.optionsChanged) {
 			TelemetryReporter.sendActionEvent(TelemetryViews.PublishOptionsDialog, TelemetryActions.optionsChanged);
 		}
+		// When options are Reset to default and clicked Ok, seting optionsChanged flag to false, if not set the state of the option change
+		this.publish.publishOptionsModified = this.isResetOptionsClicked ? false : (this.optionsChanged || this.publish.publishOptionsModified);
 	}
 
 	/*
@@ -172,6 +178,7 @@ export class PublishOptionsDialog {
 		this.optionsFlexBuilder?.removeItem(this.optionsTable!);
 		this.optionsFlexBuilder?.insertItem(this.optionsTable!, 0, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh', 'padding-top': '2px' } });
 		TelemetryReporter.sendActionEvent(TelemetryViews.PublishOptionsDialog, TelemetryActions.resetOptions);
+		this.isResetOptionsClicked = true;
 	}
 
 	private disposeListeners(): void {

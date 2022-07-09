@@ -58,6 +58,7 @@ export class PublishDatabaseDialog {
 	private serverName: string | undefined;
 	protected optionsButton: azdataType.ButtonComponent | undefined;
 	private publishOptionsDialog: PublishOptionsDialog | undefined;
+	public publishOptionsModified: boolean = false;
 
 	private completionPromise: Deferred = new Deferred();
 
