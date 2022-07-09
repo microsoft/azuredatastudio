@@ -57,7 +57,8 @@ export function getInputComponentType(inputComponent: InputComponent): string {
 	} else if ((<RadioGroupLoadingComponentBuilder>inputComponent).checked !== undefined && (<RadioGroupLoadingComponentBuilder>inputComponent).displayValue !== undefined) {
 		return loc.radioButtonCompType;
 	} else {
-		throw new Error(loc.unknownInputTypeError);
+		//throw new Error(loc.unknownInputTypeError);
+		return '';
 	}
 }
 
@@ -418,26 +419,29 @@ async function hookUpDynamicEnablement(context: WizardPageContext): Promise<void
 					}
 
 					// If field is disabled, hide it entirely
-					if (!fieldComponent.component.enabled && fieldComponent.labelComponent) {
-						// await fieldComponent.labelComponent.updateProperties({
-						// 	CSSStyles: {}
-						// });
-						//  azdata.TextComponent | azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent | RadioGroupLoadingComponentBuilder
+					if (!fieldComponent.component.enabled) {
+						// await fieldComponent.labelComponent!.updateCssStyles({ 'visibility': 'hidden' });
+						//await (<azdata.TextComponent | azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent | RadioGroupLoadingComponentBuilder>fieldComponent.component).updateCssStyles({ 'visibility': 'hidden' });
 						let inputCompType = getInputComponentType(fieldComponent.component);
 						if (inputCompType === loc.textCompType) {
-							(<azdata.TextComponent>fieldComponent.component).updateProperties({ CSSStyles: {} });
+							(<azdata.TextComponent>fieldComponent.component).updateCssStyles({ 'visibility': 'hidden' });
+							fieldComponent.labelComponent!.updateCssStyles({ 'visibility': 'hidden' });
 						} else if (inputCompType === loc.inputBoxCompType) {
-							(<azdata.InputBoxComponent>fieldComponent.component).updateProperties({ CSSStyles: {} });
+							(<azdata.InputBoxComponent>fieldComponent.component).updateCssStyles({ 'visibility': 'hidden' });
+							fieldComponent.labelComponent!.updateCssStyles({ 'visibility': 'hidden' });
 						} else if (inputCompType === loc.dropDownCompType) {
-							// doesnt have CSSTYLES AS A PROPERTY
-							(<azdata.DropDownComponent>fieldComponent.component).updateProperties({ CSSStyles: {} });
+							(<azdata.DropDownComponent>fieldComponent.component).updateCssStyles({ 'visibility': 'hidden' });
+							fieldComponent.labelComponent!.updateCssStyles({ 'visibility': 'hidden' });
 						} else if (inputCompType === loc.checkBoxCompType) {
-							(<azdata.CheckBoxComponent>fieldComponent.component).updateProperties({ CSSStyles: {} });
+							(<azdata.CheckBoxComponent>fieldComponent.component).updateCssStyles({ 'visibility': 'hidden' });
+							fieldComponent.labelComponent!.updateCssStyles({ 'visibility': 'hidden' });
 						} else if (inputCompType === loc.radioButtonCompType) {
-							// fix
-							(<RadioGroupLoadingComponentBuilder>fieldComponent.component).component = (<RadioGroupLoadingComponentBuilder>fieldComponent.component).component;
+							(<RadioGroupLoadingComponentBuilder>fieldComponent.component).updateCssStyles({ 'visibility': 'hidden' });
+							fieldComponent.labelComponent!.updateCssStyles({ 'visibility': 'hidden' });
 						}
-
+					} else {
+						await fieldComponent.labelComponent!.updateCssStyles({ 'visibility': 'visible' });
+						await (<azdata.TextComponent | azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent | RadioGroupLoadingComponentBuilder>fieldComponent.component).updateCssStyles({ 'visibility': 'visible' });
 					}
 				};
 				targetComponent.onValueChanged(() => {

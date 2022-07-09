@@ -36,6 +36,10 @@ export class RadioGroupLoadingComponentBuilder implements azdata.ComponentBuilde
 		return this._optionsLoadingBuilder.withValidation(validation);
 	}
 
+	updateCssStyles(cssStyles: azdata.CssStyles): Thenable<void> {
+		return this._optionsDivContainer.updateCssStyles(cssStyles);
+	}
+
 	async loadOptions(optionsInfo: OptionsInfo | (() => Promise<OptionsInfo>)): Promise<void> {
 		this.component().loading = true;
 		this._optionsDivContainer.clearItems();
