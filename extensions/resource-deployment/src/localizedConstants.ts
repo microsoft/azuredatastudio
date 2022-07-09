@@ -89,3 +89,10 @@ export const optionsText = localize('resourceDeployment.Options', "Options");
 export function getToolInstallingMessage(tool: ITool): string {
 	return localize('deploymentDialog.InstallingTool', "Required tool '{0}' [ {1} ] is being installed now.", tool.displayName, tool.homePage);
 }
+
+export const unknownInputTypeError = localize('unknownInputTypeError', "Unknown InputType. Not a text field, input box, dropdown, checkbox, or radio button.");
+export const textCompType = localize('textComp', "azdata.TextComponent");
+export const inputBoxCompType = localize('inputBoxCompType', "azdata.InputBoxComponent");
+export const dropDownCompType = localize('dropDownCompType', "azdata.DropDownComponent");
+export const checkBoxCompType = localize('checkBoxCompType', "azdata.CheckBoxComponent");
+export const radioButtonCompType = localize('radioButtonCompType', "RadioGroupLoadingComponentBuilder");

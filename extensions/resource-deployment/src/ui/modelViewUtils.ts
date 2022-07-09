@@ -45,6 +45,22 @@ export type InputComponentInfo<T extends InputComponent> = {
 	isPassword?: boolean
 };
 
+export function getInputComponentType(inputComponent: InputComponent): string {
+	if ((<azdata.TextComponent>inputComponent).textType !== undefined) {
+		return loc.textCompType;
+	} else if ((<azdata.InputBoxComponent>inputComponent).inputType !== undefined) {
+		return loc.inputBoxCompType;
+	} else if ((<azdata.DropDownComponent>inputComponent).editable !== undefined) {
+		return loc.dropDownCompType;
+	} else if ((<azdata.CheckBoxComponent>inputComponent).checked !== undefined && (<azdata.CheckBoxComponent>inputComponent).valid !== undefined) {
+		return loc.checkBoxCompType;
+	} else if ((<RadioGroupLoadingComponentBuilder>inputComponent).checked !== undefined && (<RadioGroupLoadingComponentBuilder>inputComponent).displayValue !== undefined) {
+		return loc.radioButtonCompType;
+	} else {
+		throw new Error(loc.unknownInputTypeError);
+	}
+}
+
 export type InputComponents = {
 	[s: string]: InputComponentInfo<InputComponent>
 };
@@ -399,6 +415,29 @@ async function hookUpDynamicEnablement(context: WizardPageContext): Promise<void
 					// be modified anyways and so just should not use a placeholder value if they don't want one
 					if ('placeHolder' in fieldComponent.component) {
 						fieldComponent.component.placeHolder = valuesMatch ? field.placeHolder : '';
+					}
+
+					// If field is disabled, hide it entirely
+					if (!fieldComponent.component.enabled && fieldComponent.labelComponent) {
+						// await fieldComponent.labelComponent.updateProperties({
+						// 	CSSStyles: {}
+						// });
+						//  azdata.TextComponent | azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent | RadioGroupLoadingComponentBuilder
+						let inputCompType = getInputComponentType(fieldComponent.component);
+						if (inputCompType === loc.textCompType) {
+							(<azdata.TextComponent>fieldComponent.component).updateProperties({ CSSStyles: {} });
+						} else if (inputCompType === loc.inputBoxCompType) {
+							(<azdata.InputBoxComponent>fieldComponent.component).updateProperties({ CSSStyles: {} });
+						} else if (inputCompType === loc.dropDownCompType) {
+							// doesnt have CSSTYLES AS A PROPERTY
+							(<azdata.DropDownComponent>fieldComponent.component).updateProperties({ CSSStyles: {} });
+						} else if (inputCompType === loc.checkBoxCompType) {
+							(<azdata.CheckBoxComponent>fieldComponent.component).updateProperties({ CSSStyles: {} });
+						} else if (inputCompType === loc.radioButtonCompType) {
+							// fix
+							(<RadioGroupLoadingComponentBuilder>fieldComponent.component).component = (<RadioGroupLoadingComponentBuilder>fieldComponent.component).component;
+						}
+
 					}
 				};
 				targetComponent.onValueChanged(() => {
