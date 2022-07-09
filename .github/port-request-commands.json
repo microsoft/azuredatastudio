@@ -1,6 +1,7 @@
 [
 	{
-		"type": "label",
-		"name": "Port Request"
+		"type": "comment",
+		"name": "*",
+		"addLabel": "Port Request"
 	}
 ]
