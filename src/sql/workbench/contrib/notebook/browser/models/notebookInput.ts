@@ -77,6 +77,7 @@ export class NotebookEditorModel extends EditorModel {
 				}, err => undefined);
 			}
 		}));
+		this._register(this.textEditorModel);
 		if (this.textEditorModel instanceof UntitledTextEditorModel) {
 			this._register(this.textEditorModel.onDidChangeDirty(e => {
 				let dirty = this.textEditorModel instanceof TextResourceEditorModel ? false : this.textEditorModel.isDirty();
@@ -420,6 +421,7 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 				}
 			} else {
 				const textEditorModelReference = await this.textModelService.createModelReference(this.resource);
+				this._register(textEditorModelReference);
 				textEditorModelReference.object.textEditorModel.onBeforeAttached();
 				await textEditorModelReference.object.resolve();
 				textOrUntitledEditorModel = textEditorModelReference.object as TextFileEditorModel | TextResourceEditorModel;
