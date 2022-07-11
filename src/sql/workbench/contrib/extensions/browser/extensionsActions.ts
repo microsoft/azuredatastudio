@@ -27,7 +27,7 @@ export class ShowRecommendedExtensionsByScenarioAction extends Action {
 	}
 
 	override run(): Promise<void> {
-		return this.viewletService.openPaneComposite(VIEWLET_ID, ViewContainerLocation.Sidebar,  true)
+		return this.viewletService.openPaneComposite(VIEWLET_ID, ViewContainerLocation.Sidebar, true)
 			.then(viewlet => viewlet?.getViewPaneContainer() as IExtensionsViewPaneContainer)
 			.then(viewlet => {
 				viewlet.search('@' + this.scenarioType);
@@ -53,7 +53,7 @@ export class InstallRecommendedExtensionsByScenarioAction extends Action {
 
 	override async run(): Promise<void> {
 		if (!this.recommendations.length) { return; }
-		const viewlet = await this.viewletService.openPaneComposite(VIEWLET_ID, ViewContainerLocation.Sidebar,  true)
+		const viewlet = await this.viewletService.openPaneComposite(VIEWLET_ID, ViewContainerLocation.Sidebar, true);
 		const viewPaneContainer = viewlet?.getViewPaneContainer() as IExtensionsViewPaneContainer;
 		viewPaneContainer.search('@' + this.scenarioType);
 		viewlet.focus();

@@ -21,8 +21,8 @@ export interface ILocalFileSearchSimpleWorker {
 
 	cancelQuery(queryId: number): void;
 
-	listDirectory(handle: FileSystemDirectoryHandle, queryProps: IFileQueryProps<UriComponents>, folderQuery: IFolderQuery, queryId: number): Promise<IWorkerFileSearchComplete>
-	searchDirectory(handle: FileSystemDirectoryHandle, queryProps: ITextQueryProps<UriComponents>, folderQuery: IFolderQuery, queryId: number): Promise<IWorkerTextSearchComplete>
+	listDirectory(handle: any, queryProps: IFileQueryProps<UriComponents>, folderQuery: IFolderQuery, queryId: number): Promise<IWorkerFileSearchComplete>
+	searchDirectory(handle: any, queryProps: ITextQueryProps<UriComponents>, folderQuery: IFolderQuery, queryId: number): Promise<IWorkerTextSearchComplete>
 }
 
 export interface ILocalFileSearchSimpleWorkerHost {
