@@ -9,7 +9,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { MenuId, IMenuService, registerAction2, Action2 } from 'vs/platform/actions/common/actions';
-import { IContextKeyService, ContextKeyExpr, ContextKeyEqualsExpr, RawContextKey, IContextKey } from 'vs/platform/contextkey/common/contextkey';
+import { IContextKeyService, ContextKeyExpr, RawContextKey, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { ITreeView, ITreeViewDescriptor, IViewsRegistry, Extensions, IViewDescriptorService, ITreeItem, TreeItemCollapsibleState, ITreeViewDataProvider, TreeViewItemHandleArg, ITreeItemLabel, ViewContainer, ViewContainerLocation, ResolvableTreeItem, ITreeViewDragAndDropController, ITreeDataTransfer, TREE_ITEM_DATA_TRANSFER_TYPE } from 'vs/workbench/common/views';
 import { IViewletViewOptions } from 'vs/workbench/browser/parts/views/viewsViewlet';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -227,7 +227,7 @@ abstract class AbstractTreeView extends Disposable implements ITreeView {
 		}));
 		this._register(this.viewDescriptorService.onDidChangeLocation(({ views, from, to }) => {
 			if (views.some(v => v.id === this.id)) {
-				this.tree?.updateOptions({ overrideStyles: { listBackground: this.viewLocation === ViewContainerLocation.Sidebar ? SIDE_BAR_BACKGROUND : PANEL_BACKGROUND } });
+				this.tree?.updateOptions({ overrideStyles: { listBackground: this.viewLocation === ViewContainerLocation.Panel ? PANEL_BACKGROUND : SIDE_BAR_BACKGROUND } });
 			}
 		}));
 		this.registerActions();
@@ -288,7 +288,10 @@ abstract class AbstractTreeView extends Disposable implements ITreeView {
 				}
 			};
 			if (this._dataProvider.onDidChangeEmpty) {
-				this._register(this._dataProvider.onDidChangeEmpty(() => this._onDidChangeWelcomeState.fire()));
+				this._register(this._dataProvider.onDidChangeEmpty(() => {
+					this.updateCollapseAllToggle();
+					this._onDidChangeWelcomeState.fire();
+				}));
 			}
 			this.updateMessage();
 			this.refresh();
@@ -379,7 +382,7 @@ abstract class AbstractTreeView extends Disposable implements ITreeView {
 					title: localize('refresh', "Refresh"),
 					menu: {
 						id: MenuId.ViewTitle,
-						when: ContextKeyExpr.and(ContextKeyEqualsExpr.create('view', that.id), that.refreshContextKey),
+						when: ContextKeyExpr.and(ContextKeyExpr.equals('view', that.id), that.refreshContextKey),
 						group: 'navigation',
 						order: Number.MAX_SAFE_INTEGER - 1,
 					},
@@ -397,7 +400,7 @@ abstract class AbstractTreeView extends Disposable implements ITreeView {
 					title: localize('collapseAll', "Collapse All"),
 					menu: {
 						id: MenuId.ViewTitle,
-						when: ContextKeyExpr.and(ContextKeyEqualsExpr.create('view', that.id), that.collapseAllContextKey),
+						when: ContextKeyExpr.and(ContextKeyExpr.equals('view', that.id), that.collapseAllContextKey),
 						group: 'navigation',
 						order: Number.MAX_SAFE_INTEGER,
 					},
@@ -487,7 +490,7 @@ abstract class AbstractTreeView extends Disposable implements ITreeView {
 			dataSource, {
 			identityProvider: new TreeViewIdentityProvider(),
 			accessibilityProvider: {
-				getAriaLabel(element: ITreeItem): string {
+				getAriaLabel(element: ITreeItem): string | null {
 					if (element.accessibilityInformation) {
 						return element.accessibilityInformation.label;
 					}
@@ -495,6 +498,11 @@ abstract class AbstractTreeView extends Disposable implements ITreeView {
 					if (isString(element.tooltip)) {
 						return element.tooltip;
 					} else {
+						if (element.resourceUri && !element.label) {
+							// The custom tree has no good information on what should be used for the aria label.
+							// Allow the tree widget's default aria label to be used.
+							return null;
+						}
 						let buildAriaLabel: string = '';
 						if (element.label) {
 							buildAriaLabel += element.label.label + ' ';
@@ -872,9 +880,7 @@ class TreeRenderer extends Disposable implements ITreeRenderer<ITreeItem, FuzzyS
 	) {
 		super();
 		this._hoverDelegate = {
-			showHover: (options: IHoverDelegateOptions): IDisposable | undefined => {
-				return this.hoverService.showHover(options);
-			},
+			showHover: (options: IHoverDelegateOptions) => this.hoverService.showHover(options),
 			delay: <number>this.configurationService.getValue('workbench.hover.delay')
 		};
 	}
@@ -916,9 +922,8 @@ class TreeRenderer extends Disposable implements ITreeRenderer<ITreeItem, FuzzyS
 
 		return {
 			markdown: (token: CancellationToken): Promise<IMarkdownString | string | undefined> => {
-				return new Promise<IMarkdownString | string | undefined>(async (resolve) => {
-					await node.resolve(token);
-					resolve(node.tooltip);
+				return new Promise<IMarkdownString | string | undefined>((resolve) => {
+					node.resolve(token).then(() => resolve(node.tooltip));
 				});
 			},
 			markdownNotSupportedFallback: resource ? undefined : label ?? '' // Passing undefined as the fallback for a resource falls back to the old native hover

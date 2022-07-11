@@ -44,23 +44,23 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		if (this.cellModel?.currentMode === CellEditModes.SPLIT || this.cellModel?.currentMode === CellEditModes.MARKDOWN) {
 			const keyEvent = new StandardKeyboardEvent(e);
 			let markdownTextTransformer = new MarkdownTextTransformer(this._notebookService, this.cellModel);
-			if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KEY_B) {
+			if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KeyB) {
 				// Bold Text
 				DOM.EventHelper.stop(e, true);
 				await markdownTextTransformer.transformText(MarkdownButtonType.BOLD);
-			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KEY_I) {
+			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KeyI) {
 				// Italicize text
 				DOM.EventHelper.stop(e, true);
 				await markdownTextTransformer.transformText(MarkdownButtonType.ITALIC);
-			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KEY_U) {
+			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KeyU) {
 				// Underline text
 				DOM.EventHelper.stop(e, true);
 				await markdownTextTransformer.transformText(MarkdownButtonType.UNDERLINE);
-			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.shiftKey && keyEvent.keyCode === KeyCode.KEY_K) {
+			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.shiftKey && keyEvent.keyCode === KeyCode.KeyK) {
 				// Code Block
 				DOM.EventHelper.stop(e, true);
 				await markdownTextTransformer.transformText(MarkdownButtonType.CODE);
-			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.shiftKey && keyEvent.keyCode === KeyCode.KEY_H) {
+			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.shiftKey && keyEvent.keyCode === KeyCode.KeyH) {
 				// Highlight Text
 				DOM.EventHelper.stop(e, true);
 				await markdownTextTransformer.transformText(MarkdownButtonType.HIGHLIGHT);

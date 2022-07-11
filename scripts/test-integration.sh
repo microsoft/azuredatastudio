@@ -72,7 +72,7 @@ after_suite
 
 # Tests in the extension host
 
-ALL_PLATFORMS_API_TESTS_EXTRA_ARGS="--disable-telemetry --skip-welcome --crash-reporter-directory=$VSCODECRASHDIR --logsPath=$VSCODELOGSDIR --no-cached-data --disable-updates --disable-extensions --disable-workspace-trust --user-data-dir=$VSCODEUSERDATADIR"
+ALL_PLATFORMS_API_TESTS_EXTRA_ARGS="--disable-telemetry --skip-welcome --skip-release-notes --crash-reporter-directory=$VSCODECRASHDIR --logsPath=$VSCODELOGSDIR --no-cached-data --disable-updates --disable-extensions --disable-workspace-trust --user-data-dir=$VSCODEUSERDATADIR"
 
 # {{SQL CARBON EDIT}} Don't run tests for unused extensions
 # "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS $ROOT/extensions/vscode-api-tests/testWorkspace --enable-proposed-api=vscode.vscode-api-tests --extensionDevelopmentPath=$ROOT/extensions/vscode-api-tests --extensionTestsPath=$ROOT/extensions/vscode-api-tests/out/singlefolder-tests $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
@@ -84,7 +84,7 @@ ALL_PLATFORMS_API_TESTS_EXTRA_ARGS="--disable-telemetry --skip-welcome --crash-r
 # "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS $ROOT/extensions/vscode-colorize-tests/test --extensionDevelopmentPath=$ROOT/extensions/vscode-colorize-tests --extensionTestsPath=$ROOT/extensions/vscode-colorize-tests/out $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
 # after_suite
 
-# "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS $ROOT/extensions/typescript-language-features/test-workspace --extensionDevelopmentPath=$ROOT/extensions/typescript-language-features --extensionTestsPath=$ROOT/extensions/typescript-language-features/out/test/unit $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
+"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS $ROOT/extensions/typescript-language-features/test-workspace --extensionDevelopmentPath=$ROOT/extensions/typescript-language-features --extensionTestsPath=$ROOT/extensions/typescript-language-features/out/test/unit $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
 # after_suite
 
 # "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS $ROOT/extensions/markdown-language-features/test-workspace --extensionDevelopmentPath=$ROOT/extensions/markdown-language-features --extensionTestsPath=$ROOT/extensions/markdown-language-features/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS

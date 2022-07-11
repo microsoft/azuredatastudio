@@ -6,9 +6,11 @@
 import { extensionsWorkbenchServiceIncompatible } from 'sql/base/common/locConstants';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
+import { getErrorMessage } from 'vs/base/common/errors';
 import { Schemas } from 'vs/base/common/network';
 import * as path from 'vs/base/common/path';
-import { isMacintosh } from 'vs/base/common/platform';
+import { isLinux, isMacintosh, platform } from 'vs/base/common/platform';
+import { arch } from 'vs/base/common/process';
 import { joinPath } from 'vs/base/common/resources';
 import * as semver from 'vs/base/common/semver/semver';
 import { URI } from 'vs/base/common/uri';
@@ -18,11 +20,10 @@ import { IFile, zip } from 'vs/base/node/zip';
 import * as nls from 'vs/nls';
 import { IDownloadService } from 'vs/platform/download/common/download';
 import { INativeEnvironmentService } from 'vs/platform/environment/common/environment';
-import { AbstractExtensionManagementService, AbstractExtensionTask, IInstallExtensionTask, INSTALL_ERROR_VALIDATING, IUninstallExtensionTask, joinErrors, UninstallExtensionTaskOptions } from 'vs/platform/extensionManagement/common/abstractExtensionManagementService';
+import { AbstractExtensionManagementService, AbstractExtensionTask, IInstallExtensionTask, IUninstallExtensionTask, joinErrors, UninstallExtensionTaskOptions } from 'vs/platform/extensionManagement/common/abstractExtensionManagementService';
 import {
-	ExtensionManagementError, IExtensionGalleryService, IExtensionIdentifier, IExtensionManagementService, IGalleryExtension, IGalleryMetadata, ILocalExtension, InstallOperation, InstallOptions,
-	InstallVSIXOptions,
-	INSTALL_ERROR_INCOMPATIBLE
+	ExtensionManagementError, ExtensionManagementErrorCode, getTargetPlatform, IExtensionGalleryService, IExtensionIdentifier, IExtensionManagementService, IGalleryExtension, IGalleryMetadata, ILocalExtension, InstallOperation, InstallOptions,
+	InstallVSIXOptions, TargetPlatform
 } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { areSameExtensions, ExtensionIdentifierWithVersion, getGalleryExtensionId } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { ExtensionsDownloader } from 'vs/platform/extensionManagement/node/extensionDownloader';
@@ -34,13 +35,10 @@ import { ExtensionsWatcher } from 'vs/platform/extensionManagement/node/extensio
 import { ExtensionType, IExtensionManifest } from 'vs/platform/extensions/common/extensions';
 import { isEngineValid } from 'vs/platform/extensions/common/extensionValidator';
 import { IFileService } from 'vs/platform/files/common/files';
-import { IInstantiationService, optional } from 'vs/platform/instantiation/common/instantiation';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ILogService } from 'vs/platform/log/common/log';
-import product from 'vs/platform/product/common/product';
+import { IProductService } from 'vs/platform/product/common/productService';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-
-const INSTALL_ERROR_UNSET_UNINSTALLED = 'unsetUninstalled';
-const INSTALL_ERROR_DOWNLOADING = 'downloading';
 
 interface InstallableExtension {
 	zipPath: string;
@@ -59,11 +57,12 @@ export class ExtensionManagementService extends AbstractExtensionManagementServi
 		@ITelemetryService telemetryService: ITelemetryService,
 		@ILogService logService: ILogService,
 		@INativeEnvironmentService private readonly environmentService: INativeEnvironmentService,
-		@optional(IDownloadService) private downloadService: IDownloadService,
+		@IDownloadService private downloadService: IDownloadService,
 		@IInstantiationService instantiationService: IInstantiationService,
-		@IFileService fileService: IFileService,
+		@IFileService private readonly fileService: IFileService,
+		@IProductService productService: IProductService
 	) {
-		super(galleryService, telemetryService, logService);
+		super(galleryService, telemetryService, logService, productService);
 		const extensionLifecycle = this._register(instantiationService.createInstance(ExtensionsLifecycle));
 		this.extensionsScanner = this._register(instantiationService.createInstance(ExtensionsScanner, extension => extensionLifecycle.postUninstall(extension)));
 		this.manifestCache = this._register(new ExtensionsManifestCache(environmentService, this));
@@ -76,6 +75,39 @@ export class ExtensionManagementService extends AbstractExtensionManagementServi
 			}
 			removed.forEach(extension => this._onDidUninstallExtension.fire({ identifier: extension }));
 		}));
+	}
+
+	private _targetPlatformPromise: Promise<TargetPlatform> | undefined;
+	getTargetPlatform(): Promise<TargetPlatform> {
+		if (!this._targetPlatformPromise) {
+			this._targetPlatformPromise = (async () => {
+				const isAlpineLinux = await this.isAlpineLinux();
+				const targetPlatform = getTargetPlatform(isAlpineLinux ? 'alpine' : platform, arch);
+				this.logService.debug('ExtensionManagementService#TargetPlatform:', targetPlatform);
+				return targetPlatform;
+			})();
+		}
+		return this._targetPlatformPromise;
+	}
+
+	private async isAlpineLinux(): Promise<boolean> {
+		if (!isLinux) {
+			return false;
+		}
+		let content: string | undefined;
+		try {
+			const fileContent = await this.fileService.readFile(URI.file('/etc/os-release'));
+			content = fileContent.value.toString();
+		} catch (error) {
+			try {
+				const fileContent = await this.fileService.readFile(URI.file('/usr/lib/os-release'));
+				content = fileContent.value.toString();
+			} catch (error) {
+				/* Ignore */
+				this.logService.debug(`Error while getting the os-release file.`, getErrorMessage(error));
+			}
+		}
+		return !!content && (content.match(/^ID=([^\u001b\r\n]*)/m) || [])[1] === 'alpine';
 	}
 
 	async zip(extension: ILocalExtension): Promise<URI> {
@@ -101,10 +133,6 @@ export class ExtensionManagementService extends AbstractExtensionManagementServi
 		return this.extensionsScanner.scanExtensions(type);
 	}
 
-	async canInstall(extension: IGalleryExtension): Promise<boolean> {
-		return true;
-	}
-
 	async install(vsix: URI, options: InstallVSIXOptions = {}): Promise<ILocalExtension> {
 		this.logService.trace('ExtensionManagementService#install', vsix.toString());
 
@@ -112,15 +140,15 @@ export class ExtensionManagementService extends AbstractExtensionManagementServi
 		const manifest = await getManifest(path.resolve(downloadLocation.fsPath));
 		// {{SQL CARBON EDIT}} Do our own engine checks
 		const id = getGalleryExtensionId(manifest.publisher, manifest.name);
-		if (manifest.engines?.vscode && !isEngineValid(manifest.engines.vscode, product.vscodeVersion, product.date)) {
-			throw new Error(nls.localize('incompatible', "Unable to install extension '{0}' as it is not compatible with the current VS Code engine version '{1}'.", id, product.vscodeVersion));
+		if (manifest.engines?.vscode && !isEngineValid(manifest.engines.vscode, this.productService.vscodeVersion, this.productService.date)) {
+			throw new Error(nls.localize('incompatible', "Unable to install extension '{0}' as it is not compatible with the current VS Code engine version '{1}'.", id, this.productService.vscodeVersion));
 		}
-		if (manifest.engines?.azdata && !isEngineValid(manifest.engines.azdata, product.version, product.date)) {
-			throw new ExtensionManagementError(extensionsWorkbenchServiceIncompatible(id, manifest.version, product.version, manifest.engines.azdata), INSTALL_ERROR_INCOMPATIBLE);
+		if (manifest.engines?.azdata && !isEngineValid(manifest.engines.azdata, this.productService.version, this.productService.date)) {
+			throw new ExtensionManagementError(extensionsWorkbenchServiceIncompatible(id, manifest.version, this.productService.version, manifest.engines.azdata), ExtensionManagementErrorCode.Incompatible);
 		}
 		/*
-		if (manifest.engines && manifest.engines.vscode && !isEngineValid(manifest.engines.vscode, product.version, product.date)) {
-			throw new Error(nls.localize('incompatible', "Unable to install extension '{0}' as it is not compatible with VS Code '{1}'.", getGalleryExtensionId(manifest.publisher, manifest.name), product.version));
+		if (manifest.engines && manifest.engines.vscode && !isEngineValid(manifest.engines.vscode, this.productService.version, this.productService.date)) {
+			throw new Error(nls.localize('incompatible', "Unable to install extension '{0}' as it is not compatible with VS Code '{1}'.", getGalleryExtensionId(manifest.publisher, manifest.name), this.productService.version));
 		}
 		*/
 
@@ -149,10 +177,6 @@ export class ExtensionManagementService extends AbstractExtensionManagementServi
 		if (vsix.scheme === Schemas.file) {
 			return vsix;
 		}
-		if (!this.downloadService) {
-			throw new Error('Download service is not available');
-		}
-
 		const downloadedLocation = joinPath(this.environmentService.tmpDir, generateUuid());
 		await this.downloadService.download(vsix, downloadedLocation);
 		return downloadedLocation;
@@ -215,9 +239,9 @@ abstract class AbstractInstallExtensionTask extends AbstractExtensionTask<ILocal
 			}
 		} catch (e) {
 			if (isMacintosh) {
-				throw new ExtensionManagementError(nls.localize('quitCode', "Unable to install the extension. Please Quit and Start VS Code before reinstalling."), INSTALL_ERROR_UNSET_UNINSTALLED);
+				throw new ExtensionManagementError(nls.localize('quitCode', "Unable to install the extension. Please Quit and Start VS Code before reinstalling."), ExtensionManagementErrorCode.Internal);
 			} else {
-				throw new ExtensionManagementError(nls.localize('exitCode', "Unable to install the extension. Please Exit and Start VS Code before reinstalling."), INSTALL_ERROR_UNSET_UNINSTALLED);
+				throw new ExtensionManagementError(nls.localize('exitCode', "Unable to install the extension. Please Exit and Start VS Code before reinstalling."), ExtensionManagementErrorCode.Internal);
 			}
 		}
 		return this.extract(installableExtension, token);
@@ -243,11 +267,8 @@ abstract class AbstractInstallExtensionTask extends AbstractExtensionTask<ILocal
 	}
 
 	private async extract({ zipPath, identifierWithVersion, metadata }: InstallableExtension, token: CancellationToken): Promise<ILocalExtension> {
-		let local = await this.extensionsScanner.extractUserExtension(identifierWithVersion, zipPath, token);
+		let local = await this.extensionsScanner.extractUserExtension(identifierWithVersion, zipPath, metadata, token);
 		this.logService.info('Extracting completed.', identifierWithVersion.id);
-		if (metadata) {
-			local = await this.extensionsScanner.saveMetadataForLocalExtension(local, metadata);
-		}
 		return local;
 	}
 
@@ -276,12 +297,25 @@ class InstallGalleryExtensionTask extends AbstractInstallExtensionTask {
 		installableExtension.metadata.isMachineScoped = this.options.isMachineScoped || existingExtension?.isMachineScoped;
 		installableExtension.metadata.isBuiltin = this.options.isBuiltin || existingExtension?.isBuiltin;
 
-		const local = await this.installExtension(installableExtension, token);
-		if (existingExtension && semver.neq(existingExtension.manifest.version, this.gallery.version)) {
-			await this.extensionsScanner.setUninstalled(existingExtension);
+		try {
+			const local = await this.installExtension(installableExtension, token);
+			if (existingExtension && semver.neq(existingExtension.manifest.version, this.gallery.version)) {
+				await this.extensionsScanner.setUninstalled(existingExtension);
+			}
+			return local;
+		} catch (error) {
+			await this.deleteDownloadedVSIX(installableExtension.zipPath);
+			throw error;
 		}
-		try { await this.extensionsDownloader.delete(URI.file(installableExtension.zipPath)); } catch (error) { /* Ignore */ }
-		return local;
+	}
+
+	private async deleteDownloadedVSIX(vsix: string): Promise<void> {
+		try {
+			await this.extensionsDownloader.delete(URI.file(vsix));
+		} catch (error) {
+			/* Ignore */
+			this.logService.warn('Error while deleting the downloaded vsix', vsix.toString(), getErrorMessage(error));
+		}
 	}
 
 	private async downloadInstallableExtension(extension: IGalleryExtension, operation: InstallOperation): Promise<Required<InstallableExtension>> {
@@ -297,14 +331,15 @@ class InstallGalleryExtensionTask extends AbstractInstallExtensionTask {
 			zipPath = (await this.extensionsDownloader.downloadExtension(extension, operation)).fsPath;
 			this.logService.info('Downloaded extension:', extension.identifier.id, zipPath);
 		} catch (error) {
-			throw new ExtensionManagementError(joinErrors(error).message, INSTALL_ERROR_DOWNLOADING);
+			throw new ExtensionManagementError(joinErrors(error).message, ExtensionManagementErrorCode.Download);
 		}
 
 		try {
 			const manifest = await getManifest(zipPath);
 			return (<Required<InstallableExtension>>{ zipPath, identifierWithVersion: new ExtensionIdentifierWithVersion(extension.identifier, manifest.version), metadata });
 		} catch (error) {
-			throw new ExtensionManagementError(joinErrors(error).message, INSTALL_ERROR_VALIDATING);
+			await this.deleteDownloadedVSIX(zipPath);
+			throw new ExtensionManagementError(joinErrors(error).message, ExtensionManagementErrorCode.Invalid);
 		}
 	}
 }
@@ -327,10 +362,10 @@ class InstallVSIXTask extends AbstractInstallExtensionTask {
 		const installedExtensions = await this.extensionsScanner.scanExtensions(ExtensionType.User);
 		const existing = installedExtensions.find(i => areSameExtensions(this.identifier, i.identifier));
 		const metadata = await this.getMetadata(this.identifier.id, token);
+		metadata.isMachineScoped = this.options.isMachineScoped || existing?.isMachineScoped;
+		metadata.isBuiltin = this.options.isBuiltin || existing?.isBuiltin;
 
 		if (existing) {
-			metadata.isMachineScoped = this.options.isMachineScoped || existing.isMachineScoped;
-			metadata.isBuiltin = this.options.isBuiltin || existing.isBuiltin;
 			this._operation = InstallOperation.Update;
 			if (identifierWithVersion.equals(new ExtensionIdentifierWithVersion(existing.identifier, existing.manifest.version))) {
 				try {

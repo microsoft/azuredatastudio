@@ -7,7 +7,7 @@ import * as nls from 'vs/nls';
 import { isObject } from 'vs/base/common/types';
 import { IJSONSchema, IJSONSchemaMap, IJSONSchemaSnippet } from 'vs/base/common/jsonSchema';
 import { IWorkspaceFolder } from 'vs/platform/workspace/common/workspace';
-import { IConfig, IDebuggerContribution, IDebugAdapter, IDebugger, IDebugSession, IAdapterManager, IDebugService } from 'vs/workbench/contrib/debug/common/debug';
+import { IConfig, IDebuggerContribution, IDebugAdapter, IDebugger, IDebugSession, IAdapterManager, IDebugService, debuggerDisabledMessage } from 'vs/workbench/contrib/debug/common/debug';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IConfigurationResolverService } from 'vs/workbench/services/configurationResolver/common/configurationResolver';
 import * as ConfigurationResolverUtils from 'vs/workbench/services/configurationResolver/common/configurationResolverUtils';
@@ -19,12 +19,15 @@ import { IExtensionDescription } from 'vs/platform/extensions/common/extensions'
 import { ITelemetryEndpoint } from 'vs/platform/telemetry/common/telemetry';
 import { cleanRemoteAuthority } from 'vs/platform/telemetry/common/telemetryUtils';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
+import { ContextKeyExpr, ContextKeyExpression, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 export class Debugger implements IDebugger {
 
 	private debuggerContribution: IDebuggerContribution;
 	private mergedExtensionDescriptions: IExtensionDescription[] = [];
 	private mainExtensionDescription: IExtensionDescription | undefined;
+
+	private debuggerWhen: ContextKeyExpression | undefined;
 
 	constructor(
 		private adapterManager: IAdapterManager,
@@ -34,10 +37,13 @@ export class Debugger implements IDebugger {
 		@ITextResourcePropertiesService private readonly resourcePropertiesService: ITextResourcePropertiesService,
 		@IConfigurationResolverService private readonly configurationResolverService: IConfigurationResolverService,
 		@IWorkbenchEnvironmentService private readonly environmentService: IWorkbenchEnvironmentService,
-		@IDebugService private readonly debugService: IDebugService
+		@IDebugService private readonly debugService: IDebugService,
+		@IContextKeyService private readonly contextKeyService: IContextKeyService,
 	) {
 		this.debuggerContribution = { type: dbgContribution.type };
 		this.merge(dbgContribution, extensionDescription);
+
+		this.debuggerWhen = typeof this.debuggerContribution.when === 'string' ? ContextKeyExpr.deserialize(this.debuggerContribution.when) : undefined;
 	}
 
 	merge(otherDebuggerContribution: IDebuggerContribution, extensionDescription: IExtensionDescription): void {
@@ -133,6 +139,14 @@ export class Debugger implements IDebugger {
 		return this.debuggerContribution.languages;
 	}
 
+	get when(): ContextKeyExpression | undefined {
+		return this.debuggerWhen;
+	}
+
+	get enabled() {
+		return !this.debuggerWhen || this.contextKeyService.contextMatchesRules(this.debuggerWhen);
+	}
+
 	hasInitialConfiguration(): boolean {
 		return !!this.debuggerContribution.initialConfigurations;
 	}
@@ -212,6 +226,7 @@ export class Debugger implements IDebugger {
 				enum: [this.type],
 				description: nls.localize('debugType', "Type of configuration."),
 				pattern: '^(?!node2)',
+				deprecationMessage: this.enabled ? undefined : debuggerDisabledMessage(this.type),
 				errorMessage: nls.localize('debugTypeNotRecognised', "The debug type is not recognized. Make sure that you have a corresponding debug extension installed and that it is enabled."),
 				patternErrorMessage: nls.localize('node2NotSupported', "\"node2\" is no longer supported, use \"node\" instead and set the \"protocol\" attribute to \"inspector\".")
 			};
