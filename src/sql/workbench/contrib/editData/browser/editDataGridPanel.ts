@@ -70,6 +70,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	private dirtyCells: { row: number, column: number }[] = [];
 	protected plugins = new Array<Slick.Plugin<any>>();
 	private newlinePattern: string;
+	private lastEnteredString: string;
 	// List of column names with their indexes stored.
 	private columnNameToIndex: { [columnNumber: number]: string } = {};
 	// Edit Data functions
@@ -384,6 +385,10 @@ export class EditDataGridPanel extends GridParentComponent {
 				// Cell update failed, jump back to the last cell we were on
 				this.updateEnabledState(true);
 				this.focusCell(cellToSubmit.row, cellToSubmit.column, true);
+				if (this.lastEnteredString) {
+					(this.table.grid.getCellEditor() as Slick.Editors.Text<any>).setValue(this.lastEnteredString);
+					this.lastEnteredString = undefined;
+				}
 				return Promise.reject(null);
 			});
 	}
@@ -679,6 +684,7 @@ export class EditDataGridPanel extends GridParentComponent {
 					});
 				},
 				error => {
+					self.lastEnteredString = self.currentEditCellValue;
 					self.currentEditCellValue = undefined;
 					// Switch lastClickedCell back to the cell to submit.
 					this.lastClickedCell = { row: cellToAdd.row, column: cellToAdd.column, isEditable: true };
@@ -1135,13 +1141,14 @@ export class EditDataGridPanel extends GridParentComponent {
 		if (this.previousSavedCell) {
 			activeCell = this.previousSavedCell;
 		}
-		if (editor && activeCell.row >= startIndex && activeCell.row < startIndex + count) {
-			if (oldValue && wasValueChanged) {
-				editor.setValue(oldValue);
-			}
-		}
 		if (!this.noAutoSelectOnRender && !this.firstRender) {
 			this.focusCell(this.lastClickedCell.row, this.lastClickedCell.column);
+			editor = <Slick.Editors.Text<any>>this.table.grid.getCellEditor();
+			if (editor && activeCell.row >= startIndex && activeCell.row < startIndex + count) {
+				if (oldValue && wasValueChanged) {
+					editor.setValue(oldValue);
+				}
+			}
 		}
 		else {
 			this.noAutoSelectOnRender = false;
