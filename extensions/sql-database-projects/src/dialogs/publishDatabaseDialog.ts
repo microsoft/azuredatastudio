@@ -291,7 +291,6 @@ export class PublishDatabaseDialog {
 			// We only use the dialog in ADS context currently so safe to cast to the mssql DeploymentOptions here
 			this.deploymentOptions = await utils.getDefaultPublishDeploymentOptions(this.project) as DeploymentOptions;
 		}
-
 		return this.deploymentOptions;
 	}
 

@@ -489,112 +489,31 @@ declare module 'vscode-mssql' {
 		executeAndScript = 2
 	}
 
+	/**
+	* Interface containing deployment options of boolean type
+	*/
 	export interface DacDeployOptionPropertyBoolean {
 		value: boolean;
 		description: string;
 		displayName: string;
 	}
 
+	/**
+	* Interface containing deployment options of integer type, value property holds values from <DacFx>\Product\Source\DeploymentApi\ObjectTypes.cs enum
+	*/
 	export interface DacDeployOptionPropertyObject {
-		value: SchemaObjectType[];
+		value: number[];
 		description: string;
 		displayName: string;
 	}
 
+	/**
+	* Interface containing deployment options of integer type, value property holds values from <DacFx>\Product\Source\DeploymentApi\ObjectTypes.cs enum
+	*/
 	export interface DeploymentOptions {
-		ignoreTableOptions: DacDeployOptionPropertyBoolean;
-		ignoreSemicolonBetweenStatements: DacDeployOptionPropertyBoolean;
-		ignoreRouteLifetime: DacDeployOptionPropertyBoolean;
-		ignoreRoleMembership: DacDeployOptionPropertyBoolean;
-		ignoreQuotedIdentifiers: DacDeployOptionPropertyBoolean;
-		ignorePermissions: DacDeployOptionPropertyBoolean;
-		ignorePartitionSchemes: DacDeployOptionPropertyBoolean;
-		ignoreObjectPlacementOnPartitionScheme: DacDeployOptionPropertyBoolean;
-		ignoreNotForReplication: DacDeployOptionPropertyBoolean;
-		ignoreLoginSids: DacDeployOptionPropertyBoolean;
-		ignoreLockHintsOnIndexes: DacDeployOptionPropertyBoolean;
-		ignoreKeywordCasing: DacDeployOptionPropertyBoolean;
-		ignoreIndexPadding: DacDeployOptionPropertyBoolean;
-		ignoreIndexOptions: DacDeployOptionPropertyBoolean;
-		ignoreIncrement: DacDeployOptionPropertyBoolean;
-		ignoreIdentitySeed: DacDeployOptionPropertyBoolean;
-		ignoreUserSettingsObjects: DacDeployOptionPropertyBoolean;
-		ignoreFullTextCatalogFilePath: DacDeployOptionPropertyBoolean;
-		ignoreWhitespace: DacDeployOptionPropertyBoolean;
-		ignoreWithNocheckOnForeignKeys: DacDeployOptionPropertyBoolean;
-		verifyCollationCompatibility: DacDeployOptionPropertyBoolean;
-		unmodifiableObjectWarnings: DacDeployOptionPropertyBoolean;
-		treatVerificationErrorsAsWarnings: DacDeployOptionPropertyBoolean;
-		scriptRefreshModule: DacDeployOptionPropertyBoolean;
-		scriptNewConstraintValidation: DacDeployOptionPropertyBoolean;
-		scriptFileSize: DacDeployOptionPropertyBoolean;
-		scriptDeployStateChecks: DacDeployOptionPropertyBoolean;
-		scriptDatabaseOptions: DacDeployOptionPropertyBoolean;
-		scriptDatabaseCompatibility: DacDeployOptionPropertyBoolean;
-		scriptDatabaseCollation: DacDeployOptionPropertyBoolean;
-		runDeploymentPlanExecutors: DacDeployOptionPropertyBoolean;
-		registerDataTierApplication: DacDeployOptionPropertyBoolean;
-		populateFilesOnFileGroups: DacDeployOptionPropertyBoolean;
-		noAlterStatementsToChangeClrTypes: DacDeployOptionPropertyBoolean;
-		includeTransactionalScripts: DacDeployOptionPropertyBoolean;
-		includeCompositeObjects: DacDeployOptionPropertyBoolean;
-		allowUnsafeRowLevelSecurityDataMovement: DacDeployOptionPropertyBoolean;
-		ignoreWithNocheckOnCheckConstraints: DacDeployOptionPropertyBoolean;
-		ignoreFillFactor: DacDeployOptionPropertyBoolean;
-		ignoreFileSize: DacDeployOptionPropertyBoolean;
-		ignoreFilegroupPlacement: DacDeployOptionPropertyBoolean;
-		doNotAlterReplicatedObjects: DacDeployOptionPropertyBoolean;
-		doNotAlterChangeDataCaptureObjects: DacDeployOptionPropertyBoolean;
-		disableAndReenableDdlTriggers: DacDeployOptionPropertyBoolean;
-		deployDatabaseInSingleUserMode: DacDeployOptionPropertyBoolean;
-		createNewDatabase: DacDeployOptionPropertyBoolean;
-		compareUsingTargetCollation: DacDeployOptionPropertyBoolean;
-		commentOutSetVarDeclarations: DacDeployOptionPropertyBoolean;
-		blockWhenDriftDetected: DacDeployOptionPropertyBoolean;
-		blockOnPossibleDataLoss: DacDeployOptionPropertyBoolean;
-		backupDatabaseBeforeChanges: DacDeployOptionPropertyBoolean;
-		allowIncompatiblePlatform: DacDeployOptionPropertyBoolean;
-		allowDropBlockingAssemblies: DacDeployOptionPropertyBoolean;
-		dropConstraintsNotInSource: DacDeployOptionPropertyBoolean;
-		dropDmlTriggersNotInSource: DacDeployOptionPropertyBoolean;
-		dropExtendedPropertiesNotInSource: DacDeployOptionPropertyBoolean;
-		dropIndexesNotInSource: DacDeployOptionPropertyBoolean;
-		ignoreFileAndLogFilePath: DacDeployOptionPropertyBoolean;
-		ignoreExtendedProperties: DacDeployOptionPropertyBoolean;
-		ignoreDmlTriggerState: DacDeployOptionPropertyBoolean;
-		ignoreDmlTriggerOrder: DacDeployOptionPropertyBoolean;
-		ignoreDefaultSchema: DacDeployOptionPropertyBoolean;
-		ignoreDdlTriggerState: DacDeployOptionPropertyBoolean;
-		ignoreDdlTriggerOrder: DacDeployOptionPropertyBoolean;
-		ignoreCryptographicProviderFilePath: DacDeployOptionPropertyBoolean;
-		verifyDeployment: DacDeployOptionPropertyBoolean;
-		ignoreComments: DacDeployOptionPropertyBoolean;
-		ignoreColumnCollation: DacDeployOptionPropertyBoolean;
-		ignoreAuthorizer: DacDeployOptionPropertyBoolean;
-		ignoreAnsiNulls: DacDeployOptionPropertyBoolean;
-		generateSmartDefaults: DacDeployOptionPropertyBoolean;
-		dropStatisticsNotInSource: DacDeployOptionPropertyBoolean;
-		dropRoleMembersNotInSource: DacDeployOptionPropertyBoolean;
-		dropPermissionsNotInSource: DacDeployOptionPropertyBoolean;
-		dropObjectsNotInSource: DacDeployOptionPropertyBoolean;
-		ignoreColumnOrder: DacDeployOptionPropertyBoolean;
-		doNotDropObjectTypes: DacDeployOptionPropertyObject;
 		excludeObjectTypes: DacDeployOptionPropertyObject;
-		ignoreTablePartitionOptions: DacDeployOptionPropertyBoolean;
-		doNotEvaluateSqlCmdVariables: DacDeployOptionPropertyBoolean;
-		disableParallelismForEnablingIndexes: DacDeployOptionPropertyBoolean;
-		disableIndexesForDataPhase: DacDeployOptionPropertyBoolean;
-		restoreSequenceCurrentValue: DacDeployOptionPropertyBoolean;
-		rebuildIndexesOfflineForDataPhase: DacDeployOptionPropertyBoolean;
-		isAlwaysEncryptedParameterizationEnabled: DacDeployOptionPropertyBoolean;
-		preserveIdentityLastValues: DacDeployOptionPropertyBoolean;
-		allowExternalLibraryPaths: DacDeployOptionPropertyBoolean;
-		allowExternalLanguagePaths: DacDeployOptionPropertyBoolean;
-		hashObjectNamesInLogs: DacDeployOptionPropertyBoolean;
-		doNotDropWorkloadClassifiers: DacDeployOptionPropertyBoolean;
-		ignoreWorkloadClassifiers: DacDeployOptionPropertyBoolean;
-		ignoreDatabaseWorkloadGroups: DacDeployOptionPropertyBoolean;
-		doNotDropDatabaseWorkloadGroups: DacDeployOptionPropertyBoolean;
+		// key will be the boolean option name
+		booleanOptionsDictionary: { [key: string]: DacDeployOptionPropertyBoolean };
 	}
 
 	/**

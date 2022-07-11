@@ -74,10 +74,12 @@ export class PublishOptionsDialog {
 
 			// Get the description of the selected option
 			this.disposableListeners.push(this.optionsTable.onRowSelected(async () => {
+				// selectedRows[0] contains selected row number
 				const row = this.optionsTable?.selectedRows![0];
-				const label = this.optionsModel.optionsLabels[row!];
+				// data[row][1] contains the option display name
+				const displayName = this.optionsTable?.data[row!][1];
 				await this.descriptionText?.updateProperties({
-					value: this.optionsModel.getDescription(label)
+					value: this.optionsModel.getOptionDescription(displayName)
 				});
 			}));
 
@@ -85,8 +87,9 @@ export class PublishOptionsDialog {
 			this.disposableListeners.push(this.optionsTable.onCellAction!((rowState) => {
 				const checkboxState = <azdataType.ICheckboxCellActionEventArgs>rowState;
 				if (checkboxState && checkboxState.row !== undefined) {
-					const label = this.optionsModel.optionsLabels[checkboxState.row];
-					this.optionsModel.optionsLookup[label] = checkboxState.checked;
+					// data[row][1] contains the option display name
+					const displayName = this.optionsTable?.data[checkboxState.row][1];
+					this.optionsModel.setOptionValue(displayName, checkboxState.checked);
 					this.optionsChanged = true;
 				}
 			}));
@@ -137,7 +140,9 @@ export class PublishOptionsDialog {
 	* Ok button click, will update the deployment options with selections
 	*/
 	protected execute(): void {
+		// Update the model deploymentoptions with the updated table component values
 		this.optionsModel.setDeploymentOptions();
+		// Set the publish deploymentoptions with the updated table component values
 		this.publish.setDeploymentOptions(this.optionsModel.deploymentOptions);
 		this.disposeListeners();
 
@@ -160,8 +165,8 @@ export class PublishOptionsDialog {
 		const result = await this.publish.getDefaultDeploymentOptions();
 		this.optionsModel.deploymentOptions = result;
 
-		// This will update the Map table with default values
-		this.optionsModel.InitializeUpdateOptionsMapTable();
+		// reset optionsvalueNameLookup with default deployment options
+		this.optionsModel.setOptionsToValueNameLookup();
 
 		await this.updateOptionsTable();
 		this.optionsFlexBuilder?.removeItem(this.optionsTable!);
