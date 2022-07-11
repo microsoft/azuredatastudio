@@ -202,6 +202,10 @@ body.web {
 	width: 16px;
 	height: 16px;
 	line-height: 16px;
+	position: absolute; /* {{SQL CARBON EDIT}} - fix positioning styles */
+	top: 0;
+	bottom: 0;
+	right: 6px;
 	margin: auto;
 	pointer-events: none;
 }
