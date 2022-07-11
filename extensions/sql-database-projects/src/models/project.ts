@@ -10,6 +10,7 @@ import * as utils from '../common/utils';
 import * as xmlFormat from 'xml-formatter';
 import * as os from 'os';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
+import * as mssql from 'mssql';
 
 import { Uri, window } from 'vscode';
 import { EntryType, IDatabaseReferenceProjectEntry, IProjectEntry, ISqlProject, ItemType, SqlTargetPlatform } from 'sqldbproj';
@@ -247,14 +248,19 @@ export class Project implements ISqlProject {
 		const fileEntries: FileProjectEntry[] = [];
 		for (let f of Array.from(filesSet.values())) {
 			const typeEntry = entriesWithType.find(e => e.relativePath === f);
-			let containsCreateTableStatement;
+			let containsCreateTableStatement = false;
 
 			// read file to check if it has a "Create Table" statement
 			const fullPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(f));
 
-			if (await utils.exists(fullPath)) {
-				const fileContents = await fs.readFile(fullPath);
-				containsCreateTableStatement = fileContents.toString().toLowerCase().includes('create table');
+			if (utils.getAzdataApi() && await utils.exists(fullPath)) {
+				const dacFxService = await utils.getDacFxService() as mssql.IDacFxService;
+				try {
+					const result = await dacFxService.parseTSqlScript(fullPath, this.getProjectTargetVersion());
+					containsCreateTableStatement = result.containsCreateTableStatement;
+				} catch (e) {
+					console.error(utils.getErrorMessage(e));
+				}
 			}
 
 			fileEntries.push(this.createFileProjectEntry(f, EntryType.File, typeEntry ? typeEntry.typeAttribute : undefined, containsCreateTableStatement));
