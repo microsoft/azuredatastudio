@@ -23,7 +23,7 @@ jobs:
 
       - uses: actions/setup-node@v2
         with:
-          node-version: 14
+          node-version: 16
 
       - uses: actions/setup-python@v2
         with:
@@ -101,7 +101,7 @@ jobs:
 
       - uses: actions/setup-node@v2
         with:
-          node-version: 14
+          node-version: 16
       # {{SQL CARBON EDIT}} Skip caching for now
       # - name: Compute node modules cache key
       #   id: nodeModulesCacheKey
@@ -173,7 +173,7 @@ jobs:
 
       - uses: actions/setup-node@v2
         with:
-          node-version: 14
+          node-version: 16
 
       # {{SQL CARBON EDIT}} Skip caching for now
       # - name: Compute node modules cache key
@@ -235,7 +235,7 @@ jobs:
 
       - uses: actions/setup-node@v2
         with:
-          node-version: 14
+          node-version: 16
 
       - name: Compute node modules cache key
         id: nodeModulesCacheKey
