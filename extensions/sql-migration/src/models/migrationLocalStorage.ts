@@ -110,6 +110,6 @@ export enum BackupFileInfoStatus {
 	Uploaded = 'Uploaded',
 	Restoring = 'Restoring',
 	Restored = 'Restored',
-	Canceled = 'Canceled',
+	Cancelled = 'Cancelled',
 	Ignored = 'Ignored'
 }

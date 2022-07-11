@@ -34,6 +34,8 @@ export enum State {
 	EXIT,
 }
 
+export const BusinessCriticalTier = 'BusinessCritical';
+
 export enum MigrationTargetType {
 	SQLVM = 'AzureSqlVirtualMachine',
 	SQLMI = 'AzureSqlManagedInstance',

@@ -526,6 +526,22 @@ export interface MigrationStatusDetails {
 	lastRestoredFilename: string;
 	pendingLogBackupsCount: number;
 	invalidFiles: string[];
+	listOfCopyProgressDetails: CopyProgressDetail[];
+}
+
+export interface CopyProgressDetail {
+	tableName: string;
+	status: 'Queued' | 'InProgress' | 'Succeeded' | 'Failed' | 'Canceling' | 'Cancelled';
+	parallelCopyType: string;
+	usedParallelCopies: number;
+	dataRead: number;
+	dataWritten: number;
+	rowsRead: number;
+	rowsCopied: number;
+	copyStart: string;
+	copyThroughput: number,
+	copyDuration: number;
+	errors: string[];
 }
 
 export interface SqlConnectionInfo {
