@@ -1545,7 +1545,7 @@
       <source xml:lang="en">Service Tier</source>
     </trans-unit>
     <trans-unit id="arc.sql.storage-class.backups.description">
-      <source xml:lang="en">The storage class to be used for backup persistent volumes. If no value is specified, the default storage class will be used.</source>
+      <source xml:lang="en">The storage class to be used for Backups. If no value is specified, backups will be stored in same storage class assigned to Data. Must be a RWX capable storage class.</source>
     </trans-unit>
     <trans-unit id="arc.sql.storage-class.data.description">
       <source xml:lang="en">The storage class to be used for data (.mdf). If no value is specified, the default storage class will be used.</source>
@@ -1609,6 +1609,12 @@
     </trans-unit>
     <trans-unit id="arc.storage-class.backups.label">
       <source xml:lang="en">Storage Class (Backups)</source>
+    </trans-unit>
+    <trans-unit id="arc.storage-class.backups.warning">
+      <source xml:lang="en">({0})</source>
+    </trans-unit>
+    <trans-unit id="arc.storage-class.backups.warning.link">
+      <source xml:lang="en">RWX capable</source>
     </trans-unit>
     <trans-unit id="arc.storage-class.data.label">
       <source xml:lang="en">Storage Class (Data)</source>
