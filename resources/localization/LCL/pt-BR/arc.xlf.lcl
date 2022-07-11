@@ -4693,8 +4693,8 @@
       <Item ItemId=";extensions/arc/package.arc.sql.storage-class.backups.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The storage class to be used for Backups. If no value is specified, backups will be stored in same storage class assigned to Data. Must be a RWX capable storage class.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[A classe de armazenamento a ser usada nos volumes persistentes de backup. Se nenhum valor for especificado, a classe de armazenamento padrão será usada.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[A classe de armazenamento a ser usada para Backups. Se nenhum valor for especificado, os backups serão armazenados na mesma classe de armazenamento atribuída a Dados. Deve ser uma classe de armazenamento compatível com RWX.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[The storage class to be used for backup persistent volumes. If no value is specified, the default storage class will be used.]]></Val>
@@ -4918,6 +4918,9 @@
       <Item ItemId=";extensions/arc/package.arc.storage-class.backups.warning.link" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[RWX capable]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Compatível com RWX]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
