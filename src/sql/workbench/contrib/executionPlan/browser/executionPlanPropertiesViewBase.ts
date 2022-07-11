@@ -156,7 +156,7 @@ export abstract class ExecutionPlanPropertiesViewBase implements IVerticalSashLa
 		return this._tableHeight;
 	}
 
-	public abstract addDataToTable();
+	public abstract refreshPropertiesTable();
 
 	public toggleVisibility(): void {
 		this._parentContainer.style.display = this._parentContainer.style.display === 'none' ? 'flex' : 'none';
@@ -167,6 +167,10 @@ export abstract class ExecutionPlanPropertiesViewBase implements IVerticalSashLa
 		this._tableContainer.scrollTo(0, 0);
 		this._tableComponent.setData(data);
 		this.resizeTable();
+	}
+
+	public updateTableColumns(columns: Slick.Column<Slick.SlickData>[]) {
+		this._tableComponent.columns = columns;
 	}
 
 	private resizeTable(): void {
@@ -207,7 +211,7 @@ export class SortPropertiesAlphabeticallyAction extends Action {
 
 	public override async run(context: ExecutionPlanPropertiesViewBase): Promise<void> {
 		context.sortType = PropertiesSortType.Alphabetical;
-		context.addDataToTable();
+		context.refreshPropertiesTable();
 	}
 }
 
@@ -221,7 +225,7 @@ export class SortPropertiesReverseAlphabeticallyAction extends Action {
 
 	public override async run(context: ExecutionPlanPropertiesViewBase): Promise<void> {
 		context.sortType = PropertiesSortType.ReverseAlphabetical;
-		context.addDataToTable();
+		context.refreshPropertiesTable();
 	}
 }
 
@@ -235,7 +239,7 @@ export class SortPropertiesByDisplayOrderAction extends Action {
 
 	public override async run(context: ExecutionPlanPropertiesViewBase): Promise<void> {
 		context.sortType = PropertiesSortType.DisplayOrder;
-		context.addDataToTable();
+		context.refreshPropertiesTable();
 	}
 }
 
