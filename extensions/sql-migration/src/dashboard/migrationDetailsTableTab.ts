@@ -69,6 +69,7 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 		this.refreshButton.enabled = false;
 		this.refreshLoader.loading = true;
 		await this.statusBar.clearError();
+		await this._progressTable.updateProperty('data', []);
 
 		try {
 			await this.model.fetchStatus();

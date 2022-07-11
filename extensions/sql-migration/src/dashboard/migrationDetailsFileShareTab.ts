@@ -78,6 +78,7 @@ export class MigrationDetailsFileShareTab extends MigrationDetailsTabBase<Migrat
 		this.refreshButton.enabled = false;
 		this.refreshLoader.loading = true;
 		await this.statusBar.clearError();
+		await this._fileTable.updateProperty('data', []);
 
 		try {
 			await this.model.fetchStatus();
