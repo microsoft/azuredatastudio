@@ -8,7 +8,7 @@ import 'vs/css!./media/slick.grid';
 import 'vs/css!./media/slickColorTheme';
 
 import { TableDataView } from './tableDataView';
-import { ITableSorter, ITableMouseEvent, ITableConfiguration, ITableStyles } from 'sql/base/browser/ui/table/interfaces';
+import { ITableSorter, ITableMouseEvent, ITableConfiguration, ITableStyles, ITableKeyboardEvent } from 'sql/base/browser/ui/table/interfaces';
 
 import * as DOM from 'vs/base/browser/dom';
 import { mixin } from 'vs/base/common/objects';
@@ -58,6 +58,9 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 
 	private _onColumnResize = new Emitter<void>();
 	public readonly onColumnResize = this._onColumnResize.event;
+
+	private _onKeyDown = new Emitter<ITableKeyboardEvent>();
+	public readonly onKeyDown = this._onKeyDown.event;
 
 	private _onBlur = new Emitter<void>();
 	public readonly onBlur = this._onBlur.event;
@@ -126,6 +129,17 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this.mapMouseEvent(this._grid.onHeaderClick, this._onHeaderClick);
 		this.mapMouseEvent(this._grid.onDblClick, this._onDoubleClick);
 		this._grid.onColumnsResized.subscribe(() => this._onColumnResize.fire());
+
+		this._grid.onKeyDown.subscribe((e, args: Slick.OnKeyDownEventArgs<T>) => {
+			const evt = (e as JQuery.Event).originalEvent as KeyboardEvent;
+			this._onKeyDown.fire({
+				event: evt,
+				cell: {
+					row: args.row,
+					cell: args.cell
+				}
+			});
+		});
 	}
 
 	public rerenderGrid() {

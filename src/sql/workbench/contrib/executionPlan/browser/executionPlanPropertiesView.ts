@@ -33,7 +33,7 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 
 	public set graphElement(element: azdata.executionPlan.ExecutionPlanNode | azdata.executionPlan.ExecutionPlanEdge) {
 		this._model.graphElement = element;
-		this.addDataToTable();
+		this.refreshPropertiesTable();
 	}
 
 	public sortPropertiesAlphabetically(props: azdata.executionPlan.ExecutionPlanGraphElementProperty[]): azdata.executionPlan.ExecutionPlanGraphElementProperty[] {
@@ -79,7 +79,7 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 		});
 	}
 
-	public addDataToTable(): void {
+	public refreshPropertiesTable(): void {
 		if (this._model.graphElement) {
 			const nodeName = (<azdata.executionPlan.ExecutionPlanNode>this._model.graphElement).name;
 			this._operationName.innerText = nodeName ? removeLineBreaks(nodeName) : localize('executionPlanPropertiesEdgeOperationName', "Edge"); //since edges do not have names like node, we set the operation name to 'Edge'

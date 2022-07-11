@@ -146,14 +146,14 @@ export const done = localize('done', "Done");
 export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not be empty");
 
 // Publish Dialog options
-export const publishOptions = localize('publishOptions', 'Publish Options');
-export const publishingOptions = localize('publishingOptions', 'Publishing Options');
-export const GeneralOptions: string = localize('generalOptions', "General Options");
+export const AdvancedOptionsButton = localize('advancedOptionsButton', 'Advanced...');
+export const AdvancedPublishOptions = localize('advancedPublishOptions', 'Advanced Publish Options');
+export const PublishOptions = localize('publishOptions', 'Publish Options');
 export const ResetButton: string = localize('reset', "Reset");
 export const OptionDescription: string = localize('optionDescription', "Option Description");
 export const OptionName: string = localize('optionName', "Option Name");
 export const OptionInclude: string = localize('Include', "Include");
-
+export function OptionNotFoundWarningMessage(label: string) { return localize('OptionNotFoundWarningMessage', "label: {0} does not exist in the options value name lookup", label); }
 
 // Deploy
 export const SqlServerName = 'SQL server';
