@@ -409,6 +409,10 @@ export class AzdataGraphView {
 	public clearSubtreePolygon(): void {
 		this._diagram.removeDrawnPolygons();
 	}
+
+	public disableNodeCollapse(disable: boolean): void {
+		this._diagram.disableNodeCollapse(disable);
+	}
 }
 
 export interface InternalExecutionPlanEdge extends azdata.executionPlan.ExecutionPlanEdge {
