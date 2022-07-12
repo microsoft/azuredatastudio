@@ -335,6 +335,15 @@ export class SKURecommendationPage extends MigrationWizardPage {
 							'text-decoration': 'none',
 						}
 					},
+					{
+						// 8 - CardDescriptionIndex.GENERATE_ARM_TEMPLATE
+						textValue: '',
+						linkDisplayValue: '',
+						linkStyles: {
+							...styles.BODY_CSS,
+							'text-decoration': 'none',
+						}
+					},
 				]
 			});
 
@@ -635,12 +644,14 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				// this._rbg.cards[index].descriptions[5].textValue = constants.ASSESSED_DBS(dbCount);
 				if (this.hasRecommendations()) {
 					this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_SKU_DETAILS].linkDisplayValue = constants.VIEW_DETAILS;
+					this._rbg.cards[index].descriptions[CardDescriptionIndex.GENERATE_ARM_TEMPLATE].linkDisplayValue = 'Generate ARM template';
 					this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textStyles = {
 						...styles.BODY_CSS,
 						'font-weight': '500',
 					};
 				} else {
 					this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_SKU_DETAILS].linkDisplayValue = '';
+					this._rbg.cards[index].descriptions[CardDescriptionIndex.GENERATE_ARM_TEMPLATE].linkDisplayValue = '';
 					this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textStyles = {
 						...styles.BODY_CSS,
 					};
@@ -1184,4 +1195,5 @@ export enum CardDescriptionIndex {
 	SKU_RECOMMENDATION = 5,
 	VM_CONFIGURATIONS = 6,
 	VIEW_SKU_DETAILS = 7,
+	GENERATE_ARM_TEMPLATE = 8,
 }
