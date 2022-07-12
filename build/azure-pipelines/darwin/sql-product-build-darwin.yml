@@ -17,7 +17,7 @@ steps:
 
   - task: NodeTool@0
     inputs:
-      versionSpec: "14.x"
+      versionSpec: "16.x"
 
   - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
     inputs:
@@ -213,10 +213,10 @@ steps:
     condition: always()
 
   - task: PublishTestResults@2
-    displayName: 'Publish Test Results test-results.xml'
+    displayName: 'Publish Test Results'
     inputs:
-      testResultsFiles: 'test-results.xml'
-      searchFolder: '$(Build.SourcesDirectory)'
+      testResultsFiles: "*-results.xml"
+      searchFolder: "$(Build.ArtifactStagingDirectory)/test-results"
     continueOnError: true
     condition: and(succeededOrFailed(), eq(variables['RUN_TESTS'], 'true'))
 

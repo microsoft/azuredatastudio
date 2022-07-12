@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { isFirefox } from 'vs/base/browser/browser';
+import { EventType as TouchEventType, Gesture } from 'vs/base/browser/touch';
 import { $, addDisposableListener, append, clearNode, createStyleSheet, Dimension, EventHelper, EventLike, EventType, getActiveElement, IDomNodePagePosition, isAncestor, isInShadowDOM } from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { StandardMouseEvent } from 'vs/base/browser/mouseEvent';
@@ -18,7 +19,8 @@ import { Codicon, registerCodicon } from 'vs/base/common/codicons';
 import { Color } from 'vs/base/common/color';
 import { Event } from 'vs/base/common/event';
 import { stripIcons } from 'vs/base/common/iconLabels';
-import { KeyCode, ResolvedKeybinding } from 'vs/base/common/keyCodes';
+import { KeyCode } from 'vs/base/common/keyCodes';
+import { ResolvedKeybinding } from 'vs/base/common/keybindings';
 import { DisposableStore } from 'vs/base/common/lifecycle';
 import { isLinux, isMacintosh } from 'vs/base/common/platform';
 import { ScrollbarVisibility, ScrollEvent } from 'vs/base/common/scrollable';
@@ -99,6 +101,8 @@ export class Menu extends ActionBar {
 		this.menuDisposables = this._register(new DisposableStore());
 
 		this.initializeStyleSheet(container);
+
+		this._register(Gesture.addTarget(menuElement));
 
 		addDisposableListener(menuElement, EventType.KEY_DOWN, (e) => {
 			const event = new StandardKeyboardEvent(e);
@@ -182,6 +186,29 @@ export class Menu extends ActionBar {
 			}
 		}));
 
+		// Support touch on actions list to focus items (needed for submenus)
+		this._register(Gesture.addTarget(this.actionsList));
+		this._register(addDisposableListener(this.actionsList, TouchEventType.Tap, e => {
+			let target = e.initialTarget as HTMLElement;
+			if (!target || !isAncestor(target, this.actionsList) || target === this.actionsList) {
+				return;
+			}
+
+			while (target.parentElement !== this.actionsList && target.parentElement !== null) {
+				target = target.parentElement;
+			}
+
+			if (target.classList.contains('action-item')) {
+				const lastFocusedItem = this.focusedItem;
+				this.setFocusedItem(target);
+
+				if (lastFocusedItem !== this.focusedItem) {
+					this.updateFocus();
+				}
+			}
+		}));
+
+
 		let parentData: ISubMenuData = {
 			parent: this
 		};
@@ -200,6 +227,14 @@ export class Menu extends ActionBar {
 
 		const scrollElement = this.scrollableElement.getDomNode();
 		scrollElement.style.position = '';
+
+		// Support scroll on menu drag
+		this._register(addDisposableListener(menuElement, TouchEventType.Change, e => {
+			EventHelper.stop(e, true);
+
+			const scrollTop = this.scrollableElement.getScrollPosition().scrollTop;
+			this.scrollableElement.setScrollPosition({ scrollTop: scrollTop - e.translationY });
+		}));
 
 		this._register(addDisposableListener(scrollElement, EventType.MOUSE_UP, e => {
 			// Absorb clicks in menu dead space https://github.com/microsoft/vscode/issues/63575
@@ -644,14 +679,14 @@ class BaseMenuActionViewItem extends BaseActionViewItem {
 			return;
 		}
 
-		if (this.getAction().checked) {
-			this.item.classList.add('checked');
+		const checked = this.getAction().checked;
+		this.item.classList.toggle('checked', !!checked);
+		if (checked !== undefined) {
 			this.item.setAttribute('role', 'menuitemcheckbox');
-			this.item.setAttribute('aria-checked', 'true');
+			this.item.setAttribute('aria-checked', checked ? 'true' : 'false');
 		} else {
-			this.item.classList.remove('checked');
 			this.item.setAttribute('role', 'menuitem');
-			this.item.setAttribute('aria-checked', 'false');
+			this.item.setAttribute('aria-checked', '');
 		}
 	}
 
@@ -883,8 +918,9 @@ class SubmenuMenuActionViewItem extends BaseMenuActionViewItem {
 			const viewBox = this.submenuContainer.getBoundingClientRect();
 
 			const { top, left } = this.calculateSubmenuMenuLayout(new Dimension(window.innerWidth, window.innerHeight), Dimension.lift(viewBox), entryBoxUpdated, this.expandDirection);
-			this.submenuContainer.style.left = `${left}px`;
-			this.submenuContainer.style.top = `${top}px`;
+			// subtract offsets caused by transform parent
+			this.submenuContainer.style.left = `${left - viewBox.left}px`;
+			this.submenuContainer.style.top = `${top - viewBox.top}px`;
 
 			this.submenuDisposables.add(addDisposableListener(this.submenuContainer, EventType.KEY_UP, e => {
 				let event = new StandardKeyboardEvent(e);

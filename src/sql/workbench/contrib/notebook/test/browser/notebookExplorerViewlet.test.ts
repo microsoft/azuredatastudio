@@ -5,18 +5,18 @@
 
 import * as assert from 'assert';
 import * as Platform from 'vs/platform/registry/common/platform';
-import { ViewletDescriptor, Extensions, ViewletRegistry, Viewlet } from 'vs/workbench/browser/viewlet';
 import * as Types from 'vs/base/common/types';
 import { Extensions as ViewContainerExtensions, IViewDescriptor, IViewsRegistry } from 'vs/workbench/common/views';
 import { NotebookExplorerViewPaneContainer, NOTEBOOK_VIEW_CONTAINER } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { ViewPaneContainer } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { Extensions, PaneComposite, PaneCompositeDescriptor, PaneCompositeRegistry } from 'vs/workbench/browser/panecomposite';
 
 suite('Notebook Explorer Views', () => {
 
-	class NotebookExplorerTestViewlet extends Viewlet {
+	class NotebookExplorerTestViewlet extends PaneComposite {
 		constructor() {
-			super('notebookExplorer', undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+			super('notebookExplorer', undefined, undefined, undefined, undefined, undefined, undefined, undefined);
 		}
 
 		public override layout(dimension: any): void {
@@ -30,7 +30,7 @@ suite('Notebook Explorer Views', () => {
 	}
 
 	test('ViewDescriptor API', function () {
-		let d = ViewletDescriptor.create(NotebookExplorerTestViewlet, 'id', 'name', 'class', 1);
+		let d = PaneCompositeDescriptor.create(NotebookExplorerTestViewlet, 'id', 'name', 'class', 1);
 		assert.strictEqual(d.id, 'id');
 		assert.strictEqual(d.name, 'name');
 		assert.strictEqual(d.cssClass, 'class');
@@ -38,11 +38,11 @@ suite('Notebook Explorer Views', () => {
 	});
 
 	test('Editor Aware ViewletDescriptor API', function () {
-		let d = ViewletDescriptor.create(NotebookExplorerTestViewlet, 'id', 'name', 'class', 5);
+		let d = PaneCompositeDescriptor.create(NotebookExplorerTestViewlet, 'id', 'name', 'class', 5);
 		assert.strictEqual(d.id, 'id');
 		assert.strictEqual(d.name, 'name');
 
-		d = ViewletDescriptor.create(NotebookExplorerTestViewlet, 'id', 'name', 'class', 5);
+		d = PaneCompositeDescriptor.create(NotebookExplorerTestViewlet, 'id', 'name', 'class', 5);
 		assert.strictEqual(d.id, 'id');
 		assert.strictEqual(d.name, 'name');
 	});
@@ -80,15 +80,15 @@ suite('Notebook Explorer Views', () => {
 	});
 
 	test('NotebookExplorer Viewlet extension point should not register duplicate viewlets', function () {
-		let v1 = ViewletDescriptor.create(NotebookExplorerTestViewlet, 'notebookExplorer-test-id', 'name');
-		Platform.Registry.as<ViewletRegistry>(Extensions.Viewlets).registerViewlet(v1);
-		let oldCount = Platform.Registry.as<ViewletRegistry>(Extensions.Viewlets).getViewlets().length;
+		let v1 = PaneCompositeDescriptor.create(NotebookExplorerTestViewlet, 'notebookExplorer-test-id', 'name');
+		Platform.Registry.as<PaneCompositeRegistry>(Extensions.Viewlets).registerPaneComposite(v1);
+		let oldCount = Platform.Registry.as<PaneCompositeRegistry>(Extensions.Viewlets).getPaneComposites().length;
 
-		let v1Duplicate = ViewletDescriptor.create(NotebookExplorerTestViewlet, 'notebookExplorer-test-id', 'name');
+		let v1Duplicate = PaneCompositeDescriptor.create(NotebookExplorerTestViewlet, 'notebookExplorer-test-id', 'name');
 		// Shouldn't register the duplicate.
-		Platform.Registry.as<ViewletRegistry>(Extensions.Viewlets).registerViewlet(v1Duplicate);
+		Platform.Registry.as<PaneCompositeRegistry>(Extensions.Viewlets).registerPaneComposite(v1Duplicate);
 
-		let newCount = Platform.Registry.as<ViewletRegistry>(Extensions.Viewlets).getViewlets().length;
+		let newCount = Platform.Registry.as<PaneCompositeRegistry>(Extensions.Viewlets).getPaneComposites().length;
 		assert.strictEqual(oldCount, newCount, 'Duplicate registration of views.');
 
 	});
