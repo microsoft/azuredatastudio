@@ -10,11 +10,11 @@ import * as constants from '../../common/constants';
 export class DeployOptionsModel {
 	// key is the option display name and values are checkboxValue and optionName
 	private optionsValueNameLookup: { [key: string]: mssql.IOptionWithValue } = {};
-	private includeObjectTypesLookup: { [key: string]: mssql.IOptionWithValue } = {};
+	private excludeObjectTypesLookup: { [key: string]: mssql.IOptionWithValue } = {};
 
 	constructor(public deploymentOptions: mssql.DeploymentOptions) {
 		this.setOptionsToValueNameLookup();
-		this.setIncludeObjectTypesLookup();
+		this.setExcludeObjectTypesLookup();
 	}
 
 	/*
@@ -73,27 +73,27 @@ export class DeployOptionsModel {
 	}
 
 	/*
-	 * Sets deployment option's checkbox values and property name to the includeObjectTypesLookup map
+	 * Sets deployment option's checkbox values and property name to the excludeObjectTypesLookup map
 	 */
-	public setIncludeObjectTypesLookup(): void {
+	public setExcludeObjectTypesLookup(): void {
 		Object.entries(this.deploymentOptions.includeObjectsDictionary).forEach(option => {
 			const optionValue: mssql.IOptionWithValue = {
 				optionName: option[0],
-				checked: this.getIncludObjecttypeOptionCheckStatus(option[0])
+				checked: this.getExcludeObjectTypeOptionCheckStatus(option[0])
 			};
-			this.includeObjectTypesLookup[option[1]] = optionValue;
+			this.excludeObjectTypesLookup[option[1]] = optionValue;
 		});
 	}
 
 	/*
-	 * Initialize options data from include objects options for table component
+	 * Initialize options data from exclude objects options for table component
 	 * Returns data as [booleanValue, optionName]
 	 */
-	public getIncludeObjectTypesOptionsData(): any[][] {
+	public getExcludeObjectTypesOptionsData(): any[][] {
 		let data: any[][] = [];
 		Object.entries(this.deploymentOptions.includeObjectsDictionary).forEach(option => {
 			// option[1] holds checkedbox display name and option[0] is the optionName
-			data.push([this.getIncludObjecttypeOptionCheckStatus(option[0]), option[1]]);
+			data.push([this.getExcludeObjectTypeOptionCheckStatus(option[0]), option[1]]);
 		});
 
 		return data.sort((a, b) => a[1].localeCompare(b[1]));
@@ -101,17 +101,17 @@ export class DeployOptionsModel {
 
 	/*
 	* Gets the selected/default value of the object type option
-	* retrun false for those excludeObjectTypes[] values by comparing with includeObjectTypes options
+	* retrun true for the excludeObjectTypes[] values by exists in deploymentOptions.excludeObjectTypes
 	*/
-	public getIncludObjecttypeOptionCheckStatus(optionName: string): boolean {
-		return (this.deploymentOptions.excludeObjectTypes.value?.find(x => x.toLowerCase() === optionName.toLowerCase())) !== undefined ? false : true;
+	public getExcludeObjectTypeOptionCheckStatus(optionName: string): boolean {
+		return (this.deploymentOptions.excludeObjectTypes.value?.find(x => x.toLowerCase() === optionName.toLowerCase())) !== undefined ? true : false;
 	}
 
 	/*
-	* Sets the checkbox value to the includeObjectTypesLookup map
+	* Sets the checkbox value to the excludeObjectTypesLookup map
 	*/
 	public setIncludeObjectTypesOptionValue(displayName: string, checked: boolean): void {
-		this.includeObjectTypesLookup[displayName].checked = checked;
+		this.excludeObjectTypesLookup[displayName].checked = checked;
 	}
 
 	/*
@@ -119,9 +119,9 @@ export class DeployOptionsModel {
 	*/
 	public setIncludeObjectTypesOptions(): void {
 		let finalExcludedObjectTypes: string[] = [];
-		Object.entries(this.includeObjectTypesLookup).forEach(option => {
+		Object.entries(this.excludeObjectTypesLookup).forEach(option => {
 			// option[1] holds checkedbox value and optionName
-			if (!option[1].checked) {
+			if (option[1].checked) {
 				finalExcludedObjectTypes.push(option[1].optionName);
 			}
 		});

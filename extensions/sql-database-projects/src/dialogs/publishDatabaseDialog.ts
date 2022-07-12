@@ -931,7 +931,12 @@ export class PublishDatabaseDialog {
 	* Gets the default deployment options from the dacfx service
 	*/
 	public async getDefaultDeploymentOptions(): Promise<DeploymentOptions> {
-		return await utils.getDefaultPublishDeploymentOptions(this.project) as DeploymentOptions;
+		let defaultDeploymentOptions = await utils.getDefaultPublishDeploymentOptions(this.project) as DeploymentOptions;
+		if (defaultDeploymentOptions !== undefined && defaultDeploymentOptions.excludeObjectTypes !== undefined) {
+			// For publish dialog no default exclude options should exists
+			defaultDeploymentOptions.excludeObjectTypes.value = [];
+		}
+		return defaultDeploymentOptions;
 	}
 
 	/*
