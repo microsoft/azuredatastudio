@@ -385,10 +385,6 @@ export class EditDataGridPanel extends GridParentComponent {
 				// Cell update failed, jump back to the last cell we were on
 				this.updateEnabledState(true);
 				this.focusCell(cellToSubmit.row, cellToSubmit.column, true);
-				if (this.lastEnteredString) {
-					(this.table.grid.getCellEditor() as Slick.Editors.Text<any>).setValue(this.lastEnteredString);
-					this.lastEnteredString = undefined;
-				}
 				return Promise.reject(null);
 			});
 	}
@@ -1133,9 +1129,6 @@ export class EditDataGridPanel extends GridParentComponent {
 	}
 
 	private renderGridDataRowsRange(startIndex: number, count: number): void {
-		let editor = <Slick.Editors.Text<any>>this.table.grid.getCellEditor();
-		let oldValue = editor ? editor.getValue() : undefined;
-		let wasValueChanged = editor ? editor.isValueChanged() : false;
 		this.invalidateRange(startIndex, startIndex + count);
 		let activeCell = { row: -1, column: -1 };
 		if (this.previousSavedCell) {
@@ -1143,12 +1136,6 @@ export class EditDataGridPanel extends GridParentComponent {
 		}
 		if (!this.noAutoSelectOnRender && !this.firstRender) {
 			this.focusCell(this.lastClickedCell.row, this.lastClickedCell.column);
-			editor = <Slick.Editors.Text<any>>this.table.grid.getCellEditor();
-			if (editor && activeCell.row >= startIndex && activeCell.row < startIndex + count) {
-				if (oldValue && wasValueChanged) {
-					editor.setValue(oldValue);
-				}
-			}
 		}
 		else {
 			this.noAutoSelectOnRender = false;
