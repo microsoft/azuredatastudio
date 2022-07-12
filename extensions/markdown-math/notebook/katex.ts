@@ -3,13 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import type * as markdownIt from 'markdown-it';
+import type { RendererContext } from 'vscode-notebook-renderer';
 
 const styleHref = import.meta.url.replace(/katex.js$/, 'katex.min.css');
 
-export async function activate(ctx: {
-	getRenderer: (id: string) => Promise<any | undefined>
-}) {
-	const markdownItRenderer = await ctx.getRenderer('markdownItRenderer');
+export async function activate(ctx: RendererContext<void>) {
+	const markdownItRenderer = (await ctx.getRenderer('markdownItRenderer')) as undefined | any;
 	if (!markdownItRenderer) {
 		throw new Error('Could not load markdownItRenderer');
 	}
@@ -41,6 +40,9 @@ export async function activate(ctx: {
 
 	const katex = require('@iktakahiro/markdown-it-katex');
 	markdownItRenderer.extendMarkdownIt((md: markdownIt.MarkdownIt) => {
-		return md.use(katex, { globalGroup: true });
+		return md.use(katex, {
+			globalGroup: true,
+			enableBareBlocks: true,
+		});
 	});
 }

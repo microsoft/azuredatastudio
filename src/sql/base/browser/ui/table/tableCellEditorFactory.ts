@@ -5,7 +5,6 @@
 
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
-import { getCodeForKeyCode } from 'vs/base/browser/keyboardEvent';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import * as DOM from 'vs/base/browser/dom';
@@ -225,3 +224,7 @@ export class TableCellEditorFactory {
 		return DropdownEditor;
 	}
 }
+function getCodeForKeyCode(keycode: KeyCode): any {
+	throw new Error('Function not implemented.');
+}
+

@@ -227,7 +227,7 @@ suite('NotebookMarkdownRenderer', () => {
 
 			test('Cell 8e45da0e-5c24-469e-8ae5-671313bd54a1', function (): void {
 				const markdown = '1.  List Item\n\n    \n\n2.  List Item 2';
-				const expectedValue = '<ol>\n<li><p>List Item</p></li>\n<li><p> List Item 2</p></li>\n</ol>\n';
+				const expectedValue = '<ol>\n<li><p>List Item</p></li>\n<li><p>List Item 2</p></li>\n</ol>\n';
 				const result = notebookMarkdownRenderer.renderMarkdown({ value: markdown, isTrusted: true }).innerHTML;
 				assert.strictEqual(result, expectedValue);
 			});
@@ -243,7 +243,7 @@ suite('NotebookMarkdownRenderer', () => {
 
 			test('Cell e6ad1eb3-7409-4199-9592-9d13f1e2d8a0', function (): void {
 				const markdown = '1. Text \n\nMore text \n\n    a. Sub-Text';
-				const expectedValue = '<ol>\n<li>Text </li>\n</ol>\n<p>More text </p><pre><code>a. Sub-Text\n</code></pre>\n';
+				const expectedValue = '<ol>\n<li>Text</li>\n</ol>\n<p>More text </p><pre><code>a. Sub-Text\n</code></pre>\n';
 				const result = notebookMarkdownRenderer.renderMarkdown({ value: markdown, isTrusted: true }).innerHTML;
 				assert.strictEqual(result, expectedValue);
 			});

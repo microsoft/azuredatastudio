@@ -679,6 +679,12 @@ These files will be FOREVER LOST.</source>
     <trans-unit id="neveragain">
       <source xml:lang="en">Don't Show Again</source>
     </trans-unit>
+    <trans-unit id="no">
+      <source xml:lang="en">No</source>
+    </trans-unit>
+    <trans-unit id="ok">
+      <source xml:lang="en">OK</source>
+    </trans-unit>
     <trans-unit id="open">
       <source xml:lang="en">Open</source>
     </trans-unit>
@@ -703,6 +709,15 @@ These files will be FOREVER LOST.</source>
     <trans-unit id="push success">
       <source xml:lang="en">Successfully pushed.</source>
     </trans-unit>
+    <trans-unit id="scm button publish title">
+      <source xml:lang="en">$(cloud-upload) Publish Changes</source>
+    </trans-unit>
+    <trans-unit id="scm button publish tooltip">
+      <source xml:lang="en">Publish Changes</source>
+    </trans-unit>
+    <trans-unit id="scm button sync title">
+      <source xml:lang="en"> Sync Changes $(sync){0}{1}</source>
+    </trans-unit>
     <trans-unit id="staged changes">
       <source xml:lang="en">Staged Changes</source>
     </trans-unit>
@@ -711,6 +726,9 @@ These files will be FOREVER LOST.</source>
     </trans-unit>
     <trans-unit id="sync is unpredictable">
       <source xml:lang="en">Syncing. Cancelling may cause serious damages to the repository</source>
+    </trans-unit>
+    <trans-unit id="tooManyChangesWarning">
+      <source xml:lang="en">Too many changes were detected. Only the first {0} changes will be shown below.</source>
     </trans-unit>
     <trans-unit id="untracked">
       <source xml:lang="en">Untracked</source>
@@ -1303,6 +1321,18 @@ These files will be FOREVER LOST.</source>
     <trans-unit id="config.showPushSuccessNotification">
       <source xml:lang="en">Controls whether to show a notification when a push is successful.</source>
     </trans-unit>
+    <trans-unit id="config.showUnpublishedCommitsButton">
+      <source xml:lang="en">Controls whether to show an action button to sync or publish, if there are unpublished commits.</source>
+    </trans-unit>
+    <trans-unit id="config.showUnpublishedCommitsButton.always">
+      <source xml:lang="en">Always shows the action button, if there are unpublished commits.</source>
+    </trans-unit>
+    <trans-unit id="config.showUnpublishedCommitsButton.never">
+      <source xml:lang="en">Never shows the action button.</source>
+    </trans-unit>
+    <trans-unit id="config.showUnpublishedCommitsButton.whenEmpty">
+      <source xml:lang="en">Only shows the action button if there are no other changes and there are unpublished commits.</source>
+    </trans-unit>
     <trans-unit id="config.smartCommitChanges">
       <source xml:lang="en">Control which changes are automatically staged by Smart Commit.</source>
     </trans-unit>
@@ -1311,6 +1341,9 @@ These files will be FOREVER LOST.</source>
     </trans-unit>
     <trans-unit id="config.smartCommitChanges.tracked">
       <source xml:lang="en">Automatically stage tracked changes only.</source>
+    </trans-unit>
+    <trans-unit id="config.statusLimit">
+      <source xml:lang="en">Controls how to limit the number of changes that can be parsed from Git status command. Can be set to 0 for no limit.</source>
     </trans-unit>
     <trans-unit id="config.suggestSmartCommit">
       <source xml:lang="en">Suggests to enable smart commit (commit all changes when there are no staged changes).</source>
