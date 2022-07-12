@@ -71,6 +71,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private assessmentGroupContainer!: azdata.FlexContainer;
 	private _disposables: vscode.Disposable[] = [];
 
+	private _serverName: string = '';
 	private _supportedProducts: Product[] = [
 		{
 			type: MigrationTargetType.SQLMI,
@@ -383,10 +384,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 		}).component();
 
-		let serverName = this.migrationStateModel.serverName || (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
-
-		let miDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, constants.ASSESSMENT_TILE(serverName), this, MigrationTargetType.SQLMI);
-		let vmDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, constants.ASSESSMENT_TILE(serverName), this, MigrationTargetType.SQLVM);
+		let miDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, constants.ASSESSMENT_TILE(this._serverName), this, MigrationTargetType.SQLMI);
+		let vmDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, constants.ASSESSMENT_TILE(this._serverName), this, MigrationTargetType.SQLVM);
 
 		this._disposables.push(button.onDidClick(async (e) => {
 			if (this._rbg.selectedCardId === MigrationTargetType.SQLVM) {
@@ -449,7 +448,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			level: azdata.window.MessageLevel.Error
 		};
 
-		const serverName = (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
+		this._serverName = this.migrationStateModel.serverName || (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
+
 
 		if (this.migrationStateModel._runAssessments) {
 			const errors: string[] = [];
@@ -465,29 +465,29 @@ export class SKURecommendationPage extends MigrationWizardPage {
 						e => `message: ${e.message}${EOL}errorSummary: ${e.errorSummary}${EOL}possibleCauses: ${e.possibleCauses}${EOL}guidance: ${e.guidance}${EOL}errorId: ${e.errorId}`)!);
 				}
 			} catch (e) {
-				errors.push(constants.SKU_RECOMMENDATION_ASSESSMENT_UNEXPECTED_ERROR(serverName, e));
+				errors.push(constants.SKU_RECOMMENDATION_ASSESSMENT_UNEXPECTED_ERROR(this._serverName, e));
 				logError(TelemetryViews.MigrationWizardSkuRecommendationPage, 'SkuRecommendationUnexpectedError', e);
 			} finally {
 				this.migrationStateModel._runAssessments = errors.length > 0;
 				if (errors.length > 0) {
 					this.wizard.message = {
-						text: constants.SKU_RECOMMENDATION_ASSESSMENT_ERROR(serverName),
+						text: constants.SKU_RECOMMENDATION_ASSESSMENT_ERROR(this._serverName),
 						description: errors.join(EOL),
 						level: azdata.window.MessageLevel.Error
 					};
 					this._assessmentStatusIcon.iconPath = IconPathHelper.error;
-					this._igComponent.value = constants.ASSESSMENT_FAILED(serverName);
-					this._detailsComponent.value = constants.SKU_RECOMMENDATION_ASSESSMENT_ERROR(serverName);
+					this._igComponent.value = constants.ASSESSMENT_FAILED(this._serverName);
+					this._detailsComponent.value = constants.SKU_RECOMMENDATION_ASSESSMENT_ERROR(this._serverName);
 				} else {
 					this._assessmentStatusIcon.iconPath = IconPathHelper.completedMigration;
-					this._igComponent.value = constants.ASSESSMENT_COMPLETED(serverName);
+					this._igComponent.value = constants.ASSESSMENT_COMPLETED(this._serverName);
 					this._detailsComponent.value = constants.SKU_RECOMMENDATION_ALL_SUCCESSFUL(this.migrationStateModel._assessmentResults?.databaseAssessments?.length);
 				}
 			}
 		} else {
 			// use prior assessment results
 			this._assessmentStatusIcon.iconPath = IconPathHelper.completedMigration;
-			this._igComponent.value = constants.ASSESSMENT_COMPLETED(serverName);
+			this._igComponent.value = constants.ASSESSMENT_COMPLETED(this._serverName);
 			this._detailsComponent.value = constants.SKU_RECOMMENDATION_ALL_SUCCESSFUL(this.migrationStateModel._assessmentResults?.databaseAssessments?.length);
 		}
 
@@ -760,7 +760,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 	private async createAssessmentInfo(): Promise<azdata.TextComponent> {
 		this._assessmentInfo = this._view.modelBuilder.text().withProps({
-			value: constants.ASSESSMENT_IN_PROGRESS_CONTENT((await this.migrationStateModel.getSourceConnectionProfile()).serverName),
+			value: constants.ASSESSMENT_IN_PROGRESS_CONTENT(this._serverName),
 			CSSStyles: {
 				...styles.BODY_CSS,
 				'width': '660px'
@@ -1082,6 +1082,17 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		await this.startCardLoading();
 		this._skuLastRefreshTimeText.value = constants.LAST_REFRESHED_TIME();
 		await this.migrationStateModel.getSkuRecommendations();
+
+		const skuRecommendationError = this.migrationStateModel._skuRecommendationResults?.recommendationError;
+		if (skuRecommendationError) {
+			this.wizard.message = {
+				text: constants.SKU_RECOMMENDATION_ERROR(this._serverName),
+				description: skuRecommendationError.message,
+				level: azdata.window.MessageLevel.Error
+			};
+			// vscode.window.showInformationMessage(`Error: ${skuRecommendationError.message}`);
+		}
+
 		await this.refreshSkuRecommendationComponents();
 		this._skuLastRefreshTimeText.value = constants.LAST_REFRESHED_TIME(new Date().toLocaleString());
 	}

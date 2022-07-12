@@ -217,8 +217,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _perfDataCollectionErrors!: string[];
 	public _perfDataCollectionIsCollecting!: boolean;
 
-	public readonly _performanceDataQueryIntervalInSeconds = 30;
-	public readonly _staticDataQueryIntervalInSeconds = 60;
+	public readonly _performanceDataQueryIntervalInSeconds = 3;
+	public readonly _staticDataQueryIntervalInSeconds = 15;
 	public readonly _numberOfPerformanceDataQueryIterations = 19;
 	public readonly _defaultDataPointStartTime = '1900-01-01 00:00:00';
 	public readonly _defaultDataPointEndTime = '2200-01-01 00:00:00';
@@ -226,7 +226,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public refreshPerfDataCollectionFrequency = this._performanceDataQueryIntervalInSeconds * 1000;
 	private _autoRefreshPerfDataCollectionHandle!: NodeJS.Timeout;
-	public refreshGetSkuRecommendationFrequency = constants.TIME_IN_MINUTES(10);
+	public refreshGetSkuRecommendationFrequency = constants.TIME_IN_MINUTES(1);
 	private _autoRefreshGetSkuRecommendationHandle!: NodeJS.Timeout;
 
 	public _skuScalingFactor!: number;
