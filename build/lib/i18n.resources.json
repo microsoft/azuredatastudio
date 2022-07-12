@@ -103,10 +103,6 @@
 			"project": "vscode-workbench"
 		},
 		{
-			"name": "vs/workbench/contrib/languageStatus",
-			"project": "vscode-workbench"
-		},
-		{
 			"name": "vs/workbench/contrib/keybindings",
 			"project": "vscode-workbench"
 		},
