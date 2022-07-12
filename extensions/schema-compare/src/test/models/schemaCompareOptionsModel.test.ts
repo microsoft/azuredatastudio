@@ -16,7 +16,6 @@ describe('Schema Compare Options Model', () => {
 		should.doesNotThrow(() => model.setDeploymentOptions());
 		should.doesNotThrow(() => model.setObjectTypeOptions());
 
-		should(model.getSchemaCompareOptionUtil('')).equal(undefined, 'Should return undefined if an invalid option is passed in');
 		should(model.getSchemaCompareIncludedObjectsUtil('')).be.false('Should return false if invalid object name is passed in');
 	});
 
@@ -24,8 +23,8 @@ describe('Schema Compare Options Model', () => {
 		const model = new SchemaCompareOptionsModel(testUtils.getDeploymentOptions());
 		should(model.excludedObjectTypes.length).be.equal(0, 'There should be no excluded objects');
 
-		model.objectTypeLabels.forEach(l => {
-			model.setSchemaCompareIncludedObjectsUtil(l, false);
+		model.objectTypeLabels.forEach(label => {
+			model.setSchemaCompareIncludedObjectsUtil(label, false);
 		});
 
 		should(model.excludedObjectTypes.length).be.equal(model.objectTypeLabels.length, 'All the object types should be excluded');
@@ -33,8 +32,14 @@ describe('Schema Compare Options Model', () => {
 
 	it('Should get descriptions', function (): void {
 		const model = new SchemaCompareOptionsModel(testUtils.getDeploymentOptions());
-		model.optionsLabels.forEach(l => {
-			should(model.getDescription(l)).not.equal(undefined);
+		model.getOptionsData();
+		Object.entries(model.deploymentOptions.booleanOptionsDictionary).forEach(option => {
+			should(model.getOptionDescription(option[1].displayName)).not.equal(undefined);
 		});
+	});
+
+	it('Should return empty string for null option ', function (): void {
+		const model = new SchemaCompareOptionsModel(testUtils.getDeploymentOptions());
+		should(model.getOptionDescription('')).equal('');
 	});
 });

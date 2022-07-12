@@ -197,6 +197,12 @@ const apiMenus: IAPIMenu[] = [
 		description: localize('notebook.cell.execute', "The contributed notebook cell execution menu")
 	},
 	{
+		key: 'notebook/cell/executePrimary',
+		id: MenuId.NotebookCellExecutePrimary,
+		description: localize('notebook.cell.executePrimary', "The contributed primary notebook cell execution button"),
+		proposed: true
+	},
+	{
 		key: 'interactive/toolbar',
 		id: MenuId.InteractiveToolbar,
 		description: localize('interactive.toolbar', "The contributed interactive toolbar menu"),
@@ -676,7 +682,7 @@ commandsExtensionPoint.setHandler(extensions => {
 			id: command,
 			title,
 			source: extension.description.displayName ?? extension.description.name,
-			shortTitle: extension.description.enableProposedApi ? shortTitle : undefined,
+			shortTitle,
 			tooltip: extension.description.enableProposedApi ? title : undefined,
 			category,
 			precondition: ContextKeyExpr.deserialize(enablement),

@@ -37,7 +37,7 @@ export enum CreateAzureFunctionStep {
 	getSelectedFolder = 'getSelectedFolder',
 	getBindingType = 'getBindingType',
 	launchFromCommandPalette = 'launchFromCommandPalette',
-	launchFromTable = 'launchFromTable',
+	launchFromObjectExplorer = 'launchFromObjectExplorer',
 	getConnectionProfile = 'getConnectionProfile',
 	getDatabase = 'getDatabase',
 	getObjectName = 'getObjectName',

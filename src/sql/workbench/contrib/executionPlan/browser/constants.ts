@@ -257,6 +257,11 @@ export const badgeIconPaths = {
 	criticalWarning: imageBasePath + 'badge_critical_warning.svg'
 };
 
+export const collapseExpandNodeIconPaths = {
+	collapse: imageBasePath + 'collapse.svg',
+	expand: imageBasePath + 'expand.svg'
+};
+
 export const savePlanIconClassNames = 'ep-save-plan-icon';
 export const openPropertiesIconClassNames = 'ep-open-properties-icon';
 export const openQueryIconClassNames = 'ep-open-query-icon';
@@ -282,6 +287,7 @@ export const executionPlanCompareIconClassName = 'ep-plan-compare-icon';
 export const executionPlanComparisonPropertiesDifferent = 'ep-properties-different';
 export const executionPlanComparisonPropertiesDownArrow = 'ep-properties-down-arrow';
 export const executionPlanComparisonPropertiesUpArrow = 'ep-properties-up-arrow';
+export const executionPlanTopOperations = 'ep-top-operations';
 
 /**
  * Plan comparison polygon border colors

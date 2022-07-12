@@ -3,14 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { IMouseWheelEvent } from 'vs/base/browser/mouseEvent';
 import { IAction } from 'vs/base/common/actions';
 import { coalesce } from 'vs/base/common/arrays';
 import { VSBuffer } from 'vs/base/common/buffer';
 import { Emitter, Event } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { getExtensionForMimeType } from 'vs/base/common/mime';
-import { Schemas } from 'vs/base/common/network';
-import { isMacintosh } from 'vs/base/common/platform';
+import { FileAccess, Schemas } from 'vs/base/common/network';
+import { isMacintosh, isWeb } from 'vs/base/common/platform';
 import { dirname, joinPath } from 'vs/base/common/resources';
 import { URI } from 'vs/base/common/uri';
 import * as UUID from 'vs/base/common/uuid';
@@ -27,7 +28,7 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IWorkspaceTrustManagementService } from 'vs/platform/workspace/common/workspaceTrust';
 import { asWebviewUri, webviewGenericCspSource } from 'vs/workbench/api/common/shared/webview';
-import { CellEditState, ICellOutputViewModel, ICommonCellInfo, ICommonNotebookEditor, IDisplayOutputLayoutUpdateRequest, IDisplayOutputViewModel, IGenericCellViewModel, IInsetRenderOutput, RenderOutputType } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
+import { CellEditState, ICellOutputViewModel, ICommonCellInfo, IDisplayOutputLayoutUpdateRequest, IDisplayOutputViewModel, IFocusNotebookCellOptions, IGenericCellViewModel, IInsetRenderOutput, INotebookEditorCreationOptions, RenderOutputType } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
 import { preloadsScriptStr, RendererMetadata } from 'vs/workbench/contrib/notebook/browser/view/renderers/webviewPreloads';
 import { transformWebviewThemeVars } from 'vs/workbench/contrib/notebook/browser/view/renderers/webviewThemeMapping';
 import { MarkupCellViewModel } from 'vs/workbench/contrib/notebook/browser/viewModel/markupCellViewModel';
@@ -62,6 +63,28 @@ export interface IResolvedBackLayerWebview {
 	webview: WebviewElement;
 }
 
+/**
+ * Notebook Editor Delegate for back layer webview
+ */
+export interface INotebookDelegateForWebview {
+	readonly creationOptions: INotebookEditorCreationOptions;
+	getCellById(cellId: string): IGenericCellViewModel | undefined;
+	focusNotebookCell(cell: IGenericCellViewModel, focus: 'editor' | 'container' | 'output', options?: IFocusNotebookCellOptions): void;
+	toggleNotebookCellSelection(cell: IGenericCellViewModel, selectFromPrevious: boolean): void;
+	getCellByInfo(cellInfo: ICommonCellInfo): IGenericCellViewModel;
+	focusNextNotebookCell(cell: IGenericCellViewModel, focus: 'editor' | 'container' | 'output'): void;
+	updateOutputHeight(cellInfo: ICommonCellInfo, output: IDisplayOutputViewModel, height: number, isInit: boolean, source?: string): void;
+	scheduleOutputHeightAck(cellInfo: ICommonCellInfo, outputId: string, height: number): void;
+	updateMarkupCellHeight(cellId: string, height: number, isInit: boolean): void;
+	setMarkupCellEditState(cellId: string, editState: CellEditState): void;
+	didStartDragMarkupCell(cellId: string, event: { dragOffsetY: number; }): void;
+	didDragMarkupCell(cellId: string, event: { dragOffsetY: number; }): void;
+	didDropMarkupCell(cellId: string, event: { dragOffsetY: number, ctrlKey: boolean, altKey: boolean; }): void;
+	didEndDragMarkupCell(cellId: string): void;
+	setScrollTop(scrollTop: number): void;
+	triggerScroll(event: IMouseWheelEvent): void;
+}
+
 export class BackLayerWebView<T extends ICommonCellInfo> extends Disposable {
 	element: HTMLElement;
 	webview: WebviewElement | undefined = undefined;
@@ -73,13 +96,14 @@ export class BackLayerWebView<T extends ICommonCellInfo> extends Disposable {
 	private readonly _onMessage = this._register(new Emitter<INotebookWebviewMessage>());
 	private readonly _preloadsCache = new Set<string>();
 	public readonly onMessage: Event<INotebookWebviewMessage> = this._onMessage.event;
+	private _initalized?: Promise<void>;
 	private _disposed = false;
 	private _currentKernel?: INotebookKernel;
 
 	private readonly nonce = UUID.generateUuid();
 
 	constructor(
-		public readonly notebookEditor: ICommonNotebookEditor,
+		public readonly notebookEditor: INotebookDelegateForWebview,
 		public readonly id: string,
 		public readonly documentUri: URI,
 		private options: {
@@ -192,7 +216,7 @@ export class BackLayerWebView<T extends ICommonCellInfo> extends Disposable {
 		};
 	}
 
-	private generateContent(baseUrl: string) {
+	private generateContent(coreDependencies: string, baseUrl: string) {
 		const renderersData = this.getRendererData();
 		const preloadScript = preloadsScriptStr(
 			this.options,
@@ -235,6 +259,8 @@ export class BackLayerWebView<T extends ICommonCellInfo> extends Disposable {
 						padding-bottom: var(--notebook-output-node-padding);
 						padding-left: var(--notebook-output-node-left-padding);
 						box-sizing: border-box;
+						border-top: none !important;
+						border: 1px solid var(--theme-notebook-output-border);
 						background-color: var(--theme-notebook-output-background);
 					}
 
@@ -277,11 +303,11 @@ export class BackLayerWebView<T extends ICommonCellInfo> extends Disposable {
 						background-color: var(--theme-notebook-symbol-highlight-background);
 					}
 
-					#container > div.nb-cellDeleted {
+					#container > div.nb-cellDeleted .output_container {
 						background-color: var(--theme-notebook-diff-removed-background);
 					}
 
-					#container > div.nb-cellAdded {
+					#container > div.nb-cellAdded .output_container {
 						background-color: var(--theme-notebook-diff-inserted-background);
 					}
 
@@ -331,8 +357,13 @@ export class BackLayerWebView<T extends ICommonCellInfo> extends Disposable {
 				</style>
 			</head>
 			<body style="overflow: hidden;">
+				<script>
+					self.require = {};
+				</script>
+				${coreDependencies}
+				<div id='container' class="widgetarea" style="position: absolute;width:100%;top: 0px"></div>
+				<script type="module">${preloadScript}</script>
 				<div id="container" class="widgetarea" style="position: absolute; width:100%; top: 0px"></div>
-				<script type="module" nonce="${this.nonce}">${preloadScript}</script>
 			</body>
 		</html>`;
 	}
@@ -346,6 +377,7 @@ export class BackLayerWebView<T extends ICommonCellInfo> extends Disposable {
 				mimeTypes: renderer.mimeTypes,
 				extends: renderer.extends,
 				messaging: renderer.messaging !== RendererMessagingSpec.Never,
+				isBuiltin: renderer.isBuiltin
 			};
 		});
 	}
@@ -376,11 +408,70 @@ export class BackLayerWebView<T extends ICommonCellInfo> extends Disposable {
 		return !!this.webview;
 	}
 
-	createWebview(): void {
+	async createWebview(): Promise<void> {
 		const baseUrl = this.asWebviewUri(dirname(this.documentUri), undefined);
-		const htmlContent = this.generateContent(baseUrl.toString());
-		this._initialize(htmlContent);
-		return;
+
+		// Python notebooks assume that requirejs is a global.
+		// For all other notebooks, they need to provide their own loader.
+		if (!this.documentUri.path.toLowerCase().endsWith('.ipynb')) {
+			const htmlContent = this.generateContent('', baseUrl.toString());
+			this._initialize(htmlContent);
+			return;
+		}
+
+		let coreDependencies = '';
+		let resolveFunc: () => void;
+
+		this._initalized = new Promise<void>((resolve, reject) => {
+			resolveFunc = resolve;
+		});
+
+
+		if (!isWeb) {
+			const loaderUri = FileAccess.asFileUri('vs/loader.js', require);
+			const loader = this.asWebviewUri(loaderUri, undefined);
+
+			coreDependencies = `<script src="${loader}"></script><script>
+			var requirejs = (function() {
+				return require;
+			}());
+			</script>`;
+			const htmlContent = this.generateContent(coreDependencies, baseUrl.toString());
+			this._initialize(htmlContent);
+			resolveFunc!();
+		} else {
+			const loaderUri = FileAccess.asBrowserUri('vs/loader.js', require);
+
+			fetch(loaderUri.toString(true)).then(async response => {
+				if (response.status !== 200) {
+					throw new Error(response.statusText);
+				}
+
+				const loaderJs = await response.text();
+
+				coreDependencies = `
+<script>
+${loaderJs}
+</script>
+<script>
+var requirejs = (function() {
+	return require;
+}());
+</script>
+`;
+
+				const htmlContent = this.generateContent(coreDependencies, baseUrl.toString());
+				this._initialize(htmlContent);
+				resolveFunc!();
+			}, error => {
+				// the fetch request is rejected
+				const htmlContent = this.generateContent(coreDependencies, baseUrl.toString());
+				this._initialize(htmlContent);
+				resolveFunc!();
+			});
+		}
+
+		await this._initalized;
 	}
 
 	private _initialize(content: string) {

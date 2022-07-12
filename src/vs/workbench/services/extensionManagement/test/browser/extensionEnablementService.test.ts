@@ -64,7 +64,7 @@ export class TestExtensionEnablementService extends ExtensionEnablementService {
 					onDidInstallExtensions: new Emitter<readonly InstallExtensionResult[]>().event,
 					onUninstallExtension: new Emitter<IExtensionIdentifier>().event,
 					onDidUninstallExtension: new Emitter<DidUninstallExtensionEvent>().event,
-				}
+				},
 			}, null, null));
 		const workbenchExtensionManagementService = instantiationService.get(IWorkbenchExtensionManagementService) || instantiationService.stub(IWorkbenchExtensionManagementService, instantiationService.createInstance(ExtensionManagementService));
 		const workspaceTrustManagementService = instantiationService.get(IWorkspaceTrustManagementService) || instantiationService.stub(IWorkspaceTrustManagementService, new TestWorkspaceTrustManagementService());
@@ -128,7 +128,7 @@ suite('ExtensionEnablementService Test', () => {
 				onDidInstallExtensions: didInstallEvent.event,
 				onDidUninstallExtension: didUninstallEvent.event,
 				getInstalled: () => Promise.resolve(installed)
-			}
+			},
 		}, null, null));
 		instantiationService.stub(IWorkbenchExtensionManagementService, instantiationService.createInstance(ExtensionManagementService));
 		testObject = new TestExtensionEnablementService(instantiationService);
@@ -747,7 +747,7 @@ suite('ExtensionEnablementService Test', () => {
 
 	test('test web extension on local server is disabled by kind when web worker is not enabled', async () => {
 		instantiationService.stub(IExtensionManagementServerService, aMultiExtensionManagementServerService(instantiationService));
-		const localWorkspaceExtension = aLocalExtension2('pub.a', { extensionKind: ['web'] }, { location: URI.file(`pub.a`) });
+		const localWorkspaceExtension = aLocalExtension2('pub.a', { browser: 'browser.js' }, { location: URI.file(`pub.a`) });
 		(<TestConfigurationService>instantiationService.get(IConfigurationService)).setUserConfiguration('extensions', { webWorker: false });
 		testObject = new TestExtensionEnablementService(instantiationService);
 		assert.strictEqual(testObject.isEnabled(localWorkspaceExtension), false);
@@ -756,7 +756,7 @@ suite('ExtensionEnablementService Test', () => {
 
 	test('test web extension on local server is not disabled by kind when web worker is enabled', async () => {
 		instantiationService.stub(IExtensionManagementServerService, aMultiExtensionManagementServerService(instantiationService));
-		const localWorkspaceExtension = aLocalExtension2('pub.a', { extensionKind: ['web'] }, { location: URI.file(`pub.a`) });
+		const localWorkspaceExtension = aLocalExtension2('pub.a', { browser: 'browser.js' }, { location: URI.file(`pub.a`) });
 		(<TestConfigurationService>instantiationService.get(IConfigurationService)).setUserConfiguration('extensions', { webWorker: true });
 		testObject = new TestExtensionEnablementService(instantiationService);
 		assert.strictEqual(testObject.isEnabled(localWorkspaceExtension), true);
@@ -765,7 +765,7 @@ suite('ExtensionEnablementService Test', () => {
 
 	test('test web extension on remote server is disabled by kind when web worker is not enabled', async () => {
 		instantiationService.stub(IExtensionManagementServerService, anExtensionManagementServerService(anExtensionManagementServer('vscode-local', instantiationService), anExtensionManagementServer('vscode-remote', instantiationService), anExtensionManagementServer('web', instantiationService)));
-		const localWorkspaceExtension = aLocalExtension2('pub.a', { extensionKind: ['web'] }, { location: URI.file(`pub.a`).with({ scheme: 'vscode-remote' }) });
+		const localWorkspaceExtension = aLocalExtension2('pub.a', { browser: 'browser.js' }, { location: URI.file(`pub.a`).with({ scheme: 'vscode-remote' }) });
 		(<TestConfigurationService>instantiationService.get(IConfigurationService)).setUserConfiguration('extensions', { webWorker: false });
 		testObject = new TestExtensionEnablementService(instantiationService);
 		assert.strictEqual(testObject.isEnabled(localWorkspaceExtension), false);
@@ -774,7 +774,7 @@ suite('ExtensionEnablementService Test', () => {
 
 	test('test web extension on remote server is disabled by kind when web worker is enabled', async () => {
 		instantiationService.stub(IExtensionManagementServerService, anExtensionManagementServerService(anExtensionManagementServer('vscode-local', instantiationService), anExtensionManagementServer('vscode-remote', instantiationService), anExtensionManagementServer('web', instantiationService)));
-		const localWorkspaceExtension = aLocalExtension2('pub.a', { extensionKind: ['web'] }, { location: URI.file(`pub.a`).with({ scheme: 'vscode-remote' }) });
+		const localWorkspaceExtension = aLocalExtension2('pub.a', { browser: 'browser.js' }, { location: URI.file(`pub.a`).with({ scheme: 'vscode-remote' }) });
 		(<TestConfigurationService>instantiationService.get(IConfigurationService)).setUserConfiguration('extensions', { webWorker: true });
 		testObject = new TestExtensionEnablementService(instantiationService);
 		assert.strictEqual(testObject.isEnabled(localWorkspaceExtension), false);
@@ -783,7 +783,7 @@ suite('ExtensionEnablementService Test', () => {
 
 	test('test web extension on web server is not disabled by kind', async () => {
 		instantiationService.stub(IExtensionManagementServerService, anExtensionManagementServerService(anExtensionManagementServer('vscode-local', instantiationService), anExtensionManagementServer('vscode-remote', instantiationService), anExtensionManagementServer('web', instantiationService)));
-		const webExtension = aLocalExtension2('pub.a', { extensionKind: ['web'] }, { location: URI.file(`pub.a`).with({ scheme: 'web' }) });
+		const webExtension = aLocalExtension2('pub.a', { browser: 'browser.js' }, { location: URI.file(`pub.a`).with({ scheme: 'web' }) });
 		testObject = new TestExtensionEnablementService(instantiationService);
 		assert.strictEqual(testObject.isEnabled(webExtension), true);
 		assert.deepStrictEqual(testObject.getEnablementState(webExtension), EnablementState.EnabledGlobally);
@@ -920,7 +920,7 @@ function anExtensionManagementServer(authority: string, instantiationService: Te
 	return {
 		id: authority,
 		label: authority,
-		extensionManagementService: instantiationService.get(IExtensionManagementService)
+		extensionManagementService: instantiationService.get(IExtensionManagementService),
 	};
 }
 

@@ -350,7 +350,7 @@ class KeyboardController<T> implements IDisposable {
 		onKeyDown.filter(e => e.keyCode === KeyCode.Escape).on(this.onEscape, this, this.disposables);
 
 		// if (multipleSelectionSupport) {
-		onKeyDown.filter(e => (platform.isMacintosh ? e.metaKey : e.ctrlKey) && e.keyCode === KeyCode.KEY_A).on(this.onCtrlA, this, this.disposables);
+		onKeyDown.filter(e => (platform.isMacintosh ? e.metaKey : e.ctrlKey) && e.keyCode === KeyCode.KeyA).on(this.onCtrlA, this, this.disposables);
 		// }
 	}
 

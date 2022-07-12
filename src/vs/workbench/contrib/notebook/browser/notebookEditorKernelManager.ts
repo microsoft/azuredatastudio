@@ -10,7 +10,7 @@ import { CellKind, INotebookTextModel, NotebookCellExecutionState } from 'vs/wor
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { INotebookKernel, INotebookKernelService } from 'vs/workbench/contrib/notebook/common/notebookKernelService';
 import { IWorkspaceTrustRequestService } from 'vs/platform/workspace/common/workspaceTrust';
-import { SELECT_KERNEL_ID } from 'vs/workbench/contrib/notebook/browser/contrib/coreActions';
+import { SELECT_KERNEL_ID } from 'vs/workbench/contrib/notebook/browser/controller/coreActions';
 
 export class NotebookEditorKernelManager extends Disposable {
 
@@ -25,7 +25,7 @@ export class NotebookEditorKernelManager extends Disposable {
 	getSelectedOrSuggestedKernel(notebook: INotebookTextModel): INotebookKernel | undefined {
 		// returns SELECTED or the ONLY available kernel
 		const info = this._notebookKernelService.getMatchingKernel(notebook);
-		return info.selected ?? info.suggested;
+		return info.selected ?? info.suggestions[0];
 	}
 
 	async executeNotebookCells(notebook: INotebookTextModel, cells: Iterable<ICellViewModel>): Promise<void> {

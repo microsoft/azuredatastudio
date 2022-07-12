@@ -294,7 +294,7 @@ export class QuickInputList {
 				case KeyCode.Space:
 					this.toggleCheckbox();
 					break;
-				case KeyCode.KEY_A:
+				case KeyCode.KeyA:
 					if (platform.isMacintosh ? e.metaKey : e.ctrlKey) {
 						this.list.setFocus(range(this.list.length));
 					}
@@ -360,6 +360,14 @@ export class QuickInputList {
 	@memoize
 	get onDidChangeSelection() {
 		return Event.map(this.list.onDidChangeSelection, e => ({ items: e.elements.map(e => e.item), event: e.browserEvent }));
+	}
+
+	get scrollTop() {
+		return this.list.scrollTop;
+	}
+
+	set scrollTop(scrollTop: number) {
+		this.list.scrollTop = scrollTop;
 	}
 
 	getAllVisibleChecked() {

@@ -5,7 +5,6 @@
 
 import { exec } from 'child_process';
 import type * as pty from 'node-pty';
-import * as os from 'os';
 import { timeout } from 'vs/base/common/async';
 import { Emitter, Event } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
@@ -15,7 +14,7 @@ import { URI } from 'vs/base/common/uri';
 import { Promises } from 'vs/base/node/pfs';
 import { localize } from 'vs/nls';
 import { ILogService } from 'vs/platform/log/common/log';
-import { FlowControlConstants, IProcessReadyEvent, IShellLaunchConfig, ITerminalChildProcess, ITerminalDimensionsOverride, ITerminalLaunchError, TerminalShellType } from 'vs/platform/terminal/common/terminal';
+import { FlowControlConstants, IShellLaunchConfig, ITerminalChildProcess, ITerminalLaunchError, IProcessProperty, IProcessPropertyMap as IProcessPropertyMap, ProcessPropertyType, TerminalShellType, ProcessCapability, IProcessReadyEvent } from 'vs/platform/terminal/common/terminal';
 import { ChildProcessMonitor } from 'vs/platform/terminal/node/childProcessMonitor';
 import { findExecutable, getWindowsBuildNumber } from 'vs/platform/terminal/node/terminalEnvironment';
 import { WindowsShellHelper } from 'vs/platform/terminal/node/windowsShellHelper';
@@ -77,8 +76,17 @@ export class TerminalProcess extends Disposable implements ITerminalChildProcess
 	readonly id = 0;
 	readonly shouldPersist = false;
 
+	private _properties: IProcessPropertyMap = {
+		cwd: '',
+		initialCwd: '',
+		fixedDimensions: { cols: undefined, rows: undefined },
+		title: '',
+		shellType: undefined,
+		hasChildProcesses: true,
+		resolvedShellLaunchConfig: {},
+		overrideDimensions: undefined
+	};
 	private static _lastKillOrStart = 0;
-
 	private _exitCode: number | undefined;
 	private _exitMessage: string | undefined;
 	private _closeTimeout: any;
@@ -94,6 +102,7 @@ export class TerminalProcess extends Disposable implements ITerminalChildProcess
 	private _delayedResizer: DelayedResizer | undefined;
 	private readonly _initialCwd: string;
 	private readonly _ptyOptions: pty.IPtyForkOptions | pty.IWindowsPtyForkOptions;
+	private _capabilities: ProcessCapability[] = [];
 
 	private _isPtyPaused: boolean = false;
 	private _unacknowledgedCharCount: number = 0;
@@ -102,24 +111,19 @@ export class TerminalProcess extends Disposable implements ITerminalChildProcess
 	get currentTitle(): string { return this._windowsShellHelper?.shellTitle || this._currentTitle; }
 	get shellType(): TerminalShellType { return this._windowsShellHelper ? this._windowsShellHelper.shellType : undefined; }
 
+	get capabilities(): ProcessCapability[] { return this._capabilities; }
+
 	private readonly _onProcessData = this._register(new Emitter<string>());
 	readonly onProcessData = this._onProcessData.event;
-	private readonly _onProcessExit = this._register(new Emitter<number>());
-	readonly onProcessExit = this._onProcessExit.event;
 	private readonly _onProcessReady = this._register(new Emitter<IProcessReadyEvent>());
 	readonly onProcessReady = this._onProcessReady.event;
-	private readonly _onProcessTitleChanged = this._register(new Emitter<string>());
-	readonly onProcessTitleChanged = this._onProcessTitleChanged.event;
-	private readonly _onProcessShellTypeChanged = this._register(new Emitter<TerminalShellType>());
-	readonly onProcessShellTypeChanged = this._onProcessShellTypeChanged.event;
-	private readonly _onDidChangeHasChildProcesses = this._register(new Emitter<boolean>());
-	readonly onDidChangeHasChildProcesses = this._onDidChangeHasChildProcesses.event;
-
-	onProcessOverrideDimensions?: Event<ITerminalDimensionsOverride | undefined> | undefined;
-	onProcessResolvedShellLaunchConfig?: Event<IShellLaunchConfig> | undefined;
+	private readonly _onDidChangeProperty = this._register(new Emitter<IProcessProperty<any>>());
+	readonly onDidChangeProperty = this._onDidChangeProperty.event;
+	private readonly _onProcessExit = this._register(new Emitter<number>());
+	readonly onProcessExit = this._onProcessExit.event;
 
 	constructor(
-		private readonly _shellLaunchConfig: IShellLaunchConfig,
+		readonly shellLaunchConfig: IShellLaunchConfig,
 		cwd: string,
 		cols: number,
 		rows: number,
@@ -134,13 +138,15 @@ export class TerminalProcess extends Disposable implements ITerminalChildProcess
 		super();
 		let name: string;
 		if (isWindows) {
-			name = path.basename(this._shellLaunchConfig.executable || '');
+			name = path.basename(this.shellLaunchConfig.executable || '');
 		} else {
 			// Using 'xterm-256color' here helps ensure that the majority of Linux distributions will use a
 			// color prompt as defined in the default ~/.bashrc file.
 			name = 'xterm-256color';
 		}
 		this._initialCwd = cwd;
+		this._properties[ProcessPropertyType.InitialCwd] = this._initialCwd;
+		this._properties[ProcessPropertyType.Cwd] = this._initialCwd;
 		const useConpty = windowsEnableConpty && process.platform === 'win32' && getWindowsBuildNumber() >= 18309;
 		this._ptyOptions = {
 			name,
@@ -151,11 +157,11 @@ export class TerminalProcess extends Disposable implements ITerminalChildProcess
 			rows,
 			useConpty,
 			// This option will force conpty to not redraw the whole viewport on launch
-			conptyInheritCursor: useConpty && !!_shellLaunchConfig.initialText
+			conptyInheritCursor: useConpty && !!shellLaunchConfig.initialText
 		};
 		// Delay resizes to avoid conpty not respecting very early resize calls
 		if (isWindows) {
-			if (useConpty && cols === 0 && rows === 0 && this._shellLaunchConfig.executable?.endsWith('Git\\bin\\bash.exe')) {
+			if (useConpty && cols === 0 && rows === 0 && this.shellLaunchConfig.executable?.endsWith('Git\\bin\\bash.exe')) {
 				this._delayedResizer = new DelayedResizer();
 				this._register(this._delayedResizer.onTrigger(dimensions => {
 					this._delayedResizer?.dispose();
@@ -168,9 +174,13 @@ export class TerminalProcess extends Disposable implements ITerminalChildProcess
 			// WindowsShellHelper is used to fetch the process title and shell type
 			this.onProcessReady(e => {
 				this._windowsShellHelper = this._register(new WindowsShellHelper(e.pid));
-				this._register(this._windowsShellHelper.onShellTypeChanged(e => this._onProcessShellTypeChanged.fire(e)));
-				this._register(this._windowsShellHelper.onShellNameChanged(e => this._onProcessTitleChanged.fire(e)));
+				this._register(this._windowsShellHelper.onShellTypeChanged(e => this._onDidChangeProperty.fire({ type: ProcessPropertyType.ShellType, value: e })));
+				this._register(this._windowsShellHelper.onShellNameChanged(e => this._onDidChangeProperty.fire({ type: ProcessPropertyType.Title, value: e })));
 			});
+		}
+		// Enable the cwd detection capability if the process supports it
+		if (isLinux || isMacintosh) {
+			this.capabilities.push(ProcessCapability.CwdDetection);
 		}
 	}
 
@@ -182,7 +192,7 @@ export class TerminalProcess extends Disposable implements ITerminalChildProcess
 		}
 
 		try {
-			await this.setupPtyProcess(this._shellLaunchConfig, this._ptyOptions);
+			await this.setupPtyProcess(this.shellLaunchConfig, this._ptyOptions);
 			return undefined;
 		} catch (err) {
 			this._logService.trace('IPty#spawn native exception', err);
@@ -201,11 +211,12 @@ export class TerminalProcess extends Disposable implements ITerminalChildProcess
 				return { message: localize('launchFail.cwdDoesNotExist', "Starting directory (cwd) \"{0}\" does not exist", this._initialCwd.toString()) };
 			}
 		}
+		this._onDidChangeProperty.fire({ type: ProcessPropertyType.InitialCwd, value: this._initialCwd });
 		return undefined;
 	}
 
 	private async _validateExecutable(): Promise<undefined | ITerminalLaunchError> {
-		const slc = this._shellLaunchConfig;
+		const slc = this.shellLaunchConfig;
 		if (!slc.executable) {
 			throw new Error('IShellLaunchConfig.executable not set');
 		}
@@ -238,7 +249,7 @@ export class TerminalProcess extends Disposable implements ITerminalChildProcess
 		const ptyProcess = (await import('node-pty')).spawn(shellLaunchConfig.executable!, args, options);
 		this._ptyProcess = ptyProcess;
 		this._childProcessMonitor = this._register(new ChildProcessMonitor(ptyProcess.pid, this._logService));
-		this._childProcessMonitor.onDidChangeHasChildProcesses(this._onDidChangeHasChildProcesses.fire, this._onDidChangeHasChildProcesses);
+		this._childProcessMonitor.onDidChangeHasChildProcesses(value => this._onDidChangeProperty.fire({ type: ProcessPropertyType.HasChildProcesses, value }));
 		this._processStartupComplete = new Promise<void>(c => {
 			this.onProcessReady(() => c());
 		});
@@ -337,7 +348,7 @@ export class TerminalProcess extends Disposable implements ITerminalChildProcess
 	}
 
 	private _sendProcessId(pid: number) {
-		this._onProcessReady.fire({ pid, cwd: this._initialCwd, requiresWindowsMode: isWindows && getWindowsBuildNumber() < 21376 });
+		this._onProcessReady.fire({ pid, cwd: this._initialCwd, capabilities: this.capabilities, requiresWindowsMode: isWindows && getWindowsBuildNumber() < 21376 });
 	}
 
 	private _sendProcessTitle(ptyProcess: pty.IPty): void {
@@ -345,7 +356,7 @@ export class TerminalProcess extends Disposable implements ITerminalChildProcess
 			return;
 		}
 		this._currentTitle = ptyProcess.process;
-		this._onProcessTitleChanged.fire(this._currentTitle);
+		this._onDidChangeProperty.fire({ type: ProcessPropertyType.Title, value: this._currentTitle });
 	}
 
 	shutdown(immediate: boolean): void {
@@ -384,6 +395,36 @@ export class TerminalProcess extends Disposable implements ITerminalChildProcess
 
 	async processBinary(data: string): Promise<void> {
 		this.input(data, true);
+	}
+
+	async refreshProperty<T extends ProcessPropertyType>(type: ProcessPropertyType): Promise<IProcessPropertyMap[T]> {
+		switch (type) {
+			case ProcessPropertyType.Cwd:
+				const newCwd = await this.getCwd();
+				if (newCwd !== this._properties.cwd) {
+					this._properties.cwd = newCwd;
+					this._onDidChangeProperty.fire({ type: ProcessPropertyType.Cwd, value: this._properties.cwd });
+				}
+				return newCwd as IProcessPropertyMap[T];
+			case ProcessPropertyType.InitialCwd:
+				const initialCwd = await this.getInitialCwd();
+				if (initialCwd !== this._properties.initialCwd) {
+					this._properties.initialCwd = initialCwd;
+					this._onDidChangeProperty.fire({ type: ProcessPropertyType.InitialCwd, value: this._properties.initialCwd });
+				}
+				return initialCwd as IProcessPropertyMap[T];
+			case ProcessPropertyType.Title:
+				return this.currentTitle as IProcessPropertyMap[T];
+			default:
+				return this.shellType as IProcessPropertyMap[T];
+		}
+	}
+
+	async updateProperty<T extends ProcessPropertyType>(type: ProcessPropertyType, value: IProcessPropertyMap[T]): Promise<void> {
+		//TODO: why is the type check necessary?
+		if (type === ProcessPropertyType.FixedDimensions && typeof value !== 'string' && value && ('cols' in value || 'rows' in value)) {
+			this._properties.fixedDimensions = value;
+		}
 	}
 
 	private _startWrite(): void {
@@ -480,26 +521,24 @@ export class TerminalProcess extends Disposable implements ITerminalChildProcess
 
 	async getCwd(): Promise<string> {
 		if (isMacintosh) {
-			// Disable cwd lookup on macOS Big Sur due to spawn blocking thread (darwin v20 is macOS
-			// Big Sur) https://github.com/Microsoft/vscode/issues/105446
-			const osRelease = os.release().split('.');
-			if (osRelease.length > 0 && parseInt(osRelease[0]) < 20) {
-				return new Promise<string>(resolve => {
-					if (!this._ptyProcess) {
+			// From Big Sur (darwin v20) there is a spawn blocking thread issue on Electron,
+			// this is fixed in VS Code's internal Electron.
+			// https://github.com/Microsoft/vscode/issues/105446
+			return new Promise<string>(resolve => {
+				if (!this._ptyProcess) {
+					resolve(this._initialCwd);
+					return;
+				}
+				this._logService.trace('IPty#pid');
+				exec('lsof -OPln -p ' + this._ptyProcess.pid + ' | grep cwd', (error, stdout, stderr) => {
+					if (!error && stdout !== '') {
+						resolve(stdout.substring(stdout.indexOf('/'), stdout.length - 1));
+					} else {
+						this._logService.error('lsof did not run successfully, it may not be on the $PATH?', error, stdout, stderr);
 						resolve(this._initialCwd);
-						return;
 					}
-					this._logService.trace('IPty#pid');
-					exec('lsof -OPln -p ' + this._ptyProcess.pid + ' | grep cwd', (error, stdout, stderr) => {
-						if (!error && stdout !== '') {
-							resolve(stdout.substring(stdout.indexOf('/'), stdout.length - 1));
-						} else {
-							this._logService.error('lsof did not run successfully, it may not be on the $PATH?', error, stdout, stderr);
-							resolve(this._initialCwd);
-						}
-					});
 				});
-			}
+			});
 		}
 
 		if (isLinux) {

@@ -56,7 +56,7 @@
       "view/item/context": [
         {
           "command": "sqlBindings.createAzureFunction",
-          "when": "view == objectExplorer && viewItem == Table",
+          "when": "view == objectExplorer && (viewItem == Table || viewItem == View)",
           "group": "zAzure_Function@1"
         }
       ]

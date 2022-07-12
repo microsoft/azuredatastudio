@@ -106,7 +106,7 @@ suite.skip('Workbench - TerminalConfigHelper', () => { // {{SQL CARBON EDIT}} sk
 		});
 		configHelper = new TestTerminalConfigHelper(configurationService, null!, null!, null!, null!, null!);
 		configHelper.panelContainer = fixture;
-		assert.strictEqual(configHelper.getFont().fontSize, 25, 'The maximum terminal font size should be used when terminal.integrated.fontSize more than it');
+		assert.strictEqual(configHelper.getFont().fontSize, 100, 'The maximum terminal font size should be used when terminal.integrated.fontSize more than it');
 
 		await configurationService.setUserConfiguration('editor', {
 			fontFamily: 'foo'

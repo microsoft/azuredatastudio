@@ -356,14 +356,14 @@
     "highlight.js": "^10.4.1",
     "markdown-it": "^12.3.2",
     "markdown-it-front-matter": "^0.2.1",
-    "vscode-extension-telemetry": "0.2.8",
+    "vscode-extension-telemetry": "0.4.2",
     "vscode-nls": "^5.0.0"
   },
   "devDependencies": {
-    "@types/dompurify": "^2.2.3",
-    "@types/highlight.js": "10.1.0",
+    "@types/dompurify": "^2.3.1",
     "@types/lodash.throttle": "^4.1.3",
-    "@types/markdown-it": "0.0.2",
+    "@types/markdown-it": "12.2.3",
+    "@types/vscode-notebook-renderer": "^1.60.0",
     "@types/vscode-webview": "^1.57.0",
     "lodash.throttle": "^4.1.1"
   },

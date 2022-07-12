@@ -52,7 +52,7 @@ import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 import { MessagePanel } from 'sql/workbench/contrib/query/browser/messagePanel';
 import { GridPanel } from 'sql/workbench/contrib/query/browser/gridPanel';
 import { ChartTab } from 'sql/workbench/contrib/charts/browser/chartTab';
-import { TopOperationsTab } from 'sql/workbench/contrib/queryPlan/browser/topOperations';
+import { TopOperationsTab } from 'sql/workbench/contrib/executionPlan/browser/topOperationsTab';
 import { QueryModelViewTab } from 'sql/workbench/contrib/query/browser/modelViewTab/queryModelViewTab';
 import { ExecutionPlanTab } from 'sql/workbench/contrib/executionPlan/browser/executionPlanTab';
 import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
@@ -64,6 +64,7 @@ import { ExecutionPlanFileViewCache } from 'sql/workbench/contrib/executionPlan/
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { ILogService } from 'vs/platform/log/common/log';
+import { ICodeEditorViewState } from 'vs/editor/common/editorCommon';
 
 const QUERY_EDITOR_VIEW_STATE_PREFERENCE_KEY = 'queryEditorViewState';
 
@@ -309,7 +310,7 @@ export class QueryEditor extends EditorPane {
 
 	private textResourceEditor: TextResourceEditor;
 	private textFileEditor: TextFileEditor;
-	private currentTextEditor: BaseTextEditor;
+	private currentTextEditor: BaseTextEditor<ICodeEditorViewState>;
 
 	private textResourceEditorContainer: HTMLElement;
 	private textFileEditorContainer: HTMLElement;
