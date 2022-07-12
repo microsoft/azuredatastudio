@@ -94,6 +94,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.OptionNotFoundWarningMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[label: {0} does not exist in the options value name lookup]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[레이블: {0}이(가) 옵션 값 이름 조회에 없음]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -208,6 +211,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.advancedPublishOptions" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Advanced Publish Options]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[고급 게시 옵션]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
