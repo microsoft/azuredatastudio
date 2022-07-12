@@ -688,7 +688,7 @@ class TypeScriptLanguageServiceHost implements ts.LanguageServiceHost {
 	readFile(): string | undefined {
 		return undefined;
 	}
-    fileExists(): boolean {
+	fileExists(): boolean {
 		return false;
 	}
 
