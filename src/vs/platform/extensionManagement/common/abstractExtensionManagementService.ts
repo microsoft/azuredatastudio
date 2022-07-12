@@ -112,7 +112,7 @@ export abstract class AbstractExtensionManagementService extends Disposable impl
 			throw error;
 		}
 
-		/* {{SQL CARBON EDIT}} Remove this check as we don't want to enforce the manifest versions matching since those are often coming directly from Github
+		/* {{SQL CARBON EDIT}} Remove this check as we don't want to enforce the manifest versions matching since those are often coming directly from the main branch
 		if (manifest.version !== extension.version) {
 			const error = new ExtensionManagementError(`Cannot install '${extension.identifier.id}' extension because of version mismatch in Marketplace`, ExtensionManagementErrorCode.Invalid);
 			this.logService.error(error.message);
