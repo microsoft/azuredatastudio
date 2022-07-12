@@ -70,6 +70,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	private dirtyCells: { row: number, column: number }[] = [];
 	protected plugins = new Array<Slick.Plugin<any>>();
 	private newlinePattern: string;
+	// User inputted string saved in case of an invalid edit
 	private lastEnteredString: string;
 	// List of column names with their indexes stored.
 	private columnNameToIndex: { [columnNumber: number]: string } = {};
@@ -385,6 +386,14 @@ export class EditDataGridPanel extends GridParentComponent {
 				// Cell update failed, jump back to the last cell we were on
 				this.updateEnabledState(true);
 				this.focusCell(cellToSubmit.row, cellToSubmit.column, true);
+				// Cannot insert text for existing row as that causes an infinite loop scenario, this is for new row only.
+				// During a new row, the renderGridDataRowsRange function is disabled as it also results in an infinite loop.
+				// To address the case after the new row is reverted/removed, we insert the text here instead.
+				if (this.isNullRow(cellToSubmit.row) && this.lastEnteredString) {
+					document.execCommand('selectAll');
+					document.execCommand('delete');
+					document.execCommand('insertText', false, this.lastEnteredString);
+				}
 				return Promise.reject(null);
 			});
 	}
@@ -564,7 +573,6 @@ export class EditDataGridPanel extends GridParentComponent {
 				this.focusCell(this.lastClickedCell.row, this.lastClickedCell.column);
 			}
 			else {
-				this.noAutoSelectOnRender = true;
 				this.revertSelectedCell(this.previousSavedCell.row, this.previousSavedCell.column).catch(onUnexpectedError);
 				this.table.grid.resetActiveCell();
 			}
@@ -667,6 +675,8 @@ export class EditDataGridPanel extends GridParentComponent {
 				return self.dataService.updateCell(sessionRowId, cellToAdd.column - 1, this.newlinePattern ? self.currentEditCellValue.replace('\u0000', this.newlinePattern) : self.currentEditCellValue);
 			}).then(
 				result => {
+					// last entered input is no longer needed as we have entered a valid input to commit.
+					self.lastEnteredString = undefined;
 					self.currentEditCellValue = undefined;
 					let refreshPromise: Thenable<void> = Promise.resolve();
 					if (refreshGrid) {
@@ -680,6 +690,7 @@ export class EditDataGridPanel extends GridParentComponent {
 					});
 				},
 				error => {
+					// save the user's current input so that it can be restored after revert.
 					self.lastEnteredString = self.currentEditCellValue;
 					self.currentEditCellValue = undefined;
 					// Switch lastClickedCell back to the cell to submit.
@@ -1130,12 +1141,15 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	private renderGridDataRowsRange(startIndex: number, count: number): void {
 		this.invalidateRange(startIndex, startIndex + count);
-		let activeCell = { row: -1, column: -1 };
-		if (this.previousSavedCell) {
-			activeCell = this.previousSavedCell;
-		}
 		if (!this.noAutoSelectOnRender && !this.firstRender) {
 			this.focusCell(this.lastClickedCell.row, this.lastClickedCell.column);
+			// Restore the last entered string from the user in case an invalid edit was happened, to allow users to keep their string.
+			// very brief flickering may occur as this function is called a couple of times after an invalid cell is reverted.
+			if (this.lastEnteredString) {
+				document.execCommand('selectAll');
+				document.execCommand('delete');
+				document.execCommand('insertText', false, this.lastEnteredString);
+			}
 		}
 		else {
 			this.noAutoSelectOnRender = false;
