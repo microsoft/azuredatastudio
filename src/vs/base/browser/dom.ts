@@ -1364,13 +1364,13 @@ export function detectFullscreen(): IDetectedFullscreen | null {
 /**
  * Sanitizes the given `value` and reset the given `node` with it.
  */
-export function safeInnerHtml(node: HTMLElement, value: string, allowUnknowProtocols: boolean = false): void { // {{SQL CARBON EDIT}} - add allow unknown schemas parameter
+export function safeInnerHtml(node: HTMLElement, value: string, allowUnknownProtocols: boolean = false): void { // {{SQL CARBON EDIT}} - add allow unknown schemas parameter
 	const options: dompurify.Config = {
 		ALLOWED_TAGS: ['a', 'button', 'blockquote', 'code', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'i', 'img', 'input', 'label', 'li', 'p', 'pre', 'select', 'small', 'span', 'strong', 'textarea', 'ul', 'ol'], // {{SQL CARBON EDIT}} Add i & img tags for welcome page support
 		ALLOWED_ATTR: ['href', 'data-href', 'data-command', 'target', 'title', 'name', 'src', 'alt', 'class', 'id', 'role', 'tabindex', 'style', 'data-code', 'width', 'height', 'align', 'x-dispatch', 'required', 'checked', 'placeholder', 'type', 'aria-label'], // {{SQL CARBON EDIT}} Add aria-label
 		RETURN_DOM: false,
 		RETURN_DOM_FRAGMENT: false,
-		ALLOW_UNKNOWN_PROTOCOLS: allowUnknowProtocols
+		ALLOW_UNKNOWN_PROTOCOLS: allowUnknownProtocols
 	};
 
 	const allowedProtocols = [Schemas.http, Schemas.https, Schemas.command];
