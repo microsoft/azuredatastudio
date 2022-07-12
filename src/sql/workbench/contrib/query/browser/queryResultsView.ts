@@ -183,7 +183,7 @@ export class QueryResultsView extends Disposable {
 		this.chartTab = this._register(new ChartTab(instantiationService));
 		this._panelView = this._register(new TabbedPanel(container, { showHeaderWhenSingleView: true }));
 		this._register(attachTabbedPanelStyler(this._panelView, themeService));
-		this.executionPlanTab = this._register(this.instantiationService.createInstance(ExecutionPlanTab));
+		this.executionPlanTab = this._register(this.instantiationService.createInstance(ExecutionPlanTab, this));
 		this.topOperationsTab = this._register(this.instantiationService.createInstance(TopOperationsTab, this));
 		this._panelView.pushTab(this.resultsTab);
 		this._panelView.pushTab(this.messagesTab);

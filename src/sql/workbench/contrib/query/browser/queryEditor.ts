@@ -597,7 +597,7 @@ export class QueryEditor extends EditorPane {
 		if (!this._panelView.contains(this.topOperationsTab.identifier)) {
 			this._panelView.pushTab(this.topOperationsTab);
 		}
-		this.topOperationsTab.view.showPlan(xml);
+		//this.topOperationsTab.view.showPlan(xml);
 	}
 
 	public showPlan() {
@@ -696,8 +696,8 @@ export class QueryEditor extends EditorPane {
 		this.resultsTab = this._register(new ResultsTab(this.instantiationService));
 		this.messagesTab = this._register(new MessagesTab(this.instantiationService));
 		this.chartTab = this._register(new ChartTab(this.instantiationService));
-		this.executionPlanTab = this._register(this.instantiationService.createInstance(ExecutionPlanTab));
-		this.topOperationsTab = this._register(new TopOperationsTab(this.instantiationService));
+		//this.executionPlanTab = this._register(this.instantiationService.createInstance(ExecutionPlanTab));
+		//this.topOperationsTab = this._register(new TopOperationsTab(this.instantiationService));
 
 		let textTab = new TextTab(this.textResourceEditor, this.textResourceEditorContainer);
 		this._register(attachTabbedPanelStyler(this._panelView, this.themeService));
@@ -886,7 +886,7 @@ export class QueryEditor extends EditorPane {
 
 			if (input) {
 				this.resultsTab.view.state = input.state.gridPanelState;
-				this.topOperationsTab.view.setState(input.state.topOperationsState);
+				//this.topOperationsTab.view.setState(input.state.topOperationsState);
 				this.chartTab.view.state = input.state.chartState;
 				this.executionPlanTab.view.state = input.state.executionPlanState;
 				this.dynamicModelViewTabs.forEach((dynamicTab: QueryModelViewTab) => {
