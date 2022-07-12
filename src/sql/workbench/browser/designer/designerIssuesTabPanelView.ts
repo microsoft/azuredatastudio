@@ -127,11 +127,11 @@ class TableFilterListRenderer implements IListRenderer<DesignerIssue, DesignerIs
 		}
 		templateData.issueIcon.className = `issue-icon ${iconClass}`;
 		if (element.moreInfoLink) {
-			const linkElement = this._instantiationService.createInstance(Link, {
-				label: localize('designer.moreInfoLink', "More information"),
-				href: element.moreInfoLink
-			}, undefined);
-			templateData.issueMoreInfoLink.appendChild(linkElement.el);
+			this._instantiationService.createInstance(Link, templateData.issueMoreInfoLink,
+				{
+					label: localize('designer.moreInfoLink', "More information"),
+					href: element.moreInfoLink
+				}, undefined);
 		} else {
 			DOM.clearNode(templateData.issueMoreInfoLink);
 		}

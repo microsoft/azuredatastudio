@@ -13,7 +13,8 @@ import * as mouse from 'vs/base/browser/mouseEvent';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import * as _ from 'vs/base/parts/tree/browser/tree';
 import { IDragAndDropData } from 'vs/base/browser/dnd';
-import { KeyCode, KeyMod, Keybinding, SimpleKeybinding, createKeybinding } from 'vs/base/common/keyCodes';
+import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
+import { createKeybinding, Keybinding, SimpleKeybinding } from 'vs/base/common/keybindings';
 
 export interface IKeyBindingCallback {
 	(tree: _.ITree, event: IKeyboardEvent): void;
@@ -112,8 +113,8 @@ export class DefaultController implements _.IController {
 			this.downKeyBindingDispatcher.set(KeyCode.RightArrow, (t, e) => this.onRight(t, e));
 			if (platform.isMacintosh) {
 				this.downKeyBindingDispatcher.set(KeyMod.CtrlCmd | KeyCode.UpArrow, (t, e) => this.onLeft(t, e));
-				this.downKeyBindingDispatcher.set(KeyMod.WinCtrl | KeyCode.KEY_N, (t, e) => this.onDown(t, e));
-				this.downKeyBindingDispatcher.set(KeyMod.WinCtrl | KeyCode.KEY_P, (t, e) => this.onUp(t, e));
+				this.downKeyBindingDispatcher.set(KeyMod.WinCtrl | KeyCode.KeyN, (t, e) => this.onDown(t, e));
+				this.downKeyBindingDispatcher.set(KeyMod.WinCtrl | KeyCode.KeyP, (t, e) => this.onUp(t, e));
 			}
 			this.downKeyBindingDispatcher.set(KeyCode.PageUp, (t, e) => this.onPageUp(t, e));
 			this.downKeyBindingDispatcher.set(KeyCode.PageDown, (t, e) => this.onPageDown(t, e));

@@ -578,7 +578,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			}
 			handled = true;
 		}
-		if (e.ctrlKey && e.keyCode === KeyCode.KEY_0) {
+		if (e.ctrlKey && e.keyCode === KeyCode.Digit0) {
 			//Replace contents with NULL in cell contents.
 			document.execCommand('selectAll');
 			document.execCommand('delete');

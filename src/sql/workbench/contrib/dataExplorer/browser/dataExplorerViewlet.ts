@@ -102,7 +102,7 @@ export const VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(ViewContainer
 	openCommandActionDescriptor: {
 		id: VIEWLET_ID,
 		mnemonicTitle: localize('showDataExplorer', "Show Connections"),
-		keybindings: { primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_D },
+		keybindings: { primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KeyD },
 		order: 0
 	},
 	icon: { id: SqlIconId.dataExplorer },

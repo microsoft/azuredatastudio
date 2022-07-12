@@ -3152,7 +3152,7 @@ declare module 'azdata' {
 		'run-in' |
 		'table' |
 		'table-caption' |
-		' table-column-group' |
+		'table-column-group' |
 		'table-header-group' |
 		'table-footer-group' |
 		'table-row-group' |

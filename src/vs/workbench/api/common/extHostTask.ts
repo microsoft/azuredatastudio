@@ -8,7 +8,6 @@ import { asPromise } from 'vs/base/common/async';
 import { Event, Emitter } from 'vs/base/common/event';
 
 import { MainContext, MainThreadTaskShape, ExtHostTaskShape } from 'vs/workbench/api/common/extHost.protocol';
-import * as Objects from 'vs/base/common/objects';
 import * as types from 'vs/workbench/api/common/extHostTypes';
 import { IExtHostWorkspaceProvider, IExtHostWorkspace } from 'vs/workbench/api/common/extHostWorkspace';
 import type * as vscode from 'vscode';
@@ -319,8 +318,8 @@ export namespace TaskDTO {
 		}
 		if (value.group !== undefined) {
 			result.group = types.TaskGroup.from(value.group._id);
-			if (result.group) {
-				result.group = Objects.deepClone(result.group);
+			if (result.group && value.group.isDefault) {
+				result.group = new types.TaskGroup(result.group.id, result.group.label);
 				if (value.group.isDefault) {
 					result.group.isDefault = value.group.isDefault;
 				}
@@ -643,12 +642,20 @@ export abstract class ExtHostTaskBase implements ExtHostTaskShape, IExtHostTask 
 		if (result) {
 			return result;
 		}
-		const createdResult: Promise<TaskExecutionImpl> = new Promise(async (resolve, reject) => {
-			const taskToCreate = task ? task : await TaskDTO.to(execution.task, this._workspaceProvider, this._providedCustomExecutions2);
-			if (!taskToCreate) {
-				reject('Unexpected: Task does not exist.');
+		const createdResult: Promise<TaskExecutionImpl> = new Promise((resolve, reject) => {
+			function resolvePromiseWithCreatedTask(that: ExtHostTaskBase, execution: tasks.TaskExecutionDTO, taskToCreate: vscode.Task | types.Task | undefined) {
+				if (!taskToCreate) {
+					reject('Unexpected: Task does not exist.');
+				} else {
+					resolve(new TaskExecutionImpl(that, execution.id, taskToCreate));
+				}
+			}
+
+			if (task) {
+				resolvePromiseWithCreatedTask(this, execution, task);
 			} else {
-				resolve(new TaskExecutionImpl(this, execution.id, taskToCreate));
+				TaskDTO.to(execution.task, this._workspaceProvider, this._providedCustomExecutions2)
+					.then(task => resolvePromiseWithCreatedTask(this, execution, task));
 			}
 		});
 

@@ -20,11 +20,12 @@ import { IJSONEditingService } from 'vs/workbench/services/configuration/common/
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
-import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { VIEWLET_ID as EXTENSIONS_VIEWLET_ID, IExtensionsViewPaneContainer } from 'vs/workbench/contrib/extensions/common/extensions';
 import { minimumTranslatedStrings } from 'vs/workbench/contrib/localizations/browser/minimalTranslations';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { CancellationToken } from 'vs/base/common/cancellation';
+import { IPaneCompositePartService } from 'vs/workbench/services/panecomposite/browser/panecomposite';
+import { ViewContainerLocation } from 'vs/workbench/common/views';
 import * as locConstants from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}}
 
 // Register action to configure locale and related settings
@@ -42,7 +43,7 @@ export class LocalizationWorkbenchContribution extends Disposable implements IWo
 		@IStorageService private readonly storageService: IStorageService,
 		@IExtensionManagementService private readonly extensionManagementService: IExtensionManagementService,
 		@IExtensionGalleryService private readonly galleryService: IExtensionGalleryService,
-		@IViewletService private readonly viewletService: IViewletService,
+		@IPaneCompositePartService private readonly paneCompositeService: IPaneCompositePartService,
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
 	) {
 		super();
@@ -68,6 +69,9 @@ export class LocalizationWorkbenchContribution extends Disposable implements IWo
 								const updatePromise = updateAndRestart ? this.jsonEditingService.write(this.environmentService.argvResource, [{ path: ['locale'], value: locale }], true) : Promise.resolve(undefined);
 								updatePromise.then(() => this.hostService.restart(), e => this.notificationService.error(e));
 							}
+						}, {
+							label: updateAndRestart ? localize('doNotChangeAndRestart', "Don't Change Language") : localize('doNotRestart', "Don't Restart"),
+							run: () => { }
 						}],
 						{
 							sticky: true,
@@ -90,7 +94,7 @@ export class LocalizationWorkbenchContribution extends Disposable implements IWo
 		if (!language || !locale || locale === 'en' || locale.indexOf('en-') === 0) {
 			return;
 		}
-		if (language === locale || languagePackSuggestionIgnoreList.indexOf(language) > -1) {
+		if (language === locale || languagePackSuggestionIgnoreList.indexOf(locale) > -1) {
 			return;
 		}
 
@@ -144,7 +148,7 @@ export class LocalizationWorkbenchContribution extends Disposable implements IWo
 								label: translations['searchMarketplace'],
 								run: () => {
 									logUserReaction('search');
-									this.viewletService.openViewlet(EXTENSIONS_VIEWLET_ID, true)
+									this.paneCompositeService.openPaneComposite(EXTENSIONS_VIEWLET_ID, ViewContainerLocation.Sidebar, true)
 										.then(viewlet => viewlet?.getViewPaneContainer() as IExtensionsViewPaneContainer)
 										.then(viewlet => {
 											viewlet.search(`tag:lp-${locale}`);
@@ -171,7 +175,7 @@ export class LocalizationWorkbenchContribution extends Disposable implements IWo
 									label: localize('neverAgain', "Don't Show Again"),
 									isSecondary: true,
 									run: () => {
-										languagePackSuggestionIgnoreList.push(language);
+										languagePackSuggestionIgnoreList.push(locale);
 										this.storageService.store(
 											LANGUAGEPACK_SUGGESTION_IGNORE_STORAGE_KEY,
 											JSON.stringify(languagePackSuggestionIgnoreList),
@@ -205,7 +209,7 @@ export class LocalizationWorkbenchContribution extends Disposable implements IWo
 	}
 
 	private installExtension(extension: IGalleryExtension): Promise<void> {
-		return this.viewletService.openViewlet(EXTENSIONS_VIEWLET_ID)
+		return this.paneCompositeService.openPaneComposite(EXTENSIONS_VIEWLET_ID, ViewContainerLocation.Sidebar)
 			.then(viewlet => viewlet?.getViewPaneContainer() as IExtensionsViewPaneContainer)
 			.then(viewlet => viewlet.search(`@id:${extension.identifier.id}`))
 			.then(() => this.extensionManagementService.installFromGallery(extension))

@@ -22,6 +22,7 @@ import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editor
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
 import { ITextEditorOptions } from 'vs/platform/editor/common/editor';
+import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 
 class ProfilerResourceCodeEditor extends CodeEditorWidget {
 
@@ -37,7 +38,7 @@ class ProfilerResourceCodeEditor extends CodeEditorWidget {
 /**
  * Extension of TextResourceEditor that is always readonly rather than only with non UntitledInputs
  */
-export class ProfilerResourceEditor extends BaseTextEditor {
+export class ProfilerResourceEditor extends BaseTextEditor<editorCommon.ICodeEditorViewState> {
 
 	public static ID = 'profiler.editors.textEditor';
 	constructor(
@@ -66,7 +67,9 @@ export class ProfilerResourceEditor extends BaseTextEditor {
 			options.folding = false;
 			options.renderWhitespace = 'none';
 			options.wordWrap = 'on';
-			options.renderIndentGuides = false;
+			options.guides = {
+				indentation: false
+			};
 			options.rulers = [];
 			options.glyphMargin = true;
 			options.minimap = {
@@ -89,5 +92,9 @@ export class ProfilerResourceEditor extends BaseTextEditor {
 
 	public override layout(dimension: DOM.Dimension) {
 		this.getControl().layout(dimension);
+	}
+
+	protected tracksEditorViewState(input: EditorInput): boolean {
+		return input.typeId === ProfilerResourceEditor.ID;
 	}
 }

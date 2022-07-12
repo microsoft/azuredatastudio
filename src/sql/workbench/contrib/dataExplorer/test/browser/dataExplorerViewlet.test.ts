@@ -5,15 +5,16 @@
 
 import * as assert from 'assert';
 import * as Platform from 'vs/platform/registry/common/platform';
-import { ViewletDescriptor, Extensions, Viewlet, ViewletRegistry } from 'vs/workbench/browser/viewlet';
+//import { ViewletDescriptor, Extensions, Viewlet, ViewletRegistry } from 'vs/workbench/browser/viewlet';
 import * as Types from 'vs/base/common/types';
 import { ViewPaneContainer } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { Extensions, PaneComposite, PaneCompositeDescriptor, PaneCompositeRegistry } from 'vs/workbench/browser/panecomposite';
 
 suite('Data Explorer Viewlet', () => {
 
-	class DataExplorerTestViewlet extends Viewlet {
+	class DataExplorerTestViewlet extends PaneComposite {
 		constructor() {
-			super('dataExplorer', undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+			super('dataExplorer', undefined, undefined, undefined, undefined, undefined, undefined, undefined);
 		}
 
 		public override layout(dimension: any): void {
@@ -26,7 +27,7 @@ suite('Data Explorer Viewlet', () => {
 	}
 
 	test('ViewletDescriptor API', function () {
-		let d = ViewletDescriptor.create(DataExplorerTestViewlet, 'id', 'name', 'class', 1);
+		let d = PaneCompositeDescriptor.create(DataExplorerTestViewlet, 'id', 'name', 'class', 1);
 		assert.strictEqual(d.id, 'id');
 		assert.strictEqual(d.name, 'name');
 		assert.strictEqual(d.cssClass, 'class');
@@ -34,26 +35,26 @@ suite('Data Explorer Viewlet', () => {
 	});
 
 	test('Editor Aware ViewletDescriptor API', function () {
-		let d = ViewletDescriptor.create(DataExplorerTestViewlet, 'id', 'name', 'class', 5);
+		let d = PaneCompositeDescriptor.create(DataExplorerTestViewlet, 'id', 'name', 'class', 5);
 		assert.strictEqual(d.id, 'id');
 		assert.strictEqual(d.name, 'name');
 
-		d = ViewletDescriptor.create(DataExplorerTestViewlet, 'id', 'name', 'class', 5);
+		d = PaneCompositeDescriptor.create(DataExplorerTestViewlet, 'id', 'name', 'class', 5);
 		assert.strictEqual(d.id, 'id');
 		assert.strictEqual(d.name, 'name');
 	});
 
 	test('Data Explorer Viewlet extension point and registration', function () {
-		assert(Types.isFunction(Platform.Registry.as<ViewletRegistry>(Extensions.Viewlets).registerViewlet));
-		assert(Types.isFunction(Platform.Registry.as<ViewletRegistry>(Extensions.Viewlets).getViewlet));
-		assert(Types.isFunction(Platform.Registry.as<ViewletRegistry>(Extensions.Viewlets).getViewlets));
+		assert(Types.isFunction(Platform.Registry.as<PaneCompositeRegistry>(Extensions.Viewlets).registerPaneComposite));
+		assert(Types.isFunction(Platform.Registry.as<PaneCompositeRegistry>(Extensions.Viewlets).getPaneComposite));
+		assert(Types.isFunction(Platform.Registry.as<PaneCompositeRegistry>(Extensions.Viewlets).getPaneComposites));
 
-		let oldCount = Platform.Registry.as<ViewletRegistry>(Extensions.Viewlets).getViewlets().length;
-		let d = ViewletDescriptor.create(DataExplorerTestViewlet, 'dataExplorer-test-id', 'name');
-		Platform.Registry.as<ViewletRegistry>(Extensions.Viewlets).registerViewlet(d);
-		let retrieved = Platform.Registry.as<ViewletRegistry>(Extensions.Viewlets).getViewlet('dataExplorer-test-id');
+		let oldCount = Platform.Registry.as<PaneCompositeRegistry>(Extensions.Viewlets).getPaneComposites().length;
+		let d = PaneCompositeDescriptor.create(DataExplorerTestViewlet, 'dataExplorer-test-id', 'name');
+		Platform.Registry.as<PaneCompositeRegistry>(Extensions.Viewlets).registerPaneComposite(d);
+		let retrieved = Platform.Registry.as<PaneCompositeRegistry>(Extensions.Viewlets).getComposite('dataExplorer-test-id');
 		assert(d === retrieved);
-		let newCount = Platform.Registry.as<ViewletRegistry>(Extensions.Viewlets).getViewlets().length;
+		let newCount = Platform.Registry.as<PaneCompositeRegistry>(Extensions.Viewlets).getPaneComposites().length;
 		assert.strictEqual(oldCount + 1, newCount);
 	});
 });
