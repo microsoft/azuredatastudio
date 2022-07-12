@@ -291,7 +291,7 @@ export class WalkThroughPart extends EditorPane {
 
 				const content = model.main;
 				if (!input.resource.path.endsWith('.md')) {
-					safeInnerHtml(this.content, content);
+					safeInnerHtml(this.content, content, true); // {{SQL CARBON EDIT}} - allow unknown schemas
 
 					this.updateSizeClasses();
 					this.decorateContent();

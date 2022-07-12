@@ -94,6 +94,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.OptionNotFoundWarningMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[label: {0} does not exist in the options value name lookup]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ラベル: {0} はオプション値の名前参照に存在しません]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -200,7 +203,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Advanced...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[詳細設定...]]></Val>
+            <Val><![CDATA[詳細...]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -208,6 +211,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.advancedPublishOptions" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Advanced Publish Options]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[高度な発行オプション]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

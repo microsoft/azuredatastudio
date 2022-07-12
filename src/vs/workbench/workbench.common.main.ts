@@ -474,9 +474,6 @@ import 'sql/workbench/contrib/objectExplorer/common/serverGroup.contribution';
 // edit data editor
 import 'sql/workbench/contrib/editData/browser/editData.contribution';
 
-// query plan editor
-import 'sql/workbench/contrib/queryPlan/browser/queryPlan.contribution';
-
 //acounts
 import 'sql/workbench/contrib/accounts/browser/accounts.contribution';
 import 'sql/workbench/contrib/accounts/browser/accountManagement.contribution';
