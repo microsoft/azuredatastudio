@@ -10,9 +10,11 @@ import * as constants from '../../common/constants';
 export class DeployOptionsModel {
 	// key is the option display name and values are checkboxValue and optionName
 	private optionsValueNameLookup: { [key: string]: mssql.IOptionWithValue } = {};
+	private includeObjectTypesLookup: { [key: string]: mssql.IOptionWithValue } = {};
 
 	constructor(public deploymentOptions: mssql.DeploymentOptions) {
 		this.setOptionsToValueNameLookup();
+		this.setIncludeObjectTypesLookup();
 	}
 
 	/*
@@ -69,4 +71,62 @@ export class DeployOptionsModel {
 		}
 		return optionName !== undefined ? this.deploymentOptions.booleanOptionsDictionary[optionName.optionName].description : '';
 	}
+
+	/*
+	 * Sets deployment option's checkbox values and property name to the includeObjectTypesLookup map
+	 */
+	public setIncludeObjectTypesLookup(): void {
+		Object.entries(this.deploymentOptions.includeObjectsDictionary).forEach(option => {
+			const optionValue: mssql.IOptionWithValue = {
+				optionName: option[0],
+				checked: this.getIncludObjecttypeOptionCheckStatus(option[0])
+			};
+			this.includeObjectTypesLookup[option[1]] = optionValue;
+		});
+	}
+
+	/*
+	 * Initialize options data from include objects options for table component
+	 * Returns data as [booleanValue, optionName]
+	 */
+	public getIncludeObjectTypesOptionsData(): any[][] {
+		let data: any[][] = [];
+		Object.entries(this.deploymentOptions.includeObjectsDictionary).forEach(option => {
+			// option[1] holds checkedbox display name and option[0] is the optionName
+			data.push([this.getIncludObjecttypeOptionCheckStatus(option[0]), option[1]]);
+		});
+
+		return data.sort((a, b) => a[1].localeCompare(b[1]));
+	}
+
+	/*
+	* Gets the selected/default value of the object type option
+	* retrun false for those excludeObjectTypes[] values by comparing with includeObjectTypes options
+	*/
+	public getIncludObjecttypeOptionCheckStatus(optionName: string): boolean {
+		return (this.deploymentOptions.excludeObjectTypes.value?.find(x => x.toLowerCase() === optionName.toLowerCase())) !== undefined ? false : true;
+	}
+
+	/*
+	* Sets the checkbox value to the includeObjectTypesLookup map
+	*/
+	public setIncludeObjectTypesOptionValue(displayName: string, checked: boolean): void {
+		this.includeObjectTypesLookup[displayName].checked = checked;
+	}
+
+	/*
+	* Sets the selected option checkbox value to the deployment options
+	*/
+	public setIncludeObjectTypesOptions(): void {
+		let finalExcludedObjectTypes: string[] = [];
+		Object.entries(this.includeObjectTypesLookup).forEach(option => {
+			// option[1] holds checkedbox value and optionName
+			if (!option[1].checked) {
+				finalExcludedObjectTypes.push(option[1].optionName);
+			}
+		});
+
+		this.deploymentOptions.excludeObjectTypes.value = finalExcludedObjectTypes;
+	}
+
 }

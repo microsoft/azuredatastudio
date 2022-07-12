@@ -7,7 +7,7 @@ import * as constants from '../common/constants';
 import * as vscode from 'vscode';
 import * as mssql from 'mssql';
 import * as utils from '../common/utils';
-import type * as azdataType from 'azdata';
+import * as azdataType from 'azdata';
 import { PublishDatabaseDialog } from './publishDatabaseDialog';
 import { DeployOptionsModel } from '../models/options/deployOptionsModel';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
@@ -23,6 +23,9 @@ export class PublishOptionsDialog {
 	public optionsModel: DeployOptionsModel;
 	private optionsFlexBuilder: azdataType.FlexContainer | undefined;
 	private optionsChanged: boolean = false;
+	private includeObjectTypesOptionsTab: azdataType.window.DialogTab | undefined;
+	private includeObjectTypesOptionsTable: azdataType.TableComponent | undefined;
+	private includeObjectTypesOptionsFlexBuilder: azdataType.FlexContainer | undefined;
 
 	constructor(defaultOptions: mssql.DeploymentOptions, private publish: PublishDatabaseDialog) {
 		this.optionsModel = new DeployOptionsModel(defaultOptions);
@@ -30,8 +33,10 @@ export class PublishOptionsDialog {
 
 	protected initializeDialog(): void {
 		this.optionsTab = utils.getAzdataApi()!.window.createTab(constants.PublishOptions);
-		this.intializeDeploymentOptionsDialogTab();
-		this.dialog.content = [this.optionsTab];
+		this.includeObjectTypesOptionsTab = utils.getAzdataApi()!.window.createTab(constants.IncludeObjectTypeTab);
+		this.initializeDeploymentOptionsDialogTab();
+		this.InitializeIncludeObjectTypesOptionsDialogTab();
+		this.dialog.content = [this.optionsTab, this.includeObjectTypesOptionsTab];
 	}
 
 	public openDialog(): void {
@@ -52,7 +57,7 @@ export class PublishOptionsDialog {
 		utils.getAzdataApi()!.window.openDialog(this.dialog);
 	}
 
-	private intializeDeploymentOptionsDialogTab(): void {
+	private initializeDeploymentOptionsDialogTab(): void {
 		this.optionsTab?.registerContent(async view => {
 			this.descriptionHeading = view.modelBuilder.table().withProps({
 				data: [],
@@ -108,6 +113,32 @@ export class PublishOptionsDialog {
 		});
 	}
 
+	private InitializeIncludeObjectTypesOptionsDialogTab(): void {
+		this.includeObjectTypesOptionsTab?.registerContent(async view => {
+			this.includeObjectTypesOptionsTable = view.modelBuilder.table().component();
+			await this.updateIncludeObjectsTable();
+
+			// Update deploy options value on checkbox onchange
+			this.disposableListeners.push(this.includeObjectTypesOptionsTable!.onCellAction!((rowState) => {
+				const checkboxState = <azdataType.ICheckboxCellActionEventArgs>rowState;
+				if (checkboxState && checkboxState.row !== undefined) {
+					// data[row][1] contains the option display name
+					const displayName = this.includeObjectTypesOptionsTable?.data[checkboxState.row][1];
+					this.optionsModel.setIncludeObjectTypesOptionValue(displayName, checkboxState.checked);
+					this.optionsChanged = true;
+				}
+			}));
+
+			this.includeObjectTypesOptionsFlexBuilder = view.modelBuilder.flexContainer()
+				.withLayout({
+					flexFlow: 'column'
+				}).component();
+
+			this.includeObjectTypesOptionsFlexBuilder.addItem(this.includeObjectTypesOptionsTable, { CSSStyles: { 'overflow': 'scroll', 'height': '85vh', 'padding-top': '2px' } });
+			await view.initializeModel(this.includeObjectTypesOptionsFlexBuilder);
+		});
+	}
+
 	/*
 	* Update the default options to the options table area
 	*/
@@ -137,11 +168,40 @@ export class PublishOptionsDialog {
 	}
 
 	/*
+	* Update the default options to the include objects table area
+	*/
+	private async updateIncludeObjectsTable(): Promise<void> {
+		const data = this.optionsModel.getIncludeObjectTypesOptionsData();
+		await this.includeObjectTypesOptionsTable?.updateProperties({
+			data: data,
+			columns: [
+				<azdataType.CheckboxColumn>
+				{
+					value: constants.OptionInclude,
+					type: utils.getAzdataApi()!.ColumnType.checkBox,
+					action: utils.getAzdataApi()!.ActionOnCellCheckboxCheck.customAction,
+					headerCssClass: 'display-none',
+					cssClass: 'no-borders align-with-header',
+					width: 50
+				},
+				{
+					value: constants.OptionName,
+					headerCssClass: 'display-none',
+					cssClass: 'no-borders align-with-header',
+					width: 50
+				}
+			],
+			ariaRowCount: data.length
+		});
+	}
+
+	/*
 	* Ok button click, will update the deployment options with selections
 	*/
 	protected execute(): void {
-		// Update the model deploymentoptions with the updated table component values
+		// Update the model deploymentoptions with the updated options/excludeObjects table component values
 		this.optionsModel.setDeploymentOptions();
+		this.optionsModel.setIncludeObjectTypesOptions();
 		// Set the publish deploymentoptions with the updated table component values
 		this.publish.setDeploymentOptions(this.optionsModel.deploymentOptions);
 		this.disposeListeners();
@@ -167,11 +227,16 @@ export class PublishOptionsDialog {
 
 		// reset optionsvalueNameLookup with default deployment options
 		this.optionsModel.setOptionsToValueNameLookup();
+		this.optionsModel.setIncludeObjectTypesLookup();
 
 		await this.updateOptionsTable();
 		this.optionsFlexBuilder?.removeItem(this.optionsTable!);
 		this.optionsFlexBuilder?.insertItem(this.optionsTable!, 0, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh', 'padding-top': '2px' } });
 		TelemetryReporter.sendActionEvent(TelemetryViews.PublishOptionsDialog, TelemetryActions.resetOptions);
+
+		await this.updateIncludeObjectsTable();
+		this.includeObjectTypesOptionsFlexBuilder?.removeItem(this.includeObjectTypesOptionsTable!);
+		this.includeObjectTypesOptionsFlexBuilder?.addItem(this.includeObjectTypesOptionsTable!, { CSSStyles: { 'overflow': 'scroll', 'height': '85vh', 'padding-top': '2px' } });
 	}
 
 	private disposeListeners(): void {

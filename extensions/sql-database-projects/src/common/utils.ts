@@ -327,9 +327,9 @@ export async function getDefaultPublishDeploymentOptions(project: ISqlProject): 
 	const result = await schemaCompareService.schemaCompareGetDefaultOptions();
 	// re-include database-scoped credentials
 	if (getAzdataApi()) {
-		result.defaultDeploymentOptions.excludeObjectTypes.value = (result.defaultDeploymentOptions as mssql.DeploymentOptions).excludeObjectTypes.value?.filter(x => x !== mssql.SchemaObjectType.DatabaseScopedCredentials);
+		result.defaultDeploymentOptions.excludeObjectTypes.value = (result.defaultDeploymentOptions as mssql.DeploymentOptions).excludeObjectTypes.value?.filter(x => x !== constants.DatabaseScopedCredentials);
 	} else {
-		result.defaultDeploymentOptions.excludeObjectTypes.value = (result.defaultDeploymentOptions as vscodeMssql.DeploymentOptions).excludeObjectTypes.value?.filter(x => x !== vscodeMssql.SchemaObjectType.DatabaseScopedCredentials);
+		result.defaultDeploymentOptions.excludeObjectTypes.value = (result.defaultDeploymentOptions as vscodeMssql.DeploymentOptions).excludeObjectTypes.value?.filter(x => x !== constants.DatabaseScopedCredentials);
 	}
 
 	// this option needs to be true for same database references validation to work
