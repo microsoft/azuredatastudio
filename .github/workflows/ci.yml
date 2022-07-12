@@ -279,9 +279,8 @@ jobs:
       # - name: Run Monaco Editor Checks {{SQL CARBON EDIT}} Remove Monaco checks
       #   run: yarn monaco-compile-check
 
-# skip while fixing
-      # - name: Compile /build/
-      #   run: yarn --cwd build compile
+      - name: Compile /build/
+        run: yarn --cwd build compile
 
       - name: Run eslint
         run: yarn eslint
