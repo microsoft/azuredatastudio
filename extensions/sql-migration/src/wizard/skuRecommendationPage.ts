@@ -262,7 +262,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			iconHeight: '35px',
 			iconWidth: '35px',
 			cardWidth: '250px',
-			cardHeight: '340px',
+			cardHeight: '380px',
 			iconPosition: 'left',
 			CSSStyles: {
 				'margin-top': '0px',
@@ -350,8 +350,13 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			this._disposables.push(this._rbg.onLinkClick(async (e: azdata.RadioCardLinkClickEvent) => {
 				if (this.hasRecommendations()) {
 					const skuRecommendationResultsDialog = new SkuRecommendationResultsDialog(this.migrationStateModel, product.type);
-					if (e.cardId === skuRecommendationResultsDialog._targetType) {
-						await skuRecommendationResultsDialog.openDialog(e.cardId, this.migrationStateModel._skuRecommendationResults.recommendations);
+					if (e.description.linkDisplayValue === e.card.descriptions[CardDescriptionIndex.VIEW_SKU_DETAILS].linkDisplayValue) {
+						if (e.cardId === skuRecommendationResultsDialog._targetType) {
+							await skuRecommendationResultsDialog.openDialog(e.cardId, this.migrationStateModel._skuRecommendationResults.recommendations);
+						}
+					}
+					else if (e.description.linkDisplayValue === e.card.descriptions[CardDescriptionIndex.GENERATE_ARM_TEMPLATE].linkDisplayValue) {
+
 					}
 				}
 			}));
