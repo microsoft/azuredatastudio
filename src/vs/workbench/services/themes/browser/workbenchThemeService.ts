@@ -109,7 +109,7 @@ export class WorkbenchThemeService implements IWorkbenchThemeService {
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
 		@IWorkbenchEnvironmentService readonly environmentService: IWorkbenchEnvironmentService,
-		@IFileService private readonly fileService: IFileService,
+		@IFileService fileService: IFileService,
 		@IExtensionResourceLoaderService private readonly extensionResourceLoaderService: IExtensionResourceLoaderService,
 		@IWorkbenchLayoutService readonly layoutService: IWorkbenchLayoutService,
 		@ILogService private readonly logService: ILogService,
@@ -571,7 +571,7 @@ export class WorkbenchThemeService implements IWorkbenchThemeService {
 			if (iconTheme !== this.currentFileIconTheme.id || !this.currentFileIconTheme.isLoaded) {
 
 				const newThemeData = this.fileIconThemeRegistry.findThemeById(iconTheme) || FileIconThemeData.noIconTheme;
-				await newThemeData.ensureLoaded(this.fileService);
+				await newThemeData.ensureLoaded(this.extensionResourceLoaderService);
 
 				this.applyAndSetFileIconTheme(newThemeData); // updates this.currentFileIconTheme
 			}
@@ -590,7 +590,7 @@ export class WorkbenchThemeService implements IWorkbenchThemeService {
 
 	private async reloadCurrentFileIconTheme() {
 		return this.fileIconThemeSequencer.queue(async () => {
-			await this.currentFileIconTheme.reload(this.fileService);
+			await this.currentFileIconTheme.reload(this.extensionResourceLoaderService);
 			this.applyAndSetFileIconTheme(this.currentFileIconTheme);
 		});
 	}
@@ -646,7 +646,7 @@ export class WorkbenchThemeService implements IWorkbenchThemeService {
 			iconTheme = iconTheme || '';
 			if (iconTheme !== this.currentProductIconTheme.id || !this.currentProductIconTheme.isLoaded) {
 				const newThemeData = this.productIconThemeRegistry.findThemeById(iconTheme) || ProductIconThemeData.defaultTheme;
-				await newThemeData.ensureLoaded(this.fileService, this.logService);
+				await newThemeData.ensureLoaded(this.extensionResourceLoaderService, this.logService);
 
 				this.applyAndSetProductIconTheme(newThemeData); // updates this.currentProductIconTheme
 			}
@@ -664,7 +664,7 @@ export class WorkbenchThemeService implements IWorkbenchThemeService {
 
 	private async reloadCurrentProductIconTheme() {
 		return this.productIconThemeSequencer.queue(async () => {
-			await this.currentProductIconTheme.reload(this.fileService, this.logService);
+			await this.currentProductIconTheme.reload(this.extensionResourceLoaderService, this.logService);
 			this.applyAndSetProductIconTheme(this.currentProductIconTheme);
 		});
 	}
