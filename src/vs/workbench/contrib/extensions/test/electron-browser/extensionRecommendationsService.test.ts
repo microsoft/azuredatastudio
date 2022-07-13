@@ -267,6 +267,7 @@ suite.skip('ExtensionRecommendationsService Test', () => { // {{SQL CARBON EDIT}
 		instantiationService.stubPromise(IExtensionManagementService, 'getInstalled', []);
 		instantiationService.stub(IExtensionGalleryService, 'isEnabled', true);
 		instantiationService.stubPromise(IExtensionGalleryService, 'query', aPage<IGalleryExtension>(...mockExtensionGallery));
+		instantiationService.stubPromise(IExtensionGalleryService, 'getExtensions', []);
 
 		prompted = false;
 
