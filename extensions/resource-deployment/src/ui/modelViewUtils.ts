@@ -42,7 +42,8 @@ export type InputComponentInfo<T extends InputComponent> = {
 	getDisplayValue?: () => Promise<string>;
 	setOptions?: (options: OptionsInfo) => void;
 	onValueChanged: vscode.Event<void>;
-	isPassword?: boolean
+	isPassword?: boolean;
+	rows?: azdata.Component[];
 };
 
 export function getInputComponentType(inputComponent: InputComponent): string {
@@ -205,7 +206,7 @@ function createInputBoxField({ context, inputBoxType = 'text' }: { context: Fiel
 		validations: context.fieldValidations
 	});
 	input.labelComponent = label;
-	addLabelInputPairToContainer(context.view, context.components, label, input.component, context.fieldInfo);
+	addLabelInputPairToContainer(input, context.view, context.components, label, input.component, context.fieldInfo);
 	return input;
 }
 
@@ -420,38 +421,43 @@ async function hookUpDynamicEnablement(context: WizardPageContext): Promise<void
 
 					// If field is disabled, hide it entirely
 					if (!fieldComponent.component.enabled) {
+						fieldComponent.rows?.forEach(row => {
+							row.updateCssStyles({ 'display': 'none' });
+						}
+						);
 						// await fieldComponent.labelComponent!.updateCssStyles({ 'visibility': 'hidden' });
 						//await (<azdata.TextComponent | azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent | RadioGroupLoadingComponentBuilder>fieldComponent.component).updateCssStyles({ 'visibility': 'hidden' });
-						let inputCompType = getInputComponentType(fieldComponent.component);
-						if (inputCompType === loc.textCompType) {
-							(<azdata.TextComponent>fieldComponent.component).updateCssStyles({ 'visibility': 'hidden' });
-							fieldComponent.labelComponent!.updateCssStyles({ 'visibility': 'hidden', 'font-size': '0px' });
-							fieldComponent.labelComponent!.updateProperties({ 'width': '0px' });
-							// (<azdata.TextComponent>fieldComponent.component).updateProperties({ 'visibility': 'hidden' });
-							// fieldComponent.labelComponent!.updateProperties({ 'visibility': 'hidden' });
-						} else if (inputCompType === loc.inputBoxCompType) {
-							(<azdata.InputBoxComponent>fieldComponent.component).updateCssStyles({ 'visibility': 'hidden' });
-							fieldComponent.labelComponent!.updateCssStyles({ 'visibility': 'hidden', 'font-size': '0px' });
-							fieldComponent.labelComponent!.updateProperties({ 'width': '0px' });
-							// context.wizardInfo.fieldHeight = '0px';
-							// context.pageInfo.sections.forEach(section => {
-						} else if (inputCompType === loc.dropDownCompType) {
-							(<azdata.DropDownComponent>fieldComponent.component).updateCssStyles({ 'visibility': 'hidden' });
-							fieldComponent.labelComponent!.updateCssStyles({ 'visibility': 'hidden', 'font-size': '0px' });
-							fieldComponent.labelComponent!.updateProperties({ 'width': '0px' });
-							// (<azdata.DropDownComponent>fieldComponent.component).updateProperties({ 'visibility': 'hidden' });
-							// fieldComponent.labelComponent!.updateProperties({ 'visibility': 'hidden' });
-						} else if (inputCompType === loc.checkBoxCompType) {
-							(<azdata.CheckBoxComponent>fieldComponent.component).updateCssStyles({ 'visibility': 'hidden' });
-							fieldComponent.labelComponent!.updateCssStyles({ 'visibility': 'hidden', 'font-size': '0px' });
-							fieldComponent.labelComponent!.updateProperties({ 'width': '0px' });
-							// (<azdata.CheckBoxComponent>fieldComponent.component).updateProperties({ 'visibility': 'hidden' });
-							// fieldComponent.labelComponent!.updateProperties({ 'visibility': 'hidden' });
-						} else if (inputCompType === loc.radioButtonCompType) {
-							// (<RadioGroupLoadingComponentBuilder>fieldComponent.component).updateCssStyles({ 'visibility': 'hidden' });
-							// fieldComponent.labelComponent!.updateCssStyles({ 'visibility': 'hidden' });
-							//(<RadioGroupLoadingComponentBuilder>fieldComponent.component).updateProperties({ 'visibility': 'hidden' });
-						}
+						// let inputCompType = getInputComponentType(fieldComponent.component);
+						// if (inputCompType === loc.textCompType) {
+						// 	f
+						// 	(<azdata.TextComponent>fieldComponent.component).updateCssStyles({ 'visibility': 'hidden' });
+						// 	fieldComponent.labelComponent!.updateCssStyles({ 'visibility': 'hidden', 'font-size': '0px' });
+						// 	fieldComponent.labelComponent!.updateProperties({ 'width': '0px' });
+						// 	// (<azdata.TextComponent>fieldComponent.component).updateProperties({ 'visibility': 'hidden' });
+						// 	// fieldComponent.labelComponent!.updateProperties({ 'visibility': 'hidden' });
+						// } else if (inputCompType === loc.inputBoxCompType) {
+						// 	(<azdata.InputBoxComponent>fieldComponent.component).updateCssStyles({ 'visibility': 'hidden' });
+						// 	fieldComponent.labelComponent!.updateCssStyles({ 'visibility': 'hidden', 'font-size': '0px' });
+						// 	fieldComponent.labelComponent!.updateProperties({ 'width': '0px' });
+						// 	// context.wizardInfo.fieldHeight = '0px';
+						// 	// context.pageInfo.sections.forEach(section => {
+						// } else if (inputCompType === loc.dropDownCompType) {
+						// 	(<azdata.DropDownComponent>fieldComponent.component).updateCssStyles({ 'visibility': 'hidden' });
+						// 	fieldComponent.labelComponent!.updateCssStyles({ 'visibility': 'hidden', 'font-size': '0px' });
+						// 	fieldComponent.labelComponent!.updateProperties({ 'width': '0px' });
+						// 	// (<azdata.DropDownComponent>fieldComponent.component).updateProperties({ 'visibility': 'hidden' });
+						// 	// fieldComponent.labelComponent!.updateProperties({ 'visibility': 'hidden' });
+						// } else if (inputCompType === loc.checkBoxCompType) {
+						// 	(<azdata.CheckBoxComponent>fieldComponent.component).updateCssStyles({ 'visibility': 'hidden' });
+						// 	fieldComponent.labelComponent!.updateCssStyles({ 'visibility': 'hidden', 'font-size': '0px' });
+						// 	fieldComponent.labelComponent!.updateProperties({ 'width': '0px' });
+						// 	// (<azdata.CheckBoxComponent>fieldComponent.component).updateProperties({ 'visibility': 'hidden' });
+						// 	// fieldComponent.labelComponent!.updateProperties({ 'visibility': 'hidden' });
+						// } else if (inputCompType === loc.radioButtonCompType) {
+						// 	// (<RadioGroupLoadingComponentBuilder>fieldComponent.component).updateCssStyles({ 'visibility': 'hidden' });
+						// 	// fieldComponent.labelComponent!.updateCssStyles({ 'visibility': 'hidden' });
+						// 	//(<RadioGroupLoadingComponentBuilder>fieldComponent.component).updateProperties({ 'visibility': 'hidden' });
+						// }
 					}
 					// else {
 					// 	await fieldComponent.labelComponent!.updateCssStyles({ 'visibility': 'visible' });
@@ -645,7 +651,7 @@ export function createGroupContainer(view: azdata.ModelView, items: azdata.Compo
 	return view.modelBuilder.groupContainer().withItems(items).withLayout(layout).component();
 }
 
-function addLabelInputPairToContainer(view: azdata.ModelView, components: azdata.Component[], label: azdata.Component, input: azdata.Component | undefined, fieldInfo: FieldInfo, additionalComponents?: azdata.Component[]): void {
+function addLabelInputPairToContainer(inputComponentInfo: InputComponentInfo<InputComponent> | undefined, view: azdata.ModelView, components: azdata.Component[], label: azdata.Component, input: azdata.Component | undefined, fieldInfo: FieldInfo, additionalComponents?: azdata.Component[]): void {
 	const inputs: azdata.Component[] = [label];
 	if (input !== undefined) {
 		inputs.push(input);
@@ -655,8 +661,14 @@ function addLabelInputPairToContainer(view: azdata.ModelView, components: azdata
 	}
 	if (fieldInfo.labelPosition === LabelPosition.Left) {
 		const row = createFlexContainer(view, inputs, true, fieldInfo.fieldWidth, fieldInfo.fieldHeight, fieldInfo.fieldAlignItems);
+		if (inputComponentInfo) {
+			inputComponentInfo.rows = [row];
+		}
 		components.push(row);
 	} else {
+		if (inputComponentInfo) {
+			inputComponentInfo.rows = inputs;
+		}
 		components.push(...inputs);
 	}
 }
@@ -849,7 +861,7 @@ function processDropdownOptionsTypeField(context: FieldContext): azdata.DropDown
 	dropdown.labelComponent = label;
 	dropdown.component.fireOnTextChange = true;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, dropdown);
-	addLabelInputPairToContainer(context.view, context.components, label, dropdown.component, context.fieldInfo);
+	addLabelInputPairToContainer(dropdown, context.view, context.components, label, dropdown.component, context.fieldInfo);
 	return dropdown.component;
 }
 
@@ -907,7 +919,7 @@ function processPasswordField(context: FieldContext): void {
 			width: context.fieldInfo.inputWidth
 		}).component();
 
-		addLabelInputPairToContainer(context.view, context.components, confirmPasswordLabel, confirmPasswordInput, context.fieldInfo);
+		addLabelInputPairToContainer(passwordInput, context.view, context.components, confirmPasswordLabel, confirmPasswordInput, context.fieldInfo);
 		context.onNewValidatorCreated((): { valid: boolean, message: string } => {
 			const passwordMatches = passwordInput.component.value === confirmPasswordInput.value;
 			return { valid: passwordMatches, message: passwordNotMatchMessage };
@@ -938,19 +950,21 @@ function processReadonlyTextField(context: FieldContext, allowEvaluation: boolea
 	const text = context.fieldInfo.defaultValue !== undefined
 		? createLabel(context.view, { text: context.fieldInfo.defaultValue, description: '', required: false, width: context.fieldInfo.inputWidth })
 		: undefined;
+	let inputComponent: InputComponentInfo<InputComponent> | undefined = undefined;
 	if (text) {
 		// If we created the text component then add it to our list of inputs so other fields can utilize it
 		const onChangedEmitter = new vscode.EventEmitter<void>(); // Stub event since we don't currently support updating this when the dependent fields change
 		context.onNewDisposableCreated(onChangedEmitter);
-		context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, {
+		inputComponent = {
 			component: text,
 			getValue: async (): Promise<InputValueType> => typeof text.value === 'string' ? text.value : text.value?.join(EOL),
 			setValue: (value: InputValueType) => text.value = value?.toString(),
 			onValueChanged: onChangedEmitter.event,
-		});
+		};
+		context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, inputComponent); //TODO
 	}
 
-	addLabelInputPairToContainer(context.view, context.components, label, text, context.fieldInfo);
+	addLabelInputPairToContainer(undefined, context.view, context.components, label, text, context.fieldInfo);
 	return { label: label, text: text };
 }
 
@@ -1011,7 +1025,7 @@ function processCheckboxField(context: FieldContext): void {
 	const checkbox = createCheckboxInputInfo(context.view, { initialValue: context.fieldInfo.defaultValue! === 'true', label: '', required: context.fieldInfo.required });
 	checkbox.labelComponent = label;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, checkbox);
-	addLabelInputPairToContainer(context.view, context.components, label, checkbox.component, context.fieldInfo);
+	addLabelInputPairToContainer(checkbox, context.view, context.components, label, checkbox.component, context.fieldInfo);
 }
 
 /**
@@ -1063,7 +1077,7 @@ function processFilePickerField(context: FieldContext): FilePickerInputs {
 		input.component.value = fileUri.fsPath;
 	}));
 	const component = createFlexContainer(context.view, [input.component, browseFileButton], true, context.fieldInfo.inputWidth);
-	addLabelInputPairToContainer(context.view, context.components, label, component, context.fieldInfo);
+	addLabelInputPairToContainer(input, context.view, context.components, label, component, context.fieldInfo);
 	return { input: input.component, browseButton: browseFileButton };
 }
 
@@ -1166,7 +1180,7 @@ async function createRadioOptions(context: FieldContext, getRadioButtonInfo?: ((
 	const radioGroupLoadingComponentBuilder = new RadioGroupLoadingComponentBuilder(context.view, context.onNewDisposableCreated, context.fieldInfo);
 
 	context.fieldInfo.labelPosition = LabelPosition.Left;
-	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, {
+	const inputComponent = {
 		component: radioGroupLoadingComponentBuilder,
 		labelComponent: label,
 		getValue: async (): Promise<InputValueType> => radioGroupLoadingComponentBuilder.value,
@@ -1174,7 +1188,8 @@ async function createRadioOptions(context: FieldContext, getRadioButtonInfo?: ((
 		setOptions: (optionsInfo: OptionsInfo) => { radioGroupLoadingComponentBuilder.loadOptions(optionsInfo); },
 		getDisplayValue: async (): Promise<string> => radioGroupLoadingComponentBuilder.displayValue,
 		onValueChanged: radioGroupLoadingComponentBuilder.onValueChanged,
-	});
+	};
+	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, inputComponent);
 	const options = context.fieldInfo.options as OptionsInfo;
 	let loadingText = options?.source?.loadingText;
 	let loadingCompletedText = options?.source?.loadingCompletedText;
@@ -1185,7 +1200,7 @@ async function createRadioOptions(context: FieldContext, getRadioButtonInfo?: ((
 			loadingCompletedText: loadingCompletedText
 		});
 	}
-	addLabelInputPairToContainer(context.view, context.components, label, radioGroupLoadingComponentBuilder.component(), context.fieldInfo);
+	addLabelInputPairToContainer(inputComponent, context.view, context.components, label, radioGroupLoadingComponentBuilder.component(), context.fieldInfo);
 	// Start loading the options but continue on so that we can continue setting up the rest of the components - the group
 	// will show a loading spinner while the options are loaded
 	radioGroupLoadingComponentBuilder.loadOptions(
@@ -1322,7 +1337,7 @@ async function processKubeStorageClassField(context: FieldContext): Promise<void
 	storageClassDropdown.labelComponent = label;
 	storageClassDropdown.component.fireOnTextChange = true;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, storageClassDropdown);
-	addLabelInputPairToContainer(context.view, context.components, label, storageClassDropdown.component, context.fieldInfo);
+	addLabelInputPairToContainer(storageClassDropdown, context.view, context.components, label, storageClassDropdown.component, context.fieldInfo);
 }
 
 
@@ -1349,7 +1364,7 @@ function createAzureAccountDropdown(context: AzureAccountFieldContext): AzureAcc
 	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, accountDropdown);
 	const signInButton = context.view!.modelBuilder.button().withProps({ label: loc.signIn, width: '100px', secondary: true }).component();
 	const refreshButton = context.view!.modelBuilder.button().withProps({ label: loc.refresh, width: '100px', secondary: true }).component();
-	addLabelInputPairToContainer(context.view, context.components, label, accountDropdown.component, context.fieldInfo);
+	addLabelInputPairToContainer(accountDropdown, context.view, context.components, label, accountDropdown.component, context.fieldInfo);
 
 	const buttons = createFlexContainer(context.view!, [signInButton, refreshButton], true, undefined, undefined, undefined, { 'margin-right': '10px' });
 	context.components.push(buttons);
@@ -1412,7 +1427,7 @@ function createAzureSubscriptionComponent(
 		getDisplayValue: subscriptionInputInfo.getDisplayValue,
 		onValueChanged: subscriptionInputInfo.onValueChanged
 	});
-	addLabelInputPairToContainer(context.view, context.components, label, subscriptionInputInfo.component, context.fieldInfo);
+	addLabelInputPairToContainer(subscriptionInputInfo, context.view, context.components, label, subscriptionInputInfo.component, context.fieldInfo);
 	return subscriptionInputInfo.component;
 }
 
@@ -1560,7 +1575,7 @@ function createAzureResourceGroupsComponent(
 	const rgValueChangedEmitter = new vscode.EventEmitter<void>();
 	resourceGroupInputInfo.onValueChanged(() => rgValueChangedEmitter.fire());
 	context.onNewInputComponentCreated(context.fieldInfo.resourceGroupVariableName || context.fieldInfo.label, resourceGroupInputInfo);
-	addLabelInputPairToContainer(context.view, context.components, label, resourceGroupInputInfo.component, context.fieldInfo);
+	addLabelInputPairToContainer(resourceGroupInputInfo, context.view, context.components, label, resourceGroupInputInfo.component, context.fieldInfo);
 	if ('onValueChanged' in subscriptionComponent) {
 		subscriptionComponent.onValueChanged(async selectedItem => {
 			const selectedAccount = !accountDropdown || !accountDropdown.value ? undefined : accountValueToAccountMap.get(accountDropdown.value.toString());
@@ -1669,7 +1684,7 @@ async function processAzureLocationsField(context: AzureLocationsFieldContext): 
 		});
 		context.onNewInputComponentCreated(context.fieldInfo.locationVariableName, locationInputInfo);
 	}
-	addLabelInputPairToContainer(context.view, context.components, label, locationInputInfo.component, context.fieldInfo);
+	addLabelInputPairToContainer(locationInputInfo, context.view, context.components, label, locationInputInfo.component, context.fieldInfo);
 	return locationInputInfo.component;
 }
 
