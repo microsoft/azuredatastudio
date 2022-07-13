@@ -1553,8 +1553,10 @@ export class ExtensionEditor extends EditorPane {
 					$('td', undefined, l.id),
 					$('td', undefined, l.name),
 					$('td', undefined, ...join(l.extensions.map(ext => $('code', undefined, ext)), ' ')),
-					$('td', undefined, document.createTextNode(l.hasGrammar ? 'âœ”ï¸Ž' : 'â€”')),
-					$('td', undefined, document.createTextNode(l.hasSnippets ? 'âœ”ï¸Ž' : 'â€”'))
+					// allow-any-unicode-next-line
+					$('td', undefined, document.createTextNode(l.hasGrammar ? '✔︎' : '—')),
+					// allow-any-unicode-next-line
+					$('td', undefined, document.createTextNode(l.hasSnippets ? '✔︎' : '—'))
 				))
 			)
 		);
