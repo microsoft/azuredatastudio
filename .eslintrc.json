@@ -220,6 +220,8 @@
 				"target": "**/{vs,sql}/platform/*/common/**",
 				"restrictions": [
 					"vs/nls",
+					"**/vs/platform/*/common/**",
+					"tas-client-umd",
 					"azdata",
 					"mssql",
 					"azurecore",
