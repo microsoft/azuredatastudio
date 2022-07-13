@@ -240,7 +240,8 @@ export class BrowserSocketFactory implements ISocketFactory {
 	}
 
 	connect(host: string, port: number, query: string, callback: IConnectCallback): void {
-		const socket = this._webSocketFactory.create(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${host}:${port}/?${query}&skipWebSocketFrames=false`); // {{SQL CARBON EDIT}} # dynamic websocket protocol
+		const webSocketSchema = (/^https:/.test(window.location.href) ? 'wss' : 'ws');
+		const socket = this._webSocketFactory.create(`${webSocketSchema}://${/:/.test(host) ? `[${host}]` : host}:${port}/?${query}&skipWebSocketFrames=false`);
 		const errorListener = socket.onError((err) => callback(err, undefined));
 		socket.onOpen(() => {
 			errorListener.dispose();
