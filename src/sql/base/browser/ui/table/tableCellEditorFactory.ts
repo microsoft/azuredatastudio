@@ -12,7 +12,7 @@ import { Dropdown } from 'sql/base/browser/ui/editableDropdown/browser/dropdown'
 import { Event } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
 
-const InverseKeyCodeMap = Object.fromEntries(Object.entries(EVENT_KEY_CODE_MAP).map(([key, value]) => [value, Number(key)]));
+const InverseKeyCodeMap: { [k: string]: number } = Object.fromEntries(Object.entries(EVENT_KEY_CODE_MAP).map(([key, value]) => [value, Number(key)]));
 
 export interface ITableCellEditorOptions {
 	valueGetter?: (item: Slick.SlickData, column: Slick.Column<Slick.SlickData>) => string,
