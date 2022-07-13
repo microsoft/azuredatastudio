@@ -3887,6 +3887,7 @@ declare namespace monaco.editor {
 		invisibleCharacters?: boolean;
 		ambiguousCharacters?: boolean;
 		includeComments?: boolean | InUntrustedWorkspace;
+		includeStrings?: boolean | InUntrustedWorkspace;
 		/**
 		 * A map of allowed characters (true: allowed).
 		*/

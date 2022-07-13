@@ -116,13 +116,16 @@ export class Application {
 		// issues with the status bar items disappearing
 		const statusbarPromises: Promise<string>[] = [];
 
-		if (this.remote || this.web) {
-			const host = this.remote ? 'TestResolver' : 'localhost:9000';
+		if (this.remote) {
 			await code.waitForTextContent('.monaco-workbench .statusbar-item[id="status.host"]', ' TestResolver', undefined, 2000);
 		}
+    
+		if (this.web) {
+			await code.waitForTextContent('.monaco-workbench .statusbar-item[id="status.host"]', undefined, s => !s.includes('Opening Remote'), 2000);
+		}
+
 		// Wait for SQL Tools Service to start before considering the app ready
 		statusbarPromises.push(this.code.waitForTextContent('.monaco-workbench .statusbar-item[id="Microsoft.mssql"]', 'SQL Tools Service Started', undefined, 30000));
 		await Promise.all(statusbarPromises);
-
 	}
 }
