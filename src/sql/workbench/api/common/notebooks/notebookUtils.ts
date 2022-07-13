@@ -33,7 +33,8 @@ export function convertToVSCodeNotebookCell(cellKind: azdata.nb.CellType, cellIn
 		notebook: notebook,
 		outputs: [],
 		metadata: {},
-		mime: undefined
+		mime: undefined,
+		executionSummary: undefined
 	};
 }
 

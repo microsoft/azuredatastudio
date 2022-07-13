@@ -11,8 +11,9 @@ import { join } from 'vs/base/common/path';
 import { isWindows } from 'vs/base/common/platform';
 import { generateUuid } from 'vs/base/common/uuid';
 import { Promises } from 'vs/base/node/pfs';
-import { IStorageDatabase, IStorageItemsChangeEvent, Storage } from 'vs/base/parts/storage/common/storage';
+import { isStorageItemsChangeEvent, IStorageDatabase, IStorageItemsChangeEvent, Storage } from 'vs/base/parts/storage/common/storage';
 import { ISQLiteStorageDatabaseOptions, SQLiteStorageDatabase } from 'vs/base/parts/storage/node/storage';
+import { runWithFakedTimers } from 'vs/base/test/common/timeTravelScheduler';
 import { flakySuite, getRandomTestPath } from 'vs/base/test/node/testUtils';
 
 flakySuite('Storage Library', function () {
@@ -29,133 +30,142 @@ flakySuite('Storage Library', function () {
 		return Promises.rm(testDir);
 	});
 
-	test('basics', async () => {
-		const storage = new Storage(new SQLiteStorageDatabase(join(testDir, 'storage.db')));
+	test('basics', () => {
+		return runWithFakedTimers({}, async function () {
+			const storage = new Storage(new SQLiteStorageDatabase(join(testDir, 'storage.db')));
 
-		await storage.init();
+			await storage.init();
 
-		// Empty fallbacks
-		strictEqual(storage.get('foo', 'bar'), 'bar');
-		strictEqual(storage.getNumber('foo', 55), 55);
-		strictEqual(storage.getBoolean('foo', true), true);
+			// Empty fallbacks
+			strictEqual(storage.get('foo', 'bar'), 'bar');
+			strictEqual(storage.getNumber('foo', 55), 55);
+			strictEqual(storage.getBoolean('foo', true), true);
 
-		let changes = new Set<string>();
-		storage.onDidChangeStorage(key => {
-			changes.add(key);
+			let changes = new Set<string>();
+			storage.onDidChangeStorage(key => {
+				changes.add(key);
+			});
+
+			await storage.whenFlushed(); // returns immediately when no pending updates
+
+			// Simple updates
+			const set1Promise = storage.set('bar', 'foo');
+			const set2Promise = storage.set('barNumber', 55);
+			const set3Promise = storage.set('barBoolean', true);
+
+			let flushPromiseResolved = false;
+			storage.whenFlushed().then(() => flushPromiseResolved = true);
+
+			strictEqual(storage.get('bar'), 'foo');
+			strictEqual(storage.getNumber('barNumber'), 55);
+			strictEqual(storage.getBoolean('barBoolean'), true);
+
+			strictEqual(changes.size, 3);
+			ok(changes.has('bar'));
+			ok(changes.has('barNumber'));
+			ok(changes.has('barBoolean'));
+
+			let setPromiseResolved = false;
+			await Promise.all([set1Promise, set2Promise, set3Promise]).then(() => setPromiseResolved = true);
+			strictEqual(setPromiseResolved, true);
+			strictEqual(flushPromiseResolved, true);
+
+			changes = new Set<string>();
+
+			// Does not trigger events for same update values
+			storage.set('bar', 'foo');
+			storage.set('barNumber', 55);
+			storage.set('barBoolean', true);
+			strictEqual(changes.size, 0);
+
+			// Simple deletes
+			const delete1Promise = storage.delete('bar');
+			const delete2Promise = storage.delete('barNumber');
+			const delete3Promise = storage.delete('barBoolean');
+
+			ok(!storage.get('bar'));
+			ok(!storage.getNumber('barNumber'));
+			ok(!storage.getBoolean('barBoolean'));
+
+			strictEqual(changes.size, 3);
+			ok(changes.has('bar'));
+			ok(changes.has('barNumber'));
+			ok(changes.has('barBoolean'));
+
+			changes = new Set<string>();
+
+			// Does not trigger events for same delete values
+			storage.delete('bar');
+			storage.delete('barNumber');
+			storage.delete('barBoolean');
+			strictEqual(changes.size, 0);
+
+			let deletePromiseResolved = false;
+			await Promise.all([delete1Promise, delete2Promise, delete3Promise]).then(() => deletePromiseResolved = true);
+			strictEqual(deletePromiseResolved, true);
+
+			await storage.close();
+			await storage.close(); // it is ok to call this multiple times
 		});
-
-		await storage.whenFlushed(); // returns immediately when no pending updates
-
-		// Simple updates
-		const set1Promise = storage.set('bar', 'foo');
-		const set2Promise = storage.set('barNumber', 55);
-		const set3Promise = storage.set('barBoolean', true);
-
-		let flushPromiseResolved = false;
-		storage.whenFlushed().then(() => flushPromiseResolved = true);
-
-		strictEqual(storage.get('bar'), 'foo');
-		strictEqual(storage.getNumber('barNumber'), 55);
-		strictEqual(storage.getBoolean('barBoolean'), true);
-
-		strictEqual(changes.size, 3);
-		ok(changes.has('bar'));
-		ok(changes.has('barNumber'));
-		ok(changes.has('barBoolean'));
-
-		let setPromiseResolved = false;
-		await Promise.all([set1Promise, set2Promise, set3Promise]).then(() => setPromiseResolved = true);
-		strictEqual(setPromiseResolved, true);
-		strictEqual(flushPromiseResolved, true);
-
-		changes = new Set<string>();
-
-		// Does not trigger events for same update values
-		storage.set('bar', 'foo');
-		storage.set('barNumber', 55);
-		storage.set('barBoolean', true);
-		strictEqual(changes.size, 0);
-
-		// Simple deletes
-		const delete1Promise = storage.delete('bar');
-		const delete2Promise = storage.delete('barNumber');
-		const delete3Promise = storage.delete('barBoolean');
-
-		ok(!storage.get('bar'));
-		ok(!storage.getNumber('barNumber'));
-		ok(!storage.getBoolean('barBoolean'));
-
-		strictEqual(changes.size, 3);
-		ok(changes.has('bar'));
-		ok(changes.has('barNumber'));
-		ok(changes.has('barBoolean'));
-
-		changes = new Set<string>();
-
-		// Does not trigger events for same delete values
-		storage.delete('bar');
-		storage.delete('barNumber');
-		storage.delete('barBoolean');
-		strictEqual(changes.size, 0);
-
-		let deletePromiseResolved = false;
-		await Promise.all([delete1Promise, delete2Promise, delete3Promise]).then(() => deletePromiseResolved = true);
-		strictEqual(deletePromiseResolved, true);
-
-		await storage.close();
-		await storage.close(); // it is ok to call this multiple times
 	});
 
-	test('external changes', async () => {
+	test('external changes', () => {
+		return runWithFakedTimers({}, async function () {
+			class TestSQLiteStorageDatabase extends SQLiteStorageDatabase {
+				private readonly _onDidChangeItemsExternal = new Emitter<IStorageItemsChangeEvent>();
+				override get onDidChangeItemsExternal(): Event<IStorageItemsChangeEvent> { return this._onDidChangeItemsExternal.event; }
 
-		class TestSQLiteStorageDatabase extends SQLiteStorageDatabase {
-			private readonly _onDidChangeItemsExternal = new Emitter<IStorageItemsChangeEvent>();
-			override get onDidChangeItemsExternal(): Event<IStorageItemsChangeEvent> { return this._onDidChangeItemsExternal.event; }
-
-			fireDidChangeItemsExternal(event: IStorageItemsChangeEvent): void {
-				this._onDidChangeItemsExternal.fire(event);
+				fireDidChangeItemsExternal(event: IStorageItemsChangeEvent): void {
+					this._onDidChangeItemsExternal.fire(event);
+				}
 			}
-		}
 
-		const database = new TestSQLiteStorageDatabase(join(testDir, 'storage.db'));
-		const storage = new Storage(database);
+			const database = new TestSQLiteStorageDatabase(join(testDir, 'storage.db'));
+			const storage = new Storage(database);
 
-		let changes = new Set<string>();
-		storage.onDidChangeStorage(key => {
-			changes.add(key);
+			let changes = new Set<string>();
+			storage.onDidChangeStorage(key => {
+				changes.add(key);
+			});
+
+			await storage.init();
+
+			await storage.set('foo', 'bar');
+			ok(changes.has('foo'));
+			changes.clear();
+
+			// Nothing happens if changing to same value
+			const changed = new Map<string, string>();
+			changed.set('foo', 'bar');
+			database.fireDidChangeItemsExternal({ changed });
+			strictEqual(changes.size, 0);
+
+			// Change is accepted if valid
+			changed.set('foo', 'bar1');
+			database.fireDidChangeItemsExternal({ changed });
+			ok(changes.has('foo'));
+			strictEqual(storage.get('foo'), 'bar1');
+			changes.clear();
+
+			// Delete is accepted
+			const deleted = new Set<string>(['foo']);
+			database.fireDidChangeItemsExternal({ deleted });
+			ok(changes.has('foo'));
+			strictEqual(storage.get('foo', undefined), undefined);
+			changes.clear();
+
+			// Nothing happens if changing to same value
+			database.fireDidChangeItemsExternal({ deleted });
+			strictEqual(changes.size, 0);
+
+			strictEqual(isStorageItemsChangeEvent({ changed }), true);
+			strictEqual(isStorageItemsChangeEvent({ deleted }), true);
+			strictEqual(isStorageItemsChangeEvent({ changed, deleted }), true);
+			strictEqual(isStorageItemsChangeEvent(undefined), false);
+			strictEqual(isStorageItemsChangeEvent({ changed: 'yes', deleted: false }), false);
+
+			await storage.close();
 		});
-
-		await storage.init();
-
-		await storage.set('foo', 'bar');
-		ok(changes.has('foo'));
-		changes.clear();
-
-		// Nothing happens if changing to same value
-		const changed = new Map<string, string>();
-		changed.set('foo', 'bar');
-		database.fireDidChangeItemsExternal({ changed });
-		strictEqual(changes.size, 0);
-
-		// Change is accepted if valid
-		changed.set('foo', 'bar1');
-		database.fireDidChangeItemsExternal({ changed });
-		ok(changes.has('foo'));
-		strictEqual(storage.get('foo'), 'bar1');
-		changes.clear();
-
-		// Delete is accepted
-		const deleted = new Set<string>(['foo']);
-		database.fireDidChangeItemsExternal({ deleted });
-		ok(changes.has('foo'));
-		strictEqual(storage.get('foo', undefined), undefined);
-		changes.clear();
-
-		// Nothing happens if changing to same value
-		database.fireDidChangeItemsExternal({ deleted });
-		strictEqual(changes.size, 0);
-
-		await storage.close();
 	});
 
 	test('close flushes data', async () => {
@@ -651,27 +661,27 @@ flakySuite('SQLite Storage Library', function () {
 		storage.set('foo', 'bar');
 		storage.set('some/foo/path', 'some/bar/path');
 
-		await timeout(10);
+		await timeout(2);
 
 		storage.set('foo1', 'bar');
 		storage.set('some/foo1/path', 'some/bar/path');
 
-		await timeout(10);
+		await timeout(2);
 
 		storage.set('foo2', 'bar');
 		storage.set('some/foo2/path', 'some/bar/path');
 
-		await timeout(10);
+		await timeout(2);
 
 		storage.delete('foo1');
 		storage.delete('some/foo1/path');
 
-		await timeout(10);
+		await timeout(2);
 
 		storage.delete('foo4');
 		storage.delete('some/foo4/path');
 
-		await timeout(70);
+		await timeout(5);
 
 		storage.set('foo3', 'bar');
 		await storage.set('some/foo3/path', 'some/bar/path');

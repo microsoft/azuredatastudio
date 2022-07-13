@@ -24,6 +24,7 @@ import { PartsSplash } from 'vs/workbench/electron-sandbox/splash';
 import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { InstallShellScriptAction, UninstallShellScriptAction } from 'vs/workbench/electron-sandbox/actions/installActions';
 import { EditorsVisibleContext, SingleEditorGroupsContext } from 'vs/workbench/common/editor';
+import { TELEMETRY_SETTING_ID } from 'vs/platform/telemetry/common/telemetry';
 
 // eslint-disable-next-line code-import-patterns
 import { SELECT_INSTALL_VSIX_EXTENSION_COMMAND_ID } from 'vs/workbench/contrib/extensions/common/extensions';
@@ -52,7 +53,7 @@ import product from 'vs/platform/product/common/product'; // {{SQL CARBON EDIT}}
 			id: CloseWindowAction.ID,
 			weight: KeybindingWeight.WorkbenchContrib,
 			when: ContextKeyExpr.and(EditorsVisibleContext.toNegated(), SingleEditorGroupsContext),
-			primary: KeyMod.CtrlCmd | KeyCode.KEY_W
+			primary: KeyMod.CtrlCmd | KeyCode.KeyW
 		});
 	}
 
@@ -71,8 +72,8 @@ import product from 'vs/platform/product/common/product'; // {{SQL CARBON EDIT}}
 			nativeHostService.quit();
 		},
 		when: undefined,
-		mac: { primary: KeyMod.CtrlCmd | KeyCode.KEY_Q },
-		linux: { primary: KeyMod.CtrlCmd | KeyCode.KEY_Q }
+		mac: { primary: KeyMod.CtrlCmd | KeyCode.KeyQ },
+		linux: { primary: KeyMod.CtrlCmd | KeyCode.KeyQ }
 	});
 
 	// Actions: macOS Native Tabs
@@ -247,7 +248,8 @@ import product from 'vs/platform/product/common/product'; // {{SQL CARBON EDIT}}
 				'type': 'boolean',
 				'description': localize('telemetry.enableCrashReporting', "Enable crash reports to be collected. This helps us improve stability. \nThis option requires restart to take effect."),
 				'default': true,
-				'tags': ['usesOnlineServices', 'telemetry']
+				'tags': ['usesOnlineServices', 'telemetry'],
+				'markdownDeprecationMessage': localize('enableCrashReporterDeprecated', "If this setting is false, no telemetry will be sent regardless of the new setting's value. Deprecated due to being combined into the {0} setting.", `\`#${TELEMETRY_SETTING_ID}#\``),
 			}
 		}
 	});

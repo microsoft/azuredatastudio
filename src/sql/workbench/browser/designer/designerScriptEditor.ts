@@ -29,13 +29,14 @@ import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editor
 import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
 import { ITextEditorOptions } from 'vs/platform/editor/common/editor';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 
 class DesignerCodeEditor extends CodeEditorWidget {
 }
 
 let DesignerScriptEditorInstanceId = 0;
 
-export class DesignerScriptEditor extends BaseTextEditor implements DesignerTextEditor {
+export class DesignerScriptEditor extends BaseTextEditor<editorCommon.ICodeEditorViewState> implements DesignerTextEditor {
 	private _content: string;
 	private _contentChangeEventEmitter: Emitter<string> = new Emitter<string>();
 	readonly onDidContentChange: Event<string> = this._contentChangeEventEmitter.event;
@@ -81,7 +82,7 @@ export class DesignerScriptEditor extends BaseTextEditor implements DesignerText
 			options.folding = false;
 			options.renderWhitespace = 'all';
 			options.wordWrap = 'off';
-			options.renderIndentGuides = false;
+			options.guides = { indentation: false };
 			options.rulers = [];
 			options.glyphMargin = true;
 		}
@@ -118,5 +119,9 @@ export class DesignerScriptEditor extends BaseTextEditor implements DesignerText
 			this._untitledTextEditorModel.setDirty(false);
 			this.layout(new DOM.Dimension(this._container.clientWidth, this._container.clientHeight));
 		}
+	}
+
+	protected tracksEditorViewState(input: EditorInput): boolean {
+		return input.typeId === DesignerScriptEditor.ID;
 	}
 }

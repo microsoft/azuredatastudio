@@ -4,12 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { FileAccess } from 'vs/base/common/network';
-import { globals, isWeb } from 'vs/base/common/platform';
+import { globals } from 'vs/base/common/platform';
 import { env } from 'vs/base/common/process';
 import { IProductConfiguration } from 'vs/base/common/product';
 import { dirname, joinPath } from 'vs/base/common/resources';
 import { ISandboxConfiguration } from 'vs/base/parts/sandbox/common/sandboxTypes';
 
+/**
+ * @deprecated You MUST use `IProductService` if possible.
+ */
 let product: IProductConfiguration;
 
 // Native sandbox environment
@@ -54,10 +57,10 @@ else {
 	// Running out of sources
 	if (Object.keys(product).length === 0) {
 		Object.assign(product, {
-			version: '1.33.0-dev',
-			vscodeVersion: '1.59.0-dev',
-			nameLong: isWeb ? 'Azure Data Studio Web Dev' : 'Azure Data Studio Dev',
-			nameShort: isWeb ? 'Azure Data Studio Web Dev' : 'Azure Data Studio Dev',
+			version: '1.37.0-dev',
+			vscodeVersion: '1.62.0-dev',
+			nameLong: 'Azure Data Studio Dev',
+			nameShort: 'Azure Data Studio Dev',
 			applicationName: 'azuredatastudio-oss',
 			dataFolderName: '.azuredatastudio-oss',
 			urlProtocol: 'azuredatastudio-oss',
@@ -76,4 +79,7 @@ else {
 	}
 }
 
+/**
+ * @deprecated You MUST use `IProductService` if possible.
+ */
 export default product;

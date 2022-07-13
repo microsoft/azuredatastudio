@@ -947,12 +947,18 @@
         <Item ItemId=";(...) ertiesLeftOperation" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Left operation: {0}]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[左側作業: {0}]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
         <Item ItemId=";(...) ertiesRightOperation" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Right operation: {0}]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[右側作業: {0}]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1004,12 +1010,18 @@
         <Item ItemId=";(...) lumnLeftHeader" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Value (Left Plan)]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[值 (左側計畫)]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
         <Item ItemId=";(...) lumnRightHeader" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Value (Right Plan)]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[值 (右側計畫)]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -7662,6 +7674,9 @@
       <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/topOperationsTab.ep.topOperationsCopyWithHeader" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Copy with Header]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[連同標頭複製]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7677,6 +7692,9 @@
       <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/topOperationsTab.topOperationsTabTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Top Operations  (Preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[前幾項作業 (預覽)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7684,7 +7702,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Top Operations]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[最前幾項操作]]></Val>
+            <Val><![CDATA[前幾項作業]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

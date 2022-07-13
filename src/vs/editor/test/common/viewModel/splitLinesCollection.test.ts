@@ -14,7 +14,7 @@ import { TextModel } from 'vs/editor/common/model/textModel';
 import * as modes from 'vs/editor/common/modes';
 import { NULL_STATE } from 'vs/editor/common/modes/nullMode';
 import { MonospaceLineBreaksComputerFactory } from 'vs/editor/common/viewModel/monospaceLineBreaksComputer';
-import { ISimpleModel, SplitLine, SplitLinesCollection } from 'vs/editor/common/viewModel/splitLinesCollection';
+import { ISimpleModel, ModelLineProjection, SplitLinesCollection } from 'vs/editor/common/viewModel/splitLinesCollection';
 import { LineBreakData, ViewLineData } from 'vs/editor/common/viewModel/viewModel';
 import { TestConfiguration } from 'vs/editor/test/common/mocks/testConfiguration';
 import { EditorOption } from 'vs/editor/common/config/editorOptions';
@@ -326,8 +326,8 @@ suite('SplitLinesCollection', () => {
 		]
 	];
 
-	let model: TextModel | null = null;
-	let languageRegistration: IDisposable | null = null;
+	let model: TextModel;
+	let languageRegistration: IDisposable;
 
 	setup(() => {
 		let _lineIndex = 0;
@@ -349,16 +349,14 @@ suite('SplitLinesCollection', () => {
 		};
 		const LANGUAGE_ID = 'modelModeTest1';
 		languageRegistration = modes.TokenizationRegistry.register(LANGUAGE_ID, tokenizationSupport);
-		model = createTextModel(_text.join('\n'), undefined, new modes.LanguageIdentifier(LANGUAGE_ID, 0));
+		model = createTextModel(_text.join('\n'), undefined, LANGUAGE_ID);
 		// force tokenization
 		model.forceTokenization(model.getLineCount());
 	});
 
 	teardown(() => {
-		model!.dispose();
-		model = null;
-		languageRegistration!.dispose();
-		languageRegistration = null;
+		model.dispose();
+		languageRegistration.dispose();
 	});
 
 
@@ -433,7 +431,7 @@ suite('SplitLinesCollection', () => {
 	}
 
 	test('getViewLinesData - no wrapping', () => {
-		withSplitLinesCollection(model!, 'off', 0, (splitLinesCollection) => {
+		withSplitLinesCollection(model, 'off', 0, (splitLinesCollection) => {
 			assert.strictEqual(splitLinesCollection.getViewLineCount(), 8);
 			assert.strictEqual(splitLinesCollection.modelPositionIsVisible(1, 1), true);
 			assert.strictEqual(splitLinesCollection.modelPositionIsVisible(2, 1), true);
@@ -567,7 +565,7 @@ suite('SplitLinesCollection', () => {
 	});
 
 	test('getViewLinesData - with wrapping', () => {
-		withSplitLinesCollection(model!, 'wordWrapColumn', 30, (splitLinesCollection) => {
+		withSplitLinesCollection(model, 'wordWrapColumn', 30, (splitLinesCollection) => {
 			assert.strictEqual(splitLinesCollection.getViewLineCount(), 12);
 			assert.strictEqual(splitLinesCollection.modelPositionIsVisible(1, 1), true);
 			assert.strictEqual(splitLinesCollection.modelPositionIsVisible(2, 1), true);
@@ -740,17 +738,18 @@ suite('SplitLinesCollection', () => {
 	});
 
 	test('getViewLinesData - with wrapping and injected text', () => {
-		model!.deltaDecorations([], [{
+		model.deltaDecorations([], [{
 			range: new Range(1, 9, 1, 9),
 			options: {
 				description: 'example',
 				after: {
 					content: 'very very long injected text that causes a line break'
-				}
+				},
+				showIfCollapsed: true,
 			}
 		}]);
 
-		withSplitLinesCollection(model!, 'wordWrapColumn', 30, (splitLinesCollection) => {
+		withSplitLinesCollection(model, 'wordWrapColumn', 30, (splitLinesCollection) => {
 			assert.strictEqual(splitLinesCollection.getViewLineCount(), 14);
 
 			assert.strictEqual(splitLinesCollection.getViewLineMaxColumn(1), 24);
@@ -947,8 +946,8 @@ function pos(lineNumber: number, column: number): Position {
 	return new Position(lineNumber, column);
 }
 
-function createSplitLine(splitLengths: number[], breakingOffsetsVisibleColumn: number[], wrappedTextIndentWidth: number, isVisible: boolean = true): SplitLine {
-	return new SplitLine(createLineBreakData(splitLengths, breakingOffsetsVisibleColumn, wrappedTextIndentWidth), isVisible);
+function createSplitLine(splitLengths: number[], breakingOffsetsVisibleColumn: number[], wrappedTextIndentWidth: number, isVisible: boolean = true): ModelLineProjection {
+	return new ModelLineProjection(createLineBreakData(splitLengths, breakingOffsetsVisibleColumn, wrappedTextIndentWidth), isVisible);
 }
 
 function createLineBreakData(breakingLengths: number[], breakingOffsetsVisibleColumn: number[], wrappedTextIndentWidth: number): LineBreakData {

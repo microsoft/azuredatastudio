@@ -3,29 +3,29 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as nls from 'vs/nls';
 import { Delayer } from 'vs/base/common/async';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { Disposable } from 'vs/base/common/lifecycle';
 import * as strings from 'vs/base/common/strings';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
-import { EditorAction, EditorCommand, ServicesAccessor, registerEditorAction, registerEditorCommand, registerEditorContribution, MultiEditorAction, registerMultiEditorAction } from 'vs/editor/browser/editorExtensions';
+import { EditorAction, EditorCommand, MultiEditorAction, registerEditorAction, registerEditorCommand, registerEditorContribution, registerMultiEditorAction, ServicesAccessor } from 'vs/editor/browser/editorExtensions';
+import { EditorOption } from 'vs/editor/common/config/editorOptions';
 import { IEditorContribution } from 'vs/editor/common/editorCommon';
 import { EditorContextKeys } from 'vs/editor/common/editorContextKeys';
-import { CONTEXT_FIND_INPUT_FOCUSED, CONTEXT_FIND_WIDGET_VISIBLE, FIND_IDS, FindModelBoundToEditorModel, ToggleCaseSensitiveKeybinding, TogglePreserveCaseKeybinding, ToggleRegexKeybinding, ToggleSearchScopeKeybinding, ToggleWholeWordKeybinding, CONTEXT_REPLACE_INPUT_FOCUSED } from 'vs/editor/contrib/find/findModel';
+import { CONTEXT_FIND_INPUT_FOCUSED, CONTEXT_FIND_WIDGET_VISIBLE, CONTEXT_REPLACE_INPUT_FOCUSED, FindModelBoundToEditorModel, FIND_IDS, ToggleCaseSensitiveKeybinding, TogglePreserveCaseKeybinding, ToggleRegexKeybinding, ToggleSearchScopeKeybinding, ToggleWholeWordKeybinding } from 'vs/editor/contrib/find/findModel';
 import { FindOptionsWidget } from 'vs/editor/contrib/find/findOptionsWidget';
 import { FindReplaceState, FindReplaceStateChangedEvent, INewFindReplaceState } from 'vs/editor/contrib/find/findState';
 import { FindWidget, IFindController } from 'vs/editor/contrib/find/findWidget';
+import * as nls from 'vs/nls';
 import { MenuId } from 'vs/platform/actions/common/actions';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
-import { IContextKey, IContextKeyService, ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
+import { ContextKeyExpr, IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { INotificationService } from 'vs/platform/notification/common/notification';
-import { EditorOption } from 'vs/editor/common/config/editorOptions';
 
 const SEARCH_STRING_MAX_LENGTH = 524288;
 
@@ -492,7 +492,7 @@ export const StartFindAction = registerMultiEditorAction(new MultiEditorAction({
 	precondition: ContextKeyExpr.or(EditorContextKeys.focus, ContextKeyExpr.has('editorIsOpen')),
 	kbOpts: {
 		kbExpr: null,
-		primary: KeyMod.CtrlCmd | KeyCode.KEY_F,
+		primary: KeyMod.CtrlCmd | KeyCode.KeyF,
 		weight: KeybindingWeight.EditorContrib
 	},
 	menuOpts: {
@@ -532,7 +532,7 @@ export class StartFindWithSelectionAction extends EditorAction {
 				kbExpr: null,
 				primary: 0,
 				mac: {
-					primary: KeyMod.CtrlCmd | KeyCode.KEY_E,
+					primary: KeyMod.CtrlCmd | KeyCode.KeyE,
 				},
 				weight: KeybindingWeight.EditorContrib
 			}
@@ -589,7 +589,7 @@ export class NextMatchFindAction extends MatchFindAction {
 			kbOpts: [{
 				kbExpr: EditorContextKeys.focus,
 				primary: KeyCode.F3,
-				mac: { primary: KeyMod.CtrlCmd | KeyCode.KEY_G, secondary: [KeyCode.F3] },
+				mac: { primary: KeyMod.CtrlCmd | KeyCode.KeyG, secondary: [KeyCode.F3] },
 				weight: KeybindingWeight.EditorContrib
 			}, {
 				kbExpr: ContextKeyExpr.and(EditorContextKeys.focus, CONTEXT_FIND_INPUT_FOCUSED),
@@ -621,7 +621,7 @@ export class PreviousMatchFindAction extends MatchFindAction {
 			kbOpts: [{
 				kbExpr: EditorContextKeys.focus,
 				primary: KeyMod.Shift | KeyCode.F3,
-				mac: { primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_G, secondary: [KeyMod.Shift | KeyCode.F3] },
+				mac: { primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KeyG, secondary: [KeyMod.Shift | KeyCode.F3] },
 				weight: KeybindingWeight.EditorContrib
 			}, {
 				kbExpr: ContextKeyExpr.and(EditorContextKeys.focus, CONTEXT_FIND_INPUT_FOCUSED),
@@ -719,8 +719,8 @@ export const StartFindReplaceAction = registerMultiEditorAction(new MultiEditorA
 	precondition: ContextKeyExpr.or(EditorContextKeys.focus, ContextKeyExpr.has('editorIsOpen')),
 	kbOpts: {
 		kbExpr: null,
-		primary: KeyMod.CtrlCmd | KeyCode.KEY_H,
-		mac: { primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_F },
+		primary: KeyMod.CtrlCmd | KeyCode.KeyH,
+		mac: { primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KeyF },
 		weight: KeybindingWeight.EditorContrib
 	},
 	menuOpts: {
@@ -869,7 +869,7 @@ registerEditorCommand(new FindCommand({
 	kbOpts: {
 		weight: KeybindingWeight.EditorContrib + 5,
 		kbExpr: EditorContextKeys.focus,
-		primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_1
+		primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.Digit1
 	}
 }));
 
