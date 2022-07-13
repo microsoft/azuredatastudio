@@ -657,7 +657,6 @@ export class EditDataGridPanel extends GridParentComponent {
 		let updateCellPromise: Promise<void> = Promise.resolve();
 		let refreshGrid = false;
 		if (cellToAdd && cellToAdd.isEditable && this.currentEditCellValue !== undefined && !this.removingNewRow) {
-
 			if (this.isNullRow(cellToAdd.row)) {
 				refreshGrid = true;
 				// We've entered the "new row", so we need to add a row and jump to it
