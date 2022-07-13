@@ -77,8 +77,9 @@ export class Application {
 
 	private async _start(workspaceOrFolder = this.workspacePathOrFolder, extraArgs: string[] = []): Promise<any> {
 		this._workspacePathOrFolder = workspaceOrFolder;
-		await this.startApplication(extraArgs);
-		await this.checkWindowReady();
+
+		const code = await this.startApplication(extraArgs);
+		await this.checkWindowReady(code);
 	}
 
 	async stop(): Promise<any> {
@@ -96,9 +97,7 @@ export class Application {
 			const raw = await this.code.capturePage();
 			const buffer = Buffer.from(raw, 'base64');
 			const screenshotPath = path.join(this.options.screenshotsPath, `${name}.png`);
-			if (this.options.log) {
-				this.logger.log('*** Screenshot recorded:', screenshotPath);
-			}
+			this.logger.log('Screenshot recorded:', screenshotPath);
 
 			fs.writeFileSync(screenshotPath, buffer);
 		}
@@ -112,30 +111,27 @@ export class Application {
 		await this._code?.stopTracing(name, persist);
 	}
 
-	private async startApplication(extraArgs: string[] = []): Promise<any> {
-		this._code = await spawn({
+	private async startApplication(extraArgs: string[] = []): Promise<Code> {
+		const code = this._code = await spawn({
 			...this.options,
 			extraArgs: [...(this.options.extraArgs || []), ...extraArgs],
 		});
 
 		this._workbench = new Workbench(this._code, this.userDataPath);
+
+		return code;
 	}
 
-	private async checkWindowReady(): Promise<any> {
-		if (!this.code) {
-			console.error('No code instance found');
-			return;
-		}
-
-		await this.code.waitForWindowIds(ids => ids.length > 0);
-		await this.code.waitForElement('.monaco-workbench');
+	private async checkWindowReady(code: Code): Promise<any> {
+		await code.waitForWindowIds(ids => ids.length > 0);
+		await code.waitForElement('.monaco-workbench');
 
 		// {{SQL CARBON EDIT}} Wait for specified status bar items before considering the app ready - we wait for them together to avoid timing
 		// issues with the status bar items disappearing
 		const statusbarPromises: Promise<string>[] = [];
 
 		if (this.remote) {
-			statusbarPromises.push(this.code.waitForTextContent('.monaco-workbench .statusbar-item[id="status.host"]', ' TestResolver', undefined, 2000));
+			await this.code.waitForTextContent('.monaco-workbench .statusbar-item[id="status.host"]', ' TestResolver', undefined, 2000);
 		}
 
 		// Wait for SQL Tools Service to start before considering the app ready

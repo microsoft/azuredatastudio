@@ -22,7 +22,6 @@ export interface SpawnOptions {
 	logger: Logger;
 	verbose?: boolean;
 	extraArgs?: string[];
-	log?: string;
 	remote?: boolean;
 	web?: boolean;
 	headless?: boolean;
@@ -52,13 +51,13 @@ export async function spawn(options: SpawnOptions): Promise<Code> {
 }
 
 async function spawnBrowser(options: SpawnOptions): Promise<Code> {
-	const { serverProcess, client, driver } = await launchPlaywright(options.codePath, options.userDataDir, options.extensionsPath, options.workspacePath, Boolean(options.verbose), options);
+	const { serverProcess, client, driver } = await launchPlaywright(options.codePath, options.userDataDir, options.extensionsPath, options.workspacePath, Boolean(options.verbose), options, options.logger);
 
 	return new Code(client, driver, options.logger, serverProcess);
 }
 
 async function spawnElectron(options: SpawnOptions): Promise<Code> {
-	const { electronProcess, client, driver } = await launchElectron(options.codePath, options.userDataDir, options.extensionsPath, options.workspacePath, Boolean(options.verbose), Boolean(options.remote), options.log, options.extraArgs);
+	const { electronProcess, client, driver } = await launchElectron(options.codePath, options.userDataDir, options.extensionsPath, options.workspacePath, Boolean(options.verbose), Boolean(options.remote), options.extraArgs, options.logger);
 
 	return new Code(client, driver, options.logger, electronProcess);
 }
@@ -66,6 +65,7 @@ async function spawnElectron(options: SpawnOptions): Promise<Code> {
 async function poll<T>(
 	fn: () => Thenable<T>,
 	acceptFn: (result: T) => boolean,
+	logger: Logger,
 	timeoutMessage: string,
 	retryCount: number = 200,
 	retryInterval: number = 100 // millis
@@ -75,9 +75,9 @@ async function poll<T>(
 
 	while (true) {
 		if (trial > retryCount) {
-			console.error('** Timeout!');
-			console.error(lastError);
-			console.error(`*** Timeout: ${timeoutMessage} after ${(retryCount * retryInterval) / 1000} seconds.`);
+			logger.log('Timeout!');
+			logger.log(lastError);
+			logger.log(`Timeout: ${timeoutMessage} after ${(retryCount * retryInterval) / 1000} seconds.`);
 			throw new Error(`Timeout: ${timeoutMessage} after ${(retryCount * retryInterval) / 1000} seconds.`);
 		}
 
@@ -144,7 +144,7 @@ export class Code {
 	}
 
 	async waitForWindowIds(fn: (windowIds: number[]) => boolean): Promise<void> {
-		await poll(() => this.driver.getWindowIds(), fn, `get window ids`, 600, 100); // {{SQL CARBON EDIT}}
+		await poll(() => this.driver.getWindowIds(), fn, this.logger, `get window ids`, 600, 100); // {{SQL CARBON EDIT}}
 	}
 
 	async dispatchKeybinding(keybinding: string): Promise<void> {
@@ -171,7 +171,7 @@ export class Code {
 					retries++;
 
 					if (retries > 20) {
-						console.warn('Smoke test exit call did not terminate process after 10s, still trying...');
+						this.logger.log('Smoke test exit call did not terminate process after 10s, still trying...');
 					}
 
 					if (retries > 40) {
@@ -201,6 +201,7 @@ export class Code {
 		const element = await poll(
 			() => this.driver.getElements(windowId, selector).then(els => els.length > 0 ? Promise.resolve(els[0]) : Promise.reject(new Error('Element not found for textContent'))),
 			s => accept!(typeof s.textContent === 'string' ? s.textContent : ''),
+			this.logger,
 			`get text content '${selector}'`,
 			retryCount
 		);
@@ -210,23 +211,23 @@ export class Code {
 
 	async waitAndClick(selector: string, xoffset?: number, yoffset?: number, retryCount: number = 200): Promise<void> {
 		const windowId = await this.getActiveWindowId();
-		await poll(() => this.driver.click(windowId, selector, xoffset, yoffset), () => true, `click '${selector}'`, retryCount);
+		await poll(() => this.driver.click(windowId, selector, xoffset, yoffset), () => true, this.logger, `click '${selector}'`, retryCount);
 	}
 
 	async waitAndDoubleClick(selector: string): Promise<void> {
 		const windowId = await this.getActiveWindowId();
-		await poll(() => this.driver.doubleClick(windowId, selector), () => true, `double click '${selector}'`);
+		await poll(() => this.driver.doubleClick(windowId, selector), () => true, this.logger, `double click '${selector}'`);
 	}
 
 	async waitForSetValue(selector: string, value: string): Promise<void> {
 		const windowId = await this.getActiveWindowId();
-		await poll(() => this.driver.setValue(windowId, selector, value), () => true, `set value '${selector}'`);
+		await poll(() => this.driver.setValue(windowId, selector, value), () => true, this.logger, `set value '${selector}'`);
 	}
 
 	async waitForElements(selector: string, recursive: boolean, accept: (result: IElement[]) => boolean = result => result.length > 0): Promise<IElement[]> {
 		const windowId = await this.getActiveWindowId();
 		// {{SQL CARBON EDIT}} Print out found element
-		const elements = await poll(() => this.driver.getElements(windowId, selector, recursive), accept, `get elements '${selector}'`);
+		return await poll(() => this.driver.getElements(windowId, selector, recursive), accept, `get elements '${selector}'`);
 		this.logger.log(`got elements ${elements.map(element => JSON.stringify(element)).join('\n')}`);
 		return elements;
 	}
@@ -241,32 +242,32 @@ export class Code {
 
 	async waitForElementGone(selector: string, accept: (result: IElement | undefined) => boolean = result => !result, retryCount: number = 200): Promise<IElement> {
 		const windowId = await this.getActiveWindowId();
-		return await poll<IElement>(() => this.driver.getElements(windowId, selector).then(els => els[0]), accept, `get element gone '${selector}'`, retryCount);
+		return await poll<IElement>(() => this.driver.getElements(windowId, selector).then(els => els[0]), accept, `get element '${selector}'`, retryCount);
 	}
 
 	async waitForActiveElement(selector: string, retryCount: number = 200): Promise<void> {
 		const windowId = await this.getActiveWindowId();
-		await poll(() => this.driver.isActiveElement(windowId, selector), r => r, `is active element '${selector}'`, retryCount);
+		await poll(() => this.driver.isActiveElement(windowId, selector), r => r, this.logger, `is active element '${selector}'`, retryCount);
 	}
 
 	async waitForTitle(fn: (title: string) => boolean): Promise<void> {
 		const windowId = await this.getActiveWindowId();
-		await poll(() => this.driver.getTitle(windowId), fn, `get title`);
+		await poll(() => this.driver.getTitle(windowId), fn, this.logger, `get title`);
 	}
 
 	async waitForTypeInEditor(selector: string, text: string): Promise<void> {
 		const windowId = await this.getActiveWindowId();
-		await poll(() => this.driver.typeInEditor(windowId, selector, text), () => true, `type in editor '${selector}'`);
+		await poll(() => this.driver.typeInEditor(windowId, selector, text), () => true, this.logger, `type in editor '${selector}'`);
 	}
 
 	async waitForTerminalBuffer(selector: string, accept: (result: string[]) => boolean): Promise<void> {
 		const windowId = await this.getActiveWindowId();
-		await poll(() => this.driver.getTerminalBuffer(windowId, selector), accept, `get terminal buffer '${selector}'`);
+		await poll(() => this.driver.getTerminalBuffer(windowId, selector), accept, this.logger, `get terminal buffer '${selector}'`);
 	}
 
 	async writeInTerminal(selector: string, value: string): Promise<void> {
 		const windowId = await this.getActiveWindowId();
-		await poll(() => this.driver.writeInTerminal(windowId, selector, value), () => true, `writeInTerminal '${selector}'`);
+		await poll(() => this.driver.writeInTerminal(windowId, selector, value), () => true, this.logger, `writeInTerminal '${selector}'`);
 	}
 
 	async getLocaleInfo(): Promise<ILocaleInfo> {
