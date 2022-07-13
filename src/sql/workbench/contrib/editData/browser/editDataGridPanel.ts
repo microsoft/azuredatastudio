@@ -66,6 +66,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	private currentEditCellValue: string;
 	private newRowVisible: boolean;
 	private removingNewRow: boolean;
+	private tabPressedAtLastColumn: boolean;
 	private rowIdMappings: { [gridRowId: number]: number } = {};
 	private dirtyCells: { row: number, column: number }[] = [];
 	protected plugins = new Array<Slick.Plugin<any>>();
@@ -361,11 +362,16 @@ export class EditDataGridPanel extends GridParentComponent {
 				// Cell update was successful, update the flags
 				self.setCellDirtyState(cellToSubmit.row, cellToSubmit.column, result.cell.isDirty);
 				self.setRowDirtyState(cellToSubmit.row, result.isRowDirty);
+				let lastColumnCheck = this.isLastColumn(cellToSubmit.column);
 				let nullCommit = this.isNullRow(cellToSubmit.row + 1) && this.lastClickedCell.row === cellToSubmit.row && this.lastClickedCell.column === cellToSubmit.column;
 				let regularCommit = cellToSubmit.row !== this.lastClickedCell.row && this.isRowDirty(cellToSubmit.row);
 				if (regularCommit || nullCommit) {
 					await this.commitEditTask().then(() => {
-						if (nullCommit && this.lastClickedCell.row === cellToSubmit.row && this.lastClickedCell.column === cellToSubmit.column) {
+						if (nullCommit && lastColumnCheck && this.tabPressedAtLastColumn) {
+							this.lastClickedCell = { row: cellToSubmit.row + 1, column: 1, isEditable: true };
+							this.tabPressedAtLastColumn = false;
+						}
+						else if (nullCommit && this.lastClickedCell.row === cellToSubmit.row && this.lastClickedCell.column === cellToSubmit.column) {
 							this.lastClickedCell = { row: cellToSubmit.row + 1, column: cellToSubmit.column, isEditable: true };
 						}
 					},
@@ -573,10 +579,24 @@ export class EditDataGridPanel extends GridParentComponent {
 				this.focusCell(this.lastClickedCell.row, this.lastClickedCell.column);
 			}
 			else {
-				this.revertSelectedCell(this.previousSavedCell.row, this.previousSavedCell.column).catch(onUnexpectedError);
+				// Currently we do not support reverting individual cells in a dirty row.
+				if (this.isRowDirty(this.previousSavedCell.row)) {
+					this.noAutoSelectOnRender = true;
+					this.revertSelectedRow(this.previousSavedCell.row);
+				}
+				else {
+					this.revertSelectedCell(this.previousSavedCell.row, this.previousSavedCell.column).catch(onUnexpectedError);
+				}
 				this.table.grid.resetActiveCell();
 			}
 			handled = true;
+		}
+		if (e.keyCode === KeyCode.Tab) {
+			// Check if the tab is pressed on the last cell of the null row.
+			// This is done so that we can alert the submit cell function to move to the right cell.
+			if (this.isNullRow(this.lastClickedCell.row) && this.isLastColumn(this.lastClickedCell.column)) {
+				this.tabPressedAtLastColumn = true;
+			}
 		}
 		if (e.ctrlKey && e.keyCode === KeyCode.Digit0) {
 			//Replace contents with NULL in cell contents.
@@ -695,12 +715,15 @@ export class EditDataGridPanel extends GridParentComponent {
 					// Switch lastClickedCell back to the cell to submit.
 					this.lastClickedCell = { row: cellToAdd.row, column: cellToAdd.column, isEditable: true };
 					let errorPromise: Thenable<void> = Promise.resolve();
-					if (refreshGrid) {
-						let message = 'Error: invalid value entered in new row, reverting changes, please enter a valid value.';
-						self.notificationService.notify({
-							severity: Severity.Error,
-							message: message
-						});
+					if (refreshGrid || this.isRowDirty(cellToAdd.row)) {
+						if (refreshGrid) {
+							let message = 'Error: invalid value entered in new row, reverting changes, please enter a valid value.';
+							self.notificationService.notify({
+								severity: Severity.Error,
+								message: message
+							});
+						}
+						// Currently we do not support reverting individual cells in a dirty row, and we must revert it for a new row.
 						errorPromise = this.revertSelectedRow(cellToAdd.row);
 					}
 					else {
@@ -718,6 +741,14 @@ export class EditDataGridPanel extends GridParentComponent {
 		// Null row is always at index (totalRows - 1)
 		if (this.dataSet) {
 			return (row === this.dataSet.totalRows - 1);
+		}
+		return false;
+	}
+
+	// Checks if input column is the last column
+	private isLastColumn(column): boolean {
+		if (this.dataSet) {
+			return (column === this.dataSet.columnDefinitions.length - 1);
 		}
 		return false;
 	}
