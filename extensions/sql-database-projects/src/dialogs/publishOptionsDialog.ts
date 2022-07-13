@@ -7,7 +7,7 @@ import * as constants from '../common/constants';
 import * as vscode from 'vscode';
 import * as mssql from 'mssql';
 import * as utils from '../common/utils';
-import * as azdataType from 'azdata';
+import type * as azdataType from 'azdata';
 import { PublishDatabaseDialog } from './publishDatabaseDialog';
 import { DeployOptionsModel } from '../models/options/deployOptionsModel';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
@@ -35,7 +35,7 @@ export class PublishOptionsDialog {
 		this.optionsTab = utils.getAzdataApi()!.window.createTab(constants.PublishOptions);
 		this.excludeObjectTypesOptionsTab = utils.getAzdataApi()!.window.createTab(constants.ExcludeObjectTypeTab);
 		this.initializeDeploymentOptionsDialogTab();
-		this.InitializeIncludeObjectTypesOptionsDialogTab();
+		this.InitializeExcludeObjectTypesOptionsDialogTab();
 		this.dialog.content = [this.optionsTab, this.excludeObjectTypesOptionsTab];
 	}
 
@@ -113,18 +113,18 @@ export class PublishOptionsDialog {
 		});
 	}
 
-	private InitializeIncludeObjectTypesOptionsDialogTab(): void {
+	private InitializeExcludeObjectTypesOptionsDialogTab(): void {
 		this.excludeObjectTypesOptionsTab?.registerContent(async view => {
 			this.excludeObjectTypesOptionsTable = view.modelBuilder.table().component();
-			await this.updateIncludeObjectsTable();
+			await this.updateExcludeObjectsTable();
 
-			// Update deploy options value on checkbox onchange
+			// Update exclude type options value on checkbox onchange
 			this.disposableListeners.push(this.excludeObjectTypesOptionsTable!.onCellAction!((rowState) => {
 				const checkboxState = <azdataType.ICheckboxCellActionEventArgs>rowState;
 				if (checkboxState && checkboxState.row !== undefined) {
-					// data[row][1] contains the option display name
+					// data[row][1] contains the exclude type option display name
 					const displayName = this.excludeObjectTypesOptionsTable?.data[checkboxState.row][1];
-					this.optionsModel.setIncludeObjectTypesOptionValue(displayName, checkboxState.checked);
+					this.optionsModel.setExcludeObjectTypesOptionValue(displayName, checkboxState.checked);
 					this.optionsChanged = true;
 				}
 			}));
@@ -170,7 +170,7 @@ export class PublishOptionsDialog {
 	/*
 	* Update the default options to the exclude objects table area
 	*/
-	private async updateIncludeObjectsTable(): Promise<void> {
+	private async updateExcludeObjectsTable(): Promise<void> {
 		const data = this.optionsModel.getExcludeObjectTypesOptionsData();
 		await this.excludeObjectTypesOptionsTable?.updateProperties({
 			data: data,
@@ -201,7 +201,7 @@ export class PublishOptionsDialog {
 	protected execute(): void {
 		// Update the model deploymentoptions with the updated options/excludeObjects table component values
 		this.optionsModel.setDeploymentOptions();
-		this.optionsModel.setIncludeObjectTypesOptions();
+		this.optionsModel.setExcludeObjectTypesToDeploymentOptions();
 		// Set the publish deploymentoptions with the updated table component values
 		this.publish.setDeploymentOptions(this.optionsModel.deploymentOptions);
 		this.disposeListeners();
@@ -234,7 +234,7 @@ export class PublishOptionsDialog {
 		this.optionsFlexBuilder?.insertItem(this.optionsTable!, 0, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh', 'padding-top': '2px' } });
 		TelemetryReporter.sendActionEvent(TelemetryViews.PublishOptionsDialog, TelemetryActions.resetOptions);
 
-		await this.updateIncludeObjectsTable();
+		await this.updateExcludeObjectsTable();
 		this.excludeObjectTypesOptionsFlexBuilder?.removeItem(this.excludeObjectTypesOptionsTable!);
 		this.excludeObjectTypesOptionsFlexBuilder?.addItem(this.excludeObjectTypesOptionsTable!, { CSSStyles: { 'overflow': 'scroll', 'height': '85vh', 'padding-top': '2px' } });
 	}

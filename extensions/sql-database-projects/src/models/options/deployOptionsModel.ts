@@ -110,14 +110,14 @@ export class DeployOptionsModel {
 	/*
 	* Sets the checkbox value to the excludeObjectTypesLookup map
 	*/
-	public setIncludeObjectTypesOptionValue(displayName: string, checked: boolean): void {
+	public setExcludeObjectTypesOptionValue(displayName: string, checked: boolean): void {
 		this.excludeObjectTypesLookup[displayName].checked = checked;
 	}
 
 	/*
 	* Sets the selected option checkbox value to the deployment options
 	*/
-	public setIncludeObjectTypesOptions(): void {
+	public setExcludeObjectTypesToDeploymentOptions(): void {
 		let finalExcludedObjectTypes: string[] = [];
 		Object.entries(this.excludeObjectTypesLookup).forEach(option => {
 			// option[1] holds checkedbox value and optionName

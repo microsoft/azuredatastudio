@@ -163,7 +163,7 @@ declare module 'mssql' {
 	}
 
 	/**
-	* Interface containing deployment options of string type, value property holds values from <DacFx>\Product\Source\DeploymentApi\ObjectTypes.cs enum
+	* Interface containing deployment options of string[] type, value property holds enum names from <DacFx>\Product\Source\DeploymentApi\ObjectTypes.cs enum
 	*/
 	export interface DacDeployOptionPropertyStringArray {
 		value: string[];

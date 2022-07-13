@@ -153,9 +153,9 @@ export const ExcludeObjectTypeTab = localize('excludeObjectTypes', 'Exclude Obje
 export const ResetButton: string = localize('reset', "Reset");
 export const OptionDescription: string = localize('optionDescription', "Option Description");
 export const OptionName: string = localize('optionName', "Option Name");
-export const OptionInclude: string = localize('Include', "Include");
-export const DatabaseScopedCredentials: string = localize('DatabaseScopedCredentials', "DatabaseScopedCredentials");
-export function OptionNotFoundWarningMessage(label: string) { return localize('OptionNotFoundWarningMessage', "label: {0} does not exist in the options value name lookup", label); }
+export const OptionInclude: string = localize('include', "Include");
+export const DatabaseScopedCredentials: string = localize('databaseScopedCredentials', "DatabaseScopedCredentials");
+export function OptionNotFoundWarningMessage(label: string) { return localize('optionNotFoundWarningMessage', "label: {0} does not exist in the options value name lookup", label); }
 
 // Deploy
 export const SqlServerName = 'SQL server';

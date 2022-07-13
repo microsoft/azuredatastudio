@@ -33,7 +33,7 @@ describe('Publish Dialog Deploy Options Model', () => {
 		const model = new DeployOptionsModel(testUtils.getDeploymentOptions());
 		should(model.deploymentOptions.excludeObjectTypes.value.length).be.equal(0, 'There should be no excluded objects');
 
-		// should return true for all include object options as there are no exclude options
+		// should return true for all object type options as there are no exclude options
 		Object.keys(model.deploymentOptions.includeObjectsDictionary).forEach(option => {
 			should(model.getExcludeObjectTypeOptionCheckStatus(option)).equal(true);
 		});
