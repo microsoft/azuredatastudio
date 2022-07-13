@@ -73,6 +73,9 @@ export namespace Schemas {
 
 	export const vscodeTerminal = 'vscode-terminal';
 
+	/**
+	 * Scheme used internally for webviews that aren't linked to a resource (i.e. not custom editors)
+	 */
 	export const webviewPanel = 'webview-panel';
 
 	/**
