@@ -13,7 +13,7 @@ import { URI } from 'vs/base/common/uri';
 import { generateUuid } from 'vs/base/common/uuid';
 import { Promises as FSPromises } from 'vs/base/node/pfs';
 import { INativeEnvironmentService } from 'vs/platform/environment/common/environment';
-import { IExtensionGalleryService, IGalleryExtension, InstallOperation } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { IExtensionGalleryService, IGalleryExtension, InstallOperation, TargetPlatform } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { ExtensionIdentifierWithVersion, groupByExtension } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { IFileService, IFileStatWithMetadata } from 'vs/platform/files/common/files';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -72,7 +72,8 @@ export class ExtensionsDownloader extends Disposable {
 	}
 
 	async delete(location: URI): Promise<void> {
-		// noop as caching is enabled always
+		await this.cleanUpPromise;
+		await this.fileService.del(location);
 	}
 
 	private async rename(from: URI, to: URI, retryUntil: number): Promise<void> {
@@ -123,7 +124,7 @@ export class ExtensionsDownloader extends Disposable {
 	}
 
 	private getName(extension: IGalleryExtension): string {
-		return this.cache ? new ExtensionIdentifierWithVersion(extension.identifier, extension.version).key().toLowerCase() : generateUuid();
+		return this.cache ? `${new ExtensionIdentifierWithVersion(extension.identifier, extension.version).key().toLowerCase()}${extension.properties.targetPlatform !== TargetPlatform.UNDEFINED ? `-${extension.properties.targetPlatform}` : ''}` : generateUuid();
 	}
 
 	private parse(name: string): ExtensionIdentifierWithVersion | null {

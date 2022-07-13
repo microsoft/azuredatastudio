@@ -157,6 +157,19 @@ const newCommands: ApiCommand[] = [
 	),
 	// --- rename
 	new ApiCommand(
+		'vscode.prepareRename', '_executePrepareRename', 'Execute the prepareRename of rename provider.',
+		[ApiCommandArgument.Uri, ApiCommandArgument.Position],
+		new ApiCommandResult<modes.RenameLocation, { range: types.Range, placeholder: string } | undefined>('A promise that resolves to a range and placeholder text.', value => {
+			if (!value) {
+				return undefined;
+			}
+			return {
+				range: typeConverters.Range.to(value.range),
+				placeholder: value.text
+			};
+		})
+	),
+	new ApiCommand(
 		'vscode.executeDocumentRenameProvider', '_executeDocumentRenameProvider', 'Execute rename provider.',
 		[ApiCommandArgument.Uri, ApiCommandArgument.Position, ApiCommandArgument.String.with('newName', 'The new symbol name')],
 		new ApiCommandResult<IWorkspaceEditDto & { rejectReason?: string }, types.WorkspaceEdit | undefined>('A promise that resolves to a WorkspaceEdit.', value => {
@@ -203,7 +216,7 @@ const newCommands: ApiCommand[] = [
 	),
 	new ApiCommand(
 		'vscode.provideDocumentRangeSemanticTokensLegend', '_provideDocumentRangeSemanticTokensLegend', 'Provide semantic tokens legend for a document range',
-		[ApiCommandArgument.Uri],
+		[ApiCommandArgument.Uri, ApiCommandArgument.Range.optional()],
 		new ApiCommandResult<modes.SemanticTokensLegend, types.SemanticTokensLegend | undefined>('A promise that resolves to SemanticTokensLegend.', value => {
 			if (!value) {
 				return undefined;
@@ -422,6 +435,12 @@ const newCommands: ApiCommand[] = [
 		[ApiCommandArgument.TypeHierarchyItem],
 		new ApiCommandResult<ITypeHierarchyItemDto[], types.TypeHierarchyItem[]>('A TypeHierarchyItem or undefined', v => v.map(typeConverters.TypeHierarchyItem.to))
 	),
+	// --- testing
+	new ApiCommand(
+		'vscode.revealTestInExplorer', '_revealTestInExplorer', 'Reveals a test instance in the explorer',
+		[ApiCommandArgument.TestItem],
+		ApiCommandResult.Void
+	)
 ];
 
 //#endregion

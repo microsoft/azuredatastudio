@@ -28,6 +28,9 @@ import { Action } from 'vs/base/common/actions';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { ITableKeyboardEvent } from 'sql/base/browser/ui/table/interfaces';
 import { Disposable } from 'vs/base/common/lifecycle';
+
+const TABLE_SORT_COLUMN_KEY = 'tableCostColumnForSorting';
+
 export class TopOperationsTab extends Disposable implements IPanelTab {
 	public readonly title = localize('topOperationsTabTitle', "Top Operations  (Preview)");
 	public readonly identifier: string = 'TopOperationsTab';
@@ -128,9 +131,14 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 			if (node.children) {
 				node.children.forEach(c => stack.push(c));
 			}
-
+			row[TABLE_SORT_COLUMN_KEY] = node.cost;
 			dataMap.push(row);
 		}
+
+		dataMap.sort((a, b) => {
+			return b[TABLE_SORT_COLUMN_KEY] - a[TABLE_SORT_COLUMN_KEY];
+		});
+
 		const columns = columnValues.map((c, i) => {
 			return <Slick.Column<Slick.SlickData>>{
 				id: c.toString(),
@@ -252,6 +260,7 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 				this._queryResultsView.focusOnNode(planId, nodeId);
 			}
 		}));
+
 		this._tables.push(table);
 		const contextMenuAction = [
 			this._instantiationService.createInstance(CopyTableData),

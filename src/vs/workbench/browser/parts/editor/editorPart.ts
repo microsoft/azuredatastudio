@@ -8,10 +8,10 @@ import { Part } from 'vs/workbench/browser/part';
 import { Dimension, isAncestor, $, EventHelper, addDisposableGenericMouseDownListner } from 'vs/base/browser/dom';
 import { Event, Emitter, Relay } from 'vs/base/common/event';
 import { contrastBorder, editorBackground } from 'vs/platform/theme/common/colorRegistry';
-import { GroupDirection, IAddGroupOptions, GroupsArrangement, GroupOrientation, IMergeGroupOptions, MergeGroupMode, GroupsOrder, GroupChangeKind, GroupLocation, IFindGroupScope, EditorGroupLayout, GroupLayoutArgument, IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
+import { GroupDirection, IAddGroupOptions, GroupsArrangement, GroupOrientation, IMergeGroupOptions, MergeGroupMode, GroupsOrder, GroupChangeKind, GroupLocation, IFindGroupScope, EditorGroupLayout, GroupLayoutArgument, IEditorGroupsService, IEditorSideGroup } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IView, orthogonal, LayoutPriority, IViewSize, Direction, SerializableGrid, Sizing, ISerializedGrid, Orientation, GridBranchNode, isGridBranchNode, GridNode, createSerializedGrid, Grid } from 'vs/base/browser/ui/grid/grid';
-import { GroupIdentifier, IEditorPartOptions, IEditorPartOptionsChangeEvent } from 'vs/workbench/common/editor';
+import { GroupIdentifier, EditorInputWithOptions, IEditorPartOptions, IEditorPartOptionsChangeEvent } from 'vs/workbench/common/editor';
 import { EDITOR_GROUP_BORDER, EDITOR_PANE_BACKGROUND } from 'vs/workbench/common/theme';
 import { distinct, coalesce, firstOrDefault } from 'vs/base/common/arrays';
 import { IEditorGroupsAccessor, IEditorGroupView, getEditorPartOptions, impactsEditorPartOptions, IEditorPartCreationOptions } from 'vs/workbench/browser/parts/editor/editor';
@@ -31,6 +31,8 @@ import { assertIsDefined } from 'vs/base/common/types';
 import { IBoundarySashes } from 'vs/base/browser/ui/grid/gridview';
 import { CompositeDragAndDropObserver } from 'vs/workbench/browser/dnd';
 import { Promises } from 'vs/base/common/async';
+import { findGroup } from 'vs/workbench/services/editor/common/editorGroupFinder';
+import { SIDE_GROUP } from 'vs/workbench/services/editor/common/editorService';
 
 interface IEditorPartUIState {
 	serializedGrid: ISerializedGrid;
@@ -69,9 +71,9 @@ class GridWidgetView<T extends IView> implements IView {
 		this._gridWidget = grid;
 	}
 
-	layout(width: number, height: number): void {
+	layout(width: number, height: number, top: number, left: number): void {
 		if (this.gridWidget) {
-			this.gridWidget.layout(width, height);
+			this.gridWidget.layout(width, height, top, left);
 		}
 	}
 
@@ -163,9 +165,9 @@ export class EditorPart extends Part implements IEditorGroupsService, IEditorGro
 		const oldPartOptions = this._partOptions;
 		const newPartOptions = getEditorPartOptions(this.configurationService, this.themeService);
 
-		this.enforcedPartOptions.forEach(enforcedPartOptions => {
+		for (const enforcedPartOptions of this.enforcedPartOptions) {
 			Object.assign(newPartOptions, enforcedPartOptions); // check for overrides
-		});
+		}
 
 		this._partOptions = newPartOptions;
 
@@ -197,6 +199,14 @@ export class EditorPart extends Part implements IEditorGroupsService, IEditorGro
 		return this._activeGroup;
 	}
 
+	readonly sideGroup: IEditorSideGroup = {
+		openEditor: (editor, options) => {
+			const [group] = this.instantiationService.invokeFunction(accessor => findGroup(accessor, { editor, options }, SIDE_GROUP));
+
+			return group.openEditor(editor, options);
+		}
+	};
+
 	get groups(): IEditorGroupView[] {
 		return Array.from(this.groupViews.values());
 	}
@@ -208,6 +218,9 @@ export class EditorPart extends Part implements IEditorGroupsService, IEditorGro
 	get orientation(): GroupOrientation {
 		return (this.gridWidget && this.gridWidget.orientation === Orientation.VERTICAL) ? GroupOrientation.VERTICAL : GroupOrientation.HORIZONTAL;
 	}
+
+	private _isReady = false;
+	get isReady(): boolean { return this._isReady; }
 
 	private whenReadyResolve: (() => void) | undefined;
 	readonly whenReady = new Promise<void>(resolve => (this.whenReadyResolve = resolve));
@@ -390,13 +403,13 @@ export class EditorPart extends Part implements IEditorGroupsService, IEditorGro
 		// Determine how many groups we need overall
 		let layoutGroupsCount = 0;
 		function countGroups(groups: GroupLayoutArgument[]): void {
-			groups.forEach(group => {
+			for (const group of groups) {
 				if (Array.isArray(group.groups)) {
 					countGroups(group.groups);
 				} else {
 					layoutGroupsCount++;
 				}
-			});
+			}
 		}
 		countGroups(layout.groups);
 
@@ -430,17 +443,17 @@ export class EditorPart extends Part implements IEditorGroupsService, IEditorGro
 		this.doCreateGridControlWithState(gridDescriptor, activeGroup.id, currentGroupViews);
 
 		// Layout
-		this.doLayout(this._contentDimension);
+		this.doLayout(this._contentDimension, 0, 0);
 
 		// Update container
 		this.updateContainer();
 
 		// Events for groups that got added
-		this.getGroups(GroupsOrder.GRID_APPEARANCE).forEach(groupView => {
+		for (const groupView of this.getGroups(GroupsOrder.GRID_APPEARANCE)) {
 			if (!currentGroupViews.includes(groupView)) {
 				this._onDidAddGroup.fire(groupView);
 			}
-		});
+		}
 
 		// Notify group index change given layout has changed
 		this.notifyGroupIndexChange();
@@ -742,21 +755,25 @@ export class EditorPart extends Part implements IEditorGroupsService, IEditorGro
 		const sourceView = this.assertGroupView(group);
 		const targetView = this.assertGroupView(target);
 
-		// Move/Copy editors over into target
+		// Collect editors to move/copy
+		const editors: EditorInputWithOptions[] = [];
 		let index = (options && typeof options.index === 'number') ? options.index : targetView.count;
-		sourceView.editors.forEach(editor => {
+		for (const editor of sourceView.editors) {
 			const inactive = !sourceView.isActive(editor) || this._activeGroup !== sourceView;
 			const sticky = sourceView.isSticky(editor);
-			const editorOptions = { index: !sticky ? index : undefined /* do not set index to preserve sticky flag */, inactive, preserveFocus: inactive };
+			const options = { index: !sticky ? index : undefined /* do not set index to preserve sticky flag */, inactive, preserveFocus: inactive };
 
-			if (options?.mode === MergeGroupMode.COPY_EDITORS) {
-				sourceView.copyEditor(editor, targetView, editorOptions);
-			} else {
-				sourceView.moveEditor(editor, targetView, editorOptions);
-			}
+			editors.push({ editor, options });
 
 			index++;
-		});
+		}
+
+		// Move/Copy editors over into target
+		if (options?.mode === MergeGroupMode.COPY_EDITORS) {
+			sourceView.copyEditors(editors, targetView);
+		} else {
+			sourceView.moveEditors(editors, targetView);
+		}
 
 		// Remove source if the view is now empty and not already removed
 		if (sourceView.isEmpty && !sourceView.disposed /* could have been disposed already via workbench.editor.closeEmptyGroups setting */) {
@@ -848,6 +865,7 @@ export class EditorPart extends Part implements IEditorGroupsService, IEditorGro
 
 		// Signal ready
 		this.whenReadyResolve?.();
+		this._isReady = true;
 
 		// Signal restored
 		Promises.settled(this.groups.map(group => group.whenRestored)).finally(() => {
@@ -875,7 +893,30 @@ export class EditorPart extends Part implements IEditorGroupsService, IEditorGro
 			onDragEnd: e => overlay.classList.remove('visible')
 		}));
 
-		let panelOpenerTimeout: any;
+		let horizontalOpenerTimeout: any;
+		let verticalOpenerTimeout: any;
+		let lastOpenHorizontalPosition: Position | undefined;
+		let lastOpenVerticalPosition: Position | undefined;
+		const openPartAtPosition = (position: Position) => {
+			if (!this.layoutService.isVisible(Parts.PANEL_PART) && position === this.layoutService.getPanelPosition()) {
+				this.layoutService.setPartHidden(false, Parts.PANEL_PART);
+			} else if (!this.layoutService.isVisible(Parts.AUXILIARYBAR_PART) && position === (this.layoutService.getSideBarPosition() === Position.RIGHT ? Position.LEFT : Position.RIGHT)) {
+				this.layoutService.setPartHidden(false, Parts.AUXILIARYBAR_PART);
+			}
+		};
+
+		const clearAllTimeouts = () => {
+			if (horizontalOpenerTimeout) {
+				clearTimeout(horizontalOpenerTimeout);
+				horizontalOpenerTimeout = undefined;
+			}
+
+			if (verticalOpenerTimeout) {
+				clearTimeout(verticalOpenerTimeout);
+				verticalOpenerTimeout = undefined;
+			}
+		};
+
 		this._register(CompositeDragAndDropObserver.INSTANCE.registerTarget(overlay, {
 			onDragOver: e => {
 				EventHelper.stop(e.eventData, true);
@@ -883,55 +924,46 @@ export class EditorPart extends Part implements IEditorGroupsService, IEditorGro
 					e.eventData.dataTransfer.dropEffect = 'none';
 				}
 
-				if (!this.layoutService.isVisible(Parts.PANEL_PART)) {
-					const boundingRect = overlay.getBoundingClientRect();
+				const boundingRect = overlay.getBoundingClientRect();
 
-					let openPanel = false;
-					const proximity = 100;
-					switch (this.layoutService.getPanelPosition()) {
-						case Position.BOTTOM:
-							if (e.eventData.clientY > boundingRect.bottom - proximity) {
-								openPanel = true;
-							}
-							break;
-						case Position.LEFT:
-							if (e.eventData.clientX < boundingRect.left + proximity) {
-								openPanel = true;
-							}
-							break;
-						case Position.RIGHT:
-							if (e.eventData.clientX > boundingRect.right - proximity) {
-								openPanel = true;
-							}
-							break;
-					}
+				let openHorizontalPosition: Position | undefined = undefined;
+				let openVerticalPosition: Position | undefined = undefined;
+				const proximity = 100;
+				if (e.eventData.clientX < boundingRect.left + proximity) {
+					openHorizontalPosition = Position.LEFT;
+				}
 
-					if (!panelOpenerTimeout && openPanel) {
-						panelOpenerTimeout = setTimeout(() => this.layoutService.setPanelHidden(false), 200);
-					} else if (panelOpenerTimeout && !openPanel) {
-						clearTimeout(panelOpenerTimeout);
-						panelOpenerTimeout = undefined;
-					}
+				if (e.eventData.clientX > boundingRect.right - proximity) {
+					openHorizontalPosition = Position.RIGHT;
+				}
+
+				if (e.eventData.clientY > boundingRect.bottom - proximity) {
+					openVerticalPosition = Position.BOTTOM;
+				}
+
+				if (horizontalOpenerTimeout && openHorizontalPosition !== lastOpenHorizontalPosition) {
+					clearTimeout(horizontalOpenerTimeout);
+					horizontalOpenerTimeout = undefined;
+				}
+
+				if (verticalOpenerTimeout && openVerticalPosition !== lastOpenVerticalPosition) {
+					clearTimeout(verticalOpenerTimeout);
+					verticalOpenerTimeout = undefined;
+				}
+
+				if (!horizontalOpenerTimeout && openHorizontalPosition !== undefined) {
+					lastOpenHorizontalPosition = openHorizontalPosition;
+					horizontalOpenerTimeout = setTimeout(() => openPartAtPosition(openHorizontalPosition!), 200);
+				}
+
+				if (!verticalOpenerTimeout && openVerticalPosition !== undefined) {
+					lastOpenVerticalPosition = openVerticalPosition;
+					verticalOpenerTimeout = setTimeout(() => openPartAtPosition(openVerticalPosition!), 200);
 				}
 			},
-			onDragLeave: () => {
-				if (panelOpenerTimeout) {
-					clearTimeout(panelOpenerTimeout);
-					panelOpenerTimeout = undefined;
-				}
-			},
-			onDragEnd: () => {
-				if (panelOpenerTimeout) {
-					clearTimeout(panelOpenerTimeout);
-					panelOpenerTimeout = undefined;
-				}
-			},
-			onDrop: () => {
-				if (panelOpenerTimeout) {
-					clearTimeout(panelOpenerTimeout);
-					panelOpenerTimeout = undefined;
-				}
-			}
+			onDragLeave: () => clearAllTimeouts(),
+			onDragEnd: () => clearAllTimeouts(),
+			onDrop: () => clearAllTimeouts()
 		}));
 	}
 
@@ -1085,20 +1117,20 @@ export class EditorPart extends Part implements IEditorGroupsService, IEditorGro
 		this.centeredLayoutWidget.boundarySashes = sashes;
 	}
 
-	override layout(width: number, height: number): void {
+	override layout(width: number, height: number, top: number, left: number): void {
 
 		// Layout contents
 		const contentAreaSize = super.layoutContents(width, height).contentSize;
 
 		// Layout editor container
-		this.doLayout(Dimension.lift(contentAreaSize));
+		this.doLayout(Dimension.lift(contentAreaSize), top, left);
 	}
 
-	private doLayout(dimension: Dimension): void {
+	private doLayout(dimension: Dimension, top: number, left: number): void {
 		this._contentDimension = dimension;
 
 		// Layout Grid
-		this.centeredLayoutWidget.layout(this._contentDimension.width, this._contentDimension.height);
+		this.centeredLayoutWidget.layout(this._contentDimension.width, this._contentDimension.height, top, left);
 
 		// Event
 		this._onDidLayout.fire(dimension);

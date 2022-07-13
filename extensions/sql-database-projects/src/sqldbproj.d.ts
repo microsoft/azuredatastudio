@@ -304,6 +304,7 @@ declare module 'sqldbproj' {
 		sqlServer2016 = 'SQL Server 2016',
 		sqlServer2017 = 'SQL Server 2017',
 		sqlServer2019 = 'SQL Server 2019',
+		sqlServer2022 = 'SQL Server 2022',
 		sqlAzure = 'Azure SQL Database',
 		sqlDW = 'Azure Synapse Dedicated SQL Pool',
 		sqlEdge = 'Azure SQL Edge'

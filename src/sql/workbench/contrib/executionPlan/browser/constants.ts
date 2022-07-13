@@ -257,6 +257,11 @@ export const badgeIconPaths = {
 	criticalWarning: imageBasePath + 'badge_critical_warning.svg'
 };
 
+export const collapseExpandNodeIconPaths = {
+	collapse: imageBasePath + 'collapse.svg',
+	expand: imageBasePath + 'expand.svg'
+};
+
 export const savePlanIconClassNames = 'ep-save-plan-icon';
 export const openPropertiesIconClassNames = 'ep-open-properties-icon';
 export const openQueryIconClassNames = 'ep-open-query-icon';

@@ -5,13 +5,14 @@
 
 import { localize } from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
-import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { IExtensionsWorkbenchService, VIEWLET_ID, IExtensionsViewPaneContainer } from 'vs/workbench/contrib/extensions/common/extensions';
 import { IExtensionRecommendation } from 'sql/workbench/services/extensionManagement/common/extensionManagement';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { URI } from 'vs/base/common/uri';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { PagedModel } from 'vs/base/common/paging';
+import { IPaneCompositePartService } from 'vs/workbench/services/panecomposite/browser/panecomposite';
+import { ViewContainerLocation } from 'vs/workbench/common/views';
 
 function getScenarioID(scenarioType: string) {
 	return 'workbench.extensions.action.show' + scenarioType;
@@ -20,13 +21,13 @@ function getScenarioID(scenarioType: string) {
 export class ShowRecommendedExtensionsByScenarioAction extends Action {
 	constructor(
 		private readonly scenarioType: string,
-		@IViewletService private readonly viewletService: IViewletService
+		@IPaneCompositePartService private readonly viewletService: IPaneCompositePartService
 	) {
 		super(getScenarioID(scenarioType), localize('showRecommendations', "Show Recommendations"), undefined, true);
 	}
 
 	override run(): Promise<void> {
-		return this.viewletService.openViewlet(VIEWLET_ID, true)
+		return this.viewletService.openPaneComposite(VIEWLET_ID, ViewContainerLocation.Sidebar, true)
 			.then(viewlet => viewlet?.getViewPaneContainer() as IExtensionsViewPaneContainer)
 			.then(viewlet => {
 				viewlet.search('@' + this.scenarioType);
@@ -43,7 +44,7 @@ export class InstallRecommendedExtensionsByScenarioAction extends Action {
 	constructor(
 		private readonly scenarioType: string,
 		recommendations: IExtensionRecommendation[],
-		@IViewletService private readonly viewletService: IViewletService,
+		@IPaneCompositePartService private readonly viewletService: IPaneCompositePartService,
 		@IExtensionsWorkbenchService private readonly extensionWorkbenchService: IExtensionsWorkbenchService
 	) {
 		super(getScenarioID(scenarioType), localize('Install Extensions', "Install Extensions"), 'extension-action');
@@ -52,7 +53,7 @@ export class InstallRecommendedExtensionsByScenarioAction extends Action {
 
 	override async run(): Promise<void> {
 		if (!this.recommendations.length) { return; }
-		const viewlet = await this.viewletService.openViewlet(VIEWLET_ID, true);
+		const viewlet = await this.viewletService.openPaneComposite(VIEWLET_ID, ViewContainerLocation.Sidebar, true);
 		const viewPaneContainer = viewlet?.getViewPaneContainer() as IExtensionsViewPaneContainer;
 		viewPaneContainer.search('@' + this.scenarioType);
 		viewlet.focus();
