@@ -28,6 +28,7 @@ import { setup as setupDataExtensionTests } from './areas/extensions/extensions.
 import { setup as setupDataMultirootTests } from './areas/multiroot/multiroot.test';
 import { setup as setupDataLocalizationTests } from './areas/workbench/localization.test';
 import { setup as setupLaunchTests } from './areas/workbench/launch.test';*/
+import { setup as setupTerminalProfileTests } from './areas/terminal/terminal-profiles.test';
 
 const testDataPath = path.join(os.tmpdir(), 'vscsmoke');
 if (fs.existsSync(testDataPath)) {
@@ -372,15 +373,17 @@ if (!opts.web && opts['build'] && !opts['remote']) {
 describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
 	/* {{SQL CARBON EDIT}} Disable unused tests
 	if (!opts.web) { setupDataLossTests(opts); }
-	if (!opts.web) { setupDataPreferencesTests(opts); }
-	setupDataSearchTests(opts);
-	setupDataNotebookTests(opts);
-	setupDataLanguagesTests(opts);
-	setupDataEditorTests(opts);
-	setupDataStatusbarTests(opts);
-	setupDataExtensionTests(opts);
-	if (!opts.web) { setupDataMultirootTests(opts); }
-	if (!opts.web) { setupDataLocalizationTests(opts); }
+	if (!opts.web) { setupPreferencesTests(opts); }
+	setupSearchTests(opts);
+	setupNotebookTests(opts);
+	setupLanguagesTests(opts);
+	setupEditorTests(opts);
+	setupStatusbarTests(opts);
+	setupExtensionTests(opts);
+	if (!opts.web) { setupMultirootTests(opts); }
+	if (!opts.web) { setupLocalizationTests(opts); }
 	if (!opts.web) { setupLaunchTests(); }
 	*/
+	// TODO: Enable terminal tests for non-web
+	if (opts.web) { setupTerminalProfileTests(opts); }
 });

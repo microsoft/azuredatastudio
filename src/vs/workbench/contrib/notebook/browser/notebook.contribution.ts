@@ -30,7 +30,7 @@ import { NotebookEditor } from 'vs/workbench/contrib/notebook/browser/notebookEd
 import { isCompositeNotebookEditorInput, NotebookEditorInput, NotebookEditorInputOptions } from 'vs/workbench/contrib/notebook/common/notebookEditorInput';
 import { INotebookService } from 'vs/workbench/contrib/notebook/common/notebookService';
 import { NotebookService } from 'vs/workbench/contrib/notebook/browser/notebookServiceImpl';
-import { CellKind, CellUri, UndoRedoPerCell, IResolvedNotebookEditorModel, NotebookDocumentBackupData, NotebookWorkingCopyTypeIdentifier, IOutputItemDto, CellToolbarLocation } from 'vs/workbench/contrib/notebook/common/notebookCommon'; // {{SQL CARBON EDIT}} Remove unused
+import { CellKind, CellToolbarLocation, CellToolbarVisibility, CellUri, DisplayOrderKey, UndoRedoPerCell, IResolvedNotebookEditorModel, NotebookDocumentBackupData, NotebookTextDiffEditorPreview, NotebookWorkingCopyTypeIdentifier, ShowCellStatusBar, CompactView, FocusIndicator, InsertToolbarLocation, GlobalToolbar, ConsolidatedOutputButton, ShowFoldingControls, DragAndDropEnabled, NotebookCellEditorOptionsCustomizations, ConsolidatedRunButton, TextOutputLineLimit, GlobalToolbarShowLabel, IOutputItemDto } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 import { INotebookEditorModelResolverService } from 'vs/workbench/contrib/notebook/common/notebookEditorModelResolverService';
@@ -209,7 +209,7 @@ export class NotebookContribution extends Disposable implements IWorkbenchContri
 	) {
 		super();
 
-		const undoRedoPerCell = configurationService.getValue<boolean>(UndoRedoPerCell);
+		const undoRedoPerCell = configurationService.getValue<boolean>(NotebookSetting.undoRedoPerCell);
 
 		this._register(undoRedoService.registerUriComparisonKeyComputer(CellUri.scheme, {
 			getComparisonKey: (uri: URI): string => {
@@ -668,7 +668,7 @@ configurationRegistry.registerConfiguration({
 		// 	},
 		// 	default: []
 		// },
-		[CellToolbarLocation]: {
+		[NotebookSetting.cellToolbarLocation]: {
 			description: cellToolbarCompatibilityMessage, // {{SQL CARBON EDIT}}
 			type: 'object',
 			additionalProperties: {
@@ -682,7 +682,7 @@ configurationRegistry.registerConfiguration({
 			tags: ['notebookLayout']
 		},
 		// {{SQL CARBON EDIT}} Remove unused VS Code Notebook configurations
-		// [ShowCellStatusBar]: {
+		//[ShowCellStatusBar]: {
 		// 	description: nls.localize('notebook.showCellStatusbar.description', "Whether the cell status bar should be shown."),
 		// 	type: 'string',
 		// 	enum: ['hidden', 'visible', 'visibleAfterExecute'],
@@ -693,39 +693,39 @@ configurationRegistry.registerConfiguration({
 		// 	default: 'visible',
 		// 	tags: ['notebookLayout']
 		// },
-		// [NotebookTextDiffEditorPreview]: {
+		[NotebookTextDiffEditorPreview]: {
 		// 	description: nls.localize('notebook.diff.enablePreview.description', "Whether to use the enhanced text diff editor for notebook."),
 		// 	type: 'boolean',
 		// 	default: true,
 		// 	tags: ['notebookLayout']
 		// },
-		// [CellToolbarVisibility]: {
+		[CellToolbarVisibility]: {
 		// 	markdownDescription: nls.localize('notebook.cellToolbarVisibility.description', "Whether the cell toolbar should appear on hover or click."),
 		// 	type: 'string',
 		// 	enum: ['hover', 'click'],
 		// 	default: 'click',
 		// 	tags: ['notebookLayout']
 		// },
-		// [UndoRedoPerCell]: {
+		[UndoRedoPerCell]: {
 		// 	description: nls.localize('notebook.undoRedoPerCell.description', "Whether to use separate undo/redo stack for each cell."),
 		// 	type: 'boolean',
 		// 	default: true,
 		// 	tags: ['notebookLayout']
 		// },
-		// [CompactView]: {
+		[CompactView]: {
 		// 	description: nls.localize('notebook.compactView.description', "Control whether the notebook editor should be rendered in a compact form. "),
 		// 	type: 'boolean',
 		// 	default: true,
 		// 	tags: ['notebookLayout']
 		// },
-		// [FocusIndicator]: {
+		[FocusIndicator]: {
 		// 	description: nls.localize('notebook.focusIndicator.description', "Controls where the focus indicator is rendered, either along the cell borders or on the left gutter"),
 		// 	type: 'string',
 		// 	enum: ['border', 'gutter'],
 		// 	default: 'gutter',
 		// 	tags: ['notebookLayout']
 		// },
-		// [InsertToolbarLocation]: {
+		[InsertToolbarLocation]: {
 		// 	description: nls.localize('notebook.insertToolbarPosition.description', "Control where the insert cell actions should appear."),
 		// 	type: 'string',
 		// 	enum: ['betweenCells', 'notebookToolbar', 'both', 'hidden'],
@@ -738,19 +738,19 @@ configurationRegistry.registerConfiguration({
 		// 	default: 'both',
 		// 	tags: ['notebookLayout']
 		// },
-		// [GlobalToolbar]: {
+		[GlobalToolbar]: {
 		// 	description: nls.localize('notebook.globalToolbar.description', "Control whether to render a global toolbar inside the notebook editor."),
 		// 	type: 'boolean',
 		// 	default: true,
 		// 	tags: ['notebookLayout']
 		// },
-		// [ConsolidatedOutputButton]: {
+		[ConsolidatedOutputButton]: {
 		// 	description: nls.localize('notebook.consolidatedOutputButton.description', "Control whether outputs action should be rendered in the output toolbar."),
 		// 	type: 'boolean',
 		// 	default: true,
 		// 	tags: ['notebookLayout']
 		// },
-		// [ShowFoldingControls]: {
+		[ShowFoldingControls]: {
 		// 	description: nls.localize('notebook.showFoldingControls.description', "Controls when the Markdown header folding arrow is shown."),
 		// 	type: 'string',
 		// 	enum: ['always', 'mouseover'],
@@ -761,30 +761,36 @@ configurationRegistry.registerConfiguration({
 		// 	default: 'mouseover',
 		// 	tags: ['notebookLayout']
 		// },
-		// [DragAndDropEnabled]: {
+		[DragAndDropEnabled]: {
 		// 	description: nls.localize('notebook.dragAndDrop.description', "Control whether the notebook editor should allow moving cells through drag and drop."),
 		// 	type: 'boolean',
 		// 	default: true,
 		// 	tags: ['notebookLayout']
 		// },
-		// [ConsolidatedRunButton]: {
+		[ConsolidatedRunButton]: {
 		// 	description: nls.localize('notebook.consolidatedRunButton.description', "Control whether extra actions are shown in a dropdown next to the run button."),
 		// 	type: 'boolean',
 		// 	default: false,
 		// 	tags: ['notebookLayout']
 		// },
-		// [GlobalToolbarShowLabel]: {
+		[GlobalToolbarShowLabel]: {
 		// 	description: nls.localize('notebook.globalToolbarShowLabel', "Control whether the actions on the notebook toolbar should render label or not."),
 		// 	type: 'boolean',
 		// 	default: true,
 		// 	tags: ['notebookLayout']
 		// },
-		// [TextOutputLineLimit]: {
+		[TextOutputLineLimit]: {
 		// 	description: nls.localize('notebook.textOutputLineLimit', "Control how many lines of text in a text output is rendered."),
 		// 	type: 'number',
 		// 	default: 30,
 		// 	tags: ['notebookLayout']
 		// },
-		// [NotebookCellEditorOptionsCustomizations]: editorOptionsCustomizationSchema
+		[NotebookSetting.markupFontSize]: {
+			markdownDescription: nls.localize('notebook.markup.fontSize', "Controls the font size of rendered markup in notebooks. When set to `0`, 120% `#editor.fontSize#` is used."),
+			type: 'number',
+			default: 0,
+			tags: ['notebookLayout']
+		},
+		[NotebookCellEditorOptionsCustomizations]: editorOptionsCustomizationSchema
 	}
 });

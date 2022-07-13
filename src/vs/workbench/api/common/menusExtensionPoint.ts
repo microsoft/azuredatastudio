@@ -16,6 +16,7 @@ import { DisposableStore } from 'vs/base/common/lifecycle';
 import { ThemeIcon } from 'vs/platform/theme/common/themeService';
 import { Iterable } from 'vs/base/common/iterator';
 import { index } from 'vs/base/common/arrays';
+import { isProposedApiEnabled } from 'vs/platform/extensions/common/extensions';
 import * as locConstants from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}}
 
 interface IAPIMenu {
@@ -683,7 +684,7 @@ commandsExtensionPoint.setHandler(extensions => {
 			title,
 			source: extension.description.displayName ?? extension.description.name,
 			shortTitle,
-			tooltip: extension.description.enableProposedApi ? title : undefined,
+			tooltip: isProposedApiEnabled(extension.description) ? title : undefined,
 			category,
 			precondition: ContextKeyExpr.deserialize(enablement),
 			icon: absoluteIcon
@@ -813,7 +814,7 @@ menusExtensionPoint.setHandler(extensions => {
 				return;
 			}
 
-			if (menu.proposed && !extension.description.enableProposedApi) {
+			if (menu.proposed && !isProposedApiEnabled(extension.description)) {
 				collector.error(localize('proposedAPI.invalid', "{0} is a proposed menu identifier and is only available when running out of dev or with the following command line switch: --enable-proposed-api {1}", entry.key, extension.description.identifier.value));
 				return;
 			}
