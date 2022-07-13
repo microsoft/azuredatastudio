@@ -2841,7 +2841,7 @@ declare module 'vscode' {
 		/*
 		 * Replaces the existing contents of the channel with the given value.
 		 */
-		replaceAll(value: string): void;
+		replace(value: string): void;
 	}
 
 	//#endregion
