@@ -12,7 +12,7 @@
     "@angular/platform-browser-dynamic": "~4.1.3",
     "@angular/router": "~4.1.3",
     "@microsoft/applicationinsights-web": "^2.6.4",
-    "@parcel/watcher": "2.0.1",
+    "@parcel/watcher": "2.0.2",
     "@vscode/vscode-languagedetection": "1.0.21",
     "applicationinsights": "1.0.8",
     "angular2-grid": "2.0.6",
@@ -33,7 +33,7 @@
     "minimist": "^1.2.6",
     "native-watchdog": "1.3.0",
     "ng2-charts": "^1.6.0",
-    "node-pty": "0.11.0-beta7",
+    "node-pty": "0.11.0-beta11",
     "plotly.js-dist-min": "^1.53.0",
     "reflect-metadata": "^0.1.8",
     "rxjs": "5.4.0",
@@ -61,7 +61,7 @@
     "zone.js": "^0.11.4"
   },
   "optionalDependencies": {
-    "vscode-windows-registry": "1.0.3",
+    "vscode-windows-registry": "1.0.4",
     "windows-process-tree": "^0.3.2"
   }
 }
