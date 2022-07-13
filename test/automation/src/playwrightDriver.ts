@@ -76,7 +76,7 @@ class PlaywrightDriver implements IDriver {
 				await timeout(100);
 			}
 
-			if (keybinding.startsWith('Alt') || keybinding.startsWith('Control')) {
+			if (keybinding.startsWith('Alt') || keybinding.startsWith('Control') || keybinding.startsWith('Backspace')) {
 				await this._page.keyboard.press(keybinding);
 				return;
 			}
