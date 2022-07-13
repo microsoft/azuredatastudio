@@ -16,7 +16,7 @@ import { DisposableStore } from 'vs/base/common/lifecycle';
 import { ThemeIcon } from 'vs/platform/theme/common/themeService';
 import { Iterable } from 'vs/base/common/iterator';
 import { index } from 'vs/base/common/arrays';
-import { isProposedApiEnabled } from 'vs/platform/extensions/common/extensions';
+import { isProposedApiEnabled } from 'vs/workbench/services/extensions/common/extensions';
 import * as locConstants from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}}
 
 interface IAPIMenu {
