@@ -52,9 +52,10 @@ suite('WorkingCopyEditorService', () => {
 	test('findEditor', async () => {
 		const disposables = new DisposableStore();
 
-		const instantiationService = workbenchInstantiationService();
+		const instantiationService = workbenchInstantiationService(undefined, disposables);
 		const part = await createEditorPart(instantiationService, disposables);
 		instantiationService.stub(IEditorGroupsService, part);
+
 		instantiationService.stub(IWorkspaceTrustRequestService, new TestWorkspaceTrustRequestService(false));
 		const editorService = instantiationService.createInstance(EditorService);
 		const accessor = instantiationService.createInstance(TestServiceAccessor);

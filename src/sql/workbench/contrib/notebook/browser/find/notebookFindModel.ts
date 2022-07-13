@@ -739,7 +739,7 @@ export const findCommand = new SearchNotebookCommand({
 	id: NOTEBOOK_COMMAND_SEARCH,
 	precondition: ActiveEditorContext.isEqualTo(NotebookEditor.ID),
 	kbOpts: {
-		primary: KeyMod.CtrlCmd | KeyCode.KEY_F,
+		primary: KeyMod.CtrlCmd | KeyCode.KeyF,
 		weight: KeybindingWeight.EditorContrib
 	}
 });

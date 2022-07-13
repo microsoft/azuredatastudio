@@ -666,7 +666,7 @@ const command = new StartSearchProfilerTableCommand({
 	id: PROFILER_TABLE_COMMAND_SEARCH,
 	precondition: ContextKeyExpr.and(CONTEXT_PROFILER_EDITOR),
 	kbOpts: {
-		primary: KeyMod.CtrlCmd | KeyCode.KEY_F,
+		primary: KeyMod.CtrlCmd | KeyCode.KeyF,
 		weight: KeybindingWeight.EditorContrib
 	}
 });

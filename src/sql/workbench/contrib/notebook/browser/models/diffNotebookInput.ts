@@ -11,6 +11,7 @@ import { FileNotebookInput } from 'sql/workbench/contrib/notebook/browser/models
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { Deferred } from 'sql/base/common/promise';
 import { ILogService } from 'vs/platform/log/common/log';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 export class DiffNotebookInput extends SideBySideEditorInput {
 	public static override ID: string = 'workbench.editorinputs.DiffNotebookInput';
@@ -22,11 +23,12 @@ export class DiffNotebookInput extends SideBySideEditorInput {
 		diffInput: DiffEditorInput,
 		@IInstantiationService instantiationService: IInstantiationService,
 		@INotebookService notebookService: INotebookService,
-		@ILogService logService: ILogService
+		@ILogService logService: ILogService,
+		@IEditorService editorService: IEditorService
 	) {
 		let originalInput = instantiationService.createInstance(FileNotebookInput, diffInput.primary.getName(), diffInput.primary.resource, diffInput.original as FileEditorInput, false);
 		let modifiedInput = instantiationService.createInstance(FileNotebookInput, diffInput.secondary.getName(), diffInput.secondary.resource, diffInput.modified as FileEditorInput, false);
-		super(title, diffInput.getTitle(), modifiedInput, originalInput);
+		super(title, diffInput.getTitle(), modifiedInput, originalInput, editorService);
 		this._notebookService = notebookService;
 		this._logService = logService;
 		this.setupScrollListeners(originalInput, modifiedInput);

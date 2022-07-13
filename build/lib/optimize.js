@@ -37,7 +37,7 @@ function loaderConfig() {
 }
 exports.loaderConfig = loaderConfig;
 const IS_OUR_COPYRIGHT_REGEXP = /Copyright \(C\) Microsoft Corporation/i;
-function loader(src, bundledFileHeader, bundleLoader) {
+function loader(src, bundledFileHeader, bundleLoader, externalLoaderInfo) {
     let sources = [
         `${src}/vs/loader.js`
     ];
@@ -63,6 +63,15 @@ function loader(src, bundledFileHeader, bundleLoader) {
         else {
             this.emit('data', data);
         }
+    }, function () {
+        if (externalLoaderInfo !== undefined) {
+            this.emit('data', new VinylFile({
+                path: 'fake2',
+                base: '.',
+                contents: Buffer.from(`require.config(${JSON.stringify(externalLoaderInfo, undefined, 2)});`)
+            }));
+        }
+        this.emit('end');
     }))
         .pipe(concat('vs/loader.js')));
 }
@@ -148,7 +157,7 @@ function optimizeTask(opts) {
             }
             es.readArray(bundleInfoArray).pipe(bundleInfoStream);
         });
-        const result = es.merge(loader(src, bundledFileHeader, bundleLoader), bundlesStream, resourcesStream, bundleInfoStream);
+        const result = es.merge(loader(src, bundledFileHeader, bundleLoader, opts.externalLoaderInfo), bundlesStream, resourcesStream, bundleInfoStream);
         return result
             .pipe(sourcemaps.write('./', {
             sourceRoot: undefined,

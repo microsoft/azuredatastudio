@@ -17,10 +17,12 @@ import { NotebookChangeType, CellType } from 'sql/workbench/services/notebook/co
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 import { Range } from 'vs/editor/common/core/range';
-import { IEditorInput, IEditorPane } from 'vs/workbench/common/editor';
+import { IEditorPane } from 'vs/workbench/common/editor';
 import { INotebookInput } from 'sql/workbench/services/notebook/browser/interface';
 import { INotebookShowOptions } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
+import { EditorInput } from 'vs/workbench/common/editor/editorInput';
+import { ICodeEditorViewState } from 'vs/editor/common/editorCommon';
 
 export const SERVICE_ID = 'sqlNotebookService';
 export const INotebookService = createDecorator<INotebookService>(SERVICE_ID);
@@ -139,7 +141,7 @@ export interface INotebookService {
 	 */
 	notifyCellExecutionStarted(): void;
 
-	createNotebookInputFromContents(providerId: string, contents?: azdata.nb.INotebookContents, resource?: UriComponents): Promise<IEditorInput | undefined>;
+	createNotebookInputFromContents(providerId: string, contents?: azdata.nb.INotebookContents, resource?: UriComponents): Promise<EditorInput | undefined>;
 
 	openNotebook(resource: UriComponents, options: INotebookShowOptions): Promise<IEditorPane | undefined>;
 
@@ -196,7 +198,7 @@ export interface ICellEditorProvider {
 	hasEditor(): boolean;
 	isCellOutput: boolean;
 	cellGuid(): string;
-	getEditor(): BaseTextEditor;
+	getEditor(): BaseTextEditor<ICodeEditorViewState>;
 	deltaDecorations(newDecorationsRange: NotebookRange | NotebookRange[], oldDecorationsRange: NotebookRange | NotebookRange[]): void;
 }
 

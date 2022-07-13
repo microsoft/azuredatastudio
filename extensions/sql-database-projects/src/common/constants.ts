@@ -578,6 +578,7 @@ export const targetPlatformToVersion: Map<string, string> = new Map<string, stri
 	[SqlTargetPlatform.sqlServer2016, '130'],
 	[SqlTargetPlatform.sqlServer2017, '140'],
 	[SqlTargetPlatform.sqlServer2019, '150'],
+	[SqlTargetPlatform.sqlServer2022, '160'],
 	[SqlTargetPlatform.sqlAzure, 'AzureV12'],
 	[SqlTargetPlatform.sqlDW, 'Dw']
 ]);
@@ -585,7 +586,7 @@ export const targetPlatformToVersion: Map<string, string> = new Map<string, stri
 // DW is special since the system dacpac folder has a different name from the target platform
 export const AzureDwFolder = 'AzureDw';
 
-export const defaultTargetPlatform = SqlTargetPlatform.sqlServer2019;
+export const defaultTargetPlatform = SqlTargetPlatform.sqlServer2019; // TODO: update to 2022 when it's GA
 export const defaultDSP = targetPlatformToVersion.get(defaultTargetPlatform)!;
 
 /**
