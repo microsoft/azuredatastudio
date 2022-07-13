@@ -268,7 +268,7 @@ class SharedProcessMain extends Disposable {
 					this._register(toDisposable(() => collectorAppender.flush())); // Ensure the AI appender is disposed so that it flushes remaining data
 					appenders.push(collectorAppender);
 				}
-				const appInsightsAppender = new AppInsightsAppender('adsworkbench', null, productService.aiConfig.asimovKey, insiders ? false : testCollector); // {{SQL CARBON EDIT}} Use our own event prefix
+				const appInsightsAppender = new AppInsightsAppender('adsworkbench', null, productService.aiConfig.asimovKey, insiders ? false : testCollector, testCollector && insiders); // {{SQL CARBON EDIT}} Use our own event prefix
 				this._register(toDisposable(() => appInsightsAppender.flush())); // Ensure the AI appender is disposed so that it flushes remaining data
 				appenders.push(appInsightsAppender);
 			}
