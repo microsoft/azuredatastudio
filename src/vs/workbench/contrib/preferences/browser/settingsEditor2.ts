@@ -123,7 +123,7 @@ export class SettingsEditor2 extends EditorPane {
 			return false;
 		}
 		return type === SettingValueType.Enum ||
-			type === SettingValueType.StringOrEnumArray ||
+			type === SettingValueType.Array ||
 			type === SettingValueType.BooleanObject ||
 			type === SettingValueType.Object ||
 			type === SettingValueType.Complex ||

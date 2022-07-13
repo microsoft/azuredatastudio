@@ -8,7 +8,7 @@ import { IMenuService, MenuId, IMenu, SubmenuItemAction, registerAction2, Action
 import { registerThemingParticipant, IThemeService } from 'vs/platform/theme/common/themeService';
 import { MenuBarVisibility, getTitleBarStyle, IWindowOpenable, getMenuBarVisibility } from 'vs/platform/windows/common/windows';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey'; // {{SQL CARBON EDIT}} Remove unused
-import { IAction, Action, SubmenuAction, Separator } from 'vs/base/common/actions';
+import { IAction, Action, SubmenuAction, Separator, IActionRunner, ActionRunner, WorkbenchActionExecutedEvent, WorkbenchActionExecutedClassification } from 'vs/base/common/actions';
 import { addDisposableListener, Dimension, EventType } from 'vs/base/browser/dom';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { isMacintosh, isWeb, isIOS, isNative } from 'vs/base/common/platform';
@@ -382,6 +382,7 @@ export class CustomMenubarControl extends MenubarControl {
 	private alwaysOnMnemonics: boolean = false;
 	private focusInsideMenubar: boolean = false;
 	private visible: boolean = true;
+	private actionRunner: IActionRunner;
 	private readonly webNavigationMenu = this._register(this.menuService.createMenu(MenuId.MenubarHomeMenu, this.contextKeyService));
 
 	private readonly _onVisibilityChange: Emitter<boolean>;
@@ -402,6 +403,7 @@ export class CustomMenubarControl extends MenubarControl {
 		@IAccessibilityService accessibilityService: IAccessibilityService,
 		@IThemeService private readonly themeService: IThemeService,
 		@IWorkbenchLayoutService private readonly layoutService: IWorkbenchLayoutService,
+		@ITelemetryService private readonly telemetryService: ITelemetryService,
 		@IHostService hostService: IHostService,
 		@ICommandService commandService: ICommandService
 	) {
@@ -409,6 +411,11 @@ export class CustomMenubarControl extends MenubarControl {
 
 		this._onVisibilityChange = this._register(new Emitter<boolean>());
 		this._onFocusStateChange = this._register(new Emitter<boolean>());
+
+		this.actionRunner = this._register(new ActionRunner());
+		this.actionRunner.onDidRun(e => {
+			this.telemetryService.publicLog2<WorkbenchActionExecutedEvent, WorkbenchActionExecutedClassification>('workbenchActionExecuted', { id: e.action.id, from: 'menu' });
+		});
 
 		this.workspacesService.getRecentlyOpened().then((recentlyOpened) => {
 			this.recentlyOpened = recentlyOpened;
@@ -819,6 +826,7 @@ export class CustomMenubarControl extends MenubarControl {
 			enableMnemonics: this.currentEnableMenuBarMnemonics,
 			disableAltFocus: this.currentDisableMenuBarAltFocus,
 			visibility: this.currentMenubarVisibility,
+			actionRunner: this.actionRunner,
 			getKeybinding: (action) => this.keybindingService.lookupKeybinding(action.id),
 			alwaysOnMnemonics: this.alwaysOnMnemonics,
 			compactMode: this.currentCompactMenuMode,

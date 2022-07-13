@@ -30,7 +30,7 @@ import { NotebookEditor } from 'vs/workbench/contrib/notebook/browser/notebookEd
 import { isCompositeNotebookEditorInput, NotebookEditorInput, NotebookEditorInputOptions } from 'vs/workbench/contrib/notebook/common/notebookEditorInput';
 import { INotebookService } from 'vs/workbench/contrib/notebook/common/notebookService';
 import { NotebookService } from 'vs/workbench/contrib/notebook/browser/notebookServiceImpl';
-import { CellKind, CellToolbarLocation, CellToolbarVisibility, CellUri, DisplayOrderKey, UndoRedoPerCell, IResolvedNotebookEditorModel, NotebookDocumentBackupData, NotebookTextDiffEditorPreview, NotebookWorkingCopyTypeIdentifier, ShowCellStatusBar, CompactView, FocusIndicator, InsertToolbarLocation, GlobalToolbar, ConsolidatedOutputButton, ShowFoldingControls, DragAndDropEnabled, NotebookCellEditorOptionsCustomizations, ConsolidatedRunButton, TextOutputLineLimit, GlobalToolbarShowLabel, IOutputItemDto } from 'vs/workbench/contrib/notebook/common/notebookCommon';
+import { CellKind, CellUri, IResolvedNotebookEditorModel, NotebookDocumentBackupData, NotebookWorkingCopyTypeIdentifier, NotebookSetting } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 import { INotebookEditorModelResolverService } from 'vs/workbench/contrib/notebook/common/notebookEditorModelResolverService';
@@ -45,7 +45,7 @@ import { NotebookEditorWidgetService } from 'vs/workbench/contrib/notebook/brows
 import { IJSONContributionRegistry, Extensions as JSONExtensions } from 'vs/platform/jsonschemas/common/jsonContributionRegistry';
 import { IJSONSchema, IJSONSchemaMap } from 'vs/base/common/jsonSchema';
 import { Event } from 'vs/base/common/event';
-import { getFormatedMetadataJSON } from 'vs/workbench/contrib/notebook/browser/diff/diffElementViewModel';
+import { getFormatedMetadataJSON, getStreamOutputData } from 'vs/workbench/contrib/notebook/browser/diff/diffElementViewModel';
 import { NotebookModelResolverServiceImpl } from 'vs/workbench/contrib/notebook/common/notebookEditorModelResolverServiceImpl';
 import { INotebookKernelService } from 'vs/workbench/contrib/notebook/common/notebookKernelService';
 import { NotebookKernelService } from 'vs/workbench/contrib/notebook/browser/notebookKernelServiceImpl';
@@ -373,22 +373,6 @@ class CellInfoContentProvider {
 		return result;
 	}
 
-	private _getStreamOutputData(outputs: IOutputItemDto[]) {
-		if (!outputs.length) {
-			return null;
-		}
-
-		const first = outputs[0];
-		const mime = first.mime;
-		const sameStream = !outputs.find(op => op.mime !== mime);
-
-		if (sameStream) {
-			return outputs.map(opit => opit.data.toString()).join('');
-		} else {
-			return null;
-		}
-	}
-
 	async provideOutputTextContent(resource: URI): Promise<ITextModel | null> {
 		const existing = this._modelService.getModel(resource);
 		if (existing) {
@@ -409,7 +393,7 @@ class CellInfoContentProvider {
 			if (cell.handle === data.handle) {
 				if (cell.outputs.length === 1) {
 					// single output
-					const streamOutputData = this._getStreamOutputData(cell.outputs[0].outputs);
+					const streamOutputData = getStreamOutputData(cell.outputs[0].outputs);
 					if (streamOutputData) {
 						result = this._modelService.createModel(
 							streamOutputData,

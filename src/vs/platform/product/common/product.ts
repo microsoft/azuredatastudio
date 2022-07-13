@@ -58,7 +58,7 @@ else {
 	if (Object.keys(product).length === 0) {
 		Object.assign(product, {
 			version: '1.37.0-dev',
-			vscodeVersion: '1.62.0-dev',
+			vscodeVersion: '1.63.0-dev',
 			nameLong: 'Azure Data Studio Dev',
 			nameShort: 'Azure Data Studio Dev',
 			applicationName: 'azuredatastudio-oss',
