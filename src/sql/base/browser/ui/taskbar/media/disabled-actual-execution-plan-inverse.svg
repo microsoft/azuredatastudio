@@ -1,1 +1,17 @@
-<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><defs><style>.cls-1{fill:#fff;}</style></defs><title>query_plan_inverse_16x16</title><path class="cls-1" d="M13.06,10.49H15v5H10.22v-5h1.89v-2H3.59v2H5.48v5H.75v-5h1.9v-3H7.38v-2H5.48v-5h4.74v5H8.33v2h4.74Zm-8.53,4v-3H1.69v3Zm1.9-13v3H9.27v-3Zm7.58,13v-3H11.17v3Z"/></svg>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 25.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 16 16" style="enable-background:new 0 0 16 16;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#FFFFFF;}
+</style>
+<g id="ad15c611-5475-46cd-b8f6-56ecc02b8e72">
+	<path class="st0" d="M5,5H0V0h5V5z M1,4h3V1H1V4z"/>
+	<path class="st0" d="M16,5h-5V0h5V5z M12,4h3V1h-3V4z"/>
+	<path class="st0" d="M8,0.5l0.8,0.8L8,2h3V3H8l0.7,0.7L8,4.5l-2-2L8,0.5z"/>
+	<polygon class="st0" points="16,11.8 14.2,13.5 16,15.3 15.3,16 13.5,14.2 11.8,16 11,15.3 12.8,13.5 11,11.8 11.8,11 13.5,12.8 
+		15.3,11 	"/>
+	<path class="st0" d="M5,16H0v-5h5V16z M1,15h3v-3H1V15z"/>
+	<path class="st0" d="M4.5,8L3.7,8.7L3,8v3H2V8L1.3,8.7L0.5,8l2-2L4.5,8z"/>
+</g>
+</svg>
