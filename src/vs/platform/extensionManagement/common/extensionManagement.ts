@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { CancellationToken } from 'vs/base/common/cancellation';
+import { IStringDictionary } from 'vs/base/common/collections';
 import { Event } from 'vs/base/common/event';
 import { FileAccess } from 'vs/base/common/network';
 import { IPager } from 'vs/base/common/paging';
@@ -186,6 +187,7 @@ export interface IGalleryExtensionProperties {
 	azDataEngine?: string;
 	localizedLanguages?: string[];
 	targetPlatform: TargetPlatform;
+	isPreReleaseVersion: boolean;
 }
 
 export interface IGalleryExtensionAsset {
@@ -237,6 +239,7 @@ export interface IGalleryExtensionIdentifier extends IExtensionIdentifier {
 export interface IGalleryExtensionVersion {
 	version: string;
 	date: string;
+	isPreReleaseVersion: boolean;
 }
 
 export interface IGalleryExtension {
@@ -257,23 +260,30 @@ export interface IGalleryExtension {
 	releaseDate: number;
 	lastUpdated: number;
 	preview: boolean;
+	hasPreReleaseVersion: boolean;
+	hasReleaseVersion: boolean;
 	allTargetPlatforms: TargetPlatform[];
 	assets: IGalleryExtensionAssets;
 	properties: IGalleryExtensionProperties;
-	telemetryData: any;
+	telemetryData?: any;
 }
 
 export interface IGalleryMetadata {
 	id: string;
 	publisherId: string;
 	publisherDisplayName: string;
+	isPreReleaseVersion: boolean, 
 }
+
+export type Metadata = Partial<IGalleryMetadata & { isMachineScoped: boolean; isBuiltin: boolean; preRelease: boolean, installedTimestamp: number }>;
 
 export interface ILocalExtension extends IExtension {
 	isMachineScoped: boolean;
 	publisherId: string | null;
 	publisherDisplayName: string | null;
 	installedTimestamp?: number;
+	isPreReleaseVersion: boolean;
+	preRelease: boolean;
 }
 
 export const enum SortBy {
@@ -301,6 +311,7 @@ export interface IQueryOptions {
 	sortBy?: SortBy;
 	sortOrder?: SortOrder;
 	source?: string;
+	includePreRelease?: boolean;
 	// {{SQL CARBON EDIT}} do not show extensions matching excludeFlags in the marketplace
 	// This field only supports an exact match of a single flag.  It doesn't currently
 	// support setting multiple flags such as "hidden,preview" since this functionality isn't
@@ -313,15 +324,16 @@ export const enum StatisticType {
 	Uninstall = 'uninstall'
 }
 
-export interface IReportedExtension {
-	id: IExtensionIdentifier;
-	malicious: boolean;
+export interface IExtensionsControlManifest {
+	malicious: IExtensionIdentifier[];
+	unsupportedPreReleaseExtensions?: IStringDictionary<{ id: string, displayName: string }>;
 }
 
 export const enum InstallOperation {
-	None = 0,
+	None = 1,
 	Install,
-	Update
+	Update,
+	Migrate,
 }
 
 export interface ITranslation {
@@ -334,17 +346,18 @@ export interface IExtensionGalleryService {
 	isEnabled(): boolean;
 	query(options: IQueryOptions, token: CancellationToken): Promise<IPager<IGalleryExtension>>;
 	getExtensions(identifiers: ReadonlyArray<IExtensionIdentifier | IExtensionIdentifierWithVersion>, token: CancellationToken): Promise<IGalleryExtension[]>;
+	getExtensions(identifiers: ReadonlyArray<IExtensionIdentifier | IExtensionIdentifierWithVersion>, includePreRelease: boolean, token: CancellationToken): Promise<IGalleryExtension[]>;
 	download(extension: IGalleryExtension, location: URI, operation: InstallOperation): Promise<void>;
 	reportStatistic(publisher: string, name: string, version: string, type: StatisticType): Promise<void>;
 	getReadme(extension: IGalleryExtension, token: CancellationToken): Promise<string>;
 	getManifest(extension: IGalleryExtension, token: CancellationToken): Promise<IExtensionManifest | null>;
 	getChangelog(extension: IGalleryExtension, token: CancellationToken): Promise<string>;
 	getCoreTranslation(extension: IGalleryExtension, languageId: string): Promise<ITranslation | null>;
-	getExtensionsReport(): Promise<IReportedExtension[]>;
-	isExtensionCompatible(extension: IGalleryExtension, targetPlatform: TargetPlatform): Promise<boolean>;
-	getCompatibleExtension(extension: IGalleryExtension, targetPlatform: TargetPlatform): Promise<IGalleryExtension | null>;
-	getCompatibleExtension(id: IExtensionIdentifier, targetPlatform: TargetPlatform): Promise<IGalleryExtension | null>;
-	getAllCompatibleVersions(extension: IGalleryExtension, targetPlatform: TargetPlatform): Promise<IGalleryExtensionVersion[]>;
+	getExtensionsControlManifest(): Promise<IExtensionsControlManifest>;
+	isExtensionCompatible(extension: IGalleryExtension, includePreRelease: boolean, targetPlatform: TargetPlatform): Promise<boolean>;
+	getCompatibleExtension(extension: IGalleryExtension, includePreRelease: boolean, targetPlatform: TargetPlatform): Promise<IGalleryExtension | null>;
+	getCompatibleExtension(id: IExtensionIdentifier, includePreRelease: boolean, targetPlatform: TargetPlatform): Promise<IGalleryExtension | null>;
+	getAllCompatibleVersions(extension: IGalleryExtension, includePreRelease: boolean, targetPlatform: TargetPlatform): Promise<IGalleryExtensionVersion[]>;
 }
 
 export interface InstallExtensionEvent {
@@ -366,8 +379,11 @@ export interface DidUninstallExtensionEvent {
 
 export enum ExtensionManagementErrorCode {
 	Unsupported = 'Unsupported',
+	UnsupportedPreRelease = 'UnsupportedPreRelease',
 	Malicious = 'Malicious',
 	Incompatible = 'Incompatible',
+	IncompatiblePreRelease = 'IncompatiblePreRelease',
+	IncompatibleTargetPlatform = 'IncompatibleTargetPlatform',
 	Invalid = 'Invalid',
 	Download = 'Download',
 	Extract = 'Extract',
@@ -385,7 +401,7 @@ export class ExtensionManagementError extends Error {
 	}
 }
 
-export type InstallOptions = { isBuiltin?: boolean, isMachineScoped?: boolean, donotIncludePackAndDependencies?: boolean, installGivenVersion?: boolean };
+export type InstallOptions = { isBuiltin?: boolean, isMachineScoped?: boolean, donotIncludePackAndDependencies?: boolean, installGivenVersion?: boolean, installPreReleaseVersion?: boolean };
 export type InstallVSIXOptions = Omit<InstallOptions, 'installGivenVersion'> & { installOnlyNewlyAddedFromExtensionPack?: boolean };
 export type UninstallOptions = { donotIncludePack?: boolean, donotCheckDependents?: boolean };
 
@@ -412,7 +428,7 @@ export interface IExtensionManagementService {
 	uninstall(extension: ILocalExtension, options?: UninstallOptions): Promise<void>;
 	reinstallFromGallery(extension: ILocalExtension): Promise<void>;
 	getInstalled(type?: ExtensionType, donotIgnoreInvalidExtensions?: boolean): Promise<ILocalExtension[]>;
-	getExtensionsReport(): Promise<IReportedExtension[]>;
+	getExtensionsControlManifest(): Promise<IExtensionsControlManifest>;
 
 	updateMetadata(local: ILocalExtension, metadata: IGalleryMetadata): Promise<ILocalExtension>;
 	updateExtensionScope(local: ILocalExtension, isMachineScoped: boolean): Promise<ILocalExtension>;
@@ -483,7 +499,7 @@ export interface IExtensionManagementCLIService {
 	readonly _serviceBrand: undefined;
 
 	listExtensions(showVersions: boolean, category?: string, output?: CLIOutput): Promise<void>;
-	installExtensions(extensions: (string | URI)[], builtinExtensionIds: string[], isMachineScoped: boolean, force: boolean, output?: CLIOutput): Promise<void>;
+	installExtensions(extensions: (string | URI)[], builtinExtensionIds: string[], installOptions: InstallOptions, force: boolean, output?: CLIOutput): Promise<void>;
 	uninstallExtensions(extensions: (string | URI)[], force: boolean, output?: CLIOutput): Promise<void>;
 	locateExtension(extensions: string[], output?: CLIOutput): Promise<void>;
 }

@@ -4,26 +4,19 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ParsedArgs } from 'minimist';
-import { Terminal, TerminalCommandId, TerminalCommandIdWithValue } from '../../../../automation/out';
-import { afterSuite, beforeSuite } from '../../utils';
+import { Application, Terminal, TerminalCommandId, TerminalCommandIdWithValue } from '../../../../automation/out';
 
 export function setup(opts: ParsedArgs) {
 	describe('Terminal Editors', () => {
 		let terminal: Terminal;
 
-		beforeSuite(opts);
-		afterSuite(opts);
-
-		before(function () {
-			terminal = this.app.workbench.terminal;
+		// Acquire automation API
+		before(async function () {
+			const app = this.app as Application;
+			terminal = app.workbench.terminal;
 		});
 
-		afterEach(async () => {
-			await terminal.runCommand(TerminalCommandId.KillAll);
-		});
-
-		// TODO: This was flaky in CI
-		it.skip('should update color of the tab', async () => {
+		it('should update color of the tab', async () => {
 			await terminal.runCommand(TerminalCommandId.CreateNewEditor);
 			const color = 'Cyan';
 			await terminal.runCommandWithValue(TerminalCommandIdWithValue.ChangeColor, color);

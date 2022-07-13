@@ -312,7 +312,6 @@ export interface IRelaxedExtensionDescription {
 		vscode: string;
 	};
 	main?: string;
-	enableProposedApi?: boolean;
 }
 
 class ExtensionManifestValidator extends ExtensionManifestHandler {

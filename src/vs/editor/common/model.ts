@@ -168,6 +168,12 @@ export interface IModelDecorationOptions {
 	 * If set, text will be injected in the view before the range.
 	 */
 	before?: InjectedTextOptions | null;
+
+	/**
+	 * If set, this decoration will not be rendered for comment tokens.
+	 * @internal
+	*/
+	hideInCommentTokens?: boolean | null;
 }
 
 /**
@@ -754,7 +760,7 @@ export interface ITextModel {
 	getLineLastNonWhitespaceColumn(lineNumber: number): number;
 
 	/**
-	 * Create a valid position,
+	 * Create a valid position.
 	 */
 	validatePosition(position: IPosition): Position;
 
@@ -794,7 +800,7 @@ export interface ITextModel {
 	getPositionAt(offset: number): Position;
 
 	/**
-	 * Get a range covering the entire model
+	 * Get a range covering the entire model.
 	 */
 	getFullModelRange(): Range;
 

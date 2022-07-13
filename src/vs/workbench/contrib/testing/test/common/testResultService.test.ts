@@ -312,7 +312,7 @@ suite.skip('Workbench - Test Results Service', () => {
 		});
 	});
 
-	test('resultItemParents', () => {
+	test('resultItemParents', function () {
 		assert.deepStrictEqual([...resultItemParents(r, r.getStateById(new TestId(['ctrlId', 'id-a', 'id-aa']).toString())!)], [
 			r.getStateById(new TestId(['ctrlId', 'id-a', 'id-aa']).toString()),
 			r.getStateById(new TestId(['ctrlId', 'id-a']).toString()),

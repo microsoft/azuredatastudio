@@ -4,6 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as fs from 'fs';
+import { promisify } from 'util';
+import { gracefulify } from 'graceful-fs';
 import * as cp from 'child_process';
 import * as path from 'path';
 import * as os from 'os';
@@ -14,6 +16,7 @@ import { ncp } from 'ncp';
 import * as vscodetest from 'vscode-test';
 import fetch from 'node-fetch';
 import { Quality, ApplicationOptions, MultiLogger, Logger, ConsoleLogger, FileLogger } from '../../automation';
+import { timeout } from './utils';
 
 import { main as sqlMain, setup as sqlSetup } from './sql/main'; // {{SQL CARBON EDIT}}
 /*import { setup as setupDataMigrationTests } from './areas/workbench/data-migration.test';
@@ -345,8 +348,6 @@ before(async function () {
 });
 
 after(async function () {
-	await new Promise(c => setTimeout(c, 500)); // wait for shutdown
-
 	if (opts.log) {
 		const logsDir = path.join(userDataDir, 'logs');
 		const destLogsDir = path.join(path.dirname(opts.log), 'logs');
@@ -358,23 +359,48 @@ after(async function () {
 		 * explaining that there's no such file or directory. This prevents that error from occurring.
 		 */
 		try {
-			await new Promise((c, e) => ncp(logsDir, destLogsDir, err => err ? e(err) : c(undefined)));
+			await promisify(ncp)(logsDir, destLogsDir);
 		}
 		catch (ex) {
 			console.warn(`Caught exception from ncp: ${ex}`);
 		}
 	}
 
-	await new Promise((c, e) => rimraf(testDataPath, { maxBusyTries: 10 }, err => err ? e(err) : c(undefined)));
-});
-
+	try {
+		// TODO@tyriar TODO@meganrogge lately deleting the test root
+		// folder results in timeouts of 60s or EPERM issues which
+		// seems to indicate that a process (terminal?) holds onto a
+		// folder within.
+		//
+		// Workarounds pushed for mitigation
+		// - do not end up with mocha timeout errors after 60s by limiting
+		//   this operation to at maximum 30s
+		// - do not end up with a failing `after` call when deletion failed
+		//
+		// Refs: https://github.com/microsoft/vscode/issues/137725
+		let deleted = false;
+		await Promise.race([
+			new Promise<void>((resolve, reject) => rimraf(testDataPath, { maxBusyTries: 10 }, error => {
+				if (error) {
+					reject(error);
+				} else {
+					deleted = true;
+					resolve();
+				}
+			})),
+			timeout(30000).then(() => {
+				if (!deleted) {
+					throw new Error('giving up after 30s');
+				}
 sqlMain(opts);
 
-if (!opts.web && opts['build'] && !opts['remote']) {
-	describe(`Stable vs Insiders Smoke Tests: This test MUST run before releasing`, () => {
-		// setupDataMigrationTests(opts, testDataPath); {{SQL CARBON EDIT}} Remove unused tests
-	});
-}
+		setupDataMigrationTests(opts, testDataPath);
+			})
+		]);
+	} catch (error) {
+		console.error(`Unable to delete smoke test workspace: ${error}. This indicates some process is locking the workspace folder.`);
+	}
+});
 
 describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
 	/* {{SQL CARBON EDIT}} Disable unused tests
@@ -384,14 +410,11 @@ describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
 	setupNotebookTests(opts);
 	setupLanguagesTests(opts);
 	setupEditorTests(opts);
+	setupTerminalTests(opts);
 	setupStatusbarTests(opts);
 	setupExtensionTests(opts);
 	if (!opts.web) { setupMultirootTests(opts); }
 	if (!opts.web) { setupLocalizationTests(opts); }
 	if (!opts.web) { setupLaunchTests(opts); }
 	*/
-	// TODO: Enable terminal tests for non-web
-	if (opts.web) { setupTerminalProfileTests(opts); }
-	if (opts.web) { setupTerminalTabsTests(opts); }
-	if (opts.web) { setupTerminalEditorsTests(opts); }
 });

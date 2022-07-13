@@ -1057,7 +1057,9 @@ class InlineCompletionAdapter {
 				context.selectedSuggestionInfo
 					? {
 						range: typeConvert.Range.to(context.selectedSuggestionInfo.range),
-						text: context.selectedSuggestionInfo.text
+						text: context.selectedSuggestionInfo.text,
+						isSnippetText: context.selectedSuggestionInfo.isSnippetText,
+						completionKind: typeConvert.CompletionItemKind.to(context.selectedSuggestionInfo.completionKind),
 					}
 					: undefined,
 			triggerKind: context.triggerKind
