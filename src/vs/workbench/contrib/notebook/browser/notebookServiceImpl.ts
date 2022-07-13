@@ -322,6 +322,7 @@ export class NotebookOutputRendererInfoStore {
 
 		const preferred = notebookProviderInfo && this.preferredMimetype.getValue()[notebookProviderInfo.id]?.[mimeType];
 		const notebookExtId = notebookProviderInfo?.extension?.value;
+		const notebookId = notebookProviderInfo?.id;
 		const renderers: { ordered: IOrderedMimeType, score: number }[] = Array.from(this.contributedRenderers.values())
 			.map(renderer => {
 				const ownScore = kernelProvides === undefined
@@ -335,7 +336,7 @@ export class NotebookOutputRendererInfoStore {
 				const rendererExtId = renderer.extensionId.value;
 				const reuseScore = preferred === renderer.id
 					? ReuseOrder.PreviouslySelected
-					: rendererExtId === notebookExtId || RENDERER_EQUIVALENT_EXTENSIONS.get(rendererExtId)?.has(notebookExtId!)
+					: rendererExtId === notebookExtId || RENDERER_EQUIVALENT_EXTENSIONS.get(rendererExtId)?.has(notebookId!)
 						? ReuseOrder.SameExtensionAsNotebook
 						: renderer.isBuiltin ? ReuseOrder.BuiltIn : ReuseOrder.OtherRenderer;
 				return {
