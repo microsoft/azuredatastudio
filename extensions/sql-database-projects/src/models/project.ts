@@ -162,12 +162,13 @@ export class Project implements ISqlProject {
 		}
 
 		// get output path
-		try {
-			const outputPath = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.OutputPath)[0].childNodes[0].nodeValue!;
+		const outputNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.OutputPath);
+		if (outputNodes.length > 0) {
+			const outputPath = outputNodes[0].childNodes[0].nodeValue!;
 			this._outputPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(outputPath));
-		} catch (e) {
+		} else {
 			// If output path isn't specified in .sqlproj, set it to the default output path .\bin\Debug\
-			this._outputPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(constants.defaultOutputPath));
+			this._outputPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(constants.defaultOutputPath()));
 		}
 	}
 
