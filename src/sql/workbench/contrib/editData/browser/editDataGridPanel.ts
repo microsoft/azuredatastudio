@@ -716,13 +716,15 @@ export class EditDataGridPanel extends GridParentComponent {
 					this.lastClickedCell = { row: cellToAdd.row, column: cellToAdd.column, isEditable: true };
 					let errorPromise: Thenable<void> = Promise.resolve();
 					if (refreshGrid || this.isRowDirty(cellToAdd.row)) {
+						let message = 'Error: row commit is invalid, reverting changes to last state, please enter only valid values in row or a non NULL only row (excluding the new row)';
 						if (refreshGrid) {
-							let message = 'Error: invalid value entered in new row, reverting changes, please enter a valid value.';
-							self.notificationService.notify({
-								severity: Severity.Error,
-								message: message
-							});
+							message = 'Error: invalid value entered in new row, cancelling new row addition, please enter a valid value.';
 						}
+
+						self.notificationService.notify({
+							severity: Severity.Error,
+							message: message
+						});
 						// Currently we do not support reverting individual cells in a dirty row, and we must revert it for a new row.
 						errorPromise = this.revertSelectedRow(cellToAdd.row);
 					}
