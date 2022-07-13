@@ -133,13 +133,9 @@ export class Application {
 		if (this.remote) {
 			await this.code.waitForTextContent('.monaco-workbench .statusbar-item[id="status.host"]', ' TestResolver', undefined, 2000);
 		}
-
 		// Wait for SQL Tools Service to start before considering the app ready
 		statusbarPromises.push(this.code.waitForTextContent('.monaco-workbench .statusbar-item[id="Microsoft.mssql"]', 'SQL Tools Service Started', undefined, 30000));
 		await Promise.all(statusbarPromises);
 
-		// wait a bit, since focus might be stolen off widgets
-		// as soon as they open (e.g. quick access)
-		await new Promise(c => setTimeout(c, 1000));
 	}
 }
