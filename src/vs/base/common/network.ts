@@ -98,6 +98,11 @@ export namespace Schemas {
 	 * Scheme used for temporary resources
 	 */
 	export const tmp = 'tmp';
+
+	/**
+	 * Scheme used vs live share
+	 */
+	export const vsls = 'vsls';
 }
 
 class RemoteAuthoritiesImpl {
