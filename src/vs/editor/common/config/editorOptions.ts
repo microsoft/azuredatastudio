@@ -887,14 +887,12 @@ abstract class ComputedEditorOption<K1 extends EditorOption, V> implements IEdit
 	public readonly id: K1;
 	public readonly name: '_never_';
 	public readonly defaultValue: V;
-	public readonly deps: EditorOption[] | null;
 	public readonly schema: IConfigurationPropertySchema | undefined = undefined;
 
-	constructor(id: K1, deps: EditorOption[] | null = null) {
+	constructor(id: K1) {
 		this.id = id;
 		this.name = '_never_';
 		this.defaultValue = <any>undefined;
-		this.deps = deps;
 	}
 
 	public applyUpdate(value: V, update: V): ApplyUpdateResult<V> {
@@ -1355,7 +1353,7 @@ function _cursorStyleFromString(cursorStyle: 'line' | 'block' | 'underline' | 'l
 class EditorClassName extends ComputedEditorOption<EditorOption.editorClassName, string> {
 
 	constructor() {
-		super(EditorOption.editorClassName, [EditorOption.mouseStyle, EditorOption.extraEditorClassName]);
+		super(EditorOption.editorClassName);
 	}
 
 	public compute(env: IEnvironmentalOptions, options: IComputedEditorOptions, _: string): string {
@@ -2083,16 +2081,7 @@ export interface IMinimapLayoutInput {
 export class EditorLayoutInfoComputer extends ComputedEditorOption<EditorOption.layoutInfo, EditorLayoutInfo> {
 
 	constructor() {
-		super(
-			EditorOption.layoutInfo,
-			[
-				EditorOption.glyphMargin, EditorOption.lineDecorationsWidth, EditorOption.folding,
-				EditorOption.minimap, EditorOption.scrollbar, EditorOption.lineNumbers,
-				EditorOption.lineNumbersMinChars, EditorOption.scrollBeyondLastLine,
-				EditorOption.wordWrap, EditorOption.wordWrapColumn, EditorOption.wordWrapOverride1, EditorOption.wordWrapOverride2,
-				EditorOption.accessibilitySupport
-			]
-		);
+		super(EditorOption.layoutInfo);
 	}
 
 	public compute(env: IEnvironmentalOptions, options: IComputedEditorOptions, _: EditorLayoutInfo): EditorLayoutInfo {
@@ -4181,7 +4170,7 @@ class SmartSelect extends BaseEditorOption<EditorOption.smartSelect, SmartSelect
 class EditorTabFocusMode extends ComputedEditorOption<EditorOption.tabFocusMode, boolean> {
 
 	constructor() {
-		super(EditorOption.tabFocusMode, [EditorOption.readOnly]);
+		super(EditorOption.tabFocusMode);
 	}
 
 	public compute(env: IEnvironmentalOptions, options: IComputedEditorOptions, _: boolean): boolean {
@@ -4239,7 +4228,7 @@ export interface EditorWrappingInfo {
 class EditorWrappingInfoComputer extends ComputedEditorOption<EditorOption.wrappingInfo, EditorWrappingInfo> {
 
 	constructor() {
-		super(EditorOption.wrappingInfo, [EditorOption.layoutInfo]);
+		super(EditorOption.wrappingInfo);
 	}
 
 	public compute(env: IEnvironmentalOptions, options: IComputedEditorOptions, _: EditorWrappingInfo): EditorWrappingInfo {
