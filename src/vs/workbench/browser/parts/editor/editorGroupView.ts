@@ -30,7 +30,7 @@ import { combinedDisposable, dispose, MutableDisposable, toDisposable } from 'vs
 import { Severity, INotificationService } from 'vs/platform/notification/common/notification';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { Promises, RunOnceWorker } from 'vs/base/common/async';
+import { DeferredPromise, Promises, RunOnceWorker } from 'vs/base/common/async';
 import { EventType as TouchEventType, GestureEvent } from 'vs/base/browser/touch';
 import { TitleControl } from 'vs/workbench/browser/parts/editor/titleControl';
 import { IEditorGroupsAccessor, IEditorGroupView, IEditorGroupTitleHeight, IInternalEditorOpenOptions, IInternalMoveCopyOptions, IInternalEditorCloseOptions, IInternalEditorTitleControlOptions, fillActiveEditorViewState } from 'vs/workbench/browser/parts/editor/editor';
@@ -129,8 +129,8 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 
 	private readonly containerToolBarMenuDisposable = this._register(new MutableDisposable());
 
-	private whenRestoredResolve: (() => void) | undefined;
-	readonly whenRestored = new Promise<void>(resolve => (this.whenRestoredResolve = resolve));
+	private readonly whenRestoredPromise = new DeferredPromise<void>();
+	readonly whenRestored = this.whenRestoredPromise.p;
 	private isRestored = false;
 
 	constructor(
@@ -233,7 +233,7 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 		// Signal restored once editors have restored
 		restoreEditorsPromise.finally(() => {
 			this.isRestored = true;
-			this.whenRestoredResolve?.();
+			this.whenRestoredPromise.complete();
 		});
 
 		// Register Listeners
