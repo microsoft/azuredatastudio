@@ -3,9 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import minimist = require('minimist');
 import { Suite, Context } from 'mocha';
-import { Application, ApplicationOptions } from '../../automation';
+import { Application, ApplicationOptions, Logger } from '../../automation';
 
 export function describeRepeat(n: number, description: string, callback: (this: Suite) => void): void {
 	for (let i = 0; i < n; i++) {
@@ -19,33 +18,77 @@ export function itRepeat(n: number, description: string, callback: (this: Contex
 	}
 }
 
-export function installCommonTestHandlers(args: minimist.ParsedArgs, optionsTransform?: (opts: ApplicationOptions) => Promise<ApplicationOptions>) {
-	installCommonBeforeHandlers(args, optionsTransform);
-	installCommonAfterHandlers(args);
+export function installAllHandlers(logger: Logger, optionsTransform?: (opts: ApplicationOptions) => ApplicationOptions) {
+	installDiagnosticsHandler(logger);
+	installAppBeforeHandler(optionsTransform);
+	installAppAfterHandler();
 }
 
-export function installCommonBeforeHandlers(args: minimist.ParsedArgs, optionsTransform?: (opts: ApplicationOptions) => Promise<ApplicationOptions>) {
+export function installDiagnosticsHandler(logger: Logger, appFn?: () => Application | undefined) {
+
+	// Before each suite
 	before(async function () {
-		this.app = await startApp(args, this.defaultOptions, optionsTransform);
+		const suiteTitle = this.currentTest?.parent?.title;
+		logger.log('');
+		logger.log(`>>> Suite start: '${suiteTitle ?? 'unknown'}' <<<`);
+		logger.log('');
 	});
 
-	installCommonBeforeEachHandler();
-}
-
-export function installCommonBeforeEachHandler() {
+	// Before each test
 	beforeEach(async function () {
 		const testTitle = this.currentTest?.title;
-		this.defaultOptions.logger.log('');
-		this.defaultOptions.logger.log(`>>> Test start: ${testTitle} <<<`);
-		this.defaultOptions.logger.log('');
+		logger.log('');
+		logger.log(`>>> Test start: '${testTitle ?? 'unknown'}' <<<`);
+		logger.log('');
 
-		await this.app?.startTracing(testTitle);
+		const app: Application = appFn?.() ?? this.app;
+		await app?.startTracing(testTitle ?? 'unknown');
+	});
+
+	// After each test
+	afterEach(async function () {
+		const currentTest = this.currentTest;
+		if (!currentTest) {
+			return;
+		}
+
+		const failed = currentTest.state === 'failed';
+		const testTitle = currentTest.title;
+		logger.log('');
+		if (failed) {
+			logger.log(`>>> !!! FAILURE !!! Test end: '${testTitle}' !!! FAILURE !!! <<<`);
+		} else {
+			logger.log(`>>> Test end: '${testTitle}' <<<`);
+		}
+		logger.log('');
+
+		const app: Application = appFn?.() ?? this.app;
+		await app?.stopTracing(testTitle.replace(/[^a-z0-9\-]/ig, '_'), failed);
 	});
 }
 
-export async function startApp(args: minimist.ParsedArgs, options: ApplicationOptions, optionsTransform?: (opts: ApplicationOptions) => Promise<ApplicationOptions>): Promise<Application> {
+function installAppBeforeHandler(optionsTransform?: (opts: ApplicationOptions) => ApplicationOptions) {
+	before(async function () {
+		this.app = await startApp(this.defaultOptions, optionsTransform);
+	});
+}
+
+export function installAppAfterHandler(appFn?: () => Application | undefined, joinFn?: () => Promise<unknown>) {
+	after(async function () {
+		const app: Application = appFn?.() ?? this.app;
+		if (app) {
+			await app.stop();
+		}
+
+		if (joinFn) {
+			await joinFn();
+		}
+	});
+}
+
+export async function startApp(options: ApplicationOptions, optionsTransform?: (opts: ApplicationOptions) => ApplicationOptions): Promise<Application> {
 	if (optionsTransform) {
-		options = await optionsTransform({ ...options });
+		options = optionsTransform({ ...options });
 	}
 
 	const app = new Application({

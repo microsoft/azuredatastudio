@@ -71,11 +71,11 @@ export interface IExtension {
 	readonly extensionPack: string[];
 	readonly telemetryData: any;
 	readonly preview: boolean;
-	getManifest(preRelease: boolean, token: CancellationToken): Promise<IExtensionManifest | null>;
+	getManifest(token: CancellationToken): Promise<IExtensionManifest | null>;
 	hasReadme(): boolean;
-	getReadme(preRelease: boolean, token: CancellationToken): Promise<string>;
+	getReadme(token: CancellationToken): Promise<string>;
 	hasChangelog(): boolean;
-	getChangelog(preRelease: boolean, token: CancellationToken): Promise<string>;
+	getChangelog(token: CancellationToken): Promise<string>;
 	readonly server?: IExtensionManagementServer;
 	readonly local?: ILocalExtension;
 	gallery?: IGalleryExtension;
@@ -186,3 +186,7 @@ export const LIST_WORKSPACE_UNSUPPORTED_EXTENSIONS_COMMAND_ID = 'workbench.exten
 export const DefaultViewsContext = new RawContextKey<boolean>('defaultExtensionViews', true);
 export const ExtensionsSortByContext = new RawContextKey<string>('extensionsSortByValue', '');
 export const HasOutdatedExtensionsContext = new RawContextKey<boolean>('hasOutdatedExtensions', false);
+
+// Context Menu Groups
+export const THEME_ACTIONS_GROUP = '_theme_';
+export const INSTALL_ACTIONS_GROUP = '0_install';
