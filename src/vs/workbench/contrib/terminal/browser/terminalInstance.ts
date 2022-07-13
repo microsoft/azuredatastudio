@@ -66,6 +66,7 @@ import { LineDataEventAddon } from 'vs/workbench/contrib/terminal/browser/xterm/
 import { XtermTerminal } from 'vs/workbench/contrib/terminal/browser/xterm/xtermTerminal';
 import { escapeNonWindowsPath } from 'vs/platform/terminal/common/terminalEnvironment';
 import { IWorkspaceTrustRequestService } from 'vs/platform/workspace/common/workspaceTrust';
+import { isFirefox } from 'vs/base/browser/browser';
 
 const enum Constants {
 	/**
@@ -658,7 +659,6 @@ export class TerminalInstance extends Disposable implements ITerminalInstance {
 		this._container = undefined;
 	}
 
-
 	attachToElement(container: HTMLElement): Promise<void> | void {
 		// The container did not change, do nothing
 		if (this._container === container) {
@@ -667,12 +667,11 @@ export class TerminalInstance extends Disposable implements ITerminalInstance {
 
 		this._attachBarrier.open();
 
-		this.xterm?.attachToElement(container);
-
 		// Attach has not occurred yet
 		if (!this._wrapperElement) {
 			return this._attachToElement(container);
 		}
+		this.xterm?.attachToElement(this._wrapperElement);
 
 		// The container changed, reattach
 		this._container = container;
@@ -917,6 +916,15 @@ export class TerminalInstance extends Disposable implements ITerminalInstance {
 			}
 		}
 		this.xterm?.dispose();
+
+		// HACK: Workaround for Firefox bug https://bugzilla.mozilla.org/show_bug.cgi?id=559561,
+		// as 'blur' event in xterm.raw.textarea is not triggered on xterm.dispose()
+		// See https://github.com/microsoft/vscode/issues/138358
+		if (isFirefox) {
+			this._terminalFocusContextKey.reset();
+			this._terminalHasTextContextKey.reset();
+			this._onDidBlur.fire(this);
+		}
 
 		if (this._pressAnyKeyToCloseListener) {
 			this._pressAnyKeyToCloseListener.dispose();
@@ -2162,7 +2170,7 @@ export function parseExitResult(
 	// Create exit code message
 	let message: string | undefined = undefined;
 	switch (typeof exitCodeOrError) {
-		case 'number':
+		case 'number': {
 			let commandLine: string | undefined = undefined;
 			if (shellLaunchConfig.executable) {
 				commandLine = shellLaunchConfig.executable;
@@ -2187,7 +2195,8 @@ export function parseExitResult(
 				}
 			}
 			break;
-		case 'object':
+		}
+		case 'object': {
 			// Ignore internal errors
 			if (exitCodeOrError.message.toString().includes('Could not find pty with id')) {
 				break;
@@ -2211,6 +2220,7 @@ export function parseExitResult(
 			}
 			message = nls.localize('launchFailed.errorMessage', "The terminal process failed to launch: {0}.", innerMessage);
 			break;
+		}
 	}
 
 	return { code, message };

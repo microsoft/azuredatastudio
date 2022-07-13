@@ -381,6 +381,10 @@ export class NotebookTextModel extends Disposable implements INotebookTextModel 
 		return this.cells.findIndex(c => !!c.outputs.find(o => o.outputId === outputId));
 	}
 
+	checkCellExistence(handle: number) {
+		return this._cellListeners.has(handle);
+	}
+
 	reset(cells: ICellDto2[], metadata: NotebookDocumentMetadata, transientOptions: TransientOptions): void {
 		this.transientOptions = transientOptions;
 		this._cellhandlePool = 0;
@@ -500,7 +504,7 @@ export class NotebookTextModel extends Disposable implements INotebookTextModel 
 				case CellEditType.Replace:
 					this._replaceCells(edit.index, edit.count, edit.cells, synchronous, computeUndoRedo);
 					break;
-				case CellEditType.Output:
+				case CellEditType.Output: {
 					this._assertIndex(cellIndex);
 					const cell = this._cells[cellIndex];
 					if (edit.append) {
@@ -509,6 +513,7 @@ export class NotebookTextModel extends Disposable implements INotebookTextModel 
 						this._spliceNotebookCellOutputs2(cell, edit.outputs.map(op => new NotebookCellOutputTextModel(op)), computeUndoRedo);
 					}
 					break;
+				}
 				case CellEditType.OutputItems:
 					{
 						this._assertIndex(cellIndex);

@@ -620,7 +620,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 			},
 			showQuickPick(items: any, options?: vscode.QuickPickOptions, token?: vscode.CancellationToken): any {
 				// TODO: remove this once quickPickSeparators has been finalized.
-				if (Array.isArray(items) && items.some((item) => item.kind !== undefined)) {
+				if (Array.isArray(items) && items.some((item) => item.kind === extHostTypes.QuickPickItemKind.Separator)) {
 					checkProposedApiEnabled(extension, 'quickPickSeparators');
 				}
 				return extHostQuickOpen.showQuickPick(items, options, token);
