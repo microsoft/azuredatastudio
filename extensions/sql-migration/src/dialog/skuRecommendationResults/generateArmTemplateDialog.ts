@@ -92,7 +92,6 @@ export class GenerateArmTemplateDialog {
 			dialogSetupPromises.push(this.initializeDialog(this.dialog));
 			azdata.window.openDialog(this.dialog);
 			await Promise.all(dialogSetupPromises);
-
 		}
 	}
 
