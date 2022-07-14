@@ -35,6 +35,7 @@ import { Event } from 'vs/base/common/event';
 import { equals } from 'vs/base/common/arrays';
 import * as DOM from 'vs/base/browser/dom';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { ThemeRule } from 'vs/workbench/services/textMate/common/TMHelper';
 
 export class EditDataGridPanel extends GridParentComponent {
 	// The time(in milliseconds) we wait before refreshing the grid.
@@ -578,18 +579,14 @@ export class EditDataGridPanel extends GridParentComponent {
 				document.execCommand('selectAll');
 				document.execCommand('delete');
 				document.execCommand('insertText', false, 'NULL');
-				// Focus called here as this revert does not trigger handleChanges (which focuses on last clicked cell at the end).
-				this.focusCell(this.lastClickedCell.row, this.lastClickedCell.column);
 			}
-			else {
-				if (this.isRowDirty(this.lastClickedCell.row) && this.endStringValue === this.originalStringValue) {
-					this.revertSelectedRow(this.lastClickedCell.row);
-				}
-				else {
-					this.revertSelectedCell(this.lastClickedCell.row, this.lastClickedCell.column).catch(onUnexpectedError);
-					this.focusCell(this.lastClickedCell.row, this.lastClickedCell.column);
-				}
+			else if (this.isRowDirty(this.lastClickedCell.row) && this.endStringValue === this.originalStringValue) {
+				this.revertSelectedRow(this.lastClickedCell.row);
 			}
+			else if (this.endStringValue !== this.originalStringValue) {
+				this.revertSelectedCell(this.lastClickedCell.row, this.lastClickedCell.column).catch(onUnexpectedError);
+			}
+			this.focusCell(this.lastClickedCell.row, this.lastClickedCell.column);
 			handled = true;
 		}
 		if (e.keyCode === KeyCode.Tab) {
@@ -1232,7 +1229,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		this.logService.debug('onBeforeEditCell called with grid: ' + event.grid + ' row: ' + event.row
 			+ ' cell: ' + event.cell + ' item: ' + event.item + ' column: ' + event.column);
 
-		this.originalStringValue = event.item[event.cell].displayValue;
+		this.originalStringValue = (Object.keys(event.item).length > 0) ? event.item[event.cell].displayValue : this.originalStringValue;
 	}
 
 	onBeforeCellEditorDestroy(event: Slick.OnBeforeCellEditorDestroyEventArgs<any>): void {
