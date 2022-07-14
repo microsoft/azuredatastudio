@@ -15,6 +15,7 @@ import { DatabaseProjectItemType, RelativeOuterPath, ExternalStreamingJob, sqlpr
 import { IconPathHelper } from '../../common/iconHelper';
 import { FileProjectEntry } from '../projectEntry';
 import { EntryType } from 'sqldbproj';
+import { DBProjectConfigurationKey } from '../../tools/netcoreTool';
 
 /**
  * TreeNode root that represents an entire project
@@ -47,7 +48,8 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	}
 
 	public get treeItem(): vscode.TreeItem {
-		const projectItem = new vscode.TreeItem(this.fileSystemUri, vscode.TreeItemCollapsibleState.Expanded);
+		const collapsibleState = vscode.workspace.getConfiguration(DBProjectConfigurationKey)['collapseProjectNodes'] ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.Expanded;
+		const projectItem = new vscode.TreeItem(this.fileSystemUri, collapsibleState);
 		projectItem.contextValue = this.project.isSdkStyleProject ? DatabaseProjectItemType.project : DatabaseProjectItemType.legacyProject;
 		projectItem.iconPath = IconPathHelper.databaseProject;
 		projectItem.label = path.basename(this.projectUri.fsPath, sqlprojExtension);
