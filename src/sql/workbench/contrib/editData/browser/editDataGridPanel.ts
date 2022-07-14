@@ -75,6 +75,9 @@ export class EditDataGridPanel extends GridParentComponent {
 	private lastEnteredString: string;
 	// List of column names with their indexes stored.
 	private columnNameToIndex: { [columnNumber: number]: string } = {};
+
+	private originalStringValue: string;
+	private endStringValue: string;
 	// Edit Data functions
 	public onActiveCellChanged: (event: Slick.OnActiveCellChangedEventArgs<any>) => void;
 	public onCellChange: (event: Slick.OnCellChangeEventArgs<any>) => void;
@@ -579,15 +582,13 @@ export class EditDataGridPanel extends GridParentComponent {
 				this.focusCell(this.lastClickedCell.row, this.lastClickedCell.column);
 			}
 			else {
-				// Currently we do not support reverting individual cells in a dirty row.
-				if (this.isRowDirty(this.previousSavedCell.row)) {
-					this.noAutoSelectOnRender = true;
-					this.revertSelectedRow(this.previousSavedCell.row);
+				if (this.isRowDirty(this.lastClickedCell.row) && this.endStringValue === this.originalStringValue) {
+					this.revertSelectedRow(this.lastClickedCell.row);
 				}
 				else {
-					this.revertSelectedCell(this.previousSavedCell.row, this.previousSavedCell.column).catch(onUnexpectedError);
+					this.revertSelectedCell(this.lastClickedCell.row, this.lastClickedCell.column).catch(onUnexpectedError);
+					this.focusCell(this.lastClickedCell.row, this.lastClickedCell.column);
 				}
-				this.table.grid.resetActiveCell();
 			}
 			handled = true;
 		}
@@ -653,6 +654,7 @@ export class EditDataGridPanel extends GridParentComponent {
 				// do not refresh the whole dataset as it will move the focus away to the first row.
 				//
 				this.dirtyCells = [];
+				this.setRowDirtyState(rowNumber, false);
 				this.resetCurrentCell();
 				this.dataSet.dataRows.resetWindowsAroundIndex(rowNumber);
 			}
@@ -667,7 +669,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		// so clear any existing client-side edit and refresh on-screen data
 		// do not refresh the whole dataset as it will move the focus away to the first row.
 		//
-		this.dirtyCells = [];
+		this.setCellDirtyState(rowNumber, columnNumber, false);
 		this.resetCurrentCell();
 		this.dataSet.dataRows.resetWindowsAroundIndex(rowNumber);
 	}
@@ -715,17 +717,12 @@ export class EditDataGridPanel extends GridParentComponent {
 					// Switch lastClickedCell back to the cell to submit.
 					this.lastClickedCell = { row: cellToAdd.row, column: cellToAdd.column, isEditable: true };
 					let errorPromise: Thenable<void> = Promise.resolve();
-					if (refreshGrid || this.isRowDirty(cellToAdd.row)) {
-						let message = 'Error: row commit is invalid, reverting changes to last state, please enter only valid values in row or a non NULL only row (excluding the new row)';
-						if (refreshGrid) {
-							message = 'Error: invalid value entered in new row, cancelling new row addition, please enter a valid value.';
-						}
-
+					if (refreshGrid) {
+						let message = 'Error: invalid value entered in new row, cancelling new row addition, please enter a valid value.';
 						self.notificationService.notify({
 							severity: Severity.Error,
 							message: message
 						});
-						// Currently we do not support reverting individual cells in a dirty row, and we must revert it for a new row.
 						errorPromise = this.revertSelectedRow(cellToAdd.row);
 					}
 					else {
@@ -929,7 +926,12 @@ export class EditDataGridPanel extends GridParentComponent {
 	}
 
 	private isCellDirty(row: number, column: number): boolean {
-		return this.dirtyCells.indexOf({ row, column }) !== -1;
+		for (let i = 0; i < this.dirtyCells.length; i++) {
+			if (this.dirtyCells[i].row === row && this.dirtyCells[i].column === column) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private resetCurrentCell() {
@@ -1173,6 +1175,14 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	private renderGridDataRowsRange(startIndex: number, count: number): void {
 		this.invalidateRange(startIndex, startIndex + count);
+		//restore dirty state css classes after cell revert.
+		if (this.lastClickedCell && this.isRowDirty(this.lastClickedCell.row)) {
+			for (let i = 1; i < this.dataSet.columnDefinitions.length; i++) {
+				if (this.isCellDirty(this.lastClickedCell.row, i)) {
+					this.setCellDirtyState(this.lastClickedCell.row, i, true);
+				}
+			}
+		}
 		if (!this.noAutoSelectOnRender && !this.firstRender) {
 			this.focusCell(this.lastClickedCell.row, this.lastClickedCell.column);
 			// Restore the last entered string from the user in case an invalid edit was happened, to allow users to keep their string.
@@ -1201,6 +1211,9 @@ export class EditDataGridPanel extends GridParentComponent {
 		this.table.grid.onBeforeEditCell.subscribe((e, args) => {
 			this.onBeforeEditCell(args);
 		});
+		this.table.grid.onBeforeCellEditorDestroy.subscribe((e, args) => {
+			this.onBeforeCellEditorDestroy(args);
+		});
 		// Subscribe to all active cell changes to be able to catch when we tab to the header on the next row
 		this.table.grid.onActiveCellChanged.subscribe((e, args) => {
 			// Emit that we've changed active cells
@@ -1218,6 +1231,12 @@ export class EditDataGridPanel extends GridParentComponent {
 	onBeforeEditCell(event: Slick.OnBeforeEditCellEventArgs<any>): void {
 		this.logService.debug('onBeforeEditCell called with grid: ' + event.grid + ' row: ' + event.row
 			+ ' cell: ' + event.cell + ' item: ' + event.item + ' column: ' + event.column);
+
+		this.originalStringValue = event.item[event.cell].displayValue;
+	}
+
+	onBeforeCellEditorDestroy(event: Slick.OnBeforeCellEditorDestroyEventArgs<any>): void {
+		this.endStringValue = event.editor.serializeValue();
 	}
 
 	handleInitializeTable(): void {
