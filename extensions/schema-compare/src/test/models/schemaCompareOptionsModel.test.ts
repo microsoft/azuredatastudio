@@ -11,23 +11,35 @@ describe('Schema Compare Options Model', () => {
 	it('Should create model and set options successfully', function (): void {
 		const model = new SchemaCompareOptionsModel(testUtils.getDeploymentOptions());
 		should.notEqual(model.getOptionsData(), undefined, 'Options shouldn\'t be undefined');
-		should.notEqual(model.getObjectsData(), undefined, 'Objects shouldn\'t be undefined');
+		should.notEqual(model.getIncludeObjectTypesOptionsData(), undefined, 'Objects shouldn\'t be undefined');
 
 		should.doesNotThrow(() => model.setDeploymentOptions());
-		should.doesNotThrow(() => model.setObjectTypeOptions());
-
-		should(model.getSchemaCompareIncludedObjectsUtil('')).be.false('Should return false if invalid object name is passed in');
+		should.doesNotThrow(() => model.setIncludeObjectTypesToDeploymentOptions());
 	});
 
 	it('Should exclude objects', function (): void {
 		const model = new SchemaCompareOptionsModel(testUtils.getDeploymentOptions());
-		should(model.excludedObjectTypes.length).be.equal(0, 'There should be no excluded objects');
+		should(model.deploymentOptions.excludeObjectTypes.value.length).be.equal(0, 'There should be no excluded objects');
 
-		model.objectTypeLabels.forEach(label => {
-			model.setSchemaCompareIncludedObjectsUtil(label, false);
+		Object.keys(model.deploymentOptions.includeObjectsDictionary).forEach(option => {
+			should(model.getIncludeObjectTypeOptionCheckStatus(option)).equal(true);
 		});
+	});
 
-		should(model.excludedObjectTypes.length).be.equal(model.objectTypeLabels.length, 'All the object types should be excluded');
+	it('Should have default exclude objects', function (): void {
+		const model = new SchemaCompareOptionsModel(testUtils.getDeploymentOptions());
+		model.deploymentOptions.excludeObjectTypes.value = ['SampleProperty1'];
+
+		should(model.deploymentOptions.excludeObjectTypes.value.length).be.equal(1, 'There should be one excluded object');
+
+		// should return true for all exclude object types options and false for the exising defauit option
+		Object.keys(model.deploymentOptions.includeObjectsDictionary).forEach(option => {
+			if (option === 'SampleProperty1') {
+				should(model.getIncludeObjectTypeOptionCheckStatus(option)).equal(false);
+			} else {
+				should(model.getIncludeObjectTypeOptionCheckStatus(option)).equal(true);
+			}
+		});
 	});
 
 	it('Should get descriptions', function (): void {
