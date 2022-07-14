@@ -37,6 +37,7 @@ import { IModeService } from 'vs/editor/common/services/modeService';
 import { ICellMetadata } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { alert } from 'vs/base/browser/ui/aria/aria';
 import { CELL_URI_PATH_PREFIX } from 'sql/workbench/common/constants';
+import { DotnetInteractiveLanguagePrefix } from 'sql/workbench/api/common/notebooks/notebookUtils';
 
 let modelId = 0;
 const ads_execute_command = 'ads_execute_command';
@@ -1014,6 +1015,10 @@ export class CellModel extends Disposable implements ICellModel {
 			cellJson.execution_count = this.executionCount ? this.executionCount : null;
 			if (this._configurationService?.getValue('notebook.saveConnectionName')) {
 				metadata.connection_name = this._savedConnectionName;
+			}
+			// Set .NET Interactive language field for vscode compatibility
+			if (this._language?.startsWith(DotnetInteractiveLanguagePrefix)) {
+				(cellJson.metadata as ICellMetadata).dotnet_interactive = { language: this._language.replace(DotnetInteractiveLanguagePrefix, '') };
 			}
 		} else if (this._cellType === CellTypes.Markdown && this._attachments) {
 			cellJson.attachments = this._attachments;
