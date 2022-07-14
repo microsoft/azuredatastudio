@@ -5,14 +5,14 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { MigrationStateModel } from '../../models/stateMachine';
 import * as constants from '../../constants/strings';
 import * as styles from '../../constants/styles';
-import { selectDropDownIndex } from '../../api/utils';
-import { SKURecommendationPage } from '../../wizard/skuRecommendationPage';
 import * as mssql from 'mssql';
 
 export class GenerateArmTemplateDialog {
+
+	private static readonly CloseButtonText: string = 'Close';
+
 	private dialog: azdata.window.Dialog | undefined;
 	private _isOpen: boolean = false;
 
@@ -68,7 +68,24 @@ export class GenerateArmTemplateDialog {
 	public async openDialog(dialogName?: string, recommendations?: mssql.SkuRecommendationResult) {
 		if (!this._isOpen){
 			this._isOpen = true;
+
+			this.dialog = azdata.window.createModelViewDialog('Generate ARM template', 'GenerateArmTemplateDialog', 'narrow');
+
+			this.dialog.okButton.label = GenerateArmTemplateDialog.CloseButtonText;
+			this._disposables.push(this.dialog.okButton.onClick(async () => await this.execute()));
+
+			this.dialog.cancelButton.hidden = true;
+
+			const dialogSetupPromises: Thenable<void>[] = [];
+			dialogSetupPromises.push(this.initializeDialog(this.dialog));
+			azdata.window.openDialog(this.dialog);
+			await Promise.all(dialogSetupPromises);
+
 		}
+	}
+
+	protected async execute() {
+		this._isOpen = false;
 	}
 
 	public get isOpen(): boolean {
