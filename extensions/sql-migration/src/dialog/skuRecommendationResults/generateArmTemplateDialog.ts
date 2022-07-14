@@ -110,6 +110,21 @@ export class GenerateArmTemplateDialog {
 				...styles.BODY_CSS,
 			}
 		}).component();
+
+		const armTemplateSaveInstructions = _view.modelBuilder.text().withProps({
+			// TODO: Update text
+			// Replace with localized string in the future
+			value: 'ARM template save instructions',
+			CSSStyles: {
+				...styles.BODY_CSS,
+				'margin-right': '20px'
+			}
+		}).component();
+
+		container.addItems([
+			armTemplateSaveInstructions,
+		]);
+
 		return container;
 	}
 
