@@ -23,6 +23,7 @@ export class PublishOptionsDialog {
 	public optionsModel: DeployOptionsModel;
 	private optionsFlexBuilder: azdataType.FlexContainer | undefined;
 	private optionsChanged: boolean = false;
+	private isResetOptionsClicked: boolean = false;
 	private excludeObjectTypesOptionsTab: azdataType.window.DialogTab | undefined;
 	private excludeObjectTypesOptionsTable: azdataType.TableComponent | undefined;
 	private excludeObjectTypesOptionsFlexBuilder: azdataType.FlexContainer | undefined;
@@ -52,6 +53,8 @@ export class PublishOptionsDialog {
 
 		let resetButton = utils.getAzdataApi()!.window.createButton(constants.ResetButton);
 		resetButton.onClick(async () => await this.reset());
+		// If options values already modified then enable the reset button
+		resetButton.enabled = this.publish.publishOptionsModified;
 		this.dialog.customButtons = [resetButton];
 
 		utils.getAzdataApi()!.window.openDialog(this.dialog);
@@ -96,6 +99,8 @@ export class PublishOptionsDialog {
 					const displayName = this.optionsTable?.data[checkboxState.row][1];
 					this.optionsModel.setOptionValue(displayName, checkboxState.checked);
 					this.optionsChanged = true;
+					// customButton[0] is the reset button, enabling it when option checkbox is changed
+					this.dialog.customButtons[0].enabled = true;
 				}
 			}));
 
@@ -126,6 +131,8 @@ export class PublishOptionsDialog {
 					const displayName = this.excludeObjectTypesOptionsTable?.data[checkboxState.row][1];
 					this.optionsModel.setExcludeObjectTypesOptionValue(displayName, checkboxState.checked);
 					this.optionsChanged = true;
+					// customButton[0] is the reset button, enabling it when option checkbox is changed
+					this.dialog.customButtons[0].enabled = true;
 				}
 			}));
 
@@ -209,6 +216,9 @@ export class PublishOptionsDialog {
 		if (this.optionsChanged) {
 			TelemetryReporter.sendActionEvent(TelemetryViews.PublishOptionsDialog, TelemetryActions.optionsChanged);
 		}
+		// When options are Reset to default and clicked Ok, seting optionsChanged flag to false
+		// When options are Reset to default and options are changed and then clicked Ok, seting optionsChanged flag to the state of the option change
+		this.publish.publishOptionsModified = this.isResetOptionsClicked && !this.optionsChanged ? false : (this.optionsChanged || this.publish.publishOptionsModified);
 	}
 
 	/*
@@ -237,6 +247,10 @@ export class PublishOptionsDialog {
 		await this.updateExcludeObjectsTable();
 		this.excludeObjectTypesOptionsFlexBuilder?.removeItem(this.excludeObjectTypesOptionsTable!);
 		this.excludeObjectTypesOptionsFlexBuilder?.addItem(this.excludeObjectTypesOptionsTable!, { CSSStyles: { 'overflow': 'scroll', 'height': '85vh', 'padding-top': '2px' } });
+
+		// setting optionsChanged to false when reset click, if optionsChanged is true during execute, that means there is an option changed after reset
+		this.isResetOptionsClicked = true;
+		this.optionsChanged = false;
 	}
 
 	private disposeListeners(): void {
