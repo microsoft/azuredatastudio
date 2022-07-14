@@ -59,11 +59,49 @@ export class GenerateArmTemplateDialog {
 
 	// TODO: Implement this
 	private CreateGenerateArmTemplateContainer(_view: azdata.ModelView): azdata.FlexContainer {
-		const container = _view.modelBuilder.flexContainer().withProps({
+
+		const armTemplateLoader = _view.modelBuilder.loadingComponent().component();
+
+		const armTemplateProgress = _view.modelBuilder.text().withProps({
+			// Replace with localized string in the future
+			value: 'ARM template generation in progress...',
 			CSSStyles: {
 				...styles.BODY_CSS,
+				'margin-right': '20px'
 			}
 		}).component();
+
+		const armTemplateLoadingContainer = _view.modelBuilder.flexContainer().withLayout({
+			height: '100%',
+			flexFlow: 'row',
+		}).component();
+
+		armTemplateLoadingContainer.addItem(armTemplateProgress, { flex: '0 0 auto' });
+		armTemplateLoadingContainer.addItem(armTemplateLoader, { flex: '0 0 auto' });
+
+		const armTemplateLoadingInfo = _view.modelBuilder.text().withProps({
+			// Replace with localized string in the future
+			value: 'We are generating an ARM template according to your recommended SKU. This may take some time.',
+			CSSStyles: {
+				...styles.BODY_CSS,
+				'margin-right': '20px'
+			}
+		}).component();
+
+		const armTemplateLoadingInfoCcontainer = _view.modelBuilder.flexContainer().withLayout({
+			height: '100%',
+			flexFlow: 'row',
+		}).component();
+
+		armTemplateLoadingInfoCcontainer.addItem(armTemplateLoadingInfo, { flex: '0 0 auto' });
+
+		const container = _view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'column'
+		}).withItems([
+			armTemplateLoadingContainer,
+			armTemplateLoadingInfoCcontainer
+		]).component();
+
 		return container;
 	}
 
@@ -82,7 +120,7 @@ export class GenerateArmTemplateDialog {
 			this._isOpen = true;
 
 			// Replace 'Generate ARM template' with a localized string in the future
-			this.dialog = azdata.window.createModelViewDialog('Generate ARM template', 'GenerateArmTemplateDialog', 'narrow');
+			this.dialog = azdata.window.createModelViewDialog('Generate ARM template', 'GenerateArmTemplateDialog', 'medium');
 
 			this.dialog.okButton.label = GenerateArmTemplateDialog.CloseButtonText;
 			this._disposables.push(this.dialog.okButton.onClick(async () => await this.execute()));
