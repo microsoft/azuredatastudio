@@ -17,6 +17,7 @@ import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import * as styles from '../constants/styles';
 import { SkuEditParametersDialog } from '../dialog/skuRecommendationResults/skuEditParametersDialog';
+import { GenerateArmTemplateDialog } from '../dialog/skuRecommendationResults/generateArmTemplateDialog';
 import { logError, TelemetryViews } from '../telemtery';
 
 export interface Product {
@@ -350,13 +351,16 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			this._disposables.push(this._rbg.onLinkClick(async (e: azdata.RadioCardLinkClickEvent) => {
 				if (this.hasRecommendations()) {
 					const skuRecommendationResultsDialog = new SkuRecommendationResultsDialog(this.migrationStateModel, product.type);
+					const generateArmTemplateDialog = new GenerateArmTemplateDialog();
 					if (e.description.linkDisplayValue === e.card.descriptions[CardDescriptionIndex.VIEW_SKU_DETAILS].linkDisplayValue) {
 						if (e.cardId === skuRecommendationResultsDialog._targetType) {
 							await skuRecommendationResultsDialog.openDialog(e.cardId, this.migrationStateModel._skuRecommendationResults.recommendations);
 						}
 					}
 					else if (e.description.linkDisplayValue === e.card.descriptions[CardDescriptionIndex.GENERATE_ARM_TEMPLATE].linkDisplayValue) {
-
+						if (e.cardId === skuRecommendationResultsDialog._targetType) {
+							await generateArmTemplateDialog.openDialog(e.cardId, this.migrationStateModel._skuRecommendationResults.recommendations);
+						}
 					}
 				}
 			}));
