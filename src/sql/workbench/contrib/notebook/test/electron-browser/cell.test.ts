@@ -1528,4 +1528,26 @@ suite('Cell Model', function (): void {
 		assert((cellJson.metadata as ICellMetadata).dotnet_interactive !== undefined, 'dotnet_interactive field should be set in JSON cell metadata');
 		assert.strictEqual((cellJson.metadata as ICellMetadata).dotnet_interactive.language, 'csharp', 'Expected dotnet_interactive language field to be csharp');
 	});
+
+	test('should overwrite pre-existing .NET Interactive cell metadata when converting to JSON', async function () {
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let contents: nb.ICellContents = {
+			cell_type: CellTypes.Code,
+			source: '',
+			metadata: {
+				language: 'dotnet-interactive.csharp'
+			}
+		};
+		(contents.metadata as ICellMetadata).dotnet_interactive = { language: 'fsharp' };
+
+		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+		assert((model.metadata as ICellMetadata).dotnet_interactive !== undefined, 'dotnet_interactive field should exist in cell metadata');
+		let cellJson = model.toJSON();
+		assert((cellJson.metadata as ICellMetadata).dotnet_interactive !== undefined, 'dotnet_interactive field should be set in JSON cell metadata');
+		assert.strictEqual((cellJson.metadata as ICellMetadata).dotnet_interactive.language, 'csharp', 'Expected dotnet_interactive language field to be csharp');
+	});
 });
