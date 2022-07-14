@@ -172,7 +172,7 @@ export class PublishDatabaseDialog {
 								title: constants.selectConnectionRadioButtonsTitle,
 								component: selectConnectionRadioButtons
 							},*/
-							/* TODO : enable using this when data source creation is enabled
+							/* TODO : Disabling deployment options for the July release
 							{
 								component: displayOptionsButton,
 								title: ''
