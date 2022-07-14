@@ -18,6 +18,9 @@ export class GenerateArmTemplateDialog {
 
 	private _disposables: vscode.Disposable[] = [];
 
+	private _generateArmTemplateContainer!: azdata.FlexContainer;
+	private _saveArmTemplateContainer!: azdata.FlexContainer;
+
 	private async initializeDialog(dialog: azdata.window.Dialog): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
 			dialog.registerContent(async (view) => {
@@ -45,23 +48,32 @@ export class GenerateArmTemplateDialog {
 				'flex-direction': 'column',
 			}
 		}).component();
-		const description1 = _view.modelBuilder.text().withProps({
-			value: constants.AZURE_RECOMMENDATION_DESCRIPTION,
-			CSSStyles: {
-				...styles.BODY_CSS,
-			}
-		}).component();
-		const description2 = _view.modelBuilder.text().withProps({
-			value: constants.AZURE_RECOMMENDATION_DESCRIPTION2,
-			CSSStyles: {
-				...styles.BODY_CSS,
-				'margin-top': '8px',
-			}
-		}).component();
+		this._generateArmTemplateContainer = this.CreateGenerateArmTemplateContainer(_view);
+		this._saveArmTemplateContainer = this.CreateSaveArmTemplateContainer(_view);
 		container.addItems([
-			description1,
-			description2,
+			this._generateArmTemplateContainer,
+			this._saveArmTemplateContainer,
 		]);
+		return container;
+	}
+
+	// TODO: Implement this
+	private CreateGenerateArmTemplateContainer(_view: azdata.ModelView): azdata.FlexContainer {
+		const container = _view.modelBuilder.flexContainer().withProps({
+			CSSStyles: {
+				...styles.BODY_CSS,
+			}
+		}).component();
+		return container;
+	}
+
+	// TODO: Implement this
+	private CreateSaveArmTemplateContainer(_view: azdata.ModelView): azdata.FlexContainer {
+		const container = _view.modelBuilder.flexContainer().withProps({
+			CSSStyles: {
+				...styles.BODY_CSS,
+			}
+		}).component();
 		return container;
 	}
 
