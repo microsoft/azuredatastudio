@@ -1079,6 +1079,25 @@ suite('Cell Model', function (): void {
 		assert.deepStrictEqual(serializedCell.attachments, undefined, 'JSON should not include attachments if attachments do not exist');
 	});
 
+	test('Should not include image in attachments if image is added in html image tag', async function () {
+		const cellAttachment = JSON.parse('{"ads.png":{"image/png":"iVBORw0KGgoAAAANSUhEUgAAAggg=="}}');
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let contents: nb.ICellContents = {
+			cell_type: CellTypes.Markdown,
+			source: '![ads.png](attachment:ads.png)',
+			attachments: cellAttachment
+		};
+		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+		let imageElement = '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAggg=="';
+		model.source = '![ads.png](attachment:ads.png) \n Test image: ' + imageElement;
+
+		assert.deepStrictEqual(model.attachments, contents.attachments, 'Should not add the image represented in html tag to the attachments of cell source');
+	});
+
 	test('Should remove unused attachments name when updating cell source', async function () {
 		const cellAttachment = JSON.parse('{"ads.png":{"image/png":"iVBORw0KGgoAAAANSUhEUgAAAggg=="}}');
 		let notebookModel = new NotebookModelStub({
