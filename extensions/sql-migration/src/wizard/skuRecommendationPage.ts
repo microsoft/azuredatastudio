@@ -653,6 +653,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				// this._rbg.cards[index].descriptions[5].textValue = constants.ASSESSED_DBS(dbCount);
 				if (this.hasRecommendations()) {
 					this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_SKU_DETAILS].linkDisplayValue = constants.VIEW_DETAILS;
+					// Replace 'Generate ARM template' with a localized string in the future
 					this._rbg.cards[index].descriptions[CardDescriptionIndex.GENERATE_ARM_TEMPLATE].linkDisplayValue = 'Generate ARM template';
 					this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textStyles = {
 						...styles.BODY_CSS,

@@ -81,6 +81,7 @@ export class GenerateArmTemplateDialog {
 		if (!this._isOpen){
 			this._isOpen = true;
 
+			// Replace 'Generate ARM template' with a localized string in the future
 			this.dialog = azdata.window.createModelViewDialog('Generate ARM template', 'GenerateArmTemplateDialog', 'narrow');
 
 			this.dialog.okButton.label = GenerateArmTemplateDialog.CloseButtonText;
