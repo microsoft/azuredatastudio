@@ -57,7 +57,6 @@ export class GenerateArmTemplateDialog {
 		return container;
 	}
 
-	// TODO: Implement this
 	private CreateGenerateArmTemplateContainer(_view: azdata.ModelView): azdata.FlexContainer {
 
 		const armTemplateLoader = _view.modelBuilder.loadingComponent().component();
@@ -84,7 +83,6 @@ export class GenerateArmTemplateDialog {
 			value: 'We are generating an ARM template according to your recommended SKU. This may take some time.',
 			CSSStyles: {
 				...styles.BODY_CSS,
-				'margin-right': '20px'
 			}
 		}).component();
 
