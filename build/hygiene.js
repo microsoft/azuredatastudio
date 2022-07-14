@@ -12,7 +12,7 @@ const vfs = require('vinyl-fs');
 const path = require('path');
 const fs = require('fs');
 const pall = require('p-all');
-const { all, copyrightFilter, unicodeFilter, indentationFilter, jsHygieneFilter, tsHygieneFilter } = require('./filters');
+const { all, copyrightFilter, unicodeFilter, indentationFilter, tsFormattingFilter, eslintFilter } = require('./filters');
 
 const copyrightHeaderLines = [
 	'/*---------------------------------------------------------------------------------------------',
@@ -58,6 +58,8 @@ function hygiene(some) {
 				errorCount++;
 			}
 		});
+
+		this.emit('data', file);
 	});
 
 	const indentation = es.through(function (file) {
@@ -160,23 +162,29 @@ function hygiene(some) {
 		.pipe(filter(copyrightFilter))
 		.pipe(copyrights);
 
-	const typescript = result.pipe(filter(tsHygieneFilter)).pipe(formatting);
+	const streams = [
+		result.pipe(filter(tsFormattingFilter)).pipe(formatting)
+	];
 
-	const javascript = result
-		.pipe(filter(jsHygieneFilter.concat(tsHygieneFilter)))
-		.pipe(
-			gulpeslint({
-				configFile: '.eslintrc.json',
-				rulePaths: ['./build/lib/eslint'],
-			})
-		)
-		.pipe(gulpeslint.formatEach('compact'))
-		.pipe(
-			gulpeslint.results((results) => {
-				errorCount += results.warningCount;
-				errorCount += results.errorCount;
-			})
+	if (linting) {
+		streams.push(
+			result
+				.pipe(filter(eslintFilter))
+				.pipe(
+					gulpeslint({
+						configFile: '.eslintrc.json',
+						rulePaths: ['./build/lib/eslint'],
+					})
+				)
+				.pipe(gulpeslint.formatEach('compact'))
+				.pipe(
+					gulpeslint.results((results) => {
+						errorCount += results.warningCount;
+						errorCount += results.errorCount;
+					})
+				)
 		);
+	}
 
 	let count = 0;
 	return es.merge(typescript, javascript).pipe(

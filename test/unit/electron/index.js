@@ -20,10 +20,6 @@ const net = require('net');
 const createStatsCollector = require('mocha/lib/stats-collector');
 const { applyReporter, importMochaReporter } = require('../reporter');
 
-// Disable render process reuse, we still have
-// non-context aware native modules in the renderer.
-app.allowRendererProcessReuse = false;
-
 const optimist = require('optimist')
 	.describe('grep', 'only run tests matching <pattern>').alias('grep', 'g').alias('grep', 'f').string('grep')
 	.describe('invert', 'uses the inverse of the match specified by grep').alias('invert', 'i').string('invert') // {{SQL CARBON EDIT}}

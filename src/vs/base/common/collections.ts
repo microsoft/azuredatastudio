@@ -38,7 +38,7 @@ export function values<T>(from: IStringDictionary<T> | INumberDictionary<T>): T[
  */
 export function forEach<T>(from: IStringDictionary<T>, callback: (entry: { key: string; value: T; }, remove: () => void) => any): void; // {{SQL CARBON EDIT}} @anthonydresser add hard typings
 export function forEach<T>(from: INumberDictionary<T>, callback: (entry: { key: number; value: T; }, remove: () => void) => any): void;
-export function forEach<T>(from: IStringDictionary<T> | INumberDictionary<T>, callback: (entry: { key: any; value: T; }, remove: () => void) => any): void {
+export function forEach<T>(from: IStringDictionary<T> | INumberDictionary<T>, callback: (entry: { key: any; value: T }, remove: () => void) => any): void {
 	for (let key in from) {
 		if (hasOwnProperty.call(from, key)) {
 			const result = callback({ key: key, value: (from as any)[key] }, function () {
@@ -78,7 +78,7 @@ export function fromMap<T>(original: Map<string, T>): IStringDictionary<T> {
 	return result;
 }
 
-export function diffSets<T>(before: Set<T>, after: Set<T>): { removed: T[], added: T[] } {
+export function diffSets<T>(before: Set<T>, after: Set<T>): { removed: T[]; added: T[] } {
 	const removed: T[] = [];
 	const added: T[] = [];
 	for (let element of before) {
@@ -94,7 +94,7 @@ export function diffSets<T>(before: Set<T>, after: Set<T>): { removed: T[], adde
 	return { removed, added };
 }
 
-export function diffMaps<K, V>(before: Map<K, V>, after: Map<K, V>): { removed: V[], added: V[] } {
+export function diffMaps<K, V>(before: Map<K, V>, after: Map<K, V>): { removed: V[]; added: V[] } {
 	const removed: V[] = [];
 	const added: V[] = [];
 	for (let [index, value] of before) {

@@ -8,9 +8,9 @@ import { ICommandHandlerDescription } from 'vs/platform/commands/common/commands
 import * as extHostTypes from 'vs/workbench/api/common/extHostTypes';
 import * as extHostTypeConverter from 'vs/workbench/api/common/extHostTypeConverters';
 import { cloneAndChange } from 'vs/base/common/objects';
-import { MainContext, MainThreadCommandsShape, ExtHostCommandsShape, ObjectIdentifier, ICommandDto, MainThreadTelemetryShape } from './extHost.protocol'; // {{SQL CARBON EDIT}} Log extension contributed actions
+import { MainContext, MainThreadCommandsShape, ExtHostCommandsShape, ICommandDto, ICommandHandlerDescriptionDto, MainThreadTelemetryShape } from './extHost.protocol';
 import { isNonEmptyArray } from 'vs/base/common/arrays';
-import * as modes from 'vs/editor/common/modes';
+import * as languages from 'vs/editor/common/languages';
 import type * as vscode from 'vscode';
 import { ILogService } from 'vs/platform/log/common/log';
 import { revive } from 'vs/base/common/marshalling';
@@ -21,7 +21,7 @@ import { DisposableStore, toDisposable } from 'vs/base/common/lifecycle';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IExtHostRpcService } from 'vs/workbench/api/common/extHostRpcService';
 import { ISelection } from 'vs/editor/common/core/selection';
-import { TestItemImpl } from 'vs/workbench/api/common/extHostTestingPrivateApi';
+import { TestItemImpl } from 'vs/workbench/api/common/extHostTestItem';
 import { VSBuffer } from 'vs/base/common/buffer';
 import { SerializableObjectWithBuffers } from 'vs/workbench/services/extensions/common/proxyIdentifier';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
@@ -47,6 +47,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 
 	private readonly _commands = new Map<string, CommandHandler>();
 	private readonly _apiCommands = new Map<string, ApiCommand>();
+	#telemetry: MainThreadTelemetryShape;
 
 	protected readonly _mainThreadTelemetryProxy: MainThreadTelemetryShape; // {{SQL CARBON EDIT}} Log extension contributed actions
 	private readonly _logService: ILogService;
@@ -61,6 +62,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 		this.#proxy = extHostRpc.getProxy(MainContext.MainThreadCommands);
 		this._mainThreadTelemetryProxy = extHostRpc.getProxy(MainContext.MainThreadTelemetry); // {{SQL CARBON EDIT}} Log extension contributed actions
 		this._logService = logService;
+		this.#telemetry = extHostRpc.getProxy(MainContext.MainThreadTelemetry);
 		this.converter = new CommandsConverter(
 			this,
 			id => {
@@ -90,7 +92,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 						if (Position.isIPosition(obj)) {
 							return extHostTypeConverter.Position.to(obj);
 						}
-						if (Range.isIRange((obj as modes.Location).range) && URI.isUri((obj as modes.Location).uri)) {
+						if (Range.isIRange((obj as languages.Location).range) && URI.isUri((obj as languages.Location).uri)) {
 							return extHostTypeConverter.location.to(obj);
 						}
 						if (obj instanceof VSBuffer) {
@@ -198,6 +200,9 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 				} else if (value instanceof Uint8Array) {
 					hasBuffers = true;
 					return VSBuffer.wrap(value);
+				} else if (value instanceof VSBuffer) {
+					hasBuffers = true;
+					return value;
 				}
 				if (!Array.isArray(value)) {
 					return value;
@@ -205,7 +210,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 			});
 
 			try {
-				const result = await this.#proxy.$executeCommand<T>(id, hasBuffers ? new SerializableObjectWithBuffers(toArgs) : toArgs, retry);
+				const result = await this.#proxy.$executeCommand(id, hasBuffers ? new SerializableObjectWithBuffers(toArgs) : toArgs, retry);
 				return revive<any>(result);
 			} catch (e) {
 				// Rerun the command when it wasn't known, had arguments, and when retry
@@ -220,11 +225,12 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 		}
 	}
 
-	private async _executeContributedCommand<T>(id: string, args: any[], annotateError: boolean): Promise<T> {
+	private async _executeContributedCommand<T = unknown>(id: string, args: any[], annotateError: boolean): Promise<T> {
 		const command = this._commands.get(id);
 		if (!command) {
 			throw new Error('Unknown command');
 		}
+		this._reportTelemetry(command, id);
 		let { callback, thisArg, description } = command;
 		if (description) {
 			for (let i = 0; i < description.args.length; i++) {
@@ -263,7 +269,27 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 		}
 	}
 
-	$executeContributedCommand<T>(id: string, ...args: any[]): Promise<T> {
+	private _reportTelemetry(command: CommandHandler, id: string) {
+		if (!command.extension || command.extension.isBuiltin) {
+			return;
+		}
+		type ExtensionActionTelemetry = {
+			extensionId: string;
+			id: string;
+		};
+		type ExtensionActionTelemetryMeta = {
+			extensionId: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'The id of the extension handling the command, informing which extensions provide most-used functionality.' };
+			id: { classification: 'SystemMetaData'; purpose: 'FeatureInsight'; comment: 'The id of the command, to understand which specific extension features are most popular.' };
+			owner: 'digitarald';
+			comment: 'Used to gain insight on the most popular commands used from extensions';
+		};
+		this.#telemetry.$publicLog2<ExtensionActionTelemetry, ExtensionActionTelemetryMeta>('Extension:ActionExecuted', {
+			extensionId: command.extension.identifier.value,
+			id: id,
+		});
+	}
+
+	$executeContributedCommand(id: string, ...args: any[]): Promise<unknown> {
 		this._logService.trace('ExtHostCommands#$executeContributedCommand', id);
 
 		if (!this._commands.has(id)) {
@@ -285,7 +311,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 		});
 	}
 
-	$getContributedCommandHandlerDescriptions(): Promise<{ [id: string]: string | ICommandHandlerDescription }> {
+	$getContributedCommandHandlerDescriptions(): Promise<{ [id: string]: string | ICommandHandlerDescriptionDto }> {
 		const result: { [id: string]: string | ICommandHandlerDescription } = Object.create(null);
 		for (let [id, command] of this._commands) {
 			let { description } = command;
@@ -300,7 +326,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 export interface IExtHostCommands extends ExtHostCommands { }
 export const IExtHostCommands = createDecorator<IExtHostCommands>('IExtHostCommands');
 
-export class CommandsConverter {
+export class CommandsConverter implements extHostTypeConverter.Command.ICommandsConverter {
 
 	readonly delegatingCommandId: string = `_vscode_delegate_cmd_${Date.now().toString(36)}`;
 	private readonly _cache = new Map<number, vscode.Command>();
@@ -364,11 +390,10 @@ export class CommandsConverter {
 		return result;
 	}
 
-	fromInternal(command: modes.Command): vscode.Command | undefined {
+	fromInternal(command: ICommandDto): vscode.Command | undefined {
 
-		const id = ObjectIdentifier.of(command);
-		if (typeof id === 'number') {
-			return this._cache.get(id);
+		if (typeof command.$ident === 'number') {
+			return this._cache.get(command.$ident);
 
 		} else {
 			return {

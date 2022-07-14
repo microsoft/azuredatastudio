@@ -45,6 +45,7 @@
 		"jsdoc/no-types": "warn",
 		"semi": "off",
 		"@typescript-eslint/semi": "warn",
+		"@typescript-eslint/member-delimiter-style": "warn",
 		"@typescript-eslint/naming-convention": [
 			"warn",
 			{
@@ -90,1001 +91,6 @@
 				]
 			}
 		],
-		"code-import-patterns": [
-			"warn",
-			// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-			// !!! Do not relax these rules !!!
-			// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-			{
-				"target": "**/{vs,sql}/base/common/**",
-				"restrictions": [
-					"vs/nls",
-					"**/{vs,sql}/base/common/**"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/base/test/common/**",
-				"restrictions": [
-					"assert",
-					"sinon",
-					"sinon-test",
-					"vs/nls",
-					"**/{vs,sql}/base/common/**",
-					"**/{vs,sql}/base/test/common/**"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/base/browser/**",
-				"restrictions": [
-					"vs/nls",
-					"vs/css!./**/*",
-					"**/{vs,sql}/base/{common,browser}/**",
-					"@angular/*",
-					"rxjs/*"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/base/electron-sandbox/**",
-				"restrictions": [
-					"vs/nls",
-					"vs/css!./**/*",
-					"**/{vs,sql}/base/{common,browser,electron-sandbox}/**"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/base/node/**",
-				"restrictions": [
-					"vs/nls",
-					"**/{vs,sql}/base/{common,node}/**",
-					"@vscode/*",
-					"@parcel/*",
-					"*" // node modules
-				]
-			},
-			{
-				// vs/base/test/browser contains tests for vs/base/browser
-				"target": "**/{vs,sql}/base/test/browser/**",
-				"restrictions": [
-					"assert",
-					"sinon",
-					"sinon-test",
-					"vs/nls",
-					"**/{vs,sql}/base/{common,browser}/**",
-					"**/{vs,sql}/base/test/{common,browser}/**",
-					"@angular/*",
-					"rxjs/*"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/base/parts/*/common/**",
-				"restrictions": [
-					"vs/nls",
-					"**/{vs,sql}/base/common/**",
-					"**/{vs,sql}/base/parts/*/common/**"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/base/parts/*/browser/**",
-				"restrictions": [
-					"vs/nls",
-					"vs/css!./**/*",
-					"**/{vs,sql}/base/{common,browser}/**",
-					"**/{vs,sql}/base/parts/*/{common,browser}/**",
-					"@angular/*",
-					"rxjs/*"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/base/parts/*/node/**",
-				"restrictions": [
-					"vs/nls",
-					"**/{vs,sql}/base/{common,node}/**",
-					"**/{vs,sql}/base/parts/*/{common,node}/**",
-					"@vscode/*",
-					"@parcel/*",
-					"*" // node modules
-				]
-			},
-			{
-				"target": "**/{vs,sql}/base/parts/*/electron-sandbox/**",
-				"restrictions": [
-					"vs/nls",
-					"vs/css!./**/*",
-					"**/{vs,sql}/base/{common,browser,electron-sandbox}/**",
-					"**/{vs,sql}/base/parts/*/{common,browser,electron-sandbox}/**"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/base/parts/*/electron-browser/**",
-				"restrictions": [
-					"vs/nls",
-					"vs/css!./**/*",
-					"**/{vs,sql}/base/{common,browser,node,electron-sandbox,electron-browser}/**",
-					"**/{vs,sql}/base/parts/*/{common,browser,node,electron-sandbox,electron-browser}/**",
-					"@vscode/*",
-					"@parcel/*",
-					"*" // node modules
-				]
-			},
-			{
-				"target": "**/{vs,sql}/base/parts/*/electron-main/**",
-				"restrictions": [
-					"vs/nls",
-					"**/{vs,sql}/base/{common,node,electron-main}/**",
-					"**/{vs,sql}/base/parts/*/{common,node,electron-main}/**",
-					"@vscode/*",
-					"@parcel/*",
-					"*" // node modules
-				]
-			},
-			{
-				"target": "**/{vs,sql}/platform/*/common/**",
-				"restrictions": [
-					"vs/nls",
-					"**/vs/platform/*/common/**",
-					"tas-client-umd",
-					"azdata",
-					"mssql",
-					"azurecore",
-					"**/{vs,sql}/base/common/**",
-					"**/{vs,sql}/base/parts/*/common/**",
-					"**/{vs,sql}/platform/*/common/**"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/platform/*/test/common/**",
-				"restrictions": [
-					"assert",
-					"typemoq",
-					"sinon",
-					"sinon-test",
-					"vs/nls",
-					"azdata",
-					"**/{vs,sql}/base/common/**",
-					"**/{vs,sql}/base/parts/*/common/**",
-					"**/{vs,sql}/base/test/common/**",
-					"**/{vs,sql}/platform/*/common/**",
-					"**/{vs,sql}/platform/*/test/common/**"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/platform/*/browser/**",
-				"restrictions": [
-					"vs/nls",
-					"azdata",
-					"vs/css!./**/*",
-					"**/{vs,sql}/base/{common,browser}/**",
-					"**/{vs,sql}/base/parts/*/{common,browser}/**",
-					"**/{vs,sql}/platform/*/{common,browser}/**"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/platform/*/node/**",
-				"restrictions": [
-					"vs/nls",
-					"azdata",
-					"**/{vs,sql}/base/{common,node}/**",
-					"**/{vs,sql}/base/parts/*/{common,node}/**",
-					"**/{vs,sql}/platform/*/{common,node}/**",
-					"@vscode/*",
-					"@parcel/*",
-					"*" // node modules
-				]
-			},
-			{
-				"target": "**/{vs,sql}/platform/*/electron-sandbox/**",
-				"restrictions": [
-					"vs/nls",
-					"vs/css!./**/*",
-					"**/{vs,sql}/base/{common,browser,electron-sandbox}/**",
-					"**/{vs,sql}/base/parts/*/{common,browser,electron-sandbox}/**",
-					"**/{vs,sql}/platform/*/{common,browser,electron-sandbox}/**"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/platform/*/electron-browser/**",
-				"restrictions": [
-					"vs/nls",
-					"azdata",
-					"vs/css!./**/*",
-					"**/{vs,sql}/base/{common,browser,node,electron-sandbox,electron-browser}/**",
-					"**/{vs,sql}/base/parts/*/{common,browser,node,electron-sandbox,electron-browser}/**",
-					"**/{vs,sql}/platform/*/{common,browser,node,electron-sandbox,electron-browser}/**",
-					"@vscode/*",
-					"@parcel/*",
-					"*" // node modules
-				]
-			},
-			{
-				"target": "**/{vs,sql}/platform/*/electron-main/**",
-				"restrictions": [
-					"vs/nls",
-					"azdata",
-					"**/{vs,sql}/base/{common,node,electron-main}/**",
-					"**/{vs,sql}/base/parts/*/{common,node,electron-main}/**",
-					"**/{vs,sql}/platform/*/{common,node,electron-main}/**",
-					"@vscode/*",
-					"@parcel/*",
-					"*" // node modules
-				]
-			},
-			{
-				"target": "**/{vs,sql}/platform/*/test/browser/**",
-				"restrictions": [
-					"assert",
-					"typemoq",
-					"sinon",
-					"azdata",
-					"sinon-test",
-					"vs/nls",
-					"**/{vs,sql}/base/{common,browser}/**",
-					"**/{vs,sql}/base/test/{common,browser}/**",
-					"**/{vs,sql}/base/parts/*/common/**", // {{SQL CARBON EDIT}}
-					"**/{vs,sql}/platform/*/{common,browser}/**",
-					"**/{vs,sql}/platform/*/test/{common,browser}/**"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/editor/common/**",
-				"restrictions": [
-					"vs/nls",
-					"**/{vs,sql}/base/common/**",
-					"**/{vs,sql}/base/worker/**",
-					"**/{vs,sql}/platform/*/common/**",
-					"**/{vs,sql}/editor/common/**"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/editor/test/common/**",
-				"restrictions": [
-					"assert",
-					"sinon",
-					"sinon-test",
-					"vs/nls",
-					"**/{vs,sql}/base/common/**",
-					"**/{vs,sql}/platform/*/common/**",
-					"**/{vs,sql}/platform/*/test/common/**",
-					"**/{vs,sql}/editor/common/**",
-					"**/{vs,sql}/editor/test/common/**"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/editor/browser/**",
-				"restrictions": [
-					"vs/nls",
-					"vs/css!./**/*",
-					"**/{vs,sql}/base/{common,browser}/**",
-					"**/{vs,sql}/platform/*/{common,browser}/**",
-					"**/{vs,sql}/editor/{common,browser}/**"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/editor/test/browser/**",
-				"restrictions": [
-					"assert",
-					"sinon",
-					"sinon-test",
-					"vs/nls",
-					"**/{vs,sql}/base/{common,browser}/**",
-					"**/{vs,sql}/platform/*/{common,browser}/**",
-					"**/{vs,sql}/platform/*/test/{common,browser}/**",
-					"**/{vs,sql}/editor/{common,browser}/**",
-					"**/{vs,sql}/editor/test/{common,browser}/**"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/editor/standalone/common/**",
-				"restrictions": [
-					"vs/nls",
-					"**/{vs,sql}/base/common/**",
-					"**/{vs,sql}/platform/*/common/**",
-					"**/{vs,sql}/editor/common/**",
-					"**/{vs,sql}/editor/standalone/common/**"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/editor/standalone/test/common/**",
-				"restrictions": [
-					"assert",
-					"sinon",
-					"sinon-test",
-					"vs/nls",
-					"**/{vs,sql}/base/common/**",
-					"**/{vs,sql}/platform/*/common/**",
-					"**/{vs,sql}/platform/*/test/common/**",
-					"**/{vs,sql}/editor/common/**",
-					"**/{vs,sql}/editor/test/common/**"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/editor/standalone/browser/**",
-				"restrictions": [
-					"vs/nls",
-					"vs/css!./**/*",
-					"**/{vs,sql}/base/{common,browser}/**",
-					"**/{vs,sql}/base/parts/*/{common,browser}/**",
-					"**/{vs,sql}/platform/*/{common,browser}/**",
-					"**/{vs,sql}/editor/{common,browser}/**",
-					"**/{vs,sql}/editor/contrib/**",
-					"**/{vs,sql}/editor/standalone/{common,browser}/**"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/editor/standalone/test/browser/**",
-				"restrictions": [
-					"assert",
-					"sinon",
-					"sinon-test",
-					"vs/nls",
-					"**/{vs,sql}/base/{common,browser}/**",
-					"**/{vs,sql}/platform/*/{common,browser}/**",
-					"**/{vs,sql}/platform/*/test/{common,browser}/**",
-					"**/{vs,sql}/editor/{common,browser}/**",
-					"**/{vs,sql}/editor/standalone/{common,browser}/**",
-					"**/{vs,sql}/editor/test/{common,browser}/**"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/editor/contrib/*/test/**",
-				"restrictions": [
-					"assert",
-					"sinon",
-					"sinon-test",
-					"vs/nls",
-					"**/{vs,sql}/base/{common,browser}/**",
-					"**/{vs,sql}/base/test/{common,browser}/**",
-					"**/{vs,sql}/base/parts/*/{common,browser}/**",
-					"**/{vs,sql}/platform/*/{common,browser}/**",
-					"**/{vs,sql}/platform/*/test/{common,browser}/**",
-					"**/{vs,sql}/editor/{common,browser}/**",
-					"**/{vs,sql}/editor/test/{common,browser}/**",
-					"**/{vs,sql}/editor/contrib/**"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/editor/contrib/**",
-				"restrictions": [
-					"vs/nls",
-					"vs/css!./**/*",
-					"**/{vs,sql}/base/{common,browser}/**",
-					"**/{vs,sql}/base/parts/*/{common,browser}/**",
-					"**/{vs,sql}/platform/{common,browser}/**",
-					"**/{vs,sql}/platform/*/{common,browser}/**",
-					"**/{vs,sql}/editor/{common,browser}/**",
-					"**/{vs,sql}/editor/contrib/**"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/workbench/common/**",
-				"restrictions": [
-					"vs/nls",
-					"azdata",
-					"**/{vs,sql}/base/common/**",
-					"**/{vs,sql}/base/parts/*/common/**",
-					"**/{vs,sql}/platform/*/common/**",
-					"**/{vs,sql}/editor/common/**",
-					"**/{vs,sql}/editor/contrib/*/common/**",
-					"**/{vs,sql}/workbench/common/**",
-					"**/{vs,sql}/workbench/services/*/common/**",
-					"assert"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/workbench/browser/**",
-				"restrictions": [
-					"vs/nls",
-					"azdata",
-					"@angular/*",
-					"vs/css!./**/*",
-					"**/{vs,sql}/base/{common,browser}/**",
-					"**/{vs,sql}/base/parts/*/{common,browser}/**",
-					"**/{vs,sql}/platform/*/{common,browser}/**",
-					"**/{vs,sql}/editor/{common,browser}/**",
-					"**/{vs,sql}/editor/contrib/**", // editor/contrib is equivalent to /browser/ by convention
-					"**/{vs,sql}/workbench/workbench.web.api",
-					"**/{vs,sql}/workbench/{common,browser}/**",
-					"**/{vs,sql}/workbench/services/*/{common,browser}/**",
-					"assert"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/workbench/api/common/**",
-				"restrictions": [
-					"vscode",
-					"azdata",
-					"mssql",
-					"azurecore",
-					"vs/nls",
-					"**/{vs,sql}/base/common/**",
-					"**/{vs,sql}/platform/*/common/**",
-					"**/{vs,sql}/editor/common/**",
-					"**/{vs,sql}/editor/contrib/*/common/**",
-					"**/{vs,sql}/workbench/api/common/**",
-					"**/{vs,sql}/workbench/common/**",
-					"**/{vs,sql}/workbench/services/*/common/**",
-					"**/{vs,sql}/workbench/contrib/*/common/**"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/workbench/api/worker/**",
-				"restrictions": [
-					"vscode",
-					"azdata",
-					"vs/nls",
-					"**/{vs,sql}/**/{common,worker}/**"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/workbench/electron-sandbox/**",
-				"restrictions": [
-					"vs/nls",
-					"vs/css!./**/*",
-					"**/{vs,sql}/base/{common,browser,electron-sandbox}/**",
-					"**/{vs,sql}/base/parts/*/{common,browser,electron-sandbox}/**",
-					"**/{vs,sql}/platform/*/{common,browser,electron-sandbox}/**",
-					"**/{vs,sql}/editor/{common,browser,electron-sandbox}/**",
-					"**/{vs,sql}/editor/contrib/**", // editor/contrib is equivalent to /browser/ by convention
-					"**/{vs,sql}/workbench/{common,browser,electron-sandbox}/**",
-					"**/{vs,sql}/workbench/api/{common,browser,electron-sandbox}/**",
-					"**/{vs,sql}/workbench/services/*/{common,browser,electron-sandbox}/**"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/workbench/electron-browser/**",
-				"restrictions": [
-					"vs/nls",
-					"vs/css!./**/*",
-					"**/{vs,sql}/base/{common,browser,node,electron-sandbox,electron-browser}/**",
-					"**/{vs,sql}/base/parts/*/{common,browser,node,electron-sandbox,electron-browser}/**",
-					"**/{vs,sql}/platform/*/{common,browser,node,electron-sandbox,electron-browser}/**",
-					"**/{vs,sql}/editor/{common,browser,node,electron-sandbox,electron-browser}/**",
-					"**/{vs,sql}/editor/contrib/**", // editor/contrib is equivalent to /browser/ by convention
-					"**/{vs,sql}/workbench/{common,browser,node,electron-sandbox,electron-browser}/**",
-					"**/{vs,sql}/workbench/api/{common,browser,node,electron-sandbox,electron-browser}/**",
-					"**/{vs,sql}/workbench/services/*/{common,browser,node,electron-sandbox,electron-browser}/**",
-					"@vscode/*",
-					"@parcel/*",
-					"*" // node modules
-				]
-			},
-			{
-				"target": "**/{vs,sql}/workbench/services/**/test/**",
-				"restrictions": [
-					"vs/nls",
-					"vs/css!./**/*",
-					"**/{vs,sql}/base/**",
-					"**/{vs,sql}/platform/**",
-					"**/{vs,sql}/editor/**",
-					"**/{vs,sql}/workbench/{common,browser,node,electron-sandbox,electron-browser}/**",
-					"vs/workbench/contrib/files/browser/editors/fileEditorInput",
-					"**/{vs,sql}/workbench/services/**",
-					"**/{vs,sql}/workbench/test/**",
-					"@vscode/*",
-					"@parcel/*",
-					"*" // node modules
-				]
-			},
-			{
-				"target": "**/{vs,sql}/workbench/services/**/common/**",
-				"restrictions": [
-					"vs/nls",
-					"azdata",
-					"**/{vs,sql}/base/**/common/**",
-					"**/{vs,sql}/platform/**/common/**",
-					"**/{vs,sql}/editor/common/**",
-					"**/{vs,sql}/workbench/workbench.web.api",
-					"**/{vs,sql}/workbench/common/**",
-					"**/{vs,sql}/workbench/services/**/common/**",
-					"**/{vs,sql}/workbench/api/**/common/**",
-					"**/{vs,sql}/workbench/contrib/**/common/**",
-					"vs/workbench/contrib/files/common/editors/fileEditorInput", // this should be fine, it only accesses constants from contrib
-					"vscode-textmate",
-					"vscode-oniguruma",
-					"iconv-lite-umd",
-					"tas-client-umd",
-					"jschardet"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/workbench/services/**/worker/**",
-				"restrictions": [
-					"vs/nls",
-					"**/{vs,sql}/base/**/common/**",
-					"**/{vs,sql}/platform/**/common/**",
-					"**/{vs,sql}/editor/common/**",
-					"**/{vs,sql}/workbench/**/common/**",
-					"**/{vs,sql}/workbench/**/worker/**",
-					"**/{vs,sql}/workbench/services/**/common/**",
-					"vscode"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/workbench/services/**/browser/**",
-				"restrictions": [
-					"vs/nls",
-					"vs/css!./**/*",
-					"azdata",
-					"mssql",
-					"azurecore",
-					"vscode",
-					"**/{vs,sql}/base/**/{common,browser,worker}/**",
-					"**/{vs,sql}/platform/**/{common,browser}/**",
-					"**/{vs,sql}/editor/{common,browser}/**",
-					"**/{vs,sql}/workbench/workbench.web.api",
-					"**/{vs,sql}/workbench/{common,browser}/**",
-					"**/{vs,sql}/workbench/api/{common,browser}/**",
-					"**/{vs,sql}/workbench/services/**/{common,browser}/**",
-					"**/{vs,sql}/workbench/contrib/**/common/**",
-					"vscode-textmate",
-					"vscode-oniguruma",
-					"iconv-lite-umd",
-					"jschardet",
-					"@vscode/vscode-languagedetection",
-					"@angular/*",
-					"rxjs/**",
-					"sanitize-html",
-					"ansi_up",
-					"@microsoft/applicationinsights-web"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/workbench/services/**/node/**",
-				"restrictions": [
-					"vs/nls",
-					"**/{vs,sql}/base/**/{common,node}/**",
-					"**/{vs,sql}/platform/**/{common,node}/**",
-					"**/{vs,sql}/editor/{common,node}/**",
-					"**/{vs,sql}/workbench/{common,node}/**",
-					"**/{vs,sql}/workbench/api/{common,node}/**",
-					"**/{vs,sql}/workbench/services/**/{common,node}/**",
-					"@vscode/*",
-					"@parcel/*",
-					"*" // node modules
-				]
-			},
-			{
-				"target": "**/{vs,sql}/workbench/services/**/electron-sandbox/**",
-				"restrictions": [
-					"vs/nls",
-					"vs/css!./**/*",
-					"**/{vs,sql}/base/**/{common,browser,worker,electron-sandbox}/**",
-					"**/{vs,sql}/platform/**/{common,browser,electron-sandbox}/**",
-					"**/{vs,sql}/editor/**",
-					"**/{vs,sql}/workbench/{common,browser,electron-sandbox}/**",
-					"**/{vs,sql}/workbench/api/{common,browser,electron-sandbox}/**",
-					"**/{vs,sql}/workbench/services/**/{common,browser,electron-sandbox}/**",
-					"vscode-textmate",
-					"vscode-oniguruma",
-					"iconv-lite-umd",
-					"jschardet"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/workbench/services/**/electron-browser/**",
-				"restrictions": [
-					"vs/nls",
-					"vs/css!./**/*",
-					"**/{vs,sql}/base/**/{common,browser,worker,node,electron-sandbox,electron-browser}/**",
-					"**/{vs,sql}/platform/**/{common,browser,node,electron-sandbox,electron-browser}/**",
-					"**/{vs,sql}/editor/**",
-					"**/{vs,sql}/workbench/{common,browser,node,electron-sandbox,electron-browser}/**",
-					"**/{vs,sql}/workbench/api/{common,browser,node,electron-sandbox,electron-browser}/**",
-					"**/{vs,sql}/workbench/services/**/{common,browser,node,electron-sandbox,electron-browser}/**",
-					"@vscode/*",
-					"@parcel/*",
-					"*" // node modules
-				]
-			},
-			{
-				"target": "**/{vs,sql}/workbench/contrib/**/test/**",
-				"restrictions": [
-					"assert",
-					"vs/nls",
-					"vs/css!./**/*",
-					"**/{vs,sql}/base/**",
-					"**/{vs,sql}/platform/**",
-					"**/{vs,sql}/editor/**",
-					"**/{vs,sql}/workbench/api/common/**", // {{SQL CARBON EDIT}}
-					"**/{vs,sql}/workbench/{common,browser,node,electron-sandbox,electron-browser}/**",
-					"**/{vs,sql}/workbench/services/**",
-					"**/{vs,sql}/workbench/contrib/**",
-					"**/{vs,sql}/workbench/test/**",
-					"@angular/*", // {{SQL CARBON EDIT}}
-					"rxjs/**", // {{SQL CARBON EDIT}}
-					"*"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/workbench/contrib/terminal/browser/**",
-				"restrictions": [
-					// xterm and its addons are strictly browser-only components
-					"xterm",
-					"xterm-addon-*",
-					"vs/nls",
-					"vs/css!./**/*",
-					"**/{vs,sql}/base/**/{common,browser}/**",
-					"**/{vs,sql}/platform/**/{common,browser}/**",
-					"**/{vs,sql}/editor/**",
-					"**/{vs,sql}/workbench/{common,browser}/**",
-					"**/{vs,sql}/workbench/contrib/**/{common,browser}/**",
-					"**/{vs,sql}/workbench/services/**/{common,browser}/**"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/workbench/contrib/extensions/browser/**",
-				"restrictions": [
-					"semver-umd",
-					"vs/nls",
-					"vs/css!./**/*",
-					"**/{vs,sql}/base/**/{common,browser}/**",
-					"**/{vs,sql}/platform/**/{common,browser}/**",
-					"**/{vs,sql}/editor/**",
-					"**/{vs,sql}/workbench/{common,browser}/**",
-					"**/{vs,sql}/workbench/contrib/**/{common,browser}/**",
-					"**/{vs,sql}/workbench/services/**/{common,browser}/**"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/workbench/contrib/update/browser/update.ts",
-				"restrictions": [
-					"semver-umd",
-					"vs/nls",
-					"vs/css!./**/*",
-					"**/{vs,sql}/base/**/{common,browser}/**",
-					"**/{vs,sql}/platform/**/{common,browser}/**",
-					"**/{vs,sql}/editor/**",
-					"**/{vs,sql}/workbench/{common,browser}/**",
-					"**/{vs,sql}/workbench/contrib/**/{common,browser}/**",
-					"**/{vs,sql}/workbench/services/**/{common,browser}/**"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/workbench/contrib/notebook/common/**",
-				"restrictions": [
-					"vs/nls",
-					"vs/css!./**/*",
-					"**/{vs,sql}/base/**/{common,worker}/**",
-					"**/{vs,sql}/platform/**/common/**",
-					"**/{vs,sql}/editor/**",
-					"**/{vs,sql}/workbench/common/**",
-					"**/{vs,sql}/workbench/api/common/**",
-					"**/{vs,sql}/workbench/services/**/common/**",
-					"**/{vs,sql}/workbench/contrib/**/common/**"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/workbench/contrib/**/common/**",
-				"restrictions": [
-					"vs/nls",
-					"vs/css!./**/*",
-					"azdata",
-					"**/{vs,sql}/base/**/common/**",
-					"**/{vs,sql}/platform/**/common/**",
-					"**/{vs,sql}/editor/**",
-					"**/{vs,sql}/workbench/common/**",
-					"**/{vs,sql}/workbench/api/common/**",
-					"**/{vs,sql}/workbench/services/**/common/**",
-					"**/{vs,sql}/workbench/contrib/**/common/**"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/workbench/contrib/**/browser/**",
-				"restrictions": [
-					"vs/nls",
-					"vs/css!./**/*",
-					"azdata",
-					"vscode",
-					"**/{vs,sql}/base/**/{common,browser}/**",
-					"**/{vs,sql}/platform/**/{common,browser}/**",
-					"**/{vs,sql}/editor/**",
-					"**/{vs,sql}/workbench/{common,browser}/**",
-					"**/{vs,sql}/workbench/api/{common,browser}/**",
-					"**/{vs,sql}/workbench/services/**/{common,browser}/**",
-					"**/{vs,sql}/workbench/contrib/**/{common,browser}/**",
-					"@angular/*",
-					"rxjs/**",
-					"ng2-charts",
-					"chart.js",
-					"plotly.js",
-					"angular2-grid",
-					"kburtram-query-plan",
-					"html-to-image",
-					"turndown",
-					"gridstack",
-					"mark.js",
-					"vscode-textmate",
-					"vscode-oniguruma",
-					"iconv-lite-umd",
-					"jschardet",
-					"azdataGraph"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/workbench/contrib/**/node/**",
-				"restrictions": [
-					"vs/nls",
-					"vs/css!./**/*",
-					"**/{vs,sql}/base/**/{common,node}/**",
-					"**/{vs,sql}/platform/**/{common,node}/**",
-					"**/{vs,sql}/editor/**/common/**",
-					"**/{vs,sql}/workbench/{common,node}/**",
-					"**/{vs,sql}/workbench/api/{common,node}/**",
-					"**/{vs,sql}/workbench/services/**/{common,node}/**",
-					"**/{vs,sql}/workbench/contrib/**/{common,node}/**",
-					"@vscode/*",
-					"@parcel/*",
-					"*" // node modules
-				]
-			},
-			{
-				"target": "**/{vs,sql}/workbench/contrib/**/electron-sandbox/**",
-				"restrictions": [
-					"vs/nls",
-					"vs/css!./**/*",
-					"**/{vs,sql}/base/**/{common,browser,worker,electron-sandbox}/**",
-					"**/{vs,sql}/platform/**/{common,browser,electron-sandbox}/**",
-					"**/{vs,sql}/editor/**",
-					"**/{vs,sql}/workbench/{common,browser,electron-sandbox}/**",
-					"**/{vs,sql}/workbench/api/{common,browser,electron-sandbox}/**",
-					"**/{vs,sql}/workbench/services/**/{common,browser,electron-sandbox}/**",
-					"**/{vs,sql}/workbench/contrib/**/{common,browser,electron-sandbox}/**",
-					"vscode-textmate",
-					"vscode-oniguruma",
-					"iconv-lite-umd",
-					"jschardet"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/workbench/contrib/**/electron-browser/**",
-				"restrictions": [
-					"vs/nls",
-					"vs/css!./**/*",
-					"**/{vs,sql}/base/**/{common,browser,worker,node,electron-sandbox,electron-browser}/**",
-					"**/{vs,sql}/platform/**/{common,browser,node,electron-sandbox,electron-browser}/**",
-					"**/{vs,sql}/editor/**",
-					"**/{vs,sql}/workbench/{common,browser,node,electron-sandbox,electron-browser}/**",
-					"**/{vs,sql}/workbench/api/{common,browser,node,electron-sandbox,electron-browser}/**",
-					"**/{vs,sql}/workbench/services/**/{common,browser,node,electron-sandbox,electron-browser}/**",
-					"**/{vs,sql}/workbench/contrib/**/{common,browser,node,electron-sandbox,electron-browser}/**",
-					"@vscode/*",
-					"@parcel/*",
-					"*" // node modules
-				]
-			},
-			{
-				"target": "**/{vs,sql}/code/browser/**",
-				"restrictions": [
-					"vs/nls",
-					"vs/css!./**/*",
-					"**/{vs,sql}/base/**/{common,browser}/**",
-					"**/{vs,sql}/base/parts/**/{common,browser}/**",
-					"**/{vs,sql}/platform/**/{common,browser}/**",
-					"**/{vs,sql}/code/**/{common,browser}/**",
-					"**/{vs,sql}/workbench/workbench.web.api"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/code/node/**",
-				"restrictions": [
-					"vs/nls",
-					"**/{vs,sql}/base/**/{common,node}/**",
-					"**/{vs,sql}/base/parts/**/{common,node}/**",
-					"**/{vs,sql}/platform/**/{common,node}/**",
-					"**/{vs,sql}/code/**/{common,node}/**",
-					"@vscode/*",
-					"@parcel/*",
-					"*" // node modules
-				]
-			},
-			{
-				"target": "**/{vs,sql}/code/electron-browser/**",
-				"restrictions": [
-					"vs/nls",
-					"vs/css!./**/*",
-					"**/{vs,sql}/base/**/{common,browser,node,electron-sandbox,electron-browser}/**",
-					"**/{vs,sql}/base/parts/**/{common,browser,node,electron-sandbox,electron-browser}/**",
-					"**/{vs,sql}/platform/**/{common,browser,node,electron-sandbox,electron-browser}/**",
-					"**/{vs,sql}/code/**/{common,browser,node,electron-sandbox,electron-browser}/**",
-					"@vscode/*",
-					"@parcel/*",
-					"*" // node modules
-				]
-			},
-			{
-				"target": "**/{vs,sql}/code/electron-main/**",
-				"restrictions": [
-					"vs/nls",
-					"**/{vs,sql}/base/**/{common,node,electron-main}/**",
-					"**/{vs,sql}/base/parts/**/{common,node,electron-main}/**",
-					"**/{vs,sql}/platform/**/{common,node,electron-main}/**",
-					"**/{vs,sql}/code/**/{common,node,electron-main}/**",
-					"@vscode/*",
-					"@parcel/*",
-					"*" // node modules
-				]
-			},
-			{
-				"target": "**/{vs,sql}/server/**",
-				"restrictions": [
-					"vs/nls",
-					"**/{vs,sql}/base/**/{common,node}/**",
-					"**/{vs,sql}/base/parts/**/{common,node}/**",
-					"**/{vs,sql}/platform/**/{common,node}/**",
-					"**/{vs,sql}/workbench/**/{common,node}/**",
-					"**/{vs,sql}/server/**",
-					"@vscode/*",
-					"@parcel/*",
-					"*" // node modules
-				]
-			},
-			{
-				"target": "**/src/{vs,sql}/workbench/workbench.common.main.ts",
-				"restrictions": [
-					"vs/nls",
-					"**/{vs,sql}/base/**/{common,browser}/**",
-					"**/{vs,sql}/base/parts/**/{common,browser}/**",
-					"**/{vs,sql}/platform/**/{common,browser}/**",
-					"**/{vs,sql}/editor/**",
-					"**/{vs,sql}/workbench/**/{common,browser}/**"
-				]
-			},
-			{
-				"target": "**/src/{vs,sql}/workbench/workbench.web.main.ts",
-				"restrictions": [
-					"vs/nls",
-					"**/{vs,sql}/base/**/{common,browser}/**",
-					"**/{vs,sql}/base/parts/**/{common,browser}/**",
-					"**/{vs,sql}/platform/**/{common,browser}/**",
-					"**/{vs,sql}/editor/**",
-					"**/{vs,sql}/workbench/**/{common,browser}/**",
-					"**/{vs,sql}/workbench/workbench.common.main"
-				]
-			},
-			{
-				"target": "**/src/{vs,sql}/workbench/workbench.web.api.ts",
-				"restrictions": [
-					"vs/nls",
-					"**/{vs,sql}/base/**/{common,browser}/**",
-					"**/{vs,sql}/base/parts/**/{common,browser}/**",
-					"**/{vs,sql}/platform/**/{common,browser}/**",
-					"**/{vs,sql}/editor/**",
-					"**/{vs,sql}/workbench/**/{common,browser}/**",
-					"**/{vs,sql}/workbench/workbench.web.main"
-				]
-			},
-			{
-				"target": "**/src/{vs,sql}/workbench/workbench.sandbox.main.ts",
-				"restrictions": [
-					"vs/nls",
-					"**/{vs,sql}/base/**/{common,browser,electron-sandbox}/**",
-					"**/{vs,sql}/base/parts/**/{common,browser,electron-sandbox}/**",
-					"**/{vs,sql}/platform/**/{common,browser,electron-sandbox}/**",
-					"**/{vs,sql}/editor/**",
-					"**/{vs,sql}/workbench/**/{common,browser,electron-sandbox}/**",
-					"**/{vs,sql}/workbench/workbench.common.main"
-				]
-			},
-			{
-				"target": "**/src/{vs,sql}/workbench/workbench.desktop.main.ts",
-				"restrictions": [
-					"vs/nls",
-					"**/{vs,sql}/base/**/{common,browser,node,electron-sandbox,electron-browser}/**",
-					"**/{vs,sql}/base/parts/**/{common,browser,node,electron-sandbox,electron-browser}/**",
-					"**/{vs,sql}/platform/**/{common,browser,node,electron-sandbox,electron-browser}/**",
-					"**/{vs,sql}/editor/**",
-					"**/{vs,sql}/workbench/**/{common,browser,node,electron-sandbox,electron-browser}/**",
-					"**/{vs,sql}/workbench/workbench.common.main",
-					"**/{vs,sql}/workbench/workbench.sandbox.main"
-				]
-			},
-			{
-				"target": "**/extensions/**",
-				"restrictions": "**/*"
-			},
-			{
-				"target": "**/test/smoke/**",
-				"restrictions": [
-					"**/test/smoke/**",
-					"@vscode/*",
-					"@parcel/*",
-					"*" // node modules
-				]
-			},
-			{
-				"target": "**/test/automation/**",
-				"restrictions": [
-					"**/test/automation/**",
-					"@vscode/*",
-					"@parcel/*",
-					"playwright-core/**",
-					"*" // node modules
-				]
-			},
-			{
-				"target": "**/test/integration/**",
-				"restrictions": [
-					"**/test/integration/**",
-					"@vscode/*",
-					"@parcel/*",
-					"*" // node modules
-				]
-			},
-			{
-				"target": "**/test/monaco/**",
-				"restrictions": [
-					"**/test/monaco/**",
-					"@vscode/*",
-					"@parcel/*",
-					"*" // node modules
-				]
-			},
-			{
-				"target": "**/api/**.test.ts",
-				"restrictions": [
-					"**/{vs,sql}/**",
-					"assert",
-					"sinon",
-					"sinon-test",
-					"crypto",
-					"vscode",
-					"typemoq",
-					"azdata"
-				]
-			},
-			{
-				"target": "**/{node,electron-browser,electron-main}/**/*.test.ts",
-				"restrictions": [
-					"**/{vs,sql}/**",
-					"@vscode/*",
-					"@parcel/*",
-					"*", // node modules
-					"@angular/*" // {{SQL CARBON EDIT}}
-				]
-			},
-			{
-				"target": "**/{node,electron-browser,electron-main}/**/test/**",
-				"restrictions": [
-					"**/{vs,sql}/**",
-					"@vscode/*",
-					"@parcel/*",
-					"*" // node modules
-				]
-			},
-			{
-				"target": "**/test/{node,electron-browser,electron-main}/**",
-				"restrictions": [
-					"**/{vs,sql}/**",
-					"@vscode/*",
-					"@parcel/*",
-					"*" // node modules
-				]
-			},
-			{
-				"target": "**/**.test.ts",
-				"restrictions": [
-					"**/{vs,sql}/**",
-					"assert",
-					"typemoq",
-					"sinon",
-					"sinon-test",
-					"crypto",
-					"xterm*",
-					"azdata"
-				]
-			},
-			{
-				"target": "**/test/**",
-				"restrictions": [
-					"**/{vs,sql}/**",
-					"assert",
-					"typemoq",
-					"sinon",
-					"sinon-test",
-					"crypto",
-					"xterm*"
-				]
-			}
-		],
 		"header/header": [
 			2,
 			"block",
@@ -1110,7 +116,7 @@
 				"**/*.test.ts"
 			],
 			"rules": {
-				"code-no-test-only": "error"
+				"code-no-test-only": "error",
 			}
 		},
 		{
@@ -1120,7 +126,6 @@
 			"rules": {
 				"no-sync": "warn",
 				"strict": ["warn", "never"],
-				"no-console": "warn"
 			}
 		},
 		{
@@ -1167,6 +172,7 @@
 							"delete",
 							"discover",
 							"dispose",
+							"drop",
 							"edit",
 							"end",
 							"expand",
@@ -1193,42 +199,424 @@
 		},
 		{
 			"files": [
-				"src/{vs,sql}/server/*",
-
-				// {{SQL CARBON EDIT}} Ignore our own that don't use our copyright
-				"extensions/azuremonitor/src/prompts/**",
-				"extensions/azuremonitor/src/typings/findRemove.d.ts",
-				"extensions/kusto/src/prompts/**",
-				"extensions/mssql/src/hdfs/webhdfs.ts",
-				"extensions/mssql/src/prompts/**",
-				"extensions/mssql/src/typings/bufferStreamReader.d.ts",
-				"extensions/mssql/src/typings/findRemove.d.ts",
-				"extensions/notebook/resources/jupyter_config/**",
-				"extensions/notebook/src/intellisense/text.ts",
-				"extensions/notebook/src/prompts/**",
-				"extensions/resource-deployment/src/typings/linuxReleaseInfo.d.ts",
-				"src/sql/base/browser/ui/table/plugins/autoSizeColumns.plugin.ts",
+				"src/**/*.ts"
+			],
+			"rules": {
+				"code-no-look-behind-regex": "warn",
+				"code-import-patterns": [
+					"warn",
+					{
+						// imports that are allowed in all files of layers:
+						// - browser
+						// - electron-sandbox
+						// - electron-browser
+						"when": "hasBrowser",
+						"allow": [
+							"vs/css!./**/*"
+						]
+					},
+					{
+						// imports that are allowed in all files of layers:
+						// - node
+						// - electron-browser
+						// - electron-main
+						"when": "hasNode",
+						"allow": [
+							"@microsoft/applicationinsights-web",
+							"@parcel/watcher",
+							"@vscode/sqlite3",
+							"@vscode/vscode-languagedetection",
+							"@vscode/ripgrep",
+							"@vscode/iconv-lite-umd",
+							"applicationinsights",
+							"assert",
+							"child_process",
+							"console",
+							"cookie",
+							"crypto",
+							"electron",
+							"events",
+							"fs",
+							"graceful-fs",
+							"http",
+							"https",
+							"minimist",
+							"native-keymap",
+							"native-watchdog",
+							"net",
+							"node-pty",
+							"os",
+							"path",
+							"perf_hooks",
+							"spdlog",
+							"stream",
+							"string_decoder",
+							"tas-client-umd",
+							"tls",
+							"url",
+							"util",
+							"v8-inspect-profiler",
+							"vscode-proxy-agent",
+							"vscode-regexpp",
+							"vscode-textmate",
+							"windows-process-tree",
+							"worker_threads",
+							"xterm",
+							"xterm-addon-search",
+							"xterm-addon-serialize",
+							"xterm-addon-unicode11",
+							"xterm-addon-webgl",
+							"xterm-headless",
+							"yauzl",
+							"yazl",
+							"zlib"
+						]
+					},
+					{
+						// imports that are allowed in all /test/ files
+						"when": "test",
+						"allow": [
+							"assert",
+							"sinon",
+							"sinon-test"
+						]
+					},
+					// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+					// !!! Do not relax these rules !!!
+					// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+					//
+					// A path ending in /~ has a special meaning. It indicates a template position
+					// which will be substituted with one or more layers.
+					//
+					// When /~ is used in the target, the rule will be expanded to 14 distinct rules.
+					// e.g. "src/vs/base/~" will be expanded to:
+					//  - src/vs/base/common
+					//  - src/vs/base/worker
+					//  - src/vs/base/electron-sandbox
+					//  - src/vs/base/node
+					//  - src/vs/base/electron-browser
+					//  - src/vs/base/electron-main
+					//  - src/vs/base/test/common
+					//  - src/vs/base/test/worker
+					//  - src/vs/base/test/browser
+					//  - src/vs/base/test/electron-sandbox
+					//  - src/vs/base/test/node
+					//  - src/vs/base/test/electron-browser
+					//  - src/vs/base/test/electron-main
+					//
+					// layers that can be used e.g. "src/vs/base/electron-sandbox" will be able
+					//
+					// the target property by adding a layer property.
+					{
+						"target": "src/vs/base/~",
+						"restrictions": [
+							"vs/base/~"
+						]
+					},
+					{
+						"target": "src/vs/base/parts/*/~",
+						"restrictions": [
+							"vs/base/~",
+							"vs/base/parts/*/~"
+						]
+					},
+					{
+						"target": "src/vs/platform/*/~",
+						"restrictions": [
+							"vs/base/~",
+							"vs/base/parts/*/~",
+							"vs/platform/*/~",
+							"tas-client-umd" // node module allowed even in /common/
+						]
+					},
+					{
+						"target": "src/vs/editor/~",
+						"restrictions": [
+							"vs/base/~",
+							"vs/base/parts/*/~",
+							"vs/platform/*/~",
+							"vs/editor/~"
+						]
+					},
+					{
+						"target": "src/vs/editor/contrib/*/~",
+						"restrictions": [
+							"vs/base/~",
+							"vs/base/parts/*/~",
+							"vs/platform/*/~",
+							"vs/editor/~",
+						]
+					},
+					{
+						"restrictions": [
+							"vs/base/~",
+							"vs/base/parts/*/~",
+							"vs/platform/*/~",
+							"vs/editor/~",
+							"vs/editor/standalone/~"
+						]
+					},
+					{
+						"layer": "browser",
+						"restrictions": [
+							"vs/base/~",
+							"vs/base/parts/*/~",
+							"vs/platform/*/~",
+							"vs/editor/~",
+							"vs/editor/contrib/*/~"
+						]
+					},
+					{
+						"target": "src/vs/editor/editor.worker.ts",
+						"layer": "worker",
+						"restrictions": [
+							"vs/base/~",
+							"vs/base/parts/*/~",
+							"vs/platform/*/~",
+							"vs/editor/~"
+						]
+					},
+					{
+						"layer": "browser",
+						"restrictions": [
+							"vs/base/~",
+							"vs/base/parts/*/~",
+							"vs/editor/~",
+							"vs/editor/contrib/*/~",
+							"vs/editor/standalone/~",
+							"vs/editor/*"
+						]
+					},
+					{
+						"target": "src/vs/workbench/~",
+						"restrictions": [
+							"vs/base/~",
+							"vs/base/parts/*/~",
+							"vs/platform/*/~",
+							"vs/editor/~",
+							"vs/editor/contrib/*/~",
+							"vs/workbench/~",
+							"vs/workbench/services/*/~",
+							"assert",
+							{
+								"when": "test",
+								"pattern": "vs/workbench/contrib/*/~"
+							} // TODO@layers
+						]
+					},
+					{
+						"target": "src/vs/workbench/api/~",
+						"restrictions": [
+							"vscode",
+							"vs/base/~",
+							"vs/base/parts/*/~",
+							"vs/platform/*/~",
+							"vs/editor/~",
+							"vs/editor/contrib/*/~",
+							"vs/workbench/api/~",
+							"vs/workbench/~",
+							"vs/workbench/services/*/~",
+							"vs/workbench/contrib/*/~"
+						]
+					},
+					{
+							"vs/base/~",
+							"vs/base/parts/*/~",
+							"vs/platform/*/~",
+							"vs/editor/~",
+							"vs/editor/contrib/*/~",
+							"vs/workbench/~",
+							"vs/workbench/services/*/~",
+							{
+								"when": "test",
+							}, // TODO@layers
+							"tas-client-umd", // node module allowed even in /common/
 				"src/sql/base/browser/ui/table/plugins/cellSelectionModel.plugin.ts",
 				"src/sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin.ts",
 				"src/sql/base/browser/ui/table/plugins/headerFilter.plugin.ts",
 				"src/sql/base/browser/ui/table/plugins/rowDetailView.ts",
 				"src/sql/base/browser/ui/table/plugins/rowMoveManager.plugin.ts",
-				"src/sql/base/browser/ui/table/plugins/rowSelectionModel.plugin.ts",
-				"src/sql/workbench/services/notebook/browser/outputs/factories.ts",
-				"src/sql/workbench/services/notebook/browser/outputs/mimemodel.ts",
-				"src/sql/workbench/services/notebook/browser/outputs/registry.ts",
-				"src/sql/workbench/services/notebook/browser/outputs/renderMimeInterfaces.ts",
-				"src/sql/workbench/services/notebook/browser/outputs/sanitizer.ts",
-				"src/sql/workbench/contrib/notebook/browser/models/outputProcessor.ts",
-				"src/sql/workbench/contrib/notebook/browser/turndownPluginGfm.ts",
-				"src/sql/workbench/services/notebook/common/nbformat.ts",
-				"src/sql/workbench/services/notebook/browser/outputs/renderers.ts",
-				"src/sql/workbench/services/notebook/browser/outputs/tableRenderers.ts"
+						]
+					},
+					{
+						"restrictions": [
+							"vs/base/~",
+							"vs/base/parts/*/~",
+							"vs/platform/*/~",
+							"vs/editor/~",
+							"vs/editor/contrib/*/~",
+							"vs/workbench/~",
+							"vs/workbench/services/*/~",
+							"vs/workbench/contrib/*/~",
+								"when": "hasBrowser",
+								"pattern": "xterm"
+							}, // node module allowed even in /browser/
+							{
+								"when": "hasBrowser",
+								"pattern": "xterm-addon-*"
+							}, // node module allowed even in /browser/
+							{
+								"when": "hasBrowser",
+								"pattern": "vscode-textmate"
+							} // node module allowed even in /browser/
+						]
+					},
+					{
+						"target": "src/vs/code/~",
+						"restrictions": [
+							"vs/base/~",
+							"vs/base/parts/*/~",
+							"vs/platform/*/~",
+							"vs/editor/~",
+							"vs/editor/contrib/*/~",
+							"vs/code/~",
+							{
+								"when": "hasBrowser",
+								"pattern": "vs/workbench/workbench.web.main"
+							}
+						]
+					},
+					{
+						"target": "src/vs/server/~",
+						"restrictions": [
+							"vs/base/~",
+							"vs/base/parts/*/~",
+							"vs/platform/*/~",
+							"vs/workbench/~",
+							"vs/workbench/api/~",
+							"vs/workbench/services/*/~",
+							"vs/workbench/contrib/*/~",
+							"vs/server/~"
+						]
+					},
+					{
+						"layer": "browser",
+						"restrictions": [
+							"vs/base/~",
+							"vs/base/parts/*/~",
+							"vs/platform/*/~",
+							"vs/editor/~",
+							"vs/editor/contrib/*/~",
+							"vs/editor/editor.all",
+							"vs/workbench/~",
+							"vs/workbench/api/~",
+							"vs/workbench/services/*/~",
+							"vs/workbench/contrib/*/~"
+						]
+					},
+					{
+						"restrictions": [
+							"vs/base/~",
+							"vs/base/parts/*/~",
+							"vs/platform/*/~",
+							"vs/editor/~",
+							"vs/editor/contrib/*/~",
+							"vs/editor/editor.all",
+							"vs/workbench/~",
+							"vs/workbench/api/~",
+							"vs/workbench/services/*/~",
+							"vs/workbench/contrib/*/~",
+							"vs/workbench/workbench.common.main"
+						]
+					},
+					{
+						"layer": "electron-sandbox",
+						"restrictions": [
+							"vs/base/*/~",
+							"vs/base/parts/*/~",
+							"vs/platform/*/~",
+							"vs/editor/~",
+							"vs/editor/contrib/*/~",
+							"vs/editor/editor.all",
+							"vs/workbench/~",
+							"vs/workbench/api/~",
+							"vs/workbench/services/*/~",
+							"vs/workbench/contrib/*/~",
+							"vs/workbench/workbench.sandbox.main"
+						]
+					},
+					{
+						"layer": "electron-browser",
+						"restrictions": [
+							"vs/base/*/~",
+							"vs/base/parts/*/~",
+							"vs/platform/*/~",
+							"vs/editor/~",
+							"vs/editor/contrib/*/~",
+							"vs/editor/editor.all",
+							"vs/workbench/~",
+							"vs/workbench/api/~",
+							"vs/workbench/services/*/~",
+							"vs/workbench/contrib/*/~",
+							"vs/workbench/workbench.common.main",
+							"vs/workbench/workbench.sandbox.main"
+						]
+					},
+					{
+						"target": "src/vs/workbench/{workbench.desktop.main.nls.js,workbench.web.main.nls.js}",
+						"restrictions": []
+					},
+					{
+						"target": "src/vs/{css.d.ts,monaco.d.ts,nls.d.ts,nls.mock.ts}",
+						"restrictions": []
+					},
+					{
+						"target": "src/vscode-dts/**",
+						"restrictions": []
+					},
+					{
+						"target": "src/{bootstrap-amd.js,bootstrap-fork.js,bootstrap-node.js,bootstrap-window.js,bootstrap.js,cli.js,main.js,server-cli.js,server-main.js}",
+						"restrictions": []
+					}
+				]
+			}
+		},
+		{
+			"files": [
+				"test/**/*.ts"
 			],
 			"rules": {
-				"header/header": [
-					// hygiene.js still checks that all files (even those in this directory) are MIT licensed.
-					"off"
+						"target": "test/smoke/**",
+						"restrictions": [
+							"test/automation",
+							"test/smoke/**",
+							"@vscode/*",
+							"@parcel/*",
+							"@playwright/*",
+							"*" // node modules
+						]
+					},
+					{
+						"target": "test/automation/**",
+						"restrictions": [
+							"test/automation/**",
+							"@vscode/*",
+							"@parcel/*",
+							"playwright-core/**",
+							"@playwright/*",
+							"*" // node modules
+						]
+					},
+					{
+						"target": "test/integration/**",
+						"restrictions": [
+							"test/integration/**",
+							"@vscode/*",
+							"@parcel/*",
+							"@playwright/*",
+							"*" // node modules
+						]
+					},
+					{
+						"target": "test/monaco/**",
+						"restrictions": [
+							"test/monaco/**",
+							"@vscode/*",
+							"@parcel/*",
+							"@playwright/*",
+							"*" // node modules
+						]
+					}
 				]
 			}
 		}

@@ -8,14 +8,15 @@ else
 	ROOT=$(dirname $(dirname $(readlink -f $0)))
 	# {{SQL CARBON EDIT}} Completed disable sandboxing via --no-sandbox since we still see failures on our test runs
 	# --disable-setuid-sandbox: setuid sandboxes requires root and is used in containers so we disable this
-	# --disable-dev-shm-usage --use-gl=swiftshader: when run on docker containers where size of /dev/shm
+	# --disable-dev-shm-usage: when run on docker containers where size of /dev/shm
 	# partition < 64MB which causes OOM failure for chromium compositor that uses the partition for shared memory
-	LINUX_EXTRA_ARGS="--no-sandbox --disable-dev-shm-usage --use-gl=swiftshader"
+	LINUX_EXTRA_ARGS="--disable-dev-shm-usage --use-gl=swiftshader"
 fi
 
 VSCODEUSERDATADIR=`mktemp -d 2>/dev/null`
 VSCODECRASHDIR=$ROOT/.build/crashes
 VSCODELOGSDIR=$ROOT/.build/logs/integration-tests
+
 cd $ROOT
 
 # Figure out which Electron to use for running tests
@@ -50,7 +51,6 @@ else
 
 	# Configuration for more verbose output
 	export VSCODE_CLI=1
-	export ELECTRON_ENABLE_STACK_DUMPING=1
 	export ELECTRON_ENABLE_LOGGING=1
 
 	echo "Storing crash reports into '$VSCODECRASHDIR'."
@@ -58,17 +58,13 @@ else
 	echo "Running integration tests with '$INTEGRATION_TEST_ELECTRON_PATH' as build."
 fi
 
-if [ -z "$INTEGRATION_TEST_APP_NAME" ]; then
-	after_suite() { true; }
-else
-	after_suite() { killall $INTEGRATION_TEST_APP_NAME || true; }
-fi
-
 
 # Tests standalone (AMD)
 
+echo
+echo "### node.js integration tests"
+echo
 ./scripts/test.sh --runGlob **/*.integrationTest.js "$@"
-after_suite
 
 
 # Tests in the extension host

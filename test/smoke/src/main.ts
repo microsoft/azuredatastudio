@@ -11,10 +11,10 @@ import * as os from 'os';
 import * as minimist from 'minimist';
 import * as rimraf from 'rimraf';
 import * as mkdirp from 'mkdirp';
-import * as vscodetest from 'vscode-test';
+import * as vscodetest from '@vscode/test-electron';
 import fetch from 'node-fetch';
-import { Quality, MultiLogger, Logger, ConsoleLogger, FileLogger, measureAndLog } from '../../automation';
-import { timeout } from './utils';
+import { Quality, MultiLogger, Logger, ConsoleLogger, FileLogger, measureAndLog, getDevElectronPath, getBuildElectronPath, getBuildVersion } from '../../automation';
+import { retry, timeout } from './utils';
 
 import { main as sqlMain, setup as sqlSetup } from './sql/main'; // {{SQL CARBON EDIT}}
 /*import { setup as setupDataMigrationTests } from './areas/workbench/data-migration.test';
@@ -32,7 +32,7 @@ import { setup as setupLaunchTests } from './areas/workbench/launch.test';*/
 import { setup as setupTerminalProfileTests } from './areas/terminal/terminal-profiles.test';
 import { setup as setupTerminalTabsTests } from './areas/terminal/terminal-tabs.test'; */
 
-const repoPath = path.join(__dirname, '..', '..', '..');
+const rootPath = path.join(__dirname, '..', '..', '..');
 
 const [, , ...args] = process.argv;
 const opts = minimist(args, {
@@ -48,21 +48,38 @@ const opts = minimist(args, {
 		'verbose',
 		'remote',
 		'web',
-		'headless'
+		'headless',
+		'tracing'
 	],
 	default: {
 		verbose: false
 	}
 }) as {
-	verbose?: boolean,
-	remote?: boolean,
-	headless?: boolean,
-	web?: boolean,
-	build?: string,
-	'stable-build'?: string,
-	browser?: string,
-	electronArgs?: string
+	verbose?: boolean;
+	remote?: boolean;
+	headless?: boolean;
+	web?: boolean;
+	tracing?: boolean;
+	build?: string;
+	'stable-build'?: string;
+	browser?: string;
+	electronArgs?: string;
 };
+
+const logsRootPath = (() => {
+	const logsParentPath = path.join(rootPath, '.build', 'logs');
+
+	let logsName: string;
+	if (opts.web) {
+		logsName = 'smoke-tests-browser';
+	} else if (opts.remote) {
+		logsName = 'smoke-tests-remote';
+	} else {
+		logsName = 'smoke-tests-electron';
+	}
+
+	return path.join(logsParentPath, logsName);
+})();
 
 const logger = createLogger();
 
@@ -74,10 +91,12 @@ function createLogger(): Logger {
 		loggers.push(new ConsoleLogger());
 	}
 
+	// Prepare logs rot path
+	fs.rmSync(logsRootPath, { recursive: true, force: true, maxRetries: 3 });
+	mkdirp.sync(logsRootPath);
+
 	// Always log to log file
-	const logPath = path.join(repoPath, '.build', 'logs', opts.web ? 'smoke-tests-browser' : opts.remote ? 'smoke-tests-remote' : 'smoke-tests');
-	mkdirp.sync(logPath);
-	loggers.push(new FileLogger(path.join(logPath, 'smoke-test-runner.log')));
+	loggers.push(new FileLogger(path.join(logsRootPath, 'smoke-test-runner.log')));
 
 	return new MultiLogger(loggers);
 }
@@ -86,7 +105,7 @@ const testDataPath = path.join(os.tmpdir(), 'vscsmoke');
 if (fs.existsSync(testDataPath)) {
 	rimraf.sync(testDataPath);
 }
-fs.mkdirSync(testDataPath);
+mkdirp.sync(testDataPath);
 process.once('exit', () => {
 	try {
 		rimraf.sync(testDataPath);
@@ -136,13 +155,16 @@ if (logPath) {
 	mkdirp.sync(path.dirname(logPath));
 function fail(errorMessage): void {
 	logger.log(errorMessage);
+	if (!opts.verbose) {
+		console.error(errorMessage);
+	}
 	process.exit(1);
 }
 
 let quality: Quality;
 let version: string | undefined;
 
-function parseVersion(version: string): { major: number, minor: number, patch: number } {
+function parseVersion(version: string): { major: number; minor: number; patch: number } {
 	const [, major, minor, patch] = /^(\d+)\.(\d+)\.(\d+)/.exec(version)!;
 	return { major: parseInt(major), minor: parseInt(minor), patch: parseInt(patch) };
 }
@@ -151,49 +173,6 @@ function parseVersion(version: string): { major: number, minor: number, patch: n
 // #### Electron Smoke Tests ####
 //
 if (!opts.web) {
-
-	function getDevElectronPath(): string {
-		const buildPath = path.join(repoPath, '.build');
-		const product = require(path.join(repoPath, 'product.json'));
-
-		switch (process.platform) {
-			case 'darwin':
-				return path.join(buildPath, 'electron', `${product.nameLong}.app`, 'Contents', 'MacOS', 'Electron');
-			case 'linux':
-				return path.join(buildPath, 'electron', `${product.applicationName}`);
-			case 'win32':
-				return path.join(buildPath, 'electron', `${product.nameShort}.exe`);
-			default:
-				throw new Error('Unsupported platform.');
-		}
-	}
-
-	function getBuildElectronPath(root: string): string {
-		switch (process.platform) {
-			case 'darwin':
-				return path.join(root, 'Contents', 'MacOS', 'Electron');
-			case 'linux': {
-				const product = require(path.join(root, 'resources', 'app', 'product.json'));
-				return path.join(root, product.applicationName);
-			}
-			case 'win32': {
-				const product = require(path.join(root, 'resources', 'app', 'product.json'));
-				return path.join(root, `${product.nameShort}.exe`);
-			}
-			default:
-				throw new Error('Unsupported platform.');
-		}
-	}
-
-	function getBuildVersion(root: string): string {
-		switch (process.platform) {
-			case 'darwin':
-				return require(path.join(root, 'Contents', 'Resources', 'app', 'package.json')).version;
-			default:
-				return require(path.join(root, 'resources', 'app', 'package.json')).version;
-		}
-	}
-
 	let testCodePath = opts.build;
 	let electronPath: string;
 
@@ -203,13 +182,13 @@ if (!opts.web) {
 	} else {
 		testCodePath = getDevElectronPath();
 		electronPath = testCodePath;
-		process.env.VSCODE_REPOSITORY = repoPath;
+		process.env.VSCODE_REPOSITORY = rootPath;
 		process.env.VSCODE_DEV = '1';
 		process.env.VSCODE_CLI = '1';
 	}
 
 	if (!fs.existsSync(electronPath || '')) {
-		fail(`Can't find VSCode at ${electronPath}.`);
+		fail(`Can't find VSCode at ${electronPath}. Please run VSCode once first (scripts/code.sh, scripts\\code.bat) and try again.`);
 	}
 
 	if (process.env.VSCODE_DEV === '1') {
@@ -242,7 +221,7 @@ else {
 	}
 
 	if (!testCodeServerPath) {
-		process.env.VSCODE_REPOSITORY = repoPath;
+		process.env.VSCODE_REPOSITORY = rootPath;
 		process.env.VSCODE_DEV = '1';
 		process.env.VSCODE_CLI = '1';
 
@@ -271,18 +250,16 @@ async function setupRepository(): Promise<void> {
 	} else {
 		if (!fs.existsSync(workspacePath)) {
 			logger.log('Cloning test project repository...');
-			cp.spawnSync('git', ['clone', testRepoUrl, workspacePath]);
+			const res = cp.spawnSync('git', ['clone', testRepoUrl, workspacePath], { stdio: 'inherit' });
+			if (!fs.existsSync(workspacePath)) {
+				throw new Error(`Clone operation failed: ${res.stderr.toString()}`);
+			}
 		} else {
 			logger.log('Cleaning test project repository...');
-			cp.spawnSync('git', ['fetch'], { cwd: workspacePath });
-			cp.spawnSync('git', ['reset', '--hard', 'FETCH_HEAD'], { cwd: workspacePath });
-			cp.spawnSync('git', ['clean', '-xdf'], { cwd: workspacePath });
+			cp.spawnSync('git', ['fetch'], { cwd: workspacePath, stdio: 'inherit' });
+			cp.spawnSync('git', ['reset', '--hard', 'FETCH_HEAD'], { cwd: workspacePath, stdio: 'inherit' });
+			cp.spawnSync('git', ['clean', '-xdf'], { cwd: workspacePath, stdio: 'inherit' });
 		}
-
-		// None of the current smoke tests have a dependency on the packages.
-		// If new smoke tests are added that need the packages, uncomment this.
-		// logger.log('Running yarn...');
-		// cp.execSync('yarn', { cwd: workspacePath, stdio: 'inherit' });
 	}
 }
 
@@ -292,7 +269,7 @@ async function ensureStableCode(): Promise<void> {
 	if (!stableCodePath) {
 		const { major, minor } = parseVersion(version!);
 		const majorMinorVersion = `${major}.${minor - 1}`;
-		const versionsReq = await measureAndLog(fetch('https://update.code.visualstudio.com/api/releases/stable', { headers: { 'x-api-version': '2' } }), 'versionReq', logger);
+		const versionsReq = await retry(() => measureAndLog(fetch('https://update.code.visualstudio.com/api/releases/stable', { headers: { 'x-api-version': '2' } }), 'versionReq', logger), 1000, 20);
 
 		if (!versionsReq.ok) {
 			throw new Error('Could not fetch releases from update server');
@@ -308,10 +285,39 @@ async function ensureStableCode(): Promise<void> {
 
 		logger.log(`Found VS Code v${version}, downloading previous VS Code version ${previousVersion.version}...`);
 
-		const stableCodeExecutable = await measureAndLog(vscodetest.download({
-			cachePath: path.join(os.tmpdir(), 'vscode-test'),
-			version: previousVersion.version
-		}), 'download stable code', logger);
+		let lastProgressMessage: string | undefined = undefined;
+		let lastProgressReportedAt = 0;
+		const stableCodeDestination = path.join(testDataPath, 's');
+		const stableCodeExecutable = await retry(() => measureAndLog(vscodetest.download({
+			cachePath: stableCodeDestination,
+			version: previousVersion.version,
+			extractSync: true,
+			reporter: {
+				report: report => {
+					let progressMessage = `download stable code progress: ${report.stage}`;
+					const now = Date.now();
+					if (progressMessage !== lastProgressMessage || now - lastProgressReportedAt > 10000) {
+						lastProgressMessage = progressMessage;
+						lastProgressReportedAt = now;
+
+						if (report.stage === 'downloading') {
+							progressMessage += ` (${report.bytesSoFar}/${report.totalBytes})`;
+						}
+
+						logger.log(progressMessage);
+					}
+				},
+				error: error => logger.log(`download stable code error: ${error}`)
+			}
+		}), 'download stable code', logger), 1000, 3, () => new Promise<void>((resolve, reject) => {
+			rimraf(stableCodeDestination, { maxBusyTries: 10 }, error => {
+				if (error) {
+					reject(error);
+				} else {
+					resolve();
+				}
+			});
+		}));
 
 		if (process.platform === 'darwin') {
 			// Visual Studio Code.app/Contents/MacOS/Electron
@@ -344,8 +350,9 @@ async function setup(): Promise<void> {
 	logger.log('Smoketest setup done!\n');
 }
 
+// Before all tests run setup
 before(async function () {
-	this.timeout(2 * 60 * 1000); // allow two minutes for setup
+	this.timeout(5 * 60 * 1000); // increase since we download VSCode
 
 	this.defaultOptions = {
 		quality,
@@ -353,14 +360,15 @@ before(async function () {
 		workspacePath,
 		userDataDir,
 		extensionsPath,
-		waitTime: parseInt(opts['wait-time'] || '0') || 20,
 		logger,
+		logsPath: path.join(logsRootPath, 'suite_unknown'),
 		verbose: opts.verbose,
 		remote: opts.remote,
 		web: opts.web,
+		tracing: opts.tracing,
 		headless: opts.headless,
 		browser: opts.browser,
-		extraArgs: (opts.electronArgs || '').split(' ').map(a => a.trim()).filter(a => !!a)
+		extraArgs: (opts.electronArgs || '').split(' ').map(arg => arg.trim()).filter(arg => !!arg)
 	};
 
 	await setup();
@@ -368,6 +376,7 @@ before(async function () {
 	await setup(options.logger);
 });
 
+// After main suite (after all tests)
 after(async function () {
 	if (opts.log) {
 		const logsDir = path.join(userDataDir, 'logs');
@@ -412,14 +421,14 @@ after(async function () {
 describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
 	/* {{SQL CARBON EDIT}} Disable unused tests
 	if (!opts.web) { setupDataLossTests(() => opts['stable-build'] /* Do not change, deferred for a reason! */, logger); }
-	if (!opts.web) { setupPreferencesTests(logger); }
+	setupPreferencesTests(logger);
 	setupSearchTests(logger);
 	setupNotebookTests(logger);
 	setupLanguagesTests(logger);
-	if (opts.web) { setupTerminalTests(logger); } // TODO@daniel TODO@meggan: Enable terminal tests for non-web when the desktop driver is moved to playwright
-	setupStatusbarTests(!!opts.web, logger);
+	if (opts.web) { setupTerminalTests(logger); } // Tests require playwright driver (https://github.com/microsoft/vscode/issues/146811)
+	setupStatusbarTests(logger);
 	if (quality !== Quality.Dev) { setupExtensionTests(logger); }
-	if (!opts.web) { setupMultirootTests(logger); }
+	setupMultirootTests(logger);
 	if (!opts.web && !opts.remote && quality !== Quality.Dev) { setupLocalizationTests(logger); }
 	if (!opts.web && !opts.remote) { setupLaunchTests(logger); }
 	*/

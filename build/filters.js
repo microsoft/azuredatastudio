@@ -12,6 +12,9 @@
  * all ⊃ eol ⊇ indentation ⊃ copyright ⊃ typescript
  */
 
+const { readFileSync } = require('fs');
+const { join } = require('path');
+
 module.exports.all = [
 	'*',
 	'build/**/*',
@@ -36,7 +39,7 @@ module.exports.unicodeFilter = [
 	'!LICENSES.chromium.html',
 	'!**/LICENSE',
 
-	'!**/*.{dll,exe,png,bmp,jpg,scpt,cur,ttf,woff,eot,template,ico,icns}',
+	'!**/*.{dll,exe,png,bmp,jpg,scpt,cur,ttf,woff,eot,template,ico,icns,opus}',
 	'!**/test/**',
 	'!**/*.test.ts',
 	'!**/*.{d.ts,json,md}',
@@ -44,6 +47,7 @@ module.exports.unicodeFilter = [
 	'!build/win32/**',
 	'!extensions/markdown-language-features/notebook-out/*.js',
 	'!extensions/markdown-math/notebook-out/**',
+	'!extensions/notebook-renderers/renderer-out/**',
 	'!extensions/php-language-features/src/features/phpGlobalFunctions.ts',
 	'!extensions/typescript-language-features/test-workspace/**',
 	'!extensions/vscode-api-tests/testWorkspace/**',
@@ -112,7 +116,7 @@ module.exports.indentationFilter = [
 	'!src/vs/*/**/*.d.ts',
 	'!src/typings/**/*.d.ts',
 	'!extensions/**/*.d.ts',
-	'!**/*.{svg,exe,png,bmp,jpg,scpt,bat,cmd,cur,ttf,woff,eot,md,ps1,template,yaml,yml,d.ts.recipe,ico,icns,plist}',
+	'!**/*.{svg,exe,png,bmp,jpg,scpt,bat,cmd,cur,ttf,woff,eot,md,ps1,template,yaml,yml,d.ts.recipe,ico,icns,plist,opus,admx,adml}',
 	'!build/{lib,download,linux,darwin}/**/*.js',
 	'!build/**/*.sh',
 	'!build/azure-pipelines/**/*.js',
@@ -121,9 +125,12 @@ module.exports.indentationFilter = [
 	'!**/Dockerfile.*',
 	'!**/*.Dockerfile',
 	'!**/*.dockerfile',
+
+	// except for built files
 	'!extensions/markdown-language-features/media/*.js',
 	'!extensions/markdown-language-features/notebook-out/*.js',
 	'!extensions/markdown-math/notebook-out/*.js',
+	'!extensions/notebook-renderers/renderer-out/*.js',
 	'!extensions/simple-browser/media/*.js',
 
 	// {{SQL CARBON EDIT}} Except for our stuff
@@ -166,9 +173,11 @@ module.exports.copyrightFilter = [
 	'!**/*.bat',
 	'!**/*.cmd',
 	'!**/*.ico',
+	'!**/*.opus',
 	'!**/*.icns',
 	'!**/*.xml',
 	'!**/*.sh',
+	'!**/*.zsh',
 	'!**/*.txt',
 	'!**/*.xpm',
 	'!**/*.opts',
@@ -179,7 +188,6 @@ module.exports.copyrightFilter = [
 	'!build/linux/libcxx-fetcher.*',
 	'!resources/linux/snap/snapcraft.yaml',
 	'!resources/win32/bin/code.js',
-	'!resources/web/code-web.js',
 	'!resources/completions/**',
 	'!extensions/configuration-editing/build/inline-allOf.ts',
 	'!extensions/markdown-language-features/media/highlight.css',
@@ -231,22 +239,8 @@ module.exports.copyrightFilter = [
 	'!**/*.py'
 ];
 
-module.exports.jsHygieneFilter = [
-	'src/**/*.js',
-	'build/gulpfile.*.js',
-	'!src/vs/loader.js',
-	'!src/vs/css.js',
-	'!src/vs/nls.js',
-	'!src/vs/css.build.js',
-	'!src/vs/nls.build.js',
-	'!src/**/dompurify.js',
-	'!src/**/marked.js',
-	'!src/**/semver.js',
-	'!**/test/**',
 	'!build/**/*' // {{SQL CARBON EDIT}}
-];
-
-module.exports.tsHygieneFilter = [
+module.exports.tsFormattingFilter = [
 	'src/**/*.ts',
 	'test/**/*.ts',
 	'extensions/**/*.ts',
@@ -268,4 +262,14 @@ module.exports.tsHygieneFilter = [
 	'!src/vs/workbench/services/themes/common/textMateScopeMatcher.ts', // skip this because we have no plans on touching this and its not ours
 	'!src/vs/workbench/contrib/extensions/browser/extensionRecommendationsService.ts', // skip this because known issue
 	'!build/**/*'
+];
+
+module.exports.eslintFilter = [
+	'**/*.js',
+	'**/*.ts',
+	...readFileSync(join(__dirname, '../.eslintignore'))
+		.toString().split(/\r\n|\n/)
+		.filter(line => !line.startsWith('#'))
+		.filter(line => !!line)
+		.map(line => `!${line}`)
 ];

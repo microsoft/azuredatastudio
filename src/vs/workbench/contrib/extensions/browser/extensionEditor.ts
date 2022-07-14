@@ -10,7 +10,7 @@ import { OS } from 'vs/base/common/platform';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Cache, CacheResult } from 'vs/base/common/cache';
 import { Action, IAction } from 'vs/base/common/actions';
-import { getErrorMessage, isPromiseCanceledError, onUnexpectedError } from 'vs/base/common/errors';
+import { getErrorMessage, isCancellationError, onUnexpectedError } from 'vs/base/common/errors';
 import { dispose, toDisposable, Disposable, DisposableStore, IDisposable, MutableDisposable } from 'vs/base/common/lifecycle';
 import { append, $, finalHandler, join, addDisposableListener, EventType, setParentFlowTo, reset, Dimension } from 'vs/base/browser/dom';
 import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
@@ -56,9 +56,9 @@ import { platform } from 'vs/base/common/process';
 import { URI } from 'vs/base/common/uri';
 import { Schemas } from 'vs/base/common/network';
 import { DEFAULT_MARKDOWN_STYLES, renderMarkdownDocument } from 'vs/workbench/contrib/markdown/browser/markdownDocumentRenderer';
-import { ILanguageService } from 'vs/editor/common/services/languageService';
-import { TokenizationRegistry } from 'vs/editor/common/modes';
-import { generateTokensCSSForColorMap } from 'vs/editor/common/modes/supports/tokenization';
+import { ILanguageService } from 'vs/editor/common/languages/language';
+import { TokenizationRegistry } from 'vs/editor/common/languages';
+import { generateTokensCSSForColorMap } from 'vs/editor/common/languages/supports/tokenization';
 import { buttonForeground, buttonHoverBackground, editorBackground, textLinkActiveForeground, textLinkForeground } from 'vs/platform/theme/common/colorRegistry';
 import { registerAction2, Action2 } from 'vs/platform/actions/common/actions';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
@@ -67,16 +67,17 @@ import { Delegate } from 'vs/workbench/contrib/extensions/browser/extensionsList
 import { renderMarkdown } from 'vs/base/browser/markdownRenderer';
 import { attachKeybindingLabelStyler } from 'vs/platform/theme/common/styler';
 import { areSameExtensions } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
-import { errorIcon, infoIcon, starEmptyIcon, verifiedPublisherIcon as verifiedPublisherThemeIcon, warningIcon } from 'vs/workbench/contrib/extensions/browser/extensionsIcons';
+import { errorIcon, infoIcon, preReleaseIcon, starEmptyIcon, verifiedPublisherIcon as verifiedPublisherThemeIcon, warningIcon } from 'vs/workbench/contrib/extensions/browser/extensionsIcons';
 import { MarkdownString } from 'vs/base/common/htmlContent';
 import { IPaneCompositePartService } from 'vs/workbench/services/panecomposite/browser/panecomposite';
 import { ViewContainerLocation } from 'vs/workbench/common/views';
 import { IExtensionGalleryService, IGalleryExtension } from 'vs/platform/extensionManagement/common/extensionManagement';
+import semver = require('vs/base/common/semver/semver');
 
 class NavBar extends Disposable {
 
-	private _onChange = this._register(new Emitter<{ id: string | null, focus: boolean }>());
-	get onChange(): Event<{ id: string | null, focus: boolean }> { return this._onChange.event; }
+	private _onChange = this._register(new Emitter<{ id: string | null; focus: boolean }>());
+	get onChange(): Event<{ id: string | null; focus: boolean }> { return this._onChange.event; }
 
 	private _currentId: string | null = null;
 	get currentId(): string | null { return this._currentId; }
@@ -184,10 +185,10 @@ class VersionWidget extends ExtensionWithDifferentGalleryVersionWidget {
 		this.render();
 	}
 	render(): void {
-		if (!this.extension) {
+		if (!this.extension || !semver.valid(this.extension.version)) {
 			return;
 		}
-		this.element.textContent = `v${this.gallery ? this.gallery.version : this.extension.version}`;
+		this.element.textContent = `v${this.gallery?.version ?? this.extension.version}`;
 	}
 }
 
@@ -196,7 +197,9 @@ class PreReleaseTextWidget extends ExtensionWithDifferentGalleryVersionWidget {
 	constructor(container: HTMLElement) {
 		super();
 		this.element = append(container, $('span.pre-release'));
-		this.element.textContent = localize('preRelease', "Pre-Release");
+		append(this.element, $('span' + ThemeIcon.asCSSSelector(preReleaseIcon)));
+		const textElement = append(this.element, $('span.pre-release-text'));
+		textElement.textContent = localize('preRelease', "Pre-Release");
 		this.render();
 	}
 	render(): void {
@@ -209,7 +212,7 @@ class PreReleaseTextWidget extends ExtensionWithDifferentGalleryVersionWidget {
 		if (this.gallery) {
 			return this.gallery.properties.isPreReleaseVersion;
 		}
-		return !!(this.extension.local?.isPreReleaseVersion || this.extension.gallery?.properties.isPreReleaseVersion);
+		return !!(this.extension.state === ExtensionState.Installed ? this.extension.local?.isPreReleaseVersion : this.extension.gallery?.properties.isPreReleaseVersion);
 	}
 }
 
@@ -234,7 +237,6 @@ export class ExtensionEditor extends EditorPane {
 	private readonly contentDisposables = this._register(new DisposableStore());
 	private readonly transientDisposables = this._register(new DisposableStore());
 	private activeElement: IActiveElement | null = null;
-	private editorLoadComplete: boolean = false;
 	private dimension: Dimension | undefined;
 
 	private showPreReleaseVersionContextKey: IContextKey<boolean> | undefined;
@@ -288,10 +290,11 @@ export class ExtensionEditor extends EditorPane {
 		const name = append(title, $('span.name.clickable', { title: localize('name', "Extension name"), role: 'heading', tabIndex: 0 }));
 		const versionWidget = new VersionWidget(title);
 
+		const preReleaseWidget = new PreReleaseTextWidget(title);
+
 		const preview = append(title, $('span.preview', { title: localize('preview', "Preview") }));
 		preview.textContent = localize('preview', "Preview");
 
-		const preReleaseWidget = new PreReleaseTextWidget(title);
 		const builtin = append(title, $('span.builtin'));
 		builtin.textContent = localize('builtin', "Built-in");
 
@@ -484,12 +487,11 @@ export class ExtensionEditor extends EditorPane {
 		if (!preRelease && !extension.hasReleaseVersion) {
 			return null;
 		}
-		return (await this.extensionGalleryService.query({ includePreRelease: preRelease, names: [extension.identifier.id] }, CancellationToken.None)).firstPage[0] || null;
+		return (await this.extensionGalleryService.getExtensions([{ ...extension.identifier, preRelease, hasPreRelease: extension.hasPreReleaseVersion }], CancellationToken.None))[0] || null;
 	}
 
 	private async render(extension: IExtension, template: IExtensionEditorTemplate, preserveFocus: boolean): Promise<void> {
 		this.activeElement = null;
-		this.editorLoadComplete = false;
 		this.transientDisposables.clear();
 
 		const token = this.transientDisposables.add(new CancellationTokenSource()).token;
@@ -521,7 +523,7 @@ export class ExtensionEditor extends EditorPane {
 		template.publisher.classList.toggle('clickable', !!extension.url);
 		template.publisherDisplayName.textContent = extension.publisherDisplayName;
 		template.verifiedPublisherIcon.style.display = extension.publisherDomain?.verified ? 'inherit' : 'none';
-		template.publisher.title = extension.publisherDomain?.link ? localize('publisher verified tooltip', "This publisher has verified ownership of {0}", URI.parse(extension.publisherDomain.link).authority) : '';
+		template.publisher.title = extension.publisherDomain?.verified && extension.publisherDomain.link ? localize('publisher verified tooltip', "This publisher has verified ownership of {0}", URI.parse(extension.publisherDomain.link).authority) : '';
 
 		// {{SQL CARBON EDIT}} remove install count widget
 		// template.installCount.parentElement?.classList.toggle('hide', !extension.url);
@@ -569,7 +571,6 @@ export class ExtensionEditor extends EditorPane {
 		*/
 		this.telemetryService.publicLog('extensionGallery:openExtension', { ...extension.telemetryData, ...recommendationsData });
 
-		this.editorLoadComplete = true;
 	}
 
 	private renderNavbar(extension: IExtension, manifest: IExtensionManifest | null, template: IExtensionEditorTemplate, preserveFocus: boolean): void {
@@ -706,19 +707,7 @@ export class ExtensionEditor extends EditorPane {
 		return this.activeElement as IWebview;
 	}
 
-	private onNavbarChange(extension: IExtension, { id, focus }: { id: string | null, focus: boolean }, template: IExtensionEditorTemplate): void {
-		if (this.editorLoadComplete) {
-			/* __GDPR__
-				"extensionEditor:navbarChange" : {
-					"navItem": { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
-					"${include}": [
-						"${GalleryExtensionTelemetryData}"
-					]
-				}
-			*/
-			this.telemetryService.publicLog('extensionEditor:navbarChange', { ...extension.telemetryData, navItem: id });
-		}
-
+	private onNavbarChange(extension: IExtension, { id, focus }: { id: string | null; focus: boolean }, template: IExtensionEditorTemplate): void {
 		this.contentDisposables.clear();
 		template.content.innerText = '';
 		this.activeElement = null;
@@ -838,7 +827,8 @@ export class ExtensionEditor extends EditorPane {
 						height: 40px;
 						right: 25px;
 						bottom: 25px;
-						background-color:#444444;
+						background-color: var(--vscode-button-background);
+						border-color: var(--vscode-button-border);
 						border-radius: 50%;
 						cursor: pointer;
 						box-shadow: 1px 1px 1px rgba(0,0,0,.25);
@@ -849,32 +839,23 @@ export class ExtensionEditor extends EditorPane {
 					}
 
 					#scroll-to-top:hover {
-						background-color:#007acc;
+						background-color: var(--vscode-button-hoverBackground);
 						box-shadow: 2px 2px 2px rgba(0,0,0,.25);
 					}
 
-					body.vscode-light #scroll-to-top {
-						background-color: #949494;
-					}
-
-					body.vscode-high-contrast #scroll-to-top:hover {
-						background-color: #007acc;
-					}
-
 					body.vscode-high-contrast #scroll-to-top {
-						background-color: black;
-						border: 2px solid #6fc3df;
+						border-width: 2px;
+						border-style: solid;
 						box-shadow: none;
-					}
-					body.vscode-high-contrast #scroll-to-top:hover {
-						background-color: #007acc;
 					}
 
 					#scroll-to-top span.icon::before {
 						content: "";
 						display: block;
+						background: var(--vscode-button-foreground);
 						/* Chevron up icon */
-						background:url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjIuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IgoJIHZpZXdCb3g9IjAgMCAxNiAxNiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMTYgMTY7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPHN0eWxlIHR5cGU9InRleHQvY3NzIj4KCS5zdDB7ZmlsbDojRkZGRkZGO30KCS5zdDF7ZmlsbDpub25lO30KPC9zdHlsZT4KPHRpdGxlPnVwY2hldnJvbjwvdGl0bGU+CjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik04LDUuMWwtNy4zLDcuM0wwLDExLjZsOC04bDgsOGwtMC43LDAuN0w4LDUuMXoiLz4KPHJlY3QgY2xhc3M9InN0MSIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2Ii8+Cjwvc3ZnPgo=');
+						webkit-mask-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjIuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IgoJIHZpZXdCb3g9IjAgMCAxNiAxNiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMTYgMTY7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPHN0eWxlIHR5cGU9InRleHQvY3NzIj4KCS5zdDB7ZmlsbDojRkZGRkZGO30KCS5zdDF7ZmlsbDpub25lO30KPC9zdHlsZT4KPHRpdGxlPnVwY2hldnJvbjwvdGl0bGU+CjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik04LDUuMWwtNy4zLDcuM0wwLDExLjZsOC04bDgsOGwtMC43LDAuN0w4LDUuMXoiLz4KPHJlY3QgY2xhc3M9InN0MSIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2Ii8+Cjwvc3ZnPgo=');
+						-webkit-mask-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDE5LjIuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IgoJIHZpZXdCb3g9IjAgMCAxNiAxNiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMTYgMTY7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPHN0eWxlIHR5cGU9InRleHQvY3NzIj4KCS5zdDB7ZmlsbDojRkZGRkZGO30KCS5zdDF7ZmlsbDpub25lO30KPC9zdHlsZT4KPHRpdGxlPnVwY2hldnJvbjwvdGl0bGU+CjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik04LDUuMWwtNy4zLDcuM0wwLDExLjZsOC04bDgsOGwtMC43LDAuN0w4LDUuMXoiLz4KPHJlY3QgY2xhc3M9InN0MSIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2Ii8+Cjwvc3ZnPgo=');
 						width: 16px;
 						height: 16px;
 					}
@@ -1007,18 +988,18 @@ export class ExtensionEditor extends EditorPane {
 	private renderMoreInfo(container: HTMLElement, extension: IExtension): void {
 		const gallery = extension.gallery;
 		const moreInfoContainer = append(container, $('.more-info-container'));
-		append(moreInfoContainer, $('.additional-details-title', undefined, localize('more info', "More Info")));
+		append(moreInfoContainer, $('.additional-details-title', undefined, localize('Marketplace Info', "Marketplace Info")));
 		const moreInfo = append(moreInfoContainer, $('.more-info'));
 		if (gallery) {
 			append(moreInfo,
 				/* {{SQL CARBON EDIT}} We don't keep track of when an extension was released
 				$('.more-info-entry', undefined,
 					$('div', undefined, localize('release date', "Released on")),
-					$('div', undefined, new Date(gallery.releaseDate).toLocaleString(undefined, { hour12: false }))
+					$('div', undefined, new Date(gallery.releaseDate).toLocaleString(undefined, { hourCycle: 'h23' }))
 				),*/
 				$('.more-info-entry', undefined,
 					$('div', undefined, localize('last updated', "Last updated")),
-					$('div', undefined, new Date(gallery.lastUpdated).toLocaleDateString(undefined, { hour12: false })) // {{SQL CARBON EDIT}} Just display date - we don't require time being accurate
+					$('div', undefined, new Date(gallery.lastUpdated).toLocaleString(undefined, { hour12: false }))
 				)
 			);
 		}
@@ -1306,7 +1287,7 @@ export class ExtensionEditor extends EditorPane {
 			let viewContainersForLocation: IViewContainer[] = contrib[location];
 			result.push(...viewContainersForLocation.map(viewContainer => ({ ...viewContainer, location })));
 			return result;
-		}, [] as Array<{ id: string, title: string, location: string }>);
+		}, [] as Array<{ id: string; title: string; location: string }>);
 
 		if (!viewContainers.length) {
 			return false;
@@ -1331,7 +1312,7 @@ export class ExtensionEditor extends EditorPane {
 			let viewsForLocation: IView[] = contrib[location];
 			result.push(...viewsForLocation.map(view => ({ ...view, location })));
 			return result;
-		}, [] as Array<{ id: string, name: string, location: string }>);
+		}, [] as Array<{ id: string; name: string; location: string }>);
 
 		if (!views.length) {
 			return false;
@@ -1798,7 +1779,7 @@ export class ExtensionEditor extends EditorPane {
 	}
 
 	private onError(err: any): void {
-		if (isPromiseCanceledError(err)) {
+		if (isCancellationError(err)) {
 			return;
 		}
 
