@@ -41,7 +41,6 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 import { getIconClasses } from 'vs/editor/common/services/getIconClasses';
 import { URI } from 'vs/base/common/uri';
 import { ILanguagePickInput } from 'vs/workbench/contrib/notebook/browser/controller/editActions';
-import { NbTelemetryAction } from 'sql/platform/telemetry/common/telemetryKeys';
 
 export const CODE_SELECTOR: string = 'code-component';
 const MARKDOWN_CLASS = 'markdown';
@@ -284,7 +283,6 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			nativeElement.ariaLabel = this.cellModel.displayLanguage;
 			this.updateLanguageMode();
 			this._changeRef.detectChanges();
-			this._model.sendNotebookTelemetryActionEvent(NbTelemetryAction.CellLanguageChanged, { language: language });
 		}));
 		this._register(this.cellModel.onCollapseStateChanged(isCollapsed => {
 			this.onCellCollapse(isCollapsed);
