@@ -499,7 +499,7 @@ declare module 'vscode-mssql' {
 	}
 
 	/**
-	* Interface containing deployment options of string[] type, value property holds enum names from <DacFx>\Product\Source\DeploymentApi\ObjectTypes.cs enum
+	* Interface containing deployment options of string[] type, value property holds enum names(nothing but option name) from <DacFx>\Product\Source\DeploymentApi\ObjectTypes.cs enum
 	*/
 	export interface DacDeployOptionPropertyStringArray {
 		value: string[];
@@ -515,8 +515,8 @@ declare module 'vscode-mssql' {
 		excludeObjectTypes: DacDeployOptionPropertyStringArray;
 		// key will be the boolean option name
 		booleanOptionsDictionary: { [key: string]: DacDeployOptionPropertyBoolean };
-		// key will be the object type option name
-		includeObjectsDictionary: { [key: string]: string };
+		// key will be the object type enum name(nothing but option name)
+		objectTypesDictionary: { [key: string]: string };
 	}
 
 	/**

@@ -235,7 +235,7 @@ export class PublishOptionsDialog {
 		const result = await this.publish.getDefaultDeploymentOptions();
 		this.optionsModel.deploymentOptions = result;
 
-		// reset optionsvalueNameLookup with default deployment options
+		// reset optionsvalueNameLookup and excludeObjectTypesLookup with default deployment options
 		this.optionsModel.setOptionsToValueNameLookup();
 		this.optionsModel.setExcludeObjectTypesLookup();
 

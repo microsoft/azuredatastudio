@@ -73,10 +73,10 @@ export class DeployOptionsModel {
 	}
 
 	/*
-	 * Sets deployment option's checkbox values and property name to the excludeObjectTypesLookup map
+	 * Sets exclude object types option's checkbox values and property name to the excludeObjectTypesLookup map
 	 */
 	public setExcludeObjectTypesLookup(): void {
-		Object.entries(this.deploymentOptions.includeObjectsDictionary).forEach(option => {
+		Object.entries(this.deploymentOptions.objectTypesDictionary).forEach(option => {
 			const optionValue: mssql.IOptionWithValue = {
 				optionName: option[0],
 				checked: this.getExcludeObjectTypeOptionCheckStatus(option[0])
@@ -86,13 +86,13 @@ export class DeployOptionsModel {
 	}
 
 	/*
-	 * Initialize options data from exclude objects options for table component
+	 * Initialize options data from objectTypesDictionary for table component
 	 * Returns data as [booleanValue, optionName]
 	 */
 	public getExcludeObjectTypesOptionsData(): any[][] {
 		let data: any[][] = [];
-		Object.entries(this.deploymentOptions.includeObjectsDictionary).forEach(option => {
-			// option[1] holds checkedbox display name and option[0] is the optionName
+		Object.entries(this.deploymentOptions.objectTypesDictionary).forEach(option => {
+			// option[1] is the display name and option[0] is the optionName
 			data.push([this.getExcludeObjectTypeOptionCheckStatus(option[0]), option[1]]);
 		});
 
@@ -101,7 +101,7 @@ export class DeployOptionsModel {
 
 	/*
 	* Gets the selected/default value of the object type option
-	* retrun true for the excludeObjectTypes[] values by exists in deploymentOptions.excludeObjectTypes
+	* return true for the deploymentOptions.excludeObjectTypes option, if it is in ObjectTypesDictionary
 	*/
 	public getExcludeObjectTypeOptionCheckStatus(optionName: string): boolean {
 		return (this.deploymentOptions.excludeObjectTypes.value?.find(x => x.toLowerCase() === optionName.toLowerCase())) !== undefined ? true : false;
