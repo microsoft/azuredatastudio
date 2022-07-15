@@ -81,6 +81,7 @@
 	"arc.data.controller.summary.data.controller.infrastructure": "Data controller infrastructure",
 	"arc.data.controller.summary.controller": "Controller",
 	"arc.data.controller.summary.location": "Location",
+	"arc.data.controller.agreement": "I accept {0} and {1}.",
 	"arc.data.controller.readmore": "Read more",
 	"microsoft.agreement.privacy.statement":"Microsoft Privacy Statement",
 	"deploy.script.action":"Script to notebook",
