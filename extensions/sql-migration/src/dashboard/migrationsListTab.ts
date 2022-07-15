@@ -12,7 +12,7 @@ import { filterMigrations, getMigrationDuration, getMigrationStatusImage, getMig
 import { SqlMigrationServiceDetailsDialog } from '../dialog/sqlMigrationService/sqlMigrationServiceDetailsDialog';
 import { ConfirmCutoverDialog } from '../dialog/migrationCutover/confirmCutoverDialog';
 import { MigrationCutoverDialogModel } from '../dialog/migrationCutover/migrationCutoverDialogModel';
-import { getMigrationTargetType, getMigrationMode, canRetryMigration, getMigrationModeEnum, canCancelMigration, canCutoverMigration } from '../constants/helper';
+import { getMigrationTargetType, getMigrationMode, canRetryMigration, getMigrationModeEnum, canCancelMigration, canCutoverMigration, getMigrationStatus } from '../constants/helper';
 import { RetryMigrationDialog } from '../dialog/retryMigration/retryMigrationDialog';
 import { DatabaseMigration, getResourceName } from '../api/azure';
 import { logError, TelemetryViews } from '../telemtery';
@@ -415,21 +415,18 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 			const data: any[] = this._filteredMigrations.map((migration, index) => {
 				return [
 					<azdata.HyperlinkColumnCellValue>{
-						icon: IconPathHelper.sqlServerLogo,
-						title: migration.properties.sourceServerName ?? EmptySettingValue,
-					},															// sourceServer
-					<azdata.HyperlinkColumnCellValue>{
 						icon: IconPathHelper.sqlDatabaseLogo,
 						title: migration.properties.sourceDatabaseName ?? EmptySettingValue,
 					},															// sourceDatabase
+					migration.properties.sourceServerName ?? EmptySettingValue,	// sourceServer
 					<azdata.HyperlinkColumnCellValue>{
 						icon: getMigrationStatusImage(migration),
 						title: getMigrationStatusWithErrors(migration),
 					},															// statue
 					getMigrationMode(migration),								// mode
 					getMigrationTargetType(migration),							// targetType
-					getResourceName(migration.properties.scope),				// targetServer
 					getResourceName(migration.id),								// targetDatabase
+					getResourceName(migration.properties.scope),				// targetServer
 					getMigrationDuration(
 						migration.properties.startedOn,
 						migration.properties.endedOn),							// duration
@@ -468,20 +465,19 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 					<azdata.HyperlinkColumn>{
 						cssClass: rowCssStyles,
 						headerCssClass: headerCssStyles,
-						name: loc.SRC_SERVER,
-						value: 'sourceServer',
-						width: 190,
-						type: azdata.ColumnType.hyperlink,
-						showText: true,
-					},
-					<azdata.HyperlinkColumn>{
-						cssClass: rowCssStyles,
-						headerCssClass: headerCssStyles,
 						name: loc.SRC_DATABASE,
 						value: 'sourceDatabase',
 						width: 190,
 						type: azdata.ColumnType.hyperlink,
 						showText: true,
+					},
+					{
+						cssClass: rowCssStyles,
+						headerCssClass: headerCssStyles,
+						name: loc.SRC_SERVER,
+						value: 'sourceServer',
+						width: 190,
+						type: azdata.ColumnType.text,
 					},
 					<azdata.HyperlinkColumn>{
 						cssClass: rowCssStyles,
@@ -510,16 +506,16 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 					{
 						cssClass: rowCssStyles,
 						headerCssClass: headerCssStyles,
-						name: loc.TARGET_SERVER_COLUMN,
-						value: 'targetServer',
+						name: loc.TARGET_DATABASE_COLUMN,
+						value: 'targetDatabase',
 						width: 125,
 						type: azdata.ColumnType.text,
 					},
 					{
 						cssClass: rowCssStyles,
 						headerCssClass: headerCssStyles,
-						name: loc.TARGET_DATABASE_COLUMN,
-						value: 'targetDatabase',
+						name: loc.TARGET_SERVER_COLUMN,
+						value: 'targetServer',
 						width: 125,
 						type: azdata.ColumnType.text,
 					},
@@ -563,14 +559,16 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 			const migration = this._filteredMigrations[rowState.row];
 			switch (buttonState?.column) {
 				case 2:
+					const status = getMigrationStatus(migration);
+					const statusMessage = loc.DATABASE_MIGRATION_STATUS_LABEL(status);
 					const errors = this.getMigrationErrors(migration!);
-					if (errors?.length > 0) {
-						this.showDialogMessage(loc.MIGRATION_ERROR_TITLE, errors);
-					}
+
+					this.showDialogMessage(
+						loc.DATABASE_MIGRATION_STATUS_TITLE,
+						statusMessage,
+						errors);
 					break;
-				default:
-					// case 0:
-					// case 1:
+				case 0:
 					await this._openMigrationDetails(migration);
 					break;
 			}

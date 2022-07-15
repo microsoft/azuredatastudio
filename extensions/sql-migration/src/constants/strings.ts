@@ -598,8 +598,8 @@ export const SERVER_OBJECTS_IN_PROGRESS_TABLES_LABEL = localize('sql.migration.d
 export const SERVER_OBJECTS_SUCCESSFUL_TABLES_LABEL = localize('sql.migration.details.serverobjects.successful.tables.label', 'Successful');
 export const SERVER_OBJECTS_FAILED_TABLES_LABEL = localize('sql.migration.details.serverobjects.failed.tables.label', 'Failed');
 export const SERVER_OBJECTS_CANCELLED_TABLES_LABEL = localize('sql.migration.details.serverobjects.cancelled.tables.label', 'Cancelled');
-export const FILTER_SERVER_OBJECTS_PLACEHOLDER = localize('sql.migration.details.serverobjects.filter.label', 'Search table results');
-export const FILTER_SERVER_OBJECTS_ARIA_LABEL = localize('sql.migration.details.serverobjects.filter.aria.label', 'Search table results using keywords');
+export const FILTER_SERVER_OBJECTS_PLACEHOLDER = localize('sql.migration.details.serverobjects.filter.label', 'Filter table migration results');
+export const FILTER_SERVER_OBJECTS_ARIA_LABEL = localize('sql.migration.details.serverobjects.filter.aria.label', 'Filter table migration results using keywords');
 
 //Migration confirm cutover dialog
 export const COMPLETING_CUTOVER_WARNING = localize('sql.migration.completing.cutover.warning', "Completing cutover without restoring all the backups may result in a data loss.");
@@ -638,12 +638,12 @@ export const STATUS_ONGOING = localize('sql.migration.status.dropdown.ongoing', 
 export const STATUS_COMPLETING = localize('sql.migration.status.dropdown.completing', "Status: Completing");
 export const STATUS_SUCCEEDED = localize('sql.migration.status.dropdown.succeeded', "Status: Succeeded");
 export const STATUS_FAILED = localize('sql.migration.status.dropdown.failed', "Status: Failed");
-export const SEARCH_FOR_MIGRATIONS = localize('sql.migration.search.for.migration', "Search for migrations");
+export const SEARCH_FOR_MIGRATIONS = localize('sql.migration.search.for.migration', "Filter migration results");
 export const ONLINE = localize('sql.migration.online', "Online");
 export const OFFLINE = localize('sql.migration.offline', "Offline");
 export const DATABASE = localize('sql.migration.database', "Database");
 export const SRC_DATABASE = localize('sql.migration.src.database', "Source database");
-export const SRC_SERVER = localize('sql.migration.src.server', "Source server");
+export const SRC_SERVER = localize('sql.migration.src.server', "Source name");
 
 export const STATUS_COLUMN = localize('sql.migration.database.status.column', "Migration status");
 export const DATABASE_MIGRATION_SERVICE = localize('sql.migration.database.migration.service', "Database Migration Service");
@@ -653,7 +653,7 @@ export const SQL_MANAGED_INSTANCE = localize('sql.migration.sql.managed.instance
 export const SQL_VIRTUAL_MACHINE = localize('sql.migration.sql.virtual.machine', "SQL Virtual Machine");
 export const SQL_DATABASE = localize('sql.migration.sql.database', "SQL Database");
 export const TARGET_AZURE_SQL_INSTANCE_NAME = localize('sql.migration.target.azure.sql.instance.name', "Target name");
-export const TARGET_SERVER_COLUMN = localize('sql.migration.target.azure.sql.instance.server.name', "Target server");
+export const TARGET_SERVER_COLUMN = localize('sql.migration.target.azure.sql.instance.server.name', "Target name");
 export const TARGET_DATABASE_COLUMN = localize('sql.migration.target.azure.sql.instance.database.name', "Target database");
 export const MIGRATION_MODE = localize('sql.migration.cutover.type', "Mode");
 export const START_TIME = localize('sql.migration.start.time', "Start time");
@@ -864,5 +864,13 @@ export const DESKTOP_DASHBOARD_TAB_TITLE = localize('sql.migration.tab.dashboard
 export const DESKTOP_MIGRATIONS_TAB_TITLE = localize('sql.migration.tab.migrations.title', 'Migrations');
 
 // Error info
-export const MIGRATION_ERROR_TITLE = localize('sql.migration.error.title', 'Migration error details');
-export const TABLE_MIGRATION_ERROR_TITLE = localize('sql.migration.table.error.title', 'Table migration error details');
+export const DATABASE_MIGRATION_STATUS_TITLE = localize('sql.migration.error.title', 'Migration status details');
+export const TABLE_MIGRATION_STATUS_TITLE = localize('sql.migration.table.error.title', 'Table migration status details');
+
+export function DATABASE_MIGRATION_STATUS_LABEL(status?: string): string {
+	return localize('sql.migration.database.migration.status.label', 'Database migration status: {0}', status ?? '');
+}
+
+export function TABLE_MIGRATION_STATUS_LABEL(status?: string): string {
+	return localize('sql.migration.table.migration.status.label', 'Table migration status: {0}', status ?? '');
+}

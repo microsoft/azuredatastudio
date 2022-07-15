@@ -93,7 +93,10 @@ export class DashboardWidget implements DashboardStatusBar {
 
 			this._disposables.push(
 				this._tabs.onTabChanged(
-					async id => await this.onDialogClosed()));
+					async id => {
+						await this.clearError();
+						await this.onDialogClosed();
+					}));
 
 			this._statusInfoBox = view.modelBuilder.infoBox()
 				.withProps({

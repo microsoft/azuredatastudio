@@ -264,11 +264,14 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 							const tableProgress = this.model.migration.properties.migrationStatusDetails?.listOfCopyProgressDetails?.find(
 								progress => progress.tableName === tableName);
 							const errors = tableProgress?.errors || [];
-							if (errors.length > 0) {
-								this.showDialogMessage(
-									loc.TABLE_MIGRATION_ERROR_TITLE,
-									errors.join(EOL));
-							}
+							const tableStatus = loc.PipelineRunStatus[tableProgress?.status ?? ''] ?? tableProgress?.status;
+							const statusMessage = loc.TABLE_MIGRATION_STATUS_LABEL(tableStatus);
+							const errorMessage = errors.join(EOL);
+
+							this.showDialogMessage(
+								loc.TABLE_MIGRATION_STATUS_TITLE,
+								statusMessage,
+								errorMessage);
 						}
 					}));
 

@@ -149,15 +149,29 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 
 	protected showDialogMessage(
 		title: string,
-		message: string
+		statusMessage: string,
+		errorMessage: string,
 	): void {
 		const tab = azdata.window.createTab(title);
 		tab.registerContent(async (view) => {
 			const flex = view.modelBuilder.flexContainer()
 				.withItems([
+					view.modelBuilder.text()
+						.withProps({ value: statusMessage })
+						.component(),
+				])
+				.withLayout({
+					flexFlow: 'column',
+					width: 420,
+				})
+				.withProps({ CSSStyles: { 'margin': '0 10px 0 10px' } })
+				.component();
+
+			if (errorMessage.length > 0) {
+				flex.addItem(
 					view.modelBuilder.inputBox()
 						.withProps({
-							value: message,
+							value: errorMessage,
 							readOnly: true,
 							multiline: true,
 							inputType: 'text',
@@ -165,13 +179,8 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 							CSSStyles: { 'overflow': 'hidden auto' },
 						})
 						.component()
-				])
-				.withLayout({
-					flexFlow: 'row',
-					width: 420,
-				})
-				.withProps({ CSSStyles: { 'margin': '0 10px 0 10px' } })
-				.component();
+				);
+			}
 
 			await view.initializeModel(flex);
 		});
