@@ -3,7 +3,6 @@
 	// for the documentation about the extensions.json format
 	"recommendations": [
 		"dbaeumer.vscode-eslint",
-		"EditorConfig.EditorConfig",
-		"redhat.vscode-yaml"
+		"EditorConfig.EditorConfig"
 	]
 }
