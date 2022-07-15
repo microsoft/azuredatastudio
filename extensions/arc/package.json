@@ -1597,20 +1597,6 @@
           ],
           "when": "mi-type=arc-mi"
         },
-        "agreement": {
-          "template": "%arc.agreement%",
-          "links": [
-            {
-              "text": "%microsoft.agreement.privacy.statement%",
-              "url": "https://go.microsoft.com/fwlink/?LinkId=853010"
-            },
-            {
-              "text": "%arc.agreement.sql.terms.conditions%",
-              "url": "https://go.microsoft.com/fwlink/?linkid=2045708"
-            }
-          ],
-          "when": "mi-type=arc-mi"
-        },
         "helpText": {
           "template": "%arc.agreement.sql.help.text%",
           "links": [
