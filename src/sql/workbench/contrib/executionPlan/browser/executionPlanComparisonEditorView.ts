@@ -193,7 +193,6 @@ export class ExecutionPlanComparisonEditorView {
 				c.style.display = 'none';
 			});
 			this._topPlanDiagramContainers[e.index].style.display = '';
-			this.topPlanDiagrams[e.index].selectElement(undefined);
 			this._propertiesView.setTopElement(this._topPlanDiagramModels[e.index].root);
 			this._topPlanRecommendations.recommendations = this._topPlanDiagramModels[e.index].recommendations;
 			this._activeTopPlanIndex = e.index;
@@ -221,7 +220,6 @@ export class ExecutionPlanComparisonEditorView {
 				c.style.display = 'none';
 			});
 			this._bottomPlanDiagramContainers[e.index].style.display = '';
-			this.bottomPlanDiagrams[e.index].selectElement(undefined);
 			this._propertiesView.setTopElement(this._bottomPlanDiagramModels[e.index].root);
 			this._bottomPlanRecommendations.recommendations = this._bottomPlanDiagramModels[e.index].recommendations;
 			this._activeBottomPlanIndex = e.index;
