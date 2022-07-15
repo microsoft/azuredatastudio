@@ -126,7 +126,8 @@ export const enum NbTelemetryAction {
 	CellExecutionFailed = 'CellExecutionFailed',
 	TextCellToolbarAction = 'TextCellToolbarAction',
 	WYSIWYGKeyboardAction = 'WYSIWYGKeyboardAction',
-	TextCellCreated = 'TextCellCreated'
+	TextCellCreated = 'TextCellCreated',
+	CellLanguageChanged = 'CellLanguageChanged'
 }
 
 export const enum TelemetryPropertyName {
