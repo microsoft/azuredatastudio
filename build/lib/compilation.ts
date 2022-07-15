@@ -44,9 +44,19 @@ function createCompile(src: string, build: boolean, emitError?: boolean) {
 
 	const projectPath = path.join(__dirname, '../../', src, 'tsconfig.json');
 	const overrideOptions = { ...getTypeScriptCompilerOptions(src), inlineSources: Boolean(build) };
-	if (!build) {
+	// {{SQL CARBON EDIT}} Add override for not inlining the sourcemap during build so we can get code coverage - it
+	// currently expects a *.map.js file to exist next to the source file for proper source mapping
+	if (!build && !process.env['SQL_NO_INLINE_SOURCEMAP']) {
 		overrideOptions.inlineSourceMap = true;
+	} else if (!build) {
+		console.warn('********************************************************************************************');
+		console.warn('* Inlining of source maps is DISABLED, which will prevent debugging from working properly, *');
+		console.warn('* but is required to generate code coverage reports.                                       *');
+		console.warn('* To re-enable inlining of source maps clear the SQL_NO_INLINE_SOURCEMAP environment var   *');
+		console.warn('* and re-run the build/watch task                                                          *');
+		console.warn('********************************************************************************************');
 	}
+
 
 	const compilation = tsb.create(projectPath, overrideOptions, false, err => reporter(err));
 
