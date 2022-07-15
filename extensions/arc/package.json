@@ -252,7 +252,11 @@
                             "uksouth",
                             "westeurope",
                             "westus2"
-                          ]
+                          ],
+                          "enabled": {
+                            "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
+                            "value": "Indirect"
+                          }
                         }
                       ]
                     }
@@ -268,25 +272,6 @@
                           "type": "readonly_text",
                           "label": "%arc.data.controller.details.description%",
                           "labelWidth": "600px"
-                        },
-                        {
-                          "type": "text",
-                          "label": "%arc.data.controller.namespace%",
-                          "validations": [
-                            {
-                              "type": "regex_match",
-                              "regex": "^[a-z0-9]([-a-z0-9]{0,61}[a-z0-9])?$",
-                              "description": "%arc.data.controller.namespace.validation.description%"
-                            }
-                          ],
-                          "defaultValue": "",
-                          "required": true,
-                          "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAMESPACE",
-                          "enabled": {
-                            "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
-                            "value": "Indirect"
-                          },
-                          "description": "%arc.data.controller.namespace.description%"
                         },
                         {
                           "type": "text",
@@ -334,6 +319,25 @@
                             "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
                             "value": "Direct"
                           }
+                        },
+                        {
+                          "type": "text",
+                          "label": "%arc.data.controller.namespace%",
+                          "validations": [
+                            {
+                              "type": "regex_match",
+                              "regex": "^[a-z0-9]([-a-z0-9]{0,61}[a-z0-9])?$",
+                              "description": "%arc.data.controller.namespace.validation.description%"
+                            }
+                          ],
+                          "defaultValue": "",
+                          "required": true,
+                          "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAMESPACE",
+                          "enabled": {
+                            "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
+                            "value": "Indirect"
+                          },
+                          "description": "%arc.data.controller.namespace.description%"
                         },
                         {
                           "type": "text",
