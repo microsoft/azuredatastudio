@@ -75,7 +75,7 @@ export class SchemaCompareOptionsModel {
 	 * Sets include object types option's checkbox values and property name to the includeObjectTypesLookup map
 	 */
 	public setIncludeObjectTypesLookup(): void {
-		Object.entries(this.deploymentOptions.includeObjectsDictionary).forEach(option => {
+		Object.entries(this.deploymentOptions.objectTypesDictionary).forEach(option => {
 			const optionValue: mssql.IOptionWithValue = {
 				optionName: option[0],
 				checked: this.getIncludeObjectTypeOptionCheckStatus(option[0])
@@ -90,8 +90,8 @@ export class SchemaCompareOptionsModel {
 	 */
 	public getIncludeObjectTypesOptionsData(): any[][] {
 		let data: any[][] = [];
-		Object.entries(this.deploymentOptions.includeObjectsDictionary).forEach(option => {
-			// option[1] holds checkedbox display name and option[0] is the optionName
+		Object.entries(this.deploymentOptions.objectTypesDictionary).forEach(option => {
+			// option[1] is the display name and option[0] is the optionName
 			data.push([this.getIncludeObjectTypeOptionCheckStatus(option[0]), option[1]]);
 		});
 
@@ -100,7 +100,7 @@ export class SchemaCompareOptionsModel {
 
 	/*
 	* Gets the selected/default value of the object type option
-	* retrun false for the include eObject Types values that exists in deploymentOptions.excludeObjectTypes
+	* return false for the deploymentOptions.excludeObjectTypes option, if it is in ObjectTypesDictionary
 	*/
 	public getIncludeObjectTypeOptionCheckStatus(optionName: string): boolean {
 		return (this.deploymentOptions.excludeObjectTypes.value?.find(x => x.toLowerCase() === optionName.toLowerCase())) !== undefined ? false : true;

@@ -118,7 +118,7 @@ export function getDeploymentOptions(): mssql.DeploymentOptions {
 			'SampleDisplayOption1': { value: false, description: sampleDesc, displayName: sampleName },
 			'SampleDisplayOption2': { value: false, description: sampleDesc, displayName: sampleName }
 		},
-		includeObjectsDictionary: {
+		objectTypesDictionary: {
 			'SampleProperty1': sampleName,
 			'SampleProperty2': sampleName
 		}

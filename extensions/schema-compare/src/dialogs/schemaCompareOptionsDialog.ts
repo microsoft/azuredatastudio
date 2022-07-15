@@ -187,7 +187,7 @@ export class SchemaCompareOptionsDialog {
 			this.disposableListeners.push(this.objectsTable.onCellAction((rowState) => {
 				let checkboxState = <azdata.ICheckboxCellActionEventArgs>rowState;
 				if (checkboxState && checkboxState.row !== undefined) {
-					// data[row][1] contains the exclude type option display nam
+					// data[row][1] contains the include object type option display name
 					const displayName = this.objectsTable?.data[checkboxState.row][1];
 					this.optionsModel.setIncludeObjectTypesOptionValue(displayName, checkboxState.checked);
 					this.optionsChanged = true;

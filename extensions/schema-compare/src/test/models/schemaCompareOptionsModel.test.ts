@@ -17,27 +17,27 @@ describe('Schema Compare Options Model', () => {
 		should.doesNotThrow(() => model.setIncludeObjectTypesToDeploymentOptions());
 	});
 
-	it('Should exclude objects', function (): void {
+	it('Should not have a default object types to exclude from IncludeObjectTypes ', function (): void {
 		const model = new SchemaCompareOptionsModel(testUtils.getDeploymentOptions());
-		should(model.deploymentOptions.excludeObjectTypes.value.length).be.equal(0, 'There should be no excluded objects');
+		should(model.deploymentOptions.excludeObjectTypes.value.length).be.equal(0, 'There should be no object type excluding from IncludeObjectTypes');
 
-		Object.keys(model.deploymentOptions.includeObjectsDictionary).forEach(option => {
-			should(model.getIncludeObjectTypeOptionCheckStatus(option)).equal(true);
+		Object.keys(model.deploymentOptions.objectTypesDictionary).forEach(option => {
+			should(model.getIncludeObjectTypeOptionCheckStatus(option)).equal(true, 'Object types that are not excluding should return true');
 		});
 	});
 
-	it('Should have default exclude objects', function (): void {
+	it('Should have default object types to exclude from IncludeObjectTypes ', function (): void {
 		const model = new SchemaCompareOptionsModel(testUtils.getDeploymentOptions());
 		model.deploymentOptions.excludeObjectTypes.value = ['SampleProperty1'];
 
-		should(model.deploymentOptions.excludeObjectTypes.value.length).be.equal(1, 'There should be one excluded object');
+		should(model.deploymentOptions.excludeObjectTypes.value.length).be.equal(1, 'There should be one object type excluding from IncludeObjectTypes ');
 
-		// should return true for all exclude object types options and false for the exising defauit option
-		Object.keys(model.deploymentOptions.includeObjectsDictionary).forEach(option => {
+		// should return false for the default object types and false for the remaining object types
+		Object.keys(model.deploymentOptions.objectTypesDictionary).forEach(option => {
 			if (option === 'SampleProperty1') {
-				should(model.getIncludeObjectTypeOptionCheckStatus(option)).equal(false);
+				should(model.getIncludeObjectTypeOptionCheckStatus(option)).equal(false, 'Object type property that have default object types to exclude from IncludeObjectTypes should return false');
 			} else {
-				should(model.getIncludeObjectTypeOptionCheckStatus(option)).equal(true);
+				should(model.getIncludeObjectTypeOptionCheckStatus(option)).equal(true, 'All including Object type should return true');
 			}
 		});
 	});
@@ -46,7 +46,7 @@ describe('Schema Compare Options Model', () => {
 		const model = new SchemaCompareOptionsModel(testUtils.getDeploymentOptions());
 		model.getOptionsData();
 		Object.entries(model.deploymentOptions.booleanOptionsDictionary).forEach(option => {
-			should(model.getOptionDescription(option[1].displayName)).not.equal(undefined);
+			should(model.getOptionDescription(option[1].displayName)).not.equal(undefined, 'Option description shouldn\'t be undefined');
 		});
 	});
 
