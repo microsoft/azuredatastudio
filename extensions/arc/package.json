@@ -1606,6 +1606,18 @@
                 "label": "%arc.agreement.sql.help.text.learn.more.ariaLabel%"
               },
               "url": "https://go.microsoft.com/fwlink/?linkid=2141849"
+            },
+            {
+              "text": "%arc.agreement.sql.help.text.azure.marketplace.terms%",
+              "url": "https://go.microsoft.com/fwlink/?linkid=2045624"
+            },
+            {
+              "text": "%arc.agreement.sql.help.text.terms.of.use%",
+              "url": "https://go.microsoft.com/fwlink/?linkid=2045708"
+            },
+            {
+              "text": "%arc.agreement.sql.help.text.privacy.policy%",
+              "url": "https://go.microsoft.com/fwlink/?linkid=512132"
             }
           ],
           "when": "mi-type=arc-mi"
