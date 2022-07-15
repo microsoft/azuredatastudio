@@ -119,9 +119,12 @@ export class GenerateArmTemplateDialog {
 			value: 'a\nb\nc\nd\ne',
 			rows: 20,
 			multiline: true,
+			// UNCOMMENT THIS AFTER TESTING
 			// readOnly: true,
 			CSSStyles: {
 				'font': '14px "Monaco", "Menlo", "Consolas", "Droid Sans Mono", "Inconsolata", "Courier New", monospace',
+				// 'overflow': 'scroll',
+				// 'white-space': 'nowrap',
 			}
 		}).component();
 
