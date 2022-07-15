@@ -125,7 +125,8 @@ export const enum NbTelemetryAction {
 	MIMETypeRendererNotFound = 'MIMETypeRendererNotFound',
 	CellExecutionFailed = 'CellExecutionFailed',
 	TextCellToolbarAction = 'TextCellToolbarAction',
-	WYSIWYGKeyboardAction = 'WYSIWYGKeyboardAction'
+	WYSIWYGKeyboardAction = 'WYSIWYGKeyboardAction',
+	TextCellCreated = 'TextCellCreated'
 }
 
 export const enum TelemetryPropertyName {

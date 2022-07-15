@@ -131,6 +131,7 @@ export class CellModel extends Disposable implements ICellModel {
 		}
 		this.createUri();
 		this.populatePropertiesFromSettings();
+		this.notebookModel.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.TextCellCreated, { defaultTextEditMode: this._defaultTextEditMode });
 	}
 
 	public equals(other: ICellModel) {
