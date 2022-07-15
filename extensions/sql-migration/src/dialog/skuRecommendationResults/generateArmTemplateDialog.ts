@@ -105,25 +105,32 @@ export class GenerateArmTemplateDialog {
 
 	// TODO: Implement this
 	private CreateSaveArmTemplateContainer(_view: azdata.ModelView): azdata.FlexContainer {
-		const container = _view.modelBuilder.flexContainer().withProps({
-			CSSStyles: {
-				...styles.BODY_CSS,
-			}
-		}).component();
-
 		const armTemplateSaveInstructions = _view.modelBuilder.text().withProps({
 			// TODO: Update text
 			// Replace with localized string in the future
 			value: 'ARM template save instructions',
 			CSSStyles: {
 				...styles.BODY_CSS,
-				'margin-right': '20px'
+				'margin-bottom': '8px',
 			}
 		}).component();
 
-		container.addItems([
+		const armTemplateInputBox = _view.modelBuilder.inputBox().withProps({
+			value: 'a\nb\nc\nd\ne',
+			rows: 20,
+			multiline: true,
+			// readOnly: true,
+			CSSStyles: {
+				'font': '14px "Monaco", "Menlo", "Consolas", "Droid Sans Mono", "Inconsolata", "Courier New", monospace',
+			}
+		}).component();
+
+		const container = _view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'column'
+		}).withItems([
 			armTemplateSaveInstructions,
-		]);
+			armTemplateInputBox
+		]).component();
 
 		return container;
 	}
