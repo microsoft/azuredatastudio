@@ -42,7 +42,7 @@
 			"assocLabelPath": "Dateien mit Pfad",
 			"derivedDescription": "Ordnet Dateien zu, die gleichgeordnete Elemente mit dem gleichen Namen und einer anderen Erweiterung besitzen.",
 			"derivedLabel": "Dateien mit gleichgeordneten Elementen nach Name",
-			"dirty": "Ein geänderter Indikator, wenn der aktive Editor geändert wurde",
+			"dirty": "ein Indikator für den Fall, dass der aktive Editor nicht gespeicherte Änderungen aufweist",
 			"falseDescription": "Deaktiviert das Muster.",
 			"fileDescription": "Ordnet alle Dateien mit einer bestimmten Erweiterung zu.",
 			"fileLabel": "Dateien nach Erweiterung",
