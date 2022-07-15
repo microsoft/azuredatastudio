@@ -546,8 +546,8 @@ export class QueryEditorOverrideContribution extends Disposable implements IWork
 					// Fall back to using the normal text based diff editor - we don't want the query bar and related items showing up in the diff editor
 					canHandleDiff: () => false
 				},
-				(editorInput, group) => {
-					const fileInput = this._editorService.createEditorInput(editorInput) as FileEditorInput;
+				async (editorInput, group) => {
+					const fileInput = await this._editorService.createEditorInput(editorInput) as FileEditorInput;
 					const langAssociation = languageAssociationRegistry.getAssociationForLanguage(lang);
 					const queryEditorInput = langAssociation?.syncConvertInput?.(fileInput);
 					if (!queryEditorInput) {
