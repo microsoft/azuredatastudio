@@ -76,8 +76,10 @@ export class EditDataGridPanel extends GridParentComponent {
 	// List of column names with their indexes stored.
 	private columnNameToIndex: { [columnNumber: number]: string } = {};
 
+	// Strings immediately before and after an edit.
 	private originalStringValue: string;
 	private endStringValue: string;
+	private stringChanged: boolean;
 	// Edit Data functions
 	public onActiveCellChanged: (event: Slick.OnActiveCellChangedEventArgs<any>) => void;
 	public onCellChange: (event: Slick.OnCellChangeEventArgs<any>) => void;
@@ -310,11 +312,11 @@ export class EditDataGridPanel extends GridParentComponent {
 			return;
 		}
 
-		if (this.previousSavedCell.row !== row && this.previousSavedCell.column !== column && this.firstRender) {
+		if (this.lastClickedCell.row !== row && this.lastClickedCell.column !== column && this.firstRender) {
 			return;
 		}
 
-		if (this.isRowDirty(this.previousSavedCell.row) && row !== this.previousSavedCell.row) {
+		if (this.isRowDirty(this.lastClickedCell.row) && row !== this.lastClickedCell.row && !this.stringChanged) {
 			await this.commitEditTask().then(() => {
 				this.currentEditCellValue = undefined;
 				this.lastClickedCell = { row, column, isEditable };
@@ -322,8 +324,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			},
 				() => {
 					this.currentEditCellValue = undefined;
-					this.lastClickedCell = { row: this.previousSavedCell.row, column: this.previousSavedCell.column, isEditable };
-					this.focusCell(this.previousSavedCell.row, this.previousSavedCell.column);
+					this.focusCell(this.lastClickedCell.row, this.lastClickedCell.column);
 					return Promise.reject(null);
 				});
 		}
@@ -579,11 +580,13 @@ export class EditDataGridPanel extends GridParentComponent {
 				document.execCommand('delete');
 				document.execCommand('insertText', false, 'NULL');
 			}
-			else if (this.isRowDirty(this.lastClickedCell.row) && this.endStringValue === this.originalStringValue) {
+			else if (this.isRowDirty(this.lastClickedCell.row) && !this.stringChanged) {
 				this.revertSelectedRow(this.lastClickedCell.row);
 			}
-			else if (this.endStringValue !== this.originalStringValue) {
+			else if (this.stringChanged) {
 				this.revertSelectedCell(this.lastClickedCell.row, this.lastClickedCell.column).catch(onUnexpectedError);
+				this.lastEnteredString = undefined;
+				this.stringChanged = false;
 			}
 			this.focusCell(this.lastClickedCell.row, this.lastClickedCell.column);
 			handled = true;
@@ -1228,11 +1231,12 @@ export class EditDataGridPanel extends GridParentComponent {
 		this.logService.debug('onBeforeEditCell called with grid: ' + event.grid + ' row: ' + event.row
 			+ ' cell: ' + event.cell + ' item: ' + event.item + ' column: ' + event.column);
 
-		this.originalStringValue = (Object.keys(event.item).length > 0) ? event.item[event.cell].displayValue : this.originalStringValue;
+		this.originalStringValue = (Object.keys(event.item).length > 0) ? (event.item[event.cell].displayValue ? event.item[event.cell].displayValue : event.item[event.cell]) : this.originalStringValue;
 	}
 
 	onBeforeCellEditorDestroy(event: Slick.OnBeforeCellEditorDestroyEventArgs<any>): void {
 		this.endStringValue = event.editor.serializeValue();
+		this.stringChanged = this.originalStringValue !== this.endStringValue;
 	}
 
 	handleInitializeTable(): void {
