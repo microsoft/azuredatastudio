@@ -16,6 +16,7 @@ import { IServerInstance } from './common';
 import { JupyterServerInstallation } from './jupyterServerInstallation';
 import * as utils from '../common/utils';
 import * as constants from '../common/constants';
+import { sendNotebookActionEvent, NbTelemetryView, NbTelemetryAction } from '../telemetry';
 
 const NotebookConfigFilename = 'jupyter_notebook_config.py';
 const CustomJsFilename = 'custom.js';
@@ -218,6 +219,7 @@ export class PerFolderServerInstance implements IServerInstance {
 
 		// Execute the command
 		await this.executeStartCommand(startCommand);
+		sendNotebookActionEvent(NbTelemetryView.Jupyter, NbTelemetryAction.JupyterServerStarted, { pythonVersion: this.options.install.installedPythonVersion, usingExistingPython: String(JupyterServerInstallation.getExistingPythonSetting()), usingConda: String(this.options.install.usingConda) });
 	}
 
 	private executeStartCommand(startCommand: string): Promise<void> {

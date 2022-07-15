@@ -20,6 +20,7 @@ import { IconPathHelper } from './common/iconHelper';
 import { ExtensionContextHelper } from './common/extensionContextHelper';
 import { BookTreeItem } from './book/bookTreeItem';
 import Logger from './common/logger';
+import { sendNotebookActionEvent, NbTelemetryView, NbTelemetryAction } from './telemetry';
 
 const localize = nls.loadMessageBundle();
 
@@ -80,6 +81,7 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.openRemoteBook', async () => {
 		let dialog = new RemoteBookDialog(remoteBookController);
+		sendNotebookActionEvent(NbTelemetryView.Book, NbTelemetryAction.AddRemoteBook);
 		return dialog.createDialog();
 	}));
 

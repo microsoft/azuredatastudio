@@ -15,10 +15,9 @@ import * as TypeMoq from 'typemoq';
 import { PublishDatabaseDialog } from '../../dialogs/publishDatabaseDialog';
 import { Project } from '../../models/project';
 import { ProjectsController } from '../../controllers/projectController';
-import { IDeploySettings } from '../../models/IDeploySettings';
 import { emptySqlDatabaseProjectTypeId } from '../../common/constants';
 import { createContext, mockDacFxOptionsResult, TestContext } from '../testContext';
-import { ILocalDbDeployProfile } from '../../models/deploy/deployProfile';
+import { ISqlProjectPublishSettings, IPublishToDockerSettings } from 'sqldbproj';
 
 let testContext: TestContext;
 describe('Publish Database Dialog', () => {
@@ -40,7 +39,7 @@ describe('Publish Database Dialog', () => {
 			sdkStyle: false
 		});
 
-		const project = new Project(projFilePath);
+		const project = await Project.openProject(projFilePath);
 		const publishDatabaseDialog = new PublishDatabaseDialog(project);
 		publishDatabaseDialog.openDialog();
 		should.notEqual(publishDatabaseDialog.publishTab, undefined);
@@ -76,9 +75,9 @@ describe('Publish Database Dialog', () => {
 		dialog.object.publishToExistingServer = true;
 		dialog.callBase = true;
 
-		let profile: IDeploySettings | undefined;
+		let profile: ISqlProjectPublishSettings | undefined;
 
-		const expectedPublish: IDeploySettings = {
+		const expectedPublish: ISqlProjectPublishSettings = {
 			databaseName: 'MockDatabaseName',
 			serverName: 'MockServer',
 			connectionUri: 'Mock|Connection|Uri',
@@ -95,7 +94,7 @@ describe('Publish Database Dialog', () => {
 
 		should(profile).deepEqual(expectedPublish);
 
-		const expectedGenScript: IDeploySettings = {
+		const expectedGenScript: ISqlProjectPublishSettings = {
 			databaseName: 'MockDatabaseName',
 			serverName: 'MockServer',
 			connectionUri: 'Mock|Connection|Uri',
@@ -112,8 +111,8 @@ describe('Publish Database Dialog', () => {
 
 		should(profile).deepEqual(expectedGenScript);
 
-		const expectedContainerPublishProfile: ILocalDbDeployProfile = {
-			localDbSetting: {
+		const expectedContainerPublishProfile: IPublishToDockerSettings = {
+			dockerSettings: {
 				dbName: 'MockDatabaseName',
 				dockerBaseImage: '',
 				password: '',
@@ -123,7 +122,7 @@ describe('Publish Database Dialog', () => {
 				dockerBaseImageEula: ''
 
 			},
-			deploySettings: {
+			sqlProjectPublishSettings: {
 				databaseName: 'MockDatabaseName',
 				serverName: 'localhost',
 				connectionUri: '',
@@ -136,7 +135,7 @@ describe('Publish Database Dialog', () => {
 			}
 		};
 		dialog.object.publishToExistingServer = false;
-		let deployProfile: ILocalDbDeployProfile | undefined;
+		let deployProfile: IPublishToDockerSettings | undefined;
 		dialog.object.publishToContainer = (_, prof) => { deployProfile = prof; };
 		await dialog.object.publishClick();
 

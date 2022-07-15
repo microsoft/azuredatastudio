@@ -6,18 +6,15 @@
 import * as path from 'path';
 import * as utils from '../common/utils';
 import { IDacpacReferenceSettings, IProjectReferenceSettings } from './IDatabaseReferenceSettings';
-import { IFileProjectEntry } from 'sqldbproj';
+import { EntryType, IDatabaseReferenceProjectEntry, IFileProjectEntry, IProjectEntry } from 'sqldbproj';
 import { Uri } from 'vscode';
 
 /**
  * Represents an entry in a project file
  */
-export abstract class ProjectEntry {
-	type: EntryType;
+export abstract class ProjectEntry implements IProjectEntry {
 
-	constructor(type: EntryType) {
-		this.type = type;
-	}
+	constructor(public type: EntryType) { }
 }
 
 export class FileProjectEntry extends ProjectEntry implements IFileProjectEntry {
@@ -44,16 +41,6 @@ export class FileProjectEntry extends ProjectEntry implements IFileProjectEntry 
 	public pathForSqlProj(): string {
 		return utils.convertSlashesForSqlProj(this.fsUri.fsPath);
 	}
-}
-
-/**
- * Represents a database reference entry in a project file
- */
-
-export interface IDatabaseReferenceProjectEntry extends FileProjectEntry {
-	databaseName: string;
-	databaseVariableLiteralValue?: string;
-	suppressMissingDependenciesErrors: boolean;
 }
 
 export class DacpacReferenceProjectEntry extends FileProjectEntry implements IDatabaseReferenceProjectEntry {
@@ -142,13 +129,6 @@ export class SqlCmdVariableProjectEntry extends ProjectEntry {
 	constructor(public variableName: string, public defaultValue: string) {
 		super(EntryType.SqlCmdVariable);
 	}
-}
-
-export enum EntryType {
-	File,
-	Folder,
-	DatabaseReference,
-	SqlCmdVariable
 }
 
 export enum DatabaseReferenceLocation {

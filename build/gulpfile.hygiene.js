@@ -14,6 +14,10 @@ function checkPackageJSON(actualPath) {
 	const rootPackageJSON = require('../package.json');
 	const checkIncluded = (set1, set2) => {
 		for (let depName in set1) {
+			if (depName === 'typescript') {
+				continue;
+			}
+
 			const depVersion = set1[depName];
 			const rootDepVersion = set2[depName];
 			if (!rootDepVersion) {

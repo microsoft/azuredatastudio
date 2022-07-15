@@ -23,19 +23,20 @@ export class PublishOptionsDialog {
 	public optionsModel: DeployOptionsModel;
 	private optionsFlexBuilder: azdataType.FlexContainer | undefined;
 	private optionsChanged: boolean = false;
+	private isResetOptionsClicked: boolean = false;
 
 	constructor(defaultOptions: mssql.DeploymentOptions, private publish: PublishDatabaseDialog) {
 		this.optionsModel = new DeployOptionsModel(defaultOptions);
 	}
 
 	protected initializeDialog(): void {
-		this.optionsTab = utils.getAzdataApi()!.window.createTab(constants.publishOptions);
+		this.optionsTab = utils.getAzdataApi()!.window.createTab(constants.PublishOptions);
 		this.intializeDeploymentOptionsDialogTab();
 		this.dialog.content = [this.optionsTab];
 	}
 
 	public openDialog(): void {
-		this.dialog = utils.getAzdataApi()!.window.createModelViewDialog(constants.publishOptions);
+		this.dialog = utils.getAzdataApi()!.window.createModelViewDialog(constants.AdvancedPublishOptions);
 
 		this.initializeDialog();
 
@@ -47,6 +48,8 @@ export class PublishOptionsDialog {
 
 		let resetButton = utils.getAzdataApi()!.window.createButton(constants.ResetButton);
 		resetButton.onClick(async () => await this.reset());
+		// If options values already modified then enable the reset button
+		resetButton.enabled = this.publish.publishOptionsModified;
 		this.dialog.customButtons = [resetButton];
 
 		utils.getAzdataApi()!.window.openDialog(this.dialog);
@@ -74,10 +77,12 @@ export class PublishOptionsDialog {
 
 			// Get the description of the selected option
 			this.disposableListeners.push(this.optionsTable.onRowSelected(async () => {
+				// selectedRows[0] contains selected row number
 				const row = this.optionsTable?.selectedRows![0];
-				const label = this.optionsModel.optionsLabels[row!];
+				// data[row][1] contains the option display name
+				const displayName = this.optionsTable?.data[row!][1];
 				await this.descriptionText?.updateProperties({
-					value: this.optionsModel.getDescription(label)
+					value: this.optionsModel.getOptionDescription(displayName)
 				});
 			}));
 
@@ -85,9 +90,12 @@ export class PublishOptionsDialog {
 			this.disposableListeners.push(this.optionsTable.onCellAction!((rowState) => {
 				const checkboxState = <azdataType.ICheckboxCellActionEventArgs>rowState;
 				if (checkboxState && checkboxState.row !== undefined) {
-					const label = this.optionsModel.optionsLabels[checkboxState.row];
-					this.optionsModel.optionsLookup[label] = checkboxState.checked;
+					// data[row][1] contains the option display name
+					const displayName = this.optionsTable?.data[checkboxState.row][1];
+					this.optionsModel.setOptionValue(displayName, checkboxState.checked);
 					this.optionsChanged = true;
+					// customButton[0] is the reset button, enabling it when option checkbox is changed
+					this.dialog.customButtons[0].enabled = true;
 				}
 			}));
 
@@ -96,7 +104,7 @@ export class PublishOptionsDialog {
 					flexFlow: 'column'
 				}).component();
 
-			this.optionsFlexBuilder.addItem(this.optionsTable, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh' } });
+			this.optionsFlexBuilder.addItem(this.optionsTable, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh', 'padding-top': '2px' } });
 			this.optionsFlexBuilder.addItem(this.descriptionHeading, { CSSStyles: { 'font-weight': 'bold', 'height': '30px' } });
 			this.optionsFlexBuilder.addItem(this.descriptionText, { CSSStyles: { 'padding': '4px', 'margin-right': '10px', 'overflow': 'scroll', 'height': '10vh' } });
 			await view.initializeModel(this.optionsFlexBuilder);
@@ -137,13 +145,18 @@ export class PublishOptionsDialog {
 	* Ok button click, will update the deployment options with selections
 	*/
 	protected execute(): void {
+		// Update the model deploymentoptions with the updated table component values
 		this.optionsModel.setDeploymentOptions();
+		// Set the publish deploymentoptions with the updated table component values
 		this.publish.setDeploymentOptions(this.optionsModel.deploymentOptions);
 		this.disposeListeners();
 
 		if (this.optionsChanged) {
 			TelemetryReporter.sendActionEvent(TelemetryViews.PublishOptionsDialog, TelemetryActions.optionsChanged);
 		}
+		// When options are Reset to default and clicked Ok, seting optionsChanged flag to false
+		// When options are Reset to default and options are changed and then clicked Ok, seting optionsChanged flag to the state of the option change
+		this.publish.publishOptionsModified = this.isResetOptionsClicked && !this.optionsChanged ? false : (this.optionsChanged || this.publish.publishOptionsModified);
 	}
 
 	/*
@@ -160,14 +173,17 @@ export class PublishOptionsDialog {
 		const result = await this.publish.getDefaultDeploymentOptions();
 		this.optionsModel.deploymentOptions = result;
 
-		// This will update the Map table with default values
-		this.optionsModel.InitializeUpdateOptionsMapTable();
+		// reset optionsvalueNameLookup with default deployment options
+		this.optionsModel.setOptionsToValueNameLookup();
 
 		await this.updateOptionsTable();
 		this.optionsFlexBuilder?.removeItem(this.optionsTable!);
-		this.optionsFlexBuilder?.insertItem(this.optionsTable!, 0, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh' } });
-
+		this.optionsFlexBuilder?.insertItem(this.optionsTable!, 0, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh', 'padding-top': '2px' } });
 		TelemetryReporter.sendActionEvent(TelemetryViews.PublishOptionsDialog, TelemetryActions.resetOptions);
+
+		// setting optionsChanged to false when reset click, if optionsChanged is true during execute, that means there is an option changed after reset
+		this.isResetOptionsClicked = true;
+		this.optionsChanged = false;
 	}
 
 	private disposeListeners(): void {

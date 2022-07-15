@@ -12,6 +12,7 @@ import * as TypeMoq from 'typemoq';
 import { PublishOptionsDialog } from '../../dialogs/publishOptionsDialog';
 import { PublishDatabaseDialog } from '../../dialogs/publishDatabaseDialog';
 import { Project } from '../../models/project';
+import sinon = require('sinon');
 
 describe('Publish Database Options Dialog', () => {
 	before(async function (): Promise<void> {
@@ -19,6 +20,8 @@ describe('Publish Database Options Dialog', () => {
 	});
 
 	it('Should open dialog successfully ', async function (): Promise<void> {
+		const proj = new Project('');
+		sinon.stub(proj, 'getProjectTargetVersion').returns('150');
 		const publishDatabaseDialog = new PublishDatabaseDialog(new Project(''));
 		const optionsDialog = new PublishOptionsDialog(testData.getDeploymentOptions(), publishDatabaseDialog);
 		optionsDialog.openDialog();
@@ -43,7 +46,7 @@ describe('Publish Database Options Dialog', () => {
 		// Verify the deployment options should exists
 		should.notEqual(optionsDialog.optionsModel.deploymentOptions, undefined);
 
-		Object.entries(optionsDialog.optionsModel.deploymentOptions).forEach(option => {
+		Object.entries(optionsDialog.optionsModel.deploymentOptions.booleanOptionsDictionary).forEach(option => {
 			// Validate the value and description as expected
 			should.equal(option[1].value, false);
 			should.equal(option[1].description, 'Sample Description text');

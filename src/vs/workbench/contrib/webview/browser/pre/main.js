@@ -21,6 +21,7 @@ const searchParams = new URL(location.toString()).searchParams;
 const ID = searchParams.get('id');
 const onElectron = searchParams.get('platform') === 'electron';
 const expectedWorkerVersion = parseInt(searchParams.get('swVersion'));
+const parentOrigin = searchParams.get('parentOrigin');
 
 /**
  * Use polling to track focus of main webview and iframes within the webview
@@ -30,7 +31,7 @@ const expectedWorkerVersion = parseInt(searchParams.get('swVersion'));
  * @param {() => void} handlers.onBlur
  */
 const trackFocus = ({ onFocus, onBlur }) => {
-	const interval = 50;
+	const interval = 250;
 	let isFocused = document.hasFocus();
 	setInterval(() => {
 		const isCurrentlyFocused = document.hasFocus();
@@ -90,7 +91,7 @@ defaultStyles.textContent = `
 		max-height: 100%;
 	}
 
-	a {
+	a, a code {
 		color: var(--vscode-textLink-foreground, var(--theme-link));
 	}
 
@@ -197,7 +198,7 @@ function getVsCodeApiScript(allowMultipleAPIAcquire, state) {
 }
 
 /** @type {Promise<void>} */
-const workerReady = new Promise(async (resolve, reject) => {
+const workerReady = new Promise((resolve, reject) => {
 	if (!areServiceWorkersEnabled()) {
 		return reject(new Error('Service Workers are not enabled. Webviews will not work. Try disabling private/incognito mode.'));
 	}
@@ -233,7 +234,28 @@ const workerReady = new Promise(async (resolve, reject) => {
 				}
 			};
 			navigator.serviceWorker.addEventListener('message', versionHandler);
-			assertIsDefined(registration.active).postMessage({ channel: 'version' });
+
+			const postVersionMessage = () => {
+				assertIsDefined(navigator.serviceWorker.controller).postMessage({ channel: 'version' });
+			};
+
+			// At this point, either the service worker is ready and
+			// became our controller, or we need to wait for it.
+			// Note that navigator.serviceWorker.controller could be a
+			// controller from a previously loaded service worker.
+			const currentController = navigator.serviceWorker.controller;
+			if (currentController && currentController.scriptURL.endsWith(swPath)) {
+				// service worker already loaded & ready to receive messages
+				postVersionMessage();
+			} else {
+				// either there's no controlling service worker, or it's an old one:
+				// wait for it to change before posting the message
+				const onControllerChange = () => {
+					navigator.serviceWorker.removeEventListener('controllerchange', onControllerChange);
+					postVersionMessage();
+				};
+				navigator.serviceWorker.addEventListener('controllerchange', onControllerChange);
+			}
 		},
 		error => {
 			reject(new Error(`Could not register service workers: ${error}.`));
@@ -246,6 +268,11 @@ const hostMessaging = new class HostMessaging {
 		this.handlers = new Map();
 
 		window.addEventListener('message', (e) => {
+			if (e.origin !== parentOrigin) {
+				console.log(`skipping webview message due to mismatched origins: ${e.origin} ${parentOrigin}`);
+				return;
+			}
+
 			const channel = e.data.channel;
 			const handlers = this.handlers.get(channel);
 			if (handlers) {
@@ -263,7 +290,7 @@ const hostMessaging = new class HostMessaging {
 	 * @param {any} data
 	 */
 	postMessage(channel, data) {
-		window.parent.postMessage({ target: ID, channel, data }, '*');
+		window.parent.postMessage({ target: ID, channel, data }, parentOrigin);
 	}
 
 	/**
@@ -424,19 +451,18 @@ const handleInnerClick = (event) => {
 		return;
 	}
 
-	const baseElement = event.view.document.getElementsByTagName('base')[0];
+	const baseElement = event.view.document.querySelector('base');
 
 	for (const pathElement of event.composedPath()) {
 		/** @type {any} */
 		const node = pathElement;
-		if (node.tagName === 'A' && node.href) {
+		if (node.tagName && node.tagName.toLowerCase() === 'a' && node.href) {
 			if (node.getAttribute('href') === '#') {
 				event.view.scrollTo(0, 0);
 			} else if (node.hash && (node.getAttribute('href') === node.hash || (baseElement && node.href === baseElement.href + node.hash))) {
-				const scrollTarget = event.view.document.getElementById(node.hash.substr(1, node.hash.length - 1));
-				if (scrollTarget) {
-					scrollTarget.scrollIntoView();
-				}
+				const fragment = node.hash.substr(1, node.hash.length - 1);
+				const scrollTarget = event.view.document.getElementById(decodeURIComponent(fragment));
+				scrollTarget?.scrollIntoView();
 			} else {
 				hostMessaging.postMessage('did-click-link', node.href.baseVal || node.href);
 			}
@@ -460,7 +486,7 @@ const handleAuxClick =
 			for (const pathElement of event.composedPath()) {
 				/** @type {any} */
 				const node = pathElement;
-				if (node.tagName === 'A' && node.href) {
+				if (node.tagName && node.tagName.toLowerCase() === 'a' && node.href) {
 					event.preventDefault();
 					return;
 				}
@@ -615,6 +641,7 @@ function areServiceWorkersEnabled() {
  *     contents: string;
  *     options: {
  *         readonly allowScripts: boolean;
+ *         readonly allowForms: boolean;
  *         readonly allowMultipleAPIAcquire: boolean;
  *     }
  *     state: any;
@@ -639,6 +666,11 @@ function toContentHtml(data) {
 			}
 		}
 	});
+
+	// Set default aria role
+	if (!newDocument.body.hasAttribute('role')) {
+		newDocument.body.setAttribute('role', 'document');
+	}
 
 	// Inject default script
 	if (options.allowScripts) {
@@ -719,7 +751,6 @@ onDomReady(() => {
 	let updateId = 0;
 	hostMessaging.onMessage('content', async (_event, /** @type {ContentUpdateData} */ data) => {
 		const currentUpdateId = ++updateId;
-
 		try {
 			await workerReady;
 		} catch (e) {
@@ -773,7 +804,16 @@ onDomReady(() => {
 		const newFrame = document.createElement('iframe');
 		newFrame.setAttribute('id', 'pending-frame');
 		newFrame.setAttribute('frameborder', '0');
-		newFrame.setAttribute('sandbox', options.allowScripts ? 'allow-scripts allow-forms allow-same-origin allow-pointer-lock allow-downloads' : 'allow-same-origin allow-pointer-lock');
+
+		const sandboxRules = new Set(['allow-same-origin', 'allow-pointer-lock']);
+		if (options.allowScripts) {
+			sandboxRules.add('allow-scripts');
+			sandboxRules.add('allow-downloads');
+		}
+		if (options.allowForms) {
+			sandboxRules.add('allow-forms');
+		}
+		newFrame.setAttribute('sandbox', Array.from(sandboxRules).join(' '));
 		if (!isFirefox) {
 			newFrame.setAttribute('allow', options.allowScripts ? 'clipboard-read; clipboard-write;' : '');
 		}
@@ -839,6 +879,7 @@ onDomReady(() => {
 
 			const newFrame = getPendingFrame();
 			if (newFrame && newFrame.contentDocument && newFrame.contentDocument === contentDocument) {
+				const wasFocused = document.hasFocus();
 				const oldActiveFrame = getActiveFrame();
 				if (oldActiveFrame) {
 					document.body.removeChild(oldActiveFrame);
@@ -853,12 +894,12 @@ onDomReady(() => {
 				contentWindow.addEventListener('scroll', handleInnerScroll);
 				contentWindow.addEventListener('wheel', handleWheel);
 
-				if (document.hasFocus()) {
+				if (wasFocused) {
 					contentWindow.focus();
 				}
 
 				pendingMessages.forEach((message) => {
-					contentWindow.postMessage(message.message, '*', message.transfer);
+					contentWindow.postMessage(message.message, window.origin, message.transfer);
 				});
 				pendingMessages = [];
 			}
@@ -920,7 +961,7 @@ onDomReady(() => {
 		if (!pending) {
 			const target = getActiveFrame();
 			if (target) {
-				assertIsDefined(target.contentWindow).postMessage(data.message, '*', data.transfer);
+				assertIsDefined(target.contentWindow).postMessage(data.message, window.origin, data.transfer);
 				return;
 			}
 		}

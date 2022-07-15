@@ -6,27 +6,27 @@
 import * as dom from 'vs/base/browser/dom';
 import * as aria from 'vs/base/browser/ui/aria/aria';
 import { DomScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElement';
+import { Codicon } from 'vs/base/common/codicons';
 import { Event } from 'vs/base/common/event';
+import { IMarkdownString } from 'vs/base/common/htmlContent';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
+import { escapeRegExpCharacters } from 'vs/base/common/strings';
+import { assertIsDefined } from 'vs/base/common/types';
 import 'vs/css!./parameterHints';
+import { IMarkdownRenderResult, MarkdownRenderer } from 'vs/editor/browser/core/markdownRenderer';
 import { ContentWidgetPositionPreference, ICodeEditor, IContentWidget, IContentWidgetPosition } from 'vs/editor/browser/editorBrowser';
 import { ConfigurationChangedEvent, EditorOption } from 'vs/editor/common/config/editorOptions';
 import * as modes from 'vs/editor/common/modes';
 import { IModeService } from 'vs/editor/common/services/modeService';
-import { IMarkdownRenderResult, MarkdownRenderer } from 'vs/editor/browser/core/markdownRenderer';
+import { ParameterHintsModel, TriggerContext } from 'vs/editor/contrib/parameterHints/parameterHintsModel';
 import { Context } from 'vs/editor/contrib/parameterHints/provideSignatureHelp';
 import * as nls from 'vs/nls';
 import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
-import { editorHoverBackground, editorHoverBorder, textCodeBlockBackground, textLinkForeground, editorHoverForeground, textLinkActiveForeground } from 'vs/platform/theme/common/colorRegistry';
-import { registerThemingParticipant, ThemeIcon } from 'vs/platform/theme/common/themeService';
-import { ParameterHintsModel, TriggerContext } from 'vs/editor/contrib/parameterHints/parameterHintsModel';
-import { escapeRegExpCharacters } from 'vs/base/common/strings';
-import { Codicon } from 'vs/base/common/codicons';
-import { assertIsDefined } from 'vs/base/common/types';
-import { ColorScheme } from 'vs/platform/theme/common/theme';
+import { editorHoverBackground, editorHoverBorder, editorHoverForeground, registerColor, textCodeBlockBackground, textLinkActiveForeground, textLinkForeground, listHighlightForeground } from 'vs/platform/theme/common/colorRegistry';
 import { registerIcon } from 'vs/platform/theme/common/iconRegistry';
-import { IMarkdownString } from 'vs/base/common/htmlContent';
+import { ColorScheme } from 'vs/platform/theme/common/theme';
+import { registerThemingParticipant, ThemeIcon } from 'vs/platform/theme/common/themeService';
 
 const $ = dom.$;
 
@@ -132,6 +132,7 @@ export class ParameterHintsWidget extends Disposable implements IContentWidget {
 			}
 			const fontInfo = this.editor.getOption(EditorOption.fontInfo);
 			this.domNodes.element.style.fontSize = `${fontInfo.fontSize}px`;
+			this.domNodes.element.style.lineHeight = `${fontInfo.lineHeight / fontInfo.fontSize}`;
 		};
 
 		updateFont();
@@ -383,6 +384,8 @@ export class ParameterHintsWidget extends Disposable implements IContentWidget {
 	}
 }
 
+export const editorHoverWidgetHighlightForeground = registerColor('editorHoverWidget.highlightForeground', { dark: listHighlightForeground, light: listHighlightForeground, hc: listHighlightForeground }, nls.localize('editorHoverWidgetHighlightForeground', 'Foreground color of the active item in the parameter hint.'));
+
 registerThemingParticipant((theme, collector) => {
 	const border = theme.getColor(editorHoverBorder);
 	if (border) {
@@ -415,4 +418,10 @@ registerThemingParticipant((theme, collector) => {
 	if (codeBackground) {
 		collector.addRule(`.monaco-editor .parameter-hints-widget code { background-color: ${codeBackground}; }`);
 	}
+
+	const parameterHighlightColor = theme.getColor(editorHoverWidgetHighlightForeground);
+	if (parameterHighlightColor) {
+		collector.addRule(`.monaco-editor .parameter-hints-widget .parameter.active { color: ${parameterHighlightColor}}`);
+	}
+
 });

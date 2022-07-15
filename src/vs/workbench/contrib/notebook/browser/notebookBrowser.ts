@@ -3,33 +3,25 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IMouseWheelEvent } from 'vs/base/browser/mouseEvent';
-import { IListContextMenuEvent, IListEvent, IListMouseEvent } from 'vs/base/browser/ui/list/list';
-import { IListOptions, IListStyles } from 'vs/base/browser/ui/list/listWidget';
-import { ProgressBar } from 'vs/base/browser/ui/progressbar/progressbar';
-import { ToolBar } from 'vs/base/browser/ui/toolbar/toolbar';
 import { Event } from 'vs/base/common/event';
-import { DisposableStore, IDisposable } from 'vs/base/common/lifecycle';
-import { ScrollEvent } from 'vs/base/common/scrollable';
+import { IDisposable } from 'vs/base/common/lifecycle';
 import { URI } from 'vs/base/common/uri';
-import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { FontInfo } from 'vs/editor/common/config/fontInfo';
 import { IPosition } from 'vs/editor/common/core/position';
 import { Range } from 'vs/editor/common/core/range';
 import { FindMatch, IModelDeltaDecoration, IReadonlyTextBuffer, ITextModel } from 'vs/editor/common/model';
-import { ContextKeyExpr, RawContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { ContextKeyExpr, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { OutputRenderer } from 'vs/workbench/contrib/notebook/browser/view/output/outputRenderer';
-import { CellViewModel, IModelDecorationsChangeAccessor, NotebookViewModel } from 'vs/workbench/contrib/notebook/browser/viewModel/notebookViewModel';
+import { CellViewModel, IModelDecorationsChangeAccessor, INotebookViewCellsUpdateEvent, NotebookViewModel } from 'vs/workbench/contrib/notebook/browser/viewModel/notebookViewModel';
 import { NotebookCellTextModel } from 'vs/workbench/contrib/notebook/common/model/notebookCellTextModel';
-import { CellKind, NotebookCellMetadata, IOrderedMimeType, INotebookRendererInfo, ICellOutput, IOutputItemDto, INotebookCellStatusBarItem, NotebookCellInternalMetadata } from 'vs/workbench/contrib/notebook/common/notebookCommon';
-import { ICellRange, cellRangesToIndexes, reduceRanges } from 'vs/workbench/contrib/notebook/common/notebookRange';
+import { CellKind, NotebookCellMetadata, IOrderedMimeType, INotebookRendererInfo, ICellOutput, INotebookCellStatusBarItem, NotebookCellInternalMetadata, NotebookDocumentMetadata } from 'vs/workbench/contrib/notebook/common/notebookCommon';
+import { ICellRange, cellRangesToIndexes, reduceCellRanges } from 'vs/workbench/contrib/notebook/common/notebookRange';
 import { Webview } from 'vs/workbench/contrib/webview/browser/webview';
 import { NotebookTextModel } from 'vs/workbench/contrib/notebook/common/model/notebookTextModel';
-import { IMenu, MenuId } from 'vs/platform/actions/common/actions';
+import { MenuId } from 'vs/platform/actions/common/actions';
 import { IEditorPane } from 'vs/workbench/common/editor';
 import { ITextEditorOptions, ITextResourceEditorInput } from 'vs/platform/editor/common/editor';
 import { IConstructorSignature1 } from 'vs/platform/instantiation/common/instantiation';
-import { CellEditorStatusBar } from 'vs/workbench/contrib/notebook/browser/view/renderers/cellWidgets';
 import { INotebookWebviewMessage } from 'vs/workbench/contrib/notebook/browser/view/renderers/backLayerWebView';
 import { NotebookOptions } from 'vs/workbench/contrib/notebook/common/notebookOptions';
 import { INotebookKernel } from 'vs/workbench/contrib/notebook/common/notebookKernelService';
@@ -54,6 +46,7 @@ export const NOTEBOOK_EDITOR_EDITABLE = new RawContextKey<boolean>('notebookEdit
 export const NOTEBOOK_HAS_RUNNING_CELL = new RawContextKey<boolean>('notebookHasRunningCell', false);
 export const NOTEBOOK_USE_CONSOLIDATED_OUTPUT_BUTTON = new RawContextKey<boolean>('notebookUseConsolidatedOutputButton', false);
 export const NOTEBOOK_BREAKPOINT_MARGIN_ACTIVE = new RawContextKey<boolean>('notebookBreakpointMargin', false);
+export const NOTEBOOK_CELL_TOOLBAR_LOCATION = new RawContextKey<'left' | 'right' | 'hidden'>('notebookCellToolbarLocation', 'left');
 
 // Cell keys
 export const NOTEBOOK_VIEW_TYPE = new RawContextKey<string>('notebookType', undefined);
@@ -94,6 +87,7 @@ export const EXPAND_CELL_OUTPUT_COMMAND_ID = 'notebook.cell.expandCellOutput';
 // look them up in the marketplace dynamically.
 export const IPYNB_VIEW_TYPE = 'jupyter-notebook';
 export const JUPYTER_EXTENSION_ID = 'ms-toolsai.jupyter';
+/** @deprecated use the notebookKernel<Type> "keyword" instead */
 export const KERNEL_EXTENSIONS = new Map<string, string>([
 	[IPYNB_VIEW_TYPE, JUPYTER_EXTENSION_ID],
 ]);
@@ -186,26 +180,6 @@ export interface INotebookCellOutputLayoutInfo {
 
 export interface IFocusNotebookCellOptions {
 	readonly skipReveal?: boolean;
-}
-
-export interface ICommonNotebookEditor {
-	readonly creationOptions: INotebookEditorCreationOptions;
-	getCellOutputLayoutInfo(cell: IGenericCellViewModel): INotebookCellOutputLayoutInfo;
-	setScrollTop(scrollTop: number): void;
-	triggerScroll(event: IMouseWheelEvent): void;
-	getCellByInfo(cellInfo: ICommonCellInfo): IGenericCellViewModel;
-	getCellById(cellId: string): IGenericCellViewModel | undefined;
-	toggleNotebookCellSelection(cell: IGenericCellViewModel, selectFromPrevious: boolean): void;
-	focusNotebookCell(cell: IGenericCellViewModel, focus: 'editor' | 'container' | 'output', options?: IFocusNotebookCellOptions): void;
-	focusNextNotebookCell(cell: IGenericCellViewModel, focus: 'editor' | 'container' | 'output'): void;
-	updateOutputHeight(cellInfo: ICommonCellInfo, output: IDisplayOutputViewModel, height: number, isInit: boolean, source?: string): void;
-	scheduleOutputHeightAck(cellInfo: ICommonCellInfo, outputId: string, height: number): void;
-	updateMarkupCellHeight(cellId: string, height: number, isInit: boolean): void;
-	setMarkupCellEditState(cellId: string, editState: CellEditState): void;
-	didStartDragMarkupCell(cellId: string, event: { dragOffsetY: number; }): void;
-	didDragMarkupCell(cellId: string, event: { dragOffsetY: number; }): void;
-	didDropMarkupCell(cellId: string, event: { dragOffsetY: number, ctrlKey: boolean, altKey: boolean; }): void;
-	didEndDragMarkupCell(cellId: string): void;
 }
 
 //#endregion
@@ -371,57 +345,87 @@ export interface INotebookEditorCreationOptions {
 		cellInsertToolbar: MenuId;
 		cellTopInsertToolbar: MenuId;
 		cellExecuteToolbar: MenuId;
+		cellExecutePrimary?: MenuId;
 	};
 	readonly options?: NotebookOptions;
 }
 
-export interface IActiveNotebookEditor extends INotebookEditor {
-	viewModel: NotebookViewModel;
-	textModel: NotebookTextModel;
-	getFocus(): ICellRange;
+export enum NotebookViewEventType {
+	LayoutChanged = 1,
+	MetadataChanged = 2,
+	CellStateChanged = 3
 }
 
-export interface INotebookEditor extends ICommonNotebookEditor {
+export class NotebookLayoutChangedEvent {
+	public readonly type = NotebookViewEventType.LayoutChanged;
 
-	// from the old IEditor
+	constructor(readonly source: NotebookLayoutChangeEvent, readonly value: NotebookLayoutInfo) {
+
+	}
+}
+
+
+export class NotebookMetadataChangedEvent {
+	public readonly type = NotebookViewEventType.MetadataChanged;
+
+	constructor(readonly source: NotebookDocumentMetadata) {
+
+	}
+}
+
+export class NotebookCellStateChangedEvent {
+	public readonly type = NotebookViewEventType.CellStateChanged;
+
+	constructor(readonly source: CellViewModelStateChangeEvent, readonly cell: ICellViewModel) {
+
+	}
+}
+
+
+export type NotebookViewEvent = NotebookLayoutChangedEvent | NotebookMetadataChangedEvent | NotebookCellStateChangedEvent;
+
+
+export interface INotebookEditor {
+	//#region Eventing
+	readonly onDidChangeCellState: Event<NotebookCellStateChangedEvent>;
+	readonly onDidChangeViewCells: Event<INotebookViewCellsUpdateEvent>;
 	readonly onDidChangeVisibleRanges: Event<void>;
 	readonly onDidChangeSelection: Event<void>;
-	getSelections(): ICellRange[];
-	setSelections(selections: ICellRange[]): void;
-	getFocus(): ICellRange;
-	setFocus(focus: ICellRange): void;
-	visibleRanges: ICellRange[];
-	textModel?: NotebookTextModel;
-	getId(): string;
-	hasEditorFocus(): boolean;
-	readonly creationOptions: INotebookEditorCreationOptions;
-
-	isEmbedded: boolean;
-
-	cursorNavigationMode: boolean;
-
-	/**
-	 * Notebook view model attached to the current editor
-	 */
-	viewModel: NotebookViewModel | undefined;
-	hasModel(): this is IActiveNotebookEditor;
-
 	/**
 	 * An event emitted when the model of this editor has changed.
-	 * @event
 	 */
 	readonly onDidChangeModel: Event<NotebookTextModel | undefined>;
 	readonly onDidFocusEditorWidget: Event<void>;
 	readonly onDidScroll: Event<void>;
-
 	readonly onDidChangeActiveCell: Event<void>;
-	readonly notebookOptions: NotebookOptions;
-	isDisposed: boolean;
-	dispose(): void;
+	readonly onMouseUp: Event<INotebookEditorMouseEvent>;
+	readonly onMouseDown: Event<INotebookEditorMouseEvent>;
 
+	//#endregion
+
+	//#region readonly properties
+	readonly visibleRanges: ICellRange[];
+	readonly textModel?: NotebookTextModel;
+	readonly isReadOnly: boolean;
+	readonly notebookOptions: NotebookOptions;
+	readonly isDisposed: boolean;
+	readonly activeKernel: INotebookKernel | undefined;
+	//#endregion
+
+	getLength(): number;
+	getSelections(): ICellRange[];
+	setSelections(selections: ICellRange[]): void;
+	getFocus(): ICellRange;
+	setFocus(focus: ICellRange): void;
 	getId(): string;
+	hasEditorFocus(): boolean;
+
+	cursorNavigationMode: boolean;
+
+	_getViewModel(): NotebookViewModel | undefined;
+	hasModel(): this is IActiveNotebookEditor;
+	dispose(): void;
 	getDomNode(): HTMLElement;
-	getOverflowContainerDomNode(): HTMLElement;
 	getInnerWebview(): Webview | undefined;
 	getSelectionViewModels(): ICellViewModel[];
 
@@ -454,43 +458,9 @@ export interface INotebookEditor extends ICommonNotebookEditor {
 	getOutputRenderer(): OutputRenderer;
 
 	/**
-	 * Insert a new cell around `cell`
-	 */
-	insertNotebookCell(cell: ICellViewModel | undefined, type: CellKind, direction?: 'above' | 'below', initialText?: string, ui?: boolean): CellViewModel | null;
-
-	/**
-	 * Split a given cell into multiple cells of the same type using the selection start positions.
-	 */
-	splitNotebookCell(cell: ICellViewModel): Promise<CellViewModel[] | null>;
-
-	/**
-	 * Delete a cell from the notebook
-	 */
-	deleteNotebookCell(cell: ICellViewModel): Promise<boolean>;
-
-	/**
-	 * Move a cell up one spot
-	 */
-	moveCellUp(cell: ICellViewModel): Promise<ICellViewModel | null>;
-
-	/**
-	 * Move a cell down one spot
-	 */
-	moveCellDown(cell: ICellViewModel): Promise<ICellViewModel | null>;
-
-	/**
-	 * Move a cell to a specific position
-	 */
-	moveCellsToIdx(index: number, length: number, toIdx: number): Promise<ICellViewModel | null>;
-
-	/**
 	 * Focus the container of a cell (the monaco editor inside is not focused).
 	 */
 	focusNotebookCell(cell: ICellViewModel, focus: 'editor' | 'container' | 'output', options?: IFocusNotebookCellOptions): void;
-
-	focusNextNotebookCell(cell: ICellViewModel, focus: 'editor' | 'container' | 'output'): void;
-
-	readonly activeKernel: INotebookKernel | undefined;
 
 	/**
 	 * Execute the given notebook cells
@@ -512,27 +482,12 @@ export interface INotebookEditor extends ICommonNotebookEditor {
 	 */
 	layoutNotebookCell(cell: ICellViewModel, height: number): Promise<void>;
 
-	createMarkupPreview(cell: ICellViewModel): Promise<void>;
-	unhideMarkupPreviews(cells: readonly ICellViewModel[]): Promise<void>;
-	hideMarkupPreviews(cells: readonly ICellViewModel[]): Promise<void>;
-
 	/**
 	 * Render the output in webview layer
 	 */
 	createOutput(cell: ICellViewModel, output: IInsetRenderOutput, offset: number): Promise<void>;
 
-	/**
-	 * Remove the output from the webview layer
-	 */
-	removeInset(output: IDisplayOutputViewModel): void;
-
-	/**
-	 * Hide the inset in the webview layer without removing it
-	 */
-	hideInset(output: IDisplayOutputViewModel): void;
-
-
-	onDidReceiveMessage: Event<INotebookWebviewMessage>;
+	readonly onDidReceiveMessage: Event<INotebookWebviewMessage>;
 
 	/**
 	 * Send message to the webview for outputs.
@@ -548,13 +503,6 @@ export interface INotebookEditor extends ICommonNotebookEditor {
 	 * Remove class name on the notebook editor root DOM node.
 	 */
 	removeClassName(className: string): void;
-
-	deltaCellOutputContainerClassNames(cellId: string, added: string[], removed: string[]): void;
-
-	/**
-	 * Trigger the editor to scroll from scroll event programmatically
-	 */
-	triggerScroll(event: IMouseWheelEvent): void;
 
 	/**
 	 * The range will be revealed with as little scrolling as possible.
@@ -612,56 +560,44 @@ export interface INotebookEditor extends ICommonNotebookEditor {
 	revealRangeInCenterIfOutsideViewportAsync(cell: ICellViewModel, range: Range): Promise<void>;
 
 	/**
-	 * Get the view index of a cell
-	 */
-	getViewIndex(cell: ICellViewModel): number;
-
-	/**
-	 * Get the view height of a cell (from the list view)
-	 */
-	getViewHeight(cell: ICellViewModel): number;
-
-	/**
+	 * Convert the view range to model range
 	 * @param startIndex Inclusive
 	 * @param endIndex Exclusive
 	 */
 	getCellRangeFromViewRange(startIndex: number, endIndex: number): ICellRange | undefined;
 
 	/**
-	 * @param startIndex Inclusive
-	 * @param endIndex Exclusive
-	 */
-	getCellsFromViewRange(startIndex: number, endIndex: number): ReadonlyArray<ICellViewModel>;
-
-	/**
 	 * Set hidden areas on cell text models.
 	 */
 	setHiddenAreas(_ranges: ICellRange[]): boolean;
 
+	/**
+	 * Set selectiosn on the text editor attached to the cell
+	 */
+
 	setCellEditorSelection(cell: ICellViewModel, selection: Range): void;
+
+	/**
+	 *Change the decorations on the notebook cell list
+	 */
 
 	deltaCellDecorations(oldDecorations: string[], newDecorations: INotebookDeltaDecoration[]): string[];
 
 	/**
-	 * Change the decorations on cells.
+	 * Change the decorations on cell editors.
 	 * The notebook is virtualized and this method should be called to create/delete editor decorations safely.
 	 */
 	changeModelDecorations<T>(callback: (changeAccessor: IModelDecorationsChangeAccessor) => T): T | null;
 
+	/**
+	 * Set decoration key on cells in the range
+	 */
 	setEditorDecorations(key: string, range: ICellRange): void;
+
+	/**
+	 * Remove decoration key from the notebook editor
+	 */
 	removeEditorDecorations(key: string): void;
-
-	/**
-	 * An event emitted on a "mouseup".
-	 * @event
-	 */
-	onMouseUp(listener: (e: INotebookEditorMouseEvent) => void): IDisposable;
-
-	/**
-	 * An event emitted on a "mousedown".
-	 * @event
-	 */
-	onMouseDown(listener: (e: INotebookEditorMouseEvent) => void): IDisposable;
 
 	/**
 	 * Get a contribution of this editor.
@@ -670,138 +606,57 @@ export interface INotebookEditor extends ICommonNotebookEditor {
 	 */
 	getContribution<T extends INotebookEditorContribution>(id: string): T;
 
-	getCellByInfo(cellInfo: ICommonCellInfo): ICellViewModel;
-	getCellById(cellId: string): ICellViewModel | undefined;
-	updateOutputHeight(cellInfo: ICommonCellInfo, output: IDisplayOutputViewModel, height: number, isInit: boolean, source?: string): void;
-}
-
-export interface INotebookCellList {
-	isDisposed: boolean;
-	viewModel: NotebookViewModel | null;
-	readonly contextKeyService: IContextKeyService;
-	element(index: number): ICellViewModel | undefined;
-	elementAt(position: number): ICellViewModel | undefined;
-	elementHeight(element: ICellViewModel): number;
-	onWillScroll: Event<ScrollEvent>;
-	onDidScroll: Event<ScrollEvent>;
-	onDidChangeFocus: Event<IListEvent<ICellViewModel>>;
-	onDidChangeContentHeight: Event<number>;
-	onDidChangeVisibleRanges: Event<void>;
-	visibleRanges: ICellRange[];
-	scrollTop: number;
-	scrollHeight: number;
-	scrollLeft: number;
-	length: number;
-	rowsContainer: HTMLElement;
-	readonly onDidRemoveOutputs: Event<readonly ICellOutputViewModel[]>;
-	readonly onDidHideOutputs: Event<readonly ICellOutputViewModel[]>;
-	readonly onDidRemoveCellsFromView: Event<readonly ICellViewModel[]>;
-	readonly onMouseUp: Event<IListMouseEvent<CellViewModel>>;
-	readonly onMouseDown: Event<IListMouseEvent<CellViewModel>>;
-	readonly onContextMenu: Event<IListContextMenuEvent<CellViewModel>>;
-	detachViewModel(): void;
-	attachViewModel(viewModel: NotebookViewModel): void;
-	clear(): void;
-	getViewIndex(cell: ICellViewModel): number | undefined;
-	getViewIndex2(modelIndex: number): number | undefined;
-	getModelIndex(cell: CellViewModel): number | undefined;
-	getModelIndex2(viewIndex: number): number | undefined;
-	getVisibleRangesPlusViewportBelow(): ICellRange[];
-	focusElement(element: ICellViewModel): void;
-	selectElements(elements: ICellViewModel[]): void;
-	getFocusedElements(): ICellViewModel[];
-	getSelectedElements(): ICellViewModel[];
-	revealElementsInView(range: ICellRange): void;
-	scrollToBottom(): void;
-	revealElementInView(element: ICellViewModel): void;
-	revealElementInViewAtTop(element: ICellViewModel): void;
-	revealElementInCenterIfOutsideViewport(element: ICellViewModel): void;
-	revealElementInCenter(element: ICellViewModel): void;
-	revealElementInCenterIfOutsideViewportAsync(element: ICellViewModel): Promise<void>;
-	revealElementLineInViewAsync(element: ICellViewModel, line: number): Promise<void>;
-	revealElementLineInCenterAsync(element: ICellViewModel, line: number): Promise<void>;
-	revealElementLineInCenterIfOutsideViewportAsync(element: ICellViewModel, line: number): Promise<void>;
-	revealElementRangeInViewAsync(element: ICellViewModel, range: Range): Promise<void>;
-	revealElementRangeInCenterAsync(element: ICellViewModel, range: Range): Promise<void>;
-	revealElementRangeInCenterIfOutsideViewportAsync(element: ICellViewModel, range: Range): Promise<void>;
-	setHiddenAreas(_ranges: ICellRange[], triggerViewUpdate: boolean): boolean;
-	domElementOfElement(element: ICellViewModel): HTMLElement | null;
-	focusView(): void;
-	getAbsoluteTopOfElement(element: ICellViewModel): number;
-	triggerScrollFromMouseWheelEvent(browserEvent: IMouseWheelEvent): void;
-	updateElementHeight2(element: ICellViewModel, size: number): void;
-	domFocus(): void;
-	setCellSelection(element: ICellViewModel, range: Range): void;
-	style(styles: IListStyles): void;
-	getRenderHeight(): number;
-	updateOptions(options: IListOptions<ICellViewModel>): void;
-	layout(height?: number, width?: number): void;
-	dispose(): void;
-}
-
-export interface BaseCellRenderTemplate {
-	rootContainer: HTMLElement;
-	editorPart: HTMLElement;
-	cellInputCollapsedContainer: HTMLElement;
-	contextKeyService: IContextKeyService;
-	container: HTMLElement;
-	cellContainer: HTMLElement;
-	decorationContainer: HTMLElement;
-	toolbar: ToolBar;
-	deleteToolbar: ToolBar;
-	betweenCellToolbar: ToolBar;
-	focusIndicatorLeft: HTMLElement;
-	focusIndicatorRight: HTMLElement;
-	readonly disposables: DisposableStore;
-	readonly elementDisposables: DisposableStore;
-	bottomCellContainer: HTMLElement;
-	currentRenderedCell?: ICellViewModel;
-	statusBar: CellEditorStatusBar;
-	titleMenu: IMenu;
-	toJSON: () => object;
-}
-
-export interface MarkdownCellRenderTemplate extends BaseCellRenderTemplate {
-	editorContainer: HTMLElement;
-	foldingIndicator: HTMLElement;
-	focusIndicatorBottom: HTMLElement;
-	currentEditor?: ICodeEditor;
-}
-
-export interface CodeCellRenderTemplate extends BaseCellRenderTemplate {
-	runToolbar: ToolBar;
-	runButtonContainer: HTMLElement;
-	executionOrderLabel: HTMLElement;
-	outputContainer: HTMLElement;
-	cellOutputCollapsedContainer: HTMLElement;
-	outputShowMoreContainer: HTMLElement;
-	focusSinkElement: HTMLElement;
-	editor: ICodeEditor;
-	progressBar: ProgressBar;
-	collapsedProgressBar: ProgressBar;
-	focusIndicatorRight: HTMLElement;
-	focusIndicatorBottom: HTMLElement;
-	dragHandle: HTMLElement;
-}
-
-export function isCodeCellRenderTemplate(templateData: BaseCellRenderTemplate): templateData is CodeCellRenderTemplate {
-	return !!(templateData as CodeCellRenderTemplate).runToolbar;
-}
-
-export interface IOutputTransformContribution {
-	getType(): RenderOutputType;
-	getMimetypes(): string[];
 	/**
-	 * Dispose this contribution.
+	 * Get the view index of a cell at model `index`
 	 */
-	dispose(): void;
+	getViewIndexByModelIndex(index: number): number;
+	getCellsInRange(range?: ICellRange): ReadonlyArray<ICellViewModel>;
+	cellAt(index: number): ICellViewModel | undefined;
+	getCellByHandle(handle: number): ICellViewModel | undefined;
+	getCellIndex(cell: ICellViewModel): number | undefined;
+	getNextVisibleCellIndex(index: number): number | undefined;
+}
+
+export interface IActiveNotebookEditor extends INotebookEditor {
+	_getViewModel(): NotebookViewModel;
+	textModel: NotebookTextModel;
+	getFocus(): ICellRange;
+	cellAt(index: number): ICellViewModel;
+	getCellIndex(cell: ICellViewModel): number;
+	getNextVisibleCellIndex(index: number): number;
+}
+
+/**
+ * A mix of public interface and internal one (used by internal rendering code, e.g., cellRenderer)
+ */
+export interface INotebookEditorDelegate extends INotebookEditor {
+	hasModel(): this is IActiveNotebookEditorDelegate;
+
+	readonly creationOptions: INotebookEditorCreationOptions;
+	readonly onDidChangeOptions: Event<void>;
+	createMarkupPreview(cell: ICellViewModel): Promise<void>;
+	unhideMarkupPreviews(cells: readonly ICellViewModel[]): Promise<void>;
+	hideMarkupPreviews(cells: readonly ICellViewModel[]): Promise<void>;
 
 	/**
-	 * Returns contents to place in the webview inset, or the {@link IRenderNoOutput}.
-	 * This call is allowed to have side effects, such as placing output
-	 * directly into the container element.
+	 * Remove the output from the webview layer
 	 */
-	render(output: ICellOutputViewModel, item: IOutputItemDto, container: HTMLElement, notebookUri: URI): IRenderOutput;
+	removeInset(output: IDisplayOutputViewModel): void;
+
+	/**
+	 * Hide the inset in the webview layer without removing it
+	 */
+	hideInset(output: IDisplayOutputViewModel): void;
+	deltaCellOutputContainerClassNames(cellId: string, added: string[], removed: string[]): void;
+}
+
+export interface IActiveNotebookEditorDelegate extends INotebookEditorDelegate {
+	_getViewModel(): NotebookViewModel;
+	textModel: NotebookTextModel;
+	getFocus(): ICellRange;
+	cellAt(index: number): ICellViewModel;
+	getCellIndex(cell: ICellViewModel): number;
+	getNextVisibleCellIndex(index: number): number;
 }
 
 export interface CellFindMatch {
@@ -868,52 +723,6 @@ export interface CellViewModelStateChangeEvent {
 	readonly cellLineNumberChanged?: boolean;
 }
 
-export function cellRangesEqual(a: ICellRange[], b: ICellRange[]) {
-	a = reduceCellRanges(a);
-	b = reduceCellRanges(b);
-	if (a.length !== b.length) {
-		return false;
-	}
-
-	for (let i = 0; i < a.length; i++) {
-		if (a[i].start !== b[i].start || a[i].end !== b[i].end) {
-			return false;
-		}
-	}
-
-	return true;
-}
-
-
-/**
- * @param _ranges
- */
-export function reduceCellRanges(_ranges: ICellRange[]): ICellRange[] {
-	if (!_ranges.length) {
-		return [];
-	}
-
-	const ranges = _ranges.sort((a, b) => a.start - b.start);
-	const result: ICellRange[] = [];
-	let currentRangeStart = ranges[0].start;
-	let currentRangeEnd = ranges[0].end + 1;
-
-	for (let i = 0, len = ranges.length; i < len; i++) {
-		const range = ranges[i];
-
-		if (range.start > currentRangeEnd) {
-			result.push({ start: currentRangeStart, end: currentRangeEnd - 1 });
-			currentRangeStart = range.start;
-			currentRangeEnd = range.end + 1;
-		} else if (range.end + 1 > currentRangeEnd) {
-			currentRangeEnd = range.end + 1;
-		}
-	}
-
-	result.push({ start: currentRangeStart, end: currentRangeEnd - 1 });
-	return result;
-}
-
 export function getVisibleCells(cells: CellViewModel[], hiddenRanges: ICellRange[]) {
 	if (!hiddenRanges.length) {
 		return cells;
@@ -961,18 +770,18 @@ export function getNotebookEditorFromEditorPane(editorPane?: IEditorPane): INote
  * ranges: model selections
  * this will convert model selections to view indexes first, and then include the hidden ranges in the list view
  */
-export function expandCellRangesWithHiddenCells(editor: INotebookEditor, viewModel: NotebookViewModel, ranges: ICellRange[]) {
+export function expandCellRangesWithHiddenCells(editor: INotebookEditor, ranges: ICellRange[]) {
 	// assuming ranges are sorted and no overlap
 	const indexes = cellRangesToIndexes(ranges);
 	let modelRanges: ICellRange[] = [];
 	indexes.forEach(index => {
-		const viewCell = viewModel.viewCells[index];
+		const viewCell = editor.cellAt(index);
 
 		if (!viewCell) {
 			return;
 		}
 
-		const viewIndex = editor.getViewIndex(viewCell);
+		const viewIndex = editor.getViewIndexByModelIndex(index);
 		if (viewIndex < 0) {
 			return;
 		}
@@ -985,7 +794,7 @@ export function expandCellRangesWithHiddenCells(editor: INotebookEditor, viewMod
 		}
 	});
 
-	return reduceRanges(modelRanges);
+	return reduceCellRanges(modelRanges);
 }
 
 /**
@@ -1009,4 +818,25 @@ export function getRanges(cells: ICellViewModel[], included: (cell: ICellViewMod
 	});
 
 	return ranges;
+}
+
+export function cellRangeToViewCells(editor: IActiveNotebookEditor, ranges: ICellRange[]) {
+	const cells: ICellViewModel[] = [];
+	reduceCellRanges(ranges).forEach(range => {
+		cells.push(...editor.getCellsInRange(range));
+	});
+
+	return cells;
+}
+
+export function formatCellDuration(duration: number): string {
+	const minutes = Math.floor(duration / 1000 / 60);
+	const seconds = Math.floor(duration / 1000) % 60;
+	const tenths = String(duration - minutes * 60 * 1000 - seconds * 1000).charAt(0);
+
+	if (minutes > 0) {
+		return `${minutes}m ${seconds}.${tenths}s`;
+	} else {
+		return `${seconds}.${tenths}s`;
+	}
 }

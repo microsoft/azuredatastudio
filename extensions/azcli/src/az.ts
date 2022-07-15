@@ -494,6 +494,7 @@ export async function findAzAndArc(): Promise<IAzTool> {
 /**
  * Find az by searching user's directories. If no az is found, this will error out and no arcdata is found.
  * If az is found, check if arcdata extension exists on it and return true if so, false if not.
+ * Attempt to update arcdata extension.
  * Return the AzTool whether or not an arcdata extension has been found.
  */
 async function findSpecificAzAndArc(): Promise<IAzTool> {
@@ -507,6 +508,9 @@ async function findSpecificAzAndArc(): Promise<IAzTool> {
 	if (arcVersion === undefined) {
 		throw AzureCLIArcExtError;
 	}
+
+	// Quietly attempt to update the arcdata extension to the latest. If it is already the latest, then it will not update.
+	await executeCommand('az', ['extension', 'update', '--name', 'arcdata']);
 
 	return new AzTool(path, <string>parseVersion(versionOutput.stdout), <string>arcVersion);
 }

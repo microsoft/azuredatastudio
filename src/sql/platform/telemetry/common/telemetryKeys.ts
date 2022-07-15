@@ -121,7 +121,11 @@ export const enum NbTelemetryAction {
 	NewNotebookFromConnections = 'NewNotebookWithConnectionProfile',
 	UndoCell = 'UndoCell',
 	RedoCell = 'RedoCell',
-	MIMETypeRendererNotFound = 'MIMETypeRendererNotFound'
+	MoveCell = 'MoveCell',
+	MIMETypeRendererNotFound = 'MIMETypeRendererNotFound',
+	CellExecutionFailed = 'CellExecutionFailed',
+	TextCellToolbarAction = 'TextCellToolbarAction',
+	WYSIWYGKeyboardAction = 'WYSIWYGKeyboardAction'
 }
 
 export const enum TelemetryPropertyName {
