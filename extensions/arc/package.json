@@ -210,6 +210,10 @@
                             },
                             "defaultValue": "azure-arc-aks-default-storage",
                             "optionsType": "dropdown"
+                          },
+                          "enabled": {
+                            "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
+                            "value": "Indirect"
                           }
                         }
                       ]

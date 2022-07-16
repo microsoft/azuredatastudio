@@ -394,6 +394,9 @@ async function hookUpDynamicEnablement(context: WizardPageContext): Promise<void
 					if ('required' in fieldComponent.component) {
 						fieldComponent.component.required = isRequired;
 					}
+					if ('requiredIndicator' in fieldComponent.component) {
+						fieldComponent.component.requiredIndicator = isRequired;
+					}
 					// When we disable the field then remove the placeholder if it exists so it's clear this field isn't needed
 					// We only do this for dynamic enablement since if a field is disabled through the JSON directly then it can't
 					// be modified anyways and so just should not use a placeholder value if they don't want one
