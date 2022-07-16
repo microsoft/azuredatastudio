@@ -5,9 +5,12 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import * as fs from 'fs';
 import * as constants from '../../constants/strings';
+import { join } from 'path';
 import * as styles from '../../constants/styles';
 import * as mssql from 'mssql';
+import * as utils from '../../api/utils';
 
 export class GenerateArmTemplateDialog {
 
@@ -20,6 +23,8 @@ export class GenerateArmTemplateDialog {
 
 	private _generateArmTemplateContainer!: azdata.FlexContainer;
 	private _saveArmTemplateContainer!: azdata.FlexContainer;
+
+	private _armTemplate!: string;
 
 	private async initializeDialog(dialog: azdata.window.Dialog): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
@@ -123,16 +128,32 @@ export class GenerateArmTemplateDialog {
 			// readOnly: true,
 			CSSStyles: {
 				'font': '14px "Monaco", "Menlo", "Consolas", "Droid Sans Mono", "Inconsolata", "Courier New", monospace',
+				'margin-bottom': '8px',
 				// 'overflow': 'scroll',
 				// 'white-space': 'nowrap',
 			}
 		}).component();
 
+		const saveArmTemplateButton = _view.modelBuilder.button().withProps({
+			// Replace with localized string in the future
+			label: 'Save ARM template',
+			width: 150,
+			CSSStyles: {
+				'margin': '0'
+			}
+		}).component();
+		this._disposables.push(saveArmTemplateButton.onDidClick(async (e) => {
+			// REMOVE AFTER TESTING
+			this._armTemplate = 'TEST\nTEST\nTEST\nTEST';
+			await this.saveArmTemplate();
+		}));
+
 		const container = _view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column'
 		}).withItems([
 			armTemplateSaveInstructions,
-			armTemplateInputBox
+			armTemplateInputBox,
+			saveArmTemplateButton
 		]).component();
 
 		return container;
@@ -141,6 +162,11 @@ export class GenerateArmTemplateDialog {
 	public async openDialog(dialogName?: string, recommendations?: mssql.SkuRecommendationResult) {
 		if (!this._isOpen){
 			this._isOpen = true;
+
+			// await vscode.commands.executeCommand('vscode.openFolder', vscode.Uri.file(utils.getUserHome()!), {
+			//	forceNewWindow: true,
+		   	// });
+			// await vscode.commands.executeCommand('vscode.open', vscode.Uri.file(join(utils.getUserHome()!, 'test.json')));
 
 			// Replace 'Generate ARM template' with a localized string in the future
 			this.dialog = azdata.window.createModelViewDialog('Generate ARM template', 'GenerateArmTemplateDialog', 'medium');
@@ -163,6 +189,17 @@ export class GenerateArmTemplateDialog {
 
 	public get isOpen(): boolean {
 		return this._isOpen;
+	}
+
+	private async saveArmTemplate(): Promise<void> {
+		const filePath = await vscode.window.showSaveDialog({
+			defaultUri: vscode.Uri.file(join(utils.getUserHome()!, 'ARMTemplate-' + new Date().toISOString().split('T')[0] + '.json')),
+			filters: {
+				'JSON File': ['json']
+			}
+		});
+
+		fs.writeFileSync(filePath!.fsPath, this._armTemplate);
 	}
 
 }
