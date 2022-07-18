@@ -11,7 +11,7 @@ import * as fileTree from './fileFolderTreeItem';
 import { Project } from '../project';
 import * as utils from '../../common/utils';
 import { DatabaseReferencesTreeItem } from './databaseReferencesTreeItem';
-import { DatabaseProjectItemType, RelativeOuterPath, ExternalStreamingJob, sqlprojExtension } from '../../common/constants';
+import { DatabaseProjectItemType, RelativeOuterPath, ExternalStreamingJob, sqlprojExtension, CollapseProjectNodesKey } from '../../common/constants';
 import { IconPathHelper } from '../../common/iconHelper';
 import { FileProjectEntry } from '../projectEntry';
 import { EntryType } from 'sqldbproj';
@@ -48,7 +48,7 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	}
 
 	public get treeItem(): vscode.TreeItem {
-		const collapsibleState = vscode.workspace.getConfiguration(DBProjectConfigurationKey)['collapseProjectNodes'] ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.Expanded;
+		const collapsibleState = vscode.workspace.getConfiguration(DBProjectConfigurationKey)[CollapseProjectNodesKey] ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.Expanded;
 		const projectItem = new vscode.TreeItem(this.fileSystemUri, collapsibleState);
 		projectItem.contextValue = this.project.isSdkStyleProject ? DatabaseProjectItemType.project : DatabaseProjectItemType.legacyProject;
 		projectItem.iconPath = IconPathHelper.databaseProject;
