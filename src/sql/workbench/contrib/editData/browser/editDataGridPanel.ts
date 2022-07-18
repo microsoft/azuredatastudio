@@ -35,6 +35,11 @@ import { Event } from 'vs/base/common/event';
 import { equals } from 'vs/base/common/arrays';
 import * as DOM from 'vs/base/browser/dom';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import * as nls from 'vs/nls';
+
+// Error constants
+const commitError: string = nls.localize('editDataGridPanel.commitError', "Error: commit has failed due to an error, reverting the row to last known good state.");
+const newRowError: string = nls.localize('editDataGridPanel.newRowError', "Error: invalid value entered in new row, cancelling new row addition, please enter a valid value.");
 
 export class EditDataGridPanel extends GridParentComponent {
 	// The time(in milliseconds) we wait before refreshing the grid.
@@ -306,11 +311,6 @@ export class EditDataGridPanel extends GridParentComponent {
 			return;
 		}
 
-		// Skip processing if the cell hasn't moved (eg, we reset focus to the previous cell after a failed update)
-		if (this.previousSavedCell.row === row && this.previousSavedCell.column === column && this.previousSavedCell.isDirty === false) {
-			return;
-		}
-
 		if (this.lastClickedCell.row !== row && this.lastClickedCell.column !== column && this.firstRender) {
 			return;
 		}
@@ -322,9 +322,14 @@ export class EditDataGridPanel extends GridParentComponent {
 				return Promise.resolve();
 			},
 				() => {
+					// Committing failed, need to restore row state to original state.
+					this.notificationService.notify({
+						severity: Severity.Error,
+						message: commitError
+					});
 					this.currentEditCellValue = undefined;
-					this.focusCell(this.lastClickedCell.row, this.lastClickedCell.column);
-					return Promise.reject(null);
+					this.lastClickedCell = { row, column, isEditable };
+					return this.revertSelectedRow(this.lastClickedCell.row);
 				});
 		}
 		else {
@@ -379,11 +384,12 @@ export class EditDataGridPanel extends GridParentComponent {
 						}
 					},
 						() => {
-							// Committing failed, jump back to the last selected cell
-							this.updateEnabledState(true);
-							this.setCurrentCell(cellToSubmit.row, cellToSubmit.column);
-							this.focusCell(cellToSubmit.row, cellToSubmit.column);
-							return Promise.reject(null);
+							// Committing failed, need to restore row state to original state.
+							this.notificationService.notify({
+								severity: Severity.Error,
+								message: commitError
+							});
+							return this.revertSelectedRow(cellToSubmit.row);
 						});
 				}
 				// At the end of a successful cell select, update the currently selected cell
@@ -715,10 +721,9 @@ export class EditDataGridPanel extends GridParentComponent {
 					this.lastClickedCell = { row: cellToAdd.row, column: cellToAdd.column, isEditable: true };
 					let errorPromise: Thenable<void> = Promise.resolve();
 					if (refreshGrid) {
-						let message = 'Error: invalid value entered in new row, cancelling new row addition, please enter a valid value.';
 						self.notificationService.notify({
 							severity: Severity.Error,
-							message: message
+							message: newRowError
 						});
 						errorPromise = this.revertSelectedRow(cellToAdd.row);
 					}
@@ -942,18 +947,14 @@ export class EditDataGridPanel extends GridParentComponent {
 	}
 
 	private setCurrentCell(row: number, column: number) {
-		// Only update if we're actually changing cells
-		if (this.previousSavedCell && (row !== this.previousSavedCell.row || column !== this.previousSavedCell.column)) {
-			this.previousSavedCell = {
-				row: row,
-				column: column,
-				isEditable: this.dataSet.columnDefinitions[column]
-					? this.dataSet.columnDefinitions[column].isEditable
-					: false,
-				isDirty: false
-			};
-		}
-
+		this.previousSavedCell = {
+			row: row,
+			column: column,
+			isEditable: this.dataSet.columnDefinitions[column]
+				? this.dataSet.columnDefinitions[column].isEditable
+				: false,
+			isDirty: false
+		};
 	}
 
 	private createNewTable(): void {
