@@ -2,21 +2,45 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file original="extensions/query-history/package" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
+      <trans-unit id="queryHistory.captureEnabledDesc">
+        <source xml:lang="en">Whether Query History capture is enabled. If false queries executed will not be captured.</source>
+        <target state="translated">是否启用查询历史记录捕获。若为 false，则不捕获所执行的查询。</target>
+      </trans-unit>
       <trans-unit id="queryHistory.clear">
         <source xml:lang="en">Clear All History</source>
         <target state="translated">清除所有历史记录</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.delete">
+        <source xml:lang="en">Delete</source>
+        <target state="translated">删除</target>
       </trans-unit>
       <trans-unit id="queryHistory.description">
         <source xml:lang="en">View and run previously executed queries</source>
         <target state="translated">查看并运行以前执行的查询</target>
       </trans-unit>
+      <trans-unit id="queryHistory.disableCapture">
+        <source xml:lang="en">Pause Query History Capture</source>
+        <target state="translated">暂停查询历史记录捕获</target>
+      </trans-unit>
       <trans-unit id="queryHistory.displayName">
         <source xml:lang="en">Query History</source>
         <target state="translated">查询历史记录</target>
       </trans-unit>
-      <trans-unit id="queryHistory.toggleCapture">
-        <source xml:lang="en">Toggle Query History Capture</source>
-        <target state="translated">切换查询历史记录捕获</target>
+      <trans-unit id="queryHistory.enableCapture">
+        <source xml:lang="en">Start Query History Capture</source>
+        <target state="translated">开始查询历史记录捕获</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.noEntries">
+        <source xml:lang="en">No queries to display</source>
+        <target state="translated">没有要显示的查询</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.open">
+        <source xml:lang="en">Open Query</source>
+        <target state="translated">打开查询</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.run">
+        <source xml:lang="en">Run Query</source>
+        <target state="translated">运行查询</target>
       </trans-unit>
     </body>
   </file>
