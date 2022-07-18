@@ -665,6 +665,18 @@
             ],
             "when": true
           }
+        ],
+        "helpTexts": [
+          {
+            "template": "%arc.data.controller.help.text%",
+            "links": [
+              {
+                "text": "%arc.data.controller.help.text.documentation.page%",
+                "url": "https://docs.microsoft.com/cli/azure/connectedk8s?view=azure-cli-latest#az-connectedk8s-connect"
+              }
+            ],
+            "when": true
+          }
         ]
       },
       {
