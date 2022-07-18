@@ -1229,7 +1229,9 @@ export class EditDataGridPanel extends GridParentComponent {
 		this.logService.debug('onBeforeEditCell called with grid: ' + event.grid + ' row: ' + event.row
 			+ ' cell: ' + event.cell + ' item: ' + event.item + ' column: ' + event.column);
 
-		this.originalStringValue = (Object.keys(event.item).length > 0) ? (event.item[event.cell].displayValue ? event.item[event.cell].displayValue : event.item[event.cell]) : this.originalStringValue;
+		let backupValue = (Object.keys(event.item).length > 0) ? event.item[event.cell] : this.originalStringValue;
+		let getString = typeof backupValue === 'string' ? backupValue : backupValue.displayValue;
+		this.originalStringValue = getString;
 	}
 
 	onBeforeCellEditorDestroy(event: Slick.OnBeforeCellEditorDestroyEventArgs<any>): void {
