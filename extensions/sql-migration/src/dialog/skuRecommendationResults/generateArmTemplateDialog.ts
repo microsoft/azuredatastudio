@@ -159,6 +159,14 @@ export class GenerateArmTemplateDialog {
 		return container;
 	}
 
+	private async updateArmTemplateStatus(succeeded: boolean): Promise<void> {
+		await this._generateArmTemplateContainer.updateCssStyles({ 'display': 'none' });
+
+		if (succeeded){
+			await this._saveArmTemplateContainer.updateCssStyles({ 'display': 'inline' });
+		}
+	}
+
 	public async openDialog(dialogName?: string, recommendations?: mssql.SkuRecommendationResult) {
 		if (!this._isOpen){
 			this._isOpen = true;
