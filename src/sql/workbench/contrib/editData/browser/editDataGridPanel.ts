@@ -79,7 +79,6 @@ export class EditDataGridPanel extends GridParentComponent {
 	// Strings immediately before and after an edit.
 	private originalStringValue: string;
 	private endStringValue: string;
-	private stringChanged: boolean;
 	// Edit Data functions
 	public onActiveCellChanged: (event: Slick.OnActiveCellChangedEventArgs<any>) => void;
 	public onCellChange: (event: Slick.OnCellChangeEventArgs<any>) => void;
@@ -316,7 +315,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			return;
 		}
 
-		if (this.isRowDirty(this.lastClickedCell.row) && row !== this.lastClickedCell.row && !this.stringChanged) {
+		if (this.isRowDirty(this.lastClickedCell.row) && row !== this.lastClickedCell.row && !this.hasCellStringChanged()) {
 			await this.commitEditTask().then(() => {
 				this.currentEditCellValue = undefined;
 				this.lastClickedCell = { row, column, isEditable };
@@ -580,13 +579,12 @@ export class EditDataGridPanel extends GridParentComponent {
 				document.execCommand('delete');
 				document.execCommand('insertText', false, 'NULL');
 			}
-			else if (this.isRowDirty(this.lastClickedCell.row) && !this.stringChanged) {
+			else if (this.isRowDirty(this.lastClickedCell.row) && !this.hasCellStringChanged()) {
 				this.revertSelectedRow(this.lastClickedCell.row);
 			}
-			else if (this.stringChanged) {
+			else if (this.hasCellStringChanged()) {
 				this.revertSelectedCell(this.lastClickedCell.row, this.lastClickedCell.column).catch(onUnexpectedError);
 				this.lastEnteredString = undefined;
-				this.stringChanged = false;
 			}
 			this.focusCell(this.lastClickedCell.row, this.lastClickedCell.column);
 			handled = true;
@@ -1236,7 +1234,6 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	onBeforeCellEditorDestroy(event: Slick.OnBeforeCellEditorDestroyEventArgs<any>): void {
 		this.endStringValue = event.editor.serializeValue();
-		this.stringChanged = this.originalStringValue !== this.endStringValue;
 	}
 
 	handleInitializeTable(): void {
@@ -1250,6 +1247,15 @@ export class EditDataGridPanel extends GridParentComponent {
 		// subscribe to slick events
 		// https://github.com/mleibman/SlickGrid/wiki/Grid-Events
 		this.setupEvents();
+	}
+
+	private hasCellStringChanged(): boolean {
+		if ((this.endStringValue === 'NULL' && this.originalStringValue === '') || (this.endStringValue === '' && this.originalStringValue === 'NULL')) {
+			return false;
+		}
+		else {
+			return this.originalStringValue !== this.endStringValue;
+		}
 	}
 
 
