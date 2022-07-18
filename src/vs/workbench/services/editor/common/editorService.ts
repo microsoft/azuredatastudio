@@ -259,10 +259,11 @@ export interface IEditorService {
 	findEditors(resource: URI, group: IEditorGroup | GroupIdentifier): readonly EditorInput[];
 	findEditors(editor: IResourceEditorInputIdentifier, group: IEditorGroup | GroupIdentifier): EditorInput | undefined;
 
+	// {{SQL CARBON EDIT}} -- add back createEditorInput until we can remove all references. Make async to handle updated canHandleResource function returning promise
 	/**
 	 * Converts a lightweight input to a workbench editor input.
 	 */
-	createEditorInput(input: IUntypedEditorInput): EditorInput;
+	createEditorInput(input: IUntypedEditorInput): Promise<EditorInput>;
 
 
 	/**

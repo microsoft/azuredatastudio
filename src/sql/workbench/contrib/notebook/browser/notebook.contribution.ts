@@ -782,15 +782,15 @@ export class NotebookEditorOverrideContribution extends Disposable implements IW
 				priority: RegisteredEditorPriority.builtin
 			},
 			{},
-			(editorInput, group) => {
-				const fileInput = this._editorService.createEditorInput(editorInput) as FileEditorInput;
+			async (editorInput, group) => {
+				const fileInput = await this._editorService.createEditorInput(editorInput) as FileEditorInput;
 				// Try to convert the input, falling back to just a plain file input if we're unable to
 				const newInput = this.convertInput(fileInput);
 				return { editor: newInput, options: editorInput.options, group: group };
 			},
 			undefined,
-			(diffEditorInput, group) => {
-				const diffEditorInputImpl = this._editorService.createEditorInput(diffEditorInput) as DiffEditorInput;
+			async (diffEditorInput, group) => {
+				const diffEditorInputImpl = await this._editorService.createEditorInput(diffEditorInput) as DiffEditorInput;
 				// Try to convert the input, falling back to the original input if we're unable to
 				const newInput = this.convertInput(diffEditorInputImpl);
 				return { editor: newInput, options: diffEditorInput.options, group: group };
