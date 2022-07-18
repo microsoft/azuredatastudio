@@ -279,7 +279,7 @@ export abstract class ComponentBase<TPropertyBag extends azdata.ComponentPropert
 	}
 }
 
-export abstract class ContainerBase<T, TPropertyBag extends azdata.ComponentProperties = azdata.ComponentProperties> extends ComponentBase<TPropertyBag> {
+export abstract class ContainerBase<T, TPropertyBag extends azdata.ContainerProperties = azdata.ContainerProperties> extends ComponentBase<TPropertyBag> {
 	protected items: ItemDescriptor<T>[];
 
 	@ViewChildren(ModelComponentWrapper) protected _componentWrappers: QueryList<ModelComponentWrapper>;
@@ -394,5 +394,13 @@ export abstract class ContainerBase<T, TPropertyBag extends azdata.ComponentProp
 	}
 
 	protected onItemLayoutUpdated(item: ItemDescriptor<T>): void {
+	}
+
+	public get ariaLive(): string | undefined {
+		return this.getPropertyOrDefault<string>((props) => props.ariaLive, undefined);
+	}
+
+	public set ariaLive(newValue: string | undefined) {
+		this.setPropertyFromUI<string>((props, value) => props.ariaLive = value, newValue);
 	}
 }

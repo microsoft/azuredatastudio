@@ -76,7 +76,6 @@ export const vscodeOpenCommand = 'vscode.open';
 export const refreshDataWorkspaceCommand = 'dataworkspace.refresh';
 
 // UI Strings
-
 export const dataSourcesNodeName = localize('dataSourcesNodeName', "Data Sources");
 export const databaseReferencesNodeName = localize('databaseReferencesNodeName', "Database References");
 export const sqlConnectionStringFriendly = localize('sqlConnectionStringFriendly', "SQL connection string");
@@ -111,7 +110,6 @@ export function convertToSdkStyleConfirmation(projectName: string) { return loca
 export function updatedToSdkStyleError(projectName: string) { return localize('updatedToSdkStyleError', "Converting the project {0} to SDK-style was unsuccessful. Changes to the .sqlproj have been rolled back.", projectName); }
 
 // Publish dialog strings
-
 export const publishDialogName = localize('publishDialogName', "Publish project");
 export const publish = localize('publish', "Publish");
 export const cancelButtonText = localize('cancelButtonText', "Cancel");
@@ -146,6 +144,16 @@ export const newText = localize('new', "New");
 export const selectDatabase = localize('selectDatabase', "Select database");
 export const done = localize('done', "Done");
 export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not be empty");
+
+// Publish Dialog options
+export const publishOptions = localize('publishOptions', 'Publish Options');
+export const publishingOptions = localize('publishingOptions', 'Publishing Options');
+export const GeneralOptions: string = localize('generalOptions', "General Options");
+export const ResetButton: string = localize('reset', "Reset");
+export const OptionDescription: string = localize('optionDescription', "Option Description");
+export const OptionName: string = localize('optionName', "Option Name");
+export const OptionInclude: string = localize('Include', "Include");
+
 
 // Deploy
 export const SqlServerName = 'SQL server';
@@ -273,7 +281,6 @@ export const dacpacNotOnSameDrive = (projectLocation: string): string => { retur
 export const referenceType = localize('referenceType', "Reference type");
 
 // Create Project From Database dialog strings
-
 export const createProjectFromDatabaseDialogName = localize('createProjectFromDatabaseDialogName', "Create project from database");
 export const createProjectDialogOkButtonText = localize('createProjectDialogOkButtonText', "Create");
 export const sourceDatabase = localize('sourceDatabase', "Source database");

@@ -34,6 +34,7 @@ import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/commo
 import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
 import { IRange } from 'vs/editor/common/core/range';
 import { ServerInfo } from 'azdata';
+import { QueryEditorState } from 'sql/workbench/common/editor/query/queryEditorInput';
 
 suite('SQL QueryAction Tests', () => {
 
@@ -41,6 +42,7 @@ suite('SQL QueryAction Tests', () => {
 	let editor: TypeMoq.Mock<QueryEditor>;
 	let calledRunQueryOnInput: boolean = undefined;
 	let testQueryInput: TypeMoq.Mock<UntitledQueryEditorInput>;
+	let testQueryInputState: TypeMoq.Mock<QueryEditorState>;
 	let configurationService: TypeMoq.Mock<TestConfigurationService>;
 	let queryModelService: TypeMoq.Mock<TestQueryModelService>;
 	let connectionManagementService: TypeMoq.Mock<TestConnectionManagementService>;
@@ -76,9 +78,13 @@ suite('SQL QueryAction Tests', () => {
 		const service = accessor.untitledTextEditorService;
 		let fileInput = workbenchinstantiationService.createInstance(UntitledTextEditorInput, service.create({ associatedResource: URI.parse('file://testUri') }));
 		// Setup a reusable mock QueryInput
+		testQueryInputState = TypeMoq.Mock.ofType(QueryEditorState, TypeMoq.MockBehavior.Strict);
+		testQueryInputState.setup(x => x.isActualExecutionPlanMode).returns(() => false);
+
 		testQueryInput = TypeMoq.Mock.ofType(UntitledQueryEditorInput, TypeMoq.MockBehavior.Strict, undefined, fileInput, undefined, connectionManagementService.object, queryModelService.object, configurationService.object);
 		testQueryInput.setup(x => x.uri).returns(() => testUri);
 		testQueryInput.setup(x => x.runQuery(undefined)).callback(() => { calledRunQueryOnInput = true; });
+		testQueryInput.setup(x => x.state).returns(() => testQueryInputState.object);
 	});
 
 	test('setClass sets child CSS class correctly', () => {
@@ -184,11 +190,15 @@ suite('SQL QueryAction Tests', () => {
 		let fileInput = workbenchinstantiationService.createInstance(UntitledTextEditorInput, service.create({ associatedResource: URI.parse('file://testUri') }));
 
 		// ... Mock "isSelectionEmpty" in QueryEditor
+		let queryInputState = TypeMoq.Mock.ofType(QueryEditorState, TypeMoq.MockBehavior.Loose);
+		queryInputState.setup(x => x.isActualExecutionPlanMode).returns(() => false);
+
 		let queryInput = TypeMoq.Mock.ofType(UntitledQueryEditorInput, TypeMoq.MockBehavior.Strict, undefined, fileInput, undefined, connectionManagementService.object, queryModelService.object, configurationService.object);
 		queryInput.setup(x => x.uri).returns(() => testUri);
 		queryInput.setup(x => x.runQuery(undefined)).callback(() => {
 			countCalledRunQuery++;
 		});
+		queryInput.setup(x => x.state).returns(() => queryInputState.object);
 		const contextkeyservice = new MockContextKeyService();
 
 		// Setup a reusable mock QueryEditor
@@ -234,12 +244,16 @@ suite('SQL QueryAction Tests', () => {
 		const service = accessor.untitledTextEditorService;
 		let fileInput = workbenchinstantiationService.createInstance(UntitledTextEditorInput, service.create({ associatedResource: URI.parse('file://testUri') }));
 
+		let queryInputState = TypeMoq.Mock.ofType(QueryEditorState, TypeMoq.MockBehavior.Loose);
+		queryInputState.setup(x => x.isActualExecutionPlanMode).returns(() => false);
+
 		let queryInput = TypeMoq.Mock.ofType(UntitledQueryEditorInput, TypeMoq.MockBehavior.Loose, undefined, fileInput, undefined, connectionManagementService.object, queryModelService.object, configurationService.object);
 		queryInput.setup(x => x.uri).returns(() => testUri);
 		queryInput.setup(x => x.runQuery(TypeMoq.It.isAny())).callback((selection: IRange) => {
 			runQuerySelection = selection;
 			countCalledRunQuery++;
 		});
+		queryInput.setup(x => x.state).returns(() => queryInputState.object);
 		queryInput.setup(x => x.runQuery(undefined)).callback((selection: IRange) => {
 			runQuerySelection = selection;
 			countCalledRunQuery++;

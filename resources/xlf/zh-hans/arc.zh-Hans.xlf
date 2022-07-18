@@ -22,9 +22,21 @@
         <source xml:lang="en">Azure Arc Resources</source>
         <target state="translated">Azure Arc 资源</target>
       </trans-unit>
+      <trans-unit id="arc.areYouSure">
+        <source xml:lang="en">Are you sure you want to apply the selected upgrade?</source>
+        <target state="translated">是否确定要应用所选升级?</target>
+      </trans-unit>
       <trans-unit id="arc.available">
         <source xml:lang="en">Available</source>
         <target state="translated">可用</target>
+      </trans-unit>
+      <trans-unit id="arc.availableUpgrades">
+        <source xml:lang="en">Available Upgrades</source>
+        <target state="translated">可用升级</target>
+      </trans-unit>
+      <trans-unit id="arc.availableUpgradesDescription">
+        <source xml:lang="en">Available upgrades for this resource are listed below. You can apply upgrades by clicking the upgrade button.</source>
+        <target state="translated">下面列出了此资源的可用升级。你可以通过单击升级按钮来应用升级。</target>
       </trans-unit>
       <trans-unit id="arc.backup">
         <source xml:lang="en">Backup</source>
@@ -102,10 +114,6 @@
         <source xml:lang="en">Confirm the new password</source>
         <target state="translated">确认新密码</target>
       </trans-unit>
-      <trans-unit id="arc.connecToServer">
-        <source xml:lang="en">Connect to Server</source>
-        <target state="translated">连接到服务器</target>
-      </trans-unit>
       <trans-unit id="arc.connect">
         <source xml:lang="en">Connect</source>
         <target state="translated">连接</target>
@@ -137,6 +145,10 @@
       <trans-unit id="arc.connectToPostgresDescription">
         <source xml:lang="en">A connection to the server is required to show and set database engine settings, which will require the PostgreSQL Extension to be installed.</source>
         <target state="translated">要显示和设置数据库引擎设置，需要连接到服务器，这将需要安装 PostgreSQL 扩展。</target>
+      </trans-unit>
+      <trans-unit id="arc.connectToServer">
+        <source xml:lang="en">Connect to Server</source>
+        <target state="translated">连接到服务器</target>
       </trans-unit>
       <trans-unit id="arc.connectionMode">
         <source xml:lang="en">Connection Mode</source>
@@ -269,6 +281,10 @@
         <source xml:lang="en">New Instance</source>
         <target state="translated">新实例</target>
       </trans-unit>
+      <trans-unit id="arc.currentVersion">
+        <source xml:lang="en">Current version</source>
+        <target state="translated">当前版本</target>
+      </trans-unit>
       <trans-unit id="arc.dataController">
         <source xml:lang="en">Data controller</source>
         <target state="translated">数据控制器</target>
@@ -372,6 +388,10 @@
       <trans-unit id="arc.errorConnectingToController">
         <source xml:lang="en">Error connecting to controller. {0}</source>
         <target state="translated">连接到控制器时出现错误。{0}</target>
+      </trans-unit>
+      <trans-unit id="arc.errorGettingConnectionMode">
+        <source xml:lang="en">Error getting data controller connection mode.</source>
+        <target state="translated">获取数据控制器连接模式时出错。</target>
       </trans-unit>
       <trans-unit id="arc.errorListingLogAnalyticsWorkspaces">
         <source xml:lang="en">Error listing Log Analytics workspaces {0}</source>
@@ -621,6 +641,10 @@
         <source xml:lang="en">SQL managed instance - Azure Arc</source>
         <target state="translated">SQL 托管实例 - Azure Arc</target>
       </trans-unit>
+      <trans-unit id="arc.miaaVersionError">
+        <source xml:lang="en">Error getting SQL managed instance version number.</source>
+        <target state="translated">获取 SQL 托管实例版本号时出错。</target>
+      </trans-unit>
       <trans-unit id="arc.missingExtension">
         <source xml:lang="en">The {0} extension is required to view engine settings. Do you wish to install it now?</source>
         <target state="translated">需要 {0} 扩展才能查看引擎设置。是否要立即安装?</target>
@@ -628,6 +652,10 @@
       <trans-unit id="arc.monitor">
         <source xml:lang="en">Monitor</source>
         <target state="translated">监视器</target>
+      </trans-unit>
+      <trans-unit id="arc.monitorUpgrade">
+        <source xml:lang="en">You can check the status of the upgrade by running the following command:</source>
+        <target state="translated">可以通过运行以下命令来检查升级的状态:</target>
       </trans-unit>
       <trans-unit id="arc.name">
         <source xml:lang="en">Name</source>
@@ -672,6 +700,10 @@
       <trans-unit id="arc.noPodIssuesDetected">
         <source xml:lang="en">There aren’t any known issues affecting this PostgreSQL Hyperscale instance.</source>
         <target state="translated">没有任何影响此 PostgreSQL 超大规模实例的已知问题。</target>
+      </trans-unit>
+      <trans-unit id="arc.noUpgrades">
+        <source xml:lang="en">The current version is the latest version. No upgrades available.</source>
+        <target state="translated">当前版本是最新版本。没有可用的升级。</target>
       </trans-unit>
       <trans-unit id="arc.noWorkerPods">
         <source xml:lang="en">No worker pods in this configuration.</source>
@@ -728,6 +760,14 @@
       <trans-unit id="arc.online">
         <source xml:lang="en">Online</source>
         <target state="translated">联机</target>
+      </trans-unit>
+      <trans-unit id="arc.onlyNextImmediateVersion">
+        <source xml:lang="en">Currently, only upgrading to the next immediate version is supported.</source>
+        <target state="translated">目前，仅支持升级到下一个即时版本。</target>
+      </trans-unit>
+      <trans-unit id="arc.onlyNextImmediateVersionMiaa">
+        <source xml:lang="en">The version of a SQL Managed Instance can not be newer than the version of its data controller. Currently, only upgrading to the next immediate version is supported.</source>
+        <target state="translated">SQL 托管实例的版本不能高于其数据控制器的版本。目前，仅支持升级到下一个最近的版本。</target>
       </trans-unit>
       <trans-unit id="arc.openDashboardFailed">
         <source xml:lang="en">Error opening dashboard. {0}</source>
@@ -909,6 +949,14 @@
         <source xml:lang="en">Region</source>
         <target state="translated">区域</target>
       </trans-unit>
+      <trans-unit id="arc.releaseDate">
+        <source xml:lang="en">Release Date</source>
+        <target state="translated">发布日期</target>
+      </trans-unit>
+      <trans-unit id="arc.releaseNotes">
+        <source xml:lang="en">Release Notes</source>
+        <target state="translated">发行说明</target>
+      </trans-unit>
       <trans-unit id="arc.rememberPassword">
         <source xml:lang="en">Remember Password</source>
         <target state="translated">记住密码</target>
@@ -1041,6 +1089,10 @@
         <source xml:lang="en">Settings</source>
         <target state="translated">设置</target>
       </trans-unit>
+      <trans-unit id="arc.showMiaaError">
+        <source xml:lang="en">Error showing details of SQL managed instance.</source>
+        <target state="translated">显示 SQL 托管实例的详细信息时出错。</target>
+      </trans-unit>
       <trans-unit id="arc.sourceDatabase">
         <source xml:lang="en">Source database</source>
         <target state="translated">源数据库</target>
@@ -1117,6 +1169,38 @@
         <source xml:lang="en">Updating instance '{0}'...</source>
         <target state="translated">正在更新实例“{0}”...</target>
       </trans-unit>
+      <trans-unit id="arc.upgrade">
+        <source xml:lang="en">Upgrade</source>
+        <target state="translated">升级</target>
+      </trans-unit>
+      <trans-unit id="arc.upgradeDataController">
+        <source xml:lang="en">Upgrade Data Controller</source>
+        <target state="translated">升级数据控制器</target>
+      </trans-unit>
+      <trans-unit id="arc.upgradeDialogController">
+        <source xml:lang="en">During a data controller upgrade, portions of the data control plane such as Custom Resource Definitions (CRDs) and containers may be upgraded. An upgrade of the data controller will not cause downtime for the data services (SQL Managed Instance or PostgreSQL server).</source>
+        <target state="translated">在数据控制器升级期间，可能会升级数据控制平面的某些部分，例如自定义资源定义(CRD)和容器。升级数据控制器不会导致数据服务(SQL 托管实例或 PostgreSQL 超大规模服务器)停机。</target>
+      </trans-unit>
+      <trans-unit id="arc.upgradeDialogMiaa">
+        <source xml:lang="en">During a SQL managed instance upgrade, portions of the data control plane such as Custom Resource Definitions (CRDs) and containers may be upgraded. An upgrade of the SQL managed instance will not cause downtime for the data services (SQL Managed Instance or PostgreSQL server).</source>
+        <target state="translated">在 SQL 托管实例升级期间，可能会升级数据控制平面的某些部分，例如自定义资源定义(CRD)和容器。升级 SQL 托管实例不会导致数据服务(SQL 托管实例或 PostgreSQL 超大规模服务器)停机。</target>
+      </trans-unit>
+      <trans-unit id="arc.upgradeManagement">
+        <source xml:lang="en">Upgrade Management</source>
+        <target state="translated">升级管理</target>
+      </trans-unit>
+      <trans-unit id="arc.upgradeMiaa">
+        <source xml:lang="en">Upgrade SQL Managed Instance</source>
+        <target state="translated">升级 Azure SQL 托管实例</target>
+      </trans-unit>
+      <trans-unit id="arc.upgradingController">
+        <source xml:lang="en">Data controller is being upgraded. You can check the status of the upgrade by running the following command: 'kubectl get datacontrollers -A'</source>
+        <target state="translated">正在升级数据控制器。可以通过运行以下命令来检查升级状态: \"kubectl get datacontrollers -A\"</target>
+      </trans-unit>
+      <trans-unit id="arc.upgradingMiaa">
+        <source xml:lang="en">SQL managed instance is being upgraded. You can check the status of the upgrade by running the following command: 'kubectl get sqlmi -A'</source>
+        <target state="translated">正在升级 SQL 托管实例。可以通过运行以下命令来检查升级状态: 'kubectl get sqlmi -A'</target>
+      </trans-unit>
       <trans-unit id="arc.userCancelledError">
         <source xml:lang="en">User cancelled the dialog</source>
         <target state="translated">用户取消了此对话框</target>
@@ -1132,6 +1216,14 @@
       <trans-unit id="arc.value">
         <source xml:lang="en">Value</source>
         <target state="translated">值</target>
+      </trans-unit>
+      <trans-unit id="arc.version">
+        <source xml:lang="en">Version</source>
+        <target state="translated">版本</target>
+      </trans-unit>
+      <trans-unit id="arc.versionLog">
+        <source xml:lang="en">Learn more about each release here.</source>
+        <target state="translated">在此处详细了解每个版本。</target>
       </trans-unit>
       <trans-unit id="arc.worker">
         <source xml:lang="en">Worker</source>
@@ -1922,8 +2014,8 @@
         <target state="translated">时间点保留(天)</target>
       </trans-unit>
       <trans-unit id="arc.sql.service.tier.business.critical">
-        <source xml:lang="en">[PREVIEW] Business Critical (Unlimited vCores and RAM, advanced high availability)</source>
-        <target state="translated">[预览] 业务关键(无限制的 vCore 和 RAM，高级高可用性)</target>
+        <source xml:lang="en">Business Critical (Unlimited vCores and RAM, advanced high availability)</source>
+        <target state="translated">业务关键(无限制的 vCore 和 RAM，高级高可用性)</target>
       </trans-unit>
       <trans-unit id="arc.sql.service.tier.description">
         <source xml:lang="en">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical.</source>

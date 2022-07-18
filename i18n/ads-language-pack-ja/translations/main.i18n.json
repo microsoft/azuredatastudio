@@ -10175,8 +10175,7 @@
 			"designer.issuesTabTitle": "問題 ({0} 件)",
 			"designer.loadingDesigner": "デザイナーの読み込み中...",
 			"designer.loadingDesignerCompleted": "デザイナーが読み込まれます",
-			"designer.newRowButtonAriaLabel": "`{0}` テーブルに新しい行を追加する",
-			"designer.newRowText": "新規追加",
+			"designer.moveRowText": "行の移動",
 			"designer.processing": "処理中...",
 			"designer.processingChanges": "変更の処理中...",
 			"designer.processingChangesCompleted": "変更が処理されました",
@@ -10185,7 +10184,7 @@
 			"designer.publishingChanges": "変更をパブリッシュしています...",
 			"designer.removeRowText": "削除",
 			"designer.scriptTabTitle": "スクリプト",
-			"tableDesigner.unknownComponentType": "コンポーネントの種類: {0} はサポートされていません"
+			"designer.unknownComponentType": "コンポーネントの種類: {0} はサポートされていません"
 		},
 		"sql/workbench/browser/designer/designerPropertiesPane": {
 			"tableDesigner.propertiesPaneTitle": "プロパティ",
@@ -10349,7 +10348,8 @@
 			"azure.openInAzurePortal.title": "Azure Portal で開きます"
 		},
 		"sql/workbench/contrib/backup/browser/backup.component": {
-			"addFile": "ファイルを追加",
+			"addFile": "ファイルの追加",
+			"addUrl": "URL の追加",
 			"backup.advancedConfiguration": "高度な構成",
 			"backup.algorithm": "アルゴリズム",
 			"backup.backupDevice": "バックアップ ファイル",
@@ -10357,6 +10357,7 @@
 			"backup.backupName": "バックアップ名",
 			"backup.backupTail": "ログ末尾のバックアップ",
 			"backup.backupType": "バックアップの種類",
+			"backup.backupUrl": "バックアップ URL",
 			"backup.certificateOrAsymmetricKey": "証明書または非対称キー",
 			"backup.checksumContainer": "メディアに書き込む前にチェックサムを行う",
 			"backup.compression": "圧縮",
@@ -10378,9 +10379,11 @@
 			"backup.reliability": "信頼性",
 			"backup.setBackupCompression": "バックアップの圧縮の設定",
 			"backup.setBackupRetainDays": "バックアップ保持日数の設定",
+			"backup.toUrl": "バックアップを URL に保存",
 			"backup.transactionLog": "トランザクション ログ",
 			"backup.truncateTransactionLog": "トランザクション ログの切り捨て",
 			"backup.verifyContainer": "完了時にバックアップを検証する",
+			"backupBrowseButton": "参照",
 			"backupComponent.backup": "バックアップ",
 			"backupComponent.cancel": "キャンセル",
 			"backupComponent.invalidInput": "入力が無効です。値は 0 以上でなければなりません。",
@@ -10493,7 +10496,6 @@
 			"workbench.configuration.upgradeWorkspace": "ワークスペース設定の {0} は {1} に置き換えられました。"
 		},
 		"sql/workbench/contrib/connection/browser/connection.contribution": {
-			"connection.parseClipboardForConnectionStringDescription": "接続ダイアログが開いたり、解析が実行されたりするときにクリップボードの内容の解析を試行します。",
 			"connection.showUnsupportedServerVersionWarning": "Azure Data Studio でサポートされていないサーバー バージョンにユーザーが接続した場合に警告メッセージを表示するかどうか。",
 			"sql.defaultAuthenticationType.AzureMFA": "Azure Active Directory - MFA サポート付きユニバーサル",
 			"sql.defaultAuthenticationType.AzureMFAAndUser": "Azure Active Directory - パスワード",
@@ -10509,10 +10511,12 @@
 		"sql/workbench/contrib/connection/common/connectionProviderExtension": {
 			"schema.connectionOptions": "接続のオプション",
 			"schema.displayName": "プロバイダーの表示名",
+			"schema.enableConnectionStringOption": "プロバイダーが入力オプションとして接続文字列をサポートするかどうか。既定値は false です。",
 			"schema.iconPath": "サーバーの種類のアイコン パス",
 			"schema.isQueryProvider": "プロバイダーがクエリ プロバイダーであるかどうか。既定値は true です。",
 			"schema.notebookKernelAlias": "プロバイダーの Notebook カーネル別名",
-			"schema.providerId": "プロバイダーの共通 ID"
+			"schema.providerId": "プロバイダーの共通 ID",
+			"schema.useConnectionStringAsDefaultOption": "接続プロバイダーが接続するための既定オプションとして接続文字列を使用するかどうか。既定値は false です。"
 		},
 		"sql/workbench/contrib/connection/common/connectionTreeProviderExentionPoint": {
 			"connectionTreeProvider.schema.id": "プロバイダーの ID は、ツリー データ プロバイダーを登録するときと同じである必要があり、'connectionDialog/' で始まる必要があります",
@@ -10586,6 +10590,7 @@
 			"azdata.extension.contributes.dashboard.tab.container": "このタブに表示されるコンテナー。",
 			"azdata.extension.contributes.dashboard.tab.description": "ユーザーに表示されるこのタブの説明。",
 			"azdata.extension.contributes.dashboard.tab.group": "このタブが属しているグループの一意識別子。ホーム グループの値: home。",
+			"azdata.extension.contributes.dashboard.tab.hideRefreshTask": "ツール バーの [更新] ボタンの表示/非表示を切り替えるフラグです。既定では、値は false です",
 			"azdata.extension.contributes.dashboard.tab.icon.dark": "暗いテーマを使用した場合のアイコンのパス",
 			"azdata.extension.contributes.dashboard.tab.icon.light": "明るいテーマを使用した場合のアイコンのパス",
 			"azdata.extension.contributes.dashboard.tab.id": "このタブの一意の識別子。すべての要求で拡張機能に渡されます。",
@@ -11104,7 +11109,6 @@
 			"addTextLabel": "テキストの追加",
 			"cellNotFound": "URI {0} を含むセルは、このモデルには見つかりませんでした",
 			"cellRunFailed": "セルの実行に失敗しました。詳細については、現在選択されているセルの出力内のエラーをご覧ください。",
-			"code": "コード",
 			"codeCellsPreview": "セルの追加",
 			"codePreview": "コード セル",
 			"createFile": "ファイルの作成",
@@ -11112,9 +11116,7 @@
 			"editor": "エディター",
 			"nextButtonLabel": "次へ >",
 			"previousButtonLabel": "< 前へ",
-			"runAll": "セルの実行",
 			"runAllPreview": "すべて実行",
-			"text": "テキスト",
 			"textPreview": "テキスト セル",
 			"views": "ビュー"
 		},
@@ -11208,6 +11210,7 @@
 			"runParameters": "パラメーターを指定して実行",
 			"selectConnection": "接続を選択",
 			"trustLabel": "信頼されています",
+			"untitledNotSupported": "パラメーターを使用した実行は、無題のノートブックではサポートされていません。続行する前にノートブックを保存してください。[Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization)。",
 			"untrustLabel": "信頼されていません",
 			"viewNotFound": "ビューが見つかりません: {0}"
 		},
@@ -11823,7 +11826,11 @@
 			"connectionDetailsTitle": "接続の詳細",
 			"connectionDialog.cancel": "キャンセル",
 			"connectionDialog.connect": "接続",
+			"connectionDialog.connectionProviderNotSupported": "プロバイダー タイプ '{0}' をサポートする拡張機能は現在インストールされていません。それをインストールしてもう一度お試しください。",
+			"connectionDialog.extensionNotInstalled": "このリソースに接続するには、拡張機能 '{0}' が必要です。インストールしてから、もう一度お試しください。",
 			"connectionDialog.recentConnections": "最近の接続",
+			"connectionDialog.viewExtension": "拡張機能の表示",
+			"connectionDialog.viewExtensions": "拡張機能の表示",
 			"noRecentConnections": "最近の接続はありません",
 			"recentConnectionTitle": "最近"
 		},
@@ -11846,7 +11853,9 @@
 			"connection.azureTenantDropdownLabel": "Azure AD テナント",
 			"connectionName": "名前 (省略可能)",
 			"connectionWidget.AddAzureAccount": "アカウントを追加する...",
-			"connectionWidget.fieldWillBeTrimmed": "{0} がトリミングされます。",
+			"connectionWidget.ConnectionStringError": "接続文字列を解析できませんでした。",
+			"connectionWidget.Error": "エラー",
+			"connectionWidget.connectionString": "接続文字列",
 			"connectionWidget.invalidAzureAccount": "アカウントを選択する必要があります",
 			"connectionWidget.missingRequireField": "{0} が必須です。",
 			"connectionWidget.refreshAzureCredentials": "アカウントの資格情報を更新",
@@ -11957,8 +11966,12 @@
 			"sqlKernel": "SQL"
 		},
 		"sql/workbench/services/notebook/browser/models/cell": {
+			"cellExecutionComplete": "セルの実行が完了しました",
+			"cellExecutionStarted": "セルの実行が開始されました",
+			"codeCellLabel": "コード セル {0}",
 			"commandSuccessful": "コマンドは正常に実行されました",
 			"executionCanceled": "クエリの実行が取り消されました",
+			"mdCellLabel": "Markdown セル {0}",
 			"noDefaultKernel": "このノートブックで使用できるカーネルはありません",
 			"notebookNotReady": "このノートブックのセッションは準備がまだ整っていません",
 			"runCellCancelled": "セルの実行が取り消されました",
@@ -12151,13 +12164,16 @@
 			"RestoreDialogTitle": "データベースの復元",
 			"backupFilePath": "バックアップ ファイルのパス",
 			"backupSetsToRestore": "復元するバックアップ セット",
+			"backupUrl": "バックアップ URL",
 			"database": "データベース",
 			"destination": "ターゲット",
+			"enterBackupUrl": "ユーザーを入力してください。",
 			"fileType": "ファイルの種類",
 			"filesTitle": "ファイル",
 			"generalTitle": "全般",
 			"logicalFileName": "論理ファイル名",
 			"missingBackupFilePathError": "バックアップ ファイルのパスが必須です。",
+			"missingBackupUrlError": "Backup URL は必須です。",
 			"multipleBackupFilePath": "１つまたは複数のファイル パスをコンマで区切って入力してください。",
 			"optionsTitle": "オプション​​",
 			"originalFileName": "元のファイル名",
@@ -12165,11 +12181,14 @@
 			"restoreDatabaseFileAs": "データベース ファイルを名前を付けて復元",
 			"restoreDatabaseFileDetails": "データベース ファイルの詳細を復元する",
 			"restoreDialog.backupFile": "バックアップ ファイル",
+			"restoreDialog.browse": "参照",
 			"restoreDialog.cancel": "キャンセル",
 			"restoreDialog.database": "データベース",
 			"restoreDialog.restore": "復元",
 			"restoreDialog.restoreTitle": "データベースの復元",
 			"restoreDialog.script": "スクリプト",
+			"restoreDialog.targetDatabaseAlreadyExists": "データベースは既に存在します。",
+			"restoreDialog.url": "URL",
 			"restoreFrom": "復元元",
 			"restoreOptions": "復元オプション",
 			"restorePlan": "復元計画",
@@ -12177,7 +12196,8 @@
 			"serverConnection": "サーバーの接続",
 			"source": "ソース",
 			"taillogBackup": "ログ末尾のバックアップ",
-			"targetDatabase": "ターゲット データベース"
+			"targetDatabase": "ターゲット データベース",
+			"targetDatabaseTooltip": "ターゲット データベース名を入力してください"
 		},
 		"sql/workbench/services/restore/common/constants": {
 			"backup.allFiles": "すべてのファイル",
@@ -12190,6 +12210,7 @@
 			"groupColor": "グループの色",
 			"groupDescription": "グループの説明",
 			"serverGroup.cancel": "キャンセル",
+			"serverGroup.colorValue": "色: {0}",
 			"serverGroup.ok": "OK"
 		},
 		"sql/workbench/services/serverGroup/common/serverGroupViewModel": {
@@ -12197,28 +12218,34 @@
 			"serverGroup.editServerGroup": "サーバー グループの編集"
 		},
 		"sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput": {
+			"designer.checkConstraint.description.description": "CHECK 制約の説明。",
 			"designer.checkConstraint.description.expression": "CHECK 制約を定義する式です。",
 			"designer.checkConstraint.description.name": "CHECK 制約の名前。",
+			"designer.column.description.advancedType": "列の統合データ型 (長さ、小数部桁数、精度を含む) を表示します",
 			"designer.column.description.allowNulls": "列が NULL 値を持つことができるかどうかを指定します。",
 			"designer.column.description.dataType": "列のデータ型名を表示します",
 			"designer.column.description.defaultValueBinding": "列またはバインドの定義済みのグローバルな既定値です。",
+			"designer.column.description.description": "列の説明を表示します",
 			"designer.column.description.length": "このデータベース オブジェクトに格納できる最大長 (文字数) です。",
 			"designer.column.description.name": "列オブジェクトの名前です。",
 			"designer.column.description.precision": "数値データの場合、このデータベース オブジェクトに格納できる 10 進数の最大桁数です。",
 			"designer.column.description.primaryKey": "列がテーブルの主キーに含まれるかどうかを指定します。",
 			"designer.column.description.scale": "数値データの場合、この小数点の右側にあるデータベース オブジェクトに格納できる小数点以下の最大桁数です。",
 			"designer.foreignkey.description.columnMapping": "外部キー列と主キー列の間のマッピング。",
+			"designer.foreignkey.description.description": "外部キーの説明。",
 			"designer.foreignkey.description.name": "外部キーの名前です。",
 			"designer.foreignkey.description.onDeleteAction": "外部キー リレーションシップに含まれるデータのある行をユーザーが削除しようとしたときの動作です。",
 			"designer.foreignkey.description.onUpdateAction": "外部キー リレーションシップに含まれるデータのある行をユーザーが更新しようとしたときの動作です。",
 			"designer.foreignkey.description.primaryKeyTable": "主キー列または一意キー列を含むテーブルです。",
 			"designer.index.column.description.name": "列の名前です。",
 			"designer.index.description.columns": "インデックスの列。",
+			"designer.index.description.description": "インデックスの説明。",
 			"designer.index.description.name": "インデックスの名前です。",
 			"designer.table.description.description": "テーブルの説明です。",
 			"designer.table.description.name": "テーブル オブジェクトの名前です。",
 			"designer.table.description.schema": "テーブルを含むスキーマです。",
 			"designer.table.primaryKeyColumns.description": "主キーの列。",
+			"designer.table.primaryKeyDescription.description": "主キーの説明。",
 			"designer.table.primaryKeyName.description": "主キーの名前。",
 			"tableDesigner.ErrorDialogTitle": "テーブル デザイナー エラー",
 			"tableDesigner.ForeignKeyTypeName": "外部キー",
@@ -12233,12 +12260,15 @@
 			"tableDesigner.addNewColumnToIndex": "列の追加",
 			"tableDesigner.addNewColumnToPrimaryKey": "列の追加",
 			"tableDesigner.addNewIndex": "新しいインデックス",
+			"tableDesigner.checkConstraintDescriptionTitle": "説明",
 			"tableDesigner.checkConstraintExpressionTitle": "式",
 			"tableDesigner.checkConstraintNameTitle": "名前",
 			"tableDesigner.checkConstraintTypeName": "制約のチェック",
 			"tableDesigner.checkConstraintsTabTitle": "チェック制約",
+			"tableDesigner.columnAdvancedTypeTitle": "種類",
 			"tableDesigner.columnAllowNullTitle": "Null を許容",
 			"tableDesigner.columnDefaultValueTitle": "既定値",
+			"tableDesigner.columnDescriptionTitle": "説明",
 			"tableDesigner.columnIsPrimaryKeyTitle": "主キー",
 			"tableDesigner.columnLengthTitle": "長さ",
 			"tableDesigner.columnNameTitle": "名前",
@@ -12253,6 +12283,7 @@
 			"tableDesigner.foreignKey.column": "列",
 			"tableDesigner.foreignKey.foreignColumn": "外部列",
 			"tableDesigner.foreignKeyColumns": "列",
+			"tableDesigner.foreignKeyDescriptionTitle": "説明",
 			"tableDesigner.foreignKeyNameTitle": "名前",
 			"tableDesigner.foreignKeyOnDeleteAction": "削除アクション時に",
 			"tableDesigner.foreignKeyOnUpdateAction": "更新アクション時に",
@@ -12265,11 +12296,13 @@
 			"tableDesigner.generatingScriptCompleted": "スクリプトが生成されました。",
 			"tableDesigner.index.column.name": "列",
 			"tableDesigner.indexColumns": "列",
+			"tableDesigner.indexDescription": "説明",
 			"tableDesigner.indexName": "名前",
 			"tableDesigner.indexesTabTitle": "インデックス",
 			"tableDesigner.inputValidationError": "入力の検証に失敗しました。エラー: {0}",
 			"tableDesigner.nameTitle": "テーブル名",
 			"tableDesigner.primaryKeyColumnsTitle": "主キー列",
+			"tableDesigner.primaryKeyDescriptionTitle": "説明",
 			"tableDesigner.primaryKeyNameTitle": "名前",
 			"tableDesigner.publishChangeError": "変更の発行中にエラーが発生しました: {0}",
 			"tableDesigner.publishChangeSuccess": "変更が正常に公開されました。",
@@ -12287,7 +12320,8 @@
 			"showReleaseNotes": "「はじめに」を表示する"
 		},
 		"sql/workbench/api/common/notebooks/vscodeExecuteProvider": {
-			"errorStartBeforeReady": "セッションを開始できません。マネージャーがまだ初期化されていません"
+			"errorStartBeforeReady": "セッションを開始できません。マネージャーがまだ初期化されていません",
+			"notebookMultipleRequestsError": "コード セルを実行できません。別のセルが現在実行されています。"
 		},
 		"sql/workbench/contrib/tableDesigner/browser/tableDesignerEditor": {
 			"tableDesigner.PreviewFeature": "プレビュー機能"
@@ -12308,38 +12342,16 @@
 			"selectBox": "ボックスを選択"
 		},
 		"sql/workbench/browser/designer/designerIssuesTabPanelView": {
-			"designer.IssueListAriaLabel": "問題"
-		},
-		"sql/workbench/contrib/executionPlan/browser/executionPlan": {
-			"executionPlan.SaveFileDescription": "実行プラン ファイル",
-			"executionPlanCustomZoom": "ズームの指定",
-			"executionPlanFileLoadingComplete": "実行プランが生成されます",
-			"executionPlanFileLoadingFailed": "実行プランを読み込めませんでした",
-			"executionPlanFitGraphLabel": "ウィンドウのサイズに合わせて拡大",
-			"executionPlanOpenGraphFile": "クエリ プラン XML の表示",
-			"executionPlanPropertiesActionLabel": "プロパティ",
-			"executionPlanSavePlanXML": "プラン ファイルの保存",
-			"executionPlanSearchNodeAction": "ノードの検索",
-			"executionPlanTitle": "クエリ プラン (プレビュー)",
-			"executionPlanZoomInActionLabel": "拡大",
-			"executionPlanZoomOutActionLabel": "縮小",
-			"loadingExecutionPlanFile": "実行プランの生成",
-			"openQueryAction": "クエリを開く"
+			"designer.IssueListAriaLabel": "問題",
+			"designer.moreInfoLink": "詳細情報"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanEditor": {
 			"executionPlanEditor": "クエリ実行プラン エディター"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView": {
 			"executionPlanPropertiesEdgeOperationName": "Edge",
-			"executionPlanPropertyViewClose": "閉じる",
-			"executionPlanPropertyViewSortAlphabetically": "アルファベット順",
-			"executionPlanPropertyViewSortByDisplayOrder": "項目別",
 			"nodePropertyViewNameNameColumnHeader": "名前",
-			"nodePropertyViewNameValueColumnHeader": "値",
-			"nodePropertyViewTitle": "プロパティ"
-		},
-		"sql/workbench/contrib/executionPlan/browser/planHeader": {
-			"planHeaderIndexAndCost": "クエリ {0}: クエリ コスト (スクリプトに対する相対): {1}%"
+			"nodePropertyViewNameValueColumnHeader": "値"
 		},
 		"sql/workbench/contrib/executionPlan/browser/widgets/customZoomWidget": {
 			"cancelCustomZoomAction": "閉じる (Esc)",
@@ -12367,6 +12379,106 @@
 		},
 		"sql/base/browser/ui/table/plugins/contextMenuColumn.plugin": {
 			"table.showActions": "アクションの表示"
+		},
+		"sql/workbench/browser/designer/tableActions": {
+			"designer.addColumnAction": "新規追加",
+			"designer.insertAfterSelectedColumn": "後に挿入",
+			"designer.insertBeforeSelectedRow": "前に挿入",
+			"designer.moveRowDownAction": "下へ移動",
+			"designer.moveRowDownButtonAriaLabel": "選択した行を 1 つ下の位置に移動します",
+			"designer.moveRowUpAction": "上へ移動",
+			"designer.moveRowUpButtonAriaLabel": "選択した行を 1 つ上の位置に移動します",
+			"designer.newRowButtonAriaLabel": "`{0}` テーブルに新しい行を追加する"
+		},
+		"sql/workbench/contrib/executionPlan/browser/azdataGraphView": {
+			"invalidExecutionPlanZoomError": "ズーム レベルを 0 または負の値にすることはできません"
+		},
+		"sql/workbench/contrib/executionPlan/browser/compareExecutionPlanInput": {
+			"epCompare.editorName": "比較実行プラン"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditor": {
+			"compareExecutionPlanEditor": "比較実行プラン エディター"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView": {
+			"addExecutionPlanLabel": "実行プランの追加",
+			"epComapre.LoadingPlanCompleteMessage": "実行プランが正常に読み込まれました",
+			"epComapre.LoadingPlanMessage": "実行プランを読み込んでいます",
+			"epComapre.placeholderInfoboxText": "比較する実行プランの追加",
+			"epCompare.FileFilterDescription": "実行プラン ファイル",
+			"epCompare.comparePropertiesAction": "プロパティ",
+			"epCompare.comparisonProgess": "比較したプランの類似点を読み込んでいます",
+			"epCompare.toggleOrientation": "方向の切り替え",
+			"epCompare.zoomInAction": "拡大",
+			"epCompare.zoomOutAction": "縮小",
+			"epCompare.zoomReset": "ズームのリセット",
+			"epCompare.zoomToFit": "ウィンドウのサイズに合わせて拡大"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView": {
+			"executionPlanComparisonPropertiesBottomOperation": "下位の操作: {0}",
+			"executionPlanComparisonPropertiesTopOperation": "上位の操作: {0}",
+			"executionPlanPropertiesEdgeOperationName": "Edge",
+			"nodePropertyViewNameNameColumnHeader": "名前",
+			"nodePropertyViewNameValueColumnBottomHeader": "値 (下位プラン)",
+			"nodePropertyViewNameValueColumnTopHeader": "値 (上位プラン)"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanContribution": {
+			"executionPlanCompareCommandOriginalValue": "比較実行プラン",
+			"executionPlanCompareCommandValue": "比較実行プラン"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanFileView": {
+			"executionPlanFileLoadingComplete": "実行プランが生成されます",
+			"executionPlanFileLoadingFailed": "実行プランを読み込めませんでした",
+			"loadingExecutionPlanFile": "実行プランの生成"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase": {
+			"executionPlanPropertyViewClose": "閉じる",
+			"executionPlanPropertyViewSortAlphabetically": "アルファベット順",
+			"executionPlanPropertyViewSortByDisplayOrder": "項目別",
+			"executionPlanPropertyViewSortReverseAlphabetically": "逆アルファベット順",
+			"nodePropertyViewTitle": "プロパティ"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanTab": {
+			"executionPlanTitle": "クエリ プラン (プレビュー)"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanView": {
+			"executionPlan.SaveFileDescription": "実行プラン ファイル",
+			"executionPlanCompareExecutionPlanAction": "比較実行プラン",
+			"executionPlanContextMenuDisableTooltip": "ヒントを無効にする",
+			"executionPlanContextMenuEnableTooltip": "ツールヒントを有効にする",
+			"executionPlanCustomZoom": "ズームのカスタマイズ",
+			"executionPlanDisableTooltip": "ヒントが無効になっています",
+			"executionPlanEnableTooltip": "ツールヒントが有効",
+			"executionPlanFitGraphLabel": "ウィンドウのサイズに合わせて拡大",
+			"executionPlanOpenGraphFile": "クエリ プラン XML の表示",
+			"executionPlanPropertiesActionLabel": "プロパティ",
+			"executionPlanSavePlanXML": "プラン ファイルの保存",
+			"executionPlanSearchNodeAction": "ノードの検索",
+			"executionPlanZoomInActionLabel": "拡大",
+			"executionPlanZoomOutActionLabel": "縮小",
+			"openQueryAction": "クエリを開く"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanViewHeader": {
+			"planHeaderIndexAndCost": "クエリ {0}: クエリ コスト (スクリプトに対する相対): {1}%"
+		},
+		"sql/workbench/services/backupRestoreUrlBrowser/browser/urlBrowserDialog": {
+			"backupRestoreUrlBrowserDialog.account": "Azure アカウント",
+			"backupRestoreUrlBrowserDialog.backupFile": "バックアップ ファイル",
+			"backupRestoreUrlBrowserDialog.blobContainer": "BLOB コンテナー",
+			"backupRestoreUrlBrowserDialog.linkAccount": "アカウントのリンク",
+			"backupRestoreUrlBrowserDialog.sharedAccessSignature": "Shared Access Signature が生成されました",
+			"backupRestoreUrlBrowserDialog.sharedAccessSignatureButton": "資格情報の作成",
+			"backupRestoreUrlBrowserDialog.storageAccount": "ストレージ アカウント",
+			"backupRestoreUrlBrowserDialog.subscription": "Azure サブスクリプション",
+			"backupRestoreUrlBrowserDialog.tenant": "Azure AD テナント",
+			"fileBrowser.discard": "破棄",
+			"fileBrowser.ok": "OK"
+		},
+		"sql/workbench/services/backupRestoreUrlBrowser/browser/urlBrowserDialogService": {
+			"filebrowser.selectBlob": "BLOB の選択"
+		},
+		"sql/workbench/services/tableDesigner/browser/tableDesignerService": {
+			"TableDesigner.closeApplication": "アプリケーションの終了(&&C)",
+			"TableDesigner.saveBeforeExit": "テーブル デザイナーに保存されていない変更があり、アプリケーションを閉じると失われます。アプリケーションを閉じますか?"
 		}
 	}
 }

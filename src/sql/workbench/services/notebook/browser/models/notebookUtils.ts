@@ -47,6 +47,7 @@ export async function getStandardKernelsForProvider(providerId: string, notebook
 	if (!standardKernels || standardKernels.length === 0) {
 		// Fall back to using SQL provider instead
 		standardKernels = await notebookService.getStandardKernelsForProvider(SQL_NOTEBOOK_PROVIDER) ?? [];
+		providerId = SQL_NOTEBOOK_PROVIDER;
 	}
 	standardKernels.forEach(kernel => {
 		Object.assign(<IStandardKernelWithProvider>kernel, {

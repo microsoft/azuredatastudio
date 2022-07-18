@@ -210,6 +210,14 @@
         <source xml:lang="en">Execute</source>
         <target state="translated">Выполнение</target>
       </trans-unit>
+      <trans-unit id="mssql.failedToFindAccount">
+        <source xml:lang="en">Failed to find azure account {0} when executing token refresh</source>
+        <target state="translated">Не удалось найти учетную запись Azure {0} при обновлении токена</target>
+      </trans-unit>
+      <trans-unit id="mssql.failedToFindTenants">
+        <source xml:lang="en">Failed to find tenant '{0}' in account '{1}' when refreshing security token</source>
+        <target state="translated">Не удалось найти клиент ''{0}'' в учетной записи ''{1}'' при обновлении токена безопасности</target>
+      </trans-unit>
       <trans-unit id="mssql.group">
         <source xml:lang="en">Group</source>
         <target state="translated">Группа</target>
@@ -257,6 +265,14 @@
       <trans-unit id="mssql.stickyHeader">
         <source xml:lang="en">Sticky Bit</source>
         <target state="translated">Бит закрепления</target>
+      </trans-unit>
+      <trans-unit id="mssql.tokenRefreshFailed">
+        <source xml:lang="en">{0} AAD token refresh failed, please reconnect to enable {0}</source>
+        <target state="translated">{0} Не удалось обновить токен AAD. Пожалуйста, подключитесь повторно, чтобы включить {0}</target>
+      </trans-unit>
+      <trans-unit id="mssql.tokenRefreshFailedNoSecurityToken">
+        <source xml:lang="en">Editor token refresh failed, autocompletion will be disabled until the editor is disconnected and reconnected</source>
+        <target state="translated">Не удалось обновить токен редактора, автозаполнение будет отключено до тех пор, пока редактор не будет отключен и подключен снова.</target>
       </trans-unit>
       <trans-unit id="mssql.userLabel">
         <source xml:lang="en">User</source>
@@ -1329,6 +1345,10 @@
       <trans-unit id="mssql.logRetentionMinutes">
         <source xml:lang="en">Number of minutes to retain log files for backend services. Default is 1 week.</source>
         <target state="translated">Срок хранения файлов журналов (в минутах) для серверных служб. По умолчанию задана 1 неделя.</target>
+      </trans-unit>
+      <trans-unit id="mssql.parallelMessageProcessing">
+        <source xml:lang="en">[Experimental] Whether the requests to the SQL Tools Service should be handled in parallel. This is introduced to discover the issues there might be when handling all requests in parallel. The default value is false. Relaunch of ADS is required when the value is changed.</source>
+        <target state="translated">[Experimental] Следует ли обрабатывать запросы к службе SQL Tools Service одновременно. Этот параметр введен для обнаружения проблем, которые могут возникнуть при параллельной обработке всех запросов. Значение по умолчанию — false. При изменении значения требуется перезапуск ADS.</target>
       </trans-unit>
       <trans-unit id="mssql.provider.displayName">
         <source xml:lang="en">Microsoft SQL Server</source>

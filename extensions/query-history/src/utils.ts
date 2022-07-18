@@ -4,7 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 /**
- * Query History panel id
+ * Removes all newlines from the given string, replacing them with spaces
+ * @param str The original string
+ * @returns The string with all newlines replaced by spaces
  */
-export const QUERY_HISTORY_CONTAINER_ID = 'workbench.panel.queryHistory';
-export const QUERY_HISTORY_VIEW_ID = 'workbench.panel.queryHistory.view';
+export function removeNewLines(str: string): string {
+	return str.replace(/\r\n/g, ' ').replace(/\n/g, ' ');
+}

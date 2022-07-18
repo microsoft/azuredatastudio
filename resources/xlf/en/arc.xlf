@@ -853,6 +853,9 @@
     <trans-unit id="arc.suspect">
       <source xml:lang="en">Suspect</source>
     </trans-unit>
+    <trans-unit id="arc.syncSecondaryToCommit">
+      <source xml:lang="en">Sync Secondary To Commit</source>
+    </trans-unit>
     <trans-unit id="arc.thePasswordsDoNotMatch">
       <source xml:lang="en">The passwords do not match. Confirm the password or press escape to exit.</source>
     </trans-unit>
@@ -1082,6 +1085,12 @@
     <trans-unit id="arc.data.controller.cluster.environment.title">
       <source xml:lang="en">What is your target existing Kubernetes cluster environment?</source>
     </trans-unit>
+    <trans-unit id="arc.data.controller.cluster.name">
+      <source xml:lang="en">Cluster Name</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.cluster.name.description">
+      <source xml:lang="en">The name of the cluster. Direct mode only.</source>
+    </trans-unit>
     <trans-unit id="arc.data.controller.connectivity.mode">
       <source xml:lang="en">Connectivity mode</source>
     </trans-unit>
@@ -1152,7 +1161,7 @@
       <source xml:lang="en">Data controller namespace</source>
     </trans-unit>
     <trans-unit id="arc.data.controller.namespace.description">
-      <source xml:lang="en">Indirect mode only.</source>
+      <source xml:lang="en">Data controller namespace. Indirect mode only.</source>
     </trans-unit>
     <trans-unit id="arc.data.controller.namespace.validation.description">
       <source xml:lang="en">Namespace must consist of lower case alphanumeric characters or '-', start/end with an alphanumeric character, and be 63 characters or fewer in length.</source>
@@ -1193,8 +1202,14 @@
     <trans-unit id="arc.data.controller.summary.cluster.context">
       <source xml:lang="en">Cluster context</source>
     </trans-unit>
+    <trans-unit id="arc.data.controller.summary.cluster.name">
+      <source xml:lang="en">Cluster name</source>
+    </trans-unit>
     <trans-unit id="arc.data.controller.summary.controller">
       <source xml:lang="en">Controller</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.summary.data.controller.custom.location">
+      <source xml:lang="en">Data controller custom location</source>
     </trans-unit>
     <trans-unit id="arc.data.controller.summary.data.controller.infrastructure">
       <source xml:lang="en">Data controller infrastructure</source>
@@ -1400,6 +1415,9 @@
     <trans-unit id="arc.sql.cost.summary.basics">
       <source xml:lang="en">Basics</source>
     </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.billable.replicas">
+      <source xml:lang="en">Billable replicas</source>
+    </trans-unit>
     <trans-unit id="arc.sql.cost.summary.business.critical">
       <source xml:lang="en">Business Critical</source>
     </trans-unit>
@@ -1502,6 +1520,12 @@
     <trans-unit id="arc.sql.pitr.retention.description">
       <source xml:lang="en">Configure retention for point-in-time backups. {0}</source>
     </trans-unit>
+    <trans-unit id="arc.sql.readable.secondaries.description">
+      <source xml:lang="en">The number of readable secondary replicas.</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.readable.secondaries.label">
+      <source xml:lang="en">Readable secondary replicas</source>
+    </trans-unit>
     <trans-unit id="arc.sql.retention.days.description">
       <source xml:lang="en">Specify how long you want to keep your point-in-time backups.</source>
     </trans-unit>
@@ -1537,6 +1561,12 @@
     </trans-unit>
     <trans-unit id="arc.sql.summary.arc.by.microsoft">
       <source xml:lang="en">by Microsoft</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.sync.secondaries.description">
+      <source xml:lang="en">The number of synchronous replicas required to commit a transaction before the primary replica is allowed to commit. Setting this value to -1 will set the number of required synchronized secondaries to '(# of replicas - 1) / 2', rounded down.</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.sync.secondaries.label">
+      <source xml:lang="en">Synchronized secondaries required to commit</source>
     </trans-unit>
     <trans-unit id="arc.sql.three.replicas">
       <source xml:lang="en">3 replicas</source>

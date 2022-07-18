@@ -1525,4 +1525,66 @@ declare module 'azdata' {
 		 */
 		link: LinkArea;
 	}
+
+	export interface ContainerBuilder<TComponent extends Component, TLayout, TItemLayout, TPropertyBag extends ContainerProperties> extends ComponentBuilder<TComponent, TPropertyBag> {
+		/**
+		 * Sets the initial set of properties for the container being created
+		 * @param properties The properties to apply to the container
+		 */
+		withProps(properties: TPropertyBag): ContainerBuilder<TComponent, TLayout, TItemLayout, TPropertyBag>;
+	}
+
+	export interface ContainerProperties extends ComponentProperties {
+		/**
+		 * Corresponds to the aria-live accessibility attribute for this component
+		 */
+		ariaLive?: string;
+	}
+	export namespace queryeditor {
+
+		export interface QueryMessage {
+			/**
+			 * The message string
+			 */
+			message: string;
+			/**
+			 * Whether this message is an error message or not
+			 */
+			isError: boolean;
+			/**
+			 * The timestamp for when this message was sent
+			 */
+			time?: string;
+		}
+
+		/**
+		 * Information about a query that was executed
+		 */
+		export interface QueryInfo {
+			/**
+			 * Any messages that have been received from the query provider
+			 */
+			messages: QueryMessage[];
+			/**
+			 * The ranges for each batch that has executed so far
+			 */
+			batchRanges: vscode.Range[];
+		}
+
+		export interface QueryEventListener {
+			/**
+			 * An event that is fired for query events
+			 * @param type The type of query event
+			 * @param document The document this event was sent by
+			 * @param args The extra information for the event, if any
+			 * The args sent depend on the type of event :
+			 * queryStart: undefined
+			 * queryStop: undefined
+			 * executionPlan: string (the plan itself)
+			 * visualize: ResultSetSummary (the result set to be visualized)
+			 * @param queryInfo The information about the query that triggered this event
+			 */
+			onQueryEvent(type: QueryEventType, document: QueryDocument, args: ResultSetSummary | string | undefined, queryInfo: QueryInfo): void;
+		}
+	}
 }
