@@ -177,10 +177,16 @@
                           "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
                           "options": {
                             "values": [
-                              "Indirect",
-                              "Direct"
+                              {
+                                "name": "indirect",
+                                "displayName": "%arc.data.controller.indirect.display.name%"
+                              },
+                              {
+                                "name": "direct",
+                                "displayName": "%arc.data.controller.direct.display.name%"
+                              }
                             ],
-                            "defaultValue": "Indirect",
+                            "defaultValue": "indirect",
                             "optionsType": "radio"
                           }
                         },
@@ -193,7 +199,7 @@
                           "configFileVariableName": "AZDATA_NB_VAR_ARC_CONFIG_FILE",
                           "enabled": {
                             "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
-                            "value": "Indirect"
+                            "value": "indirect"
                           }
                         },
                         {
@@ -213,7 +219,7 @@
                           },
                           "enabled": {
                             "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
-                            "value": "Indirect"
+                            "value": "indirect"
                           }
                         }
                       ]
@@ -259,7 +265,7 @@
                           ],
                           "enabled": {
                             "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
-                            "value": "Indirect"
+                            "value": "indirect"
                           }
                         }
                       ]
@@ -321,7 +327,7 @@
                           "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CLUSTER_NAME",
                           "enabled": {
                             "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
-                            "value": "Direct"
+                            "value": "direct"
                           }
                         },
                         {
@@ -339,7 +345,7 @@
                           "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAMESPACE",
                           "enabled": {
                             "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
-                            "value": "Indirect"
+                            "value": "indirect"
                           },
                           "description": "%arc.data.controller.namespace.description%"
                         },
@@ -351,7 +357,7 @@
                           "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CUSTOM_LOCATION",
                           "enabled": {
                             "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
-                            "value": "Direct"
+                            "value": "direct"
                           }
                         },
                         {
@@ -362,7 +368,7 @@
                           "defaultValue": false,
                           "enabled": {
                             "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
-                            "value": "Direct"
+                            "value": "direct"
                           }
                         },
                         {
@@ -373,7 +379,7 @@
                           "defaultValue": false,
                           "enabled": {
                             "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
-                            "value": "Direct"
+                            "value": "direct"
                           }
                         },
                         {
