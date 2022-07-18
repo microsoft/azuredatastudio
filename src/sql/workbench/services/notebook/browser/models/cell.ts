@@ -349,9 +349,11 @@ export class CellModel extends Disposable implements ICellModel {
 	private attachImageFromSource(newSource: string | string[]): string | string[] {
 		if (!Array.isArray(newSource) && this.isValidBase64OctetStream(newSource)) {
 			let results;
-			// only replace the base64 value if it's from markdown [](base64value) not html tags <img src="base64value"
-			while ((results = validBase64OctetStreamRegex.exec(newSource)) !== null && newSource.substring(newSource.indexOf(results[0]) - 9, newSource.indexOf(results[0]) - 2) !== 'img src') {
-				let imageName = this.addAttachment(results[1], results[0], 'image0.png');
+			// only replace the base64 value if it's from markdown [](base64value) not html tags <img src="base64value">
+			let validImageTag = /<img\s+[^>]*src="([^"]*)"[^>]*>/;
+			let imageResults;
+			while ((results = validBase64OctetStreamRegex.exec(newSource)) !== null && ((imageResults = validImageTag.exec(newSource)) !== null && this.isValidBase64OctetStream(imageResults[1]) && results[0] !== imageResults[1])) {
+				let imageName = this.addAttachment(results[1], results[0], 'image.png');
 				newSource = newSource.replace(validBase64OctetStreamRegex, `attachment:${imageName}`);
 			}
 			return newSource;
