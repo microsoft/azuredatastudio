@@ -49,7 +49,6 @@ export class AzdataGraphView {
 		this._diagram = new azdataGraph.azdataQueryPlan(queryPlanConfiguration);
 
 		this.setGraphProperties();
-		this.selectElement(this._executionPlan.root);
 		this._cellInFocus = this._diagram.graph.getSelectionCell();
 		this.initializeGraphEvents();
 	}
@@ -72,7 +71,7 @@ export class AzdataGraphView {
 		this.onElementSelected = this._onElementSelectedEmitter.event;
 		this._diagram.graph.getSelectionModel().addListener('change', (sender, evt) => {
 			if (evt.properties?.removed) {
-				if (this._cellInFocus.id === evt.properties.removed[0].id) {
+				if (this._cellInFocus?.id === evt.properties.removed[0].id) {
 					return;
 				}
 				const newSelection = evt.properties.removed[0];

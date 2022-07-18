@@ -1014,13 +1014,24 @@
       <source xml:lang="en">Azure Arc-enabled PostgreSQL Hyperscale terms and conditions</source>
     </trans-unit>
     <trans-unit id="arc.agreement.sql.help.text">
-      <source xml:lang="en">Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}</source>
+      <source xml:lang="en">Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}. 
+ 
+ By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.</source>
+    </trans-unit>
+    <trans-unit id="arc.agreement.sql.help.text.azure.marketplace.terms">
+      <source xml:lang="en">Azure Marketplace Terms</source>
     </trans-unit>
     <trans-unit id="arc.agreement.sql.help.text.learn.more">
       <source xml:lang="en">Learn more</source>
     </trans-unit>
     <trans-unit id="arc.agreement.sql.help.text.learn.more.ariaLabel">
       <source xml:lang="en">Learn more about Azure Arc enabled Managed Instance</source>
+    </trans-unit>
+    <trans-unit id="arc.agreement.sql.help.text.privacy.policy">
+      <source xml:lang="en">Privacy policy</source>
+    </trans-unit>
+    <trans-unit id="arc.agreement.sql.help.text.terms.of.use">
+      <source xml:lang="en">Terms of use</source>
     </trans-unit>
     <trans-unit id="arc.agreement.sql.terms.conditions">
       <source xml:lang="en">Azure SQL managed instance - Azure Arc terms and conditions</source>
@@ -1054,9 +1065,6 @@
     </trans-unit>
     <trans-unit id="arc.cores-request.label">
       <source xml:lang="en">Cores Request</source>
-    </trans-unit>
-    <trans-unit id="arc.data.controller.agreement">
-      <source xml:lang="en">I accept {0} and {1}.</source>
     </trans-unit>
     <trans-unit id="arc.data.controller.auto.upload.logs">
       <source xml:lang="en">Auto-upload Logs</source>

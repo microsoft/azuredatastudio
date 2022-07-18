@@ -42,7 +42,7 @@
 			"assocLabelPath": "檔案路徑",
 			"derivedDescription": "比對名稱相同但副檔名不同的同層級檔案。",
 			"derivedLabel": "依名稱排列且同層級的檔案",
-			"dirty": "若使用中的編輯器已變更，即為已變更的指示區",
+			"dirty": "當使用中編輯器具有未儲存變更的指示器",
 			"falseDescription": "停用模式。",
 			"fileDescription": "比對所有具特定副檔名的檔案。",
 			"fileLabel": "依副檔名排列的檔案",
