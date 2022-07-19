@@ -11,6 +11,7 @@ import { EOL } from 'os';
 import { DatabaseMigration } from '../api/azure';
 import { DashboardStatusBar } from './sqlServerDashboard';
 import { getSelectedServiceStatus } from '../models/migrationLocalStorage';
+import { util } from 'webpack';
 
 export const SqlMigrationExtensionId = 'microsoft.sql-migration';
 export const EmptySettingValue = '-';
@@ -55,6 +56,33 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 	dispose() {
 		this.disposables.forEach(
 			d => { try { d.dispose(); } catch { } });
+	}
+
+	protected numberCompare(number1: number | undefined, number2: number | undefined, sortDir: number): number {
+		if (!number1) {
+			return sortDir;
+		} else if (!number2) {
+			return -sortDir;
+		}
+		return util.comparators.compareNumbers(number1, number2) * -sortDir;
+	}
+
+	protected stringCompare(string1: string | undefined, string2: string | undefined, sortDir: number): number {
+		if (!string1) {
+			return sortDir;
+		} else if (!string2) {
+			return -sortDir;
+		}
+		return string1.localeCompare(string2) * -sortDir;
+	}
+
+	protected dateCompare(stringDate1: string | undefined, stringDate2: string | undefined, sortDir: number): number {
+		if (!stringDate1) {
+			return sortDir;
+		} else if (!stringDate2) {
+			return -sortDir;
+		}
+		return new Date(stringDate1) > new Date(stringDate2) ? -sortDir : sortDir;
 	}
 
 	protected async updateServiceContext(button: azdata.ButtonComponent): Promise<void> {
@@ -164,7 +192,7 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 					flexFlow: 'column',
 					width: 420,
 				})
-				.withProps({ CSSStyles: { 'margin': '0 10px 0 10px' } })
+				.withProps({ CSSStyles: { 'margin': '0 15px' } })
 				.component();
 
 			if (errorMessage.length > 0) {

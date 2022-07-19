@@ -121,21 +121,17 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 	}
 
 	protected createMigrationToolbarContainer(): azdata.FlexContainer {
-		const toolbarContainer = this.view.modelBuilder.flexContainer()
-			.withLayout({ flexWrap: 'wrap' })
-			.withProps({ width: '100%' })
-			.component();
-
+		const toolbarContainer = this.view.modelBuilder.toolbarContainer();
+		const buttonHeight = 20;
 		this.cutoverButton = this.view.modelBuilder.button()
 			.withProps({
 				iconPath: IconPathHelper.cutover,
 				iconHeight: '16px',
 				iconWidth: '16px',
 				label: loc.COMPLETE_CUTOVER,
-				height: '20px',
-				width: '140px',
+				height: buttonHeight,
 				enabled: false,
-				CSSStyles: { ...styles.BODY_CSS, 'display': 'none' }
+				CSSStyles: { 'display': 'none' }
 			}).component();
 
 		this.disposables.push(
@@ -153,18 +149,14 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 				}
 			}));
 
-		toolbarContainer.addItem(this.cutoverButton, { flex: '0' });
-
 		this.cancelButton = this.view.modelBuilder.button()
 			.withProps({
 				iconPath: IconPathHelper.cancel,
 				iconHeight: '16px',
 				iconWidth: '16px',
 				label: loc.CANCEL_MIGRATION,
-				height: '20px',
-				width: '140px',
+				height: buttonHeight,
 				enabled: false,
-				CSSStyles: { ...styles.BODY_CSS }
 			}).component();
 
 		this.disposables.push(
@@ -191,7 +183,6 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 				});
 			}));
 
-		toolbarContainer.addItem(this.cancelButton, { flex: '0' });
 
 		this.retryButton = this.view.modelBuilder.button()
 			.withProps({
@@ -200,10 +191,9 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 				enabled: false,
 				iconHeight: '16px',
 				iconWidth: '16px',
-				height: '20px',
-				width: '120px',
-				CSSStyles: { ...styles.BODY_CSS, }
+				height: buttonHeight,
 			}).component();
+
 		this.disposables.push(
 			this.retryButton.onDidClick(
 				async (e) => {
@@ -216,24 +206,6 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 					await retryMigrationDialog.openDialog();
 				}
 			));
-		toolbarContainer.addItem(this.retryButton, { flex: '0' });
-
-		this.refreshButton = this.view.modelBuilder.button()
-			.withProps({
-				iconPath: IconPathHelper.refresh,
-				iconHeight: '16px',
-				iconWidth: '16px',
-				label: loc.REFRESH_BUTTON_TEXT,
-				height: '20px',
-				width: '80px',
-				CSSStyles: { ...styles.BODY_CSS }
-			}).component();
-
-		this.disposables.push(
-			this.refreshButton.onDidClick(
-				async (e) => await this.refresh()));
-
-		toolbarContainer.addItem(this.refreshButton, { flex: '0' });
 
 		this.copyDatabaseMigrationDetails = this.view.modelBuilder.button()
 			.withProps({
@@ -241,9 +213,7 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 				iconHeight: '16px',
 				iconWidth: '16px',
 				label: loc.COPY_MIGRATION_DETAILS,
-				height: '20px',
-				width: '160px',
-				CSSStyles: { ...styles.BODY_CSS }
+				height: buttonHeight,
 			}).component();
 
 		this.disposables.push(
@@ -254,20 +224,13 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 				void vscode.window.showInformationMessage(loc.DETAILS_COPIED);
 			}));
 
-		toolbarContainer.addItem(this.copyDatabaseMigrationDetails, {
-			flex: '0',
-			CSSStyles: { 'margin-left': '5px' }
-		});
-
 		this.newSupportRequest = this.view.modelBuilder.button()
 			.withProps({
 				label: loc.NEW_SUPPORT_REQUEST,
 				iconPath: IconPathHelper.newSupportRequest,
 				iconHeight: '16px',
 				iconWidth: '16px',
-				height: '20px',
-				width: '160px',
-				CSSStyles: { ...styles.BODY_CSS }
+				height: buttonHeight,
 			}).component();
 
 		this.disposables.push(
@@ -277,10 +240,18 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 				await vscode.env.openExternal(vscode.Uri.parse(supportUrl));
 			}));
 
-		toolbarContainer.addItem(this.newSupportRequest, {
-			flex: '0',
-			CSSStyles: { 'margin-left': '5px' }
-		});
+		this.refreshButton = this.view.modelBuilder.button()
+			.withProps({
+				iconPath: IconPathHelper.refresh,
+				iconHeight: '16px',
+				iconWidth: '16px',
+				label: loc.REFRESH_BUTTON_TEXT,
+				height: buttonHeight,
+			}).component();
+
+		this.disposables.push(
+			this.refreshButton.onDidClick(
+				async (e) => await this.refresh()));
 
 		this.refreshLoader = this.view.modelBuilder.loadingComponent()
 			.withProps({
@@ -291,20 +262,21 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 				}
 			}).component();
 
-		toolbarContainer.addItem(this.refreshLoader, {
-			flex: '0',
-			CSSStyles: { 'margin-left': '16px' }
-		});
-
-		const separator = this.view.modelBuilder.separator()
-			.withProps({ width: '100%', CSSStyles: { 'padding': '0' } })
-			.component();
+		toolbarContainer.addToolbarItems([
+			<azdata.ToolbarComponent>{ component: this.cutoverButton },
+			<azdata.ToolbarComponent>{ component: this.cancelButton },
+			<azdata.ToolbarComponent>{ component: this.retryButton },
+			<azdata.ToolbarComponent>{ component: this.copyDatabaseMigrationDetails, toolbarSeparatorAfter: true },
+			<azdata.ToolbarComponent>{ component: this.newSupportRequest, toolbarSeparatorAfter: true },
+			<azdata.ToolbarComponent>{ component: this.refreshButton },
+			<azdata.ToolbarComponent>{ component: this.refreshLoader },
+		]);
 
 		return this.view.modelBuilder.flexContainer()
 			.withItems([
 				this.createBreadcrumbContainer(),
-				toolbarContainer,
-				separator])
+				toolbarContainer.component(),
+			])
 			.withLayout({ flexFlow: 'column', width: '100%' })
 			.component();
 	}

@@ -9,7 +9,7 @@ import * as loc from '../constants/strings';
 import { getSqlServerName, getMigrationStatusImage, getPipelineStatusImage, debounce } from '../api/utils';
 import { logError, TelemetryViews } from '../telemtery';
 import { canCancelMigration, canCutoverMigration, canRetryMigration, formatDateTimeString, formatNumber, formatSizeBytes, formatSizeKb, formatTime, getMigrationStatus, getMigrationTargetTypeEnum, isOfflineMigation, PipelineStatusCodes } from '../constants/helper';
-import { getResourceName } from '../api/azure';
+import { CopyProgressDetail, getResourceName } from '../api/azure';
 import { InfoFieldSchema, infoFieldLgWidth, MigrationDetailsTabBase, MigrationTargetTypeName } from './migrationDetailsTabBase';
 import { EmptySettingValue } from './tabBase';
 import { IconPathHelper } from '../constants/iconPathHelper';
@@ -17,6 +17,20 @@ import { DashboardStatusBar } from './sqlServerDashboard';
 import { EOL } from 'os';
 
 const MigrationDetailsTableTabId = 'MigrationDetailsTableTab';
+
+const TableColumns = {
+	tableName: 'tableName',
+	status: 'status',
+	dataRead: 'dataRead',
+	dataWritten: 'dataWritten',
+	rowsRead: 'rowsRead',
+	rowsCopied: 'rowsCopied',
+	copyThroughput: 'copyThroughput',
+	copyDuration: 'copyDuration',
+	parallelCopyType: 'parallelCopyType',
+	usedParallelCopies: 'usedParallelCopies',
+	copyStart: 'copyStart',
+};
 
 enum SummaryCardIndex {
 	TotalTables = 0,
@@ -36,7 +50,10 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 	private _migrationStatusInfoField!: InfoFieldSchema;
 	private _serverObjectsInfoField!: InfoFieldSchema;
 	private _tableFilterInputBox!: azdata.InputBoxComponent;
+	private _columnSortDropdown!: azdata.DropDownComponent;
+	private _columnSortCheckbox!: azdata.CheckBoxComponent;
 	private _progressTable!: azdata.TableComponent;
+	private _progressDetail: CopyProgressDetail[] = [];
 
 	constructor() {
 		super();
@@ -69,10 +86,10 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 		this.refreshButton.enabled = false;
 		this.refreshLoader.loading = true;
 		await this.statusBar.clearError();
-		await this._progressTable.updateProperty('data', []);
 
 		try {
 			await this.model.fetchStatus();
+			await this._loadData();
 		} catch (e) {
 			await this.statusBar.showError(
 				loc.MIGRATION_STATUS_REFRESH_ERROR,
@@ -80,11 +97,17 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 				e.message);
 		}
 
+		this.isRefreshing = false;
+		this.refreshLoader.loading = false;
+		this.refreshButton.enabled = true;
+	}
+
+	private async _loadData(): Promise<void> {
 		const migration = this.model?.migration;
+		await this.showMigrationErrors(this.model?.migration);
+
 		await this.cutoverButton.updateCssStyles(
 			{ 'display': isOfflineMigation(migration) ? 'none' : 'block' });
-
-		await this.showMigrationErrors(migration);
 
 		const sqlServerName = migration?.properties.sourceServerName;
 		const sourceDatabaseName = migration?.properties.sourceDatabaseName;
@@ -98,7 +121,51 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 		const targetServerVersion = MigrationTargetTypeName[targetType ?? ''];
 
 		const hashSet: loc.LookupTable<number> = {};
-		const tableData: any[] = migration?.properties.migrationStatusDetails?.listOfCopyProgressDetails?.map((d) => {
+		this._progressDetail = migration?.properties.migrationStatusDetails?.listOfCopyProgressDetails ?? [];
+		await this._populateTableData(hashSet);
+
+		const successCount = hashSet[PipelineStatusCodes.Succeeded] ?? 0;
+		const cancelledCount = hashSet[PipelineStatusCodes.Cancelled] ?? 0;
+		const failedCount = hashSet[PipelineStatusCodes.Failed] ?? 0;
+		const inProgressCount = (hashSet[PipelineStatusCodes.Queued] ?? 0) + (hashSet[PipelineStatusCodes.InProgress] ?? 0);
+		const totalCount = migration.properties.migrationStatusDetails?.listOfCopyProgressDetails.length ?? 0;
+
+		this._updateSummaryComponent(SummaryCardIndex.TotalTables, totalCount);
+		this._updateSummaryComponent(SummaryCardIndex.InProgressTables, inProgressCount);
+		this._updateSummaryComponent(SummaryCardIndex.SuccessfulTables, successCount);
+		this._updateSummaryComponent(SummaryCardIndex.FailedTables, failedCount);
+		this._updateSummaryComponent(SummaryCardIndex.CanceledTables, cancelledCount);
+
+		this.databaseLabel.value = sourceDatabaseName;
+		this._sourceDatabaseInfoField.text.value = sourceDatabaseName;
+		this._sourceDetailsInfoField.text.value = sqlServerName;
+		this._sourceVersionInfoField.text.value = `${sqlServerVersion} ${sqlServerInfo.serverVersion}`;
+
+		this._targetDatabaseInfoField.text.value = targetDatabaseName;
+		this._targetServerInfoField.text.value = targetServerName;
+		this._targetVersionInfoField.text.value = targetServerVersion;
+
+		this._migrationStatusInfoField.text.value = getMigrationStatus(migration) ?? EmptySettingValue;
+		this._migrationStatusInfoField.icon!.iconPath = getMigrationStatusImage(migration);
+		this._serverObjectsInfoField.text.value = totalCount.toLocaleString();
+
+		this.cutoverButton.enabled = canCutoverMigration(migration);
+		this.cancelButton.enabled = canCancelMigration(migration);
+		this.retryButton.enabled = canRetryMigration(migration);
+	}
+
+	private async _populateTableData(hashSet: loc.LookupTable<number> = {}): Promise<void> {
+		if (this._progressTable.data.length > 0) {
+			await this._progressTable.updateProperty('data', []);
+		}
+
+		// Sort table data
+		this._sortTableMigrations(
+			this._progressDetail,
+			(<azdata.CategoryValue>this._columnSortDropdown.value).name,
+			this._columnSortCheckbox.checked === true);
+
+		const data = this._progressDetail.map((d) => {
 			hashSet[d.status] = (hashSet[d.status] ?? 0) + 1;
 			return [
 				d.tableName,
@@ -118,45 +185,10 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 			];
 		}) ?? [];
 
-		const successCount = hashSet[PipelineStatusCodes.Succeeded] ?? 0;
-		const cancelledCount = hashSet[PipelineStatusCodes.Cancelled] ?? 0;
-		const failedCount = hashSet[PipelineStatusCodes.Failed] ?? 0;
-		const inProgressCount = (hashSet[PipelineStatusCodes.Queued] ?? 0) + (hashSet[PipelineStatusCodes.InProgress] ?? 0);
-		const totalCount = tableData.length;
-
-		this._updateSummaryComponent(SummaryCardIndex.TotalTables, totalCount);
-		this._updateSummaryComponent(SummaryCardIndex.InProgressTables, inProgressCount);
-		this._updateSummaryComponent(SummaryCardIndex.SuccessfulTables, successCount);
-		this._updateSummaryComponent(SummaryCardIndex.FailedTables, failedCount);
-		this._updateSummaryComponent(SummaryCardIndex.CanceledTables, cancelledCount);
-
-		this.databaseLabel.value = sourceDatabaseName;
-		this._sourceDatabaseInfoField.text.value = sourceDatabaseName;
-		this._sourceDetailsInfoField.text.value = sqlServerName;
-		this._sourceVersionInfoField.text.value = `${sqlServerVersion} ${sqlServerInfo.serverVersion}`;
-
-		this._targetDatabaseInfoField.text.value = targetDatabaseName;
-		this._targetServerInfoField.text.value = targetServerName;
-		this._targetVersionInfoField.text.value = targetServerVersion;
-
-		this._migrationStatusInfoField.text.value = getMigrationStatus(migration) ?? EmptySettingValue;
-		this._migrationStatusInfoField.icon!.iconPath = getMigrationStatusImage(migration);
-		this._serverObjectsInfoField.text.value = tableData.length.toLocaleString();
-
-		// Sorting files in descending order of backupStartTime
-		tableData.sort((file1, file2) => new Date(file1.backupStartTime) > new Date(file2.backupStartTime) ? - 1 : 1);
-
 		// Filter tableData
-		const data = this._filterTables(tableData, this._tableFilterInputBox.value);
+		const filteredData = this._filterTables(data, this._tableFilterInputBox.value);
 
-		await this._progressTable.updateProperty('data', data);
-
-		this.cutoverButton.enabled = canCutoverMigration(migration);
-		this.cancelButton.enabled = canCancelMigration(migration);
-		this.retryButton.enabled = canRetryMigration(migration);
-		this.isRefreshing = false;
-		this.refreshLoader.loading = false;
-		this.refreshButton.enabled = true;
+		await this._progressTable.updateProperty('data', filteredData);
 	}
 
 	protected async initialize(view: azdata.ModelView): Promise<void> {
@@ -172,70 +204,70 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 					height: '300px',
 					columns: [
 						{
-							value: 'tableName',
-							name: 'Table name',
+							value: TableColumns.tableName,
+							name: loc.SQLDB_COL_TABLE_NAME,
 							type: azdata.ColumnType.text,
 							width: 170,
 						},
 						<azdata.HyperlinkColumn>{
 							name: loc.STATUS,
-							value: 'status',
+							value: TableColumns.status,
 							width: 106,
 							type: azdata.ColumnType.hyperlink,
 							icon: IconPathHelper.inProgressMigration,
 							showText: true,
 						},
 						{
-							value: 'dataRead',
-							name: 'Data read',
+							value: TableColumns.dataRead,
+							name: loc.SQLDB_COL_DATA_READ,
 							width: 64,
 							type: azdata.ColumnType.text,
 						},
 						{
-							value: 'dataWritten',
-							name: 'Data written',
+							value: TableColumns.dataWritten,
+							name: loc.SQLDB_COL_DATA_WRITTEN,
 							width: 77,
 							type: azdata.ColumnType.text,
 						},
 						{
-							value: 'rowsRead',
-							name: 'Rows read',
+							value: TableColumns.rowsRead,
+							name: loc.SQLDB_COL_ROWS_READ,
 							width: 68,
 							type: azdata.ColumnType.text,
 						},
 						{
-							value: 'rowsCopied',
-							name: 'Rows copied',
+							value: TableColumns.rowsCopied,
+							name: loc.SQLDB_COL_ROWS_COPIED,
 							width: 77,
 							type: azdata.ColumnType.text,
 						},
 						{
-							value: 'copyThroughput',
-							name: 'Copy throughput',
+							value: TableColumns.copyThroughput,
+							name: loc.SQLDB_COL_COPY_THROUGHPUT,
 							width: 102,
 							type: azdata.ColumnType.text,
 						},
 						{
-							value: 'copyDuration',
-							name: 'Copy duration',
+							value: TableColumns.copyDuration,
+							name: loc.SQLDB_COL_COPY_DURATION,
 							width: 87,
 							type: azdata.ColumnType.text,
 						},
 						{
-							value: 'parallelCopyType',
-							name: 'Parallel copy type',
+							value: TableColumns.parallelCopyType,
+							name: loc.SQLDB_COL_PARRALEL_COPY_TYPE,
 							width: 104,
 							type: azdata.ColumnType.text,
 						},
 						{
-							value: 'usedParallelCopies',
-							name: 'Used parallel copies',
+							value: TableColumns.usedParallelCopies,
+							name: loc.SQLDB_COL_USED_PARALLEL_COPIES,
 							width: 116,
 							type: azdata.ColumnType.text,
 						},
 						{
-							value: 'copyStart',
-							name: 'Copy start',
+							value: TableColumns.copyStart,
+							name: loc.SQLDB_COL_COPY_START,
 							width: 140,
 							type: azdata.ColumnType.text,
 						},
@@ -288,6 +320,45 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 		}
 	}
 
+	private _sortTableMigrations(data: CopyProgressDetail[], columnName: string, assending: boolean): void {
+		const sortDir = assending ? -1 : 1;
+		switch (columnName) {
+			case TableColumns.tableName:
+				data.sort((t1, t2) => this.stringCompare(t1.tableName, t2.tableName, sortDir));
+				return;
+			case TableColumns.status:
+				data.sort((t1, t2) => this.stringCompare(t1.status, t2.status, sortDir));
+				return;
+			case TableColumns.dataRead:
+				data.sort((t1, t2) => this.numberCompare(t1.dataRead, t2.dataRead, sortDir));
+				return;
+			case TableColumns.dataWritten:
+				data.sort((t1, t2) => this.numberCompare(t1.dataWritten, t2.dataWritten, sortDir));
+				return;
+			case TableColumns.rowsRead:
+				data.sort((t1, t2) => this.numberCompare(t1.rowsRead, t2.rowsRead, sortDir));
+				return;
+			case TableColumns.rowsCopied:
+				data.sort((t1, t2) => this.numberCompare(t1.rowsCopied, t2.rowsCopied, sortDir));
+				return;
+			case TableColumns.copyThroughput:
+				data.sort((t1, t2) => this.numberCompare(t1.copyThroughput, t2.copyThroughput, sortDir));
+				return;
+			case TableColumns.copyDuration:
+				data.sort((t1, t2) => this.numberCompare(t1.copyDuration, t2.copyDuration, sortDir));
+				return;
+			case TableColumns.parallelCopyType:
+				data.sort((t1, t2) => this.stringCompare(t1.parallelCopyType, t2.parallelCopyType, sortDir));
+				return;
+			case TableColumns.usedParallelCopies:
+				data.sort((t1, t2) => this.numberCompare(t1.usedParallelCopies, t2.usedParallelCopies, sortDir));
+				return;
+			case TableColumns.copyStart:
+				data.sort((t1, t2) => this.dateCompare(t1.copyStart, t2.copyStart, sortDir));
+				return;
+		}
+	}
+
 	private _updateSummaryComponent(cardIndex: number, value: number): void {
 		const stringValue = value.toLocaleString();
 		const textComponent = this.summaryTextComponent[cardIndex];
@@ -306,10 +377,9 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 						: col.title?.toLowerCase().includes(lcValue);
 				}))
 			: tables;
-
 	}
 
-	private async _createTableFilter(): Promise<azdata.InputBoxComponent> {
+	private async _createTableFilter(): Promise<azdata.FlexContainer> {
 		this._tableFilterInputBox = this.view.modelBuilder.inputBox()
 			.withProps({
 				inputType: 'text',
@@ -322,9 +392,83 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 
 		this.disposables.push(
 			this._tableFilterInputBox.onTextChanged(
-				async (value) => await this.refresh()));
+				async (value) => await this._populateTableData()));
 
-		return this._tableFilterInputBox;
+		const sortLabel = this.view.modelBuilder.text()
+			.withProps({
+				value: loc.SORT_LABEL,
+				CSSStyles: {
+					'font-size': '13px',
+					'font-weight': '600',
+					'margin': '3px 0 0 0',
+				},
+			}).component();
+
+		this._columnSortDropdown = this.view.modelBuilder.dropDown()
+			.withProps({
+				editable: false,
+				width: 150,
+				CSSStyles: { 'margin-left': '5px' },
+				value: <azdata.CategoryValue>{ name: TableColumns.copyStart, displayName: loc.START_TIME },
+				values: [
+					<azdata.CategoryValue>{ name: TableColumns.tableName, displayName: loc.SQLDB_COL_TABLE_NAME },
+					<azdata.CategoryValue>{ name: TableColumns.status, displayName: loc.STATUS },
+					<azdata.CategoryValue>{ name: TableColumns.dataRead, displayName: loc.SQLDB_COL_DATA_READ },
+					<azdata.CategoryValue>{ name: TableColumns.dataWritten, displayName: loc.SQLDB_COL_DATA_WRITTEN },
+					<azdata.CategoryValue>{ name: TableColumns.rowsRead, displayName: loc.SQLDB_COL_ROWS_READ },
+					<azdata.CategoryValue>{ name: TableColumns.rowsCopied, displayName: loc.SQLDB_COL_ROWS_COPIED },
+					<azdata.CategoryValue>{ name: TableColumns.copyThroughput, displayName: loc.SQLDB_COL_COPY_THROUGHPUT },
+					<azdata.CategoryValue>{ name: TableColumns.copyDuration, displayName: loc.SQLDB_COL_COPY_DURATION },
+					<azdata.CategoryValue>{ name: TableColumns.parallelCopyType, displayName: loc.SQLDB_COL_PARRALEL_COPY_TYPE },
+					<azdata.CategoryValue>{ name: TableColumns.usedParallelCopies, displayName: loc.SQLDB_COL_USED_PARALLEL_COPIES },
+					<azdata.CategoryValue>{ name: TableColumns.copyStart, displayName: loc.SQLDB_COL_COPY_START },
+				],
+			})
+			.component();
+		this.disposables.push(
+			this._columnSortDropdown.onValueChanged(
+				async (value) => await this._populateTableData()));
+
+		this._columnSortCheckbox = this.view.modelBuilder.checkBox()
+			.withProps({
+				label: loc.ASSENDING_LABEL,
+				checked: false,
+				CSSStyles: { 'margin-left': '15px' },
+			})
+			.component();
+		this.disposables.push(
+			this._columnSortCheckbox.onChanged(
+				async (value) => await this._populateTableData()));
+
+		const columnSortContainer = this.view.modelBuilder.flexContainer()
+			.withItems([sortLabel, this._columnSortDropdown])
+			.withProps({
+				CSSStyles: {
+					'justify-content': 'left',
+					'align-items': 'center',
+					'padding': '0px',
+					'display': 'flex',
+					'flex-direction': 'row',
+				},
+			}).component();
+		columnSortContainer.addItem(this._columnSortCheckbox, { flex: '0 0 auto' });
+
+		const flexContainer = this.view.modelBuilder.flexContainer()
+			.withProps({
+				width: '100%',
+				CSSStyles: {
+					'justify-content': 'left',
+					'align-items': 'center',
+					'padding': '0px',
+					'display': 'flex',
+					'flex-direction': 'row',
+					'flex-flow': 'wrap',
+				},
+			}).component();
+		flexContainer.addItem(this._tableFilterInputBox, { flex: '0' });
+		flexContainer.addItem(columnSortContainer, { flex: '0', CSSStyles: { 'margin-left': '10px' } });
+
+		return flexContainer;
 	}
 
 	private async _createStatusBar(): Promise<azdata.FlexContainer> {

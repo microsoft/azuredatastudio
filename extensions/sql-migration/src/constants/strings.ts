@@ -827,6 +827,8 @@ export const AUTHENTICATION_TYPE = localize('sql.migration.authentication.type',
 
 export const REFRESH_BUTTON_LABEL = localize('sql.migration.status.refresh.label', 'Refresh');
 export const STATUS_LABEL = localize('sql.migration.status.status.label', 'Status');
+export const SORT_LABEL = localize('sql.migration.migration.list.sort.label', 'Sort');
+export const ASSENDING_LABEL = localize('sql.migration.migration.list.assending.label', 'Assending');
 
 // Saved Assessment Dialog
 export const NEXT_LABEL = localize('sql.migration.saved.assessment.next', "Next");
@@ -874,3 +876,14 @@ export function DATABASE_MIGRATION_STATUS_LABEL(status?: string): string {
 export function TABLE_MIGRATION_STATUS_LABEL(status?: string): string {
 	return localize('sql.migration.table.migration.status.label', 'Table migration status: {0}', status ?? '');
 }
+
+export const SQLDB_COL_TABLE_NAME = localize('sql.migration.sqldb.column.tablename', 'Table name');
+export const SQLDB_COL_DATA_READ = localize('sql.migration.sqldb.column.dataread', 'Data read');
+export const SQLDB_COL_DATA_WRITTEN = localize('sql.migration.sqldb.column.datawritten', 'Data written');
+export const SQLDB_COL_ROWS_READ = localize('sql.migration.sqldb.column.rowsread', 'Rows read');
+export const SQLDB_COL_ROWS_COPIED = localize('sql.migration.sqldb.column.rowscopied', 'Rows copied');
+export const SQLDB_COL_COPY_THROUGHPUT = localize('sql.migration.sqldb.column.copythroughput', 'Copy throughput');
+export const SQLDB_COL_COPY_DURATION = localize('sql.migration.sqldb.column.copyduration', 'Copy duration');
+export const SQLDB_COL_PARRALEL_COPY_TYPE = localize('sql.migration.sqldb.column.parallelcopytype', 'Parallel copy type');
+export const SQLDB_COL_USED_PARALLEL_COPIES = localize('sql.migration.sqldb.column.usedparallelcopies', 'Used parallel copies');
+export const SQLDB_COL_COPY_START = localize('sql.migration.sqldb.column.copystart', 'Copy start');

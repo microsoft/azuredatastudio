@@ -23,11 +23,26 @@ import { MigrationMode } from '../models/stateMachine';
 
 export const MigrationsListTabId = 'MigrationsListTab';
 
+const TableColumns = {
+	sourceDatabase: 'sourceDatabase',
+	sourceServer: 'sourceServer',
+	status: 'status',
+	mode: 'mode',
+	targetType: 'targetType',
+	targetDatabse: 'targetDatabase',
+	targetServer: 'TargetServer',
+	duration: 'duration',
+	startTime: 'startTime',
+	finishTime: 'finishTime',
+};
+
 export class MigrationsListTab extends TabBase<MigrationsListTab> {
 	private _searchBox!: azdata.InputBoxComponent;
 	private _refresh!: azdata.ButtonComponent;
 	private _serviceContextButton!: azdata.ButtonComponent;
 	private _statusDropdown!: azdata.DropDownComponent;
+	private _columnSortDropdown!: azdata.DropDownComponent;
+	private _columnSortCheckbox!: azdata.CheckBoxComponent;
 	private _statusTable!: azdata.TableComponent;
 	private _refreshLoader!: azdata.LoadingComponent;
 	private _filteredMigrations: DatabaseMigration[] = [];
@@ -89,9 +104,9 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 				e.message);
 			logError(TelemetryViews.MigrationsTab, 'refreshMigrations', e);
 		} finally {
-			this.isRefreshing = false;
 			this._refreshLoader.loading = false;
 			this._refresh.enabled = true;
+			this.isRefreshing = false;
 		}
 	}
 
@@ -102,7 +117,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 			.withItems(
 				[
 					this._createToolbar(),
-					await this._createSearchAndRefreshContainer(),
+					await this._createSearchAndSortContainer(),
 					this._createStatusTable()
 				],
 				{ CSSStyles: { 'width': '100%' } }
@@ -115,16 +130,64 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 
 	private _createToolbar(): azdata.ToolbarContainer {
 		const toolbar = this.view.modelBuilder.toolbarContainer();
+
+		this._refresh = this.view.modelBuilder.button()
+			.withProps({
+				iconPath: IconPathHelper.refresh,
+				iconHeight: 24,
+				iconWidth: 24,
+				height: 24,
+				label: loc.REFRESH_BUTTON_LABEL,
+			}).component();
+		this.disposables.push(
+			this._refresh.onDidClick(
+				async (e) => await this.refresh()));
+
+		this._refreshLoader = this.view.modelBuilder.loadingComponent()
+			.withProps({
+				loading: false,
+				CSSStyles: {
+					'height': '8px',
+					'margin-top': '6px'
+				}
+			})
+			.component();
+
 		toolbar.addToolbarItems([
-			<azdata.ToolbarComponent>{ component: this.createNewMigrationButton() },
+			<azdata.ToolbarComponent>{ component: this.createNewMigrationButton(), toolbarSeparatorAfter: true },
 			<azdata.ToolbarComponent>{ component: this.createNewSupportRequestButton() },
-			<azdata.ToolbarComponent>{ component: this.createFeedbackButton() },
+			<azdata.ToolbarComponent>{ component: this.createFeedbackButton(), toolbarSeparatorAfter: true },
+			<azdata.ToolbarComponent>{ component: this._refresh },
+			<azdata.ToolbarComponent>{ component: this._refreshLoader },
 		]);
 
 		return toolbar.component();
 	}
 
-	private async _createSearchAndRefreshContainer(): Promise<azdata.FlexContainer> {
+	private async _createSearchAndSortContainer(): Promise<azdata.FlexContainer> {
+		const serviceContextLabel = await getSelectedServiceStatus();
+		this._serviceContextButton = this.view.modelBuilder.button()
+			.withProps({
+				iconPath: IconPathHelper.sqlMigrationService,
+				iconHeight: 22,
+				iconWidth: 22,
+				label: serviceContextLabel,
+				title: serviceContextLabel,
+				description: loc.MIGRATION_SERVICE_DESCRIPTION,
+				buttonType: azdata.ButtonType.Informational,
+				width: 230,
+			}).component();
+
+		const onDialogClosed = async (): Promise<void> =>
+			await this.updateServiceContext(this._serviceContextButton);
+
+		this.disposables.push(
+			this._serviceContextButton.onDidClick(
+				async () => {
+					const dialog = new SelectMigrationServiceDialog(onDialogClosed);
+					await dialog.initialize();
+				}));
+
 		this._searchBox = this.view.modelBuilder.inputBox()
 			.withProps({
 				stopEnterPropagation: true,
@@ -134,17 +197,6 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 		this.disposables.push(
 			this._searchBox.onTextChanged(
 				async (value) => await this._populateMigrationTable()));
-
-		this._refresh = this.view.modelBuilder.button()
-			.withProps({
-				iconPath: IconPathHelper.refresh,
-				iconHeight: '16px',
-				iconWidth: '20px',
-				label: loc.REFRESH_BUTTON_LABEL,
-			}).component();
-		this.disposables.push(
-			this._refresh.onDidClick(
-				async (e) => await this.refresh()));
 
 		const searchLabel = this.view.modelBuilder.text()
 			.withProps({
@@ -175,32 +227,63 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 		searchContainer.addItem(searchLabel, { flex: '0' });
 		searchContainer.addItem(this._statusDropdown, { flex: '0', CSSStyles: { 'margin-left': '5px' } });
 
-		this._refreshLoader = this.view.modelBuilder.loadingComponent()
-			.withProps({ loading: false })
-			.component();
-
-		const serviceContextLabel = await getSelectedServiceStatus();
-		this._serviceContextButton = this.view.modelBuilder.button()
+		const sortLabel = this.view.modelBuilder.text()
 			.withProps({
-				iconPath: IconPathHelper.sqlMigrationService,
-				iconHeight: 22,
-				iconWidth: 22,
-				label: serviceContextLabel,
-				title: serviceContextLabel,
-				description: loc.MIGRATION_SERVICE_DESCRIPTION,
-				buttonType: azdata.ButtonType.Informational,
-				width: 230,
+				value: loc.SORT_LABEL,
+				CSSStyles: {
+					'font-size': '13px',
+					'font-weight': '600',
+					'margin': '3px 0 0 0',
+				},
 			}).component();
 
-		const onDialogClosed = async (): Promise<void> =>
-			await this.updateServiceContext(this._serviceContextButton);
-
+		this._columnSortDropdown = this.view.modelBuilder.dropDown()
+			.withProps({
+				editable: false,
+				width: 120,
+				CSSStyles: { 'margin-left': '5px' },
+				value: <azdata.CategoryValue>{ name: TableColumns.startTime, displayName: loc.START_TIME },
+				values: [
+					<azdata.CategoryValue>{ name: TableColumns.sourceDatabase, displayName: loc.SRC_DATABASE },
+					<azdata.CategoryValue>{ name: TableColumns.sourceServer, displayName: loc.SRC_SERVER },
+					<azdata.CategoryValue>{ name: TableColumns.status, displayName: loc.STATUS_COLUMN },
+					<azdata.CategoryValue>{ name: TableColumns.mode, displayName: loc.MIGRATION_MODE },
+					<azdata.CategoryValue>{ name: TableColumns.targetType, displayName: loc.AZURE_SQL_TARGET },
+					<azdata.CategoryValue>{ name: TableColumns.targetDatabse, displayName: loc.TARGET_DATABASE_COLUMN },
+					<azdata.CategoryValue>{ name: TableColumns.targetServer, displayName: loc.TARGET_SERVER_COLUMN },
+					<azdata.CategoryValue>{ name: TableColumns.duration, displayName: loc.DURATION },
+					<azdata.CategoryValue>{ name: TableColumns.startTime, displayName: loc.START_TIME },
+					<azdata.CategoryValue>{ name: TableColumns.finishTime, displayName: loc.FINISH_TIME },
+				],
+			})
+			.component();
 		this.disposables.push(
-			this._serviceContextButton.onDidClick(
-				async () => {
-					const dialog = new SelectMigrationServiceDialog(onDialogClosed);
-					await dialog.initialize();
-				}));
+			this._columnSortDropdown.onValueChanged(
+				async (e) => await this._populateMigrationTable()));
+
+		this._columnSortCheckbox = this.view.modelBuilder.checkBox()
+			.withProps({
+				label: loc.ASSENDING_LABEL,
+				checked: false,
+				CSSStyles: { 'margin-left': '15px' },
+			})
+			.component();
+		this.disposables.push(
+			this._columnSortCheckbox.onChanged(
+				async (e) => await this._populateMigrationTable()));
+
+		const columnSortContainer = this.view.modelBuilder.flexContainer()
+			.withItems([sortLabel, this._columnSortDropdown])
+			.withProps({
+				CSSStyles: {
+					'justify-content': 'left',
+					'align-items': 'center',
+					'padding': '0px',
+					'display': 'flex',
+					'flex-direction': 'row',
+				},
+			}).component();
+		columnSortContainer.addItem(this._columnSortCheckbox, { flex: '0 0 auto' });
 
 		const flexContainer = this.view.modelBuilder.flexContainer()
 			.withProps({
@@ -215,11 +298,10 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 				},
 			}).component();
 
-		flexContainer.addItem(this._searchBox, { flex: '0', CSSStyles: { 'margin-left': '10px' } });
 		flexContainer.addItem(this._serviceContextButton, { flex: '0', CSSStyles: { 'margin-left': '10px' } });
+		flexContainer.addItem(this._searchBox, { flex: '0', CSSStyles: { 'margin-left': '10px' } });
 		flexContainer.addItem(searchContainer, { flex: '0', CSSStyles: { 'margin-left': '10px' } });
-		flexContainer.addItem(this._refresh, { flex: '0', CSSStyles: { 'margin-left': '10px' } });
-		flexContainer.addItem(this._refreshLoader, { flex: '0 0 auto', CSSStyles: { 'margin-left': '10px' } });
+		flexContainer.addItem(columnSortContainer, { flex: '0', CSSStyles: { 'margin-left': '10px' } });
 
 		const container = this.view.modelBuilder.flexContainer()
 			.withProps({ width: '100%' })
@@ -396,6 +478,91 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 			}));
 	}
 
+	private _sortMigrations(migrations: DatabaseMigration[], columnName: string, assending: boolean): void {
+		const sortDir = assending ? -1 : 1;
+		switch (columnName) {
+			case TableColumns.sourceDatabase:
+				migrations.sort(
+					(m1, m2) => this.stringCompare(
+						m1.properties.sourceDatabaseName,
+						m2.properties.sourceDatabaseName,
+						sortDir));
+				return;
+			case TableColumns.sourceServer:
+				migrations.sort(
+					(m1, m2) => this.stringCompare(
+						m1.properties.sourceServerName,
+						m2.properties.sourceServerName,
+						sortDir));
+				return;
+			case TableColumns.status:
+				migrations.sort(
+					(m1, m2) => this.stringCompare(
+						getMigrationStatusWithErrors(m1),
+						getMigrationStatusWithErrors(m2),
+						sortDir));
+				return;
+			case TableColumns.mode:
+				migrations.sort(
+					(m1, m2) => this.stringCompare(
+						getMigrationMode(m1),
+						getMigrationMode(m2),
+						sortDir));
+				return;
+			case TableColumns.targetType:
+				migrations.sort(
+					(m1, m2) => this.stringCompare(
+						getMigrationTargetType(m1),
+						getMigrationTargetType(m2),
+						sortDir));
+				return;
+			case TableColumns.targetDatabse:
+				migrations.sort(
+					(m1, m2) => this.stringCompare(
+						getResourceName(m1.id),
+						getResourceName(m2.id),
+						sortDir));
+				return;
+			case TableColumns.targetServer:
+				migrations.sort(
+					(m1, m2) => this.stringCompare(
+						getResourceName(m1.properties.scope),
+						getResourceName(m2.properties.scope),
+						sortDir));
+				return;
+			case TableColumns.duration:
+				migrations.sort((m1, m2) => {
+					if (!m1.properties.startedOn) {
+						return sortDir;
+					} else if (!m2.properties.startedOn) {
+						return -sortDir;
+					}
+					const m1_startedOn = new Date(m1.properties.startedOn);
+					const m2_startedOn = new Date(m2.properties.startedOn);
+					const m1_endedOn = new Date(m1.properties.endedOn ?? Date.now());
+					const m2_endedOn = new Date(m2.properties.endedOn ?? Date.now());
+					const m1_duration = m1_endedOn.getTime() - m1_startedOn.getTime();
+					const m2_duration = m2_endedOn.getTime() - m2_startedOn.getTime();
+					return m1_duration > m2_duration ? -sortDir : sortDir;
+				});
+				return;
+			case TableColumns.startTime:
+				migrations.sort(
+					(m1, m2) => this.dateCompare(
+						m1.properties.startedOn,
+						m2.properties.startedOn,
+						sortDir));
+				return;
+			case TableColumns.finishTime:
+				migrations.sort(
+					(m1, m2) => this.dateCompare(
+						m1.properties.endedOn,
+						m2.properties.endedOn,
+						sortDir));
+				return;
+		}
+	}
+
 	private async _populateMigrationTable(): Promise<void> {
 		try {
 			this._filteredMigrations = filterMigrations(
@@ -403,14 +570,10 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 				(<azdata.CategoryValue>this._statusDropdown.value).name,
 				this._searchBox.value!);
 
-			this._filteredMigrations.sort((m1, m2) => {
-				if (!m1.properties?.startedOn) {
-					return 1;
-				} else if (!m2.properties?.startedOn) {
-					return -1;
-				}
-				return new Date(m1.properties?.startedOn) > new Date(m2.properties?.startedOn) ? -1 : 1;
-			});
+			this._sortMigrations(
+				this._filteredMigrations,
+				(<azdata.CategoryValue>this._columnSortDropdown.value).name,
+				this._columnSortCheckbox.checked === true);
 
 			const data: any[] = this._filteredMigrations.map((migration, index) => {
 				return [
@@ -418,7 +581,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 						icon: IconPathHelper.sqlDatabaseLogo,
 						title: migration.properties.sourceDatabaseName ?? EmptySettingValue,
 					},															// sourceDatabase
-					migration.properties.sourceServerName ?? EmptySettingValue,	// sourceServer
+					migration.properties.sourceServerName ?? EmptySettingValue, // sourceServer
 					<azdata.HyperlinkColumnCellValue>{
 						icon: getMigrationStatusImage(migration),
 						title: getMigrationStatusWithErrors(migration),

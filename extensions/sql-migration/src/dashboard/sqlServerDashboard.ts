@@ -123,8 +123,8 @@ export class DashboardWidget implements DashboardStatusBar {
 	}
 
 	public async refresh(): Promise<void> {
+		void this._migrationsTab.refresh();
 		await this._dashboardTab.refresh();
-		await this._migrationsTab.refresh();
 	}
 
 	public async onDialogClosed(): Promise<void> {
