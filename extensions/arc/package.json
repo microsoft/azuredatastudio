@@ -186,7 +186,10 @@
                                 "displayName": "%arc.data.controller.direct.display.name%"
                               }
                             ],
-                            "defaultValue": "indirect",
+                            "defaultValue": {
+                              "name": "indirect",
+                              "displayName": "%arc.data.controller.indirect.display.name%"
+                            },
                             "optionsType": "radio"
                           }
                         },
@@ -1082,7 +1085,7 @@
                               "kubeConfig": "AZDATA_NB_VAR_CONTROLLER_KUBECONFIG",
                               "clusterContext": "AZDATA_NB_VAR_CONTROLLER_KUBECTL_CONTEXT",
                               "resourceGroup": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_RESOURCE_GROUP",
-                              "connectionMode": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTION_MODE",
+                              "connectionMode": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
                               "location": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_LOCATION",
                               "customLocation": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CUSTOM_LOCATION"
                             }
