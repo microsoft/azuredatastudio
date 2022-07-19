@@ -917,7 +917,7 @@ export class TestEditorService implements EditorServiceImpl {
 	revert(editors: IEditorIdentifier[], options?: IRevertOptions): Promise<boolean> { throw new Error('Method not implemented.'); }
 	revertAll(options?: IRevertAllEditorsOptions): Promise<boolean> { throw new Error('Method not implemented.'); }
 	// {{SQL CARBON EDIT}} add createEditorInput back
-	createEditorInput(input: IUntypedEditorInput): EditorInput { throw new Error('Method not implemented.'); }
+	createEditorInput(input: IUntypedEditorInput): Promise<EditorInput> { throw new Error('Method not implemented.'); }
 }
 
 export class TestFileService implements IFileService {
