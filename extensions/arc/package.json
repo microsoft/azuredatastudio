@@ -246,6 +246,7 @@
                         {
                           "type": "azure_locations",
                           "label": "%arc.data.controller.location%",
+                          "description": "%arc.data.controller.location.description%",
                           "defaultValue": "eastus",
                           "required": true,
                           "locationVariableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_LOCATION",
