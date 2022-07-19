@@ -215,7 +215,7 @@ See [sample-options](https://github.com/microsoft/azuredatastudio/blob/main/samp
 This object defines a set of options for a field, similar to the arrays that can be used for the [options](#options) field but with greater control over of the options. Currently there are two reasons that you would use this object over the arrays - either you want to display the options as something other than a dropdown or you wish to use an [Options Source Provider](#options-source-provider) to populate the options dynamically.
 
 `values` - An array of either `strings` or `azdata.CategoryValue` objects. See [options](#options) for more details on each of those.
-`defaultValue` - The string value of the default option to have selected
+`defaultValue` - The value of the default option to have selected. Can either be a string or a ResourceTypeOptionValue.
 `optionsType` - How to display the options, either `radio` or `dropdown`
 `source` - OPTIONAL If set defines the [Options Source Provider](#options-source-provider) to use for populating the options dynamically.
 
