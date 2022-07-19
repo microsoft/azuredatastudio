@@ -177,10 +177,16 @@
                           "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
                           "options": {
                             "values": [
-                              "Indirect",
-                              "Direct"
+                              {
+                                "name": "indirect",
+                                "displayName": "%arc.data.controller.indirect.display.name%"
+                              },
+                              {
+                                "name": "direct",
+                                "displayName": "%arc.data.controller.direct.display.name%"
+                              }
                             ],
-                            "defaultValue": "Indirect",
+                            "defaultValue": "indirect",
                             "optionsType": "radio"
                           }
                         },
@@ -193,7 +199,7 @@
                           "configFileVariableName": "AZDATA_NB_VAR_ARC_CONFIG_FILE",
                           "enabled": {
                             "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
-                            "value": "Indirect"
+                            "value": "indirect"
                           }
                         },
                         {
@@ -210,6 +216,10 @@
                             },
                             "defaultValue": "azure-arc-aks-default-storage",
                             "optionsType": "dropdown"
+                          },
+                          "enabled": {
+                            "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
+                            "value": "indirect"
                           }
                         }
                       ]
@@ -252,7 +262,11 @@
                             "uksouth",
                             "westeurope",
                             "westus2"
-                          ]
+                          ],
+                          "enabled": {
+                            "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
+                            "value": "indirect"
+                          }
                         }
                       ]
                     }
@@ -268,25 +282,6 @@
                           "type": "readonly_text",
                           "label": "%arc.data.controller.details.description%",
                           "labelWidth": "600px"
-                        },
-                        {
-                          "type": "text",
-                          "label": "%arc.data.controller.namespace%",
-                          "validations": [
-                            {
-                              "type": "regex_match",
-                              "regex": "^[a-z0-9]([-a-z0-9]{0,61}[a-z0-9])?$",
-                              "description": "%arc.data.controller.namespace.validation.description%"
-                            }
-                          ],
-                          "defaultValue": "",
-                          "required": true,
-                          "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAMESPACE",
-                          "enabled": {
-                            "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
-                            "value": "Indirect"
-                          },
-                          "description": "%arc.data.controller.namespace.description%"
                         },
                         {
                           "type": "text",
@@ -332,8 +327,27 @@
                           "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CLUSTER_NAME",
                           "enabled": {
                             "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
-                            "value": "Direct"
+                            "value": "direct"
                           }
+                        },
+                        {
+                          "type": "text",
+                          "label": "%arc.data.controller.namespace%",
+                          "validations": [
+                            {
+                              "type": "regex_match",
+                              "regex": "^[a-z0-9]([-a-z0-9]{0,61}[a-z0-9])?$",
+                              "description": "%arc.data.controller.namespace.validation.description%"
+                            }
+                          ],
+                          "defaultValue": "",
+                          "required": true,
+                          "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAMESPACE",
+                          "enabled": {
+                            "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
+                            "value": "indirect"
+                          },
+                          "description": "%arc.data.controller.namespace.description%"
                         },
                         {
                           "type": "text",
@@ -343,7 +357,7 @@
                           "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CUSTOM_LOCATION",
                           "enabled": {
                             "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
-                            "value": "Direct"
+                            "value": "direct"
                           }
                         },
                         {
@@ -354,7 +368,7 @@
                           "defaultValue": false,
                           "enabled": {
                             "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
-                            "value": "Direct"
+                            "value": "direct"
                           }
                         },
                         {
@@ -365,7 +379,7 @@
                           "defaultValue": false,
                           "enabled": {
                             "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
-                            "value": "Direct"
+                            "value": "direct"
                           }
                         },
                         {
@@ -661,6 +675,18 @@
               },
               {
                 "name": "azure-cli"
+              }
+            ],
+            "when": true
+          }
+        ],
+        "helpTexts": [
+          {
+            "template": "%arc.data.controller.help.text%",
+            "links": [
+              {
+                "text": "%arc.data.controller.help.text.documentation.page%",
+                "url": "https://docs.microsoft.com/cli/azure/connectedk8s?view=azure-cli-latest#az-connectedk8s-connect"
               }
             ],
             "when": true
@@ -1122,7 +1148,10 @@
                               "displayName": "%arc.sql.service.tier.general.purpose%"
                             }
                           ],
-                          "defaultValue": "BusinessCritical",
+                          "defaultValue": {
+                            "name": "BusinessCritical",
+                            "displayName": "%arc.sql.service.tier.business.critical%"
+                          },
                           "optionsType": "radio"
                         }
                       },
@@ -1154,7 +1183,10 @@
                               "displayName": "%arc.sql.three.replicas%"
                             }
                           ],
-                          "defaultValue": "3",
+                          "defaultValue": {
+                            "name": "3",
+                            "displayName": "%arc.sql.three.replicas%"
+                          },
                           "optionsType": "radio"
                         },
                         "dynamicOptions": {
@@ -1168,7 +1200,10 @@
                                   "displayName": "%arc.sql.one.replica%"
                                 }
                               ],
-                              "defaultValue": "1"
+                              "defaultValue": {
+                                "name": "1",
+                                "displayName": "%arc.sql.one.replica%"
+                              }
                             }
                           ]
                         }
@@ -1597,20 +1632,6 @@
           ],
           "when": "mi-type=arc-mi"
         },
-        "agreement": {
-          "template": "%arc.agreement%",
-          "links": [
-            {
-              "text": "%microsoft.agreement.privacy.statement%",
-              "url": "https://go.microsoft.com/fwlink/?LinkId=853010"
-            },
-            {
-              "text": "%arc.agreement.sql.terms.conditions%",
-              "url": "https://go.microsoft.com/fwlink/?linkid=2045708"
-            }
-          ],
-          "when": "mi-type=arc-mi"
-        },
         "helpText": {
           "template": "%arc.agreement.sql.help.text%",
           "links": [
@@ -1620,6 +1641,18 @@
                 "label": "%arc.agreement.sql.help.text.learn.more.ariaLabel%"
               },
               "url": "https://go.microsoft.com/fwlink/?linkid=2141849"
+            },
+            {
+              "text": "%arc.agreement.sql.help.text.azure.marketplace.terms%",
+              "url": "https://go.microsoft.com/fwlink/?linkid=2045624"
+            },
+            {
+              "text": "%arc.agreement.sql.help.text.terms.of.use%",
+              "url": "https://go.microsoft.com/fwlink/?linkid=2045708"
+            },
+            {
+              "text": "%arc.agreement.sql.help.text.privacy.policy%",
+              "url": "https://go.microsoft.com/fwlink/?linkid=512132"
             }
           ],
           "when": "mi-type=arc-mi"

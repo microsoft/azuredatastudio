@@ -59,6 +59,10 @@
           "sqlDatabaseProjects.autorestSqlVersion": {
             "type": "string",
             "description": "%sqlDatabaseProjects.autorestSqlVersion%"
+          },
+          "sqlDatabaseProjects.collapseProjectNodes": {
+            "type": "boolean",
+            "description": "%sqlDatabaseProjects.collapseProjectNodes%"
           }
         }
       }
