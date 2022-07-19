@@ -73,7 +73,6 @@ export const userPasswordLater = localize('userPasswordLater', 'In order to user
 export const openFile = localize('openFile', "Open File");
 export const closeButton = localize('closeButton', "Close");
 export const enterPasswordPrompt = localize('enterPasswordPrompt', '(Optional) Enter connection password to save in local.settings.json');
-export const connectionProgressTitle = localize('connectionProgressTitle', "Testing SQL Server connection...");
 export const enterTableName = localize('enterTableName', 'Enter SQL table to query');
 export const enterViewName = localize('enterViewName', 'Enter SQL view to query');
 export const enterTableNameToUpsert = localize('enterTableNameToUpsert', 'Enter SQL table to upsert into');
