@@ -280,9 +280,9 @@ export class ServiceSettingsPage extends ResourceTypePage {
 			});
 
 		const sqlServerMasterDataStorageClassInputInfo = createInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.sqlServerMasterDataStorageClass', "SQL Server master's data storage class"), width: inputWidth, required: false, placeHolder: hintTextForStorageFields });
-		const sqlServerMasterDataStorageClaimSizeInputInfo = createNumberInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.sqlServerMasterDataStorageClaimSize', "SQL Server master's data storage claim size"), width: inputWidth, required: false, min: 1, placeHolder: hintTextForStorageFields });
+		const sqlServerMasterDataStorageClaimSizeInputInfo = createNumberInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.sqlServerMasterDataStorageClaimSize', "SQL Server master's data storage claim size (Gigabytes)"), width: inputWidth, required: false, min: 1, placeHolder: hintTextForStorageFields });
 		const sqlServerMasterLogsStorageClassInputInfo = createInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.sqlServerMasterLogsStorageClass', "SQL Server master's logs storage class"), width: inputWidth, required: false, placeHolder: hintTextForStorageFields });
-		const sqlServerMasterLogsStorageClaimSizeInputInfo = createNumberInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.sqlServerMasterLogsStorageClaimSize', "SQL Server master's logs storage claim size"), width: inputWidth, required: false, min: 1, placeHolder: hintTextForStorageFields });
+		const sqlServerMasterLogsStorageClaimSizeInputInfo = createNumberInputBoxInputInfo(view, { ariaLabel: localize('deployCluster.sqlServerMasterLogsStorageClaimSize', "SQL Server master's logs storage claim size (Gigabytes)"), width: inputWidth, required: false, min: 1, placeHolder: hintTextForStorageFields });
 
 		this.onNewInputComponentCreated(VariableNames.ControllerDataStorageClassName_VariableName, controllerDataStorageClassInputInfo);
 		this.onNewInputComponentCreated(VariableNames.ControllerDataStorageSize_VariableName, controllerDataStorageClaimSizeInputInfo);
