@@ -24,7 +24,8 @@ export class GenerateArmTemplateDialog {
 	private _generateArmTemplateContainer!: azdata.FlexContainer;
 	private _saveArmTemplateContainer!: azdata.FlexContainer;
 
-	private _armTemplate!: string;
+	// REMOVE AFTER TESTING
+	private _armTemplate: string = 'testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt';
 
 	private async initializeDialog(dialog: azdata.window.Dialog): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
@@ -113,46 +114,53 @@ export class GenerateArmTemplateDialog {
 		const armTemplateSaveInstructions = _view.modelBuilder.text().withProps({
 			// TODO: Update text
 			// Replace with localized string in the future
-			value: 'ARM template save instructions',
+			value: 'ARM template save instructions placeholder',
 			CSSStyles: {
 				...styles.BODY_CSS,
 				'margin-bottom': '8px',
 			}
 		}).component();
 
-		const armTemplateInputBox = _view.modelBuilder.inputBox().withProps({
-			value: 'a\nb\nc\nd\ne',
-			rows: 20,
-			multiline: true,
-			// UNCOMMENT THIS AFTER TESTING
-			// readOnly: true,
+		const armTemplateTextBox = _view.modelBuilder.text().withProps({
+			value: this._armTemplate,
+			width: '100%',
+			height: '100%',
 			CSSStyles: {
 				'font': '14px "Monaco", "Menlo", "Consolas", "Droid Sans Mono", "Inconsolata", "Courier New", monospace',
-				'margin-bottom': '8px',
-				// 'overflow': 'scroll',
-				// 'white-space': 'nowrap',
+				'margin': '0'
 			}
 		}).component();
 
 		const saveArmTemplateButton = _view.modelBuilder.button().withProps({
 			// Replace with localized string in the future
 			label: 'Save ARM template',
-			width: 150,
+			width: 120,
 			CSSStyles: {
 				'margin': '0'
 			}
 		}).component();
 		this._disposables.push(saveArmTemplateButton.onDidClick(async (e) => {
-			// REMOVE AFTER TESTING
-			this._armTemplate = 'TEST\nTEST\nTEST\nTEST';
 			await this.saveArmTemplate();
 		}));
 
+		const textContainer = _view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'column',
+			height: 500,
+		}).withProps({
+			CSSStyles: {
+				'overflow': 'auto',
+				'user-select': 'text',
+				'margin-bottom': '8px'
+			}
+		}).withItems([
+			armTemplateTextBox
+		]).component();
+
 		const container = _view.modelBuilder.flexContainer().withLayout({
-			flexFlow: 'column'
+			flexFlow: 'column',
 		}).withItems([
 			armTemplateSaveInstructions,
-			armTemplateInputBox,
+			textContainer,
 			saveArmTemplateButton
 		]).component();
 
