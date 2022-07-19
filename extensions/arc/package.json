@@ -1198,6 +1198,10 @@
                               "defaultValue": "1"
                             }
                           ]
+                        },
+                        "enabled": {
+                          "target": "AZDATA_NB_VAR_SQL_SERVICE_TIER",
+                          "value": "BusinessCritical"
                         }
                       },
                       {
