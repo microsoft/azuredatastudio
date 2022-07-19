@@ -1357,13 +1357,13 @@
         <source xml:lang="en">Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}. 
  
  By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.</source>
-        <target state="new">Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}. 
+        <target state="translated">Azure Arc fähige verwaltete Instanzen bieten SQL Server Zugriff und Funktionskompatibilität, die in der Infrastruktur Ihrer Wahl bereitgestellt werden können. {0}. 
  
- By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.</target>
+Indem ich auf ‚Script to notebook‘ oder ‚Deploy‘ klicke, (a) stimme ich den rechtlichen Bedingungen und der/den Datenschutzerklärung(en) zu, die mit den unten aufgeführten Marketplace-Angeboten verbunden sind; (b) Microsoft zu autorisieren, meine aktuelle Zahlungsmethode für die mit dem/den Angebot(en) verbundenen Gebühren mit der gleichen Abrechnungshäufigkeit wie mein Azure-Abonnement in Rechnung zu stellen; und (c) stimme zu, dass Microsoft meine Kontakt-, Nutzungs und Transaktionsinformationen mit dem/den Anbieter(n) des Angebots/der Angebote für Support, Abrechnungs und andere Transaktionsaktivitäten teilen darf. Microsoft gewährt keine Rechte für Angebote von Drittanbietern. Weitere Einzelheiten finden Sie unter {1}, {2}, und {3}.</target>
       </trans-unit>
       <trans-unit id="arc.agreement.sql.help.text.azure.marketplace.terms">
         <source xml:lang="en">Azure Marketplace Terms</source>
-        <target state="translated">Azure Marketplace-Nutzungsbedingungen</target>
+        <target state="translated">Azure Marketplace Bedingungen</target>
       </trans-unit>
       <trans-unit id="arc.agreement.sql.help.text.learn.more">
         <source xml:lang="en">Learn more</source>

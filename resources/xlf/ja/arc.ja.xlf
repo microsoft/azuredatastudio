@@ -1357,9 +1357,9 @@
         <source xml:lang="en">Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}. 
  
  By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.</source>
-        <target state="new">Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}. 
+        <target state="translated">Azure Arc 対応のManaged Instanceでは、選択したインフラストラクチャにデプロイできるSQL Serverアクセスと機能の互換性が提供されます。 {0}。 
  
- By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.</target>
+ [ノートブックへのスクリプト] または [配置] をクリックすると、以下に記載されている Marketplace オファリングに関連する法律条項およびプライバシーに関する声明に同意します。(b) Microsoft が、Azure サブスクリプションと同じ請求頻度で、オファリングに関連する料金に対して現在の支払い方法を請求することを承認します。(c) Microsoft は、サポート、課金、およびその他のトランザクション アクティビティのために、Microsoft がサービスのプロバイダーと連絡先、使用状況、およびトランザクション情報を共有することに同意します。Microsoft は、サード パーティのオファリングに対する権利を提供しません。詳細については、 {1}、 {2}、および {3}を参照してください。</target>
       </trans-unit>
       <trans-unit id="arc.agreement.sql.help.text.azure.marketplace.terms">
         <source xml:lang="en">Azure Marketplace Terms</source>
