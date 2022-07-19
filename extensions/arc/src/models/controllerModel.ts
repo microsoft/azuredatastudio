@@ -70,7 +70,7 @@ export class ControllerModel {
 
 	public async refresh(showErrors: boolean = true, namespace: string): Promise<void> {
 		await this.refreshController(showErrors, namespace);
-		if (this._controllerConfig?.spec.settings.azure.connectionMode === ConnectionMode.direct) {
+		if (this._controllerConfig?.spec.settings.azure.connectionMode.toLowerCase() === ConnectionMode.direct) {
 			await this.refreshDirectMode(this._controllerConfig?.spec.settings.azure.resourceGroup, namespace);
 		} else {
 			await this.refreshIndirectMode(namespace);

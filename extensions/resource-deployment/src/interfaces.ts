@@ -285,7 +285,7 @@ export interface IOptionsSource {
 export interface OptionsInfo {
 	values?: string[] | azdata.CategoryValue[],
 	source?: IOptionsSource,
-	defaultValue: string,
+	defaultValue: string | ResourceTypeOptionValue,
 	optionsType?: OptionsType
 }
 

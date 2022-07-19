@@ -42,7 +42,7 @@
 			"assocLabelPath": "Fichiers avec chemin",
 			"derivedDescription": "Faites correspondre les fichiers ayant des frères portant le même nom, mais avec une extension distincte.",
 			"derivedLabel": "Fichiers avec frères par nom",
-			"dirty": "indicateur d'intégrité si l'intégrité de l'éditeur actif est compromise",
+			"dirty": "un indicateur pour quand l’éditeur actif a des modifications non enregistrées.",
 			"falseDescription": "Désactivez le modèle.",
 			"fileDescription": "Faites correspondre tous les fichiers ayant une extension de fichier spécifique.",
 			"fileLabel": "Fichiers par extension",

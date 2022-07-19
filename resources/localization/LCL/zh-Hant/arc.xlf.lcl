@@ -3066,13 +3066,22 @@
       </Item>
       <Item ItemId=";extensions/arc/package.arc.agreement.sql.help.text" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}]]></Val>
+          <Val><![CDATA[Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}. ]D;]A; ]D;]A; By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[啟用了 Azure Arc 的受控執行個體，不僅可以存取 SQL Server，還提供相容的功能，可以部署到您選擇的基礎結構上。{0}]]></Val>
+            <Val><![CDATA[已啟用 Azure Arc 的受控執行個體不僅可以存取 SQL Server，還提供相容的功能，可以部署到您選擇的基礎結構上。已啟用 Azure Arc 的受控執行個體不僅可以存取 SQL Server，還提供相容的功能，可以部署到您選擇的基礎結構上。{0}。]D;]A; ]D;]A; 按一下 [編寫指令碼到筆記本]5D; 表示我 (a) 同意下方 Marketplace 供應項目的相關法律條款及隱私權聲明; (b) 授權 Microsoft 使用我目前的付款方式，收取供應項目的相關費用，帳單週期與我的 Azure 訂閱相同; 並 (c) 同意 Microsoft 可以將我的連絡資料、使用方式及交易資訊，提供給供應項目的提供者，供支援、帳單及其他交易活動之用。Microsoft 不提供第三方供應項目的權利。如需其他詳細資料，請參閱 {1}、{2} 以及 {3}。]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. While this service is in preview, it has some feature limitations compared to SQL Managed Instance on Azure. {0}]]></Val>
+            <Val><![CDATA[Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}]]></Val>
           </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.agreement.sql.help.text.azure.marketplace.terms" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Azure Marketplace Terms]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Marketplace 條款]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3090,6 +3099,24 @@
           <Val><![CDATA[Learn more about Azure Arc enabled Managed Instance]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[深入了解啟用 Azure Arc 的受控執行個體]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.agreement.sql.help.text.privacy.policy" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Privacy policy]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[隱私權原則]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.agreement.sql.help.text.terms.of.use" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Terms of use]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[使用規定]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3189,15 +3216,6 @@
           <Val><![CDATA[Cores Request]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[核心數要求]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/arc/package.arc.data.controller.agreement" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[I accept {0} and {1}.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[我接受 {0} 和 {1}。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
