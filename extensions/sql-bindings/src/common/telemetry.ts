@@ -11,7 +11,8 @@ export const TelemetryReporter = new AdsTelemetryReporter(packageInfo.name, pack
 
 export enum TelemetryViews {
 	SqlBindingsQuickPick = 'SqlBindingsQuickPick',
-	CreateAzureFunctionWithSqlBinding = 'CreateAzureFunctionWithSqlBinding'
+	CreateAzureFunctionWithSqlBinding = 'CreateAzureFunctionWithSqlBinding',
+	AzureFunctionsUtils = 'AzureFunctionsUtils',
 }
 
 export enum TelemetryActions {
@@ -31,6 +32,7 @@ export enum TelemetryActions {
 }
 
 export enum CreateAzureFunctionStep {
+	noAzureFunctionsExtension = 'noAzureFunctionsExtension',
 	getAzureFunctionProject = 'getAzureFunctionProject',
 	learnMore = 'learnMore',
 	helpCreateAzureFunctionProject = 'helpCreateAzureFunctionProject',
@@ -46,6 +48,10 @@ export enum CreateAzureFunctionStep {
 	getTemplateId = 'getTemplateId',
 	getConnectionStringSettingName = 'getConnectionStringSettingName',
 	promptForIncludePassword = 'promptForIncludePassword',
+}
+
+export enum AzureFunctionUtils {
+	addSQLNugetPackage = 'addSQLNugetPackage',
 }
 
 export enum ExitReason {

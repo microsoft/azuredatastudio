@@ -14,6 +14,7 @@ import { ConnectionDetails, IConnectionInfo } from 'vscode-mssql';
 import { AzureFunctionsExtensionApi } from '../../../types/vscode-azurefunctions.api';
 // https://github.com/microsoft/vscode-azuretools/blob/main/ui/api.d.ts
 import { AzureExtensionApiProvider } from '../../../types/vscode-azuretools.api';
+import { AzureFunctionUtils, TelemetryReporter, TelemetryViews } from './telemetry';
 /**
  * Represents the settings in an Azure function project's locawl.settings.json file
  */
@@ -238,6 +239,7 @@ export function waitForNewHostFile(): IFileFunctionObject {
  * @param selectedProjectFile is the users selected project file path
  */
 export async function addSqlNugetReferenceToProjectFile(selectedProjectFile: string): Promise<void> {
+	TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, AzureFunctionUtils.addSQLNugetPackage).send();
 	await utils.executeCommand(`dotnet add "${selectedProjectFile}" package ${constants.sqlExtensionPackageName} --prerelease`);
 }
 
