@@ -81,6 +81,8 @@ export class EditDataGridPanel extends GridParentComponent {
 	// List of column names with their indexes stored.
 	private columnNameToIndex: { [columnNumber: number]: string } = {};
 
+	private cellSubmitInProgress: boolean;
+
 	// Strings immediately before and after an edit.
 	private originalStringValue: string;
 	private endStringValue: string;
@@ -186,6 +188,11 @@ export class EditDataGridPanel extends GridParentComponent {
 		this.onActiveCellChanged = this.onCellSelect;
 
 		this.onCellChange = (event: Slick.OnCellChangeEventArgs<any>): void => {
+
+			if (this.cellSubmitInProgress) {
+				return;
+			}
+
 			let isDirtyStatus = false;
 			if (self.currentEditCellValue !== event.item[event.cell]) {
 				isDirtyStatus = true;
@@ -315,6 +322,10 @@ export class EditDataGridPanel extends GridParentComponent {
 			return;
 		}
 
+		if (this.lastClickedCell.row === row && this.lastClickedCell.column === column) {
+			return;
+		}
+
 		if (this.isRowDirty(this.lastClickedCell.row) && row !== this.lastClickedCell.row && !this.hasCellStringChanged()) {
 			await this.commitEditTask().then(() => {
 				this.currentEditCellValue = undefined;
@@ -399,7 +410,9 @@ export class EditDataGridPanel extends GridParentComponent {
 			},
 			() => {
 				// Cell update failed, jump back to the last cell we were on
+				this.cellSubmitInProgress = true;
 				this.updateEnabledState(true);
+				this.cellSubmitInProgress = false;
 				this.focusCell(cellToSubmit.row, cellToSubmit.column, true);
 				// Cannot insert text for existing row as that causes an infinite loop scenario, this is for new row only.
 				// During a new row, the renderGridDataRowsRange function is disabled as it also results in an infinite loop.
@@ -580,7 +593,8 @@ export class EditDataGridPanel extends GridParentComponent {
 		let handled: boolean = false;
 
 		if (e.keyCode === KeyCode.Escape) {
-			if ((this.lastClickedCell && this.isNullRow(this.lastClickedCell.row)) || (this.previousSavedCell && this.isNullRow(this.previousSavedCell.row))) {
+			if (this.lastClickedCell && this.isNullRow(this.lastClickedCell.row)) {
+				this.focusCell(this.lastClickedCell.row, this.lastClickedCell.column);
 				document.execCommand('selectAll');
 				document.execCommand('delete');
 				document.execCommand('insertText', false, 'NULL');
@@ -727,9 +741,8 @@ export class EditDataGridPanel extends GridParentComponent {
 						});
 						errorPromise = this.revertSelectedRow(cellToAdd.row);
 					}
-					else {
-						errorPromise = this.revertSelectedCell(cellToAdd.row, cellToAdd.column);
-					}
+
+					errorPromise = errorPromise.then(() => { this.revertSelectedCell(cellToAdd.row, cellToAdd.column); });
 					return errorPromise.then(() => { errorHandler(error); });
 				}
 			);
@@ -838,10 +851,6 @@ export class EditDataGridPanel extends GridParentComponent {
 		// refresh results view
 		if (withRefresh) {
 			return this.refreshGrid().then(() => {
-				// Set focus to the row index column of the removed row if the current selection is in the removed row
-				if (this.previousSavedCell.row === row && !this.removingNewRow) {
-					this.focusCell(row, 1);
-				}
 				this.removingNewRow = false;
 			});
 		}
