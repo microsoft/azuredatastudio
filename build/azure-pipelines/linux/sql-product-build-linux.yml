@@ -229,7 +229,6 @@ steps:
       set -e
       ./build/azure-pipelines/linux/createDrop.sh
     displayName: Create Drop
-    condition: and(succeeded(), ne(variables['EXTENSIONS_ONLY'], 'true'))
 
   - script: |
       set -e
