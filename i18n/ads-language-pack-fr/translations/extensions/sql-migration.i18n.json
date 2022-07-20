@@ -497,7 +497,6 @@
 			"sql.migration.username": "Nom d'utilisateur",
 			"sql.migration.view.all": "Toutes les migrations de base de données",
 			"sql.migration.view.select.button.label": "Afficher/sélectionner",
-			"sql.migration.vm.not.ready": "La machine virtuelle « {0} » n’est pas disponible pour la migration, car elle est actuellement à l’état « {1} ». Pour continuer, sélectionnez une machine virtuelle disponible.",
 			"sql.migration.warning": "Avertissement",
 			"sql.migration.warnings": "Avertissements",
 			"sql.migration.warnings.count": "Avertissements ({0})",

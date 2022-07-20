@@ -148,6 +148,8 @@
 			"managePackages.backgroundInstallFailed": "無法安裝 {0} {1}。錯誤: {2}",
 			"managePackages.backgroundInstallStarted": "正在安裝 {0} {1}",
 			"managePackages.installButtonText": "安裝",
+			"managePackages.installCompleteText": "已安裝套件",
+			"managePackages.installProgressText": "正在安裝套件",
 			"managePackages.invalidTextPlaceholder": "N/A",
 			"managePackages.noVersionsFound": "無法為指定的套件找到任何有效版本",
 			"managePackages.packageNameTitle": "套件名稱",
@@ -168,7 +170,9 @@
 			"managePackages.packageCount": "已找到 {0} 個 {1} 套件",
 			"managePackages.packageType": "套件類型",
 			"managePackages.pkgNameColumn": "名稱",
-			"managePackages.uninstallButtonText": "將選取的套件解除安裝"
+			"managePackages.uninstallButtonText": "將選取的套件解除安裝",
+			"managePackages.uninstallCompleteText": "已將套件解除安裝",
+			"managePackages.uninstallProgressText": "正在解除安裝套件"
 		},
 		"dist/dialog/managePackages/managePackagesDialog": {
 			"managePackages.cancelButtonText": "關閉",

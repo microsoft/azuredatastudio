@@ -148,6 +148,8 @@
 			"managePackages.backgroundInstallFailed": "Не удалось установить {0} {1}. Ошибка: {2}",
 			"managePackages.backgroundInstallStarted": "Идет установка {0} {1}",
 			"managePackages.installButtonText": "Установить",
+			"managePackages.installCompleteText": "Пакет установлен.",
+			"managePackages.installProgressText": "Идет установка пакета",
 			"managePackages.invalidTextPlaceholder": "Н/Д",
 			"managePackages.noVersionsFound": "Не удалось найти допустимые версии для указанного пакета",
 			"managePackages.packageNameTitle": "Имя пакета",
@@ -168,7 +170,9 @@
 			"managePackages.packageCount": "Найдены пакеты: {0} {1}",
 			"managePackages.packageType": "Тип пакета",
 			"managePackages.pkgNameColumn": "Имя",
-			"managePackages.uninstallButtonText": "Удалить выбранные пакеты"
+			"managePackages.uninstallButtonText": "Удалить выбранные пакеты",
+			"managePackages.uninstallCompleteText": "Пакет удален",
+			"managePackages.uninstallProgressText": "Идет удаление пакета"
 		},
 		"dist/dialog/managePackages/managePackagesDialog": {
 			"managePackages.cancelButtonText": "Закрыть",
