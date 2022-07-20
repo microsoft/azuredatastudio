@@ -207,7 +207,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 
 			let request: msal.AuthorizationUrlRequest;
 			request = {
-				scopes: ['https://management.core.windows.net//default'],
+				scopes: this.scopes,
 				redirectUri: this.redirectUri,
 				codeChallenge: codeChallenge,
 				codeChallengeMethod: 'S256'
