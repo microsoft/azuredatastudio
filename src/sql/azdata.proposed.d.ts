@@ -790,7 +790,9 @@ declare module 'azdata' {
 			Basic = 'Basic',
 			Temporal = 'Temporal',
 			GraphNode = 'GraphNode',
-			GraphEdge = 'GraphEdge'
+			GraphEdge = 'GraphEdge',
+			Ledger = 'Ledger',
+			LedgerHistory = 'LedgerHistory'
 		}
 
 		/**
