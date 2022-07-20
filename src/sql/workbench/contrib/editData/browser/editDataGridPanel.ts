@@ -742,8 +742,8 @@ export class EditDataGridPanel extends GridParentComponent {
 						errorPromise = this.revertSelectedRow(cellToAdd.row);
 					}
 
-					errorPromise = errorPromise.then(() => { this.revertSelectedCell(cellToAdd.row, cellToAdd.column).catch(onUnexpectedError); }, onUnexpectedError);
-					return errorPromise.then(() => { }, onUnexpectedError);
+					errorPromise = errorPromise.then(() => { this.revertSelectedCell(cellToAdd.row, cellToAdd.column).catch(onUnexpectedError); });
+					return errorPromise.then(() => { errorHandler(error); });
 				}
 			);
 		}
