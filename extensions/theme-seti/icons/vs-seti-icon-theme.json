@@ -1559,6 +1559,9 @@
 		},
 		"execution-plan-compare": {
 			"iconPath": "./images/execution-plan-compare.svg"
+		},
+		"dashboard": {
+			"iconPath": "./images/dashboard.svg"
 		}
 	},
 	"file": "_default",
@@ -1865,7 +1868,7 @@
 		"todo": "_todo",
 		"npm-debug.log": "_npm_ignored",
 		// {{SQL CARBON EDIT}}
-		"dashboard": "_default",
+		"dashboard": "dashboard",
 		"profiler": "_csv",
 		"Schema Compare": "scmp_dark",
 		"table-basic": "table-basic",
@@ -2336,7 +2339,6 @@
 			"procfile": "_heroku_light",
 			"npm-debug.log": "_npm_ignored_light",
 			// {{SQL CARBON EDIT}}
-			"dashboard": "_default_light",
 			"profiler": "_csv_light",
 			"Schema Compare": "scmp"
 		}
