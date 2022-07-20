@@ -617,19 +617,9 @@ export async function promptSelectDatabase(connectionURI: string): Promise<strin
 
 export async function getConnectionURI(connectionInfo: IConnectionInfo): Promise<string | undefined> {
 	const vscodeMssqlApi = await utils.getVscodeMssqlApi();
-
 	let connectionURI: string = '';
 	try {
-		await vscode.window.withProgress(
-			{
-				location: vscode.ProgressLocation.Notification,
-				title: constants.connectionProgressTitle,
-				cancellable: false
-			}, async (_progress, _token) => {
-				// show progress bar while connecting to the users selected connection profile
-				connectionURI = await vscodeMssqlApi.connect(connectionInfo!);
-			}
-		);
+		connectionURI = await vscodeMssqlApi.connect(connectionInfo);
 	} catch (e) {
 		// mssql connection error will be shown to the user
 		return undefined;

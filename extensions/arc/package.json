@@ -186,7 +186,7 @@
                                 "displayName": "%arc.data.controller.direct.display.name%"
                               }
                             ],
-                            "defaultValue": "indirect",
+                            "defaultValue": "%arc.data.controller.indirect.display.name%",
                             "optionsType": "radio"
                           }
                         },
@@ -246,6 +246,7 @@
                         {
                           "type": "azure_locations",
                           "label": "%arc.data.controller.location%",
+                          "description": "%arc.data.controller.location.description%",
                           "defaultValue": "eastus",
                           "required": true,
                           "locationVariableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_LOCATION",
@@ -1148,10 +1149,7 @@
                               "displayName": "%arc.sql.service.tier.general.purpose%"
                             }
                           ],
-                          "defaultValue": {
-                            "name": "BusinessCritical",
-                            "displayName": "%arc.sql.service.tier.business.critical%"
-                          },
+                          "defaultValue": "%arc.sql.service.tier.business.critical%",
                           "optionsType": "radio"
                         }
                       },
@@ -1183,10 +1181,7 @@
                               "displayName": "%arc.sql.three.replicas%"
                             }
                           ],
-                          "defaultValue": {
-                            "name": "3",
-                            "displayName": "%arc.sql.three.replicas%"
-                          },
+                          "defaultValue": "%arc.sql.three.replicas%",
                           "optionsType": "radio"
                         },
                         "dynamicOptions": {
@@ -1200,12 +1195,13 @@
                                   "displayName": "%arc.sql.one.replica%"
                                 }
                               ],
-                              "defaultValue": {
-                                "name": "1",
-                                "displayName": "%arc.sql.one.replica%"
-                              }
+                              "defaultValue": "%arc.sql.one.replica%"
                             }
                           ]
+                        },
+                        "enabled": {
+                          "target": "AZDATA_NB_VAR_SQL_SERVICE_TIER",
+                          "value": "BusinessCritical"
                         }
                       },
                       {

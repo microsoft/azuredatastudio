@@ -1123,11 +1123,17 @@
     <trans-unit id="arc.data.controller.details.title">
       <source xml:lang="en">Data controller details</source>
     </trans-unit>
+    <trans-unit id="arc.data.controller.direct.display.name">
+      <source xml:lang="en">Direct</source>
+    </trans-unit>
     <trans-unit id="arc.data.controller.help.text">
       <source xml:lang="en">The Kubernetes cluster must already be arc-enabled with the az connectedk8s connect command. Please use our {0} to learn more.</source>
     </trans-unit>
     <trans-unit id="arc.data.controller.help.text.documentation.page">
       <source xml:lang="en">documentation page</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.indirect.display.name">
+      <source xml:lang="en">Indirect</source>
     </trans-unit>
     <trans-unit id="arc.data.controller.infrastructure">
       <source xml:lang="en">Infrastructure</source>
@@ -1137,6 +1143,9 @@
     </trans-unit>
     <trans-unit id="arc.data.controller.location">
       <source xml:lang="en">Location</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.location.description">
+      <source xml:lang="en">Location is only used for indirect mode deployment. This field will be ignored for direct mode.</source>
     </trans-unit>
     <trans-unit id="arc.data.controller.log.analytics.primary.key">
       <source xml:lang="en">Log Analytics primary key</source>

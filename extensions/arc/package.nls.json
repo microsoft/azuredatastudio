@@ -38,6 +38,7 @@
 	"arc.data.controller.name": "Data controller name",
 	"arc.data.controller.name.validation.description": "Name must consist of lower case alphanumeric characters, '-' or '.', start/end with an alphanumeric character and be 253 characters or less in length.",
 	"arc.data.controller.location": "Location",
+	"arc.data.controller.location.description": "Location is only used for indirect mode deployment. This field will be ignored for direct mode.",
 	"arc.data.controller.infrastructure": "Infrastructure",
 	"arc.data.controller.custom.location": "Custom Location",
 	"arc.data.controller.custom.location.description": "The name of the custom location. Direct mode only.",
