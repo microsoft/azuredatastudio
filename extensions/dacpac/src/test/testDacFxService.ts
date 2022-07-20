@@ -70,8 +70,8 @@ export class DacFxTestService implements mssql.IDacFxService {
 					'SampleProperty2': { value: false, description: sampleDesc, displayName: sampleName }
 				},
 				objectTypesDictionary: {
-					'SampleProperty1': sampleName,
-					'SampleProperty2': sampleName
+					'ObjectType1': sampleName,
+					'ObjectType2': sampleName
 				}
 			}
 		};

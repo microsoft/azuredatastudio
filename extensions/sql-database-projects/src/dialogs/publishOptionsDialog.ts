@@ -36,7 +36,7 @@ export class PublishOptionsDialog {
 		this.optionsTab = utils.getAzdataApi()!.window.createTab(constants.PublishOptions);
 		this.excludeObjectTypesOptionsTab = utils.getAzdataApi()!.window.createTab(constants.ExcludeObjectTypeTab);
 		this.initializeDeploymentOptionsDialogTab();
-		this.InitializeExcludeObjectTypesOptionsDialogTab();
+		this.initializeExcludeObjectTypesOptionsDialogTab();
 		this.dialog.content = [this.optionsTab, this.excludeObjectTypesOptionsTab];
 	}
 
@@ -118,7 +118,7 @@ export class PublishOptionsDialog {
 		});
 	}
 
-	private InitializeExcludeObjectTypesOptionsDialogTab(): void {
+	private initializeExcludeObjectTypesOptionsDialogTab(): void {
 		this.excludeObjectTypesOptionsTab?.registerContent(async view => {
 			this.excludeObjectTypesOptionsTable = view.modelBuilder.table().component();
 			await this.updateExcludeObjectsTable();
@@ -141,7 +141,7 @@ export class PublishOptionsDialog {
 					flexFlow: 'column'
 				}).component();
 
-			this.excludeObjectTypesOptionsFlexBuilder.addItem(this.excludeObjectTypesOptionsTable, { CSSStyles: { 'overflow': 'scroll', 'height': '85vh', 'padding-top': '2px' } });
+			this.excludeObjectTypesOptionsFlexBuilder.addItem(this.excludeObjectTypesOptionsTable, { CSSStyles: { 'overflow': 'scroll', 'height': '80vh', 'padding-top': '2px' } });
 			await view.initializeModel(this.excludeObjectTypesOptionsFlexBuilder);
 		});
 	}
@@ -246,7 +246,7 @@ export class PublishOptionsDialog {
 
 		await this.updateExcludeObjectsTable();
 		this.excludeObjectTypesOptionsFlexBuilder?.removeItem(this.excludeObjectTypesOptionsTable!);
-		this.excludeObjectTypesOptionsFlexBuilder?.addItem(this.excludeObjectTypesOptionsTable!, { CSSStyles: { 'overflow': 'scroll', 'height': '85vh', 'padding-top': '2px' } });
+		this.excludeObjectTypesOptionsFlexBuilder?.addItem(this.excludeObjectTypesOptionsTable!, { CSSStyles: { 'overflow': 'scroll', 'height': '80vh', 'padding-top': '2px' } });
 
 		// setting optionsChanged to false when reset click, if optionsChanged is true during execute, that means there is an option changed after reset
 		this.isResetOptionsClicked = true;
