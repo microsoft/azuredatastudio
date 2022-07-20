@@ -2516,6 +2516,7 @@ function validateDiffEditorOptions(options: Readonly<IDiffEditorOptions>, defaul
 		diffCodeLens: validateBooleanOption(options.diffCodeLens, defaults.diffCodeLens),
 		renderOverviewRuler: validateBooleanOption(options.renderOverviewRuler, defaults.renderOverviewRuler),
 		diffWordWrap: validateDiffWordWrap(options.diffWordWrap, defaults.diffWordWrap),
+		reverse: validateBooleanOption(options.reverse, defaults.reverse), // {{SQL CARBON EDIT}}
 	};
 	return outOptions;
 }
