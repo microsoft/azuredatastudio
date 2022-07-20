@@ -95,7 +95,8 @@ export enum MigrationStatus {
 	Canceled = 'Canceled',
 	Completing = 'Completing',
 	Creating = 'Creating',
-	Canceling = 'Canceling'
+	Canceling = 'Canceling',
+	Retriable = 'Retriable',
 }
 
 export enum ProvisioningState {

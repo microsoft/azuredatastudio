@@ -125,9 +125,19 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 		await this._populateTableData(hashSet);
 
 		const successCount = hashSet[PipelineStatusCodes.Succeeded] ?? 0;
-		const cancelledCount = hashSet[PipelineStatusCodes.Cancelled] ?? 0;
+		const cancelledCount =
+			(hashSet[PipelineStatusCodes.Canceled] ?? 0) +
+			(hashSet[PipelineStatusCodes.Cancelled] ?? 0);
+
 		const failedCount = hashSet[PipelineStatusCodes.Failed] ?? 0;
-		const inProgressCount = (hashSet[PipelineStatusCodes.Queued] ?? 0) + (hashSet[PipelineStatusCodes.InProgress] ?? 0);
+		const inProgressCount =
+			(hashSet[PipelineStatusCodes.Queued] ?? 0) +
+			(hashSet[PipelineStatusCodes.CopyFinished] ?? 0) +
+			(hashSet[PipelineStatusCodes.Copying] ?? 0) +
+			(hashSet[PipelineStatusCodes.PreparingForCopy] ?? 0) +
+			(hashSet[PipelineStatusCodes.RebuildingIndexes] ?? 0) +
+			(hashSet[PipelineStatusCodes.InProgress] ?? 0);
+
 		const totalCount = migration.properties.migrationStatusDetails?.listOfCopyProgressDetails.length ?? 0;
 
 		this._updateSummaryComponent(SummaryCardIndex.TotalTables, totalCount);

@@ -684,6 +684,7 @@ export const StatusLookup: LookupTable<string | undefined> = {
 	[MigrationStatus.Succeeded]: localize('sql.migration.status.succeeded', 'Succeeded'),
 	[MigrationStatus.Creating]: localize('sql.migration.status.creating', 'Creating'),
 	[MigrationStatus.Completing]: localize('sql.migration.status.completing', 'Completing'),
+	[MigrationStatus.Retriable]: localize('sql.migration.status.retriable', 'Retriable'),
 	[MigrationStatus.Canceling]: localize('sql.migration.status.canceling', 'Canceling'),
 	[MigrationStatus.Canceled]: localize('sql.migration.status.canceled', 'Canceled'),
 	[MigrationStatus.Failed]: localize('sql.migration.status.failed', 'Failed'),
@@ -691,13 +692,19 @@ export const StatusLookup: LookupTable<string | undefined> = {
 };
 
 export const PipelineRunStatus: LookupTable<string | undefined> = {
-	[PipelineStatusCodes.Queued]: localize('sql.migration.copy.status.queued', 'Queued'),
-	[PipelineStatusCodes.InProgress]: localize('sql.migration.copy.status.inprogress', 'In progress'),
+	// status codes: ['PreparingForCopy' | 'Copying' | 'CopyFinished' | 'RebuildingIndexes' | 'Succeeded' | 'Failed' |	'Canceled']
+	[PipelineStatusCodes.PreparingForCopy]: localize('sql.migration.copy.status.preparingforcopy', 'Preparing'),
 	[PipelineStatusCodes.Copying]: localize('sql.migration.copy.status.copying', 'Copying'),
+	[PipelineStatusCodes.CopyFinished]: localize('sql.migration.copy.status.copyfinished', 'Copy finished'),
+	[PipelineStatusCodes.RebuildingIndexes]: localize('sql.migration.copy.status.rebuildingindexes', 'Rebuilding indexes'),
 	[PipelineStatusCodes.Succeeded]: localize('sql.migration.copy.status.succeeded', 'Succeeded'),
 	[PipelineStatusCodes.Failed]: localize('sql.migration.copy.status.failed', 'Failed'),
+	[PipelineStatusCodes.Canceled]: localize('sql.migration.copy.status.canceled', 'Canceled'),
+
+	// legacy status codes ['Queued', 'InProgress', 'Cancelled']
+	[PipelineStatusCodes.Queued]: localize('sql.migration.copy.status.queued', 'Queued'),
+	[PipelineStatusCodes.InProgress]: localize('sql.migration.copy.status.inprogress', 'In progress'),
 	[PipelineStatusCodes.Cancelled]: localize('sql.migration.copy.status.cancelled', 'Cancelled'),
-	[PipelineStatusCodes.PreparingForCopy]: localize('sql.migration.copy.status.preparingforcopy', 'Preparing'),
 };
 
 export const ParallelCopyType: LookupTable<string | undefined> = {

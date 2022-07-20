@@ -145,6 +145,8 @@ export function filterMigrations(databaseMigrations: azure.DatabaseMigration[], 
 				value => {
 					const status = getMigrationStatus(value);
 					return status === MigrationStatus.InProgress
+						|| status === MigrationStatus.Completing
+						|| status === MigrationStatus.Retriable
 						|| status === MigrationStatus.Creating;
 				});
 		case AdsMigrationStatus.SUCCEEDED:
@@ -268,19 +270,30 @@ export function getMigrationStatusWithErrors(migration: azure.DatabaseMigration)
 }
 
 export function getPipelineStatusImage(status: string | undefined): IconPath {
+	// status codes: 'PreparingForCopy' | 'Copying' | 'CopyFinished' | 'RebuildingIndexes' | 'Succeeded' | 'Failed' |	'Canceled',
 	switch (status) {
+		case PipelineStatusCodes.Copying:				// Copying: 'Copying',
+			return IconPathHelper.copy;
+		case PipelineStatusCodes.CopyFinished:			// CopyFinished: 'CopyFinished',
+		case PipelineStatusCodes.RebuildingIndexes:		// RebuildingIndexes: 'RebuildingIndexes',
+			return IconPathHelper.inProgressMigration;
+		case PipelineStatusCodes.Canceled:				// Canceled: 'Canceled',
+			return IconPathHelper.cancel;
+		case PipelineStatusCodes.PreparingForCopy:		// PreparingForCopy: 'PreparingForCopy',
+			return IconPathHelper.notStartedMigration;
+		case PipelineStatusCodes.Failed:				// Failed: 'Failed',
+			return IconPathHelper.error;
+		case PipelineStatusCodes.Succeeded:				// Succeeded: 'Succeeded',
+			return IconPathHelper.completedMigration;
+
+		// legacy status codes:  Queued: 'Queued', InProgress: 'InProgress',Cancelled: 'Cancelled',
+		case PipelineStatusCodes.Queued:
+			return IconPathHelper.notStartedMigration;
 		case PipelineStatusCodes.InProgress:
 			return IconPathHelper.inProgressMigration;
 		case PipelineStatusCodes.Cancelled:
 			return IconPathHelper.cancel;
-		case PipelineStatusCodes.PreparingForCopy:
-		case PipelineStatusCodes.Queued:
-			return IconPathHelper.notStartedMigration;
-		case PipelineStatusCodes.Succeeded:
-			return IconPathHelper.completedMigration;
-		case PipelineStatusCodes.Copying:
-			return IconPathHelper.copy;
-		case PipelineStatusCodes.Failed:
+		// default:
 		default:
 			return IconPathHelper.error;
 	}
@@ -297,6 +310,8 @@ export function getMigrationStatusImage(migration: azure.DatabaseMigration): Ico
 			return IconPathHelper.notStartedMigration;
 		case MigrationStatus.Completing:
 			return IconPathHelper.completingCutover;
+		case MigrationStatus.Retriable:
+			return IconPathHelper.retry;
 		case MigrationStatus.Canceling:
 		case MigrationStatus.Canceled:
 			return IconPathHelper.cancel;

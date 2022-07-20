@@ -22,13 +22,19 @@ export const ParallelCopyTypeCodes = {
 };
 
 export const PipelineStatusCodes = {
-	Queued: 'Queued',
-	InProgress: 'InProgress',
+	// status codes: 'PreparingForCopy' | 'Copying' | 'CopyFinished' | 'RebuildingIndexes' | 'Succeeded' | 'Failed' |	'Canceled',
+	PreparingForCopy: 'PreparingForCopy',
+	Copying: 'Copying',
+	CopyFinished: 'CopyFinished',
+	RebuildingIndexes: 'RebuildingIndexes',
 	Succeeded: 'Succeeded',
 	Failed: 'Failed',
+	Canceled: 'Canceled',
+
+	// legacy status codes
+	Queued: 'Queued',
+	InProgress: 'InProgress',
 	Cancelled: 'Cancelled',
-	Copying: 'Copying',
-	PreparingForCopy: 'PreparingForCopy',
 };
 
 const _dateFormatter = new Intl.DateTimeFormat(
@@ -148,6 +154,7 @@ export function canCancelMigration(migration: DatabaseMigration | undefined): bo
 	const status = getMigrationStatus(migration);
 	return hasMigrationOperationId(migration)
 		&& (status === MigrationStatus.InProgress ||
+			status === MigrationStatus.Retriable ||
 			status === MigrationStatus.Creating);
 }
 
@@ -155,12 +162,14 @@ export function canDeleteMigration(migration: DatabaseMigration | undefined): bo
 	const status = getMigrationStatus(migration);
 	return status === MigrationStatus.Canceled
 		|| status === MigrationStatus.Failed
+		|| status === MigrationStatus.Retriable
 		|| status === MigrationStatus.Succeeded;
 }
 
 export function canRetryMigration(migration: DatabaseMigration | undefined): boolean {
 	const status = getMigrationStatus(migration);
 	return status === MigrationStatus.Canceled
+		|| status === MigrationStatus.Retriable
 		|| status === MigrationStatus.Failed
 		|| status === MigrationStatus.Succeeded;
 }
@@ -176,6 +185,7 @@ export function canCutoverMigration(migration: DatabaseMigration | undefined): b
 export function isActiveMigration(migration: DatabaseMigration | undefined): boolean {
 	const status = getMigrationStatus(migration);
 	return status === MigrationStatus.Completing
+		|| status === MigrationStatus.Retriable
 		|| status === MigrationStatus.Creating
 		|| status === MigrationStatus.InProgress;
 }

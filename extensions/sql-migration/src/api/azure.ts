@@ -531,7 +531,7 @@ export interface MigrationStatusDetails {
 
 export interface CopyProgressDetail {
 	tableName: string;
-	status: 'Queued' | 'InProgress' | 'Succeeded' | 'Failed' | 'Canceling' | 'Cancelled';
+	status: 'PreparingForCopy' | 'Copying' | 'CopyFinished' | 'RebuildingIndexes' | 'Succeeded' | 'Failed' | 'Canceled',
 	parallelCopyType: string;
 	usedParallelCopies: number;
 	dataRead: number;
