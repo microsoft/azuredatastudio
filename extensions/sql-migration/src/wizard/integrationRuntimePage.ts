@@ -216,6 +216,34 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			}
 		}));
 
+		// Button to reload migration service list
+		const dmsRefreshButton = this._view.modelBuilder.button().withProps({
+			iconPath: IconPathHelper.refresh,
+			iconHeight: 18,
+			iconWidth: 18,
+			height: 25,
+			ariaLabel: constants.REFRESH,
+		}).component();
+
+		this._disposables.push(dmsRefreshButton.onDidClick(async (e) => {
+			await this.loadResourceGroupDropdown();
+			await this.populateDms();
+		}));
+
+		const dmsContainer = this._view.modelBuilder.flexContainer().component();
+
+		dmsContainer.addItem(this._dmsDropdown, {
+			flex: '0 0 auto'
+		});
+
+		dmsContainer.addItem(dmsRefreshButton, {
+			flex: '0 0 auto',
+			CSSStyles: {
+				'margin-left': '5px',
+				'margin-top': '-1em',
+			}
+		});
+
 		const createNewMigrationService = this._view.modelBuilder.hyperlink().withProps({
 			label: constants.CREATE_NEW,
 			url: '',
@@ -233,23 +261,6 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			await this.populateDms();
 		}));
 
-		// Button to reload migration service list
-		const refreshMigrationServiceButton = this._view.modelBuilder.button().withProps({
-			iconPath: IconPathHelper.refresh,
-			label: constants.REFRESH_BUTTON_LABEL,
-			width: 90,
-			height: 24,
-			CSSStyles: {
-				...styles.BODY_CSS,
-				'margin': '12px 0 4px 0'
-			}
-		}).component();
-
-		this._disposables.push(refreshMigrationServiceButton.onDidClick(async (e) => {
-			await this.loadResourceGroupDropdown();
-			await this.populateDms();
-		}));
-
 		const flexContainer = this._view.modelBuilder.flexContainer().withItems([
 			descriptionText,
 			subscriptionLabel,
@@ -259,9 +270,8 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			resourceGroupLabel,
 			this._resourceGroupDropdown,
 			migrationServiceDropdownLabel,
-			this._dmsDropdown,
+			dmsContainer,
 			createNewMigrationService,
-			refreshMigrationServiceButton
 		]).withLayout({
 			flexFlow: 'column'
 		}).component();

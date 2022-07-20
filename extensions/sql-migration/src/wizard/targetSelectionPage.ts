@@ -450,23 +450,33 @@ export class TargetSelectionPage extends MigrationWizardPage {
 		}));
 
 		// Button to reload target resources
-		const refreshTargetButton = this._view.modelBuilder.button().withProps({
+		const azureResourceRefreshButton = this._view.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.refresh,
-			label: constants.REFRESH_BUTTON_LABEL,
-			width: 90,
-			height: 24,
-			CSSStyles: {
-				...styles.BODY_CSS,
-				'margin': '12px 0 4px 0'
-			}
+			iconHeight: 18,
+			iconWidth: 18,
+			height: 25,
+			ariaLabel: constants.REFRESH,
 		}).component();
-
-		this._disposables.push(refreshTargetButton.onDidClick(async (event) => {
+		this._disposables.push(azureResourceRefreshButton.onDidClick(async (event) => {
 			await this.populateSubscriptionDropdown();
 			await this.populateLocationDropdown();
 			await this.populateResourceGroupDropdown();
 			await this.populateResourceInstanceDropdown();
 		}));
+
+		const azureResourceContainer = this._view.modelBuilder.flexContainer().component();
+
+		azureResourceContainer.addItem(this._azureResourceDropdown, {
+			flex: '0 0 auto'
+		});
+
+		azureResourceContainer.addItem(azureResourceRefreshButton, {
+			flex: '0 0 auto',
+			CSSStyles: {
+				'margin-left': '5px',
+				'margin-top': '-1em',
+			}
+		});
 
 		return this._view.modelBuilder.flexContainer().withItems(
 			[
@@ -477,8 +487,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 				azureResourceGroupLabel,
 				this._azureResourceGroupDropdown,
 				this._azureResourceDropdownLabel,
-				this._azureResourceDropdown,
-				refreshTargetButton
+				azureResourceContainer,
 			]
 		).withLayout({
 			flexFlow: 'column',
