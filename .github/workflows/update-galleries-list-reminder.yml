@@ -1,6 +1,6 @@
 name: Update Extension Gallery Reminder
 on:
-  pull_request:
+  pull_request_target:
     paths:
       - 'extensionsGallery.json'
     branches:
