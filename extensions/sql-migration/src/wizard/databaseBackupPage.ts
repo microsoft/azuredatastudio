@@ -577,20 +577,20 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}).component();
 
 		// Button to reload resources in blob container table dropdowns
-		const refreshBlobTableButton = this._view.modelBuilder.button()
+		const blobTableRefreshButton = this._view.modelBuilder.button()
 			.withProps({
 				iconPath: IconPathHelper.refresh,
 				label: constants.REFRESH_BUTTON_LABEL,
-				width: 90,
+				width: 80,
 				height: 24,
 				CSSStyles: {
 					...styles.BODY_CSS,
-					'margin': '12px 0 4px 0'
+					'margin': '12px 0 12px 4px'
 				}
 			})
 			.component();
 
-		this._disposables.push(refreshBlobTableButton.onDidClick(async (event) => {
+		this._disposables.push(blobTableRefreshButton.onDidClick(async (event) => {
 			await this.getSubscriptionValues();
 			for (const [index, _db] of this.migrationStateModel._databasesForMigration.entries()) {
 				const BlobStorageDropdown = this._blobContainerStorageAccountDropdowns[index];
@@ -615,8 +615,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			blobTableText,
 			allFieldsRequiredLabel,
 			azureStoragePrivateEndpointInfoBox,
+			blobTableRefreshButton,
 			this._blobContainerTargetDatabaseNamesTable,
-			refreshBlobTableButton
 		]).withProps({
 			CSSStyles: {
 				'display': 'none',
