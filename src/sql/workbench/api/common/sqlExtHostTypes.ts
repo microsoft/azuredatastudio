@@ -1031,9 +1031,7 @@ export namespace designers {
 		Basic = 'Basic',
 		Temporal = 'Temporal',
 		GraphEdge = 'GraphEdge',
-		GraphNode = 'GraphNode',
-		Ledger = 'Ledger',
-		LedgerHistory = 'LedgerHistory'
+		GraphNode = 'GraphNode'
 	}
 }
 
