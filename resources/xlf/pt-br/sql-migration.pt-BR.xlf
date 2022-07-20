@@ -1958,10 +1958,6 @@ Isto pode levar algum tempo.</target>
         <source xml:lang="en">View/Select</source>
         <target state="translated">Exibir/selecionar</target>
       </trans-unit>
-      <trans-unit id="sql.migration.vm.not.ready">
-        <source xml:lang="en">The virtual machine '{0}' is unavailable for migration because it is currently in the '{1}' state. To continue, select an available virtual machine.</source>
-        <target state="translated">A máquina virtual '{0}' não está disponível para migração porque está atualmente no estado '{1}'. Para continuar, selecione uma máquina virtual disponível.</target>
-      </trans-unit>
       <trans-unit id="sql.migration.warning">
         <source xml:lang="en">Warning</source>
         <target state="translated">Aviso</target>

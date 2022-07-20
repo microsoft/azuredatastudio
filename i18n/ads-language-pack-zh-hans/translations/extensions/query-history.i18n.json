@@ -9,10 +9,16 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
+			"queryHistory.captureEnabledDesc": "是否启用查询历史记录捕获。若为 false，则不捕获所执行的查询。",
 			"queryHistory.clear": "清除所有历史记录",
+			"queryHistory.delete": "删除",
 			"queryHistory.description": "查看并运行以前执行的查询",
+			"queryHistory.disableCapture": "暂停查询历史记录捕获",
 			"queryHistory.displayName": "查询历史记录",
-			"queryHistory.toggleCapture": "切换查询历史记录捕获"
+			"queryHistory.enableCapture": "开始查询历史记录捕获",
+			"queryHistory.noEntries": "没有要显示的查询",
+			"queryHistory.open": "打开查询",
+			"queryHistory.run": "运行查询"
 		}
 	}
 }

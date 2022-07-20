@@ -1958,10 +1958,6 @@ This may take some time.</source>
         <source xml:lang="en">View/Select</source>
         <target state="translated">檢視/選取</target>
       </trans-unit>
-      <trans-unit id="sql.migration.vm.not.ready">
-        <source xml:lang="en">The virtual machine '{0}' is unavailable for migration because it is currently in the '{1}' state. To continue, select an available virtual machine.</source>
-        <target state="translated">虛擬機器 '{0}' 無法用於移轉，因為它目前處於 '{1}' 狀態。若要繼續，請選取可用的虛擬機器。</target>
-      </trans-unit>
       <trans-unit id="sql.migration.warning">
         <source xml:lang="en">Warning</source>
         <target state="translated">警告</target>

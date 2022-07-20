@@ -497,7 +497,6 @@
 			"sql.migration.username": "用户名",
 			"sql.migration.view.all": "所有数据库迁移",
 			"sql.migration.view.select.button.label": "查看/选择",
-			"sql.migration.vm.not.ready": "虚拟机“{0}”不可用于迁移，因为它当前处于“{1}”状态。若要继续，请选择可用的虚拟机。",
 			"sql.migration.warning": "警告",
 			"sql.migration.warnings": "警告",
 			"sql.migration.warnings.count": "警告({0})",

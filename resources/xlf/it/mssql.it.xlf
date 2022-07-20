@@ -880,6 +880,14 @@
       </trans-unit>
     </body>
   </file>
+  <file original="extensions/mssql/dist/tableDesigner/tableDesigner" source-language="en" datatype="plaintext" target-language="it">
+    <body>
+      <trans-unit id="tableDesigner.NewTable">
+        <source xml:lang="en">New Table</source>
+        <target state="translated">Nuova tabella</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/mssql/dist/telemetry" source-language="en" datatype="plaintext" target-language="it">
     <body>
       <trans-unit id="serviceCrashMessage">

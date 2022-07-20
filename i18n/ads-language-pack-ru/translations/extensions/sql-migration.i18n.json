@@ -497,7 +497,6 @@
 			"sql.migration.username": "Имя пользователя",
 			"sql.migration.view.all": "Все миграции баз данных",
 			"sql.migration.view.select.button.label": "Просмотреть или выбрать",
-			"sql.migration.vm.not.ready": "Виртуальная машина «{0}» недоступна для переноса, поскольку в настоящее время она находится в состоянии «{1}». Чтобы продолжить, выберите доступную виртуальную машину.",
 			"sql.migration.warning": "Предупреждение",
 			"sql.migration.warnings": "Предупреждения",
 			"sql.migration.warnings.count": "Предупреждения ({0})",

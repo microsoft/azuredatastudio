@@ -250,6 +250,9 @@
 			"serviceStartedStatusMsg": "{0} avviato",
 			"startingServiceStatusMsg": "Avvio di {0}"
 		},
+		"dist/tableDesigner/tableDesigner": {
+			"tableDesigner.NewTable": "Nuova tabella"
+		},
 		"dist/telemetry": {
 			"serviceCrashMessage": "Il componente {0} è stato chiuso in modo imprevisto. Riavviare Azure Data Studio.",
 			"viewKnownIssuesText": "Visualizza problemi noti"

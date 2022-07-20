@@ -497,7 +497,6 @@
 			"sql.migration.username": "使用者名稱",
 			"sql.migration.view.all": "所有資料庫移轉",
 			"sql.migration.view.select.button.label": "檢視/選取",
-			"sql.migration.vm.not.ready": "虛擬機器 '{0}' 無法用於移轉，因為它目前處於 '{1}' 狀態。若要繼續，請選取可用的虛擬機器。",
 			"sql.migration.warning": "警告",
 			"sql.migration.warnings": "警告",
 			"sql.migration.warnings.count": "警告 ({0})",
