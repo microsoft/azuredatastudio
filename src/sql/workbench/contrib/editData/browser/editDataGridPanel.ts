@@ -600,7 +600,7 @@ export class EditDataGridPanel extends GridParentComponent {
 				document.execCommand('insertText', false, 'NULL');
 			}
 			else if (this.isRowDirty(this.lastClickedCell.row) && !this.hasCellStringChanged()) {
-				this.revertSelectedRow(this.lastClickedCell.row);
+				this.revertSelectedRow(this.lastClickedCell.row).catch(onUnexpectedError);
 			}
 			else if (this.hasCellStringChanged()) {
 				this.revertSelectedCell(this.lastClickedCell.row, this.lastClickedCell.column).catch(onUnexpectedError);
@@ -742,8 +742,8 @@ export class EditDataGridPanel extends GridParentComponent {
 						errorPromise = this.revertSelectedRow(cellToAdd.row);
 					}
 
-					errorPromise = errorPromise.then(() => { this.revertSelectedCell(cellToAdd.row, cellToAdd.column); });
-					return errorPromise.then(() => { errorHandler(error); });
+					errorPromise = errorPromise.then(() => { this.revertSelectedCell(cellToAdd.row, cellToAdd.column).catch(onUnexpectedError); }, onUnexpectedError);
+					return errorPromise.then(() => { }, onUnexpectedError);
 				}
 			);
 		}
