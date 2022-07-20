@@ -934,6 +934,14 @@ Esses arquivos serão PERDIDOS PARA SEMPRE.</target>
         <source xml:lang="en">Don't Show Again</source>
         <target state="translated">Não Mostrar Novamente</target>
       </trans-unit>
+      <trans-unit id="no">
+        <source xml:lang="en">No</source>
+        <target state="translated">Não</target>
+      </trans-unit>
+      <trans-unit id="ok">
+        <source xml:lang="en">OK</source>
+        <target state="translated">OK</target>
+      </trans-unit>
       <trans-unit id="open">
         <source xml:lang="en">Open</source>
         <target state="translated">Abrir</target>
@@ -966,6 +974,18 @@ Esses arquivos serão PERDIDOS PARA SEMPRE.</target>
         <source xml:lang="en">Successfully pushed.</source>
         <target state="translated">Enviado por push com êxito.</target>
       </trans-unit>
+      <trans-unit id="scm button publish title">
+        <source xml:lang="en">$(cloud-upload) Publish Changes</source>
+        <target state="translated">$(cloud-upload) Publicar Alterações</target>
+      </trans-unit>
+      <trans-unit id="scm button publish tooltip">
+        <source xml:lang="en">Publish Changes</source>
+        <target state="translated">Publicar Alterações</target>
+      </trans-unit>
+      <trans-unit id="scm button sync title">
+        <source xml:lang="en"> Sync Changes $(sync){0}{1}</source>
+        <target state="translated"> Alterações de Sincronização $(sync){0}{1}</target>
+      </trans-unit>
       <trans-unit id="staged changes">
         <source xml:lang="en">Staged Changes</source>
         <target state="translated">Alterações Preparadas</target>
@@ -977,6 +997,10 @@ Esses arquivos serão PERDIDOS PARA SEMPRE.</target>
       <trans-unit id="sync is unpredictable">
         <source xml:lang="en">Syncing. Cancelling may cause serious damages to the repository</source>
         <target state="translated">Sincronizando. O cancelamento pode causar sérios danos ao repositório</target>
+      </trans-unit>
+      <trans-unit id="tooManyChangesWarning">
+        <source xml:lang="en">Too many changes were detected. Only the first {0} changes will be shown below.</source>
+        <target state="translated">Muitas mudanças foram detectadas. Somente as primeiras {0} alterações serão mostradas abaixo.</target>
       </trans-unit>
       <trans-unit id="untracked">
         <source xml:lang="en">Untracked</source>
@@ -1772,6 +1796,22 @@ Esses arquivos serão PERDIDOS PARA SEMPRE.</target>
         <source xml:lang="en">Controls whether to show a notification when a push is successful.</source>
         <target state="translated">Controla se uma notificação deve ser mostrada quando um envio por push é bem-sucedido.</target>
       </trans-unit>
+      <trans-unit id="config.showUnpublishedCommitsButton">
+        <source xml:lang="en">Controls whether to show an action button to sync or publish, if there are unpublished commits.</source>
+        <target state="translated">Controla se deve mostrar um botão de ação para sincronizar ou publicar, se houver confirmações não publicadas.</target>
+      </trans-unit>
+      <trans-unit id="config.showUnpublishedCommitsButton.always">
+        <source xml:lang="en">Always shows the action button, if there are unpublished commits.</source>
+        <target state="translated">Sempre mostra o botão de ação, se houver confirmações não publicados.</target>
+      </trans-unit>
+      <trans-unit id="config.showUnpublishedCommitsButton.never">
+        <source xml:lang="en">Never shows the action button.</source>
+        <target state="translated">Nunca mostrar o botão de ação.</target>
+      </trans-unit>
+      <trans-unit id="config.showUnpublishedCommitsButton.whenEmpty">
+        <source xml:lang="en">Only shows the action button if there are no other changes and there are unpublished commits.</source>
+        <target state="translated">Mostra o botão de ação somente se não houver outras alterações e se houver confirmações não publicadas.</target>
+      </trans-unit>
       <trans-unit id="config.smartCommitChanges">
         <source xml:lang="en">Control which changes are automatically staged by Smart Commit.</source>
         <target state="translated">Controlar quais alterações são automaticamente testadas por Confirmação Inteligente.</target>
@@ -1783,6 +1823,10 @@ Esses arquivos serão PERDIDOS PARA SEMPRE.</target>
       <trans-unit id="config.smartCommitChanges.tracked">
         <source xml:lang="en">Automatically stage tracked changes only.</source>
         <target state="translated">Somente preparar automaticamente as alterações controladas.</target>
+      </trans-unit>
+      <trans-unit id="config.statusLimit">
+        <source xml:lang="en">Controls how to limit the number of changes that can be parsed from Git status command. Can be set to 0 for no limit.</source>
+        <target state="translated">Controla como limitar o número de alterações que podem ser analisadas a partir do comando de status do Git. Pode ser definido como 0 para nenhum limite.</target>
       </trans-unit>
       <trans-unit id="config.suggestSmartCommit">
         <source xml:lang="en">Suggests to enable smart commit (commit all changes when there are no staged changes).</source>

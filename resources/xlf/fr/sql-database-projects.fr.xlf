@@ -18,6 +18,14 @@
         <source xml:lang="en">In progress</source>
         <target state="translated">En cours</target>
       </trans-unit>
+      <trans-unit id="Include">
+        <source xml:lang="en">Include</source>
+        <target state="translated">Inclure</target>
+      </trans-unit>
+      <trans-unit id="OptionNotFoundWarningMessage">
+        <source xml:lang="en">label: {0} does not exist in the options value name lookup</source>
+        <target state="translated">étiquette : {0} n’existe pas dans la recherche de nom de valeur d’options.</target>
+      </trans-unit>
       <trans-unit id="PublishHistory">
         <source xml:lang="en">Publish History</source>
         <target state="translated">Publier l’historique</target>
@@ -61,6 +69,14 @@
       <trans-unit id="addItemAction">
         <source xml:lang="en">Add Item</source>
         <target state="translated">Ajouter un élément</target>
+      </trans-unit>
+      <trans-unit id="advancedOptionsButton">
+        <source xml:lang="en">Advanced...</source>
+        <target state="translated">Avancé...</target>
+      </trans-unit>
+      <trans-unit id="advancedPublishOptions">
+        <source xml:lang="en">Advanced Publish Options</source>
+        <target state="translated">Options de publication avancées</target>
       </trans-unit>
       <trans-unit id="appSettingPrompt">
         <source xml:lang="en">Would you like to update Azure Function local.settings.json with the new connection string?</source>
@@ -768,6 +784,14 @@
         <source xml:lang="en">Open License Agreement</source>
         <target state="translated">Ouvrir le contrat de licence</target>
       </trans-unit>
+      <trans-unit id="optionDescription">
+        <source xml:lang="en">Option Description</source>
+        <target state="translated">Description de l'option</target>
+      </trans-unit>
+      <trans-unit id="optionName">
+        <source xml:lang="en">Option Name</source>
+        <target state="translated">Nom de l’option</target>
+      </trans-unit>
       <trans-unit id="outsideFolderPath">
         <source xml:lang="en">Items with absolute path outside project folder are not supported. Please make sure the paths in the project file are relative to project folder.</source>
         <target state="translated">Les éléments avec un chemin d’accès absolu extérieur au dossier du projet ne sont pas pris en charge. Assurez-vous que les chemins d’accès du fichier projet sont relatifs au dossier du projet.</target>
@@ -872,6 +896,10 @@
         <source xml:lang="en">Publish project</source>
         <target state="translated">Publier le projet</target>
       </trans-unit>
+      <trans-unit id="publishOptions">
+        <source xml:lang="en">Publish Options</source>
+        <target state="translated">Options de publication</target>
+      </trans-unit>
       <trans-unit id="publishProjectSucceed">
         <source xml:lang="en">Database project published successfully</source>
         <target state="translated">Projet de base de données publié avec succès</target>
@@ -927,6 +955,10 @@
       <trans-unit id="reloadValuesFromProjectButtonTitle">
         <source xml:lang="en">Reload values from project</source>
         <target state="translated">Recharger les valeurs à partir du projet</target>
+      </trans-unit>
+      <trans-unit id="reset">
+        <source xml:lang="en">Reset</source>
+        <target state="translated">Réinitialiser</target>
       </trans-unit>
       <trans-unit id="resetAllVars">
         <source xml:lang="en">Reset all variables</source>
@@ -1407,6 +1439,10 @@
       <trans-unit id="sqlDatabaseProjects.openContainingFolder">
         <source xml:lang="en">Open Containing Folder</source>
         <target state="translated">Ouvrir le dossier contenant</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.openInDesigner">
+        <source xml:lang="en">Open in Designer</source>
+        <target state="translated">Ouvrir dans le Concepteur</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.properties">
         <source xml:lang="en">Properties</source>

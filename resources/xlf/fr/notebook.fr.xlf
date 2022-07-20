@@ -532,6 +532,14 @@
         <source xml:lang="en">Install</source>
         <target state="translated">Installer</target>
       </trans-unit>
+      <trans-unit id="managePackages.installCompleteText">
+        <source xml:lang="en">Package installed</source>
+        <target state="translated">Package installé</target>
+      </trans-unit>
+      <trans-unit id="managePackages.installProgressText">
+        <source xml:lang="en">Installing package</source>
+        <target state="translated">Installation du package</target>
+      </trans-unit>
       <trans-unit id="managePackages.invalidTextPlaceholder">
         <source xml:lang="en">N/A</source>
         <target state="translated">N/A</target>
@@ -611,6 +619,14 @@
       <trans-unit id="managePackages.uninstallButtonText">
         <source xml:lang="en">Uninstall selected packages</source>
         <target state="translated">Désinstaller les packages sélectionnés</target>
+      </trans-unit>
+      <trans-unit id="managePackages.uninstallCompleteText">
+        <source xml:lang="en">Package uninstalled</source>
+        <target state="translated">Paquet désinstallé</target>
+      </trans-unit>
+      <trans-unit id="managePackages.uninstallProgressText">
+        <source xml:lang="en">Uninstalling package</source>
+        <target state="translated">Désinstallation du package</target>
       </trans-unit>
     </body>
   </file>
