@@ -1,8 +1,8 @@
-## Extension Integration tests
+## Integration tests
 
 This extension is for running tests against specific features that require a connection to an actual server.
 
-Unit tests that don't require this should be added as tests to the extensions themselves.
+Unit tests that don't require this should be added as tests to the extensions or core directly.
 
 Tests that require user interaction should be added to the smoke tests - see https://github.com/microsoft/azuredatastudio/blob/main/test/smoke/README.md for more information.
 
