@@ -148,6 +148,8 @@
 			"managePackages.backgroundInstallFailed": "Fehler beim Installieren von {0} {1}. Fehler: {2}",
 			"managePackages.backgroundInstallStarted": "{0} {1} wird installiert.",
 			"managePackages.installButtonText": "Installieren",
+			"managePackages.installCompleteText": "Paket installiert",
+			"managePackages.installProgressText": "Paket installieren",
 			"managePackages.invalidTextPlaceholder": "N/V",
 			"managePackages.noVersionsFound": "Für das angegebene Paket wurden keine gültigen Versionen gefunden.",
 			"managePackages.packageNameTitle": "Paketname",
@@ -168,7 +170,9 @@
 			"managePackages.packageCount": "{0} {1}-Pakete gefunden",
 			"managePackages.packageType": "Pakettyp",
 			"managePackages.pkgNameColumn": "Name",
-			"managePackages.uninstallButtonText": "Ausgewählte Pakete deinstallieren"
+			"managePackages.uninstallButtonText": "Ausgewählte Pakete deinstallieren",
+			"managePackages.uninstallCompleteText": "Paket deinstalliert",
+			"managePackages.uninstallProgressText": "Paket deinstallieren"
 		},
 		"dist/dialog/managePackages/managePackagesDialog": {
 			"managePackages.cancelButtonText": "Schließen",

@@ -9,10 +9,16 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
+			"queryHistory.captureEnabledDesc": "Se a captura do Histórico de Consultas estiver habilitada. Se for false, as consultas executadas não serão capturadas.",
 			"queryHistory.clear": "Limpar todo o histórico",
+			"queryHistory.delete": "Excluir",
 			"queryHistory.description": "Exibir e executar consultas executadas anteriormente",
+			"queryHistory.disableCapture": "Pausar a Captura de Histórico de Consultas",
 			"queryHistory.displayName": "Histórico de Consultas",
-			"queryHistory.toggleCapture": "Ativar/desativar a captura de Histórico de Consultas"
+			"queryHistory.enableCapture": "Iniciar a Captura do Histórico de Consultas",
+			"queryHistory.noEntries": "Não há nenhuma consulta a ser exibida",
+			"queryHistory.open": "Abrir Consulta",
+			"queryHistory.run": "Executar Consulta"
 		}
 	}
 }

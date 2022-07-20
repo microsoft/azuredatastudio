@@ -9,10 +9,16 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
+			"queryHistory.captureEnabledDesc": "Query History キャプチャが有効かどうか。false の場合、実行されたクエリはキャプチャされません。",
 			"queryHistory.clear": "すべての履歴をクリア",
+			"queryHistory.delete": "削除",
 			"queryHistory.description": "以前に実行したクエリを表示して実行します",
+			"queryHistory.disableCapture": "Query History キャプチャの一時停止",
 			"queryHistory.displayName": "Query History",
-			"queryHistory.toggleCapture": "Query History キャプチャの切り替え"
+			"queryHistory.enableCapture": "Query History キャプチャの開始",
+			"queryHistory.noEntries": "表示するクエリはありません",
+			"queryHistory.open": "クエリを開く",
+			"queryHistory.run": "クエリの実行"
 		}
 	}
 }

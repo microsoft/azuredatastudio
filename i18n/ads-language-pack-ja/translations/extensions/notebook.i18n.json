@@ -148,6 +148,8 @@
 			"managePackages.backgroundInstallFailed": "{0} のインストールに失敗しました {1} エラー: {2}",
 			"managePackages.backgroundInstallStarted": "{0} をインストールしています {1}",
 			"managePackages.installButtonText": "インストール",
+			"managePackages.installCompleteText": "パッケージがインストールされました",
+			"managePackages.installProgressText": "パッケージをインストールしています",
 			"managePackages.invalidTextPlaceholder": "該当なし",
 			"managePackages.noVersionsFound": "指定されたパッケージの有効なバージョンが見つかりませんでした",
 			"managePackages.packageNameTitle": "パッケージ名",
@@ -168,7 +170,9 @@
 			"managePackages.packageCount": "{0} {1} パッケージが見つかりました",
 			"managePackages.packageType": "パッケージの種類",
 			"managePackages.pkgNameColumn": "名前",
-			"managePackages.uninstallButtonText": "選択したパッケージをアンインストールします"
+			"managePackages.uninstallButtonText": "選択したパッケージをアンインストールします",
+			"managePackages.uninstallCompleteText": "パッケージがアンインストールされました",
+			"managePackages.uninstallProgressText": "パッケージをアンインストールしています"
 		},
 		"dist/dialog/managePackages/managePackagesDialog": {
 			"managePackages.cancelButtonText": "閉じる",

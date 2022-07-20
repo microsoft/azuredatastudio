@@ -497,7 +497,6 @@
 			"sql.migration.username": "ユーザー名",
 			"sql.migration.view.all": "すべてのデータベース移行",
 			"sql.migration.view.select.button.label": "表示/選択",
-			"sql.migration.vm.not.ready": "仮想マシン '{0}' は現在 '{1}' 状態であるため、移行できません。続行するには、利用可能な仮想マシンを選択します。",
 			"sql.migration.warning": "警告",
 			"sql.migration.warnings": "警告",
 			"sql.migration.warnings.count": "警告 ({0})",
