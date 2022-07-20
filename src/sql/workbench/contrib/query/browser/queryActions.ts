@@ -341,6 +341,7 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
  */
 export class ToggleActualExecutionPlanModeAction extends QueryTaskbarAction {
 	public static EnabledClass = 'enabledActualExecutionPlan';
+	public static DisabledClass = 'disabledActualExecutionPlan';
 	public static ID = 'toggleActualExecutionPlanModeAction';
 
 	private static readonly EnableActualPlanLabel = nls.localize('enableActualPlanLabel', "Enable Actual Plan");
@@ -370,6 +371,12 @@ export class ToggleActualExecutionPlanModeAction extends QueryTaskbarAction {
 	private updateLabel(): void {
 		// show option to disable actual plan mode if already enabled
 		this.label = this.isActualExecutionPlanMode ? ToggleActualExecutionPlanModeAction.DisableActualPlanLabel : ToggleActualExecutionPlanModeAction.EnableActualPlanLabel;
+		if (this.isActualExecutionPlanMode) {
+			this.updateCssClass(ToggleActualExecutionPlanModeAction.DisabledClass);
+		}
+		else {
+			this.updateCssClass(ToggleActualExecutionPlanModeAction.EnabledClass);
+		}
 	}
 
 	public override async run(): Promise<void> {

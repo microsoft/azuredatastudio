@@ -11,12 +11,12 @@ import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
 import { BINARY_FILE_EDITOR_ID, BINARY_TEXT_FILE_MODE } from 'vs/workbench/contrib/files/common/files';
 import { IStorageService } from 'vs/platform/storage/common/storage';
-import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { EditorResolution, IEditorOptions } from 'vs/platform/editor/common/editor';
 import { IEditorResolverService, ResolvedStatus, ResolvedEditor } from 'vs/workbench/services/editor/common/editorResolverService';
-import { isEditorInputWithOptions, IEditorInputWithOptionsAndGroup } from 'vs/workbench/common/editor'; // {{SQL CARBON EDIT}} Cast to avoid compiler errors
+import { isEditorInputWithOptions } from 'vs/workbench/common/editor';
 import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 
 /**
  * An implementation of editor for binary files that cannot be displayed.
@@ -28,10 +28,10 @@ export class BinaryFileEditor extends BaseBinaryResourceEditor {
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IThemeService themeService: IThemeService,
-		@IEditorService private readonly editorService: IEditorService,
 		@IEditorResolverService private readonly editorResolverService: IEditorResolverService,
 		@IStorageService storageService: IStorageService,
-		@IInstantiationService instantiationService: IInstantiationService
+		@IInstantiationService instantiationService: IInstantiationService,
+		@IEditorGroupsService private readonly editorGroupService: IEditorGroupsService
 	) {
 		super(
 			BinaryFileEditor.ID,
@@ -86,16 +86,15 @@ export class BinaryFileEditor extends BaseBinaryResourceEditor {
 				}
 			}
 
-			resolvedEditor = resolvedEditor as IEditorInputWithOptionsAndGroup; // {{SQL CARBON EDIT}} Cast to avoid compiler errors
+			let resolvedEditorWithOptions = <any>resolvedEditor; // {{SQL CARBON EDIT}} Cast to avoid compiler errors
 			// Replace the active editor with the picked one
-			await this.editorService.replaceEditors([{
+			await (this.group ?? this.editorGroupService.activeGroup).replaceEditors([{
 				editor: activeEditor,
-				replacement: resolvedEditor?.editor ?? input,
+				replacement: resolvedEditorWithOptions?.editor ?? input,
 				options: {
-					...resolvedEditor?.options ?? options,
-					override: EditorResolution.DISABLED
+					...resolvedEditorWithOptions?.options ?? options
 				}
-			}], this.group);
+			}]);
 		}
 	}
 

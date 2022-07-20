@@ -10,7 +10,7 @@ import { IRemoteAgentService } from 'vs/workbench/services/remote/common/remoteA
 import { Disposable, dispose } from 'vs/base/common/lifecycle';
 import { MenuId, IMenuService, MenuItemAction, MenuRegistry, registerAction2, Action2, SubmenuItemAction } from 'vs/platform/actions/common/actions';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
-import { StatusbarAlignment, IStatusbarService, IStatusbarEntryAccessor, IStatusbarEntry } from 'vs/workbench/services/statusbar/common/statusbar';
+import { StatusbarAlignment, IStatusbarService, IStatusbarEntryAccessor, IStatusbarEntry } from 'vs/workbench/services/statusbar/browser/statusbar';
 import { ILabelService } from 'vs/platform/label/common/label';
 import { ContextKeyExpr, IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { ICommandService } from 'vs/platform/commands/common/commands';
@@ -30,11 +30,12 @@ import { getCodiconAriaLabel } from 'vs/base/common/codicons';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ReloadWindowAction } from 'vs/workbench/browser/actions/windowActions';
 import { IExtensionGalleryService } from 'vs/platform/extensionManagement/common/extensionManagement';
-import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { IExtensionsViewPaneContainer, LIST_WORKSPACE_UNSUPPORTED_EXTENSIONS_COMMAND_ID, VIEWLET_ID } from 'vs/workbench/contrib/extensions/common/extensions';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { IMarkdownString, MarkdownString } from 'vs/base/common/htmlContent';
 import { RemoteNameContext, VirtualWorkspaceContext } from 'vs/workbench/browser/contextkeys';
+import { IPaneCompositePartService } from 'vs/workbench/services/panecomposite/browser/panecomposite';
+import { ViewContainerLocation } from 'vs/workbench/common/views';
 
 
 type ActionGroup = [string, Array<MenuItemAction | SubmenuItemAction>];
@@ -150,8 +151,8 @@ export class RemoteStatusIndicator extends Disposable implements IWorkbenchContr
 					});
 				}
 				run = (accessor: ServicesAccessor, input: string) => {
-					const viewletService = accessor.get(IViewletService);
-					return viewletService.openViewlet(VIEWLET_ID, true).then(viewlet => {
+					const paneCompositeService = accessor.get(IPaneCompositePartService);
+					return paneCompositeService.openPaneComposite(VIEWLET_ID, ViewContainerLocation.Sidebar, true).then(viewlet => {
 						if (viewlet) {
 							(viewlet?.getViewPaneContainer() as IExtensionsViewPaneContainer).search(`tag:"remote-menu"`);
 							viewlet.focus();

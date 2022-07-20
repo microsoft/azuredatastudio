@@ -16,6 +16,9 @@
     <trans-unit id="Include">
       <source xml:lang="en">Include</source>
     </trans-unit>
+    <trans-unit id="OptionNotFoundWarningMessage">
+      <source xml:lang="en">label: {0} does not exist in the options value name lookup</source>
+    </trans-unit>
     <trans-unit id="PublishHistory">
       <source xml:lang="en">Publish History</source>
     </trans-unit>
@@ -48,6 +51,12 @@
     </trans-unit>
     <trans-unit id="addItemAction">
       <source xml:lang="en">Add Item</source>
+    </trans-unit>
+    <trans-unit id="advancedOptionsButton">
+      <source xml:lang="en">Advanced...</source>
+    </trans-unit>
+    <trans-unit id="advancedPublishOptions">
+      <source xml:lang="en">Advanced Publish Options</source>
     </trans-unit>
     <trans-unit id="appSettingPrompt">
       <source xml:lang="en">Would you like to update Azure Function local.settings.json with the new connection string?</source>
@@ -447,9 +456,6 @@
     <trans-unit id="folderStructureLabel">
       <source xml:lang="en">Folder structure</source>
     </trans-unit>
-    <trans-unit id="generalOptions">
-      <source xml:lang="en">General Options</source>
-    </trans-unit>
     <trans-unit id="generateScriptButtonText">
       <source xml:lang="en">Generate Script</source>
     </trans-unit>
@@ -695,9 +701,6 @@
     </trans-unit>
     <trans-unit id="publishToNewAzureServerFailed">
       <source xml:lang="en">Failed to publish to new Azure SQL server. {0}</source>
-    </trans-unit>
-    <trans-unit id="publishingOptions">
-      <source xml:lang="en">Publishing Options</source>
     </trans-unit>
     <trans-unit id="publishingProjectMessage">
       <source xml:lang="en">Publishing project in a container...</source>
@@ -1004,6 +1007,9 @@
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.close">
       <source xml:lang="en">Close Database Project</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.collapseProjectNodes">
+      <source xml:lang="en">Whether project nodes start collapsed</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.convertToSdkStyleProject">
       <source xml:lang="en">Convert to SDK-style project</source>

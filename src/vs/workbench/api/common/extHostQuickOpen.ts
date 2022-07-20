@@ -420,7 +420,15 @@ export function createExtHostQuickOpen(mainContext: IMainContext, workspace: IEx
 
 		_fireDidHide() {
 			if (this._expectingHide) {
-				this._expectingHide = false;
+				// if this._visible is true, it means that .show() was called between
+				// .hide() and .onDidHide. To ensure the correct number of onDidHide events
+				// are emitted, we set this._expectingHide to this value so that
+				// the next time .hide() is called, we can emit the event again.
+				// Example:
+				// .show() -> .hide() -> .show() -> .hide() should emit 2 onDidHide events.
+				// .show() -> .hide() -> .hide() should emit 1 onDidHide event.
+				// Fixes #135747
+				this._expectingHide = this._visible;
 				this._onDidHideEmitter.fire();
 			}
 		}
@@ -516,6 +524,7 @@ export function createExtHostQuickOpen(mainContext: IMainContext, workspace: IEx
 		private _matchOnDescription = true;
 		private _matchOnDetail = true;
 		private _sortByLabel = true;
+		private _keepScrollPosition = false;
 		private _activeItems: T[] = [];
 		private readonly _onDidChangeActiveEmitter = new Emitter<T[]>();
 		private _selectedItems: T[] = [];
@@ -600,6 +609,15 @@ export function createExtHostQuickOpen(mainContext: IMainContext, workspace: IEx
 		set sortByLabel(sortByLabel: boolean) {
 			this._sortByLabel = sortByLabel;
 			this.update({ sortByLabel });
+		}
+
+		get keepScrollPosition() {
+			return this._keepScrollPosition;
+		}
+
+		set keepScrollPosition(keepScrollPosition: boolean) {
+			this._keepScrollPosition = keepScrollPosition;
+			this.update({ keepScrollPosition });
 		}
 
 		get activeItems() {

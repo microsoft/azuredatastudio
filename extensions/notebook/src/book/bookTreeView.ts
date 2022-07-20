@@ -22,7 +22,7 @@ import { BookTocManager, IBookTocManager, quickPickResults } from './bookTocMana
 import { CreateBookDialog } from '../dialog/createBookDialog';
 import { AddTocEntryDialog } from '../dialog/addTocEntryDialog';
 import { getContentPath } from './bookVersionHandler';
-import { TelemetryReporter, BookTelemetryView, NbTelemetryActions } from '../telemetry';
+import { sendNotebookActionEvent, NbTelemetryView, NbTelemetryAction } from '../telemetry';
 
 interface BookSearchResults {
 	notebookPaths: string[];
@@ -124,7 +124,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 						}
 					});
 				}
-				TelemetryReporter.sendActionEvent(BookTelemetryView, NbTelemetryActions.TrustNotebook);
+				sendNotebookActionEvent(NbTelemetryView.Book, NbTelemetryAction.TrustNotebook);
 				void vscode.window.showInformationMessage(loc.msgBookTrusted);
 			} else {
 				void vscode.window.showInformationMessage(loc.msgBookAlreadyTrusted);
@@ -136,7 +136,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		let bookPathToUpdate = bookTreeItem.book?.contentPath;
 		if (bookPathToUpdate) {
 			let pinStatusChanged = await this.bookPinManager.pinNotebook(bookTreeItem);
-			TelemetryReporter.sendActionEvent(BookTelemetryView, NbTelemetryActions.PinNotebook);
+			sendNotebookActionEvent(NbTelemetryView.Book, NbTelemetryAction.PinNotebook);
 			if (pinStatusChanged) {
 				bookTreeItem.contextValue = 'pinnedNotebook';
 			}
@@ -155,7 +155,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	async createBook(): Promise<void> {
 		const dialog = new CreateBookDialog(this.bookTocManager);
-		TelemetryReporter.sendActionEvent(BookTelemetryView, NbTelemetryActions.CreateBook);
+		sendNotebookActionEvent(NbTelemetryView.Book, NbTelemetryAction.CreateBook);
 		return dialog.createDialog();
 	}
 
@@ -211,7 +211,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	 * @param treeItems Elements to be moved
 	 */
 	async moveTreeItems(treeItems: BookTreeItem[]): Promise<void> {
-		TelemetryReporter.sendActionEvent(BookTelemetryView, NbTelemetryActions.MoveNotebook);
+		sendNotebookActionEvent(NbTelemetryView.Book, NbTelemetryAction.MoveNotebook);
 		const selectionResults = await this.bookSectionQuickPick();
 		if (selectionResults) {
 			let pickedSection = selectionResults.quickPickSection;
@@ -250,7 +250,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				await this.showPreviewFile(urlToOpen);
 			}
 
-			TelemetryReporter.sendActionEvent(BookTelemetryView, NbTelemetryActions.OpenBook);
+			sendNotebookActionEvent(NbTelemetryView.Book, NbTelemetryAction.OpenBook);
 		} catch (e) {
 			// if there is an error remove book from context
 			const index = this.books.findIndex(book => book.bookPath === bookPath);
@@ -317,7 +317,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				}
 				this._onDidChangeTreeData.fire(undefined);
 			}
-			TelemetryReporter.sendActionEvent(BookTelemetryView, NbTelemetryActions.CloseBook);
+			sendNotebookActionEvent(NbTelemetryView.Book, NbTelemetryAction.CloseBook);
 		} catch (e) {
 			void vscode.window.showErrorMessage(loc.closeBookError(book.root, e instanceof Error ? e.message : e));
 		} finally {
@@ -402,7 +402,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					this._visitedNotebooks = this._visitedNotebooks.concat([normalizedResource]);
 				}
 			}
-			TelemetryReporter.sendActionEvent(BookTelemetryView, NbTelemetryActions.OpenNotebookFromBook);
+			sendNotebookActionEvent(NbTelemetryView.Book, NbTelemetryAction.OpenNotebookFromBook);
 		} catch (e) {
 			void vscode.window.showErrorMessage(loc.openNotebookError(resource, e instanceof Error ? e.message : e));
 		}
@@ -754,7 +754,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	async onDrop(sources: vscode.TreeDataTransfer, target: BookTreeItem): Promise<void> {
 		if (target.contextValue === BookTreeItemType.savedBook || target.contextValue === BookTreeItemType.section) {
-			TelemetryReporter.sendActionEvent(BookTelemetryView, NbTelemetryActions.DragAndDrop);
+			sendNotebookActionEvent(NbTelemetryView.Book, NbTelemetryAction.DragAndDrop);
 			// gets the tree items that are dragged and dropped
 			let treeItems = JSON.parse(await sources.items.get(this.supportedTypes[0])!.asString()) as BookTreeItem[];
 			let rootItems = this.getLocalRoots(treeItems);

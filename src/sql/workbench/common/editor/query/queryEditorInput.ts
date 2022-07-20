@@ -7,7 +7,7 @@ import { localize } from 'vs/nls';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
-import { GroupIdentifier, IRevertOptions, ISaveOptions, IEditorInput, EditorInputCapabilities } from 'vs/workbench/common/editor';
+import { GroupIdentifier, IRevertOptions, ISaveOptions, EditorInputCapabilities } from 'vs/workbench/common/editor';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 import { IConnectionManagementService, IConnectableInput, INewConnectionParams, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
@@ -257,7 +257,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		}
 	}
 
-	override save(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
+	override save(group: GroupIdentifier, options?: ISaveOptions): Promise<EditorInput | undefined> {
 		return this.text.save(group, options);
 	}
 

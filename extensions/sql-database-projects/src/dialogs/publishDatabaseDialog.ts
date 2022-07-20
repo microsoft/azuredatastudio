@@ -58,7 +58,7 @@ export class PublishDatabaseDialog {
 	private serverName: string | undefined;
 	protected optionsButton: azdataType.ButtonComponent | undefined;
 	private publishOptionsDialog: PublishOptionsDialog | undefined;
-	public fileUris: vscode.Uri[] | undefined;
+	public publishOptionsModified: boolean = false;
 
 	private completionPromise: Deferred = new Deferred();
 
@@ -145,6 +145,7 @@ export class PublishDatabaseDialog {
 			this.connectionRow = this.createConnectionRow(view);
 			this.databaseRow = this.createDatabaseRow(view);
 			const displayOptionsButton = this.createOptionsButton(view);
+			displayOptionsButton.enabled = false;
 
 			const horizontalFormSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 			horizontalFormSection.addItems([profileRow, this.databaseRow]);
@@ -171,10 +172,12 @@ export class PublishDatabaseDialog {
 								title: constants.selectConnectionRadioButtonsTitle,
 								component: selectConnectionRadioButtons
 							},*/
+							/* TODO : Disabling deployment options for the July release
 							{
 								component: displayOptionsButton,
 								title: ''
 							}
+							*/
 						]
 					}
 				], {
@@ -821,7 +824,6 @@ export class PublishDatabaseDialog {
 			}
 
 			if (this.readPublishProfile) {
-				this.fileUris = fileUris;
 				const result = await this.readPublishProfile(fileUris[0]);
 				// clear out old database dropdown values. They'll get populated later if there was a connection specified in the profile
 				this.targetDatabaseName = '';
