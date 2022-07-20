@@ -19,9 +19,7 @@ enum TableIcon {
 	Basic = 'Basic',
 	Temporal = 'Temporal',
 	GraphEdge = 'GraphEdge',
-	GraphNode = 'GraphNode',
-	Ledger = 'Ledger',
-	LedgerHistory = 'LedgerHistory'
+	GraphNode = 'GraphNode'
 }
 export class TableDesignerInput extends EditorInput {
 	public static ID: string = 'workbench.editorinputs.tableDesignerInput';
@@ -33,9 +31,7 @@ export class TableDesignerInput extends EditorInput {
 		[TableIcon.Basic, 'table-basic'],
 		[TableIcon.Temporal, 'table-temporal'],
 		[TableIcon.GraphEdge, 'table-graphedge'],
-		[TableIcon.GraphNode, 'table-graphnode'],
-		[TableIcon.Ledger, 'table-ledger'],
-		[TableIcon.LedgerHistory, 'table-ledgerhistory']
+		[TableIcon.GraphNode, 'table-graphnode']
 	]);
 
 
