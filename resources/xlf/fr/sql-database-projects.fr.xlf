@@ -1348,6 +1348,10 @@
         <source xml:lang="en">Close Database Project</source>
         <target state="translated">Fermer le projet de base de données</target>
       </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.collapseProjectNodes">
+        <source xml:lang="en">Whether project nodes start collapsed</source>
+        <target state="new">Whether project nodes start collapsed</target>
+      </trans-unit>
       <trans-unit id="sqlDatabaseProjects.convertToSdkStyleProject">
         <source xml:lang="en">Convert to SDK-style project</source>
         <target state="translated">Convertir en projet de style SDK</target>

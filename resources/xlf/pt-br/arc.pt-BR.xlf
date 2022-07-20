@@ -1501,13 +1501,21 @@
         <source xml:lang="en">Data controller details</source>
         <target state="translated">Detalhes do controlador de dados</target>
       </trans-unit>
+      <trans-unit id="arc.data.controller.direct.display.name">
+        <source xml:lang="en">Direct</source>
+        <target state="new">Direct</target>
+      </trans-unit>
       <trans-unit id="arc.data.controller.help.text">
         <source xml:lang="en">The Kubernetes cluster must already be arc-enabled with the az connectedk8s connect command. Please use our {0} to learn more.</source>
         <target state="new">The Kubernetes cluster must already be arc-enabled with the az connectedk8s connect command. Please use our {0} to learn more.</target>
       </trans-unit>
       <trans-unit id="arc.data.controller.help.text.documentation.page">
         <source xml:lang="en">documentation page</source>
-        <target state="new">documentation page</target>
+        <target state="translated">página de documentação</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.indirect.display.name">
+        <source xml:lang="en">Indirect</source>
+        <target state="new">Indirect</target>
       </trans-unit>
       <trans-unit id="arc.data.controller.infrastructure">
         <source xml:lang="en">Infrastructure</source>
@@ -1520,6 +1528,10 @@
       <trans-unit id="arc.data.controller.location">
         <source xml:lang="en">Location</source>
         <target state="translated">Localização</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.location.description">
+        <source xml:lang="en">Location is only used for indirect mode deployment. This field will be ignored for direct mode.</source>
+        <target state="new">Location is only used for indirect mode deployment. This field will be ignored for direct mode.</target>
       </trans-unit>
       <trans-unit id="arc.data.controller.log.analytics.primary.key">
         <source xml:lang="en">Log Analytics primary key</source>
