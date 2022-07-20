@@ -18,12 +18,13 @@ When these tests are ran, Azure Data Studio will be launched using new temp fold
 The integration test suite has been added to ADS windows pipeline to run the test and report the results, you can find the test results under the test tab.
 
 2. Local environment:
+	1. Install [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
 	1. Close all currently active VS Code windows
 	1. Open a terminal window/command line window
-	1. Navigate to this folder and then run 'node setEnvironmentVariables.js', there are different options, by default VS Code will be opened.
-		1. Terminal(Mac)/CMD(Windows): node setEnvironmentVariables.js Terminal
-		2. Git-Bash on Windows: node setEnvironmentVariables.js BashWin
-	1. Follow the instructions in the window: you will be prompted to login to azure portal.
+	1. Run `az login` to login with your Microsoft AAD account.
+	1. Navigate to this folder and then run `node setEnvironmentVariables.js`, there are different options, by default VS Code will be opened.
+		1. Terminal(Mac)/CMD(Windows): `node setEnvironmentVariables.js Terminal`
+		2. Git-Bash on Windows: `node setEnvironmentVariables.js BashWin`
 	1. A new window will be opened based on your selection and the new window will have the required environment variables set.
 	2. In the new window navigate to the scripts folder and run sql-test-integration.[bat|sh]
 
