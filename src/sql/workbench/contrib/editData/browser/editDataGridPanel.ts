@@ -1194,7 +1194,8 @@ export class EditDataGridPanel extends GridParentComponent {
 			this.focusCell(this.lastClickedCell.row, this.lastClickedCell.column);
 			// Restore the last entered string from the user in case an invalid edit was happened, to allow users to keep their string.
 			// very brief flickering may occur as this function is called a couple of times after an invalid cell is reverted.
-			if (this.lastEnteredString) {
+			// Skip null row as this is already handled with the cell submit function.
+			if (!this.isNullRow(this.lastClickedCell.row) && this.lastEnteredString) {
 				document.execCommand('selectAll');
 				document.execCommand('delete');
 				document.execCommand('insertText', false, this.lastEnteredString);
