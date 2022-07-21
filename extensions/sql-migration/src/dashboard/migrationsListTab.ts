@@ -263,7 +263,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 
 		this._columnSortCheckbox = this.view.modelBuilder.checkBox()
 			.withProps({
-				label: loc.ASSENDING_LABEL,
+				label: loc.ASCENDING_LABEL,
 				checked: false,
 				CSSStyles: { 'margin-left': '15px' },
 			})
@@ -478,8 +478,8 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 			}));
 	}
 
-	private _sortMigrations(migrations: DatabaseMigration[], columnName: string, assending: boolean): void {
-		const sortDir = assending ? -1 : 1;
+	private _sortMigrations(migrations: DatabaseMigration[], columnName: string, ascending: boolean): void {
+		const sortDir = ascending ? -1 : 1;
 		switch (columnName) {
 			case TableColumns.sourceDatabase:
 				migrations.sort(

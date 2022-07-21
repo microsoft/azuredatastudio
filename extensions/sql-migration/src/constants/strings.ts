@@ -835,7 +835,7 @@ export const AUTHENTICATION_TYPE = localize('sql.migration.authentication.type',
 export const REFRESH_BUTTON_LABEL = localize('sql.migration.status.refresh.label', 'Refresh');
 export const STATUS_LABEL = localize('sql.migration.status.status.label', 'Status');
 export const SORT_LABEL = localize('sql.migration.migration.list.sort.label', 'Sort');
-export const ASSENDING_LABEL = localize('sql.migration.migration.list.assending.label', 'Assending');
+export const ASCENDING_LABEL = localize('sql.migration.migration.list.ascending.label', 'Ascending');
 
 // Saved Assessment Dialog
 export const NEXT_LABEL = localize('sql.migration.saved.assessment.next', "Next");
@@ -871,6 +871,16 @@ export const DESKTOP_FEEDBACK_BUTTON_LABEL = localize('sql.migration.tab.button.
 export const DESKTOP_FEEDBACK_BUTTON_DESCRIPTION = localize('sql.migration.tab.button.feedback.description', 'Feedback');
 export const DESKTOP_DASHBOARD_TAB_TITLE = localize('sql.migration.tab.dashboard.title', 'Dashboard');
 export const DESKTOP_MIGRATIONS_TAB_TITLE = localize('sql.migration.tab.migrations.title', 'Migrations');
+
+// dashboard tab
+export const DASHBOARD_HELP_LINK_MIGRATE_USING_ADS = localize('sql.migration.dashboard.help.link.migrateUsingADS', 'Migrate databases using Azure Data Studio');
+export const DASHBOARD_HELP_DESCRIPTION_MIGRATE_USING_ADS = localize('sql.migration.dashboard.help.description.migrateUsingADS', 'The Azure SQL Migration extension for Azure Data Studio provides capabilities to assess, get right-sized Azure recommendations and migrate SQL Server databases to Azure.');
+export const DASHBOARD_HELP_LINK_MI_TUTORIAL = localize('sql.migration.dashboard.help.link.mi', 'Tutorial:  Migrate to Azure SQL Managed Instance (online)');
+export const DASHBOARD_HELP_DESCRIPTION_MI_TUTORIAL = localize('sql.migration.dashboard.help.description.mi', 'A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Managed Instance with minimal downtime.');
+export const DASHBOARD_HELP_LINK_VM_TUTORIAL = localize('sql.migration.dashboard.help.link.vm', 'Tutorial:  Migrate to SQL Server on Azure Virtual Machines (online)');
+export const DASHBOARD_HELP_DESCRIPTION_VMTUTORIAL = localize('sql.migration.dashboard.help.description.vm', 'A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises) to SQL Server on Azure Virtual Machines with minimal downtime.');
+export const DASHBOARD_HELP_LINK_DMS_GUIDE = localize('sql.migration.dashboard.help.link.dmsGuide', 'Azure Database Migration Guides');
+export const DASHBOARD_HELP_DESCRIPTION_DMS_GUIDE = localize('sql.migration.dashboard.help.description.dmsGuide', 'A hub of migration articles that provides step-by-step guidance for migrating and modernizing your data assets in Azure.');
 
 // Error info
 export const DATABASE_MIGRATION_STATUS_TITLE = localize('sql.migration.error.title', 'Migration status details');

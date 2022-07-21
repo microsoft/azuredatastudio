@@ -330,8 +330,8 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 		}
 	}
 
-	private _sortTableMigrations(data: CopyProgressDetail[], columnName: string, assending: boolean): void {
-		const sortDir = assending ? -1 : 1;
+	private _sortTableMigrations(data: CopyProgressDetail[], columnName: string, ascending: boolean): void {
+		const sortDir = ascending ? -1 : 1;
 		switch (columnName) {
 			case TableColumns.tableName:
 				data.sort((t1, t2) => this.stringCompare(t1.tableName, t2.tableName, sortDir));
@@ -441,7 +441,7 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 
 		this._columnSortCheckbox = this.view.modelBuilder.checkBox()
 			.withProps({
-				label: loc.ASSENDING_LABEL,
+				label: loc.ASCENDING_LABEL,
 				checked: false,
 				CSSStyles: { 'margin-left': '15px' },
 			})

@@ -12,7 +12,7 @@ import { IconPathHelper } from '../../constants/iconPathHelper';
 import { convertByteSizeToReadableUnit, get12HourTime } from '../../api/utils';
 import * as styles from '../../constants/styles';
 import { getMigrationTargetTypeEnum, isBlobMigration } from '../../constants/helper';
-import { BusinessCriticalTier, MigrationTargetType } from '../../models/stateMachine';
+import { MigrationTargetType, ServiceTier } from '../../models/stateMachine';
 export class ConfirmCutoverDialog {
 	private _dialogObject!: azdata.window.Dialog;
 	private _view!: azdata.ModelView;
@@ -83,7 +83,7 @@ export class ConfirmCutoverDialog {
 					this.migrationCutoverModel.serviceConstext.subscription!,
 					this.migrationCutoverModel.migration);
 
-				if ((<SqlManagedInstance>targetInstance)?.sku?.tier === BusinessCriticalTier) {
+				if ((<SqlManagedInstance>targetInstance)?.sku?.tier === ServiceTier.BusinessCritical) {
 					infoDisplay = 'inline';
 				}
 			}

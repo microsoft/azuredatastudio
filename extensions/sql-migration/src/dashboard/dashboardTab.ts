@@ -5,7 +5,6 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as nls from 'vscode-nls';
 import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import * as styles from '../constants/styles';
 import * as loc from '../constants/strings';
@@ -35,7 +34,6 @@ interface StatusCard {
 
 export const DashboardTabId = 'DashboardTab';
 
-const localize = nls.loadMessageBundle();
 const maxWidth = 800;
 const BUTTON_CSS = {
 	'font-size': '13px',
@@ -345,23 +343,23 @@ export class DashboardTab extends TabBase<DashboardTab> {
 
 		const links = [
 			{
-				title: localize('sql.migration.dashboard.help.link.migrateUsingADS', 'Migrate databases using Azure Data Studio'),
-				description: localize('sql.migration.dashboard.help.description.migrateUsingADS', 'The Azure SQL Migration extension for Azure Data Studio provides capabilities to assess, get right-sized Azure recommendations and migrate SQL Server databases to Azure.'),
+				title: loc.DASHBOARD_HELP_LINK_MIGRATE_USING_ADS,
+				description: loc.DASHBOARD_HELP_DESCRIPTION_MIGRATE_USING_ADS,
 				link: 'https://docs.microsoft.com/azure/dms/migration-using-azure-data-studio'
 			},
 			{
-				title: localize('sql.migration.dashboard.help.link.mi', 'Tutorial:  Migrate to Azure SQL Managed Instance (online)'),
-				description: localize('sql.migration.dashboard.help.description.mi', 'A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Managed Instance with minimal downtime.'),
+				title: loc.DASHBOARD_HELP_LINK_MI_TUTORIAL,
+				description: loc.DASHBOARD_HELP_DESCRIPTION_MI_TUTORIAL,
 				link: 'https://docs.microsoft.com/azure/dms/tutorial-sql-server-managed-instance-online-ads'
 			},
 			{
-				title: localize('sql.migration.dashboard.help.link.vm', 'Tutorial:  Migrate to SQL Server on Azure Virtual Machines (online)'),
-				description: localize('sql.migration.dashboard.help.description.vm', 'A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises) to SQL Server on Azure Virtual Machines with minimal downtime.'),
+				title: loc.DASHBOARD_HELP_LINK_VM_TUTORIAL,
+				description: loc.DASHBOARD_HELP_DESCRIPTION_VMTUTORIAL,
 				link: 'https://docs.microsoft.com/azure/dms/tutorial-sql-server-to-virtual-machine-online-ads'
 			},
 			{
-				title: localize('sql.migration.dashboard.help.link.dmsGuide', 'Azure Database Migration Guides'),
-				description: localize('sql.migration.dashboard.help.description.dmsGuide', 'A hub of migration articles that provides step-by-step guidance for migrating and modernizing your data assets in Azure.'),
+				title: loc.DASHBOARD_HELP_LINK_DMS_GUIDE,
+				description: loc.DASHBOARD_HELP_DESCRIPTION_DMS_GUIDE,
 				link: 'https://docs.microsoft.com/data-migration/'
 			},
 		];

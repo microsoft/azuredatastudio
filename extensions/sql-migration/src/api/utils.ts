@@ -145,7 +145,6 @@ export function filterMigrations(databaseMigrations: azure.DatabaseMigration[], 
 				value => {
 					const status = getMigrationStatus(value);
 					return status === MigrationStatus.InProgress
-						|| status === MigrationStatus.Completing
 						|| status === MigrationStatus.Retriable
 						|| status === MigrationStatus.Creating;
 				});
