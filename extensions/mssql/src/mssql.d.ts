@@ -788,6 +788,10 @@ declare module 'mssql' {
 		errors: ErrorModel[];
 	}
 
+	export interface GenerateProvisioningScriptResult {
+		provisioningScript: string;
+	}
+
 	export interface ISqlMigrationService {
 		getAssessments(ownerUri: string, databases: string[]): Promise<AssessmentResult | undefined>;
 	}
