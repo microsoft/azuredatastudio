@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { OptionsInfo, FieldInfo, instanceOfDynamicEnablementInfo, ResourceTypeOptionValue } from '../interfaces';
+import { OptionsInfo, FieldInfo, instanceOfDynamicEnablementInfo } from '../interfaces';
 import { getErrorMessage } from '../common/utils';
 
 export class RadioGroupLoadingComponentBuilder implements azdata.ComponentBuilder<azdata.LoadingComponent, azdata.LoadingComponentProperties> {
@@ -45,14 +45,7 @@ export class RadioGroupLoadingComponentBuilder implements azdata.ComponentBuilde
 			}
 
 			let options: (string[] | azdata.CategoryValue[]) = optionsInfo.values!;
-			let defaultValue: string | ResourceTypeOptionValue = optionsInfo.defaultValue!;
-			if (optionsInfo.defaultValue) {
-				if ((<ResourceTypeOptionValue>optionsInfo.defaultValue).displayName) {
-					defaultValue = (<ResourceTypeOptionValue>optionsInfo.defaultValue).displayName;
-				} else {
-					defaultValue = optionsInfo.defaultValue;
-				}
-			}
+			let defaultValue: string = optionsInfo.defaultValue!;
 			options.forEach((op: string | azdata.CategoryValue) => {
 				const option: azdata.CategoryValue = (typeof op === 'string')
 					? { name: op, displayName: op }

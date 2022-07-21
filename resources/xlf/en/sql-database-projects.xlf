@@ -1008,6 +1008,9 @@
     <trans-unit id="sqlDatabaseProjects.close">
       <source xml:lang="en">Close Database Project</source>
     </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.collapseProjectNodes">
+      <source xml:lang="en">Whether project nodes start collapsed</source>
+    </trans-unit>
     <trans-unit id="sqlDatabaseProjects.convertToSdkStyleProject">
       <source xml:lang="en">Convert to SDK-style project</source>
     </trans-unit>

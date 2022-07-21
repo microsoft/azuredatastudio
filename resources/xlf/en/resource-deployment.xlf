@@ -1151,25 +1151,25 @@ Select a different subscription containing at least one server</source>
       <source xml:lang="en">Storage settings</source>
     </trans-unit>
     <trans-unit id="deployCluster.controllerDataStorageClaimSize">
-      <source xml:lang="en">Controller's data storage claim size</source>
+      <source xml:lang="en">Controller's data storage claim size (Gigabytes)</source>
     </trans-unit>
     <trans-unit id="deployCluster.controllerDataStorageClass">
       <source xml:lang="en">Controller's data storage class</source>
     </trans-unit>
     <trans-unit id="deployCluster.controllerLogsStorageClaimSize">
-      <source xml:lang="en">Controller's logs storage claim size</source>
+      <source xml:lang="en">Controller's logs storage claim size (Gigabytes)</source>
     </trans-unit>
     <trans-unit id="deployCluster.controllerLogsStorageClass">
       <source xml:lang="en">Controller's logs storage class</source>
     </trans-unit>
     <trans-unit id="deployCluster.dataPoolDataStorageClaimSize">
-      <source xml:lang="en">Data pool's data storage claim size</source>
+      <source xml:lang="en">Data pool's data storage claim size (Gigabytes)</source>
     </trans-unit>
     <trans-unit id="deployCluster.dataPoolDataStorageClass">
       <source xml:lang="en">Data pool's data storage class</source>
     </trans-unit>
     <trans-unit id="deployCluster.dataPoolLogsStorageClaimSize">
-      <source xml:lang="en">Data pool's logs storage claim size</source>
+      <source xml:lang="en">Data pool's logs storage claim size (Gigabytes)</source>
     </trans-unit>
     <trans-unit id="deployCluster.dataPoolLogsStorageClass">
       <source xml:lang="en">Data pool's logs storage class</source>
@@ -1178,13 +1178,13 @@ Select a different subscription containing at least one server</source>
       <source xml:lang="en">Scale settings</source>
     </trans-unit>
     <trans-unit id="deployCluster.sqlServerMasterDataStorageClaimSize">
-      <source xml:lang="en">SQL Server master's data storage claim size</source>
+      <source xml:lang="en">SQL Server master's data storage claim size (Gigabytes)</source>
     </trans-unit>
     <trans-unit id="deployCluster.sqlServerMasterDataStorageClass">
       <source xml:lang="en">SQL Server master's data storage class</source>
     </trans-unit>
     <trans-unit id="deployCluster.sqlServerMasterLogsStorageClaimSize">
-      <source xml:lang="en">SQL Server master's logs storage claim size</source>
+      <source xml:lang="en">SQL Server master's logs storage claim size (Gigabytes)</source>
     </trans-unit>
     <trans-unit id="deployCluster.sqlServerMasterLogsStorageClass">
       <source xml:lang="en">SQL Server master's logs storage class</source>
@@ -1193,13 +1193,13 @@ Select a different subscription containing at least one server</source>
       <source xml:lang="en">Use controller settings</source>
     </trans-unit>
     <trans-unit id="deployCluster.storagePoolDataStorageClaimSize">
-      <source xml:lang="en">Storage pool's data storage claim size</source>
+      <source xml:lang="en">Storage pool's data storage claim size (Gigabytes)</source>
     </trans-unit>
     <trans-unit id="deployCluster.storagePoolDataStorageClass">
       <source xml:lang="en">Storage pool's data storage class</source>
     </trans-unit>
     <trans-unit id="deployCluster.storagePoolLogsStorageClaimSize">
-      <source xml:lang="en">Storage pool's logs storage claim size</source>
+      <source xml:lang="en">Storage pool's logs storage claim size (Gigabytes)</source>
     </trans-unit>
     <trans-unit id="deployCluster.storagePoolLogsStorageClass">
       <source xml:lang="en">Storage pool's logs storage class</source>
