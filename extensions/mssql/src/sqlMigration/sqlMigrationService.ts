@@ -75,7 +75,7 @@ export class SqlMigrationService implements mssql.ISqlMigrationService {
 		return undefined;
 	}
 
-	async generateProvisioningScript(skuRecommendations: mssql.SkuRecommendationResult[]): Promise<void | undefined>
+	async generateProvisioningScript(skuRecommendations: mssql.SkuRecommendationResult[]): Promise<mssql.ProvisioningScriptResult | undefined>
 	{
 		let params: contracts.SqlMigrationGenerateProvisioningScriptParams = { skuRecommendations: skuRecommendations };
 

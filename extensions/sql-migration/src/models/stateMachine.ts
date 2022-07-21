@@ -1130,3 +1130,8 @@ export interface SkuRecommendation {
 	recommendations: mssql.SkuRecommendationResult;
 	recommendationError?: Error;
 }
+
+export interface ProvisioningScript {
+	provisioningScriptResult: mssql.ProvisioningScriptResult;
+	provisioningScriptError?: Error;
+}

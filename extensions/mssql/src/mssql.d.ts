@@ -697,7 +697,7 @@ declare module 'mssql' {
 	export interface ISqlMigrationService {
 		getAssessments(ownerUri: string, databases: string[]): Promise<AssessmentResult | undefined>;
 		getSkuRecommendations(dataFolder: string, perfQueryIntervalInSec: number, targetPlatforms: string[], targetSqlInstance: string, targetPercentile: number, scalingFactor: number, startTime: string, endTime: string, includePreviewSkus: boolean, databaseAllowList: string[]): Promise<SkuRecommendationResult | undefined>;
-		generateProvisioningScript(skuRecommendations: SkuRecommendationResult[]): Promise<void | undefined>;
+		generateProvisioningScript(skuRecommendations: SkuRecommendationResult[]): Promise<ProvisioningScriptResult | undefined>;
 		startPerfDataCollection(ownerUri: string, dataFolder: string, perfQueryIntervalInSec: number, staticQueryIntervalInSec: number, numberOfIterations: number): Promise<StartPerfDataCollectionResult | undefined>;
 		stopPerfDataCollection(): Promise<StopPerfDataCollectionResult | undefined>;
 		refreshPerfDataCollection(lastRefreshedTime: Date): Promise<RefreshPerfDataCollectionResult | undefined>;
@@ -788,7 +788,7 @@ declare module 'mssql' {
 		errors: ErrorModel[];
 	}
 
-	export interface GenerateProvisioningScriptResult {
+	export interface ProvisioningScriptResult {
 		provisioningScript: string;
 	}
 

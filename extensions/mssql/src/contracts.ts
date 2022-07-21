@@ -1128,7 +1128,7 @@ export interface SqlMigrationGenerateProvisioningScriptParams {
 }
 
 export namespace SqlMigrationGenerateProvisioningScriptRequest {
-	export const type = new RequestType<SqlMigrationGenerateProvisioningScriptParams, mssql.GenerateProvisioningScriptResult, void, void>('migration/generateprovisioningscript');
+	export const type = new RequestType<SqlMigrationGenerateProvisioningScriptParams, mssql.ProvisioningScriptResult, void, void>('migration/generateprovisioningscript');
 }
 
 export interface SqlMigrationStartPerfDataCollectionParams {
