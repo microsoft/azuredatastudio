@@ -34,6 +34,7 @@ export enum TelemetryViews {
 	MigrationLocalStorage = 'MigrationLocalStorage',
 	SkuRecommendationWizard = 'SkuRecommendationWizard',
 	DataCollectionWizard = 'GetAzureRecommendationDialog',
+	ProvisioningScriptWizard = 'GenerateArmTemplateDialog',
 	SelectMigrationServiceDialog = 'SelectMigrationServiceDialog',
 	Utils = 'Utils'
 }

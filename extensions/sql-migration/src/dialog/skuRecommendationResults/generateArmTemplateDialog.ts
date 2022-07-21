@@ -7,7 +7,6 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import { MigrationStateModel, MigrationTargetType } from '../../models/stateMachine';
-import * as constants from '../../constants/strings';
 import { join } from 'path';
 import * as styles from '../../constants/styles';
 import * as mssql from 'mssql';
@@ -25,12 +24,12 @@ export class GenerateArmTemplateDialog {
 	private _generateArmTemplateContainer!: azdata.FlexContainer;
 	private _saveArmTemplateContainer!: azdata.FlexContainer;
 
+	private _armTemplateTextBox!: azdata.TextComponent;
+	private _armTemplateText!: string;
+
 	constructor(public model: MigrationStateModel, public _targetType: MigrationTargetType) {
 
 	}
-
-	// REMOVE AFTER TESTING
-	private _armTemplate: string = 'testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt';
 
 	private async initializeDialog(dialog: azdata.window.Dialog): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
@@ -126,14 +125,15 @@ export class GenerateArmTemplateDialog {
 			}
 		}).component();
 
-		const armTemplateTextBox = _view.modelBuilder.text().withProps({
-			value: this._armTemplate,
+		this._armTemplateTextBox = _view.modelBuilder.text().withProps({
+			value: this._armTemplateText,
 			width: '100%',
 			height: '100%',
 			CSSStyles: {
 				'font': '14px "Monaco", "Menlo", "Consolas", "Droid Sans Mono", "Inconsolata", "Courier New", monospace',
 				'margin': '0'
 			}
+
 		}).component();
 
 		const saveArmTemplateButton = _view.modelBuilder.button().withProps({
@@ -158,11 +158,13 @@ export class GenerateArmTemplateDialog {
 				'margin-bottom': '8px'
 			}
 		}).withItems([
-			armTemplateTextBox
+			this._armTemplateTextBox
 		]).component();
 
 		const container = _view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
+		}).withProps({
+			display: 'none',
 		}).withItems([
 			armTemplateSaveInstructions,
 			textContainer,
@@ -176,6 +178,8 @@ export class GenerateArmTemplateDialog {
 		await this._generateArmTemplateContainer.updateCssStyles({ 'display': 'none' });
 
 		if (succeeded){
+			this._armTemplateText = this.model._provisioningScriptResult.provisioningScriptResult.script;
+			this._armTemplateTextBox.value = this._armTemplateText;
 			await this._saveArmTemplateContainer.updateCssStyles({ 'display': 'inline' });
 		}
 	}
@@ -184,12 +188,6 @@ export class GenerateArmTemplateDialog {
 		if (!this._isOpen){
 			this._isOpen = true;
 
-			// await vscode.commands.executeCommand('vscode.openFolder', vscode.Uri.file(utils.getUserHome()!), {
-			//	forceNewWindow: true,
-		   	// });
-			// await vscode.commands.executeCommand('vscode.open', vscode.Uri.file(join(utils.getUserHome()!, 'test.json')));
-
-			// Replace 'Generate ARM template' with a localized string in the future
 			this.dialog = azdata.window.createModelViewDialog('Generate ARM template', 'GenerateArmTemplateDialog', 'medium');
 
 			this.dialog.okButton.label = GenerateArmTemplateDialog.CloseButtonText;
@@ -198,8 +196,21 @@ export class GenerateArmTemplateDialog {
 
 			const dialogSetupPromises: Thenable<void>[] = [];
 			dialogSetupPromises.push(this.initializeDialog(this.dialog));
+
 			azdata.window.openDialog(this.dialog);
 			await Promise.all(dialogSetupPromises);
+
+			// Generate ARM template upon opening dialog
+			await this.model.generateProvisioningScript(this._targetType);
+			const error = this.model._provisioningScriptResult.provisioningScriptError;
+
+			if (error) {
+				await this.updateArmTemplateStatus(false);
+			}
+			else {
+				await this.updateArmTemplateStatus(true);
+
+			}
 		}
 	}
 
@@ -219,7 +230,7 @@ export class GenerateArmTemplateDialog {
 			}
 		});
 
-		fs.writeFileSync(filePath!.fsPath, this._armTemplate);
+		fs.writeFileSync(filePath!.fsPath, this._armTemplateText);
 	}
 
 }
