@@ -326,7 +326,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			return;
 		}
 
-		if (this.isRowDirty(this.lastClickedCell.row) && row !== this.lastClickedCell.row && !this.hasCellStringChanged()) {
+		if (this.isRowDirty(this.lastClickedCell.row) && row !== this.lastClickedCell.row) {
 			await this.commitEditTask().then(() => {
 				this.currentEditCellValue = undefined;
 				this.lastClickedCell = { row, column, isEditable };
@@ -339,8 +339,9 @@ export class EditDataGridPanel extends GridParentComponent {
 						message: commitError
 					});
 					this.currentEditCellValue = undefined;
-					this.lastClickedCell = { row, column, isEditable };
-					return this.revertSelectedRow(this.lastClickedCell.row);
+					return this.revertSelectedRow(this.lastClickedCell.row).then(() => {
+						this.lastClickedCell = { row, column, isEditable };
+					});
 				});
 		}
 		else {
@@ -1195,6 +1196,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			// Restore the last entered string from the user in case an invalid edit was happened, to allow users to keep their string.
 			// very brief flickering may occur as this function is called a couple of times after an invalid cell is reverted.
 			// Skip null row as this is already handled with the cell submit function.
+			// The insert must be set there to get change to register after new row removal/revert.
 			if (!this.isNullRow(this.lastClickedCell.row) && this.lastEnteredString) {
 				document.execCommand('selectAll');
 				document.execCommand('delete');
