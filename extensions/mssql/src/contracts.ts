@@ -1124,7 +1124,7 @@ export namespace GetSqlMigrationSkuRecommendationsRequest {
 }
 
 export interface SqlMigrationGenerateProvisioningScriptParams {
-	skuRecommendations: mssql.SkuRecommendationResult[];
+	skuRecommendations: mssql.SkuRecommendationResultItem[];
 }
 
 export namespace SqlMigrationGenerateProvisioningScriptRequest {

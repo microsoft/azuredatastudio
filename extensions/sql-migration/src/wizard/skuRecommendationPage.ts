@@ -351,7 +351,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			this._disposables.push(this._rbg.onLinkClick(async (e: azdata.RadioCardLinkClickEvent) => {
 				if (this.hasRecommendations()) {
 					const skuRecommendationResultsDialog = new SkuRecommendationResultsDialog(this.migrationStateModel, product.type);
-					const generateArmTemplateDialog = new GenerateArmTemplateDialog();
+					const generateArmTemplateDialog = new GenerateArmTemplateDialog(this.migrationStateModel, product.type);
 					if (e.description.linkDisplayValue === e.card.descriptions[CardDescriptionIndex.VIEW_SKU_DETAILS].linkDisplayValue) {
 						if (e.cardId === skuRecommendationResultsDialog._targetType) {
 							await skuRecommendationResultsDialog.openDialog(e.cardId, this.migrationStateModel._skuRecommendationResults.recommendations);

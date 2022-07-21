@@ -6,6 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as fs from 'fs';
+import { MigrationStateModel, MigrationTargetType } from '../../models/stateMachine';
 import * as constants from '../../constants/strings';
 import { join } from 'path';
 import * as styles from '../../constants/styles';
@@ -23,6 +24,10 @@ export class GenerateArmTemplateDialog {
 
 	private _generateArmTemplateContainer!: azdata.FlexContainer;
 	private _saveArmTemplateContainer!: azdata.FlexContainer;
+
+	constructor(public model: MigrationStateModel, public _targetType: MigrationTargetType) {
+
+	}
 
 	// REMOVE AFTER TESTING
 	private _armTemplate: string = 'testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt\nt';
@@ -189,7 +194,6 @@ export class GenerateArmTemplateDialog {
 
 			this.dialog.okButton.label = GenerateArmTemplateDialog.CloseButtonText;
 			this._disposables.push(this.dialog.okButton.onClick(async () => await this.execute()));
-
 			this.dialog.cancelButton.hidden = true;
 
 			const dialogSetupPromises: Thenable<void>[] = [];
