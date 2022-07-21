@@ -19,7 +19,7 @@ import { IColorTheme, ICssStyleCollector, IThemeService, registerThemingParticip
 import * as DOM from 'vs/base/browser/dom';
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { localize } from 'vs/nls';
-import { addIconClassName, openPropertiesIconClassNames, polygonBorderColor, polygonFillColor, resetZoomIconClassName, splitScreenHorizontallyIconClassName, splitScreenVerticallyIconClassName, zoomInIconClassNames, zoomOutIconClassNames, zoomToFitIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/constants';
+import { addIconClassName, openPropertiesIconClassNames, polygonBorderColor, polygonFillColor, resetZoomIconClassName, searchIconClassNames, splitScreenHorizontallyIconClassName, splitScreenVerticallyIconClassName, zoomInIconClassNames, zoomOutIconClassNames, zoomToFitIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/constants';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { extname } from 'vs/base/common/path';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -45,6 +45,7 @@ export class ExecutionPlanComparisonEditorView {
 	private _resetZoomAction: Action;
 	private _propertiesAction: Action;
 	private _toggleOrientationAction: Action;
+	private _searchNodeAction: Action;
 
 	private _planComparisonContainer: HTMLElement;
 
@@ -139,6 +140,7 @@ export class ExecutionPlanComparisonEditorView {
 		this._zoomToFitAction = new ZoomToFitAction();
 		this._propertiesAction = this._instantiationService.createInstance(PropertiesAction);
 		this._toggleOrientationAction = new ToggleOrientation();
+		this._searchNodeAction = this._instantiationService.createInstance(SearchNodeAction);
 		this._resetZoomAction = new ZoomReset();
 		const content: ITaskbarContent[] = [
 			{ action: this._addExecutionPlanAction },
@@ -147,7 +149,8 @@ export class ExecutionPlanComparisonEditorView {
 			{ action: this._zoomToFitAction },
 			{ action: this._resetZoomAction },
 			{ action: this._toggleOrientationAction },
-			{ action: this._propertiesAction }
+			{ action: this._propertiesAction },
+			{ action: this._searchNodeAction }
 		];
 		this._taskbar.setContent(content);
 		this.container.appendChild(this._taskbarContainer);
@@ -345,6 +348,7 @@ export class ExecutionPlanComparisonEditorView {
 			this._resetZoomAction.enabled = true;
 			this._zoomToFitAction.enabled = true;
 			this._toggleOrientationAction.enabled = true;
+			this._searchNodeAction.enabled = true;
 		} else {
 			this._bottomPlanDiagramModels = executionPlanGraphs;
 			this._bottomPlanDropdown.setOptions(executionPlanGraphs.map((e, index) => {
@@ -444,6 +448,10 @@ export class ExecutionPlanComparisonEditorView {
 
 	public togglePropertiesView(): void {
 		this._propertiesContainer.style.display = this._propertiesContainer.style.display === 'none' ? '' : 'none';
+	}
+
+	public toggleWidget(): void {
+
 	}
 
 	public toggleOrientation(): void {
@@ -639,6 +647,22 @@ class PropertiesAction extends Action {
 			.send();
 
 		context.togglePropertiesView();
+	}
+}
+
+class SearchNodeAction extends Action {
+	public static ID = 'epCompare.searchNodeAction';
+	public static LABEL = localize('epCompare.searchNodeAction', 'Find Node');
+
+	constructor(@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService) {
+		super(SearchNodeAction.ID, SearchNodeAction.LABEL, searchIconClassNames);
+		this.enabled = false;
+	}
+
+	public override async run(context: ExecutionPlanComparisonEditorView): Promise<void> {
+		this.telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.FindNode);
+
+		context.toggleWidget();
 	}
 }
 
