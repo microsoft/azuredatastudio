@@ -808,16 +808,9 @@
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_ENGINE_VERSION",
                           "type": "options",
                           "options": [
-                            "11",
-                            "12"
+                            "14"
                           ],
-                          "defaultValue": "12"
-                        },
-                        {
-                          "label": "%arc.postgres.server.group.extensions.label%",
-                          "description": "%arc.postgres.server.group.extensions.description%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_EXTENSIONS",
-                          "type": "text"
+                          "defaultValue": "14"
                         }
                       ]
                     },
