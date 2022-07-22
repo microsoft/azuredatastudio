@@ -585,12 +585,6 @@
 	background: url("Table_Ledger.svg") center center no-repeat;
 }
 
-.vs .icon.table_ledgerhistory,
-.vs-dark .icon.table_ledgerhistory,
-.hc-black .icon.table_ledgerhistory {
-	background: url("Table_LedgerHistory.svg") center center no-repeat;
-}
-
 .vs .icon.table_temporal,
 .vs-dark .icon.table_temporal,
 .hc-black .icon.table_temporal {
@@ -607,6 +601,12 @@
 .vs-dark .icon.table_graphedge,
 .hc-black .icon.table_graphedge {
 	background: url("Table_GraphEdge.svg") center center no-repeat;
+}
+
+.vs .icon.historytable_ledgerhistory,
+.vs-dark .icon.historytable_ledgerhistory,
+.hc-black .icon.historytable_ledgerhistory {
+	background: url("Table_LedgerHistory.svg") center center no-repeat;
 }
 
 
