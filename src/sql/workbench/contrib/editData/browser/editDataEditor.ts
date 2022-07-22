@@ -751,7 +751,7 @@ export class EditDataEditor extends EditorPane {
 			 * This is called whenever tab is changed, including when editor is closed (the editor will be reused).
 			 * Must not call saveEditorState when input is already disposed.
 			 * */
-			if (editDataInput.results?.isDisposed()) {
+			if (!editDataInput.results?.isDisposed()) {
 				editDataInput.results.onSaveViewStateEmitter.fire();
 			}
 		}
