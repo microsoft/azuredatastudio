@@ -178,7 +178,7 @@ export class GenerateArmTemplateDialog {
 		await this._generateArmTemplateContainer.updateCssStyles({ 'display': 'none' });
 
 		if (succeeded){
-			this._armTemplateText = this.model._provisioningScriptResult.provisioningScriptResult.script;
+			this._armTemplateText = this.model._provisioningScriptResult.result.provisioningScript;
 			this._armTemplateTextBox.value = this._armTemplateText;
 			await this._saveArmTemplateContainer.updateCssStyles({ 'display': 'inline' });
 		}
@@ -202,7 +202,7 @@ export class GenerateArmTemplateDialog {
 
 			// Generate ARM template upon opening dialog
 			await this.model.generateProvisioningScript(this._targetType);
-			const error = this.model._provisioningScriptResult.provisioningScriptError;
+			const error = this.model._provisioningScriptResult.error;
 
 			if (error) {
 				await this.updateArmTemplateStatus(false);

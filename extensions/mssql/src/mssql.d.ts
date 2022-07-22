@@ -789,7 +789,7 @@ declare module 'mssql' {
 	}
 
 	export interface ProvisioningScriptResult {
-		script: string;
+		provisioningScript: string;
 	}
 
 	export interface ISqlMigrationService {

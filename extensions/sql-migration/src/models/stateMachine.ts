@@ -541,7 +541,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			}
 
 			this._provisioningScriptResult = {
-				provisioningScriptResult: this._provisioningScriptApiResponse,
+				result: this._provisioningScriptApiResponse,
 			};
 
 			return this._provisioningScriptResult;
@@ -549,10 +549,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		} catch (error) {
 			logError(TelemetryViews.ProvisioningScriptWizard, 'GenerateProvisioningScriptFailed', error);
 			this._provisioningScriptResult = {
-				provisioningScriptResult: {
-					script: '',
+				result: {
+					provisioningScript: '',
 				},
-				provisioningScriptError: error,
+				error: error,
 			};
 		}
 		return this._provisioningScriptResult;
@@ -1178,6 +1178,6 @@ export interface SkuRecommendation {
 }
 
 export interface ProvisioningScript {
-	provisioningScriptResult: mssql.ProvisioningScriptResult;
-	provisioningScriptError?: Error;
+	result: mssql.ProvisioningScriptResult;
+	error?: Error;
 }
