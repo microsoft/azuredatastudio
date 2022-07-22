@@ -83,6 +83,8 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	private cellSubmitInProgress: boolean;
 
+	private saveViewStateCalled: boolean;
+
 	// Strings immediately before and after an edit.
 	private originalStringValue: string;
 	private endStringValue: string;
@@ -188,6 +190,15 @@ export class EditDataGridPanel extends GridParentComponent {
 		this.onActiveCellChanged = this.onCellSelect;
 
 		this.onCellChange = (event: Slick.OnCellChangeEventArgs<any>): void => {
+
+			if (this.isNullRow(event.row) && this.saveViewStateCalled) {
+				// Temporary measure called here because restoreViewState is not called.
+				this.saveViewStateCalled = false;
+				return;
+			}
+			else if (this.saveViewStateCalled) {
+				this.saveViewStateCalled = false;
+			}
 
 			if (this.cellSubmitInProgress) {
 				return;
@@ -358,6 +369,13 @@ export class EditDataGridPanel extends GridParentComponent {
 			this.newRowVisible = false;
 			return Promise.resolve();
 		});
+	}
+
+	public override dispose(): void {
+		if (!this.saveViewStateCalled && this.table) {
+			// TODO - Commit the row actively being edited.
+		}
+		super.dispose();
 	}
 
 	/**
@@ -879,8 +897,8 @@ export class EditDataGridPanel extends GridParentComponent {
 	}
 
 	private saveViewState(): void {
+		this.saveViewStateCalled = true;
 		let grid = this.table;
-		let self = this;
 		if (grid) {
 			let gridSelections = grid.getSelectedRanges();
 			let gridObject = grid as any;
@@ -895,18 +913,14 @@ export class EditDataGridPanel extends GridParentComponent {
 			// Note: This is only updating the data in tools service, not saving the change to database.
 			// This is added to fix the data inconsistency: the updated value is displayed but won't be saved to the database
 			// when committing the changes for the row.
-			if (this.previousSavedCell.row !== undefined && this.previousSavedCell.column !== undefined && this.previousSavedCell.isEditable) {
+			if (this.lastClickedCell.row !== undefined && this.lastClickedCell.column !== undefined && this.lastClickedCell.isEditable) {
 				gridObject._grid.getEditorLock().commitCurrentEdit();
-				this.submitCurrentCellChange(this.previousSavedCell, (result: EditUpdateCellResult) => {
-					self.setCellDirtyState(self.previousSavedCell.row, self.previousSavedCell.column, result.cell.isDirty);
-				}, (error: any) => {
-					self.notificationService.error(error);
-				}).catch(onUnexpectedError);
 			}
 		}
 	}
 
 	private restoreViewState(): void {
+		// TODO - Code is not being called due to vscode forcibly disposing the grid when tab is being hidden, this needs to be fixed.
 		if (this.savedViewState) {
 			// Row selections are undefined in original slickgrid, removed for no purpose
 			let viewport = ((this.table as any)._grid.getCanvasNode() as HTMLElement).parentElement;
@@ -926,6 +940,7 @@ export class EditDataGridPanel extends GridParentComponent {
 				}
 			}
 		}
+		this.saveViewStateCalled = false;
 	}
 
 	private isRowDirty(row: number): boolean {
