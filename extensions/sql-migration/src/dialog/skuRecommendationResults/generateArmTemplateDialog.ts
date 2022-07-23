@@ -209,7 +209,6 @@ export class GenerateArmTemplateDialog {
 			}
 			else {
 				await this.updateArmTemplateStatus(true);
-
 			}
 		}
 	}
