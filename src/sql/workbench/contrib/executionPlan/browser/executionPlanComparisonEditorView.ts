@@ -31,6 +31,8 @@ import { attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
 import { IProgressService, ProgressLocation } from 'vs/platform/progress/common/progress';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { ExecutionPlanWidgetController } from 'sql/workbench/contrib/executionPlan/browser/executionPlanWidgetController';
+import { NodeSearchWidget } from 'sql/workbench/contrib/executionPlan/browser/widgets/nodeSearchWidget';
 
 export class ExecutionPlanComparisonEditorView {
 
@@ -59,6 +61,9 @@ export class ExecutionPlanComparisonEditorView {
 	private _verticalSash: Sash;
 	private _orientation: ExecutionPlanCompareOrientation = ExecutionPlanCompareOrientation.Horizontal;
 
+	private _widgetContainer: HTMLElement;
+	public widgetController: ExecutionPlanWidgetController;
+
 	private _placeholderContainer: HTMLElement;
 	private _placeholderInfoboxContainer: HTMLElement;
 	private _placeholderInfobox: InfoBox;
@@ -78,7 +83,7 @@ export class ExecutionPlanComparisonEditorView {
 		bottomPolygon: azdata.executionPlan.ExecutionGraphComparisonResult
 	}> = new Map();
 
-	private get _activeTopPlanDiagram(): AzdataGraphView {
+	public get _activeTopPlanDiagram(): AzdataGraphView {
 		if (this.topPlanDiagrams.length > 0) {
 			return this.topPlanDiagrams[this._activeTopPlanIndex];
 		}
@@ -96,7 +101,7 @@ export class ExecutionPlanComparisonEditorView {
 	private _bottomSimilarNode: Map<string, azdata.executionPlan.ExecutionGraphComparisonResult> = new Map();
 	private _latestRequestUuid: string;
 
-	private get _activeBottomPlanDiagram(): AzdataGraphView {
+	public get _activeBottomPlanDiagram(): AzdataGraphView {
 		if (this.bottomPlanDiagrams.length > 0) {
 			return this.bottomPlanDiagrams[this._activeBottomPlanIndex];
 		}
@@ -109,7 +114,7 @@ export class ExecutionPlanComparisonEditorView {
 
 	constructor(
 		parentContainer: HTMLElement,
-		@IInstantiationService private _instantiationService: IInstantiationService,
+		@IInstantiationService public readonly _instantiationService: IInstantiationService,
 		@IThemeService private themeService: IThemeService,
 		@IExecutionPlanService private _executionPlanService: IExecutionPlanService,
 		@IFileDialogService private _fileDialogService: IFileDialogService,
@@ -161,6 +166,7 @@ export class ExecutionPlanComparisonEditorView {
 		this.container.appendChild(this._planComparisonContainer);
 		this.initializeSplitView();
 		this.initializeProperties();
+		this.initializeWidgetController();
 	}
 
 	private initializeSplitView(): void {
@@ -276,6 +282,12 @@ export class ExecutionPlanComparisonEditorView {
 		this._propertiesContainer = DOM.$('.properties');
 		this._propertiesView = this._instantiationService.createInstance(ExecutionPlanComparisonPropertiesView, this._propertiesContainer);
 		this._planComparisonContainer.appendChild(this._propertiesContainer);
+	}
+
+	private initializeWidgetController(): void {
+		this._widgetContainer = DOM.$('.plan-action-container');
+		this._topPlanContainer.appendChild(this._widgetContainer);
+		this.widgetController = new ExecutionPlanWidgetController(this._widgetContainer);
 	}
 
 	public async openAndAddExecutionPlanFile(): Promise<void> {
@@ -662,7 +674,8 @@ class SearchNodeAction extends Action {
 	public override async run(context: ExecutionPlanComparisonEditorView): Promise<void> {
 		this.telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.FindNode);
 
-		context.toggleWidget();
+		let nodeSearchWidget = context._instantiationService.createInstance(NodeSearchWidget, context.widgetController, [context._activeTopPlanDiagram, context._activeBottomPlanDiagram]);
+		context.widgetController.toggleWidget(nodeSearchWidget);
 	}
 }
 
