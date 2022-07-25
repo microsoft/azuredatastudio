@@ -482,7 +482,7 @@ export class SearchNodeAction extends Action {
 			.withAdditionalProperties({ source: this.source })
 			.send();
 
-		context.widgetController.toggleWidget(context._instantiationService.createInstance(NodeSearchWidget, context.widgetController, [context.executionPlanDiagram]));
+		context.widgetController.toggleWidget(context._instantiationService.createInstance(NodeSearchWidget, context.widgetController, context.executionPlanDiagram));
 	}
 }
 

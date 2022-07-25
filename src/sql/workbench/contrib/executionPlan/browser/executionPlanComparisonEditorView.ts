@@ -674,7 +674,11 @@ class SearchNodeAction extends Action {
 	public override async run(context: ExecutionPlanComparisonEditorView): Promise<void> {
 		this.telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.FindNode);
 
-		let nodeSearchWidget = context._instantiationService.createInstance(NodeSearchWidget, context.widgetController, [context._activeTopPlanDiagram, context._activeBottomPlanDiagram]);
+		let nodeSearchWidget = context._instantiationService.createInstance(NodeSearchWidget, context.widgetController, context._activeTopPlanDiagram);
+
+		let bottomPlan = context._activeBottomPlanDiagram;
+		nodeSearchWidget.secondExecutionPlan = bottomPlan;
+
 		context.widgetController.toggleWidget(nodeSearchWidget);
 	}
 }

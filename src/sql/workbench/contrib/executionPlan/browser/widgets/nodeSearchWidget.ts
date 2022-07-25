@@ -44,19 +44,15 @@ export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 
 	private _actionBar: ActionBar;
 
-	private executionPlanDiagram: AzdataGraphView;
-	private secondExecutionPlanDiagram: AzdataGraphView;
+	private _secondExecutionPlanDiagram: AzdataGraphView;
 
 	constructor(
 		public readonly planActionView: ExecutionPlanWidgetController,
-		executionPlanDiagrams: AzdataGraphView[],
+		private readonly executionPlanDiagram: AzdataGraphView,
 		@IContextViewService public readonly contextViewService: IContextViewService,
 		@IThemeService public readonly themeService: IThemeService
 	) {
 		super(DOM.$('.search-node-widget'), 'searchWidget');
-
-		this.executionPlanDiagram = executionPlanDiagrams[0];
-		this.secondExecutionPlanDiagram = executionPlanDiagrams.length > 1 ? executionPlanDiagrams[1] : undefined;
 
 		// property name dropdown
 		this._propertyNameSelectBoxContainer = DOM.$('.search-widget-property-name-select-box .dropdown-container');
@@ -140,6 +136,10 @@ export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 		this._actionBar.pushAction(new CancelSearch(), { label: false, icon: true });
 	}
 
+	public set secondExecutionPlan(secondPlanDiagram: AzdataGraphView) {
+		this._secondExecutionPlanDiagram = secondPlanDiagram;
+	}
+
 	// Initial focus is set to the search text input box
 	public focus() {
 		this._searchTextInputBox.focus();
@@ -153,7 +153,7 @@ export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 			searchType: this._selectedSearchType
 		});
 
-		if (!!this.secondExecutionPlanDiagram) {
+		if (!!this._secondExecutionPlanDiagram) {
 			this.searchSecondPlan();
 		}
 
@@ -162,7 +162,7 @@ export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 
 	private searchSecondPlan(): void {
 		this._currentSecondSearchResultIndex = 0;
-		this._secondSearchResults = this.secondExecutionPlanDiagram.searchNodes({
+		this._secondSearchResults = this._secondExecutionPlanDiagram.searchNodes({
 			propertyName: this._propertyNameSelectBox.value,
 			value: this._searchTextInputBox.value,
 			searchType: this._selectedSearchType
@@ -180,14 +180,14 @@ export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 			this._currentSearchResultIndex = 0 :
 			this._currentSearchResultIndex = ++this._currentSearchResultIndex;
 
-		if (!!this.secondExecutionPlanDiagram) {
+		if (!!this._secondExecutionPlanDiagram) {
 			this.secondPlanNext();
 		}
 	}
 
 	private secondPlanNext(): void {
-		this.secondExecutionPlanDiagram.centerElement(this._secondSearchResults[this._currentSecondSearchResultIndex]);
-		this.secondExecutionPlanDiagram.selectElement(this._secondSearchResults[this._currentSecondSearchResultIndex]);
+		this._secondExecutionPlanDiagram.centerElement(this._secondSearchResults[this._currentSecondSearchResultIndex]);
+		this._secondExecutionPlanDiagram.selectElement(this._secondSearchResults[this._currentSecondSearchResultIndex]);
 		this._currentSecondSearchResultIndex = this._currentSecondSearchResultIndex === this._secondSearchResults.length - 1 ?
 			this._currentSecondSearchResultIndex = 0 :
 			this._currentSecondSearchResultIndex = ++this._currentSecondSearchResultIndex;
@@ -204,14 +204,14 @@ export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 			this._currentSearchResultIndex = this._searchResults.length - 1 :
 			this._currentSearchResultIndex = --this._currentSearchResultIndex;
 
-		if (!!this.secondExecutionPlanDiagram) {
+		if (!!this._secondExecutionPlanDiagram) {
 			this.secondPlanPrevious();
 		}
 	}
 
 	private secondPlanPrevious(): void {
-		this.secondExecutionPlanDiagram.centerElement(this._secondSearchResults[this._currentSecondSearchResultIndex]);
-		this.secondExecutionPlanDiagram.selectElement(this._secondSearchResults[this._currentSecondSearchResultIndex]);
+		this._secondExecutionPlanDiagram.centerElement(this._secondSearchResults[this._currentSecondSearchResultIndex]);
+		this._secondExecutionPlanDiagram.selectElement(this._secondSearchResults[this._currentSecondSearchResultIndex]);
 		this._currentSecondSearchResultIndex = this._currentSecondSearchResultIndex === 0 ?
 			this._currentSecondSearchResultIndex = this._secondSearchResults.length - 1 :
 			this._currentSecondSearchResultIndex = --this._currentSecondSearchResultIndex;
