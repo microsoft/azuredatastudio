@@ -38,7 +38,16 @@ export class AzdataGraphView {
 	) {
 		this._parentContainer.tabIndex = 0;
 		this._diagramModel = this.populate(this._executionPlan.root);
-		this._diagram = new azdataGraph.azdataQueryPlan(this._parentContainer, this._diagramModel, executionPlanNodeIconPaths, badgeIconPaths, collapseExpandNodeIconPaths);
+
+		let queryPlanConfiguration = {
+			container: this._parentContainer,
+			queryPlanGraph: this._diagramModel,
+			iconPaths: executionPlanNodeIconPaths,
+			badgeIconPaths: badgeIconPaths,
+			expandCollapsePaths: collapseExpandNodeIconPaths
+		};
+		this._diagram = new azdataGraph.azdataQueryPlan(queryPlanConfiguration);
+
 		this.setGraphProperties();
 		this.selectElement(this._executionPlan.root);
 		this._cellInFocus = this._diagram.graph.getSelectionCell();
