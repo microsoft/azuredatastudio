@@ -656,7 +656,13 @@ export class SKURecommendationPage extends MigrationWizardPage {
 						this._rbg.cards[index].descriptions[CardDescriptionIndex.ASSESSMENT_STATUS].textValue = constants.CAN_BE_MIGRATED(dbWithoutIssuesCount, dbCount);
 
 						if (this.hasRecommendations()) {
-							recommendation = this.migrationStateModel._skuRecommendationResults.recommendations.sqlMiRecommendationResults[0];
+							recommendation = this.migrationStateModel._skuRecommendationResults.recommendations.baselineModelResults.sqlMiRecommendationResults[0];
+
+							//
+							let elasticRecommendation = this.migrationStateModel._skuRecommendationResults.recommendations.elasticModelResults.sqlMiRecommendationResults[0];
+							if (!recommendation.targetSku && elasticRecommendation.targetSku) {
+								recommendation = elasticRecommendation;
+							}
 
 							// result returned but no SKU recommended
 							if (!recommendation.targetSku) {
@@ -680,7 +686,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 						this._rbg.cards[index].descriptions[CardDescriptionIndex.ASSESSMENT_STATUS].textValue = constants.CAN_BE_MIGRATED(dbCount, dbCount);
 
 						if (this.hasRecommendations()) {
-							recommendation = this.migrationStateModel._skuRecommendationResults.recommendations.sqlVmRecommendationResults[0];
+							recommendation = this.migrationStateModel._skuRecommendationResults.recommendations.baselineModelResults.sqlVmRecommendationResults[0];
 
 							// result returned but no SKU recommended
 							if (!recommendation.targetSku) {
@@ -704,7 +710,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 						this._rbg.cards[index].descriptions[CardDescriptionIndex.ASSESSMENT_STATUS].textValue = constants.CAN_BE_MIGRATED(dbWithoutIssuesCount, dbCount);
 
 						if (this.hasRecommendations()) {
-							const successfulRecommendationsCount = this.migrationStateModel._skuRecommendationResults.recommendations.sqlDbRecommendationResults.filter(r => r.targetSku !== null).length;
+							const successfulRecommendationsCount = this.migrationStateModel._skuRecommendationResults.recommendations.baselineModelResults.sqlDbRecommendationResults.filter(r => r.targetSku !== null).length;
 							this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue = constants.RECOMMENDATIONS_AVAILABLE(successfulRecommendationsCount);
 						}
 						break;

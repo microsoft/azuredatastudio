@@ -395,34 +395,32 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			// clone list of databases currently being assessed and store them, so that if the user ever changes the list we can refresh new recommendations
 			this._skuRecommendationRecommendedDatabaseList = this._databasesForAssessment.slice();
 
-			if (response?.sqlDbRecommendationResults || response?.sqlMiRecommendationResults || response?.sqlVmRecommendationResults) {
+			if (response?.baselineModelResults || response?.elasticModelResults) {
 				this._skuRecommendationResults = {
 					recommendations: {
-						sqlDbRecommendationResults: response?.sqlDbRecommendationResults ?? [],
-						sqlMiRecommendationResults: response?.sqlMiRecommendationResults ?? [],
-						sqlVmRecommendationResults: response?.sqlVmRecommendationResults ?? [],
+						baselineModelResults: response?.baselineModelResults ?? [],
+						elasticModelResults: response?.elasticModelResults ?? [],
 						instanceRequirements: response?.instanceRequirements
 					},
 				};
 			} else {
-				this._skuRecommendationResults = {
-					recommendations: {
-						sqlDbRecommendationResults: [],
-						sqlMiRecommendationResults: [],
-						sqlVmRecommendationResults: [],
-						instanceRequirements: response?.instanceRequirements
-					},
-				};
+				// this._skuRecommendationResults = {
+				// 	recommendations: {
+				// 		baselineModelResults: null,
+				// 		elasticModelResults: null,
+				// 		instanceRequirements: response?.instanceRequirements
+				// 	},
+				// };
 			}
 
 		} catch (error) {
 			logError(TelemetryViews.SkuRecommendationWizard, 'GetSkuRecommendationFailed', error);
 
+			//
 			this._skuRecommendationResults = {
 				recommendations: {
-					sqlDbRecommendationResults: this._skuRecommendationApiResponse?.sqlDbRecommendationResults ?? [],
-					sqlMiRecommendationResults: this._skuRecommendationApiResponse?.sqlMiRecommendationResults ?? [],
-					sqlVmRecommendationResults: this._skuRecommendationApiResponse?.sqlVmRecommendationResults ?? [],
+					baselineModelResults: this._skuRecommendationApiResponse?.baselineModelResults ?? [],
+					elasticModelResults: this._skuRecommendationApiResponse?.elasticModelResults ?? [],
 					instanceRequirements: this._skuRecommendationApiResponse?.instanceRequirements
 				},
 				recommendationError: error
@@ -435,32 +433,74 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	private async generateSkuRecommendationTelemetry(): Promise<void> {
 		try {
+			// TO-DO: send telemetry for DB recommendations once that's turned on
+			///////
+			this._skuRecommendationResults?.recommendations?.baselineModelResults.sqlDbRecommendationResults
+				.map((e, i) => [e, this._skuRecommendationResults?.recommendations?.elasticModelResults.sqlDbRecommendationResults[i]])
+				.forEach(resultPair => {
+					// Send telemetry for recommended DB SKUs
+					sendSqlMigrationActionEvent(
+						TelemetryViews.SkuRecommendationWizard,
+						TelemetryAction.GetDBSkuRecommendation,
+						{
+							'sessionId': this._sessionId,
+							'recommendedSku': JSON.stringify(resultPair[0]?.targetSku),
+							'elasticRecommendedSku': JSON.stringify(resultPair[1]?.targetSku),
+							'recommendationDurationInSec': this._skuRecommendationResults?.recommendations.baselineModelResults.sqlDbRecommendationDurationInMs !== -1
+								? (this._skuRecommendationResults?.recommendations.baselineModelResults.sqlDbRecommendationDurationInMs).toString()
+								: '',
+							'elasticRecommendationDurationInSec': this._skuRecommendationResults?.recommendations.elasticModelResults.sqlDbRecommendationDurationInMs !== -1
+								? (this._skuRecommendationResults?.recommendations.elasticModelResults.sqlDbRecommendationDurationInMs).toString()
+								: ''
+						},
+						{}
+					);
+				});
+			////////
 
-			this._skuRecommendationResults?.recommendations?.sqlMiRecommendationResults?.forEach(resultItem => {
-				// Send telemetry for recommended MI SKU
-				sendSqlMigrationActionEvent(
-					TelemetryViews.SkuRecommendationWizard,
-					TelemetryAction.GetMISkuRecommendation,
-					{
-						'sessionId': this._sessionId,
-						'recommendedSku': JSON.stringify(resultItem?.targetSku)
-					},
-					{}
-				);
-			});
+			this._skuRecommendationResults?.recommendations?.baselineModelResults.sqlMiRecommendationResults
+				.map((e, i) => [e, this._skuRecommendationResults?.recommendations?.elasticModelResults.sqlMiRecommendationResults[i]])
+				.forEach(resultPair => {
+					// Send telemetry for recommended MI SKUs
+					sendSqlMigrationActionEvent(
+						TelemetryViews.SkuRecommendationWizard,
+						TelemetryAction.GetMISkuRecommendation,
+						{
+							'sessionId': this._sessionId,
+							'recommendedSku': JSON.stringify(resultPair[0]?.targetSku),
+							'elasticRecommendedSku': JSON.stringify(resultPair[1]?.targetSku),
+							'recommendationDurationInMs': this._skuRecommendationResults?.recommendations.baselineModelResults.sqlMiRecommendationDurationInMs !== -1
+								? (this._skuRecommendationResults?.recommendations.baselineModelResults.sqlMiRecommendationDurationInMs).toString()
+								: '',
+							'elasticRecommendationDurationInMs': this._skuRecommendationResults?.recommendations.elasticModelResults.sqlMiRecommendationDurationInMs !== -1
+								? (this._skuRecommendationResults?.recommendations.elasticModelResults.sqlMiRecommendationDurationInMs).toString()
+								: ''
+						},
+						{}
+					);
+				});
 
-			this._skuRecommendationResults?.recommendations?.sqlVmRecommendationResults?.forEach(resultItem => {
-				// Send telemetry for recommended VM SKU
-				sendSqlMigrationActionEvent(
-					TelemetryViews.SkuRecommendationWizard,
-					TelemetryAction.GetVMSkuRecommendation,
-					{
-						'sessionId': this._sessionId,
-						'recommendedSku': JSON.stringify(resultItem?.targetSku)
-					},
-					{}
-				);
-			});
+			this._skuRecommendationResults?.recommendations?.baselineModelResults.sqlVmRecommendationResults
+				.map((e, i) => [e, this._skuRecommendationResults?.recommendations?.elasticModelResults.sqlVmRecommendationResults[i]])
+				.forEach(resultPair => {
+					// Send telemetry for recommended VM SKUs
+					sendSqlMigrationActionEvent(
+						TelemetryViews.SkuRecommendationWizard,
+						TelemetryAction.GetVMSkuRecommendation,
+						{
+							'sessionId': this._sessionId,
+							'recommendedSku': JSON.stringify(resultPair[0]?.targetSku),
+							'elasticRecommendedSku': JSON.stringify(resultPair[1]?.targetSku),
+							'recommendationDurationInMs': this._skuRecommendationResults?.recommendations.baselineModelResults.sqlVmRecommendationDurationInMs !== -1
+								? (this._skuRecommendationResults?.recommendations.baselineModelResults.sqlVmRecommendationDurationInMs).toString()
+								: '',
+							'elasticRecommendationDurationInMs': this._skuRecommendationResults?.recommendations.elasticModelResults.sqlVmRecommendationDurationInMs !== -1
+								? (this._skuRecommendationResults?.recommendations.elasticModelResults.sqlVmRecommendationDurationInMs).toString()
+								: ''
+						},
+						{}
+					);
+				});
 
 			// Send Instance requirements used for calculating recommendations
 			sendSqlMigrationActionEvent(

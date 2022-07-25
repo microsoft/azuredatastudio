@@ -469,15 +469,15 @@ export class SkuRecommendationResultsDialog {
 
 			switch (this._targetType) {
 				case MigrationTargetType.SQLMI:
-					this.targetRecommendations = recommendations?.sqlMiRecommendationResults;
+					this.targetRecommendations = recommendations?.baselineModelResults.sqlMiRecommendationResults;
 					break;
 
 				case MigrationTargetType.SQLVM:
-					this.targetRecommendations = recommendations?.sqlVmRecommendationResults;
+					this.targetRecommendations = recommendations?.baselineModelResults.sqlVmRecommendationResults;
 					break;
 
 				case MigrationTargetType.SQLDB:
-					this.targetRecommendations = recommendations?.sqlDbRecommendationResults;
+					this.targetRecommendations = recommendations?.baselineModelResults.sqlDbRecommendationResults;
 					break;
 			}
 
