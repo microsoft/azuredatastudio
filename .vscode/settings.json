@@ -100,4 +100,7 @@
 		"comments": "inline",
 		"strings": "inline"
 	},
+	"yaml.schemas": {
+		"https://raw.githubusercontent.com/microsoft/azure-pipelines-vscode/master/service-schema.json": "build/azure-pipelines/**/*.yml"
+	},
 }
