@@ -11,7 +11,6 @@ import { EOL } from 'os';
 import { DatabaseMigration } from '../api/azure';
 import { DashboardStatusBar } from './sqlServerDashboard';
 import { getSelectedServiceStatus } from '../models/migrationLocalStorage';
-import { util } from 'webpack';
 
 export const SqlMigrationExtensionId = 'microsoft.sql-migration';
 export const EmptySettingValue = '-';
@@ -64,7 +63,7 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 		} else if (!number2) {
 			return -sortDir;
 		}
-		return util.comparators.compareNumbers(number1, number2) * -sortDir;
+		return number1 > number2 ? -sortDir : sortDir;
 	}
 
 	protected stringCompare(string1: string | undefined, string2: string | undefined, sortDir: number): number {
