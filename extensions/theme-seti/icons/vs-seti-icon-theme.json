@@ -1892,7 +1892,7 @@
 		"todo.md": "_todo",
 		"npm-debug.log": "_npm_ignored",
 		// {{SQL CARBON EDIT}}
-		"dashboard": "_shell",
+		"dashboard": "_default",
 		"profiler": "_csv",
 		"Schema Compare": "scmp_dark",
 		"table-basic": "table-basic",
@@ -2382,7 +2382,7 @@
 			"procfile": "_heroku_light",
 			"npm-debug.log": "_npm_ignored_light",
 			// {{SQL CARBON EDIT}}
-			"dashboard": "_shell_light",
+			"dashboard": "_default_light",
 			"profiler": "_csv_light",
 			"Schema Compare": "scmp"
 		}
