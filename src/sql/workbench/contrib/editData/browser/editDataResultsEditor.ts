@@ -58,6 +58,8 @@ export class EditDataResultsEditor extends EditorPane {
 
 	public override dispose(): void {
 		this.styleSheet = undefined;
+		//Must be called first otherwise edit session will not exist to make changes.
+		(this.input.editDataGridPanel as EditDataGridPanel).dispose();
 		super.dispose();
 	}
 
