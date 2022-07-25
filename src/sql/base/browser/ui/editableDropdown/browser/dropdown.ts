@@ -100,7 +100,7 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 		super();
 		this._options = opt || Object.create(null);
 		mixin(this._options, defaults, false);
-		// Set up the width measure control using the same classes and structure to get accurate width measurement.
+		// Set up the width measure control using the same classes and structure as the context menu to get the accurate width measurement.
 		this._widthControlElementContainer = DOM.append(container, document.createElement('div'));
 		this._widthControlElementContainer.classList.add('monaco-dropdown-width-control-element', 'context-view', 'fixed');
 		this._widthControlElementContainer.setAttribute('aria-hidden', 'true');
