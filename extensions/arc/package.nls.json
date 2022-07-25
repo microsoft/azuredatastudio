@@ -234,6 +234,8 @@
 	"arc.agreement.sql.help.text.learn.more": "Learn more",
 	"arc.agreement.sql.help.text.learn.more.ariaLabel": "Learn more about Azure Arc enabled Managed Instance",
 	"arc.sql.pitr.retention.description": "Configure retention for point-in-time backups. {0}",
+	"arc.data.controller.help.text": "The Kubernetes cluster must already be arc-enabled with the az connectedk8s connect command. Please use our {0} to learn more.",
+	"arc.data.controller.help.text.documentation.page": "documentation page"
 	"arc.agreement.sql.help.text.terms.of.use": "Terms of use",
 	"arc.agreement.sql.help.text.privacy.policy": "Privacy policy",
 	"arc.agreement.sql.help.text.azure.marketplace.terms": "Azure Marketplace Terms"
