@@ -462,10 +462,6 @@ export class ExecutionPlanComparisonEditorView {
 		this._propertiesContainer.style.display = this._propertiesContainer.style.display === 'none' ? '' : 'none';
 	}
 
-	public toggleWidget(): void {
-
-	}
-
 	public toggleOrientation(): void {
 		if (this._orientation === 'vertical') {
 			this._sashContainer.style.width = '100%';
