@@ -387,7 +387,7 @@
         "mssql.parallelMessageProcessing": {
           "type": "boolean",
           "description": "%mssql.parallelMessageProcessing%",
-          "default": false
+          "default": true
         }
       }
     },
