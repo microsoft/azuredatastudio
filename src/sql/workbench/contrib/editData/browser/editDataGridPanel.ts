@@ -191,13 +191,9 @@ export class EditDataGridPanel extends GridParentComponent {
 
 		this.onCellChange = (event: Slick.OnCellChangeEventArgs<any>): void => {
 
-			if (this.isNullRow(event.row) && this.saveViewStateCalled) {
-				// Temporary measure called here because restoreViewState is not called.
-				this.saveViewStateCalled = false;
+			if (this.saveViewStateCalled) {
+				// The saveViewState function will handle cell submitting functions.
 				return;
-			}
-			else if (this.saveViewStateCalled) {
-				this.saveViewStateCalled = false;
 			}
 
 			if (this.cellSubmitInProgress) {
@@ -374,7 +370,18 @@ export class EditDataGridPanel extends GridParentComponent {
 	public override dispose(): void {
 		if (!this.saveViewStateCalled && this.table) {
 			// TODO - Commit the row actively being edited.
+			this.currentEditCellValue = this.table.grid.getCellEditor().serializeValue();
+
+			let isDirty = this.table.grid.getCellEditor().isValueChanged();
+
+			let currentActiveCell = this.table.grid.getActiveCell();
+
+			let currentNewCell = { row: currentActiveCell.row, column: currentActiveCell.cell, isEditable: true, isDirty: isDirty };
+
+			this.submitCellTask(currentNewCell).then(() =>
+				this.commitEditTask(), () => onUnexpectedError);
 		}
+		this.saveViewStateCalled = false;
 		super.dispose();
 	}
 
@@ -394,7 +401,9 @@ export class EditDataGridPanel extends GridParentComponent {
 	private async submitCellTask(cellToSubmit): Promise<void> {
 		let self = this;
 		// disable editing the grid temporarily as any text entered while the grid is being refreshed will be lost upon completion.
+		this.cellSubmitInProgress = true;
 		this.updateEnabledState(false);
+		this.cellSubmitInProgress = false;
 		await this.submitCurrentCellChange(cellToSubmit,
 			async (result: EditUpdateCellResult) => {
 				// Cell update was successful, update the flags
@@ -424,7 +433,9 @@ export class EditDataGridPanel extends GridParentComponent {
 				}
 				// At the end of a successful cell select, update the currently selected cell
 				this.setCurrentCell(this.lastClickedCell.row, this.lastClickedCell.column);
+				this.cellSubmitInProgress = true;
 				this.updateEnabledState(true);
+				this.cellSubmitInProgress = false;
 				this.focusCell(this.lastClickedCell.row, this.lastClickedCell.column);
 			},
 			() => {
@@ -915,7 +926,15 @@ export class EditDataGridPanel extends GridParentComponent {
 			// when committing the changes for the row.
 			if (this.lastClickedCell.row !== undefined && this.lastClickedCell.column !== undefined && this.lastClickedCell.isEditable) {
 				gridObject._grid.getEditorLock().commitCurrentEdit();
+				this.submitCurrentCellChange(this.lastClickedCell, (result: EditUpdateCellResult) => {
+					this.setCellDirtyState(this.lastClickedCell.row, this.lastClickedCell.column, result.cell.isDirty);
+					this.setRowDirtyState(this.lastClickedCell.row, result.isRowDirty);
+				}, (error: any) => {
+					this.notificationService.error(error);
+				}).catch(onUnexpectedError);
 			}
+
+
 		}
 	}
 
