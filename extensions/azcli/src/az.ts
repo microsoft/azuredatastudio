@@ -447,7 +447,7 @@ export async function checkAndInstallAz(userRequested: boolean = false): Promise
 	try {
 		return await findAzAndArc(); // find currently installed Az
 	} catch (err) {
-		if (err === AzureCLIArcExtError) {
+		if (err.toString() === 'Error: ' + loc.arcdataExtensionNotInstalled) {
 			// Az found but arcdata extension not found. Prompt user to install it, then check again.
 			if (await promptToInstallArcdata(userRequested)) {
 				return await findAzAndArc();
@@ -506,7 +506,7 @@ async function findSpecificAzAndArc(): Promise<IAzTool> {
 	// if no az has been found. If found, check if az arcdata extension exists.
 	const arcVersion = parseArcExtensionVersion(versionOutput.stdout);
 	if (arcVersion === undefined) {
-		throw AzureCLIArcExtError;
+		throw new AzureCLIArcExtError;
 	}
 
 	// Quietly attempt to update the arcdata extension to the latest. If it is already the latest, then it will not update.
