@@ -899,7 +899,7 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 	// {{SQL CARBON EDIT}} -- add back createEditorInput until we can remove all references
 	private readonly editorInputCache = new ResourceMap<CachedEditorInput>();
 
-	createEditorInput(input: EditorInput | IUntypedEditorInput): EditorInput {
+	async createEditorInput(input: EditorInput | IUntypedEditorInput): Promise<EditorInput> {
 
 		// Typed Editor Input Support (EditorInput)
 		if (input instanceof EditorInput) {
@@ -911,8 +911,8 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 			// const original = this.createEditorInput({ ...input.original, forceFile: true /*input.forceFile*/ });
 			// const modified = this.createEditorInput({ ...input.modified, forceFile: true /*input.forceFile*/ });
 
-			const original = this.createEditorInput(input.original);
-			const modified = this.createEditorInput(input.modified);
+			const original = await this.createEditorInput(input.original);
+			const modified = await this.createEditorInput(input.modified);
 
 			return this.instantiationService.createInstance(DiffEditorInput,
 				input.label,
@@ -943,7 +943,7 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 				untitledModel = this.untitledTextEditorService.create({ associatedResource: untitledInput.resource, ...untitledOptions });
 			}
 
-			return this.createOrGetCached(untitledModel.resource, () => {
+			return this.createOrGetCached(untitledModel.resource, async () => {
 
 				// Factory function for new untitled editor
 				const input = this.instantiationService.createInstance(UntitledTextEditorInput, untitledModel);
@@ -956,7 +956,7 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 				Event.once(input.onWillDispose)(() => untitledModel.dispose());
 
 				return input;
-			}) as EditorInput;
+			}) as Promise<EditorInput>;
 		}
 
 		// Text Resource Editor Support
@@ -975,11 +975,11 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 			// with different resource forms (e.g. path casing on Windows)
 			const canonicalResource = this.uriIdentityService.asCanonicalUri(preferredResource);
 
-			return this.createOrGetCached(canonicalResource, () => {
+			return this.createOrGetCached(canonicalResource, async () => {
 
 				// File
 				//if (textResourceEditorInput.forceFile || this.fileService.canHandleResource(canonicalResource)) {
-				if (this.fileService.canHandleResource(canonicalResource)) {
+				if (await this.fileService.canHandleResource(canonicalResource)) {
 					return this.fileEditorFactory.createFileEditor(canonicalResource, preferredResource, textResourceEditorInput.label, textResourceEditorInput.description, textResourceEditorInput.encoding, textResourceEditorInput.mode, textResourceEditorInput.contents, this.instantiationService);
 				}
 
@@ -1035,13 +1035,13 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 						cachedInput.setPreferredContents(textResourceEditorInput.contents);
 					}
 				}
-			}) as EditorInput;
+			}) as Promise<EditorInput>;
 		}
 
 		throw new Error('Unknown input type');
 	}
 
-	private createOrGetCached(resource: URI, factoryFn: () => CachedEditorInput, cachedFn?: (input: CachedEditorInput) => void): CachedEditorInput {
+	private async createOrGetCached(resource: URI, factoryFn: () => Promise<CachedEditorInput>, cachedFn?: (input: CachedEditorInput) => void): Promise<CachedEditorInput> {
 
 		// Return early if already cached
 		let input = this.editorInputCache.get(resource);
@@ -1054,7 +1054,7 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 		}
 
 		// Otherwise create and add to cache
-		input = factoryFn();
+		input = await factoryFn();
 		this.editorInputCache.set(resource, input);
 		Event.once(input.onWillDispose)(() => this.editorInputCache.delete(resource));
 
