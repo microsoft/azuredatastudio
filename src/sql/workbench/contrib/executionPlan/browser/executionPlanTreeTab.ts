@@ -340,8 +340,8 @@ export class ExecutionPlanTreeTabView extends Disposable implements IPanelView {
 }
 
 export class CopyTableData extends Action {
-	public static ID = 'ep.CopyTableData';
-	public static LABEL = localize('ep.topOperationsCopyTableData', "Copy");
+	public static ID = 'ept.CopyTableData';
+	public static LABEL = localize('ept.topOperationsCopyTableData', "Copy");
 
 	constructor(
 		@IClipboardService private _clipboardService: IClipboardService
@@ -356,8 +356,8 @@ export class CopyTableData extends Action {
 }
 
 export class CopyTableDataWithHeader extends Action {
-	public static ID = 'ep.CopyTableData';
-	public static LABEL = localize('ep.topOperationsCopyWithHeader', "Copy with Header");
+	public static ID = 'ept.CopyTableDataWithHeader';
+	public static LABEL = localize('ept.topOperationsCopyWithHeader', "Copy with Header");
 
 	constructor(
 		@IClipboardService private _clipboardService: IClipboardService
@@ -372,8 +372,8 @@ export class CopyTableDataWithHeader extends Action {
 }
 
 export class SelectAll extends Action {
-	public static ID = 'ep.SelectAllTableData';
-	public static LABEL = localize('ep.topOperationsSelectAll', "Select All");
+	public static ID = 'ept.SelectAllTableData';
+	public static LABEL = localize('ept.topOperationsSelectAll', "Select All");
 
 	constructor(
 	) {
