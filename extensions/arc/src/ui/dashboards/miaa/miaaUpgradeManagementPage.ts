@@ -160,7 +160,7 @@ export class MiaaUpgradeManagementPage extends DashboardPage {
 	private async getMiaaVersion(): Promise<string | undefined> {
 		try {
 			let miaaShowResult;
-			if (this._controllerModel.info.connectionMode === ConnectionMode.direct || this._controllerModel.controllerConfig?.spec.settings.azure.connectionMode === ConnectionMode.direct) {
+			if (this._controllerModel.info.connectionMode === ConnectionMode.direct || this._controllerModel.controllerConfig?.spec.settings.azure.connectionMode.toLowerCase() === ConnectionMode.direct) {
 				miaaShowResult = await this._azApi.az.sql.miarc.show(
 					this._miaaModel.info.name,
 					{
