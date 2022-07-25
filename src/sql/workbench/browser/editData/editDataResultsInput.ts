@@ -70,6 +70,7 @@ export class EditDataResultsInput extends EditorInput {
 	}
 
 	public override dispose(): void {
+		(this.editDataGridPanel as any).dispose();
 		this._disposeContainer();
 		super.dispose();
 	}

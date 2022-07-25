@@ -85,6 +85,8 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	private saveViewStateCalled: boolean;
 
+	private alreadyDisposed: boolean;
+
 	// Strings immediately before and after an edit.
 	private originalStringValue: string;
 	private endStringValue: string;
@@ -368,7 +370,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	}
 
 	public override dispose(): void {
-		if (!this.saveViewStateCalled && this.table) {
+		if (!this.alreadyDisposed && !this.saveViewStateCalled && this.table) {
 			// TODO - Commit the row actively being edited.
 			this.currentEditCellValue = this.table.grid.getCellEditor().serializeValue();
 
@@ -381,6 +383,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			this.submitCellTask(currentNewCell).then(() =>
 				this.commitEditTask(), () => onUnexpectedError);
 		}
+		this.alreadyDisposed = true;
 		this.saveViewStateCalled = false;
 		super.dispose();
 	}
