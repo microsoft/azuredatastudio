@@ -13,7 +13,7 @@ import * as constants from '../common/constants';
 
 import { promises as fs } from 'fs';
 import { Project } from '../models/project';
-import { exists, convertSlashesForSqlProj, getWellKnownDatabaseSources } from '../common/utils';
+import { exists, convertSlashesForSqlProj, getWellKnownDatabaseSources, getPlatformSafeFileEntryPath } from '../common/utils';
 import { Uri, window } from 'vscode';
 import { IDacpacReferenceSettings, IProjectReferenceSettings, ISystemDatabaseReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { EntryType, ItemType, SqlTargetPlatform } from 'sqldbproj';
@@ -1428,6 +1428,30 @@ describe('Project: sdk style project content operations', function (): void {
 		projFileText = (await fs.readFile(projFilePath)).toString();
 		should(project.projectGuid).not.equal(undefined);
 		should(projFileText.includes(constants.ProjectGuid)).equal(true);
+	});
+
+	it('Should read OutputPath from sqlproj if there is one', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectBaseline);
+		const projFileText = (await fs.readFile(projFilePath)).toString();
+
+		// Verify sqlproj has OutputPath
+		should(projFileText.includes(constants.OutputPath)).equal(true);
+
+		const project: Project = await Project.openProject(projFilePath);
+		should(project.outputPath).equal(path.join(getPlatformSafeFileEntryPath(project.projectFolderPath), getPlatformSafeFileEntryPath('..\\otherFolder')));
+		should(project.dacpacOutputPath).equal(path.join(getPlatformSafeFileEntryPath(project.projectFolderPath), getPlatformSafeFileEntryPath('..\\otherFolder'), `${project.projectFileName}.dacpac`));
+	});
+
+	it('Should use default output path if OutputPath is not specified in sqlproj', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectWithGlobsSpecifiedBaseline);
+		const projFileText = (await fs.readFile(projFilePath)).toString();
+
+		// Verify sqlproj doesn't have OutputPath
+		should(projFileText.includes(constants.OutputPath)).equal(true);
+
+		const project: Project = await Project.openProject(projFilePath);
+		should(project.outputPath).equal(path.join(getPlatformSafeFileEntryPath(project.projectFolderPath), getPlatformSafeFileEntryPath(constants.defaultOutputPath())));
+		should(project.dacpacOutputPath).equal(path.join(getPlatformSafeFileEntryPath(project.projectFolderPath), getPlatformSafeFileEntryPath(constants.defaultOutputPath()), `${project.projectFileName}.dacpac`));
 	});
 
 	it('Should handle adding existing items to project', async function (): Promise<void> {

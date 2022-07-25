@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vscode-nls';
+import * as path from 'path';
 import { SqlTargetPlatform } from 'sqldbproj';
 import * as utils from '../common/utils';
 
@@ -455,6 +456,7 @@ export const Sdk: string = 'Sdk';
 export const DatabaseSource = 'DatabaseSource';
 export const VisualStudioVersion = 'VisualStudioVersion';
 export const SSDTExists = 'SSDTExists';
+export const OutputPath = 'OutputPath';
 
 export const BuildElements = localize('buildElements', "Build Elements");
 export const FolderElements = localize('folderElements', "Folder Elements");
@@ -492,6 +494,8 @@ export const RoundTripSqlDbPresentCondition = '\'$(NetCoreBuild)\' != \'true\' A
 export const RoundTripSqlDbNotPresentCondition = '\'$(NetCoreBuild)\' != \'true\' AND \'$(SQLDBExtensionsRefPath)\' == \'\'';
 export const DacpacRootPath = '$(DacPacRootPath)';
 export const ProjJsonToClean = '$(BaseIntermediateOutputPath)\\project.assets.json';
+
+export function defaultOutputPath() { return path.join('bin', 'Debug'); }
 
 // Sqlproj VS property conditions
 export const VSVersionCondition = '\'$(VisualStudioVersion)\' == \'\'';
