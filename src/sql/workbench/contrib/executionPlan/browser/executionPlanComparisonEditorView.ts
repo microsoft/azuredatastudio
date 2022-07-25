@@ -25,7 +25,7 @@ import { extname } from 'vs/base/common/path';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { InfoBox } from 'sql/workbench/browser/ui/infoBox/infoBox';
 import { LoadingSpinner } from 'sql/base/browser/ui/loadingSpinner/loadingSpinner';
-import { errorForeground, listHoverBackground, textLinkForeground } from 'vs/platform/theme/common/colorRegistry';
+import { contrastBorder, editorWidgetBackground, errorForeground, listHoverBackground, textLinkForeground, widgetShadow } from 'vs/platform/theme/common/colorRegistry';
 import { ExecutionPlanViewHeader } from 'sql/workbench/contrib/executionPlan/browser/executionPlanViewHeader';
 import { attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
 import { IProgressService, ProgressLocation } from 'vs/platform/progress/common/progress';
@@ -735,6 +735,30 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 		collector.addRule(`
 		.eps-container .comparison-editor .plan-comparison-container .split-view-container .plan-container .recommendations {
 			background-color: ${menuBackgroundColor};
+		}
+		`);
+	}
+	const shadow = theme.getColor(widgetShadow);
+	if (shadow) {
+		collector.addRule(`
+		.eps-container .comparison-editor .plan-comparison-container .split-view-container .plan-container .plan-action-container .child {
+			box-shadow: 0 0 8px 2px ${shadow};
+		}
+		`);
+	}
+	const widgetBackgroundColor = theme.getColor(editorWidgetBackground);
+	if (widgetBackgroundColor) {
+		collector.addRule(`
+		.eps-container .comparison-editor .plan-comparison-container .split-view-container .plan-container .plan-action-container .child {
+			background-color: ${widgetBackgroundColor};
+		}
+		`);
+	}
+	const widgetBorderColor = theme.getColor(contrastBorder);
+	if (widgetBorderColor) {
+		collector.addRule(`
+		.eps-container .comparison-editor .plan-comparison-container .split-view-container .plan-container .plan-action-container .child {
+			border: 1px solid ${widgetBorderColor};
 		}
 		`);
 	}
