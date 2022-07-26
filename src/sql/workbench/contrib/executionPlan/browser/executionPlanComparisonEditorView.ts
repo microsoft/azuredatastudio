@@ -671,10 +671,8 @@ class SearchNodeAction extends Action {
 		this.telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.FindNode);
 
 		let nodeSearchWidget = context._instantiationService.createInstance(NodeSearchWidget, context.widgetController, context._activeTopPlanDiagram);
-
-		let bottomPlan = context._activeBottomPlanDiagram;
-		nodeSearchWidget.secondExecutionPlan = bottomPlan;
-
+		let activeBottomPlanDiagram = context._activeBottomPlanDiagram;
+		nodeSearchWidget.secondExecutionPlan = activeBottomPlanDiagram;
 		context.widgetController.toggleWidget(nodeSearchWidget);
 	}
 }
