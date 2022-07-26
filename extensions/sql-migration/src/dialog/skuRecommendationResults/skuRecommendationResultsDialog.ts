@@ -17,6 +17,7 @@ export class SkuRecommendationResultsDialog {
 
 	private _isOpen: boolean = false;
 	private dialog: azdata.window.Dialog | undefined;
+	private migrationStateModel: MigrationStateModel;
 
 	// Dialog Name for Telemetry
 	public dialogName: string | undefined;
@@ -43,6 +44,7 @@ export class SkuRecommendationResultsDialog {
 		}
 
 		this.title = constants.RECOMMENDATIONS_TITLE(this.targetName);
+		this.migrationStateModel = model;
 	}
 
 	private async initializeDialog(dialog: azdata.window.Dialog): Promise<void> {
@@ -469,15 +471,29 @@ export class SkuRecommendationResultsDialog {
 
 			switch (this._targetType) {
 				case MigrationTargetType.SQLMI:
-					this.targetRecommendations = recommendations?.baselineModelResults.sqlMiRecommendationResults;
+					if (this.migrationStateModel._skuEnableElastic) {
+						this.targetRecommendations = recommendations?.elasticModelResults.sqlMiRecommendationResults;
+					} else {
+						this.targetRecommendations = recommendations?.baselineModelResults.sqlMiRecommendationResults;
+					}
 					break;
 
 				case MigrationTargetType.SQLVM:
-					this.targetRecommendations = recommendations?.baselineModelResults.sqlVmRecommendationResults;
+					if (this.migrationStateModel._skuEnableElastic) {
+						// elastic model currently doesn't support SQL VM, so show the baseline model results regardless of user preference
+						// this.targetRecommendations = recommendations?.elasticModelResults.sqlDbRecommendationResults;
+						this.targetRecommendations = recommendations?.baselineModelResults.sqlVmRecommendationResults;
+					} else {
+						this.targetRecommendations = recommendations?.baselineModelResults.sqlVmRecommendationResults;
+					}
 					break;
 
 				case MigrationTargetType.SQLDB:
-					this.targetRecommendations = recommendations?.baselineModelResults.sqlDbRecommendationResults;
+					if (this.migrationStateModel._skuEnableElastic) {
+						this.targetRecommendations = recommendations?.elasticModelResults.sqlDbRecommendationResults;
+					} else {
+						this.targetRecommendations = recommendations?.baselineModelResults.sqlDbRecommendationResults;
+					}
 					break;
 			}
 

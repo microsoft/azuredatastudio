@@ -232,6 +232,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _skuScalingFactor!: number;
 	public _skuTargetPercentile!: number;
 	public _skuEnablePreview!: boolean;
+	public _skuEnableElastic!: boolean;
 
 	public refreshDatabaseBackupPage!: boolean;
 	public retryMigration!: boolean;
@@ -263,6 +264,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		this._skuScalingFactor = 100;
 		this._skuTargetPercentile = 95;
 		this._skuEnablePreview = true;
+		this._skuEnablePreview = false;
 	}
 
 	public get sourceConnectionId(): string {

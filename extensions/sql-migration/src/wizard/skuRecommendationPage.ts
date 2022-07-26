@@ -67,6 +67,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private _skuScaleFactorText!: azdata.TextComponent;
 	private _skuTargetPercentileText!: azdata.TextComponent;
 	private _skuEnablePreviewSkuText!: azdata.TextComponent;
+	private _skuEnableElasticRecommendationsText!: azdata.TextComponent;
 
 	private assessmentGroupContainer!: azdata.FlexContainer;
 	private _disposables: vscode.Disposable[] = [];
@@ -656,13 +657,16 @@ export class SKURecommendationPage extends MigrationWizardPage {
 						this._rbg.cards[index].descriptions[CardDescriptionIndex.ASSESSMENT_STATUS].textValue = constants.CAN_BE_MIGRATED(dbWithoutIssuesCount, dbCount);
 
 						if (this.hasRecommendations()) {
-							recommendation = this.migrationStateModel._skuRecommendationResults.recommendations.baselineModelResults.sqlMiRecommendationResults[0];
-
-							//
-							let elasticRecommendation = this.migrationStateModel._skuRecommendationResults.recommendations.elasticModelResults.sqlMiRecommendationResults[0];
-							if (!recommendation.targetSku && elasticRecommendation.targetSku) {
-								recommendation = elasticRecommendation;
+							if (this.migrationStateModel._skuEnableElastic) {
+								recommendation = this.migrationStateModel._skuRecommendationResults.recommendations.elasticModelResults.sqlMiRecommendationResults[0];
+							} else {
+								recommendation = this.migrationStateModel._skuRecommendationResults.recommendations.baselineModelResults.sqlMiRecommendationResults[0];
 							}
+
+							// show elastic results if there are no baseline results
+							// if (!recommendation.targetSku && elasticRecommendation.targetSku) {
+							// 	recommendation = elasticRecommendation;
+							// }
 
 							// result returned but no SKU recommended
 							if (!recommendation.targetSku) {
@@ -686,6 +690,14 @@ export class SKURecommendationPage extends MigrationWizardPage {
 						this._rbg.cards[index].descriptions[CardDescriptionIndex.ASSESSMENT_STATUS].textValue = constants.CAN_BE_MIGRATED(dbCount, dbCount);
 
 						if (this.hasRecommendations()) {
+							if (this.migrationStateModel._skuEnableElastic) {
+								// elastic model currently doesn't support SQL VM, so show the baseline model results regardless of user preference
+								// recommendation = this.migrationStateModel._skuRecommendationResults.recommendations.elasticModelResults.sqlMiRecommendationResults[0];
+								recommendation = this.migrationStateModel._skuRecommendationResults.recommendations.baselineModelResults.sqlMiRecommendationResults[0];
+							} else {
+								recommendation = this.migrationStateModel._skuRecommendationResults.recommendations.baselineModelResults.sqlMiRecommendationResults[0];
+							}
+
 							recommendation = this.migrationStateModel._skuRecommendationResults.recommendations.baselineModelResults.sqlVmRecommendationResults[0];
 
 							// result returned but no SKU recommended
@@ -1056,6 +1068,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		const skuEnablePreviewParameterGroup = createParameterGroup(constants.ENABLE_PREVIEW_SKU, this.migrationStateModel._skuEnablePreview ? constants.YES : constants.NO);
 		this._skuEnablePreviewSkuText = skuEnablePreviewParameterGroup.text;
 
+		const skuEnableElasticRecommendationsParameterGroup = createParameterGroup(constants.ELASTIC_RECOMMENDATION_LABEL, this.migrationStateModel._skuEnableElastic ? constants.YES : constants.NO);
+		this._skuEnableElasticRecommendationsText = skuEnableElasticRecommendationsParameterGroup.text;
+
 		const parametersContainer = _view.modelBuilder.flexContainer().withProps({
 			CSSStyles: {
 				'margin': '8px 0',
@@ -1067,6 +1082,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			scaleFactorParameterGroup.flexContainer,
 			skuTargetPercentileParameterGroup.flexContainer,
 			skuEnablePreviewParameterGroup.flexContainer,
+			skuEnableElasticRecommendationsParameterGroup.flexContainer
 		]);
 
 		container.addItems([
@@ -1081,6 +1097,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this._skuScaleFactorText.value = this.migrationStateModel._skuScalingFactor.toString();
 		this._skuTargetPercentileText.value = constants.PERCENTAGE(this.migrationStateModel._skuTargetPercentile);
 		this._skuEnablePreviewSkuText.value = this.migrationStateModel._skuEnablePreview ? constants.YES : constants.NO;
+		this._skuEnableElasticRecommendationsText.value = this.migrationStateModel._skuEnableElastic ? constants.YES : constants.NO;
 		await this.refreshAzureRecommendation();
 	}
 
