@@ -11,7 +11,8 @@ import { getMigrationTargetInstance, SqlManagedInstance } from '../../api/azure'
 import { IconPathHelper } from '../../constants/iconPathHelper';
 import { convertByteSizeToReadableUnit, get12HourTime } from '../../api/utils';
 import * as styles from '../../constants/styles';
-import { isBlobMigration } from '../../constants/helper';
+import { getMigrationTargetTypeEnum, isBlobMigration } from '../../constants/helper';
+import { MigrationTargetType, ServiceTier } from '../../models/stateMachine';
 export class ConfirmCutoverDialog {
 	private _dialogObject!: azdata.window.Dialog;
 	private _view!: azdata.ModelView;
@@ -32,7 +33,7 @@ export class ConfirmCutoverDialog {
 			}).component();
 
 			const sourceDatabaseText = view.modelBuilder.text().withProps({
-				value: this.migrationCutoverModel._migration.properties.sourceDatabaseName,
+				value: this.migrationCutoverModel.migration.properties.sourceDatabaseName,
 				CSSStyles: {
 					...styles.SMALL_NOTE_CSS,
 					'margin': '4px 0px 8px'
@@ -53,7 +54,7 @@ export class ConfirmCutoverDialog {
 				}
 			}).component();
 
-			const fileContainer = isBlobMigration(this.migrationCutoverModel.migrationStatus)
+			const fileContainer = isBlobMigration(this.migrationCutoverModel.migration)
 				? this.createBlobFileContainer()
 				: this.createNetworkShareFileContainer();
 
@@ -76,13 +77,13 @@ export class ConfirmCutoverDialog {
 			}).component();
 
 			let infoDisplay = 'none';
-			if (this.migrationCutoverModel._migration.id.toLocaleLowerCase().includes('managedinstances')) {
+			if (getMigrationTargetTypeEnum(this.migrationCutoverModel.migration) === MigrationTargetType.SQLMI) {
 				const targetInstance = await getMigrationTargetInstance(
-					this.migrationCutoverModel._serviceConstext.azureAccount!,
-					this.migrationCutoverModel._serviceConstext.subscription!,
-					this.migrationCutoverModel._migration);
+					this.migrationCutoverModel.serviceConstext.azureAccount!,
+					this.migrationCutoverModel.serviceConstext.subscription!,
+					this.migrationCutoverModel.migration);
 
-				if ((<SqlManagedInstance>targetInstance)?.sku?.tier === 'BusinessCritical') {
+				if ((<SqlManagedInstance>targetInstance)?.sku?.tier === ServiceTier.BusinessCritical) {
 					infoDisplay = 'inline';
 				}
 			}
@@ -116,7 +117,7 @@ export class ConfirmCutoverDialog {
 				await this.migrationCutoverModel.startCutover();
 				void vscode.window.showInformationMessage(
 					constants.CUTOVER_IN_PROGRESS(
-						this.migrationCutoverModel._migration.properties.sourceDatabaseName));
+						this.migrationCutoverModel.migration.properties.sourceDatabaseName));
 			}));
 
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
@@ -163,7 +164,7 @@ export class ConfirmCutoverDialog {
 			} catch (e) {
 				this._dialogObject.message = {
 					level: azdata.window.MessageLevel.Error,
-					text: e.toString()
+					text: e.message
 				};
 			} finally {
 				refreshLoader.loading = false;
@@ -241,7 +242,7 @@ export class ConfirmCutoverDialog {
 			} catch (e) {
 				this._dialogObject.message = {
 					level: azdata.window.MessageLevel.Error,
-					text: e.toString()
+					text: e.message
 				};
 			} finally {
 				refreshLoader.loading = false;
