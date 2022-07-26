@@ -65,7 +65,6 @@ export class ExecutionPlanTreeTabView extends Disposable implements IPanelView {
 
 		this._input = newInput;
 		this.renderInput();
-
 	}
 
 	render(parent: HTMLElement): void {
