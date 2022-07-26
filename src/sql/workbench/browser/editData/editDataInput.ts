@@ -203,15 +203,18 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 	}
 
 	public override dispose(): void {
-		// Dispose our edit session then disconnect our input
-		this._queryModelService.disposeEdit(this.uri).then(() => {
-			return this._connectionManagementService.disconnectEditor(this, true);
-		});
-		this._queryModelService.disposeQuery(this.uri);
-		this._sql.dispose();
-		this._results.dispose();
+		//Submit the last cell for EditData and dispose the grid before cleaning everything else.
+		(this._results.editDataGridPanel as any).safeDispose().then(() => {
+			// Dispose our edit session then disconnect our input
+			this._queryModelService.disposeEdit(this.uri).then(() => {
+				return this._connectionManagementService.disconnectEditor(this, true);
+			});
+			this._queryModelService.disposeQuery(this.uri);
+			this._sql.dispose();
+			this._results.dispose();
 
-		super.dispose();
+			super.dispose();
+		});
 	}
 
 	public get tabColor(): string {
