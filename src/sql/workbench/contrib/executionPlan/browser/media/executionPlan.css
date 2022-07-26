@@ -55,13 +55,15 @@ However we always want it to be the width of the container it is resizing.
 }
 
 /* views created by the action-bar actions */
-.eps-container .execution-plan .plan .plan-action-container .child {
+.eps-container .execution-plan .plan .plan-action-container .child,
+.eps-container .comparison-editor .plan-comparison-container .split-view-container .plan-container .plan-action-container .child {
 	flex: 0 0 25px;
 	margin-left: auto;
 }
 
 /* Search node action view */
-.eps-container .execution-plan .plan .plan-action-container .search-node-widget {
+.eps-container .execution-plan .plan .plan-action-container .search-node-widget,
+.eps-container .comparison-editor .plan-comparison-container .split-view-container .plan-container .plan-action-container .search-node-widget {
 	display: flex;
 	flex-direction: row;
 	padding: 5px;
@@ -70,12 +72,14 @@ However we always want it to be the width of the container it is resizing.
 }
 
 /* input bar styling in search node action view */
-.eps-container .execution-plan .plan .plan-action-container .search-node-widget .select-container {
+.eps-container .execution-plan .plan .plan-action-container .search-node-widget .select-container,
+.eps-container .comparison-editor .plan-comparison-container .split-view-container .plan-container .plan-action-container .search-node-widget .select-container {
 	margin-left: 5px;
 }
 
 /* styling for select element in search node action view */
-.eps-container .execution-plan .plan .plan-action-container .search-node-widget .select-container>select {
+.eps-container .execution-plan .plan .plan-action-container .search-node-widget .select-container>select,
+.eps-container .comparison-editor .plan-comparison-container .split-view-container .plan-container .plan-action-container .search-node-widget .select-container>select {
 	height: 100%;
 }
 
@@ -692,31 +696,6 @@ However we always want it to be the width of the container it is resizing.
 	flex: 0;
 	padding: 3px;
 	border-bottom: 1px solid var(--separator-border);
-}
-
-/* views created by the action-bar actions */
-.eps-container .comparison-editor .plan-comparison-container .split-view-container .plan-container .plan-action-container .child {
-	flex: 0 0 25px;
-	margin-left: auto;
-}
-
-/* Search node action view */
-.eps-container .comparison-editor .plan-comparison-container .split-view-container .plan-container .plan-action-container .search-node-widget {
-	display: flex;
-	flex-direction: row;
-	padding: 5px;
-	height: auto;
-	width: 470px;
-}
-
-/* input bar drop-down styling in search node action view */
-.eps-container .comparison-editor .plan-comparison-container .split-view-container .plan-container .plan-action-container .search-node-widget .select-container {
-	margin-left: 5px;
-}
-
-/* input bar drop-down styling for select element in search node action view */
-.eps-container .comparison-editor .plan-comparison-container .split-view-container .plan-container .plan-action-container .search-node-widget .select-container>select {
-	height: 100%;
 }
 
 /* each link in execution plan recommendations */
