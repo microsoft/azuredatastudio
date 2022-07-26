@@ -12,7 +12,7 @@ import * as vscode from 'vscode';
 import { executeCommand, executeSudoCommand, ExitCodeError, ProcessOutput } from './common/childProcess';
 import { HttpClient } from './common/httpClient';
 import Logger from './common/logger';
-import { AzureCLIArcExtError, NoAzureCLIError, searchForCmd } from './common/utils';
+import { NoAzureCLIArcExtError, NoAzureCLIError, searchForCmd } from './common/utils';
 import { azArcdataInstallKey, azConfigSection, azFound, debugConfigKey, latestAzArcExtensionVersion, azCliInstallKey, azArcFound, azHostname, azUri } from './constants';
 import * as loc from './localizedConstants';
 
@@ -447,7 +447,7 @@ export async function checkAndInstallAz(userRequested: boolean = false): Promise
 	try {
 		return await findAzAndArc(); // find currently installed Az
 	} catch (err) {
-		if (err.toString() === 'Error: ' + loc.arcdataExtensionNotInstalled) {
+		if (err instanceof NoAzureCLIArcExtError) {
 			// Az found but arcdata extension not found. Prompt user to install it, then check again.
 			if (await promptToInstallArcdata(userRequested)) {
 				return await findAzAndArc();
@@ -478,7 +478,7 @@ export async function findAzAndArc(): Promise<IAzTool> {
 		Logger.log(loc.foundExistingAz(await azTool.getPath(), (await azTool.getSemVersionAz()).raw, (await azTool.getSemVersionArc()).raw));
 		return azTool;
 	} catch (err) {
-		if (err === AzureCLIArcExtError) {
+		if (err === NoAzureCLIArcExtError) {
 			Logger.log(loc.couldNotFindAzArc(err));
 			Logger.log(loc.noAzArc);
 			await vscode.commands.executeCommand('setContext', azArcFound, false); // save a context key that az was not found so that command for installing az is available in commandPalette and that for updating it is no longer available.
@@ -506,7 +506,7 @@ async function findSpecificAzAndArc(): Promise<IAzTool> {
 	// if no az has been found. If found, check if az arcdata extension exists.
 	const arcVersion = parseArcExtensionVersion(versionOutput.stdout);
 	if (arcVersion === undefined) {
-		throw new AzureCLIArcExtError;
+		throw new NoAzureCLIArcExtError;
 	}
 
 	// Quietly attempt to update the arcdata extension to the latest. If it is already the latest, then it will not update.
