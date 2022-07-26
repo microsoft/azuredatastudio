@@ -2478,6 +2478,23 @@
       <source xml:lang="en">Query Plan (Preview)</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanTreeTab" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="ept.topOperationsCopyTableData">
+      <source xml:lang="en">Copy</source>
+    </trans-unit>
+    <trans-unit id="ept.topOperationsCopyWithHeader">
+      <source xml:lang="en">Copy with Header</source>
+    </trans-unit>
+    <trans-unit id="ept.topOperationsSelectAll">
+      <source xml:lang="en">Select All</source>
+    </trans-unit>
+    <trans-unit id="planTreeTab.title">
+      <source xml:lang="en">Plan Tree (Preview)</source>
+    </trans-unit>
+    <trans-unit id="topOperationsTableTitle">
+      <source xml:lang="en">Execution Plan Tree</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanView" source-language="en" datatype="plaintext"><body>
     <trans-unit id="executionPlan.SaveFileDescription">
       <source xml:lang="en">Execution Plan Files</source>
