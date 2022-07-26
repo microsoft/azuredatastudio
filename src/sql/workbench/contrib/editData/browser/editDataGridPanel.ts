@@ -375,6 +375,7 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	public async safeDispose(): Promise<void> {
 		if (!this.alreadyDisposed && !this.saveViewStateCalled && this.table) {
+			this.alreadyDisposed = true;
 			// TODO - Commit the row actively being edited.
 			this.currentEditCellValue = this.table.grid.getCellEditor().serializeValue();
 
@@ -389,7 +390,6 @@ export class EditDataGridPanel extends GridParentComponent {
 			},
 				() => onUnexpectedError);
 		}
-		this.alreadyDisposed = true;
 		this.saveViewStateCalled = false;
 		super.dispose();
 	}
@@ -906,33 +906,33 @@ export class EditDataGridPanel extends GridParentComponent {
 	}
 
 	private async saveViewState(): Promise<void> {
-		this.saveViewStateCalled = true;
-		let grid = this.table;
-		if (grid) {
-			let gridSelections = grid.getSelectedRanges();
-			let gridObject = grid as any;
-			let viewport = (gridObject._grid.getCanvasNode() as HTMLElement).parentElement;
-			this.savedViewState = {
-				gridSelections,
-				scrollTop: viewport.scrollTop,
-				scrollLeft: viewport.scrollLeft
-			};
+		if (!this.alreadyDisposed) {
+			this.saveViewStateCalled = true;
+			let grid = this.table;
+			if (grid) {
+				let gridSelections = grid.getSelectedRanges();
+				let gridObject = grid as any;
+				let viewport = (gridObject._grid.getCanvasNode() as HTMLElement).parentElement;
+				this.savedViewState = {
+					gridSelections,
+					scrollTop: viewport.scrollTop,
+					scrollLeft: viewport.scrollLeft
+				};
 
-			// Save the cell that is currently being edited.
-			// Note: This is only updating the data in tools service, not saving the change to database.
-			// This is added to fix the data inconsistency: the updated value is displayed but won't be saved to the database
-			// when committing the changes for the row.
-			if (this.lastClickedCell.row !== undefined && this.lastClickedCell.column !== undefined && this.lastClickedCell.isEditable) {
-				gridObject._grid.getEditorLock().commitCurrentEdit();
-				await this.submitCurrentCellChange(this.lastClickedCell, (result: EditUpdateCellResult) => {
-					this.setCellDirtyState(this.lastClickedCell.row, this.lastClickedCell.column, result.cell.isDirty);
-					this.setRowDirtyState(this.lastClickedCell.row, result.isRowDirty);
-				}, (error: any) => {
-					this.notificationService.error(error);
-				});
+				// Save the cell that is currently being edited.
+				// Note: This is only updating the data in tools service, not saving the change to database.
+				// This is added to fix the data inconsistency: the updated value is displayed but won't be saved to the database
+				// when committing the changes for the row.
+				if (this.lastClickedCell.row !== undefined && this.lastClickedCell.column !== undefined && this.lastClickedCell.isEditable) {
+					gridObject._grid.getEditorLock().commitCurrentEdit();
+					await this.submitCurrentCellChange(this.lastClickedCell, (result: EditUpdateCellResult) => {
+						this.setCellDirtyState(this.lastClickedCell.row, this.lastClickedCell.column, result.cell.isDirty);
+						this.setRowDirtyState(this.lastClickedCell.row, result.isRowDirty);
+					}, (error: any) => {
+						this.notificationService.error(error);
+					});
+				}
 			}
-
-
 		}
 	}
 
