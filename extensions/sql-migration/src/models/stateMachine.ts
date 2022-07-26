@@ -550,7 +550,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			logError(TelemetryViews.ProvisioningScriptWizard, 'GenerateProvisioningScriptFailed', error);
 			this._provisioningScriptResult = {
 				result: {
-					provisioningScript: '',
+					provisioningScriptFilePath: '',
 				},
 				error: error,
 			};

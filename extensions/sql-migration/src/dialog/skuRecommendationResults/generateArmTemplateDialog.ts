@@ -11,6 +11,7 @@ import { join } from 'path';
 import * as styles from '../../constants/styles';
 import * as mssql from 'mssql';
 import * as utils from '../../api/utils';
+import { Console } from 'console';
 
 export class GenerateArmTemplateDialog {
 
@@ -178,7 +179,7 @@ export class GenerateArmTemplateDialog {
 		await this._generateArmTemplateContainer.updateCssStyles({ 'display': 'none' });
 
 		if (succeeded){
-			this._armTemplateText = this.model._provisioningScriptResult.result.provisioningScript;
+			this._armTemplateText = fs.readFileSync(this.model._provisioningScriptResult.result.provisioningScriptFilePath).toString();
 			this._armTemplateTextBox.value = this._armTemplateText;
 			await this._saveArmTemplateContainer.updateCssStyles({ 'display': 'inline' });
 		}
@@ -201,7 +202,9 @@ export class GenerateArmTemplateDialog {
 			await Promise.all(dialogSetupPromises);
 
 			// Generate ARM template upon opening dialog
+			console.log('ARM template generation started');
 			await this.model.generateProvisioningScript(this._targetType);
+			console.log('ARM template generation complete');
 			const error = this.model._provisioningScriptResult.error;
 
 			if (error) {
