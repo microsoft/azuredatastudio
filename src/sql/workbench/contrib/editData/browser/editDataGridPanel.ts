@@ -461,7 +461,6 @@ export class EditDataGridPanel extends GridParentComponent {
 					document.execCommand('delete');
 					document.execCommand('insertText', false, this.lastEnteredString);
 				}
-				return Promise.reject(null);
 			});
 	}
 
@@ -765,6 +764,7 @@ export class EditDataGridPanel extends GridParentComponent {
 
 				await this.revertSelectedCell(cellToAdd.row, cellToAdd.column).catch(onUnexpectedError);
 				errorHandler(error);
+				return;
 			}
 			// last entered input is no longer needed as we have entered a valid input to commit.
 			self.lastEnteredString = undefined;
