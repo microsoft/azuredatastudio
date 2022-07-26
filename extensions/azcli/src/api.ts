@@ -5,9 +5,7 @@
 
 import * as azExt from 'az-ext';
 import { IAzTool } from './az';
-import Logger from './common/logger';
 import { NoAzureCLIError } from './common/utils';
-import * as loc from './localizedConstants';
 import { AzToolService } from './services/azToolService';
 
 /**
@@ -21,7 +19,6 @@ export function validateAz(az: IAzTool | undefined) {
 
 export function throwIfNoAz(localAz: IAzTool | undefined): asserts localAz {
 	if (!localAz) {
-		Logger.log(loc.noAzureCLI);
 		throw new NoAzureCLIError();
 	}
 }
