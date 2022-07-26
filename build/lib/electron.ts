@@ -104,6 +104,9 @@ export const config = {
 	darwinHelpBookName: 'VS Code HelpBook',
 	darwinBundleDocumentTypes: [
 		darwinBundleDocumentType(['csv', 'json', 'sqlplan', 'sql', 'xml'], 'code_file'),
+		], 'default', product.nameLong + ' document')
+		// Folder support ()
+		darwinBundleDocumentType([], 'default', 'Folder', ['public.folder'])
 	],
 	darwinBundleURLTypes: [{
 		role: 'Viewer',
