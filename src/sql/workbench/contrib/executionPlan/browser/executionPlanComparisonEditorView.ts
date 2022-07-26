@@ -48,6 +48,7 @@ export class ExecutionPlanComparisonEditorView {
 	private _propertiesAction: Action;
 	private _toggleOrientationAction: Action;
 	private _searchNodeAction: Action;
+	private _searchNodeActionForAddedPlan: Action;
 
 	private _planComparisonContainer: HTMLElement;
 
@@ -61,8 +62,10 @@ export class ExecutionPlanComparisonEditorView {
 	private _verticalSash: Sash;
 	private _orientation: ExecutionPlanCompareOrientation = ExecutionPlanCompareOrientation.Horizontal;
 
-	private _widgetContainer: HTMLElement;
-	public widgetController: ExecutionPlanWidgetController;
+	private _topWidgetContainer: HTMLElement;
+	public topWidgetController: ExecutionPlanWidgetController;
+	private _bottomWidgetContainer: HTMLElement;
+	public bottomWidgetController: ExecutionPlanWidgetController;
 
 	private _placeholderContainer: HTMLElement;
 	private _placeholderInfoboxContainer: HTMLElement;
@@ -145,7 +148,8 @@ export class ExecutionPlanComparisonEditorView {
 		this._zoomToFitAction = new ZoomToFitAction();
 		this._propertiesAction = this._instantiationService.createInstance(PropertiesAction);
 		this._toggleOrientationAction = new ToggleOrientation();
-		this._searchNodeAction = this._instantiationService.createInstance(SearchNodeAction);
+		this._searchNodeAction = this._instantiationService.createInstance(SearchNodeAction, PlanIdentifier.Primary);
+		this._searchNodeActionForAddedPlan = this._instantiationService.createInstance(SearchNodeAction, PlanIdentifier.Added);
 		this._resetZoomAction = new ZoomReset();
 		const content: ITaskbarContent[] = [
 			{ action: this._addExecutionPlanAction },
@@ -155,7 +159,8 @@ export class ExecutionPlanComparisonEditorView {
 			{ action: this._resetZoomAction },
 			{ action: this._toggleOrientationAction },
 			{ action: this._propertiesAction },
-			{ action: this._searchNodeAction }
+			{ action: this._searchNodeAction },
+			{ action: this._searchNodeActionForAddedPlan }
 		];
 		this._taskbar.setContent(content);
 		this.container.appendChild(this._taskbarContainer);
@@ -166,7 +171,7 @@ export class ExecutionPlanComparisonEditorView {
 		this.container.appendChild(this._planComparisonContainer);
 		this.initializeSplitView();
 		this.initializeProperties();
-		this.initializeWidgetController();
+		this.initializeWidgetControllers();
 	}
 
 	private initializeSplitView(): void {
@@ -284,10 +289,14 @@ export class ExecutionPlanComparisonEditorView {
 		this._planComparisonContainer.appendChild(this._propertiesContainer);
 	}
 
-	private initializeWidgetController(): void {
-		this._widgetContainer = DOM.$('.plan-action-container');
-		this._topPlanContainer.appendChild(this._widgetContainer);
-		this.widgetController = new ExecutionPlanWidgetController(this._widgetContainer);
+	private initializeWidgetControllers(): void {
+		this._topWidgetContainer = DOM.$('.plan-action-container');
+		this._topPlanContainer.appendChild(this._topWidgetContainer);
+		this.topWidgetController = new ExecutionPlanWidgetController(this._topWidgetContainer);
+
+		this._bottomWidgetContainer = DOM.$('.plan-action-container');
+		this._bottomPlanContainer.appendChild(this._bottomWidgetContainer);
+		this.bottomWidgetController = new ExecutionPlanWidgetController(this._bottomWidgetContainer);
 	}
 
 	public async openAndAddExecutionPlanFile(): Promise<void> {
@@ -391,6 +400,7 @@ export class ExecutionPlanComparisonEditorView {
 			this._bottomPlanDropdown.select(preSelectIndex);
 			this._propertiesView.setBottomElement(executionPlanGraphs[0].root);
 			this._addExecutionPlanAction.enabled = false;
+			this._searchNodeActionForAddedPlan.enabled = true;
 		}
 		this.refreshSplitView();
 	}
@@ -658,22 +668,32 @@ class PropertiesAction extends Action {
 	}
 }
 
+enum PlanIdentifier {
+	Primary = 0,
+	Added = 1
+}
+
 class SearchNodeAction extends Action {
 	public static ID = 'epCompare.searchNodeAction';
 	public static LABEL = localize('epCompare.searchNodeAction', 'Find Node');
+	public static LABEL_FOR_ADDED_PLAN = localize('epCompare.searchNodeActionAddedPlan', 'Find Node - Added Plan');
 
-	constructor(@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService) {
-		super(SearchNodeAction.ID, SearchNodeAction.LABEL, searchIconClassNames);
+	constructor(private readonly _planIdentifier: PlanIdentifier, @IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService) {
+		const getLabelForAction = () => {
+			return _planIdentifier === PlanIdentifier.Added ? SearchNodeAction.LABEL_FOR_ADDED_PLAN : SearchNodeAction.LABEL;
+		};
+
+		super(SearchNodeAction.ID, getLabelForAction(), searchIconClassNames);
 		this.enabled = false;
 	}
 
 	public override async run(context: ExecutionPlanComparisonEditorView): Promise<void> {
-		this.telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.FindNode);
+		let executionPlan = this._planIdentifier === PlanIdentifier.Added ? context.activeBottomPlanDiagram : context.activeTopPlanDiagram;
+		let widgetController = this._planIdentifier === PlanIdentifier.Added ? context.bottomWidgetController : context.topWidgetController;
 
-		let nodeSearchWidget = context._instantiationService.createInstance(NodeSearchWidget, context.widgetController, context.activeTopPlanDiagram);
-		let activeBottomPlanDiagram = context.activeBottomPlanDiagram;
-		nodeSearchWidget.secondExecutionPlan = activeBottomPlanDiagram;
-		context.widgetController.toggleWidget(nodeSearchWidget);
+		this.telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.FindNode);
+		let nodeSearchWidget = context._instantiationService.createInstance(NodeSearchWidget, widgetController, executionPlan);
+		widgetController.toggleWidget(nodeSearchWidget);
 	}
 }
 

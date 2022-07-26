@@ -37,14 +37,10 @@ export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 
 	private _searchTextInputBox: InputBox;
 	private _searchResults: azdata.executionPlan.ExecutionPlanNode[] = [];
-	private _secondSearchResults: azdata.executionPlan.ExecutionPlanNode[] = [];
 	private _currentSearchResultIndex = 0;
-	private _currentSecondSearchResultIndex = 0;
 	private _usePreviousSearchResult: boolean = false;
 
 	private _actionBar: ActionBar;
-
-	private _secondExecutionPlanDiagram: AzdataGraphView;
 
 	constructor(
 		public readonly planActionView: ExecutionPlanWidgetController,
@@ -136,10 +132,6 @@ export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 		this._actionBar.pushAction(new CancelSearch(), { label: false, icon: true });
 	}
 
-	public set secondExecutionPlan(secondPlanDiagram: AzdataGraphView) {
-		this._secondExecutionPlanDiagram = secondPlanDiagram;
-	}
-
 	// Initial focus is set to the search text input box
 	public focus() {
 		this._searchTextInputBox.focus();
@@ -153,20 +145,7 @@ export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 			searchType: this._selectedSearchType
 		});
 
-		if (!!this._secondExecutionPlanDiagram) {
-			this.searchSecondPlan();
-		}
-
 		this._usePreviousSearchResult = true;
-	}
-
-	private searchSecondPlan(): void {
-		this._currentSecondSearchResultIndex = 0;
-		this._secondSearchResults = this._secondExecutionPlanDiagram.searchNodes({
-			propertyName: this._propertyNameSelectBox.value,
-			value: this._searchTextInputBox.value,
-			searchType: this._selectedSearchType
-		});
 	}
 
 	public next(): void {
@@ -179,18 +158,6 @@ export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 		this._currentSearchResultIndex = this._currentSearchResultIndex === this._searchResults.length - 1 ?
 			this._currentSearchResultIndex = 0 :
 			this._currentSearchResultIndex = ++this._currentSearchResultIndex;
-
-		if (!!this._secondExecutionPlanDiagram) {
-			this.secondPlanNext();
-		}
-	}
-
-	private secondPlanNext(): void {
-		this._secondExecutionPlanDiagram.centerElement(this._secondSearchResults[this._currentSecondSearchResultIndex]);
-		this._secondExecutionPlanDiagram.selectElement(this._secondSearchResults[this._currentSecondSearchResultIndex]);
-		this._currentSecondSearchResultIndex = this._currentSecondSearchResultIndex === this._secondSearchResults.length - 1 ?
-			this._currentSecondSearchResultIndex = 0 :
-			this._currentSecondSearchResultIndex = ++this._currentSecondSearchResultIndex;
 	}
 
 	public previous(): void {
@@ -203,18 +170,6 @@ export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 		this._currentSearchResultIndex = this._currentSearchResultIndex === 0 ?
 			this._currentSearchResultIndex = this._searchResults.length - 1 :
 			this._currentSearchResultIndex = --this._currentSearchResultIndex;
-
-		if (!!this._secondExecutionPlanDiagram) {
-			this.secondPlanPrevious();
-		}
-	}
-
-	private secondPlanPrevious(): void {
-		this._secondExecutionPlanDiagram.centerElement(this._secondSearchResults[this._currentSecondSearchResultIndex]);
-		this._secondExecutionPlanDiagram.selectElement(this._secondSearchResults[this._currentSecondSearchResultIndex]);
-		this._currentSecondSearchResultIndex = this._currentSecondSearchResultIndex === 0 ?
-			this._currentSecondSearchResultIndex = this._secondSearchResults.length - 1 :
-			this._currentSecondSearchResultIndex = --this._currentSecondSearchResultIndex;
 	}
 }
 
