@@ -46,12 +46,10 @@ export class RadioGroupLoadingComponentBuilder implements azdata.ComponentBuilde
 
 			let options: (string[] | azdata.CategoryValue[]) = optionsInfo.values!;
 			let defaultValue: string | ResourceTypeOptionValue = optionsInfo.defaultValue!;
-			if (optionsInfo.defaultValue) {
-				if ((<ResourceTypeOptionValue>optionsInfo.defaultValue).displayName) {
-					defaultValue = (<ResourceTypeOptionValue>optionsInfo.defaultValue).displayName;
-				} else {
-					defaultValue = optionsInfo.defaultValue;
-				}
+			if (typeof optionsInfo.defaultValue === 'string') {
+				defaultValue = optionsInfo.defaultValue;
+			} else {
+				defaultValue = optionsInfo.defaultValue.displayName;
 			}
 			options.forEach((op: string | azdata.CategoryValue) => {
 				const option: azdata.CategoryValue = (typeof op === 'string')
