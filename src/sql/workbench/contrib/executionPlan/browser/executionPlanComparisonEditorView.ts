@@ -83,7 +83,7 @@ export class ExecutionPlanComparisonEditorView {
 		bottomPolygon: azdata.executionPlan.ExecutionGraphComparisonResult
 	}> = new Map();
 
-	public get _activeTopPlanDiagram(): AzdataGraphView {
+	public get activeTopPlanDiagram(): AzdataGraphView {
 		if (this.topPlanDiagrams.length > 0) {
 			return this.topPlanDiagrams[this._activeTopPlanIndex];
 		}
@@ -101,7 +101,7 @@ export class ExecutionPlanComparisonEditorView {
 	private _bottomSimilarNode: Map<string, azdata.executionPlan.ExecutionGraphComparisonResult> = new Map();
 	private _latestRequestUuid: string;
 
-	public get _activeBottomPlanDiagram(): AzdataGraphView {
+	public get activeBottomPlanDiagram(): AzdataGraphView {
 		if (this.bottomPlanDiagrams.length > 0) {
 			return this.bottomPlanDiagrams[this._activeBottomPlanIndex];
 		}
@@ -194,10 +194,10 @@ export class ExecutionPlanComparisonEditorView {
 		this._topPlanDropdown = new SelectBox(['option 1', 'option2'], 'option1', this.contextViewService, this._topPlanDropdownContainer);
 		this._topPlanDropdown.render(this._topPlanDropdownContainer);
 		this._topPlanDropdown.onDidSelect(async (e) => {
-			if (this._activeBottomPlanDiagram) {
-				this._activeBottomPlanDiagram.clearSubtreePolygon();
+			if (this.activeBottomPlanDiagram) {
+				this.activeBottomPlanDiagram.clearSubtreePolygon();
 			}
-			this._activeTopPlanDiagram.clearSubtreePolygon();
+			this.activeTopPlanDiagram.clearSubtreePolygon();
 			this._topPlanDiagramContainers.forEach(c => {
 				c.style.display = 'none';
 			});
@@ -205,7 +205,7 @@ export class ExecutionPlanComparisonEditorView {
 			this._propertiesView.setTopElement(this._topPlanDiagramModels[e.index].root);
 			this._topPlanRecommendations.recommendations = this._topPlanDiagramModels[e.index].recommendations;
 			this._activeTopPlanIndex = e.index;
-			this._activeTopPlanDiagram.disableNodeCollapse(true);
+			this.activeTopPlanDiagram.disableNodeCollapse(true);
 
 			await this.getSkeletonNodes();
 		});
@@ -221,9 +221,9 @@ export class ExecutionPlanComparisonEditorView {
 		this._bottomPlanDropdown = new SelectBox(['option 1', 'option2'], 'option1', this.contextViewService, this._bottomPlanDropdownContainer);
 		this._bottomPlanDropdown.render(this._bottomPlanDropdownContainer);
 		this._bottomPlanDropdown.onDidSelect(async (e) => {
-			this._activeBottomPlanDiagram.clearSubtreePolygon();
-			if (this._activeTopPlanDiagram) {
-				this._activeTopPlanDiagram.clearSubtreePolygon();
+			this.activeBottomPlanDiagram.clearSubtreePolygon();
+			if (this.activeTopPlanDiagram) {
+				this.activeTopPlanDiagram.clearSubtreePolygon();
 			}
 			this._bottomPlanDiagramContainers.forEach(c => {
 				c.style.display = 'none';
@@ -232,7 +232,7 @@ export class ExecutionPlanComparisonEditorView {
 			this._propertiesView.setTopElement(this._bottomPlanDiagramModels[e.index].root);
 			this._bottomPlanRecommendations.recommendations = this._bottomPlanDiagramModels[e.index].recommendations;
 			this._activeBottomPlanIndex = e.index;
-			this._activeBottomPlanDiagram.disableNodeCollapse(true);
+			this.activeBottomPlanDiagram.disableNodeCollapse(true);
 
 			await this.getSkeletonNodes();
 		});
@@ -342,11 +342,11 @@ export class ExecutionPlanComparisonEditorView {
 					const id = e.id.replace(`element-`, '');
 					if (this._topSimilarNode.has(id)) {
 						const similarNode = this._topSimilarNode.get(id);
-						const element = this._activeBottomPlanDiagram.getElementById(`element-` + similarNode.matchingNodesId[0]);
-						if (similarNode.matchingNodesId.find(m => this._activeBottomPlanDiagram.getSelectedElement().id === `element-` + m) !== undefined) {
+						const element = this.activeBottomPlanDiagram.getElementById(`element-` + similarNode.matchingNodesId[0]);
+						if (similarNode.matchingNodesId.find(m => this.activeBottomPlanDiagram.getSelectedElement().id === `element-` + m) !== undefined) {
 							return;
 						}
-						this._activeBottomPlanDiagram.selectElement(element);
+						this.activeBottomPlanDiagram.selectElement(element);
 					}
 				});
 				this.topPlanDiagrams.push(diagram);
@@ -378,11 +378,11 @@ export class ExecutionPlanComparisonEditorView {
 					const id = e.id.replace(`element-`, '');
 					if (this._bottomSimilarNode.has(id)) {
 						const similarNode = this._bottomSimilarNode.get(id);
-						const element = this._activeTopPlanDiagram.getElementById(`element-` + similarNode.matchingNodesId[0]);
-						if (similarNode.matchingNodesId.find(m => this._activeTopPlanDiagram.getSelectedElement().id === `element-` + m) !== undefined) {
+						const element = this.activeTopPlanDiagram.getElementById(`element-` + similarNode.matchingNodesId[0]);
+						if (similarNode.matchingNodesId.find(m => this.activeTopPlanDiagram.getSelectedElement().id === `element-` + m) !== undefined) {
 							return;
 						}
-						this._activeTopPlanDiagram.selectElement(element);
+						this.activeTopPlanDiagram.selectElement(element);
 					}
 				});
 				this.bottomPlanDiagrams.push(diagram);
@@ -396,7 +396,7 @@ export class ExecutionPlanComparisonEditorView {
 	}
 
 	private async getSkeletonNodes(): Promise<void> {
-		if (!this._activeBottomPlanDiagram) {
+		if (!this.activeBottomPlanDiagram) {
 			return;
 		}
 		this._progressService.withProgress(
@@ -424,8 +424,8 @@ export class ExecutionPlanComparisonEditorView {
 					this.getSimilarSubtrees(result.secondComparisonResult, true);
 					let colorIndex = 0;
 					this._polygonRootsMap.forEach((v, k) => {
-						this._activeTopPlanDiagram.drawSubtreePolygon(v.topPolygon.baseNode.id, polygonFillColor[colorIndex], polygonBorderColor[colorIndex]);
-						this._activeBottomPlanDiagram.drawSubtreePolygon(v.bottomPolygon.baseNode.id, polygonFillColor[colorIndex], polygonBorderColor[colorIndex]);
+						this.activeTopPlanDiagram.drawSubtreePolygon(v.topPolygon.baseNode.id, polygonFillColor[colorIndex], polygonBorderColor[colorIndex]);
+						this.activeBottomPlanDiagram.drawSubtreePolygon(v.bottomPolygon.baseNode.id, polygonFillColor[colorIndex], polygonBorderColor[colorIndex]);
 						colorIndex += 1;
 					});
 				}
@@ -518,37 +518,37 @@ export class ExecutionPlanComparisonEditorView {
 	}
 
 	public zoomIn(): void {
-		this._activeTopPlanDiagram.zoomIn();
-		this._activeBottomPlanDiagram.zoomIn();
+		this.activeTopPlanDiagram.zoomIn();
+		this.activeBottomPlanDiagram.zoomIn();
 		this.syncZoom();
 	}
 
 	public zoomOut(): void {
-		this._activeTopPlanDiagram.zoomOut();
-		this._activeBottomPlanDiagram.zoomOut();
+		this.activeTopPlanDiagram.zoomOut();
+		this.activeBottomPlanDiagram.zoomOut();
 		this.syncZoom();
 	}
 
 	public zoomToFit(): void {
-		this._activeTopPlanDiagram.zoomToFit();
-		this._activeBottomPlanDiagram.zoomToFit();
+		this.activeTopPlanDiagram.zoomToFit();
+		this.activeBottomPlanDiagram.zoomToFit();
 		this.syncZoom();
 	}
 
 	public resetZoom(): void {
-		if (this._activeTopPlanDiagram) {
-			this._activeTopPlanDiagram.setZoomLevel(100);
+		if (this.activeTopPlanDiagram) {
+			this.activeTopPlanDiagram.setZoomLevel(100);
 		}
-		if (this._activeBottomPlanDiagram) {
-			this._activeBottomPlanDiagram.setZoomLevel(100);
+		if (this.activeBottomPlanDiagram) {
+			this.activeBottomPlanDiagram.setZoomLevel(100);
 		}
 	}
 
 	private syncZoom(): void {
-		if (this._activeTopPlanDiagram.getZoomLevel() < this._activeBottomPlanDiagram.getZoomLevel()) {
-			this._activeBottomPlanDiagram.setZoomLevel(this._activeTopPlanDiagram.getZoomLevel());
+		if (this.activeTopPlanDiagram.getZoomLevel() < this.activeBottomPlanDiagram.getZoomLevel()) {
+			this.activeBottomPlanDiagram.setZoomLevel(this.activeTopPlanDiagram.getZoomLevel());
 		} else {
-			this._activeTopPlanDiagram.setZoomLevel(this._activeBottomPlanDiagram.getZoomLevel());
+			this.activeTopPlanDiagram.setZoomLevel(this.activeBottomPlanDiagram.getZoomLevel());
 		}
 	}
 }
@@ -670,8 +670,8 @@ class SearchNodeAction extends Action {
 	public override async run(context: ExecutionPlanComparisonEditorView): Promise<void> {
 		this.telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.FindNode);
 
-		let nodeSearchWidget = context._instantiationService.createInstance(NodeSearchWidget, context.widgetController, context._activeTopPlanDiagram);
-		let activeBottomPlanDiagram = context._activeBottomPlanDiagram;
+		let nodeSearchWidget = context._instantiationService.createInstance(NodeSearchWidget, context.widgetController, context.activeTopPlanDiagram);
+		let activeBottomPlanDiagram = context.activeBottomPlanDiagram;
 		nodeSearchWidget.secondExecutionPlan = activeBottomPlanDiagram;
 		context.widgetController.toggleWidget(nodeSearchWidget);
 	}

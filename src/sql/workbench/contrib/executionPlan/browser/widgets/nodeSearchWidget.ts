@@ -48,7 +48,7 @@ export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 
 	constructor(
 		public readonly planActionView: ExecutionPlanWidgetController,
-		private readonly executionPlanDiagram: AzdataGraphView,
+		private readonly _executionPlanDiagram: AzdataGraphView,
 		@IContextViewService public readonly contextViewService: IContextViewService,
 		@IThemeService public readonly themeService: IThemeService
 	) {
@@ -57,7 +57,7 @@ export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 		// property name dropdown
 		this._propertyNameSelectBoxContainer = DOM.$('.search-widget-property-name-select-box .dropdown-container');
 		this.container.appendChild(this._propertyNameSelectBoxContainer);
-		const propDropdownOptions = this.executionPlanDiagram.getUniqueElementProperties();
+		const propDropdownOptions = this._executionPlanDiagram.getUniqueElementProperties();
 		this._propertyNameSelectBox = new SelectBox(propDropdownOptions, propDropdownOptions[0], this.contextViewService, this._propertyNameSelectBoxContainer);
 		attachSelectBoxStyler(this._propertyNameSelectBox, this.themeService);
 		this._propertyNameSelectBoxContainer.style.width = '150px';
@@ -147,7 +147,7 @@ export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 
 	public searchNodes(): void {
 		this._currentSearchResultIndex = 0;
-		this._searchResults = this.executionPlanDiagram.searchNodes({
+		this._searchResults = this._executionPlanDiagram.searchNodes({
 			propertyName: this._propertyNameSelectBox.value,
 			value: this._searchTextInputBox.value,
 			searchType: this._selectedSearchType
@@ -174,8 +174,8 @@ export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 			this.searchNodes();
 		}
 
-		this.executionPlanDiagram.centerElement(this._searchResults[this._currentSearchResultIndex]);
-		this.executionPlanDiagram.selectElement(this._searchResults[this._currentSearchResultIndex]);
+		this._executionPlanDiagram.centerElement(this._searchResults[this._currentSearchResultIndex]);
+		this._executionPlanDiagram.selectElement(this._searchResults[this._currentSearchResultIndex]);
 		this._currentSearchResultIndex = this._currentSearchResultIndex === this._searchResults.length - 1 ?
 			this._currentSearchResultIndex = 0 :
 			this._currentSearchResultIndex = ++this._currentSearchResultIndex;
@@ -198,8 +198,8 @@ export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 			this.searchNodes();
 		}
 
-		this.executionPlanDiagram.centerElement(this._searchResults[this._currentSearchResultIndex]);
-		this.executionPlanDiagram.selectElement(this._searchResults[this._currentSearchResultIndex]);
+		this._executionPlanDiagram.centerElement(this._searchResults[this._currentSearchResultIndex]);
+		this._executionPlanDiagram.selectElement(this._searchResults[this._currentSearchResultIndex]);
 		this._currentSearchResultIndex = this._currentSearchResultIndex === 0 ?
 			this._currentSearchResultIndex = this._searchResults.length - 1 :
 			this._currentSearchResultIndex = --this._currentSearchResultIndex;
