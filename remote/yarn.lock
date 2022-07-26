@@ -220,11 +220,11 @@ async-hook-jl@^1.7.6:
     stack-chain "^1.3.7"
 
   dependencies:
-"azdataGraph@github:Microsoft/azdataGraph#0.0.36":
+"azdataGraph@github:Microsoft/azdataGraph#0.0.37":
 
 base64-js@^1.3.1:
-  version "0.0.33"
-  resolved "https://codeload.github.com/Microsoft/azdataGraph/tar.gz/03b12598831a85f977f5e58f22cbd7ff37e16b04"
+  version "0.0.36"
+  resolved "https://codeload.github.com/Microsoft/azdataGraph/tar.gz/f93a93d5269ebb3768cc75ccb19f2085957f7eb2"
   integrity sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==
 
 bindings@^1.5.0:
