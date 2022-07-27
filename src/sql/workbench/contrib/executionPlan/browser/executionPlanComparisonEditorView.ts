@@ -119,7 +119,7 @@ export class ExecutionPlanComparisonEditorView {
 
 	constructor(
 		parentContainer: HTMLElement,
-		@IInstantiationService public readonly _instantiationService: IInstantiationService,
+		@IInstantiationService private readonly _instantiationService: IInstantiationService,
 		@IThemeService private themeService: IThemeService,
 		@IExecutionPlanService private _executionPlanService: IExecutionPlanService,
 		@IFileDialogService private _fileDialogService: IFileDialogService,
