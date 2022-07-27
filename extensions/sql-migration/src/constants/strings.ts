@@ -8,6 +8,7 @@ import * as nls from 'vscode-nls';
 import { EOL } from 'os';
 import { MigrationStatus } from '../models/migrationLocalStorage';
 import { MigrationSourceAuthenticationType } from '../models/stateMachine';
+import { ParallelCopyTypeCodes, PipelineStatusCodes } from './helper';
 const localize = nls.loadMessageBundle();
 
 
@@ -518,9 +519,9 @@ export const NOTEBOOK_SQL_MIGRATION_ASSESSMENT_TITLE = localize('sql.migration.s
 export const NOTEBOOK_OPEN_ERROR = localize('sql.migration.notebook.open.error', "Failed to open the migration notebook.");
 
 // Dashboard
-export function DASHBOARD_REFRESH_MIGRATIONS(error: string): string {
-	return localize('sql.migration.refresh.migrations.error', "An error occurred while refreshing the migrations list: '{0}'.  Please check your linked Azure connection and click refresh to try again.", error);
-}
+export const DASHBOARD_REFRESH_MIGRATIONS_TITLE = localize('sql.migration.refresh.migrations.error.title', 'An error has occured while refreshing the migrations list.');
+export const DASHBOARD_REFRESH_MIGRATIONS_LABEL = localize('sql.migration.refresh.migrations.error.label', "An error occurred while refreshing the migrations list.  Please check your linked Azure connection and click refresh to try again.");
+
 export const DASHBOARD_TITLE = localize('sql.migration.dashboard.title', "Azure SQL Migration");
 export const DASHBOARD_DESCRIPTION = localize('sql.migration.dashboard.description', "Determine the migration readiness of your SQL Server instances, identify a recommended Azure SQL target, and complete the migration of your SQL Server instance to Azure SQL Managed Instance or SQL Server on Azure Virtual Machines.");
 export const DASHBOARD_MIGRATE_TASK_BUTTON_TITLE = localize('sql.migration.dashboard.migrate.task.button', "Migrate to Azure SQL");
@@ -547,6 +548,7 @@ export function MIGRATION_INPROGRESS_WARNING(count: number) {
 export const FEEDBACK_ISSUE_TITLE = localize('sql.migration.feedback.issue.title', "Feedback on the migration experience");
 
 //Migration cutover dialog
+export const BREADCRUMB_MIGRATIONS = localize('sql.migration.details.breadcrumb.migrations', 'Migrations');
 export const MIGRATION_CUTOVER = localize('sql.migration.cutover', "Migration cutover");
 export const COMPLETE_CUTOVER = localize('sql.migration.complete.cutover', "Complete cutover");
 export const SOURCE_DATABASE = localize('sql.migration.source.database', "Source database name");
@@ -588,6 +590,16 @@ export const NA = localize('sql.migration.na', "N/A");
 export const EMPTY_TABLE_TEXT = localize('sql.migration.empty.table.text', "No backup files");
 export const EMPTY_TABLE_SUBTEXT = localize('sql.migration.empty.table.subtext', "If results were expected, verify the connection to the SQL Server instance.");
 export const MIGRATION_CUTOVER_ERROR = localize('sql.migration.cutover.error', 'An error occurred while initiating cutover.');
+export const REFRESH_BUTTON_TEXT = localize('sql.migration.details.refresh', 'Refresh');
+export const SERVER_OBJECTS_FIELD_LABEL = localize('sql.migration.details.serverobjects.field.label', 'Server objects');
+export const SERVER_OBJECTS_LABEL = localize('sql.migration.details.serverobjects.label', 'Server objects');
+export const SERVER_OBJECTS_ALL_TABLES_LABEL = localize('sql.migration.details.serverobjects.all.tables.label', 'Total tables');
+export const SERVER_OBJECTS_IN_PROGRESS_TABLES_LABEL = localize('sql.migration.details.serverobjects.inprogress.tables.label', 'In progress');
+export const SERVER_OBJECTS_SUCCESSFUL_TABLES_LABEL = localize('sql.migration.details.serverobjects.successful.tables.label', 'Successful');
+export const SERVER_OBJECTS_FAILED_TABLES_LABEL = localize('sql.migration.details.serverobjects.failed.tables.label', 'Failed');
+export const SERVER_OBJECTS_CANCELLED_TABLES_LABEL = localize('sql.migration.details.serverobjects.cancelled.tables.label', 'Cancelled');
+export const FILTER_SERVER_OBJECTS_PLACEHOLDER = localize('sql.migration.details.serverobjects.filter.label', 'Filter table migration results');
+export const FILTER_SERVER_OBJECTS_ARIA_LABEL = localize('sql.migration.details.serverobjects.filter.aria.label', 'Filter table migration results using keywords');
 
 //Migration confirm cutover dialog
 export const COMPLETING_CUTOVER_WARNING = localize('sql.migration.completing.cutover.warning', "Completing cutover without restoring all the backups may result in a data loss.");
@@ -616,6 +628,7 @@ export const MIGRATION_CANNOT_CUTOVER = localize('sql.migration.cannot.cutover',
 export const FILE_NAME = localize('sql.migration.file.name', "File name");
 export const SIZE_COLUMN_HEADER = localize('sql.migration.size.column.header', "Size");
 export const NO_PENDING_BACKUPS = localize('sql.migration.no.pending.backups', "No pending backups. Click refresh to check current status.");
+
 //Migration status dialog
 export const ADD_ACCOUNT = localize('sql.migration.status.add.account', "Add account");
 export const ADD_ACCOUNT_MESSAGE = localize('sql.migration.status.add.account.MESSAGE', "Add your Azure account to view existing migrations and their status.");
@@ -625,11 +638,14 @@ export const STATUS_ONGOING = localize('sql.migration.status.dropdown.ongoing', 
 export const STATUS_COMPLETING = localize('sql.migration.status.dropdown.completing', "Status: Completing");
 export const STATUS_SUCCEEDED = localize('sql.migration.status.dropdown.succeeded', "Status: Succeeded");
 export const STATUS_FAILED = localize('sql.migration.status.dropdown.failed', "Status: Failed");
-export const SEARCH_FOR_MIGRATIONS = localize('sql.migration.search.for.migration', "Search for migrations");
+export const SEARCH_FOR_MIGRATIONS = localize('sql.migration.search.for.migration', "Filter migration results");
 export const ONLINE = localize('sql.migration.online', "Online");
 export const OFFLINE = localize('sql.migration.offline', "Offline");
 export const DATABASE = localize('sql.migration.database', "Database");
-export const STATUS_COLUMN = localize('sql.migration.database.status.column', "Status");
+export const SRC_DATABASE = localize('sql.migration.src.database', "Source database");
+export const SRC_SERVER = localize('sql.migration.src.server', "Source name");
+
+export const STATUS_COLUMN = localize('sql.migration.database.status.column', "Migration status");
 export const DATABASE_MIGRATION_SERVICE = localize('sql.migration.database.migration.service', "Database Migration Service");
 export const DURATION = localize('sql.migration.duration', "Duration");
 export const AZURE_SQL_TARGET = localize('sql.migration.azure.sql.target', "Target type");
@@ -637,7 +653,9 @@ export const SQL_MANAGED_INSTANCE = localize('sql.migration.sql.managed.instance
 export const SQL_VIRTUAL_MACHINE = localize('sql.migration.sql.virtual.machine', "SQL Virtual Machine");
 export const SQL_DATABASE = localize('sql.migration.sql.database', "SQL Database");
 export const TARGET_AZURE_SQL_INSTANCE_NAME = localize('sql.migration.target.azure.sql.instance.name', "Target name");
-export const MIGRATION_MODE = localize('sql.migration.cutover.type', "Migration mode");
+export const TARGET_SERVER_COLUMN = localize('sql.migration.target.azure.sql.instance.server.name', "Target name");
+export const TARGET_DATABASE_COLUMN = localize('sql.migration.target.azure.sql.instance.database.name', "Target database");
+export const MIGRATION_MODE = localize('sql.migration.cutover.type', "Mode");
 export const START_TIME = localize('sql.migration.start.time', "Start time");
 export const FINISH_TIME = localize('sql.migration.finish.time', "Finish time");
 
@@ -648,18 +666,51 @@ export function STATUS_VALUE(status: string, count: number): string {
 	return localize('sql.migration.status.error.count.none', "{0}", StatusLookup[status] ?? status);
 }
 
+export const MIGRATION_ERROR_DETAILS_TITLE = localize('sql.migration.error.details.title', "Migration error details");
+export const MIGRATION_ERROR_DETAILS_LABEL = localize('sql.migration.error.details.label', "Migration error(s))");
+export const OPEN_MIGRATION_DETAILS_ERROR = localize('sql.migration.open.migration.destails.error', "Error opening migration details dialog");
+export const OPEN_MIGRATION_TARGET_ERROR = localize('sql.migration.open.migration.target.error', "Error opening migration target");
+export const OPEN_MIGRATION_SERVICE_ERROR = localize('sql.migration.open.migration.service.error', "Error opening migration service dialog");
+export const LOAD_MIGRATION_LIST_ERROR = localize('sql.migration.load.migration.list.error', "Error loading migrations list");
+export const ERROR_DIALOG_CLEAR_BUTTON_LABEL = localize('sql.migration.error.dialog.clear.button.label', "Clear");
+
 export interface LookupTable<T> {
 	[key: string]: T;
 }
 
+
 export const StatusLookup: LookupTable<string | undefined> = {
-	['InProgress']: localize('sql.migration.status.inprogress', 'In progress'),
-	['Succeeded']: localize('sql.migration.status.succeeded', 'Succeeded'),
-	['Creating']: localize('sql.migration.status.creating', 'Creating'),
-	['Completing']: localize('sql.migration.status.completing', 'Completing'),
-	['Canceling']: localize('sql.migration.status.canceling', 'Canceling'),
-	['Failed']: localize('sql.migration.status.failed', 'Failed'),
+	[MigrationStatus.InProgress]: localize('sql.migration.status.inprogress', 'In progress'),
+	[MigrationStatus.Succeeded]: localize('sql.migration.status.succeeded', 'Succeeded'),
+	[MigrationStatus.Creating]: localize('sql.migration.status.creating', 'Creating'),
+	[MigrationStatus.Completing]: localize('sql.migration.status.completing', 'Completing'),
+	[MigrationStatus.Retriable]: localize('sql.migration.status.retriable', 'Retriable'),
+	[MigrationStatus.Canceling]: localize('sql.migration.status.canceling', 'Canceling'),
+	[MigrationStatus.Canceled]: localize('sql.migration.status.canceled', 'Canceled'),
+	[MigrationStatus.Failed]: localize('sql.migration.status.failed', 'Failed'),
 	default: undefined
+};
+
+export const PipelineRunStatus: LookupTable<string | undefined> = {
+	// status codes: ['PreparingForCopy' | 'Copying' | 'CopyFinished' | 'RebuildingIndexes' | 'Succeeded' | 'Failed' |	'Canceled']
+	[PipelineStatusCodes.PreparingForCopy]: localize('sql.migration.copy.status.preparingforcopy', 'Preparing'),
+	[PipelineStatusCodes.Copying]: localize('sql.migration.copy.status.copying', 'Copying'),
+	[PipelineStatusCodes.CopyFinished]: localize('sql.migration.copy.status.copyfinished', 'Copy finished'),
+	[PipelineStatusCodes.RebuildingIndexes]: localize('sql.migration.copy.status.rebuildingindexes', 'Rebuilding indexes'),
+	[PipelineStatusCodes.Succeeded]: localize('sql.migration.copy.status.succeeded', 'Succeeded'),
+	[PipelineStatusCodes.Failed]: localize('sql.migration.copy.status.failed', 'Failed'),
+	[PipelineStatusCodes.Canceled]: localize('sql.migration.copy.status.canceled', 'Canceled'),
+
+	// legacy status codes ['Queued', 'InProgress', 'Cancelled']
+	[PipelineStatusCodes.Queued]: localize('sql.migration.copy.status.queued', 'Queued'),
+	[PipelineStatusCodes.InProgress]: localize('sql.migration.copy.status.inprogress', 'In progress'),
+	[PipelineStatusCodes.Cancelled]: localize('sql.migration.copy.status.cancelled', 'Cancelled'),
+};
+
+export const ParallelCopyType: LookupTable<string | undefined> = {
+	[ParallelCopyTypeCodes.None]: localize('sql.migration.parallel.copy.type.none', 'None'),
+	[ParallelCopyTypeCodes.PhysicalPartitionsOfTable]: localize('sql.migration.parallel.copy.type.physical', 'Physical partitions'),
+	[ParallelCopyTypeCodes.DynamicRange]: localize('sql.migration.parallel.copy.type.dynamic', 'Dynamic range'),
 };
 
 export function STATUS_WARNING_COUNT(status: string, count: number): string | undefined {
@@ -697,6 +748,27 @@ export function MINUTE(mins: number): string {
 }
 export function SEC(sec: number): string {
 	return localize('sql.migration.sec', "{0} sec", sec);
+}
+
+export const sizeFormatter = new Intl.NumberFormat(
+	undefined, {
+	style: 'decimal',
+	useGrouping: true,
+	minimumIntegerDigits: 1,
+	minimumFractionDigits: 2,
+	maximumFractionDigits: 2,
+});
+
+export function formatSizeMb(sizeMb: number): string {
+	if (isNaN(sizeMb) || sizeMb < 0) {
+		return '';
+	} else if (sizeMb < 1024) {
+		return localize('sql.migration.size.mb', "{0} MB", sizeFormatter.format(sizeMb));
+	} else if (sizeMb < 1024 * 1024) {
+		return localize('sql.migration.size.gb', "{0} GB", sizeFormatter.format(sizeMb / 1024));
+	} else {
+		return localize('sql.migration.size.tb', "{0} TB", sizeFormatter.format(sizeMb / 1024 / 1024));
+	}
 }
 
 // SQL Migration Service Details page.
@@ -761,6 +833,9 @@ export function WARNINGS_COUNT(totalCount: number): string {
 export const AUTHENTICATION_TYPE = localize('sql.migration.authentication.type', "Authentication type");
 
 export const REFRESH_BUTTON_LABEL = localize('sql.migration.status.refresh.label', 'Refresh');
+export const STATUS_LABEL = localize('sql.migration.status.status.label', 'Status');
+export const SORT_LABEL = localize('sql.migration.migration.list.sort.label', 'Sort');
+export const ASCENDING_LABEL = localize('sql.migration.migration.list.ascending.label', 'Ascending');
 
 // Saved Assessment Dialog
 export const NEXT_LABEL = localize('sql.migration.saved.assessment.next', "Next");
@@ -786,3 +861,46 @@ export function MIGRATION_SERVICE_SERVICE_PROMPT(serviceName: string): string {
 	return localize('sql.migration.service.prompt', '{0} (change)', serviceName);
 }
 export const MIGRATION_SERVICE_DESCRIPTION = localize('sql.migration.select.service.description', 'Azure Database Migration Service');
+
+// Desktop tabs
+export const DESKTOP_MIGRATION_BUTTON_LABEL = localize('sql.migration.tab.button.migration.label', 'New migration');
+export const DESKTOP_MIGRATION_BUTTON_DESCRIPTION = localize('sql.migration.tab.button.migration.description', 'Migrate to Azure SQL');
+export const DESKTOP_SUPPORT_BUTTON_LABEL = localize('sql.migration.tab.button.support.label', 'New support request');
+export const DESKTOP_SUPPORT_BUTTON_DESCRIPTION = localize('sql.migration.tab.button.support.description', 'New support request');
+export const DESKTOP_FEEDBACK_BUTTON_LABEL = localize('sql.migration.tab.button.feedback.label', 'Feedback');
+export const DESKTOP_FEEDBACK_BUTTON_DESCRIPTION = localize('sql.migration.tab.button.feedback.description', 'Feedback');
+export const DESKTOP_DASHBOARD_TAB_TITLE = localize('sql.migration.tab.dashboard.title', 'Dashboard');
+export const DESKTOP_MIGRATIONS_TAB_TITLE = localize('sql.migration.tab.migrations.title', 'Migrations');
+
+// dashboard tab
+export const DASHBOARD_HELP_LINK_MIGRATE_USING_ADS = localize('sql.migration.dashboard.help.link.migrateUsingADS', 'Migrate databases using Azure Data Studio');
+export const DASHBOARD_HELP_DESCRIPTION_MIGRATE_USING_ADS = localize('sql.migration.dashboard.help.description.migrateUsingADS', 'The Azure SQL Migration extension for Azure Data Studio provides capabilities to assess, get right-sized Azure recommendations and migrate SQL Server databases to Azure.');
+export const DASHBOARD_HELP_LINK_MI_TUTORIAL = localize('sql.migration.dashboard.help.link.mi', 'Tutorial:  Migrate to Azure SQL Managed Instance (online)');
+export const DASHBOARD_HELP_DESCRIPTION_MI_TUTORIAL = localize('sql.migration.dashboard.help.description.mi', 'A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Managed Instance with minimal downtime.');
+export const DASHBOARD_HELP_LINK_VM_TUTORIAL = localize('sql.migration.dashboard.help.link.vm', 'Tutorial:  Migrate to SQL Server on Azure Virtual Machines (online)');
+export const DASHBOARD_HELP_DESCRIPTION_VMTUTORIAL = localize('sql.migration.dashboard.help.description.vm', 'A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises) to SQL Server on Azure Virtual Machines with minimal downtime.');
+export const DASHBOARD_HELP_LINK_DMS_GUIDE = localize('sql.migration.dashboard.help.link.dmsGuide', 'Azure Database Migration Guides');
+export const DASHBOARD_HELP_DESCRIPTION_DMS_GUIDE = localize('sql.migration.dashboard.help.description.dmsGuide', 'A hub of migration articles that provides step-by-step guidance for migrating and modernizing your data assets in Azure.');
+
+// Error info
+export const DATABASE_MIGRATION_STATUS_TITLE = localize('sql.migration.error.title', 'Migration status details');
+export const TABLE_MIGRATION_STATUS_TITLE = localize('sql.migration.table.error.title', 'Table migration status details');
+
+export function DATABASE_MIGRATION_STATUS_LABEL(status?: string): string {
+	return localize('sql.migration.database.migration.status.label', 'Database migration status: {0}', status ?? '');
+}
+
+export function TABLE_MIGRATION_STATUS_LABEL(status?: string): string {
+	return localize('sql.migration.table.migration.status.label', 'Table migration status: {0}', status ?? '');
+}
+
+export const SQLDB_COL_TABLE_NAME = localize('sql.migration.sqldb.column.tablename', 'Table name');
+export const SQLDB_COL_DATA_READ = localize('sql.migration.sqldb.column.dataread', 'Data read');
+export const SQLDB_COL_DATA_WRITTEN = localize('sql.migration.sqldb.column.datawritten', 'Data written');
+export const SQLDB_COL_ROWS_READ = localize('sql.migration.sqldb.column.rowsread', 'Rows read');
+export const SQLDB_COL_ROWS_COPIED = localize('sql.migration.sqldb.column.rowscopied', 'Rows copied');
+export const SQLDB_COL_COPY_THROUGHPUT = localize('sql.migration.sqldb.column.copythroughput', 'Copy throughput');
+export const SQLDB_COL_COPY_DURATION = localize('sql.migration.sqldb.column.copyduration', 'Copy duration');
+export const SQLDB_COL_PARRALEL_COPY_TYPE = localize('sql.migration.sqldb.column.parallelcopytype', 'Parallel copy type');
+export const SQLDB_COL_USED_PARALLEL_COPIES = localize('sql.migration.sqldb.column.usedparallelcopies', 'Used parallel copies');
+export const SQLDB_COL_COPY_START = localize('sql.migration.sqldb.column.copystart', 'Copy start');

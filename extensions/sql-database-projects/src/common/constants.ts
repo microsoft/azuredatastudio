@@ -601,3 +601,5 @@ export enum PublishTargetType {
 	docker = 'docker',
 	newAzureServer = 'newAzureServer'
 }
+
+export const CollapseProjectNodesKey = 'collapseProjectNodes';

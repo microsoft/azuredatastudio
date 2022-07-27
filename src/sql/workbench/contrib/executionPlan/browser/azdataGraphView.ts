@@ -8,7 +8,7 @@ import * as azdata from 'azdata';
 import * as sqlExtHostType from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { isString } from 'vs/base/common/types';
-import { badgeIconPaths, executionPlanNodeIconPaths } from 'sql/workbench/contrib/executionPlan/browser/constants';
+import { badgeIconPaths, collapseExpandNodeIconPaths, executionPlanNodeIconPaths } from 'sql/workbench/contrib/executionPlan/browser/constants';
 import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
@@ -38,9 +38,17 @@ export class AzdataGraphView {
 	) {
 		this._parentContainer.tabIndex = 0;
 		this._diagramModel = this.populate(this._executionPlan.root);
-		this._diagram = new azdataGraph.azdataQueryPlan(this._parentContainer, this._diagramModel, executionPlanNodeIconPaths, badgeIconPaths);
+
+		let queryPlanConfiguration = {
+			container: this._parentContainer,
+			queryPlanGraph: this._diagramModel,
+			iconPaths: executionPlanNodeIconPaths,
+			badgeIconPaths: badgeIconPaths,
+			expandCollapsePaths: collapseExpandNodeIconPaths
+		};
+		this._diagram = new azdataGraph.azdataQueryPlan(queryPlanConfiguration);
+
 		this.setGraphProperties();
-		this.selectElement(this._executionPlan.root);
 		this._cellInFocus = this._diagram.graph.getSelectionCell();
 		this.initializeGraphEvents();
 	}
@@ -63,7 +71,7 @@ export class AzdataGraphView {
 		this.onElementSelected = this._onElementSelectedEmitter.event;
 		this._diagram.graph.getSelectionModel().addListener('change', (sender, evt) => {
 			if (evt.properties?.removed) {
-				if (this._cellInFocus.id === evt.properties.removed[0].id) {
+				if (this._cellInFocus?.id === evt.properties.removed[0].id) {
 					return;
 				}
 				const newSelection = evt.properties.removed[0];
@@ -408,6 +416,10 @@ export class AzdataGraphView {
 
 	public clearSubtreePolygon(): void {
 		this._diagram.removeDrawnPolygons();
+	}
+
+	public disableNodeCollapse(disable: boolean): void {
+		this._diagram.disableNodeCollapse(disable);
 	}
 }
 

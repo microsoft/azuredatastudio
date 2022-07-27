@@ -94,6 +94,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.OptionNotFoundWarningMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[label: {0} does not exist in the options value name lookup]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[etichetta: {0} non esiste nella ricerca del nome del valore delle opzioni]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -208,6 +211,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.advancedPublishOptions" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Advanced Publish Options]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Opzioni di pubblicazione avanzate]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3090,6 +3096,15 @@
           <Val><![CDATA[Close Database Project]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Chiudere il progetto di database]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-database-projects/package.sqlDatabaseProjects.collapseProjectNodes" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Whether project nodes start collapsed]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Indica se i nodi del progetto iniziano a essere compressi]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

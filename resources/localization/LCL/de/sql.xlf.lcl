@@ -12621,24 +12621,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryPlan/browser/queryPlan.queryPlanTitle" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Query Plan]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Abfrageplan]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryPlan/browser/queryPlanEditor.queryPlanEditor" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Query Plan Editor]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Abfrageplan-Editor]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";src/sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution.deployment.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[New Deployment...]]></Val>
@@ -15937,7 +15919,7 @@
         <Str Cat="Text">
           <Val><![CDATA[The specified provider '{0}' is not present in the notebook registry.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Der angegebene Anbieter „{0}“ ist in der Notebookregistrierung nicht vorhanden.]]></Val>
+            <Val><![CDATA[Der angegebene Anbieter '{0}' ist in der Notebookregistrierung nicht vorhanden.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

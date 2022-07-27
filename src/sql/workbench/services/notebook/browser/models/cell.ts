@@ -37,6 +37,7 @@ import { IModeService } from 'vs/editor/common/services/modeService';
 import { ICellMetadata } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { alert } from 'vs/base/browser/ui/aria/aria';
 import { CELL_URI_PATH_PREFIX } from 'sql/workbench/common/constants';
+import { DotnetInteractiveLanguagePrefix } from 'sql/workbench/api/common/notebooks/notebookUtils';
 
 let modelId = 0;
 const ads_execute_command = 'ads_execute_command';
@@ -349,7 +350,12 @@ export class CellModel extends Disposable implements ICellModel {
 	private attachImageFromSource(newSource: string | string[]): string | string[] {
 		if (!Array.isArray(newSource) && this.isValidBase64OctetStream(newSource)) {
 			let results;
-			while ((results = validBase64OctetStreamRegex.exec(newSource)) !== null) {
+			// only replace the base64 value if it's from markdown [](base64value) not html tags <img src="base64value">
+			let validImageTag = /<img\s+[^>]*src="([^"]*)"[^>]*>/;
+			let imageResults;
+			// Note: Currently this will not process any markdown image attachments that are below an HTML img element.
+			// This is acceptable for now given the low risk of this happening and an easy workaround being to just changing the img element to a markdown embedded image instead
+			while ((results = validBase64OctetStreamRegex.exec(newSource)) !== null && ((imageResults = validImageTag.exec(newSource)) !== null && this.isValidBase64OctetStream(imageResults[1]) && results[0] !== imageResults[1])) {
 				let imageName = this.addAttachment(results[1], results[0], 'image.png');
 				newSource = newSource.replace(validBase64OctetStreamRegex, `attachment:${imageName}`);
 			}
@@ -1014,6 +1020,10 @@ export class CellModel extends Disposable implements ICellModel {
 			cellJson.execution_count = this.executionCount ? this.executionCount : null;
 			if (this._configurationService?.getValue('notebook.saveConnectionName')) {
 				metadata.connection_name = this._savedConnectionName;
+			}
+			// Set .NET Interactive language field for vscode compatibility
+			if (this._language?.startsWith(DotnetInteractiveLanguagePrefix)) {
+				(cellJson.metadata as ICellMetadata).dotnet_interactive = { language: this._language.replace(DotnetInteractiveLanguagePrefix, '') };
 			}
 		} else if (this._cellType === CellTypes.Markdown && this._attachments) {
 			cellJson.attachments = this._attachments;
