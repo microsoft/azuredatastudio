@@ -217,7 +217,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _perfDataCollectionErrors!: string[];
 	public _perfDataCollectionIsCollecting!: boolean;
 
-	public readonly _performanceDataQueryIntervalInSeconds = 3;
+	public readonly _refreshGetSkuRecommendationIntervalInMinutes = 10;
+	public readonly _performanceDataQueryIntervalInSeconds = 30;
 	public readonly _staticDataQueryIntervalInSeconds = 15;
 	public readonly _numberOfPerformanceDataQueryIterations = 19;
 	public readonly _defaultDataPointStartTime = '1900-01-01 00:00:00';
@@ -226,7 +227,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public refreshPerfDataCollectionFrequency = this._performanceDataQueryIntervalInSeconds * 1000;
 	private _autoRefreshPerfDataCollectionHandle!: NodeJS.Timeout;
-	public refreshGetSkuRecommendationFrequency = constants.TIME_IN_MINUTES(1);
+	public refreshGetSkuRecommendationFrequency = constants.TIME_IN_MINUTES(this._refreshGetSkuRecommendationIntervalInMinutes);
 	private _autoRefreshGetSkuRecommendationHandle!: NodeJS.Timeout;
 
 	public _skuScalingFactor!: number;
@@ -360,6 +361,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		try {
 			let fullInstanceName: string;
 
+			// execute a query against the source to get the correct instance name
 			const connectionProfile = await this.getSourceConnectionProfile();
 			const connectionUri = await azdata.connection.getUriForConnection(this._sourceConnectionId);
 			const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(connectionProfile.providerId, azdata.DataProviderType.QueryProvider);
@@ -369,9 +371,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			if (queryResult.rowCount > 0) {
 				fullInstanceName = queryResult.rows[0][0].displayValue;
 			} else {
-				// backup
+				// get the instance name from connection info in case querying for the instance name doesn't work for whatever reason
 				const serverInfo = await azdata.connection.getServerInfo(this.sourceConnectionId);
-				const machineName = (<any>serverInfo)['machineName'];	// contains the correct machine name but not necessarily the correct instance name
+				const machineName = (<any>serverInfo)['machineName'];						// contains the correct machine name but not necessarily the correct instance name
 				const instanceName = (await this.getSourceConnectionProfile()).serverName;	// contains the correct instance name but not necessarily the correct machine name
 
 				if (instanceName.includes('\\')) {
@@ -406,19 +408,32 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					},
 				};
 			} else {
-				// this._skuRecommendationResults = {
-				// 	recommendations: {
-				// 		baselineModelResults: null,
-				// 		elasticModelResults: null,
-				// 		instanceRequirements: response?.instanceRequirements
-				// 	},
-				// };
+				this._skuRecommendationResults = {
+					recommendations: {
+						baselineModelResults: {
+							sqlDbRecommendationResults: [],
+							sqlMiRecommendationResults: [],
+							sqlVmRecommendationResults: [],
+							sqlDbRecommendationDurationInMs: -1,
+							sqlMiRecommendationDurationInMs: -1,
+							sqlVmRecommendationDurationInMs: -1
+						},
+						elasticModelResults: {
+							sqlDbRecommendationResults: [],
+							sqlMiRecommendationResults: [],
+							sqlVmRecommendationResults: [],
+							sqlDbRecommendationDurationInMs: -1,
+							sqlMiRecommendationDurationInMs: -1,
+							sqlVmRecommendationDurationInMs: -1
+						},
+						instanceRequirements: response?.instanceRequirements
+					},
+				};
 			}
 
 		} catch (error) {
 			logError(TelemetryViews.SkuRecommendationWizard, 'GetSkuRecommendationFailed', error);
 
-			//
 			this._skuRecommendationResults = {
 				recommendations: {
 					baselineModelResults: this._skuRecommendationApiResponse?.baselineModelResults ?? [],
@@ -435,30 +450,29 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	private async generateSkuRecommendationTelemetry(): Promise<void> {
 		try {
-			// TO-DO: send telemetry for DB recommendations once that's turned on
-			///////
-			this._skuRecommendationResults?.recommendations?.baselineModelResults.sqlDbRecommendationResults
-				.map((e, i) => [e, this._skuRecommendationResults?.recommendations?.elasticModelResults.sqlDbRecommendationResults[i]])
-				.forEach(resultPair => {
-					// Send telemetry for recommended DB SKUs
-					sendSqlMigrationActionEvent(
-						TelemetryViews.SkuRecommendationWizard,
-						TelemetryAction.GetDBSkuRecommendation,
-						{
-							'sessionId': this._sessionId,
-							'recommendedSku': JSON.stringify(resultPair[0]?.targetSku),
-							'elasticRecommendedSku': JSON.stringify(resultPair[1]?.targetSku),
-							'recommendationDurationInSec': this._skuRecommendationResults?.recommendations.baselineModelResults.sqlDbRecommendationDurationInMs !== -1
-								? (this._skuRecommendationResults?.recommendations.baselineModelResults.sqlDbRecommendationDurationInMs).toString()
-								: '',
-							'elasticRecommendationDurationInSec': this._skuRecommendationResults?.recommendations.elasticModelResults.sqlDbRecommendationDurationInMs !== -1
-								? (this._skuRecommendationResults?.recommendations.elasticModelResults.sqlDbRecommendationDurationInMs).toString()
-								: ''
-						},
-						{}
-					);
-				});
-			////////
+			// TO-DO: uncomment to enable telemetry for DB recommendations, once that's turned on
+
+			// this._skuRecommendationResults?.recommendations?.baselineModelResults.sqlDbRecommendationResults
+			// 	.map((e, i) => [e, this._skuRecommendationResults?.recommendations?.elasticModelResults.sqlDbRecommendationResults[i]])
+			// 	.forEach(resultPair => {
+			// 		// Send telemetry for recommended DB SKUs
+			// 		sendSqlMigrationActionEvent(
+			// 			TelemetryViews.SkuRecommendationWizard,
+			// 			TelemetryAction.GetDBSkuRecommendation,
+			// 			{
+			// 				'sessionId': this._sessionId,
+			// 				'recommendedSku': JSON.stringify(resultPair[0]?.targetSku),
+			// 				'elasticRecommendedSku': JSON.stringify(resultPair[1]?.targetSku),
+			// 				'recommendationDurationInSec': this._skuRecommendationResults?.recommendations.baselineModelResults.sqlDbRecommendationDurationInMs !== -1
+			// 					? (this._skuRecommendationResults?.recommendations.baselineModelResults.sqlDbRecommendationDurationInMs).toString()
+			// 					: '',
+			// 				'elasticRecommendationDurationInSec': this._skuRecommendationResults?.recommendations.elasticModelResults.sqlDbRecommendationDurationInMs !== -1
+			// 					? (this._skuRecommendationResults?.recommendations.elasticModelResults.sqlDbRecommendationDurationInMs).toString()
+			// 					: ''
+			// 			},
+			// 			{}
+			// 		);
+			// 	});
 
 			this._skuRecommendationResults?.recommendations?.baselineModelResults.sqlMiRecommendationResults
 				.map((e, i) => [e, this._skuRecommendationResults?.recommendations?.elasticModelResults.sqlMiRecommendationResults[i]])

@@ -663,11 +663,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 								recommendation = this.migrationStateModel._skuRecommendationResults.recommendations.baselineModelResults.sqlMiRecommendationResults[0];
 							}
 
-							// show elastic results if there are no baseline results
-							// if (!recommendation.targetSku && elasticRecommendation.targetSku) {
-							// 	recommendation = elasticRecommendation;
-							// }
-
 							// result returned but no SKU recommended
 							if (!recommendation.targetSku) {
 								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue = constants.SKU_RECOMMENDATION_NO_RECOMMENDATION;

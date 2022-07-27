@@ -609,13 +609,6 @@ declare module 'mssql' {
 		targetSku: AzureSqlIaaSSku;
 	}
 
-	// export interface SkuRecommendationResult {
-	// 	sqlDbRecommendationResults: PaaSSkuRecommendationResultItem[];
-	// 	sqlMiRecommendationResults: PaaSSkuRecommendationResultItem[];
-	// 	sqlVmRecommendationResults: IaaSSkuRecommendationResultItem[];
-	// 	instanceRequirements: SqlInstanceRequirements;
-	// }
-
 	export interface RecommendationResultSet {
 		sqlDbRecommendationResults: PaaSSkuRecommendationResultItem[];
 		sqlMiRecommendationResults: PaaSSkuRecommendationResultItem[];

@@ -26,7 +26,6 @@ export class SkuEditParametersDialog {
 	private _enablePreviewValue!: boolean;
 	private _enableElasticRecommendation!: boolean;
 
-
 	constructor(public skuRecommendationPage: SKURecommendationPage, public migrationStateModel: MigrationStateModel) {
 		this._enablePreviewValue = true;
 		this._enablePreviewValue = false;
