@@ -145,6 +145,7 @@ export class PublishDatabaseDialog {
 			this.connectionRow = this.createConnectionRow(view);
 			this.databaseRow = this.createDatabaseRow(view);
 			const displayOptionsButton = this.createOptionsButton(view);
+			displayOptionsButton.enabled = false;
 
 			const horizontalFormSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 			horizontalFormSection.addItems([profileRow, this.databaseRow]);
@@ -171,10 +172,12 @@ export class PublishDatabaseDialog {
 								title: constants.selectConnectionRadioButtonsTitle,
 								component: selectConnectionRadioButtons
 							},*/
+							/* TODO : Disabling deployment options for the July release
 							{
 								component: displayOptionsButton,
 								title: ''
 							}
+							*/
 						]
 					}
 				], {
