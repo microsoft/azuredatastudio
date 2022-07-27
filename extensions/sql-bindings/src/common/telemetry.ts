@@ -29,6 +29,9 @@ export enum TelemetryActions {
 	updateConnectionString = 'updateConnectionString',
 	finishAddSqlBinding = 'finishAddSqlBinding',
 	exitSqlBindingsQuickpick = 'exitSqlBindingsQuickpick',
+
+	// Azure Functions Utils
+	addSQLNugetPackage = 'addSQLNugetPackage',
 }
 
 export enum CreateAzureFunctionStep {
@@ -48,10 +51,6 @@ export enum CreateAzureFunctionStep {
 	getTemplateId = 'getTemplateId',
 	getConnectionStringSettingName = 'getConnectionStringSettingName',
 	promptForIncludePassword = 'promptForIncludePassword',
-}
-
-export enum AzureFunctionUtils {
-	addSQLNugetPackage = 'addSQLNugetPackage',
 }
 
 export enum ExitReason {
