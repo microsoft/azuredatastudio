@@ -89,7 +89,18 @@ export interface DatabaseBackupModel {
 	networkShares: NetworkShare[];
 	subscription: azurecore.azureResource.AzureResourceSubscription;
 	blobs: Blob[];
-	taskIds: { [taskId: string]: any; };
+	backupHistory: string[];
+	credentials: string[];
+	backupTasks: {
+		[index: number]:
+		{
+			physicalDeviceType: number,
+			taskId: string,
+			backupSetName: String,
+			eta?: number,
+			status: number //0: backup in progress, 1: canceled, 2: success, 3: fail
+		}
+	};
 }
 
 export interface NetworkShare {

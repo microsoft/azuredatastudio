@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { window, Account, accounts, CategoryValue, DropDownComponent, IconPath } from 'azdata';
+import { window, Account, accounts, CategoryValue, DropDownComponent, IconPath, SimpleExecuteResult } from 'azdata';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { AdsMigrationStatus } from '../dialog/migrationStatus/migrationStatusDialogModel';
 import { MigrationStatus, ProvisioningState } from '../models/migrationLocalStorage';
@@ -775,4 +775,27 @@ export async function getBlobLastBackupFileNamesValues(lastFileNames: azureResou
 		];
 	}
 	return lastFileNamesValues;
+}
+
+export async function getBlobCredentialsValue(credentials: SimpleExecuteResult): Promise<CategoryValue[]> {
+	let credentialsValues: CategoryValue[] = [];
+	credentials.rows.forEach((row) => {
+		credentialsValues.push({
+			name: row[0].displayValue,
+			displayName: row[0].displayValue
+		});
+	});
+	if (credentialsValues.length === 0) {
+		credentialsValues = [
+			{
+				displayName: 'no credential found',
+				name: ''
+			}
+		];
+	}
+	credentialsValues.push({
+		name: 'Create Crednetial',
+		displayName: 'Create Credential'
+	});
+	return credentialsValues;
 }

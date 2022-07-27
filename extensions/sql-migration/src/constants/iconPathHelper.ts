@@ -45,8 +45,13 @@ export class IconPathHelper {
 	public static stop: IconPath;
 	public static view: IconPath;
 	public static sqlMigrationService: IconPath;
+	public static backup: IconPath;
 
 	public static setExtensionContext(context: vscode.ExtensionContext) {
+		IconPathHelper.backup = {
+			light: context.asAbsolutePath('images/backup.svg'),
+			dark: context.asAbsolutePath('images/backup.svg')
+		};
 		IconPathHelper.copy = {
 			light: context.asAbsolutePath('images/copy.svg'),
 			dark: context.asAbsolutePath('images/copy.svg')
