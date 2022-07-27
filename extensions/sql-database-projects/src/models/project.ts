@@ -36,10 +36,9 @@ export class Project implements ISqlProject {
 	private _postDeployScripts: FileProjectEntry[] = [];
 	private _noneDeployScripts: FileProjectEntry[] = [];
 	private _isSdkStyleProject: boolean = false; // https://docs.microsoft.com/en-us/dotnet/core/project-sdk/overview
-	private _outputPath: string = '';
 
 	public get dacpacOutputPath(): string {
-		return path.join(this.outputPath, `${this._projectFileName}.dacpac`);
+		return path.join(this.projectFolderPath, 'bin', 'Debug', `${this._projectFileName}.dacpac`);
 	}
 
 	public get projectFolderPath() {
@@ -92,10 +91,6 @@ export class Project implements ISqlProject {
 
 	public get isSdkStyleProject(): boolean {
 		return this._isSdkStyleProject;
-	}
-
-	public get outputPath(): string {
-		return this._outputPath;
 	}
 
 	private projFileXmlDoc: Document | undefined = undefined;
@@ -159,16 +154,6 @@ export class Project implements ISqlProject {
 			newProjectGuidNode.appendChild(newProjectGuidTextNode);
 			this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.PropertyGroup)[0]?.appendChild(newProjectGuidNode);
 			await this.serializeToProjFile(this.projFileXmlDoc);
-		}
-
-		// get output path
-		const outputNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.OutputPath);
-		if (outputNodes.length > 0) {
-			const outputPath = outputNodes[0].childNodes[0].nodeValue!;
-			this._outputPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(outputPath));
-		} else {
-			// If output path isn't specified in .sqlproj, set it to the default output path .\bin\Debug\
-			this._outputPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(constants.defaultOutputPath()));
 		}
 	}
 
