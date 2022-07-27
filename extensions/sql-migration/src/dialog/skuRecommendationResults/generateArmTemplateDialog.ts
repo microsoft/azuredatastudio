@@ -131,7 +131,8 @@ export class GenerateArmTemplateDialog {
 			height: '100%',
 			CSSStyles: {
 				'font': '14px "Monaco", "Menlo", "Consolas", "Droid Sans Mono", "Inconsolata", "Courier New", monospace',
-				'margin': '0'
+				'margin': '0',
+				'white-space': 'pre',
 			}
 
 		}).component();
