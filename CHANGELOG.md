@@ -1,5 +1,44 @@
 # Change Log
 
+## Version 1.38.0
+* Release date: July 27, 2022
+* Release status: General Availability
+## What's new in 1.38.0
+* New Features:
+    * VS Code merges to 1.62 - This release includes updates to VS Code from the three previous VS Code releases. Read [their release notes](https://code.visualstudio.com/updates/v1_62) to learn more.
+    * Table Designer - New column added to Table Designer for easier access to additional actions specific to individual rows.
+    * Query Plan Viewer - The Top Operations pane view now includes clickable links to operations in each of its rows to show the runtime statistics which can be used to evaluate estimated and actual rows when analyzing a plan.
+    * Query Plan Viewer - Improved UI on selected operation node in the Execution Plan.
+    * Query Plan Viewer - The keyboard command **CTRL + M** no longer executes queries. It now just enables or disables the actual execution plan creation when a query is executed.
+    * Query Plan Viewer - Plan labels are now updated in the Properties window when plans are compared and the orientation is toggled from horizontal to vertical, and back.
+    * Query Plan Viewer - Updates were made to the Command Palette. All execution plan commands are prefixed with "Execution Plan", so that they are easier to find and use.
+    * Query Plan Viewer - A collapse/expand functionality is now available at the operator level to allow users to hide or display sections of the plan during analysis.
+
+* Bug Fixes:
+    * Table Designer - Error found in edit data tab when switching back to previously selected column when adding a new row. To fix this, editing the table is now disabled while new rows are being added and only reenabled afterwards.
+    * Query Editor - Fixed coloring issues for new T-SQL functions in the Query Editor.
+    * Query Plan Viewer - Fixed bug that caused custom zoom level spinner to allow values outside valid range.
+    * Dashboard - Fixed issue that caused incorrect displaying of insight widgets on the dashboard.
+
+
+| Platform																|
+| ---------------------------------------	|
+| [Windows User Installer][win-user]			|
+| [Windows System Installer][win-system]	|
+| [Windows ZIP][win-zip]									|
+| [macOS ZIP][osx-zip]										|
+| [Linux TAR.GZ][linux-zip]								|
+| [Linux RPM][linux-rpm]									|
+| [Linux DEB][linux-deb]									|
+
+[win-user]: https://go.microsoft.com/fwlink/?linkid=2198663
+[win-system]: https://go.microsoft.com/fwlink/?linkid=2198878
+[win-zip]: https://go.microsoft.com/fwlink/?linkid=2198664
+[osx-zip]: https://go.microsoft.com/fwlink/?linkid=2198762
+[linux-zip]: https://go.microsoft.com/fwlink/?linkid=2198879
+[linux-rpm]: https://go.microsoft.com/fwlink/?linkid=2198880
+[linux-deb]: https://go.microsoft.com/fwlink/?linkid=2198763
+
 ## Version 1.37.0
 * Release date: June 15, 2022
 * Release status: General Availability
@@ -22,26 +61,7 @@
     *  Schema Compare - Fixed issue with indexes not being added correctly when updating project from database.
     *  Notebooks - Fixed inconsistencies with notebook cell behavior and toolbars.
     *  Notebooks - Fixed issues with keyboard navigation.
-
-
-| Platform																|
-| ---------------------------------------	|
-| [Windows User Installer][win-user]			|
-| [Windows System Installer][win-system]	|
-| [Windows ZIP][win-zip]									|
-| [macOS ZIP][osx-zip]										|
-| [Linux TAR.GZ][linux-zip]								|
-| [Linux RPM][linux-rpm]									|
-| [Linux DEB][linux-deb]									|
-
-[win-user]: https://go.microsoft.com/fwlink/?linkid=2198663
-[win-system]: https://go.microsoft.com/fwlink/?linkid=2198878
-[win-zip]: https://go.microsoft.com/fwlink/?linkid=2198664
-[osx-zip]: https://go.microsoft.com/fwlink/?linkid=2198762
-[linux-zip]: https://go.microsoft.com/fwlink/?linkid=2198879
-[linux-rpm]: https://go.microsoft.com/fwlink/?linkid=2198880
-[linux-deb]: https://go.microsoft.com/fwlink/?linkid=2198763
-
+	
 ## Version 1.36.2
 * Release date: May 20, 2022
 * Release status: General Availability
