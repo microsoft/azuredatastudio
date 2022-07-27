@@ -194,6 +194,11 @@ export abstract class GridParentComponent extends Disposable {
 		this.toDispose.dispose();
 	}
 
+	public override dispose(): void {
+		this.baseDestroy();
+		super.dispose();
+	}
+
 	protected toggleResultPane(): void {
 		this.resultActive = !this.resultActive;
 		if (this.resultActive) {

@@ -8,6 +8,9 @@
 	width: 100%;
 }
 
+.editDataGridPanel.slickgridContainer.loadingRows {
+	display: none
+}
 
 #workbench\.editor\.editDataEditor .monaco-toolbar .monaco-select-box {
 	margin-top: 4px;
