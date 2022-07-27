@@ -86,10 +86,11 @@ export class ExecutionPlanComparisonEditorView {
 		bottomPolygon: azdata.executionPlan.ExecutionGraphComparisonResult
 	}> = new Map();
 
-	public get activeTopPlanDiagram(): AzdataGraphView {
+	public get activeTopPlanDiagram(): AzdataGraphView | undefined {
 		if (this.topPlanDiagrams.length > 0) {
 			return this.topPlanDiagrams[this._activeTopPlanIndex];
 		}
+
 		return undefined;
 	}
 
@@ -104,10 +105,11 @@ export class ExecutionPlanComparisonEditorView {
 	private _bottomSimilarNode: Map<string, azdata.executionPlan.ExecutionGraphComparisonResult> = new Map();
 	private _latestRequestUuid: string;
 
-	public get activeBottomPlanDiagram(): AzdataGraphView {
+	public get activeBottomPlanDiagram(): AzdataGraphView | undefined {
 		if (this.bottomPlanDiagrams.length > 0) {
 			return this.bottomPlanDiagrams[this._activeBottomPlanIndex];
 		}
+
 		return undefined;
 	}
 
