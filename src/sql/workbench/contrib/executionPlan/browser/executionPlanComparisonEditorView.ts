@@ -676,7 +676,7 @@ class SearchNodeAction extends Action {
 	public static LABEL = localize('epCompare.searchNodeAction', 'Find Node');
 	public static LABEL_FOR_ADDED_PLAN = localize('epCompare.searchNodeActionAddedPlan', 'Find Node - Added Plan');
 
-	constructor(private readonly _planIdentifier: PlanIdentifier, @IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService) {
+	constructor(private readonly _planIdentifier: PlanIdentifier, @IInstantiationService private readonly _instantiationService: IInstantiationService, @IAdsTelemetryService private readonly _telemetryService: IAdsTelemetryService) {
 		const getLabelForAction = () => {
 			return _planIdentifier === PlanIdentifier.Added ? SearchNodeAction.LABEL_FOR_ADDED_PLAN : SearchNodeAction.LABEL;
 		};
@@ -689,8 +689,8 @@ class SearchNodeAction extends Action {
 		let executionPlan = this._planIdentifier === PlanIdentifier.Added ? context.activeBottomPlanDiagram : context.activeTopPlanDiagram;
 		let widgetController = this._planIdentifier === PlanIdentifier.Added ? context.bottomWidgetController : context.topWidgetController;
 
-		this.telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.FindNode);
-		let nodeSearchWidget = context._instantiationService.createInstance(NodeSearchWidget, widgetController, executionPlan);
+		this._telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.FindNode);
+		let nodeSearchWidget = this._instantiationService.createInstance(NodeSearchWidget, widgetController, executionPlan);
 		widgetController.toggleWidget(nodeSearchWidget);
 	}
 }
