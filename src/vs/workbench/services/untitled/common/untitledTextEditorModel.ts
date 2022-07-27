@@ -27,6 +27,7 @@ import { getCharContainingOffset } from 'vs/base/common/strings';
 import { UTF8 } from 'vs/workbench/services/textfile/common/encoding';
 import { bufferToStream, VSBuffer, VSBufferReadableStream } from 'vs/base/common/buffer';
 import { ILanguageDetectionService } from 'vs/workbench/services/languageDetection/common/languageDetectionWorkerService';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 
 export interface IUntitledTextEditorModel extends ITextEditorModel, IModeSupport, IEncodingSupport, IWorkingCopy {
 
@@ -143,19 +144,19 @@ export class UntitledTextEditorModel extends BaseTextEditorModel implements IUnt
 		@ITextFileService private readonly textFileService: ITextFileService,
 		@ILabelService private readonly labelService: ILabelService,
 		@IEditorService private readonly editorService: IEditorService,
-		@ILanguageDetectionService languageDetectionService: ILanguageDetectionService
+		@ILanguageDetectionService languageDetectionService: ILanguageDetectionService,
+		@IAccessibilityService accessibilityService: IAccessibilityService,
 	) {
-		super(
-			modelService,
-			modeService,
-			languageDetectionService,
-			undefined,
-			preferredMode = preferredMode === UntitledTextEditorModel.ACTIVE_EDITOR_LANGUAGE_MODE
-				? editorService.activeTextEditorMode
-				: preferredMode);
+		super(modelService, modeService, languageDetectionService, accessibilityService);
 
 		// Make known to working copy service
 		this._register(this.workingCopyService.registerWorkingCopy(this));
+
+		// This is typically controlled by the setting `files.defaultLanguage`.
+		// If that setting is set, we should not detect the language.
+		if (preferredMode) {
+			this.setMode(preferredMode);
+		}
 
 		// Fetch config
 		this.onConfigurationChange(false);
@@ -208,7 +209,7 @@ export class UntitledTextEditorModel extends BaseTextEditorModel implements IUnt
 
 	override getMode(): string | undefined {
 		if (this.textEditorModel) {
-			return this.textEditorModel.getModeId();
+			return this.textEditorModel.getLanguageId();
 		}
 
 		return this.preferredMode;

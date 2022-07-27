@@ -32,6 +32,7 @@ import { IEditor } from 'vs/editor/common/editorCommon';
 import { NotebookEditorStub } from 'sql/workbench/contrib/notebook/test/testCommon';
 import { Range } from 'vs/editor/common/core/range';
 import { IProductService } from 'vs/platform/product/common/productService';
+import { LanguageId } from 'vs/editor/common/modes';
 
 suite('MarkdownTextTransformer', () => {
 	let markdownTextTransformer: MarkdownTextTransformer;
@@ -86,8 +87,18 @@ suite('MarkdownTextTransformer', () => {
 		widget = editor.getControl();
 		assert(!isUndefinedOrNull(widget), 'widget is undefined');
 
+		let languageConfigurationService: any = {
+			onDidChange: (_a: any) => { }
+		};
+
+		let modeService: any = {
+			languageIdCodec: {
+				encodeLanguageId: (languageId: string) => { return <LanguageId>undefined; },
+				decodeLanguageId: (languageId: LanguageId) => { return <string>undefined; }
+			}
+		};
 		// Create new text model
-		textModel = new TextModel('', { isForSimpleWidget: true, defaultEOL: DefaultEndOfLine.LF, detectIndentation: true, indentSize: 0, insertSpaces: false, largeFileOptimizations: false, tabSize: 4, trimAutoWhitespace: false, bracketPairColorizationOptions: { enabled: true } }, null, undefined, undoRedoService);
+		textModel = new TextModel('', { isForSimpleWidget: true, defaultEOL: DefaultEndOfLine.LF, detectIndentation: true, indentSize: 0, insertSpaces: false, largeFileOptimizations: false, tabSize: 4, trimAutoWhitespace: false, bracketPairColorizationOptions: { enabled: true } }, null, undefined, undoRedoService, modeService, languageConfigurationService);
 
 		// Couple widget with newly created text model
 		widget.setModel(textModel);

@@ -34,6 +34,11 @@ export enum State {
 	EXIT,
 }
 
+export enum ServiceTier {
+	GeneralPurpose = 'GeneralPurpose',
+	BusinessCritical = 'BusinessCritical',
+}
+
 export enum MigrationTargetType {
 	SQLVM = 'AzureSqlVirtualMachine',
 	SQLMI = 'AzureSqlManagedInstance',

@@ -8,7 +8,7 @@ import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { ITaskbarContent, Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { AzdataGraphView } from 'sql/workbench/contrib/executionPlan/browser/azdataGraphView';
-import { ExecutionPlanComparisonPropertiesView } from 'sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView';
+import { ExecutionPlanCompareOrientation, ExecutionPlanComparisonPropertiesView } from 'sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView';
 import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
 import { IHorizontalSashLayoutProvider, ISashEvent, IVerticalSashLayoutProvider, Orientation, Sash } from 'vs/base/browser/ui/sash/sash';
 import { Action } from 'vs/base/common/actions';
@@ -56,7 +56,7 @@ export class ExecutionPlanComparisonEditorView {
 	private _sashContainer: HTMLElement;
 	private _horizontalSash: Sash;
 	private _verticalSash: Sash;
-	private _orientation: 'horizontal' | 'vertical' = 'horizontal';
+	private _orientation: ExecutionPlanCompareOrientation = ExecutionPlanCompareOrientation.Horizontal;
 
 	private _placeholderContainer: HTMLElement;
 	private _placeholderInfoboxContainer: HTMLElement;
@@ -193,10 +193,10 @@ export class ExecutionPlanComparisonEditorView {
 				c.style.display = 'none';
 			});
 			this._topPlanDiagramContainers[e.index].style.display = '';
-			this.topPlanDiagrams[e.index].selectElement(undefined);
 			this._propertiesView.setTopElement(this._topPlanDiagramModels[e.index].root);
 			this._topPlanRecommendations.recommendations = this._topPlanDiagramModels[e.index].recommendations;
 			this._activeTopPlanIndex = e.index;
+
 			await this.getSkeletonNodes();
 		});
 		attachSelectBoxStyler(this._topPlanDropdown, this.themeService);
@@ -219,10 +219,10 @@ export class ExecutionPlanComparisonEditorView {
 				c.style.display = 'none';
 			});
 			this._bottomPlanDiagramContainers[e.index].style.display = '';
-			this.bottomPlanDiagrams[e.index].selectElement(undefined);
 			this._propertiesView.setTopElement(this._bottomPlanDiagramModels[e.index].root);
 			this._bottomPlanRecommendations.recommendations = this._bottomPlanDiagramModels[e.index].recommendations;
 			this._activeBottomPlanIndex = e.index;
+
 			await this.getSkeletonNodes();
 		});
 		attachSelectBoxStyler(this._bottomPlanDropdown, this.themeService);
@@ -452,7 +452,7 @@ export class ExecutionPlanComparisonEditorView {
 			this._topPlanContainer.style.minHeight = '200px';
 			this._topPlanContainer.style.minWidth = '';
 			this._topPlanContainer.style.flex = '1';
-			this._orientation = 'horizontal';
+			this._orientation = ExecutionPlanCompareOrientation.Horizontal;
 			this._toggleOrientationAction.class = splitScreenHorizontallyIconClassName;
 		} else {
 			this._sashContainer.style.width = '3px';
@@ -460,9 +460,11 @@ export class ExecutionPlanComparisonEditorView {
 			this.planSplitViewContainer.style.flexDirection = 'row';
 			this._topPlanContainer.style.minHeight = '';
 			this._topPlanContainer.style.minWidth = '200px';
-			this._orientation = 'vertical';
+			this._orientation = ExecutionPlanCompareOrientation.Vertical;
 			this._toggleOrientationAction.class = splitScreenVerticallyIconClassName;
 		}
+
+		this._propertiesView.orientation = this._orientation;
 		this._topPlanContainer.style.flex = '1';
 		this._bottomPlanContainer.style.flex = '1';
 	}

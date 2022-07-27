@@ -1,1 +1,9 @@
-<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><title>query_plan_16x16</title><path d="M13.16,10.59h1.9v5H10.32v-5h1.89v-2H3.68v2H5.58v5H.84v-5h1.9v-3H7.47v-2H5.58v-5h4.74v5H8.42v2h4.74Zm-8.53,4v-3H1.79v3Zm1.9-13v3H9.37v-3Zm7.58,13v-3H11.26v3Z"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <g id="a495911c-0e61-40bb-bcd5-88ae526d2834" data-name="Icons">
+    <path d="M5,5H0V0H5ZM1,4H4V1H1Z"/>
+    <path d="M16,5H11V0h5ZM12,4h3V1H12Z"/>
+    <path d="M7.975.525l.75.75-.684.692H11V3.033H8.041l.684.692-.75.75L6,2.5Z"/>
+    <path d="M5,16H0V11H5ZM1,15H4V12H1Z"/>
+    <path d="M4.475,7.975l-.75.75-.692-.684V11H1.967V8.041l-.692.684-.75-.75L2.5,6Z"/>
+  </g>
+</svg>

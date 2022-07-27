@@ -95,7 +95,8 @@ export enum MigrationStatus {
 	Canceled = 'Canceled',
 	Completing = 'Completing',
 	Creating = 'Creating',
-	Canceling = 'Canceling'
+	Canceling = 'Canceling',
+	Retriable = 'Retriable',
 }
 
 export enum ProvisioningState {
@@ -110,6 +111,6 @@ export enum BackupFileInfoStatus {
 	Uploaded = 'Uploaded',
 	Restoring = 'Restoring',
 	Restored = 'Restored',
-	Canceled = 'Canceled',
+	Cancelled = 'Cancelled',
 	Ignored = 'Ignored'
 }

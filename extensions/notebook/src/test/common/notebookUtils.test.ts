@@ -15,6 +15,7 @@ import * as uuid from 'uuid';
 import { promises as fs } from 'fs';
 import { tryDeleteFile } from './testUtils';
 import { CellTypes } from '../../contracts/content';
+import { NBFORMAT, NBFORMAT_MINOR } from '../../common/constants';
 
 describe('notebookUtils Tests', function (): void {
 	let notebookUtils: NotebookUtils = new NotebookUtils();
@@ -90,6 +91,34 @@ describe('notebookUtils Tests', function (): void {
 			sinon.stub(vscode.window, 'showOpenDialog').throws(new Error('Unexpected error'));
 			await notebookUtils.openNotebook();
 			should(showErrorMessageSpy.calledOnce).be.true('showErrorMessage should have been called');
+		});
+
+		it('closing and opening an untitled notebook shows correct contents', async function (): Promise<void> {
+			await notebookUtils.newNotebook();
+			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+			await notebookUtils.newNotebook({
+				initialContent: {
+					cells: [{
+						source: 'test content',
+						cell_type: 'markdown'
+					}],
+					metadata: {
+						kernelspec: {
+							name: 'SQL',
+							language: 'sql',
+							display_name: 'SQL'
+						}
+					},
+					nbformat: NBFORMAT,
+					nbformat_minor: NBFORMAT_MINOR
+				}
+			});
+			let activeEditor = azdata.nb.activeNotebookEditor;
+			let cells = activeEditor.document.cells;
+			// We currently can't retrieve the cell source from the extension API, but all we care
+			// about is that the notebook doesn't open as empty again, so just check the number of
+			// cells here.
+			should(cells.length).be.greaterThan(0);
 		});
 	});
 

@@ -73,7 +73,7 @@ export class ProjectsController {
 	private buildHelper: BuildHelper;
 	private buildInfo: DashboardData[] = [];
 	private publishInfo: PublishData[] = [];
-	private deployService: DeployService;
+	public deployService: DeployService;
 	private connectionService: ConnectionService;
 	private azureSqlClient: AzureSqlClient;
 	private autorestHelper: AutorestHelper;
@@ -320,35 +320,28 @@ export class ProjectsController {
 		const project: Project = this.getProjectFromContext(context);
 		// Removing the path separator from the image base name to be able to add that in the telemetry. With the separator the name is flagged as user path which is not true
 		// We only need to know the image base parts so it's ok to use a different separator when adding to telemetry
-		const dockerImageNameForTelemetry = deployProfile.dockerSettings?.dockerBaseImage ? deployProfile.dockerSettings.dockerBaseImage.replace(/\//gi, '_') : '';
+		const dockerImageNameForTelemetry = deployProfile.dockerSettings.dockerBaseImage.replace(/\//gi, '_');
 		try {
 			TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.publishToContainer)
 				.withAdditionalProperties({ dockerBaseImage: dockerImageNameForTelemetry })
 				.send();
 
-			if (deployProfile && deployProfile.sqlProjectPublishSettings) {
-				let connectionUri: string | undefined;
-				if (deployProfile.dockerSettings) {
-					void utils.showInfoMessageWithOutputChannel(constants.publishingProjectMessage, this._outputChannel);
-					connectionUri = await this.deployService.deployToContainer(deployProfile, project);
-					if (connectionUri) {
-						deployProfile.sqlProjectPublishSettings.connectionUri = connectionUri;
-					}
-				}
+			void utils.showInfoMessageWithOutputChannel(constants.publishingProjectMessage, this._outputChannel);
+			const connectionUri = await this.deployService.deployToContainer(deployProfile, project);
+			if (connectionUri) {
+				deployProfile.sqlProjectPublishSettings.connectionUri = connectionUri;
+			}
 
-				if (deployProfile.sqlProjectPublishSettings.connectionUri) {
-					const publishResult = await this.publishOrScriptProject(project, deployProfile.sqlProjectPublishSettings, true);
-					if (publishResult && publishResult.success) {
-						if (deployProfile.dockerSettings) {
-							await this.connectionService.getConnection(deployProfile.dockerSettings, true, deployProfile.dockerSettings.dbName);
-						}
-						void vscode.window.showInformationMessage(constants.publishProjectSucceed);
-					} else {
-						void utils.showErrorMessageWithOutputChannel(constants.publishToContainerFailed, publishResult?.errorMessage || '', this._outputChannel);
-					}
+			if (deployProfile.sqlProjectPublishSettings.connectionUri) {
+				const publishResult = await this.publishOrScriptProject(project, deployProfile.sqlProjectPublishSettings, true);
+				if (publishResult && publishResult.success) {
+					await this.connectionService.getConnection(deployProfile.dockerSettings, true, deployProfile.dockerSettings.dbName);
+					void vscode.window.showInformationMessage(constants.publishProjectSucceed);
 				} else {
-					void utils.showErrorMessageWithOutputChannel(constants.publishToContainerFailed, constants.deployProjectFailedMessage, this._outputChannel);
+					void utils.showErrorMessageWithOutputChannel(constants.publishToContainerFailed, publishResult?.errorMessage || '', this._outputChannel);
 				}
+			} else {
+				void utils.showErrorMessageWithOutputChannel(constants.publishToContainerFailed, constants.deployProjectFailedMessage, this._outputChannel);
 			}
 		} catch (error) {
 			void utils.showErrorMessageWithOutputChannel(constants.publishToContainerFailed, error, this._outputChannel);
@@ -399,10 +392,12 @@ export class ProjectsController {
 		}
 
 		if (publishTarget === constants.PublishTargetType.docker) {
-			const deployProfile = await getPublishToDockerSettings(project);
-			if (deployProfile?.sqlProjectPublishSettings && deployProfile?.dockerSettings) {
-				await this.publishToDockerContainer(project, deployProfile);
+			const publishToDockerSettings = await getPublishToDockerSettings(project);
+			if (!publishToDockerSettings) {
+				// User cancelled
+				return;
 			}
+			await this.publishToDockerContainer(project, publishToDockerSettings);
 		} else if (publishTarget === constants.PublishTargetType.newAzureServer) {
 			try {
 				const settings = await launchCreateAzureServerQuickPick(project, this.azureSqlClient);

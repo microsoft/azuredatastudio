@@ -155,6 +155,14 @@ module _nls {
 			this.lib = ts.ScriptSnapshot.fromString('');
 		}
 
+		// {{SQL CARBON EDIT}} - provide missing methods
+		readFile(): string | undefined {
+			return undefined;
+		}
+		fileExists(): boolean {
+			return false;
+		}
+
 		getCompilationSettings = () => this.options;
 		getScriptFileNames = () => [this.filename];
 		getScriptVersion = () => '1';

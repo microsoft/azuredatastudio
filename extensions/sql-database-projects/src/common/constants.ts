@@ -146,14 +146,14 @@ export const done = localize('done', "Done");
 export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not be empty");
 
 // Publish Dialog options
-export const publishOptions = localize('publishOptions', 'Publish Options');
-export const publishingOptions = localize('publishingOptions', 'Publishing Options');
-export const GeneralOptions: string = localize('generalOptions', "General Options");
+export const AdvancedOptionsButton = localize('advancedOptionsButton', 'Advanced...');
+export const AdvancedPublishOptions = localize('advancedPublishOptions', 'Advanced Publish Options');
+export const PublishOptions = localize('publishOptions', 'Publish Options');
 export const ResetButton: string = localize('reset', "Reset");
 export const OptionDescription: string = localize('optionDescription', "Option Description");
 export const OptionName: string = localize('optionName', "Option Name");
 export const OptionInclude: string = localize('Include', "Include");
-
+export function OptionNotFoundWarningMessage(label: string) { return localize('OptionNotFoundWarningMessage', "label: {0} does not exist in the options value name lookup", label); }
 
 // Deploy
 export const SqlServerName = 'SQL server';
@@ -576,6 +576,7 @@ export const targetPlatformToVersion: Map<string, string> = new Map<string, stri
 	[SqlTargetPlatform.sqlServer2016, '130'],
 	[SqlTargetPlatform.sqlServer2017, '140'],
 	[SqlTargetPlatform.sqlServer2019, '150'],
+	[SqlTargetPlatform.sqlServer2022, '160'],
 	[SqlTargetPlatform.sqlAzure, 'AzureV12'],
 	[SqlTargetPlatform.sqlDW, 'Dw']
 ]);
@@ -583,7 +584,7 @@ export const targetPlatformToVersion: Map<string, string> = new Map<string, stri
 // DW is special since the system dacpac folder has a different name from the target platform
 export const AzureDwFolder = 'AzureDw';
 
-export const defaultTargetPlatform = SqlTargetPlatform.sqlServer2019;
+export const defaultTargetPlatform = SqlTargetPlatform.sqlServer2019; // TODO: update to 2022 when it's GA
 export const defaultDSP = targetPlatformToVersion.get(defaultTargetPlatform)!;
 
 /**
@@ -600,3 +601,5 @@ export enum PublishTargetType {
 	docker = 'docker',
 	newAzureServer = 'newAzureServer'
 }
+
+export const CollapseProjectNodesKey = 'collapseProjectNodes';

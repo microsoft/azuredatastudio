@@ -46,6 +46,9 @@ export class IconPathHelper {
 	public static view: IconPath;
 	public static sqlMigrationService: IconPath;
 	public static backup: IconPath;
+	public static addNew: IconPath;
+	public static breadCrumb: IconPath;
+	public static allTables: IconPath;
 
 	public static setExtensionContext(context: vscode.ExtensionContext) {
 		IconPathHelper.backup = {
@@ -187,6 +190,18 @@ export class IconPathHelper {
 		IconPathHelper.sqlMigrationService = {
 			light: context.asAbsolutePath('images/sqlMigrationService.svg'),
 			dark: context.asAbsolutePath('images/sqlMigrationService.svg'),
+		};
+		IconPathHelper.addNew = {
+			light: context.asAbsolutePath('images/addNew.svg'),
+			dark: context.asAbsolutePath('images/addNew.svg'),
+		};
+		IconPathHelper.breadCrumb = {
+			light: context.asAbsolutePath('images/breadCrumb.svg'),
+			dark: context.asAbsolutePath('images/breadCrumb.svg'),
+		};
+		IconPathHelper.allTables = {
+			light: context.asAbsolutePath('images/allTables.svg'),
+			dark: context.asAbsolutePath('images/allTables.svg'),
 		};
 	}
 }

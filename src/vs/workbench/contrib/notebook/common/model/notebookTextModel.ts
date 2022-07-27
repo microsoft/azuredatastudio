@@ -18,7 +18,7 @@ import { IModelService } from 'vs/editor/common/services/modelService';
 import { Schemas } from 'vs/base/common/network';
 import { isEqual } from 'vs/base/common/resources';
 import { IModeService } from 'vs/editor/common/services/modeService';
-import { ITextBuffer, ITextModel } from 'vs/editor/common/model';
+import { ITextModel } from 'vs/editor/common/model';
 import { TextModel } from 'vs/editor/common/model/textModel';
 import { isDefined } from 'vs/base/common/types';
 
@@ -555,6 +555,15 @@ export class NotebookTextModel extends Disposable implements INotebookTextModel 
 					&& last.cellIndex === edit.cellIndex
 				) {
 					last.edit.outputs = [...last.edit.outputs, ...edit.edit.outputs];
+				} else if (last.edit.editType === CellEditType.Output
+					&& !last.edit.append // last cell is not append
+					&& last.edit.outputs.length === 0 // last cell is clear outputs
+					&& edit.edit.editType === CellEditType.Output
+					&& edit.edit.append
+					&& last.cellIndex === edit.cellIndex
+				) {
+					last.edit.append = false;
+					last.edit.outputs = edit.edit.outputs;
 				} else {
 					mergedEdits.push(edit);
 				}
@@ -598,9 +607,8 @@ export class NotebookTextModel extends Disposable implements INotebookTextModel 
 			if (textModel && textModel instanceof TextModel) {
 				cell.textModel = textModel;
 				cell.language = cellDto.language;
-				if (!cell.textModel.equalsTextBuffer(cell.textBuffer as ITextBuffer)) {
-					cell.textModel.setValue(cellDto.source);
-				}
+				cell.textModel.setValue(cellDto.source);
+				cell.resetTextBuffer(cell.textModel.getTextBuffer());
 			}
 			const dirtyStateListener = cell.onDidChangeContent((e) => {
 				this._bindCellContentHandler(cell, e);
@@ -658,17 +666,6 @@ export class NotebookTextModel extends Disposable implements INotebookTextModel 
 		this._notebookSpecificAlternativeId = Number(newAlternativeVersionId.substr(0, newAlternativeVersionId.indexOf('_')));
 	}
 
-	private _isDocumentMetadataChangeTransient(a: NotebookDocumentMetadata, b: NotebookDocumentMetadata) {
-		const keys = new Set([...Object.keys(a || {}), ...Object.keys(b || {})]);
-		for (let key of keys) {
-			if (key !== 'trusted') {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
 	private _updateNotebookMetadata(metadata: NotebookDocumentMetadata, computeUndoRedo: boolean) {
 		const oldMetadata = this.metadata;
 		const triggerDirtyChange = this._isDocumentMetadataChanged(this.metadata, metadata);
@@ -694,7 +691,7 @@ export class NotebookTextModel extends Disposable implements INotebookTextModel 
 
 		this.metadata = metadata;
 		this._pauseableEmitter.fire({
-			rawEvents: [{ kind: NotebookCellsChangeType.ChangeDocumentMetadata, metadata: this.metadata, transient: this._isDocumentMetadataChangeTransient(oldMetadata, metadata) }],
+			rawEvents: [{ kind: NotebookCellsChangeType.ChangeDocumentMetadata, metadata: this.metadata, transient: !triggerDirtyChange }],
 			versionId: this.versionId,
 			synchronous: true,
 			endSelectionState: undefined

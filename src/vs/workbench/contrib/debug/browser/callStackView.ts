@@ -16,7 +16,7 @@ import { renderViewTree } from 'vs/workbench/contrib/debug/browser/baseDebugView
 import { IAction, Action } from 'vs/base/common/actions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IContextKey, IContextKeyService, ContextKeyEqualsExpr, ContextKeyExpr, ContextKeyExpression } from 'vs/platform/contextkey/common/contextkey';
+import { IContextKey, IContextKeyService, ContextKeyExpr, ContextKeyExpression } from 'vs/platform/contextkey/common/contextkey';
 import { ViewPane, ViewAction } from 'vs/workbench/browser/parts/views/viewPane';
 import { ILabelService } from 'vs/platform/label/common/label';
 import { IListAccessibilityProvider } from 'vs/base/browser/ui/list/listWidget';
@@ -154,7 +154,7 @@ export class CallStackView extends ViewPane {
 		this._register(this.menu);
 
 		// Create scheduler to prevent unnecessary flashing of tree when reacting to changes
-		this.onCallStackChangeScheduler = new RunOnceScheduler(async () => {
+		this.onCallStackChangeScheduler = this._register(new RunOnceScheduler(async () => {
 			// Only show the global pause message if we do not display threads.
 			// Otherwise there will be a pause message per thread and there is no need for a global one.
 			const sessions = this.debugService.getModel().getSessions();
@@ -201,7 +201,7 @@ export class CallStackView extends ViewPane {
 				this.selectionNeedsUpdate = false;
 				await this.updateTreeSelection();
 			}
-		}, 50);
+		}, 50));
 	}
 
 	protected override renderHeaderTitle(container: HTMLElement): void {
@@ -1029,7 +1029,7 @@ registerAction2(class Collapse extends ViewAction<CallStackView> {
 				id: MenuId.ViewTitle,
 				order: 10,
 				group: 'navigation',
-				when: ContextKeyEqualsExpr.create('view', CALLSTACK_VIEW_ID)
+				when: ContextKeyExpr.equals('view', CALLSTACK_VIEW_ID)
 			}
 		});
 	}

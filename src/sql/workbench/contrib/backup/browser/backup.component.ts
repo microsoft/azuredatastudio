@@ -308,7 +308,7 @@ export class BackupComponent extends AngularDisposable {
 				const key = e.keyCode;
 				const ctrlOrCmd = e.ctrlKey || e.metaKey;
 
-				if (ctrlOrCmd && key === KeyCode.KEY_C) {
+				if (ctrlOrCmd && key === KeyCode.KeyC) {
 					let textToCopy = this.pathListBox!.selectedOptions[0];
 					for (let i = 1; i < this.pathListBox!.selectedOptions.length; i++) {
 						textToCopy = textToCopy + ', ' + this.pathListBox!.selectedOptions[i];

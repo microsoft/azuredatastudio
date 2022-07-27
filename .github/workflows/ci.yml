@@ -23,7 +23,7 @@ jobs:
 
       - uses: actions/setup-node@v2
         with:
-          node-version: 14
+          node-version: 16
 
       - uses: actions/setup-python@v2
         with:
@@ -101,7 +101,7 @@ jobs:
 
       - uses: actions/setup-node@v2
         with:
-          node-version: 14
+          node-version: 16
       # {{SQL CARBON EDIT}} Skip caching for now
       # - name: Compute node modules cache key
       #   id: nodeModulesCacheKey
@@ -133,7 +133,7 @@ jobs:
 
       # Don't inline source maps so that we generate code coverage for ts files
       - name: Compile and Download
-        run: yarn npm-run-all --max_old_space_size=4095 -lp compile "electron x64" playwright-install download-builtin-extensions
+        run: yarn npm-run-all --max_old_space_size=4095 -lp compile "electron x64" # {{SQL CARBON EDIT}} Remove unused options playwright-install download-builtin-extensions
         env:
           SQL_NO_INLINE_SOURCEMAP: 1
 
@@ -173,7 +173,7 @@ jobs:
 
       - uses: actions/setup-node@v2
         with:
-          node-version: 14
+          node-version: 16
 
       # {{SQL CARBON EDIT}} Skip caching for now
       # - name: Compute node modules cache key
@@ -205,7 +205,7 @@ jobs:
         run: yarn --frozen-lockfile --network-timeout 180000
 
       - name: Compile and Download
-        run: yarn npm-run-all --max_old_space_size=4095 -lp compile "electron x64" playwright-install download-builtin-extensions
+        run: yarn npm-run-all --max_old_space_size=4095 -lp compile "electron x64" # {{SQL CARBON EDIT}} Remove unused options playwright-install download-builtin-extensions
 
       # This is required for keytar unittests, otherwise we hit
       # https://github.com/atom/node-keytar/issues/76
@@ -235,7 +235,7 @@ jobs:
 
       - uses: actions/setup-node@v2
         with:
-          node-version: 14
+          node-version: 16
 
       - name: Compute node modules cache key
         id: nodeModulesCacheKey

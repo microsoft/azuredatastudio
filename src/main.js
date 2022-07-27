@@ -96,7 +96,7 @@ registerListeners();
  * Support user defined locale: load it early before app('ready')
  * to have more things running in parallel.
  *
- * @type {Promise<NLSConfiguration> | undefined}
+ * @type {Promise<NLSConfiguration> | undefined}
  */
 let nlsConfigurationPromise = undefined;
 
@@ -407,7 +407,7 @@ function configureCrashReporter() {
 	if (process.env['VSCODE_DEV']) {
 		crashReporter.start({
 			companyName: companyName,
-			productName: `${productName} Dev`,
+			productName: process.env['VSCODE_DEV'] ? `${productName} Dev` : productName,
 			submitURL,
 			uploadToServer: false,
 			compress: true
@@ -541,7 +541,7 @@ function mkdirp(dir) {
 }
 
 /**
- * @param {string | undefined} dir
+ * @param {string | undefined} dir
  * @returns {Promise<string | undefined>}
  */
 async function mkdirpIgnoreError(dir) {

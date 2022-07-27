@@ -3,14 +3,17 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import AdsTelemetryReporter from '@microsoft/ads-extension-telemetry';
+import AdsTelemetryReporter, { TelemetryEventMeasures, TelemetryEventProperties } from '@microsoft/ads-extension-telemetry';
 
 const packageJson = require('../package.json');
 export const TelemetryReporter = new AdsTelemetryReporter(packageJson.name, packageJson.version, packageJson.aiKey);
 
-export const BookTelemetryView = 'Book';
+export enum NbTelemetryView {
+	Book = 'Book',
+	Jupyter = 'Jupyter'
+}
 
-export enum NbTelemetryActions {
+export enum NbTelemetryAction {
 	OpenNotebook = 'NotebookOpened',
 	OpenMarkdown = 'MarkdownOpened',
 	OpenBook = 'BookOpened',
@@ -21,6 +24,15 @@ export enum NbTelemetryActions {
 	PinNotebook = 'NotebookPinned',
 	OpenNotebookFromBook = 'NotebookOpenedFromBook',
 	MoveNotebook = 'MoveNotebook',
-	DragAndDrop = 'DragAndDrop'
+	DragAndDrop = 'DragAndDrop',
+	AddRemoteBook = 'AddRemoteBook',
+	JupyterServerStarted = 'JupyterServerStarted'
+}
+
+export function sendNotebookActionEvent(telemetryView: NbTelemetryView, telemetryAction: NbTelemetryAction, additionalProps?: TelemetryEventProperties, additionalMeasurements?: TelemetryEventMeasures): void {
+	TelemetryReporter.createActionEvent(telemetryView, telemetryAction)
+		.withAdditionalProperties(additionalProps)
+		.withAdditionalMeasurements(additionalMeasurements)
+		.send();
 }
 

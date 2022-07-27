@@ -182,10 +182,12 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 
 			// Now insert the link element
 			const link = links[i];
-			const linkElement = this._register(this.instantiationService.createInstance(Link, {
+			const linkElement = this._register(this.instantiationService.createInstance(Link,
+				(<HTMLElement>this.textContainer.nativeElement), {
 				label: link.text,
 				href: link.url
 			}, undefined));
+
 			if (link.accessibilityInformation) {
 				linkElement.el.setAttribute('aria-label', link.accessibilityInformation.label);
 				if (link.accessibilityInformation.role) {

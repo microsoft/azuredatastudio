@@ -197,7 +197,7 @@ export class TreeView extends Disposable implements ITreeView {
 							this._onDidChangeEmpty.fire();
 						}
 					}
-					return children;
+					return children ?? [];
 				}
 			};
 			if (this._dataProvider.onDidChangeEmpty) {

@@ -5,9 +5,12 @@
 
 import { Throttler } from 'vs/base/common/async';
 import { VSBuffer } from 'vs/base/common/buffer';
+import { getErrorMessage } from 'vs/base/common/errors';
 import { Emitter, Event } from 'vs/base/common/event';
 import { Disposable, IDisposable, toDisposable } from 'vs/base/common/lifecycle';
+import { mark } from 'vs/base/common/performance';
 import { joinPath } from 'vs/base/common/resources';
+import { isString } from 'vs/base/common/types';
 import { URI, UriComponents } from 'vs/base/common/uri';
 import { localize } from 'vs/nls';
 import { createFileSystemProviderError, FileChangeType, FileDeleteOptions, FileOverwriteOptions, FileSystemProviderCapabilities, FileSystemProviderErrorCode, FileType, FileWriteOptions, IFileChange, IFileSystemProviderWithFileReadWriteCapability, IStat, IWatchOptions } from 'vs/platform/files/common/files';
@@ -25,12 +28,20 @@ const ERR_DIR_NOT_EMPTY = createFileSystemProviderError(localize('dirIsNotEmpty'
 // Arbitrary Internal Errors (should never be thrown in production)
 const ERR_UNKNOWN_INTERNAL = (message: string) => createFileSystemProviderError(localize('internal', "Internal error occurred in IndexedDB File System Provider. ({0})", message), FileSystemProviderErrorCode.Unknown);
 
+class MissingStoresError extends Error {
+	constructor(readonly db: IDBDatabase) {
+		super('Missing stores');
+	}
+}
+
 export class IndexedDB {
 
 	private indexedDBPromise: Promise<IDBDatabase | null>;
 
 	constructor() {
+		mark('code/willOpenWebDB');
 		this.indexedDBPromise = this.openIndexedDB(INDEXEDDB_VSCODE_DB, 2, [INDEXEDDB_USERDATA_OBJECT_STORE, INDEXEDDB_LOGS_OBJECT_STORE]);
+		this.indexedDBPromise.finally(() => mark('code/didOpenWebDB'));
 	}
 
 	async createFileSystemProvider(scheme: string, store: string, watchCrossWindowChanges: boolean): Promise<IIndexedDBFileSystemProvider | null> {
@@ -46,16 +57,38 @@ export class IndexedDB {
 		return fsp;
 	}
 
-	private openIndexedDB(name: string, version: number, stores: string[]): Promise<IDBDatabase | null> {
+	private async openIndexedDB(name: string, version: number, stores: string[]): Promise<IDBDatabase> {
+		try {
+			return await this.createIndexedDB(name, version, stores);
+		} catch (err) {
+			if (err instanceof MissingStoresError) {
+				console.info(`Attempting to recreate the indexedDB once.`, name);
+
+				try {
+					// Try to delete the db
+					await this.deleteIndexedDB(err.db);
+				} catch (error) {
+					console.error(`Error while deleting the indexedDB`, getErrorMessage(error));
+					throw error;
+				}
+
+				return await this.createIndexedDB(name, version, stores);
+			}
+
+			throw err;
+		}
+	}
+
+	private createIndexedDB(name: string, version: number, stores: string[]): Promise<IDBDatabase> {
 		return new Promise((c, e) => {
 			const request = window.indexedDB.open(name, version);
-			request.onerror = (err) => e(request.error);
+			request.onerror = () => e(request.error);
 			request.onsuccess = () => {
 				const db = request.result;
 				for (const store of stores) {
 					if (!db.objectStoreNames.contains(store)) {
-						console.error(`Error while creating indexedDB. Could not create ${store} object store`);
-						c(null);
+						console.error(`Error while opening indexedDB. Could not find ${store} object store`);
+						e(new MissingStoresError(db));
 						return;
 					}
 				}
@@ -69,6 +102,18 @@ export class IndexedDB {
 					}
 				}
 			};
+		});
+	}
+
+	private deleteIndexedDB(indexedDB: IDBDatabase): Promise<void> {
+		return new Promise((c, e) => {
+			// Close any opened connections
+			indexedDB.close();
+
+			// Delete the db
+			const deleteRequest = window.indexedDB.deleteDatabase(indexedDB.name);
+			deleteRequest.onerror = (err) => e(deleteRequest.error);
+			deleteRequest.onsuccess = () => c();
 		});
 	}
 }
@@ -210,6 +255,73 @@ type FileChangeDto = {
 	readonly resource: UriComponents;
 };
 
+class IndexedDBChangesBroadcastChannel extends Disposable {
+
+	private broadcastChannel: BroadcastChannel | undefined;
+
+	private readonly _onDidFileChanges = this._register(new Emitter<readonly IFileChange[]>());
+	readonly onDidFileChanges: Event<readonly IFileChange[]> = this._onDidFileChanges.event;
+
+	constructor(private readonly changesKey: string) {
+		super();
+
+		// Use BroadcastChannel
+		if ('BroadcastChannel' in window) {
+			try {
+				this.broadcastChannel = new BroadcastChannel(changesKey);
+				const listener = (event: MessageEvent) => {
+					if (isString(event.data)) {
+						this.onDidReceiveChanges(event.data);
+					}
+				};
+				this.broadcastChannel.addEventListener('message', listener);
+				this._register(toDisposable(() => {
+					if (this.broadcastChannel) {
+						this.broadcastChannel.removeEventListener('message', listener);
+						this.broadcastChannel.close();
+					}
+				}));
+			} catch (error) {
+				console.warn('Error while creating broadcast channel. Falling back to localStorage.', getErrorMessage(error));
+				this.createStorageBroadcastChannel(changesKey);
+			}
+		}
+
+		// BroadcastChannel is not supported. Use storage.
+		else {
+			this.createStorageBroadcastChannel(changesKey);
+		}
+	}
+
+	private createStorageBroadcastChannel(changesKey: string): void {
+		const listener = (event: StorageEvent) => {
+			if (event.key === changesKey && event.newValue) {
+				this.onDidReceiveChanges(event.newValue);
+			}
+		};
+		window.addEventListener('storage', listener);
+		this._register(toDisposable(() => window.removeEventListener('storage', listener)));
+	}
+
+	private onDidReceiveChanges(data: string): void {
+		try {
+			const changesDto: FileChangeDto[] = JSON.parse(data);
+			this._onDidFileChanges.fire(changesDto.map(c => ({ type: c.type, resource: URI.revive(c.resource) })));
+		} catch (error) {/* ignore*/ }
+	}
+
+	postChanges(changes: IFileChange[]): void {
+		if (this.broadcastChannel) {
+			this.broadcastChannel.postMessage(JSON.stringify(changes));
+		} else {
+			// remove previous changes so that event is triggered even if new changes are same as old changes
+			window.localStorage.removeItem(this.changesKey);
+			window.localStorage.setItem(this.changesKey, JSON.stringify(changes));
+		}
+	}
+
+}
+
 class IndexedDBFileSystemProvider extends Disposable implements IIndexedDBFileSystemProvider {
 
 	readonly capabilities: FileSystemProviderCapabilities =
@@ -217,7 +329,7 @@ class IndexedDBFileSystemProvider extends Disposable implements IIndexedDBFileSy
 		| FileSystemProviderCapabilities.PathCaseSensitive;
 	readonly onDidChangeCapabilities: Event<void> = Event.None;
 
-	private readonly changesKey: string;
+	private readonly changesBroadcastChannel: IndexedDBChangesBroadcastChannel | undefined;
 	private readonly _onDidChangeFile = this._register(new Emitter<readonly IFileChange[]>());
 	readonly onDidChangeFile: Event<readonly IFileChange[]> = this._onDidChangeFile.event;
 
@@ -226,24 +338,13 @@ class IndexedDBFileSystemProvider extends Disposable implements IIndexedDBFileSy
 	private cachedFiletree: Promise<IndexedDBFileSystemNode> | undefined;
 	private writeManyThrottler: Throttler;
 
-	constructor(scheme: string, private readonly database: IDBDatabase, private readonly store: string, private readonly watchCrossWindowChanges: boolean) {
+	constructor(scheme: string, private readonly database: IDBDatabase, private readonly store: string, watchCrossWindowChanges: boolean) {
 		super();
 		this.writeManyThrottler = new Throttler();
 
-		this.changesKey = `vscode.indexedDB.${scheme}.changes`;
 		if (watchCrossWindowChanges) {
-			const storageListener = (event: StorageEvent) => this.onDidStorageChange(event);
-			window.addEventListener('storage', storageListener);
-			this._register(toDisposable(() => window.removeEventListener('storage', storageListener)));
-		}
-	}
-
-	private onDidStorageChange(event: StorageEvent): void {
-		if (event.key === this.changesKey && event.newValue) {
-			try {
-				const changesDto: FileChangeDto[] = JSON.parse(event.newValue);
-				this._onDidChangeFile.fire(changesDto.map(c => ({ type: c.type, resource: URI.revive(c.resource) })));
-			} catch (error) {/* ignore*/ }
+			this.changesBroadcastChannel = this._register(new IndexedDBChangesBroadcastChannel(`vscode.indexedDB.${scheme}.changes`));
+			this._register(this.changesBroadcastChannel.onDidFileChanges(changes => this._onDidChangeFile.fire(changes)));
 		}
 	}
 
@@ -396,10 +497,8 @@ class IndexedDBFileSystemProvider extends Disposable implements IIndexedDBFileSy
 		if (changes.length) {
 			this._onDidChangeFile.fire(changes);
 
-			if (this.watchCrossWindowChanges) {
-				// remove previous changes so that event is triggered even if new changes are same as old changes
-				window.localStorage.removeItem(this.changesKey);
-				window.localStorage.setItem(this.changesKey, JSON.stringify(changes));
+			if (this.changesBroadcastChannel) {
+				this.changesBroadcastChannel.postChanges(changes);
 			}
 		}
 	}
@@ -447,7 +546,7 @@ class IndexedDBFileSystemProvider extends Disposable implements IIndexedDBFileSy
 	}
 
 	private deleteKeys(keys: string[]): Promise<void> {
-		return new Promise(async (c, e) => {
+		return new Promise((c, e) => {
 			if (keys.length === 0) {
 				return c();
 			}
@@ -463,7 +562,7 @@ class IndexedDBFileSystemProvider extends Disposable implements IIndexedDBFileSy
 	}
 
 	reset(): Promise<void> {
-		return new Promise(async (c, e) => {
+		return new Promise((c, e) => {
 			const transaction = this.database.transaction([this.store], 'readwrite');
 			transaction.oncomplete = () => c();
 			transaction.onerror = () => e(transaction.error);
