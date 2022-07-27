@@ -41,6 +41,7 @@ import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { IEditorOptions } from 'vs/platform/editor/common/editor';
 import { DisposableStore } from 'vs/base/common/lifecycle';
+import { IEditorViewState } from 'vs/editor/common/editorCommon';
 
 /**
  * Editor that hosts an action bar and a resultSetInput for an edit data session
@@ -73,6 +74,10 @@ export class EditDataEditor extends EditorPane {
 
 	private _queryEditorVisible: IContextKey<boolean>;
 	private hideQueryResultsView = false;
+
+	//saveStates
+	private sqlSaveState: IEditorViewState;
+	private savedOldInput: EditDataInput;
 
 	private readonly _disposables = new DisposableStore();
 	constructor(
@@ -236,6 +241,7 @@ export class EditDataEditor extends EditorPane {
 			this._register(newInput.updateTaskbarEvent((owner) => this._updateTaskbar(owner)));
 			this._register(newInput.editorInitializingEvent((initializing) => this._onEditorInitializingChanged(initializing)));
 			this._register(newInput.showResultsEditorEvent(() => this._showResultsEditor()));
+			newInput.savedViewState = this.sqlSaveState;
 			newInput.onRowDropDownSet(this._changeMaxRowsActionItem.defaultRowCount);
 			newInput.setupComplete();
 		}
@@ -746,6 +752,7 @@ export class EditDataEditor extends EditorPane {
 		if (editDataInput) {
 			if (this._sqlEditor) {
 				editDataInput.savedViewState = this._sqlEditor.getControl().saveViewState();
+				this.sqlSaveState = editDataInput.savedViewState;
 			}
 			/***
 			 * This is called whenever tab is changed, including when editor is closed (the editor will be reused).
@@ -753,6 +760,7 @@ export class EditDataEditor extends EditorPane {
 			 * */
 			if (!editDataInput.results?.isDisposed()) {
 				editDataInput.results.onSaveViewStateEmitter.fire();
+				this.savedOldInput = editDataInput;
 			}
 		}
 	}
