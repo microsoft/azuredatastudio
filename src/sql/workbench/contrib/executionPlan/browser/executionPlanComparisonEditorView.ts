@@ -689,7 +689,11 @@ class SearchNodeAction extends Action {
 		let executionPlan = this._planIdentifier === PlanIdentifier.Added ? context.activeBottomPlanDiagram : context.activeTopPlanDiagram;
 		let widgetController = this._planIdentifier === PlanIdentifier.Added ? context.bottomWidgetController : context.topWidgetController;
 
-		this._telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.FindNode);
+		this._telemetryService
+			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.FindNode)
+			.withAdditionalProperties({ source: 'ComparisonView' })
+			.send();
+
 		let nodeSearchWidget = this._instantiationService.createInstance(NodeSearchWidget, widgetController, executionPlan);
 		widgetController.toggleWidget(nodeSearchWidget);
 	}
