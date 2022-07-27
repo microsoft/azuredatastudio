@@ -309,7 +309,7 @@ export class NotebookService extends Disposable implements INotebookService {
 				fileInput = this._instantiationService.createInstance(UntitledTextEditorInput, model);
 			} else {
 				let input: any = { forceFile: true, resource: uri, mode: languageMode };
-				fileInput = this._editorService.createEditorInput(input);
+				fileInput = await this._editorService.createEditorInput(input);
 			}
 		}
 

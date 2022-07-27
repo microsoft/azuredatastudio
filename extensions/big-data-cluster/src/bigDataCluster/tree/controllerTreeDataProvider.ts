@@ -42,12 +42,11 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 		}
 
 		if (!this.initialized) {
-			this.loadSavedControllers().catch(err => { vscode.window.showErrorMessage(localize('bdc.controllerTreeDataProvider.error', "Unexpected error loading saved controllers: {0}", err)); });
-		} else {
-			// We set the context here since VS Code takes a bit of time to process the _onDidChangeTreeData
-			// and so if we set it as soon as we finished loading the controllers it would briefly flash
-			// the "connect to controller" welcome view
-			await vscode.commands.executeCommand('setContext', 'bdc.loaded', true);
+			try {
+				await this.loadSavedControllers();
+			} catch (err) {
+				void vscode.window.showErrorMessage(localize('bdc.controllerTreeDataProvider.error', "Unexpected error loading saved controllers: {0}", err));
+			}
 		}
 
 		return this.root.getChildren();
@@ -132,13 +131,12 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 
 			this.root.clearChildren();
 			treeNodes.forEach(node => this.root.addChild(node));
-			this.notifyNodeChanged();
+			await vscode.commands.executeCommand('setContext', 'bdc.loaded', true);
 		} catch (err) {
 			// Reset so we can try again if the tree refreshes
 			this.initialized = false;
 			throw err;
 		}
-
 	}
 
 	public async saveControllers(): Promise<void> {

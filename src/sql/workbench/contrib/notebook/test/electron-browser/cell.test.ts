@@ -27,6 +27,7 @@ import { TestNotificationService } from 'vs/platform/notification/test/common/te
 import { ICommandService, NullCommandService } from 'vs/platform/commands/common/commands';
 import { ControlType, IChartOption } from 'sql/workbench/contrib/charts/browser/chartOptions';
 import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
+import { ICellMetadata } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 let instantiationService: IInstantiationService;
 
@@ -1079,6 +1080,25 @@ suite('Cell Model', function (): void {
 		assert.deepStrictEqual(serializedCell.attachments, undefined, 'JSON should not include attachments if attachments do not exist');
 	});
 
+	test('Should not include image in attachments if image is added in html image tag', async function () {
+		const cellAttachment = JSON.parse('{"ads.png":{"image/png":"iVBORw0KGgoAAAANSUhEUgAAAggg=="}}');
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let contents: nb.ICellContents = {
+			cell_type: CellTypes.Markdown,
+			source: '![ads.png](attachment:ads.png)',
+			attachments: cellAttachment
+		};
+		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+		let imageElement = '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAggg=="';
+		model.source = '![ads.png](attachment:ads.png) \n Test image: ' + imageElement;
+
+		assert.deepStrictEqual(model.attachments, contents.attachments, 'Should not add the image represented in html tag to the attachments of cell source');
+	});
+
 	test('Should remove unused attachments name when updating cell source', async function () {
 		const cellAttachment = JSON.parse('{"ads.png":{"image/png":"iVBORw0KGgoAAAANSUhEUgAAAggg=="}}');
 		let notebookModel = new NotebookModelStub({
@@ -1508,4 +1528,45 @@ suite('Cell Model', function (): void {
 
 	});
 
+	test('should set .NET Interactive cell metadata when converting to JSON', async function () {
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let contents: nb.ICellContents = {
+			cell_type: CellTypes.Code,
+			source: '',
+			metadata: {
+				language: 'dotnet-interactive.csharp'
+			}
+		};
+		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+		assert((model.metadata as ICellMetadata).dotnet_interactive === undefined, 'dotnet_interactive field should not be set in cell metadata before converting to JSON');
+		let cellJson = model.toJSON();
+		assert((cellJson.metadata as ICellMetadata).dotnet_interactive !== undefined, 'dotnet_interactive field should be set in JSON cell metadata');
+		assert.strictEqual((cellJson.metadata as ICellMetadata).dotnet_interactive.language, 'csharp', 'Expected dotnet_interactive language field to be csharp');
+	});
+
+	test('should overwrite pre-existing .NET Interactive cell metadata when converting to JSON', async function () {
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let contents: nb.ICellContents = {
+			cell_type: CellTypes.Code,
+			source: '',
+			metadata: {
+				language: 'dotnet-interactive.csharp'
+			}
+		};
+		(contents.metadata as ICellMetadata).dotnet_interactive = { language: 'fsharp' };
+
+		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+		assert((model.metadata as ICellMetadata).dotnet_interactive !== undefined, 'dotnet_interactive field should exist in cell metadata');
+		let cellJson = model.toJSON();
+		assert((cellJson.metadata as ICellMetadata).dotnet_interactive !== undefined, 'dotnet_interactive field should be set in JSON cell metadata');
+		assert.strictEqual((cellJson.metadata as ICellMetadata).dotnet_interactive.language, 'csharp', 'Expected dotnet_interactive language field to be csharp');
+	});
 });

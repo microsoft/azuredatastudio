@@ -195,7 +195,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
 		this.setFocusAndScroll();
-		this.cellModel.isEditMode = false;
 		this._htmlMarkdownConverter = this._instantiationService.createInstance(HTMLMarkdownConverter, this.notebookUri);
 		this._register(this.cellModel.onOutputsChanged(e => {
 			this.updatePreview();
