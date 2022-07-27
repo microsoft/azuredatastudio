@@ -2,7 +2,7 @@
   "name": "arc",
   "displayName": "%arc.displayName%",
   "description": "%arc.description%",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "publisher": "Microsoft",
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/extension.png",
@@ -186,7 +186,7 @@
                                 "displayName": "%arc.data.controller.direct.display.name%"
                               }
                             ],
-                            "defaultValue": "indirect",
+                            "defaultValue": "%arc.data.controller.indirect.display.name%",
                             "optionsType": "radio"
                           }
                         },
@@ -1082,7 +1082,7 @@
                               "kubeConfig": "AZDATA_NB_VAR_CONTROLLER_KUBECONFIG",
                               "clusterContext": "AZDATA_NB_VAR_CONTROLLER_KUBECTL_CONTEXT",
                               "resourceGroup": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_RESOURCE_GROUP",
-                              "connectionMode": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTION_MODE",
+                              "connectionMode": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
                               "location": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_LOCATION",
                               "customLocation": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CUSTOM_LOCATION"
                             }
@@ -1149,10 +1149,7 @@
                               "displayName": "%arc.sql.service.tier.general.purpose%"
                             }
                           ],
-                          "defaultValue": {
-                            "name": "BusinessCritical",
-                            "displayName": "%arc.sql.service.tier.business.critical%"
-                          },
+                          "defaultValue": "%arc.sql.service.tier.business.critical%",
                           "optionsType": "radio"
                         }
                       },
@@ -1184,10 +1181,7 @@
                               "displayName": "%arc.sql.three.replicas%"
                             }
                           ],
-                          "defaultValue": {
-                            "name": "3",
-                            "displayName": "%arc.sql.three.replicas%"
-                          },
+                          "defaultValue": "%arc.sql.three.replicas%",
                           "optionsType": "radio"
                         },
                         "dynamicOptions": {
@@ -1201,10 +1195,7 @@
                                   "displayName": "%arc.sql.one.replica%"
                                 }
                               ],
-                              "defaultValue": {
-                                "name": "1",
-                                "displayName": "%arc.sql.one.replica%"
-                              }
+                              "defaultValue": "%arc.sql.one.replica%"
                             }
                           ]
                         },
