@@ -90,6 +90,10 @@ export class EditDataGridPanel extends GridParentComponent {
 	// Strings immediately before and after an edit.
 	private originalStringValue: string;
 	private endStringValue: string;
+
+	// Used when saving is being done.
+	private saveActive: boolean;
+
 	// Edit Data functions
 	public onActiveCellChanged: (event: Slick.OnActiveCellChangedEventArgs<any>) => void;
 	public onCellChange: (event: Slick.OnCellChangeEventArgs<any>) => Promise<void>;
@@ -183,6 +187,15 @@ export class EditDataGridPanel extends GridParentComponent {
 		else {
 			return false;
 		}
+	}
+
+	public async savingGrid(): Promise<boolean> {
+		if (!this.saveActive) {
+			this.saveActive = true;
+			// TODO - do something with submitting cells.
+		}
+		// default case.
+		return false;
 	}
 
 	handleStart(self: EditDataGridPanel, event: any): void {
