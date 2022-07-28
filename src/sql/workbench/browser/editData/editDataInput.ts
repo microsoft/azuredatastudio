@@ -113,6 +113,7 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 	public get rowLimit(): number | undefined { return this._rowLimit; }
 	public get objectType(): string { return this._objectType; }
 	public showResultsEditor(): void { this._showResultsEditor.fire(undefined); }
+	public override isSaving(): boolean { return false; }
 	public override isDirty(): boolean { return false; }
 	public override save(): Promise<EditorInput | undefined> { return Promise.resolve(undefined); }
 	public override get typeId(): string { return EditDataInput.ID; }
