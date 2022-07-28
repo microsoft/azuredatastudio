@@ -2370,6 +2370,12 @@
     <trans-unit id="epCompare.comparisonProgess">
       <source xml:lang="en">Loading similar areas in compared plans</source>
     </trans-unit>
+    <trans-unit id="epCompare.searchNodeAction">
+      <source xml:lang="en">Find Node</source>
+    </trans-unit>
+    <trans-unit id="epCompare.searchNodeActionAddedPlan">
+      <source xml:lang="en">Find Node - Added Plan</source>
+    </trans-unit>
     <trans-unit id="epCompare.toggleOrientation">
       <source xml:lang="en">Toggle Orientation</source>
     </trans-unit>
