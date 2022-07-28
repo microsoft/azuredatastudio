@@ -160,7 +160,7 @@ export class MiaaUpgradeManagementPage extends DashboardPage {
 	private async getMiaaVersion(): Promise<string | undefined> {
 		try {
 			let miaaShowResult;
-			if (this._controllerModel.info.connectionMode === ConnectionMode.direct || this._controllerModel.controllerConfig?.spec.settings.azure.connectionMode.toLowerCase() === ConnectionMode.direct) {
+			if (this._controllerModel.info.connectionMode.toLowerCase() === ConnectionMode.direct || this._controllerModel.controllerConfig?.spec.settings.azure.connectionMode.toLowerCase() === ConnectionMode.direct) {
 				miaaShowResult = await this._azApi.az.sql.miarc.show(
 					this._miaaModel.info.name,
 					{
@@ -263,14 +263,14 @@ export class MiaaUpgradeManagementPage extends DashboardPage {
 					try {
 						upgradeButton.enabled = false;
 						vscode.window.showInformationMessage(loc.upgradingMiaa('kubectl get sqlmi -A\' should not be localized.'));
-						await vscode.window.withProgress(
-							{
-								location: vscode.ProgressLocation.Notification,
-								title: loc.updatingInstance(this._miaaModel.info.name),
-								cancellable: true
-							},
-							async (_progress, _token): Promise<void> => {
-								if (this._controllerModel.info.connectionMode === ConnectionMode.direct) {
+						if (this._controllerModel.info.connectionMode.toLowerCase() === ConnectionMode.direct) {
+							await vscode.window.withProgress(
+								{
+									location: vscode.ProgressLocation.Notification,
+									title: loc.upgradingDirectMiaa(this._miaaModel.info.name, this._controllerModel.info.resourceGroup),
+									cancellable: true
+								},
+								async (_progress, _token): Promise<void> => {
 									await this._azApi.az.sql.miarc.upgrade(
 										this._miaaModel.info.name,
 										{
@@ -278,7 +278,21 @@ export class MiaaUpgradeManagementPage extends DashboardPage {
 											namespace: undefined
 										}
 									);
-								} else {
+									try {
+										await this._controllerModel.refresh(false, this._controllerModel.info.namespace);
+									} catch (error) {
+										vscode.window.showErrorMessage(loc.refreshFailed(error));
+									}
+								}
+							);
+						} else {
+							await vscode.window.withProgress(
+								{
+									location: vscode.ProgressLocation.Notification,
+									title: loc.upgradingIndirectMiaa(this._miaaModel.info.name, this._controllerModel.info.namespace),
+									cancellable: true
+								},
+								async (_progress, _token): Promise<void> => {
 									await this._azApi.az.sql.miarc.upgrade(
 										this._miaaModel.info.name,
 										{
@@ -286,15 +300,14 @@ export class MiaaUpgradeManagementPage extends DashboardPage {
 											namespace: this._controllerModel.info.namespace,
 										}
 									);
+									try {
+										await this._controllerModel.refresh(false, this._controllerModel.info.namespace);
+									} catch (error) {
+										vscode.window.showErrorMessage(loc.refreshFailed(error));
+									}
 								}
-
-								try {
-									await this._controllerModel.refresh(false, this._controllerModel.info.namespace);
-								} catch (error) {
-									vscode.window.showErrorMessage(loc.refreshFailed(error));
-								}
-							}
-						);
+							);
+						}
 					} catch (error) {
 						console.log(error);
 					}

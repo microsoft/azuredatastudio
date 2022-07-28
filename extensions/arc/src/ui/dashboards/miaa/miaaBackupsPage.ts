@@ -220,7 +220,7 @@ export class MiaaBackupsPage extends DashboardPage {
 								cancellable: false
 							},
 							async (_progress, _token): Promise<void> => {
-								if (this._miaaModel.controllerModel.info.connectionMode === ConnectionMode.direct) {
+								if (this._miaaModel.controllerModel.info.connectionMode.toLowerCase() === ConnectionMode.direct) {
 									await this._azApi.az.sql.miarc.update(
 										this._miaaModel.info.name,
 										this._saveArgs,
