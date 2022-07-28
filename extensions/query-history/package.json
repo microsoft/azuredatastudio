@@ -170,7 +170,7 @@
         {
           "id": "queryHistory",
           "title": "%queryHistory.displayName%",
-          "icon": "./images/history.png"
+          "icon": "$(history)"
         }
       ]
     }
