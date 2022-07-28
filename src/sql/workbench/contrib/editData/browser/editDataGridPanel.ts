@@ -176,6 +176,15 @@ export class EditDataGridPanel extends GridParentComponent {
 		// TODO add any Edit Data-specific shortcuts here
 	}
 
+	public isGridDirty(): boolean {
+		if (this.dirtyCells.length >= 0 || this.table.grid.getCellEditor().isValueChanged()) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
 	handleStart(self: EditDataGridPanel, event: any): void {
 		self.dataSet = undefined;
 		self.oldDataRows = undefined;

@@ -114,7 +114,6 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 	public get objectType(): string { return this._objectType; }
 	public showResultsEditor(): void { this._showResultsEditor.fire(undefined); }
 	public override isSaving(): boolean { return false; }
-	public override isDirty(): boolean { return false; }
 	public override save(): Promise<EditorInput | undefined> { return Promise.resolve(undefined); }
 	public override get typeId(): string { return EditDataInput.ID; }
 	public setBootstrappedTrue(): void { this._hasBootstrapped = true; }
@@ -201,6 +200,18 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 		}
 
 		return this._sql.matches(otherInput);
+	}
+
+
+	public override isDirty(): boolean {
+		let message = nls.localize('editDataInput.testDirtyCall', "The grid was dirty while saving!");
+		if (this._results?.editDataGridPanel && (this._results.editDataGridPanel as any).isGridDirty()) {
+			this.notificationService.notify({
+				severity: Severity.Warning,
+				message: message
+			});
+		}
+		return false;
 	}
 
 	public override dispose(): void {
