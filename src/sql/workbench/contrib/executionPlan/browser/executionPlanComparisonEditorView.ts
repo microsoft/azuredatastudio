@@ -201,13 +201,8 @@ export class ExecutionPlanComparisonEditorView {
 		this._topPlanDropdown = new SelectBox(['option 1', 'option2'], 'option1', this.contextViewService, this._topPlanDropdownContainer);
 		this._topPlanDropdown.render(this._topPlanDropdownContainer);
 		this._topPlanDropdown.onDidSelect(async (e) => {
-			if (this.activeBottomPlanDiagram) {
-				this.activeBottomPlanDiagram.clearSubtreePolygon();
-			}
-
-			if (this.activeTopPlanDiagram) {
-				this.activeTopPlanDiagram.clearSubtreePolygon();
-			}
+			this.activeBottomPlanDiagram?.clearSubtreePolygon();
+			this.activeTopPlanDiagram?.clearSubtreePolygon();
 
 			this._topPlanDiagramContainers.forEach(c => {
 				c.style.display = 'none';
@@ -231,13 +226,8 @@ export class ExecutionPlanComparisonEditorView {
 		this._bottomPlanDropdown = new SelectBox(['option 1', 'option2'], 'option1', this.contextViewService, this._bottomPlanDropdownContainer);
 		this._bottomPlanDropdown.render(this._bottomPlanDropdownContainer);
 		this._bottomPlanDropdown.onDidSelect(async (e) => {
-			if (this.activeBottomPlanDiagram) {
-				this.activeBottomPlanDiagram.clearSubtreePolygon();
-			}
-
-			if (this.activeTopPlanDiagram) {
-				this.activeTopPlanDiagram.clearSubtreePolygon();
-			}
+			this.activeBottomPlanDiagram?.clearSubtreePolygon();
+			this.activeTopPlanDiagram?.clearSubtreePolygon();
 
 			this._bottomPlanDiagramContainers.forEach(c => {
 				c.style.display = 'none';
@@ -405,6 +395,7 @@ export class ExecutionPlanComparisonEditorView {
 							if (similarNode.matchingNodesId.find(m => this.activeTopPlanDiagram.getSelectedElement().id === `element-` + m) !== undefined) {
 								return;
 							}
+
 							this.activeTopPlanDiagram.selectElement(element);
 						}
 					}
@@ -424,7 +415,8 @@ export class ExecutionPlanComparisonEditorView {
 		if (!this.activeBottomPlanDiagram) {
 			return;
 		}
-		this._progressService.withProgress(
+
+		await this._progressService.withProgress(
 			{
 				location: ProgressLocation.Notification,
 				title: localize('epCompare.comparisonProgess', "Loading similar areas in compared plans"),
@@ -545,49 +537,29 @@ export class ExecutionPlanComparisonEditorView {
 	}
 
 	public zoomIn(): void {
-		if (this.activeTopPlanDiagram) {
-			this.activeTopPlanDiagram.zoomIn();
-		}
-
-		if (this.activeBottomPlanDiagram) {
-			this.activeBottomPlanDiagram.zoomIn();
-		}
+		this.activeTopPlanDiagram?.zoomIn();
+		this.activeBottomPlanDiagram?.zoomIn();
 
 		this.syncZoom();
 	}
 
 	public zoomOut(): void {
-		if (this.activeTopPlanDiagram) {
-			this.activeTopPlanDiagram.zoomOut();
-		}
-
-		if (this.activeBottomPlanDiagram) {
-			this.activeBottomPlanDiagram.zoomOut();
-		}
+		this.activeTopPlanDiagram?.zoomOut();
+		this.activeBottomPlanDiagram?.zoomOut();
 
 		this.syncZoom();
 	}
 
 	public zoomToFit(): void {
-		if (this.activeTopPlanDiagram) {
-			this.activeTopPlanDiagram.zoomToFit();
-		}
-
-		if (this.activeBottomPlanDiagram) {
-			this.activeBottomPlanDiagram.zoomToFit();
-		}
+		this.activeTopPlanDiagram?.zoomToFit();
+		this.activeBottomPlanDiagram.zoomToFit();
 
 		this.syncZoom();
 	}
 
 	public resetZoom(): void {
-		if (this.activeTopPlanDiagram) {
-			this.activeTopPlanDiagram.setZoomLevel(100);
-		}
-
-		if (this.activeBottomPlanDiagram) {
-			this.activeBottomPlanDiagram.setZoomLevel(100);
-		}
+		this.activeTopPlanDiagram?.setZoomLevel(100);
+		this.activeBottomPlanDiagram?.setZoomLevel(100);
 	}
 
 	private syncZoom(): void {
