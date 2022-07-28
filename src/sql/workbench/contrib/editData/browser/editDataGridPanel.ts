@@ -177,7 +177,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	}
 
 	public isGridDirty(): boolean {
-		if (this.dirtyCells.length >= 0 || this.table.grid.getCellEditor().isValueChanged()) {
+		if (this.dirtyCells.length > 0 || this.table?.grid?.getCellEditor().isValueChanged()) {
 			return true;
 		}
 		else {
