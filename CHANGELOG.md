@@ -13,12 +13,20 @@
     * Query Plan Viewer - Plan labels are now updated in the Properties window when plans are compared and the orientation is toggled from horizontal to vertical, and back.
     * Query Plan Viewer - Updates were made to the Command Palette. All execution plan commands are prefixed with "Execution Plan", so that they are easier to find and use.
     * Query Plan Viewer - A collapse/expand functionality is now available at the operator level to allow users to hide or display sections of the plan during analysis.
+	* Query History - The Query History extension was refactored to be fully implemented in an extension. This makes the history view behave like all other extension views and also allows for searching and filtering in the view by selecting the view and typing in your search text.
 
 * Bug Fixes:
     * Table Designer - Error found in edit data tab when switching back to previously selected column when adding a new row. To fix this, editing the table is now disabled while new rows are being added and only reenabled afterwards.
     * Query Editor - Fixed coloring issues for new T-SQL functions in the Query Editor.
     * Query Plan Viewer - Fixed bug that caused custom zoom level spinner to allow values outside valid range.
     * Dashboard - Fixed issue that caused incorrect displaying of insight widgets on the dashboard.
+	* Notebooks - Fixed issue where keyboard shortcuts and toolbar buttons were not working when first creating a Split View markdown cell.
+    * Notebooks - Fixed issue where cell languages were not being set correctly when opening an ADS .NET Interactive notebook in VS Code.
+    * Notebooks - Fixed issue where notebook was being opened as empty when exporting a SQL query as a notebook.
+    * Notebooks - Disables install and uninstall buttons in Manage Packages dialog while a package is being installed or uninstalled.
+    * Notebooks - Fixed issue where cell toolbar buttons were not refreshing when converting cell type.
+    * Notebooks - Fixed issue where notebook was not opening if a cell contains an unsupported output type.
+    * Schema Compare - Fixed issue where views and stored procedures were not correctly recognized by schema compare after applying changes.
 
 
 | Platform																|
