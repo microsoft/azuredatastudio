@@ -858,6 +858,7 @@ declare module 'mssql' {
 		assessmentResult: ServerAssessmentProperties;
 		rawAssessmentResult: any;
 		errors: ErrorModel[];
+		assessmentReportPath: string;
 	}
 
 	export interface ISqlMigrationService {

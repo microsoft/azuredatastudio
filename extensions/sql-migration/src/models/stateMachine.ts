@@ -199,6 +199,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _assessedDatabaseList!: string[];
 	public _runAssessments: boolean = true;
 	private _assessmentApiResponse!: mssql.AssessmentResult;
+	public _assessmentReportFilePath: string;
 	public mementoString: string;
 
 	public _databasesForMigration: string[] = [];
@@ -263,6 +264,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		this._databaseBackup.networkShares = [];
 		this._databaseBackup.blobs = [];
 		this._targetDatabaseNames = [];
+		this._assessmentReportFilePath = '';
 		this.mementoString = 'sqlMigration.assessmentResults';
 
 		this._skuScalingFactor = 100;
@@ -325,6 +327,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					}) ?? [],
 					errors: this._assessmentApiResponse?.errors ?? []
 				};
+				this._assessmentReportFilePath = response.assessmentReportPath;
 			} else {
 				this._assessmentResults = {
 					issues: [],

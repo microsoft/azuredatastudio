@@ -94,6 +94,14 @@ export function CAN_BE_MIGRATED(eligibleDbs: number, totalDbs: number): string {
 export const ASSESSMENT_MIGRATION_WARNING = localize('sql.migration.assessment.migration.warning', "Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines.");
 export const DATABASES_TABLE_TILE = localize('sql.migration.databases.table.title', "Databases");
 export const SQL_SERVER_INSTANCE = localize('sql.migration.sql.server.instance', "SQL Server instance");
+export const SAVE_ASSESSMENT_REPORT = localize('sql.migration.save.assessment.report', "Save assessment report");
+export const SAVE_RECOMMENDATION_REPORT = localize('sql.migration.save.recommendation.report', "Save recommendation report");
+export function SAVE_ASSESSMENT_REPORT_SUCCESS(filePath: string): string {
+	return localize('sql.migration.save.assessment.report.success', "Successfully saved assessment report to {0}.", filePath);
+}
+export function SAVE_RECOMMENDATION_REPORT_SUCCESS(filePath: string): string {
+	return localize('sql.migration.save.recommendation.report.success', "Successfully saved recommendation report to {0}.", filePath);
+}
 
 // SKU
 export const AZURE_RECOMMENDATION = localize('sql.migration.sku.recommendation', "Azure recommendation");

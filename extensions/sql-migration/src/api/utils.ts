@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { window, Account, accounts, CategoryValue, DropDownComponent, IconPath } from 'azdata';
+import * as vscode from 'vscode';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { MigrationStatus, ProvisioningState } from '../models/migrationLocalStorage';
 import * as crypto from 'crypto';
@@ -864,4 +865,22 @@ export async function getBlobLastBackupFileNamesValues(lastFileNames: azureResou
 		];
 	}
 	return lastFileNamesValues;
+}
+
+export async function promptUserForFolder(): Promise<string> {
+	let path = '';
+
+	let options: vscode.OpenDialogOptions = {
+		defaultUri: vscode.Uri.file(getUserHome()!),
+		canSelectFiles: false,
+		canSelectFolders: true,
+		canSelectMany: false,
+	};
+
+	let fileUris = await vscode.window.showOpenDialog(options);
+	if (fileUris && fileUris?.length > 0 && fileUris[0]) {
+		path = fileUris[0].fsPath;
+	}
+
+	return path;
 }
