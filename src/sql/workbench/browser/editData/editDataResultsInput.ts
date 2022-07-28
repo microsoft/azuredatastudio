@@ -69,6 +69,13 @@ export class EditDataResultsInput extends EditorInput {
 		this._hasBootstrapped = true;
 	}
 
+	public override isDirty(): boolean {
+		if ((this.editDataGridPanel as any)?.isGridDirty()) {
+			return true;
+		}
+		return false;
+	}
+
 	public override dispose(): void {
 		this._disposeContainer();
 		super.dispose();

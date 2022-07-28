@@ -205,11 +205,13 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 
 	public override isDirty(): boolean {
 		let message = nls.localize('editDataInput.testDirtyCall', "The grid was dirty while saving!");
-		if (this._results?.editDataGridPanel && (this._results.editDataGridPanel as any).isGridDirty()) {
+		if (this._results?.isDirty()) {
 			this.notificationService.notify({
 				severity: Severity.Warning,
 				message: message
 			});
+			// comment out for now until actual save feature has been added.
+			//return true;
 		}
 		return false;
 	}
