@@ -10,7 +10,7 @@ import 'mocha';
 import * as sinon from 'sinon';
 import * as azdataTest from '@microsoft/azdata-test';
 import { QueryHistoryProvider } from '../queryHistoryProvider';
-import { QueryHistoryNode } from '../queryHistoryNode';
+import { QueryHistoryItem } from '../queryHistoryItem';
 import { EOL } from 'os';
 
 describe('QueryHistoryProvider', () => {
@@ -77,7 +77,7 @@ describe('QueryHistoryProvider', () => {
 		});
 		const children = testProvider.getChildren();
 		should(children).length(1, 'Should have one child after adding item');
-		should(children[0].queryText).be.equal(`${rangeWithContent1.content}${EOL}${rangeWithContent2.content}`, 'node content should be combined from both source ranges');
+		should(children[0].queryText).be.equal(`${rangeWithContent1.content}${EOL}${rangeWithContent2.content}`, 'item content should be combined from both source ranges');
 	});
 
 	it('event with errors is marked as error', async function () {
@@ -87,7 +87,7 @@ describe('QueryHistoryProvider', () => {
 		await fireQueryEventAndWaitForRefresh('queryStop', <any>{ uri: testUri.toString() }, { messages: [ message1, message2, message3 ], batchRanges: []});
 		const children = testProvider.getChildren();
 		should(children).length(1, 'Should have one child after adding item');
-		should((<vscode.ThemeIcon>children[0].iconPath).id).be.equal('error', 'Event with errors should have error icon');
+		should(children[0].isSuccess).be.false('Event with errors should have error icon');
 	});
 
 	it('event without errors is marked as success', async function () {
@@ -97,12 +97,12 @@ describe('QueryHistoryProvider', () => {
 		await fireQueryEventAndWaitForRefresh('queryStop', <any>{ uri: testUri.toString() }, { messages: [ message1, message2, message3 ], batchRanges: []});
 		const children = testProvider.getChildren();
 		should(children).length(1, 'Should have one child after adding item');
-		should((<vscode.ThemeIcon>children[0].iconPath).id).be.equal('check', 'Event without errors should have check icon');
+		should(children[0].isSuccess).be.true('Event without errors should have check icon');
 	});
 
 	it('queryStop events from unknown document are ignored', async function () {
 		const unknownUri = vscode.Uri.parse('untitled://query2');
-		// Since we didn't find the text document we'll never update the node list so add a timeout since that event will never fire
+		// Since we didn't find the text document we'll never update the item list so add a timeout since that event will never fire
 		await fireQueryEventAndWaitForRefresh('queryStop', <any>{ uri: unknownUri.toString() }, { messages: [], batchRanges: [] }, 2000);
 		const children = testProvider.getChildren();
 		should(children).length(0, 'Should not have any children');
@@ -113,7 +113,7 @@ describe('QueryHistoryProvider', () => {
 		let children = testProvider.getChildren();
 		should(children).length(1, 'Should have one child after adding item');
 
-		await waitForNodeRefresh(() => testProvider.clearAll());
+		await waitForItemRefresh(() => testProvider.clearAll());
 		children = testProvider.getChildren();
 		should(children).length(0, 'Should have no children after clearing');
 	});
@@ -125,53 +125,53 @@ describe('QueryHistoryProvider', () => {
 		let children = testProvider.getChildren();
 		should(children).length(3, 'Should have 3 children after adding item');
 
-		await waitForNodeRefresh(() => testProvider.clearAll());
+		await waitForItemRefresh(() => testProvider.clearAll());
 		children = testProvider.getChildren();
 		should(children).length(0, 'Should have no children after clearing');
 	});
 
-	it('delete node when no nodes doesn\'t throw', async function () {
-		const testNode: QueryHistoryNode = { queryText: 'SELECT 1', connectionProfile: azdataTest.stubs.connectionProfile.createConnectionProfile() };
-		await waitForNodeRefresh(() => testProvider.deleteNode(testNode));
+	it('delete item when no items doesn\'t throw', async function () {
+		const testItem: QueryHistoryItem = { queryText: 'SELECT 1', connectionProfile: azdataTest.stubs.connectionProfile.createConnectionProfile(), timestamp: new Date(), isSuccess: true };
+		await waitForItemRefresh(() => testProvider.deleteItem(testItem));
 		const children = testProvider.getChildren();
-		should(children).length(0, 'Should have no children after deleting node');
+		should(children).length(0, 'Should have no children after deleting item');
 	});
 
-	it('delete node that doesn\'t exist doesn\'t throw', async function () {
+	it('delete item that doesn\'t exist doesn\'t throw', async function () {
 		await fireQueryEventAndWaitForRefresh('queryStop', <any>{ uri: testUri.toString() }, { messages: [], batchRanges: [] });
 		let children = testProvider.getChildren();
 		should(children).length(1, 'Should have 1 child initially');
 
-		const testNode: QueryHistoryNode = { queryText: 'SELECT 1', connectionProfile: azdataTest.stubs.connectionProfile.createConnectionProfile() };
-		await waitForNodeRefresh(() => testProvider.deleteNode(testNode));
+		const testItem: QueryHistoryItem = { queryText: 'SELECT 1', connectionProfile: azdataTest.stubs.connectionProfile.createConnectionProfile(), timestamp: new Date(), isSuccess: true };
+		await waitForItemRefresh(() => testProvider.deleteItem(testItem));
 		children = testProvider.getChildren();
-		should(children).length(1, 'Should still have 1 child after deleting node');
+		should(children).length(1, 'Should still have 1 child after deleting item');
 	});
 
-	it('can delete single node', async function () {
+	it('can delete single item', async function () {
 		await fireQueryEventAndWaitForRefresh('queryStop', <any>{ uri: testUri.toString() }, { messages: [], batchRanges: [] });
 		await fireQueryEventAndWaitForRefresh('queryStop', <any>{ uri: testUri.toString() }, { messages: [], batchRanges: [] });
 		await fireQueryEventAndWaitForRefresh('queryStop', <any>{ uri: testUri.toString() }, { messages: [], batchRanges: [] });
 		const firstChildren = testProvider.getChildren();
 		should(firstChildren).length(3, 'Should have 3 children initially');
 
-		let nodeToDelete: QueryHistoryNode = firstChildren[1];
-		await waitForNodeRefresh(() => testProvider.deleteNode(nodeToDelete));
+		let itemToDelete: QueryHistoryItem = firstChildren[1];
+		await waitForItemRefresh(() => testProvider.deleteItem(itemToDelete));
 		const secondChildren = testProvider.getChildren();
-		should(secondChildren).length(2, 'Should still have 2 child after deleting node');
-		should(secondChildren[0]).be.equal(firstChildren[0], 'First node should still exist after deleting first node');
-		should(secondChildren[1]).be.equal(firstChildren[2], 'Second node should still exist after deleting first node');
+		should(secondChildren).length(2, 'Should still have 2 child after deleting item');
+		should(secondChildren[0]).be.equal(firstChildren[0], 'First item should still exist after deleting first item');
+		should(secondChildren[1]).be.equal(firstChildren[2], 'Second item should still exist after deleting first item');
 
-		nodeToDelete = secondChildren[0];
-		await waitForNodeRefresh(() => testProvider.deleteNode(nodeToDelete));
+		itemToDelete = secondChildren[0];
+		await waitForItemRefresh(() => testProvider.deleteItem(itemToDelete));
 		const thirdChildren = testProvider.getChildren();
-		should(thirdChildren).length(1, 'Should still have 1 child after deleting node');
-		should(thirdChildren[0]).be.equal(secondChildren[1], 'Second node should still exist after deleting second node');
+		should(thirdChildren).length(1, 'Should still have 1 child after deleting item');
+		should(thirdChildren[0]).be.equal(secondChildren[1], 'Second item should still exist after deleting second item');
 
-		nodeToDelete = thirdChildren[0];
-		await waitForNodeRefresh(() => testProvider.deleteNode(nodeToDelete));
+		itemToDelete = thirdChildren[0];
+		await waitForItemRefresh(() => testProvider.deleteItem(itemToDelete));
 		const fourthChildren = testProvider.getChildren();
-		should(fourthChildren).length(0, 'Should have no children after deleting all nodes');
+		should(fourthChildren).length(0, 'Should have no children after deleting all items');
 	});
 
 	it('pausing capture causes children not to be added', async function () {
@@ -192,10 +192,10 @@ describe('QueryHistoryProvider', () => {
 	});
 
 	async function fireQueryEventAndWaitForRefresh(type: azdata.queryeditor.QueryEventType, document: azdata.queryeditor.QueryDocument, queryInfo: azdata.queryeditor.QueryInfo, timeoutMs?: number): Promise<void> {
-		await waitForNodeRefresh(() => testListener.onQueryEvent(type, document, undefined, queryInfo), timeoutMs);
+		await waitForItemRefresh(() => testListener.onQueryEvent(type, document, undefined, queryInfo), timeoutMs);
 	}
 
-	async function waitForNodeRefresh(func: Function, timeoutMs?: number): Promise<void> {
+	async function waitForItemRefresh(func: Function, timeoutMs?: number): Promise<void> {
 		const promises: Promise<any>[] = [azdataTest.helpers.eventToPromise(testProvider.onDidChangeTreeData)];
 		const timeoutPromise = timeoutMs ? new Promise<void>(r => setTimeout(() => r(), timeoutMs)) : undefined;
 		if (timeoutPromise) {
