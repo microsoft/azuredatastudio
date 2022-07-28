@@ -8,7 +8,7 @@ import { EditorPaneDescriptor, IEditorPaneRegistry } from 'vs/workbench/browser/
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { localize } from 'vs/nls';
-import { IEditorFactoryRegistry, ActiveEditorContext, IEditorInput, EditorExtensions } from 'vs/workbench/common/editor';
+import { IEditorFactoryRegistry, ActiveEditorContext, EditorExtensions } from 'vs/workbench/common/editor';
 import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/untitledNotebookInput';
 import { FileNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/fileNotebookInput';
@@ -24,7 +24,6 @@ import { GridOutputComponent } from 'sql/workbench/contrib/notebook/browser/outp
 import { PlotlyOutputComponent } from 'sql/workbench/contrib/notebook/browser/outputs/plotlyOutput.component';
 import { registerComponentType } from 'sql/workbench/contrib/notebook/browser/outputs/mimeRegistry';
 import { MimeRendererComponent } from 'sql/workbench/contrib/notebook/browser/outputs/mimeRenderer.component';
-import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { URI } from 'vs/base/common/uri';
 import { IWorkspaceEditingService } from 'vs/workbench/services/workspaces/common/workspaceEditing';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
@@ -64,6 +63,9 @@ import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
 import { useNewMarkdownRendererKey } from 'sql/workbench/contrib/notebook/common/notebookCommon';
 import { JUPYTER_PROVIDER_ID, NotebookLanguage } from 'sql/workbench/common/constants';
 import { INotebookProviderRegistry, NotebookProviderRegistryId } from 'sql/workbench/services/notebook/common/notebookRegistry';
+import { EditorInput } from 'vs/workbench/common/editor/editorInput';
+import { IPaneCompositePartService } from 'vs/workbench/services/panecomposite/browser/panecomposite';
+import { IViewDescriptorService, ViewContainerLocation } from 'vs/workbench/common/views';
 
 Registry.as<IEditorFactoryRegistry>(EditorExtensions.EditorFactory)
 	.registerEditorSerializer(FileNotebookInput.ID, FileNoteBookEditorSerializer);
@@ -88,7 +90,7 @@ actionRegistry.registerWorkbenchAction(
 		NewNotebookAction,
 		NewNotebookAction.ID,
 		NewNotebookAction.LABEL,
-		{ primary: KeyMod.WinCtrl | KeyMod.Alt | KeyCode.KEY_N },
+		{ primary: KeyMod.WinCtrl | KeyMod.Alt | KeyCode.KeyN },
 
 	),
 	NewNotebookAction.LABEL
@@ -185,7 +187,7 @@ CommandsRegistry.registerCommand({
 	id: RESTART_JUPYTER_NOTEBOOK_SESSIONS,
 	handler: async (accessor: ServicesAccessor, restartJupyterServer: boolean = true) => {
 		const editorService: IEditorService = accessor.get(IEditorService);
-		const editors: readonly IEditorInput[] = editorService.editors;
+		const editors: readonly EditorInput[] = editorService.editors;
 		let jupyterServerRestarted: boolean = false;
 
 		for (let editor of editors) {
@@ -219,7 +221,7 @@ CommandsRegistry.registerCommand({
 	id: STOP_JUPYTER_NOTEBOOK_SESSIONS,
 	handler: async (accessor: ServicesAccessor) => {
 		const editorService: IEditorService = accessor.get(IEditorService);
-		const editors: readonly IEditorInput[] = editorService.editors;
+		const editors: readonly EditorInput[] = editorService.editors;
 
 		for (let editor of editors) {
 			if (editor instanceof NotebookInput) {
@@ -274,7 +276,8 @@ registerAction2(class extends Action2 {
 	}
 
 	run = async (accessor, options: { forceNewWindow: boolean, folderPath: URI }) => {
-		const viewletService = accessor.get(IViewletService);
+		const viewletService: IPaneCompositePartService = accessor.get(IPaneCompositePartService);
+		const viewDescriptorService: IViewDescriptorService = accessor.get(IViewDescriptorService);
 		const workspaceEditingService = accessor.get(IWorkspaceEditingService);
 		const hostService = accessor.get(IHostService);
 		let folders = [];
@@ -283,7 +286,8 @@ registerAction2(class extends Action2 {
 		}
 		folders.push(options.folderPath);
 		await workspaceEditingService.addFolders(folders.map(folder => ({ uri: folder })));
-		await viewletService.openViewlet(viewletService.getDefaultViewletId(), true);
+		await viewletService.openPaneComposite(viewDescriptorService.getDefaultViewContainer(ViewContainerLocation.Sidebar)?.id,
+			ViewContainerLocation.Sidebar, true);
 		if (options.forceNewWindow) {
 			return hostService.openWindow([{ folderUri: folders[0] }], { forceNewWindow: options.forceNewWindow });
 		}
@@ -778,15 +782,15 @@ export class NotebookEditorOverrideContribution extends Disposable implements IW
 				priority: RegisteredEditorPriority.builtin
 			},
 			{},
-			(editorInput, group) => {
-				const fileInput = this._editorService.createEditorInput(editorInput) as FileEditorInput;
+			async (editorInput, group) => {
+				const fileInput = await this._editorService.createEditorInput(editorInput) as FileEditorInput;
 				// Try to convert the input, falling back to just a plain file input if we're unable to
 				const newInput = this.convertInput(fileInput);
 				return { editor: newInput, options: editorInput.options, group: group };
 			},
 			undefined,
-			(diffEditorInput, group) => {
-				const diffEditorInputImpl = this._editorService.createEditorInput(diffEditorInput) as DiffEditorInput;
+			async (diffEditorInput, group) => {
+				const diffEditorInputImpl = await this._editorService.createEditorInput(diffEditorInput) as DiffEditorInput;
 				// Try to convert the input, falling back to the original input if we're unable to
 				const newInput = this.convertInput(diffEditorInputImpl);
 				return { editor: newInput, options: diffEditorInput.options, group: group };
@@ -794,7 +798,7 @@ export class NotebookEditorOverrideContribution extends Disposable implements IW
 		));
 	}
 
-	private convertInput(input: IEditorInput): IEditorInput {
+	private convertInput(input: EditorInput): EditorInput {
 		const langAssociation = languageAssociationRegistry.getAssociationForLanguage(NotebookLanguage.Ipynb);
 		const notebookEditorInput = langAssociation?.syncConvertInput?.(input);
 		if (!notebookEditorInput) {

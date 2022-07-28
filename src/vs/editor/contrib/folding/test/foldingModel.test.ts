@@ -3,16 +3,16 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as assert from 'assert';
-import { FoldingModel, setCollapseStateAtLevel, setCollapseStateLevelsDown, setCollapseStateLevelsUp, setCollapseStateForMatchingLines, setCollapseStateUp, setCollapseStateForRest, getParentFoldLine, getPreviousFoldLine, getNextFoldLine } from 'vs/editor/contrib/folding/foldingModel';
-import { ModelDecorationOptions } from 'vs/editor/common/model/textModel';
-import { createTextModel } from 'vs/editor/test/common/editorTestUtils';
-import { computeRanges } from 'vs/editor/contrib/folding/indentRangeProvider';
-import { TrackedRangeStickiness, IModelDeltaDecoration, ITextModel, IModelDecorationsChangeAccessor } from 'vs/editor/common/model';
+import { escapeRegExpCharacters } from 'vs/base/common/strings';
 import { EditOperation } from 'vs/editor/common/core/editOperation';
 import { Position } from 'vs/editor/common/core/position';
 import { Range } from 'vs/editor/common/core/range';
+import { IModelDecorationsChangeAccessor, IModelDeltaDecoration, ITextModel, TrackedRangeStickiness } from 'vs/editor/common/model';
+import { ModelDecorationOptions } from 'vs/editor/common/model/textModel';
+import { FoldingModel, getNextFoldLine, getParentFoldLine, getPreviousFoldLine, setCollapseStateAtLevel, setCollapseStateForMatchingLines, setCollapseStateForRest, setCollapseStateLevelsDown, setCollapseStateLevelsUp, setCollapseStateUp } from 'vs/editor/contrib/folding/foldingModel';
 import { FoldingRegion } from 'vs/editor/contrib/folding/foldingRanges';
-import { escapeRegExpCharacters } from 'vs/base/common/strings';
+import { computeRanges } from 'vs/editor/contrib/folding/indentRangeProvider';
+import { createTextModel } from 'vs/editor/test/common/editorTestUtils';
 
 
 interface ExpectedRegion {
@@ -875,12 +875,19 @@ suite('Folding Model', () => {
 			assert.strictEqual(getPreviousFoldLine(9, foldingModel), 5);
 			assert.strictEqual(getPreviousFoldLine(5, foldingModel), 3);
 			assert.strictEqual(getPreviousFoldLine(3, foldingModel), null);
+			// Test when not on a folding region start line.
+			assert.strictEqual(getPreviousFoldLine(4, foldingModel), 3);
+			assert.strictEqual(getPreviousFoldLine(7, foldingModel), 6);
+			assert.strictEqual(getPreviousFoldLine(8, foldingModel), 6);
 
 			// Test jump to next.
 			assert.strictEqual(getNextFoldLine(3, foldingModel), 5);
-			assert.strictEqual(getNextFoldLine(4, foldingModel), 5);
 			assert.strictEqual(getNextFoldLine(5, foldingModel), 9);
 			assert.strictEqual(getNextFoldLine(9, foldingModel), null);
+			// Test when not on a folding region start line.
+			assert.strictEqual(getNextFoldLine(4, foldingModel), 5);
+			assert.strictEqual(getNextFoldLine(7, foldingModel), 9);
+			assert.strictEqual(getNextFoldLine(8, foldingModel), 9);
 
 		} finally {
 			textModel.dispose();

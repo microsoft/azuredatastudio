@@ -7,7 +7,8 @@ import * as DOM from 'vs/base/browser/dom';
 import { Delayer } from 'vs/base/common/async';
 import { Disposable, MutableDisposable } from 'vs/base/common/lifecycle';
 import * as platform from 'vs/base/common/platform';
-import { BaseCellRenderTemplate, expandCellRangesWithHiddenCells, ICellViewModel, INotebookCellList, INotebookEditor } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
+import { expandCellRangesWithHiddenCells, ICellViewModel, INotebookEditorDelegate } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
+import { BaseCellRenderTemplate, INotebookCellList } from 'vs/workbench/contrib/notebook/browser/view/notebookRenderingCommon';
 import { cloneNotebookCellTextModel } from 'vs/workbench/contrib/notebook/common/model/notebookCellTextModel';
 import { CellEditType, SelectionStateType } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import { cellRangesToIndexes, ICellRange } from 'vs/workbench/contrib/notebook/common/notebookRange';
@@ -42,7 +43,7 @@ export class CellDragAndDropController extends Disposable {
 	private readonly listOnWillScrollListener = this._register(new MutableDisposable());
 
 	constructor(
-		private readonly notebookEditor: INotebookEditor,
+		private readonly notebookEditor: INotebookEditorDelegate,
 		insertionIndicatorContainer: HTMLElement
 	) {
 		super();
@@ -185,7 +186,7 @@ export class CellDragAndDropController extends Disposable {
 
 	private getCellRangeAroundDragTarget(draggedCellIndex: number) {
 		const selections = this.notebookEditor.getSelections();
-		const modelRanges = expandCellRangesWithHiddenCells(this.notebookEditor, this.notebookEditor.viewModel!, selections);
+		const modelRanges = expandCellRangesWithHiddenCells(this.notebookEditor, selections);
 		const nearestRange = modelRanges.find(range => range.start <= draggedCellIndex && draggedCellIndex < range.end);
 
 		if (nearestRange) {
@@ -209,15 +210,20 @@ export class CellDragAndDropController extends Disposable {
 
 		const isCopy = (ctx.ctrlKey && !platform.isMacintosh) || (ctx.altKey && platform.isMacintosh);
 
+		if (!this.notebookEditor.hasModel()) {
+			return;
+		}
+
+		const textModel = this.notebookEditor.textModel;
+
 		if (isCopy) {
-			const viewModel = this.notebookEditor.viewModel!;
-			const draggedCellIndex = this.notebookEditor.viewModel!.getCellIndex(draggedCell);
+			const draggedCellIndex = this.notebookEditor.getCellIndex(draggedCell);
 			const range = this.getCellRangeAroundDragTarget(draggedCellIndex);
 
-			let originalToIdx = viewModel.getCellIndex(draggedOverCell);
+			let originalToIdx = this.notebookEditor.getCellIndex(draggedOverCell);
 			if (dropDirection === 'below') {
-				const relativeToIndex = viewModel.getCellIndex(draggedOverCell);
-				const newIdx = viewModel.getNextVisibleCellIndex(relativeToIndex);
+				const relativeToIndex = this.notebookEditor.getCellIndex(draggedOverCell);
+				const newIdx = this.notebookEditor.getNextVisibleCellIndex(relativeToIndex);
 				originalToIdx = newIdx;
 			}
 
@@ -233,23 +239,22 @@ export class CellDragAndDropController extends Disposable {
 				finalFocus = { start: draggedCellIndex + delta, end: draggedCellIndex + delta + 1 };
 			}
 
-			viewModel.notebookDocument.applyEdits([
+			textModel.applyEdits([
 				{
 					editType: CellEditType.Replace,
 					index: originalToIdx,
 					count: 0,
-					cells: cellRangesToIndexes([range]).map(index => cloneNotebookCellTextModel(viewModel.viewCells[index].model))
+					cells: cellRangesToIndexes([range]).map(index => cloneNotebookCellTextModel(this.notebookEditor.cellAt(index)!.model))
 				}
-			], true, { kind: SelectionStateType.Index, focus: viewModel.getFocus(), selections: viewModel.getSelections() }, () => ({ kind: SelectionStateType.Index, focus: finalFocus, selections: [finalSelection] }), undefined, true);
+			], true, { kind: SelectionStateType.Index, focus: this.notebookEditor.getFocus(), selections: this.notebookEditor.getSelections() }, () => ({ kind: SelectionStateType.Index, focus: finalFocus, selections: [finalSelection] }), undefined, true);
 			this.notebookEditor.revealCellRangeInView(finalSelection);
 		} else {
-			const viewModel = this.notebookEditor.viewModel!;
-			const draggedCellIndex = this.notebookEditor.viewModel!.getCellIndex(draggedCell);
+			const draggedCellIndex = this.notebookEditor.getCellIndex(draggedCell);
 			const range = this.getCellRangeAroundDragTarget(draggedCellIndex);
-			let originalToIdx = viewModel.getCellIndex(draggedOverCell);
+			let originalToIdx = this.notebookEditor.getCellIndex(draggedOverCell);
 			if (dropDirection === 'below') {
-				const relativeToIndex = viewModel.getCellIndex(draggedOverCell);
-				const newIdx = viewModel.getNextVisibleCellIndex(relativeToIndex);
+				const relativeToIndex = this.notebookEditor.getCellIndex(draggedOverCell);
+				const newIdx = this.notebookEditor.getNextVisibleCellIndex(relativeToIndex);
 				originalToIdx = newIdx;
 			}
 
@@ -269,14 +274,14 @@ export class CellDragAndDropController extends Disposable {
 				finalFocus = { start: draggedCellIndex + delta, end: draggedCellIndex + delta + 1 };
 			}
 
-			viewModel.notebookDocument.applyEdits([
+			textModel.applyEdits([
 				{
 					editType: CellEditType.Move,
 					index: range.start,
 					length: range.end - range.start,
 					newIdx: originalToIdx <= range.start ? originalToIdx : (originalToIdx - (range.end - range.start))
 				}
-			], true, { kind: SelectionStateType.Index, focus: viewModel.getFocus(), selections: viewModel.getSelections() }, () => ({ kind: SelectionStateType.Index, focus: finalFocus, selections: [finalSelection] }), undefined, true);
+			], true, { kind: SelectionStateType.Index, focus: this.notebookEditor.getFocus(), selections: this.notebookEditor.getSelections() }, () => ({ kind: SelectionStateType.Index, focus: finalFocus, selections: [finalSelection] }), undefined, true);
 			this.notebookEditor.revealCellRangeInView(finalSelection);
 		}
 	}
@@ -301,7 +306,7 @@ export class CellDragAndDropController extends Disposable {
 		dragHandle.setAttribute('draggable', 'true');
 
 		templateData.disposables.add(DOM.addDisposableListener(dragHandle, DOM.EventType.DRAG_END, () => {
-			if (!this.notebookEditor.notebookOptions.getLayoutConfiguration().dragAndDropEnabled || !!this.notebookEditor.viewModel?.options.isReadOnly) {
+			if (!this.notebookEditor.notebookOptions.getLayoutConfiguration().dragAndDropEnabled || !!this.notebookEditor.isReadOnly) {
 				return;
 			}
 
@@ -315,7 +320,7 @@ export class CellDragAndDropController extends Disposable {
 				return;
 			}
 
-			if (!this.notebookEditor.notebookOptions.getLayoutConfiguration().dragAndDropEnabled || !!this.notebookEditor.viewModel?.options.isReadOnly) {
+			if (!this.notebookEditor.notebookOptions.getLayoutConfiguration().dragAndDropEnabled || !!this.notebookEditor.isReadOnly) {
 				return;
 			}
 
@@ -332,7 +337,7 @@ export class CellDragAndDropController extends Disposable {
 	}
 
 	public startExplicitDrag(cell: ICellViewModel, _dragOffsetY: number) {
-		if (!this.notebookEditor.notebookOptions.getLayoutConfiguration().dragAndDropEnabled || !!this.notebookEditor.viewModel?.options.isReadOnly) {
+		if (!this.notebookEditor.notebookOptions.getLayoutConfiguration().dragAndDropEnabled || !!this.notebookEditor.isReadOnly) {
 			return;
 		}
 
@@ -341,7 +346,7 @@ export class CellDragAndDropController extends Disposable {
 	}
 
 	public explicitDrag(cell: ICellViewModel, dragOffsetY: number) {
-		if (!this.notebookEditor.notebookOptions.getLayoutConfiguration().dragAndDropEnabled || !!this.notebookEditor.viewModel?.options.isReadOnly) {
+		if (!this.notebookEditor.notebookOptions.getLayoutConfiguration().dragAndDropEnabled || !!this.notebookEditor.isReadOnly) {
 			return;
 		}
 

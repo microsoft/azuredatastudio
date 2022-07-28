@@ -243,7 +243,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 								cancellable: false
 							},
 							async (_progress, _token) => {
-								if (this._controllerModel.info.connectionMode === ConnectionMode.direct) {
+								if (this._controllerModel.info.connectionMode.toLowerCase() === ConnectionMode.direct) {
 									return await this._azApi.az.sql.miarc.delete(
 										this._miaaModel.info.name,
 										{

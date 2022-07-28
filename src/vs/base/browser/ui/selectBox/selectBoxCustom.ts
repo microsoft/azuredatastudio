@@ -180,6 +180,12 @@ export class SelectBoxList extends Disposable implements ISelectBoxDelegate, ILi
 
 		// Inline stylesheet for themes
 		this.styleElement = dom.createStyleSheet(this.selectDropDownContainer);
+
+		// Prevent dragging of dropdown #114329
+		this.selectDropDownContainer.setAttribute('draggable', 'true');
+		this._register(dom.addDisposableListener(this.selectDropDownContainer, dom.EventType.DRAG_START, (e) => {
+			dom.EventHelper.stop(e, true);
+		}));
 	}
 
 	private registerListeners() {
@@ -758,6 +764,7 @@ export class SelectBoxList extends Disposable implements ISelectBoxDelegate, ILi
 			.map(e => new StandardKeyboardEvent(e));
 
 		this._register(onSelectDropDownKeyDown.filter(e => e.keyCode === KeyCode.Enter).on(e => this.onEnter(e), this));
+		this._register(onSelectDropDownKeyDown.filter(e => e.keyCode === KeyCode.Tab).on(e => this.onEnter(e), this)); // Tab should behave the same as enter, #79339
 		this._register(onSelectDropDownKeyDown.filter(e => e.keyCode === KeyCode.Escape).on(e => this.onEscape(e), this));
 		this._register(onSelectDropDownKeyDown.filter(e => e.keyCode === KeyCode.UpArrow).on(e => this.onUpArrow(e), this));
 		this._register(onSelectDropDownKeyDown.filter(e => e.keyCode === KeyCode.DownArrow).on(e => this.onDownArrow(e), this));
@@ -765,7 +772,7 @@ export class SelectBoxList extends Disposable implements ISelectBoxDelegate, ILi
 		this._register(onSelectDropDownKeyDown.filter(e => e.keyCode === KeyCode.PageUp).on(this.onPageUp, this));
 		this._register(onSelectDropDownKeyDown.filter(e => e.keyCode === KeyCode.Home).on(this.onHome, this));
 		this._register(onSelectDropDownKeyDown.filter(e => e.keyCode === KeyCode.End).on(this.onEnd, this));
-		this._register(onSelectDropDownKeyDown.filter(e => (e.keyCode >= KeyCode.KEY_0 && e.keyCode <= KeyCode.KEY_Z) || (e.keyCode >= KeyCode.US_SEMICOLON && e.keyCode <= KeyCode.NUMPAD_DIVIDE)).on(this.onCharacter, this));
+		this._register(onSelectDropDownKeyDown.filter(e => (e.keyCode >= KeyCode.Digit0 && e.keyCode <= KeyCode.KeyZ) || (e.keyCode >= KeyCode.Semicolon && e.keyCode <= KeyCode.NumpadDivide)).on(this.onCharacter, this));
 
 		// SetUp list mouse controller - control navigation, disabled items, focus
 
@@ -870,12 +877,12 @@ export class SelectBoxList extends Disposable implements ISelectBoxDelegate, ILi
 			}
 		};
 
-		const renderedMarkdown = renderMarkdown({ value: text }, { actionHandler });
+		const rendered = renderMarkdown({ value: text }, { actionHandler });
 
-		renderedMarkdown.classList.add('select-box-description-markdown');
-		cleanRenderedMarkdown(renderedMarkdown);
+		rendered.element.classList.add('select-box-description-markdown');
+		cleanRenderedMarkdown(rendered.element);
 
-		return renderedMarkdown;
+		return rendered.element;
 	}
 
 	// List Focus Change - passive - update details pane with newly focused element's data
@@ -890,12 +897,13 @@ export class SelectBoxList extends Disposable implements ISelectBoxDelegate, ILi
 
 	private updateDetail(selectedIndex: number): void {
 		this.selectionDetailsPane.innerText = '';
-		const description = this.options[selectedIndex]?.description; // {{SQL CARBON EDIT}} Handle undefined options
-		const descriptionIsMarkdown = this.options[selectedIndex]?.descriptionIsMarkdown; // {{SQL CARBON EDIT}} Handle undefined options
+		const option = this.options[selectedIndex];
+		const description = option?.description ?? '';
+		const descriptionIsMarkdown = option?.descriptionIsMarkdown ?? false;
 
 		if (description) {
 			if (descriptionIsMarkdown) {
-				const actionHandler = this.options[selectedIndex].descriptionMarkdownActionHandler;
+				const actionHandler = option.descriptionMarkdownActionHandler;
 				this.selectionDetailsPane.appendChild(this.renderDescriptionMarkdown(description, actionHandler));
 			} else {
 				this.selectionDetailsPane.innerText = description;

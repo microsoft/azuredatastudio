@@ -79,7 +79,7 @@ class SQLMigration {
 				}),
 			azdata.tasks.registerTask(
 				'sqlmigration.refreshmigrations',
-				async (e) => await widget?.refreshMigrations()),
+				async (e) => await widget.refresh()),
 		];
 
 		this.context.subscriptions.push(...commandDisposables);

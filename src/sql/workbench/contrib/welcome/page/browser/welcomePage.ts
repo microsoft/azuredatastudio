@@ -45,7 +45,7 @@ import { IProductService } from 'vs/platform/product/common/productService';
 import { joinPath } from 'vs/base/common/resources';
 import { clearNode } from 'vs/base/browser/dom';
 import { GuidedTour } from 'sql/workbench/contrib/welcome/page/browser/gettingStartedTour';
-import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { IWorkbenchLayoutService, Parts } from 'vs/workbench/services/layout/browser/layoutService';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
@@ -448,7 +448,6 @@ class WelcomePage extends Disposable {
 		p.innerText = localize('WelcomePage.TakeATour', "Would you like to take a quick tour of Azure Data Studio?");
 		b.innerText = localize('WelcomePage.welcome', "Welcome!");
 
-
 		containerLeft.appendChild(icon);
 		containerLeft.appendChild(p);
 		containerRight.appendChild(removeTourBtn);
@@ -458,10 +457,9 @@ class WelcomePage extends Disposable {
 
 		startTourBtn.onDidClick((e) => {
 			this.configurationService.updateValue(configurationKey, 'welcomePageWithTour', ConfigurationTarget.USER);
-			this.layoutService.setSideBarHidden(true);
+			this.layoutService.setPartHidden(true, Parts.SIDEBAR_PART);
 			guidedTour.create();
 		});
-
 
 		removeTourBtn.addEventListener('click', (e: MouseEvent) => {
 			this.configurationService.updateValue(configurationKey, 'welcomePage', ConfigurationTarget.USER);

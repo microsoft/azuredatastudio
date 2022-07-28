@@ -9,7 +9,7 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
-import { IStatusbarEntryAccessor, IStatusbarService, StatusbarAlignment } from 'vs/workbench/services/statusbar/common/statusbar';
+import { IStatusbarEntryAccessor, IStatusbarService, StatusbarAlignment } from 'vs/workbench/services/statusbar/browser/statusbar';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { localize } from 'vs/nls';
 

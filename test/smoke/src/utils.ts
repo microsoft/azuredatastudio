@@ -48,7 +48,11 @@ export function afterSuite(opts: minimist.ParsedArgs) {
 
 		if (this.currentTest?.state === 'failed' && opts.screenshots) {
 			const name = this.currentTest!.fullTitle().replace(/[^a-z0-9\-]/ig, '_');
-			await app.captureScreenshot(name);
+			try {
+				await app.captureScreenshot(name);
+			} catch (error) {
+				// ignore
+			}
 		}
 	});
 
@@ -67,4 +71,24 @@ export function timeout(i: number) {
 			resolve();
 		}, i);
 	});
+}
+
+export interface ITask<T> {
+	(): T;
+}
+
+export async function retry<T>(task: ITask<Promise<T>>, delay: number, retries: number): Promise<T> {
+	let lastError: Error | undefined;
+
+	for (let i = 0; i < retries; i++) {
+		try {
+			return await task();
+		} catch (error) {
+			lastError = error;
+
+			await timeout(delay);
+		}
+	}
+
+	throw lastError;
 }

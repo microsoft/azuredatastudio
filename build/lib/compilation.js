@@ -37,6 +37,8 @@ function createCompile(src, build, emitError) {
     const sourcemaps = require('gulp-sourcemaps');
     const projectPath = path.join(__dirname, '../../', src, 'tsconfig.json');
     const overrideOptions = Object.assign(Object.assign({}, getTypeScriptCompilerOptions(src)), { inlineSources: Boolean(build) });
+    // {{SQL CARBON EDIT}} Add override for not inlining the sourcemap during build so we can get code coverage - it
+    // currently expects a *.map.js file to exist next to the source file for proper source mapping
     if (!build && !process.env['SQL_NO_INLINE_SOURCEMAP']) {
         overrideOptions.inlineSourceMap = true;
     }

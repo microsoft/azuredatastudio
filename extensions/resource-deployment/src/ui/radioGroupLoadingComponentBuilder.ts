@@ -25,7 +25,7 @@ export class RadioGroupLoadingComponentBuilder implements azdata.ComponentBuilde
 	}
 
 	withProperties<U>(properties: U): azdata.ComponentBuilder<azdata.LoadingComponent, azdata.LoadingComponentProperties> {
-		return this._optionsLoadingBuilder.withProps(properties);
+		return this._optionsLoadingBuilder.withProps(<any>properties);
 	}
 
 	withProps(properties: azdata.LoadingComponentProperties): azdata.ComponentBuilder<azdata.LoadingComponent, azdata.LoadingComponentProperties> {

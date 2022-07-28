@@ -40,7 +40,7 @@ import { IQuickInputService, QuickPickInput } from 'vs/platform/quickinput/commo
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { getIconClasses } from 'vs/editor/common/services/getIconClasses';
 import { URI } from 'vs/base/common/uri';
-import { ILanguagePickInput } from 'vs/workbench/contrib/notebook/browser/contrib/coreActions';
+import { ILanguagePickInput } from 'vs/workbench/contrib/notebook/browser/controller/editActions';
 
 export const CODE_SELECTOR: string = 'code-component';
 const MARKDOWN_CLASS = 'markdown';

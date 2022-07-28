@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IRevertOptions, GroupIdentifier, IEditorInput, EditorInputCapabilities, IUntypedEditorInput } from 'vs/workbench/common/editor';
+import { IRevertOptions, GroupIdentifier, EditorInputCapabilities, IUntypedEditorInput } from 'vs/workbench/common/editor';
 import { Emitter, Event } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import * as resources from 'vs/base/common/resources';
@@ -77,6 +77,7 @@ export class NotebookEditorModel extends EditorModel {
 				}, err => undefined);
 			}
 		}));
+		this._register(this.textEditorModel);
 		if (this.textEditorModel instanceof UntitledTextEditorModel) {
 			this._register(this.textEditorModel.onDidChangeDirty(e => {
 				let dirty = this.textEditorModel instanceof TextResourceEditorModel ? false : this.textEditorModel.isDirty();
@@ -329,7 +330,7 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 		return this._standardKernels;
 	}
 
-	override async save(groupId: number, options?: ITextFileSaveOptions): Promise<IEditorInput | undefined> {
+	override async save(groupId: number, options?: ITextFileSaveOptions): Promise<EditorInput | undefined> {
 		await this.updateModel();
 		let input = await this.textInput.save(groupId, options);
 		await this.setTrustForNewEditor(input);
@@ -337,7 +338,7 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 		return langAssociation.convertInput(input);
 	}
 
-	override async saveAs(group: number, options?: ITextFileSaveOptions): Promise<IEditorInput | undefined> {
+	override async saveAs(group: number, options?: ITextFileSaveOptions): Promise<EditorInput | undefined> {
 		await this.updateModel();
 		let input = await this.textInput.saveAs(group, options);
 		await this.setTrustForNewEditor(input);
@@ -345,7 +346,7 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 		return langAssociation.convertInput(input);
 	}
 
-	private async setTrustForNewEditor(newInput: IEditorInput | undefined): Promise<void> {
+	private async setTrustForNewEditor(newInput: EditorInput | undefined): Promise<void> {
 		let model = this._model.getNotebookModel();
 		if (model?.trustedMode && newInput && newInput.resource !== this.resource) {
 			await this.notebookService.serializeNotebookStateChange(newInput.resource, NotebookChangeType.Saved, undefined, true);
@@ -420,6 +421,7 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 				}
 			} else {
 				const textEditorModelReference = await this.textModelService.createModelReference(this.resource);
+				this._register(textEditorModelReference);
 				textEditorModelReference.object.textEditorModel.onBeforeAttached();
 				await textEditorModelReference.object.resolve();
 				textOrUntitledEditorModel = textEditorModelReference.object as TextFileEditorModel | TextResourceEditorModel;
@@ -531,7 +533,7 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 		return this._model.updateModel();
 	}
 
-	public override matches(otherInput: IEditorInput | IUntypedEditorInput): boolean {
+	public override matches(otherInput: EditorInput | IUntypedEditorInput): boolean {
 		if (otherInput instanceof NotebookInput) {
 			return this.textInput.matches(otherInput.textInput);
 		} else {

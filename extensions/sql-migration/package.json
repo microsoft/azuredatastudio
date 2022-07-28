@@ -2,7 +2,7 @@
   "name": "sql-migration",
   "displayName": "%displayName%",
   "description": "%description%",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "publisher": "Microsoft",
   "preview": false,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
@@ -147,32 +147,7 @@
         "when": "connectionProvider == 'MSSQL' && !mssql:iscloud  && mssql:engineedition != 8",
         "hideRefreshTask": true,
         "container": {
-          "grid-container": [
-            {
-              "name": "",
-              "row": 0,
-              "col": 0,
-              "widget": {
-                "tasks-widget": [
-                  "sqlmigration.start",
-                  "sqlmigration.newsupportrequest",
-                  "sqlmigration.sendfeedback"
-                ]
-              }
-            },
-            {
-              "name": "",
-              "row": 0,
-              "col": 1,
-              "rowspan": 2.5,
-              "colspan": 3.5,
-              "widget": {
-                "modelview": {
-                  "id": "migration.dashboard"
-                }
-              }
-            }
-          ]
+          "modelview-container": null
         }
       }
     ]

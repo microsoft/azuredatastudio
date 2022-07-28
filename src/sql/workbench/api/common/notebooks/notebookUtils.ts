@@ -13,7 +13,7 @@ import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
 import { NotebookCellKind } from 'vs/workbench/api/common/extHostTypes';
 
 const DotnetInteractiveJupyterKernelPrefix = '.net-';
-const DotnetInteractiveLanguagePrefix = 'dotnet-interactive.';
+export const DotnetInteractiveLanguagePrefix = 'dotnet-interactive.';
 export const DotnetInteractiveDisplayName = '.NET Interactive';
 
 export function convertToVSCodeNotebookCell(cellKind: azdata.nb.CellType, cellIndex: number, cellUri: URI, docUri: URI, cellLanguage: string, cellSource?: string | string[]): vscode.NotebookCell {
@@ -33,7 +33,8 @@ export function convertToVSCodeNotebookCell(cellKind: azdata.nb.CellType, cellIn
 		notebook: notebook,
 		outputs: [],
 		metadata: {},
-		mime: undefined
+		mime: undefined,
+		executionSummary: undefined
 	};
 }
 

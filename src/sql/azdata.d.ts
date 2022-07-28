@@ -3152,7 +3152,7 @@ declare module 'azdata' {
 		'run-in' |
 		'table' |
 		'table-caption' |
-		' table-column-group' |
+		'table-column-group' |
 		'table-header-group' |
 		'table-footer-group' |
 		'table-row-group' |
@@ -3443,9 +3443,7 @@ declare module 'azdata' {
 	/**
 	 * Common properties for container components such as {@link DivContainer} or {@link FlexContainer}
 	 */
-	export interface ContainerProperties extends ComponentProperties {
-
-	}
+	export interface ContainerProperties extends ComponentProperties { }
 
 	export type ThemedIconPath = { light: string | vscode.Uri; dark: string | vscode.Uri };
 	export type IconPath = string | vscode.Uri | ThemedIconPath;
