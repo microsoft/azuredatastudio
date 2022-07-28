@@ -23,6 +23,7 @@ import {
 import { Deferred } from '../interfaces';
 import { SimpleTokenCache } from '../simpleTokenCache';
 import { Logger } from '../../utils/Logger';
+import { AuthenticationResult } from '@azure/msal-node';
 const localize = nls.loadMessageBundle();
 
 interface DeviceCodeLogin { // https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code
@@ -55,7 +56,7 @@ export class AzureDeviceCode extends AzureAuth {
 		this.pageTitle = localize('addAccount', "Add {0} account", this.metadata.displayName);
 
 	}
-	protected async login(tenant: Tenant, resource: Resource): Promise<{ response: OAuthTokenResponse, authComplete: Deferred<void, Error> }> {
+	protected async login(tenant: Tenant, resource: Resource): Promise<{ response: AuthenticationResult, authComplete: Deferred<void, Error> }> {
 		let authCompleteDeferred: Deferred<void, Error>;
 		let authCompletePromise = new Promise<void>((resolve, reject) => authCompleteDeferred = { resolve, reject });
 

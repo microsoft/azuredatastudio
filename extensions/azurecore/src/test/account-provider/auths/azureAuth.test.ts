@@ -12,6 +12,7 @@ import { Tenant, AzureAccount } from 'azurecore';
 import providerSettings from '../../../account-provider/providerSettings';
 import { AzureResource } from 'azdata';
 import { AxiosResponse } from 'axios';
+import { AuthenticationResult } from '@azure/msal-node';
 
 
 let azureAuthCodeGrant: TypeMoq.IMock<AzureAuthCodeGrant>;
@@ -73,7 +74,7 @@ describe('Azure Authentication', function () {
 			]);
 		});
 
-		const response = await azureAuthCodeGrant.object.hydrateAccount(mockToken, mockClaims);
+		const response = await azureAuthCodeGrant.object.hydrateAccount(mockToken.token, mockClaims);
 		should(response.displayInfo.displayName).be.equal(`${mockClaims.name} - ${mockClaims.email}`, 'Account name should match');
 		should(response.displayInfo.userId).be.equal(mockClaims.sub, 'Account ID should match');
 		should(response.properties.tenants).be.deepEqual([mockTenant], 'Tenants should match');
@@ -219,8 +220,8 @@ describe('Azure Authentication', function () {
 
 			azureAuthCodeGrant.setup(x => x.handleInteractionRequired(mockTenant, provider.settings.microsoftResource)).returns(() => {
 				return Promise.resolve({
-					accessToken: mockAccessToken
-				} as OAuthTokenResponse);
+					accessToken: mockAccessToken.token
+				} as AuthenticationResult);
 			});
 
 

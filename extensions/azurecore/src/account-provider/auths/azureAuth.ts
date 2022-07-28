@@ -24,6 +24,7 @@ import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Logger } from '../../utils/Logger';
 import * as qs from 'qs';
 import { AzureAuthError } from './azureAuthError';
+import { AuthenticationResult } from '@azure/msal-node';
 
 const localize = nls.loadMessageBundle();
 
@@ -46,6 +47,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 	constructor(
 		protected readonly metadata: AzureAccountProviderMetadata,
+		// TODO: replace with MSAL token cache
 		protected readonly tokenCache: SimpleTokenCache,
 		protected readonly context: vscode.ExtensionContext,
 		protected readonly uriEventEmitter: vscode.EventEmitter<vscode.Uri>,
@@ -101,7 +103,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 					canceled: false
 				};
 			}
-			const account = await this.hydrateAccount(result.response.accessToken, result.response.tokenClaims);
+			const account = await this.hydrateAccount(result.response.accessToken, result.response.idTokenClaims);
 			loginComplete?.resolve();
 			return account;
 		} catch (ex) {
@@ -160,8 +162,8 @@ export abstract class AzureAuth implements vscode.Disposable {
 		}
 	}
 
-	public async hydrateAccount(token: Token | AccessToken, tokenClaims: TokenClaims): Promise<AzureAccount> {
-		const tenants = await this.getTenants({ ...token });
+	public async hydrateAccount(token: string, tokenClaims: TokenClaims): Promise<AzureAccount> {
+		const tenants = await this.getTenants(token);
 		const account = this.createAccount(tokenClaims, token.key, tenants);
 		return account;
 	}
@@ -241,7 +243,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 
 
-	protected abstract login(tenant: Tenant, resource: Resource): Promise<{ response: OAuthTokenResponse, authComplete: Deferred<void, Error> }>;
+	protected abstract login(tenant: Tenant, resource: Resource): Promise<{ response: AuthenticationResult, authComplete: Deferred<void, Error> }>;
 
 	/**
 	 * Refreshes a token, if a refreshToken is passed in then we use that. If it is not passed in then we will prompt the user for consent.
@@ -251,45 +253,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	 * @returns The oauth token response or undefined. Undefined is returned when the user wants to ignore a tenant or chooses not to start the
 	 * re-authentication process for their tenant.
 	 */
-	public async refreshToken(tenant: Tenant, resource: Resource, refreshToken: RefreshToken | undefined): Promise<OAuthTokenResponse> | undefined {
-		Logger.pii('Refreshing token', [{ name: 'token', objOrArray: refreshToken }], []);
-		if (refreshToken) {
-			const postData: RefreshTokenPostData = {
-				grant_type: 'refresh_token',
-				client_id: this.clientId,
-				refresh_token: refreshToken.token,
-				tenant: tenant.id,
-				resource: resource.endpoint
-			};
 
-			return this.getToken(tenant, resource, postData);
-		}
-
-		return this.handleInteractionRequired(tenant, resource);
-	}
-
-	public async getToken(tenant: Tenant, resource: Resource, postData: AuthorizationCodePostData | TokenPostData | RefreshTokenPostData): Promise<OAuthTokenResponse> {
-		Logger.verbose('Fetching token');
-		const tokenUrl = `${this.loginEndpointUrl}${tenant.id}/oauth2/token`;
-		// TODO: makePostRequest no longer needed, will just be able to call acquireTokenByCode
-		const response = await this.makePostRequest(tokenUrl, postData);
-		Logger.pii('Token: ', [{ name: 'access token', objOrArray: response.data }, { name: 'refresh token', objOrArray: response.data }],
-			[{ name: 'access token', value: response.data.access_token }, { name: 'refresh token', value: response.data.refresh_token }]);
-		if (response.data.error === 'interaction_required') {
-			return this.handleInteractionRequired(tenant, resource);
-		}
-
-		if (response.data.error) {
-			Logger.error('Response error!', response.data);
-			throw new AzureAuthError(localize('azure.responseError', "Token retrieval failed with an error. [Open developer tools]({0}) for more details.", 'command:workbench.action.toggleDevTools'), 'Token retrieval failed', undefined);
-		}
-
-		const accessTokenString = response.data.access_token;
-		const refreshTokenString = response.data.refresh_token;
-		const expiresOnString = response.data.expires_on;
-
-		return this.getTokenHelper(tenant, resource, accessTokenString, refreshTokenString, expiresOnString);
-	}
 
 	public async getTokenHelper(tenant: Tenant, resource: Resource, accessTokenString: string, refreshTokenString: string, expiresOnString: string): Promise<OAuthTokenResponse> {
 		if (!accessTokenString) {
@@ -347,7 +311,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 
 	//#region tenant calls
-	public async getTenants(token: AccessToken): Promise<Tenant[]> {
+	public async getTenants(token: string): Promise<Tenant[]> {
 		interface TenantResponse { // https://docs.microsoft.com/en-us/rest/api/resources/tenants/list
 			id: string
 			tenantId: string
@@ -448,7 +412,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 	//#region interaction handling
 
-	public async handleInteractionRequired(tenant: Tenant, resource: Resource): Promise<OAuthTokenResponse | undefined> {
+	public async handleInteractionRequired(tenant: Tenant, resource: Resource): Promise<AuthenticationResult | undefined> {
 		const shouldOpen = await this.askUserForInteraction(tenant, resource);
 		if (shouldOpen) {
 			const result = await this.login(tenant, resource);
