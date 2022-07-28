@@ -88,6 +88,25 @@ export enum PerformanceDataSourceOptions {
 	OpenExisting = 'OpenExisting',
 }
 
+
+export enum PhysicalDeviceType {
+	Disk = 2,
+	FloppyA = 3,
+	FloppyB = 4,
+	Tape = 5,
+	Pipe = 6,
+	CDRom = 7,
+	Url = 9,
+	Unknown = 100
+}
+
+export enum backupStatus {
+	InProgress,
+	Canceled,
+	Successed,
+	Failed
+}
+
 export interface DatabaseBackupModel {
 	migrationMode: MigrationMode;
 	networkContainerType: NetworkContainerType;
@@ -103,7 +122,7 @@ export interface DatabaseBackupModel {
 			taskId: string,
 			backupSetName: String,
 			eta?: number,
-			status: number //0: backup in progress, 1: canceled, 2: success, 3: fail
+			status: backupStatus
 		}
 	};
 }

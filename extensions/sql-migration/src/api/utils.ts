@@ -877,14 +877,14 @@ export async function getBlobCredentialsValue(credentials: SimpleExecuteResult):
 	if (credentialsValues.length === 0) {
 		credentialsValues = [
 			{
-				displayName: 'no credential found',
+				displayName: constants.NO_CREDENTIAL_FOUND,
 				name: ''
 			}
 		];
 	}
 	credentialsValues.push({
-		name: 'Create Crednetial',
-		displayName: 'Create Credential'
+		name: constants.DATABASE_BACKUP_CREATE_CREDENTIAL_TEXT,
+		displayName: constants.DATABASE_BACKUP_CREATE_CREDENTIAL_TEXT
 	});
 	return credentialsValues;
 }

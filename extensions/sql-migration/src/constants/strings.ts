@@ -398,6 +398,16 @@ export const SELECT_RESOURCE_GROUP_PROMPT = localize('sql.migration.blob.resourc
 export const SELECT_STORAGE_ACCOUNT = localize('sql.migration.blob.storageAccount.select', "Select a storage account value first.");
 export const SELECT_BLOB_CONTAINER = localize('sql.migration.blob.container.select', "Select a blob container value first.");
 
+export const DATABASE_BACKUP_NETWORK_SHARE_BACKUP_BUTTON_INFO_TEXT = localize('sql.migration.network.share.backup.info  ', "Use the backup button to perform a full backup to network share location.");
+export const DATABASE_BACKUP_BUTTON_LABEL = localize('sql.migration.database.backup', "Backup");
+export const DATABASE_BACKUP_PROGRESS_LABEL = localize('sql.migration.database.backup.progress', "Backup progress");
+export const DATABASE_BACKUP_CREDENTIAL_DROPDOWN_LABEL = localize('sql.migration.backup.credential', "Credential");
+
+export const DATABASE_BACKUP_CREATE_CREDENTIAL_TEXT = localize('sql.migration.backup.credential.text', "Create credential");
+export const DATABASE_BACKUP_BLOB_NOT_SUPPORT_INFO_TEXT = localize('sql.migration.backup.not.support', "SQL server 2013 or older does not support backup to blob, use the backup button to perform a full backup to a network share folder and copy the backup file to blob.");
+export const DATABASE_BACKUP_BLOB_BACKUP_BUTTON_INFO_TEXT = localize('sql.migration.blob.backup.text', "Use the backup button to perform a full backup to blob.");
+export const NO_CREDENTIAL_FOUND = localize('sql.migration.backup.credential.not.found', "No credential found");
+
 // integration runtime page
 export const SELECT_RESOURCE_GROUP = localize('sql.migration.blob.resourceGroup.select', "Select a resource group.");
 export const IR_PAGE_TITLE = localize('sql.migration.ir.page.title', "Azure Database Migration Service");
