@@ -100,7 +100,7 @@ export class MiaaModel extends ResourceModel {
 		try {
 			try {
 				let result;
-				if (this.controllerModel.info.connectionMode === ConnectionMode.direct) {
+				if (this.controllerModel.info.connectionMode.toLowerCase() === ConnectionMode.direct) {
 					result = await this._azApi.az.sql.miarc.show(
 						this.info.name,
 						{
