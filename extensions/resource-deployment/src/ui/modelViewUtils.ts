@@ -423,8 +423,7 @@ async function hookUpDynamicEnablement(context: WizardPageContext): Promise<void
 					if (!fieldComponent.component.enabled) {
 						fieldComponent.rows?.forEach(row => {
 							row.updateCssStyles({ 'display': 'none' });
-						}
-						);
+						});
 						// await fieldComponent.labelComponent!.updateCssStyles({ 'visibility': 'hidden' });
 						//await (<azdata.TextComponent | azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent | RadioGroupLoadingComponentBuilder>fieldComponent.component).updateCssStyles({ 'visibility': 'hidden' });
 						// let inputCompType = getInputComponentType(fieldComponent.component);
@@ -458,6 +457,10 @@ async function hookUpDynamicEnablement(context: WizardPageContext): Promise<void
 						// 	// fieldComponent.labelComponent!.updateCssStyles({ 'visibility': 'hidden' });
 						// 	//(<RadioGroupLoadingComponentBuilder>fieldComponent.component).updateProperties({ 'visibility': 'hidden' });
 						// }
+					} else {
+						fieldComponent.rows?.forEach(row => {
+							row.updateCssStyles({ 'display': 'flex-flow' });
+						});
 					}
 					// else {
 					// 	await fieldComponent.labelComponent!.updateCssStyles({ 'visibility': 'visible' });
