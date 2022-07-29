@@ -39,6 +39,19 @@
             "type": "boolean",
             "default": true,
             "description": "%queryHistory.captureEnabledDesc%"
+          },
+          "queryHistory.doubleClickAction": {
+            "type": "string",
+            "description": "%queryHistory.doubleClickAction%",
+            "default": "open",
+            "enum": [
+              "open",
+              "run"
+            ],
+            "enumDescriptions": [
+              "%queryHistory.doubleClickAction.open%",
+              "%queryHistory.doubleClickAction.run%"
+            ]
           }
         }
       }
@@ -170,7 +183,7 @@
         {
           "id": "queryHistory",
           "title": "%queryHistory.displayName%",
-          "icon": "./images/history.png"
+          "icon": "$(history)"
         }
       ]
     }
