@@ -191,17 +191,22 @@ export class EditDataGridPanel extends GridParentComponent {
 	}
 
 	public async savingGrid(): Promise<boolean> {
+		let result = false;
 		if (!this.saveActive) {
 			this.saveActive = true;
 			let currentActiveCell = this.table.grid.getActiveCell();
-			let currentNewCell = { row: currentActiveCell.row, column: currentActiveCell.cell, isEditable: true, isDirty: true };
+			let isDirty = this.table.grid.getCellEditor().isValueChanged();
+			this.currentEditCellValue = this.table.grid.getCellEditor().serializeValue();
+			let currentNewCell = { row: currentActiveCell.row, column: currentActiveCell.cell, isEditable: true, isDirty: isDirty };
 			await this.submitCellTask(currentNewCell);
 			if (this.saveSuccess) {
-				// TODO - do something with committing.
+				await this.commitEditTask();
 			}
+			this.saveActive = false;
+			result = this.saveSuccess;
 		}
 		// default case.
-		return false;
+		return Promise.resolve(result);
 	}
 
 	handleStart(self: EditDataGridPanel, event: any): void {
@@ -405,18 +410,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		if (!this.alreadyDisposed && !this.saveViewStateCalled && this.table) {
 			this.alreadyDisposed = true;
 			// TODO - Commit the row actively being edited.
-			this.currentEditCellValue = this.table.grid.getCellEditor().serializeValue();
-
-			let isDirty = this.table.grid.getCellEditor().isValueChanged();
-
-			let currentActiveCell = this.table.grid.getActiveCell();
-
-			let currentNewCell = { row: currentActiveCell.row, column: currentActiveCell.cell, isEditable: true, isDirty: isDirty };
-
-			await this.submitCellTask(currentNewCell).then(() => {
-				return this.commitEditTask();
-			},
-				() => onUnexpectedError);
+			await this.savingGrid();
 		}
 		this.saveViewStateCalled = false;
 		super.dispose();
