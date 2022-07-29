@@ -49,8 +49,8 @@
               "run"
             ],
             "enumDescriptions": [
-              "Open a new disconnected editor with the query from the selected history item",
-              "Open a new connected editor with the query and connection from the selected history item and automatically run the query"
+              "%queryHistory.doubleClickAction.open%",
+              "%queryHistory.doubleClickAction.run%"
             ]
           }
         }
