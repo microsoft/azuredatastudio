@@ -408,6 +408,9 @@ export const DATABASE_BACKUP_BLOB_NOT_SUPPORT_INFO_TEXT = localize('sql.migratio
 export const DATABASE_BACKUP_BLOB_BACKUP_BUTTON_INFO_TEXT = localize('sql.migration.blob.backup.text', "Use the backup button to perform a full backup to blob.");
 export const NO_CREDENTIAL_FOUND = localize('sql.migration.backup.credential.not.found', "No credential found");
 
+export const FAILED = localize('sql.migration.backup.failed', "failed");
+
+
 // integration runtime page
 export const SELECT_RESOURCE_GROUP = localize('sql.migration.blob.resourceGroup.select', "Select a resource group.");
 export const IR_PAGE_TITLE = localize('sql.migration.ir.page.title', "Azure Database Migration Service");

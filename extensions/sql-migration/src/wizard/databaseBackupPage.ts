@@ -1013,8 +1013,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						ariaLabel: constants.DATABASE_BACKUP_BUTTON_LABEL
 					}).component();
 					this._disposables.push(networkShareActionButton.onDidClick(async () => {
-						await networkShareActionButton.updateProperty('enabled', false);
-						await blobContainerActionButton.updateProperty('enabled', false);
+						networkShareActionButton.enabled = false;
+						blobContainerActionButton.enabled = false;
 						if (networkShareActionButton.iconPath === IconPathHelper.backup) {
 							await this.onBackup(index, PhysicalDeviceType.Disk, networkShareLocationInput.value!);
 						} else {
@@ -1088,7 +1088,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					}).component();
 
 					this._disposables.push(blobContainerResourceDropdown.onValueChanged(async (value) => {
-						await blobContainerActionButton.updateProperty('enabled', false);
+						blobContainerActionButton.enabled = false;
 						if (value && value !== 'undefined' && this.migrationStateModel._resourceGroups) {
 							const selectedResourceGroup = this.migrationStateModel._resourceGroups.find(rg => rg.name === value);
 							if (selectedResourceGroup && !blobResourceGroupErrorStrings.includes(value)) {
@@ -1103,7 +1103,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					this._blobContainerResourceGroupDropdowns.push(blobContainerResourceDropdown);
 
 					this._disposables.push(blobContainerStorageAccountDropdown.onValueChanged(async (value) => {
-						await blobContainerActionButton.updateProperty('enabled', false);
+						blobContainerActionButton.enabled = false;
 						if (value && value !== 'undefined') {
 							const selectedStorageAccount = this.migrationStateModel._storageAccounts.find(sa => sa.name === value);
 							if (selectedStorageAccount && !blobStorageAccountErrorStrings.includes(value)) {
@@ -1118,12 +1118,12 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					this._blobContainerStorageAccountDropdowns.push(blobContainerStorageAccountDropdown);
 
 					this._disposables.push(blobContainerDropdown.onValueChanged(async (value) => {
-						await blobContainerActionButton.updateProperty('enabled', false);
+						blobContainerActionButton.enabled = false;
 						if (value && value !== 'undefined' && this.migrationStateModel._blobContainers) {
 							const selectedBlobContainer = this.migrationStateModel._blobContainers.find(blob => blob.name === value);
 							if (selectedBlobContainer && !blobContainerErrorStrings.includes(value)) {
 								this.migrationStateModel._databaseBackup.blobs[index].blobContainer = selectedBlobContainer;
-								await blobContainerActionButton.updateProperty('enabled', true);
+								blobContainerActionButton.enabled = true;
 								if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
 									await this.loadBlobLastBackupFileDropdown(index);
 									await blobContainerLastBackupFileDropdown.updateProperties({ enabled: true });
@@ -1131,7 +1131,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 							} else {
 								await this.disableBlobTableDropdowns(index, constants.BLOB_CONTAINER);
 							}
-							await this._blobContainerCredentialDropdowns[index].updateProperty('enabled', value !== constants.NO_BLOBCONTAINERS_FOUND);
+							this._blobContainerCredentialDropdowns[index].enabled = value !== constants.NO_BLOBCONTAINERS_FOUND;
 						}
 					}));
 					this._blobContainerDropdowns.push(blobContainerDropdown);
@@ -1172,8 +1172,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						ariaLabel: constants.CANCEL
 					}).component();
 					this._disposables.push(blobContainerActionButton.onDidClick(async () => {
-						await networkShareActionButton.updateProperty('enabled', false);
-						await blobContainerActionButton.updateProperty('enabled', false);
+						networkShareActionButton.enabled = false;
+						blobContainerActionButton.enabled = false;
 						if (blobContainerActionButton.iconPath === IconPathHelper.backup) { //backup
 							const container = this.migrationStateModel._databaseBackup.blobs[index].blobContainer.name;
 							const storageAccount = this.migrationStateModel._databaseBackup.blobs[index].storageAccount;
@@ -1265,7 +1265,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					constants.DATABASE_BACKUP_BLOB_NOT_SUPPORT_INFO_TEXT : constants.DATABASE_BACKUP_BLOB_BACKUP_BUTTON_INFO_TEXT);
 				await this.loadBlobCredentialDropdown();
 				this._blobContainerCredentialDropdowns.forEach(async (dropdown) => {
-					await dropdown.updateProperty('enabled', true);
+					dropdown.enabled = true;
 				});
 				await this.getSubscriptionValues();
 				this.migrationStateModel.refreshDatabaseBackupPage = false;
@@ -1614,7 +1614,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	}
 
 	private async cancelBackup(dbIndex: number) {
-		this.migrationStateModel._databaseBackup.backupTasks[dbIndex].status = 1;
+		this.migrationStateModel._databaseBackup.backupTasks[dbIndex].status = backupStatus.Canceled;
 		if (this.migrationStateModel._databaseBackup.backupTasks[dbIndex].physicalDeviceType === PhysicalDeviceType.Disk) {
 			await azdata.dataprotocol.getProvider<azdata.TaskServicesProvider>(
 				(await this.migrationStateModel.getSourceConnectionProfile()).providerId, azdata.DataProviderType.TaskServicesProvider)
@@ -1747,9 +1747,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 	private async updateBackupButton() {
 		let currentBackup = await this.getInProgressBackup();
-		let isCancelling = true;
 		this.migrationStateModel._databasesForMigration.forEach(async (db, index) => {
-			isCancelling = false;
+			let isCancelling = false;
 			const lastSuccessBackup = await this.getLastSuccessfulBackup(index);
 			await this._networkShareBackupLastBackup[index].updateProperty('value', lastSuccessBackup.rows[0][2].displayValue);
 			await this._blobContainerBackupLastBackup[index].updateProperty('value', lastSuccessBackup.rows[0][2].displayValue);
@@ -1797,8 +1796,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				const index = this.migrationStateModel._databasesForMigration.indexOf(database);
 				currentBackup.add(database);
 				if (this.migrationStateModel._databaseBackup.backupTasks[index] && this.migrationStateModel._databaseBackup.backupTasks[index].status === backupStatus.InProgress) {
-					await this._networkShareBackupLoading[index].updateProperty('value', parseInt(row[1].displayValue) + '%');
-					await this._blobContainerBackupLoading[index].updateProperty('value', parseInt(row[1].displayValue) + '%');
+					this._networkShareBackupLoading[index].value = parseInt(row[1].displayValue) + '%';
+					this._blobContainerBackupLoading[index].value = parseInt(row[1].displayValue) + '%';
 				}
 			});
 		}
@@ -1820,31 +1819,31 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 	private async loadBackupButton(dbIndex: number, isBackupInProgress: boolean, cancelling: boolean) {
 		const backupTriggered = this.migrationStateModel._databaseBackup.backupTasks[dbIndex] && this.migrationStateModel._databaseBackup.backupTasks[dbIndex].status === backupStatus.InProgress;
-		await this._blobContainerAction[dbIndex].updateProperty('enabled', this.migrationStateModel._databaseBackup.blobs[dbIndex].blobContainer && !cancelling);
-		await this._networkShareAction[dbIndex].updateProperty('enabled', this._networkShareLocations[dbIndex].valid && this._networkShareLocations[dbIndex].value && this._networkShareLocations[dbIndex].value?.trim() !== '' && !cancelling);
+		this._blobContainerAction[dbIndex].enabled = this.migrationStateModel._databaseBackup.blobs[dbIndex].blobContainer && !cancelling;
+		this._networkShareAction[dbIndex].enabled = this._networkShareLocations[dbIndex].valid && this._networkShareLocations[dbIndex].value !== undefined && this._networkShareLocations[dbIndex].value?.trim() !== '' && !cancelling;
 		await this._blobContainerAction[dbIndex].updateProperty('iconPath', !backupTriggered ? IconPathHelper.backup : IconPathHelper.cancel);
 		await this._networkShareAction[dbIndex].updateProperty('iconPath', !backupTriggered ? IconPathHelper.backup : IconPathHelper.cancel);
 		if (this.migrationStateModel._databaseBackup.backupTasks[dbIndex]) {
 			switch (this.migrationStateModel._databaseBackup.backupTasks[dbIndex].status) {
 				case backupStatus.Canceled:
 				case backupStatus.Successed: {
-					await this._networkShareBackupLoading[dbIndex].updateProperty('value', '');
-					await this._blobContainerBackupLoading[dbIndex].updateProperty('value', '');
+					this._networkShareBackupLoading[dbIndex].value = '';
+					this._blobContainerBackupLoading[dbIndex].value = '';
 					break;
 				}
 				case backupStatus.Failed: {
-					await this._networkShareBackupLoading[dbIndex].updateProperty('value', constants.StatusLookup['failed']);
-					await this._blobContainerBackupLoading[dbIndex].updateProperty('value', constants.StatusLookup['failed']);
+					this._networkShareBackupLoading[dbIndex].value = constants.FAILED;
+					this._blobContainerBackupLoading[dbIndex].value = constants.FAILED;
 					break;
 				}
 			}
 		}
 		if (isBackupInProgress) {
-			await this._blobContainerAction[dbIndex].updateProperty('enabled', true);
-			await this._networkShareAction[dbIndex].updateProperty('enabled', true);
+			this._blobContainerAction[dbIndex].enabled = true;
+			this._networkShareAction[dbIndex].enabled = true;
 		} else {
-			await this._blobContainerAction[dbIndex].updateProperty('enabled', this.migrationStateModel._databaseBackup.blobs[dbIndex].blobContainer && !cancelling);
-			await this._networkShareAction[dbIndex].updateProperty('enabled', this._networkShareLocations[dbIndex].valid && this._networkShareLocations[dbIndex].value && this._networkShareLocations[dbIndex].value?.trim() !== '' && !cancelling);
+			this._blobContainerAction[dbIndex].enabled = this.migrationStateModel._databaseBackup.blobs[dbIndex].blobContainer && !cancelling;
+			this._networkShareAction[dbIndex].enabled = this._networkShareLocations[dbIndex].valid && this._networkShareLocations[dbIndex].value !== undefined && this._networkShareLocations[dbIndex].value?.trim() !== '' && !cancelling;
 		}
 	}
 
