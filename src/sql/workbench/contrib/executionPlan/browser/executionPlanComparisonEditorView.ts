@@ -326,7 +326,7 @@ export class ExecutionPlanComparisonEditorView {
 					if (this._topSimilarNode.has(id)) {
 						const similarNode = this._topSimilarNode.get(id);
 						const element = this._activeBottomPlanDiagram.getElementById(`element-` + similarNode.matchingNodesId[0]);
-						if (similarNode.matchingNodesId.find(m => this._activeBottomPlanDiagram.getSelectedElement().id === `element-` + m) !== undefined) {
+						if (this._activeBottomPlanDiagram.getSelectedElement() && similarNode.matchingNodesId.find(m => this._activeBottomPlanDiagram.getSelectedElement().id === `element-` + m) !== undefined) {
 							return;
 						}
 						this._activeBottomPlanDiagram.selectElement(element);
@@ -361,7 +361,7 @@ export class ExecutionPlanComparisonEditorView {
 					if (this._bottomSimilarNode.has(id)) {
 						const similarNode = this._bottomSimilarNode.get(id);
 						const element = this._activeTopPlanDiagram.getElementById(`element-` + similarNode.matchingNodesId[0]);
-						if (similarNode.matchingNodesId.find(m => this._activeTopPlanDiagram.getSelectedElement().id === `element-` + m) !== undefined) {
+						if (this._activeTopPlanDiagram.getSelectedElement() && similarNode.matchingNodesId.find(m => this._activeTopPlanDiagram.getSelectedElement().id === `element-` + m) !== undefined) {
 							return;
 						}
 						this._activeTopPlanDiagram.selectElement(element);

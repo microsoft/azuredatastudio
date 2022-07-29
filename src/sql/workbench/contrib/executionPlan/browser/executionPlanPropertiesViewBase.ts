@@ -164,7 +164,7 @@ export abstract class ExecutionPlanPropertiesViewBase implements IVerticalSashLa
 				for (let colIndex = selectedDataRange.fromCell; colIndex <= selectedDataRange.toCell; colIndex++) {
 					const dataItem = dataRow[this._tableComponent.grid.getColumns()[colIndex].field];
 					if (dataItem) {
-						row.push(isString(dataItem) ? dataItem : dataItem.displayText ?? dataItem.text);
+						row.push(isString(dataItem) ? dataItem : dataItem.displayText ?? dataItem.text ?? dataItem.title);
 					} else {
 						row.push('');
 					}

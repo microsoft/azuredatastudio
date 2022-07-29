@@ -137,7 +137,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 				formatter: textFormatter
 			});
 			columns.push({
-				id: 'value',
+				id: 'value1',
 				name: getPropertyViewNameValueColumnTopHeaderForOrientation(this._orientation),
 				field: 'primary',
 				width: 150,
@@ -148,14 +148,13 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		}
 		if (this._model.bottomElement) {
 			columns.push(new TextWithIconColumn({
-				id: 'value',
+				id: 'value2',
 				name: getPropertyViewNameValueColumnBottomHeaderForOrientation(this._orientation),
 				field: 'secondary',
 				width: 150,
 				headerCssClass: 'prop-table-header',
 			}).definition);
 		}
-
 		return columns;
 	}
 
@@ -317,6 +316,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 			}
 
 		});
+
 		return rows;
 	}
 
