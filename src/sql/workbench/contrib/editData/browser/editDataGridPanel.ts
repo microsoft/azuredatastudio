@@ -85,6 +85,8 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	private saveViewStateCalled: boolean;
 
+	private restoreViewStateCalled: boolean;
+
 	private alreadyDisposed: boolean;
 
 	// Strings immediately before and after an edit.
@@ -403,6 +405,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	}
 
 	public override dispose(): void {
+		//DO NOT DISPOSE, need to still keep, only dispose when editor is destroyed.
 		return;
 	}
 
@@ -972,14 +975,16 @@ export class EditDataGridPanel extends GridParentComponent {
 
 			// This block of code is responsible for restoring the dirty state indicators if slickgrid decides not to re-render the dirty row
 			// Other scenarios will be taken care of by getAdditionalCssClassesForCell method when slickgrid needs to re-render the rows.
-			if (this.previousSavedCell.row !== undefined) {
-				if (this.isRowDirty(this.previousSavedCell.row)) {
-					this.setRowDirtyState(this.previousSavedCell.row, true);
+			if (this.lastClickedCell?.row !== undefined) {
+				if (this.isRowDirty(this.lastClickedCell.row)) {
+					this.setRowDirtyState(this.lastClickedCell.row, true);
 
 					this.dirtyCells.forEach(cell => {
 						this.setCellDirtyState(cell.row, cell.column, true);
 					});
 				}
+				// Layout function will be called shortly after this, which resets the focused cell, must notify the onResize call to restore the cell.
+				this.restoreViewStateCalled = true;
 			}
 		}
 		this.saveViewStateCalled = false;
@@ -1327,6 +1332,15 @@ export class EditDataGridPanel extends GridParentComponent {
 		}
 		else {
 			return this.originalStringValue !== this.endStringValue;
+		}
+	}
+
+	protected override onResize() {
+		super.onResize();
+		// After layout resize, resume focus on the last clickedCell we last left.
+		if (this.restoreViewStateCalled) {
+			this.restoreViewStateCalled = false;
+			this.focusCell(this.lastClickedCell.row, this.lastClickedCell.column, true);
 		}
 	}
 

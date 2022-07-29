@@ -77,7 +77,6 @@ export class EditDataEditor extends EditorPane {
 
 	//saveStates
 	private sqlSaveState: IEditorViewState;
-	//private savedOldInput: EditDataInput;
 
 	private readonly _disposables = new DisposableStore();
 	constructor(
@@ -760,7 +759,6 @@ export class EditDataEditor extends EditorPane {
 			 * */
 			if (!editDataInput.results?.isDisposed()) {
 				editDataInput.results.onSaveViewStateEmitter.fire();
-				//this.savedOldInput = editDataInput;
 			}
 		}
 	}
