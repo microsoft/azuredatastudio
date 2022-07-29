@@ -195,8 +195,8 @@ export class EditDataGridPanel extends GridParentComponent {
 		if (!this.saveActive) {
 			this.saveActive = true;
 			let currentActiveCell = this.table.grid.getActiveCell();
-			let isDirty = this.table.grid.getCellEditor().isValueChanged();
 			this.currentEditCellValue = this.table.grid.getCellEditor().serializeValue();
+			let isDirty = this.table.grid.getCellEditor().isValueChanged() && !(this.originalStringValue === 'NULL' && this.currentEditCellValue === '');
 			let currentNewCell = { row: currentActiveCell.row, column: currentActiveCell.cell, isEditable: true, isDirty: isDirty };
 			await this.submitCellTask(currentNewCell);
 			if (this.saveSuccess) {
