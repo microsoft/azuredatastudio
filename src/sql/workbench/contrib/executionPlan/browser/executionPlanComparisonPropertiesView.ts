@@ -17,6 +17,7 @@ import * as sqlExtHostType from 'sql/workbench/api/common/sqlExtHostTypes';
 import { TextWithIconColumn } from 'sql/base/browser/ui/table/plugins/textWithIconColumn';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { LongTextPopupViewer } from 'sql/workbench/contrib/executionPlan/browser/LongTextPopupViewer';
 
 export enum ExecutionPlanCompareOrientation {
 	Horizontal = 'horizontal',
@@ -132,7 +133,6 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 				name: localize('nodePropertyViewNameNameColumnHeader', "Name"),
 				field: 'name',
 				width: 200,
-				editor: Slick.Editors.Text,
 				headerCssClass: 'prop-table-header',
 				formatter: textFormatter
 			});
@@ -141,7 +141,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 				name: getPropertyViewNameValueColumnTopHeaderForOrientation(this._orientation),
 				field: 'primary',
 				width: 150,
-				editor: Slick.Editors.Text,
+				editor: LongTextPopupViewer,
 				headerCssClass: 'prop-table-header',
 				formatter: textFormatter
 			});
@@ -153,6 +153,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 				field: 'secondary',
 				width: 150,
 				headerCssClass: 'prop-table-header',
+				editor: LongTextPopupViewer
 			}).definition);
 		}
 		return columns;
