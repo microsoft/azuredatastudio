@@ -93,6 +93,7 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	// Used when saving is being done.
 	private saveActive: boolean;
+	private saveSuccess: boolean;
 
 	// Edit Data functions
 	public onActiveCellChanged: (event: Slick.OnActiveCellChangedEventArgs<any>) => void;
@@ -192,7 +193,12 @@ export class EditDataGridPanel extends GridParentComponent {
 	public async savingGrid(): Promise<boolean> {
 		if (!this.saveActive) {
 			this.saveActive = true;
-			// TODO - do something with submitting cells.
+			let currentActiveCell = this.table.grid.getActiveCell();
+			let currentNewCell = { row: currentActiveCell.row, column: currentActiveCell.cell, isEditable: true, isDirty: true };
+			await this.submitCellTask(currentNewCell);
+			if (this.saveSuccess) {
+				// TODO - do something with committing.
+			}
 		}
 		// default case.
 		return false;
@@ -431,11 +437,12 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	private async submitCellTask(cellToSubmit): Promise<void> {
 		let self = this;
+		this.saveSuccess = true;
 		// disable editing the grid temporarily as any text entered while the grid is being refreshed will be lost upon completion.
 		this.cellSubmitInProgress = true;
 		this.updateEnabledState(false);
 		this.cellSubmitInProgress = false;
-		await this.submitCurrentCellChange(cellToSubmit,
+		return this.submitCurrentCellChange(cellToSubmit,
 			async (result: EditUpdateCellResult) => {
 				// Cell update was successful, update the flags
 				self.setCellDirtyState(cellToSubmit.row, cellToSubmit.column, result.cell.isDirty);
@@ -455,6 +462,7 @@ export class EditDataGridPanel extends GridParentComponent {
 					},
 						() => {
 							// Committing failed, need to restore row state to original state.
+							this.saveSuccess = false;
 							this.notificationService.notify({
 								severity: Severity.Error,
 								message: commitError
@@ -471,6 +479,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			},
 			() => {
 				// Cell update failed, jump back to the last cell we were on
+				this.saveSuccess = false;
 				this.cellSubmitInProgress = true;
 				this.updateEnabledState(true);
 				this.cellSubmitInProgress = false;
