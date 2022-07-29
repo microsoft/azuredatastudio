@@ -2,6 +2,7 @@
 	"queryHistory.displayName": "Query History",
 	"queryHistory.description": "View and run previously executed queries",
 	"queryHistory.captureEnabledDesc": "Whether Query History capture is enabled. If false queries executed will not be captured.",
+	"queryHistory.doubleClickAction": "The action taken when a history item is double clicked",
 	"queryHistory.open": "Open Query",
 	"queryHistory.run": "Run Query",
 	"queryHistory.delete": "Delete",
