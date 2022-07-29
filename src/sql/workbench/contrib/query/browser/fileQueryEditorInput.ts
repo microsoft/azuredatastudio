@@ -17,6 +17,7 @@ import { URI } from 'vs/base/common/uri';
 import { FILE_QUERY_EDITOR_TYPEID } from 'sql/workbench/common/constants';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
+import { IResourceEditorInput } from 'vs/platform/editor/common/editor';
 
 export class FileQueryEditorInput extends QueryEditorInput {
 
@@ -119,5 +120,11 @@ export class FileQueryEditorInput extends QueryEditorInput {
 				return newEditorInput;
 			}
 		}
+	}
+
+	override toUntyped(): IResourceEditorInput {
+		return <IResourceEditorInput>{
+			resource: this.resource,
+		};
 	}
 }
