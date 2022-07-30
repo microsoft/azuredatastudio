@@ -19,7 +19,7 @@ let lastSelectedItem: { item: QueryHistoryItem | undefined, time: number | undef
 const DOUBLE_CLICK_TIMEOUT_MS = 500;
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
-	const treeDataProvider = new QueryHistoryProvider();
+	const treeDataProvider = new QueryHistoryProvider(context);
 	context.subscriptions.push(treeDataProvider);
 	const treeView = vscode.window.createTreeView('queryHistory', {
 		treeDataProvider,
@@ -63,10 +63,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 		return runQuery(item);
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('queryHistory.delete', (item: QueryHistoryItem) => {
-		treeDataProvider.deleteItem(item);
+		return treeDataProvider.deleteItem(item);
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('queryHistory.clear', () => {
-		treeDataProvider.clearAll();
+		return treeDataProvider.clearAll();
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('queryHistory.disableCapture', async () => {
 		return treeDataProvider.setCaptureEnabled(false);

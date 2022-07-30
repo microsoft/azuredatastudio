@@ -8,9 +8,11 @@ import * as azdata from 'azdata';
 import { EOL } from 'os';
 import { QueryHistoryItem } from './queryHistoryItem';
 import { removeNewLines } from './utils';
-import { CAPTURE_ENABLED_CONFIG_SECTION, ITEM_SELECTED_COMMAND_ID, QUERY_HISTORY_CONFIG_SECTION } from './constants';
+import { CAPTURE_ENABLED_CONFIG_SECTION, ITEM_SELECTED_COMMAND_ID, PERSIST_HISTORY_CONFIG_SECTION, QUERY_HISTORY_CONFIG_SECTION } from './constants';
 
+const STORAGE_KEY = 'queryHistory.historyItems';
 const DEFAULT_CAPTURE_ENABLED = true;
+const DEFAULT_PERSIST_HISTORY = true;
 const successIcon = new vscode.ThemeIcon('check', new vscode.ThemeColor('testing.iconPassed'));
 const failedIcon = new vscode.ThemeIcon('error', new vscode.ThemeColor('testing.iconFailed'));
 
@@ -20,11 +22,18 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 	readonly onDidChangeTreeData: vscode.Event<QueryHistoryItem | undefined> = this._onDidChangeTreeData.event;
 
 	private _queryHistoryItems: QueryHistoryItem[] = [];
-	private _captureEnabled: boolean = true;
+	private _captureEnabled: boolean = DEFAULT_CAPTURE_ENABLED;
+	private _persistHistory: boolean = DEFAULT_PERSIST_HISTORY;
 
 	private _disposables: vscode.Disposable[] = [];
 
-	constructor() {
+	constructor(private readonly _context: vscode.ExtensionContext) {
+		void this._context.secrets.get(STORAGE_KEY).then(value => {
+			if (value) {
+				this._queryHistoryItems = JSON.parse(value);
+				this._onDidChangeTreeData.fire(undefined);
+			}
+		});
 		this._disposables.push(azdata.queryeditor.registerQueryEventListener({
 			onQueryEvent: async (type: azdata.queryeditor.QueryEventType, document: azdata.queryeditor.QueryDocument, args: azdata.ResultSetSummary | string | undefined, queryInfo?: azdata.queryeditor.QueryInfo) => {
 				if (this._captureEnabled && queryInfo && type === 'queryStop') {
@@ -43,27 +52,31 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 					const isSuccess = queryInfo.messages.find(m => m.isError) ? false : true;
 					// Add to the front of the list so the new item appears at the top
 					this._queryHistoryItems.unshift({ queryText, connectionProfile, timestamp: new Date(), isSuccess });
+					await this.storeHistory();
 					this._onDidChangeTreeData.fire(undefined);
 				}
 			}
 		}));
-		this.updateCaptureEnabled();
-		this._disposables.push(vscode.workspace.onDidChangeConfiguration(e => {
+		void this.updateConfigurationValues();
+		this._disposables.push(vscode.workspace.onDidChangeConfiguration(async e => {
 			if (e.affectsConfiguration(QUERY_HISTORY_CONFIG_SECTION)) {
-				this.updateCaptureEnabled();
+				await this.updateConfigurationValues();
 			}
 		}));
 	}
 
-	public clearAll(): void {
+	public async clearAll(): Promise<void> {
 		this._queryHistoryItems = [];
+		await this.storeHistory();
 		this._onDidChangeTreeData.fire(undefined);
 	}
 
-	public deleteItem(item: QueryHistoryItem): void {
+	public async deleteItem(item: QueryHistoryItem): Promise<void> {
 		this._queryHistoryItems = this._queryHistoryItems.filter(n => n !== item);
+		await this.storeHistory();
 		this._onDidChangeTreeData.fire(undefined);
 	}
+
 	public getTreeItem(item: QueryHistoryItem): vscode.TreeItem {
 		const treeItem = new vscode.TreeItem(removeNewLines(item.queryText), vscode.TreeItemCollapsibleState.None);
 		treeItem.iconPath = item.isSuccess ? successIcon : failedIcon;
@@ -82,8 +95,16 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 		this._disposables.forEach(d => d.dispose());
 	}
 
-	private updateCaptureEnabled(): void {
-		this._captureEnabled = vscode.workspace.getConfiguration(QUERY_HISTORY_CONFIG_SECTION).get(CAPTURE_ENABLED_CONFIG_SECTION) ?? DEFAULT_CAPTURE_ENABLED;
+	private async updateConfigurationValues(): Promise<void> {
+		const configSection = vscode.workspace.getConfiguration(QUERY_HISTORY_CONFIG_SECTION);
+		this._captureEnabled = configSection.get(CAPTURE_ENABLED_CONFIG_SECTION, DEFAULT_CAPTURE_ENABLED);
+		this._persistHistory = configSection.get(PERSIST_HISTORY_CONFIG_SECTION, DEFAULT_PERSIST_HISTORY);
+		if (!this._persistHistory) {
+			// If we're no longer persisting the history then clean out our storage secret
+			await this._context.secrets.delete(STORAGE_KEY);
+		} else {
+			await this.storeHistory();
+		}
 	}
 
 	/**
@@ -94,5 +115,13 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 	public async setCaptureEnabled(enabled: boolean): Promise<void> {
 		this._captureEnabled = enabled;
 		return vscode.workspace.getConfiguration(QUERY_HISTORY_CONFIG_SECTION).update(CAPTURE_ENABLED_CONFIG_SECTION, this._captureEnabled, vscode.ConfigurationTarget.Global);
+	}
+
+	private async storeHistory(): Promise<void> {
+		if (this._persistHistory) {
+			// Secret storage is used because the user text could have sensitive values in it in addition to us storing
+			// the connection profile which may have a password set
+			return this._context.secrets.store(STORAGE_KEY, JSON.stringify(this._queryHistoryItems));
+		}
 	}
 }

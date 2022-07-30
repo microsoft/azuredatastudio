@@ -6,5 +6,7 @@
 export const QUERY_HISTORY_CONFIG_SECTION = 'queryHistory';
 export const CAPTURE_ENABLED_CONFIG_SECTION = 'captureEnabled';
 export const DOUBLE_CLICK_ACTION_CONFIG_SECTION = 'doubleClickAction';
+export const PERSIST_HISTORY_CONFIG_SECTION = 'persistHistory';
 
 export const ITEM_SELECTED_COMMAND_ID = 'queryHistory.itemSelected';
+

@@ -52,6 +52,11 @@
               "%queryHistory.doubleClickAction.open%",
               "%queryHistory.doubleClickAction.run%"
             ]
+          },
+          "queryHistory.persistHistory": {
+            "type": "boolean",
+            "default": true,
+            "description": "%queryHistory.persistHistory%"
           }
         }
       }
