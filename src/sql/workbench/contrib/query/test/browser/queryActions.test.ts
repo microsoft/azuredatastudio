@@ -59,6 +59,7 @@ suite('SQL QueryAction Tests', () => {
 		editor.setup(x => x.getSelection()).returns(() => undefined);
 		editor.setup(x => x.getSelection(false)).returns(() => undefined);
 		editor.setup(x => x.isSelectionEmpty()).returns(() => false);
+		editor.setup(x => x.getSelections()).returns(() => [undefined]);
 		configurationService = TypeMoq.Mock.ofInstance({
 			getValue: () => undefined,
 			onDidChangeConfiguration: () => undefined
