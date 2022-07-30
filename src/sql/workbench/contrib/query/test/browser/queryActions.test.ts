@@ -209,6 +209,7 @@ suite('SQL QueryAction Tests', () => {
 		queryEditor.setup(x => x.getSelection()).returns(() => undefined);
 		queryEditor.setup(x => x.getSelection(false)).returns(() => undefined);
 		queryEditor.setup(x => x.isSelectionEmpty()).returns(() => isSelectionEmpty);
+		queryEditor.setup(x => x.getSelections()).returns(() => [undefined]);
 
 		// If I call run on RunQueryAction when I have a non empty selection
 		let queryAction: RunQueryAction = new RunQueryAction(queryEditor.object, queryModelService.object, connectionManagementService.object, undefined);
@@ -271,6 +272,9 @@ suite('SQL QueryAction Tests', () => {
 		});
 		queryEditor.setup(x => x.getSelection(TypeMoq.It.isAny())).returns(() => {
 			return selectionToReturnInGetSelection;
+		});
+		queryEditor.setup(x => x.getSelections()).returns(() => {
+			return [undefined];
 		});
 
 		// ... Mock "isConnected" in ConnectionManagementService
