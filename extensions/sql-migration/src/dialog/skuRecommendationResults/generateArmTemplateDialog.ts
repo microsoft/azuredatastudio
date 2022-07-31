@@ -11,6 +11,7 @@ import { join } from 'path';
 import * as styles from '../../constants/styles';
 import * as mssql from 'mssql';
 import * as utils from '../../api/utils';
+import { logError, TelemetryViews } from '../../telemtery';
 
 export class GenerateArmTemplateDialog {
 
@@ -113,7 +114,6 @@ export class GenerateArmTemplateDialog {
 		return container;
 	}
 
-	// TODO: Implement this
 	private CreateSaveArmTemplateContainer(_view: azdata.ModelView): azdata.FlexContainer {
 		const armTemplateSaveInstructions = _view.modelBuilder.text().withProps({
 			// TODO: Update text
@@ -206,6 +206,7 @@ export class GenerateArmTemplateDialog {
 			const error = this.model._provisioningScriptResult.error;
 
 			if (error) {
+				logError(TelemetryViews.ProvisioningScriptWizard, 'ProvisioningScriptGenerationUnexpectedError', error);
 				await this.updateArmTemplateStatus(false);
 			}
 			else {
