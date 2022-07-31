@@ -17,7 +17,7 @@ import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import * as styles from '../constants/styles';
 import { SkuEditParametersDialog } from '../dialog/skuRecommendationResults/skuEditParametersDialog';
-import { GenerateArmTemplateDialog } from '../dialog/skuRecommendationResults/generateArmTemplateDialog';
+import { GenerateArmTemplateDialog } from '../dialog/skuRecommendationResults/viewArmTemplateDialog';
 import { logError, TelemetryViews } from '../telemtery';
 
 export interface Product {
@@ -653,8 +653,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				// this._rbg.cards[index].descriptions[5].textValue = constants.ASSESSED_DBS(dbCount);
 				if (this.hasRecommendations()) {
 					this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_SKU_DETAILS].linkDisplayValue = constants.VIEW_DETAILS;
-					// Replace 'Generate ARM template' with a localized string in the future
-					this._rbg.cards[index].descriptions[CardDescriptionIndex.GENERATE_ARM_TEMPLATE].linkDisplayValue = 'Generate ARM template';
+					// Replace with a localized string in the future
+					this._rbg.cards[index].descriptions[CardDescriptionIndex.GENERATE_ARM_TEMPLATE].linkDisplayValue = 'View ARM template';
 					this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textStyles = {
 						...styles.BODY_CSS,
 						'font-weight': '500',

@@ -12,6 +12,8 @@ import * as styles from '../../constants/styles';
 import * as mssql from 'mssql';
 import * as utils from '../../api/utils';
 import { logError, TelemetryViews } from '../../telemtery';
+import { IconPathHelper } from '../../constants/iconPathHelper';
+
 
 export class GenerateArmTemplateDialog {
 
@@ -24,6 +26,7 @@ export class GenerateArmTemplateDialog {
 
 	private _generateArmTemplateContainer!: azdata.FlexContainer;
 	private _saveArmTemplateContainer!: azdata.FlexContainer;
+	private _armTemplateErrorContainer!: azdata.FlexContainer;
 
 	private _armTemplateTextBox!: azdata.TextComponent;
 	private _armTemplateText!: string;
@@ -61,9 +64,11 @@ export class GenerateArmTemplateDialog {
 		}).component();
 		this._generateArmTemplateContainer = this.CreateGenerateArmTemplateContainer(_view);
 		this._saveArmTemplateContainer = this.CreateSaveArmTemplateContainer(_view);
+		this._armTemplateErrorContainer = this.CreateArmTemplateErrorContainer(_view);
 		container.addItems([
 			this._generateArmTemplateContainer,
 			this._saveArmTemplateContainer,
+			this._armTemplateErrorContainer
 		]);
 		return container;
 	}
@@ -133,30 +138,19 @@ export class GenerateArmTemplateDialog {
 				'font': '14px "Monaco", "Menlo", "Consolas", "Droid Sans Mono", "Inconsolata", "Courier New", monospace',
 				'margin': '0',
 				'white-space': 'pre',
+				'background-color': '#eeeeee',
 			}
 
 		}).component();
-
-		const saveArmTemplateButton = _view.modelBuilder.button().withProps({
-			// Replace with localized string in the future
-			label: 'Save ARM template',
-			width: 120,
-			CSSStyles: {
-				'margin': '0'
-			}
-		}).component();
-		this._disposables.push(saveArmTemplateButton.onDidClick(async (e) => {
-			await this.saveArmTemplate();
-		}));
 
 		const textContainer = _view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
-			height: 500,
+			height: 750,
 		}).withProps({
 			CSSStyles: {
 				'overflow': 'auto',
 				'user-select': 'text',
-				'margin-bottom': '8px'
+				'margin-bottom': '8px',
 			}
 		}).withItems([
 			this._armTemplateTextBox
@@ -168,9 +162,37 @@ export class GenerateArmTemplateDialog {
 			display: 'none',
 		}).withItems([
 			armTemplateSaveInstructions,
-			textContainer,
-			saveArmTemplateButton
+			textContainer
 		]).component();
+
+		return container;
+	}
+
+	private CreateArmTemplateErrorContainer(_view: azdata.ModelView): azdata.FlexContainer {
+
+		const errorIcon = _view.modelBuilder.image().withProps({
+			iconPath: IconPathHelper.error,
+			iconHeight: 17,
+			iconWidth: 17,
+			width: 20,
+			height: 20
+		}).component();
+
+		const errorText = _view.modelBuilder.text().withProps({
+			// Replace with localized string in the future
+			value: 'An error occurred while generating the ARM template. Please try again.',
+			CSSStyles: {
+				...styles.BODY_CSS,
+				'margin-left': '8px'
+			}
+		}).component();
+
+		const container = _view.modelBuilder.flexContainer().withProps({
+			display: 'none',
+		}).component();
+
+		container.addItem(errorIcon, { flex: '0 0 auto' });
+		container.addItem(errorText, { flex: '0 0 auto' });
 
 		return container;
 	}
@@ -183,17 +205,25 @@ export class GenerateArmTemplateDialog {
 			this._armTemplateTextBox.value = this._armTemplateText;
 			await this._saveArmTemplateContainer.updateCssStyles({ 'display': 'inline' });
 		}
+		else {
+			await this._armTemplateErrorContainer.updateCssStyles({ 'display': 'inline' });
+		}
 	}
 
 	public async openDialog(dialogName?: string, recommendations?: mssql.SkuRecommendationResult) {
 		if (!this._isOpen){
 			this._isOpen = true;
 
-			this.dialog = azdata.window.createModelViewDialog('Generate ARM template', 'GenerateArmTemplateDialog', 'medium');
+			this.dialog = azdata.window.createModelViewDialog('View ARM template', 'ViewArmTemplateDialog', 'medium');
 
 			this.dialog.okButton.label = GenerateArmTemplateDialog.CloseButtonText;
 			this._disposables.push(this.dialog.okButton.onClick(async () => await this.execute()));
 			this.dialog.cancelButton.hidden = true;
+
+			const armTemplateSaveButton = azdata.window.createButton('Save ARM template', 'left');
+			this._disposables.push(armTemplateSaveButton.onClick(async () => await this.saveArmTemplate()));
+
+			this.dialog.customButtons = [armTemplateSaveButton];
 
 			const dialogSetupPromises: Thenable<void>[] = [];
 			dialogSetupPromises.push(this.initializeDialog(this.dialog));
