@@ -938,6 +938,9 @@
         <Item ItemId=";(...) Plan" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Find Node - Added Plan]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[ノードの検索 - プランの追加]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
