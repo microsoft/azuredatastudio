@@ -33,8 +33,10 @@ import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/u
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
 import { IRange } from 'vs/editor/common/core/range';
-import { ServerInfo } from 'azdata';
+import { ConnectionOptionSpecialType, ServerInfo } from 'azdata';
 import { QueryEditorState } from 'sql/workbench/common/editor/query/queryEditorInput';
+import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
+import { ProviderFeatures } from 'sql/platform/capabilities/common/capabilitiesService';
 
 suite('SQL QueryAction Tests', () => {
 
@@ -46,6 +48,7 @@ suite('SQL QueryAction Tests', () => {
 	let configurationService: TypeMoq.Mock<TestConfigurationService>;
 	let queryModelService: TypeMoq.Mock<TestQueryModelService>;
 	let connectionManagementService: TypeMoq.Mock<TestConnectionManagementService>;
+	let capabilitiesService: TypeMoq.Mock<TestCapabilitiesService>;
 
 	setup(() => {
 
@@ -86,6 +89,19 @@ suite('SQL QueryAction Tests', () => {
 		testQueryInput.setup(x => x.uri).returns(() => testUri);
 		testQueryInput.setup(x => x.runQuery(undefined)).callback(() => { calledRunQueryOnInput = true; });
 		testQueryInput.setup(x => x.state).returns(() => testQueryInputState.object);
+
+		capabilitiesService = TypeMoq.Mock.ofType<TestCapabilitiesService>(TestCapabilitiesService);
+		capabilitiesService.setup(x => x.getCapabilities(TypeMoq.It.isAnyString())).returns(() => {
+			return <ProviderFeatures>{
+				connection: {
+					connectionOptions: [
+						{
+							specialValueType: ConnectionOptionSpecialType.databaseName
+						}
+					]
+				}
+			};
+		});
 	});
 
 	test('setClass sets child CSS class correctly', () => {
@@ -491,7 +507,7 @@ suite('SQL QueryAction Tests', () => {
 		connectionManagementService.setup(x => x.changeDatabase(TypeMoq.It.isAnyString(), TypeMoq.It.isAnyString())).returns(() => Promise.resolve(true));
 
 		// If I query without having initialized anything, state should be clear
-		listItem = new ListDatabasesActionItem(editor.object, undefined, undefined, connectionManagementService.object, undefined, undefined);
+		listItem = new ListDatabasesActionItem(editor.object, undefined, undefined, connectionManagementService.object, undefined, undefined, capabilitiesService.object);
 
 		assert.strictEqual(listItem.isEnabled(), false, 'do not expect dropdown enabled unless connected');
 		assert.strictEqual(listItem.currentDatabaseName, undefined, 'do not expect dropdown to have entries unless connected');
@@ -524,7 +540,7 @@ suite('SQL QueryAction Tests', () => {
 		connectionManagementService.setup(x => x.changeDatabase(TypeMoq.It.isAnyString(), TypeMoq.It.isAnyString())).returns(() => Promise.resolve(true));
 
 		// ... Create a database dropdown that has been connected
-		let listItem = new ListDatabasesActionItem(editor.object, undefined, undefined, connectionManagementService.object, undefined, undefined);
+		let listItem = new ListDatabasesActionItem(editor.object, undefined, undefined, connectionManagementService.object, undefined, undefined, capabilitiesService.object);
 		listItem.onConnected();
 
 		// If: I raise a connection changed event
@@ -548,7 +564,7 @@ suite('SQL QueryAction Tests', () => {
 		connectionManagementService.setup(x => x.changeDatabase(TypeMoq.It.isAnyString(), TypeMoq.It.isAnyString())).returns(() => Promise.resolve(true));
 
 		// ... Create a database dropdown that has been connected
-		let listItem = new ListDatabasesActionItem(editor.object, undefined, undefined, connectionManagementService.object, undefined, undefined);
+		let listItem = new ListDatabasesActionItem(editor.object, undefined, undefined, connectionManagementService.object, undefined, undefined, capabilitiesService.object);
 		listItem.onConnected();
 
 		// If: I raise a connection changed event for the 'wrong' URI
@@ -573,7 +589,7 @@ suite('SQL QueryAction Tests', () => {
 		connectionManagementService.setup(x => x.onConnectionChanged).returns(() => dbChangedEmitter.event);
 
 		// ... Create a database dropdown
-		let listItem = new ListDatabasesActionItem(editor.object, undefined, undefined, connectionManagementService.object, undefined, undefined);
+		let listItem = new ListDatabasesActionItem(editor.object, undefined, undefined, connectionManagementService.object, undefined, undefined, capabilitiesService.object);
 
 		// If: I raise a connection changed event
 		let eventParams = <IConnectionParams>{
