@@ -29,11 +29,13 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 	let newFunctionFileObject: azureFunctionsUtils.IFileFunctionObject | undefined;
 
 	try {
+		// check to see if Azure Functions Extension is installed
 		const azureFunctionApi = await azureFunctionsUtils.getAzureFunctionsExtensionApi();
 		if (!azureFunctionApi) {
 			exitReason = ExitReason.error;
 			propertyBag.exitReason = exitReason;
-			TelemetryReporter.createErrorEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick)
+			telemetryStep = CreateAzureFunctionStep.noAzureFunctionsExtension;
+			TelemetryReporter.createErrorEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
 				.withAdditionalProperties(propertyBag).send();
 			return;
 		}
@@ -70,6 +72,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 						{ title: constants.selectAzureFunctionProjFolder, ignoreFocusOut: true });
 					if (!browseProjectLocation) {
 						// User cancelled
+						exitReason = ExitReason.cancelled;
 						return;
 					}
 					const projectFolders = (await vscode.window.showOpenDialog({
@@ -80,6 +83,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 					}));
 					if (!projectFolders) {
 						// User cancelled
+						exitReason = ExitReason.cancelled;
 						return;
 					}
 					projectFolder = projectFolders[0].fsPath;
@@ -89,6 +93,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 					break;
 				} else {
 					// user cancelled
+					exitReason = ExitReason.cancelled;
 					return;
 				}
 			}
@@ -109,6 +114,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			let chosenObjectType = await azureFunctionsUtils.promptForObjectType();
 			if (!chosenObjectType) {
 				// User cancelled
+				exitReason = ExitReason.cancelled;
 				return;
 			}
 
@@ -116,6 +122,8 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			telemetryStep = CreateAzureFunctionStep.getBindingType;
 			selectedBindingType = await azureFunctionsUtils.promptForBindingType(chosenObjectType);
 			if (!selectedBindingType) {
+				// User cancelled
+				exitReason = ExitReason.cancelled;
 				return;
 			}
 
@@ -137,6 +145,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 				}
 				if (!connectionInfo) {
 					// User cancelled
+					exitReason = ExitReason.cancelled;
 					return;
 				}
 				TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
@@ -174,6 +183,8 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			let nodeType = ObjectType.Table === node.nodeType ? ObjectType.Table : ObjectType.View;
 			selectedBindingType = await azureFunctionsUtils.promptForBindingType(nodeType);
 			if (!selectedBindingType) {
+				// User cancelled
+				exitReason = ExitReason.cancelled;
 				return;
 			}
 
@@ -201,6 +212,8 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			validateInput: input => utils.validateFunctionName(input)
 		}) as string;
 		if (!functionName) {
+			// User cancelled
+			exitReason = ExitReason.cancelled;
 			return;
 		}
 		TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
@@ -219,6 +232,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			connectionStringInfo = await azureFunctionsUtils.promptAndUpdateConnectionStringSetting(vscode.Uri.parse(projectFile), connectionInfo);
 			if (!connectionStringInfo) {
 				// User cancelled connection string setting name prompt or connection string method prompt
+				exitReason = ExitReason.cancelled;
 				return;
 			}
 			TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
