@@ -40,9 +40,10 @@ export function setup(opts: minimist.ParsedArgs) {
 			await app.workbench.sqlNotebook.addCellFromPlaceholder('Code');
 			await app.workbench.sqlNotebook.waitForPlaceholderGone();
 
-			const text1: string = 'SEL';
-			await app.workbench.sqlNotebook.waitForTypeInEditor(text1);
-			await app.code.dispatchKeybinding('ctrl+space bar');
+			await app.workbench.sqlNotebook.waitForTypeInEditor('S');
+			await app.workbench.sqlNotebook.waitForTypeInEditor('E');
+			await app.workbench.sqlNotebook.waitForTypeInEditor('L');
+			await app.code.dispatchKeybinding('ctrl+space');
 
 			// check for completion suggestions
 			await app.workbench.sqlNotebook.waitForSuggestionWidget();
