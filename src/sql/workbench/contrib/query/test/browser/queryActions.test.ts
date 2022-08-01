@@ -33,10 +33,11 @@ import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/u
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
 import { IRange } from 'vs/editor/common/core/range';
-import { ConnectionOptionSpecialType, ServerInfo } from 'azdata';
+import { ServerInfo } from 'azdata';
 import { QueryEditorState } from 'sql/workbench/common/editor/query/queryEditorInput';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { ProviderFeatures } from 'sql/platform/capabilities/common/capabilitiesService';
+import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 suite('SQL QueryAction Tests', () => {
 
