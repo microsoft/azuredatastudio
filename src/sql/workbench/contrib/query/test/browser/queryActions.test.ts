@@ -36,8 +36,7 @@ import { IRange } from 'vs/editor/common/core/range';
 import { ServerInfo } from 'azdata';
 import { QueryEditorState } from 'sql/workbench/common/editor/query/queryEditorInput';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
-import { ProviderFeatures } from 'sql/platform/capabilities/common/capabilitiesService';
-import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 suite('SQL QueryAction Tests', () => {
 
@@ -49,7 +48,7 @@ suite('SQL QueryAction Tests', () => {
 	let configurationService: TypeMoq.Mock<TestConfigurationService>;
 	let queryModelService: TypeMoq.Mock<TestQueryModelService>;
 	let connectionManagementService: TypeMoq.Mock<TestConnectionManagementService>;
-	let capabilitiesService: TypeMoq.Mock<TestCapabilitiesService>;
+	let capabilitiesService: TestCapabilitiesService;
 
 	setup(() => {
 
@@ -90,19 +89,7 @@ suite('SQL QueryAction Tests', () => {
 		testQueryInput.setup(x => x.uri).returns(() => testUri);
 		testQueryInput.setup(x => x.runQuery(undefined)).callback(() => { calledRunQueryOnInput = true; });
 		testQueryInput.setup(x => x.state).returns(() => testQueryInputState.object);
-
-		capabilitiesService = TypeMoq.Mock.ofType<TestCapabilitiesService>(TestCapabilitiesService);
-		capabilitiesService.setup(x => x.getCapabilities(TypeMoq.It.isAnyString())).returns(() => {
-			return <ProviderFeatures>{
-				connection: {
-					connectionOptions: [
-						{
-							specialValueType: ConnectionOptionSpecialType.databaseName
-						}
-					]
-				}
-			};
-		});
+		capabilitiesService = new TestCapabilitiesService();
 	});
 
 	test('setClass sets child CSS class correctly', () => {
@@ -503,12 +490,13 @@ suite('SQL QueryAction Tests', () => {
 		connectionManagementService.setup(x => x.getServerInfo(TypeMoq.It.isAny())).returns(() => <ServerInfo>{ serverMajorVersion: 12, serverEdition: 'Test' });
 		connectionManagementService.setup(x => x.onConnectionChanged).returns(() => Event.None);
 		connectionManagementService.setup(x => x.getConnectionProfile(TypeMoq.It.isAny())).returns(() => <IConnectionProfile>{
-			databaseName: databaseName
+			databaseName: databaseName,
+			providerName: mssqlProviderName
 		});
 		connectionManagementService.setup(x => x.changeDatabase(TypeMoq.It.isAnyString(), TypeMoq.It.isAnyString())).returns(() => Promise.resolve(true));
 
 		// If I query without having initialized anything, state should be clear
-		listItem = new ListDatabasesActionItem(editor.object, undefined, undefined, connectionManagementService.object, undefined, undefined, capabilitiesService.object);
+		listItem = new ListDatabasesActionItem(editor.object, undefined, undefined, connectionManagementService.object, undefined, undefined, capabilitiesService);
 
 		assert.strictEqual(listItem.isEnabled(), false, 'do not expect dropdown enabled unless connected');
 		assert.strictEqual(listItem.currentDatabaseName, undefined, 'do not expect dropdown to have entries unless connected');
@@ -537,11 +525,11 @@ suite('SQL QueryAction Tests', () => {
 		let databaseName = 'foobar';
 		connectionManagementService.setup(x => x.onConnectionChanged).returns(() => dbChangedEmitter.event);
 		connectionManagementService.setup(x => x.getServerInfo(TypeMoq.It.isAny())).returns(() => <ServerInfo>{ serverMajorVersion: 12, serverEdition: 'Test' });
-		connectionManagementService.setup(x => x.getConnectionProfile(TypeMoq.It.isAny())).returns(() => <IConnectionProfile>{ databaseName: databaseName });
+		connectionManagementService.setup(x => x.getConnectionProfile(TypeMoq.It.isAny())).returns(() => <IConnectionProfile>{ databaseName: databaseName, providerName: mssqlProviderName });
 		connectionManagementService.setup(x => x.changeDatabase(TypeMoq.It.isAnyString(), TypeMoq.It.isAnyString())).returns(() => Promise.resolve(true));
 
 		// ... Create a database dropdown that has been connected
-		let listItem = new ListDatabasesActionItem(editor.object, undefined, undefined, connectionManagementService.object, undefined, undefined, capabilitiesService.object);
+		let listItem = new ListDatabasesActionItem(editor.object, undefined, undefined, connectionManagementService.object, undefined, undefined, capabilitiesService);
 		listItem.onConnected();
 
 		// If: I raise a connection changed event
@@ -561,11 +549,11 @@ suite('SQL QueryAction Tests', () => {
 		let databaseName = 'foobar';
 		connectionManagementService.setup(x => x.onConnectionChanged).returns(() => dbChangedEmitter.event);
 		connectionManagementService.setup(x => x.getServerInfo(TypeMoq.It.isAny())).returns(() => <ServerInfo>{ serverMajorVersion: 12, serverEdition: 'Test' });
-		connectionManagementService.setup(x => x.getConnectionProfile(TypeMoq.It.isAny())).returns(() => <IConnectionProfile>{ databaseName: databaseName });
+		connectionManagementService.setup(x => x.getConnectionProfile(TypeMoq.It.isAny())).returns(() => <IConnectionProfile>{ databaseName: databaseName, providerName: mssqlProviderName });
 		connectionManagementService.setup(x => x.changeDatabase(TypeMoq.It.isAnyString(), TypeMoq.It.isAnyString())).returns(() => Promise.resolve(true));
 
 		// ... Create a database dropdown that has been connected
-		let listItem = new ListDatabasesActionItem(editor.object, undefined, undefined, connectionManagementService.object, undefined, undefined, capabilitiesService.object);
+		let listItem = new ListDatabasesActionItem(editor.object, undefined, undefined, connectionManagementService.object, undefined, undefined, capabilitiesService);
 		listItem.onConnected();
 
 		// If: I raise a connection changed event for the 'wrong' URI
@@ -588,14 +576,16 @@ suite('SQL QueryAction Tests', () => {
 
 		// ... Create mock connection management service
 		connectionManagementService.setup(x => x.onConnectionChanged).returns(() => dbChangedEmitter.event);
+		connectionManagementService.setup(x => x.getConnectionProfile(TypeMoq.It.isAny())).returns(() => <IConnectionProfile>{ databaseName: 'foobarbaz', providerName: mssqlProviderName });
 
 		// ... Create a database dropdown
-		let listItem = new ListDatabasesActionItem(editor.object, undefined, undefined, connectionManagementService.object, undefined, undefined, capabilitiesService.object);
+		let listItem = new ListDatabasesActionItem(editor.object, undefined, undefined, connectionManagementService.object, undefined, undefined, capabilitiesService);
 
 		// If: I raise a connection changed event
 		let eventParams = <IConnectionParams>{
 			connectionProfile: {
-				databaseName: 'foobarbaz'
+				databaseName: 'foobarbaz',
+				providerName: mssqlProviderName
 			},
 			connectionUri: editor.object.input.uri
 		};
