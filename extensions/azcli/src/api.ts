@@ -117,9 +117,9 @@ export function getAzApi(localAzDiscovered: Promise<IAzTool | undefined>, azTool
 				delete: async (
 					name: string,
 					args: {
-						// Direct mode arguments
+						// ARM API arguments
 						resourceGroup?: string;
-						// Indirect mode arguments
+						// K8s API arguments
 						namespace?: string;
 					},
 					additionalEnvVars?: azExt.AdditionalEnvVars
@@ -130,9 +130,9 @@ export function getAzApi(localAzDiscovered: Promise<IAzTool | undefined>, azTool
 				},
 				list: async (
 					args: {
-						// Direct mode arguments
+						// ARM API arguments
 						resourceGroup?: string;
-						// Indirect mode arguments
+						// K8s API arguments
 						namespace?: string;
 					},
 					additionalEnvVars?: azExt.AdditionalEnvVars
@@ -144,9 +144,9 @@ export function getAzApi(localAzDiscovered: Promise<IAzTool | undefined>, azTool
 				show: async (
 					name: string,
 					args: {
-						// Direct mode arguments
+						// ARM API arguments
 						resourceGroup?: string;
-						// Indirect mode arguments
+						// K8s API arguments
 						namespace?: string;
 					},
 					// Additional arguments
@@ -166,9 +166,9 @@ export function getAzApi(localAzDiscovered: Promise<IAzTool | undefined>, azTool
 						noWait?: boolean;
 						syncSecondaryToCommit?: string;
 					},
-					// Direct mode arguments
+					// ARM API arguments
 					resourceGroup?: string,
-					// Indirect mode arguments
+					// K8s API arguments
 					namespace?: string,
 					usek8s?: boolean,
 					// Additional arguments
@@ -181,9 +181,9 @@ export function getAzApi(localAzDiscovered: Promise<IAzTool | undefined>, azTool
 				upgrade: async (
 					name: string,
 					args: {
-						// Direct mode arguments
+						// ARM API arguments
 						resourceGroup?: string;
-						// Indirect mode arguments
+						// K8s API arguments
 						namespace?: string;
 					},
 					// Additional arguments
