@@ -294,6 +294,7 @@ export function setup(opts: minimist.ParsedArgs) {
 					}
 					await app.workbench.quickaccess.runCommand('workbench.action.revertAndCloseActiveEditor');
 				}
+				await app.workbench.settingsEditor.clearUserSettings();
 			}
 
 			async function verifyToolbarKeyboardShortcut(app: Application, keyboardShortcut: string, selector: string) {
@@ -311,6 +312,7 @@ export function setup(opts: minimist.ParsedArgs) {
 					await app.workbench.sqlNotebook.waitForTextCellPreviewContent(testText, selector);
 					await app.workbench.quickaccess.runCommand('workbench.action.revertAndCloseActiveEditor');
 				}
+				await app.workbench.settingsEditor.clearUserSettings();
 			}
 
 			it('can bold selected text', async function () {
