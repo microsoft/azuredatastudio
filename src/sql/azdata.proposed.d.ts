@@ -1612,6 +1612,6 @@ declare module 'azdata' {
 		 * The object type of the node. Node type is used to determine the icon, the object type is the actual type of the node, e.g. for Tables node
 		 * under the database, the nodeType is Folder, the objectType is be Tables.
 		 */
-		objectType: string;
+		objectType?: string;
 	}
 }
