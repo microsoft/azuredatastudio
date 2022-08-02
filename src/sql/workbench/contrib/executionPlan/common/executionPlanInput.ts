@@ -14,12 +14,12 @@ export class ExecutionPlanInput extends EditorInput {
 	public static ID: string = 'workbench.editorinputs.executionplan';
 	public static SCHEMA: string = 'executionplan';
 
-	private _content?: string;
 	public _executionPlanFileViewUUID: string;
 
 	constructor(
 		private _uri: URI,
-		@ITextFileService private readonly _fileService: ITextFileService,
+		private _content: string | undefined,
+		@ITextFileService private readonly _fileService: ITextFileService
 	) {
 		super();
 	}

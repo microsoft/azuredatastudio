@@ -51,6 +51,8 @@ import { IQueryModelService } from 'sql/workbench/services/query/common/queryMod
 import { FilterButtonWidth, HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { HybridDataProvider } from 'sql/base/browser/ui/table/hybridDataProvider';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { ExecutionPlanInput } from 'sql/workbench/contrib/executionPlan/common/executionPlanInput';
+import { URI } from 'vs/base/common/uri';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -704,7 +706,13 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			const subset = await this.getRowData(event.cell.row, 1);
 			const value = subset[0][event.cell.cell - 1];
 			const isJson = isJsonCell(value);
-			if (column.isXml || isJson) {
+			if (column.isXml && value.displayValue.includes('ShowPlanXML')) {
+				const untitledUri = URI.parse(`untitled-plan.sqlplan`);
+				this.editorService.openEditor(this.instantiationService.createInstance(ExecutionPlanInput, untitledUri, value.displayValue), {
+					pinned: true,
+				});
+			}
+			else if (column.isXml || isJson) {
 				const content = value.displayValue;
 				const input = this.untitledEditorService.create({ mode: column.isXml ? 'xml' : 'json', initialValue: content });
 				await input.resolve();
