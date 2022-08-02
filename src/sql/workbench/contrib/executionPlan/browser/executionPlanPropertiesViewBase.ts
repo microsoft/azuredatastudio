@@ -121,7 +121,8 @@ export abstract class ExecutionPlanPropertiesViewBase implements IVerticalSashLa
 			rowHeight: RESULTS_GRID_DEFAULTS.rowHeight,
 			forceFitColumns: true,
 			defaultColumnWidth: 120,
-			editable: true
+			editable: true,
+			autoEdit: false
 		});
 		attachTableStyler(this._tableComponent, this._themeService);
 		this._tableComponent.setSelectionModel(this._selectionModel);
