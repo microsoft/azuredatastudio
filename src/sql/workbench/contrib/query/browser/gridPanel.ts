@@ -344,6 +344,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	private currentHeight: number;
 	private dataProvider: HybridDataProvider<T>;
 	private filterPlugin: HeaderFilter<T>;
+	private isDisposed: boolean = false;
 
 	private columns: Slick.Column<T>[];
 
@@ -420,6 +421,9 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	}
 
 	public async onDidInsert() {
+		if (this.isDisposed) {
+			return;
+		}
 		if (!this.table) {
 			this.build();
 		}
@@ -853,6 +857,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	}
 
 	public override dispose() {
+		this.isDisposed = true;
 		this.container.remove();
 		if (this.table) {
 			this.table.dispose();
