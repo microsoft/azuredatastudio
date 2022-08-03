@@ -205,7 +205,10 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 		if (this.isSaving()) {
 			this.notificationService.warn(nls.localize('editDataInput.SaveInProgressWarning', "Saving cannot be performed while another save is in progress."));
 		} else if (this._results) {
-			result = this._results.save();
+			result = await this._results.save();
+			if (result) {
+				result = this;
+			}
 		}
 		return result;
 	}
