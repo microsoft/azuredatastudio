@@ -51,6 +51,7 @@ import { IQueryModelService } from 'sql/workbench/services/query/common/queryMod
 import { FilterButtonWidth, HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { HybridDataProvider } from 'sql/base/browser/ui/table/hybridDataProvider';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { ExecutionPlanInput } from 'sql/workbench/contrib/executionPlan/common/executionPlanInput';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -704,7 +705,11 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			const subset = await this.getRowData(event.cell.row, 1);
 			const value = subset[0][event.cell.cell - 1];
 			const isJson = isJsonCell(value);
-			if (column.isXml || isJson) {
+			if (column.isXml && value?.executionPlanFileExtension !== '') {
+				const executionPlanInput = this.instantiationService.createInstance(ExecutionPlanInput, undefined, value.displayValue, value?.executionPlanFileExtension);
+				await this.editorService.openEditor(executionPlanInput);
+			}
+			else if (column.isXml || isJson) {
 				const content = value.displayValue;
 				const input = this.untitledEditorService.create({ mode: column.isXml ? 'xml' : 'json', initialValue: content });
 				await input.resolve();
@@ -800,7 +805,8 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 						displayValue: r[i - 1].displayValue,
 						ariaLabel: escape(r[i - 1].displayValue),
 						isNull: r[i - 1].isNull,
-						invariantCultureDisplayValue: r[i - 1].invariantCultureDisplayValue
+						invariantCultureDisplayValue: r[i - 1].invariantCultureDisplayValue,
+						executionPlanFileExtension: r[i - 1]?.executionPlanFileExtension
 					};
 				}
 				return dataWithSchema as T;

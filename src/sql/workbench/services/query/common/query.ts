@@ -74,4 +74,5 @@ export interface ICellValue {
 	displayValue: string;
 	isNull?: boolean;
 	invariantCultureDisplayValue?: string;
+	executionPlanFileExtension?: string;
 }

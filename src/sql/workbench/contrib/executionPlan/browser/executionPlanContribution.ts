@@ -70,7 +70,7 @@ export class ExecutionPlanEditorOverrideContribution extends Disposable implemen
 			},
 			{},
 			(editorInput, group) => {
-				const executionPlanInput = this._instantiationService.createInstance(ExecutionPlanInput, editorInput.resource);
+				const executionPlanInput = this._instantiationService.createInstance(ExecutionPlanInput, editorInput.resource, undefined, undefined);
 				return { editor: executionPlanInput, options: editorInput.options, group: group };
 			}
 		);
