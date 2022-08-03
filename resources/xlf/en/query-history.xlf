@@ -19,6 +19,15 @@
     <trans-unit id="queryHistory.displayName">
       <source xml:lang="en">Query History</source>
     </trans-unit>
+    <trans-unit id="queryHistory.doubleClickAction">
+      <source xml:lang="en">The action taken when a history item is double clicked</source>
+    </trans-unit>
+    <trans-unit id="queryHistory.doubleClickAction.open">
+      <source xml:lang="en">Open a new disconnected editor with the query from the selected history item</source>
+    </trans-unit>
+    <trans-unit id="queryHistory.doubleClickAction.run">
+      <source xml:lang="en">Open a new connected editor with the query and connection from the selected history item and automatically run the query</source>
+    </trans-unit>
     <trans-unit id="queryHistory.enableCapture">
       <source xml:lang="en">Start Query History Capture</source>
     </trans-unit>
