@@ -17,7 +17,7 @@ import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import * as styles from '../constants/styles';
 import { SkuEditParametersDialog } from '../dialog/skuRecommendationResults/skuEditParametersDialog';
-import { GenerateArmTemplateDialog } from '../dialog/skuRecommendationResults/viewArmTemplateDialog';
+import { GenerateArmTemplateDialog } from '../dialog/skuRecommendationResults/generateArmTemplateDialog';
 import { logError, TelemetryViews } from '../telemtery';
 
 export interface Product {
@@ -337,7 +337,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 						}
 					},
 					{
-						// 8 - CardDescriptionIndex.GENERATE_ARM_TEMPLATE
+						// 8 - CardDescriptionIndex.VIEW_TEMPLATE
 						textValue: '',
 						linkDisplayValue: '',
 						linkStyles: {
@@ -357,7 +357,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 							await skuRecommendationResultsDialog.openDialog(e.cardId, this.migrationStateModel._skuRecommendationResults.recommendations);
 						}
 					}
-					else if (e.description.linkDisplayValue === e.card.descriptions[CardDescriptionIndex.GENERATE_ARM_TEMPLATE].linkDisplayValue) {
+					else if (e.description.linkDisplayValue === e.card.descriptions[CardDescriptionIndex.VIEW_TEMPLATE].linkDisplayValue) {
 						if (e.cardId === skuRecommendationResultsDialog._targetType) {
 							await generateArmTemplateDialog.openDialog(e.cardId, this.migrationStateModel._skuRecommendationResults.recommendations);
 						}
@@ -654,14 +654,14 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				if (this.hasRecommendations()) {
 					this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_SKU_DETAILS].linkDisplayValue = constants.VIEW_DETAILS;
 					// Replace with a localized string in the future
-					this._rbg.cards[index].descriptions[CardDescriptionIndex.GENERATE_ARM_TEMPLATE].linkDisplayValue = 'View ARM template';
+					this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_TEMPLATE].linkDisplayValue = 'View template';
 					this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textStyles = {
 						...styles.BODY_CSS,
 						'font-weight': '500',
 					};
 				} else {
 					this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_SKU_DETAILS].linkDisplayValue = '';
-					this._rbg.cards[index].descriptions[CardDescriptionIndex.GENERATE_ARM_TEMPLATE].linkDisplayValue = '';
+					this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_TEMPLATE].linkDisplayValue = '';
 					this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textStyles = {
 						...styles.BODY_CSS,
 					};
@@ -1205,5 +1205,5 @@ export enum CardDescriptionIndex {
 	SKU_RECOMMENDATION = 5,
 	VM_CONFIGURATIONS = 6,
 	VIEW_SKU_DETAILS = 7,
-	GENERATE_ARM_TEMPLATE = 8,
+	VIEW_TEMPLATE = 8,
 }

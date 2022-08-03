@@ -120,12 +120,30 @@ export class GenerateArmTemplateDialog {
 	}
 
 	private CreateSaveArmTemplateContainer(_view: azdata.ModelView): azdata.FlexContainer {
-		const armTemplateSaveInstructions = _view.modelBuilder.text().withProps({
-			// TODO: Update text
+		const armTemplateDescription = _view.modelBuilder.text().withProps({
 			// Replace with localized string in the future
-			value: 'ARM template save instructions placeholder',
+			value: 'ARM templates enable you to define the infrastructure requirements for your deployments on Azure.',
 			CSSStyles: {
 				...styles.BODY_CSS,
+				'margin-bottom': '8px',
+			}
+		}).component();
+
+		const armTemplateLearnMoreLink = _view.modelBuilder.hyperlink().withProps({
+			// Replace with localized string in the future
+			position: 'absolute',
+			label: 'Learn more on how to deploy ARM templates',
+			url: 'https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/quickstart-create-templates-use-the-portal#edit-and-deploy-the-template',
+			CSSStyles: {
+				...styles.BODY_CSS,
+			}
+		}).component();
+
+		const armTemplateLearnMoreContainer = _view.modelBuilder.flexContainer().withItems([
+			armTemplateLearnMoreLink,
+		]).withProps({
+			height: 20,
+			CSSStyles: {
 				'margin-bottom': '8px',
 			}
 		}).component();
@@ -145,7 +163,7 @@ export class GenerateArmTemplateDialog {
 
 		const textContainer = _view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
-			height: 750,
+			height: 600,
 		}).withProps({
 			CSSStyles: {
 				'overflow': 'auto',
@@ -158,10 +176,12 @@ export class GenerateArmTemplateDialog {
 
 		const container = _view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
+			position: 'relative',
 		}).withProps({
 			display: 'none',
 		}).withItems([
-			armTemplateSaveInstructions,
+			armTemplateDescription,
+			armTemplateLearnMoreContainer,
 			textContainer
 		]).component();
 
@@ -214,13 +234,13 @@ export class GenerateArmTemplateDialog {
 		if (!this._isOpen){
 			this._isOpen = true;
 
-			this.dialog = azdata.window.createModelViewDialog('View ARM template', 'ViewArmTemplateDialog', 'medium');
+			this.dialog = azdata.window.createModelViewDialog('Generate ARM template', 'ViewArmTemplateDialog', 'medium');
 
 			this.dialog.okButton.label = GenerateArmTemplateDialog.CloseButtonText;
 			this._disposables.push(this.dialog.okButton.onClick(async () => await this.execute()));
 			this.dialog.cancelButton.hidden = true;
 
-			const armTemplateSaveButton = azdata.window.createButton('Save ARM template', 'left');
+			const armTemplateSaveButton = azdata.window.createButton('Download template', 'left');
 			this._disposables.push(armTemplateSaveButton.onClick(async () => await this.saveArmTemplate()));
 
 			this.dialog.customButtons = [armTemplateSaveButton];
