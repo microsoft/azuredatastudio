@@ -113,8 +113,6 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 	public get rowLimit(): number | undefined { return this._rowLimit; }
 	public get objectType(): string { return this._objectType; }
 	public showResultsEditor(): void { this._showResultsEditor.fire(undefined); }
-	public override isSaving(): boolean { return false; }
-	public override save(): Promise<EditorInput | undefined> { return Promise.resolve(undefined); }
 	public override get typeId(): string { return EditDataInput.ID; }
 	public setBootstrappedTrue(): void { this._hasBootstrapped = true; }
 	public get resource(): URI { return this._uri; }
@@ -200,6 +198,23 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 		}
 
 		return this._sql.matches(otherInput);
+	}
+
+	public override async save(): Promise<EditorInput | undefined> {
+		let result = undefined;
+		if (this.isSaving()) {
+			this.notificationService.warn(nls.localize('editDataInput.SaveInProgressWarning', "Saving cannot be performed while another save is in progress."));
+		} else if (this._results) {
+			result = this._results.save();
+		}
+		return result;
+	}
+
+	public override isSaving(): boolean {
+		if (this._results?.isSaving()) {
+			return true;
+		}
+		return false;
 	}
 
 

@@ -192,6 +192,10 @@ export class EditDataGridPanel extends GridParentComponent {
 		}
 	}
 
+	public isSavingActive(): boolean {
+		return this.saveActive;
+	}
+
 	public async savingGrid(): Promise<boolean> {
 		let result = false;
 		if (!this.saveActive) {

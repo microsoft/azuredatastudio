@@ -69,6 +69,18 @@ export class EditDataResultsInput extends EditorInput {
 		this._hasBootstrapped = true;
 	}
 
+	public override isSaving(): boolean {
+		if ((this.editDataGridPanel as any)?.isSavingActive()) {
+			return true;
+		}
+		return false;
+	}
+
+	public override async save(): Promise<EditorInput | undefined> {
+		let result = undefined;
+		return result;
+	}
+
 	public override isDirty(): boolean {
 		if ((this.editDataGridPanel as any)?.isGridDirty()) {
 			return true;
