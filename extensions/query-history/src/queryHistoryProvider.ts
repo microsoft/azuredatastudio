@@ -8,9 +8,8 @@ import * as azdata from 'azdata';
 import { EOL } from 'os';
 import { QueryHistoryItem } from './queryHistoryItem';
 import { removeNewLines } from './utils';
+import { CAPTURE_ENABLED_CONFIG_SECTION, ITEM_SELECTED_COMMAND_ID, QUERY_HISTORY_CONFIG_SECTION } from './constants';
 
-const QUERY_HISTORY_CONFIG_SECTION = 'queryHistory';
-const CAPTURE_ENABLED_CONFIG_SECTION = 'captureEnabled';
 const DEFAULT_CAPTURE_ENABLED = true;
 const successIcon = new vscode.ThemeIcon('check', new vscode.ThemeColor('testing.iconPassed'));
 const failedIcon = new vscode.ThemeIcon('error', new vscode.ThemeColor('testing.iconFailed'));
@@ -70,6 +69,7 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 		treeItem.iconPath = item.isSuccess ? successIcon : failedIcon;
 		treeItem.tooltip = item.queryText;
 		treeItem.description = item.connectionProfile ? `${item.connectionProfile.serverName}|${item.connectionProfile.databaseName} ${item.timestamp.toLocaleString()}` : item.timestamp.toLocaleString();
+		treeItem.command = { title: '', command: ITEM_SELECTED_COMMAND_ID, arguments: [item] };
 		return treeItem;
 	}
 
