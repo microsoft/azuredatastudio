@@ -10,6 +10,7 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 export class TreeNodeContextKey implements IContextKey<TreeNode> {
 
 	static NodeType = new RawContextKey<string>('nodeType', undefined);
+	static ObjectType = new RawContextKey<string>('objectType', undefined);
 	static SubType = new RawContextKey<string>('nodeSubType', undefined);
 	static Status = new RawContextKey<string>('nodeStatus', undefined);
 	static TreeNode = new RawContextKey<TreeNode>('treeNode', undefined);
@@ -18,6 +19,7 @@ export class TreeNodeContextKey implements IContextKey<TreeNode> {
 	static IsQueryProvider = new RawContextKey<boolean>('isQueryProvider', false);
 
 	private _nodeTypeKey: IContextKey<string>;
+	private _objectTypeKey: IContextKey<string>;
 	private _subTypeKey: IContextKey<string>;
 	private _statusKey: IContextKey<string>;
 	private _treeNodeKey: IContextKey<TreeNode>;
@@ -30,6 +32,7 @@ export class TreeNodeContextKey implements IContextKey<TreeNode> {
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
 	) {
 		this._nodeTypeKey = TreeNodeContextKey.NodeType.bindTo(contextKeyService);
+		this._objectTypeKey = TreeNodeContextKey.ObjectType.bindTo(contextKeyService);
 		this._subTypeKey = TreeNodeContextKey.SubType.bindTo(contextKeyService);
 		this._statusKey = TreeNodeContextKey.Status.bindTo(contextKeyService);
 		this._treeNodeKey = TreeNodeContextKey.TreeNode.bindTo(contextKeyService);
@@ -41,6 +44,7 @@ export class TreeNodeContextKey implements IContextKey<TreeNode> {
 	set(value: TreeNode) {
 		this._treeNodeKey.set(value);
 		this._nodeTypeKey.set(value && value.nodeTypeId);
+		this._objectTypeKey.set(value && value.objectType);
 		this._subTypeKey.set(value && value.nodeSubType);
 		if (value.nodeStatus) {
 			this._statusKey.set(value && value.nodeStatus);
@@ -54,6 +58,7 @@ export class TreeNodeContextKey implements IContextKey<TreeNode> {
 
 	reset(): void {
 		this._nodeTypeKey.reset();
+		this._objectTypeKey.reset();
 		this._subTypeKey.reset();
 		this._statusKey.reset();
 		this._treeNodeKey.reset();
