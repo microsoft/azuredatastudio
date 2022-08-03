@@ -564,6 +564,14 @@ export class QueryEditor extends EditorPane {
 	}
 
 	/**
+	 * Returns the underlying SQL editor's text selections. Returns undefined if there
+	 * is no selected text.
+	 */
+	public getSelections(): IRange[] | undefined {
+		return this.currentTextEditor?.getControl()?.getSelections();
+	}
+
+	/**
 	 * Returns the underlying SQL editor's text selection in a 0-indexed format. Returns undefined if there
 	 * is no selected text.
 	 */
