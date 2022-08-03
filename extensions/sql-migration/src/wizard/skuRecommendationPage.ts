@@ -214,6 +214,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this._rootContainer = this._view.modelBuilder.flexContainer().withLayout({
 			height: '100%',
 			flexFlow: 'column'
+		}).withProps({
+			ariaLive: 'polite',
 		}).component();
 		this._rootContainer.addItem(this._assessmentComponent, { flex: '0 0 auto' });
 		this._rootContainer.addItem(this._formContainer.component(), { flex: '0 0 auto' });
