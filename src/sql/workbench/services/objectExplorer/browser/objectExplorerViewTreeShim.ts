@@ -142,7 +142,7 @@ export class OEShimService extends Disposable implements IOEShimService {
 
 			const sessionId = await this.getOrCreateSession(viewId, node);
 			const requestHandle = this.nodeHandleMap.get(generateNodeMapKey(viewId, node)) || node.handle;
-			const treeNode = new TreeNode(undefined!, undefined!, undefined!, requestHandle, undefined!); // hack since this entire system is a hack anyways
+			const treeNode = new TreeNode(undefined!, undefined!, undefined!, undefined!, requestHandle, undefined!); // hack since this entire system is a hack anyways
 			treeNode.connection = new ConnectionProfile(this.capabilities, node.payload);
 			const childrenNodes = await this.oe.refreshTreeNode({
 				success: true,
@@ -186,6 +186,7 @@ export class OEShimService extends Disposable implements IOEShimService {
 		const nodeInfo: azdata.NodeInfo = {
 			nodePath: nodePath,
 			nodeType: node.nodeTypeId,
+			objectType: node.objectType,
 			nodeSubType: node.nodeSubType,
 			nodeStatus: node.nodeStatus,
 			label: node.label,
