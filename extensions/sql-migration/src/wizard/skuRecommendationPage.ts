@@ -403,7 +403,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this._databaseSelectedHelperText = this._view.modelBuilder.text().withProps({
 			CSSStyles: {
 				...styles.BODY_CSS,
-			}
+			},
+			ariaLive: 'polite'
 		}).component();
 
 		const container = this._view.modelBuilder.flexContainer().withItems([

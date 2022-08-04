@@ -1545,6 +1545,13 @@ declare module 'azdata' {
 		link: LinkArea;
 	}
 
+	export interface TextComponentProperties {
+		/**
+		 * Corresponds to the aria-live accessibility attribute for this component
+		 */
+		ariaLive?: string;
+	}
+
 	export interface ContainerBuilder<TComponent extends Component, TLayout, TItemLayout, TPropertyBag extends ContainerProperties> extends ComponentBuilder<TComponent, TPropertyBag> {
 		/**
 		 * Sets the initial set of properties for the container being created
