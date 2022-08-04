@@ -836,7 +836,7 @@ export class PublishDatabaseDialog {
 					this.targetDatabaseName = result.databaseName;
 				}
 
-				// Set profiles options to the deployment options
+				// set options coming from the publish profiles to deployment options
 				this.setDeploymentOptions(result.options);
 
 				if (Object.keys(result.sqlCmdVariables).length) {
