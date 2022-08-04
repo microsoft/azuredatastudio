@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as azExt from 'az-ext';
 import * as loc from '../../../localizedConstants';
-import { IconPathHelper, cssStyles, ConnectionMode } from '../../../constants';
+import { IconPathHelper, cssStyles } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { ControllerModel } from '../../../models/controllerModel';
 import { UpgradeSqlMiaa } from '../../dialogs/upgradeSqlMiaa';
@@ -160,25 +160,14 @@ export class MiaaUpgradeManagementPage extends DashboardPage {
 	private async getMiaaVersion(): Promise<string | undefined> {
 		try {
 			let miaaShowResult;
-			if (this._controllerModel.info.connectionMode.toLowerCase() === ConnectionMode.direct || this._controllerModel.controllerConfig?.spec.settings.azure.connectionMode.toLowerCase() === ConnectionMode.direct) {
-				miaaShowResult = await this._azApi.az.sql.miarc.show(
-					this._miaaModel.info.name,
-					{
-						resourceGroup: this._controllerModel.info.resourceGroup,
-						namespace: undefined
-					},
-					this._controllerModel.azAdditionalEnvVars
-				);
-			} else {
-				miaaShowResult = await this._azApi.az.sql.miarc.show(
-					this._miaaModel.info.name,
-					{
-						resourceGroup: undefined,
-						namespace: this._controllerModel.info.namespace
-					},
-					this._controllerModel.azAdditionalEnvVars
-				);
-			}
+			miaaShowResult = await this._azApi.az.sql.miarc.show(
+				this._miaaModel.info.name,
+				{
+					resourceGroup: undefined,
+					namespace: this._controllerModel.info.namespace
+				},
+				this._controllerModel.azAdditionalEnvVars
+			);
 			return miaaShowResult.stdout.status.runningVersion;
 		} catch (e) {
 			console.error(loc.showMiaaError, e);
@@ -263,51 +252,27 @@ export class MiaaUpgradeManagementPage extends DashboardPage {
 					try {
 						upgradeButton.enabled = false;
 						vscode.window.showInformationMessage(loc.upgradingMiaa('kubectl get sqlmi -A\' should not be localized.'));
-						if (this._controllerModel.info.connectionMode.toLowerCase() === ConnectionMode.direct) {
-							await vscode.window.withProgress(
-								{
-									location: vscode.ProgressLocation.Notification,
-									title: loc.upgradingDirectMiaa(this._miaaModel.info.name, this._controllerModel.info.resourceGroup),
-									cancellable: true
-								},
-								async (_progress, _token): Promise<void> => {
-									await this._azApi.az.sql.miarc.upgrade(
-										this._miaaModel.info.name,
-										{
-											resourceGroup: this._controllerModel.info.resourceGroup,
-											namespace: undefined
-										}
-									);
-									try {
-										await this._controllerModel.refresh(false, this._controllerModel.info.namespace);
-									} catch (error) {
-										vscode.window.showErrorMessage(loc.refreshFailed(error));
+						await vscode.window.withProgress(
+							{
+								location: vscode.ProgressLocation.Notification,
+								title: loc.upgradingIndirectMiaa(this._miaaModel.info.name, this._controllerModel.info.namespace),
+								cancellable: true
+							},
+							async (_progress, _token): Promise<void> => {
+								await this._azApi.az.sql.miarc.upgrade(
+									this._miaaModel.info.name,
+									{
+										resourceGroup: undefined,
+										namespace: this._controllerModel.info.namespace,
 									}
+								);
+								try {
+									await this._controllerModel.refresh(false, this._controllerModel.info.namespace);
+								} catch (error) {
+									vscode.window.showErrorMessage(loc.refreshFailed(error));
 								}
-							);
-						} else {
-							await vscode.window.withProgress(
-								{
-									location: vscode.ProgressLocation.Notification,
-									title: loc.upgradingIndirectMiaa(this._miaaModel.info.name, this._controllerModel.info.namespace),
-									cancellable: true
-								},
-								async (_progress, _token): Promise<void> => {
-									await this._azApi.az.sql.miarc.upgrade(
-										this._miaaModel.info.name,
-										{
-											resourceGroup: undefined,
-											namespace: this._controllerModel.info.namespace,
-										}
-									);
-									try {
-										await this._controllerModel.refresh(false, this._controllerModel.info.namespace);
-									} catch (error) {
-										vscode.window.showErrorMessage(loc.refreshFailed(error));
-									}
-								}
-							);
-						}
+							}
+						);
 					} catch (error) {
 						console.log(error);
 					}

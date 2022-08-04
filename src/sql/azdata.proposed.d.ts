@@ -1545,6 +1545,13 @@ declare module 'azdata' {
 		link: LinkArea;
 	}
 
+	export interface TextComponentProperties {
+		/**
+		 * Corresponds to the aria-live accessibility attribute for this component
+		 */
+		ariaLive?: string;
+	}
+
 	export interface ContainerBuilder<TComponent extends Component, TLayout, TItemLayout, TPropertyBag extends ContainerProperties> extends ComponentBuilder<TComponent, TPropertyBag> {
 		/**
 		 * Sets the initial set of properties for the container being created
@@ -1605,5 +1612,13 @@ declare module 'azdata' {
 			 */
 			onQueryEvent(type: QueryEventType, document: QueryDocument, args: ResultSetSummary | string | undefined, queryInfo: QueryInfo): void;
 		}
+	}
+
+	export interface NodeInfo {
+		/**
+		 * The object type of the node. Node type is used to determine the icon, the object type is the actual type of the node, e.g. for Tables node
+		 * under the database, the nodeType is Folder, the objectType is be Tables.
+		 */
+		objectType?: string;
 	}
 }
