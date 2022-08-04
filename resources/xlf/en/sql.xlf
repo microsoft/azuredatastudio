@@ -4285,6 +4285,9 @@ Error: {1}</source>
     <trans-unit id="newQueryTask.newQuery">
       <source xml:lang="en">New Query</source>
     </trans-unit>
+    <trans-unit id="query.multiSelectionNotSupported">
+      <source xml:lang="en">Running query is not supported when the editor is in multiple selection mode.</source>
+    </trans-unit>
     <trans-unit id="queryEditor.exportSqlAsNotebook">
       <source xml:lang="en">Export as Notebook</source>
     </trans-unit>

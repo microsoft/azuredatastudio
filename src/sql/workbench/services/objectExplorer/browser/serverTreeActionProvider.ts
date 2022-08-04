@@ -69,7 +69,7 @@ export class ServerTreeActionProvider {
 	 * Return actions for connection elements
 	 */
 	private getConnectionActions(tree: AsyncServerTree | ITree, profile: ConnectionProfile): IAction[] {
-		let node = new TreeNode(NodeType.Server, '', false, '', '', '', undefined, undefined, undefined, undefined);
+		let node = new TreeNode(NodeType.Server, NodeType.Server, '', false, '', '', '', undefined, undefined, undefined, undefined);
 		node.connection = profile;
 		return this.getAllActions({
 			tree: tree,
