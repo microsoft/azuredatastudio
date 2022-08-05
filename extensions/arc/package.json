@@ -143,9 +143,7 @@
         "platforms": "*",
         "icon": "./images/data_controller.svg",
         "tags": [
-          "Hybrid",
-          "SQL Server",
-          "PostgreSQL"
+          "Hybrid"
         ],
         "providers": [
           {
