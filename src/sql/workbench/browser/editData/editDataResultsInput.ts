@@ -77,7 +77,7 @@ export class EditDataResultsInput extends EditorInput {
 	}
 
 	public override async revert(): Promise<void> {
-		//TODO do something to revert the current cell in editDataGridPanel.
+		await (this.editDataGridPanel as any)?.revertForDontSave();
 	}
 
 	public override async save(): Promise<EditorInput | undefined> {

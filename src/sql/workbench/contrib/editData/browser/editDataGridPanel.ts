@@ -408,6 +408,12 @@ export class EditDataGridPanel extends GridParentComponent {
 		});
 	}
 
+	public async revertForDontSave(): Promise<void> {
+		(this.table as any)._grid.getEditorLock().cancelCurrentEdit();
+		await this.revertSelectedCell(this.lastClickedCell.row, this.lastClickedCell.column).catch(onUnexpectedError);
+		await this.revertSelectedRow(this.lastClickedCell.row).catch(onUnexpectedError);
+	}
+
 	public override dispose(): void {
 		//DO NOT DISPOSE, need to still keep, only dispose when editor is destroyed.
 		return;
