@@ -10,6 +10,7 @@ import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { EditorModel } from 'vs/workbench/common/editor/editorModel';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
+import * as azdata from 'azdata';
 
 export class ExecutionPlanInput extends EditorInput {
 
@@ -22,20 +23,19 @@ export class ExecutionPlanInput extends EditorInput {
 
 	constructor(
 		private _uri: URI | undefined,
-		private _content: string | undefined,
-		private _executionPlanFileExtension: string | undefined,
+		private _executionPlanGraphInfo: azdata.executionPlan.ExecutionPlanGraphInfo,
 		@ITextFileService private readonly _fileService: ITextFileService,
 		@IEditorService private readonly _editorService: IEditorService
 	) {
 		super();
 
-		if (this._uri === undefined) {
+		if (this._uri === undefined && !!this._executionPlanGraphInfo.graphFileContent && !!this._executionPlanGraphInfo.graphFileType) {
 			const existingNames = this._editorService.editors.map(editor => editor.getName());
 			let i = 0;
-			this._editorName = `${this.editorNamePrefix}${i}${this._executionPlanFileExtension}`;
+			this._editorName = `${this.editorNamePrefix}${i}${this._executionPlanGraphInfo.graphFileType}`;
 			while (existingNames.includes(this._editorName)) {
 				i++;
-				this._editorName = `${this.editorNamePrefix}${i}${this._executionPlanFileExtension}`;
+				this._editorName = `${this.editorNamePrefix}${i}${this._executionPlanGraphInfo.graphFileContent}`;
 			}
 
 			this._uri = URI.parse(this._editorName);
@@ -55,7 +55,7 @@ export class ExecutionPlanInput extends EditorInput {
 	}
 
 	public override getName(): string {
-		if (!(!!this._executionPlanFileExtension)) {
+		if (!(!!this._executionPlanGraphInfo.graphFileType)) {
 			return this._editorName;
 		}
 
@@ -63,10 +63,10 @@ export class ExecutionPlanInput extends EditorInput {
 	}
 
 	public async content(): Promise<string> {
-		if (!this._content) {
-			this._content = (await this._fileService.read(this._uri, { acceptTextOnly: true })).value;
+		if (!this._executionPlanGraphInfo.graphFileContent) {
+			this._executionPlanGraphInfo.graphFileContent = (await this._fileService.read(this._uri, { acceptTextOnly: true })).value;
 		}
-		return this._content;
+		return this._executionPlanGraphInfo.graphFileContent;
 	}
 
 	public getUri(): string {
@@ -82,8 +82,8 @@ export class ExecutionPlanInput extends EditorInput {
 	}
 
 	public override async resolve(refresh?: boolean): Promise<EditorModel | undefined> {
-		if (!this._content) {
-			this._content = (await this._fileService.read(this._uri, { acceptTextOnly: true })).value;
+		if (!this._executionPlanGraphInfo.graphFileContent) {
+			this._executionPlanGraphInfo.graphFileContent = (await this._fileService.read(this._uri, { acceptTextOnly: true })).value;
 		}
 		return undefined;
 	}

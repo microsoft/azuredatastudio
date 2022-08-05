@@ -1417,11 +1417,11 @@ declare module 'azdata' {
 			/**
 			 * File contents
 			 */
-			graphFileContent: string;
+			graphFileContent: string | undefined;
 			/**
 			 * File type for execution plan. This will be the file type of the editor when the user opens the graph file
 			 */
-			graphFileType: string;
+			graphFileType: string | undefined;
 			/**
 			 * Index of the execution plan in the file content
 			 */
