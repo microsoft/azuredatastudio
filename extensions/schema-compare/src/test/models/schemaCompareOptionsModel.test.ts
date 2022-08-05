@@ -19,10 +19,10 @@ describe('Schema Compare Options Model', () => {
 
 	it('Should not have a default object types to exclude from IncludeObjectTypes ', function (): void {
 		const model = new SchemaCompareOptionsModel(testUtils.getDeploymentOptions());
-		should(model.deploymentOptions.excludeObjectTypes.value.length).be.equal(0, 'There should be no object type excluding from IncludeObjectTypes');
+		should(model.deploymentOptions.excludeObjectTypes.value.length).be.equal(0, 'There should be no object type excluded from IncludeObjectTypes');
 
 		Object.keys(model.deploymentOptions.objectTypesDictionary).forEach(option => {
-			should(model.getIncludeObjectTypeOptionCheckStatus(option)).equal(true, 'Object types that are not excluding should return true');
+			should(model.getIncludeObjectTypeOptionCheckStatus(option)).equal(true, 'Object types that are not excluded should return true');
 		});
 	});
 
