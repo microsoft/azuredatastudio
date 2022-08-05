@@ -240,7 +240,7 @@ export class GenerateArmTemplateDialog {
 			this._disposables.push(this.dialog.okButton.onClick(async () => await this.execute()));
 			this.dialog.cancelButton.hidden = true;
 
-			const armTemplateSaveButton = azdata.window.createButton('Download template', 'left');
+			const armTemplateSaveButton = azdata.window.createButton('Save template', 'left');
 			this._disposables.push(armTemplateSaveButton.onClick(async () => await this.saveArmTemplate()));
 
 			this.dialog.customButtons = [armTemplateSaveButton];
