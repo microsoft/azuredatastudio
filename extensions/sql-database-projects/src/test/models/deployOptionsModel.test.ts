@@ -31,7 +31,7 @@ describe('Publish Dialog Deploy Options Model', () => {
 
 	it('Should have no default exclude object types', function (): void {
 		const model = new DeployOptionsModel(testUtils.getDeploymentOptions());
-		should(model.deploymentOptions.excludeObjectTypes.value.length).be.equal(0, 'There should be no excluded objects');
+		should(model.deploymentOptions.excludeObjectTypes.value.length).be.equal(0, 'There should be no object types excluded from excludeObjectTypes');
 
 		// should return true for all object type options as there are no default excludeObjectTypes in the deployment options
 		Object.keys(model.deploymentOptions.objectTypesDictionary).forEach(option => {
