@@ -18,6 +18,7 @@ import { IResolvedTextEditorModel } from 'vs/editor/common/services/resolverServ
 import { IUntitledTextEditorModel, UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 import { EncodingMode } from 'vs/workbench/services/textfile/common/textfiles';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
+import { GroupIdentifier, IRevertOptions } from 'vs/workbench/common/editor';
 
 /**
  * Input for the EditDataEditor.
@@ -200,6 +201,10 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 		return this._sql.matches(otherInput);
 	}
 
+	public override async revert(group: GroupIdentifier, options?: IRevertOptions): Promise<void> {
+		//TODO implement revert on the cell.
+	}
+
 	public override async save(): Promise<EditorInput | undefined> {
 		let result = undefined;
 		if (this.isSaving()) {
@@ -229,7 +234,7 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 				message: message
 			});
 			// comment out for now until actual save feature has been added.
-			//return true;
+			return true;
 		}
 		return false;
 	}
