@@ -76,6 +76,10 @@ export class EditDataResultsInput extends EditorInput {
 		return false;
 	}
 
+	public override async revert(): Promise<void> {
+		//TODO do something to revert the current cell in editDataGridPanel.
+	}
+
 	public override async save(): Promise<EditorInput | undefined> {
 		let result = undefined;
 		return result;

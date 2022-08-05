@@ -202,7 +202,7 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 	}
 
 	public override async revert(group: GroupIdentifier, options?: IRevertOptions): Promise<void> {
-		//TODO implement revert on the cell.
+		this._results?.revert();
 	}
 
 	public override async save(): Promise<EditorInput | undefined> {
