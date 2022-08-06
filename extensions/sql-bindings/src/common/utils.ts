@@ -84,20 +84,6 @@ export function generateQuotedFullName(schema: string, objectName: string): stri
 }
 
 /**
- * Returns a promise that will reject after the specified timeout
- * @param errorMessage error message to be returned in the rejection
- * @param ms timeout in milliseconds. Default is 10 seconds
- * @returns a promise that rejects after the specified timeout
- */
-export function timeoutPromise(errorMessage: string, ms: number = 10000): Promise<string> {
-	return new Promise((_, reject) => {
-		setTimeout(() => {
-			reject(new TimeoutError(errorMessage));
-		}, ms);
-	});
-}
-
-/**
  * Gets a unique file name
  * Increment the file name by adding 1 to function name if the file already exists
  * Undefined if the filename suffix count becomes greater than 1024
