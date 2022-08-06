@@ -194,7 +194,7 @@ declare module 'mssql' {
 	/**
 	 * Values from <DacFx>\Product\Source\DeploymentApi\ObjectTypes.cs
 	 */
-	 export const enum SchemaObjectType {
+	export const enum SchemaObjectType {
 		Aggregates = 0,
 		ApplicationRoles = 1,
 		Assemblies = 2,
