@@ -68,7 +68,7 @@ describe('Azure Authentication', function () {
 
 	it('accountHydration should yield a valid account', async function () {
 
-		azureAuthCodeGrant.setup(x => x.getTenants(mockToken)).returns((): Promise<Tenant[]> => {
+		azureAuthCodeGrant.setup(x => x.getTenants(mockToken.token)).returns((): Promise<Tenant[]> => {
 			return Promise.resolve([
 				mockTenant
 			]);
@@ -95,7 +95,7 @@ describe('Azure Authentication', function () {
 		});
 
 		it('token recieved for ossRdbmns resource', async function () {
-			azureAuthCodeGrant.setup(x => x.getTenants(mockToken)).returns(() => {
+			azureAuthCodeGrant.setup(x => x.getTenants(mockToken.token)).returns(() => {
 				return Promise.resolve([
 					mockTenant
 				]);

@@ -13,8 +13,7 @@ import {
 	AzureAccount
 } from 'azurecore';
 import { Deferred } from './interfaces';
-
-import { SimpleTokenCache } from './simpleTokenCache';
+import { PublicClientApplication } from '@azure/msal-node';
 import { Logger } from '../utils/Logger';
 import { MultiTenantTokenResponse, Token, AzureAuth } from './auths/azureAuth';
 import { AzureAuthCodeGrant } from './auths/azureAuthCodeGrant';
@@ -27,22 +26,24 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 	private readonly authMappings = new Map<AzureAuthType, AzureAuth>();
 	private initComplete: Deferred<void, Error>;
 	private initCompletePromise: Promise<void> = new Promise<void>((resolve, reject) => this.initComplete = { resolve, reject });
+	public clientApplication: PublicClientApplication;
 
 	constructor(
 		metadata: AzureAccountProviderMetadata,
-		tokenCache: SimpleTokenCache,
 		context: vscode.ExtensionContext,
+		clientApplication: PublicClientApplication,
 		uriEventHandler: vscode.EventEmitter<vscode.Uri>,
 		private readonly forceDeviceCode: boolean = false
 	) {
+		this.clientApplication = clientApplication;
 		vscode.workspace.onDidChangeConfiguration((changeEvent) => {
 			const impact = changeEvent.affectsConfiguration(AzureAccountProvider.CONFIGURATION_SECTION);
 			if (impact === true) {
-				this.handleAuthMapping(metadata, tokenCache, context, uriEventHandler);
+				this.handleAuthMapping(metadata, context, uriEventHandler);
 			}
 		});
 
-		this.handleAuthMapping(metadata, tokenCache, context, uriEventHandler);
+		this.handleAuthMapping(metadata, context, uriEventHandler);
 	}
 
 	dispose() {
@@ -53,7 +54,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		return this.getAuthMethod().deleteAllCache();
 	}
 
-	private handleAuthMapping(metadata: AzureAccountProviderMetadata, tokenCache: SimpleTokenCache, context: vscode.ExtensionContext, uriEventHandler: vscode.EventEmitter<vscode.Uri>) {
+	private handleAuthMapping(metadata: AzureAccountProviderMetadata, context: vscode.ExtensionContext, uriEventHandler: vscode.EventEmitter<vscode.Uri>) {
 		this.authMappings.forEach(m => m.dispose());
 		this.authMappings.clear();
 		const configuration = vscode.workspace.getConfiguration(AzureAccountProvider.CONFIGURATION_SECTION);
@@ -62,10 +63,10 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		const deviceCodeMethod: boolean = configuration.get('deviceCode');
 
 		if (codeGrantMethod === true && !this.forceDeviceCode) {
-			this.authMappings.set(AzureAuthType.AuthCodeGrant, new AzureAuthCodeGrant(metadata, tokenCache, context, uriEventHandler));
+			this.authMappings.set(AzureAuthType.AuthCodeGrant, new AzureAuthCodeGrant(metadata, context, uriEventHandler, this.clientApplication));
 		}
 		if (deviceCodeMethod === true || this.forceDeviceCode) {
-			this.authMappings.set(AzureAuthType.DeviceCode, new AzureDeviceCode(metadata, tokenCache, context, uriEventHandler));
+			this.authMappings.set(AzureAuthType.DeviceCode, new AzureDeviceCode(metadata, context, uriEventHandler));
 		}
 	}
 
@@ -115,7 +116,14 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		await this.initCompletePromise;
 		const azureAuth = this.getAuthMethod(account);
 		Logger.pii(`Getting account security token for ${JSON.stringify(account.key)} (tenant ${tenantId}). Auth Method = ${azureAuth.userFriendlyName}`, [], []);
-		return azureAuth?.getAccountSecurityToken(account, tenantId, resource);
+		let authResult = await azureAuth?.getToken(account.key.accountId, resource);
+		const token: Token = {
+			key: authResult.account.homeAccountId,
+			token: authResult.accessToken,
+			tokenType: authResult.tokenType,
+		};
+
+		return token;
 	}
 
 	private async _getSecurityToken(account: AzureAccount, resource: azdata.AzureResource): Promise<MultiTenantTokenResponse | undefined> {

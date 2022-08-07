@@ -7,12 +7,12 @@ import * as azdata from 'azdata';
 import * as events from 'events';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
-import { SimpleTokenCache } from './simpleTokenCache';
 import providerSettings from './providerSettings';
 import { AzureAccountProvider as AzureAccountProvider } from './azureAccountProvider';
 import { AzureAccountProviderMetadata } from 'azurecore';
 import { ProviderSettings } from './interfaces';
 import * as loc from '../localizedConstants';
+import { PublicClientApplication } from '@azure/msal-node';
 
 let localize = nls.loadMessageBundle();
 
@@ -37,6 +37,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 	private _currentConfig: vscode.WorkspaceConfiguration;
 	private _event: events.EventEmitter;
 	private readonly _uriEventHandler: UriEventHandler;
+	public clientApplication: PublicClientApplication;
 
 	constructor(private _context: vscode.ExtensionContext, private _userStoragePath: string) {
 		this._accountDisposals = {};
@@ -146,13 +147,15 @@ export class AzureAccountProviderService implements vscode.Disposable {
 
 	private async registerAccountProvider(provider: ProviderSettings): Promise<void> {
 		try {
-			const noSystemKeychain = vscode.workspace.getConfiguration('azure').get<boolean>('noSystemKeychain');
-			let tokenCacheKey = `azureTokenCache-${provider.metadata.id}`;
-			let simpleTokenCache = new SimpleTokenCache(tokenCacheKey, this._userStoragePath, noSystemKeychain, this._credentialProvider);
-			await simpleTokenCache.init();
-
+			const MSAL_CONFIG = {
+				auth: {
+					clientId: provider.metadata.settings.clientId,
+					redirect_uri: provider.metadata.settings.redirectUri
+				}
+			};
+			this.clientApplication = new PublicClientApplication(MSAL_CONFIG);
 			const isSaw: boolean = vscode.env.appName.toLowerCase().indexOf('saw') > 0;
-			let accountProvider = new AzureAccountProvider(provider.metadata as AzureAccountProviderMetadata, simpleTokenCache, this._context, this._uriEventHandler, isSaw);
+			let accountProvider = new AzureAccountProvider(provider.metadata as AzureAccountProviderMetadata, this._context, this.clientApplication, this._uriEventHandler, isSaw);
 
 			this._accountProviders[provider.metadata.id] = accountProvider;
 			this._accountDisposals[provider.metadata.id] = azdata.accounts.registerAccountProvider(provider.metadata, accountProvider);

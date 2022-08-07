@@ -18,13 +18,12 @@ import {
 import { Deferred } from '../interfaces';
 import * as url from 'url';
 
-import { SimpleTokenCache } from '../simpleTokenCache';
 import { MemoryDatabase } from '../utils/memoryDatabase';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Logger } from '../../utils/Logger';
 import * as qs from 'qs';
 import { AzureAuthError } from './azureAuthError';
-import { AuthenticationResult } from '@azure/msal-node';
+import { AccountInfo, AuthenticationResult, AuthorizationCodeRequest, PublicClientApplication, TokenCache } from '@azure/msal-node';
 
 const localize = nls.loadMessageBundle();
 
@@ -47,13 +46,13 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 	constructor(
 		protected readonly metadata: AzureAccountProviderMetadata,
-		// TODO: replace with MSAL token cache
-		protected readonly tokenCache: SimpleTokenCache,
 		protected readonly context: vscode.ExtensionContext,
+		protected clientApplication: PublicClientApplication,
 		protected readonly uriEventEmitter: vscode.EventEmitter<vscode.Uri>,
 		protected readonly authType: AzureAuthType,
-		public readonly userFriendlyName: string
+		public readonly userFriendlyName: string,
 	) {
+		this.clientApplication = clientApplication;
 		this.loginEndpointUrl = this.metadata.settings.host;
 		this.commonTenant = {
 			id: 'common',
@@ -103,7 +102,14 @@ export abstract class AzureAuth implements vscode.Disposable {
 					canceled: false
 				};
 			}
-			const account = await this.hydrateAccount(result.response.accessToken, result.response.idTokenClaims);
+			const token: Token = {
+				token: result.response.accessToken,
+				key: result.response.account.homeAccountId,
+				tokenType: result.response.tokenType
+			};
+			// build token claims object
+			const tokenClaims = <TokenClaims>result.response.idTokenClaims;
+			const account = await this.hydrateAccount(token, tokenClaims);
 			loginComplete?.resolve();
 			return account;
 		} catch (ex) {
@@ -141,8 +147,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			return account;
 		}
 		try {
-			const tenant = this.getHomeTenant(account);
-			const tokenResult = await this.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.MicrosoftResourceManagement);
+			const tokenResult = await this.getToken(account.key.accountId);
 			if (!tokenResult) {
 				account.isStale = true;
 				return account;
@@ -162,8 +167,8 @@ export abstract class AzureAuth implements vscode.Disposable {
 		}
 	}
 
-	public async hydrateAccount(token: string, tokenClaims: TokenClaims): Promise<AzureAccount> {
-		const tenants = await this.getTenants(token);
+	public async hydrateAccount(token: Token, tokenClaims: TokenClaims): Promise<AzureAccount> {
+		const tenants = await this.getTenants(token.token);
 		const account = this.createAccount(tokenClaims, token.key, tenants);
 		return account;
 	}
@@ -255,6 +260,56 @@ export abstract class AzureAuth implements vscode.Disposable {
 	 */
 
 
+	/**
+	 * Gets the access token for the correct account and scope from the token cache, if the correct token doesn't exist in the token cache
+	 * (i.e. expired token, wrong scope, etc.), sends a request for a new token using the refresh token
+	 * @param accountId
+	 * @param azureResource
+	 * @returns The authentication result, including the access token
+	 */
+	// TODO: Need to add resource we are getting the token for
+	// Can replace most refreshToken calls with getToken, it does the same thing
+	public async getToken(accountId: string, azureResource: azdata.AzureResource): Promise<AuthenticationResult> {
+
+		const cache = this.clientApplication.getTokenCache();
+		if (!cache) {
+			console.log('Error: Could not fetch token cache.');
+		}
+		const resource = this.resources.find(s => s.azureResourceId === azureResource);
+		if (!resource) {
+			console.log('Error: Could not fetch the azure resource.');
+		}
+		const account = await cache.getAccountByHomeId(accountId);
+		if (!account) {
+			console.log('Error: Could not fetch account when acquiring token');
+		}
+		let newScope = [`${resource.endpoint}/User.Read`];
+		// construct request
+		const tokenRequest = {
+			account: account,
+			scopes: newScope
+		};
+
+		try {
+			return await this.clientApplication.acquireTokenSilent(tokenRequest);
+		} catch (e) {
+			console.log('Failed to acquireTokenSilent');
+			console.log(e);
+			// TODO: deal with the other scenario where acquireTokenSilent fails
+			/// this.login(account.tenantId, )
+		}
+		// Need: Account info
+		// Need: Scope
+		// Use account info to find correct account from cache
+		// Call clientApplication.getTokenSilent() in a try/catch
+		// In the catch if that fails, call clientApplication.getTokenInteractive
+		// return authResponse.accessToken
+	}
+
+	public async getTokenInteractive(authCodeRequest: AuthorizationCodeRequest): AuthenticationResult {
+
+	}
+
 	public async getTokenHelper(tenant: Tenant, resource: Resource, accessTokenString: string, refreshTokenString: string, expiresOnString: string): Promise<OAuthTokenResponse> {
 		if (!accessTokenString) {
 			const msg = localize('azure.accessTokenEmpty', 'No access token returned from Microsoft OAuth');
@@ -303,8 +358,6 @@ export abstract class AzureAuth implements vscode.Disposable {
 			accountId: userKey
 		};
 
-		await this.saveToken(tenant, resource, accountKey, result);
-
 		return result;
 	}
 
@@ -322,13 +375,13 @@ export abstract class AzureAuth implements vscode.Disposable {
 		const tenantUri = url.resolve(this.metadata.settings.armResource.endpoint, 'tenants?api-version=2019-11-01');
 		try {
 			Logger.verbose('Fetching tenants', tenantUri);
-			const tenantResponse = await this.makeGetRequest(tenantUri, token.token);
+			const tenantResponse = await this.makeGetRequest(tenantUri, token);
 			const tenants: Tenant[] = tenantResponse.data.value.map((tenantInfo: TenantResponse) => {
 				Logger.verbose(`Tenant: ${tenantInfo.displayName}`);
 				return {
 					id: tenantInfo.tenantId,
 					displayName: tenantInfo.displayName ? tenantInfo.displayName : localize('azureWorkAccountDisplayName', "Work or school account"),
-					userId: token.key,
+					userId: token,
 					tenantCategory: tenantInfo.tenantCategory
 				} as Tenant;
 			});
@@ -345,70 +398,6 @@ export abstract class AzureAuth implements vscode.Disposable {
 			throw new Error('Error retrieving tenant information');
 		}
 	}
-
-	//#endregion
-
-	//#region token management
-	private async saveToken(tenant: Tenant, resource: Resource, accountKey: azdata.AccountKey, { accessToken, refreshToken, expiresOn }: OAuthTokenResponse) {
-		const msg = localize('azure.cacheErrorAdd', "Error when adding your account to the cache.");
-		if (!tenant.id || !resource.id) {
-			Logger.pii('Tenant ID or resource ID was undefined', [], [], tenant, resource);
-			throw new AzureAuthError(msg, 'Adding account to cache failed', undefined);
-		}
-		try {
-			Logger.pii(`Saving access token`, [{ name: 'access_token', objOrArray: accessToken }], []);
-			await this.tokenCache.saveCredential(`${accountKey.accountId}_access_${resource.id}_${tenant.id}`, JSON.stringify(accessToken));
-			Logger.pii(`Saving refresh token`, [{ name: 'refresh_token', objOrArray: refreshToken }], []);
-			await this.tokenCache.saveCredential(`${accountKey.accountId}_refresh_${resource.id}_${tenant.id}`, JSON.stringify(refreshToken));
-			this.memdb.set(`${accountKey.accountId}_${tenant.id}_${resource.id}`, expiresOn);
-		} catch (ex) {
-			Logger.error(ex);
-			throw new AzureAuthError(msg, 'Adding account to cache failed', ex);
-		}
-	}
-
-	public async getSavedToken(tenant: Tenant, resource: Resource, accountKey: azdata.AccountKey): Promise<{ accessToken: AccessToken, refreshToken: RefreshToken, expiresOn: string }> {
-		const getMsg = localize('azure.cacheErrorGet', "Error when getting your account from the cache");
-		const parseMsg = localize('azure.cacheErrorParse', "Error when parsing your account from the cache");
-
-		if (!tenant.id || !resource.id) {
-			Logger.pii('Tenant ID or resource ID was undefined', [], [], tenant, resource);
-			throw new AzureAuthError(getMsg, 'Getting account from cache failed', undefined);
-		}
-
-		let accessTokenString: string;
-		let refreshTokenString: string;
-		let expiresOn: string;
-		try {
-			Logger.info('Fetching saved token');
-			accessTokenString = await this.tokenCache.getCredential(`${accountKey.accountId}_access_${resource.id}_${tenant.id}`);
-			refreshTokenString = await this.tokenCache.getCredential(`${accountKey.accountId}_refresh_${resource.id}_${tenant.id}`);
-			expiresOn = this.memdb.get(`${accountKey.accountId}_${tenant.id}_${resource.id}`);
-		} catch (ex) {
-			Logger.error(ex);
-			throw new AzureAuthError(getMsg, 'Getting account from cache failed', ex);
-		}
-
-		try {
-			if (!accessTokenString) {
-				Logger.error('No access token found');
-				return undefined;
-			}
-			const accessToken: AccessToken = JSON.parse(accessTokenString);
-			let refreshToken: RefreshToken;
-			if (refreshTokenString) {
-				refreshToken = JSON.parse(refreshTokenString);
-			}
-			Logger.pii('GetSavedToken ', [{ name: 'access', objOrArray: accessToken }, { name: 'refresh', objOrArray: refreshToken }], [], `expiresOn=${expiresOn}`);
-			return {
-				accessToken, refreshToken, expiresOn
-			};
-		} catch (ex) {
-			Logger.error(ex);
-			throw new AzureAuthError(parseMsg, 'Parsing account from cache failed', ex);
-		}
-	}
-	//#endregion
 
 	//#region interaction handling
 
@@ -603,11 +592,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	}
 
 	public async deleteAllCache(): Promise<void> {
-		const results = await this.tokenCache.findCredentials('');
-
-		for (let { account } of results) {
-			await this.tokenCache.clearCredential(account);
-		}
+		this.clientApplication.clearCache();
 	}
 
 	public async clearCredentials(account: azdata.AccountKey): Promise<void> {
@@ -621,11 +606,9 @@ export abstract class AzureAuth implements vscode.Disposable {
 	}
 
 	public async deleteAccountCache(account: azdata.AccountKey): Promise<void> {
-		const results = await this.tokenCache.findCredentials(account.accountId);
+		const tokenCache = this.clientApplication.getTokenCache();
 
-		for (let { account } of results) {
-			await this.tokenCache.clearCredential(account);
-		}
+		// tokenCache.removeAccount();
 	}
 
 	public async dispose() { }
