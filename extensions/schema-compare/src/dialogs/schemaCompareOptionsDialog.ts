@@ -63,7 +63,7 @@ export class SchemaCompareOptionsDialog {
 	protected execute(): void {
 		// Update the model deploymentoptions with the updated table component values
 		this.optionsModel.setDeploymentOptions();
-		this.optionsModel.setObjectTypeOptions();
+		this.optionsModel.setIncludeObjectTypesToDeploymentOptions();
 		// Set the publish deploymentoptions with the updated table component values
 		this.schemaComparison.setDeploymentOptions(this.optionsModel.deploymentOptions);
 
@@ -102,6 +102,7 @@ export class SchemaCompareOptionsDialog {
 
 		// reset optionsvalueNameLookup with fresh deployment options
 		this.optionsModel.setOptionsToValueNameLookup();
+		this.optionsModel.setIncludeObjectTypesLookup();
 
 		await this.updateOptionsTable();
 		this.optionsFlexBuilder.removeItem(this.optionsTable);
@@ -182,11 +183,13 @@ export class SchemaCompareOptionsDialog {
 			this.objectsTable = view.modelBuilder.table().component();
 			await this.updateObjectsTable();
 
+			// Update inlcude object type options value on checkbox onchange
 			this.disposableListeners.push(this.objectsTable.onCellAction((rowState) => {
 				let checkboxState = <azdata.ICheckboxCellActionEventArgs>rowState;
 				if (checkboxState && checkboxState.row !== undefined) {
-					let label = this.optionsModel.objectTypeLabels[checkboxState.row];
-					this.optionsModel.objectsLookup[label] = checkboxState.checked;
+					// data[row][1] contains the include object type option display name
+					const displayName = this.objectsTable?.data[checkboxState.row][1];
+					this.optionsModel.setIncludeObjectTypesOptionValue(displayName, checkboxState.checked);
 					this.optionsChanged = true;
 				}
 			}));
@@ -229,7 +232,7 @@ export class SchemaCompareOptionsDialog {
 	}
 
 	private async updateObjectsTable(): Promise<void> {
-		let data = this.optionsModel.getObjectsData();
+		let data = this.optionsModel.getIncludeObjectTypesOptionsData();
 		await this.objectsTable.updateProperties({
 			data: data,
 			columns: [
