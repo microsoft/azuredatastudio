@@ -154,7 +154,8 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			CSSStyles: {
 				...styles.BODY_CSS,
 				'margin-top': '8px'
-			}
+			},
+			ariaLive: 'polite'
 		}).component();
 
 		const cssClass = 'no-borders';
