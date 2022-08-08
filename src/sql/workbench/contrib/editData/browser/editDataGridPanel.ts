@@ -91,7 +91,10 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	// Strings immediately before and after an edit.
 	private originalStringValue: string;
+	private lastStringBeforeSelect: string;
 	private endStringValue: string;
+
+	private rowAdded: boolean;
 
 	// Used when saving is being done.
 	private saveActive: boolean;
@@ -382,7 +385,9 @@ export class EditDataGridPanel extends GridParentComponent {
 			return;
 		}
 
-		if (this.isRowDirty(this.lastClickedCell.row) && row !== this.lastClickedCell.row) {
+		let isNullChange = (this.endStringValue === 'NULL' && this.lastStringBeforeSelect === '') || (this.endStringValue === '' && this.lastStringBeforeSelect === 'NULL');
+
+		if (this.isRowDirty(this.lastClickedCell.row) && row !== this.lastClickedCell.row && !(!isNullChange && (this.lastStringBeforeSelect !== this.endStringValue))) {
 			this.commitEditTask().then(() => {
 				this.currentEditCellValue = undefined;
 				this.lastClickedCell = { row, column, isEditable };
@@ -430,8 +435,6 @@ export class EditDataGridPanel extends GridParentComponent {
 	public async safeDispose(): Promise<void> {
 		if (!this.alreadyDisposed && !this.saveViewStateCalled && this.table) {
 			this.alreadyDisposed = true;
-			// TODO - Commit the row actively being edited.
-			await this.savingGrid();
 		}
 		this.saveViewStateCalled = false;
 		super.dispose();
@@ -463,7 +466,8 @@ export class EditDataGridPanel extends GridParentComponent {
 				self.setCellDirtyState(cellToSubmit.row, cellToSubmit.column, result.cell.isDirty);
 				self.setRowDirtyState(cellToSubmit.row, result.isRowDirty);
 				let lastColumnCheck = this.isLastColumn(cellToSubmit.column);
-				let nullCommit = this.isNullRow(cellToSubmit.row + 1) && this.lastClickedCell.row === cellToSubmit.row && this.lastClickedCell.column === cellToSubmit.column;
+				let nullCommit = this.rowAdded && this.isNullRow(cellToSubmit.row + 1) && this.lastClickedCell.row === cellToSubmit.row && this.lastClickedCell.column === cellToSubmit.column;
+				this.rowAdded = false;
 				let regularCommit = cellToSubmit.row !== this.lastClickedCell.row && this.isRowDirty(cellToSubmit.row);
 				if (regularCommit || nullCommit) {
 					await this.commitEditTask().then(() => {
@@ -782,7 +786,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			let result = undefined;
 			try {
 				if (this.isNullRow(cellToAdd.row)) {
-					refreshGrid = true;
+					this.rowAdded = refreshGrid = true;
 					// We've entered the "new row", so we need to add a row and jump to it
 					await self.addRow(cellToAdd.row);
 				}
@@ -801,6 +805,7 @@ export class EditDataGridPanel extends GridParentComponent {
 				// Switch lastClickedCell back to the cell to submit.
 				this.lastClickedCell = { row: cellToAdd.row, column: cellToAdd.column, isEditable: true };
 				if (refreshGrid) {
+					this.rowAdded = false;
 					self.notificationService.notify({
 						severity: Severity.Error,
 						message: newRowError
@@ -972,6 +977,7 @@ export class EditDataGridPanel extends GridParentComponent {
 				if (this.lastClickedCell.row !== undefined && this.lastClickedCell.column !== undefined && this.lastClickedCell.isEditable) {
 					gridObject._grid.getEditorLock().commitCurrentEdit();
 					await this.submitCurrentCellChange(this.lastClickedCell, (result: EditUpdateCellResult) => {
+						this.rowAdded = false;
 						this.setCellDirtyState(this.lastClickedCell.row, this.lastClickedCell.column, result.cell.isDirty);
 						this.setRowDirtyState(this.lastClickedCell.row, result.isRowDirty);
 					}, (error: any) => {
@@ -1319,6 +1325,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	}
 
 	onBeforeEditCell(event: Slick.OnBeforeEditCellEventArgs<any>): void {
+		this.lastStringBeforeSelect = this.originalStringValue;
 		this.logService.debug('onBeforeEditCell called with grid: ' + event.grid + ' row: ' + event.row
 			+ ' cell: ' + event.cell + ' item: ' + event.item + ' column: ' + event.column);
 

@@ -81,8 +81,8 @@ export class EditDataResultsInput extends EditorInput {
 	}
 
 	public override async save(): Promise<EditorInput | undefined> {
-		let result = undefined;
-		return result;
+		await (this._editDataGridPanel as any)?.savingGrid();
+		return this;
 	}
 
 	public override isDirty(): boolean {
