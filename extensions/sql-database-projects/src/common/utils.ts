@@ -325,13 +325,6 @@ export async function defaultAzureAccountServiceFactory(): Promise<vscodeMssql.I
 export async function getDefaultPublishDeploymentOptions(project: ISqlProject): Promise<mssql.DeploymentOptions | vscodeMssql.DeploymentOptions> {
 	const schemaCompareService = await getSchemaCompareService();
 	const result = await schemaCompareService.schemaCompareGetDefaultOptions();
-	// re-include database-scoped credentials
-	if (getAzdataApi()) {
-		result.defaultDeploymentOptions.excludeObjectTypes.value = (result.defaultDeploymentOptions as mssql.DeploymentOptions).excludeObjectTypes.value?.filter(x => x !== mssql.SchemaObjectType.DatabaseScopedCredentials);
-	} else {
-		result.defaultDeploymentOptions.excludeObjectTypes.value = (result.defaultDeploymentOptions as vscodeMssql.DeploymentOptions).excludeObjectTypes.value?.filter(x => x !== vscodeMssql.SchemaObjectType.DatabaseScopedCredentials);
-	}
-
 	// this option needs to be true for same database references validation to work
 	if (project.databaseReferences.length > 0) {
 		result.defaultDeploymentOptions.booleanOptionsDictionary.includeCompositeObjects.value = true;
