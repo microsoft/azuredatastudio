@@ -197,7 +197,6 @@ export class EditDataGridPanel extends GridParentComponent {
 	}
 
 	public async savingGrid(): Promise<boolean> {
-		let result = false;
 		if (!this.saveActive) {
 			this.saveActive = true;
 			let currentActiveCell = this.table.grid.getActiveCell();
@@ -206,13 +205,22 @@ export class EditDataGridPanel extends GridParentComponent {
 			let currentNewCell = { row: currentActiveCell.row, column: currentActiveCell.cell, isEditable: true, isDirty: isDirty };
 			await this.submitCellTask(currentNewCell);
 			if (this.saveSuccess) {
-				await this.commitEditTask();
+				try {
+					await this.commitEditTask();
+				}
+				catch (e) {
+					this.saveActive = false;
+					throw new Error(nls.localize('nls.commitFailure', "Commit failed due to overlapping rows: {0}", e));
+				}
 			}
-			this.saveActive = false;
-			result = this.saveSuccess;
+			else {
+				this.saveActive = false;
+				throw new Error(nls.localize('nls.saveFailure', "Invalid data entered into cell. Please enter in correct data or revert."));
+			}
 		}
 		// default case.
-		return Promise.resolve(result);
+		this.saveActive = false;
+		return Promise.resolve(true);
 	}
 
 	handleStart(self: EditDataGridPanel, event: any): void {
