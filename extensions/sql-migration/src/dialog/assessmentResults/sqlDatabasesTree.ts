@@ -864,6 +864,7 @@ export class SqlDatabaseTree {
 		this._descriptionText.value = selectedIssue?.description || '';
 		this._moreInfo.url = selectedIssue?.helpLink || '';
 		this._moreInfo.label = selectedIssue?.displayName || '';
+		this._moreInfo.ariaLabel = selectedIssue?.displayName || '';
 		this._impactedObjects = selectedIssue?.impactedObjects || [];
 		this._recommendationText.value = selectedIssue?.message || constants.NA;
 
