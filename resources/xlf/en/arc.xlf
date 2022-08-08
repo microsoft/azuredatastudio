@@ -1091,7 +1091,10 @@
       <source xml:lang="en">Enable the automatic upload of metrics. Direct mode only.</source>
     </trans-unit>
     <trans-unit id="arc.data.controller.cluster.config.profile">
-      <source xml:lang="en">Config profile</source>
+      <source xml:lang="en">Kubernetes configuration template</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.cluster.config.profile.description">
+      <source xml:lang="en">Choose the Kubernetes configuration template that matches with your Kubernetes distribution. This template provides defaults for storage class, service type, etc.</source>
     </trans-unit>
     <trans-unit id="arc.data.controller.cluster.config.profile.loading">
       <source xml:lang="en">Loading config profiles</source>
@@ -1130,7 +1133,7 @@
       <source xml:lang="en">The name of the custom location. Direct mode only.</source>
     </trans-unit>
     <trans-unit id="arc.data.controller.details.description">
-      <source xml:lang="en">For indirect mode, provide a namespace, name and storage class for your Azure Arc data controller. This name will be used to identify your Arc instance for remote management and monitoring. For direct mode you do not need to provide a namespace, but please provide the custom location name.</source>
+      <source xml:lang="en">For indirect mode, namespace, name and storage class are required. This name will be used to identify your Arc instance for remote management and monitoring. For direct mode, custom location name is required.</source>
     </trans-unit>
     <trans-unit id="arc.data.controller.details.title">
       <source xml:lang="en">Data controller details</source>
