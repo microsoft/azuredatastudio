@@ -163,10 +163,10 @@ declare module 'mssql' {
 	}
 
 	/**
-	* Interface containing deployment options of integer type, value property holds values from <DacFx>\Product\Source\DeploymentApi\ObjectTypes.cs enum
+	* Interface containing deployment options of string[] type, value property holds enum names (nothing but option name) from <DacFx>\Product\Source\DeploymentApi\ObjectTypes.cs enum
 	*/
 	export interface DacDeployOptionPropertyObject {
-		value: number[];
+		value: string[];
 		description: string;
 		displayName: string;
 	}
@@ -179,6 +179,8 @@ declare module 'mssql' {
 		excludeObjectTypes: DacDeployOptionPropertyObject;
 		// key will be the boolean option name
 		booleanOptionsDictionary: { [key: string]: DacDeployOptionPropertyBoolean };
+		// key will be the object type enum name(nothing but option name)
+		objectTypesDictionary: { [key: string]: string };
 	}
 
 	/*
