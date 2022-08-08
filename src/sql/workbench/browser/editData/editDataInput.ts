@@ -233,7 +233,6 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 				severity: Severity.Warning,
 				message: message
 			});
-			// comment out for now until actual save feature has been added.
 			return true;
 		}
 		return false;
