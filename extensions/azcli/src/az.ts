@@ -265,6 +265,7 @@ export class AzTool implements azExt.IAzApi {
 				if (args.memoryRequest) { argsArray.push('--memory-request', args.memoryRequest); }
 				if (args.noWait) { argsArray.push('--no-wait'); }
 				if (args.retentionDays) { argsArray.push('--retention-days', args.retentionDays); }
+				if (args.syncSecondaryToCommit) { argsArray.push('--sync-secondary-to-commit', args.syncSecondaryToCommit); }
 				if (resourceGroup) { argsArray.push('--resource-group', resourceGroup); }
 				if (namespace) { argsArray.push('--k8s-namespace', namespace); }
 				if (usek8s) { argsArray.push('--use-k8s'); }

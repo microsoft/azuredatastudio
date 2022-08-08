@@ -262,6 +262,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 		this.syncSecondaryToCommitBox = this.modelView.modelBuilder.inputBox().withProps({
 			readOnly: false,
 			min: -1,
+			max: 2,
 			inputType: 'number',
 			placeHolder: loc.loading,
 			ariaLabel: loc.syncSecondaryToCommit
