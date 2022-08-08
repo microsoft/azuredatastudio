@@ -1352,14 +1352,14 @@
 					},
 					"versions": [
 						{
-							"version": "2022.6.3",
-							"lastUpdated": "7/6/2022",
+							"version": "2022.7.2",
+							"lastUpdated": "8/8/2022",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/powershell/ms-vscode.PowerShell-2022.6.3.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/powershell/ms-vscode.PowerShell-2022.7.2.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
