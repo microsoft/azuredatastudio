@@ -145,7 +145,6 @@ export class PublishDatabaseDialog {
 			this.connectionRow = this.createConnectionRow(view);
 			this.databaseRow = this.createDatabaseRow(view);
 			const displayOptionsButton = this.createOptionsButton(view);
-			displayOptionsButton.enabled = false;
 
 			const horizontalFormSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 			horizontalFormSection.addItems([profileRow, this.databaseRow]);
@@ -172,12 +171,10 @@ export class PublishDatabaseDialog {
 								title: constants.selectConnectionRadioButtonsTitle,
 								component: selectConnectionRadioButtons
 							},*/
-							/* TODO : Disabling deployment options for the July release
 							{
 								component: displayOptionsButton,
 								title: ''
 							}
-							*/
 						]
 					}
 				], {
@@ -938,7 +935,12 @@ export class PublishDatabaseDialog {
 	* Gets the default deployment options from the dacfx service
 	*/
 	public async getDefaultDeploymentOptions(): Promise<DeploymentOptions> {
-		return await utils.getDefaultPublishDeploymentOptions(this.project) as DeploymentOptions;
+		const defaultDeploymentOptions = await utils.getDefaultPublishDeploymentOptions(this.project) as DeploymentOptions;
+		if (defaultDeploymentOptions && defaultDeploymentOptions.excludeObjectTypes !== undefined) {
+			// For publish dialog no default exclude options should exists
+			defaultDeploymentOptions.excludeObjectTypes.value = [];
+		}
+		return defaultDeploymentOptions;
 	}
 
 	/*
