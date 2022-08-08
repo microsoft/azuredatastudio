@@ -117,6 +117,10 @@ export function getDeploymentOptions(): mssql.DeploymentOptions {
 		booleanOptionsDictionary: {
 			'SampleDisplayOption1': { value: false, description: sampleDesc, displayName: sampleName },
 			'SampleDisplayOption2': { value: false, description: sampleDesc, displayName: sampleName }
+		},
+		objectTypesDictionary: {
+			'SampleProperty1': sampleName,
+			'SampleProperty2': sampleName
 		}
 	};
 }

@@ -25,11 +25,6 @@ export interface ILocalSettingsJson {
 	ConnectionStrings?: { [key: string]: string };
 }
 
-export interface IFileFunctionObject {
-	filePromise: Promise<string>;
-	watcherDisposable: vscode.Disposable;
-}
-
 /**
  * copied and modified from vscode-azurefunctions extension
  * https://github.com/microsoft/vscode-azurefunctions/blob/main/src/funcConfig/local.settings.ts
@@ -196,42 +191,6 @@ export async function getHostFiles(): Promise<string[] | undefined> {
  */
 export async function getSettingsFile(projectFolder: string): Promise<string | undefined> {
 	return path.join(projectFolder, 'local.settings.json');
-}
-
-/**
- * New azure function file watcher and watcher disposable to be used to watch for changes to the azure function project
- * @param projectFolder is the parent directory to the project file
- * @returns the function file path once created and the watcher disposable
- */
-export function waitForNewFunctionFile(projectFolder: string): IFileFunctionObject {
-	const watcher = vscode.workspace.createFileSystemWatcher((
-		new vscode.RelativePattern(projectFolder, '**/*.cs')), false, true, true);
-	const filePromise = new Promise<string>((resolve, _) => {
-		watcher.onDidCreate((e) => {
-			resolve(e.fsPath);
-		});
-	});
-	return {
-		filePromise,
-		watcherDisposable: watcher
-	};
-}
-
-/**
- * Retrieves the new host project file once it has created and the watcher disposable
- * @returns the host file path once created and the watcher disposable
- */
-export function waitForNewHostFile(): IFileFunctionObject {
-	const watcher = vscode.workspace.createFileSystemWatcher('**/host.json', false, true, true);
-	const filePromise = new Promise<string>((resolve, _) => {
-		watcher.onDidCreate((e) => {
-			resolve(e.fsPath);
-		});
-	});
-	return {
-		filePromise,
-		watcherDisposable: watcher
-	};
 }
 
 /**
