@@ -16,7 +16,7 @@ const CreateBookCommand = 'Jupyter Books: Create Jupyter Book';
 const bookName = 'my-book';
 
 export function setup(opts: minimist.ParsedArgs) {
-	describe('CreateBookDialog', () => {
+	describe.skip('CreateBookDialog', () => {
 		beforeSuite(opts);
 		afterSuite(opts);
 
