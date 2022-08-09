@@ -262,6 +262,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 		this.syncSecondaryToCommitBox = this.modelView.modelBuilder.inputBox().withProps({
 			readOnly: false,
 			min: -1,
+			max: 2,
 			inputType: 'number',
 			placeHolder: loc.loading,
 			ariaLabel: loc.syncSecondaryToCommit
@@ -323,7 +324,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 	}
 
 	private handleOnTextChanged(component: azdata.InputBoxComponent): boolean {
-		if ((!component.value)) {
+		if ((!component.placeHolder)) {
 			// if there is no text found in the inputbox component return false
 			return false;
 		} else if ((!component.valid)) {
@@ -349,8 +350,9 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 			currentCPUSize = '';
 		}
 
-		this.coresRequestBox!.placeHolder = currentCPUSize;
-		this.coresRequestBox!.value = '';
+		this.coresRequestBox!.value = currentCPUSize;
+		this.coresRequestBox!.placeHolder = '';
+
 		this.saveArgs.coresRequest = undefined;
 
 		currentCPUSize = this._miaaModel.config?.spec?.scheduling?.default?.resources?.limits?.cpu;
@@ -359,8 +361,9 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 			currentCPUSize = '';
 		}
 
-		this.coresLimitBox!.placeHolder = currentCPUSize;
-		this.coresLimitBox!.value = '';
+		this.coresLimitBox!.value = currentCPUSize;
+		this.coresLimitBox!.placeHolder = '';
+
 		this.saveArgs.coresLimit = undefined;
 	}
 
@@ -374,8 +377,8 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 			currentMemSizeConversion = convertToGibibyteString(currentMemorySize);
 		}
 
-		this.memoryRequestBox!.placeHolder = currentMemSizeConversion!;
-		this.memoryRequestBox!.value = '';
+		this.memoryRequestBox!.value = currentMemSizeConversion!;
+		this.memoryRequestBox!.placeHolder = '';
 
 		this.saveArgs.memoryRequest = undefined;
 
@@ -387,8 +390,9 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 			currentMemSizeConversion = convertToGibibyteString(currentMemorySize);
 		}
 
-		this.memoryLimitBox!.placeHolder = currentMemSizeConversion!;
-		this.memoryLimitBox!.value = '';
+		this.memoryLimitBox!.value = currentMemSizeConversion!;
+		this.memoryLimitBox!.placeHolder = '';
+
 
 		this.saveArgs.memoryLimit = undefined;
 	}
@@ -396,8 +400,8 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 	private editSyncSecondaryToCommit(): void {
 		let currentSyncSecondaryToCommit = this._miaaModel.config?.spec?.syncSecondaryToCommit;
 
-		this.syncSecondaryToCommitBox!.placeHolder = currentSyncSecondaryToCommit!;
-		this.syncSecondaryToCommitBox!.value = '';
+		this.syncSecondaryToCommitBox!.value = currentSyncSecondaryToCommit!;
+		this.syncSecondaryToCommitBox!.placeHolder = '';
 
 		this.saveArgs.syncSecondaryToCommit = undefined;
 	}
