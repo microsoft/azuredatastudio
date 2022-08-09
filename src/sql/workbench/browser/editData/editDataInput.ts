@@ -227,19 +227,14 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 
 
 	public override isDirty(): boolean {
-		let message = nls.localize('editDataInput.testDirtyCall', "The grid was dirty while saving!");
 		if (this._results?.isDirty()) {
-			this.notificationService.notify({
-				severity: Severity.Warning,
-				message: message
-			});
 			return true;
 		}
 		return false;
 	}
 
 	public override dispose(): void {
-		//Submit the last cell for EditData and dispose the grid before cleaning everything else.
+		// Dispose the grid before cleaning everything else (to allow for the data to be processed before closing).
 		(this._results.editDataGridPanel as any).safeDispose().then(() => {
 			// Dispose our edit session then disconnect our input
 			this._queryModelService.disposeEdit(this.uri).then(() => {

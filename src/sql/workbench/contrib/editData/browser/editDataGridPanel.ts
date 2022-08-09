@@ -989,7 +989,6 @@ export class EditDataGridPanel extends GridParentComponent {
 	}
 
 	private restoreViewState(): void {
-		// TODO - Code is not being called due to vscode forcibly disposing the grid when tab is being hidden, this needs to be fixed.
 		if (this.savedViewState) {
 			// Row selections are undefined in original slickgrid, removed for no purpose
 			let viewport = ((this.table as any)._grid.getCanvasNode() as HTMLElement).parentElement;
