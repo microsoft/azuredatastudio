@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Application, ctrlOrCmd } from '../../../../../automation';
+import { Application, ctrlOrCmd, Quality } from '../../../../../automation';
 import * as minimist from 'minimist';
 import { afterSuite, beforeSuite } from '../../../utils';
 import * as assert from 'assert';
@@ -195,34 +195,42 @@ export function setup(opts: minimist.ParsedArgs) {
 		});
 
 		describe('Notebook keyboard navigation', async () => {
-			it.skip('can enter and exit edit mode and navigate using keyboard nav', async function () {
-				const app = this.app as Application;
-				await app.workbench.sqlNotebook.newUntitledNotebook();
-				await app.workbench.sqlNotebook.addCellFromPlaceholder('Code'); // add new code cell
-				await app.workbench.sqlNotebook.waitForPlaceholderGone();
-				const activeCodeCellId = (await app.workbench.sqlNotebook.getActiveCell()).attributes['id'];
-				await app.workbench.sqlNotebook.waitForTypeInEditor('code cell', activeCodeCellId); // the new cell should be in edit mode
-				await app.workbench.sqlNotebook.exitActiveCell();
-				await app.workbench.sqlNotebook.waitForActiveCellGone();
+			let n = 20;
+			for (let i = 0; i < n; i++) {
+				it('can enter and exit edit mode and navigate using keyboard nav', async function () {
+					const app = this.app as Application;
+					if (app.quality === Quality.Dev) {
+						this.skip();
+					}
 
-				await app.workbench.sqlNotebook.addCell('markdown'); // add markdown cell
-				await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Split View');
-				const activeTextCellId = (await app.workbench.sqlNotebook.getActiveCell()).attributes['id'];
-				await app.workbench.sqlNotebook.waitForTypeInEditor('text cell', activeTextCellId); // Text cell should be in edit mode
+					await app.workbench.sqlNotebook.newUntitledNotebook();
+					await app.workbench.sqlNotebook.addCellFromPlaceholder('Code'); // add new code cell
+					await app.workbench.sqlNotebook.waitForPlaceholderGone();
+					const activeCodeCellId = (await app.workbench.sqlNotebook.getActiveCell()).attributes['id'];
+					await app.workbench.sqlNotebook.waitForTypeInEditor('code cell', activeCodeCellId); // the new cell should be in edit mode
+					await app.workbench.sqlNotebook.exitActiveCell();
+					await app.workbench.sqlNotebook.waitForActiveCellGone();
 
-				await app.code.dispatchKeybinding('escape'); // exit edit mode and stay in browse mode
-				await app.code.dispatchKeybinding('up'); // select code cell
-				await app.workbench.sqlNotebook.getActiveCell(activeCodeCellId); // check that the code cell is now active
-				await app.code.dispatchKeybinding('enter');
-				await app.workbench.sqlNotebook.waitForTypeInEditor('test', activeCodeCellId); // code cell should be in edit mode after hitting enter
-				await app.code.dispatchKeybinding('escape'); // exit edit mode and stay in browse mode
-				await app.code.dispatchKeybinding('down'); // select text cell
-				await app.code.dispatchKeybinding('enter');
-				await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Split View');
-				await app.workbench.sqlNotebook.waitForTypeInEditor('test', activeTextCellId); // text cell should be in edit mode after hitting enter
-			});
+					await app.workbench.sqlNotebook.addCell('markdown'); // add markdown cell
+					await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Split View');
+					const activeTextCellId = (await app.workbench.sqlNotebook.getActiveCell()).attributes['id'];
+					await app.workbench.sqlNotebook.waitForTypeInEditor('text cell', activeTextCellId); // Text cell should be in edit mode
 
-			it('cannot move through cells when find widget is invoked', async function () {
+					await app.code.dispatchKeybinding('escape'); // exit edit mode and stay in browse mode
+					await app.code.dispatchKeybinding('up'); // select code cell
+					await app.workbench.sqlNotebook.getActiveCell(activeCodeCellId); // check that the code cell is now active
+					await app.code.dispatchKeybinding('enter');
+					await app.workbench.sqlNotebook.waitForTypeInEditor('test', activeCodeCellId); // code cell should be in edit mode after hitting enter
+					await app.code.dispatchKeybinding('escape'); // exit edit mode and stay in browse mode
+					await app.code.dispatchKeybinding('down'); // select text cell
+					await app.code.dispatchKeybinding('enter');
+					await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Split View');
+					await app.workbench.sqlNotebook.waitForTypeInEditor('test', activeTextCellId); // text cell should be in edit mode after hitting enter
+				});
+			}
+
+
+			it.skip('cannot move through cells when find widget is invoked', async function () {
 				const app = this.app as Application;
 				await app.workbench.sqlNotebook.newUntitledNotebook();
 				await app.workbench.sqlNotebook.addCell('markdown');
