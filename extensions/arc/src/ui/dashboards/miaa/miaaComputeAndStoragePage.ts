@@ -324,7 +324,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 	}
 
 	private handleOnTextChanged(component: azdata.InputBoxComponent): boolean {
-		if ((!component.value)) {
+		if ((!component.placeHolder)) {
 			// if there is no text found in the inputbox component return false
 			return false;
 		} else if ((!component.valid)) {
@@ -351,6 +351,8 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 		}
 
 		this.coresRequestBox!.value = currentCPUSize;
+		this.coresRequestBox!.placeHolder = '';
+
 		this.saveArgs.coresRequest = undefined;
 
 		currentCPUSize = this._miaaModel.config?.spec?.scheduling?.default?.resources?.limits?.cpu;
@@ -360,6 +362,8 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 		}
 
 		this.coresLimitBox!.value = currentCPUSize;
+		this.coresLimitBox!.placeHolder = '';
+
 		this.saveArgs.coresLimit = undefined;
 	}
 
@@ -374,6 +378,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 		}
 
 		this.memoryRequestBox!.value = currentMemSizeConversion!;
+		this.memoryRequestBox!.placeHolder = '';
 
 		this.saveArgs.memoryRequest = undefined;
 
@@ -386,6 +391,8 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 		}
 
 		this.memoryLimitBox!.value = currentMemSizeConversion!;
+		this.memoryLimitBox!.placeHolder = '';
+
 
 		this.saveArgs.memoryLimit = undefined;
 	}
@@ -394,6 +401,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 		let currentSyncSecondaryToCommit = this._miaaModel.config?.spec?.syncSecondaryToCommit;
 
 		this.syncSecondaryToCommitBox!.value = currentSyncSecondaryToCommit!;
+		this.syncSecondaryToCommitBox!.placeHolder = '';
 
 		this.saveArgs.syncSecondaryToCommit = undefined;
 	}
