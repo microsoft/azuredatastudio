@@ -3,21 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.monaco-dropdown-width-control-element {
-	position: absolute !important;
-	left: -10000px !important;
-	visibility: hidden;
-}
+export const QUERY_HISTORY_CONFIG_SECTION = 'queryHistory';
+export const CAPTURE_ENABLED_CONFIG_SECTION = 'captureEnabled';
+export const DOUBLE_CLICK_ACTION_CONFIG_SECTION = 'doubleClickAction';
 
-.editable-drop-option-text {
-	padding-left: 6px;
-	padding-right: 4px;
-	text-overflow: ellipsis;
-	display: inline-block;
-	overflow: hidden;
-}
-
-.monaco-dropdown .monaco-inputbox {
-	width: 100%;
-	height: 100%;
-}
+export const ITEM_SELECTED_COMMAND_ID = 'queryHistory.itemSelected';

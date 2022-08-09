@@ -2370,6 +2370,12 @@
     <trans-unit id="epCompare.comparisonProgess">
       <source xml:lang="en">Loading similar areas in compared plans</source>
     </trans-unit>
+    <trans-unit id="epCompare.searchNodeAction">
+      <source xml:lang="en">Find Node</source>
+    </trans-unit>
+    <trans-unit id="epCompare.searchNodeActionAddedPlan">
+      <source xml:lang="en">Find Node - Added Plan</source>
+    </trans-unit>
     <trans-unit id="epCompare.toggleOrientation">
       <source xml:lang="en">Toggle Orientation</source>
     </trans-unit>
@@ -2476,6 +2482,23 @@
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanTab" source-language="en" datatype="plaintext"><body>
     <trans-unit id="executionPlanTitle">
       <source xml:lang="en">Query Plan (Preview)</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanTreeTab" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="ept.topOperationsCopyTableData">
+      <source xml:lang="en">Copy</source>
+    </trans-unit>
+    <trans-unit id="ept.topOperationsCopyWithHeader">
+      <source xml:lang="en">Copy with Header</source>
+    </trans-unit>
+    <trans-unit id="ept.topOperationsSelectAll">
+      <source xml:lang="en">Select All</source>
+    </trans-unit>
+    <trans-unit id="planTreeTab.title">
+      <source xml:lang="en">Plan Tree (Preview)</source>
+    </trans-unit>
+    <trans-unit id="topOperationsTableTitle">
+      <source xml:lang="en">Execution Plan Tree</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanView" source-language="en" datatype="plaintext"><body>
@@ -4261,6 +4284,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="newQueryTask.newQuery">
       <source xml:lang="en">New Query</source>
+    </trans-unit>
+    <trans-unit id="query.multiSelectionNotSupported">
+      <source xml:lang="en">Running query is not supported when the editor is in multiple selection mode.</source>
     </trans-unit>
     <trans-unit id="queryEditor.exportSqlAsNotebook">
       <source xml:lang="en">Export as Notebook</source>

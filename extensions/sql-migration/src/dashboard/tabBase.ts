@@ -10,7 +10,6 @@ import { IconPathHelper } from '../constants/iconPathHelper';
 import { EOL } from 'os';
 import { DatabaseMigration } from '../api/azure';
 import { getSelectedServiceStatus } from '../models/migrationLocalStorage';
-import { util } from 'webpack';
 import { MenuCommands, SqlMigrationExtensionId } from '../api/utils';
 import { DashboardStatusBar } from './DashboardStatusBar';
 
@@ -63,7 +62,7 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 		} else if (!number2) {
 			return -sortDir;
 		}
-		return util.comparators.compareNumbers(number1, number2) * -sortDir;
+		return number1 > number2 ? -sortDir : sortDir;
 	}
 
 	protected stringCompare(string1: string | undefined, string2: string | undefined, sortDir: number): number {

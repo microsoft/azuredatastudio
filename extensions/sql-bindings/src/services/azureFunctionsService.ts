@@ -26,14 +26,15 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 	TelemetryReporter.sendActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.startCreateAzureFunctionWithSqlBinding);
 	let connectionInfo: IConnectionInfo | undefined;
 	let isCreateNewProject: boolean = false;
-	let newFunctionFileObject: azureFunctionsUtils.IFileFunctionObject | undefined;
 
 	try {
+		// check to see if Azure Functions Extension is installed
 		const azureFunctionApi = await azureFunctionsUtils.getAzureFunctionsExtensionApi();
 		if (!azureFunctionApi) {
 			exitReason = ExitReason.error;
 			propertyBag.exitReason = exitReason;
-			TelemetryReporter.createErrorEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick)
+			telemetryStep = CreateAzureFunctionStep.noAzureFunctionsExtension;
+			TelemetryReporter.createErrorEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
 				.withAdditionalProperties(propertyBag).send();
 			return;
 		}
@@ -70,6 +71,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 						{ title: constants.selectAzureFunctionProjFolder, ignoreFocusOut: true });
 					if (!browseProjectLocation) {
 						// User cancelled
+						exitReason = ExitReason.cancelled;
 						return;
 					}
 					const projectFolders = (await vscode.window.showOpenDialog({
@@ -80,6 +82,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 					}));
 					if (!projectFolders) {
 						// User cancelled
+						exitReason = ExitReason.cancelled;
 						return;
 					}
 					projectFolder = projectFolders[0].fsPath;
@@ -89,6 +92,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 					break;
 				} else {
 					// user cancelled
+					exitReason = ExitReason.cancelled;
 					return;
 				}
 			}
@@ -96,9 +100,6 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			// user has an azure function project open
 			projectFolder = path.dirname(projectFile);
 		}
-		// create a system file watcher for the project folder
-		newFunctionFileObject = azureFunctionsUtils.waitForNewFunctionFile(projectFolder);
-
 		// Get connection string parameters and construct object name from prompt or connectionInfo given
 		let objectName: string | undefined;
 		let selectedBindingType: BindingType | undefined;
@@ -109,6 +110,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			let chosenObjectType = await azureFunctionsUtils.promptForObjectType();
 			if (!chosenObjectType) {
 				// User cancelled
+				exitReason = ExitReason.cancelled;
 				return;
 			}
 
@@ -116,6 +118,8 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			telemetryStep = CreateAzureFunctionStep.getBindingType;
 			selectedBindingType = await azureFunctionsUtils.promptForBindingType(chosenObjectType);
 			if (!selectedBindingType) {
+				// User cancelled
+				exitReason = ExitReason.cancelled;
 				return;
 			}
 
@@ -137,6 +141,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 				}
 				if (!connectionInfo) {
 					// User cancelled
+					exitReason = ExitReason.cancelled;
 					return;
 				}
 				TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
@@ -174,6 +179,8 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			let nodeType = ObjectType.Table === node.nodeType ? ObjectType.Table : ObjectType.View;
 			selectedBindingType = await azureFunctionsUtils.promptForBindingType(nodeType);
 			if (!selectedBindingType) {
+				// User cancelled
+				exitReason = ExitReason.cancelled;
 				return;
 			}
 
@@ -201,6 +208,8 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			validateInput: input => utils.validateFunctionName(input)
 		}) as string;
 		if (!functionName) {
+			// User cancelled
+			exitReason = ExitReason.cancelled;
 			return;
 		}
 		TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
@@ -219,6 +228,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			connectionStringInfo = await azureFunctionsUtils.promptAndUpdateConnectionStringSetting(vscode.Uri.parse(projectFile), connectionInfo);
 			if (!connectionStringInfo) {
 				// User cancelled connection string setting name prompt or connection string method prompt
+				exitReason = ExitReason.cancelled;
 				return;
 			}
 			TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
@@ -249,9 +259,6 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			.withAdditionalProperties(propertyBag)
 			.withConnectionInfo(connectionInfo).send();
 
-		// check for the new function file to be created and dispose of the file system watcher
-		const timeoutForFunctionFile = utils.timeoutPromise(constants.timeoutAzureFunctionFileError);
-		await Promise.race([newFunctionFileObject.filePromise, timeoutForFunctionFile]);
 		telemetryStep = 'finishCreateFunction';
 		propertyBag.telemetryStep = telemetryStep;
 		exitReason = ExitReason.finishCreate;
@@ -261,15 +268,9 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 	} catch (error) {
 		let errorType = utils.getErrorType(error);
 		propertyBag.telemetryStep = telemetryStep;
-		if (errorType === 'TimeoutError') {
-			// this error can be cause by many different scenarios including timeout or error occurred during createFunction
-			exitReason = ExitReason.timeout;
-			console.log('Timed out waiting for Azure Function project to be created. This may not necessarily be an error, for example if the user canceled out of the create flow.');
-		} else {
-			// else an error would occur during the createFunction
-			exitReason = ExitReason.error;
-			void vscode.window.showErrorMessage(constants.errorNewAzureFunction(error));
-		}
+		// an error occurred during createFunction
+		exitReason = ExitReason.error;
+		void vscode.window.showErrorMessage(constants.errorNewAzureFunction(error));
 		TelemetryReporter.createErrorEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick, undefined, errorType)
 			.withAdditionalProperties(propertyBag).send();
 		return;
@@ -278,7 +279,6 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 		propertyBag.exitReason = exitReason;
 		TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick)
 			.withAdditionalProperties(propertyBag).send();
-		newFunctionFileObject?.watcherDisposable.dispose();
 	}
 }
 

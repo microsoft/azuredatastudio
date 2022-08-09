@@ -302,7 +302,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 		assert(includeResult.affectedDependencies[0].included === true, 'Table t2 should be included as a result of including v1. Actual: false');
 
 		// excluding views from the comparison should make it so t2 can be excluded
-		deploymentOptions.excludeObjectTypes.value.push(mssql.SchemaObjectType.Views);
+		deploymentOptions.excludeObjectTypes.value.push(Object.keys(deploymentOptions.objectTypesDictionary).find((key) => { return deploymentOptions.objectTypesDictionary[key] === 'Views'; }));
 		await schemaCompareService.schemaCompare(operationId, source, target, azdata.TaskExecutionMode.execute, deploymentOptions);
 		const excludeResult3 = await schemaCompareService.schemaCompareIncludeExcludeNode(operationId, t2Difference, false, azdata.TaskExecutionMode.execute);
 		assertIncludeExcludeResult(excludeResult3, true, 0, 0);
@@ -507,7 +507,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 
 			const deploymentOptionsResult = await schemaCompareService.schemaCompareGetDefaultOptions();
 			let deploymentOptions = deploymentOptionsResult.defaultDeploymentOptions;
-			deploymentOptions.excludeObjectTypes.value.push(mssql.SchemaObjectType.TableValuedFunctions);
+			deploymentOptions.excludeObjectTypes.value.push(Object.keys(deploymentOptions.objectTypesDictionary).find((key) => { return deploymentOptions.objectTypesDictionary[key] === 'TableValuedFunctions'; }));
 			const schemaCompareResult = await schemaCompareService.schemaCompare(operationId, source, target, azdata.TaskExecutionMode.execute, deploymentOptions);
 			assertSchemaCompareResult(schemaCompareResult, operationId, 3);
 

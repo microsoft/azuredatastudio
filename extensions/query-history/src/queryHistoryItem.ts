@@ -3,21 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.monaco-dropdown-width-control-element {
-	position: absolute !important;
-	left: -10000px !important;
-	visibility: hidden;
-}
+import * as azdata from 'azdata';
 
-.editable-drop-option-text {
-	padding-left: 6px;
-	padding-right: 4px;
-	text-overflow: ellipsis;
-	display: inline-block;
-	overflow: hidden;
-}
-
-.monaco-dropdown .monaco-inputbox {
-	width: 100%;
-	height: 100%;
+export interface QueryHistoryItem {
+	readonly queryText: string,
+	readonly connectionProfile: azdata.connection.ConnectionProfile | undefined,
+	readonly timestamp: Date,
+	readonly isSuccess: boolean
 }

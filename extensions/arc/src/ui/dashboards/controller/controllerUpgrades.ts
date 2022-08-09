@@ -222,15 +222,15 @@ export class ControllerUpgradesPage extends DashboardPage {
 					try {
 						upgradeButton.enabled = false;
 						vscode.window.showInformationMessage(loc.upgradingController('kubectl get datacontrollers -A\' should not be localized.'));
-						await vscode.window.withProgress(
-							{
-								location: vscode.ProgressLocation.Notification,
-								title: loc.updatingInstance(this._controllerModel.info.name),
-								cancellable: true
-							},
-							async (_progress, _token): Promise<void> => {
-								if (nextVersion !== '') {
-									if (this._controllerModel.info.connectionMode === ConnectionMode.direct) {
+						if (this._controllerModel.info.connectionMode.toLowerCase() === ConnectionMode.direct) {
+							await vscode.window.withProgress(
+								{
+									location: vscode.ProgressLocation.Notification,
+									title: loc.upgradingDirectDC(this._controllerModel.info.name, nextVersion, this._controllerModel.info.resourceGroup),
+									cancellable: true
+								},
+								async (_progress, _token): Promise<void> => {
+									if (nextVersion !== '') {
 										await this._azApi.az.arcdata.dc.upgrade(
 											nextVersion,
 											this._controllerModel.info.name,
@@ -238,24 +238,41 @@ export class ControllerUpgradesPage extends DashboardPage {
 											undefined, // Indirect mode argument - namespace
 										);
 									} else {
+										vscode.window.showInformationMessage(loc.noUpgrades);
+									}
+									try {
+										await this._controllerModel.refresh(false, this._controllerModel.info.namespace);
+									} catch (error) {
+										vscode.window.showErrorMessage(loc.refreshFailed(error));
+									}
+								}
+							);
+						} else {
+							await vscode.window.withProgress(
+								{
+									location: vscode.ProgressLocation.Notification,
+									title: loc.upgradingIndirectDC(this._controllerModel.info.name, nextVersion, this._controllerModel.info.namespace),
+									cancellable: true
+								},
+								async (_progress, _token): Promise<void> => {
+									if (nextVersion !== '') {
 										await this._azApi.az.arcdata.dc.upgrade(
 											nextVersion,
 											this._controllerModel.info.name,
 											undefined, // Direct mode argument - resourceGroup
 											this._controllerModel.info.namespace,
 										);
+									} else {
+										vscode.window.showInformationMessage(loc.noUpgrades);
 									}
-								} else {
-									vscode.window.showInformationMessage(loc.noUpgrades);
+									try {
+										await this._controllerModel.refresh(false, this._controllerModel.info.namespace);
+									} catch (error) {
+										vscode.window.showErrorMessage(loc.refreshFailed(error));
+									}
 								}
-
-								try {
-									await this._controllerModel.refresh(false, this._controllerModel.info.namespace);
-								} catch (error) {
-									vscode.window.showErrorMessage(loc.refreshFailed(error));
-								}
-							}
-						);
+							);
+						}
 					} catch (error) {
 						console.log(error);
 					}
