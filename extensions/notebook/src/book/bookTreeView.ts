@@ -16,7 +16,7 @@ import { Deferred } from '../common/promise';
 import { IBookTrustManager, BookTrustManager } from './bookTrustManager';
 import * as loc from '../common/localizedConstants';
 import * as glob from 'fast-glob';
-import { getPinnedNotebooks, confirmMessageDialog, getNotebookType, FileExtension, IPinnedNotebook, BookTreeItemType } from '../common/utils';
+import { getPinnedNotebooks, getNotebookType, confirmMessageDialog, FileExtension, IPinnedNotebook, BookTreeItemType } from '../common/utils';
 import { IBookPinManager, BookPinManager } from './bookPinManager';
 import { BookTocManager, IBookTocManager, quickPickResults } from './bookTocManager';
 import { CreateBookDialog } from '../dialog/createBookDialog';
@@ -138,7 +138,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			let pinStatusChanged = await this.bookPinManager.pinNotebook(bookTreeItem);
 			sendNotebookActionEvent(NbTelemetryView.Book, NbTelemetryAction.PinNotebook);
 			if (pinStatusChanged) {
-				bookTreeItem.contextValue = 'pinnedNotebook';
+				bookTreeItem.contextValue = BookTreeItemType.pinnedNotebook;
+				this._onDidChangeTreeData.fire(bookTreeItem);
 			}
 		}
 	}
@@ -148,7 +149,12 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		if (bookPathToUpdate) {
 			let pinStatusChanged = await this.bookPinManager.unpinNotebook(bookTreeItem);
 			if (pinStatusChanged) {
+				let book = bookTreeItem.book.type === BookTreeItemType.BookNotebook ? this.books.find(book => book.bookPath === bookTreeItem.book.root) : this.books.find(book => book.bookPath === bookTreeItem.book.contentPath);
+				if (book) {
+					bookTreeItem = book.getNotebook(bookTreeItem.book.contentPath) ?? bookTreeItem;
+				}
 				bookTreeItem.contextValue = getNotebookType(bookTreeItem.book);
+				this._onDidChangeTreeData.fire(bookTreeItem);
 			}
 		}
 	}
@@ -264,7 +270,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	async addNotebookToPinnedView(bookItem: BookTreeItem): Promise<void> {
 		let notebookPath: string = bookItem.book.contentPath;
 		if (notebookPath) {
-			let notebookDetails: IPinnedNotebook = bookItem.book.root ? { bookPath: bookItem.book.root, notebookPath: notebookPath, title: bookItem.book.title } : { notebookPath: notebookPath };
+			let notebookDetails: IPinnedNotebook = bookItem.book.tableOfContents.sections ? { bookPath: bookItem.book.root, notebookPath: notebookPath, title: bookItem.book.title } : { notebookPath: notebookPath };
 			await this.createAndAddBookModel(notebookPath, true, notebookDetails);
 		}
 	}
@@ -691,8 +697,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	getChildren(element?: BookTreeItem): Thenable<BookTreeItem[]> {
 		if (element) {
-			if (element.sections && this.currentBook) {
-				return Promise.resolve(this.currentBook.getSections(element));
+			const book = this.books.find(book => book.bookPath === element.book.root);
+			if (element.sections && book) {
+				return Promise.resolve(book.getSections(element));
 			} else {
 				return Promise.resolve([]);
 			}

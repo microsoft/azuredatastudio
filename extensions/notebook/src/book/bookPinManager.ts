@@ -58,7 +58,8 @@ export class BookPinManager implements IBookPinManager {
 			pinnedBooks.splice(existingBookIndex, 1);
 			modifiedPinnedBooks = true;
 		} else if (existingBookIndex === -1 && operation === PinBookOperation.Pin) {
-			let addNotebook: IPinnedNotebook = { notebookPath: bookPathToChange, bookPath: notebook.book.root, title: notebook.book.title };
+			const bookPath = notebook.tableOfContents.sections ? notebook.book.root : undefined;
+			let addNotebook: IPinnedNotebook = { notebookPath: bookPathToChange, bookPath: bookPath, title: notebook.book.title };
 			pinnedBooks.push(addNotebook);
 			modifiedPinnedBooks = true;
 		}
