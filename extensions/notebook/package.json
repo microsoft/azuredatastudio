@@ -802,5 +802,5 @@
     "moment": "^2.29.2",
     "ajv": "^6.12.3"
   },
-  "enableProposedApi": true
+  "enabledProposedApi": true
 }

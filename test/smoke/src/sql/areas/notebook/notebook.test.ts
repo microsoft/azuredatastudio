@@ -195,10 +195,11 @@ export function setup(opts: minimist.ParsedArgs) {
 		});
 
 		describe('Notebook keyboard navigation', async () => {
-			let n = 20;
+			let n = 10;
 			for (let i = 0; i < n; i++) {
 				it('can enter and exit edit mode and navigate using keyboard nav', async function () {
 					const app = this.app as Application;
+					// skipping test if running locally, due to test failing when window is not focused
 					if (app.quality === Quality.Dev) {
 						this.skip();
 					}
