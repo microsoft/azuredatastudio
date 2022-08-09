@@ -350,8 +350,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 			currentCPUSize = '';
 		}
 
-		this.coresRequestBox!.placeHolder = currentCPUSize;
-		this.coresRequestBox!.value = '';
+		this.coresRequestBox!.value = currentCPUSize;
 		this.saveArgs.coresRequest = undefined;
 
 		currentCPUSize = this._miaaModel.config?.spec?.scheduling?.default?.resources?.limits?.cpu;
@@ -360,8 +359,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 			currentCPUSize = '';
 		}
 
-		this.coresLimitBox!.placeHolder = currentCPUSize;
-		this.coresLimitBox!.value = '';
+		this.coresLimitBox!.value = currentCPUSize;
 		this.saveArgs.coresLimit = undefined;
 	}
 
@@ -375,8 +373,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 			currentMemSizeConversion = convertToGibibyteString(currentMemorySize);
 		}
 
-		this.memoryRequestBox!.placeHolder = currentMemSizeConversion!;
-		this.memoryRequestBox!.value = '';
+		this.memoryRequestBox!.value = currentMemSizeConversion!;
 
 		this.saveArgs.memoryRequest = undefined;
 
@@ -388,8 +385,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 			currentMemSizeConversion = convertToGibibyteString(currentMemorySize);
 		}
 
-		this.memoryLimitBox!.placeHolder = currentMemSizeConversion!;
-		this.memoryLimitBox!.value = '';
+		this.memoryLimitBox!.value = currentMemSizeConversion!;
 
 		this.saveArgs.memoryLimit = undefined;
 	}
@@ -397,8 +393,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 	private editSyncSecondaryToCommit(): void {
 		let currentSyncSecondaryToCommit = this._miaaModel.config?.spec?.syncSecondaryToCommit;
 
-		this.syncSecondaryToCommitBox!.placeHolder = currentSyncSecondaryToCommit!;
-		this.syncSecondaryToCommitBox!.value = '';
+		this.syncSecondaryToCommitBox!.value = currentSyncSecondaryToCommit!;
 
 		this.saveArgs.syncSecondaryToCommit = undefined;
 	}
