@@ -14,7 +14,7 @@ import { canCancelMigration, canCutoverMigration, canRetryMigration, getMigratio
 import { getResourceName } from '../api/azure';
 import { EmptySettingValue } from './tabBase';
 import { InfoFieldSchema, infoFieldWidth, MigrationDetailsTabBase, MigrationTargetTypeName } from './migrationDetailsTabBase';
-import { DashboardStatusBar } from './sqlServerDashboard';
+import { DashboardStatusBar } from './DashboardStatusBar';
 
 const MigrationDetailsFileShareTabId = 'MigrationDetailsFileShareTab';
 
@@ -43,7 +43,6 @@ export class MigrationDetailsFileShareTab extends MigrationDetailsTabBase<Migrat
 	private _lastAppliedBackupInfoField!: InfoFieldSchema;
 	private _lastAppliedBackupTakenOnInfoField!: InfoFieldSchema;
 	private _currentRestoringFileInfoField!: InfoFieldSchema;
-
 	private _fileCount!: azdata.TextComponent;
 	private _fileTable!: azdata.TableComponent;
 	private _emptyTableFill!: azdata.FlexContainer;
@@ -56,12 +55,12 @@ export class MigrationDetailsFileShareTab extends MigrationDetailsTabBase<Migrat
 	public async create(
 		context: vscode.ExtensionContext,
 		view: azdata.ModelView,
-		onClosedCallback: () => Promise<void>,
+		openMigrationsListFcn: () => Promise<void>,
 		statusBar: DashboardStatusBar): Promise<MigrationDetailsFileShareTab> {
 
 		this.view = view;
 		this.context = context;
-		this.onClosedCallback = onClosedCallback;
+		this.openMigrationsListFcn = openMigrationsListFcn;
 		this.statusBar = statusBar;
 
 		await this.initialize(this.view);

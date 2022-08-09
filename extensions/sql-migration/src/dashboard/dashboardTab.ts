@@ -8,13 +8,13 @@ import * as vscode from 'vscode';
 import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import * as styles from '../constants/styles';
 import * as loc from '../constants/strings';
-import { filterMigrations } from '../api/utils';
+import { filterMigrations, MenuCommands } from '../api/utils';
 import { DatabaseMigration } from '../api/azure';
 import { getCurrentMigrations, getSelectedServiceStatus, isServiceContextValid, MigrationLocalStorage } from '../models/migrationLocalStorage';
 import { SelectMigrationServiceDialog } from '../dialog/selectMigrationService/selectMigrationServiceDialog';
 import { logError, TelemetryViews } from '../telemtery';
-import { AdsMigrationStatus, MenuCommands, TabBase } from './tabBase';
-import { DashboardStatusBar } from './sqlServerDashboard';
+import { AdsMigrationStatus, ServiceContextChangeEvent, TabBase } from './tabBase';
+import { DashboardStatusBar } from './DashboardStatusBar';
 
 interface IActionMetadata {
 	title?: string,
@@ -62,16 +62,15 @@ export class DashboardTab extends TabBase<DashboardTab> {
 		this.icon = IconPathHelper.sqlMigrationLogo;
 	}
 
-	public onDialogClosed = async (): Promise<void> =>
-		await this.updateServiceContext(this._serviceContextButton);
-
 	public async create(
 		view: azdata.ModelView,
 		openMigrationsFcn: (status: AdsMigrationStatus) => Promise<void>,
+		serviceContextChangedEvent: vscode.EventEmitter<ServiceContextChangeEvent>,
 		statusBar: DashboardStatusBar): Promise<DashboardTab> {
 
 		this.view = view;
-		this.openMigrationFcn = openMigrationsFcn;
+		this.openMigrationsFcn = openMigrationsFcn;
+		this.serviceContextChangedEvent = serviceContextChangedEvent;
 		this.statusBar = statusBar;
 
 		await this.initialize(this.view);
@@ -668,7 +667,7 @@ export class DashboardTab extends TabBase<DashboardTab> {
 			loc.MIGRATION_IN_PROGRESS);
 		this.disposables.push(
 			this._inProgressMigrationButton.container.onDidClick(
-				async (e) => await this.openMigrationFcn(AdsMigrationStatus.ONGOING)));
+				async (e) => await this.openMigrationsFcn(AdsMigrationStatus.ONGOING)));
 		this._migrationStatusCardsContainer.addItem(
 			this._inProgressMigrationButton.container,
 			{ flex: '0 0 auto' });
@@ -681,7 +680,7 @@ export class DashboardTab extends TabBase<DashboardTab> {
 			true);
 		this.disposables.push(
 			this._inProgressWarningMigrationButton.container.onDidClick(
-				async (e) => await this.openMigrationFcn(AdsMigrationStatus.ONGOING)));
+				async (e) => await this.openMigrationsFcn(AdsMigrationStatus.ONGOING)));
 		this._migrationStatusCardsContainer.addItem(
 			this._inProgressWarningMigrationButton.container,
 			{ flex: '0 0 auto' });
@@ -693,7 +692,7 @@ export class DashboardTab extends TabBase<DashboardTab> {
 			loc.MIGRATION_COMPLETED);
 		this.disposables.push(
 			this._successfulMigrationButton.container.onDidClick(
-				async (e) => await this.openMigrationFcn(AdsMigrationStatus.SUCCEEDED)));
+				async (e) => await this.openMigrationsFcn(AdsMigrationStatus.SUCCEEDED)));
 		this._migrationStatusCardsContainer.addItem(
 			this._successfulMigrationButton.container,
 			{ flex: '0 0 auto' });
@@ -705,7 +704,7 @@ export class DashboardTab extends TabBase<DashboardTab> {
 			loc.MIGRATION_CUTOVER_CARD);
 		this.disposables.push(
 			this._completingMigrationButton.container.onDidClick(
-				async (e) => await this.openMigrationFcn(AdsMigrationStatus.COMPLETING)));
+				async (e) => await this.openMigrationsFcn(AdsMigrationStatus.COMPLETING)));
 		this._migrationStatusCardsContainer.addItem(
 			this._completingMigrationButton.container,
 			{ flex: '0 0 auto' });
@@ -717,7 +716,7 @@ export class DashboardTab extends TabBase<DashboardTab> {
 			loc.MIGRATION_FAILED);
 		this.disposables.push(
 			this._failedMigrationButton.container.onDidClick(
-				async (e) => await this.openMigrationFcn(AdsMigrationStatus.FAILED)));
+				async (e) => await this.openMigrationsFcn(AdsMigrationStatus.FAILED)));
 		this._migrationStatusCardsContainer.addItem(
 			this._failedMigrationButton.container,
 			{ flex: '0 0 auto' });
@@ -729,7 +728,7 @@ export class DashboardTab extends TabBase<DashboardTab> {
 			loc.VIEW_ALL);
 		this.disposables.push(
 			this._allMigrationButton.container.onDidClick(
-				async (e) => await this.openMigrationFcn(AdsMigrationStatus.ALL)));
+				async (e) => await this.openMigrationsFcn(AdsMigrationStatus.ALL)));
 		this._migrationStatusCardsContainer.addItem(
 			this._allMigrationButton.container,
 			{ flex: '0 0 auto' });
@@ -759,9 +758,20 @@ export class DashboardTab extends TabBase<DashboardTab> {
 			})
 			.component();
 
+		const connectionProfile = await azdata.connection.getCurrentConnection();
+		this.disposables.push(
+			this.serviceContextChangedEvent.event(
+				async (e) => {
+					if (e.connectionId === connectionProfile.connectionId) {
+						await this.updateServiceContext(this._serviceContextButton);
+					}
+				}
+			));
+		await this.updateServiceContext(this._serviceContextButton);
+
 		this.disposables.push(
 			this._serviceContextButton.onDidClick(async () => {
-				const dialog = new SelectMigrationServiceDialog(async () => await this.onDialogClosed());
+				const dialog = new SelectMigrationServiceDialog(this.serviceContextChangedEvent);
 				await dialog.initialize();
 			}));
 

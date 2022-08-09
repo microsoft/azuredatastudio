@@ -92,21 +92,49 @@ export class SummaryPage extends MigrationWizardPage {
 				targetDatabaseRow,
 
 				await createHeadingTextComponent(this._view, constants.AZURE_SQL_TARGET_PAGE_TITLE),
-				createInformationRow(this._view, constants.AZURE_SQL_TARGET_PAGE_TITLE, (this.migrationStateModel._targetType === MigrationTargetType.SQLVM) ? constants.SUMMARY_VM_TYPE : constants.SUMMARY_MI_TYPE),
+				createInformationRow(
+					this._view,
+					constants.AZURE_SQL_TARGET_PAGE_TITLE,
+					(this.migrationStateModel._targetType === MigrationTargetType.SQLVM)
+						? constants.SUMMARY_VM_TYPE
+						: (this.migrationStateModel._targetType === MigrationTargetType.SQLMI)
+							? constants.SUMMARY_MI_TYPE
+							: constants.SUMMARY_SQLDB_TYPE),
+
 				createInformationRow(this._view, constants.SUBSCRIPTION, this.migrationStateModel._targetSubscription.name),
-				createInformationRow(this._view, constants.LOCATION, await this.migrationStateModel.getLocationDisplayName(this.migrationStateModel._targetServerInstance.location)),
+				createInformationRow(
+					this._view,
+					constants.LOCATION,
+					await this.migrationStateModel.getLocationDisplayName(this.migrationStateModel._targetServerInstance.location)),
+
 				createInformationRow(this._view, constants.RESOURCE_GROUP, getResourceGroupFromId(this.migrationStateModel._targetServerInstance.id)),
-				createInformationRow(this._view, (this.migrationStateModel._targetType === MigrationTargetType.SQLVM) ? constants.SUMMARY_VM_TYPE : constants.SUMMARY_MI_TYPE, await this.migrationStateModel.getLocationDisplayName(this.migrationStateModel._targetServerInstance.name!)),
+				createInformationRow(
+					this._view,
+					(this.migrationStateModel._targetType === MigrationTargetType.SQLVM)
+						? constants.SUMMARY_VM_TYPE
+						: (this.migrationStateModel._targetType === MigrationTargetType.SQLMI)
+							? constants.SUMMARY_MI_TYPE
+							: constants.SUMMARY_SQLDB_TYPE,
+					await this.migrationStateModel.getLocationDisplayName(this.migrationStateModel._targetServerInstance.name!)),
 
 				await createHeadingTextComponent(this._view, constants.DATABASE_BACKUP_MIGRATION_MODE_LABEL),
-				createInformationRow(this._view, constants.MODE, this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.ONLINE ? constants.DATABASE_BACKUP_MIGRATION_MODE_ONLINE_LABEL : constants.DATABASE_BACKUP_MIGRATION_MODE_OFFLINE_LABEL),
+				createInformationRow(
+					this._view,
+					constants.MODE,
+					this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.ONLINE
+						? constants.DATABASE_BACKUP_MIGRATION_MODE_ONLINE_LABEL
+						: constants.DATABASE_BACKUP_MIGRATION_MODE_OFFLINE_LABEL),
 
 				await createHeadingTextComponent(this._view, constants.DATABASE_BACKUP_PAGE_TITLE),
 				await this.createNetworkContainerRows(),
 
 				await createHeadingTextComponent(this._view, constants.IR_PAGE_TITLE),
 				createInformationRow(this._view, constants.SUBSCRIPTION, this.migrationStateModel._targetSubscription.name),
-				createInformationRow(this._view, constants.LOCATION, await this.migrationStateModel.getLocationDisplayName(this.migrationStateModel._sqlMigrationService?.location!)),
+				createInformationRow(
+					this._view,
+					constants.LOCATION,
+					await this.migrationStateModel.getLocationDisplayName(this.migrationStateModel._sqlMigrationService?.location!)),
+
 				createInformationRow(this._view, constants.RESOURCE_GROUP, this.migrationStateModel._sqlMigrationService?.properties?.resourceGroup!),
 				createInformationRow(this._view, constants.IR_PAGE_TITLE, this.migrationStateModel._sqlMigrationService?.name!)
 			]
@@ -119,18 +147,17 @@ export class SummaryPage extends MigrationWizardPage {
 
 	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		this._flexContainer.clearItems();
-		this.wizard.registerNavigationValidator(async (pageChangeInfo) => {
-			return true;
-		});
+		this.wizard.registerNavigationValidator(async (pageChangeInfo) => true);
 	}
 
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
 	}
 
 	private async createNetworkContainerRows(): Promise<azdata.FlexContainer> {
-		const flexContainer = this._view.modelBuilder.flexContainer().withLayout({
-			flexFlow: 'column'
-		}).component();
+		const flexContainer = this._view.modelBuilder.flexContainer()
+			.withLayout({ flexFlow: 'column' })
+			.component();
+
 		switch (this.migrationStateModel._databaseBackup.networkContainerType) {
 			case NetworkContainerType.NETWORK_SHARE:
 				flexContainer.addItems(

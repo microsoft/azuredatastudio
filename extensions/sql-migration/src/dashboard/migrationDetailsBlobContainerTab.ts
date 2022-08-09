@@ -12,7 +12,7 @@ import { canCancelMigration, canCutoverMigration, canRetryMigration, getMigratio
 import { getResourceName } from '../api/azure';
 import { InfoFieldSchema, infoFieldWidth, MigrationDetailsTabBase, MigrationTargetTypeName } from './migrationDetailsTabBase';
 import { EmptySettingValue } from './tabBase';
-import { DashboardStatusBar } from './sqlServerDashboard';
+import { DashboardStatusBar } from './DashboardStatusBar';
 
 const MigrationDetailsBlobContainerTabId = 'MigrationDetailsBlobContainerTab';
 
@@ -36,13 +36,13 @@ export class MigrationDetailsBlobContainerTab extends MigrationDetailsTabBase<Mi
 	public async create(
 		context: vscode.ExtensionContext,
 		view: azdata.ModelView,
-		onClosedCallback: () => Promise<void>,
+		openMigrationsListFcn: () => Promise<void>,
 		statusBar: DashboardStatusBar,
 	): Promise<MigrationDetailsBlobContainerTab> {
 
 		this.view = view;
 		this.context = context;
-		this.onClosedCallback = onClosedCallback;
+		this.openMigrationsListFcn = openMigrationsListFcn;
 		this.statusBar = statusBar;
 
 		await this.initialize(this.view);

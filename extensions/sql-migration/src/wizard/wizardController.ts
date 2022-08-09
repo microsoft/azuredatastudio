@@ -19,6 +19,7 @@ import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError 
 import * as styles from '../constants/styles';
 import { MigrationLocalStorage, MigrationServiceContext } from '../models/migrationLocalStorage';
 import { azureResource } from 'azurecore';
+import { ServiceContextChangeEvent } from '../dashboard/tabBase';
 
 export const WIZARD_INPUT_COMPONENT_WIDTH = '600px';
 export class WizardController {
@@ -27,7 +28,7 @@ export class WizardController {
 	constructor(
 		private readonly extensionContext: vscode.ExtensionContext,
 		private readonly _model: MigrationStateModel,
-		private readonly _onClosedCallback: () => Promise<void>) {
+		private readonly _serviceContextChangedEvent: vscode.EventEmitter<ServiceContextChangeEvent>) {
 	}
 
 	public async openWizard(connectionId: string): Promise<void> {
@@ -139,8 +140,7 @@ export class WizardController {
 		this._disposables.push(
 			this._wizardObject.doneButton.onClick(async (e) => {
 				await stateModel.startMigration();
-				await this.updateServiceContext(stateModel);
-				await this._onClosedCallback();
+				await this.updateServiceContext(stateModel, this._serviceContextChangedEvent);
 
 				sendSqlMigrationActionEvent(
 					TelemetryViews.SqlMigrationWizard,
@@ -153,7 +153,7 @@ export class WizardController {
 			}));
 	}
 
-	private async updateServiceContext(stateModel: MigrationStateModel): Promise<void> {
+	private async updateServiceContext(stateModel: MigrationStateModel, serviceContextChangedEvent: vscode.EventEmitter<ServiceContextChangeEvent>): Promise<void> {
 		const resourceGroup = this._getResourceGroupByName(
 			stateModel._resourceGroups,
 			stateModel._sqlMigrationService?.properties.resourceGroup);
@@ -174,7 +174,8 @@ export class WizardController {
 				location: location,
 				resourceGroup: resourceGroup,
 				migrationService: stateModel._sqlMigrationService,
-			});
+			},
+			serviceContextChangedEvent);
 	}
 
 	private _getResourceGroupByName(resourceGroups: azureResource.AzureResourceResourceGroup[], displayName?: string): azureResource.AzureResourceResourceGroup | undefined {

@@ -13,8 +13,8 @@ import { CopyProgressDetail, getResourceName } from '../api/azure';
 import { InfoFieldSchema, infoFieldLgWidth, MigrationDetailsTabBase, MigrationTargetTypeName } from './migrationDetailsTabBase';
 import { EmptySettingValue } from './tabBase';
 import { IconPathHelper } from '../constants/iconPathHelper';
-import { DashboardStatusBar } from './sqlServerDashboard';
 import { EOL } from 'os';
+import { DashboardStatusBar } from './DashboardStatusBar';
 
 const MigrationDetailsTableTabId = 'MigrationDetailsTableTab';
 
@@ -63,12 +63,12 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 	public async create(
 		context: vscode.ExtensionContext,
 		view: azdata.ModelView,
-		onClosedCallback: () => Promise<void>,
+		openMigrationsListFcn: () => Promise<void>,
 		statusBar: DashboardStatusBar): Promise<MigrationDetailsTableTab> {
 
 		this.view = view;
 		this.context = context;
-		this.onClosedCallback = onClosedCallback;
+		this.openMigrationsListFcn = openMigrationsListFcn;
 		this.statusBar = statusBar;
 
 		await this.initialize(this.view);

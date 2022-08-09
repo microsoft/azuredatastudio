@@ -310,10 +310,9 @@ export class GetAzureRecommendationDialog {
 			this._disposables.push(this.dialog.okButton.onClick(async () => await this.execute()));
 			this._disposables.push(this.dialog.cancelButton.onClick(() => this._isOpen = false));
 
-			const dialogSetupPromises: Thenable<void>[] = [];
-			dialogSetupPromises.push(this.initializeDialog(this.dialog));
+			const promise = this.initializeDialog(this.dialog);
 			azdata.window.openDialog(this.dialog);
-			await Promise.all(dialogSetupPromises);
+			await promise;
 
 			// if data source was previously selected, default folder value to previously selected
 			switch (this.migrationStateModel._skuRecommendationPerformanceDataSource) {

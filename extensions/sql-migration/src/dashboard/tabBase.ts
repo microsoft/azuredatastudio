@@ -9,11 +9,11 @@ import * as loc from '../constants/strings';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { EOL } from 'os';
 import { DatabaseMigration } from '../api/azure';
-import { DashboardStatusBar } from './sqlServerDashboard';
 import { getSelectedServiceStatus } from '../models/migrationLocalStorage';
 import { util } from 'webpack';
+import { MenuCommands, SqlMigrationExtensionId } from '../api/utils';
+import { DashboardStatusBar } from './DashboardStatusBar';
 
-export const SqlMigrationExtensionId = 'microsoft.sql-migration';
 export const EmptySettingValue = '-';
 
 export enum AdsMigrationStatus {
@@ -24,17 +24,15 @@ export enum AdsMigrationStatus {
 	COMPLETING = 'completing'
 }
 
-export const MenuCommands = {
-	Cutover: 'sqlmigration.cutover',
-	ViewDatabase: 'sqlmigration.view.database',
-	ViewTarget: 'sqlmigration.view.target',
-	ViewService: 'sqlmigration.view.service',
-	CopyMigration: 'sqlmigration.copy.migration',
-	CancelMigration: 'sqlmigration.cancel.migration',
-	RetryMigration: 'sqlmigration.retry.migration',
-	StartMigration: 'sqlmigration.start',
-	IssueReporter: 'workbench.action.openIssueReporter',
-};
+export interface ServiceContextChangeEvent {
+	connectionId: string;
+}
+
+export interface MigrationDetailsEvent {
+	connectionId: string,
+	migrationId: string,
+	migrationOperationId: string,
+}
 
 export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 	public content!: azdata.Component;
@@ -46,7 +44,8 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 	protected view!: azdata.ModelView;
 	protected disposables: vscode.Disposable[] = [];
 	protected isRefreshing: boolean = false;
-	protected openMigrationFcn!: (status: AdsMigrationStatus) => Promise<void>;
+	protected openMigrationsFcn!: (status: AdsMigrationStatus) => Promise<void>;
+	protected serviceContextChangedEvent!: vscode.EventEmitter<ServiceContextChangeEvent>;
 	protected statusBar!: DashboardStatusBar;
 
 	protected abstract initialize(view: azdata.ModelView): Promise<void>;

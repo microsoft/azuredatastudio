@@ -6,11 +6,36 @@
 import { AzureAccount } from 'azurecore';
 import * as nls from 'vscode-nls';
 import { EOL } from 'os';
-import { MigrationStatus } from '../models/migrationLocalStorage';
 import { MigrationSourceAuthenticationType } from '../models/stateMachine';
 import { ParallelCopyTypeCodes, PipelineStatusCodes } from './helper';
 const localize = nls.loadMessageBundle();
 
+export enum MigrationStatus {
+	Failed = 'Failed',
+	Succeeded = 'Succeeded',
+	InProgress = 'InProgress',
+	Canceled = 'Canceled',
+	Completing = 'Completing',
+	Creating = 'Creating',
+	Canceling = 'Canceling',
+	Retriable = 'Retriable',
+}
+
+export enum ProvisioningState {
+	Failed = 'Failed',
+	Succeeded = 'Succeeded',
+	Creating = 'Creating'
+}
+
+export enum BackupFileInfoStatus {
+	Arrived = 'Arrived',
+	Uploading = 'Uploading',
+	Uploaded = 'Uploaded',
+	Restoring = 'Restoring',
+	Restored = 'Restored',
+	Cancelled = 'Cancelled',
+	Ignored = 'Ignored'
+}
 
 // #region wizard
 export function WIZARD_TITLE(instanceName: string): string {
@@ -67,12 +92,13 @@ export const REFRESH_ASSESSMENT_BUTTON_LABEL = localize('sql.migration.refresh.a
 export const SKU_RECOMMENDATION_CHOOSE_A_TARGET = localize('sql.migration.wizard.sku.choose_a_target', "Choose your Azure SQL target");
 
 export const SKU_RECOMMENDATION_MI_CARD_TEXT = localize('sql.migration.sku.mi.card.title', "Azure SQL Managed Instance");
-export const SKU_RECOMMENDATION_DB_CARD_TEXT = localize('sql.migration.sku.db.card.title', "Azure SQL Database");
+export const SKU_RECOMMENDATION_SQLDB_CARD_TEXT = localize('sql.migration.sku.sqldb.card.title', "Azure SQL Database");
 export const SKU_RECOMMENDATION_VM_CARD_TEXT = localize('sql.migration.sku.vm.card.title', "SQL Server on Azure Virtual Machine");
 export const SELECT_AZURE_MI = localize('sql.migration.select.azure.mi', "Select your target Azure subscription and your target Azure SQL Managed Instance.");
 export const SELECT_AZURE_VM = localize('sql.migration.select.azure.vm', "Select your target Azure Subscription and your target SQL Server on Azure Virtual Machine for your target.");
 export const SKU_RECOMMENDATION_VIEW_ASSESSMENT_MI = localize('sql.migration.sku.recommendation.view.assessment.mi', "To migrate to Azure SQL Managed Instance, view assessment results and select one or more databases.");
 export const SKU_RECOMMENDATION_VIEW_ASSESSMENT_VM = localize('sql.migration.sku.recommendation.view.assessment.vm', "To migrate to SQL Server on Azure Virtual Machine, view assessment results and select one or more databases.");
+export const SKU_RECOMMENDATION_VIEW_ASSESSMENT_SQLDB = localize('sql.migration.sku.recommendation.view.assessment.sqldb', "To migrate to Azure SQL Database, view assessment results and select one or more databases.");
 export const VIEW_SELECT_BUTTON_LABEL = localize('sql.migration.view.select.button.label', "View/Select");
 export function TOTAL_DATABASES_SELECTED(selectedDbCount: number, totalDbCount: number): string {
 	return localize('total.databases.selected', "{0} of {1} databases selected", selectedDbCount, totalDbCount);
@@ -152,8 +178,11 @@ export function VM_CONFIGURATION(vmSize: string, vCPU: number): string {
 export function VM_CONFIGURATION_PREVIEW(dataDisk: string, logDisk: string, temp: string): string {
 	return localize('sql.migration.sku.azureConfiguration.vmPreview', "Data: {0}, Log: {1}, tempdb: {2}", dataDisk, logDisk, temp);
 }
-export function DB_CONFIGURATION(computeTier: string, vCore: number): string {
-	return localize('sql.migration.sku.azureConfiguration.db', "{0} - {1} vCore", computeTier, vCore);
+export function SQLDB_CONFIGURATION(computeTier: string, vCore: number): string {
+	return localize('sql.migration.sku.azureConfiguration.sqldb', "{0} - {1} vCore", computeTier, vCore);
+}
+export function SQLDB_CONFIGURATION_PREVIEW(hardwareType: string, computeTier: string, vCore: number, storage: number): string {
+	return localize('sql.migration.sku.azureConfiguration.sqldbPreview', "{0} - {1} - {2} vCore - {3} GB", hardwareType, computeTier, vCore, storage);
 }
 export function MI_CONFIGURATION(hardwareType: string, computeTier: string, vCore: number): string {
 	return localize('sql.migration.sku.azureConfiguration.mi', "{0} - {1} - {2} vCore", hardwareType, computeTier, vCore);
@@ -245,6 +274,39 @@ export function AZURE_SQL_TARGET_PAGE_DESCRIPTION(targetInstance: string = 'inst
 	return localize('sql.migration.wizard.target.description', "Select an Azure account and your target {0}.", targetInstance);
 }
 
+export function SQL_TARGET_CONNECTION_ERROR(message: string): string {
+	return localize('sql.migration.wizard.target.connection.error', "Connection error: {0}", message);
+}
+export function SQL_TARGET_CONNECTION_SUCCESS(databaseCount: string): string {
+	return localize('sql.migration.wizard.target.connection.success', "Connection was successful. Target databases found: '{0}'", databaseCount);
+}
+
+export const SQL_TARGET_MISSING_SOURCE_DATABASES = localize('sql.migration.wizard.source.missing', 'Connection was successful but did not find any target databases.');
+export const SQL_TARGET_MAPPING_ERROR_MISSING_TARGET = localize(
+	'sql.migration.wizard.target.missing',
+	'Database mapping error. Missing target databases to migrate.  Please configure the target server connection and click connect to collect the list of available database migration targets.');
+
+export function SQL_TARGET_CONNECTION_DUPLICATE_TARGET_MAPPING(
+	targetDatabaseName: string,
+	sourceDatabaseName: string,
+	mappedSourceDatabaseName: string,
+): string {
+	return localize(
+		'sql.migration.wizard.target.mapping.error.duplicate',
+		"Database mapping error.  Target database '{0}' cannot be selected to as a migratoin target for database '{1}'.  Target database '${targetDatabaseName}' is already selected as a migration target for database '{2}'.  Please select a different target database.",
+		targetDatabaseName,
+		sourceDatabaseName,
+		mappedSourceDatabaseName);
+}
+
+//`Database mapping error.  Source database '${sourceDatabaseName}' is not mapped to a target database.  Please select a target database to migrate to.`
+export function SQL_TARGET_CONNECTION_SOURCE_NOT_MAPPED(sourceDatabaseName: string): string {
+	return localize(
+		'sql.migration.wizard.target.source.mapping.error',
+		"Database mapping error.  Source database '{0}' is not mapped to a target database.  Please select a target database to migrate to.",
+		sourceDatabaseName);
+}
+
 // Managed Instance
 export const AZURE_SQL_DATABASE_MANAGED_INSTANCE = localize('sql.migration.azure.sql.database.managed.instance', "Azure SQL Managed Instance");
 export const NO_MANAGED_INSTANCE_FOUND = localize('sql.migration.no.managedInstance.found', "No managed instances found.");
@@ -253,7 +315,6 @@ export function UNAVAILABLE_TARGET_PREFIX(targetName: string): string {
 	return localize('sql.migration.unavailable.target', "(Unavailable) {0}", targetName);
 }
 
-
 // Virtual Machine
 export const AZURE_SQL_DATABASE_VIRTUAL_MACHINE = localize('sql.migration.azure.sql.database.virtual.machine', "SQL Server on Azure Virtual Machines");
 export const AZURE_SQL_DATABASE_VIRTUAL_MACHINE_SHORT = localize('sql.migration.azure.sql.database.virtual.machine.short', "SQL Server on Azure VM");
@@ -261,7 +322,10 @@ export const NO_VIRTUAL_MACHINE_FOUND = localize('sql.migration.no.virtualMachin
 export const INVALID_VIRTUAL_MACHINE_ERROR = localize('sql.migration.invalid.virtualMachine.error', "To continue, select a valid virtual machine.");
 
 // Azure SQL Database
-export const AZURE_SQL_DATABASE = localize('sql.migration.azure.sql.database', "Azure SQL Database");
+export const AZURE_SQL_DATABASE = localize('sql.migration.azure.sql.database', "Azure SQL Database Server");
+export const NO_SQL_DATABASE_SERVER_FOUND = localize('sql.migration.no.sqldatabaseserver.found', "No Azure SQL database servers found.");
+export const NO_SQL_DATABASE_FOUND = localize('sql.migration.no.sqldatabase.found', "No Azure SQL databases found.");
+export const INVALID_SQL_DATABASE_ERROR = localize('sql.migration.invalid.sqldatabase.error', "To continue, select a valid Azure SQL Database Server.");
 
 // Target info tooltip
 export const TARGET_SUBSCRIPTION_INFO = localize('sql.migration.sku.subscription', "Subscription name for your Azure SQL target");
@@ -303,6 +367,10 @@ export function ACCOUNT_ACCESS_ERROR(account: AzureAccount, error: Error) {
 }
 export function MI_NOT_READY_ERROR(miName: string, state: string): string {
 	return localize('sql.migration.mi.not.ready', "The managed instance '{0}' is unavailable for migration because it is currently in the '{1}' state. To continue, select an available managed instance.", miName, state);
+}
+
+export function SQLDB_NOT_READY_ERROR(sqldbName: string, state: string): string {
+	return localize('sql.migration.sqldb.not.ready', "The SQL database server '{0}' is unavailable for migration because it is currently in the '{1}' state. To continue, select an available SQL database server.", sqldbName, state);
 }
 
 export const SELECT_AN_ACCOUNT = localize('sql.migration.select.service.select.a.', "Sign into Azure and select an account");
@@ -370,6 +438,21 @@ export const INVALID_SUBSCRIPTION_ERROR = localize('sql.migration.invalid.subscr
 export const INVALID_LOCATION_ERROR = localize('sql.migration.invalid.location.error', "To continue, select a valid location.");
 export const INVALID_RESOURCE_GROUP_ERROR = localize('sql.migration.invalid.resourceGroup.error', "To continue, select a valid resource group.");
 export const INVALID_STORAGE_ACCOUNT_ERROR = localize('sql.migration.invalid.storageAccount.error', "To continue, select a valid storage account.");
+export const MISSING_TARGET_USERNAME_ERROR = localize('sql.migration.missing.targetUserName.error', "To continue, enter a valid target user name.");
+export const MISSING_TARGET_PASSWORD_ERROR = localize('sql.migration.missing.targetPassword.error', "To continue, enter a valid target password.");
+
+export const TARGET_USERNAME_LAbEL = localize('sql.migration.username.label', "Target username");
+export const TARGET_USERNAME_PLACEHOLDER = localize('sql.migration.username.placeholder', "Enter the target user name");
+export const TARGET_PASSWORD_LAbEL = localize('sql.migration.password.label', "Target password");
+export const TARGET_PASSWORD_PLACEHOLDER = localize('sql.migration.password.placeholder', "Enter the target password");
+export const TARGET_CONNECTION_LABEL = localize('sql.migration.connection.label', "Connect");
+export const MAP_SOURCE_TARGET_HEADING = localize('sql.migration.map.target.heading', "Map selected source databases to target databases for migration.");
+export const MAP_SOURCE_TARGET_DESCRIPTION = localize('sql.migration.map.target.description', "Select the target dataase where you would like your source database to migration.  You can choose a target database for only one source database.");
+export const MAP_SOURCE_COLUMN = localize('sql.migration.map.source.column', "Source database");
+export const MAP_TARGET_COLUMN = localize('sql.migration.map.target.column', "Target database");
+export const MAP_TARGET_PLACEHOLDER = localize('sql.migration.map.target.placeholder', "Select a target database");
+
+
 export function INVALID_BLOB_RESOURCE_GROUP_ERROR(sourceDb: string): string {
 	return localize('sql.migration.invalid.blob.resourceGroup.error', "To continue, select a valid resource group for source database '{0}'.", sourceDb);
 }
@@ -493,6 +576,7 @@ export const START_MIGRATION_TEXT = localize('sql.migration.start.migration.butt
 export const SUMMARY_PAGE_TITLE = localize('sql.migration.summary.page.title', "Summary");
 export const SUMMARY_MI_TYPE = localize('sql.migration.summary.mi.type', "Azure SQL Managed Instance");
 export const SUMMARY_VM_TYPE = localize('sql.migration.summary.vm.type', "SQL Server on Azure Virtual Machine");
+export const SUMMARY_SQLDB_TYPE = localize('sql.migration.summary.sqldb.type', "Azure SQL Database");
 export const SUMMARY_DATABASE_COUNT_LABEL = localize('sql.migration.summary.database.count', "Databases for migration");
 export const SUMMARY_AZURE_STORAGE_SUBSCRIPTION = localize('sql.migration.summary.azure.storage.subscription', "Azure storage subscription");
 export const SUMMARY_AZURE_STORAGE = localize('sql.migration.summary.azure.storage', "Azure storage");
@@ -673,11 +757,11 @@ export const OPEN_MIGRATION_TARGET_ERROR = localize('sql.migration.open.migratio
 export const OPEN_MIGRATION_SERVICE_ERROR = localize('sql.migration.open.migration.service.error', "Error opening migration service dialog");
 export const LOAD_MIGRATION_LIST_ERROR = localize('sql.migration.load.migration.list.error', "Error loading migrations list");
 export const ERROR_DIALOG_CLEAR_BUTTON_LABEL = localize('sql.migration.error.dialog.clear.button.label', "Clear");
+export const ERROR_DIALOG_ARIA_CLICK_VIEW_ERROR_DETAILS = localize('sql.migration.error.aria.view.details', 'Click to view error details');
 
 export interface LookupTable<T> {
 	[key: string]: T;
 }
-
 
 export const StatusLookup: LookupTable<string | undefined> = {
 	[MigrationStatus.InProgress]: localize('sql.migration.status.inprogress', 'In progress'),
@@ -810,6 +894,7 @@ export const ISSUES_DETAILS = localize('sql.migration.issues.details', "Issue de
 export const SELECT_DB_PROMPT = localize('sql.migration.select.prompt', "Click on SQL Server instance or any of the databases on the left to view its details.");
 export const NO_ISSUES_FOUND_VM = localize('sql.migration.no.issues.vm', "No issues found for migrating to SQL Server on Azure Virtual Machine.");
 export const NO_ISSUES_FOUND_MI = localize('sql.migration.no.issues.mi', "No issues found for migrating to SQL Server on Azure SQL Managed Instance.");
+export const NO_ISSUES_FOUND_SQLDB = localize('sql.migration.no.issues.sqldb', "No issues found for migrating to SQL Server on Azure SQL Database.");
 export const NO_RESULTS_AVAILABLE = localize('sql.migration.no.results', 'Assessment results are unavailable.');
 
 export function IMPACT_OBJECT_TYPE(objectType?: string): string {

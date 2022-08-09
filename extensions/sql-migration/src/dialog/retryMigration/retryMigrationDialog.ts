@@ -13,6 +13,7 @@ import { MigrationServiceContext } from '../../models/migrationLocalStorage';
 import { WizardController } from '../../wizard/wizardController';
 import { getMigrationModeEnum, getMigrationTargetTypeEnum } from '../../constants/helper';
 import * as constants from '../../constants/strings';
+import { ServiceContextChangeEvent } from '../../dashboard/tabBase';
 
 export class RetryMigrationDialog {
 
@@ -20,15 +21,20 @@ export class RetryMigrationDialog {
 		private readonly _context: vscode.ExtensionContext,
 		private readonly _serviceContext: MigrationServiceContext,
 		private readonly _migration: DatabaseMigration,
-		private readonly _onClosedCallback: () => Promise<void>) {
+		private readonly _serviceContextChangedEvent: vscode.EventEmitter<ServiceContextChangeEvent>) {
 	}
 
-	private async createMigrationStateModel(serviceContext: MigrationServiceContext, migration: DatabaseMigration, connectionId: string, serverName: string, api: mssql.IExtension, location: azureResource.AzureLocation): Promise<MigrationStateModel> {
-		let stateModel = new MigrationStateModel(this._context, connectionId, api.sqlMigration);
+	private async createMigrationStateModel(
+		serviceContext: MigrationServiceContext,
+		migration: DatabaseMigration,
+		connectionId: string,
+		serverName: string,
+		api: mssql.IExtension,
+		location: azureResource.AzureLocation): Promise<MigrationStateModel> {
 
+		const stateModel = new MigrationStateModel(this._context, connectionId, api.sqlMigration);
 		const sourceDatabaseName = migration.properties.sourceDatabaseName;
-		let savedInfo: SavedInfo;
-		savedInfo = {
+		const savedInfo: SavedInfo = {
 			closedPage: 0,
 
 			// DatabaseSelector
@@ -142,7 +148,7 @@ export class RetryMigrationDialog {
 			}
 		});
 
-		let activeConnection = await azdata.connection.getCurrentConnection();
+		const activeConnection = await azdata.connection.getCurrentConnection();
 		let connectionId: string = '';
 		let serverName: string = '';
 		if (!activeConnection) {
@@ -163,7 +169,7 @@ export class RetryMigrationDialog {
 			const wizardController = new WizardController(
 				this._context,
 				stateModel,
-				this._onClosedCallback);
+				this._serviceContextChangedEvent);
 			await wizardController.openWizard(stateModel.sourceConnectionId);
 		} else {
 			void vscode.window.showInformationMessage(constants.MIGRATION_CANNOT_RETRY);

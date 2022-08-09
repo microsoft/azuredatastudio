@@ -81,5 +81,10 @@ export abstract class MigrationWizardPage {
 		await this.wizard.setCurrentPage(current + 1);
 	}
 
+	protected async setControlVisibility(control: azdata.Component, visible: boolean): Promise<void> {
+		const display: azdata.DisplayType = visible ? 'block' : 'none';
+		await control.updateCssStyles({ 'display': display });
+		control.display = display;
+	}
 }
 
