@@ -575,9 +575,9 @@ declare module 'az-ext' {
 				delete(
 					name: string,
 					args: {
-						// Direct mode arguments
+						// ARM API arguments
 						resourceGroup?: string,
-						// Indirect mode arguments
+						// K8s API arguments
 						namespace?: string
 						},
 						// Additional arguments
@@ -585,9 +585,9 @@ declare module 'az-ext' {
 				): Promise<AzOutput<void>>,
 				list(
 					args: {
-					// Direct mode arguments
+					// ARM API arguments
 					resourceGroup?: string,
-					// Indirect mode arguments
+					// K8s API arguments
 					namespace?: string
 					},
 					// Additional arguments
@@ -596,9 +596,9 @@ declare module 'az-ext' {
 				show(
 					name: string,
 					args: {
-						// Direct mode arguments
+						// ARM API arguments
 						resourceGroup?: string,
-						// Indirect mode arguments
+						// K8s API arguments
 						namespace?: string
 					},
 					// Additional arguments
@@ -615,9 +615,9 @@ declare module 'az-ext' {
 						retentionDays?: string, //5
 						syncSecondaryToCommit?: string //2
 					},
-					// Direct mode arguments
+					// ARM API arguments
 					resourceGroup?: string,
-					// Indirect mode arguments
+					// K8s API arguments
 					namespace?: string,
 					usek8s?: boolean,
 					// Additional arguments
@@ -626,9 +626,9 @@ declare module 'az-ext' {
 				upgrade(
 					name: string,
 					args: {
-						// Direct mode arguments
+						// ARM API arguments
 						resourceGroup?: string,
-						// Indirect mode arguments
+						// K8s API arguments
 						namespace?: string
 					},
 					// Additional arguments

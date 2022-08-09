@@ -200,6 +200,7 @@ export class RunQueryAction extends QueryTaskbarAction {
 		editor: QueryEditor,
 		@IQueryModelService protected readonly queryModelService: IQueryModelService,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
+		@INotificationService private readonly notificationService: INotificationService,
 		@ICommandService private readonly commandService?: ICommandService
 	) {
 		super(connectionManagementService, editor, RunQueryAction.ID, RunQueryAction.EnabledClass);
@@ -238,6 +239,13 @@ export class RunQueryAction extends QueryTaskbarAction {
 		if (this.isConnected(editor)) {
 			// Hide IntelliSense suggestions list when running query to match SSMS behavior
 			this.commandService?.executeCommand('hideSuggestWidget');
+			// Do not execute when there are multiple selections in the editor until it can be properly handled.
+			// Otherwise only the first selection will be executed and cause unexpected issues.
+			if (editor.getSelections()?.length > 1) {
+				this.notificationService.error(nls.localize('query.multiSelectionNotSupported', "Running query is not supported when the editor is in multiple selection mode."));
+				return true;
+			}
+
 			// if the selection isn't empty then execute the selection
 			// otherwise, either run the statement or the script depending on parameter
 			let selection = editor.getSelection(false);
@@ -341,6 +349,7 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
  */
 export class ToggleActualExecutionPlanModeAction extends QueryTaskbarAction {
 	public static EnabledClass = 'enabledActualExecutionPlan';
+	public static DisabledClass = 'disabledActualExecutionPlan';
 	public static ID = 'toggleActualExecutionPlanModeAction';
 
 	private static readonly EnableActualPlanLabel = nls.localize('enableActualPlanLabel', "Enable Actual Plan");
@@ -370,6 +379,12 @@ export class ToggleActualExecutionPlanModeAction extends QueryTaskbarAction {
 	private updateLabel(): void {
 		// show option to disable actual plan mode if already enabled
 		this.label = this.isActualExecutionPlanMode ? ToggleActualExecutionPlanModeAction.DisableActualPlanLabel : ToggleActualExecutionPlanModeAction.EnableActualPlanLabel;
+		if (this.isActualExecutionPlanMode) {
+			this.updateCssClass(ToggleActualExecutionPlanModeAction.DisabledClass);
+		}
+		else {
+			this.updateCssClass(ToggleActualExecutionPlanModeAction.EnabledClass);
+		}
 	}
 
 	public override async run(): Promise<void> {

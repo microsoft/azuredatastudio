@@ -5,13 +5,16 @@
 
 import { window, Account, accounts, CategoryValue, DropDownComponent, IconPath } from 'azdata';
 import { IconPathHelper } from '../constants/iconPathHelper';
-import { AdsMigrationStatus } from '../dialog/migrationStatus/migrationStatusDialogModel';
 import { MigrationStatus, ProvisioningState } from '../models/migrationLocalStorage';
 import * as crypto from 'crypto';
 import * as azure from './azure';
 import { azureResource, Tenant } from 'azurecore';
 import * as constants from '../constants/strings';
 import { logError, TelemetryViews } from '../telemtery';
+import { AdsMigrationStatus } from '../dashboard/tabBase';
+import { getMigrationMode, getMigrationStatus, getMigrationTargetType, PipelineStatusCodes } from '../constants/helper';
+
+export const DefaultSettingValue = '---';
 
 export function deepClone<T>(obj: T): T {
 	if (!obj || typeof obj !== 'object') {
@@ -92,34 +95,68 @@ export function convertTimeDifferenceToDuration(startTime: Date, endTime: Date):
 	}
 }
 
-export function filterMigrations(databaseMigrations: azure.DatabaseMigration[], statusFilter: string, databaseNameFilter?: string): azure.DatabaseMigration[] {
-	let filteredMigration: azure.DatabaseMigration[] = [];
-	if (statusFilter === AdsMigrationStatus.ALL) {
-		filteredMigration = databaseMigrations;
-	} else if (statusFilter === AdsMigrationStatus.ONGOING) {
-		filteredMigration = databaseMigrations.filter(
-			value => {
-				const status = value.properties?.migrationStatus;
-				return status === MigrationStatus.InProgress
-					|| status === MigrationStatus.Creating
-					|| value.properties?.provisioningState === MigrationStatus.Creating;
-			});
-	} else if (statusFilter === AdsMigrationStatus.SUCCEEDED) {
-		filteredMigration = databaseMigrations.filter(
-			value => value.properties?.migrationStatus === MigrationStatus.Succeeded);
-	} else if (statusFilter === AdsMigrationStatus.FAILED) {
-		filteredMigration = databaseMigrations.filter(
-			value =>
-				value.properties?.migrationStatus === MigrationStatus.Failed ||
-				value.properties?.provisioningState === ProvisioningState.Failed);
-	} else if (statusFilter === AdsMigrationStatus.COMPLETING) {
-		filteredMigration = databaseMigrations.filter(
-			value => value.properties?.migrationStatus === MigrationStatus.Completing);
+export function getMigrationTime(migrationTime: string): string {
+	return migrationTime
+		? new Date(migrationTime).toLocaleString()
+		: DefaultSettingValue;
+}
+
+export function getMigrationDuration(startDate: string, endDate: string): string {
+	if (startDate) {
+		if (endDate) {
+			return convertTimeDifferenceToDuration(
+				new Date(startDate),
+				new Date(endDate));
+		} else {
+			return convertTimeDifferenceToDuration(
+				new Date(startDate),
+				new Date());
+		}
 	}
-	if (databaseNameFilter) {
-		const filter = databaseNameFilter.toLowerCase();
+
+	return DefaultSettingValue;
+}
+
+export function filterMigrations(databaseMigrations: azure.DatabaseMigration[], statusFilter: string, columnTextFilter?: string): azure.DatabaseMigration[] {
+	let filteredMigration: azure.DatabaseMigration[] = databaseMigrations || [];
+	if (columnTextFilter) {
+		const filter = columnTextFilter.toLowerCase();
 		filteredMigration = filteredMigration.filter(
-			migration => migration.name?.toLowerCase().includes(filter));
+			migration => migration.properties.sourceServerName?.toLowerCase().includes(filter)
+				|| migration.properties.sourceDatabaseName?.toLowerCase().includes(filter)
+				|| getMigrationStatus(migration)?.toLowerCase().includes(filter)
+				|| getMigrationMode(migration)?.toLowerCase().includes(filter)
+				|| getMigrationTargetType(migration)?.toLowerCase().includes(filter)
+				|| azure.getResourceName(migration.properties.scope)?.toLowerCase().includes(filter)
+				|| azure.getResourceName(migration.id)?.toLowerCase().includes(filter)
+				|| getMigrationDuration(
+					migration.properties.startedOn,
+					migration.properties.endedOn)?.toLowerCase().includes(filter)
+				|| getMigrationTime(migration.properties.startedOn)?.toLowerCase().includes(filter)
+				|| getMigrationTime(migration.properties.endedOn)?.toLowerCase().includes(filter)
+				|| getMigrationMode(migration)?.toLowerCase().includes(filter));
+	}
+
+	switch (statusFilter) {
+		case AdsMigrationStatus.ALL:
+			return filteredMigration;
+		case AdsMigrationStatus.ONGOING:
+			return filteredMigration.filter(
+				value => {
+					const status = getMigrationStatus(value);
+					return status === MigrationStatus.InProgress
+						|| status === MigrationStatus.Retriable
+						|| status === MigrationStatus.Creating;
+				});
+		case AdsMigrationStatus.SUCCEEDED:
+			return filteredMigration.filter(
+				value => getMigrationStatus(value) === MigrationStatus.Succeeded);
+		case AdsMigrationStatus.FAILED:
+			return filteredMigration.filter(
+				value => getMigrationStatus(value) === MigrationStatus.Failed);
+		case AdsMigrationStatus.COMPLETING:
+			return filteredMigration.filter(
+				value => getMigrationStatus(value) === MigrationStatus.Completing);
 	}
 	return filteredMigration;
 }
@@ -208,12 +245,61 @@ export function decorate(decorator: (fn: Function, key: string) => Function): Fu
 }
 
 export function getSessionIdHeader(sessionId: string): { [key: string]: string } {
-	return {
-		'SqlMigrationSessionId': sessionId
-	};
+	return { 'SqlMigrationSessionId': sessionId };
 }
 
-export function getMigrationStatusImage(status: string): IconPath {
+export function getMigrationStatusWithErrors(migration: azure.DatabaseMigration): string {
+	const properties = migration.properties;
+	const migrationStatus = properties.migrationStatus ?? properties.provisioningState;
+	let warningCount = 0;
+
+	if (properties.migrationFailureError?.message) {
+		warningCount++;
+	}
+	if (properties.migrationStatusDetails?.fileUploadBlockingErrors) {
+		const blockingErrors = properties.migrationStatusDetails?.fileUploadBlockingErrors.length ?? 0;
+		warningCount += blockingErrors;
+	}
+	if (properties.migrationStatusDetails?.restoreBlockingReason) {
+		warningCount++;
+	}
+
+	return constants.STATUS_VALUE(migrationStatus, warningCount)
+		+ (constants.STATUS_WARNING_COUNT(migrationStatus, warningCount) ?? '');
+}
+
+export function getPipelineStatusImage(status: string | undefined): IconPath {
+	// status codes: 'PreparingForCopy' | 'Copying' | 'CopyFinished' | 'RebuildingIndexes' | 'Succeeded' | 'Failed' |	'Canceled',
+	switch (status) {
+		case PipelineStatusCodes.Copying:				// Copying: 'Copying',
+			return IconPathHelper.copy;
+		case PipelineStatusCodes.CopyFinished:			// CopyFinished: 'CopyFinished',
+		case PipelineStatusCodes.RebuildingIndexes:		// RebuildingIndexes: 'RebuildingIndexes',
+			return IconPathHelper.inProgressMigration;
+		case PipelineStatusCodes.Canceled:				// Canceled: 'Canceled',
+			return IconPathHelper.cancel;
+		case PipelineStatusCodes.PreparingForCopy:		// PreparingForCopy: 'PreparingForCopy',
+			return IconPathHelper.notStartedMigration;
+		case PipelineStatusCodes.Failed:				// Failed: 'Failed',
+			return IconPathHelper.error;
+		case PipelineStatusCodes.Succeeded:				// Succeeded: 'Succeeded',
+			return IconPathHelper.completedMigration;
+
+		// legacy status codes:  Queued: 'Queued', InProgress: 'InProgress',Cancelled: 'Cancelled',
+		case PipelineStatusCodes.Queued:
+			return IconPathHelper.notStartedMigration;
+		case PipelineStatusCodes.InProgress:
+			return IconPathHelper.inProgressMigration;
+		case PipelineStatusCodes.Cancelled:
+			return IconPathHelper.cancel;
+		// default:
+		default:
+			return IconPathHelper.error;
+	}
+}
+
+export function getMigrationStatusImage(migration: azure.DatabaseMigration): IconPath {
+	const status = getMigrationStatus(migration);
 	switch (status) {
 		case MigrationStatus.InProgress:
 			return IconPathHelper.inProgressMigration;
@@ -223,7 +309,10 @@ export function getMigrationStatusImage(status: string): IconPath {
 			return IconPathHelper.notStartedMigration;
 		case MigrationStatus.Completing:
 			return IconPathHelper.completingCutover;
+		case MigrationStatus.Retriable:
+			return IconPathHelper.retry;
 		case MigrationStatus.Canceling:
+		case MigrationStatus.Canceled:
 			return IconPathHelper.cancel;
 		case MigrationStatus.Failed:
 		default:

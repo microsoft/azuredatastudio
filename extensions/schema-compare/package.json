@@ -2,12 +2,12 @@
   "name": "schema-compare",
   "displayName": "%displayName%",
   "description": "%description%",
-  "version": "1.15.0",
+  "version": "1.16.0",
   "publisher": "Microsoft",
   "preview": false,
   "engines": {
     "vscode": "^1.25.0",
-    "azdata": ">=1.35.0"
+    "azdata": ">=1.38.0"
   },
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/extension.png",

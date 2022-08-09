@@ -7,7 +7,7 @@ import { ResourceType } from 'arc';
 import * as azdata from 'azdata';
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
-import { getConnectionModeDisplayText, getResourceTypeIcon, resourceTypeToDisplayName } from '../../../common/utils';
+import { getResourceTypeIcon, resourceTypeToDisplayName } from '../../../common/utils';
 import { cssStyles, IconPathHelper, controllerTroubleshootDocsUrl, iconSize } from '../../../constants';
 import * as loc from '../../../localizedConstants';
 import { ControllerModel } from '../../../models/controllerModel';
@@ -147,9 +147,8 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 			newInstance.onDidClick(async () => {
 				const node = this._controllerModel.treeDataProvider.getControllerNode(this._controllerModel);
 				await vscode.commands.executeCommand('azdata.resource.deploy',
-					'azure-sql-mi', // Default option
-					['azure-sql-mi', 'arc-postgres'], // Type filter
-					{ 'azure-sql-mi': { 'mi-type': ['arc-mi'] } }, // Options filter
+					'arc-sql', // Default option
+					['arc-sql', 'arc-postgres'], // Type filter
 					{ 'CONTROLLER_NAME': node?.label });
 			}));
 
@@ -218,7 +217,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 		this.controllerProperties.resourceGroupName = config?.spec.settings.azure.resourceGroup || this.controllerProperties.resourceGroupName;
 		this.controllerProperties.location = this._azurecoreApi.getRegionDisplayName(config?.spec.settings.azure.location) || this.controllerProperties.location;
 		this.controllerProperties.subscriptionId = config?.spec.settings.azure.subscription || this.controllerProperties.subscriptionId;
-		this.controllerProperties.connectionMode = getConnectionModeDisplayText(config?.spec.settings.azure.connectionMode) || this.controllerProperties.connectionMode;
+		this.controllerProperties.connectionMode = config?.spec.settings.azure.connectionMode.toLowerCase() || this.controllerProperties.connectionMode.toLowerCase();
 		this.controllerProperties.instanceNamespace = config?.metadata.namespace || this.controllerProperties.instanceNamespace;
 		this.controllerProperties.status = config?.status.state || this.controllerProperties.status;
 		this.refreshDisplayedProperties();

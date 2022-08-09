@@ -58,7 +58,7 @@ export class QueryEditorService implements IQueryEditorService {
 
 		// Create a sql document pane with accoutrements
 		const mode = this._connectionManagementService.getProviderLanguageMode(connectionProviderName);
-		const fileInput = this._editorService.createEditorInput({ forceUntitled: true, resource: docUri, mode: mode }) as UntitledTextEditorInput;
+		const fileInput = await this._editorService.createEditorInput({ forceUntitled: true, resource: docUri, mode: mode }) as UntitledTextEditorInput;
 		let untitledEditorModel = await fileInput.resolve();
 		if (options.initalContent) {
 			untitledEditorModel.textEditorModel.setValue(options.initalContent);
@@ -102,7 +102,7 @@ export class QueryEditorService implements IQueryEditorService {
 		let docUri: URI = URI.from({ scheme: Schemas.untitled, path: filePath });
 
 		// Create a sql document pane with accoutrements
-		const fileInput = this._editorService.createEditorInput({ forceUntitled: true, resource: docUri, mode: 'sql' }) as UntitledTextEditorInput;
+		const fileInput = await this._editorService.createEditorInput({ forceUntitled: true, resource: docUri, mode: 'sql' }) as UntitledTextEditorInput;
 		const m = await fileInput.resolve();
 		//when associatedResource editor is created it is dirty, this must be set to false to be able to detect changes to the editor.
 		(m as UntitledTextEditorModel).setDirty(false);

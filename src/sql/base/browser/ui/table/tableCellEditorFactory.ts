@@ -6,11 +6,13 @@
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
-import { KeyCode } from 'vs/base/common/keyCodes';
+import { KeyCode, EVENT_KEY_CODE_MAP } from 'vs/base/common/keyCodes';
 import * as DOM from 'vs/base/browser/dom';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
 import { Event } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
+
+const InverseKeyCodeMap: { [k: string]: number } = Object.fromEntries(Object.entries(EVENT_KEY_CODE_MAP).map(([key, value]) => [value, Number(key)]));
 
 export interface ITableCellEditorOptions {
 	valueGetter?: (item: Slick.SlickData, column: Slick.Column<Slick.SlickData>) => string,
@@ -50,7 +52,7 @@ export class TableCellEditorFactory {
 				super();
 				this.init();
 				const keycodesToCapture = [KeyCode.Home, KeyCode.End, KeyCode.UpArrow, KeyCode.DownArrow, KeyCode.LeftArrow, KeyCode.RightArrow];
-				this._keyCaptureList = keycodesToCapture.map(keycode => getCodeForKeyCode(keycode));
+				this._keyCaptureList = keycodesToCapture.map(keycode => InverseKeyCodeMap[keycode]);
 			}
 
 			/**
@@ -131,7 +133,7 @@ export class TableCellEditorFactory {
 				super();
 				this.init();
 				const keycodesToCapture = [KeyCode.Home, KeyCode.End, KeyCode.UpArrow, KeyCode.DownArrow, KeyCode.LeftArrow, KeyCode.RightArrow];
-				this._keyCaptureList = keycodesToCapture.map(keycode => getCodeForKeyCode(keycode));
+				this._keyCaptureList = keycodesToCapture.map(keycode => InverseKeyCodeMap[keycode]);
 			}
 
 			/**
@@ -224,7 +226,3 @@ export class TableCellEditorFactory {
 		return DropdownEditor;
 	}
 }
-function getCodeForKeyCode(keycode: KeyCode): any {
-	throw new Error('Function not implemented.');
-}
-
