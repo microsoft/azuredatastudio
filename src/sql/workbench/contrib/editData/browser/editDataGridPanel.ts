@@ -203,12 +203,13 @@ export class EditDataGridPanel extends GridParentComponent {
 		if (!this.saveActive) {
 			this.saveActive = true;
 			let currentActiveCell = this.table.grid.getActiveCell();
-			this.currentEditCellValue = this.table.grid.getCellEditor().serializeValue();
-			let isDirty = this.table.grid.getCellEditor().isValueChanged() && !(this.originalStringValue === 'NULL' && this.currentEditCellValue === '');
+			let newValue = this.table.grid.getCellEditor().serializeValue();
+			let isDirty = this.table.grid.getCellEditor().isValueChanged() && !(this.originalStringValue === 'NULL' && newValue === '');
 			if (!isDirty) {
 				this.saveActive = false;
 				return Promise.resolve(true);
 			}
+			this.currentEditCellValue = newValue;
 			let currentNewCell = { row: currentActiveCell.row, column: currentActiveCell.cell, isEditable: true, isDirty: isDirty };
 			await this.submitCellTask(currentNewCell);
 			if (this.saveSuccess) {
@@ -974,20 +975,24 @@ export class EditDataGridPanel extends GridParentComponent {
 					scrollLeft: viewport.scrollLeft
 				};
 
-				// Save the cell that is currently being edited.
+				// Save the cell that is currently being edited if it is dirty.
 				// Note: This is only updating the data in tools service, not saving the change to database.
 				// This is added to fix the data inconsistency: the updated value is displayed but won't be saved to the database
 				// when committing the changes for the row.
 				if (this.lastClickedCell.row !== undefined && this.lastClickedCell.column !== undefined && this.lastClickedCell.isEditable) {
-					this.currentEditCellValue = gridObject._grid.getCellEditor().serializeValue();
-					gridObject._grid.getEditorLock().commitCurrentEdit();
-					await this.submitCurrentCellChange(this.lastClickedCell, (result: EditUpdateCellResult) => {
-						this.rowAdded = false;
-						this.setCellDirtyState(this.lastClickedCell.row, this.lastClickedCell.column, result.cell.isDirty);
-						this.setRowDirtyState(this.lastClickedCell.row, result.isRowDirty);
-					}, (error: any) => {
-						this.notificationService.error(error);
-					});
+					let newValue = gridObject._grid.getCellEditor().serializeValue();
+					let isDirty = gridObject._grid.getCellEditor().isValueChanged() && !(this.originalStringValue === 'NULL' && newValue === '');
+					if (isDirty) {
+						this.currentEditCellValue = newValue;
+						gridObject._grid.getEditorLock().commitCurrentEdit();
+						await this.submitCurrentCellChange(this.lastClickedCell, (result: EditUpdateCellResult) => {
+							this.rowAdded = false;
+							this.setCellDirtyState(this.lastClickedCell.row, this.lastClickedCell.column, result.cell.isDirty);
+							this.setRowDirtyState(this.lastClickedCell.row, result.isRowDirty);
+						}, (error: any) => {
+							this.notificationService.error(error);
+						});
+					}
 				}
 			}
 		}
