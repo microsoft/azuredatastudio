@@ -205,6 +205,10 @@ export class EditDataGridPanel extends GridParentComponent {
 			let currentActiveCell = this.table.grid.getActiveCell();
 			this.currentEditCellValue = this.table.grid.getCellEditor().serializeValue();
 			let isDirty = this.table.grid.getCellEditor().isValueChanged() && !(this.originalStringValue === 'NULL' && this.currentEditCellValue === '');
+			if (!isDirty) {
+				this.saveActive = false;
+				return Promise.resolve(true);
+			}
 			let currentNewCell = { row: currentActiveCell.row, column: currentActiveCell.cell, isEditable: true, isDirty: isDirty };
 			await this.submitCellTask(currentNewCell);
 			if (this.saveSuccess) {
@@ -975,6 +979,7 @@ export class EditDataGridPanel extends GridParentComponent {
 				// This is added to fix the data inconsistency: the updated value is displayed but won't be saved to the database
 				// when committing the changes for the row.
 				if (this.lastClickedCell.row !== undefined && this.lastClickedCell.column !== undefined && this.lastClickedCell.isEditable) {
+					this.currentEditCellValue = gridObject._grid.getCellEditor().serializeValue();
 					gridObject._grid.getEditorLock().commitCurrentEdit();
 					await this.submitCurrentCellChange(this.lastClickedCell, (result: EditUpdateCellResult) => {
 						this.rowAdded = false;
