@@ -153,7 +153,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				if (book) {
 					bookTreeItem = book.getNotebook(bookTreeItem.book.contentPath) ?? bookTreeItem;
 				}
-				bookTreeItem.contextValue = getNotebookType(bookTreeItem.book);
+				bookTreeItem.contextValue = bookTreeItem.book.type === BookTreeItemType.Markdown ? BookTreeItemType.Markdown : getNotebookType(bookTreeItem.book);
 				this._onDidChangeTreeData.fire(bookTreeItem);
 			}
 		}
