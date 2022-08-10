@@ -262,6 +262,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 		this.syncSecondaryToCommitBox = this.modelView.modelBuilder.inputBox().withProps({
 			readOnly: false,
 			min: -1,
+			max: 2,
 			inputType: 'number',
 			placeHolder: loc.loading,
 			ariaLabel: loc.syncSecondaryToCommit
@@ -349,8 +350,9 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 			currentCPUSize = '';
 		}
 
-		this.coresRequestBox!.placeHolder = currentCPUSize;
-		this.coresRequestBox!.value = '';
+		this.coresRequestBox!.value = currentCPUSize;
+		this.coresRequestBox!.placeHolder = '';
+
 		this.saveArgs.coresRequest = undefined;
 
 		currentCPUSize = this._miaaModel.config?.spec?.scheduling?.default?.resources?.limits?.cpu;
@@ -361,6 +363,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 
 		this.coresLimitBox!.placeHolder = currentCPUSize;
 		this.coresLimitBox!.value = '';
+
 		this.saveArgs.coresLimit = undefined;
 	}
 
@@ -389,6 +392,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 
 		this.memoryLimitBox!.placeHolder = currentMemSizeConversion!;
 		this.memoryLimitBox!.value = '';
+
 
 		this.saveArgs.memoryLimit = undefined;
 	}

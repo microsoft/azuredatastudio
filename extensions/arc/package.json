@@ -2,7 +2,7 @@
   "name": "arc",
   "displayName": "%arc.displayName%",
   "description": "%arc.description%",
-  "version": "1.4.3",
+  "version": "1.5.0",
   "publisher": "Microsoft",
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/extension.png",
@@ -143,9 +143,7 @@
         "platforms": "*",
         "icon": "./images/data_controller.svg",
         "tags": [
-          "Hybrid",
-          "SQL Server",
-          "PostgreSQL"
+          "Hybrid"
         ],
         "providers": [
           {
@@ -197,26 +195,6 @@
                           "inputWidth": "350px",
                           "variableName": "AZDATA_NB_VAR_ARC_CLUSTER_CONTEXT",
                           "configFileVariableName": "AZDATA_NB_VAR_ARC_CONFIG_FILE",
-                          "enabled": {
-                            "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
-                            "value": "indirect"
-                          }
-                        },
-                        {
-                          "type": "options",
-                          "label": "%arc.data.controller.cluster.config.profile%",
-                          "required": true,
-                          "variableName": "AZDATA_NB_VAR_ARC_PROFILE",
-                          "editable": false,
-                          "options": {
-                            "source": {
-                              "providerId": "azcli.arc.controller.config.profiles",
-                              "loadingText": "%arc.data.controller.cluster.config.profile.loading%",
-                              "loadingCompletedText": "%arc.data.controller.cluster.config.profile.loadingcompleted%"
-                            },
-                            "defaultValue": "azure-arc-aks-default-storage",
-                            "optionsType": "dropdown"
-                          },
                           "enabled": {
                             "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
                             "value": "indirect"
@@ -297,6 +275,23 @@
                           "defaultValue": "arc-dc",
                           "required": true,
                           "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAME"
+                        },
+                        {
+                          "type": "options",
+                          "label": "%arc.data.controller.cluster.config.profile%",
+                          "description": "%arc.data.controller.cluster.config.profile.description%",
+                          "required": true,
+                          "variableName": "AZDATA_NB_VAR_ARC_PROFILE",
+                          "editable": false,
+                          "options": {
+                            "source": {
+                              "providerId": "azcli.arc.controller.config.profiles",
+                              "loadingText": "%arc.data.controller.cluster.config.profile.loading%",
+                              "loadingCompletedText": "%arc.data.controller.cluster.config.profile.loadingcompleted%"
+                            },
+                            "defaultValue": "azure-arc-aks-default-storage",
+                            "optionsType": "dropdown"
+                          }
                         },
                         {
                           "label": "%arc.storage-class.dc.label%",

@@ -149,11 +149,12 @@ export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not 
 export const AdvancedOptionsButton = localize('advancedOptionsButton', 'Advanced...');
 export const AdvancedPublishOptions = localize('advancedPublishOptions', 'Advanced Publish Options');
 export const PublishOptions = localize('publishOptions', 'Publish Options');
+export const ExcludeObjectTypeTab = localize('excludeObjectTypes', 'Exclude Object Types');
 export const ResetButton: string = localize('reset', "Reset");
 export const OptionDescription: string = localize('optionDescription', "Option Description");
 export const OptionName: string = localize('optionName', "Option Name");
-export const OptionInclude: string = localize('Include', "Include");
-export function OptionNotFoundWarningMessage(label: string) { return localize('OptionNotFoundWarningMessage', "label: {0} does not exist in the options value name lookup", label); }
+export const OptionInclude: string = localize('include', "Include");
+export function OptionNotFoundWarningMessage(label: string) { return localize('optionNotFoundWarningMessage', "label: {0} does not exist in the options value name lookup", label); }
 
 // Deploy
 export const SqlServerName = 'SQL server';
@@ -200,8 +201,8 @@ export const eulaAgreementTemplate = localize({ key: 'eulaAgreementTemplate', co
 export function eulaAgreementText(name: string) { return localize({ key: 'eulaAgreementText', comment: ['The placeholders are contents of the line and should not be translated.'] }, "I accept the {0}.", name); }
 export const eulaAgreementTitle = localize('eulaAgreementTitle', "Microsoft SQL Server License Agreement");
 export const edgeEulaAgreementTitle = localize('edgeEulaAgreementTitle', "Microsoft Azure SQL Edge License Agreement");
-export const sqlServerEulaLink = 'https://go.microsoft.com/fwlink/?linkid=857698';
-export const sqlServerEdgeEulaLink = 'https://go.microsoft.com/fwlink/?linkid=2139274';
+export const sqlServerEulaLink = 'https://aka.ms/mcr/osslegalnotice';
+export const sqlServerEdgeEulaLink = 'https://aka.ms/mcr/osslegalnotice';
 export const connectionNamePrefix = 'SQLDbProject';
 export const sqlServerDockerRegistry = 'mcr.microsoft.com';
 export const sqlServerDockerRepository = 'mssql/server';
