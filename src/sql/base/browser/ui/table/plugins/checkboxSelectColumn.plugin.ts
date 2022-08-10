@@ -191,7 +191,7 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 			this._grid.render();
 		}
 
-		//Ensure that the focus stays on current selected checkbox row
+		//Ensure that the focus stays on current selected checkbox cell
 		this._grid.setActiveCell(row, col);
 		if (this._grid.getActiveCellNode()) {
 			this._grid.getActiveCellNode().focus();
