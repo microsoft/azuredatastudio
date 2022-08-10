@@ -275,7 +275,7 @@ export class GenerateArmTemplateDialog {
 
 	private async saveArmTemplate(): Promise<void> {
 		const filePath = await vscode.window.showSaveDialog({
-			defaultUri: vscode.Uri.file(join(utils.getUserHome()!, 'ARMTemplate-' + new Date().toISOString().split('T')[0] + '.json')),
+			defaultUri: vscode.Uri.file(join(utils.getUserHome()!, 'ARMTemplate-' + this._targetType + '-' + new Date().toISOString().split('T')[0] + '.json')),
 			filters: {
 				'JSON File': ['json']
 			}
