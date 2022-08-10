@@ -6079,7 +6079,7 @@ Error: {1}</source>
       <source xml:lang="en">Cancel</source>
     </trans-unit>
     <trans-unit id="serverGroup.colorValue">
-      <source xml:lang="en">Color: {0}</source>
+      <source xml:lang="en">Group Color: {0}</source>
     </trans-unit>
     <trans-unit id="serverGroup.ok">
       <source xml:lang="en">OK</source>
