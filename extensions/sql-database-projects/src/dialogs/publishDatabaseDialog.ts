@@ -13,7 +13,7 @@ import { SqlConnectionDataSource } from '../models/dataSources/sqlConnectionStri
 import { DeploymentOptions } from 'mssql';
 import { IconPathHelper } from '../common/iconHelper';
 import { cssStyles } from '../common/uiConstants';
-import { getAgreementDisplayText, getConnectionName, getDockerBaseImages, getPublishServerName } from './utils';
+import { getAgreementDisplayText, getConnectionName, getDefaultDockerImageWithTag, getDockerBaseImages, getPublishServerName } from './utils';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { Deferred } from '../common/promise';
 import { PublishOptionsDialog } from './publishOptionsDialog';
@@ -247,22 +247,7 @@ export class PublishDatabaseDialog {
 
 			// selecting the image tag isn't currently exposed in the publish dialog, so this adds the tag matching the target platform
 			// to make sure the correct image is used for the project's target platform when the docker base image is SQL Server
-			if (imageInfo?.displayName === constants.SqlServerDockerImageName) {
-				switch (this.project.getProjectTargetVersion()) {
-					case constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlServer2022):
-						dockerBaseImage = `${dockerBaseImage}:2022-latest`;
-						break;
-					case constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlServer2019):
-						dockerBaseImage = `${dockerBaseImage}:2019-latest`;
-						break;
-					case constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlServer2017):
-						dockerBaseImage = `${dockerBaseImage}:2017-latest`;
-						break;
-					default:
-						// nothing - let it be the default image defined as default in the container registry
-						break;
-				}
-			}
+			dockerBaseImage = getDefaultDockerImageWithTag(this.project.getProjectTargetVersion(), dockerBaseImage, imageInfo);
 
 			const settings: IPublishToDockerSettings = {
 				dockerSettings: {
@@ -618,6 +603,16 @@ export class PublishDatabaseDialog {
 
 		const baseImages = getDockerBaseImages(this.project.getProjectTargetVersion());
 		const baseImagesValues: azdataType.CategoryValue[] = baseImages.map(x => { return { name: x.name, displayName: x.displayName }; });
+
+		// add preview string for 2022
+		// TODO: remove after 2022 is GA
+		if (this.project.getProjectTargetVersion() === constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlServer2022)) {
+			const sqlServerImageIndex = baseImagesValues.findIndex(image => image.displayName === constants.SqlServerDockerImageName);
+			if (sqlServerImageIndex >= 0) {
+				baseImagesValues[sqlServerImageIndex].displayName = constants.SqlServerDocker2022ImageName;
+			}
+		}
+
 		this.baseDockerImageDropDown = view.modelBuilder.dropDown().withProps({
 			values: baseImagesValues,
 			ariaLabel: constants.baseDockerImage(name),

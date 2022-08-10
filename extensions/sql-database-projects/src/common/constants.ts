@@ -160,6 +160,7 @@ export function OptionNotFoundWarningMessage(label: string) { return localize('o
 export const SqlServerName = 'SQL server';
 export const AzureSqlServerName = 'Azure SQL server';
 export const SqlServerDockerImageName = 'Microsoft SQL Server';
+export const SqlServerDocker2022ImageName = 'Microsoft SQL Server 2022 (preview)';
 export const AzureSqlDbFullDockerImageName = 'Azure SQL Database emulator Full';
 export const AzureSqlDbLiteDockerImageName = 'Azure SQL Database emulator Lite';
 export const AzureSqlLogicalServerName = 'Azure SQL logical server';
