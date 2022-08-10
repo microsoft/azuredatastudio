@@ -187,7 +187,8 @@ export class EditDataGridPanel extends GridParentComponent {
 	}
 
 	public isGridDirty(): boolean {
-		if (this.dirtyCells.length > 0 || (this.table?.grid?.getCellEditor()?.isValueChanged() && !(this.originalStringValue === 'NULL' && this.currentEditCellValue === ''))) {
+		let currValue = this.table?.grid?.getCellEditor()?.serializeValue();
+		if (this.dirtyCells.length > 0 || (this.table?.grid?.getCellEditor()?.isValueChanged() && !(this.originalStringValue === 'NULL' && (currValue === '' || currValue === undefined)))) {
 			return true;
 		}
 		else {
@@ -204,7 +205,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			this.saveActive = true;
 			let currentActiveCell = this.table.grid.getActiveCell();
 			let newValue = this.table.grid.getCellEditor().serializeValue();
-			let isDirty = this.table.grid.getCellEditor().isValueChanged() && !(this.originalStringValue === 'NULL' && newValue === '');
+			let isDirty = this.table.grid.getCellEditor().isValueChanged() && !(this.originalStringValue === 'NULL' && (newValue === '' || newValue === undefined));
 			if (!isDirty) {
 				this.saveActive = false;
 				return Promise.resolve(true);
@@ -981,7 +982,7 @@ export class EditDataGridPanel extends GridParentComponent {
 				// when committing the changes for the row.
 				if (this.lastClickedCell.row !== undefined && this.lastClickedCell.column !== undefined && this.lastClickedCell.isEditable) {
 					let newValue = gridObject._grid.getCellEditor().serializeValue();
-					let isDirty = gridObject._grid.getCellEditor().isValueChanged() && !(this.originalStringValue === 'NULL' && newValue === '');
+					let isDirty = gridObject._grid.getCellEditor().isValueChanged() && !(this.originalStringValue === 'NULL' && (newValue === '' || newValue === undefined));
 					if (isDirty) {
 						this.currentEditCellValue = newValue;
 						gridObject._grid.getEditorLock().commitCurrentEdit();
