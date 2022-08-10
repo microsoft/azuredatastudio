@@ -15,7 +15,7 @@ import * as path from 'path';
 import * as http from 'http';
 import * as qs from 'qs';
 import { promises as fs } from 'fs';
-import { PublicClientApplication, CryptoProvider, AuthorizationUrlRequest, AuthorizationCodeRequest, AuthenticationResult, TokenCache } from '@azure/msal-node';
+import { PublicClientApplication, CryptoProvider, AuthorizationUrlRequest, AuthorizationCodeRequest, AuthenticationResult } from '@azure/msal-node';
 
 
 const localize = nls.loadMessageBundle();

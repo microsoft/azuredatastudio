@@ -13,6 +13,8 @@ import { AzureAccountProviderMetadata } from 'azurecore';
 import { ProviderSettings } from './interfaces';
 import * as loc from '../localizedConstants';
 import { PublicClientApplication } from '@azure/msal-node';
+import { DataProtectionScope, PersistenceCreator, PersistenceCachePlugin } from '@azure/msal-node-extensions';
+import * as path from 'path';
 
 let localize = nls.loadMessageBundle();
 
@@ -147,13 +149,28 @@ export class AzureAccountProviderService implements vscode.Disposable {
 
 	private async registerAccountProvider(provider: ProviderSettings): Promise<void> {
 		try {
-			const MSAL_CONFIG = {
-				auth: {
-					clientId: provider.metadata.settings.clientId,
-					redirect_uri: provider.metadata.settings.redirectUri
-				}
+			const cachePath = path.join(this._userStoragePath, './cache.json');
+			//TODO: figure out new account name
+			const persistenceConfiguration = {
+				cachePath,
+				dataProtectionScope: DataProtectionScope.CurrentUser,
+				serviceName: 'azuredatastudio',
+				accountName: 'test',
+				usePlaintextFileOnLinux: false,
 			};
-			this.clientApplication = new PublicClientApplication(MSAL_CONFIG);
+			await PersistenceCreator.createPersistence(persistenceConfiguration).then(async (persistence) => {
+				const MSAL_CONFIG = {
+					auth: {
+						clientId: provider.metadata.settings.clientId,
+						redirect_uri: provider.metadata.settings.redirectUri
+					},
+					cache: {
+						cachePlugin: new PersistenceCachePlugin(persistence)
+					}
+				};
+				this.clientApplication = new PublicClientApplication(MSAL_CONFIG);
+
+			});
 			const isSaw: boolean = vscode.env.appName.toLowerCase().indexOf('saw') > 0;
 			let accountProvider = new AzureAccountProvider(provider.metadata as AzureAccountProviderMetadata, this._context, this.clientApplication, this._uriEventHandler, isSaw);
 

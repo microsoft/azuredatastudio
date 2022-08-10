@@ -23,7 +23,7 @@ import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Logger } from '../../utils/Logger';
 import * as qs from 'qs';
 import { AzureAuthError } from './azureAuthError';
-import { AccountInfo, AuthenticationResult, AuthorizationCodeRequest, PublicClientApplication, TokenCache } from '@azure/msal-node';
+import { AuthenticationResult, AuthorizationCodeRequest, AuthorizationUrlRequest, PublicClientApplication } from '@azure/msal-node';
 
 const localize = nls.loadMessageBundle();
 
@@ -134,119 +134,11 @@ export abstract class AzureAuth implements vscode.Disposable {
 		}
 	}
 
-	private getHomeTenant(account: AzureAccount): Tenant {
-		// Home is defined by the API
-		// Lets pick the home tenant - and fall back to commonTenant if they don't exist
-		return account.properties.tenants.find(t => t.tenantCategory === 'Home') ?? account.properties.tenants[0] ?? this.commonTenant;
-	}
-
-	public async refreshAccess(account: AzureAccount): Promise<AzureAccount> {
-		// Deprecated account - delete it.
-		if (account.key.accountVersion !== AzureAuth.ACCOUNT_VERSION) {
-			account.delete = true;
-			return account;
-		}
-		try {
-			const tokenResult = await this.getToken(account.key.accountId);
-			if (!tokenResult) {
-				account.isStale = true;
-				return account;
-			}
-
-			return await this.hydrateAccount(tokenResult, this.getTokenClaims(tokenResult.token));
-		} catch (ex) {
-			if (ex instanceof AzureAuthError) {
-				void vscode.window.showErrorMessage(ex.message);
-				Logger.error(ex.originalMessageAndException);
-			} else {
-				Logger.error(ex);
-			}
-			Logger.error(ex);
-			account.isStale = true;
-			return account;
-		}
-	}
-
 	public async hydrateAccount(token: Token, tokenClaims: TokenClaims): Promise<AzureAccount> {
 		const tenants = await this.getTenants(token.token);
 		const account = this.createAccount(tokenClaims, token.key, tenants);
 		return account;
 	}
-
-	public async getAccountSecurityToken(account: AzureAccount, tenantId: string, azureResource: azdata.AzureResource): Promise<Token | undefined> {
-		if (account.isStale === true) {
-			Logger.error('Account was stale. No tokens being fetched.');
-			return undefined;
-		}
-
-		const resource = this.resources.find(s => s.azureResourceId === azureResource);
-		if (!resource) {
-			Logger.error('Invalid resource, not fetching', azureResource);
-
-			return undefined;
-		}
-
-		const tenant = account.properties.tenants.find(t => t.id === tenantId);
-
-		if (!tenant) {
-			throw new AzureAuthError(localize('azure.tenantNotFound', "Specified tenant with ID '{0}' not found.", tenantId), `Tenant ${tenantId} not found.`, undefined);
-		}
-
-		const cachedTokens = await this.getSavedToken(tenant, resource, account.key);
-
-		// Let's check to see if we can just use the cached tokens to return to the user
-		if (cachedTokens?.accessToken) {
-			let expiry = Number(cachedTokens.expiresOn);
-			if (Number.isNaN(expiry)) {
-				Logger.error('Expiration time was not defined. This is expected on first launch');
-				expiry = 0;
-			}
-			const currentTime = new Date().getTime() / 1000;
-
-			let accessToken = cachedTokens.accessToken;
-			let expiresOn = Number(cachedTokens.expiresOn);
-			const remainingTime = expiry - currentTime;
-			const maxTolerance = 2 * 60; // two minutes
-
-			if (remainingTime < maxTolerance) {
-				const result = await this.refreshToken(tenant, resource, cachedTokens.refreshToken);
-				if (result) {
-					accessToken = result.accessToken;
-					expiresOn = Number(result.expiresOn);
-				}
-			}
-			// Let's just return here.
-			if (accessToken) {
-				return {
-					...accessToken,
-					expiresOn: expiresOn,
-					tokenType: 'Bearer'
-				};
-			}
-		}
-
-		// User didn't have any cached tokens, or the cached tokens weren't useful.
-		// For most users we can use the refresh token from the general microsoft resource to an access token of basically any type of resource we want.
-		const baseTokens = await this.getSavedToken(this.commonTenant, this.metadata.settings.microsoftResource, account.key);
-		if (!baseTokens) {
-			Logger.error('User had no base tokens for the basic resource registered. This should not happen and indicates something went wrong with the authentication cycle');
-			const msg = localize('azure.noBaseToken', 'Something failed with the authentication, or your tokens have been deleted from the system. Please try adding your account to Azure Data Studio again.');
-			account.isStale = true;
-			throw new AzureAuthError(msg, 'No base token found', undefined);
-		}
-		// Let's try to convert the access token type, worst case we'll have to prompt the user to do an interactive authentication.
-		const result = await this.refreshToken(tenant, resource, baseTokens.refreshToken);
-		if (result?.accessToken) {
-			return {
-				...result.accessToken,
-				expiresOn: Number(result.expiresOn),
-				tokenType: 'Bearer'
-			};
-		}
-		return undefined;
-	}
-
-
 
 	protected abstract login(tenant: Tenant, resource: Resource): Promise<{ response: AuthenticationResult, authComplete: Deferred<void, Error> }>;
 
@@ -279,6 +171,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		if (!resource) {
 			console.log('Error: Could not fetch the azure resource.');
 		}
+		const accounts = await cache.getAllAccounts();
 		const account = await cache.getAccountByHomeId(accountId);
 		if (!account) {
 			console.log('Error: Could not fetch account when acquiring token');
@@ -295,8 +188,13 @@ export abstract class AzureAuth implements vscode.Disposable {
 		} catch (e) {
 			console.log('Failed to acquireTokenSilent');
 			console.log(e);
-			// TODO: deal with the other scenario where acquireTokenSilent fails
-			/// this.login(account.tenantId, )
+			// need to create an auth url request
+			const tenant: Tenant = {
+				id: account.tenantId,
+				displayName: ''
+			};
+			const authResult = await this.login(tenant, resource);
+			return authResult.response;
 		}
 		// Need: Account info
 		// Need: Scope
@@ -607,8 +505,8 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 	public async deleteAccountCache(account: azdata.AccountKey): Promise<void> {
 		const tokenCache = this.clientApplication.getTokenCache();
-
-		// tokenCache.removeAccount();
+		let msalAccount = await tokenCache.getAccountByHomeId(account.accountId);
+		await tokenCache.removeAccount(msalAccount);
 	}
 
 	public async dispose() { }

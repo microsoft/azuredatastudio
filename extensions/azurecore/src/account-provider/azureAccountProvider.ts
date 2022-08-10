@@ -91,13 +91,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		const accounts: AzureAccount[] = [];
 		console.log(`Initializing stored accounts ${JSON.stringify(accounts)}`);
 		for (let account of storedAccounts) {
-			const azureAuth = this.getAuthMethod(account);
-			if (!azureAuth) {
-				account.isStale = true;
-				accounts.push(account);
-			} else {
-				accounts.push(await azureAuth.refreshAccess(account));
-			}
+			accounts.push(account);
 		}
 		this.initComplete.resolve();
 		return accounts;
@@ -179,6 +173,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		return pick.azureAuth.startLogin();
 	}
 
+	//TODO: might need to change refresh logic based on new msal library
 	refresh(account: AzureAccount): Thenable<AzureAccount | azdata.PromptFailedResult> {
 		return this._refresh(account);
 	}
