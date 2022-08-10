@@ -14,7 +14,6 @@ import * as utils from '../../api/utils';
 import { logError, TelemetryViews } from '../../telemtery';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 
-
 export class GenerateArmTemplateDialog {
 
 	private static readonly CloseButtonText: string = 'Close';
@@ -282,6 +281,7 @@ export class GenerateArmTemplateDialog {
 		});
 
 		fs.writeFileSync(filePath!.fsPath, this._armTemplateText);
+		void vscode.window.showInformationMessage('Successfully saved ARM template to ' + filePath + '.');
 	}
 
 }
