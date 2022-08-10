@@ -35,7 +35,6 @@ import { Event } from 'vs/base/common/event';
 import { equals } from 'vs/base/common/arrays';
 import * as DOM from 'vs/base/browser/dom';
 import { onUnexpectedError } from 'vs/base/common/errors';
-import * as nls from 'vs/nls';
 
 export class EditDataGridPanel extends GridParentComponent {
 	// The time(in milliseconds) we wait before refreshing the grid.
@@ -215,12 +214,12 @@ export class EditDataGridPanel extends GridParentComponent {
 				}
 				catch (e) {
 					this.saveActive = false;
-					throw new Error(nls.localize('nls.commitFailure', "Commit failed due to overlapping rows: {0}", e));
+					throw new Error('Commit failed due to overlapping rows: ' + e.toString());
 				}
 			}
 			else {
 				this.saveActive = false;
-				throw new Error(nls.localize('nls.saveFailure', "Invalid data entered into cell. Please enter in correct data or revert."));
+				throw new Error('Invalid data entered into cell.');
 			}
 		}
 		// default case.
@@ -970,9 +969,7 @@ export class EditDataGridPanel extends GridParentComponent {
 							this.rowAdded = false;
 							this.setCellDirtyState(this.lastClickedCell.row, this.lastClickedCell.column, result.cell.isDirty);
 							this.setRowDirtyState(this.lastClickedCell.row, result.isRowDirty);
-						}, (error: any) => {
-							this.notificationService.error(error);
-						});
+						}, (error: any) => onUnexpectedError);
 					}
 				}
 			}
