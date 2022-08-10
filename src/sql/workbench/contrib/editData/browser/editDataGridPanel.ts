@@ -69,6 +69,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	private previousSavedCell: { row: number, column: number, isEditable: boolean, isDirty: boolean };
 	// Last cell selected by the user.
 	private lastClickedCell: { row: number, column: number, isEditable: boolean };
+	// value of the cell after a user has finished editing (for submitting).
 	private currentEditCellValue: string;
 	private newRowVisible: boolean;
 	private removingNewRow: boolean;
