@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as should from 'should';
-import { SqlTargetPlatform } from 'sqldbproj';
 import * as constants from '../../common/constants';
+import { SqlTargetPlatform } from 'sqldbproj';
 import { getDefaultDockerImageWithTag, getDockerBaseImages } from '../../dialogs/utils';
 
 describe('Tests to verify dialog utils functions', function (): void {
