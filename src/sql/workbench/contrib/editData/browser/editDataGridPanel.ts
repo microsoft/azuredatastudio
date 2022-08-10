@@ -65,8 +65,9 @@ export class EditDataGridPanel extends GridParentComponent {
 	private firstLoad = true;
 	private enableEditing = true;
 	private noAutoSelectOnRender = false;
-	// Current selected cell state
+	// Last successfully edited cell state (used for reverting purposes).
 	private previousSavedCell: { row: number, column: number, isEditable: boolean, isDirty: boolean };
+	// Last cell selected by the user.
 	private lastClickedCell: { row: number, column: number, isEditable: boolean };
 	private currentEditCellValue: string;
 	private newRowVisible: boolean;
@@ -1043,16 +1044,19 @@ export class EditDataGridPanel extends GridParentComponent {
 	}
 
 	private resetCurrentCell() {
+		// Reset the last successfully edited cell to the first cell.
 		this.previousSavedCell = {
 			row: 0,
 			column: 1,
 			isEditable: false,
 			isDirty: false
 		};
+		// Reset the saved value of the last cell that was finished editing.
 		this.currentEditCellValue = undefined;
 	}
 
 	private setCurrentCell(row: number, column: number) {
+		// Set the last successfully edited cell.
 		this.previousSavedCell = {
 			row: row,
 			column: column,
