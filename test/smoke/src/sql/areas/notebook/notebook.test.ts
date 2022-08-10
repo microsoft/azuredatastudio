@@ -40,9 +40,10 @@ export function setup(opts: minimist.ParsedArgs) {
 			await app.workbench.sqlNotebook.addCellFromPlaceholder('Code');
 			await app.workbench.sqlNotebook.waitForPlaceholderGone();
 
-			const text1: string = 'SEL';
-			await app.workbench.sqlNotebook.waitForTypeInEditor(text1);
-			await app.code.dispatchKeybinding('ctrl+space bar');
+			await app.workbench.sqlNotebook.waitForTypeInEditor('S');
+			await app.workbench.sqlNotebook.waitForTypeInEditor('E');
+			await app.workbench.sqlNotebook.waitForTypeInEditor('L');
+			await app.code.dispatchKeybinding('ctrl+space');
 
 			// check for completion suggestions
 			await app.workbench.sqlNotebook.waitForSuggestionWidget();
@@ -272,7 +273,7 @@ export function setup(opts: minimist.ParsedArgs) {
 			});
 		});
 
-		describe('Cell Toolbar Actions', function () {
+		describe.skip('Cell Toolbar Actions', function () {
 			async function verifyCellToolbarBehavior(app: Application, toolbarAction: () => Promise<void>, selector: string, checkIfGone: boolean = false): Promise<void> {
 				// Run the test for each of the default text editor modes
 				for (let editMode of ['Markdown', 'Split View']) {
@@ -293,6 +294,7 @@ export function setup(opts: minimist.ParsedArgs) {
 					}
 					await app.workbench.quickaccess.runCommand('workbench.action.revertAndCloseActiveEditor');
 				}
+				await app.workbench.settingsEditor.clearUserSettings();
 			}
 
 			async function verifyToolbarKeyboardShortcut(app: Application, keyboardShortcut: string, selector: string) {
@@ -310,6 +312,7 @@ export function setup(opts: minimist.ParsedArgs) {
 					await app.workbench.sqlNotebook.waitForTextCellPreviewContent(testText, selector);
 					await app.workbench.quickaccess.runCommand('workbench.action.revertAndCloseActiveEditor');
 				}
+				await app.workbench.settingsEditor.clearUserSettings();
 			}
 
 			it('can bold selected text', async function () {

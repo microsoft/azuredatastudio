@@ -116,7 +116,7 @@ export class AzTool implements azExt.IAzApi {
 				const argsArray = ['arcdata', 'dc', 'upgrade', '--desired-version', desiredVersion, '--name', name];
 				// Direct mode argument
 				if (resourceGroup) { argsArray.push('--resource-group', resourceGroup); }
-				// Indirect mode arguments
+				// K8s API arguments
 				if (namespace) {
 					argsArray.push('--k8s-namespace', namespace);
 					argsArray.push('--use-k8s');
@@ -180,9 +180,9 @@ export class AzTool implements azExt.IAzApi {
 			delete: (
 				name: string,
 				args: {
-					// Direct mode arguments
+					// ARM API arguments
 					resourceGroup?: string,
-					// Indirect mode arguments
+					// K8s API arguments
 					namespace?: string
 					// Additional arguments
 				},
@@ -200,9 +200,9 @@ export class AzTool implements azExt.IAzApi {
 			},
 			list: (
 				args: {
-					// Direct mode arguments
+					// ARM API arguments
 					resourceGroup?: string,
-					// Indirect mode arguments
+					// K8s API arguments
 					namespace?: string
 					// Additional arguments
 				},
@@ -221,9 +221,9 @@ export class AzTool implements azExt.IAzApi {
 			show: (
 				name: string,
 				args: {
-					// Direct mode arguments
+					// ARM API arguments
 					resourceGroup?: string,
-					// Indirect mode arguments
+					// K8s API arguments
 					namespace?: string
 					// Additional arguments
 				},
@@ -250,9 +250,9 @@ export class AzTool implements azExt.IAzApi {
 					retentionDays?: string,
 					syncSecondaryToCommit?: string
 				},
-				// Direct mode arguments
+				// ARM API arguments
 				resourceGroup?: string,
-				// Indirect mode arguments
+				// K8s API arguments
 				namespace?: string,
 				usek8s?: boolean,
 				// Additional arguments
@@ -265,6 +265,7 @@ export class AzTool implements azExt.IAzApi {
 				if (args.memoryRequest) { argsArray.push('--memory-request', args.memoryRequest); }
 				if (args.noWait) { argsArray.push('--no-wait'); }
 				if (args.retentionDays) { argsArray.push('--retention-days', args.retentionDays); }
+				if (args.syncSecondaryToCommit) { argsArray.push('--sync-secondary-to-commit', args.syncSecondaryToCommit); }
 				if (resourceGroup) { argsArray.push('--resource-group', resourceGroup); }
 				if (namespace) { argsArray.push('--k8s-namespace', namespace); }
 				if (usek8s) { argsArray.push('--use-k8s'); }
@@ -273,9 +274,9 @@ export class AzTool implements azExt.IAzApi {
 			upgrade: (
 				name: string,
 				args: {
-					// Direct mode arguments
+					// ARM API arguments
 					resourceGroup?: string,
-					// Indirect mode arguments
+					// K8s API arguments
 					namespace?: string
 					// Additional arguments
 				},

@@ -42,6 +42,7 @@ const connection: azdata.IConnectionProfile = {
 
 const nodeInfo: azdata.NodeInfo = {
 	nodePath: 'MyServer',
+	objectType: '',
 	nodeStatus: '',
 	nodeSubType: '',
 	nodeType: 'Server',
@@ -51,7 +52,7 @@ const nodeInfo: azdata.NodeInfo = {
 	errorMessage: ''
 };
 
-const treeNode = new TreeNode(NodeType.Database, 'db node', false, '', '', '', undefined, undefined, undefined, undefined);
+const treeNode = new TreeNode(NodeType.Database, '', 'db node', false, '', '', '', undefined, undefined, undefined, undefined);
 const oeActionArgs: ObjectExplorerActionsContext = { connectionProfile: connection, isConnectionNode: false, nodeInfo: nodeInfo };
 
 let instantiationService: IInstantiationService;

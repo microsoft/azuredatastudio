@@ -3,16 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.group-color-options {
-	display: flex;
-	width: 100%;
-}
+export const QUERY_HISTORY_CONFIG_SECTION = 'queryHistory';
+export const CAPTURE_ENABLED_CONFIG_SECTION = 'captureEnabled';
+export const DOUBLE_CLICK_ACTION_CONFIG_SECTION = 'doubleClickAction';
 
-.group-color-options .server-group-color {
-	height: 20px;
-	margin: 0px;
-}
-
-.server-group-dialog {
-	padding: 15px
-}
+export const ITEM_SELECTED_COMMAND_ID = 'queryHistory.itemSelected';

@@ -190,24 +190,25 @@ export class ServerGroupDialog extends Modal {
 		for (let i = 0; i < this.withViewModel.colors.length; i++) {
 			const color = this.withViewModel.colors[i];
 
-			const colorColorBox = new Colorbox(container, {
+			const colorBox = new Colorbox(container, {
 				name: 'server-group-color',
 				class: ['server-group-color'],
-				label: localize('serverGroup.colorValue', "Color: {0}", color),
+				label: localize('serverGroup.colorValue', "Group Color: {0}", color),
+				colorName: color
 			});
 
-			this._register(colorColorBox.onSelect((viaKeyboard) => {
+			this._register(colorBox.onSelect((viaKeyboard) => {
 				this.onSelectGroupColor(color);
 			}));
-			colorColorBox.style({
+			colorBox.style({
 				backgroundColor: Color.fromHex(color)
 			});
 
 			// Theme styler
-			this._register(attachCheckboxStyler(colorColorBox, this._themeService));
+			this._register(attachCheckboxStyler(colorBox, this._themeService));
 
 			// add the new colorbox to the color map
-			this._colorColorBoxesMap[i] = { color, colorbox: colorColorBox };
+			this._colorColorBoxesMap[i] = { color, colorbox: colorBox };
 		}
 	}
 

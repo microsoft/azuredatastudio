@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as azExt from 'az-ext';
 import * as loc from '../../../localizedConstants';
-import { IconPathHelper, cssStyles, ConnectionMode } from '../../../constants';
+import { IconPathHelper, cssStyles } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { convertToGibibyteString } from '../../../common/utils';
 import { MiaaModel } from '../../../models/miaaModel';
@@ -132,23 +132,13 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 						},
 						async (_progress, _token): Promise<void> => {
 							try {
-								if (this._miaaModel.controllerModel.info.connectionMode === ConnectionMode.direct) {
-									await this._azApi.az.sql.miarc.update(
-										this._miaaModel.info.name,
-										this.saveArgs,
-										this._miaaModel.controllerModel.info.resourceGroup,
-										undefined, // Indirect mode argument - namespace
-										undefined, // Indirect mode argument - usek8s
-										this._miaaModel.controllerModel.azAdditionalEnvVars);
-								} else {
-									await this._azApi.az.sql.miarc.update(
-										this._miaaModel.info.name,
-										this.saveArgs,
-										undefined, // Direct mode argument - resourceGroup
-										this._miaaModel.controllerModel.info.namespace,
-										true,
-										this._miaaModel.controllerModel.azAdditionalEnvVars);
-								}
+								await this._azApi.az.sql.miarc.update(
+									this._miaaModel.info.name,
+									this.saveArgs,
+									undefined, // Direct mode argument - resourceGroup
+									this._miaaModel.controllerModel.info.namespace,
+									true,
+									this._miaaModel.controllerModel.azAdditionalEnvVars);
 							} catch (err) {
 								this.saveButton!.enabled = true;
 								throw err;
@@ -272,6 +262,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 		this.syncSecondaryToCommitBox = this.modelView.modelBuilder.inputBox().withProps({
 			readOnly: false,
 			min: -1,
+			max: 2,
 			inputType: 'number',
 			placeHolder: loc.loading,
 			ariaLabel: loc.syncSecondaryToCommit
@@ -359,8 +350,9 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 			currentCPUSize = '';
 		}
 
-		this.coresRequestBox!.placeHolder = currentCPUSize;
-		this.coresRequestBox!.value = '';
+		this.coresRequestBox!.value = currentCPUSize;
+		this.coresRequestBox!.placeHolder = '';
+
 		this.saveArgs.coresRequest = undefined;
 
 		currentCPUSize = this._miaaModel.config?.spec?.scheduling?.default?.resources?.limits?.cpu;
@@ -371,6 +363,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 
 		this.coresLimitBox!.placeHolder = currentCPUSize;
 		this.coresLimitBox!.value = '';
+
 		this.saveArgs.coresLimit = undefined;
 	}
 
@@ -399,6 +392,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 
 		this.memoryLimitBox!.placeHolder = currentMemSizeConversion!;
 		this.memoryLimitBox!.value = '';
+
 
 		this.saveArgs.memoryLimit = undefined;
 	}
