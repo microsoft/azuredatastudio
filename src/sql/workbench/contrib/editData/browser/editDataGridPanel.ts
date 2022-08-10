@@ -37,10 +37,6 @@ import * as DOM from 'vs/base/browser/dom';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import * as nls from 'vs/nls';
 
-// Error constants
-const commitError: string = nls.localize('editDataGridPanel.commitError', "Error: commit has failed due to an error, reverting the row to last known good state.");
-const newRowError: string = nls.localize('editDataGridPanel.newRowError', "Error: invalid value entered in new row, cancelling new row addition, please enter a valid value.");
-
 export class EditDataGridPanel extends GridParentComponent {
 	// The time(in milliseconds) we wait before refreshing the grid.
 	// We use clearTimeout and setTimeout pair to avoid unnecessary refreshes.
@@ -65,8 +61,6 @@ export class EditDataGridPanel extends GridParentComponent {
 	private firstLoad = true;
 	private enableEditing = true;
 	private noAutoSelectOnRender = false;
-	// Last successfully edited cell state (used for reverting purposes).
-	private previousSavedCell: { row: number, column: number, isEditable: boolean, isDirty: boolean };
 	// Last cell selected by the user.
 	private lastClickedCell: { row: number, column: number, isEditable: boolean };
 	// value of the cell after a user has finished editing (for submitting).
@@ -370,7 +364,9 @@ export class EditDataGridPanel extends GridParentComponent {
 	onRevertRow(): () => void {
 		const self = this;
 		return (): void => {
-			self.revertSelectedRow(self.previousSavedCell.row).catch(onUnexpectedError);
+			self.focusCell(this.lastClickedCell.row, self.lastClickedCell.column);
+			self.revertSelectedCell(self.lastClickedCell.row, self.lastClickedCell.column).catch(onUnexpectedError);
+			self.revertSelectedRow(self.lastClickedCell.row).catch(onUnexpectedError);
 		};
 	}
 
@@ -402,15 +398,8 @@ export class EditDataGridPanel extends GridParentComponent {
 				return Promise.resolve();
 			},
 				() => {
-					// Committing failed, need to restore row state to original state.
-					this.notificationService.notify({
-						severity: Severity.Error,
-						message: commitError
-					});
 					this.currentEditCellValue = undefined;
-					return this.revertSelectedRow(this.lastClickedCell.row).then(() => {
-						this.lastClickedCell = { row, column, isEditable };
-					});
+					this.focusCell(this.lastClickedCell.row, this.lastClickedCell.column, true);
 				});
 		}
 		else {
@@ -488,17 +477,11 @@ export class EditDataGridPanel extends GridParentComponent {
 						}
 					},
 						() => {
-							// Committing failed, need to restore row state to original state.
 							this.saveSuccess = false;
-							this.notificationService.notify({
-								severity: Severity.Error,
-								message: commitError
-							});
-							return this.revertSelectedRow(cellToSubmit.row);
+							this.lastClickedCell = { row: cellToSubmit.row, column: cellToSubmit.column, isEditable: true };
 						});
 				}
 				// At the end of a successful cell select, update the currently selected cell
-				this.setCurrentCell(this.lastClickedCell.row, this.lastClickedCell.column);
 				this.cellSubmitInProgress = true;
 				this.updateEnabledState(true);
 				this.cellSubmitInProgress = false;
@@ -640,7 +623,7 @@ export class EditDataGridPanel extends GridParentComponent {
 					reject();
 				}
 				if (this.firstRender) {
-					this.resetCurrentCell();
+					this.currentEditCellValue = undefined;
 					this.lastClickedCell = { row: 0, column: 1, isEditable: true };
 					// Re-enable selecting once table has been loaded properly.
 					this.nativeElement.classList.remove('loadingRows');
@@ -649,7 +632,7 @@ export class EditDataGridPanel extends GridParentComponent {
 					this.setActive();
 				}
 				else if (isManual) {
-					this.resetCurrentCell();
+					this.currentEditCellValue = undefined;
 					this.removingNewRow = false;
 					this.newRowVisible = false;
 					this.dirtyCells = [];
@@ -663,7 +646,6 @@ export class EditDataGridPanel extends GridParentComponent {
 	private setActive() {
 		if (this.firstRender && this.table) {
 			this.table.setActiveCell(0, 1);
-			this.setCurrentCell(0, 1);
 			this.firstRender = false;
 		}
 	}
@@ -755,7 +737,7 @@ export class EditDataGridPanel extends GridParentComponent {
 					return this.commitEditTask().then(() => this.removeRow(currentNewRowIndex, true));
 				}).then(() => {
 					this.newRowVisible = false;
-					this.resetCurrentCell();
+					this.currentEditCellValue = undefined;
 				});
 		} else {
 			try {
@@ -768,7 +750,7 @@ export class EditDataGridPanel extends GridParentComponent {
 				//
 				this.dirtyCells = [];
 				this.setRowDirtyState(rowNumber, false);
-				this.resetCurrentCell();
+				this.currentEditCellValue = undefined;
 				this.dataSet.dataRows.resetWindowsAroundIndex(rowNumber);
 			}
 		}
@@ -783,7 +765,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		// do not refresh the whole dataset as it will move the focus away to the first row.
 		//
 		this.setCellDirtyState(rowNumber, columnNumber, false);
-		this.resetCurrentCell();
+		this.currentEditCellValue = undefined;
 		this.dataSet.dataRows.resetWindowsAroundIndex(rowNumber);
 	}
 
@@ -814,10 +796,6 @@ export class EditDataGridPanel extends GridParentComponent {
 				this.lastClickedCell = { row: cellToAdd.row, column: cellToAdd.column, isEditable: true };
 				if (refreshGrid) {
 					this.rowAdded = false;
-					self.notificationService.notify({
-						severity: Severity.Error,
-						message: newRowError
-					});
 					await this.revertSelectedRow(cellToAdd.row).catch(onUnexpectedError);
 				}
 
@@ -1042,30 +1020,6 @@ export class EditDataGridPanel extends GridParentComponent {
 			}
 		}
 		return false;
-	}
-
-	private resetCurrentCell() {
-		// Reset the last successfully edited cell to the first cell.
-		this.previousSavedCell = {
-			row: 0,
-			column: 1,
-			isEditable: false,
-			isDirty: false
-		};
-		// Reset the saved value of the last cell that was finished editing.
-		this.currentEditCellValue = undefined;
-	}
-
-	private setCurrentCell(row: number, column: number) {
-		// Set the last successfully edited cell.
-		this.previousSavedCell = {
-			row: row,
-			column: column,
-			isEditable: this.dataSet.columnDefinitions[column]
-				? this.dataSet.columnDefinitions[column].isEditable
-				: false,
-			isDirty: false
-		};
 	}
 
 	private createNewTable(): void {
