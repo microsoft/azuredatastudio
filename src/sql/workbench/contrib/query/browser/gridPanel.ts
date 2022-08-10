@@ -51,6 +51,7 @@ import { IQueryModelService } from 'sql/workbench/services/query/common/queryMod
 import { FilterButtonWidth, HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { HybridDataProvider } from 'sql/base/browser/ui/table/hybridDataProvider';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { alert, status } from 'vs/base/browser/ui/aria/aria';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -122,10 +123,19 @@ export class GridPanel extends Disposable {
 		this.queryRunnerDisposables.add(this.runner.onResultSet(this.onResultSet, this));
 		this.queryRunnerDisposables.add(this.runner.onResultSetUpdate(this.updateResultSet, this));
 		this.queryRunnerDisposables.add(this.runner.onQueryStart(() => {
+			status(localize('query.QueryExecutionStarted', "Query execution started."));
 			if (this.state) {
 				this.state.tableStates = [];
 			}
 			this.reset();
+		}));
+		this.queryRunnerDisposables.add(this.runner.onQueryEnd(() => {
+			status(localize('query.QueryExecutionEnded', "Query execution completed."));
+		}));
+		this.queryRunnerDisposables.add(this.runner.onMessage((messages) => {
+			if (messages?.find(m => m.isError)) {
+				alert(localize('query.QueryErrorOccured', "Error occured while executing the query."));
+			}
 		}));
 		this.addResultSet(this.runner.batchSets.reduce<ResultSetSummary[]>((p, e) => {
 			if (this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.streaming) {
