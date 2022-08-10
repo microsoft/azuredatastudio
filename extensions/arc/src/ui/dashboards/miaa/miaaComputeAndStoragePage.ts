@@ -23,6 +23,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 
 	private discardButton?: azdata.ButtonComponent;
 	private saveButton?: azdata.ButtonComponent;
+	private alreadySaved: boolean = true;
 
 	private saveArgs: {
 		coresLimit?: string,
@@ -142,6 +143,9 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 							} catch (err) {
 								this.saveButton!.enabled = true;
 								throw err;
+							} finally {
+								this.alreadySaved = true;
+								this.saveButton!.enabled = false;
 							}
 							try {
 								await this._miaaModel.refresh();
@@ -176,6 +180,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.pageDiscardFailed(error));
 				} finally {
+					this.alreadySaved = true;
 					this.saveButton!.enabled = false;
 				}
 			}));
@@ -191,7 +196,6 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 			readOnly: false,
 			min: 1,
 			inputType: 'number',
-			placeHolder: loc.loading,
 			ariaLabel: loc.coresLimit
 		}).component();
 
@@ -209,7 +213,6 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 			readOnly: false,
 			min: 1,
 			inputType: 'number',
-			placeHolder: loc.loading,
 			ariaLabel: loc.coresRequest
 		}).component();
 
@@ -227,7 +230,6 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 			readOnly: false,
 			min: 2,
 			inputType: 'number',
-			placeHolder: loc.loading,
 			ariaLabel: loc.memoryLimit
 		}).component();
 
@@ -245,7 +247,6 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 			readOnly: false,
 			min: 2,
 			inputType: 'number',
-			placeHolder: loc.loading,
 			ariaLabel: loc.memoryRequest
 		}).component();
 
@@ -264,7 +265,6 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 			min: -1,
 			max: 2,
 			inputType: 'number',
-			placeHolder: loc.loading,
 			ariaLabel: loc.syncSecondaryToCommit
 		}).component();
 
@@ -324,8 +324,8 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 	}
 
 	private handleOnTextChanged(component: azdata.InputBoxComponent): boolean {
-		if ((!component.placeHolder)) {
-			// if there is no text found in the inputbox component return false
+		if ((!component.value) || this.alreadySaved) {
+			this.alreadySaved = false;
 			return false;
 		} else if ((!component.valid)) {
 			// if value given by user is not valid enable discard button for user
@@ -351,7 +351,6 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 		}
 
 		this.coresRequestBox!.value = currentCPUSize;
-		this.coresRequestBox!.placeHolder = '';
 
 		this.saveArgs.coresRequest = undefined;
 
@@ -362,7 +361,6 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 		}
 
 		this.coresLimitBox!.value = currentCPUSize;
-		this.coresLimitBox!.placeHolder = '';
 
 		this.saveArgs.coresLimit = undefined;
 	}
@@ -378,7 +376,6 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 		}
 
 		this.memoryRequestBox!.value = currentMemSizeConversion!;
-		this.memoryRequestBox!.placeHolder = '';
 
 		this.saveArgs.memoryRequest = undefined;
 
@@ -391,7 +388,6 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 		}
 
 		this.memoryLimitBox!.value = currentMemSizeConversion!;
-		this.memoryLimitBox!.placeHolder = '';
 
 
 		this.saveArgs.memoryLimit = undefined;
@@ -401,7 +397,6 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 		let currentSyncSecondaryToCommit = this._miaaModel.config?.spec?.syncSecondaryToCommit;
 
 		this.syncSecondaryToCommitBox!.value = currentSyncSecondaryToCommit!;
-		this.syncSecondaryToCommitBox!.placeHolder = '';
 
 		this.saveArgs.syncSecondaryToCommit = undefined;
 	}
