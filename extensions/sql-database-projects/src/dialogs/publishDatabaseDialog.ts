@@ -17,7 +17,7 @@ import { getAgreementDisplayText, getConnectionName, getDockerBaseImages, getPub
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { Deferred } from '../common/promise';
 import { PublishOptionsDialog } from './publishOptionsDialog';
-import { ISqlProjectPublishSettings, IPublishToDockerSettings } from 'sqldbproj';
+import { ISqlProjectPublishSettings, IPublishToDockerSettings, SqlTargetPlatform } from 'sqldbproj';
 
 interface DataSourceDropdownValue extends azdataType.CategoryValue {
 	dataSource: SqlConnectionDataSource;
@@ -241,9 +241,29 @@ export class PublishDatabaseDialog {
 			utils.getAzdataApi()!.window.closeDialog(this.dialog);
 			await this.publish!(this.project, settings);
 		} else {
-			const dockerBaseImage = this.getBaseDockerImageName();
+			let dockerBaseImage = this.getBaseDockerImageName();
 			const baseImages = getDockerBaseImages(this.project.getProjectTargetVersion());
 			const imageInfo = baseImages.find(x => x.name === dockerBaseImage);
+
+			// selecting the image tag isn't currently exposed in the publish dialog, so this adds the tag matching the target platform
+			// to make sure the correct image is used for the project's target platform when the docker base image is SQL Server
+			if (imageInfo?.displayName === constants.SqlServerDockerImageName) {
+				switch (this.project.getProjectTargetVersion()) {
+					case constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlServer2022):
+						dockerBaseImage = `${dockerBaseImage}:2022-latest`;
+						break;
+					case constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlServer2019):
+						dockerBaseImage = `${dockerBaseImage}:2019-latest`;
+						break;
+					case constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlServer2017):
+						dockerBaseImage = `${dockerBaseImage}:2017-latest`;
+						break;
+					default:
+						// nothing - let it be the default image defined as default in the container registry
+						break;
+				}
+			}
+
 			const settings: IPublishToDockerSettings = {
 				dockerSettings: {
 					dbName: this.targetDatabaseName,
