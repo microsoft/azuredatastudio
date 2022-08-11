@@ -867,6 +867,7 @@ export async function getBlobLastBackupFileNamesValues(lastFileNames: azureResou
 }
 
 export function getCorrectArmEndpointForAccount(account: AzureAccount): string {
+	// Looks up the correct ARM endpoint for the given account, as defined in extensions\azurecore\src\account-provider\providerSettings.ts
 	switch (account.properties.providerSettings.id) {
 		case 'azure_publicCloud':
 			return 'https://management.azure.com';
