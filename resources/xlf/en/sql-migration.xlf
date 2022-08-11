@@ -252,6 +252,12 @@ This may take some time.</source>
     <trans-unit id="sql.migration.create.new">
       <source xml:lang="en">Create new</source>
     </trans-unit>
+    <trans-unit id="sql.migration.create.new.migration.service">
+      <source xml:lang="en">Create new migration service</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.create.new.resource.group">
+      <source xml:lang="en">Create new resource group</source>
+    </trans-unit>
     <trans-unit id="sql.migration.creating.rg.loading">
       <source xml:lang="en">Creating resource group</source>
     </trans-unit>
