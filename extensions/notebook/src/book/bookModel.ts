@@ -146,7 +146,7 @@ export class BookModel {
 			root: this.pinnedNotebookDetails?.bookPath ?? pathDetails.dir,
 			tableOfContents: { sections: undefined },
 			page: { sections: undefined },
-			type: this.pinnedNotebookDetails?.bookPath ? BookTreeItemType.BookNotebook : BookTreeItemType.Notebook,
+			type: BookTreeItemType.Notebook,
 			treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Expanded,
 			isUntitled: this.openAsUntitled,
 		},

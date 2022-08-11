@@ -149,12 +149,11 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		if (bookPathToUpdate) {
 			let pinStatusChanged = await this.bookPinManager.unpinNotebook(bookTreeItem);
 			if (pinStatusChanged) {
-				let book = bookTreeItem.book.type === BookTreeItemType.BookNotebook ? this.books.find(book => book.bookPath === bookTreeItem.book.root) : this.books.find(book => book.bookPath === bookTreeItem.book.contentPath);
-				if (book) {
-					bookTreeItem = book.getNotebook(bookTreeItem.book.contentPath) ?? bookTreeItem;
+				if (this.currentBook) {
+					bookTreeItem = this.currentBook.getNotebook(bookTreeItem.book.contentPath) ?? this.books.find(book => book.bookPath === bookTreeItem.book.contentPath).getNotebook(bookTreeItem.book.contentPath);
 				}
 				bookTreeItem.contextValue = bookTreeItem.book.type === BookTreeItemType.Markdown ? BookTreeItemType.Markdown : getNotebookType(bookTreeItem.book);
-				this._onDidChangeTreeData.fire(bookTreeItem);
+				this._onDidChangeTreeData.fire(await this.getParent(bookTreeItem));
 			}
 		}
 	}
@@ -697,9 +696,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	getChildren(element?: BookTreeItem): Thenable<BookTreeItem[]> {
 		if (element) {
-			const book = this.books.find(book => book.bookPath === element.book.root);
-			if (element.sections && book) {
-				return Promise.resolve(book.getSections(element));
+			//const book = this.books.find(book => book.bookPath === element.book.root);
+			if (element.sections && this.currentBook) {
+				return Promise.resolve(this.currentBook.getSections(element));
 			} else {
 				return Promise.resolve([]);
 			}

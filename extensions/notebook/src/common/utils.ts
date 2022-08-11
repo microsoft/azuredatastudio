@@ -445,7 +445,6 @@ export function isBookItemPinned(notebookPath: string): boolean {
 export enum BookTreeItemType {
 	Book = 'Book',
 	Notebook = 'Notebook',
-	BookNotebook = 'BookNotebook',
 	Markdown = 'Markdown',
 	ExternalLink = 'ExternalLink',
 	providedBook = 'providedBook',
