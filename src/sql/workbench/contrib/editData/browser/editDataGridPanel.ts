@@ -390,6 +390,7 @@ export class EditDataGridPanel extends GridParentComponent {
 
 		let isNullChange = (this.endStringValue === 'NULL' && this.lastStringBeforeSelect === '') || (this.endStringValue === '' && this.lastStringBeforeSelect === 'NULL');
 
+		// Only commit if we are changing from a dirty row and the cell last edited did not change from before (the cell submit function will handle the commit in that case).
 		if (this.isRowDirty(this.lastClickedCell.row) && row !== this.lastClickedCell.row && !(!isNullChange && (this.lastStringBeforeSelect !== this.endStringValue))) {
 			this.commitEditTask().then(() => {
 				this.currentEditCellValue = undefined;
@@ -397,6 +398,7 @@ export class EditDataGridPanel extends GridParentComponent {
 				return Promise.resolve();
 			},
 				() => {
+					// Commit failed, don't move from the current cell.
 					this.currentEditCellValue = undefined;
 					this.focusCell(this.lastClickedCell.row, this.lastClickedCell.column, true);
 				});
@@ -449,6 +451,10 @@ export class EditDataGridPanel extends GridParentComponent {
 		this.table.grid.setOptions(newOptions, true);
 	}
 
+	/**
+	 * Main function to handle submitting cell data and committing them (when row has changed immediately after cell submission).
+	 * @param cellToSubmit cell to submit and commit in case we change row.
+	 */
 	private async submitCellTask(cellToSubmit): Promise<void> {
 		let self = this;
 		this.saveSuccess = true;
@@ -773,6 +779,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		this.dataSet.dataRows.resetWindowsAroundIndex(rowNumber);
 	}
 
+	// Function for submitting data of a cell, also adds a new row in case of data being added in the placeholder row.
 	private async submitCurrentCellChange(cellToAdd, resultHandler, errorHandler): Promise<void> {
 		let self = this;
 		let refreshGrid = false;
@@ -1288,11 +1295,12 @@ export class EditDataGridPanel extends GridParentComponent {
 			this.openContextMenu(e, this.dataSet.batchId, this.dataSet.resultId, 0);
 		});
 		this.table.grid.onBeforeAppendCell.subscribe((e, args) => {
-			// Since we need to return a string here, we are using calling a function instead of event emitter like other events handlers
+			// Since we need to return a string here, we are calling a function instead of event emitter like other events handlers
 			return this.onBeforeAppendCell ? this.onBeforeAppendCell(args.row, args.cell) : undefined;
 		});
 	}
 
+	// Get the value of the last string of the previous cell when moving to a different cell, and the value of the string of the cell just clicked.
 	onBeforeEditCell(event: Slick.OnBeforeEditCellEventArgs<any>): void {
 		this.lastStringBeforeSelect = this.originalStringValue;
 		this.logService.debug('onBeforeEditCell called with grid: ' + event.grid + ' row: ' + event.row
@@ -1303,6 +1311,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		this.originalStringValue = getString;
 	}
 
+	// Get the value of the cell after finishing editing.
 	onBeforeCellEditorDestroy(event: Slick.OnBeforeCellEditorDestroyEventArgs<any>): void {
 		this.endStringValue = event.editor.serializeValue();
 	}
