@@ -371,3 +371,15 @@ export function getTimeStamp(dateTime: string | undefined): number {
 export function checkISOTimeString(dateTime: string): boolean {
 	return /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d.*Z/.test(dateTime);
 }
+
+/**
+ * Parses out the SQL MIAA list from the raw json output
+ * @param raw The raw version output from az sql mi-arc list
+ */
+export function parseMiaaList(raw: string): string | undefined {
+	// The output of az sql mi-arc list looks like:
+	// 'Found 1 Arc-enabled SQL Managed Instances in namespace testns1\r\n[\r\n  {\r\n    "name": "sqlinstance1",\r\n    "primaryEndpoint": "20.236.10.81,1422",\r\n    "replicas": "3/3",\r\n    "state": "Ready"\r\n  }\r\n]'
+	const lines = raw.split('\n');
+	lines.splice(0, 1);
+	return lines.join('\n');
+}
