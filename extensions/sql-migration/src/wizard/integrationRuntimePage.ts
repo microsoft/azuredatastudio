@@ -218,6 +218,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 
 		const createNewMigrationService = this._view.modelBuilder.hyperlink().withProps({
 			label: constants.CREATE_NEW,
+			ariaLabel: constants.CREATE_NEW_MIGRATION_SERVICE,
 			url: '',
 			CSSStyles: {
 				...styles.BODY_CSS
