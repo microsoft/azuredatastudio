@@ -885,6 +885,7 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 		this._dropdown.enabled = true;
 
 		// Set the strict selection to false so that it is allowed to not to have a database selected to begin with.
+		// e.g. MySQL allows server level query.
 		if (!databaseName) {
 			this._dropdown.options.strictSelection = false;
 		}
