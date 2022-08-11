@@ -498,9 +498,9 @@ export class EditDataGridPanel extends GridParentComponent {
 				this.updateEnabledState(true);
 				this.cellSubmitInProgress = false;
 				this.focusCell(cellToSubmit.row, cellToSubmit.column, true);
-				// Cannot insert text for existing row as that causes an infinite loop scenario, this is for new row only.
-				// During a new row, the renderGridDataRowsRange function is disabled as it also results in an infinite loop.
-				// To address the case after the new row is reverted/removed, we insert the text here instead.
+				// Cannot insert text for existing row here as that causes an infinite loop, this is for new row only.
+				// Existing row text is handled in renderGridDataRowsRange.
+				// During a new row, the renderGridDataRowsRange version of the text insert is disabled for the same reasons.
 				if (this.isNullRow(cellToSubmit.row) && this.lastEnteredString) {
 					document.execCommand('selectAll');
 					document.execCommand('delete');
@@ -1250,8 +1250,8 @@ export class EditDataGridPanel extends GridParentComponent {
 			this.focusCell(this.lastClickedCell.row, this.lastClickedCell.column);
 			// Restore the last entered string from the user in case an invalid edit was happened, to allow users to keep their string.
 			// very brief flickering may occur as this function is called a couple of times after an invalid cell is reverted.
-			// Skip null row as this is already handled with the cell submit function.
-			// The insert must be set there to get change to register after new row removal/revert.
+			// Skip null row as this is already handled with the cell submit function (also to prevent infinite loop).
+			// The insert must be set there for null row to get the reverted string change to register after new row removal/revert.
 			if (!this.isNullRow(this.lastClickedCell.row) && this.lastEnteredString) {
 				document.execCommand('selectAll');
 				document.execCommand('delete');
