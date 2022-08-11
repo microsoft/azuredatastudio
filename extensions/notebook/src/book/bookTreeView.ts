@@ -149,11 +149,12 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		if (bookPathToUpdate) {
 			let pinStatusChanged = await this.bookPinManager.unpinNotebook(bookTreeItem);
 			if (pinStatusChanged) {
-				if (this.currentBook) {
-					bookTreeItem = this.currentBook.getNotebook(bookTreeItem.book.contentPath) ?? this.books.find(book => book.bookPath === bookTreeItem.book.contentPath).getNotebook(bookTreeItem.book.contentPath);
-				}
 				bookTreeItem.contextValue = bookTreeItem.book.type === BookTreeItemType.Markdown ? BookTreeItemType.Markdown : getNotebookType(bookTreeItem.book);
-				this._onDidChangeTreeData.fire(await this.getParent(bookTreeItem));
+				let itemOpenedInBookTreeView = this.currentBook?.getNotebook(bookTreeItem.book.contentPath) ?? this.books.find(book => book.bookPath === bookTreeItem.book.contentPath)?.getNotebook(bookTreeItem.book.contentPath);
+				if (itemOpenedInBookTreeView) {
+					itemOpenedInBookTreeView.contextValue = bookTreeItem.contextValue;
+					this._onDidChangeTreeData.fire(itemOpenedInBookTreeView.parent);
+				}
 			}
 		}
 	}
