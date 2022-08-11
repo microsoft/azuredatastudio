@@ -513,7 +513,7 @@ export async function getBlobs(account: AzureAccount, subscription: azureResourc
 	return result;
 }
 
-export function getCorrectArmEndpointForAccount(account: AzureAccount): string {
+function getCorrectArmEndpointForAccount(account: AzureAccount): string {
 	const provider = providerSettings.find(provider => {
 		return account.properties.providerSettings.id === provider.metadata.id;
 	});
