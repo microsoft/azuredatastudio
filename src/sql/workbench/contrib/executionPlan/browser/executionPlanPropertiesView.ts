@@ -13,7 +13,6 @@ import { textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { ExecutionPlanPropertiesViewBase, PropertiesSortType } from 'sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { LongTextPopupViewer } from 'sql/workbench/contrib/executionPlan/browser/LongTextPopupViewer';
 
 export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase {
 	// Div that holds the name of the element selected
@@ -104,7 +103,6 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 				name: localize('nodePropertyViewNameValueColumnHeader', "Value"),
 				field: 'value',
 				width: 250,
-				editor: LongTextPopupViewer,
 				headerCssClass: 'prop-table-header',
 				formatter: textFormatter
 			}
