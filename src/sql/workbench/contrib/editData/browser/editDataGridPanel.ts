@@ -393,13 +393,11 @@ export class EditDataGridPanel extends GridParentComponent {
 		// Only commit if we are changing from a dirty row and the cell last edited did not change from before (the cell submit function will handle the commit in that case).
 		if (this.isRowDirty(this.lastClickedCell.row) && row !== this.lastClickedCell.row && !(!isNullChange && (this.lastStringBeforeSelect !== this.endStringValue))) {
 			this.commitEditTask().then(() => {
-				this.currentEditCellValue = undefined;
 				this.lastClickedCell = { row, column, isEditable };
 				return Promise.resolve();
 			},
 				() => {
 					// Commit failed, don't move from the current cell.
-					this.currentEditCellValue = undefined;
 					this.focusCell(this.lastClickedCell.row, this.lastClickedCell.column, true);
 				});
 		}
