@@ -62,6 +62,14 @@
         <source xml:lang="en">Add Item</source>
         <target state="translated">Добавить элемент</target>
       </trans-unit>
+      <trans-unit id="advancedOptionsButton">
+        <source xml:lang="en">Advanced...</source>
+        <target state="translated">Дополнительно…</target>
+      </trans-unit>
+      <trans-unit id="advancedPublishOptions">
+        <source xml:lang="en">Advanced Publish Options</source>
+        <target state="translated">Дополнительные параметры публикации</target>
+      </trans-unit>
       <trans-unit id="appSettingPrompt">
         <source xml:lang="en">Would you like to update Azure Function local.settings.json with the new connection string?</source>
         <target state="translated">Обновить функцию Azure local.settings.json с помощью новой строки подключения?</target>
@@ -528,6 +536,10 @@
         <source xml:lang="en">Exclude</source>
         <target state="translated">Исключить</target>
       </trans-unit>
+      <trans-unit id="excludeObjectTypes">
+        <source xml:lang="en">Exclude Object Types</source>
+        <target state="translated">Исключить типы объектов</target>
+      </trans-unit>
       <trans-unit id="externalStream">
         <source xml:lang="en">External Stream</source>
         <target state="translated">Внешний поток</target>
@@ -611,6 +623,10 @@
       <trans-unit id="importElements">
         <source xml:lang="en">Import Elements</source>
         <target state="translated">Импорт элементов</target>
+      </trans-unit>
+      <trans-unit id="include">
+        <source xml:lang="en">Include</source>
+        <target state="translated">Включить</target>
       </trans-unit>
       <trans-unit id="installGlobally">
         <source xml:lang="en">Install globally</source>
@@ -768,6 +784,18 @@
         <source xml:lang="en">Open License Agreement</source>
         <target state="translated">Открыть лицензионное соглашение</target>
       </trans-unit>
+      <trans-unit id="optionDescription">
+        <source xml:lang="en">Option Description</source>
+        <target state="translated">Описание параметра</target>
+      </trans-unit>
+      <trans-unit id="optionName">
+        <source xml:lang="en">Option Name</source>
+        <target state="translated">Имя параметра</target>
+      </trans-unit>
+      <trans-unit id="optionNotFoundWarningMessage">
+        <source xml:lang="en">label: {0} does not exist in the options value name lookup</source>
+        <target state="translated">метка: {0} не существует в поиске имени значения параметров</target>
+      </trans-unit>
       <trans-unit id="outsideFolderPath">
         <source xml:lang="en">Items with absolute path outside project folder are not supported. Please make sure the paths in the project file are relative to project folder.</source>
         <target state="translated">Элементы с абсолютным путем вне папки проекта не поддерживаются. Убедитесь, что пути в файле проекта указаны относительно папки проекта.</target>
@@ -872,6 +900,10 @@
         <source xml:lang="en">Publish project</source>
         <target state="translated">Опубликовать проект</target>
       </trans-unit>
+      <trans-unit id="publishOptions">
+        <source xml:lang="en">Publish Options</source>
+        <target state="translated">Параметры публикации</target>
+      </trans-unit>
       <trans-unit id="publishProjectSucceed">
         <source xml:lang="en">Database project published successfully</source>
         <target state="translated">Проект базы данных успешно опубликован</target>
@@ -927,6 +959,10 @@
       <trans-unit id="reloadValuesFromProjectButtonTitle">
         <source xml:lang="en">Reload values from project</source>
         <target state="translated">Перезагрузить значения из проекта</target>
+      </trans-unit>
+      <trans-unit id="reset">
+        <source xml:lang="en">Reset</source>
+        <target state="translated">Сбросить</target>
       </trans-unit>
       <trans-unit id="resetAllVars">
         <source xml:lang="en">Reset all variables</source>
@@ -1316,6 +1352,10 @@
         <source xml:lang="en">Close Database Project</source>
         <target state="translated">Закрыть проект базы данных</target>
       </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.collapseProjectNodes">
+        <source xml:lang="en">Whether project nodes start collapsed</source>
+        <target state="translated">Будут ли узлы проекта свернуты</target>
+      </trans-unit>
       <trans-unit id="sqlDatabaseProjects.convertToSdkStyleProject">
         <source xml:lang="en">Convert to SDK-style project</source>
         <target state="translated">Преобразовать в проект в стиле SDK</target>
@@ -1407,6 +1447,10 @@
       <trans-unit id="sqlDatabaseProjects.openContainingFolder">
         <source xml:lang="en">Open Containing Folder</source>
         <target state="translated">Открыть содержащую папку</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.openInDesigner">
+        <source xml:lang="en">Open in Designer</source>
+        <target state="translated">Открыть в конструкторе</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.properties">
         <source xml:lang="en">Properties</source>

@@ -1565,32 +1565,32 @@ Sélectionnez un autre abonnement contenant au moins un serveur</target>
         <target state="translated">Paramètres de stockage</target>
       </trans-unit>
       <trans-unit id="deployCluster.controllerDataStorageClaimSize">
-        <source xml:lang="en">Controller's data storage claim size</source>
-        <target state="translated">Taille de la revendication de stockage de données du contrôleur</target>
+        <source xml:lang="en">Controller's data storage claim size (Gigabytes)</source>
+        <target state="translated">Taille de revendication de stockage des données du contrôleur (gigaoctets)</target>
       </trans-unit>
       <trans-unit id="deployCluster.controllerDataStorageClass">
         <source xml:lang="en">Controller's data storage class</source>
         <target state="translated">Classe de stockage de données du contrôleur</target>
       </trans-unit>
       <trans-unit id="deployCluster.controllerLogsStorageClaimSize">
-        <source xml:lang="en">Controller's logs storage claim size</source>
-        <target state="translated">Taille de la revendication de stockage des journaux du contrôleur</target>
+        <source xml:lang="en">Controller's logs storage claim size (Gigabytes)</source>
+        <target state="translated">Taille de revendication de stockage des journaux du contrôleur (gigaoctets)</target>
       </trans-unit>
       <trans-unit id="deployCluster.controllerLogsStorageClass">
         <source xml:lang="en">Controller's logs storage class</source>
         <target state="translated">Classe de stockage des journaux du contrôleur</target>
       </trans-unit>
       <trans-unit id="deployCluster.dataPoolDataStorageClaimSize">
-        <source xml:lang="en">Data pool's data storage claim size</source>
-        <target state="translated">Taille de la revendication de stockage de données du pool de données</target>
+        <source xml:lang="en">Data pool's data storage claim size (Gigabytes)</source>
+        <target state="translated">Taille des revendications de stockage de données du pool de données (gigaoctets)</target>
       </trans-unit>
       <trans-unit id="deployCluster.dataPoolDataStorageClass">
         <source xml:lang="en">Data pool's data storage class</source>
         <target state="translated">Classe de stockage de données du pool de données</target>
       </trans-unit>
       <trans-unit id="deployCluster.dataPoolLogsStorageClaimSize">
-        <source xml:lang="en">Data pool's logs storage claim size</source>
-        <target state="translated">Taille de la revendication de stockage des journaux du pool de données</target>
+        <source xml:lang="en">Data pool's logs storage claim size (Gigabytes)</source>
+        <target state="translated">Taille de revendication de stockage des journaux du pool de données (gigaoctets)</target>
       </trans-unit>
       <trans-unit id="deployCluster.dataPoolLogsStorageClass">
         <source xml:lang="en">Data pool's logs storage class</source>
@@ -1601,16 +1601,16 @@ Sélectionnez un autre abonnement contenant au moins un serveur</target>
         <target state="translated">Paramètres de mise à l'échelle</target>
       </trans-unit>
       <trans-unit id="deployCluster.sqlServerMasterDataStorageClaimSize">
-        <source xml:lang="en">SQL Server master's data storage claim size</source>
-        <target state="translated">Taille de la revendication de stockage de données de l'instance maître SQL Server</target>
+        <source xml:lang="en">SQL Server master's data storage claim size (Gigabytes)</source>
+        <target state="translated">Taille de la demande de stockage de données du serveur principal SQL (gigaoctets)</target>
       </trans-unit>
       <trans-unit id="deployCluster.sqlServerMasterDataStorageClass">
         <source xml:lang="en">SQL Server master's data storage class</source>
         <target state="translated">Classe de stockage de données de l'instance maître SQL Server</target>
       </trans-unit>
       <trans-unit id="deployCluster.sqlServerMasterLogsStorageClaimSize">
-        <source xml:lang="en">SQL Server master's logs storage claim size</source>
-        <target state="translated">Taille de la revendication de stockage des journaux de l'instance maître SQL Server</target>
+        <source xml:lang="en">SQL Server master's logs storage claim size (Gigabytes)</source>
+        <target state="translated">Taille de la demande de stockage des journaux du serveur principal SQL (gigaoctets)</target>
       </trans-unit>
       <trans-unit id="deployCluster.sqlServerMasterLogsStorageClass">
         <source xml:lang="en">SQL Server master's logs storage class</source>
@@ -1621,16 +1621,16 @@ Sélectionnez un autre abonnement contenant au moins un serveur</target>
         <target state="translated">Utiliser les paramètres du contrôleur</target>
       </trans-unit>
       <trans-unit id="deployCluster.storagePoolDataStorageClaimSize">
-        <source xml:lang="en">Storage pool's data storage claim size</source>
-        <target state="translated">Taille de la revendication de stockage de données du pool de stockage</target>
+        <source xml:lang="en">Storage pool's data storage claim size (Gigabytes)</source>
+        <target state="translated">Taille de revendication de stockage de données du pool de stockage (gigaoctets)</target>
       </trans-unit>
       <trans-unit id="deployCluster.storagePoolDataStorageClass">
         <source xml:lang="en">Storage pool's data storage class</source>
         <target state="translated">Classe de stockage de données du pool de stockage</target>
       </trans-unit>
       <trans-unit id="deployCluster.storagePoolLogsStorageClaimSize">
-        <source xml:lang="en">Storage pool's logs storage claim size</source>
-        <target state="translated">Taille de la revendication de stockage des journaux du pool de stockage</target>
+        <source xml:lang="en">Storage pool's logs storage claim size (Gigabytes)</source>
+        <target state="translated">Taille de revendication de stockage des journaux du pool de stockage (gigaoctets)</target>
       </trans-unit>
       <trans-unit id="deployCluster.storagePoolLogsStorageClass">
         <source xml:lang="en">Storage pool's logs storage class</source>
@@ -2250,6 +2250,10 @@ Sélectionnez un autre abonnement contenant au moins un serveur</target>
         <source xml:lang="en">Deploy SQL Server 2019 container images</source>
         <target state="translated">Déployer des images conteneur SQL Server 2019</target>
       </trans-unit>
+      <trans-unit id="docker-sql-2022-title">
+        <source xml:lang="en">Deploy SQL Server 2022 Preview container images</source>
+        <target state="translated">Déployer des images conteneur Préversion de SQL Server 2022</target>
+      </trans-unit>
       <trans-unit id="docker-sql-password-field">
         <source xml:lang="en">SQL Server password</source>
         <target state="translated">Mot de passe SQL Server</target>
@@ -2297,6 +2301,10 @@ Sélectionnez un autre abonnement contenant au moins un serveur</target>
       <trans-unit id="sql-2019-display-name">
         <source xml:lang="en">SQL Server 2019</source>
         <target state="translated">SQL Server 2019</target>
+      </trans-unit>
+      <trans-unit id="sql-2022-display-name">
+        <source xml:lang="en">SQL Server 2022 Preview</source>
+        <target state="translated">Préversion de SQL Server 2022</target>
       </trans-unit>
       <trans-unit id="sql-azure-database-server-display-name">
         <source xml:lang="en">Database Server</source>
