@@ -269,7 +269,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	async addNotebookToPinnedView(bookItem: BookTreeItem): Promise<void> {
 		let notebookPath: string = bookItem.book.contentPath;
 		if (notebookPath) {
-			let notebookDetails: IPinnedNotebook = bookItem.book.tableOfContents.sections ? { bookPath: bookItem.book.root, notebookPath: notebookPath, title: bookItem.book.title } : { notebookPath: notebookPath };
+			let notebookDetails: IPinnedNotebook = getNotebookType(bookItem.book) === BookTreeItemType.savedBookNotebook ? { bookPath: bookItem.book.root, notebookPath: notebookPath, title: bookItem.book.title } : { notebookPath: notebookPath };
 			await this.createAndAddBookModel(notebookPath, true, notebookDetails);
 		}
 	}
@@ -696,7 +696,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	getChildren(element?: BookTreeItem): Thenable<BookTreeItem[]> {
 		if (element) {
-			//const book = this.books.find(book => book.bookPath === element.book.root);
 			if (element.sections && this.currentBook) {
 				return Promise.resolve(this.currentBook.getSections(element));
 			} else {
