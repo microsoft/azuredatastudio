@@ -66,7 +66,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 			this.authMappings.set(AzureAuthType.AuthCodeGrant, new AzureAuthCodeGrant(metadata, context, uriEventHandler, this.clientApplication));
 		}
 		if (deviceCodeMethod === true || this.forceDeviceCode) {
-			this.authMappings.set(AzureAuthType.DeviceCode, new AzureDeviceCode(metadata, context, uriEventHandler));
+			this.authMappings.set(AzureAuthType.DeviceCode, new AzureDeviceCode(metadata, context, uriEventHandler, this.clientApplication));
 		}
 	}
 

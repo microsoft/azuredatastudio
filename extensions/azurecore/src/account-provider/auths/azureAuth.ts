@@ -23,7 +23,7 @@ import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Logger } from '../../utils/Logger';
 import * as qs from 'qs';
 import { AzureAuthError } from './azureAuthError';
-import { AuthenticationResult, AuthorizationCodeRequest, AuthorizationUrlRequest, PublicClientApplication } from '@azure/msal-node';
+import { AuthenticationResult, AuthorizationCodeRequest, PublicClientApplication } from '@azure/msal-node';
 
 const localize = nls.loadMessageBundle();
 
