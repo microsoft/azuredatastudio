@@ -352,7 +352,7 @@ export class ExecutionPlanComparisonEditorView {
 
 						if (this.activeBottomPlanDiagram) {
 							const element = this.activeBottomPlanDiagram.getElementById(`element-` + similarNode.matchingNodesId[0]);
-							if (similarNode.matchingNodesId.find(m => this.activeBottomPlanDiagram.getSelectedElement().id === `element-` + m) !== undefined) {
+							if (this.activeBottomPlanDiagram.getSelectedElement() && similarNode.matchingNodesId.find(m => this.activeBottomPlanDiagram.getSelectedElement().id === `element-` + m) !== undefined) {
 								return;
 							}
 
@@ -392,7 +392,7 @@ export class ExecutionPlanComparisonEditorView {
 
 						if (this.activeTopPlanDiagram) {
 							const element = this.activeTopPlanDiagram.getElementById(`element-` + similarNode.matchingNodesId[0]);
-							if (similarNode.matchingNodesId.find(m => this.activeTopPlanDiagram.getSelectedElement().id === `element-` + m) !== undefined) {
+							if (this.activeTopPlanDiagram.getSelectedElement() && similarNode.matchingNodesId.find(m => this.activeTopPlanDiagram.getSelectedElement().id === `element-` + m) !== undefined) {
 								return;
 							}
 
