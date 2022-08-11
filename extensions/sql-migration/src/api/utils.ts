@@ -8,7 +8,8 @@ import { IconPathHelper } from '../constants/iconPathHelper';
 import { MigrationStatus, ProvisioningState } from '../models/migrationLocalStorage';
 import * as crypto from 'crypto';
 import * as azure from './azure';
-import { azureResource, Tenant } from 'azurecore';
+import { AzureAccount, azureResource, AzureRestResponse, HttpRequestMethod, IExtension, Tenant, } from 'azurecore';
+// import providerSettings from '../../../azurecore/src/account-provider/providerSettings';
 import * as constants from '../constants/strings';
 import { logError, TelemetryViews } from '../telemtery';
 import { AdsMigrationStatus } from '../dashboard/tabBase';
@@ -864,4 +865,31 @@ export async function getBlobLastBackupFileNamesValues(lastFileNames: azureResou
 		];
 	}
 	return lastFileNamesValues;
+}
+
+// a wrapper for IExtension.makeAzureRestRequest() which automatically populates the correct host depending on which cloud the account is in
+export async function makeAzureRestRequest(api: IExtension, account: AzureAccount, subscription: azureResource.AzureResourceSubscription, path: string, requestType: HttpRequestMethod, requestBody?: any, ignoreErrors?: boolean, zzzzzzz?: string, requestHeaders?: { [key: string]: string }): Promise<AzureRestResponse> {
+	let host;
+	switch (account.properties.providerSettings.id) {
+		case 'azure_publicCloud':
+			host = 'https://management.azure.com';
+			break;
+		case 'azure_usGovtCloud':
+			host = 'https://management.usgovcloudapi.net';
+			break;
+		case 'azure_usNatCloud':
+			host = 'https://management.core.eaglex.ic.gov';
+			break;
+		case 'azure_germanyCloud':
+			host = 'https://management.microsoftazure.de';
+			break;
+		case 'azure_chinaCloud':
+			host = 'https://management.chinacloudapi.cn';
+			break;
+		default:
+			host = 'https://management.azure.com';
+			break;
+	}
+
+	return await api.makeAzureRestRequest(account, subscription, path, requestType, requestBody, ignoreErrors, host);
 }
