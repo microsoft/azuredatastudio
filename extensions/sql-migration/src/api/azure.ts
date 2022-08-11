@@ -211,8 +211,7 @@ export async function createSqlMigrationService(account: azdata.Account, subscri
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
 	}
-	const asyncUrl = response.response.headers['azure-asyncoperation']
-		.replace('https://management.azure.com/', '');
+	const asyncUrl = response.response.headers['azure-asyncoperation'];
 	const asyncPath = asyncUrl.replace((new URL(asyncUrl)).origin + '/', '');	// path is everything after the hostname, e.g. the 'test' part of 'https://management.azure.com/test'
 
 	const maxRetry = 24;

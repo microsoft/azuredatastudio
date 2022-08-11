@@ -514,6 +514,7 @@ export async function getBlobs(account: AzureAccount, subscription: azureResourc
 }
 
 function getCorrectArmEndpointForAccount(account: AzureAccount): string {
+	// Looks up the correct ARM endpoint for the given account, as defined in azurecore\src\account-provider\providerSettings.ts
 	const provider = providerSettings.find(provider => {
 		return account.properties.providerSettings.id === provider.metadata.id;
 	});
