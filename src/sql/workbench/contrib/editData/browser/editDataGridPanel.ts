@@ -462,20 +462,25 @@ export class EditDataGridPanel extends GridParentComponent {
 				self.setCellDirtyState(cellToSubmit.row, cellToSubmit.column, result.cell.isDirty);
 				self.setRowDirtyState(cellToSubmit.row, result.isRowDirty);
 				let lastColumnCheck = this.isLastColumn(cellToSubmit.column);
+				// Commit indicating we have pressed enter on a null row.
 				let nullCommit = this.rowAdded && this.isNullRow(cellToSubmit.row + 1) && this.lastClickedCell.row === cellToSubmit.row && this.lastClickedCell.column === cellToSubmit.column;
 				this.rowAdded = false;
+				// Commit indicating regular enter press on existing row.
 				let regularCommit = cellToSubmit.row !== this.lastClickedCell.row && this.isRowDirty(cellToSubmit.row);
 				if (regularCommit || nullCommit) {
 					await this.commitEditTask().then(() => {
+						// Mark the first cell of the placeholder row to be focused.
 						if (nullCommit && lastColumnCheck && this.tabPressedAtLastColumn) {
 							this.lastClickedCell = { row: cellToSubmit.row + 1, column: 1, isEditable: true };
 							this.tabPressedAtLastColumn = false;
 						}
+						// Mark the cell directly below (the newly created placeholder row) to be focused.
 						else if (nullCommit && this.lastClickedCell.row === cellToSubmit.row && this.lastClickedCell.column === cellToSubmit.column) {
 							this.lastClickedCell = { row: cellToSubmit.row + 1, column: cellToSubmit.column, isEditable: true };
 						}
 					},
 						() => {
+							// Don't change position, commit has failed
 							this.saveSuccess = false;
 							this.lastClickedCell = { row: cellToSubmit.row, column: cellToSubmit.column, isEditable: true };
 						});
@@ -757,7 +762,7 @@ export class EditDataGridPanel extends GridParentComponent {
 
 	// Private Helper Functions ////////////////////////////////////////////////////////////////////////////
 	private async revertSelectedCell(rowNumber: number, columnNumber: number): Promise<void> {
-		// Perform a revert row operation
+		// Perform a revert cell operation on a specified cell
 		await this.dataService.revertCell(rowNumber, columnNumber - 1);
 		// The operation may fail if there were no changes sent to the service to revert,
 		// so clear any existing client-side edit and refresh on-screen data
@@ -872,7 +877,6 @@ export class EditDataGridPanel extends GridParentComponent {
 	}
 
 	// Adds an extra row to the end of slickgrid (just for rendering purposes)
-	// Then sets the focused call afterwards
 	private addRow(row: number): Thenable<void> {
 		let self = this;
 		this.noAutoSelectOnRender = true;
@@ -901,7 +905,6 @@ export class EditDataGridPanel extends GridParentComponent {
 
 
 	// removes a row from the end of slickgrid (just for rendering purposes)
-	// Then sets the focused call afterwards
 	private removeRow(row: number, withRefresh: boolean): Thenable<void> {
 		// Removing the new row
 		this.dataSet.totalRows--;
