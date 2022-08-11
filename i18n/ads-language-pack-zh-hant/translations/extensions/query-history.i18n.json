@@ -9,10 +9,19 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
+			"queryHistory.captureEnabledDesc": "是否啟用了查詢歷史記錄擷取。若未啟用，將不會擷取已經執行的查詢。",
 			"queryHistory.clear": "清除所有歷史記錄",
+			"queryHistory.delete": "刪除",
 			"queryHistory.description": "檢視及執行先前執行的查詢",
+			"queryHistory.disableCapture": "暫停查詢歷史記錄擷取",
 			"queryHistory.displayName": "查詢歷史記錄",
-			"queryHistory.toggleCapture": "切換查詢歷史記錄擷取"
+			"queryHistory.doubleClickAction": "按兩下歷程記錄項目時採取的動作",
+			"queryHistory.doubleClickAction.open": "使用來自所選歷程記錄項目的查詢，開啟新的已中斷連線的編輯器",
+			"queryHistory.doubleClickAction.run": "從選取的歷程記錄項目開啟具有查詢和連線的新連接編輯器，並自動執行查詢",
+			"queryHistory.enableCapture": "開始查詢歷史記錄擷取",
+			"queryHistory.noEntries": "沒有可顯示的查詢",
+			"queryHistory.open": "開啟查詢",
+			"queryHistory.run": "執行查詢"
 		}
 	}
 }
