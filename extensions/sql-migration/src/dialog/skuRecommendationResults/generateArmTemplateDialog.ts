@@ -219,7 +219,7 @@ export class GenerateArmTemplateDialog {
 	private async updateArmTemplateStatus(succeeded: boolean): Promise<void> {
 		await this._generateArmTemplateContainer.updateCssStyles({ 'display': 'none' });
 
-		if (succeeded){
+		if (succeeded) {
 			this._armTemplateText = fs.readFileSync(this.model._provisioningScriptResult.result.provisioningScriptFilePath).toString();
 			this._armTemplateTextBox.value = this._armTemplateText;
 			await this._saveArmTemplateContainer.updateCssStyles({ 'display': 'inline' });
@@ -230,7 +230,7 @@ export class GenerateArmTemplateDialog {
 	}
 
 	public async openDialog(dialogName?: string, recommendations?: mssql.SkuRecommendationResult) {
-		if (!this._isOpen){
+		if (!this._isOpen) {
 			this._isOpen = true;
 
 			this.dialog = azdata.window.createModelViewDialog('Generate ARM template', 'ViewArmTemplateDialog', 'medium');
