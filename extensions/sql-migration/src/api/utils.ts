@@ -8,7 +8,7 @@ import { IconPathHelper } from '../constants/iconPathHelper';
 import { MigrationStatus, ProvisioningState } from '../models/migrationLocalStorage';
 import * as crypto from 'crypto';
 import * as azure from './azure';
-import { AzureAccount, azureResource, Tenant } from 'azurecore';
+import { azureResource, Tenant } from 'azurecore';
 import * as constants from '../constants/strings';
 import { logError, TelemetryViews } from '../telemtery';
 import { AdsMigrationStatus } from '../dashboard/tabBase';
@@ -864,22 +864,4 @@ export async function getBlobLastBackupFileNamesValues(lastFileNames: azureResou
 		];
 	}
 	return lastFileNamesValues;
-}
-
-export function getCorrectArmEndpointForAccount(account: AzureAccount): string {
-	// Looks up the correct ARM endpoint for the given account, as defined in extensions\azurecore\src\account-provider\providerSettings.ts
-	switch (account.properties.providerSettings.id) {
-		case 'azure_publicCloud':
-			return 'https://management.azure.com';
-		case 'azure_usGovtCloud':
-			return 'https://management.usgovcloudapi.net';
-		case 'azure_usNatCloud':
-			return 'https://management.core.eaglex.ic.gov';
-		case 'azure_germanyCloud':
-			return 'https://management.microsoftazure.de';
-		case 'azure_chinaCloud':
-			return 'https://management.chinacloudapi.cn';
-		default:
-			throw new Error('unknown cloud');
-	}
 }
