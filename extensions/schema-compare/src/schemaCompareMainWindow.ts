@@ -1126,6 +1126,20 @@ export class SchemaCompareMainWindow {
 		if (ownerUri) {
 			endpointInfo = endpoint;
 			endpointInfo.ownerUri = ownerUri;
+		} else if (endpoint.endpointType === mssql.SchemaCompareEndpointType.Project) {
+			endpointInfo = {
+				endpointType: endpoint.endpointType,
+				packageFilePath: '',
+				serverDisplayName: '',
+				serverName: '',
+				databaseName: '',
+				ownerUri: '',
+				connectionDetails: undefined,
+				projectFilePath: endpoint.projectFilePath,
+				targetScripts: [],
+				dataSchemaProvider: '',
+				folderStructure: 'Schema/Object Type'			// TODO: Pick this automatically from the scmp file, after issue #20332 is resolved (check dsp as well)
+			};
 		} else {
 			// need to do this instead of just setting it to the endpoint because some fields are null which will cause an error when sending the compare request
 			endpointInfo = {
@@ -1135,7 +1149,11 @@ export class SchemaCompareMainWindow {
 				databaseName: '',
 				ownerUri: '',
 				packageFilePath: endpoint.packageFilePath,
-				connectionDetails: undefined
+				connectionDetails: undefined,
+				projectFilePath: '',
+				targetScripts: [],
+				dataSchemaProvider: '',
+				folderStructure: ''
 			};
 		}
 		return endpointInfo;
