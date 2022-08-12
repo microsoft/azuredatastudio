@@ -3468,6 +3468,10 @@
   </file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase" source-language="en" datatype="plaintext" target-language="de">
     <body>
+      <trans-unit id="ep.topOperationsCopyTableData">
+        <source xml:lang="en">Copy</source>
+        <target state="new">Copy</target>
+      </trans-unit>
       <trans-unit id="executionPlanPropertyViewClose">
         <source xml:lang="en">Close</source>
         <target state="translated">Schließen</target>
@@ -8525,7 +8529,7 @@ Fehler: {1}</target>
       </trans-unit>
       <trans-unit id="serverGroup.colorValue">
         <source xml:lang="en">Group Color: {0}</source>
-        <target state="new">Group Color: {0}</target>
+        <target state="translated">Gruppenfarbe: {0}</target>
       </trans-unit>
       <trans-unit id="serverGroup.ok">
         <source xml:lang="en">OK</source>

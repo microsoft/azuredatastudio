@@ -3468,6 +3468,10 @@
   </file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase" source-language="en" datatype="plaintext" target-language="es">
     <body>
+      <trans-unit id="ep.topOperationsCopyTableData">
+        <source xml:lang="en">Copy</source>
+        <target state="new">Copy</target>
+      </trans-unit>
       <trans-unit id="executionPlanPropertyViewClose">
         <source xml:lang="en">Close</source>
         <target state="translated">Cerrar</target>
@@ -5734,15 +5738,15 @@ Error: {1}</target>
     <body>
       <trans-unit id="query.QueryErrorOccured">
         <source xml:lang="en">Error occured while executing the query.</source>
-        <target state="new">Error occured while executing the query.</target>
+        <target state="translated">Error al ejecutar la consulta.</target>
       </trans-unit>
       <trans-unit id="query.QueryExecutionEnded">
         <source xml:lang="en">Query execution completed.</source>
-        <target state="new">Query execution completed.</target>
+        <target state="translated">Ejecución de la consulta completada.</target>
       </trans-unit>
       <trans-unit id="query.QueryExecutionStarted">
         <source xml:lang="en">Query execution started.</source>
-        <target state="new">Query execution started.</target>
+        <target state="translated">Se inició la ejecución de la consulta.</target>
       </trans-unit>
       <trans-unit id="resultsGrid">
         <source xml:lang="en">Results grid</source>

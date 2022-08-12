@@ -3468,6 +3468,10 @@
   </file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase" source-language="en" datatype="plaintext" target-language="ru">
     <body>
+      <trans-unit id="ep.topOperationsCopyTableData">
+        <source xml:lang="en">Copy</source>
+        <target state="new">Copy</target>
+      </trans-unit>
       <trans-unit id="executionPlanPropertyViewClose">
         <source xml:lang="en">Close</source>
         <target state="translated">Закрыть</target>
@@ -5734,15 +5738,15 @@ Error: {1}</source>
     <body>
       <trans-unit id="query.QueryErrorOccured">
         <source xml:lang="en">Error occured while executing the query.</source>
-        <target state="new">Error occured while executing the query.</target>
+        <target state="translated">При выполнении запроса произошла ошибка.</target>
       </trans-unit>
       <trans-unit id="query.QueryExecutionEnded">
         <source xml:lang="en">Query execution completed.</source>
-        <target state="new">Query execution completed.</target>
+        <target state="translated">Выполнение задачи завершено.</target>
       </trans-unit>
       <trans-unit id="query.QueryExecutionStarted">
         <source xml:lang="en">Query execution started.</source>
-        <target state="new">Query execution started.</target>
+        <target state="translated">Выполнение запроса запущено.</target>
       </trans-unit>
       <trans-unit id="resultsGrid">
         <source xml:lang="en">Results grid</source>
@@ -8525,7 +8529,7 @@ Error: {1}</source>
       </trans-unit>
       <trans-unit id="serverGroup.colorValue">
         <source xml:lang="en">Group Color: {0}</source>
-        <target state="new">Group Color: {0}</target>
+        <target state="translated">Цвет группы: {0}</target>
       </trans-unit>
       <trans-unit id="serverGroup.ok">
         <source xml:lang="en">OK</source>
