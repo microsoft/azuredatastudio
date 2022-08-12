@@ -973,10 +973,11 @@ export class EditDataGridPanel extends GridParentComponent {
 					if (isDirty) {
 						this.currentEditCellValue = newValue;
 						gridObject._grid.getEditorLock().commitCurrentEdit();
-						await this.submitCurrentCellChange(this.lastClickedCell, (result: EditUpdateCellResult) => {
+						await this.submitCurrentCellChange(this.lastClickedCell, async (result: EditUpdateCellResult) => {
 							this.rowAdded = false;
 							this.setCellDirtyState(this.lastClickedCell.row, this.lastClickedCell.column, result.cell.isDirty);
 							this.setRowDirtyState(this.lastClickedCell.row, result.isRowDirty);
+							await this.commitEditTask();
 						}, (error: any) => onUnexpectedError);
 					}
 				}
