@@ -10254,7 +10254,7 @@
 			"enable remote": "この拡張機能を {0} で有効にするには、Azure Data Studio を再度読み込んでください。",
 			"enableWindowsBackgroundUpdates": "Windows で新しい Azure Data Studio バージョンをバックグラウンドでダウンロードしてインストールできるようにする",
 			"extensionsPolicy": "拡張機能をダウンロードするためのセキュリティ ポリシーを設定します。",
-			"incompatible": "Azure Data Studio '{1}' と互換性がないため、拡張機能 '{0}' をインストールできません。",
+			"incompatible": "Azure Data Studio '{2}' と互換性がないため、拡張機能 '{1}' のバージョン '{0}' をインストールできません。拡張機能をインストールするには、Azure Data Studio {3} に更新してください。",
 			"installExtensionCompletedAndReloadRequired": "拡張機能 {0} のインストールが完了しました。これを有効にするには、Azure Data Studio を再度読み込んでください。",
 			"maxMemoryForLargeFilesMB": "大きなファイルを開こうとすると再起動後に Azure Data Studio に対して使用できるメモリを制御します。コマンド ラインで '--max-memory=NEWSIZE' を指定する場合と同じ効果があります。",
 			"miNewNotebook": "新しいノートブック(&N)",
@@ -10423,8 +10423,7 @@
 			"navigationProviderRequired": "有効な providerId を持つ NavigationProvider をこのメソッドに渡す必要があります"
 		},
 		"sql/workbench/api/common/notebooks/vscodeExecuteProvider": {
-			"errorStartBeforeReady": "セッションを開始できません。マネージャーがまだ初期化されていません",
-			"notebookMultipleRequestsError": "コード セルを実行できません。別のセルが現在実行されています。"
+			"errorStartBeforeReady": "セッションを開始できません。マネージャーがまだ初期化されていません"
 		},
 		"sql/workbench/browser/actions": {
 			"clearSavedAccounts": "保存されているすべてのアカウントのクリア",
@@ -10440,13 +10439,14 @@
 			"showConnectDialogOnStartup": "起動時に接続ダイアログを表示"
 		},
 		"sql/workbench/browser/designer/designer": {
+			"designer.actions": "その他の操作",
 			"designer.defaultRemoveRowConfirmationMessage": "この行を削除しますか?",
 			"designer.generalGroupName": "全般",
 			"designer.issueCountAlert": "{0} 件の検証の問題が見つかりました。",
 			"designer.issuesTabTitle": "問題 ({0} 件)",
 			"designer.loadingDesigner": "デザイナーの読み込み中...",
 			"designer.loadingDesignerCompleted": "デザイナーが読み込まれます",
-			"designer.moveRowText": "行の移動",
+			"designer.moveRowText": "移動",
 			"designer.processing": "処理中...",
 			"designer.processingChanges": "変更の処理中...",
 			"designer.processingChangesCompleted": "変更が処理されました",
@@ -10493,8 +10493,7 @@
 			"resourceViewerInput.resourceViewer": "リソース ビューアー"
 		},
 		"sql/workbench/browser/editor/tableDesigner/tableDesignerInput": {
-			"tableDesigner.OperationInProgressWarning": "別の操作が進行中の間は、操作を実行できません。",
-			"tableDesigner.newTable": "新しいテーブル"
+			"tableDesigner.OperationInProgressWarning": "別の操作が進行中の間は、操作を実行できません。"
 		},
 		"sql/workbench/browser/modal/modal": {
 			"closeMessage": "閉じる",
@@ -11140,18 +11139,25 @@
 			"epCompare.FileFilterDescription": "実行プラン ファイル",
 			"epCompare.comparePropertiesAction": "プロパティ",
 			"epCompare.comparisonProgess": "比較したプランの類似点を読み込んでいます",
+			"epCompare.searchNodeAction": "ノードの検索",
+			"epCompare.searchNodeActionAddedPlan": "ノードの検索 - プランの追加",
 			"epCompare.toggleOrientation": "方向の切り替え",
 			"epCompare.zoomInAction": "拡大",
 			"epCompare.zoomOutAction": "縮小",
 			"epCompare.zoomReset": "ズームのリセット",
-			"epCompare.zoomToFit": "ウィンドウのサイズに合わせて拡大"
+			"epCompare.zoomToFit": "ウィンドウのサイズに合わせて拡大",
+			"queryDropdownPrefix": "{1} のクエリ {0}: {2}"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView": {
 			"executionPlanComparisonPropertiesBottomOperation": "下位の操作: {0}",
+			"executionPlanComparisonPropertiesLeftOperation": "左操作: {0}",
+			"executionPlanComparisonPropertiesRightOperation": "右の操作: {0}",
 			"executionPlanComparisonPropertiesTopOperation": "上位の操作: {0}",
 			"executionPlanPropertiesEdgeOperationName": "Edge",
 			"nodePropertyViewNameNameColumnHeader": "名前",
 			"nodePropertyViewNameValueColumnBottomHeader": "値 (下位プラン)",
+			"nodePropertyViewNameValueColumnLeftHeader": "値 (左プラン)",
+			"nodePropertyViewNameValueColumnRightHeader": "値 (右プラン)",
 			"nodePropertyViewNameValueColumnTopHeader": "値 (上位プラン)"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanContribution": {
@@ -11172,9 +11178,10 @@
 			"nodePropertyViewNameValueColumnHeader": "値"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase": {
+			"ep.topOperationsCopyTableData": "Copy",
 			"executionPlanPropertyViewClose": "閉じる",
 			"executionPlanPropertyViewSortAlphabetically": "アルファベット順",
-			"executionPlanPropertyViewSortByDisplayOrder": "項目別",
+			"executionPlanPropertyViewSortByDisplayOrder": "重要度",
 			"executionPlanPropertyViewSortReverseAlphabetically": "逆アルファベット順",
 			"nodePropertyViewTitle": "プロパティ"
 		},
@@ -11194,6 +11201,7 @@
 			"executionPlanPropertiesActionLabel": "プロパティ",
 			"executionPlanSavePlanXML": "プラン ファイルの保存",
 			"executionPlanSearchNodeAction": "ノードの検索",
+			"executionPlanTopOperationsAction": "上位操作",
 			"executionPlanZoomInActionLabel": "拡大",
 			"executionPlanZoomOutActionLabel": "縮小",
 			"openQueryAction": "クエリを開く"
@@ -11451,9 +11459,9 @@
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/output.component": {
 			"componentRenderError": "コンポーネントのレンダリング エラー: {0}",
-			"noMimeTypeFound": "出力用の {0} レンダラーが見つかりませんでした。次の MIME の種類があります: {1}",
-			"noSelectorFound": "セレクター {0} のコンポーネントが見つかりませんでした",
-			"safe": "安全 "
+			"noMimeTypeFound": "出力用のレンダラーが見つかりませんでした。次の MIME の種類があります: {0}。",
+			"noSafeMimeTypeFound": "出力用の安全なレンダラーが見つかりませんでした。次の MIME の種類があります: {0}",
+			"noSelectorFound": "セレクター {0} のコンポーネントが見つかりませんでした"
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/placeholderCell.component": {
 			"clickOn": "次をクリック",
@@ -11683,7 +11691,7 @@
 			"plotlyError": "Plotly グラフの表示エラー: {0}"
 		},
 		"sql/workbench/contrib/objectExplorer/browser/serverTreeView": {
-			"serverTree.addConnection": "接続の追加",
+			"serverTree.newConnection": "新しい接続",
 			"servers.noConnections": "接続が見つかりません。"
 		},
 		"sql/workbench/contrib/objectExplorer/common/serverGroup.contribution": {
@@ -11780,14 +11788,19 @@
 			"status.query.flavor": "SQL 言語のフレーバー"
 		},
 		"sql/workbench/contrib/query/browser/gridPanel": {
+			"query.QueryErrorOccured": "Error occured while executing the query.",
+			"query.QueryExecutionEnded": "Query execution completed.",
+			"query.QueryExecutionStarted": "Query execution started.",
 			"resultsGrid": "結果グリッド",
 			"resultsGrid.maxRowCountExceeded": "フィルター/並べ替えに使用する行の最大数を超えました。更新するには、[ユーザーの設定] に移動し、設定を変更します: 'queryEditor.results.inMemoryDataProcessingThreshold'",
 			"xmlShowplan": "XML プラン表示"
 		},
 		"sql/workbench/contrib/query/browser/keyboardQueryActions": {
+			"ToggleActualPlanKeyboardAction": "実際の実行プランを有効または無効にする",
 			"ToggleFocusBetweenQueryEditorAndResultsAction": "クエリと結果の間のフォーカスの切り替え",
 			"cancelQueryKeyboardAction": "クエリのキャンセル",
 			"copyQueryWithResultsKeyboardAction": "結果を含むクエリのコピー",
+			"estimatedExecutionPlanKeyboardAction": "推定実行プランの表示",
 			"focusOnCurrentQueryKeyboardAction": "現在のクエリにフォーカスを移動する",
 			"parseSyntaxLabel": "クエリの解析",
 			"queryActions.notConnected": "サーバーに接続してください",
@@ -11797,7 +11810,6 @@
 			"queryShortcutNoEditor": "ショートカットを実行するにはエディター パラメーターが必須です",
 			"refreshIntellisenseKeyboardAction": "IntelliSense キャッシュの更新",
 			"runCurrentQueryKeyboardAction": "現在のクエリを実行",
-			"runCurrentQueryWithActualPlanKeyboardAction": "実際のプランで現在のクエリを実行",
 			"runQueryKeyboardAction": "クエリの実行",
 			"toggleQueryResultsKeyboardAction": "クエリ結果の切り替え"
 		},
@@ -11834,17 +11846,21 @@
 			"queryShortcutDescription": "ショートカット テキストをプロシージャ呼び出しまたはクエリ実行として実行するにはキー バインド workbench.action.query.shortcut{0} を設定します。クエリ エディターで選択したテキストはクエリの末尾でパラメーターとして渡されます。または、これを {arg} で参照することができます。"
 		},
 		"sql/workbench/contrib/query/browser/queryActions": {
+			"ExecutionPlan": "実行プラン",
 			"actualQueryPlan": "実際",
 			"cancelQueryLabel": "キャンセル",
 			"changeConnectionDatabaseLabel": "接続の変更",
 			"changeDatabase.failed": "データベースを変更できませんでした",
 			"changeDatabase.failedWithError": "データベースを変更できませんでした: {0}",
 			"connectDatabaseLabel": "接続",
+			"disableActualPlanLabel": "実際のプランを無効にする",
 			"disablesqlcmdLabel": "SQLCMD を無効にする",
 			"disconnectDatabaseLabel": "切断",
+			"enableActualPlanLabel": "実際のプランを有効にする",
 			"enablesqlcmdLabel": "SQLCMD を有効にする",
-			"estimatedQueryPlan": "説明",
+			"estimatedQueryPlan": "推定プラン",
 			"newQueryTask.newQuery": "新しいクエリ",
+			"query.multiSelectionNotSupported": "エディターが複数選択モードの場合、クエリの実行はサポートされません。",
 			"queryEditor.exportSqlAsNotebook": "ノートブックとしてエクスポート",
 			"runQueryLabel": "実行",
 			"selectDatabase": "データベースの選択"
@@ -11876,58 +11892,6 @@
 			"maxColumnWidth": "自動サイズ設定される列の最大幅 (ピクセル単位)",
 			"resultsGridConfigurationTitle": "結果グリッドとメッセージ",
 			"rowHeight": "ピクセル単位で行の高さを制御する"
-		},
-		"sql/workbench/contrib/queryHistory/browser/queryHistoryActions": {
-			"queryHistory.clearLabel": "すべての履歴をクリア",
-			"queryHistory.delete": "削除",
-			"queryHistory.disableCapture": "Query History キャプチャの一時停止",
-			"queryHistory.enableCapture": "Query History キャプチャの開始",
-			"queryHistory.openQuery": "クエリを開く",
-			"queryHistory.runQuery": "クエリの実行",
-			"queryHistory.toggleCaptureLabel": "Query History キャプチャの切り替え",
-			"toggleQueryHistory": "Query History の切り替え"
-		},
-		"sql/workbench/contrib/queryHistory/browser/queryHistoryRenderer": {
-			"failed": "失敗",
-			"succeeded": "成功"
-		},
-		"sql/workbench/contrib/queryHistory/browser/queryHistoryView": {
-			"noQueriesMessage": "表示するクエリがありません。",
-			"queryHistory.regTreeAriaLabel": "Query History"
-		},
-		"sql/workbench/contrib/queryHistory/electron-browser/queryHistory": {
-			"miViewQueryHistory": "Query History (&&Q)",
-			"queryHistory": "Query History",
-			"queryHistory.clearLabel": "すべての履歴をクリア",
-			"queryHistory.disableCapture": "Query History キャプチャの一時停止",
-			"queryHistory.enableCapture": "Query History キャプチャの開始",
-			"queryHistoryCaptureEnabled": "Query History キャプチャが有効かどうか。false の場合、実行されたクエリはキャプチャされません。",
-			"queryHistoryConfigurationTitle": "クエリ履歴",
-			"viewCategory": "表示"
-		},
-		"sql/workbench/contrib/queryPlan/browser/queryPlan": {
-			"queryPlanTitle": "クエリ プラン"
-		},
-		"sql/workbench/contrib/queryPlan/browser/queryPlanEditor": {
-			"queryPlanEditor": "クエリ プラン エディター"
-		},
-		"sql/workbench/contrib/queryPlan/browser/topOperations": {
-			"topOperations.actualExecutions": "実際の実行",
-			"topOperations.actualRebinds": "実際の再バインド数",
-			"topOperations.actualRewinds": "実際の巻き戻し数",
-			"topOperations.actualRows": "実際の行数",
-			"topOperations.estCPUCost": "推定 CPU コスト",
-			"topOperations.estCost": "推定コスト",
-			"topOperations.estIOCost": "推定 IO コスト",
-			"topOperations.estRebinds": "再バインドの推定数",
-			"topOperations.estRewinds": "巻き戻しの推定数",
-			"topOperations.estRows": "推定行数",
-			"topOperations.estSubtreeCost": "サブ ツリーの推定コスト",
-			"topOperations.object": "オブジェクト",
-			"topOperations.operation": "操作",
-			"topOperations.parallel": "並列",
-			"topOperations.partitioned": "パーティション分割",
-			"topOperationsTitle": "上位操作"
 		},
 		"sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution": {
 			"deployment.title": "新しい展開..."
@@ -11982,8 +11946,8 @@
 			"refreshError": "ノード '{0}' の更新でエラーが発生しました: {1}"
 		},
 		"sql/workbench/contrib/tableDesigner/browser/actions": {
-			"tableDesigner.generateScript": "スクリプトの生成",
-			"tableDesigner.publishTableChanges": "変更の発行..."
+			"tableDesigner.publishTableChanges": "変更の発行...",
+			"tableDesigner.saveTableChanges": "保存"
 		},
 		"sql/workbench/contrib/tableDesigner/browser/tableDesignerEditor": {
 			"tableDesigner.PreviewFeature": "プレビュー機能"
@@ -12427,6 +12391,7 @@
 			"standardKernelsTimeout": "ノートブック プロバイダー '{0}' の標準カーネルの可用性待機がタイムアウトしました"
 		},
 		"sql/workbench/services/notebook/browser/notebookViews/notebookViewModel": {
+			"Untitled": "無題",
 			"notebookView.nameTaken": "このノートブックには、 {0} という名前のビューが既に存在します。"
 		},
 		"sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension": {
@@ -12447,9 +12412,7 @@
 			"invalidMimeData": "{0} のデータは、文字列または文字列の配列である必要があります",
 			"nbNotSupported": "このファイルは有効なノートブック形式ではありません",
 			"nbformatNotRecognized": "認識されない nbformat v{0}.{1}",
-			"unknownCellType": "セルの種類 {0} が不明",
-			"unrecognizedOutput": "出力の種類 {0} を認識できません",
-			"unrecognizedOutputType": "出力の種類 {0} を認識できません"
+			"unknownCellType": "セルの種類 {0} が不明"
 		},
 		"sql/workbench/services/notebook/common/notebookRegistry": {
 			"carbon.extension.contributes.notebook.executionTarget": "Spark / SQL など、このマジックが示すオプションの実行対象",
@@ -12621,7 +12584,7 @@
 			"groupColor": "グループの色",
 			"groupDescription": "グループの説明",
 			"serverGroup.cancel": "キャンセル",
-			"serverGroup.colorValue": "色: {0}",
+			"serverGroup.colorValue": "グループの色: {0}",
 			"serverGroup.ok": "OK"
 		},
 		"sql/workbench/services/serverGroup/common/serverGroupViewModel": {
@@ -12739,6 +12702,26 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "はじめに(&&S)",
 			"showReleaseNotes": "「はじめに」を表示する"
+		},
+		"sql/workbench/common/constants": {
+			"notebookMultipleRequestsError": "コード セルを実行できません。別のセルが現在実行されています。"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanTreeTab": {
+			"ept.topOperationsCopyTableData": "コピー",
+			"ept.topOperationsCopyWithHeader": "ヘッダー付きのコピー",
+			"ept.topOperationsSelectAll": "すべて選択する",
+			"planTreeTab.title": "計画ツリー (プレビュー)",
+			"topOperationsTableTitle": "実行計画ツリー"
+		},
+		"sql/workbench/contrib/executionPlan/browser/topOperationsTab": {
+			"ep.topOperationsCopyTableData": "コピー",
+			"ep.topOperationsCopyWithHeader": "ヘッダー付きのコピー",
+			"ep.topOperationsSelectAll": "すべて選択",
+			"topOperationsTabTitle": "上位の操作 (プレビュー)",
+			"topOperationsTableTitle": "上位操作"
+		},
+		"sql/workbench/contrib/notebook/browser/models/outputProcessor": {
+			"notebookInvalidOutputTypeError": "出力の種類 '{0}' を認識できません。"
 		}
 	}
 }

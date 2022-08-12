@@ -10254,7 +10254,7 @@
 			"enable remote": "Ricaricare Azure Data Studio per abilitare l'estensione in {0}.",
 			"enableWindowsBackgroundUpdates": "Abilitare questa opzione per scaricare e installare le nuove versioni di Azure Data Studio in background in Windows",
 			"extensionsPolicy": "Impostare i criteri di sicurezza per il download delle estensioni.",
-			"incompatible": "Non è possibile installare l'estensione '{0}' perché non è compatibile con Azure Data Studio '{1}'.",
+			"incompatible": "Non è possibile installare la versione '{0}' dell'estensione '{1}' perché non è compatibile con Azure Data Studio '{2}'. Eseguire l'aggiornamento ad Azure Data Studio {3} per installare l'estensione.",
 			"installExtensionCompletedAndReloadRequired": "L'installazione dell'estensione {0} è stata completata. Ricaricare Azure Data Studio per abilitarla.",
 			"maxMemoryForLargeFilesMB": "Controlla la memoria disponibile per Azure Data Studio dopo il riavvio durante il tentativo di aprire file di grandi dimensioni. Il risultato è uguale a quando si specifica `--max-memory=NEWSIZE` sulla riga di comando.",
 			"miNewNotebook": "&&Nuovo notebook",
@@ -10423,8 +10423,7 @@
 			"navigationProviderRequired": "È necessario passare a questo metodo un elemento NavigationProvider con providerId valido"
 		},
 		"sql/workbench/api/common/notebooks/vscodeExecuteProvider": {
-			"errorStartBeforeReady": "Non è possibile avviare una sessione. Il gestore non è ancora inizializzato",
-			"notebookMultipleRequestsError": "Impossibile eseguire la cella di codice. È in corso l'esecuzione di un'altra cella."
+			"errorStartBeforeReady": "Non è possibile avviare una sessione. Il gestore non è ancora inizializzato"
 		},
 		"sql/workbench/browser/actions": {
 			"clearSavedAccounts": "Cancella tutti gli account salvati",
@@ -10440,13 +10439,14 @@
 			"showConnectDialogOnStartup": "Mostra la finestra di dialogo della connessione all'avvio"
 		},
 		"sql/workbench/browser/designer/designer": {
+			"designer.actions": "Altre azioni",
 			"designer.defaultRemoveRowConfirmationMessage": "Rimuovere la riga?",
 			"designer.generalGroupName": "Generale",
 			"designer.issueCountAlert": "{0} problemi di convalida rilevati.",
 			"designer.issuesTabTitle": "Problemi ({0})",
 			"designer.loadingDesigner": "Caricamento della finestra di progettazione in corso",
 			"designer.loadingDesignerCompleted": "La finestra di progettazione è caricata",
-			"designer.moveRowText": "Sposta riga",
+			"designer.moveRowText": "Sposta",
 			"designer.processing": "Elaborazione...",
 			"designer.processingChanges": "Elaborazione delle modifiche in corso...",
 			"designer.processingChangesCompleted": "Le modifiche sono state elaborate",
@@ -10493,8 +10493,7 @@
 			"resourceViewerInput.resourceViewer": "Visualizzatore risorse"
 		},
 		"sql/workbench/browser/editor/tableDesigner/tableDesignerInput": {
-			"tableDesigner.OperationInProgressWarning": "Impossibile eseguire l'operazione mentre è in corso un'altra operazione.",
-			"tableDesigner.newTable": "Nuova tabella"
+			"tableDesigner.OperationInProgressWarning": "Impossibile eseguire l'operazione mentre è in corso un'altra operazione."
 		},
 		"sql/workbench/browser/modal/modal": {
 			"closeMessage": "Chiudi",
@@ -11140,18 +11139,25 @@
 			"epCompare.FileFilterDescription": "File piano di esecuzione",
 			"epCompare.comparePropertiesAction": "Proprietà",
 			"epCompare.comparisonProgess": "Caricamento di aree simili nei piani confrontati",
+			"epCompare.searchNodeAction": "Trova nodo",
+			"epCompare.searchNodeActionAddedPlan": "Trova nodo - Piano aggiunto",
 			"epCompare.toggleOrientation": "Attivare/disattivare orientamento",
 			"epCompare.zoomInAction": "Zoom avanti",
 			"epCompare.zoomOutAction": "Zoom indietro",
 			"epCompare.zoomReset": "Reimpostare zoom",
-			"epCompare.zoomToFit": "Adattare alla finestra"
+			"epCompare.zoomToFit": "Adattare alla finestra",
+			"queryDropdownPrefix": "Query {0} di {1}: {2}"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView": {
 			"executionPlanComparisonPropertiesBottomOperation": "Operazione inferiore: {0}",
+			"executionPlanComparisonPropertiesLeftOperation": "Operazione a sinistra: {0}",
+			"executionPlanComparisonPropertiesRightOperation": "Operazione a destra: {0}",
 			"executionPlanComparisonPropertiesTopOperation": "Operazione superiore: {0}",
 			"executionPlanPropertiesEdgeOperationName": "Edge",
 			"nodePropertyViewNameNameColumnHeader": "Nome",
 			"nodePropertyViewNameValueColumnBottomHeader": "Valore (piano inferiore)",
+			"nodePropertyViewNameValueColumnLeftHeader": "Valore (piano a sinistra)",
+			"nodePropertyViewNameValueColumnRightHeader": "Valore (piano a destra)",
 			"nodePropertyViewNameValueColumnTopHeader": "Valore (piano superiore)"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanContribution": {
@@ -11172,9 +11178,10 @@
 			"nodePropertyViewNameValueColumnHeader": "Valore"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase": {
+			"ep.topOperationsCopyTableData": "Copy",
 			"executionPlanPropertyViewClose": "Chiudi",
 			"executionPlanPropertyViewSortAlphabetically": "In ordine alfabetico",
-			"executionPlanPropertyViewSortByDisplayOrder": "Per categoria",
+			"executionPlanPropertyViewSortByDisplayOrder": "Importanza",
 			"executionPlanPropertyViewSortReverseAlphabetically": "Ordine alfabetico inverso",
 			"nodePropertyViewTitle": "Proprietà"
 		},
@@ -11194,6 +11201,7 @@
 			"executionPlanPropertiesActionLabel": "Proprietà",
 			"executionPlanSavePlanXML": "Salva file di piano",
 			"executionPlanSearchNodeAction": "Trova nodo",
+			"executionPlanTopOperationsAction": "Operazioni più frequenti",
 			"executionPlanZoomInActionLabel": "Zoom avanti",
 			"executionPlanZoomOutActionLabel": "Zoom indietro",
 			"openQueryAction": "Apri query"
@@ -11451,9 +11459,9 @@
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/output.component": {
 			"componentRenderError": "Si è verificato un errore durante il rendering del componente: {0}",
-			"noMimeTypeFound": "Non è stato possibile trovare alcun renderer {0} per l'output. Include i tipi MIME seguenti: {1}",
-			"noSelectorFound": "Non è stato possibile trovare alcun componente per il selettore {0}",
-			"safe": "sicuro "
+			"noMimeTypeFound": "Non è stato possibile trovare alcun renderer per l'output. Include i tipi MIME seguenti: {0}",
+			"noSafeMimeTypeFound": "Non è stato possibile trovare alcun renderer sicuro per l'output. Include i tipi MIME seguenti: {0}",
+			"noSelectorFound": "Non è stato possibile trovare alcun componente per il selettore {0}"
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/placeholderCell.component": {
 			"clickOn": "Fare clic su",
@@ -11683,7 +11691,7 @@
 			"plotlyError": "Si è verificato un errore durante la visualizzazione del grafo Plotly: {0}"
 		},
 		"sql/workbench/contrib/objectExplorer/browser/serverTreeView": {
-			"serverTree.addConnection": "Aggiungi connessione",
+			"serverTree.newConnection": "Nuova connessione",
 			"servers.noConnections": "Non sono state trovate connessioni."
 		},
 		"sql/workbench/contrib/objectExplorer/common/serverGroup.contribution": {
@@ -11780,14 +11788,19 @@
 			"status.query.flavor": "Versione del linguaggio SQL"
 		},
 		"sql/workbench/contrib/query/browser/gridPanel": {
+			"query.QueryErrorOccured": "Errore durante l'esecuzione della query.",
+			"query.QueryExecutionEnded": "Esecuzione attività completata.",
+			"query.QueryExecutionStarted": "Esecuzione della query avviata.",
 			"resultsGrid": "Griglia dei risultati",
 			"resultsGrid.maxRowCountExceeded": "È stato superato il numero massimo di righe per il filtraggio o l'ordinamento. Per aggiornarlo, passare alle impostazioni utente e modificare l'impostazione 'queryEditor.results.inMemoryDataProcessingThreshold'",
 			"xmlShowplan": "Showplan XML"
 		},
 		"sql/workbench/contrib/query/browser/keyboardQueryActions": {
+			"ToggleActualPlanKeyboardAction": "Abilita/Disabilita piano di esecuzione effettivo",
 			"ToggleFocusBetweenQueryEditorAndResultsAction": "Alterna lo stato attivo tra la query e i risultati",
 			"cancelQueryKeyboardAction": "Annulla query",
 			"copyQueryWithResultsKeyboardAction": "Copia query con risultati",
+			"estimatedExecutionPlanKeyboardAction": "Visualizza piano di esecuzione stimato",
 			"focusOnCurrentQueryKeyboardAction": "Stato attivo su query corrente",
 			"parseSyntaxLabel": "Analizza query",
 			"queryActions.notConnected": "Connettersi a un server",
@@ -11797,7 +11810,6 @@
 			"queryShortcutNoEditor": "Per consentire l'esecuzione del tasto di scelta rapida, è necessario specificare il parametro Editor",
 			"refreshIntellisenseKeyboardAction": "Aggiorna cache IntelliSense",
 			"runCurrentQueryKeyboardAction": "Esegui query corrente",
-			"runCurrentQueryWithActualPlanKeyboardAction": "Esegui query corrente con piano effettivo",
 			"runQueryKeyboardAction": "Esegui query",
 			"toggleQueryResultsKeyboardAction": "Attiva/Disattiva risultati della query"
 		},
@@ -11834,17 +11846,21 @@
 			"queryShortcutDescription": "Impostare l'associazione dei tasti workbench.action.query.shortcut{0} per eseguire il testo del collegamento come chiamata di routine o esecuzione di query. Il testo selezionato nell'editor di query verrà passato come parametro alla fine della query oppure è possibile fare riferimento a esso con {arg}"
 		},
 		"sql/workbench/contrib/query/browser/queryActions": {
+			"ExecutionPlan": "Piano di esecuzione",
 			"actualQueryPlan": "Effettivo",
 			"cancelQueryLabel": "Annulla",
 			"changeConnectionDatabaseLabel": "Cambia connessione",
 			"changeDatabase.failed": "Non è stato possibile modificare il database",
 			"changeDatabase.failedWithError": "Non è stato possibile modificare il database: {0}",
 			"connectDatabaseLabel": "Connetti",
+			"disableActualPlanLabel": "Disabilita piano effettivo",
 			"disablesqlcmdLabel": "Disabilita SQLCMD",
 			"disconnectDatabaseLabel": "Disconnetti",
+			"enableActualPlanLabel": "Abilita piano effettivo",
 			"enablesqlcmdLabel": "Abilita SQLCMD",
-			"estimatedQueryPlan": "Spiega",
+			"estimatedQueryPlan": "Piano stimato",
 			"newQueryTask.newQuery": "Nuova query",
+			"query.multiSelectionNotSupported": "L'esecuzione di query non è supportata quando l'editor è in modalità di selezione multipla.",
 			"queryEditor.exportSqlAsNotebook": "Esporta come notebook",
 			"runQueryLabel": "Esegui",
 			"selectDatabase": "Seleziona database"
@@ -11876,58 +11892,6 @@
 			"maxColumnWidth": "Larghezza massima in pixel per colonne con ridimensionamento automatico",
 			"resultsGridConfigurationTitle": "Messaggi e griglia dei risultati",
 			"rowHeight": "Controlla l'altezza delle righe in pixel"
-		},
-		"sql/workbench/contrib/queryHistory/browser/queryHistoryActions": {
-			"queryHistory.clearLabel": "Cancella tutta la cronologia",
-			"queryHistory.delete": "Elimina",
-			"queryHistory.disableCapture": "Sospendi acquisizione della cronologia delle query",
-			"queryHistory.enableCapture": "Avvia acquisizione della cronologia delle query",
-			"queryHistory.openQuery": "Apri query",
-			"queryHistory.runQuery": "Esegui query",
-			"queryHistory.toggleCaptureLabel": "Attiva/Disattiva acquisizione della cronologia delle query",
-			"toggleQueryHistory": "Attiva/Disattiva cronologia delle query"
-		},
-		"sql/workbench/contrib/queryHistory/browser/queryHistoryRenderer": {
-			"failed": "non riuscito",
-			"succeeded": "riuscito"
-		},
-		"sql/workbench/contrib/queryHistory/browser/queryHistoryView": {
-			"noQueriesMessage": "Non ci sono query da visualizzare.",
-			"queryHistory.regTreeAriaLabel": "Cronologia delle query"
-		},
-		"sql/workbench/contrib/queryHistory/electron-browser/queryHistory": {
-			"miViewQueryHistory": "&&Cronologia delle query",
-			"queryHistory": "Cronologia delle query",
-			"queryHistory.clearLabel": "Cancella tutta la cronologia",
-			"queryHistory.disableCapture": "Sospendi acquisizione della cronologia delle query",
-			"queryHistory.enableCapture": "Avvia acquisizione della cronologia delle query",
-			"queryHistoryCaptureEnabled": "Indica se l'acquisizione della cronologia delle query è abilitata. Se è false, le query eseguite non verranno acquisite.",
-			"queryHistoryConfigurationTitle": "Cronologia query",
-			"viewCategory": "Visualizza"
-		},
-		"sql/workbench/contrib/queryPlan/browser/queryPlan": {
-			"queryPlanTitle": "Piano di query"
-		},
-		"sql/workbench/contrib/queryPlan/browser/queryPlanEditor": {
-			"queryPlanEditor": "Editor piano di query"
-		},
-		"sql/workbench/contrib/queryPlan/browser/topOperations": {
-			"topOperations.actualExecutions": "Esecuzioni effettive",
-			"topOperations.actualRebinds": "Riassociazioni effettive",
-			"topOperations.actualRewinds": "Ripristini effettivi",
-			"topOperations.actualRows": "Righe effettive",
-			"topOperations.estCPUCost": "Costo CPU stimato",
-			"topOperations.estCost": "Costo stimato",
-			"topOperations.estIOCost": "Costo IO stimato",
-			"topOperations.estRebinds": "Riassociazioni stimate",
-			"topOperations.estRewinds": "Ripristini stimati",
-			"topOperations.estRows": "Righe stimate",
-			"topOperations.estSubtreeCost": "Costo sottoalbero stimato",
-			"topOperations.object": "Oggetto",
-			"topOperations.operation": "Operazione",
-			"topOperations.parallel": "In parallelo",
-			"topOperations.partitioned": "Partizionato",
-			"topOperationsTitle": "Operazioni più frequenti"
 		},
 		"sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution": {
 			"deployment.title": "Nuova distribuzione..."
@@ -11982,8 +11946,8 @@
 			"refreshError": "Si è verificato un errore durante l'aggiornamento del nodo '{0}': {1}"
 		},
 		"sql/workbench/contrib/tableDesigner/browser/actions": {
-			"tableDesigner.generateScript": "Genera script",
-			"tableDesigner.publishTableChanges": "Pubblica modifiche..."
+			"tableDesigner.publishTableChanges": "Pubblica modifiche...",
+			"tableDesigner.saveTableChanges": "Salva"
 		},
 		"sql/workbench/contrib/tableDesigner/browser/tableDesignerEditor": {
 			"tableDesigner.PreviewFeature": "Funzionalità in anteprima"
@@ -12427,6 +12391,7 @@
 			"standardKernelsTimeout": "L'attesa per la disponibilità dei kernel standard è scaduta per il provider di notebook '{0}'"
 		},
 		"sql/workbench/services/notebook/browser/notebookViews/notebookViewModel": {
+			"Untitled": "Senza nome",
 			"notebookView.nameTaken": "Una vista con il nome {0} esiste già in questo notebook."
 		},
 		"sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension": {
@@ -12447,9 +12412,7 @@
 			"invalidMimeData": "I dati per {0} devono essere una stringa o una matrice di stringhe",
 			"nbNotSupported": "Il formato di notebook di questo file non è valido",
 			"nbformatNotRecognized": "nbformat v{0}.{1} non riconosciuto",
-			"unknownCellType": "Il tipo di cella {0} è sconosciuto",
-			"unrecognizedOutput": "Il tipo di output {0} non è riconosciuto",
-			"unrecognizedOutputType": "Il tipo di output {0} non è riconosciuto"
+			"unknownCellType": "Il tipo di cella {0} è sconosciuto"
 		},
 		"sql/workbench/services/notebook/common/notebookRegistry": {
 			"carbon.extension.contributes.notebook.executionTarget": "Destinazione di esecuzione facoltativa indicata da questo comando magic, ad esempio Spark rispetto a SQL",
@@ -12621,7 +12584,7 @@
 			"groupColor": "Colore del gruppo",
 			"groupDescription": "Descrizione gruppo",
 			"serverGroup.cancel": "Annulla",
-			"serverGroup.colorValue": "Colore: {0}",
+			"serverGroup.colorValue": "Colore del gruppo: {0}",
 			"serverGroup.ok": "OK"
 		},
 		"sql/workbench/services/serverGroup/common/serverGroupViewModel": {
@@ -12739,6 +12702,26 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "&&Introduzione",
 			"showReleaseNotes": "Mostra introduzione"
+		},
+		"sql/workbench/common/constants": {
+			"notebookMultipleRequestsError": "Impossibile eseguire la cella di codice. È in corso l'esecuzione di un'altra cella."
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanTreeTab": {
+			"ept.topOperationsCopyTableData": "Copia",
+			"ept.topOperationsCopyWithHeader": "Copia con intestazione",
+			"ept.topOperationsSelectAll": "Seleziona tutto",
+			"planTreeTab.title": "Albero dei piani (anteprima)",
+			"topOperationsTableTitle": "Albero del piano di esecuzione"
+		},
+		"sql/workbench/contrib/executionPlan/browser/topOperationsTab": {
+			"ep.topOperationsCopyTableData": "Copia",
+			"ep.topOperationsCopyWithHeader": "Copia con intestazione",
+			"ep.topOperationsSelectAll": "Seleziona tutto",
+			"topOperationsTabTitle": "Operazioni più frequenti (anteprima)",
+			"topOperationsTableTitle": "Operazioni più frequenti"
+		},
+		"sql/workbench/contrib/notebook/browser/models/outputProcessor": {
+			"notebookInvalidOutputTypeError": "Tipo di output '{0}' non riconosciuto."
 		}
 	}
 }
