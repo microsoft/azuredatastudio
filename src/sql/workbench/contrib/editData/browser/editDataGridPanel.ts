@@ -331,6 +331,7 @@ export class EditDataGridPanel extends GridParentComponent {
 				this.cellSubmitInProgress = true;
 				this.updateEnabledState(true);
 				this.cellSubmitInProgress = false;
+				this.lastClickedCell = { row: self.currentCell.row, column: self.currentCell.column };
 				self.focusCell(self.currentCell.row, self.currentCell.column, true);
 				return Promise.reject(null);
 			});
@@ -349,6 +350,7 @@ export class EditDataGridPanel extends GridParentComponent {
 					this.cellSubmitInProgress = true;
 					this.updateEnabledState(true);
 					this.cellSubmitInProgress = false;
+					this.lastClickedCell = { row: self.currentCell.row, column: self.currentCell.column };
 					self.focusCell(self.currentCell.row, self.currentCell.column);
 					return Promise.reject(null);
 				});
