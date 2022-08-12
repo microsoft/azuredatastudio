@@ -22,6 +22,7 @@ export const sqlBindingsHelpLink = 'https://github.com/Azure/azure-functions-sql
 export const passwordPlaceholder = '******';
 export const azureFunctionLocalSettingsFileName = 'local.settings.json';
 export const vscodeOpenCommand = 'vscode.open';
+export const serviceName = 'SQL Bindings';
 
 // localized constants
 export const functionNameTitle = localize('functionNameTitle', 'Function Name');
@@ -90,6 +91,7 @@ export function failedToParse(filename: string, error: any): string { return loc
 export function addSqlBinding(functionName: string): string { return localize('addSqlBinding', 'Adding SQL Binding to function "{0}"...'), functionName; }
 export function errorNewAzureFunction(error: any): string { return localize('errorNewAzureFunction', 'Error creating new Azure Function: {0}', utils.getErrorMessage(error)); }
 export function manuallyEnterObjectName(userObjectName: string): string { return `$(pencil) ${userObjectName}`; }
+export function dotnetResult(output: string): string { return localize('dotnetResult', 'Adding SQL nuget package:\n{0}', output); }
 
 // Known Azure settings reference for Azure Functions
 // https://docs.microsoft.com/en-us/azure/azure-functions/functions-app-settings
