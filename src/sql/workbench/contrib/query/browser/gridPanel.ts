@@ -19,7 +19,6 @@ import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColu
 import { escape } from 'sql/base/common/strings';
 import { hyperLinkFormatter, textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';
-import { CopyKeybind } from 'sql/base/browser/ui/table/plugins/copyKeybind.plugin';
 
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -52,6 +51,7 @@ import { FilterButtonWidth, HeaderFilter } from 'sql/base/browser/ui/table/plugi
 import { HybridDataProvider } from 'sql/base/browser/ui/table/hybridDataProvider';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { alert, status } from 'vs/base/browser/ui/aria/aria';
+import { CopyAction } from 'vs/editor/contrib/clipboard/clipboard';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -492,10 +492,6 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			this.renderGridDataRowsRange(startIndex, count);
 		});
 		this.rowNumberColumn = new RowNumberColumn({ numberOfRows: this.resultSet.rowCount });
-		let copyHandler = new CopyKeybind<T>();
-		copyHandler.onCopy(e => {
-			this.instantiationService.createInstance(CopyResultAction, CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false).run(this.generateContext());
-		});
 		this.columns.unshift(this.rowNumberColumn.getColumnDefinition());
 		let tableOptions: Slick.GridOptions<T> = {
 			rowHeight: this.rowHeight,
@@ -525,7 +521,6 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.table.registerPlugin(new MouseWheelSupport());
 		const autoSizeOnRender: boolean = !this.state.columnSizes && this.configurationService.getValue('resultsGrid.autoSizeColumns');
 		this.table.registerPlugin(new AutoColumnSize({ autoSizeOnRender: autoSizeOnRender, maxWidth: this.configurationService.getValue<number>('resultsGrid.maxColumnWidth'), extraColumnHeaderWidth: FilterButtonWidth }));
-		this.table.registerPlugin(copyHandler);
 		this.table.registerPlugin(this.rowNumberColumn);
 		this.table.registerPlugin(new AdditionalKeyBindings());
 		this._register(this.dataProvider.onFilterStateChange(() => { this.layout(); }));
@@ -608,6 +603,18 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 				this.state.activeCell = this.table.grid.getActiveCell();
 			}
 		});
+		// Add implementation for the copy action to respect the user's global copy command keybinding.
+		// 1 is a priority number that is slightly larger than the basic handler's priority 0 to make sure our implementation
+		// is executed.
+		this._register(CopyAction.addImplementation(1, 'query-result-grid', accessor => {
+			const selectedRanges = this.table.getSelectedRanges();
+			// Only do copy if the grid is the current active grid.
+			if (this.container.contains(document.activeElement) && selectedRanges && selectedRanges.length !== 0) {
+				this.instantiationService.createInstance(CopyResultAction, CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false).run(this.generateContext());
+				return true;
+			}
+			return false;
+		}));
 	}
 
 	private restoreScrollState() {
