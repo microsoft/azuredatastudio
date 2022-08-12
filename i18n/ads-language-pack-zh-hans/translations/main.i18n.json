@@ -11178,6 +11178,7 @@
 			"nodePropertyViewNameValueColumnHeader": "值"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase": {
+			"ep.topOperationsCopyTableData": "Copy",
 			"executionPlanPropertyViewClose": "关闭",
 			"executionPlanPropertyViewSortAlphabetically": "按字母顺序",
 			"executionPlanPropertyViewSortByDisplayOrder": "重要性",
@@ -11787,9 +11788,9 @@
 			"status.query.flavor": "SQL 语言风格"
 		},
 		"sql/workbench/contrib/query/browser/gridPanel": {
-			"query.QueryErrorOccured": "Error occured while executing the query.",
-			"query.QueryExecutionEnded": "Query execution completed.",
-			"query.QueryExecutionStarted": "Query execution started.",
+			"query.QueryErrorOccured": "执行查询时出错。",
+			"query.QueryExecutionEnded": "查询执行已完成。",
+			"query.QueryExecutionStarted": "查询执行已开始。",
 			"resultsGrid": "结果网格",
 			"resultsGrid.maxRowCountExceeded": "已超过筛选/排序的最大行计数。若要更新它，可以转到“用户设置”并更改设置: \"queryEditor.results.inMemoryDataProcessingThreshold\"",
 			"xmlShowplan": "XML 显示计划"

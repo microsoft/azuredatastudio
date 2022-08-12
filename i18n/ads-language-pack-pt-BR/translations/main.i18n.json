@@ -11178,6 +11178,7 @@
 			"nodePropertyViewNameValueColumnHeader": "Valor"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase": {
+			"ep.topOperationsCopyTableData": "Copy",
 			"executionPlanPropertyViewClose": "Perto",
 			"executionPlanPropertyViewSortAlphabetically": "Alfabética",
 			"executionPlanPropertyViewSortByDisplayOrder": "Importância",
@@ -11787,9 +11788,9 @@
 			"status.query.flavor": "Variante de linguagem SQL"
 		},
 		"sql/workbench/contrib/query/browser/gridPanel": {
-			"query.QueryErrorOccured": "Error occured while executing the query.",
-			"query.QueryExecutionEnded": "Query execution completed.",
-			"query.QueryExecutionStarted": "Query execution started.",
+			"query.QueryErrorOccured": "Ocorreu um erro ao executar a consulta.",
+			"query.QueryExecutionEnded": "Execução da consulta concluída.",
+			"query.QueryExecutionStarted": "Execução da consulta iniciada.",
 			"resultsGrid": "Grade de resultados",
 			"resultsGrid.maxRowCountExceeded": "A contagem máxima de linhas para filtragem/classificação foi excedida. Para atualizá-la, você pode ir para Configurações do Usuário e alterar a configuração: 'queryEditor. Results. inMemoryDataProcessingThreshold'",
 			"xmlShowplan": "Plano de execução XML"

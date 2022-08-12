@@ -11178,6 +11178,7 @@
 			"nodePropertyViewNameValueColumnHeader": "Значение"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase": {
+			"ep.topOperationsCopyTableData": "Copy",
 			"executionPlanPropertyViewClose": "Закрыть",
 			"executionPlanPropertyViewSortAlphabetically": "В алфавитном порядке",
 			"executionPlanPropertyViewSortByDisplayOrder": "Важность",
@@ -11787,9 +11788,9 @@
 			"status.query.flavor": "Вариант языка SQL"
 		},
 		"sql/workbench/contrib/query/browser/gridPanel": {
-			"query.QueryErrorOccured": "Error occured while executing the query.",
-			"query.QueryExecutionEnded": "Query execution completed.",
-			"query.QueryExecutionStarted": "Query execution started.",
+			"query.QueryErrorOccured": "При выполнении запроса произошла ошибка.",
+			"query.QueryExecutionEnded": "Выполнение задачи завершено.",
+			"query.QueryExecutionStarted": "Выполнение запроса запущено.",
 			"resultsGrid": "Сетка результатов",
 			"resultsGrid.maxRowCountExceeded": "Превышено максимальное количество строк для фильтрации или сортировки. Чтобы обновить его, перейдите к параметрам пользователя и изменить параметр queryEditor.results.inMemoryDataProcessingThreshold",
 			"xmlShowplan": "XML Showplan"
@@ -12583,7 +12584,7 @@
 			"groupColor": "Цвет группы",
 			"groupDescription": "Описание группы",
 			"serverGroup.cancel": "Отмена",
-			"serverGroup.colorValue": "Group Color: {0}",
+			"serverGroup.colorValue": "Цвет группы: {0}",
 			"serverGroup.ok": "OK"
 		},
 		"sql/workbench/services/serverGroup/common/serverGroupViewModel": {

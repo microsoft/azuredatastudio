@@ -11178,6 +11178,7 @@
 			"nodePropertyViewNameValueColumnHeader": "값"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase": {
+			"ep.topOperationsCopyTableData": "Copy",
 			"executionPlanPropertyViewClose": "닫기",
 			"executionPlanPropertyViewSortAlphabetically": "사전순",
 			"executionPlanPropertyViewSortByDisplayOrder": "중요도",

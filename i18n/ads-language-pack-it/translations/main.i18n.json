@@ -11178,6 +11178,7 @@
 			"nodePropertyViewNameValueColumnHeader": "Valore"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase": {
+			"ep.topOperationsCopyTableData": "Copy",
 			"executionPlanPropertyViewClose": "Chiudi",
 			"executionPlanPropertyViewSortAlphabetically": "In ordine alfabetico",
 			"executionPlanPropertyViewSortByDisplayOrder": "Importanza",
@@ -11787,9 +11788,9 @@
 			"status.query.flavor": "Versione del linguaggio SQL"
 		},
 		"sql/workbench/contrib/query/browser/gridPanel": {
-			"query.QueryErrorOccured": "Error occured while executing the query.",
-			"query.QueryExecutionEnded": "Query execution completed.",
-			"query.QueryExecutionStarted": "Query execution started.",
+			"query.QueryErrorOccured": "Errore durante l'esecuzione della query.",
+			"query.QueryExecutionEnded": "Esecuzione attività completata.",
+			"query.QueryExecutionStarted": "Esecuzione della query avviata.",
 			"resultsGrid": "Griglia dei risultati",
 			"resultsGrid.maxRowCountExceeded": "È stato superato il numero massimo di righe per il filtraggio o l'ordinamento. Per aggiornarlo, passare alle impostazioni utente e modificare l'impostazione 'queryEditor.results.inMemoryDataProcessingThreshold'",
 			"xmlShowplan": "Showplan XML"
@@ -12583,7 +12584,7 @@
 			"groupColor": "Colore del gruppo",
 			"groupDescription": "Descrizione gruppo",
 			"serverGroup.cancel": "Annulla",
-			"serverGroup.colorValue": "Group Color: {0}",
+			"serverGroup.colorValue": "Colore del gruppo: {0}",
 			"serverGroup.ok": "OK"
 		},
 		"sql/workbench/services/serverGroup/common/serverGroupViewModel": {

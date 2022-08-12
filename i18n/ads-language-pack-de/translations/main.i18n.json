@@ -11178,6 +11178,7 @@
 			"nodePropertyViewNameValueColumnHeader": "Wert"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase": {
+			"ep.topOperationsCopyTableData": "Copy",
 			"executionPlanPropertyViewClose": "Schließen",
 			"executionPlanPropertyViewSortAlphabetically": "Alphabetisch",
 			"executionPlanPropertyViewSortByDisplayOrder": "Wichtigkeit",
@@ -12583,7 +12584,7 @@
 			"groupColor": "Gruppenfarbe",
 			"groupDescription": "Gruppenbeschreibung",
 			"serverGroup.cancel": "Abbrechen",
-			"serverGroup.colorValue": "Group Color: {0}",
+			"serverGroup.colorValue": "Gruppenfarbe: {0}",
 			"serverGroup.ok": "OK"
 		},
 		"sql/workbench/services/serverGroup/common/serverGroupViewModel": {

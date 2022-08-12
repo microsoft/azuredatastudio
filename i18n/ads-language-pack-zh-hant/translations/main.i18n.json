@@ -11178,6 +11178,7 @@
 			"nodePropertyViewNameValueColumnHeader": "值"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase": {
+			"ep.topOperationsCopyTableData": "Copy",
 			"executionPlanPropertyViewClose": "關閉",
 			"executionPlanPropertyViewSortAlphabetically": "字母順序",
 			"executionPlanPropertyViewSortByDisplayOrder": "重要性",
@@ -11787,9 +11788,9 @@
 			"status.query.flavor": "SQL 語言的變體"
 		},
 		"sql/workbench/contrib/query/browser/gridPanel": {
-			"query.QueryErrorOccured": "Error occured while executing the query.",
-			"query.QueryExecutionEnded": "Query execution completed.",
-			"query.QueryExecutionStarted": "Query execution started.",
+			"query.QueryErrorOccured": "執行查詢時發生錯誤。",
+			"query.QueryExecutionEnded": "查詢執行已完成。",
+			"query.QueryExecutionStarted": "查詢執行已開始。",
 			"resultsGrid": "結果方格",
 			"resultsGrid.maxRowCountExceeded": "已超過篩選/排序的資料列計數上限。若要更新，導覽至使用者設定並變更設定: ' queryEditor. inMemoryDataProcessingThreshold '",
 			"xmlShowplan": "XML 執行程序表"
