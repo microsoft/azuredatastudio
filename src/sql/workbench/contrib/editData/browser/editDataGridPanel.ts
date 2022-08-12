@@ -1342,6 +1342,12 @@ export class EditDataGridPanel extends GridParentComponent {
 		if (this.restoreViewStateCalled) {
 			this.restoreViewStateCalled = false;
 			this.focusCell(this.lastClickedCell.row, this.lastClickedCell.column, true);
+			// Bring back last entered value in case of revert from invalid commit.
+			if (this.lastEnteredString) {
+				document.execCommand('selectAll');
+				document.execCommand('delete');
+				document.execCommand('insertText', false, this.lastEnteredString);
+			}
 		}
 	}
 
