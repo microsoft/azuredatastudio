@@ -27,7 +27,6 @@ export class PublishOptionsDialog {
 	private excludeObjectTypesOptionsTab: azdataType.window.DialogTab | undefined;
 	private excludeObjectTypesOptionsTable: azdataType.TableComponent | undefined;
 	private excludeObjectTypesOptionsFlexBuilder: azdataType.FlexContainer | undefined;
-	private loader: azdataType.LoadingComponent | undefined;
 
 	constructor(defaultOptions: mssql.DeploymentOptions, private publish: PublishDatabaseDialog) {
 		this.optionsModel = new DeployOptionsModel(defaultOptions);
@@ -63,8 +62,8 @@ export class PublishOptionsDialog {
 
 	private initializeDeploymentOptionsDialogTab(): void {
 		this.optionsTab?.registerContent(async view => {
-			// creating loader component
-			this.loader = view.modelBuilder.loadingComponent()
+			// create loading component
+			const loader = view.modelBuilder.loadingComponent()
 				.withProps({
 					CSSStyles: {
 						'margin-top': '350px'
@@ -119,12 +118,10 @@ export class PublishOptionsDialog {
 					flexFlow: 'column'
 				}).component();
 
-			// adding loader to the flexcontainer
-			this.optionsFlexBuilder.addItem(this.loader);
+			// adding loading component to the flexcontainer
+			this.optionsFlexBuilder.addItem(loader);
 			await view.initializeModel(this.optionsFlexBuilder);
-			if (this.loader) {
-				this.loader.loading = false;
-			}
+			loader.loading = false;
 
 			this.optionsFlexBuilder.addItem(this.optionsTable, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh', 'padding-top': '2px' } });
 			this.optionsFlexBuilder.addItem(this.descriptionHeading, { CSSStyles: { 'font-weight': 'bold', 'height': '30px' } });
