@@ -87,4 +87,3 @@ export abstract class MigrationWizardPage {
 		control.display = display;
 	}
 }
-

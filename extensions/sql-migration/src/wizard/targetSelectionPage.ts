@@ -37,11 +37,15 @@ export class TargetSelectionPage extends MigrationWizardPage {
 	private _targetPasswordInputBox!: azdata.InputBoxComponent;
 	private _testConectionButton!: azdata.ButtonComponent;
 	private _connectionResultsInfoBox!: azdata.InfoBoxComponent;
-
 	private _migrationTargetPlatform!: MigrationTargetType;
 
-	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
-		super(wizard, azdata.window.createWizardPage(constants.AZURE_SQL_TARGET_PAGE_TITLE), migrationStateModel);
+	constructor(
+		wizard: azdata.window.Wizard,
+		migrationStateModel: MigrationStateModel) {
+		super(
+			wizard,
+			azdata.window.createWizardPage(constants.AZURE_SQL_TARGET_PAGE_TITLE),
+			migrationStateModel);
 	}
 
 	protected async registerContent(view: azdata.ModelView): Promise<void> {
@@ -889,14 +893,14 @@ export class TargetSelectionPage extends MigrationWizardPage {
 					})
 					.component();
 
-				const targetDatabaseName = this.migrationStateModel._sourceTargetMapping.get(sourceDatabase)?.database_name ?? '';
+				const targetDatabaseName = this.migrationStateModel._sourceTargetMapping.get(sourceDatabase)?.databaseName ?? '';
 				if (targetDatabaseName.length > 0) {
 					utils.selectDefaultDropdownValue(targetDatabaseDropDown, targetDatabaseName);
 				}
 
 				this._disposables.push(
 					targetDatabaseDropDown.onValueChanged((targetDatabaseName: string) => {
-						const targetDatabase = targetDatabases.find(targetDb => targetDb.database_name === targetDatabaseName);
+						const targetDatabase = targetDatabases.find(targetDb => targetDb.databaseName === targetDatabaseName);
 						this.migrationStateModel._sourceTargetMapping.set(sourceDatabase, targetDatabase);
 					}));
 
@@ -913,19 +917,17 @@ export class TargetSelectionPage extends MigrationWizardPage {
 		const targetDatabaseKeys = new Set<string>();
 		let sourceDatabaseCount = 0;
 		let targetDatabaseCount = 0;
-
-		for (let sourceDatabaseKey in this.migrationStateModel._sourceTargetMapping) {
+		this.migrationStateModel._sourceTargetMapping.forEach((targetDatabaseInfo, sourceDatabaseName) => {
 			sourceDatabaseCount++;
-			const targetDatabase = this.migrationStateModel._sourceTargetMapping.get(sourceDatabaseKey);
-			const targetKey = targetDatabase?.database_name;
-			if (targetKey && !targetDatabaseKeys.has(targetKey)) {
+			const targetDatabase = this.migrationStateModel._sourceTargetMapping.get(sourceDatabaseName);
+			const targetDatabaseName = targetDatabase?.databaseName;
+			if (targetDatabaseName && !targetDatabaseKeys.has(targetDatabaseName)) {
 				targetDatabaseCount++;
-				targetDatabaseKeys.add(targetDatabase?.database_name);
-				continue;
+				targetDatabaseKeys.add(targetDatabaseName);
 			}
-			return false;
-		}
-		return sourceDatabaseCount === targetDatabaseCount && sourceDatabaseCount > 0;
+		});
+		return sourceDatabaseCount > 0
+			&& sourceDatabaseCount === targetDatabaseCount;
 	}
 
 	private _getTargetDatabaseDropdownValues(
@@ -934,7 +936,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 
 		if (databases?.length > 0) {
 			return databases.map<azdata.CategoryValue>(database => {
-				const databaseName = database.database_name;
+				const databaseName = database.databaseName;
 				return { name: databaseName, displayName: databaseName };
 			});
 		}
@@ -953,7 +955,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			for (let i = 0; i < this.migrationStateModel._databasesForMigration.length; i++) {
 				const sourceDatabaseName = this.migrationStateModel._databasesForMigration[i];
 				const targetDatabase = this.migrationStateModel._sourceTargetMapping.get(sourceDatabaseName);
-				const targetDatabaseName = targetDatabase?.database_name;
+				const targetDatabaseName = targetDatabase?.databaseName;
 				if (targetDatabaseName && targetDatabaseName.length > 0) {
 					if (!targetDatabaseKeys.has(targetDatabaseName)) {
 						targetDatabaseKeys.set(targetDatabaseName, sourceDatabaseName);

@@ -117,7 +117,10 @@ export class SummaryPage extends MigrationWizardPage {
 							: constants.SUMMARY_SQLDB_TYPE,
 					await this.migrationStateModel.getLocationDisplayName(this.migrationStateModel._targetServerInstance.name!)),
 
-				await createHeadingTextComponent(this._view, constants.DATABASE_BACKUP_MIGRATION_MODE_LABEL),
+				await createHeadingTextComponent(
+					this._view,
+					constants.DATABASE_BACKUP_MIGRATION_MODE_LABEL),
+
 				createInformationRow(
 					this._view,
 					constants.MODE,

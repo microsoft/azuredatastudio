@@ -9,6 +9,7 @@ import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationSourceAuthenticationType, MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import { createLabelTextComponent, createHeadingTextComponent, WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
+import { AuthenticationType } from '../api/sqlUtils';
 
 export class SqlSourceConfigurationPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -59,10 +60,13 @@ export class SqlSourceConfigurationPage extends MigrationWizardPage {
 		const query = 'select SUSER_NAME()';
 		const results = await queryProvider.runQueryAndReturn(await (azdata.connection.getUriForConnection(this.migrationStateModel.sourceConnectionId)), query);
 		const username = results.rows[0][0].displayValue;
-		this.migrationStateModel._authenticationType = connectionProfile.authenticationType === 'SqlLogin' ? MigrationSourceAuthenticationType.Sql : connectionProfile.authenticationType === 'Integrated' ? MigrationSourceAuthenticationType.Integrated : undefined!;
+		this.migrationStateModel._authenticationType = connectionProfile.authenticationType === AuthenticationType.SqlLogin
+			? MigrationSourceAuthenticationType.Sql
+			: connectionProfile.authenticationType === AuthenticationType.Integrated
+				? MigrationSourceAuthenticationType.Integrated
+				: undefined!;
 
 		const sourceCredText = await createHeadingTextComponent(this._view, constants.SOURCE_CREDENTIALS);
-
 		const enterYourCredText = createLabelTextComponent(
 			this._view,
 			constants.ENTER_YOUR_SQL_CREDS,

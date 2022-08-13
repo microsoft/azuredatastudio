@@ -471,7 +471,6 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 						value: 'sourceDatabase',
 						width: 190,
 						type: azdata.ColumnType.hyperlink,
-						showText: true,
 					},
 					{
 						cssClass: rowCssStyles,

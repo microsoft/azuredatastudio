@@ -97,41 +97,42 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	protected async registerContent(view: azdata.ModelView) {
 		this._view = view;
 		this._igComponent = this.createStatusComponent(view); // The first component giving basic information
-		this._assessmentStatusIcon = this._view.modelBuilder.image().withProps({
-			iconPath: IconPathHelper.completedMigration,
-			iconHeight: 17,
-			iconWidth: 17,
-			width: 20,
-			height: 20
-		}).component();
-		const igContainer = this._view.modelBuilder.flexContainer().withProps({
-			CSSStyles: {
-				'align-items': 'center'
-			}
-		}).component();
+		this._assessmentStatusIcon = this._view.modelBuilder.image()
+			.withProps({
+				iconPath: IconPathHelper.completedMigration,
+				iconHeight: 17,
+				iconWidth: 17,
+				width: 20,
+				height: 20
+			}).component();
+		const igContainer = this._view.modelBuilder.flexContainer()
+			.withProps({ CSSStyles: { 'align-items': 'center' } })
+			.component();
 		igContainer.addItem(this._assessmentStatusIcon, { flex: '0 0 auto' });
 		igContainer.addItem(this._igComponent, { flex: '0 0 auto' });
 
 		this._detailsComponent = this.createDetailsComponent(view); // The details of what can be moved
-		this._skipAssessmentCheckbox = view.modelBuilder.checkBox().withProps({
-			label: constants.SKU_RECOMMENDATION_ASSESSMENT_ERROR_BYPASS,
-			checked: false,
-			CSSStyles: {
-				...styles.SECTION_HEADER_CSS,
-				'margin': '10px 0 0 0',
-				'display': 'none'
-			},
-		}).component();
-		this._skipAssessmentSubText = view.modelBuilder.text().withProps({
-			value: constants.SKU_RECOMMENDATION_ASSESSMENT_ERROR_DETAIL,
-			CSSStyles: {
-				'margin': '0 0 0 15px',
-				'font-size': '13px',
-				'color': 'red',
-				'width': '590px',
-				'display': 'none'
-			},
-		}).component();
+		this._skipAssessmentCheckbox = view.modelBuilder.checkBox()
+			.withProps({
+				label: constants.SKU_RECOMMENDATION_ASSESSMENT_ERROR_BYPASS,
+				checked: false,
+				CSSStyles: {
+					...styles.SECTION_HEADER_CSS,
+					'margin': '10px 0 0 0',
+					'display': 'none'
+				},
+			}).component();
+		this._skipAssessmentSubText = view.modelBuilder.text()
+			.withProps({
+				value: constants.SKU_RECOMMENDATION_ASSESSMENT_ERROR_DETAIL,
+				CSSStyles: {
+					'margin': '0 0 0 15px',
+					'font-size': '13px',
+					'color': 'red',
+					'width': '590px',
+					'display': 'none'
+				},
+			}).component();
 
 		this._disposables.push(
 			this._skipAssessmentCheckbox.onChanged(
@@ -162,61 +163,55 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				this._detailsComponent,
 				refreshAssessmentButton,
 				this._skipAssessmentCheckbox,
-				this._skipAssessmentSubText,
-			]).withProps({
-				CSSStyles: { 'margin': '0' }
-			}).component();
+				this._skipAssessmentSubText])
+			.withProps({ CSSStyles: { 'margin': '0' } })
+			.component();
 		this._chooseTargetComponent = await this.createChooseTargetComponent(view);
 		const _azureRecommendationsContainer = this.createAzureRecommendationContainer(view);
 		this.assessmentGroupContainer = await this.createViewAssessmentsContainer();
-		this._formContainer = view.modelBuilder.formContainer().withFormItems([
-			{ component: statusContainer, title: '' },
-			{ component: this._chooseTargetComponent },
-			{ component: _azureRecommendationsContainer },
-			{ component: this.assessmentGroupContainer },
-		]).withProps({
-			CSSStyles: {
-				'display': 'none',
-				'padding-top': '0',
-			}
-		});
+		this._formContainer = view.modelBuilder.formContainer()
+			.withFormItems([
+				{ component: statusContainer, title: '' },
+				{ component: this._chooseTargetComponent },
+				{ component: _azureRecommendationsContainer },
+				{ component: this.assessmentGroupContainer }])
+			.withProps({
+				CSSStyles: {
+					'display': 'none',
+					'padding-top': '0',
+				}
+			});
 
-		this._assessmentComponent = this._view.modelBuilder.flexContainer().withLayout({
-			height: '100%',
-			flexFlow: 'column'
-		}).withProps({
-			CSSStyles: {
-				'margin-left': '30px'
-			}
-		}).component();
+		this._assessmentComponent = this._view.modelBuilder.flexContainer()
+			.withLayout({ height: '100%', flexFlow: 'column' })
+			.withProps({ CSSStyles: { 'margin-left': '30px' } })
+			.component();
 
 		this._assessmentComponent.addItem(this.createAssessmentProgress(), { flex: '0 0 auto' });
 		this._assessmentComponent.addItem(await this.createAssessmentInfo(), { flex: '0 0 auto' });
 
-		this._rootContainer = this._view.modelBuilder.flexContainer().withLayout({
-			height: '100%',
-			flexFlow: 'column'
-		}).withProps({
-			ariaLive: 'polite',
-		}).component();
+		this._rootContainer = this._view.modelBuilder.flexContainer()
+			.withLayout({ height: '100%', flexFlow: 'column' })
+			.withProps({ ariaLive: 'polite' })
+			.component();
 		this._rootContainer.addItem(this._assessmentComponent, { flex: '0 0 auto' });
 		this._rootContainer.addItem(this._formContainer.component(), { flex: '0 0 auto' });
 
-		this._disposables.push(this._view.onClosed(e => {
-			this._disposables.forEach(
-				d => { try { d.dispose(); } catch { } });
-		}));
+		this._disposables.push(this._view.onClosed(
+			e => this._disposables.forEach(
+				d => { try { d.dispose(); } catch { } })));
 
 		await this._view.initializeModel(this._rootContainer);
 	}
 
 	private createStatusComponent(view: azdata.ModelView): azdata.TextComponent {
-		const component = view.modelBuilder.text().withProps({
-			CSSStyles: {
-				...styles.SECTION_HEADER_CSS,
-				'margin-left': '8px'
-			}
-		}).component();
+		const component = view.modelBuilder.text()
+			.withProps({
+				CSSStyles: {
+					...styles.SECTION_HEADER_CSS,
+					'margin-left': '8px'
+				}
+			}).component();
 		return component;
 	}
 
@@ -349,7 +344,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 	private async createViewAssessmentsContainer(): Promise<azdata.FlexContainer> {
 		this._viewAssessmentsHelperText = this._view.modelBuilder.text().withProps({
-			value: constants.SKU_RECOMMENDATION_VIEW_ASSESSMENT_MI, // TODO?
+			value: constants.SKU_RECOMMENDATION_VIEW_ASSESSMENT_MI,
 			CSSStyles: { ...styles.SECTION_HEADER_CSS },
 			width: WIZARD_INPUT_COMPONENT_WIDTH
 		}).component();
@@ -357,9 +352,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		const button = this._view.modelBuilder.button().withProps({
 			label: constants.VIEW_SELECT_BUTTON_LABEL,
 			width: 100,
-			CSSStyles: {
-				'margin': '12px 0'
-			}
+			CSSStyles: { 'margin': '12px 0' }
 		}).component();
 
 		const serverName = this.migrationStateModel.serverName || (await this.migrationStateModel.getSourceConnectionProfile()).serverName;

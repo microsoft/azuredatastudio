@@ -9,21 +9,26 @@ import { AzureSqlDatabase, AzureSqlDatabaseServer } from './azure';
 import { generateGuid } from './utils';
 import * as utils from '../api/utils';
 
-// private readonly sqldb_object_count_sql_query: string = `
-// SELECT type, COUNT(*) AS objectCount FROM [sys].[objects]
-//   GROUP BY type
-// UNION ALL
-// 	SELECT 'index', COUNT(*) FROM sys.indexes
-// UNION ALL
-// 	SELECT 'trigger', COUNT(*) FROM sys.triggers
-// UNION ALL
-// 	SELECT 'role', COUNT(*) FROM sys.database_principals
-// 		WHERE type='R'
-// UNION ALL
-// 	SELECT 'database_audit_spec', COUNT(*) FROM sys.database_audit_specifications";`;
+const query_target_database_tables_sql = `
+	SELECT
+		DB_NAME() as database_name,
+		QUOTENAME(SCHEMA_NAME(o.schema_id)) + '.' + QUOTENAME(o.name) AS table_name,
+		SUM(p.Rows) AS row_count
+	FROM
+		sys.objects AS o
+	INNER JOIN sys.partitions AS p
+		ON o.object_id = p.object_id
+	WHERE
+		o.type = 'U'
+		AND o.is_ms_shipped = 0x0
+		AND index_id < 2 -- 0:Heap, 1:Clustered
+	GROUP BY
+		o.schema_id,
+		o.name
+	ORDER BY table_name;`;
 
 const query_target_databases_sql = `
-	select
+	SELECT
 		('servername') as server_name,
 		SERVERPROPERTY ('collation') as server_collation,
 		db.database_id as database_id,
@@ -32,10 +37,11 @@ const query_target_databases_sql = `
 		CASE WHEN 'A' = 'a' THEN 0 ELSE 1 END as is_server_case_sensitive,
 		db.state as database_state,
 		db.is_read_only	as is_read_only
-	from sys.databases db
-	where db.name not in ('master', 'tempdb', 'model', 'msdb')
-	and is_distributor <> 1
-	order by db.name;`;
+	FROM sys.databases db
+	WHERE
+		db.name not in ('master', 'tempdb', 'model', 'msdb')
+		AND is_distributor <> 1
+	ORDER BY db.name;`;
 
 export const excludeDatabses: string[] = [
 	'master',
@@ -44,15 +50,66 @@ export const excludeDatabses: string[] = [
 	'model'
 ];
 
+export enum AuthenticationType {
+	Integrated = 'Integrated',
+	SqlLogin = 'SqlLogin'
+}
+
+export interface TargetTableInfo {
+	databaseName: string;
+	tableName: string;
+	rowCount: number;
+	selectedForMigration: boolean;
+}
+
 export interface TargetDatabaseInfo {
-	server_name: string;
-	server_collation: string;
-	database_id: string;
-	database_name: string;
-	database_collation: string;
-	is_server_case_sensitive: boolean;
-	database_state: number;
-	is_read_only: boolean;
+	serverName: string;
+	serverCollation: string;
+	databaseId: string;
+	databaseName: string;
+	databaseCollation: string;
+	isServerCaseSensitive: boolean;
+	databaseState: number;
+	isReadOnly: boolean;
+	targetTables: Map<string, TargetTableInfo>;
+}
+
+function getSqlDbConnectionProfile(
+	serverName: string,
+	tenantId: string,
+	databaseName: string,
+	userName: string,
+	password: string): azdata.IConnectionProfile {
+	return {
+		id: generateGuid(),
+		providerName: 'MSSQL',
+		connectionName: '',
+		serverName: serverName,
+		databaseName: databaseName,
+		userName: userName,
+		password: password,
+		authenticationType: AuthenticationType.SqlLogin, // 1
+		savePassword: false,
+		saveProfile: false,
+		options: {
+			conectionName: '',
+			server: serverName,
+			database: databaseName,
+			authenticationType: AuthenticationType.SqlLogin,
+			user: userName,
+			password: password,
+			connectionTimeout: 30,
+			columnEncryptionSetting: 'Enabled',
+			encrypt: true,
+			trustServerCertificate: false,
+			connectRetryCount: '1',
+			connectRetryInterval: '10',
+			applicationName: 'azdata',
+			azureTenantId: tenantId,
+			originalDatabase: databaseName,
+			databaseDisplayName: databaseName,
+		},
+	};
 }
 
 function getConnectionProfile(
@@ -73,8 +130,58 @@ function getConnectionProfile(
 		groupId: '',
 		providerName: 'MSSQL',
 		saveProfile: false,
-		options: {},
+		options: {
+			conectionName: '',
+			server: serverName,
+			authenticationType: AuthenticationType.SqlLogin,
+			user: userName,
+			password: password,
+			connectionTimeout: 30,
+			columnEncryptionSetting: 'Enabled',
+			encrypt: true,
+			trustServerCertificate: false,
+			connectRetryCount: '1',
+			connectRetryInterval: '10',
+			applicationName: 'azdata',
+		},
 	};
+}
+
+export async function collectTargetDatabaseTableInfo(
+	targetServer: AzureSqlDatabaseServer,
+	targetDatabaseName: string,
+	tenantId: string,
+	userName: string,
+	password: string): Promise<TargetTableInfo[]> {
+	const connectionProfile = getSqlDbConnectionProfile(
+		targetServer.properties.fullyQualifiedDomainName,
+		tenantId,
+		targetDatabaseName,
+		userName,
+		password);
+
+	const result = await azdata.connection.connect(connectionProfile, false, false);
+	if (result.connected && result.connectionId) {
+		const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(
+			'MSSQL',
+			azdata.DataProviderType.QueryProvider);
+
+		const ownerUri = await azdata.connection.getUriForConnection(result.connectionId);
+		const results = await queryProvider.runQueryAndReturn(
+			ownerUri,
+			query_target_database_tables_sql);
+
+		return results.rows.map(row => {
+			return {
+				databaseName: getSqlString(row[0]),
+				tableName: getSqlString(row[1]),
+				rowCount: getSqlNumber(row[2]),
+				selectedForMigration: false,
+			};
+		}) ?? [];
+	}
+
+	throw new Error(result.errorMessage);
 }
 
 export async function collectTargetDatabaseInfo(
@@ -101,14 +208,15 @@ export async function collectTargetDatabaseInfo(
 
 		return results.rows.map(row => {
 			return {
-				server_name: getSqlString(row[0]),
-				server_collation: getSqlString(row[1]),
-				database_id: getSqlString(row[2]),
-				database_name: getSqlString(row[3]),
-				database_collation: getSqlString(row[4]),
-				is_server_case_sensitive: getSqlBoolean(row[5]),
-				database_state: getSqlNumber(row[6]),
-				is_read_only: getSqlBoolean(row[7]),
+				serverName: getSqlString(row[0]),
+				serverCollation: getSqlString(row[1]),
+				databaseId: getSqlString(row[2]),
+				databaseName: getSqlString(row[3]),
+				databaseCollation: getSqlString(row[4]),
+				isServerCaseSensitive: getSqlBoolean(row[5]),
+				databaseState: getSqlNumber(row[6]),
+				isReadOnly: getSqlBoolean(row[7]),
+				targetTables: new Map(),
 			};
 		}) ?? [];
 	}
