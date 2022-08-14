@@ -11440,7 +11440,7 @@
 		"sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component": {
 			"bold": "Negrita",
 			"buttonPreview": "Alternancia de la vista previa de Markdown: desactivada",
-			"dropdownHeading": "Encabezado",
+			"headingDropdownLabel": "Text Size",
 			"highlight": "Resaltar",
 			"insertCode": "Insertar código",
 			"insertImage": "Inserción de una imagen",

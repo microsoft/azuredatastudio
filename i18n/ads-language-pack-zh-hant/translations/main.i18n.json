@@ -11440,7 +11440,7 @@
 		"sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component": {
 			"bold": "粗體",
 			"buttonPreview": "Markdown 預覽切換 - 關閉",
-			"dropdownHeading": "標題",
+			"headingDropdownLabel": "Text Size",
 			"highlight": "醒目提示",
 			"insertCode": "插入程式碼",
 			"insertImage": "插入影像",

@@ -11440,7 +11440,7 @@
 		"sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component": {
 			"bold": "Полужирный",
 			"buttonPreview": "Переключить предварительный просмотр Markdown — отключено",
-			"dropdownHeading": "Заголовок",
+			"headingDropdownLabel": "Text Size",
 			"highlight": "Выделить цветом",
 			"insertCode": "Вставить код",
 			"insertImage": "Вставка изображения",
