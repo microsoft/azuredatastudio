@@ -3470,7 +3470,7 @@
     <body>
       <trans-unit id="ep.topOperationsCopyTableData">
         <source xml:lang="en">Copy</source>
-        <target state="new">Copy</target>
+        <target state="translated">コピー</target>
       </trans-unit>
       <trans-unit id="executionPlanPropertyViewClose">
         <source xml:lang="en">Close</source>
@@ -4474,7 +4474,7 @@ Error: {1}</source>
       </trans-unit>
       <trans-unit id="headingDropdownLabel">
         <source xml:lang="en">Text Size</source>
-        <target state="new">Text Size</target>
+        <target state="translated">テキスト サイズ</target>
       </trans-unit>
       <trans-unit id="highlight">
         <source xml:lang="en">Highlight</source>
@@ -5738,15 +5738,15 @@ Error: {1}</source>
     <body>
       <trans-unit id="query.QueryErrorOccured">
         <source xml:lang="en">Error occured while executing the query.</source>
-        <target state="new">Error occured while executing the query.</target>
+        <target state="translated">クエリの実行中にエラーが発生しました。</target>
       </trans-unit>
       <trans-unit id="query.QueryExecutionEnded">
         <source xml:lang="en">Query execution completed.</source>
-        <target state="new">Query execution completed.</target>
+        <target state="translated">クエリの実行が完了しました。</target>
       </trans-unit>
       <trans-unit id="query.QueryExecutionStarted">
         <source xml:lang="en">Query execution started.</source>
-        <target state="new">Query execution started.</target>
+        <target state="translated">クエリの実行が開始されました。</target>
       </trans-unit>
       <trans-unit id="resultsGrid">
         <source xml:lang="en">Results grid</source>

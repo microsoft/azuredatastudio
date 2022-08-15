@@ -340,11 +340,11 @@ L'operazione potrebbe richiedere qualche minuto.</target>
       </trans-unit>
       <trans-unit id="sql.migration.create.new.migration.service">
         <source xml:lang="en">Create new migration service</source>
-        <target state="new">Create new migration service</target>
+        <target state="translated">Crea nuovo servizio di migrazione</target>
       </trans-unit>
       <trans-unit id="sql.migration.create.new.resource.group">
         <source xml:lang="en">Create new resource group</source>
-        <target state="new">Create new resource group</target>
+        <target state="translated">Crea nuovo gruppo di risorse</target>
       </trans-unit>
       <trans-unit id="sql.migration.creating.rg.loading">
         <source xml:lang="en">Creating resource group</source>

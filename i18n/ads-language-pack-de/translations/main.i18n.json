@@ -11178,7 +11178,7 @@
 			"nodePropertyViewNameValueColumnHeader": "Wert"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase": {
-			"ep.topOperationsCopyTableData": "Copy",
+			"ep.topOperationsCopyTableData": "Kopieren",
 			"executionPlanPropertyViewClose": "Schließen",
 			"executionPlanPropertyViewSortAlphabetically": "Alphabetisch",
 			"executionPlanPropertyViewSortByDisplayOrder": "Wichtigkeit",
@@ -11440,7 +11440,7 @@
 		"sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component": {
 			"bold": "Fett",
 			"buttonPreview": "Markdownvorschau umschalten – aus",
-			"headingDropdownLabel": "Text Size",
+			"headingDropdownLabel": "Textgröße",
 			"highlight": "Hervorheben",
 			"insertCode": "Code einfügen",
 			"insertImage": "Bild einfügen",
@@ -11788,9 +11788,9 @@
 			"status.query.flavor": "SQL-Sprachvariante"
 		},
 		"sql/workbench/contrib/query/browser/gridPanel": {
-			"query.QueryErrorOccured": "Error occured while executing the query.",
-			"query.QueryExecutionEnded": "Query execution completed.",
-			"query.QueryExecutionStarted": "Query execution started.",
+			"query.QueryErrorOccured": "Fehler beim Ausführen der Abfrage.",
+			"query.QueryExecutionEnded": "Abfrageausführung abgeschlossen.",
+			"query.QueryExecutionStarted": "Abfrageausführung gestartet.",
 			"resultsGrid": "Ergebnisraster",
 			"resultsGrid.maxRowCountExceeded": "Die maximale Zeilenanzahl für das Filtern/Sortieren wurde überschritten. Navigieren Sie zu \"Benutzereinstellungen\", und ändern Sie die Einstellung \"queryEditor.results.inMemoryDataProcessingThreshold\", um sie zu aktualisieren.",
 			"xmlShowplan": "XML-Showplan"
