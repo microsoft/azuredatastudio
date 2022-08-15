@@ -215,6 +215,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			return azureResourceUtils.makeHttpRequest(account, subscription, path, requestType, requestBody, ignoreErrors, host, requestHeaders);
 		},
 		getRegionDisplayName: utils.getRegionDisplayName,
+		getProviderMetadataForAccount(account: azurecore.AzureAccount) {
+			return azureResourceUtils.getProviderMetadataForAccount(account);
+		},
 		runGraphQuery<T extends azurecore.azureResource.AzureGraphResource>(account: azurecore.AzureAccount,
 			subscriptions: azurecore.azureResource.AzureResourceSubscription[],
 			ignoreErrors: boolean,

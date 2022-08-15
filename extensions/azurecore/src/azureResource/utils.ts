@@ -7,7 +7,7 @@ import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 import { TokenCredentials } from '@azure/ms-rest-js';
 import axios, { AxiosRequestConfig } from 'axios';
 import * as azdata from 'azdata';
-import { AzureRestResponse, GetResourceGroupsResult, GetSubscriptionsResult, ResourceQueryResult, GetBlobContainersResult, GetFileSharesResult, HttpRequestMethod, GetLocationsResult, GetManagedDatabasesResult, CreateResourceGroupResult, GetBlobsResult, GetStorageAccountAccessKeyResult, AzureAccount, azureResource } from 'azurecore';
+import { AzureRestResponse, GetResourceGroupsResult, GetSubscriptionsResult, ResourceQueryResult, GetBlobContainersResult, GetFileSharesResult, HttpRequestMethod, GetLocationsResult, GetManagedDatabasesResult, CreateResourceGroupResult, GetBlobsResult, GetStorageAccountAccessKeyResult, AzureAccount, azureResource, AzureAccountProviderMetadata } from 'azurecore';
 import { EOL } from 'os';
 import * as nls from 'vscode-nls';
 import { AppContext } from '../appContext';
@@ -16,6 +16,7 @@ import { AzureResourceServiceNames } from './constants';
 import { IAzureResourceSubscriptionFilterService, IAzureResourceSubscriptionService } from './interfaces';
 import { AzureResourceGroupService } from './providers/resourceGroup/resourceGroupService';
 import { BlobServiceClient, StorageSharedKeyCredential } from '@azure/storage-blob';
+import providerSettings from '../account-provider/providerSettings';
 
 const localize = nls.loadMessageBundle();
 
@@ -155,7 +156,8 @@ export async function getLocations(appContext: AppContext, account?: AzureAccoun
 
 	try {
 		const path = `/subscriptions/${subscription.id}/locations?api-version=2020-01-01`;
-		const response = await makeHttpRequest(account, subscription, path, HttpRequestMethod.GET, undefined, ignoreErrors);
+		const host = getProviderMetadataForAccount(account).settings.armResource.endpoint;
+		const response = await makeHttpRequest(account, subscription, path, HttpRequestMethod.GET, undefined, ignoreErrors, host);
 		result.locations.push(...response.response.data.value);
 		result.errors.push(...response.errors);
 	} catch (err) {
@@ -431,7 +433,8 @@ export async function makeHttpRequest(account: AzureAccount, subscription: azure
 
 export async function getManagedDatabases(account: AzureAccount, subscription: azureResource.AzureResourceSubscription, managedInstance: azureResource.AzureSqlManagedInstance, ignoreErrors: boolean): Promise<GetManagedDatabasesResult> {
 	const path = `/subscriptions/${subscription.id}/resourceGroups/${managedInstance.resourceGroup}/providers/Microsoft.Sql/managedInstances/${managedInstance.name}/databases?api-version=2020-02-02-preview`;
-	const response = await makeHttpRequest(account, subscription, path, HttpRequestMethod.GET, undefined, ignoreErrors);
+	const host = getProviderMetadataForAccount(account).settings.armResource.endpoint;
+	const response = await makeHttpRequest(account, subscription, path, HttpRequestMethod.GET, undefined, ignoreErrors, host);
 	return {
 		databases: response?.response?.data?.value ?? [],
 		errors: response.errors ? response.errors : []
@@ -440,7 +443,8 @@ export async function getManagedDatabases(account: AzureAccount, subscription: a
 
 export async function getBlobContainers(account: AzureAccount, subscription: azureResource.AzureResourceSubscription, storageAccount: azureResource.AzureGraphResource, ignoreErrors: boolean): Promise<GetBlobContainersResult> {
 	const path = `/subscriptions/${subscription.id}/resourceGroups/${storageAccount.resourceGroup}/providers/Microsoft.Storage/storageAccounts/${storageAccount.name}/blobServices/default/containers?api-version=2019-06-01`;
-	const response = await makeHttpRequest(account, subscription, path, HttpRequestMethod.GET, undefined, ignoreErrors);
+	const host = getProviderMetadataForAccount(account).settings.armResource.endpoint;
+	const response = await makeHttpRequest(account, subscription, path, HttpRequestMethod.GET, undefined, ignoreErrors, host);
 	return {
 		blobContainers: response?.response?.data?.value ?? [],
 		errors: response.errors ? response.errors : []
@@ -449,7 +453,8 @@ export async function getBlobContainers(account: AzureAccount, subscription: azu
 
 export async function getFileShares(account: AzureAccount, subscription: azureResource.AzureResourceSubscription, storageAccount: azureResource.AzureGraphResource, ignoreErrors: boolean): Promise<GetFileSharesResult> {
 	const path = `/subscriptions/${subscription.id}/resourceGroups/${storageAccount.resourceGroup}/providers/Microsoft.Storage/storageAccounts/${storageAccount.name}/fileServices/default/shares?api-version=2019-06-01`;
-	const response = await makeHttpRequest(account, subscription, path, HttpRequestMethod.GET, undefined, ignoreErrors);
+	const host = getProviderMetadataForAccount(account).settings.armResource.endpoint;
+	const response = await makeHttpRequest(account, subscription, path, HttpRequestMethod.GET, undefined, ignoreErrors, host);
 	return {
 		fileShares: response?.response?.data?.value ?? [],
 		errors: response.errors ? response.errors : []
@@ -461,7 +466,8 @@ export async function createResourceGroup(account: AzureAccount, subscription: a
 	const requestBody = {
 		location: location
 	};
-	const response = await makeHttpRequest(account, subscription, path, HttpRequestMethod.PUT, requestBody, ignoreErrors);
+	const host = getProviderMetadataForAccount(account).settings.armResource.endpoint;
+	const response = await makeHttpRequest(account, subscription, path, HttpRequestMethod.PUT, requestBody, ignoreErrors, host);
 	return {
 		resourceGroup: response?.response?.data,
 		errors: response.errors ? response.errors : []
@@ -470,7 +476,8 @@ export async function createResourceGroup(account: AzureAccount, subscription: a
 
 export async function getStorageAccountAccessKey(account: AzureAccount, subscription: azureResource.AzureResourceSubscription, storageAccount: azureResource.AzureGraphResource, ignoreErrors: boolean): Promise<GetStorageAccountAccessKeyResult> {
 	const path = `/subscriptions/${subscription.id}/resourceGroups/${storageAccount.resourceGroup}/providers/Microsoft.Storage/storageAccounts/${storageAccount.name}/listKeys?api-version=2019-06-01`;
-	const response = await makeHttpRequest(account, subscription, path, HttpRequestMethod.POST, undefined, ignoreErrors);
+	const host = getProviderMetadataForAccount(account).settings.armResource.endpoint;
+	const response = await makeHttpRequest(account, subscription, path, HttpRequestMethod.POST, undefined, ignoreErrors, host);
 	return {
 		keyName1: response?.response?.data?.keys[0].value ?? '',
 		keyName2: response?.response?.data?.keys[0].value ?? '',
@@ -504,4 +511,12 @@ export async function getBlobs(account: AzureAccount, subscription: azureResourc
 		}
 	}
 	return result;
+}
+
+export function getProviderMetadataForAccount(account: AzureAccount): AzureAccountProviderMetadata {
+	const provider = providerSettings.find(provider => {
+		return account.properties.providerSettings.id === provider.metadata.id;
+	});
+
+	return provider.metadata;
 }
