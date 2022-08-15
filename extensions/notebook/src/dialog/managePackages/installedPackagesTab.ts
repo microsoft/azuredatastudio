@@ -93,7 +93,7 @@ export class InstalledPackagesTab {
 						}
 					],
 					data: [[]],
-					height: '500px',
+					height: '480px',
 					width: '400px'
 				}).component();
 			this.disposables.push(this.installedPackagesTable.onCellAction(async (rowState) => {
