@@ -226,7 +226,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public readonly _refreshGetSkuRecommendationIntervalInMinutes = 10;
 	public readonly _performanceDataQueryIntervalInSeconds = 30;
-	public readonly _staticDataQueryIntervalInSeconds = 15;
+	public readonly _staticDataQueryIntervalInSeconds = 60;
 	public readonly _numberOfPerformanceDataQueryIterations = 19;
 	public readonly _defaultDataPointStartTime = '1900-01-01 00:00:00';
 	public readonly _defaultDataPointEndTime = '2200-01-01 00:00:00';
@@ -273,8 +273,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 		this._skuScalingFactor = 100;
 		this._skuTargetPercentile = 95;
-		this._skuEnablePreview = true;
 		this._skuEnablePreview = false;
+		this._skuEnableElastic = false;
 	}
 
 	public get sourceConnectionId(): string {

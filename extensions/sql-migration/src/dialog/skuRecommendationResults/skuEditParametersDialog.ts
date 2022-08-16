@@ -26,10 +26,7 @@ export class SkuEditParametersDialog {
 	private _enablePreviewValue!: boolean;
 	private _enableElasticRecommendation!: boolean;
 
-	constructor(public skuRecommendationPage: SKURecommendationPage, public migrationStateModel: MigrationStateModel) {
-		this._enablePreviewValue = true;
-		this._enablePreviewValue = false;
-	}
+	constructor(public skuRecommendationPage: SKURecommendationPage, public migrationStateModel: MigrationStateModel) { }
 
 	private async initializeDialog(dialog: azdata.window.Dialog): Promise<void> {
 		return new Promise<void>((resolve, reject) => {

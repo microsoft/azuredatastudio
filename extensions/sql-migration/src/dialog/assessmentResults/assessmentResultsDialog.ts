@@ -83,17 +83,19 @@ export class AssessmentResultsDialog {
 			this._disposables.push(
 				this._saveButton.onClick(async () => {
 					const folder = await utils.promptUserForFolder();
-					const destinationFilePath = path.join(folder, AssessmentResultsDialog._assessmentReportName);
-					if (this.model._assessmentReportFilePath) {
-						fs.copyFile(this.model._assessmentReportFilePath, destinationFilePath, (err) => {
-							if (err) {
-								console.log(err);
-							} else {
-								void vscode.window.showInformationMessage(constants.SAVE_ASSESSMENT_REPORT_SUCCESS(destinationFilePath));
-							}
-						});
-					} else {
-						console.log('assessment report not found');
+					if (folder) {
+						const destinationFilePath = path.join(folder, AssessmentResultsDialog._assessmentReportName);
+						if (this.model._assessmentReportFilePath) {
+							fs.copyFile(this.model._assessmentReportFilePath, destinationFilePath, (err) => {
+								if (err) {
+									console.log(err);
+								} else {
+									void vscode.window.showInformationMessage(constants.SAVE_ASSESSMENT_REPORT_SUCCESS(destinationFilePath));
+								}
+							});
+						} else {
+							console.log('assessment report not found');
+						}
 					}
 				}));
 			this.dialog.customButtons = [this._saveButton];

@@ -513,38 +513,39 @@ export class SkuRecommendationResultsDialog {
 			this._disposables.push(
 				this._saveButton.onClick(async () => {
 					const folder = await utils.promptUserForFolder();
+					if (folder) {
+						if (this.model._skuRecommendationReportFilePaths) {
 
-					if (this.model._skuRecommendationReportFilePaths) {
+							let sourceFilePath: string | undefined;
+							let destinationFilePath: string | undefined;
 
-						let sourceFilePath: string | undefined;
-						let destinationFilePath: string | undefined;
+							switch (this._targetType) {
+								case MigrationTargetType.SQLMI:
+									sourceFilePath = this.model._skuRecommendationReportFilePaths.find(filePath => filePath.includes('SkuRecommendationReport-AzureSqlManagedInstance'));
+									destinationFilePath = path.join(folder, 'SkuRecommendationReport-AzureSqlManagedInstance.html');
+									break;
 
-						switch (this._targetType) {
-							case MigrationTargetType.SQLMI:
-								sourceFilePath = this.model._skuRecommendationReportFilePaths.find(filePath => filePath.includes('SkuRecommendationReport-AzureSqlManagedInstance'));
-								destinationFilePath = path.join(folder, 'SkuRecommendationReport-AzureSqlManagedInstance.html');
-								break;
+								case MigrationTargetType.SQLVM:
+									sourceFilePath = this.model._skuRecommendationReportFilePaths.find(filePath => filePath.includes('SkuRecommendationReport-AzureSqlVirtualMachine'));
+									destinationFilePath = path.join(folder, 'SkuRecommendationReport-AzureSqlVirtualMachine.html');
+									break;
 
-							case MigrationTargetType.SQLVM:
-								sourceFilePath = this.model._skuRecommendationReportFilePaths.find(filePath => filePath.includes('SkuRecommendationReport-AzureSqlVirtualMachine'));
-								destinationFilePath = path.join(folder, 'SkuRecommendationReport-AzureSqlVirtualMachine.html');
-								break;
-
-							case MigrationTargetType.SQLDB:
-								sourceFilePath = this.model._skuRecommendationReportFilePaths.find(filePath => filePath.includes('SkuRecommendationReport-AzureSqlDatabase'));
-								destinationFilePath = path.join(folder, 'SkuRecommendationReport-AzureSqlDatabase.html');
-								break;
-						}
-
-						fs.copyFile(sourceFilePath!, destinationFilePath, (err) => {
-							if (err) {
-								console.log(err);
-							} else {
-								void vscode.window.showInformationMessage(constants.SAVE_RECOMMENDATION_REPORT_SUCCESS(destinationFilePath!));
+								case MigrationTargetType.SQLDB:
+									sourceFilePath = this.model._skuRecommendationReportFilePaths.find(filePath => filePath.includes('SkuRecommendationReport-AzureSqlDatabase'));
+									destinationFilePath = path.join(folder, 'SkuRecommendationReport-AzureSqlDatabase.html');
+									break;
 							}
-						});
-					} else {
-						console.log('recommendation report not found');
+
+							fs.copyFile(sourceFilePath!, destinationFilePath, (err) => {
+								if (err) {
+									console.log(err);
+								} else {
+									void vscode.window.showInformationMessage(constants.SAVE_RECOMMENDATION_REPORT_SUCCESS(destinationFilePath!));
+								}
+							});
+						} else {
+							console.log('recommendation report not found');
+						}
 					}
 				}));
 			this.dialog.customButtons = [this._saveButton];
