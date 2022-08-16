@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vscode-nls';
-import * as path from 'path';
 import { SqlTargetPlatform } from 'sqldbproj';
 import * as utils from '../common/utils';
 
@@ -150,16 +149,18 @@ export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not 
 export const AdvancedOptionsButton = localize('advancedOptionsButton', 'Advanced...');
 export const AdvancedPublishOptions = localize('advancedPublishOptions', 'Advanced Publish Options');
 export const PublishOptions = localize('publishOptions', 'Publish Options');
+export const ExcludeObjectTypeTab = localize('excludeObjectTypes', 'Exclude Object Types');
 export const ResetButton: string = localize('reset', "Reset");
 export const OptionDescription: string = localize('optionDescription', "Option Description");
 export const OptionName: string = localize('optionName', "Option Name");
-export const OptionInclude: string = localize('Include', "Include");
-export function OptionNotFoundWarningMessage(label: string) { return localize('OptionNotFoundWarningMessage', "label: {0} does not exist in the options value name lookup", label); }
+export const OptionInclude: string = localize('include', "Include");
+export function OptionNotFoundWarningMessage(label: string) { return localize('optionNotFoundWarningMessage', "label: {0} does not exist in the options value name lookup", label); }
 
 // Deploy
 export const SqlServerName = 'SQL server';
 export const AzureSqlServerName = 'Azure SQL server';
 export const SqlServerDockerImageName = 'Microsoft SQL Server';
+export const SqlServerDocker2022ImageName = 'Microsoft SQL Server 2022 (preview)';
 export const AzureSqlDbFullDockerImageName = 'Azure SQL Database emulator Full';
 export const AzureSqlDbLiteDockerImageName = 'Azure SQL Database emulator Lite';
 export const AzureSqlLogicalServerName = 'Azure SQL logical server';
@@ -201,8 +202,8 @@ export const eulaAgreementTemplate = localize({ key: 'eulaAgreementTemplate', co
 export function eulaAgreementText(name: string) { return localize({ key: 'eulaAgreementText', comment: ['The placeholders are contents of the line and should not be translated.'] }, "I accept the {0}.", name); }
 export const eulaAgreementTitle = localize('eulaAgreementTitle', "Microsoft SQL Server License Agreement");
 export const edgeEulaAgreementTitle = localize('edgeEulaAgreementTitle', "Microsoft Azure SQL Edge License Agreement");
-export const sqlServerEulaLink = 'https://go.microsoft.com/fwlink/?linkid=857698';
-export const sqlServerEdgeEulaLink = 'https://go.microsoft.com/fwlink/?linkid=2139274';
+export const sqlServerEulaLink = 'https://aka.ms/mcr/osslegalnotice';
+export const sqlServerEdgeEulaLink = 'https://aka.ms/mcr/osslegalnotice';
 export const connectionNamePrefix = 'SQLDbProject';
 export const sqlServerDockerRegistry = 'mcr.microsoft.com';
 export const sqlServerDockerRepository = 'mssql/server';
@@ -456,7 +457,6 @@ export const Sdk: string = 'Sdk';
 export const DatabaseSource = 'DatabaseSource';
 export const VisualStudioVersion = 'VisualStudioVersion';
 export const SSDTExists = 'SSDTExists';
-export const OutputPath = 'OutputPath';
 
 export const BuildElements = localize('buildElements', "Build Elements");
 export const FolderElements = localize('folderElements', "Folder Elements");
@@ -494,8 +494,6 @@ export const RoundTripSqlDbPresentCondition = '\'$(NetCoreBuild)\' != \'true\' A
 export const RoundTripSqlDbNotPresentCondition = '\'$(NetCoreBuild)\' != \'true\' AND \'$(SQLDBExtensionsRefPath)\' == \'\'';
 export const DacpacRootPath = '$(DacPacRootPath)';
 export const ProjJsonToClean = '$(BaseIntermediateOutputPath)\\project.assets.json';
-
-export function defaultOutputPath() { return path.join('bin', 'Debug'); }
 
 // Sqlproj VS property conditions
 export const VSVersionCondition = '\'$(VisualStudioVersion)\' == \'\'';

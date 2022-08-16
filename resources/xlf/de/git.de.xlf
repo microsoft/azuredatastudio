@@ -934,6 +934,14 @@ Die Dateien gehen DAUERHAFT VERLOREN.</target>
         <source xml:lang="en">Don't Show Again</source>
         <target state="translated">Nicht mehr anzeigen</target>
       </trans-unit>
+      <trans-unit id="no">
+        <source xml:lang="en">No</source>
+        <target state="translated">Nein</target>
+      </trans-unit>
+      <trans-unit id="ok">
+        <source xml:lang="en">OK</source>
+        <target state="translated">OK</target>
+      </trans-unit>
       <trans-unit id="open">
         <source xml:lang="en">Open</source>
         <target state="translated">Öffnen</target>
@@ -966,6 +974,18 @@ Die Dateien gehen DAUERHAFT VERLOREN.</target>
         <source xml:lang="en">Successfully pushed.</source>
         <target state="translated">Push wurde erfolgreich ausgeführt.</target>
       </trans-unit>
+      <trans-unit id="scm button publish title">
+        <source xml:lang="en">$(cloud-upload) Publish Changes</source>
+        <target state="translated">$(cloud-upload) Änderungen veröffentlichen</target>
+      </trans-unit>
+      <trans-unit id="scm button publish tooltip">
+        <source xml:lang="en">Publish Changes</source>
+        <target state="translated">Änderungen veröffentlichen</target>
+      </trans-unit>
+      <trans-unit id="scm button sync title">
+        <source xml:lang="en"> Sync Changes $(sync){0}{1}</source>
+        <target state="translated"> Synchronisieren von Änderungen $(sync){0}{1}</target>
+      </trans-unit>
       <trans-unit id="staged changes">
         <source xml:lang="en">Staged Changes</source>
         <target state="translated">Gestagete Änderungen</target>
@@ -977,6 +997,10 @@ Die Dateien gehen DAUERHAFT VERLOREN.</target>
       <trans-unit id="sync is unpredictable">
         <source xml:lang="en">Syncing. Cancelling may cause serious damages to the repository</source>
         <target state="translated">Synchronisierung wird durchgeführt. Das Abbrechen des Vorgangs kann zu schweren Schäden am Repository führen.</target>
+      </trans-unit>
+      <trans-unit id="tooManyChangesWarning">
+        <source xml:lang="en">Too many changes were detected. Only the first {0} changes will be shown below.</source>
+        <target state="translated">Es wurden zu viele Änderungen erkannt. Im Folgenden werden nur die ersten {0} Änderungen angezeigt.</target>
       </trans-unit>
       <trans-unit id="untracked">
         <source xml:lang="en">Untracked</source>
@@ -1772,6 +1796,22 @@ Die Dateien gehen DAUERHAFT VERLOREN.</target>
         <source xml:lang="en">Controls whether to show a notification when a push is successful.</source>
         <target state="translated">Legt fest, ob bei einem erfolgreichen Push eine Benachrichtigung angezeigt werden soll.</target>
       </trans-unit>
+      <trans-unit id="config.showUnpublishedCommitsButton">
+        <source xml:lang="en">Controls whether to show an action button to sync or publish, if there are unpublished commits.</source>
+        <target state="translated">Steuert, ob eine Aktionsschaltfläche zum Synchronisieren oder Veröffentlichen angezeigt werden soll, wenn unveröffentlichte Commits vorhanden sind.</target>
+      </trans-unit>
+      <trans-unit id="config.showUnpublishedCommitsButton.always">
+        <source xml:lang="en">Always shows the action button, if there are unpublished commits.</source>
+        <target state="translated">Zeigt immer die Aktionsschaltfläche an, wenn unveröffentlichte Commits vorhanden sind.</target>
+      </trans-unit>
+      <trans-unit id="config.showUnpublishedCommitsButton.never">
+        <source xml:lang="en">Never shows the action button.</source>
+        <target state="translated">Zeigt die Aktionsschaltfläche nie an.</target>
+      </trans-unit>
+      <trans-unit id="config.showUnpublishedCommitsButton.whenEmpty">
+        <source xml:lang="en">Only shows the action button if there are no other changes and there are unpublished commits.</source>
+        <target state="translated">Zeigt die Aktionsschaltfläche nur an, wenn es keine anderen Änderungen gibt und nicht veröffentlichte Commits vorhanden sind.</target>
+      </trans-unit>
       <trans-unit id="config.smartCommitChanges">
         <source xml:lang="en">Control which changes are automatically staged by Smart Commit.</source>
         <target state="translated">Hiermit steuern Sie, welche Änderungen beim intelligenten Commit automatisch gestaget werden.</target>
@@ -1783,6 +1823,10 @@ Die Dateien gehen DAUERHAFT VERLOREN.</target>
       <trans-unit id="config.smartCommitChanges.tracked">
         <source xml:lang="en">Automatically stage tracked changes only.</source>
         <target state="translated">Es wurden nur nachverfolgte Änderungen automatisch gestaget.</target>
+      </trans-unit>
+      <trans-unit id="config.statusLimit">
+        <source xml:lang="en">Controls how to limit the number of changes that can be parsed from Git status command. Can be set to 0 for no limit.</source>
+        <target state="translated">Steuert, wie die Anzahl der Änderungen begrenzt wird, die über den Git-Statusbefehl analysiert werden können. Kann auf 0 (Null) festgelegt werden, um keinen Grenzwert zu setzen.</target>
       </trans-unit>
       <trans-unit id="config.suggestSmartCommit">
         <source xml:lang="en">Suggests to enable smart commit (commit all changes when there are no staged changes).</source>

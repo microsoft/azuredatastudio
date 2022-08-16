@@ -17,7 +17,7 @@ export class NoAzureCLIError extends Error implements azExt.ErrorWithLink {
 	}
 }
 
-export class AzureCLIArcExtError extends Error implements azExt.ErrorWithLink {
+export class NoAzureCLIArcExtError extends Error implements azExt.ErrorWithLink {
 	constructor() {
 		super(loc.arcdataExtensionNotInstalled);
 	}

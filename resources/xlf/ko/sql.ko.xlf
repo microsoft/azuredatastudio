@@ -257,8 +257,8 @@
         <target state="translated">확장을 다운로드하기 위한 보안 정책을 설정합니다.</target>
       </trans-unit>
       <trans-unit id="incompatible">
-        <source xml:lang="en">Unable to install extension '{0}' as it is not compatible with Azure Data Studio '{1}'.</source>
-        <target state="translated">'Azure Data Studio '{1}'과(와) 호환되지 않으므로 확장 '{0}'을(를) 설치할 수 없습니다.</target>
+        <source xml:lang="en">Unable to install version '{0}' of extension '{1}' as it is not compatible with Azure Data Studio '{2}'. Update to Azure Data Studio {3} to install the extension.</source>
+        <target state="translated">Azure Data Studio '{2}'와(과) 호환되지 않으므로 '{1}' 확장의 '{0}' 버전을 설치할 수 없습니다. 확장을 설치하려면 Azure Data Studio {3}(으)로 업데이트하세요.</target>
       </trans-unit>
       <trans-unit id="installExtensionCompletedAndReloadRequired">
         <source xml:lang="en">Installing extension {0} is completed. Please reload Azure Data Studio to enable it.</source>
@@ -871,10 +871,6 @@
         <source xml:lang="en">Cannot start a session, the manager is not yet initialized</source>
         <target state="translated">세션을 시작할 수 없습니다. 관리자가 아직 초기화되지 않았습니다.</target>
       </trans-unit>
-      <trans-unit id="notebookMultipleRequestsError">
-        <source xml:lang="en">Cannot execute code cell. Another cell is currently being executed.</source>
-        <target state="translated">코드 셀을 실행할 수 없습니다. 다른 셀이 현재 실행 중입니다.</target>
-      </trans-unit>
     </body>
   </file>
   <file original="src/sql/workbench/browser/actions" source-language="en" datatype="plaintext" target-language="ko">
@@ -923,6 +919,10 @@
   </file>
   <file original="src/sql/workbench/browser/designer/designer" source-language="en" datatype="plaintext" target-language="ko">
     <body>
+      <trans-unit id="designer.actions">
+        <source xml:lang="en">More Actions</source>
+        <target state="translated">기타 작업</target>
+      </trans-unit>
       <trans-unit id="designer.defaultRemoveRowConfirmationMessage">
         <source xml:lang="en">Are you sure you want to remove the row?</source>
         <target state="translated">행을 제거하시겠습니까?</target>
@@ -948,8 +948,8 @@
         <target state="translated">디자이너가 로드되었습니다.</target>
       </trans-unit>
       <trans-unit id="designer.moveRowText">
-        <source xml:lang="en">Move Row</source>
-        <target state="translated">행 이동</target>
+        <source xml:lang="en">Move</source>
+        <target state="translated">이동</target>
       </trans-unit>
       <trans-unit id="designer.processing">
         <source xml:lang="en">Processing...</source>
@@ -1029,11 +1029,11 @@
         <target state="translated">새로 추가</target>
       </trans-unit>
       <trans-unit id="designer.insertAfterSelectedColumn">
-        <source xml:lang="en">Insert after</source>
-        <target state="translated">다음에 삽입</target>
+        <source xml:lang="en">Insert After</source>
+        <target state="translated">뒤에 삽입</target>
       </trans-unit>
       <trans-unit id="designer.insertBeforeSelectedRow">
-        <source xml:lang="en">Insert before</source>
+        <source xml:lang="en">Insert Before</source>
         <target state="translated">앞에 삽입</target>
       </trans-unit>
       <trans-unit id="designer.moveRowDownAction">
@@ -1107,10 +1107,6 @@
       <trans-unit id="tableDesigner.OperationInProgressWarning">
         <source xml:lang="en">The operation cannot be performed while another operation is in progress.</source>
         <target state="translated">다른 작업이 진행 중인 동안에는 작업을 수행할 수 없습니다.</target>
-      </trans-unit>
-      <trans-unit id="tableDesigner.newTable">
-        <source xml:lang="en">New Table</source>
-        <target state="translated">새 테이블</target>
       </trans-unit>
     </body>
   </file>
@@ -1335,6 +1331,14 @@
       <trans-unit id="updateOperationName">
         <source xml:lang="en">Update</source>
         <target state="translated">업데이트</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/common/constants" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="notebookMultipleRequestsError">
+        <source xml:lang="en">Cannot execute code cell. Another cell is currently being executed.</source>
+        <target state="translated">코드 셀을 실행할 수 없습니다. 다른 셀이 현재 실행 중입니다.</target>
       </trans-unit>
     </body>
   </file>
@@ -3332,6 +3336,14 @@
         <source xml:lang="en">Loading similar areas in compared plans</source>
         <target state="translated">비교하는 계획의 비슷한 영역 로드 중</target>
       </trans-unit>
+      <trans-unit id="epCompare.searchNodeAction">
+        <source xml:lang="en">Find Node</source>
+        <target state="translated">노드 찾기</target>
+      </trans-unit>
+      <trans-unit id="epCompare.searchNodeActionAddedPlan">
+        <source xml:lang="en">Find Node - Added Plan</source>
+        <target state="translated">노드 찾기 - 추가된 계획</target>
+      </trans-unit>
       <trans-unit id="epCompare.toggleOrientation">
         <source xml:lang="en">Toggle Orientation</source>
         <target state="translated">방향 토글</target>
@@ -3352,6 +3364,10 @@
         <source xml:lang="en">Zoom to fit</source>
         <target state="translated">크기에 맞게 확대/축소</target>
       </trans-unit>
+      <trans-unit id="queryDropdownPrefix">
+        <source xml:lang="en">Query {0} of {1}: {2}</source>
+        <target state="translated">쿼리 {0}/{1}: {2}</target>
+      </trans-unit>
     </body>
   </file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView" source-language="en" datatype="plaintext" target-language="ko">
@@ -3359,6 +3375,14 @@
       <trans-unit id="executionPlanComparisonPropertiesBottomOperation">
         <source xml:lang="en">Bottom operation: {0}</source>
         <target state="translated">맨 아래 작업: {0}</target>
+      </trans-unit>
+      <trans-unit id="executionPlanComparisonPropertiesLeftOperation">
+        <source xml:lang="en">Left operation: {0}</source>
+        <target state="translated">왼쪽 작업: {0}</target>
+      </trans-unit>
+      <trans-unit id="executionPlanComparisonPropertiesRightOperation">
+        <source xml:lang="en">Right operation: {0}</source>
+        <target state="translated">오른쪽 작업: {0}</target>
       </trans-unit>
       <trans-unit id="executionPlanComparisonPropertiesTopOperation">
         <source xml:lang="en">Top operation: {0}</source>
@@ -3375,6 +3399,14 @@
       <trans-unit id="nodePropertyViewNameValueColumnBottomHeader">
         <source xml:lang="en">Value (Bottom Plan)</source>
         <target state="translated">값(맨 아래 계획)</target>
+      </trans-unit>
+      <trans-unit id="nodePropertyViewNameValueColumnLeftHeader">
+        <source xml:lang="en">Value (Left Plan)</source>
+        <target state="translated">값(왼쪽 계획)</target>
+      </trans-unit>
+      <trans-unit id="nodePropertyViewNameValueColumnRightHeader">
+        <source xml:lang="en">Value (Right Plan)</source>
+        <target state="translated">값(올바른 계획)</target>
       </trans-unit>
       <trans-unit id="nodePropertyViewNameValueColumnTopHeader">
         <source xml:lang="en">Value (Top Plan)</source>
@@ -3436,6 +3468,10 @@
   </file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase" source-language="en" datatype="plaintext" target-language="ko">
     <body>
+      <trans-unit id="ep.topOperationsCopyTableData">
+        <source xml:lang="en">Copy</source>
+        <target state="translated">복사</target>
+      </trans-unit>
       <trans-unit id="executionPlanPropertyViewClose">
         <source xml:lang="en">Close</source>
         <target state="translated">닫기</target>
@@ -3445,8 +3481,8 @@
         <target state="translated">사전순</target>
       </trans-unit>
       <trans-unit id="executionPlanPropertyViewSortByDisplayOrder">
-        <source xml:lang="en">Categorized</source>
-        <target state="translated">항목별</target>
+        <source xml:lang="en">Importance</source>
+        <target state="translated">중요도</target>
       </trans-unit>
       <trans-unit id="executionPlanPropertyViewSortReverseAlphabetically">
         <source xml:lang="en">Reverse Alphabetical</source>
@@ -3463,6 +3499,30 @@
       <trans-unit id="executionPlanTitle">
         <source xml:lang="en">Query Plan (Preview)</source>
         <target state="translated">쿼리 계획(미리 보기)</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanTreeTab" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="ept.topOperationsCopyTableData">
+        <source xml:lang="en">Copy</source>
+        <target state="translated">복사</target>
+      </trans-unit>
+      <trans-unit id="ept.topOperationsCopyWithHeader">
+        <source xml:lang="en">Copy with Header</source>
+        <target state="translated">헤더와 함께 복사</target>
+      </trans-unit>
+      <trans-unit id="ept.topOperationsSelectAll">
+        <source xml:lang="en">Select All</source>
+        <target state="translated">모두 선택</target>
+      </trans-unit>
+      <trans-unit id="planTreeTab.title">
+        <source xml:lang="en">Plan Tree (Preview)</source>
+        <target state="translated">계획 트리(미리 보기)</target>
+      </trans-unit>
+      <trans-unit id="topOperationsTableTitle">
+        <source xml:lang="en">Execution Plan Tree</source>
+        <target state="translated">실행 계획 트리</target>
       </trans-unit>
     </body>
   </file>
@@ -3516,6 +3576,10 @@
         <source xml:lang="en">Find Node</source>
         <target state="translated">노드 찾기</target>
       </trans-unit>
+      <trans-unit id="executionPlanTopOperationsAction">
+        <source xml:lang="en">Top Operations</source>
+        <target state="translated">상위 작업</target>
+      </trans-unit>
       <trans-unit id="executionPlanZoomInActionLabel">
         <source xml:lang="en">Zoom In</source>
         <target state="translated">확대</target>
@@ -3537,6 +3601,30 @@
         <note>{0} is the index of the graph in the execution plan tab
 {1} is the relative cost in percentage of the graph to the rest of the graphs in execution plan tab </note>
         <target state="translated">쿼리 {0}: 쿼리 비용(스크립트 기준): {1}%</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/topOperationsTab" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="ep.topOperationsCopyTableData">
+        <source xml:lang="en">Copy</source>
+        <target state="translated">복사</target>
+      </trans-unit>
+      <trans-unit id="ep.topOperationsCopyWithHeader">
+        <source xml:lang="en">Copy with Header</source>
+        <target state="translated">헤더를 사용하여 복사</target>
+      </trans-unit>
+      <trans-unit id="ep.topOperationsSelectAll">
+        <source xml:lang="en">Select All</source>
+        <target state="translated">모두 선택</target>
+      </trans-unit>
+      <trans-unit id="topOperationsTabTitle">
+        <source xml:lang="en">Top Operations  (Preview)</source>
+        <target state="translated">상위 작업(미리 보기)</target>
+      </trans-unit>
+      <trans-unit id="topOperationsTableTitle">
+        <source xml:lang="en">Top Operations</source>
+        <target state="translated">상위 작업</target>
       </trans-unit>
     </body>
   </file>
@@ -4384,9 +4472,9 @@ Error: {1}</source>
         <source xml:lang="en">Markdown preview toggle - off</source>
         <target state="translated">Markdown 미리 보기 토글 - 끄기</target>
       </trans-unit>
-      <trans-unit id="dropdownHeading">
-        <source xml:lang="en">Heading</source>
-        <target state="translated">제목</target>
+      <trans-unit id="headingDropdownLabel">
+        <source xml:lang="en">Text Size</source>
+        <target state="translated">텍스트 크기</target>
       </trans-unit>
       <trans-unit id="highlight">
         <source xml:lang="en">Highlight</source>
@@ -4457,16 +4545,16 @@ Error: {1}</source>
         <target state="translated">구성 요소 {0} 렌더링 중 오류 발생</target>
       </trans-unit>
       <trans-unit id="noMimeTypeFound">
-        <source xml:lang="en">No {0}renderer could be found for output. It has the following MIME types: {1}</source>
-        <target state="translated">출력의 {0}렌더러를 찾을 수 없습니다. MIME 형식이 {1}입니다.</target>
+        <source xml:lang="en">No renderer could be found for output. It has the following MIME types: {0}</source>
+        <target state="translated">출력에 대한 렌더러를 찾을 수 없습니다. 다음의 MIME 형식입니다: {0}</target>
+      </trans-unit>
+      <trans-unit id="noSafeMimeTypeFound">
+        <source xml:lang="en">No safe renderer could be found for output. It has the following MIME types: {0}</source>
+        <target state="translated">출력에 대한 안전한 렌더러를 찾을 수 없습니다. 다음의 MIME 형식입니다: {0}</target>
       </trans-unit>
       <trans-unit id="noSelectorFound">
         <source xml:lang="en">No component could be found for selector {0}</source>
         <target state="translated">선택기 {0}에 대한 구성 요소를 찾을 수 없습니다.</target>
-      </trans-unit>
-      <trans-unit id="safe">
-        <source xml:lang="en">safe </source>
-        <target state="translated">안전 </target>
       </trans-unit>
     </body>
   </file>
@@ -4555,6 +4643,14 @@ Error: {1}</source>
       <trans-unit id="title.matchesCountLimit">
         <source xml:lang="en">Your search returned a large number of results, only the first 999 matches will be highlighted.</source>
         <target state="translated">많은 수의 검색 결과가 반환되었습니다. 처음 999개의 일치 항목만 강조 표시됩니다.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/notebook/browser/models/outputProcessor" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="notebookInvalidOutputTypeError">
+        <source xml:lang="en">Output type '{0}' not recognized.</source>
+        <target state="translated">출력 형식 {0}을(를) 인식할 수 없습니다.</target>
       </trans-unit>
     </body>
   </file>
@@ -5296,9 +5392,9 @@ Error: {1}</source>
   </file>
   <file original="src/sql/workbench/contrib/objectExplorer/browser/serverTreeView" source-language="en" datatype="plaintext" target-language="ko">
     <body>
-      <trans-unit id="serverTree.addConnection">
-        <source xml:lang="en">Add Connection</source>
-        <target state="translated">연결 추가</target>
+      <trans-unit id="serverTree.newConnection">
+        <source xml:lang="en">New Connection</source>
+        <target state="translated">새 연결</target>
       </trans-unit>
       <trans-unit id="servers.noConnections">
         <source xml:lang="en">No connections found.</source>
@@ -5640,6 +5736,18 @@ Error: {1}</source>
   </file>
   <file original="src/sql/workbench/contrib/query/browser/gridPanel" source-language="en" datatype="plaintext" target-language="ko">
     <body>
+      <trans-unit id="query.QueryErrorOccured">
+        <source xml:lang="en">Error occured while executing the query.</source>
+        <target state="translated">쿼리를 실행하는 동안 오류가 발생했습니다.</target>
+      </trans-unit>
+      <trans-unit id="query.QueryExecutionEnded">
+        <source xml:lang="en">Query execution completed.</source>
+        <target state="translated">쿼리 실행을 완료했습니다.</target>
+      </trans-unit>
+      <trans-unit id="query.QueryExecutionStarted">
+        <source xml:lang="en">Query execution started.</source>
+        <target state="translated">쿼리 실행을 시작했습니다.</target>
+      </trans-unit>
       <trans-unit id="resultsGrid">
         <source xml:lang="en">Results grid</source>
         <target state="translated">결과 표</target>
@@ -5656,6 +5764,10 @@ Error: {1}</source>
   </file>
   <file original="src/sql/workbench/contrib/query/browser/keyboardQueryActions" source-language="en" datatype="plaintext" target-language="ko">
     <body>
+      <trans-unit id="ToggleActualPlanKeyboardAction">
+        <source xml:lang="en">Enable/Disable Actual Execution Plan</source>
+        <target state="translated">실제 실행 계획 사용/사용 안 함</target>
+      </trans-unit>
       <trans-unit id="ToggleFocusBetweenQueryEditorAndResultsAction">
         <source xml:lang="en">Toggle Focus Between Query And Results</source>
         <target state="translated">쿼리와 결과 간 포커스 전환</target>
@@ -5667,6 +5779,10 @@ Error: {1}</source>
       <trans-unit id="copyQueryWithResultsKeyboardAction">
         <source xml:lang="en">Copy Query With Results</source>
         <target state="translated">결과와 함께 쿼리 복사</target>
+      </trans-unit>
+      <trans-unit id="estimatedExecutionPlanKeyboardAction">
+        <source xml:lang="en">Display Estimated Execution Plan</source>
+        <target state="translated">예상 실행 계획 표시</target>
       </trans-unit>
       <trans-unit id="focusOnCurrentQueryKeyboardAction">
         <source xml:lang="en">Focus on Current Query</source>
@@ -5703,10 +5819,6 @@ Error: {1}</source>
       <trans-unit id="runCurrentQueryKeyboardAction">
         <source xml:lang="en">Run Current Query</source>
         <target state="translated">현재 쿼리 실행</target>
-      </trans-unit>
-      <trans-unit id="runCurrentQueryWithActualPlanKeyboardAction">
-        <source xml:lang="en">Run Current Query with Actual Plan</source>
-        <target state="translated">실제 계획에 따라 현재 쿼리 실행</target>
       </trans-unit>
       <trans-unit id="runQueryKeyboardAction">
         <source xml:lang="en">Run Query</source>
@@ -5840,6 +5952,10 @@ Error: {1}</source>
   </file>
   <file original="src/sql/workbench/contrib/query/browser/queryActions" source-language="en" datatype="plaintext" target-language="ko">
     <body>
+      <trans-unit id="ExecutionPlan">
+        <source xml:lang="en">Execution Plan</source>
+        <target state="translated">실행 계획</target>
+      </trans-unit>
       <trans-unit id="actualQueryPlan">
         <source xml:lang="en">Actual</source>
         <target state="translated">실제</target>
@@ -5864,6 +5980,10 @@ Error: {1}</source>
         <source xml:lang="en">Connect</source>
         <target state="translated">연결</target>
       </trans-unit>
+      <trans-unit id="disableActualPlanLabel">
+        <source xml:lang="en">Disable Actual Plan</source>
+        <target state="translated">실제 계획 사용 안 함</target>
+      </trans-unit>
       <trans-unit id="disablesqlcmdLabel">
         <source xml:lang="en">Disable SQLCMD</source>
         <target state="translated">SQLCMD 사용 안 함</target>
@@ -5872,17 +5992,25 @@ Error: {1}</source>
         <source xml:lang="en">Disconnect</source>
         <target state="translated">연결 끊기</target>
       </trans-unit>
+      <trans-unit id="enableActualPlanLabel">
+        <source xml:lang="en">Enable Actual Plan</source>
+        <target state="translated">실제 계획 사용</target>
+      </trans-unit>
       <trans-unit id="enablesqlcmdLabel">
         <source xml:lang="en">Enable SQLCMD</source>
         <target state="translated">SQLCMD 사용</target>
       </trans-unit>
       <trans-unit id="estimatedQueryPlan">
-        <source xml:lang="en">Explain</source>
-        <target state="translated">설명</target>
+        <source xml:lang="en">Estimated Plan</source>
+        <target state="translated">예상 플랜</target>
       </trans-unit>
       <trans-unit id="newQueryTask.newQuery">
         <source xml:lang="en">New Query</source>
         <target state="translated">새 쿼리</target>
+      </trans-unit>
+      <trans-unit id="query.multiSelectionNotSupported">
+        <source xml:lang="en">Running query is not supported when the editor is in multiple selection mode.</source>
+        <target state="translated">편집기가 다중 선택 모드에 있는 경우 쿼리 실행이 지원되지 않습니다.</target>
       </trans-unit>
       <trans-unit id="queryEditor.exportSqlAsNotebook">
         <source xml:lang="en">Export as Notebook</source>
@@ -5991,188 +6119,6 @@ Error: {1}</source>
       <trans-unit id="rowHeight">
         <source xml:lang="en">Controls the row height in pixels</source>
         <target state="translated">행 높이(픽셀)를 제어합니다.</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="src/sql/workbench/contrib/queryHistory/browser/queryHistoryActions" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="queryHistory.clearLabel">
-        <source xml:lang="en">Clear All History</source>
-        <target state="translated">모든 기록 지우기</target>
-      </trans-unit>
-      <trans-unit id="queryHistory.delete">
-        <source xml:lang="en">Delete</source>
-        <target state="translated">삭제</target>
-      </trans-unit>
-      <trans-unit id="queryHistory.disableCapture">
-        <source xml:lang="en">Pause Query History Capture</source>
-        <target state="translated">쿼리 기록 캡처 일시 중지</target>
-      </trans-unit>
-      <trans-unit id="queryHistory.enableCapture">
-        <source xml:lang="en">Start Query History Capture</source>
-        <target state="translated">쿼리 기록 캡처 시작</target>
-      </trans-unit>
-      <trans-unit id="queryHistory.openQuery">
-        <source xml:lang="en">Open Query</source>
-        <target state="translated">쿼리 열기</target>
-      </trans-unit>
-      <trans-unit id="queryHistory.runQuery">
-        <source xml:lang="en">Run Query</source>
-        <target state="translated">쿼리 실행</target>
-      </trans-unit>
-      <trans-unit id="queryHistory.toggleCaptureLabel">
-        <source xml:lang="en">Toggle Query History capture</source>
-        <target state="translated">쿼리 기록 캡처 전환</target>
-      </trans-unit>
-      <trans-unit id="toggleQueryHistory">
-        <source xml:lang="en">Toggle Query History</source>
-        <target state="translated">쿼리 기록 전환</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="src/sql/workbench/contrib/queryHistory/browser/queryHistoryRenderer" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="failed">
-        <source xml:lang="en">failed</source>
-        <target state="translated">실패</target>
-      </trans-unit>
-      <trans-unit id="succeeded">
-        <source xml:lang="en">succeeded</source>
-        <target state="translated">성공</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="src/sql/workbench/contrib/queryHistory/browser/queryHistoryView" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="noQueriesMessage">
-        <source xml:lang="en">No queries to display.</source>
-        <target state="translated">표시할 쿼리가 없습니다.</target>
-      </trans-unit>
-      <trans-unit id="queryHistory.regTreeAriaLabel">
-        <source xml:lang="en">Query History</source>
-        <note>QueryHistory</note>
-        <target state="translated">쿼리 기록</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="src/sql/workbench/contrib/queryHistory/electron-browser/queryHistory" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="miViewQueryHistory">
-        <source xml:lang="en">&amp;&amp;Query History</source>
-        <note>&amp;&amp; denotes a mnemonic</note>
-        <target state="translated">쿼리 기록(&amp;Q)</target>
-      </trans-unit>
-      <trans-unit id="queryHistory">
-        <source xml:lang="en">Query History</source>
-        <target state="translated">쿼리 기록</target>
-      </trans-unit>
-      <trans-unit id="queryHistory.clearLabel">
-        <source xml:lang="en">Clear All History</source>
-        <target state="translated">모든 기록 지우기</target>
-      </trans-unit>
-      <trans-unit id="queryHistory.disableCapture">
-        <source xml:lang="en">Pause Query History Capture</source>
-        <target state="translated">쿼리 기록 캡처 일시 중지</target>
-      </trans-unit>
-      <trans-unit id="queryHistory.enableCapture">
-        <source xml:lang="en">Start Query History Capture</source>
-        <target state="translated">쿼리 기록 캡처 시작</target>
-      </trans-unit>
-      <trans-unit id="queryHistoryCaptureEnabled">
-        <source xml:lang="en">Whether Query History capture is enabled. If false queries executed will not be captured.</source>
-        <target state="translated">쿼리 기록 캡처가 사용하도록 설정되어 있는지 여부입니다. false이면 실행된 쿼리가 캡처되지 않습니다.</target>
-      </trans-unit>
-      <trans-unit id="queryHistoryConfigurationTitle">
-        <source xml:lang="en">QueryHistory</source>
-        <target state="translated">QueryHistory</target>
-      </trans-unit>
-      <trans-unit id="viewCategory">
-        <source xml:lang="en">View</source>
-        <target state="translated">보기</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="src/sql/workbench/contrib/queryPlan/browser/queryPlan" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="queryPlanTitle">
-        <source xml:lang="en">Query Plan</source>
-        <target state="translated">쿼리 계획</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="src/sql/workbench/contrib/queryPlan/browser/queryPlanEditor" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="queryPlanEditor">
-        <source xml:lang="en">Query Plan Editor</source>
-        <target state="translated">쿼리 플랜 편집기</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="src/sql/workbench/contrib/queryPlan/browser/topOperations" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="topOperations.actualExecutions">
-        <source xml:lang="en">Actual Executions</source>
-        <target state="translated">실제 실행 수</target>
-      </trans-unit>
-      <trans-unit id="topOperations.actualRebinds">
-        <source xml:lang="en">Actual Rebinds</source>
-        <target state="translated">실제 다시 바인딩 횟수</target>
-      </trans-unit>
-      <trans-unit id="topOperations.actualRewinds">
-        <source xml:lang="en">Actual Rewinds</source>
-        <target state="translated">실제 되감기 횟수</target>
-      </trans-unit>
-      <trans-unit id="topOperations.actualRows">
-        <source xml:lang="en">Actual Rows</source>
-        <target state="translated">실제 행 수</target>
-      </trans-unit>
-      <trans-unit id="topOperations.estCPUCost">
-        <source xml:lang="en">Est CPU Cost</source>
-        <target state="translated">예상 CPU 비용</target>
-      </trans-unit>
-      <trans-unit id="topOperations.estCost">
-        <source xml:lang="en">Est Cost</source>
-        <target state="translated">예상 비용</target>
-      </trans-unit>
-      <trans-unit id="topOperations.estIOCost">
-        <source xml:lang="en">Est IO Cost</source>
-        <target state="translated">예상 입출력 비용</target>
-      </trans-unit>
-      <trans-unit id="topOperations.estRebinds">
-        <source xml:lang="en">Est Rebinds</source>
-        <target state="translated">예상 다시 바인딩 횟수</target>
-      </trans-unit>
-      <trans-unit id="topOperations.estRewinds">
-        <source xml:lang="en">Est Rewinds</source>
-        <target state="translated">예상 되감기 횟수</target>
-      </trans-unit>
-      <trans-unit id="topOperations.estRows">
-        <source xml:lang="en">Est Rows</source>
-        <target state="translated">예상 행 수</target>
-      </trans-unit>
-      <trans-unit id="topOperations.estSubtreeCost">
-        <source xml:lang="en">Est Subtree Cost</source>
-        <target state="translated">예상 하위 트리 비용</target>
-      </trans-unit>
-      <trans-unit id="topOperations.object">
-        <source xml:lang="en">Object</source>
-        <target state="translated">개체</target>
-      </trans-unit>
-      <trans-unit id="topOperations.operation">
-        <source xml:lang="en">Operation</source>
-        <target state="translated">작업</target>
-      </trans-unit>
-      <trans-unit id="topOperations.parallel">
-        <source xml:lang="en">Parallel</source>
-        <target state="translated">병렬</target>
-      </trans-unit>
-      <trans-unit id="topOperations.partitioned">
-        <source xml:lang="en">Partitioned</source>
-        <target state="translated">분할됨</target>
-      </trans-unit>
-      <trans-unit id="topOperationsTitle">
-        <source xml:lang="en">Top Operations</source>
-        <target state="translated">상위 작업</target>
       </trans-unit>
     </body>
   </file>
@@ -6346,13 +6292,13 @@ Error: {1}</source>
   </file>
   <file original="src/sql/workbench/contrib/tableDesigner/browser/actions" source-language="en" datatype="plaintext" target-language="ko">
     <body>
-      <trans-unit id="tableDesigner.generateScript">
-        <source xml:lang="en">Generate Script</source>
-        <target state="translated">스크립트 생성</target>
-      </trans-unit>
       <trans-unit id="tableDesigner.publishTableChanges">
         <source xml:lang="en">Publish Changes...</source>
         <target state="translated">변경 내용 게시 중...</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.saveTableChanges">
+        <source xml:lang="en">Save</source>
+        <target state="translated">저장</target>
       </trans-unit>
     </body>
   </file>
@@ -7897,6 +7843,10 @@ Error: {1}</source>
   </file>
   <file original="src/sql/workbench/services/notebook/browser/notebookViews/notebookViewModel" source-language="en" datatype="plaintext" target-language="ko">
     <body>
+      <trans-unit id="Untitled">
+        <source xml:lang="en">Untitled</source>
+        <target state="translated">제목 없음</target>
+      </trans-unit>
       <trans-unit id="notebookView.nameTaken">
         <source xml:lang="en">A view with the name {0} already exists in this notebook.</source>
         <target state="translated">이름이 {0}인 보기가 이 전자 필기장에 이미 있습니다.</target>
@@ -7964,14 +7914,6 @@ Error: {1}</source>
       <trans-unit id="unknownCellType">
         <source xml:lang="en">Cell type {0} unknown</source>
         <target state="translated">알 수 없는 셀 형식 {0}</target>
-      </trans-unit>
-      <trans-unit id="unrecognizedOutput">
-        <source xml:lang="en">Output type {0} not recognized</source>
-        <target state="translated">출력 형식 {0}을(를) 인식할 수 없습니다.</target>
-      </trans-unit>
-      <trans-unit id="unrecognizedOutputType">
-        <source xml:lang="en">Output type {0} not recognized</source>
-        <target state="translated">출력 형식 {0}을(를) 인식할 수 없습니다.</target>
       </trans-unit>
     </body>
   </file>
@@ -8586,8 +8528,8 @@ Error: {1}</source>
         <target state="translated">취소</target>
       </trans-unit>
       <trans-unit id="serverGroup.colorValue">
-        <source xml:lang="en">Color: {0}</source>
-        <target state="translated">색: {0}</target>
+        <source xml:lang="en">Group Color: {0}</source>
+        <target state="translated">그룹 색: {0}</target>
       </trans-unit>
       <trans-unit id="serverGroup.ok">
         <source xml:lang="en">OK</source>

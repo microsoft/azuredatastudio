@@ -13,12 +13,6 @@
     <trans-unit id="InProgress">
       <source xml:lang="en">In progress</source>
     </trans-unit>
-    <trans-unit id="Include">
-      <source xml:lang="en">Include</source>
-    </trans-unit>
-    <trans-unit id="OptionNotFoundWarningMessage">
-      <source xml:lang="en">label: {0} does not exist in the options value name lookup</source>
-    </trans-unit>
     <trans-unit id="PublishHistory">
       <source xml:lang="en">Publish History</source>
     </trans-unit>
@@ -408,6 +402,9 @@
     <trans-unit id="excludeAction">
       <source xml:lang="en">Exclude</source>
     </trans-unit>
+    <trans-unit id="excludeObjectTypes">
+      <source xml:lang="en">Exclude Object Types</source>
+    </trans-unit>
     <trans-unit id="externalStream">
       <source xml:lang="en">External Stream</source>
     </trans-unit>
@@ -470,6 +467,9 @@
     </trans-unit>
     <trans-unit id="importElements">
       <source xml:lang="en">Import Elements</source>
+    </trans-unit>
+    <trans-unit id="include">
+      <source xml:lang="en">Include</source>
     </trans-unit>
     <trans-unit id="installGlobally">
       <source xml:lang="en">Install globally</source>
@@ -593,6 +593,9 @@
     </trans-unit>
     <trans-unit id="optionName">
       <source xml:lang="en">Option Name</source>
+    </trans-unit>
+    <trans-unit id="optionNotFoundWarningMessage">
+      <source xml:lang="en">label: {0} does not exist in the options value name lookup</source>
     </trans-unit>
     <trans-unit id="outsideFolderPath">
       <source xml:lang="en">Items with absolute path outside project folder are not supported. Please make sure the paths in the project file are relative to project folder.</source>

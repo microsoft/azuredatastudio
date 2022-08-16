@@ -10254,7 +10254,7 @@
 			"enable remote": "Перезапустите Azure Data Studio, чтобы включить это расширение в {0}.",
 			"enableWindowsBackgroundUpdates": "Включите, чтобы скачивать и устанавливать новые версии Azure Data Studio в Windows в фоновом режиме",
 			"extensionsPolicy": "Устанавливает политику безопасности для скачивания расширений.",
-			"incompatible": "Не удалось установить расширение \"{0}\", так как оно несовместимо с Azure Data Studio \"{1}\".",
+			"incompatible": "Не удается установить версию \"{0}\" расширения \"{1}\", так как она несовместима с Azure Data Studio \"{2}\". Обновите до Azure Data Studio {3}, чтобы установить расширение.",
 			"installExtensionCompletedAndReloadRequired": "Установка расширения {0} завершена. Перезагрузите Azure Data Studio, чтобы включить это расширение.",
 			"maxMemoryForLargeFilesMB": "Управляет объемом памяти, который доступен Azure Data Studio после перезапуска при попытке открытия больших файлов. Действие этого параметра аналогично указанию параметра \"--max-memory=НОВЫЙ_РАЗМЕР\" в командной строке.",
 			"miNewNotebook": "&&Новая записная книжка",
@@ -10423,8 +10423,7 @@
 			"navigationProviderRequired": "В качестве параметра этого метода необходимо указать NavigationProvider с действительным providerId"
 		},
 		"sql/workbench/api/common/notebooks/vscodeExecuteProvider": {
-			"errorStartBeforeReady": "Не удается запустить сеанс, диспетчер еще не инициализирован",
-			"notebookMultipleRequestsError": "Невозможно выполнить ячейку кода. Выполняется другая ячейка."
+			"errorStartBeforeReady": "Не удается запустить сеанс, диспетчер еще не инициализирован"
 		},
 		"sql/workbench/browser/actions": {
 			"clearSavedAccounts": "Очистить все сохраненные учетные записи",
@@ -10440,13 +10439,14 @@
 			"showConnectDialogOnStartup": "Показывать диалоговое окно подключения при запуске"
 		},
 		"sql/workbench/browser/designer/designer": {
+			"designer.actions": "Дополнительные действия",
 			"designer.defaultRemoveRowConfirmationMessage": "Действительно удалить эту строку?",
 			"designer.generalGroupName": "Общие",
 			"designer.issueCountAlert": "Найдено столько проблем при проверке: {0}",
 			"designer.issuesTabTitle": "Проблемы ({0})",
 			"designer.loadingDesigner": "Идет загрузка конструктора...",
 			"designer.loadingDesignerCompleted": "Конструктор загружен",
-			"designer.moveRowText": "Переместить строку",
+			"designer.moveRowText": "Переместить",
 			"designer.processing": "Обработка…",
 			"designer.processingChanges": "Обработка изменений...",
 			"designer.processingChangesCompleted": "Изменения обработаны",
@@ -10471,7 +10471,7 @@
 		"sql/workbench/browser/designer/tableActions": {
 			"designer.addColumnAction": "Добавить новый",
 			"designer.insertAfterSelectedColumn": "Вставить после",
-			"designer.insertBeforeSelectedRow": "Вставить до",
+			"designer.insertBeforeSelectedRow": "Вставить перед",
 			"designer.moveRowDownAction": "Переместить вниз",
 			"designer.moveRowDownButtonAriaLabel": "Переместить выбранную строку вниз на одну позицию",
 			"designer.moveRowUpAction": "Переместить вверх",
@@ -10493,8 +10493,7 @@
 			"resourceViewerInput.resourceViewer": "Средство просмотра ресурсов"
 		},
 		"sql/workbench/browser/editor/tableDesigner/tableDesignerInput": {
-			"tableDesigner.OperationInProgressWarning": "Невозможно выполнить операцию, пока выполняется другая операция.",
-			"tableDesigner.newTable": "Создать таблицу"
+			"tableDesigner.OperationInProgressWarning": "Невозможно выполнить операцию, пока выполняется другая операция."
 		},
 		"sql/workbench/browser/modal/modal": {
 			"closeMessage": "Закрыть",
@@ -11140,18 +11139,25 @@
 			"epCompare.FileFilterDescription": "Файлы плана выполнения",
 			"epCompare.comparePropertiesAction": "Свойства",
 			"epCompare.comparisonProgess": "Загрузка похожих областей в сравниваемых планах",
+			"epCompare.searchNodeAction": "Найти узел",
+			"epCompare.searchNodeActionAddedPlan": "Найти узел — добавлен план",
 			"epCompare.toggleOrientation": "Переключить ориентацию",
 			"epCompare.zoomInAction": "Увеличить масштаб",
 			"epCompare.zoomOutAction": "Уменьшить масштаб",
 			"epCompare.zoomReset": "Сбросить масштаб",
-			"epCompare.zoomToFit": "Масштаб по размеру экрана"
+			"epCompare.zoomToFit": "Масштаб по размеру экрана",
+			"queryDropdownPrefix": "Запрос {0} из {1}: {2}"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView": {
 			"executionPlanComparisonPropertiesBottomOperation": "Нижняя операция: {0}",
+			"executionPlanComparisonPropertiesLeftOperation": "Операция слева: {0}",
+			"executionPlanComparisonPropertiesRightOperation": "Операция справа: {0}",
 			"executionPlanComparisonPropertiesTopOperation": "Верхняя операция: {0}",
 			"executionPlanPropertiesEdgeOperationName": "Edge",
 			"nodePropertyViewNameNameColumnHeader": "Имя",
 			"nodePropertyViewNameValueColumnBottomHeader": "Значение (нижний план)",
+			"nodePropertyViewNameValueColumnLeftHeader": "Значение (левый план)",
+			"nodePropertyViewNameValueColumnRightHeader": "Значение (правый план)",
 			"nodePropertyViewNameValueColumnTopHeader": "Значение (верхний план)"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanContribution": {
@@ -11172,9 +11178,10 @@
 			"nodePropertyViewNameValueColumnHeader": "Значение"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase": {
+			"ep.topOperationsCopyTableData": "Копировать",
 			"executionPlanPropertyViewClose": "Закрыть",
 			"executionPlanPropertyViewSortAlphabetically": "В алфавитном порядке",
-			"executionPlanPropertyViewSortByDisplayOrder": "По категориям",
+			"executionPlanPropertyViewSortByDisplayOrder": "Важность",
 			"executionPlanPropertyViewSortReverseAlphabetically": "В обратном алфавитном порядке",
 			"nodePropertyViewTitle": "Свойства"
 		},
@@ -11194,6 +11201,7 @@
 			"executionPlanPropertiesActionLabel": "Свойства",
 			"executionPlanSavePlanXML": "Сохранить файл плана",
 			"executionPlanSearchNodeAction": "Найти узел",
+			"executionPlanTopOperationsAction": "Основные операции",
 			"executionPlanZoomInActionLabel": "Увеличить",
 			"executionPlanZoomOutActionLabel": "Уменьшить",
 			"openQueryAction": "Открыть запрос"
@@ -11432,7 +11440,7 @@
 		"sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component": {
 			"bold": "Полужирный",
 			"buttonPreview": "Переключить предварительный просмотр Markdown — отключено",
-			"dropdownHeading": "Заголовок",
+			"headingDropdownLabel": "Размер текста",
 			"highlight": "Выделить цветом",
 			"insertCode": "Вставить код",
 			"insertImage": "Вставка изображения",
@@ -11451,9 +11459,9 @@
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/output.component": {
 			"componentRenderError": "Ошибка при отрисовке компонента: {0}",
-			"noMimeTypeFound": "Не удается найти отрисовщик {0} для выходных данных. Он содержит следующие типы MIME: {1}",
-			"noSelectorFound": "Не удалось найти компонент для селектора {0}",
-			"safe": "безопасный "
+			"noMimeTypeFound": "Не удается найти отрисовщик для выходных данных. Он содержит следующие типы MIME: {0}",
+			"noSafeMimeTypeFound": "Не удалось найти безопасный модуль визуализации выходных данных. Он содержит следующие типы MIME: {0}",
+			"noSelectorFound": "Не удалось найти компонент для селектора {0}"
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/placeholderCell.component": {
 			"clickOn": "Щелкните",
@@ -11683,7 +11691,7 @@
 			"plotlyError": "Не удалось отобразить диаграмму Plotly: {0}"
 		},
 		"sql/workbench/contrib/objectExplorer/browser/serverTreeView": {
-			"serverTree.addConnection": "Добавить подключение",
+			"serverTree.newConnection": "Новое подключение",
 			"servers.noConnections": "Подключения не найдены."
 		},
 		"sql/workbench/contrib/objectExplorer/common/serverGroup.contribution": {
@@ -11780,14 +11788,19 @@
 			"status.query.flavor": "Вариант языка SQL"
 		},
 		"sql/workbench/contrib/query/browser/gridPanel": {
+			"query.QueryErrorOccured": "При выполнении запроса произошла ошибка.",
+			"query.QueryExecutionEnded": "Выполнение задачи завершено.",
+			"query.QueryExecutionStarted": "Выполнение запроса запущено.",
 			"resultsGrid": "Сетка результатов",
 			"resultsGrid.maxRowCountExceeded": "Превышено максимальное количество строк для фильтрации или сортировки. Чтобы обновить его, перейдите к параметрам пользователя и изменить параметр queryEditor.results.inMemoryDataProcessingThreshold",
 			"xmlShowplan": "XML Showplan"
 		},
 		"sql/workbench/contrib/query/browser/keyboardQueryActions": {
+			"ToggleActualPlanKeyboardAction": "Включить или отключить фактический план выполнения",
 			"ToggleFocusBetweenQueryEditorAndResultsAction": "Переключить фокус между запросом и результатами",
 			"cancelQueryKeyboardAction": "Отменить запрос",
 			"copyQueryWithResultsKeyboardAction": "Копировать запрос с результатами",
+			"estimatedExecutionPlanKeyboardAction": "Отобразить предполагаемый план выполнения",
 			"focusOnCurrentQueryKeyboardAction": "Фокус на текущем запросе",
 			"parseSyntaxLabel": "Синтаксический анализ запроса",
 			"queryActions.notConnected": "Подключитесь к серверу",
@@ -11797,7 +11810,6 @@
 			"queryShortcutNoEditor": "Для выполнения ярлыка требуется параметр редактора.",
 			"refreshIntellisenseKeyboardAction": "Обновить кэш IntelliSense",
 			"runCurrentQueryKeyboardAction": "Выполнить текущий запрос",
-			"runCurrentQueryWithActualPlanKeyboardAction": "Выполнить текущий запрос с фактическим планом",
 			"runQueryKeyboardAction": "Выполнить запрос",
 			"toggleQueryResultsKeyboardAction": "Переключить результаты запроса"
 		},
@@ -11834,17 +11846,21 @@
 			"queryShortcutDescription": "Установка сочетания клавиш workbench.action.query.shortcut{0} для запуска текста ярлыка при вызове процедуры или выполнении запроса. В качестве параметра будет передан любой выбранный текст в редакторе запросов в конце запроса, или вы можете сослаться на него с помощью {arg}"
 		},
 		"sql/workbench/contrib/query/browser/queryActions": {
+			"ExecutionPlan": "План выполнения",
 			"actualQueryPlan": "Действительное значение",
 			"cancelQueryLabel": "Отмена",
 			"changeConnectionDatabaseLabel": "Изменить подключение",
 			"changeDatabase.failed": "Не удалось изменить базу данных",
 			"changeDatabase.failedWithError": "Не удалось изменить базу данных: {0}",
 			"connectDatabaseLabel": "Подключиться",
+			"disableActualPlanLabel": "Отключить фактический план",
 			"disablesqlcmdLabel": "Отключить SQLCMD",
 			"disconnectDatabaseLabel": "Отключить",
+			"enableActualPlanLabel": "Включить фактический план",
 			"enablesqlcmdLabel": "Включить SQLCMD",
-			"estimatedQueryPlan": "Объяснить",
+			"estimatedQueryPlan": "Предполагаемый план",
 			"newQueryTask.newQuery": "Создать запрос",
+			"query.multiSelectionNotSupported": "Выполнение запроса не поддерживается, если редактор находится в режиме выбора нескольких элементов.",
 			"queryEditor.exportSqlAsNotebook": "Экспортировать в виде записной книжки",
 			"runQueryLabel": "Запуск",
 			"selectDatabase": "Выберите базу данных"
@@ -11876,58 +11892,6 @@
 			"maxColumnWidth": "Максимальная ширина в пикселях для столбцов, размер которых определяется автоматически",
 			"resultsGridConfigurationTitle": "Сетка результатов и сообщения",
 			"rowHeight": "Определяет высоту строки в пикселах"
-		},
-		"sql/workbench/contrib/queryHistory/browser/queryHistoryActions": {
-			"queryHistory.clearLabel": "Очистить весь журнал",
-			"queryHistory.delete": "Удалить",
-			"queryHistory.disableCapture": "Приостановить ведение Журнала запросов",
-			"queryHistory.enableCapture": "Начать ведение Журнала запросов",
-			"queryHistory.openQuery": "Открыть запрос",
-			"queryHistory.runQuery": "Выполнить запрос",
-			"queryHistory.toggleCaptureLabel": "Включить или отключить ведение Журнала запросов",
-			"toggleQueryHistory": "Включить или отключить журнал запросов"
-		},
-		"sql/workbench/contrib/queryHistory/browser/queryHistoryRenderer": {
-			"failed": "Ошибка",
-			"succeeded": "Выполнено"
-		},
-		"sql/workbench/contrib/queryHistory/browser/queryHistoryView": {
-			"noQueriesMessage": "Нет запросов для отображения.",
-			"queryHistory.regTreeAriaLabel": "Журнал запросов"
-		},
-		"sql/workbench/contrib/queryHistory/electron-browser/queryHistory": {
-			"miViewQueryHistory": "&&Журнал запросов",
-			"queryHistory": "Журнал запросов",
-			"queryHistory.clearLabel": "Очистить весь журнал",
-			"queryHistory.disableCapture": "Приостановить ведение Журнала запросов",
-			"queryHistory.enableCapture": "Начать ведение Журнала запросов",
-			"queryHistoryCaptureEnabled": "Включено ли ведение Журнала запросов. Если этот параметр имеет значение False, выполняемые запросы не будут записываться в истории.",
-			"queryHistoryConfigurationTitle": "QueryHistory",
-			"viewCategory": "Вид"
-		},
-		"sql/workbench/contrib/queryPlan/browser/queryPlan": {
-			"queryPlanTitle": "План запроса"
-		},
-		"sql/workbench/contrib/queryPlan/browser/queryPlanEditor": {
-			"queryPlanEditor": "Редактор планов запросов"
-		},
-		"sql/workbench/contrib/queryPlan/browser/topOperations": {
-			"topOperations.actualExecutions": "Фактическое число выполнений",
-			"topOperations.actualRebinds": "Фактическое число повторных привязок",
-			"topOperations.actualRewinds": "Фактическое число сбросов на начало",
-			"topOperations.actualRows": "Фактических строк",
-			"topOperations.estCPUCost": "Приблизительные расходы на ЦП",
-			"topOperations.estCost": "Оценка стоимости",
-			"topOperations.estIOCost": "Приблизительные затраты на операции ввода/вывода",
-			"topOperations.estRebinds": "Приблизительное число повторных привязок",
-			"topOperations.estRewinds": "Приблизительное число возвратов",
-			"topOperations.estRows": "Оценка строк",
-			"topOperations.estSubtreeCost": "Оценка стоимости поддерева",
-			"topOperations.object": "Объект",
-			"topOperations.operation": "Операция",
-			"topOperations.parallel": "Параллельный",
-			"topOperations.partitioned": "Секционированный",
-			"topOperationsTitle": "Основные операции"
 		},
 		"sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution": {
 			"deployment.title": "Новое развертывание..."
@@ -11982,8 +11946,8 @@
 			"refreshError": "Произошла ошибка при обновлении узла \"{0}\": {1}"
 		},
 		"sql/workbench/contrib/tableDesigner/browser/actions": {
-			"tableDesigner.generateScript": "Создать сценарий",
-			"tableDesigner.publishTableChanges": "Опубликовать изменения…"
+			"tableDesigner.publishTableChanges": "Опубликовать изменения…",
+			"tableDesigner.saveTableChanges": "Сохранить"
 		},
 		"sql/workbench/contrib/tableDesigner/browser/tableDesignerEditor": {
 			"tableDesigner.PreviewFeature": "Предварительная версия функции"
@@ -12427,6 +12391,7 @@
 			"standardKernelsTimeout": "Истекло время ожидания доступности стандартных ядер для поставщика записных книжек \"{0}\""
 		},
 		"sql/workbench/services/notebook/browser/notebookViews/notebookViewModel": {
+			"Untitled": "Без имени",
 			"notebookView.nameTaken": "Представление с именем {0} уже существует в этой записной книжке."
 		},
 		"sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension": {
@@ -12447,9 +12412,7 @@
 			"invalidMimeData": "Данные для {0} должны представлять собой строку или массив строк",
 			"nbNotSupported": "Формат этого файла не соответствует допустимому формату записной книжки",
 			"nbformatNotRecognized": "Формат nbformat v{0}.{1} не распознан",
-			"unknownCellType": "Неизвестный тип ячейки {0}",
-			"unrecognizedOutput": "Тип выходных данных {0} не распознан",
-			"unrecognizedOutputType": "Тип выходных данных {0} не распознан"
+			"unknownCellType": "Неизвестный тип ячейки {0}"
 		},
 		"sql/workbench/services/notebook/common/notebookRegistry": {
 			"carbon.extension.contributes.notebook.executionTarget": "Необязательная цель выполнения, указанная в этой магической команде, например, Spark vs SQL",
@@ -12621,7 +12584,7 @@
 			"groupColor": "Цвет группы",
 			"groupDescription": "Описание группы",
 			"serverGroup.cancel": "Отмена",
-			"serverGroup.colorValue": "Цвет: {0}",
+			"serverGroup.colorValue": "Цвет группы: {0}",
 			"serverGroup.ok": "OK"
 		},
 		"sql/workbench/services/serverGroup/common/serverGroupViewModel": {
@@ -12739,6 +12702,26 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "Начало р&&аботы",
 			"showReleaseNotes": "Показать раздел \"Начало работы\""
+		},
+		"sql/workbench/common/constants": {
+			"notebookMultipleRequestsError": "Невозможно выполнить ячейку кода. Выполняется другая ячейка."
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanTreeTab": {
+			"ept.topOperationsCopyTableData": "Копировать",
+			"ept.topOperationsCopyWithHeader": "Копировать с заголовками",
+			"ept.topOperationsSelectAll": "Выбрать все",
+			"planTreeTab.title": "Дерево планов (предварительная версия)",
+			"topOperationsTableTitle": "Дерево плана выполнения"
+		},
+		"sql/workbench/contrib/executionPlan/browser/topOperationsTab": {
+			"ep.topOperationsCopyTableData": "Копировать",
+			"ep.topOperationsCopyWithHeader": "Копировать с заголовками",
+			"ep.topOperationsSelectAll": "Выделить все",
+			"topOperationsTabTitle": "Основные операции (предварительный просмотр)",
+			"topOperationsTableTitle": "Основные операции"
+		},
+		"sql/workbench/contrib/notebook/browser/models/outputProcessor": {
+			"notebookInvalidOutputTypeError": "Тип выходных данных {0} не распознан"
 		}
 	}
 }

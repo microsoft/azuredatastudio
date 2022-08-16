@@ -250,6 +250,9 @@
 			"serviceStartedStatusMsg": "{0} запущен",
 			"startingServiceStatusMsg": "Запуск (0)"
 		},
+		"dist/tableDesigner/tableDesigner": {
+			"tableDesigner.NewTable": "Создать таблицу"
+		},
 		"dist/telemetry": {
 			"serviceCrashMessage": "Компонент {0} неожиданно завершил работу. Перезапустите Azure Data Studio.",
 			"viewKnownIssuesText": "Просмотреть известные проблемы"

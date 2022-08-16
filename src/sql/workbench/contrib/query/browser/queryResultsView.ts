@@ -26,6 +26,8 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { ExecutionPlanTab } from 'sql/workbench/contrib/executionPlan/browser/executionPlanTab';
 import { ExecutionPlanFileViewCache } from 'sql/workbench/contrib/executionPlan/browser/executionPlanFileViewCache';
 import { TopOperationsTab } from 'sql/workbench/contrib/executionPlan/browser/topOperationsTab';
+import { ExecutionPlanTreeTab } from 'sql/workbench/contrib/executionPlan/browser/executionPlanTreeTab';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 
 class MessagesView extends Disposable implements IPanelView {
 	private messagePanel: MessagePanel;
@@ -84,6 +86,7 @@ class ResultsView extends Disposable implements IPanelView {
 
 	public clear() {
 		this.gridPanel.clear();
+		this._runner = undefined;
 	}
 
 	remove(): void {
@@ -165,6 +168,7 @@ export class QueryResultsView extends Disposable {
 	private chartTab: ChartTab;
 	private executionPlanTab: ExecutionPlanTab;
 	private topOperationsTab: TopOperationsTab;
+	private planTreeTab: ExecutionPlanTreeTab;
 	private dynamicModelViewTabs: QueryModelViewTab[] = [];
 
 	private runnerDisposables = new DisposableStore();
@@ -175,7 +179,8 @@ export class QueryResultsView extends Disposable {
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@IQueryModelService private queryModelService: IQueryModelService,
 		@INotificationService private notificationService: INotificationService,
-		@ILogService private logService: ILogService
+		@ILogService private logService: ILogService,
+		@IAccessibilityService private accessibilityService: IAccessibilityService
 	) {
 		super();
 		this.resultsTab = this._register(new ResultsTab(instantiationService));
@@ -185,6 +190,7 @@ export class QueryResultsView extends Disposable {
 		this._register(attachTabbedPanelStyler(this._panelView, themeService));
 		this.executionPlanTab = this._register(this.instantiationService.createInstance(ExecutionPlanTab, this));
 		this.topOperationsTab = this._register(this.instantiationService.createInstance(TopOperationsTab, this));
+		this.planTreeTab = this._register(this.instantiationService.createInstance(ExecutionPlanTreeTab));
 		this._panelView.pushTab(this.resultsTab);
 		this._panelView.pushTab(this.messagesTab);
 		this._register(this._panelView.onTabChange(e => {
@@ -264,6 +270,7 @@ export class QueryResultsView extends Disposable {
 						view.addGraphs(e.planGraphs);
 					}
 					this.topOperationsTab.view.renderInput();
+					this.planTreeTab.view.renderInput();
 				}
 			}
 		}));
@@ -284,6 +291,12 @@ export class QueryResultsView extends Disposable {
 			this._panelView.pushTab(this.topOperationsTab);
 		} else if (!this.input?.state.visibleTabs.has(this.topOperationsTab.identifier) && this._panelView.contains(this.topOperationsTab.identifier)) {
 			this._panelView.removeTab(this.topOperationsTab.identifier);
+		}
+
+		if (this.input?.state.visibleTabs.has(this.planTreeTab.identifier) && !this._panelView.contains(this.planTreeTab.identifier)) {
+			this._panelView.pushTab(this.planTreeTab);
+		} else if (!this.input?.state.visibleTabs.has(this.planTreeTab.identifier) && this._panelView.contains(this.planTreeTab.identifier)) {
+			this._panelView.removeTab(this.planTreeTab.identifier);
 		}
 
 		// restore query model view tabs
@@ -333,7 +346,7 @@ export class QueryResultsView extends Disposable {
 			this._input = input;
 			this.runnerDisposables.clear();
 
-			[this.resultsTab, this.messagesTab, this.executionPlanTab, this.topOperationsTab, this.chartTab].forEach(t => t.clear());
+			[this.resultsTab, this.messagesTab, this.executionPlanTab, this.planTreeTab, this.topOperationsTab, this.chartTab].forEach(t => t.clear());
 			this.dynamicModelViewTabs.forEach(t => t.clear());
 
 			if (input) {
@@ -341,6 +354,8 @@ export class QueryResultsView extends Disposable {
 				this.topOperationsTab.view.state = input.state.executionPlanState;
 				this.chartTab.view.state = input.state.chartState;
 				this.executionPlanTab.view.state = input.state.executionPlanState;
+				this.planTreeTab.view.state = input.state.executionPlanState;
+
 				this.dynamicModelViewTabs.forEach((dynamicTab: QueryModelViewTab) => {
 					dynamicTab.captureState(input.state.dynamicModelViewTabsState);
 				});
@@ -381,6 +396,7 @@ export class QueryResultsView extends Disposable {
 		this.topOperationsTab.clear();
 		this.chartTab.clear();
 		this.executionPlanTab.clear();
+		this.planTreeTab.clear();
 		this.dynamicModelViewTabs.forEach(t => t.clear());
 	}
 
@@ -444,6 +460,18 @@ export class QueryResultsView extends Disposable {
 			}
 			this._panelView.showTab(this.executionPlanTab.identifier);
 		}
+
+		if (!this._panelView.contains(this.planTreeTab.identifier)) {
+			this.input?.state.visibleTabs.add(this.planTreeTab.identifier);
+			if (!this._panelView.contains(this.planTreeTab.identifier)) {
+				this._panelView.pushTab(this.planTreeTab);
+			}
+
+			// Switching to plan tree as default view when screen reader mode is on.
+			if (this.accessibilityService.isScreenReaderOptimized()) {
+				this._panelView.showTab(this.planTreeTab.identifier);
+			}
+		}
 	}
 
 	public switchToExecutionPlanTab() {
@@ -464,6 +492,10 @@ export class QueryResultsView extends Disposable {
 		if (this._panelView.contains(this.executionPlanTab.identifier)) {
 			this._panelView.removeTab(this.executionPlanTab.identifier);
 			this.executionPlanTab.clear();
+		}
+		if (this._panelView.contains(this.planTreeTab.identifier)) {
+			this._panelView.removeTab(this.planTreeTab.identifier);
+			this.planTreeTab.clear();
 		}
 	}
 
