@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { window, Account, accounts, CategoryValue, DropDownComponent, IconPath, Component } from 'azdata';
+import { window, Account, accounts, CategoryValue, DropDownComponent, IconPath, Component, DisplayType } from 'azdata';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import * as crypto from 'crypto';
 import * as azure from './azure';
@@ -681,8 +681,8 @@ export async function getBlobLastBackupFileNamesValues(blobs: azureResource.Blob
 		|| [{ name: '', displayName: constants.NO_BLOBFILES_FOUND }];
 }
 
-export async function updateControlDisplay(control: Component, visible: boolean): Promise<void> {
-	const display = visible ? 'inline' : 'none';
+export async function updateControlDisplay(control: Component, visible: boolean, displayStyle: DisplayType = 'inline'): Promise<void> {
+	const display = visible ? displayStyle : 'none';
 	control.display = display;
 	await control.updateCssStyles({ 'display': display });
 	await control.updateProperties({ 'display': display });

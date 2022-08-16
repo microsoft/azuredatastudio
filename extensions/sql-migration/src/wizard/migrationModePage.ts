@@ -89,8 +89,11 @@ export class MigrationModePage extends MigrationWizardPage {
 				CSSStyles: { ...styles.NOTE_CSS, 'margin-left': '20px' }
 			}).component();
 		this._disposables.push(
-			this._onlineButton.onDidChangeCheckedState(
-				(e) => { this.migrationStateModel._databaseBackup.migrationMode = MigrationMode.ONLINE; }));
+			this._onlineButton.onDidChangeCheckedState(checked => {
+				if (checked) {
+					this.migrationStateModel._databaseBackup.migrationMode = MigrationMode.ONLINE;
+				}
+			}));
 
 		this._offlineButton = this._view.modelBuilder.radioButton()
 			.withProps({
@@ -105,8 +108,11 @@ export class MigrationModePage extends MigrationWizardPage {
 				CSSStyles: { ...styles.NOTE_CSS, 'margin-left': '20px' }
 			}).component();
 		this._disposables.push(
-			this._offlineButton.onDidChangeCheckedState(
-				(e) => this.migrationStateModel._databaseBackup.migrationMode = MigrationMode.OFFLINE));
+			this._offlineButton.onDidChangeCheckedState(checked => {
+				if (checked) {
+					this.migrationStateModel._databaseBackup.migrationMode = MigrationMode.OFFLINE;
+				}
+			}));
 
 		const flexContainer = this._view.modelBuilder.flexContainer()
 			.withItems([

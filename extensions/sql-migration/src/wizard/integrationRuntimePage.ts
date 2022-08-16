@@ -66,13 +66,13 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		this._subscription.value = this.migrationStateModel._targetSubscription.name;
-		this._location.value = await getLocationDisplayName(this.migrationStateModel._targetServerInstance.location);
-		this._dmsInfoContainer.display =
-			((this.migrationStateModel._targetType === MigrationTargetType.SQLDB ||
-				this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE)
-				&& this.migrationStateModel._sqlMigrationService)
-				? 'inline'
-				: 'none';
+		this._location.value = await getLocationDisplayName(
+			this.migrationStateModel._targetServerInstance.location);
+
+		await utils.updateControlDisplay(
+			this._dmsInfoContainer,
+			this.migrationStateModel._targetType === MigrationTargetType.SQLDB ||
+			this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE);
 
 		await this.loadResourceGroupDropdown();
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
@@ -191,10 +191,12 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				async (value) => {
 					if (value && value !== 'undefined' && value !== constants.SQL_MIGRATION_SERVICE_NOT_FOUND_ERROR) {
 						this.wizard.message = { text: '' };
-						if ((this.migrationStateModel._targetType === MigrationTargetType.SQLDB ||
-							this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE)) {
-							this._dmsInfoContainer.display = 'inline';
-						}
+
+						await utils.updateControlDisplay(
+							this._dmsInfoContainer,
+							this.migrationStateModel._targetType === MigrationTargetType.SQLDB ||
+							this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE);
+
 						const selectedDms = this.migrationStateModel._sqlMigrationServices.find(
 							dms => dms.name === value && dms.properties.resourceGroup.toLowerCase() === this.migrationStateModel._sqlMigrationServiceResourceGroup.name.toLowerCase());
 						if (selectedDms) {
@@ -203,7 +205,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 						}
 					} else {
 						this.migrationStateModel._sqlMigrationService = undefined;
-						this._dmsInfoContainer.display = 'none';
+						await utils.updateControlDisplay(this._dmsInfoContainer, false);
 					}
 				}));
 
@@ -266,15 +268,14 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			}).component();
 
 		this._disposables.push(
-			this._refreshButton.onDidClick(
-				async (e) => {
+			this._refreshButton.onDidClick(async (e) => {
+				try {
 					this._connectionStatusLoader.loading = true;
-					try {
-						await this.loadStatus();
-					} finally {
-						this._connectionStatusLoader.loading = false;
-					}
-				}));
+					await this.loadStatus();
+				} finally {
+					this._connectionStatusLoader.loading = false;
+				}
+			}));
 
 		const connectionLabelContainer = this._view.modelBuilder.flexContainer()
 			.component();
@@ -325,11 +326,10 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			}).component();
 
 		this._disposables.push(
-			this._copy2.onDidClick(
-				async (e) => {
-					await vscode.env.clipboard.writeText(<string>this._authKeyTable.dataValues![1][1].value);
-					void vscode.window.showInformationMessage(constants.SERVICE_KEY2_COPIED_HELP);
-				}));
+			this._copy2.onDidClick(async (e) => {
+				await vscode.env.clipboard.writeText(<string>this._authKeyTable.dataValues![1][1].value);
+				void vscode.window.showInformationMessage(constants.SERVICE_KEY2_COPIED_HELP);
+			}));
 
 		this._refresh1 = this._view.modelBuilder.button()
 			.withProps({
@@ -365,9 +365,10 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 	}
 
 	public async loadResourceGroupDropdown(): Promise<void> {
-		this._resourceGroupDropdown.loading = true;
-		this._dmsDropdown.loading = true;
 		try {
+			this._resourceGroupDropdown.loading = true;
+			this._dmsDropdown.loading = true;
+
 			this.migrationStateModel._sqlMigrationServices = await utils.getAzureSqlMigrationServices(
 				this.migrationStateModel._azureAccount,
 				this.migrationStateModel._targetSubscription);
@@ -391,8 +392,8 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 	}
 
 	public populateDms(): void {
-		this._dmsDropdown.loading = true;
 		try {
+			this._dmsDropdown.loading = true;
 			this._dmsDropdown.values = utils.getAzureResourceDropdownValues(
 				this.migrationStateModel._sqlMigrationServices,
 				this.migrationStateModel._location,
@@ -409,8 +410,8 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 	}
 
 	private async loadMigrationServiceStatus(): Promise<void> {
-		this._statusLoadingComponent.loading = true;
 		try {
+			this._statusLoadingComponent.loading = true;
 			await this.loadStatus();
 		} catch (error) {
 			logError(TelemetryViews.MigrationWizardIntegrationRuntimePage, 'ErrorLoadingMigrationServiceStatus', error);

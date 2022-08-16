@@ -39,18 +39,18 @@ export class SavedAssessmentDialog {
 				try {
 					this._rootContainer = this.initializePageContent(view);
 					await view.initializeModel(this._rootContainer);
-					this._disposables.push(dialog.okButton.onClick(async e => {
-						await this.execute();
-					}));
-					this._disposables.push(dialog.cancelButton.onClick(e => {
-						this.cancel();
-					}));
+					this._disposables.push(
+						dialog.okButton.onClick(
+							async e => await this.execute()));
 
-					this._disposables.push(view.onClosed(e => {
-						this._disposables.forEach(
-							d => { try { d.dispose(); } catch { } }
-						);
-					}));
+					this._disposables.push(
+						dialog.cancelButton.onClick(
+							e => this.cancel()));
+					this._disposables.push(
+						view.onClosed(
+							e => this._disposables.forEach(
+								d => { try { d.dispose(); } catch { } })));
+
 					resolve();
 				} catch (ex) {
 					reject(ex);
@@ -103,44 +103,39 @@ export class SavedAssessmentDialog {
 	public initializePageContent(view: azdata.ModelView): azdata.FlexContainer {
 		const buttonGroup = 'resumeMigration';
 
-		const radioStart = view.modelBuilder.radioButton().withProps({
-			label: constants.START_NEW_SESSION,
-			name: buttonGroup,
-			CSSStyles: {
-				...styles.BODY_CSS,
-				'margin-bottom': '8px'
-			},
-			checked: true
-		}).component();
+		const radioStart = view.modelBuilder.radioButton()
+			.withProps({
+				label: constants.START_NEW_SESSION,
+				name: buttonGroup,
+				CSSStyles: { ...styles.BODY_CSS, 'margin-bottom': '8px' },
+				checked: true
+			}).component();
 
-		this._disposables.push(radioStart.onDidChangeCheckedState((e) => {
-			if (e) {
-				this.stateModel.resumeAssessment = false;
-			}
-		}));
-		const radioContinue = view.modelBuilder.radioButton().withProps({
-			label: constants.RESUME_SESSION,
-			name: buttonGroup,
-			CSSStyles: {
-				...styles.BODY_CSS,
-			},
-			checked: false
-		}).component();
+		this._disposables.push(
+			radioStart.onDidChangeCheckedState(checked => {
+				if (checked) {
+					this.stateModel.resumeAssessment = false;
+				}
+			}));
+		const radioContinue = view.modelBuilder.radioButton()
+			.withProps({
+				label: constants.RESUME_SESSION,
+				name: buttonGroup,
+				CSSStyles: { ...styles.BODY_CSS },
+				checked: false
+			}).component();
 
-		this._disposables.push(radioContinue.onDidChangeCheckedState((e) => {
-			if (e) {
-				this.stateModel.resumeAssessment = true;
-			}
-		}));
+		this._disposables.push(
+			radioContinue.onDidChangeCheckedState(checked => {
+				if (checked) {
+					this.stateModel.resumeAssessment = true;
+				}
+			}));
 
 		const flex = view.modelBuilder.flexContainer()
-			.withLayout({
-				flexFlow: 'column',
-			}).withProps({
-				CSSStyles: {
-					'padding': '20px 15px',
-				}
-			}).component();
+			.withLayout({ flexFlow: 'column', })
+			.withProps({ CSSStyles: { 'padding': '20px 15px', } })
+			.component();
 		flex.addItem(radioStart, { flex: '0 0 auto' });
 		flex.addItem(radioContinue, { flex: '0 0 auto' });
 

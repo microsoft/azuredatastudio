@@ -594,14 +594,29 @@ export interface StartDatabaseMigrationRequest {
 			},
 			sourceLocation?: SourceLocation
 		},
-		sourceSqlConnection: {
-			authentication: string,
+		targetSqlConnection?: {
 			dataSource: string,
-			username: string,
-			password: string
+			authentication: string,
+			userName: string,
+			password: string,
+			encryptConnection?: boolean,
+			trustServerCertificate?: boolean,
 		},
+		sourceSqlConnection: {
+			dataSource: string,
+			authentication: string,
+			userName: string,
+			password: string,
+			encryptConnection?: boolean,
+			trustServerCertificate?: boolean,
+		},
+		sqlDataCopyThresholds?: {
+			cidxrowthreshold: number,
+			cidxkbsthreshold: number,
+		},
+		tableList?: string[],
 		scope: string,
-		offlineConfiguration: OfflineConfiguration,
+		offlineConfiguration?: OfflineConfiguration,
 	}
 }
 

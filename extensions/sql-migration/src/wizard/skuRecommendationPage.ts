@@ -5,6 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import * as utils from '../api/utils';
 import * as mssql from 'mssql';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationStateModel, MigrationTargetType, PerformanceDataSourceOptions, StateChangeEvent } from '../models/stateMachine';
@@ -527,27 +528,18 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	}
 
 	private async _setAssessmentState(assessing: boolean, failedAssessment: boolean): Promise<void> {
-		await this.setControlVisibility(
-			this._assessmentComponent,
-			assessing);
-
-		await this.setControlVisibility(
-			this._skipAssessmentCheckbox,
-			!assessing && failedAssessment);
-
-		await this.setControlVisibility(
+		await utils.updateControlDisplay(this._assessmentComponent, assessing);
+		await utils.updateControlDisplay(this._skipAssessmentCheckbox, !assessing && failedAssessment);
+		await utils.updateControlDisplay(
 			this._skipAssessmentSubText,
-			!assessing && failedAssessment);
-
-		await this.setControlVisibility(
-			this._formContainer.component(),
-			!assessing);
-
-		await this.setControlVisibility(
+			!assessing && failedAssessment,
+			'block');
+		await utils.updateControlDisplay(this._formContainer.component(), !assessing);
+		await utils.updateControlDisplay(
 			this._chooseTargetComponent,
 			!failedAssessment || this._skipAssessmentCheckbox.checked === true);
 
-		await this.setControlVisibility(
+		await utils.updateControlDisplay(
 			this.assessmentGroupContainer,
 			this._rbg.selectedCardId !== undefined && (!failedAssessment || this._skipAssessmentCheckbox.checked === true));
 
@@ -556,15 +548,12 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
-			const errors: string[] = [];
-			this.wizard.message = {
-				text: '',
-				level: azdata.window.MessageLevel.Error
-			};
+			this.wizard.message = { text: '' };
 			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
 				return true;
 			}
 
+			const errors: string[] = [];
 			if (this._rbg.selectedCardId === undefined || this._rbg.selectedCardId === '') {
 				errors.push(constants.SELECT_TARGET_TO_CONTINUE);
 			}

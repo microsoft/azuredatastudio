@@ -274,6 +274,7 @@ export function AZURE_SQL_TARGET_PAGE_DESCRIPTION(targetInstance: string = 'inst
 	return localize('sql.migration.wizard.target.description', "Select an Azure account and your target {0}.", targetInstance);
 }
 
+export const AZURE_SQL_TARGET_CONNECTION_ERROR_TITLE = localize('sql.migration.wizard.connection.error.title', "An error occurred while conneting to the target server.");
 export function SQL_TARGET_CONNECTION_ERROR(message: string): string {
 	return localize('sql.migration.wizard.target.connection.error', "Connection error: {0}", message);
 }
@@ -391,6 +392,7 @@ export function ACCOUNT_CREDENTIALS_REFRESH(accountName: string): string {
 		"{0} (requires credentials refresh)",
 		accountName);
 }
+export const SELECT_SERVICE_PLACEHOLDER = localize('sql.migration.select.service.select.migration.target', "Select a target server.");
 
 // database backup page
 export const DATABASE_BACKUP_PAGE_TITLE = localize('sql.migration.database.page.title', "Database backup");
@@ -670,6 +672,7 @@ export const SOURCE_DATABASE = localize('sql.migration.source.database', "Source
 export const SOURCE_SERVER = localize('sql.migration.source.server', "Source server");
 export const SOURCE_VERSION = localize('sql.migration.source.version', "Source version");
 export const TARGET_DATABASE_NAME = localize('sql.migration.target.database.name', "Target database name");
+export const TARGET_TABLE_COUNT_NAME = localize('sql.migration.target.table.count.name', "Tables");
 export const TARGET_SERVER = localize('sql.migration.target.server', "Target server");
 export const TARGET_VERSION = localize('sql.migration.target.version', "Target version");
 export const MIGRATION_STATUS = localize('sql.migration.migration.status', "Migration status");
