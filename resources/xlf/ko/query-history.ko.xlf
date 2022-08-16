@@ -2,21 +2,57 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file original="extensions/query-history/package" source-language="en" datatype="plaintext" target-language="ko">
     <body>
+      <trans-unit id="queryHistory.captureEnabledDesc">
+        <source xml:lang="en">Whether Query History capture is enabled. If false queries executed will not be captured.</source>
+        <target state="translated">쿼리 기록 캡처가 사용하도록 설정되어 있는지 여부입니다. false이면 실행된 쿼리가 캡처되지 않습니다.</target>
+      </trans-unit>
       <trans-unit id="queryHistory.clear">
         <source xml:lang="en">Clear All History</source>
         <target state="translated">모든 기록 지우기</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.delete">
+        <source xml:lang="en">Delete</source>
+        <target state="translated">삭제</target>
       </trans-unit>
       <trans-unit id="queryHistory.description">
         <source xml:lang="en">View and run previously executed queries</source>
         <target state="translated">이전에 실행한 쿼리 보기 및 실행</target>
       </trans-unit>
+      <trans-unit id="queryHistory.disableCapture">
+        <source xml:lang="en">Pause Query History Capture</source>
+        <target state="translated">쿼리 기록 캡처 일시 중지</target>
+      </trans-unit>
       <trans-unit id="queryHistory.displayName">
         <source xml:lang="en">Query History</source>
         <target state="translated">쿼리 기록</target>
       </trans-unit>
-      <trans-unit id="queryHistory.toggleCapture">
-        <source xml:lang="en">Toggle Query History Capture</source>
-        <target state="translated">쿼리 기록 캡처 설정/해제</target>
+      <trans-unit id="queryHistory.doubleClickAction">
+        <source xml:lang="en">The action taken when a history item is double clicked</source>
+        <target state="translated">기록 항목을 두 번 클릭할 때 수행되는 작업</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.doubleClickAction.open">
+        <source xml:lang="en">Open a new disconnected editor with the query from the selected history item</source>
+        <target state="translated">선택한 기록 항목의 쿼리로 연결이 끊긴 새 편집기 열기</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.doubleClickAction.run">
+        <source xml:lang="en">Open a new connected editor with the query and connection from the selected history item and automatically run the query</source>
+        <target state="translated">선택한 기록 항목에서 쿼리 및 연결을 사용하여 연결된 새 편집기를 열고 쿼리를 자동으로 실행</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.enableCapture">
+        <source xml:lang="en">Start Query History Capture</source>
+        <target state="translated">쿼리 기록 캡처 시작</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.noEntries">
+        <source xml:lang="en">No queries to display</source>
+        <target state="translated">표시할 쿼리 없음</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.open">
+        <source xml:lang="en">Open Query</source>
+        <target state="translated">쿼리 열기</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.run">
+        <source xml:lang="en">Run Query</source>
+        <target state="translated">쿼리 실행</target>
       </trans-unit>
     </body>
   </file>

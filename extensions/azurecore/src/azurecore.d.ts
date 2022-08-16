@@ -306,6 +306,7 @@ declare module 'azurecore' {
 		 * @param region The region value
 		 */
 		getRegionDisplayName(region?: string): string;
+		getProviderMetadataForAccount(account: AzureAccount): AzureAccountProviderMetadata;
 		provideResources(): azureResource.IAzureResourceProvider[];
 
 		runGraphQuery<T extends azureResource.AzureGraphResource>(account: AzureAccount, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors: boolean, query: string): Promise<ResourceQueryResult<T>>;

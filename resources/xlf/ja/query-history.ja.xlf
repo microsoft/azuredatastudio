@@ -2,21 +2,57 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file original="extensions/query-history/package" source-language="en" datatype="plaintext" target-language="ja">
     <body>
+      <trans-unit id="queryHistory.captureEnabledDesc">
+        <source xml:lang="en">Whether Query History capture is enabled. If false queries executed will not be captured.</source>
+        <target state="translated">Query History キャプチャが有効かどうか。false の場合、実行されたクエリはキャプチャされません。</target>
+      </trans-unit>
       <trans-unit id="queryHistory.clear">
         <source xml:lang="en">Clear All History</source>
         <target state="translated">すべての履歴をクリア</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.delete">
+        <source xml:lang="en">Delete</source>
+        <target state="translated">削除</target>
       </trans-unit>
       <trans-unit id="queryHistory.description">
         <source xml:lang="en">View and run previously executed queries</source>
         <target state="translated">以前に実行したクエリを表示して実行します</target>
       </trans-unit>
+      <trans-unit id="queryHistory.disableCapture">
+        <source xml:lang="en">Pause Query History Capture</source>
+        <target state="translated">Query History キャプチャの一時停止</target>
+      </trans-unit>
       <trans-unit id="queryHistory.displayName">
         <source xml:lang="en">Query History</source>
         <target state="translated">Query History</target>
       </trans-unit>
-      <trans-unit id="queryHistory.toggleCapture">
-        <source xml:lang="en">Toggle Query History Capture</source>
-        <target state="translated">Query History キャプチャの切り替え</target>
+      <trans-unit id="queryHistory.doubleClickAction">
+        <source xml:lang="en">The action taken when a history item is double clicked</source>
+        <target state="translated">履歴項目がダブルクリックされたときに実行されるアクション</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.doubleClickAction.open">
+        <source xml:lang="en">Open a new disconnected editor with the query from the selected history item</source>
+        <target state="translated">選択した履歴項目のクエリを使用して、切断された新しいエディターを開きます</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.doubleClickAction.run">
+        <source xml:lang="en">Open a new connected editor with the query and connection from the selected history item and automatically run the query</source>
+        <target state="translated">クエリーと選択した履歴項目からの接続を使用して新しい接続されたエディターを開き、クエリを自動的に実行します</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.enableCapture">
+        <source xml:lang="en">Start Query History Capture</source>
+        <target state="translated">Query History キャプチャの開始</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.noEntries">
+        <source xml:lang="en">No queries to display</source>
+        <target state="translated">表示するクエリはありません</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.open">
+        <source xml:lang="en">Open Query</source>
+        <target state="translated">クエリを開く</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.run">
+        <source xml:lang="en">Run Query</source>
+        <target state="translated">クエリの実行</target>
       </trans-unit>
     </body>
   </file>

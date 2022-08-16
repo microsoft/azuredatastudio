@@ -278,6 +278,7 @@ export class CreateSqlMigrationServiceDialog {
 
 		this._createResourceGroupLink = this._view.modelBuilder.hyperlink().withProps({
 			label: constants.CREATE_NEW,
+			ariaLabel: constants.CREATE_NEW_RESOURCE_GROUP,
 			url: '',
 			CSSStyles: {
 				...styles.BODY_CSS

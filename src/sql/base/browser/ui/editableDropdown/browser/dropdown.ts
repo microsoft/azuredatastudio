@@ -90,6 +90,7 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 	private _onFocus = this._register(new Emitter<void>());
 	public onFocus: Event<void> = this._onFocus.event;
 	private readonly _widthControlElement: HTMLElement;
+	private readonly _widthControlElementContainer: HTMLElement;
 
 	constructor(
 		container: HTMLElement,
@@ -99,9 +100,12 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 		super();
 		this._options = opt || Object.create(null);
 		mixin(this._options, defaults, false);
-		this._widthControlElement = DOM.append(container, document.createElement('span'));
-		this._widthControlElement.classList.add('monaco-dropdown-width-control-element');
-		this._widthControlElement.setAttribute('aria-hidden', 'true');
+		// Set up the width measure control using the same classes and structure as the context menu to get the accurate width measurement.
+		this._widthControlElementContainer = DOM.append(container, document.createElement('div'));
+		this._widthControlElementContainer.classList.add('monaco-dropdown-width-control-element', 'context-view', 'fixed');
+		this._widthControlElementContainer.setAttribute('aria-hidden', 'true');
+		this._widthControlElement = DOM.append(this._widthControlElementContainer, document.createElement('span'));
+		this._widthControlElement.classList.add('editable-drop-option-text');
 
 		this._el = DOM.append(container, DOM.$('.monaco-dropdown'));
 		this._el.style.width = '100%';
@@ -415,5 +419,9 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 
 	public get selectList(): List<IDropdownListItem> {
 		return this._selectList;
+	}
+
+	public get options(): IDropdownOptions {
+		return this._options;
 	}
 }

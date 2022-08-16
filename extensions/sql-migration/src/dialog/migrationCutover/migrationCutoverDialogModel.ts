@@ -7,53 +7,45 @@ import { DatabaseMigration, startMigrationCutover, stopMigration, BackupFileInfo
 import { BackupFileInfoStatus, MigrationServiceContext } from '../../models/migrationLocalStorage';
 import { logError, sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../../telemtery';
 import * as constants from '../../constants/strings';
-import { EOL } from 'os';
 import { getMigrationTargetType, getMigrationMode, isBlobMigration } from '../../constants/helper';
 
 export class MigrationCutoverDialogModel {
 	public CutoverError?: Error;
 	public CancelMigrationError?: Error;
-	public migrationStatus!: DatabaseMigration;
-
 
 	constructor(
-		public _serviceConstext: MigrationServiceContext,
-		public _migration: DatabaseMigration
-	) {
-	}
+		public serviceConstext: MigrationServiceContext,
+		public migration: DatabaseMigration) { }
 
 	public async fetchStatus(): Promise<void> {
-		this.migrationStatus = await getMigrationDetails(
-			this._serviceConstext.azureAccount!,
-			this._serviceConstext.subscription!,
-			this._migration.id,
-			this._migration.properties?.migrationOperationId);
+		const migrationStatus = await getMigrationDetails(
+			this.serviceConstext.azureAccount!,
+			this.serviceConstext.subscription!,
+			this.migration.id,
+			this.migration.properties?.migrationOperationId);
 
 		sendSqlMigrationActionEvent(
 			TelemetryViews.MigrationCutoverDialog,
 			TelemetryAction.MigrationStatus,
-			{
-				'migrationStatus': this.migrationStatus.properties?.migrationStatus
-			},
-			{}
-		);
-		// Logging status to help debugging.
-		console.log(this.migrationStatus);
+			{ 'migrationStatus': migrationStatus.properties?.migrationStatus },
+			{});
+
+		this.migration = migrationStatus;
 	}
 
 	public async startCutover(): Promise<DatabaseMigration | undefined> {
 		try {
 			this.CutoverError = undefined;
-			if (this._migration) {
+			if (this.migration) {
 				const cutover = await startMigrationCutover(
-					this._serviceConstext.azureAccount!,
-					this._serviceConstext.subscription!,
-					this._migration!);
+					this.serviceConstext.azureAccount!,
+					this.serviceConstext.subscription!,
+					this.migration!);
 				sendSqlMigrationActionEvent(
 					TelemetryViews.MigrationCutoverDialog,
 					TelemetryAction.CutoverMigration,
 					{
-						...this.getTelemetryProps(this._serviceConstext, this._migration),
+						...this.getTelemetryProps(this.serviceConstext, this.migration),
 						'migrationEndTime': new Date().toString(),
 					},
 					{}
@@ -67,30 +59,21 @@ export class MigrationCutoverDialogModel {
 		return undefined!;
 	}
 
-	public async fetchErrors(): Promise<string> {
-		const errors = [];
-		await this.fetchStatus();
-		errors.push(this.migrationStatus.properties.migrationFailureError?.message);
-		return errors
-			.filter((e, i, arr) => e !== undefined && i === arr.indexOf(e))
-			.join(EOL);
-	}
-
 	public async cancelMigration(): Promise<void> {
 		try {
 			this.CancelMigrationError = undefined;
-			if (this.migrationStatus) {
+			if (this.migration) {
 				const cutoverStartTime = new Date().toString();
 				await stopMigration(
-					this._serviceConstext.azureAccount!,
-					this._serviceConstext.subscription!,
-					this.migrationStatus);
+					this.serviceConstext.azureAccount!,
+					this.serviceConstext.subscription!,
+					this.migration);
 				sendSqlMigrationActionEvent(
 					TelemetryViews.MigrationCutoverDialog,
 					TelemetryAction.CancelMigration,
 					{
-						...this.getTelemetryProps(this._serviceConstext, this._migration),
-						'migrationMode': getMigrationMode(this._migration),
+						...this.getTelemetryProps(this.serviceConstext, this.migration),
+						'migrationMode': getMigrationMode(this.migration),
 						'cutoverStartTime': cutoverStartTime,
 					},
 					{}
@@ -104,7 +87,7 @@ export class MigrationCutoverDialogModel {
 	}
 
 	public confirmCutoverStepsString(): string {
-		if (isBlobMigration(this.migrationStatus)) {
+		if (isBlobMigration(this.migration)) {
 			return `${constants.CUTOVER_HELP_STEP1}
 			${constants.CUTOVER_HELP_STEP2_BLOB_CONTAINER}
 			${constants.CUTOVER_HELP_STEP3_BLOB_CONTAINER}`;
@@ -116,16 +99,16 @@ export class MigrationCutoverDialogModel {
 	}
 
 	public getLastBackupFileRestoredName(): string | undefined {
-		return this.migrationStatus.properties.migrationStatusDetails?.lastRestoredFilename;
+		return this.migration.properties.migrationStatusDetails?.lastRestoredFilename;
 	}
 
 	public getPendingLogBackupsCount(): number | undefined {
-		return this.migrationStatus.properties.migrationStatusDetails?.pendingLogBackupsCount;
+		return this.migration.properties.migrationStatusDetails?.pendingLogBackupsCount;
 	}
 
 	public getPendingFiles(): BackupFileInfo[] {
 		const files: BackupFileInfo[] = [];
-		this.migrationStatus.properties.migrationStatusDetails?.activeBackupSets?.forEach(abs => {
+		this.migration.properties.migrationStatusDetails?.activeBackupSets?.forEach(abs => {
 			abs.listOfBackupFiles.forEach(f => {
 				if (f.status !== BackupFileInfoStatus.Restored) {
 					files.push(f);

@@ -6,18 +6,20 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { EOL } from 'os';
-import { QueryHistoryNode } from './queryHistoryNode';
+import { QueryHistoryItem } from './queryHistoryItem';
+import { removeNewLines } from './utils';
+import { CAPTURE_ENABLED_CONFIG_SECTION, ITEM_SELECTED_COMMAND_ID, QUERY_HISTORY_CONFIG_SECTION } from './constants';
 
-const QUERY_HISTORY_CONFIG_SECTION = 'queryHistory';
-const CAPTURE_ENABLED_CONFIG_SECTION = 'captureEnabled';
 const DEFAULT_CAPTURE_ENABLED = true;
+const successIcon = new vscode.ThemeIcon('check', new vscode.ThemeColor('testing.iconPassed'));
+const failedIcon = new vscode.ThemeIcon('error', new vscode.ThemeColor('testing.iconFailed'));
 
-export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistoryNode>, vscode.Disposable {
+export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistoryItem>, vscode.Disposable {
 
-	private _onDidChangeTreeData: vscode.EventEmitter<QueryHistoryNode | undefined> = new vscode.EventEmitter<QueryHistoryNode | undefined>();
-	readonly onDidChangeTreeData: vscode.Event<QueryHistoryNode | undefined> = this._onDidChangeTreeData.event;
+	private _onDidChangeTreeData: vscode.EventEmitter<QueryHistoryItem | undefined> = new vscode.EventEmitter<QueryHistoryItem | undefined>();
+	readonly onDidChangeTreeData: vscode.Event<QueryHistoryItem | undefined> = this._onDidChangeTreeData.event;
 
-	private _queryHistoryNodes: QueryHistoryNode[] = [];
+	private _queryHistoryItems: QueryHistoryItem[] = [];
 	private _captureEnabled: boolean = true;
 
 	private _disposables: vscode.Disposable[] = [];
@@ -37,10 +39,10 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 					}
 					// Combine all the text from the batches back together
 					const queryText = queryInfo.batchRanges.map(r => textDocument.getText(r) ?? '').join(EOL);
-					const connProfile = await azdata.connection.getConnection(document.uri);
-					const isError = queryInfo.messages.find(m => m.isError) ? false : true;
+					const connectionProfile = await azdata.connection.getConnection(document.uri);
+					const isSuccess = queryInfo.messages.find(m => m.isError) ? false : true;
 					// Add to the front of the list so the new item appears at the top
-					this._queryHistoryNodes.unshift(new QueryHistoryNode(queryText, connProfile, new Date(), isError));
+					this._queryHistoryItems.unshift({ queryText, connectionProfile, timestamp: new Date(), isSuccess });
 					this._onDidChangeTreeData.fire(undefined);
 				}
 			}
@@ -54,21 +56,26 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 	}
 
 	public clearAll(): void {
-		this._queryHistoryNodes = [];
+		this._queryHistoryItems = [];
 		this._onDidChangeTreeData.fire(undefined);
 	}
 
-	public deleteNode(node: QueryHistoryNode): void {
-		this._queryHistoryNodes = this._queryHistoryNodes.filter(n => n !== node);
+	public deleteItem(item: QueryHistoryItem): void {
+		this._queryHistoryItems = this._queryHistoryItems.filter(n => n !== item);
 		this._onDidChangeTreeData.fire(undefined);
 	}
-	public getTreeItem(node: QueryHistoryNode): vscode.TreeItem {
-		return node;
+	public getTreeItem(item: QueryHistoryItem): vscode.TreeItem {
+		const treeItem = new vscode.TreeItem(removeNewLines(item.queryText), vscode.TreeItemCollapsibleState.None);
+		treeItem.iconPath = item.isSuccess ? successIcon : failedIcon;
+		treeItem.tooltip = item.queryText;
+		treeItem.description = item.connectionProfile ? `${item.connectionProfile.serverName}|${item.connectionProfile.databaseName} ${item.timestamp.toLocaleString()}` : item.timestamp.toLocaleString();
+		treeItem.command = { title: '', command: ITEM_SELECTED_COMMAND_ID, arguments: [item] };
+		return treeItem;
 	}
 
-	public getChildren(element?: QueryHistoryNode): QueryHistoryNode[] {
+	public getChildren(element?: QueryHistoryItem): QueryHistoryItem[] {
 		// We only have top level items
-		return this._queryHistoryNodes;
+		return this._queryHistoryItems;
 	}
 
 	public dispose(): void {
