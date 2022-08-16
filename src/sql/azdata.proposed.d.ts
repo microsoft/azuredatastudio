@@ -1314,6 +1314,14 @@ declare module 'azdata' {
 			 * Data to show in top operations table for the node.
 			 */
 			topOperationsData: TopOperationsDataItem[];
+			/**
+			 * Output row count associated with the node
+			 */
+			rowCountDisplayString: string;
+			/**
+			 * Cost string for the node
+			 */
+			costDisplayString: string;
 		}
 
 		export interface ExecutionPlanBadge {

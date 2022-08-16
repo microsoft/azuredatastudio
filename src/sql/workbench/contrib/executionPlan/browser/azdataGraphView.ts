@@ -293,6 +293,8 @@ export class AzdataGraphView {
 		let diagramNode: AzDataGraphCell = <AzDataGraphCell>{};
 		diagramNode.label = node.subtext.join(this.textResourcePropertiesService.getEOL(undefined));
 		diagramNode.tooltipTitle = node.name;
+		diagramNode.rowCountDisplayString = node.rowCountDisplayString;
+		diagramNode.costDisplayString = node.costDisplayString;
 		if (!node.id.toString().startsWith(`element-`)) {
 			node.id = `element-${node.id}`;
 		}
@@ -445,6 +447,14 @@ export interface AzDataGraphCell {
 	 * icon for the cell
 	 */
 	icon: string;
+	/**
+	 * cost string for the cell
+	 */
+	costDisplayString: string;
+	/**
+	 * row count for the cell
+	 */
+	rowCountDisplayString: string;
 	/**
 	 * title for the cell hover tooltip
 	 */
