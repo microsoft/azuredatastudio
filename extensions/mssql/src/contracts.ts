@@ -1217,4 +1217,12 @@ export namespace ExecutionPlanComparisonRequest {
 	export const type = new RequestType<ExecutionPlanComparisonParams, azdata.executionPlan.ExecutionPlanComparisonResult, void, void>('queryExecutionPlan/compareExecutionPlanGraph');
 }
 
+export interface IsExecutionPlanXmlParams {
+	executionPlanXml: string;
+}
+
+export namespace IsExecutionPlanXmlRequest {
+	export const type = new RequestType<IsExecutionPlanXmlParams, azdata.executionPlan.IsExecutionPlanXmlResult, void, void>('queryExecutionPlan/isExecutionPlanXml');
+}
+
 // ------------------------------- < Execution Plan > ------------------------------------

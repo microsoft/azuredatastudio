@@ -585,6 +585,10 @@ export abstract class ExtHostDataProtocolShape {
 	 * Compares two execution plans and identifies matching sections in both.
 	 */
 	$compareExecutionPlanGraph(handle: number, firstPlanFile: azdata.executionPlan.ExecutionPlanGraphInfo, secondPlanFile: azdata.executionPlan.ExecutionPlanGraphInfo): Thenable<azdata.executionPlan.ExecutionPlanComparisonResult> { throw ni(); }
+	/**
+	 * Determines if the provided XML is for an execution plan and returns the appropriate file extension.
+	 */
+	$isExecutionPlanXml(handle: number, executionPlanXml: string): Thenable<azdata.executionPlan.IsExecutionPlanXmlResult> { throw ni(); }
 }
 
 /**

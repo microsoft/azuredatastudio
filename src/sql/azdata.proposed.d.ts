@@ -1464,6 +1464,11 @@ declare module 'azdata' {
 			secondComparisonResult: ExecutionGraphComparisonResult;
 		}
 
+		export interface IsExecutionPlanXmlResult extends ResultStatus {
+			isExecutionPlanXml: boolean;
+			queryExecutionPlanFileExtension: string;
+		}
+
 		export interface ExecutionPlanProvider extends DataProvider {
 			// execution plan service methods
 
@@ -1478,6 +1483,11 @@ declare module 'azdata' {
 			 * @param secondPlanFile file that contains the second execution plan.
 			 */
 			compareExecutionPlanGraph(firstPlanFile: ExecutionPlanGraphInfo, secondPlanFile: ExecutionPlanGraphInfo): Thenable<ExecutionPlanComparisonResult>;
+			/**
+			 * Determines if the provided XML is for an execution plan and returns the appropriate file extension.
+			 * @param executionPlanXml XML string that needs to be checked.
+			 */
+			isExecutionPlanXml(executionPlanXml: string): Thenable<IsExecutionPlanXmlResult>;
 		}
 
 		export interface TopOperationsDataItem {

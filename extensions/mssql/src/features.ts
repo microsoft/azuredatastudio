@@ -1279,10 +1279,25 @@ export class ExecutionPlanServiceFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
+		const isExecutionPlanXml = (executionPlanXml: string): Thenable<azdata.executionPlan.IsExecutionPlanXmlResult> => {
+			const params: contracts.IsExecutionPlanXmlParams = {
+				executionPlanXml: executionPlanXml
+			};
+
+			return client.sendRequest(contracts.IsExecutionPlanXmlRequest.type, params).then(
+				r => r,
+				e => {
+					client.logFailedRequest(contracts.IsExecutionPlanXmlRequest.type, e);
+					return Promise.reject(e);
+				}
+			);
+		};
+
 		return azdata.dataprotocol.registerExecutionPlanProvider({
 			providerId: client.providerId,
 			getExecutionPlan,
-			compareExecutionPlanGraph
+			compareExecutionPlanGraph,
+			isExecutionPlanXml
 		});
 	}
 }
