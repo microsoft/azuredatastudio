@@ -19,7 +19,6 @@ import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColu
 import { escape } from 'sql/base/common/strings';
 import { hyperLinkFormatter, textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';
-import { CopyKeybind } from 'sql/base/browser/ui/table/plugins/copyKeybind.plugin';
 
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -51,6 +50,8 @@ import { IQueryModelService } from 'sql/workbench/services/query/common/queryMod
 import { FilterButtonWidth, HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { HybridDataProvider } from 'sql/base/browser/ui/table/hybridDataProvider';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { alert, status } from 'vs/base/browser/ui/aria/aria';
+import { CopyAction } from 'vs/editor/contrib/clipboard/clipboard';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -122,10 +123,19 @@ export class GridPanel extends Disposable {
 		this.queryRunnerDisposables.add(this.runner.onResultSet(this.onResultSet, this));
 		this.queryRunnerDisposables.add(this.runner.onResultSetUpdate(this.updateResultSet, this));
 		this.queryRunnerDisposables.add(this.runner.onQueryStart(() => {
+			status(localize('query.QueryExecutionStarted', "Query execution started."));
 			if (this.state) {
 				this.state.tableStates = [];
 			}
 			this.reset();
+		}));
+		this.queryRunnerDisposables.add(this.runner.onQueryEnd(() => {
+			status(localize('query.QueryExecutionEnded', "Query execution completed."));
+		}));
+		this.queryRunnerDisposables.add(this.runner.onMessage((messages) => {
+			if (messages?.find(m => m.isError)) {
+				alert(localize('query.QueryErrorOccured', "Error occured while executing the query."));
+			}
 		}));
 		this.addResultSet(this.runner.batchSets.reduce<ResultSetSummary[]>((p, e) => {
 			if (this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.streaming) {
@@ -344,6 +354,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	private currentHeight: number;
 	private dataProvider: HybridDataProvider<T>;
 	private filterPlugin: HeaderFilter<T>;
+	private isDisposed: boolean = false;
 
 	private columns: Slick.Column<T>[];
 
@@ -358,7 +369,6 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 
 	private _state: GridTableState;
 
-	private scrolled = false;
 	private visible = false;
 
 	private rowHeight: number;
@@ -421,6 +431,9 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	}
 
 	public async onDidInsert() {
+		if (this.isDisposed) {
+			return;
+		}
 		if (!this.table) {
 			this.build();
 		}
@@ -450,8 +463,6 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		);
 		this.dataProvider.dataRows = collection;
 		this.table.updateRowCount();
-		// when we are removed slickgrid acts badly so we need to account for that
-		this.scrolled = false;
 	}
 
 	// actionsOrientation controls the orientation (horizontal or vertical) of the actionBar
@@ -481,10 +492,6 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			this.renderGridDataRowsRange(startIndex, count);
 		});
 		this.rowNumberColumn = new RowNumberColumn({ numberOfRows: this.resultSet.rowCount });
-		let copyHandler = new CopyKeybind<T>();
-		copyHandler.onCopy(e => {
-			this.instantiationService.createInstance(CopyResultAction, CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false).run(this.generateContext());
-		});
 		this.columns.unshift(this.rowNumberColumn.getColumnDefinition());
 		let tableOptions: Slick.GridOptions<T> = {
 			rowHeight: this.rowHeight,
@@ -514,14 +521,11 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.table.registerPlugin(new MouseWheelSupport());
 		const autoSizeOnRender: boolean = !this.state.columnSizes && this.configurationService.getValue('resultsGrid.autoSizeColumns');
 		this.table.registerPlugin(new AutoColumnSize({ autoSizeOnRender: autoSizeOnRender, maxWidth: this.configurationService.getValue<number>('resultsGrid.maxColumnWidth'), extraColumnHeaderWidth: FilterButtonWidth }));
-		this.table.registerPlugin(copyHandler);
 		this.table.registerPlugin(this.rowNumberColumn);
 		this.table.registerPlugin(new AdditionalKeyBindings());
 		this._register(this.dataProvider.onFilterStateChange(() => { this.layout(); }));
 		this._register(this.table.onContextMenu(this.contextMenu, this));
 		this._register(this.table.onClick(this.onTableClick, this));
-		//This listener is used for correcting auto-scroling when clicking on the header for reszing.
-		this._register(this.table.onHeaderClick(this.onHeaderClick, this));
 		this._register(this.dataProvider.onFilterStateChange(() => {
 			const columns = this.table.columns as FilterableColumn<T>[];
 			this.state.columnFilters = columns.filter((column) => column.filterValues?.length > 0).map(column => {
@@ -582,10 +586,6 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 				// so ignore those events
 				return;
 			}
-			if (!this.scrolled && (this.state.scrollPositionY || this.state.scrollPositionX) && isInDOM(this.container)) {
-				this.scrolled = true;
-				this.restoreScrollState();
-			}
 			if (this.state && isInDOM(this.container)) {
 				this.state.scrollPositionY = data.scrollTop;
 				this.state.scrollPositionX = data.scrollLeft;
@@ -603,6 +603,18 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 				this.state.activeCell = this.table.grid.getActiveCell();
 			}
 		});
+		// Add implementation for the copy action to respect the user's global copy command keybinding.
+		// 1 is a priority number that is slightly larger than the basic handler's priority 0 to make sure our implementation
+		// is executed.
+		this._register(CopyAction.addImplementation(1, 'query-result-grid', accessor => {
+			const selectedRanges = this.table.getSelectedRanges();
+			// Only do copy if the grid is the current active grid.
+			if (this.container.contains(document.activeElement) && selectedRanges && selectedRanges.length !== 0) {
+				this.instantiationService.createInstance(CopyResultAction, CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false).run(this.generateContext());
+				return true;
+			}
+			return false;
+		}));
 	}
 
 	private restoreScrollState() {
@@ -662,11 +674,6 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 
 	public set state(val: GridTableState) {
 		this._state = val;
-	}
-
-	private onHeaderClick(event: ITableMouseEvent) {
-		//header clicks must be accounted for as they force the table to scroll to the top;
-		this.scrolled = false;
 	}
 
 	private async getRowData(start: number, length: number): Promise<ICellValue[][]> {
@@ -867,6 +874,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	}
 
 	public override dispose() {
+		this.isDisposed = true;
 		this.container.remove();
 		if (this.table) {
 			this.table.dispose();

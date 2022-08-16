@@ -58,17 +58,17 @@ suite('SQL QueryEditor Tests', () => {
 			return new Promise((resolve) => resolve(mockEditor));
 		});
 		instantiationService.setup(x => x.createInstance(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((input) => {
-			return new Promise((resolve) => resolve(new RunQueryAction(undefined, undefined, undefined)));
+			return new Promise((resolve) => resolve(new RunQueryAction(undefined, undefined, undefined, undefined)));
 		});
 		// Setup hook to capture calls to create the listDatabase action
 		instantiationService.setup(x => x.createInstance(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((classDef, editor, action) => {
 			if (classDef.ID) {
 				if (classDef.ID === 'listDatabaseQueryActionItem') {
-					return new ListDatabasesActionItem(editor, action, undefined, connectionManagementService.object, undefined, undefined);
+					return new ListDatabasesActionItem(editor, action, undefined, connectionManagementService.object, undefined, undefined, undefined);
 				}
 			}
 			// Default
-			return new RunQueryAction(undefined, undefined, undefined);
+			return new RunQueryAction(undefined, undefined, undefined, undefined);
 		});
 
 		// Mock EditorDescriptorService to give us a mock editor description
@@ -285,18 +285,18 @@ suite('SQL QueryEditor Tests', () => {
 
 			queryActionInstantiationService.setup(x => x.createInstance(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((input) => {
 				// Default
-				return new RunQueryAction(undefined, undefined, undefined);
+				return new RunQueryAction(undefined, undefined, undefined, undefined);
 			});
 
 			// Setup hook to capture calls to create the listDatabase action
 			queryActionInstantiationService.setup(x => x.createInstance(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()))
 				.returns((definition, editor, action, selectBox) => {
 					if (definition.ID === 'listDatabaseQueryActionItem') {
-						let item = new ListDatabasesActionItem(editor, action, undefined, connectionManagementService.object, undefined, undefined);
+						let item = new ListDatabasesActionItem(editor, action, undefined, connectionManagementService.object, undefined, undefined, undefined);
 						return item;
 					}
 					// Default
-					return new RunQueryAction(undefined, undefined, undefined);
+					return new RunQueryAction(undefined, undefined, undefined, undefined);
 				});
 
 			const workbenchinstantiationService = workbenchInstantiationService();

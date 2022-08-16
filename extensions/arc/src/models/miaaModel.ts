@@ -15,7 +15,6 @@ import { ConnectToMiaaSqlDialog } from '../ui/dialogs/connectMiaaDialog';
 import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
 import { ControllerModel, Registration } from './controllerModel';
 import { ResourceModel } from './resourceModel';
-import { ConnectionMode } from '../constants';
 
 export type DatabaseModel = { name: string, status: string, earliestBackup: string, lastBackup: string };
 export type RPModel = { recoveryPointObjective: string, retentionDays: string };
@@ -100,25 +99,14 @@ export class MiaaModel extends ResourceModel {
 		try {
 			try {
 				let result;
-				if (this.controllerModel.info.connectionMode === ConnectionMode.direct) {
-					result = await this._azApi.az.sql.miarc.show(
-						this.info.name,
-						{
-							resourceGroup: this.controllerModel.info.resourceGroup,
-							namespace: undefined
-						},
-						this.controllerModel.azAdditionalEnvVars
-					);
-				} else {
-					result = await this._azApi.az.sql.miarc.show(
-						this.info.name,
-						{
-							resourceGroup: undefined,
-							namespace: this.controllerModel.info.namespace
-						},
-						this.controllerModel.azAdditionalEnvVars
-					);
-				}
+				result = await this._azApi.az.sql.miarc.show(
+					this.info.name,
+					{
+						resourceGroup: undefined,
+						namespace: this.controllerModel.info.namespace
+					},
+					this.controllerModel.azAdditionalEnvVars
+				);
 				this._config = result.stdout;
 				this.configLastUpdated = new Date();
 				this.rpSettings.retentionDays = this._config?.spec?.backup?.retentionPeriodInDays?.toString() ?? '';

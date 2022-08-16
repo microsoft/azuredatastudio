@@ -14,6 +14,7 @@ import { ConnectionDetails, IConnectionInfo } from 'vscode-mssql';
 import { AzureFunctionsExtensionApi } from '../../../types/vscode-azurefunctions.api';
 // https://github.com/microsoft/vscode-azuretools/blob/main/ui/api.d.ts
 import { AzureExtensionApiProvider } from '../../../types/vscode-azuretools.api';
+import { TelemetryActions, TelemetryReporter, TelemetryViews } from './telemetry';
 /**
  * Represents the settings in an Azure function project's locawl.settings.json file
  */
@@ -24,10 +25,7 @@ export interface ILocalSettingsJson {
 	ConnectionStrings?: { [key: string]: string };
 }
 
-export interface IFileFunctionObject {
-	filePromise: Promise<string>;
-	watcherDisposable: vscode.Disposable;
-}
+export const outputChannel = vscode.window.createOutputChannel(constants.serviceName);
 
 /**
  * copied and modified from vscode-azurefunctions extension
@@ -198,47 +196,16 @@ export async function getSettingsFile(projectFolder: string): Promise<string | u
 }
 
 /**
- * New azure function file watcher and watcher disposable to be used to watch for changes to the azure function project
- * @param projectFolder is the parent directory to the project file
- * @returns the function file path once created and the watcher disposable
- */
-export function waitForNewFunctionFile(projectFolder: string): IFileFunctionObject {
-	const watcher = vscode.workspace.createFileSystemWatcher((
-		new vscode.RelativePattern(projectFolder, '**/*.cs')), false, true, true);
-	const filePromise = new Promise<string>((resolve, _) => {
-		watcher.onDidCreate((e) => {
-			resolve(e.fsPath);
-		});
-	});
-	return {
-		filePromise,
-		watcherDisposable: watcher
-	};
-}
-
-/**
- * Retrieves the new host project file once it has created and the watcher disposable
- * @returns the host file path once created and the watcher disposable
- */
-export function waitForNewHostFile(): IFileFunctionObject {
-	const watcher = vscode.workspace.createFileSystemWatcher('**/host.json', false, true, true);
-	const filePromise = new Promise<string>((resolve, _) => {
-		watcher.onDidCreate((e) => {
-			resolve(e.fsPath);
-		});
-	});
-	return {
-		filePromise,
-		watcherDisposable: watcher
-	};
-}
-
-/**
  * Adds the required nuget package to the project
  * @param selectedProjectFile is the users selected project file path
  */
 export async function addSqlNugetReferenceToProjectFile(selectedProjectFile: string): Promise<void> {
-	await utils.executeCommand(`dotnet add "${selectedProjectFile}" package ${constants.sqlExtensionPackageName} --prerelease`);
+	// clear the output channel prior to adding the nuget reference
+	outputChannel.clear();
+	let addNugetCommmand = await utils.executeCommand(`dotnet add "${selectedProjectFile}" package ${constants.sqlExtensionPackageName} --prerelease`);
+	outputChannel.appendLine(constants.dotnetResult(addNugetCommmand));
+	outputChannel.show(true);
+	TelemetryReporter.sendActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.addSQLNugetPackage);
 }
 
 /**

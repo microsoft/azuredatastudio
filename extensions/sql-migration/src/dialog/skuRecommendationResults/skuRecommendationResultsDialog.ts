@@ -9,6 +9,9 @@ import { MigrationStateModel, MigrationTargetType } from '../../models/stateMach
 import * as constants from '../../constants/strings';
 import * as styles from '../../constants/styles';
 import * as mssql from 'mssql';
+import * as utils from '../../api/utils';
+import * as fs from 'fs';
+import path = require('path');
 
 export class SkuRecommendationResultsDialog {
 
@@ -24,6 +27,7 @@ export class SkuRecommendationResultsDialog {
 	private _disposables: vscode.Disposable[] = [];
 	public title?: string;
 	public targetName?: string;
+	private _saveButton!: azdata.window.Button;
 
 	public targetRecommendations?: mssql.SkuRecommendationResultItem[];
 	public instanceRequirements?: mssql.SqlInstanceRequirements;
@@ -472,27 +476,23 @@ export class SkuRecommendationResultsDialog {
 			switch (this._targetType) {
 				case MigrationTargetType.SQLMI:
 					if (this.migrationStateModel._skuEnableElastic) {
-						this.targetRecommendations = recommendations?.elasticModelResults.sqlMiRecommendationResults;
+						this.targetRecommendations = recommendations?.elasticSqlMiRecommendationResults;
 					} else {
-						this.targetRecommendations = recommendations?.baselineModelResults.sqlMiRecommendationResults;
+						this.targetRecommendations = recommendations?.sqlMiRecommendationResults;
 					}
 					break;
 
 				case MigrationTargetType.SQLVM:
-					if (this.migrationStateModel._skuEnableElastic) {
-						// elastic model currently doesn't support SQL VM, so show the baseline model results regardless of user preference
-						// this.targetRecommendations = recommendations?.elasticModelResults.sqlDbRecommendationResults;
-						this.targetRecommendations = recommendations?.baselineModelResults.sqlVmRecommendationResults;
-					} else {
-						this.targetRecommendations = recommendations?.baselineModelResults.sqlVmRecommendationResults;
-					}
+					// elastic model currently doesn't support SQL VM, so show the baseline model results regardless of user preference
+					// this.targetRecommendations = recommendations?.elasticModelResults.sqlDbRecommendationResults;
+					this.targetRecommendations = recommendations?.sqlVmRecommendationResults;
 					break;
 
 				case MigrationTargetType.SQLDB:
 					if (this.migrationStateModel._skuEnableElastic) {
-						this.targetRecommendations = recommendations?.elasticModelResults.sqlDbRecommendationResults;
+						this.targetRecommendations = recommendations?.elasticSqlDbRecommendationResults;
 					} else {
-						this.targetRecommendations = recommendations?.baselineModelResults.sqlDbRecommendationResults;
+						this.targetRecommendations = recommendations?.sqlDbRecommendationResults;
 					}
 					break;
 			}
@@ -506,6 +506,48 @@ export class SkuRecommendationResultsDialog {
 			// TO-DO: When "Create target in Portal" feature is ready, unhide cancel button and use cancelButton to direct user to Portal
 			// this.dialog.cancelButton.label = SkuRecommendationResultsDialog.CreateTargetButtonText;
 			// this._disposables.push(this.dialog.cancelButton.onClick(async () => console.log(SkuRecommendationResultsDialog.CreateTargetButtonText)));
+
+			this._saveButton = azdata.window.createButton(
+				constants.SAVE_RECOMMENDATION_REPORT,
+				'left');
+			this._disposables.push(
+				this._saveButton.onClick(async () => {
+					const folder = await utils.promptUserForFolder();
+
+					if (this.model._skuRecommendationReportFilePaths) {
+
+						let sourceFilePath: string | undefined;
+						let destinationFilePath: string | undefined;
+
+						switch (this._targetType) {
+							case MigrationTargetType.SQLMI:
+								sourceFilePath = this.model._skuRecommendationReportFilePaths.find(filePath => filePath.includes('SkuRecommendationReport-AzureSqlManagedInstance'));
+								destinationFilePath = path.join(folder, 'SkuRecommendationReport-AzureSqlManagedInstance.html');
+								break;
+
+							case MigrationTargetType.SQLVM:
+								sourceFilePath = this.model._skuRecommendationReportFilePaths.find(filePath => filePath.includes('SkuRecommendationReport-AzureSqlVirtualMachine'));
+								destinationFilePath = path.join(folder, 'SkuRecommendationReport-AzureSqlVirtualMachine.html');
+								break;
+
+							case MigrationTargetType.SQLDB:
+								sourceFilePath = this.model._skuRecommendationReportFilePaths.find(filePath => filePath.includes('SkuRecommendationReport-AzureSqlDatabase'));
+								destinationFilePath = path.join(folder, 'SkuRecommendationReport-AzureSqlDatabase.html');
+								break;
+						}
+
+						fs.copyFile(sourceFilePath!, destinationFilePath, (err) => {
+							if (err) {
+								console.log(err);
+							} else {
+								void vscode.window.showInformationMessage(constants.SAVE_RECOMMENDATION_REPORT_SUCCESS(destinationFilePath!));
+							}
+						});
+					} else {
+						console.log('recommendation report not found');
+					}
+				}));
+			this.dialog.customButtons = [this._saveButton];
 
 			const dialogSetupPromises: Thenable<void>[] = [];
 			dialogSetupPromises.push(this.initializeDialog(this.dialog));

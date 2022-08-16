@@ -216,6 +216,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this._rootContainer = this._view.modelBuilder.flexContainer().withLayout({
 			height: '100%',
 			flexFlow: 'column'
+		}).withProps({
+			ariaLive: 'polite',
 		}).component();
 		this._rootContainer.addItem(this._assessmentComponent, { flex: '0 0 auto' });
 		this._rootContainer.addItem(this._formContainer.component(), { flex: '0 0 auto' });
@@ -401,7 +403,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this._databaseSelectedHelperText = this._view.modelBuilder.text().withProps({
 			CSSStyles: {
 				...styles.BODY_CSS,
-			}
+			},
+			ariaLive: 'polite'
 		}).component();
 
 		const container = this._view.modelBuilder.flexContainer().withItems([
@@ -658,13 +661,13 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 						if (this.hasRecommendations()) {
 							if (this.migrationStateModel._skuEnableElastic) {
-								recommendation = this.migrationStateModel._skuRecommendationResults.recommendations.elasticModelResults.sqlMiRecommendationResults[0];
+								recommendation = this.migrationStateModel._skuRecommendationResults.recommendations?.elasticSqlMiRecommendationResults[0];
 							} else {
-								recommendation = this.migrationStateModel._skuRecommendationResults.recommendations.baselineModelResults.sqlMiRecommendationResults[0];
+								recommendation = this.migrationStateModel._skuRecommendationResults.recommendations?.sqlMiRecommendationResults[0];
 							}
 
 							// result returned but no SKU recommended
-							if (!recommendation.targetSku) {
+							if (!recommendation?.targetSku) {
 								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue = constants.SKU_RECOMMENDATION_NO_RECOMMENDATION;
 							}
 							else {
@@ -685,18 +688,11 @@ export class SKURecommendationPage extends MigrationWizardPage {
 						this._rbg.cards[index].descriptions[CardDescriptionIndex.ASSESSMENT_STATUS].textValue = constants.CAN_BE_MIGRATED(dbCount, dbCount);
 
 						if (this.hasRecommendations()) {
-							if (this.migrationStateModel._skuEnableElastic) {
-								// elastic model currently doesn't support SQL VM, so show the baseline model results regardless of user preference
-								// recommendation = this.migrationStateModel._skuRecommendationResults.recommendations.elasticModelResults.sqlMiRecommendationResults[0];
-								recommendation = this.migrationStateModel._skuRecommendationResults.recommendations.baselineModelResults.sqlMiRecommendationResults[0];
-							} else {
-								recommendation = this.migrationStateModel._skuRecommendationResults.recommendations.baselineModelResults.sqlMiRecommendationResults[0];
-							}
-
-							recommendation = this.migrationStateModel._skuRecommendationResults.recommendations.baselineModelResults.sqlVmRecommendationResults[0];
+							// elastic model currently doesn't support SQL VM, so show the baseline model results regardless of user preference
+							recommendation = this.migrationStateModel._skuRecommendationResults.recommendations?.sqlVmRecommendationResults[0];
 
 							// result returned but no SKU recommended
-							if (!recommendation.targetSku) {
+							if (!recommendation?.targetSku) {
 								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue = constants.SKU_RECOMMENDATION_NO_RECOMMENDATION;
 								this._rbg.cards[index].descriptions[CardDescriptionIndex.VM_CONFIGURATIONS].textValue = '';
 							}
@@ -717,8 +713,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 						this._rbg.cards[index].descriptions[CardDescriptionIndex.ASSESSMENT_STATUS].textValue = constants.CAN_BE_MIGRATED(dbWithoutIssuesCount, dbCount);
 
 						if (this.hasRecommendations()) {
-							const successfulRecommendationsCount = this.migrationStateModel._skuRecommendationResults.recommendations.baselineModelResults.sqlDbRecommendationResults.filter(r => r.targetSku !== null).length;
-							this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue = constants.RECOMMENDATIONS_AVAILABLE(successfulRecommendationsCount);
+							const successfulRecommendationsCount = this.migrationStateModel._skuRecommendationResults.recommendations?.sqlDbRecommendationResults.filter(r => r.targetSku !== null).length;
+							this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue = constants.RECOMMENDATIONS_AVAILABLE(successfulRecommendationsCount!);
 						}
 						break;
 				}
