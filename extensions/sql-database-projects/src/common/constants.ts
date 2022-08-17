@@ -459,6 +459,9 @@ export const DatabaseSource = 'DatabaseSource';
 export const VisualStudioVersion = 'VisualStudioVersion';
 export const SSDTExists = 'SSDTExists';
 export const OutputPath = 'OutputPath';
+export const Configuration = 'Configuration';
+export const Platform = 'Platform';
+export const AnyCPU = 'AnyCPU';
 
 export const BuildElements = localize('buildElements', "Build Elements");
 export const FolderElements = localize('folderElements', "Folder Elements");
@@ -496,8 +499,11 @@ export const RoundTripSqlDbPresentCondition = '\'$(NetCoreBuild)\' != \'true\' A
 export const RoundTripSqlDbNotPresentCondition = '\'$(NetCoreBuild)\' != \'true\' AND \'$(SQLDBExtensionsRefPath)\' == \'\'';
 export const DacpacRootPath = '$(DacPacRootPath)';
 export const ProjJsonToClean = '$(BaseIntermediateOutputPath)\\project.assets.json';
+export const EmptyConfigurationCondition = '\'$(Configuration)\' == \'\'';
+export const EmptyPlatformCondition = '\'$(Platform)\' == \'\'';
+export function ConfigurationPlatformCondition(configuration: string, platform: string) { return `'$(Configuration)|$(Platform)' == '${configuration}|${platform}'`; }
 
-export function defaultOutputPath() { return path.join('bin', 'Debug'); }
+export function defaultOutputPath(configuration: string) { return path.join('.', 'bin', configuration); }
 
 // Sqlproj VS property conditions
 export const VSVersionCondition = '\'$(VisualStudioVersion)\' == \'\'';

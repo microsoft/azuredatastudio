@@ -1450,8 +1450,8 @@ describe('Project: sdk style project content operations', function (): void {
 		should(projFileText.includes(constants.OutputPath)).equal(true);
 
 		const project: Project = await Project.openProject(projFilePath);
-		should(project.outputPath).equal(path.join(getPlatformSafeFileEntryPath(project.projectFolderPath), getPlatformSafeFileEntryPath(constants.defaultOutputPath())));
-		should(project.dacpacOutputPath).equal(path.join(getPlatformSafeFileEntryPath(project.projectFolderPath), getPlatformSafeFileEntryPath(constants.defaultOutputPath()), `${project.projectFileName}.dacpac`));
+		should(project.outputPath).equal(path.join(getPlatformSafeFileEntryPath(project.projectFolderPath), getPlatformSafeFileEntryPath(constants.defaultOutputPath(project.configuration.toString()))));
+		should(project.dacpacOutputPath).equal(path.join(getPlatformSafeFileEntryPath(project.projectFolderPath), getPlatformSafeFileEntryPath(constants.defaultOutputPath(project.configuration.toString())), `${project.projectFileName}.dacpac`));
 	});
 
 	it('Should handle adding existing items to project', async function (): Promise<void> {
