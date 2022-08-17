@@ -83,49 +83,51 @@ export class DashboardTab extends TabBase<DashboardTab> {
 			return;
 		}
 
-		this.isRefreshing = true;
-		this._migrationStatusCardLoadingContainer.loading = true;
-		let migrations: DatabaseMigration[] = [];
 		try {
+			this.isRefreshing = true;
+			this._refreshButton.enabled = false;
+			this._migrationStatusCardLoadingContainer.loading = true;
 			await this.statusBar.clearError();
-			migrations = await getCurrentMigrations();
+			const migrations = await getCurrentMigrations();
+
+			const inProgressMigrations = filterMigrations(migrations, AdsMigrationStatus.ONGOING);
+			let warningCount = 0;
+			for (let i = 0; i < inProgressMigrations.length; i++) {
+				if (inProgressMigrations[i].properties.migrationFailureError?.message ||
+					inProgressMigrations[i].properties.migrationStatusDetails?.fileUploadBlockingErrors ||
+					inProgressMigrations[i].properties.migrationStatusDetails?.restoreBlockingReason) {
+					warningCount += 1;
+				}
+			}
+			if (warningCount > 0) {
+				this._inProgressWarningMigrationButton.warningText!.value = loc.MIGRATION_INPROGRESS_WARNING(warningCount);
+				this._inProgressMigrationButton.container.display = 'none';
+				this._inProgressWarningMigrationButton.container.display = '';
+			} else {
+				this._inProgressMigrationButton.container.display = '';
+				this._inProgressWarningMigrationButton.container.display = 'none';
+			}
+
+			this._inProgressMigrationButton.count.value = inProgressMigrations.length.toString();
+			this._inProgressWarningMigrationButton.count.value = inProgressMigrations.length.toString();
+
+			this._updateStatusCard(migrations, this._successfulMigrationButton, AdsMigrationStatus.SUCCEEDED, true);
+			this._updateStatusCard(migrations, this._failedMigrationButton, AdsMigrationStatus.FAILED);
+			this._updateStatusCard(migrations, this._completingMigrationButton, AdsMigrationStatus.COMPLETING);
+			this._updateStatusCard(migrations, this._allMigrationButton, AdsMigrationStatus.ALL, true);
+
+			await this._updateSummaryStatus();
 		} catch (e) {
 			await this.statusBar.showError(
 				loc.DASHBOARD_REFRESH_MIGRATIONS_TITLE,
 				loc.DASHBOARD_REFRESH_MIGRATIONS_LABEL,
 				e.message);
 			logError(TelemetryViews.SqlServerDashboard, 'RefreshgMigrationFailed', e);
+		} finally {
+			this._migrationStatusCardLoadingContainer.loading = false;
+			this._refreshButton.enabled = true;
+			this.isRefreshing = false;
 		}
-
-		const inProgressMigrations = filterMigrations(migrations, AdsMigrationStatus.ONGOING);
-		let warningCount = 0;
-		for (let i = 0; i < inProgressMigrations.length; i++) {
-			if (inProgressMigrations[i].properties.migrationFailureError?.message ||
-				inProgressMigrations[i].properties.migrationStatusDetails?.fileUploadBlockingErrors ||
-				inProgressMigrations[i].properties.migrationStatusDetails?.restoreBlockingReason) {
-				warningCount += 1;
-			}
-		}
-		if (warningCount > 0) {
-			this._inProgressWarningMigrationButton.warningText!.value = loc.MIGRATION_INPROGRESS_WARNING(warningCount);
-			this._inProgressMigrationButton.container.display = 'none';
-			this._inProgressWarningMigrationButton.container.display = '';
-		} else {
-			this._inProgressMigrationButton.container.display = '';
-			this._inProgressWarningMigrationButton.container.display = 'none';
-		}
-
-		this._inProgressMigrationButton.count.value = inProgressMigrations.length.toString();
-		this._inProgressWarningMigrationButton.count.value = inProgressMigrations.length.toString();
-
-		this._updateStatusCard(migrations, this._successfulMigrationButton, AdsMigrationStatus.SUCCEEDED, true);
-		this._updateStatusCard(migrations, this._failedMigrationButton, AdsMigrationStatus.FAILED);
-		this._updateStatusCard(migrations, this._completingMigrationButton, AdsMigrationStatus.COMPLETING);
-		this._updateStatusCard(migrations, this._allMigrationButton, AdsMigrationStatus.ALL, true);
-
-		await this._updateSummaryStatus();
-		this.isRefreshing = false;
-		this._migrationStatusCardLoadingContainer.loading = false;
 	}
 
 	protected async initialize(view: azdata.ModelView): Promise<void> {
@@ -615,11 +617,8 @@ export class DashboardTab extends TabBase<DashboardTab> {
 			}).component();
 
 		this.disposables.push(
-			this._refreshButton.onDidClick(async (e) => {
-				this._refreshButton.enabled = false;
-				await this.refresh();
-				this._refreshButton.enabled = true;
-			}));
+			this._refreshButton.onDidClick(
+				async (e) => await this.refresh()));
 
 		const buttonContainer = view.modelBuilder.flexContainer()
 			.withProps({

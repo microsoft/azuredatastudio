@@ -166,7 +166,7 @@ export class TargetDatabaseSummaryDialog {
 					}
 				} else if (isSqlDbMigration) {
 					tableRow.push(
-						{ value: formatNumber(this._model._sourceTargetMapping.get(db)?.targetTables.size ?? 0) });
+						{ value: formatNumber(this._model._sourceTargetMapping.get(db)?.sourceTables.size ?? 0) });
 				} else {
 					tableRow.push(
 						{ value: this._model._databaseBackup.networkShares[index].networkShareLocation });

@@ -82,12 +82,11 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 			return;
 		}
 
-		this.isRefreshing = true;
-		this.refreshButton.enabled = false;
-		this.refreshLoader.loading = true;
-		await this.statusBar.clearError();
-
 		try {
+			this.isRefreshing = true;
+			this.refreshLoader.loading = true;
+			await this.statusBar.clearError();
+
 			await this.model.fetchStatus();
 			await this._loadData();
 		} catch (e) {
@@ -95,11 +94,10 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 				loc.MIGRATION_STATUS_REFRESH_ERROR,
 				loc.MIGRATION_STATUS_REFRESH_ERROR,
 				e.message);
+		} finally {
+			this.refreshLoader.loading = false;
+			this.isRefreshing = false;
 		}
-
-		this.isRefreshing = false;
-		this.refreshLoader.loading = false;
-		this.refreshButton.enabled = true;
 	}
 
 	private async _loadData(): Promise<void> {

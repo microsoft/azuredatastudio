@@ -257,12 +257,10 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 				async (e) => await this.refresh()));
 
 		this.refreshLoader = this.view.modelBuilder.loadingComponent()
+			.withItem(this.refreshButton)
 			.withProps({
 				loading: false,
-				CSSStyles: {
-					'height': '8px',
-					'margin-top': '4px'
-				}
+				CSSStyles: { 'height': '8px', 'margin-top': '4px' }
 			}).component();
 
 		toolbarContainer.addToolbarItems([
@@ -271,7 +269,6 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 			<azdata.ToolbarComponent>{ component: this.retryButton },
 			<azdata.ToolbarComponent>{ component: this.copyDatabaseMigrationDetails, toolbarSeparatorAfter: true },
 			<azdata.ToolbarComponent>{ component: this.newSupportRequest, toolbarSeparatorAfter: true },
-			<azdata.ToolbarComponent>{ component: this.refreshButton },
 			<azdata.ToolbarComponent>{ component: this.refreshLoader },
 		]);
 

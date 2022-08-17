@@ -58,9 +58,9 @@ export class MigrationsTab extends TabBase<MigrationsTab> {
 		switch (this._selectedTabId) {
 			case undefined:
 			case MigrationsListTabId:
-				return await this._migrationsListTab?.refresh();
+				return this._migrationsListTab.refresh();
 			default:
-				return await this._migrationDetailsTab?.refresh();
+				return this._migrationDetailsTab.refresh();
 		}
 	}
 
@@ -126,9 +126,8 @@ export class MigrationsTab extends TabBase<MigrationsTab> {
 	}
 
 	public async setMigrationFilter(filter: AdsMigrationStatus): Promise<void> {
-		await this._migrationsListTab?.setMigrationFilter(filter);
 		await this._openTab(this._migrationsListTab);
-		await this._migrationsListTab?.setMigrationFilter(filter);
+		await this._migrationsListTab.setMigrationFilter(filter);
 	}
 
 	public async openMigrationDetails(migration: DatabaseMigration): Promise<void> {
@@ -148,7 +147,9 @@ export class MigrationsTab extends TabBase<MigrationsTab> {
 			await MigrationLocalStorage.getMigrationServiceContext(),
 			migration);
 
+		const promise = this._migrationDetailsTab.refresh();
 		await this._openTab(this._migrationDetailsTab);
+		await promise;
 	}
 
 	private async _getMigrationDetails(migrationId: string, migrationOperationId: string): Promise<DatabaseMigration | undefined> {

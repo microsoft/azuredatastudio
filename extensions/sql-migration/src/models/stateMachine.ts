@@ -917,6 +917,22 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						break;
 					default:
 						if (isSqlDbTarget) {
+							const sourceDatabaseName = this._databasesForMigration[i];
+							const targetDatabaseInfo = this._sourceTargetMapping.get(sourceDatabaseName);
+							const totalTables = targetDatabaseInfo?.sourceTables.size ?? 0;
+							const sourceTables: string[] = [];
+							let selectedTables = 0;
+							targetDatabaseInfo?.sourceTables.forEach(table => {
+								const hasTargetTable = targetDatabaseInfo?.targetTables.get(table.tableName) !== undefined;
+								selectedTables += table.selectedForMigration && hasTargetTable ? 1 : 0;
+								sourceTables.push(table.tableName);
+							});
+
+							// skip databases that don't have tables selected
+							if (selectedTables === 0) {
+								continue;
+							}
+
 							const sqlDbTarget = this._targetServerInstance as AzureSqlDatabaseServer;
 							requestBody.properties.offlineConfiguration = undefined;
 							requestBody.properties.sourceSqlConnection = {
@@ -936,18 +952,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 								trustServerCertificate: false,
 							};
 
-							const sourceDatabaseName = this._databasesForMigration[i];
-							const targetDatabaseInfo = this._sourceTargetMapping.get(sourceDatabaseName);
-							const totalTables = targetDatabaseInfo?.targetTables.size ?? 0;
-							const sourceTargetTables: string[] = [];
-							let selectedTables = 0;
-							targetDatabaseInfo?.targetTables.forEach(table => {
-								selectedTables += table.selectedForMigration ? 1 : 0;
-								sourceTargetTables.push(table.tableName);
-							});
-
 							requestBody.properties.tableList = totalTables > 0 && selectedTables < totalTables
-								? sourceTargetTables
+								? sourceTables
 								: [];
 						}
 						break;

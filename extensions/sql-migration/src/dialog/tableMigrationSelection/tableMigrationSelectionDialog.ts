@@ -7,9 +7,8 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as constants from '../../constants/strings';
 import { AzureSqlDatabaseServer } from '../../api/azure';
-import { collectTargetDatabaseTableInfo, TargetTableInfo } from '../../api/sqlUtils';
+import { collectSourceDatabaseTableInfo, collectTargetDatabaseTableInfo, TableInfo } from '../../api/sqlUtils';
 import { MigrationStateModel } from '../../models/stateMachine';
-import { formatNumber } from '../../constants/helper';
 
 const DialogName = 'TableMigrationSelection';
 
@@ -23,7 +22,8 @@ export class TableMigrationSelectionDialog {
 	private _isOpen: boolean = false;
 	private _model: MigrationStateModel;
 	private _sourceDatabaseName: string;
-	private _tableSelectionMap!: Map<string, TargetTableInfo>;
+	private _tableSelectionMap!: Map<string, TableInfo>;
+	private _targetTableMap!: Map<string, TableInfo>;
 	private _onSaveCallback: () => Promise<void>;
 
 	constructor(
@@ -41,17 +41,14 @@ export class TableMigrationSelectionDialog {
 			this._tableLoader.loading = true;
 			const targetDatabaseInfo = this._model._sourceTargetMapping.get(this._sourceDatabaseName);
 			if (targetDatabaseInfo) {
-				const tableList: TargetTableInfo[] = await collectTargetDatabaseTableInfo(
-					this._model._targetServerInstance as AzureSqlDatabaseServer,
-					targetDatabaseInfo.databaseName,
-					this._model._azureTenant.id,
-					this._model._targetUserName,
-					this._model._targetPassword);
+				const sourceTableList: TableInfo[] = await collectSourceDatabaseTableInfo(
+					this._model.sourceConnectionId);
 
 				this._tableSelectionMap = new Map();
-				tableList.forEach(table => {
-					const isSelected = targetDatabaseInfo.targetTables.get(table.tableName)?.selectedForMigration === true;
-					const tableInfo: TargetTableInfo = {
+				sourceTableList.forEach(table => {
+					const sourceTable = targetDatabaseInfo.sourceTables.get(table.tableName);
+					const isSelected = sourceTable?.selectedForMigration === true;
+					const tableInfo: TableInfo = {
 						databaseName: table.databaseName,
 						rowCount: table.rowCount,
 						selectedForMigration: isSelected,
@@ -59,6 +56,23 @@ export class TableMigrationSelectionDialog {
 					};
 					this._tableSelectionMap.set(table.tableName, tableInfo);
 				});
+
+				const targetTableList: TableInfo[] = await collectTargetDatabaseTableInfo(
+					this._model._targetServerInstance as AzureSqlDatabaseServer,
+					targetDatabaseInfo.databaseName,
+					this._model._azureTenant.id,
+					this._model._targetUserName,
+					this._model._targetPassword);
+
+				this._targetTableMap = new Map();
+				targetTableList.forEach(table =>
+					this._targetTableMap.set(
+						table.tableName, {
+						databaseName: table.databaseName,
+						rowCount: table.rowCount,
+						selectedForMigration: false,
+						tableName: table.tableName,
+					}));
 			}
 		} catch (error) {
 			this._dialog!.message = {
@@ -77,15 +91,22 @@ export class TableMigrationSelectionDialog {
 		const filterText = this._filterInputBox.value ?? '';
 		const selectedItems: number[] = [];
 		let tableRow = 0;
-		this._tableSelectionMap.forEach(table => {
-			if (filterText?.length === 0 || table.tableName.indexOf(filterText) > -1) {
+		this._tableSelectionMap.forEach(sourceTable => {
+			if (filterText?.length === 0 || sourceTable.tableName.indexOf(filterText) > -1) {
+				let tableStatus = constants.TARGET_TABLE_MISSING;
+				const targetTable = this._targetTableMap.get(sourceTable.tableName);
+				if (targetTable) {
+					const targetTableRowCount = targetTable?.rowCount ?? 0;
+					tableStatus = targetTableRowCount > 0
+						? constants.TARGET_TABLE_NOT_EMPTY
+						: '--';
+				}
+
 				data.push([
-					table.selectedForMigration,
-					table.tableName,
-					table.rowCount > 0
-						? `${formatNumber(table.rowCount)}`
-						: '--']);
-				if (table.selectedForMigration) {
+					sourceTable.selectedForMigration,
+					sourceTable.tableName,
+					tableStatus]);
+				if (sourceTable.selectedForMigration && targetTable) {
 					selectedItems.push(tableRow);
 				}
 				tableRow++;
@@ -174,7 +195,7 @@ export class TableMigrationSelectionDialog {
 			.withProps({
 				data: [],
 				width: 565,
-				height: '500px',
+				height: '600px',
 				forceFitColumns: azdata.ColumnSizingMode.ForceFit,
 				columns: [
 					<azdata.CheckboxColumn>{
@@ -206,46 +227,66 @@ export class TableMigrationSelectionDialog {
 			.withValidation(() => true)
 			.component();
 
+		let updating: boolean = false;
 		this._disposables.push(
 			table.onRowSelected(e => {
+				if (updating) {
+					return;
+				}
+				updating = true;
+
 				// collect table list selected for migration
 				const selectedRows = this._tableSelectionTable.selectedRows ?? [];
-				const selectedTables = new Map<String, TargetTableInfo>();
+				const keepSelectedRows: number[] = [];
+				// determine if selected rows have a matching target and can be selected
 				selectedRows.forEach(rowIndex => {
-					const tableName = this._tableSelectionTable.data[rowIndex][1] as string;
-					const tableInfo = this._tableSelectionMap.get(tableName);
-					if (tableInfo) {
-						selectedTables.set(tableName, tableInfo);
+					// get selected source table name
+					const sourceTableName = this._tableSelectionTable.data[rowIndex][1] as string;
+					// get source table info
+					const sourceTableInfo = this._tableSelectionMap.get(sourceTableName);
+					if (sourceTableInfo) {
+						// see if source table exists on target database
+						const targetTableInfo = this._targetTableMap.get(sourceTableName);
+						// keep source table selected
+						sourceTableInfo.selectedForMigration = targetTableInfo !== undefined;
+						// update table selection map with new selectedForMigration value
+						this._tableSelectionMap.set(sourceTableName, sourceTableInfo);
+						// keep row selected
+						if (sourceTableInfo.selectedForMigration) {
+							keepSelectedRows.push(rowIndex);
+						}
 					}
 				});
 
-				// update visible table selections in table map
-				this._tableSelectionTable.data.forEach(tableRow => {
-					const tableName = tableRow[1] as string;
-					const tableInfo = this._tableSelectionMap.get(tableName);
-					if (tableInfo) {
-						const isSelected = selectedTables.has(tableName);
-						tableInfo.selectedForMigration = isSelected;
-						this._tableSelectionMap.set(tableInfo.tableName, tableInfo);
-					}
-				});
-
-				// update table selections in table map
-				this._tableSelectionMap.forEach(tableInfo => {
-					const isSelected = selectedTables.has(tableInfo.tableName);
-					tableInfo.selectedForMigration = isSelected;
-					this._tableSelectionMap.set(tableInfo.tableName, tableInfo);
-				});
+				// if the selected rows are different, update the selectedRows property
+				if (!this._areEqual(this._tableSelectionTable.selectedRows ?? [], keepSelectedRows)) {
+					this._tableSelectionTable.selectedRows = keepSelectedRows;
+				}
 
 				this._updateRowSelection();
+				updating = false;
 			}));
 
 		return table;
 	}
 
+	private _areEqual(source: number[], target: number[]): boolean {
+		if (source.length === target.length) {
+			for (let i = 0; i < source.length; i++) {
+				if (source[i] !== target[i]) {
+					return false;
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+
 	private _updateRowSelection(): void {
 		this._headingText.value = this._tableSelectionTable.data.length > 0
-			? constants.TABLE_SELECTED_COUNT(this._tableSelectionTable.selectedRows?.length ?? 0, this._tableSelectionTable.data.length)
+			? constants.TABLE_SELECTED_COUNT(
+				this._tableSelectionTable.selectedRows?.length ?? 0,
+				this._tableSelectionTable.data.length)
 			: this._tableLoader.loading
 				? constants.DATABASE_LOADING_TABLES
 				: constants.DATABASE_MISSING_TABLES;
@@ -256,7 +297,7 @@ export class TableMigrationSelectionDialog {
 		if (targetDatabaseInfo) {
 			// collect table list selected for migration
 			const selectedRows = this._tableSelectionTable.selectedRows ?? [];
-			const selectedTables = new Map<String, TargetTableInfo>();
+			const selectedTables = new Map<String, TableInfo>();
 			selectedRows.forEach(rowIndex => {
 				const tableName = this._tableSelectionTable.data[rowIndex][1] as string;
 				const tableInfo = this._tableSelectionMap.get(tableName);
@@ -267,12 +308,13 @@ export class TableMigrationSelectionDialog {
 
 			// copy table map selection status from grid
 			this._tableSelectionMap.forEach(tableInfo => {
-				tableInfo.selectedForMigration = selectedTables.has(tableInfo.tableName);
+				const selectedTableInfo = selectedTables.get(tableInfo.tableName);
+				tableInfo.selectedForMigration = selectedTableInfo?.selectedForMigration === true;
 				this._tableSelectionMap.set(tableInfo.tableName, tableInfo);
 			});
 
 			// save table selection changes to migration source target map
-			targetDatabaseInfo.targetTables = this._tableSelectionMap;
+			targetDatabaseInfo.sourceTables = this._tableSelectionMap;
 			this._model._sourceTargetMapping.set(this._sourceDatabaseName, targetDatabaseInfo);
 		}
 		await this._onSaveCallback();

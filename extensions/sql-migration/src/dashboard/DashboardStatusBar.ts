@@ -83,8 +83,9 @@ export class DashboardStatusBar implements vscode.Disposable {
 								value: this._errorDescription,
 								readOnly: true,
 								multiline: true,
+								height: 400,
 								inputType: 'text',
-								rows: 20,
+								display: 'inline-block',
 								CSSStyles: { 'overflow': 'hidden auto', 'margin': '0px 0px 0px 5px' },
 							})
 							.component()])

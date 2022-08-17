@@ -90,8 +90,17 @@ export class DashboardWidget {
 						d => { try { d.dispose(); } catch { } })));
 
 			const openMigrationFcn = async (filter: AdsMigrationStatus): Promise<void> => {
-				tabs.selectTab(MigrationsTabId);
-				await migrationsTab.setMigrationFilter(filter);
+				if (!migrationsTabInitialized) {
+					migrationsTabInitialized = true;
+					tabs.selectTab(MigrationsTabId);
+					await migrationsTab.setMigrationFilter(AdsMigrationStatus.ALL);
+					await migrationsTab.refresh();
+					await migrationsTab.setMigrationFilter(filter);
+				} else {
+					const promise = migrationsTab.setMigrationFilter(filter);
+					tabs.selectTab(MigrationsTabId);
+					await promise;
+				}
 			};
 
 			const dashboardTab = await new DashboardTab().create(
@@ -121,19 +130,21 @@ export class DashboardWidget {
 				})
 				.component();
 
+			let migrationsTabInitialized = false;
+			disposables.push(
+				tabs.onTabChanged(async tabId => {
+					if (tabId === MigrationsTabId && !migrationsTabInitialized) {
+						migrationsTabInitialized = true;
+						await migrationsTab.refresh();
+					}
+				}));
+
 			const flexContainer = view.modelBuilder.flexContainer()
 				.withLayout({ flexFlow: 'column' })
 				.withItems([statusInfoBox, tabs])
 				.component();
 			await view.initializeModel(flexContainer);
-
-			const refresh = async (): Promise<void> => {
-				const promise = migrationsTab.refresh();
-				await dashboardTab.refresh();
-				await promise;
-			};
-
-			await refresh();
+			await dashboardTab.refresh();
 		});
 	}
 

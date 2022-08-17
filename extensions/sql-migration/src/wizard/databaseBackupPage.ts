@@ -1160,10 +1160,10 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 	private _validateTableSelection(): boolean {
 		for (const targetDatabaseInfo of this.migrationStateModel._sourceTargetMapping) {
-			const targetTables = targetDatabaseInfo[1];
-			if (targetTables) {
-				for (const targetTable of targetTables.targetTables) {
-					const tableInfo = targetTable[1];
+			const databaseInfo = targetDatabaseInfo[1];
+			if (databaseInfo) {
+				for (const sourceTable of databaseInfo.sourceTables) {
+					const tableInfo = sourceTable[1];
 					if (tableInfo.selectedForMigration === true) {
 						return true;
 					}
@@ -1469,14 +1469,14 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 		this.migrationStateModel._sourceTargetMapping.forEach((targetDatabaseInfo, sourceDatabaseName) => {
 			if (sourceDatabaseName) {
-				const tableCount = targetDatabaseInfo?.targetTables.size ?? 0;
-				const hasTargetTables = tableCount > 0;
+				const tableCount = targetDatabaseInfo?.sourceTables.size ?? 0;
+				const hasTables = tableCount > 0;
 
 				let selectedCount = 0;
-				targetDatabaseInfo?.targetTables.forEach(
+				targetDatabaseInfo?.sourceTables.forEach(
 					tableInfo => selectedCount += tableInfo.selectedForMigration ? 1 : 0);
 
-				const hasSelectedTables = hasTargetTables && selectedCount > 0;
+				const hasSelectedTables = hasTables && selectedCount > 0;
 				data.push([
 					sourceDatabaseName,
 					targetDatabaseInfo?.databaseName,
@@ -1484,7 +1484,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						icon: hasSelectedTables
 							? IconPathHelper.completedMigration
 							: IconPathHelper.edit,
-						title: hasTargetTables
+						title: hasTables
 							? constants.TABLE_SELECTION_COUNT(selectedCount, tableCount)
 							: constants.TABLE_SELECTION_EDIT,
 					}]);

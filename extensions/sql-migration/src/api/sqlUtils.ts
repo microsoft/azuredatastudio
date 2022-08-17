@@ -9,7 +9,7 @@ import { AzureSqlDatabase, AzureSqlDatabaseServer } from './azure';
 import { generateGuid } from './utils';
 import * as utils from '../api/utils';
 
-const query_target_database_tables_sql = `
+const query_database_tables_sql = `
 	SELECT
 		DB_NAME() as database_name,
 		QUOTENAME(SCHEMA_NAME(o.schema_id)) + '.' + QUOTENAME(o.name) AS table_name,
@@ -21,7 +21,7 @@ const query_target_database_tables_sql = `
 	WHERE
 		o.type = 'U'
 		AND o.is_ms_shipped = 0x0
-		AND index_id < 2 -- 0:Heap, 1:Clustered
+		AND index_id < 2
 	GROUP BY
 		o.schema_id,
 		o.name
@@ -55,7 +55,7 @@ export enum AuthenticationType {
 	SqlLogin = 'SqlLogin'
 }
 
-export interface TargetTableInfo {
+export interface TableInfo {
 	databaseName: string;
 	tableName: string;
 	rowCount: number;
@@ -71,7 +71,8 @@ export interface TargetDatabaseInfo {
 	isServerCaseSensitive: boolean;
 	databaseState: number;
 	isReadOnly: boolean;
-	targetTables: Map<string, TargetTableInfo>;
+	sourceTables: Map<string, TableInfo>;
+	targetTables: Map<string, TableInfo>;
 }
 
 function getSqlDbConnectionProfile(
@@ -147,12 +148,31 @@ function getConnectionProfile(
 	};
 }
 
+export async function collectSourceDatabaseTableInfo(sourceConnectionId: string): Promise<TableInfo[]> {
+	const ownerUri = await azdata.connection.getUriForConnection(sourceConnectionId);
+	const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(
+		'MSSQL',
+		azdata.DataProviderType.QueryProvider);
+	const results = await queryProvider.runQueryAndReturn(
+		ownerUri,
+		query_database_tables_sql);
+
+	return results.rows.map(row => {
+		return {
+			databaseName: getSqlString(row[0]),
+			tableName: getSqlString(row[1]),
+			rowCount: getSqlNumber(row[2]),
+			selectedForMigration: false,
+		};
+	}) ?? [];
+}
+
 export async function collectTargetDatabaseTableInfo(
 	targetServer: AzureSqlDatabaseServer,
 	targetDatabaseName: string,
 	tenantId: string,
 	userName: string,
-	password: string): Promise<TargetTableInfo[]> {
+	password: string): Promise<TableInfo[]> {
 	const connectionProfile = getSqlDbConnectionProfile(
 		targetServer.properties.fullyQualifiedDomainName,
 		tenantId,
@@ -169,7 +189,7 @@ export async function collectTargetDatabaseTableInfo(
 		const ownerUri = await azdata.connection.getUriForConnection(result.connectionId);
 		const results = await queryProvider.runQueryAndReturn(
 			ownerUri,
-			query_target_database_tables_sql);
+			query_database_tables_sql);
 
 		return results.rows.map(row => {
 			return {
@@ -216,6 +236,7 @@ export async function collectTargetDatabaseInfo(
 				isServerCaseSensitive: getSqlBoolean(row[5]),
 				databaseState: getSqlNumber(row[6]),
 				isReadOnly: getSqlBoolean(row[7]),
+				sourceTables: new Map(),
 				targetTables: new Map(),
 			};
 		}) ?? [];

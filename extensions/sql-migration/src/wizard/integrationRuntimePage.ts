@@ -190,18 +190,24 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			this._dmsDropdown.onValueChanged(
 				async (value) => {
 					if (value && value !== 'undefined' && value !== constants.SQL_MIGRATION_SERVICE_NOT_FOUND_ERROR) {
-						this.wizard.message = { text: '' };
+						try {
+							this._resourceGroupDropdown.loading = true;
+							this._dmsDropdown.loading = true;
+							this.wizard.message = { text: '' };
 
-						await utils.updateControlDisplay(
-							this._dmsInfoContainer,
-							this.migrationStateModel._targetType === MigrationTargetType.SQLDB ||
-							this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE);
+							await utils.updateControlDisplay(
+								this._dmsInfoContainer,
+								this.migrationStateModel._targetType === MigrationTargetType.SQLDB ||
+								this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE);
 
-						const selectedDms = this.migrationStateModel._sqlMigrationServices.find(
-							dms => dms.name === value && dms.properties.resourceGroup.toLowerCase() === this.migrationStateModel._sqlMigrationServiceResourceGroup.name.toLowerCase());
-						if (selectedDms) {
-							this.migrationStateModel._sqlMigrationService = selectedDms;
-							await this.loadMigrationServiceStatus();
+							const selectedDms = this.migrationStateModel._sqlMigrationServices.find(
+								dms => dms.name === value && dms.properties.resourceGroup.toLowerCase() === this.migrationStateModel._sqlMigrationServiceResourceGroup.name.toLowerCase());
+							if (selectedDms) {
+								this.migrationStateModel._sqlMigrationService = selectedDms;
+								await this.loadMigrationServiceStatus();
+							}
+						} finally {
+							this._dmsDropdown.loading = false;
 						}
 					} else {
 						this.migrationStateModel._sqlMigrationService = undefined;
@@ -246,6 +252,14 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			.component();
 	}
 
+	private _controlsLoading(loading: boolean): void {
+		this._resourceGroupDropdown.loading = loading;
+		this._dmsDropdown.loading = loading;
+		this._resourceGroupDropdown.loading = loading;
+		this._dmsDropdown.loading = loading;
+		this._statusLoadingComponent.loading = loading;
+	}
+
 	private createDMSDetailsContainer(): azdata.FlexContainer {
 		const container = this._view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
@@ -270,10 +284,10 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		this._disposables.push(
 			this._refreshButton.onDidClick(async (e) => {
 				try {
-					this._connectionStatusLoader.loading = true;
+					this._controlsLoading(true);
 					await this.loadStatus();
 				} finally {
-					this._connectionStatusLoader.loading = false;
+					this._controlsLoading(false);
 				}
 			}));
 
@@ -366,8 +380,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 
 	public async loadResourceGroupDropdown(): Promise<void> {
 		try {
-			this._resourceGroupDropdown.loading = true;
-			this._dmsDropdown.loading = true;
+			this._controlsLoading(true);
 
 			this.migrationStateModel._sqlMigrationServices = await utils.getAzureSqlMigrationServices(
 				this.migrationStateModel._azureAccount,
@@ -386,14 +399,13 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				: undefined;
 			utils.selectDefaultDropdownValue(this._resourceGroupDropdown, resourceGroup, false);
 		} finally {
-			this._resourceGroupDropdown.loading = false;
-			this._dmsDropdown.loading = false;
+			this._controlsLoading(false);
 		}
 	}
 
 	public populateDms(): void {
 		try {
-			this._dmsDropdown.loading = true;
+			this._controlsLoading(true);
 			this._dmsDropdown.values = utils.getAzureResourceDropdownValues(
 				this.migrationStateModel._sqlMigrationServices,
 				this.migrationStateModel._location,
@@ -405,18 +417,18 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				this.migrationStateModel._sqlMigrationService?.id,
 				false);
 		} finally {
-			this._dmsDropdown.loading = false;
+			this._controlsLoading(false);
 		}
 	}
 
 	private async loadMigrationServiceStatus(): Promise<void> {
 		try {
-			this._statusLoadingComponent.loading = true;
+			this._controlsLoading(true);
 			await this.loadStatus();
 		} catch (error) {
 			logError(TelemetryViews.MigrationWizardIntegrationRuntimePage, 'ErrorLoadingMigrationServiceStatus', error);
 		} finally {
-			this._statusLoadingComponent.loading = false;
+			this._controlsLoading(false);
 		}
 	}
 

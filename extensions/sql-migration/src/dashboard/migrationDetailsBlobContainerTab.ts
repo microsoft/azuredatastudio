@@ -56,7 +56,6 @@ export class MigrationDetailsBlobContainerTab extends MigrationDetailsTabBase<Mi
 		}
 
 		this.isRefreshing = true;
-		this.refreshButton.enabled = false;
 		this.refreshLoader.loading = true;
 		await this.statusBar.clearError();
 
@@ -114,9 +113,8 @@ export class MigrationDetailsBlobContainerTab extends MigrationDetailsTabBase<Mi
 		this.cancelButton.enabled = canCancelMigration(migration);
 		this.retryButton.enabled = canRetryMigration(migration);
 
-		this.isRefreshing = false;
 		this.refreshLoader.loading = false;
-		this.refreshButton.enabled = true;
+		this.isRefreshing = false;
 	}
 
 	protected async initialize(view: azdata.ModelView): Promise<void> {

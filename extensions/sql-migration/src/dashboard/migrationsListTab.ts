@@ -74,7 +74,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 			const statusFilter = (<azdata.CategoryValue[]>this._statusDropdown.values)
 				.find(value => value.name === filter.toString());
 
-			this._statusDropdown.value = statusFilter;
+			await this._statusDropdown.updateProperties({ 'value': statusFilter });
 		}
 	}
 
@@ -83,12 +83,12 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 			return;
 		}
 
-		this.isRefreshing = true;
-		this._refresh.enabled = false;
-		this._refreshLoader.loading = true;
-		await this.statusBar.clearError();
-
 		try {
+			this.isRefreshing = true;
+			this._refreshLoader.loading = true;
+
+			await this.statusBar.clearError();
+
 			await this._statusTable.updateProperty('data', []);
 			this._migrations = await getCurrentMigrations();
 			await this._populateMigrationTable();
@@ -100,24 +100,22 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 			logError(TelemetryViews.MigrationsTab, 'refreshMigrations', e);
 		} finally {
 			this._refreshLoader.loading = false;
-			this._refresh.enabled = true;
 			this.isRefreshing = false;
 		}
 	}
 
 	protected async initialize(): Promise<void> {
+		this._createStatusTable();
 		this.content = this.view.modelBuilder.flexContainer()
 			.withItems(
 				[
 					this._createToolbar(),
 					await this._createSearchAndSortContainer(),
-					this._createStatusTable(),
+					this._statusTable,
 				],
 				{ CSSStyles: { 'width': '100%' } }
-			).withLayout({
-				width: '100%',
-				flexFlow: 'column',
-			}).withProps({ CSSStyles: { 'padding': '0px' } })
+			).withLayout({ width: '100%', flexFlow: 'column' })
+			.withProps({ CSSStyles: { 'padding': '0px' } })
 			.component();
 	}
 
@@ -137,20 +135,16 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 				async (e) => await this.refresh()));
 
 		this._refreshLoader = this.view.modelBuilder.loadingComponent()
+			.withItem(this._refresh)
 			.withProps({
 				loading: false,
-				CSSStyles: {
-					'height': '8px',
-					'margin-top': '6px'
-				}
-			})
-			.component();
+				CSSStyles: { 'height': '8px', 'margin-top': '6px' }
+			}).component();
 
 		toolbar.addToolbarItems([
 			<azdata.ToolbarComponent>{ component: this.createNewMigrationButton(), toolbarSeparatorAfter: true },
 			<azdata.ToolbarComponent>{ component: this.createNewSupportRequestButton() },
 			<azdata.ToolbarComponent>{ component: this.createFeedbackButton(), toolbarSeparatorAfter: true },
-			<azdata.ToolbarComponent>{ component: this._refresh },
 			<azdata.ToolbarComponent>{ component: this._refreshLoader },
 		]);
 
@@ -213,7 +207,9 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 			.withProps({
 				ariaLabel: loc.MIGRATION_STATUS_FILTER,
 				values: this._statusDropdownValues,
-				width: '150px'
+				width: '150px',
+				fireOnTextChange: true,
+				value: this._statusDropdownValues[0],
 			}).component();
 		this.disposables.push(
 			this._statusDropdown.onValueChanged(
@@ -555,25 +551,26 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 				]
 			}).component();
 
-		this.disposables.push(this._statusTable.onCellAction!(async (rowState: azdata.ICellActionEventArgs) => {
-			const buttonState = <azdata.ICellActionEventArgs>rowState;
-			const migration = this._filteredMigrations[rowState.row];
-			switch (buttonState?.column) {
-				case 2:
-					const status = getMigrationStatus(migration);
-					const statusMessage = loc.DATABASE_MIGRATION_STATUS_LABEL(status);
-					const errors = this.getMigrationErrors(migration!);
+		this.disposables.push(
+			this._statusTable.onCellAction!(async (rowState: azdata.ICellActionEventArgs) => {
+				const buttonState = <azdata.ICellActionEventArgs>rowState;
+				const migration = this._filteredMigrations[rowState.row];
+				switch (buttonState?.column) {
+					case 2:
+						const status = getMigrationStatus(migration);
+						const statusMessage = loc.DATABASE_MIGRATION_STATUS_LABEL(status);
+						const errors = this.getMigrationErrors(migration!);
 
-					this.showDialogMessage(
-						loc.DATABASE_MIGRATION_STATUS_TITLE,
-						statusMessage,
-						errors);
-					break;
-				case 0:
-					await this._openMigrationDetails(migration);
-					break;
-			}
-		}));
+						this.showDialogMessage(
+							loc.DATABASE_MIGRATION_STATUS_TITLE,
+							statusMessage,
+							errors);
+						break;
+					case 0:
+						await this._openMigrationDetails(migration);
+						break;
+				}
+			}));
 
 		return this._statusTable;
 	}
