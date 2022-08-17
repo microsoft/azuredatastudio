@@ -117,7 +117,8 @@ export class BookModel {
 	}
 
 	public getNotebook(uri: string): BookTreeItem | undefined {
-		return this._allNotebooks.get(this.openAsUntitled ? path.basename(uri) : uri);
+		const notebookUri = vscode.Uri.file(uri).fsPath;
+		return this._allNotebooks.get(this.openAsUntitled ? path.basename(notebookUri) : notebookUri);
 	}
 
 	public async loadTableOfContentFiles(): Promise<void> {
