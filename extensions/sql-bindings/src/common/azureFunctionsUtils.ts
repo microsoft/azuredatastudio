@@ -196,13 +196,13 @@ export async function getSettingsFile(projectFolder: string): Promise<string | u
 }
 
 /**
- * Adds the required nuget package to the project
- * @param selectedProjectFile is the users selected project file path
+ * Adds the latest SQL nuget package to the project
+ * @param projectFolder is the folder containing the project file
  */
-export async function addSqlNugetReferenceToProjectFile(selectedProjectFile: string): Promise<void> {
+export async function addSqlNugetReferenceToProjectFile(projectFolder: string): Promise<void> {
 	// clear the output channel prior to adding the nuget reference
 	outputChannel.clear();
-	let addNugetCommmand = await utils.executeCommand(`dotnet add "${selectedProjectFile}" package ${constants.sqlExtensionPackageName} --prerelease`);
+	let addNugetCommmand = await utils.executeCommand(`dotnet add "${projectFolder}" package ${constants.sqlExtensionPackageName} --prerelease`);
 	outputChannel.appendLine(constants.dotnetResult(addNugetCommmand));
 	outputChannel.show(true);
 	TelemetryReporter.sendActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.addSQLNugetPackage);
@@ -477,8 +477,6 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 				connectionStringSettingName = selectedSetting?.label;
 			}
 		}
-		// Add sql extension package reference to project. If the reference is already there, it doesn't get added again
-		await addSqlNugetReferenceToProjectFile(projectUri.fsPath);
 	} else {
 		// if no AF project was found or there's more than one AF functions project in the workspace,
 		// ask for the user to input the setting name

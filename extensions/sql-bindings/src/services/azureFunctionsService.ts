@@ -255,6 +255,10 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			suppressCreateProjectPrompt: true,
 			...(isCreateNewProject && { executeStep: connectionStringExecuteStep })
 		});
+
+		// Update sql extension package reference to latest SQL binding nuget package
+		await azureFunctionsUtils.addSqlNugetReferenceToProjectFile(projectFolder);
+
 		TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
 			.withAdditionalProperties(propertyBag)
 			.withConnectionInfo(connectionInfo).send();
