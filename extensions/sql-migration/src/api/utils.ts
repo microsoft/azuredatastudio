@@ -649,14 +649,14 @@ export function getAzureResourceDropdownValues(
 	resourceGroup: string | undefined,
 	resourceNotFoundMessage: string): CategoryValue[] {
 
-	if (location && resourceGroup && azureResources?.length > 0) {
+	if (location?.name && resourceGroup && azureResources?.length > 0) {
 		const locationName = location.name.toLowerCase();
 		const resourceGroupName = resourceGroup.toLowerCase();
 
 		return azureResources
 			.filter(resource =>
-				resource.location.toLowerCase() === locationName &&
-				azure.getResourceGroupFromId(resource.id).toLowerCase() === resourceGroupName)
+				resource.location?.toLowerCase() === locationName &&
+				azure.getResourceGroupFromId(resource.id)?.toLowerCase() === resourceGroupName)
 			.map(resource => {
 				return { name: resource.id, displayName: resource.name };
 			});

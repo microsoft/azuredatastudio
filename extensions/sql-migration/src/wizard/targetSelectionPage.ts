@@ -875,14 +875,14 @@ export class TargetSelectionPage extends MigrationWizardPage {
 					this._azureResourceDropdown.values = utils.getAzureResourceDropdownValues(
 						this.migrationStateModel._targetSqlVirtualMachines,
 						this.migrationStateModel._location,
-						this.migrationStateModel._resourceGroup.name,
+						this.migrationStateModel._resourceGroup?.name,
 						constants.NO_VIRTUAL_MACHINE_FOUND);
 					break;
 				case MigrationTargetType.SQLDB:
 					this._azureResourceDropdown.values = utils.getAzureResourceDropdownValues(
 						this.migrationStateModel._targetSqlDatabaseServers,
 						this.migrationStateModel._location,
-						this.migrationStateModel._resourceGroup.name,
+						this.migrationStateModel._resourceGroup?.name,
 						constants.NO_SQL_DATABASE_SERVER_FOUND);
 					break;
 			}

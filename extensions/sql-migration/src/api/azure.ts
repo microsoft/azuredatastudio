@@ -206,7 +206,8 @@ export type SqlVMServer = {
 export async function getAvailableSqlDatabaseServers(account: azdata.Account, subscription: Subscription): Promise<AzureSqlDatabaseServer[]> {
 	const api = await getAzureCoreAPI();
 	const path = encodeURI(`/subscriptions/${subscription.id}/providers/Microsoft.Sql/servers?api-version=${SQL_SQLDB_API_VERSION}`);
-	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true);
+	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, host);
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
 	}
@@ -217,7 +218,8 @@ export async function getAvailableSqlDatabaseServers(account: azdata.Account, su
 export async function getAvailableSqlDatabases(account: azdata.Account, subscription: Subscription, resourceGroupName: string, serverName: string): Promise<AzureSqlDatabase[]> {
 	const api = await getAzureCoreAPI();
 	const path = encodeURI(`/subscriptions/${subscription.id}/resourceGroups/${resourceGroupName}/providers/Microsoft.Sql/servers/${serverName}/databases?api-version=${SQL_SQLDB_API_VERSION}`);
-	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true);
+	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, host);
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
 	}
@@ -320,10 +322,10 @@ export async function getSqlMigrationServices(account: azdata.Account, subscript
 export async function createSqlMigrationService(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, sqlMigrationServiceName: string, sessionId: string): Promise<SqlMigrationService> {
 	const api = await getAzureCoreAPI();
 	const path = encodeURI(`/subscriptions/${subscription.id}/resourceGroups/${resourceGroupName}/providers/Microsoft.DataMigration/sqlMigrationServices/${sqlMigrationServiceName}?api-version=${DMSV2_API_VERSION}`);
+	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
 	const requestBody = {
 		'location': regionName
 	};
-	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
 	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.PUT, requestBody, true, host, getSessionIdHeader(sessionId));
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());

@@ -302,7 +302,7 @@ export function SQL_TARGET_CONNECTION_DUPLICATE_TARGET_MAPPING(
 ): string {
 	return localize(
 		'sql.migration.wizard.target.mapping.error.duplicate',
-		"Database mapping error.  Target database '{0}' cannot be selected to as a migratoin target for database '{1}'.  Target database '${targetDatabaseName}' is already selected as a migration target for database '{2}'.  Please select a different target database.",
+		"Database mapping error.  Target database '{0}' cannot be selected to as a migration target for database '{1}'.  Target database '${targetDatabaseName}' is already selected as a migration target for database '{2}'.  Please select a different target database.",
 		targetDatabaseName,
 		sourceDatabaseName,
 		mappedSourceDatabaseName);
@@ -334,7 +334,7 @@ export const INVALID_VIRTUAL_MACHINE_ERROR = localize('sql.migration.invalid.vir
 export const AZURE_SQL_DATABASE = localize('sql.migration.azure.sql.database', "Azure SQL Database Server");
 export const NO_SQL_DATABASE_SERVER_FOUND = localize('sql.migration.no.sqldatabaseserver.found', "No Azure SQL database servers found.");
 export const NO_SQL_DATABASE_FOUND = localize('sql.migration.no.sqldatabase.found', "No Azure SQL databases found.");
-export const INVALID_SQL_DATABASE_ERROR = localize('sql.migration.invalid.sqldatabase.error', "To continue, select a valid Azure SQL Database Server.");
+export const INVALID_SQL_DATABASE_ERROR = localize('sql.migration.invalid.sqldatabase.error', "To continue, select a valid Azure SQL Database server.");
 
 // Target info tooltip
 export const TARGET_SUBSCRIPTION_INFO = localize('sql.migration.sku.subscription', "Subscription name for your Azure SQL target");
@@ -432,7 +432,7 @@ export const DATABASE_BACKUP_BLOB_STORAGE_SUBSCRIPTION_LABEL = localize('sql.mig
 export const DATABASE_BACKUP_MIGRATION_MODE_LABEL = localize('sql.migration.database.migration.mode.label', "Migration mode");
 export const DATABASE_BACKUP_MIGRATION_MODE_DESCRIPTION = localize('sql.migration.database.migration.mode.description', "To migrate to the Azure SQL target, choose a migration mode based on your downtime requirements.");
 export const DATABASE_TABLE_SELECTION_LABEL = localize('sql.migration.database.table.selection.label', "Migration table selection");
-export const DATABASE_TABLE_SELECTION_DESCRIPTION = localize('sql.migration.database.table.selection.description', "To migrate to the Azure SQL target, select tables in each dataase for migration.");
+export const DATABASE_TABLE_SELECTION_DESCRIPTION = localize('sql.migration.database.table.selection.description', "To migrate to the Azure SQL target, select tables in each database for migration.");
 export const DATABASE_TABLE_REFRESH_LABEL = localize('sql.migration.database.table.refresh.label', "Refresh");
 export const DATABASE_TABLE_SOURCE_DATABASE_COLUMN_LABEL = localize('sql.migration.database.table.source.column.label', "Source database");
 export const DATABASE_TABLE_TARGET_DATABASE_COLUMN_LABEL = localize('sql.migration.database.table.target.column.label', "Target database");
@@ -442,7 +442,7 @@ export function DATABASE_TABLE_CONNECTION_ERROR_MESSAGE(message: string): string
 	return localize('sql.migration.database.connection.error.message', "Connection error:{0} {1}", EOL, message);
 }
 export const DATABASE_TABLE_DATA_LOADING = localize('sql.migration.database.loading', "Loading database table list..");
-export const DATABASE_TABLE_VALIDATE_SELECTION_MESSAGE = localize('sql.migration.database.validate.selection', "Please select target database tables to migrate to.  At least one database wtih one table is required.");
+export const DATABASE_TABLE_VALIDATE_SELECTION_MESSAGE = localize('sql.migration.database.validate.selection', "Please select target database tables to migrate to.  At least one database with one table is required.");
 export const DATABASE_BACKUP_MIGRATION_MODE_ONLINE_LABEL = localize('sql.migration.database.migration.mode.online.label', "Online migration");
 export const DATABASE_BACKUP_MIGRATION_MODE_ONLINE_DESCRIPTION = localize('sql.migration.database.migration.mode.online.description', "Application downtime is limited to cutover at the end of migration.");
 export const DATABASE_BACKUP_MIGRATION_MODE_OFFLINE_LABEL = localize('sql.migration.database.migration.mode.offline.label', "Offline migration");
@@ -942,8 +942,8 @@ export const WARNINGS_DETAILS = localize('sql.migration.warnings.details', "Warn
 export const ISSUES_DETAILS = localize('sql.migration.issues.details', "Issue details");
 export const SELECT_DB_PROMPT = localize('sql.migration.select.prompt', "Click on SQL Server instance or any of the databases on the left to view its details.");
 export const NO_ISSUES_FOUND_VM = localize('sql.migration.no.issues.vm', "No issues found for migrating to SQL Server on Azure Virtual Machine.");
-export const NO_ISSUES_FOUND_MI = localize('sql.migration.no.issues.mi', "No issues found for migrating to SQL Server on Azure SQL Managed Instance.");
-export const NO_ISSUES_FOUND_SQLDB = localize('sql.migration.no.issues.sqldb', "No issues found for migrating to SQL Server on Azure SQL Database.");
+export const NO_ISSUES_FOUND_MI = localize('sql.migration.no.issues.mi', "No issues found for migrating to Azure SQL Managed Instance.");
+export const NO_ISSUES_FOUND_SQLDB = localize('sql.migration.no.issues.sqldb', "No issues found for migrating to Azure SQL Database.");
 export const NO_RESULTS_AVAILABLE = localize('sql.migration.no.results', 'Assessment results are unavailable.');
 
 export function IMPACT_OBJECT_TYPE(objectType?: string): string {
