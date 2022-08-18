@@ -29,10 +29,10 @@ export interface IExecutionPlanService {
 	 */
 	compareExecutionPlanGraph(firstPlanFile: azdata.executionPlan.ExecutionPlanGraphInfo, secondPlanFile: azdata.executionPlan.ExecutionPlanGraphInfo): Promise<azdata.executionPlan.ExecutionPlanComparisonResult>;
 	/**
-	 * Determines if the provided XML is for an execution plan and returns the appropriate file extension.
-	 * @param executionPlanXml XML string that needs to be checked.
+	 * Determines if the provided value is an execution plan and returns the appropriate file extension.
+	 * @param value String that needs to be checked.
 	 */
-	isExecutionPlanXml(providerId: string, executionPlanXml: string): Promise<azdata.executionPlan.IsExecutionPlanXmlResult>;
+	isExecutionPlan(providerId: string, value: string): Promise<azdata.executionPlan.IsExecutionPlanResult>;
 
 	/**
 	 * Get execution plan file extensions supported by all registered providers.

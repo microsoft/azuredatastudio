@@ -717,8 +717,8 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			const value = subset[0][event.cell.cell - 1];
 			const isJson = isJsonCell(value);
 			if (column.isXml || isJson) {
-				const result = await this.executionPlanService.isExecutionPlanXml(this.providerId, value.displayValue);
-				if (result.isExecutionPlanXml) {
+				const result = await this.executionPlanService.isExecutionPlan(this.providerId, value.displayValue);
+				if (result.isExecutionPlan) {
 					const executionPlanGraphInfo = {
 						graphFileContent: value.displayValue,
 						graphFileType: result.queryExecutionPlanFileExtension

@@ -175,9 +175,9 @@ export class ExecutionPlanService implements IExecutionPlanService {
 		});
 	}
 
-	isExecutionPlanXml(providerId: string, executionPlanXml: string): Promise<azdata.executionPlan.IsExecutionPlanXmlResult> {
+	isExecutionPlan(providerId: string, value: string): Promise<azdata.executionPlan.IsExecutionPlanResult> {
 		return this._runActionForProvider(providerId, (runner) => {
-			return runner.isExecutionPlanXml(executionPlanXml);
+			return runner.isExecutionPlan(value);
 		});
 	}
 
