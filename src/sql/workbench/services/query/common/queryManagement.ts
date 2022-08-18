@@ -42,7 +42,7 @@ export interface IQueryManagementService {
 	getRegisteredProviders(): string[];
 	registerRunner(runner: QueryRunner, uri: string): void;
 	getRunner(uri: string): QueryRunner | undefined;
-	getProviderIdForUri(uri: string): string;
+	getProviderIdFromUri(uri: string): string;
 
 	cancelQuery(ownerUri: string): Promise<QueryCancelResult>;
 	runQuery(ownerUri: string, range?: IRange, runOptions?: ExecutionPlanOptions): Promise<void>;
@@ -150,7 +150,7 @@ export class QueryManagementService implements IQueryManagementService {
 		return this._queryRunners.get(uri);
 	}
 
-	public getProviderIdForUri(uri: string): string {
+	public getProviderIdFromUri(uri: string): string {
 		return this._connectionService.getProviderIdFromUri(uri);
 	}
 

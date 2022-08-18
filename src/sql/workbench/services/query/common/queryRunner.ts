@@ -129,7 +129,7 @@ export default class QueryRunner extends Disposable {
 	}
 
 	public getProviderId(): string {
-		return this.queryManagementService.getProviderIdForUri(this.uri);
+		return this.queryManagementService.getProviderIdFromUri(this.uri);
 	}
 
 	// PUBLIC METHODS ======================================================
