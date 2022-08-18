@@ -16,7 +16,6 @@ import { ResourceType } from 'arc';
 
 export type PodStatusModel = {
 	podName: azdata.Component,
-	type: string,
 	status: string
 };
 
@@ -173,14 +172,6 @@ export class PostgresOverviewPage extends DashboardPage {
 						'white-space': 'nowrap',
 						'max-width': '0'
 					}
-				},
-				{
-					displayName: loc.type,
-					valueType: azdata.DeclarativeDataType.string,
-					isReadOnly: true,
-					width: '35%',
-					headerCssStyles: cssStyles.tableHeader,
-					rowCssStyles: cssStyles.tableRow
 				},
 				{
 					displayName: loc.status,
@@ -374,7 +365,6 @@ export class PostgresOverviewPage extends DashboardPage {
 				podLabelContainer.addItem(podLabel);
 				let pod: PodStatusModel = {
 					podName: podLabelContainer,
-					type: loc.worker,
 					status: status
 				};
 				podModels.push(pod);
@@ -383,7 +373,6 @@ export class PostgresOverviewPage extends DashboardPage {
 				podLabelContainer.addItem(podLabel);
 				let pod: PodStatusModel = {
 					podName: podLabelContainer,
-					type: loc.coordinator,
 					status: status
 				};
 				podModels.unshift(pod);
@@ -394,7 +383,7 @@ export class PostgresOverviewPage extends DashboardPage {
 	}
 
 	private createPodStatusDataValues(): azdata.DeclarativeTableCellValue[][] {
-		let podDataValue: (string | azdata.Component)[][] = this.podStatusData.map(p => [p.podName, p.type, p.status]);
+		let podDataValue: (string | azdata.Component)[][] = this.podStatusData.map(p => [p.podName, p.status]);
 		return podDataValue.map(p => {
 			return p.map((value): azdata.DeclarativeTableCellValue => {
 				return { value: value };

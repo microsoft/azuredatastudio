@@ -91,7 +91,7 @@
 	"deploy.done.action":"Deploy",
 
 	"resource.type.arc.sql.display.name": "Azure SQL managed instance - Azure Arc",
-	"resource.type.arc.postgres.display.name": "PostgreSQL server - Azure Arc",
+	"resource.type.arc.postgres.display.name": "PostgreSQL server - Azure Arc (Preview)",
 	"resource.type.arc.sql.description": "Managed SQL Instance service for app developers in a customer-managed environment",
 	"resource.type.arc.postgres.description": "Deploy a PostgreSQL server into an Azure Arc environment",
 	"arc.controller": "Target Azure Arc Controller",
@@ -189,7 +189,7 @@
 	"arc.azure.subscription": "Azure subscription",
 	"arc.azure.resource.group": "Azure resource group",
 	"arc.azure.location": "Azure location",
-	"arc.postgres.wizard.title": "Deploy an Azure Arc-enabled PostgreSQL server",
+	"arc.postgres.wizard.title": "Deploy an Azure Arc-enabled PostgreSQL server (Preview)",
 	"arc.postgres.wizard.page1.title": "Provide Azure enabled PostgreSQL server parameters",
 	"arc.postgres.settings.section.title": "General settings",
 	"arc.postgres.settings.resource.compute.config.title": "Compute Configuration",
