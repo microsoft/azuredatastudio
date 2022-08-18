@@ -8,8 +8,8 @@ import * as vscode from 'vscode';
 import * as loc from '../constants/strings';
 import { getSqlServerName, getMigrationStatusImage, getPipelineStatusImage, debounce } from '../api/utils';
 import { logError, TelemetryViews } from '../telemtery';
-import { canCancelMigration, canCutoverMigration, canRetryMigration, formatDateTimeString, formatNumber, formatSizeBytes, formatSizeKb, formatTime, getMigrationStatus, getMigrationTargetTypeEnum, isActiveMigration, isOfflineMigation, PipelineStatusCodes } from '../constants/helper';
-import { CopyProgressDetail, DatabaseMigration, getResourceName } from '../api/azure';
+import { canCancelMigration, canCutoverMigration, canRetryMigration, formatDateTimeString, formatNumber, formatSizeBytes, formatSizeKb, formatTime, getMigrationStatus, getMigrationTargetTypeEnum, isOfflineMigation, PipelineStatusCodes } from '../constants/helper';
+import { CopyProgressDetail, getResourceName } from '../api/azure';
 import { InfoFieldSchema, infoFieldLgWidth, MigrationDetailsTabBase, MigrationTargetTypeName } from './migrationDetailsTabBase';
 import { EmptySettingValue } from './tabBase';
 import { IconPathHelper } from '../constants/iconPathHelper';
@@ -118,7 +118,7 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 		const targetType = getMigrationTargetTypeEnum(migration);
 		const targetServerVersion = MigrationTargetTypeName[targetType ?? ''];
 
-		this._progressDetail = this._getCopyProgressDetails(migration);
+		this._progressDetail = migration?.properties.migrationStatusDetails?.listOfCopyProgressDetails ?? [];
 
 		const hashSet: loc.LookupTable<number> = {};
 		await this._populateTableData(hashSet);
@@ -161,37 +161,6 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 		this.cutoverButton.enabled = canCutoverMigration(migration);
 		this.cancelButton.enabled = canCancelMigration(migration);
 		this.retryButton.enabled = canRetryMigration(migration);
-	}
-
-	private _getCopyProgressDetails(migration: DatabaseMigration): CopyProgressDetail[] {
-		// use list of copy progress details to display table progress
-		const progress = migration?.properties.migrationStatusDetails?.listOfCopyProgressDetails ?? [];
-		if (progress.length === 0) {
-			const isMigrationRunning = isActiveMigration(migration);
-			// if progress is not ready, use table list to for table name
-			//  and infer progress setting status to  preparing for copy
-			//  when running or canceled if the migration not.
-			if (migration?.properties.tableList?.length > 0) {
-				progress.push(...migration?.properties.tableList?.map(
-					table => <CopyProgressDetail>{
-						tableName: table,
-						status: isMigrationRunning
-							? PipelineStatusCodes.PreparingForCopy
-							: PipelineStatusCodes.Canceled,
-						parallelCopyType: '',
-						usedParallelCopies: 0,
-						dataRead: 0,
-						dataWritten: 0,
-						rowsRead: 0,
-						rowsCopied: 0,
-						copyStart: '',
-						copyThroughput: 0,
-						copyDuration: 0,
-						errors: [],
-					}));
-			}
-		}
-		return progress;
 	}
 
 	private async _populateTableData(hashSet: loc.LookupTable<number> = {}): Promise<void> {
