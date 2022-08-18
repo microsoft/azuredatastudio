@@ -327,6 +327,23 @@ export class AzdataGraphView {
 		if (node.description) {
 			diagramNode.description = node.description;
 		}
+
+		if (node.cost) {
+			diagramNode.cost = node.cost;
+		}
+
+		if (node.subTreeCost) {
+			diagramNode.subTreeCost = node.subTreeCost;
+		}
+
+		if (node.relativeCost) {
+			diagramNode.relativeCost = node.relativeCost;
+		}
+
+		if (node.elapsedTimeInMs) {
+			diagramNode.elapsedTimeInMs = node.elapsedTimeInMs;
+		}
+
 		return diagramNode;
 	}
 
@@ -465,6 +482,22 @@ export interface AzDataGraphCell {
 	 * Description to be displayed in the cell tooltip
 	 */
 	description: string;
+	/**
+	 * Cost associated with the graph cell
+	 */
+	cost: number;
+	/**
+	 * Cost of the node subtree
+	 */
+	subTreeCost: number
+	/**
+	 * Relative cost of the node  compared to its siblings
+	 */
+	relativeCost: number;
+	/**
+	 * Time taken by the node operation in milliseconds
+	 */
+	elapsedTimeInMs: number;
 	badges: AzDataGraphNodeBadge[];
 }
 
