@@ -228,7 +228,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			min: 1,
 			inputType: 'number',
 			placeHolder: loc.loading,
-			ariaLabel: 'temp'
+			ariaLabel: loc.coresRequest
 		}).component();
 
 		this.disposables.push(
@@ -249,7 +249,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			min: 1,
 			inputType: 'number',
 			placeHolder: loc.loading,
-			ariaLabel: 'temp'
+			ariaLabel: loc.coresLimit
 		}).component();
 
 		this.disposables.push(
@@ -270,7 +270,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			min: 0.25,
 			inputType: 'number',
 			placeHolder: loc.loading,
-			ariaLabel: 'temp'
+			ariaLabel: loc.memoryRequest
 		}).component();
 
 		this.disposables.push(
@@ -291,7 +291,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			min: 0.25,
 			inputType: 'number',
 			placeHolder: loc.loading,
-			ariaLabel: 'temp'
+			ariaLabel: loc.memoryLimit
 		}).component();
 
 		this.disposables.push(
@@ -316,10 +316,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		}
 
 		return [
-			this.modelView.modelBuilder.text().withProps({
-				value: 'temp',
-				CSSStyles: { ...cssStyles.title, 'margin-top': '25px' }
-			}).component(),
 			this.createCoresMemorySection(loc.configuration, loc.coordinatorNodeConfigurationInformation),
 			this.createConfigurationSectionContainer(loc.coresRequest, this.coordinatorCoresRequestBox),
 			this.createConfigurationSectionContainer(loc.coresLimit, this.coordinatorCoresLimitBox),

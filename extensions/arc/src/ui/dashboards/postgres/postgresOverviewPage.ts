@@ -341,9 +341,7 @@ export class PostgresOverviewPage extends DashboardPage {
 			{ displayName: loc.subscriptionId, value: azure?.subscription || '-' },
 			{ displayName: loc.externalEndpoint, value: this._postgresModel.config?.status.primaryEndpoint || '-' },
 			{ displayName: loc.status, value: status ? `${status.state} (${status.readyPods} ${loc.podsReady})` : '-' },
-			{ displayName: loc.postgresAdminUsername, value: 'postgres' },
-			{ displayName: loc.postgresVersion, value: this._postgresModel.engineVersion ?? '-' },
-			{ displayName: loc.nodeConfiguration, value: this._postgresModel.scaleConfiguration || '-' }
+			{ displayName: loc.postgresAdminUsername, value: 'postgres' }
 		];
 	}
 
