@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 import * as uuid from 'uuid';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
+import * as path from 'path';
 import * as azureFunctionsUtils from '../common/azureFunctionsUtils';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { addSqlBinding, getAzureFunctions } from '../services/azureFunctionsService';
@@ -113,6 +114,13 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined):
 					.withAdditionalProperties(propertyBag).send();
 				return;
 			}
+
+			// Add latest sql extension package reference to project
+			// only add if AF project (.csproj) is found
+			if (projectUri?.fsPath) {
+				await azureFunctionsUtils.addSqlNugetReferenceToProjectFile(path.dirname(projectUri.fsPath));
+			}
+
 			exitReason = 'done';
 			TelemetryReporter.createActionEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.finishAddSqlBinding)
 				.withAdditionalProperties(propertyBag).send();
