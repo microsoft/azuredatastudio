@@ -271,20 +271,16 @@ export function getMigrationStatusWithErrors(migration: azure.DatabaseMigration)
 	const migrationStatus = getMigrationStatus(migration) ?? '';
 
 	// provisioning error
-	let warningCount = properties.provisioningError?.length ?? 0;
+	let warningCount = properties.provisioningError?.length > 0 ? 1 : 0;
 
 	// migration failure error
-	if (properties.migrationFailureError?.message) {
-		warningCount++;
-	}
+	warningCount += properties.migrationFailureError?.message?.length > 0 ? 1 : 0;
 
 	// file upload blocking errors
 	warningCount += properties.migrationStatusDetails?.fileUploadBlockingErrors?.length ?? 0;
 
 	// restore blocking reason
-	if (properties.migrationStatusDetails?.restoreBlockingReason) {
-		warningCount++;
-	}
+	warningCount += properties.migrationStatusDetails?.restoreBlockingReason ? 1 : 0;
 
 	// sql data copy errors
 	warningCount += properties.migrationStatusDetails?.sqlDataCopyErrors?.length ?? 0;
