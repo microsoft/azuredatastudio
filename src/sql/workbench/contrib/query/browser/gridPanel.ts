@@ -52,6 +52,8 @@ import { HybridDataProvider } from 'sql/base/browser/ui/table/hybridDataProvider
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { alert, status } from 'vs/base/browser/ui/aria/aria';
 import { CopyAction } from 'vs/editor/contrib/clipboard/clipboard';
+import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
+import { ExecutionPlanInput } from 'sql/workbench/contrib/executionPlan/common/executionPlanInput';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -375,6 +377,8 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 
 	public isOnlyTable: boolean = true;
 
+	public providerId: string;
+
 	// this handles if the row count is small, like 4-5 rows
 	protected get maxSize(): number {
 		return ((this.resultSet.rowCount) * this.rowHeight) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT;
@@ -400,7 +404,8 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		@IQueryModelService private readonly queryModelService: IQueryModelService,
 		@IThemeService private readonly themeService: IThemeService,
 		@IContextViewService private readonly contextViewService: IContextViewService,
-		@INotificationService private readonly notificationService: INotificationService
+		@INotificationService private readonly notificationService: INotificationService,
+		@IExecutionPlanService private readonly executionPlanService: IExecutionPlanService
 	) {
 		super();
 
@@ -712,12 +717,24 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			const value = subset[0][event.cell.cell - 1];
 			const isJson = isJsonCell(value);
 			if (column.isXml || isJson) {
-				const content = value.displayValue;
-				const input = this.untitledEditorService.create({ mode: column.isXml ? 'xml' : 'json', initialValue: content });
-				await input.resolve();
-				await this.instantiationService.invokeFunction(formatDocumentWithSelectedProvider, input.textEditorModel, FormattingMode.Explicit, Progress.None, CancellationToken.None);
-				input.setDirty(false);
-				await this.editorService.openEditor(input);
+				const result = await this.executionPlanService.isExecutionPlan(this.providerId, value.displayValue);
+				if (result.isExecutionPlan) {
+					const executionPlanGraphInfo = {
+						graphFileContent: value.displayValue,
+						graphFileType: result.queryExecutionPlanFileExtension
+					};
+
+					const executionPlanInput = this.instantiationService.createInstance(ExecutionPlanInput, undefined, executionPlanGraphInfo);
+					await this.editorService.openEditor(executionPlanInput);
+				}
+				else {
+					const content = value.displayValue;
+					const input = this.untitledEditorService.create({ mode: column.isXml ? 'xml' : 'json', initialValue: content });
+					await input.resolve();
+					await this.instantiationService.invokeFunction(formatDocumentWithSelectedProvider, input.textEditorModel, FormattingMode.Explicit, Progress.None, CancellationToken.None);
+					input.setDirty(false);
+					await this.editorService.openEditor(input);
+				}
 			}
 		}
 	}
@@ -901,15 +918,17 @@ class GridTable<T> extends GridTableBase<T> {
 		@IQueryModelService queryModelService: IQueryModelService,
 		@IThemeService themeService: IThemeService,
 		@IContextViewService contextViewService: IContextViewService,
-		@INotificationService notificationService: INotificationService
+		@INotificationService notificationService: INotificationService,
+		@IExecutionPlanService executionPlanService: IExecutionPlanService
 	) {
 		super(state, resultSet, {
 			actionOrientation: ActionsOrientation.VERTICAL,
 			inMemoryDataProcessing: true,
 			showActionBar: true,
 			inMemoryDataCountThreshold: configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.inMemoryDataProcessingThreshold,
-		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService, contextViewService, notificationService);
+		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService, contextViewService, notificationService, executionPlanService);
 		this._gridDataProvider = this.instantiationService.createInstance(QueryGridDataProvider, this._runner, resultSet.batchId, resultSet.id);
+		this.providerId = this._runner.getProviderId();
 	}
 
 	get gridDataProvider(): IGridDataProvider {

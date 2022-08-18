@@ -47,6 +47,7 @@ import { IStorageService } from 'vs/platform/storage/common/storage';
 import { getChartMaxRowCount, notifyMaxRowCountExceeded } from 'sql/workbench/contrib/charts/browser/utils';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
 
 @Component({
 	selector: GridOutputComponent.SELECTOR,
@@ -237,12 +238,13 @@ class DataResourceTable extends GridTableBase<any> {
 		@IQueryModelService queryModelService: IQueryModelService,
 		@IThemeService themeService: IThemeService,
 		@IContextViewService contextViewService: IContextViewService,
-		@INotificationService notificationService: INotificationService
+		@INotificationService notificationService: INotificationService,
+		@IExecutionPlanService executionPlanService: IExecutionPlanService
 	) {
 		super(state, createResultSet(source), {
 			actionOrientation: ActionsOrientation.HORIZONTAL,
 			inMemoryDataProcessing: true
-		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService, contextViewService, notificationService);
+		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService, contextViewService, notificationService, executionPlanService);
 		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, source, this.resultSet, this.cellModel);
 		this._chart = this.instantiationService.createInstance(ChartView, false);
 
