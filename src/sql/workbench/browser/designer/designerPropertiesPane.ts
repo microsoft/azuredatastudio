@@ -8,7 +8,9 @@ import { CreateComponentsFunc, DesignerUIComponent, SetComponentValueFunc } from
 import { DesignerViewModel, DesignerDataPropertyInfo, DesignerPropertyPath } from 'sql/workbench/browser/designer/interfaces';
 import * as DOM from 'vs/base/browser/dom';
 import { equals } from 'vs/base/common/objects';
+import { MarkdownRenderer } from 'vs/editor/browser/core/markdownRenderer';
 import { localize } from 'vs/nls';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export interface ObjectInfo {
 	path: DesignerPropertyPath;
@@ -18,6 +20,7 @@ export interface ObjectInfo {
 }
 
 export class DesignerPropertiesPane {
+	private readonly _markdownRenderer: MarkdownRenderer;
 	private _titleElement: HTMLElement;
 	private _contentElement: HTMLElement;
 	private _objectPath: DesignerPropertyPath;
@@ -29,12 +32,17 @@ export class DesignerPropertiesPane {
 	private _descriptionTitleContainer: HTMLElement;
 	private _descriptionTextContainer: HTMLElement;
 
-	constructor(container: HTMLElement, private _createComponents: CreateComponentsFunc, private _setComponentValue: SetComponentValueFunc) {
+	constructor(container: HTMLElement,
+		private _createComponents: CreateComponentsFunc,
+		private _setComponentValue: SetComponentValueFunc,
+		instantiationService: IInstantiationService) {
 		const titleContainer = container.appendChild(DOM.$('.title-container'));
 		this._titleElement = titleContainer.appendChild(DOM.$('div'));
 		this._contentElement = container.appendChild(DOM.$('.properties-content.components-grid'));
 		this._titleElement.innerText = localize('tableDesigner.propertiesPaneTitle', "Properties");
 		this.createDescriptionComponent(container);
+		this._markdownRenderer = instantiationService.createInstance(MarkdownRenderer, {});
+
 	}
 
 	public get groupHeaders(): HTMLElement[] {
@@ -58,7 +66,11 @@ export class DesignerPropertiesPane {
 		const title: string = definition.componentProperties.title || definition.componentProperties.ariaLabel || '';
 		const description: string = definition.description ?? '';
 		this._descriptionTitleContainer.innerText = title;
-		this._descriptionTextContainer.innerText = description;
+		DOM.clearNode(this._descriptionTextContainer);
+		if (description) {
+			const markdownElement = this._markdownRenderer.render({ value: description }).element;
+			this._descriptionTextContainer.appendChild(markdownElement);
+		}
 	}
 
 	public clear(): void {
