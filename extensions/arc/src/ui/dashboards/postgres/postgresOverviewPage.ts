@@ -149,7 +149,7 @@ export class PostgresOverviewPage extends DashboardPage {
 
 		// Server Group Nodes
 		content.addItem(this.modelView.modelBuilder.text().withProps({
-			value: loc.serverGroupNodes,
+			value: loc.server,
 			CSSStyles: titleCSS,
 			headingLevel: 1
 		}).component());
@@ -158,7 +158,7 @@ export class PostgresOverviewPage extends DashboardPage {
 
 		this.podStatusTable = this.modelView.modelBuilder.declarativeTable().withProps({
 			width: '100%',
-			ariaLabel: loc.serverGroupNodes,
+			ariaLabel: loc.server,
 			columns: [
 				{
 					displayName: loc.name,
