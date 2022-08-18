@@ -2,7 +2,7 @@
 	"extends": "../tsconfig.base.json",
 	"compilerOptions": {
 		"outDir": "./out",
-		"strict": false,
+		"strict": true,
 		"noUnusedParameters": false,
 		"typeRoots": [
 			"./node_modules/@types"

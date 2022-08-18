@@ -71,7 +71,7 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 					let token: azdata.accounts.AccountSecurityToken | undefined = undefined;
 					let errMsg = '';
 					try {
-						token = await azdata.accounts.getAccountSecurityToken(this.account, s.tenant, azdata.AzureResource.ResourceManagement);
+						token = await azdata.accounts.getAccountSecurityToken(this.account, s.tenant!, azdata.AzureResource.ResourceManagement);
 					} catch (err) {
 						errMsg = AzureResourceErrorMessageUtil.getErrorMessage(err);
 					}
@@ -84,7 +84,7 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 				subscriptions = subscriptions.filter((_s, i) => hasTokenResults[i]);
 
 				let subTreeNodes = await Promise.all(subscriptions.map(async (subscription) => {
-					return new AzureResourceSubscriptionTreeNode(this.account, subscription, subscription.tenant, this.appContext, this.treeChangeHandler, this);
+					return new AzureResourceSubscriptionTreeNode(this.account, subscription, subscription.tenant!, this.appContext, this.treeChangeHandler, this);
 				}));
 				return subTreeNodes.sort((a, b) => a.subscription.name.localeCompare(b.subscription.name));
 			}
@@ -97,7 +97,7 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 	}
 
 	public async getCachedSubscriptions(): Promise<azureResource.AzureResourceSubscription[]> {
-		return this.getCache<azureResource.AzureResourceSubscription[]>();
+		return this.getCache<azureResource.AzureResourceSubscription[]>() ?? [];
 	}
 
 	public getTreeItem(): vscode.TreeItem | Promise<vscode.TreeItem> {
@@ -155,11 +155,11 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 		return label;
 	}
 
-	private _subscriptionService: IAzureResourceSubscriptionService = undefined;
-	private _subscriptionFilterService: IAzureResourceSubscriptionFilterService = undefined;
+	private _subscriptionService: IAzureResourceSubscriptionService;
+	private _subscriptionFilterService: IAzureResourceSubscriptionFilterService;
 
-	private _id: string = undefined;
-	private _label: string = undefined;
+	private _id: string;
+	private _label: string;
 	private _totalSubscriptionCount = 0;
 	private _selectedSubscriptionCount = 0;
 

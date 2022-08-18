@@ -14,7 +14,7 @@ abstract class AzureResourceTreeNodeBase extends TreeNode {
 	public constructor(
 		public readonly appContext: AppContext,
 		public readonly treeChangeHandler: IAzureResourceTreeChangeHandler,
-		parent: TreeNode
+		parent: TreeNode | undefined
 	) {
 		super();
 
@@ -26,7 +26,7 @@ export abstract class AzureResourceContainerTreeNodeBase extends AzureResourceTr
 	public constructor(
 		appContext: AppContext,
 		treeChangeHandler: IAzureResourceTreeChangeHandler,
-		parent: TreeNode
+		parent: TreeNode | undefined
 	) {
 		super(appContext, treeChangeHandler, parent);
 
@@ -46,14 +46,21 @@ export abstract class AzureResourceContainerTreeNodeBase extends AzureResourceTr
 	}
 
 	protected updateCache<T>(cache: T): Promise<void> {
-		return this._cacheService.update<T>(this._cacheKey, cache);
+		return this._cacheService.update<T>(this._cacheKey!, cache);
 	}
 
-	protected getCache<T>(): T {
-		return this._cacheService.get<T>(this._cacheKey);
+	protected getCache<T>(): T | undefined {
+		this.ensureCacheKey();
+		return this._cacheService.get<T | undefined>(this._cacheKey!);
+	}
+
+	private ensureCacheKey(): void {
+		if (!this._cacheKey) {
+			throw new Error('A cache key must be generated first');
+		}
 	}
 
 	protected _isClearingCache = true;
-	private _cacheService: IAzureResourceCacheService = undefined;
-	private _cacheKey: string = undefined;
+	private _cacheService: IAzureResourceCacheService;
+	private _cacheKey: string | undefined = undefined;
 }
