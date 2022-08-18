@@ -49,7 +49,7 @@ export class Project implements ISqlProject {
 	private _configuration: Configuration = Configuration.Debug;
 
 	public get dacpacOutputPath(): string {
-		return path.join(this.projectFolderPath, 'bin', 'Debug', `${this._projectFileName}.dacpac`);
+		return path.join(this.outputPath, `${this._projectFileName}.dacpac`);
 	}
 
 	public get projectFolderPath() {
@@ -108,7 +108,7 @@ export class Project implements ISqlProject {
 		return this._outputPath;
 	}
 
-	public configuration(): Configuration {
+	public get configuration(): Configuration {
 		return this._configuration;
 	}
 
@@ -219,7 +219,8 @@ export class Project implements ISqlProject {
 				const parent = outputPathNodes[i].parentNode as Element;
 				const condition = parent?.getAttribute(constants.Condition);
 
-				if (condition?.trim() === constants.ConfigurationPlatformCondition(this.configuration().toString(), platform)) {
+				// only handle the default conditions format that are there when creating a sqlproj in VS or ADS
+				if (condition?.toLowerCase().trim() === constants.ConfigurationPlatformCondition(this.configuration.toString(), platform).toLowerCase()) {
 					// if parent's condition matches, use this OutputPath
 					outputPath = outputPathNodes[i].childNodes[0].nodeValue;
 					break;
@@ -235,7 +236,7 @@ export class Project implements ISqlProject {
 			this._outputPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(outputPath));
 		} else {
 			// If output path isn't specified in .sqlproj, set it to the default output path .\bin\Debug\
-			this._outputPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(constants.defaultOutputPath(this.configuration().toString())));
+			this._outputPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(constants.defaultOutputPath(this.configuration.toString())));
 		}
 	}
 

@@ -858,6 +858,42 @@ describe('Project: sqlproj content operations', function (): void {
 		should(projFileText.includes('<Build Include="test.sql" />')).equal(true, projFileText);
 		should(projFileText.includes('<None Include="foo\\test.txt" />')).equal(true, projFileText);
 	});
+
+	it('Should read OutputPath from sqlproj if there is one for legacy-style project with Debug configuration', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline);
+		const project: Project = await Project.openProject(projFilePath);
+
+		should(project.configuration).equal('Debug');
+		should(project.outputPath).equal(path.join(getPlatformSafeFileEntryPath(project.projectFolderPath), getPlatformSafeFileEntryPath('bin\\Debug\\')));
+		should(project.dacpacOutputPath).equal(path.join(getPlatformSafeFileEntryPath(project.projectFolderPath), getPlatformSafeFileEntryPath('bin\\Debug\\'), `${project.projectFileName}.dacpac`));
+	});
+
+	it('Should read OutputPath from sqlproj if there is one for legacy-style project with Release configuration', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openProjectFileReleaseConfigurationBaseline);
+		const project: Project = await Project.openProject(projFilePath);
+
+		should(project.configuration).equal('Release');
+		should(project.outputPath).equal(path.join(getPlatformSafeFileEntryPath(project.projectFolderPath), getPlatformSafeFileEntryPath('bin\\Release\\')));
+		should(project.dacpacOutputPath).equal(path.join(getPlatformSafeFileEntryPath(project.projectFolderPath), getPlatformSafeFileEntryPath('bin\\Release\\'), `${project.projectFileName}.dacpac`));
+	});
+
+	it('Should set configuration to Output for legacy-style project with unknown configuration', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openProjectFileUnknownConfigurationBaseline);
+		const project: Project = await Project.openProject(projFilePath);
+
+		should(project.configuration).equal('Output');
+		should(project.outputPath).equal(path.join(getPlatformSafeFileEntryPath(project.projectFolderPath), getPlatformSafeFileEntryPath('bin\\Output')));
+		should(project.dacpacOutputPath).equal(path.join(getPlatformSafeFileEntryPath(project.projectFolderPath), getPlatformSafeFileEntryPath('bin\\Output\\'), `${project.projectFileName}.dacpac`));
+	});
+
+	it('Should set configuration to Output for legacy-style project with unknown configuration', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openProjectFileSingleOutputPathBaseline);
+		const project: Project = await Project.openProject(projFilePath);
+
+		should(project.configuration).equal('Debug');
+		should(project.outputPath).equal(path.join(getPlatformSafeFileEntryPath(project.projectFolderPath), getPlatformSafeFileEntryPath('..\\otherFolder')));
+		should(project.dacpacOutputPath).equal(path.join(getPlatformSafeFileEntryPath(project.projectFolderPath), getPlatformSafeFileEntryPath('..\\otherFolder'), `${project.projectFileName}.dacpac`));
+	});
 });
 
 describe('Project: sdk style project content operations', function (): void {
@@ -1430,7 +1466,7 @@ describe('Project: sdk style project content operations', function (): void {
 		should(projFileText.includes(constants.ProjectGuid)).equal(true);
 	});
 
-	it('Should read OutputPath from sqlproj if there is one', async function (): Promise<void> {
+	it('Should read OutputPath from sqlproj if there is one for SDK-style project', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectBaseline);
 		const projFileText = (await fs.readFile(projFilePath)).toString();
 
