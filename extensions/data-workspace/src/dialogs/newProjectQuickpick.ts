@@ -52,6 +52,12 @@ export async function createNewProjectWithQuickpick(workspaceService: WorkspaceS
 	if (defaultProjectSaveLoc) {
 		browseProjectLocationOptions.unshift(defaultProjectSaveLoc.fsPath);
 	}
+
+	// if there's an open folder, add it for easier access. If there are multiple folders in the workspace, default to the first one
+	if (vscode.workspace.workspaceFolders) {
+		browseProjectLocationOptions.unshift(vscode.workspace.workspaceFolders[0].uri.fsPath);
+	}
+
 	// 3. Prompt for Project location
 	// We validate that the folder doesn't already exist, and if it does keep prompting them to pick a new one
 	let projectLocation = '';
