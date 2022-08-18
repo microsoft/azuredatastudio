@@ -7,7 +7,7 @@ import { AzureAccount } from 'azurecore';
 import * as nls from 'vscode-nls';
 import { EOL } from 'os';
 import { MigrationSourceAuthenticationType } from '../models/stateMachine';
-import { ParallelCopyTypeCodes, PipelineStatusCodes } from './helper';
+import { formatNumber, ParallelCopyTypeCodes, PipelineStatusCodes } from './helper';
 const localize = nls.loadMessageBundle();
 
 export enum MigrationStatus {
@@ -630,6 +630,9 @@ export const DATABASE_TO_BE_MIGRATED = localize('sql.migration.database.to.be.mi
 export function COUNT_DATABASES(count: number): string {
 	return (count === 1) ? localize('sql.migration.count.database.single', "{0} database", count) : localize('sql.migration.count.database.multiple', "{0} databases", count);
 }
+export function TOTAL_TABLES_SELECTED(selected: number, total: number): string {
+	return localize('total.tables.selected.of.total', "{0} of {1}", formatNumber(selected), formatNumber(total));
+}
 
 // Open notebook quick pick string
 export const NOTEBOOK_QUICK_PICK_PLACEHOLDER = localize('sql.migration.quick.pick.placeholder', "Select the operation you'd like to perform.");
@@ -674,7 +677,7 @@ export const SOURCE_DATABASE = localize('sql.migration.source.database', "Source
 export const SOURCE_SERVER = localize('sql.migration.source.server', "Source server");
 export const SOURCE_VERSION = localize('sql.migration.source.version', "Source version");
 export const TARGET_DATABASE_NAME = localize('sql.migration.target.database.name', "Target database name");
-export const TARGET_TABLE_COUNT_NAME = localize('sql.migration.target.table.count.name', "Tables");
+export const TARGET_TABLE_COUNT_NAME = localize('sql.migration.target.table.count.name', "Tables selected");
 export const TARGET_SERVER = localize('sql.migration.target.server', "Target server");
 export const TARGET_VERSION = localize('sql.migration.target.version', "Target version");
 export const MIGRATION_STATUS = localize('sql.migration.migration.status', "Migration status");

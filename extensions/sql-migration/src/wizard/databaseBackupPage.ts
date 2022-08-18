@@ -720,7 +720,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			if (isSqlDbTarget) {
 				this.wizardPage.title = constants.DATABASE_TABLE_SELECTION_LABEL;
 				this.wizardPage.description = constants.DATABASE_TABLE_SELECTION_LABEL;
-				// TODO, does the  selected database list need to be reconciled here if the user un/selected a database
 				await this._loadTableData();
 			}
 			try {
@@ -780,13 +779,15 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					this.migrationStateModel._databaseBackup.blobs = [];
 				}
 
-				this.migrationStateModel._databasesForMigration.forEach((db, index) => {
-					let targetDatabaseName = db;
+				this.migrationStateModel._databasesForMigration.forEach((sourceDatabaseName, index) => {
+					let targetDatabaseName = isSqlDbTarget
+						? this.migrationStateModel._sourceTargetMapping.get(sourceDatabaseName)?.databaseName ?? sourceDatabaseName
+						: sourceDatabaseName;
 					let networkShare = <NetworkShare>{};
 					let blob = <Blob>{};
 
 					if (this.migrationStateModel._didUpdateDatabasesForMigration) {
-						const dbIndex = this.migrationStateModel._sourceDatabaseNames?.indexOf(db);
+						const dbIndex = this.migrationStateModel._sourceDatabaseNames?.indexOf(sourceDatabaseName);
 						if (dbIndex > -1) {
 							targetDatabaseName = originalTargetDatabaseNames[dbIndex] ?? targetDatabaseName;
 							networkShare = originalNetworkShares[dbIndex] ?? networkShare;

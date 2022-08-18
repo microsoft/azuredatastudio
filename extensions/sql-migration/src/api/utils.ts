@@ -267,7 +267,7 @@ export function getSessionIdHeader(sessionId: string): { [key: string]: string }
 
 export function getMigrationStatusWithErrors(migration: azure.DatabaseMigration): string {
 	const properties = migration.properties;
-	const migrationStatus = properties.migrationStatus ?? properties.provisioningState;
+	const migrationStatus = getMigrationStatus(migration) ?? '';
 	let warningCount = 0;
 
 	if (properties.migrationFailureError?.message) {

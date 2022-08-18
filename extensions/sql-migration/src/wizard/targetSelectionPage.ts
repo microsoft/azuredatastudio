@@ -192,10 +192,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 	}
 
 	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
-		this.wizard.registerNavigationValidator(e =>
-			pageChangeInfo.newPage < pageChangeInfo.lastPage
-			|| this.migrationStateModel._targetType !== MigrationTargetType.SQLDB
-			|| this._validateSourceTargetMapping());
+		this.wizard.registerNavigationValidator(async (pageChangeInfo) => true);
 	}
 
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
@@ -671,8 +668,10 @@ export class TargetSelectionPage extends MigrationWizardPage {
 	private _initializeSourceTargetDatabaseMap(): void {
 		// initialize source / target database map
 		this.migrationStateModel._sourceTargetMapping = new Map();
+		this.migrationStateModel._targetDatabaseNames = [];
 		this.migrationStateModel._databasesForMigration.forEach(
-			databaseName => this.migrationStateModel._sourceTargetMapping.set(databaseName, undefined));
+			sourceDatabaseName => this.migrationStateModel._sourceTargetMapping.set(
+				sourceDatabaseName, undefined));
 	}
 
 	private _updateConnectionButtonState(): void {
@@ -915,6 +914,16 @@ export class TargetSelectionPage extends MigrationWizardPage {
 						placeholder: constants.MAP_TARGET_PLACEHOLDER,
 					})
 					.component();
+				this._disposables.push(
+					targetDatabaseDropDown.onValueChanged((targetDatabaseName: string) => {
+						const targetDatabaseInfo = targetDatabases.find(
+							targetDb => targetDb.databaseName === targetDatabaseName);
+						this.migrationStateModel._sourceTargetMapping.set(
+							sourceDatabase,
+							targetDatabaseInfo);
+						this.migrationStateModel._didUpdateDatabasesForMigration = true;
+						this.migrationStateModel.refreshDatabaseBackupPage = true;
+					}));
 
 				const targetDatabaseName = this.migrationStateModel._sourceTargetMapping.get(sourceDatabase)?.databaseName ?? '';
 				if (targetDatabaseName.length > 0) {
@@ -923,12 +932,6 @@ export class TargetSelectionPage extends MigrationWizardPage {
 						targetDatabaseName);
 				}
 
-				this._disposables.push(
-					targetDatabaseDropDown.onValueChanged((targetDatabaseName: string) => {
-						const targetDatabase = targetDatabases.find(targetDb => targetDb.databaseName === targetDatabaseName);
-						this.migrationStateModel._sourceTargetMapping.set(sourceDatabase, targetDatabase);
-					}));
-
 				return [
 					<azdata.DeclarativeTableCellValue>{ value: sourceDatabase },
 					<azdata.DeclarativeTableCellValue>{ value: targetDatabaseDropDown },
@@ -936,23 +939,6 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			}) || [];
 
 		await this._azureResourceTable.setDataValues(data);
-	}
-
-	private _validateSourceTargetMapping(): boolean {
-		const targetDatabaseKeys = new Set<string>();
-		let sourceDatabaseCount = 0;
-		let targetDatabaseCount = 0;
-		this.migrationStateModel._sourceTargetMapping.forEach((targetDatabaseInfo, sourceDatabaseName) => {
-			sourceDatabaseCount++;
-			const targetDatabase = this.migrationStateModel._sourceTargetMapping.get(sourceDatabaseName);
-			const targetDatabaseName = targetDatabase?.databaseName;
-			if (targetDatabaseName && !targetDatabaseKeys.has(targetDatabaseName)) {
-				targetDatabaseCount++;
-				targetDatabaseKeys.add(targetDatabaseName);
-			}
-		});
-		return sourceDatabaseCount > 0
-			&& sourceDatabaseCount === targetDatabaseCount;
 	}
 
 	private _getTargetDatabaseDropdownValues(
@@ -974,16 +960,18 @@ export class TargetSelectionPage extends MigrationWizardPage {
 		const errors: string[] = [];
 		const targetDatabaseKeys = new Map<string, string>();
 		const migrationDatabaseCount = this._azureResourceTable.dataValues?.length ?? 0;
+		this.migrationStateModel._targetDatabaseNames = [];
 		if (migrationDatabaseCount === 0) {
 			errors.push(constants.SQL_TARGET_MAPPING_ERROR_MISSING_TARGET);
 		} else {
 			for (let i = 0; i < this.migrationStateModel._databasesForMigration.length; i++) {
 				const sourceDatabaseName = this.migrationStateModel._databasesForMigration[i];
-				const targetDatabase = this.migrationStateModel._sourceTargetMapping.get(sourceDatabaseName);
-				const targetDatabaseName = targetDatabase?.databaseName;
+				const targetDatabaseInfo = this.migrationStateModel._sourceTargetMapping.get(sourceDatabaseName);
+				const targetDatabaseName = targetDatabaseInfo?.databaseName;
 				if (targetDatabaseName && targetDatabaseName.length > 0) {
 					if (!targetDatabaseKeys.has(targetDatabaseName)) {
 						targetDatabaseKeys.set(targetDatabaseName, sourceDatabaseName);
+						this.migrationStateModel._targetDatabaseNames.push(targetDatabaseName);
 					} else {
 						const mappedSourceDatabaseName = targetDatabaseKeys.get(targetDatabaseName) ?? '';
 						// target mapped only once

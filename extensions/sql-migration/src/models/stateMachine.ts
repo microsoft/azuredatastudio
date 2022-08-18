@@ -920,12 +920,18 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 							const sourceDatabaseName = this._databasesForMigration[i];
 							const targetDatabaseInfo = this._sourceTargetMapping.get(sourceDatabaseName);
 							const totalTables = targetDatabaseInfo?.sourceTables.size ?? 0;
+							// skip databases that don't have tables
+							if (totalTables === 0) {
+								continue;
+							}
+
 							const sourceTables: string[] = [];
 							let selectedTables = 0;
-							targetDatabaseInfo?.sourceTables.forEach(table => {
-								const hasTargetTable = targetDatabaseInfo?.targetTables.get(table.tableName) !== undefined;
-								selectedTables += table.selectedForMigration && hasTargetTable ? 1 : 0;
-								sourceTables.push(table.tableName);
+							targetDatabaseInfo?.sourceTables.forEach(sourceTableInfo => {
+								if (sourceTableInfo.selectedForMigration) {
+									selectedTables++;
+									sourceTables.push(sourceTableInfo.tableName);
+								}
 							});
 
 							// skip databases that don't have tables selected
@@ -952,9 +958,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 								trustServerCertificate: false,
 							};
 
-							requestBody.properties.tableList = totalTables > 0 && selectedTables < totalTables
-								? sourceTables
-								: [];
+							// send an empty array when 'all' tables are selected for migration
+							requestBody.properties.tableList = selectedTables === totalTables
+								? []
+								: sourceTables;
 						}
 						break;
 				}
@@ -1105,6 +1112,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			this._databasesForAssessment = this.savedInfo.databaseAssessment;
 			this._databasesForMigration = this.savedInfo.databaseList;
 			this._didUpdateDatabasesForMigration = true;
+			this.refreshDatabaseBackupPage = true;
+
 			switch (this._targetType) {
 				case MigrationTargetType.SQLMI:
 					this._miDbs = this._databasesForMigration;
@@ -1127,7 +1136,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 			this._databaseBackup.migrationMode = this.savedInfo.migrationMode || undefined!;
 
-			this.refreshDatabaseBackupPage = true;
 			this._sourceDatabaseNames = this._databasesForMigration;
 			this._targetDatabaseNames = this.savedInfo.targetDatabaseNames;
 			this._databaseBackup.networkContainerType = this.savedInfo.networkContainerType || undefined!;

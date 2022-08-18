@@ -7,7 +7,6 @@ import * as azdata from 'azdata';
 import { MigrationMode, MigrationStateModel, MigrationTargetType, NetworkContainerType } from '../../models/stateMachine';
 import * as constants from '../../constants/strings';
 import * as styles from '../../constants/styles';
-import { formatNumber } from '../../constants/helper';
 
 export class TargetDatabaseSummaryDialog {
 	private _dialogObject!: azdata.window.Dialog;
@@ -147,11 +146,7 @@ export class TargetDatabaseSummaryDialog {
 				const tableRow: azdata.DeclarativeTableCellValue[] = [];
 				tableRow.push(
 					{ value: db },
-					{
-						value: isSqlDbMigration
-							? this._model._sourceTargetMapping.get(db)?.databaseName ?? this._model._targetDatabaseNames[index]
-							: this._model._targetDatabaseNames[index]
-					});
+					{ value: this._model._targetDatabaseNames[index] });
 
 				if (this._model._databaseBackup.networkContainerType === NetworkContainerType.BLOB_CONTAINER) {
 					tableRow.push(
@@ -165,8 +160,12 @@ export class TargetDatabaseSummaryDialog {
 							{ value: this._model._databaseBackup.blobs[index].lastBackupFile! });
 					}
 				} else if (isSqlDbMigration) {
+					const totalTables = this._model._sourceTargetMapping.get(db)?.sourceTables.size ?? 0;
+					let selectedTables = 0;
+					this._model._sourceTargetMapping.get(db)?.sourceTables.forEach(
+						tableInfo => selectedTables += tableInfo.selectedForMigration ? 1 : 0);
 					tableRow.push(
-						{ value: formatNumber(this._model._sourceTargetMapping.get(db)?.sourceTables.size ?? 0) });
+						{ value: constants.TOTAL_TABLES_SELECTED(selectedTables, totalTables) });
 				} else {
 					tableRow.push(
 						{ value: this._model._databaseBackup.networkShares[index].networkShareLocation });

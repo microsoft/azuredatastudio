@@ -150,18 +150,22 @@ export class WizardController {
 
 		this._disposables.push(
 			this._wizardObject.doneButton.onClick(async (e) => {
-				await stateModel.startMigration();
-				await this.updateServiceContext(stateModel, this._serviceContextChangedEvent);
-
-				sendSqlMigrationActionEvent(
-					TelemetryViews.SqlMigrationWizard,
-					TelemetryAction.PageButtonClick,
-					{
-						...this.getTelemetryProps(),
-						'buttonPressed': TelemetryAction.Done,
-						'pageTitle': this._wizardObject.pages[this._wizardObject.currentPage].title
-					},
-					{});
+				try {
+					await stateModel.startMigration();
+					await this.updateServiceContext(stateModel, this._serviceContextChangedEvent);
+				} catch (e) {
+					logError(TelemetryViews.MigrationWizardController, 'StartMigrationFailed', e);
+				} finally {
+					sendSqlMigrationActionEvent(
+						TelemetryViews.SqlMigrationWizard,
+						TelemetryAction.PageButtonClick,
+						{
+							...this.getTelemetryProps(),
+							'buttonPressed': TelemetryAction.Done,
+							'pageTitle': this._wizardObject.pages[this._wizardObject.currentPage].title
+						},
+						{});
+				}
 			}));
 	}
 

@@ -148,11 +148,16 @@ function getConnectionProfile(
 	};
 }
 
-export async function collectSourceDatabaseTableInfo(sourceConnectionId: string): Promise<TableInfo[]> {
+export async function collectSourceDatabaseTableInfo(sourceConnectionId: string, sourceDatabase: string): Promise<TableInfo[]> {
 	const ownerUri = await azdata.connection.getUriForConnection(sourceConnectionId);
+	const connectionProvider = azdata.dataprotocol.getProvider<azdata.ConnectionProvider>(
+		'MSSQL',
+		azdata.DataProviderType.ConnectionProvider);
+	await connectionProvider.changeDatabase(ownerUri, sourceDatabase);
 	const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(
 		'MSSQL',
 		azdata.DataProviderType.QueryProvider);
+
 	const results = await queryProvider.runQueryAndReturn(
 		ownerUri,
 		query_database_tables_sql);
