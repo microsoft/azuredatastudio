@@ -101,7 +101,7 @@ export class ControllerModel {
 		]);
 		const newRegistrations: Registration[] = [];
 		await Promise.all([
-			this._azApi.az.postgres.arcserver.list(namespace, this.azAdditionalEnvVars).then(result => {
+			this._azApi.az.postgres.serverarc.list(namespace, this.azAdditionalEnvVars).then(result => {
 				newRegistrations.push(...result.stdout.map(r => {
 					return {
 						instanceName: r.name,

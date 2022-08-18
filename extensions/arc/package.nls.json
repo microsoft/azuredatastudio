@@ -192,7 +192,7 @@
 	"arc.postgres.wizard.title": "Deploy an Azure Arc-enabled PostgreSQL server",
 	"arc.postgres.wizard.page1.title": "Provide Azure enabled PostgreSQL server parameters",
 	"arc.postgres.settings.section.title": "General settings",
-	"arc.postgres.settings.resource.computer.config.title": "Compute Configuration",
+	"arc.postgres.settings.resource.compute.config.title": "Compute Configuration",
 	"arc.postgres.settings.storage.title": "Storage settings",
 	"arc.postgres.server.name": "Server name",
 	"arc.postgres.server.name.validation.description": "Server name must consist of lower case alphanumeric characters or '-', start with a letter, end with an alphanumeric character, and be 11 characters or fewer in length.",

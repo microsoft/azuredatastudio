@@ -35,28 +35,4 @@ export class PostgresCoordinatorNodeParametersPage extends PostgresParametersPag
 		return this._postgresModel.coordinatorNodeEngineSettings;
 	}
 
-	protected async saveParameterEdits(engineSettings: string): Promise<void> {
-		await this._azApi.az.postgres.arcserver.edit(
-			this._postgresModel.info.name,
-			{ coordinatorEngineSettings: engineSettings },
-			this._postgresModel.controllerModel.info.namespace,
-			this._postgresModel.controllerModel.azAdditionalEnvVars);
-
-	}
-
-	protected async resetAllParameters(): Promise<void> {
-		await this._azApi.az.postgres.arcserver.edit(
-			this._postgresModel.info.name,
-			{ coordinatorEngineSettings: `''`, replaceEngineSettings: true },
-			this._postgresModel.controllerModel.info.namespace,
-			this._postgresModel.controllerModel.azAdditionalEnvVars);
-	}
-
-	protected async resetParameter(parameterName: string): Promise<void> {
-		await this._azApi.az.postgres.arcserver.edit(
-			this._postgresModel.info.name,
-			{ coordinatorEngineSettings: parameterName + '=' },
-			this._postgresModel.controllerModel.info.namespace,
-			this._postgresModel.controllerModel.azAdditionalEnvVars);
-	}
 }

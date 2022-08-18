@@ -151,7 +151,6 @@ export abstract class PostgresParametersPage extends DashboardPage {
 								this.parameterUpdates.forEach((value, key) => {
 									engineSettings.push(`${key}="${value}"`);
 								});
-								await this.saveParameterEdits(engineSettings.toString());
 							} catch (err) {
 								// If an error occurs while editing the instance then re-enable the save button since
 								// the edit wasn't successfully applied
@@ -224,7 +223,6 @@ export abstract class PostgresParametersPage extends DashboardPage {
 						},
 						async (_progress, _token): Promise<void> => {
 							try {
-								await this.resetAllParameters();
 							} catch (err) {
 								// If an error occurs while resetting the instance then re-enable the reset button since
 								// the edit wasn't successfully applied
@@ -425,7 +423,6 @@ export abstract class PostgresParametersPage extends DashboardPage {
 							cancellable: false
 						},
 						async (_progress, _token): Promise<void> => {
-							await this.resetParameter(engineSetting.parameterName!);
 							try {
 								await this.callGetEngineSettings();
 							} catch (error) {
@@ -649,10 +646,4 @@ export abstract class PostgresParametersPage extends DashboardPage {
 			await this.callGetEngineSettings();
 		}
 	}
-
-	protected abstract saveParameterEdits(engineSettings: string): Promise<void>;
-
-	protected abstract resetAllParameters(): Promise<void>;
-
-	protected abstract resetParameter(parameterName: string): Promise<void>;
 }

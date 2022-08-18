@@ -127,49 +127,35 @@ export class AzTool implements azExt.IAzApi {
 	};
 
 	public postgres = {
-		arcserver: {
+		serverarc: {
 			delete: (name: string, namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<void>> => {
-				return this.executeCommand<void>(['postgres', 'arc-server', 'delete', '-n', name, '--k8s-namespace', namespace, '--force', '--use-k8s'], additionalEnvVars);
+				return this.executeCommand<void>(['postgres', 'server-arc', 'delete', '-n', name, '--k8s-namespace', namespace, '--force', '--use-k8s'], additionalEnvVars);
 			},
 			list: (namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.PostgresServerListResult[]>> => {
-				return this.executeCommand<azExt.PostgresServerListResult[]>(['postgres', 'arc-server', 'list', '--k8s-namespace', namespace, '--use-k8s'], additionalEnvVars);
+				return this.executeCommand<azExt.PostgresServerListResult[]>(['postgres', 'server-arc', 'list', '--k8s-namespace', namespace, '--use-k8s'], additionalEnvVars);
 			},
 			show: (name: string, namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.PostgresServerShowResult>> => {
-				return this.executeCommand<azExt.PostgresServerShowResult>(['postgres', 'arc-server', 'show', '-n', name, '--k8s-namespace', namespace, '--use-k8s'], additionalEnvVars);
+				return this.executeCommand<azExt.PostgresServerShowResult>(['postgres', 'server-arc', 'show', '-n', name, '--k8s-namespace', namespace, '--use-k8s'], additionalEnvVars);
 			},
-			edit: (
+			update: (
 				name: string,
 				args: {
-					adminPassword?: boolean,
 					coresLimit?: string,
 					coresRequest?: string,
-					coordinatorEngineSettings?: string,
-					engineSettings?: string,
-					extensions?: string,
 					memoryLimit?: string,
 					memoryRequest?: string,
 					noWait?: boolean,
-					port?: number,
-					replaceEngineSettings?: boolean,
-					workerEngineSettings?: string,
-					workers?: number
+					port?: number
 				},
 				namespace: string,
 				additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<void>> => {
-				const argsArray = ['postgres', 'arc-server', 'edit', '-n', name, '--k8s-namespace', namespace, '--use-k8s'];
-				if (args.adminPassword) { argsArray.push('--admin-password'); }
+				const argsArray = ['postgres', 'server-arc', 'update', '-n', name, '--k8s-namespace', namespace, '--use-k8s'];
 				if (args.coresLimit) { argsArray.push('--cores-limit', args.coresLimit); }
 				if (args.coresRequest) { argsArray.push('--cores-request', args.coresRequest); }
-				if (args.coordinatorEngineSettings) { argsArray.push('--coordinator-settings', args.coordinatorEngineSettings); }
-				if (args.engineSettings) { argsArray.push('--engine-settings', args.engineSettings); }
-				if (args.extensions) { argsArray.push('--extensions', args.extensions); }
 				if (args.memoryLimit) { argsArray.push('--memory-limit', args.memoryLimit); }
 				if (args.memoryRequest) { argsArray.push('--memory-request', args.memoryRequest); }
 				if (args.noWait) { argsArray.push('--no-wait'); }
 				if (args.port) { argsArray.push('--port', args.port.toString()); }
-				if (args.replaceEngineSettings) { argsArray.push('--replace-settings'); }
-				if (args.workerEngineSettings) { argsArray.push('--worker-settings', args.workerEngineSettings); }
-				if (args.workers !== undefined) { argsArray.push('--workers', args.workers.toString()); }
 				return this.executeCommand<void>(argsArray, additionalEnvVars);
 			}
 		}
