@@ -316,7 +316,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		}
 
 		return [
-			this.createCoresMemorySection(loc.configuration, loc.coordinatorNodeConfigurationInformation),
+			this.createCoresMemorySection(loc.configuration),
 			this.createConfigurationSectionContainer(loc.coresRequest, this.coordinatorCoresRequestBox),
 			this.createConfigurationSectionContainer(loc.coresLimit, this.coordinatorCoresLimitBox),
 			this.createConfigurationSectionContainer(loc.memoryRequest, this.coordinatorMemoryRequestBox),
@@ -377,7 +377,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		}
 	}
 
-	private createCoresMemorySection(title: string, description: string): azdata.DivContainer {
+	private createCoresMemorySection(title: string): azdata.DivContainer {
 		const titleFlex = { flex: `0 1 250px` };
 
 		const flexContainer = this.modelView.modelBuilder.flexContainer().withLayout({
@@ -387,12 +387,11 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		const titleComponent = this.modelView.modelBuilder.text().withProps({
 			value: title,
-			description: description,
 			CSSStyles: { ...cssStyles.title, 'font-weight': 'bold', 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
 		const titleContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
-		titleContainer.addItem(titleComponent, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '15px' } });
+		titleContainer.addItem(titleComponent, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '15px', 'margin-top': '15px' } });
 
 		flexContainer.addItem(titleContainer, titleFlex);
 
