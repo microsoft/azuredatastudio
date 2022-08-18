@@ -115,7 +115,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined):
 				return;
 			}
 
-			// Update sql extension package reference to latest SQL binding nuget package
+			// Add latest sql extension package reference to project
 			// only add if AF project (.csproj) is found
 			if (projectUri?.fsPath) {
 				await azureFunctionsUtils.addSqlNugetReferenceToProjectFile(path.dirname(projectUri.fsPath));
