@@ -190,7 +190,7 @@ export class GetAzureRecommendationDialog {
 				CSSStyles: { 'margin': '0' }
 			}).component();
 		this._disposables.push(browseButton.onDidClick(async (e) => {
-			let folder = await this.handleBrowse();
+			let folder = await utils.promptUserForFolder();
 			this._collectDataFolderInput.value = folder;
 		}));
 
@@ -243,7 +243,7 @@ export class GetAzureRecommendationDialog {
 			}).component();
 		this._disposables.push(
 			openButton.onDidClick(
-				async e => this._openExistingFolderInput.value = await this.handleBrowse()));
+				async (e) => this._openExistingFolderInput.value = await utils.promptUserForFolder()));
 
 		selectFolderContainer.addItems([
 			this._openExistingFolderInput,
@@ -360,24 +360,5 @@ export class GetAzureRecommendationDialog {
 
 	public get isOpen(): boolean {
 		return this._isOpen;
-	}
-
-	// TO-DO: add validation
-	private async handleBrowse(): Promise<string> {
-		let path = '';
-
-		const options: vscode.OpenDialogOptions = {
-			defaultUri: vscode.Uri.file(utils.getUserHome()!),
-			canSelectFiles: false,
-			canSelectFolders: true,
-			canSelectMany: false,
-		};
-
-		const fileUris = await vscode.window.showOpenDialog(options);
-		if (fileUris && fileUris?.length > 0 && fileUris[0]) {
-			path = fileUris[0].fsPath;
-		}
-
-		return path;
 	}
 }

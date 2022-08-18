@@ -157,6 +157,7 @@
 .designer-component .description-component-content {
 	padding-top: 10px;
 	padding-left: 25px;
+	user-select: text;
 }
 
 .designer-component .codicon-grabber {

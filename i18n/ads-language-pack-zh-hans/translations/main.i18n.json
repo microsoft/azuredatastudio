@@ -10254,7 +10254,7 @@
 			"enable remote": "请重新加载 Azure Data Studio 以在 {0} 中启用此扩展。",
 			"enableWindowsBackgroundUpdates": "启用在 Windows 上后台下载和安装新的 Azure Data Studio 版本",
 			"extensionsPolicy": "设置用于下载扩展的安全策略。",
-			"incompatible": "无法安装扩展名 '{0}'，因为它不兼容 Azure Data Studio '{1}'。",
+			"incompatible": "无法安装扩展“{1}”的版本“{0}”，因为它与 Azure Data Studio“{2}”不兼容。请更新到 Azure Data Studio {3} 以安装扩展。",
 			"installExtensionCompletedAndReloadRequired": "安装扩展 {0} 已完成。请重新加载 Azure Data Studio 以启用它。",
 			"maxMemoryForLargeFilesMB": "在打开大型文件时，控制 Azure Data Studio 可在重启后使用的内存。在命令行中指定 `--max-memory=新的大小` 参数可达到相同效果。",
 			"miNewNotebook": "新建笔记本(&&N)",
@@ -10423,8 +10423,7 @@
 			"navigationProviderRequired": "必须向此方法传递具有有效 providerId 的 NavigationProvider"
 		},
 		"sql/workbench/api/common/notebooks/vscodeExecuteProvider": {
-			"errorStartBeforeReady": "无法启动会话，管理器尚未初始化",
-			"notebookMultipleRequestsError": "无法执行代码单元格。当前正在执行另一个单元格。"
+			"errorStartBeforeReady": "无法启动会话，管理器尚未初始化"
 		},
 		"sql/workbench/browser/actions": {
 			"clearSavedAccounts": "清除所有保存的帐户",
@@ -10440,13 +10439,14 @@
 			"showConnectDialogOnStartup": "在启动时显示连接对话框"
 		},
 		"sql/workbench/browser/designer/designer": {
+			"designer.actions": "更多操作",
 			"designer.defaultRemoveRowConfirmationMessage": "是否确实要删除该行?",
 			"designer.generalGroupName": "常规",
 			"designer.issueCountAlert": "已找到 {0} 个验证问题。",
 			"designer.issuesTabTitle": "问题({0})",
 			"designer.loadingDesigner": "正在加载设计器...",
 			"designer.loadingDesignerCompleted": "已加载设计器",
-			"designer.moveRowText": "移动行",
+			"designer.moveRowText": "移动",
 			"designer.processing": "正在处理...",
 			"designer.processingChanges": "正在处理更改...",
 			"designer.processingChangesCompleted": "已处理更改",
@@ -10493,8 +10493,7 @@
 			"resourceViewerInput.resourceViewer": "资源查看器"
 		},
 		"sql/workbench/browser/editor/tableDesigner/tableDesignerInput": {
-			"tableDesigner.OperationInProgressWarning": "当另一个操作正在进行时，无法执行该操作。",
-			"tableDesigner.newTable": "新建表"
+			"tableDesigner.OperationInProgressWarning": "当另一个操作正在进行时，无法执行该操作。"
 		},
 		"sql/workbench/browser/modal/modal": {
 			"closeMessage": "关闭",
@@ -11140,18 +11139,25 @@
 			"epCompare.FileFilterDescription": "执行计划文件",
 			"epCompare.comparePropertiesAction": "属性",
 			"epCompare.comparisonProgess": "在比较的计划中加载类似区域",
+			"epCompare.searchNodeAction": "查找节点",
+			"epCompare.searchNodeActionAddedPlan": "查找节点 - 已添加计划",
 			"epCompare.toggleOrientation": "切换方向",
 			"epCompare.zoomInAction": "放大",
 			"epCompare.zoomOutAction": "缩小",
 			"epCompare.zoomReset": "重置缩放",
-			"epCompare.zoomToFit": "缩放到合适大小"
+			"epCompare.zoomToFit": "缩放到合适大小",
+			"queryDropdownPrefix": "查询 {1}: {2} 的 {0}"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView": {
 			"executionPlanComparisonPropertiesBottomOperation": "底部操作: {0}",
+			"executionPlanComparisonPropertiesLeftOperation": "左侧操作: {0}",
+			"executionPlanComparisonPropertiesRightOperation": "右侧操作: {0}",
 			"executionPlanComparisonPropertiesTopOperation": "热门操作: {0}",
 			"executionPlanPropertiesEdgeOperationName": "边缘",
 			"nodePropertyViewNameNameColumnHeader": "名称",
 			"nodePropertyViewNameValueColumnBottomHeader": "值(底部计划)",
+			"nodePropertyViewNameValueColumnLeftHeader": "值(左侧计划)",
+			"nodePropertyViewNameValueColumnRightHeader": "值(右侧计划)",
 			"nodePropertyViewNameValueColumnTopHeader": "值(顶级计划)"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanContribution": {
@@ -11172,9 +11178,10 @@
 			"nodePropertyViewNameValueColumnHeader": "值"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase": {
+			"ep.topOperationsCopyTableData": "复制",
 			"executionPlanPropertyViewClose": "关闭",
 			"executionPlanPropertyViewSortAlphabetically": "按字母顺序",
-			"executionPlanPropertyViewSortByDisplayOrder": "按分类顺序",
+			"executionPlanPropertyViewSortByDisplayOrder": "重要性",
 			"executionPlanPropertyViewSortReverseAlphabetically": "按反向字母顺序",
 			"nodePropertyViewTitle": "属性"
 		},
@@ -11194,6 +11201,7 @@
 			"executionPlanPropertiesActionLabel": "属性",
 			"executionPlanSavePlanXML": "保存计划文件",
 			"executionPlanSearchNodeAction": "查找节点",
+			"executionPlanTopOperationsAction": "热门的操作",
 			"executionPlanZoomInActionLabel": "放大",
 			"executionPlanZoomOutActionLabel": "缩小",
 			"openQueryAction": "打开查询"
@@ -11432,7 +11440,7 @@
 		"sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component": {
 			"bold": "加粗",
 			"buttonPreview": "Markdown 预览切换 - 关闭",
-			"dropdownHeading": "标题",
+			"headingDropdownLabel": "文本大小",
 			"highlight": "突出显示",
 			"insertCode": "插入代码",
 			"insertImage": "插入图像",
@@ -11451,9 +11459,9 @@
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/output.component": {
 			"componentRenderError": "渲染组件时出错: {0}",
-			"noMimeTypeFound": "未找到 {0} 呈现器用于输出。它具有以下 MIME 类型: {1}",
-			"noSelectorFound": "未找到选择器 {0} 的组件",
-			"safe": "安全"
+			"noMimeTypeFound": "未找到用于输出的呈现器。它具有以下 MIME 类型: {0}",
+			"noSafeMimeTypeFound": "未找到用于输出的安全呈现器。它具有以下 MIME 类型: {0}",
+			"noSelectorFound": "未找到选择器 {0} 的组件"
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/placeholderCell.component": {
 			"clickOn": "单击",
@@ -11683,7 +11691,7 @@
 			"plotlyError": "显示 Plotly 图形时出错: {0}"
 		},
 		"sql/workbench/contrib/objectExplorer/browser/serverTreeView": {
-			"serverTree.addConnection": "添加连接",
+			"serverTree.newConnection": "新建连接",
 			"servers.noConnections": "未找到连接。"
 		},
 		"sql/workbench/contrib/objectExplorer/common/serverGroup.contribution": {
@@ -11780,14 +11788,19 @@
 			"status.query.flavor": "SQL 语言风格"
 		},
 		"sql/workbench/contrib/query/browser/gridPanel": {
+			"query.QueryErrorOccured": "执行查询时出错。",
+			"query.QueryExecutionEnded": "查询执行已完成。",
+			"query.QueryExecutionStarted": "查询执行已开始。",
 			"resultsGrid": "结果网格",
 			"resultsGrid.maxRowCountExceeded": "已超过筛选/排序的最大行计数。若要更新它，可以转到“用户设置”并更改设置: \"queryEditor.results.inMemoryDataProcessingThreshold\"",
 			"xmlShowplan": "XML 显示计划"
 		},
 		"sql/workbench/contrib/query/browser/keyboardQueryActions": {
+			"ToggleActualPlanKeyboardAction": "启用/禁用实际执行计划",
 			"ToggleFocusBetweenQueryEditorAndResultsAction": "在查询和结果之间切换焦点",
 			"cancelQueryKeyboardAction": "取消查询",
 			"copyQueryWithResultsKeyboardAction": "复制查询和结果",
+			"estimatedExecutionPlanKeyboardAction": "显示估计的执行计划",
 			"focusOnCurrentQueryKeyboardAction": "关注当前查询",
 			"parseSyntaxLabel": "分析查询",
 			"queryActions.notConnected": "请连接到服务器",
@@ -11797,7 +11810,6 @@
 			"queryShortcutNoEditor": "需要编辑器参数才能执行快捷方式",
 			"refreshIntellisenseKeyboardAction": "刷新 IntelliSense 缓存",
 			"runCurrentQueryKeyboardAction": "运行当前查询",
-			"runCurrentQueryWithActualPlanKeyboardAction": "使用实际计划运行当前查询",
 			"runQueryKeyboardAction": "运行查询",
 			"toggleQueryResultsKeyboardAction": "切换查询结果"
 		},
@@ -11834,17 +11846,21 @@
 			"queryShortcutDescription": "设置键绑定 workbench.action.query.shortcut{0}，将快捷方式文本作为过程调用或查询执行运行。查询编辑器中的选中的文本将在查询结尾处作为参数进行传递，也可以使用 {arg} 加以引用"
 		},
 		"sql/workbench/contrib/query/browser/queryActions": {
+			"ExecutionPlan": "执行计划",
 			"actualQueryPlan": "实际",
 			"cancelQueryLabel": "取消",
 			"changeConnectionDatabaseLabel": "更改连接",
 			"changeDatabase.failed": "未能更改数据库",
 			"changeDatabase.failedWithError": "未能更改数据库: {0}",
 			"connectDatabaseLabel": "连接",
+			"disableActualPlanLabel": "禁用实际计划",
 			"disablesqlcmdLabel": "禁用 SQLCMD",
 			"disconnectDatabaseLabel": "断开连接",
+			"enableActualPlanLabel": "启用实际计划",
 			"enablesqlcmdLabel": "启用 SQLCMD",
-			"estimatedQueryPlan": "解释",
+			"estimatedQueryPlan": "估计计划",
 			"newQueryTask.newQuery": "新建查询",
+			"query.multiSelectionNotSupported": "当编辑器处于多重选择模式时，不支持运行查询。",
 			"queryEditor.exportSqlAsNotebook": "导出为笔记本",
 			"runQueryLabel": "运行",
 			"selectDatabase": "选择数据库"
@@ -11876,58 +11892,6 @@
 			"maxColumnWidth": "自动调整大小的列的最大宽度(像素)",
 			"resultsGridConfigurationTitle": "结果网格和消息",
 			"rowHeight": "控制行高(像素)"
-		},
-		"sql/workbench/contrib/queryHistory/browser/queryHistoryActions": {
-			"queryHistory.clearLabel": "清除所有历史记录",
-			"queryHistory.delete": "删除",
-			"queryHistory.disableCapture": "暂停查询历史记录捕获",
-			"queryHistory.enableCapture": "开始查询历史记录捕获",
-			"queryHistory.openQuery": "打开查询",
-			"queryHistory.runQuery": "运行查询",
-			"queryHistory.toggleCaptureLabel": "切换查询历史记录捕获",
-			"toggleQueryHistory": "切换查询历史记录"
-		},
-		"sql/workbench/contrib/queryHistory/browser/queryHistoryRenderer": {
-			"failed": "失败",
-			"succeeded": "成功"
-		},
-		"sql/workbench/contrib/queryHistory/browser/queryHistoryView": {
-			"noQueriesMessage": "没有可显示的查询。",
-			"queryHistory.regTreeAriaLabel": "查询历史记录"
-		},
-		"sql/workbench/contrib/queryHistory/electron-browser/queryHistory": {
-			"miViewQueryHistory": "查询历史记录(&&Q)",
-			"queryHistory": "查询历史记录",
-			"queryHistory.clearLabel": "清除所有历史记录",
-			"queryHistory.disableCapture": "暂停查询历史记录捕获",
-			"queryHistory.enableCapture": "开始查询历史记录捕获",
-			"queryHistoryCaptureEnabled": "是否启用查询历史记录捕获。若为 false，则不捕获所执行的查询。",
-			"queryHistoryConfigurationTitle": "QueryHistory",
-			"viewCategory": "查看"
-		},
-		"sql/workbench/contrib/queryPlan/browser/queryPlan": {
-			"queryPlanTitle": "查询计划"
-		},
-		"sql/workbench/contrib/queryPlan/browser/queryPlanEditor": {
-			"queryPlanEditor": "查询计划编辑器"
-		},
-		"sql/workbench/contrib/queryPlan/browser/topOperations": {
-			"topOperations.actualExecutions": "实际执行次数",
-			"topOperations.actualRebinds": "实际重新绑定次数",
-			"topOperations.actualRewinds": "实际后退次数",
-			"topOperations.actualRows": "实际行数",
-			"topOperations.estCPUCost": "预计 CPU 成本",
-			"topOperations.estCost": "预计成本",
-			"topOperations.estIOCost": "预计 IO 成本",
-			"topOperations.estRebinds": "预计重新绑定次数",
-			"topOperations.estRewinds": "预计后退次数",
-			"topOperations.estRows": "预计行数",
-			"topOperations.estSubtreeCost": "预计子树成本",
-			"topOperations.object": "对象",
-			"topOperations.operation": "操作",
-			"topOperations.parallel": "并行",
-			"topOperations.partitioned": "分区",
-			"topOperationsTitle": "热门的操作"
 		},
 		"sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution": {
 			"deployment.title": "新建部署..."
@@ -11982,8 +11946,8 @@
 			"refreshError": "刷新节点“{0}”时出错: {1}"
 		},
 		"sql/workbench/contrib/tableDesigner/browser/actions": {
-			"tableDesigner.generateScript": "生成脚本",
-			"tableDesigner.publishTableChanges": "发布更改..."
+			"tableDesigner.publishTableChanges": "发布更改...",
+			"tableDesigner.saveTableChanges": "保存"
 		},
 		"sql/workbench/contrib/tableDesigner/browser/tableDesignerEditor": {
 			"tableDesigner.PreviewFeature": "预览功能"
@@ -12427,6 +12391,7 @@
 			"standardKernelsTimeout": "等待笔记本提供程序 \"{0}\" 的标准内核可用时超时"
 		},
 		"sql/workbench/services/notebook/browser/notebookViews/notebookViewModel": {
+			"Untitled": "无标题",
 			"notebookView.nameTaken": "此笔记本中已存在名为 {0} 的视图。"
 		},
 		"sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension": {
@@ -12447,9 +12412,7 @@
 			"invalidMimeData": "{0} 的数据应为字符串或字符串数组",
 			"nbNotSupported": "此文件没有有效的笔记本格式",
 			"nbformatNotRecognized": "无法识别 nbformat v{0}.{1}",
-			"unknownCellType": "单元格类型 {0} 未知",
-			"unrecognizedOutput": "无法识别输出类型 {0}",
-			"unrecognizedOutputType": "无法识别输出类型 {0}"
+			"unknownCellType": "单元格类型 {0} 未知"
 		},
 		"sql/workbench/services/notebook/common/notebookRegistry": {
 			"carbon.extension.contributes.notebook.executionTarget": "此魔术方法指示的可选执行目标，例如 Spark 和 SQL",
@@ -12621,7 +12584,7 @@
 			"groupColor": "组颜色",
 			"groupDescription": "组描述",
 			"serverGroup.cancel": "取消",
-			"serverGroup.colorValue": "颜色: {0}",
+			"serverGroup.colorValue": "组颜色: {0}",
 			"serverGroup.ok": "确定"
 		},
 		"sql/workbench/services/serverGroup/common/serverGroupViewModel": {
@@ -12739,6 +12702,26 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "入门(&&S)",
 			"showReleaseNotes": "显示入门指南"
+		},
+		"sql/workbench/common/constants": {
+			"notebookMultipleRequestsError": "无法执行代码单元格。当前正在执行另一个单元格。"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanTreeTab": {
+			"ept.topOperationsCopyTableData": "复制",
+			"ept.topOperationsCopyWithHeader": "使用标头复制",
+			"ept.topOperationsSelectAll": "全选",
+			"planTreeTab.title": "计划树(预览版)",
+			"topOperationsTableTitle": "执行计划树"
+		},
+		"sql/workbench/contrib/executionPlan/browser/topOperationsTab": {
+			"ep.topOperationsCopyTableData": "复制",
+			"ep.topOperationsCopyWithHeader": "使用标头复制",
+			"ep.topOperationsSelectAll": "全选",
+			"topOperationsTabTitle": "热门操作(预览)",
+			"topOperationsTableTitle": "热门操作"
+		},
+		"sql/workbench/contrib/notebook/browser/models/outputProcessor": {
+			"notebookInvalidOutputTypeError": "无法识别输出类型 '{0}'。"
 		}
 	}
 }

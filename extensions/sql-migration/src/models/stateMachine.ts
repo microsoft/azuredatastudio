@@ -200,6 +200,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _assessmentResults!: ServerAssessment;
 	public _assessedDatabaseList!: string[];
 	public _runAssessments: boolean = true;
+	private _assessmentApiResponse!: mssql.AssessmentResult;
+	public _assessmentReportFilePath: string;
 	public mementoString: string;
 
 	public _databasesForMigration: string[] = [];
@@ -211,6 +213,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public _skuRecommendationResults!: SkuRecommendation;
 	public _skuRecommendationPerformanceDataSource!: PerformanceDataSourceOptions;
+	private _skuRecommendationApiResponse!: mssql.SkuRecommendationResult;
+	public _skuRecommendationReportFilePaths: string[];
 	public _skuRecommendationPerformanceLocation!: string;
 
 	public _perfDataCollectionStartDate!: Date | undefined;
@@ -245,8 +249,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	private _stateChangeEventEmitter = new vscode.EventEmitter<StateChangeEvent>();
 	private _currentState: State;
 	private _gatheringInformationError: string | undefined;
-	private _assessmentApiResponse!: mssql.AssessmentResult;
-	private _skuRecommendationApiResponse!: mssql.SkuRecommendationResult;
 	private _skuRecommendationRecommendedDatabaseList!: string[];
 	private _startPerfDataCollectionApiResponse!: mssql.StartPerfDataCollectionResult;
 	private _stopPerfDataCollectionApiResponse!: mssql.StopPerfDataCollectionResult;
@@ -264,6 +266,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		this._databaseBackup.networkShares = [];
 		this._databaseBackup.blobs = [];
 		this._targetDatabaseNames = [];
+		this._assessmentReportFilePath = '';
+		this._skuRecommendationReportFilePaths = [];
 		this.mementoString = 'sqlMigration.assessmentResults';
 
 		this._skuScalingFactor = 100;
@@ -329,6 +333,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					}) ?? [],
 					errors: this._assessmentApiResponse?.errors ?? []
 				};
+				this._assessmentReportFilePath = response.assessmentReportPath;
 			} else {
 				this._assessmentResults = {
 					issues: [],
@@ -398,16 +403,19 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						sqlDbRecommendationResults: response?.sqlDbRecommendationResults ?? [],
 						sqlMiRecommendationResults: response?.sqlMiRecommendationResults ?? [],
 						sqlVmRecommendationResults: response?.sqlVmRecommendationResults ?? [],
-						instanceRequirements: response?.instanceRequirements
+						instanceRequirements: response?.instanceRequirements,
+						skuRecommendationReportPaths: response?.skuRecommendationReportPaths
 					},
 				};
+				this._skuRecommendationReportFilePaths = response.skuRecommendationReportPaths;
 			} else {
 				this._skuRecommendationResults = {
 					recommendations: {
 						sqlDbRecommendationResults: [],
 						sqlMiRecommendationResults: [],
 						sqlVmRecommendationResults: [],
-						instanceRequirements: response?.instanceRequirements
+						instanceRequirements: response?.instanceRequirements,
+						skuRecommendationReportPaths: response?.skuRecommendationReportPaths
 					},
 				};
 			}
@@ -420,7 +428,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					sqlDbRecommendationResults: this._skuRecommendationApiResponse?.sqlDbRecommendationResults ?? [],
 					sqlMiRecommendationResults: this._skuRecommendationApiResponse?.sqlMiRecommendationResults ?? [],
 					sqlVmRecommendationResults: this._skuRecommendationApiResponse?.sqlVmRecommendationResults ?? [],
-					instanceRequirements: this._skuRecommendationApiResponse?.instanceRequirements
+					instanceRequirements: this._skuRecommendationApiResponse?.instanceRequirements,
+					skuRecommendationReportPaths: this._skuRecommendationApiResponse?.skuRecommendationReportPaths
 				},
 				recommendationError: error
 			};

@@ -16,7 +16,7 @@ import { Deferred } from '../common/promise';
 import { IBookTrustManager, BookTrustManager } from './bookTrustManager';
 import * as loc from '../common/localizedConstants';
 import * as glob from 'fast-glob';
-import { getPinnedNotebooks, confirmMessageDialog, getNotebookType, FileExtension, IPinnedNotebook, BookTreeItemType } from '../common/utils';
+import { getPinnedNotebooks, getNotebookType, confirmMessageDialog, FileExtension, IPinnedNotebook, BookTreeItemType } from '../common/utils';
 import { IBookPinManager, BookPinManager } from './bookPinManager';
 import { BookTocManager, IBookTocManager, quickPickResults } from './bookTocManager';
 import { CreateBookDialog } from '../dialog/createBookDialog';
@@ -138,7 +138,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			let pinStatusChanged = await this.bookPinManager.pinNotebook(bookTreeItem);
 			sendNotebookActionEvent(NbTelemetryView.Book, NbTelemetryAction.PinNotebook);
 			if (pinStatusChanged) {
-				bookTreeItem.contextValue = 'pinnedNotebook';
+				bookTreeItem.contextValue = BookTreeItemType.pinnedNotebook;
+				this._onDidChangeTreeData.fire(bookTreeItem);
 			}
 		}
 	}
@@ -148,7 +149,16 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		if (bookPathToUpdate) {
 			let pinStatusChanged = await this.bookPinManager.unpinNotebook(bookTreeItem);
 			if (pinStatusChanged) {
-				bookTreeItem.contextValue = getNotebookType(bookTreeItem.book);
+				// reset to original context value
+				bookTreeItem.contextValue = bookTreeItem.book.type === BookTreeItemType.Markdown ? BookTreeItemType.Markdown : getNotebookType(bookTreeItem.book);
+				// to search for notebook in allNotebooks dictionary we need to format uri
+				const notebookUri = vscode.Uri.file(bookTreeItem.book.contentPath).fsPath;
+				// if notebook is not in current book then it is a standalone notebook
+				let itemOpenedInBookTreeView = this.currentBook?.getNotebook(notebookUri) ?? this.books.find(book => book.bookPath === bookTreeItem.book.contentPath)?.getNotebook(notebookUri);
+				if (itemOpenedInBookTreeView) {
+					itemOpenedInBookTreeView.contextValue = bookTreeItem.contextValue;
+					this._onDidChangeTreeData.fire(itemOpenedInBookTreeView.parent);
+				}
 			}
 		}
 	}
@@ -264,7 +274,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	async addNotebookToPinnedView(bookItem: BookTreeItem): Promise<void> {
 		let notebookPath: string = bookItem.book.contentPath;
 		if (notebookPath) {
-			let notebookDetails: IPinnedNotebook = bookItem.book.root ? { bookPath: bookItem.book.root, notebookPath: notebookPath, title: bookItem.book.title } : { notebookPath: notebookPath };
+			let notebookDetails: IPinnedNotebook = getNotebookType(bookItem.book) === BookTreeItemType.savedBookNotebook ? { bookPath: bookItem.book.root, notebookPath: notebookPath, title: bookItem.book.title } : { notebookPath: notebookPath };
 			await this.createAndAddBookModel(notebookPath, true, notebookDetails);
 		}
 	}

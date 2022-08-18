@@ -55,6 +55,9 @@ export class AzurecoreApiStub implements azurecore.IExtension {
 	getRegionDisplayName(_region?: string | undefined): string {
 		throw new Error('Method not implemented.');
 	}
+	getProviderMetadataForAccount(_account: azurecore.AzureAccount): azurecore.AzureAccountProviderMetadata {
+		throw new Error('Method not implemented.');
+	}
 	provideResources(): azurecore.azureResource.IAzureResourceProvider[] {
 		throw new Error('Method not implemented.');
 	}

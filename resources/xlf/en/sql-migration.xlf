@@ -252,6 +252,12 @@ This may take some time.</source>
     <trans-unit id="sql.migration.create.new">
       <source xml:lang="en">Create new</source>
     </trans-unit>
+    <trans-unit id="sql.migration.create.new.migration.service">
+      <source xml:lang="en">Create new migration service</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.create.new.resource.group">
+      <source xml:lang="en">Create new resource group</source>
+    </trans-unit>
     <trans-unit id="sql.migration.creating.rg.loading">
       <source xml:lang="en">Creating resource group</source>
     </trans-unit>
@@ -927,11 +933,23 @@ This may take some time.</source>
     <trans-unit id="sql.migration.rg.created">
       <source xml:lang="en">Resource group created</source>
     </trans-unit>
+    <trans-unit id="sql.migration.save.assessment.report">
+      <source xml:lang="en">Save assessment report</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.save.assessment.report.success">
+      <source xml:lang="en">Successfully saved assessment report to {0}.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.save.close">
       <source xml:lang="en">Save and close</source>
     </trans-unit>
     <trans-unit id="sql.migration.save.close.popup">
       <source xml:lang="en">Configuration saved. Performance data collection will remain running in the background. You can stop the collection when you want to.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.save.recommendation.report">
+      <source xml:lang="en">Save recommendation report</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.save.recommendation.report.success">
+      <source xml:lang="en">Successfully saved recommendation report to {0}.</source>
     </trans-unit>
     <trans-unit id="sql.migration.saved.assessment.cancel">
       <source xml:lang="en">Cancel</source>

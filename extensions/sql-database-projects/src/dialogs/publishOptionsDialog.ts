@@ -62,6 +62,24 @@ export class PublishOptionsDialog {
 
 	private initializeDeploymentOptionsDialogTab(): void {
 		this.optionsTab?.registerContent(async view => {
+			// create loading component
+			const loader = view.modelBuilder.loadingComponent()
+				.withProps({
+					CSSStyles: {
+						'margin-top': '50%'
+					}
+				})
+				.component();
+
+			this.optionsFlexBuilder = view.modelBuilder.flexContainer()
+				.withLayout({
+					flexFlow: 'column'
+				}).component();
+
+			// adding loading component to the flexcontainer
+			this.optionsFlexBuilder.addItem(loader);
+			await view.initializeModel(this.optionsFlexBuilder);
+
 			this.descriptionHeading = view.modelBuilder.table().withProps({
 				data: [],
 				columns: [
@@ -104,14 +122,10 @@ export class PublishOptionsDialog {
 				}
 			}));
 
-			this.optionsFlexBuilder = view.modelBuilder.flexContainer()
-				.withLayout({
-					flexFlow: 'column'
-				}).component();
-
 			this.optionsFlexBuilder.addItem(this.optionsTable, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh', 'padding-top': '2px' } });
 			this.optionsFlexBuilder.addItem(this.descriptionHeading, { CSSStyles: { 'font-weight': 'bold', 'height': '30px' } });
 			this.optionsFlexBuilder.addItem(this.descriptionText, { CSSStyles: { 'padding': '4px', 'margin-right': '10px', 'overflow': 'scroll', 'height': '10vh' } });
+			loader.loading = false;
 			await view.initializeModel(this.optionsFlexBuilder);
 			// focus the first option
 			await this.optionsTable.focus();

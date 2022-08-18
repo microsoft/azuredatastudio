@@ -7,6 +7,7 @@ import { escape } from 'sql/base/common/strings';
 import { getIconCellValue, IconColumnOptions, TableColumn } from 'sql/base/browser/ui/table/plugins/tableColumn';
 
 export interface TextWithIconColumnOptions extends IconColumnOptions {
+	editor?: any;
 }
 
 export class TextWithIconColumn<T extends Slick.SlickData> implements TableColumn<T> {
@@ -26,7 +27,8 @@ export class TextWithIconColumn<T extends Slick.SlickData> implements TableColum
 			width: this.options.width,
 			name: this.options.name,
 			cssClass: 'slick-icon-cell',
-			headerCssClass: this.options.headerCssClass
+			headerCssClass: this.options.headerCssClass,
+			editor: this.options.editor
 		};
 	}
 }

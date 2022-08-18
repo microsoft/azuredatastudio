@@ -106,6 +106,52 @@ export class ExecutionPlanService implements IExecutionPlanService {
 		}
 	}
 
+	/**
+	 * Runs the action using the specified provider.
+	 * @param providerId The provider ID that will be used to run an action.
+	 * @param action executionPlanService action to be performed.
+	 */
+	private async _runActionForProvider<T>(providerId: string, action: (handler: azdata.executionPlan.ExecutionPlanProvider) => Thenable<T>): Promise<T> {
+		let providers = Object.keys(this._capabilitiesService.providers);
+		if (!providers) {
+			providers = await new Promise(resolve => {
+				this._capabilitiesService.onCapabilitiesRegistered(e => {
+					resolve(Object.keys(this._capabilitiesService.providers));
+				});
+			});
+		}
+
+		const selectedProvider: string | undefined = providers.find(p => p === providerId);
+		if (!selectedProvider) {
+			return Promise.reject(new Error(localize('providerIdNotValidError', "Valid provider is required in order to interact with ExecutionPlanService")));
+		}
+
+		await this._extensionService.whenInstalledExtensionsRegistered();
+		let handler = this._providers[selectedProvider];
+		if (!handler) {
+			handler = await new Promise((resolve, reject) => {
+				this._providerRegisterEvent(e => {
+					if (e.id === selectedProvider) {
+						resolve(e.provider);
+					}
+				});
+				setTimeout(() => {
+					/**
+					 * Handling a possible edge case where provider registered event
+					 * might have been called before we await for it.
+					 */
+					resolve(this._providers[selectedProvider]);
+				}, 30000);
+			});
+		}
+
+		if (handler) {
+			return Promise.resolve(action(handler));
+		} else {
+			return Promise.reject(new Error(localize('noHandlerRegistered', "No valid execution plan handler is registered")));
+		}
+	}
+
 	registerProvider(providerId: string, provider: azdata.executionPlan.ExecutionPlanProvider): void {
 		if (this._providers[providerId]) {
 			throw new Error(`A execution plan provider with id "${providerId}" is already registered`);
@@ -126,6 +172,12 @@ export class ExecutionPlanService implements IExecutionPlanService {
 	compareExecutionPlanGraph(firstPlanFile: azdata.executionPlan.ExecutionPlanGraphInfo, secondPlanFile: azdata.executionPlan.ExecutionPlanGraphInfo): Promise<azdata.executionPlan.ExecutionPlanComparisonResult> {
 		return this._runAction(firstPlanFile.graphFileType, (runner) => {
 			return runner.compareExecutionPlanGraph(firstPlanFile, secondPlanFile);
+		});
+	}
+
+	isExecutionPlan(providerId: string, value: string): Promise<azdata.executionPlan.IsExecutionPlanResult> {
+		return this._runActionForProvider(providerId, (runner) => {
+			return runner.isExecutionPlan(value);
 		});
 	}
 

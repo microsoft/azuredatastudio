@@ -3,7 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { window, Account, accounts, CategoryValue, DropDownComponent, IconPath, Component, DisplayType } from 'azdata';
+import { window, Account, accounts, CategoryValue, DropDownComponent, IconPath, DisplayType, Component } from 'azdata';
+import * as vscode from 'vscode';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import * as crypto from 'crypto';
 import * as azure from './azure';
@@ -710,4 +711,20 @@ export function generateGuid(): string {
 	const clockSequenceHi: string = hexValues[8 + (Math.random() * 4) | 0];
 	return `${oct.substr(0, 8)}-${oct.substr(9, 4)}-4${oct.substr(13, 3)}-${clockSequenceHi}${oct.substr(16, 3)}-${oct.substr(19, 12)}`;
 	/* tslint:enable:no-bitwise */
+}
+
+export async function promptUserForFolder(): Promise<string> {
+	const options: vscode.OpenDialogOptions = {
+		defaultUri: vscode.Uri.file(getUserHome()!),
+		canSelectFiles: false,
+		canSelectFolders: true,
+		canSelectMany: false,
+	};
+
+	const fileUris = await vscode.window.showOpenDialog(options);
+	if (fileUris && fileUris.length > 0 && fileUris[0]) {
+		return fileUris[0].fsPath;
+	}
+
+	return '';
 }

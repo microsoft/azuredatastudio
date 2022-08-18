@@ -250,6 +250,9 @@
 			"serviceStartedStatusMsg": "{0}이(가) 시작됨",
 			"startingServiceStatusMsg": "{0}을(를) 시작하는 중"
 		},
+		"dist/tableDesigner/tableDesigner": {
+			"tableDesigner.NewTable": "새 테이블"
+		},
 		"dist/telemetry": {
 			"serviceCrashMessage": "{0} 구성 요소가 예기치 않게 종료되었습니다. Azure Data Studio를 다시 시작하세요.",
 			"viewKnownIssuesText": "알려진 문제 보기"
