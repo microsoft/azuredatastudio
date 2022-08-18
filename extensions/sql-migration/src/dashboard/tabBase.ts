@@ -164,8 +164,9 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 		const errors = [];
 		errors.push(migration.properties.provisioningError);
 		errors.push(migration.properties.migrationFailureError?.message);
-		errors.push(...migration.properties.migrationStatusDetails?.fileUploadBlockingErrors ?? []);
+		errors.push(migration.properties.migrationStatusDetails?.fileUploadBlockingErrors ?? []);
 		errors.push(migration.properties.migrationStatusDetails?.restoreBlockingReason);
+		errors.push(migration.properties.migrationStatusDetails?.sqlDataCopyErrors);
 
 		// remove undefined and duplicate error entries
 		return errors

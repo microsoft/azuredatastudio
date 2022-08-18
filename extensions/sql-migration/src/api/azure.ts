@@ -643,10 +643,10 @@ export interface StartDatabaseMigrationResponse {
 }
 
 export interface DatabaseMigration {
-	properties: DatabaseMigrationProperties;
 	id: string;
 	name: string;
 	type: string;
+	properties: DatabaseMigrationProperties;
 }
 
 export interface DatabaseMigrationProperties {
@@ -665,6 +665,7 @@ export interface DatabaseMigrationProperties {
 	backupConfiguration: BackupConfiguration;
 	offlineConfiguration: OfflineConfiguration;
 	migrationFailureError: ErrorInfo;
+	tableList: string[];
 }
 
 export interface MigrationStatusDetails {
@@ -683,6 +684,7 @@ export interface MigrationStatusDetails {
 	pendingLogBackupsCount: number;
 	invalidFiles: string[];
 	listOfCopyProgressDetails: CopyProgressDetail[];
+	sqlDataCopyErrors: string[];
 }
 
 export interface CopyProgressDetail {

@@ -269,18 +269,25 @@ export function getSessionIdHeader(sessionId: string): { [key: string]: string }
 export function getMigrationStatusWithErrors(migration: azure.DatabaseMigration): string {
 	const properties = migration.properties;
 	const migrationStatus = getMigrationStatus(migration) ?? '';
-	let warningCount = 0;
 
+	// provisioning error
+	let warningCount = properties.provisioningError?.length ?? 0;
+
+	// migration failure error
 	if (properties.migrationFailureError?.message) {
 		warningCount++;
 	}
-	if (properties.migrationStatusDetails?.fileUploadBlockingErrors) {
-		const blockingErrors = properties.migrationStatusDetails?.fileUploadBlockingErrors.length ?? 0;
-		warningCount += blockingErrors;
-	}
+
+	// file upload blocking errors
+	warningCount += properties.migrationStatusDetails?.fileUploadBlockingErrors?.length ?? 0;
+
+	// restore blocking reason
 	if (properties.migrationStatusDetails?.restoreBlockingReason) {
 		warningCount++;
 	}
+
+	// sql data copy errors
+	warningCount += properties.migrationStatusDetails?.sqlDataCopyErrors?.length ?? 0;
 
 	return constants.STATUS_VALUE(migrationStatus, warningCount)
 		+ (constants.STATUS_WARNING_COUNT(migrationStatus, warningCount) ?? '');
