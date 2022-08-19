@@ -24,26 +24,44 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 
 	private _disposables: vscode.Disposable[] = [];
 
+	/**
+	 * Mapping of query URIs to the query text being executed
+	 */
+	private queryTextMappings: Map<string, string> = new Map<string, string>();
+
 	constructor() {
 		this._disposables.push(azdata.queryeditor.registerQueryEventListener({
 			onQueryEvent: async (type: azdata.queryeditor.QueryEventType, document: azdata.queryeditor.QueryDocument, args: azdata.ResultSetSummary | string | undefined, queryInfo?: azdata.queryeditor.QueryInfo) => {
-				if (this._captureEnabled && queryInfo && type === 'queryStop') {
-					const textDocuments = vscode.workspace.textDocuments;
-					// We need to compare URIs, but the event Uri comes in as string so while it should be in the same format as
-					// the textDocument uri.toString() we parse it into a vscode.Uri first to be absolutely sure.
-					const textDocument = textDocuments.find(e => e.uri.toString() === vscode.Uri.parse(document.uri).toString());
-					if (!textDocument) {
-						// If we couldn't find the document then we can't get the text so just log the error and move on
-						console.error(`Couldn't find text document with URI ${document.uri} for query event`);
-						return;
+				if (this._captureEnabled && queryInfo) {
+					if (type === 'queryStop') {
+						const connectionProfile = await azdata.connection.getConnection(document.uri);
+						const isSuccess = queryInfo.messages.find(m => m.isError) ? false : true;
+						// Add to the front of the list so the new item appears at the top
+						const queryText = this.queryTextMappings.get(document.uri);
+						if (queryText === undefined) {
+							console.error(`Couldn't find query text for URI ${document.uri}`);
+							return;
+						}
+						this.queryTextMappings.delete(document.uri);
+						this._queryHistoryItems.unshift({ queryText, connectionProfile, timestamp: new Date(), isSuccess });
+						this._onDidChangeTreeData.fire(undefined);
+					} else if (type === 'queryStart') {
+						// We get the text and save it on queryStart because we want to get the query text immediately when
+						// the query is started but then only add the item when it finishes (so that we can properly determine the success of the execution).
+						// This avoids a race condition with the text being modified during execution and ending up with the query text at the end being
+						// different than when it started.
+						const textEditor = vscode.window.activeTextEditor;
+						// We need to compare URIs, but the event Uri comes in as string so while it should be in the same format as
+						// the textDocument uri.toString() we parse it into a vscode.Uri first to be absolutely sure.
+						if (textEditor?.document.uri.toString() !== vscode.Uri.parse(document.uri).toString()) {
+							// If we couldn't find the document then we can't get the text so just log the error and move on
+							console.error(`Couldn't find text editor with URI ${document.uri} for query event`);
+							return;
+						}
+						// Get the text from the current selection - or the entire document if there isn't a selection (mimicking what STS is doing itself)
+						const queryText = queryInfo.batchRanges.map(r => textEditor.document.getText(textEditor.selection.isEmpty ? undefined : textEditor.selection) ?? '').join(EOL);
+						this.queryTextMappings.set(document.uri, queryText);
 					}
-					// Combine all the text from the batches back together
-					const queryText = queryInfo.batchRanges.map(r => textDocument.getText(r) ?? '').join(EOL);
-					const connectionProfile = await azdata.connection.getConnection(document.uri);
-					const isSuccess = queryInfo.messages.find(m => m.isError) ? false : true;
-					// Add to the front of the list so the new item appears at the top
-					this._queryHistoryItems.unshift({ queryText, connectionProfile, timestamp: new Date(), isSuccess });
-					this._onDidChangeTreeData.fire(undefined);
 				}
 			}
 		}));
