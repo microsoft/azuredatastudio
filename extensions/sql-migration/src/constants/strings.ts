@@ -174,7 +174,11 @@ export function ASSESSED_DBS(totalDbs: number): string {
 	return localize('sql.migration.assessed.databases', "(for {0} assessed databases)", totalDbs);
 }
 export function RECOMMENDATIONS_AVAILABLE(totalDbs: number): string {
-	return localize('sql.migration.sku.available.recommendations', "{0} recommendations available", totalDbs);
+	if (totalDbs === 1) {
+		return localize('sql.migration.sku.available.recommendations.one', "{0} recommendation available", totalDbs);
+	} else {
+		return localize('sql.migration.sku.available.recommendations.many', "{0} recommendations available", totalDbs);
+	}
 }
 export const RECOMMENDATIONS = localize('sql.migration.sku.recommendations', "Recommendations");
 export const LOADING_RECOMMENDATIONS = localize('sql.migration.sku.recommendations.loading', "Loading...");
@@ -287,7 +291,7 @@ export function SQL_TARGET_CONNECTION_ERROR(message: string): string {
 	return localize('sql.migration.wizard.target.connection.error', "Connection error: {0}", message);
 }
 export function SQL_TARGET_CONNECTION_SUCCESS(databaseCount: string): string {
-	return localize('sql.migration.wizard.target.connection.success', "Connection was successful. Target databases found: '{0}'", databaseCount);
+	return localize('sql.migration.wizard.target.connection.success', "Connection was successful. Target databases found: {0}", databaseCount);
 }
 
 export const SQL_TARGET_MISSING_SOURCE_DATABASES = localize('sql.migration.wizard.source.missing', 'Connection was successful but did not find any target databases.');
@@ -470,7 +474,7 @@ export const TARGET_USERNAME_PLACEHOLDER = localize('sql.migration.username.plac
 export const TARGET_PASSWORD_LAbEL = localize('sql.migration.password.label', "Target password");
 export const TARGET_PASSWORD_PLACEHOLDER = localize('sql.migration.password.placeholder', "Enter the target password");
 export const TARGET_CONNECTION_LABEL = localize('sql.migration.connection.label', "Connect");
-export const MAP_SOURCE_TARGET_HEADING = localize('sql.migration.map.target.heading', "Map selected source databases to target databases for migration.");
+export const MAP_SOURCE_TARGET_HEADING = localize('sql.migration.map.target.heading', "Map selected source databases to target databases for migration");
 export const MAP_SOURCE_TARGET_DESCRIPTION = localize('sql.migration.map.target.description', "Select the target database where you would like to migrate your source database to.  You can choose a target database for only one source database.");
 export const MAP_SOURCE_COLUMN = localize('sql.migration.map.source.column', "Source database");
 export const MAP_TARGET_COLUMN = localize('sql.migration.map.target.column', "Target database");

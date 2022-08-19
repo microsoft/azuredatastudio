@@ -34,15 +34,13 @@ export class SkuRecommendationResultsDialog {
 	constructor(public model: MigrationStateModel, public _targetType: MigrationTargetType) {
 		switch (this._targetType) {
 			case MigrationTargetType.SQLMI:
-				this.targetName = constants.AZURE_SQL_DATABASE_MANAGED_INSTANCE;
+				this.targetName = constants.SKU_RECOMMENDATION_MI_CARD_TEXT;
 				break;
-
 			case MigrationTargetType.SQLVM:
-				this.targetName = constants.AZURE_SQL_DATABASE_VIRTUAL_MACHINE;
+				this.targetName = constants.SKU_RECOMMENDATION_VM_CARD_TEXT;
 				break;
-
 			case MigrationTargetType.SQLDB:
-				this.targetName = constants.AZURE_SQL_DATABASE;
+				this.targetName = constants.SKU_RECOMMENDATION_SQLDB_CARD_TEXT;
 				break;
 		}
 
