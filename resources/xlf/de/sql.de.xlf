@@ -3470,7 +3470,7 @@
     <body>
       <trans-unit id="ep.topOperationsCopyTableData">
         <source xml:lang="en">Copy</source>
-        <target state="new">Copy</target>
+        <target state="translated">Kopieren</target>
       </trans-unit>
       <trans-unit id="executionPlanPropertyViewClose">
         <source xml:lang="en">Close</source>
@@ -4472,9 +4472,9 @@ Fehler: {1}</target>
         <source xml:lang="en">Markdown preview toggle - off</source>
         <target state="translated">Markdownvorschau umschalten – aus</target>
       </trans-unit>
-      <trans-unit id="dropdownHeading">
-        <source xml:lang="en">Heading</source>
-        <target state="translated">Überschrift</target>
+      <trans-unit id="headingDropdownLabel">
+        <source xml:lang="en">Text Size</source>
+        <target state="translated">Textgröße</target>
       </trans-unit>
       <trans-unit id="highlight">
         <source xml:lang="en">Highlight</source>
@@ -5738,15 +5738,15 @@ Fehler: {1}</target>
     <body>
       <trans-unit id="query.QueryErrorOccured">
         <source xml:lang="en">Error occured while executing the query.</source>
-        <target state="new">Error occured while executing the query.</target>
+        <target state="translated">Fehler beim Ausführen der Abfrage.</target>
       </trans-unit>
       <trans-unit id="query.QueryExecutionEnded">
         <source xml:lang="en">Query execution completed.</source>
-        <target state="new">Query execution completed.</target>
+        <target state="translated">Abfrageausführung abgeschlossen.</target>
       </trans-unit>
       <trans-unit id="query.QueryExecutionStarted">
         <source xml:lang="en">Query execution started.</source>
-        <target state="new">Query execution started.</target>
+        <target state="translated">Abfrageausführung gestartet.</target>
       </trans-unit>
       <trans-unit id="resultsGrid">
         <source xml:lang="en">Results grid</source>

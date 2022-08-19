@@ -3470,7 +3470,7 @@
     <body>
       <trans-unit id="ep.topOperationsCopyTableData">
         <source xml:lang="en">Copy</source>
-        <target state="new">Copy</target>
+        <target state="translated">Copia</target>
       </trans-unit>
       <trans-unit id="executionPlanPropertyViewClose">
         <source xml:lang="en">Close</source>
@@ -4472,9 +4472,9 @@ Errore: {1}</target>
         <source xml:lang="en">Markdown preview toggle - off</source>
         <target state="translated">Disattivazione anteprima Markdown</target>
       </trans-unit>
-      <trans-unit id="dropdownHeading">
-        <source xml:lang="en">Heading</source>
-        <target state="translated">Intestazione</target>
+      <trans-unit id="headingDropdownLabel">
+        <source xml:lang="en">Text Size</source>
+        <target state="translated">Dimensioni testo</target>
       </trans-unit>
       <trans-unit id="highlight">
         <source xml:lang="en">Highlight</source>

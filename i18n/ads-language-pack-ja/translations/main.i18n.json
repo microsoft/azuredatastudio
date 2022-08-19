@@ -11178,7 +11178,7 @@
 			"nodePropertyViewNameValueColumnHeader": "値"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase": {
-			"ep.topOperationsCopyTableData": "Copy",
+			"ep.topOperationsCopyTableData": "コピー",
 			"executionPlanPropertyViewClose": "閉じる",
 			"executionPlanPropertyViewSortAlphabetically": "アルファベット順",
 			"executionPlanPropertyViewSortByDisplayOrder": "重要度",
@@ -11440,7 +11440,7 @@
 		"sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component": {
 			"bold": "太字",
 			"buttonPreview": "マークダウン プレビューの切り替え - オフ",
-			"dropdownHeading": "見出し",
+			"headingDropdownLabel": "テキスト サイズ",
 			"highlight": "強調表示",
 			"insertCode": "コードの挿入",
 			"insertImage": "画像の挿入",
@@ -11788,9 +11788,9 @@
 			"status.query.flavor": "SQL 言語のフレーバー"
 		},
 		"sql/workbench/contrib/query/browser/gridPanel": {
-			"query.QueryErrorOccured": "Error occured while executing the query.",
-			"query.QueryExecutionEnded": "Query execution completed.",
-			"query.QueryExecutionStarted": "Query execution started.",
+			"query.QueryErrorOccured": "クエリの実行中にエラーが発生しました。",
+			"query.QueryExecutionEnded": "クエリの実行が完了しました。",
+			"query.QueryExecutionStarted": "クエリの実行が開始されました。",
 			"resultsGrid": "結果グリッド",
 			"resultsGrid.maxRowCountExceeded": "フィルター/並べ替えに使用する行の最大数を超えました。更新するには、[ユーザーの設定] に移動し、設定を変更します: 'queryEditor.results.inMemoryDataProcessingThreshold'",
 			"xmlShowplan": "XML プラン表示"

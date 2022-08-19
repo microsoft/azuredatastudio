@@ -11178,7 +11178,7 @@
 			"nodePropertyViewNameValueColumnHeader": "值"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase": {
-			"ep.topOperationsCopyTableData": "Copy",
+			"ep.topOperationsCopyTableData": "复制",
 			"executionPlanPropertyViewClose": "关闭",
 			"executionPlanPropertyViewSortAlphabetically": "按字母顺序",
 			"executionPlanPropertyViewSortByDisplayOrder": "重要性",
@@ -11440,7 +11440,7 @@
 		"sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component": {
 			"bold": "加粗",
 			"buttonPreview": "Markdown 预览切换 - 关闭",
-			"dropdownHeading": "标题",
+			"headingDropdownLabel": "文本大小",
 			"highlight": "突出显示",
 			"insertCode": "插入代码",
 			"insertImage": "插入图像",

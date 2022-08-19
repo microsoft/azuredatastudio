@@ -3470,7 +3470,7 @@
     <body>
       <trans-unit id="ep.topOperationsCopyTableData">
         <source xml:lang="en">Copy</source>
-        <target state="new">Copy</target>
+        <target state="translated">복사</target>
       </trans-unit>
       <trans-unit id="executionPlanPropertyViewClose">
         <source xml:lang="en">Close</source>
@@ -4472,9 +4472,9 @@ Error: {1}</source>
         <source xml:lang="en">Markdown preview toggle - off</source>
         <target state="translated">Markdown 미리 보기 토글 - 끄기</target>
       </trans-unit>
-      <trans-unit id="dropdownHeading">
-        <source xml:lang="en">Heading</source>
-        <target state="translated">제목</target>
+      <trans-unit id="headingDropdownLabel">
+        <source xml:lang="en">Text Size</source>
+        <target state="translated">텍스트 크기</target>
       </trans-unit>
       <trans-unit id="highlight">
         <source xml:lang="en">Highlight</source>
@@ -5738,15 +5738,15 @@ Error: {1}</source>
     <body>
       <trans-unit id="query.QueryErrorOccured">
         <source xml:lang="en">Error occured while executing the query.</source>
-        <target state="new">Error occured while executing the query.</target>
+        <target state="translated">쿼리를 실행하는 동안 오류가 발생했습니다.</target>
       </trans-unit>
       <trans-unit id="query.QueryExecutionEnded">
         <source xml:lang="en">Query execution completed.</source>
-        <target state="new">Query execution completed.</target>
+        <target state="translated">쿼리 실행을 완료했습니다.</target>
       </trans-unit>
       <trans-unit id="query.QueryExecutionStarted">
         <source xml:lang="en">Query execution started.</source>
-        <target state="new">Query execution started.</target>
+        <target state="translated">쿼리 실행을 시작했습니다.</target>
       </trans-unit>
       <trans-unit id="resultsGrid">
         <source xml:lang="en">Results grid</source>

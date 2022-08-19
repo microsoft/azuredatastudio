@@ -11178,7 +11178,7 @@
 			"nodePropertyViewNameValueColumnHeader": "Значение"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase": {
-			"ep.topOperationsCopyTableData": "Copy",
+			"ep.topOperationsCopyTableData": "Копировать",
 			"executionPlanPropertyViewClose": "Закрыть",
 			"executionPlanPropertyViewSortAlphabetically": "В алфавитном порядке",
 			"executionPlanPropertyViewSortByDisplayOrder": "Важность",
@@ -11440,7 +11440,7 @@
 		"sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component": {
 			"bold": "Полужирный",
 			"buttonPreview": "Переключить предварительный просмотр Markdown — отключено",
-			"dropdownHeading": "Заголовок",
+			"headingDropdownLabel": "Размер текста",
 			"highlight": "Выделить цветом",
 			"insertCode": "Вставить код",
 			"insertImage": "Вставка изображения",

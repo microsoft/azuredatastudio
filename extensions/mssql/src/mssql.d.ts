@@ -541,6 +541,7 @@ declare module 'mssql' {
 		sqlMiRecommendationResults: PaaSSkuRecommendationResultItem[];
 		sqlVmRecommendationResults: IaaSSkuRecommendationResultItem[];
 		instanceRequirements: SqlInstanceRequirements;
+		skuRecommendationReportPaths: string[];
 	}
 
 	// SKU recommendation enums, mirrored from Microsoft.SqlServer.Migration.SkuRecommendation
@@ -785,6 +786,7 @@ declare module 'mssql' {
 		assessmentResult: ServerAssessmentProperties;
 		rawAssessmentResult: any;
 		errors: ErrorModel[];
+		assessmentReportPath: string;
 	}
 
 	export interface ISqlMigrationService {
