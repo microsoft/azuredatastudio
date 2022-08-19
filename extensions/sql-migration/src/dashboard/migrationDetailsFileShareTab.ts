@@ -10,7 +10,7 @@ import * as loc from '../constants/strings';
 import { convertByteSizeToReadableUnit, convertIsoTimeToLocalTime, getSqlServerName, getMigrationStatusImage } from '../api/utils';
 import { logError, TelemetryViews } from '../telemtery';
 import * as styles from '../constants/styles';
-import { canCancelMigration, canCutoverMigration, canRetryMigration, getMigrationStatus, getMigrationTargetTypeEnum, isOfflineMigation } from '../constants/helper';
+import { canCancelMigration, canCutoverMigration, canRetryMigration, getMigrationStatusString, getMigrationTargetTypeEnum, isOfflineMigation } from '../constants/helper';
 import { getResourceName } from '../api/azure';
 import { EmptySettingValue } from './tabBase';
 import { InfoFieldSchema, infoFieldWidth, MigrationDetailsTabBase, MigrationTargetTypeName } from './migrationDetailsTabBase';
@@ -134,7 +134,7 @@ export class MigrationDetailsFileShareTab extends MigrationDetailsTabBase<Migrat
 			this._targetServerInfoField.text.value = targetServerName;
 			this._targetVersionInfoField.text.value = targetServerVersion;
 
-			this._migrationStatusInfoField.text.value = getMigrationStatus(migration) ?? EmptySettingValue;
+			this._migrationStatusInfoField.text.value = getMigrationStatusString(migration);
 			this._migrationStatusInfoField.icon!.iconPath = getMigrationStatusImage(migration);
 
 			this._fullBackupFileOnInfoField.text.value = migration?.properties?.migrationStatusDetails?.fullBackupSetInfo?.listOfBackupFiles[0]?.fileName! ?? EmptySettingValue;

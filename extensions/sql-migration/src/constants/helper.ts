@@ -5,6 +5,7 @@
 
 import * as azdata from 'azdata';
 import { DatabaseMigration } from '../api/azure';
+import { DefaultSettingValue } from '../api/utils';
 import { FileStorageType, MigrationMode, MigrationTargetType } from '../models/stateMachine';
 import * as loc from './strings';
 
@@ -140,6 +141,11 @@ export function isBlobMigration(migration: DatabaseMigration | undefined): boole
 export function getMigrationStatus(migration: DatabaseMigration | undefined): string | undefined {
 	return migration?.properties.migrationStatus
 		?? migration?.properties.provisioningState;
+}
+
+export function getMigrationStatusString(migration: DatabaseMigration | undefined): string {
+	const migrationStatus = getMigrationStatus(migration) ?? DefaultSettingValue;
+	return loc.StatusLookup[migrationStatus] ?? migrationStatus;
 }
 
 export function hasMigrationOperationId(migration: DatabaseMigration | undefined): boolean {

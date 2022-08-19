@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import * as loc from '../constants/strings';
 import { getSqlServerName, getMigrationStatusImage } from '../api/utils';
 import { logError, TelemetryViews } from '../telemtery';
-import { canCancelMigration, canCutoverMigration, canRetryMigration, getMigrationStatus, getMigrationTargetTypeEnum, isOfflineMigation } from '../constants/helper';
+import { canCancelMigration, canCutoverMigration, canRetryMigration, getMigrationStatusString, getMigrationTargetTypeEnum, isOfflineMigation } from '../constants/helper';
 import { getResourceName } from '../api/azure';
 import { InfoFieldSchema, infoFieldWidth, MigrationDetailsTabBase, MigrationTargetTypeName } from './migrationDetailsTabBase';
 import { EmptySettingValue } from './tabBase';
@@ -94,7 +94,7 @@ export class MigrationDetailsBlobContainerTab extends MigrationDetailsTabBase<Mi
 		this._targetServerInfoField.text.value = targetServerName;
 		this._targetVersionInfoField.text.value = targetServerVersion;
 
-		this._migrationStatusInfoField.text.value = getMigrationStatus(migration) ?? EmptySettingValue;
+		this._migrationStatusInfoField.text.value = getMigrationStatusString(migration);
 		this._migrationStatusInfoField.icon!.iconPath = getMigrationStatusImage(migration);
 
 		const storageAccountResourceId = migration.properties.backupConfiguration?.sourceLocation?.azureBlob?.storageAccountResourceId;

@@ -8,10 +8,9 @@ import * as vscode from 'vscode';
 import * as loc from '../constants/strings';
 import { getSqlServerName, getMigrationStatusImage, getPipelineStatusImage, debounce } from '../api/utils';
 import { logError, TelemetryViews } from '../telemtery';
-import { canCancelMigration, canCutoverMigration, canRetryMigration, formatDateTimeString, formatNumber, formatSizeBytes, formatSizeKb, formatTime, getMigrationStatus, getMigrationTargetTypeEnum, isOfflineMigation, PipelineStatusCodes } from '../constants/helper';
+import { canCancelMigration, canCutoverMigration, canRetryMigration, formatDateTimeString, formatNumber, formatSizeBytes, formatSizeKb, formatTime, getMigrationStatusString, getMigrationTargetTypeEnum, isOfflineMigation, PipelineStatusCodes } from '../constants/helper';
 import { CopyProgressDetail, getResourceName } from '../api/azure';
 import { InfoFieldSchema, infoFieldLgWidth, MigrationDetailsTabBase, MigrationTargetTypeName } from './migrationDetailsTabBase';
-import { EmptySettingValue } from './tabBase';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { EOL } from 'os';
 import { DashboardStatusBar } from './DashboardStatusBar';
@@ -154,7 +153,7 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 		this._targetServerInfoField.text.value = targetServerName;
 		this._targetVersionInfoField.text.value = targetServerVersion;
 
-		this._migrationStatusInfoField.text.value = getMigrationStatus(migration) ?? EmptySettingValue;
+		this._migrationStatusInfoField.text.value = getMigrationStatusString(migration);
 		this._migrationStatusInfoField.icon!.iconPath = getMigrationStatusImage(migration);
 		this._serverObjectsInfoField.text.value = totalCount.toLocaleString();
 
