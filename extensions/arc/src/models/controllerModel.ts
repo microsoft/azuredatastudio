@@ -6,6 +6,7 @@
 import { ControllerInfo, ResourceType } from 'arc';
 import * as azExt from 'az-ext';
 import * as vscode from 'vscode';
+import { parseMiaaList } from '../common/utils';
 import * as loc from '../localizedConstants';
 import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
 
@@ -110,14 +111,15 @@ export class ControllerModel {
 				}));
 			}),
 			this._azApi.az.sql.miarc.list({ resourceGroup: undefined, namespace: namespace }, this.azAdditionalEnvVars).then(result => {
-				newRegistrations.push(...result.stdout.map(r => {
+				let miaaList = parseMiaaList(result.stdout.toString());
+				let jsonList: azExt.SqlMiListResult[] = JSON.parse(<string>miaaList);
+				newRegistrations.push(...jsonList.map(r => {
 					return {
 						instanceName: r.name,
 						state: r.state,
 						instanceType: ResourceType.sqlManagedInstances
 					};
 				}));
-
 			})
 		]).then(() => {
 			this._registrations = newRegistrations;

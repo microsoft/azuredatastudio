@@ -11,6 +11,8 @@ import { removeLineBreaks } from 'sql/base/common/strings';
 import { isString } from 'vs/base/common/types';
 import { textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { ExecutionPlanPropertiesViewBase, PropertiesSortType } from 'sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase {
 	// Div that holds the name of the element selected
@@ -19,9 +21,11 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 
 	public constructor(
 		parentContainer: HTMLElement,
-		themeService: IThemeService
+		@IThemeService themeService: IThemeService,
+		@IInstantiationService instantiationService: IInstantiationService,
+		@IContextMenuService contextMenuService: IContextMenuService,
 	) {
-		super(parentContainer, themeService);
+		super(parentContainer, themeService, instantiationService, contextMenuService);
 		this._model = <ExecutionPlanPropertiesView>{};
 		this._operationName = DOM.$('h3');
 		this._operationName.classList.add('operation-name');
@@ -91,7 +95,6 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 				name: localize('nodePropertyViewNameNameColumnHeader', "Name"),
 				field: 'name',
 				width: 250,
-				editor: Slick.Editors.Text,
 				headerCssClass: 'prop-table-header',
 				formatter: textFormatter
 			},
@@ -100,7 +103,6 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 				name: localize('nodePropertyViewNameValueColumnHeader', "Value"),
 				field: 'value',
 				width: 250,
-				editor: Slick.Editors.Text,
 				headerCssClass: 'prop-table-header',
 				formatter: textFormatter
 			}

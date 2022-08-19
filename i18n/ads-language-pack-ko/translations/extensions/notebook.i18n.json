@@ -148,6 +148,8 @@
 			"managePackages.backgroundInstallFailed": "{0} {1}을(를) 설치하지 못했습니다. 오류: {2}",
 			"managePackages.backgroundInstallStarted": "{0} {1} 설치 중",
 			"managePackages.installButtonText": "설치",
+			"managePackages.installCompleteText": "패키지를 설치함",
+			"managePackages.installProgressText": "패키지를 설치하는 중",
 			"managePackages.invalidTextPlaceholder": "해당 없음",
 			"managePackages.noVersionsFound": "지정된 패키지의 유효한 버전을 찾을 수 없습니다.",
 			"managePackages.packageNameTitle": "패키지 이름",
@@ -168,7 +170,9 @@
 			"managePackages.packageCount": "{0} {1}개의 패키지 찾음",
 			"managePackages.packageType": "패키지 유형",
 			"managePackages.pkgNameColumn": "이름",
-			"managePackages.uninstallButtonText": "선택한 패키지 제거"
+			"managePackages.uninstallButtonText": "선택한 패키지 제거",
+			"managePackages.uninstallCompleteText": "패키지를 제거함",
+			"managePackages.uninstallProgressText": "패키지를 제거하는 중"
 		},
 		"dist/dialog/managePackages/managePackagesDialog": {
 			"managePackages.cancelButtonText": "닫기",

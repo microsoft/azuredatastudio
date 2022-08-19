@@ -10254,7 +10254,7 @@
 			"enable remote": "{0}에서 이 확장을 사용하도록 설정하려면 Azure Data Studio를 다시 로드하세요.",
 			"enableWindowsBackgroundUpdates": "새로운 Azure Data Studio 버전을 Windows 백그라운드에 다운로드 및 설치하려면 사용하도록 설정",
 			"extensionsPolicy": "확장을 다운로드하기 위한 보안 정책을 설정합니다.",
-			"incompatible": "'Azure Data Studio '{1}'과(와) 호환되지 않으므로 확장 '{0}'을(를) 설치할 수 없습니다.",
+			"incompatible": "Azure Data Studio '{2}'와(과) 호환되지 않으므로 '{1}' 확장의 '{0}' 버전을 설치할 수 없습니다. 확장을 설치하려면 Azure Data Studio {3}(으)로 업데이트하세요.",
 			"installExtensionCompletedAndReloadRequired": "{0} 확장 설치가 완료되었습니다. Azure Data Studio를 다시 로드하여 사용하도록 설정하세요.",
 			"maxMemoryForLargeFilesMB": "큰 파일을 열려고 할 때 다시 시작한 후 Azure Data Studio에 사용 가능한 메모리를 제어합니다. 명령줄에 '--max-memory=NEWSIZE'를 지정하는 것과 결과가 같습니다.",
 			"miNewNotebook": "새 Notebook(&&N)",
@@ -10423,8 +10423,7 @@
 			"navigationProviderRequired": "유효한 providerId가 있는 NavigationProvider가 이 메서드에 전달되어야 합니다."
 		},
 		"sql/workbench/api/common/notebooks/vscodeExecuteProvider": {
-			"errorStartBeforeReady": "세션을 시작할 수 없습니다. 관리자가 아직 초기화되지 않았습니다.",
-			"notebookMultipleRequestsError": "코드 셀을 실행할 수 없습니다. 다른 셀이 현재 실행 중입니다."
+			"errorStartBeforeReady": "세션을 시작할 수 없습니다. 관리자가 아직 초기화되지 않았습니다."
 		},
 		"sql/workbench/browser/actions": {
 			"clearSavedAccounts": "저장된 모든 계정 지우기",
@@ -10440,13 +10439,14 @@
 			"showConnectDialogOnStartup": "시작 시 연결 대화 상자 표시"
 		},
 		"sql/workbench/browser/designer/designer": {
+			"designer.actions": "기타 작업",
 			"designer.defaultRemoveRowConfirmationMessage": "행을 제거하시겠습니까?",
 			"designer.generalGroupName": "일반",
 			"designer.issueCountAlert": "유효성 검사 문제를 {0}개 발견했습니다.",
 			"designer.issuesTabTitle": "문제({0}개)",
 			"designer.loadingDesigner": "디자이너를 로드하는 중...",
 			"designer.loadingDesignerCompleted": "디자이너가 로드되었습니다.",
-			"designer.moveRowText": "행 이동",
+			"designer.moveRowText": "이동",
 			"designer.processing": "처리 중...",
 			"designer.processingChanges": "변경 내용 처리 중...",
 			"designer.processingChangesCompleted": "변경 내용이 처리되었습니다.",
@@ -10470,7 +10470,7 @@
 		},
 		"sql/workbench/browser/designer/tableActions": {
 			"designer.addColumnAction": "새로 추가",
-			"designer.insertAfterSelectedColumn": "다음에 삽입",
+			"designer.insertAfterSelectedColumn": "뒤에 삽입",
 			"designer.insertBeforeSelectedRow": "앞에 삽입",
 			"designer.moveRowDownAction": "아래로 이동",
 			"designer.moveRowDownButtonAriaLabel": "선택한 행을 한 위치 아래로 이동",
@@ -10493,8 +10493,7 @@
 			"resourceViewerInput.resourceViewer": "리소스 뷰어"
 		},
 		"sql/workbench/browser/editor/tableDesigner/tableDesignerInput": {
-			"tableDesigner.OperationInProgressWarning": "다른 작업이 진행 중인 동안에는 작업을 수행할 수 없습니다.",
-			"tableDesigner.newTable": "새 테이블"
+			"tableDesigner.OperationInProgressWarning": "다른 작업이 진행 중인 동안에는 작업을 수행할 수 없습니다."
 		},
 		"sql/workbench/browser/modal/modal": {
 			"closeMessage": "닫기",
@@ -11140,18 +11139,25 @@
 			"epCompare.FileFilterDescription": "실행 계획 파일",
 			"epCompare.comparePropertiesAction": "속성",
 			"epCompare.comparisonProgess": "비교하는 계획의 비슷한 영역 로드 중",
+			"epCompare.searchNodeAction": "노드 찾기",
+			"epCompare.searchNodeActionAddedPlan": "노드 찾기 - 추가된 계획",
 			"epCompare.toggleOrientation": "방향 토글",
 			"epCompare.zoomInAction": "확대",
 			"epCompare.zoomOutAction": "축소",
 			"epCompare.zoomReset": "확대/축소 초기화",
-			"epCompare.zoomToFit": "크기에 맞게 확대/축소"
+			"epCompare.zoomToFit": "크기에 맞게 확대/축소",
+			"queryDropdownPrefix": "쿼리 {0}/{1}: {2}"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView": {
 			"executionPlanComparisonPropertiesBottomOperation": "맨 아래 작업: {0}",
+			"executionPlanComparisonPropertiesLeftOperation": "왼쪽 작업: {0}",
+			"executionPlanComparisonPropertiesRightOperation": "오른쪽 작업: {0}",
 			"executionPlanComparisonPropertiesTopOperation": "맨 위 작업: {0}",
 			"executionPlanPropertiesEdgeOperationName": "Edge",
 			"nodePropertyViewNameNameColumnHeader": "이름",
 			"nodePropertyViewNameValueColumnBottomHeader": "값(맨 아래 계획)",
+			"nodePropertyViewNameValueColumnLeftHeader": "값(왼쪽 계획)",
+			"nodePropertyViewNameValueColumnRightHeader": "값(올바른 계획)",
 			"nodePropertyViewNameValueColumnTopHeader": "값(맨 위 플랜)"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanContribution": {
@@ -11172,9 +11178,10 @@
 			"nodePropertyViewNameValueColumnHeader": "값"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase": {
+			"ep.topOperationsCopyTableData": "복사",
 			"executionPlanPropertyViewClose": "닫기",
 			"executionPlanPropertyViewSortAlphabetically": "사전순",
-			"executionPlanPropertyViewSortByDisplayOrder": "항목별",
+			"executionPlanPropertyViewSortByDisplayOrder": "중요도",
 			"executionPlanPropertyViewSortReverseAlphabetically": "사전순 반대로",
 			"nodePropertyViewTitle": "속성"
 		},
@@ -11194,6 +11201,7 @@
 			"executionPlanPropertiesActionLabel": "속성",
 			"executionPlanSavePlanXML": "계획 파일 저장",
 			"executionPlanSearchNodeAction": "노드 찾기",
+			"executionPlanTopOperationsAction": "상위 작업",
 			"executionPlanZoomInActionLabel": "확대",
 			"executionPlanZoomOutActionLabel": "축소",
 			"openQueryAction": "쿼리 열기"
@@ -11432,7 +11440,7 @@
 		"sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component": {
 			"bold": "굵게",
 			"buttonPreview": "Markdown 미리 보기 토글 - 끄기",
-			"dropdownHeading": "제목",
+			"headingDropdownLabel": "텍스트 크기",
 			"highlight": "강조 표시",
 			"insertCode": "코드 삽입",
 			"insertImage": "이미지 삽입",
@@ -11451,9 +11459,9 @@
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/output.component": {
 			"componentRenderError": "구성 요소 {0} 렌더링 중 오류 발생",
-			"noMimeTypeFound": "출력의 {0}렌더러를 찾을 수 없습니다. MIME 형식이 {1}입니다.",
-			"noSelectorFound": "선택기 {0}에 대한 구성 요소를 찾을 수 없습니다.",
-			"safe": "안전 "
+			"noMimeTypeFound": "출력에 대한 렌더러를 찾을 수 없습니다. 다음의 MIME 형식입니다: {0}",
+			"noSafeMimeTypeFound": "출력에 대한 안전한 렌더러를 찾을 수 없습니다. 다음의 MIME 형식입니다: {0}",
+			"noSelectorFound": "선택기 {0}에 대한 구성 요소를 찾을 수 없습니다."
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/placeholderCell.component": {
 			"clickOn": "코드 또는 텍스트 셀을 추가하려면",
@@ -11683,7 +11691,7 @@
 			"plotlyError": "플롯 그래프 {0}을(를) 표시하는 동안 오류가 발생했습니다."
 		},
 		"sql/workbench/contrib/objectExplorer/browser/serverTreeView": {
-			"serverTree.addConnection": "연결 추가",
+			"serverTree.newConnection": "새 연결",
 			"servers.noConnections": "연결이 없습니다."
 		},
 		"sql/workbench/contrib/objectExplorer/common/serverGroup.contribution": {
@@ -11780,14 +11788,19 @@
 			"status.query.flavor": "SQL 언어 버전"
 		},
 		"sql/workbench/contrib/query/browser/gridPanel": {
+			"query.QueryErrorOccured": "쿼리를 실행하는 동안 오류가 발생했습니다.",
+			"query.QueryExecutionEnded": "쿼리 실행을 완료했습니다.",
+			"query.QueryExecutionStarted": "쿼리 실행을 시작했습니다.",
 			"resultsGrid": "결과 표",
 			"resultsGrid.maxRowCountExceeded": "필터링/정렬에 대한 최대 행 수가 초과되었습니다. 업데이트하려면 사용자 설정으로 이동하여 'queryEditor.results.inMemoryDataProcessingThreshold' 설정을 변경할 수 있습니다.",
 			"xmlShowplan": "XML 실행 계획"
 		},
 		"sql/workbench/contrib/query/browser/keyboardQueryActions": {
+			"ToggleActualPlanKeyboardAction": "실제 실행 계획 사용/사용 안 함",
 			"ToggleFocusBetweenQueryEditorAndResultsAction": "쿼리와 결과 간 포커스 전환",
 			"cancelQueryKeyboardAction": "쿼리 취소",
 			"copyQueryWithResultsKeyboardAction": "결과와 함께 쿼리 복사",
+			"estimatedExecutionPlanKeyboardAction": "예상 실행 계획 표시",
 			"focusOnCurrentQueryKeyboardAction": "현재 쿼리에 포커스",
 			"parseSyntaxLabel": "쿼리 구문 분석",
 			"queryActions.notConnected": "서버에 연결하세요.",
@@ -11797,7 +11810,6 @@
 			"queryShortcutNoEditor": "바로 가기를 실행하려면 편집기 매개 변수가 필요합니다.",
 			"refreshIntellisenseKeyboardAction": "IntelliSense 캐시 새로 고침",
 			"runCurrentQueryKeyboardAction": "현재 쿼리 실행",
-			"runCurrentQueryWithActualPlanKeyboardAction": "실제 계획에 따라 현재 쿼리 실행",
 			"runQueryKeyboardAction": "쿼리 실행",
 			"toggleQueryResultsKeyboardAction": "쿼리 결과 전환"
 		},
@@ -11834,17 +11846,21 @@
 			"queryShortcutDescription": "keybinding workbench.action.query.shortcut{0}를 설정하여 프로시저 호출 또는 쿼리 실행으로 바로 가기 텍스트를 실행합니다. 쿼리 편집기에서 선택한 모든 텍스트는 쿼리 끝에 매개 변수로 전달되거나 {arg}로 참조할 수 있습니다."
 		},
 		"sql/workbench/contrib/query/browser/queryActions": {
+			"ExecutionPlan": "실행 계획",
 			"actualQueryPlan": "실제",
 			"cancelQueryLabel": "취소",
 			"changeConnectionDatabaseLabel": "연결 변경",
 			"changeDatabase.failed": "데이터베이스를 변경하지 못함",
 			"changeDatabase.failedWithError": "데이터베이스 {0}을(를) 변경하지 못함",
 			"connectDatabaseLabel": "연결",
+			"disableActualPlanLabel": "실제 계획 사용 안 함",
 			"disablesqlcmdLabel": "SQLCMD 사용 안 함",
 			"disconnectDatabaseLabel": "연결 끊기",
+			"enableActualPlanLabel": "실제 계획 사용",
 			"enablesqlcmdLabel": "SQLCMD 사용",
-			"estimatedQueryPlan": "설명",
+			"estimatedQueryPlan": "예상 플랜",
 			"newQueryTask.newQuery": "새 쿼리",
+			"query.multiSelectionNotSupported": "편집기가 다중 선택 모드에 있는 경우 쿼리 실행이 지원되지 않습니다.",
 			"queryEditor.exportSqlAsNotebook": "Notebook으로 내보내기",
 			"runQueryLabel": "실행",
 			"selectDatabase": "데이터베이스 선택"
@@ -11876,58 +11892,6 @@
 			"maxColumnWidth": "자동으로 크기가 조정되는 열의 최대 너비(픽셀)",
 			"resultsGridConfigurationTitle": "결과 표 및 메시지",
 			"rowHeight": "행 높이(픽셀)를 제어합니다."
-		},
-		"sql/workbench/contrib/queryHistory/browser/queryHistoryActions": {
-			"queryHistory.clearLabel": "모든 기록 지우기",
-			"queryHistory.delete": "삭제",
-			"queryHistory.disableCapture": "쿼리 기록 캡처 일시 중지",
-			"queryHistory.enableCapture": "쿼리 기록 캡처 시작",
-			"queryHistory.openQuery": "쿼리 열기",
-			"queryHistory.runQuery": "쿼리 실행",
-			"queryHistory.toggleCaptureLabel": "쿼리 기록 캡처 전환",
-			"toggleQueryHistory": "쿼리 기록 전환"
-		},
-		"sql/workbench/contrib/queryHistory/browser/queryHistoryRenderer": {
-			"failed": "실패",
-			"succeeded": "성공"
-		},
-		"sql/workbench/contrib/queryHistory/browser/queryHistoryView": {
-			"noQueriesMessage": "표시할 쿼리가 없습니다.",
-			"queryHistory.regTreeAriaLabel": "쿼리 기록"
-		},
-		"sql/workbench/contrib/queryHistory/electron-browser/queryHistory": {
-			"miViewQueryHistory": "쿼리 기록(&Q)",
-			"queryHistory": "쿼리 기록",
-			"queryHistory.clearLabel": "모든 기록 지우기",
-			"queryHistory.disableCapture": "쿼리 기록 캡처 일시 중지",
-			"queryHistory.enableCapture": "쿼리 기록 캡처 시작",
-			"queryHistoryCaptureEnabled": "쿼리 기록 캡처가 사용하도록 설정되어 있는지 여부입니다. false이면 실행된 쿼리가 캡처되지 않습니다.",
-			"queryHistoryConfigurationTitle": "QueryHistory",
-			"viewCategory": "보기"
-		},
-		"sql/workbench/contrib/queryPlan/browser/queryPlan": {
-			"queryPlanTitle": "쿼리 계획"
-		},
-		"sql/workbench/contrib/queryPlan/browser/queryPlanEditor": {
-			"queryPlanEditor": "쿼리 플랜 편집기"
-		},
-		"sql/workbench/contrib/queryPlan/browser/topOperations": {
-			"topOperations.actualExecutions": "실제 실행 수",
-			"topOperations.actualRebinds": "실제 다시 바인딩 횟수",
-			"topOperations.actualRewinds": "실제 되감기 횟수",
-			"topOperations.actualRows": "실제 행 수",
-			"topOperations.estCPUCost": "예상 CPU 비용",
-			"topOperations.estCost": "예상 비용",
-			"topOperations.estIOCost": "예상 입출력 비용",
-			"topOperations.estRebinds": "예상 다시 바인딩 횟수",
-			"topOperations.estRewinds": "예상 되감기 횟수",
-			"topOperations.estRows": "예상 행 수",
-			"topOperations.estSubtreeCost": "예상 하위 트리 비용",
-			"topOperations.object": "개체",
-			"topOperations.operation": "작업",
-			"topOperations.parallel": "병렬",
-			"topOperations.partitioned": "분할됨",
-			"topOperationsTitle": "상위 작업"
 		},
 		"sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution": {
 			"deployment.title": "새 배포..."
@@ -11982,8 +11946,8 @@
 			"refreshError": "'{0}' 노드를 새로 고치는 동안 오류가 발생했습니다. {1}"
 		},
 		"sql/workbench/contrib/tableDesigner/browser/actions": {
-			"tableDesigner.generateScript": "스크립트 생성",
-			"tableDesigner.publishTableChanges": "변경 내용 게시 중..."
+			"tableDesigner.publishTableChanges": "변경 내용 게시 중...",
+			"tableDesigner.saveTableChanges": "저장"
 		},
 		"sql/workbench/contrib/tableDesigner/browser/tableDesignerEditor": {
 			"tableDesigner.PreviewFeature": "미리 보기 기능"
@@ -12427,6 +12391,7 @@
 			"standardKernelsTimeout": "전자 필기장 공급자 '{0}'에 대한 표준 커널 가용성 대기 시간이 초과되었습니다."
 		},
 		"sql/workbench/services/notebook/browser/notebookViews/notebookViewModel": {
+			"Untitled": "제목 없음",
 			"notebookView.nameTaken": "이름이 {0}인 보기가 이 전자 필기장에 이미 있습니다."
 		},
 		"sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension": {
@@ -12447,9 +12412,7 @@
 			"invalidMimeData": "{0}의 데이터는 문자열 또는 문자열 배열이어야 합니다.",
 			"nbNotSupported": "이 파일에 유효한 Notebook 형식이 없습니다.",
 			"nbformatNotRecognized": "nbformat v{0}.{1}이(가) 인식되지 않습니다.",
-			"unknownCellType": "알 수 없는 셀 형식 {0}",
-			"unrecognizedOutput": "출력 형식 {0}을(를) 인식할 수 없습니다.",
-			"unrecognizedOutputType": "출력 형식 {0}을(를) 인식할 수 없습니다."
+			"unknownCellType": "알 수 없는 셀 형식 {0}"
 		},
 		"sql/workbench/services/notebook/common/notebookRegistry": {
 			"carbon.extension.contributes.notebook.executionTarget": "이 매직이 나타내는 선택적 실행 대상(예: Spark 및 SQL)",
@@ -12621,7 +12584,7 @@
 			"groupColor": "그룹 색",
 			"groupDescription": "그룹 설명",
 			"serverGroup.cancel": "취소",
-			"serverGroup.colorValue": "색: {0}",
+			"serverGroup.colorValue": "그룹 색: {0}",
 			"serverGroup.ok": "확인"
 		},
 		"sql/workbench/services/serverGroup/common/serverGroupViewModel": {
@@ -12739,6 +12702,26 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "시작(&S)",
 			"showReleaseNotes": "시작 표시"
+		},
+		"sql/workbench/common/constants": {
+			"notebookMultipleRequestsError": "코드 셀을 실행할 수 없습니다. 다른 셀이 현재 실행 중입니다."
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanTreeTab": {
+			"ept.topOperationsCopyTableData": "복사",
+			"ept.topOperationsCopyWithHeader": "헤더와 함께 복사",
+			"ept.topOperationsSelectAll": "모두 선택",
+			"planTreeTab.title": "계획 트리(미리 보기)",
+			"topOperationsTableTitle": "실행 계획 트리"
+		},
+		"sql/workbench/contrib/executionPlan/browser/topOperationsTab": {
+			"ep.topOperationsCopyTableData": "복사",
+			"ep.topOperationsCopyWithHeader": "헤더를 사용하여 복사",
+			"ep.topOperationsSelectAll": "모두 선택",
+			"topOperationsTabTitle": "상위 작업(미리 보기)",
+			"topOperationsTableTitle": "상위 작업"
+		},
+		"sql/workbench/contrib/notebook/browser/models/outputProcessor": {
+			"notebookInvalidOutputTypeError": "출력 형식 {0}을(를) 인식할 수 없습니다."
 		}
 	}
 }

@@ -94,6 +94,14 @@ export function CAN_BE_MIGRATED(eligibleDbs: number, totalDbs: number): string {
 export const ASSESSMENT_MIGRATION_WARNING = localize('sql.migration.assessment.migration.warning', "Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines.");
 export const DATABASES_TABLE_TILE = localize('sql.migration.databases.table.title', "Databases");
 export const SQL_SERVER_INSTANCE = localize('sql.migration.sql.server.instance', "SQL Server instance");
+export const SAVE_ASSESSMENT_REPORT = localize('sql.migration.save.assessment.report', "Save assessment report");
+export const SAVE_RECOMMENDATION_REPORT = localize('sql.migration.save.recommendation.report', "Save recommendation report");
+export function SAVE_ASSESSMENT_REPORT_SUCCESS(filePath: string): string {
+	return localize('sql.migration.save.assessment.report.success', "Successfully saved assessment report to {0}.", filePath);
+}
+export function SAVE_RECOMMENDATION_REPORT_SUCCESS(filePath: string): string {
+	return localize('sql.migration.save.recommendation.report.success', "Successfully saved recommendation report to {0}.", filePath);
+}
 
 // SKU
 export const AZURE_RECOMMENDATION = localize('sql.migration.sku.recommendation', "Azure recommendation");
@@ -404,6 +412,8 @@ export const IR_PAGE_TITLE = localize('sql.migration.ir.page.title', "Azure Data
 export const IR_PAGE_DESCRIPTION = localize('sql.migration.ir.page.description', "Azure Database Migration Service orchestrates database migration activities and tracks their progress. You can select an existing Database Migration Service as an Azure SQL target if you have created one previously, or create a new one below.");
 export const SQL_MIGRATION_SERVICE_NOT_FOUND_ERROR = localize('sql.migration.ir.page.sql.migration.service.not.found', "No Database Migration Service found. Create a new one.");
 export const CREATE_NEW = localize('sql.migration.create.new', "Create new");
+export const CREATE_NEW_MIGRATION_SERVICE = localize('sql.migration.create.new.migration.service', "Create new migration service");
+export const CREATE_NEW_RESOURCE_GROUP = localize('sql.migration.create.new.resource.group', "Create new resource group");
 export const INVALID_SERVICE_ERROR = localize('sql.migration.invalid.migration.service.error', "Select a valid Database Migration Service.");
 export const SERVICE_OFFLINE_ERROR = localize('sql.migration.invalid.migration.service.offline.error', "Select a Database Migration Service that is connected to a node.");
 export const AUTHENTICATION_KEYS = localize('sql.migration.authentication.types', "Authentication keys");

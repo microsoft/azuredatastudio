@@ -207,7 +207,7 @@ export class AzTool implements azExt.IAzApi {
 					// Additional arguments
 				},
 				additionalEnvVars?: azExt.AdditionalEnvVars
-			): Promise<azExt.AzOutput<azExt.SqlMiListResult[]>> => {
+			): Promise<azExt.AzOutput<azExt.SqlMiListRawOutput>> => {
 				const argsArray = ['sql', 'mi-arc', 'list'];
 				if (args.resourceGroup) {
 					argsArray.push('--resource-group', args.resourceGroup);
@@ -216,7 +216,8 @@ export class AzTool implements azExt.IAzApi {
 					argsArray.push('--k8s-namespace', args.namespace);
 					argsArray.push('--use-k8s');
 				}
-				return this.executeCommand<azExt.SqlMiListResult[]>(argsArray, additionalEnvVars);
+				return this.executeCommand<azExt.SqlMiListRawOutput>(argsArray, additionalEnvVars);
+
 			},
 			show: (
 				name: string,

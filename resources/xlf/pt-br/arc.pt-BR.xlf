@@ -1137,6 +1137,10 @@
         <source xml:lang="en">Suspect</source>
         <target state="translated">Suspeito</target>
       </trans-unit>
+      <trans-unit id="arc.syncSecondaryToCommit">
+        <source xml:lang="en">Sync Secondary To Commit</source>
+        <target state="translated">Sincronizar Secundário para Confirmar</target>
+      </trans-unit>
       <trans-unit id="arc.thePasswordsDoNotMatch">
         <source xml:lang="en">The passwords do not match. Confirm the password or press escape to exit.</source>
         <target state="translated">As senhas não coincidem. Confirme a senha ou pressione escape para sair.</target>
@@ -1196,6 +1200,22 @@
       <trans-unit id="arc.upgradingController">
         <source xml:lang="en">Data controller is being upgraded. You can check the status of the upgrade by running the following command: 'kubectl get datacontrollers -A'</source>
         <target state="translated">O controlador de dados está sendo atualizado. Você pode verificar o status da atualização executando o seguinte comando: 'kubectl get datacontrollers -A'</target>
+      </trans-unit>
+      <trans-unit id="arc.upgradingDirectDC">
+        <source xml:lang="en">Upgrading data controller '{0}' with command 'az arcdata dc upgrade --desired-version {1} --name {0} --resource-group {2}'</source>
+        <target state="translated">Atualizando controlador de dados '{0}' com o comando 'az arcdata dc upgrade --desired-version {1} --name {0} --resource-group {2}'</target>
+      </trans-unit>
+      <trans-unit id="arc.upgradingDirectMiaa">
+        <source xml:lang="en">Upgrading SQL MIAA '{0}' with command 'az sql mi-arc upgrade --name {0} --resource-group {1}'</source>
+        <target state="translated">Atualização do SQL MIAA '{0}' com o comando 'az sql mi-arc upgrade --name {0} --resource-group {1}'</target>
+      </trans-unit>
+      <trans-unit id="arc.upgradingIndirectDC">
+        <source xml:lang="en">Upgrading data controller '{0}' with command 'az arcdata dc upgrade --desired-version {1} --name {0} --k8s-namespace {2} --use-k8s'</source>
+        <target state="translated">Atualizando controlador de dados '{0}' com o comando 'az arcdata dc upgrade --desired-version {1} --name {0} --k8s-namespace {2} --use-k8s'</target>
+      </trans-unit>
+      <trans-unit id="arc.upgradingIndirectMiaa">
+        <source xml:lang="en">Upgrading SQL MIAA '{0}' with command 'az sql mi-arc upgrade --name {0} --k8s-namespace {1} --use-k8s'</source>
+        <target state="translated">Atualização do SQL MIAA '{0}' com o comando 'az sql mi-arc upgrade --name {0} --k8s-namespace {1} --use-k8s'</target>
       </trans-unit>
       <trans-unit id="arc.upgradingMiaa">
         <source xml:lang="en">SQL managed instance is being upgraded. You can check the status of the upgrade by running the following command: 'kubectl get sqlmi -A'</source>
@@ -1350,8 +1370,16 @@
         <target state="translated">Termos e condições da Hiperescala PostgreSQL do Azure Arc habilitado</target>
       </trans-unit>
       <trans-unit id="arc.agreement.sql.help.text">
-        <source xml:lang="en">Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}</source>
-        <target state="translated">A Instância Gerenciada habilitada para o Azure Arc fornece acesso ao SQL Server e compatibilidade de recursos que podem ser implantados na infraestrutura de sua escolha. {0}</target>
+        <source xml:lang="en">Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}. 
+ 
+ By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.</source>
+        <target state="translated">A instância gerenciada habilitada para Azure Arc fornece acesso ao SQL Server e compatibilidade de recursos que podem ser implantados na infraestrutura de sua escolha. {0}. 
+ 
+ Ao clicar em 'Script to notebook' ou 'Deploy', eu (a) concordo com os termos legais e as políticas de privacidade associadas às ofertas do Marketplace listadas abaixo; (b) autorizar a Microsoft a cobrar do meu método de pagamento atual as taxas associadas à(s) oferta(s), com a mesma frequência de cobrança da minha assinatura do Azure; e (c) concordar que a Microsoft pode compartilhar meu contato, uso e informações transacionais com o(s) fornecedor(es) da(s) oferta(s) para suporte, cobrança e outras atividades transacionais. A Microsoft não fornece direitos para ofertas de terceiros. Para detalhes adicionais consulte {1}, {2} e {3}.</target>
+      </trans-unit>
+      <trans-unit id="arc.agreement.sql.help.text.azure.marketplace.terms">
+        <source xml:lang="en">Azure Marketplace Terms</source>
+        <target state="translated">Termos do Azure Marketplace</target>
       </trans-unit>
       <trans-unit id="arc.agreement.sql.help.text.learn.more">
         <source xml:lang="en">Learn more</source>
@@ -1360,6 +1388,14 @@
       <trans-unit id="arc.agreement.sql.help.text.learn.more.ariaLabel">
         <source xml:lang="en">Learn more about Azure Arc enabled Managed Instance</source>
         <target state="translated">Saiba mais sobre a Instância Gerenciada habilitada para Azure Arc</target>
+      </trans-unit>
+      <trans-unit id="arc.agreement.sql.help.text.privacy.policy">
+        <source xml:lang="en">Privacy policy</source>
+        <target state="translated">Política de privacidade</target>
+      </trans-unit>
+      <trans-unit id="arc.agreement.sql.help.text.terms.of.use">
+        <source xml:lang="en">Terms of use</source>
+        <target state="translated">Termos de uso</target>
       </trans-unit>
       <trans-unit id="arc.agreement.sql.terms.conditions">
         <source xml:lang="en">Azure SQL managed instance - Azure Arc terms and conditions</source>
@@ -1405,10 +1441,6 @@
         <source xml:lang="en">Cores Request</source>
         <target state="translated">Solicitação de Núcleos</target>
       </trans-unit>
-      <trans-unit id="arc.data.controller.agreement">
-        <source xml:lang="en">I accept {0} and {1}.</source>
-        <target state="translated">Aceito {0} e {1}.</target>
-      </trans-unit>
       <trans-unit id="arc.data.controller.auto.upload.logs">
         <source xml:lang="en">Auto-upload Logs</source>
         <target state="translated">Carregar logs automaticamente</target>
@@ -1426,8 +1458,12 @@
         <target state="translated">Habilitar o carregamento automático de métricas. Somente modo direto.</target>
       </trans-unit>
       <trans-unit id="arc.data.controller.cluster.config.profile">
-        <source xml:lang="en">Config profile</source>
-        <target state="translated">Perfil de configuração</target>
+        <source xml:lang="en">Kubernetes configuration template</source>
+        <target state="translated">Configuração do modelo de Kubernetes</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.cluster.config.profile.description">
+        <source xml:lang="en">Choose the Kubernetes configuration template that matches with your Kubernetes distribution. This template provides defaults for storage class, service type, etc.</source>
+        <target state="translated">Escolha o modelo de configuração Kubernetes que corresponde à sua distribuição da Kubernetes. Esse modelo fornece padrões para classe de armazenamento, tipo de serviço etc.</target>
       </trans-unit>
       <trans-unit id="arc.data.controller.cluster.config.profile.loading">
         <source xml:lang="en">Loading config profiles</source>
@@ -1444,6 +1480,14 @@
       <trans-unit id="arc.data.controller.cluster.environment.title">
         <source xml:lang="en">What is your target existing Kubernetes cluster environment?</source>
         <target state="translated">Qual é a sua meta de ambiente de cluster Kubernete existente?</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.cluster.name">
+        <source xml:lang="en">Cluster Name</source>
+        <target state="translated">Nome do Cluster</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.cluster.name.description">
+        <source xml:lang="en">The name of the cluster. Direct mode only.</source>
+        <target state="translated">O nome do cluster. Somente modo direto.</target>
       </trans-unit>
       <trans-unit id="arc.data.controller.connectivity.mode">
         <source xml:lang="en">Connectivity mode</source>
@@ -1470,12 +1514,28 @@
         <target state="translated">O nome do local personalizado. Apenas modo direto.</target>
       </trans-unit>
       <trans-unit id="arc.data.controller.details.description">
-        <source xml:lang="en">For indirect mode, provide a namespace, name and storage class for your Azure Arc data controller. This name will be used to identify your Arc instance for remote management and monitoring. For direct mode you do not need to provide a namespace, but please provide the custom location name.</source>
-        <target state="translated">Para o modo indireto, forneça um namespace, nome e classe de armazenamento para o controlador de dados Azure Arc. Este nome será usado para identificar sua instância do Arc para gerenciamento e monitoramento remoto. Para o modo direto, você não precisa fornecer um namespace, mas forneça o nome do local personalizado.</target>
+        <source xml:lang="en">For indirect mode, namespace, name and storage class are required. This name will be used to identify your Arc instance for remote management and monitoring. For direct mode, custom location name is required.</source>
+        <target state="translated">Para o modo indireto, o namespace, o nome e a classe de armazenamento são obrigatórios. Esse nome será usado para identificar sua instância do Arc para gerenciamento e monitoramento remotos. Para o modo direto, é necessário um nome de local personalizado.</target>
       </trans-unit>
       <trans-unit id="arc.data.controller.details.title">
         <source xml:lang="en">Data controller details</source>
         <target state="translated">Detalhes do controlador de dados</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.direct.display.name">
+        <source xml:lang="en">Direct</source>
+        <target state="translated">Direto</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.help.text">
+        <source xml:lang="en">The Kubernetes cluster must already be arc-enabled with the az connectedk8s connect command. Please use our {0} to learn more.</source>
+        <target state="translated">O cluster Kubernetes já deve estar habilitado para arc com o comando az connectk8s connect. Use nosso {0} para saber mais.</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.help.text.documentation.page">
+        <source xml:lang="en">documentation page</source>
+        <target state="translated">página de documentação</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.indirect.display.name">
+        <source xml:lang="en">Indirect</source>
+        <target state="translated">Indireto</target>
       </trans-unit>
       <trans-unit id="arc.data.controller.infrastructure">
         <source xml:lang="en">Infrastructure</source>
@@ -1488,6 +1548,10 @@
       <trans-unit id="arc.data.controller.location">
         <source xml:lang="en">Location</source>
         <target state="translated">Localização</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.location.description">
+        <source xml:lang="en">Location is only used for indirect mode deployment. This field will be ignored for direct mode.</source>
+        <target state="translated">A localização só é usada para implantação de modo indireto. Este campo será ignorado para o modo direto.</target>
       </trans-unit>
       <trans-unit id="arc.data.controller.log.analytics.primary.key">
         <source xml:lang="en">Log Analytics primary key</source>
@@ -1538,8 +1602,8 @@
         <target state="translated">Namespace do controlador de dados</target>
       </trans-unit>
       <trans-unit id="arc.data.controller.namespace.description">
-        <source xml:lang="en">Indirect mode only.</source>
-        <target state="translated">Somente modo indireto.</target>
+        <source xml:lang="en">Data controller namespace. Indirect mode only.</source>
+        <target state="translated">Namespace do controlador de dados. Somente modo indireto.</target>
       </trans-unit>
       <trans-unit id="arc.data.controller.namespace.validation.description">
         <source xml:lang="en">Namespace must consist of lower case alphanumeric characters or '-', start/end with an alphanumeric character, and be 63 characters or fewer in length.</source>
@@ -1593,9 +1657,17 @@
         <source xml:lang="en">Cluster context</source>
         <target state="translated">Contexto de cluster</target>
       </trans-unit>
+      <trans-unit id="arc.data.controller.summary.cluster.name">
+        <source xml:lang="en">Cluster name</source>
+        <target state="translated">Nome do cluster</target>
+      </trans-unit>
       <trans-unit id="arc.data.controller.summary.controller">
         <source xml:lang="en">Controller</source>
         <target state="translated">Controlador</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.data.controller.custom.location">
+        <source xml:lang="en">Data controller custom location</source>
+        <target state="translated">Localização personalizada do controlador de dados</target>
       </trans-unit>
       <trans-unit id="arc.data.controller.summary.data.controller.infrastructure">
         <source xml:lang="en">Data controller infrastructure</source>
@@ -1869,6 +1941,10 @@
         <source xml:lang="en">Basics</source>
         <target state="translated">Básico</target>
       </trans-unit>
+      <trans-unit id="arc.sql.cost.summary.billable.replicas">
+        <source xml:lang="en">Billable replicas</source>
+        <target state="translated">Réplicas faturáveis</target>
+      </trans-unit>
       <trans-unit id="arc.sql.cost.summary.business.critical">
         <source xml:lang="en">Business Critical</source>
         <target state="translated">Comercialmente Crítico</target>
@@ -2005,6 +2081,14 @@
         <source xml:lang="en">Configure retention for point-in-time backups. {0}</source>
         <target state="translated">Configure a retenção para backups pontuais. {0}</target>
       </trans-unit>
+      <trans-unit id="arc.sql.readable.secondaries.description">
+        <source xml:lang="en">The number of readable secondary replicas.</source>
+        <target state="translated">Número de réplicas secundárias para leitura.</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.readable.secondaries.label">
+        <source xml:lang="en">Readable secondary replicas</source>
+        <target state="translated">Réplicas secundárias para leitura</target>
+      </trans-unit>
       <trans-unit id="arc.sql.retention.days.description">
         <source xml:lang="en">Specify how long you want to keep your point-in-time backups.</source>
         <target state="translated">Especifique por quanto tempo você deseja manter os seus backups pontuais.</target>
@@ -2030,8 +2114,8 @@
         <target state="translated">Camada de Serviço</target>
       </trans-unit>
       <trans-unit id="arc.sql.storage-class.backups.description">
-        <source xml:lang="en">The storage class to be used for backup persistent volumes. If no value is specified, the default storage class will be used.</source>
-        <target state="translated">A classe de armazenamento a ser usada nos volumes persistentes de backup. Se nenhum valor for especificado, a classe de armazenamento padrão será usada.</target>
+        <source xml:lang="en">The storage class to be used for Backups. If no value is specified, backups will be stored in same storage class assigned to Data. Must be a RWX capable storage class.</source>
+        <target state="translated">A classe de armazenamento a ser usada para Backups. Se nenhum valor for especificado, os backups serão armazenados na mesma classe de armazenamento atribuída a Dados. Deve ser uma classe de armazenamento compatível com RWX.</target>
       </trans-unit>
       <trans-unit id="arc.sql.storage-class.data.description">
         <source xml:lang="en">The storage class to be used for data (.mdf). If no value is specified, the default storage class will be used.</source>
@@ -2052,6 +2136,14 @@
       <trans-unit id="arc.sql.summary.arc.by.microsoft">
         <source xml:lang="en">by Microsoft</source>
         <target state="translated">por Microsoft</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.sync.secondaries.description">
+        <source xml:lang="en">The number of synchronous replicas required to commit a transaction before the primary replica is allowed to commit. Setting this value to -1 will set the number of required synchronized secondaries to '(# of replicas - 1) / 2', rounded down.</source>
+        <target state="translated">O número de réplicas síncronas necessárias para confirmar uma transação antes que a réplica primária tenha permissão para confirmar. Definir esse valor como -1 definirá o número de secundários sincronizados necessários para '(# de réplicas - 1) / 2', arredondado para baixo.</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.sync.secondaries.label">
+        <source xml:lang="en">Synchronized secondaries required to commit</source>
+        <target state="translated">Secundários sincronizados necessários para confirmar</target>
       </trans-unit>
       <trans-unit id="arc.sql.three.replicas">
         <source xml:lang="en">3 replicas</source>
@@ -2108,6 +2200,14 @@
       <trans-unit id="arc.storage-class.backups.label">
         <source xml:lang="en">Storage Class (Backups)</source>
         <target state="translated">Classe de Armazenamento (Backups)</target>
+      </trans-unit>
+      <trans-unit id="arc.storage-class.backups.warning">
+        <source xml:lang="en">({0})</source>
+        <target state="translated">({0})</target>
+      </trans-unit>
+      <trans-unit id="arc.storage-class.backups.warning.link">
+        <source xml:lang="en">RWX capable</source>
+        <target state="translated">Compatível com RWX</target>
       </trans-unit>
       <trans-unit id="arc.storage-class.data.label">
         <source xml:lang="en">Storage Class (Data)</source>
