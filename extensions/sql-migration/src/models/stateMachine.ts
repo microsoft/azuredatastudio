@@ -206,6 +206,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public _databasesForMigration: string[] = [];
 	public _didUpdateDatabasesForMigration: boolean = false;
+	public _didDatabaseMappingChange: boolean = false;
 	public _vmDbs: string[] = [];
 	public _miDbs: string[] = [];
 	public _sqldbDbs: string[] = [];
@@ -1121,6 +1122,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			this._databasesForAssessment = this.savedInfo.databaseAssessment;
 			this._databasesForMigration = this.savedInfo.databaseList;
 			this._didUpdateDatabasesForMigration = true;
+			this._didDatabaseMappingChange = true;
 			this.refreshDatabaseBackupPage = true;
 
 			switch (this._targetType) {

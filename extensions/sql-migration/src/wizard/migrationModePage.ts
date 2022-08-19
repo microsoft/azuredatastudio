@@ -53,6 +53,10 @@ export class MigrationModePage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
+		if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
+			return;
+		}
+
 		const isSqlDbTarget = this.migrationStateModel._targetType === MigrationTargetType.SQLDB;
 		this._onlineButton.enabled = !isSqlDbTarget;
 		if (isSqlDbTarget) {

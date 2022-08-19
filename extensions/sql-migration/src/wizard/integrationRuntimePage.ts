@@ -65,6 +65,10 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
+		if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
+			return;
+		}
+
 		this._subscription.value = this.migrationStateModel._targetSubscription.name;
 		this._location.value = await getLocationDisplayName(
 			this.migrationStateModel._targetServerInstance.location);

@@ -711,6 +711,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
+		if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
+			return;
+		}
 		if (this.migrationStateModel.refreshDatabaseBackupPage) {
 			this._networkShareButton.checked = this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE;
 			this._blobContainerButton.checked = this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.BLOB_CONTAINER;
@@ -773,7 +776,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				const originalTargetDatabaseNames = this.migrationStateModel._targetDatabaseNames;
 				const originalNetworkShares = this.migrationStateModel._databaseBackup.networkShares || [];
 				const originalBlobs = this.migrationStateModel._databaseBackup.blobs;
-				if (this.migrationStateModel._didUpdateDatabasesForMigration) {
+				if (this.migrationStateModel._didUpdateDatabasesForMigration ||
+					this.migrationStateModel._didDatabaseMappingChange) {
+
 					this.migrationStateModel._targetDatabaseNames = [];
 					this.migrationStateModel._databaseBackup.networkShares = [];
 					this.migrationStateModel._databaseBackup.blobs = [];
@@ -786,7 +791,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					let networkShare = <NetworkShare>{};
 					let blob = <Blob>{};
 
-					if (this.migrationStateModel._didUpdateDatabasesForMigration) {
+					if (this.migrationStateModel._didUpdateDatabasesForMigration ||
+						this.migrationStateModel._didDatabaseMappingChange) {
+
 						const dbIndex = this.migrationStateModel._sourceDatabaseNames?.indexOf(sourceDatabaseName);
 						if (dbIndex > -1) {
 							targetDatabaseName = originalTargetDatabaseNames[dbIndex] ?? targetDatabaseName;
@@ -1009,7 +1016,10 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				await this._blobContainerTargetDatabaseNamesTable.setDataValues(blobContainerTargetData);
 
 				await this.getSubscriptionValues();
+				// clear change tracking flags
 				this.migrationStateModel.refreshDatabaseBackupPage = false;
+				this.migrationStateModel._didUpdateDatabasesForMigration = false;
+				this.migrationStateModel._didDatabaseMappingChange = false;
 			} catch (error) {
 				console.log(error);
 				let errorText = error?.message;

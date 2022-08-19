@@ -76,6 +76,9 @@ export class TargetSelectionPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
+		if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
+			return;
+		}
 		switch (this.migrationStateModel._targetType) {
 			case MigrationTargetType.SQLMI:
 				this._pageDescription.value = constants.AZURE_SQL_TARGET_PAGE_DESCRIPTION(constants.SKU_RECOMMENDATION_MI_CARD_TEXT);
@@ -115,7 +118,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			await this.populateLocationDropdown();
 		}
 
-		if (this.migrationStateModel._didUpdateDatabasesForMigration && isSqlDbTarget) {
+		if (this.migrationStateModel._didUpdateDatabasesForMigration) {
 			await this._azureResourceTable.setDataValues([]);
 			this._initializeSourceTargetDatabaseMap();
 			this._updateConnectionButtonState();
@@ -941,8 +944,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 						this.migrationStateModel._sourceTargetMapping.set(
 							sourceDatabase,
 							targetDatabaseInfo);
-						this.migrationStateModel._didUpdateDatabasesForMigration = true;
-						this.migrationStateModel.refreshDatabaseBackupPage = true;
+						this.migrationStateModel._didDatabaseMappingChange = true;
 					}));
 
 				const targetDatabaseName = this.migrationStateModel._sourceTargetMapping.get(sourceDatabase)?.databaseName ?? '';
