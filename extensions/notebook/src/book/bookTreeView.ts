@@ -151,8 +151,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			if (pinStatusChanged) {
 				// reset to original context value
 				bookTreeItem.contextValue = bookTreeItem.book.type === BookTreeItemType.Markdown ? BookTreeItemType.Markdown : getNotebookType(bookTreeItem.book);
+				// to search for notebook in allNotebooks dictionary we need to format uri
+				const notebookUri = vscode.Uri.file(bookTreeItem.book.contentPath).fsPath;
 				// if notebook is not in current book then it is a standalone notebook
-				let itemOpenedInBookTreeView = this.currentBook?.getNotebook(bookTreeItem.book.contentPath) ?? this.books.find(book => book.bookPath === bookTreeItem.book.contentPath)?.getNotebook(bookTreeItem.book.contentPath);
+				let itemOpenedInBookTreeView = this.currentBook?.getNotebook(notebookUri) ?? this.books.find(book => book.bookPath === bookTreeItem.book.contentPath)?.getNotebook(notebookUri);
 				if (itemOpenedInBookTreeView) {
 					itemOpenedInBookTreeView.contextValue = bookTreeItem.contextValue;
 					this._onDidChangeTreeData.fire(itemOpenedInBookTreeView.parent);
