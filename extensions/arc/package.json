@@ -1402,15 +1402,6 @@
                           "defaultValue": "5432",
                           "min": 1,
                           "max": 65535
-                        },
-                        {
-                          "label": "%arc.postgres.server.group.engine.version%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_ENGINE_VERSION",
-                          "type": "options",
-                          "options": [
-                            "14"
-                          ],
-                          "defaultValue": "14"
                         }
                       ]
                     },
