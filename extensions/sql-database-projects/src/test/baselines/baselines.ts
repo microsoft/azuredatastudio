@@ -14,6 +14,7 @@ export let openProjectFileBaseline: string;
 export let openProjectFileReleaseConfigurationBaseline: string;
 export let openProjectFileUnknownConfigurationBaseline: string;
 export let openProjectFileSingleOutputPathBaseline: string;
+export let openProjectFileMultipleOutputPathBaseline: string;
 export let openDataSourcesBaseline: string;
 export let SSDTProjectFileBaseline: string;
 export let SSDTProjectAfterUpdateBaseline: string;
@@ -50,6 +51,7 @@ export async function loadBaselines() {
 	openProjectFileReleaseConfigurationBaseline = await loadBaseline(baselineFolderPath, 'openSqlProjectReleaseConfigurationBaseline.xml');
 	openProjectFileUnknownConfigurationBaseline = await loadBaseline(baselineFolderPath, 'openSqlProjectUnknownConfigurationBaseline.xml');
 	openProjectFileSingleOutputPathBaseline = await loadBaseline(baselineFolderPath, 'openSqlProjectSingleOutputPathBaseline.xml');
+	openProjectFileMultipleOutputPathBaseline = await loadBaseline(baselineFolderPath, 'openSqlProjectMultipleOutputPathBaseline.xml');
 	openDataSourcesBaseline = await loadBaseline(baselineFolderPath, 'openDataSourcesBaseline.json');
 	SSDTProjectFileBaseline = await loadBaseline(baselineFolderPath, 'SSDTProjectBaseline.xml');
 	SSDTProjectAfterUpdateBaseline = await loadBaseline(baselineFolderPath, 'SSDTProjectAfterUpdateBaseline.xml');

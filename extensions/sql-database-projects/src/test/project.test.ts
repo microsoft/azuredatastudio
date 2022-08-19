@@ -894,6 +894,15 @@ describe('Project: sqlproj content operations', function (): void {
 		should(project.outputPath).equal(path.join(getPlatformSafeFileEntryPath(project.projectFolderPath), getPlatformSafeFileEntryPath('..\\otherFolder')));
 		should(project.dacpacOutputPath).equal(path.join(getPlatformSafeFileEntryPath(project.projectFolderPath), getPlatformSafeFileEntryPath('..\\otherFolder'), `${project.projectFileName}.dacpac`));
 	});
+
+	it('Should use the last OutputPath in the .sqlproj that matches the conditions', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openProjectFileMultipleOutputPathBaseline);
+		const project: Project = await Project.openProject(projFilePath);
+
+		should(project.configuration).equal('Debug');
+		should(project.outputPath).equal(path.join(getPlatformSafeFileEntryPath(project.projectFolderPath), getPlatformSafeFileEntryPath('bin\\other')));
+		should(project.dacpacOutputPath).equal(path.join(getPlatformSafeFileEntryPath(project.projectFolderPath), getPlatformSafeFileEntryPath('bin\\other'), `${project.projectFileName}.dacpac`));
+	});
 });
 
 describe('Project: sdk style project content operations', function (): void {

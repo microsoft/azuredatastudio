@@ -214,6 +214,7 @@ export class Project implements ISqlProject {
 		let outputPath;
 		const outputPathNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.OutputPath);
 		if (outputPathNodes.length > 0) {
+			// go through all the OutputPath nodes and use the last one in the .sqlproj that the condition matches
 			for (let i = 0; i < outputPathNodes.length; i++) {
 				// check if parent has a condition
 				const parent = outputPathNodes[i].parentNode as Element;
@@ -221,12 +222,8 @@ export class Project implements ISqlProject {
 
 				// only handle the default conditions format that are there when creating a sqlproj in VS or ADS
 				if (condition?.toLowerCase().trim() === constants.ConfigurationPlatformCondition(this.configuration.toString(), platform).toLowerCase()) {
-					// if parent's condition matches, use this OutputPath
 					outputPath = outputPathNodes[i].childNodes[0].nodeValue;
-					break;
 				} else if (!condition) {
-					// if parent doesn't have a condition, set OutputPath to this one for now, but keep going through the other OutputPath nodes to see if another one
-					// has a parent with a condition that matches
 					outputPath = outputPathNodes[i].childNodes[0].nodeValue;
 				}
 			}
