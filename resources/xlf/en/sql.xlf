@@ -2615,6 +2615,11 @@
       <source xml:lang="en">Previous Match (Shift+Enter)</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/common/executionPlanInput" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="epCompare.executionPlanEditorName">
+      <source xml:lang="en">ExecutionPlan</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/contrib/extensions/browser/contributionRenders" source-language="en" datatype="plaintext"><body>
     <trans-unit id="insight condition">
       <source xml:lang="en">When</source>
@@ -3184,8 +3189,8 @@ Error: {1}</source>
     <trans-unit id="buttonPreview">
       <source xml:lang="en">Markdown preview toggle - off</source>
     </trans-unit>
-    <trans-unit id="dropdownHeading">
-      <source xml:lang="en">Heading</source>
+    <trans-unit id="headingDropdownLabel">
+      <source xml:lang="en">Text Size</source>
     </trans-unit>
     <trans-unit id="highlight">
       <source xml:lang="en">Highlight</source>

@@ -43,6 +43,10 @@
     <trans-unit id="doNotInstall">
       <source xml:lang="en">Do not install</source>
     </trans-unit>
+    <trans-unit id="dotnetResult">
+      <source xml:lang="en">Adding SQL nuget package:
+{0}</source>
+    </trans-unit>
     <trans-unit id="enterConnectionString">
       <source xml:lang="en">Enter connection string</source>
     </trans-unit>
