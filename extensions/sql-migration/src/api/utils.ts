@@ -209,6 +209,8 @@ export function selectDefaultDropdownValue(dropDown: DropDownComponent, value?: 
 			selectedIndex = -1;
 		}
 		selectDropDownIndex(dropDown, selectedIndex > -1 ? selectedIndex : 0);
+	} else {
+		dropDown.value = undefined;
 	}
 }
 

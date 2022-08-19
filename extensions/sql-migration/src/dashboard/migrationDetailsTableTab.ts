@@ -77,7 +77,9 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 
 	@debounce(500)
 	public async refresh(): Promise<void> {
-		if (this.isRefreshing) {
+		if (this.isRefreshing ||
+			this.refreshLoader === undefined) {
+
 			return;
 		}
 

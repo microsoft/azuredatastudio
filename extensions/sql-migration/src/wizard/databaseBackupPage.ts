@@ -712,8 +712,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		if (this.migrationStateModel.refreshDatabaseBackupPage) {
-			this._networkShareButton.checked = false;
-			this._blobContainerButton.checked = false;
+			this._networkShareButton.checked = this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE;
+			this._blobContainerButton.checked = this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.BLOB_CONTAINER;
 			await this._updatePageControlsVisibility(this.migrationStateModel._databaseBackup.networkContainerType);
 
 			const isSqlDbTarget = this.migrationStateModel._targetType === MigrationTargetType.SQLDB;

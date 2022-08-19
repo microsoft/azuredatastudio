@@ -51,7 +51,10 @@ export class MigrationDetailsBlobContainerTab extends MigrationDetailsTabBase<Mi
 	}
 
 	public async refresh(): Promise<void> {
-		if (this.isRefreshing || this.model?.migration === undefined) {
+		if (this.isRefreshing ||
+			this.refreshLoader === undefined ||
+			this.model?.migration === undefined) {
+
 			return;
 		}
 

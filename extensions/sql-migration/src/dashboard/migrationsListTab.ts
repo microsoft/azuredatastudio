@@ -79,7 +79,9 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 	}
 
 	public async refresh(): Promise<void> {
-		if (this.isRefreshing) {
+		if (this.isRefreshing ||
+			this._refreshLoader === undefined) {
+
 			return;
 		}
 
@@ -178,6 +180,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 				async (e) => {
 					if (e.connectionId === connectionProfile.connectionId) {
 						await this.updateServiceContext(this._serviceContextButton);
+						await this.refresh();
 					}
 				}
 			));

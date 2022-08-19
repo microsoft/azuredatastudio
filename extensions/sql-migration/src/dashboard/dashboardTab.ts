@@ -79,7 +79,7 @@ export class DashboardTab extends TabBase<DashboardTab> {
 	}
 
 	public async refresh(): Promise<void> {
-		if (this.isRefreshing) {
+		if (this.isRefreshing || this._migrationStatusCardLoadingContainer === undefined) {
 			return;
 		}
 
@@ -763,6 +763,7 @@ export class DashboardTab extends TabBase<DashboardTab> {
 				async (e) => {
 					if (e.connectionId === connectionProfile.connectionId) {
 						await this.updateServiceContext(this._serviceContextButton);
+						await this.refresh();
 					}
 				}
 			));

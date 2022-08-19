@@ -69,7 +69,10 @@ export class MigrationDetailsFileShareTab extends MigrationDetailsTabBase<Migrat
 	}
 
 	public async refresh(): Promise<void> {
-		if (this.isRefreshing || this.model?.migration === undefined) {
+		if (this.isRefreshing ||
+			this.refreshLoader === undefined ||
+			this.model?.migration === undefined) {
+
 			return;
 		}
 

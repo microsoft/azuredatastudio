@@ -133,6 +133,8 @@ export class DashboardWidget {
 			let migrationsTabInitialized = false;
 			disposables.push(
 				tabs.onTabChanged(async tabId => {
+					const connectionProfile = await azdata.connection.getCurrentConnection();
+					await this.clearError(connectionProfile.connectionId);
 					if (tabId === MigrationsTabId && !migrationsTabInitialized) {
 						migrationsTabInitialized = true;
 						await migrationsTab.refresh();
