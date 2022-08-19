@@ -223,13 +223,15 @@
 	"cores.limit.greater.than.or.equal.to.requested.cores": "Cores limit must be greater than or equal to requested cores",
 	"requested.memory.less.than.or.equal.to.memory.limit": "Requested memory must be less than or equal to memory limit",
 	"memory.limit.greater.than.or.equal.to.requested.memory": "Memory limit must be greater than or equal to requested memory",
-	"arc.agreement.sql.help.text": "Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}. \n \n By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.",
-	"arc.agreement.sql.help.text.learn.more": "Learn more",
-	"arc.agreement.sql.help.text.learn.more.ariaLabel": "Learn more about Azure Arc enabled Managed Instance",
+	"arc.agreement.sql.help.text": "Azure Arc-enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}. \n \n By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.",
+	"arc.agreement.help.text.learn.more": "Learn more",
+	"arc.agreement.sql.help.text.learn.more.ariaLabel": "Learn more about Azure Arc-enabled Managed Instance",
 	"arc.sql.pitr.retention.description": "Configure retention for point-in-time backups. {0}",
 	"arc.data.controller.help.text": "The Kubernetes cluster must already be arc-enabled with the az connectedk8s connect command. Please use our {0} to learn more.",
 	"arc.data.controller.help.text.documentation.page": "documentation page",
-	"arc.agreement.sql.help.text.terms.of.use": "Terms of use",
-	"arc.agreement.sql.help.text.privacy.policy": "Privacy policy",
-	"arc.agreement.sql.help.text.azure.marketplace.terms": "Azure Marketplace Terms"
+	"arc.agreement.help.text.terms.of.use": "Terms of use",
+	"arc.agreement.help.text.privacy.policy": "Privacy policy",
+	"arc.agreement.help.text.azure.marketplace.terms": "Azure Marketplace Terms",
+	"arc.agreement.postgres.help.text": "Azure Arc-enabled PostgreSQL is one of the database engines available as part of Azure Arc-enabled data services and it can be deployed on the infrastructure of your choice. {0}. \n \n By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.",
+	"arc.agreement.postgres.help.text.learn.more.ariaLabel": "Learn more about Azure Arc-enabled PostgreSQL"
 }

@@ -1253,7 +1253,7 @@
                           "fieldHeight": "10px",
                           "links": [
                             {
-                              "text": "%arc.agreement.sql.help.text.learn.more%",
+                              "text": "%arc.agreement.help.text.learn.more%",
                               "url": "https://docs.microsoft.com/azure/azure-arc/data/point-in-time-restore"
                             }
                           ]
@@ -1290,22 +1290,22 @@
             "template": "%arc.agreement.sql.help.text%",
             "links": [
               {
-                "text": "%arc.agreement.sql.help.text.learn.more%",
+                "text": "%arc.agreement.help.text.learn.more%",
                 "accessibilityInformation": {
                   "label": "%arc.agreement.sql.help.text.learn.more.ariaLabel%"
                 },
                 "url": "https://go.microsoft.com/fwlink/?linkid=2141849"
               },
               {
-                "text": "%arc.agreement.sql.help.text.azure.marketplace.terms%",
+                "text": "%arc.agreement.help.text.azure.marketplace.terms%",
                 "url": "https://go.microsoft.com/fwlink/?linkid=2045624"
               },
               {
-                "text": "%arc.agreement.sql.help.text.terms.of.use%",
+                "text": "%arc.agreement.help.text.terms.of.use%",
                 "url": "https://go.microsoft.com/fwlink/?linkid=2045708"
               },
               {
-                "text": "%arc.agreement.sql.help.text.privacy.policy%",
+                "text": "%arc.agreement.help.text.privacy.policy%",
                 "url": "https://go.microsoft.com/fwlink/?linkid=512132"
               }
             ],
@@ -1540,20 +1540,31 @@
             "when": "true"
           }
         ],
-        "agreements": [
+        "helpTexts": [
           {
-            "template": "%arc.agreement%",
+            "template": "%arc.agreement.postgres.help.text%",
             "links": [
               {
-                "text": "%microsoft.agreement.privacy.statement%",
-                "url": "https://go.microsoft.com/fwlink/?LinkId=853010"
+                "text": "%arc.agreement.help.text.learn.more%",
+                "accessibilityInformation": {
+                  "label": "%arc.agreement.postgres.help.text.learn.more.ariaLabel%"
+                },
+                "url": "https://docs.microsoft.com/azure/azure-arc/data/what-is-azure-arc-enabled-postgres-hyperscale"
               },
               {
-                "text": "%arc.agreement.postgres.terms.conditions%",
+                "text": "%arc.agreement.help.text.azure.marketplace.terms%",
+                "url": "https://go.microsoft.com/fwlink/?linkid=2045624"
+              },
+              {
+                "text": "%arc.agreement.help.text.terms.of.use%",
                 "url": "https://go.microsoft.com/fwlink/?linkid=2045708"
+              },
+              {
+                "text": "%arc.agreement.help.text.privacy.policy%",
+                "url": "https://go.microsoft.com/fwlink/?linkid=512132"
               }
             ],
-            "when": "true"
+            "when": true
           }
         ]
       }
