@@ -118,6 +118,8 @@ export class ServerGroupDialog extends Modal {
 		DOM.append(body, DOM.$('.dialog-label')).innerText = groupColorLabel;
 
 		this._serverGroupContainer = DOM.append(body, DOM.$('.group-color-options'));
+		this._serverGroupContainer.setAttribute('role', 'radiogroup');
+		this._serverGroupContainer.setAttribute('aria-label', groupColorLabel);
 		this.fillGroupColors(this._serverGroupContainer);
 
 		DOM.addStandardDisposableListener(this._serverGroupContainer, DOM.EventType.KEY_DOWN, (event: StandardKeyboardEvent) => {
@@ -193,8 +195,7 @@ export class ServerGroupDialog extends Modal {
 			const colorBox = new Colorbox(container, {
 				name: 'server-group-color',
 				class: ['server-group-color'],
-				label: localize('serverGroup.colorValue', "Group Color: {0}", color),
-				colorName: color
+				label: color
 			});
 
 			this._register(colorBox.onSelect((viaKeyboard) => {

@@ -92,6 +92,8 @@ export class GetAzureRecommendationDialog {
 
 		const buttonGroup = 'dataSourceContainer';
 		const radioButtonContainer = _view.modelBuilder.flexContainer().withProps({
+			ariaLabel: constants.AZURE_RECOMMENDATION_CHOOSE_METHOD,
+			ariaRole: 'radiogroup',
 			CSSStyles: {
 				'flex-direction': 'row',
 				'width': 'fit-content',
