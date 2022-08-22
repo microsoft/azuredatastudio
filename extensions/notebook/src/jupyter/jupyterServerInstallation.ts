@@ -716,15 +716,16 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	}
 
 	private static async getCondaExePath(pythonInstallationPath: string): Promise<string> {
-		let condaPath = path.join(pythonInstallationPath, process.platform === constants.winPlatform ? 'Scripts\\conda.exe' : 'bin/conda');
+		let exeName = process.platform === constants.winPlatform ? 'Scripts\\conda.exe' : 'bin/conda';
+		let condaPath = path.join(pythonInstallationPath, exeName);
 		let condaExists = await fs.pathExists(condaPath);
 		// If conda was not found, then check if we're using a virtual environment
 		if (!condaExists) {
 			let pathParts = pythonInstallationPath.split(path.sep);
-			if (pathParts.length > 1 && pathParts[pathParts.length - 1] === 'envs') {
-				// A virtual environment python executable is a folder down from the root folder
-				// Example: Anaconda3\envs\python.exe -> Anaconda3\conda.exe
-				condaPath = path.join(pythonInstallationPath, '..', process.platform === constants.winPlatform ? 'conda.exe' : 'conda');
+			if (pathParts.length > 1 && pathParts[pathParts.length - 2] === 'envs') {
+				// A virtual environment python executable is 2 folders down from the root folder
+				// Example: Anaconda3\envs\myEnv\python.exe -> Anaconda3\conda.exe
+				condaPath = path.join(pythonInstallationPath, '..', '..', exeName);
 				condaExists = await fs.pathExists(condaPath);
 			}
 			if (!condaExists) {
