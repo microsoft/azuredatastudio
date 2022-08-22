@@ -7,7 +7,7 @@ resources:
 jobs:
 - job: LinuxWeb
   pool:
-    vmImage: 'Ubuntu-18.04'
+    vmImage: 'Ubuntu-20.04'
   container: linux-x64
   variables:
     VSCODE_ARCH: x64
@@ -17,7 +17,7 @@ jobs:
 
 - job: Docker
   pool:
-    vmImage: 'Ubuntu-18.04'
+    vmImage: 'Ubuntu-20.04'
   container: linux-x64
   dependsOn:
   - LinuxWeb

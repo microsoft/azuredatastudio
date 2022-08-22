@@ -10,11 +10,11 @@ import * as loc from '../constants/strings';
 import { convertByteSizeToReadableUnit, convertIsoTimeToLocalTime, getSqlServerName, getMigrationStatusImage } from '../api/utils';
 import { logError, TelemetryViews } from '../telemtery';
 import * as styles from '../constants/styles';
-import { canCancelMigration, canCutoverMigration, canRetryMigration, getMigrationStatus, getMigrationTargetTypeEnum, isOfflineMigation } from '../constants/helper';
+import { canCancelMigration, canCutoverMigration, canRetryMigration, getMigrationStatusString, getMigrationTargetTypeEnum, isOfflineMigation } from '../constants/helper';
 import { getResourceName } from '../api/azure';
 import { EmptySettingValue } from './tabBase';
 import { InfoFieldSchema, infoFieldWidth, MigrationDetailsTabBase, MigrationTargetTypeName } from './migrationDetailsTabBase';
-import { DashboardStatusBar } from './sqlServerDashboard';
+import { DashboardStatusBar } from './DashboardStatusBar';
 
 const MigrationDetailsFileShareTabId = 'MigrationDetailsFileShareTab';
 
@@ -43,7 +43,6 @@ export class MigrationDetailsFileShareTab extends MigrationDetailsTabBase<Migrat
 	private _lastAppliedBackupInfoField!: InfoFieldSchema;
 	private _lastAppliedBackupTakenOnInfoField!: InfoFieldSchema;
 	private _currentRestoringFileInfoField!: InfoFieldSchema;
-
 	private _fileCount!: azdata.TextComponent;
 	private _fileTable!: azdata.TableComponent;
 	private _emptyTableFill!: azdata.FlexContainer;
@@ -56,12 +55,12 @@ export class MigrationDetailsFileShareTab extends MigrationDetailsTabBase<Migrat
 	public async create(
 		context: vscode.ExtensionContext,
 		view: azdata.ModelView,
-		onClosedCallback: () => Promise<void>,
+		openMigrationsListFcn: () => Promise<void>,
 		statusBar: DashboardStatusBar): Promise<MigrationDetailsFileShareTab> {
 
 		this.view = view;
 		this.context = context;
-		this.onClosedCallback = onClosedCallback;
+		this.openMigrationsListFcn = openMigrationsListFcn;
 		this.statusBar = statusBar;
 
 		await this.initialize(this.view);
@@ -70,126 +69,128 @@ export class MigrationDetailsFileShareTab extends MigrationDetailsTabBase<Migrat
 	}
 
 	public async refresh(): Promise<void> {
-		if (this.isRefreshing || this.model?.migration === undefined) {
+		if (this.isRefreshing ||
+			this.refreshLoader === undefined ||
+			this.model?.migration === undefined) {
+
 			return;
 		}
 
-		this.isRefreshing = true;
-		this.refreshButton.enabled = false;
-		this.refreshLoader.loading = true;
-		await this.statusBar.clearError();
-		await this._fileTable.updateProperty('data', []);
-
 		try {
+			this.isRefreshing = true;
+			this.refreshLoader.loading = true;
+			await this.statusBar.clearError();
+			await this._fileTable.updateProperty('data', []);
+
 			await this.model.fetchStatus();
+
+			const migration = this.model?.migration;
+			await this.cutoverButton.updateCssStyles(
+				{ 'display': isOfflineMigation(migration) ? 'none' : 'block' });
+
+			await this.showMigrationErrors(migration);
+
+			const sqlServerName = migration.properties.sourceServerName;
+			const sourceDatabaseName = migration.properties.sourceDatabaseName;
+			const sqlServerInfo = await azdata.connection.getServerInfo((await azdata.connection.getCurrentConnection()).connectionId);
+			const versionName = getSqlServerName(sqlServerInfo.serverMajorVersion!);
+			const sqlServerVersion = versionName ? versionName : sqlServerInfo.serverVersion;
+			const targetDatabaseName = migration.name;
+			const targetServerName = getResourceName(migration.properties.scope);
+
+			const targetType = getMigrationTargetTypeEnum(migration);
+			const targetServerVersion = MigrationTargetTypeName[targetType ?? ''];
+
+			let lastAppliedSSN: string;
+			let lastAppliedBackupFileTakenOn: string;
+
+			const tableData: ActiveBackupFileSchema[] = [];
+			migration.properties.migrationStatusDetails?.activeBackupSets?.forEach(
+				(activeBackupSet) => {
+					tableData.push(
+						...activeBackupSet.listOfBackupFiles.map(f => {
+							return {
+								fileName: f.fileName,
+								type: activeBackupSet.backupType,
+								status: f.status,
+								dataUploaded: `${convertByteSizeToReadableUnit(f.dataWritten)} / ${convertByteSizeToReadableUnit(f.totalSize)}`,
+								copyThroughput: (f.copyThroughput) ? (f.copyThroughput / 1024).toFixed(2) : EmptySettingValue,
+								backupStartTime: activeBackupSet.backupStartDate,
+								firstLSN: activeBackupSet.firstLSN,
+								lastLSN: activeBackupSet.lastLSN
+							};
+						})
+					);
+
+					if (activeBackupSet.listOfBackupFiles[0].fileName === migration.properties.migrationStatusDetails?.lastRestoredFilename) {
+						lastAppliedSSN = activeBackupSet.lastLSN;
+						lastAppliedBackupFileTakenOn = activeBackupSet.backupFinishDate;
+					}
+				});
+
+			this.databaseLabel.value = sourceDatabaseName;
+			this._sourceDatabaseInfoField.text.value = sourceDatabaseName;
+			this._sourceDetailsInfoField.text.value = sqlServerName;
+			this._sourceVersionInfoField.text.value = `${sqlServerVersion} ${sqlServerInfo.serverVersion}`;
+
+			this._targetDatabaseInfoField.text.value = targetDatabaseName;
+			this._targetServerInfoField.text.value = targetServerName;
+			this._targetVersionInfoField.text.value = targetServerVersion;
+
+			this._migrationStatusInfoField.text.value = getMigrationStatusString(migration);
+			this._migrationStatusInfoField.icon!.iconPath = getMigrationStatusImage(migration);
+
+			this._fullBackupFileOnInfoField.text.value = migration?.properties?.migrationStatusDetails?.fullBackupSetInfo?.listOfBackupFiles[0]?.fileName! ?? EmptySettingValue;
+
+			const fileShare = migration.properties.backupConfiguration?.sourceLocation?.fileShare;
+			const backupLocation = fileShare?.path! ?? EmptySettingValue;
+			this._backupLocationInfoField.text.value = backupLocation ?? EmptySettingValue;
+
+			this._lastLSNInfoField.text.value = lastAppliedSSN! ?? EmptySettingValue;
+			this._lastAppliedBackupInfoField.text.value = migration.properties.migrationStatusDetails?.lastRestoredFilename ?? EmptySettingValue;
+			this._lastAppliedBackupTakenOnInfoField.text.value = lastAppliedBackupFileTakenOn! ? convertIsoTimeToLocalTime(lastAppliedBackupFileTakenOn).toLocaleString() : EmptySettingValue;
+			this._currentRestoringFileInfoField.text.value = this.getMigrationCurrentlyRestoringFile(migration) ?? EmptySettingValue;
+
+			await this._fileCount.updateCssStyles({ ...styles.SECTION_HEADER_CSS, display: 'inline' });
+
+			this._fileCount.value = loc.ACTIVE_BACKUP_FILES_ITEMS(tableData.length);
+			if (tableData.length === 0) {
+				await this._emptyTableFill.updateCssStyles({ 'display': 'flex' });
+				this._fileTable.height = '50px';
+				await this._fileTable.updateProperty('data', []);
+			} else {
+				await this._emptyTableFill.updateCssStyles({ 'display': 'none' });
+				this._fileTable.height = '300px';
+
+				// Sorting files in descending order of backupStartTime
+				tableData.sort((file1, file2) => new Date(file1.backupStartTime) > new Date(file2.backupStartTime) ? - 1 : 1);
+			}
+
+			const data = tableData.map(row => [
+				row.fileName,
+				row.type,
+				row.status,
+				row.dataUploaded,
+				row.copyThroughput,
+				convertIsoTimeToLocalTime(row.backupStartTime).toLocaleString(),
+				row.firstLSN,
+				row.lastLSN
+			]) || [];
+
+			await this._fileTable.updateProperty('data', data);
+
+			this.cutoverButton.enabled = canCutoverMigration(migration);
+			this.cancelButton.enabled = canCancelMigration(migration);
+			this.retryButton.enabled = canRetryMigration(migration);
 		} catch (e) {
 			await this.statusBar.showError(
 				loc.MIGRATION_STATUS_REFRESH_ERROR,
 				loc.MIGRATION_STATUS_REFRESH_ERROR,
 				e.message);
+		} finally {
+			this.refreshLoader.loading = false;
+			this.isRefreshing = false;
 		}
-
-		const migration = this.model?.migration;
-		await this.cutoverButton.updateCssStyles(
-			{ 'display': isOfflineMigation(migration) ? 'none' : 'block' });
-
-		await this.showMigrationErrors(migration);
-
-		const sqlServerName = migration.properties.sourceServerName;
-		const sourceDatabaseName = migration.properties.sourceDatabaseName;
-		const sqlServerInfo = await azdata.connection.getServerInfo((await azdata.connection.getCurrentConnection()).connectionId);
-		const versionName = getSqlServerName(sqlServerInfo.serverMajorVersion!);
-		const sqlServerVersion = versionName ? versionName : sqlServerInfo.serverVersion;
-		const targetDatabaseName = migration.name;
-		const targetServerName = getResourceName(migration.properties.scope);
-
-		const targetType = getMigrationTargetTypeEnum(migration);
-		const targetServerVersion = MigrationTargetTypeName[targetType ?? ''];
-
-		let lastAppliedSSN: string;
-		let lastAppliedBackupFileTakenOn: string;
-
-		const tableData: ActiveBackupFileSchema[] = [];
-		migration.properties.migrationStatusDetails?.activeBackupSets?.forEach(
-			(activeBackupSet) => {
-				tableData.push(
-					...activeBackupSet.listOfBackupFiles.map(f => {
-						return {
-							fileName: f.fileName,
-							type: activeBackupSet.backupType,
-							status: f.status,
-							dataUploaded: `${convertByteSizeToReadableUnit(f.dataWritten)} / ${convertByteSizeToReadableUnit(f.totalSize)}`,
-							copyThroughput: (f.copyThroughput) ? (f.copyThroughput / 1024).toFixed(2) : EmptySettingValue,
-							backupStartTime: activeBackupSet.backupStartDate,
-							firstLSN: activeBackupSet.firstLSN,
-							lastLSN: activeBackupSet.lastLSN
-						};
-					})
-				);
-
-				if (activeBackupSet.listOfBackupFiles[0].fileName === migration.properties.migrationStatusDetails?.lastRestoredFilename) {
-					lastAppliedSSN = activeBackupSet.lastLSN;
-					lastAppliedBackupFileTakenOn = activeBackupSet.backupFinishDate;
-				}
-			});
-
-		this.databaseLabel.value = sourceDatabaseName;
-		this._sourceDatabaseInfoField.text.value = sourceDatabaseName;
-		this._sourceDetailsInfoField.text.value = sqlServerName;
-		this._sourceVersionInfoField.text.value = `${sqlServerVersion} ${sqlServerInfo.serverVersion}`;
-
-		this._targetDatabaseInfoField.text.value = targetDatabaseName;
-		this._targetServerInfoField.text.value = targetServerName;
-		this._targetVersionInfoField.text.value = targetServerVersion;
-
-		this._migrationStatusInfoField.text.value = getMigrationStatus(migration) ?? EmptySettingValue;
-		this._migrationStatusInfoField.icon!.iconPath = getMigrationStatusImage(migration);
-
-		this._fullBackupFileOnInfoField.text.value = migration?.properties?.migrationStatusDetails?.fullBackupSetInfo?.listOfBackupFiles[0]?.fileName! ?? EmptySettingValue;
-
-		const fileShare = migration.properties.backupConfiguration?.sourceLocation?.fileShare;
-		const backupLocation = fileShare?.path! ?? EmptySettingValue;
-		this._backupLocationInfoField.text.value = backupLocation ?? EmptySettingValue;
-
-		this._lastLSNInfoField.text.value = lastAppliedSSN! ?? EmptySettingValue;
-		this._lastAppliedBackupInfoField.text.value = migration.properties.migrationStatusDetails?.lastRestoredFilename ?? EmptySettingValue;
-		this._lastAppliedBackupTakenOnInfoField.text.value = lastAppliedBackupFileTakenOn! ? convertIsoTimeToLocalTime(lastAppliedBackupFileTakenOn).toLocaleString() : EmptySettingValue;
-		this._currentRestoringFileInfoField.text.value = this.getMigrationCurrentlyRestoringFile(migration) ?? EmptySettingValue;
-
-		await this._fileCount.updateCssStyles({ ...styles.SECTION_HEADER_CSS, display: 'inline' });
-
-		this._fileCount.value = loc.ACTIVE_BACKUP_FILES_ITEMS(tableData.length);
-		if (tableData.length === 0) {
-			await this._emptyTableFill.updateCssStyles({ 'display': 'flex' });
-			this._fileTable.height = '50px';
-			await this._fileTable.updateProperty('data', []);
-		} else {
-			await this._emptyTableFill.updateCssStyles({ 'display': 'none' });
-			this._fileTable.height = '300px';
-
-			// Sorting files in descending order of backupStartTime
-			tableData.sort((file1, file2) => new Date(file1.backupStartTime) > new Date(file2.backupStartTime) ? - 1 : 1);
-		}
-
-		const data = tableData.map(row => [
-			row.fileName,
-			row.type,
-			row.status,
-			row.dataUploaded,
-			row.copyThroughput,
-			convertIsoTimeToLocalTime(row.backupStartTime).toLocaleString(),
-			row.firstLSN,
-			row.lastLSN
-		]) || [];
-
-		await this._fileTable.updateProperty('data', data);
-
-		this.cutoverButton.enabled = canCutoverMigration(migration);
-		this.cancelButton.enabled = canCancelMigration(migration);
-		this.retryButton.enabled = canRetryMigration(migration);
-		this.isRefreshing = false;
-		this.refreshLoader.loading = false;
-		this.refreshButton.enabled = true;
 	}
 
 	protected async initialize(view: azdata.ModelView): Promise<void> {

@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import { DatabaseMigration } from '../api/azure';
-import { MigrationStatus } from '../models/migrationLocalStorage';
+import { DefaultSettingValue } from '../api/utils';
 import { FileStorageType, MigrationMode, MigrationTargetType } from '../models/stateMachine';
 import * as loc from './strings';
 
@@ -143,6 +143,11 @@ export function getMigrationStatus(migration: DatabaseMigration | undefined): st
 		?? migration?.properties.provisioningState;
 }
 
+export function getMigrationStatusString(migration: DatabaseMigration | undefined): string {
+	const migrationStatus = getMigrationStatus(migration) ?? DefaultSettingValue;
+	return loc.StatusLookup[migrationStatus] ?? migrationStatus;
+}
+
 export function hasMigrationOperationId(migration: DatabaseMigration | undefined): boolean {
 	const migrationId = migration?.id ?? '';
 	const migationOperationId = migration?.properties?.migrationOperationId ?? '';
@@ -153,41 +158,41 @@ export function hasMigrationOperationId(migration: DatabaseMigration | undefined
 export function canCancelMigration(migration: DatabaseMigration | undefined): boolean {
 	const status = getMigrationStatus(migration);
 	return hasMigrationOperationId(migration)
-		&& (status === MigrationStatus.InProgress ||
-			status === MigrationStatus.Retriable ||
-			status === MigrationStatus.Creating);
+		&& (status === loc.MigrationStatus.InProgress ||
+			status === loc.MigrationStatus.Retriable ||
+			status === loc.MigrationStatus.Creating);
 }
 
 export function canDeleteMigration(migration: DatabaseMigration | undefined): boolean {
 	const status = getMigrationStatus(migration);
-	return status === MigrationStatus.Canceled
-		|| status === MigrationStatus.Failed
-		|| status === MigrationStatus.Retriable
-		|| status === MigrationStatus.Succeeded;
+	return status === loc.MigrationStatus.Canceled
+		|| status === loc.MigrationStatus.Failed
+		|| status === loc.MigrationStatus.Retriable
+		|| status === loc.MigrationStatus.Succeeded;
 }
 
 export function canRetryMigration(migration: DatabaseMigration | undefined): boolean {
 	const status = getMigrationStatus(migration);
-	return status === MigrationStatus.Canceled
-		|| status === MigrationStatus.Retriable
-		|| status === MigrationStatus.Failed
-		|| status === MigrationStatus.Succeeded;
+	return status === loc.MigrationStatus.Canceled
+		|| status === loc.MigrationStatus.Retriable
+		|| status === loc.MigrationStatus.Failed
+		|| status === loc.MigrationStatus.Succeeded;
 }
 
 export function canCutoverMigration(migration: DatabaseMigration | undefined): boolean {
 	const status = getMigrationStatus(migration);
 	return hasMigrationOperationId(migration)
-		&& status === MigrationStatus.InProgress
+		&& status === loc.MigrationStatus.InProgress
 		&& isOnlineMigration(migration)
 		&& isFullBackupRestored(migration);
 }
 
 export function isActiveMigration(migration: DatabaseMigration | undefined): boolean {
 	const status = getMigrationStatus(migration);
-	return status === MigrationStatus.Completing
-		|| status === MigrationStatus.Retriable
-		|| status === MigrationStatus.Creating
-		|| status === MigrationStatus.InProgress;
+	return status === loc.MigrationStatus.Completing
+		|| status === loc.MigrationStatus.Retriable
+		|| status === loc.MigrationStatus.Creating
+		|| status === loc.MigrationStatus.InProgress;
 }
 
 export function isFullBackupRestored(migration: DatabaseMigration | undefined): boolean {
