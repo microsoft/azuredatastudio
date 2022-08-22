@@ -19,6 +19,7 @@ import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError 
 import * as styles from '../constants/styles';
 import { MigrationLocalStorage, MigrationServiceContext } from '../models/migrationLocalStorage';
 import { azureResource } from 'azurecore';
+import { ServiceContextChangeEvent } from '../dashboard/tabBase';
 
 export const WIZARD_INPUT_COMPONENT_WIDTH = '600px';
 export class WizardController {
@@ -27,7 +28,7 @@ export class WizardController {
 	constructor(
 		private readonly extensionContext: vscode.ExtensionContext,
 		private readonly _model: MigrationStateModel,
-		private readonly _onClosedCallback: () => Promise<void>) {
+		private readonly _serviceContextChangedEvent: vscode.EventEmitter<ServiceContextChangeEvent>) {
 	}
 
 	public async openWizard(connectionId: string): Promise<void> {
@@ -40,7 +41,11 @@ export class WizardController {
 
 	private async createWizard(stateModel: MigrationStateModel): Promise<void> {
 		const serverName = (await stateModel.getSourceConnectionProfile()).serverName;
-		this._wizardObject = azdata.window.createWizard(loc.WIZARD_TITLE(serverName), 'MigrationWizard', 'wide');
+		this._wizardObject = azdata.window.createWizard(
+			loc.WIZARD_TITLE(serverName),
+			'MigrationWizard',
+			'wide');
+
 		this._wizardObject.generateScriptButton.enabled = false;
 		this._wizardObject.generateScriptButton.hidden = true;
 		const saveAndCloseButton = azdata.window.createButton(loc.SAVE_AND_CLOSE);
@@ -60,8 +65,7 @@ export class WizardController {
 			migrationModePage,
 			databaseBackupPage,
 			integrationRuntimePage,
-			summaryPage
-		];
+			summaryPage];
 
 		this._wizardObject.pages = pages.map(p => p.getwizardPage());
 
@@ -82,20 +86,26 @@ export class WizardController {
 
 			// if the user selected network share and selected save & close afterwards, it should always return to the database backup page so that
 			// the user can input their password again
-			if (this._model.savedInfo.closedPage >= Page.DatabaseBackup && this._model.savedInfo.networkContainerType === NetworkContainerType.NETWORK_SHARE) {
+			if (this._model.savedInfo.closedPage >= Page.DatabaseBackup &&
+				this._model.savedInfo.networkContainerType === NetworkContainerType.NETWORK_SHARE) {
 				wizardSetupPromises.push(this._wizardObject.setCurrentPage(Page.DatabaseBackup));
 			} else {
 				wizardSetupPromises.push(this._wizardObject.setCurrentPage(this._model.savedInfo.closedPage));
 			}
 		}
 
-		this._model.extensionContext.subscriptions.push(this._wizardObject.onPageChanged(async (pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
-			const newPage = pageChangeInfo.newPage;
-			const lastPage = pageChangeInfo.lastPage;
-			this.sendPageButtonClickEvent(pageChangeInfo).catch(e => logError(TelemetryViews.MigrationWizardController, 'ErrorSendingPageButtonClick', e));
-			await pages[lastPage]?.onPageLeave(pageChangeInfo);
-			await pages[newPage]?.onPageEnter(pageChangeInfo);
-		}));
+		this._model.extensionContext.subscriptions.push(
+			this._wizardObject.onPageChanged(
+				async (pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
+					const newPage = pageChangeInfo.newPage;
+					const lastPage = pageChangeInfo.lastPage;
+					this.sendPageButtonClickEvent(pageChangeInfo)
+						.catch(e => logError(
+							TelemetryViews.MigrationWizardController,
+							'ErrorSendingPageButtonClick', e));
+					await pages[lastPage]?.onPageLeave(pageChangeInfo);
+					await pages[newPage]?.onPageEnter(pageChangeInfo);
+				}));
 
 		this._wizardObject.registerNavigationValidator(async validator => {
 			// const lastPage = validator.lastPage;
@@ -110,50 +120,59 @@ export class WizardController {
 		await Promise.all(wizardSetupPromises);
 		this._model.extensionContext.subscriptions.push(
 			this._wizardObject.onPageChanged(
-				async (pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
-					await pages[0].onPageEnter(pageChangeInfo);
-				}));
-
-		this._disposables.push(saveAndCloseButton.onClick(async () => {
-			await stateModel.saveInfo(serverName, this._wizardObject.currentPage);
-			await this._wizardObject.close();
-
-			if (stateModel.performanceCollectionInProgress()) {
-				void vscode.window.showInformationMessage(loc.SAVE_AND_CLOSE_POPUP);
-			}
-		}));
-
-		this._disposables.push(this._wizardObject.cancelButton.onClick(e => {
-			sendSqlMigrationActionEvent(
-				TelemetryViews.SqlMigrationWizard,
-				TelemetryAction.PageButtonClick,
-				{
-					...this.getTelemetryProps(),
-					'buttonPressed': TelemetryAction.Cancel,
-					'pageTitle': this._wizardObject.pages[this._wizardObject.currentPage].title
-				}, {});
-		}));
-
-		this._wizardObject.doneButton.label = loc.START_MIGRATION_TEXT;
+				async (pageChangeInfo: azdata.window.WizardPageChangeInfo) =>
+					await pages[0].onPageEnter(pageChangeInfo)));
 
 		this._disposables.push(
-			this._wizardObject.doneButton.onClick(async (e) => {
-				await stateModel.startMigration();
-				await this.updateServiceContext(stateModel);
-				await this._onClosedCallback();
+			saveAndCloseButton.onClick(async () => {
+				await stateModel.saveInfo(serverName, this._wizardObject.currentPage);
+				await this._wizardObject.close();
 
+				if (stateModel.performanceCollectionInProgress()) {
+					void vscode.window.showInformationMessage(loc.SAVE_AND_CLOSE_POPUP);
+				}
+			}));
+
+		this._disposables.push(
+			this._wizardObject.cancelButton.onClick(e => {
 				sendSqlMigrationActionEvent(
 					TelemetryViews.SqlMigrationWizard,
 					TelemetryAction.PageButtonClick,
 					{
 						...this.getTelemetryProps(),
-						'buttonPressed': TelemetryAction.Done,
+						'buttonPressed': TelemetryAction.Cancel,
 						'pageTitle': this._wizardObject.pages[this._wizardObject.currentPage].title
-					}, {});
+					},
+					{});
+			}));
+
+		this._wizardObject.doneButton.label = loc.START_MIGRATION_TEXT;
+
+		this._disposables.push(
+			this._wizardObject.doneButton.onClick(async (e) => {
+				try {
+					await stateModel.startMigration();
+					await this.updateServiceContext(stateModel, this._serviceContextChangedEvent);
+				} catch (e) {
+					logError(TelemetryViews.MigrationWizardController, 'StartMigrationFailed', e);
+				} finally {
+					sendSqlMigrationActionEvent(
+						TelemetryViews.SqlMigrationWizard,
+						TelemetryAction.PageButtonClick,
+						{
+							...this.getTelemetryProps(),
+							'buttonPressed': TelemetryAction.Done,
+							'pageTitle': this._wizardObject.pages[this._wizardObject.currentPage].title
+						},
+						{});
+				}
 			}));
 	}
 
-	private async updateServiceContext(stateModel: MigrationStateModel): Promise<void> {
+	private async updateServiceContext(
+		stateModel: MigrationStateModel,
+		serviceContextChangedEvent: vscode.EventEmitter<ServiceContextChangeEvent>): Promise<void> {
+
 		const resourceGroup = this._getResourceGroupByName(
 			stateModel._resourceGroups,
 			stateModel._sqlMigrationService?.properties.resourceGroup);
@@ -174,18 +193,28 @@ export class WizardController {
 				location: location,
 				resourceGroup: resourceGroup,
 				migrationService: stateModel._sqlMigrationService,
-			});
+			},
+			serviceContextChangedEvent);
 	}
 
-	private _getResourceGroupByName(resourceGroups: azureResource.AzureResourceResourceGroup[], displayName?: string): azureResource.AzureResourceResourceGroup | undefined {
+	private _getResourceGroupByName(
+		resourceGroups: azureResource.AzureResourceResourceGroup[],
+		displayName?: string): azureResource.AzureResourceResourceGroup | undefined {
+
 		return resourceGroups.find(rg => rg.name === displayName);
 	}
 
-	private _getLocationByValue(locations: azureResource.AzureLocation[], name?: string): azureResource.AzureLocation | undefined {
+	private _getLocationByValue(
+		locations: azureResource.AzureLocation[],
+		name?: string): azureResource.AzureLocation | undefined {
+
 		return locations.find(loc => loc.name === name);
 	}
 
-	private _getSubscriptionFromResourceId(subscriptions: azureResource.AzureResourceSubscription[], resourceId?: string): azureResource.AzureResourceSubscription | undefined {
+	private _getSubscriptionFromResourceId(
+		subscriptions: azureResource.AzureResourceSubscription[],
+		resourceId?: string): azureResource.AzureResourceSubscription | undefined {
+
 		let parts = resourceId?.split('/subscriptions/');
 		if (parts?.length && parts?.length > 1) {
 			parts = parts[1]?.split('/resourcegroups/');
@@ -198,7 +227,9 @@ export class WizardController {
 	}
 
 	private async sendPageButtonClickEvent(pageChangeInfo: azdata.window.WizardPageChangeInfo) {
-		const buttonPressed = pageChangeInfo.newPage > pageChangeInfo.lastPage ? TelemetryAction.Next : TelemetryAction.Prev;
+		const buttonPressed = pageChangeInfo.newPage > pageChangeInfo.lastPage
+			? TelemetryAction.Next
+			: TelemetryAction.Prev;
 		const pageTitle = this._wizardObject.pages[pageChangeInfo.lastPage]?.title;
 		sendSqlMigrationActionEvent(
 			TelemetryViews.SqlMigrationWizard,
@@ -207,7 +238,8 @@ export class WizardController {
 				...this.getTelemetryProps(),
 				'buttonPressed': buttonPressed,
 				'pageTitle': pageTitle
-			}, {});
+			},
+			{});
 	}
 
 	private getTelemetryProps() {
@@ -221,33 +253,38 @@ export class WizardController {
 	}
 }
 
-export function createInformationRow(view: azdata.ModelView, label: string, value: string): azdata.FlexContainer {
+export function createInformationRow(
+	view: azdata.ModelView,
+	label: string,
+	value: string): azdata.FlexContainer {
+
 	return view.modelBuilder.flexContainer()
-		.withLayout(
-			{
-				flexFlow: 'row',
-				alignItems: 'center',
-			})
-		.withItems(
-			[
-				createLabelTextComponent(view, label,
-					{
-						...styles.BODY_CSS,
-						'margin': '4px 0px',
-						'width': '300px',
-					}
-				),
-				createTextComponent(view, value,
-					{
-						...styles.BODY_CSS,
-						'margin': '4px 0px',
-						'width': '300px',
-					}
-				)
-			]).component();
+		.withLayout({ flexFlow: 'row', alignItems: 'center', })
+		.withItems([
+			createLabelTextComponent(
+				view,
+				label,
+				{
+					...styles.BODY_CSS,
+					'margin': '4px 0px',
+					'width': '300px',
+				}),
+			createTextComponent(
+				view,
+				value,
+				{
+					...styles.BODY_CSS,
+					'margin': '4px 0px',
+					'width': '300px',
+				})])
+		.component();
 }
 
-export async function createHeadingTextComponent(view: azdata.ModelView, value: string, firstElement: boolean = false): Promise<azdata.TextComponent> {
+export async function createHeadingTextComponent(
+	view: azdata.ModelView,
+	value: string,
+	firstElement: boolean = false): Promise<azdata.TextComponent> {
+
 	const component = createTextComponent(view, value);
 	await component.updateCssStyles({
 		...styles.LABEL_CSS,
@@ -256,14 +293,20 @@ export async function createHeadingTextComponent(view: azdata.ModelView, value: 
 	return component;
 }
 
-export function createLabelTextComponent(view: azdata.ModelView, value: string, styles: { [key: string]: string; } = { 'width': '300px' }): azdata.TextComponent {
-	const component = createTextComponent(view, value, styles);
-	return component;
+export function createLabelTextComponent(
+	view: azdata.ModelView,
+	value: string,
+	styles: { [key: string]: string; } = { 'width': '300px' }): azdata.TextComponent {
+
+	return createTextComponent(view, value, styles);
 }
 
-export function createTextComponent(view: azdata.ModelView, value: string, styles: { [key: string]: string; } = { 'width': '300px' }): azdata.TextComponent {
-	return view.modelBuilder.text().withProps({
-		value: value,
-		CSSStyles: styles
-	}).component();
+export function createTextComponent(
+	view: azdata.ModelView,
+	value: string,
+	styles: { [key: string]: string; } = { 'width': '300px' }): azdata.TextComponent {
+
+	return view.modelBuilder.text()
+		.withProps({ value: value, CSSStyles: styles })
+		.component();
 }
