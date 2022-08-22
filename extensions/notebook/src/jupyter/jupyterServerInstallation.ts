@@ -720,8 +720,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		let condaExists = await fs.pathExists(condaPath);
 		// If conda was not found, then check if we're using a virtual environment
 		if (!condaExists) {
-			let pathParts = condaPath.split(path.sep);
-			if (pathParts.length > 1 && pathParts[pathParts.length - 2] === 'envs') {
+			let pathParts = pythonInstallationPath.split(path.sep);
+			if (pathParts.length > 1 && pathParts[pathParts.length - 1] === 'envs') {
 				// A virtual environment python executable is a folder down from the root folder
 				// Example: Anaconda3\envs\python.exe -> Anaconda3\conda.exe
 				condaPath = path.join(pythonInstallationPath, '..', process.platform === constants.winPlatform ? 'conda.exe' : 'conda');
