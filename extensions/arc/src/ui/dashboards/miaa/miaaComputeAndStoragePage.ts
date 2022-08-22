@@ -324,7 +324,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 	}
 
 	private handleOnTextChanged(component: azdata.InputBoxComponent): boolean {
-		if ((!component.placeHolder)) {
+		if ((!component.value)) {
 			// if there is no text found in the inputbox component return false
 			return false;
 		} else if ((!component.valid)) {
@@ -361,8 +361,8 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 			currentCPUSize = '';
 		}
 
-		this.coresLimitBox!.value = currentCPUSize;
-		this.coresLimitBox!.placeHolder = '';
+		this.coresLimitBox!.placeHolder = currentCPUSize;
+		this.coresLimitBox!.value = '';
 
 		this.saveArgs.coresLimit = undefined;
 	}
@@ -377,8 +377,8 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 			currentMemSizeConversion = convertToGibibyteString(currentMemorySize);
 		}
 
-		this.memoryRequestBox!.value = currentMemSizeConversion!;
-		this.memoryRequestBox!.placeHolder = '';
+		this.memoryRequestBox!.placeHolder = currentMemSizeConversion!;
+		this.memoryRequestBox!.value = '';
 
 		this.saveArgs.memoryRequest = undefined;
 
@@ -390,8 +390,8 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 			currentMemSizeConversion = convertToGibibyteString(currentMemorySize);
 		}
 
-		this.memoryLimitBox!.value = currentMemSizeConversion!;
-		this.memoryLimitBox!.placeHolder = '';
+		this.memoryLimitBox!.placeHolder = currentMemSizeConversion!;
+		this.memoryLimitBox!.value = '';
 
 
 		this.saveArgs.memoryLimit = undefined;
@@ -400,8 +400,8 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 	private editSyncSecondaryToCommit(): void {
 		let currentSyncSecondaryToCommit = this._miaaModel.config?.spec?.syncSecondaryToCommit;
 
-		this.syncSecondaryToCommitBox!.value = currentSyncSecondaryToCommit!;
-		this.syncSecondaryToCommitBox!.placeHolder = '';
+		this.syncSecondaryToCommitBox!.placeHolder = currentSyncSecondaryToCommit!;
+		this.syncSecondaryToCommitBox!.value = '';
 
 		this.saveArgs.syncSecondaryToCommit = undefined;
 	}
