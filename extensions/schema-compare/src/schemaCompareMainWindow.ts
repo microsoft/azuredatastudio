@@ -1089,6 +1089,13 @@ export class SchemaCompareMainWindow {
 		}
 
 		let fileUri = fileUris[0];
+		this.openScmpFile(fileUri, true);
+
+	}
+	public async openScmpFile(fileUri: vscode.Uri, callFromWithinSC: boolean = false): Promise<void> {
+		if (!callFromWithinSC) {
+			await this.launch(undefined, undefined, false, undefined);
+		}
 		const service = await this.getService();
 		let startTime = Date.now();
 		const result = await service.schemaCompareOpenScmp(fileUri.fsPath);
