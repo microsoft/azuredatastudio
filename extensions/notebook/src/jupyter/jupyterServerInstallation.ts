@@ -648,10 +648,10 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 	public async getInstalledCondaPackages(): Promise<PythonPkgDetails[]> {
 		try {
-			if (!this._condaExecutable) {
+			if (!this.condaExecutable) {
 				return [];
 			}
-			let cmd = `"${this._condaExecutable}" list --json`;
+			let cmd = `"${this.condaExecutable}" list --json`;
 			let packagesInfo = await this.executeBufferedCommand(cmd);
 
 			let packages: PythonPkgDetails[] = [];
@@ -670,7 +670,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	}
 
 	public async installCondaPackages(packages: PythonPkgDetails[], useMinVersionDefault: boolean): Promise<void> {
-		if (!this._condaExecutable || !packages || packages.length === 0) {
+		if (!this.condaExecutable || !packages || packages.length === 0) {
 			return Promise.resolve();
 		}
 
@@ -680,12 +680,12 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			return `"${pkg.name}${pkgVersionSpecifier}${pkg.version}"`;
 		}).join(' ');
 
-		let cmd = `"${this._condaExecutable}" install -c conda-forge -y ${packagesStr}`;
+		let cmd = `"${this.condaExecutable}" install -c conda-forge -y ${packagesStr}`;
 		await this.executeStreamedCommand(cmd);
 	}
 
 	public async uninstallCondaPackages(packages: PythonPkgDetails[]): Promise<void> {
-		if (this._condaExecutable) {
+		if (this.condaExecutable) {
 			for (let pkg of packages) {
 				if (this._requiredPackagesSet.has(pkg.name)) {
 					this._kernelSetupCache.clear();
@@ -694,7 +694,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			}
 
 			let packagesStr = packages.map(pkg => `"${pkg.name}==${pkg.version}"`).join(' ');
-			let cmd = `"${this._condaExecutable}" uninstall -y ${packagesStr}`;
+			let cmd = `"${this.condaExecutable}" uninstall -y ${packagesStr}`;
 			await this.executeStreamedCommand(cmd);
 		}
 	}
@@ -715,7 +715,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		return this._condaExecutable;
 	}
 
-	private static async getCondaExePath(pythonInstallationPath: string): Promise<string> {
+	public static async getCondaExePath(pythonInstallationPath: string): Promise<string> {
 		let exeName = process.platform === constants.winPlatform ? 'Scripts\\conda.exe' : 'bin/conda';
 		let condaPath = path.join(pythonInstallationPath, exeName);
 		let condaExists = await fs.pathExists(condaPath);
