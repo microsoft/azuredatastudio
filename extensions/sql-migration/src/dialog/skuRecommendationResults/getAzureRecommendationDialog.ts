@@ -92,6 +92,8 @@ export class GetAzureRecommendationDialog {
 
 		const buttonGroup = 'dataSourceContainer';
 		const radioButtonContainer = _view.modelBuilder.flexContainer().withProps({
+			ariaLabel: constants.AZURE_RECOMMENDATION_CHOOSE_METHOD,
+			ariaRole: 'radiogroup',
 			CSSStyles: {
 				'flex-direction': 'row',
 				'width': 'fit-content',
@@ -109,93 +111,86 @@ export class GetAzureRecommendationDialog {
 					'margin': '0'
 				},
 			}).component();
-		this._disposables.push(collectDataButton.onDidChangeCheckedState(async (e) => {
-			if (e) {
-				await this.switchDataSourceContainerFields(PerformanceDataSourceOptions.CollectData);
-			}
-		}));
+		this._disposables.push(
+			collectDataButton.onDidChangeCheckedState(async checked => {
+				if (checked) {
+					await this.switchDataSourceContainerFields(
+						PerformanceDataSourceOptions.CollectData);
+				}
+			}));
 
 		const openExistingButton = _view.modelBuilder.radioButton()
 			.withProps({
 				name: buttonGroup,
 				label: constants.AZURE_RECOMMENDATION_OPEN_EXISTING,
 				checked: this._performanceDataSource === PerformanceDataSourceOptions.OpenExisting,
-				CSSStyles: {
-					...styles.BODY_CSS,
-					'margin': '0 12px',
-				}
+				CSSStyles: { ...styles.BODY_CSS, 'margin': '0 12px' }
 			}).component();
-		this._disposables.push(openExistingButton.onDidChangeCheckedState(async (e) => {
-			if (e) {
-				await this.switchDataSourceContainerFields(PerformanceDataSourceOptions.OpenExisting);
-			}
-		}));
+		this._disposables.push(
+			openExistingButton.onDidChangeCheckedState(async checked => {
+				if (checked) {
+					await this.switchDataSourceContainerFields(
+						PerformanceDataSourceOptions.OpenExisting);
+				}
+			}));
 
 		radioButtonContainer.addItems([
 			collectDataButton,
-			openExistingButton
-		]);
+			openExistingButton]);
 
 		this._collectDataContainer = this.createCollectDataContainer(_view);
 		this._openExistingContainer = this.createOpenExistingContainer(_view);
 
-		const container = _view.modelBuilder.flexContainer().withLayout({
-			flexFlow: 'column'
-		}).withItems([
-			chooseMethodText,
-			radioButtonContainer,
-			this._openExistingContainer,
-			this._collectDataContainer,
-		]).component();
+		const container = _view.modelBuilder.flexContainer()
+			.withLayout({ flexFlow: 'column' })
+			.withItems([
+				chooseMethodText,
+				radioButtonContainer,
+				this._openExistingContainer,
+				this._collectDataContainer])
+			.component();
 
 		return container;
 	}
 
 	private createCollectDataContainer(_view: azdata.ModelView): azdata.FlexContainer {
-		const container = _view.modelBuilder.flexContainer().withProps({
-			CSSStyles: {
-				'flex-direction': 'column',
-				'display': 'inline',
-			}
-		}).component();
+		const container = _view.modelBuilder.flexContainer()
+			.withProps(
+				{ CSSStyles: { 'flex-direction': 'column', 'display': 'inline' } })
+			.component();
 
-		const instructions = _view.modelBuilder.text().withProps({
-			value: constants.AZURE_RECOMMENDATION_COLLECT_DATA_FOLDER,
-			CSSStyles: {
-				...styles.LABEL_CSS,
-				'margin-bottom': '8px',
-			}
-		}).component();
+		const instructions = _view.modelBuilder.text()
+			.withProps({
+				value: constants.AZURE_RECOMMENDATION_COLLECT_DATA_FOLDER,
+				CSSStyles: { ...styles.LABEL_CSS, 'margin-bottom': '8px' }
+			}).component();
 
-		const selectFolderContainer = _view.modelBuilder.flexContainer().withProps({
-			CSSStyles: {
-				'flex-direction': 'row',
-				'align-items': 'center',
-			}
-		}).component();
+		const selectFolderContainer = _view.modelBuilder.flexContainer()
+			.withProps(
+				{ CSSStyles: { 'flex-direction': 'row', 'align-items': 'center' } })
+			.component();
 
-		this._collectDataFolderInput = _view.modelBuilder.inputBox().withProps({
-			placeHolder: constants.FOLDER_NAME,
-			readOnly: true,
-			width: 320,
-			CSSStyles: {
-				'margin-right': '12px'
-			},
-		}).component();
-		this._disposables.push(this._collectDataFolderInput.onTextChanged(async (value) => {
-			if (value) {
-				this.migrationStateModel._skuRecommendationPerformanceLocation = value.trim();
-				this.dialog!.okButton.enabled = true;
-			}
-		}));
+		this._collectDataFolderInput = _view.modelBuilder.inputBox()
+			.withProps({
+				placeHolder: constants.FOLDER_NAME,
+				readOnly: true,
+				width: 320,
+				CSSStyles: { 'margin-right': '12px' },
+			}).component();
+		this._disposables.push(
+			this._collectDataFolderInput.onTextChanged(async (value) => {
+				if (value) {
+					this.migrationStateModel._skuRecommendationPerformanceLocation = value.trim();
+					this.dialog!.okButton.enabled = true;
+				}
+			}));
 
-		const browseButton = _view.modelBuilder.button().withProps({
-			label: constants.BROWSE,
-			width: 100,
-			CSSStyles: {
-				'margin': '0'
-			}
-		}).component();
+		const browseButton = _view.modelBuilder.button()
+			.withProps({
+				label: constants.BROWSE,
+				width: 100,
+				CSSStyles: { 'margin': '0' }
+			}).component();
 		this._disposables.push(browseButton.onDidClick(async (e) => {
 			let folder = await utils.promptUserForFolder();
 			this._collectDataFolderInput.value = folder;
@@ -203,74 +198,61 @@ export class GetAzureRecommendationDialog {
 
 		selectFolderContainer.addItems([
 			this._collectDataFolderInput,
-			browseButton,
-		]);
+			browseButton]);
 
 		container.addItems([
 			instructions,
-			selectFolderContainer,
-		]);
+			selectFolderContainer]);
 		return container;
 	}
 
 	private createOpenExistingContainer(_view: azdata.ModelView): azdata.FlexContainer {
-		const container = _view.modelBuilder.flexContainer().withProps({
-			CSSStyles: {
-				'flex-direction': 'column',
-				'display': 'none',
-			}
-		}).component();
+		const container = _view.modelBuilder.flexContainer()
+			.withProps(
+				{ CSSStyles: { 'flex-direction': 'column', 'display': 'none', } })
+			.component();
 
-		const instructions = _view.modelBuilder.text().withProps({
-			value: constants.AZURE_RECOMMENDATION_OPEN_EXISTING_FOLDER,
-			CSSStyles: {
-				...styles.LABEL_CSS,
-				'margin-bottom': '8px',
-			}
-		}).component();
+		const instructions = _view.modelBuilder.text()
+			.withProps({
+				value: constants.AZURE_RECOMMENDATION_OPEN_EXISTING_FOLDER,
+				CSSStyles: { ...styles.LABEL_CSS, 'margin-bottom': '8px' }
+			}).component();
 
-		const selectFolderContainer = _view.modelBuilder.flexContainer().withProps({
-			CSSStyles: {
-				'flex-direction': 'row',
-				'align-items': 'center',
-			}
-		}).component();
+		const selectFolderContainer = _view.modelBuilder.flexContainer()
+			.withProps(
+				{ CSSStyles: { 'flex-direction': 'row', 'align-items': 'center' } })
+			.component();
 
 		this._openExistingFolderInput = _view.modelBuilder.inputBox().withProps({
 			placeHolder: constants.FOLDER_NAME,
 			readOnly: true,
 			width: 320,
-			CSSStyles: {
-				'margin-right': '12px'
-			},
+			CSSStyles: { 'margin-right': '12px' },
 		}).component();
-		this._disposables.push(this._openExistingFolderInput.onTextChanged(async (value) => {
-			if (value) {
-				this.migrationStateModel._skuRecommendationPerformanceLocation = value.trim();
-				this.dialog!.okButton.enabled = true;
-			}
-		}));
+		this._disposables.push(
+			this._openExistingFolderInput.onTextChanged(async (value) => {
+				if (value) {
+					this.migrationStateModel._skuRecommendationPerformanceLocation = value.trim();
+					this.dialog!.okButton.enabled = true;
+				}
+			}));
 
-		const openButton = _view.modelBuilder.button().withProps({
-			label: constants.OPEN,
-			width: 100,
-			CSSStyles: {
-				'margin': '0'
-			}
-		}).component();
-		this._disposables.push(openButton.onDidClick(async (e) => {
-			let folder = await utils.promptUserForFolder();
-			this._openExistingFolderInput.value = folder;
-		}));
+		const openButton = _view.modelBuilder.button()
+			.withProps({
+				label: constants.OPEN,
+				width: 100,
+				CSSStyles: { 'margin': '0' }
+			}).component();
+		this._disposables.push(
+			openButton.onDidClick(
+				async (e) => this._openExistingFolderInput.value = await utils.promptUserForFolder()));
 
 		selectFolderContainer.addItems([
 			this._openExistingFolderInput,
-			openButton,
-		]);
+			openButton]);
 		container.addItems([
 			instructions,
-			selectFolderContainer,
-		]);
+			selectFolderContainer]);
 		return container;
 	}
 
@@ -279,24 +261,22 @@ export class GetAzureRecommendationDialog {
 
 		let okButtonEnabled = false;
 		switch (containerType) {
-			case PerformanceDataSourceOptions.CollectData: {
-				await this._collectDataContainer.updateCssStyles({ 'display': 'inline' });
-				await this._openExistingContainer.updateCssStyles({ 'display': 'none' });
+			case PerformanceDataSourceOptions.CollectData:
+				await utils.updateControlDisplay(this._collectDataContainer, true);
+				await utils.updateControlDisplay(this._openExistingContainer, false);
 
 				if (this._collectDataFolderInput.value) {
 					okButtonEnabled = true;
 				}
 				break;
-			}
-			case PerformanceDataSourceOptions.OpenExisting: {
-				await this._collectDataContainer.updateCssStyles({ 'display': 'none' });
-				await this._openExistingContainer.updateCssStyles({ 'display': 'inline' });
+			case PerformanceDataSourceOptions.OpenExisting:
+				await utils.updateControlDisplay(this._collectDataContainer, false);
+				await utils.updateControlDisplay(this._openExistingContainer, true);
 
 				if (this._openExistingFolderInput.value) {
 					okButtonEnabled = true;
 				}
 				break;
-			}
 		}
 		this.dialog!.okButton.enabled = okButtonEnabled;
 	}
@@ -304,27 +284,32 @@ export class GetAzureRecommendationDialog {
 	public async openDialog(dialogName?: string) {
 		if (!this._isOpen) {
 			this._isOpen = true;
-			this.dialog = azdata.window.createModelViewDialog(constants.GET_AZURE_RECOMMENDATION, 'GetAzureRecommendationsDialog', 'narrow');
+			this.dialog = azdata.window.createModelViewDialog(
+				constants.GET_AZURE_RECOMMENDATION,
+				'GetAzureRecommendationsDialog',
+				'narrow');
 
 			this.dialog.okButton.label = GetAzureRecommendationDialog.StartButtonText;
-			this._disposables.push(this.dialog.okButton.onClick(async () => await this.execute()));
-			this._disposables.push(this.dialog.cancelButton.onClick(() => this._isOpen = false));
+			this._disposables.push(
+				this.dialog.okButton.onClick(
+					async () => await this.execute()));
 
-			const dialogSetupPromises: Thenable<void>[] = [];
-			dialogSetupPromises.push(this.initializeDialog(this.dialog));
+			this._disposables.push(
+				this.dialog.cancelButton.onClick(
+					() => this._isOpen = false));
+
+			const promise = this.initializeDialog(this.dialog);
 			azdata.window.openDialog(this.dialog);
-			await Promise.all(dialogSetupPromises);
+			await promise;
 
 			// if data source was previously selected, default folder value to previously selected
 			switch (this.migrationStateModel._skuRecommendationPerformanceDataSource) {
-				case PerformanceDataSourceOptions.CollectData: {
+				case PerformanceDataSourceOptions.CollectData:
 					this._collectDataFolderInput.value = this.migrationStateModel._skuRecommendationPerformanceLocation;
 					break;
-				}
-				case PerformanceDataSourceOptions.OpenExisting: {
+				case PerformanceDataSourceOptions.OpenExisting:
 					this._openExistingFolderInput.value = this.migrationStateModel._skuRecommendationPerformanceLocation;
 					break;
-				}
 			}
 
 			await this.switchDataSourceContainerFields(this._performanceDataSource);
@@ -336,16 +321,14 @@ export class GetAzureRecommendationDialog {
 
 		this.migrationStateModel._skuRecommendationPerformanceDataSource = this._performanceDataSource;
 		switch (this.migrationStateModel._skuRecommendationPerformanceDataSource) {
-			case PerformanceDataSourceOptions.CollectData: {
+			case PerformanceDataSourceOptions.CollectData:
 				await this.migrationStateModel.startPerfDataCollection(
 					this.migrationStateModel._skuRecommendationPerformanceLocation,
 					this.migrationStateModel._performanceDataQueryIntervalInSeconds,
 					this.migrationStateModel._staticDataQueryIntervalInSeconds,
 					this.migrationStateModel._numberOfPerformanceDataQueryIterations,
-					this.skuRecommendationPage
-				);
+					this.skuRecommendationPage);
 				break;
-			}
 			case PerformanceDataSourceOptions.OpenExisting: {
 				const serverName = (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
 				const errors: string[] = [];

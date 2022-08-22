@@ -34,15 +34,13 @@ export class SkuRecommendationResultsDialog {
 	constructor(public model: MigrationStateModel, public _targetType: MigrationTargetType) {
 		switch (this._targetType) {
 			case MigrationTargetType.SQLMI:
-				this.targetName = constants.AZURE_SQL_DATABASE_MANAGED_INSTANCE;
+				this.targetName = constants.SKU_RECOMMENDATION_MI_CARD_TEXT;
 				break;
-
 			case MigrationTargetType.SQLVM:
-				this.targetName = constants.AZURE_SQL_DATABASE_VIRTUAL_MACHINE;
+				this.targetName = constants.SKU_RECOMMENDATION_VM_CARD_TEXT;
 				break;
-
 			case MigrationTargetType.SQLDB:
-				this.targetName = constants.AZURE_SQL_DATABASE;
+				this.targetName = constants.SKU_RECOMMENDATION_SQLDB_CARD_TEXT;
 				break;
 		}
 
@@ -79,7 +77,9 @@ export class SkuRecommendationResultsDialog {
 
 		this.targetRecommendations?.forEach((recommendation, index) => {
 			if (index > 0) {
-				const separator = _view.modelBuilder.separator().withProps({ width: 750 }).component();
+				const separator = _view.modelBuilder.separator()
+					.withProps({ width: 750 })
+					.component();
 				container.addItem(separator);
 			}
 
@@ -101,7 +101,9 @@ export class SkuRecommendationResultsDialog {
 				recommendation = <mssql.IaaSSkuRecommendationResultItem>recommendationItem;
 
 				if (recommendation.targetSku) {
-					configuration = constants.VM_CONFIGURATION(recommendation.targetSku.virtualMachineSize!.azureSkuName, recommendation.targetSku.virtualMachineSize!.vCPUsAvailable);
+					configuration = constants.VM_CONFIGURATION(
+						recommendation.targetSku.virtualMachineSize!.azureSkuName,
+						recommendation.targetSku.virtualMachineSize!.vCPUsAvailable);
 
 					storageSection = this.createSqlVmTargetStorageSection(_view, recommendation);
 				}
@@ -123,84 +125,73 @@ export class SkuRecommendationResultsDialog {
 							: constants.PREMIUM_SERIES_MEMORY_OPTIMIZED;
 
 					configuration = this._targetType === MigrationTargetType.SQLDB
-						? constants.DB_CONFIGURATION(serviceTier, recommendation.targetSku.computeSize!)
+						? constants.SQLDB_CONFIGURATION(serviceTier, recommendation.targetSku.computeSize!)
 						: constants.MI_CONFIGURATION(hardwareType, serviceTier, recommendation.targetSku.computeSize!);
 
-					const storageLabel = _view.modelBuilder.text().withProps({
-						value: constants.STORAGE_HEADER,
-						CSSStyles: {
-							...styles.LABEL_CSS,
-							'margin': '12px 0 0',
-						}
-					}).component();
-					const storageValue = _view.modelBuilder.text().withProps({
-						value: constants.STORAGE_GB(recommendation.targetSku.storageMaxSizeInMb! / 1024),
-						CSSStyles: {
-							...styles.BODY_CSS,
-						}
-					}).component();
+					const storageLabel = _view.modelBuilder.text()
+						.withProps({
+							value: constants.STORAGE_HEADER,
+							CSSStyles: {
+								...styles.LABEL_CSS,
+								'margin': '12px 0 0',
+							}
+						}).component();
+					const storageValue = _view.modelBuilder.text()
+						.withProps({
+							value: constants.STORAGE_GB(recommendation.targetSku.storageMaxSizeInMb! / 1024),
+							CSSStyles: { ...styles.BODY_CSS, }
+						}).component();
 
 					storageSection.addItems([
 						storageLabel,
-						storageValue,
-					]);
+						storageValue]);
 				}
 				break;
 		}
-		const recommendationContainer = _view.modelBuilder.flexContainer().withProps({
-			CSSStyles: {
-				'margin-bottom': '20px',
-				'flex-direction': 'column',
-			}
-		}).component();
-
-		if (this._targetType === MigrationTargetType.SQLDB) {
-			const databaseNameLabel = _view.modelBuilder.text().withProps({
-				value: recommendation.databaseName!,
+		const recommendationContainer = _view.modelBuilder.flexContainer()
+			.withProps({
 				CSSStyles: {
-					...styles.SECTION_HEADER_CSS,
+					'margin-bottom': '20px',
+					'flex-direction': 'column',
 				}
 			}).component();
+
+		if (this._targetType === MigrationTargetType.SQLDB) {
+			const databaseNameLabel = _view.modelBuilder.text()
+				.withProps({
+					value: recommendation.databaseName!,
+					CSSStyles: { ...styles.SECTION_HEADER_CSS, }
+				}).component();
 			recommendationContainer.addItem(databaseNameLabel);
 		}
 
-		const targetDeploymentTypeLabel = _view.modelBuilder.text().withProps({
-			value: constants.TARGET_DEPLOYMENT_TYPE,
-			CSSStyles: {
-				...styles.LABEL_CSS,
-				'margin': '0',
-			}
-		}).component();
-		const targetDeploymentTypeValue = _view.modelBuilder.text().withProps({
-			value: this.targetName,
-			CSSStyles: {
-				...styles.BODY_CSS,
-				'margin': '0',
-			}
-		}).component();
+		const targetDeploymentTypeLabel = _view.modelBuilder.text()
+			.withProps({
+				value: constants.TARGET_DEPLOYMENT_TYPE,
+				CSSStyles: { ...styles.LABEL_CSS, 'margin': '0', }
+			}).component();
+		const targetDeploymentTypeValue = _view.modelBuilder.text()
+			.withProps({
+				value: this.targetName,
+				CSSStyles: { ...styles.BODY_CSS, 'margin': '0', }
+			}).component();
 
-		const azureConfigurationLabel = _view.modelBuilder.text().withProps({
-			value: constants.AZURE_CONFIGURATION,
-			CSSStyles: {
-				...styles.LABEL_CSS,
-				'margin': '12px 0 0',
-			}
-		}).component();
-		const azureConfigurationValue = _view.modelBuilder.text().withProps({
-			value: configuration,
-			CSSStyles: {
-				...styles.BODY_CSS,
-				'margin': '0',
-			}
-		}).component();
+		const azureConfigurationLabel = _view.modelBuilder.text()
+			.withProps({
+				value: constants.AZURE_CONFIGURATION,
+				CSSStyles: { ...styles.LABEL_CSS, 'margin': '12px 0 0', }
+			}).component();
+		const azureConfigurationValue = _view.modelBuilder.text()
+			.withProps({
+				value: configuration,
+				CSSStyles: { ...styles.BODY_CSS, 'margin': '0', }
+			}).component();
 
 		recommendationContainer.addItems([
 			targetDeploymentTypeLabel,
 			targetDeploymentTypeValue,
-
 			targetDeploymentTypeLabel,
 			targetDeploymentTypeValue,
-
 			azureConfigurationLabel,
 			azureConfigurationValue,
 
@@ -209,23 +200,21 @@ export class SkuRecommendationResultsDialog {
 
 		const recommendationsReasonSection = _view.modelBuilder.text().withProps({
 			value: constants.RECOMMENDATION_REASON,
-			CSSStyles: {
-				...styles.SECTION_HEADER_CSS,
-				'margin': '12px 0 0'
-			}
+			CSSStyles: { ...styles.SECTION_HEADER_CSS, 'margin': '12px 0 0' }
 		}).component();
 
-		const reasonsContainer = _view.modelBuilder.flexContainer().withLayout({
-			flexFlow: 'column'
-		}).component();
-		const justifications: string[] = recommendation?.positiveJustifications?.concat(recommendation?.negativeJustifications) || [constants.SKU_RECOMMENDATION_NO_RECOMMENDATION_REASON];
+		const reasonsContainer = _view.modelBuilder.flexContainer()
+			.withLayout({ flexFlow: 'column' })
+			.component();
+
+		const justifications: string[] = recommendation?.positiveJustifications?.concat(recommendation?.negativeJustifications)
+			|| [constants.SKU_RECOMMENDATION_NO_RECOMMENDATION_REASON];
+
 		justifications?.forEach(text => {
 			reasonsContainer.addItem(
 				_view.modelBuilder.text().withProps({
 					value: text,
-					CSSStyles: {
-						...styles.BODY_CSS,
-					}
+					CSSStyles: { ...styles.BODY_CSS, }
 				}).component()
 			);
 		});
@@ -235,26 +224,23 @@ export class SkuRecommendationResultsDialog {
 		recommendationContainer.addItems([
 			recommendationsReasonSection,
 			reasonsContainer,
-			storagePropertiesContainer,
-		]);
+			storagePropertiesContainer]);
 
 		return recommendationContainer;
 	}
 
 	private createSqlVmTargetStorageSection(_view: azdata.ModelView, recommendation: mssql.IaaSSkuRecommendationResultItem): azdata.FlexContainer {
-		const recommendedTargetStorageSection = _view.modelBuilder.text().withProps({
-			value: constants.RECOMMENDED_TARGET_STORAGE_CONFIGURATION,
-			CSSStyles: {
-				...styles.SECTION_HEADER_CSS,
-				'margin-top': '12px'
-			}
-		}).component();
-		const recommendedTargetStorageInfo = _view.modelBuilder.text().withProps({
-			value: constants.RECOMMENDED_TARGET_STORAGE_CONFIGURATION_INFO,
-			CSSStyles: {
-				...styles.BODY_CSS,
-			}
-		}).component();
+		const recommendedTargetStorageSection = _view.modelBuilder.text()
+			.withProps({
+				value: constants.RECOMMENDED_TARGET_STORAGE_CONFIGURATION,
+				CSSStyles: { ...styles.SECTION_HEADER_CSS, 'margin-top': '12px' }
+			}).component();
+
+		const recommendedTargetStorageInfo = _view.modelBuilder.text()
+			.withProps({
+				value: constants.RECOMMENDED_TARGET_STORAGE_CONFIGURATION_INFO,
+				CSSStyles: { ...styles.BODY_CSS, }
+			}).component();
 
 		const headerCssStyle = {
 			'border': 'none',
@@ -333,20 +319,21 @@ export class SkuRecommendationResultsDialog {
 			logDiskTableRow,
 		];
 
-		const storageConfigurationTable: azdata.DeclarativeTableComponent = _view.modelBuilder.declarativeTable().withProps({
-			ariaLabel: constants.RECOMMENDED_TARGET_STORAGE_CONFIGURATION,
-			columns: columns,
-			dataValues: storageConfigurationTableRows,
-			width: 700
-		}).component();
+		const storageConfigurationTable: azdata.DeclarativeTableComponent = _view.modelBuilder.declarativeTable()
+			.withProps({
+				ariaLabel: constants.RECOMMENDED_TARGET_STORAGE_CONFIGURATION,
+				columns: columns,
+				dataValues: storageConfigurationTableRows,
+				width: 700
+			}).component();
 
-		const container = _view.modelBuilder.flexContainer().withLayout({
-			flexFlow: 'column'
-		}).withItems([
-			recommendedTargetStorageSection,
-			recommendedTargetStorageInfo,
-			storageConfigurationTable,
-		]).component();
+		const container = _view.modelBuilder.flexContainer()
+			.withLayout({ flexFlow: 'column' })
+			.withItems([
+				recommendedTargetStorageSection,
+				recommendedTargetStorageInfo,
+				storageConfigurationTable])
+			.component();
 		return container;
 	}
 
@@ -375,19 +362,16 @@ export class SkuRecommendationResultsDialog {
 				break;
 
 			case MigrationTargetType.SQLDB:
-				instanceRequirements = this.instanceRequirements?.databaseLevelRequirements.filter(d => {
-					return databaseName === d.databaseName;
-				})[0]!;
+				instanceRequirements = this.instanceRequirements?.databaseLevelRequirements
+					.filter((d) => databaseName === d.databaseName)[0]!;
 				break;
 		}
 
-		const storagePropertiesSection = _view.modelBuilder.text().withProps({
-			value: constants.SOURCE_PROPERTIES,
-			CSSStyles: {
-				...styles.SECTION_HEADER_CSS,
-				'margin-top': '12px'
-			}
-		}).component();
+		const storagePropertiesSection = _view.modelBuilder.text()
+			.withProps({
+				value: constants.SOURCE_PROPERTIES,
+				CSSStyles: { ...styles.SECTION_HEADER_CSS, 'margin-top': '12px' }
+			}).component();
 
 		const headerCssStyle = {
 			'border': 'none',
@@ -407,7 +391,7 @@ export class SkuRecommendationResultsDialog {
 		};
 
 		const columnWidth = 80;
-		let columns: azdata.DeclarativeTableColumn[] = [
+		const columns: azdata.DeclarativeTableColumn[] = [
 			{
 				valueType: azdata.DeclarativeDataType.string,
 				displayName: constants.DIMENSION,
@@ -450,19 +434,18 @@ export class SkuRecommendationResultsDialog {
 			ioLatencyRow,
 		];
 
-		const storagePropertiesTable: azdata.DeclarativeTableComponent = _view.modelBuilder.declarativeTable().withProps({
-			ariaLabel: constants.RECOMMENDED_TARGET_STORAGE_CONFIGURATION,
-			columns: columns,
-			dataValues: storagePropertiesTableRows,
-			width: 300
-		}).component();
+		const storagePropertiesTable: azdata.DeclarativeTableComponent = _view.modelBuilder.declarativeTable()
+			.withProps({
+				ariaLabel: constants.RECOMMENDED_TARGET_STORAGE_CONFIGURATION,
+				columns: columns,
+				dataValues: storagePropertiesTableRows,
+				width: 300
+			}).component();
 
-		const container = _view.modelBuilder.flexContainer().withLayout({
-			flexFlow: 'column'
-		}).withItems([
-			storagePropertiesSection,
-			storagePropertiesTable,
-		]).component();
+		const container = _view.modelBuilder.flexContainer()
+			.withLayout({ flexFlow: 'column' })
+			.withItems([storagePropertiesSection, storagePropertiesTable])
+			.component();
 		return container;
 	}
 
@@ -537,10 +520,9 @@ export class SkuRecommendationResultsDialog {
 				}));
 			this.dialog.customButtons = [this._saveButton];
 
-			const dialogSetupPromises: Thenable<void>[] = [];
-			dialogSetupPromises.push(this.initializeDialog(this.dialog));
+			const promise = this.initializeDialog(this.dialog);
 			azdata.window.openDialog(this.dialog);
-			await Promise.all(dialogSetupPromises);
+			await promise;
 		}
 	}
 

@@ -156,20 +156,21 @@ export class ConfirmCutoverDialog {
 			height: 20,
 			label: constants.REFRESH,
 		}).component();
-		this._disposables.push(refreshButton.onDidClick(async e => {
-			refreshLoader.loading = true;
-			try {
-				await this.migrationCutoverModel.fetchStatus();
-				containerHeading.value = constants.PENDING_BACKUPS(this.migrationCutoverModel.getPendingLogBackupsCount() ?? 0);
-			} catch (e) {
-				this._dialogObject.message = {
-					level: azdata.window.MessageLevel.Error,
-					text: e.message
-				};
-			} finally {
-				refreshLoader.loading = false;
-			}
-		}));
+		this._disposables.push(
+			refreshButton.onDidClick(async e => {
+				try {
+					refreshLoader.loading = true;
+					await this.migrationCutoverModel.fetchStatus();
+					containerHeading.value = constants.PENDING_BACKUPS(this.migrationCutoverModel.getPendingLogBackupsCount() ?? 0);
+				} catch (e) {
+					this._dialogObject.message = {
+						level: azdata.window.MessageLevel.Error,
+						text: e.message
+					};
+				} finally {
+					refreshLoader.loading = false;
+				}
+			}));
 		container.addItem(refreshButton, { flex: '0' });
 
 		const refreshLoader = this._view.modelBuilder.loadingComponent().withProps({
@@ -232,22 +233,23 @@ export class ConfirmCutoverDialog {
 
 		headingRow.addItem(containerHeading, { flex: '0' });
 
-		this._disposables.push(refreshButton.onDidClick(async e => {
-			refreshLoader.loading = true;
-			try {
-				await this.migrationCutoverModel.fetchStatus();
-				containerHeading.label = constants.PENDING_BACKUPS(this.migrationCutoverModel.getPendingLogBackupsCount() ?? 0);
-				lastScanCompleted.value = constants.LAST_SCAN_COMPLETED(get12HourTime(new Date()));
-				this.refreshFileTable(fileTable);
-			} catch (e) {
-				this._dialogObject.message = {
-					level: azdata.window.MessageLevel.Error,
-					text: e.message
-				};
-			} finally {
-				refreshLoader.loading = false;
-			}
-		}));
+		this._disposables.push(
+			refreshButton.onDidClick(async e => {
+				try {
+					refreshLoader.loading = true;
+					await this.migrationCutoverModel.fetchStatus();
+					containerHeading.label = constants.PENDING_BACKUPS(this.migrationCutoverModel.getPendingLogBackupsCount() ?? 0);
+					lastScanCompleted.value = constants.LAST_SCAN_COMPLETED(get12HourTime(new Date()));
+					this.refreshFileTable(fileTable);
+				} catch (e) {
+					this._dialogObject.message = {
+						level: azdata.window.MessageLevel.Error,
+						text: e.message
+					};
+				} finally {
+					refreshLoader.loading = false;
+				}
+			}));
 		headingRow.addItem(refreshButton, { flex: '0' });
 
 		const refreshLoader = this._view.modelBuilder.loadingComponent().withProps({
