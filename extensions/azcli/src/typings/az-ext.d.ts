@@ -29,6 +29,11 @@ declare module 'az-ext' {
 		protocol: string // "https"
 	}
 
+	export interface SqlMiListRawOutput {
+		text: string,
+		miaaList: SqlMiListResult[]
+	}
+
 	export interface SqlMiListResult {
 		name: string, // "arc-miaa"
 		replicas: string, // "1/1"
@@ -592,7 +597,7 @@ declare module 'az-ext' {
 					},
 					// Additional arguments
 					additionalEnvVars?: AdditionalEnvVars
-				): Promise<AzOutput<SqlMiListResult[]>>,
+				): Promise<AzOutput<SqlMiListRawOutput>>,
 				show(
 					name: string,
 					args: {
