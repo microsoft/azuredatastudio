@@ -5,7 +5,6 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import { EOL } from 'os';
 import { QueryHistoryItem } from './queryHistoryItem';
 import { removeNewLines } from './utils';
 import { CAPTURE_ENABLED_CONFIG_SECTION, ITEM_SELECTED_COMMAND_ID, QUERY_HISTORY_CONFIG_SECTION } from './constants';
@@ -39,7 +38,7 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 						// Add to the front of the list so the new item appears at the top
 						const queryText = this.queryTextMappings.get(document.uri);
 						if (queryText === undefined) {
-							console.error(`Couldn't find query text for URI ${document.uri}`);
+							console.error(`Couldn't find query text for URI ${document.uri.toString()}`);
 							return;
 						}
 						this.queryTextMappings.delete(document.uri);
@@ -55,11 +54,11 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 						// the textDocument uri.toString() we parse it into a vscode.Uri first to be absolutely sure.
 						if (textEditor?.document.uri.toString() !== vscode.Uri.parse(document.uri).toString()) {
 							// If we couldn't find the document then we can't get the text so just log the error and move on
-							console.error(`Couldn't find text editor with URI ${document.uri} for query event`);
+							console.error(`Active text editor ${textEditor?.document.uri} does not match URI ${document.uri} for query event`);
 							return;
 						}
 						// Get the text from the current selection - or the entire document if there isn't a selection (mimicking what STS is doing itself)
-						const queryText = queryInfo.batchRanges.map(r => textEditor.document.getText(textEditor.selection.isEmpty ? undefined : textEditor.selection) ?? '').join(EOL);
+						const queryText = textEditor.document.getText(textEditor.selection.isEmpty ? undefined : textEditor.selection) ?? '';
 						this.queryTextMappings.set(document.uri, queryText);
 					}
 				}
