@@ -250,6 +250,9 @@
 			"serviceStartedStatusMsg": "{0} 已启动",
 			"startingServiceStatusMsg": "正在启动 {0}"
 		},
+		"dist/tableDesigner/tableDesigner": {
+			"tableDesigner.NewTable": "新建表"
+		},
 		"dist/telemetry": {
 			"serviceCrashMessage": "{0} 个组件意外退出。请重启 Azure Data Studio。",
 			"viewKnownIssuesText": "查看已知问题"

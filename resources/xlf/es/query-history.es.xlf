@@ -2,21 +2,57 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file original="extensions/query-history/package" source-language="en" datatype="plaintext" target-language="es">
     <body>
+      <trans-unit id="queryHistory.captureEnabledDesc">
+        <source xml:lang="en">Whether Query History capture is enabled. If false queries executed will not be captured.</source>
+        <target state="translated">Si la captura del historial de consultas está habilitada. De no ser así, las consultas ejecutadas no se capturarán.</target>
+      </trans-unit>
       <trans-unit id="queryHistory.clear">
         <source xml:lang="en">Clear All History</source>
         <target state="translated">Borrar todo el historial</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.delete">
+        <source xml:lang="en">Delete</source>
+        <target state="translated">Eliminar</target>
       </trans-unit>
       <trans-unit id="queryHistory.description">
         <source xml:lang="en">View and run previously executed queries</source>
         <target state="translated">Ver y ejecutar consultas ejecutadas previamente</target>
       </trans-unit>
+      <trans-unit id="queryHistory.disableCapture">
+        <source xml:lang="en">Pause Query History Capture</source>
+        <target state="translated">Pausar la captura del historial de consultas</target>
+      </trans-unit>
       <trans-unit id="queryHistory.displayName">
         <source xml:lang="en">Query History</source>
         <target state="translated">Historial de consultas</target>
       </trans-unit>
-      <trans-unit id="queryHistory.toggleCapture">
-        <source xml:lang="en">Toggle Query History Capture</source>
-        <target state="translated">Alternar la captura del historial de consultas</target>
+      <trans-unit id="queryHistory.doubleClickAction">
+        <source xml:lang="en">The action taken when a history item is double clicked</source>
+        <target state="translated">Acción realizada cuando se hace doble clic en un elemento del historial</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.doubleClickAction.open">
+        <source xml:lang="en">Open a new disconnected editor with the query from the selected history item</source>
+        <target state="translated">Abrir un nuevo editor desconectado con la consulta del elemento de historial seleccionado</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.doubleClickAction.run">
+        <source xml:lang="en">Open a new connected editor with the query and connection from the selected history item and automatically run the query</source>
+        <target state="translated">Abrir un nuevo editor conectado con la consulta y la conexión desde el elemento de historial seleccionado y ejecute automáticamente la consulta.</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.enableCapture">
+        <source xml:lang="en">Start Query History Capture</source>
+        <target state="translated">Iniciar la captura del historial de consultas</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.noEntries">
+        <source xml:lang="en">No queries to display</source>
+        <target state="translated">No hay consultas que mostrar</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.open">
+        <source xml:lang="en">Open Query</source>
+        <target state="translated">Abrir consulta</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.run">
+        <source xml:lang="en">Run Query</source>
+        <target state="translated">Ejecutar consulta</target>
       </trans-unit>
     </body>
   </file>

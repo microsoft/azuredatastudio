@@ -10254,7 +10254,7 @@
 			"enable remote": "請重新載入 Azure Data Studio 以在 {0} 中啟用此延伸模組。",
 			"enableWindowsBackgroundUpdates": "啟用以在 Windows 背景中下載並安裝新的 Azure Data Studio 版本",
 			"extensionsPolicy": "設定下載延伸模組的安全性原則。",
-			"incompatible": "由於延伸模組 ‘{0}’ 與 Azure Data Studio '{1}' 不相容，所以無法安裝延伸模組。",
+			"incompatible": "無法安裝延伸模組 '{1}' 的版本 '{0}'，因為它與 Azure Data Studio '{2}' 不相容。更新為 Azure Data Studio {3} 以安裝延伸模組。",
 			"installExtensionCompletedAndReloadRequired": "延伸模組 {0} 安裝完成。請重新載入 Azure Data Studio 以啟用此延伸模組。",
 			"maxMemoryForLargeFilesMB": "控制當嘗試開啟大型檔案時，Azure Data Studio 在重新啟動後可用的記憶體。效果與在命令列上指定 `--max-memory=NEWSIZE` 相同。",
 			"miNewNotebook": "新增筆記本(&&N)",
@@ -10423,8 +10423,7 @@
 			"navigationProviderRequired": "必須將具有有效 providerId 的 NavigationProvider 傳遞給此方法"
 		},
 		"sql/workbench/api/common/notebooks/vscodeExecuteProvider": {
-			"errorStartBeforeReady": "無法啟動工作階段，管理員尚未初始化",
-			"notebookMultipleRequestsError": "無法執行程式碼儲存格。目前正在執行另一個儲存格。"
+			"errorStartBeforeReady": "無法啟動工作階段，管理員尚未初始化"
 		},
 		"sql/workbench/browser/actions": {
 			"clearSavedAccounts": "清除所有儲存的帳戶",
@@ -10440,13 +10439,14 @@
 			"showConnectDialogOnStartup": "啟動時顯示連線對話方塊"
 		},
 		"sql/workbench/browser/designer/designer": {
+			"designer.actions": "更多動作",
 			"designer.defaultRemoveRowConfirmationMessage": "確定要移除列嗎?",
 			"designer.generalGroupName": "一般",
 			"designer.issueCountAlert": "找到 {0} 個驗證問題。",
 			"designer.issuesTabTitle": "問題 ({0})",
 			"designer.loadingDesigner": "正在載入設計工具...",
 			"designer.loadingDesignerCompleted": "設計工具已載入",
-			"designer.moveRowText": "移動列",
+			"designer.moveRowText": "移動",
 			"designer.processing": "正在處理...",
 			"designer.processingChanges": "正在處理變更...",
 			"designer.processingChangesCompleted": "已處理變更",
@@ -10470,8 +10470,8 @@
 		},
 		"sql/workbench/browser/designer/tableActions": {
 			"designer.addColumnAction": "新增",
-			"designer.insertAfterSelectedColumn": "插入此項目之後",
-			"designer.insertBeforeSelectedRow": "插入此項目之前",
+			"designer.insertAfterSelectedColumn": "插入此項目之後:",
+			"designer.insertBeforeSelectedRow": "插入此項目之前:",
 			"designer.moveRowDownAction": "下移",
 			"designer.moveRowDownButtonAriaLabel": "將選取的列下移一個位置",
 			"designer.moveRowUpAction": "上移",
@@ -10493,8 +10493,7 @@
 			"resourceViewerInput.resourceViewer": "資源檢視器"
 		},
 		"sql/workbench/browser/editor/tableDesigner/tableDesignerInput": {
-			"tableDesigner.OperationInProgressWarning": "另一個作業正在進行中時，無法執行作業。",
-			"tableDesigner.newTable": "新增資料表"
+			"tableDesigner.OperationInProgressWarning": "另一個作業正在進行中時，無法執行作業。"
 		},
 		"sql/workbench/browser/modal/modal": {
 			"closeMessage": "關閉",
@@ -11140,18 +11139,25 @@
 			"epCompare.FileFilterDescription": "執行計畫檔案",
 			"epCompare.comparePropertiesAction": "屬性",
 			"epCompare.comparisonProgess": "在比較計畫中載入類似區域",
+			"epCompare.searchNodeAction": "尋找節點",
+			"epCompare.searchNodeActionAddedPlan": "尋找節點 - 已新增方案",
 			"epCompare.toggleOrientation": "切換方向",
 			"epCompare.zoomInAction": "放大",
 			"epCompare.zoomOutAction": "縮小",
 			"epCompare.zoomReset": "重設縮放",
-			"epCompare.zoomToFit": "縮放至適當比例"
+			"epCompare.zoomToFit": "縮放至適當比例",
+			"queryDropdownPrefix": "查詢{0}/{1}: {2}"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView": {
 			"executionPlanComparisonPropertiesBottomOperation": "基本作業: {0}",
+			"executionPlanComparisonPropertiesLeftOperation": "左側作業: {0}",
+			"executionPlanComparisonPropertiesRightOperation": "右側作業: {0}",
 			"executionPlanComparisonPropertiesTopOperation": "最主要作業: {0}",
 			"executionPlanPropertiesEdgeOperationName": "邊緣",
 			"nodePropertyViewNameNameColumnHeader": "名稱",
 			"nodePropertyViewNameValueColumnBottomHeader": "值 (基本計畫)",
+			"nodePropertyViewNameValueColumnLeftHeader": "值 (左側計畫)",
+			"nodePropertyViewNameValueColumnRightHeader": "值 (右側計畫)",
 			"nodePropertyViewNameValueColumnTopHeader": "值 (主要計畫)"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanContribution": {
@@ -11172,9 +11178,10 @@
 			"nodePropertyViewNameValueColumnHeader": "值"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase": {
+			"ep.topOperationsCopyTableData": "Copy",
 			"executionPlanPropertyViewClose": "關閉",
 			"executionPlanPropertyViewSortAlphabetically": "字母順序",
-			"executionPlanPropertyViewSortByDisplayOrder": "已分類",
+			"executionPlanPropertyViewSortByDisplayOrder": "重要性",
 			"executionPlanPropertyViewSortReverseAlphabetically": "反向字母順序",
 			"nodePropertyViewTitle": "屬性"
 		},
@@ -11194,6 +11201,7 @@
 			"executionPlanPropertiesActionLabel": "屬性",
 			"executionPlanSavePlanXML": "儲存計畫檔案",
 			"executionPlanSearchNodeAction": "尋找節點",
+			"executionPlanTopOperationsAction": "最前幾項操作",
 			"executionPlanZoomInActionLabel": "放大",
 			"executionPlanZoomOutActionLabel": "縮小",
 			"openQueryAction": "開啟查詢"
@@ -11451,9 +11459,9 @@
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/output.component": {
 			"componentRenderError": "轉譯元件時發生錯誤: {0}",
-			"noMimeTypeFound": "找不到輸出的 {0} 轉譯器。其有下列 MIME 類型: {1}",
-			"noSelectorFound": "找不到選取器 {0} 的元件",
-			"safe": "安全"
+			"noMimeTypeFound": "找不到輸出的轉譯器。其有下列 MIME 類型: {0}",
+			"noSafeMimeTypeFound": "找不到輸出的安全轉譯器。其有下列 MIME 類型: {0}",
+			"noSelectorFound": "找不到選取器 {0} 的元件"
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/placeholderCell.component": {
 			"clickOn": "按一下",
@@ -11683,7 +11691,7 @@
 			"plotlyError": "顯示 Plotly 圖表時發生錯誤: {0}"
 		},
 		"sql/workbench/contrib/objectExplorer/browser/serverTreeView": {
-			"serverTree.addConnection": "新增連線",
+			"serverTree.newConnection": "新增連線",
 			"servers.noConnections": "找不到連線。"
 		},
 		"sql/workbench/contrib/objectExplorer/common/serverGroup.contribution": {
@@ -11780,14 +11788,19 @@
 			"status.query.flavor": "SQL 語言的變體"
 		},
 		"sql/workbench/contrib/query/browser/gridPanel": {
+			"query.QueryErrorOccured": "執行查詢時發生錯誤。",
+			"query.QueryExecutionEnded": "查詢執行已完成。",
+			"query.QueryExecutionStarted": "查詢執行已開始。",
 			"resultsGrid": "結果方格",
 			"resultsGrid.maxRowCountExceeded": "已超過篩選/排序的資料列計數上限。若要更新，導覽至使用者設定並變更設定: ' queryEditor. inMemoryDataProcessingThreshold '",
 			"xmlShowplan": "XML 執行程序表"
 		},
 		"sql/workbench/contrib/query/browser/keyboardQueryActions": {
+			"ToggleActualPlanKeyboardAction": "啟用/停用實際執行計畫",
 			"ToggleFocusBetweenQueryEditorAndResultsAction": "在查詢與結果之間切換焦點",
 			"cancelQueryKeyboardAction": "取消查詢",
 			"copyQueryWithResultsKeyboardAction": "與結果一併複製查詢",
+			"estimatedExecutionPlanKeyboardAction": "顯示預估執行方案",
 			"focusOnCurrentQueryKeyboardAction": "聚焦於目前的查詢",
 			"parseSyntaxLabel": "剖析查詢",
 			"queryActions.notConnected": "請連線至伺服器",
@@ -11797,7 +11810,6 @@
 			"queryShortcutNoEditor": "要執行的捷徑需要編輯器參數",
 			"refreshIntellisenseKeyboardAction": "重新整理 IntelliSense 快取",
 			"runCurrentQueryKeyboardAction": "執行目前查詢",
-			"runCurrentQueryWithActualPlanKeyboardAction": "使用實際計畫執行目前的查詢",
 			"runQueryKeyboardAction": "執行查詢",
 			"toggleQueryResultsKeyboardAction": "切換查詢結果"
 		},
@@ -11834,17 +11846,21 @@
 			"queryShortcutDescription": "設定按鍵繫結關係 workbench.action.query.shortcut{0} 以執行捷徑文字作為程序呼叫或查詢執行。任何選取的文字在查詢編輯器中會於查詢結尾作為參數傳遞，或您可將它以 {arg} 參考"
 		},
 		"sql/workbench/contrib/query/browser/queryActions": {
+			"ExecutionPlan": "執行計劃",
 			"actualQueryPlan": "實際",
 			"cancelQueryLabel": "取消",
 			"changeConnectionDatabaseLabel": "變更連線",
 			"changeDatabase.failed": "變更資料庫失敗",
 			"changeDatabase.failedWithError": "無法變更資料庫: {0}",
 			"connectDatabaseLabel": "連線",
+			"disableActualPlanLabel": "停用實際計畫",
 			"disablesqlcmdLabel": "停用 SQLCMD",
 			"disconnectDatabaseLabel": "中斷連線",
+			"enableActualPlanLabel": "啟用實際計畫",
 			"enablesqlcmdLabel": "啟用 SQLCMD",
-			"estimatedQueryPlan": "說明",
+			"estimatedQueryPlan": "預估方案",
 			"newQueryTask.newQuery": "新增查詢",
+			"query.multiSelectionNotSupported": "當編輯器處於多重選取模式時，不支援執行查詢。",
 			"queryEditor.exportSqlAsNotebook": "匯出為筆記本",
 			"runQueryLabel": "執行",
 			"selectDatabase": "選擇資料庫"
@@ -11876,58 +11892,6 @@
 			"maxColumnWidth": "自動調整大小之欄位的寬度上限 (像素)",
 			"resultsGridConfigurationTitle": "結果方格與訊息",
 			"rowHeight": "控制列高 (像素)"
-		},
-		"sql/workbench/contrib/queryHistory/browser/queryHistoryActions": {
-			"queryHistory.clearLabel": "清除所有歷史記錄",
-			"queryHistory.delete": "刪除",
-			"queryHistory.disableCapture": "暫停查詢歷史記錄擷取",
-			"queryHistory.enableCapture": "開始查詢歷史記錄擷取",
-			"queryHistory.openQuery": "開啟查詢",
-			"queryHistory.runQuery": "執行查詢",
-			"queryHistory.toggleCaptureLabel": "切換查詢歷史記錄擷取",
-			"toggleQueryHistory": "切換查詢歷史記錄"
-		},
-		"sql/workbench/contrib/queryHistory/browser/queryHistoryRenderer": {
-			"failed": "失敗",
-			"succeeded": "成功"
-		},
-		"sql/workbench/contrib/queryHistory/browser/queryHistoryView": {
-			"noQueriesMessage": "沒有查詢可顯示。",
-			"queryHistory.regTreeAriaLabel": "查詢歷史記錄"
-		},
-		"sql/workbench/contrib/queryHistory/electron-browser/queryHistory": {
-			"miViewQueryHistory": "查詢歷史記錄(&&Q)",
-			"queryHistory": "查詢歷史記錄",
-			"queryHistory.clearLabel": "清除所有歷史記錄",
-			"queryHistory.disableCapture": "暫停查詢歷史記錄擷取",
-			"queryHistory.enableCapture": "開始查詢歷史記錄擷取",
-			"queryHistoryCaptureEnabled": "是否啟用了查詢歷史記錄擷取。若未啟用，將不會擷取已經執行的查詢。",
-			"queryHistoryConfigurationTitle": "查詢歷史記錄",
-			"viewCategory": "檢視"
-		},
-		"sql/workbench/contrib/queryPlan/browser/queryPlan": {
-			"queryPlanTitle": "查詢計劃"
-		},
-		"sql/workbench/contrib/queryPlan/browser/queryPlanEditor": {
-			"queryPlanEditor": "查詢計畫編輯器"
-		},
-		"sql/workbench/contrib/queryPlan/browser/topOperations": {
-			"topOperations.actualExecutions": "實際執行次數",
-			"topOperations.actualRebinds": "實際重新繫結數",
-			"topOperations.actualRewinds": "實際倒轉數",
-			"topOperations.actualRows": "實際資料列數",
-			"topOperations.estCPUCost": "估計 CPU 成本",
-			"topOperations.estCost": "估計成本",
-			"topOperations.estIOCost": "估計 IO 成本",
-			"topOperations.estRebinds": "估計重新繫結數",
-			"topOperations.estRewinds": "估計倒轉數",
-			"topOperations.estRows": "估計資料列數",
-			"topOperations.estSubtreeCost": "估計的樹狀子目錄成本",
-			"topOperations.object": "物件",
-			"topOperations.operation": "作業",
-			"topOperations.parallel": "平行作業",
-			"topOperations.partitioned": "已分割",
-			"topOperationsTitle": "最前幾項操作"
 		},
 		"sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution": {
 			"deployment.title": "新部署…"
@@ -11982,8 +11946,8 @@
 			"refreshError": "重新整理節點 '{0}' 時發生錯誤: {1}"
 		},
 		"sql/workbench/contrib/tableDesigner/browser/actions": {
-			"tableDesigner.generateScript": "產生指令碼",
-			"tableDesigner.publishTableChanges": "發佈變更..."
+			"tableDesigner.publishTableChanges": "發佈變更...",
+			"tableDesigner.saveTableChanges": "儲存"
 		},
 		"sql/workbench/contrib/tableDesigner/browser/tableDesignerEditor": {
 			"tableDesigner.PreviewFeature": "預覽功能"
@@ -12427,6 +12391,7 @@
 			"standardKernelsTimeout": "正在等候筆記本提供者 '{0}' 之標準核心顯示狀態的逾時"
 		},
 		"sql/workbench/services/notebook/browser/notebookViews/notebookViewModel": {
+			"Untitled": "未命名",
 			"notebookView.nameTaken": "此筆記本中已有名稱為 {0} 的檢視。"
 		},
 		"sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension": {
@@ -12447,9 +12412,7 @@
 			"invalidMimeData": "{0} 的資料應為字串或字串的陣列",
 			"nbNotSupported": "檔案不具備有效的筆記本格式",
 			"nbformatNotRecognized": "無法識別 nbformat v{0}.{1}",
-			"unknownCellType": "資料格類型 {0} 不明",
-			"unrecognizedOutput": "無法識別輸出類型 {0}",
-			"unrecognizedOutputType": "無法識別輸出類型 {0}"
+			"unknownCellType": "資料格類型 {0} 不明"
 		},
 		"sql/workbench/services/notebook/common/notebookRegistry": {
 			"carbon.extension.contributes.notebook.executionTarget": "這個 magic 指示的選擇性執行目標，例如 Spark vs SQL",
@@ -12621,7 +12584,7 @@
 			"groupColor": "群組色彩",
 			"groupDescription": "群組描述",
 			"serverGroup.cancel": "取消",
-			"serverGroup.colorValue": "色彩: {0}",
+			"serverGroup.colorValue": "群組色彩: {0}",
 			"serverGroup.ok": "確定"
 		},
 		"sql/workbench/services/serverGroup/common/serverGroupViewModel": {
@@ -12739,6 +12702,26 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "開始使用(&&S)",
 			"showReleaseNotes": "顯示入門指南"
+		},
+		"sql/workbench/common/constants": {
+			"notebookMultipleRequestsError": "無法執行程式碼儲存格。目前正在執行另一個儲存格。"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanTreeTab": {
+			"ept.topOperationsCopyTableData": "複製",
+			"ept.topOperationsCopyWithHeader": "連同標頭複製",
+			"ept.topOperationsSelectAll": "全選",
+			"planTreeTab.title": "計畫樹狀目錄 (預覽)",
+			"topOperationsTableTitle": "執行計畫樹狀目錄"
+		},
+		"sql/workbench/contrib/executionPlan/browser/topOperationsTab": {
+			"ep.topOperationsCopyTableData": "複製",
+			"ep.topOperationsCopyWithHeader": "連同標頭複製",
+			"ep.topOperationsSelectAll": "全選",
+			"topOperationsTabTitle": "前幾項作業 (預覽)",
+			"topOperationsTableTitle": "前幾項作業"
+		},
+		"sql/workbench/contrib/notebook/browser/models/outputProcessor": {
+			"notebookInvalidOutputTypeError": "無法識別輸出類型 '{0}'。"
 		}
 	}
 }

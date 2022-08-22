@@ -9,10 +9,19 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
+			"queryHistory.captureEnabledDesc": "Gibt an, ob die Erfassung des Abfrageverlaufs aktiviert ist. Bei Festlegung auf FALSE werden ausgeführte Abfragen nicht erfasst.",
 			"queryHistory.clear": "Gesamten Verlauf löschen",
+			"queryHistory.delete": "Löschen",
 			"queryHistory.description": "Zuvor ausgeführte Abfragen anzeigen und ausführen",
+			"queryHistory.disableCapture": "Erfassung des Abfrageverlaufs anhalten",
 			"queryHistory.displayName": "Abfrageverlauf",
-			"queryHistory.toggleCapture": "Erfassung des Abfrageverlaufs umschalten"
+			"queryHistory.doubleClickAction": "Die Aktion, die ausgeführt wird, wenn auf ein Verlaufselement doppelt geklickt wird",
+			"queryHistory.doubleClickAction.open": "Öffnen eines neuen getrennten Editors mit der Abfrage aus dem ausgewählten Verlaufselement",
+			"queryHistory.doubleClickAction.run": "Öffnen eines neuen verbundenen Editors mit der Abfrage und der Verbindung aus dem ausgewählten Verlaufselement, und automatisches Ausführen der Abfrage",
+			"queryHistory.enableCapture": "Erfassung des Abfrageverlaufs starten",
+			"queryHistory.noEntries": "Keine anzuzeigenden Abfragen vorhanden",
+			"queryHistory.open": "Abfrage öffnen",
+			"queryHistory.run": "Abfrage ausführen"
 		}
 	}
 }
