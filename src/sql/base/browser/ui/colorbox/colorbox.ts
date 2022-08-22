@@ -8,12 +8,12 @@ import { Color } from 'vs/base/common/color';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Widget } from 'vs/base/browser/ui/widget';
 import * as DOM from 'vs/base/browser/dom';
+import { generateUuid } from 'vs/base/common/uuid';
 
 export interface ColorboxOptions {
 	name: string;
 	class?: string[];
 	label: string;
-	colorName: string;
 }
 
 export interface ColorboxStyle {
@@ -36,7 +36,7 @@ export class Colorbox extends Widget {
 		this.domNode = DOM.$('input');
 		this.domNode.type = 'radio';
 		this.domNode.name = opts.name;
-		this.domNode.id = opts.colorName;
+		this.domNode.id = generateUuid();
 		this._checked = false;
 
 		this.domNode.classList.add('colorbox');
@@ -45,8 +45,8 @@ export class Colorbox extends Widget {
 		}
 		this.domNode.setAttribute('aria-label', opts.label);
 		this.labelNode = DOM.$('label.colorbox-label');
-		this.labelNode.setAttribute('for', opts.colorName);
-		this.labelNode.innerText = opts.colorName;
+		this.labelNode.setAttribute('for', this.domNode.id);
+		this.labelNode.innerText = opts.label;
 
 		colorboxContainer.appendChild(this.domNode);
 		colorboxContainer.appendChild(this.labelNode);
