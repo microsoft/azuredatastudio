@@ -15,6 +15,7 @@ import { ProjectsController } from '../controllers/projectController';
 import { Project } from '../models/project';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { getPublishToDockerSettings } from '../dialogs/deployDatabaseQuickpick';
+import { getDockerImageSpec } from '../models/deploy/deployService';
 
 export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvider, sqldbproj.IExtension {
 	constructor(private projectController: ProjectsController) {
@@ -222,5 +223,13 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 
 	public getPublishToDockerSettings(project: sqldbproj.ISqlProject): Promise<sqldbproj.IPublishToDockerSettings | undefined> {
 		return getPublishToDockerSettings(project);
+	}
+
+	public getDockerImageSpec(projectName: string, baseImage: string, imageUniqueId?: string): sqldbproj.DockerImageSpec {
+		return getDockerImageSpec(projectName, baseImage, imageUniqueId);
+	}
+
+	public cleanDockerObjectsIfNeeded(imageLabel: string): Promise<void> {
+		return this.projectController.deployService.cleanDockerObjectsIfNeeded(imageLabel);
 	}
 }

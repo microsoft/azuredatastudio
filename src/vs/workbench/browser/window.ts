@@ -20,7 +20,6 @@ import { ILabelService } from 'vs/platform/label/common/label';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IOpenerService, matchesScheme } from 'vs/platform/opener/common/opener';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
-import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { BrowserLifecycleService } from 'vs/workbench/services/lifecycle/browser/lifecycleService';
 import { ILifecycleService } from 'vs/workbench/services/lifecycle/common/lifecycle';
@@ -31,7 +30,6 @@ export class BrowserWindow extends Disposable {
 		@IOpenerService private readonly openerService: IOpenerService,
 		@ILifecycleService private readonly lifecycleService: BrowserLifecycleService,
 		@IDialogService private readonly dialogService: IDialogService,
-		@IHostService private readonly hostService: IHostService,
 		@ILabelService private readonly labelService: ILabelService,
 		@IWorkbenchEnvironmentService private readonly environmentService: IWorkbenchEnvironmentService,
 		@ILogService private readonly logService: ILogService,
@@ -85,6 +83,21 @@ export class BrowserWindow extends Disposable {
 
 	private onWillShutdown(): void {
 
+		// Some browsers implement back/forward caching which will
+		// restore the workbench even after `unload` events have
+		// fired.
+		// We can detect this happens by looking at the `persisted`
+		// property when the `pageshow` event fires. If this happens
+		// after we have been shutdown, we simply reload the workbench
+		// to bring back a working state.
+		// Docs: https://web.dev/bfcache/#optimize-your-pages-for-bfcache
+		// Refs: https://github.com/microsoft/vscode/issues/136035
+		window.addEventListener('pageshow', function (event) {
+			if (event.persisted) {
+				window.location.reload();
+			}
+		});
+
 		// Try to detect some user interaction with the workbench
 		// when shutdown has happened to not show the dialog e.g.
 		// when navigation takes a longer time.
@@ -113,7 +126,7 @@ export class BrowserWindow extends Disposable {
 			);
 
 			if (res.choice === 0) {
-				this.hostService.reload();
+				window.location.reload(); // do not use any services at this point since they are likely not functional at this point
 			}
 		});
 	}
@@ -143,6 +156,11 @@ export class BrowserWindow extends Disposable {
 		// will trigger the `beforeunload`.
 		this.openerService.setDefaultExternalOpener({
 			openExternal: async (href: string) => {
+				if (this.environmentService.options?.externalURLOpener) {
+					if (await this.environmentService.options?.externalURLOpener.openExternal(href)) {
+						return true;
+					}
+				}
 
 				// HTTP(s): open in new window and deal with potential popup blockers
 				if (matchesScheme(href, Schemas.http) || matchesScheme(href, Schemas.https)) {

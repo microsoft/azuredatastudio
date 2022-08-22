@@ -107,6 +107,13 @@ var _nls;
             this.file = ts.ScriptSnapshot.fromString(contents);
             this.lib = ts.ScriptSnapshot.fromString('');
         }
+        // {{SQL CARBON EDIT}} - provide missing methods
+        readFile() {
+            return undefined;
+        }
+        fileExists() {
+            return false;
+        }
     }
     function isCallExpressionWithinTextSpanCollectStep(ts, textSpan, node) {
         if (!ts.textSpanContainsTextSpan({ start: node.pos, length: node.end - node.pos }, textSpan)) {

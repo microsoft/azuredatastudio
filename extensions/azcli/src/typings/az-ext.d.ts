@@ -29,6 +29,11 @@ declare module 'az-ext' {
 		protocol: string // "https"
 	}
 
+	export interface SqlMiListRawOutput {
+		text: string,
+		miaaList: SqlMiListResult[]
+	}
+
 	export interface SqlMiListResult {
 		name: string, // "arc-miaa"
 		replicas: string, // "1/1"
@@ -575,9 +580,9 @@ declare module 'az-ext' {
 				delete(
 					name: string,
 					args: {
-						// Direct mode arguments
+						// ARM API arguments
 						resourceGroup?: string,
-						// Indirect mode arguments
+						// K8s API arguments
 						namespace?: string
 						},
 						// Additional arguments
@@ -585,20 +590,20 @@ declare module 'az-ext' {
 				): Promise<AzOutput<void>>,
 				list(
 					args: {
-					// Direct mode arguments
+					// ARM API arguments
 					resourceGroup?: string,
-					// Indirect mode arguments
+					// K8s API arguments
 					namespace?: string
 					},
 					// Additional arguments
 					additionalEnvVars?: AdditionalEnvVars
-				): Promise<AzOutput<SqlMiListResult[]>>,
+				): Promise<AzOutput<SqlMiListRawOutput>>,
 				show(
 					name: string,
 					args: {
-						// Direct mode arguments
+						// ARM API arguments
 						resourceGroup?: string,
-						// Indirect mode arguments
+						// K8s API arguments
 						namespace?: string
 					},
 					// Additional arguments
@@ -615,9 +620,9 @@ declare module 'az-ext' {
 						retentionDays?: string, //5
 						syncSecondaryToCommit?: string //2
 					},
-					// Direct mode arguments
+					// ARM API arguments
 					resourceGroup?: string,
-					// Indirect mode arguments
+					// K8s API arguments
 					namespace?: string,
 					usek8s?: boolean,
 					// Additional arguments
@@ -626,9 +631,9 @@ declare module 'az-ext' {
 				upgrade(
 					name: string,
 					args: {
-						// Direct mode arguments
+						// ARM API arguments
 						resourceGroup?: string,
-						// Indirect mode arguments
+						// K8s API arguments
 						namespace?: string
 					},
 					// Additional arguments

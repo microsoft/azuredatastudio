@@ -24,14 +24,13 @@ import { TerminalEditorInput } from 'vs/workbench/contrib/terminal/browser/termi
 import { TerminalFindWidget } from 'vs/workbench/contrib/terminal/browser/terminalFindWidget';
 import { getTerminalActionBarArgs } from 'vs/workbench/contrib/terminal/browser/terminalMenus';
 import { ITerminalProfileResolverService, TerminalCommandId } from 'vs/workbench/contrib/terminal/common/terminal';
-import { ITerminalContributionService } from 'vs/workbench/contrib/terminal/common/terminalExtensionPoints';
 import { IEditorGroup } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { isLinux, isMacintosh } from 'vs/base/common/platform';
 import { BrowserFeatures } from 'vs/base/browser/canIUse';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { openContextMenu } from 'vs/workbench/contrib/terminal/browser/terminalContextMenu';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { TerminalLocation } from 'vs/platform/terminal/common/terminal';
+import { ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
 
 const findWidgetSelector = '.simple-find-part-wrapper';
 
@@ -63,7 +62,6 @@ export class TerminalEditor extends EditorPane {
 		@IStorageService storageService: IStorageService,
 		@ITerminalEditorService private readonly _terminalEditorService: ITerminalEditorService,
 		@ITerminalProfileResolverService private readonly _terminalProfileResolverService: ITerminalProfileResolverService,
-		@ITerminalContributionService private readonly _terminalContributionService: ITerminalContributionService,
 		@ITerminalService private readonly _terminalService: ITerminalService,
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IContextKeyService private readonly _contextKeyService: IContextKeyService,
@@ -77,7 +75,7 @@ export class TerminalEditor extends EditorPane {
 		this._findState = new FindReplaceState();
 		this._findWidget = instantiationService.createInstance(TerminalFindWidget, this._findState);
 		this._dropdownMenu = this._register(menuService.createMenu(MenuId.TerminalNewDropdownContext, _contextKeyService));
-		this._instanceMenu = this._register(menuService.createMenu(MenuId.TerminalInstanceContext, _contextKeyService));
+		this._instanceMenu = this._register(menuService.createMenu(MenuId.TerminalEditorInstanceContext, _contextKeyService));
 	}
 
 	override async setInput(newInput: TerminalEditorInput, options: IEditorOptions | undefined, context: IEditorOpenContext, token: CancellationToken) {
@@ -88,7 +86,7 @@ export class TerminalEditor extends EditorPane {
 		if (this._lastDimension) {
 			this.layout(this._lastDimension);
 		}
-		this._editorInput.terminalInstance?.setVisible(true);
+		this._editorInput.terminalInstance?.setVisible(this.isVisible());
 		if (this._editorInput.terminalInstance) {
 			// since the editor does not monitor focus changes, for ex. between the terminal
 			// panel and the editors, this is needed so that the active instance gets set
@@ -100,6 +98,7 @@ export class TerminalEditor extends EditorPane {
 
 	override clearInput(): void {
 		super.clearInput();
+		this._editorInput?.terminalInstance?.detachFromElement();
 		this._editorInput = undefined;
 	}
 
@@ -201,7 +200,8 @@ export class TerminalEditor extends EditorPane {
 	override getActionViewItem(action: IAction): IActionViewItem | undefined {
 		switch (action.id) {
 			case TerminalCommandId.CreateWithProfileButton: {
-				const actions = getTerminalActionBarArgs(TerminalLocation.Editor, this._terminalService.availableProfiles, this._getDefaultProfileName(), this._terminalContributionService.terminalProfiles, this._instantiationService, this._terminalService, this._contextKeyService, this._commandService, this._dropdownMenu);
+				const location = { viewColumn: ACTIVE_GROUP };
+				const actions = getTerminalActionBarArgs(location, this._terminalService.availableProfiles, this._getDefaultProfileName(), this._terminalService.contributedProfiles, this._instantiationService, this._terminalService, this._contextKeyService, this._commandService, this._dropdownMenu);
 				const button = this._instantiationService.createInstance(DropdownWithPrimaryActionViewItem, actions.primaryAction, actions.dropdownAction, actions.dropdownMenuActions, actions.className, this._contextMenuService, {});
 				return button;
 			}

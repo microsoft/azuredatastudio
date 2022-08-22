@@ -66,8 +66,25 @@ declare module 'sqldbproj' {
 		 */
 		addItemPrompt(project: ISqlProject, relativeFilePath: string, options?: AddItemOptions): Promise<void>;
 
+		/**
+		 * Gathers information required for publishing a project to a docker container, prompting the user as necessary
+		 * @param project The Project being published
+		 */
 		getPublishToDockerSettings(project: ISqlProject): Promise<IPublishToDockerSettings | undefined>;
 
+		/**
+		 * Gets the information required to start a docker container for publishing to
+		 * @param projectName The name of the project being published
+		 * @param baseImage The base docker image being deployed
+		 * @param imageUniqueId The unique ID to use in the name, default is a random GUID
+		 */
+		getDockerImageSpec(projectName: string, baseImage: string, imageUniqueId?: string): DockerImageSpec;
+
+		/**
+		 * Checks if any containers with the specified label already exist, and if they do prompt the user whether they want to clean them up
+		 * @param imageLabel The label of the container to search for
+		 */
+		cleanDockerObjectsIfNeeded(imageLabel: string): Promise<void>;
 	}
 
 	export interface AddItemOptions {
@@ -287,6 +304,7 @@ declare module 'sqldbproj' {
 		sqlServer2016 = 'SQL Server 2016',
 		sqlServer2017 = 'SQL Server 2017',
 		sqlServer2019 = 'SQL Server 2019',
+		sqlServer2022 = 'SQL Server 2022',
 		sqlAzure = 'Azure SQL Database',
 		sqlDW = 'Azure Synapse Dedicated SQL Pool',
 		sqlEdge = 'Azure SQL Edge'
@@ -316,8 +334,8 @@ declare module 'sqldbproj' {
 	 * Settings for publishing a SQL Project to a docker container
 	 */
 	export interface IPublishToDockerSettings {
-		dockerSettings?: IDockerSettings;
-		sqlProjectPublishSettings?: ISqlProjectPublishSettings;
+		dockerSettings: IDockerSettings;
+		sqlProjectPublishSettings: ISqlProjectPublishSettings;
 	}
 
 	export type DeploymentOptions = mssqlDeploymentOptions | vscodeMssqlDeploymentOptions;
@@ -332,5 +350,23 @@ declare module 'sqldbproj' {
 		sqlCmdVariables?: Record<string, string>;
 		deploymentOptions?: DeploymentOptions;
 		profileUsed?: boolean;
+	}
+
+	/**
+	 * Information for deploying a new docker container
+	 */
+	interface DockerImageSpec {
+		/**
+		 * The label to apply to the container
+		 */
+		label: string;
+		/**
+		 * The full name to give the container
+		 */
+		containerName: string;
+		/**
+		 * The tag to apply to the container
+		 */
+		tag: string
 	}
 }

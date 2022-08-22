@@ -43,7 +43,6 @@
 	 * }} [options]
 	 */
 	async function load(modulePaths, resultCallback, options) {
-
 		const isDev = !!safeProcess.env['VSCODE_DEV'];
 
 		// Error handler (TODO@sandbox non-sandboxed only)
@@ -115,16 +114,14 @@
 		};
 
 		// use a trusted types policy when loading via script tags
-		if (loaderConfig.preferScriptTags) {
-			loaderConfig.trustedTypesPolicy = window.trustedTypes?.createPolicy('amdLoader', {
-				createScriptURL(value) {
-					if (value.startsWith(window.location.origin)) {
-						return value;
-					}
-					throw new Error(`Invalid script url: ${value}`);
+		loaderConfig.trustedTypesPolicy = window.trustedTypes?.createPolicy('amdLoader', {
+			createScriptURL(value) {
+				if (value.startsWith(window.location.origin)) {
+					return value;
 				}
-			});
-		}
+				throw new Error(`Invalid script url: ${value}`);
+			}
+		});
 
 		// Teach the loader the location of the node modules we use in renderers
 		// This will enable to load these modules via <script> tags instead of
@@ -144,9 +141,8 @@
 			'ansi_up': `${baseNodeModulesPath}/ansi_up/ansi_up.js`,
 			'azdataGraph': `${baseNodeModulesPath}/azdataGraph/dist/build.js`
 		};
-
 		// For priviledged renderers, allow to load built-in and other node.js
-		// modules via AMD which has a fallback to using node.js `require`
+		// Cached data config (node.js loading only)
 		if (!safeProcess.sandboxed) {
 			// VS Code uses an AMD loader for its own files (and ours) but Node.JS normally uses commonjs. For modules that
 			// support UMD this may cause some issues since it will appear to them that AMD exists and so depending on the order
@@ -197,7 +193,7 @@
 	}
 
 	/**
-	 * @param {boolean | undefined} disallowReloadKeybinding
+	 * @param {boolean | undefined} disallowReloadKeybinding
 	 * @returns {() => void}
 	 */
 	function registerDeveloperKeybindings(disallowReloadKeybinding) {
@@ -222,7 +218,7 @@
 		const TOGGLE_DEV_TOOLS_KB_ALT = '123'; // F12
 		const RELOAD_KB = (safeProcess.platform === 'darwin' ? 'meta-82' : 'ctrl-82'); // mac: Cmd-R, rest: Ctrl-R
 
-		/** @type {((e: KeyboardEvent) => void) | undefined} */
+		/** @type {((e: KeyboardEvent) => void) | undefined} */
 		let listener = function (e) {
 			const key = extractKey(e);
 			if (key === TOGGLE_DEV_TOOLS_KB || key === TOGGLE_DEV_TOOLS_KB_ALT) {

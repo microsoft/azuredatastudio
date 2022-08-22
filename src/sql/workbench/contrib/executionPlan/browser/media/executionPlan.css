@@ -55,13 +55,15 @@ However we always want it to be the width of the container it is resizing.
 }
 
 /* views created by the action-bar actions */
-.eps-container .execution-plan .plan .plan-action-container .child {
+.eps-container .execution-plan .plan .plan-action-container .child,
+.eps-container .comparison-editor .plan-comparison-container .split-view-container .plan-container .plan-action-container .child {
 	flex: 0 0 25px;
 	margin-left: auto;
 }
 
 /* Search node action view */
-.eps-container .execution-plan .plan .plan-action-container .search-node-widget {
+.eps-container .execution-plan .plan .plan-action-container .search-node-widget,
+.eps-container .comparison-editor .plan-comparison-container .split-view-container .plan-container .plan-action-container .search-node-widget {
 	display: flex;
 	flex-direction: row;
 	padding: 5px;
@@ -70,12 +72,14 @@ However we always want it to be the width of the container it is resizing.
 }
 
 /* input bar styling in search node action view */
-.eps-container .execution-plan .plan .plan-action-container .search-node-widget .select-container {
+.eps-container .execution-plan .plan .plan-action-container .search-node-widget .select-container,
+.eps-container .comparison-editor .plan-comparison-container .split-view-container .plan-container .plan-action-container .search-node-widget .select-container {
 	margin-left: 5px;
 }
 
 /* styling for select element in search node action view */
-.eps-container .execution-plan .plan .plan-action-container .search-node-widget .select-container>select {
+.eps-container .execution-plan .plan .plan-action-container .search-node-widget .select-container>select,
+.eps-container .comparison-editor .plan-comparison-container .split-view-container .plan-container .plan-action-container .search-node-widget .select-container>select {
 	height: 100%;
 }
 
@@ -89,13 +93,15 @@ However we always want it to be the width of the container it is resizing.
 }
 
 /* execution plan header that contains the relative query cost, query statement and recommendations */
-.eps-container .execution-plan .plan .header {
+.eps-container .execution-plan .plan .header,
+.top-operations-tab .top-operations-container .query-row {
 	padding: 5px;
 	font-weight: bolder;
 }
 
 /* execution plan header that contains the relative query cost, query statement and recommendations */
-.eps-container .execution-plan .plan .header .query-row {
+.eps-container .execution-plan .plan .header .query-row,
+.top-operations-tab .top-operations-container .query-row{
 	overflow: hidden;
 	text-overflow: ellipsis;
 	display: -webkit-box;
@@ -117,6 +123,8 @@ However we always want it to be the width of the container it is resizing.
 	height: 100%;
 	overflow: scroll;
 	position: relative;
+	outline-offset: -3px;
+	outline-width: 3px;
 }
 
 .eps-container .properties {
@@ -613,6 +621,23 @@ However we always want it to be the width of the container it is resizing.
 	height: auto;
 }
 
+.eps-container .ep-top-operations {
+	background-image: url(../images/actionIcons/topOperations.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+
+.vs-dark .eps-container .ep-top-operations,
+.hc-black .eps-container .ep-top-operations {
+	background-image: url(../images/actionIcons/topOperationsDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+
 .eps-container .comparison-editor {
 	width: 100%;
 	height: 100%;
@@ -758,4 +783,23 @@ However we always want it to be the width of the container it is resizing.
 
 .eps-container .comparison-editor .parent-row-styling {
 	font-weight: bold;
+}
+
+.top-operations-tab {
+	overflow: scroll;
+	display: flex;
+	flex-direction: column;
+}
+
+
+.top-operations-tab .top-operations-container {
+	flex: 1;
+	width: 100%;
+	min-height: 300px;
+	overflow: scroll;
+}
+
+.top-operations-tab .top-operations-container .table-container {
+	flex: 1;
+	height: calc(100% - 50px);
 }

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
 import { IConnectionInfo, ITreeNodeInfo } from 'vscode-mssql';
-import { IExtension, BindingType, GetAzureFunctionsResult, ResultStatus, IConnectionStringInfo } from 'sql-bindings';
+import { IExtension, BindingType, GetAzureFunctionsResult, ResultStatus, IConnectionStringInfo, ObjectType } from 'sql-bindings';
 import { addSqlBinding, createAzureFunction, getAzureFunctions } from './services/azureFunctionsService';
 import { launchAddSqlBindingQuickpick } from './dialogs/addSqlBindingQuickpick';
 import { promptForBindingType, promptAndUpdateConnectionStringSetting, promptForObjectName, addSqlNugetReferenceToProjectFile } from './common/azureFunctionsUtils';
@@ -23,11 +23,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 		createAzureFunction: async (): Promise<void> => {
 			return createAzureFunction();
 		},
-		promptForBindingType: async (funcName?: string): Promise<BindingType | undefined> => {
-			return promptForBindingType(funcName);
+		promptForBindingType: async (objectType?: ObjectType, funcName?: string): Promise<BindingType | undefined> => {
+			return promptForBindingType(objectType, funcName);
 		},
-		promptForObjectName: async (bindingType: BindingType, connectionInfo?: IConnectionInfo): Promise<string | undefined> => {
-			return promptForObjectName(bindingType, connectionInfo);
+		promptForObjectName: async (bindingType: BindingType, connectionInfo?: IConnectionInfo, objectType?: ObjectType): Promise<string | undefined> => {
+			return promptForObjectName(bindingType, connectionInfo, objectType);
 		},
 		promptAndUpdateConnectionStringSetting: async (projectUri: vscode.Uri | undefined, connectionInfo?: IConnectionInfo): Promise<IConnectionStringInfo | undefined> => {
 			return promptAndUpdateConnectionStringSetting(projectUri, connectionInfo);

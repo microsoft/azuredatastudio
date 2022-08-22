@@ -8,7 +8,7 @@ import * as azExt from 'az-ext';
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import { getDatabaseStateDisplayText, promptForInstanceDeletion } from '../../../common/utils';
-import { ConnectionMode, cssStyles, IconPathHelper, miaaTroubleshootDocsUrl } from '../../../constants';
+import { cssStyles, IconPathHelper, miaaTroubleshootDocsUrl } from '../../../constants';
 import * as loc from '../../../localizedConstants';
 import { ControllerModel } from '../../../models/controllerModel';
 import { MiaaModel } from '../../../models/miaaModel';
@@ -243,25 +243,14 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 								cancellable: false
 							},
 							async (_progress, _token) => {
-								if (this._controllerModel.info.connectionMode === ConnectionMode.direct) {
-									return await this._azApi.az.sql.miarc.delete(
-										this._miaaModel.info.name,
-										{
-											resourceGroup: this._controllerModel.info.resourceGroup,
-											namespace: undefined,
-										},
-										this._controllerModel.azAdditionalEnvVars
-									);
-								} else {
-									return await this._azApi.az.sql.miarc.delete(
-										this._miaaModel.info.name,
-										{
-											resourceGroup: undefined,
-											namespace: this._controllerModel.info.namespace,
-										},
-										this._controllerModel.azAdditionalEnvVars
-									);
-								}
+								return await this._azApi.az.sql.miarc.delete(
+									this._miaaModel.info.name,
+									{
+										resourceGroup: undefined,
+										namespace: this._controllerModel.info.namespace,
+									},
+									this._controllerModel.azAdditionalEnvVars
+								);
 							}
 						);
 						await this._controllerModel.refreshTreeNode();

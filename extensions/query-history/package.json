@@ -2,7 +2,7 @@
   "name": "query-history",
   "displayName": "%queryHistory.displayName%",
   "description": "%queryHistory.description%",
-  "version": "0.2.0",
+  "version": "0.4.0",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
@@ -39,6 +39,19 @@
             "type": "boolean",
             "default": true,
             "description": "%queryHistory.captureEnabledDesc%"
+          },
+          "queryHistory.doubleClickAction": {
+            "type": "string",
+            "description": "%queryHistory.doubleClickAction%",
+            "default": "open",
+            "enum": [
+              "open",
+              "run"
+            ],
+            "enumDescriptions": [
+              "%queryHistory.doubleClickAction.open%",
+              "%queryHistory.doubleClickAction.run%"
+            ]
           }
         }
       }
@@ -170,14 +183,19 @@
         {
           "id": "queryHistory",
           "title": "%queryHistory.displayName%",
-          "icon": "./images/history.png"
+          "icon": "images/QueryHistoryIcon.svg"
         }
       ]
     }
   },
   "dependencies": {},
   "devDependencies": {
-    "@types/node": "^12.11.7"
+    "@microsoft/azdata-test": "^2.0.0",
+    "@microsoft/vscodetestcover": "^1.2.1",
+    "@types/mocha": "^7.0.2",
+    "@types/node": "^12.11.7",
+    "should": "^13.2.3",
+    "typemoq": "^2.1.0"
   },
   "__metadata": {
     "id": "55",

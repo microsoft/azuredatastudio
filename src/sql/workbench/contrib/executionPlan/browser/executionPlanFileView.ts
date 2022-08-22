@@ -13,6 +13,7 @@ import { localize } from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { contrastBorder, editorWidgetBackground, foreground, listHoverBackground, textLinkForeground, widgetShadow } from 'vs/platform/theme/common/colorRegistry';
 import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
+import { QueryResultsView } from 'sql/workbench/contrib/query/browser/queryResultsView';
 
 export class ExecutionPlanFileView {
 	private _parent: HTMLElement;
@@ -25,6 +26,7 @@ export class ExecutionPlanFileView {
 	private _planCache: Map<string, azdata.executionPlan.ExecutionPlanGraph[]> = new Map();
 
 	constructor(
+		private _queryResultsView: QueryResultsView,
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@IExecutionPlanService private executionPlanService: IExecutionPlanService
 	) {
@@ -56,7 +58,7 @@ export class ExecutionPlanFileView {
 	public addGraphs(newGraphs: azdata.executionPlan.ExecutionPlanGraph[] | undefined) {
 		if (newGraphs) {
 			newGraphs.forEach(g => {
-				const ep = this.instantiationService.createInstance(ExecutionPlanView, this._container, this._executionPlanViews.length + 1, this);
+				const ep = this.instantiationService.createInstance(ExecutionPlanView, this._container, this._executionPlanViews.length + 1, this, this._queryResultsView);
 				ep.model = g;
 				this._executionPlanViews.push(ep);
 				this.graphs.push(g);
@@ -113,6 +115,13 @@ export class ExecutionPlanFileView {
 				ep.planHeader.relativeCost = ((ep.model.root.subTreeCost + ep.model.root.cost) / sum) * 100;
 			});
 		}
+	}
+
+	public scrollToNode(planId: number, nodeId: string): void {
+		this._executionPlanViews[planId].container.scrollIntoView(true);
+		const element = this._executionPlanViews[planId].executionPlanDiagram.getElementById(nodeId);
+		this._executionPlanViews[planId].executionPlanDiagram.centerElement(element);
+		this._executionPlanViews[planId].executionPlanDiagram.selectElement(element);
 	}
 }
 

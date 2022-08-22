@@ -9,9 +9,8 @@
 }
 
 .group-color-options .server-group-color {
-	flex: 1 1 auto;
 	height: 20px;
-	margin: 5px;
+	margin: 0px;
 }
 
 .server-group-dialog {

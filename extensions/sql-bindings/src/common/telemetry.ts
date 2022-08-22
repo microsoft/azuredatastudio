@@ -11,7 +11,8 @@ export const TelemetryReporter = new AdsTelemetryReporter(packageInfo.name, pack
 
 export enum TelemetryViews {
 	SqlBindingsQuickPick = 'SqlBindingsQuickPick',
-	CreateAzureFunctionWithSqlBinding = 'CreateAzureFunctionWithSqlBinding'
+	CreateAzureFunctionWithSqlBinding = 'CreateAzureFunctionWithSqlBinding',
+	AzureFunctionsUtils = 'AzureFunctionsUtils',
 }
 
 export enum TelemetryActions {
@@ -28,16 +29,20 @@ export enum TelemetryActions {
 	updateConnectionString = 'updateConnectionString',
 	finishAddSqlBinding = 'finishAddSqlBinding',
 	exitSqlBindingsQuickpick = 'exitSqlBindingsQuickpick',
+
+	// Azure Functions Utils
+	addSQLNugetPackage = 'addSQLNugetPackage',
 }
 
 export enum CreateAzureFunctionStep {
+	noAzureFunctionsExtension = 'noAzureFunctionsExtension',
 	getAzureFunctionProject = 'getAzureFunctionProject',
 	learnMore = 'learnMore',
 	helpCreateAzureFunctionProject = 'helpCreateAzureFunctionProject',
 	getSelectedFolder = 'getSelectedFolder',
 	getBindingType = 'getBindingType',
 	launchFromCommandPalette = 'launchFromCommandPalette',
-	launchFromTable = 'launchFromTable',
+	launchFromObjectExplorer = 'launchFromObjectExplorer',
 	getConnectionProfile = 'getConnectionProfile',
 	getDatabase = 'getDatabase',
 	getObjectName = 'getObjectName',

@@ -12,6 +12,7 @@ import { ExecutionPlanState } from 'sql/workbench/common/editor/query/executionP
 import { ExecutionPlanFileView } from 'sql/workbench/contrib/executionPlan/browser/executionPlanFileView';
 import { ExecutionPlanFileViewCache } from 'sql/workbench/contrib/executionPlan/browser/executionPlanFileViewCache';
 import { generateUuid } from 'vs/base/common/uuid';
+import { QueryResultsView } from 'sql/workbench/contrib/query/browser/queryResultsView';
 
 export class ExecutionPlanTab implements IPanelTab {
 	public readonly title = localize('executionPlanTitle', "Query Plan (Preview)");
@@ -19,9 +20,10 @@ export class ExecutionPlanTab implements IPanelTab {
 	public readonly view: ExecutionPlanTabView;
 
 	constructor(
+		private _queryResultsView: QueryResultsView,
 		@IInstantiationService instantiationService: IInstantiationService,
 	) {
-		this.view = instantiationService.createInstance(ExecutionPlanTabView);
+		this.view = instantiationService.createInstance(ExecutionPlanTabView, this._queryResultsView);
 	}
 
 	public dispose() {
@@ -37,8 +39,10 @@ export class ExecutionPlanTabView implements IPanelView {
 	private _container: HTMLElement = DOM.$('.execution-plan-tab');
 	private _input: ExecutionPlanState;
 	private _viewCache: ExecutionPlanFileViewCache = ExecutionPlanFileViewCache.getInstance();
+	public currentFileView: ExecutionPlanFileView;
 
 	constructor(
+		private _queryResultsView: QueryResultsView,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 	) {
 	}
@@ -59,13 +63,14 @@ export class ExecutionPlanTabView implements IPanelView {
 		} else {
 			// creating a new view for the new input
 			newInput.executionPlanFileViewUUID = generateUuid();
-			newView = this._instantiationService.createInstance(ExecutionPlanFileView);
+			newView = this._instantiationService.createInstance(ExecutionPlanFileView, this._queryResultsView);
 			newView.onShow(this._container);
 			newView.addGraphs(
 				newInput.graphs
 			);
 			this._viewCache.executionPlanFileViewMap.set(newInput.executionPlanFileViewUUID, newView);
 		}
+		this.currentFileView = newView;
 		this._input = newInput;
 	}
 
@@ -83,10 +88,11 @@ export class ExecutionPlanTabView implements IPanelView {
 		if (currentView) {
 			currentView.onHide(this._container);
 			this._input.graphs = [];
-			currentView = this._instantiationService.createInstance(ExecutionPlanFileView);
+			currentView = this._instantiationService.createInstance(ExecutionPlanFileView, this._queryResultsView);
 			this._viewCache.executionPlanFileViewMap.set(this._input.executionPlanFileViewUUID, currentView);
 			currentView.render(this._container);
 		}
+		this.currentFileView = currentView;
 	}
 
 	public clear() {

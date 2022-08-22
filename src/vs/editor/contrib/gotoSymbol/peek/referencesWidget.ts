@@ -3,15 +3,18 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!./referencesWidget';
 import * as dom from 'vs/base/browser/dom';
 import { IMouseEvent } from 'vs/base/browser/mouseEvent';
 import { Orientation } from 'vs/base/browser/ui/sash/sash';
+import { Sizing, SplitView } from 'vs/base/browser/ui/splitview/splitview';
 import { Color } from 'vs/base/common/color';
 import { Emitter, Event } from 'vs/base/common/event';
-import { dispose, IDisposable, IReference, DisposableStore } from 'vs/base/common/lifecycle';
+import { FuzzyScore } from 'vs/base/common/filters';
+import { KeyCode } from 'vs/base/common/keyCodes';
+import { DisposableStore, dispose, IDisposable, IReference } from 'vs/base/common/lifecycle';
 import { Schemas } from 'vs/base/common/network';
 import { basenameOrAuthority, dirname } from 'vs/base/common/resources';
+import 'vs/css!./referencesWidget';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { EmbeddedCodeEditorWidget } from 'vs/editor/browser/widget/embeddedCodeEditorWidget';
 import { IEditorOptions } from 'vs/editor/common/config/editorOptions';
@@ -20,21 +23,20 @@ import { ScrollType } from 'vs/editor/common/editorCommon';
 import { IModelDeltaDecoration, TrackedRangeStickiness } from 'vs/editor/common/model';
 import { ModelDecorationOptions, TextModel } from 'vs/editor/common/model/textModel';
 import { Location } from 'vs/editor/common/modes';
+import { ILanguageConfigurationService } from 'vs/editor/common/modes/languageConfigurationRegistry';
+import { IModeService } from 'vs/editor/common/services/modeService';
 import { ITextEditorModel, ITextModelService } from 'vs/editor/common/services/resolverService';
-import { AccessibilityProvider, DataSource, Delegate, FileReferencesRenderer, OneReferenceRenderer, TreeElement, StringRepresentationProvider, IdentityProvider } from 'vs/editor/contrib/gotoSymbol/peek/referencesTree';
+import { AccessibilityProvider, DataSource, Delegate, FileReferencesRenderer, IdentityProvider, OneReferenceRenderer, StringRepresentationProvider, TreeElement } from 'vs/editor/contrib/gotoSymbol/peek/referencesTree';
+import * as peekView from 'vs/editor/contrib/peekView/peekView';
 import * as nls from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { ILabelService } from 'vs/platform/label/common/label';
-import { WorkbenchAsyncDataTree, IWorkbenchAsyncDataTreeOptions } from 'vs/platform/list/browser/listService';
+import { IWorkbenchAsyncDataTreeOptions, WorkbenchAsyncDataTree } from 'vs/platform/list/browser/listService';
 import { activeContrastBorder } from 'vs/platform/theme/common/colorRegistry';
 import { IColorTheme, IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
-import * as peekView from 'vs/editor/contrib/peekView/peekView';
-import { FileReferences, OneReference, ReferencesModel } from '../referencesModel';
-import { FuzzyScore } from 'vs/base/common/filters';
-import { SplitView, Sizing } from 'vs/base/browser/ui/splitview/splitview';
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
-import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
-import { KeyCode } from 'vs/base/common/keyCodes';
+import { FileReferences, OneReference, ReferencesModel } from '../referencesModel';
 
 
 class DecorationsManager implements IDisposable {
@@ -223,8 +225,10 @@ export class ReferenceWidget extends peekView.PeekViewWidget {
 		@ILabelService private readonly _uriLabel: ILabelService,
 		@IUndoRedoService private readonly _undoRedoService: IUndoRedoService,
 		@IKeybindingService private readonly _keybindingService: IKeybindingService,
+		@IModeService private readonly _modeService: IModeService,
+		@ILanguageConfigurationService private readonly _languageConfigurationService: ILanguageConfigurationService,
 	) {
-		super(editor, { showFrame: false, showArrow: true, isResizeable: true, isAccessible: true }, _instantiationService);
+		super(editor, { showFrame: false, showArrow: true, isResizeable: true, isAccessible: true, supportOnTitleClick: true }, _instantiationService);
 
 		this._applyTheme(themeService.getColorTheme());
 		this._callOnDispose.add(themeService.onDidColorThemeChange(this._applyTheme.bind(this)));
@@ -311,7 +315,7 @@ export class ReferenceWidget extends peekView.PeekViewWidget {
 		};
 		this._preview = this._instantiationService.createInstance(EmbeddedCodeEditorWidget, this._previewContainer, options, this.editor);
 		dom.hide(this._previewContainer);
-		this._previewNotAvailableMessage = new TextModel(nls.localize('missingPreviewMessage', "no preview available"), TextModel.DEFAULT_CREATION_OPTIONS, null, null, this._undoRedoService);
+		this._previewNotAvailableMessage = new TextModel(nls.localize('missingPreviewMessage', "no preview available"), TextModel.DEFAULT_CREATION_OPTIONS, null, null, this._undoRedoService, this._modeService, this._languageConfigurationService);
 
 		// tree
 		this._treeContainer = dom.append(containerElement, dom.$('div.ref-tree.inline'));

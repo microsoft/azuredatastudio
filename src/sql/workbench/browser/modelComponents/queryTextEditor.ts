@@ -23,11 +23,12 @@ import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editor
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
 import { ITextEditorOptions } from 'vs/platform/editor/common/editor';
+import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 
 /**
  * Extension of TextResourceEditor that is always readonly rather than only with non UntitledInputs
  */
-export class QueryTextEditor extends BaseTextEditor {
+export class QueryTextEditor extends BaseTextEditor<editorCommon.ICodeEditorViewState> {
 
 	public static ID = 'modelview.editors.textEditor';
 	private _dimension: DOM.Dimension;
@@ -63,7 +64,7 @@ export class QueryTextEditor extends BaseTextEditor {
 			options.inDiffEditor = false;
 			options.scrollBeyondLastLine = false;
 			options.folding = false;
-			options.renderIndentGuides = false;
+			options.guides = { indentation: false };
 			options.rulers = [];
 			options.glyphMargin = true;
 			options.minimap = {
@@ -204,5 +205,9 @@ export class QueryTextEditor extends BaseTextEditor {
 		const editorConfiguration = this.computeConfiguration(configuration);
 		let editorSettingsToApply = editorConfiguration;
 		this.getControl().updateOptions(editorSettingsToApply);
+	}
+
+	protected override tracksEditorViewState(input: EditorInput): boolean {
+		return input.typeId === QueryTextEditor.ID;
 	}
 }

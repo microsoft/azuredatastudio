@@ -31,3 +31,8 @@ export interface FilterableColumn<T> extends Slick.Column<T> {
 	filterable?: boolean;
 	filterValues?: Array<string>;
 }
+
+export interface ITableKeyboardEvent {
+	cell?: { row: number, cell: number };
+	event: KeyboardEvent;
+}

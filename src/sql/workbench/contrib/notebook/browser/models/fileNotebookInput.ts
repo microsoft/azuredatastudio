@@ -10,6 +10,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
+import { IResourceEditorInput } from 'vs/platform/editor/common/editor';
 
 export class FileNotebookInput extends NotebookInput {
 	public static ID: string = 'workbench.editorinputs.fileNotebookInput';
@@ -49,5 +50,11 @@ export class FileNotebookInput extends NotebookInput {
 
 	public getEncoding(): string | undefined {
 		return this.textInput.getEncoding();
+	}
+
+	override toUntyped(): IResourceEditorInput {
+		return <IResourceEditorInput>{
+			resource: this.resource
+		};
 	}
 }

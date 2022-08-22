@@ -5,43 +5,62 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import { EOL } from 'os';
-import { QueryHistoryNode } from './queryHistoryNode';
+import { QueryHistoryItem } from './queryHistoryItem';
+import { removeNewLines } from './utils';
+import { CAPTURE_ENABLED_CONFIG_SECTION, ITEM_SELECTED_COMMAND_ID, QUERY_HISTORY_CONFIG_SECTION } from './constants';
 
-const QUERY_HISTORY_CONFIG_SECTION = 'queryHistory';
-const CAPTURE_ENABLED_CONFIG_SECTION = 'captureEnabled';
 const DEFAULT_CAPTURE_ENABLED = true;
+const successIcon = new vscode.ThemeIcon('check', new vscode.ThemeColor('testing.iconPassed'));
+const failedIcon = new vscode.ThemeIcon('error', new vscode.ThemeColor('testing.iconFailed'));
 
-export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistoryNode>, vscode.Disposable {
+export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistoryItem>, vscode.Disposable {
 
-	private _onDidChangeTreeData: vscode.EventEmitter<QueryHistoryNode | undefined> = new vscode.EventEmitter<QueryHistoryNode | undefined>();
-	readonly onDidChangeTreeData: vscode.Event<QueryHistoryNode | undefined> = this._onDidChangeTreeData.event;
+	private _onDidChangeTreeData: vscode.EventEmitter<QueryHistoryItem | undefined> = new vscode.EventEmitter<QueryHistoryItem | undefined>();
+	readonly onDidChangeTreeData: vscode.Event<QueryHistoryItem | undefined> = this._onDidChangeTreeData.event;
 
-	private _queryHistoryNodes: QueryHistoryNode[] = [];
+	private _queryHistoryItems: QueryHistoryItem[] = [];
 	private _captureEnabled: boolean = true;
 
 	private _disposables: vscode.Disposable[] = [];
 
+	/**
+	 * Mapping of query URIs to the query text being executed
+	 */
+	private queryTextMappings: Map<string, string> = new Map<string, string>();
+
 	constructor() {
 		this._disposables.push(azdata.queryeditor.registerQueryEventListener({
 			onQueryEvent: async (type: azdata.queryeditor.QueryEventType, document: azdata.queryeditor.QueryDocument, args: azdata.ResultSetSummary | string | undefined, queryInfo?: azdata.queryeditor.QueryInfo) => {
-				if (this._captureEnabled && queryInfo && type === 'queryStop') {
-					const textDocuments = vscode.workspace.textDocuments;
-					// We need to compare URIs, but the event Uri comes in as string so while it should be in the same format as
-					// the textDocument uri.toString() we parse it into a vscode.Uri first to be absolutely sure.
-					const textDocument = textDocuments.find(e => e.uri.toString() === vscode.Uri.parse(document.uri).toString());
-					if (!textDocument) {
-						// If we couldn't find the document then we can't get the text so just log the error and move on
-						console.error(`Couldn't find text document with URI ${document.uri} for query event`);
-						return;
+				if (this._captureEnabled && queryInfo) {
+					if (type === 'queryStop') {
+						const connectionProfile = await azdata.connection.getConnection(document.uri);
+						const isSuccess = queryInfo.messages.find(m => m.isError) ? false : true;
+						// Add to the front of the list so the new item appears at the top
+						const queryText = this.queryTextMappings.get(document.uri);
+						if (queryText === undefined) {
+							console.error(`Couldn't find query text for URI ${document.uri.toString()}`);
+							return;
+						}
+						this.queryTextMappings.delete(document.uri);
+						this._queryHistoryItems.unshift({ queryText, connectionProfile, timestamp: new Date(), isSuccess });
+						this._onDidChangeTreeData.fire(undefined);
+					} else if (type === 'queryStart') {
+						// We get the text and save it on queryStart because we want to get the query text immediately when
+						// the query is started but then only add the item when it finishes (so that we can properly determine the success of the execution).
+						// This avoids a race condition with the text being modified during execution and ending up with the query text at the end being
+						// different than when it started.
+						const textEditor = vscode.window.activeTextEditor;
+						// We need to compare URIs, but the event Uri comes in as string so while it should be in the same format as
+						// the textDocument uri.toString() we parse it into a vscode.Uri first to be absolutely sure.
+						if (textEditor?.document.uri.toString() !== vscode.Uri.parse(document.uri).toString()) {
+							// If we couldn't find the document then we can't get the text so just log the error and move on
+							console.error(`Active text editor ${textEditor?.document.uri} does not match URI ${document.uri} for query event`);
+							return;
+						}
+						// Get the text from the current selection - or the entire document if there isn't a selection (mimicking what STS is doing itself)
+						const queryText = textEditor.document.getText(textEditor.selection.isEmpty ? undefined : textEditor.selection) ?? '';
+						this.queryTextMappings.set(document.uri, queryText);
 					}
-					// Combine all the text from the batches back together
-					const queryText = queryInfo.range.map(r => textDocument.getText(r) ?? '').join(EOL);
-					const connProfile = await azdata.connection.getConnection(document.uri);
-					const isError = queryInfo.messages.find(m => m.isError) ? false : true;
-					// Add to the front of the list so the new item appears at the top
-					this._queryHistoryNodes.unshift(new QueryHistoryNode(queryText, connProfile, new Date(), isError));
-					this._onDidChangeTreeData.fire(undefined);
 				}
 			}
 		}));
@@ -54,21 +73,26 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 	}
 
 	public clearAll(): void {
-		this._queryHistoryNodes = [];
+		this._queryHistoryItems = [];
 		this._onDidChangeTreeData.fire(undefined);
 	}
 
-	public deleteNode(node: QueryHistoryNode): void {
-		this._queryHistoryNodes = this._queryHistoryNodes.filter(n => n !== node);
+	public deleteItem(item: QueryHistoryItem): void {
+		this._queryHistoryItems = this._queryHistoryItems.filter(n => n !== item);
 		this._onDidChangeTreeData.fire(undefined);
 	}
-	public getTreeItem(node: QueryHistoryNode): vscode.TreeItem {
-		return node;
+	public getTreeItem(item: QueryHistoryItem): vscode.TreeItem {
+		const treeItem = new vscode.TreeItem(removeNewLines(item.queryText), vscode.TreeItemCollapsibleState.None);
+		treeItem.iconPath = item.isSuccess ? successIcon : failedIcon;
+		treeItem.tooltip = item.queryText;
+		treeItem.description = item.connectionProfile ? `${item.connectionProfile.serverName}|${item.connectionProfile.databaseName} ${item.timestamp.toLocaleString()}` : item.timestamp.toLocaleString();
+		treeItem.command = { title: '', command: ITEM_SELECTED_COMMAND_ID, arguments: [item] };
+		return treeItem;
 	}
 
-	public getChildren(element?: QueryHistoryNode): QueryHistoryNode[] {
+	public getChildren(element?: QueryHistoryItem): QueryHistoryItem[] {
 		// We only have top level items
-		return this._queryHistoryNodes;
+		return this._queryHistoryItems;
 	}
 
 	public dispose(): void {

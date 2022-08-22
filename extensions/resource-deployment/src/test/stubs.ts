@@ -23,14 +23,17 @@ export class TestChildProcessPromise<T> implements cp.ChildProcessPromise {
 	}
 	resolve!: (value: T | PromiseLike<T>) => void;
 	reject!: (reason?: any) => void;
-	then<TResult1 = T, TResult2 = never>(onFulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | null, onRejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null): Promise<TResult1 | TResult2> {
+
+
+	then<TResult1 = T, TResult2 = never>(onFulfilled?: ((value: any) => TResult1 | PromiseLike<TResult1>) | null, onRejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null): Promise<TResult1 | TResult2> {
 		return this._promise.then(onFulfilled, onRejected);
 	}
-	catch<TResult = never>(onRejected?: ((reason: any) => TResult | PromiseLike<TResult>) | null): Promise<T | TResult> {
+
+	catch<TResult = never>(onRejected?: ((reason: any) => TResult | PromiseLike<TResult>) | null): Promise<T | TResult | any> {
 		return this._promise.catch(onRejected);
 	}
-	[Symbol.toStringTag]: string;
-	finally(onFinally?: (() => void) | null): Promise<T> {
+	[Symbol.toStringTag]: string = '';
+	finally(onFinally?: (() => void) | null): Promise<T | any> {
 		return this._promise.finally(onFinally);
 	}
 	stdin: any = this._event;

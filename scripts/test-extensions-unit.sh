@@ -58,6 +58,7 @@ else
 				compile-extension:machine-learning \
 				compile-extension:mssql \
 				compile-extension:notebook \
+				compile-extension:query-history \
 				compile-extension:resource-deployment \
 				compile-extension:sql-bindings \
 				compile-extension:sql-database-projects
@@ -125,25 +126,15 @@ echo *** starting dacpac tests ***
 echo *****************************
 "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/dacpac --extensionTestsPath=$ROOT/extensions/dacpac/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
 
+echo ********************************************
+echo *** starting data-workspace tests ***
+echo ********************************************
+"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/data-workspace --extensionTestsPath=$ROOT/extensions/data-workspace/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
+
 echo *****************************
 echo *** starting import tests ***
 echo *****************************
 "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/import --extensionTestsPath=$ROOT/extensions/import/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
-
-echo *************************************
-echo *** starting schema compare tests ***
-echo *************************************
-"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/schema-compare --extensionTestsPath=$ROOT/extensions/schema-compare/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
-
-echo *******************************
-echo *** starting notebook tests ***
-echo *******************************
-"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/notebook --extensionTestsPath=$ROOT/extensions/notebook/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
-
-echo ******************************************
-echo *** starting resource deployment tests ***
-echo ******************************************
-"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/resource-deployment --extensionTestsPath=$ROOT/extensions/resource-deployment/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
 
 echo ************************************************
 echo *** starting machine-learning tests ***
@@ -155,21 +146,35 @@ echo ************************************************
 # echo ******************************************
 # "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/mssql --extensionTestsPath=$ROOT/extensions/mssql/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
 
+echo *******************************
+echo *** starting notebook tests ***
+echo *******************************
+"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/notebook --extensionTestsPath=$ROOT/extensions/notebook/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
+
+echo ******************************************
+echo *** starting query-history tests ***
+echo ******************************************
+"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/query-history --extensionTestsPath=$ROOT/extensions/query-history/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
+
+echo ******************************************
+echo *** starting resource deployment tests ***
+echo ******************************************
+"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/resource-deployment --extensionTestsPath=$ROOT/extensions/resource-deployment/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
+
+echo *************************************
+echo *** starting schema compare tests ***
+echo *************************************
+"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/schema-compare --extensionTestsPath=$ROOT/extensions/schema-compare/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
+
 echo ********************************************
 echo *** starting sql-bindings tests ***
 echo ********************************************
 "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/sql-bindings --extensionTestsPath=$ROOT/extensions/sql-bindings/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
 
-
 echo ********************************************
 echo *** starting sql-database-projects tests ***
 echo ********************************************
 "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/sql-database-projects --extensionTestsPath=$ROOT/extensions/sql-database-projects/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
-
-echo ********************************************
-echo *** starting data-workspace tests ***
-echo ********************************************
-"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/data-workspace --extensionTestsPath=$ROOT/extensions/data-workspace/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
 
 if [[ "$NO_CLEANUP" == "" ]]; then
 	rm -r $VSCODEUSERDATADIR

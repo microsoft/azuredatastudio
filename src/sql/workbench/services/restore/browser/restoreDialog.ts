@@ -287,7 +287,7 @@ export class RestoreDialog extends Modal {
 			ariaLabel: LocalizedStrings.TARGETDATABASE,
 			placeholder: localize('targetDatabaseTooltip', "Please enter target database name"),
 			validationOptions: {
-				validation: (value: string) => this.viewModel.databases.includes(value) ? ({ type: MessageType.ERROR, content: localize('restoreDialog.targetDatabaseAlreadyExists', "Target database already exists") }) : null
+				validation: (value: string) => this.viewModel.databases?.includes(value) ? ({ type: MessageType.ERROR, content: localize('restoreDialog.targetDatabaseAlreadyExists', "Target database already exists") }) : null
 			},
 		}));
 
@@ -666,7 +666,7 @@ export class RestoreDialog extends Modal {
 		this._register(attachTableStyler(this._restorePlanTable!, this._themeService));
 
 		this._register(this._targetDatabaseInputBox.onDidChange(dbName => {
-			if (!this.viewModel.databases.includes(dbName)) {
+			if (!this.viewModel.databases?.includes(dbName)) {
 				if (this.viewModel.targetDatabaseName !== dbName) {
 					this.viewModel.targetDatabaseName = dbName;
 					this.validateRestore();

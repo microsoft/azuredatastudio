@@ -16,6 +16,12 @@ import { RESULTS_GRID_DEFAULTS } from 'sql/workbench/common/constants';
 import { contrastBorder, listHoverBackground } from 'vs/platform/theme/common/colorRegistry';
 import { TreeGrid } from 'sql/base/browser/ui/table/treeGrid';
 import { ISashEvent, IVerticalSashLayoutProvider, Orientation, Sash } from 'vs/base/browser/ui/sash/sash';
+import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { isString } from 'vs/base/common/types';
+import { CopyKeybind } from 'sql/base/browser/ui/table/plugins/copyKeybind.plugin';
 
 export abstract class ExecutionPlanPropertiesViewBase implements IVerticalSashLayoutProvider {
 	// Title bar with close button action
@@ -42,9 +48,13 @@ export abstract class ExecutionPlanPropertiesViewBase implements IVerticalSashLa
 
 	public resizeSash: Sash;
 
+	private _selectionModel: CellSelectionModel<Slick.SlickData>;
+
 	constructor(
 		public _parentContainer: HTMLElement,
-		private _themeService: IThemeService
+		private _themeService: IThemeService,
+		@IInstantiationService private _instantiationService: IInstantiationService,
+		@IContextMenuService private _contextMenuService: IContextMenuService
 	) {
 
 		const sashContainer = DOM.$('.properties-sash');
@@ -103,19 +113,70 @@ export abstract class ExecutionPlanPropertiesViewBase implements IVerticalSashLa
 		const table = DOM.$('.table');
 		this._tableContainer.appendChild(table);
 
+		this._selectionModel = new CellSelectionModel<Slick.SlickData>();
+
 		this._tableComponent = new TreeGrid(table, {
 			columns: []
 		}, {
 			rowHeight: RESULTS_GRID_DEFAULTS.rowHeight,
 			forceFitColumns: true,
-			defaultColumnWidth: 120
+			defaultColumnWidth: 120,
+			editable: true,
+			autoEdit: false
 		});
 		attachTableStyler(this._tableComponent, this._themeService);
+		this._tableComponent.setSelectionModel(this._selectionModel);
+
+		const contextMenuAction = [
+			this._instantiationService.createInstance(CopyTableData),
+		];
+
+		this._tableComponent.onContextMenu(e => {
+			this._contextMenuService.showContextMenu({
+				getAnchor: () => e.anchor,
+				getActions: () => contextMenuAction,
+				getActionsContext: () => this.getCopyString()
+			});
+		});
+
+		let copyHandler = new CopyKeybind<any>();
+		this._tableComponent.registerPlugin(copyHandler);
+
+		copyHandler.onCopy(e => {
+			this._instantiationService.createInstance(CopyTableData).run(this.getCopyString());
+		});
 
 		new ResizeObserver((e) => {
 			this.resizeSash.layout();
 			this.resizeTable();
 		}).observe(_parentContainer);
+	}
+
+
+	public getCopyString(): string {
+		const selectedDataRange = this._selectionModel.getSelectedRanges()[0];
+		let csvString = '';
+		if (selectedDataRange) {
+			const data = [];
+
+			for (let rowIndex = selectedDataRange.fromRow; rowIndex <= selectedDataRange.toRow; rowIndex++) {
+				const dataRow = this._tableComponent.getData().getItem(rowIndex);
+				const row = [];
+				for (let colIndex = selectedDataRange.fromCell; colIndex <= selectedDataRange.toCell; colIndex++) {
+					const dataItem = dataRow[this._tableComponent.grid.getColumns()[colIndex].field];
+					if (dataItem) {
+						row.push(isString(dataItem) ? dataItem : dataItem.displayText ?? dataItem.text ?? dataItem.title);
+					} else {
+						row.push('');
+					}
+				}
+				data.push(row);
+			}
+			csvString = data.map(row =>
+				row.map(x => `${x}`).join('\t')
+			).join('\n');
+		}
+		return csvString;
 	}
 
 	getVerticalSashLeft(sash: Sash): number {
@@ -156,7 +217,7 @@ export abstract class ExecutionPlanPropertiesViewBase implements IVerticalSashLa
 		return this._tableHeight;
 	}
 
-	public abstract addDataToTable();
+	public abstract refreshPropertiesTable();
 
 	public toggleVisibility(): void {
 		this._parentContainer.style.display = this._parentContainer.style.display === 'none' ? 'flex' : 'none';
@@ -167,6 +228,10 @@ export abstract class ExecutionPlanPropertiesViewBase implements IVerticalSashLa
 		this._tableContainer.scrollTo(0, 0);
 		this._tableComponent.setData(data);
 		this.resizeTable();
+	}
+
+	public updateTableColumns(columns: Slick.Column<Slick.SlickData>[]) {
+		this._tableComponent.columns = columns;
 	}
 
 	private resizeTable(): void {
@@ -207,7 +272,7 @@ export class SortPropertiesAlphabeticallyAction extends Action {
 
 	public override async run(context: ExecutionPlanPropertiesViewBase): Promise<void> {
 		context.sortType = PropertiesSortType.Alphabetical;
-		context.addDataToTable();
+		context.refreshPropertiesTable();
 	}
 }
 
@@ -221,7 +286,7 @@ export class SortPropertiesReverseAlphabeticallyAction extends Action {
 
 	public override async run(context: ExecutionPlanPropertiesViewBase): Promise<void> {
 		context.sortType = PropertiesSortType.ReverseAlphabetical;
-		context.addDataToTable();
+		context.refreshPropertiesTable();
 	}
 }
 
@@ -235,7 +300,7 @@ export class SortPropertiesByDisplayOrderAction extends Action {
 
 	public override async run(context: ExecutionPlanPropertiesViewBase): Promise<void> {
 		context.sortType = PropertiesSortType.DisplayOrder;
-		context.addDataToTable();
+		context.refreshPropertiesTable();
 	}
 }
 
@@ -269,3 +334,19 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 	}
 });
 
+
+export class CopyTableData extends Action {
+	public static ID = 'ep.CopyTableData';
+	public static LABEL = localize('ep.topOperationsCopyTableData', "Copy");
+
+	constructor(
+		@IClipboardService private _clipboardService: IClipboardService
+	) {
+		super(CopyTableData.ID, CopyTableData.LABEL, '');
+	}
+
+	public override async run(context: string): Promise<void> {
+
+		this._clipboardService.writeText(context);
+	}
+}

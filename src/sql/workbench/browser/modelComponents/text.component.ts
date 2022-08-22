@@ -34,7 +34,7 @@ const errorTextClass = 'error-text';
 @Component({
 	selector: 'modelview-text',
 	template: `
-	<div *ngIf="showList;else noList" [style.display]="display" [style.width]="getWidth()" [style.height]="getHeight()" [title]="title" [attr.role]="ariaRole" [attr.aria-hidden]="ariaHidden" [ngStyle]="this.CSSStyles">
+	<div *ngIf="showList;else noList" [style.display]="display" [style.width]="getWidth()" [style.height]="getHeight()" [title]="title" [attr.role]="ariaRole" [attr.aria-hidden]="ariaHidden" [ngStyle]="this.CSSStyles" [attr.aria-live]="ariaLive">
 		<div *ngIf="isUnOrderedList;else orderedlist">
 			<ul style="padding-left:0px">
 				<li *ngFor="let v of value">{{v}}</li>
@@ -48,7 +48,7 @@ const errorTextClass = 'error-text';
 	</div>
 	<ng-template #noList>
 		<div *ngIf="showDiv;else noDiv" style="display:flex;flex-flow:row;align-items:center;" [style.width]="getWidth()" [style.height]="getHeight()">
-			<p [title]="title" [ngStyle]="this.CSSStyles" [attr.role]="ariaRole" [attr.aria-hidden]="ariaHidden"></p>
+			<p [title]="title" [ngStyle]="this.CSSStyles" [attr.role]="ariaRole" [attr.aria-hidden]="ariaHidden" [attr.aria-live]="ariaLive"></p>
 			<div #textContainer id="textContainer"></div>
 			<span *ngIf="requiredIndicator" style="color:red;margin-left:5px;">*</span>
 			<div *ngIf="description" tabindex="0" class="modelview-text-tooltip" [attr.aria-label]="description" role="img" (mouseenter)="showTooltip($event)" (focus)="showTooltip($event)" (keydown)="onDescriptionKeyDown($event)">
@@ -56,7 +56,7 @@ const errorTextClass = 'error-text';
 			</div>
 		</div>
 		<ng-template #noDiv>
-			<div #textContainer id="textContainer" [style.display]="display" [style.width]="getWidth()" [style.height]="getHeight()" [title]="title" [attr.role]="ariaRole" [attr.aria-hidden]="ariaHidden" [ngStyle]="this.CSSStyles"></div>
+			<div #textContainer id="textContainer" [style.display]="display" [style.width]="getWidth()" [style.height]="getHeight()" [title]="title" [attr.role]="ariaRole" [attr.aria-hidden]="ariaHidden" [attr.aria-live]="ariaLive" [ngStyle]="this.CSSStyles"></div>
 		</ng-template>
 	</ng-template>`
 })
@@ -182,10 +182,12 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 
 			// Now insert the link element
 			const link = links[i];
-			const linkElement = this._register(this.instantiationService.createInstance(Link, {
+			const linkElement = this._register(this.instantiationService.createInstance(Link,
+				(<HTMLElement>this.textContainer.nativeElement), {
 				label: link.text,
 				href: link.url
 			}, undefined));
+
 			if (link.accessibilityInformation) {
 				linkElement.el.setAttribute('aria-label', link.accessibilityInformation.label);
 				if (link.accessibilityInformation.role) {
@@ -209,6 +211,10 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 
 	public get showDiv(): boolean {
 		return this.requiredIndicator || !!this.description;
+	}
+
+	public get ariaLive(): string | undefined {
+		return this.getPropertyOrDefault<string | undefined>((props) => props.ariaLive, undefined);
 	}
 
 	/**

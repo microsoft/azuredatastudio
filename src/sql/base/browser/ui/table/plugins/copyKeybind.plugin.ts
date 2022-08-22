@@ -31,7 +31,7 @@ export class CopyKeybind<T> implements Slick.Plugin<T> {
 		let event = new StandardKeyboardEvent(e);
 		let handled = false;
 
-		if (event.equals(KeyCode.KEY_C | KeyMod.CtrlCmd)) {
+		if (event.equals(KeyCode.KeyC | KeyMod.CtrlCmd)) {
 			handled = true;
 			let selectionModel = this.grid.getSelectionModel();
 			let ranges: Slick.Range[];

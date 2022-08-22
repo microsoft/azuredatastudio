@@ -21,12 +21,13 @@ import { KeymapRecommendations } from 'vs/workbench/contrib/extensions/browser/k
 import { LanguageRecommendations } from 'vs/workbench/contrib/extensions/browser/languageRecommendations';
 import { ExtensionRecommendation } from 'vs/workbench/contrib/extensions/browser/extensionRecommendations';
 import { ConfigBasedRecommendations } from 'vs/workbench/contrib/extensions/browser/configBasedRecommendations';
-import { StaticRecommendations } from 'sql/workbench/contrib/extensions/browser/staticRecommendations';
+import { StaticRecommendations } from 'sql/workbench/contrib/extensions/browser/staticRecommendations'; // {{SQL CARBON EDIT}} Custom extension recommendation
 import { ScenarioRecommendations } from 'sql/workbench/contrib/extensions/browser/scenarioRecommendations';
 import { IExtensionRecommendationNotificationService } from 'vs/platform/extensionRecommendations/common/extensionRecommendations';
 import { timeout } from 'vs/base/common/async';
 import { IExtensionRecommendation } from 'sql/workbench/services/extensionManagement/common/extensionManagement'; // {{SQL CARBON EDIT}} Custom extension recommendation
 import { URI } from 'vs/base/common/uri';
+import { WebRecommendations } from 'vs/workbench/contrib/extensions/browser/webRecommendations';
 
 type IgnoreRecommendationClassification = {
 	recommendationReason: { classification: 'SystemMetaData', purpose: 'FeatureInsight', isMeasurement: true };
@@ -47,6 +48,7 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 	private readonly keymapRecommendations: KeymapRecommendations;
 	private readonly staticRecommendations: StaticRecommendations; // {{SQL CARBON EDIT}} add ours
 	private readonly scenarioRecommendations: ScenarioRecommendations; // {{SQL CARBON EDIT}} add ours
+	private readonly webRecommendations: WebRecommendations;
 	private readonly languageRecommendations: LanguageRecommendations;
 
 	public readonly activationPromise: Promise<void>;
@@ -74,9 +76,10 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 		this.exeBasedRecommendations = instantiationService.createInstance(ExeBasedRecommendations);
 		this.dynamicWorkspaceRecommendations = instantiationService.createInstance(DynamicWorkspaceRecommendations);
 		this.keymapRecommendations = instantiationService.createInstance(KeymapRecommendations);
+		this.webRecommendations = instantiationService.createInstance(WebRecommendations);
+		this.languageRecommendations = instantiationService.createInstance(LanguageRecommendations);
 		this.staticRecommendations = instantiationService.createInstance(StaticRecommendations); // {{SQL CARBON EDIT}} add ours
 		this.scenarioRecommendations = instantiationService.createInstance(ScenarioRecommendations); // {{SQL CARBON EDIT}} add ours
-		this.languageRecommendations = instantiationService.createInstance(LanguageRecommendations);
 
 		if (!this.isEnabled()) {
 			this.sessionSeed = 0;
@@ -98,12 +101,14 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 		// activate all recommendations
 		await Promise.all([
 			this.workspaceRecommendations.activate(),
+			this.configBasedRecommendations.activate(),
 			this.fileBasedRecommendations.activate(),
 			this.experimentalRecommendations.activate(),
 			this.keymapRecommendations.activate(),
 			this.staticRecommendations.activate(), // {{SQL CARBON EDIT}} add ours
 			this.scenarioRecommendations.activate(), // {{SQL CARBON EDIT}} add ours
 			this.languageRecommendations.activate(),
+			this.webRecommendations.activate()
 		]);
 
 		this._register(Event.any(this.workspaceRecommendations.onDidChangeRecommendations, this.configBasedRecommendations.onDidChangeRecommendations, this.extensionRecommendationsManagementService.onDidChangeIgnoredRecommendations)(() => this._onDidChangeRecommendations.fire()));
@@ -143,6 +148,7 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 			...this.keymapRecommendations.recommendations,
 			...this.staticRecommendations.recommendations, // {{SQL CARBON EDIT}} add ours
 			...this.languageRecommendations.recommendations,
+			...this.webRecommendations.recommendations,
 		];
 
 		for (const { extensionId, reason } of allRecommendations) {
@@ -163,6 +169,7 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 	}
 
 	async getOtherRecommendations(): Promise<string[]> {
+		await this.activationPromise;
 		await this.activateProactiveRecommendations();
 
 		const recommendations = [
@@ -170,7 +177,8 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 			...this.exeBasedRecommendations.otherRecommendations,
 			...this.dynamicWorkspaceRecommendations.recommendations,
 			...this.experimentalRecommendations.recommendations,
-			...this.staticRecommendations.recommendations // {{SQL CARBON EDIT}}
+			...this.webRecommendations.recommendations,
+			...this.staticRecommendations.recommendations // {{SQL CARBON EDIT}},
 		];
 
 		const extensionIds = distinct(recommendations.map(e => e.extensionId))
@@ -272,8 +280,6 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 			await this.extensionRecommendationNotificationService.promptWorkspaceRecommendations(allowedRecommendations);
 		}
 	}
-
-
 
 	// {{SQL CARBON EDIT}}
 	promptRecommendedExtensionsByScenario(scenarioType: string): void {

@@ -569,10 +569,28 @@ declare module 'azdata' {
 
 		buildConnectionInfo?(connectionString: string): Thenable<ConnectionInfo>;
 
+		/**
+		 * Registers a handler for ConnectionComplete events.
+		 *
+		 * **WARNING** This should only ever be called by the extension creating the provider. Any other extensions calling this
+		 * will overwrite the handler registered by the provider extension which will likely break this functionality.
+		 */
 		registerOnConnectionComplete(handler: (connSummary: ConnectionInfoSummary) => any): void;
 
+		/**
+		 * Registers a handler for IntellisenseCacheComplete events.
+		 *
+		 * **WARNING** This should only ever be called by the extension creating the provider. Any other extensions calling this
+		 * will overwrite the handler registered by the provider extension which will likely break this functionality.
+		 */
 		registerOnIntelliSenseCacheComplete(handler: (connectionUri: string) => any): void;
 
+		/**
+		 * Registers a handler for ConnectionChanged events.
+		 *
+		 * **WARNING** This should only ever be called by the extension creating the provider. Any other extensions calling this
+		 * will overwrite the handler registered by the provider extension which will likely break this functionality.
+		 */
 		registerOnConnectionChanged(handler: (changedConnInfo: ChangedConnectionInfo) => any): void;
 	}
 
@@ -819,6 +837,12 @@ declare module 'azdata' {
 	export interface ScriptingProvider extends DataProvider {
 		scriptAsOperation(connectionUri: string, operation: ScriptOperation, metadata: ObjectMetadata, paramDetails: ScriptingParamDetails): Thenable<ScriptingResult>;
 
+		/**
+		 * Registers a handler for ScriptingComplete events.
+		 *
+		 * **WARNING** This should only ever be called by the extension creating the provider. Any other extensions calling this
+		 * will overwrite the handler registered by the provider extension which will likely break this functionality.
+		 */
 		registerOnScriptingComplete(handler: (scriptingCompleteResult: ScriptingCompleteResult) => any): void;
 	}
 
@@ -884,11 +908,47 @@ declare module 'azdata' {
 		setQueryExecutionOptions(ownerUri: string, options: QueryExecutionOptions): Thenable<void>;
 
 		// Notifications
+		/**
+		 * Registers a handler for QueryComplete events.
+		 *
+		 * **WARNING** This should only ever be called by the extension creating the provider. Any other extensions calling this
+		 * will overwrite the handler registered by the provider extension which will likely break this functionality.
+		 */
 		registerOnQueryComplete(handler: (result: QueryExecuteCompleteNotificationResult) => any): void;
+		/**
+		 * Registers a handler for BatchStart events.
+		 *
+		 * **WARNING** This should only ever be called by the extension creating the provider. Any other extensions calling this
+		 * will overwrite the handler registered by the provider extension which will likely break this functionality.
+		 */
 		registerOnBatchStart(handler: (batchInfo: QueryExecuteBatchNotificationParams) => any): void;
+		/**
+		 * Registers a handler for BatchComplete events.
+		 *
+		 * **WARNING** This should only ever be called by the extension creating the provider. Any other extensions calling this
+		 * will overwrite the handler registered by the provider extension which will likely break this functionality.
+		 */
 		registerOnBatchComplete(handler: (batchInfo: QueryExecuteBatchNotificationParams) => any): void;
+		/**
+		 * Registers a handler for ResultSetAvailable events.
+		 *
+		 * **WARNING** This should only ever be called by the extension creating the provider. Any other extensions calling this
+		 * will overwrite the handler registered by the provider extension which will likely break this functionality.
+		 */
 		registerOnResultSetAvailable(handler: (resultSetInfo: QueryExecuteResultSetNotificationParams) => any): void;
+		/**
+		 * Registers a handler for ResultSetUpdated events.
+		 *
+		 * **WARNING** This should only ever be called by the extension creating the provider. Any other extensions calling this
+		 * will overwrite the handler registered by the provider extension which will likely break this functionality.
+		 */
 		registerOnResultSetUpdated(handler: (resultSetInfo: QueryExecuteResultSetNotificationParams) => any): void;
+		/**
+		 * Registers a handler for Message events.
+		 *
+		 * **WARNING** This should only ever be called by the extension creating the provider. Any other extensions calling this
+		 * will overwrite the handler registered by the provider extension which will likely break this functionality.
+		 */
 		registerOnMessage(handler: (message: QueryExecuteMessageParams) => any): void;
 
 		// Edit Data Requests
@@ -903,6 +963,12 @@ declare module 'azdata' {
 		getEditRows(rowData: EditSubsetParams): Thenable<EditSubsetResult>;
 
 		// Edit Data Notifications
+		/**
+		 * Registers a handler for EditSessionReady events.
+		 *
+		 * **WARNING** This should only ever be called by the extension creating the provider. Any other extensions calling this
+		 * will overwrite the handler registered by the provider extension which will likely break this functionality.
+		 */
 		registerOnEditSessionReady(handler: (ownerUri: string, success: boolean, message: string) => any): void;
 	}
 
@@ -1345,6 +1411,12 @@ declare module 'azdata' {
 
 		findNodes(findNodesInfo: FindNodesInfo): Thenable<ObjectExplorerFindNodesResponse>;
 
+		/**
+		 * Registers a handler for ExpandCompleted events.
+		 *
+		 * **WARNING** This should only ever be called by the extension creating the provider. Any other extensions calling this
+		 * will overwrite the handler registered by the provider extension which will likely break this functionality.
+		 */
 		registerOnExpandCompleted(handler: (response: ObjectExplorerExpandInfo) => any): void;
 	}
 
@@ -1353,8 +1425,20 @@ declare module 'azdata' {
 
 		closeSession(closeSessionInfo: ObjectExplorerCloseSessionInfo): Thenable<ObjectExplorerCloseSessionResponse>;
 
+		/**
+		 * Registers a handler for SessionCreated events.
+		 *
+		 * **WARNING** This should only ever be called by the extension creating the provider. Any other extensions calling this
+		 * will overwrite the handler registered by the provider extension which will likely break this functionality.
+		 */
 		registerOnSessionCreated(handler: (response: ObjectExplorerSession) => any): void;
 
+		/**
+		 * Registers a handler for SessionDisconnected events.
+		 *
+		 * **WARNING** This should only ever be called by the extension creating the provider. Any other extensions calling this
+		 * will overwrite the handler registered by the provider extension which will likely break this functionality.
+		 */
 		registerOnSessionDisconnected?(handler: (response: ObjectExplorerSession) => any): void;
 	}
 
@@ -1946,8 +2030,20 @@ declare module 'azdata' {
 
 		cancelTask(cancelTaskParams: CancelTaskParams): Thenable<boolean>;
 
+		/**
+		 * Registers a handler for TaskCreated events.
+		 *
+		 * **WARNING** This should only ever be called by the extension creating the provider. Any other extensions calling this
+		 * will overwrite the handler registered by the provider extension which will likely break this functionality.
+		 */
 		registerOnTaskCreated(handler: (response: TaskInfo) => any): void;
 
+		/**
+		 * Registers a handler for TaskStatusChanged events.
+		 *
+		 * **WARNING** This should only ever be called by the extension creating the provider. Any other extensions calling this
+		 * will overwrite the handler registered by the provider extension which will likely break this functionality.
+		 */
 		registerOnTaskStatusChanged(handler: (response: TaskProgressInfo) => any): void;
 	}
 
@@ -2127,10 +2223,28 @@ declare module 'azdata' {
 
 	export interface FileBrowserProvider extends DataProvider {
 		openFileBrowser(ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean): Thenable<boolean>;
+		/**
+		 * Registers a handler for FileBrowserOpened events.
+		 *
+		 * **WARNING** This should only ever be called by the extension creating the provider. Any other extensions calling this
+		 * will overwrite the handler registered by the provider extension which will likely break this functionality.
+		 */
 		registerOnFileBrowserOpened(handler: (response: FileBrowserOpenedParams) => any): void;
 		expandFolderNode(ownerUri: string, expandPath: string): Thenable<boolean>;
+		/**
+		 * Registers a handler for FolderNodeExpanded events.
+		 *
+		 * **WARNING** This should only ever be called by the extension creating the provider. Any other extensions calling this
+		 * will overwrite the handler registered by the provider extension which will likely break this functionality.
+		 */
 		registerOnFolderNodeExpanded(handler: (response: FileBrowserExpandedParams) => any): void;
 		validateFilePaths(ownerUri: string, serviceType: string, selectedFiles: string[]): Thenable<boolean>;
+		/**
+		 * Registers a handler for FilePathsValidated events.
+		 *
+		 * **WARNING** This should only ever be called by the extension creating the provider. Any other extensions calling this
+		 * will overwrite the handler registered by the provider extension which will likely break this functionality.
+		 */
 		registerOnFilePathsValidated(handler: (response: FileBrowserValidatedParams) => any): void;
 		closeFileBrowser(ownerUri: string): Thenable<FileBrowserCloseResponse>;
 	}
@@ -3038,7 +3152,7 @@ declare module 'azdata' {
 		'run-in' |
 		'table' |
 		'table-caption' |
-		' table-column-group' |
+		'table-column-group' |
 		'table-header-group' |
 		'table-footer-group' |
 		'table-row-group' |
@@ -3329,9 +3443,7 @@ declare module 'azdata' {
 	/**
 	 * Common properties for container components such as {@link DivContainer} or {@link FlexContainer}
 	 */
-	export interface ContainerProperties extends ComponentProperties {
-
-	}
+	export interface ContainerProperties extends ComponentProperties { }
 
 	export type ThemedIconPath = { light: string | vscode.Uri; dark: string | vscode.Uri };
 	export type IconPath = string | vscode.Uri | ThemedIconPath;

@@ -3,43 +3,46 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!./ghostText';
 import * as dom from 'vs/base/browser/dom';
+import { Color, RGBA } from 'vs/base/common/color';
 import { Disposable, DisposableStore, IDisposable, toDisposable } from 'vs/base/common/lifecycle';
-import { Range } from 'vs/editor/common/core/range';
+import * as strings from 'vs/base/common/strings';
+import 'vs/css!./ghostText';
+import { Configuration } from 'vs/editor/browser/config/configuration';
 import { ContentWidgetPositionPreference, ICodeEditor, IContentWidget, IContentWidgetPosition } from 'vs/editor/browser/editorBrowser';
 import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService';
-import * as strings from 'vs/base/common/strings';
-import { RenderLineInput, renderViewLine } from 'vs/editor/common/viewLayout/viewLineRenderer';
 import { EditorFontLigatures, EditorOption, IComputedEditorOptions } from 'vs/editor/common/config/editorOptions';
-import { createStringBuilder } from 'vs/editor/common/core/stringBuilder';
-import { Configuration } from 'vs/editor/browser/config/configuration';
+import { CursorColumns } from 'vs/editor/common/controller/cursorCommon';
 import { LineTokens } from 'vs/editor/common/core/lineTokens';
 import { Position } from 'vs/editor/common/core/position';
-import { IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
-import { ghostTextBorder, ghostTextForeground } from 'vs/editor/common/view/editorColorRegistry';
-import { RGBA, Color } from 'vs/base/common/color';
-import { CursorColumns } from 'vs/editor/common/controller/cursorCommon';
+import { Range } from 'vs/editor/common/core/range';
+import { createStringBuilder } from 'vs/editor/common/core/stringBuilder';
 import { IDecorationRenderOptions } from 'vs/editor/common/editorCommon';
-import { GhostTextWidgetModel } from 'vs/editor/contrib/inlineCompletions/ghostText';
 import { IModelDeltaDecoration } from 'vs/editor/common/model';
+import { ILanguageIdCodec } from 'vs/editor/common/modes';
+import { IModeService } from 'vs/editor/common/services/modeService';
+import { ghostTextBackground, ghostTextBorder, ghostTextForeground } from 'vs/editor/common/view/editorColorRegistry';
 import { LineDecoration } from 'vs/editor/common/viewLayout/lineDecorations';
+import { RenderLineInput, renderViewLine } from 'vs/editor/common/viewLayout/viewLineRenderer';
 import { InlineDecorationType } from 'vs/editor/common/viewModel/viewModel';
+import { GhostTextWidgetModel } from 'vs/editor/contrib/inlineCompletions/ghostText';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 
 const ttPolicy = window.trustedTypes?.createPolicy('editorGhostText', { createHTML: value => value });
 
 export class GhostTextWidget extends Disposable {
 	private disposed = false;
 	private readonly partsWidget = this._register(this.instantiationService.createInstance(DecorationsWidget, this.editor));
-	private readonly additionalLinesWidget = this._register(new AdditionalLinesWidget(this.editor));
+	private readonly additionalLinesWidget = this._register(new AdditionalLinesWidget(this.editor, this.modeService.languageIdCodec));
 	private viewMoreContentWidget: ViewMoreLinesContentWidget | undefined = undefined;
 
 	constructor(
 		private readonly editor: ICodeEditor,
 		private readonly model: GhostTextWidgetModel,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
+		@IModeService private readonly modeService: IModeService,
 	) {
 		super();
 
@@ -116,6 +119,7 @@ export class GhostTextWidget extends Disposable {
 				inlineTexts.push({
 					column: part.column,
 					text: lines[0],
+					preview: part.preview,
 				});
 				lines = lines.slice(1);
 			} else {
@@ -192,6 +196,7 @@ interface HiddenText {
 interface InsertedInlineText {
 	column: number;
 	text: string;
+	preview: boolean;
 }
 
 class DecorationsWidget implements IDisposable {
@@ -221,6 +226,7 @@ class DecorationsWidget implements IDisposable {
 
 		const colorTheme = this.themeService.getColorTheme();
 		const foreground = colorTheme.getColor(ghostTextForeground);
+
 		let opacity: string | undefined = undefined;
 		let color: string | undefined = undefined;
 		if (foreground) {
@@ -273,6 +279,7 @@ class DecorationsWidget implements IDisposable {
 					opacity,
 					color,
 					border,
+					fontWeight: p.preview ? 'bold' : 'normal',
 				},
 			}));
 
@@ -280,7 +287,8 @@ class DecorationsWidget implements IDisposable {
 				range: Range.fromPositions(new Position(lineNumber, p.column)),
 				options: shouldUseInjectedText ? {
 					description: 'ghost-text',
-					after: { content: contentText, inlineClassName: 'ghost-text-decoration' }
+					after: { content: contentText, inlineClassName: p.preview ? 'ghost-text-decoration-preview' : 'ghost-text-decoration' },
+					showIfCollapsed: true,
 				} : {
 					...decorationType.resolve()
 				}
@@ -332,7 +340,10 @@ class AdditionalLinesWidget implements IDisposable {
 	private _viewZoneId: string | undefined = undefined;
 	public get viewZoneId(): string | undefined { return this._viewZoneId; }
 
-	constructor(private readonly editor: ICodeEditor) { }
+	constructor(
+		private readonly editor: ICodeEditor,
+		private readonly languageIdCodec: ILanguageIdCodec
+	) { }
 
 	public dispose(): void {
 		this.clear();
@@ -364,7 +375,7 @@ class AdditionalLinesWidget implements IDisposable {
 			const heightInLines = Math.max(additionalLines.length, minReservedLineCount);
 			if (heightInLines > 0) {
 				const domNode = document.createElement('div');
-				renderLines(domNode, tabSize, additionalLines, this.editor.getOptions());
+				renderLines(domNode, tabSize, additionalLines, this.editor.getOptions(), this.languageIdCodec);
 
 				this._viewZoneId = changeAccessor.addZone({
 					afterLineNumber: lineNumber,
@@ -381,7 +392,7 @@ interface LineData {
 	decorations: LineDecoration[];
 }
 
-function renderLines(domNode: HTMLElement, tabSize: number, lines: LineData[], opts: IComputedEditorOptions): void {
+function renderLines(domNode: HTMLElement, tabSize: number, lines: LineData[], opts: IComputedEditorOptions, languageIdCodec: ILanguageIdCodec): void {
 	const disableMonospaceOptimizations = opts.get(EditorOption.disableMonospaceOptimizations);
 	const stopRenderingLineAfter = opts.get(EditorOption.stopRenderingLineAfter);
 	// To avoid visual confusion, we don't want to render visible whitespace
@@ -404,7 +415,7 @@ function renderLines(domNode: HTMLElement, tabSize: number, lines: LineData[], o
 
 		const isBasicASCII = strings.isBasicASCII(line);
 		const containsRTL = strings.containsRTL(line);
-		const lineTokens = LineTokens.createEmpty(line);
+		const lineTokens = LineTokens.createEmpty(line, languageIdCodec);
 
 		renderViewLine(new RenderLineInput(
 			(fontInfo.isMonospace && !disableMonospaceOptimizations),
@@ -489,17 +500,24 @@ class ViewMoreLinesContentWidget extends Disposable implements IContentWidget {
 
 registerThemingParticipant((theme, collector) => {
 	const foreground = theme.getColor(ghostTextForeground);
-
 	if (foreground) {
-		const opacity = String(foreground.rgba.a);
-		const color = Color.Format.CSS.format(opaque(foreground))!;
+		// `!important` ensures that other decorations don't cause a style conflict (#132017).
+		collector.addRule(`.monaco-editor .ghost-text-decoration { color: ${foreground.toString()} !important; }`);
+		collector.addRule(`.monaco-editor .ghost-text-decoration-preview { color: ${foreground.toString()} !important; }`);
+		collector.addRule(`.monaco-editor .suggest-preview-text .ghost-text { color: ${foreground.toString()} !important; }`);
+	}
 
-		collector.addRule(`.monaco-editor .ghost-text-decoration { opacity: ${opacity}; color: ${color}; }`);
-		collector.addRule(`.monaco-editor .suggest-preview-text .ghost-text { opacity: ${opacity}; color: ${color}; }`);
+	const background = theme.getColor(ghostTextBackground);
+	if (background) {
+		collector.addRule(`.monaco-editor .ghost-text-decoration { background-color: ${background.toString()}; }`);
+		collector.addRule(`.monaco-editor .ghost-text-decoration-preview { background-color: ${background.toString()}; }`);
+		collector.addRule(`.monaco-editor .suggest-preview-text .ghost-text { background-color: ${background.toString()}; }`);
 	}
 
 	const border = theme.getColor(ghostTextBorder);
 	if (border) {
-		collector.addRule(`.monaco-editor .suggest-preview-text .ghost-text { border: 2px dashed ${border}; }`);
+		collector.addRule(`.monaco-editor .suggest-preview-text .ghost-text { border: 1px solid ${border}; }`);
+		collector.addRule(`.monaco-editor .ghost-text-decoration { border: 1px solid ${border}; }`);
+		collector.addRule(`.monaco-editor .ghost-text-decoration-preview { border: 1px solid ${border}; }`);
 	}
 });

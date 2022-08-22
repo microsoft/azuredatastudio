@@ -88,6 +88,8 @@ export const CONTEXT_DISASSEMBLY_VIEW_FOCUS = new RawContextKey<boolean>('disass
 export const CONTEXT_LANGUAGE_SUPPORTS_DISASSEMBLE_REQUEST = new RawContextKey<boolean>('languageSupportsDisassembleRequest', false, { type: 'boolean', description: nls.localize('languageSupportsDisassembleRequest', "True when the language in the current editor supports disassemble request.") });
 export const CONTEXT_FOCUSED_STACK_FRAME_HAS_INSTRUCTION_POINTER_REFERENCE = new RawContextKey<boolean>('focusedStackFrameHasInstructionReference', false, { type: 'boolean', description: nls.localize('focusedStackFrameHasInstructionReference', "True when the focused stack frame has instruction pointer reference.") });
 
+export const debuggerDisabledMessage = (debugType: string) => nls.localize('debuggerDisabled', "Configured debug type '{0}' is installed but not supported in this environment.", debugType);
+
 export const EDITOR_CONTRIBUTION_ID = 'editor.contrib.debug';
 export const BREAKPOINT_EDITOR_CONTRIBUTION_ID = 'editor.contrib.breakpoint';
 export const DEBUG_SCHEME = 'debug';
@@ -191,6 +193,7 @@ export interface IDebugSessionOptions {
 	debugUI?: {
 		simple?: boolean;
 	};
+	startedByUser?: boolean;
 }
 
 export interface IDataBreakpointInfoResponse {
@@ -548,6 +551,9 @@ export interface IDebugConfiguration {
 	showBreakpointsInOverviewRuler: boolean;
 	showInlineBreakpointCandidates: boolean;
 	confirmOnExit: 'always' | 'never';
+	disassemblyView: {
+		showSourceCode: boolean;
+	}
 }
 
 export interface IGlobalConfig {
@@ -679,6 +685,7 @@ export interface IDebuggerContribution extends IPlatformSpecificAdapterContribut
 	initialConfigurations?: any[];
 	configurationSnippets?: IJSONSchemaSnippet[];
 	variables?: { [key: string]: string };
+	when?: string;
 }
 
 export interface IDebugConfigurationProvider {
@@ -741,7 +748,7 @@ export interface IAdapterManager {
 
 	onDidRegisterDebugger: Event<void>;
 
-	hasDebuggers(): boolean;
+	hasEnabledDebuggers(): boolean;
 	getDebugAdapterDescriptor(session: IDebugSession): Promise<IAdapterDescriptor | undefined>;
 	getDebuggerLabel(type: string): string | undefined;
 	isDebuggerInterestedInLanguage(language: string): boolean;

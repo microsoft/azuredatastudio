@@ -12,6 +12,7 @@ import * as constants from '../../constants/strings';
 import * as utils from '../../api/utils';
 import { SqlMigrationService } from '../../api/azure';
 import { logError, TelemetryViews } from '../../telemtery';
+import { ServiceContextChangeEvent } from '../../dashboard/tabBase';
 
 const CONTROL_MARGIN = '20px';
 const INPUT_COMPONENT_WIDTH = '100%';
@@ -56,7 +57,7 @@ export class SelectMigrationServiceDialog {
 	private _deleteButton!: azdata.window.Button;
 
 	constructor(
-		private readonly _onClosedCallback: () => Promise<void>) {
+		private readonly onServiceContextChanged: vscode.EventEmitter<ServiceContextChangeEvent>) {
 		this._dialog = azdata.window.createModelViewDialog(
 			constants.MIGRATION_SERVICE_SELECT_TITLE,
 			'SelectMigraitonServiceDialog',
@@ -85,10 +86,10 @@ export class SelectMigrationServiceDialog {
 			'left');
 		this._disposables.push(
 			this._deleteButton.onClick(async (value) => {
-				await MigrationLocalStorage.saveMigrationServiceContext({});
-				await this._onClosedCallback();
+				await MigrationLocalStorage.saveMigrationServiceContext({}, this.onServiceContextChanged);
 				azdata.window.closeDialog(this._dialog);
 			}));
+
 		this._dialog.customButtons = [this._deleteButton];
 
 		azdata.window.openDialog(this._dialog);
@@ -262,7 +263,7 @@ export class SelectMigrationServiceDialog {
 						? utils.deepClone(selectedLocation)
 						: undefined!;
 					await this._populateResourceGroupDropdown();
-					await this._populateMigrationServiceDropdown();
+					this._populateMigrationServiceDropdown();
 				}
 			}));
 
@@ -290,7 +291,7 @@ export class SelectMigrationServiceDialog {
 					this._serviceContext.resourceGroup = (selectedResourceGroup)
 						? utils.deepClone(selectedResourceGroup)
 						: undefined!;
-					await this._populateMigrationServiceDropdown();
+					this._populateMigrationServiceDropdown();
 				}
 			}));
 
@@ -323,10 +324,10 @@ export class SelectMigrationServiceDialog {
 			}));
 
 		this._disposables.push(
-			this._dialog.okButton.onClick(async (value) => {
-				await MigrationLocalStorage.saveMigrationServiceContext(this._serviceContext);
-				await this._onClosedCallback();
-			}));
+			this._dialog.okButton.onClick(async (value) =>
+				await MigrationLocalStorage.saveMigrationServiceContext(
+					this._serviceContext,
+					this.onServiceContextChanged)));
 
 		return this._view.modelBuilder.flexContainer()
 			.withItems([
@@ -417,8 +418,14 @@ export class SelectMigrationServiceDialog {
 	private async _populateLocationDropdown(): Promise<void> {
 		try {
 			this._azureLocationDropdown.loading = true;
-			this._sqlMigrationServices = await utils.getAzureSqlMigrationServices(this._serviceContext.azureAccount, this._serviceContext.subscription);
-			this._locations = await utils.getSqlMigrationServiceLocations(this._serviceContext.azureAccount, this._serviceContext.subscription, this._sqlMigrationServices);
+			this._sqlMigrationServices = await utils.getAzureSqlMigrationServices(
+				this._serviceContext.azureAccount,
+				this._serviceContext.subscription);
+			this._locations = await utils.getResourceLocations(
+				this._serviceContext.azureAccount,
+				this._serviceContext.subscription,
+				this._sqlMigrationServices);
+
 			this._azureLocationDropdown.values = await utils.getAzureLocationsDropdownValues(this._locations);
 			if (this._azureLocationDropdown.values.length > 0) {
 				utils.selectDefaultDropdownValue(
@@ -439,8 +446,13 @@ export class SelectMigrationServiceDialog {
 	private async _populateResourceGroupDropdown(): Promise<void> {
 		try {
 			this._azureResourceGroupDropdown.loading = true;
-			this._resourceGroups = await utils.getSqlMigrationServiceResourceGroups(this._sqlMigrationServices, this._serviceContext.location!);
-			this._azureResourceGroupDropdown.values = await utils.getAzureResourceGroupsDropdownValues(this._resourceGroups);
+			this._resourceGroups = utils.getServiceResourceGroupsByLocation(
+				this._sqlMigrationServices,
+				this._serviceContext.location!);
+			this._azureResourceGroupDropdown.values = utils.getResourceDropdownValues(
+				this._resourceGroups,
+				constants.RESOURCE_GROUP_NOT_FOUND);
+
 			if (this._azureResourceGroupDropdown.values.length > 0) {
 				utils.selectDefaultDropdownValue(
 					this._azureResourceGroupDropdown,
@@ -457,10 +469,15 @@ export class SelectMigrationServiceDialog {
 		}
 	}
 
-	private async _populateMigrationServiceDropdown(): Promise<void> {
+	private _populateMigrationServiceDropdown(): void {
 		try {
 			this._azureServiceDropdown.loading = true;
-			this._azureServiceDropdown.values = await utils.getAzureSqlMigrationServicesDropdownValues(this._sqlMigrationServices, this._serviceContext.location!, this._serviceContext.resourceGroup!);
+			this._azureServiceDropdown.values = utils.getAzureResourceDropdownValues(
+				this._sqlMigrationServices,
+				this._serviceContext.location!,
+				this._serviceContext.resourceGroup?.name,
+				constants.SQL_MIGRATION_SERVICE_NOT_FOUND_ERROR);
+
 			if (this._azureServiceDropdown.values.length > 0) {
 				utils.selectDefaultDropdownValue(
 					this._azureServiceDropdown,

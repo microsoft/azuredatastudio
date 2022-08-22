@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 .monaco-dropdown-width-control-element {
-	position: absolute;
-	left: -10000px;
+	position: absolute !important;
+	left: -10000px !important;
 	visibility: hidden;
 }
 
@@ -14,7 +14,6 @@
 	padding-right: 4px;
 	text-overflow: ellipsis;
 	display: inline-block;
-	width: 100%;
 	overflow: hidden;
 }
 

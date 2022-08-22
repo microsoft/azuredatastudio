@@ -253,6 +253,10 @@ export function deletingInstance(name: string): string { return localize('arc.de
 export function installingExtension(name: string): string { return localize('arc.installingExtension', "Installing extension '{0}'...", name); }
 export function extensionInstalled(name: string): string { return localize('arc.extensionInstalled', "Extension '{0}' has been installed.", name); }
 export function updatingInstance(name: string): string { return localize('arc.updatingInstance', "Updating instance '{0}'...", name); }
+export function upgradingDirectDC(name: string, desiredVersion: string, resourceGroup: string): string { return localize('arc.upgradingDirectDC', "Upgrading data controller '{0}' with command 'az arcdata dc upgrade --desired-version {1} --name {0} --resource-group {2}'", name, desiredVersion, resourceGroup); }
+export function upgradingIndirectDC(name: string, desiredVersion: string, namespace: string): string { return localize('arc.upgradingIndirectDC', "Upgrading data controller '{0}' with command 'az arcdata dc upgrade --desired-version {1} --name {0} --k8s-namespace {2} --use-k8s'", name, desiredVersion, namespace); }
+export function upgradingDirectMiaa(name: string, resourceGroup: string): string { return localize('arc.upgradingDirectMiaa', "Upgrading SQL MIAA '{0}' with command 'az sql mi-arc upgrade --name {0} --resource-group {1}'", name, resourceGroup); }
+export function upgradingIndirectMiaa(name: string, namespace: string): string { return localize('arc.upgradingIndirectMiaa', "Upgrading SQL MIAA '{0}' with command 'az sql mi-arc upgrade --name {0} --k8s-namespace {1} --use-k8s'", name, namespace); }
 export function instanceDeleted(name: string): string { return localize('arc.instanceDeleted', "Instance '{0}' deleted", name); }
 export function instanceUpdated(name: string): string { return localize('arc.instanceUpdated', "Instance '{0}' updated", name); }
 export function extensionsDropped(name: string): string { return localize('arc.extensionsDropped', "Extensions '{0}' dropped", name); }

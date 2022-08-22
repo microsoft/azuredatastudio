@@ -42,7 +42,7 @@
 			"assocLabelPath": "Arquivos com Caminho",
 			"derivedDescription": "Corresponder arquivos que têm irmãos com o mesmo nome, mas com uma extensão diferente.",
 			"derivedLabel": "Arquivos com Irmãos por Nome",
-			"dirty": "um indicador sujo se o editor ativo estiver sujo",
+			"dirty": "um indicador para quando o editor ativo tem alterações não salvas",
 			"falseDescription": "Desabilitar o padrão.",
 			"fileDescription": "Corresponder todos os arquivos de uma extensão de arquivo específica.",
 			"fileLabel": "Arquivos por Extensão",

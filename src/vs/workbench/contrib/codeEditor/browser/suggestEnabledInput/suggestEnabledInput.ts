@@ -46,7 +46,7 @@ export interface SuggestResultsProvider {
 	 *
 	 * @param query the full text of the input.
 	 */
-	provideResults: (query: string) => (modes.CompletionItemLabel | string)[];
+	provideResults: (query: string) => (Partial<modes.CompletionItem> & ({ label: string }) | string)[];
 
 	/**
 	 * Trigger characters for this input. Suggestions will appear when one of these is typed,
@@ -157,6 +157,7 @@ export class SuggestEnabledInput extends Widget implements IThemable {
 
 		let scopeHandle = uri.parse(resourceHandle);
 		this.inputModel = modelService.createModel('', null, scopeHandle, true);
+		this._register(this.inputModel);
 		this.inputWidget.setModel(this.inputModel);
 
 		this._register(this.inputWidget.onDidPaste(() => this.setValue(this.getValue()))); // setter cleanses
@@ -455,7 +456,9 @@ function getSuggestEnabledInputOptions(ariaLabel?: string): IEditorOptions {
 		wordWrap: 'off',
 		scrollbar: { vertical: 'hidden', },
 		roundedSelection: false,
-		renderIndentGuides: false,
+		guides: {
+			indentation: false
+		},
 		cursorWidth: 1,
 		fontFamily: DEFAULT_FONT_FAMILY,
 		ariaLabel: ariaLabel || '',

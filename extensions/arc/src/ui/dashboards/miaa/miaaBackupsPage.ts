@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as azExt from 'az-ext';
 import * as loc from '../../../localizedConstants';
-import { IconPathHelper, cssStyles, ConnectionMode } from '../../../constants';
+import { IconPathHelper, cssStyles } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { MiaaModel, RPModel, DatabaseModel, systemDbs } from '../../../models/miaaModel';
 import { ControllerModel } from '../../../models/controllerModel';
@@ -220,23 +220,13 @@ export class MiaaBackupsPage extends DashboardPage {
 								cancellable: false
 							},
 							async (_progress, _token): Promise<void> => {
-								if (this._miaaModel.controllerModel.info.connectionMode === ConnectionMode.direct) {
-									await this._azApi.az.sql.miarc.update(
-										this._miaaModel.info.name,
-										this._saveArgs,
-										this._miaaModel.controllerModel.info.resourceGroup,
-										undefined, // Indirect mode argument - namespace
-										undefined, // Indirect mode argument - usek8s
-										this._miaaModel.controllerModel.azAdditionalEnvVars);
-								} else {
-									await this._azApi.az.sql.miarc.update(
-										this._miaaModel.info.name,
-										this._saveArgs,
-										undefined, // Direct mode argument - resourceGroup
-										this._miaaModel.controllerModel.info.namespace,
-										true,
-										this._miaaModel.controllerModel.azAdditionalEnvVars);
-								}
+								await this._azApi.az.sql.miarc.update(
+									this._miaaModel.info.name,
+									this._saveArgs,
+									undefined, // Direct mode argument - resourceGroup
+									this._miaaModel.controllerModel.info.namespace,
+									true,
+									this._miaaModel.controllerModel.azAdditionalEnvVars);
 								try {
 									await this._miaaModel.refresh();
 								} catch (error) {

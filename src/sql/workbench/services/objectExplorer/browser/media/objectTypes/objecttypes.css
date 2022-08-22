@@ -102,6 +102,12 @@
 	background: url("Database.svg") center center no-repeat;
 }
 
+.vs .icon.database_ledger,
+.vs-dark .icon.database_ledger,
+.hc-black .icon.database_ledger {
+	background: url("Database_Ledger.svg") center center no-repeat;
+}
+
 .vs .icon.database_unavailable,
 .vs-dark .icon.database_unavailable,
 .hc-black .icon.database_unavailable {
@@ -573,6 +579,12 @@
 	background: url("TableValuedFunctionParameter_Return.svg") center center no-repeat;
 }
 
+.vs .icon.table_ledger,
+.vs-dark .icon.table_ledger,
+.hc-black .icon.table_ledger {
+	background: url("Table_Ledger.svg") center center no-repeat;
+}
+
 .vs .icon.table_temporal,
 .vs-dark .icon.table_temporal,
 .hc-black .icon.table_temporal {
@@ -589,6 +601,12 @@
 .vs-dark .icon.table_graphedge,
 .hc-black .icon.table_graphedge {
 	background: url("Table_GraphEdge.svg") center center no-repeat;
+}
+
+.vs .icon.historytable_ledgerhistory,
+.vs-dark .icon.historytable_ledgerhistory,
+.hc-black .icon.historytable_ledgerhistory {
+	background: url("Table_LedgerHistory.svg") center center no-repeat;
 }
 
 
@@ -650,6 +668,12 @@
 .vs-dark .icon.view,
 .hc-black .icon.view {
 	background: url("View.svg") center center no-repeat;
+}
+
+.vs .icon.view_ledger,
+.vs-dark .icon.view_ledger,
+.hc-black .icon.view_ledger {
+	background: url("View_Ledger.svg") center center no-repeat;
 }
 
 .vs .icon.xmlschemacollection,

@@ -21,6 +21,8 @@ export enum TelemetryViews {
 	IntegrationRuntimePage = 'IntegrationRuntimePage',
 	MigrationCutoverDialog = 'MigrationCutoverDialog',
 	MigrationStatusDialog = 'MigrationStatusDialog',
+	DashboardTab = 'DashboardTab',
+	MigrationsTab = 'MigrationsTab',
 	MigrationWizardAccountSelectionPage = 'MigrationWizardAccountSelectionPage',
 	MigrationWizardSkuRecommendationPage = 'MigrationWizardSkuRecommendationPage',
 	MigrationWizardTargetSelectionPage = 'MigrationWizardTargetSelectionPage',
@@ -55,6 +57,7 @@ export enum TelemetryAction {
 	OnPageLeave = 'OnPageLeave',
 	GetMISkuRecommendation = 'GetMISkuRecommendation',
 	GetVMSkuRecommendation = 'GetVMSkuRecommendation',
+	GetSqlDbSkuRecommendation = 'GetSqlDbSkuRecommendation',
 	GetInstanceRequirements = 'GetInstanceRequirements',
 	StartDataCollection = 'StartDataCollection',
 	StopDataCollection = 'StopDataCollection'

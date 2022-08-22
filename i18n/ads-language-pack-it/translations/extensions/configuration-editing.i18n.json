@@ -42,7 +42,7 @@
 			"assocLabelPath": "File con percorso",
 			"derivedDescription": "Trova file con elementi di pari livello e nome identico ma estensione diversa.",
 			"derivedLabel": "File con elementi di pari livello in base al nome",
-			"dirty": "indicatore che segnala se l'editor attivo è modificato ma non salvato",
+			"dirty": "un indicatore per il momento in cui l'editor attivo contiene modifiche non salvate",
 			"falseDescription": "Disabilita il criterio.",
 			"fileDescription": "Trova tutti i file di un'estensione di file specifica.",
 			"fileLabel": "File in base all'estensione",

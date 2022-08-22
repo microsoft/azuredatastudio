@@ -391,6 +391,12 @@
     <trans-unit id="managePackages.installButtonText">
       <source xml:lang="en">Install</source>
     </trans-unit>
+    <trans-unit id="managePackages.installCompleteText">
+      <source xml:lang="en">Package installed</source>
+    </trans-unit>
+    <trans-unit id="managePackages.installProgressText">
+      <source xml:lang="en">Installing package</source>
+    </trans-unit>
     <trans-unit id="managePackages.invalidTextPlaceholder">
       <source xml:lang="en">N/A</source>
     </trans-unit>
@@ -449,6 +455,12 @@
     </trans-unit>
     <trans-unit id="managePackages.uninstallButtonText">
       <source xml:lang="en">Uninstall selected packages</source>
+    </trans-unit>
+    <trans-unit id="managePackages.uninstallCompleteText">
+      <source xml:lang="en">Package uninstalled</source>
+    </trans-unit>
+    <trans-unit id="managePackages.uninstallProgressText">
+      <source xml:lang="en">Uninstalling package</source>
     </trans-unit>
 </body></file>
   <file original="extensions/notebook/dist/dialog/managePackages/managePackagesDialog" source-language="en" datatype="plaintext"><body>

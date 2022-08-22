@@ -11,9 +11,9 @@ import { URI } from 'vs/base/common/uri';
 import { IStringDictionary } from 'vs/base/common/collections';
 
 export interface IExtensionManagementServer {
-	id: string;
-	label: string;
-	extensionManagementService: IExtensionManagementService;
+	readonly id: string;
+	readonly label: string;
+	readonly extensionManagementService: IExtensionManagementService;
 }
 
 export const IExtensionManagementServerService = createDecorator<IExtensionManagementServerService>('extensionManagementServerService');
@@ -40,8 +40,8 @@ export interface IWorkbenchExtensionManagementService extends IExtensionManageme
 
 	installWebExtension(location: URI): Promise<ILocalExtension>;
 	installExtensions(extensions: IGalleryExtension[], installOptions?: InstallOptions): Promise<ILocalExtension[]>;
-	updateFromGallery(gallery: IGalleryExtension, extension: ILocalExtension): Promise<ILocalExtension>;
-	getExtensionManagementServerToInstall(manifest: IExtensionManifest): IExtensionManagementServer | null
+	updateFromGallery(gallery: IGalleryExtension, extension: ILocalExtension, installOptions?: InstallOptions): Promise<ILocalExtension>;
+	getExtensionManagementServerToInstall(manifest: IExtensionManifest): IExtensionManagementServer | null;
 }
 
 export const enum EnablementState {
@@ -138,7 +138,7 @@ export interface IWebExtensionsScannerService {
 	readonly _serviceBrand: undefined;
 
 	scanSystemExtensions(): Promise<IExtension[]>;
-	scanUserExtensions(): Promise<IScannedExtension[]>;
+	scanUserExtensions(donotIgnoreInvalidExtensions?: boolean): Promise<IScannedExtension[]>;
 	scanExtensionsUnderDevelopment(): Promise<IExtension[]>;
 	scanExistingExtension(extensionLocation: URI, extensionType: ExtensionType): Promise<IExtension | null>;
 

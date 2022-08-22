@@ -42,7 +42,7 @@
 			"assocLabelPath": "경로가 있는 파일",
 			"derivedDescription": "동일한 이름의 형제가 있지만 확장명이 다른 파일을 일치시킵니다.",
 			"derivedLabel": "이름별 형제가 있는 파일",
-			"dirty": "활성 편집기가 더티인 경우 더티 표시기",
+			"dirty": "활성 편집기에 저장되지 않은 변경 내용이 있는 경우에 대한 표시기",
 			"falseDescription": "패턴을 사용하지 않도록 설정합니다.",
 			"fileDescription": "특정 파일 확장명이 있는 모든 파일을 일치시킵니다.",
 			"fileLabel": "확장명별 파일",

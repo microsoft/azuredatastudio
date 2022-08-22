@@ -85,7 +85,7 @@ suite('Insights Utils tests', function () {
 			new Workspace(
 				'TestWorkspace',
 				[toWorkspaceFolder(URI.file(queryFileDir))],
-				undefined, undefined
+				undefined, undefined, undefined
 			));
 		const configurationResolverService = new ConfigurationResolverService(
 			undefined,
@@ -118,7 +118,7 @@ suite('Insights Utils tests', function () {
 			new Workspace(
 				'TestWorkspace',
 				[toWorkspaceFolder(URI.file(os.tmpdir()))],
-				undefined, undefined)
+				undefined, undefined, undefined)
 		);
 		const configurationResolverService = new ConfigurationResolverService(
 			undefined,
@@ -154,7 +154,7 @@ suite('Insights Utils tests', function () {
 		const contextService = new TestContextService(
 			new Workspace(
 				'TestWorkspace',
-				undefined, undefined, undefined));
+				undefined, undefined, undefined, undefined));
 		const configurationResolverService = new ConfigurationResolverService(
 			undefined,
 			undefined,
@@ -186,7 +186,7 @@ suite('Insights Utils tests', function () {
 	test.skip('resolveQueryFilePath resolves path correctly with env var and empty workspace', async () => {
 		const contextService = new TestContextService(
 			new Workspace('TestWorkspace',
-				undefined, undefined, undefined));
+				undefined, undefined, undefined, undefined));
 
 		const environmentService = new MockWorkbenchEnvironmentService({ TEST_PATH: queryFileDir });
 
@@ -217,7 +217,7 @@ suite('Insights Utils tests', function () {
 
 	test('resolveQueryFilePath resolves path correctly with env var and non-empty workspace', async () => {
 		const contextService = new TestContextService(
-			new Workspace('TestWorkspace', [toWorkspaceFolder(URI.file(os.tmpdir()))], undefined, undefined));
+			new Workspace('TestWorkspace', [toWorkspaceFolder(URI.file(os.tmpdir()))], undefined, undefined, undefined));
 
 		const environmentService = new MockWorkbenchEnvironmentService({ TEST_PATH: queryFileDir });
 

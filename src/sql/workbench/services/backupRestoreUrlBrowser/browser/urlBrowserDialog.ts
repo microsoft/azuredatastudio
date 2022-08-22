@@ -129,6 +129,7 @@ export class BackupRestoreUrlBrowserDialog extends Modal {
 		let linkAccountText = localize('backupRestoreUrlBrowserDialog.linkAccount', "Link account");
 		let linkAccountButton = DialogHelper.appendRow(tableContainer, '', 'url-input-label', 'url-input-box');
 		const linkAccount: Link = this._register(this._instantiationService.createInstance(Link,
+			linkAccountButton,
 			{
 				label: linkAccountText,
 				title: linkAccountText,

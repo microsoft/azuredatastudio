@@ -30,7 +30,6 @@ export const terminalStrings = {
 	moveToEditor: {
 		value: localize('moveToEditor', "Move Terminal into Editor Area"),
 		original: 'Move Terminal into Editor Area',
-		short: 'Move into Editor Area'
 	},
 	moveToTerminalPanel: {
 		value: localize('workbench.action.terminal.moveToTerminalPanel', "Move Terminal into Panel"),
@@ -53,9 +52,12 @@ export const terminalStrings = {
 		value: localize('unsplitTerminal', "Unsplit Terminal"),
 		original: 'Unsplit Terminal'
 	},
-	rename:
-	{
+	rename: {
 		value: localize('workbench.action.terminal.rename', "Rename..."),
 		original: 'Rename...'
+	},
+	toggleSizeToContentWidth: {
+		value: localize('workbench.action.terminal.sizeToContentWidthInstance', "Toggle Size to Content Width"),
+		original: 'Toggle Size to Content Width'
 	}
 };

@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { createDecorator, IInstantiationService, optional, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
+import { createDecorator, IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { Emitter, Event } from 'vs/base/common/event';
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { Memento } from 'vs/workbench/common/memento';
@@ -61,6 +61,8 @@ export interface IWalkthrough {
 	| { type: 'image', path: string }
 }
 
+export type IWalkthroughLoose = Omit<IWalkthrough, 'steps'> & { steps: (Omit<IWalkthroughStep, 'description'> & { description: string })[] };
+
 export interface IResolvedWalkthrough extends IWalkthrough {
 	steps: IResolvedWalkthroughStep[]
 	newItems: boolean
@@ -99,7 +101,7 @@ export interface IWalkthroughsService {
 	getWalkthroughs(): IResolvedWalkthrough[]
 	getWalkthrough(id: string): IResolvedWalkthrough
 
-	registerWalkthrough(descriptor: IWalkthrough): void;
+	registerWalkthrough(descriptor: IWalkthroughLoose): void;
 
 	progressByEvent(eventName: string): void;
 	progressStep(id: string): void;
@@ -157,7 +159,7 @@ export class WalkthroughsService extends Disposable implements IWalkthroughsServ
 		@IHostService private readonly hostService: IHostService,
 		@IViewsService private readonly viewsService: IViewsService,
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
-		@optional(ITASExperimentService) tasExperimentService: ITASExperimentService,
+		@ITASExperimentService tasExperimentService: ITASExperimentService,
 	) {
 		super();
 
@@ -184,7 +186,7 @@ export class WalkthroughsService extends Disposable implements IWalkthroughsServ
 		this.installedExtensionsRegistered = new Promise(r => this.triggerInstalledExtensionsRegistered = r);
 
 		walkthroughs.forEach(async (category, index) => {
-			this.registerWalkthrough({
+			this._registerWalkthrough({
 				...category,
 				icon: { type: 'icon', icon: category.icon },
 				order: walkthroughs.length - index,
@@ -352,6 +354,13 @@ export class WalkthroughsService extends Disposable implements IWalkthroughsServ
 						root: FileAccess.asFileUri(extension.extensionLocation),
 					};
 				}
+				else if (step.media.svg) {
+					media = {
+						type: 'svg',
+						path: convertExtensionPathToFileURI(step.media.svg),
+						altText: step.media.svg,
+					};
+				}
 
 				// Legacy media config
 				else {
@@ -409,7 +418,7 @@ export class WalkthroughsService extends Disposable implements IWalkthroughsServ
 				when: ContextKeyExpr.deserialize(override ?? walkthrough.when) ?? ContextKeyExpr.true(),
 			} as const;
 
-			this.registerWalkthrough(walkthoughDescriptor);
+			this._registerWalkthrough(walkthoughDescriptor);
 
 			this._onDidAddWalkthrough.fire(this.resolveWalkthrough(walkthoughDescriptor));
 		}));
@@ -535,7 +544,14 @@ export class WalkthroughsService extends Disposable implements IWalkthroughsServ
 		this.completionListeners.get(event)?.forEach(id => this.progressStep(id));
 	}
 
-	registerWalkthrough(walkthroughDescriptor: IWalkthrough): void {
+	registerWalkthrough(walkthoughDescriptor: IWalkthroughLoose) {
+		this._registerWalkthrough({
+			...walkthoughDescriptor,
+			steps: walkthoughDescriptor.steps.map(step => ({ ...step, description: parseDescription(step.description) }))
+		});
+	}
+
+	_registerWalkthrough(walkthroughDescriptor: IWalkthrough): void {
 		const oldCategory = this.gettingStartedContributions.get(walkthroughDescriptor.id);
 		if (oldCategory) {
 			console.error(`Skipping attempt to overwrite walkthrough. (${walkthroughDescriptor.id})`);
@@ -599,6 +615,9 @@ export class WalkthroughsService extends Disposable implements IWalkthroughsServ
 						this.stepCompletionContextKeyExpressions.add(expression);
 						expression.keys().forEach(key => this.stepCompletionContextKeys.add(key));
 						event = eventType + ':' + expression.serialize();
+						if (this.contextService.contextMatchesRules(expression)) {
+							this.sessionEvents.add(event);
+						}
 					} else {
 						console.error('Unable to parse context key expression:', expression, 'in walkthrough step', step.id);
 					}

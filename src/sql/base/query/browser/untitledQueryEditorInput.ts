@@ -13,12 +13,13 @@ import { IResolvedTextEditorModel } from 'vs/editor/common/services/resolverServ
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { IUntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 import { EncodingMode } from 'vs/workbench/services/textfile/common/textfiles';
-import { GroupIdentifier, ISaveOptions, IEditorInput, EditorInputCapabilities } from 'vs/workbench/common/editor';
+import { GroupIdentifier, ISaveOptions, EditorInputCapabilities } from 'vs/workbench/common/editor';
 import { FileQueryEditorInput } from 'sql/workbench/contrib/query/browser/fileQueryEditorInput';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
 import { UNTITLED_QUERY_EDITOR_TYPEID } from 'sql/workbench/common/constants';
 import { IUntitledQueryEditorInput } from 'sql/base/query/common/untitledQueryEditorInput';
+import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 
 export class UntitledQueryEditorInput extends QueryEditorInput implements IUntitledQueryEditorInput {
 
@@ -52,17 +53,17 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IUntit
 		return this.text.model.hasAssociatedFilePath;
 	}
 
-	override async save(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
+	override async save(group: GroupIdentifier, options?: ISaveOptions): Promise<EditorInput | undefined> {
 		let fileEditorInput = await this.text.save(group, options);
 		return this.createFileQueryEditorInput(fileEditorInput);
 	}
 
-	override async saveAs(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
+	override async saveAs(group: GroupIdentifier, options?: ISaveOptions): Promise<EditorInput | undefined> {
 		let fileEditorInput = await this.text.saveAs(group, options);
 		return this.createFileQueryEditorInput(fileEditorInput);
 	}
 
-	private async createFileQueryEditorInput(fileEditorInput: IEditorInput): Promise<IEditorInput> {
+	private async createFileQueryEditorInput(fileEditorInput: EditorInput): Promise<EditorInput> {
 		// Create our own FileQueryEditorInput wrapper here so that the existing state (connection, results, etc) can be transferred from this input to the new file input.
 		try {
 			let newUri = fileEditorInput.resource.toString(true);

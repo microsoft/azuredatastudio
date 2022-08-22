@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { asArray } from 'vs/base/common/arrays';
-import { timeout } from 'vs/base/common/async';
+import { DeferredPromise, timeout } from 'vs/base/common/async';
 import { CancellationTokenSource } from 'vs/base/common/cancellation';
 import { Emitter } from 'vs/base/common/event';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
@@ -13,6 +13,7 @@ import { URI, UriComponents } from 'vs/base/common/uri';
 import { ExtensionIdentifier, IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ExtHostNotebookKernelsShape, ICellExecuteUpdateDto, IMainContext, INotebookKernelDto2, MainContext, MainThreadNotebookKernelsShape, NotebookOutputDto } from 'vs/workbench/api/common/extHost.protocol';
+import { ApiCommand, ApiCommandArgument, ApiCommandResult, ExtHostCommands } from 'vs/workbench/api/common/extHostCommands';
 import { IExtHostInitDataService } from 'vs/workbench/api/common/extHostInitDataService';
 import { ExtHostNotebookController } from 'vs/workbench/api/common/extHostNotebook';
 import { ExtHostCell, ExtHostNotebookDocument } from 'vs/workbench/api/common/extHostNotebookDocument';
@@ -32,6 +33,11 @@ interface IKernelData {
 	associatedNotebooks: ResourceMap<boolean>;
 }
 
+type ExtHostSelectKernelArgs = ControllerInfo | { notebookEditor: vscode.NotebookEditor } | ControllerInfo & { notebookEditor: vscode.NotebookEditor } | undefined;
+export type SelectKernelReturnArgs = ControllerInfo | { notebookEditorId: string } | ControllerInfo & { notebookEditorId: string } | undefined;
+type ControllerInfo = { id: string, extension: string };
+
+
 export class ExtHostNotebookKernels implements ExtHostNotebookKernelsShape {
 
 	private readonly _proxy: MainThreadNotebookKernelsShape;
@@ -44,9 +50,35 @@ export class ExtHostNotebookKernels implements ExtHostNotebookKernelsShape {
 		mainContext: IMainContext,
 		private readonly _initData: IExtHostInitDataService,
 		private readonly _extHostNotebook: ExtHostNotebookController,
+		private _commands: ExtHostCommands,
 		@ILogService private readonly _logService: ILogService,
 	) {
 		this._proxy = mainContext.getProxy(MainContext.MainThreadNotebookKernels);
+
+		// todo@rebornix @joyceerhl: move to APICommands once stablized.
+		const selectKernelApiCommand = new ApiCommand(
+			'notebook.selectKernel',
+			'_notebook.selectKernel',
+			'Trigger kernel picker for specified notebook editor widget',
+			[
+				new ApiCommandArgument<ExtHostSelectKernelArgs, SelectKernelReturnArgs>('options', 'Select kernel options', v => true, (v: ExtHostSelectKernelArgs) => {
+					if (v && 'notebookEditor' in v && 'id' in v) {
+						const notebookEditorId = this._extHostNotebook.getIdByEditor(v.notebookEditor);
+						return {
+							id: v.id, extension: v.extension, notebookEditorId
+						};
+					} else if (v && 'notebookEditor' in v) {
+						const notebookEditorId = this._extHostNotebook.getIdByEditor(v.notebookEditor);
+						if (notebookEditorId === undefined) {
+							throw new Error(`Cannot invoke 'notebook.selectKernel' for unrecognized notebook editor ${v.notebookEditor.document.uri.toString()}`);
+						}
+						return { notebookEditorId };
+					}
+					return <any>v;
+				})
+			],
+			ApiCommandResult.Void);
+		this._commands.registerApiCommand(selectKernelApiCommand);
 	}
 
 	createNotebookController(extension: IExtensionDescription, id: string, viewType: string, label: string, handler?: (cells: vscode.NotebookCell[], notebook: vscode.NotebookDocument, controller: vscode.NotebookController) => void | Thenable<void>, preloads?: vscode.NotebookRendererScript[]): vscode.NotebookController {
@@ -132,6 +164,15 @@ export class ExtHostNotebookKernels implements ExtHostNotebookKernelsShape {
 			},
 			set description(value) {
 				data.description = value;
+				_update();
+			},
+			get kind() {
+				checkProposedApiEnabled(extension);
+				return data.kind ?? '';
+			},
+			set kind(value) {
+				checkProposedApiEnabled(extension);
+				data.kind = value;
 				_update();
 			},
 			get supportedLanguages() {
@@ -508,39 +549,42 @@ class NotebookCellExecutionTask extends Disposable {
 
 class TimeoutBasedCollector<T> {
 	private batch: T[] = [];
-	private waitPromise: Promise<void> | undefined;
-	private lastFlush = Date.now();
+	private startedTimer = Date.now();
+	private currentDeferred: DeferredPromise<void> | undefined;
 
 	constructor(
 		private readonly delay: number,
-		private readonly callback: (items: T[]) => Promise<void> | void) { }
+		private readonly callback: (items: T[]) => Promise<void>) { }
 
 	addItem(item: T): Promise<void> {
 		this.batch.push(item);
-		if (!this.waitPromise) {
-			this.waitPromise = timeout(this.delay).then(() => {
+		if (!this.currentDeferred) {
+			this.currentDeferred = new DeferredPromise<void>();
+			this.startedTimer = Date.now();
+			timeout(this.delay).then(() => {
 				return this.flush();
 			});
 		}
 
 		// This can be called by the extension repeatedly for a long time before the timeout is able to run.
 		// Force a flush after the delay.
-		if (Date.now() - this.lastFlush > this.delay) {
-			this.flush();
+		if (Date.now() - this.startedTimer > this.delay) {
+			return this.flush();
 		}
 
-		return this.waitPromise;
+		return this.currentDeferred.p;
 	}
 
-	flush(): void | Promise<void> {
-		if (this.batch.length === 0) {
-			return;
+	flush(): Promise<void> {
+		if (this.batch.length === 0 || !this.currentDeferred) {
+			return Promise.resolve();
 		}
 
-		this.lastFlush = Date.now();
-		this.waitPromise = undefined;
+		const deferred = this.currentDeferred;
+		this.currentDeferred = undefined;
 		const batch = this.batch;
 		this.batch = [];
-		return this.callback(batch);
+		return this.callback(batch)
+			.finally(() => deferred.complete());
 	}
 }

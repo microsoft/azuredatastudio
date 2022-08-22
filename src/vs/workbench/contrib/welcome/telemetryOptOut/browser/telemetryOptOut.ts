@@ -5,7 +5,7 @@
 
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import { ITelemetryService, TelemetryLevel } from 'vs/platform/telemetry/common/telemetry';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { URI } from 'vs/base/common/uri';
@@ -56,7 +56,7 @@ export abstract class AbstractTelemetryOptOut implements IWorkbenchContribution 
 
 			this.privacyUrl = this.productService.privacyStatementUrl || this.productService.telemetryOptOutUrl;
 
-			if (experimentState && experimentState.state === ExperimentState.Run && this.telemetryService.isOptedIn) {
+			if (experimentState && experimentState.state === ExperimentState.Run && this.telemetryService.telemetryLevel !== TelemetryLevel.NONE) {
 				this.runExperiment(experimentId);
 				return;
 			}
@@ -74,7 +74,7 @@ export abstract class AbstractTelemetryOptOut implements IWorkbenchContribution 
 
 		this.notificationService.prompt(
 			Severity.Info,
-			this.telemetryService.isOptedIn ? optOutNotice : optInNotice,
+			this.telemetryService.telemetryLevel !== TelemetryLevel.NONE ? optOutNotice : optInNotice,
 			[{
 				label: localize('telemetryOptOut.readMore', "Read More"),
 				run: () => this.openerService.open(URI.parse(telemetryOptOutUrl))

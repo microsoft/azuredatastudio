@@ -114,7 +114,7 @@ export class AccountFeature implements StaticFeature {
 		}
 
 		// find tenant
-		const tenant = account.properties.tenants.find(tenant => tenant.id === request.tenantId);
+		const tenant = account.properties.tenants.find((tenant: any) => tenant.id === request.tenantId);
 		if (!tenant) {
 			console.log(`Failed to find tenant ${request.tenantId} in account ${account.displayInfo.displayName} when refreshing security token`);
 			throw Error(localizedConstants.failedToFindTenants(request.tenantId, account.displayInfo.displayName));
@@ -1279,10 +1279,30 @@ export class ExecutionPlanServiceFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
+		const isExecutionPlan = (value: string): Thenable<azdata.executionPlan.IsExecutionPlanResult> => {
+			return new Promise((resolve) => {
+				let isExecutionPlan = false;
+				let queryExecutionPlanFileExtension = '';
+
+				if (value.includes('ShowPlanXML')) {
+					isExecutionPlan = true;
+					queryExecutionPlanFileExtension = 'sqlplan';
+				}
+
+				const result: azdata.executionPlan.IsExecutionPlanResult = {
+					isExecutionPlan: isExecutionPlan,
+					queryExecutionPlanFileExtension: queryExecutionPlanFileExtension,
+				};
+
+				return resolve(result);
+			});
+		};
+
 		return azdata.dataprotocol.registerExecutionPlanProvider({
 			providerId: client.providerId,
 			getExecutionPlan,
-			compareExecutionPlanGraph
+			compareExecutionPlanGraph,
+			isExecutionPlan
 		});
 	}
 }

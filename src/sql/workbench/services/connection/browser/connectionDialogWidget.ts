@@ -45,9 +45,10 @@ import { ConnectionBrowseTab } from 'sql/workbench/services/connection/browser/c
 import { ElementSizeObserver } from 'vs/editor/browser/config/elementSizeObserver';
 import { ConnectionProviderAndExtensionMap, ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
-import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { VIEWLET_ID as ExtensionsViewletID } from 'vs/workbench/contrib/extensions/common/extensions';
 import { ICommandService } from 'vs/platform/commands/common/commands';
+import { IPaneCompositePartService } from 'vs/workbench/services/panecomposite/browser/panecomposite';
+import { ViewContainerLocation } from 'vs/workbench/common/views';
 
 export interface OnShowUIResponse {
 	selectedProviderDisplayName: string;
@@ -130,7 +131,7 @@ export class ConnectionDialogWidget extends Modal {
 		@IConfigurationService private _configurationService: IConfigurationService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@INotificationService private _notificationService: INotificationService,
-		@IViewletService private _viewletService: IViewletService,
+		@IPaneCompositePartService private _paneCompositeService: IPaneCompositePartService,
 		@ICommandService private _commandService: ICommandService
 	) {
 		super(
@@ -426,7 +427,7 @@ export class ConnectionDialogWidget extends Modal {
 						label: localize('connectionDialog.viewExtensions', "View Extensions"),
 						run: async () => {
 							this.close();
-							await this._viewletService.openViewlet(ExtensionsViewletID, true);
+							await this._paneCompositeService.openPaneComposite(ExtensionsViewletID, ViewContainerLocation.Sidebar);
 						}
 					}]);
 			}

@@ -34,7 +34,7 @@ export async function resolveQueryFilePath(services: ServicesAccessor, filePath?
 	let workspaceFolders: IWorkspaceFolder[] = workspaceContextService.getWorkspace().folders;
 	// Resolve the path using each folder in our workspace, or undefined if there aren't any
 	// (so that non-folder vars such as environment vars still resolve)
-	const isRemote = fileService.canHandleResource(URI.from({ scheme: Schemas.vscodeRemote }));
+	const isRemote = await fileService.canHandleResource(URI.from({ scheme: Schemas.vscodeRemote }));
 	let resolvedFileUriPromises = (workspaceFolders.length > 0 ? workspaceFolders : [undefined])
 		.map(async f => {
 			const resolvedUri = await configurationResolverService.resolveAsync(f, filePath);

@@ -6,7 +6,7 @@
 import { ControllerInfo, ResourceType } from 'arc';
 import * as azExt from 'az-ext';
 import * as vscode from 'vscode';
-import { ConnectionMode } from '../constants';
+import { parseMiaaList } from '../common/utils';
 import * as loc from '../localizedConstants';
 import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
 
@@ -69,15 +69,6 @@ export class ControllerModel {
 	}
 
 	public async refresh(showErrors: boolean = true, namespace: string): Promise<void> {
-		await this.refreshController(showErrors, namespace);
-		if (this._controllerConfig?.spec.settings.azure.connectionMode === ConnectionMode.direct) {
-			await this.refreshDirectMode(this._controllerConfig?.spec.settings.azure.resourceGroup, namespace);
-		} else {
-			await this.refreshIndirectMode(namespace);
-		}
-	}
-
-	public async refreshController(showErrors: boolean = true, namespace: string): Promise<void> {
 		await Promise.all([
 			this._azApi.az.arcdata.dc.config.show(namespace, this.azAdditionalEnvVars).then(result => {
 				this._controllerConfig = result.stdout;
@@ -108,38 +99,6 @@ export class ControllerModel {
 				throw err;
 			})
 		]);
-	}
-
-	public async refreshDirectMode(resourceGroup: string, namespace: string): Promise<void> {
-		const newRegistrations: Registration[] = [];
-		await Promise.all([
-			this._azApi.az.postgres.arcserver.list(namespace, this.azAdditionalEnvVars).then(result => {
-				newRegistrations.push(...result.stdout.map(r => {
-					return {
-						instanceName: r.name,
-						state: r.state,
-						instanceType: ResourceType.postgresInstances
-					};
-				}));
-			}),
-			this._azApi.az.sql.miarc.list({ resourceGroup: resourceGroup, namespace: undefined }, this.azAdditionalEnvVars).then(result => {
-				newRegistrations.push(...result.stdout.map(r => {
-					return {
-						instanceName: r.name,
-						state: r.state,
-						instanceType: ResourceType.sqlManagedInstances
-					};
-				}));
-
-			})
-		]).then(() => {
-			this._registrations = newRegistrations;
-			this.registrationsLastUpdated = new Date();
-			this._onRegistrationsUpdated.fire(this._registrations);
-		});
-	}
-
-	public async refreshIndirectMode(namespace: string): Promise<void> {
 		const newRegistrations: Registration[] = [];
 		await Promise.all([
 			this._azApi.az.postgres.arcserver.list(namespace, this.azAdditionalEnvVars).then(result => {
@@ -152,14 +111,15 @@ export class ControllerModel {
 				}));
 			}),
 			this._azApi.az.sql.miarc.list({ resourceGroup: undefined, namespace: namespace }, this.azAdditionalEnvVars).then(result => {
-				newRegistrations.push(...result.stdout.map(r => {
+				let miaaList = parseMiaaList(result.stdout.toString());
+				let jsonList: azExt.SqlMiListResult[] = JSON.parse(<string>miaaList);
+				newRegistrations.push(...jsonList.map(r => {
 					return {
 						instanceName: r.name,
 						state: r.state,
 						instanceType: ResourceType.sqlManagedInstances
 					};
 				}));
-
 			})
 		]).then(() => {
 			this._registrations = newRegistrations;

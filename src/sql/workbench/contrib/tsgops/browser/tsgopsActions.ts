@@ -5,8 +5,10 @@
 import { localize } from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
 
-import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
-import { IActivityBarService } from 'vs/workbench/services/activityBar/browser/activityBarService';
+import { IWorkbenchLayoutService, Parts } from 'vs/workbench/services/layout/browser/layoutService';
+// import { IActivityBarService } from 'vs/workbench/services/activityBar/browser/activityBarService';
+import { IPaneCompositePartService } from 'vs/workbench/services/panecomposite/browser/panecomposite';
+import { IViewDescriptorService } from 'vs/workbench/common/views';
 
 export class HidePanel extends Action {
 	static readonly ID = 'workbench.action.hidePanel';
@@ -21,7 +23,7 @@ export class HidePanel extends Action {
 	}
 
 	override async run(): Promise<void> {
-		this.layoutService.setPanelHidden(true);
+		this.layoutService.setPartHidden(true, Parts.PANEL_PART);
 	}
 }
 
@@ -50,7 +52,8 @@ export class HideActivityBarViewContainers extends Action {
 	constructor(
 		id: string = HideActivityBarViewContainers.ID,
 		label: string = HideActivityBarViewContainers.LABEL,
-		@IActivityBarService private readonly activityBarService: IActivityBarService,
+		@IViewDescriptorService private readonly viewDescriptorService: IViewDescriptorService,
+		@IPaneCompositePartService private readonly activityBarService: IPaneCompositePartService,
 	) {
 		super(id, label);
 	}
@@ -58,7 +61,10 @@ export class HideActivityBarViewContainers extends Action {
 	override async run(): Promise<void> {
 		let viewsToHide = ['workbench.view.search', 'workbench.view.explorer', 'workbench.view.scm', 'workbench.view.extensions'];
 		for (let j = 0; j < viewsToHide.length; j++) {
-			this.activityBarService.hideViewContainer(viewsToHide[j]);
+			const viewContainer = this.viewDescriptorService.getViewContainerById(viewsToHide[j]);
+			if (viewContainer) {
+				this.activityBarService.hideActivePaneComposite(this.viewDescriptorService.getViewContainerLocation(viewContainer));
+			}
 		}
 	}
 }

@@ -201,12 +201,12 @@ export class ConnectToControllerDialog extends ControllerDialogBase {
 			// default info.name to the name of the controller instance if the user did not specify their own and to a pre-canned default if for some weird reason controller endpoint returned instanceName is also not a valid value
 			controllerModel.info.name = controllerModel.info.name || controllerModel.controllerConfig?.metadata.name || loc.defaultControllerName;
 			controllerModel.info.resourceGroup = <string>controllerModel.controllerConfig?.spec.settings.azure.resourceGroup;
-			controllerModel.info.connectionMode = <string>controllerModel.controllerConfig?.spec.settings.azure.connectionMode;
+			controllerModel.info.connectionMode = <string>controllerModel.controllerConfig?.spec.settings.azure.connectionMode.toLowerCase();
 			controllerModel.info.location = <string>controllerModel.controllerConfig?.spec.settings.azure.location;
 
-			if (controllerModel.info.connectionMode === ConnectionMode.direct) {
+			if (controllerModel.info.connectionMode.toLowerCase() === ConnectionMode.direct) {
 				const rawCustomLocation = <string>controllerModel.controllerConfig?.metadata.annotations['management.azure.com/customLocation'];
-				const exp = /customlocations\/([\S]*)/;
+				const exp = /custom[lL]ocations\/([\S]*)/;
 				controllerModel.info.customLocation = <string>exp.exec(rawCustomLocation)?.pop();
 			}
 		} catch (err) {

@@ -99,7 +99,7 @@ export class Workbench {
 		this.sqlNotebook = new SqlNotebook(code, this.quickaccess, this.quickinput, this.editors);
 		this.createBookDialog = new CreateBookDialog(code);
 		this.configurePythonDialog = new ConfigurePythonDialog(code);
-		this.managePackagesDialog = new ManagePackagesDialog(code);
+		this.managePackagesDialog = new ManagePackagesDialog(code, this.quickinput);
 		this.addRemoteBookDialog = new AddRemoteBookDialog(code);
 		this.taskPanel = new TaskPanel(code, this.quickaccess);
 		// {{END}}

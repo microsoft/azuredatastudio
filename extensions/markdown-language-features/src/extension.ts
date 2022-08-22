@@ -83,3 +83,4 @@ function registerMarkdownCommands(
 	commandManager.register(new commands.ReloadPlugins(previewManager, engine));
 	return commandManager;
 }
+

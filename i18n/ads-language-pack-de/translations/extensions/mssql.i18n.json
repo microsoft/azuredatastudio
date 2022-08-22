@@ -250,6 +250,9 @@
 			"serviceStartedStatusMsg": "\"{0}\" wurde gestartet.",
 			"startingServiceStatusMsg": "\"{0}\" wird gestartet."
 		},
+		"dist/tableDesigner/tableDesigner": {
+			"tableDesigner.NewTable": "Neue Tabelle"
+		},
 		"dist/telemetry": {
 			"serviceCrashMessage": "Die Komponente \"{0}\" wurde unerwartet beendet. Starten Sie Azure Data Studio neu.",
 			"viewKnownIssuesText": "Bekannte Probleme anzeigen"

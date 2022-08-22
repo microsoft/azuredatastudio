@@ -2370,6 +2370,12 @@
     <trans-unit id="epCompare.comparisonProgess">
       <source xml:lang="en">Loading similar areas in compared plans</source>
     </trans-unit>
+    <trans-unit id="epCompare.searchNodeAction">
+      <source xml:lang="en">Find Node</source>
+    </trans-unit>
+    <trans-unit id="epCompare.searchNodeActionAddedPlan">
+      <source xml:lang="en">Find Node - Added Plan</source>
+    </trans-unit>
     <trans-unit id="epCompare.toggleOrientation">
       <source xml:lang="en">Toggle Orientation</source>
     </trans-unit>
@@ -2393,6 +2399,12 @@
     <trans-unit id="executionPlanComparisonPropertiesBottomOperation">
       <source xml:lang="en">Bottom operation: {0}</source>
     </trans-unit>
+    <trans-unit id="executionPlanComparisonPropertiesLeftOperation">
+      <source xml:lang="en">Left operation: {0}</source>
+    </trans-unit>
+    <trans-unit id="executionPlanComparisonPropertiesRightOperation">
+      <source xml:lang="en">Right operation: {0}</source>
+    </trans-unit>
     <trans-unit id="executionPlanComparisonPropertiesTopOperation">
       <source xml:lang="en">Top operation: {0}</source>
     </trans-unit>
@@ -2404,6 +2416,12 @@
     </trans-unit>
     <trans-unit id="nodePropertyViewNameValueColumnBottomHeader">
       <source xml:lang="en">Value (Bottom Plan)</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewNameValueColumnLeftHeader">
+      <source xml:lang="en">Value (Left Plan)</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewNameValueColumnRightHeader">
+      <source xml:lang="en">Value (Right Plan)</source>
     </trans-unit>
     <trans-unit id="nodePropertyViewNameValueColumnTopHeader">
       <source xml:lang="en">Value (Top Plan)</source>
@@ -2445,6 +2463,9 @@
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="ep.topOperationsCopyTableData">
+      <source xml:lang="en">Copy</source>
+    </trans-unit>
     <trans-unit id="executionPlanPropertyViewClose">
       <source xml:lang="en">Close</source>
     </trans-unit>
@@ -2464,6 +2485,23 @@
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanTab" source-language="en" datatype="plaintext"><body>
     <trans-unit id="executionPlanTitle">
       <source xml:lang="en">Query Plan (Preview)</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanTreeTab" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="ept.topOperationsCopyTableData">
+      <source xml:lang="en">Copy</source>
+    </trans-unit>
+    <trans-unit id="ept.topOperationsCopyWithHeader">
+      <source xml:lang="en">Copy with Header</source>
+    </trans-unit>
+    <trans-unit id="ept.topOperationsSelectAll">
+      <source xml:lang="en">Select All</source>
+    </trans-unit>
+    <trans-unit id="planTreeTab.title">
+      <source xml:lang="en">Plan Tree (Preview)</source>
+    </trans-unit>
+    <trans-unit id="topOperationsTableTitle">
+      <source xml:lang="en">Execution Plan Tree</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanView" source-language="en" datatype="plaintext"><body>
@@ -2503,6 +2541,9 @@
     <trans-unit id="executionPlanSearchNodeAction">
       <source xml:lang="en">Find Node</source>
     </trans-unit>
+    <trans-unit id="executionPlanTopOperationsAction">
+      <source xml:lang="en">Top Operations</source>
+    </trans-unit>
     <trans-unit id="executionPlanZoomInActionLabel">
       <source xml:lang="en">Zoom In</source>
     </trans-unit>
@@ -2518,6 +2559,23 @@
       <source xml:lang="en">Query {0}: Query cost (relative to the script): {1}%</source>
       <note>{0} is the index of the graph in the execution plan tab
 {1} is the relative cost in percentage of the graph to the rest of the graphs in execution plan tab </note>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/topOperationsTab" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="ep.topOperationsCopyTableData">
+      <source xml:lang="en">Copy</source>
+    </trans-unit>
+    <trans-unit id="ep.topOperationsCopyWithHeader">
+      <source xml:lang="en">Copy with Header</source>
+    </trans-unit>
+    <trans-unit id="ep.topOperationsSelectAll">
+      <source xml:lang="en">Select All</source>
+    </trans-unit>
+    <trans-unit id="topOperationsTabTitle">
+      <source xml:lang="en">Top Operations  (Preview)</source>
+    </trans-unit>
+    <trans-unit id="topOperationsTableTitle">
+      <source xml:lang="en">Top Operations</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/widgets/customZoomWidget" source-language="en" datatype="plaintext"><body>
@@ -2555,6 +2613,11 @@
     </trans-unit>
     <trans-unit id="previousSearchItemAction">
       <source xml:lang="en">Previous Match (Shift+Enter)</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/common/executionPlanInput" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="epCompare.executionPlanEditorName">
+      <source xml:lang="en">ExecutionPlan</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/extensions/browser/contributionRenders" source-language="en" datatype="plaintext"><body>
@@ -3126,8 +3189,8 @@ Error: {1}</source>
     <trans-unit id="buttonPreview">
       <source xml:lang="en">Markdown preview toggle - off</source>
     </trans-unit>
-    <trans-unit id="dropdownHeading">
-      <source xml:lang="en">Heading</source>
+    <trans-unit id="headingDropdownLabel">
+      <source xml:lang="en">Text Size</source>
     </trans-unit>
     <trans-unit id="highlight">
       <source xml:lang="en">Highlight</source>
@@ -4039,6 +4102,15 @@ Error: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/query/browser/gridPanel" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="query.QueryErrorOccured">
+      <source xml:lang="en">Error occured while executing the query.</source>
+    </trans-unit>
+    <trans-unit id="query.QueryExecutionEnded">
+      <source xml:lang="en">Query execution completed.</source>
+    </trans-unit>
+    <trans-unit id="query.QueryExecutionStarted">
+      <source xml:lang="en">Query execution started.</source>
+    </trans-unit>
     <trans-unit id="resultsGrid">
       <source xml:lang="en">Results grid</source>
     </trans-unit>
@@ -4050,6 +4122,9 @@ Error: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/query/browser/keyboardQueryActions" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="ToggleActualPlanKeyboardAction">
+      <source xml:lang="en">Enable/Disable Actual Execution Plan</source>
+    </trans-unit>
     <trans-unit id="ToggleFocusBetweenQueryEditorAndResultsAction">
       <source xml:lang="en">Toggle Focus Between Query And Results</source>
     </trans-unit>
@@ -4088,9 +4163,6 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="runCurrentQueryKeyboardAction">
       <source xml:lang="en">Run Current Query</source>
-    </trans-unit>
-    <trans-unit id="runCurrentQueryWithActualPlanKeyboardAction">
-      <source xml:lang="en">Run Current Query with Actual Plan</source>
     </trans-unit>
     <trans-unit id="runQueryKeyboardAction">
       <source xml:lang="en">Run Query</source>
@@ -4188,6 +4260,9 @@ Error: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/query/browser/queryActions" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="ExecutionPlan">
+      <source xml:lang="en">Execution Plan</source>
+    </trans-unit>
     <trans-unit id="actualQueryPlan">
       <source xml:lang="en">Actual</source>
     </trans-unit>
@@ -4226,6 +4301,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="newQueryTask.newQuery">
       <source xml:lang="en">New Query</source>
+    </trans-unit>
+    <trans-unit id="query.multiSelectionNotSupported">
+      <source xml:lang="en">Running query is not supported when the editor is in multiple selection mode.</source>
     </trans-unit>
     <trans-unit id="queryEditor.exportSqlAsNotebook">
       <source xml:lang="en">Export as Notebook</source>
@@ -4303,66 +4381,6 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="rowHeight">
       <source xml:lang="en">Controls the row height in pixels</source>
-    </trans-unit>
-</body></file>
-  <file original="src/sql/workbench/contrib/queryPlan/browser/queryPlan" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="queryPlanTitle">
-      <source xml:lang="en">Query Plan</source>
-    </trans-unit>
-</body></file>
-  <file original="src/sql/workbench/contrib/queryPlan/browser/queryPlanEditor" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="queryPlanEditor">
-      <source xml:lang="en">Query Plan Editor</source>
-    </trans-unit>
-</body></file>
-  <file original="src/sql/workbench/contrib/queryPlan/browser/topOperations" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="topOperations.actualExecutions">
-      <source xml:lang="en">Actual Executions</source>
-    </trans-unit>
-    <trans-unit id="topOperations.actualRebinds">
-      <source xml:lang="en">Actual Rebinds</source>
-    </trans-unit>
-    <trans-unit id="topOperations.actualRewinds">
-      <source xml:lang="en">Actual Rewinds</source>
-    </trans-unit>
-    <trans-unit id="topOperations.actualRows">
-      <source xml:lang="en">Actual Rows</source>
-    </trans-unit>
-    <trans-unit id="topOperations.estCPUCost">
-      <source xml:lang="en">Est CPU Cost</source>
-    </trans-unit>
-    <trans-unit id="topOperations.estCost">
-      <source xml:lang="en">Est Cost</source>
-    </trans-unit>
-    <trans-unit id="topOperations.estIOCost">
-      <source xml:lang="en">Est IO Cost</source>
-    </trans-unit>
-    <trans-unit id="topOperations.estRebinds">
-      <source xml:lang="en">Est Rebinds</source>
-    </trans-unit>
-    <trans-unit id="topOperations.estRewinds">
-      <source xml:lang="en">Est Rewinds</source>
-    </trans-unit>
-    <trans-unit id="topOperations.estRows">
-      <source xml:lang="en">Est Rows</source>
-    </trans-unit>
-    <trans-unit id="topOperations.estSubtreeCost">
-      <source xml:lang="en">Est Subtree Cost</source>
-    </trans-unit>
-    <trans-unit id="topOperations.object">
-      <source xml:lang="en">Object</source>
-    </trans-unit>
-    <trans-unit id="topOperations.operation">
-      <source xml:lang="en">Operation</source>
-    </trans-unit>
-    <trans-unit id="topOperations.parallel">
-      <source xml:lang="en">Parallel</source>
-    </trans-unit>
-    <trans-unit id="topOperations.partitioned">
-      <source xml:lang="en">Partitioned</source>
-    </trans-unit>
-    <trans-unit id="topOperationsTitle">
-      <source xml:lang="en">Top Operations</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution" source-language="en" datatype="plaintext"><body>
@@ -6076,9 +6094,6 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="serverGroup.cancel">
       <source xml:lang="en">Cancel</source>
-    </trans-unit>
-    <trans-unit id="serverGroup.colorValue">
-      <source xml:lang="en">Color: {0}</source>
     </trans-unit>
     <trans-unit id="serverGroup.ok">
       <source xml:lang="en">OK</source>

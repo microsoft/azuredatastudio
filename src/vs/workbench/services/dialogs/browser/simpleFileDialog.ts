@@ -201,7 +201,7 @@ export class SimpleFileDialog {
 				defaultUri = resources.joinPath(defaultUri, filename);
 			}
 		}
-		if ((this.scheme !== Schemas.file) && !this.fileService.canHandleResource(defaultUri)) {
+		if ((this.scheme !== Schemas.file) && !this.fileService.hasProvider(defaultUri)) {
 			this.notificationService.info(nls.localize('remoteFileDialog.notConnectedToRemote', 'File system provider for {0} is not available.', defaultUri.toString()));
 			return undefined;
 		}
@@ -220,7 +220,7 @@ export class SimpleFileDialog {
 		return resources.toLocalResource(uri, authority,
 			// If there is a remote authority, then we should use the system's default URI as the local scheme.
 			// If there is *no* remote authority, then we should use the default scheme for this dialog as that is already local.
-			this.remoteAuthority ? this.pathService.defaultUriScheme : uri.scheme);
+			authority ? this.pathService.defaultUriScheme : uri.scheme);
 	}
 
 	private getScheme(available: readonly string[] | undefined, defaultUri: URI | undefined): string {
@@ -266,7 +266,7 @@ export class SimpleFileDialog {
 			}
 		}
 
-		return new Promise<URI | undefined>(async (resolve) => {
+		return new Promise<URI | undefined>((resolve) => {
 			this.filePickBox = this.quickInputService.createQuickPick<FileQuickPickItem>();
 			this.busy = true;
 			this.filePickBox.matchOnLabel = false;
@@ -395,13 +395,14 @@ export class SimpleFileDialog {
 
 			this.filePickBox.show();
 			this.contextKey.set(true);
-			await this.updateItems(homedir, true, this.trailing);
-			if (this.trailing) {
-				this.filePickBox.valueSelection = [this.filePickBox.value.length - this.trailing.length, this.filePickBox.value.length - ext.length];
-			} else {
-				this.filePickBox.valueSelection = [this.filePickBox.value.length, this.filePickBox.value.length];
-			}
-			this.busy = false;
+			this.updateItems(homedir, true, this.trailing).then(() => {
+				if (this.trailing) {
+					this.filePickBox.valueSelection = [this.filePickBox.value.length - this.trailing.length, this.filePickBox.value.length - ext.length];
+				} else {
+					this.filePickBox.valueSelection = [this.filePickBox.value.length, this.filePickBox.value.length];
+				}
+				this.busy = false;
+			});
 		});
 	}
 

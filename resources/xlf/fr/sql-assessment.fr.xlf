@@ -98,9 +98,21 @@
         <source xml:lang="en">Error</source>
         <target state="translated">Erreur</target>
       </trans-unit>
+      <trans-unit id="asmt.sqlReport.High">
+        <source xml:lang="en">High</source>
+        <target state="translated">Haute</target>
+      </trans-unit>
       <trans-unit id="asmt.sqlReport.Info">
         <source xml:lang="en">Information</source>
         <target state="translated">Informations</target>
+      </trans-unit>
+      <trans-unit id="asmt.sqlReport.Low">
+        <source xml:lang="en">Low</source>
+        <target state="translated">Basse</target>
+      </trans-unit>
+      <trans-unit id="asmt.sqlReport.Medium">
+        <source xml:lang="en">Medium</source>
+        <target state="translated">Moyenne</target>
       </trans-unit>
       <trans-unit id="asmt.sqlReport.Warning">
         <source xml:lang="en">Warning</source>

@@ -14,7 +14,7 @@ import { IPager, mapPager, singlePagePager } from 'vs/base/common/paging';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import {
 	IExtensionGalleryService, ILocalExtension, IGalleryExtension, IQueryOptions,
-	InstallExtensionEvent, DidUninstallExtensionEvent, IExtensionIdentifier, InstallOperation, DefaultIconPath, InstallOptions, WEB_EXTENSION_TAG, InstallExtensionResult, INSTALL_ERROR_INCOMPATIBLE, ExtensionManagementError
+	InstallExtensionEvent, DidUninstallExtensionEvent, IExtensionIdentifier, InstallOperation, DefaultIconPath, InstallOptions, WEB_EXTENSION_TAG, InstallExtensionResult, ExtensionManagementError, ExtensionManagementErrorCode
 } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { IWorkbenchExtensionEnablementService, EnablementState, IExtensionManagementServerService, IExtensionManagementServer, IWorkbenchExtensionManagementService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { getGalleryExtensionTelemetryData, getLocalExtensionTelemetryData, areSameExtensions, getMaliciousExtensionsSet, groupByExtension, ExtensionIdentifierWithVersion, getGalleryExtensionId } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
@@ -115,6 +115,10 @@ class Extension implements IExtension {
 		}
 
 		return this.local!.manifest.publisher;
+	}
+
+	get publisherDomain(): { link: string, verified: boolean } | undefined {
+		return this.gallery?.publisherDomain;
 	}
 
 	get version(): string {
@@ -419,7 +423,7 @@ class Extensions extends Disposable {
 		}
 		// Loading the compatible version only there is an engine property
 		// Otherwise falling back to old way so that we will not make many roundtrips
-		const compatible = gallery.properties.engine ? await this.galleryService.getCompatibleExtension(gallery) : gallery;
+		const compatible = gallery.properties.engine ? await this.galleryService.getCompatibleExtension(gallery, await this.server.extensionManagementService.getTargetPlatform()) : gallery;
 		if (!compatible) {
 			return false;
 		}
@@ -434,8 +438,15 @@ class Extensions extends Disposable {
 		return false;
 	}
 
+	canInstall(galleryExtension: IGalleryExtension): Promise<boolean> {
+		return this.server.extensionManagementService.canInstall(galleryExtension);
+	}
+
 	private async syncInstalledExtensionWithGallery(extension: Extension): Promise<void> {
-		const compatible = await this.galleryService.getCompatibleExtension(extension.identifier);
+		if (!this.galleryService.isEnabled()) {
+			return;
+		}
+		const compatible = await this.galleryService.getCompatibleExtension(extension.identifier, await this.server.extensionManagementService.getTargetPlatform());
 		if (compatible) {
 			extension.gallery = compatible;
 			this._onChange.fire({ extension });
@@ -745,8 +756,8 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 				const keywords = lookup[ext] || [];
 
 				// Get mode name
-				const modeId = this.modeService.getModeIdByFilepathOrFirstLine(URI.file(`.${ext}`));
-				const languageName = modeId && this.modeService.getLanguageName(modeId);
+				const languageId = this.modeService.getModeIdByFilepathOrFirstLine(URI.file(`.${ext}`));
+				const languageName = languageId && this.modeService.getLanguageName(languageId);
 				const languageTag = languageName ? ` tag:"${languageName}"` : '';
 
 				// Construct a rich query
@@ -994,7 +1005,7 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		return Promises.settled(toUpdate.map(e => this.install(e)));
 	}
 
-	canInstall(extension: IExtension): boolean {
+	async canInstall(extension: IExtension): Promise<boolean> {
 		if (!(extension instanceof Extension)) {
 			return false;
 		}
@@ -1007,14 +1018,16 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 			return false;
 		}
 
-		if (this.extensionManagementServerService.localExtensionManagementServer
-			|| this.extensionManagementServerService.remoteExtensionManagementServer) {
+		if (this.localExtensions && await this.localExtensions.canInstall(extension.gallery)) {
 			return true;
 		}
 
-		if (this.extensionManagementServerService.webExtensionManagementServer) {
-			const configuredExtensionKind = this.extensionManifestPropertiesService.getUserConfiguredExtensionKind(extension.gallery.identifier);
-			return configuredExtensionKind ? configuredExtensionKind.includes('web') : extension.gallery.webExtension;
+		if (this.remoteExtensions && await this.remoteExtensions.canInstall(extension.gallery)) {
+			return true;
+		}
+
+		if (this.webExtensions && await this.webExtensions.canInstall(extension.gallery)) {
+			return true;
 		}
 
 		return false;
@@ -1042,7 +1055,7 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		// The check is added here because we want to fail fast instead of downloading the VSIX and then fail.
 		if (gallery.properties.engine && (!isEngineValid(gallery.properties.engine, this.productService.vscodeVersion, this.productService.date)
 			|| (gallery.properties.azDataEngine && !isEngineValid(gallery.properties.azDataEngine, this.productService.version, this.productService.date)))) {
-			const error = new ExtensionManagementError(locConstants.extensionsWorkbenchServiceIncompatible(extension.gallery!.identifier.id, gallery.version, this.productService.version, gallery.properties.azDataEngine), INSTALL_ERROR_INCOMPATIBLE);
+			const error = new ExtensionManagementError(locConstants.extensionsWorkbenchServiceIncompatible(extension.gallery!.identifier.id, gallery.version, this.productService.version, gallery.properties.azDataEngine), ExtensionManagementErrorCode.Incompatible);
 			return Promise.reject(error);
 		}
 
@@ -1089,29 +1102,27 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		}, () => this.extensionManagementService.uninstall(toUninstall).then(() => undefined));
 	}
 
-	installVersion(extension: IExtension, version: string): Promise<IExtension> {
+	async installVersion(extension: IExtension, version: string): Promise<IExtension> {
 		if (!(extension instanceof Extension)) {
-			return Promise.resolve(extension);
+			return extension;
 		}
 
 		if (!extension.gallery) {
-			return Promise.reject(new Error('Missing gallery'));
+			throw new Error('Missing gallery');
 		}
 
-		return this.galleryService.getCompatibleExtension(extension.gallery.identifier, version)
-			.then(async (gallery) => {
-				if (!gallery) {
-					throw new ExtensionManagementError(locConstants.extensionsWorkbenchServiceIncompatible(extension.gallery!.identifier.id, extension.gallery.version, version, (await extension.getManifest(undefined)).engines.azdata), INSTALL_ERROR_INCOMPATIBLE); // {{SQL CARBON EDIT}} Change vscode to ads
-				}
-				return this.installWithProgress(async () => {
-					const installed = await this.installFromGallery(extension, gallery);
-					if (extension.latestVersion !== version) {
-						this.ignoreAutoUpdate(new ExtensionIdentifierWithVersion(gallery.identifier, version));
-					}
-					return installed;
-				}
-					, gallery.displayName);
-			});
+		const [gallery] = await this.galleryService.getExtensions([{ id: extension.gallery.identifier.id, version }], CancellationToken.None);
+		if (!gallery) {
+			throw new ExtensionManagementError(locConstants.extensionsWorkbenchServiceIncompatible(extension.gallery!.identifier.id, extension.gallery.version, version, (await extension.getManifest(undefined)).engines.azdata), ExtensionManagementErrorCode.Incompatible); // {{SQL CARBON EDIT}} Change vscode to ads
+		}
+
+		return this.installWithProgress(async () => {
+			const installed = await this.installFromGallery(extension, gallery, { installGivenVersion: true });
+			if (extension.latestVersion !== version) {
+				this.ignoreAutoUpdate(new ExtensionIdentifierWithVersion(gallery.identifier, version));
+			}
+			return installed;
+		}, gallery.displayName);
 	}
 
 	reinstall(extension: IExtension): Promise<IExtension> {
@@ -1190,7 +1201,7 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		this._onChange.fire(extension);
 		try {
 			if (extension.state === ExtensionState.Installed && extension.local) {
-				await this.extensionManagementService.updateFromGallery(gallery, extension.local);
+				await this.extensionManagementService.updateFromGallery(gallery, extension.local, installOptions);
 			} else {
 				await this.extensionManagementService.installFromGallery(gallery, installOptions);
 			}

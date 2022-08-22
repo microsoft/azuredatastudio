@@ -146,19 +146,21 @@ export const done = localize('done', "Done");
 export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not be empty");
 
 // Publish Dialog options
-export const publishOptions = localize('publishOptions', 'Publish Options');
-export const publishingOptions = localize('publishingOptions', 'Publishing Options');
-export const GeneralOptions: string = localize('generalOptions', "General Options");
+export const AdvancedOptionsButton = localize('advancedOptionsButton', 'Advanced...');
+export const AdvancedPublishOptions = localize('advancedPublishOptions', 'Advanced Publish Options');
+export const PublishOptions = localize('publishOptions', 'Publish Options');
+export const ExcludeObjectTypeTab = localize('excludeObjectTypes', 'Exclude Object Types');
 export const ResetButton: string = localize('reset', "Reset");
 export const OptionDescription: string = localize('optionDescription', "Option Description");
 export const OptionName: string = localize('optionName', "Option Name");
-export const OptionInclude: string = localize('Include', "Include");
-
+export const OptionInclude: string = localize('include', "Include");
+export function OptionNotFoundWarningMessage(label: string) { return localize('optionNotFoundWarningMessage', "label: {0} does not exist in the options value name lookup", label); }
 
 // Deploy
 export const SqlServerName = 'SQL server';
 export const AzureSqlServerName = 'Azure SQL server';
 export const SqlServerDockerImageName = 'Microsoft SQL Server';
+export const SqlServerDocker2022ImageName = 'Microsoft SQL Server 2022 (preview)';
 export const AzureSqlDbFullDockerImageName = 'Azure SQL Database emulator Full';
 export const AzureSqlDbLiteDockerImageName = 'Azure SQL Database emulator Lite';
 export const AzureSqlLogicalServerName = 'Azure SQL logical server';
@@ -200,8 +202,8 @@ export const eulaAgreementTemplate = localize({ key: 'eulaAgreementTemplate', co
 export function eulaAgreementText(name: string) { return localize({ key: 'eulaAgreementText', comment: ['The placeholders are contents of the line and should not be translated.'] }, "I accept the {0}.", name); }
 export const eulaAgreementTitle = localize('eulaAgreementTitle', "Microsoft SQL Server License Agreement");
 export const edgeEulaAgreementTitle = localize('edgeEulaAgreementTitle', "Microsoft Azure SQL Edge License Agreement");
-export const sqlServerEulaLink = 'https://go.microsoft.com/fwlink/?linkid=857698';
-export const sqlServerEdgeEulaLink = 'https://go.microsoft.com/fwlink/?linkid=2139274';
+export const sqlServerEulaLink = 'https://aka.ms/mcr/osslegalnotice';
+export const sqlServerEdgeEulaLink = 'https://aka.ms/mcr/osslegalnotice';
 export const connectionNamePrefix = 'SQLDbProject';
 export const sqlServerDockerRegistry = 'mcr.microsoft.com';
 export const sqlServerDockerRepository = 'mssql/server';
@@ -576,6 +578,7 @@ export const targetPlatformToVersion: Map<string, string> = new Map<string, stri
 	[SqlTargetPlatform.sqlServer2016, '130'],
 	[SqlTargetPlatform.sqlServer2017, '140'],
 	[SqlTargetPlatform.sqlServer2019, '150'],
+	[SqlTargetPlatform.sqlServer2022, '160'],
 	[SqlTargetPlatform.sqlAzure, 'AzureV12'],
 	[SqlTargetPlatform.sqlDW, 'Dw']
 ]);
@@ -583,7 +586,7 @@ export const targetPlatformToVersion: Map<string, string> = new Map<string, stri
 // DW is special since the system dacpac folder has a different name from the target platform
 export const AzureDwFolder = 'AzureDw';
 
-export const defaultTargetPlatform = SqlTargetPlatform.sqlServer2019;
+export const defaultTargetPlatform = SqlTargetPlatform.sqlServer2019; // TODO: update to 2022 when it's GA
 export const defaultDSP = targetPlatformToVersion.get(defaultTargetPlatform)!;
 
 /**
@@ -600,3 +603,5 @@ export enum PublishTargetType {
 	docker = 'docker',
 	newAzureServer = 'newAzureServer'
 }
+
+export const CollapseProjectNodesKey = 'collapseProjectNodes';

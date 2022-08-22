@@ -12,7 +12,7 @@ import * as vscode from 'vscode';
 import { executeCommand, executeSudoCommand, ExitCodeError, ProcessOutput } from './common/childProcess';
 import { HttpClient } from './common/httpClient';
 import Logger from './common/logger';
-import { AzureCLIArcExtError, NoAzureCLIError, searchForCmd } from './common/utils';
+import { NoAzureCLIArcExtError, NoAzureCLIError, searchForCmd } from './common/utils';
 import { azArcdataInstallKey, azConfigSection, azFound, debugConfigKey, latestAzArcExtensionVersion, azCliInstallKey, azArcFound, azHostname, azUri } from './constants';
 import * as loc from './localizedConstants';
 
@@ -116,7 +116,7 @@ export class AzTool implements azExt.IAzApi {
 				const argsArray = ['arcdata', 'dc', 'upgrade', '--desired-version', desiredVersion, '--name', name];
 				// Direct mode argument
 				if (resourceGroup) { argsArray.push('--resource-group', resourceGroup); }
-				// Indirect mode arguments
+				// K8s API arguments
 				if (namespace) {
 					argsArray.push('--k8s-namespace', namespace);
 					argsArray.push('--use-k8s');
@@ -180,9 +180,9 @@ export class AzTool implements azExt.IAzApi {
 			delete: (
 				name: string,
 				args: {
-					// Direct mode arguments
+					// ARM API arguments
 					resourceGroup?: string,
-					// Indirect mode arguments
+					// K8s API arguments
 					namespace?: string
 					// Additional arguments
 				},
@@ -200,14 +200,14 @@ export class AzTool implements azExt.IAzApi {
 			},
 			list: (
 				args: {
-					// Direct mode arguments
+					// ARM API arguments
 					resourceGroup?: string,
-					// Indirect mode arguments
+					// K8s API arguments
 					namespace?: string
 					// Additional arguments
 				},
 				additionalEnvVars?: azExt.AdditionalEnvVars
-			): Promise<azExt.AzOutput<azExt.SqlMiListResult[]>> => {
+			): Promise<azExt.AzOutput<azExt.SqlMiListRawOutput>> => {
 				const argsArray = ['sql', 'mi-arc', 'list'];
 				if (args.resourceGroup) {
 					argsArray.push('--resource-group', args.resourceGroup);
@@ -216,14 +216,15 @@ export class AzTool implements azExt.IAzApi {
 					argsArray.push('--k8s-namespace', args.namespace);
 					argsArray.push('--use-k8s');
 				}
-				return this.executeCommand<azExt.SqlMiListResult[]>(argsArray, additionalEnvVars);
+				return this.executeCommand<azExt.SqlMiListRawOutput>(argsArray, additionalEnvVars);
+
 			},
 			show: (
 				name: string,
 				args: {
-					// Direct mode arguments
+					// ARM API arguments
 					resourceGroup?: string,
-					// Indirect mode arguments
+					// K8s API arguments
 					namespace?: string
 					// Additional arguments
 				},
@@ -250,9 +251,9 @@ export class AzTool implements azExt.IAzApi {
 					retentionDays?: string,
 					syncSecondaryToCommit?: string
 				},
-				// Direct mode arguments
+				// ARM API arguments
 				resourceGroup?: string,
-				// Indirect mode arguments
+				// K8s API arguments
 				namespace?: string,
 				usek8s?: boolean,
 				// Additional arguments
@@ -265,6 +266,7 @@ export class AzTool implements azExt.IAzApi {
 				if (args.memoryRequest) { argsArray.push('--memory-request', args.memoryRequest); }
 				if (args.noWait) { argsArray.push('--no-wait'); }
 				if (args.retentionDays) { argsArray.push('--retention-days', args.retentionDays); }
+				if (args.syncSecondaryToCommit) { argsArray.push('--sync-secondary-to-commit', args.syncSecondaryToCommit); }
 				if (resourceGroup) { argsArray.push('--resource-group', resourceGroup); }
 				if (namespace) { argsArray.push('--k8s-namespace', namespace); }
 				if (usek8s) { argsArray.push('--use-k8s'); }
@@ -273,9 +275,9 @@ export class AzTool implements azExt.IAzApi {
 			upgrade: (
 				name: string,
 				args: {
-					// Direct mode arguments
+					// ARM API arguments
 					resourceGroup?: string,
-					// Indirect mode arguments
+					// K8s API arguments
 					namespace?: string
 					// Additional arguments
 				},
@@ -447,7 +449,7 @@ export async function checkAndInstallAz(userRequested: boolean = false): Promise
 	try {
 		return await findAzAndArc(); // find currently installed Az
 	} catch (err) {
-		if (err === AzureCLIArcExtError) {
+		if (err instanceof NoAzureCLIArcExtError) {
 			// Az found but arcdata extension not found. Prompt user to install it, then check again.
 			if (await promptToInstallArcdata(userRequested)) {
 				return await findAzAndArc();
@@ -478,7 +480,7 @@ export async function findAzAndArc(): Promise<IAzTool> {
 		Logger.log(loc.foundExistingAz(await azTool.getPath(), (await azTool.getSemVersionAz()).raw, (await azTool.getSemVersionArc()).raw));
 		return azTool;
 	} catch (err) {
-		if (err === AzureCLIArcExtError) {
+		if (err === NoAzureCLIArcExtError) {
 			Logger.log(loc.couldNotFindAzArc(err));
 			Logger.log(loc.noAzArc);
 			await vscode.commands.executeCommand('setContext', azArcFound, false); // save a context key that az was not found so that command for installing az is available in commandPalette and that for updating it is no longer available.
@@ -494,6 +496,7 @@ export async function findAzAndArc(): Promise<IAzTool> {
 /**
  * Find az by searching user's directories. If no az is found, this will error out and no arcdata is found.
  * If az is found, check if arcdata extension exists on it and return true if so, false if not.
+ * Attempt to update arcdata extension.
  * Return the AzTool whether or not an arcdata extension has been found.
  */
 async function findSpecificAzAndArc(): Promise<IAzTool> {
@@ -505,8 +508,11 @@ async function findSpecificAzAndArc(): Promise<IAzTool> {
 	// if no az has been found. If found, check if az arcdata extension exists.
 	const arcVersion = parseArcExtensionVersion(versionOutput.stdout);
 	if (arcVersion === undefined) {
-		throw AzureCLIArcExtError;
+		throw new NoAzureCLIArcExtError;
 	}
+
+	// Quietly attempt to update the arcdata extension to the latest. If it is already the latest, then it will not update.
+	await executeCommand('az', ['extension', 'update', '--name', 'arcdata']);
 
 	return new AzTool(path, <string>parseVersion(versionOutput.stdout), <string>arcVersion);
 }

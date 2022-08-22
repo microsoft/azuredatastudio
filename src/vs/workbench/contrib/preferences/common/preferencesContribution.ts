@@ -19,10 +19,10 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
 import { workbenchConfigurationNodeBase } from 'vs/workbench/common/configuration';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
-import { IEditorInputWithOptions } from 'vs/workbench/common/editor';
+import { EditorInputWithOptions } from 'vs/workbench/common/editor';
 import { SideBySideEditorInput } from 'vs/workbench/common/editor/sideBySideEditorInput';
 import { RegisteredEditorPriority, IEditorResolverService } from 'vs/workbench/services/editor/common/editorResolverService';
-import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { ITextEditorService } from 'vs/workbench/services/textfile/common/textEditorService';
 import { DEFAULT_SETTINGS_EDITOR_SETTING, FOLDER_SETTINGS_PATH, IPreferencesService, USE_SPLIT_JSON_SETTING } from 'vs/workbench/services/preferences/common/preferences';
 
 const schemaRegistry = Registry.as<JSONContributionRegistry.IJSONContributionRegistry>(JSONContributionRegistry.Extensions.JSONContribution);
@@ -40,7 +40,7 @@ export class PreferencesContribution implements IWorkbenchContribution {
 		@IWorkspaceContextService private readonly workspaceService: IWorkspaceContextService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@IEditorResolverService private readonly editorResolverService: IEditorResolverService,
-		@IEditorService private readonly editorService: IEditorService,
+		@ITextEditorService private readonly textEditorService: ITextEditorService
 	) {
 		this.settingsListener = this.configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration(USE_SPLIT_JSON_SETTING) || e.affectsConfiguration(DEFAULT_SETTINGS_EDITOR_SETTING)) {
@@ -69,7 +69,7 @@ export class PreferencesContribution implements IWorkbenchContribution {
 				{
 					canHandleDiff: false,
 				},
-				({ resource, options }): IEditorInputWithOptions => {
+				({ resource, options }): EditorInputWithOptions => {
 					// Global User Settings File
 					if (isEqual(resource, this.environmentService.settingsResource)) {
 						return { editor: this.preferencesService.createSplitJsonEditorInput(ConfigurationTarget.USER_LOCAL, resource), options };
@@ -94,7 +94,7 @@ export class PreferencesContribution implements IWorkbenchContribution {
 						}
 					}
 
-					return { editor: this.editorService.createEditorInput({ resource }), options };
+					return { editor: this.textEditorService.createTextEditor({ resource }), options };
 				}
 			);
 		}

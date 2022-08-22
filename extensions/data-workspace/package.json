@@ -178,7 +178,7 @@
   },
   "dependencies": {
     "fast-glob": "^3.2.7",
-    "@microsoft/ads-extension-telemetry": "^1.1.5",
+    "@microsoft/ads-extension-telemetry": "^1.2.0",
     "vscode-nls": "^4.0.0"
   },
   "devDependencies": {

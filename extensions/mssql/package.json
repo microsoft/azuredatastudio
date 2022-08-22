@@ -511,7 +511,7 @@
         },
         {
           "command": "mssql.newTable",
-          "when": "connectionProvider == MSSQL && nodeType == Folder && nodeLabel == Tables && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Tables && config.workbench.enablePreviewFeatures",
           "group": "0_query@1"
         }
       ],
@@ -523,7 +523,7 @@
         },
         {
           "command": "mssql.newTable",
-          "when": "connectionProvider == MSSQL && nodeType == Folder && nodeLabel == Tables && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Tables && config.workbench.enablePreviewFeatures",
           "group": "connection@1"
         }
       ],

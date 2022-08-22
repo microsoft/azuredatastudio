@@ -532,6 +532,14 @@
         <source xml:lang="en">Install</source>
         <target state="translated">Установить</target>
       </trans-unit>
+      <trans-unit id="managePackages.installCompleteText">
+        <source xml:lang="en">Package installed</source>
+        <target state="translated">Пакет установлен.</target>
+      </trans-unit>
+      <trans-unit id="managePackages.installProgressText">
+        <source xml:lang="en">Installing package</source>
+        <target state="translated">Идет установка пакета</target>
+      </trans-unit>
       <trans-unit id="managePackages.invalidTextPlaceholder">
         <source xml:lang="en">N/A</source>
         <target state="translated">Н/Д</target>
@@ -611,6 +619,14 @@
       <trans-unit id="managePackages.uninstallButtonText">
         <source xml:lang="en">Uninstall selected packages</source>
         <target state="translated">Удалить выбранные пакеты</target>
+      </trans-unit>
+      <trans-unit id="managePackages.uninstallCompleteText">
+        <source xml:lang="en">Package uninstalled</source>
+        <target state="translated">Пакет удален</target>
+      </trans-unit>
+      <trans-unit id="managePackages.uninstallProgressText">
+        <source xml:lang="en">Uninstalling package</source>
+        <target state="translated">Идет удаление пакета</target>
       </trans-unit>
     </body>
   </file>

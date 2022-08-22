@@ -44,23 +44,23 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		if (this.cellModel?.currentMode === CellEditModes.SPLIT || this.cellModel?.currentMode === CellEditModes.MARKDOWN) {
 			const keyEvent = new StandardKeyboardEvent(e);
 			let markdownTextTransformer = new MarkdownTextTransformer(this._notebookService, this.cellModel);
-			if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KEY_B) {
+			if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KeyB) {
 				// Bold Text
 				DOM.EventHelper.stop(e, true);
 				await markdownTextTransformer.transformText(MarkdownButtonType.BOLD);
-			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KEY_I) {
+			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KeyI) {
 				// Italicize text
 				DOM.EventHelper.stop(e, true);
 				await markdownTextTransformer.transformText(MarkdownButtonType.ITALIC);
-			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KEY_U) {
+			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KeyU) {
 				// Underline text
 				DOM.EventHelper.stop(e, true);
 				await markdownTextTransformer.transformText(MarkdownButtonType.UNDERLINE);
-			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.shiftKey && keyEvent.keyCode === KeyCode.KEY_K) {
+			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.shiftKey && keyEvent.keyCode === KeyCode.KeyK) {
 				// Code Block
 				DOM.EventHelper.stop(e, true);
 				await markdownTextTransformer.transformText(MarkdownButtonType.CODE);
-			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.shiftKey && keyEvent.keyCode === KeyCode.KEY_H) {
+			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.shiftKey && keyEvent.keyCode === KeyCode.KeyH) {
 				// Highlight Text
 				DOM.EventHelper.stop(e, true);
 				await markdownTextTransformer.transformText(MarkdownButtonType.HIGHLIGHT);
@@ -78,7 +78,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 	public insertOrderedList = localize('insertOrderedList', "Insert ordered list");
 	public insertImage = localize('insertImage', "Insert image");
 	public buttonPreview = localize('buttonPreview', "Markdown preview toggle - off");
-	public dropdownHeading = localize('dropdownHeading', "Heading");
+	public headingDropdownLabel = localize('headingDropdownLabel', "Text Size");
 	public optionHeading1 = localize('optionHeading1', "Heading 1");
 	public optionHeading2 = localize('optionHeading2', "Heading 2");
 	public optionHeading3 = localize('optionHeading3', "Heading 3");
@@ -148,7 +148,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		let codeButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.codeText', '', 'code masked-icon', this.insertCode, this.cellModel, MarkdownButtonType.CODE);
 		let listButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.listText', '', 'list masked-icon', this.insertList, this.cellModel, MarkdownButtonType.UNORDERED_LIST);
 		let orderedListButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.orderedText', '', 'ordered-list masked-icon', this.insertOrderedList, this.cellModel, MarkdownButtonType.ORDERED_LIST);
-		let headingDropdown = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.heading', '', 'heading', this.dropdownHeading, this.cellModel, null);
+		let headingDropdown = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.heading', '', 'heading', this.headingDropdownLabel, this.cellModel, null);
 		let heading1 = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.heading1', this.optionHeading1, 'heading 1', this.optionHeading1, this.cellModel, MarkdownButtonType.HEADING1);
 		let heading2 = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.heading2', this.optionHeading2, 'heading 2', this.optionHeading2, this.cellModel, MarkdownButtonType.HEADING2);
 		let heading3 = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.heading3', this.optionHeading3, 'heading 3', this.optionHeading3, this.cellModel, MarkdownButtonType.HEADING3);
@@ -172,7 +172,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 			this._actionBar.actionRunner,
 			undefined,
 			'masked-pseudo-after dropdown-arrow heading-dropdown',
-			this.optionParagraph,
+			this.headingDropdownLabel,
 			undefined
 		);
 		dropdownMenuActionViewItem.render(buttonDropdownContainer);

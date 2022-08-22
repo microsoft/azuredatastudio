@@ -278,7 +278,6 @@ export async function launchCreateAzureServerQuickPick(project: Project, azureSq
 export async function getPublishToDockerSettings(project: ISqlProject): Promise<IPublishToDockerSettings | undefined> {
 	const target = project.getProjectTargetVersion();
 	const name = uiUtils.getPublishServerName(target);
-	let localDbSetting: IDockerSettings | undefined;
 	// Deploy to docker selected
 	let portNumber = await vscode.window.showInputBox({
 		title: constants.enterPortNumber(name),
@@ -370,7 +369,7 @@ export async function getPublishToDockerSettings(project: ISqlProject): Promise<
 		imageName = `${imageName}:${imageTag.label}`;
 	}
 
-	localDbSetting = {
+	const dockerSettings: IDockerSettings = {
 		serverName: constants.defaultLocalServerName,
 		userName: constants.defaultLocalServerAdminName,
 		dbName: project.projectFileName,
@@ -388,13 +387,13 @@ export async function getPublishToDockerSettings(project: ISqlProject): Promise<
 	}
 
 	// Server name should be set to localhost
-	deploySettings.serverName = localDbSetting.serverName;
+	deploySettings.serverName = dockerSettings.serverName;
 
 	// Get the database name from deploy settings
-	localDbSetting.dbName = deploySettings.databaseName;
+	dockerSettings.dbName = deploySettings.databaseName;
 
 	return {
-		dockerSettings: localDbSetting,
+		dockerSettings,
 		sqlProjectPublishSettings: deploySettings,
 	};
 }

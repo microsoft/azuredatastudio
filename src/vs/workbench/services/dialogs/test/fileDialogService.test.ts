@@ -29,6 +29,10 @@ import { IWorkspacesService } from 'vs/platform/workspaces/common/workspaces';
 import { IHistoryService } from 'vs/workbench/services/history/common/history';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { SimpleFileDialog } from 'vs/workbench/services/dialogs/browser/simpleFileDialog';
+import { ICommandService } from 'vs/platform/commands/common/commands';
+import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { DisposableStore } from 'vs/base/common/lifecycle';
 
 class TestFileDialogService extends FileDialogService {
 	constructor(
@@ -46,10 +50,13 @@ class TestFileDialogService extends FileDialogService {
 		@IModeService modeService: IModeService,
 		@IWorkspacesService workspacesService: IWorkspacesService,
 		@ILabelService labelService: ILabelService,
-		@IPathService pathService: IPathService
+		@IPathService pathService: IPathService,
+		@ICommandService commandService: ICommandService,
+		@IEditorService editorService: IEditorService,
+		@ICodeEditorService codeEditorService: ICodeEditorService
 	) {
 		super(hostService, contextService, historyService, environmentService, instantiationService, configurationService, fileService,
-			openerService, nativeHostService, dialogService, modeService, workspacesService, labelService, pathService);
+			openerService, nativeHostService, dialogService, modeService, workspacesService, labelService, pathService, commandService, editorService, codeEditorService);
 	}
 
 	protected override getSimpleFileDialog() {
@@ -63,15 +70,21 @@ class TestFileDialogService extends FileDialogService {
 
 suite('FileDialogService', function () {
 
+	let disposables: DisposableStore;
 	let instantiationService: TestInstantiationService;
 	const testFile: URI = URI.file('/test/file');
 
 	setup(async function () {
-		instantiationService = <TestInstantiationService>workbenchInstantiationService();
+		disposables = new DisposableStore();
+		instantiationService = <TestInstantiationService>workbenchInstantiationService(undefined, disposables);
 		const configurationService = new TestConfigurationService();
 		await configurationService.setUserConfiguration('files', { simpleDialog: { enable: true } });
 		instantiationService.stub(IConfigurationService, configurationService);
 
+	});
+
+	teardown(() => {
+		disposables.dispose();
 	});
 
 	test('Local - open/save workspaces availableFilesystems', async function () {

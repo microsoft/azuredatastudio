@@ -15,90 +15,101 @@ import { InternalExecutionPlanElement } from 'sql/workbench/contrib/executionPla
 import { executionPlanComparisonPropertiesDifferent, executionPlanComparisonPropertiesUpArrow, executionPlanComparisonPropertiesDownArrow } from 'sql/workbench/contrib/executionPlan/browser/constants';
 import * as sqlExtHostType from 'sql/workbench/api/common/sqlExtHostTypes';
 import { TextWithIconColumn } from 'sql/base/browser/ui/table/plugins/textWithIconColumn';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+
+export enum ExecutionPlanCompareOrientation {
+	Horizontal = 'horizontal',
+	Vertical = 'vertical'
+}
+
+const topTitleColumnHeader = localize('nodePropertyViewNameValueColumnTopHeader', "Value (Top Plan)");
+const leftTitleColumnHeader = localize('nodePropertyViewNameValueColumnLeftHeader', "Value (Left Plan)");
+const rightTitleColumnHeader = localize('nodePropertyViewNameValueColumnRightHeader', "Value (Right Plan)");
+const bottomTitleColumnHeader = localize('nodePropertyViewNameValueColumnBottomHeader', "Value (Bottom Plan)");
 
 export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanPropertiesViewBase {
 	private _model: ExecutionPlanComparisonPropertiesViewModel;
-	private _topOperationNameContainer: HTMLElement;
-	private _bottomOperationNameContainer: HTMLElement;
+	private _primaryContainer: HTMLElement;
+	private _secondaryContainer: HTMLElement;
+	private _orientation: ExecutionPlanCompareOrientation = ExecutionPlanCompareOrientation.Horizontal;
+	private _primaryTarget: string;
+	private _secondaryTarget: string;
 
 	public constructor(
 		parentContainer: HTMLElement,
 		@IThemeService themeService: IThemeService,
+		@IInstantiationService instantiationService: IInstantiationService,
+		@IContextMenuService contextMenuService: IContextMenuService
 	) {
-		super(parentContainer, themeService);
+		super(parentContainer, themeService, instantiationService, contextMenuService);
 		this._model = <ExecutionPlanComparisonPropertiesViewModel>{};
 		this._parentContainer.style.display = 'none';
 		const header = DOM.$('.compare-operation-name');
-		this._topOperationNameContainer = DOM.$('.compare-operation-name-text');
-		header.appendChild(this._topOperationNameContainer);
-		this._bottomOperationNameContainer = DOM.$('.compare-operation-name-text');
-		header.appendChild(this._bottomOperationNameContainer);
+		this._primaryContainer = DOM.$('.compare-operation-name-text');
+		header.appendChild(this._primaryContainer);
+		this._secondaryContainer = DOM.$('.compare-operation-name-text');
+		header.appendChild(this._secondaryContainer);
 		this.setHeader(header);
 	}
 
-
 	public setTopElement(e: InternalExecutionPlanElement): void {
 		this._model.topElement = e;
-		let target;
 		if ((<azdata.executionPlan.ExecutionPlanNode>e).name) {
-			target = removeLineBreaks((<azdata.executionPlan.ExecutionPlanNode>e).name);
+			this._primaryTarget = removeLineBreaks((<azdata.executionPlan.ExecutionPlanNode>e).name);
 		} else {
-			target = localize('executionPlanPropertiesEdgeOperationName', "Edge");
+			this._primaryTarget = localize('executionPlanPropertiesEdgeOperationName', "Edge");
 		}
-		const titleText = localize('executionPlanComparisonPropertiesTopOperation', "Top operation: {0}", target);
-		this._topOperationNameContainer.innerText = titleText;
-		this._topOperationNameContainer.title = titleText;
-		this.addDataToTable();
+
+		let topTitleText = localize('executionPlanComparisonPropertiesTopOperation', "Top operation: {0}", this._primaryTarget);
+		this._primaryContainer.innerText = topTitleText;
+		this._primaryContainer.title = topTitleText;
+		this.refreshPropertiesTable();
 	}
 
 	public setBottomElement(e: InternalExecutionPlanElement): void {
 		this._model.bottomElement = e;
-		let target;
 		if ((<azdata.executionPlan.ExecutionPlanNode>e)?.name) {
-			target = removeLineBreaks((<azdata.executionPlan.ExecutionPlanNode>e).name);
+			this._secondaryTarget = removeLineBreaks((<azdata.executionPlan.ExecutionPlanNode>e).name);
 		} else {
-			target = localize('executionPlanPropertiesEdgeOperationName', "Edge");
+			this._secondaryTarget = localize('executionPlanPropertiesEdgeOperationName', "Edge");
 		}
 
-		const titleText = localize('executionPlanComparisonPropertiesBottomOperation', "Bottom operation: {0}", target);
-		this._bottomOperationNameContainer.innerText = titleText;
-		this._bottomOperationNameContainer.title = titleText;
-		this.addDataToTable();
+		let bottomTitleText = localize('executionPlanComparisonPropertiesBottomOperation', "Bottom operation: {0}", this._secondaryTarget);
+		this._secondaryContainer.innerText = bottomTitleText;
+		this._secondaryContainer.title = bottomTitleText;
+		this.refreshPropertiesTable();
 	}
 
+	private updatePropertyContainerTitles(): void {
+		let primaryTitleText = '';
+		let secondaryTitleText = '';
 
-	public addDataToTable() {
-		const columns: Slick.Column<Slick.SlickData>[] = [
-		];
-		if (this._model.topElement) {
-			columns.push({
-				id: 'name',
-				name: localize('nodePropertyViewNameNameColumnHeader', "Name"),
-				field: 'name',
-				width: 200,
-				editor: Slick.Editors.Text,
-				headerCssClass: 'prop-table-header',
-				formatter: textFormatter
-			});
-			columns.push({
-				id: 'value',
-				name: localize('nodePropertyViewNameValueColumnTopHeader', "Value (Top Plan)"),
-				field: 'value1',
-				width: 150,
-				editor: Slick.Editors.Text,
-				headerCssClass: 'prop-table-header',
-				formatter: textFormatter
-			});
+		if (this._orientation === ExecutionPlanCompareOrientation.Horizontal) {
+			primaryTitleText = localize('executionPlanComparisonPropertiesTopOperation', "Top operation: {0}", this._primaryTarget);
+			secondaryTitleText = localize('executionPlanComparisonPropertiesBottomOperation', "Bottom operation: {0}", this._secondaryTarget);
 		}
-		if (this._model.bottomElement) {
-			columns.push(new TextWithIconColumn({
-				id: 'value',
-				name: localize('nodePropertyViewNameValueColumnBottomHeader', "Value (Bottom Plan)"),
-				field: 'value2',
-				width: 150,
-				headerCssClass: 'prop-table-header',
-			}).definition);
+		else {
+			primaryTitleText = localize('executionPlanComparisonPropertiesLeftOperation', "Left operation: {0}", this._primaryTarget);
+			secondaryTitleText = localize('executionPlanComparisonPropertiesRightOperation', "Right operation: {0}", this._secondaryTarget);
 		}
+
+		this._primaryContainer.innerText = primaryTitleText;
+		this._primaryContainer.title = primaryTitleText;
+		this._secondaryContainer.innerText = secondaryTitleText;
+		this._secondaryContainer.title = secondaryTitleText;
+
+		this.updatePropertiesTableColumnHeaders();
+	}
+
+	public updatePropertiesTableColumnHeaders() {
+		const columns: Slick.Column<Slick.SlickData>[] = this.getPropertyTableColumns();
+
+		this.updateTableColumns(columns);
+	}
+
+	public refreshPropertiesTable() {
+		const columns: Slick.Column<Slick.SlickData>[] = this.getPropertyTableColumns();
 
 		let topProps = [];
 		let bottomProps = [];
@@ -110,6 +121,39 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		}
 
 		this.populateTable(columns, this.convertPropertiesToTableRows(topProps, bottomProps, -1, 0));
+	}
+
+	private getPropertyTableColumns() {
+		const columns: Slick.Column<Slick.SlickData>[] = [];
+
+		if (this._model.topElement) {
+			columns.push({
+				id: 'name',
+				name: localize('nodePropertyViewNameNameColumnHeader', "Name"),
+				field: 'name',
+				width: 200,
+				headerCssClass: 'prop-table-header',
+				formatter: textFormatter
+			});
+			columns.push({
+				id: 'value1',
+				name: getPropertyViewNameValueColumnTopHeaderForOrientation(this._orientation),
+				field: 'primary',
+				width: 150,
+				headerCssClass: 'prop-table-header',
+				formatter: textFormatter
+			});
+		}
+		if (this._model.bottomElement) {
+			columns.push(new TextWithIconColumn({
+				id: 'value2',
+				name: getPropertyViewNameValueColumnBottomHeaderForOrientation(this._orientation),
+				field: 'secondary',
+				width: 150,
+				headerCssClass: 'prop-table-header',
+			}).definition);
+		}
+		return columns;
 	}
 
 	public sortPropertiesAlphabetically(props: Map<string, TablePropertiesMapEntry>): Map<string, TablePropertiesMapEntry> {
@@ -224,17 +268,17 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 							break;
 					}
 				}
-				row['value1'] = {
+				row['primary'] = {
 					text: removeLineBreaks(v.topProp.displayValue, ' ')
 				};
-				row['value2'] = {
+				row['secondary'] = {
 					iconCssClass: diffIconClass,
 					title: removeLineBreaks(v.bottomProp.displayValue, ' ')
 				};
 				if ((topProp && !isString(topProp.value)) || (bottomProp && !isString(bottomProp.value))) {
 					row['name'].style = parentRowCellStyling;
-					row['value1'].style = parentRowCellStyling;
-					row['value2'].iconCssClass += ` parent-row-styling`;
+					row['primary'].style = parentRowCellStyling;
+					row['secondary'].iconCssClass += ` parent-row-styling`;
 				}
 				rows.push(row);
 				if (!isString(topProp.value) && !isString(bottomProp.value)) {
@@ -246,31 +290,58 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 				}
 			} else if (topProp && !bottomProp) {
 				row['displayOrder'] = v.topProp.displayOrder;
-				row['value1'] = {
+				row['primary'] = {
 					text: v.topProp.displayValue
 				};
 				rows.push(row);
 				if (!isString(topProp.value)) {
 					row['name'].style = parentRowCellStyling;
-					row['value1'].style = parentRowCellStyling;
+					row['primary'].style = parentRowCellStyling;
 					this.convertPropertiesToTableRows(topProp.value, undefined, rows.length - 1, indent + 2, rows);
 				}
 			} else if (!topProp && bottomProp) {
 				row['displayOrder'] = v.bottomProp.displayOrder;
-				row['value2'] = {
+				row['secondary'] = {
 					title: v.bottomProp.displayValue,
 					iconCssClass: diffIconClass
 				};
 				rows.push(row);
 				if (!isString(bottomProp.value)) {
 					row['name'].style = parentRowCellStyling;
-					row['value2'].iconCssClass += ` parent-row-styling`;
+					row['secondary'].iconCssClass += ` parent-row-styling`;
 					this.convertPropertiesToTableRows(undefined, bottomProp.value, rows.length - 1, indent + 2, rows);
 				}
 			}
 
 		});
+
 		return rows;
+	}
+
+	set orientation(value: ExecutionPlanCompareOrientation) {
+		if (this._orientation === value) {
+			return;
+		}
+		this._orientation = value;
+		this.updatePropertyContainerTitles();
+	}
+}
+
+function getPropertyViewNameValueColumnTopHeaderForOrientation(orientation: ExecutionPlanCompareOrientation): string {
+	if (orientation === ExecutionPlanCompareOrientation.Horizontal) {
+		return topTitleColumnHeader;
+	}
+	else {
+		return leftTitleColumnHeader;
+	}
+}
+
+function getPropertyViewNameValueColumnBottomHeaderForOrientation(orientation: ExecutionPlanCompareOrientation): string {
+	if (orientation === ExecutionPlanCompareOrientation.Horizontal) {
+		return bottomTitleColumnHeader;
+	}
+	else {
+		return rightTitleColumnHeader;
 	}
 }
 

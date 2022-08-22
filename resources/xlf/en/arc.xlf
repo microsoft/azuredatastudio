@@ -901,6 +901,18 @@
     <trans-unit id="arc.upgradingController">
       <source xml:lang="en">Data controller is being upgraded. You can check the status of the upgrade by running the following command: 'kubectl get datacontrollers -A'</source>
     </trans-unit>
+    <trans-unit id="arc.upgradingDirectDC">
+      <source xml:lang="en">Upgrading data controller '{0}' with command 'az arcdata dc upgrade --desired-version {1} --name {0} --resource-group {2}'</source>
+    </trans-unit>
+    <trans-unit id="arc.upgradingDirectMiaa">
+      <source xml:lang="en">Upgrading SQL MIAA '{0}' with command 'az sql mi-arc upgrade --name {0} --resource-group {1}'</source>
+    </trans-unit>
+    <trans-unit id="arc.upgradingIndirectDC">
+      <source xml:lang="en">Upgrading data controller '{0}' with command 'az arcdata dc upgrade --desired-version {1} --name {0} --k8s-namespace {2} --use-k8s'</source>
+    </trans-unit>
+    <trans-unit id="arc.upgradingIndirectMiaa">
+      <source xml:lang="en">Upgrading SQL MIAA '{0}' with command 'az sql mi-arc upgrade --name {0} --k8s-namespace {1} --use-k8s'</source>
+    </trans-unit>
     <trans-unit id="arc.upgradingMiaa">
       <source xml:lang="en">SQL managed instance is being upgraded. You can check the status of the upgrade by running the following command: 'kubectl get sqlmi -A'</source>
     </trans-unit>
@@ -1014,13 +1026,24 @@
       <source xml:lang="en">Azure Arc-enabled PostgreSQL Hyperscale terms and conditions</source>
     </trans-unit>
     <trans-unit id="arc.agreement.sql.help.text">
-      <source xml:lang="en">Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}</source>
+      <source xml:lang="en">Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}. 
+ 
+ By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.</source>
+    </trans-unit>
+    <trans-unit id="arc.agreement.sql.help.text.azure.marketplace.terms">
+      <source xml:lang="en">Azure Marketplace Terms</source>
     </trans-unit>
     <trans-unit id="arc.agreement.sql.help.text.learn.more">
       <source xml:lang="en">Learn more</source>
     </trans-unit>
     <trans-unit id="arc.agreement.sql.help.text.learn.more.ariaLabel">
       <source xml:lang="en">Learn more about Azure Arc enabled Managed Instance</source>
+    </trans-unit>
+    <trans-unit id="arc.agreement.sql.help.text.privacy.policy">
+      <source xml:lang="en">Privacy policy</source>
+    </trans-unit>
+    <trans-unit id="arc.agreement.sql.help.text.terms.of.use">
+      <source xml:lang="en">Terms of use</source>
     </trans-unit>
     <trans-unit id="arc.agreement.sql.terms.conditions">
       <source xml:lang="en">Azure SQL managed instance - Azure Arc terms and conditions</source>
@@ -1055,9 +1078,6 @@
     <trans-unit id="arc.cores-request.label">
       <source xml:lang="en">Cores Request</source>
     </trans-unit>
-    <trans-unit id="arc.data.controller.agreement">
-      <source xml:lang="en">I accept {0} and {1}.</source>
-    </trans-unit>
     <trans-unit id="arc.data.controller.auto.upload.logs">
       <source xml:lang="en">Auto-upload Logs</source>
     </trans-unit>
@@ -1071,7 +1091,10 @@
       <source xml:lang="en">Enable the automatic upload of metrics. Direct mode only.</source>
     </trans-unit>
     <trans-unit id="arc.data.controller.cluster.config.profile">
-      <source xml:lang="en">Config profile</source>
+      <source xml:lang="en">Kubernetes configuration template</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.cluster.config.profile.description">
+      <source xml:lang="en">Choose the Kubernetes configuration template that matches with your Kubernetes distribution. This template provides defaults for storage class, service type, etc.</source>
     </trans-unit>
     <trans-unit id="arc.data.controller.cluster.config.profile.loading">
       <source xml:lang="en">Loading config profiles</source>
@@ -1084,6 +1107,12 @@
     </trans-unit>
     <trans-unit id="arc.data.controller.cluster.environment.title">
       <source xml:lang="en">What is your target existing Kubernetes cluster environment?</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.cluster.name">
+      <source xml:lang="en">Cluster Name</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.cluster.name.description">
+      <source xml:lang="en">The name of the cluster. Direct mode only.</source>
     </trans-unit>
     <trans-unit id="arc.data.controller.connectivity.mode">
       <source xml:lang="en">Connectivity mode</source>
@@ -1104,10 +1133,22 @@
       <source xml:lang="en">The name of the custom location. Direct mode only.</source>
     </trans-unit>
     <trans-unit id="arc.data.controller.details.description">
-      <source xml:lang="en">For indirect mode, provide a namespace, name and storage class for your Azure Arc data controller. This name will be used to identify your Arc instance for remote management and monitoring. For direct mode you do not need to provide a namespace, but please provide the custom location name.</source>
+      <source xml:lang="en">For indirect mode, namespace, name and storage class are required. This name will be used to identify your Arc instance for remote management and monitoring. For direct mode, custom location name is required.</source>
     </trans-unit>
     <trans-unit id="arc.data.controller.details.title">
       <source xml:lang="en">Data controller details</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.direct.display.name">
+      <source xml:lang="en">Direct</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.help.text">
+      <source xml:lang="en">The Kubernetes cluster must already be arc-enabled with the az connectedk8s connect command. Please use our {0} to learn more.</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.help.text.documentation.page">
+      <source xml:lang="en">documentation page</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.indirect.display.name">
+      <source xml:lang="en">Indirect</source>
     </trans-unit>
     <trans-unit id="arc.data.controller.infrastructure">
       <source xml:lang="en">Infrastructure</source>
@@ -1117,6 +1158,9 @@
     </trans-unit>
     <trans-unit id="arc.data.controller.location">
       <source xml:lang="en">Location</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.location.description">
+      <source xml:lang="en">Location is only used for indirect mode deployment. This field will be ignored for direct mode.</source>
     </trans-unit>
     <trans-unit id="arc.data.controller.log.analytics.primary.key">
       <source xml:lang="en">Log Analytics primary key</source>
@@ -1155,7 +1199,7 @@
       <source xml:lang="en">Data controller namespace</source>
     </trans-unit>
     <trans-unit id="arc.data.controller.namespace.description">
-      <source xml:lang="en">Indirect mode only.</source>
+      <source xml:lang="en">Data controller namespace. Indirect mode only.</source>
     </trans-unit>
     <trans-unit id="arc.data.controller.namespace.validation.description">
       <source xml:lang="en">Namespace must consist of lower case alphanumeric characters or '-', start/end with an alphanumeric character, and be 63 characters or fewer in length.</source>
@@ -1196,8 +1240,14 @@
     <trans-unit id="arc.data.controller.summary.cluster.context">
       <source xml:lang="en">Cluster context</source>
     </trans-unit>
+    <trans-unit id="arc.data.controller.summary.cluster.name">
+      <source xml:lang="en">Cluster name</source>
+    </trans-unit>
     <trans-unit id="arc.data.controller.summary.controller">
       <source xml:lang="en">Controller</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.summary.data.controller.custom.location">
+      <source xml:lang="en">Data controller custom location</source>
     </trans-unit>
     <trans-unit id="arc.data.controller.summary.data.controller.infrastructure">
       <source xml:lang="en">Data controller infrastructure</source>
@@ -1533,7 +1583,7 @@
       <source xml:lang="en">Service Tier</source>
     </trans-unit>
     <trans-unit id="arc.sql.storage-class.backups.description">
-      <source xml:lang="en">The storage class to be used for backup persistent volumes. If no value is specified, the default storage class will be used.</source>
+      <source xml:lang="en">The storage class to be used for Backups. If no value is specified, backups will be stored in same storage class assigned to Data. Must be a RWX capable storage class.</source>
     </trans-unit>
     <trans-unit id="arc.sql.storage-class.data.description">
       <source xml:lang="en">The storage class to be used for data (.mdf). If no value is specified, the default storage class will be used.</source>
@@ -1597,6 +1647,12 @@
     </trans-unit>
     <trans-unit id="arc.storage-class.backups.label">
       <source xml:lang="en">Storage Class (Backups)</source>
+    </trans-unit>
+    <trans-unit id="arc.storage-class.backups.warning">
+      <source xml:lang="en">({0})</source>
+    </trans-unit>
+    <trans-unit id="arc.storage-class.backups.warning.link">
+      <source xml:lang="en">RWX capable</source>
     </trans-unit>
     <trans-unit id="arc.storage-class.data.label">
       <source xml:lang="en">Storage Class (Data)</source>

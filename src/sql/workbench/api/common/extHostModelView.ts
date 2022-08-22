@@ -1390,6 +1390,14 @@ class TextComponentWrapper extends ComponentWrapper implements azdata.TextCompon
 	public set textType(type: azdata.TextType | undefined) {
 		this.setProperty('textType', type);
 	}
+
+	public get ariaLive(): string | undefined {
+		return this.properties['ariaLive'];
+	}
+
+	public set ariaLive(ariaLive: string | undefined) {
+		this.setProperty('ariaLive', ariaLive);
+	}
 }
 
 class ImageComponentWrapper extends ComponentWithIconWrapper implements azdata.ImageComponentProperties {

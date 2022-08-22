@@ -331,15 +331,19 @@ export class CursorsController extends Disposable {
 	public onModelContentChanged(eventsCollector: ViewModelEventsCollector, e: ModelRawContentChangedEvent | ModelInjectedTextChangedEvent): void {
 		if (e instanceof ModelInjectedTextChangedEvent) {
 			// If injected texts change, the view positions of all cursors need to be updated.
-			const selectionsFromMarkers = this._cursors.readSelectionFromMarkers();
-			const newState = CursorState.fromModelSelections(selectionsFromMarkers);
-
-			if (didStateChange(this.getCursorStates(), newState || [])) {
-				// setStates might remove markers, which could trigger a decoration change.
-				// If there are injected text decorations for that line, `onModelContentChanged` is emitted again
-				// and an endless recursion happens.
-				// This is why we only call setStates if we really need to (this fixes recursion).
-				this.setStates(eventsCollector, 'modelChange', CursorChangeReason.RecoverFromMarkers, newState);
+			if (this._isHandling) {
+				// The view positions will be updated when handling finishes
+				return;
+			}
+			// setStates might remove markers, which could trigger a decoration change.
+			// If there are injected text decorations for that line, `onModelContentChanged` is emitted again
+			// and an endless recursion happens.
+			// _isHandling prevents that.
+			this._isHandling = true;
+			try {
+				this.setStates(eventsCollector, 'modelChange', CursorChangeReason.NotSet, this.getCursorStates());
+			} finally {
+				this._isHandling = false;
 			}
 		} else {
 			this._knownModelVersionId = e.versionId;
@@ -725,28 +729,6 @@ export class CursorsController extends Disposable {
 			}));
 		}, eventsCollector, source);
 	}
-}
-
-function didStateChange(currentStates: CursorState[], newStates: PartialCursorState[]): boolean {
-	if (currentStates.length !== newStates.length) {
-		return true;
-	}
-
-	for (let i = 0; i < currentStates.length; i++) {
-		const curState = currentStates[i];
-		const newState = newStates[i];
-		if (newState.modelState) {
-			if (!newState.modelState.equals(curState.modelState)) {
-				return true;
-			}
-		}
-		if (newState.viewState) {
-			if (!newState.viewState.equals(curState.viewState)) {
-				return true;
-			}
-		}
-	}
-	return false;
 }
 
 interface IExecContext {

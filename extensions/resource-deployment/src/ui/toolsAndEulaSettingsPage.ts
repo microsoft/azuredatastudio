@@ -172,20 +172,6 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 			);
 			return view.initializeModel(this.form!.withLayout({ width: '100%' }).component()).then(() => {
 				this._agreementContainer.clearItems();
-				if (this._resourceType.agreements) {
-					const agreementTitle = this.view.modelBuilder.text().withProps({
-						value: localize('resourceDeployment.AgreementTitle', "Accept terms of use"),
-						CSSStyles: {
-							'font-size': '14px',
-							'padding': '0'
-						}
-					}).component();
-					this._agreementContainer.addItem(agreementTitle);
-				} else {
-					this.form.removeFormItem({
-						component: this._agreementContainer
-					});
-				}
 
 				this._optionsContainer.clearItems();
 				this._optionDropDownMap.clear();
@@ -243,6 +229,20 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 
 				const agreementInfo = this._resourceType.getAgreementInfo(this.getSelectedOptions());
 				if (agreementInfo) {
+					if (this._resourceType.agreements) {
+						const agreementTitle = this.view.modelBuilder.text().withProps({
+							value: localize('resourceDeployment.AgreementTitle', "Accept terms of use"),
+							CSSStyles: {
+								'font-size': '14px',
+								'padding': '0'
+							}
+						}).component();
+						this._agreementContainer.addItem(agreementTitle);
+					} else {
+						this.form.removeFormItem({
+							component: this._agreementContainer
+						});
+					}
 					this._agreementContainer.addItem(this.createAgreementCheckbox(agreementInfo));
 				}
 

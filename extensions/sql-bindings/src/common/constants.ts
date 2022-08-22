@@ -22,6 +22,7 @@ export const sqlBindingsHelpLink = 'https://github.com/Azure/azure-functions-sql
 export const passwordPlaceholder = '******';
 export const azureFunctionLocalSettingsFileName = 'local.settings.json';
 export const vscodeOpenCommand = 'vscode.open';
+export const serviceName = 'SQL Bindings';
 
 // localized constants
 export const functionNameTitle = localize('functionNameTitle', 'Function Name');
@@ -48,7 +49,7 @@ export const output = localize('output', "Output");
 export const inputDescription = localize('inputDescription', "Retrieves data from a database");
 export const outputDescription = localize('outputDescription', "Save data to a database");
 export const selectAzureFunction = localize('selectAzureFunction', "Select an Azure function in the current file to add SQL binding to");
-export const sqlTableOrViewToQuery = localize('sqlTableOrViewToQuery', "SQL table or view to query");
+export const sqlObjectToQuery = localize('sqlObjectToQuery', "SQL object to query");
 export const sqlTableToUpsert = localize('sqlTableToUpsert', "SQL table to upsert into");
 export const connectionStringSetting = localize('connectionStringSetting', "Connection string setting name");
 export const selectSetting = localize('selectSetting', "Select SQL connection string setting from local.settings.json");
@@ -73,11 +74,16 @@ export const userPasswordLater = localize('userPasswordLater', 'In order to user
 export const openFile = localize('openFile', "Open File");
 export const closeButton = localize('closeButton', "Close");
 export const enterPasswordPrompt = localize('enterPasswordPrompt', '(Optional) Enter connection password to save in local.settings.json');
-export const connectionProgressTitle = localize('connectionProgressTitle', "Testing SQL Server connection...");
-export const enterObjectName = localize('enterObjectName', 'Enter SQL table or view to query');
-export const enterObjectNameToUpsert = localize('enterObjectNameToUpsert', 'Enter SQL table to upsert into');
+export const enterTableName = localize('enterTableName', 'Enter SQL table to query');
+export const enterViewName = localize('enterViewName', 'Enter SQL view to query');
+export const enterTableNameToUpsert = localize('enterTableNameToUpsert', 'Enter SQL table to upsert into');
 export const selectTable = localize('selectTable', 'Select table to use');
+export const selectView = localize('selectView', 'Select view to use');
 export const tableListProgressTitle = localize('tableListProgressTitle', "Fetching tables for selected database...");
+export const viewListProgressTitle = localize('viewListProgressTitle', "Fetching views for selected database...");
+export const table = localize('table', 'Table');
+export const view = localize('view', 'View');
+export const selectSqlTableOrViewPrompt = localize('selectSqlTableOrViewPrompt', "Select object type to insert or upsert into");
 export const failedToSetSetting = (err?: any): string => err ? localize('failedToSetSetting', "Failed to set connection string app setting: {0}", utils.getErrorMessage(err)) : localize('unableToSetConnectionString', "Failed to set connection string app setting");
 export function selectBindingType(funcName?: string): string { return funcName ? localize('selectBindingTypeToSpecifiedFunction', "Select type of binding for the function '{0}'", funcName) : localize('selectBindingType', "Select type of binding"); }
 export function settingAlreadyExists(settingName: string): string { return localize('SettingAlreadyExists', 'Local app setting \'{0}\' already exists. Overwrite?', settingName); }
@@ -85,6 +91,7 @@ export function failedToParse(filename: string, error: any): string { return loc
 export function addSqlBinding(functionName: string): string { return localize('addSqlBinding', 'Adding SQL Binding to function "{0}"...'), functionName; }
 export function errorNewAzureFunction(error: any): string { return localize('errorNewAzureFunction', 'Error creating new Azure Function: {0}', utils.getErrorMessage(error)); }
 export function manuallyEnterObjectName(userObjectName: string): string { return `$(pencil) ${userObjectName}`; }
+export function dotnetResult(output: string): string { return localize('dotnetResult', 'Adding SQL nuget package:\n{0}', output); }
 
 // Known Azure settings reference for Azure Functions
 // https://docs.microsoft.com/en-us/azure/azure-functions/functions-app-settings

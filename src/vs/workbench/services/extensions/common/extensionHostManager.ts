@@ -20,12 +20,13 @@ import { registerAction2, Action2 } from 'vs/platform/actions/common/actions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { StopWatch } from 'vs/base/common/stopwatch';
 import { VSBuffer } from 'vs/base/common/buffer';
-import { IExtensionHost, ExtensionHostKind, ActivationKind } from 'vs/workbench/services/extensions/common/extensions';
+import { IExtensionHost, ExtensionHostKind, ActivationKind, extensionHostKindToString } from 'vs/workbench/services/extensions/common/extensions';
 import { ExtensionActivationReason } from 'vs/workbench/api/common/extHostExtensionActivator';
 import { CATEGORIES } from 'vs/workbench/common/actions';
 import { Barrier, timeout } from 'vs/base/common/async';
 import { URI } from 'vs/base/common/uri';
 import { ILogService } from 'vs/platform/log/common/log';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 
 // Enable to see detailed message communication between window and extension host
 const LOG_EXTENSION_HOST_COMMUNICATION = false;
@@ -56,6 +57,24 @@ export function createExtensionHostManager(instantiationService: IInstantiationS
 	return instantiationService.createInstance(ExtensionHostManager, extensionHost, initialActivationEvents);
 }
 
+export type ExtensionHostStartupClassification = {
+	time: { classification: 'SystemMetaData', purpose: 'PerformanceAndHealth' };
+	action: { classification: 'SystemMetaData', purpose: 'PerformanceAndHealth' };
+	kind: { classification: 'SystemMetaData', purpose: 'PerformanceAndHealth' };
+	errorName?: { classification: 'SystemMetaData', purpose: 'PerformanceAndHealth' };
+	errorMessage?: { classification: 'SystemMetaData', purpose: 'PerformanceAndHealth' };
+	errorStack?: { classification: 'SystemMetaData', purpose: 'PerformanceAndHealth' };
+};
+
+export type ExtensionHostStartupEvent = {
+	time: number;
+	action: 'starting' | 'success' | 'error';
+	kind: string;
+	errorName?: string;
+	errorMessage?: string;
+	errorStack?: string;
+};
+
 class ExtensionHostManager extends Disposable implements IExtensionHostManager {
 
 	public readonly kind: ExtensionHostKind;
@@ -83,6 +102,8 @@ class ExtensionHostManager extends Disposable implements IExtensionHostManager {
 		initialActivationEvents: string[],
 		@IInstantiationService private readonly _instantiationService: IInstantiationService,
 		@IWorkbenchEnvironmentService private readonly _environmentService: IWorkbenchEnvironmentService,
+		@ITelemetryService private readonly _telemetryService: ITelemetryService,
+		@ILogService private readonly _logService: ILogService,
 	) {
 		super();
 		this._cachedActivationEvents = new Map<string, Promise<void>>();
@@ -92,14 +113,50 @@ class ExtensionHostManager extends Disposable implements IExtensionHostManager {
 		this._extensionHost = extensionHost;
 		this.kind = this._extensionHost.kind;
 		this.onDidExit = this._extensionHost.onExit;
+
+		const startingTelemetryEvent: ExtensionHostStartupEvent = {
+			time: Date.now(),
+			action: 'starting',
+			kind: extensionHostKindToString(this.kind)
+		};
+		this._telemetryService.publicLog2<ExtensionHostStartupEvent, ExtensionHostStartupClassification>('extensionHostStartup', startingTelemetryEvent);
+
 		this._proxy = this._extensionHost.start()!.then(
 			(protocol) => {
 				this._hasStarted = true;
+
+				// Track healthy extension host startup
+				const successTelemetryEvent: ExtensionHostStartupEvent = {
+					time: Date.now(),
+					action: 'success',
+					kind: extensionHostKindToString(this.kind)
+				};
+				this._telemetryService.publicLog2<ExtensionHostStartupEvent, ExtensionHostStartupClassification>('extensionHostStartup', successTelemetryEvent);
+
 				return { value: this._createExtensionHostCustomers(protocol) };
 			},
 			(err) => {
-				console.error(`Error received from starting extension host (kind: ${this.kind})`);
-				console.error(err);
+				this._logService.error(`Error received from starting extension host (kind: ${extensionHostKindToString(this.kind)})`);
+				this._logService.error(err);
+
+				// Track errors during extension host startup
+				const failureTelemetryEvent: ExtensionHostStartupEvent = {
+					time: Date.now(),
+					action: 'error',
+					kind: extensionHostKindToString(this.kind)
+				};
+
+				if (err && err.name) {
+					failureTelemetryEvent.errorName = err.name;
+				}
+				if (err && err.message) {
+					failureTelemetryEvent.errorMessage = err.message;
+				}
+				if (err && err.stack) {
+					failureTelemetryEvent.errorStack = err.stack;
+				}
+				this._telemetryService.publicLog2<ExtensionHostStartupEvent, ExtensionHostStartupClassification>('extensionHostStartup', failureTelemetryEvent, true);
+
 				return null;
 			}
 		);
@@ -327,6 +384,11 @@ class ExtensionHostManager extends Disposable implements IExtensionHostManager {
 	}
 
 	public async getCanonicalURI(remoteAuthority: string, uri: URI): Promise<URI> {
+		const authorityPlusIndex = remoteAuthority.indexOf('+');
+		if (authorityPlusIndex === -1) {
+			// This authority does not use a resolver
+			return uri;
+		}
 		const proxy = await this._getProxy();
 		if (!proxy) {
 			throw new Error(`Cannot resolve canonical URI`);
@@ -437,7 +499,7 @@ class LazyStartExtensionHostManager extends Disposable implements IExtensionHost
 		const extensionHostAlreadyStarted = Boolean(this._actual);
 		const shouldStartExtensionHost = (toAdd.length > 0);
 		if (extensionHostAlreadyStarted || shouldStartExtensionHost) {
-			const actual = await this._getOrCreateActualAndStart(`contains ${toAdd.length} new extension(s) (installed or enabled)`);
+			const actual = await this._getOrCreateActualAndStart(`contains ${toAdd.length} new extension(s) (installed or enabled): ${toAdd.map(ext => ext.identifier.value)}`);
 			return actual.deltaExtensions(toAdd, toRemove);
 		}
 	}
@@ -449,6 +511,13 @@ class LazyStartExtensionHostManager extends Disposable implements IExtensionHost
 		return false;
 	}
 	public async activateByEvent(activationEvent: string, activationKind: ActivationKind): Promise<void> {
+		if (activationKind === ActivationKind.Immediate) {
+			// this is an immediate request, so we cannot wait for start to be called
+			if (this._actual) {
+				return this._actual.activateByEvent(activationEvent, activationKind);
+			}
+			return;
+		}
 		await this._startCalled.wait();
 		if (this._actual) {
 			return this._actual.activateByEvent(activationEvent, activationKind);
@@ -478,7 +547,7 @@ class LazyStartExtensionHostManager extends Disposable implements IExtensionHost
 	public async start(enabledExtensionIds: ExtensionIdentifier[]): Promise<void> {
 		if (enabledExtensionIds.length > 0) {
 			// there are actual extensions, so let's launch the extension host
-			const actual = this._createActual(`contains ${enabledExtensionIds.length} extension(s).`);
+			const actual = this._createActual(`contains ${enabledExtensionIds.length} extension(s): ${enabledExtensionIds.map(extId => extId.value)}.`);
 			const result = actual.start(enabledExtensionIds);
 			this._startCalled.open();
 			return result;

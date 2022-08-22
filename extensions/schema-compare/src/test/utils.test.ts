@@ -8,13 +8,14 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as mssql from 'mssql';
 import * as loc from '../localizedConstants';
-import * as TypeMoq from 'typemoq';
 import * as path from 'path';
 import * as uuid from 'uuid';
 import * as os from 'os';
+import * as azdataTest from '@microsoft/azdata-test';
+
 import { promises as fs } from 'fs';
 import { getEndpointName, verifyConnectionAndGetOwnerUri, exists } from '../utils';
-import { mockDacpacEndpoint, mockDatabaseEndpoint, mockFilePath, mockConnectionInfo, shouldThrowSpecificError, mockConnectionResult, mockConnectionProfile } from './testUtils';
+import { mockDacpacEndpoint, mockDatabaseEndpoint, mockFilePath, mockConnectionInfo, shouldThrowSpecificError, mockConnectionResult } from './testUtils';
 import { createContext, TestContext } from './testContext';
 import * as sinon from 'sinon';
 
@@ -115,7 +116,16 @@ describe('utils: In-depth tests to verify verifyConnectionAndGetOwnerUri', funct
 	});
 
 	it('Should throw an error for login failure', async function (): Promise<void> {
-		const getConnectionsResults: azdata.connection.ConnectionProfile[] = [{ ...mockConnectionProfile }];
+		const connectionProfile = azdataTest.stubs.connectionProfile.createConnectionProfile({
+			// these need to match what's in mockConnectionInfo in testUtils.ts
+			options: {
+				server: mockConnectionInfo.serverName,
+				database: mockConnectionInfo.databaseName,
+				user: mockConnectionInfo.userName,
+				authenticationType: mockConnectionInfo.authenticationType
+			}
+		});
+		const getConnectionsResults: azdata.connection.ConnectionProfile[] = [{ ...connectionProfile }];
 		const connection = { ...mockConnectionResult };
 		const testDatabaseEndpoint: mssql.SchemaCompareEndpointInfo = { ...mockDatabaseEndpoint };
 		testDatabaseEndpoint.connectionDetails = { ...mockConnectionInfo };
