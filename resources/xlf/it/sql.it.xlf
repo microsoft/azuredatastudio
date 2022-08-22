@@ -4472,9 +4472,9 @@ Errore: {1}</target>
         <source xml:lang="en">Markdown preview toggle - off</source>
         <target state="translated">Disattivazione anteprima Markdown</target>
       </trans-unit>
-      <trans-unit id="dropdownHeading">
-        <source xml:lang="en">Heading</source>
-        <target state="translated">Intestazione</target>
+      <trans-unit id="headingDropdownLabel">
+        <source xml:lang="en">Text Size</source>
+        <target state="new">Text Size</target>
       </trans-unit>
       <trans-unit id="highlight">
         <source xml:lang="en">Highlight</source>

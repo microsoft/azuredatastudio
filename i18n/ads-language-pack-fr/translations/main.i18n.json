@@ -11440,7 +11440,7 @@
 		"sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component": {
 			"bold": "Gras",
 			"buttonPreview": "Bouton bascule d'aperçu Markdown - désactivé",
-			"dropdownHeading": "Titre",
+			"headingDropdownLabel": "Text Size",
 			"highlight": "Recommandation",
 			"insertCode": "Insérer du code",
 			"insertImage": "Insérer une image",

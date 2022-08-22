@@ -11440,7 +11440,7 @@
 		"sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component": {
 			"bold": "굵게",
 			"buttonPreview": "Markdown 미리 보기 토글 - 끄기",
-			"dropdownHeading": "제목",
+			"headingDropdownLabel": "Text Size",
 			"highlight": "강조 표시",
 			"insertCode": "코드 삽입",
 			"insertImage": "이미지 삽입",

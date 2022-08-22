@@ -11440,7 +11440,7 @@
 		"sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component": {
 			"bold": "太字",
 			"buttonPreview": "マークダウン プレビューの切り替え - オフ",
-			"dropdownHeading": "見出し",
+			"headingDropdownLabel": "Text Size",
 			"highlight": "強調表示",
 			"insertCode": "コードの挿入",
 			"insertImage": "画像の挿入",
