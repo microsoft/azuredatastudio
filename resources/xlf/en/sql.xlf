@@ -4094,6 +4094,15 @@ Error: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/query/browser/gridPanel" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="query.QueryErrorOccured">
+      <source xml:lang="en">Error occured while executing the query.</source>
+    </trans-unit>
+    <trans-unit id="query.QueryExecutionEnded">
+      <source xml:lang="en">Query execution completed.</source>
+    </trans-unit>
+    <trans-unit id="query.QueryExecutionStarted">
+      <source xml:lang="en">Query execution started.</source>
+    </trans-unit>
     <trans-unit id="resultsGrid">
       <source xml:lang="en">Results grid</source>
     </trans-unit>
