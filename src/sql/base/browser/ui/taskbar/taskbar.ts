@@ -162,4 +162,7 @@ export class Taskbar {
 		this.actionBar.dispose();
 	}
 
+	public clear(): void {
+		this.actionBar.clear();
+	}
 }
