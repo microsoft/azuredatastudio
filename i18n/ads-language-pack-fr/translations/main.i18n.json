@@ -11178,7 +11178,7 @@
 			"nodePropertyViewNameValueColumnHeader": "Valeur"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase": {
-			"ep.topOperationsCopyTableData": "Copy",
+			"ep.topOperationsCopyTableData": "Copier",
 			"executionPlanPropertyViewClose": "Fermer",
 			"executionPlanPropertyViewSortAlphabetically": "Alphabétique",
 			"executionPlanPropertyViewSortByDisplayOrder": "Importance",
@@ -11440,7 +11440,7 @@
 		"sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component": {
 			"bold": "Gras",
 			"buttonPreview": "Bouton bascule d'aperçu Markdown - désactivé",
-			"headingDropdownLabel": "Text Size",
+			"headingDropdownLabel": "Taille du texte",
 			"highlight": "Recommandation",
 			"insertCode": "Insérer du code",
 			"insertImage": "Insérer une image",

@@ -3470,7 +3470,7 @@
     <body>
       <trans-unit id="ep.topOperationsCopyTableData">
         <source xml:lang="en">Copy</source>
-        <target state="new">Copy</target>
+        <target state="translated">複製</target>
       </trans-unit>
       <trans-unit id="executionPlanPropertyViewClose">
         <source xml:lang="en">Close</source>
@@ -4474,7 +4474,7 @@ Error: {1}</source>
       </trans-unit>
       <trans-unit id="headingDropdownLabel">
         <source xml:lang="en">Text Size</source>
-        <target state="new">Text Size</target>
+        <target state="translated">文字大小</target>
       </trans-unit>
       <trans-unit id="highlight">
         <source xml:lang="en">Highlight</source>
