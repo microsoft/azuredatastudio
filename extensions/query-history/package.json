@@ -183,7 +183,7 @@
         {
           "id": "queryHistory",
           "title": "%queryHistory.displayName%",
-          "icon": "$(history)"
+          "icon": "images/QueryHistoryIcon.svg"
         }
       ]
     }
