@@ -120,10 +120,14 @@ export class AssessmentResultsDialog {
 				this._model._miDbs = selectedDbs;
 				break;
 			}
-
 			case MigrationTargetType.SQLVM: {
 				this.didUpdateDatabasesForMigration(this._model._vmDbs, selectedDbs);
 				this._model._vmDbs = selectedDbs;
+				break;
+			}
+			case MigrationTargetType.SQLDB: {
+				this.didUpdateDatabasesForMigration(this._model._sqldbDbs, selectedDbs);
+				this._model._sqldbDbs = selectedDbs;
 				break;
 			}
 		}

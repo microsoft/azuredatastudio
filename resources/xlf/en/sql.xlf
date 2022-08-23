@@ -2615,6 +2615,11 @@
       <source xml:lang="en">Previous Match (Shift+Enter)</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/common/executionPlanInput" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="epCompare.executionPlanEditorName">
+      <source xml:lang="en">ExecutionPlan</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/contrib/extensions/browser/contributionRenders" source-language="en" datatype="plaintext"><body>
     <trans-unit id="insight condition">
       <source xml:lang="en">When</source>
@@ -6089,9 +6094,6 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="serverGroup.cancel">
       <source xml:lang="en">Cancel</source>
-    </trans-unit>
-    <trans-unit id="serverGroup.colorValue">
-      <source xml:lang="en">Group Color: {0}</source>
     </trans-unit>
     <trans-unit id="serverGroup.ok">
       <source xml:lang="en">OK</source>

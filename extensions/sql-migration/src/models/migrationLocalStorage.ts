@@ -8,6 +8,7 @@ import * as azurecore from 'azurecore';
 import { DatabaseMigration, SqlMigrationService, getSubscriptions, getServiceMigrations } from '../api/azure';
 import { deepClone } from '../api/utils';
 import * as loc from '../constants/strings';
+import { ServiceContextChangeEvent } from '../dashboard/tabBase';
 
 export class MigrationLocalStorage {
 	private static context: vscode.ExtensionContext;
@@ -26,15 +27,16 @@ export class MigrationLocalStorage {
 		return {};
 	}
 
-	public static async saveMigrationServiceContext(serviceContext: MigrationServiceContext): Promise<void> {
+	public static async saveMigrationServiceContext(serviceContext: MigrationServiceContext, serviceContextChangedEvent: vscode.EventEmitter<ServiceContextChangeEvent>): Promise<void> {
 		const connectionProfile = await azdata.connection.getCurrentConnection();
 		if (connectionProfile) {
 			const serverContextKey = `${this.mementoToken}.${connectionProfile.serverName}.serviceContext`;
-			return await this.context.globalState.update(serverContextKey, deepClone(serviceContext));
+			await this.context.globalState.update(serverContextKey, deepClone(serviceContext));
+			serviceContextChangedEvent.fire({ connectionId: connectionProfile.connectionId });
 		}
 	}
 
-	public static async refreshMigrationAzureAccount(serviceContext: MigrationServiceContext, migration: DatabaseMigration): Promise<void> {
+	public static async refreshMigrationAzureAccount(serviceContext: MigrationServiceContext, migration: DatabaseMigration, serviceContextChangedEvent: vscode.EventEmitter<ServiceContextChangeEvent>): Promise<void> {
 		if (serviceContext.azureAccount?.isStale) {
 			const accounts = await azdata.accounts.getAllAccounts();
 			const account = accounts.find(a => !a.isStale && a.key.accountId === serviceContext.azureAccount?.key.accountId);
@@ -43,7 +45,7 @@ export class MigrationLocalStorage {
 				const subscription = subscriptions.find(s => s.id === serviceContext.subscription?.id);
 				if (subscription) {
 					serviceContext.azureAccount = account;
-					await this.saveMigrationServiceContext(serviceContext);
+					await this.saveMigrationServiceContext(serviceContext, serviceContextChangedEvent);
 				}
 			}
 		}
@@ -86,31 +88,4 @@ export interface MigrationServiceContext {
 	location?: azurecore.azureResource.AzureLocation,
 	resourceGroup?: azurecore.azureResource.AzureResourceResourceGroup,
 	migrationService?: SqlMigrationService,
-}
-
-export enum MigrationStatus {
-	Failed = 'Failed',
-	Succeeded = 'Succeeded',
-	InProgress = 'InProgress',
-	Canceled = 'Canceled',
-	Completing = 'Completing',
-	Creating = 'Creating',
-	Canceling = 'Canceling',
-	Retriable = 'Retriable',
-}
-
-export enum ProvisioningState {
-	Failed = 'Failed',
-	Succeeded = 'Succeeded',
-	Creating = 'Creating'
-}
-
-export enum BackupFileInfoStatus {
-	Arrived = 'Arrived',
-	Uploading = 'Uploading',
-	Uploaded = 'Uploaded',
-	Restoring = 'Restoring',
-	Restored = 'Restored',
-	Cancelled = 'Cancelled',
-	Ignored = 'Ignored'
 }

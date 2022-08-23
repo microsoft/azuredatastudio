@@ -390,8 +390,12 @@ export class CreateSqlMigrationServiceDialog {
 	private async populateResourceGroups(): Promise<void> {
 		this.migrationServiceResourceGroupDropdown.loading = true;
 		try {
-			this._resourceGroups = await utils.getAllResourceGroups(this._model._azureAccount, this._model._targetSubscription);
-			this.migrationServiceResourceGroupDropdown.values = await utils.getAzureResourceGroupsDropdownValues(this._resourceGroups);
+			this._resourceGroups = await utils.getAllResourceGroups(
+				this._model._azureAccount,
+				this._model._targetSubscription);
+			this.migrationServiceResourceGroupDropdown.values = utils.getResourceDropdownValues(
+				this._resourceGroups,
+				constants.RESOURCE_GROUP_NOT_FOUND);
 
 			const selectedResourceGroupValue = this.migrationServiceResourceGroupDropdown.values.find(v => v.name.toLowerCase() === this._resourceGroupPreset.toLowerCase());
 			this.migrationServiceResourceGroupDropdown.value = (selectedResourceGroupValue) ? selectedResourceGroupValue : this.migrationServiceResourceGroupDropdown.values[0];
