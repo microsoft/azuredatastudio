@@ -8,13 +8,12 @@ import * as vscode from 'vscode';
 import * as loc from '../constants/strings';
 import { getSqlServerName, getMigrationStatusImage, getPipelineStatusImage, debounce } from '../api/utils';
 import { logError, TelemetryViews } from '../telemtery';
-import { canCancelMigration, canCutoverMigration, canRetryMigration, formatDateTimeString, formatNumber, formatSizeBytes, formatSizeKb, formatTime, getMigrationStatus, getMigrationTargetTypeEnum, isOfflineMigation, PipelineStatusCodes } from '../constants/helper';
+import { canCancelMigration, canCutoverMigration, canRetryMigration, formatDateTimeString, formatNumber, formatSizeBytes, formatSizeKb, formatTime, getMigrationStatusString, getMigrationTargetTypeEnum, isOfflineMigation, PipelineStatusCodes } from '../constants/helper';
 import { CopyProgressDetail, getResourceName } from '../api/azure';
 import { InfoFieldSchema, infoFieldLgWidth, MigrationDetailsTabBase, MigrationTargetTypeName } from './migrationDetailsTabBase';
-import { EmptySettingValue } from './tabBase';
 import { IconPathHelper } from '../constants/iconPathHelper';
-import { DashboardStatusBar } from './sqlServerDashboard';
 import { EOL } from 'os';
+import { DashboardStatusBar } from './DashboardStatusBar';
 
 const MigrationDetailsTableTabId = 'MigrationDetailsTableTab';
 
@@ -63,12 +62,12 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 	public async create(
 		context: vscode.ExtensionContext,
 		view: azdata.ModelView,
-		onClosedCallback: () => Promise<void>,
+		openMigrationsListFcn: () => Promise<void>,
 		statusBar: DashboardStatusBar): Promise<MigrationDetailsTableTab> {
 
 		this.view = view;
 		this.context = context;
-		this.onClosedCallback = onClosedCallback;
+		this.openMigrationsListFcn = openMigrationsListFcn;
 		this.statusBar = statusBar;
 
 		await this.initialize(this.view);
@@ -78,16 +77,17 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 
 	@debounce(500)
 	public async refresh(): Promise<void> {
-		if (this.isRefreshing) {
+		if (this.isRefreshing ||
+			this.refreshLoader === undefined) {
+
 			return;
 		}
 
-		this.isRefreshing = true;
-		this.refreshButton.enabled = false;
-		this.refreshLoader.loading = true;
-		await this.statusBar.clearError();
-
 		try {
+			this.isRefreshing = true;
+			this.refreshLoader.loading = true;
+			await this.statusBar.clearError();
+
 			await this.model.fetchStatus();
 			await this._loadData();
 		} catch (e) {
@@ -95,11 +95,10 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 				loc.MIGRATION_STATUS_REFRESH_ERROR,
 				loc.MIGRATION_STATUS_REFRESH_ERROR,
 				e.message);
+		} finally {
+			this.refreshLoader.loading = false;
+			this.isRefreshing = false;
 		}
-
-		this.isRefreshing = false;
-		this.refreshLoader.loading = false;
-		this.refreshButton.enabled = true;
 	}
 
 	private async _loadData(): Promise<void> {
@@ -120,8 +119,9 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 		const targetType = getMigrationTargetTypeEnum(migration);
 		const targetServerVersion = MigrationTargetTypeName[targetType ?? ''];
 
-		const hashSet: loc.LookupTable<number> = {};
 		this._progressDetail = migration?.properties.migrationStatusDetails?.listOfCopyProgressDetails ?? [];
+
+		const hashSet: loc.LookupTable<number> = {};
 		await this._populateTableData(hashSet);
 
 		const successCount = hashSet[PipelineStatusCodes.Succeeded] ?? 0;
@@ -138,7 +138,7 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 			(hashSet[PipelineStatusCodes.RebuildingIndexes] ?? 0) +
 			(hashSet[PipelineStatusCodes.InProgress] ?? 0);
 
-		const totalCount = migration.properties.migrationStatusDetails?.listOfCopyProgressDetails.length ?? 0;
+		const totalCount = this._progressDetail.length;
 
 		this._updateSummaryComponent(SummaryCardIndex.TotalTables, totalCount);
 		this._updateSummaryComponent(SummaryCardIndex.InProgressTables, inProgressCount);
@@ -155,7 +155,7 @@ export class MigrationDetailsTableTab extends MigrationDetailsTabBase<MigrationD
 		this._targetServerInfoField.text.value = targetServerName;
 		this._targetVersionInfoField.text.value = targetServerVersion;
 
-		this._migrationStatusInfoField.text.value = getMigrationStatus(migration) ?? EmptySettingValue;
+		this._migrationStatusInfoField.text.value = getMigrationStatusString(migration);
 		this._migrationStatusInfoField.icon!.iconPath = getMigrationStatusImage(migration);
 		this._serverObjectsInfoField.text.value = totalCount.toLocaleString();
 
