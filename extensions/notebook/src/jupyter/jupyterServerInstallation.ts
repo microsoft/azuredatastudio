@@ -725,6 +725,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			if (pathParts.length > 1 && pathParts[pathParts.length - 2] === 'envs') {
 				// The root Anaconda folder is 2 folders above the virtual environment's folder
 				// Example: Anaconda3\envs\myEnv\python.exe -> Anaconda3\conda.exe
+				// Docs: https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#creating-an-environment-with-commands
 				condaPath = path.join(pythonInstallationPath, '..', '..', exeName);
 				condaExists = await fs.pathExists(condaPath);
 			}
