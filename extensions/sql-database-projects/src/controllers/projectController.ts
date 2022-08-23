@@ -231,7 +231,7 @@ export class ProjectsController {
 		}
 
 		// Check mssql extension for project dlls (tracking issue #10273)
-		await this.buildHelper.createBuildDirFolder();
+		await this.buildHelper.createBuildDirFolder(this._outputChannel);
 
 		const options: ShellCommandOptions = {
 			commandTitle: 'Build',

@@ -7,41 +7,33 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { promises as fs } from 'fs';
 import * as utils from '../common/utils';
-import { errorFindingBuildFilesLocation } from '../common/constants';
-import * as mssql from 'mssql';
-import * as vscodeMssql from 'vscode-mssql';
 import * as sqldbproj from 'sqldbproj';
+import * as extractZip from 'extract-zip';
+import { HttpClient } from '../common/httpClient';
 
 const buildDirectory = 'BuildDirectory';
-const buildFiles: string[] = [
-	'Microsoft.Data.SqlClient.dll',
-	'Microsoft.Data.Tools.Schema.Sql.dll',
-	'Microsoft.Data.Tools.Schema.Tasks.Sql.dll',
-	'Microsoft.Data.Tools.Utilities.dll',
-	'Microsoft.SqlServer.Dac.dll',
-	'Microsoft.SqlServer.Dac.Extensions.dll',
-	'Microsoft.SqlServer.TransactSql.ScriptDom.dll',
-	'Microsoft.SqlServer.Types.dll',
-	'System.ComponentModel.Composition.dll',
-	'System.IO.Packaging.dll',
-	'Microsoft.Data.Tools.Schema.SqlTasks.targets'
-];
+const sdkDirectory = 'Microsoft.Build.Sql';
+const microsoftBuildSqlVersion = '0.1.3-preview';
+const fullSdkName = `${sdkDirectory}.${microsoftBuildSqlVersion}`;
 
 export class BuildHelper {
 
 	private extensionDir: string;
 	private extensionBuildDir: string;
+	private extensionBuildFullPath: string;
 	private initialized: boolean = false;
 
 	constructor() {
 		const extName = utils.getAzdataApi() ? sqldbproj.extension.name : sqldbproj.extension.vsCodeName;
 		this.extensionDir = vscode.extensions.getExtension(extName)?.extensionPath ?? '';
 		this.extensionBuildDir = path.join(this.extensionDir, buildDirectory);
+		this.extensionBuildFullPath = path.join(this.extensionDir, buildDirectory, sdkDirectory, 'tools', 'netstandard2.1');
+
 	}
 
 	// create build dlls directory
 	// this should not be required. temporary solution for issue #10273
-	public async createBuildDirFolder(): Promise<void> {
+	public async createBuildDirFolder(outputChannel?: vscode.OutputChannel): Promise<void> {
 
 		if (this.initialized) {
 			return;
@@ -51,35 +43,23 @@ export class BuildHelper {
 			await fs.mkdir(this.extensionBuildDir);
 		}
 
-		const buildfilesPath = await this.getBuildDirPathFromMssqlTools();
-		buildFiles.forEach(async (fileName) => {
-			if (await (utils.exists(path.join(buildfilesPath, fileName)))) {
-				await fs.copyFile(path.join(buildfilesPath, fileName), path.join(this.extensionBuildDir, fileName));
-			}
-		});
+		const httpClient = new HttpClient();
+		await httpClient.download('https://www.nuget.org/api/v2/package/Microsoft.Build.Sql/0.1.3-preview', path.join(this.extensionBuildDir, `${fullSdkName}.nupkg`), outputChannel);
+
+		try {
+			await extractZip(path.join(this.extensionDir, buildDirectory, `${fullSdkName}.nupkg`), { dir: path.join(this.extensionDir, buildDirectory, sdkDirectory) });
+		} catch {
+
+		}
+
 		this.initialized = true;
 	}
 
-	/**
-	 * Gets the path to the SQL Tools Service installation
-	 * @returns
-	 */
-	private async getBuildDirPathFromMssqlTools(): Promise<string> {
-		try {
-			if (utils.getAzdataApi()) {
-				return (vscode.extensions.getExtension(mssql.extension.name)?.exports as mssql.IExtension).sqlToolsServicePath;
-			} else {
-				return (vscode.extensions.getExtension(vscodeMssql.extension.name)?.exports as vscodeMssql.IExtension).sqlToolsServicePath;
-			}
-		} catch (err) {
-			throw new Error(errorFindingBuildFilesLocation(err));
-		}
-	}
-
 	public get extensionBuildDirPath(): string {
-		return this.extensionBuildDir;
+		return this.extensionBuildFullPath;
 	}
 
+	// TODO: fix this now that the paths are different for dacpacs and targets
 	public constructBuildArguments(projectPath: string, buildDirPath: string, isSdkStyleProject: boolean): string {
 		projectPath = utils.getQuotedPath(projectPath);
 		buildDirPath = utils.getQuotedPath(buildDirPath);
