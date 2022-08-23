@@ -15,6 +15,21 @@ const buildDirectory = 'BuildDirectory';
 const sdkDirectory = 'Microsoft.Build.Sql';
 const microsoftBuildSqlVersion = '0.1.3-preview';
 const fullSdkName = `${sdkDirectory}.${microsoftBuildSqlVersion}`;
+const microsoftBuildSqlUrl = `https://www.nuget.org/api/v2/package/Microsoft.Build.Sql/${microsoftBuildSqlVersion}`;
+
+const buildFiles: string[] = [
+	'Microsoft.Data.SqlClient.dll',
+	'Microsoft.Data.Tools.Schema.Sql.dll',
+	'Microsoft.Data.Tools.Schema.Tasks.Sql.dll',
+	'Microsoft.Data.Tools.Utilities.dll',
+	'Microsoft.SqlServer.Dac.dll',
+	'Microsoft.SqlServer.Dac.Extensions.dll',
+	'Microsoft.SqlServer.TransactSql.ScriptDom.dll',
+	'Microsoft.SqlServer.Types.dll',
+	'System.ComponentModel.Composition.dll',
+	'System.IO.Packaging.dll',
+	'Microsoft.Data.Tools.Schema.SqlTasks.targets'
+];
 
 export class BuildHelper {
 
@@ -43,20 +58,31 @@ export class BuildHelper {
 			await fs.mkdir(this.extensionBuildDir);
 		}
 
+		// download the Microsoft.Build.Sql sdk nuget
 		const httpClient = new HttpClient();
-		await httpClient.download('https://www.nuget.org/api/v2/package/Microsoft.Build.Sql/0.1.3-preview', path.join(this.extensionBuildDir, `${fullSdkName}.nupkg`), outputChannel);
+		const nugetPath = path.join(this.extensionBuildDir, `${fullSdkName}.nupkg`);
+		await httpClient.download(microsoftBuildSqlUrl, nugetPath, outputChannel);
 
-		try {
-			await extractZip(path.join(this.extensionDir, buildDirectory, `${fullSdkName}.nupkg`), { dir: path.join(this.extensionDir, buildDirectory, sdkDirectory) });
-		} catch {
+		// extract the files from the nuget
+		await extractZip(nugetPath, { dir: path.join(this.extensionDir, buildDirectory, sdkDirectory) });
 
-		}
+		// copy the dlls and targets file to the BuildDirectory folder
+		const buildfilesPath = this.extensionBuildFullPath;
+		buildFiles.forEach(async (fileName) => {
+			if (await (utils.exists(path.join(buildfilesPath, fileName)))) {
+				await fs.copyFile(path.join(buildfilesPath, fileName), path.join(this.extensionBuildDir, fileName));
+			}
+		});
+
+		// cleanup extracted folder and nuget
+		await fs.unlink(nugetPath);
+		await fs.rm(path.join(this.extensionDir, buildDirectory, sdkDirectory), { recursive: true });
 
 		this.initialized = true;
 	}
 
 	public get extensionBuildDirPath(): string {
-		return this.extensionBuildFullPath;
+		return this.extensionBuildDir;
 	}
 
 	// TODO: fix this now that the paths are different for dacpacs and targets
