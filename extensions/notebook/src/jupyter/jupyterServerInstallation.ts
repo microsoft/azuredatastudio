@@ -63,7 +63,6 @@ export interface IJupyterServerInstallation {
 	getInstalledCondaPackages(): Promise<PythonPkgDetails[]>;
 	uninstallCondaPackages(packages: PythonPkgDetails[]): Promise<void>;
 	usingConda: boolean;
-	getCondaExePath(): string;
 	executeBufferedCommand(command: string): Promise<string>;
 	executeStreamedCommand(command: string): Promise<void>;
 	/**
@@ -74,6 +73,7 @@ export interface IJupyterServerInstallation {
 	installPipPackages(packages: PythonPkgDetails[], useMinVersionDefault: boolean): Promise<void>;
 	uninstallPipPackages(packages: PythonPkgDetails[]): Promise<void>;
 	pythonExecutable: string;
+	condaExecutable: string | undefined;
 	pythonInstallationPath: string;
 	installedPythonVersion: string;
 }
@@ -113,8 +113,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 	private _pythonInstallationPath: string;
 	private _pythonExecutable: string;
+	private _condaExecutable: string | undefined;
 	private _usingExistingPython: boolean;
-	private _usingConda: boolean;
 	private _installedPythonVersion: string;
 
 	private _upgradeInProcess: boolean = false;
@@ -154,7 +154,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			this._pythonInstallationPath = JupyterServerInstallation.getPythonInstallPath();
 			this._usingExistingPython = JupyterServerInstallation.getExistingPythonSetting();
 		}
-		this._usingConda = false;
 		this._installInProgress = false;
 
 		this._kernelSetupCache = new Map<string, boolean>();
@@ -360,9 +359,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		let pythonBinPathSuffix = process.platform === constants.winPlatform ? '' : 'bin';
 
 		this._pythonExecutable = JupyterServerInstallation.getPythonExePath(this._pythonInstallationPath);
+		this._condaExecutable = await JupyterServerInstallation.getCondaExePath(this._pythonInstallationPath);
 		this.pythonBinPath = path.join(this._pythonInstallationPath, pythonBinPathSuffix);
-
-		this._usingConda = this.isCondaInstalled();
 
 		// Store paths to python libraries required to run jupyter.
 		this.pythonEnvVarPath = process.env['PATH'];
@@ -373,7 +371,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			let pythonScriptsPath = path.join(this._pythonInstallationPath, 'Scripts');
 			this.pythonEnvVarPath = pythonScriptsPath + delimiter + this.pythonEnvVarPath;
 
-			if (this._usingConda) {
+			if (this.usingConda) {
 				this.pythonEnvVarPath = [
 					path.join(this._pythonInstallationPath, 'Library', 'mingw-w64', 'bin'),
 					path.join(this._pythonInstallationPath, 'Library', 'usr', 'bin'),
@@ -650,12 +648,10 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 	public async getInstalledCondaPackages(): Promise<PythonPkgDetails[]> {
 		try {
-			if (!this.isCondaInstalled()) {
+			if (!this.condaExecutable) {
 				return [];
 			}
-
-			let condaExe = this.getCondaExePath();
-			let cmd = `"${condaExe}" list --json`;
+			let cmd = `"${this.condaExecutable}" list --json`;
 			let packagesInfo = await this.executeBufferedCommand(cmd);
 
 			let packages: PythonPkgDetails[] = [];
@@ -673,8 +669,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		}
 	}
 
-	public installCondaPackages(packages: PythonPkgDetails[], useMinVersionDefault: boolean): Promise<void> {
-		if (!packages || packages.length === 0) {
+	public async installCondaPackages(packages: PythonPkgDetails[], useMinVersionDefault: boolean): Promise<void> {
+		if (!this.condaExecutable || !packages || packages.length === 0) {
 			return Promise.resolve();
 		}
 
@@ -683,23 +679,24 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			const pkgVersionSpecifier = pkg.installExactVersion ? '==' : versionSpecifierDefault;
 			return `"${pkg.name}${pkgVersionSpecifier}${pkg.version}"`;
 		}).join(' ');
-		let condaExe = this.getCondaExePath();
-		let cmd = `"${condaExe}" install -c conda-forge -y ${packagesStr}`;
-		return this.executeStreamedCommand(cmd);
+
+		let cmd = `"${this.condaExecutable}" install -c conda-forge -y ${packagesStr}`;
+		await this.executeStreamedCommand(cmd);
 	}
 
-	public uninstallCondaPackages(packages: PythonPkgDetails[]): Promise<void> {
-		for (let pkg of packages) {
-			if (this._requiredPackagesSet.has(pkg.name)) {
-				this._kernelSetupCache.clear();
-				break;
+	public async uninstallCondaPackages(packages: PythonPkgDetails[]): Promise<void> {
+		if (this.condaExecutable) {
+			for (let pkg of packages) {
+				if (this._requiredPackagesSet.has(pkg.name)) {
+					this._kernelSetupCache.clear();
+					break;
+				}
 			}
-		}
 
-		let condaExe = this.getCondaExePath();
-		let packagesStr = packages.map(pkg => `"${pkg.name}==${pkg.version}"`).join(' ');
-		let cmd = `"${condaExe}" uninstall -y ${packagesStr}`;
-		return this.executeStreamedCommand(cmd);
+			let packagesStr = packages.map(pkg => `"${pkg.name}==${pkg.version}"`).join(' ');
+			let cmd = `"${this.condaExecutable}" uninstall -y ${packagesStr}`;
+			await this.executeStreamedCommand(cmd);
+		}
 	}
 
 	public async executeStreamedCommand(command: string): Promise<void> {
@@ -714,9 +711,29 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		return this._pythonExecutable;
 	}
 
-	public getCondaExePath(): string {
-		return path.join(this._pythonInstallationPath,
-			process.platform === constants.winPlatform ? 'Scripts\\conda.exe' : 'bin/conda');
+	public get condaExecutable(): string | undefined {
+		return this._condaExecutable;
+	}
+
+	public static async getCondaExePath(pythonInstallationPath: string): Promise<string> {
+		let exeName = process.platform === constants.winPlatform ? 'Scripts\\conda.exe' : 'bin/conda';
+		let condaPath = path.join(pythonInstallationPath, exeName);
+		let condaExists = await fs.pathExists(condaPath);
+		// If conda was not found, then check if we're using a virtual environment
+		if (!condaExists) {
+			let pathParts = pythonInstallationPath.split(path.sep);
+			if (pathParts.length > 1 && pathParts[pathParts.length - 2] === 'envs') {
+				// The root Anaconda folder is 2 folders above the virtual environment's folder
+				// Example: Anaconda3\envs\myEnv\python.exe -> Anaconda3\conda.exe
+				// Docs: https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#creating-an-environment-with-commands
+				condaPath = path.join(pythonInstallationPath, '..', '..', exeName);
+				condaExists = await fs.pathExists(condaPath);
+			}
+			if (!condaExists) {
+				condaPath = undefined;
+			}
+		}
+		return condaPath;
 	}
 
 	/**
@@ -727,17 +744,11 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	}
 
 	public get usingConda(): boolean {
-		return this._usingConda;
+		return !!this._condaExecutable;
 	}
 
 	public get installedPythonVersion(): string {
 		return this._installedPythonVersion;
-	}
-
-	private isCondaInstalled(): boolean {
-		let condaExePath = this.getCondaExePath();
-		// eslint-disable-next-line no-sync
-		return fs.existsSync(condaExePath);
 	}
 
 	/**
