@@ -359,6 +359,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			CSSStyles: { 'margin': '12px 0' }
 		}).component();
 
+		this._serverName = this.migrationStateModel.serverName || (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
+
 		const miDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, constants.ASSESSMENT_TILE(this._serverName), this, MigrationTargetType.SQLMI);
 		const vmDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, constants.ASSESSMENT_TILE(this._serverName), this, MigrationTargetType.SQLVM);
 		const dbDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, constants.ASSESSMENT_TILE(this._serverName), this, MigrationTargetType.SQLDB);
@@ -436,9 +438,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			text: '',
 			level: azdata.window.MessageLevel.Error
 		};
-
-		this._serverName = this.migrationStateModel.serverName || (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
-
 
 		if (this.migrationStateModel._runAssessments) {
 			const errors: string[] = [];
@@ -530,20 +529,30 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	}
 
 	private async _setAssessmentState(assessing: boolean, failedAssessment: boolean): Promise<void> {
-		await utils.updateControlDisplay(this._assessmentComponent, assessing);
-		await utils.updateControlDisplay(this._skipAssessmentCheckbox, !assessing && failedAssessment);
+		await utils.updateControlDisplay(
+			this._assessmentComponent,
+			assessing,
+			'block');
+		await utils.updateControlDisplay(
+			this._skipAssessmentCheckbox,
+			!assessing && failedAssessment,
+			'block');
 		await utils.updateControlDisplay(
 			this._skipAssessmentSubText,
 			!assessing && failedAssessment,
 			'block');
-		await utils.updateControlDisplay(this._formContainer.component(), !assessing);
+		await utils.updateControlDisplay(
+			this._formContainer.component(),
+			!assessing,
+			'block');
 		await utils.updateControlDisplay(
 			this._chooseTargetComponent,
-			!failedAssessment || this._skipAssessmentCheckbox.checked === true);
-
+			!failedAssessment || this._skipAssessmentCheckbox.checked === true,
+			'block');
 		await utils.updateControlDisplay(
 			this.assessmentGroupContainer,
-			this._rbg.selectedCardId !== undefined && (!failedAssessment || this._skipAssessmentCheckbox.checked === true));
+			this._rbg.selectedCardId !== undefined && (!failedAssessment || this._skipAssessmentCheckbox.checked === true),
+			'inline');
 
 		this._assessmentLoader.loading = assessing;
 	}
@@ -612,8 +621,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			if (!this.migrationStateModel._assessmentResults) {
 				this._rbg.cards[index].descriptions[CardDescriptionIndex.ASSESSMENT_STATUS].textValue = '';
 			} else {
-				// TO-DO: add the assessed db counts
-				// this._rbg.cards[index].descriptions[5].textValue = constants.ASSESSED_DBS(dbCount);
 				if (this.hasRecommendations()) {
 					this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_SKU_DETAILS].linkDisplayValue = constants.VIEW_DETAILS;
 					this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textStyles = {

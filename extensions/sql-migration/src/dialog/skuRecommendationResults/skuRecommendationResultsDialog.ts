@@ -161,16 +161,23 @@ export class SkuRecommendationResultsDialog {
 		if (this._targetType === MigrationTargetType.SQLDB) {
 			const databaseNameLabel = _view.modelBuilder.text()
 				.withProps({
+					value: constants.SOURCE_DATABASE,
+					CSSStyles: { ...styles.LABEL_CSS, 'margin': '0', }
+				}).component();
+
+			const databaseNameValue = _view.modelBuilder.text()
+				.withProps({
 					value: recommendation.databaseName!,
-					CSSStyles: { ...styles.SECTION_HEADER_CSS, }
+					CSSStyles: { ...styles.BODY_CSS, 'margin': '0', }
 				}).component();
 			recommendationContainer.addItem(databaseNameLabel);
+			recommendationContainer.addItem(databaseNameValue);
 		}
 
 		const targetDeploymentTypeLabel = _view.modelBuilder.text()
 			.withProps({
 				value: constants.TARGET_DEPLOYMENT_TYPE,
-				CSSStyles: { ...styles.LABEL_CSS, 'margin': '0', }
+				CSSStyles: { ...styles.LABEL_CSS, 'margin': '12px 0 0', }
 			}).component();
 		const targetDeploymentTypeValue = _view.modelBuilder.text()
 			.withProps({
