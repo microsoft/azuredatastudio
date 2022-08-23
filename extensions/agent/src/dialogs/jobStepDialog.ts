@@ -403,7 +403,7 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 			.withProps({
 				inputType: 'number',
 				width: '100%',
-				placeHolder: '0'
+				value: '0'
 			})
 			.component();
 		this.retryIntervalBox = view.modelBuilder.inputBox()
@@ -411,7 +411,7 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 			.withProps({
 				inputType: 'number',
 				width: '100%',
-				placeHolder: '0'
+				value: '0'
 			}).component();
 
 		let retryAttemptsContainer = view.modelBuilder.formContainer()
