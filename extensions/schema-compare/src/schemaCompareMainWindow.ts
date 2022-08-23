@@ -1090,11 +1090,16 @@ export class SchemaCompareMainWindow {
 
 		let fileUri = fileUris[0];
 		this.openScmpFile(fileUri, true);
-
 	}
+
+	/**
+	 * Primary functional entrypoint for opening the schema comparison window with the scmp file Uri provided.
+	 * @param fileUri .scmp file URI to open Schema Compare extension with
+	 * @param callFromWithinSC is the call from openScmp? False by default, since it is one of the direct entry points.
+	 */
 	public async openScmpFile(fileUri: vscode.Uri, callFromWithinSC: boolean = false): Promise<void> {
 		if (!callFromWithinSC) {
-			await this.launch(undefined, undefined, false, undefined);
+			await this.launch(undefined, undefined, false, undefined);			//Instantiate and open schema compare window if called from "Open in Schema Compare"
 		}
 		const service = await this.getService();
 		let startTime = Date.now();
