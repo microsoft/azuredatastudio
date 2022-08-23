@@ -8,6 +8,7 @@ import * as fs from 'fs';
 import * as request from 'request';
 import * as vscode from 'vscode';
 import axios, { AxiosRequestConfig } from 'axios';
+import * as constants from '../common/constants';
 
 const DownloadTimeout = 20000;
 
@@ -69,18 +70,18 @@ export class HttpClient {
 			let printThreshold = 0.1;
 			let downloadRequest = request.get(downloadUrl, { timeout: DownloadTimeout })
 				.on('error', downloadError => {
-					outputChannel?.appendLine('Download error');
+					outputChannel?.appendLine(constants.downloadError);
 					reject(downloadError);
 				})
 				.on('response', (response) => {
 					if (response.statusCode !== 200) {
-						outputChannel?.appendLine('Download error');
+						outputChannel?.appendLine(constants.downloadError);
 						return reject(response.statusMessage);
 					}
 					let contentLength = response.headers['content-length'];
 					let totalBytes = parseInt(contentLength || '0');
 					totalMegaBytes = totalBytes / (1024 * 1024);
-					outputChannel?.appendLine(`'Downloading' (0 / ${totalMegaBytes.toFixed(2)} MB)`);
+					outputChannel?.appendLine(`${constants.downloading} ${downloadUrl} (0 / ${totalMegaBytes.toFixed(2)} MB)`);
 				})
 				.on('data', (data) => {
 					receivedBytes += data.length;
@@ -88,7 +89,7 @@ export class HttpClient {
 						let receivedMegaBytes = receivedBytes / (1024 * 1024);
 						let percentage = receivedMegaBytes / totalMegaBytes;
 						if (percentage >= printThreshold) {
-							outputChannel?.appendLine(`${'Downlaod progress'} (${receivedMegaBytes.toFixed(2)} / ${totalMegaBytes.toFixed(2)} MB)`);
+							outputChannel?.appendLine(`${constants.downloadProgress} (${receivedMegaBytes.toFixed(2)} / ${totalMegaBytes.toFixed(2)} MB)`);
 							printThreshold += 0.1;
 						}
 					}
