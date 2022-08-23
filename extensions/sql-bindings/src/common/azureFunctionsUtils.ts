@@ -25,6 +25,8 @@ export interface ILocalSettingsJson {
 	ConnectionStrings?: { [key: string]: string };
 }
 
+export const outputChannel = vscode.window.createOutputChannel(constants.serviceName);
+
 /**
  * copied and modified from vscode-azurefunctions extension
  * https://github.com/microsoft/vscode-azurefunctions/blob/main/src/funcConfig/local.settings.ts
@@ -198,7 +200,11 @@ export async function getSettingsFile(projectFolder: string): Promise<string | u
  * @param selectedProjectFile is the users selected project file path
  */
 export async function addSqlNugetReferenceToProjectFile(selectedProjectFile: string): Promise<void> {
-	await utils.executeCommand(`dotnet add "${selectedProjectFile}" package ${constants.sqlExtensionPackageName} --prerelease`);
+	// clear the output channel prior to adding the nuget reference
+	outputChannel.clear();
+	let addNugetCommmand = await utils.executeCommand(`dotnet add "${selectedProjectFile}" package ${constants.sqlExtensionPackageName} --prerelease`);
+	outputChannel.appendLine(constants.dotnetResult(addNugetCommmand));
+	outputChannel.show(true);
 	TelemetryReporter.sendActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.addSQLNugetPackage);
 }
 
