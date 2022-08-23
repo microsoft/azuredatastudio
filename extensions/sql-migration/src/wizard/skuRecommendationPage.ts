@@ -264,6 +264,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			cardWidth: '250px',
 			cardHeight: '340px',
 			iconPosition: 'left',
+			ariaLabel: constants.SKU_RECOMMENDATION_CHOOSE_A_TARGET,
 			CSSStyles: {
 				'margin-top': '0px',
 				'margin-left': '-15px',
