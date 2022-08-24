@@ -14,14 +14,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.48.0",
-							"lastUpdated": "11/05/2020",
+							"version": "0.49.0",
+							"lastUpdated": "8/24/2022",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/agent/agent-0.48.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/agent/agent-0.49.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
