@@ -14,7 +14,7 @@ import { HttpClient } from '../common/httpClient';
 
 const buildDirectory = 'BuildDirectory';
 const sdkName = 'Microsoft.Build.Sql';
-const microsoftBuildSqlVersion = '0.1.3-preview';
+const microsoftBuildSqlVersion = '0.1.3-preview'; // TODO: have this be configurable
 const fullSdkName = `${sdkName}.${microsoftBuildSqlVersion}`;
 const microsoftBuildSqlUrl = `https://www.nuget.org/api/v2/package/${sdkName}/${microsoftBuildSqlVersion}`;
 
@@ -42,7 +42,6 @@ export class BuildHelper {
 		const extName = utils.getAzdataApi() ? sqldbproj.extension.name : sqldbproj.extension.vsCodeName;
 		this.extensionDir = vscode.extensions.getExtension(extName)?.extensionPath ?? '';
 		this.extensionBuildDir = path.join(this.extensionDir, buildDirectory);
-
 	}
 
 	/**
@@ -59,18 +58,34 @@ export class BuildHelper {
 			await fs.mkdir(this.extensionBuildDir);
 		}
 
-		// download the Microsoft.Build.Sql sdk nuget
-		const httpClient = new HttpClient();
+		// check if this if the nuget needs to be downloaded
 		const nugetPath = path.join(this.extensionBuildDir, `${fullSdkName}.nupkg`);
 
+		if (await utils.exists(nugetPath)) {
+			// if it does exist, make sure all the necessary files are also in the BuildDirectory
+			let missingFiles = false;
+			for (const fileName of buildFiles) {
+				if (!await (utils.exists(path.join(this.extensionBuildDir, fileName)))) {
+					missingFiles = true;
+					break;
+				}
+			}
+
+			// if all the files are there, no need to continue
+			if (!missingFiles) {
+				return;
+			}
+		}
+
+		// download the Microsoft.Build.Sql sdk nuget
 		outputChannel.appendLine(constants.downloadingDacFxDlls);
+		const httpClient = new HttpClient();
 		await httpClient.download(microsoftBuildSqlUrl, nugetPath, outputChannel);
 
 		// extract the files from the nuget
+		outputChannel.appendLine(constants.extractingDacFxDlls);
 		const extractedFolderPath = path.join(this.extensionDir, buildDirectory, sdkName);
 		await extractZip(nugetPath, { dir: extractedFolderPath });
-
-		outputChannel.appendLine(constants.extractingDacFxDlls);
 
 		// copy the dlls and targets file to the BuildDirectory folder
 		const buildfilesPath = path.join(extractedFolderPath, 'tools', 'netstandard2.1');
@@ -81,8 +96,7 @@ export class BuildHelper {
 			}
 		}
 
-		// cleanup extracted folder and nuget
-		await fs.unlink(nugetPath);
+		// cleanup extracted folder
 		await fs.rm(extractedFolderPath, { recursive: true });
 
 		this.initialized = true;
