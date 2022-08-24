@@ -11,14 +11,18 @@ import { formatNumber, ParallelCopyTypeCodes, PipelineStatusCodes } from './help
 const localize = nls.loadMessageBundle();
 
 export enum MigrationStatus {
-	Failed = 'Failed',
-	Succeeded = 'Succeeded',
-	InProgress = 'InProgress',
 	Canceled = 'Canceled',
+	Canceling = 'Canceling',
 	Completing = 'Completing',
 	Creating = 'Creating',
-	Canceling = 'Canceling',
+	Failed = 'Failed',
+	InProgress = 'InProgress',
+	ReadyForCutover = 'ReadyForCutover',
+	Restoring = 'Restoring',
 	Retriable = 'Retriable',
+	Succeeded = 'Succeeded',
+	UploadingFullBackup = 'UploadingFullBackup',
+	UploadingLogBackup = 'UploadingLogBackup',
 }
 
 export enum ProvisioningState {
@@ -817,14 +821,18 @@ export interface LookupTable<T> {
 }
 
 export const StatusLookup: LookupTable<string | undefined> = {
-	[MigrationStatus.InProgress]: localize('sql.migration.status.inprogress', 'In progress'),
-	[MigrationStatus.Succeeded]: localize('sql.migration.status.succeeded', 'Succeeded'),
-	[MigrationStatus.Creating]: localize('sql.migration.status.creating', 'Creating'),
-	[MigrationStatus.Completing]: localize('sql.migration.status.completing', 'Completing'),
-	[MigrationStatus.Retriable]: localize('sql.migration.status.retriable', 'Retriable'),
-	[MigrationStatus.Canceling]: localize('sql.migration.status.canceling', 'Canceling'),
 	[MigrationStatus.Canceled]: localize('sql.migration.status.canceled', 'Canceled'),
+	[MigrationStatus.Canceling]: localize('sql.migration.status.canceling', 'Canceling'),
+	[MigrationStatus.Completing]: localize('sql.migration.status.completing', 'Completing'),
+	[MigrationStatus.Creating]: localize('sql.migration.status.creating', 'Creating'),
 	[MigrationStatus.Failed]: localize('sql.migration.status.failed', 'Failed'),
+	[MigrationStatus.InProgress]: localize('sql.migration.status.inprogress', 'In progress'),
+	[MigrationStatus.ReadyForCutover]: localize('sql.migration.status.readyforcutover', 'Ready for cutover'),
+	[MigrationStatus.Restoring]: localize('sql.migration.status.restoring', 'Restoring'),
+	[MigrationStatus.Retriable]: localize('sql.migration.status.retriable', 'Retriable'),
+	[MigrationStatus.Succeeded]: localize('sql.migration.status.succeeded', 'Succeeded'),
+	[MigrationStatus.UploadingFullBackup]: localize('sql.migration.status.uploadingfullbackup', 'Uploading full backup'),
+	[MigrationStatus.UploadingLogBackup]: localize('sql.migration.status.uploadinglogbackup', 'Uploading log backup'),
 	default: undefined
 };
 
