@@ -1099,7 +1099,8 @@ export class SchemaCompareMainWindow {
 	 */
 	public async openScmpFile(fileUri: vscode.Uri, callFromWithinSC: boolean = false): Promise<void> {
 		if (!callFromWithinSC) {
-			await this.launch(undefined, undefined, false, undefined);			//Instantiate and open schema compare window if called from "Open in Schema Compare"
+			//Instantiate and open schema compare window if called from "Open in Schema Compare"
+			await this.launch(undefined, undefined, false, undefined);
 		}
 		const service = await this.getService();
 		let startTime = Date.now();
