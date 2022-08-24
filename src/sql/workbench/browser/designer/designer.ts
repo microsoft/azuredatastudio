@@ -303,7 +303,12 @@ export class Designer extends Disposable implements IThemable {
 		this._inputDisposable.add(this._input.onRefreshRequested(() => {
 			this.refresh();
 		}));
-
+		this._inputDisposable.add(this._input.onSubmitPendingEditRequested(() => {
+			if (this._container.contains(document.activeElement) && document.activeElement instanceof HTMLInputElement) {
+				// Force the input box to fire the blur event to submit the pending changes.
+				document.activeElement.blur();
+			}
+		}));
 		if (this._input.view === undefined) {
 			this._input.initialize();
 		} else {

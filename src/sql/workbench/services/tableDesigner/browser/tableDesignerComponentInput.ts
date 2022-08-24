@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { DesignerViewModel, DesignerEdit, DesignerComponentInput, DesignerView, DesignerTab, DesignerDataPropertyInfo, DropDownProperties, DesignerTableProperties, DesignerEditProcessedEventArgs, DesignerAction, DesignerStateChangedEventArgs, DesignerPropertyPath, DesignerIssue, ScriptProperty } from 'sql/workbench/browser/designer/interfaces';
+import { DesignerViewModel, DesignerEdit, DesignerComponentInput, DesignerView, DesignerTab, DesignerDataPropertyInfo, DropDownProperties, DesignerTableProperties, DesignerEditProcessedEventArgs, DesignerAction, DesignerStateChangedEventArgs, DesignerPropertyPath, DesignerIssue, ScriptProperty, DesignerUIState } from 'sql/workbench/browser/designer/interfaces';
 import { TableDesignerProvider } from 'sql/workbench/services/tableDesigner/common/interface';
 import { localize } from 'vs/nls';
 import { designers } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -32,13 +32,19 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 	private _onInitialized = new Emitter<void>();
 	private _onEditProcessed = new Emitter<DesignerEditProcessedEventArgs>();
 	private _onRefreshRequested = new Emitter<void>();
+	private _onSubmitPendingEditRequested = new Emitter<void>();
 	private _originalViewModel: DesignerViewModel;
 	private _tableDesignerView: azdata.designers.TableDesignerView;
+	private _activeEditPromise: Promise<void>;
+	private _isEditInProgress: boolean = false;
+	private _cancelSaveOperation: boolean = false;
 
 	public readonly onInitialized: Event<void> = this._onInitialized.event;
 	public readonly onEditProcessed: Event<DesignerEditProcessedEventArgs> = this._onEditProcessed.event;
 	public readonly onStateChange: Event<DesignerStateChangedEventArgs> = this._onStateChange.event;
 	public readonly onRefreshRequested: Event<void> = this._onRefreshRequested.event;
+	public readonly onSubmitPendingEditRequested: Event<void> = this._onSubmitPendingEditRequested.event;
+
 
 	private readonly designerEditTypeDisplayValue: { [key: number]: string } = {
 		0: 'Add', 1: 'Remove', 2: 'Update'
@@ -53,6 +59,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		@IInstantiationService private readonly _instantiationService: IInstantiationService,
 		@IErrorMessageService private readonly _errorMessageService: IErrorMessageService) {
 	}
+	designerUIState?: DesignerUIState;
 
 	get valid(): boolean {
 		return this._valid;
@@ -93,38 +100,47 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			this.designerEditTypeDisplayValue[edit.type]).withAdditionalProperties(telemetryInfo);
 		const startTime = new Date().getTime();
 		this.updateState(this.valid, this.dirty, 'processEdit');
-		this._provider.processTableEdit(this.tableInfo, edit).then(
-			result => {
-				if (result.inputValidationError) {
-					this._errorMessageService.showDialog(Severity.Error, ErrorDialogTitle, localize('tableDesigner.inputValidationError', "The input validation failed with error: {0}", result.inputValidationError));
-				}
-				this._viewModel = result.viewModel;
-				if (result.view) {
-					this.setDesignerView(result.view);
-				}
-				this._issues = result.issues;
-				this.updateState(result.isValid, this.isDirty(), undefined);
-
-				this._onEditProcessed.fire({
-					edit: edit,
-					result: {
-						isValid: result.isValid,
-						issues: result.issues,
-						refreshView: !!result.view
+		this._activeEditPromise = new Promise((resolve) => {
+			this._isEditInProgress = true;
+			this._provider.processTableEdit(this.tableInfo, edit).then(
+				result => {
+					if (result.inputValidationError) {
+						this._cancelSaveOperation = true;
+						this._errorMessageService.showDialog(Severity.Error, ErrorDialogTitle, localize('tableDesigner.inputValidationError', "The input validation failed with error: {0}", result.inputValidationError));
 					}
-				});
-				const metadataTelemetryInfo = TableDesignerMetadata.getTelemetryInfo(this._provider.providerId, result.metadata);
-				editAction.withAdditionalMeasurements({
-					'elapsedTimeMs': new Date().getTime() - startTime
-				}).withAdditionalProperties(metadataTelemetryInfo).send();
-			},
-			error => {
-				this._errorMessageService.showDialog(Severity.Error, ErrorDialogTitle, localize('tableDesigner.errorProcessingEdit', "An error occured while processing the change: {0}", error?.message ?? error), error?.data);
-				this.updateState(this.valid, this.dirty);
-				this._adsTelemetryService.createErrorEvent(TelemetryView.TableDesigner,
-					this.designerEditTypeDisplayValue[edit.type]).withAdditionalProperties(telemetryInfo).send();
-			}
-		);
+					this._viewModel = result.viewModel;
+					if (result.view) {
+						this.setDesignerView(result.view);
+					}
+					this._issues = result.issues;
+					this.updateState(result.isValid, this.isDirty(), undefined);
+
+					this._onEditProcessed.fire({
+						edit: edit,
+						result: {
+							isValid: result.isValid,
+							issues: result.issues,
+							refreshView: !!result.view
+						}
+					});
+					const metadataTelemetryInfo = TableDesignerMetadata.getTelemetryInfo(this._provider.providerId, result.metadata);
+					editAction.withAdditionalMeasurements({
+						'elapsedTimeMs': new Date().getTime() - startTime
+					}).withAdditionalProperties(metadataTelemetryInfo).send();
+					resolve();
+					this._isEditInProgress = false;
+				},
+				error => {
+					this._errorMessageService.showDialog(Severity.Error, ErrorDialogTitle, localize('tableDesigner.errorProcessingEdit', "An error occured while processing the change: {0}", error?.message ?? error), error?.data);
+					this.updateState(this.valid, this.dirty);
+					this._adsTelemetryService.createErrorEvent(TelemetryView.TableDesigner,
+						this.designerEditTypeDisplayValue[edit.type]).withAdditionalProperties(telemetryInfo).send();
+					this._cancelSaveOperation = true;
+					this._isEditInProgress = false;
+					resolve();
+				}
+			);
+		});
 	}
 
 	async generateScript(): Promise<void> {
@@ -183,14 +199,25 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 	}
 
 	async save(): Promise<void> {
-		if (!this.isDirty()) {
-			return;
-		}
-		if (this.tableDesignerView?.useAdvancedSaveMode) {
-			await this.openPublishDialog();
-		} else {
-			await this.publishChanges();
-		}
+		this._cancelSaveOperation = false;
+		this._onSubmitPendingEditRequested.fire();
+		const self = this;
+		setTimeout(async () => {
+			if (self._isEditInProgress) {
+				await self._activeEditPromise;
+			}
+			if (!self.valid || self._cancelSaveOperation) {
+				return;
+			}
+			if (!self.isDirty()) {
+				return;
+			}
+			if (self.tableDesignerView?.useAdvancedSaveMode) {
+				await self.openPublishDialog();
+			} else {
+				await self.publishChanges();
+			}
+		}, 100);
 	}
 
 	async openPublishDialog(): Promise<void> {
