@@ -16,7 +16,7 @@ const buildDirectory = 'BuildDirectory';
 const sdkName = 'Microsoft.Build.Sql';
 const microsoftBuildSqlVersion = '0.1.3-preview';
 const fullSdkName = `${sdkName}.${microsoftBuildSqlVersion}`;
-const microsoftBuildSqlUrl = `https://www.nuget.org/api/v2/package/Microsoft.Build.Sql/${microsoftBuildSqlVersion}`;
+const microsoftBuildSqlUrl = `https://www.nuget.org/api/v2/package/${sdkName}/${microsoftBuildSqlVersion}`;
 
 const buildFiles: string[] = [
 	'Microsoft.Data.SqlClient.dll',
@@ -49,7 +49,7 @@ export class BuildHelper {
 	 * Create build dlls directory with the dlls and targets needed for building a sqlproj
 	 * @param outputChannel
 	 */
-	public async createBuildDirFolder(outputChannel?: vscode.OutputChannel): Promise<void> {
+	public async createBuildDirFolder(outputChannel: vscode.OutputChannel): Promise<void> {
 
 		if (this.initialized) {
 			return;
@@ -62,15 +62,18 @@ export class BuildHelper {
 		// download the Microsoft.Build.Sql sdk nuget
 		const httpClient = new HttpClient();
 		const nugetPath = path.join(this.extensionBuildDir, `${fullSdkName}.nupkg`);
+
+		outputChannel.appendLine(constants.downloadingDacFxDlls);
 		await httpClient.download(microsoftBuildSqlUrl, nugetPath, outputChannel);
 
 		// extract the files from the nuget
-		await extractZip(nugetPath, { dir: path.join(this.extensionDir, buildDirectory, sdkName) });
+		const extractedFolderPath = path.join(this.extensionDir, buildDirectory, sdkName);
+		await extractZip(nugetPath, { dir: extractedFolderPath });
 
-		outputChannel?.appendLine(constants.extractingDacFxDlls);
+		outputChannel.appendLine(constants.extractingDacFxDlls);
 
 		// copy the dlls and targets file to the BuildDirectory folder
-		const buildfilesPath = path.join(this.extensionDir, buildDirectory, sdkName, 'tools', 'netstandard2.1');
+		const buildfilesPath = path.join(extractedFolderPath, 'tools', 'netstandard2.1');
 
 		for (const fileName of buildFiles) {
 			if (await (utils.exists(path.join(buildfilesPath, fileName)))) {
@@ -80,7 +83,7 @@ export class BuildHelper {
 
 		// cleanup extracted folder and nuget
 		await fs.unlink(nugetPath);
-		await fs.rm(path.join(this.extensionDir, buildDirectory, sdkName), { recursive: true });
+		await fs.rm(extractedFolderPath, { recursive: true });
 
 		this.initialized = true;
 	}

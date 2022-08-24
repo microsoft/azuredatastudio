@@ -607,7 +607,8 @@ export enum PublishTargetType {
 export const CollapseProjectNodesKey = 'collapseProjectNodes';
 
 // httpClient
-export const downloadError = localize('downloadError', 'Download error');
-export const downloadProgress = localize('downloadProgress', 'Download progress');
-export const downloading = localize('downloading', 'Downloading');
-export const extractingDacFxDlls = localize('extractingDacFxDlls', 'Extracting DacFx build dlls');
+export const downloadError = localize('downloadError', "Download error");
+export const downloadProgress = localize('downloadProgress', "Download progress");
+export const downloading = localize('downloading', "Downloading");
+export const downloadingDacFxDlls = localize('downloadingDacFxDlls', "Downloading Microsoft.Build.Sql nuget to get build dlls");
+export const extractingDacFxDlls = localize('extractingDacFxDlls', "Extracting DacFx build dlls");

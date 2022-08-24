@@ -10,7 +10,7 @@ import * as vscode from 'vscode';
 import axios, { AxiosRequestConfig } from 'axios';
 import * as constants from '../common/constants';
 
-const DownloadTimeout = 20000;
+const DownloadTimeoutMs = 20000;
 
 /**
  * Class includes method for making http request
@@ -68,7 +68,7 @@ export class HttpClient {
 			let totalMegaBytes: number | undefined = undefined;
 			let receivedBytes = 0;
 			let printThreshold = 0.1;
-			let downloadRequest = request.get(downloadUrl, { timeout: DownloadTimeout })
+			let downloadRequest = request.get(downloadUrl, { timeout: DownloadTimeoutMs })
 				.on('error', downloadError => {
 					outputChannel?.appendLine(constants.downloadError);
 					reject(downloadError);
