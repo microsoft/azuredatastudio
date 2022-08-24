@@ -9,12 +9,13 @@ import { promises as fs } from 'fs';
 import * as utils from '../common/utils';
 import * as sqldbproj from 'sqldbproj';
 import * as extractZip from 'extract-zip';
+import * as constants from '../common/constants';
 import { HttpClient } from '../common/httpClient';
 
 const buildDirectory = 'BuildDirectory';
-const sdkDirectory = 'Microsoft.Build.Sql';
+const sdkName = 'Microsoft.Build.Sql';
 const microsoftBuildSqlVersion = '0.1.3-preview';
-const fullSdkName = `${sdkDirectory}.${microsoftBuildSqlVersion}`;
+const fullSdkName = `${sdkName}.${microsoftBuildSqlVersion}`;
 const microsoftBuildSqlUrl = `https://www.nuget.org/api/v2/package/Microsoft.Build.Sql/${microsoftBuildSqlVersion}`;
 
 const buildFiles: string[] = [
@@ -35,19 +36,19 @@ export class BuildHelper {
 
 	private extensionDir: string;
 	private extensionBuildDir: string;
-	private extensionBuildFullPath: string;
 	private initialized: boolean = false;
 
 	constructor() {
 		const extName = utils.getAzdataApi() ? sqldbproj.extension.name : sqldbproj.extension.vsCodeName;
 		this.extensionDir = vscode.extensions.getExtension(extName)?.extensionPath ?? '';
 		this.extensionBuildDir = path.join(this.extensionDir, buildDirectory);
-		this.extensionBuildFullPath = path.join(this.extensionDir, buildDirectory, sdkDirectory, 'tools', 'netstandard2.1');
 
 	}
 
-	// create build dlls directory
-	// this should not be required. temporary solution for issue #10273
+	/**
+	 * Create build dlls directory with the dlls and targets needed for building a sqlproj
+	 * @param outputChannel
+	 */
 	public async createBuildDirFolder(outputChannel?: vscode.OutputChannel): Promise<void> {
 
 		if (this.initialized) {
@@ -64,19 +65,22 @@ export class BuildHelper {
 		await httpClient.download(microsoftBuildSqlUrl, nugetPath, outputChannel);
 
 		// extract the files from the nuget
-		await extractZip(nugetPath, { dir: path.join(this.extensionDir, buildDirectory, sdkDirectory) });
+		await extractZip(nugetPath, { dir: path.join(this.extensionDir, buildDirectory, sdkName) });
+
+		outputChannel?.appendLine(constants.extractingDacFxDlls);
 
 		// copy the dlls and targets file to the BuildDirectory folder
-		const buildfilesPath = this.extensionBuildFullPath;
-		buildFiles.forEach(async (fileName) => {
+		const buildfilesPath = path.join(this.extensionDir, buildDirectory, sdkName, 'tools', 'netstandard2.1');
+
+		for (const fileName of buildFiles) {
 			if (await (utils.exists(path.join(buildfilesPath, fileName)))) {
 				await fs.copyFile(path.join(buildfilesPath, fileName), path.join(this.extensionBuildDir, fileName));
 			}
-		});
+		}
 
 		// cleanup extracted folder and nuget
 		await fs.unlink(nugetPath);
-		await fs.rm(path.join(this.extensionDir, buildDirectory, sdkDirectory), { recursive: true });
+		await fs.rm(path.join(this.extensionDir, buildDirectory, sdkName), { recursive: true });
 
 		this.initialized = true;
 	}
@@ -85,7 +89,6 @@ export class BuildHelper {
 		return this.extensionBuildDir;
 	}
 
-	// TODO: fix this now that the paths are different for dacpacs and targets
 	public constructBuildArguments(projectPath: string, buildDirPath: string, isSdkStyleProject: boolean): string {
 		projectPath = utils.getQuotedPath(projectPath);
 		buildDirPath = utils.getQuotedPath(buildDirPath);

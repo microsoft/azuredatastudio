@@ -230,8 +230,10 @@ export class ProjectsController {
 			this.buildInfo.shift();		// Remove the first element to maintain the length
 		}
 
-		// Check mssql extension for project dlls (tracking issue #10273)
-		await this.buildHelper.createBuildDirFolder(this._outputChannel);
+		// get dlls and targets file needed for building for legacy style projects
+		if (!project.isSdkStyleProject) {
+			await this.buildHelper.createBuildDirFolder(this._outputChannel);
+		}
 
 		const options: ShellCommandOptions = {
 			commandTitle: 'Build',
