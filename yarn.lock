@@ -1936,9 +1936,9 @@ axios@^0.21.4:
   dependencies:
     follow-redirects "^1.14.0"
 
-"azdataGraph@github:Microsoft/azdataGraph#0.0.38":
-  version "0.0.38"
-  resolved "https://codeload.github.com/Microsoft/azdataGraph/tar.gz/387ffc5c524784a2129fe028c1dfd36264150aa5"
+"azdataGraph@github:Microsoft/azdataGraph#0.0.42":
+  version "0.0.42"
+  resolved "https://codeload.github.com/Microsoft/azdataGraph/tar.gz/86f72ee9c9ea78a31c9ad2f402fb24d40e50c75b"
 
 bach@^1.0.0:
   version "1.2.0"

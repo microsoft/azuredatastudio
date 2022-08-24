@@ -173,7 +173,7 @@ function rewriteSourceMappingURL(sourceMappingURLBase) {
         .pipe(es.mapSync(f => {
         const contents = f.contents.toString('utf8');
         const str = `//# sourceMappingURL=${sourceMappingURLBase}/${path.dirname(f.relative).replace(/\\/g, '/')}/$1`;
-        f.contents = Buffer.from(contents.replace(/\n\/\/# sourceMappingURL=(.*)$/gm, str));
+        f.contents = Buffer.from(contents.replace(/\n\/\/# sourceMappingURL=((?!data:).*)$/gm, str)); // {{SQL CARBON EDIT}} Don't rewrite embedded source maps - some of our dependencies have these (sanitize-html)
         return f;
     }));
     return es.duplex(input, output);
