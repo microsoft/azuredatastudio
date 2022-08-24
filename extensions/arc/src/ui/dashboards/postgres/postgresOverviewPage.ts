@@ -7,11 +7,11 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as azExt from 'az-ext';
 import * as loc from '../../../localizedConstants';
-import { IconPathHelper, cssStyles, iconSize } from '../../../constants';
+import { IconPathHelper, cssStyles } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { ControllerModel } from '../../../models/controllerModel';
 import { PostgresModel } from '../../../models/postgresModel';
-import { promptAndConfirmPassword, promptForInstanceDeletion } from '../../../common/utils';
+import { promptForInstanceDeletion } from '../../../common/utils';
 import { ResourceType } from 'arc';
 
 export type PodStatusModel = {
@@ -30,9 +30,6 @@ export class PostgresOverviewPage extends DashboardPage {
 	private kibanaLink!: azdata.HyperlinkComponent;
 	private grafanaLink!: azdata.HyperlinkComponent;
 	private deleteButton!: azdata.ButtonComponent;
-
-	private podStatusTable!: azdata.DeclarativeTableComponent;
-	private podStatusData: PodStatusModel[] = [];
 
 	private readonly _azApi: azExt.IExtension;
 
@@ -146,90 +143,11 @@ export class PostgresOverviewPage extends DashboardPage {
 		}).component();
 		content.addItem(endpointsTable);
 
-		// Server Group Nodes
-		content.addItem(this.modelView.modelBuilder.text().withProps({
-			value: loc.server,
-			CSSStyles: titleCSS,
-			headingLevel: 1
-		}).component());
-
-
-
-		this.podStatusTable = this.modelView.modelBuilder.declarativeTable().withProps({
-			width: '100%',
-			ariaLabel: loc.server,
-			columns: [
-				{
-					displayName: loc.name,
-					valueType: azdata.DeclarativeDataType.component,
-					isReadOnly: true,
-					width: '35%',
-					headerCssStyles: cssStyles.tableHeader,
-					rowCssStyles: {
-						...cssStyles.tableRow,
-						'overflow': 'hidden',
-						'text-overflow': 'ellipsis',
-						'white-space': 'nowrap',
-						'max-width': '0'
-					}
-				},
-				{
-					displayName: loc.status,
-					valueType: azdata.DeclarativeDataType.string,
-					isReadOnly: true,
-					width: '30%',
-					headerCssStyles: cssStyles.tableHeader,
-					rowCssStyles: cssStyles.tableRow
-				}
-			],
-			dataValues: this.createPodStatusDataValues()
-		}).component();
-
-
-
-		this.serverGroupNodesLoading = this.modelView.modelBuilder.loadingComponent()
-			.withItem(this.podStatusTable)
-			.withProps({
-				loading: !this._postgresModel.configLastUpdated
-			}).component();
-
-		this.refreshServerNodes();
-
-		content.addItem(this.serverGroupNodesLoading, { CSSStyles: cssStyles.text });
-
 		this.initialized = true;
 		return root;
 	}
 
 	protected get toolbarContainer(): azdata.ToolbarContainer {
-		// Reset password
-		const resetPasswordButton = this.modelView.modelBuilder.button().withProps({
-			label: loc.resetPassword,
-			iconPath: IconPathHelper.edit
-		}).component();
-
-		this.disposables.push(
-			resetPasswordButton.onDidClick(async () => {
-				resetPasswordButton.enabled = false;
-				try {
-					const password = await promptAndConfirmPassword(input => !input ? loc.enterANonEmptyPassword : '');
-					if (password) {
-						await this._azApi.az.postgres.serverarc.update(
-							this._postgresModel.info.name,
-							{
-								noWait: true
-							},
-							this._postgresModel.controllerModel.info.namespace,
-							Object.assign({ 'AZDATA_PASSWORD': password }, this._controllerModel.azAdditionalEnvVars));
-						vscode.window.showInformationMessage(loc.passwordReset);
-					}
-				} catch (error) {
-					vscode.window.showErrorMessage(loc.passwordResetFailed(error));
-				} finally {
-					resetPasswordButton.enabled = true;
-				}
-			}));
-
 		// Delete service
 		this.deleteButton = this.modelView.modelBuilder.button().withProps({
 			label: loc.deleteText,
@@ -313,7 +231,6 @@ export class PostgresOverviewPage extends DashboardPage {
 			}));
 
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems([
-			{ component: resetPasswordButton },
 			{ component: this.deleteButton },
 			{ component: refreshButton, toolbarSeparatorAfter: true },
 			{ component: openInAzurePortalButton }
@@ -331,64 +248,8 @@ export class PostgresOverviewPage extends DashboardPage {
 			{ displayName: loc.namespace, value: this._postgresModel.config?.metadata.namespace || '-' },
 			{ displayName: loc.subscriptionId, value: azure?.subscription || '-' },
 			{ displayName: loc.externalEndpoint, value: this._postgresModel.config?.status.primaryEndpoint || '-' },
-			{ displayName: loc.status, value: status ? `${status.state} (${status.readyPods} ${loc.podsReady})` : '-' },
-			{ displayName: loc.postgresAdminUsername, value: 'postgres' }
+			{ displayName: loc.status, value: status ? `${status.state} (${status.readyPods} ${loc.podsReady})` : '-' }
 		];
-	}
-
-	private getPodStatus(): PodStatusModel[] {
-		let podModels: PodStatusModel[] = [];
-		const podStatus = this._postgresModel.config?.status.podsStatus;
-
-		podStatus?.forEach((p: { conditions: any[]; name: any; role: string; }) => {
-			// If a condition of the pod has a status of False, pod is not Ready
-			const status = p.conditions.find(c => c.status === 'False') ? loc.notReady : loc.ready;
-
-			const podLabelContainer = this.modelView.modelBuilder.flexContainer().withProps({
-				CSSStyles: { 'alignItems': 'center', 'height': '15px' }
-			}).component();
-
-			const imageComponent = this.modelView.modelBuilder.image().withProps({
-				iconPath: IconPathHelper.postgres,
-				width: iconSize,
-				height: iconSize,
-				iconHeight: '15px',
-				iconWidth: '15px'
-			}).component();
-
-			let podLabel = this.modelView.modelBuilder.text().withProps({
-				value: p.name,
-			}).component();
-
-			if (p.role.toUpperCase() === loc.worker.toUpperCase()) {
-				podLabelContainer.addItem(imageComponent, { CSSStyles: { 'margin-left': '15px', 'margin-right': '0px' } });
-				podLabelContainer.addItem(podLabel);
-				let pod: PodStatusModel = {
-					podName: podLabelContainer,
-					status: status
-				};
-				podModels.push(pod);
-			} else {
-				podLabelContainer.addItem(imageComponent, { CSSStyles: { 'margin-right': '0px' } });
-				podLabelContainer.addItem(podLabel);
-				let pod: PodStatusModel = {
-					podName: podLabelContainer,
-					status: status
-				};
-				podModels.unshift(pod);
-			}
-		});
-
-		return podModels;
-	}
-
-	private createPodStatusDataValues(): azdata.DeclarativeTableCellValue[][] {
-		let podDataValue: (string | azdata.Component)[][] = this.podStatusData.map(p => [p.podName, p.status]);
-		return podDataValue.map(p => {
-			return p.map((value): azdata.DeclarativeTableCellValue => {
-				return { value: value };
-			});
-		});
 	}
 
 	private refreshDashboardLinks(): void {
@@ -405,14 +266,6 @@ export class PostgresOverviewPage extends DashboardPage {
 		}
 	}
 
-	private refreshServerNodes(): void {
-		if (this._postgresModel.config) {
-			this.podStatusData = this.getPodStatus();
-			this.podStatusTable.setDataValues(this.createPodStatusDataValues());
-			this.serverGroupNodesLoading.loading = false;
-		}
-	}
-
 	private handleRegistrationsUpdated() {
 		this.properties!.propertyItems = this.getProperties();
 		this.propertiesLoading!.loading = false;
@@ -422,6 +275,5 @@ export class PostgresOverviewPage extends DashboardPage {
 		this.properties!.propertyItems = this.getProperties();
 		this.propertiesLoading!.loading = false;
 		this.refreshDashboardLinks();
-		this.refreshServerNodes();
 	}
 }
