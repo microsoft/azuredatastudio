@@ -50,7 +50,7 @@ export class SqlDatabaseTree {
 	private _dialog!: azdata.window.Dialog;
 	private _instanceTable!: azdata.DeclarativeTableComponent;
 	private _databaseTable!: azdata.DeclarativeTableComponent;
-	private _assessmentResultsTable!: azdata.DeclarativeTableComponent;
+	private _assessmentResultsList!: azdata.ListViewComponent;
 	private _impactedObjectsTable!: azdata.DeclarativeTableComponent;
 	private _assessmentContainer!: azdata.FlexContainer;
 	private _assessmentsTable!: azdata.FlexContainer;
@@ -202,7 +202,7 @@ export class SqlDatabaseTree {
 		this._disposables.push(this._databaseTable.onRowSelected(async (e) => {
 			if (this._targetType === MigrationTargetType.SQLMI ||
 				this._targetType === MigrationTargetType.SQLDB) {
-				this._activeIssues = this._model._assessmentResults?.databaseAssessments[e.row].issues;
+				this._activeIssues = this._model._assessmentResults?.databaseAssessments[e.row].issues.filter(i => i.appliesToMigrationTargetPlatform === this._targetType);
 			} else {
 				this._activeIssues = [];
 			}
@@ -727,52 +727,19 @@ export class SqlDatabaseTree {
 	}
 
 	private createImpactedObjectsTable(): azdata.FlexContainer {
-		const headerStyle: azdata.CssStyles = {
-			'border': 'none',
-			'text-align': 'left'
-		};
-		const rowStyle: azdata.CssStyles = {
-			'border': 'none',
-			'text-align': 'left',
-			'white-space': 'nowrap',
-			'text-overflow': 'ellipsis',
-			'width': '200px',
-			'overflow': 'hidden',
-		};
 
-		this._assessmentResultsTable = this._view.modelBuilder.declarativeTable()
-			.withProps({
-				enableRowSelection: true,
-				width: '200px',
-				CSSStyles: { 'table-layout': 'fixed' },
-				columns: [
-					{
-						displayName: '',
-						valueType: azdata.DeclarativeDataType.component,
-						width: '16px',
-						isReadOnly: true,
-						headerCssStyles: headerStyle,
-						rowCssStyles: rowStyle
-					},
-					{
-						displayName: '',
-						valueType: azdata.DeclarativeDataType.string,
-						width: '184px',
-						isReadOnly: true,
-						headerCssStyles: headerStyle,
-						rowCssStyles: rowStyle
-					}
-				]
-			}
-			).component();
+		this._assessmentResultsList = this._view.modelBuilder.listView().withProps({
+			width: '200px',
+			options: []
+		}).component();
 
-		this._disposables.push(this._assessmentResultsTable.onRowSelected(async (e) => {
-			const selectedIssue = e.row > -1 ? this._activeIssues[e.row] : undefined;
+		this._disposables.push(this._assessmentResultsList.onDidClick(async (e: azdata.ListViewClickEvent) => {
+			const selectedIssue = this._activeIssues[parseInt(this._assessmentResultsList.selectedOptionId!)];
 			await this.refreshAssessmentDetails(selectedIssue);
 		}));
 
 		const container = this._view.modelBuilder.flexContainer()
-			.withItems([this._assessmentResultsTable])
+			.withItems([this._assessmentResultsList])
 			.withLayout({
 				flexFlow: 'column',
 				height: '100%'
@@ -814,36 +781,28 @@ export class SqlDatabaseTree {
 			this._recommendationTitle.value = constants.ASSESSMENT_RESULTS;
 			this._recommendation.value = '';
 		}
-
-		const assessmentResults: azdata.DeclarativeTableCellValue[][] = this._activeIssues
+		let assessmentResults: azdata.ListViewOption[] = this._activeIssues
 			.sort((e1, e2) => {
 				if (e1.databaseRestoreFails) { return -1; }
 				if (e2.databaseRestoreFails) { return 1; }
-
 				return e1.checkId.localeCompare(e2.checkId);
-			}).map((v) => [
-				{
-					value: this._view.modelBuilder
-						.image()
-						.withProps({
-							iconPath: v.databaseRestoreFails
-								? IconPathHelper.error
-								: undefined,
-							iconHeight: 16,
-							iconWidth: 16,
-							height: 16,
-							width: 16,
-							title: v.databaseRestoreFails
-								? constants.ASSESSMENT_BLOCKING_ISSUE_TITLE
-								: '',
-						})
-						.component()
-				},
-				{ value: v.checkId }])
-			|| [];
+			}).filter((v) => {
+				return v.appliesToMigrationTargetPlatform === this._targetType;
+			}).map((v, index) => {
+				return {
+					id: index.toString(),
+					label: v.checkId,
+					icon: v.databaseRestoreFails ? IconPathHelper.error : '',
+					ariaLabel: v.databaseRestoreFails ? constants.BLOCKING_ISSUE_ARIA_LABEL(v.checkId) : v.checkId,
+					addIconPadding: true
+				};
+			});
 
-		await this._assessmentResultsTable.setDataValues(assessmentResults);
-		this._assessmentResultsTable.selectedRow = assessmentResults?.length > 0 ? 0 : -1;
+		this._assessmentResultsList.options = assessmentResults;
+		if (this._assessmentResultsList.options.length) {
+			this._assessmentResultsList.selectedOptionId = '0';
+
+		}
 	}
 
 	public async refreshAssessmentDetails(selectedIssue?: SqlMigrationAssessmentResultItem): Promise<void> {
@@ -939,7 +898,7 @@ export class SqlDatabaseTree {
 						style: styleLeft
 					},
 					{
-						value: db.issues?.length,
+						value: db.issues.filter(v => v.appliesToMigrationTargetPlatform === this._targetType)?.length,
 						style: styleRight
 					}
 				]);

@@ -18,6 +18,7 @@ import { IListRenderer, IListVirtualDelegate } from 'vs/base/browser/ui/list/lis
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { ILogService } from 'vs/platform/log/common/log';
+import { createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUtils';
 
 @Component({
 	templateUrl: decodeURI(require.toUrl('./listView.component.html'))
@@ -31,6 +32,8 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 	private _selectedElementIdx!: number;
 
 	static ROW_HEIGHT = 26;
+
+	private iconClasses: string[] = [];
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
@@ -80,6 +83,9 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 	}
 
 	override ngOnDestroy(): void {
+		this.iconClasses.forEach((icon) => {
+			DOM.removeCSSRulesContainingSelector(icon);
+		});
 		this.baseDestroy();
 	}
 
@@ -166,7 +172,10 @@ class OptionListDelegate implements IListVirtualDelegate<azdata.ListViewOption> 
 }
 
 interface ExtensionListTemplate {
+	parent: HTMLElement;
 	root: HTMLElement;
+	labelContainer: HTMLElement;
+	iconContainer: HTMLElement;
 }
 
 class OptionsListRenderer implements IListRenderer<azdata.ListViewOption, ExtensionListTemplate> {
@@ -178,12 +187,30 @@ class OptionsListRenderer implements IListRenderer<azdata.ListViewOption, Extens
 
 	public renderTemplate(container: HTMLElement): ExtensionListTemplate {
 		const tableTemplate: ExtensionListTemplate = Object.create(null);
+		tableTemplate.parent = container;
 		tableTemplate.root = DOM.append(container, DOM.$('div.list-row.listview-option'));
+		tableTemplate.iconContainer = DOM.$('div.list-row.listview-option-icon');
+		tableTemplate.labelContainer = DOM.$('div.list-row.listview-option-label');
+		DOM.append(tableTemplate.root, tableTemplate.iconContainer);
+		DOM.append(tableTemplate.root, tableTemplate.labelContainer);
 		return tableTemplate;
 	}
 
 	public renderElement(option: azdata.ListViewOption, index: number, templateData: ExtensionListTemplate): void {
-		templateData.root.innerText = option.label ?? '';
+		templateData.labelContainer.innerText = option.label ?? '';
+		if (option.icon) {
+			templateData.iconContainer.classList.add('icon');
+			templateData.iconContainer.classList.add(createIconCssClass(option.icon));
+		} else {
+			if (!option.addIconPadding) {
+				templateData.iconContainer.remove();
+			} else {
+				templateData.iconContainer.className = '';
+				templateData.iconContainer.classList.add('list-row', 'listview-option-icon');
+			}
+		}
+		templateData.parent.title = option.label ?? '';
+		templateData.parent.setAttribute('aria-label', option.ariaLabel ?? option.label ?? '');
 	}
 
 	public disposeTemplate(template: ExtensionListTemplate): void {

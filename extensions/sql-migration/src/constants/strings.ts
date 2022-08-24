@@ -950,6 +950,9 @@ export const NO_ISSUES_FOUND_MI = localize('sql.migration.no.issues.mi', "No iss
 export const NO_ISSUES_FOUND_SQLDB = localize('sql.migration.no.issues.sqldb', "No issues found for migrating to Azure SQL Database.");
 export const NO_RESULTS_AVAILABLE = localize('sql.migration.no.results', 'Assessment results are unavailable.');
 
+export function BLOCKING_ISSUE_ARIA_LABEL(issue: string): string {
+	return localize('sql.migration.issue.aria.label', "Blocking Issue: {0}", issue);
+}
 export function IMPACT_OBJECT_TYPE(objectType?: string): string {
 	return objectType ? localize('sql.migration.impact.object.type', "Type: {0}", objectType) : '';
 }

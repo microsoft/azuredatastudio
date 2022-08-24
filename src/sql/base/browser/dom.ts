@@ -20,6 +20,15 @@ export function isHidden(element: HTMLElement): boolean {
  * @param defaultValue The default value to use if the size is undefined
  */
 export function convertSize(size: number | string | undefined, defaultValue?: string): string {
+	/**
+	 * Regex that checks if a size string is a calc expression. Source: https://codepen.io/benfoster/pen/VPjLdQ
+	 * If the size is a valid calc expression, we want to leave it as it is.
+	 */
+	const calcRegex = /calc\(( )?([\d\.]+(%|vh|vw|vmin|vmax|em|rem|px|cm|ex|in|mm|pc|pt|ch|q|deg|rad|grad|turn|s|ms|hz|khz))( )+[+\-\*\/]( )+(\-)?([\d\.]+(%|vh|vw|vmin|vmax|em|rem|px|cm|ex|in|mm|pc|pt|ch|q|deg|rad|grad|turn|s|ms|hz|khz))( )?\)/i;
+	if (types.isString(size) && size.match(calcRegex)) {
+		return size;
+	}
+
 	defaultValue = defaultValue || '';
 	if (types.isUndefinedOrNull(size)) {
 		return defaultValue;

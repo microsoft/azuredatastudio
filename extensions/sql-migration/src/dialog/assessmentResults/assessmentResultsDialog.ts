@@ -47,7 +47,7 @@ export class AssessmentResultsDialog {
 				try {
 					const flex = view.modelBuilder.flexContainer().withLayout({
 						flexFlow: 'row',
-						height: '100%',
+						height: 'calc( 100% - 33px )',
 						width: '100%'
 					}).component();
 					flex.addItem(await this._tree.createRootContainer(dialog, view), { flex: '1 1 auto' });

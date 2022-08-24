@@ -7,8 +7,6 @@
 	display: flex;
 	flex-direction: column;
 	height: 100%;
-	max-width: 150px;
-	min-width: 120px;
 	font-size: 100%;
 	font-weight: inherit;
 	overflow: auto;
@@ -24,10 +22,26 @@
 }
 
 .modelview-listview-container .listview-option {
+	display: flex;
 	line-height: 16px;
 	width: 95%;
 	padding: 5px 0px 5px 5px;
 }
 
+.modelview-listview-container .listview-option .listview-option-icon {
+	width: 16px;
+	height: 16px;
+	margin-right: 5px;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+}
 
+
+.modelview-listview-container .listview-option .listview-option-label {
+	flex: 1;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
 
