@@ -36,7 +36,6 @@ export class AzdataGraphView {
 		private _executionPlan: azdata.executionPlan.ExecutionPlanGraph,
 		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService,
 	) {
-		this._parentContainer.tabIndex = 0;
 		this._diagramModel = this.populate(this._executionPlan.root);
 
 		let queryPlanConfiguration = {
@@ -84,11 +83,6 @@ export class AzdataGraphView {
 					this.selectElement(this.getElementById(getPreviousSelection.id));
 				}
 			}
-		});
-
-		// Focusing the parent container when we click the graph
-		this._diagram.graph.addListener('click', (sender, evt) => {
-			this._parentContainer.focus();
 		});
 	}
 
