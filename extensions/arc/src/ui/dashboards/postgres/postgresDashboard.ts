@@ -12,7 +12,6 @@ import { PostgresConnectionStringsPage } from './postgresConnectionStringsPage';
 import { Dashboard } from '../../components/dashboard';
 import { PostgresSupportRequestPage } from './postgresSupportRequestPage';
 import { PostgresComputeAndStoragePage } from './postgresComputeAndStoragePage';
-import { PostgresPropertiesPage } from './postgresPropertiesPage';
 
 export class PostgresDashboard extends Dashboard {
 	constructor(private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
@@ -31,7 +30,6 @@ export class PostgresDashboard extends Dashboard {
 		const overviewPage = new PostgresOverviewPage(modelView, this.dashboard, this._controllerModel, this._postgresModel);
 		const connectionStringsPage = new PostgresConnectionStringsPage(modelView, this.dashboard, this._postgresModel);
 		const computeAndStoragePage = new PostgresComputeAndStoragePage(modelView, this.dashboard, this._postgresModel);
-		const propertiesPage = new PostgresPropertiesPage(modelView, this.dashboard, this._controllerModel, this._postgresModel);
 		const supportRequestPage = new PostgresSupportRequestPage(modelView, this.dashboard, this._controllerModel, this._postgresModel);
 
 		return [
@@ -39,7 +37,6 @@ export class PostgresDashboard extends Dashboard {
 			{
 				title: loc.settings,
 				tabs: [
-					propertiesPage.tab,
 					connectionStringsPage.tab,
 					computeAndStoragePage.tab
 				]
