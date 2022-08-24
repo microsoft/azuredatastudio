@@ -85,8 +85,4 @@ suite('DOM Tests', () => {
 			assert.strictEqual(run.expected, validateCalcExpression(run.input), `error validating calc expression: ${run.input}`);
 		});
 	});
-
-
-
-
 });
