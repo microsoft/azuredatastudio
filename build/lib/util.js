@@ -171,9 +171,9 @@ function rewriteSourceMappingURL(sourceMappingURLBase) {
     const input = es.through();
     const output = input
         .pipe(es.mapSync(f => {
-        //const contents = (<Buffer>f.contents).toString('utf8');
-        //const str = `//# sourceMappingURL=${sourceMappingURLBase}/${path.dirname(f.relative).replace(/\\/g, '/')}/$1`;
-        //f.contents = Buffer.from(contents.replace(/\n\/\/# sourceMappingURL=(.*)$/gm, str));
+        const contents = f.contents.toString('utf8');
+        const str = `//# sourceMappingURL=${sourceMappingURLBase}/${path.dirname(f.relative).replace(/\\/g, '/')}/$1`;
+        f.contents = Buffer.from(contents.replace(/\n\/\/# sourceMappingURL=((?!data:).*)$/gm, str));
         return f;
     }));
     return es.duplex(input, output);
