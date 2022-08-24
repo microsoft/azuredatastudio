@@ -62,6 +62,14 @@
         <source xml:lang="en">Add Item</source>
         <target state="translated">항목 추가</target>
       </trans-unit>
+      <trans-unit id="advancedOptionsButton">
+        <source xml:lang="en">Advanced...</source>
+        <target state="translated">고급...</target>
+      </trans-unit>
+      <trans-unit id="advancedPublishOptions">
+        <source xml:lang="en">Advanced Publish Options</source>
+        <target state="translated">고급 게시 옵션</target>
+      </trans-unit>
       <trans-unit id="appSettingPrompt">
         <source xml:lang="en">Would you like to update Azure Function local.settings.json with the new connection string?</source>
         <target state="translated">Azure Function local.settings.json을 새 연결 문자열로 업데이트하시겠습니까?</target>
@@ -528,6 +536,10 @@
         <source xml:lang="en">Exclude</source>
         <target state="translated">제외</target>
       </trans-unit>
+      <trans-unit id="excludeObjectTypes">
+        <source xml:lang="en">Exclude Object Types</source>
+        <target state="translated">개체 형식 제외</target>
+      </trans-unit>
       <trans-unit id="externalStream">
         <source xml:lang="en">External Stream</source>
         <target state="translated">외부 스트림</target>
@@ -611,6 +623,10 @@
       <trans-unit id="importElements">
         <source xml:lang="en">Import Elements</source>
         <target state="translated">요소 가져오기</target>
+      </trans-unit>
+      <trans-unit id="include">
+        <source xml:lang="en">Include</source>
+        <target state="translated">포함</target>
       </trans-unit>
       <trans-unit id="installGlobally">
         <source xml:lang="en">Install globally</source>
@@ -768,6 +784,18 @@
         <source xml:lang="en">Open License Agreement</source>
         <target state="translated">라이선스 계약 열기</target>
       </trans-unit>
+      <trans-unit id="optionDescription">
+        <source xml:lang="en">Option Description</source>
+        <target state="translated">옵션 설명</target>
+      </trans-unit>
+      <trans-unit id="optionName">
+        <source xml:lang="en">Option Name</source>
+        <target state="translated">옵션 이름</target>
+      </trans-unit>
+      <trans-unit id="optionNotFoundWarningMessage">
+        <source xml:lang="en">label: {0} does not exist in the options value name lookup</source>
+        <target state="translated">레이블: {0}이(가) 옵션 값 이름 조회에 없음</target>
+      </trans-unit>
       <trans-unit id="outsideFolderPath">
         <source xml:lang="en">Items with absolute path outside project folder are not supported. Please make sure the paths in the project file are relative to project folder.</source>
         <target state="translated">프로젝트 폴더 외부에 절대 경로가 있는 항목은 지원되지 않습니다. 프로젝트 파일의 경로가 프로젝트 폴더에 상대적인지 확인하세요.</target>
@@ -872,6 +900,10 @@
         <source xml:lang="en">Publish project</source>
         <target state="translated">프로젝트 게시</target>
       </trans-unit>
+      <trans-unit id="publishOptions">
+        <source xml:lang="en">Publish Options</source>
+        <target state="translated">게시 옵션</target>
+      </trans-unit>
       <trans-unit id="publishProjectSucceed">
         <source xml:lang="en">Database project published successfully</source>
         <target state="translated">데이터베이스 프로젝트를 게시했습니다.</target>
@@ -927,6 +959,10 @@
       <trans-unit id="reloadValuesFromProjectButtonTitle">
         <source xml:lang="en">Reload values from project</source>
         <target state="translated">프로젝트에서 값 다시 로드</target>
+      </trans-unit>
+      <trans-unit id="reset">
+        <source xml:lang="en">Reset</source>
+        <target state="translated">다시 설정</target>
       </trans-unit>
       <trans-unit id="resetAllVars">
         <source xml:lang="en">Reset all variables</source>
@@ -1316,6 +1352,10 @@
         <source xml:lang="en">Close Database Project</source>
         <target state="translated">데이터베이스 프로젝트 닫기</target>
       </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.collapseProjectNodes">
+        <source xml:lang="en">Whether project nodes start collapsed</source>
+        <target state="translated">프로젝트 노드를 축소할지 여부</target>
+      </trans-unit>
       <trans-unit id="sqlDatabaseProjects.convertToSdkStyleProject">
         <source xml:lang="en">Convert to SDK-style project</source>
         <target state="translated">SDK 스타일 프로젝트로 변환</target>
@@ -1407,6 +1447,10 @@
       <trans-unit id="sqlDatabaseProjects.openContainingFolder">
         <source xml:lang="en">Open Containing Folder</source>
         <target state="translated">상위 폴더 열기</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.openInDesigner">
+        <source xml:lang="en">Open in Designer</source>
+        <target state="translated">디자이너에서 열기</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.properties">
         <source xml:lang="en">Properties</source>

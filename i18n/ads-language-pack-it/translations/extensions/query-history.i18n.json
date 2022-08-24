@@ -9,10 +9,19 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
+			"queryHistory.captureEnabledDesc": "Indica se l'acquisizione della cronologia delle query è abilitata. Se è false, le query eseguite non verranno acquisite.",
 			"queryHistory.clear": "Cancella tutta la cronologia",
+			"queryHistory.delete": "Elimina",
 			"queryHistory.description": "Visualizza ed esegue query eseguite in precedenza",
+			"queryHistory.disableCapture": "Sospendi acquisizione della cronologia delle query",
 			"queryHistory.displayName": "Cronologia delle query",
-			"queryHistory.toggleCapture": "Attiva/Disattiva acquisizione della cronologia delle query"
+			"queryHistory.doubleClickAction": "Azione eseguita quando si fa doppio clic su un elemento della cronologia",
+			"queryHistory.doubleClickAction.open": "Aprire un nuovo editor disconnesso con la query dall'elemento della cronologia selezionato",
+			"queryHistory.doubleClickAction.run": "Aprire un nuovo editor connesso con la query e la connessione dall'elemento della cronologia selezionato ed eseguire automaticamente la query",
+			"queryHistory.enableCapture": "Avvia acquisizione della cronologia delle query",
+			"queryHistory.noEntries": "Nessuna query da visualizzare",
+			"queryHistory.open": "Apri query",
+			"queryHistory.run": "Esegui query"
 		}
 	}
 }

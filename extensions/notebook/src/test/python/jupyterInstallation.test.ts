@@ -31,12 +31,12 @@ describe('Jupyter Server Installation', function () {
 		sinon.restore();
 	});
 
-	it('Getters and setters', async function() {
+	it('Getters and setters', async function () {
 		let pythonPath = installation.pythonInstallationPath;
 		should(pythonPath).be.equal(JupyterServerInstallation.getPythonInstallPath());
 	});
 
-	it('Get pip packages', async function() {
+	it('Get pip packages', async function () {
 		// Should return nothing if passed an invalid python path
 		let fakePath = uuid.v4();
 		let pkgResult = await installation.getInstalledPipPackages(fakePath);
@@ -73,7 +73,7 @@ describe('Jupyter Server Installation', function () {
 		should(pkgResult).be.deepEqual(testPackages);
 	});
 
-	it('Install pip package', async function() {
+	it('Install pip package', async function () {
 		let commandStub = sinon.stub(utils, 'executeStreamedCommand').resolves();
 
 		// Should not execute any commands when passed an empty package list
@@ -103,7 +103,7 @@ describe('Jupyter Server Installation', function () {
 		should(commandStr.includes('"TestPkg1>=1.2.3" "TestPkg2>=4.5.6"')).be.true();
 	});
 
-	it('Uninstall pip package', async function() {
+	it('Uninstall pip package', async function () {
 		let commandStub = sinon.stub(utils, 'executeStreamedCommand').resolves();
 
 		let testPackages = [{
@@ -119,16 +119,16 @@ describe('Jupyter Server Installation', function () {
 		should(commandStr.includes('"jupyter==1.0.0" "TestPkg2==4.5.6"')).be.true();
 	});
 
-	it('Get conda packages', async function() {
+	it('Get conda packages', async function () {
 		// Should return nothing if conda is not installed
-		sinon.stub(fs, 'existsSync').returns(false);
+		sinon.stub(installation, 'condaExecutable').get(() => undefined);
 		let pkgResult = await installation.getInstalledCondaPackages();
 		should(pkgResult).not.be.undefined();
 		should(pkgResult.length).be.equal(0);
 
 		// Should return nothing on error
 		sinon.restore();
-		sinon.stub(fs, 'existsSync').returns(true);
+		sinon.stub(installation, 'condaExecutable').get(() => 'TestCondaPath');
 		sinon.stub(utils, 'executeBufferedCommand').rejects(new Error('Expected test failure.'));
 		pkgResult = await installation.getInstalledCondaPackages();
 		should(pkgResult).not.be.undefined();
@@ -150,15 +150,30 @@ describe('Jupyter Server Installation', function () {
 			version: '7.8.9',
 			channel: 'conda'
 		}];
-		sinon.stub(fs, 'existsSync').returns(true);
+		sinon.stub(installation, 'condaExecutable').get(() => 'TestCondaPath');
 		sinon.stub(utils, 'executeBufferedCommand').resolves(JSON.stringify(testPackages));
 		pkgResult = await installation.getInstalledCondaPackages();
 		let filteredPackages = testPackages.filter(pkg => pkg.channel !== 'pypi');
 		should(pkgResult).be.deepEqual(filteredPackages);
 	});
 
-	it('Install conda package', async function() {
+	it('Install conda package', async function () {
+		const testPackages = [{
+			name: 'TestPkg1',
+			version: '1.2.3'
+		}, {
+			name: 'TestPkg2',
+			version: '4.5.6'
+		}];
 		let commandStub = sinon.stub(utils, 'executeStreamedCommand').resolves();
+
+		// Should not execute any commands if conda is not installed
+		let condaStub = sinon.stub(installation, 'condaExecutable').get(() => undefined);
+		await installation.installCondaPackages(testPackages, false);
+		should(commandStub.called).be.false();
+
+		condaStub.restore();
+		sinon.stub(installation, 'condaExecutable').get(() => 'TestCondaPath');
 
 		// Should not execute any commands when passed an empty package list
 		await installation.installCondaPackages(undefined, false);
@@ -168,13 +183,6 @@ describe('Jupyter Server Installation', function () {
 		should(commandStub.called).be.false();
 
 		// Install package using exact version
-		let testPackages = [{
-			name: 'TestPkg1',
-			version: '1.2.3'
-		}, {
-			name: 'TestPkg2',
-			version: '4.5.6'
-		}];
 		await installation.installCondaPackages(testPackages, false);
 		should(commandStub.calledOnce).be.true();
 		let commandStr = commandStub.args[0][0] as string;
@@ -187,7 +195,8 @@ describe('Jupyter Server Installation', function () {
 		should(commandStr.includes('"TestPkg1>=1.2.3" "TestPkg2>=4.5.6"')).be.true();
 	});
 
-	it('Uninstall conda package', async function() {
+	it('Uninstall conda package', async function () {
+		sinon.stub(installation, 'condaExecutable').get(() => 'TestCondaPath');
 		let commandStub = sinon.stub(utils, 'executeStreamedCommand').resolves();
 
 		let testPackages = [{
@@ -203,29 +212,29 @@ describe('Jupyter Server Installation', function () {
 		should(commandStr.includes('"jupyter==1.0.0" "TestPkg2==4.5.6"')).be.true();
 	});
 
-	it('Get required packages test - Undefined argument', async function() {
+	it('Get required packages test - Undefined argument', async function () {
 		let packages = installation.getRequiredPackagesForKernel(undefined);
 		should(packages).not.be.undefined();
 		should(packages.length).be.equal(0);
 	});
 
-	it('Get required packages test - Fake kernel', async function() {
+	it('Get required packages test - Fake kernel', async function () {
 		let packages = installation.getRequiredPackagesForKernel('NotARealKernel');
 		should(packages).not.be.undefined();
 		should(packages.length).be.equal(0);
 	});
 
-	it('Get required packages test - Python 3 kernel', async function() {
+	it('Get required packages test - Python 3 kernel', async function () {
 		let packages = installation.getRequiredPackagesForKernel(python3DisplayName);
 		should(packages).be.deepEqual([requiredJupyterPkg]);
 	});
 
-	it('Get required packages test - Powershell kernel', async function() {
+	it('Get required packages test - Powershell kernel', async function () {
 		let packages = installation.getRequiredPackagesForKernel(powershellDisplayName);
 		should(packages).be.deepEqual([requiredJupyterPkg, requiredPowershellPkg]);
 	});
 
-	it('Get required packages test - Spark kernels', async function() {
+	it('Get required packages test - Spark kernels', async function () {
 		let packages = installation.getRequiredPackagesForKernel(pysparkDisplayName);
 		should(packages).be.deepEqual(requiredSparkPackages, 'Unexpected packages for PySpark kernel.');
 
@@ -236,7 +245,7 @@ describe('Jupyter Server Installation', function () {
 		should(packages).be.deepEqual(requiredSparkPackages, 'Unexpected packages for Spark R kernel.');
 	});
 
-	it('Install python test - Run install while Python is already running', async function() {
+	it('Install python test - Run install while Python is already running', async function () {
 		// Should reject overwriting an existing python install if running on Windows and python is currently running.
 		if (process.platform === winPlatform) {
 			sinon.stub(utils, 'executeBufferedCommand').resolves('python.exe');
@@ -250,7 +259,7 @@ describe('Jupyter Server Installation', function () {
 		}
 	});
 
-	it('Install python test - Run install with existing Python instance', async function() {
+	it('Install python test - Run install with existing Python instance', async function () {
 		let installSettings: PythonInstallSettings = {
 			installPath: `${process.env['USERPROFILE']}\\ads-python`,
 			existingPython: true,
@@ -258,7 +267,7 @@ describe('Jupyter Server Installation', function () {
 		};
 
 		sinon.stub(utils, 'exists').resolves(true);
-		sinon.stub(fs, 'existsSync').returns(false);
+		sinon.stub(fs, 'pathExists').resolves(false);
 		sinon.stub(utils, 'executeBufferedCommand').resolves(`${installSettings.installPath}\\site-packages`);
 
 		// Both of these are called from upgradePythonPackages

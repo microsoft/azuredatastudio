@@ -1565,32 +1565,32 @@ Selecione uma assinatura diferente contendo pelo menos um servidor</target>
         <target state="translated">Configurações de armazenamento</target>
       </trans-unit>
       <trans-unit id="deployCluster.controllerDataStorageClaimSize">
-        <source xml:lang="en">Controller's data storage claim size</source>
-        <target state="translated">Tamanho da declaração de armazenamento de dados do controlador</target>
+        <source xml:lang="en">Controller's data storage claim size (Gigabytes)</source>
+        <target state="translated">Tamanho da declaração de armazenamento de dados do controlador (Gigabytes)</target>
       </trans-unit>
       <trans-unit id="deployCluster.controllerDataStorageClass">
         <source xml:lang="en">Controller's data storage class</source>
         <target state="translated">Classe de armazenamento de dados do controlador</target>
       </trans-unit>
       <trans-unit id="deployCluster.controllerLogsStorageClaimSize">
-        <source xml:lang="en">Controller's logs storage claim size</source>
-        <target state="translated">Tamanho da declaração de armazenamento de logs do controlador</target>
+        <source xml:lang="en">Controller's logs storage claim size (Gigabytes)</source>
+        <target state="translated">Tamanho da declaração de armazenamento de logs do controlador (Gigabytes)</target>
       </trans-unit>
       <trans-unit id="deployCluster.controllerLogsStorageClass">
         <source xml:lang="en">Controller's logs storage class</source>
         <target state="translated">Classe de armazenamento de logs do controlador</target>
       </trans-unit>
       <trans-unit id="deployCluster.dataPoolDataStorageClaimSize">
-        <source xml:lang="en">Data pool's data storage claim size</source>
-        <target state="translated">Tamanho da declaração de armazenamento de dados do pool de dados</target>
+        <source xml:lang="en">Data pool's data storage claim size (Gigabytes)</source>
+        <target state="translated">Tamanho da declaração de armazenamento de dados do pool de dados (Gigabytes)</target>
       </trans-unit>
       <trans-unit id="deployCluster.dataPoolDataStorageClass">
         <source xml:lang="en">Data pool's data storage class</source>
         <target state="translated">Classe de armazenamento de dados do pool de dados</target>
       </trans-unit>
       <trans-unit id="deployCluster.dataPoolLogsStorageClaimSize">
-        <source xml:lang="en">Data pool's logs storage claim size</source>
-        <target state="translated">Tamanho da declaração de armazenamento de logs do pool de dados</target>
+        <source xml:lang="en">Data pool's logs storage claim size (Gigabytes)</source>
+        <target state="translated">Tamanho da declaração de armazenamento de logs do pool de dados (Gigabytes)</target>
       </trans-unit>
       <trans-unit id="deployCluster.dataPoolLogsStorageClass">
         <source xml:lang="en">Data pool's logs storage class</source>
@@ -1601,16 +1601,16 @@ Selecione uma assinatura diferente contendo pelo menos um servidor</target>
         <target state="translated">Configurações de escala</target>
       </trans-unit>
       <trans-unit id="deployCluster.sqlServerMasterDataStorageClaimSize">
-        <source xml:lang="en">SQL Server master's data storage claim size</source>
-        <target state="translated">Tamanho da declaração de armazenamento de dados do SQL Server mestre</target>
+        <source xml:lang="en">SQL Server master's data storage claim size (Gigabytes)</source>
+        <target state="translated">Tamanho da declaração de armazenamento de dados mestre do SQL Server (Gigabytes)</target>
       </trans-unit>
       <trans-unit id="deployCluster.sqlServerMasterDataStorageClass">
         <source xml:lang="en">SQL Server master's data storage class</source>
         <target state="translated">Classe de armazenamento de dados do SQL Server mestre</target>
       </trans-unit>
       <trans-unit id="deployCluster.sqlServerMasterLogsStorageClaimSize">
-        <source xml:lang="en">SQL Server master's logs storage claim size</source>
-        <target state="translated">Tamanho da declaração de armazenamento de logs do SQL Server mestre</target>
+        <source xml:lang="en">SQL Server master's logs storage claim size (Gigabytes)</source>
+        <target state="translated">Tamanho da declaração de armazenamento de logs do mestre do SQL Server (Gigabytes)</target>
       </trans-unit>
       <trans-unit id="deployCluster.sqlServerMasterLogsStorageClass">
         <source xml:lang="en">SQL Server master's logs storage class</source>
@@ -1621,16 +1621,16 @@ Selecione uma assinatura diferente contendo pelo menos um servidor</target>
         <target state="translated">Usar as configurações do controlador</target>
       </trans-unit>
       <trans-unit id="deployCluster.storagePoolDataStorageClaimSize">
-        <source xml:lang="en">Storage pool's data storage claim size</source>
-        <target state="translated">Tamanho da declaração de armazenamento de dados do pool de armazenamento</target>
+        <source xml:lang="en">Storage pool's data storage claim size (Gigabytes)</source>
+        <target state="translated">Tamanho da declaração de armazenamento de dados do pool de armazenamento (Gigabytes)</target>
       </trans-unit>
       <trans-unit id="deployCluster.storagePoolDataStorageClass">
         <source xml:lang="en">Storage pool's data storage class</source>
         <target state="translated">Classe de armazenamento de dados do pool de armazenamento</target>
       </trans-unit>
       <trans-unit id="deployCluster.storagePoolLogsStorageClaimSize">
-        <source xml:lang="en">Storage pool's logs storage claim size</source>
-        <target state="translated">Tamanho da declaração de armazenamento de logs do pool de armazenamento</target>
+        <source xml:lang="en">Storage pool's logs storage claim size (Gigabytes)</source>
+        <target state="translated">Tamanho da declaração de armazenamento de logs do pool de armazenamento (Gigabytes)</target>
       </trans-unit>
       <trans-unit id="deployCluster.storagePoolLogsStorageClass">
         <source xml:lang="en">Storage pool's logs storage class</source>
@@ -2250,6 +2250,10 @@ Selecione uma assinatura diferente contendo pelo menos um servidor</target>
         <source xml:lang="en">Deploy SQL Server 2019 container images</source>
         <target state="translated">Implantar imagens de contêiner do SQL Server 2019</target>
       </trans-unit>
+      <trans-unit id="docker-sql-2022-title">
+        <source xml:lang="en">Deploy SQL Server 2022 Preview container images</source>
+        <target state="translated">Implantar imagens de contêiner do SQL Server 2022 Visualização</target>
+      </trans-unit>
       <trans-unit id="docker-sql-password-field">
         <source xml:lang="en">SQL Server password</source>
         <target state="translated">Senha do SQL Server</target>
@@ -2297,6 +2301,10 @@ Selecione uma assinatura diferente contendo pelo menos um servidor</target>
       <trans-unit id="sql-2019-display-name">
         <source xml:lang="en">SQL Server 2019</source>
         <target state="translated">SQL Server 2019</target>
+      </trans-unit>
+      <trans-unit id="sql-2022-display-name">
+        <source xml:lang="en">SQL Server 2022 Preview</source>
+        <target state="translated">SQL Server 2022 Visualização</target>
       </trans-unit>
       <trans-unit id="sql-azure-database-server-display-name">
         <source xml:lang="en">Database Server</source>

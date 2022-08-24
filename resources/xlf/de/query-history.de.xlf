@@ -2,21 +2,57 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file original="extensions/query-history/package" source-language="en" datatype="plaintext" target-language="de">
     <body>
+      <trans-unit id="queryHistory.captureEnabledDesc">
+        <source xml:lang="en">Whether Query History capture is enabled. If false queries executed will not be captured.</source>
+        <target state="translated">Gibt an, ob die Erfassung des Abfrageverlaufs aktiviert ist. Bei Festlegung auf FALSE werden ausgeführte Abfragen nicht erfasst.</target>
+      </trans-unit>
       <trans-unit id="queryHistory.clear">
         <source xml:lang="en">Clear All History</source>
         <target state="translated">Gesamten Verlauf löschen</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.delete">
+        <source xml:lang="en">Delete</source>
+        <target state="translated">Löschen</target>
       </trans-unit>
       <trans-unit id="queryHistory.description">
         <source xml:lang="en">View and run previously executed queries</source>
         <target state="translated">Zuvor ausgeführte Abfragen anzeigen und ausführen</target>
       </trans-unit>
+      <trans-unit id="queryHistory.disableCapture">
+        <source xml:lang="en">Pause Query History Capture</source>
+        <target state="translated">Erfassung des Abfrageverlaufs anhalten</target>
+      </trans-unit>
       <trans-unit id="queryHistory.displayName">
         <source xml:lang="en">Query History</source>
         <target state="translated">Abfrageverlauf</target>
       </trans-unit>
-      <trans-unit id="queryHistory.toggleCapture">
-        <source xml:lang="en">Toggle Query History Capture</source>
-        <target state="translated">Erfassung des Abfrageverlaufs umschalten</target>
+      <trans-unit id="queryHistory.doubleClickAction">
+        <source xml:lang="en">The action taken when a history item is double clicked</source>
+        <target state="translated">Die Aktion, die ausgeführt wird, wenn auf ein Verlaufselement doppelt geklickt wird</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.doubleClickAction.open">
+        <source xml:lang="en">Open a new disconnected editor with the query from the selected history item</source>
+        <target state="translated">Öffnen eines neuen getrennten Editors mit der Abfrage aus dem ausgewählten Verlaufselement</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.doubleClickAction.run">
+        <source xml:lang="en">Open a new connected editor with the query and connection from the selected history item and automatically run the query</source>
+        <target state="translated">Öffnen eines neuen verbundenen Editors mit der Abfrage und der Verbindung aus dem ausgewählten Verlaufselement, und automatisches Ausführen der Abfrage</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.enableCapture">
+        <source xml:lang="en">Start Query History Capture</source>
+        <target state="translated">Erfassung des Abfrageverlaufs starten</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.noEntries">
+        <source xml:lang="en">No queries to display</source>
+        <target state="translated">Keine anzuzeigenden Abfragen vorhanden</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.open">
+        <source xml:lang="en">Open Query</source>
+        <target state="translated">Abfrage öffnen</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.run">
+        <source xml:lang="en">Run Query</source>
+        <target state="translated">Abfrage ausführen</target>
       </trans-unit>
     </body>
   </file>

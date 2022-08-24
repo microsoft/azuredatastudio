@@ -9,10 +9,19 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
+			"queryHistory.captureEnabledDesc": "Включено ли ведение Журнала запросов. Если этот параметр имеет значение False, выполняемые запросы не будут записываться в истории.",
 			"queryHistory.clear": "Очистить весь журнал",
+			"queryHistory.delete": "Удалить",
 			"queryHistory.description": "Просмотр и запуск ранее выполненных запросов",
+			"queryHistory.disableCapture": "Приостановить ведение Журнала запросов",
 			"queryHistory.displayName": "Журнал запросов",
-			"queryHistory.toggleCapture": "Включить или отключить ведение Журнала запросов"
+			"queryHistory.doubleClickAction": "Действие при двойном щелчке элемента журнала",
+			"queryHistory.doubleClickAction.open": "Открыть новый отключенный редактор с запросом из выбранного элемента журнала",
+			"queryHistory.doubleClickAction.run": "Открыть новый подключенный редактор с запросом и подключением из выбранного элемента журнала, автоматически выполнить запрос",
+			"queryHistory.enableCapture": "Начать ведение Журнала запросов",
+			"queryHistory.noEntries": "Нет запросов для отображения",
+			"queryHistory.open": "Открыть запрос",
+			"queryHistory.run": "Выполнить запрос"
 		}
 	}
 }

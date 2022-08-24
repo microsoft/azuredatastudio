@@ -3424,8 +3424,8 @@
       <Item ItemId=";extensions/arc/package.arc.data.controller.details.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[For indirect mode, namespace, name and storage class are required. This name will be used to identify your Arc instance for remote management and monitoring. For direct mode, custom location name is required.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Pour le mode indirect, fournissez un espace de noms, un nom et une classe de stockage pour votre contrôleur de données Azure Arc. Ce nom permet d’identifier votre instance Arc pour la gestion et la supervision à distance. Pour le mode direct, vous n’avez pas besoin de fournir d’espace de noms, mais fournissez le nom d’emplacement personnalisé.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Pour le mode indirect, l’espace de noms, le nom et la classe de stockage sont obligatoires. Ce nom sera utilisé pour identifier votre instance Arc à des fins de gestion et de surveillance à distance. Pour le mode direct, un nom d’emplacement personnalisé est requis.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[For indirect mode, provide a namespace, name and storage class for your Azure Arc data controller. This name will be used to identify your Arc instance for remote management and monitoring. For direct mode you do not need to provide a namespace, but please provide the custom location name.]]></Val>

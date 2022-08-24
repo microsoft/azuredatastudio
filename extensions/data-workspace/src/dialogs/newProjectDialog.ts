@@ -193,6 +193,11 @@ export class NewProjectDialog extends DialogBase {
 			width: constants.DefaultInputWidth
 		}).component();
 
+		// use the default save location if it's there
+		// otherwise, if there's an open folder, set the initial location to that. If there are multiple folders in the workspace, default to the first one
+		const defaultSaveLocation = defaultProjectSaveLocation();
+		locationTextBox.value = defaultSaveLocation?.fsPath ?? vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+
 		this.register(locationTextBox.onTextChanged(() => {
 			this.model.location = locationTextBox.value!;
 			return locationTextBox.updateProperty('title', locationTextBox.value);
@@ -209,7 +214,7 @@ export class NewProjectDialog extends DialogBase {
 				canSelectFiles: false,
 				canSelectFolders: true,
 				canSelectMany: false,
-				defaultUri: defaultProjectSaveLocation()
+				defaultUri: locationTextBox.value ? vscode.Uri.file(locationTextBox.value) : undefined
 			});
 			if (!folderUris || folderUris.length === 0) {
 				return;

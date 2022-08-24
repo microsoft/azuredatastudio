@@ -8,11 +8,11 @@ import * as vscode from 'vscode';
 import * as loc from '../constants/strings';
 import { getSqlServerName, getMigrationStatusImage } from '../api/utils';
 import { logError, TelemetryViews } from '../telemtery';
-import { canCancelMigration, canCutoverMigration, canRetryMigration, getMigrationStatus, getMigrationTargetTypeEnum, isOfflineMigation } from '../constants/helper';
+import { canCancelMigration, canCutoverMigration, canRetryMigration, getMigrationStatusString, getMigrationTargetTypeEnum, isOfflineMigation } from '../constants/helper';
 import { getResourceName } from '../api/azure';
 import { InfoFieldSchema, infoFieldWidth, MigrationDetailsTabBase, MigrationTargetTypeName } from './migrationDetailsTabBase';
 import { EmptySettingValue } from './tabBase';
-import { DashboardStatusBar } from './sqlServerDashboard';
+import { DashboardStatusBar } from './DashboardStatusBar';
 
 const MigrationDetailsBlobContainerTabId = 'MigrationDetailsBlobContainerTab';
 
@@ -36,13 +36,13 @@ export class MigrationDetailsBlobContainerTab extends MigrationDetailsTabBase<Mi
 	public async create(
 		context: vscode.ExtensionContext,
 		view: azdata.ModelView,
-		onClosedCallback: () => Promise<void>,
+		openMigrationsListFcn: () => Promise<void>,
 		statusBar: DashboardStatusBar,
 	): Promise<MigrationDetailsBlobContainerTab> {
 
 		this.view = view;
 		this.context = context;
-		this.onClosedCallback = onClosedCallback;
+		this.openMigrationsListFcn = openMigrationsListFcn;
 		this.statusBar = statusBar;
 
 		await this.initialize(this.view);
@@ -51,12 +51,14 @@ export class MigrationDetailsBlobContainerTab extends MigrationDetailsTabBase<Mi
 	}
 
 	public async refresh(): Promise<void> {
-		if (this.isRefreshing || this.model?.migration === undefined) {
+		if (this.isRefreshing ||
+			this.refreshLoader === undefined ||
+			this.model?.migration === undefined) {
+
 			return;
 		}
 
 		this.isRefreshing = true;
-		this.refreshButton.enabled = false;
 		this.refreshLoader.loading = true;
 		await this.statusBar.clearError();
 
@@ -95,7 +97,7 @@ export class MigrationDetailsBlobContainerTab extends MigrationDetailsTabBase<Mi
 		this._targetServerInfoField.text.value = targetServerName;
 		this._targetVersionInfoField.text.value = targetServerVersion;
 
-		this._migrationStatusInfoField.text.value = getMigrationStatus(migration) ?? EmptySettingValue;
+		this._migrationStatusInfoField.text.value = getMigrationStatusString(migration);
 		this._migrationStatusInfoField.icon!.iconPath = getMigrationStatusImage(migration);
 
 		const storageAccountResourceId = migration.properties.backupConfiguration?.sourceLocation?.azureBlob?.storageAccountResourceId;
@@ -114,9 +116,8 @@ export class MigrationDetailsBlobContainerTab extends MigrationDetailsTabBase<Mi
 		this.cancelButton.enabled = canCancelMigration(migration);
 		this.retryButton.enabled = canRetryMigration(migration);
 
-		this.isRefreshing = false;
 		this.refreshLoader.loading = false;
-		this.refreshButton.enabled = true;
+		this.isRefreshing = false;
 	}
 
 	protected async initialize(view: azdata.ModelView): Promise<void> {

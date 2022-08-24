@@ -15,7 +15,7 @@ import { MigrationCutoverDialogModel } from '../dialog/migrationCutover/migratio
 import { ConfirmCutoverDialog } from '../dialog/migrationCutover/confirmCutoverDialog';
 import { RetryMigrationDialog } from '../dialog/retryMigration/retryMigrationDialog';
 import { MigrationTargetType } from '../models/stateMachine';
-import { DashboardStatusBar } from './sqlServerDashboard';
+import { DashboardStatusBar } from './DashboardStatusBar';
 
 export const infoFieldLgWidth: string = '330px';
 export const infoFieldWidth: string = '250px';
@@ -38,8 +38,7 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 	protected model!: MigrationCutoverDialogModel;
 	protected databaseLabel!: azdata.TextComponent;
 	protected serviceContext!: MigrationServiceContext;
-	protected onClosedCallback!: () => Promise<void>;
-
+	protected openMigrationsListFcn!: () => Promise<void>;
 	protected cutoverButton!: azdata.ButtonComponent;
 	protected refreshButton!: azdata.ButtonComponent;
 	protected cancelButton!: azdata.ButtonComponent;
@@ -49,7 +48,11 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 	protected retryButton!: azdata.ButtonComponent;
 	protected summaryTextComponent: azdata.TextComponent[] = [];
 
-	public abstract create(context: vscode.ExtensionContext, view: azdata.ModelView, onClosedCallback: () => Promise<void>, statusBar: DashboardStatusBar): Promise<T>;
+	public abstract create(
+		context: vscode.ExtensionContext,
+		view: azdata.ModelView,
+		openMigrationsListFcn: () => Promise<void>,
+		statusBar: DashboardStatusBar): Promise<T>;
 
 	protected abstract migrationInfoGrid(): Promise<azdata.FlexContainer>;
 
@@ -80,7 +83,7 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 			.component();
 		this.disposables.push(
 			migrationsTabLink.onDidClick(
-				async (e) => await this.onClosedCallback()));
+				async (e) => await this.openMigrationsListFcn()));
 
 		const breadCrumbImage = this.view.modelBuilder.image()
 			.withProps({
@@ -202,7 +205,7 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 						this.context,
 						this.serviceContext,
 						this.model.migration,
-						this.onClosedCallback);
+						this.serviceContextChangedEvent);
 					await retryMigrationDialog.openDialog();
 				}
 			));
@@ -254,12 +257,10 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 				async (e) => await this.refresh()));
 
 		this.refreshLoader = this.view.modelBuilder.loadingComponent()
+			.withItem(this.refreshButton)
 			.withProps({
 				loading: false,
-				CSSStyles: {
-					'height': '8px',
-					'margin-top': '4px'
-				}
+				CSSStyles: { 'height': '8px', 'margin-top': '4px' }
 			}).component();
 
 		toolbarContainer.addToolbarItems([
@@ -268,7 +269,6 @@ export abstract class MigrationDetailsTabBase<T> extends TabBase<T> {
 			<azdata.ToolbarComponent>{ component: this.retryButton },
 			<azdata.ToolbarComponent>{ component: this.copyDatabaseMigrationDetails, toolbarSeparatorAfter: true },
 			<azdata.ToolbarComponent>{ component: this.newSupportRequest, toolbarSeparatorAfter: true },
-			<azdata.ToolbarComponent>{ component: this.refreshButton },
 			<azdata.ToolbarComponent>{ component: this.refreshLoader },
 		]);
 

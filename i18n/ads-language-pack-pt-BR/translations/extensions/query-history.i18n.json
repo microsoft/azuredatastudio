@@ -9,10 +9,19 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
+			"queryHistory.captureEnabledDesc": "Se a captura do Histórico de Consultas estiver habilitada. Se for false, as consultas executadas não serão capturadas.",
 			"queryHistory.clear": "Limpar todo o histórico",
+			"queryHistory.delete": "Excluir",
 			"queryHistory.description": "Exibir e executar consultas executadas anteriormente",
+			"queryHistory.disableCapture": "Pausar a Captura de Histórico de Consultas",
 			"queryHistory.displayName": "Histórico de Consultas",
-			"queryHistory.toggleCapture": "Ativar/desativar a captura de Histórico de Consultas"
+			"queryHistory.doubleClickAction": "A ação executada quando um item de histórico é clicado duas vezes",
+			"queryHistory.doubleClickAction.open": "Abrir um novo editor desconectado com a consulta do item de histórico selecionado",
+			"queryHistory.doubleClickAction.run": "Abrir um novo editor conectado com a consulta e a conexão do item de histórico selecionado e executar a consulta automaticamente",
+			"queryHistory.enableCapture": "Iniciar a Captura do Histórico de Consultas",
+			"queryHistory.noEntries": "Não há nenhuma consulta a ser exibida",
+			"queryHistory.open": "Abrir Consulta",
+			"queryHistory.run": "Executar Consulta"
 		}
 	}
 }
