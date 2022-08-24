@@ -656,7 +656,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			.withItems([
 				azureAccountHeader,
 				azureAccountHelpText,
-				// azureStoragePrivateEndpointInfoBox,
 				subscriptionLabel,
 				this._networkShareContainerSubscription,
 				locationLabel,

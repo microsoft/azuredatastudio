@@ -29,8 +29,6 @@ export class SkuEditParametersDialog {
 	constructor(
 		public skuRecommendationPage: SKURecommendationPage,
 		public migrationStateModel: MigrationStateModel) {
-
-		// this._enablePreviewValue = true;
 	}
 
 	private async initializeDialog(dialog: azdata.window.Dialog): Promise<void> {

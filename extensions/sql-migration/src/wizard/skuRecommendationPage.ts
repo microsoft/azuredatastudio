@@ -1129,7 +1129,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				description: skuRecommendationError.message,
 				level: azdata.window.MessageLevel.Error
 			};
-			// vscode.window.showInformationMessage(`Error: ${skuRecommendationError.message}`);
 		}
 
 		await this.refreshSkuRecommendationComponents();
