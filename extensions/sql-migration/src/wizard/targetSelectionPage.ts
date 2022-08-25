@@ -109,20 +109,20 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			// and came back, forcibly reload the location/resource group/resource values since they will now be different
 			this._migrationTargetPlatform = this.migrationStateModel._targetType;
 
-			await this._azureResourceTable.setDataValues([]);
-			this._targetPasswordInputBox.value = '';
-			this.migrationStateModel._sqlMigrationServices = undefined!;
-			this.migrationStateModel._targetServerInstance = undefined!;
-			this.migrationStateModel._resourceGroup = undefined!;
-			this.migrationStateModel._location = undefined!;
+			// await this._azureResourceTable.setDataValues([]);
+			// this._targetPasswordInputBox.value = '';
+			// this.migrationStateModel._sqlMigrationServices = undefined!;
+			// this.migrationStateModel._targetServerInstance = undefined!;
+			// this.migrationStateModel._resourceGroup = undefined!;
+			// this.migrationStateModel._location = undefined!;
 			await this.populateLocationDropdown();
 		}
 
-		if (this.migrationStateModel._didUpdateDatabasesForMigration) {
-			await this._azureResourceTable.setDataValues([]);
-			this._initializeSourceTargetDatabaseMap();
-			this._updateConnectionButtonState();
-		}
+		// if (this.migrationStateModel._didUpdateDatabasesForMigration) {
+		// 	await this._azureResourceTable.setDataValues([]);
+		// 	this._initializeSourceTargetDatabaseMap();
+		// 	this._updateConnectionButtonState();
+		// }
 
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			this.wizard.message = { text: '' };
