@@ -26,7 +26,6 @@ interface ListViewOption {
 	label: string;
 	ariaLabel?: string;
 	icon?: azdata.IconPath;
-	addIconPadding?: boolean;
 }
 
 @Component({
@@ -38,6 +37,7 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 	@Input() modelStore: IModelStore;
 	@ViewChild('vscodelist', { read: ElementRef }) private _vscodeList: ElementRef;
 	private _optionsList!: List<ListViewOption>;
+	private _optionsListRenderer: OptionsListRenderer;
 	private _selectedElementIdx!: number;
 
 	static ROW_HEIGHT = 26;
@@ -62,9 +62,11 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 			accessibilityProvider: new OptionsListAccessibilityProvider(this)
 		};
 
+		this._optionsListRenderer = new OptionsListRenderer();
+
 		this._optionsList = new List<ListViewOption>('ModelViewListView',
 			this._vscodeList.nativeElement,
-			new OptionListDelegate(ListViewComponent.ROW_HEIGHT), [new OptionsListRenderer()],
+			new OptionListDelegate(ListViewComponent.ROW_HEIGHT), [this._optionsListRenderer],
 			vscodelistOption);
 		this._register(attachListStyler(this._optionsList, this.themeService));
 
@@ -100,9 +102,7 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 
 	public get options(): ListViewOption[] {
 		const options = <ListViewOption[]>this.getProperties().options ?? [];
-		if (options.find(o => o.icon !== undefined)) {
-			options.forEach(o => o.addIconPadding = true);
-		}
+		this._optionsListRenderer.forceIconPadding = options.find(o => o.icon !== undefined) ? true : false;
 		return options;
 	}
 
@@ -171,7 +171,7 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 
 class OptionListDelegate implements IListVirtualDelegate<ListViewOption> {
 	constructor(
-		private _height: number
+		private _height: number,
 	) {
 	}
 
@@ -193,10 +193,20 @@ interface ExtensionListTemplate {
 
 class OptionsListRenderer implements IListRenderer<ListViewOption, ExtensionListTemplate> {
 	public static TEMPLATE_ID = 'optionListRenderer';
+	private _forceIconPadding: boolean = false;
 
 	public get templateId(): string {
 		return OptionsListRenderer.TEMPLATE_ID;
 	}
+
+	public set forceIconPadding(v: boolean) {
+		this._forceIconPadding = v;
+	}
+
+	public get forceIconPadding(): boolean {
+		return this._forceIconPadding;
+	}
+
 
 	public renderTemplate(container: HTMLElement): ExtensionListTemplate {
 		const tableTemplate: ExtensionListTemplate = Object.create(null);
@@ -216,7 +226,8 @@ class OptionsListRenderer implements IListRenderer<ListViewOption, ExtensionList
 			templateData.iconContainer.classList.add('icon');
 			templateData.iconContainer.classList.add(createIconCssClass(option.icon));
 		} else {
-			if (!option.addIconPadding) {
+
+			if (!this._forceIconPadding) {
 				templateData.iconContainer.style.display = 'none';
 			} else {
 				templateData.iconContainer.style.display = '';
