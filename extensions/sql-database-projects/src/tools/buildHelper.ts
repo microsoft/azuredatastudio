@@ -80,13 +80,25 @@ export class BuildHelper {
 		// TODO: check nuget cache locations first to avoid downloading if those exist
 		// download the Microsoft.Build.Sql sdk nuget
 		outputChannel.appendLine(constants.downloadingDacFxDlls);
-		const httpClient = new HttpClient();
-		await httpClient.download(microsoftBuildSqlUrl, nugetPath, outputChannel);
+
+		try {
+			const httpClient = new HttpClient();
+			await httpClient.download(microsoftBuildSqlUrl, nugetPath, outputChannel);
+		} catch {
+			void vscode.window.showErrorMessage(constants.errorDownloading(microsoftBuildSqlUrl));
+			return;
+		}
 
 		// extract the files from the nuget
 		outputChannel.appendLine(constants.extractingDacFxDlls);
 		const extractedFolderPath = path.join(this.extensionDir, buildDirectory, sdkName);
-		await extractZip(nugetPath, { dir: extractedFolderPath });
+
+		try {
+			await extractZip(nugetPath, { dir: extractedFolderPath });
+		} catch {
+			void vscode.window.showErrorMessage(constants.errorExtracting(nugetPath));
+			return;
+		}
 
 		// copy the dlls and targets file to the BuildDirectory folder
 		const buildfilesPath = path.join(extractedFolderPath, 'tools', 'netstandard2.1');

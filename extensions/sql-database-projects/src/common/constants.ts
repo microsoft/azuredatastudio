@@ -610,5 +610,9 @@ export const CollapseProjectNodesKey = 'collapseProjectNodes';
 export const downloadError = localize('downloadError', "Download error");
 export const downloadProgress = localize('downloadProgress', "Download progress");
 export const downloading = localize('downloading', "Downloading");
+
+// buildHelper
 export const downloadingDacFxDlls = localize('downloadingDacFxDlls', "Downloading Microsoft.Build.Sql nuget to get build dlls");
 export const extractingDacFxDlls = localize('extractingDacFxDlls', "Extracting DacFx build dlls");
+export function errorDownloading(url: string) { return localize('errorDownloading', "Error downloading {0}", url); }
+export function errorExtracting(path: string) { return localize('errorExtracting', "Error extracting files from {0}", path); }
