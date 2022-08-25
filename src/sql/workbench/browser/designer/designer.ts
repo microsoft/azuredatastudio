@@ -52,6 +52,7 @@ import { ITaskbarContent, Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
 import { listFocusAndSelectionBackground } from 'sql/platform/theme/common/colors';
 import { timeout } from 'vs/base/common/async';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 export interface IDesignerStyle {
 	tabbedPanelStyles?: ITabbedPanelStyles;
@@ -284,7 +285,7 @@ export class Designer extends Disposable implements IThemable {
 
 	public setInput(input: DesignerComponentInput): void {
 		if (this._input) {
-			this.submitPendingChanges();
+			void this.submitPendingChanges().catch(onUnexpectedError);
 		}
 		this.saveUIState();
 		if (this._loadingTimeoutHandle) {
