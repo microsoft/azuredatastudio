@@ -31,7 +31,7 @@ export function registerAzureResourceCommands(appContext: AppContext, azureViewT
 			}
 			let azureAccount: AzureAccount | undefined;
 			if (node instanceof AzureResourceAccountTreeNode) {
-				azureAccount = node.account as AzureAccount;
+				azureAccount = node.account;
 			} else {
 				let accounts = await azdata.accounts.getAllAccounts();
 				accounts = accounts.filter(a => a.key.providerId.startsWith('azure'));
@@ -57,7 +57,9 @@ export function registerAzureResourceCommands(appContext: AppContext, azureViewT
 					azureAccount = accounts.find(acct => acct.displayInfo.displayName === pickedAccount);
 				}
 			}
-
+			if (!azureAccount) {
+				throw new Error('No Azure Account chosen');
+			}
 			const terminalService = appContext.getService<IAzureTerminalService>(AzureResourceServiceNames.terminalService);
 
 			const listOfTenants = azureAccount.properties.tenants.map(t => t.displayName);
@@ -176,7 +178,7 @@ export function registerAzureResourceCommands(appContext: AppContext, azureViewT
 		if (!node) {
 			return;
 		}
-		let connectionProfile: azdata.IConnectionProfile = undefined;
+		let connectionProfile: azdata.IConnectionProfile | undefined = undefined;
 		if (node instanceof TreeNode) {
 			const treeItem: azdata.TreeItem = await node.getTreeItem();
 			if (!treeItem.payload) {
