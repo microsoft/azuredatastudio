@@ -21,13 +21,6 @@ import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { ILogService } from 'vs/platform/log/common/log';
 import { createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUtils';
 
-interface ListViewOption {
-	id: string;
-	label: string;
-	ariaLabel?: string;
-	icon?: azdata.IconPath;
-}
-
 @Component({
 	templateUrl: decodeURI(require.toUrl('./listView.component.html'))
 })
@@ -36,7 +29,7 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	@ViewChild('vscodelist', { read: ElementRef }) private _vscodeList: ElementRef;
-	private _optionsList!: List<ListViewOption>;
+	private _optionsList!: List<azdata.ListViewOption>;
 	private _optionsListRenderer: OptionsListRenderer;
 	private _selectedElementIdx!: number;
 
@@ -54,7 +47,7 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 	}
 
 	ngAfterViewInit(): void {
-		const vscodelistOption: IListOptions<ListViewOption> = {
+		const vscodelistOption: IListOptions<azdata.ListViewOption> = {
 			keyboardSupport: true,
 			mouseSupport: true,
 			smoothScrolling: true,
@@ -64,7 +57,7 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 
 		this._optionsListRenderer = new OptionsListRenderer();
 
-		this._optionsList = new List<ListViewOption>('ModelViewListView',
+		this._optionsList = new List<azdata.ListViewOption>('ModelViewListView',
 			this._vscodeList.nativeElement,
 			new OptionListDelegate(ListViewComponent.ROW_HEIGHT), [this._optionsListRenderer],
 			vscodelistOption);
@@ -100,8 +93,8 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 		this.baseDestroy();
 	}
 
-	public get options(): ListViewOption[] {
-		const options = <ListViewOption[]>this.getProperties().options ?? [];
+	public get options(): azdata.ListViewOption[] {
+		const options = this.getProperties().options ?? [];
 		this._optionsListRenderer.forceIconPadding = options.find(o => o.icon !== undefined) ? true : false;
 		return options;
 	}
@@ -169,17 +162,17 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 	}
 }
 
-class OptionListDelegate implements IListVirtualDelegate<ListViewOption> {
+class OptionListDelegate implements IListVirtualDelegate<azdata.ListViewOption> {
 	constructor(
 		private _height: number,
 	) {
 	}
 
-	public getHeight(element: ListViewOption): number {
+	public getHeight(element: azdata.ListViewOption): number {
 		return this._height;
 	}
 
-	public getTemplateId(element: ListViewOption): string {
+	public getTemplateId(element: azdata.ListViewOption): string {
 		return 'optionListRenderer';
 	}
 }
@@ -191,7 +184,7 @@ interface ExtensionListTemplate {
 	iconContainer: HTMLElement;
 }
 
-class OptionsListRenderer implements IListRenderer<ListViewOption, ExtensionListTemplate> {
+class OptionsListRenderer implements IListRenderer<azdata.ListViewOption, ExtensionListTemplate> {
 	public static TEMPLATE_ID = 'optionListRenderer';
 	private _forceIconPadding: boolean = false;
 
@@ -219,7 +212,7 @@ class OptionsListRenderer implements IListRenderer<ListViewOption, ExtensionList
 		return tableTemplate;
 	}
 
-	public renderElement(option: ListViewOption, index: number, templateData: ExtensionListTemplate): void {
+	public renderElement(option: azdata.ListViewOption, index: number, templateData: ExtensionListTemplate): void {
 		templateData.labelContainer.innerText = option.label ?? '';
 		if (option.icon) {
 			templateData.iconContainer.style.display = '';
@@ -243,16 +236,16 @@ class OptionsListRenderer implements IListRenderer<ListViewOption, ExtensionList
 		// noop
 	}
 
-	public disposeElement(element: ListViewOption, index: number, templateData: ExtensionListTemplate): void {
+	public disposeElement(element: azdata.ListViewOption, index: number, templateData: ExtensionListTemplate): void {
 		// noop
 	}
 }
 
-class OptionsListAccessibilityProvider implements IListAccessibilityProvider<ListViewOption> {
+class OptionsListAccessibilityProvider implements IListAccessibilityProvider<azdata.ListViewOption> {
 
 	constructor(private _listViewComponent: ListViewComponent) { }
 
-	getAriaLabel(element: ListViewOption): string {
+	getAriaLabel(element: azdata.ListViewOption): string {
 		return element.label;
 	}
 
@@ -260,7 +253,7 @@ class OptionsListAccessibilityProvider implements IListAccessibilityProvider<Lis
 		return this._listViewComponent.ariaLabel;
 	}
 
-	getRole(element: ListViewOption): string {
+	getRole(element: azdata.ListViewOption): string {
 		// Currently hardcode this to option since we don't support nested lists (which would use listitem)
 		return 'option';
 	}
