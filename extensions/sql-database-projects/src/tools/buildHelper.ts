@@ -77,6 +77,7 @@ export class BuildHelper {
 			}
 		}
 
+		// TODO: check nuget cache locations first to avoid downloading if those exist
 		// download the Microsoft.Build.Sql sdk nuget
 		outputChannel.appendLine(constants.downloadingDacFxDlls);
 		const httpClient = new HttpClient();
