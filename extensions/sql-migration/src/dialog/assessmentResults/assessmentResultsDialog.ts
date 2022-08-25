@@ -46,8 +46,9 @@ export class AssessmentResultsDialog {
 			dialog.registerContent(async (view) => {
 				try {
 					/**
-					 * Subtracting 33px as it removes vertical spacebar caused due 100% height
-					 * as it extends beyond the screen.
+					 * When using 100% height in the dialog, the container extends beyond the screen.
+					 * This causes a vertical scrollbar to appear. To fix that, 33px needs to be
+					 * subtracted from 100%
 					 */
 					const flex = view.modelBuilder.flexContainer().withLayout({
 						flexFlow: 'row',

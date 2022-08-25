@@ -163,8 +163,8 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 
 	public override get CSSStyles(): azdata.CssStyles {
 		return this.mergeCss(super.CSSStyles, {
-			'width': this.getWidth(),
-			'height': this.getHeight()
+			'width': super.CSSStyles['width'] ?? this.getWidth(),
+			'height': super.CSSStyles['height'] ?? this.getHeight()
 		});
 	}
 }
