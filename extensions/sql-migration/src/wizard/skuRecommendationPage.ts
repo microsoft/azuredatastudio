@@ -721,9 +721,10 @@ export class SKURecommendationPage extends MigrationWizardPage {
 							constants.CAN_BE_MIGRATED(dbWithoutIssuesCount, dbCount);
 
 						if (this.hasRecommendations()) {
-							const successfulRecommendationsCount =
-								this.migrationStateModel._skuRecommendationResults.recommendations!.sqlDbRecommendationResults
-									.filter(r => r.targetSku !== null).length;
+							const recommendations = this.migrationStateModel._skuEnableElastic
+								? this.migrationStateModel._skuRecommendationResults.recommendations!.elasticSqlDbRecommendationResults
+								: this.migrationStateModel._skuRecommendationResults.recommendations!.sqlDbRecommendationResults;
+							const successfulRecommendationsCount = recommendations.filter(r => r.targetSku !== null).length;
 							this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue =
 								constants.RECOMMENDATIONS_AVAILABLE(successfulRecommendationsCount);
 						}
