@@ -91,7 +91,7 @@
 	"deploy.done.action":"Deploy",
 
 	"resource.type.arc.sql.display.name": "Azure SQL managed instance - Azure Arc",
-	"resource.type.arc.postgres.display.name": "Azure Database for PostgreSQL - Azure Arc (Preview)",
+	"resource.type.arc.postgres.display.name": "PostgreSQL Server - Azure Arc (Preview)",
 	"resource.type.arc.sql.description": "Managed SQL Instance service for app developers in a customer-managed environment",
 	"resource.type.arc.postgres.description": "Deploy a PostgreSQL server into an Azure Arc environment",
 	"arc.controller": "Target Azure Arc Controller",
@@ -189,7 +189,7 @@
 	"arc.azure.subscription": "Azure subscription",
 	"arc.azure.resource.group": "Azure resource group",
 	"arc.azure.location": "Azure location",
-	"arc.postgres.wizard.title": "Deploy an Azure Database for PostgreSQL - Azure Arc (Preview)",
+	"arc.postgres.wizard.title": "Deploy a PostgreSQL Server - Azure Arc (Preview)",
 	"arc.postgres.wizard.page1.title": "Provide PostgreSQL server parameters",
 	"arc.postgres.settings.section.title": "General settings",
 	"arc.postgres.settings.resource.compute.config.title": "Compute Configuration",
@@ -216,7 +216,7 @@
 	"arc.postgres.server.memory.limit.description": "The memory limit of the Postgres instance on the coordinator node in GB.",
 	"arc.agreement": "I accept {0} and {1}.",
 	"arc.agreement.sql.terms.conditions": "Azure SQL managed instance - Azure Arc terms and conditions",
-	"arc.agreement.postgres.terms.conditions": "Azure Database for PostgreSQL - Azure Arc terms and conditions",
+	"arc.agreement.postgres.terms.conditions": "PostgreSQL Server - Azure Arc terms and conditions",
 	"should.be.integer": "Value must be an integer",
 	"worker.node.count.should.not.be.one": "Value of 1 is not supported.",
 	"requested.cores.less.than.or.equal.to.cores.limit": "Requested cores must be less than or equal to cores limit",
@@ -232,6 +232,6 @@
 	"arc.agreement.help.text.terms.of.use": "Terms of use",
 	"arc.agreement.help.text.privacy.policy": "Privacy policy",
 	"arc.agreement.help.text.azure.marketplace.terms": "Azure Marketplace Terms",
-	"arc.agreement.postgres.help.text": "Azure Database for PostgreSQL - Azure Arc is one of the database engines available as part of Azure Arc-enabled data services and it can be deployed on the infrastructure of your choice. {0}. \n \n By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.",
-	"arc.agreement.postgres.help.text.learn.more.ariaLabel": "Learn more about Azure Database for PostgreSQL - Azure Arc"
+	"arc.agreement.postgres.help.text": "PostgreSQL Server - Azure Arc is one of the database engines available as part of Azure Arc-enabled data services and it can be deployed on the infrastructure of your choice. {0}. \n \n By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.",
+	"arc.agreement.postgres.help.text.learn.more.ariaLabel": "Learn more about PostgreSQL Server - Azure Arc"
 }
