@@ -26,7 +26,7 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { INotebookService, INotebookParams, INotebookEditor, INotebookSection, INavigationProvider, ICellEditorProvider, NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { Deferred } from 'sql/base/common/promise';
-import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
+import { ITaskbarContent, Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { AddCellAction, KernelsDropdown, AttachToDropdown, TrustedAction, RunAllCellsAction, ClearAllOutputsAction, CollapseCellsAction, RunParametersAction, NotebookViewsActionProvider } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { DropdownMenuActionViewItem } from 'sql/base/browser/ui/buttonMenu/buttonMenu';
 import { INotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -81,7 +81,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private _modelReadyDeferred = new Deferred<NotebookModel>();
 	private _trustedAction: TrustedAction;
 	private _runAllCellsAction: RunAllCellsAction;
-	private _providerRelatedActions: IAction[] = [];
 	private _scrollTop: number;
 	private _navProvider: INavigationProvider;
 	private navigationResult: nb.NavigationResult;
@@ -89,6 +88,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private _onScroll = new Emitter<void>();
 	// Don't show the right hand toolbar actions if the notebook is created in a diff editor.
 	private _showToolbarActions: boolean = this._notebookParams.input.showActions;
+	private _initialToolbarContent: ITaskbarContent[];
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -476,11 +476,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	private handleProviderIdChanged(providerId: string) {
-		// If there are any actions that were related to the previous provider,
-		// disable them in the actionBar
-		this._providerRelatedActions.forEach(action => {
-			action.enabled = false;
-		});
 		this.setContextKeyServiceWithProviderId(providerId);
 		this.fillInActionsForCurrentContext();
 	}
@@ -576,7 +571,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		}
 
 		if (this._showToolbarActions) {
-			this._actionBar.setContent([
+			this._initialToolbarContent = [
 				{ element: buttonDropdownContainer },
 				{ action: this._runAllCellsAction },
 				{ element: Taskbar.createTaskbarSeparator() },
@@ -588,16 +583,17 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				{ action: clearResultsButton },
 				{ action: this._trustedAction },
 				{ action: runParametersAction },
-			]);
+			];
 		} else {
-			this._actionBar.setContent([
+			this._initialToolbarContent = [
 				{ element: buttonDropdownContainer },
 				{ action: this._runAllCellsAction },
 				{ element: Taskbar.createTaskbarSeparator() },
 				{ element: kernelContainer },
 				{ element: attachToContainer },
-			]);
+			];
 		}
+		this._actionBar.setContent(this._initialToolbarContent);
 	}
 
 	protected initNavSection(): void {
@@ -664,26 +660,18 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			let notebookBarMenu = this.menuService.createMenu(MenuId.NotebookToolbar, this.contextKeyService);
 			let groups = notebookBarMenu.getActions({ arg: null, shouldForwardArgs: true });
 			fillInActions(groups, { primary, secondary }, false, g => g === '', Number.MAX_SAFE_INTEGER, (action: SubmenuAction, group: string, groupSize: number) => group === undefined || group === '');
-			this.addPrimaryContributedActions(primary);
+
+			this._actionBar.clear();
+			this._actionBar.setContent(this._initialToolbarContent);
+			for (let action of primary) {
+				this._actionBar.addAction(action);
+			}
 		}
 	}
 
 	private detectChanges(): void {
 		if (!(this._changeRef['destroyed'])) {
 			this._changeRef.detectChanges();
-		}
-	}
-
-	private addPrimaryContributedActions(primary: IAction[]) {
-		for (let action of primary) {
-			// Need to ensure that we don't add the same action multiple times
-			let foundIndex = this._providerRelatedActions.findIndex(act => act.id === action.id);
-			if (foundIndex < 0) {
-				this._actionBar.addAction(action);
-				this._providerRelatedActions.push(action);
-			} else {
-				this._providerRelatedActions[foundIndex].enabled = true;
-			}
 		}
 	}
 
