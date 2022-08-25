@@ -45,6 +45,10 @@ export class AssessmentResultsDialog {
 		return new Promise<void>((resolve, reject) => {
 			dialog.registerContent(async (view) => {
 				try {
+					/**
+					 * Subtracting 33px as it removes vertical spacebar caused due 100% height
+					 * as it extends beyond the screen.
+					 */
 					const flex = view.modelBuilder.flexContainer().withLayout({
 						flexFlow: 'row',
 						height: 'calc( 100% - 33px )',

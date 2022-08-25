@@ -13,6 +13,11 @@ export function isHidden(element: HTMLElement): boolean {
 	return element.style.display === 'none';
 }
 
+/**
+ * Checks if the CSS calc expression is valid or not.
+ * @param expression string to be tested.
+ * @returns true if the expression is a valid calc expression else false.
+ */
 export function validateCalcExpression(expression: string): boolean {
 	/**
 	 * Regex that checks if a size string is a calc expression. Source: https://codepen.io/benfoster/pen/VPjLdQ

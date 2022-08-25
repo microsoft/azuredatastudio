@@ -2,6 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 import { ChangeDetectorRef, Component, ElementRef, forwardRef, Inject, Input, OnDestroy, ViewChild } from '@angular/core';
 import * as azdata from 'azdata';
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
@@ -20,6 +21,14 @@ import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { ILogService } from 'vs/platform/log/common/log';
 import { createIconCssClass } from 'sql/workbench/browser/modelComponents/iconUtils';
 
+interface ListViewOption {
+	id: string;
+	label: string;
+	ariaLabel?: string;
+	icon?: azdata.IconPath;
+	addIconPadding?: boolean;
+}
+
 @Component({
 	templateUrl: decodeURI(require.toUrl('./listView.component.html'))
 })
@@ -28,7 +37,7 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	@ViewChild('vscodelist', { read: ElementRef }) private _vscodeList: ElementRef;
-	private _optionsList!: List<azdata.ListViewOption>;
+	private _optionsList!: List<ListViewOption>;
 	private _selectedElementIdx!: number;
 
 	static ROW_HEIGHT = 26;
@@ -45,7 +54,7 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 	}
 
 	ngAfterViewInit(): void {
-		const vscodelistOption: IListOptions<azdata.ListViewOption> = {
+		const vscodelistOption: IListOptions<ListViewOption> = {
 			keyboardSupport: true,
 			mouseSupport: true,
 			smoothScrolling: true,
@@ -53,7 +62,7 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 			accessibilityProvider: new OptionsListAccessibilityProvider(this)
 		};
 
-		this._optionsList = new List<azdata.ListViewOption>('ModelViewListView',
+		this._optionsList = new List<ListViewOption>('ModelViewListView',
 			this._vscodeList.nativeElement,
 			new OptionListDelegate(ListViewComponent.ROW_HEIGHT), [new OptionsListRenderer()],
 			vscodelistOption);
@@ -89,8 +98,12 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 		this.baseDestroy();
 	}
 
-	public get options(): azdata.ListViewOption[] {
-		return this.getProperties().options ?? [];
+	public get options(): ListViewOption[] {
+		const options = <ListViewOption[]>this.getProperties().options ?? [];
+		if (options.find(o => o.icon !== undefined)) {
+			options.forEach(o => o.addIconPadding = true);
+		}
+		return options;
 	}
 
 	public override get width(): string | number | undefined {
@@ -156,17 +169,17 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 	}
 }
 
-class OptionListDelegate implements IListVirtualDelegate<azdata.ListViewOption> {
+class OptionListDelegate implements IListVirtualDelegate<ListViewOption> {
 	constructor(
 		private _height: number
 	) {
 	}
 
-	public getHeight(element: azdata.ListViewOption): number {
+	public getHeight(element: ListViewOption): number {
 		return this._height;
 	}
 
-	public getTemplateId(element: azdata.ListViewOption): string {
+	public getTemplateId(element: ListViewOption): string {
 		return 'optionListRenderer';
 	}
 }
@@ -178,7 +191,7 @@ interface ExtensionListTemplate {
 	iconContainer: HTMLElement;
 }
 
-class OptionsListRenderer implements IListRenderer<azdata.ListViewOption, ExtensionListTemplate> {
+class OptionsListRenderer implements IListRenderer<ListViewOption, ExtensionListTemplate> {
 	public static TEMPLATE_ID = 'optionListRenderer';
 
 	public get templateId(): string {
@@ -196,15 +209,17 @@ class OptionsListRenderer implements IListRenderer<azdata.ListViewOption, Extens
 		return tableTemplate;
 	}
 
-	public renderElement(option: azdata.ListViewOption, index: number, templateData: ExtensionListTemplate): void {
+	public renderElement(option: ListViewOption, index: number, templateData: ExtensionListTemplate): void {
 		templateData.labelContainer.innerText = option.label ?? '';
 		if (option.icon) {
+			templateData.iconContainer.style.display = '';
 			templateData.iconContainer.classList.add('icon');
 			templateData.iconContainer.classList.add(createIconCssClass(option.icon));
 		} else {
 			if (!option.addIconPadding) {
-				templateData.iconContainer.remove();
+				templateData.iconContainer.style.display = 'none';
 			} else {
+				templateData.iconContainer.style.display = '';
 				templateData.iconContainer.className = '';
 				templateData.iconContainer.classList.add('list-row', 'listview-option-icon');
 			}
@@ -217,16 +232,16 @@ class OptionsListRenderer implements IListRenderer<azdata.ListViewOption, Extens
 		// noop
 	}
 
-	public disposeElement(element: azdata.ListViewOption, index: number, templateData: ExtensionListTemplate): void {
+	public disposeElement(element: ListViewOption, index: number, templateData: ExtensionListTemplate): void {
 		// noop
 	}
 }
 
-class OptionsListAccessibilityProvider implements IListAccessibilityProvider<azdata.ListViewOption> {
+class OptionsListAccessibilityProvider implements IListAccessibilityProvider<ListViewOption> {
 
 	constructor(private _listViewComponent: ListViewComponent) { }
 
-	getAriaLabel(element: azdata.ListViewOption): string {
+	getAriaLabel(element: ListViewOption): string {
 		return element.label;
 	}
 
@@ -234,7 +249,7 @@ class OptionsListAccessibilityProvider implements IListAccessibilityProvider<azd
 		return this._listViewComponent.ariaLabel;
 	}
 
-	getRole(element: azdata.ListViewOption): string {
+	getRole(element: ListViewOption): string {
 		// Currently hardcode this to option since we don't support nested lists (which would use listitem)
 		return 'option';
 	}

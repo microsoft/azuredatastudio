@@ -792,9 +792,8 @@ export class SqlDatabaseTree {
 				return {
 					id: index.toString(),
 					label: v.checkId,
-					icon: v.databaseRestoreFails ? IconPathHelper.error : '',
+					icon: v.databaseRestoreFails ? IconPathHelper.error : undefined,
 					ariaLabel: v.databaseRestoreFails ? constants.BLOCKING_ISSUE_ARIA_LABEL(v.checkId) : v.checkId,
-					addIconPadding: true
 				};
 			});
 

@@ -548,10 +548,6 @@ declare module 'azdata' {
 		 * Specify the icon for the option. The value could the path to the icon or and ADS icon defined in {@link SqlThemeIcon}.
 		 */
 		icon?: IconPath;
-		/**
-		 * Add icon padding to the list item
-		 */
-		addIconPadding?: boolean;
 	}
 
 	export interface IconColumnCellValue {
