@@ -413,14 +413,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				CSSStyles: { ...styles.SECTION_HEADER_CSS }
 			}).component();
 
-		const azureStoragePrivateEndpointInfoBox = this._view.modelBuilder.infoBox()
-			.withProps({
-				text: constants.DATABASE_BACKUP_PRIVATE_ENDPOINT_INFO_TEXT,
-				style: 'information',
-				width: WIZARD_INPUT_COMPONENT_WIDTH,
-				CSSStyles: { ...styles.BODY_CSS }
-			}).component();
-
 		this._networkShareTargetDatabaseNamesTable = this._view.modelBuilder.declarativeTable()
 			.withProps({
 				columns: [
@@ -523,7 +515,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			.withItems([
 				blobTableText,
 				allFieldsRequiredLabel,
-				azureStoragePrivateEndpointInfoBox,
 				this._blobContainerTargetDatabaseNamesTable])
 			.withProps({ CSSStyles: { 'display': 'none', } })
 			.component();
@@ -551,14 +542,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				value: constants.DATABASE_BACKUP_NETWORK_SHARE_AZURE_ACCOUNT_HELP,
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
 				CSSStyles: { ...styles.BODY_CSS, 'margin-bottom': '12px' }
-			}).component();
-
-		const azureStoragePrivateEndpointInfoBox = this._view.modelBuilder.infoBox()
-			.withProps({
-				text: constants.DATABASE_BACKUP_PRIVATE_ENDPOINT_INFO_TEXT,
-				style: 'information',
-				width: WIZARD_INPUT_COMPONENT_WIDTH,
-				CSSStyles: { ...styles.BODY_CSS }
 			}).component();
 
 		const subscriptionLabel = this._view.modelBuilder.text()
@@ -673,7 +656,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			.withItems([
 				azureAccountHeader,
 				azureAccountHelpText,
-				azureStoragePrivateEndpointInfoBox,
 				subscriptionLabel,
 				this._networkShareContainerSubscription,
 				locationLabel,

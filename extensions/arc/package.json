@@ -2,7 +2,7 @@
   "name": "arc",
   "displayName": "%arc.displayName%",
   "description": "%arc.description%",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "publisher": "Microsoft",
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/extension.png",
@@ -1253,7 +1253,7 @@
                           "fieldHeight": "10px",
                           "links": [
                             {
-                              "text": "%arc.agreement.sql.help.text.learn.more%",
+                              "text": "%arc.agreement.help.text.learn.more%",
                               "url": "https://docs.microsoft.com/azure/azure-arc/data/point-in-time-restore"
                             }
                           ]
@@ -1290,22 +1290,22 @@
             "template": "%arc.agreement.sql.help.text%",
             "links": [
               {
-                "text": "%arc.agreement.sql.help.text.learn.more%",
+                "text": "%arc.agreement.help.text.learn.more%",
                 "accessibilityInformation": {
                   "label": "%arc.agreement.sql.help.text.learn.more.ariaLabel%"
                 },
                 "url": "https://go.microsoft.com/fwlink/?linkid=2141849"
               },
               {
-                "text": "%arc.agreement.sql.help.text.azure.marketplace.terms%",
+                "text": "%arc.agreement.help.text.azure.marketplace.terms%",
                 "url": "https://go.microsoft.com/fwlink/?linkid=2045624"
               },
               {
-                "text": "%arc.agreement.sql.help.text.terms.of.use%",
+                "text": "%arc.agreement.help.text.terms.of.use%",
                 "url": "https://go.microsoft.com/fwlink/?linkid=2045708"
               },
               {
-                "text": "%arc.agreement.sql.help.text.privacy.policy%",
+                "text": "%arc.agreement.help.text.privacy.policy%",
                 "url": "https://go.microsoft.com/fwlink/?linkid=512132"
               }
             ],
@@ -1367,22 +1367,22 @@
                           }
                         },
                         {
-                          "label": "%arc.postgres.server.group.name%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_NAME",
+                          "label": "%arc.postgres.server.name%",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_NAME",
                           "type": "text",
-                          "description": "%arc.postgres.server.group.name.validation.description%",
+                          "description": "%arc.postgres.server.name.validation.description%",
                           "validations": [
                             {
                               "type": "regex_match",
                               "regex": "^[a-z]([-a-z0-9]{0,9}[a-z0-9])?$",
-                              "description": "%arc.postgres.server.group.name.validation.description%"
+                              "description": "%arc.postgres.server.name.validation.description%"
                             }
                           ],
                           "required": true
                         },
                         {
                           "label": "%arc.password%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_PASSWORD",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_PASSWORD",
                           "type": "password",
                           "confirmationRequired": true,
                           "confirmationLabel": "%arc.confirm.password%",
@@ -1390,27 +1390,8 @@
                           "required": true
                         },
                         {
-                          "label": "%arc.postgres.server.group.workers.label%",
-                          "description": "%arc.postgres.server.group.workers.description%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_WORKERS",
-                          "type": "number",
-                          "validations": [
-                            {
-                              "type": "is_integer",
-                              "description": "%should.be.integer%"
-                            },
-                            {
-                              "type": "!=",
-                              "target": "1",
-                              "description": "%worker.node.count.should.not.be.one%"
-                            }
-                          ],
-                          "defaultValue": "2",
-                          "min": 0
-                        },
-                        {
-                          "label": "%arc.postgres.server.group.port%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_PORT",
+                          "label": "%arc.postgres.server.port%",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_PORT",
                           "type": "number",
                           "validations": [
                             {
@@ -1421,141 +1402,64 @@
                           "defaultValue": "5432",
                           "min": 1,
                           "max": 65535
-                        },
-                        {
-                          "label": "%arc.postgres.server.group.engine.version%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_ENGINE_VERSION",
-                          "type": "options",
-                          "options": [
-                            "11",
-                            "12"
-                          ],
-                          "defaultValue": "12"
-                        },
-                        {
-                          "label": "%arc.postgres.server.group.extensions.label%",
-                          "description": "%arc.postgres.server.group.extensions.description%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_EXTENSIONS",
-                          "type": "text"
                         }
                       ]
                     },
                     {
-                      "title": "%arc.postgres.settings.resource.worker.title%",
+                      "title": "%arc.postgres.settings.resource.compute.config.title%",
                       "fields": [
                         {
-                          "label": "%arc.postgres.server.group.workers.cores.request.label%",
-                          "description": "%arc.postgres.server.group.workers.cores.request.description%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_WORKERS_CORES_REQUEST",
+                          "label": "%arc.postgres.server.cores.request.label%",
+                          "description": "%arc.postgres.server.cores.request.description%",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_CORES_REQUEST",
                           "type": "number",
                           "min": 1,
                           "validations": [
                             {
                               "type": "<=",
-                              "target": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_WORKERS_CORES_LIMIT",
+                              "target": "AZDATA_NB_VAR_POSTGRES_SERVER_CORES_LIMIT",
                               "description": "%requested.cores.less.than.or.equal.to.cores.limit%"
                             }
                           ]
                         },
                         {
-                          "label": "%arc.postgres.server.group.workers.cores.limit.label%",
-                          "description": "%arc.postgres.server.group.workers.cores.limit.description%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_WORKERS_CORES_LIMIT",
+                          "label": "%arc.postgres.server.cores.limit.label%",
+                          "description": "%arc.postgres.server.cores.limit.description%",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_CORES_LIMIT",
                           "type": "number",
                           "min": 1,
                           "validations": [
                             {
                               "type": ">=",
-                              "target": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_WORKERS_CORES_REQUEST",
+                              "target": "AZDATA_NB_VAR_POSTGRES_SERVER_CORES_REQUEST",
                               "description": "%cores.limit.greater.than.or.equal.to.requested.cores%"
                             }
                           ]
                         },
                         {
-                          "label": "%arc.postgres.server.group.workers.memory.request.label%",
-                          "description": "%arc.postgres.server.group.workers.memory.request.description%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_WORKERS_MEMORY_REQUEST",
+                          "label": "%arc.postgres.server.memory.request.label%",
+                          "description": "%arc.postgres.server.memory.request.description%",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_MEMORY_REQUEST",
                           "type": "number",
                           "min": 0.25,
                           "validations": [
                             {
                               "type": "<=",
-                              "target": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_WORKERS_MEMORY_LIMIT",
+                              "target": "AZDATA_NB_VAR_POSTGRES_SERVER_MEMORY_LIMIT",
                               "description": "%requested.memory.less.than.or.equal.to.memory.limit%"
                             }
                           ]
                         },
                         {
-                          "label": "%arc.postgres.server.group.workers.memory.limit.label%",
-                          "description": "%arc.postgres.server.group.workers.memory.limit.description%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_WORKERS_MEMORY_LIMIT",
+                          "label": "%arc.postgres.server.memory.limit.label%",
+                          "description": "%arc.postgres.server.memory.limit.description%",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_MEMORY_LIMIT",
                           "type": "number",
                           "min": 0.25,
                           "validations": [
                             {
                               "type": ">=",
-                              "target": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_WORKERS_MEMORY_REQUEST",
-                              "description": "%memory.limit.greater.than.or.equal.to.requested.memory%"
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "title": "%arc.postgres.settings.resource.coordinator.title%",
-                      "fields": [
-                        {
-                          "label": "%arc.postgres.server.group.coordinator.cores.request.label%",
-                          "description": "%arc.postgres.server.group.coordinator.cores.request.description%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_COORDINATOR_CORES_REQUEST",
-                          "type": "number",
-                          "min": 1,
-                          "validations": [
-                            {
-                              "type": "<=",
-                              "target": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_COORDINATOR_CORES_LIMIT",
-                              "description": "%requested.cores.less.than.or.equal.to.cores.limit%"
-                            }
-                          ]
-                        },
-                        {
-                          "label": "%arc.postgres.server.group.coordinator.cores.limit.label%",
-                          "description": "%arc.postgres.server.group.coordinator.cores.limit.description%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_COORDINATOR_CORES_LIMIT",
-                          "type": "number",
-                          "min": 1,
-                          "validations": [
-                            {
-                              "type": ">=",
-                              "target": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_COORDINATOR_CORES_REQUEST",
-                              "description": "%cores.limit.greater.than.or.equal.to.requested.cores%"
-                            }
-                          ]
-                        },
-                        {
-                          "label": "%arc.postgres.server.group.coordinator.memory.request.label%",
-                          "description": "%arc.postgres.server.group.coordinator.memory.request.description%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_COORDINATOR_MEMORY_REQUEST",
-                          "type": "number",
-                          "min": 0.25,
-                          "validations": [
-                            {
-                              "type": "<=",
-                              "target": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_COORDINATOR_MEMORY_LIMIT",
-                              "description": "%requested.memory.less.than.or.equal.to.memory.limit%"
-                            }
-                          ]
-                        },
-                        {
-                          "label": "%arc.postgres.server.group.coordinator.memory.limit.label%",
-                          "description": "%arc.postgres.server.group.coordinator.memory.limit.description%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_COORDINATOR_MEMORY_LIMIT",
-                          "type": "number",
-                          "min": 0.25,
-                          "validations": [
-                            {
-                              "type": ">=",
-                              "target": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_COORDINATOR_MEMORY_REQUEST",
+                              "target": "AZDATA_NB_VAR_POSTGRES_SERVER_MEMORY_REQUEST",
                               "description": "%memory.limit.greater.than.or.equal.to.requested.memory%"
                             }
                           ]
@@ -1573,9 +1477,9 @@
                           "required": true
                         },
                         {
-                          "label": "%arc.postgres.server.group.volume.size.data.label%",
-                          "description": "%arc.postgres.server.group.volume.size.data.description%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_VOLUME_SIZE_DATA",
+                          "label": "%arc.postgres.server.volume.size.data.label%",
+                          "description": "%arc.postgres.server.volume.size.data.description%",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_VOLUME_SIZE_DATA",
                           "type": "number",
                           "defaultValue": "5",
                           "min": 1
@@ -1588,9 +1492,9 @@
                           "required": true
                         },
                         {
-                          "label": "%arc.postgres.server.group.volume.size.logs.label%",
-                          "description": "%arc.postgres.server.group.volume.size.logs.description%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_VOLUME_SIZE_LOGS",
+                          "label": "%arc.postgres.server.volume.size.logs.label%",
+                          "description": "%arc.postgres.server.volume.size.logs.description%",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_VOLUME_SIZE_LOGS",
                           "type": "number",
                           "defaultValue": "5",
                           "min": 1
@@ -1603,9 +1507,9 @@
                           "required": true
                         },
                         {
-                          "label": "%arc.postgres.server.group.volume.size.backups.label%",
-                          "description": "%arc.postgres.server.group.volume.size.backups.description%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_VOLUME_SIZE_BACKUPS",
+                          "label": "%arc.postgres.server.volume.size.backups.label%",
+                          "description": "%arc.postgres.server.volume.size.backups.description%",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_VOLUME_SIZE_BACKUPS",
                           "type": "number",
                           "defaultValue": "5",
                           "min": 1
@@ -1627,20 +1531,31 @@
             "when": "true"
           }
         ],
-        "agreements": [
+        "helpTexts": [
           {
-            "template": "%arc.agreement%",
+            "template": "%arc.agreement.postgres.help.text%",
             "links": [
               {
-                "text": "%microsoft.agreement.privacy.statement%",
-                "url": "https://go.microsoft.com/fwlink/?LinkId=853010"
+                "text": "%arc.agreement.help.text.learn.more%",
+                "accessibilityInformation": {
+                  "label": "%arc.agreement.postgres.help.text.learn.more.ariaLabel%"
+                },
+                "url": "https://docs.microsoft.com/azure/azure-arc/data/what-is-azure-arc-enabled-postgres-hyperscale"
               },
               {
-                "text": "%arc.agreement.postgres.terms.conditions%",
+                "text": "%arc.agreement.help.text.azure.marketplace.terms%",
+                "url": "https://go.microsoft.com/fwlink/?linkid=2045624"
+              },
+              {
+                "text": "%arc.agreement.help.text.terms.of.use%",
                 "url": "https://go.microsoft.com/fwlink/?linkid=2045708"
+              },
+              {
+                "text": "%arc.agreement.help.text.privacy.policy%",
+                "url": "https://go.microsoft.com/fwlink/?linkid=512132"
               }
             ],
-            "when": "true"
+            "when": true
           }
         ]
       }

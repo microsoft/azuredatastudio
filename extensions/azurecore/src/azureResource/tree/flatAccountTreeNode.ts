@@ -136,7 +136,7 @@ async function getSubscriptionInfo(account: AzureAccount, subscriptionService: I
 class FlatAccountTreeNodeLoader {
 
 	private _isLoading: boolean = false;
-	private _nodes: TreeNode[];
+	private _nodes: TreeNode[] = [];
 	private readonly _onNewResourcesAvailable = new vscode.EventEmitter<void>();
 	public readonly onNewResourcesAvailable = this._onNewResourcesAvailable.event;
 	private readonly _onLoadingStatusChanged = new vscode.EventEmitter<void>();
@@ -183,7 +183,7 @@ class FlatAccountTreeNodeLoader {
 			if (subscriptions.length !== 0) {
 				// Filter out everything that we can't authenticate to.
 				subscriptions = subscriptions.filter(async s => {
-					const token = await azdata.accounts.getAccountSecurityToken(this._account, s.tenant, azdata.AzureResource.ResourceManagement);
+					const token = await azdata.accounts.getAccountSecurityToken(this._account, s.tenant!, azdata.AzureResource.ResourceManagement);
 					if (!token) {
 						console.info(`Account does not have permissions to view subscription ${JSON.stringify(s)}.`);
 						return false;
@@ -195,7 +195,7 @@ class FlatAccountTreeNodeLoader {
 			const resourceProviderIds = await this._resourceService.listResourceProviderIds();
 			for (const subscription of subscriptions) {
 				for (const providerId of resourceProviderIds) {
-					const resourceTypes = await this._resourceService.getRootChildren(providerId, this._account, subscription, subscription.tenant);
+					const resourceTypes = await this._resourceService.getRootChildren(providerId, this._account, subscription, subscription.tenant!);
 					for (const resourceType of resourceTypes) {
 						const resources = await this._resourceService.getChildren(providerId, resourceType.resourceNode, true);
 						if (resources.length > 0) {
