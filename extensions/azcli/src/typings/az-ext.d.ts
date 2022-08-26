@@ -549,26 +549,19 @@ declare module 'az-ext' {
 			}
 		},
 		postgres: {
-			arcserver: {
+			serverarc: {
 				delete(name: string, namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<void>>,
 				list(namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<PostgresServerListResult[]>>,
 				show(name: string, namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<PostgresServerShowResult>>,
-				edit(
+				update(
 					name: string,
 					args: {
-						adminPassword?: boolean,
 						coresLimit?: string,
 						coresRequest?: string,
-						coordinatorEngineSettings?: string,
-						engineSettings?: string,
-						extensions?: string,
 						memoryLimit?: string,
 						memoryRequest?: string,
 						noWait?: boolean,
-						port?: number,
-						replaceEngineSettings?: boolean,
-						workerEngineSettings?: string,
-						workers?: number
+						port?: number
 					},
 					namespace?: string,
 					additionalEnvVars?: AdditionalEnvVars

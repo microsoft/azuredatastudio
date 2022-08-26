@@ -129,7 +129,6 @@ export class PostgresExtensionsPage extends DashboardPage {
 					try {
 						this.addExtensionsButton.enabled = false;
 						this.dropExtensionsButton.enabled = false;
-						let extensionList = this.extensionNames.length ? this.extensionNames.join() + ',' + extArg : extArg;
 						await vscode.window.withProgress(
 							{
 								location: vscode.ProgressLocation.Notification,
@@ -138,11 +137,9 @@ export class PostgresExtensionsPage extends DashboardPage {
 							},
 							async (_progress, _token): Promise<void> => {
 
-								await this._azApi.az.postgres.arcserver.edit(
+								await this._azApi.az.postgres.serverarc.update(
 									this._postgresModel.info.name,
-									{
-										extensions: extensionList
-									},
+									{},
 									this._postgresModel.controllerModel.info.namespace,
 									this._postgresModel.controllerModel.azAdditionalEnvVars);
 
@@ -272,11 +269,9 @@ export class PostgresExtensionsPage extends DashboardPage {
 				cancellable: false
 			},
 			async (_progress, _token): Promise<void> => {
-				await this._azApi.az.postgres.arcserver.edit(
+				await this._azApi.az.postgres.serverarc.update(
 					this._postgresModel.info.name,
-					{
-						extensions: this.extensionNames.join()
-					},
+					{},
 					this._postgresModel.controllerModel.info.namespace,
 					this._postgresModel.controllerModel.azAdditionalEnvVars
 				);
