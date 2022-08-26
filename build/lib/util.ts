@@ -227,7 +227,7 @@ export function rewriteSourceMappingURL(sourceMappingURLBase: string): NodeJS.Re
 		.pipe(es.mapSync<VinylFile, VinylFile>(f => {
 			const contents = (<Buffer>f.contents).toString('utf8');
 			const str = `//# sourceMappingURL=${sourceMappingURLBase}/${path.dirname(f.relative).replace(/\\/g, '/')}/$1`;
-			f.contents = Buffer.from(contents.replace(/\n\/\/# sourceMappingURL=(.*)$/gm, str));
+			f.contents = Buffer.from(contents.replace(/\n\/\/# sourceMappingURL=((?!data:).*)$/gm, str)); // {{SQL CARBON EDIT}} Don't rewrite embedded source maps - some of our dependencies have these (sanitize-html)
 			return f;
 		}));
 

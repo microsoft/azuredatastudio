@@ -12,7 +12,7 @@ import { AzureResourceItemType } from './constants';
 export class AzureResourceMessageTreeNode extends TreeNode {
 	public constructor(
 		public readonly message: string,
-		parent: TreeNode
+		parent: TreeNode | undefined
 	) {
 		super();
 
@@ -20,7 +20,7 @@ export class AzureResourceMessageTreeNode extends TreeNode {
 		this._id = `message_${AzureResourceMessageTreeNode._messageNum++}`;
 	}
 
-	public static create(message: string, parent: TreeNode): AzureResourceMessageTreeNode {
+	public static create(message: string, parent: TreeNode | undefined): AzureResourceMessageTreeNode {
 		return new AzureResourceMessageTreeNode(message, parent);
 	}
 

@@ -86,7 +86,7 @@ export class LocalCondaPackageManageProvider implements IPackageManageProvider {
 	}
 
 	private async fetchCondaPackage(packageName: string): Promise<IPackageOverview> {
-		let condaExe = this.jupyterInstallation.getCondaExePath();
+		let condaExe = this.jupyterInstallation.condaExecutable;
 		let cmd = `"${condaExe}" search --json ${packageName}`;
 		let packageResult: string;
 		try {

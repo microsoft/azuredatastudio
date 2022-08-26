@@ -80,6 +80,4 @@ export abstract class MigrationWizardPage {
 		const current = this.wizard.currentPage;
 		await this.wizard.setCurrentPage(current + 1);
 	}
-
 }
-

@@ -91,7 +91,14 @@ export class SqlDatabaseTree {
 
 		const selectDbMessage = this.createSelectDbMessage();
 		this._resultComponent = await this.createComponentResult(view);
-		const treeComponent = await this.createComponent(view, this._targetType === MigrationTargetType.SQLVM ? this._model._vmDbs : this._model._miDbs);
+		const treeComponent = await this.createComponent(
+			view,
+			(this._targetType === MigrationTargetType.SQLVM)
+				? this._model._vmDbs
+				: (this._targetType === MigrationTargetType.SQLMI)
+					? this._model._miDbs
+					: this._model._sqldbDbs);
+
 		this._rootContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'row',
 			height: '100%',
@@ -101,7 +108,8 @@ export class SqlDatabaseTree {
 		this._rootContainer.addItem(this._resultComponent, { flex: '0 0 auto' });
 		this._rootContainer.addItem(selectDbMessage, { flex: '1 1 auto' });
 
-		if (this._targetType === MigrationTargetType.SQLMI) {
+		if (this._targetType === MigrationTargetType.SQLMI ||
+			this._targetType === MigrationTargetType.SQLDB) {
 			if (!!this._model._assessmentResults?.issues.find(value => value.databaseRestoreFails) ||
 				!!this._model._assessmentResults?.databaseAssessments.find(d => !!d.issues.find(issue => issue.databaseRestoreFails))) {
 				dialog.message = {
@@ -192,7 +200,8 @@ export class SqlDatabaseTree {
 		}));
 
 		this._disposables.push(this._databaseTable.onRowSelected(async (e) => {
-			if (this._targetType === MigrationTargetType.SQLMI) {
+			if (this._targetType === MigrationTargetType.SQLMI ||
+				this._targetType === MigrationTargetType.SQLDB) {
 				this._activeIssues = this._model._assessmentResults?.databaseAssessments[e.row].issues;
 			} else {
 				this._activeIssues = [];
@@ -306,7 +315,8 @@ export class SqlDatabaseTree {
 			});
 			this._recommendation.value = constants.WARNINGS_DETAILS;
 			this._recommendationTitle.value = constants.WARNINGS_COUNT(this._activeIssues?.length);
-			if (this._targetType === MigrationTargetType.SQLMI) {
+			if (this._targetType === MigrationTargetType.SQLMI ||
+				this._targetType === MigrationTargetType.SQLDB) {
 				await this.refreshResults();
 			}
 		}));
@@ -388,42 +398,34 @@ export class SqlDatabaseTree {
 	}
 
 	private createNoIssuesText(): azdata.FlexContainer {
-		let message: azdata.TextComponent;
 		const failedAssessment = this.handleFailedAssessment();
-		if (this._targetType === MigrationTargetType.SQLVM) {
-			message = this._view.modelBuilder.text().withProps({
-				value: failedAssessment
-					? constants.NO_RESULTS_AVAILABLE
-					: constants.NO_ISSUES_FOUND_VM,
-				CSSStyles: {
-					...styles.BODY_CSS
-				}
-			}).component();
-		} else {
-			message = this._view.modelBuilder.text().withProps({
-				value: failedAssessment
-					? constants.NO_RESULTS_AVAILABLE
-					: constants.NO_ISSUES_FOUND_MI,
-				CSSStyles: {
-					...styles.BODY_CSS
-				}
-			}).component();
-		}
-		//TODO: will need to add a SQL DB condition here in the future
 
-		this._noIssuesContainer = this._view.modelBuilder.flexContainer().withItems([message]).withProps({
-			CSSStyles: {
-				'margin-top': '8px',
-				'display': 'none'
-			}
-		}).component();
+
+		const value = failedAssessment
+			? constants.NO_RESULTS_AVAILABLE
+			: (this._targetType === MigrationTargetType.SQLVM)
+				? constants.NO_ISSUES_FOUND_VM
+				: (this._targetType === MigrationTargetType.SQLMI)
+					? constants.NO_ISSUES_FOUND_MI
+					: constants.NO_ISSUES_FOUND_SQLDB;
+
+		const message = this._view.modelBuilder.text()
+			.withProps({
+				value: value,
+				CSSStyles: { ...styles.BODY_CSS }
+			}).component();
+
+		this._noIssuesContainer = this._view.modelBuilder.flexContainer()
+			.withItems([message])
+			.withProps({ CSSStyles: { 'margin-top': '8px', 'display': 'none' } })
+			.component();
 
 		return this._noIssuesContainer;
 	}
 
 	private handleFailedAssessment(): boolean {
 		const failedAssessment: boolean = this._model._assessmentResults?.assessmentError !== undefined
-			|| (this._model._assessmentResults?.errors?.length || 0) > 0;
+			|| (this._model._assessmentResults?.errors?.length ?? 0) > 0;
 		if (failedAssessment) {
 			this._dialog.message = {
 				level: azdata.window.MessageLevel.Warning,
@@ -471,16 +473,12 @@ export class SqlDatabaseTree {
 
 	private createAssessmentContainer(): azdata.FlexContainer {
 		const title = this.createAssessmentTitle();
-
 		const bottomContainer = this.createDescriptionContainer();
-
-		const container = this._view.modelBuilder.flexContainer().withItems([title, bottomContainer]).withLayout({
-			flexFlow: 'column'
-		}).withProps({
-			CSSStyles: {
-				'margin-left': '24px'
-			}
-		}).component();
+		const container = this._view.modelBuilder.flexContainer()
+			.withItems([title, bottomContainer])
+			.withLayout({ flexFlow: 'column' })
+			.withProps({ CSSStyles: { 'margin-left': '24px' } })
+			.component();
 
 		return container;
 	}
@@ -488,14 +486,10 @@ export class SqlDatabaseTree {
 	private createDescriptionContainer(): azdata.FlexContainer {
 		const description = this.createDescription();
 		const impactedObjects = this.createImpactedObjectsDescription();
-
-		const container = this._view.modelBuilder.flexContainer().withLayout({
-			flexFlow: 'row'
-		}).withProps({
-			CSSStyles: {
-				'height': '100%'
-			}
-		}).component();
+		const container = this._view.modelBuilder.flexContainer()
+			.withLayout({ flexFlow: 'row' })
+			.withProps({ CSSStyles: { 'height': '100%' } })
+			.component();
 		container.addItem(description, { flex: '0 0 auto', CSSStyles: { 'width': '200px', 'margin-right': '35px' } });
 		container.addItem(impactedObjects, { flex: '0 0 auto', CSSStyles: { 'width': '280px' } });
 
@@ -541,19 +535,8 @@ export class SqlDatabaseTree {
 						rowCssStyles: rowStyle
 					},
 				],
-				dataValues: [
-					[
-						{
-							value: ''
-						},
-						{
-							value: ''
-						}
-					]
-				],
-				CSSStyles: {
-					'margin-top': '12px'
-				}
+				dataValues: [[{ value: '' }, { value: '' }]],
+				CSSStyles: { 'margin-top': '12px' }
 			}
 		).component();
 
@@ -562,36 +545,47 @@ export class SqlDatabaseTree {
 			this.refreshImpactedObject(impactedObject);
 		}));
 
-		const objectDetailsTitle = this._view.modelBuilder.text().withProps({
-			value: constants.OBJECT_DETAILS,
-			CSSStyles: {
-				...styles.LIGHT_LABEL_CSS,
-				'margin': '12px 0px 0px 0px',
-			}
-		}).component();
+		const objectDetailsTitle = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.OBJECT_DETAILS,
+				CSSStyles: {
+					...styles.LIGHT_LABEL_CSS,
+					'margin': '12px 0px 0px 0px',
+				}
+			}).component();
 		const objectDescriptionStyle = {
 			...styles.BODY_CSS,
 			'margin': '5px 0px 0px 0px',
 			'word-wrap': 'break-word'
 		};
-		this._objectDetailsType = this._view.modelBuilder.text().withProps({
-			value: constants.TYPES_LABEL,
-			CSSStyles: objectDescriptionStyle
-		}).component();
+		this._objectDetailsType = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.TYPES_LABEL,
+				CSSStyles: objectDescriptionStyle
+			}).component();
 
-		this._objectDetailsName = this._view.modelBuilder.text().withProps({
-			value: constants.NAMES_LABEL,
-			CSSStyles: objectDescriptionStyle
-		}).component();
+		this._objectDetailsName = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.NAMES_LABEL,
+				CSSStyles: objectDescriptionStyle
+			}).component();
 
-		this._objectDetailsSample = this._view.modelBuilder.text().withProps({
-			value: '',
-			CSSStyles: objectDescriptionStyle
-		}).component();
+		this._objectDetailsSample = this._view.modelBuilder.text()
+			.withProps({
+				value: '',
+				CSSStyles: objectDescriptionStyle
+			}).component();
 
-		const container = this._view.modelBuilder.flexContainer().withItems([impactedObjectsTitle, this._impactedObjectsTable, objectDetailsTitle, this._objectDetailsType, this._objectDetailsName, this._objectDetailsSample]).withLayout({
-			flexFlow: 'column'
-		}).component();
+		const container = this._view.modelBuilder.flexContainer()
+			.withItems([
+				impactedObjectsTitle,
+				this._impactedObjectsTable,
+				objectDetailsTitle,
+				this._objectDetailsType,
+				this._objectDetailsName,
+				this._objectDetailsSample])
+			.withLayout({ flexFlow: 'column' })
+			.component();
 
 		return container;
 	}
@@ -607,76 +601,91 @@ export class SqlDatabaseTree {
 			'width': '200px',
 			'word-wrap': 'break-word'
 		};
-		const descriptionTitle = this._view.modelBuilder.text().withProps({
-			value: constants.DESCRIPTION,
-			CSSStyles: LABEL_CSS
-		}).component();
-		this._descriptionText = this._view.modelBuilder.text().withProps({
-			CSSStyles: textStyle
-		}).component();
+		const descriptionTitle = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.DESCRIPTION,
+				CSSStyles: LABEL_CSS
+			}).component();
+		this._descriptionText = this._view.modelBuilder.text()
+			.withProps({
+				CSSStyles: textStyle
+			}).component();
 
-		const recommendationTitle = this._view.modelBuilder.text().withProps({
-			value: constants.RECOMMENDATION,
-			CSSStyles: LABEL_CSS
-		}).component();
-		this._recommendationText = this._view.modelBuilder.text().withProps({
-			CSSStyles: textStyle
-		}).component();
-		const moreInfo = this._view.modelBuilder.text().withProps({
-			value: constants.MORE_INFO,
-			CSSStyles: LABEL_CSS
-		}).component();
-		this._moreInfo = this._view.modelBuilder.hyperlink().withProps({
-			label: '',
-			url: '',
-			CSSStyles: textStyle,
-			ariaLabel: constants.MORE_INFO,
-			showLinkIcon: true
-		}).component();
+		const recommendationTitle = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.RECOMMENDATION,
+				CSSStyles: LABEL_CSS
+			}).component();
+		this._recommendationText = this._view.modelBuilder.text()
+			.withProps({
+				CSSStyles: textStyle
+			}).component();
+		const moreInfo = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.MORE_INFO,
+				CSSStyles: LABEL_CSS
+			}).component();
+		this._moreInfo = this._view.modelBuilder.hyperlink()
+			.withProps({
+				label: '',
+				url: '',
+				CSSStyles: textStyle,
+				ariaLabel: constants.MORE_INFO,
+				showLinkIcon: true
+			}).component();
 
-		const container = this._view.modelBuilder.flexContainer().withItems([descriptionTitle, this._descriptionText, recommendationTitle, this._recommendationText, moreInfo, this._moreInfo]).withLayout({
-			flexFlow: 'column'
-		}).component();
+		const container = this._view.modelBuilder.flexContainer()
+			.withItems([descriptionTitle,
+				this._descriptionText,
+				recommendationTitle,
+				this._recommendationText,
+				moreInfo,
+				this._moreInfo])
+			.withLayout({ flexFlow: 'column' })
+			.component();
 
 		return container;
 	}
 
 	private createAssessmentTitle(): azdata.TextComponent {
-		this._assessmentTitle = this._view.modelBuilder.text().withProps({
-			value: '',
-			CSSStyles: {
-				...styles.LABEL_CSS,
-				'margin-top': '12px',
-				'height': '48px',
-				'width': '540px',
-				'border-bottom': 'solid 1px'
-			}
-		}).component();
+		this._assessmentTitle = this._view.modelBuilder.text()
+			.withProps({
+				value: '',
+				CSSStyles: {
+					...styles.LABEL_CSS,
+					'margin-top': '12px',
+					'height': '48px',
+					'width': '540px',
+					'border-bottom': 'solid 1px'
+				}
+			}).component();
 
 		return this._assessmentTitle;
 	}
 
 	private createTitleComponent(): azdata.TextComponent {
-		const title = this._view.modelBuilder.text().withProps({
-			value: constants.TARGET_PLATFORM,
-			CSSStyles: {
-				...styles.BODY_CSS,
-				'margin': '0 0 4px 0'
-			}
-		});
-
-		return title.component();
+		return this._view.modelBuilder.text()
+			.withProps({
+				value: constants.TARGET_PLATFORM,
+				CSSStyles: {
+					...styles.BODY_CSS,
+					'margin': '0 0 4px 0'
+				}
+			}).component();
 	}
 
 	private createPlatformComponent(): azdata.TextComponent {
-		const impact = this._view.modelBuilder.text().withProps({
-			value: (this._targetType === MigrationTargetType.SQLVM) ? constants.SUMMARY_VM_TYPE : constants.SUMMARY_MI_TYPE,
-			CSSStyles: {
-				...styles.PAGE_SUBTITLE_CSS
-			}
-		});
+		const target = (this._targetType === MigrationTargetType.SQLVM)
+			? constants.SUMMARY_VM_TYPE
+			: (this._targetType === MigrationTargetType.SQLMI)
+				? constants.SUMMARY_MI_TYPE
+				: constants.SUMMARY_SQLDB_TYPE;
 
-		return impact.component();
+		return this._view.modelBuilder.text()
+			.withProps({
+				value: target,
+				CSSStyles: { ...styles.PAGE_SUBTITLE_CSS }
+			}).component();
 	}
 
 	private createRecommendationComponent(): azdata.TextComponent {
@@ -718,7 +727,6 @@ export class SqlDatabaseTree {
 	}
 
 	private createImpactedObjectsTable(): azdata.FlexContainer {
-
 		const headerStyle: azdata.CssStyles = {
 			'border': 'none',
 			'text-align': 'left'
@@ -732,13 +740,11 @@ export class SqlDatabaseTree {
 			'overflow': 'hidden',
 		};
 
-		this._assessmentResultsTable = this._view.modelBuilder.declarativeTable().withProps(
-			{
+		this._assessmentResultsTable = this._view.modelBuilder.declarativeTable()
+			.withProps({
 				enableRowSelection: true,
 				width: '200px',
-				CSSStyles: {
-					'table-layout': 'fixed'
-				},
+				CSSStyles: { 'table-layout': 'fixed' },
 				columns: [
 					{
 						displayName: '',
@@ -758,21 +764,21 @@ export class SqlDatabaseTree {
 					}
 				]
 			}
-		).component();
+			).component();
 
 		this._disposables.push(this._assessmentResultsTable.onRowSelected(async (e) => {
 			const selectedIssue = e.row > -1 ? this._activeIssues[e.row] : undefined;
 			await this.refreshAssessmentDetails(selectedIssue);
 		}));
 
-		const container = this._view.modelBuilder.flexContainer().withItems([this._assessmentResultsTable]).withLayout({
-			flexFlow: 'column',
-			height: '100%'
-		}).withProps({
-			CSSStyles: {
-				'border-right': 'solid 1px'
-			}
-		}).component();
+		const container = this._view.modelBuilder.flexContainer()
+			.withItems([this._assessmentResultsTable])
+			.withLayout({
+				flexFlow: 'column',
+				height: '100%'
+			})
+			.withProps({ CSSStyles: { 'border-right': 'solid 1px' } })
+			.component();
 
 		return container;
 	}
@@ -788,42 +794,23 @@ export class SqlDatabaseTree {
 	}
 
 	public async refreshResults(): Promise<void> {
-		if (this._targetType === MigrationTargetType.SQLMI) {
+		if (this._targetType === MigrationTargetType.SQLMI ||
+			this._targetType === MigrationTargetType.SQLDB) {
 			if (this._activeIssues?.length === 0) {
 				/// show no issues here
-				await this._assessmentsTable.updateCssStyles({
-					'display': 'none',
-					'border-right': 'none'
-				});
-				await this._assessmentContainer.updateCssStyles({
-					'display': 'none'
-				});
-				await this._noIssuesContainer.updateCssStyles({
-					'display': 'flex'
-				});
+				await this._assessmentsTable.updateCssStyles({ 'display': 'none', 'border-right': 'none' });
+				await this._assessmentContainer.updateCssStyles({ 'display': 'none' });
+				await this._noIssuesContainer.updateCssStyles({ 'display': 'flex' });
 			} else {
-				await this._assessmentContainer.updateCssStyles({
-					'display': 'flex'
-				});
-				await this._assessmentsTable.updateCssStyles({
-					'display': 'flex',
-					'border-right': 'solid 1px'
-				});
-				await this._noIssuesContainer.updateCssStyles({
-					'display': 'none'
-				});
+				await this._assessmentContainer.updateCssStyles({ 'display': 'flex' });
+				await this._assessmentsTable.updateCssStyles({ 'display': 'flex', 'border-right': 'solid 1px' });
+				await this._noIssuesContainer.updateCssStyles({ 'display': 'none' });
 			}
 		} else {
-			await this._assessmentsTable.updateCssStyles({
-				'display': 'none',
-				'border-right': 'none'
-			});
-			await this._assessmentContainer.updateCssStyles({
-				'display': 'none'
-			});
-			await this._noIssuesContainer.updateCssStyles({
-				'display': 'flex'
-			});
+			await this._assessmentsTable.updateCssStyles({ 'display': 'none', 'border-right': 'none' });
+			await this._assessmentContainer.updateCssStyles({ 'display': 'none' });
+			await this._noIssuesContainer.updateCssStyles({ 'display': 'flex' });
+
 			this._recommendationTitle.value = constants.ASSESSMENT_RESULTS;
 			this._recommendation.value = '';
 		}
@@ -868,8 +855,9 @@ export class SqlDatabaseTree {
 		this._impactedObjects = selectedIssue?.impactedObjects || [];
 		this._recommendationText.value = selectedIssue?.message || constants.NA;
 
-		await this._impactedObjectsTable.setDataValues(this._impactedObjects.map(
-			(object) => [{ value: object.objectType }, { value: object.name }]));
+		await this._impactedObjectsTable.setDataValues(
+			this._impactedObjects.map(
+				(object) => [{ value: object.objectType }, { value: object.name }]));
 
 		this._impactedObjectsTable.selectedRow = this._impactedObjects?.length > 0 ? 0 : -1;
 	}
@@ -884,56 +872,55 @@ export class SqlDatabaseTree {
 		let instanceTableValues: azdata.DeclarativeTableCellValue[][] = [];
 		this._databaseTableValues = [];
 		this._dbNames = this._model._databasesForAssessment;
-		const selectedDbs = (this._targetType === MigrationTargetType.SQLVM) ? this._model._vmDbs : this._model._miDbs;
+		const selectedDbs = (this._targetType === MigrationTargetType.SQLVM)
+			? this._model._vmDbs
+			: (this._targetType === MigrationTargetType.SQLMI)
+				? this._model._miDbs
+				: this._model._sqldbDbs;
+
 		this._serverName = (await this._model.getSourceConnectionProfile()).serverName;
 
 		if (this._targetType === MigrationTargetType.SQLVM || !this._model._assessmentResults) {
-			instanceTableValues = [
-				[
+			instanceTableValues = [[
+				{
+					value: this.createIconTextCell(IconPathHelper.sqlServerLogo, this._serverName),
+					style: styleLeft
+				},
+				{
+					value: '0',
+					style: styleRight
+				}
+			]];
+			this._dbNames.forEach((db) => {
+				this._databaseTableValues.push([
 					{
-						value: this.createIconTextCell(IconPathHelper.sqlServerLogo, this._serverName),
+						value: selectedDbs.includes(db),
+						style: styleLeft
+					},
+					{
+						value: this.createIconTextCell(IconPathHelper.sqlDatabaseLogo, db),
 						style: styleLeft
 					},
 					{
 						value: '0',
 						style: styleRight
 					}
-				]
-			];
-			this._dbNames.forEach((db) => {
-				this._databaseTableValues.push(
-					[
-						{
-							value: selectedDbs.includes(db),
-							style: styleLeft
-						},
-						{
-							value: this.createIconTextCell(IconPathHelper.sqlDatabaseLogo, db),
-							style: styleLeft
-						},
-						{
-							value: '0',
-							style: styleRight
-						}
-					]
-				);
+				]);
 			});
 		} else {
-			instanceTableValues = [
-				[
-					{
-						value: this.createIconTextCell(IconPathHelper.sqlServerLogo, this._serverName),
-						style: styleLeft
-					},
-					{
-						value: this._model._assessmentResults?.issues?.length,
-						style: styleRight
-					}
-				]
-			];
-			this._model._assessmentResults?.databaseAssessments.sort((db1, db2) => {
-				return db2.issues?.length - db1.issues?.length;
-			});
+			instanceTableValues = [[
+				{
+					value: this.createIconTextCell(IconPathHelper.sqlServerLogo, this._serverName),
+					style: styleLeft
+				},
+				{
+					value: this._model._assessmentResults?.issues?.length,
+					style: styleRight
+				}
+			]];
+			this._model._assessmentResults?.databaseAssessments
+				.sort((db1, db2) => db2.issues?.length - db1.issues?.length);
+
 			// Reset the dbName list so that it is in sync with the table
 			this._dbNames = this._model._assessmentResults?.databaseAssessments.map(da => da.name);
 			this._model._assessmentResults?.databaseAssessments.forEach((db) => {
@@ -941,23 +928,21 @@ export class SqlDatabaseTree {
 				if (db.issues.find(item => item.databaseRestoreFails)) {
 					selectable = false;
 				}
-				this._databaseTableValues.push(
-					[
-						{
-							value: selectedDbs.includes(db.name),
-							style: styleLeft,
-							enabled: selectable
-						},
-						{
-							value: this.createIconTextCell((selectable) ? IconPathHelper.sqlDatabaseLogo : IconPathHelper.sqlDatabaseWarningLogo, db.name),
-							style: styleLeft
-						},
-						{
-							value: db.issues?.length,
-							style: styleRight
-						}
-					]
-				);
+				this._databaseTableValues.push([
+					{
+						value: selectedDbs.includes(db.name),
+						style: styleLeft,
+						enabled: selectable
+					},
+					{
+						value: this.createIconTextCell((selectable) ? IconPathHelper.sqlDatabaseLogo : IconPathHelper.sqlDatabaseWarningLogo, db.name),
+						style: styleLeft
+					},
+					{
+						value: db.issues?.length,
+						style: styleRight
+					}
+				]);
 			});
 		}
 		await this._instanceTable.setDataValues(instanceTableValues);
@@ -973,47 +958,7 @@ export class SqlDatabaseTree {
 		});
 	}
 
-	// undo when bug #16445 is fixed
 	private createIconTextCell(icon: IconPath, text: string): string {
 		return text;
 	}
-	// private createIconTextCell(icon: IconPath, text: string): azdata.FlexContainer {
-	// 	const cellContainer = this._view.modelBuilder.flexContainer().withProps({
-	// 		CSSStyles: {
-	// 			'justify-content': 'left'
-	// 		}
-	// 	}).component();
-
-	// 	const iconComponent = this._view.modelBuilder.image().withProps({
-	// 		iconPath: icon,
-	// 		iconWidth: '16px',
-	// 		iconHeight: '16px',
-	// 		width: '20px',
-	// 		height: '20px'
-	// 	}).component();
-	// 	cellContainer.addItem(iconComponent, {
-	// 		flex: '0',
-	// 		CSSStyles: {
-	// 			'width': '32px'
-	// 		}
-	// 	});
-
-	// 	const textComponent = this._view.modelBuilder.text().withProps({
-	// 		value: text,
-	// 		title: text,
-	// 		CSSStyles: {
-	// 			'margin': '0px',
-	// 			'width': '100%',
-	// 		}
-	// 	}).component();
-
-	// 	cellContainer.addItem(textComponent, {
-	// 		CSSStyles: {
-	// 			'width': 'auto'
-	// 		}
-	// 	});
-
-	// 	return cellContainer;
-	// }
-	// undo when bug #16445 is fixed
 }
