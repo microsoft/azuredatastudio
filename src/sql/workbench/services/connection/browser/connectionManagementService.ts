@@ -1231,6 +1231,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 						if (connectionMngInfo.serverInfo) {
 							connection.options.isCloud = connectionMngInfo.serverInfo.isCloud;
 						}
+						else if (connectionMngInfo.ownerUri.indexOf('|user:|') !== -1) {
+							this._logService.info(`Server info provided is missing the required username for ${uri}`);
+							errorMessage = nls.localize('connectionManagementService.noUsernameForString', "Connection string is missing the required \"User Id\" property.");
+						}
 						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack, connectionProfile: connection });
 					}
 				}
