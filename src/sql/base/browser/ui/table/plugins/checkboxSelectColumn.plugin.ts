@@ -1,5 +1,6 @@
 // Adopted and converted to typescript from https://github.com/6pac/SlickGrid/blob/master/plugins/slick.checkboxselectcolumn.js
 
+import 'vs/css!./media/checkboxSelectColumn.plugin';
 import { mixin } from 'vs/base/common/objects';
 import * as nls from 'vs/nls';
 import { ICheckboxStyles } from 'vs/base/browser/ui/checkbox/checkbox';
@@ -42,15 +43,13 @@ const HeaderCheckboxTitle: string = nls.localize('selectDeselectAll', "Select/De
 
 const defaultOptions: ICheckboxSelectColumnOptions = {
 	columnId: '_checkbox_selector',
-	cssClass: undefined,
-	headerCssClass: undefined,
+	cssClass: 'slick-plugin-checkbox-select-column',
+	headerCssClass: 'slick-plugin-checkbox-select-column',
 	toolTip: undefined,
 	width: 30
 };
 
-const checkboxTemplate = `<div style="display: flex; align-items: center; flex-direction: column">
-								<input type="checkbox" {0} title="{1}" aria-label="{1}" {2} />
-							</div>`;
+const checkboxTemplate = `<input type="checkbox" {0} title="{1}" aria-label="{1}" {2} />`;
 
 export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Plugin<T> {
 	private _options: ICheckboxSelectColumnOptions;
@@ -66,6 +65,8 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 
 	constructor(options?: ICheckboxSelectColumnOptions, columnIndex?: number) {
 		this._options = mixin(options, defaultOptions, false);
+		this._options.headerCssClass = (this._options.headerCssClass === undefined) ? this._options.headerCssClass + ' ' + defaultOptions.headerCssClass : defaultOptions.headerCssClass;
+		this._options.cssClass = (this._options.cssClass === undefined) ? this._options.cssClass + ' ' + defaultOptions.cssClass : defaultOptions.cssClass;
 		this.index = columnIndex ? columnIndex : 0;
 	}
 
@@ -191,8 +192,6 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 			this._grid.render();
 		}
 
-		//Ensure that the focus stays on current selected checkbox cell
-		this._grid.setActiveCell(row, col);
 		if (this._grid.getActiveCellNode()) {
 			this._grid.getActiveCellNode().focus();
 		}
@@ -240,7 +239,7 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 	public get definition(): Slick.Column<T> {
 		return {
 			id: this._options.columnId,
-			name: this._options.title || strings.format(checkboxTemplate, '', ''),
+			name: this._options.title || `<input type="checkbox" tabIndex="0" />`,
 			toolTip: this._options.toolTip,
 			field: 'sel',
 			width: this._options.width,
@@ -256,6 +255,8 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 		if (this.isCustomActionRequested()) {
 			return this.checkboxTemplateCustom(row);
 		}
+
+		`<input type="checkbox" {0} title="{1}" aria-label="{1}" {2} />`
 
 		// If checkbox is a row selector, we don't have requirement to enable/disable it, so always leave it enabled
 		return this.getCheckboxHtml(this._selectedRowsLookup[row], this._options.title, true);

@@ -3,15 +3,16 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.slick-plugin-checkbox-column {
+.slick-plugin-checkbox-select-column {
 	text-align: center;
+	border-bottom: 0px !important;
+	border-right: 0px !important;
 }
 
-.slick-plugin-checkbox-column > input,
+.slick-plugin-checkbox-select-column > input,
 .slick-column-name > input[type='checkbox']{
 	margin: 0px;
 	vertical-align: middle;
 }
-
 
 
