@@ -158,41 +158,49 @@ export function hasMigrationOperationId(migration: DatabaseMigration | undefined
 export function canCancelMigration(migration: DatabaseMigration | undefined): boolean {
 	const status = getMigrationStatus(migration);
 	return hasMigrationOperationId(migration)
-		&& (status === loc.MigrationStatus.InProgress ||
-			status === loc.MigrationStatus.Retriable ||
-			status === loc.MigrationStatus.Creating);
+		&& (status === loc.MigrationState.InProgress
+			|| status === loc.MigrationState.Retriable
+			|| status === loc.MigrationState.Creating
+			|| status === loc.MigrationState.ReadyForCutover
+			|| status === loc.MigrationState.UploadingFullBackup
+			|| status === loc.MigrationState.UploadingLogBackup
+			|| status === loc.MigrationState.Restoring);
 }
 
 export function canDeleteMigration(migration: DatabaseMigration | undefined): boolean {
 	const status = getMigrationStatus(migration);
-	return status === loc.MigrationStatus.Canceled
-		|| status === loc.MigrationStatus.Failed
-		|| status === loc.MigrationStatus.Retriable
-		|| status === loc.MigrationStatus.Succeeded;
+	return status === loc.MigrationState.Canceled
+		|| status === loc.MigrationState.Failed
+		|| status === loc.MigrationState.Retriable
+		|| status === loc.MigrationState.Succeeded;
 }
 
 export function canRetryMigration(migration: DatabaseMigration | undefined): boolean {
 	const status = getMigrationStatus(migration);
-	return status === loc.MigrationStatus.Canceled
-		|| status === loc.MigrationStatus.Retriable
-		|| status === loc.MigrationStatus.Failed
-		|| status === loc.MigrationStatus.Succeeded;
+	return status === loc.MigrationState.Canceled
+		|| status === loc.MigrationState.Retriable
+		|| status === loc.MigrationState.Failed
+		|| status === loc.MigrationState.Succeeded;
 }
 
 export function canCutoverMigration(migration: DatabaseMigration | undefined): boolean {
 	const status = getMigrationStatus(migration);
 	return hasMigrationOperationId(migration)
-		&& status === loc.MigrationStatus.InProgress
+		&& status === loc.MigrationState.ReadyForCutover
 		&& isOnlineMigration(migration)
 		&& isFullBackupRestored(migration);
 }
 
 export function isActiveMigration(migration: DatabaseMigration | undefined): boolean {
 	const status = getMigrationStatus(migration);
-	return status === loc.MigrationStatus.Completing
-		|| status === loc.MigrationStatus.Retriable
-		|| status === loc.MigrationStatus.Creating
-		|| status === loc.MigrationStatus.InProgress;
+	return status === loc.MigrationState.Completing
+		|| status === loc.MigrationState.Retriable
+		|| status === loc.MigrationState.Creating
+		|| status === loc.MigrationState.InProgress
+		|| status === loc.MigrationState.ReadyForCutover
+		|| status === loc.MigrationState.UploadingFullBackup
+		|| status === loc.MigrationState.UploadingLogBackup
+		|| status === loc.MigrationState.Restoring;
 }
 
 export function isFullBackupRestored(migration: DatabaseMigration | undefined): boolean {

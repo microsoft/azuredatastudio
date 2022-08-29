@@ -10,7 +10,8 @@ import { MigrationSourceAuthenticationType } from '../models/stateMachine';
 import { formatNumber, ParallelCopyTypeCodes, PipelineStatusCodes } from './helper';
 const localize = nls.loadMessageBundle();
 
-export enum MigrationStatus {
+// mirrors MigrationState as defined in RP
+export enum MigrationState {
 	Canceled = 'Canceled',
 	Canceling = 'Canceling',
 	Completing = 'Completing',
@@ -821,18 +822,18 @@ export interface LookupTable<T> {
 }
 
 export const StatusLookup: LookupTable<string | undefined> = {
-	[MigrationStatus.Canceled]: localize('sql.migration.status.canceled', 'Canceled'),
-	[MigrationStatus.Canceling]: localize('sql.migration.status.canceling', 'Canceling'),
-	[MigrationStatus.Completing]: localize('sql.migration.status.completing', 'Completing'),
-	[MigrationStatus.Creating]: localize('sql.migration.status.creating', 'Creating'),
-	[MigrationStatus.Failed]: localize('sql.migration.status.failed', 'Failed'),
-	[MigrationStatus.InProgress]: localize('sql.migration.status.inprogress', 'In progress'),
-	[MigrationStatus.ReadyForCutover]: localize('sql.migration.status.readyforcutover', 'Ready for cutover'),
-	[MigrationStatus.Restoring]: localize('sql.migration.status.restoring', 'Restoring'),
-	[MigrationStatus.Retriable]: localize('sql.migration.status.retriable', 'Retriable'),
-	[MigrationStatus.Succeeded]: localize('sql.migration.status.succeeded', 'Succeeded'),
-	[MigrationStatus.UploadingFullBackup]: localize('sql.migration.status.uploadingfullbackup', 'Uploading full backup'),
-	[MigrationStatus.UploadingLogBackup]: localize('sql.migration.status.uploadinglogbackup', 'Uploading log backup'),
+	[MigrationState.Canceled]: localize('sql.migration.status.canceled', 'Canceled'),
+	[MigrationState.Canceling]: localize('sql.migration.status.canceling', 'Canceling'),
+	[MigrationState.Completing]: localize('sql.migration.status.completing', 'Completing'),
+	[MigrationState.Creating]: localize('sql.migration.status.creating', 'Creating'),
+	[MigrationState.Failed]: localize('sql.migration.status.failed', 'Failed'),
+	[MigrationState.InProgress]: localize('sql.migration.status.inprogress', 'In progress'),
+	[MigrationState.ReadyForCutover]: localize('sql.migration.status.readyforcutover', 'Ready for cutover'),
+	[MigrationState.Restoring]: localize('sql.migration.status.restoring', 'Restoring'),
+	[MigrationState.Retriable]: localize('sql.migration.status.retriable', 'Retriable'),
+	[MigrationState.Succeeded]: localize('sql.migration.status.succeeded', 'Succeeded'),
+	[MigrationState.UploadingFullBackup]: localize('sql.migration.status.uploadingfullbackup', 'Uploading full backup'),
+	[MigrationState.UploadingLogBackup]: localize('sql.migration.status.uploadinglogbackup', 'Uploading log backup'),
 	default: undefined
 };
 
@@ -859,9 +860,9 @@ export const ParallelCopyType: LookupTable<string | undefined> = {
 };
 
 export function STATUS_WARNING_COUNT(status: string, count: number): string | undefined {
-	if (status === MigrationStatus.InProgress ||
-		status === MigrationStatus.Creating ||
-		status === MigrationStatus.Completing) {
+	if (status === MigrationState.InProgress ||
+		status === MigrationState.Creating ||
+		status === MigrationState.Completing) {
 		switch (count) {
 			case 0:
 				return undefined;
