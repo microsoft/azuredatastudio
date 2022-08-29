@@ -1234,7 +1234,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 						else if (connection.userName.length === 0) {
 							let connectionDisplayName = this._capabilitiesService.getCapabilities(connectionInfo.providerId).connection.displayName;
 							this._logService.info(`Connection info provided is missing the required username for ` + connectionDisplayName);
-							errorMessage = nls.localize('connectionManagementService.noUsername', "Required username is missing.");
+							errorMessage = nls.localize('connectionManagementService.noUsername', "Required username is missing for the \"{0}\" connection.", connectionDisplayName);
 						}
 						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack, connectionProfile: connection });
 					}
