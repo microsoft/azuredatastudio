@@ -163,6 +163,10 @@ export function filterMigrations(databaseMigrations: azure.DatabaseMigration[], 
 				value => {
 					const status = getMigrationStatus(value);
 					return status === constants.MigrationState.InProgress
+						|| status === constants.MigrationState.ReadyForCutover
+						|| status === constants.MigrationState.UploadingFullBackup
+						|| status === constants.MigrationState.UploadingLogBackup
+						|| status === constants.MigrationState.Restoring
 						|| status === constants.MigrationState.Retriable
 						|| status === constants.MigrationState.Creating;
 				});

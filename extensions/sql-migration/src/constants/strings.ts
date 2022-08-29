@@ -861,6 +861,10 @@ export const ParallelCopyType: LookupTable<string | undefined> = {
 
 export function STATUS_WARNING_COUNT(status: string, count: number): string | undefined {
 	if (status === MigrationState.InProgress ||
+		status === MigrationState.ReadyForCutover ||
+		status === MigrationState.UploadingFullBackup ||
+		status === MigrationState.UploadingLogBackup ||
+		status === MigrationState.Restoring ||
 		status === MigrationState.Creating ||
 		status === MigrationState.Completing) {
 		switch (count) {
