@@ -450,42 +450,11 @@ declare module 'az-ext' {
 			uid: string, // "26d0f5bb-0c0b-4225-a6b5-5be2bf6feac0"
 		},
 		spec: {
-			engine: {
-				extensions: {
-					name: string // "citus"
-				}[],
-				settings: {
-					default: { [key: string]: string }, // { "max_connections": "101", "work_mem": "4MB" }
-					roles: {
-						coordinator: { [key: string]: string },
-						worker: { [key: string]: string }
-					}
-				},
-				version: string // "12"
-			},
-			scale: {
-				shards: number, // 1 (shards was renamed to workers, kept here for backwards compatibility)
-				workers: number // 1
-			},
 			scheduling: { // If no roles are specified, settings will apply to all nodes of the PostgreSQL Hyperscale server group.
 				default: {
 					resources: {
 						requests: SchedulingOptions,
 						limits: SchedulingOptions
-					}
-				},
-				roles: {
-					coordinator: {
-						resources: {
-							requests: SchedulingOptions,
-							limits: SchedulingOptions
-						}
-					},
-					worker: {
-						resources: {
-							requests: SchedulingOptions,
-							limits: SchedulingOptions
-						}
 					}
 				}
 			},
