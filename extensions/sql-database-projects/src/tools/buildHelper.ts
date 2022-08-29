@@ -84,8 +84,8 @@ export class BuildHelper {
 		try {
 			const httpClient = new HttpClient();
 			await httpClient.download(microsoftBuildSqlUrl, nugetPath, outputChannel);
-		} catch {
-			void vscode.window.showErrorMessage(constants.errorDownloading(microsoftBuildSqlUrl));
+		} catch (e) {
+			void vscode.window.showErrorMessage(constants.errorDownloading(microsoftBuildSqlUrl, utils.getErrorMessage(e)));
 			return;
 		}
 
@@ -95,8 +95,8 @@ export class BuildHelper {
 
 		try {
 			await extractZip(nugetPath, { dir: extractedFolderPath });
-		} catch {
-			void vscode.window.showErrorMessage(constants.errorExtracting(nugetPath));
+		} catch (e) {
+			void vscode.window.showErrorMessage(constants.errorExtracting(nugetPath, utils.getErrorMessage(e)));
 			return;
 		}
 

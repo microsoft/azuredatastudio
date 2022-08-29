@@ -612,7 +612,7 @@ export const downloadProgress = localize('downloadProgress', "Download progress"
 export const downloading = localize('downloading', "Downloading");
 
 // buildHelper
-export const downloadingDacFxDlls = localize('downloadingDacFxDlls', "Downloading Microsoft.Build.Sql nuget to get build dlls");
-export const extractingDacFxDlls = localize('extractingDacFxDlls', "Extracting DacFx build dlls");
-export function errorDownloading(url: string) { return localize('errorDownloading', "Error downloading {0}", url); }
-export function errorExtracting(path: string) { return localize('errorExtracting', "Error extracting files from {0}", path); }
+export const downloadingDacFxDlls = localize('downloadingDacFxDlls', "Downloading Microsoft.Build.Sql nuget to get build DLLs");
+export const extractingDacFxDlls = localize('extractingDacFxDlls', "Extracting DacFx build DLLs");
+export function errorDownloading(url: string, error: string) { return localize('errorDownloading', "Error downloading {0}. Error: {1}", url, error); }
+export function errorExtracting(path: string, error: string) { return localize('errorExtracting', "Error extracting files from {0}. Error: {1}", path, error); }

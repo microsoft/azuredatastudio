@@ -56,7 +56,7 @@ export class HttpClient {
 	}
 
 	/**
-	 * Gets a file/fileContents at the given URL.
+	 * Gets a file/fileContents at the given URL. Function is copied from Machine Learning extension extensions/machine-learning/src/common/httpClient.ts
 	 * @param downloadUrl The URL to download the file from
 	 * @param targetPath The path to download the file to
 	 * @param outputChannel The output channel to output status messages to
@@ -64,7 +64,6 @@ export class HttpClient {
 	 */
 	public download(downloadUrl: string, targetPath: string, outputChannel?: vscode.OutputChannel): Promise<void> {
 		return new Promise((resolve, reject) => {
-
 			let totalMegaBytes: number | undefined = undefined;
 			let receivedBytes = 0;
 			let printThreshold = 0.1;
