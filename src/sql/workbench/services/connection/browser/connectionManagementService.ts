@@ -1228,13 +1228,16 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 						this._connectionStatusManager.deleteConnection(uri);
 						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack, connectionProfile: connection });
 					} else {
+						let connectionOptions = this._capabilitiesService.getCapabilities(connection.providerName).connection.connectionOptions;
+						let authTypeRequired = connectionOptions.find(option => option.specialValueType === ConnectionOptionSpecialType.authType)?.isRequired;
 						if (connectionMngInfo.serverInfo) {
 							connection.options.isCloud = connectionMngInfo.serverInfo.isCloud;
 						}
-						else if (connection.userName.length === 0) {
-							let connectionDisplayName = this._capabilitiesService.getCapabilities(connectionInfo.providerId).connection.displayName;
-							this._logService.info(`Connection info provided is missing the required username for ` + connectionDisplayName);
-							errorMessage = nls.localize('connectionManagementService.noUsername', "Required username is missing for the \"{0}\" connection.", connectionDisplayName);
+						else if (connection.authenticationType === 'SqlLogin' && authTypeRequired && connection.userName.length === 0) {
+							let userNameDisplayName = this._capabilitiesService.getCapabilities(connection.providerName).connection.connectionOptions.find(
+								option => option.specialValueType === ConnectionOptionSpecialType.userName).displayName;
+							errorMessage = nls.localize('connectionManagementService.noUsername', "Required {0} is missing for the connection.", userNameDisplayName);
+							this._logService.info(errorMessage);
 						}
 						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack, connectionProfile: connection });
 					}
