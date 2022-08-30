@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { DesignerViewModel, DesignerEdit, DesignerComponentInput, DesignerView, DesignerTab, DesignerDataPropertyInfo, DropDownProperties, DesignerTableProperties, DesignerEditProcessedEventArgs, DesignerAction, DesignerStateChangedEventArgs, DesignerPropertyPath, DesignerIssue, ScriptProperty } from 'sql/workbench/browser/designer/interfaces';
+import { DesignerViewModel, DesignerEdit, DesignerComponentInput, DesignerView, DesignerTab, DesignerDataPropertyInfo, DropDownProperties, DesignerTableProperties, DesignerEditProcessedEventArgs, DesignerAction, DesignerStateChangedEventArgs, DesignerPropertyPath, DesignerIssue, ScriptProperty, DesignerUIState } from 'sql/workbench/browser/designer/interfaces';
 import { TableDesignerProvider } from 'sql/workbench/services/tableDesigner/common/interface';
 import { localize } from 'vs/nls';
 import { designers } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -18,6 +18,7 @@ import { IAdsTelemetryService, ITelemetryEventProperties } from 'sql/platform/te
 import { TelemetryAction, TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { TableDesignerMetadata } from 'sql/workbench/services/tableDesigner/browser/tableDesignerMetadata';
+import { Queue, timeout } from 'vs/base/common/async';
 
 const ErrorDialogTitle: string = localize('tableDesigner.ErrorDialogTitle', "Table Designer Error");
 export class TableDesignerComponentInput implements DesignerComponentInput {
@@ -32,13 +33,20 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 	private _onInitialized = new Emitter<void>();
 	private _onEditProcessed = new Emitter<DesignerEditProcessedEventArgs>();
 	private _onRefreshRequested = new Emitter<void>();
+	private _onSubmitPendingEditRequested = new Emitter<void>();
 	private _originalViewModel: DesignerViewModel;
 	private _tableDesignerView: azdata.designers.TableDesignerView;
+	private _activeEditPromise: Promise<void>;
+	private _isEditInProgress: boolean = false;
+	private _recentEditAccepted: boolean = true;
+	private _editQueue: Queue<void> = new Queue<void>();
 
 	public readonly onInitialized: Event<void> = this._onInitialized.event;
 	public readonly onEditProcessed: Event<DesignerEditProcessedEventArgs> = this._onEditProcessed.event;
 	public readonly onStateChange: Event<DesignerStateChangedEventArgs> = this._onStateChange.event;
 	public readonly onRefreshRequested: Event<void> = this._onRefreshRequested.event;
+	public readonly onSubmitPendingEditRequested: Event<void> = this._onSubmitPendingEditRequested.event;
+
 
 	private readonly designerEditTypeDisplayValue: { [key: number]: string } = {
 		0: 'Add', 1: 'Remove', 2: 'Update'
@@ -53,6 +61,8 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		@IInstantiationService private readonly _instantiationService: IInstantiationService,
 		@IErrorMessageService private readonly _errorMessageService: IErrorMessageService) {
 	}
+
+	public designerUIState?: DesignerUIState = undefined;
 
 	get valid(): boolean {
 		return this._valid;
@@ -87,44 +97,11 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 	}
 
 	processEdit(edit: DesignerEdit): void {
-		const telemetryInfo = this.createTelemetryInfo();
-		telemetryInfo.tableObjectType = this.getObjectTypeFromPath(edit.path);
-		const editAction = this._adsTelemetryService.createActionEvent(TelemetryView.TableDesigner,
-			this.designerEditTypeDisplayValue[edit.type]).withAdditionalProperties(telemetryInfo);
-		const startTime = new Date().getTime();
-		this.updateState(this.valid, this.dirty, 'processEdit');
-		this._provider.processTableEdit(this.tableInfo, edit).then(
-			result => {
-				if (result.inputValidationError) {
-					this._errorMessageService.showDialog(Severity.Error, ErrorDialogTitle, localize('tableDesigner.inputValidationError', "The input validation failed with error: {0}", result.inputValidationError));
-				}
-				this._viewModel = result.viewModel;
-				if (result.view) {
-					this.setDesignerView(result.view);
-				}
-				this._issues = result.issues;
-				this.updateState(result.isValid, this.isDirty(), undefined);
-
-				this._onEditProcessed.fire({
-					edit: edit,
-					result: {
-						isValid: result.isValid,
-						issues: result.issues,
-						refreshView: !!result.view
-					}
-				});
-				const metadataTelemetryInfo = TableDesignerMetadata.getTelemetryInfo(this._provider.providerId, result.metadata);
-				editAction.withAdditionalMeasurements({
-					'elapsedTimeMs': new Date().getTime() - startTime
-				}).withAdditionalProperties(metadataTelemetryInfo).send();
-			},
-			error => {
-				this._errorMessageService.showDialog(Severity.Error, ErrorDialogTitle, localize('tableDesigner.errorProcessingEdit', "An error occured while processing the change: {0}", error?.message ?? error), error?.data);
-				this.updateState(this.valid, this.dirty);
-				this._adsTelemetryService.createErrorEvent(TelemetryView.TableDesigner,
-					this.designerEditTypeDisplayValue[edit.type]).withAdditionalProperties(telemetryInfo).send();
-			}
-		);
+		// If there is already an edit being processed, the new edit will be skipped if the previous edit is not accepted.
+		const checkPreviousEditResult = this._editQueue.size !== 0;
+		this._editQueue.queue(async () => {
+			await this.doProcessEdit(edit, checkPreviousEditResult);
+		});
 	}
 
 	async generateScript(): Promise<void> {
@@ -183,6 +160,14 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 	}
 
 	async save(): Promise<void> {
+		this._onSubmitPendingEditRequested.fire();
+		await timeout(10);
+		if (this._isEditInProgress) {
+			await this._activeEditPromise;
+		}
+		if (!this.valid || !this._recentEditAccepted) {
+			return;
+		}
 		if (!this.isDirty()) {
 			return;
 		}
@@ -233,6 +218,60 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 
 	async revert(): Promise<void> {
 		this.updateState(true, false);
+	}
+
+	private async doProcessEdit(edit: DesignerEdit, checkPreviousEditResult: boolean): Promise<void> {
+		if (checkPreviousEditResult && !this._recentEditAccepted) {
+			return;
+		}
+		const telemetryInfo = this.createTelemetryInfo();
+		telemetryInfo.tableObjectType = this.getObjectTypeFromPath(edit.path);
+		const editAction = this._adsTelemetryService.createActionEvent(TelemetryView.TableDesigner,
+			this.designerEditTypeDisplayValue[edit.type]).withAdditionalProperties(telemetryInfo);
+		const startTime = new Date().getTime();
+		this.updateState(this.valid, this.dirty, 'processEdit');
+		this._activeEditPromise = new Promise(async (resolve) => {
+			this._isEditInProgress = true;
+			this._recentEditAccepted = true;
+			try {
+				const result = await this._provider.processTableEdit(this.tableInfo, edit);
+				if (result.inputValidationError) {
+					this._recentEditAccepted = false;
+					this._errorMessageService.showDialog(Severity.Error, ErrorDialogTitle, localize('tableDesigner.inputValidationError', "The input validation failed with error: {0}", result.inputValidationError));
+				}
+				this._viewModel = result.viewModel;
+				if (result.view) {
+					this.setDesignerView(result.view);
+				}
+				this._issues = result.issues;
+				this.updateState(result.isValid, this.isDirty(), undefined);
+
+				this._onEditProcessed.fire({
+					edit: edit,
+					result: {
+						isValid: result.isValid,
+						issues: result.issues,
+						refreshView: !!result.view
+					}
+				});
+				const metadataTelemetryInfo = TableDesignerMetadata.getTelemetryInfo(this._provider.providerId, result.metadata);
+				editAction.withAdditionalMeasurements({
+					'elapsedTimeMs': new Date().getTime() - startTime
+				}).withAdditionalProperties(metadataTelemetryInfo).send();
+			}
+			catch (error) {
+				this._errorMessageService.showDialog(Severity.Error, ErrorDialogTitle, localize('tableDesigner.errorProcessingEdit', "An error occured while processing the change: {0}", error?.message ?? error), error?.data);
+				this.updateState(this.valid, this.dirty);
+				this._adsTelemetryService.createErrorEvent(TelemetryView.TableDesigner,
+					this.designerEditTypeDisplayValue[edit.type]).withAdditionalProperties(telemetryInfo).send();
+				this._recentEditAccepted = false;
+			}
+			finally {
+				this._isEditInProgress = false;
+				resolve();
+			}
+		});
+		return this._activeEditPromise;
 	}
 
 	private updateState(valid: boolean, dirty: boolean, pendingAction?: DesignerAction): void {

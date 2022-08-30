@@ -56,7 +56,7 @@ let extensionContext: vscode.ExtensionContext;
 function getAppDataPath() {
 	let platform = process.platform;
 	switch (platform) {
-		case 'win32': return process.env['APPDATA'] || path.join(process.env['USERPROFILE'], 'AppData', 'Roaming');
+		case 'win32': return process.env['APPDATA'] || path.join(process.env['USERPROFILE']!, 'AppData', 'Roaming');
 		case 'darwin': return path.join(os.homedir(), 'Library', 'Application Support');
 		case 'linux': return process.env['XDG_CONFIG_HOME'] || path.join(os.homedir(), '.config');
 		default: throw new Error('Platform not supported');
@@ -79,7 +79,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 
 	let storagePath = await findOrMakeStoragePath();
 	if (!storagePath) {
-		return undefined;
+		throw new Error('Could not find or create storage path');
 	}
 
 	// TODO: Since Code Grant auth doesnt work in web mode, enabling Device code auth by default for web mode. We can remove this once we have that working in web mode.
@@ -98,7 +98,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 	const connectionDialogTree = new ConnectionDialogTreeProvider(appContext);
 	pushDisposable(vscode.window.registerTreeDataProvider('azureResourceExplorer', azureResourceTree));
 	pushDisposable(vscode.window.registerTreeDataProvider('connectionDialog/azureResourceExplorer', connectionDialogTree));
-	pushDisposable(vscode.workspace.onDidChangeConfiguration(e => onDidChangeConfiguration(e), this));
+	pushDisposable(vscode.workspace.onDidChangeConfiguration(e => onDidChangeConfiguration(e)));
 	registerAzureResourceCommands(appContext, azureResourceTree, connectionDialogTree);
 	azdata.dataprotocol.registerDataGridProvider(new AzureDataGridProvider(appContext));
 	vscode.commands.registerCommand('azure.dataGrid.openInAzurePortal', async (item: azdata.DataGridItem) => {
@@ -280,8 +280,8 @@ async function onDidChangeConfiguration(e: vscode.ConfigurationChangeEvent): Pro
 	}
 }
 
-function updatePiiLoggingLevel() {
-	const piiLogging: boolean = vscode.workspace.getConfiguration(constants.extensionConfigSectionName).get('piiLogging');
+function updatePiiLoggingLevel(): void {
+	const piiLogging: boolean = vscode.workspace.getConfiguration(constants.extensionConfigSectionName).get('piiLogging', false);
 	Logger.piiLogging = piiLogging;
 }
 

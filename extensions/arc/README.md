@@ -10,7 +10,7 @@ This extension adds the following features to Azure Data Studio.
 
 A gui-based experience to deploy an Azure Arc data controller as well as resources on an existing Azure Arc data controller. Current list of supported resources:
 * SQL Managed Instance
-* PostgreSQL server groups
+* PostgreSQL server
 
 ### Management Dashboards
 

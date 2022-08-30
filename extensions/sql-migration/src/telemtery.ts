@@ -57,7 +57,7 @@ export enum TelemetryAction {
 	OnPageLeave = 'OnPageLeave',
 	GetMISkuRecommendation = 'GetMISkuRecommendation',
 	GetVMSkuRecommendation = 'GetVMSkuRecommendation',
-	GetSqlDbSkuRecommendation = 'GetSqlDbSkuRecommendation',
+	GetDBSkuRecommendation = 'GetDBSkuRecommendation',
 	GetInstanceRequirements = 'GetInstanceRequirements',
 	StartDataCollection = 'StartDataCollection',
 	StopDataCollection = 'StopDataCollection'
