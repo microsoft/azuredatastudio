@@ -27,7 +27,7 @@ export class ControllerTreeNode extends TreeNode {
 
 	private _children: ResourceTreeNode<ResourceModel>[] = [];
 
-	constructor(public model: ControllerModel, private _context: vscode.ExtensionContext, private _treeDataProvider: AzureArcTreeDataProvider) {
+	constructor(public model: ControllerModel, private _treeDataProvider: AzureArcTreeDataProvider) {
 		super(model.label, vscode.TreeItemCollapsibleState.Collapsed, ResourceType.dataControllers);
 		model.onInfoUpdated(_ => {
 			this.label = model.label;
@@ -107,7 +107,7 @@ export class ControllerTreeNode extends TreeNode {
 							info.name === resourceInfo.name &&
 							info.resourceType === resourceInfo.resourceType) as PGResourceInfo)?.userName;
 						const postgresModel = new PostgresModel(this.model, resourceInfo, registration, this._treeDataProvider);
-						node = new PostgresTreeNode(postgresModel, this.model, this._context);
+						node = new PostgresTreeNode(postgresModel, this.model);
 						break;
 					case ResourceType.sqlManagedInstances:
 						// Fill in the username too if we already have it

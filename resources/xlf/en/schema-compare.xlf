@@ -291,6 +291,9 @@
     <trans-unit id="displayName">
       <source xml:lang="en">SQL Server Schema Compare</source>
     </trans-unit>
+    <trans-unit id="schemaCompare.openInScmp">
+      <source xml:lang="en">Open in Schema Compare</source>
+    </trans-unit>
     <trans-unit id="schemaCompare.runComparison">
       <source xml:lang="en">Run Schema Comparison</source>
     </trans-unit>

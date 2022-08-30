@@ -538,10 +538,20 @@ declare module 'mssql' {
 
 	export interface SkuRecommendationResult {
 		sqlDbRecommendationResults: PaaSSkuRecommendationResultItem[];
+		sqlDbRecommendationDurationInMs: number;
 		sqlMiRecommendationResults: PaaSSkuRecommendationResultItem[];
+		sqlMiRecommendationDurationInMs: number;
 		sqlVmRecommendationResults: IaaSSkuRecommendationResultItem[];
+		sqlVmRecommendationDurationInMs: number;
+		elasticSqlDbRecommendationResults: PaaSSkuRecommendationResultItem[];
+		elasticSqlDbRecommendationDurationInMs: number;
+		elasticSqlMiRecommendationResults: PaaSSkuRecommendationResultItem[];
+		elasticSqlMiRecommendationDurationInMs: number;
+		elasticSqlVmRecommendationResults: IaaSSkuRecommendationResultItem[];
+		elasticSqlVmRecommendationDurationInMs: number;
 		instanceRequirements: SqlInstanceRequirements;
 		skuRecommendationReportPaths: string[];
+		elasticSkuRecommendationReportPaths: string[];
 	}
 
 	// SKU recommendation enums, mirrored from Microsoft.SqlServer.Migration.SkuRecommendation

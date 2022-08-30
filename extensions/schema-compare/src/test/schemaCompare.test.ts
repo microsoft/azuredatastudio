@@ -169,7 +169,7 @@ describe('SchemaCompareMainWindow.results @DacFx@', function (): void {
 
 		schemaCompareResult.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
 		schemaCompareResult.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
-		await schemaCompareResult.openScmp();
+		await schemaCompareResult.openScmpFile(files[0], true);
 
 		should(showErrorMessageSpy.calledOnce).be.true();
 		should.equal(showErrorMessageSpy.getCall(0).args[0], loc.openScmpErrorMessage('error1'));

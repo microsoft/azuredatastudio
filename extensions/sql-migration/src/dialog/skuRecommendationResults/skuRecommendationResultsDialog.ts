@@ -20,6 +20,7 @@ export class SkuRecommendationResultsDialog {
 
 	private _isOpen: boolean = false;
 	private dialog: azdata.window.Dialog | undefined;
+	private migrationStateModel: MigrationStateModel;
 
 	// Dialog Name for Telemetry
 	public dialogName: string | undefined;
@@ -45,6 +46,7 @@ export class SkuRecommendationResultsDialog {
 		}
 
 		this.title = constants.RECOMMENDATIONS_TITLE(this.targetName);
+		this.migrationStateModel = model;
 	}
 
 	private async initializeDialog(dialog: azdata.window.Dialog): Promise<void> {
@@ -159,16 +161,23 @@ export class SkuRecommendationResultsDialog {
 		if (this._targetType === MigrationTargetType.SQLDB) {
 			const databaseNameLabel = _view.modelBuilder.text()
 				.withProps({
+					value: constants.SOURCE_DATABASE,
+					CSSStyles: { ...styles.LABEL_CSS, 'margin': '0', }
+				}).component();
+
+			const databaseNameValue = _view.modelBuilder.text()
+				.withProps({
 					value: recommendation.databaseName!,
-					CSSStyles: { ...styles.SECTION_HEADER_CSS, }
+					CSSStyles: { ...styles.BODY_CSS, 'margin': '0', }
 				}).component();
 			recommendationContainer.addItem(databaseNameLabel);
+			recommendationContainer.addItem(databaseNameValue);
 		}
 
 		const targetDeploymentTypeLabel = _view.modelBuilder.text()
 			.withProps({
 				value: constants.TARGET_DEPLOYMENT_TYPE,
-				CSSStyles: { ...styles.LABEL_CSS, 'margin': '0', }
+				CSSStyles: { ...styles.LABEL_CSS, 'margin': '12px 0 0', }
 			}).component();
 		const targetDeploymentTypeValue = _view.modelBuilder.text()
 			.withProps({
@@ -456,15 +465,25 @@ export class SkuRecommendationResultsDialog {
 
 			switch (this._targetType) {
 				case MigrationTargetType.SQLMI:
-					this.targetRecommendations = recommendations?.sqlMiRecommendationResults;
+					if (this.migrationStateModel._skuEnableElastic) {
+						this.targetRecommendations = recommendations?.elasticSqlMiRecommendationResults;
+					} else {
+						this.targetRecommendations = recommendations?.sqlMiRecommendationResults;
+					}
 					break;
 
 				case MigrationTargetType.SQLVM:
+					// elastic model currently doesn't support SQL VM, so show the baseline model results regardless of user preference
+					// this.targetRecommendations = recommendations?.elasticModelResults.sqlDbRecommendationResults;
 					this.targetRecommendations = recommendations?.sqlVmRecommendationResults;
 					break;
 
 				case MigrationTargetType.SQLDB:
-					this.targetRecommendations = recommendations?.sqlDbRecommendationResults;
+					if (this.migrationStateModel._skuEnableElastic) {
+						this.targetRecommendations = recommendations?.elasticSqlDbRecommendationResults;
+					} else {
+						this.targetRecommendations = recommendations?.sqlDbRecommendationResults;
+					}
 					break;
 			}
 
@@ -484,38 +503,39 @@ export class SkuRecommendationResultsDialog {
 			this._disposables.push(
 				this._saveButton.onClick(async () => {
 					const folder = await utils.promptUserForFolder();
+					if (folder) {
+						if (this.model._skuRecommendationReportFilePaths) {
 
-					if (this.model._skuRecommendationReportFilePaths) {
+							let sourceFilePath: string | undefined;
+							let destinationFilePath: string | undefined;
 
-						let sourceFilePath: string | undefined;
-						let destinationFilePath: string | undefined;
+							switch (this._targetType) {
+								case MigrationTargetType.SQLMI:
+									sourceFilePath = this.model._skuRecommendationReportFilePaths.find(filePath => filePath.includes('SkuRecommendationReport-AzureSqlManagedInstance'));
+									destinationFilePath = path.join(folder, 'SkuRecommendationReport-AzureSqlManagedInstance.html');
+									break;
 
-						switch (this._targetType) {
-							case MigrationTargetType.SQLMI:
-								sourceFilePath = this.model._skuRecommendationReportFilePaths.find(filePath => filePath.includes('SkuRecommendationReport-AzureSqlManagedInstance'));
-								destinationFilePath = path.join(folder, 'SkuRecommendationReport-AzureSqlManagedInstance.html');
-								break;
+								case MigrationTargetType.SQLVM:
+									sourceFilePath = this.model._skuRecommendationReportFilePaths.find(filePath => filePath.includes('SkuRecommendationReport-AzureSqlVirtualMachine'));
+									destinationFilePath = path.join(folder, 'SkuRecommendationReport-AzureSqlVirtualMachine.html');
+									break;
 
-							case MigrationTargetType.SQLVM:
-								sourceFilePath = this.model._skuRecommendationReportFilePaths.find(filePath => filePath.includes('SkuRecommendationReport-AzureSqlVirtualMachine'));
-								destinationFilePath = path.join(folder, 'SkuRecommendationReport-AzureSqlVirtualMachine.html');
-								break;
-
-							case MigrationTargetType.SQLDB:
-								sourceFilePath = this.model._skuRecommendationReportFilePaths.find(filePath => filePath.includes('SkuRecommendationReport-AzureSqlDatabase'));
-								destinationFilePath = path.join(folder, 'SkuRecommendationReport-AzureSqlDatabase.html');
-								break;
-						}
-
-						fs.copyFile(sourceFilePath!, destinationFilePath, (err) => {
-							if (err) {
-								console.log(err);
-							} else {
-								void vscode.window.showInformationMessage(constants.SAVE_RECOMMENDATION_REPORT_SUCCESS(destinationFilePath!));
+								case MigrationTargetType.SQLDB:
+									sourceFilePath = this.model._skuRecommendationReportFilePaths.find(filePath => filePath.includes('SkuRecommendationReport-AzureSqlDatabase'));
+									destinationFilePath = path.join(folder, 'SkuRecommendationReport-AzureSqlDatabase.html');
+									break;
 							}
-						});
-					} else {
-						console.log('recommendation report not found');
+
+							fs.copyFile(sourceFilePath!, destinationFilePath, (err) => {
+								if (err) {
+									console.log(err);
+								} else {
+									void vscode.window.showInformationMessage(constants.SAVE_RECOMMENDATION_REPORT_SUCCESS(destinationFilePath!));
+								}
+							});
+						} else {
+							console.log('recommendation report not found');
+						}
 					}
 				}));
 			this.dialog.customButtons = [this._saveButton];

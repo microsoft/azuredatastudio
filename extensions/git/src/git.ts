@@ -1031,7 +1031,7 @@ export class Repository {
 		}
 
 		if (!isText) {
-			const result = filetype(buffer);
+			const result = await filetype.fromBuffer(buffer);
 
 			if (!result) {
 				return { mimetype: 'application/octet-stream' };

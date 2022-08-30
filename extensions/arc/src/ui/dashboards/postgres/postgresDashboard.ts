@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as loc from '../../../localizedConstants';
 import { ControllerModel } from '../../../models/controllerModel';
@@ -11,17 +10,11 @@ import { PostgresModel } from '../../../models/postgresModel';
 import { PostgresOverviewPage } from './postgresOverviewPage';
 import { PostgresConnectionStringsPage } from './postgresConnectionStringsPage';
 import { Dashboard } from '../../components/dashboard';
-import { PostgresDiagnoseAndSolveProblemsPage } from './postgresDiagnoseAndSolveProblemsPage';
 import { PostgresSupportRequestPage } from './postgresSupportRequestPage';
 import { PostgresComputeAndStoragePage } from './postgresComputeAndStoragePage';
-import { PostgresWorkerNodeParametersPage } from './postgresWorkerNodeParametersPage';
-import { PostgresPropertiesPage } from './postgresPropertiesPage';
-import { PostgresResourceHealthPage } from './postgresResourceHealthPage';
-import { PostgresCoordinatorNodeParametersPage } from './postgresCoordinatorNodeParametersPage';
-import { PostgresExtensionsPage } from './postgresExtensionsPage';
 
 export class PostgresDashboard extends Dashboard {
-	constructor(private _context: vscode.ExtensionContext, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
+	constructor(private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
 		super(loc.postgresDashboard(_postgresModel.info.name), 'ArcPgDashboard');
 	}
 
@@ -35,34 +28,22 @@ export class PostgresDashboard extends Dashboard {
 
 	protected async registerTabs(modelView: azdata.ModelView): Promise<(azdata.DashboardTab | azdata.DashboardTabGroup)[]> {
 		const overviewPage = new PostgresOverviewPage(modelView, this.dashboard, this._controllerModel, this._postgresModel);
-		const extensionsPage = new PostgresExtensionsPage(modelView, this.dashboard, this._postgresModel);
 		const connectionStringsPage = new PostgresConnectionStringsPage(modelView, this.dashboard, this._postgresModel);
 		const computeAndStoragePage = new PostgresComputeAndStoragePage(modelView, this.dashboard, this._postgresModel);
-		const propertiesPage = new PostgresPropertiesPage(modelView, this.dashboard, this._controllerModel, this._postgresModel);
-		const coordinatorNodeParametersPage = new PostgresCoordinatorNodeParametersPage(modelView, this.dashboard, this._postgresModel);
-		const workerNodeParametersPage = new PostgresWorkerNodeParametersPage(modelView, this.dashboard, this._postgresModel);
-		const diagnoseAndSolveProblemsPage = new PostgresDiagnoseAndSolveProblemsPage(modelView, this.dashboard, this._context, this._controllerModel, this._postgresModel);
 		const supportRequestPage = new PostgresSupportRequestPage(modelView, this.dashboard, this._controllerModel, this._postgresModel);
-		const resourceHealthPage = new PostgresResourceHealthPage(modelView, this.dashboard, this._postgresModel);
 
 		return [
 			overviewPage.tab,
 			{
 				title: loc.settings,
 				tabs: [
-					propertiesPage.tab,
-					extensionsPage.tab,
 					connectionStringsPage.tab,
-					computeAndStoragePage.tab,
-					coordinatorNodeParametersPage.tab,
-					workerNodeParametersPage.tab
+					computeAndStoragePage.tab
 				]
 			},
 			{
 				title: loc.supportAndTroubleshooting,
 				tabs: [
-					resourceHealthPage.tab,
-					diagnoseAndSolveProblemsPage.tab,
 					supportRequestPage.tab
 				]
 			}
