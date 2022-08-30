@@ -186,9 +186,8 @@ export function canRetryMigration(migration: DatabaseMigration | undefined): boo
 export function canCutoverMigration(migration: DatabaseMigration | undefined): boolean {
 	const status = getMigrationStatus(migration);
 	return hasMigrationOperationId(migration)
-		&& status === loc.MigrationState.ReadyForCutover
 		&& isOnlineMigration(migration)
-		&& isFullBackupRestored(migration);
+		&& (status === loc.MigrationState.ReadyForCutover || isFullBackupRestored(migration));
 }
 
 export function isActiveMigration(migration: DatabaseMigration | undefined): boolean {
