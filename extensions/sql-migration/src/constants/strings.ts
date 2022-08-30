@@ -531,7 +531,7 @@ export const TABLE_SELECTION_HASROWS_COLUMN = localize('sql.migratino.table.sele
 // integration runtime page
 export const SELECT_RESOURCE_GROUP = localize('sql.migration.blob.resourceGroup.select', "Select a resource group.");
 export const IR_PAGE_TITLE = localize('sql.migration.ir.page.title', "Azure Database Migration Service");
-export const IR_PAGE_DESCRIPTION = localize('sql.migration.ir.page.description', "Azure Database Migration Service orchestrates database migration activities and tracks their progress. You can select an existing Database Migration Service as an Azure SQL target if you have created one previously, or create a new one below.");
+export const IR_PAGE_DESCRIPTION = localize('sql.migration.ir.page.description', "Azure Database Migration Service orchestrates database migration activities and tracks their progress. You can select an existing Database Migration Service if you have created one previously, or create a new one below.");
 export const SQL_MIGRATION_SERVICE_NOT_FOUND_ERROR = localize('sql.migration.ir.page.sql.migration.service.not.found', "No Database Migration Service found. Create a new one.");
 export const CREATE_NEW = localize('sql.migration.create.new', "Create new");
 export const CREATE_NEW_MIGRATION_SERVICE = localize('sql.migration.create.new.migration.service', "Create new migration service");
