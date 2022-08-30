@@ -10,6 +10,83 @@ import * as constants from '../constants/strings';
 import { getSessionIdHeader } from './utils';
 import { URL } from 'url';
 
+const mocks = [
+	{
+		id: "/subscriptions/f133ff51-53dc-4486-a487-47049d50ab9e/resourceGroups/brih-dms-v2/providers/Microsoft.Sql/managedInstances/brih-dms-v2-sql-mi/providers/Microsoft.DataMigration/databaseMigrations/FakeMigration",
+		name: "FakeMigration",
+		properties: {
+			backupConfiguration: {
+				sourceLocation: {
+					fileStorageType: "AzureBlob",
+				},
+			},
+			kind: "SqlMi",
+			migrationOperationId: "0b84baff-e6a4-4aca-9b43-bb03d8f0e1ac",
+			migrationService: "/subscriptions/f133ff51-53dc-4486-a487-47049d50ab9e/resourceGroups/brih-dms-v2/providers/Microsoft.DataMigration/sqlMigrationServices/brih-dms-v2",
+			migrationStatus: "Restoring",
+			provisioningState: "Succeeded",
+			scope: "/subscriptions/f133ff51-53dc-4486-a487-47049d50ab9e/resourceGroups/brih-dms-v2/providers/Microsoft.Sql/managedInstances/brih-dms-v2-sql-mi",
+			sourceDatabaseName: "AdventureWorks",
+			startedOn: "2022-08-28T01:04:12.357Z",
+		},
+		type: "Microsoft.DataMigration/databaseMigrations",
+	},
+	{
+		id: "/subscriptions/f133ff51-53dc-4486-a487-47049d50ab9e/resourceGroups/brih-dms-v2/providers/Microsoft.Sql/managedInstances/brih-dms-v2-sql-mi/providers/Microsoft.DataMigration/databaseMigrations/FakeMigration2",
+		name: "FakeMigration2",
+		properties: {
+			backupConfiguration: {
+				sourceLocation: {
+					fileStorageType: "AzureBlob",
+				},
+			},
+			kind: "SqlMi",
+			migrationOperationId: "0b84baff-e6a4-4aca-9b43-bb03d8f0e1ac",
+			migrationService: "/subscriptions/f133ff51-53dc-4486-a487-47049d50ab9e/resourceGroups/brih-dms-v2/providers/Microsoft.DataMigration/sqlMigrationServices/brih-dms-v2",
+			migrationStatus: "ReadyForCutover",
+			migrationStatusDetails: {
+				blobContainerName: "00000000-0000-0000-0000-000000000000",
+				currentRestoringFilename: "Full",
+				lastRestoredFilename: "Full",
+				migrationState: "MonitorMigration"
+			},
+			provisioningState: "Succeeded",
+			scope: "/subscriptions/f133ff51-53dc-4486-a487-47049d50ab9e/resourceGroups/brih-dms-v2/providers/Microsoft.Sql/managedInstances/brih-dms-v2-sql-mi",
+			sourceDatabaseName: "AdventureWorks",
+			startedOn: "2022-08-28T01:04:12.357Z",
+		},
+		type: "Microsoft.DataMigration/databaseMigrations",
+	},
+	{
+		id: "/subscriptions/f133ff51-53dc-4486-a487-47049d50ab9e/resourceGroups/brih-dms-v2/providers/Microsoft.Sql/managedInstances/brih-dms-v2-sql-mi/providers/Microsoft.DataMigration/databaseMigrations/FakeMigration3",
+		name: "FakeMigration3",
+		properties: {
+			backupConfiguration: {
+				sourceLocation: {
+					fileStorageType: "AzureBlob",
+				},
+			},
+			kind: "SqlMi",
+			migrationOperationId: "0b84baff-e6a4-4aca-9b43-bb03d8f0e1ac",
+			migrationService: "/subscriptions/f133ff51-53dc-4486-a487-47049d50ab9e/resourceGroups/brih-dms-v2/providers/Microsoft.DataMigration/sqlMigrationServices/brih-dms-v2",
+			migrationStatus: "Completing",
+			migrationStatusDetails: {
+				blobContainerName: "00000000-0000-0000-0000-000000000000",
+				currentRestoringFilename: "Full",
+				lastRestoredFilename: "Full",
+				migrationState: "WaitForCompletion",
+				pendingLogBackupsCount: "0"
+			},
+			provisioningState: "Completing",
+			scope: "/subscriptions/f133ff51-53dc-4486-a487-47049d50ab9e/resourceGroups/brih-dms-v2/providers/Microsoft.Sql/managedInstances/brih-dms-v2-sql-mi",
+			sourceDatabaseName: "AdventureWorks",
+			startedOn: "2022-08-28T01:04:12.357Z",
+		},
+		type: "Microsoft.DataMigration/databaseMigrations",
+	},
+
+];
+
 const ARM_MGMT_API_VERSION = '2021-04-01';
 const SQL_VM_API_VERSION = '2021-11-01-preview';
 const SQL_MI_API_VERSION = '2021-11-01-preview';
@@ -439,9 +516,12 @@ export async function getMigrationDetails(account: azdata.Account, subscription:
 	const api = await getAzureCoreAPI();
 	// const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
 	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true);
-	if (response.errors.length > 0) {
-		throw new Error(response.errors.toString());
-	}
+	// if (response.errors.length > 0) {
+	// 	throw new Error(response.errors.toString());
+	// }
+
+	// mocks
+	response.response.data = mocks.find(mock => mock.id === migrationId);
 
 	return response.response.data;
 }
@@ -454,6 +534,9 @@ export async function getServiceMigrations(account: azdata.Account, subscription
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
 	}
+
+	// mocks
+	response.response.data.value = mocks;
 
 	return response.response.data.value;
 }
