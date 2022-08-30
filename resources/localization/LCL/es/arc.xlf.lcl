@@ -214,6 +214,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.computeConfiguration" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Compute Configuration]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Configuración de proceso]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -325,8 +328,8 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.connectToPGSql" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Connect to PostgreSQL server - Azure Arc ({0})]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Conexión a hiperescala de PostgreSQL: Azure Arc ({0})]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Conexión al servidor PostgreSQL: Azure Arc ({0})]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Connect to PostgreSQL Hyperscale - Azure Arc ({0})]]></Val>
@@ -337,8 +340,8 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.connectToPGSqlFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Could not connect to PostgreSQL server - Azure Arc Instance {0}. {1}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[No se pudo conectar a hiperescala de PostgreSQL: instancia de Azure Arc {0}. {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[No se pudo conectar con el servidor PostgreSQL: instancia de Azure Arc {0}. {1}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Could not connect to PostgreSQL Hyperscale - Azure Arc Instance {0}. {1}]]></Val>
@@ -1273,8 +1276,8 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.learnAboutNodeParameters" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Learn more about database engine settings for Azure Arc-enabled PostgreSQL]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Más información sobre la configuración del motor de base de datos para hiperescala de PostgreSQL habilitada para Azure Arc]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Más información sobre la configuración del motor de base de datos para PostgreSQL habilitada para Azure Arc]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Learn more about database engine settings for Azure Arc-enabled PostgreSQL Hyperscale]]></Val>
@@ -1285,8 +1288,8 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.learnAboutPostgresClients" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Learn more about Azure PostgreSQL client interfaces]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Más información sobre las interfaces de cliente de hiperescala de Azure PostgreSQL]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Más información sobre las interfaces de cliente de Azure PostgreSQL]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Learn more about Azure PostgreSQL Hyperscale client interfaces]]></Val>
@@ -1570,8 +1573,8 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.noPodIssuesDetected" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[There aren’t any known issues affecting this PostgreSQL instance.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[No hay ningún problema conocido que afecte a esta instancia de hiperescala de PostgreSQL.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[No hay ningún problema conocido que afecte a esta instancia de PostgreSQL.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[There aren’t any known issues affecting this PostgreSQL Hyperscale instance.]]></Val>
@@ -1843,8 +1846,8 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.pgSqlType" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[PostgreSQL server - Azure Arc]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Hiperescala de PostgreSQL: Azure Arc]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Servidor PostgreSQL: Azure Arc]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[PostgreSQL Hyperscale - Azure Arc]]></Val>
@@ -1957,8 +1960,8 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.postgres.computeAndStorageDescriptionPartTwo" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[PostgreSQL by]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Grupo de servidores de hiperescala de PostgreSQL por]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[PostgreSQL por]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[PostgreSQL Hyperscale server group by]]></Val>
@@ -1996,8 +1999,8 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.postgresDashboard" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[PostgreSQL server - Azure Arc Dashboard (Preview) - {0}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Hiperescala de PostgreSQL: panel de Azure Arc - {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Servidor PostgreSQL: panel de Azure Arc (versión preliminar) - {0}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[PostgreSQL Hyperscale - Azure Arc Dashboard - {0}]]></Val>
@@ -3082,20 +3085,26 @@
       <Item ItemId=";extensions/arc/package.arc.agreement.postgres.help.text" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[PostgreSQL Server - Azure Arc is one of the database engines available as part of Azure Arc-enabled data services and it can be deployed on the infrastructure of your choice. {0}. ]D;]A; ]D;]A; By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Servidor PostgreSQL: Azure Arc es uno de los motores de base de datos disponibles como parte de los servicios de datos habilitados para Azure Arc y se puede implementar en la infraestructura que prefiera. {0}. ]D;]A; ]D;]A; Al hacer clic en "De script a cuaderno" o "Implementar", (a) acepto los términos legales y las declaraciones de privacidad asociados a cada oferta de Marketplace enumerada a continuación; (b) autorizo a Microsoft a facturar, de acuerdo con mi método de pago actual, las cuotas relativas a las ofertas con la misma frecuencia de facturación que mi suscripción de Azure; y (c) autorizo a Microsoft a compartir mi información de contacto y los datos de transacción y uso con los proveedores de dichas ofertas para fines de soporte técnico, facturación y otras actividades transaccionales. Microsoft no proporciona derechos sobre ofertas de terceros. Para más información, consulte {1}, {2} y {3}.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/package.arc.agreement.postgres.help.text.learn.more.ariaLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Learn more about PostgreSQL Server - Azure Arc]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Más información sobre el servidor PostgreSQL: Azure Arc]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/package.arc.agreement.postgres.terms.conditions" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[PostgreSQL Server - Azure Arc terms and conditions]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Términos y condiciones de hiperescala de PostgreSQL habilitados para Azure Arc]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Servidor PostgreSQL: términos y condiciones de Azure Arc]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Azure Arc-enabled PostgreSQL Hyperscale terms and conditions]]></Val>
@@ -3106,7 +3115,7 @@
       <Item ItemId=";extensions/arc/package.arc.agreement.sql.help.text" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Arc-enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}. ]D;]A; ]D;]A; By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[La instancia administrada habilitada para Azure Arc proporciona a SQL Server acceso y compatibilidad de características que se pueden implementar en la infraestructura de su elección. {0}. ]D;]A; ]D;]A; Al hacer clic en "De script a cuaderno" o "Implementar", (a) acepto los términos legales y las declaraciones de privacidad asociados a cada oferta de Marketplace enumerada a continuación; (b) autorizo a Microsoft a facturar, de acuerdo con mi método de pago actual, las cuotas relativas a las ofertas con la misma frecuencia de facturación que mi suscripción de Azure; y (c) autorizo a Microsoft a compartir mi información de contacto y los datos de transacción y uso con los proveedores de dichas ofertas para fines de soporte técnico, facturación y otras actividades transaccionales. Microsoft no proporciona derechos sobre ofertas de terceros. Para más información, consulte {1}, {2} y {3}.]]></Val>
           </Tgt>
           <Prev Cat="Text">
@@ -3118,7 +3127,7 @@
       <Item ItemId=";extensions/arc/package.arc.agreement.sql.help.text.learn.more.ariaLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Learn more about Azure Arc-enabled Managed Instance]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Más información sobre la instancia administrada habilitada para Azure Arc]]></Val>
           </Tgt>
           <Prev Cat="Text">
@@ -4048,6 +4057,9 @@
       <Item ItemId=";extensions/arc/package.arc.postgres.server.name.validation.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Server name must consist of lower case alphanumeric characters or '-', start with a letter, end with an alphanumeric character, and be 11 characters or fewer in length.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[El nombre de servidor debe constar de caracteres alfanuméricos en minúsculas o "-", empezar con una letra, terminar con un carácter alfanumérico y tener 11 caracteres o menos de longitud.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4117,6 +4129,9 @@
       <Item ItemId=";extensions/arc/package.arc.postgres.settings.resource.compute.config.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Compute Configuration]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Configuración de proceso]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4168,8 +4183,8 @@
       <Item ItemId=";extensions/arc/package.arc.postgres.wizard.page1.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Provide PostgreSQL server parameters]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Proporcionar los parámetros del grupo de servidores de hiperescala de PostgreSQL habilitado para Azure]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Proporcionar parámetros de servidor PostgreSQL]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Provide Azure enabled PostgreSQL Hyperscale server group parameters]]></Val>
@@ -4180,8 +4195,8 @@
       <Item ItemId=";extensions/arc/package.arc.postgres.wizard.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Deploy a PostgreSQL Server - Azure Arc (Preview)]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Implementar un grupo de servidores de hiperescala de PostgreSQL habilitada para Azure Arc]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Implementar un servidor PostgreSQL: Azure Arc (versión preliminar)]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Deploy an Azure Arc-enabled PostgreSQL Hyperscale server group]]></Val>
@@ -5086,8 +5101,8 @@
       <Item ItemId=";extensions/arc/package.resource.type.arc.postgres.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Deploy a PostgreSQL server into an Azure Arc environment]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Permite implementar grupos de servidores de hiperescala de PostgreSQL en un entorno de Azure Arc.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Implementación de un servidor PostgreSQL en un entorno de Azure Arc]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Deploy PostgreSQL Hyperscale server groups into an Azure Arc environment]]></Val>
@@ -5098,8 +5113,8 @@
       <Item ItemId=";extensions/arc/package.resource.type.arc.postgres.display.name" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[PostgreSQL Server - Azure Arc (Preview)]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Grupos de servidores de hiperescala de PostgreSQL: Azure Arc]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Servidor PostgreSQL: Azure Arc (versión preliminar)]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[PostgreSQL Hyperscale server groups - Azure Arc]]></Val>
