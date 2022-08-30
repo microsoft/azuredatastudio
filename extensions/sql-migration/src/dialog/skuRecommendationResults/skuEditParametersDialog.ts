@@ -24,12 +24,11 @@ export class SkuEditParametersDialog {
 	private _scaleFactorInput!: azdata.InputBoxComponent;
 	private _targetPercentileDropdown!: azdata.DropDownComponent;
 	private _enablePreviewValue!: boolean;
+	private _enableElasticRecommendation!: boolean;
 
 	constructor(
 		public skuRecommendationPage: SKURecommendationPage,
 		public migrationStateModel: MigrationStateModel) {
-
-		this._enablePreviewValue = true;
 	}
 
 	private async initializeDialog(dialog: azdata.window.Dialog): Promise<void> {
@@ -182,6 +181,70 @@ export class SkuEditParametersDialog {
 				CSSStyles: { ...styles.BODY_CSS, }
 			}).component();
 
+		const enableElasticLabel = _view.modelBuilder.text().withProps({
+			value: constants.ELASTIC_RECOMMENDATION_LABEL,
+			width: WIZARD_INPUT_COMPONENT_WIDTH,
+			requiredIndicator: true,
+			CSSStyles: {
+				...styles.LABEL_CSS,
+			}
+		}).component();
+		const elasticButtonGroup = 'enableElasticRecommendations';
+		const enableElasticRadioButtonContainer = _view.modelBuilder.flexContainer()
+			.withProps({
+				CSSStyles: {
+					'flex-direction': 'row',
+					'width': 'fit-content',
+					'margin-top': '-1em',
+					'margin-bottom': '8px',
+				}
+			}).component();
+		const enableElasticButton = _view.modelBuilder.radioButton()
+			.withProps({
+				name: elasticButtonGroup,
+				label: constants.YES,
+				checked: this._enableElasticRecommendation,
+				CSSStyles: {
+					...styles.BODY_CSS,
+					'width': 'fit-content',
+					'margin': '0'
+				},
+			}).component();
+		this._disposables.push(enableElasticButton.onDidChangeCheckedState(async (e) => {
+			if (e) {
+				this._enableElasticRecommendation = true;
+			}
+		}));
+		const disableElasticButton = _view.modelBuilder.radioButton()
+			.withProps({
+				name: elasticButtonGroup,
+				label: constants.NO,
+				checked: !this._enableElasticRecommendation,
+				CSSStyles: {
+					...styles.BODY_CSS,
+					'width': 'fit-content',
+					'margin': '0 12px',
+				}
+			}).component();
+		this._disposables.push(disableElasticButton.onDidChangeCheckedState(async (e) => {
+			if (e) {
+				this._enableElasticRecommendation = false;
+			}
+		}));
+		enableElasticRadioButtonContainer.addItems([
+			enableElasticButton,
+			disableElasticButton
+		]);
+
+		const enableElasticInfoBox = _view.modelBuilder.infoBox()
+			.withProps({
+				text: constants.ELASTIC_RECOMMENDATION_INFO,
+				style: 'information',
+				CSSStyles: {
+					...styles.BODY_CSS,
+				}
+			}).component();
+
 		container.addItems([
 			description,
 			scaleFactorLabel,
@@ -191,6 +254,9 @@ export class SkuEditParametersDialog {
 			enablePreviewLabel,
 			enablePreviewRadioButtonContainer,
 			enablePreviewInfoBox,
+			enableElasticLabel,
+			enableElasticRadioButtonContainer,
+			enableElasticInfoBox,
 		]);
 		return container;
 	}
@@ -219,6 +285,7 @@ export class SkuEditParametersDialog {
 
 			this._scaleFactorInput.value = this.migrationStateModel._skuScalingFactor.toString();
 			this._enablePreviewValue = this.migrationStateModel._skuEnablePreview;
+			this._enableElasticRecommendation = this.migrationStateModel._skuEnableElastic;
 			(<azdata.CategoryValue[]>this._targetPercentileDropdown.values)?.forEach((percentile, index) => {
 				if ((<azdata.CategoryValue>percentile).name.toLowerCase() === this.migrationStateModel._skuTargetPercentile.toString()) {
 					selectDropDownIndex(this._targetPercentileDropdown, index);
@@ -232,6 +299,7 @@ export class SkuEditParametersDialog {
 		this.migrationStateModel._skuScalingFactor = Number(this._scaleFactorInput.value!);
 		this.migrationStateModel._skuTargetPercentile = Number((<azdata.CategoryValue>this._targetPercentileDropdown.value).name);
 		this.migrationStateModel._skuEnablePreview = this._enablePreviewValue;
+		this.migrationStateModel._skuEnableElastic = this._enableElasticRecommendation;
 		await this.skuRecommendationPage.refreshSkuParameters();
 	}
 

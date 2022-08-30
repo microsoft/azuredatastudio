@@ -24,7 +24,7 @@ export class FlatAzureResourceTreeProvider implements vscode.TreeDataProvider<Tr
 
 	private _onDidChangeTreeData = new vscode.EventEmitter<TreeNode | undefined>();
 
-	private resourceLoader: ResourceLoader;
+	private resourceLoader: ResourceLoader | undefined;
 
 	public constructor(private readonly appContext: AppContext) {
 	}
@@ -124,13 +124,13 @@ class ResourceLoader {
 			for (const tenant of account.properties.tenants) {
 				for (const subscription of await this.subscriptionService.getSubscriptions(account, [tenant.id])) {
 					for (const providerId of await this.resourceService.listResourceProviderIds()) {
-						for (const group of await this.resourceService.getRootChildren(providerId, account, subscription, subscription.tenant)) {
+						for (const group of await this.resourceService.getRootChildren(providerId, account, subscription, subscription.tenant!)) {
 							const children = await this.resourceService.getChildren(providerId, group.resourceNode);
-							if (this.resourceGroups.has(group.resourceProviderId)) {
-								const groupNode = this.resourceGroups.get(group.resourceProviderId);
+							let groupNode: AzureResourceResourceTreeNode | undefined = this.resourceGroups.get(group.resourceProviderId);
+							if (groupNode) {
 								groupNode.pushItems(...children);
 							} else {
-								const groupNode = new AzureResourceResourceTreeNode(group, this.appContext);
+								groupNode = new AzureResourceResourceTreeNode(group, this.appContext);
 								this.resourceGroups.set(group.resourceProviderId, groupNode);
 								groupNode.pushItems(...children);
 							}
@@ -199,14 +199,14 @@ class AzureResourceResourceTreeNode extends TreeNode {
 			metadata: undefined,
 			nodePath: this.generateNodePath(),
 			nodeStatus: undefined,
-			nodeType: treeItem.contextValue,
+			nodeType: treeItem.contextValue || '',
 			nodeSubType: undefined,
 			iconType: treeItem.contextValue
 		};
 	}
 
 	public get nodePathValue(): string {
-		return this.resourceNodeWithProviderId.resourceNode.treeItem.id;
+		return this.resourceNodeWithProviderId.resourceNode.treeItem.id || '';
 	}
 
 }

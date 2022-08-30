@@ -36,7 +36,6 @@ export class AzdataGraphView {
 		private _executionPlan: azdata.executionPlan.ExecutionPlanGraph,
 		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService,
 	) {
-		this._parentContainer.tabIndex = 0;
 		this._diagramModel = this.populate(this._executionPlan.root);
 
 		let queryPlanConfiguration = {
@@ -84,11 +83,6 @@ export class AzdataGraphView {
 					this.selectElement(this.getElementById(getPreviousSelection.id));
 				}
 			}
-		});
-
-		// Focusing the parent container when we click the graph
-		this._diagram.graph.addListener('click', (sender, evt) => {
-			this._parentContainer.focus();
 		});
 	}
 
@@ -293,6 +287,8 @@ export class AzdataGraphView {
 		let diagramNode: AzDataGraphCell = <AzDataGraphCell>{};
 		diagramNode.label = node.subtext.join(this.textResourcePropertiesService.getEOL(undefined));
 		diagramNode.tooltipTitle = node.name;
+		diagramNode.rowCountDisplayString = node.rowCountDisplayString;
+		diagramNode.costDisplayString = node.costDisplayString;
 		if (!node.id.toString().startsWith(`element-`)) {
 			node.id = `element-${node.id}`;
 		}
@@ -445,6 +441,14 @@ export interface AzDataGraphCell {
 	 * icon for the cell
 	 */
 	icon: string;
+	/**
+	 * cost string for the cell
+	 */
+	costDisplayString: string;
+	/**
+	 * row count for the cell
+	 */
+	rowCountDisplayString: string;
 	/**
 	 * title for the cell hover tooltip
 	 */

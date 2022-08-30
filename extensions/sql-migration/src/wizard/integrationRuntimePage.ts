@@ -227,7 +227,9 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 					const dialog = new CreateSqlMigrationServiceDialog();
 					const createdDmsResult = await dialog.createNewDms(
 						this.migrationStateModel,
-						(<azdata.CategoryValue>this._resourceGroupDropdown.value).displayName);
+						this._resourceGroupDropdown.value
+							? (<azdata.CategoryValue>this._resourceGroupDropdown.value).displayName
+							: '');
 
 					this.migrationStateModel._sqlMigrationServiceResourceGroup = createdDmsResult.resourceGroup;
 					this.migrationStateModel._sqlMigrationService = createdDmsResult.service;

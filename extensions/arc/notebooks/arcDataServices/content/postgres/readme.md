@@ -8,4 +8,4 @@
 
 ## Notebooks in this Chapter
 
- - [TSG100 - The Azure Arc-enabled PostgreSQL Hyperscale troubleshooter](../postgres/tsg100-troubleshoot-postgres.ipynb)
+ - [TSG100 - The Azure Arc-enabled PostgreSQL server troubleshooter](../postgres/tsg100-troubleshoot-postgres.ipynb)

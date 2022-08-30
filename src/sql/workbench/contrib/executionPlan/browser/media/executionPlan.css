@@ -803,3 +803,66 @@ However we always want it to be the width of the container it is resizing.
 	flex: 1;
 	height: calc(100% - 50px);
 }
+
+.graph-cell{
+	align-items: center;
+	position: relative;
+	width: fit-content;
+	height: 80px;
+	font-size: 10px;
+	font-family:'Monaco', 'Menlo', 'Consolas';
+}
+
+.graph-cell-body{
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 2px 0px;
+	min-width: 70px;
+	outline: none !important;
+}
+
+.graph-cell-icon{
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+	width:30px;
+	height:30px;
+	align-self: center;
+	position: relative;
+}
+
+.graph-cell-icon .graph-icon-badge {
+	position: absolute;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+	width:12px;
+	height:12px;
+	bottom: 0;
+	right: -5px;
+}
+
+.graph-cell .graph-cell-row-count {
+	position: absolute;
+	top: 30%;
+	left: calc(50% - 60px);
+	min-width: 20px;
+	text-align: right;
+	outline: none !important;
+}
+
+.graph-cell .graph-icon-badge-expand {
+	width: 12px;
+	height: 12px;
+	background-size: 12px 12px;
+	position: absolute;
+	top: 0px;
+	right: 0px;
+}
+
+.graph-cell-cost{
+	border-radius: 15px;
+	width: fit-content;
+	padding: 1px 8px 0px 8px;
+}
