@@ -44,66 +44,51 @@ describe('az', function () {
 		});
 
 		describe('postgres', function (): void {
-			describe('arc-server', function (): void {
+			describe('server-arc', function (): void {
 				it('delete', async function (): Promise<void> {
-					await azTool.postgres.arcserver.delete(name, namespace);
-					verifyExecuteCommandCalledWithArgs(['postgres', 'arc-server', 'delete', name, '--k8s-namespace', namespace]);
+					await azTool.postgres.serverarc.delete(name, namespace);
+					verifyExecuteCommandCalledWithArgs(['postgres', 'server-arc', 'delete', name, '--k8s-namespace', namespace]);
 				});
 				it('list', async function (): Promise<void> {
-					await azTool.postgres.arcserver.list(namespace);
-					verifyExecuteCommandCalledWithArgs(['postgres', 'arc-server', 'list', '--k8s-namespace', namespace]);
+					await azTool.postgres.serverarc.list(namespace);
+					verifyExecuteCommandCalledWithArgs(['postgres', 'server-arc', 'list', '--k8s-namespace', namespace]);
 				});
 				it('show', async function (): Promise<void> {
-					await azTool.postgres.arcserver.show(name, namespace);
-					verifyExecuteCommandCalledWithArgs(['postgres', 'arc-server', 'show', name, '--k8s-namespace', namespace]);
+					await azTool.postgres.serverarc.show(name, namespace);
+					verifyExecuteCommandCalledWithArgs(['postgres', 'server-arc', 'show', name, '--k8s-namespace', namespace]);
 				});
-				it.skip('edit', async function (): Promise<void> {
+				it.skip('update', async function (): Promise<void> {
 					const args = {
-						adminPassword: true,
 						coresLimit: 'myCoresLimit',
 						coresRequest: 'myCoresRequest',
-						engineSettings: 'myEngineSettings',
-						extensions: 'myExtensions',
 						memoryLimit: 'myMemoryLimit',
 						memoryRequest: 'myMemoryRequest',
 						noWait: true,
-						port: 1337,
-						replaceEngineSettings: true,
-						workers: 2
+						port: 1337
 					};
-					await azTool.postgres.arcserver.edit(name, args, namespace);
+					await azTool.postgres.serverarc.update(name, args, namespace);
 					verifyExecuteCommandCalledWithArgs([
-						'postgres', 'arc-server', 'edit',
+						'postgres', 'server-arc', 'update',
 						name,
-						'--admin-password',
 						args.coresLimit,
 						args.coresRequest,
-						args.engineSettings,
-						args.extensions,
 						args.memoryLimit,
 						args.memoryRequest,
 						'--no-wait',
-						args.port.toString(),
-						'--replace-engine-settings',
-						args.workers.toString()]);
+						args.port.toString()]);
 				});
-				it('edit no optional args', async function (): Promise<void> {
-					await azTool.postgres.arcserver.edit(name, {}, namespace);
+				it('update no optional args', async function (): Promise<void> {
+					await azTool.postgres.serverarc.update(name, {}, namespace);
 					verifyExecuteCommandCalledWithArgs([
-						'postgres', 'arc-server', 'edit',
+						'postgres', 'server-arc', 'update',
 						name]);
 					verifyExecuteCommandCalledWithoutArgs([
-						'--admin-password',
 						'--cores-limit',
 						'--cores-request',
-						'--engine-settings',
-						'--extensions',
 						'--memory-limit',
 						'--memory-request',
 						'--no-wait',
-						'--port',
-						'--replace-engine-settings',
-						'--workers']);
+						'--port']);
 				});
 			});
 		});
