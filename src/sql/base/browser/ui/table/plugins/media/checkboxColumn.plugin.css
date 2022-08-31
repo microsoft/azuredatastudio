@@ -7,11 +7,8 @@
 	text-align: center;
 }
 
-.slick-plugin-checkbox-column > input,
-.slick-column-name > input[type='checkbox']{
+.slick-plugin-checkbox-column > input{
 	margin: 0px;
 	vertical-align: middle;
 }
-
-
 
