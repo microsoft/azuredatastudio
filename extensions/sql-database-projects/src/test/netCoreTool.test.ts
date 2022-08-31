@@ -11,7 +11,6 @@ import * as vscode from 'vscode';
 import * as sinon from 'sinon';
 import { NetCoreTool, DBProjectConfigurationKey, DotnetInstallLocationKey, NetCoreMacDefaultPath, NetCoreLinuxDefaultPath } from '../tools/netcoreTool';
 import { getQuotedPath } from '../common/utils';
-import { isNullOrUndefined } from 'util';
 import { generateTestFolderPath } from './testUtils';
 import { createContext, TestContext } from './testContext';
 
