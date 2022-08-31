@@ -26,7 +26,29 @@ import { Progress } from 'vs/platform/progress/common/progress';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { Action, Separator } from 'vs/base/common/actions';
 import { localize } from 'vs/nls';
-import { customZoomIconClassNames, disableTooltipIconClassName, enableTooltipIconClassName, executionPlanCompareIconClassName, executionPlanTopOperations, openPlanFileIconClassNames, openPropertiesIconClassNames, openQueryIconClassNames, savePlanIconClassNames, searchIconClassNames, zoomInIconClassNames, zoomOutIconClassNames, zoomToFitIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/constants';
+import {
+	customZoomIconClassNames,
+	disableTooltipIconClassName,
+	enableTooltipIconClassName,
+	executionPlanActualElapsedCpuTime,
+	executionPlanActualElapsedTime,
+	executionPlanActualLogicalReads,
+	executionPlanActualNumberOfRowsForAllExecutions,
+	executionPlanActualPhysicalReads,
+	executionPlanCompareIconClassName,
+	executionPlanCost,
+	executionPlanNumberOfRowsRead,
+	executionPlanSubtreeCost,
+	executionPlanTopOperations,
+	openPlanFileIconClassNames,
+	openPropertiesIconClassNames,
+	openQueryIconClassNames,
+	savePlanIconClassNames,
+	searchIconClassNames,
+	zoomInIconClassNames,
+	zoomOutIconClassNames,
+	zoomToFitIconClassNames
+} from 'sql/workbench/contrib/executionPlan/browser/constants';
 import { URI } from 'vs/base/common/uri';
 import { VSBuffer } from 'vs/base/common/buffer';
 import { CustomZoomWidget } from 'sql/workbench/contrib/executionPlan/browser/widgets/customZoomWidget';
@@ -184,7 +206,16 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 			this._instantiationService.createInstance(SearchNodeAction, 'ContextMenu'),
 			this._instantiationService.createInstance(PropertiesAction, 'ContextMenu'),
 			this._instantiationService.createInstance(CompareExecutionPlanAction, 'ContextMenu'),
-			this.contextMenuToggleTooltipAction
+			this.contextMenuToggleTooltipAction,
+			new Separator(),
+			this._instantiationService.createInstance(ActualElapsedTimeAction, 'ContextMenu'),
+			this._instantiationService.createInstance(ActualElapsedCpuTimeAction, 'ContextMenu'),
+			this._instantiationService.createInstance(CostAction, 'ContextMenu'),
+			this._instantiationService.createInstance(SubtreeCostAction, 'ContextMenu'),
+			this._instantiationService.createInstance(ActualLogicalReadsAction, 'ContextMenu'),
+			this._instantiationService.createInstance(ActualPhysicalReadsAction, 'ContextMenu'),
+			this._instantiationService.createInstance(ActualNumberOfRowsForAllExecutionsAction, 'ContextMenu'),
+			this._instantiationService.createInstance(NumberOfRowsReadAction, 'ContextMenu'),
 		];
 
 		if (this._queryResultsView) {
@@ -575,5 +606,158 @@ export class TopOperationsAction extends Action {
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
 		context.openTopOperations();
+	}
+}
+
+
+export class ActualElapsedTimeAction extends Action {
+	public static ID = 'ep.actualElapsedTimeAction';
+	public static LABEL = localize('executionPlanActualElapsedTime', 'Actual Elapsed Time');
+
+	constructor(private source: ExecutionPlanActionSource,
+		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService) {
+		super(ActualElapsedTimeAction.ID, ActualElapsedTimeAction.LABEL, executionPlanActualElapsedTime);
+	}
+
+	public override async run(context: ExecutionPlanView): Promise<void> {
+		this.telemetryService
+			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.ActualElapsedTime)
+			.withAdditionalProperties({ source: this.source })
+			.send();
+
+		// Pass delegate here
+	}
+}
+
+export class ActualElapsedCpuTimeAction extends Action {
+	public static ID = 'ep.actualElapsedCpuTimeAction';
+	public static LABEL = localize('executionPlanActualElapsedCpuTime', 'Actual Elapsed CPU Time');
+
+	constructor(private source: ExecutionPlanActionSource,
+		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService) {
+		super(ActualElapsedCpuTimeAction.ID, ActualElapsedCpuTimeAction.LABEL, executionPlanActualElapsedCpuTime);
+	}
+
+	public override async run(context: ExecutionPlanView): Promise<void> {
+		this.telemetryService
+			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.ActualElapsedCpuTime)
+			.withAdditionalProperties({ source: this.source })
+			.send();
+
+		// pass delegate here
+	}
+}
+
+export class CostAction extends Action {
+	public static ID = 'ep.costAction';
+	public static LABEL = localize('executionPlanCost', 'Cost');
+
+	constructor(private source: ExecutionPlanActionSource,
+		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService) {
+		super(CostAction.ID, CostAction.LABEL, executionPlanCost);
+	}
+
+	public override async run(context: ExecutionPlanView): Promise<void> {
+		this.telemetryService
+			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.Cost)
+			.withAdditionalProperties({ source: this.source })
+			.send();
+
+		// Pass delegate here
+	}
+}
+
+export class SubtreeCostAction extends Action {
+	public static ID = 'ep.subtreeCostAction';
+	public static LABEL = localize('executionPlanSubtreeCost', 'Subtree Cost');
+
+	constructor(private source: ExecutionPlanActionSource,
+		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService) {
+		super(SubtreeCostAction.ID, SubtreeCostAction.LABEL, executionPlanSubtreeCost);
+	}
+
+	public override async run(context: ExecutionPlanView): Promise<void> {
+		this.telemetryService
+			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.SubtreeCost)
+			.withAdditionalProperties({ source: this.source })
+			.send();
+
+		// Pass delegate here
+	}
+}
+
+export class ActualLogicalReadsAction extends Action {
+	public static ID = 'ep.actualLogicalReadsAction';
+	public static LABEL = localize('executionPlanActualLogicalReads', 'Actual Logical Reads');
+
+	constructor(private source: ExecutionPlanActionSource,
+		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService) {
+		super(ActualLogicalReadsAction.ID, ActualLogicalReadsAction.LABEL, executionPlanActualLogicalReads);
+	}
+
+	public override async run(context: ExecutionPlanView): Promise<void> {
+		this.telemetryService
+			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.ActualLogicalReads)
+			.withAdditionalProperties({ source: this.source })
+			.send();
+
+		// Pass delegate here
+	}
+}
+
+export class ActualPhysicalReadsAction extends Action {
+	public static ID = 'ep.actualPhysicalReadsAction';
+	public static LABEL = localize('executionPlanActualPhysicalReads', 'Actual Physical Reads');
+
+	constructor(private source: ExecutionPlanActionSource,
+		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService) {
+		super(ActualPhysicalReadsAction.ID, ActualPhysicalReadsAction.LABEL, executionPlanActualPhysicalReads);
+	}
+
+	public override async run(context: ExecutionPlanView): Promise<void> {
+		this.telemetryService
+			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.ActualPhysicalReads)
+			.withAdditionalProperties({ source: this.source })
+			.send();
+
+		// Pass delegate here
+	}
+}
+
+export class ActualNumberOfRowsForAllExecutionsAction extends Action {
+	public static ID = 'ep.actualNumberOfRowsForAllExecutionsAction';
+	public static LABEL = localize('executionPlanCost', 'Cost');
+
+	constructor(private source: ExecutionPlanActionSource,
+		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService) {
+		super(ActualNumberOfRowsForAllExecutionsAction.ID, ActualNumberOfRowsForAllExecutionsAction.LABEL, executionPlanActualNumberOfRowsForAllExecutions);
+	}
+
+	public override async run(context: ExecutionPlanView): Promise<void> {
+		this.telemetryService
+			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.ActualNumberOfRowsReadForAllExecutions)
+			.withAdditionalProperties({ source: this.source })
+			.send();
+
+		// Pass delegate here
+	}
+}
+
+export class NumberOfRowsReadAction extends Action {
+	public static ID = 'ep.numberOfRowsReadAction';
+	public static LABEL = localize('executionPlanNumberOfRowsRead', 'NumberOfRowsRead');
+
+	constructor(private source: ExecutionPlanActionSource,
+		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService) {
+		super(NumberOfRowsReadAction.ID, NumberOfRowsReadAction.LABEL, executionPlanNumberOfRowsRead);
+	}
+
+	public override async run(context: ExecutionPlanView): Promise<void> {
+		this.telemetryService
+			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.ExecutionPlanNumberOfRowsRead)
+			.withAdditionalProperties({ source: this.source })
+			.send();
+
+		// Pass delegate here
 	}
 }
