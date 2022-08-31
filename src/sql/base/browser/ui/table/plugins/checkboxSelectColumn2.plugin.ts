@@ -172,7 +172,7 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 			this.setCheckboxPropertyValue(i, this._headerCheckbox.checked);
 		}
 
-		this._grid.updateColumnHeader(this._options.columnId!, `<input type="checkbox" tabIndex="0" ${this._headerCheckbox.checked ? 'checked' : ''}/>`, this._options.toolTip);
+		this._grid.updateColumnHeader(this._options.columnId!, `<input type="checkbox" tabIndex="0" ${this._headerCheckbox.checked ? 'checked' : ''} title=${HeaderCheckboxTitle}/>`, this._options.toolTip);
 		this.updateSelectedRows();
 		this._grid.invalidateAllRows();
 		this._grid.render();
