@@ -31,7 +31,7 @@ const publicAzureSettings: ProviderSettings = {
 		id: 'azure_publicCloud',
 		settings: {
 			host: 'https://login.microsoftonline.com/',
-			clientId: 'a69788c6-1d43-44ed-9ca3-b83e194da255',
+			clientId: '7e25583c-be94-4b34-a37d-8dc5ef70b504',
 			microsoftResource: {
 				id: SettingIds.marm,
 				endpoint: 'https://management.core.windows.net/',
@@ -93,7 +93,7 @@ const publicAzureSettings: ProviderSettings = {
 				endpoint: 'https://analysis.windows.net/powerbi/api',
 				azureResourceId: AzureResource.PowerBi
 			},
-			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
+			redirectUri: 'http://localhost/redirect/',
 			scopes: [
 				'openid', 'email', 'profile', 'offline_access',
 				'https://management.azure.com/user_impersonation',
@@ -111,7 +111,7 @@ const usGovAzureSettings: ProviderSettings = {
 		id: 'azure_usGovtCloud',
 		settings: {
 			host: 'https://login.microsoftonline.us/',
-			clientId: 'a69788c6-1d43-44ed-9ca3-b83e194da255',
+			clientId: '7e25583c-be94-4b34-a37d-8dc5ef70b504',
 			microsoftResource: {
 				id: SettingIds.marm,
 				endpoint: 'https://management.core.usgovcloudapi.net/',
@@ -158,7 +158,7 @@ const usGovAzureSettings: ProviderSettings = {
 				endpoint: 'https://analysis.windows.net/powerbi/api',
 				azureResourceId: AzureResource.PowerBi
 			},
-			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
+			redirectUri: 'http://localhost/redirect/',
 			scopes: [
 				'openid', 'email', 'profile', 'offline_access',
 				'https://management.usgovcloudapi.net/user_impersonation'
@@ -175,7 +175,7 @@ const usNatAzureSettings: ProviderSettings = {
 		id: 'azure_usNatCloud',
 		settings: {
 			host: 'https://login.microsoftonline.eaglex.ic.gov/',
-			clientId: 'a69788c6-1d43-44ed-9ca3-b83e194da255',
+			clientId: '7e25583c-be94-4b34-a37d-8dc5ef70b504',
 			microsoftResource: {
 				id: SettingIds.marm,
 				endpoint: 'https://management.azure.eaglex.ic.gov/',
@@ -217,7 +217,7 @@ const usNatAzureSettings: ProviderSettings = {
 				endpointSuffix: '.core.eaglex.ic.gov',
 				azureResourceId: AzureResource.AzureStorage
 			},
-			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
+			redirectUri: 'http://localhost/redirect/',
 			scopes: [
 				'openid', 'email', 'profile', 'offline_access',
 				'https://management.core.eaglex.ic.gov/user_impersonation'
@@ -235,7 +235,7 @@ const germanyAzureSettings: ProviderSettings = {
 		id: 'azure_germanyCloud',
 		settings: {
 			host: 'https://login.microsoftazure.de/',
-			clientId: 'a69788c6-1d43-44ed-9ca3-b83e194da255',
+			clientId: '7e25583c-be94-4b34-a37d-8dc5ef70b504',
 			graphResource: {
 				id: SettingIds.graph,
 				endpoint: 'https://graph.cloudapi.de',
@@ -267,7 +267,7 @@ const germanyAzureSettings: ProviderSettings = {
 				endpoint: 'https://analysis.windows.net/powerbi/api',
 				azureResourceId: AzureResource.PowerBi
 			},
-			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
+			redirectUri: 'http://localhost/redirect/',
 			scopes: [
 				'openid', 'email', 'profile', 'offline_access',
 				'https://management.microsoftazure.de/user_impersonation'
@@ -284,7 +284,7 @@ const chinaAzureSettings: ProviderSettings = {
 		id: 'azure_chinaCloud',
 		settings: {
 			host: 'https://login.partner.microsoftonline.cn/',
-			clientId: 'a69788c6-1d43-44ed-9ca3-b83e194da255',
+			clientId: '7e25583c-be94-4b34-a37d-8dc5ef70b504',
 			microsoftResource: {
 				id: SettingIds.marm,
 				endpoint: 'https://management.core.chinacloudapi.cn/',
@@ -331,7 +331,7 @@ const chinaAzureSettings: ProviderSettings = {
 				endpoint: 'https://analysis.windows.net/powerbi/api',
 				azureResourceId: AzureResource.PowerBi
 			},
-			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
+			redirectUri: 'http://localhost/redirect/',
 			scopes: [
 				'openid', 'email', 'profile', 'offline_access',
 				'https://management.chinacloudapi.cn/user_impersonation'
