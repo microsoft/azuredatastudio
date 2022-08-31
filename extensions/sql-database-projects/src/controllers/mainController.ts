@@ -17,7 +17,7 @@ import { WorkspaceTreeItem } from 'dataworkspace';
 import * as constants from '../common/constants';
 import { SqlDatabaseProjectProvider } from '../projectProvider/projectProvider';
 import { EntryType, GenerateProjectFromOpenApiSpecOptions, ItemType } from 'sqldbproj';
-import { TableFileNode } from '../models/tree/fileFolderTreeItem';
+import { FileNode, TableFileNode } from '../models/tree/fileFolderTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { getAzdataApi } from '../common/utils';
 
@@ -88,6 +88,7 @@ export default class MainController implements vscode.Disposable {
 		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.exclude', async (node: WorkspaceTreeItem) => { return this.projectsController.exclude(node); }));
 		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.changeTargetPlatform', async (node: WorkspaceTreeItem) => { return this.projectsController.changeTargetPlatform(node); }));
 		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.validateExternalStreamingJob', async (node: WorkspaceTreeItem) => { return this.projectsController.validateExternalStreamingJob(node); }));
+		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.openFileWithWatcher', async (fileSystemUri: vscode.Uri, node: FileNode) => { return this.projectsController.openFileWithWatcher(fileSystemUri, node); }));
 		this.context.subscriptions.push(vscode.commands.registerCommand('sqlDatabaseProjects.openInDesigner', async (node: WorkspaceTreeItem) => {
 			if (node?.element instanceof TableFileNode) {
 				const tableFileNode = node.element as TableFileNode;

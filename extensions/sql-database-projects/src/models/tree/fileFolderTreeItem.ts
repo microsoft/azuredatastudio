@@ -60,9 +60,9 @@ export class FileNode extends BaseProjectTreeItem {
 		const treeItem = new vscode.TreeItem(this.fileSystemUri, vscode.TreeItemCollapsibleState.None);
 
 		treeItem.command = {
-			title: 'Open file',
-			command: 'vscode.open',
-			arguments: [this.fileSystemUri]
+			title: 'Open file with file watcher',
+			command: 'sqlDatabaseProjects.openFileWithWatcher',
+			arguments: [this.fileSystemUri, this]
 		};
 
 		treeItem.contextValue = DatabaseProjectItemType.file;
