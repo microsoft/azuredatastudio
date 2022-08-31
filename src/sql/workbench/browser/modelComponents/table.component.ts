@@ -19,7 +19,7 @@ import { attachTableFilterStyler, attachTableStyler } from 'sql/platform/theme/c
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { getContentHeight, getContentWidth, Dimension, isAncestor } from 'vs/base/browser/dom';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
-import { ActionOnCheck, CheckboxSelectColumn, ICheckboxCellActionEventArgs } from 'sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin';
+import { ActionOnCheck, CheckboxSelectColumn, ICheckboxCellActionEventArgs } from 'sql/base/browser/ui/table/plugins/checkboxSelectColumn2.plugin';
 import { Emitter, Event as vsEvent } from 'vs/base/common/event';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
@@ -277,7 +277,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 
 			this._table = new Table<Slick.SlickData>(this._inputContainer.nativeElement, { dataProvider: this._tableData, columns: this._tableColumns }, options);
 			this._table.setData(this._tableData);
-			this._table.setSelectionModel(new RowSelectionModel({ selectActiveRow: true }));
+			this._table.setSelectionModel(new RowSelectionModel({ selectActiveRow: false }));
 
 			this._register(this._table);
 			this._register(attachTableStyler(this._table, this.themeService));
