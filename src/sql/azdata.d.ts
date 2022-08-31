@@ -424,17 +424,17 @@ declare module 'azdata' {
 		connectionId: string;
 
 		/**
-		 * Full stack trace from the engine and service host.
+		 * Additional optional detailed error messages from the engine or service host, if an error occurred.
 		 */
-		messages: string;
+		messages?: string;
 
 		/**
-		 * Main error message(s) returned from the engine and service host, if any.
+		 * Error message returned from the engine or service host, if an error occurred.
 		 */
-		errorMessage: string;
+		errorMessage?: string;
 
 		/**
-		 * Error number returned from the engine, if any.
+		 * Error number returned from the engine or server host, if an error occurred.
 		 */
 		errorNumber: number;
 		/**
