@@ -88,6 +88,9 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 	// plan diagram
 	public executionPlanDiagram: AzdataGraphView;
 
+	// previous expensive operator action selected
+	public previousExpensiveOperatorAction: Action;
+
 	public actionBarToggleTopTip: Action;
 	public contextMenuToggleTooltipAction: Action;
 	constructor(
@@ -216,6 +219,7 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 			this._instantiationService.createInstance(ActualPhysicalReadsAction, 'ContextMenu'),
 			this._instantiationService.createInstance(ActualNumberOfRowsForAllExecutionsAction, 'ContextMenu'),
 			this._instantiationService.createInstance(NumberOfRowsReadAction, 'ContextMenu'),
+			new Separator()
 		];
 
 		if (this._queryResultsView) {
@@ -625,6 +629,13 @@ export class ActualElapsedTimeAction extends Action {
 			.withAdditionalProperties({ source: this.source })
 			.send();
 
+		if (context.previousExpensiveOperatorAction) {
+			context.previousExpensiveOperatorAction.checked = false;
+		}
+
+		context.previousExpensiveOperatorAction = this;
+		this.checked = true;
+
 		// Pass delegate here
 	}
 }
@@ -643,6 +654,13 @@ export class ActualElapsedCpuTimeAction extends Action {
 			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.ActualElapsedCpuTime)
 			.withAdditionalProperties({ source: this.source })
 			.send();
+
+		if (context.previousExpensiveOperatorAction) {
+			context.previousExpensiveOperatorAction.checked = false;
+		}
+
+		context.previousExpensiveOperatorAction = this;
+		this.checked = true;
 
 		// pass delegate here
 	}
@@ -663,6 +681,13 @@ export class CostAction extends Action {
 			.withAdditionalProperties({ source: this.source })
 			.send();
 
+		if (context.previousExpensiveOperatorAction) {
+			context.previousExpensiveOperatorAction.checked = false;
+		}
+
+		context.previousExpensiveOperatorAction = this;
+		this.checked = true;
+
 		// Pass delegate here
 	}
 }
@@ -681,6 +706,13 @@ export class SubtreeCostAction extends Action {
 			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.SubtreeCost)
 			.withAdditionalProperties({ source: this.source })
 			.send();
+
+		if (context.previousExpensiveOperatorAction) {
+			context.previousExpensiveOperatorAction.checked = false;
+		}
+
+		context.previousExpensiveOperatorAction = this;
+		this.checked = true;
 
 		// Pass delegate here
 	}
@@ -701,6 +733,13 @@ export class ActualLogicalReadsAction extends Action {
 			.withAdditionalProperties({ source: this.source })
 			.send();
 
+		if (context.previousExpensiveOperatorAction) {
+			context.previousExpensiveOperatorAction.checked = false;
+		}
+
+		context.previousExpensiveOperatorAction = this;
+		this.checked = true;
+
 		// Pass delegate here
 	}
 }
@@ -719,6 +758,13 @@ export class ActualPhysicalReadsAction extends Action {
 			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.ActualPhysicalReads)
 			.withAdditionalProperties({ source: this.source })
 			.send();
+
+		if (context.previousExpensiveOperatorAction) {
+			context.previousExpensiveOperatorAction.checked = false;
+		}
+
+		context.previousExpensiveOperatorAction = this;
+		this.checked = true;
 
 		// Pass delegate here
 	}
@@ -739,6 +785,13 @@ export class ActualNumberOfRowsForAllExecutionsAction extends Action {
 			.withAdditionalProperties({ source: this.source })
 			.send();
 
+		if (context.previousExpensiveOperatorAction) {
+			context.previousExpensiveOperatorAction.checked = false;
+		}
+
+		context.previousExpensiveOperatorAction = this;
+		this.checked = true;
+
 		// Pass delegate here
 	}
 }
@@ -757,6 +810,13 @@ export class NumberOfRowsReadAction extends Action {
 			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.ExecutionPlanNumberOfRowsRead)
 			.withAdditionalProperties({ source: this.source })
 			.send();
+
+		if (context.previousExpensiveOperatorAction) {
+			context.previousExpensiveOperatorAction.checked = false;
+		}
+
+		context.previousExpensiveOperatorAction = this;
+		this.checked = true;
 
 		// Pass delegate here
 	}
