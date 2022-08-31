@@ -65,7 +65,7 @@ export enum TaskExecutionMode {
 
 export type AddDatabaseReferenceSettings = ISystemDatabaseReferenceSettings | IDacpacReferenceSettings | IProjectReferenceSettings;
 
-interface fileWatcherStatus {
+interface FileWatcherStatus {
 	fileWatcher: vscode.FileSystemWatcher;
 	containsCreateTableStatement: boolean;
 }
@@ -84,7 +84,7 @@ export class ProjectsController {
 	private autorestHelper: AutorestHelper;
 
 	private projFileWatchers = new Map<string, vscode.FileSystemWatcher>();
-	private fileWatchers = new Map<string, fileWatcherStatus>();
+	private fileWatchers = new Map<string, FileWatcherStatus>();
 
 	constructor(private _outputChannel: vscode.OutputChannel) {
 		this.netCoreTool = new NetCoreTool(this._outputChannel);
