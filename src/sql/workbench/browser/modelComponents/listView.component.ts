@@ -95,7 +95,11 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 
 	public get options(): azdata.ListViewOption[] {
 		const options = this.getProperties().options ?? [];
-		this._optionsListRenderer.forceIconPadding = options.find(o => o.icon !== undefined) ? true : false;
+		if (!options.find(o => o.icon !== undefined)) {
+			this._vscodeList.nativeElement.classList.add('hide-icon');
+		} else {
+			this._vscodeList.nativeElement.classList.remove('hide-icon');
+		}
 		return options;
 	}
 
@@ -186,20 +190,10 @@ interface ExtensionListTemplate {
 
 class OptionsListRenderer implements IListRenderer<azdata.ListViewOption, ExtensionListTemplate> {
 	public static TEMPLATE_ID = 'optionListRenderer';
-	private _forceIconPadding: boolean = false;
 
 	public get templateId(): string {
 		return OptionsListRenderer.TEMPLATE_ID;
 	}
-
-	public set forceIconPadding(v: boolean) {
-		this._forceIconPadding = v;
-	}
-
-	public get forceIconPadding(): boolean {
-		return this._forceIconPadding;
-	}
-
 
 	public renderTemplate(container: HTMLElement): ExtensionListTemplate {
 		const tableTemplate: ExtensionListTemplate = Object.create(null);
@@ -219,14 +213,9 @@ class OptionsListRenderer implements IListRenderer<azdata.ListViewOption, Extens
 			templateData.iconContainer.classList.add('icon');
 			templateData.iconContainer.classList.add(createIconCssClass(option.icon));
 		} else {
-
-			if (!this._forceIconPadding) {
-				templateData.iconContainer.style.display = 'none';
-			} else {
-				templateData.iconContainer.style.display = '';
-				templateData.iconContainer.className = '';
-				templateData.iconContainer.classList.add('list-row', 'listview-option-icon');
-			}
+			templateData.iconContainer.style.display = '';
+			templateData.iconContainer.className = '';
+			templateData.iconContainer.classList.add('list-row', 'listview-option-icon');
 		}
 		templateData.parent.title = option.label ?? '';
 		templateData.parent.setAttribute('aria-label', option.ariaLabel ?? option.label ?? '');

@@ -37,6 +37,9 @@
 	background-size: cover;
 }
 
+.modelview-listview-container .hide-icon .listview-option .listview-option-icon{
+	display: none;
+}
 
 .modelview-listview-container .listview-option .listview-option-label {
 	flex: 1;
