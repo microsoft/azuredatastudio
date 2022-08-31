@@ -7,12 +7,17 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { promises as fs } from 'fs';
 import * as utils from '../common/utils';
-import { errorFindingBuildFilesLocation } from '../common/constants';
-import * as mssql from 'mssql';
-import * as vscodeMssql from 'vscode-mssql';
 import * as sqldbproj from 'sqldbproj';
+import * as extractZip from 'extract-zip';
+import * as constants from '../common/constants';
+import { HttpClient } from '../common/httpClient';
 
 const buildDirectory = 'BuildDirectory';
+const sdkName = 'Microsoft.Build.Sql';
+const microsoftBuildSqlVersion = '0.1.3-preview'; // TODO: have this be configurable
+const fullSdkName = `${sdkName}.${microsoftBuildSqlVersion}`;
+const microsoftBuildSqlUrl = `https://www.nuget.org/api/v2/package/${sdkName}/${microsoftBuildSqlVersion}`;
+
 const buildFiles: string[] = [
 	'Microsoft.Data.SqlClient.dll',
 	'Microsoft.Data.Tools.Schema.Sql.dll',
@@ -39,9 +44,11 @@ export class BuildHelper {
 		this.extensionBuildDir = path.join(this.extensionDir, buildDirectory);
 	}
 
-	// create build dlls directory
-	// this should not be required. temporary solution for issue #10273
-	public async createBuildDirFolder(): Promise<void> {
+	/**
+	 * Create build dlls directory with the dlls and targets needed for building a sqlproj
+	 * @param outputChannel
+	 */
+	public async createBuildDirFolder(outputChannel: vscode.OutputChannel): Promise<void> {
 
 		if (this.initialized) {
 			return;
@@ -51,29 +58,61 @@ export class BuildHelper {
 			await fs.mkdir(this.extensionBuildDir);
 		}
 
-		const buildfilesPath = await this.getBuildDirPathFromMssqlTools();
-		buildFiles.forEach(async (fileName) => {
+		// check if this if the nuget needs to be downloaded
+		const nugetPath = path.join(this.extensionBuildDir, `${fullSdkName}.nupkg`);
+
+		if (await utils.exists(nugetPath)) {
+			// if it does exist, make sure all the necessary files are also in the BuildDirectory
+			let missingFiles = false;
+			for (const fileName of buildFiles) {
+				if (!await (utils.exists(path.join(this.extensionBuildDir, fileName)))) {
+					missingFiles = true;
+					break;
+				}
+			}
+
+			// if all the files are there, no need to continue
+			if (!missingFiles) {
+				return;
+			}
+		}
+
+		// TODO: check nuget cache locations first to avoid downloading if those exist
+		// download the Microsoft.Build.Sql sdk nuget
+		outputChannel.appendLine(constants.downloadingDacFxDlls);
+
+		try {
+			const httpClient = new HttpClient();
+			await httpClient.download(microsoftBuildSqlUrl, nugetPath, outputChannel);
+		} catch (e) {
+			void vscode.window.showErrorMessage(constants.errorDownloading(microsoftBuildSqlUrl, utils.getErrorMessage(e)));
+			return;
+		}
+
+		// extract the files from the nuget
+		outputChannel.appendLine(constants.extractingDacFxDlls);
+		const extractedFolderPath = path.join(this.extensionDir, buildDirectory, sdkName);
+
+		try {
+			await extractZip(nugetPath, { dir: extractedFolderPath });
+		} catch (e) {
+			void vscode.window.showErrorMessage(constants.errorExtracting(nugetPath, utils.getErrorMessage(e)));
+			return;
+		}
+
+		// copy the dlls and targets file to the BuildDirectory folder
+		const buildfilesPath = path.join(extractedFolderPath, 'tools', 'netstandard2.1');
+
+		for (const fileName of buildFiles) {
 			if (await (utils.exists(path.join(buildfilesPath, fileName)))) {
 				await fs.copyFile(path.join(buildfilesPath, fileName), path.join(this.extensionBuildDir, fileName));
 			}
-		});
-		this.initialized = true;
-	}
-
-	/**
-	 * Gets the path to the SQL Tools Service installation
-	 * @returns
-	 */
-	private async getBuildDirPathFromMssqlTools(): Promise<string> {
-		try {
-			if (utils.getAzdataApi()) {
-				return (vscode.extensions.getExtension(mssql.extension.name)?.exports as mssql.IExtension).sqlToolsServicePath;
-			} else {
-				return (vscode.extensions.getExtension(vscodeMssql.extension.name)?.exports as vscodeMssql.IExtension).sqlToolsServicePath;
-			}
-		} catch (err) {
-			throw new Error(errorFindingBuildFilesLocation(err));
 		}
+
+		// cleanup extracted folder
+		await fs.rm(extractedFolderPath, { recursive: true });
+
+		this.initialized = true;
 	}
 
 	public get extensionBuildDirPath(): string {
