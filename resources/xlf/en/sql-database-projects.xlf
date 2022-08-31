@@ -319,6 +319,18 @@
     <trans-unit id="dontUseProfile">
       <source xml:lang="en">Don't use profile</source>
     </trans-unit>
+    <trans-unit id="downloadError">
+      <source xml:lang="en">Download error</source>
+    </trans-unit>
+    <trans-unit id="downloadProgress">
+      <source xml:lang="en">Download progress</source>
+    </trans-unit>
+    <trans-unit id="downloading">
+      <source xml:lang="en">Downloading</source>
+    </trans-unit>
+    <trans-unit id="downloadingDacFxDlls">
+      <source xml:lang="en">Downloading Microsoft.Build.Sql nuget to get build DLLs</source>
+    </trans-unit>
     <trans-unit id="edgeEulaAgreementTitle">
       <source xml:lang="en">Microsoft Azure SQL Edge License Agreement</source>
     </trans-unit>
@@ -379,6 +391,12 @@
     <trans-unit id="equalComparison">
       <source xml:lang="en">The project is already up to date with the database.</source>
     </trans-unit>
+    <trans-unit id="errorDownloading">
+      <source xml:lang="en">Error downloading {0}. Error: {1}</source>
+    </trans-unit>
+    <trans-unit id="errorExtracting">
+      <source xml:lang="en">Error extracting files from {0}. Error: {1}</source>
+    </trans-unit>
     <trans-unit id="errorFindingBuildFilesLocation">
       <source xml:lang="en">Error finding build files location: {0}</source>
     </trans-unit>
@@ -416,6 +434,9 @@
     </trans-unit>
     <trans-unit id="extractTargetRequired">
       <source xml:lang="en">Target information for extract is required to create database project.</source>
+    </trans-unit>
+    <trans-unit id="extractingDacFxDlls">
+      <source xml:lang="en">Extracting DacFx build DLLs</source>
     </trans-unit>
     <trans-unit id="file">
       <source xml:lang="en">File</source>

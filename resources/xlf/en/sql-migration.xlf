@@ -696,6 +696,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.ir.setup.step3">
       <source xml:lang="en">Step 3: Click on 'Test connection' button to check the connection between Azure Database Migration Service and integration runtime</source>
     </trans-unit>
+    <trans-unit id="sql.migration.issue.aria.label">
+      <source xml:lang="en">Blocking Issue: {0}</source>
+    </trans-unit>
     <trans-unit id="sql.migration.issues">
       <source xml:lang="en">Issues</source>
     </trans-unit>
