@@ -284,7 +284,7 @@ export class AccountPicker extends Disposable {
 			const label = DOM.append(row, DOM.$('div.label'));
 
 			// TODO: Pick between the light and dark logo
-			label.innerText = tenant.displayName;
+			label.innerText = tenant.displayName.concat(' (', tenant.id, ')');
 		}
 		return null;
 	}
