@@ -35,8 +35,6 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 
 	static ROW_HEIGHT = 26;
 
-	private iconClasses: string[] = [];
-
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
@@ -87,9 +85,6 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 	}
 
 	override ngOnDestroy(): void {
-		this.iconClasses.forEach((icon) => {
-			DOM.removeCSSRulesContainingSelector(icon);
-		});
 		this.baseDestroy();
 	}
 
