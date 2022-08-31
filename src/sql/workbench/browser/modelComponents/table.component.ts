@@ -19,7 +19,7 @@ import { attachTableFilterStyler, attachTableStyler } from 'sql/platform/theme/c
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { getContentHeight, getContentWidth, Dimension, isAncestor } from 'vs/base/browser/dom';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
-import { ActionOnCheck, CheckboxSelectColumn, ICheckboxCellActionEventArgs } from 'sql/base/browser/ui/table/plugins/checkboxSelectColumn2.plugin';
+import { ActionOnCheck, CheckboxSelectColumn, ICheckboxCellActionEventArgs } from 'sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin';
 import { Emitter, Event as vsEvent } from 'vs/base/common/event';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
