@@ -94,13 +94,7 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 	}
 
 	public get options(): azdata.ListViewOption[] {
-		const options = this.getProperties().options ?? [];
-		if (!options.find(o => o.icon !== undefined)) {
-			this._vscodeList.nativeElement.classList.add('hide-icon');
-		} else {
-			this._vscodeList.nativeElement.classList.remove('hide-icon');
-		}
-		return options;
+		return this.getProperties().options ?? [];
 	}
 
 	public override get width(): string | number | undefined {
@@ -125,6 +119,11 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 			this._optionsList!.splice(0, this._optionsList!.length, this.options);
 			let height = (<number>this.height) ?? (this.options.length * ListViewComponent.ROW_HEIGHT);
 			this._optionsList.layout(height);
+			if (!this.options.find(o => o.icon !== undefined)) {
+				this._vscodeList.nativeElement.classList.add('hide-icon');
+			} else {
+				this._vscodeList.nativeElement.classList.remove('hide-icon');
+			}
 		}
 
 		// This is the entry point for the extension to set the selectedOptionId
@@ -168,7 +167,7 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 
 class OptionListDelegate implements IListVirtualDelegate<azdata.ListViewOption> {
 	constructor(
-		private _height: number,
+		private _height: number
 	) {
 	}
 
@@ -209,11 +208,9 @@ class OptionsListRenderer implements IListRenderer<azdata.ListViewOption, Extens
 	public renderElement(option: azdata.ListViewOption, index: number, templateData: ExtensionListTemplate): void {
 		templateData.labelContainer.innerText = option.label ?? '';
 		if (option.icon) {
-			templateData.iconContainer.style.display = '';
 			templateData.iconContainer.classList.add('icon');
 			templateData.iconContainer.classList.add(createIconCssClass(option.icon));
 		} else {
-			templateData.iconContainer.style.display = '';
 			templateData.iconContainer.className = '';
 			templateData.iconContainer.classList.add('list-row', 'listview-option-icon');
 		}
