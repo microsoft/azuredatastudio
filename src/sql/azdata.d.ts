@@ -419,40 +419,42 @@ declare module 'azdata' {
 		ownerUri: string;
 
 		/**
-		 * connection id returned from service host.
+		 * Connection id returned from service host, if the connection was successful.
 		 */
-		connectionId: string;
+		connectionId?: string | undefined;
 
 		/**
 		 * Additional optional detailed error messages from the engine or service host, if an error occurred.
 		 */
-		messages?: string;
+		messages?: string | undefined;
 
 		/**
 		 * Error message returned from the engine or service host, if an error occurred.
 		 */
-		errorMessage?: string;
+		errorMessage?: string | undefined;
 
 		/**
 		 * Error number returned from the engine or server host, if an error occurred.
 		 */
-		errorNumber: number;
+		errorNumber?: number | undefined;
 		/**
-		 * Information about the connected server.
+		 * Information about the connected server, if the connection was successful.
 		 */
-		serverInfo: ServerInfo;
+		serverInfo?: ServerInfo | undefined;
 		/**
-		 * information about the actual connection established
+		 * Information about the actual connection established, if the connection was successful.
 		 */
-		connectionSummary: ConnectionSummary;
+		connectionSummary?: ConnectionSummary | undefined;
 		/**
-		 * Indicates whether the server version is supported by ADS. The default value is true. If the value is false, ADS will show a warning message.
+		 * Whether the server version is supported by the provider. Default is to assume true. If the value is false, Azure Data Studio
+		 * will show a warning message.
 		 */
-		isSupportedVersion?: boolean;
+		isSupportedVersion?: boolean | undefined;
 		/**
-		 * The messages that will be appended to the Azure Data Studio's warning message about unsupported versions.
+		 * Additional optional message with details about why the version isn't supported. This will be appended to the warning message Azure Data Studio
+		 * displays about unsupported versions.
 		 */
-		unsupportedVersionMessage?: string;
+		unsupportedVersionMessage?: string | undefined;
 	}
 
 	/**
