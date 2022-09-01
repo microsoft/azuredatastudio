@@ -2286,12 +2286,12 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.ir.page.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Database Migration Service orchestrates database migration activities and tracks their progress. You can select an existing Database Migration Service as an Azure SQL target if you have created one previously, or create a new one below.]]></Val>
+          <Val><![CDATA[Azure Database Migration Service orchestrates database migration activities and tracks their progress. You can select an existing Database Migration Service if you have created one previously, or create a new one below.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure Database Migration Service orchestre les activités de migration de bases de données et suit leur progression. Vous pouvez sélectionner un Azure Database Migration Service existant pour la cible Azure SQL si vous en avez créé un précédemment ou en créer un nouveau ci-dessous.]]></Val>
+            <Val><![CDATA[Azure Database Migration Service orchestre les activités de migration de base de données et suit leur progression. Vous pouvez sélectionner un Database Migration Service existant si vous en avez créé un précédemment, ou en créer un nouveau ci-dessous.]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Azure Database Migration Service (DMS) orchestrates database migration activities and tracks their progress. You can select an existing DMS for Azure SQL target if you have created one previously or create a new one below.]]></Val>
+            <Val><![CDATA[Azure Database Migration Service orchestrates database migration activities and tracks their progress. You can select an existing Database Migration Service as an Azure SQL target if you have created one previously, or create a new one below.]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
