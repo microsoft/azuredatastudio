@@ -232,7 +232,12 @@ export class ProjectsController {
 
 		// get dlls and targets file needed for building for legacy style projects
 		if (!project.isSdkStyleProject) {
-			await this.buildHelper.createBuildDirFolder(this._outputChannel);
+			const result = await this.buildHelper.createBuildDirFolder(this._outputChannel);
+
+			if (!result) {
+				void vscode.window.showErrorMessage('Could not build project. Error retrieving files needed to build');
+				return '';
+			}
 		}
 
 		const options: ShellCommandOptions = {

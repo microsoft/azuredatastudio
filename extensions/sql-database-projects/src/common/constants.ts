@@ -614,7 +614,9 @@ export enum PublishTargetType {
 	newAzureServer = 'newAzureServer'
 }
 
+// Configuration keys
 export const CollapseProjectNodesKey = 'collapseProjectNodes';
+export const microsoftBuildSqlVersionKey = 'microsoftBuildSqlVersion';
 
 // httpClient
 export const downloadError = localize('downloadError', "Download error");
@@ -623,6 +625,7 @@ export const downloading = localize('downloading', "Downloading");
 
 // buildHelper
 export const downloadingDacFxDlls = localize('downloadingDacFxDlls', "Downloading Microsoft.Build.Sql nuget to get build DLLs");
-export const extractingDacFxDlls = localize('extractingDacFxDlls', "Extracting DacFx build DLLs");
+export function downloadingFromTo(from: string, to: string) { return localize('downloadingFromTo', "Downloading from {0} to {1}", from, to); }
+export function extractingDacFxDlls(location: string) { return localize('extractingDacFxDlls', "Extracting DacFx build DLLs to {0}", location); }
 export function errorDownloading(url: string, error: string) { return localize('errorDownloading', "Error downloading {0}. Error: {1}", url, error); }
 export function errorExtracting(path: string, error: string) { return localize('errorExtracting', "Error extracting files from {0}. Error: {1}", path, error); }
