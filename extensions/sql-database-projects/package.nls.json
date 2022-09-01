@@ -41,6 +41,6 @@
 	"sqlDatabaseProjects.nodejsDoNotAsk": "Whether to prompt the user to install Node.js when not detected.",
 	"sqlDatabaseProjects.autorestSqlVersion": "Which version of Autorest.Sql to use from NPM.  Latest will be used if not set.",
 	"sqlDatabaseProjects.collapseProjectNodes": "Whether project nodes start collapsed",
-	"sqlDatabaseProjects.microsoftBuildSqlVersion": "Which version of Microsoft.Build.Sql SDK to use for building legacy sql projects.",
+	"sqlDatabaseProjects.microsoftBuildSqlVersion": "Which version of Microsoft.Build.Sql SDK to use for building legacy sql projects. Example: 0.1.3-preview",
 	"sqlDatabaseProjects.welcome": "No database projects currently open.\n[New Project](command:sqlDatabaseProjects.new)\n[Open Project](command:sqlDatabaseProjects.open)\n[Create Project From Database](command:sqlDatabaseProjects.importDatabase)"
 }

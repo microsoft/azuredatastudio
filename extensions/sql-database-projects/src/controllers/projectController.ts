@@ -235,7 +235,7 @@ export class ProjectsController {
 			const result = await this.buildHelper.createBuildDirFolder(this._outputChannel);
 
 			if (!result) {
-				void vscode.window.showErrorMessage('Could not build project. Error retrieving files needed to build');
+				void vscode.window.showErrorMessage(constants.errorRetrievingBuildFiles);
 				return '';
 			}
 		}
