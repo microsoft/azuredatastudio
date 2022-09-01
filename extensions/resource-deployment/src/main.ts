@@ -49,9 +49,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<rd.IEx
 	vscode.commands.registerCommand('azdata.resource.sql-image.deploy', () => {
 		openDialog('sql-image');
 	});
-	vscode.commands.registerCommand('azdata.resource.sql-bdc.deploy', () => {
-		openDialog('sql-bdc');
-	});
+
 	/**
 	 * Command to open the Resource Deployment wizard - with options to filter the values shown
 	 * @param defaultResourceTypeName - The default resourceType to be selected

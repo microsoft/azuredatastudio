@@ -50,7 +50,6 @@ fi
 --extensionDevelopmentPath=$ROOT/extensions/admin-tool-ext-win \
 --extensionDevelopmentPath=$ROOT/extensions/agent \
 --extensionDevelopmentPath=$ROOT/extensions/azurecore \
---extensionDevelopmentPath=$ROOT/extensions/big-data-cluster \
 --extensionDevelopmentPath=$ROOT/extensions/cms \
 --extensionDevelopmentPath=$ROOT/extensions/dacpac \
 --extensionDevelopmentPath=$ROOT/extensions/import \

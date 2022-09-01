@@ -1370,8 +1370,6 @@ suite('SQL ConnectionManagementService tests', () => {
 				if (connection.providerName === 'MSSQL') {
 					if (serverInfo.isCloud) {
 						iconName = 'mssql:cloud';
-					} else if (serverInfo.options['isBigDataCluster']) {
-						iconName = 'mssql:cluster';
 					}
 				}
 				called = true;

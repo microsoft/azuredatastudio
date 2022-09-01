@@ -710,57 +710,6 @@
         }
       ]
     },
-    "dashboard.tabs": [
-      {
-        "id": "mssql-big-data-cluster",
-        "description": "%tab.bigDataClusterDescription%",
-        "provider": "MSSQL",
-        "title": "%title.bigDataCluster%",
-        "group": "home",
-        "when": "connectionProvider == 'MSSQL' && mssql:iscluster && dashboardContext == 'server'",
-        "container": {
-          "grid-container": [
-            {
-              "name": "%title.tasks%",
-              "row": 0,
-              "col": 0,
-              "colspan": 1,
-              "widget": {
-                "tasks-widget": [
-                  "mssqlCluster.task.newNotebook",
-                  "mssqlCluster.task.openNotebook",
-                  "mssqlCluster.livy.task.submitSparkJob",
-                  "mssqlCluster.task.openClusterDashboard"
-                ]
-              }
-            },
-            {
-              "name": "%title.endpoints%",
-              "row": 1,
-              "col": 0,
-              "rowspan": 2.5,
-              "colspan": 2,
-              "widget": {
-                "modelview": {
-                  "id": "bdc-endpoints"
-                }
-              }
-            },
-            {
-              "name": "%title.books%",
-              "row": 0,
-              "col": 2,
-              "colspan": 1,
-              "widget": {
-                "modelview": {
-                  "id": "books-widget"
-                }
-              }
-            }
-          ]
-        }
-      }
-    ],
     "connectionProvider": {
       "providerId": "MSSQL",
       "displayName": "%mssql.provider.displayName%",
@@ -776,13 +725,6 @@
           "path": {
             "light": "resources/light/azureDB.svg",
             "dark": "resources/dark/azureDB_inverse.svg"
-          }
-        },
-        {
-          "id": "mssql:cluster",
-          "path": {
-            "light": "resources/light/sql_bigdata_cluster.svg",
-            "dark": "resources/dark/sql_bigdata_cluster_inverse.svg"
           }
         }
       ],

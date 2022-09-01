@@ -115,8 +115,6 @@ module.exports.indentationFilter = [
 	'!extensions/sql-database-projects/src/test/baselines/*.json',
 	'!extensions/sql-database-projects/src/test/baselines/*.sqlproj',
 	'!extensions/sql-database-projects/BuildDirectory/SystemDacpacs/**',
-	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts',
-	'!extensions/big-data-cluster/src/bigDataCluster/controller/clusterApiGenerated2.ts',
 	'!resources/linux/snap/electron-launch',
 	'!extensions/markdown-language-features/media/*.js',
 	'!extensions/simple-browser/media/*.js',
@@ -233,8 +231,6 @@ module.exports.tsHygieneFilter = [
 	'!extensions/html-language-features/server/lib/jquery.d.ts',
 
 	// {{SQL CARBON EDIT}}
-	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts',
-	'!extensions/big-data-cluster/src/bigDataCluster/controller/tokenApiGenerated.ts',
 	'!src/vs/workbench/services/themes/common/textMateScopeMatcher.ts', // skip this because we have no plans on touching this and its not ours
 	'!src/vs/workbench/contrib/extensions/browser/extensionRecommendationsService.ts', // skip this because known issue
 	'!build/**/*'

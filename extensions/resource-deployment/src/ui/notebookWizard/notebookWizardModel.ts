@@ -8,7 +8,7 @@ import { IToolsService } from '../../services/toolsService';
 import { InputComponents, setModelValues } from '../modelViewUtils';
 import { ResourceTypeModel } from '../resourceTypeModel';
 import { ResourceTypeWizard } from '../resourceTypeWizard';
-import { DeploymentType, NotebookWizardDeploymentProvider, NotebookWizardInfo } from '../../interfaces';
+import { NotebookWizardDeploymentProvider, NotebookWizardInfo } from '../../interfaces';
 import { IPlatformService } from '../../services/platformService';
 import { NotebookWizardAutoSummaryPage } from './notebookWizardAutoSummaryPage';
 import { NotebookWizardPage } from './notebookWizardPage';
@@ -45,10 +45,6 @@ export class NotebookWizardModel extends ResourceTypeModel {
 		this.wizard.wizardObject.title = this.notebookProvider.notebookWizard.title;
 		this.wizard.wizardObject.doneButton.label = this.notebookProvider.notebookWizard.doneAction?.label || loc.deployNotebook;
 		this.wizard.wizardObject.generateScriptButton.label = this.notebookProvider.notebookWizard.scriptAction?.label || loc.scriptToNotebook;
-	}
-
-	public get deploymentType(): DeploymentType | undefined {
-		return this.notebookProvider.notebookWizard.type;
 	}
 
 	public initialize(): void {

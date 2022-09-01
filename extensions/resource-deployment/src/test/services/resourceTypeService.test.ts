@@ -24,13 +24,13 @@ describe('Resource Type Service Tests', function (): void {
 		// index 0: platform name, index 1: expected resource types
 		const platforms: { platform: string; resourceTypes: string[] }[] = [
 			{
-				platform: 'win32', resourceTypes: ['sql-image', 'sql-bdc', 'sql-windows-setup']
+				platform: 'win32', resourceTypes: ['sql-image', 'sql-windows-setup']
 			},
 			{
-				platform: 'darwin', resourceTypes: ['sql-image', 'sql-bdc']
+				platform: 'darwin', resourceTypes: ['sql-image']
 			},
 			{
-				platform: 'linux', resourceTypes: ['sql-image', 'sql-bdc']
+				platform: 'linux', resourceTypes: ['sql-image']
 			}
 		];
 		platforms.forEach(platformInfo => {
