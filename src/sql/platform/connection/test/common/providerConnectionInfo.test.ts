@@ -215,7 +215,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 
 	test('getOptionsKey should create a valid unique id', () => {
 		let conn = new ProviderConnectionInfo(capabilitiesService, connectionProfile);
-		let expectedId = 'providerName:MSSQL|authenticationType:|databaseName:database|serverName:new server|userName:user';
+		let expectedId = 'providerName:MSSQL|authenticationType:|connectionName:name|databaseName:database|serverName:new server|userName:user';
 		let id = conn.getOptionsKey();
 		assert.strictEqual(id, expectedId);
 	});
@@ -238,7 +238,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 	});
 
 	test('getProviderFromOptionsKey should return the provider name from the options key successfully', () => {
-		let optionsKey = `providerName:${mssqlProviderName}|authenticationType:|databaseName:database|serverName:new server|userName:user`;
+		let optionsKey = `providerName:${mssqlProviderName}|authenticationType:|connectionName:new name|databaseName:database|serverName:new server|userName:user`;
 		let actual = ProviderConnectionInfo.getProviderFromOptionsKey(optionsKey);
 
 		assert.strictEqual(mssqlProviderName, actual);
@@ -253,7 +253,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 	});
 
 	test('getProviderFromOptionsKey should return empty string give key without provider name', () => {
-		let optionsKey = 'providerName2:MSSQL|authenticationType:|databaseName:database|serverName:new server|userName:user';
+		let optionsKey = 'providerName2:MSSQL|authenticationType:|connectionName:new name|databaseName:database|serverName:new server|userName:user';
 		let expectedProviderId: string = '';
 		let actual = ProviderConnectionInfo.getProviderFromOptionsKey(optionsKey);
 
