@@ -1381,10 +1381,30 @@
                           "required": true
                         },
                         {
-                          "label": "%arc.postgres.username%",
+                          "label": "%arc.sql.username%",
+                          "variableName": "AZDATA_NB_VAR_SQL_USERNAME",
+                          "type": "text",
+                          "required": true,
+                          "validations": [
+                            {
+                              "type": "regex_match",
+                              "regex": "^(?!.*sa|.*system).*$",
+                              "description": "%arc.sql.invalid.username%"
+                            }
+                          ]
+                        },
+                        {
+                          "label": "%arc.postgres.server.username%",
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_USERNAME",
                           "type": "text",
                           "required": true,
+                          "validations": [
+                            {
+                              "type": "regex_match",
+                              "regex": "^(?!system$)",
+                              "description": "%arc.postgres.server.invalid.username%"
+                            }
+                          ],
                           "defaultValue": "",
                           "enabled": true
                         },
