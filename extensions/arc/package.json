@@ -1416,6 +1416,15 @@
                           ],
                           "min": 1,
                           "max": 65535
+                        },
+                        {
+                          "label": "%arc.postgres.server.service.type%",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_SERVICE_TYPE",
+                          "type": "radio",
+                          "required": true,
+                          "options": ["NodePort", "LoadBalancer"],
+                          "defaultValue": "NodePort",
+                          "enabled": true
                         }
                       ]
                     },
