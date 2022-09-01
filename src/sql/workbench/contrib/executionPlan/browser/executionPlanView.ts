@@ -637,6 +637,10 @@ export class ActualElapsedTimeAction extends Action {
 		this.checked = true;
 
 		// Pass delegate here
+		context.executionPlanDiagram.clearExpensiveOperatorHighlighting();
+		context.executionPlanDiagram.highlightExpensiveOperator(cell => {
+			return cell.elapsedTimeInMs;
+		});
 	}
 }
 
@@ -663,6 +667,7 @@ export class ActualElapsedCpuTimeAction extends Action {
 		this.checked = true;
 
 		// pass delegate here
+		context.executionPlanDiagram.clearExpensiveOperatorHighlighting();
 	}
 }
 
@@ -689,6 +694,10 @@ export class CostAction extends Action {
 		this.checked = true;
 
 		// Pass delegate here
+		context.executionPlanDiagram.clearExpensiveOperatorHighlighting();
+		context.executionPlanDiagram.highlightExpensiveOperator(cell => {
+			return cell.cost;
+		});
 	}
 }
 
@@ -715,6 +724,10 @@ export class SubtreeCostAction extends Action {
 		this.checked = true;
 
 		// Pass delegate here
+		context.executionPlanDiagram.clearExpensiveOperatorHighlighting();
+		context.executionPlanDiagram.highlightExpensiveOperator(cell => {
+			return cell.subTreeCost;
+		});
 	}
 }
 
@@ -741,6 +754,7 @@ export class ActualLogicalReadsAction extends Action {
 		this.checked = true;
 
 		// Pass delegate here
+		context.executionPlanDiagram.clearExpensiveOperatorHighlighting();
 	}
 }
 
@@ -767,12 +781,13 @@ export class ActualPhysicalReadsAction extends Action {
 		this.checked = true;
 
 		// Pass delegate here
+		context.executionPlanDiagram.clearExpensiveOperatorHighlighting();
 	}
 }
 
 export class ActualNumberOfRowsForAllExecutionsAction extends Action {
 	public static ID = 'ep.actualNumberOfRowsForAllExecutionsAction';
-	public static LABEL = localize('executionPlanCost', 'Cost');
+	public static LABEL = localize('actualNumberOfRowsForAllExecutionsAction', 'Actual Number of Rows For All Executions');
 
 	constructor(private source: ExecutionPlanActionSource,
 		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService) {
@@ -793,6 +808,7 @@ export class ActualNumberOfRowsForAllExecutionsAction extends Action {
 		this.checked = true;
 
 		// Pass delegate here
+		context.executionPlanDiagram.clearExpensiveOperatorHighlighting();
 	}
 }
 
@@ -819,5 +835,6 @@ export class NumberOfRowsReadAction extends Action {
 		this.checked = true;
 
 		// Pass delegate here
+		context.executionPlanDiagram.clearExpensiveOperatorHighlighting();
 	}
 }

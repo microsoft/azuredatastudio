@@ -227,6 +227,13 @@ export class AzdataGraphView {
 		return resultNodes;
 	}
 
+	public clearExpensiveOperatorHighlighting(): void {
+		this._diagram.clearExpensiveOperatorHighlighting();
+	}
+
+	public highlightExpensiveOperator(predicate: (cell: AzDataGraphCell) => number): void {
+		this._diagram.highlightExpensiveOperator(predicate);
+	}
 
 	/**
 	 * Brings a graph element to the center of the parent view.
@@ -323,6 +330,23 @@ export class AzdataGraphView {
 		if (node.description) {
 			diagramNode.description = node.description;
 		}
+
+		if (node.cost) {
+			diagramNode.cost = node.cost;
+		}
+
+		if (node.subTreeCost) {
+			diagramNode.subTreeCost = node.subTreeCost;
+		}
+
+		if (node.relativeCost) {
+			diagramNode.relativeCost = node.relativeCost;
+		}
+
+		if (node.elapsedTimeInMs) {
+			diagramNode.elapsedTimeInMs = node.elapsedTimeInMs;
+		}
+
 		return diagramNode;
 	}
 
@@ -470,6 +494,22 @@ export interface AzDataGraphCell {
 	 */
 	description: string;
 	badges: AzDataGraphNodeBadge[];
+	/**
+	 * Cost associated with the node
+	 */
+	cost: number;
+	/**
+	 * Cost of the node subtree
+	 */
+	subTreeCost: number;
+	/**
+	 * Relative cost of the node compared to its siblings.
+	 */
+	relativeCost: number;
+	/**
+	 * Time take by the node operation in milliseconds
+	 */
+	elapsedTimeInMs: number;
 }
 
 export interface AzDataGraphNodeBadge {
