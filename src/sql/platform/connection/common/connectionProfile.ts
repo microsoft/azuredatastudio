@@ -215,7 +215,10 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		if (databaseDisplayName) {
 			id += ProviderConnectionInfo.idSeparator + 'databaseDisplayName' + ProviderConnectionInfo.nameValueSeparator + databaseDisplayName;
 		}
-
+		let connectionDisplayName: string = this.options['connectionName'];
+		if (connectionDisplayName) {
+			id += ProviderConnectionInfo.idSeparator + 'connectionName' + ProviderConnectionInfo.nameValueSeparator + connectionDisplayName;
+		}
 		return id + ProviderConnectionInfo.idSeparator + 'group' + ProviderConnectionInfo.nameValueSeparator + this.groupId;
 	}
 
