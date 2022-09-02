@@ -11,12 +11,11 @@ import * as sqldbproj from 'sqldbproj';
 import * as extractZip from 'extract-zip';
 import * as constants from '../common/constants';
 import { HttpClient } from '../common/httpClient';
+import { DBProjectConfigurationKey } from './netcoreTool';
 
 const buildDirectory = 'BuildDirectory';
 const sdkName = 'Microsoft.Build.Sql';
-const microsoftBuildSqlVersion = '0.1.3-preview'; // TODO: have this be configurable
-const fullSdkName = `${sdkName}.${microsoftBuildSqlVersion}`;
-const microsoftBuildSqlUrl = `https://www.nuget.org/api/v2/package/${sdkName}/${microsoftBuildSqlVersion}`;
+const microsoftBuildSqlDefaultVersion = '0.1.3-preview';
 
 const buildFiles: string[] = [
 	'Microsoft.Data.SqlClient.dll',
@@ -48,15 +47,20 @@ export class BuildHelper {
 	 * Create build dlls directory with the dlls and targets needed for building a sqlproj
 	 * @param outputChannel
 	 */
-	public async createBuildDirFolder(outputChannel: vscode.OutputChannel): Promise<void> {
+	public async createBuildDirFolder(outputChannel: vscode.OutputChannel): Promise<boolean> {
 
 		if (this.initialized) {
-			return;
+			return true;
 		}
 
 		if (!await utils.exists(this.extensionBuildDir)) {
 			await fs.mkdir(this.extensionBuildDir);
 		}
+
+		// check if the settings has a version specified for Microsoft.Build.Sql, otherwise use default
+		const microsoftBuildSqlVersionConfig = vscode.workspace.getConfiguration(DBProjectConfigurationKey)[constants.microsoftBuildSqlVersionKey];
+		const sdkVersion = !!microsoftBuildSqlVersionConfig ? microsoftBuildSqlVersionConfig : microsoftBuildSqlDefaultVersion;
+		const fullSdkName = `${sdkName}.${sdkVersion}`;
 
 		// check if this if the nuget needs to be downloaded
 		const nugetPath = path.join(this.extensionBuildDir, `${fullSdkName}.nupkg`);
@@ -73,7 +77,7 @@ export class BuildHelper {
 
 			// if all the files are there, no need to continue
 			if (!missingFiles) {
-				return;
+				return true;
 			}
 		}
 
@@ -81,23 +85,26 @@ export class BuildHelper {
 		// download the Microsoft.Build.Sql sdk nuget
 		outputChannel.appendLine(constants.downloadingDacFxDlls);
 
+		const microsoftBuildSqlUrl = `https://www.nuget.org/api/v2/package/${sdkName}/${sdkVersion}`;
+
 		try {
 			const httpClient = new HttpClient();
+			outputChannel.appendLine(constants.downloadingFromTo(microsoftBuildSqlUrl, nugetPath));
 			await httpClient.download(microsoftBuildSqlUrl, nugetPath, outputChannel);
 		} catch (e) {
 			void vscode.window.showErrorMessage(constants.errorDownloading(microsoftBuildSqlUrl, utils.getErrorMessage(e)));
-			return;
+			return false;
 		}
 
 		// extract the files from the nuget
-		outputChannel.appendLine(constants.extractingDacFxDlls);
 		const extractedFolderPath = path.join(this.extensionDir, buildDirectory, sdkName);
+		outputChannel.appendLine(constants.extractingDacFxDlls(extractedFolderPath));
 
 		try {
 			await extractZip(nugetPath, { dir: extractedFolderPath });
 		} catch (e) {
 			void vscode.window.showErrorMessage(constants.errorExtracting(nugetPath, utils.getErrorMessage(e)));
-			return;
+			return false;
 		}
 
 		// copy the dlls and targets file to the BuildDirectory folder
@@ -113,6 +120,7 @@ export class BuildHelper {
 		await fs.rm(extractedFolderPath, { recursive: true });
 
 		this.initialized = true;
+		return true;
 	}
 
 	public get extensionBuildDirPath(): string {

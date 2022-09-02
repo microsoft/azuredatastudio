@@ -63,6 +63,10 @@
           "sqlDatabaseProjects.collapseProjectNodes": {
             "type": "boolean",
             "description": "%sqlDatabaseProjects.collapseProjectNodes%"
+          },
+          "sqlDatabaseProjects.microsoftBuildSqlVersion": {
+            "type": "string",
+            "description": "%sqlDatabaseProjects.microsoftBuildSqlVersion%"
           }
         }
       }
