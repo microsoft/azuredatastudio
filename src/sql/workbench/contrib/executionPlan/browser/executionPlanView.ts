@@ -32,9 +32,7 @@ import {
 	enableTooltipIconClassName,
 	executionPlanActualElapsedCpuTime,
 	executionPlanActualElapsedTime,
-	executionPlanActualLogicalReads,
 	executionPlanActualNumberOfRowsForAllExecutions,
-	executionPlanActualPhysicalReads,
 	executionPlanCompareIconClassName,
 	executionPlanCost,
 	executionPlanNumberOfRowsRead,
@@ -215,8 +213,6 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 			this._instantiationService.createInstance(ActualElapsedCpuTimeAction, 'ContextMenu'),
 			this._instantiationService.createInstance(CostAction, 'ContextMenu'),
 			this._instantiationService.createInstance(SubtreeCostAction, 'ContextMenu'),
-			this._instantiationService.createInstance(ActualLogicalReadsAction, 'ContextMenu'),
-			this._instantiationService.createInstance(ActualPhysicalReadsAction, 'ContextMenu'),
 			this._instantiationService.createInstance(ActualNumberOfRowsForAllExecutionsAction, 'ContextMenu'),
 			this._instantiationService.createInstance(NumberOfRowsReadAction, 'ContextMenu'),
 			new Separator()
@@ -728,60 +724,6 @@ export class SubtreeCostAction extends Action {
 		context.executionPlanDiagram.highlightExpensiveOperator(cell => {
 			return cell.subTreeCost;
 		});
-	}
-}
-
-export class ActualLogicalReadsAction extends Action {
-	public static ID = 'ep.actualLogicalReadsAction';
-	public static LABEL = localize('executionPlanActualLogicalReads', 'Actual Logical Reads');
-
-	constructor(private source: ExecutionPlanActionSource,
-		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService) {
-		super(ActualLogicalReadsAction.ID, ActualLogicalReadsAction.LABEL, executionPlanActualLogicalReads);
-	}
-
-	public override async run(context: ExecutionPlanView): Promise<void> {
-		this.telemetryService
-			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.ActualLogicalReads)
-			.withAdditionalProperties({ source: this.source })
-			.send();
-
-		if (context.previousExpensiveOperatorAction) {
-			context.previousExpensiveOperatorAction.checked = false;
-		}
-
-		context.previousExpensiveOperatorAction = this;
-		this.checked = true;
-
-		// Pass delegate here
-		context.executionPlanDiagram.clearExpensiveOperatorHighlighting();
-	}
-}
-
-export class ActualPhysicalReadsAction extends Action {
-	public static ID = 'ep.actualPhysicalReadsAction';
-	public static LABEL = localize('executionPlanActualPhysicalReads', 'Actual Physical Reads');
-
-	constructor(private source: ExecutionPlanActionSource,
-		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService) {
-		super(ActualPhysicalReadsAction.ID, ActualPhysicalReadsAction.LABEL, executionPlanActualPhysicalReads);
-	}
-
-	public override async run(context: ExecutionPlanView): Promise<void> {
-		this.telemetryService
-			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.ActualPhysicalReads)
-			.withAdditionalProperties({ source: this.source })
-			.send();
-
-		if (context.previousExpensiveOperatorAction) {
-			context.previousExpensiveOperatorAction.checked = false;
-		}
-
-		context.previousExpensiveOperatorAction = this;
-		this.checked = true;
-
-		// Pass delegate here
-		context.executionPlanDiagram.clearExpensiveOperatorHighlighting();
 	}
 }
 

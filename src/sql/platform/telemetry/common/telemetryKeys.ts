@@ -57,9 +57,7 @@ export const enum TelemetryError {
 export const enum TelemetryAction {
 	ActualElapsedTime = 'ActualElapsedTime',
 	ActualElapsedCpuTime = 'ActualElapsedCpuTime',
-	ActualLogicalReads = 'ActualLogicalReads',
 	ActualNumberOfRowsReadForAllExecutions = 'ActualNumberOfRowsReadForAllExecutions',
-	ActualPhysicalReads = 'ActualPhysicalReads',
 	adsCommandExecuted = 'adsCommandExecuted',
 	AddExecutionPlan = 'AddExecutionPlan',
 	AddServerGroup = 'AddServerGroup',
