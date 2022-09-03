@@ -1238,6 +1238,14 @@ declare module 'azdata' {
 			 */
 			mimeType: string;
 			/**
+			 * Whether user confirmation is required, the default value is false.
+			 */
+			requireConfirmation?: boolean;
+			/**
+			 * The confirmation text.
+			 */
+			confirmationText?: string;
+			/**
 			 * The table schema validation error.
 			 */
 			schemaValidationError?: string;
