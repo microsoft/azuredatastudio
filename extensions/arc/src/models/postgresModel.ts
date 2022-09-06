@@ -118,7 +118,7 @@ export class PostgresModel extends ResourceModel {
 		}
 		this._refreshPromise = new Deferred();
 		try {
-			this._config = (await this._azApi.az.postgres.arcserver.show(this.info.name, this.controllerModel.info.namespace, this.controllerModel.azAdditionalEnvVars)).stdout;
+			this._config = (await this._azApi.az.postgres.serverarc.show(this.info.name, this.controllerModel.info.namespace, this.controllerModel.azAdditionalEnvVars)).stdout;
 			this.configLastUpdated = new Date();
 			this._onConfigUpdated.fire(this._config);
 			this._refreshPromise.resolve();

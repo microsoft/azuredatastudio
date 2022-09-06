@@ -13,7 +13,6 @@ import { PostgresModel } from '../../../models/postgresModel';
 import { convertToGibibyteString } from '../../../common/utils';
 
 export type RoleSpecifier = {
-	workers?: string,
 	coordinator?: string
 };
 
@@ -27,12 +26,6 @@ export type ConfigurationSpecModel = {
 
 export class PostgresComputeAndStoragePage extends DashboardPage {
 	private userInputContainer!: azdata.DivContainer;
-
-	private workerCountBox!: azdata.InputBoxComponent;
-	private workerCoresLimitBox!: azdata.InputBoxComponent;
-	private workerCoresRequestBox!: azdata.InputBoxComponent;
-	private workerMemoryLimitBox!: azdata.InputBoxComponent;
-	private workerMemoryRequestBox!: azdata.InputBoxComponent;
 
 	private coordinatorCoresLimitBox!: azdata.InputBoxComponent;
 	private coordinatorCoresRequestBox!: azdata.InputBoxComponent;
@@ -88,12 +81,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
-		const workerNodeslink = this.modelView.modelBuilder.hyperlink().withProps({
-			label: loc.addingWorkerNodes,
-			url: 'https://docs.microsoft.com/azure/azure-arc/data/scale-up-down-postgresql-hyperscale-server-group-using-cli',
-			CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px' }
-		}).component();
-
 		const infoComputeStorage_p3 = this.modelView.modelBuilder.text().withProps({
 			value: loc.computeAndStorageDescriptionPartThree,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
@@ -125,7 +112,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			.withItems([
 				infoComputeStorage_p1,
 				infoComputeStorage_p2,
-				workerNodeslink,
 				infoComputeStorage_p3,
 				memoryVCoreslink,
 				infoComputeStorage_p4,
@@ -165,10 +151,9 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 						},
 						async (_progress, _token): Promise<void> => {
 							try {
-								await this._azApi.az.postgres.arcserver.edit(
+								await this._azApi.az.postgres.serverarc.update(
 									this._postgresModel.info.name,
 									{
-										workers: this.saveArgs.workers,
 										coresRequest: this.schedulingParamsToEdit(this.saveArgs.coresRequest!),
 										coresLimit: this.schedulingParamsToEdit(this.saveArgs.coresLimit!),
 										memoryRequest: this.schedulingParamsToEdit(this.saveArgs.memoryRequest!),
@@ -210,11 +195,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			this.discardButton.onDidClick(async () => {
 				this.discardButton.enabled = false;
 				try {
-					this.workerCountBox.value = this.currentConfiguration.workers!.toString();
-					this.workerCoresRequestBox.value = this.currentConfiguration.coresRequest!.workers;
-					this.workerCoresLimitBox.value = this.currentConfiguration.coresLimit!.workers;
-					this.workerMemoryRequestBox.value = this.currentConfiguration.memoryRequest!.workers;
-					this.workerMemoryLimitBox.value = this.currentConfiguration.memoryLimit!.workers;
 					this.coordinatorCoresRequestBox.value = this.currentConfiguration.coresRequest!.coordinator;
 					this.coordinatorCoresLimitBox.value = this.currentConfiguration.coresLimit!.coordinator;
 					this.coordinatorMemoryRequestBox.value = this.currentConfiguration.memoryRequest!.coordinator;
@@ -234,131 +214,21 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 	private schedulingParamsToEdit(arg: RoleSpecifier): string | undefined {
 		// A comma-separated list of roles with values can be specified in format <role>=<value>.
-		if (arg.workers && arg.coordinator) {
-			return `"${arg.workers},${arg.coordinator}"`;
+		if (arg.coordinator) {
+			return `"${arg.coordinator}"`;
 		} else {
-			return arg.workers ?? arg.coordinator ?? undefined;
+			return arg.coordinator ?? undefined;
 		}
 	}
 
 	private initializeConfigurationBoxes(): void {
-		// Worker node count
-		this.workerCountBox = this.modelView.modelBuilder.inputBox().withProps({
-			readOnly: false,
-			min: 0,
-			inputType: 'number',
-			placeHolder: loc.loading,
-			required: true,
-			ariaLabel: loc.workerNodeCount,
-			validationErrorMessage: loc.workerOneNodeValidationMessage
-		}).withValidation((component) => {
-			if (component.value === '1') {
-				return false;
-			}
-			return true;
-		}).component();
-
-		this.disposables.push(
-			this.workerCountBox.onTextChanged(() => {
-				if (!this.saveValueToEdit(this.workerCountBox, this.currentConfiguration.workers!.toString())) {
-					this.saveArgs.workers = undefined;
-				} else {
-					this.saveArgs.workers = parseInt(this.workerCountBox.value!);
-				}
-			})
-		);
-
-		// Worker nodes cores request
-		this.workerCoresRequestBox = this.modelView.modelBuilder.inputBox().withProps({
-			readOnly: false,
-			min: 1,
-			inputType: 'number',
-			placeHolder: loc.loading,
-			ariaLabel: loc.workerCoresRequest
-		}).component();
-
-		this.disposables.push(
-			this.workerCoresRequestBox.onTextChanged(() => {
-				if (!(this.saveValueToEdit(this.workerCoresRequestBox, this.currentConfiguration.coresRequest!.workers!))) {
-					this.saveArgs.coresRequest!.workers = undefined;
-				} else if (this.workerCoresRequestBox.value === '') {
-					this.saveArgs.coresRequest!.workers = 'w=';
-				} else {
-					this.saveArgs.coresRequest!.workers = `w=${this.workerCoresRequestBox.value}`;
-				}
-			})
-		);
-
-		// Worker nodes cores limit
-		this.workerCoresLimitBox = this.modelView.modelBuilder.inputBox().withProps({
-			readOnly: false,
-			min: 1,
-			inputType: 'number',
-			placeHolder: loc.loading,
-			ariaLabel: loc.workerCoresLimit
-		}).component();
-
-		this.disposables.push(
-			this.workerCoresLimitBox.onTextChanged(() => {
-				if (!(this.saveValueToEdit(this.workerCoresLimitBox, this.currentConfiguration.coresLimit!.workers!))) {
-					this.saveArgs.coresLimit!.workers = undefined;
-				} else if (this.workerCoresLimitBox.value === '') {
-					this.saveArgs.coresLimit!.workers = 'w=';
-				} else {
-					this.saveArgs.coresLimit!.workers = `w=${this.workerCoresLimitBox.value}`;
-				}
-			})
-		);
-
-		// Worker nodes memory request
-		this.workerMemoryRequestBox = this.modelView.modelBuilder.inputBox().withProps({
-			readOnly: false,
-			min: 0.25,
-			inputType: 'number',
-			placeHolder: loc.loading,
-			ariaLabel: loc.workerMemoryRequest
-		}).component();
-
-		this.disposables.push(
-			this.workerMemoryRequestBox.onTextChanged(() => {
-				if (!(this.saveValueToEdit(this.workerMemoryRequestBox, this.currentConfiguration.memoryRequest!.workers!))) {
-					this.saveArgs.memoryRequest!.workers = undefined;
-				} else if (this.workerMemoryRequestBox.value === '') {
-					this.saveArgs.memoryRequest!.workers = 'w=';
-				} else {
-					this.saveArgs.memoryRequest!.workers = `w=${this.workerMemoryRequestBox.value}Gi`;
-				}
-			})
-		);
-
-		// Worker nodes memory limit
-		this.workerMemoryLimitBox = this.modelView.modelBuilder.inputBox().withProps({
-			readOnly: false,
-			min: 0.25,
-			inputType: 'number',
-			placeHolder: loc.loading,
-			ariaLabel: loc.workerMemoryLimit
-		}).component();
-
-		this.disposables.push(
-			this.workerMemoryLimitBox.onTextChanged(() => {
-				if (!(this.saveValueToEdit(this.workerMemoryLimitBox, this.currentConfiguration.memoryLimit!.workers!))) {
-					this.saveArgs.memoryLimit!.workers = undefined;
-				} else if (this.workerMemoryLimitBox.value === '') {
-					this.saveArgs.memoryLimit!.workers = 'w=';
-				} else {
-					this.saveArgs.memoryLimit!.workers = `w=${this.workerMemoryLimitBox.value}Gi`;
-				}
-			})
-		);
-
 		// Coordinator node cores request
 		this.coordinatorCoresRequestBox = this.modelView.modelBuilder.inputBox().withProps({
 			readOnly: false,
 			min: 1,
 			inputType: 'number',
 			placeHolder: loc.loading,
-			ariaLabel: loc.coordinatorCoresRequest
+			ariaLabel: loc.coresRequest
 		}).component();
 
 		this.disposables.push(
@@ -379,7 +249,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			min: 1,
 			inputType: 'number',
 			placeHolder: loc.loading,
-			ariaLabel: loc.coordinatorCoresLimit
+			ariaLabel: loc.coresLimit
 		}).component();
 
 		this.disposables.push(
@@ -400,7 +270,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			min: 0.25,
 			inputType: 'number',
 			placeHolder: loc.loading,
-			ariaLabel: loc.coordinatorMemoryRequest
+			ariaLabel: loc.memoryRequest
 		}).component();
 
 		this.disposables.push(
@@ -421,7 +291,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			min: 0.25,
 			inputType: 'number',
 			placeHolder: loc.loading,
-			ariaLabel: loc.coordinatorMemoryLimit
+			ariaLabel: loc.memoryLimit
 		}).component();
 
 		this.disposables.push(
@@ -439,7 +309,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 	private createUserInputWorkerSection(): azdata.Component[] {
 		if (this._postgresModel.configLastUpdated) {
-			this.editWorkerNodeCount();
 			this.refreshCoresRequest();
 			this.refreshCoresLimit();
 			this.refreshMemoryRequest();
@@ -447,21 +316,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		}
 
 		return [
-			this.modelView.modelBuilder.text().withProps({
-				value: loc.workerNodes,
-				CSSStyles: { ...cssStyles.title, 'margin-top': '25px' }
-			}).component(),
-			this.createWorkerNodesSectionContainer(),
-			this.createCoresMemorySection(loc.configurationPerNode, loc.workerNodesConfigurationInformation),
-			this.createConfigurationSectionContainer(loc.coresRequest, this.workerCoresRequestBox),
-			this.createConfigurationSectionContainer(loc.coresLimit, this.workerCoresLimitBox),
-			this.createConfigurationSectionContainer(loc.memoryRequest, this.workerMemoryRequestBox),
-			this.createConfigurationSectionContainer(loc.memoryLimit, this.workerMemoryLimitBox),
-			this.modelView.modelBuilder.text().withProps({
-				value: loc.coordinatorNode,
-				CSSStyles: { ...cssStyles.title, 'margin-top': '25px' }
-			}).component(),
-			this.createCoresMemorySection(loc.configuration, loc.coordinatorNodeConfigurationInformation),
+			this.createCoresMemorySection(loc.configuration),
 			this.createConfigurationSectionContainer(loc.coresRequest, this.coordinatorCoresRequestBox),
 			this.createConfigurationSectionContainer(loc.coresLimit, this.coordinatorCoresLimitBox),
 			this.createConfigurationSectionContainer(loc.memoryRequest, this.coordinatorMemoryRequestBox),
@@ -469,34 +324,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		];
 	}
 
-	private createWorkerNodesSectionContainer(): azdata.FlexContainer {
-		const inputFlex = { flex: '0 1 150px' };
-		const keyFlex = { flex: `0 1 250px` };
-
-		const flexContainer = this.modelView.modelBuilder.flexContainer().withLayout({
-			flexWrap: 'wrap',
-			alignItems: 'center'
-		}).component();
-
-		const keyComponent = this.modelView.modelBuilder.text().withProps({
-			value: loc.workerNodeCount,
-			requiredIndicator: true,
-			description: loc.workerNodesInformation,
-			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
-		}).component();
-
-		const keyContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
-		keyContainer.addItem(keyComponent, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '15px' } });
-
-		flexContainer.addItem(keyContainer, keyFlex);
-
-		const inputContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
-		inputContainer.addItem(this.workerCountBox, { CSSStyles: { 'margin-bottom': '15px', 'min-width': '50px', 'max-width': '225px' } });
-
-		flexContainer.addItem(inputContainer, inputFlex);
-
-		return flexContainer;
-	}
 
 	private createConfigurationSectionContainer(key: string, input: azdata.Component): azdata.FlexContainer {
 		const inputFlex = { flex: '0 1 150px' };
@@ -550,17 +377,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		}
 	}
 
-	private editWorkerNodeCount(): void {
-		// scale.shards was renamed to scale.workers. Check both for backwards compatibility.
-		let scale = this._postgresModel.config?.spec.scale;
-		this.currentConfiguration.workers = scale?.workers ?? scale?.shards ?? 0;
-
-		this.workerCountBox.placeHolder = '';
-		this.workerCountBox.value = this.currentConfiguration.workers.toString();
-		this.saveArgs.workers = undefined;
-	}
-
-	private createCoresMemorySection(title: string, description: string): azdata.DivContainer {
+	private createCoresMemorySection(title: string): azdata.DivContainer {
 		const titleFlex = { flex: `0 1 250px` };
 
 		const flexContainer = this.modelView.modelBuilder.flexContainer().withLayout({
@@ -570,12 +387,11 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		const titleComponent = this.modelView.modelBuilder.text().withProps({
 			value: title,
-			description: description,
 			CSSStyles: { ...cssStyles.title, 'font-weight': 'bold', 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
 		const titleContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
-		titleContainer.addItem(titleComponent, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '15px' } });
+		titleContainer.addItem(titleComponent, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '15px', 'margin-top': '15px' } });
 
 		flexContainer.addItem(titleContainer, titleFlex);
 
@@ -586,15 +402,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 	}
 
 	private refreshCoresRequest(): void {
-		// Workers
-		let workersCR = this._postgresModel.config?.spec.scheduling?.roles?.worker?.resources?.requests?.cpu ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.cpu;
-		if (!workersCR) {
-			workersCR = '';
-		}
-
-		this.workerCoresRequestBox.placeHolder = '';
-		this.workerCoresRequestBox.value = workersCR;
-
 		// Coordinator
 		let coordinatorCR = this._postgresModel.config?.spec.scheduling?.roles?.coordinator?.resources?.requests?.cpu ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.cpu;
 		if (!coordinatorCR) {
@@ -606,7 +413,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		// Update saved current configuration
 		this.currentConfiguration.coresRequest = {
-			workers: workersCR,
 			coordinator: coordinatorCR
 		};
 
@@ -615,15 +421,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 	}
 
 	private refreshCoresLimit(): void {
-		// Workers
-		let workersCL = this._postgresModel.config?.spec.scheduling?.roles?.worker?.resources?.limits?.cpu ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.cpu;
-		if (!workersCL) {
-			workersCL = '';
-		}
-
-		this.workerCoresLimitBox.placeHolder = '';
-		this.workerCoresLimitBox.value = workersCL;
-
 		// Coordinator
 		let coordinatorCL = this._postgresModel.config?.spec.scheduling?.roles?.coordinator?.resources?.limits?.cpu ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.cpu;
 		if (!coordinatorCL) {
@@ -635,7 +432,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		// Update saved current configuration
 		this.currentConfiguration.coresLimit = {
-			workers: workersCL,
 			coordinator: coordinatorCL
 		};
 
@@ -644,16 +440,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 	}
 
 	private refreshMemoryRequest(): void {
-		// Workers
-		let currentWorkersMemoryRequest = this._postgresModel.config?.spec.scheduling?.roles?.worker?.resources?.requests?.memory ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.memory;
-		let workersMR = '';
-		if (currentWorkersMemoryRequest) {
-			workersMR = convertToGibibyteString(currentWorkersMemoryRequest);
-		}
-
-		this.workerMemoryRequestBox.placeHolder = '';
-		this.workerMemoryRequestBox.value = workersMR;
-
 		// Coordinator
 		let currentCoordinatorMemoryRequest = this._postgresModel.config?.spec.scheduling?.roles?.coordinator?.resources?.requests?.memory ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.requests?.memory;
 		let coordinatorMR = '';
@@ -666,7 +452,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		// Update saved current configuration
 		this.currentConfiguration.memoryRequest = {
-			workers: workersMR,
 			coordinator: coordinatorMR
 		};
 
@@ -675,16 +460,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 	}
 
 	private refreshMemoryLimit(): void {
-		// Workers
-		let currentWorkersMemoryLimit = this._postgresModel.config?.spec.scheduling?.roles?.worker?.resources?.limits?.memory ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.memory;
-		let workersML = '';
-		if (currentWorkersMemoryLimit) {
-			workersML = convertToGibibyteString(currentWorkersMemoryLimit);
-		}
-
-		this.workerMemoryLimitBox.placeHolder = '';
-		this.workerMemoryLimitBox.value = workersML;
-
 		// Coordinator
 		let currentCoordinatorMemoryLimit = this._postgresModel.config?.spec.scheduling?.roles?.coordinator?.resources?.limits?.memory ?? this._postgresModel.config?.spec.scheduling?.default?.resources?.limits?.memory;
 		let coordinatorML = '';
@@ -697,7 +472,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		// Update saved current configuration
 		this.currentConfiguration.memoryLimit = {
-			workers: workersML,
 			coordinator: coordinatorML
 		};
 
@@ -706,7 +480,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 	}
 
 	private handleServiceUpdated(): void {
-		this.editWorkerNodeCount();
 		this.refreshCoresRequest();
 		this.refreshCoresLimit();
 		this.refreshMemoryRequest();
