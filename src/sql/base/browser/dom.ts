@@ -14,12 +14,32 @@ export function isHidden(element: HTMLElement): boolean {
 }
 
 /**
+ * Checks if the CSS calc expression is valid or not.
+ * @param expression string to be tested.
+ * @returns true if the expression is a valid calc expression else false.
+ */
+export function validateCalcExpression(expression: string): boolean {
+	/**
+	 * Regex that checks if a size string is a calc expression. Source: https://codepen.io/benfoster/pen/VPjLdQ
+	 * If the size is a valid calc expression, we want to leave it as it is.
+	 */
+	const calcRegex = /calc\(( )?([\d\.]+(%|vh|vw|vmin|vmax|em|rem|px|cm|ex|in|mm|pc|pt|ch|q|deg|rad|grad|turn|s|ms|hz|khz))( )+[+\-\*\/]( )+(\-)?([\d\.]+(%|vh|vw|vmin|vmax|em|rem|px|cm|ex|in|mm|pc|pt|ch|q|deg|rad|grad|turn|s|ms|hz|khz))( )?\)/i;
+
+	return calcRegex.test(expression);
+}
+
+/**
  * Converts a size value into its string representation. This will add px to the end unless
  * it already ends with %. If the size value is undefined it will return the defaultValue as-is.
  * @param size The size value to convert
  * @param defaultValue The default value to use if the size is undefined
  */
 export function convertSize(size: number | string | undefined, defaultValue?: string): string {
+
+	if (types.isString(size) && validateCalcExpression(size)) {
+		return size;
+	}
+
 	defaultValue = defaultValue || '';
 	if (types.isUndefinedOrNull(size)) {
 		return defaultValue;

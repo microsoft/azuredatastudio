@@ -3198,12 +3198,12 @@ declare module 'azdata' {
 		 */
 		flexWrap?: FlexWrapType | undefined;
 		/**
-		 * Container Height
+		 * Container Height. Accepted values are px, %, auto and calc expressions.
 		 */
 		height?: number | string | undefined;
 
 		/**
-		 * Container Width
+		 * Container Width. Accepted values are px, %, auto and calc expressions.
 		 */
 		width?: number | string | undefined;
 
