@@ -331,6 +331,9 @@
     <trans-unit id="downloadingDacFxDlls">
       <source xml:lang="en">Downloading Microsoft.Build.Sql nuget to get build DLLs</source>
     </trans-unit>
+    <trans-unit id="downloadingFromTo">
+      <source xml:lang="en">Downloading from {0} to {1}</source>
+    </trans-unit>
     <trans-unit id="edgeEulaAgreementTitle">
       <source xml:lang="en">Microsoft Azure SQL Edge License Agreement</source>
     </trans-unit>
@@ -403,6 +406,9 @@
     <trans-unit id="errorReadingProjectGuid">
       <source xml:lang="en">Error trying to read {0} of project '{1}'</source>
     </trans-unit>
+    <trans-unit id="errorRetrievingBuildFiles">
+      <source xml:lang="en">Could not build project. Error retrieving files needed to build.</source>
+    </trans-unit>
     <trans-unit id="eulaAgreementTemplate">
       <source xml:lang="en">I accept the {0}.</source>
       <note>The placeholders are contents of the line and should not be translated.</note>
@@ -436,7 +442,7 @@
       <source xml:lang="en">Target information for extract is required to create database project.</source>
     </trans-unit>
     <trans-unit id="extractingDacFxDlls">
-      <source xml:lang="en">Extracting DacFx build DLLs</source>
+      <source xml:lang="en">Extracting DacFx build DLLs to {0}</source>
     </trans-unit>
     <trans-unit id="file">
       <source xml:lang="en">File</source>
@@ -1061,6 +1067,9 @@
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.generateProjectFromOpenApiSpec">
       <source xml:lang="en">Generate SQL Project from OpenAPI/Swagger spec</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.microsoftBuildSqlVersion">
+      <source xml:lang="en">Which version of Microsoft.Build.Sql SDK to use for building legacy sql projects. Example: 0.1.3-preview</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.netCoreDoNotAsk">
       <source xml:lang="en">Whether to prompt the user to install .NET Core when not detected.</source>
