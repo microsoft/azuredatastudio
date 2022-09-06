@@ -5,6 +5,7 @@
 /extensions/admin-tool-ext-win @Charles-Gagnon
 /extensions/arc/ @Charles-Gagnon @swells @candiceye
 /extensions/azcli/ @Charles-Gagnon @swells @candiceye
+/extensions/azurecore/ @cssuh @cheenamalhotra
 /extensions/big-data-cluster/ @Charles-Gagnon
 /extensions/dacpac/ @kisantia
 /extensions/notebook @azure-data-studio-notebook-devs

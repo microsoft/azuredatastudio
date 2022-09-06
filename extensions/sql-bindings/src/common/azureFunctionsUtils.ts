@@ -25,10 +25,7 @@ export interface ILocalSettingsJson {
 	ConnectionStrings?: { [key: string]: string };
 }
 
-export interface IFileFunctionObject {
-	filePromise: Promise<string>;
-	watcherDisposable: vscode.Disposable;
-}
+export const outputChannel = vscode.window.createOutputChannel(constants.serviceName);
 
 /**
  * copied and modified from vscode-azurefunctions extension
@@ -199,47 +196,15 @@ export async function getSettingsFile(projectFolder: string): Promise<string | u
 }
 
 /**
- * New azure function file watcher and watcher disposable to be used to watch for changes to the azure function project
- * @param projectFolder is the parent directory to the project file
- * @returns the function file path once created and the watcher disposable
+ * Adds the latest SQL nuget package to the project
+ * @param projectFolder is the folder containing the project file
  */
-export function waitForNewFunctionFile(projectFolder: string): IFileFunctionObject {
-	const watcher = vscode.workspace.createFileSystemWatcher((
-		new vscode.RelativePattern(projectFolder, '**/*.cs')), false, true, true);
-	const filePromise = new Promise<string>((resolve, _) => {
-		watcher.onDidCreate((e) => {
-			resolve(e.fsPath);
-		});
-	});
-	return {
-		filePromise,
-		watcherDisposable: watcher
-	};
-}
-
-/**
- * Retrieves the new host project file once it has created and the watcher disposable
- * @returns the host file path once created and the watcher disposable
- */
-export function waitForNewHostFile(): IFileFunctionObject {
-	const watcher = vscode.workspace.createFileSystemWatcher('**/host.json', false, true, true);
-	const filePromise = new Promise<string>((resolve, _) => {
-		watcher.onDidCreate((e) => {
-			resolve(e.fsPath);
-		});
-	});
-	return {
-		filePromise,
-		watcherDisposable: watcher
-	};
-}
-
-/**
- * Adds the required nuget package to the project
- * @param selectedProjectFile is the users selected project file path
- */
-export async function addSqlNugetReferenceToProjectFile(selectedProjectFile: string): Promise<void> {
-	await utils.executeCommand(`dotnet add "${selectedProjectFile}" package ${constants.sqlExtensionPackageName} --prerelease`);
+export async function addSqlNugetReferenceToProjectFile(projectFolder: string): Promise<void> {
+	// clear the output channel prior to adding the nuget reference
+	outputChannel.clear();
+	let addNugetCommmand = await utils.executeCommand(`dotnet add "${projectFolder}" package ${constants.sqlExtensionPackageName} --prerelease`);
+	outputChannel.appendLine(constants.dotnetResult(addNugetCommmand));
+	outputChannel.show(true);
 	TelemetryReporter.sendActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.addSQLNugetPackage);
 }
 
@@ -512,8 +477,6 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
 				connectionStringSettingName = selectedSetting?.label;
 			}
 		}
-		// Add sql extension package reference to project. If the reference is already there, it doesn't get added again
-		await addSqlNugetReferenceToProjectFile(projectUri.fsPath);
 	} else {
 		// if no AF project was found or there's more than one AF functions project in the workspace,
 		// ask for the user to input the setting name

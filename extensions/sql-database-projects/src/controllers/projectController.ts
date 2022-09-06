@@ -65,6 +65,11 @@ export enum TaskExecutionMode {
 
 export type AddDatabaseReferenceSettings = ISystemDatabaseReferenceSettings | IDacpacReferenceSettings | IProjectReferenceSettings;
 
+interface FileWatcherStatus {
+	fileWatcher: vscode.FileSystemWatcher;
+	containsCreateTableStatement: boolean;
+}
+
 /**
  * Controller for managing lifecycle of projects
  */
@@ -78,7 +83,8 @@ export class ProjectsController {
 	private azureSqlClient: AzureSqlClient;
 	private autorestHelper: AutorestHelper;
 
-	projFileWatchers = new Map<string, vscode.FileSystemWatcher>();
+	private projFileWatchers = new Map<string, vscode.FileSystemWatcher>();
+	private fileWatchers = new Map<string, FileWatcherStatus>();
 
 	constructor(private _outputChannel: vscode.OutputChannel) {
 		this.netCoreTool = new NetCoreTool(this._outputChannel);
@@ -230,8 +236,15 @@ export class ProjectsController {
 			this.buildInfo.shift();		// Remove the first element to maintain the length
 		}
 
-		// Check mssql extension for project dlls (tracking issue #10273)
-		await this.buildHelper.createBuildDirFolder();
+		// get dlls and targets file needed for building for legacy style projects
+		if (!project.isSdkStyleProject) {
+			const result = await this.buildHelper.createBuildDirFolder(this._outputChannel);
+
+			if (!result) {
+				void vscode.window.showErrorMessage(constants.errorRetrievingBuildFiles);
+				return '';
+			}
+		}
 
 		const options: ShellCommandOptions = {
 			commandTitle: 'Build',
@@ -886,6 +899,41 @@ export class ProjectsController {
 		} catch (err) {
 			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
 		}
+	}
+
+	/**
+	 * Opens a file in the editor and adds a file watcher to check if a create table statement has been added
+	 * @param fileSystemUri uri of file
+	 * @param node node of file in the tree
+	 */
+	public async openFileWithWatcher(fileSystemUri: vscode.Uri, node: FileNode): Promise<void> {
+		await vscode.commands.executeCommand(constants.vscodeOpenCommand, fileSystemUri);
+		const projectTargetVersion = (node.root as ProjectRootTreeItem).project.getProjectTargetVersion();
+		const initiallyContainsCreateTableStatement = await utils.fileContainsCreateTableStatement(fileSystemUri.fsPath, projectTargetVersion);
+
+		const fileWatcher: vscode.FileSystemWatcher = vscode.workspace.createFileSystemWatcher(fileSystemUri.fsPath);
+		this.fileWatchers.set(fileSystemUri.fsPath, { fileWatcher: fileWatcher, containsCreateTableStatement: initiallyContainsCreateTableStatement });
+
+		fileWatcher.onDidChange(async (uri: vscode.Uri) => {
+			const afterContainsCreateTableStatement = await utils.fileContainsCreateTableStatement(fileSystemUri.fsPath, projectTargetVersion);
+			const previousStatus = this.fileWatchers.get(uri.fsPath)?.containsCreateTableStatement;
+
+			// if the contains create table statement status is different, reload the project so that the "Open in Designer" menu option
+			// on the file node is there if a create table statement has been added or removed if it's been removed
+			if (previousStatus !== afterContainsCreateTableStatement) {
+				utils.getDataWorkspaceExtensionApi().refreshProjectsTree();
+				this.fileWatchers.get(uri.fsPath)!.containsCreateTableStatement = afterContainsCreateTableStatement;
+			}
+		});
+
+		// stop watching for changes to the file after it's closed
+		const closeSqlproj = vscode.workspace.onDidCloseTextDocument((d) => {
+			if (this.fileWatchers.has(d.uri.fsPath)) {
+				this.fileWatchers.get(d.uri.fsPath)?.fileWatcher.dispose();
+				this.fileWatchers.delete(d.uri.fsPath);
+				closeSqlproj.dispose();
+			}
+		});
 	}
 
 	/**

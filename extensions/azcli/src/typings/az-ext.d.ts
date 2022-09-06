@@ -29,6 +29,11 @@ declare module 'az-ext' {
 		protocol: string // "https"
 	}
 
+	export interface SqlMiListRawOutput {
+		text: string,
+		miaaList: SqlMiListResult[]
+	}
+
 	export interface SqlMiListResult {
 		name: string, // "arc-miaa"
 		replicas: string, // "1/1"
@@ -445,42 +450,11 @@ declare module 'az-ext' {
 			uid: string, // "26d0f5bb-0c0b-4225-a6b5-5be2bf6feac0"
 		},
 		spec: {
-			engine: {
-				extensions: {
-					name: string // "citus"
-				}[],
-				settings: {
-					default: { [key: string]: string }, // { "max_connections": "101", "work_mem": "4MB" }
-					roles: {
-						coordinator: { [key: string]: string },
-						worker: { [key: string]: string }
-					}
-				},
-				version: string // "12"
-			},
-			scale: {
-				shards: number, // 1 (shards was renamed to workers, kept here for backwards compatibility)
-				workers: number // 1
-			},
 			scheduling: { // If no roles are specified, settings will apply to all nodes of the PostgreSQL Hyperscale server group.
 				default: {
 					resources: {
 						requests: SchedulingOptions,
 						limits: SchedulingOptions
-					}
-				},
-				roles: {
-					coordinator: {
-						resources: {
-							requests: SchedulingOptions,
-							limits: SchedulingOptions
-						}
-					},
-					worker: {
-						resources: {
-							requests: SchedulingOptions,
-							limits: SchedulingOptions
-						}
 					}
 				}
 			},
@@ -544,26 +518,19 @@ declare module 'az-ext' {
 			}
 		},
 		postgres: {
-			arcserver: {
+			serverarc: {
 				delete(name: string, namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<void>>,
 				list(namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<PostgresServerListResult[]>>,
 				show(name: string, namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<PostgresServerShowResult>>,
-				edit(
+				update(
 					name: string,
 					args: {
-						adminPassword?: boolean,
 						coresLimit?: string,
 						coresRequest?: string,
-						coordinatorEngineSettings?: string,
-						engineSettings?: string,
-						extensions?: string,
 						memoryLimit?: string,
 						memoryRequest?: string,
 						noWait?: boolean,
-						port?: number,
-						replaceEngineSettings?: boolean,
-						workerEngineSettings?: string,
-						workers?: number
+						port?: number
 					},
 					namespace?: string,
 					additionalEnvVars?: AdditionalEnvVars
@@ -575,9 +542,9 @@ declare module 'az-ext' {
 				delete(
 					name: string,
 					args: {
-						// Direct mode arguments
+						// ARM API arguments
 						resourceGroup?: string,
-						// Indirect mode arguments
+						// K8s API arguments
 						namespace?: string
 						},
 						// Additional arguments
@@ -585,20 +552,20 @@ declare module 'az-ext' {
 				): Promise<AzOutput<void>>,
 				list(
 					args: {
-					// Direct mode arguments
+					// ARM API arguments
 					resourceGroup?: string,
-					// Indirect mode arguments
+					// K8s API arguments
 					namespace?: string
 					},
 					// Additional arguments
 					additionalEnvVars?: AdditionalEnvVars
-				): Promise<AzOutput<SqlMiListResult[]>>,
+				): Promise<AzOutput<SqlMiListRawOutput>>,
 				show(
 					name: string,
 					args: {
-						// Direct mode arguments
+						// ARM API arguments
 						resourceGroup?: string,
-						// Indirect mode arguments
+						// K8s API arguments
 						namespace?: string
 					},
 					// Additional arguments
@@ -615,9 +582,9 @@ declare module 'az-ext' {
 						retentionDays?: string, //5
 						syncSecondaryToCommit?: string //2
 					},
-					// Direct mode arguments
+					// ARM API arguments
 					resourceGroup?: string,
-					// Indirect mode arguments
+					// K8s API arguments
 					namespace?: string,
 					usek8s?: boolean,
 					// Additional arguments
@@ -626,9 +593,9 @@ declare module 'az-ext' {
 				upgrade(
 					name: string,
 					args: {
-						// Direct mode arguments
+						// ARM API arguments
 						resourceGroup?: string,
-						// Indirect mode arguments
+						// K8s API arguments
 						namespace?: string
 					},
 					// Additional arguments

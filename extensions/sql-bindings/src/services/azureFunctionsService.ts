@@ -26,7 +26,6 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 	TelemetryReporter.sendActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.startCreateAzureFunctionWithSqlBinding);
 	let connectionInfo: IConnectionInfo | undefined;
 	let isCreateNewProject: boolean = false;
-	let newFunctionFileObject: azureFunctionsUtils.IFileFunctionObject | undefined;
 
 	try {
 		// check to see if Azure Functions Extension is installed
@@ -101,9 +100,6 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			// user has an azure function project open
 			projectFolder = path.dirname(projectFile);
 		}
-		// create a system file watcher for the project folder
-		newFunctionFileObject = azureFunctionsUtils.waitForNewFunctionFile(projectFolder);
-
 		// Get connection string parameters and construct object name from prompt or connectionInfo given
 		let objectName: string | undefined;
 		let selectedBindingType: BindingType | undefined;
@@ -259,13 +255,14 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			suppressCreateProjectPrompt: true,
 			...(isCreateNewProject && { executeStep: connectionStringExecuteStep })
 		});
+
+		// Add latest sql extension package reference to project
+		await azureFunctionsUtils.addSqlNugetReferenceToProjectFile(projectFolder);
+
 		TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, telemetryStep)
 			.withAdditionalProperties(propertyBag)
 			.withConnectionInfo(connectionInfo).send();
 
-		// check for the new function file to be created and dispose of the file system watcher
-		const timeoutForFunctionFile = utils.timeoutPromise(constants.timeoutAzureFunctionFileError);
-		await Promise.race([newFunctionFileObject.filePromise, timeoutForFunctionFile]);
 		telemetryStep = 'finishCreateFunction';
 		propertyBag.telemetryStep = telemetryStep;
 		exitReason = ExitReason.finishCreate;
@@ -275,15 +272,9 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 	} catch (error) {
 		let errorType = utils.getErrorType(error);
 		propertyBag.telemetryStep = telemetryStep;
-		if (errorType === 'TimeoutError') {
-			// this error can be cause by many different scenarios including timeout or error occurred during createFunction
-			exitReason = ExitReason.timeout;
-			console.log('Timed out waiting for Azure Function project to be created. This may not necessarily be an error, for example if the user canceled out of the create flow.');
-		} else {
-			// else an error would occur during the createFunction
-			exitReason = ExitReason.error;
-			void vscode.window.showErrorMessage(constants.errorNewAzureFunction(error));
-		}
+		// an error occurred during createFunction
+		exitReason = ExitReason.error;
+		void vscode.window.showErrorMessage(constants.errorNewAzureFunction(error));
 		TelemetryReporter.createErrorEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick, undefined, errorType)
 			.withAdditionalProperties(propertyBag).send();
 		return;
@@ -292,7 +283,6 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 		propertyBag.exitReason = exitReason;
 		TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick)
 			.withAdditionalProperties(propertyBag).send();
-		newFunctionFileObject?.watcherDisposable.dispose();
 	}
 }
 

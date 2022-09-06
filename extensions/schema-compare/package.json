@@ -2,7 +2,7 @@
   "name": "schema-compare",
   "displayName": "%displayName%",
   "description": "%description%",
-  "version": "1.15.0",
+  "version": "1.17.0",
   "publisher": "Microsoft",
   "preview": false,
   "engines": {
@@ -42,6 +42,10 @@
       {
         "command": "schemaCompare.runComparison",
         "title": "%schemaCompare.runComparison%"
+      },
+      {
+        "command": "schemaCompare.openInScmp",
+        "title": "%schemaCompare.openInScmp%"
       }
     ],
     "languages": [
@@ -91,6 +95,17 @@
         {
           "command": "schemaCompare.runComparison",
           "when": "false"
+        },
+        {
+          "command": "schemaCompare.openInScmp",
+          "when": "false"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "schemaCompare.openInScmp",
+          "when": "resourceExtname == .scmp",
+          "group": "navigation"
         }
       ]
     }

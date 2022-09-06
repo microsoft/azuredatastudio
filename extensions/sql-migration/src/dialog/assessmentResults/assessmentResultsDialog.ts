@@ -9,6 +9,10 @@ import { MigrationStateModel, MigrationTargetType } from '../../models/stateMach
 import { SqlDatabaseTree } from './sqlDatabasesTree';
 import { SqlMigrationImpactedObjectInfo } from 'mssql';
 import { SKURecommendationPage } from '../../wizard/skuRecommendationPage';
+import * as constants from '../../constants/strings';
+import * as utils from '../../api/utils';
+import * as fs from 'fs';
+import path = require('path');
 
 export type Issues = {
 	description: string,
@@ -24,6 +28,8 @@ export class AssessmentResultsDialog {
 	private _isOpen: boolean = false;
 	private dialog: azdata.window.Dialog | undefined;
 	private _model: MigrationStateModel;
+	private _saveButton!: azdata.window.Button;
+	private static readonly _assessmentReportName: string = 'SqlAssessmentReport.json';
 
 	// Dialog Name for Telemetry
 	public dialogName: string | undefined;
@@ -39,9 +45,14 @@ export class AssessmentResultsDialog {
 		return new Promise<void>((resolve, reject) => {
 			dialog.registerContent(async (view) => {
 				try {
+					/**
+					 * When using 100% height in the dialog, the container extends beyond the screen.
+					 * This causes a vertical scrollbar to appear. To fix that, 33px needs to be
+					 * subtracted from 100%.
+					 */
 					const flex = view.modelBuilder.flexContainer().withLayout({
 						flexFlow: 'row',
-						height: '100%',
+						height: 'calc( 100% - 33px )',
 						width: '100%'
 					}).component();
 					flex.addItem(await this._tree.createRootContainer(dialog, view), { flex: '1 1 auto' });
@@ -71,6 +82,29 @@ export class AssessmentResultsDialog {
 			this.dialog.cancelButton.label = AssessmentResultsDialog.CancelButtonText;
 			this._disposables.push(this.dialog.cancelButton.onClick(async () => await this.cancel()));
 
+			this._saveButton = azdata.window.createButton(
+				constants.SAVE_ASSESSMENT_REPORT,
+				'left');
+			this._disposables.push(
+				this._saveButton.onClick(async () => {
+					const folder = await utils.promptUserForFolder();
+					if (folder) {
+						const destinationFilePath = path.join(folder, AssessmentResultsDialog._assessmentReportName);
+						if (this.model._assessmentReportFilePath) {
+							fs.copyFile(this.model._assessmentReportFilePath, destinationFilePath, (err) => {
+								if (err) {
+									console.log(err);
+								} else {
+									void vscode.window.showInformationMessage(constants.SAVE_ASSESSMENT_REPORT_SUCCESS(destinationFilePath));
+								}
+							});
+						} else {
+							console.log('assessment report not found');
+						}
+					}
+				}));
+			this.dialog.customButtons = [this._saveButton];
+
 			const dialogSetupPromises: Thenable<void>[] = [];
 
 			dialogSetupPromises.push(this.initializeDialog(this.dialog));
@@ -91,10 +125,14 @@ export class AssessmentResultsDialog {
 				this._model._miDbs = selectedDbs;
 				break;
 			}
-
 			case MigrationTargetType.SQLVM: {
 				this.didUpdateDatabasesForMigration(this._model._vmDbs, selectedDbs);
 				this._model._vmDbs = selectedDbs;
+				break;
+			}
+			case MigrationTargetType.SQLDB: {
+				this.didUpdateDatabasesForMigration(this._model._sqldbDbs, selectedDbs);
+				this._model._sqldbDbs = selectedDbs;
 				break;
 			}
 		}

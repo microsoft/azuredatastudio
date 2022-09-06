@@ -51,6 +51,8 @@ import { RowMoveManager, RowMoveOnDragEventData } from 'sql/base/browser/ui/tabl
 import { ITaskbarContent, Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
 import { listFocusAndSelectionBackground } from 'sql/platform/theme/common/colors';
+import { timeout } from 'vs/base/common/async';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 export interface IDesignerStyle {
 	tabbedPanelStyles?: ITabbedPanelStyles;
@@ -206,7 +208,7 @@ export class Designer extends Disposable implements IThemable {
 			return this.createComponents(container, components, this._propertiesPane.componentMap, this._propertiesPane.groupHeaders, parentPath, 'PropertiesView');
 		}, (definition, component, viewModel) => {
 			this.setComponentValue(definition, component, viewModel);
-		});
+		}, this._instantiationService);
 	}
 
 	private styleComponent(component: TabbedPanel | InputBox | Checkbox | Table<Slick.SlickData> | SelectBox | Button | Dropdown): void {
@@ -282,6 +284,9 @@ export class Designer extends Disposable implements IThemable {
 
 
 	public setInput(input: DesignerComponentInput): void {
+		if (this._input) {
+			void this.submitPendingChanges().catch(onUnexpectedError);
+		}
 		this.saveUIState();
 		if (this._loadingTimeoutHandle) {
 			this.stopLoading();
@@ -303,7 +308,9 @@ export class Designer extends Disposable implements IThemable {
 		this._inputDisposable.add(this._input.onRefreshRequested(() => {
 			this.refresh();
 		}));
-
+		this._inputDisposable.add(this._input.onSubmitPendingEditRequested(async () => {
+			await this.submitPendingChanges();
+		}));
 		if (this._input.view === undefined) {
 			this._input.initialize();
 		} else {
@@ -317,6 +324,14 @@ export class Designer extends Disposable implements IThemable {
 	public override dispose(): void {
 		super.dispose();
 		this._inputDisposable?.dispose();
+	}
+
+	public async submitPendingChanges(): Promise<void> {
+		if (this._container.contains(document.activeElement) && document.activeElement instanceof HTMLInputElement) {
+			// Force the elements to fire the blur event to submit the pending changes.
+			document.activeElement.blur();
+			return timeout(10);
+		}
 	}
 
 	private clearUI(): void {

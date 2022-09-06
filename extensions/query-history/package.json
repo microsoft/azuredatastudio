@@ -2,7 +2,7 @@
   "name": "query-history",
   "displayName": "%queryHistory.displayName%",
   "description": "%queryHistory.description%",
-  "version": "0.3.0",
+  "version": "0.5.0",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
@@ -188,14 +188,14 @@
         {
           "id": "queryHistory",
           "title": "%queryHistory.displayName%",
-          "icon": "$(history)"
+          "icon": "images/QueryHistoryIcon.svg"
         }
       ]
     }
   },
   "dependencies": {},
   "devDependencies": {
-    "@microsoft/azdata-test": "^1.5.2",
+    "@microsoft/azdata-test": "^2.0.0",
     "@microsoft/vscodetestcover": "^1.2.1",
     "@types/mocha": "^7.0.2",
     "@types/node": "^12.11.7",

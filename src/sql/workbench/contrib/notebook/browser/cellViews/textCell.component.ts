@@ -436,6 +436,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			this.cellModel.showMarkdown = false;
 		} else {
 			this.markdownMode = this.cellModel.showMarkdown;
+			this.previewMode = this.cellModel.showPreview;
 		}
 		this.updatePreview();
 		this._changeRef.detectChanges();

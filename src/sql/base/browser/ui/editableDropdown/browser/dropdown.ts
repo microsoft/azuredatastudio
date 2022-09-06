@@ -420,4 +420,8 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 	public get selectList(): List<IDropdownListItem> {
 		return this._selectList;
 	}
+
+	public get options(): IDropdownOptions {
+		return this._options;
+	}
 }

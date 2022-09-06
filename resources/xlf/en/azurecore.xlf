@@ -202,6 +202,9 @@
     <trans-unit id="azure.resource.tenantSubscriptionsError">
       <source xml:lang="en">Failed to get subscriptions for account {0} (tenant '{1}'). {2}</source>
     </trans-unit>
+    <trans-unit id="azure.resource.tenantTokenError">
+      <source xml:lang="en">Failed to acquire Access Token for account '{0}' (tenant '{1}').</source>
+    </trans-unit>
 </body></file>
   <file original="extensions/azurecore/dist/azureResource/services/terminalService" source-language="en" datatype="plaintext"><body>
     <trans-unit id="azure.cloudShell">

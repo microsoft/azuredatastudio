@@ -934,6 +934,14 @@ These files will be FOREVER LOST.</source>
         <source xml:lang="en">Don't Show Again</source>
         <target state="translated">Больше не показывать</target>
       </trans-unit>
+      <trans-unit id="no">
+        <source xml:lang="en">No</source>
+        <target state="translated">Нет</target>
+      </trans-unit>
+      <trans-unit id="ok">
+        <source xml:lang="en">OK</source>
+        <target state="translated">ОК</target>
+      </trans-unit>
       <trans-unit id="open">
         <source xml:lang="en">Open</source>
         <target state="translated">Открыто</target>
@@ -966,6 +974,18 @@ These files will be FOREVER LOST.</source>
         <source xml:lang="en">Successfully pushed.</source>
         <target state="translated">Отправка выполнена успешно.</target>
       </trans-unit>
+      <trans-unit id="scm button publish title">
+        <source xml:lang="en">$(cloud-upload) Publish Changes</source>
+        <target state="translated">$(cloud-upload) Опубликовать изменения</target>
+      </trans-unit>
+      <trans-unit id="scm button publish tooltip">
+        <source xml:lang="en">Publish Changes</source>
+        <target state="translated">Опубликовать изменения</target>
+      </trans-unit>
+      <trans-unit id="scm button sync title">
+        <source xml:lang="en"> Sync Changes $(sync){0}{1}</source>
+        <target state="translated"> Синхронизировать изменения $(sync){0}{1}</target>
+      </trans-unit>
       <trans-unit id="staged changes">
         <source xml:lang="en">Staged Changes</source>
         <target state="translated">Промежуточные изменения</target>
@@ -977,6 +997,10 @@ These files will be FOREVER LOST.</source>
       <trans-unit id="sync is unpredictable">
         <source xml:lang="en">Syncing. Cancelling may cause serious damages to the repository</source>
         <target state="translated">Выполняется синхронизация. Отмена может привести к серьезному повреждению репозитория</target>
+      </trans-unit>
+      <trans-unit id="tooManyChangesWarning">
+        <source xml:lang="en">Too many changes were detected. Only the first {0} changes will be shown below.</source>
+        <target state="translated">Обнаружено слишком много изменений. Ниже будут отображаться только первые изменения {0}.</target>
       </trans-unit>
       <trans-unit id="untracked">
         <source xml:lang="en">Untracked</source>
@@ -1772,6 +1796,22 @@ These files will be FOREVER LOST.</source>
         <source xml:lang="en">Controls whether to show a notification when a push is successful.</source>
         <target state="translated">Определяет, следует ли отображать уведомление об успешной отправке.</target>
       </trans-unit>
+      <trans-unit id="config.showUnpublishedCommitsButton">
+        <source xml:lang="en">Controls whether to show an action button to sync or publish, if there are unpublished commits.</source>
+        <target state="translated">Определяет, следует ли отображать управляющую кнопку для синхронизации или публикации, если имеются неопубликованные фиксации.</target>
+      </trans-unit>
+      <trans-unit id="config.showUnpublishedCommitsButton.always">
+        <source xml:lang="en">Always shows the action button, if there are unpublished commits.</source>
+        <target state="translated">Всегда отображает управляющую кнопку, если имеются неопубликованные фиксации.</target>
+      </trans-unit>
+      <trans-unit id="config.showUnpublishedCommitsButton.never">
+        <source xml:lang="en">Never shows the action button.</source>
+        <target state="translated">Управляющая кнопка никогда не отображается.</target>
+      </trans-unit>
+      <trans-unit id="config.showUnpublishedCommitsButton.whenEmpty">
+        <source xml:lang="en">Only shows the action button if there are no other changes and there are unpublished commits.</source>
+        <target state="translated">Отображает кнопку действия, только если нет других изменений и имеются неопубликованные фиксации.</target>
+      </trans-unit>
       <trans-unit id="config.smartCommitChanges">
         <source xml:lang="en">Control which changes are automatically staged by Smart Commit.</source>
         <target state="translated">Определяет, какие изменения автоматически размещаются при интеллектуальной фиксации.</target>
@@ -1783,6 +1823,10 @@ These files will be FOREVER LOST.</source>
       <trans-unit id="config.smartCommitChanges.tracked">
         <source xml:lang="en">Automatically stage tracked changes only.</source>
         <target state="translated">Только автоматически размещенные отслеживаемые изменения.</target>
+      </trans-unit>
+      <trans-unit id="config.statusLimit">
+        <source xml:lang="en">Controls how to limit the number of changes that can be parsed from Git status command. Can be set to 0 for no limit.</source>
+        <target state="translated">Определяет, как ограничить число изменений, которые можно проанализировать из команды состояния Git. Можно задать значение 0 без ограничений.</target>
       </trans-unit>
       <trans-unit id="config.suggestSmartCommit">
         <source xml:lang="en">Suggests to enable smart commit (commit all changes when there are no staged changes).</source>

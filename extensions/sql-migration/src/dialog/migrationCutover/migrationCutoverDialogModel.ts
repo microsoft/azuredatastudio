@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { DatabaseMigration, startMigrationCutover, stopMigration, BackupFileInfo, getResourceGroupFromId, getMigrationDetails, getMigrationTargetName } from '../../api/azure';
-import { BackupFileInfoStatus, MigrationServiceContext } from '../../models/migrationLocalStorage';
+import { MigrationServiceContext } from '../../models/migrationLocalStorage';
 import { logError, sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../../telemtery';
 import * as constants from '../../constants/strings';
 import { getMigrationTargetType, getMigrationMode, isBlobMigration } from '../../constants/helper';
@@ -110,7 +110,7 @@ export class MigrationCutoverDialogModel {
 		const files: BackupFileInfo[] = [];
 		this.migration.properties.migrationStatusDetails?.activeBackupSets?.forEach(abs => {
 			abs.listOfBackupFiles.forEach(f => {
-				if (f.status !== BackupFileInfoStatus.Restored) {
+				if (f.status !== constants.BackupFileInfoStatus.Restored) {
 					files.push(f);
 				}
 			});

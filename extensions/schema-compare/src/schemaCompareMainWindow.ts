@@ -1089,6 +1089,19 @@ export class SchemaCompareMainWindow {
 		}
 
 		let fileUri = fileUris[0];
+		this.openScmpFile(fileUri, true);
+	}
+
+	/**
+	 * Primary functional entrypoint for opening the schema comparison window with the scmp file Uri provided.
+	 * @param fileUri .scmp file URI to open Schema Compare extension with
+	 * @param callFromWithinSC is the call from openScmp? False by default, since it is one of the direct entry points.
+	 */
+	public async openScmpFile(fileUri: vscode.Uri, callFromWithinSC: boolean = false): Promise<void> {
+		if (!callFromWithinSC) {
+			//Instantiate and open schema compare window if called from "Open in Schema Compare"
+			await this.launch(undefined, undefined, false, undefined);
+		}
 		const service = await this.getService();
 		let startTime = Date.now();
 		const result = await service.schemaCompareOpenScmp(fileUri.fsPath);
@@ -1126,6 +1139,20 @@ export class SchemaCompareMainWindow {
 		if (ownerUri) {
 			endpointInfo = endpoint;
 			endpointInfo.ownerUri = ownerUri;
+		} else if (endpoint.endpointType === mssql.SchemaCompareEndpointType.Project) {
+			endpointInfo = {
+				endpointType: endpoint.endpointType,
+				packageFilePath: '',
+				serverDisplayName: '',
+				serverName: '',
+				databaseName: '',
+				ownerUri: '',
+				connectionDetails: undefined,
+				projectFilePath: endpoint.projectFilePath,
+				targetScripts: [],
+				dataSchemaProvider: '',
+				folderStructure: loc.schemaObjectType			// TODO: Pick this automatically from the scmp file, after issue #20332 is resolved (check dsp as well)
+			};
 		} else {
 			// need to do this instead of just setting it to the endpoint because some fields are null which will cause an error when sending the compare request
 			endpointInfo = {

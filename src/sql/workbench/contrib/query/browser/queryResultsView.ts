@@ -86,6 +86,7 @@ class ResultsView extends Disposable implements IPanelView {
 
 	public clear() {
 		this.gridPanel.clear();
+		this._runner = undefined;
 	}
 
 	remove(): void {

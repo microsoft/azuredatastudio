@@ -7,11 +7,13 @@ import 'vs/css!./media/colorbox';
 import { Color } from 'vs/base/common/color';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Widget } from 'vs/base/browser/ui/widget';
+import * as DOM from 'vs/base/browser/dom';
+import { generateUuid } from 'vs/base/common/uuid';
 
 export interface ColorboxOptions {
 	name: string;
 	class?: string[];
-	label?: string;
+	label: string;
 }
 
 export interface ColorboxStyle {
@@ -20,6 +22,7 @@ export interface ColorboxStyle {
 
 export class Colorbox extends Widget {
 	readonly domNode: HTMLInputElement;
+	private labelNode: HTMLLabelElement;
 	private backgroundColor?: Color;
 
 	private _onSelect = new Emitter<void>();
@@ -29,22 +32,26 @@ export class Colorbox extends Widget {
 
 	constructor(container: HTMLElement, opts: ColorboxOptions) {
 		super();
-
-		this.domNode = document.createElement('input');
+		const colorboxContainer = DOM.$('.colorbox-container');
+		this.domNode = DOM.$('input');
 		this.domNode.type = 'radio';
 		this.domNode.name = opts.name;
+		this.domNode.id = generateUuid();
 		this._checked = false;
 
 		this.domNode.classList.add('colorbox');
 		if (opts.class) {
 			this.domNode.classList.add(...opts.class);
 		}
-		if (opts.label) {
-			this.domNode.setAttribute('aria-label', opts.label);
-			this.domNode.title = opts.label;
-		}
+		this.domNode.setAttribute('aria-label', opts.label);
+		this.labelNode = DOM.$('label.colorbox-label');
+		this.labelNode.setAttribute('for', this.domNode.id);
+		this.labelNode.innerText = opts.label;
 
-		container.appendChild(this.domNode);
+		colorboxContainer.appendChild(this.domNode);
+		colorboxContainer.appendChild(this.labelNode);
+
+		container.appendChild(colorboxContainer);
 
 		this.onfocus(this.domNode, () => {
 			this._onSelect.fire();

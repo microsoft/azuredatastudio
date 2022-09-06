@@ -155,3 +155,32 @@ export function getDockerBaseImages(target: string): DockerImageInfo[] {
 		];
 	}
 }
+
+/**
+ * This adds the tag matching the target platform to make sure the correct image is used for the project's target platform when the docker base image is SQL Server.
+ * If the image is Edge, then no tag is appended
+ * @param projectTargetVersion target version of the project
+ * @param dockerImage selected base docker image without tag
+ * @param imageInfo docker image info of the selected docker image
+ * @returns dockerBaseImage with the appropriate image tag appended if there is one
+ */
+export function getDefaultDockerImageWithTag(projectTargetVersion: string, dockerImage: string, imageInfo?: DockerImageInfo,): string {
+	if (imageInfo?.displayName === constants.SqlServerDockerImageName) {
+		switch (projectTargetVersion) {
+			case constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlServer2022):
+				dockerImage = `${dockerImage}:2022-latest`;
+				break;
+			case constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlServer2019):
+				dockerImage = `${dockerImage}:2019-latest`;
+				break;
+			case constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlServer2017):
+				dockerImage = `${dockerImage}:2017-latest`;
+				break;
+			default:
+				// nothing - let it be the default image defined as default in the container registry
+				break;
+		}
+	}
+
+	return dockerImage;
+}

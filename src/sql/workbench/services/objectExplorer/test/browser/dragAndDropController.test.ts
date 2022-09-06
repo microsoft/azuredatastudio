@@ -72,7 +72,7 @@ suite('SQL Drag And Drop Controller tests', () => {
 	let connectionProfileGroupId = new ConnectionProfileGroup('name', undefined, 'd936bb32-422b-49c3-963f-ae9532d63dc5', 'color', 'description');
 	connectionProfileGroupId.addConnections([connectionProfileId_pgsql]);
 	let connectionProfileGroupArray = [connectionProfileGroupId];
-	let treeNode = new TreeNode('Column', 'label', undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+	let treeNode = new TreeNode('Column', '', 'label', undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
 	let treeNodeArray = [treeNode];
 
 	setup(() => {

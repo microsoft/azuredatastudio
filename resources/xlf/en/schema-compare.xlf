@@ -4,221 +4,14 @@
     <trans-unit id="OptionNotFoundWarningMessage">
       <source xml:lang="en">label: {0} does not exist in the options value name lookup</source>
     </trans-unit>
-    <trans-unit id="SchemaCompare.Aggregates">
-      <source xml:lang="en">Aggregates</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.ApplicationRoles">
-      <source xml:lang="en">Application Roles</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Assemblies">
-      <source xml:lang="en">Assemblies</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.AssemblyFiles">
-      <source xml:lang="en">Assembly Files</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.AsymmetricKeys">
-      <source xml:lang="en">Asymmetric Keys</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Audits">
-      <source xml:lang="en">Audits</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.BrokerPriorities">
-      <source xml:lang="en">Broker Priorities</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Certificates">
-      <source xml:lang="en">Certificates</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.ClrUserDefinedTypes">
-      <source xml:lang="en">Clr User Defined Types</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.ColumnEncryptionKeys">
-      <source xml:lang="en">Column Encryption Keys</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.ColumnMasterKeys">
-      <source xml:lang="en">Column Master Keys</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Contracts">
-      <source xml:lang="en">Contracts</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Credentials">
-      <source xml:lang="en">Credentials</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.CryptographicProviders">
-      <source xml:lang="en">Cryptographic Providers</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.DatabaseAuditSpecifications">
-      <source xml:lang="en">Database Audit Specifications</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.DatabaseEncryptionKeys">
-      <source xml:lang="en">Database Encryption Keys</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.DatabaseOptions">
-      <source xml:lang="en">Database Options</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.DatabaseRoles">
-      <source xml:lang="en">Database Roles</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.DatabaseScopedCredentials">
-      <source xml:lang="en">Database Scoped Credentials</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.DatabaseTriggers">
-      <source xml:lang="en">Database Triggers</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Defaults">
-      <source xml:lang="en">Defaults</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Endpoints">
-      <source xml:lang="en">Endpoints</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.ErrorMessages">
-      <source xml:lang="en">Error Messages</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.EventNotifications">
-      <source xml:lang="en">Event Notifications</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.EventSessions">
-      <source xml:lang="en">Event Sessions</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.ExtendedProperties">
-      <source xml:lang="en">Extended Properties</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.ExternalDataSources">
-      <source xml:lang="en">External Data Sources</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.ExternalFileFormats">
-      <source xml:lang="en">External File Formats</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.ExternalStreamingJobs">
-      <source xml:lang="en">External Streaming Jobs</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.ExternalStreams">
-      <source xml:lang="en">External Streams</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.ExternalTables">
-      <source xml:lang="en">External Tables</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.FileTables">
-      <source xml:lang="en">File Tables</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Filegroups">
-      <source xml:lang="en">Filegroups</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Files">
-      <source xml:lang="en">Files</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.FullTextCatalogs">
-      <source xml:lang="en">Full Text Catalogs</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.FullTextStoplists">
-      <source xml:lang="en">Full Text Stoplists</source>
-    </trans-unit>
     <trans-unit id="SchemaCompare.GeneralOptionsLabel">
       <source xml:lang="en">General Options</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.LinkedServerLogins">
-      <source xml:lang="en">Linked Server Logins</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.LinkedServers">
-      <source xml:lang="en">Linked Servers</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Logins">
-      <source xml:lang="en">Logins</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.MasterKeys">
-      <source xml:lang="en">Master Keys</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.MessageTypes">
-      <source xml:lang="en">Message Types</source>
     </trans-unit>
     <trans-unit id="SchemaCompare.ObjectTypesOptionsLabel">
       <source xml:lang="en">Include Object Types</source>
     </trans-unit>
-    <trans-unit id="SchemaCompare.PartitionFunctions">
-      <source xml:lang="en">Partition Functions</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.PartitionSchemes">
-      <source xml:lang="en">Partition Schemes</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Permissions">
-      <source xml:lang="en">Permissions</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Queues">
-      <source xml:lang="en">Queues</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.RemoteServiceBindings">
-      <source xml:lang="en">Remote Service Bindings</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.RoleMembership">
-      <source xml:lang="en">Role Membership</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Routes">
-      <source xml:lang="en">Routes</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Rules">
-      <source xml:lang="en">Rules</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.ScalarValuedFunctions">
-      <source xml:lang="en">Scalar Valued Functions</source>
-    </trans-unit>
     <trans-unit id="SchemaCompare.SchemaCompareOptionsDialogLabel">
       <source xml:lang="en">Schema Compare Options</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.SearchPropertyLists">
-      <source xml:lang="en">Search Property Lists</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.SecurityPolicies">
-      <source xml:lang="en">Security Policies</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Sequences">
-      <source xml:lang="en">Sequences</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.ServerAuditSpecifications">
-      <source xml:lang="en">Server Audit Specifications</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.ServerRoleMembership">
-      <source xml:lang="en">Server Role Membership</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.ServerRoles">
-      <source xml:lang="en">Server Roles</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.ServerTriggers">
-      <source xml:lang="en">Server Triggers</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Services">
-      <source xml:lang="en">Services</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Signatures">
-      <source xml:lang="en">Signatures</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.StoredProcedures">
-      <source xml:lang="en">Stored Procedures</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.SymmetricKeys">
-      <source xml:lang="en">Symmetric Keys</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Synonyms">
-      <source xml:lang="en">Synonyms</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.TableValuedFunctions">
-      <source xml:lang="en">Table Valued Functions</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Tables">
-      <source xml:lang="en">Tables</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.UserDefinedDataTypes">
-      <source xml:lang="en">User Defined Data Types</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.UserDefinedTableTypes">
-      <source xml:lang="en">User Defined Table Types</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Users">
-      <source xml:lang="en">Users</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Views">
-      <source xml:lang="en">Views</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.XmlSchemaCollections">
-      <source xml:lang="en">Xml Schema Collections</source>
     </trans-unit>
     <trans-unit id="SchemaCompareOptionsDialog.Reset">
       <source xml:lang="en">Reset</source>
@@ -497,6 +290,9 @@
     </trans-unit>
     <trans-unit id="displayName">
       <source xml:lang="en">SQL Server Schema Compare</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.openInScmp">
+      <source xml:lang="en">Open in Schema Compare</source>
     </trans-unit>
     <trans-unit id="schemaCompare.runComparison">
       <source xml:lang="en">Run Schema Comparison</source>

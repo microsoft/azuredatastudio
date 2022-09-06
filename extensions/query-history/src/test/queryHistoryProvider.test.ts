@@ -12,7 +12,6 @@ import * as typemoq from 'typemoq';
 import * as azdataTest from '@microsoft/azdata-test';
 import { QueryHistoryProvider } from '../queryHistoryProvider';
 import { QueryHistoryItem } from '../queryHistoryItem';
-import { EOL } from 'os';
 
 describe('QueryHistoryProvider', () => {
 
@@ -59,44 +58,51 @@ describe('QueryHistoryProvider', () => {
 	});
 
 	it('queryStop events cause children to be added', async function () {
-		await fireQueryEventAndWaitForRefresh('queryStop', <any>{ uri: testUri.toString() }, { messages: [], batchRanges: [] });
+		setupTextEditorMock('SELECT 1');
+		await fireQueryStartAndStopAndWaitForRefresh(testUri);
 		const children = testProvider.getChildren();
 		should(children).length(1, 'Should have one child after adding item');
 
-		await fireQueryEventAndWaitForRefresh('queryStop', <any>{ uri: testUri.toString() }, { messages: [], batchRanges: [] });
+		await fireQueryStartAndStopAndWaitForRefresh(testUri);
 		should(children).length(2, 'Should have two children after adding another item');
 	});
 
-	it('multiple ranges are combined', async function () {
-		const rangeWithContent1: azdataTest.mocks.vscode.RangeWithContent = { range: new vscode.Range(new vscode.Position(0, 0), new vscode.Position(2, 0)), content: 'SELECT 1' };
-		const rangeWithContent2: azdataTest.mocks.vscode.RangeWithContent = { range: new vscode.Range(new vscode.Position(3, 0), new vscode.Position(3, 5)), content: 'SELECT 2' };
-		const textDocumentMock = azdataTest.mocks.vscode.createTextDocumentMock(testUri, [rangeWithContent1, rangeWithContent2]);
-		textDocumentSandbox.restore();
-		textDocumentSandbox.replaceGetter(vscode.workspace, 'textDocuments', () => [textDocumentMock.object]);
-		await fireQueryEventAndWaitForRefresh('queryStop', <any>{ uri: testUri.toString() }, {
-			messages: [],
-			batchRanges: [rangeWithContent1.range, rangeWithContent2.range]
-		});
+	it('no selection records entire text', async function () {
+		const content = 'SELECT 1\nSELECT 2';
+		setupTextEditorMock(content);
+		await fireQueryStartAndStopAndWaitForRefresh(testUri);
 		const children = testProvider.getChildren();
 		should(children).length(1, 'Should have one child after adding item');
-		should(children[0].queryText).be.equal(`${rangeWithContent1.content}${EOL}${rangeWithContent2.content}`, 'item content should be combined from both source ranges');
+		should(children[0].queryText).be.equal(content, 'item content should be full text content');
+	});
+
+	it('active selection records only selected text', async function () {
+		const rangeWithContent1: azdataTest.mocks.vscode.RangeWithContent = { range: new vscode.Range(new vscode.Position(0, 0), new vscode.Position(2, 0)), content: 'SELECT 1' };
+		const rangeWithContent2: azdataTest.mocks.vscode.RangeWithContent = { range: new vscode.Range(new vscode.Position(3, 0), new vscode.Position(3, 5)), content: 'SELECT 2' };
+		setupTextEditorMock([rangeWithContent1, rangeWithContent2], [new vscode.Selection(rangeWithContent1.range.start, rangeWithContent1.range.end)]);
+		await fireQueryStartAndStopAndWaitForRefresh(testUri);
+		const children = testProvider.getChildren();
+		should(children).length(1, 'Should have one child after adding item');
+		should(children[0].queryText).be.equal(rangeWithContent1.content, 'item content should be only active selection');
 	});
 
 	it('event with errors is marked as error', async function () {
+		setupTextEditorMock('SELECT 1');
 		const message1: azdata.queryeditor.QueryMessage = { message: 'Message 1', isError: false };
 		const message2: azdata.queryeditor.QueryMessage = { message: 'Error message', isError: true };
 		const message3: azdata.queryeditor.QueryMessage = { message: 'Message 2', isError: false };
-		await fireQueryEventAndWaitForRefresh('queryStop', <any>{ uri: testUri.toString() }, { messages: [ message1, message2, message3 ], batchRanges: []});
+		await fireQueryStartAndStopAndWaitForRefresh(testUri, { messages: [message1, message2, message3], batchRanges: [] });
 		const children = testProvider.getChildren();
 		should(children).length(1, 'Should have one child after adding item');
 		should(children[0].isSuccess).be.false('Event with errors should have error icon');
 	});
 
 	it('event without errors is marked as success', async function () {
+		setupTextEditorMock('SELECT 1');
 		const message1: azdata.queryeditor.QueryMessage = { message: 'Message 1', isError: false };
 		const message2: azdata.queryeditor.QueryMessage = { message: 'Message 2', isError: false };
 		const message3: azdata.queryeditor.QueryMessage = { message: 'Message 3', isError: false };
-		await fireQueryEventAndWaitForRefresh('queryStop', <any>{ uri: testUri.toString() }, { messages: [ message1, message2, message3 ], batchRanges: []});
+		await fireQueryStartAndStopAndWaitForRefresh(testUri, { messages: [message1, message2, message3], batchRanges: [] });
 		const children = testProvider.getChildren();
 		should(children).length(1, 'Should have one child after adding item');
 		should(children[0].isSuccess).be.true('Event without errors should have check icon');
@@ -104,14 +110,15 @@ describe('QueryHistoryProvider', () => {
 
 	it('queryStop events from unknown document are ignored', async function () {
 		const unknownUri = vscode.Uri.parse('untitled://query2');
+		const queryDocumentMock = azdataTest.mocks.azdata.queryeditor.createQueryDocumentMock(unknownUri.toString());
 		// Since we didn't find the text document we'll never update the item list so add a timeout since that event will never fire
-		await fireQueryEventAndWaitForRefresh('queryStop', <any>{ uri: unknownUri.toString() }, { messages: [], batchRanges: [] }, 2000);
+		await fireQueryEventAndWaitForRefresh('queryStop', queryDocumentMock.object, { messages: [], batchRanges: [] }, 2000);
 		const children = testProvider.getChildren();
 		should(children).length(0, 'Should not have any children');
 	});
 
 	it('can clear all with one child', async function () {
-		await fireQueryEventAndWaitForRefresh('queryStop', <any>{ uri: testUri.toString() }, { messages: [], batchRanges: [] });
+		await fireQueryStartAndStopAndWaitForRefresh(testUri);
 		let children = testProvider.getChildren();
 		should(children).length(1, 'Should have one child after adding item');
 
@@ -121,9 +128,9 @@ describe('QueryHistoryProvider', () => {
 	});
 
 	it('can clear all with multiple children', async function () {
-		await fireQueryEventAndWaitForRefresh('queryStop', <any>{ uri: testUri.toString() }, { messages: [], batchRanges: [] });
-		await fireQueryEventAndWaitForRefresh('queryStop', <any>{ uri: testUri.toString() }, { messages: [], batchRanges: [] });
-		await fireQueryEventAndWaitForRefresh('queryStop', <any>{ uri: testUri.toString() }, { messages: [], batchRanges: [] });
+		await fireQueryStartAndStopAndWaitForRefresh(testUri);
+		await fireQueryStartAndStopAndWaitForRefresh(testUri);
+		await fireQueryStartAndStopAndWaitForRefresh(testUri);
 		let children = testProvider.getChildren();
 		should(children).length(3, 'Should have 3 children after adding item');
 
@@ -140,7 +147,7 @@ describe('QueryHistoryProvider', () => {
 	});
 
 	it('delete item that doesn\'t exist doesn\'t throw', async function () {
-		await fireQueryEventAndWaitForRefresh('queryStop', <any>{ uri: testUri.toString() }, { messages: [], batchRanges: [] });
+		await fireQueryStartAndStopAndWaitForRefresh(testUri);
 		let children = testProvider.getChildren();
 		should(children).length(1, 'Should have 1 child initially');
 
@@ -151,9 +158,9 @@ describe('QueryHistoryProvider', () => {
 	});
 
 	it('can delete single item', async function () {
-		await fireQueryEventAndWaitForRefresh('queryStop', <any>{ uri: testUri.toString() }, { messages: [], batchRanges: [] });
-		await fireQueryEventAndWaitForRefresh('queryStop', <any>{ uri: testUri.toString() }, { messages: [], batchRanges: [] });
-		await fireQueryEventAndWaitForRefresh('queryStop', <any>{ uri: testUri.toString() }, { messages: [], batchRanges: [] });
+		await fireQueryStartAndStopAndWaitForRefresh(testUri);
+		await fireQueryStartAndStopAndWaitForRefresh(testUri);
+		await fireQueryStartAndStopAndWaitForRefresh(testUri);
 		const firstChildren = testProvider.getChildren();
 		should(firstChildren).length(3, 'Should have 3 children initially');
 
@@ -177,21 +184,35 @@ describe('QueryHistoryProvider', () => {
 	});
 
 	it('pausing capture causes children not to be added', async function () {
-		await fireQueryEventAndWaitForRefresh('queryStop', <any>{ uri: testUri.toString() }, { messages: [], batchRanges: [] });
+		await fireQueryStartAndStopAndWaitForRefresh(testUri);
 		const children = testProvider.getChildren();
 		should(children).length(1, 'Should have one child after adding initial item');
 
 		await testProvider.setCaptureEnabled(false);
 
 		// Add timeout since the item is never added, thus never triggering the event
-		await fireQueryEventAndWaitForRefresh('queryStop', <any>{ uri: testUri.toString() }, { messages: [], batchRanges: [] }, 2000);
+		await fireQueryStartAndStopAndWaitForRefresh(testUri, { messages: [], batchRanges: [] }, 2000);
 		should(children).length(1, 'Should still have 1 child after adding item when capture paused');
 
 		await testProvider.setCaptureEnabled(true);
 
-		await fireQueryEventAndWaitForRefresh('queryStop', <any>{ uri: testUri.toString() }, { messages: [], batchRanges: [] });
+		await fireQueryStartAndStopAndWaitForRefresh(testUri);
 		should(children).length(2, 'Should have 2 child after adding item when capture was resumed');
 	});
+
+	function setupTextEditorMock(content: string | azdataTest.mocks.vscode.RangeWithContent[], selections?: vscode.Selection[] | undefined): void {
+		const textDocumentMock = azdataTest.mocks.vscode.createTextDocumentMock(testUri, content);
+		const textEditorMock = azdataTest.mocks.vscode.createTextEditorMock(textDocumentMock.object, selections);
+		textDocumentSandbox.replaceGetter(vscode.window, 'activeTextEditor', () => textEditorMock.object);
+	}
+
+	async function fireQueryStartAndStopAndWaitForRefresh(uri: vscode.Uri, queryInfo: azdata.queryeditor.QueryInfo = { messages: [], batchRanges: [] }, timeoutMs?: number): Promise<void> {
+		const queryDocumentMock = azdataTest.mocks.azdata.queryeditor.createQueryDocumentMock(uri.toString());
+		// First queryStart message to record text. QueryInfo is always empty for this.
+		testListener.onQueryEvent('queryStart', queryDocumentMock.object, undefined, { messages: [], batchRanges: [] });
+		// Fire queryStop message to trigger creation of the history node
+		await fireQueryEventAndWaitForRefresh('queryStop', queryDocumentMock.object, queryInfo, timeoutMs);
+	}
 
 	async function fireQueryEventAndWaitForRefresh(type: azdata.queryeditor.QueryEventType, document: azdata.queryeditor.QueryDocument, queryInfo: azdata.queryeditor.QueryInfo, timeoutMs?: number): Promise<void> {
 		await waitForItemRefresh(async () => testListener.onQueryEvent(type, document, undefined, queryInfo), timeoutMs);

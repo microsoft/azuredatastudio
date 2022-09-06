@@ -2403,7 +2403,7 @@
   },
   "dependencies": {
     "byline": "^5.0.0",
-    "file-type": "^7.2.0",
+    "file-type": "16.5.4",
     "iconv-lite-umd": "0.6.8",
     "jschardet": "3.0.0",
     "vscode-extension-telemetry": "0.4.2",
@@ -2413,7 +2413,6 @@
   },
   "devDependencies": {
     "@types/byline": "4.2.31",
-    "@types/file-type": "^5.2.1",
     "@types/mocha": "^8.2.0",
     "@types/node": "14.x",
     "@types/which": "^1.0.28"

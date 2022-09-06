@@ -68,6 +68,10 @@ export class DacFxTestService implements mssql.IDacFxService {
 				booleanOptionsDictionary: {
 					'SampleProperty1': { value: false, description: sampleDesc, displayName: sampleName },
 					'SampleProperty2': { value: false, description: sampleDesc, displayName: sampleName }
+				},
+				objectTypesDictionary: {
+					'ObjectType1': sampleName,
+					'ObjectType2': sampleName
 				}
 			}
 		};

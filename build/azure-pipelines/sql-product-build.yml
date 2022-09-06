@@ -7,7 +7,7 @@ resources:
 jobs:
 - job: Compile
   pool:
-    vmImage: 'Ubuntu-18.04'
+    vmImage: 'Ubuntu-20.04'
   container: linux-x64
   steps:
   - script: |
@@ -20,7 +20,7 @@ jobs:
 - job: macOS
   condition: and(succeeded(), eq(variables['VSCODE_BUILD_MACOS'], 'true'), ne(variables['VSCODE_QUALITY'], 'saw'))
   pool:
-    vmImage: 'macOS-10.15'
+    vmImage: 'macos-latest'
   dependsOn:
   - Compile
   steps:
@@ -30,7 +30,7 @@ jobs:
 - job: macOS_Signing
   condition: and(succeeded(), eq(variables['VSCODE_BUILD_MACOS'], 'true'), eq(variables['signed'], true), ne(variables['VSCODE_QUALITY'], 'saw'))
   pool:
-    vmImage: 'macOS-10.15'
+    vmImage: 'macos-latest'
   dependsOn:
   - macOS
   steps:
@@ -40,7 +40,7 @@ jobs:
 - job: Linux
   condition: and(succeeded(), eq(variables['VSCODE_BUILD_LINUX'], 'true'))
   pool:
-    vmImage: 'Ubuntu-18.04'
+    vmImage: 'Ubuntu-20.04'
   container: linux-x64
   dependsOn:
   - Compile
@@ -75,7 +75,7 @@ jobs:
 - job: Release
   condition: and(succeeded(), or(eq(variables['VSCODE_RELEASE'], 'true'), and(eq(variables['VSCODE_QUALITY'], 'insider'), eq(variables['Build.Reason'], 'Schedule'))))
   pool:
-    vmImage: 'Ubuntu-18.04'
+    vmImage: 'Ubuntu-20.04'
   dependsOn:
   - macOS
   - Linux

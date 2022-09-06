@@ -154,7 +154,8 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			CSSStyles: {
 				...styles.BODY_CSS,
 				'margin-top': '8px'
-			}
+			},
+			ariaLive: 'polite'
 		}).component();
 
 		const cssClass = 'no-borders';
@@ -218,9 +219,9 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 				]
 			}).component();
 
-		this._disposables.push(this._databaseSelectorTable.onRowSelected(async (e) => {
-			await this.updateValuesOnSelection();
-		}));
+		this._disposables.push(
+			this._databaseSelectorTable.onRowSelected(
+				async (e) => await this.updateValuesOnSelection()));
 
 		// load unfiltered table list and pre-select list of databases saved in state
 		await this._filterTableList('', this.migrationStateModel._databasesForAssessment);

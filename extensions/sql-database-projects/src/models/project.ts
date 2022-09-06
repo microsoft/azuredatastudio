@@ -10,7 +10,6 @@ import * as utils from '../common/utils';
 import * as xmlFormat from 'xml-formatter';
 import * as os from 'os';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
-import * as mssql from 'mssql';
 
 import { Uri, window } from 'vscode';
 import { EntryType, IDatabaseReferenceProjectEntry, IProjectEntry, ISqlProject, ItemType, SqlTargetPlatform } from 'sqldbproj';
@@ -19,6 +18,15 @@ import { DataSource } from './dataSources/dataSources';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from './IDatabaseReferenceSettings';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { DacpacReferenceProjectEntry, FileProjectEntry, ProjectEntry, SqlCmdVariableProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabase, SystemDatabaseReferenceProjectEntry } from './projectEntry';
+
+/**
+ * Represents the configuration based on the Configuration property in the sqlproj
+ */
+enum Configuration {
+	Debug = 'Debug',     // default used if the Configuration property is not specified
+	Release = 'Release',
+	Output = 'Output'    // if a string besides debug or release is used, then Output is used as the configuration
+}
 
 /**
  * Class representing a Project, and providing functions for operating on it
@@ -36,9 +44,11 @@ export class Project implements ISqlProject {
 	private _postDeployScripts: FileProjectEntry[] = [];
 	private _noneDeployScripts: FileProjectEntry[] = [];
 	private _isSdkStyleProject: boolean = false; // https://docs.microsoft.com/en-us/dotnet/core/project-sdk/overview
+	private _outputPath: string = '';
+	private _configuration: Configuration = Configuration.Debug;
 
 	public get dacpacOutputPath(): string {
-		return path.join(this.projectFolderPath, 'bin', 'Debug', `${this._projectFileName}.dacpac`);
+		return path.join(this.outputPath, `${this._projectFileName}.dacpac`);
 	}
 
 	public get projectFolderPath() {
@@ -91,6 +101,14 @@ export class Project implements ISqlProject {
 
 	public get isSdkStyleProject(): boolean {
 		return this._isSdkStyleProject;
+	}
+
+	public get outputPath(): string {
+		return this._outputPath;
+	}
+
+	public get configuration(): Configuration {
+		return this._configuration;
 	}
 
 	private projFileXmlDoc: Document | undefined = undefined;
@@ -154,6 +172,67 @@ export class Project implements ISqlProject {
 			newProjectGuidNode.appendChild(newProjectGuidTextNode);
 			this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.PropertyGroup)[0]?.appendChild(newProjectGuidNode);
 			await this.serializeToProjFile(this.projFileXmlDoc);
+		}
+
+		// get configuration
+		const configurationNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Configuration);
+		if (configurationNodes.length > 0) {
+			const configuration = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Configuration)[0].childNodes[0].nodeValue!;
+			switch (configuration.toLowerCase()) {
+				case Configuration.Debug.toString().toLowerCase():
+					this._configuration = Configuration.Debug;
+					break;
+				case Configuration.Release.toString().toLowerCase():
+					this._configuration = Configuration.Release;
+					break;
+				default:
+					// if the configuration doesn't match release or debug, the dacpac will get created in ./bin/Output
+					this._configuration = Configuration.Output;
+			}
+		} else {
+			// If configuration isn't specified in .sqlproj, set it to the default debug
+			this._configuration = Configuration.Debug;
+		}
+
+		// get platform
+		const platformNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Platform);
+		let platform = '';
+		if (platformNodes.length > 0) {
+			for (let i = 0; i < platformNodes.length; i++) {
+				const condition = platformNodes[i].getAttribute(constants.Condition);
+				if (condition?.trim() === constants.EmptyPlatformCondition.trim()) {
+					platform = platformNodes[i].childNodes[0].nodeValue ?? '';
+					break;
+				}
+			}
+		} else {
+			platform = constants.AnyCPU;
+		}
+
+		// get output path
+		let outputPath;
+		const outputPathNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.OutputPath);
+		if (outputPathNodes.length > 0) {
+			// go through all the OutputPath nodes and use the last one in the .sqlproj that the condition matches
+			for (let i = 0; i < outputPathNodes.length; i++) {
+				// check if parent has a condition
+				const parent = outputPathNodes[i].parentNode as Element;
+				const condition = parent?.getAttribute(constants.Condition);
+
+				// only handle the default conditions format that are there when creating a sqlproj in VS or ADS
+				if (condition?.toLowerCase().trim() === constants.ConfigurationPlatformCondition(this.configuration.toString(), platform).toLowerCase()) {
+					outputPath = outputPathNodes[i].childNodes[0].nodeValue;
+				} else if (!condition) {
+					outputPath = outputPathNodes[i].childNodes[0].nodeValue;
+				}
+			}
+		}
+
+		if (outputPath) {
+			this._outputPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(outputPath));
+		} else {
+			// If output path isn't specified in .sqlproj, set it to the default output path .\bin\Debug\
+			this._outputPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(constants.defaultOutputPath(this.configuration.toString())));
 		}
 	}
 
@@ -248,20 +327,10 @@ export class Project implements ISqlProject {
 		const fileEntries: FileProjectEntry[] = [];
 		for (let f of Array.from(filesSet.values())) {
 			const typeEntry = entriesWithType.find(e => e.relativePath === f);
-			let containsCreateTableStatement = false;
 
 			// read file to check if it has a "Create Table" statement
 			const fullPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(f));
-
-			if (utils.getAzdataApi() && await utils.exists(fullPath)) {
-				const dacFxService = await utils.getDacFxService() as mssql.IDacFxService;
-				try {
-					const result = await dacFxService.parseTSqlScript(fullPath, this.getProjectTargetVersion());
-					containsCreateTableStatement = result.containsCreateTableStatement;
-				} catch (e) {
-					console.error(utils.getErrorMessage(e));
-				}
-			}
+			const containsCreateTableStatement = await utils.fileContainsCreateTableStatement(fullPath, this.getProjectTargetVersion());
 
 			fileEntries.push(this.createFileProjectEntry(f, EntryType.File, typeEntry ? typeEntry.typeAttribute : undefined, containsCreateTableStatement));
 		}
@@ -539,6 +608,8 @@ export class Project implements ISqlProject {
 		this._postDeployScripts = [];
 		this._noneDeployScripts = [];
 		this.projFileXmlDoc = undefined;
+		this._outputPath = '';
+		this._configuration = Configuration.Debug;
 	}
 
 	/**

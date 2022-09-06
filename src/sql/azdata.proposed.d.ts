@@ -539,6 +539,17 @@ declare module 'azdata' {
 		appendData(data: any[][]): Thenable<void>;
 	}
 
+	export interface ListViewOption {
+		/**
+		 * The optional accessibility label for the column. Default is the label for the list view option.
+		 */
+		ariaLabel?: string;
+		/**
+		 * Specify the icon for the option. The value could the path to the icon or and ADS icon defined in {@link SqlThemeIcon}.
+		 */
+		icon?: IconPath;
+	}
+
 	export interface IconColumnCellValue {
 		/**
 		 * The icon to be displayed.
@@ -1227,6 +1238,14 @@ declare module 'azdata' {
 			 */
 			mimeType: string;
 			/**
+			 * Whether user confirmation is required, the default value is false.
+			 */
+			requireConfirmation?: boolean;
+			/**
+			 * The confirmation text.
+			 */
+			confirmationText?: string;
+			/**
 			 * The table schema validation error.
 			 */
 			schemaValidationError?: string;
@@ -1314,6 +1333,14 @@ declare module 'azdata' {
 			 * Data to show in top operations table for the node.
 			 */
 			topOperationsData: TopOperationsDataItem[];
+			/**
+			 * Output row count associated with the node
+			 */
+			rowCountDisplayString: string;
+			/**
+			 * Cost string for the node
+			 */
+			costDisplayString: string;
 		}
 
 		export interface ExecutionPlanBadge {
@@ -1464,6 +1491,11 @@ declare module 'azdata' {
 			secondComparisonResult: ExecutionGraphComparisonResult;
 		}
 
+		export interface IsExecutionPlanResult {
+			isExecutionPlan: boolean;
+			queryExecutionPlanFileExtension: string;
+		}
+
 		export interface ExecutionPlanProvider extends DataProvider {
 			// execution plan service methods
 
@@ -1478,6 +1510,11 @@ declare module 'azdata' {
 			 * @param secondPlanFile file that contains the second execution plan.
 			 */
 			compareExecutionPlanGraph(firstPlanFile: ExecutionPlanGraphInfo, secondPlanFile: ExecutionPlanGraphInfo): Thenable<ExecutionPlanComparisonResult>;
+			/**
+			 * Determines if the provided value is an execution plan and returns the appropriate file extension.
+			 * @param value String that needs to be checked.
+			 */
+			isExecutionPlan(value: string): Thenable<IsExecutionPlanResult>;
 		}
 
 		export interface TopOperationsDataItem {
@@ -1545,6 +1582,13 @@ declare module 'azdata' {
 		link: LinkArea;
 	}
 
+	export interface TextComponentProperties {
+		/**
+		 * Corresponds to the aria-live accessibility attribute for this component
+		 */
+		ariaLive?: string;
+	}
+
 	export interface ContainerBuilder<TComponent extends Component, TLayout, TItemLayout, TPropertyBag extends ContainerProperties> extends ComponentBuilder<TComponent, TPropertyBag> {
 		/**
 		 * Sets the initial set of properties for the container being created
@@ -1605,5 +1649,13 @@ declare module 'azdata' {
 			 */
 			onQueryEvent(type: QueryEventType, document: QueryDocument, args: ResultSetSummary | string | undefined, queryInfo: QueryInfo): void;
 		}
+	}
+
+	export interface NodeInfo {
+		/**
+		 * The object type of the node. Node type is used to determine the icon, the object type is the actual type of the node, e.g. for Tables node
+		 * under the database, the nodeType is Folder, the objectType is be Tables.
+		 */
+		objectType?: string;
 	}
 }

@@ -14,7 +14,6 @@ import { IContextMenuService, IContextViewService } from 'vs/platform/contextvie
 import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IFileService } from 'vs/platform/files/common/files';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
@@ -75,7 +74,6 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 		private _executionPlanFileView: ExecutionPlanFileView,
 		private _queryResultsView: QueryResultsView,
 		@IInstantiationService public readonly _instantiationService: IInstantiationService,
-		@IThemeService private readonly _themeService: IThemeService,
 		@IContextViewService public readonly contextViewService: IContextViewService,
 		@IUntitledTextEditorService private readonly _untitledEditorService: IUntitledTextEditorService,
 		@IEditorService private readonly editorService: IEditorService,
@@ -144,7 +142,7 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 		// container properties
 		this._propContainer = DOM.$('.properties');
 		this.container.appendChild(this._propContainer);
-		this.propertiesView = new ExecutionPlanPropertiesView(this._propContainer, this._themeService);
+		this.propertiesView = this._instantiationService.createInstance(ExecutionPlanPropertiesView, this._propContainer);
 
 		this._widgetContainer = DOM.$('.plan-action-container');
 		this._planContainer.appendChild(this._widgetContainer);
@@ -197,7 +195,7 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 		this._actionBar.pushAction(actionBarActions, { icon: true, label: false });
 
 		const self = this;
-		this.container.oncontextmenu = (e: MouseEvent) => {
+		this._planContainer.oncontextmenu = (e: MouseEvent) => {
 			if (contextMenuAction) {
 				this._contextMenuService.showContextMenu({
 					getAnchor: () => {

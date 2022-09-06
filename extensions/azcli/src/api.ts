@@ -71,44 +71,37 @@ export function getAzApi(localAzDiscovered: Promise<IAzTool | undefined>, azTool
 			}
 		},
 		postgres: {
-			arcserver: {
+			serverarc: {
 				delete: async (name: string, namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars) => {
 					await localAzDiscovered;
 					validateAz(azToolService.localAz);
-					return azToolService.localAz!.postgres.arcserver.delete(name, namespace, additionalEnvVars);
+					return azToolService.localAz!.postgres.serverarc.delete(name, namespace, additionalEnvVars);
 				},
 				list: async (namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars) => {
 					await localAzDiscovered;
 					validateAz(azToolService.localAz);
-					return azToolService.localAz!.postgres.arcserver.list(namespace, additionalEnvVars);
+					return azToolService.localAz!.postgres.serverarc.list(namespace, additionalEnvVars);
 				},
 				show: async (name: string, namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars) => {
 					await localAzDiscovered;
 					validateAz(azToolService.localAz);
-					return azToolService.localAz!.postgres.arcserver.show(name, namespace, additionalEnvVars);
+					return azToolService.localAz!.postgres.serverarc.show(name, namespace, additionalEnvVars);
 				},
-				edit: async (
+				update: async (
 					name: string,
 					args: {
-						adminPassword?: boolean;
 						coresLimit?: string;
 						coresRequest?: string;
-						coordinatorEngineSettings?: string;
-						engineSettings?: string;
-						extensions?: string;
 						memoryLimit?: string;
 						memoryRequest?: string;
 						noWait?: boolean;
 						port?: number;
-						replaceEngineSettings?: boolean;
-						workerEngineSettings?: string;
-						workers?: number;
 					},
 					namespace: string,
 					additionalEnvVars?: azExt.AdditionalEnvVars) => {
 					await localAzDiscovered;
 					validateAz(azToolService.localAz);
-					return azToolService.localAz!.postgres.arcserver.edit(name, args, namespace, additionalEnvVars);
+					return azToolService.localAz!.postgres.serverarc.update(name, args, namespace, additionalEnvVars);
 				}
 			}
 		},
@@ -117,9 +110,9 @@ export function getAzApi(localAzDiscovered: Promise<IAzTool | undefined>, azTool
 				delete: async (
 					name: string,
 					args: {
-						// Direct mode arguments
+						// ARM API arguments
 						resourceGroup?: string;
-						// Indirect mode arguments
+						// K8s API arguments
 						namespace?: string;
 					},
 					additionalEnvVars?: azExt.AdditionalEnvVars
@@ -130,9 +123,9 @@ export function getAzApi(localAzDiscovered: Promise<IAzTool | undefined>, azTool
 				},
 				list: async (
 					args: {
-						// Direct mode arguments
+						// ARM API arguments
 						resourceGroup?: string;
-						// Indirect mode arguments
+						// K8s API arguments
 						namespace?: string;
 					},
 					additionalEnvVars?: azExt.AdditionalEnvVars
@@ -144,9 +137,9 @@ export function getAzApi(localAzDiscovered: Promise<IAzTool | undefined>, azTool
 				show: async (
 					name: string,
 					args: {
-						// Direct mode arguments
+						// ARM API arguments
 						resourceGroup?: string;
-						// Indirect mode arguments
+						// K8s API arguments
 						namespace?: string;
 					},
 					// Additional arguments
@@ -166,9 +159,9 @@ export function getAzApi(localAzDiscovered: Promise<IAzTool | undefined>, azTool
 						noWait?: boolean;
 						syncSecondaryToCommit?: string;
 					},
-					// Direct mode arguments
+					// ARM API arguments
 					resourceGroup?: string,
-					// Indirect mode arguments
+					// K8s API arguments
 					namespace?: string,
 					usek8s?: boolean,
 					// Additional arguments
@@ -181,9 +174,9 @@ export function getAzApi(localAzDiscovered: Promise<IAzTool | undefined>, azTool
 				upgrade: async (
 					name: string,
 					args: {
-						// Direct mode arguments
+						// ARM API arguments
 						resourceGroup?: string;
-						// Indirect mode arguments
+						// K8s API arguments
 						namespace?: string;
 					},
 					// Additional arguments

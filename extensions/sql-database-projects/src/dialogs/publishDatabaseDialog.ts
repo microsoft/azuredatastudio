@@ -13,11 +13,11 @@ import { SqlConnectionDataSource } from '../models/dataSources/sqlConnectionStri
 import { DeploymentOptions } from 'mssql';
 import { IconPathHelper } from '../common/iconHelper';
 import { cssStyles } from '../common/uiConstants';
-import { getAgreementDisplayText, getConnectionName, getDockerBaseImages, getPublishServerName } from './utils';
+import { getAgreementDisplayText, getConnectionName, getDefaultDockerImageWithTag, getDockerBaseImages, getPublishServerName } from './utils';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { Deferred } from '../common/promise';
 import { PublishOptionsDialog } from './publishOptionsDialog';
-import { ISqlProjectPublishSettings, IPublishToDockerSettings } from 'sqldbproj';
+import { ISqlProjectPublishSettings, IPublishToDockerSettings, SqlTargetPlatform } from 'sqldbproj';
 
 interface DataSourceDropdownValue extends azdataType.CategoryValue {
 	dataSource: SqlConnectionDataSource;
@@ -145,7 +145,6 @@ export class PublishDatabaseDialog {
 			this.connectionRow = this.createConnectionRow(view);
 			this.databaseRow = this.createDatabaseRow(view);
 			const displayOptionsButton = this.createOptionsButton(view);
-			displayOptionsButton.enabled = false;
 
 			const horizontalFormSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 			horizontalFormSection.addItems([profileRow, this.databaseRow]);
@@ -172,12 +171,10 @@ export class PublishDatabaseDialog {
 								title: constants.selectConnectionRadioButtonsTitle,
 								component: selectConnectionRadioButtons
 							},*/
-							/* TODO : Disabling deployment options for the July release
 							{
 								component: displayOptionsButton,
 								title: ''
 							}
-							*/
 						]
 					}
 				], {
@@ -244,9 +241,14 @@ export class PublishDatabaseDialog {
 			utils.getAzdataApi()!.window.closeDialog(this.dialog);
 			await this.publish!(this.project, settings);
 		} else {
-			const dockerBaseImage = this.getBaseDockerImageName();
+			let dockerBaseImage = this.getBaseDockerImageName();
 			const baseImages = getDockerBaseImages(this.project.getProjectTargetVersion());
 			const imageInfo = baseImages.find(x => x.name === dockerBaseImage);
+
+			// selecting the image tag isn't currently exposed in the publish dialog, so this adds the tag matching the target platform
+			// to make sure the correct image is used for the project's target platform when the docker base image is SQL Server
+			dockerBaseImage = getDefaultDockerImageWithTag(this.project.getProjectTargetVersion(), dockerBaseImage, imageInfo);
+
 			const settings: IPublishToDockerSettings = {
 				dockerSettings: {
 					dbName: this.targetDatabaseName,
@@ -601,6 +603,16 @@ export class PublishDatabaseDialog {
 
 		const baseImages = getDockerBaseImages(this.project.getProjectTargetVersion());
 		const baseImagesValues: azdataType.CategoryValue[] = baseImages.map(x => { return { name: x.name, displayName: x.displayName }; });
+
+		// add preview string for 2022
+		// TODO: remove after 2022 is GA
+		if (this.project.getProjectTargetVersion() === constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlServer2022)) {
+			const sqlServerImageIndex = baseImagesValues.findIndex(image => image.displayName === constants.SqlServerDockerImageName);
+			if (sqlServerImageIndex >= 0) {
+				baseImagesValues[sqlServerImageIndex].displayName = constants.SqlServerDocker2022ImageName;
+			}
+		}
+
 		this.baseDockerImageDropDown = view.modelBuilder.dropDown().withProps({
 			values: baseImagesValues,
 			ariaLabel: constants.baseDockerImage(name),
@@ -836,6 +848,9 @@ export class PublishDatabaseDialog {
 					this.targetDatabaseName = result.databaseName;
 				}
 
+				// set options coming from the publish profiles to deployment options
+				this.setDeploymentOptions(result.options);
+
 				if (Object.keys(result.sqlCmdVariables).length) {
 					// add SQLCMD Variables table if it wasn't there before and the profile had sqlcmd variables
 					if (Object.keys(this.project.sqlCmdVariables).length === 0 && Object.keys(<Record<string, string>>this.sqlCmdVars).length === 0) {
@@ -935,7 +950,12 @@ export class PublishDatabaseDialog {
 	* Gets the default deployment options from the dacfx service
 	*/
 	public async getDefaultDeploymentOptions(): Promise<DeploymentOptions> {
-		return await utils.getDefaultPublishDeploymentOptions(this.project) as DeploymentOptions;
+		const defaultDeploymentOptions = await utils.getDefaultPublishDeploymentOptions(this.project) as DeploymentOptions;
+		if (defaultDeploymentOptions && defaultDeploymentOptions.excludeObjectTypes !== undefined) {
+			// For publish dialog no default exclude options should exists
+			defaultDeploymentOptions.excludeObjectTypes.value = [];
+		}
+		return defaultDeploymentOptions;
 	}
 
 	/*

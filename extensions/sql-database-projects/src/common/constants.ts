@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vscode-nls';
+import * as path from 'path';
 import { SqlTargetPlatform } from 'sqldbproj';
 import * as utils from '../common/utils';
 
@@ -149,16 +150,18 @@ export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not 
 export const AdvancedOptionsButton = localize('advancedOptionsButton', 'Advanced...');
 export const AdvancedPublishOptions = localize('advancedPublishOptions', 'Advanced Publish Options');
 export const PublishOptions = localize('publishOptions', 'Publish Options');
+export const ExcludeObjectTypeTab = localize('excludeObjectTypes', 'Exclude Object Types');
 export const ResetButton: string = localize('reset', "Reset");
 export const OptionDescription: string = localize('optionDescription', "Option Description");
 export const OptionName: string = localize('optionName', "Option Name");
-export const OptionInclude: string = localize('Include', "Include");
-export function OptionNotFoundWarningMessage(label: string) { return localize('OptionNotFoundWarningMessage', "label: {0} does not exist in the options value name lookup", label); }
+export const OptionInclude: string = localize('include', "Include");
+export function OptionNotFoundWarningMessage(label: string) { return localize('optionNotFoundWarningMessage', "label: {0} does not exist in the options value name lookup", label); }
 
 // Deploy
 export const SqlServerName = 'SQL server';
 export const AzureSqlServerName = 'Azure SQL server';
 export const SqlServerDockerImageName = 'Microsoft SQL Server';
+export const SqlServerDocker2022ImageName = 'Microsoft SQL Server 2022 (preview)';
 export const AzureSqlDbFullDockerImageName = 'Azure SQL Database emulator Full';
 export const AzureSqlDbLiteDockerImageName = 'Azure SQL Database emulator Lite';
 export const AzureSqlLogicalServerName = 'Azure SQL logical server';
@@ -200,8 +203,8 @@ export const eulaAgreementTemplate = localize({ key: 'eulaAgreementTemplate', co
 export function eulaAgreementText(name: string) { return localize({ key: 'eulaAgreementText', comment: ['The placeholders are contents of the line and should not be translated.'] }, "I accept the {0}.", name); }
 export const eulaAgreementTitle = localize('eulaAgreementTitle', "Microsoft SQL Server License Agreement");
 export const edgeEulaAgreementTitle = localize('edgeEulaAgreementTitle', "Microsoft Azure SQL Edge License Agreement");
-export const sqlServerEulaLink = 'https://go.microsoft.com/fwlink/?linkid=857698';
-export const sqlServerEdgeEulaLink = 'https://go.microsoft.com/fwlink/?linkid=2139274';
+export const sqlServerEulaLink = 'https://aka.ms/mcr/osslegalnotice';
+export const sqlServerEdgeEulaLink = 'https://aka.ms/mcr/osslegalnotice';
 export const connectionNamePrefix = 'SQLDbProject';
 export const sqlServerDockerRegistry = 'mcr.microsoft.com';
 export const sqlServerDockerRepository = 'mssql/server';
@@ -351,6 +354,7 @@ export const parentTreeItemUnknown = localize('parentTreeItemUnknown', "Cannot a
 export const prePostDeployCount = localize('prePostDeployCount', "To successfully build, update the project to have one pre-deployment script and/or one post-deployment script");
 export const invalidProjectReload = localize('invalidProjectReload', "Cannot access provided database project. Only valid, open database projects can be reloaded.");
 export const externalStreamingJobValidationPassed = localize('externalStreamingJobValidationPassed', "Validation of external streaming job passed.");
+export const errorRetrievingBuildFiles = localize('errorRetrievingBuildFiles', "Could not build project. Error retrieving files needed to build.");
 export function projectAlreadyOpened(path: string) { return localize('projectAlreadyOpened', "Project '{0}' is already opened.", path); }
 export function projectAlreadyExists(name: string, path: string) { return localize('projectAlreadyExists', "A project named {0} already exists in {1}.", name, path); }
 export function noFileExist(fileName: string) { return localize('noFileExist', "File {0} doesn't exist", fileName); }
@@ -455,6 +459,10 @@ export const Sdk: string = 'Sdk';
 export const DatabaseSource = 'DatabaseSource';
 export const VisualStudioVersion = 'VisualStudioVersion';
 export const SSDTExists = 'SSDTExists';
+export const OutputPath = 'OutputPath';
+export const Configuration = 'Configuration';
+export const Platform = 'Platform';
+export const AnyCPU = 'AnyCPU';
 
 export const BuildElements = localize('buildElements', "Build Elements");
 export const FolderElements = localize('folderElements', "Folder Elements");
@@ -492,6 +500,11 @@ export const RoundTripSqlDbPresentCondition = '\'$(NetCoreBuild)\' != \'true\' A
 export const RoundTripSqlDbNotPresentCondition = '\'$(NetCoreBuild)\' != \'true\' AND \'$(SQLDBExtensionsRefPath)\' == \'\'';
 export const DacpacRootPath = '$(DacPacRootPath)';
 export const ProjJsonToClean = '$(BaseIntermediateOutputPath)\\project.assets.json';
+export const EmptyConfigurationCondition = '\'$(Configuration)\' == \'\'';
+export const EmptyPlatformCondition = '\'$(Platform)\' == \'\'';
+export function ConfigurationPlatformCondition(configuration: string, platform: string) { return `'$(Configuration)|$(Platform)' == '${configuration}|${platform}'`; }
+
+export function defaultOutputPath(configuration: string) { return path.join('.', 'bin', configuration); }
 
 // Sqlproj VS property conditions
 export const VSVersionCondition = '\'$(VisualStudioVersion)\' == \'\'';
@@ -602,4 +615,18 @@ export enum PublishTargetType {
 	newAzureServer = 'newAzureServer'
 }
 
+// Configuration keys
 export const CollapseProjectNodesKey = 'collapseProjectNodes';
+export const microsoftBuildSqlVersionKey = 'microsoftBuildSqlVersion';
+
+// httpClient
+export const downloadError = localize('downloadError', "Download error");
+export const downloadProgress = localize('downloadProgress', "Download progress");
+export const downloading = localize('downloading', "Downloading");
+
+// buildHelper
+export const downloadingDacFxDlls = localize('downloadingDacFxDlls', "Downloading Microsoft.Build.Sql nuget to get build DLLs");
+export function downloadingFromTo(from: string, to: string) { return localize('downloadingFromTo', "Downloading from {0} to {1}", from, to); }
+export function extractingDacFxDlls(location: string) { return localize('extractingDacFxDlls', "Extracting DacFx build DLLs to {0}", location); }
+export function errorDownloading(url: string, error: string) { return localize('errorDownloading', "Error downloading {0}. Error: {1}", url, error); }
+export function errorExtracting(path: string, error: string) { return localize('errorExtracting', "Error extracting files from {0}. Error: {1}", path, error); }

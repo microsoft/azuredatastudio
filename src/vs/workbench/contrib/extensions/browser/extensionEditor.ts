@@ -30,7 +30,7 @@ import {
 	UpdateAction, ReloadAction, EnableDropDownAction, DisableDropDownAction, ExtensionStatusLabelAction, SetFileIconThemeAction, SetColorThemeAction,
 	RemoteInstallAction, ExtensionStatusAction, LocalInstallAction, ToggleSyncExtensionAction, SetProductIconThemeAction,
 	ActionWithDropDownAction, InstallDropdownAction, InstallingLabelAction, UninstallAction, ExtensionActionWithDropdownActionViewItem, ExtensionDropDownAction,
-	InstallAnotherVersionAction, ExtensionEditorManageExtensionAction, WebInstallAction
+	ExtensionEditorManageExtensionAction, WebInstallAction // {{SQL CARBON EDIT}} Remove unused
 } from 'vs/workbench/contrib/extensions/browser/extensionsActions';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { DomScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElement';
@@ -417,10 +417,13 @@ export class ExtensionEditor extends EditorPane {
 			this.instantiationService.createInstance(WebInstallAction),
 			combinedInstallAction,
 			this.instantiationService.createInstance(InstallingLabelAction),
-			this.instantiationService.createInstance(ActionWithDropDownAction, 'extensions.uninstall', UninstallAction.UninstallLabel, [
-				this.instantiationService.createInstance(UninstallAction),
-				this.instantiationService.createInstance(InstallAnotherVersionAction),
-			]),
+			// {{SQL CARBON EDIT}} - ADS does not support install another version
+			// this.instantiationService.createInstance(ActionWithDropDownAction, 'extensions.uninstall', UninstallAction.UninstallLabel, [
+			// 	this.instantiationService.createInstance(UninstallAction),
+			// 	this.instantiationService.createInstance(InstallAnotherVersionAction),
+			// ]),
+			this.instantiationService.createInstance(UninstallAction),
+			// {{SQL CARBON EDIT}} - End of edit
 			this.instantiationService.createInstance(ToggleSyncExtensionAction),
 			this.instantiationService.createInstance(ExtensionEditorManageExtensionAction),
 		];

@@ -163,10 +163,10 @@ declare module 'mssql' {
 	}
 
 	/**
-	* Interface containing deployment options of integer type, value property holds values from <DacFx>\Product\Source\DeploymentApi\ObjectTypes.cs enum
+	* Interface containing deployment options of string[] type, value property holds enum names (nothing but option name) from <DacFx>\Product\Source\DeploymentApi\ObjectTypes.cs enum
 	*/
 	export interface DacDeployOptionPropertyObject {
-		value: number[];
+		value: string[];
 		description: string;
 		displayName: string;
 	}
@@ -179,6 +179,8 @@ declare module 'mssql' {
 		excludeObjectTypes: DacDeployOptionPropertyObject;
 		// key will be the boolean option name
 		booleanOptionsDictionary: { [key: string]: DacDeployOptionPropertyBoolean };
+		// key will be the object type enum name (nothing but option name)
+		objectTypesDictionary: { [key: string]: string };
 	}
 
 	/*
@@ -187,81 +189,6 @@ declare module 'mssql' {
 	export interface IOptionWithValue {
 		optionName: string;
 		checked: boolean;
-	}
-
-	/**
-	 * Values from <DacFx>\Product\Source\DeploymentApi\ObjectTypes.cs
-	 */
-	export const enum SchemaObjectType {
-		Aggregates = 0,
-		ApplicationRoles = 1,
-		Assemblies = 2,
-		AssemblyFiles = 3,
-		AsymmetricKeys = 4,
-		BrokerPriorities = 5,
-		Certificates = 6,
-		ColumnEncryptionKeys = 7,
-		ColumnMasterKeys = 8,
-		Contracts = 9,
-		DatabaseOptions = 10,
-		DatabaseRoles = 11,
-		DatabaseTriggers = 12,
-		Defaults = 13,
-		ExtendedProperties = 14,
-		ExternalDataSources = 15,
-		ExternalFileFormats = 16,
-		ExternalTables = 17,
-		Filegroups = 18,
-		Files = 19,
-		FileTables = 20,
-		FullTextCatalogs = 21,
-		FullTextStoplists = 22,
-		MessageTypes = 23,
-		PartitionFunctions = 24,
-		PartitionSchemes = 25,
-		Permissions = 26,
-		Queues = 27,
-		RemoteServiceBindings = 28,
-		RoleMembership = 29,
-		Rules = 30,
-		ScalarValuedFunctions = 31,
-		SearchPropertyLists = 32,
-		SecurityPolicies = 33,
-		Sequences = 34,
-		Services = 35,
-		Signatures = 36,
-		StoredProcedures = 37,
-		SymmetricKeys = 38,
-		Synonyms = 39,
-		Tables = 40,
-		TableValuedFunctions = 41,
-		UserDefinedDataTypes = 42,
-		UserDefinedTableTypes = 43,
-		ClrUserDefinedTypes = 44,
-		Users = 45,
-		Views = 46,
-		XmlSchemaCollections = 47,
-		Audits = 48,
-		Credentials = 49,
-		CryptographicProviders = 50,
-		DatabaseAuditSpecifications = 51,
-		DatabaseEncryptionKeys = 52,
-		DatabaseScopedCredentials = 53,
-		Endpoints = 54,
-		ErrorMessages = 55,
-		EventNotifications = 56,
-		EventSessions = 57,
-		LinkedServerLogins = 58,
-		LinkedServers = 59,
-		Logins = 60,
-		MasterKeys = 61,
-		Routes = 62,
-		ServerAuditSpecifications = 63,
-		ServerRoleMembership = 64,
-		ServerRoles = 65,
-		ServerTriggers = 66,
-		ExternalStreams = 67,
-		ExternalStreamingJobs = 68
 	}
 
 	export interface SchemaCompareObjectId {
@@ -611,9 +538,20 @@ declare module 'mssql' {
 
 	export interface SkuRecommendationResult {
 		sqlDbRecommendationResults: PaaSSkuRecommendationResultItem[];
+		sqlDbRecommendationDurationInMs: number;
 		sqlMiRecommendationResults: PaaSSkuRecommendationResultItem[];
+		sqlMiRecommendationDurationInMs: number;
 		sqlVmRecommendationResults: IaaSSkuRecommendationResultItem[];
+		sqlVmRecommendationDurationInMs: number;
+		elasticSqlDbRecommendationResults: PaaSSkuRecommendationResultItem[];
+		elasticSqlDbRecommendationDurationInMs: number;
+		elasticSqlMiRecommendationResults: PaaSSkuRecommendationResultItem[];
+		elasticSqlMiRecommendationDurationInMs: number;
+		elasticSqlVmRecommendationResults: IaaSSkuRecommendationResultItem[];
+		elasticSqlVmRecommendationDurationInMs: number;
 		instanceRequirements: SqlInstanceRequirements;
+		skuRecommendationReportPaths: string[];
+		elasticSkuRecommendationReportPaths: string[];
 	}
 
 	// SKU recommendation enums, mirrored from Microsoft.SqlServer.Migration.SkuRecommendation
@@ -858,6 +796,7 @@ declare module 'mssql' {
 		assessmentResult: ServerAssessmentProperties;
 		rawAssessmentResult: any;
 		errors: ErrorModel[];
+		assessmentReportPath: string;
 	}
 
 	export interface ISqlMigrationService {

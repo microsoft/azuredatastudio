@@ -1,6 +1,6 @@
 {
   "name": "azuredatastudio",
-  "version": "1.39.0",
+  "version": "1.40.0",
   "distro": "b6bf3fb97bc70074aeebbf9bd86ec03f637f5361",
   "author": {
     "name": "Microsoft Corporation"
@@ -76,7 +76,7 @@
     "angular2-grid": "2.0.6",
     "ansi_up": "^5.1.0",
     "applicationinsights": "1.0.8",
-    "azdataGraph": "github:Microsoft/azdataGraph#0.0.38",
+    "azdataGraph": "github:Microsoft/azdataGraph#0.0.42",
     "chart.js": "^2.9.4",
     "chokidar": "3.5.1",
     "graceful-fs": "4.2.8",
