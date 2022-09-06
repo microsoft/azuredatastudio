@@ -20,8 +20,8 @@ import { ILifecycleMainService, LifecycleMainPhase } from 'vs/platform/lifecycle
 import { ILogService } from 'vs/platform/log/common/log';
 import { StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { IGlobalStorageMainService } from 'vs/platform/storage/electron-main/storageMainService';
-import { ICodeWindow } from 'vs/platform/window/electron-main/window';
-import { IRecent, IRecentFile, IRecentFolder, IRecentlyOpened, IRecentWorkspace, isRecentFile, isRecentFolder, isRecentWorkspace, restoreRecentlyOpened, toStoreData } from 'vs/platform/workspaces/common/workspaces';
+import { ICodeWindow } from 'vs/platform/windows/electron-main/windows';
+import { IRecent, IRecentFile, IRecentFolder, IRecentlyOpened, IRecentWorkspace, isRecentFile, isRecentFolder, isRecentWorkspace, isSingleFolderWorkspaceIdentifier, isWorkspaceIdentifier, IWorkspaceIdentifier, RecentlyOpenedStorageData, restoreRecentlyOpened, toStoreData, WORKSPACE_EXTENSION } from 'vs/platform/workspaces/common/workspaces';
 import { isSingleFolderWorkspaceIdentifier, isWorkspaceIdentifier, IWorkspaceIdentifier, WORKSPACE_EXTENSION } from 'vs/platform/workspace/common/workspace';
 import { IWorkspacesManagementMainService } from 'vs/platform/workspaces/electron-main/workspacesManagementMainService';
 
@@ -165,27 +165,6 @@ export class WorkspacesHistoryMainService extends Disposable implements IWorkspa
 	async getRecentlyOpened(include?: ICodeWindow): Promise<IRecentlyOpened> {
 		const workspaces: Array<IRecentFolder | IRecentWorkspace> = [];
 		const files: IRecentFile[] = [];
-
-		// Add current workspace to beginning if set
-		if (include) {
-			const currentWorkspace = include.config?.workspace;
-			if (isWorkspaceIdentifier(currentWorkspace) && !this.workspacesManagementMainService.isUntitledWorkspace(currentWorkspace)) {
-				workspaces.push({ workspace: currentWorkspace, remoteAuthority: include.remoteAuthority });
-			} else if (isSingleFolderWorkspaceIdentifier(currentWorkspace)) {
-				workspaces.push({ folderUri: currentWorkspace.uri, remoteAuthority: include.remoteAuthority });
-			}
-		}
-
-		// Add currently files to open to the beginning if any
-		const currentFiles = include?.config?.filesToOpenOrCreate;
-		if (currentFiles) {
-			for (let currentFile of currentFiles) {
-				const fileUri = currentFile.fileUri;
-				if (fileUri && this.indexOfFile(files, fileUri) === -1) {
-					files.push({ fileUri });
-				}
-			}
-		}
 
 		await this.addEntriesFromStorage(workspaces, files);
 
