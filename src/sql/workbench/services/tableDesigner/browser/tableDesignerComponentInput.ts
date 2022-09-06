@@ -341,7 +341,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		}
 
 		if (tableDesignerView.indexTableOptions?.showTable) {
-			tabs.push(this.getIndexesTab(tableDesignerView.indexTableOptions, tableDesignerView.indexColumnSpecificationTableOptions));
+			tabs.push(this.getIndexesTab(tableDesignerView.indexTableOptions, tableDesignerView.indexColumnSpecificationTableOptions, tableDesignerView.additionalComponents));
 		}
 
 		if (tableDesignerView.additionalTabs) {
@@ -735,7 +735,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		};
 	}
 
-	private getIndexesTab(options: azdata.designers.TableDesignerBuiltInTableViewOptions, columnSpecTableOptions: azdata.designers.TableDesignerBuiltInTableViewOptions): DesignerTab {
+	private getIndexesTab(options: azdata.designers.TableDesignerBuiltInTableViewOptions, columnSpecTableOptions: azdata.designers.TableDesignerBuiltInTableViewOptions, additionalComponents: azdata.designers.DesignerDataPropertyWithTabInfo[]): DesignerTab {
 		const columnSpecProperties: DesignerDataPropertyInfo[] = [
 			{
 				componentType: 'dropdown',
@@ -782,7 +782,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			}
 		];
 
-		return <DesignerTab>{
+		const tab = <DesignerTab>{
 			title: localize('tableDesigner.indexesTabTitle', "Indexes"),
 			components: [
 				{
@@ -803,6 +803,20 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				}
 			]
 		};
+
+		const additionalTables = this.getAdditionalComponentsForTab(additionalComponents, designers.TableProperty.Indexes);
+		if (additionalTables) {
+			tab.components.push(...additionalTables);
+		}
+
+		return tab;
+	}
+
+	private getAdditionalComponentsForTab(components: azdata.designers.DesignerDataPropertyWithTabInfo[], tab: designers.TableProperty.Columns | designers.TableProperty.ForeignKeys | designers.TableProperty.CheckConstraints | designers.TableProperty.Indexes): azdata.designers.DesignerDataPropertyInfo[] {
+		if (components) {
+			return components.filter(c => c.tab === tab);
+		}
+		return [];
 	}
 
 	private getTableDisplayProperties(options: azdata.designers.TableDesignerBuiltInTableViewOptions, defaultProperties: string[]): string[] {

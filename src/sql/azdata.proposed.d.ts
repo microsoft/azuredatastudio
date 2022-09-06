@@ -934,6 +934,10 @@ declare module 'azdata' {
 			 */
 			additionalPrimaryKeyProperties?: DesignerDataPropertyInfo[];
 			/**
+			 * Additional components with tab info.
+			 */
+			additionalComponents?: DesignerDataPropertyWithTabInfo[];
+			/**
 			 * Whether to use advanced save mode. for advanced save mode, a publish changes dialog will be opened with preview of changes.
 			 */
 			useAdvancedSaveMode: boolean;
@@ -1003,6 +1007,16 @@ declare module 'azdata' {
 			 * The properties of the component.
 			 */
 			componentProperties: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties;
+		}
+
+		/**
+		 * The definition of the property in the designer with tab info.
+		 */
+		export interface DesignerDataPropertyWithTabInfo extends DesignerDataPropertyInfo {
+			/**
+			 * The tab info where this property belongs to.
+			 */
+			tab: TableProperty.Columns | TableProperty.ForeignKeys | TableProperty.CheckConstraints | TableProperty.Indexes;
 		}
 
 		/**
