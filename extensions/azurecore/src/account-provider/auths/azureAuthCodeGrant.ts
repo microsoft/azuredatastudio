@@ -17,6 +17,7 @@ import * as path from 'path';
 import * as http from 'http';
 import * as qs from 'qs';
 import { promises as fs } from 'fs';
+import { PublicClientApplication, CryptoProvider, AuthorizationUrlRequest, AuthorizationCodeRequest, AuthenticationResult } from '@azure/msal-node';
 
 const localize = nls.loadMessageBundle();
 
@@ -28,6 +29,7 @@ interface AuthCodeResponse {
 
 interface CryptoValues {
 	nonce: string;
+	challengeMethod: string;
 	codeVerifier: string;
 	codeChallenge: string;
 }
@@ -35,17 +37,47 @@ interface CryptoValues {
 
 export class AzureAuthCodeGrant extends AzureAuth {
 	private static readonly USER_FRIENDLY_NAME: string = localize('azure.azureAuthCodeGrantName', 'Azure Auth Code Grant');
+	private cryptoProvider: CryptoProvider;
 	private server: SimpleWebServer;
+	private pkceCodes: CryptoValues;
+
 
 	constructor(
 		metadata: AzureAccountProviderMetadata,
 		tokenCache: SimpleTokenCache,
 		context: vscode.ExtensionContext,
 		uriEventEmitter: vscode.EventEmitter<vscode.Uri>,
+		clientApplication: PublicClientApplication
 	) {
-		super(metadata, tokenCache, context, uriEventEmitter, AzureAuthType.AuthCodeGrant, AzureAuthCodeGrant.USER_FRIENDLY_NAME);
+		super(metadata, context, clientApplication, uriEventEmitter, AzureAuthType.AuthCodeGrant, AzureAuthCodeGrant.USER_FRIENDLY_NAME);
+		this.cryptoProvider = new CryptoProvider();
+		this.pkceCodes = {
+			nonce: '',
+			challengeMethod: 'S256', // Use SHA256 Algorithm
+			codeVerifier: '', // Generate a code verifier for the Auth Code Request first
+			codeChallenge: '', // Generate a code challenge from the previously generated code verifier
+		};
 	}
 
+
+	protected async loginMsal(tenant: Tenant, resource: Resource): Promise<{ response: AuthenticationResult, authComplete: Deferred<void, Error> }> {
+		let authCompleteDeferred: Deferred<void, Error>;
+		let authCompletePromise = new Promise<void>((resolve, reject) => authCompleteDeferred = { resolve, reject });
+		let authCodeRequest: AuthorizationCodeRequest;
+
+		if (vscode.env.uiKind === vscode.UIKind.Web) {
+			authCodeRequest = await this.loginWeb(tenant, resource);
+		} else {
+			authCodeRequest = await this.loginDesktop(tenant, authCompletePromise);
+		}
+
+		let result = await this.clientApplication.acquireTokenByCode(authCodeRequest);
+		console.log(result);
+		return {
+			response: result,
+			authComplete: authCompleteDeferred
+		};
+	}
 
 	protected async login(tenant: Tenant, resource: Resource): Promise<{ response: OAuthTokenResponse, authComplete: Deferred<void, Error> }> {
 		let authCompleteDeferred: Deferred<void, Error>;
@@ -81,6 +113,35 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		};
 
 		return this.getToken(tenant, resource, postData);
+	}
+
+	private async loginWebMsal(tenant: Tenant, resource: Resource): Promise<AuthorizationCodeRequest> {
+		const callbackUri = await vscode.env.asExternalUri(vscode.Uri.parse(`${vscode.env.uriScheme}://microsoft.azurecore`));
+		await this.createCryptoValuesMsal();
+		const port = (callbackUri.authority.match(/:([0-9]*)$/) || [])[1] || (callbackUri.scheme === 'https' ? 443 : 80);
+		const state = `${port},${encodeURIComponent(this.pkceCodes.nonce)},${encodeURIComponent(callbackUri.query)}`;
+
+		const loginQuery = {
+			response_type: 'code',
+			response_mode: 'query',
+			client_id: this.clientId,
+			redirect_uri: this.redirectUri,
+			state,
+			prompt: 'select_account',
+			code_challenge_method: this.pkceCodes.challengeMethod,
+			code_challenge: this.pkceCodes.codeChallenge,
+			resource: resource.id
+		};
+
+		const signInUrl = `${this.loginEndpointUrl}${tenant.id}/oauth2/authorize?${qs.stringify(loginQuery)}`;
+		await vscode.env.openExternal(vscode.Uri.parse(signInUrl));
+		const authCode = await this.handleWebResponse(state);
+
+		return {
+			authCode,
+			codeVerifier: this.pkceCodes.codeVerifier,
+			redirectUri: this.redirectUri
+		};
 	}
 
 	private async loginWeb(tenant: Tenant, resource: Resource): Promise<AuthCodeResponse> {
@@ -140,6 +201,63 @@ export class AzureAuthCodeGrant extends AzureAuth {
 			prev[queryString[0]] = queryString[1];
 			return prev;
 		}, {});
+	}
+
+	private async loginDesktopMsal(tenant: Tenant, authCompletePromise: Promise<void>): Promise<AuthorizationCodeRequest> {
+		this.server = new SimpleWebServer();
+		let serverPort: string;
+
+		try {
+			serverPort = await this.server.startup();
+		} catch (ex) {
+			const msg = localize('azure.serverCouldNotStart', 'Server could not start. This could be a permissions error or an incompatibility on your system. You can try enabling device code authentication from settings.');
+			throw new AzureAuthError(msg, 'Server could not start', ex);
+		}
+		await this.createCryptoValuesMsal();
+		const state = `${serverPort},${this.pkceCodes.nonce}`;
+
+		try {
+			let authUrlRequest: AuthorizationUrlRequest;
+			authUrlRequest = {
+				scopes: this.scopes,
+				redirectUri: this.redirectUri,
+				codeChallenge: this.pkceCodes.codeChallenge,
+				codeChallengeMethod: this.pkceCodes.challengeMethod,
+				prompt: 'select_account',
+				state: state
+			};
+			let authCodeRequest: AuthorizationCodeRequest;
+			authCodeRequest = {
+				scopes: this.scopes,
+				redirectUri: this.redirectUri,
+				codeVerifier: this.pkceCodes.codeVerifier,
+				code: ''
+			};
+			let authCodeUrl = await this.clientApplication.getAuthCodeUrl(authUrlRequest);
+
+			// TODO: listen for the auth code that gets returned
+			// 1. set up the listener
+			// 2. open the URL
+			// 3. wait for login?
+
+			console.log(authCodeUrl);
+
+			await vscode.env.openExternal(vscode.Uri.parse(`http://localhost:${serverPort}/signin?nonce=${encodeURIComponent(this.pkceCodes.nonce)}`));
+			const authCode = await this.addServerListeners(this.server, this.pkceCodes.nonce, authCodeUrl, authCompletePromise);
+
+			// const authCode = await this.listenForAuthCode(authCodeUrl);
+			authCodeRequest.code = authCode;
+			console.log(authCodeRequest);
+
+			return authCodeRequest;
+		}
+
+		catch (e) {
+			console.log(e);
+			throw new AzureAuthError('error', 'Error requesting auth code', e);
+		}
+
+
 	}
 
 	private async loginDesktop(tenant: Tenant, resource: Resource, authCompletePromise: Promise<void>): Promise<AuthCodeResponse> {
@@ -262,9 +380,17 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		const nonce = crypto.randomBytes(16).toString('base64');
 		const codeVerifier = this.toBase64UrlEncoding(crypto.randomBytes(32).toString('base64'));
 		const codeChallenge = this.toBase64UrlEncoding(crypto.createHash('sha256').update(codeVerifier).digest('base64'));
+		const challengeMethod = '';
 
 		return {
-			nonce, codeVerifier, codeChallenge
+			nonce, challengeMethod, codeVerifier, codeChallenge
 		};
+	}
+
+	private async createCryptoValuesMsal(): Promise<void> {
+		this.pkceCodes.nonce = this.cryptoProvider.createNewGuid();
+		const { verifier, challenge } = await this.cryptoProvider.generatePkceCodes();
+		this.pkceCodes.codeVerifier = verifier;
+		this.pkceCodes.codeChallenge = challenge;
 	}
 }

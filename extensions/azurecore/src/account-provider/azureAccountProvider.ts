@@ -13,7 +13,7 @@ import {
 	AzureAccount
 } from 'azurecore';
 import { Deferred } from './interfaces';
-
+import { PublicClientApplication } from '@azure/msal-node';
 import { SimpleTokenCache } from './simpleTokenCache';
 import { Logger } from '../utils/Logger';
 import { MultiTenantTokenResponse, Token, AzureAuth } from './auths/azureAuth';
@@ -27,14 +27,17 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 	private readonly authMappings = new Map<AzureAuthType, AzureAuth>();
 	private initComplete!: Deferred<void, Error>;
 	private initCompletePromise: Promise<void> = new Promise<void>((resolve, reject) => this.initComplete = { resolve, reject });
+	public clientApplication: PublicClientApplication;
 
 	constructor(
 		metadata: AzureAccountProviderMetadata,
 		tokenCache: SimpleTokenCache,
 		context: vscode.ExtensionContext,
+		clientApplication: PublicClientApplication,
 		uriEventHandler: vscode.EventEmitter<vscode.Uri>,
 		private readonly forceDeviceCode: boolean = false
 	) {
+		this.clientApplication = clientApplication;
 		vscode.workspace.onDidChangeConfiguration((changeEvent) => {
 			const impact = changeEvent.affectsConfiguration(AzureAccountProvider.CONFIGURATION_SECTION);
 			if (impact === true) {
@@ -96,6 +99,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		const accounts: AzureAccount[] = [];
 		console.log(`Initializing stored accounts ${JSON.stringify(accounts)}`);
 		for (let account of storedAccounts) {
+			//TODO: if adal: do this
 			const azureAuth = this.getAuthMethod(account);
 			if (!azureAuth) {
 				account.isStale = true;
@@ -103,6 +107,8 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 			} else {
 				accounts.push(await azureAuth.refreshAccess(account));
 			}
+			//TODO: if msal: do this
+			accounts.push(account);
 		}
 		this.initComplete.resolve();
 		return accounts;
@@ -121,7 +127,17 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		await this.initCompletePromise;
 		const azureAuth = this.getAuthMethod(account);
 		Logger.pii(`Getting account security token for ${JSON.stringify(account.key)} (tenant ${tenantId}). Auth Method = ${azureAuth.userFriendlyName}`, [], []);
+		//TODO: if adal: do this
 		return azureAuth?.getAccountSecurityToken(account, tenantId, resource);
+		//TODO: if msal: do this
+		let authResult = await azureAuth?.getToken(account.key.accountId, resource);
+		const token: Token = {
+			key: authResult.account.homeAccountId,
+			token: authResult.accessToken,
+			tokenType: authResult.tokenType,
+		};
+
+		return token;
 	}
 
 	private async _getSecurityToken(account: AzureAccount, resource: azdata.AzureResource): Promise<MultiTenantTokenResponse | undefined> {
@@ -176,7 +192,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 
 		return pick.azureAuth.startLogin();
 	}
-
+	//TODO: might need to change refresh logic based on new msal library
 	refresh(account: AzureAccount): Thenable<AzureAccount | azdata.PromptFailedResult> {
 		return this._refresh(account);
 	}

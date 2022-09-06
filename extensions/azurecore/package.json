@@ -124,6 +124,15 @@
               "Verbose",
               "All"
             ]
+          },
+          "azure.aadLibrary": {
+            "type": "string",
+            "description": "%config.aadLibrary%",
+            "default": "ADAL",
+            "enum": [
+              "ADAL",
+              "MSAL"
+            ]
           }
         }
       }

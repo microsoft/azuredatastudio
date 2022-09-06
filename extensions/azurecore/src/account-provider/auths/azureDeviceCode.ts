@@ -21,6 +21,7 @@ import {
 	Resource
 } from 'azurecore';
 import { Deferred } from '../interfaces';
+import { AuthenticationResult, DeviceCodeRequest, PublicClientApplication } from '@azure/msal-node';
 import { SimpleTokenCache } from '../simpleTokenCache';
 import { Logger } from '../../utils/Logger';
 const localize = nls.loadMessageBundle();
@@ -50,11 +51,34 @@ export class AzureDeviceCode extends AzureAuth {
 		tokenCache: SimpleTokenCache,
 		context: vscode.ExtensionContext,
 		uriEventEmitter: vscode.EventEmitter<vscode.Uri>,
+		clientApplication: PublicClientApplication
 	) {
-		super(metadata, tokenCache, context, uriEventEmitter, AzureAuthType.DeviceCode, AzureDeviceCode.USER_FRIENDLY_NAME);
+		super(metadata, tokenCache, context, clientApplication, uriEventEmitter, AzureAuthType.DeviceCode, AzureDeviceCode.USER_FRIENDLY_NAME);
 		this.pageTitle = localize('addAccount', "Add {0} account", this.metadata.displayName);
 
 	}
+
+	protected async loginMsal(tenant: Tenant, resource: Resource): Promise<{ response: AuthenticationResult, authComplete: Deferred<void, Error> }> {
+		let authCompleteDeferred: Deferred<void, Error>;
+		let authCompletePromise = new Promise<void>((resolve, reject) => authCompleteDeferred = { resolve, reject });
+
+		//TODO: construct device code callback
+		const deviceCodeRequest: DeviceCodeRequest = {
+			scopes: this.scopes,
+			deviceCodeCallback: async (response) => {
+				await azdata.accounts.beginAutoOAuthDeviceCode(this.metadata.id, this.pageTitle, response.message, response.userCode, response.verificationUri);
+			}
+			// deviceCodeCallback code response message should be shown to the user
+		};
+		const authResult = await this.clientApplication.acquireTokenByDeviceCode(deviceCodeRequest);
+		this.closeOnceComplete(authCompletePromise).catch(Logger.error);
+
+		return {
+			response: authResult,
+			authComplete: authCompleteDeferred
+		};
+	}
+
 	protected async login(tenant: Tenant, resource: Resource): Promise<{ response: OAuthTokenResponse, authComplete: Deferred<void, Error> }> {
 		let authCompleteDeferred: Deferred<void, Error>;
 		let authCompletePromise = new Promise<void>((resolve, reject) => authCompleteDeferred = { resolve, reject });
