@@ -880,7 +880,6 @@ export class NativeHostMainService extends Disposable implements INativeHostMain
 				} catch (e) {
 					error = e;
 					this.logService.warn('Error attempting to set a password: ', e);
-					this.logService.warn(password);
 					attempts++;
 					await new Promise(resolve => setTimeout(resolve, 200));
 				}
@@ -895,26 +894,15 @@ export class NativeHostMainService extends Disposable implements INativeHostMain
 			let chunk = 0;
 			let hasNextChunk = true;
 			while (hasNextChunk) {
-				let passwordChunk = password.substring(index, index + NativeHostMainService.PASSWORD_CHUNK_SIZE);
-				let numEscapeCharacters = 0;
-				for (let c of passwordChunk) {
-					if (c === '\\' || c === '"') {
-						// numEscapeCharacters += 1;
-					}
-				}
-				if (passwordChunk.length + numEscapeCharacters > NativeHostMainService.PASSWORD_CHUNK_SIZE) {
-					passwordChunk = password.substring(index, index + NativeHostMainService.PASSWORD_CHUNK_SIZE - numEscapeCharacters);
-					index += (NativeHostMainService.PASSWORD_CHUNK_SIZE - numEscapeCharacters);
-				} else {
-					index += NativeHostMainService.PASSWORD_CHUNK_SIZE;
-				}
-				// const originalIndex = index;
+				const passwordChunk = password.substring(index, index + NativeHostMainService.PASSWORD_CHUNK_SIZE);
+				index += NativeHostMainService.PASSWORD_CHUNK_SIZE;
 				hasNextChunk = password.length - index > 0;
 
-				let content: ChunkedPassword = {
+				const content: ChunkedPassword = {
 					content: passwordChunk,
 					hasNextChunk: hasNextChunk
 				};
+
 				await setPasswordWithRetry(service, chunk ? `${account}-${chunk}` : account, JSON.stringify(content));
 				chunk++;
 			}

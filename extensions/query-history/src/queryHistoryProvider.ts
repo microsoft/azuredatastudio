@@ -31,8 +31,8 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 	 */
 	private queryTextMappings: Map<string, string> = new Map<string, string>();
 
-	constructor() {
-		void this._context.secrets.get(STORAGE_KEY).then(value => {
+	constructor(context: vscode.ExtensionContext) {
+		void context.secrets.get(STORAGE_KEY).then(value => {
 			if (value) {
 				this._queryHistoryItems = JSON.parse(value);
 				this._onDidChangeTreeData.fire(undefined);
@@ -52,7 +52,7 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 						}
 						this.queryTextMappings.delete(document.uri);
 						await this.storeHistory();
-						this._queryHistoryItems.unshift({ queryText, connectionProfile, timestamp: new Date(), isSuccess });
+						this._queryHistoryItems.unshift({ queryText, connectionProfile, timestamp: new Date().toLocaleString(), isSuccess });
 						this._onDidChangeTreeData.fire(undefined);
 					} else if (type === 'queryStart') {
 						// We get the text and save it on queryStart because we want to get the query text immediately when
@@ -98,7 +98,7 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 		const treeItem = new vscode.TreeItem(removeNewLines(item.queryText), vscode.TreeItemCollapsibleState.None);
 		treeItem.iconPath = item.isSuccess ? successIcon : failedIcon;
 		treeItem.tooltip = item.queryText;
-		treeItem.description = item.connectionProfile ? `${item.connectionProfile.serverName}|${item.connectionProfile.databaseName} ${item.timestamp.toLocaleString()}` : item.timestamp.toLocaleString();
+		treeItem.description = item.connectionProfile ? `${item.connectionProfile.serverName}|${item.connectionProfile.databaseName} ${item.timestamp}` : item.timestamp;
 		treeItem.command = { title: '', command: ITEM_SELECTED_COMMAND_ID, arguments: [item] };
 		return treeItem;
 	}
@@ -118,7 +118,7 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 		this._persistHistory = configSection.get(PERSIST_HISTORY_CONFIG_SECTION, DEFAULT_PERSIST_HISTORY);
 		if (!this._persistHistory) {
 			// If we're no longer persisting the history then clean out our storage secret
-			await this._context.secrets.delete(STORAGE_KEY);
+			// await this._context.secrets.delete(STORAGE_KEY);
 		} else {
 			await this.storeHistory();
 		}
@@ -138,7 +138,7 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 		if (this._persistHistory) {
 			// Secret storage is used because the user text could have sensitive values in it in addition to us storing
 			// the connection profile which may have a password set
-			return this._context.secrets.store(STORAGE_KEY, JSON.stringify(this._queryHistoryItems));
+			// return this._context.secrets.store(STORAGE_KEY, JSON.stringify(this._queryHistoryItems));
 		}
 	}
 }
