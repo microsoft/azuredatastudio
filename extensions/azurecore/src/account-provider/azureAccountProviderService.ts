@@ -41,8 +41,10 @@ export class AzureAccountProviderService implements vscode.Disposable {
 	private _event: events.EventEmitter = new events.EventEmitter();
 	private readonly _uriEventHandler: UriEventHandler = new UriEventHandler();
 	public clientApplication: PublicClientApplication;
+	public authLibrary: string;
 
 	constructor(private _context: vscode.ExtensionContext, private _userStoragePath: string) {
+		this.authLibrary = vscode.workspace.getConfiguration('azure').get('aadLibrary');
 		this._disposables.push(vscode.window.registerUriHandler(this._uriEventHandler));
 	}
 

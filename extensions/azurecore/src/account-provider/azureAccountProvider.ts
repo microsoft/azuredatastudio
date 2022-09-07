@@ -28,6 +28,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 	private initComplete!: Deferred<void, Error>;
 	private initCompletePromise: Promise<void> = new Promise<void>((resolve, reject) => this.initComplete = { resolve, reject });
 	public clientApplication: PublicClientApplication;
+	public authLibrary: string;
 
 	constructor(
 		metadata: AzureAccountProviderMetadata,
@@ -37,6 +38,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		uriEventHandler: vscode.EventEmitter<vscode.Uri>,
 		private readonly forceDeviceCode: boolean = false
 	) {
+		this.authLibrary = vscode.workspace.getConfiguration('azure').get('aadLibrary');
 		this.clientApplication = clientApplication;
 		vscode.workspace.onDidChangeConfiguration((changeEvent) => {
 			const impact = changeEvent.affectsConfiguration(AzureAccountProvider.CONFIGURATION_SECTION);
@@ -99,16 +101,19 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		const accounts: AzureAccount[] = [];
 		console.log(`Initializing stored accounts ${JSON.stringify(accounts)}`);
 		for (let account of storedAccounts) {
-			//TODO: if adal: do this
-			const azureAuth = this.getAuthMethod(account);
-			if (!azureAuth) {
-				account.isStale = true;
-				accounts.push(account);
-			} else {
-				accounts.push(await azureAuth.refreshAccess(account));
+			if (this.authLibrary === 'ADAL') {
+				const azureAuth = this.getAuthMethod(account);
+				if (!azureAuth) {
+					account.isStale = true;
+					accounts.push(account);
+				} else {
+					accounts.push(await azureAuth.refreshAccess(account));
+				}
 			}
-			//TODO: if msal: do this
-			accounts.push(account);
+			else if (this.authLibrary === 'MSAL') {
+				//TODO: if msal: do this
+				accounts.push(account);
+			}
 		}
 		this.initComplete.resolve();
 		return accounts;
@@ -127,17 +132,18 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		await this.initCompletePromise;
 		const azureAuth = this.getAuthMethod(account);
 		Logger.pii(`Getting account security token for ${JSON.stringify(account.key)} (tenant ${tenantId}). Auth Method = ${azureAuth.userFriendlyName}`, [], []);
-		//TODO: if adal: do this
-		return azureAuth?.getAccountSecurityToken(account, tenantId, resource);
-		//TODO: if msal: do this
-		let authResult = await azureAuth?.getToken(account.key.accountId, resource);
-		const token: Token = {
-			key: authResult.account.homeAccountId,
-			token: authResult.accessToken,
-			tokenType: authResult.tokenType,
-		};
+		if (this.authLibrary === 'ADAL') {
+			return azureAuth?.getAccountSecurityToken(account, tenantId, resource);
+		} else if (this.authLibrary === 'MSAL') {
+			let authResult = await azureAuth?.getTokenMsal(account.key.accountId, resource);
+			const token: Token = {
+				key: authResult.account.homeAccountId,
+				token: authResult.accessToken,
+				tokenType: authResult.tokenType,
+			};
 
-		return token;
+			return token;
+		}
 	}
 
 	private async _getSecurityToken(account: AzureAccount, resource: azdata.AzureResource): Promise<MultiTenantTokenResponse | undefined> {
