@@ -43,6 +43,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	protected readonly scopesString: string;
 	protected readonly clientId: string;
 	protected readonly resources: Resource[];
+	public readonly authLibrary: string;
 
 
 	constructor(
@@ -54,6 +55,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		protected readonly authType: AzureAuthType,
 		public readonly userFriendlyName: string
 	) {
+		this.authLibrary = vscode.workspace.getConfiguration('azure').get('aadLibrary');
 		this.clientApplication = clientApplication;
 		this.loginEndpointUrl = this.metadata.settings.host;
 		this.commonTenant = {
@@ -96,25 +98,39 @@ export abstract class AzureAuth implements vscode.Disposable {
 		let loginComplete: Deferred<void, Error>;
 		try {
 			Logger.verbose('Starting login');
-			const result = await this.login(this.commonTenant, this.metadata.settings.microsoftResource);
-			loginComplete = result.authComplete;
-			if (!result?.response) {
-				Logger.error('Authentication failed');
-				return {
-					canceled: false
+			if (this.authLibrary === 'ADAL') {
+				const result = await this.login(this.commonTenant, this.metadata.settings.microsoftResource);
+				loginComplete = result.authComplete;
+				if (!result?.response) {
+					Logger.error('Authentication failed');
+					return {
+						canceled: false
+					};
+				}
+				const account = await this.hydrateAccount(result.response.accessToken, result.response.tokenClaims);
+				loginComplete?.resolve();
+				return account;
+			} else {
+				const result = await this.loginMsal(this.commonTenant, this.metadata.settings.microsoftResource);
+				loginComplete = result.authComplete;
+				if (!result?.response) {
+					Logger.error('Authentication failed');
+					return {
+						canceled: false
+					};
+				}
+				const token: Token = {
+					token: result.response.accessToken,
+					key: result.response.account.homeAccountId,
+					tokenType: result.response.tokenType
 				};
+				// build token claims object
+				const tokenClaims = <TokenClaims>result.response.idTokenClaims;
+				const account = await this.hydrateAccount(token, tokenClaims);
+				loginComplete?.resolve();
+				return account;
 			}
-			const account = await this.hydrateAccount(result.response.accessToken, result.response.tokenClaims);
-			const token: Token = {
-				token: result.response.accessToken,
-				key: result.response.account.homeAccountId,
-				tokenType: result.response.tokenType
-			};
-			// build token claims object
-			const tokenClaims = <TokenClaims>result.response.idTokenClaims;
-			const account = await this.hydrateAccount(token, tokenClaims);
-			loginComplete?.resolve();
-			return account;
+
 		} catch (ex) {
 			Logger.error('Login failed');
 			if (ex instanceof AzureAuthError) {
@@ -255,6 +271,8 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 
 	protected abstract login(tenant: Tenant, resource: Resource): Promise<{ response: OAuthTokenResponse, authComplete: Deferred<void, Error> }>;
+
+	protected abstract loginMsal(tenant: Tenant, resource: Resource): Promise<{ response: AuthenticationResult, authComplete: Deferred<void, Error> }>;
 
 	/**
 	 * Refreshes a token, if a refreshToken is passed in then we use that. If it is not passed in then we will prompt the user for consent.

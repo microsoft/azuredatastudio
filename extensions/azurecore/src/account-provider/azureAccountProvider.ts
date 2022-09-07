@@ -110,7 +110,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 					accounts.push(await azureAuth.refreshAccess(account));
 				}
 			}
-			else if (this.authLibrary === 'MSAL') {
+			else {
 				//TODO: if msal: do this
 				accounts.push(account);
 			}
@@ -134,7 +134,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		Logger.pii(`Getting account security token for ${JSON.stringify(account.key)} (tenant ${tenantId}). Auth Method = ${azureAuth.userFriendlyName}`, [], []);
 		if (this.authLibrary === 'ADAL') {
 			return azureAuth?.getAccountSecurityToken(account, tenantId, resource);
-		} else if (this.authLibrary === 'MSAL') {
+		} else {
 			let authResult = await azureAuth?.getTokenMsal(account.key.accountId, resource);
 			const token: Token = {
 				key: authResult.account.homeAccountId,

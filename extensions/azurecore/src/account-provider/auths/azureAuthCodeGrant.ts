@@ -49,33 +49,13 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		uriEventEmitter: vscode.EventEmitter<vscode.Uri>,
 		clientApplication: PublicClientApplication
 	) {
-		super(metadata, context, clientApplication, uriEventEmitter, AzureAuthType.AuthCodeGrant, AzureAuthCodeGrant.USER_FRIENDLY_NAME);
+		super(metadata, tokenCache, context, clientApplication, uriEventEmitter, AzureAuthType.AuthCodeGrant, AzureAuthCodeGrant.USER_FRIENDLY_NAME);
 		this.cryptoProvider = new CryptoProvider();
 		this.pkceCodes = {
 			nonce: '',
 			challengeMethod: 'S256', // Use SHA256 Algorithm
 			codeVerifier: '', // Generate a code verifier for the Auth Code Request first
 			codeChallenge: '', // Generate a code challenge from the previously generated code verifier
-		};
-	}
-
-
-	protected async loginMsal(tenant: Tenant, resource: Resource): Promise<{ response: AuthenticationResult, authComplete: Deferred<void, Error> }> {
-		let authCompleteDeferred: Deferred<void, Error>;
-		let authCompletePromise = new Promise<void>((resolve, reject) => authCompleteDeferred = { resolve, reject });
-		let authCodeRequest: AuthorizationCodeRequest;
-
-		if (vscode.env.uiKind === vscode.UIKind.Web) {
-			authCodeRequest = await this.loginWeb(tenant, resource);
-		} else {
-			authCodeRequest = await this.loginDesktop(tenant, authCompletePromise);
-		}
-
-		let result = await this.clientApplication.acquireTokenByCode(authCodeRequest);
-		console.log(result);
-		return {
-			response: result,
-			authComplete: authCompleteDeferred
 		};
 	}
 
@@ -92,6 +72,25 @@ export class AzureAuthCodeGrant extends AzureAuth {
 
 		return {
 			response: await this.getTokenWithAuthorizationCode(tenant, resource, authResponse),
+			authComplete: authCompleteDeferred
+		};
+	}
+
+	protected async loginMsal(tenant: Tenant, resource: Resource): Promise<{ response: AuthenticationResult, authComplete: Deferred<void, Error> }> {
+		let authCompleteDeferred: Deferred<void, Error>;
+		let authCompletePromise = new Promise<void>((resolve, reject) => authCompleteDeferred = { resolve, reject });
+		let authCodeRequest: AuthorizationCodeRequest;
+
+		if (vscode.env.uiKind === vscode.UIKind.Web) {
+			authCodeRequest = await this.loginWebMsal(tenant, resource);
+		} else {
+			authCodeRequest = await this.loginDesktopMsal(tenant, authCompletePromise);
+		}
+
+		let result = await this.clientApplication.acquireTokenByCode(authCodeRequest);
+		console.log(result);
+		return {
+			response: result,
 			authComplete: authCompleteDeferred
 		};
 	}
