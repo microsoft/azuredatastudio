@@ -67,9 +67,9 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		const deviceCodeMethod: boolean = configuration.get<boolean>('deviceCode', false);
 
 		if (codeGrantMethod === true && !this.forceDeviceCode) {
-			this.authMappings.set(AzureAuthType.AuthCodeGrant, new AzureAuthCodeGrant(metadata, tokenCache, context, uriEventHandler));
+			this.authMappings.set(AzureAuthType.AuthCodeGrant, new AzureAuthCodeGrant(metadata, tokenCache, context, uriEventHandler, this.clientApplication));
 		} else if (deviceCodeMethod === true || this.forceDeviceCode) {
-			this.authMappings.set(AzureAuthType.DeviceCode, new AzureDeviceCode(metadata, tokenCache, context, uriEventHandler));
+			this.authMappings.set(AzureAuthType.DeviceCode, new AzureDeviceCode(metadata, tokenCache, context, uriEventHandler, this.clientApplication));
 		} else {
 			console.error('No authentication methods selected');
 		}

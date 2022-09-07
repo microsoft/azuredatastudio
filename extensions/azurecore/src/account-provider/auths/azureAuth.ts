@@ -188,10 +188,14 @@ export abstract class AzureAuth implements vscode.Disposable {
 	}
 
 	public async hydrateAccount(token: Token | AccessToken, tokenClaims: TokenClaims): Promise<AzureAccount> {
-		const tenants = await this.getTenants({ ...token });
-		//TODO: separate between MSAL/ADAL here
-		const tenants = await this.getTenants(token.token);
-		const account = this.createAccount(tokenClaims, token.key, tenants);
+		let account: azdata.Account;
+		if (this.authLibrary === 'ADAL') {
+			const tenants = await this.getTenants({ ...token });
+			account = this.createAccount(tokenClaims, token.key, tenants);
+		} else {
+			const tenants = await this.getTenantsMsal(token.token);
+			account = this.createAccount(tokenClaims, token.key, tenants);
+		}
 		return account;
 	}
 
