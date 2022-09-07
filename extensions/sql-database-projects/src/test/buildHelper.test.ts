@@ -8,6 +8,7 @@ import * as os from 'os';
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { BuildHelper } from '../tools/buildHelper';
+import { TestContext, createContext } from './testContext';
 
 describe('BuildHelper: Build Helper tests', function (): void {
 
@@ -38,8 +39,9 @@ describe('BuildHelper: Build Helper tests', function (): void {
 	});
 
 	it('Should get correct build folder', async function (): Promise<void> {
+		const testContext: TestContext = createContext();
 		const buildHelper = new BuildHelper();
-		await buildHelper.createBuildDirFolder();
+		await buildHelper.createBuildDirFolder(testContext.outputChannel);
 
 		// get expected path for build
 		let expectedPath = vscode.extensions.getExtension('Microsoft.sql-database-projects')?.extensionPath ?? 'EmptyPath';
@@ -47,5 +49,4 @@ describe('BuildHelper: Build Helper tests', function (): void {
 		should(buildHelper.extensionBuildDirPath).equal(expectedPath);
 	});
 });
-
 

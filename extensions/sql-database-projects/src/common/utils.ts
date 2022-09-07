@@ -689,3 +689,25 @@ export function throwIfNotConnected(connectionResult: azdataType.ConnectionResul
 		throw new Error(`${connectionResult.errorMessage} (${connectionResult.errorCode})`);
 	}
 }
+
+/**
+ * Checks whether or not the provided file contains a create table statement
+ * @param fullPath full path to file to check
+ * @param projectTargetVersion target version of sql project containing this file
+ * @returns true if file includes a create table statement, false if it doesn't
+ */
+export async function fileContainsCreateTableStatement(fullPath: string, projectTargetVersion: string): Promise<boolean> {
+	let containsCreateTableStatement = false;
+
+	if (getAzdataApi() && await exists(fullPath)) {
+		const dacFxService = await getDacFxService() as mssql.IDacFxService;
+		try {
+			const result = await dacFxService.parseTSqlScript(fullPath, projectTargetVersion);
+			containsCreateTableStatement = result.containsCreateTableStatement;
+		} catch (e) {
+			console.error(getErrorMessage(e));
+		}
+	}
+
+	return containsCreateTableStatement;
+}

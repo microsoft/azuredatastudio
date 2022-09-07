@@ -21,6 +21,7 @@ export class DesignerTableAction extends Action {
 	protected _table: Table<Slick.SlickData>;
 
 	constructor(
+		private _designer: Designer,
 		id: string,
 		label: string,
 		icon: string,
@@ -43,6 +44,10 @@ export class DesignerTableAction extends Action {
 			}
 		}
 	}
+
+	public override async run(context: DesignerTableActionContext): Promise<void> {
+		await this._designer.submitPendingChanges();
+	}
 }
 
 export class AddRowAction extends DesignerTableAction {
@@ -54,12 +59,13 @@ export class AddRowAction extends DesignerTableAction {
 		private designer: Designer,
 		tableProperties: DesignerTableProperties,
 	) {
-		super(AddRowAction.ID, tableProperties.labelForAddNewButton || AddRowAction.LABEL, AddRowAction.ICON, false);
+		super(designer, AddRowAction.ID, tableProperties.labelForAddNewButton || AddRowAction.LABEL, AddRowAction.ICON, false);
 		this.designer = designer;
 		this._tooltip = localize('designer.newRowButtonAriaLabel', "Add new row to '{0}' table", tableProperties.ariaLabel);
 	}
 
 	public override async run(context: DesignerTableActionContext): Promise<void> {
+		await super.run(context);
 		const lastIndex = context.table.getData().getItems().length;
 		return new Promise((resolve) => {
 			this.designer.handleEdit({
@@ -78,13 +84,14 @@ export class MoveRowUpAction extends DesignerTableAction {
 	public static LABEL = localize('designer.moveRowUpAction', 'Move Up');
 
 	constructor(private designer: Designer) {
-		super(MoveRowUpAction.ID, MoveRowUpAction.LABEL, MoveRowUpAction.ICON, true);
+		super(designer, MoveRowUpAction.ID, MoveRowUpAction.LABEL, MoveRowUpAction.ICON, true);
 		this.designer = designer;
 		this._tooltip = localize('designer.moveRowUpButtonAriaLabel', "Move selected row up one position");
 		this.enabled = false;
 	}
 
 	public override async run(context: DesignerTableActionContext): Promise<void> {
+		await super.run(context);
 		let rowIndex = context.selectedRow ?? context.table.getSelectedRows()[0];
 		if (rowIndex - 1 < 0) {
 			return;
@@ -116,13 +123,14 @@ export class MoveRowDownAction extends DesignerTableAction {
 	public static LABEL = localize('designer.moveRowDownAction', 'Move Down');
 
 	constructor(private designer: Designer) {
-		super(MoveRowDownAction.ID, MoveRowDownAction.LABEL, MoveRowDownAction.ICON, true);
+		super(designer, MoveRowDownAction.ID, MoveRowDownAction.LABEL, MoveRowDownAction.ICON, true);
 		this.designer = designer;
 		this._tooltip = localize('designer.moveRowDownButtonAriaLabel', "Move selected row down one position");
 		this.enabled = false;
 	}
 
 	public override async run(context: DesignerTableActionContext): Promise<void> {
+		await super.run(context);
 		let rowIndex = context.selectedRow ?? context.table.getSelectedRows()[0];
 		const tableData = context.table.getData().getItems();
 		if (rowIndex + 1 >= tableData.length) {

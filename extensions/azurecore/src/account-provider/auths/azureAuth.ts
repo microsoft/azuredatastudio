@@ -545,7 +545,7 @@ export interface RefreshToken extends AccountKey {
 }
 
 export interface MultiTenantTokenResponse {
-	[tenantId: string]: Token
+	[tenantId: string]: Token | undefined;
 }
 
 export interface Token extends AccountKey {

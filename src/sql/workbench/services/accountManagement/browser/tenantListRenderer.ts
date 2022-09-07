@@ -47,7 +47,7 @@ export class TenantPickerListRenderer implements IListRenderer<Tenant, TenantPic
 	}
 
 	public renderElement(tenant: Tenant, index: number, templateData: PickerListTemplate): void {
-		templateData.displayName.innerText = tenant.displayName;
+		templateData.displayName.innerText = tenant.displayName.concat(' (', tenant.id, ')');
 	}
 
 	public disposeTemplate(template: PickerListTemplate): void {

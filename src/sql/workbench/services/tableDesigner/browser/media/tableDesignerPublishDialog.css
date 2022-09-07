@@ -6,6 +6,12 @@
 .table-designer-publish-dialog {
 	height: 350px;
 	padding: 10px;
+	display: flex;
+	flex-direction: column;
+}
+
+.table-designer-publish-dialog .report-container {
+	flex: 1 1 auto;
 	overflow: scroll;
 	user-select: text;
 }

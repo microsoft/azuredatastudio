@@ -333,8 +333,6 @@ export class GetAzureRecommendationDialog {
 				const serverName = (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
 				const errors: string[] = [];
 				try {
-					void vscode.window.showInformationMessage(constants.AZURE_RECOMMENDATION_OPEN_EXISTING_POPUP);
-
 					await this.skuRecommendationPage.startCardLoading();
 					await this.migrationStateModel.getSkuRecommendations();
 
