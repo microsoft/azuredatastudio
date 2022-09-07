@@ -775,7 +775,7 @@ export class ActualNumberOfRowsForAllExecutionsAction extends Action {
 
 export class NumberOfRowsReadAction extends Action {
 	public static ID = 'ep.numberOfRowsReadAction';
-	public static LABEL = localize('executionPlanNumberOfRowsRead', 'Number Of Rows Read');
+	public static LABEL = localize('executionPlanNumberOfRowsRead', 'Number of Rows Read');
 
 	constructor(private source: ExecutionPlanActionSource,
 		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService) {
