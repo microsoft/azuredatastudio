@@ -1294,6 +1294,10 @@ declare module 'azdata' {
 			 */
 			elapsedTimeInMs: number;
 			/**
+			 * CPU time taken by the node operation in milliseconds
+			 */
+			elapsedCpuTimeInMs: number;
+			/**
 			 * Node properties to be shown in the tooltip
 			 */
 			properties: ExecutionPlanGraphElementProperty[];
@@ -1333,6 +1337,10 @@ declare module 'azdata' {
 			 * Cost string for the node
 			 */
 			costDisplayString: string;
+			/**
+			 * Row metrics for the node
+			 */
+			rowMetrics: Dictionary;
 		}
 
 		export interface ExecutionPlanBadge {
@@ -1522,6 +1530,13 @@ declare module 'azdata' {
 			 * Cell value for the top operation data item
 			 */
 			displayValue: string | number | boolean;
+		}
+
+		export interface Dictionary {
+			/**
+			 * Dictionary containing rows read metrics
+			 */
+			[key: string]: string | undefined;
 		}
 	}
 

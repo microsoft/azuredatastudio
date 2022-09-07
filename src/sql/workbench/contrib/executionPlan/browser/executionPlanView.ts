@@ -664,6 +664,9 @@ export class ActualElapsedCpuTimeAction extends Action {
 
 		// pass delegate here
 		context.executionPlanDiagram.clearExpensiveOperatorHighlighting();
+		context.executionPlanDiagram.highlightExpensiveOperator(cell => {
+			return cell.elapsedCpuTimeInMs;
+		});
 	}
 }
 
@@ -751,12 +754,28 @@ export class ActualNumberOfRowsForAllExecutionsAction extends Action {
 
 		// Pass delegate here
 		context.executionPlanDiagram.clearExpensiveOperatorHighlighting();
+		context.executionPlanDiagram.highlightExpensiveOperator(cell => {
+			if (!cell.rowMetrics) {
+				return undefined;
+			}
+
+			let result = Number(cell.rowMetrics['actualRows']);
+			if (!result) {
+				result = Number(cell.rowMetrics['estimateRowsAllExecs']);
+			}
+
+			if (isNaN(result)) {
+				return undefined;
+			}
+
+			return result;
+		});
 	}
 }
 
 export class NumberOfRowsReadAction extends Action {
 	public static ID = 'ep.numberOfRowsReadAction';
-	public static LABEL = localize('executionPlanNumberOfRowsRead', 'NumberOfRowsRead');
+	public static LABEL = localize('executionPlanNumberOfRowsRead', 'Number Of Rows Read');
 
 	constructor(private source: ExecutionPlanActionSource,
 		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService) {
@@ -778,5 +797,21 @@ export class NumberOfRowsReadAction extends Action {
 
 		// Pass delegate here
 		context.executionPlanDiagram.clearExpensiveOperatorHighlighting();
+		context.executionPlanDiagram.highlightExpensiveOperator(cell => {
+			if (!cell.rowMetrics) {
+				return undefined;
+			}
+
+			let result = Number(cell.rowMetrics['actualRowsRead']);
+			if (!result) {
+				result = Number(cell.rowMetrics['estimatedRowsRead']);
+			}
+
+			if (isNaN(result)) {
+				return undefined;
+			}
+
+			return result;
+		});
 	}
 }

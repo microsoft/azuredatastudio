@@ -347,6 +347,14 @@ export class AzdataGraphView {
 			diagramNode.elapsedTimeInMs = node.elapsedTimeInMs;
 		}
 
+		if (node.elapsedCpuTimeInMs) {
+			diagramNode.elapsedCpuTimeInMs = node.elapsedCpuTimeInMs;
+		}
+
+		if (node.rowMetrics) {
+			diagramNode.rowMetrics = node.rowMetrics;
+		}
+
 		return diagramNode;
 	}
 
@@ -507,9 +515,17 @@ export interface AzDataGraphCell {
 	 */
 	relativeCost: number;
 	/**
-	 * Time take by the node operation in milliseconds
+	 * Time taken by the node operation in milliseconds
 	 */
 	elapsedTimeInMs: number;
+	/**
+	 * CPU Time taken by the node operation in milliseconds
+	 */
+	elapsedCpuTimeInMs: number;
+	/**
+	 * Row metrics for the node
+	 */
+	rowMetrics: azdata.executionPlan.Dictionary;
 }
 
 export interface AzDataGraphNodeBadge {
