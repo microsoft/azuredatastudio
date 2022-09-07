@@ -93,7 +93,7 @@ const publicAzureSettings: ProviderSettings = {
 				endpoint: 'https://analysis.windows.net/powerbi/api',
 				azureResourceId: AzureResource.PowerBi
 			},
-			redirectUri: 'http://localhost/redirect/',
+			redirectUri: 'http://localhost',
 			scopes: [
 				'openid', 'email', 'profile', 'offline_access',
 				'https://management.azure.com/user_impersonation',
@@ -158,7 +158,7 @@ const usGovAzureSettings: ProviderSettings = {
 				endpoint: 'https://analysis.windows.net/powerbi/api',
 				azureResourceId: AzureResource.PowerBi
 			},
-			redirectUri: 'http://localhost/redirect/',
+			redirectUri: 'http://localhost',
 			scopes: [
 				'openid', 'email', 'profile', 'offline_access',
 				'https://management.usgovcloudapi.net/user_impersonation'
@@ -217,7 +217,7 @@ const usNatAzureSettings: ProviderSettings = {
 				endpointSuffix: '.core.eaglex.ic.gov',
 				azureResourceId: AzureResource.AzureStorage
 			},
-			redirectUri: 'http://localhost/redirect/',
+			redirectUri: 'http://localhost',
 			scopes: [
 				'openid', 'email', 'profile', 'offline_access',
 				'https://management.core.eaglex.ic.gov/user_impersonation'
@@ -267,7 +267,7 @@ const germanyAzureSettings: ProviderSettings = {
 				endpoint: 'https://analysis.windows.net/powerbi/api',
 				azureResourceId: AzureResource.PowerBi
 			},
-			redirectUri: 'http://localhost/redirect/',
+			redirectUri: 'http://localhost',
 			scopes: [
 				'openid', 'email', 'profile', 'offline_access',
 				'https://management.microsoftazure.de/user_impersonation'
@@ -331,7 +331,7 @@ const chinaAzureSettings: ProviderSettings = {
 				endpoint: 'https://analysis.windows.net/powerbi/api',
 				azureResourceId: AzureResource.PowerBi
 			},
-			redirectUri: 'http://localhost/redirect/',
+			redirectUri: 'http://localhost',
 			scopes: [
 				'openid', 'email', 'profile', 'offline_access',
 				'https://management.chinacloudapi.cn/user_impersonation'
