@@ -125,9 +125,9 @@
               "All"
             ]
           },
-          "azure.aadLibrary": {
+          "azure.authenticationLibrary": {
             "type": "string",
-            "description": "%config.aadLibrary%",
+            "description": "%config.authenticationLibrary%",
             "default": "ADAL",
             "enum": [
               "ADAL",

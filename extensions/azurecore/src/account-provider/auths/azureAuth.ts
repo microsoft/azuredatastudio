@@ -43,7 +43,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	protected readonly scopesString: string;
 	protected readonly clientId: string;
 	protected readonly resources: Resource[];
-	public readonly authLibrary: string;
+	public authLibrary: string;
 
 
 	constructor(
@@ -55,8 +55,13 @@ export abstract class AzureAuth implements vscode.Disposable {
 		protected readonly authType: AzureAuthType,
 		public readonly userFriendlyName: string
 	) {
-		this.authLibrary = vscode.workspace.getConfiguration('azure').get('aadLibrary');
-		this.clientApplication = clientApplication;
+		this.authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
+		vscode.workspace.onDidChangeConfiguration((changeEvent) => {
+			const impactLibrary = changeEvent.affectsConfiguration('azure.authenticationLibrary');
+			if (impactLibrary === true) {
+				this.authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
+			}
+		});
 		this.loginEndpointUrl = this.metadata.settings.host;
 		this.commonTenant = {
 			id: 'common',
