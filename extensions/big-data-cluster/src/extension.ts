@@ -30,6 +30,15 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	IconPathHelper.setExtensionContext(extensionContext);
 	await vscode.commands.executeCommand('setContext', 'bdc.loaded', false);
 	const treeDataProvider = new ControllerTreeDataProvider(extensionContext.globalState);
+	let controllers: any[] = extensionContext.globalState.get('controllers', []);
+	if (controllers.length > 0) {
+		const deprecationNoticeKey = 'bdc.deprecationNoticeShown';
+		const deprecationNoticeShown = extensionContext.globalState.get(deprecationNoticeKey, false);
+		if (!deprecationNoticeShown) {
+			void vscode.window.showWarningMessage(localize('bdc.deprecationWarning', 'The Big Data Cluster add-on is being retired and Azure Data Studio functionality for it will be removed in an upcoming release. Read more about this and support going forward [here](https://go.microsoft.com/fwlink/?linkid=2207340).'));
+			void extensionContext.globalState.update(deprecationNoticeKey, true);
+		}
+	}
 	vscode.window.registerTreeDataProvider('sqlBigDataCluster', treeDataProvider);
 	registerCommands(extensionContext, treeDataProvider);
 	return {
