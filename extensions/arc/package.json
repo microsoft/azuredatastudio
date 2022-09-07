@@ -1425,6 +1425,13 @@
                           "options": ["NodePort", "LoadBalancer"],
                           "defaultValue": "NodePort",
                           "enabled": true
+                        },
+                        {
+                          "type": "checkbox",
+                          "label": "%arc.postgres.server.dev.use.label%",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_DEV_USE",
+                          "description": "%arc.postgres.server.dev.use.description%",
+                          "defaultValue": false
                         }
                       ]
                     },
