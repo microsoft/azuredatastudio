@@ -216,6 +216,7 @@
 	"arc.postgres.server.memory.limit.description": "The memory limit of the Postgres instance on the coordinator node in GB.",
 	"arc.postgres.server.username": "Username",
 	"arc.postgres.server.invalid.username": "That username is disabled; please choose another username.",
+	"arc.postgres.server.service.type": "Service type",
 	"arc.postgres.server.dev.use.label": "For development use only",
 	"arc.postgres.server.dev.use.description": "Check the box to indicate this instance will be used for development or testing purposes only. This instance will not be billed.",
 	"arc.agreement": "I accept {0} and {1}.",
