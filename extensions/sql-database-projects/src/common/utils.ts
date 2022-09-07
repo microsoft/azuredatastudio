@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdataType from 'azdata';
+import type * as azdataType from 'azdata';
 import * as vscode from 'vscode';
 import * as os from 'os';
 import * as constants from './constants';
@@ -714,20 +714,20 @@ export async function fileContainsCreateTableStatement(fullPath: string, project
 
 /**
  * Gets target platform based on the server edition/version
- * @param profile server connection profile
+ * @param connectionId server connection profile id
  * @returns target platform for the database project
  */
-export async function getTargetPlatformFromServerVersion(profile: azdataType.IConnectionProfile): Promise<SqlTargetPlatform | undefined> {
-	const serverInfo = await azdataType.connection.getServerInfo(profile.id);
+export async function getTargetPlatformFromServerVersion(connectionId: string): Promise<SqlTargetPlatform | undefined> {
+	const serverInfo = await getAzdataApi()!.connection.getServerInfo(connectionId);
 	const isCloud = serverInfo.isCloud;
 
 	let targetPlatform;
 	if (isCloud) {
 		const engineEdition = serverInfo.engineEditionId;
-		targetPlatform = engineEdition === azdataType.DatabaseEngineEdition.SqlDataWarehouse ? SqlTargetPlatform.sqlDW : (engineEdition === azdataType.DatabaseEngineEdition.SqlDatabase ? SqlTargetPlatform.sqlAzure : undefined);
+		targetPlatform = engineEdition === getAzdataApi()!.DatabaseEngineEdition.SqlDataWarehouse ? SqlTargetPlatform.sqlDW : SqlTargetPlatform.sqlAzure;
 	} else {
 		const serverMajorVersion = serverInfo.serverMajorVersion;
-		targetPlatform = serverMajorVersion ? constants.serverVersionToTargetPlatform.get(serverMajorVersion) : undefined;
+		targetPlatform = serverMajorVersion ? constants.onPremServerVersionToTargetPlatform.get(serverMajorVersion) : undefined;
 	}
 
 	return targetPlatform;

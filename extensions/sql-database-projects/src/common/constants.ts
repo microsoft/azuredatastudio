@@ -593,7 +593,7 @@ export const targetPlatformToVersion: Map<string, string> = new Map<string, stri
 	[SqlTargetPlatform.sqlDW, 'Dw']
 ]);
 
-export const serverVersionToTargetPlatform: Map<number, SqlTargetPlatform> = new Map<number, SqlTargetPlatform>([
+export const onPremServerVersionToTargetPlatform: Map<number, SqlTargetPlatform> = new Map<number, SqlTargetPlatform>([
 	[11, SqlTargetPlatform.sqlServer2012],
 	[12, SqlTargetPlatform.sqlServer2014],
 	[13, SqlTargetPlatform.sqlServer2016],
