@@ -1399,7 +1399,7 @@ export class ProjectsController {
 		if (utils.getAzdataApi()) {
 			let createProjectFromDatabaseDialog = this.getCreateProjectFromDatabaseDialog(profile as azdataType.IConnectionProfile);
 
-			createProjectFromDatabaseDialog.createProjectFromDatabaseCallback = async (model) => await this.createProjectFromDatabaseCallback(model);
+			createProjectFromDatabaseDialog.createProjectFromDatabaseCallback = async (model) => await this.createProjectFromDatabaseCallback(model, profile as azdataType.IConnectionProfile);
 
 			await createProjectFromDatabaseDialog.openDialog();
 
@@ -1426,16 +1426,21 @@ export class ProjectsController {
 		return new CreateProjectFromDatabaseDialog(profile);
 	}
 
-	public async createProjectFromDatabaseCallback(model: ImportDataModel) {
+	public async createProjectFromDatabaseCallback(model: ImportDataModel, profile?: azdataType.IConnectionProfile) {
 		try {
 
 			const newProjFolderUri = model.filePath;
+			let targetPlatform: SqlTargetPlatform | undefined;
+			if (profile) {
+				targetPlatform = await utils.getTargetPlatformFromServerVersion(profile);
+			}
 
 			const newProjFilePath = await this.createNewProject({
 				newProjName: model.projName,
 				folderUri: vscode.Uri.file(newProjFolderUri),
 				projectTypeId: model.sdkStyle ? constants.emptySqlDatabaseSdkProjectTypeId : constants.emptySqlDatabaseProjectTypeId,
-				sdkStyle: model.sdkStyle
+				sdkStyle: model.sdkStyle,
+				targetPlatform: targetPlatform
 			});
 
 			model.filePath = path.dirname(newProjFilePath);

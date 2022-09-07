@@ -593,6 +593,15 @@ export const targetPlatformToVersion: Map<string, string> = new Map<string, stri
 	[SqlTargetPlatform.sqlDW, 'Dw']
 ]);
 
+export const serverVersionToTargetPlatform: Map<number, SqlTargetPlatform> = new Map<number, SqlTargetPlatform>([
+	[11, SqlTargetPlatform.sqlServer2012],
+	[12, SqlTargetPlatform.sqlServer2014],
+	[13, SqlTargetPlatform.sqlServer2016],
+	[14, SqlTargetPlatform.sqlServer2017],
+	[15, SqlTargetPlatform.sqlServer2019],
+	[16, SqlTargetPlatform.sqlServer2022]
+]);
+
 // DW is special since the system dacpac folder has a different name from the target platform
 export const AzureDwFolder = 'AzureDw';
 
