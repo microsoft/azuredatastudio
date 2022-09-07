@@ -347,7 +347,8 @@ declare module 'azurecore' {
 			azureArcService = 'microsoft.azuredata/datacontrollers',
 			storageAccount = 'microsoft.storage/storageaccounts',
 			logAnalytics = 'microsoft.operationalinsights/workspaces',
-			cosmosDbAccount = 'microsoft.documentdb/databaseaccounts'
+			cosmosDbAccount = 'microsoft.documentdb/databaseaccounts',
+			mysqlFlexibleServer = 'microsoft.dbformysql/flexibleservers'
 		}
 
 		export interface IAzureResourceProvider extends azdata.DataProvider {
