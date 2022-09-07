@@ -8,8 +8,14 @@ import * as azdata from 'azdata';
 import { QueryHistoryItem } from './queryHistoryItem';
 import { removeNewLines } from './utils';
 import { CAPTURE_ENABLED_CONFIG_SECTION, ITEM_SELECTED_COMMAND_ID, PERSIST_HISTORY_CONFIG_SECTION, QUERY_HISTORY_CONFIG_SECTION } from './constants';
+import { promises as fs } from 'fs';
+import * as path from 'path';
+import * as crypto from 'crypto';
 
-const STORAGE_KEY = 'queryHistory.historyItems';
+const STORAGE_IV_KEY = 'queryHistory.storage-iv';
+const STORAGE_KEY_KEY = 'queryHistory.storage-key';
+const HISTORY_STORAGE_FILE_NAME = 'queryHistory.bin';
+const STORAGE_ENCRYPTION_ALGORITHM = 'aes-256-ctr';
 const DEFAULT_CAPTURE_ENABLED = true;
 const DEFAULT_PERSIST_HISTORY = true;
 const successIcon = new vscode.ThemeIcon('check', new vscode.ThemeColor('testing.iconPassed'));
@@ -24,20 +30,21 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 	private _captureEnabled: boolean = DEFAULT_CAPTURE_ENABLED;
 	private _persistHistory: boolean = DEFAULT_PERSIST_HISTORY;
 
+	private _historyStorageFile: string;
+
 	private _disposables: vscode.Disposable[] = [];
+
+	private writeHistoryFile: (() => Promise<void>) | undefined;
+
 
 	/**
 	 * Mapping of query URIs to the query text being executed
 	 */
 	private queryTextMappings: Map<string, string> = new Map<string, string>();
 
-	constructor(context: vscode.ExtensionContext) {
-		void context.secrets.get(STORAGE_KEY).then(value => {
-			if (value) {
-				this._queryHistoryItems = JSON.parse(value);
-				this._onDidChangeTreeData.fire(undefined);
-			}
-		});
+	constructor(private _context: vscode.ExtensionContext) {
+		this._historyStorageFile = path.join(this._context.globalStorageUri.fsPath, HISTORY_STORAGE_FILE_NAME);
+		void this.initialize();
 		this._disposables.push(azdata.queryeditor.registerQueryEventListener({
 			onQueryEvent: async (type: azdata.queryeditor.QueryEventType, document: azdata.queryeditor.QueryDocument, args: azdata.ResultSetSummary | string | undefined, queryInfo?: azdata.queryeditor.QueryInfo) => {
 				if (this._captureEnabled && queryInfo) {
@@ -51,8 +58,8 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 							return;
 						}
 						this.queryTextMappings.delete(document.uri);
-						await this.storeHistory();
 						this._queryHistoryItems.unshift({ queryText, connectionProfile, timestamp: new Date().toLocaleString(), isSuccess });
+						await this.writeHistoryFile?.();
 						this._onDidChangeTreeData.fire(undefined);
 					} else if (type === 'queryStart') {
 						// We get the text and save it on queryStart because we want to get the query text immediately when
@@ -82,15 +89,88 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 		}));
 	}
 
+	private async initialize(): Promise<void> {
+		// await this._context.secrets.delete(STORAGE_IV_KEY);
+		// await this._context.secrets.delete(STORAGE_KEY_KEY);
+		let iv: Buffer | undefined;
+		try {
+			let ivString = await this._context.secrets.get(STORAGE_IV_KEY);
+			if (!ivString) {
+				iv = crypto.randomBytes(16);
+				await this._context.secrets.store(STORAGE_IV_KEY, iv.toString('binary'));
+			} else {
+				iv = Buffer.from(ivString, 'binary');
+			}
+		} catch (err) {
+			console.error(`Error getting persistance storage IV ${err}`);
+			// An IV is required to read/write the encrypted file so if we can't get it then just fail early
+			return;
+		}
+
+
+		let key: string | undefined;
+		try {
+			key = await this._context.secrets.get(STORAGE_KEY_KEY);
+			if (!key) {
+				// Generate a random key - this is internal to the extension so the user doesn't need to know it
+				key = crypto.createHash('sha256').update(crypto.randomBytes(64)).digest('base64').substring(0, 32);
+				await this._context.secrets.store(STORAGE_KEY_KEY, key);
+			}
+		} catch (err) {
+			console.error(`Error getting persistance storage key ${err}`);
+			// A key is required to read/write the encrypted file so if we can't get it then just fail early
+			return;
+		}
+
+		try {
+			// Read and decrypt any previous history items
+			const encryptedItems = await fs.readFile(this._historyStorageFile);
+			const decipher = crypto.createDecipheriv(STORAGE_ENCRYPTION_ALGORITHM, key, iv);
+			const result = Buffer.concat([decipher.update(encryptedItems), decipher.final()]).toString();
+			this._queryHistoryItems = JSON.parse(result);
+			this._onDidChangeTreeData.fire(undefined);
+		} catch (err) {
+			// Ignore ENOENT errors, those are expected if the storage file doesn't exist (on first run or if results aren't being persisted)
+			if (err.code !== 'ENOENT') {
+				console.error(`Error deserializing stored history items. ${err}`);
+				// Rename the file to avoid attempting to load a potentially corrupted or unreadable file every time we start up, we'll make
+				// a new one next time we write the history file
+				try {
+					const bakPath = path.join(path.dirname(this._historyStorageFile), `${HISTORY_STORAGE_FILE_NAME}.bak`);
+					await fs.rename(this._historyStorageFile, bakPath);
+				} catch (err) {
+					console.error(`Error moving corrupted history file. ${err}`);
+				}
+			}
+
+		}
+
+		// TODO: Debounce this
+		this.writeHistoryFile = async (): Promise<void> => {
+			if (this._persistHistory) {
+				try {
+					// We store the history entries in an encrypted file because they may contain sensitive information
+					// such as passwords (even in the query text itself)
+					const cipher = crypto.createCipheriv(STORAGE_ENCRYPTION_ALGORITHM, key!, iv!);
+					const stringifiedItems = JSON.stringify(this._queryHistoryItems);
+					const encryptedText = Buffer.concat([cipher.update(Buffer.from(stringifiedItems)), cipher.final()]);
+					await fs.writeFile(this._historyStorageFile, encryptedText);
+				} catch (err) {
+					console.error(`Error writing query history to disk. ${err}`);
+				}
+
+			}
+		};
+	}
 	public async clearAll(): Promise<void> {
 		this._queryHistoryItems = [];
-		await this.storeHistory();
+		await this.writeHistoryFile?.();
 		this._onDidChangeTreeData.fire(undefined);
 	}
 
 	public async deleteItem(item: QueryHistoryItem): Promise<void> {
 		this._queryHistoryItems = this._queryHistoryItems.filter(n => n !== item);
-		await this.storeHistory();
+		await this.writeHistoryFile?.();
 		this._onDidChangeTreeData.fire(undefined);
 	}
 
@@ -117,10 +197,15 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 		this._captureEnabled = configSection.get(CAPTURE_ENABLED_CONFIG_SECTION, DEFAULT_CAPTURE_ENABLED);
 		this._persistHistory = configSection.get(PERSIST_HISTORY_CONFIG_SECTION, DEFAULT_PERSIST_HISTORY);
 		if (!this._persistHistory) {
-			// If we're no longer persisting the history then clean out our storage secret
-			// await this._context.secrets.delete(STORAGE_KEY);
+			// If we're no longer persisting the history then clean up our storage file
+			try {
+				await fs.rmdir(this._historyStorageFile);
+			} catch (err) {
+				// Best effort, we don't want other things to fail if we can't delete the file for some reason
+				console.error(`Error cleaning up query history storage ${this._historyStorageFile}. ${err}`);
+			}
 		} else {
-			await this.storeHistory();
+			await this.writeHistoryFile?.();
 		}
 	}
 
@@ -132,13 +217,5 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 	public async setCaptureEnabled(enabled: boolean): Promise<void> {
 		this._captureEnabled = enabled;
 		return vscode.workspace.getConfiguration(QUERY_HISTORY_CONFIG_SECTION).update(CAPTURE_ENABLED_CONFIG_SECTION, this._captureEnabled, vscode.ConfigurationTarget.Global);
-	}
-
-	private async storeHistory(): Promise<void> {
-		if (this._persistHistory) {
-			// Secret storage is used because the user text could have sensitive values in it in addition to us storing
-			// the connection profile which may have a password set
-			// return this._context.secrets.store(STORAGE_KEY, JSON.stringify(this._queryHistoryItems));
-		}
 	}
 }

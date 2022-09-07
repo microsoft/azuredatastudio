@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 import { DOUBLE_CLICK_ACTION_CONFIG_SECTION, ITEM_SELECTED_COMMAND_ID, QUERY_HISTORY_CONFIG_SECTION } from './constants';
 import { QueryHistoryItem } from './queryHistoryItem';
 import { QueryHistoryProvider } from './queryHistoryProvider';
+import { promises as fs } from 'fs';
 
 let lastSelectedItem: { item: QueryHistoryItem | undefined, time: number | undefined } = {
 	item: undefined,
@@ -19,6 +20,14 @@ let lastSelectedItem: { item: QueryHistoryItem | undefined, time: number | undef
 const DOUBLE_CLICK_TIMEOUT_MS = 500;
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
+	// Create the global storage folder now for storing the query history persistance file
+	try {
+		await fs.mkdir(context.globalStorageUri.fsPath);
+	} catch (err) {
+		if (err.code !== 'EEXIST') {
+			console.error(`Error creating query history global storage folder ${context.globalStorageUri.fsPath}. ${err}`);
+		}
+	}
 	const treeDataProvider = new QueryHistoryProvider(context);
 	context.subscriptions.push(treeDataProvider);
 	const treeView = vscode.window.createTreeView('queryHistory', {
