@@ -53,7 +53,7 @@ export class WorkspacesMainService implements AddFirstParameterToFunctions<IWork
 	readonly onDidChangeRecentlyOpened = this.workspacesHistoryMainService.onDidChangeRecentlyOpened;
 
 	async getRecentlyOpened(windowId: number): Promise<IRecentlyOpened> {
-		return this.workspacesHistoryMainService.getRecentlyOpened(this.windowsMainService.getWindowById(windowId));
+		return this.workspacesHistoryMainService.getRecentlyOpened();
 	}
 
 	async addRecentlyOpened(windowId: number, recents: IRecent[]): Promise<void> {

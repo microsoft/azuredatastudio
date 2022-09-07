@@ -539,6 +539,17 @@ declare module 'azdata' {
 		appendData(data: any[][]): Thenable<void>;
 	}
 
+	export interface ListViewOption {
+		/**
+		 * The optional accessibility label for the column. Default is the label for the list view option.
+		 */
+		ariaLabel?: string;
+		/**
+		 * Specify the icon for the option. The value could the path to the icon or and ADS icon defined in {@link SqlThemeIcon}.
+		 */
+		icon?: IconPath;
+	}
+
 	export interface IconColumnCellValue {
 		/**
 		 * The icon to be displayed.
@@ -1240,6 +1251,14 @@ declare module 'azdata' {
 			 * Format (mimeType) of the report
 			 */
 			mimeType: string;
+			/**
+			 * Whether user confirmation is required, the default value is false.
+			 */
+			requireConfirmation?: boolean;
+			/**
+			 * The confirmation text.
+			 */
+			confirmationText?: string;
 			/**
 			 * The table schema validation error.
 			 */

@@ -441,9 +441,6 @@ This may take some time.</source>
     <trans-unit id="sql.migration.database.page.title">
       <source xml:lang="en">Database backup</source>
     </trans-unit>
-    <trans-unit id="sql.migration.database.private.endpoint.info.text">
-      <source xml:lang="en">Ensure that the Azure Storage account does not use a private endpoint.</source>
-    </trans-unit>
     <trans-unit id="sql.migration.database.status.column">
       <source xml:lang="en">Migration status</source>
     </trans-unit>
@@ -682,7 +679,7 @@ This may take some time.</source>
       <source xml:lang="en">To continue, select a valid virtual machine.</source>
     </trans-unit>
     <trans-unit id="sql.migration.ir.page.description">
-      <source xml:lang="en">Azure Database Migration Service orchestrates database migration activities and tracks their progress. You can select an existing Database Migration Service as an Azure SQL target if you have created one previously, or create a new one below.</source>
+      <source xml:lang="en">Azure Database Migration Service orchestrates database migration activities and tracks their progress. You can select an existing Database Migration Service if you have created one previously, or create a new one below.</source>
     </trans-unit>
     <trans-unit id="sql.migration.ir.page.sql.migration.service.not.found">
       <source xml:lang="en">No Database Migration Service found. Create a new one.</source>
@@ -698,6 +695,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.ir.setup.step3">
       <source xml:lang="en">Step 3: Click on 'Test connection' button to check the connection between Azure Database Migration Service and integration runtime</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.issue.aria.label">
+      <source xml:lang="en">Blocking Issue: {0}</source>
     </trans-unit>
     <trans-unit id="sql.migration.issues">
       <source xml:lang="en">Issues</source>
@@ -1302,9 +1302,6 @@ This may take some time.</source>
     <trans-unit id="sql.migration.sku.azureRecommendation.openExisting.method">
       <source xml:lang="en">I already have the performance data</source>
     </trans-unit>
-    <trans-unit id="sql.migration.sku.azureRecommendation.openExisting.popup">
-      <source xml:lang="en">Generating Azure recommendations using provided performance data...</source>
-    </trans-unit>
     <trans-unit id="sql.migration.sku.azureRecommendation.openExistingSelectFolder.instructions">
       <source xml:lang="en">Select a folder on your local drive where previously collected performance data was saved</source>
     </trans-unit>
@@ -1327,7 +1324,7 @@ This may take some time.</source>
       <source xml:lang="en">Check back periodically for updated recommendations by pressing the 'Refresh recommendation' button.</source>
     </trans-unit>
     <trans-unit id="sql.migration.sku.azureRecommendation.status.notEnabled">
-      <source xml:lang="en">Azure recommendation collects and analyzes performance data and then recommends an appropriate sized database in Azure for your workload.</source>
+      <source xml:lang="en">Azure recommendation collects and analyzes performance data and then recommends an appropriate sized target in Azure for your workload.</source>
     </trans-unit>
     <trans-unit id="sql.migration.sku.azureRecommendation.status.refining">
       <source xml:lang="en">Data collection still in progress. Refining existing recommendations...</source>
@@ -1400,6 +1397,12 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.sku.parameters.edit.title">
       <source xml:lang="en">Edit recommendation parameters</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.sku.parameters.enable.elastic">
+      <source xml:lang="en">Enable elastic recommendation</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.sku.parameters.enable.elastic.info">
+      <source xml:lang="en">Elastic recommendation uses an alternate recommendation model which utilizes personalized price-performance profiling against existing on-cloud customers.</source>
     </trans-unit>
     <trans-unit id="sql.migration.sku.parameters.enable.preview">
       <source xml:lang="en">Enable preview features</source>
@@ -1914,7 +1917,7 @@ This may take some time.</source>
       <source xml:lang="en">No recommendation available</source>
     </trans-unit>
     <trans-unit id="sql.migration.wizard.sku.error.noRecommendation.reason">
-      <source xml:lang="en">No SKU recommendations were generated, as there were no SKUs which could satisfy the performance characteristics of your source. Try selecting a different target platform, adjusting recommendation parameters, or selecting a different set of databases to assess.</source>
+      <source xml:lang="en">No SKU recommendations were generated, as there were no SKUs which could satisfy the performance characteristics of your source. Try selecting a different target platform, adjusting recommendation parameters, selecting a different set of databases to assess, or changing the recommendation model.</source>
     </trans-unit>
     <trans-unit id="sql.migration.wizard.source.missing">
       <source xml:lang="en">Connection was successful but did not find any target databases.</source>

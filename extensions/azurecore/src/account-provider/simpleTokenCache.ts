@@ -8,11 +8,11 @@ import { FileDatabase } from './utils/fileDatabase';
 import * as azdata from 'azdata';
 import * as crypto from 'crypto';
 
-function getSystemKeytar(): Keytar | undefined | null {
+function getSystemKeytar(): Keytar | undefined {
 	try {
 		return require('keytar');
 	} catch (err) {
-		console.log(err);
+		console.warn(err);
 	}
 
 	return undefined;
@@ -102,7 +102,7 @@ export type Keytar = {
 };
 
 export class SimpleTokenCache {
-	private keytar: Keytar;
+	private keytar: Keytar | undefined;
 
 	constructor(
 		private serviceName: string,
@@ -115,7 +115,7 @@ export class SimpleTokenCache {
 
 	async init(): Promise<void> {
 		this.serviceName = this.serviceName.replace(/-/g, '_');
-		let keytar: Keytar;
+		let keytar: Keytar | undefined;
 		if (this.forceFileStorage === false) {
 			keytar = getSystemKeytar();
 
@@ -124,10 +124,10 @@ export class SimpleTokenCache {
 				keytar.getPasswords = async (service: string): Promise<MultipleAccountsResponse> => {
 					const [serviceName, accountPrefix] = service.split(separator);
 					if (serviceName === undefined || accountPrefix === undefined) {
-						throw new Error('Service did not have seperator: ' + service);
+						throw new Error('Service did not have separator: ' + service);
 					}
 
-					const results = await keytar.findCredentials(serviceName);
+					const results = await keytar!.findCredentials!(serviceName);
 					return results.filter(({ account }) => {
 						return account.startsWith(accountPrefix);
 					});
@@ -150,15 +150,17 @@ export class SimpleTokenCache {
 		}
 
 		try {
-			return await this.keytar.setPassword(this.serviceName, id, key);
+			const keytar = this.getKeytar();
+			return await keytar.setPassword(this.serviceName, id, key);
 		} catch (ex) {
-			console.log(`Adding key failed: ${ex}`);
+			console.warn(`Adding key failed: ${ex}`);
 		}
 	}
 
 	async getCredential(id: string): Promise<string | undefined> {
 		try {
-			const result = await this.keytar.getPassword(this.serviceName, id);
+			const keytar = this.getKeytar();
+			const result = await keytar.getPassword(this.serviceName, id);
 
 			if (result === null) {
 				return undefined;
@@ -166,26 +168,35 @@ export class SimpleTokenCache {
 
 			return result;
 		} catch (ex) {
-			console.log(`Getting key failed: ${ex}`);
+			console.warn(`Getting key failed: ${ex}`);
 			return undefined;
 		}
 	}
 
 	async clearCredential(id: string): Promise<boolean> {
 		try {
-			return await this.keytar.deletePassword(this.serviceName, id);
+			const keytar = this.getKeytar();
+			return await keytar.deletePassword(this.serviceName, id);
 		} catch (ex) {
-			console.log(`Clearing key failed: ${ex}`);
+			console.warn(`Clearing key failed: ${ex}`);
 			return false;
 		}
 	}
 
 	async findCredentials(prefix: string): Promise<{ account: string, password: string }[]> {
 		try {
-			return await this.keytar.getPasswords(`${this.serviceName}${separator}${prefix}`);
+			const keytar = this.getKeytar();
+			return await keytar.getPasswords(`${this.serviceName}${separator}${prefix}`);
 		} catch (ex) {
-			console.log(`Finding credentials failed: ${ex}`);
-			return undefined;
+			console.warn(`Finding credentials failed: ${ex}`);
+			return [];
 		}
+	}
+
+	private getKeytar(): Keytar {
+		if (!this.keytar) {
+			throw new Error('Keytar not initialized');
+		}
+		return this.keytar;
 	}
 }

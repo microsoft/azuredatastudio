@@ -1,5 +1,30 @@
 # Change Log
 
+## Version 1.39.1
+* Release date: August 30, 2022
+* Release status: General Availability
+## What's new in 1.39.1
+* Bug fixes in 1.39.1
+    * Fixed bug that caused Database Trees in server connections to not expand in the Object Explorer.
+
+| Platform																|
+| ---------------------------------------	|
+| [Windows User Installer][win-user]			|
+| [Windows System Installer][win-system]	|
+| [Windows ZIP][win-zip]									|
+| [macOS ZIP][osx-zip]										|
+| [Linux TAR.GZ][linux-zip]								|
+| [Linux RPM][linux-rpm]									|
+| [Linux DEB][linux-deb]									|
+
+[win-user]: https://go.microsoft.com/fwlink/?linkid=2204567
+[win-system]: https://go.microsoft.com/fwlink/?linkid=2204568
+[win-zip]: https://go.microsoft.com/fwlink/?linkid=2204772
+[osx-zip]: https://go.microsoft.com/fwlink/?linkid=2204569
+[linux-zip]: https://go.microsoft.com/fwlink/?linkid=2204773
+[linux-rpm]: https://go.microsoft.com/fwlink/?linkid=2204774
+[linux-deb]: https://go.microsoft.com/fwlink/?linkid=2204570
+
 ## Version 1.39.0
 * Release date: August 24, 2022
 * Release status: General Availability
@@ -29,24 +54,6 @@
     * Notebooks - Fixed a bug that caused a console error message to appear after opening a markdown file.
     * Notebooks - Fixed a bug that prevented markdown cell toolbar shortcuts from working after creating a new split view cell.
     * Notebooks - Fixed a bug that caused text cells to be erroneously created in split view mode when the notebook default text edit mode was set to "Markdown".
-
-| Platform																|
-| ---------------------------------------	|
-| [Windows User Installer][win-user]			|
-| [Windows System Installer][win-system]	|
-| [Windows ZIP][win-zip]									|
-| [macOS ZIP][osx-zip]										|
-| [Linux TAR.GZ][linux-zip]								|
-| [Linux RPM][linux-rpm]									|
-| [Linux DEB][linux-deb]									|
-
-[win-user]: https://go.microsoft.com/fwlink/?linkid=2198663
-[win-system]: https://go.microsoft.com/fwlink/?linkid=2198878
-[win-zip]: https://go.microsoft.com/fwlink/?linkid=2198664
-[osx-zip]: https://go.microsoft.com/fwlink/?linkid=2198762
-[linux-zip]: https://go.microsoft.com/fwlink/?linkid=2198879
-[linux-rpm]: https://go.microsoft.com/fwlink/?linkid=2198880
-[linux-deb]: https://go.microsoft.com/fwlink/?linkid=2198763
 
 ## Version 1.38.0
 * Release date: July 27, 2022
@@ -98,7 +105,7 @@
     *  Schema Compare - Fixed issue with indexes not being added correctly when updating project from database.
     *  Notebooks - Fixed inconsistencies with notebook cell behavior and toolbars.
     *  Notebooks - Fixed issues with keyboard navigation.
-	
+
 ## Version 1.36.2
 * Release date: May 20, 2022
 * Release status: General Availability
