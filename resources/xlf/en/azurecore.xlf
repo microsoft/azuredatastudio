@@ -173,6 +173,11 @@
       <source xml:lang="en">Azure Data Explorer Cluster</source>
     </trans-unit>
 </body></file>
+  <file original="extensions/azurecore/dist/azureResource/providers/mysqlFlexibleServer/mysqlFlexibleServerTreeDataProvider" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel">
+      <source xml:lang="en">Azure Database for MySQL Flexible server</source>
+    </trans-unit>
+</body></file>
   <file original="extensions/azurecore/dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider" source-language="en" datatype="plaintext"><body>
     <trans-unit id="azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel">
       <source xml:lang="en">PostgreSQL Hyperscale – Azure Arc</source>
