@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 
-import { ResourceServiceBase, GraphData } from '../resourceTreeDataProviderBase';
+import { ResourceServiceBase, GraphData, serverQueryString } from '../resourceTreeDataProviderBase';
 import { azureResource } from 'azurecore';
 
 export interface DbServerGraphData extends GraphData {
@@ -14,7 +14,7 @@ export interface DbServerGraphData extends GraphData {
 	};
 }
 
-export const serversQuery = `where type == "${azureResource.AzureResourceType.sqlServer}"`;
+export const serversQuery = serverQueryString;
 
 export class AzureResourceDatabaseServerService extends ResourceServiceBase<DbServerGraphData, azureResource.AzureResourceDatabaseServer> {
 

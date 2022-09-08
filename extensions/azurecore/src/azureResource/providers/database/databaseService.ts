@@ -19,8 +19,8 @@ export class AzureResourceDatabaseService implements IAzureResourceService<azure
 		const resourceClient = new ResourceGraphClient(credential, { baseUri: account.properties.providerSettings.settings.armResource.endpoint });
 
 		// Query servers and databases in parallel (start both promises before waiting on the 1st)
-		let serverQueryPromise = queryGraphResources<GraphData>(account, resourceClient, subscriptions, serversQuery);
-		let dbQueryPromise = queryGraphResources<GraphData>(account, resourceClient, subscriptions, `where type == "${azureResource.AzureResourceType.sqlDatabase}"`);
+		let serverQueryPromise = queryGraphResources<GraphData>(resourceClient, subscriptions, serversQuery, account);
+		let dbQueryPromise = queryGraphResources<GraphData>(resourceClient, subscriptions, `where type == "${azureResource.AzureResourceType.sqlDatabase}"`);
 		let servers: DbServerGraphData[] = await serverQueryPromise as DbServerGraphData[];
 		let dbByGraph: DatabaseGraphData[] = await dbQueryPromise as DatabaseGraphData[];
 
