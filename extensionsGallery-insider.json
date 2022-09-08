@@ -4036,14 +4036,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.0.4",
-							"lastUpdated": "06/23/2022",
+							"version": "1.0.5",
+							"lastUpdated": "09/08/2022",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-migration/sql-migration-1.0.4.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-migration/sql-migration-1.0.5.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -4073,7 +4073,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.37.0"
+									"value": ">=1.39.0"
 								}
 							]
 						}
