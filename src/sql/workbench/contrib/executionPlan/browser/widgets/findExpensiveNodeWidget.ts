@@ -85,6 +85,15 @@ export class FindExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 
 		// Apply Button
 		const self = this;
+		this._operationNameSelectBox.selectElem.onkeydown = async (ev) => {
+			if (ev.key === 'Enter') {
+				await new FindExpensiveOperationAction().run(self);
+			}
+			else if (ev.key === 'Escape') {
+				this.widgetController.removeWidget(self);
+			}
+		};
+
 		const applyButton = new Button(this.container, {
 			title: localize('findExpensiveOperationButtonTitle', 'Find Expensive Operation (Enter)')
 		});
