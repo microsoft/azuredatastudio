@@ -582,6 +582,16 @@ export enum SearchType {
 	LesserThanEqualTo,
 	LesserAndGreaterThan
 }
+
+export enum ExpensiveOperationType {
+	ActualElapsedTime,
+	ActualElapsedCpuTime,
+	Cost,
+	SubtreeCost,
+	ActualNumberOfRowsForAllExecutions,
+	NumberOfRowsRead
+}
+
 export interface SearchQuery {
 	/**
 	 * property name to be searched
