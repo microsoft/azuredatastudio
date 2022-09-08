@@ -16,6 +16,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerContext';
 import { EditDataAction } from 'sql/workbench/browser/scriptingActions';
 import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { ServerInfoContextKey } from 'sql/workbench/services/connection/common/serverInfoContextKey';
 
 //#region -- Data Explorer
 // Script as Create
@@ -133,8 +134,8 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 			TreeNodeContextKey.NodeType.isEqualTo(NodeType.Table),
 			ConnectionContextKey.Provider.notEqualsTo('KUSTO'),
 			ConnectionContextKey.Provider.notEqualsTo('LOGANALYTICS'),
-			MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()),
-			MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlDataWarehouse.toString())
+			ServerInfoContextKey.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()),
+			ServerInfoContextKey.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlDataWarehouse.toString())
 		)
 });
 
@@ -153,7 +154,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.Table),
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.View),
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.Schema),
-				ContextKeyExpr.and(TreeNodeContextKey.NodeType.isEqualTo(NodeType.User), MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString())),
+				ContextKeyExpr.and(TreeNodeContextKey.NodeType.isEqualTo(NodeType.User), ServerInfoContextKey.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString())),
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.User),
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.UserDefinedTableType),
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.StoredProcedure),
