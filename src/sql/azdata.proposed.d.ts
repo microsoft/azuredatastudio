@@ -817,6 +817,7 @@ declare module 'azdata' {
 			ForeignKeys = 'foreignKeys',
 			CheckConstraints = 'checkConstraints',
 			Indexes = 'indexes',
+			PrimaryKey = 'primaryKey',
 			PrimaryKeyName = 'primaryKeyName',
 			PrimaryKeyDescription = 'primaryKeyDescription',
 			PrimaryKeyColumns = 'primaryKeyColumns'
@@ -945,7 +946,7 @@ declare module 'azdata' {
 			 */
 			additionalPrimaryKeyProperties?: DesignerDataPropertyInfo[];
 			/**
-			 * Additional components with tab info.
+			 * Components to be placed under the pre-defined tabs.
 			 */
 			additionalComponents?: DesignerDataPropertyWithTabInfo[];
 			/**
@@ -1027,7 +1028,7 @@ declare module 'azdata' {
 			/**
 			 * The tab info where this property belongs to.
 			 */
-			tab: TableProperty.Columns | TableProperty.ForeignKeys | TableProperty.CheckConstraints | TableProperty.Indexes;
+			tab: TableProperty.Columns | TableProperty.PrimaryKey | TableProperty.ForeignKeys | TableProperty.CheckConstraints | TableProperty.Indexes;
 		}
 
 		/**
