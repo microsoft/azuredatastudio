@@ -798,6 +798,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	public getDefaultAuthenticationTypeId(providerName: string): string {
+		// only return the default authentication type if the provider supports the AuthType option.
+		// Other issues with the implementation is tracked here: https://github.com/microsoft/azuredatastudio/issues/20573
 		const authOption = this._capabilitiesService.getCapabilities(providerName)?.connection.connectionOptions?.find(option => option.specialValueType === ConnectionOptionSpecialType.authType);
 		const defaultAuthenticationType = authOption ? WorkbenchUtils.getSqlConfigValue<string>(this._configurationService, Constants.defaultAuthenticationType) : undefined;
 		return defaultAuthenticationType;
