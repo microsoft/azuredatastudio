@@ -176,7 +176,7 @@ export class FindExpensiveOperationAction extends Action {
 	public static LABEL = localize('findExpensiveOperationAction', 'Find (Enter)');
 
 	constructor() {
-		super(FindExpensiveOperationAction.ID, FindExpensiveOperationAction.LABEL, zoomIconClassNames);
+		super(FindExpensiveOperationAction.ID, FindExpensiveOperationAction.LABEL, searchIconClassNames);
 	}
 
 	public override async run(context: FindExpensiveOperationWidget): Promise<void> {
