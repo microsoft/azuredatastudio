@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { nb } from 'azdata';
-import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnDestroy, ViewChildren, QueryList, Input } from '@angular/core';
+import { OnInit, Inject, Component, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnDestroy, ViewChildren, QueryList, Input } from '@angular/core';
 
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
@@ -324,7 +324,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	public clickOnCell(cell: ICellModel, event?: MouseEvent) {
-		event?.stopPropagation();
+		event?.stopImmediatePropagation();
 		if (!this.model.activeCell || this.model.activeCell.id !== cell.id) {
 			this.selectCell(cell);
 			if (cell.cellType === CellTypes.Code) {
@@ -338,7 +338,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	public updateActiveCell(cell: ICellModel) {
-		this._model.updateActiveCell(cell);
+		this.model.updateActiveCell(cell);
 	}
 
 	// Handles double click to edit icon change
@@ -847,3 +847,5 @@ class NotebookSection implements INotebookSection {
 		return this.headerEl.textContent;
 	}
 }
+
+
