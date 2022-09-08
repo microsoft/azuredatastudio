@@ -1532,20 +1532,6 @@
                           "type": "number",
                           "defaultValue": "5",
                           "min": 1
-                        },
-                        {
-                          "label": "%arc.storage-class.backups.label%",
-                          "description": "%arc.postgres.storage-class.backups.description%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_STORAGE_CLASS_BACKUPS",
-                          "type": "kube_storage_class"
-                        },
-                        {
-                          "label": "%arc.postgres.server.volume.size.backups.label%",
-                          "description": "%arc.postgres.server.volume.size.backups.description%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_VOLUME_SIZE_BACKUPS",
-                          "type": "number",
-                          "defaultValue": "5",
-                          "min": 1
                         }
                       ]
                     }
