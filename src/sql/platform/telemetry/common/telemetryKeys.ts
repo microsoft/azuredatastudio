@@ -55,9 +55,6 @@ export const enum TelemetryError {
 }
 
 export const enum TelemetryAction {
-	ActualElapsedTime = 'ActualElapsedTime',
-	ActualElapsedCpuTime = 'ActualElapsedCpuTime',
-	ActualNumberOfRowsReadForAllExecutions = 'ActualNumberOfRowsReadForAllExecutions',
 	adsCommandExecuted = 'adsCommandExecuted',
 	AddExecutionPlan = 'AddExecutionPlan',
 	AddServerGroup = 'AddServerGroup',
@@ -67,7 +64,6 @@ export const enum TelemetryAction {
 	CancelQuery = 'CancelQuery',
 	ChartCreated = 'ChartCreated',
 	Click = 'Click',
-	Cost = 'Cost',
 	CompareExecutionPlan = 'CompareExecutionPlan',
 	DashboardNavigated = 'DashboardNavigated',
 	DatabaseConnected = 'DatabaseConnected',
@@ -79,9 +75,8 @@ export const enum TelemetryAction {
 	DeleteAgentProxy = 'DeleteAgentProxy',
 	DeleteConnection = 'DeleteConnection',
 	DeleteServerGroup = 'DeleteServerGroup',
-	ExecutionPlanNumberOfRowsRead = 'ExecutionPlanNumberOfRowsRead',
-	FindNode = 'FindNode',
 	FindExpensiveOperation = 'FindExpensiveOperation',
+	FindNode = 'FindNode',
 	FirewallRuleRequested = 'FirewallRuleCreated',
 	GenerateScript = 'GenerateScript',
 	GeneratePreviewReport = 'GeneratePreviewReport',
@@ -107,7 +102,6 @@ export const enum TelemetryAction {
 	SearchStarted = 'SearchStarted',
 	ShowChart = 'ShowChart',
 	StopAgentJob = 'StopAgentJob',
-	SubtreeCost = 'SubtreeCost',
 	ToggleActualExecutionPlan = 'ToggleActualExecutionPlan',
 	ViewExecutionPlanComparisonProperties = 'ViewExecutionPlanComparisonProperties',
 	ViewTopOperations = 'ViewTopOperations',

@@ -288,14 +288,6 @@ export const executionPlanComparisonPropertiesDifferent = 'ep-properties-differe
 export const executionPlanComparisonPropertiesDownArrow = 'ep-properties-down-arrow';
 export const executionPlanComparisonPropertiesUpArrow = 'ep-properties-up-arrow';
 export const executionPlanTopOperations = 'ep-top-operations';
-export const executionPlanActualElapsedTime = 'ep-actual-elapsed-time';
-export const executionPlanActualElapsedCpuTime = 'ep-actual-elapsed-cpu-time';
-export const executionPlanCost = 'ep-cost';
-export const executionPlanSubtreeCost = 'ep-subtree-cost';
-export const executionPlanActualLogicalReads = 'ep-actual-logical-reads';
-export const executionPlanActualPhysicalReads = 'ep-actual-physical-reads';
-export const executionPlanActualNumberOfRowsForAllExecutions = 'ep-actual-number-of-rows-for-all-actions';
-export const executionPlanNumberOfRowsRead = 'ep-number-of-rows-read';
 
 /**
  * Plan comparison polygon border colors
