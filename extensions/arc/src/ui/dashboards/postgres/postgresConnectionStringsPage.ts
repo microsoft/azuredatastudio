@@ -84,13 +84,13 @@ export class PostgresConnectionStringsPage extends DashboardPage {
 
 		return [
 			new InputKeyValue(this.modelView.modelBuilder, 'ADO.NET', `Server=${endpoint.ip};Database=postgres;Port=${endpoint.port};User Id=postgres;Password={your_password_here};Ssl Mode=Require;`),
-			new InputKeyValue(this.modelView.modelBuilder, 'C++ (libpq)', `host=${endpoint.ip} port=${endpoint.port} dbname=postgres user=postgres password={your_password_here} sslmode=require`),
-			new InputKeyValue(this.modelView.modelBuilder, 'JDBC', `jdbc:postgresql://${endpoint.ip}:${endpoint.port}/postgres?user=postgres&password={your_password_here}&sslmode=require`),
-			new InputKeyValue(this.modelView.modelBuilder, 'Node.js', `host=${endpoint.ip} port=${endpoint.port} dbname=postgres user=postgres password={your_password_here} sslmode=require`),
-			new InputKeyValue(this.modelView.modelBuilder, 'PHP', `host=${endpoint.ip} port=${endpoint.port} dbname=postgres user=postgres password={your_password_here} sslmode=require`),
-			new InputKeyValue(this.modelView.modelBuilder, 'psql', `psql "host=${endpoint.ip} port=${endpoint.port} dbname=postgres user=postgres password={your_password_here} sslmode=require"`),
+			new InputKeyValue(this.modelView.modelBuilder, 'C++ (libpq)', `host=${endpoint.ip} port=${endpoint.port} dbname=postgres user={your_username_here} password={your_password_here} sslmode=require`),
+			new InputKeyValue(this.modelView.modelBuilder, 'JDBC', `jdbc:postgresql://${endpoint.ip}:${endpoint.port}/postgres?user={your_username_here}&password={your_password_here}&sslmode=require`),
+			new InputKeyValue(this.modelView.modelBuilder, 'Node.js', `host=${endpoint.ip} port=${endpoint.port} dbname=postgres user={your_username_here} password={your_password_here} sslmode=require`),
+			new InputKeyValue(this.modelView.modelBuilder, 'PHP', `host=${endpoint.ip} port=${endpoint.port} dbname=postgres user={your_username_here} password={your_password_here} sslmode=require`),
+			new InputKeyValue(this.modelView.modelBuilder, 'psql', `psql "host=${endpoint.ip} port=${endpoint.port} dbname=postgres user={your_username_here} password={your_password_here} sslmode=require"`),
 			new InputKeyValue(this.modelView.modelBuilder, 'Python', `dbname='postgres' user='postgres' host='${endpoint.ip}' password='{your_password_here}' port='${endpoint.port}' sslmode='true'`),
-			new InputKeyValue(this.modelView.modelBuilder, 'Ruby', `host=${endpoint.ip}; dbname=postgres user=postgres password={your_password_here} port=${endpoint.port} sslmode=require`)
+			new InputKeyValue(this.modelView.modelBuilder, 'Ruby', `host=${endpoint.ip}; dbname=postgres user={your_username_here} password={your_password_here} port=${endpoint.port} sslmode=require`)
 		];
 	}
 
