@@ -17,7 +17,7 @@ import { AzDataGraphCell, AzdataGraphView, ExpensiveOperationType } from 'sql/wo
 import { ExecutionPlanWidgetController } from 'sql/workbench/contrib/executionPlan/browser/executionPlanWidgetController';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { Button } from 'sql/base/browser/ui/button/button';
-import { zoomIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/constants'; // TODO: use different icon class
+import { searchIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/constants';
 
 const ACTUAL_ELAPSED_TIME_STRING = localize('executionPlanActualElapsedTime', 'Actual Elapsed Time');
 const ACTUAL_ELAPSED_CPU_TIME_STRING = localize('executionPlanActualElapsedCpuTime', 'Actual Elapsed CPU Time');
