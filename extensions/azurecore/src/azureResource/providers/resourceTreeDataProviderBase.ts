@@ -9,7 +9,9 @@ import * as msRest from '@azure/ms-rest-js';
 import { IAzureResourceService } from '../interfaces';
 import { AzureResourceErrorMessageUtil } from '../utils';
 import { ResourceGraphClient } from '@azure/arm-resourcegraph';
-import { AzureAccount, azureResource } from 'azurecore';
+import { HttpRequestMethod, extension, IExtension, azureResource, AzureAccount } from 'azurecore';
+import { serversQuery } from './databaseServer/databaseServerService';
+import * as vscode from 'vscode';
 
 export abstract class ResourceTreeDataProviderBase<T extends azureResource.AzureResource> implements azureResource.IAzureResourceTreeDataProvider {
 	public browseConnectionMode: boolean = false;
@@ -65,10 +67,20 @@ export interface GraphData {
 	resourceGroup: string;
 }
 
+async function getAzureCoreAPI(): Promise<IExtension> {
+	const api = (await vscode.extensions.getExtension(extension.name)?.activate()) as IExtension;
+	if (!api) {
+		throw new Error('azure core API undefined for sql-migration');
+	}
+	return api;
+}
 
-export async function queryGraphResources<T extends GraphData>(resourceClient: ResourceGraphClient, subscriptions: azureResource.AzureResourceSubscription[], resourceQuery: string): Promise<T[]> {
+
+export async function queryGraphResources<T extends GraphData>(account: AzureAccount, resourceClient: ResourceGraphClient, subscriptions: azureResource.AzureResourceSubscription[], resourceQuery: string): Promise<T[]> {
 	const allResources: T[] = [];
 	let totalProcessed = 0;
+	const api = await getAzureCoreAPI();
+	let SynapseServers: any[] = [];
 	let doQuery = async (skipToken?: string) => {
 		const response = await resourceClient.resources({
 			subscriptions: subscriptions.map(subscription => subscription.id),
@@ -87,6 +99,14 @@ export async function queryGraphResources<T extends GraphData>(resourceClient: R
 	};
 	try {
 		await doQuery();
+		if (resourceQuery === serversQuery) {
+			for (let subscription of subscriptions) {
+				const path = `/subscriptions/${subscription.id}/providers/Microsoft.Synapse/workspaces?api-version=2021-06-01`;
+				let asyncResponse = await api.makeAzureRestRequest(account, subscription, path, HttpRequestMethod.GET, undefined, false);
+				SynapseServers.concat(asyncResponse.response.data.value);
+			}
+		}
+		console.log('allResources contains ' + allResources);
 	} catch (err) {
 		try {
 			if (err.response?.body) {
@@ -124,7 +144,7 @@ export abstract class ResourceServiceBase<T extends GraphData, U extends azureRe
 	public async getResources(subscriptions: azureResource.AzureResourceSubscription[], credential: msRest.ServiceClientCredentials, account: AzureAccount): Promise<U[]> {
 		const convertedResources: U[] = [];
 		const resourceClient = new ResourceGraphClient(credential, { baseUri: account.properties.providerSettings.settings.armResource.endpoint });
-		const graphResources = await queryGraphResources<T>(resourceClient, subscriptions, this.query);
+		const graphResources = await queryGraphResources<T>(account, resourceClient, subscriptions, this.query);
 		const ids = new Set<string>();
 		graphResources.forEach((res) => {
 			if (!ids.has(res.id)) {
