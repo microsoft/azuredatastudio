@@ -132,6 +132,8 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 	when:
 		ContextKeyExpr.and(
 			TreeNodeContextKey.NodeType.isEqualTo(NodeType.Table),
+			TreeNodeContextKey.SubType.notEqualsTo('LedgerAppendOnly'),
+			TreeNodeContextKey.SubType.notEqualsTo('LedgerDropped'),
 			ConnectionContextKey.Provider.notEqualsTo('KUSTO'),
 			ConnectionContextKey.Provider.notEqualsTo('LOGANALYTICS'),
 			ServerInfoContextKey.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()),
@@ -150,9 +152,13 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 		ContextKeyExpr.and(
 			ConnectionContextKey.Provider.notEqualsTo('KUSTO'),
 			ConnectionContextKey.Provider.notEqualsTo('LOGANALYTICS'),
+			TreeNodeContextKey.SubType.notEqualsTo('LedgerDropped'),
 			ContextKeyExpr.or(
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.Table),
-				TreeNodeContextKey.NodeType.isEqualTo(NodeType.View),
+				ContextKeyExpr.and(
+					TreeNodeContextKey.NodeType.isEqualTo(NodeType.View),
+					TreeNodeContextKey.SubType.notEqualsTo('Ledger'),
+				),
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.Schema),
 				ContextKeyExpr.and(TreeNodeContextKey.NodeType.isEqualTo(NodeType.User), ServerInfoContextKey.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString())),
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.User),
@@ -199,7 +205,8 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.StoredProcedure)),
 			ContextKeyExpr.and(
 				ConnectionContextKey.Provider.isEqualTo('MSSQL'),
-				TreeNodeContextKey.NodeType.isEqualTo(NodeType.View)),
+				TreeNodeContextKey.NodeType.isEqualTo(NodeType.View),
+				TreeNodeContextKey.SubType.notEqualsTo('Ledger')),
 			ContextKeyExpr.and(
 				ConnectionContextKey.Provider.isEqualTo('MSSQL'),
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.AggregateFunction)),
@@ -230,9 +237,13 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 		ContextKeyExpr.and(
 			ConnectionContextKey.Provider.notEqualsTo('KUSTO'),
 			ConnectionContextKey.Provider.notEqualsTo('LOGANALYTICS'),
+			TreeNodeContextKey.SubType.notEqualsTo('LedgerDropped'),
 			ContextKeyExpr.or(
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.Table),
-				TreeNodeContextKey.NodeType.isEqualTo(NodeType.View),
+				ContextKeyExpr.and(
+					TreeNodeContextKey.NodeType.isEqualTo(NodeType.View),
+					TreeNodeContextKey.SubType.notEqualsTo('Ledger'),
+				),
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.Schema),
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.User),
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.UserDefinedTableType),

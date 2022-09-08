@@ -511,7 +511,7 @@
         },
         {
           "command": "mssql.designTable",
-          "when": "connectionProvider == MSSQL && nodeType == Table && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType == Table && nodeSubType != LedgerDropped && config.workbench.enablePreviewFeatures",
           "group": "0_query@3"
         },
         {
