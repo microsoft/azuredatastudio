@@ -81,6 +81,7 @@ export const enum TelemetryAction {
 	DeleteServerGroup = 'DeleteServerGroup',
 	ExecutionPlanNumberOfRowsRead = 'ExecutionPlanNumberOfRowsRead',
 	FindNode = 'FindNode',
+	FindExpensiveOperation = 'FindExpensiveOperation',
 	FirewallRuleRequested = 'FirewallRuleCreated',
 	GenerateScript = 'GenerateScript',
 	GeneratePreviewReport = 'GeneratePreviewReport',
