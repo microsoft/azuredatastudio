@@ -233,7 +233,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 // Create the folder for storing the token caches
 async function findOrMakeStoragePath() {
 	let defaultLogLocation = getDefaultLogLocation();
-	let storagePath = path.join(defaultLogLocation, loc.extensionName);
+	let storagePath = path.join(defaultLogLocation, constants.AzureTokenFolderName);
 
 	try {
 		await fs.mkdir(defaultLogLocation, { recursive: true });
