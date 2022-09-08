@@ -758,7 +758,8 @@
                               "regex": "^[a-z]([-a-z0-9]{0,11}[a-z0-9])?$",
                               "description": "%arc.sql.invalid.instance.name%"
                             }
-                          ]
+                          ],
+                          "placeHolder": "%arc.sql.instance.name.placeholder%"
                         },
                         {
                           "label": "%arc.sql.username%",
@@ -771,7 +772,8 @@
                               "regex": "^(?!system$|sa$).*$",
                               "description": "%arc.sql.invalid.username%"
                             }
-                          ]
+                          ],
+                          "placeHolder": "%arc.sql.username.placeholder%"
                         },
                         {
                           "label": "%arc.password%",
@@ -1378,7 +1380,8 @@
                               "description": "%arc.postgres.server.name.validation.description%"
                             }
                           ],
-                          "required": true
+                          "required": true,
+                          "placeHolder": "%arc.postgres.server.name.placeholder%"
                         },
                         {
                           "label": "%arc.postgres.server.username%",
@@ -1393,7 +1396,8 @@
                             }
                           ],
                           "defaultValue": "",
-                          "enabled": true
+                          "enabled": true,
+                          "placeHolder": "%arc.postgres.server.username.placeholder%"
                         },
                         {
                           "label": "%arc.password%",
