@@ -2775,8 +2775,20 @@ declare module 'azdata' {
 	}
 
 	export class TreeItem extends vscode.TreeItem {
+		/**
+		 * The connection profile that will be used to create the session with the provider for retrieving children.
+		 * No child nodes will be created if not specified.
+		 */
 		payload?: IConnectionProfile | undefined;
+		/**
+		 * Indicates that the children for this node should be retrieved from the specified provider if set, this will retrieve
+		 * all child nodes from the {@link ObjectExplorerProvider}, in addition to any nodes provided by {@link ObjectExplorerNodeProvider}
+		 * with the same provider ID.
+		 */
 		childProvider?: string | undefined;
+		/**
+		 * The type of node this is, used as a context key value for the node if set.
+		 */
 		type?: ExtensionNodeType | undefined;
 	}
 
