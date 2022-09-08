@@ -8,19 +8,33 @@ import { IAzureResourceService } from '../../interfaces';
 import { serversQuery, DbServerGraphData } from '../databaseServer/databaseServerService';
 import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 import { queryGraphResources, GraphData } from '../resourceTreeDataProviderBase';
-import { AzureAccount, azureResource } from 'azurecore';
+import * as azurecore from 'azurecore';
+import * as vscode from 'vscode';
 
 interface DatabaseGraphData extends GraphData {
 	kind: string;
 }
-export class AzureResourceDatabaseService implements IAzureResourceService<azureResource.AzureResourceDatabase> {
-	public async getResources(subscriptions: azureResource.AzureResourceSubscription[], credential: ServiceClientCredentials, account: AzureAccount): Promise<azureResource.AzureResourceDatabase[]> {
-		const databases: azureResource.AzureResourceDatabase[] = [];
-		const resourceClient = new ResourceGraphClient(credential, { baseUri: account.properties.providerSettings.settings.armResource.endpoint });
 
+async function getAzureCoreAPI(): Promise<azurecore.IExtension> {
+	const api = (await vscode.extensions.getExtension(azurecore.extension.name)?.activate()) as azurecore.IExtension;
+	if (!api) {
+		throw new Error('azure core API undefined for sql-migration');
+	}
+	return api;
+}
+
+export class AzureResourceDatabaseService implements IAzureResourceService<azurecore.azureResource.AzureResourceDatabase> {
+	public async getResources(subscriptions: azurecore.azureResource.AzureResourceSubscription[], credential: ServiceClientCredentials, account: azurecore.AzureAccount): Promise<azurecore.azureResource.AzureResourceDatabase[]> {
+		const databases: azurecore.azureResource.AzureResourceDatabase[] = [];
+		const resourceClient = new ResourceGraphClient(credential, { baseUri: account.properties.providerSettings.settings.armResource.endpoint });
+		const api = await getAzureCoreAPI();
+		for (let subscription of subscriptions) {
+			const path = `/subscriptions/${subscription.id}/providers/Microsoft.Synapse/workspaces?api-version=2021-06-01`;
+			const asyncResponse = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true);
+		}
 		// Query servers and databases in parallel (start both promises before waiting on the 1st)
 		let serverQueryPromise = queryGraphResources<GraphData>(resourceClient, subscriptions, serversQuery);
-		let dbQueryPromise = queryGraphResources<GraphData>(resourceClient, subscriptions, `where type == "${azureResource.AzureResourceType.sqlDatabase}"`);
+		let dbQueryPromise = queryGraphResources<GraphData>(resourceClient, subscriptions, `where type == "${azurecore.azureResource.AzureResourceType.sqlDatabase}"`);
 		let servers: DbServerGraphData[] = await serverQueryPromise as DbServerGraphData[];
 		let dbByGraph: DatabaseGraphData[] = await dbQueryPromise as DatabaseGraphData[];
 
