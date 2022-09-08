@@ -1405,6 +1405,17 @@
                           "required": true
                         },
                         {
+                          "label": "%arc.postgres.server.service.type%",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_SERVICE_TYPE",
+                          "type": "options",
+                          "required": true,
+                          "options": {
+                            "values": ["NodePort", "LoadBalancer"],
+                            "defaultValue": "NodePort",
+                            "optionsType": "radio"
+                          }
+                        },
+                        {
                           "label": "%arc.postgres.server.port%",
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_PORT",
                           "type": "number",
@@ -1416,17 +1427,6 @@
                           ],
                           "min": 1,
                           "max": 65535
-                        },
-                        {
-                          "label": "%arc.postgres.server.service.type%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_SERVICE_TYPE",
-                          "type": "options",
-                          "required": true,
-                          "options": {
-                            "values": ["NodePort", "LoadBalancer"],
-                            "defaultValue": "NodePort",
-                            "optionsType": "radio"
-                          }
                         },
                         {
                           "type": "checkbox",
@@ -1505,8 +1505,7 @@
                           "label": "%arc.storage-class.data.label%",
                           "description": "%arc.postgres.storage-class.data.description%",
                           "variableName": "AZDATA_NB_VAR_POSTGRES_STORAGE_CLASS_DATA",
-                          "type": "kube_storage_class",
-                          "required": true
+                          "type": "kube_storage_class"
                         },
                         {
                           "label": "%arc.postgres.server.volume.size.data.label%",
@@ -1520,8 +1519,7 @@
                           "label": "%arc.storage-class.logs.label%",
                           "description": "%arc.postgres.storage-class.logs.description%",
                           "variableName": "AZDATA_NB_VAR_POSTGRES_STORAGE_CLASS_LOGS",
-                          "type": "kube_storage_class",
-                          "required": true
+                          "type": "kube_storage_class"
                         },
                         {
                           "label": "%arc.postgres.server.volume.size.logs.label%",
@@ -1535,8 +1533,7 @@
                           "label": "%arc.storage-class.backups.label%",
                           "description": "%arc.postgres.storage-class.backups.description%",
                           "variableName": "AZDATA_NB_VAR_POSTGRES_STORAGE_CLASS_BACKUPS",
-                          "type": "kube_storage_class",
-                          "required": true
+                          "type": "kube_storage_class"
                         },
                         {
                           "label": "%arc.postgres.server.volume.size.backups.label%",
