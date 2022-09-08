@@ -92,6 +92,23 @@ However we always want it to be the width of the container it is resizing.
 	width: 240px;
 }
 
+/* Find expensive operation view */
+.eps-container .execution-plan .plan .plan-action-container .find-expensive-operation-widget {
+	display: flex;
+	flex-direction: row;
+	padding: 5px;
+	height: auto;
+	width: 240px;
+}
+
+.eps-container .execution-plan .plan .plan-action-container .find-expensive-operation-widget .select-container {
+	margin-left: 5px;
+}
+
+.eps-container .execution-plan .plan .plan-action-container .find-expensive-operation-widget .select-container>select {
+	height: 100%;
+}
+
 /* execution plan header that contains the relative query cost, query statement and recommendations */
 .eps-container .execution-plan .plan .header,
 .top-operations-tab .top-operations-container .query-row {

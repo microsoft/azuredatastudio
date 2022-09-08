@@ -40,7 +40,7 @@ export class FindExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 		@IThemeService public readonly themeService: IThemeService,
 		@INotificationService public readonly notificationService: INotificationService
 	) {
-		super(DOM.$('.find-epensive-operation-view'), 'findExpensiveOperation');
+		super(DOM.$('.find-expensive-operation-widget'), 'findExpensiveOperation');
 		this.renderAndStyleWidget();
 	}
 
@@ -59,7 +59,7 @@ export class FindExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 		], COST_STRING, this.contextViewService, this._operationNameSelectBoxContainer);
 		this._operationNameSelectBox.render(this._operationNameSelectBoxContainer);
 		attachSelectBoxStyler(this._operationNameSelectBox, this.themeService);
-		this._operationNameSelectBoxContainer.style.width = '100px';
+		this._operationNameSelectBoxContainer.style.width = '150px';
 
 		this._operationNameSelectBox.onDidSelect(e => {
 			switch (e.selected) {
