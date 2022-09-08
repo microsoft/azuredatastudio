@@ -768,7 +768,7 @@
                           "validations": [
                             {
                               "type": "regex_match",
-                              "regex": "^(?!.*sa|.*system).*$",
+                              "regex": "^(?!system$|sa$).*$",
                               "description": "%arc.sql.invalid.username%"
                             }
                           ]
@@ -1388,7 +1388,7 @@
                           "validations": [
                             {
                               "type": "regex_match",
-                              "regex": "^(?!.*system).*$",
+                              "regex": "^(?!system$).*$",
                               "description": "%arc.postgres.server.invalid.username%"
                             }
                           ],
