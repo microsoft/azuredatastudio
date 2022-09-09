@@ -152,9 +152,11 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 		ContextKeyExpr.and(
 			ConnectionContextKey.Provider.notEqualsTo('KUSTO'),
 			ConnectionContextKey.Provider.notEqualsTo('LOGANALYTICS'),
-			TreeNodeContextKey.SubType.notEqualsTo('LedgerDropped'),
 			ContextKeyExpr.or(
-				TreeNodeContextKey.NodeType.isEqualTo(NodeType.Table),
+				ContextKeyExpr.and(
+					TreeNodeContextKey.NodeType.isEqualTo(NodeType.Table),
+					TreeNodeContextKey.SubType.notEqualsTo('LedgerDropped')
+				),
 				ContextKeyExpr.and(
 					TreeNodeContextKey.NodeType.isEqualTo(NodeType.View),
 					TreeNodeContextKey.SubType.notEqualsTo('Ledger'),
@@ -237,9 +239,11 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 		ContextKeyExpr.and(
 			ConnectionContextKey.Provider.notEqualsTo('KUSTO'),
 			ConnectionContextKey.Provider.notEqualsTo('LOGANALYTICS'),
-			TreeNodeContextKey.SubType.notEqualsTo('LedgerDropped'),
 			ContextKeyExpr.or(
-				TreeNodeContextKey.NodeType.isEqualTo(NodeType.Table),
+				ContextKeyExpr.and(
+					TreeNodeContextKey.NodeType.isEqualTo(NodeType.Table),
+					TreeNodeContextKey.SubType.notEqualsTo('LedgerDropped')
+				),
 				ContextKeyExpr.and(
 					TreeNodeContextKey.NodeType.isEqualTo(NodeType.View),
 					TreeNodeContextKey.SubType.notEqualsTo('Ledger'),
