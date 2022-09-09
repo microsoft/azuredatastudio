@@ -5132,20 +5132,8 @@ Error: {1}</source>
     <trans-unit id="connectionDialog.connect">
       <source xml:lang="en">Connect</source>
     </trans-unit>
-    <trans-unit id="connectionDialog.connectionProviderNotSupported">
-      <source xml:lang="en">The extension that supports provider type '{0}' is not currently installed. Please install it and try again.</source>
-    </trans-unit>
-    <trans-unit id="connectionDialog.extensionNotInstalled">
-      <source xml:lang="en">The extension '{0}' is required in order to connect to this resource. Please install it and try again.</source>
-    </trans-unit>
     <trans-unit id="connectionDialog.recentConnections">
       <source xml:lang="en">Recent Connections</source>
-    </trans-unit>
-    <trans-unit id="connectionDialog.viewExtension">
-      <source xml:lang="en">View Extension</source>
-    </trans-unit>
-    <trans-unit id="connectionDialog.viewExtensions">
-      <source xml:lang="en">View Extensions</source>
     </trans-unit>
     <trans-unit id="noRecentConnections">
       <source xml:lang="en">No recent connection</source>
@@ -5157,6 +5145,9 @@ Error: {1}</source>
   <file original="src/sql/workbench/services/connection/browser/connectionManagementService" source-language="en" datatype="plaintext"><body>
     <trans-unit id="cancelConnectionConfirmation">
       <source xml:lang="en">Are you sure you want to cancel this connection?</source>
+    </trans-unit>
+    <trans-unit id="connection.extensionNotInstalled">
+      <source xml:lang="en">The extension '{0}' is required in order to connect to this resource. Do you want to install it?</source>
     </trans-unit>
     <trans-unit id="connection.invalidConnectionResult">
       <source xml:lang="en">Connection result is invalid</source>
@@ -5172,6 +5163,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="connection.unsupportedServerVersionWarning">
       <source xml:lang="en">The server version is not supported by Azure Data Studio, you may still connect to it but some features in Azure Data Studio might not work as expected.</source>
+    </trans-unit>
+    <trans-unit id="connectionDialog.connectionProviderNotSupported">
+      <source xml:lang="en">The extension that supports provider type '{0}' is not currently installed. Do you want to view the extensions?</source>
     </trans-unit>
     <trans-unit id="connectionManagementService.noProviderForUri">
       <source xml:lang="en">Could not find provider for uri: {0}</source>
