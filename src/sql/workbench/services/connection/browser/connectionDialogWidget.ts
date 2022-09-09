@@ -43,12 +43,7 @@ import { AsyncServerTree } from 'sql/workbench/services/objectExplorer/browser/a
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ConnectionBrowseTab } from 'sql/workbench/services/connection/browser/connectionBrowseTab';
 import { ElementSizeObserver } from 'vs/editor/browser/config/elementSizeObserver';
-import { ConnectionProviderAndExtensionMap, ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
-import { VIEWLET_ID as ExtensionsViewletID } from 'vs/workbench/contrib/extensions/common/extensions';
-import { ICommandService } from 'vs/platform/commands/common/commands';
-import { IPaneCompositePartService } from 'vs/workbench/services/panecomposite/browser/panecomposite';
-import { ViewContainerLocation } from 'vs/workbench/common/views';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 
 export interface OnShowUIResponse {
 	selectedProviderDisplayName: string;
@@ -129,10 +124,7 @@ export class ConnectionDialogWidget extends Modal {
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
 		@IConfigurationService private _configurationService: IConfigurationService,
-		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
-		@INotificationService private _notificationService: INotificationService,
-		@IPaneCompositePartService private _paneCompositeService: IPaneCompositePartService,
-		@ICommandService private _commandService: ICommandService
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
 	) {
 		super(
 			localize('connection', "Connection"),
@@ -399,9 +391,8 @@ export class ConnectionDialogWidget extends Modal {
 		DOM.append(noRecentConnectionContainer, DOM.$('.no-recent-connections')).innerText = noRecentHistoryLabel;
 	}
 
-	private onConnectionClick(element: IConnectionProfile, connect: boolean = false): void {
-		const isProviderAvailable = this._capabilitiesService.providers[element.providerName] !== undefined;
-		if (isProviderAvailable) {
+	private async onConnectionClick(element: IConnectionProfile, connect: boolean = false): Promise<void> {
+		if (this._capabilitiesService.providers[element.providerName] !== undefined) {
 			if (connect) {
 				this.connect(element);
 			} else {
@@ -409,27 +400,8 @@ export class ConnectionDialogWidget extends Modal {
 			}
 		}
 		else {
-			const extensionId = ConnectionProviderAndExtensionMap.get(element.providerName);
-			if (extensionId) {
-				this._notificationService.prompt(Severity.Error,
-					localize('connectionDialog.extensionNotInstalled', "The extension '{0}' is required in order to connect to this resource. Please install it and try again.", extensionId),
-					[{
-						label: localize('connectionDialog.viewExtension', "View Extension"),
-						run: async () => {
-							this.close();
-							await this._commandService.executeCommand('extension.open', extensionId);
-						}
-					}]);
-			} else {
-				this._notificationService.prompt(Severity.Error,
-					localize('connectionDialog.connectionProviderNotSupported', "The extension that supports provider type '{0}' is not currently installed. Please install it and try again.", element.providerName),
-					[{
-						label: localize('connectionDialog.viewExtensions', "View Extensions"),
-						run: async () => {
-							this.close();
-							await this._paneCompositeService.openPaneComposite(ExtensionsViewletID, ViewContainerLocation.Sidebar);
-						}
-					}]);
+			if (await this.connectionManagementService.handleUnsupportedProvider(element.providerName)) {
+				this.close();
 			}
 		}
 	}
