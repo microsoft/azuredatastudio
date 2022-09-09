@@ -312,7 +312,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 			// If there is no authentication type set, set it using configuration
 			if (!newConnection.authenticationType || newConnection.authenticationType === '') {
-				newConnection.authenticationType = this.getDefaultAuthenticationTypeId();
+				newConnection.authenticationType = this.getDefaultAuthenticationTypeId(newConnection.providerName);
 			}
 
 			// If the password is required and still not loaded show the dialog
@@ -797,8 +797,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return defaultProvider && this._providers.has(defaultProvider) ? defaultProvider : undefined;
 	}
 
-	public getDefaultAuthenticationTypeId(): string {
-		let defaultAuthenticationType = WorkbenchUtils.getSqlConfigValue<string>(this._configurationService, Constants.defaultAuthenticationType);
+	public getDefaultAuthenticationTypeId(providerName: string): string {
+		// only return the default authentication type if the provider supports the AuthType option.
+		// Other issues with the implementation is tracked here: https://github.com/microsoft/azuredatastudio/issues/20573
+		const authOption = this._capabilitiesService.getCapabilities(providerName)?.connection.connectionOptions?.find(option => option.specialValueType === ConnectionOptionSpecialType.authType);
+		const defaultAuthenticationType = authOption ? WorkbenchUtils.getSqlConfigValue<string>(this._configurationService, Constants.defaultAuthenticationType) : undefined;
 		return defaultAuthenticationType;
 	}
 
