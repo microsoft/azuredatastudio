@@ -3084,12 +3084,24 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/mssql/package.mssql.query.maxCharsToStore" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Maximum number of characters/bytes to store for each value in character/binary columns after running a query. Default value: 65,535. Valid value range: 1 to 2,147,483,647.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Die maximale Anzahl von Zeichen/Bytes, die nach dem Ausführen einer Abfrage für jeden Wert in Zeichenspalten/binären Spalten gespeichert werden sollen. Standardwert: 65.535. Gültiger Wertebereich: 1 bis 2.147.483.647.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/mssql/package.mssql.query.maxXmlCharsToStore" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Number of XML characters to store after running a query]]></Val>
+          <Val><![CDATA[Maximum number of characters to store for each value in XML columns after running a query. Default value: 2,097,152. Valid value range: 1 to 2,147,483,647.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Anzahl von XML-Zeichen, die nach dem Ausführen einer Abfrage gespeichert werden sollen]]></Val>
+            <Val><![CDATA[Die maximale Anzahl von Zeichen, die nach dem Ausführen einer Abfrage für jeden Wert in XML-Spalten gespeichert werden sollen. Standardwert: 2.097.152. Gültiger Wertebereich: 1 bis 2.147.483.647.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Number of XML characters to store after running a query]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
