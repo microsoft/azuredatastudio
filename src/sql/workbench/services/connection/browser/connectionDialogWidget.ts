@@ -44,6 +44,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { ConnectionBrowseTab } from 'sql/workbench/services/connection/browser/connectionBrowseTab';
 import { ElementSizeObserver } from 'vs/editor/browser/config/elementSizeObserver';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 export interface OnShowUIResponse {
 	selectedProviderDisplayName: string;
@@ -219,7 +220,7 @@ export class ConnectionDialogWidget extends Modal {
 
 		this._register(this.browsePanel.view.onSelectedConnectionChanged(e => {
 			this._connectionSource = e.source;
-			this.onConnectionClick(e.connectionProfile, e.connect);
+			this.onConnectionClick(e.connectionProfile, e.connect).catch(onUnexpectedError);
 		}));
 
 		this._panel.pushTab(this.browsePanel);
@@ -347,7 +348,7 @@ export class ConnectionDialogWidget extends Modal {
 			if (element instanceof ConnectionProfile) {
 				const isDoubleClick = origin === 'mouse' && (eventish as MouseEvent).detail === 2;
 				this._connectionSource = 'recent';
-				this.onConnectionClick(element, isDoubleClick);
+				this.onConnectionClick(element, isDoubleClick).catch(onUnexpectedError);
 			}
 		};
 		const actionProvider = this.instantiationService.createInstance(RecentConnectionActionsProvider);
@@ -369,13 +370,13 @@ export class ConnectionDialogWidget extends Modal {
 			this._recentConnectionTree.onMouseClick(e => {
 				if (e.element instanceof ConnectionProfile) {
 					this._connectionSource = 'recent';
-					this.onConnectionClick(e.element, false);
+					this.onConnectionClick(e.element, false).catch(onUnexpectedError);
 				}
 			});
 			this._recentConnectionTree.onMouseDblClick(e => {
 				if (e.element instanceof ConnectionProfile) {
 					this._connectionSource = 'recent';
-					this.onConnectionClick(e.element, true);
+					this.onConnectionClick(e.element, true).catch(onUnexpectedError);
 				}
 			});
 		}
