@@ -322,4 +322,8 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	refreshAzureAccountTokenIfNecessary(uri: string): Promise<boolean> {
 		return undefined;
 	}
+
+	async handleUnsupportedProvider(providerName: string): Promise<boolean> {
+		return true;
+	}
 }

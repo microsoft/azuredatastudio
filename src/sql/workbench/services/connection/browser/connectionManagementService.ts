@@ -14,7 +14,7 @@ import { ConnectionStore } from 'sql/platform/connection/common/connectionStore'
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import * as Utils from 'sql/platform/connection/common/utils';
 import * as Constants from 'sql/platform/connection/common/constants';
-import { ICapabilitiesService, ConnectionProviderProperties, ProviderFeatures } from 'sql/platform/capabilities/common/capabilitiesService';
+import { ICapabilitiesService, ConnectionProviderProperties, ProviderFeatures, ConnectionProviderAndExtensionMap } from 'sql/platform/capabilities/common/capabilitiesService';
 import * as ConnectionContracts from 'sql/workbench/services/connection/browser/connection';
 import { ConnectionStatusManager } from 'sql/platform/connection/common/connectionStatusManager';
 import { DashboardInput } from 'sql/workbench/browser/editor/profiler/dashboardInput';
@@ -51,6 +51,11 @@ import { toErrorMessage } from 'vs/base/common/errorMessage';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 import { URI } from 'vs/base/common/uri';
 import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
+import { ICommandService } from 'vs/platform/commands/common/commands';
+import { IPaneCompositePartService } from 'vs/workbench/services/panecomposite/browser/panecomposite';
+import { ViewContainerLocation } from 'vs/workbench/common/views';
+import { VIEWLET_ID as ExtensionsViewletID } from 'vs/workbench/contrib/extensions/common/extensions';
+import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
@@ -94,7 +99,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		@IAccountManagementService private _accountManagementService: IAccountManagementService,
 		@ILogService private _logService: ILogService,
 		@IStorageService private _storageService: IStorageService,
-		@IExtensionService private readonly extensionService: IExtensionService
+		@IExtensionService private readonly _extensionService: IExtensionService,
+		@ICommandService private readonly _commandService: ICommandService,
+		@IPaneCompositePartService private readonly _paneCompositePartService: IPaneCompositePartService,
+		@IDialogService private readonly _dialogService: IDialogService
 	) {
 		super();
 
@@ -981,7 +989,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			options: connection.options
 		});
 
-		await this.extensionService.activateByEvent(`onConnect:${connection.providerName}`);
+		await this._extensionService.activateByEvent(`onConnect:${connection.providerName}`);
 
 		return this._providers.get(connection.providerName).onReady.then((provider) => {
 			provider.connect(uri, connectionInfo);
@@ -1648,5 +1656,23 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			}
 		}
 		return connections;
+	}
+
+	async handleUnsupportedProvider(providerName: string): Promise<boolean> {
+		const extensionId = ConnectionProviderAndExtensionMap.get(providerName);
+		const message = extensionId ? nls.localize('connection.extensionNotInstalled', "The extension '{0}' is required in order to connect to this resource. Do you want to install it?", extensionId) :
+			nls.localize('connectionDialog.connectionProviderNotSupported', "The extension that supports provider type '{0}' is not currently installed. Do you want to view the extensions?", providerName);
+		const result = await this._dialogService.confirm({
+			message: message,
+			type: 'question'
+		});
+		if (result.confirmed) {
+			if (extensionId) {
+				await this._commandService.executeCommand('extension.open', extensionId);
+			} else {
+				await this._paneCompositePartService.openPaneComposite(ExtensionsViewletID, ViewContainerLocation.Sidebar);
+			}
+		}
+		return result.confirmed;
 	}
 }
