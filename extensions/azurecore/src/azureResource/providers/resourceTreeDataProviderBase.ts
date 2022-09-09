@@ -68,6 +68,8 @@ export interface GraphData {
 	resourceGroup: string;
 }
 
+
+
 export async function queryGraphResources<T extends GraphData>(resourceClient: ResourceGraphClient, subscriptions: azureResource.AzureResourceSubscription[], resourceQuery: string, account?: AzureAccount): Promise<T[]> {
 	const allResources: T[] = [];
 	let totalProcessed = 0;
@@ -94,7 +96,18 @@ export async function queryGraphResources<T extends GraphData>(resourceClient: R
 			for (let subscription of subscriptions) {
 				const path = `/subscriptions/${subscription.id}/providers/Microsoft.Synapse/workspaces?api-version=2021-06-01`;
 				let asyncResponse = await azureResourceUtils.makeHttpRequest(account, subscription, path, HttpRequestMethod.GET, undefined, false);
-				SynapseServers.concat(asyncResponse.response.data.value);
+				SynapseServers = SynapseServers.concat(asyncResponse.response.data.value);
+			}
+			for (let t = 0; t < allResources.length; t++) {
+				for (let i = 0; i < SynapseServers.length; i++) {
+					if (SynapseServers[i].name === allResources[t].name
+						&& SynapseServers[i].identity.tenantId === allResources[t].tenantId
+						&& SynapseServers[i].properties.managedResourceGroupName === allResources[t].resourceGroup
+						&& SynapseServers[i].location === allResources[t].location) {
+						// Replace incorrect fullyQualifiedDomainName with correct SQL one.
+						(allResources[t] as any).properties.fullyQualifiedDomainName = SynapseServers[i].properties.connectivityEndpoints.sql;
+					}
+				}
 			}
 		}
 	} catch (err) {
