@@ -69,12 +69,11 @@ export abstract class CellView extends AngularDisposable implements OnDestroy, I
 		range = range ?? this.highlightRange;
 		if (this.output && this.output.nativeElement) {
 			this.highlightAllMatches();
-			if (range) {
+			if (range && range.cell.active) {
 				let elements = this.getHtmlElements();
 				if (elements?.length >= range.startLineNumber) {
 					let elementContainingText = elements[range.startLineNumber - 1];
 					let markCurrent = new Mark(elementContainingText); // to highlight the current item of them all.
-
 					markCurrent.markRanges([{
 						start: range.startColumn - 1, //subtracting 1 since markdown html is 0 indexed.
 						length: range.endColumn - range.startColumn
