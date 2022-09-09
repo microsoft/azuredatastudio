@@ -94,13 +94,13 @@ export class FindExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 			}
 		};
 
-		const applyButton = new Button(this.container, {
+		const findButton = new Button(this.container, {
 			title: localize('findExpensiveOperationButtonTitle', 'Find Expensive Operation (Enter)')
 		});
-		applyButton.setWidth('60px');
-		applyButton.label = localize('findExpensiveOperationApplyButton', 'Apply');
+		findButton.setWidth('60px');
+		findButton.label = localize('findExpensiveOperationApplyButton', 'Find');
 
-		applyButton.onDidClick(async e => {
+		findButton.onDidClick(async e => {
 			await new FindExpensiveOperationAction().run(self);
 		});
 
@@ -183,7 +183,10 @@ export class FindExpensiveOperationAction extends Action {
 		const expensiveOperationDelegate: (cell: AzDataGraphCell) => number | undefined = context.getExpensiveOperationDelegate();
 
 		context.executionPlanDiagram.clearExpensiveOperatorHighlighting();
-		context.executionPlanDiagram.highlightExpensiveOperator(expensiveOperationDelegate);
+		let result = context.executionPlanDiagram.highlightExpensiveOperator(expensiveOperationDelegate);
+		if (!result) {
+			context.notificationService.info(localize('invalidPropertyExecutionPlanMetric', 'Unable to locate a node using the specified metric.'));
+		}
 	}
 }
 

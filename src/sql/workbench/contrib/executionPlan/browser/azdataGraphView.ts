@@ -231,8 +231,8 @@ export class AzdataGraphView {
 		this._diagram.clearExpensiveOperatorHighlighting();
 	}
 
-	public highlightExpensiveOperator(predicate: (cell: AzDataGraphCell) => number): void {
-		this._diagram.highlightExpensiveOperator(predicate);
+	public highlightExpensiveOperator(predicate: (cell: AzDataGraphCell) => number): boolean {
+		return this._diagram.highlightExpensiveOperator(predicate);
 	}
 
 	/**
