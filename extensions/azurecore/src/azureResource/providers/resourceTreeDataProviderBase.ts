@@ -9,7 +9,7 @@ import * as msRest from '@azure/ms-rest-js';
 import { IAzureResourceService } from '../interfaces';
 import { AzureResourceErrorMessageUtil } from '../utils';
 import { ResourceGraphClient } from '@azure/arm-resourcegraph';
-import { azureResource, AzureAccount } from 'azurecore';
+import { AzureAccount, azureResource } from 'azurecore';
 
 export abstract class ResourceTreeDataProviderBase<T extends azureResource.AzureResource> implements azureResource.IAzureResourceTreeDataProvider {
 	public browseConnectionMode: boolean = false;
@@ -64,6 +64,7 @@ export interface GraphData {
 	type: string;
 	resourceGroup: string;
 }
+
 
 export async function queryGraphResources<T extends GraphData>(resourceClient: ResourceGraphClient, subscriptions: azureResource.AzureResourceSubscription[], resourceQuery: string): Promise<T[]> {
 	const allResources: T[] = [];
