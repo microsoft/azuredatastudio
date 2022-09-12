@@ -11,6 +11,7 @@ export interface DbServerGraphData extends GraphData {
 	properties: {
 		fullyQualifiedDomainName: string;
 		administratorLogin: string;
+		connectivityEndpoints?: { sql: string };
 	};
 }
 
@@ -26,7 +27,7 @@ export class AzureResourceDatabaseServerService extends ResourceServiceBase<DbSe
 		return {
 			id: resource.id,
 			name: resource.name,
-			fullName: resource.properties.fullyQualifiedDomainName,
+			fullName: resource.properties.connectivityEndpoints?.sql || resource.properties.fullyQualifiedDomainName,
 			loginName: resource.properties.administratorLogin,
 			defaultDatabaseName: 'master',
 			subscription: {
