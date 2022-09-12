@@ -66,8 +66,8 @@ The same principle can be applied to the vscode/azdata APIs. The object in this 
 #### Mocking Events through TypeMoq
 Mocking Events can be done by setting up the mocked property to return the the event. In order to have the event callback be registered, the promise that registers the mock element must be setup prior to the event firing. Therefore, once the event is fired it will be triggered as expected.
 
-```
-Example of an event mock using TypeMoq: 
+**Example of an event mock using TypeMoq:**
+``` typescript
 // create test event emitter
 const onDidChangeSelectionEventEmitter = new vscode.EventEmitter<IConnectionCredentialsQuickPickItem[]>();
 // setup the mock property to return the test event 
