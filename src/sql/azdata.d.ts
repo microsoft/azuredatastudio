@@ -60,7 +60,7 @@ declare module 'azdata' {
 		export function getProvidersByType<T extends DataProvider>(providerType: DataProviderType): T[];
 
 		/**
-		 * An [event](#Event) which fires when the specific flavor of a language used in DMP
+		 * An {@link vscode.Event} which fires when the specific flavor of a language used in DMP
 		 * connections has changed. And example is for a SQL connection, the flavor changes
 		 * to MSSQL
 		 */
@@ -2353,7 +2353,7 @@ declare module 'azdata' {
 		export function getAccountSecurityToken(account: Account, tenantId: string, resource: AzureResource): Thenable<AccountSecurityToken | undefined>;
 
 		/**
-		 * An [event](#Event) which fires when the accounts have changed.
+		 * An {@link vscode.Event} which fires when the accounts have changed.
 		 */
 		export const onDidChangeAccounts: vscode.Event<DidChangeAccountsParams>;
 	}
@@ -2727,12 +2727,12 @@ declare module 'azdata' {
 	 */
 	export namespace workspace {
 		/**
-		 * An event that is emitted when a [dashboard](#DashboardDocument) is opened.
+		 * An event that is emitted when a {@link DashboardDocument} is opened.
 		 */
 		export const onDidOpenDashboard: vscode.Event<DashboardDocument>;
 
 		/**
-		 * An event that is emitted when a [dashboard](#DashboardDocument) is focused.
+		 * An event that is emitted when a {@link DashboardDocument} is focused.
 		 */
 		export const onDidChangeToDashboard: vscode.Event<DashboardDocument>;
 
@@ -2757,7 +2757,7 @@ declare module 'azdata' {
 			openEditor(position?: vscode.ViewColumn): Thenable<void>;
 
 			/**
-			 * Registers a save handler for this editor. This will be called if [supportsSave](#ModelViewEditorOptions.supportsSave)
+			 * Registers a save handler for this editor. This will be called if {@link ModelViewEditorOptions.supportsSave}
 			 * is set to true and the editor is marked as dirty
 			 */
 			registerSaveHandler(handler: () => Thenable<boolean>): void;
@@ -5213,7 +5213,7 @@ declare module 'azdata' {
 		 *
 		 * @param options Options to control how the document will be created.
 		 * @param providerId Optional provider ID this editor will be associated with. Defaults to MSSQL.
-		 * @return A promise that resolves to a [document](#QueryDocument).
+		 * @return A promise that resolves to a {@link QueryDocument}.
 		 */
 		export function openQueryDocument(options?: { content?: string; }, providerId?: string): Thenable<QueryDocument>;
 	}
@@ -5448,20 +5448,20 @@ declare module 'azdata' {
 		export let visibleNotebookEditors: NotebookEditor[];
 
 		/**
-		 * An event that is emitted when a [notebook document](#NotebookDocument) is opened.
+		 * An event that is emitted when a {@link NotebookDocument} is opened.
 		 *
-		 * To add an event listener when a visible text document is opened, use the [TextEditor](#TextEditor) events in the
-		 * [window](#window) namespace. Note that:
+		 * To add an event listener when a visible text document is opened, use the {@link TextEditor} events in the
+		 * {@link window} namespace. Note that:
 		 *
-		 * - The event is emitted before the [document](#NotebookDocument) is updated in the
-		 * [active notebook editor](#nb.activeNotebookEditor)
-		 * - When a [notebook document](#NotebookDocument) is already open (e.g.: open in another visible notebook editor) this event is not emitted
+		 * - The event is emitted before the {@link NotebookDocument} is updated in the
+		 * {@link nb.activeNotebookEditor}
+		 * - When a {@link NotebookDocument} is already open (e.g.: open in another visible notebook editor) this event is not emitted
 		 *
 		 */
 		export const onDidOpenNotebookDocument: vscode.Event<NotebookDocument>;
 
 		/**
-		 * An event that is emitted when a [notebook's](#NotebookDocument) cell contents are changed.
+		 * An event that is emitted when a {@link NotebookDocument} cell contents are changed.
 		 */
 		export const onDidChangeNotebookCell: vscode.Event<NotebookCellChangeEvent>;
 
@@ -5471,10 +5471,10 @@ declare module 'azdata' {
 		export const onDidChangeActiveNotebookEditor: vscode.Event<NotebookEditor>;
 
 		/**
-		 * Show the given document in a notebook editor. A [column](#ViewColumn) can be provided
-		 * to control where the editor is being shown. Might change the [active editor](#nb.activeNotebookEditor).
+		 * Show the given document in a notebook editor. A {@link vscode.ViewColumn} can be provided
+		 * to control where the editor is being shown. Might change the {@link nb.activeNotebookEditor}.
 		 *
-		 * The document is denoted by an [uri](#Uri). Depending on the [scheme](#Uri.scheme) the
+		 * The document is denoted by an {@link Uri}. Depending on the {@link Uri.scheme} the
 		 * following rules apply:
 		 * `file`-scheme: Open a file on disk, will be rejected if the file does not exist or cannot be loaded.
 		 * `untitled`-scheme: A new file that should be saved on disk, e.g. `untitled:c:\frodo\new.js`. The language
@@ -5482,11 +5482,11 @@ declare module 'azdata' {
 		 * For all other schemes the registered notebook providers are consulted.
 		 *
 		 * @param document A document to be shown.
-		 * @param column A view column in which the [editor](#NotebookEditor) should be shown. The default is the [active](#ViewColumn.Active), other values
-		 * are adjusted to be `Min(column, columnCount + 1)`, the [active](#ViewColumn.Active)-column is not adjusted. Use [`ViewColumn.Beside`](#ViewColumn.Beside)
+		 * @param column A view column in which the {@link NotebookEditor} should be shown. The default is the {@link vscode.ViewColumn}, other values
+		 * are adjusted to be `Min(column, columnCount + 1)`, the {@link vscode.ViewColumn.Active}-column is not adjusted. Use {@link vscode.ViewColumn.Beside}
 		 * to open the editor to the side of the currently active one.
 		 * @param preserveFocus When `true` the editor will not take focus.
-		 * @return A promise that resolves to a [notebook editor](#NotebookEditor).
+		 * @return A promise that resolves to a {@link NotebookEditor}.
 		 */
 		export function showNotebookDocument(uri: vscode.Uri, showOptions?: NotebookShowOptions): Thenable<NotebookEditor>;
 
@@ -5502,14 +5502,14 @@ declare module 'azdata' {
 
 			/**
 			 * The file system path of the associated resource. Shorthand
-			 * notation for [TextDocument.uri.fsPath](#TextDocument.uri). Independent of the uri scheme.
+			 * notation for {@link vscode.TextDocument.uri}. Independent of the uri scheme.
 			 */
 			readonly fileName: string;
 
 			/**
 			 * Is this document representing an untitled file which has never been saved yet. *Note* that
-			 * this does not mean the document will be saved to disk, use [`uri.scheme`](#Uri.scheme)
-			 * to figure out where a document will be [saved](#FileSystemProvider), e.g. `file`, `ftp` etc.
+			 * this does not mean the document will be saved to disk, use {@link vscode.Uri.scheme}
+			 * to figure out where a document will be {@link vscode.FileSystemProvider}, e.g. `file`, `ftp` etc.
 			 */
 			readonly isUntitled: boolean;
 
@@ -5559,18 +5559,18 @@ declare module 'azdata' {
 
 		/**
 		 * A cell range represents an ordered pair of two positions in a list of cells.
-		 * It is guaranteed that [start](#CellRange.start).isBeforeOrEqual([end](#CellRange.end))
+		 * It is guaranteed that {@link CellRange.start}.isBeforeOrEqual({@link CellRange.end})
 		 *
 		 * CellRange objects are __immutable__.
 		 */
 		export class CellRange {
 			/**
-			 * The start index. It is before or equal to [end](#CellRange.end).
+			 * The start index. It is before or equal to {@link CellRange.end}.
 			 */
 			readonly start: number;
 
 			/**
-			 * The end index. It is after or equal to [start](#CellRange.start).
+			 * The end index. It is after or equal to {@link CellRange.start}.
 			 */
 			readonly end: number;
 
@@ -5599,11 +5599,11 @@ declare module 'azdata' {
 			/**
 			 * Perform an edit on the document associated with this notebook editor.
 			 *
-			 * The given callback-function is invoked with an [edit-builder](#NotebookEditorEdit) which must
+			 * The given callback-function is invoked with an {@link NotebookEditorEdit} which must
 			 * be used to make edits. Note that the edit-builder is only valid while the
 			 * callback executes.
 			 *
-			 * @param callback A function which can create edits using an [edit-builder](#NotebookEditorEdit).
+			 * @param callback A function which can create edits using an {@link NotebookEditorEdit}.
 			 * @param options The undo/redo behavior around this edit. By default, undo stops will be created before and after this edit.
 			 * @return A promise that resolves with a value indicating if the edits could be applied.
 			 */
@@ -5647,21 +5647,21 @@ declare module 'azdata' {
 
 		export interface NotebookShowOptions {
 			/**
-			 * An optional view column in which the [editor](#NotebookEditor) should be shown.
-			 * The default is the [active](#ViewColumn.Active), other values are adjusted to
-			 * be `Min(column, columnCount + 1)`, the [active](#ViewColumn.Active)-column is
-			 * not adjusted. Use [`ViewColumn.Beside`](#ViewColumn.Beside) to open the
+			 * An optional view column in which the {@link NotebookEditor} should be shown.
+			 * The default is the {@link vscode.ViewColumn.Active}, other values are adjusted to
+			 * be `Min(column, columnCount + 1)`, the {@link vscode.ViewColumn.Active}-column is
+			 * not adjusted. Use {@link vscode.ViewColumn.Beside} to open the
 			 * editor to the side of the currently active one.
 			 */
 			viewColumn?: vscode.ViewColumn | undefined;
 
 			/**
-			 * An optional flag that when `true` will stop the [editor](#NotebookEditor) from taking focus.
+			 * An optional flag that when `true` will stop the {@link NotebookEditor} from taking focus.
 			 */
 			preserveFocus?: boolean | undefined;
 
 			/**
-			 * An optional flag that controls if an [editor](#NotebookEditor)-tab will be replaced
+			 * An optional flag that controls if an {@link NotebookEditor}-tab will be replaced
 			 * with the next editor or if it will be kept.
 			 */
 			preview?: boolean | undefined;
@@ -5693,19 +5693,19 @@ declare module 'azdata' {
 		}
 
 		/**
-		 * Represents an event describing the change in a [notebook document's cells](#NotebookDocument.cells).
+		 * Represents an event describing the change in a {@link NotebookDocument.cells}.
 		 */
 		export interface NotebookCellChangeEvent {
 			/**
-			 * The [notebook document](#NotebookDocument) for which the selections have changed.
+			 * The {@link NotebookDocument} for which the selections have changed.
 			 */
 			notebook: NotebookDocument;
 			/**
-			 * The new value for the [notebook document's cells](#NotebookDocument.cells).
+			 * The new value for the {@link NotebookDocument.cells}.
 			 */
 			cells: NotebookCell[];
 			/**
-			 * The [change kind](#NotebookChangeKind) which has triggered this
+			 * The {@link NotebookChangeKind} which has triggered this
 			 * event. Can be `undefined`.
 			 */
 			kind?: NotebookChangeKind | undefined;
@@ -5721,7 +5721,7 @@ declare module 'azdata' {
 		/**
 		 * A complex edit that will be applied in one transaction on a NotebookEditor.
 		 * This holds a description of the edits and if the edits are valid (i.e. no overlapping regions, document was not changed in the meantime, etc.)
-		 * they can be applied on a [document](#NotebookDocument) associated with a [Notebook editor](#NotebookEditor).
+		 * they can be applied on a {@link NotebookDocument} associated with a {@link NotebookEditor}.
 		 *
 		 */
 		export interface NotebookEditorEdit {
