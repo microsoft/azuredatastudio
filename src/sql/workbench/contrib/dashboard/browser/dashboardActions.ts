@@ -107,6 +107,11 @@ export class OEManageConnectionAction extends Action {
 			return true;
 		}
 
+		if (!this._capabilitiesService.getCapabilities(connectionProfile.providerName)) {
+			this._connectionManagementService.handleUnsupportedProvider(connectionProfile.providerName);
+			return true;
+		}
+
 		let options: IConnectionCompletionOptions = {
 			params: undefined,
 			saveTheConnection: false,

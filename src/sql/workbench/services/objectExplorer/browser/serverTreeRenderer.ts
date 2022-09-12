@@ -6,7 +6,6 @@
 import 'vs/css!./media/objectTypes/objecttypes';
 
 import * as dom from 'vs/base/browser/dom';
-import { localize } from 'vs/nls';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ITree, IRenderer } from 'vs/base/parts/tree/browser/tree';
@@ -227,10 +226,6 @@ export class ServerTreeRenderer implements IRenderer {
 		this.renderServerIcon(templateData.icon, iconPath, isConnected);
 
 		let label = connection.title;
-		if (!connection.isConnectionOptionsValid) {
-			label = localize('loading', "Loading...");
-		}
-
 		templateData.label.textContent = label;
 		templateData.root.title = connection.serverInfo;
 		templateData.connectionProfile = connection;
