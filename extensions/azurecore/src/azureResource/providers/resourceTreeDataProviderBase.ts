@@ -8,11 +8,8 @@ import * as msRest from '@azure/ms-rest-js';
 
 import { IAzureResourceService } from '../interfaces';
 import { AzureResourceErrorMessageUtil } from '../utils';
-import * as azureResourceUtils from '../../azureResource/utils';
 import { ResourceGraphClient } from '@azure/arm-resourcegraph';
-import { HttpRequestMethod, azureResource, AzureAccount } from 'azurecore';
-
-export const serverQueryString = `where type == "${azureResource.AzureResourceType.sqlServer}"`;
+import { azureResource, AzureAccount } from 'azurecore';
 
 export abstract class ResourceTreeDataProviderBase<T extends azureResource.AzureResource> implements azureResource.IAzureResourceTreeDataProvider {
 	public browseConnectionMode: boolean = false;
@@ -68,9 +65,26 @@ export interface GraphData {
 	resourceGroup: string;
 }
 
+const synapseQuery = 'type == "microsoft.synapse/workspaces"';
 
+export async function filterOutDiffKindServers(serverList: GraphData[], resourceClient: ResourceGraphClient, subscriptions: azureResource.AzureResourceSubscription[]): Promise<GraphData[]> {
+	// Section - Synapse
+	const synapseServers = await queryGraphResources<GraphData>(resourceClient, subscriptions, synapseQuery);
+	return serverList.filter(function (element) {
+		for (let i = 0; i < synapseServers.length; i++) {
+			if (element.name === synapseServers[i].name
+				&& element.tenantId === synapseServers[i].tenantId
+				&& element.subscriptionId === synapseServers[i].subscriptionId
+				&& element.location === synapseServers[i].location
+				&& element.resourceGroup === (synapseServers[i] as any).properties.managedResourceGroupName) {
+				return false;
+			}
+		}
+		return true;
+	});
+}
 
-export async function queryGraphResources<T extends GraphData>(resourceClient: ResourceGraphClient, subscriptions: azureResource.AzureResourceSubscription[], resourceQuery: string, account?: AzureAccount): Promise<T[]> {
+export async function queryGraphResources<T extends GraphData>(resourceClient: ResourceGraphClient, subscriptions: azureResource.AzureResourceSubscription[], resourceQuery: string): Promise<T[]> {
 	const allResources: T[] = [];
 	let totalProcessed = 0;
 	let doQuery = async (skipToken?: string) => {
@@ -91,25 +105,6 @@ export async function queryGraphResources<T extends GraphData>(resourceClient: R
 	};
 	try {
 		await doQuery();
-		if (resourceQuery === serverQueryString && account) {
-			let SynapseServers: any[] = [];
-			for (let subscription of subscriptions) {
-				const path = `/subscriptions/${subscription.id}/providers/Microsoft.Synapse/workspaces?api-version=2021-06-01`;
-				let asyncResponse = await azureResourceUtils.makeHttpRequest(account, subscription, path, HttpRequestMethod.GET, undefined, false);
-				SynapseServers = SynapseServers.concat(asyncResponse.response.data.value);
-			}
-			for (let t = 0; t < allResources.length; t++) {
-				for (let i = 0; i < SynapseServers.length; i++) {
-					if (SynapseServers[i].name === allResources[t].name
-						&& SynapseServers[i].identity.tenantId === allResources[t].tenantId
-						&& SynapseServers[i].properties.managedResourceGroupName === allResources[t].resourceGroup
-						&& SynapseServers[i].location === allResources[t].location) {
-						// Replace incorrect fullyQualifiedDomainName with correct SQL one.
-						(allResources[t] as any).properties.fullyQualifiedDomainName = SynapseServers[i].properties.connectivityEndpoints.sql;
-					}
-				}
-			}
-		}
 	} catch (err) {
 		try {
 			if (err.response?.body) {
@@ -147,7 +142,7 @@ export abstract class ResourceServiceBase<T extends GraphData, U extends azureRe
 	public async getResources(subscriptions: azureResource.AzureResourceSubscription[], credential: msRest.ServiceClientCredentials, account: AzureAccount): Promise<U[]> {
 		const convertedResources: U[] = [];
 		const resourceClient = new ResourceGraphClient(credential, { baseUri: account.properties.providerSettings.settings.armResource.endpoint });
-		const graphResources = await queryGraphResources<T>(resourceClient, subscriptions, this.query, account);
+		const graphResources = await queryGraphResources<T>(resourceClient, subscriptions, this.query);
 		const ids = new Set<string>();
 		graphResources.forEach((res) => {
 			if (!ids.has(res.id)) {
