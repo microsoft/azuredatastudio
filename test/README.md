@@ -63,6 +63,24 @@ The same principle can be applied to the vscode/azdata APIs. The object in this 
 
 **IMPORTANT** When using Sinon make sure to call `sinon.restore()` after every test run (using `afterEach` typically) to ensure that the stub doesn't affect other tests.
 
+#### Mocking Events through TypeMoq
+Mocking Events can be done by setting up the mocked property to return the the event. In order to have the event callback be registered, the promise that registers the mock element must be setup prior to the event firing. Therefore, once the event is fired it will be triggered as expected.
+
+```
+Example of an event mock using TypeMoq: 
+// create test event emitter
+const onDidChangeSelectionEventEmitter = new vscode.EventEmitter<IConnectionCredentialsQuickPickItem[]>();
+// setup the mock property to return the test event 
+quickPickMock.setup(q => q.onDidChangeSelection).returns(() => onDidChangeSelectionEventEmitter.event);
+
+// register the function that is being tested 
+const promptPromise = connectionUI.promptForConnection();
+// Trigger onDidChangeSelection event to simulate user selecting item
+onDidChangeSelectionEventEmitter.fire([item]);
+// await the registered promise
+await promptPromise;
+```
+
 ### azdata-test package
 
 The [@microsoft/azdata-test](https://www.npmjs.com/package/@microsoft/azdata-test) package contains a number of things that may be helpful to extension tests. These include stubs, mocks and general helper functions that many extensions may need to use - such as common patterns for mocking out parts of the extension API.
@@ -78,3 +96,5 @@ Once ran the combined coverage report will be located in `./test/coverage`.
 ### When debugging extension unit tests my breakpoints aren't being hit
 
 There's a known issue when code coverage is enabled that breakpoints won't be hit. See https://github.com/microsoft/azuredatastudio/issues/17985 for more details and a workaround.
+
+
