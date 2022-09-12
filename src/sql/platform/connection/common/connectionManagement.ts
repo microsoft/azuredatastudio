@@ -221,7 +221,7 @@ export interface IConnectionManagementService {
 	/**
 	 * Gets the default authentication type from the configuration service
 	 */
-	getDefaultAuthenticationTypeId(): string;
+	getDefaultAuthenticationTypeId(providerName: string): string;
 
 	/**
 	 * Cancels the connection

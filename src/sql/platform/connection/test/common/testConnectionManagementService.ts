@@ -306,7 +306,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return undefined!;
 	}
 
-	getDefaultAuthenticationTypeId(): string {
+	getDefaultAuthenticationTypeId(providerName: string): string {
 		return undefined!;
 	}
 
