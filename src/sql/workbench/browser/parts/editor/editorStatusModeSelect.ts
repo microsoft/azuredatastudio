@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
-import { IEditorInput } from 'vs/workbench/common/editor';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { getCodeEditor } from 'vs/editor/browser/editorBrowser';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -13,18 +12,19 @@ import { Registry } from 'vs/platform/registry/common/platform';
 
 import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { IModeSupport } from 'vs/workbench/services/textfile/common/textfiles';
+import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 
 const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
 
 /**
  * Handles setting a mode from the editor status and converts inputs if necessary
  */
-export async function setMode(accessor: ServicesAccessor, modeSupport: IModeSupport, activeEditor: IEditorInput, language: string): Promise<void> {
+export async function setMode(accessor: ServicesAccessor, modeSupport: IModeSupport, activeEditor: EditorInput, language: string): Promise<void> {
 	const editorService = accessor.get(IEditorService);
 	const activeWidget = getCodeEditor(editorService.activeTextEditorControl);
 	const activeControl = editorService.activeEditorPane;
 	const textModel = activeWidget.getModel();
-	const oldLanguage = textModel.getLanguageIdentifier().language;
+	const oldLanguage = textModel.getLanguageId();
 	if (language !== oldLanguage) {
 		const oldInputCreator = languageAssociationRegistry.getAssociationForLanguage(oldLanguage); // who knows how to handle the current language
 		const newInputCreator = languageAssociationRegistry.getAssociationForLanguage(language); // who knows how to handle the requested language
@@ -34,7 +34,7 @@ export async function setMode(accessor: ServicesAccessor, modeSupport: IModeSupp
 			return;
 		}
 		modeSupport.setMode(language);
-		let input: IEditorInput;
+		let input: EditorInput;
 		if (oldInputCreator) { // only transform the input if we have someone who knows how to deal with it (e.x QueryInput -> UntitledInput, etc)
 			input = oldInputCreator.createBase(activeEditor);
 		}

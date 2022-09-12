@@ -1891,10 +1891,13 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) StorageClaimSize" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[Controller's data storage claim size]]></Val>
+            <Val><![CDATA[Controller's data storage claim size (Gigabytes)]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[控制器的数据存储声明大小]]></Val>
+              <Val><![CDATA[控制器的数据存储声明大小(Gigabytes)]]></Val>
             </Tgt>
+            <Prev Cat="Text">
+              <Val><![CDATA[Controller's data storage claim size]]></Val>
+            </Prev>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1912,10 +1915,13 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) StorageClaimSize" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[Controller's logs storage claim size]]></Val>
+            <Val><![CDATA[Controller's logs storage claim size (Gigabytes)]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[控制器的日志存储声明大小]]></Val>
+              <Val><![CDATA[控制器的日志存储声明大小(Gigabytes)]]></Val>
             </Tgt>
+            <Prev Cat="Text">
+              <Val><![CDATA[Controller's logs storage claim size]]></Val>
+            </Prev>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1933,10 +1939,13 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) orageClaimSize" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[Data pool's data storage claim size]]></Val>
+            <Val><![CDATA[Data pool's data storage claim size (Gigabytes)]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[数据池的数据存储声明大小]]></Val>
+              <Val><![CDATA[数据池的数据存储声明大小(Gigabytes)]]></Val>
             </Tgt>
+            <Prev Cat="Text">
+              <Val><![CDATA[Data pool's data storage claim size]]></Val>
+            </Prev>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1954,10 +1963,13 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) orageClaimSize" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[Data pool's logs storage claim size]]></Val>
+            <Val><![CDATA[Data pool's logs storage claim size (Gigabytes)]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[数据池的日志存储声明大小]]></Val>
+              <Val><![CDATA[数据池的日志存储声明大小(Gigabytes)]]></Val>
             </Tgt>
+            <Prev Cat="Text">
+              <Val><![CDATA[Data pool's logs storage claim size]]></Val>
+            </Prev>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1987,10 +1999,13 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) rDataStorageClaimSize" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[SQL Server master's data storage claim size]]></Val>
+            <Val><![CDATA[SQL Server master's data storage claim size (Gigabytes)]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[SQL Server 主服务器的数据存储声明大小]]></Val>
+              <Val><![CDATA[SQL Server 主服务器的数据存储声明大小(Gigabytes)]]></Val>
             </Tgt>
+            <Prev Cat="Text">
+              <Val><![CDATA[SQL Server master's data storage claim size]]></Val>
+            </Prev>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -2005,10 +2020,13 @@
         </Item>
         <Item ItemId=";(...) rLogsStorageClaimSize" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[SQL Server master's logs storage claim size]]></Val>
+            <Val><![CDATA[SQL Server master's logs storage claim size (Gigabytes)]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[SQL Server 主服务器的日志存储声明大小]]></Val>
+              <Val><![CDATA[SQL Server 主服务器的日志存储声明大小(Gigabytes)]]></Val>
             </Tgt>
+            <Prev Cat="Text">
+              <Val><![CDATA[SQL Server master's logs storage claim size]]></Val>
+            </Prev>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -2038,10 +2056,13 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) aStorageClaimSize" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[Storage pool's data storage claim size]]></Val>
+            <Val><![CDATA[Storage pool's data storage claim size (Gigabytes)]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[存储池的数据存储声明大小]]></Val>
+              <Val><![CDATA[存储池的数据存储声明大小(Gigabytes)]]></Val>
             </Tgt>
+            <Prev Cat="Text">
+              <Val><![CDATA[Storage pool's data storage claim size]]></Val>
+            </Prev>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -2059,10 +2080,13 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) sStorageClaimSize" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[Storage pool's logs storage claim size]]></Val>
+            <Val><![CDATA[Storage pool's logs storage claim size (Gigabytes)]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[存储池的日志存储声明大小]]></Val>
+              <Val><![CDATA[存储池的日志存储声明大小(Gigabytes)]]></Val>
             </Tgt>
+            <Prev Cat="Text">
+              <Val><![CDATA[Storage pool's logs storage claim size]]></Val>
+            </Prev>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -5286,6 +5310,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/resource-deployment/package.docker-sql-2022-title" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Deploy SQL Server 2022 Preview container images]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[部署 SQL Server 2022 预览版容器映像]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/resource-deployment/package.docker-sql-password-field" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SQL Server password]]></Val>
@@ -5394,6 +5427,15 @@
           <Prev Cat="Text">
             <Val><![CDATA[SQL Server 2019 RC]]></Val>
           </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/resource-deployment/package.sql-2022-display-name" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[SQL Server 2022 Preview]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL Server 2022 预览版]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

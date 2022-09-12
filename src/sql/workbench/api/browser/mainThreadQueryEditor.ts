@@ -117,7 +117,7 @@ export class MainThreadQueryEditor extends Disposable implements MainThreadQuery
 
 	public $registerQueryInfoListener(handle: number): void {
 		const disposable = this._queryModelService.onQueryEvent(event => {
-			let connectionProfile = this._connectionManagementService.getConnectionProfile(event.uri);
+			const connectionProfile = this._connectionManagementService.getConnectionProfile(event.uri);
 			this._proxy.$onQueryEvent(connectionProfile?.providerName, handle, event.uri, event);
 		});
 		this._queryEventListenerDisposables.set(handle, disposable);

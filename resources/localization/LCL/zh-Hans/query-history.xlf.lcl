@@ -10,11 +10,29 @@
     <Disp Icon="Expand" Expand="true" Disp="true" LocTbl="false" />
     <Item ItemId=";Xliff Resources" ItemType="0" PsrId="308" Leaf="false">
       <Disp Icon="Str" Disp="true" LocTbl="false" />
+      <Item ItemId=";queryHistory.captureEnabledDesc" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Whether Query History capture is enabled. If false queries executed will not be captured.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[是否启用查询历史记录捕获。若为 false，则不捕获所执行的查询。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";queryHistory.clear" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Clear All History]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[清除所有历史记录]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";queryHistory.delete" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Delete]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[删除]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -28,6 +46,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";queryHistory.disableCapture" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Pause Query History Capture]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[暂停查询历史记录捕获]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";queryHistory.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Query History]]></Val>
@@ -37,11 +64,65 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";queryHistory.toggleCapture" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";queryHistory.doubleClickAction" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Toggle Query History Capture]]></Val>
+          <Val><![CDATA[The action taken when a history item is double clicked]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[切换查询历史记录捕获]]></Val>
+            <Val><![CDATA[双击历史记录项时执行的操作]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";queryHistory.doubleClickAction.open" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Open a new disconnected editor with the query from the selected history item]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[使用所选历史记录项中的查询打开新的断开连接的编辑器]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";queryHistory.doubleClickAction.run" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Open a new connected editor with the query and connection from the selected history item and automatically run the query]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[使用所选历史记录项中的查询和连接打开新的连接编辑器，并自动运行查询]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";queryHistory.enableCapture" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Start Query History Capture]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[开始查询历史记录捕获]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";queryHistory.noEntries" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[No queries to display]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[没有要显示的查询]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";queryHistory.open" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Open Query]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[打开查询]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";queryHistory.run" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Run Query]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[运行查询]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

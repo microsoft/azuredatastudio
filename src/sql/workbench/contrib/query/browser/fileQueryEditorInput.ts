@@ -10,12 +10,14 @@ import { IQueryModelService } from 'sql/workbench/services/query/common/queryMod
 
 import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IMoveResult, GroupIdentifier, ISaveOptions, IEditorInput } from 'vs/workbench/common/editor';
+import { IMoveResult, GroupIdentifier, ISaveOptions } from 'vs/workbench/common/editor';
 import { BinaryEditorModel } from 'vs/workbench/common/editor/binaryEditorModel';
 import { EncodingMode, ITextFileEditorModel } from 'vs/workbench/services/textfile/common/textfiles';
 import { URI } from 'vs/base/common/uri';
 import { FILE_QUERY_EDITOR_TYPEID } from 'sql/workbench/common/constants';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { EditorInput } from 'vs/workbench/common/editor/editorInput';
+import { IResourceEditorInput } from 'vs/platform/editor/common/editor';
 
 export class FileQueryEditorInput extends QueryEditorInput {
 
@@ -85,11 +87,11 @@ export class FileQueryEditorInput extends QueryEditorInput {
 		return this.text.isResolved();
 	}
 
-	public override rename(group: GroupIdentifier, target: URI): IMoveResult {
+	public override async rename(group: GroupIdentifier, target: URI): Promise<IMoveResult> {
 		return this.text.rename(group, target);
 	}
 
-	override async saveAs(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
+	override async saveAs(group: GroupIdentifier, options?: ISaveOptions): Promise<EditorInput | undefined> {
 		let newEditorInput = await this.text.saveAs(group, options);
 		let newUri = newEditorInput.resource.toString(true);
 		if (newUri === this.uri) {
@@ -118,5 +120,11 @@ export class FileQueryEditorInput extends QueryEditorInput {
 				return newEditorInput;
 			}
 		}
+	}
+
+	override toUntyped(): IResourceEditorInput {
+		return <IResourceEditorInput>{
+			resource: this.resource,
+		};
 	}
 }

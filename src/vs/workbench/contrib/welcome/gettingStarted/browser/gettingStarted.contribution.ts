@@ -9,7 +9,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { EditorExtensions, IEditorFactoryRegistry } from 'vs/workbench/common/editor';
 import { registerAction2, Action2 } from 'vs/platform/actions/common/actions'; // {{SQL CARBON EDIT}} Remove unused
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
-import { ContextKeyEqualsExpr, IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
+import { ContextKeyExpr, IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey'; // {{SQL CARBON EDIT}} Remove unused
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService'; // {{SQL CARBON EDIT}} Remove unused
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { KeyCode } from 'vs/base/common/keyCodes';
@@ -39,7 +39,7 @@ registerAction2(class extends Action2 {
 	constructor() {
 		super({
 			id: 'workbench.action.openWalkthrough',
-			title: localize('Welcome', "Welcome"),
+			title: localize('miGetStarted', "Get Started"),
 			category: localize('help', "Help"),
 			f1: true,
 			menu: {
@@ -95,14 +95,14 @@ Registry.as<IEditorPaneRegistry>(EditorExtensions.EditorPane).registerEditorPane
 	EditorPaneDescriptor.create(
 		GettingStartedPage,
 		GettingStartedPage.ID,
-		localize('welcome', "Welcome")
+		localize('getStarted', "Get Started")
 	),
 	[
 		new SyncDescriptor(GettingStartedInput)
 	]
 );
 
-const category = localize('welcome', "Welcome");
+const category = localize('getStarted', "Get Started");
 
 registerAction2(class extends Action2 {
 	constructor() {
@@ -115,7 +115,7 @@ registerAction2(class extends Action2 {
 				primary: KeyCode.Escape,
 				when: inWelcomeContext
 			},
-			precondition: ContextKeyEqualsExpr.create('activeEditor', 'gettingStartedPage'),
+			precondition: ContextKeyExpr.equals('activeEditor', 'gettingStartedPage'),
 			f1: true
 		});
 	}
@@ -186,15 +186,18 @@ registerAction2(class extends Action2 {
 
 	async run(accessor: ServicesAccessor) {
 		const commandService = accessor.get(ICommandService);
+		const contextService = accessor.get(IContextKeyService);
 		const quickInputService = accessor.get(IQuickInputService);
 		const gettingStartedService = accessor.get(IWalkthroughsService);
 		const categories = gettingStartedService.getWalkthroughs();
-		const selection = await quickInputService.pick(categories.map(x => ({
-			id: x.id,
-			label: x.title,
-			detail: x.description,
-			description: x.source,
-		})), { canPickMany: false, matchOnDescription: true, matchOnDetail: true, title: localize('pickWalkthroughs', "Open Walkthrough...") });
+		const selection = await quickInputService.pick(categories
+			.filter(c => contextService.contextMatchesRules(c.when))
+			.map(x => ({
+				id: x.id,
+				label: x.title,
+				detail: x.description,
+				description: x.source,
+			})), { canPickMany: false, matchOnDescription: true, matchOnDetail: true, title: localize('pickWalkthroughs', "Open Walkthrough...") });
 		if (selection) {
 			commandService.executeCommand('workbench.action.openWalkthrough', selection.id);
 		}
@@ -237,12 +240,10 @@ class WorkbenchConfigurationContribution {
 	private async registerConfigs(_experimentSevice: ITASExperimentService) {
 		const preferReduced = await _experimentSevice.getTreatment('welcomePage.preferReducedMotion').catch(e => false);
 		if (preferReduced) {
-			configurationRegistry.deregisterConfigurations([prefersStandardMotionConfig]);
-			configurationRegistry.registerConfiguration(prefersReducedMotionConfig);
+			configurationRegistry.updateConfigurations({ add: [prefersReducedMotionConfig], remove: [prefersStandardMotionConfig] });
 		}
 		else {
-			configurationRegistry.deregisterConfigurations([prefersReducedMotionConfig]);
-			configurationRegistry.registerConfiguration(prefersStandardMotionConfig);
+			configurationRegistry.updateConfigurations({ add: [prefersStandardMotionConfig], remove: [prefersReducedMotionConfig] });
 		}
 	}
 }
@@ -293,7 +294,7 @@ configurationRegistry.registerConfiguration({
 	...workbenchConfigurationNodeBase,
 	properties: {
 		'workbench.welcomePage.walkthroughs.openOnInstall': {
-			scope: ConfigurationScope.APPLICATION,
+			scope: ConfigurationScope.MACHINE,
 			type: 'boolean',
 			default: true,
 			description: localize('workbench.welcomePage.walkthroughs.openOnInstall', "When enabled, an extension's walkthrough will open upon install the extension.")

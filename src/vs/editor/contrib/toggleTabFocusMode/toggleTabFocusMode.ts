@@ -3,12 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as nls from 'vs/nls';
 import { alert } from 'vs/base/browser/ui/aria/aria';
 import { KeyCode, KeyMod, KeyChord } from 'vs/base/common/keyCodes';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
-import { EditorAction, ServicesAccessor, registerEditorAction } from 'vs/editor/browser/editorExtensions';
+import { EditorAction, registerEditorAction, ServicesAccessor } from 'vs/editor/browser/editorExtensions';
 import { TabFocus } from 'vs/editor/common/config/commonEditorConfig';
+import * as nls from 'vs/nls';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 
 export class ToggleTabFocusModeAction extends EditorAction {
@@ -23,8 +23,8 @@ export class ToggleTabFocusModeAction extends EditorAction {
 			precondition: undefined,
 			kbOpts: {
 				kbExpr: null,
-				primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_M), // {{SQL CARBON EDIT}} We use Ctrl+M already so move this to an unused binding
-				mac: { primary: KeyMod.WinCtrl | KeyMod.Shift | KeyCode.KEY_M },
+				primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KeyK, KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KeyM), // {{SQL CARBON EDIT}} We use Ctrl+M already so move this to an unused binding
+				mac: { primary: KeyMod.WinCtrl | KeyMod.Shift | KeyCode.KeyM },
 				weight: KeybindingWeight.EditorContrib
 			}
 		});

@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as fs from 'fs';
-import { gracefulify } from 'graceful-fs';
 import { hostname, release } from 'os';
 import { raceTimeout } from 'vs/base/common/async';
 import { VSBuffer } from 'vs/base/common/buffer';
@@ -18,10 +16,12 @@ import { URI } from 'vs/base/common/uri';
 import { Promises } from 'vs/base/node/pfs';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ConfigurationService } from 'vs/platform/configuration/common/configurationService';
+import { IDownloadService } from 'vs/platform/download/common/download';
+import { DownloadService } from 'vs/platform/download/common/downloadService';
 import { NativeParsedArgs } from 'vs/platform/environment/common/argv';
 import { INativeEnvironmentService } from 'vs/platform/environment/common/environment';
 import { NativeEnvironmentService } from 'vs/platform/environment/node/environmentService';
-import { ExtensionGalleryService } from 'vs/platform/extensionManagement/common/extensionGalleryService';
+import { ExtensionGalleryServiceWithNoStorageService } from 'vs/platform/extensionManagement/common/extensionGalleryService';
 import { IExtensionGalleryService, IExtensionManagementCLIService, IExtensionManagementService } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { ExtensionManagementCLIService } from 'vs/platform/extensionManagement/common/extensionManagementCLIService';
 import { ExtensionManagementService } from 'vs/platform/extensionManagement/node/extensionManagementService';
@@ -43,7 +43,7 @@ import { RequestService } from 'vs/platform/request/node/requestService';
 import { resolveCommonProperties } from 'vs/platform/telemetry/common/commonProperties';
 import { ITelemetryService, machineIdKey } from 'vs/platform/telemetry/common/telemetry';
 import { ITelemetryServiceConfig, TelemetryService } from 'vs/platform/telemetry/common/telemetryService';
-import { combinedAppender, NullTelemetryService } from 'vs/platform/telemetry/common/telemetryUtils';
+import { supportsTelemetry, NullTelemetryService } from 'vs/platform/telemetry/common/telemetryUtils';
 import { AppInsightsAppender } from 'vs/platform/telemetry/node/appInsightsAppender';
 import { buildTelemetryMessage } from 'vs/platform/telemetry/node/telemetry';
 
@@ -53,9 +53,6 @@ class CliMain extends Disposable {
 		private argv: NativeParsedArgs
 	) {
 		super();
-
-		// Enable gracefulFs
-		gracefulify(fs);
 
 		this.registerListeners();
 	}
@@ -87,7 +84,10 @@ class CliMain extends Disposable {
 			await this.doRun(environmentService, extensionManagementCLIService, fileService);
 
 			// Flush the remaining data in AI adapter (with 1s timeout)
-			return raceTimeout(combinedAppender(...appenders).flush(), 1000);
+			await Promise.all(appenders.map(a => {
+				raceTimeout(a.flush(), 1000);
+			}));
+			return;
 		});
 	}
 
@@ -133,9 +133,12 @@ class CliMain extends Disposable {
 		// Request
 		services.set(IRequestService, new SyncDescriptor(RequestService));
 
+		// Download Service
+		services.set(IDownloadService, new SyncDescriptor(DownloadService));
+
 		// Extensions
 		services.set(IExtensionManagementService, new SyncDescriptor(ExtensionManagementService));
-		services.set(IExtensionGalleryService, new SyncDescriptor(ExtensionGalleryService));
+		services.set(IExtensionGalleryService, new SyncDescriptor(ExtensionGalleryServiceWithNoStorageService));
 		services.set(IExtensionManagementCLIService, new SyncDescriptor(ExtensionManagementCLIService));
 
 		// Localizations
@@ -143,7 +146,7 @@ class CliMain extends Disposable {
 
 		// Telemetry
 		const appenders: AppInsightsAppender[] = [];
-		if (environmentService.isBuilt && !environmentService.isExtensionDevelopment && !environmentService.disableTelemetry && productService.enableTelemetry) {
+		if (supportsTelemetry(productService, environmentService)) {
 			if (productService.aiConfig && productService.aiConfig.asimovKey) {
 				appenders.push(new AppInsightsAppender('adsworkbench', null, productService.aiConfig.asimovKey)); // {{SQL CARBON EDIT}} Use our own event prefix
 			}
@@ -151,7 +154,7 @@ class CliMain extends Disposable {
 			const { appRoot, extensionsPath, installSourcePath } = environmentService;
 
 			const config: ITelemetryServiceConfig = {
-				appender: combinedAppender(...appenders),
+				appenders,
 				sendErrorTelemetry: false,
 				commonProperties: (async () => {
 					let machineId: string | undefined = undefined;

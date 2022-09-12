@@ -37,7 +37,8 @@
 		"vs/base/browser/ui/inputbox/inputBox": {
 			"alertErrorMessage": "エラー: {0}",
 			"alertInfoMessage": "情報: {0}",
-			"alertWarningMessage": "警告: {0}"
+			"alertWarningMessage": "警告: {0}",
+			"history.inputbox.hint": "履歴対象"
 		},
 		"vs/base/browser/ui/keybindingLabel/keybindingLabel": {
 			"unbound": "バインドなし"
@@ -201,6 +202,9 @@
 			"unchangedLine": "{0} 変更されていない行 {1}"
 		},
 		"vs/editor/browser/widget/inlineDiffMargin": {
+			"diff.clipboard.copyChangedLineContent.label": "変更された行のコピー ({0})",
+			"diff.clipboard.copyChangedLinesContent.label": "変更された行のコピー",
+			"diff.clipboard.copyChangedLinesContent.single.label": "変更された行のコピー",
 			"diff.clipboard.copyDeletedLineContent.label": "削除された行のコピー ({0})",
 			"diff.clipboard.copyDeletedLinesContent.label": "削除された行のコピー",
 			"diff.clipboard.copyDeletedLinesContent.single.label": "削除された行のコピー",
@@ -214,8 +218,13 @@
 			"insertSpaces": "`Tab` キーを押すとスペースが挿入されます。`#editor.detectIndentation#` がオンの場合、この設定はファイル コンテンツに基づいて上書きされます。",
 			"largeFileOptimizations": "大きなファイルでメモリが集中する特定の機能を無効にするための特別な処理。",
 			"maxComputationTime": "差分計算が取り消された後のタイムアウト (ミリ秒単位)。タイムアウトなしには 0 を使用します。",
+			"maxFileSize": "差分を計算する場合の最大ファイル サイズ (MB)。制限なしの場合は 0 を使用します。",
 			"maxTokenizationLineLength": "この長さを越える行は、パフォーマンス上の理由によりトークン化されません。",
 			"renderIndicators": "差分エディターが追加/削除された変更に +/- インジケーターを示すかどうかを制御します。",
+			"schema.brackets": "インデントを増減する角かっこを定義します。",
+			"schema.closeBracket": "右角かっこまたは文字列シーケンス。",
+			"schema.colorizedBracketPairs": "角かっこのペアの色付けが有効になっている場合、入れ子のレベルによって色付けされる角かっこのペアを定義します。",
+			"schema.openBracket": "左角かっこまたは文字列シーケンス。",
 			"semanticHighlighting.configuredByTheme": "セマンティックの強調表示は、現在の配色テーマの 'semanticHighlighting' 設定によって構成されています。",
 			"semanticHighlighting.enabled": "semanticHighlighting をサポートされる言語で表示するかどうかを制御します。",
 			"semanticHighlighting.false": "セマンティックの強調表示がすべての配色テーマについて無効になりました。",
@@ -253,7 +262,7 @@
 			"autoClosingQuotes": "ユーザーが開始引用符を追加した後、エディター自動的に引用符を閉じるかどうかを制御します。",
 			"autoIndent": "ユーザーが行を入力、貼り付け、移動、またはインデントするときに、エディターでインデントを自動的に調整するかどうかを制御します。",
 			"autoSurround": "引用符または角かっこを入力するときに、エディターが選択範囲を自動的に囲むかどうかを制御します。",
-			"bracketPairColorization.enabled": "ブラケット ペアの彩色を有効にするかどうかを制御します。",
+			"bracketPairColorization.enabled": "角かっこのペアの彩色を有効にするかどうかを制御します。角かっこの強調表示の色をオーバーライドするには、'workbench.colorCustomizations' を使用します。",
 			"codeActions": "エディターでコード アクションの電球を有効にします。",
 			"codeLens": "エディターで CodeLens を表示するかどうかを制御します。",
 			"codeLensFontFamily": "CodeLens のフォント ファミリを制御します。",
@@ -303,6 +312,17 @@
 			"editor.gotoLocation.multiple.goto": "プライマリ結果に移動し、他のユーザーへのピークレス ナビゲーションを有効にします",
 			"editor.gotoLocation.multiple.gotoAndPeek": "主な結果に移動し、ピーク ビューを表示します",
 			"editor.gotoLocation.multiple.peek": "結果のピーク ビューを表示 (既定)",
+			"editor.guides.bracketPairs": "ブラケット ペアのガイドを有効にするかどうかを制御します。",
+			"editor.guides.bracketPairs.active": "アクティブなブラケット ペアに対してのみブラケット ペア ガイドを有効にします。",
+			"editor.guides.bracketPairs.false": "ブラケット ペア ガイドを無効にします。",
+			"editor.guides.bracketPairs.true": "ブラケット ペア ガイドを有効にする。",
+			"editor.guides.bracketPairsHorizontal": "水平方向のブラケット ペアのガイドを有効にするかどうかを制御します。",
+			"editor.guides.bracketPairsHorizontal.active": "アクティブなブラケット ペアに対してのみ、水平のガイドを有効にします。",
+			"editor.guides.bracketPairsHorizontal.false": "水平ブラケット ペア ガイドを無効にします。",
+			"editor.guides.bracketPairsHorizontal.true": "縦のブラケット ペアのガイドに加えて、同じく水平のガイドを有効にします。",
+			"editor.guides.highlightActiveBracketPair": "ブラケット ペアのガイドを有効にするかどうかを制御します。",
+			"editor.guides.highlightActiveIndentation": "エディターでアクティブなインデントのガイドを強調表示するかどうかを制御します。",
+			"editor.guides.indentation": "エディターでインデント ガイドを表示するかどうかを制御します。",
 			"editor.suggest.showClasss": "有効にすると、IntelliSense に 'クラス' 候補が表示されます。",
 			"editor.suggest.showColors": "有効にすると、IntelliSense に `色` 候補が表示されます。",
 			"editor.suggest.showConstants": "有効にすると、IntelliSense に `定数` 候補が表示されます。",
@@ -358,18 +378,14 @@
 			"formatOnType": "エディターで入力後に自動的に行のフォーマットを行うかどうかを制御します。",
 			"glyphMargin": "エディターで縦のグリフ余白が表示されるかどうかを制御します。ほとんどの場合、グリフ余白はデバッグに使用されます。",
 			"hideCursorInOverviewRuler": "概要ルーラーでカーソルを非表示にするかどうかを制御します。",
-			"highlightActiveIndentGuide": "エディターでアクティブなインデントのガイドを強調表示するかどうかを制御します。",
+			"hover.above": "スペースがある場合は、行の上にマウス カーソルを被せて表示する。",
 			"hover.delay": "ホバーを表示後の待ち時間 (ミリ秒) を制御します。",
 			"hover.enabled": "ホバーを表示するかどうかを制御します。",
 			"hover.sticky": "ホバーにマウスを移動したときに、ホバーを表示し続けるかどうかを制御します。",
 			"inlayHints.enable": "エディターでインレー ヒントを有効にします。",
 			"inlayHints.fontFamily": "エディターでインレー ヒントのフォント ファミリを制御します。空に設定すると、`#editor.fontFamily#` が使用されます。",
-			"inlayHints.fontSize": "エディターでインレー ヒントのフォント サイズを制御します。'0' に設定すると、`#editor.fontSize#` の 90% が使用されます。",
+			"inlayHints.fontSize": "エディター内のインレイ ヒントのフォント サイズを制御します。既定値の 90% の `#editor.fontSize#` は、構成された値が `5` より小さいか、エディター フォント サイズより大きい場合に使用されます。",
 			"inlineSuggest.enabled": "エディターにインライン候補を自動的に表示するかどうかを制御します。",
-			"inlineSuggest.mode": "インライン候補をレンダリングするために使用するモードを制御します。",
-			"inlineSuggest.mode.prefix": "置換テキストが挿入テキストのプレフィックスである場合にのみインライン候補を表示します。",
-			"inlineSuggest.mode.subword": "置換テキストが挿入テキストのサブワードである場合にのみインライン候補をレンダリングします。",
-			"inlineSuggest.mode.subwordSmart": "置換テキストが挿入テキストのサブワードである場合にのみインライン候補をレンダリングしますが、サブワードはカーソルの後に開始する必要があります。",
 			"letterSpacing": "文字間隔 (ピクセル単位) を制御します。",
 			"lineHeight": "行の高さを制御します。\r\n - 0 を使用してフォント サイズから行の高さを自動的に計算します。\r\n - 0 から 8 までの値は、フォント サイズの乗数として使用されます。\r\n - 8 以上の値は有効値として使用されます。",
 			"lineNumbers": "行番号の表示を制御します。",
@@ -393,7 +409,7 @@
 			"mouseWheelScrollSensitivity": "マウス ホイール スクロール イベントの `deltaX` と `deltaY` で使用される乗数。",
 			"mouseWheelZoom": "`Ctrl` キーを押しながらマウス ホイールを使用してエディターのフォントをズームします。",
 			"multiCursorMergeOverlapping": "複数のカーソルが重なっているときは、マージします。",
-			"multiCursorModifier": "マウスを使用して複数のカーソルを追加するときに使用する修飾キーです。「定義に移動」や「リンクを開く」のマウス操作は、マルチカーソルの修飾キーと競合しないように適用されます。[詳細](https://code.visualstudio.com/docs/editor/codebasics#_multicursor-modifier)",
+			"multiCursorModifier": "マウスを使用して複数のカーソルを追加するときに使用する修飾子です。「定義に移動」や「リンクを開く」のマウス ジェスチャーは、マルチカーソルの修飾子と競合しないように適用されます。[詳細](https://code.visualstudio.com/docs/editor/codebasics#_multicursor-modifier)。",
 			"multiCursorModifier.alt": "Windows および Linux 上の `Alt` キーと macOS 上の `Option` キーに割り当てます。",
 			"multiCursorModifier.ctrlCmd": "Windows および Linux 上の `Control` キーと macOS 上の `Command` キーに割り当てます。",
 			"multiCursorPaste": "貼り付けたテキストの行数がカーソル数と一致する場合の貼り付けを制御します。",
@@ -417,7 +433,6 @@
 			"renameOnTypeDeprecate": "非推奨です。代わりに、`editor.linkedEditing` を使用してください。",
 			"renderControlCharacters": "エディターで制御文字を表示するかどうかを制御します。",
 			"renderFinalNewline": "ファイルの末尾が改行の場合は、最後の行番号を表示します。",
-			"renderIndentGuides": "エディターでインデント ガイドを表示するかどうかを制御します。",
 			"renderLineHighlight": "エディターが現在の行をどのように強調表示するかを制御します。",
 			"renderLineHighlight.all": "余白と現在の行を強調表示します。",
 			"renderLineHighlightOnlyWhenFocus": "エディターにフォーカスがある場合にのみ現在の行をエディターで強調表示する必要があるかどうかを制御します。",
@@ -465,10 +480,6 @@
 			"suggest.localityBonus": "並べ替えがカーソル付近に表示される単語を優先するかどうかを制御します。",
 			"suggest.maxVisibleSuggestions.dep": "この設定は非推奨です。候補ウィジェットのサイズ変更ができるようになりました。",
 			"suggest.preview": "提案の結果をエディターでプレビューするかどうかを制御します。",
-			"suggest.previewMode": "候補のプレビューをレンダリングするために使用するモードを制御します。",
-			"suggest.previewMode.prefix": "置換テキストが挿入テキストのプレフィックスである場合にのみプレビューを表示します。",
-			"suggest.previewMode.subword": "置換テキストが挿入テキストのサブワードである場合にのみプレビューを表示します。",
-			"suggest.previewMode.subwordSmart": "置換テキストが挿入テキストのサブワードである場合か、または挿入テキストのプレフィックスである場合にのみプレビューをします。",
 			"suggest.shareSuggestSelections": "保存された候補セクションを複数のワークプレースとウィンドウで共有するかどうかを制御します (`#editor.suggestSelection#` が必要)。",
 			"suggest.showIcons": "提案のアイコンを表示するか、非表示にするかを制御します。",
 			"suggest.showInlineDetails": "候補の詳細をラベル付きのインラインで表示するか、詳細ウィジェットにのみ表示するかを制御します",
@@ -586,15 +597,27 @@
 			"deprecatedEditorActiveLineNumber": "id は使用しないでください。代わりに 'EditorLineNumber.activeForeground' を使用してください。",
 			"editorActiveIndentGuide": "アクティブなエディターのインデント ガイドの色。",
 			"editorActiveLineNumber": "エディターのアクティブ行番号の色",
-			"editorBracketHighlightForeground1": "ブラケット (1) の前景色。",
-			"editorBracketHighlightForeground2": "ブラケット (2) の前景色。",
-			"editorBracketHighlightForeground3": "ブラケット (3) の前景色。",
-			"editorBracketHighlightForeground4": "ブラケット (4) の前景色。",
-			"editorBracketHighlightForeground5": "ブラケット (5) の前景色。",
-			"editorBracketHighlightForeground6": "ブラケット (6) の前景色。",
+			"editorBracketHighlightForeground1": "角かっこ (1) の前景色。角かっこのペアの色付けを有効にする必要があります。",
+			"editorBracketHighlightForeground2": "角かっこ (2) の前景色。角かっこのペアの色付けを有効にする必要があります。",
+			"editorBracketHighlightForeground3": "角かっこ (3) の前景色。角かっこのペアの色付けを有効にする必要があります。",
+			"editorBracketHighlightForeground4": "角かっこ (4) の前景色。角かっこのペアの色付けを有効にする必要があります。",
+			"editorBracketHighlightForeground5": "角かっこ (5) の前景色。角かっこのペアの色付けを有効にする必要があります。",
+			"editorBracketHighlightForeground6": "角かっこ (6) の前景色。角かっこのペアの色付けを有効にする必要があります。",
 			"editorBracketHighlightUnexpectedBracketForeground": "予期しないブラケットの前景色。",
 			"editorBracketMatchBackground": "一致するかっこの背景色",
 			"editorBracketMatchBorder": "一致するかっこ内のボックスの色",
+			"editorBracketPairGuide.activeBackground1": "アクティブな角かっこのペア ガイドの背景色 (1)。角かっこのペア ガイドを有効にする必要があります。",
+			"editorBracketPairGuide.activeBackground2": "アクティブな角かっこのペア ガイドの背景色 (2)。角かっこのペア ガイドを有効にする必要があります。",
+			"editorBracketPairGuide.activeBackground3": "アクティブな角かっこのペア ガイドの背景色 (3)。角かっこのペア ガイドを有効にする必要があります。",
+			"editorBracketPairGuide.activeBackground4": "アクティブな角かっこのペア ガイドの背景色 (4)。角かっこのペア ガイドを有効にする必要があります。",
+			"editorBracketPairGuide.activeBackground5": "アクティブな角かっこのペア ガイドの背景色 (5)。角かっこのペア ガイドを有効にする必要があります。",
+			"editorBracketPairGuide.activeBackground6": "アクティブな角かっこのペア ガイドの背景色 (6)。角かっこのペア ガイドを有効にする必要があります。",
+			"editorBracketPairGuide.background1": "非アクティブな角かっこのペア ガイドの背景色 (1)。角かっこのペア ガイドを有効にする必要があります。",
+			"editorBracketPairGuide.background2": "非アクティブな角かっこのペア ガイドの背景色 (2)。角かっこのペア ガイドを有効にする必要があります。",
+			"editorBracketPairGuide.background3": "非アクティブな角かっこのペア ガイドの背景色 (3)。角かっこのペア ガイドを有効にする必要があります。",
+			"editorBracketPairGuide.background4": "非アクティブな角かっこのペア ガイドの背景色 (4)。角かっこのペア ガイドを有効にする必要があります。",
+			"editorBracketPairGuide.background5": "非アクティブな角かっこのペア ガイドの背景色 (5)。角かっこのペア ガイドを有効にする必要があります。",
+			"editorBracketPairGuide.background6": "非アクティブな角かっこのペア ガイドの背景色 (6)。角かっこのペア ガイドを有効にする必要があります。",
 			"editorCodeLensForeground": "CodeLens エディターの前景色。",
 			"editorCursorBackground": "選択された文字列の背景色です。選択された文字列の背景色をカスタマイズ出来ます。",
 			"editorGhostTextBorder": "エディター内の透かし文字の境界線の色です。",
@@ -689,6 +712,9 @@
 		"vs/editor/contrib/codelens/codelensController": {
 			"showLensOnLine": "現在の行のコード レンズ コマンドを表示"
 		},
+		"vs/editor/contrib/colorPicker/colorPickerWidget": {
+			"clickToToggleColorOptions": "クリックして色オプションを切り替えます (rgb/hsl/hex)"
+		},
 		"vs/editor/contrib/comment/comment": {
 			"comment.block": "ブロック コメントの切り替え",
 			"comment.line": "行コメントの切り替え",
@@ -753,9 +779,9 @@
 			"foldBackgroundBackground": "折り曲げる範囲の背景色。基の装飾を隠さないように、色は不透明であってはなりません。",
 			"foldLevelAction.label": "レベル {0} で折りたたむ",
 			"foldRecursivelyAction.label": "再帰的に折りたたむ",
-			"gotoNextFold.label": "次のフォールドに移動する",
+			"gotoNextFold.label": "次のフォールディング範囲に移動する",
 			"gotoParentFold.label": "親フォールドに移動する",
-			"gotoPreviousFold.label": "前のフォールドに移動する",
+			"gotoPreviousFold.label": "前のフォールディング範囲に移動する",
 			"toggleFoldAction.label": "折りたたみの切り替え",
 			"unFoldRecursivelyAction.label": "再帰的に展開する",
 			"unfoldAction.label": "展開",
@@ -800,8 +826,11 @@
 			"change": "問題 {0} / {1}",
 			"editorMarkerNavigationBackground": "エディターのマーカー ナビゲーション ウィジェットの背景。",
 			"editorMarkerNavigationError": "エディターのマーカー ナビゲーション ウィジェットのエラーの色。",
+			"editorMarkerNavigationErrorHeaderBackground": "エディターのマーカー ナビゲーション ウィジェット エラーの見出しの背景。",
 			"editorMarkerNavigationInfo": "エディターのマーカー ナビゲーション ウィジェットの情報の色。",
+			"editorMarkerNavigationInfoHeaderBackground": "エディターのマーカー ナビゲーション ウィジェット情報の見出しの背景。",
 			"editorMarkerNavigationWarning": "エディターのマーカー ナビゲーション ウィジェットの警告の色。",
+			"editorMarkerNavigationWarningBackground": "エディターのマーカー ナビゲーション ウィジェット警告の見出しの背景。",
 			"marker aria": "{0} ({1})。",
 			"problems": "{1} 件中 {0} 件の問題"
 		},
@@ -828,7 +857,7 @@
 			"goToTypeDefinition.generic.noResults": "型定義が見つかりません",
 			"goToTypeDefinition.noResultWord": "'{0}' の型定義が見つかりません",
 			"impl.title": "実装",
-			"label.generic": "任意の記号へ移動",
+			"label.generic": "任意のシンボルへ移動",
 			"miGotoDeclaration": "宣言へ移動(&&D)",
 			"miGotoDefinition": "定義に移動(&&D)",
 			"miGotoImplementation": "実装箇所に移動(&&I)",
@@ -909,6 +938,7 @@
 			"action.inlineSuggest.showPrevious": "前のインライン候補を表示する",
 			"action.inlineSuggest.trigger": "インライン候補をトリガーする",
 			"inlineSuggestionHasIndentation": "インライン候補がスペースで始まるかどうか",
+			"inlineSuggestionHasIndentationLessThanTabSize": "インライン候補が、タブで挿入されるものよりも小さいスペースで始まるかどうか",
 			"inlineSuggestionVisible": "インライン候補を表示するかどうか"
 		},
 		"vs/editor/contrib/inlineCompletions/inlineCompletionsHoverParticipant": {
@@ -929,6 +959,7 @@
 			"lines.delete": "行の削除",
 			"lines.deleteAllLeft": "左側をすべて削除",
 			"lines.deleteAllRight": "右側をすべて削除",
+			"lines.deleteDuplicates": "重複する行を削除",
 			"lines.indent": "行のインデント",
 			"lines.insertAfter": "行を下に挿入",
 			"lines.insertBefore": "行を上に挿入",
@@ -990,6 +1021,7 @@
 			"parameterHints.trigger.label": "パラメーター ヒントをトリガー"
 		},
 		"vs/editor/contrib/parameterHints/parameterHintsWidget": {
+			"editorHoverWidgetHighlightForeground": "パラメーター ヒント内のアクティブな項目の前景色。",
 			"hint": "{0}、ヒント",
 			"parameterHintsNextIcon": "次のパラメーター ヒントを表示するためのアイコン。",
 			"parameterHintsPreviousIcon": "前のパラメーター ヒントを表示するためのアイコン。"
@@ -1261,7 +1293,7 @@
 			"openFile": "ファイルを開く",
 			"openFolder": "フォルダーを開く",
 			"openWorkspace": "開く(&&O)",
-			"openWorkspaceTitle": "ワークスペースを開く"
+			"openWorkspaceTitle": "ファイルでワークスペースを開く"
 		},
 		"vs/platform/environment/node/argv": {
 			"add": "最後にアクティブだったウィンドウにフォルダーを追加します。",
@@ -1309,13 +1341,19 @@
 			"multipleValues": "オプション '{0}' は複数回定義されています。値 '{1}' を使用します。",
 			"unknownOption": "警告: '{0}' は既知のオプションのリストにはありませんが、引き続き Electron または Chromium に渡されます。"
 		},
+		"vs/platform/environment/node/shellEnv": {
+			"resolveShellEnvError": "シェル環境を解決できません: {0}",
+			"resolveShellEnvExitError": "生成されたシェルでの予期しない終了コード (コード {0}、シグナル {1})",
+			"resolveShellEnvTimeout": "適度な時間内にシェル環境を解決できません。シェルの構成を確認してください。"
+		},
 		"vs/platform/extensionManagement/common/abstractExtensionManagementService": {
 			"MarketPlaceDisabled": "Marketplace が有効になっていません",
 			"Not a Marketplace extension": "Marketplace の拡張機能のみ再インストールできます",
+			"incompatible platform": "'{0}' 拡張機能は {2} の {1} では使用できません。",
 			"malicious extension": "問題が報告されたので、'{0}' 拡張機能をインストールできません。",
 			"multipleDependentsError": "'{0}' 拡張機能をアンインストールできません。'{1}'、'{2}' および他の拡張機能がこれに依存しています。",
 			"multipleIndirectDependentsError": "'{0}' 拡張機能をアンインストールできません。これには '{1}' 拡張機能のアンインストールが含まれていますが、'{2}'、'{3}' および他の拡張機能がこれに依存しています。",
-			"notFoundCompatibleDependency": "'{0}' 拡張機能は、現在のバージョンの VS Code (バージョン {1}) と互換性がないため、インストールできません。",
+			"notFoundCompatibleDependency": "{1} の現在のバージョン (バージョン {2}) と互換性がないため、\"{0}\" 拡張機能はインストールできません。",
 			"singleDependentError": "'{0}' 拡張機能をアンインストールできません。'{1}' 拡張機能がこれに依存しています。",
 			"singleIndirectDependentError": "'{0}' 拡張機能をアンインストールできません。これには '{1}' 拡張機能のアンインストールが含まれていますが、'{2}' 拡張機能がこれに依存しています。",
 			"twoDependentsError": "'{0}' 拡張機能をアンインストールできません。'{1}' と '{2}' の拡張機能がこれに依存しています。",
@@ -1419,9 +1457,9 @@
 		},
 		"vs/platform/files/common/io": {
 			"fileTooLargeError": "ファイルが大きすぎて開くことができません",
-			"fileTooLargeForHeapError": "このサイズのファイルを開くには、再起動して、{0} がより多くのメモリを利用できるようにする必要があります"
+			"fileTooLargeForHeapError": "このサイズのファイルを開くためには、再起動してより多くのメモリを使用させる必要があります。"
 		},
-		"vs/platform/files/electron-browser/diskFileSystemProvider": {
+		"vs/platform/files/electron-main/diskFileSystemProviderIpc": {
 			"binFailed": "'{0}' をごみ箱に移動できませんでした",
 			"trashFailed": "'{0}' をごみ箱に移動できませんでした"
 		},
@@ -1448,8 +1486,8 @@
 			"missing.chord": "キーの組み合わせ ({0}、{1}) はコマンドではありません。"
 		},
 		"vs/platform/list/browser/listService": {
-			"Fast Scroll Sensitivity": "[Alt] を押すと、スクロール速度が倍増します。",
-			"Mouse Wheel Scroll Sensitivity": "マウス ホイール スクロール イベントの deltaX と deltaY で使用される乗数。",
+			"Fast Scroll Sensitivity": "`Alt` を押すと、スクロール速度が倍増します。",
+			"Mouse Wheel Scroll Sensitivity": "マウス ホイール スクロール イベントの `deltaX` と `deltaY` で使用される乗数。",
 			"automatic keyboard navigation setting": "リストやツリーでのキーボード ナビゲーションを、単に入力するだけで自動的にトリガーするかどうかを制御します。`false` に設定した場合、キーボード ナビゲーションは `list.toggleKeyboardNavigation` コマンドを実行したときにのみトリガーされます。これに対してキーボード ショートカットを割り当てることができます。",
 			"expand mode": "フォルダー名をクリックしたときにツリー フォルダーが展開される方法を制御します。適用できない場合、一部のツリーやリストではこの設定が無視されることがあります。",
 			"horizontalScrolling setting": "リストとツリーがワークベンチで水平スクロールをサポートするかどうかを制御します。警告: この設定をオンにすると、パフォーマンスに影響があります。",
@@ -1462,7 +1500,7 @@
 			"multiSelectModifier.alt": "Windows および Linux 上の `Alt` キーと macOS 上の `Option` キーに割り当てます。",
 			"multiSelectModifier.ctrlCmd": "Windows および Linux 上の `Control` キーと macOS 上の `Command` キーに割り当てます。",
 			"openModeModifier": "マウスを使用して、ツリーとリスト内の項目を開く方法を制御します (サポートされている場合)。適用できない場合、一部のツリーやリストではこの設定が無視されることがあります。",
-			"render tree indent guides": "ツリーでインシデントのガイドを表示する必要があるかどうかを制御します。",
+			"render tree indent guides": "ツリーでインデントのガイドを表示するかどうかを制御します。",
 			"tree indent setting": "ツリーのインデントをピクセル単位で制御します。",
 			"workbenchConfigurationTitle": "ワークベンチ"
 		},
@@ -1544,33 +1582,47 @@
 			"systemCertificates": "CA 証明書を OS から読み込む必要があるかどうかを制御します (Windows および macOS では、オフにした場合にウィンドウの再読み込みが必要です)。"
 		},
 		"vs/platform/telemetry/common/telemetryService": {
+			"enableTelemetryDeprecated": "この設定が false の場合、新しい設定の値に関係なくテレメトリは送信されません。{0}設定を優先して非推奨になりました。",
+			"telemetry.crashReports": "クラッシュ レポート",
+			"telemetry.docsAndPrivacyStatement": "[収集するデータ]({0}) と[プライバシーに関する声明]({1}) を参照してください。",
+			"telemetry.docsStatement": "[収集するデータ]({0}) の詳細をご覧ください。",
 			"telemetry.enableTelemetry": "診断データの収集を有効にします。これにより、{0} の実行方法と改善が必要な場所について理解を深めることができます。",
 			"telemetry.enableTelemetryMd": "診断データの収集を有効にします。これにより、{0} の実行状況と改善が必要な箇所について理解を深めることができます。収集する情報とプライバシーに関する声明についての [Read more] ({1}) をご覧ください。",
+			"telemetry.errors": "エラー テレメトリ",
+			"telemetry.restart": "クラッシュ レポートの変更を有効にするには、アプリケーションを完全に再起動する必要があります。",
+			"telemetry.telemetryLevel.crash": "OS レベルのクラッシュ レポートを送信します。",
+			"telemetry.telemetryLevel.default": "使用状況データ、エラー、クラッシュ レポートを送信します。",
+			"telemetry.telemetryLevel.deprecated": "****注:*** この設定が 'off' の場合、他のテレメトリ設定に関係なくテレメトリは送信されません。この設定が 'off' 以外に設定されていて、非推奨の設定でテレメトリが無効になっている場合、テレメトリは送信されません。*",
+			"telemetry.telemetryLevel.error": "一般的なエラー テレメトリとクラッシュ レポートを送信します。",
+			"telemetry.telemetryLevel.off": "すべての製品テレメトリを無効にします。",
+			"telemetry.telemetryLevel.tableDescription": "次の表は、各設定で送信されるデータの概要を示しています。",
+			"telemetry.telemetryLevelMd": "すべてのコアおよびファースト パーティ拡張機能テレメトリを制御します。これにより、{0}のパフォーマンス、改善が必要な場所、および機能がどのように使用されているかをより深く理解するのに役立ちます。",
+			"telemetry.usage": "使用状況データ",
 			"telemetryConfigurationTitle": "テレメトリ"
 		},
 		"vs/platform/terminal/common/terminalPlatformConfiguration": {
 			"terminal.integrated.automationShell.linux": "このパスを設定すると、{0} がオーバーライドされ、{1} の値が無視されます。この値は、タスクやデバッグなどのオートメーション関連のターミナル使用に関するものです。",
 			"terminal.integrated.automationShell.osx": "このパスを設定すると、{0} がオーバーライドされ、{1} の値が無視されます。この値は、タスクやデバッグなどのオートメーション関連のターミナル使用に関するものです。",
 			"terminal.integrated.automationShell.windows": "このパスを設定すると、{0} がオーバーライドされ、{1} の値が無視されます。この値は、タスクやデバッグなどのオートメーション関連のターミナル使用に関するものです。",
+			"terminal.integrated.confirmIgnoreProcesses": "プロセスを無視するための個別設定を提供する構成は可能",
 			"terminal.integrated.defaultProfile.linux": "Linux で使用される既定のプロファイルです。{0} または {1} のいずれかが設定されている場合、現在この設定は無視されます。",
 			"terminal.integrated.defaultProfile.osx": "MacOS で使用される既定のプロファイルです。{0} または {1} のいずれかが設定されている場合、現在この設定は無視されます。",
 			"terminal.integrated.defaultProfile.windows": "Windows で使用される既定のプロファイルです。{0} または {1} のいずれかが設定されている場合、現在この設定は無視されます。",
 			"terminal.integrated.inheritEnv": "新しいシェルがVS Codeから環境を継承する必要があるかどうか。これにより、ログイン シェルがソースとなり、$PATHおよびその他の開発変数が初期化される可能性があります。これは Windows には影響しません。",
-			"terminal.integrated.persistentSessionExperimentalSerializer": "ターミナルのバッファーを復元するために、より効率的な実験アプローチを使用するかどうか。この設定を有効にするには再起動が必要です。",
 			"terminal.integrated.persistentSessionScrollback": "永続的なターミナル セッションに再接続するときに復元される回線の最大数を制御します。これを増やすと、より多くのメモリを犠牲にしてスクロールバックの回線が復元され、起動時に端末への接続にかかる時間が長くなります。この設定を有効にするには、値を `#terminal.integrated.scrollback#` 以下に設定する必要があります。",
-			"terminal.integrated.profile.linux": "ターミナルのドロップダウンを使用して新しいターミナルを作成するときに表示する Linux プロファイル。設定すると、検出された既定のプロファイルがオーバーライドされます。これらは、{0} とオプションの {1} で構成されています",
-			"terminal.integrated.profile.osx": "ターミナルのドロップダウンを使用して新しいターミナルを作成するときに表示する macOS プロファイル。設定すると、検出された既定のプロファイルがオーバーライドされます。これらは、{0} とオプションの {1} で構成されています",
-			"terminal.integrated.profiles.windows": "ターミナルのドロップダウンを使用して新しいターミナルを作成するときに表示する Windows プロファイル。除外する場合は null に設定し、検出された既定の構成を使用する場合は {0} プロパティを使用します。または、{1} とオプションの {2} を設定します",
-			"terminal.integrated.shell.linux": "The path of the shell that the terminal uses on Linux. [Read more about configuring the shell](https://code.visualstudio.com/docs/editor/integrated-terminal#_terminal-profiles).",
+			"terminal.integrated.profile.linux": "ターミナル ドロップダウンを使用して新しいターミナルを作成するときに表示する Linux プロファイルです。省略可能な {1} を使用して、{0} プロパティを手動で設定してください。\r\n\r\n既存のプロファイルを一覧から非表示にするには、プロファイルを {2} に設定してください。例: {3}。",
+			"terminal.integrated.profile.osx": "ターミナル ドロップダウンを使用して新しいターミナルを作成するときに表示する macOS プロファイルです。省略可能な {1} を使用して、{0} プロパティを手動で設定してください。\r\n\r\n既存のプロファイルを一覧から非表示にするには、プロファイルを {2} に設定してください。例: {3}。",
+			"terminal.integrated.profiles.windows": "ターミナル ドロップダウンを使用して新しいターミナルを作成するときに表示する Windows プロファイルです。シェルの場所を自動的に検出するには、{1} プロパティを使用してください。または、{0} プロパティを省略可能な {2} で手動で設定してください。\r\n\r\n既存のプロファイルを一覧から非表示にするには、プロファイルを {3} に設定してください。例: {4}。",
+			"terminal.integrated.shell.linux": "Linux 上でターミナルが使用するシェルのパスです。[シェルの構成に関する詳細情報] (https://code.visualstudio.com/docs/editor/integrated-terminal#_terminal-profiles)。",
 			"terminal.integrated.shell.linux.deprecation": "これは推奨されていません。既定のシェルを構成するための新しい推奨方法は、{0} にターミナル プロファイルを作成し、そのプロファイル名を {1} の既定値として設定することです。これは現在、新しいプロファイル設定より優先されていますが、将来は変更されます。",
-			"terminal.integrated.shell.osx": "The path of the shell that the terminal uses on macOS. [Read more about configuring the shell](https://code.visualstudio.com/docs/editor/integrated-terminal#_terminal-profiles).",
+			"terminal.integrated.shell.osx": "Mac OS 上でターミナルが使用するシェルのパスです。[シェルの構成に関する詳細情報] (https://code.visualstudio.com/docs/editor/integrated-terminal#_terminal-profiles)。",
 			"terminal.integrated.shell.osx.deprecation": "これは推奨されていません。既定のシェルを構成するための新しい推奨方法は、{0} にターミナル プロファイルを作成し、そのプロファイル名を {1} の既定値として設定することです。これは現在、新しいプロファイル設定より優先されていますが、将来は変更されます。",
-			"terminal.integrated.shell.windows": "The path of the shell that the terminal uses on Windows. [Read more about configuring the shell](https://code.visualstudio.com/docs/editor/integrated-terminal#_terminal-profiles).",
+			"terminal.integrated.shell.windows": "Windows 上でターミナルが使用するシェルのパスです。[シェルの構成に関する詳細情報] (https://code.visualstudio.com/docs/editor/integrated-terminal#_terminal-profiles)。",
 			"terminal.integrated.shell.windows.deprecation": "これは推奨されていません。既定のシェルを構成するための新しい推奨方法は、{0} にターミナル プロファイルを作成し、そのプロファイル名を {1} の既定値として設定することです。これは現在、新しいプロファイル設定より優先されていますが、将来は変更されます。",
-			"terminal.integrated.shellArgs.linux": "The command line arguments to use when on the Linux terminal. [Read more about configuring the shell](https://code.visualstudio.com/docs/editor/integrated-terminal#_terminal-profiles).",
-			"terminal.integrated.shellArgs.osx": "The command line arguments to use when on the macOS terminal. [Read more about configuring the shell](https://code.visualstudio.com/docs/editor/integrated-terminal#_terminal-profiles).",
-			"terminal.integrated.shellArgs.windows": "The command line arguments to use when on the Windows terminal. [Read more about configuring the shell](https://code.visualstudio.com/docs/editor/integrated-terminal#_terminal-profiles).",
-			"terminal.integrated.shellArgs.windows.string": "The command line arguments in [command-line format](https://msdn.microsoft.com/en-au/08dfcab2-eb6e-49a4-80eb-87d4076c98c6) to use when on the Windows terminal. [Read more about configuring the shell](https://code.visualstudio.com/docs/editor/integrated-terminal#_terminal-profiles).",
+			"terminal.integrated.shellArgs.linux": "Linux ターミナルで使用するコマンドラインの引数。[シェルの構成についての詳細情報](https://code.visualstudio.com/docs/editor/integrated-terminal#_terminal-profiles)。",
+			"terminal.integrated.shellArgs.osx": "Mac OS ターミナルで使用するコマンドラインの引数。[シェルの構成についての詳細情報](https://code.visualstudio.com/docs/editor/integrated-terminal#_terminal-profiles)。",
+			"terminal.integrated.shellArgs.windows": "Windows ターミナルで使用するコマンドラインの引数。[シェルの構成についての詳細情報](https://code.visualstudio.com/docs/editor/integrated-terminal#_terminal-profiles)。",
+			"terminal.integrated.shellArgs.windows.string": "Windows ターミナル上で使用する [コマンド ライン形式](https://msdn.microsoft.com/ja-jp/08dfcab2-eb6e-49a4-80eb-87d4076c98c6) のコマンド ライン引数です。[シェルの構成に関する詳細情報](https://code.visualstudio.com/docs/editor/integrated-terminal#_terminal-profiles)。",
 			"terminal.integrated.showLinkHover": "ターミナル出力でリンクにホバーを表示するかどうか。",
 			"terminal.integrated.useWslProfiles": "ターミナルのドロップダウンに WSL ディストリビューションを表示するかどうかを制御します",
 			"terminalIntegratedConfigurationTitle": "統合ターミナル",
@@ -1590,6 +1642,9 @@
 			"terminalProfile.windowsExtensionIdentifier": "このプロファイルを投稿した拡張機能。",
 			"terminalProfile.windowsExtensionTitle": "拡張機能ターミナルの名前",
 			"terminalProfile.windowsSource": "シェルへのパスを自動検出するプロファイル ソース。"
+		},
+		"vs/platform/terminal/node/ptyService": {
+			"terminal-session-restore": "セッションの内容が {1} の {0} で復元されました"
 		},
 		"vs/platform/terminal/node/terminalProcess": {
 			"launchFail.cwdDoesNotExist": "開始ディレクトリ (cwd) \"{0}\" が存在しません",
@@ -1647,7 +1702,11 @@
 			"editorInfo.background": "エディター内の情報テキストの背景色。この色は、基本装飾が非表示にならないよう不透明にすることはできません。",
 			"editorInfo.foreground": "エディターで情報を示す波線の前景色。",
 			"editorInlayHintBackground": "インライン ヒントの背景色",
+			"editorInlayHintBackgroundParameter": "パラメーターのインライン ヒントの背景色",
+			"editorInlayHintBackgroundTypes": "種類のインライン ヒントの背景色",
 			"editorInlayHintForeground": "インライン ヒントの前景色",
+			"editorInlayHintForegroundParameter": "パラメーターのインライン ヒントの前景色",
+			"editorInlayHintForegroundTypes": "種類のインライン ヒントの前景色",
 			"editorLightBulbAutoFixForeground": "自動修正の電球アクション アイコンとして使用される色。",
 			"editorLightBulbForeground": "電球アクション アイコンに使用する色。",
 			"editorSelectionBackground": "エディターの選択範囲の色。",
@@ -1737,7 +1796,9 @@
 			"minimapBackground": "ミニマップの背景色。",
 			"minimapError": "エラーのミニマップ マーカーの色。",
 			"minimapFindMatchHighlight": "一致を検索するためのミニマップ マーカーの色。",
+			"minimapForegroundOpacity": "ミニマップにレンダリングされる前景要素の不透明度。たとえば、\"#000000c0\" では、75% の不透明度で要素をレンダリングします。",
 			"minimapSelectionHighlight": "エディターの選択範囲のミニマップ マーカーの色。",
+			"minimapSelectionOccurrenceHighlight": "エディターを繰り返し選択する範囲のミニマップ マーカーの色。",
 			"minimapSliderActiveBackground": "クリックしたときのミニマップ スライダーの背景色。",
 			"minimapSliderBackground": "ミニマップ スライダーの背景色。",
 			"minimapSliderHoverBackground": "ホバーリング時のミニマップ スライダーの背景色。",
@@ -1800,6 +1861,7 @@
 			"class": "クラスのスタイル。",
 			"comment": "コメントのスタイル。",
 			"declaration": "すべての記号の宣言のスタイル。",
+			"decorator": "デコレーターと注釈のスタイル。",
 			"deprecated": "非推奨になったシンボルに対して使用するスタイルです。",
 			"documentation": "ドキュメント内の参照に使用するスタイル。",
 			"enum": "列挙型のスタイル。",
@@ -2452,7 +2514,7 @@
 			"unknownWorkspaceProperty": "不明なワークスペース構成のプロパティ",
 			"vscode.extension.contributes.configuration": "構成の設定を提供します。",
 			"vscode.extension.contributes.configuration.properties": "構成のプロパティの説明です。",
-			"vscode.extension.contributes.configuration.properties.schema": "Schema of the configuration property.",
+			"vscode.extension.contributes.configuration.properties.schema": "構成プロパティのスキーマ。",
 			"vscode.extension.contributes.configuration.property.empty": "プロパティを空にすることはできません。",
 			"vscode.extension.contributes.configuration.title": "設定の概要です。このラベルは、設定ファイルでコメントの区切り文字として使用します。",
 			"vscode.extension.contributes.defaultConfiguration": "言語ごとに既定のエディター構成の設定を提供します。",
@@ -2543,6 +2605,7 @@
 			"missing.submenu": "メニュー項目で、'submenus' セクションに定義されていないサブメニュー `{0}` が参照されています。",
 			"nonempty": "空でない値が必要です。",
 			"notebook.cell.execute": "投稿されたノートブックのセルの実行メニュー",
+			"notebook.cell.executePrimary": "投稿された主たるノートブックのセル実行ボタン",
 			"notebook.cell.title": "提供されたノートブック セルのタイトル メニュー",
 			"notebook.toolbar": "提供されたノートブックのツールバー メニュー",
 			"opticon": "プロパティ `icon` は省略するか、文字列または `{dark, light}` などのリテラルにする必要があります",
@@ -2593,6 +2656,10 @@
 		"vs/workbench/api/node/extHostDebugService": {
 			"debug.terminal.title": "デバッグ プロセス"
 		},
+		"vs/workbench/api/node/extHostTunnelService": {
+			"tunnelPrivacy.private": "非公開",
+			"tunnelPrivacy.public": "公開"
+		},
 		"vs/workbench/browser/actions/developerActions": {
 			"inspect context keys": "コンテキスト キーの検査",
 			"logStorage": "ログ ストレージ データベースの内容",
@@ -2609,21 +2676,21 @@
 		"vs/workbench/browser/actions/helpActions": {
 			"keybindingsReference": "キーボード ショートカットの参照",
 			"miDocumentation": "参照資料(&&D)",
-			"miIntroductoryVideos": "紹介ビデオ(&&V)",
 			"miKeyboardShortcuts": "キーボード ショートカットの参照(&&K)",
 			"miLicense": "ライセンスの表示(&&L)",
 			"miPrivacyStatement": "プライバシーに関する声明(&&Y)",
 			"miTipsAndTricks": "ヒントとトリビア(&&C)",
 			"miTwitter": "Twitter でフォローする(&&J)",
 			"miUserVoice": "機能要求の検索(&&S)",
+			"miVideoTutorials": "ビデオ チュートリアル(&&V)",
 			"newsletterSignup": "VS Code ニュースレターの登録",
 			"openDocumentationUrl": "ドキュメント",
-			"openIntroductoryVideosUrl": "紹介ビデオ",
 			"openLicenseUrl": "ライセンスを表示",
 			"openPrivacyStatement": "プライバシーに関する声明",
 			"openTipsAndTricksUrl": "ヒントとコツ",
 			"openTwitterUrl": "ツイッターに参加",
-			"openUserVoiceUrl": "機能要求の検索"
+			"openUserVoiceUrl": "機能要求の検索",
+			"openVideoTutorialsUrl": "ビデオ チュートリアル"
 		},
 		"vs/workbench/browser/actions/layoutActions": {
 			"closeSidebar": "サイド バーを閉じる",
@@ -2741,12 +2808,12 @@
 			"miOpen": "開く(&&O)...",
 			"miOpenFile": "ファイルを開く(&&O)...",
 			"miOpenFolder": "フォルダーを開く(&&F)...",
-			"miOpenWorkspace": "ワークスペースを開く(&&K)...",
+			"miOpenWorkspace": "ファイルでワークスペースを開く(&&K)...",
 			"miSaveWorkspaceAs": "名前を付けてワークスペースを保存...",
 			"openFile": "ファイルを開く...",
 			"openFileFolder": "開く...",
 			"openFolder": "フォルダーを開く...",
-			"openWorkspaceAction": "ワークスペースを開く...",
+			"openWorkspaceAction": "ファイルでワークスペースを開く...",
 			"openWorkspaceConfigFile": "ワークスペースの構成ファイルを開く",
 			"saveWorkspaceAsAction": "名前を付けてワークスペースを保存...",
 			"workspaces": "ワークスペース"
@@ -2761,12 +2828,15 @@
 			"openWorkspace": "ワークスペースを開く"
 		},
 		"vs/workbench/browser/contextkeys": {
-			"dirtyWorkingCopies": "ダーティな作業コピーがあるかどうか",
+			"dirtyWorkingCopies": "変更が保存されていない作業コピーがあるかどうか",
 			"isFullscreen": "ウィンドウが全画面モードになっているかどうか",
 			"remoteName": "ウィンドウがリモートに接続されている場合はリモートの名前、または接続されていない場合は空の文字列",
 			"virtualWorkspace": "仮想ファイル システムまたは空の文字列からの場合の、現在のワークスペースのスキーム。",
 			"workbenchState": "ウィンドウで開かれているワークスペースの種類。'empty' (ワークスペースなし)、'folder' (単一フォルダー)、または 'workspace' (マルチルート ワークスペース) のいずれか",
 			"workspaceFolderCount": "ワークスペース内のルート フォルダーの数"
+		},
+		"vs/workbench/browser/dnd": {
+			"fileTooLarge": "ファイルが大きすぎて無題のエディターとして開けません。まずファイル エクスプローラーにアップロードしてから、もう一度お試しください。"
 		},
 		"vs/workbench/browser/editor": {
 			"pinned": "{0}、ピン留めされています",
@@ -2774,6 +2844,7 @@
 		},
 		"vs/workbench/browser/parts/activitybar/activitybarActions": {
 			"authProviderUnavailable": "{0} は現在利用できません",
+			"focusActivityBar": "フォーカス アクティビティ バー",
 			"hideAccounts": "アカウントの非表示",
 			"manageTrustedExtensions": "信頼された拡張機能の管理",
 			"nextSideBarView": "次のサイドバー ビュー",
@@ -2784,12 +2855,21 @@
 		"vs/workbench/browser/parts/activitybar/activitybarPart": {
 			"accounts": "アカウント",
 			"accountsViewBarIcon": "ビュー バーのアカウント アイコン。",
-			"focusActivityBar": "フォーカス アクティビティ バー",
 			"hideActivitBar": "アクティビティ バーを非表示にする",
+			"hideMenu": "メニューを非表示にする",
 			"manage": "管理",
 			"menu": "メニュー",
 			"resetLocation": "場所のリセット",
 			"settingsViewBarIcon": "ビューバーの設定アイコン。"
+		},
+		"vs/workbench/browser/parts/auxiliarybar/auxiliaryBarActions": {
+			"focusAuxiliaryBar": "サイド パネル内にフォーカス",
+			"hideAuxiliaryBar": "サイド パネルの非表示",
+			"miShowAuxiliaryBar": "サイド パネルの表示(&&D)",
+			"toggleAuxiliaryBar": "サイド パネルの切り替え"
+		},
+		"vs/workbench/browser/parts/auxiliarybar/auxiliaryBarPart": {
+			"hideAuxiliaryBar": "サイド パネルの非表示"
 		},
 		"vs/workbench/browser/parts/banner/bannerPart": {
 			"bannerFocused": "バナーにキーボード フォーカスがあるかどうか",
@@ -2894,7 +2974,7 @@
 			"closeEditor": "エディターを閉じる",
 			"closeEditorGroup": "エディター グループを閉じる",
 			"closeEditorsInGroup": "グループ内のすべてのエディターを閉じる",
-			"closeGroupAction": "Close Group",
+			"closeGroupAction": "グループを閉じる",
 			"closeOtherEditors": "グループ内の他のエディターを閉じる",
 			"closeOthers": "その他を閉じる",
 			"closePinnedEditor": "固定されたエディターを閉じる",
@@ -2905,12 +2985,14 @@
 			"file": "ファイル",
 			"ignoreTrimWhitespace.label": "先頭と末尾のスペースによる違いを無視する",
 			"inlineView": "インライン ビュー",
+			"joinInGroup": "グループに参加する",
 			"keepEditor": "エディターを保持",
 			"keepOpen": "開いたままにする",
-			"lockGroup": "Lock Group",
+			"lockGroup": "グループをロックする",
 			"miBack": "戻る(&&B)",
 			"miClearRecentOpen": "最近使ったものをクリア(&&C)",
 			"miEditorLayout": "エディター レイアウト(&&L)",
+			"miFirstSideEditor": "エディターの表面(&&F)",
 			"miFocusAboveGroup": "グループ (上)(&&A)",
 			"miFocusBelowGroup": "グループ (下)(&&B)",
 			"miFocusFifthGroup": "グループ 5(&&5)",
@@ -2921,6 +3003,7 @@
 			"miFocusSecondGroup": "グループ 2(&&2)",
 			"miFocusThirdGroup": "グループ 3(&&3)",
 			"miForward": "進む(&&F)",
+			"miJoinEditorInGroup": "グループに参加する(&&G)",
 			"miLastEditLocation": "最後の編集場所(&&L)",
 			"miNextEditor": "次のエディター(&&N)",
 			"miNextEditorInGroup": "グループ内の次のエディター(&&N)",
@@ -2933,8 +3016,10 @@
 			"miPreviousRecentlyUsedEditor": "以前に使用したエディター(&&P)",
 			"miPreviousUsedEditorInGroup": "グループ内の前の使用されているエディター(&&P)",
 			"miReopenClosedEditor": "閉じたエディターを再度開く(&&R)",
+			"miSecondSideEditor": "エディターの裏面(&&S)",
 			"miSingleColumnEditorLayout": "シングル(&&S)",
 			"miSplitEditorDown": "分割 (下)(&&D)",
+			"miSplitEditorInGroup": "グループ内分割(&&G)",
 			"miSplitEditorLeft": "分割 (左)(&&L)",
 			"miSplitEditorRight": "分割 (右)(&&R)",
 			"miSplitEditorUp": "分割 (上)(&&U)",
@@ -2960,16 +3045,18 @@
 			"splitDown": "下に分割",
 			"splitEditorDown": "エディターを下に分割",
 			"splitEditorRight": "エディターを右に分割",
+			"splitInGroup": "グループ内分割",
 			"splitLeft": "左に分割",
 			"splitRight": "右に分割",
 			"splitUp": "上に分割",
 			"textDiffEditor": "テキスト差分エディター",
 			"textEditor": "テキスト エディター",
 			"toggleKeepEditors": "エディターを開いたままにする",
-			"toggleLockGroup": "Lock Group",
+			"toggleLockGroup": "グループをロックする",
+			"toggleSplitEditorInGroupLayout": "レイアウトの切り替え",
 			"toggleWhitespace": "差分エディター内で空白文字の切り替えアクションのアイコン。",
-			"unlockEditorGroup": "Unlock Group",
-			"unlockGroupAction": "Unlock Group",
+			"unlockEditorGroup": "グループをロック解除する",
+			"unlockGroupAction": "グループをロック解除する",
 			"unpin": "ピン留めを外す",
 			"unpinEditor": "エディターのピン留めを外す"
 		},
@@ -3058,6 +3145,14 @@
 			"splitEditorGroupRight": "エディターを右に分割",
 			"splitEditorGroupUp": "上にエディターを分割",
 			"splitEditorOrthogonal": "垂直にエディターを分割",
+			"splitEditorToAboveGroup": "エディターを上のグループに分割",
+			"splitEditorToBelowGroup": "エディターを以下のグループに分割",
+			"splitEditorToFirstGroup": "エディターを 1 番目のグループに分割",
+			"splitEditorToLastGroup": "エディターを最後のグループに分割",
+			"splitEditorToLeftGroup": "エディターを左のグループに分割",
+			"splitEditorToNextGroup": "エディターを次のグループに分割",
+			"splitEditorToPreviousGroup": "エディターを前のグループに分割",
+			"splitEditorToRightGroup": "エディターを右のグループに分割",
 			"toggleEditorWidths": "エディター グループ サイズの切り替え",
 			"unpinEditor": "エディターの固定を解除する",
 			"workbench.action.reopenTextEditor": "テキスト エディターを使用してエディターを再度開く",
@@ -3065,19 +3160,30 @@
 		},
 		"vs/workbench/browser/parts/editor/editorCommands": {
 			"compare": "比較",
+			"editorCommand.activeEditorCopy.arg.description": "引数プロパティ:\r\n\t* 'to': コピー先を指定する文字列値。\r\n\t* 'value': コピーする桁数または絶対位置を指定する数値。",
+			"editorCommand.activeEditorCopy.arg.name": "アクティブ エディターの Copy 引数",
+			"editorCommand.activeEditorCopy.description": "グループごとにアクティブ エディターをコピーする",
 			"editorCommand.activeEditorMove.arg.description": "引数プロパティ:\r\n\t'to': 移動先を指定する文字列値。\r\n\t'by': 移動に使用する単位を指定する文字列値 (タブまたはグループ)。\r\n\t'value': 移動する位置と絶対位置を指定する数値。",
 			"editorCommand.activeEditorMove.arg.name": "アクティブ エディターの Move 引数",
 			"editorCommand.activeEditorMove.description": "タブまたはグループ別にアクティブ エディターを移動する",
-			"lockEditorGroup": "Lock Editor Group",
-			"toggleEditorGroupLock": "Toggle Editor Group Lock",
+			"focusLeftSideEditor": "アクティブ エディターで表側にフォーカス",
+			"focusOtherSideEditor": "アクティブ エディターで裏側にフォーカス",
+			"focusRightSideEditor": "アクティブ エディターで裏面にフォーカス",
+			"joinEditorInGroup": "グループ内のエディターに参加する",
+			"lockEditorGroup": "エディター グループをロックする",
+			"splitEditorInGroup": "グループ内のエディターの分割",
+			"toggleEditorGroupLock": "エディター グループ のロックの切り替え",
 			"toggleInlineView": "インライン ビューの切り替え",
-			"unlockEditorGroup": "Unlock Editor Group"
+			"toggleJoinEditorInGroup": "グループでエディターの分割を切り替え",
+			"toggleSplitEditorInGroupLayout": "グループ レイアウトでエディターの分割を切り替え",
+			"unlockEditorGroup": "エディター グループをロック解除する"
 		},
-		"vs/workbench/browser/parts/editor/editorDropTarget": {
-			"fileTooLarge": "ファイルが大きすぎて無題のエディターとして開けません。まずファイル エクスプローラーにアップロードしてから、もう一度お試しください。"
+		"vs/workbench/browser/parts/editor/editorConfiguration": {
+			"markdownPreview": "マークダウンのプレビュー",
+			"workbench.editor.autoLockGroups": "リストのいずれかの種類と一致するエディターがエディター グループの最初のものとして開いており、複数のグループが開いている場合、グループは自動的にロックされます。ロックされたグループは、ユーザーのジェスチャ (例: ドラッグ アンド ドロップ) で明示的に選択された場合に、エディターを開くときにのみ使用されますが、既定では使用されません。その結果、ロックされたグループ内のアクティブなエディターが、誤って別のエディターで置き換えられる可能性は低くなります。"
 		},
 		"vs/workbench/browser/parts/editor/editorGroupView": {
-			"ariaLabelGroupActions": "Empty editor group actions",
+			"ariaLabelGroupActions": "空のエディター グループ アクション",
 			"cancel": "キャンセル",
 			"editorOpenError": "'{0}' を開くことができません: {1}。",
 			"editorOpenErrorDialog": "'{0}' を開くことができません",
@@ -3092,14 +3198,16 @@
 			"requiresWorkspaceTrustText": "信頼がワークスペースに付与されていないため、ファイルはエディターに表示されません。",
 			"retry": "再試行",
 			"trustRequiredEditor": "ワークスペースの信頼が必須です",
-			"unavailableEditor": "使用できないエディター",
-			"unavailableEditorText": "エラーまたはリソースが利用できないため、エディターを開くことができませんでした。"
+			"unavailableResourceErrorEditor": "リソースが利用できないエラー エディター",
+			"unavailableResourceErrorEditorText": "ファイルが見つからなかったため、エディターを開くことができませんでした。",
+			"unknownErrorEditor": "不明なエラー エディター",
+			"unknownErrorEditorText": "予期しないエラーのため、エディターを開くことができませんでした。"
 		},
 		"vs/workbench/browser/parts/editor/editorQuickAccess": {
 			"closeEditor": "エディターを閉じる",
-			"entryAriaLabelDirty": "{0}、ダーティ",
+			"entryAriaLabelDirty": "{0} は変更が保存されていません",
 			"entryAriaLabelWithGroup": "{0}, {1}",
-			"entryAriaLabelWithGroupDirty": "{0}、ダーティ、{1}",
+			"entryAriaLabelWithGroupDirty": "{0} は変更が保存されていません ({1})",
 			"noViewResults": "一致するエディターがありません"
 		},
 		"vs/workbench/browser/parts/editor/editorStatus": {
@@ -3157,10 +3265,12 @@
 			"status.editor.mode": "エディター言語",
 			"status.editor.screenReaderMode": "スクリーン リーダー モード",
 			"status.editor.selection": "エディターの選択",
-			"status.editor.status": "言語の状態",
 			"status.editor.tabFocusMode": "アクセシビリティ モード",
 			"tabFocusModeEnabled": "タブによるフォーカスの移動",
 			"tabSize": "タブのサイズ: {0}"
+		},
+		"vs/workbench/browser/parts/editor/sideBySideEditor": {
+			"sideBySideEditor": "横並びエディター"
 		},
 		"vs/workbench/browser/parts/editor/tabsTitleControl": {
 			"ariaLabelTabActions": "タブ操作"
@@ -3200,6 +3310,7 @@
 		},
 		"vs/workbench/browser/parts/notifications/notificationsCenter": {
 			"notifications": "通知",
+			"notificationsCenterWidgetAriaLabel": "通知センター",
 			"notificationsEmpty": "新しい通知はありません",
 			"notificationsToolbar": "通知センターのアクション"
 		},
@@ -3230,6 +3341,10 @@
 			"status.notifications": "通知",
 			"zeroNotifications": "通知はありません"
 		},
+		"vs/workbench/browser/parts/notifications/notificationsToasts": {
+			"notificationAriaLabel": "{0}、通知",
+			"notificationWithSourceAriaLabel": "{0}、ソース: {1}、通知"
+		},
 		"vs/workbench/browser/parts/notifications/notificationsViewer": {
 			"executeCommand": "クリックして '{0}' コマンドを実行",
 			"notificationActions": "通知操作",
@@ -3255,17 +3370,20 @@
 		},
 		"vs/workbench/browser/parts/panel/panelPart": {
 			"hidePanel": "パネルを非表示",
+			"moreActions": "その他の操作...",
 			"panel.emptyMessage": "表示するビューをパネルにドラッグしてください。",
 			"resetLocation": "場所のリセット"
 		},
-		"vs/workbench/browser/parts/sidebar/sidebarPart": {
+		"vs/workbench/browser/parts/sidebar/sidebarActions": {
 			"focusSideBar": "サイド バー内にフォーカス"
 		},
-		"vs/workbench/browser/parts/statusbar/statusbarPart": {
+		"vs/workbench/browser/parts/statusbar/statusbarActions": {
 			"focusStatusBar": "フォーカス ステータス バー",
 			"hide": "'{0}' の非表示",
-			"hideStatusBar": "ステータス バーを非表示にする",
 			"statusBarFocused": "ステータス バーにキーボード フォーカスがあるかどうか"
+		},
+		"vs/workbench/browser/parts/statusbar/statusbarPart": {
+			"hideStatusBar": "ステータス バーを非表示にする"
 		},
 		"vs/workbench/browser/parts/titlebar/menubarControl": {
 			"DownloadingUpdate": "更新をダウンロードしています...",
@@ -3337,16 +3455,17 @@
 			"activityBarIconClickBehavior": "ワークベンチのアクティビティ バー アイコンをクリックする動作を制御します。",
 			"activityBarVisibility": "ワークベンチでのアクティビティ バーの表示をコントロールします。",
 			"appName": "`${appName}`: 例: VS Code。",
+			"auxiliaryBarEnabled": "サイド バーの反対側にあるサイド パネルを有効にするかどうかを制御します。",
 			"centeredLayoutAutoResize": "複数のグループが開かれているとき、中央揃えのレイアウトを自動的に横幅最大にするかどうかを制御します。1 つのグループのみが開かれている場合は、元の中央揃えの横幅に戻ります。",
 			"closeEmptyGroups": "空のエディターのグループにある最後のタブを閉じたときの動作を制御します。有効であるとき、空のグループは自動的に閉じられます。無効であるとき、空のグループはグリッドの一部として残ります。",
-			"closeOnFileDelete": "セッション中のファイルを表示しているエディターが、その他のプロセスによって削除されるか名前を変更された場合に、エディターを自動的に閉じるかどうかを制御します。これを無効にすると、このような場合にエディターを開き続けます。アプリケーション内で削除すると、エディターは常に閉じられ、ダーティ ファイルをデータを保存して閉じることはありません。",
+			"closeOnFileDelete": "セッション中のファイルを表示しているエディターが、その他のプロセスによって削除されるか名前を変更された場合に、エディターを自動的に閉じるかどうかを制御します。これを無効にすると、このような場合にエディターを開き続けます。アプリケーション内で削除すると、エディターは常に閉じられ、変更が保存されていないエディターのデータを保存して閉じることはありません。",
 			"closeOnFocusLost": "フォーカスを失ったときに Quick Open を自動的に閉じるかどうかを制御します。",
 			"commandHistory": "コマンド パレットで最近使用したコマンド履歴を保持する数を制御します。0 に設定するとコマンド履歴を無効にします。",
 			"confirmBeforeCloseWeb": "ブラウザーのタブまたはウィンドウを閉じる前に確認ダイアログを表示するかどうかを制御します。有効にされている場合でも、確認されることなくブラウザーのタブやウィンドウが閉じられることがあるため、この設定はすべての場合に機能するわけではない 1 つのヒントにすぎないことにご注意ください。",
 			"customMenuBarAltFocus": "Alt キーを押してメニュー バーにフォーカスするかどうかを制御します。この設定は、Alt キーを使用してメニュー バーを切り替える操作には影響しません。",
 			"decorations.badges": "エディター ファイルの装飾にバッジを使用するかどうかを制御します。",
 			"decorations.colors": "エディター ファイルの装飾に配色を使用するかどうかを制御します。",
-			"dirty": "`${dirty}`: アクティブなエディターが編集状態 (ダーティー) のとき、ダーティー インジゲーターを表示します。",
+			"dirty": "`${dirty}`: アクティブなエディターの変更が保存されていない場合を示すインジケーター。",
 			"editorOpenPositioning": "エディターを開く場所を制御します。`left` または `right` を選択すると現在アクティブになっているエディターの左または右にエディターを開きます。`first` または `last` を選択すると現在アクティブになっているエディターとは別個にエディターを開きます。",
 			"editorTabCloseButton": "エディターのタブの [閉じる] ボタンの位置を制御するか、'off' に設定された場合に無効にします。`#workbench.editor.showTabs#` が無効な場合、この値は無視されます。",
 			"enableMenuBarMnemonics": "Alt キー ショートカットを使用してメイン メニューを開くことができるかどうかを制御します。ニーモニックを無効にすると、これらの Alt キー ショートカットを代わりにエディター コマンドにバインドできます。",
@@ -3357,8 +3476,8 @@
 			"folderName": "${folderName}`: ファイルが含まれているワークスペース フォルダーの名前 (例: myFolder)。",
 			"folderPath": "`${folderPath}`: ファイルが含まれているワークスペースの絶対パスです (例: /Users/Development/myFolder)。",
 			"fontAliasing": "ワークベンチ内のフォント エイリアシング方法を制御します。",
-			"highlightModifiedTabs": "変更された (ダーティ) エディターのタブで上罫線を描画するかどうかを制御します。`#workbench.editor.showTabs#` が無効な場合、この値は無視されます。",
-			"limitEditorsEnablement": "開いているエディターの数を制限するかどうかを制御します。有効にすると、最近使用されていない、ダーティではないエディターが閉じられ、新しく開くエディター用にスペースが確保されます。",
+			"highlightModifiedTabs": "変更が保存されていないエディターのタブで上罫線を描画するかどうかを制御します。`#workbench.editor.showTabs#` が無効な場合、この値は無視されます。",
+			"limitEditorsEnablement": "開いているエディターの数を制限するかどうかを制御します。有効にすると、最近使用されていないエディターが閉じられ、新しく開くエディター用にスペースが確保されます。",
 			"limitEditorsMaximum": "開いているエディターの最大数を制御します。エディター グループごとまたはすべてのグループ間でこの制限を制御するには、`#workbench.editor.limit.perEditorGroup#` 設定を使用します。",
 			"menuBarVisibility": "メニュー バーの表示と非表示を制御します。'切り替え' 設定は Alt キーを 1 回押すとメニュー バーの表示と非表示が切り替わることを意味します。'コンパクト' 設定では、メニューがサイド バーに移動します。",
 			"menuBarVisibility.mac": "メニュー バーの表示と非表示を制御します。'切り替え' 設定は `アプリケーション メニューにフォーカス` を実行するとメニュー バーの表示と非表示が切り替わることを意味します。'コンパクト' 設定では、メニューがサイド バーに移動します。",
@@ -3388,6 +3507,7 @@
 			"showIcons": "開いているエディターをアイコン付きで表示するかどうかを制御します。これにはファイル アイコン テーマも有効にする必要があります。",
 			"sideBarLocation": "サイド バーとアクティビティ バーの位置を制御します。ワークベンチの左側または右側のいずれかに表示できます。",
 			"sideBySideDirection": "(たとえば、エクスプローラーから) 並べて開く複数のエディターの既定の向きを制御します。既定では、エディターを現在アクティブなものの右側に開きます。`down` に変更すると、エディターを現在アクティブなものの下側に開きます。",
+			"splitInGroupLayout": "エディター グループ内でエディターが分割された場合のレイアウトを、垂直方向または水平方向に制御します。",
 			"splitOnDragAndDrop": "エディターまたはファイルをエディター領域の端にドロップして、エディター グループをドラッグ アンド ドロップ操作から分割できるかどうかを制御します。",
 			"splitSizing": "エディター グループの分割時のサイズを制御します。",
 			"statusBarVisibility": "ワークベンチの下部にステータス バーを表示するかどうかを制御します。",
@@ -3419,15 +3539,16 @@
 			"windowTitle": "アクティブなエディターに基づいてウィンドウのタイトルを制御します。変数はコンテキストに基づいて置き換えられます:",
 			"workbench.activityBar.iconClickBehavior.focus": "クリックした項目が既に表示されている場合は、サイド バーにフォーカスします。",
 			"workbench.activityBar.iconClickBehavior.toggle": "クリックした項目が既に表示されている場合は、サイド バーを非表示にします。",
-			"workbench.editor.experimentalAutoLockGroups": "Experimental: lock a group automatically when an editor is the first in the group and more than one group is open. Locked groups will only be used for opening editors when explicitly chosen by user gesture (e.g. drag and drop), but not by default. Consequently the active editor in a locked group is less likely to be replaced accidentally with a different editor.",
 			"workbench.editor.labelFormat.default": "ファイルの名前を表示します。タブが有効かつ 1 つのグループ内の 2 つの同名ファイルに各ファイルのパスの区切り記号が追加されます。タブを無効にすると、エディターがアクティブな時にワークスペース フォルダーの相対パスが表示されます。",
 			"workbench.editor.labelFormat.long": "絶対パスに続けてファイル名を表示します。",
 			"workbench.editor.labelFormat.medium": "ワークスペース フォルダーからの相対パスに続けてファイル名を表示します。",
 			"workbench.editor.labelFormat.short": "ディレクトリ名に続けてファイル名を表示します。",
-			"workbench.editor.languageDetection": "Controls whether the language in a text editor is automatically detected unless the language has been explicitly set by the language picker. This can also be scoped by language so you can control which languages you want to trigger language detection on.",
+			"workbench.editor.languageDetection": "言語の選択で言語が明示的に設定されている場合を除き、テキスト エディターの言語を自動的に検出するかどうかを制御します。これは、オフにしたくない言語を指定できるように、言語でスコープを設定することもできます。これは、Markdown のような言語 (多くの場合、言語検出で Markdown ではなく埋め込み言語であると認識させる可能性のある他の言語が含まれている) で便利です。",
 			"workbench.editor.pinnedTabSizing.compact": "固定されたタブは、コンパクト形式でアイコンまたはエディター名の最初の文字のみが表示されます。",
 			"workbench.editor.pinnedTabSizing.normal": "固定されたタブは、固定されていないタブの外観を継承します。",
 			"workbench.editor.pinnedTabSizing.shrink": "固定されたタブは、エディター名の一部を示すコンパクトな固定サイズに縮小されます。",
+			"workbench.editor.splitInGroupLayoutHorizontal": "エディターは左から右に配置されます。",
+			"workbench.editor.splitInGroupLayoutVertical": "エディターは上から下に配置されます。",
 			"workbench.editor.splitSizingDistribute": "すべてのエディター グループを等分に分割します。",
 			"workbench.editor.splitSizingSplit": "アクティブなエディター グループを等分に分割します。",
 			"workbench.editor.tabSizing.fit": "常に完全なエディター ラベルを表示するのに足りるタブの大きさを維持します。",
@@ -3463,6 +3584,11 @@
 			"test": "テスト",
 			"view": "表示"
 		},
+		"vs/workbench/common/auxiliarybar": {
+			"activeAuxiliary": "アクティブな補助パネルの識別子",
+			"auxiliaryBarFocus": "補助バーにキーボード フォーカスがあるかどうか",
+			"auxiliaryBarVisible": "補助バーが見えるかどうか"
+		},
 		"vs/workbench/common/configuration": {
 			"workbenchConfigurationTitle": "ワークベンチ"
 		},
@@ -3473,8 +3599,8 @@
 			"activeEditorGroupEmpty": "アクティブなエディター グループが空であるかどうか",
 			"activeEditorGroupIndex": "アクティブなエディター グループのインデックス",
 			"activeEditorGroupLast": "アクティブなエディター グループが最後のグループかどうか",
-			"activeEditorGroupLocked": "Whether the active editor group is locked",
-			"activeEditorIsDirty": "アクティブなエディターがダーティであるかどうか",
+			"activeEditorGroupLocked": "アクティブなエディター グループがロックされているかどうか",
+			"activeEditorIsDirty": "アクティブなエディターの変更が保存されていないかどうか",
 			"activeEditorIsNotPreview": "アクティブなエディターがプレビュー モードでないかどうか",
 			"activeEditorIsPinned": "アクティブなエディターがピン留めされているかどうか",
 			"activeEditorIsReadonly": "アクティブなエディターが読み取り専用かどうか",
@@ -3486,6 +3612,7 @@
 			"isCenteredLayout": "中央揃えのレイアウトが有効になっているかどうか",
 			"multipleEditorGroups": "複数のエディター グループが開かれているかどうか",
 			"promptOpenWith.defaultEditor.displayName": "テキスト エディター",
+			"sideBySideEditorActive": "横並びエディターがアクティブかどうか",
 			"splitEditorsVertically": "エディターが垂直方向に分割されているかどうか",
 			"textCompareEditorActive": "テキスト比較エディターがアクティブかどうか",
 			"textCompareEditorVisible": "テキスト比較エディターが表示されているかどうか"
@@ -3493,13 +3620,11 @@
 		"vs/workbench/common/editor/diffEditorInput": {
 			"sideBySideLabels": "{0} ↔ {1}"
 		},
-		"vs/workbench/common/editor/resourceEditorInput": {
-			"orphanedFile": "{0} (削除済み)",
-			"orphanedReadonlyFile": "{0} (削除済み、読み取り専用)",
-			"readonlyFile": "{0} (読み取り専用)"
-		},
 		"vs/workbench/common/editor/sideBySideEditorInput": {
 			"sideBySideLabels": "{0} - {1}"
+		},
+		"vs/workbench/common/editor/textEditorModel": {
+			"languageAutoDetected": "言語 {0} が自動的に検出され、言語モードとして設定されました。"
 		},
 		"vs/workbench/common/panel": {
 			"activePanel": "アクティブなパネルの識別子",
@@ -3533,9 +3658,7 @@
 			"banner.background": "バナーの背景色。バナーは、ウィンドウのタイトル バーの下に表示されます。",
 			"banner.foreground": "バナーの前景色。バナーは、ウィンドウのタイトル バーの下に表示されます。",
 			"banner.iconForeground": "バナーのアイコンの色。バナーは、ウィンドウのタイトル バーの下に表示されます。",
-			"deprecatedEditorGroupBackground": "非推奨: エディター グループの背景色は、グリッド エディター レイアウトの導入に伴いサポートされなくなりました。editorGroup.emptyBackground を使用して空のエディター グループの背景色を設定できます。",
 			"editorDragAndDropBackground": "エディターの周囲をドラッグしているときの背景色。エディターのコンテンツが最後まで輝くために、色は透過である必要があります。",
-			"editorGroupBackground": "エディター グループの背景色が非推奨になりました。",
 			"editorGroupBorder": "複数のエディター グループを互いに分離するための色。エディター グループはエディターのコンテナーです。",
 			"editorGroupEmptyBackground": "空のエディター グループの背景色。エディター グループはエディターのコンテナーです。",
 			"editorGroupFocusedEmptyBorder": "フォーカスがある空のエディター グループの境界線色。エディター グループはエディターのコンテナーです。",
@@ -3579,6 +3702,8 @@
 			"sideBarSectionHeaderBorder": "サイド バー セクションのヘッダーの罫線の色。サイド バーはエクスプローラーや検索のようなビューのコンテナーです。サイド バー セクションは、サイド バー内で入れ子になっているビューです。",
 			"sideBarSectionHeaderForeground": "サイド バー セクションのヘッダーの前景色。サイド バーはエクスプローラーや検索のようなビューのコンテナーです。サイド バー セクションは、サイド バー内で入れ子になっているビューです。",
 			"sideBarTitleForeground": "サイド バーのタイトルの前景色。サイド バーは、エクスプローラーや検索などのビューが入るコンテナーです。",
+			"sideBySideEditor.horizontalBorder": "エディター グループでエディターを上下に並べて表示する場合に、各エディターを互いに区別する色。",
+			"sideBySideEditor.verticalBorder": "エディター グループでエディターを左右に並べて表示する場合に、各エディターを互いに区別する色。",
 			"statusBarBackground": "ワークスペースまたはフォルダーが開かれているときのステータス バーの背景色。ステータス バーはウィンドウの下部に表示されます。",
 			"statusBarBorder": "サイドバーとエディターを隔てるステータス バーの境界線色。ステータス バーはウィンドウの下部に表示されます。",
 			"statusBarErrorItemBackground": "ステータス バーでのエラー項目の背景色。エラー項目は、エラー条件を示すために他のステータス バーのエントリーより目立つように表示されます。ステータス バーはウィンドウの下部に表示されます。",
@@ -3600,7 +3725,7 @@
 			"tabActiveBorder": "アクティブなタブの下部の境界線。タブはエディター領域内にあるエディターのコンテナーです。複数のタブを 1 つのエディター グループで開くことができます。複数のエディター グループがある可能性があります。",
 			"tabActiveBorderTop": "アクティブなタブの上部の境界線。タブはエディター領域内にあるエディターのコンテナーです。複数のタブを 1 つのエディター グループで開くことができます。複数のエディター グループがある可能性があります。",
 			"tabActiveForeground": "アクティブ グループ内のアクティブ タブの前景色。タブはエディター領域におけるエディターのコンテナーです。1 つのエディター グループで複数のタブを開くことができます。エディター グループを複数にすることもできます。",
-			"tabActiveModifiedBorder": "アクティブ グループ内で、変更された (ダーティ) アクティブ タブの上部の境界線。タブはエディター領域内にあるエディターのコンテナーです。複数のタブを 1 つのエディター グループで開くことができます。複数のエディター グループがある可能性があります。",
+			"tabActiveModifiedBorder": "アクティブ グループ内で、変更されたアクティブ タブの上部の境界線。タブはエディター領域内にあるエディターのコンテナーです。複数のタブを 1 つのエディター グループで開くことができます。複数のエディター グループがある可能性があります。",
 			"tabActiveUnfocusedBorder": "フォーカスされていないグループ内で、アクティブなタブの下部の境界線。タブはエディター領域内にあるエディターのコンテナーです。複数のタブを 1 つのエディター グループで開くことができます。複数のエディター グループがある可能性があります。",
 			"tabActiveUnfocusedBorderTop": "フォーカスされていないグループ内で、アクティブなタブの上部の境界線。タブはエディター領域内にあるエディターのコンテナーです。複数のタブを 1 つのエディター グループで開くことができます。複数のエディター グループがある可能性があります。",
 			"tabBorder": "タブ同士を分けるための境界線。タブはエディター領域内にあるエディターのコンテナーです。複数のタブを 1 つのエディター グループで開くことができます。複数のエディター グループがある可能性があります。",
@@ -3609,7 +3734,7 @@
 			"tabHoverForeground": "カーソルを置いた時のタブの前景色。タブは、エディター領域内のエディターのコンテナーです。複数のタブを 1 つのエディター グループ内で開くことができます。複数のエディター グループを使用できます。",
 			"tabInactiveBackground": "非アクティブ タブの背景色。タブはエディター領域におけるエディターのコンテナーです。1 つのエディター グループで複数のタブを開くことができます。エディター グループを複数にすることもできます。",
 			"tabInactiveForeground": "アクティブ グループ内の非アクティブ タブの前景色。タブはエディター領域におけるエディターのコンテナーです。1 つのエディター グループで複数のタブを開くことができます。エディター グループを複数にすることもできます。",
-			"tabInactiveModifiedBorder": "アクティブ グループ内で、変更された (ダーティ) 非アクティブ タブの上部の境界線。タブはエディター領域内にあるエディターのコンテナーです。複数のタブを 1 つのエディター グループで開くことができます。複数のエディター グループがある可能性があります。",
+			"tabInactiveModifiedBorder": "アクティブ グループ内で、変更された非アクティブ タブの上部の境界線。タブはエディター領域内にあるエディターのコンテナーです。複数のタブを 1 つのエディター グループで開くことができます。複数のエディター グループがある可能性があります。",
 			"tabUnfocusedActiveBackground": "フォーカスされていないグループ内のアクティブ タブの背景色。タブはエディター領域におけるエディターのコンテナーです。1 つのエディター グループで複数のタブを開くことができます。エディター グループを複数にすることもできます。",
 			"tabUnfocusedActiveForeground": "フォーカスされていないグループ内のアクティブ タブの前景色。タブはエディター領域におけるエディターのコンテナーです。1 つのエディター グループで複数のタブを開くことができます。エディター グループを複数にすることもできます。",
 			"tabUnfocusedHoverBackground": "ホバー時のフォーカスされていないグループ内のタブの背景色。タブはエディター領域におけるエディターのコンテナーです。1 つのエディター グループで複数のタブを開くことができます。エディター グループを複数にすることもできます。",
@@ -3624,8 +3749,8 @@
 			"titleBarBorder": "タイトル バーの境界線色。",
 			"titleBarInactiveBackground": "ウィンドウが非アクティブな場合のタイトル バーの背景。",
 			"titleBarInactiveForeground": "ウィンドウが非アクティブな場合のタイトル バーの前景。",
-			"unfocusedActiveModifiedBorder": "フォーカスされていないグループ内で、変更された (ダーティ) アクティブ タブの上部の境界線。タブはエディター領域内にあるエディターのコンテナーです。複数のタブを 1 つのエディター グループで開くことができます。複数のエディター グループがある可能性があります。",
-			"unfocusedINactiveModifiedBorder": "フォーカスされていないグループ内で、変更された (ダーティ) 非アクティブ タブの上部の境界線。タブはエディター領域内にあるエディターのコンテナーです。複数のタブを 1 つのエディター グループで開くことができます。複数のエディター グループがある可能性があります。",
+			"unfocusedActiveModifiedBorder": "フォーカスされていないグループ内で、変更されたアクティブ タブの上部の境界線。タブはエディター領域内にあるエディターのコンテナーです。複数のタブを 1 つのエディター グループで開くことができます。複数のエディター グループがある可能性があります。",
+			"unfocusedINactiveModifiedBorder": "フォーカスされていないグループ内で、変更された非アクティブ タブの上部の境界線。タブはエディター領域内にあるエディターのコンテナーです。複数のタブを 1 つのエディター グループで開くことができます。複数のエディター グループがある可能性があります。",
 			"windowActiveBorder": "ウィンドウがアクティブなときに境界線に使用する色。カスタム タイトル バーを使用する場合にのみ、デスクトップ クライアントでサポートされます。",
 			"windowInactiveBorder": "ウィンドウが非アクティブな場合に境界線に使用される色。カスタム タイトル バーを使用する場合にのみデスクトップ クライアントでサポートされます。"
 		},
@@ -3658,12 +3783,12 @@
 			"current": "現在のウィンドウ",
 			"miCloseWindow": "ウィンドウを閉じる(&&E)",
 			"miZoomIn": "拡大(&&Z)",
-			"miZoomOut": "ズームアウト(&&Z)",
+			"miZoomOut": "縮小(&&Z)",
 			"miZoomReset": "ズームのリセット(&&R)",
 			"quickSwitchWindow": "ウィンドウをすぐに切り替える...",
 			"switchWindow": "ウィンドウの切り替え...",
 			"switchWindowPlaceHolder": "切り替え先のウィンドウを選択してください",
-			"windowDirtyAriaLabel": "{0}、ダーティ ウィンドウ",
+			"windowDirtyAriaLabel": "{0}、変更が保存されていないウィンドウ",
 			"zoomIn": "拡大",
 			"zoomOut": "縮小",
 			"zoomReset": "ズームのリセット"
@@ -3680,6 +3805,7 @@
 			"argv.logLevel": "使用するログレベル。既定値は 'info' です。利用可能な値は 'critical', 'error', 'warn', 'info', 'debug', 'trace', 'off' です。",
 			"closeWhenEmpty": "最後のエディターを閉じたときに、ウィンドウも閉じるかどうかを制御します。この設定はフォルダーを表示していないウィンドウにのみ適用されます。",
 			"dialogStyle": "ダイアログ ウィンドウの外観を調整します。",
+			"enableCrashReporterDeprecated": "この設定が false の場合、新しい設定の値に関係なくテレメトリは送信されません。{0}設定に結合されているため、非推奨になりました。",
 			"keyboardConfigurationTitle": "キーボード",
 			"mergeAllWindowTabs": "すべてのウィンドウを統合",
 			"miExit": "終了(&&X)",
@@ -3725,6 +3851,7 @@
 		},
 		"vs/workbench/electron-sandbox/window": {
 			"cancelButton": "キャンセル(&&C)",
+			"learnMore": "詳細情報",
 			"loaderCycle": "解決する必要のある依存関係の循環が AMD モジュールにあります。",
 			"loginButton": "ログイン(&&L)",
 			"password": "パスワード",
@@ -3754,6 +3881,7 @@
 			"summary.0": "編集は行われませんでした",
 			"summary.n0": "1 つのファイルで {0} 個のテキストを編集",
 			"summary.nm": "{1} 個のファイルで {0} 件のテキスト編集を実行",
+			"summary.textFiles": "{1} ファイルに {0} テキストの編集を行い、{2} ファイルの作成または削除も行いました。",
 			"workspaceEdit": "ワークスペースの編集"
 		},
 		"vs/workbench/contrib/bulkEdit/browser/preview/bulkEdit.contribution": {
@@ -3926,6 +4054,7 @@
 			"schema.blockComments": "ブロック コメントのマーク方法を定義します。",
 			"schema.brackets": "インデントを増減する角かっこを定義します。",
 			"schema.closeBracket": "右角かっこまたは文字列シーケンス。",
+			"schema.colorizedBracketPairs": "角かっこのペアの色付けが有効になっている場合、入れ子のレベルによって色付けされる角かっこのペアを定義します。",
 			"schema.comments": "コメント記号を定義します。",
 			"schema.folding": "言語の折り畳み設定。",
 			"schema.folding.markers": "'#region'や '#endregion'などの言語固有の折りたたみマーカー。開始と終了の正規表現はすべての行の内容に対してテストし効率的に設計してください。",
@@ -4028,7 +4157,8 @@
 			"gotoSymbol": "エディターでシンボルに移動...",
 			"gotoSymbolByCategoryQuickAccess": "エディターでカテゴリ別のシンボルに移動",
 			"gotoSymbolQuickAccess": "エディターでシンボルに移動",
-			"gotoSymbolQuickAccessPlaceholder": "移動先のシンボル名を入力します。"
+			"gotoSymbolQuickAccessPlaceholder": "移動先のシンボル名を入力します。",
+			"miGotoSymbolInEditor": "エディター内のシンボルへ移動(&&S)..."
 		},
 		"vs/workbench/contrib/codeEditor/browser/saveParticipants": {
 			"codeAction.apply": "コード アクション '{0}' を適用しています。",
@@ -4067,6 +4197,7 @@
 		},
 		"vs/workbench/contrib/codeEditor/browser/untitledTextEditorHint": {
 			"dontshow": "今後このメッセージが",
+			"keyboardBindingTooltip": "{0}",
 			"selectAlanguage2": "言語の選択",
 			"thisAgain": "表示されないようにします。",
 			"toGetStarted": "を選択します。入力を開始して無視するか、"
@@ -4121,8 +4252,7 @@
 			"noComments": "このワークスペースにコメントはまだありません。"
 		},
 		"vs/workbench/contrib/customEditor/common/contributedCustomEditors": {
-			"builtinProviderDisplayName": "ビルトイン",
-			"promptOpenWith.defaultEditor.displayName": "テキスト エディター"
+			"builtinProviderDisplayName": "ビルトイン"
 		},
 		"vs/workbench/contrib/customEditor/common/customEditor": {
 			"context.customEditor": "現在アクティブなカスタム エディターの viewType。"
@@ -4267,9 +4397,9 @@
 			"copyAsExpression": "式としてコピー",
 			"copyStackTrace": "呼び出し履歴のコピー",
 			"copyValue": "値のコピー",
-			"debug.confirmOnExit": "Controls whether to confirm when the window closes if there are active debug sessions.",
-			"debug.confirmOnExit.always": "Always confirm if there are debug sessions.",
-			"debug.confirmOnExit.never": "Never confirm.",
+			"debug.confirmOnExit": "アクティブなデバッグ セッションがある場合に、ウィンドウを閉じたときに確認を行うかどうかを制御します。",
+			"debug.confirmOnExit.always": "デバッグ セッションがあるかどうかを常に確認します。",
+			"debug.confirmOnExit.never": "確認しません。",
 			"debug.console.acceptSuggestionOnEnter": "デバッグ コンソールの入力候補を受け入れるかどうかを制御します。また、入力は、デバッグコンソールに入力された内容を評価するためにも使用されます。",
 			"debug.console.closeOnEnd": "デバッグ セッションの終了時にデバッグ コンソールを自動的に閉じるかどうかを制御します。",
 			"debug.console.collapseIdenticalLines": "デバッグ コンソールで同一の行を折りたたみ、出現回数をバッジ付きで表示するかどうか制御します。",
@@ -4278,6 +4408,7 @@
 			"debug.console.historySuggestions": "以前に型指定された入力をデバッグ コンソールが提案する必要があるかどうかを制御します。",
 			"debug.console.lineHeight": "デバッグ コンソール内での行の高さをピクセル単位で制御します。フォント サイズから行の高さを計算するには 0 を使用します。",
 			"debug.console.wordWrap": "行をデバッグ コンソールで折り返す必要があるかどうかを制御します。",
+			"debug.disassemblyView.showSourceCode": "逆アセンブリ ビューでソース コードを表示する。",
 			"debug.focusWindowOnBreak": "デバッガーが中断したときにワークベンチ ウィンドウにフォーカスするかどうかを制御します。",
 			"debug.onTaskErrors": "preLaunchTask の実行後にエラーが発生した場合の処理を制御します。",
 			"debug.saveBeforeStart": "デバッグ セッションを開始する前にどのエディターを保存するかを制御します。",
@@ -4404,17 +4535,19 @@
 			"conditionalBreakpointEditorAction": "デバッグ: 条件付きブレークポイントの追加...",
 			"evaluateInDebugConsole": "デバッグ コンソールでの評価",
 			"goToNextBreakpoint": "デバッグ: 次のブレークポイントへ移動",
-			"goToPreviousBreakpoint": "デバッグ: 前のブレークポイントへ移動",
+			"goToPreviousBreakpoint": "デバッグ: 前のブレークポイントに移動",
 			"logPointEditorAction": "デバッグ: ログポイントの追加...",
 			"miConditionalBreakpoint": "条件付きブレークポイント(&&C)...",
 			"miDisassemblyView": "&&DisassemblyView",
 			"miLogPoint": "ログポイント(&&L)...",
 			"miToggleBreakpoint": "ブレークポイントの切り替え(&&B)",
+			"mitogglesource": "&&ToggleSource",
 			"openDisassemblyView": "逆アセンブリ ビューを開く",
 			"runToCursor": "カーソル行の前まで実行",
 			"showDebugHover": "デバッグ: ホバーの表示",
 			"stepIntoTargets": "ターゲットにステップ イン...",
-			"toggleBreakpointAction": "デバッグ: ブレークポイントの切り替え"
+			"toggleBreakpointAction": "デバッグ: ブレークポイントの切り替え",
+			"toggleDisassemblyViewSourceCode": "逆アセンブリ ビューでソース コードを切り替える"
 		},
 		"vs/workbench/contrib/debug/browser/debugEditorContribution": {
 			"addConfiguration": "構成の追加...",
@@ -4554,6 +4687,7 @@
 			"disassemblyView": "逆アセンブリ ビュー",
 			"instructionAddress": "アドレス",
 			"instructionBytes": "バイト",
+			"instructionNotAvailable": "逆アセンブリは使用できません。",
 			"instructionText": "命令"
 		},
 		"vs/workbench/contrib/debug/browser/exceptionWidget": {
@@ -4667,6 +4801,7 @@
 			"debugState": "フォーカスされたデバッグ セッションの状態です。'inactive'、'initializing'、'stopped'、'running' のいずれかになります。",
 			"debugType": "アクティブなデバッグ セッションのデバッグの種類。例: 'python'。",
 			"debugUX": "UX 状態をデバッグします。デバッグ構成がない場合は 'simple'、それ以外の場合は 'default' です。デバッグ ビューレットでウェルカム ビューを表示するタイミングを決定するために使用されます。",
+			"debuggerDisabled": "構成済みデバッグの種類 '{0}' はインストールされていますが、この環境ではサポートされていません。",
 			"debuggersAvailable": "アクティブなデバッグ拡張機能が少なくとも 1 つ存在する場合は True です。",
 			"disassembleRequestSupported": "フォーカスされたセッションで逆アセンブル要求がサポートされている場合は True です。",
 			"disassemblyViewFocus": "逆アセンブリ ビューがフォーカスされている場合は True です。",
@@ -4702,8 +4837,9 @@
 			"unable": "デバッグ セッションなしでリソースを解決できません"
 		},
 		"vs/workbench/contrib/debug/common/debugLifecycle": {
-			"debug.debugSessionCloseConfirmationPlural": "There are active debug sessions, are you sure you want to terminate them?",
-			"debug.debugSessionCloseConfirmationSingular": "There is an active debug session, are you sure you want to terminate it?"
+			"debug.debugSessionCloseConfirmationPlural": "アクティブなデバッグ セッションがあります。停止しますか?",
+			"debug.debugSessionCloseConfirmationSingular": "アクティブなデバッグ セッションがあります。停止しますか?",
+			"debug.stop": "デバッグを停止する"
 		},
 		"vs/workbench/contrib/debug/common/debugModel": {
 			"breakpointDirtydHover": "未確認のブレークポイント。ファイルは変更されているので、デバッグ セッションを再起動してください。",
@@ -4747,6 +4883,7 @@
 			"vscode.extension.contributes.debuggers.runtimeArgs": "オプションのランタイム引数。",
 			"vscode.extension.contributes.debuggers.type": "このデバッグ アダプターの一意識別子。",
 			"vscode.extension.contributes.debuggers.variables": "`launch.json` 内の対話型の変数 (例: ${action.pickProcess}) からコマンドへマッピングしています。",
+			"vscode.extension.contributes.debuggers.when": "この種類のデバッガーを有効にするために true でなければならない条件。'shellExecutionSupported'、'virtualWorkspace'、'resourceScheme'、または拡張機能でこれに適したものとして定義されたコンテキスト キーを使用することを検討してください。",
 			"vscode.extension.contributes.debuggers.windows": "Windows 固有の設定。",
 			"vscode.extension.contributes.debuggers.windows.runtime": "Windows で使用されるランタイム。"
 		},
@@ -4899,7 +5036,8 @@
 			"not yet activated": "まだアクティブ化されていません。",
 			"preview": "プレビュー",
 			"productThemes": "製品アイコンのテーマ ({0})",
-			"publisher": "発行者名",
+			"publisher": "発行者",
+			"publisher verified tooltip": "この発行元では、{0} の所有権を確認しました",
 			"rating": "評価",
 			"recommendationHasBeenIgnored": "この拡張機能の推奨を受け取らないことを選択しました。",
 			"release date": "リリース日",
@@ -4930,6 +5068,7 @@
 			"neverShowAgain": "今後は表示しない",
 			"no": "いいえ",
 			"show recommendations": "推奨事項の表示",
+			"singleExtensionRecommended": "このリポジトリには、'{0}' 拡張機能をお勧めします。インストールしますか?",
 			"workspaceRecommended": "このリポジトリにお勧めの拡張機能をインストールしますか?"
 		},
 		"vs/workbench/contrib/extensions/browser/extensions.contribution": {
@@ -4980,14 +5119,15 @@
 			"extensionsIgnoreRecommendations": "有効にした場合、拡張機能の推奨事項の通知を表示しません。",
 			"extensionsShowRecommendationsOnlyOnDemand_Deprecated": "この設定は非推奨化されています。extensions.ignoreRecommendations 設定を使用して、推奨事項の通知を制御します。既定で推奨ビューを非表示にするには、拡張機能ビューの可視性アクションを使用します。",
 			"extensionsWebWorker": "web worker 拡張機能ホストを有効にします。",
-			"extensionsWebWorker.auto": "The Web Worker Extension Host will be launched when a web extension needs it.",
-			"extensionsWebWorker.false": "The Web Worker Extension Host will never be launched.",
-			"extensionsWebWorker.true": "The Web Worker Extension Host will always be launched.",
+			"extensionsWebWorker.auto": "Web ワーカー拡張機能のホストは、Web 拡張機能で必要とされるときに起動されます。",
+			"extensionsWebWorker.false": "Web Worker 拡張機能のホストは起動されません。",
+			"extensionsWebWorker.true": "Web Worker 拡張機能のホストは常に起動されます。",
 			"featured filter": "おすすめ",
 			"filter by category": "カテゴリ",
 			"filterExtensions": "拡張機能のフィルター...",
 			"handleUriConfirmedExtensions": "拡張機能がここに表示されている場合、その拡張機能が URI を処理するときに確認プロンプトは表示されません。",
 			"id required": "拡張機能 Id が必要です。",
+			"importKeyboardShortcutsFroms": "キーボード ショートカットを移行する...",
 			"install button": "インストール",
 			"installButton": "インストール(&&I)",
 			"installExtensionQuickAccessHelp": "拡張機能のインストールまたは検索",
@@ -5002,10 +5142,9 @@
 			"installed filter": "インストール済み",
 			"manageExtensionsHelp": "拡張機能の管理",
 			"manageExtensionsQuickAccessPlaceholder": "Enter キーを押して拡張機能を管理してください。",
-			"miOpenKeymapExtensions": "キーマップ(&&K)",
-			"miOpenKeymapExtensions2": "キーマップ",
 			"miPreferencesExtensions": "拡張機能(&&E)",
 			"miViewExtensions": "拡張機能(&&X)",
+			"miimportKeyboardShortcutsFrom": "キーボード ショートカットを移行する(&&M)...",
 			"most popular filter": "一番人気",
 			"most popular recommended": "推奨",
 			"noUpdatesAvailable": "すべての拡張機能が最新の状態です。",
@@ -5048,6 +5187,7 @@
 			"workbench.extensions.action.undoIgnoredRecommendation": "無視された推奨事項を元に戻す",
 			"workbench.extensions.installExtension.arg.decription": "拡張機能 ID または VSIX リソース URI",
 			"workbench.extensions.installExtension.description": "指定された拡張機能をインストールします",
+			"workbench.extensions.installExtension.option.donotSync": "有効にすると、設定の同期がオンの場合に VS Code はこの拡張機能を同期しません。",
 			"workbench.extensions.installExtension.option.installOnlyNewlyAddedFromExtensionPackVSIX": "有効にした場合、VS Code は拡張機能パックの VSIX から新しく追加された拡張機能のみをインストールします。このオプションは、VSIX のインストール中にのみ考慮されます。",
 			"workbench.extensions.search.arg.name": "検索で使用するクエリ",
 			"workbench.extensions.search.description": "特定の拡張機能を検索する",
@@ -5056,20 +5196,18 @@
 			"workspace unsupported filter": "サポートされていないワークスペース"
 		},
 		"vs/workbench/contrib/extensions/browser/extensionsActions": {
-			"Cannot be enabled": "この拡張機能は、{0} でサポートされていないため、無効になっています。",
+			"Cannot be enabled": "この拡張機能は、Web 版の {0} ではサポートされていないため、無効になっています。",
 			"Install in local server to enable": "この拡張機能は、ローカル拡張ホストで実行するように定義されているため、このワークスペースでは無効です。有効にするには、拡張機能をローカルでインストールしてください。",
 			"Install in remote server to enable": "この拡張機能は、リモート拡張ホストで実行するように定義されているため、このワークスペースでは無効です。有効にするには、'{0}' の拡張機能をインストールしてください。",
 			"Install language pack also in remote server": "言語パック拡張機能を '{0}' にインストールして、その場所でも有効にします。",
 			"Install language pack also locally": "言語パック拡張機能をローカルにインストールして、その場所でも有効にします。",
-			"InstallAnotherVersionExtensionAction.reloadNow": "今すぐ再度読み込む",
-			"InstallAnotherVersionExtensionAction.success": "拡張機能 {0} のインストールが完了しました。",
-			"InstallAnotherVersionExtensionAction.successReload": "拡張機能 {0} のインストールを完了するには Visual Studio Code を再度読み込んでください。",
 			"InstallVSIXAction.reloadNow": "今すぐ再度読み込む",
 			"ManageExtensionAction.uninstallingTooltip": "アンインストールしています",
 			"OpenExtensionsFile.failed": "'.vscode' ファルダー ({0}) 内に 'extensions.json' ファイルを作成できません。",
 			"ReinstallAction.success": "拡張機能 {0} の再インストールが完了しました。",
 			"ReinstallAction.successReload": "拡張機能 {0} の再インストールを完了するために Visual Studio Code を再度読み込んでください。",
 			"Uninstalling": "アンインストールしています",
+			"VS Code for Web": "Web 版の {0}",
 			"cannot be installed": "'{0}' 拡張機能は {1} では使用できません。詳細については、[詳細情報] をクリックしてください。",
 			"check logs": "詳細については、[ログ]({0}) をご確認ください。",
 			"close": "閉じる",
@@ -5112,6 +5250,7 @@
 			"globally enabled": "この拡張機能はグローバルに有効化されています。",
 			"ignoreExtensionRecommendation": "再度この拡張機能を推奨しないでください",
 			"ignored": "同期中はこの拡張機能が無視されます",
+			"incompatible platform": "'{0}' 拡張機能は {2} の {1} では使用できません。",
 			"install": "インストール",
 			"install and do no sync": "インストール (同期しない)",
 			"install another version": "別のバージョンをインストール...",
@@ -5136,6 +5275,7 @@
 			"installing extensions": "拡張機能をインストールしています...",
 			"just now": "今すぐ",
 			"learn more": "詳細情報",
+			"learn why": "理由をご確認ください",
 			"malicious tooltip": "この拡張機能は問題ありと報告されました。",
 			"manage": "管理",
 			"more information": "詳細情報",
@@ -5181,8 +5321,6 @@
 			"updateExtensionStart": "拡張機能 {0} のバーション {1} への更新を開始しました。",
 			"updateTo": "{0} に更新します",
 			"updated": "更新",
-			"user disabled": "{1} で '{0}' の拡張を無効にするように構成しました。有効にするには、ユーザー設定を開いて `remote.extensionKind` 設定から削除してください。",
-			"vscode web": "VS Code Web",
 			"workspace disabled": "この拡張機能はユーザーによってこのワークスペースに対して無効化されています。",
 			"workspace enabled": "この拡張機能はユーザーによってこのワークスペースに対して有効化されています。"
 		},
@@ -5220,6 +5358,7 @@
 			"syncEnabledIcon": "拡張機能が同期していることを示すアイコン。",
 			"syncIgnoredIcon": "同期時に拡張機能が無視されることを示すアイコン。",
 			"trustIcon": "拡張機能のエディターで警告メッセージと共に表示されるアイコン。",
+			"verifiedPublisher": "拡張機能ビューとエディターで確認済みの拡張機能の発行元用に使用されるアイコン。",
 			"warningIcon": "拡張機能のエディターで警告メッセージと共に表示されるアイコン。"
 		},
 		"vs/workbench/contrib/extensions/browser/extensionsQuickAccess": {
@@ -5270,10 +5409,9 @@
 			"workspaceUnsupported": "サポートされていないワークスペース"
 		},
 		"vs/workbench/contrib/extensions/browser/extensionsViews": {
-			"error": "拡張機能の読み込み中にエラーが発生しました。{0}",
+			"error": "拡張機能のフェッチ中にエラーが発生しました。{0}",
 			"extension.arialabel": "{0}、{1}、{2}、{3}",
 			"extensions": "拡張機能",
-			"galleryError": "現在、拡張機能の Marketplace に接続できません。しばらくしてから、もう一度お試しください。",
 			"no extensions found": "拡張機能が見つかりません",
 			"no local extensions": "インストールする拡張機能はありません。",
 			"open user settings": "ユーザー設定を開く",
@@ -5283,8 +5421,10 @@
 			"activation": "アクティブ化の時刻",
 			"dependencies": "依存関係の表示",
 			"extensionIconStarForeground": "拡張機能の評価のアイコンの色。",
+			"extensionIconVerifiedForeground": "拡張機能の確認済みの発行元のアイコンの色。",
 			"message": "1 個のメッセージ",
 			"messages": "{0} 個のメッセージ",
+			"publisher verified tooltip": "この発行元では、{0} の所有権を確認しました",
 			"remote extension title": "{0} の拡張機能",
 			"startup": "スタートアップ",
 			"syncingore.label": "同期中はこの拡張機能が無視されます。",
@@ -5294,11 +5434,11 @@
 		"vs/workbench/contrib/extensions/browser/extensionsWorkbenchService": {
 			"Manifest is not found": "マニフェストが見つかりません",
 			"disable all": "すべて無効にする",
-			"incompatible": "VS Code と互換性がないため、拡張機能 '{0}' のバージョン '{1}' はインストールできません。",
 			"installing extension": "拡張機能をインストールしています...",
 			"installing named extension": "'{0}' 拡張機能をインストールしています....",
 			"malicious": "この拡張機能は問題ありと報告されました。",
 			"multipleDependentsError": "'{0}' 拡張機能のみを無効にすることはできません。'{1}'、'{2}'、その他の拡張機能がこれに依存しています。これらの拡張機能をすべて無効にしますか?",
+			"not found": "拡張機能 '{0}' をインストールできません。要求されたバージョン '{1}' が見つかりません。",
 			"singleDependentError": "'{0}' 拡張機能のみを無効にすることはできません。'{1}' 拡張機能がこれに依存しています。これらの拡張機能をすべて無効にしますか?",
 			"twoDependentsError": "'{0}' 拡張機能のみを無効にすることはできません。'{1}' および '{2}' の拡張機能がこれに依存しています。これらの拡張機能をすべて無効にしますか?",
 			"uninstallingExtension": "拡張機能をアンインストールしています..."
@@ -5309,6 +5449,9 @@
 			"reallyRecommended": "{0} にお勧めの拡張機能をインストールしますか?",
 			"searchMarketplace": "Marketplace で検索",
 			"showLanguageExtensions": "Marketplace には、'.{0}' ファイルに役立つ拡張機能があります"
+		},
+		"vs/workbench/contrib/extensions/browser/webRecommendations": {
+			"reason": "{0} for the Web には、この拡張機能をお勧めします"
 		},
 		"vs/workbench/contrib/extensions/browser/workspaceRecommendations": {
 			"workspaceRecommendation": "この拡張機能は、現在のワークスペースのユーザーによって推奨されています。"
@@ -5412,7 +5555,6 @@
 			"patchedVersion1": "インストールが壊れています。",
 			"patchedVersion2": "バグを送信する場合には、これを指定してください。",
 			"request a missing feature": "欠落している機能を要求する",
-			"sendFeedback": "フィードバックをツイートする",
 			"sentiment": "ご感想をお聞かせください。",
 			"showFeedback": "ステータス バーにフィードバックのアイコンを表示",
 			"smileCaption": "幸せのフィードバック センチメント",
@@ -5461,7 +5603,7 @@
 			"folders": "フォルダー",
 			"miViewExplorer": "エクスプローラー(&&E)",
 			"noFolderHelp": "フォルダーをまだ開いていません。\r\n[フォルダーを開く](command:{0})",
-			"noWorkspaceHelp": "ワークスペースにフォルダーをまだ追加していません。\r\n[フォルダーの追加](command:{0})",
+			"noWorkspaceHelp": "ワークスペースにフォルダーをまだ追加していません。\r\n[フォルダーを開く] (command: {0})",
 			"openEditorsIcon": "オープン エディター ビューのアイコンを表示します。",
 			"remoteNoFolderHelp": "リモートに接続されています。\r\n[フォルダーを開く](command:{0})"
 		},
@@ -5613,6 +5755,8 @@
 			"downloadingFiles": "ダウンロード中",
 			"dropFolder": "'{0}' をコピーするか、'{0}' をフォルダーとしてワークスペースに追加しますか?",
 			"dropFolders": "フォルダーをコピーするか、フォルダーをワークスペースに追加しますか?",
+			"fileInaccessible": "ドロップされたファイルをインポートするためにアクセスできませんでした。",
+			"filesInaccessible": "ドロップされたファイルの一部または全部で、インポートのためにアクセスできませんでした。",
 			"irreversible": "この操作は元に戻せません。",
 			"overwrite": "{0} の上書き",
 			"overwriting": "{0} を上書きしています",
@@ -5629,8 +5773,8 @@
 			"autoReveal.focusNoScroll": "ファイルは、スクロールしてビューに表示されることはありませんが、引き続きフォーカスされます。",
 			"autoReveal.off": "ファイルは、表示や選択が行われません。",
 			"autoReveal.on": "ファイルは、表示や選択が行われるようになります。",
-			"autoSave": "ダーティ エディターの自動保存を制御します。自動保存の詳細については、[こちら](https://code.visualstudio.com/docs/editor/codebasics#_save-auto-save)をお読みください。",
-			"autoSaveDelay": "ダーティ エディターが自動で保存されるまでの遅延をミリ秒単位で制御します。`#files.autoSave#` が `{0}` に設定されている場合のみ適用されます。",
+			"autoSave": "変更が保存されていないエディターの自動保存を制御します。自動保存の詳細については、[こちら](https://code.visualstudio.com/docs/editor/codebasics#_save-auto-save)をお読みください。",
+			"autoSaveDelay": "変更が保存されていないエディターが自動で保存されるまでの遅延をミリ秒単位で制御します。`#files.autoSave#` が `{0}` に設定されている場合のみ適用されます。",
 			"binaryFileEditor": "バイナリ ファイル エディター",
 			"compressSingleChildFolders": "エクスプローラーでフォルダーをコンパクト形式でレンダリングするかどうかを制御します。このような形式では、単一の子フォルダーは結合されたツリー要素に圧縮されます。たとえば、Java パッケージ構造に役立ちます。",
 			"confirmDelete": "ごみ箱を経由したファイル削除時にエクスプローラーが確認を求めるかどうかを制御します。",
@@ -5648,16 +5792,21 @@
 			"eol.auto": "OS 固有の改行文字を使用します。",
 			"everything": "ファイル全体をフォーマットします。",
 			"exclude": "ファイルとフォルダーを除外するために glob パターンを構成します。たとえば、ファイル エクスプローラーでは、この設定に基づいて、表示されるか非表示になるファイルとフォルダーが決まります。検索固有の除外を定義するには、'#search.exclude#' 設定を参照してください。glob パターンの詳細については、[こちら](https://code.visualstudio.com/docs/editor/codebasics#_advanced-search-options) をご覧ください。",
+			"expandSingleFolderWorkspaces": "初期化中に 1 つのフォルダーのみを含むマルチルート ワークスペースをエクスプローラーで展開するかどうかを制御します",
 			"explorer.decorations.badges": "ファイルの装飾にバッジを使用するかどうかを制御します。",
 			"explorer.decorations.colors": "ファイルの装飾に配色を使用するかどうかを制御します。",
 			"explorer.incrementalNaming": "貼り付けで重複するエクスプローラー項目に新しい名前を付けるときに使用する名前付け規則を制御します。",
 			"explorerConfigurationTitle": "エクスプローラー",
-			"files.autoSave.afterDelay": "ダーティ エディターは、構成された '#files.autoSaveDelay#' の後に自動的に保存されます。",
-			"files.autoSave.off": "ダーティ エディターは自動的に保存されません。",
-			"files.autoSave.onFocusChange": "エディターがフォーカスを失うと、ダーティ エディターが自動的に保存されます。",
-			"files.autoSave.onWindowChange": "ウィンドウがフォーカスを失うと、ダーティ エディターが自動的に保存されます。",
+			"files.autoSave.afterDelay": "変更のあったエディターは、構成された '#files.autoSaveDelay#' の後に自動的に保存されます。",
+			"files.autoSave.off": "変更のあったエディターは自動的に保存されません。",
+			"files.autoSave.onFocusChange": "エディターがフォーカスを失うと、変更のあったエディターが自動的に保存されます。",
+			"files.autoSave.onWindowChange": "エディターがフォーカスを失うと、変更のあったエディターが自動的に保存されます。",
 			"files.exclude.boolean": "ファイル パスの照合基準となる glob パターン。これを true または false に設定すると、パターンがそれぞれ有効/無効になります。",
 			"files.exclude.when": "一致するファイルの兄弟をさらにチェックします。一致するファイル名の変数として $(basename) を使用します。",
+			"files.experimentalSandboxedFileService": "実験: ファイル サービスをサンドボックス化するように変更します。指示がない限り、これを変更しないでください。",
+			"files.legacyWatcher.default": "新しいファイル ウォッチャーは、インサイダー バージョンを使用している場合や、マルチルート ワークスペースを開いている場合に有効になります。",
+			"files.legacyWatcher.off": "従来のファイル ウォッチャーを無効にし、新しいファイル ウォッチャーを有効にすることで、その機能を活用できるようにします。",
+			"files.legacyWatcher.on": "新しいファイル ウォッチャーで問題が発生した場合に備えて、従来のファイル ウォッチャーを有効にします。",
 			"files.restoreUndoStack": "ファイルを再度開いたときに、元に戻す機能のスタックを復元します。",
 			"files.saveConflictResolution": "保存の競合は、ファイルを保存している間に別のプログラムによって変更されたときに発生する可能性があります。データ損失を防ぐために、ユーザーは、エディターの変更とディスク上のバージョンを比較するように求められます。この設定は、保存の競合エラーが頻繁に発生する場合にのみ変更し、データが失われる可能性があるため注意してください。",
 			"files.simpleDialog.enable": "単純なファイル ダイアログを有効にします。有効な場合、単純なファイル ダイアログはシステム ファイル ダイアログを置き換えます。",
@@ -5665,11 +5814,12 @@
 			"formatOnSave": "ファイルを保存するときにフォーマットします。フォーマッタが有効でなければなりません。ファイルの遅延保存やエディターを閉じることは許可されていません。",
 			"formatOnSaveMode": "保存の形式でファイル全体をフォーマット指定するか、変更のみをフォーマットするかを制御します。`#editor.formatOnSave#` が有効な場合にのみ適用されます。",
 			"hotExit": "エディターを終了するときに保存を確認するダイアログを省略し、保存されていないファイルをセッション後も保持するかどうかを制御します。",
-			"hotExit.off": "Hot Exit を無効にします。ダーティ ファイルを含むウィンドウを閉じようとすると、プロンプトが表示されます。",
+			"hotExit.off": "Hot Exit を無効にします。変更が保存されていないエディターを含むウィンドウを閉じようとすると、プロンプトが表示されます。",
 			"hotExit.onExit": "Windows または Linux で最後のウィンドウが閉じられるとき、または `workbench.action.quit` コマンドがトリガーされるとき (コマンド パレット、キー バインド、メニュー)、Hot Exit がトリガーされます。フォルダーが開かれていないウィンドウはすべて、次回の起動時に復元されます。未保存のファイルが含まれる、以前に開かれたウィンドウのリストは、[ファイル] > [最近使用したファイル] > [詳細...] と移動すると表示できます。",
 			"hotExit.onExitAndWindowClose": "Windows または Linux で最後のウィンドウが閉じられるとき、または `workbench.action.quit` コマンドがトリガーされるとき (コマンド パレット、キー バインド、メニュー)、またフォルダーが開かれているウィンドウについても、それが最後のウィンドウかどうかに関係なく、Hot Exit がトリガーされます。フォルダーが開かれていないウィンドウはすべて、次回の起動時に復元されます。未保存のファイルが含まれる、以前に開かれたウィンドウのリストは、[ファイル] > [最近使用したファイル] > [詳細...] と移動すると表示できます。",
 			"hotExit.onExitAndWindowCloseBrowser": "Hot Exit はブラウザーが終了するか、ウィンドウまたはタブが閉じられた時にトリガーされます。",
 			"insertFinalNewline": "有効にすると、ファイルの保存時に最新の行を末尾に挿入します。",
+			"legacyWatcher": "ファイル ウォッチに使用するメカニズムを制御します。ファイル ウォッチに関連する問題が発生した場合にのみ、これを変更します。",
 			"maxMemoryForLargeFilesMB": "大きなファイルを開こうとしたとき、VS Code の再起動後に使用できるメモリを制御します。コマンド ラインで `--max-memory=NEWSIZE` を指定するのと同じ効果があります。",
 			"modification": "変更をフォーマットします (ソース管理が必要)。",
 			"modificationIfAvailable": "変更部分のみのフォーマットを試みます (ソース管理が必要)。ソース管理が使用できない場合は、ファイル全体がフォーマットされます。",
@@ -5694,7 +5844,8 @@
 			"trimFinalNewlines": "有効にすると、ファイルの保存時に最終行以降の新しい行をトリミングします。",
 			"trimTrailingWhitespace": "有効にすると、ファイルの保存時に末尾の空白をトリミングします。",
 			"useTrash": "ファイル/フォルダーを削除時するときに、 OS のごみ箱に移動します。無効にするとファイル/フォルダーは完全に削除されます。",
-			"watcherExclude": "ファイル監視から除外するファイル パスの glob パターンを設定します。パターンは絶対パスで一致する必要があります。つまり、適切に一致するには、プレフィックス `**/` または完全パスを指定し、パス内でファイルを一致させるには、サフィックス `/**` を指定します (例: `**/build/output/**` または `/Users/name/workspaces/project/build/output/**`)。この設定を変更した場合は、再起動が必要になります。始動時に Code が消費する CPU 時間が多い場合は、大きいフォルダーを除外すれば初期の負荷を減らすことができます。"
+			"watcherExclude": "ファイル監視から除外するパスまたは glob パターンを構成します。相対パス (例: 'build/output') は、現在開いているワークスペースを使用して絶対パスに解決されます。glob パターンは、プロパティと一致させる (例: `**/build/output/**` や `/Users/name/workspaces/project/build/output/**`) ために絶対パスと一致しなければなりません (例: パス内のプレフィックスに '**/' を付けるか、完全なパスとサフィックスに '/**' を付ける)。ファイル監視プロセスが CPU を大量に消費する場合は、関心の低い大きなフォルダー (ビルド出力フォルダーなど) を除外してください。",
+			"watcherInclude": "追加のパスを構成して、ワークスペース内の変更を監視します。既定では、シンボリック リンクのフォルダーを除き、すべてのワークスペースのフォルダーを再帰的に監視します。絶対パスまたは相対パスを明示的に追加して、シンボリック リンクのフォルダーの監視をサポートすることができます。相対パスは、現在開いているワークスペースを使用して絶対パスに解決されます。"
 		},
 		"vs/workbench/contrib/files/browser/views/emptyView": {
 			"noWorkspace": "開いているフォルダーがありません"
@@ -5735,6 +5886,12 @@
 			"newUntitledFile": "無題の新規ファイル",
 			"openEditors": "開いているエディター"
 		},
+		"vs/workbench/contrib/files/browser/workspaceWatcher": {
+			"enospcError": "この大規模なワークスペース フォルダーでのファイルの変更をウォッチできません。この問題を解決するには、手順のリンクに従ってください。",
+			"eshutdownError": "ファイル変更ウォッチャーが予期せず停止しました。ウィンドウを再度読み込んで、ウォッチャーをもう一度有効にしてください。",
+			"learnMore": "手順",
+			"reload": "再読み込み"
+		},
 		"vs/workbench/contrib/files/common/dirtyFilesIndicator": {
 			"dirtyFile": "1 つの未保存のファイル",
 			"dirtyFiles": "{0} 個の未保存のファイル"
@@ -5753,12 +5910,6 @@
 			"filesExplorerFocus": "[エクスプローラー] ビュー内にフォーカスがある場合は True です。",
 			"openEditorsFocus": "[開いているエディター] ビュー内にフォーカスがある場合は True です。",
 			"openEditorsVisible": "[開いているエディター] ビューが表示されている場合は True です。"
-		},
-		"vs/workbench/contrib/files/common/workspaceWatcher": {
-			"enospcError": "この大規模なワークスペース フォルダーでのファイルの変更をウォッチできません。この問題を解決するには、手順のリンクに従ってください。",
-			"installNet": ".NET Framework 4.5 をダウンロードします",
-			"learnMore": "手順",
-			"netVersionError": "Microsoft .NET Framework 4.5 が必要です。リンクに移動してインストールしてください。"
 		},
 		"vs/workbench/contrib/files/electron-sandbox/fileActions.contribution": {
 			"filesCategory": "ファイル",
@@ -5785,7 +5936,8 @@
 			"formatDocument.label.multiple": "ドキュメントのフォーマット...",
 			"formatSelection.label.multiple": "選択範囲をフォーマット...",
 			"formatter.default": "他のすべてのフォーマッタ設定よりも優先される、既定のフォーマッタを定義します。フォーマッタを提供している拡張機能の識別子にする必要があります。",
-			"miss": "拡張機能 '{0}' は '{1}' をフォーマットできません",
+			"miss": "拡張機能 '{0}' はフォーマッタとして構成されていますが、'{1}'-ファイルをフォーマットできません",
+			"miss.1": "既定のフォーマッタを変更する",
 			"null": "なし",
 			"nullFormatterDescription": "なし",
 			"select": "'{0}' ファイルの既定のフォーマッタを選択する"
@@ -5806,8 +5958,10 @@
 			"interactive.history.next": "履歴内の次の値",
 			"interactive.history.previous": "履歴内の前の値",
 			"interactive.inactiveCodeBorder": "エディターにフォーカスがない場合の、現在の対話型コード セルの境界線の色。",
-			"interactive.input.clear": "Clear the interactive window input editor contents",
-			"interactive.open": "インタラクティブ ウィンドウを開く"
+			"interactive.input.clear": "インタラクティブ ウィンドウ入力エディターの内容を消去します",
+			"interactive.open": "インタラクティブ ウィンドウを開く",
+			"interactiveScrollToBottom": "一番下にスクロール",
+			"interactiveScrollToTop": "一番上にスクロール"
 		},
 		"vs/workbench/contrib/interactive/browser/interactiveEditor": {
 			"interactiveInputPlaceHolder": "こちらにコードを入力し、{0} を押して実行してください"
@@ -5819,14 +5973,24 @@
 		},
 		"vs/workbench/contrib/issue/electron-sandbox/issueActions": {
 			"openProcessExplorer": "プロセス エクスプローラーを開く",
-			"reportPerformanceIssue": "パフォーマンスの問題のレポート"
+			"reportPerformanceIssue": "パフォーマンスの問題のレポート..."
 		},
 		"vs/workbench/contrib/keybindings/browser/keybindings.contribution": {
 			"toggleKeybindingsLog": "キーボード ショートカットの切り替えのトラブルシューティング"
 		},
+		"vs/workbench/contrib/languageStatus/browser/languageStatus.contribution": {
+			"aria.1": "{0}、{1}",
+			"aria.2": "{0}",
+			"langStatus.aria": "エディター言語の状態: {0}",
+			"langStatus.name": "エディター言語の状態",
+			"name.pattern": "{0} (言語の状態)",
+			"pin": "ステータス バーにピン留めする"
+		},
 		"vs/workbench/contrib/localizations/browser/localizations.contribution": {
 			"activateLanguagePack": "{0} で VS Code を使用するには、VS Code を再起動する必要があります。",
 			"changeAndRestart": "言語を変更し再起動",
+			"doNotChangeAndRestart": "言語を変更しない",
+			"doNotRestart": "再起動しない",
 			"neverAgain": "今後表示しない",
 			"restart": "再起動",
 			"updateLocale": "VS Code の UI 言語を {0} にして再起動しますか?",
@@ -5901,9 +6065,9 @@
 			"show multiline": "複数行にメッセージを表示します",
 			"show singleline": "メッセージを 1 行に表示します",
 			"status.problems": "問題",
-			"totalErrors": "エラー {0}",
-			"totalInfos": "情報 {0}",
-			"totalWarnings": "警告 {0}"
+			"totalErrors": "エラー: {0}",
+			"totalInfos": "情報: {0}",
+			"totalWarnings": "警告: {0}"
 		},
 		"vs/workbench/contrib/markers/browser/markersFileDecorations": {
 			"label": "問題",
@@ -5972,14 +6136,21 @@
 			"problems.view.focus.label": "問題 (エラー、警告、情報) にフォーカス",
 			"problems.view.toggle.label": "問題 (エラー、警告、情報) の切り替え"
 		},
-		"vs/workbench/contrib/notebook/browser/contrib/cellOperations/cellOperations": {
+		"vs/workbench/contrib/notebook/browser/contrib/cellCommands/cellCommands": {
+			"notebookActions.changeCellToCode": "セルをコードに変更する",
+			"notebookActions.changeCellToMarkdown": "セルを Markdown に変更する",
+			"notebookActions.collapseCellInput": "セルの入力を折りたたむ",
+			"notebookActions.collapseCellOutput": "セルの出力を折りたたむ",
 			"notebookActions.copyCellDown": "セルを下にコピー",
 			"notebookActions.copyCellUp": "セルを上にコピー",
+			"notebookActions.expandCellInput": "セルの入力を展開する",
+			"notebookActions.expandCellOutput": "セルの出力を展開する",
 			"notebookActions.joinCellAbove": "前のセルと結合する",
 			"notebookActions.joinCellBelow": "次のセルと結合する",
 			"notebookActions.moveCellDown": "セルを下に移動",
 			"notebookActions.moveCellUp": "セルを上に移動",
-			"notebookActions.splitCell": "セルを分割する"
+			"notebookActions.splitCell": "セルを分割する",
+			"notebookActions.toggleOutputs": "出力の切り替え"
 		},
 		"vs/workbench/contrib/notebook/browser/contrib/cellStatusBar/executionStatusBarItemController": {
 			"notebook.cell.status.executing": "実行中",
@@ -5994,59 +6165,8 @@
 			"notebookActions.copy": "セルのコピー",
 			"notebookActions.cut": "セルの切り取り",
 			"notebookActions.paste": "セルの貼り付け",
-			"notebookActions.pasteAbove": "セルを上に貼り付け"
-		},
-		"vs/workbench/contrib/notebook/browser/contrib/coreActions": {
-			"changeLanguage": "セルの言語の変更",
-			"clearAllCellsOutputs": "出力データをクリアします",
-			"clearCellOutputs": "セルの出力をクリアする",
-			"cmd.toggle": "階層リンクの切り替え",
-			"customizeNotebook": "ノートブックのカスタマイズ...",
-			"languageDescription": "({0}) - 現在の言語",
-			"languageDescriptionConfigured": "({0})",
-			"notebookActions.cancel": "セルの実行を停止する",
-			"notebookActions.cancelNotebook": "実行を中止する",
-			"notebookActions.category": "ノートブック",
-			"notebookActions.centerActiveCell": "アクティブ セルを中央に置く",
-			"notebookActions.changeCellToCode": "セルをコードに変更する",
-			"notebookActions.changeCellToMarkdown": "セルを Markdown に変更する",
-			"notebookActions.collapseCellInput": "セルの入力を折りたたむ",
-			"notebookActions.collapseCellOutput": "セルの出力を折りたたむ",
-			"notebookActions.deleteCell": "セルの削除",
-			"notebookActions.editCell": "セルの編集",
-			"notebookActions.execute": "セルの実行",
-			"notebookActions.executeAbove": "上記のセルで実行",
-			"notebookActions.executeAndFocusContainer": "セルを実行しコンテナーにフォーカスする",
-			"notebookActions.executeAndInsertBelow": "ノートブック セルを実行し、下に挿入する",
-			"notebookActions.executeAndSelectBelow": "ノートブック セルを実行し、下を選択する",
-			"notebookActions.executeBelow": "セルと以下の実行",
-			"notebookActions.executeNotebook": "すべてを実行",
-			"notebookActions.expandCellInput": "セルの入力を展開する",
-			"notebookActions.expandCellOutput": "セルの出力を展開する",
-			"notebookActions.insertCodeCellAbove": "コード セルを上に挿入",
-			"notebookActions.insertCodeCellAboveAndFocusContainer": "コード セルを上に挿入し、コンテナーにフォーカスする",
-			"notebookActions.insertCodeCellAtTop": "一番上にコード セルを追加する",
-			"notebookActions.insertCodeCellBelow": "コード セルを下に挿入",
-			"notebookActions.insertCodeCellBelowAndFocusContainer": "コード セルを下に挿入してコンテナーにフォーカスする",
-			"notebookActions.insertMarkdownCellAbove": "Markdown セルを上に挿入",
-			"notebookActions.insertMarkdownCellAtTop": "一番上にマークダウン セルを追加する",
-			"notebookActions.insertMarkdownCellBelow": "Markdown セルを下に挿入",
-			"notebookActions.menu.insertCode": "$(add) コード",
-			"notebookActions.menu.insertCode.minimalToolbar": "コードの追加",
-			"notebookActions.menu.insertCode.minimaltoolbar": "コードの追加",
-			"notebookActions.menu.insertCode.ontoolbar": "コード",
-			"notebookActions.menu.insertCode.tooltip": "コード セルの追加",
-			"notebookActions.menu.insertMarkdown": "$(add) Markdown",
-			"notebookActions.menu.insertMarkdown.ontoolbar": "マークダウン",
-			"notebookActions.menu.insertMarkdown.tooltip": "Markdown セルの追加",
-			"notebookActions.quitEdit": "セルの編集を停止",
-			"notebookActions.renderMarkdown": "すべての Markdown セルをレンダリングする",
-			"notebookActions.toggleOutputs": "Toggle Outputs",
-			"notebookMenu.cellTitle": "ノートブック セル",
-			"notebookMenu.insertCell": "セルを挿入する",
-			"pickLanguageToConfigure": "言語モードの選択",
-			"workbench.notebook.layout.configure.label": "ノートブック　レイアウトのカスタマイズ",
-			"workbench.notebook.layout.select.label": "ノートブックのレイアウトを選択する"
+			"notebookActions.pasteAbove": "セルを上に貼り付け",
+			"toggleNotebookClipboardLog": "ノートブックのクリップボードのトラブルシューティングを切り替える"
 		},
 		"vs/workbench/contrib/notebook/browser/contrib/editorStatusBar/editorStatusBar": {
 			"current1": "現在の選択",
@@ -6061,8 +6181,10 @@
 			"notebook.singleActiveCellIndicator": "セル {1} の {0}",
 			"notebookActions.selectKernel": "ノートブックのカーネルを選択する",
 			"notebookActions.selectKernel.args": "ノートブックのカーネル引数",
+			"otherKernelKinds": "その他",
 			"prompt.placeholder.change": "'{0}' のカーネルを変更する",
 			"prompt.placeholder.select": "'{0}' に対するカーネルの選択",
+			"suggestedKernels": "提案",
 			"tooltop": "{0} (提案)"
 		},
 		"vs/workbench/contrib/notebook/browser/contrib/find/findController": {
@@ -6094,7 +6216,8 @@
 			"focusLastCell": "最後のセルにフォーカス",
 			"focusOutput": "アクティブ セル出力にフォーカスを置く",
 			"focusOutputOut": "アクティブ セル出力からフォーカスを外す",
-			"notebook.navigation.allowNavigateToSurroundingCells": "有効にすると、セルエディター内の現在のカーソルが最初または最後の行にあるときに、カーソルは次または前のセルに移動できます。"
+			"notebook.navigation.allowNavigateToSurroundingCells": "有効にすると、セルエディター内の現在のカーソルが最初または最後の行にあるときに、カーソルは次または前のセルに移動できます。",
+			"notebookActions.centerActiveCell": "アクティブ セルを中央に置く"
 		},
 		"vs/workbench/contrib/notebook/browser/contrib/outline/notebookOutline": {
 			"breadcrumbs.showCodeCells": "有効にすると、ノートブックの階層リンクにコード セルが含まれます。",
@@ -6103,6 +6226,68 @@
 		},
 		"vs/workbench/contrib/notebook/browser/contrib/profile/notebookProfile": {
 			"setProfileTitle": "プロファイルの設定"
+		},
+		"vs/workbench/contrib/notebook/browser/controller/coreActions": {
+			"notebookActions.category": "ノートブック",
+			"notebookMenu.cellTitle": "ノートブック セル",
+			"notebookMenu.insertCell": "セルを挿入する"
+		},
+		"vs/workbench/contrib/notebook/browser/controller/editActions": {
+			"autoDetect": "自動検出",
+			"changeLanguage": "セルの言語の変更",
+			"clearAllCellsOutputs": "すべてのセルの出力をクリアする",
+			"clearCellOutputs": "セルの出力をクリアする",
+			"languageDescription": "({0}) - 現在の言語",
+			"languageDescriptionConfigured": "({0})",
+			"languagesPicks": "言語 (識別子)",
+			"notebookActions.deleteCell": "セルの削除",
+			"notebookActions.editCell": "セルの編集",
+			"notebookActions.quitEdit": "セルの編集を停止",
+			"pickLanguageToConfigure": "言語モードの選択"
+		},
+		"vs/workbench/contrib/notebook/browser/controller/executeActions": {
+			"notebookActions.cancel": "セルの実行を停止する",
+			"notebookActions.cancelNotebook": "実行を中止する",
+			"notebookActions.execute": "セルの実行",
+			"notebookActions.executeAbove": "上記のセルで実行",
+			"notebookActions.executeAndFocusContainer": "セルを実行しコンテナーにフォーカスする",
+			"notebookActions.executeAndInsertBelow": "ノートブック セルを実行し、下に挿入する",
+			"notebookActions.executeAndSelectBelow": "ノートブック セルを実行し、下を選択する",
+			"notebookActions.executeBelow": "セルと以下の実行",
+			"notebookActions.executeNotebook": "すべてを実行",
+			"notebookActions.renderMarkdown": "すべての Markdown セルをレンダリングする"
+		},
+		"vs/workbench/contrib/notebook/browser/controller/insertCellActions": {
+			"notebookActions.insertCodeCellAbove": "コード セルを上に挿入",
+			"notebookActions.insertCodeCellAboveAndFocusContainer": "コード セルを上に挿入し、コンテナーにフォーカスする",
+			"notebookActions.insertCodeCellAtTop": "一番上にコード セルを追加する",
+			"notebookActions.insertCodeCellBelow": "コード セルを下に挿入",
+			"notebookActions.insertCodeCellBelowAndFocusContainer": "コード セルを下に挿入してコンテナーにフォーカスする",
+			"notebookActions.insertMarkdownCellAbove": "Markdown セルを上に挿入",
+			"notebookActions.insertMarkdownCellAtTop": "一番上にマークダウン セルを追加する",
+			"notebookActions.insertMarkdownCellBelow": "Markdown セルを下に挿入",
+			"notebookActions.menu.insertCode": "$(add) コード",
+			"notebookActions.menu.insertCode.minimalToolbar": "コードの追加",
+			"notebookActions.menu.insertCode.minimaltoolbar": "コードの追加",
+			"notebookActions.menu.insertCode.ontoolbar": "コード",
+			"notebookActions.menu.insertCode.tooltip": "コード セルの追加",
+			"notebookActions.menu.insertMarkdown": "$(add) Markdown",
+			"notebookActions.menu.insertMarkdown.ontoolbar": "マークダウン",
+			"notebookActions.menu.insertMarkdown.tooltip": "Markdown セルの追加"
+		},
+		"vs/workbench/contrib/notebook/browser/controller/layoutActions": {
+			"cmd.toggle": "階層リンクの切り替え",
+			"customizeNotebook": "ノートブックのカスタマイズ...",
+			"notebook.placeholder": "保存する設定ファイル",
+			"notebook.saveMimeTypeOrder": "MIME の種類を表示する順序を保存する",
+			"notebook.showLineNumbers": "ノートブック行番号の表示",
+			"notebook.toggleBreadcrumb": "階層リンクの切り替え",
+			"notebook.toggleCellToolbarPosition": "セルのツールバー位置の切り替え",
+			"notebook.toggleLineNumbers": "ノートブック行番号の切り替え",
+			"saveTarget.machine": "ユーザー設定",
+			"saveTarget.workspace": "ワークスペースの設定",
+			"workbench.notebook.layout.configure.label": "ノートブック　レイアウトのカスタマイズ",
+			"workbench.notebook.layout.select.label": "ノートブックのレイアウトを選択する"
 		},
 		"vs/workbench/contrib/notebook/browser/diff/diffElementOutputs": {
 			"builtinRenderInfo": "ビルトイン",
@@ -6155,14 +6340,14 @@
 			"notebook.cellToolbarLocation.description": "セルのツールバーを表示するか非表示にするかどうか。",
 			"notebook.cellToolbarLocation.viewType": "特定のファイルの種類について、セルのツールバー位置を構成する",
 			"notebook.cellToolbarVisibility.description": "ポイントしたときまたはクリック時にセルのツールバーを表示するかどうか。",
-			"notebook.compactView.description": "ノートブック エディターをコンパクト形式で表示するかどうかを制御します。 ",
+			"notebook.compactView.description": "ノートブック エディターをコンパクト形式で表示するかどうかを制御します。たとえば、オンにすると、左余白の幅が小さくなります。",
 			"notebook.consolidatedOutputButton.description": "出力アクションを出力ツールバーにレンダリングするかどうかを制御します。",
 			"notebook.consolidatedRunButton.description": "[実行] ボタンの横にあるドロップダウンで、追加アクションを表示するかどうかを制御します。",
 			"notebook.diff.enablePreview.description": "ノートブックに拡張テキスト差分エディターを使用するかどうか。",
 			"notebook.displayOrder.description": "出力 MIME 種類の優先度リスト",
 			"notebook.dragAndDrop.description": "ノートブック エディターでドラッグ アンド ドロップによるセルの移動を許可するかどうかを制御します。",
 			"notebook.editorOptions.experimentalCustomization": "ノートブックで使用されるコード エディターの設定。これを使用して、ほとんどのエディター * 設定をカスタマイズできます。",
-			"notebook.focusIndicator.description": "Controls where the focus indicator is rendered, either along the cell borders or on the left gutter",
+			"notebook.focusIndicator.description": "フォーカスインジケーターが描画されている場所を、セルの境界線または左端余白に沿って制御します。",
 			"notebook.globalToolbar.description": "ノートブック エディター内でグローバル ツールバーをレンダリングするかどうかを制御します。",
 			"notebook.globalToolbarShowLabel": "[ノートブック] ツールバーのアクションがラベルをレンダリングするかどうかを制御します。",
 			"notebook.insertToolbarPosition.description": "セルを挿入アクションを表示するかどうかを制御します。",
@@ -6197,6 +6382,7 @@
 			"notebook.inactiveFocusedCellBorder": "セルにフォーカスが置かれているときの、セルの上下の境界線の色です。(プライマリ フォーカスはエディターの外側です)",
 			"notebook.inactiveSelectedCellBorder": "複数のセルが選択されているときのセルの境界線の色です。",
 			"notebook.outputContainerBackgroundColor": "ノートブックの出力コンテナーの背景色。",
+			"notebook.outputContainerBorderColor": "ノートブックの出力コンテナーの境界線の色。",
 			"notebook.selectedCellBorder": "セルが選択されているがフォーカスされていないときの、セルの上下境界線の色です。",
 			"notebook.symbolHighlightBackground": "強調表示されたセルの背景色",
 			"notebookScrollbarSliderActiveBackground": "クリックしたときのノートブック スクロール バー スライダーの背景色。",
@@ -6235,24 +6421,23 @@
 			"successStateIcon": "ノートブック エディターで成功の状態を示すためのアイコン。",
 			"unfoldIcon": "ノートブック エディターでセルを展開するためのアイコン。"
 		},
-		"vs/workbench/contrib/notebook/browser/notebookKernelActionViewItem": {
-			"select": "カーネルの選択"
-		},
 		"vs/workbench/contrib/notebook/browser/notebookKeymapServiceImpl": {
-			"disableOtherKeymapsConfirmation": "Disable other keymaps ({0}) to avoid conflicts between keybindings?",
-			"no": "No",
-			"yes": "Yes"
+			"disableOtherKeymapsConfirmation": "キーバインド間の競合を回避するために、他のキーマップ ({0}) を無効にしますか?",
+			"no": "いいえ",
+			"yes": "はい"
 		},
 		"vs/workbench/contrib/notebook/browser/view/output/outputRenderer": {
 			"empty": "セルに出力がありません",
-			"noRenderer.1": "mimetype にレンダラーが見つかりませんでした: {0}",
-			"noRenderer.2": "出力用のレンダラーが見つかりませんでした。次の mimetype があります: {0}。"
+			"noRenderer.1": "MIME の種類 \"{0}\" のレンダラーが見つかりませんでしたが、Marketplace で利用できる場合があります。",
+			"noRenderer.2": "出力用のレンダラーが見つかりませんでした。次の mimetype があります: {0}。",
+			"noRenderer.search": "Marketplace で検索"
 		},
 		"vs/workbench/contrib/notebook/browser/view/renderers/backLayerWebView": {
 			"notebook.emptyMarkdownPlaceholder": "Markdown セルが空です。ダブルクリックするか、Enter キーを押して、編集してください。",
 			"notebook.error.rendererNotFound": "'$0' a にレンダラーが見つかりませんでした"
 		},
 		"vs/workbench/contrib/notebook/browser/view/renderers/cellEditorOptions": {
+			"notebook.cell.toggleLineNumbers.title": "セル行番号を表示する",
 			"notebook.lineNumbers": "セル エディターでの行番号の表示を制御します。",
 			"notebook.showLineNumbers": "ノートブック行番号の表示",
 			"notebook.toggleLineNumbers": "ノートブック行番号の切り替え"
@@ -6267,6 +6452,7 @@
 			"unavailableRenderInfo": "レンダラーが利用できません"
 		},
 		"vs/workbench/contrib/notebook/browser/view/renderers/cellRenderer": {
+			"cellExecutionOrderCountLabel": "実行順序",
 			"cellExpandOutputButtonLabel": "セルの出力を展開する (${0})",
 			"cellExpandOutputButtonLabelWithDoubleClick": "セル出力 ({0}) をダブルクリックして展開します",
 			"notebook.moreRunActionsLabel": "その他..."
@@ -6274,6 +6460,9 @@
 		"vs/workbench/contrib/notebook/browser/view/renderers/codeCell": {
 			"cellExpandInputButtonLabel": "セルの入力を展開する ({0})",
 			"cellExpandInputButtonLabelWithDoubleClick": "ダブルクリックしてセル入力を展開する ({0})"
+		},
+		"vs/workbench/contrib/notebook/browser/viewParts/notebookKernelActionViewItem": {
+			"select": "カーネルの選択"
 		},
 		"vs/workbench/contrib/notebook/common/notebookEditorModel": {
 			"notebook.staleSaveError": "The contents of the file has changed on disk. Would you like to open the updated version or overwrite the file with your changes?",
@@ -6646,8 +6835,8 @@
 			"helpQuickAccessPlaceholder": "'{0}' を入力すると、ここで実行できるアクションに関するヘルプが示されます。",
 			"miCommandPalette": "コマンド パレット(&&C)...",
 			"miGotoLine": "行/列に移動(&&L)...",
-			"miGotoSymbolInEditor": "エディター内のシンボルへ移動(&&S)...",
 			"miOpenView": "ビューを開く(&&O)...",
+			"miShowAllCommands": "すべてのコマンドの表示",
 			"viewQuickAccess": "ビューを開きます",
 			"viewQuickAccessPlaceholder": "開くビュー、出力チャンネル、または端末の名前を入力します。"
 		},
@@ -6724,7 +6913,6 @@
 			"portIcon": "リモート ポートを表すアイコン。",
 			"portsViewIcon": "リモート ポート ビューのアイコンを表示します。",
 			"privatePortIcon": "プライベート リモート ポートを表すアイコン。",
-			"publicPortIcon": "パブリック リモート ポートを表すアイコン。",
 			"remoteExplorerViewIcon": "リモート エクスプローラー ビューのアイコンを表示します。",
 			"reportIssuesIcon": "リモート エクスプローラー ビュー内の問題の報告アイコン。",
 			"reviewIssuesIcon": "リモート エクスプローラー ビュー内の問題の確認アイコン。",
@@ -6769,8 +6957,6 @@
 			"remote.tunnel.forwardItem": "ポートを転送する",
 			"remote.tunnel.forwardPrompt": "ポート番号またはアドレス (例: 3000 または 10.10.10.10:2000)。",
 			"remote.tunnel.label": "ポート ラベルの設定",
-			"remote.tunnel.makePrivate": "プライベートにする",
-			"remote.tunnel.makePublic": "パブリックにする",
 			"remote.tunnel.open": "ブラウザーで開く",
 			"remote.tunnel.openCommandPalette": "ブラウザーでポートを開く",
 			"remote.tunnel.openCommandPaletteNone": "現在転送されているポートはありません。開始するには、[ポート] ビューを開いてください。",
@@ -6782,8 +6968,6 @@
 			"remote.tunnel.tooltipCandidate": "リモート ポート {0}:{1} は転送されていません。",
 			"remote.tunnel.tooltipForwarded": "リモート ポート {0}:{1} はローカル アドレス {2} に転送されました。",
 			"remote.tunnel.tooltipName": "{0} とラベル付けされたポート。",
-			"remote.tunnel.tooltipPrivate": "このマシンからのみアクセスできます。",
-			"remote.tunnel.tooltipPublic": "パブリックにアクセスできます。",
 			"remote.tunnelView.alreadyForwarded": "ポートは既に転送されています",
 			"remote.tunnelView.inlineElevationMessage": "Sudo が必要になる場合があります",
 			"remote.tunnelsView.addPort": "ポートの追加",
@@ -6791,7 +6975,7 @@
 			"remote.tunnelsView.input": "Enter キーを押して確定するか、Esc キーを押してキャンセルします。",
 			"remote.tunnelsView.labelPlaceholder": "ポート ラベル",
 			"remote.tunnelsView.portNumberToHigh": "ポート番号は、0 以上、{0} 未満でなければなりません。",
-			"remote.tunnelsView.portNumberValid": "転送されたポートが無効です。",
+			"remote.tunnelsView.portNumberValid": "転送されるポートは、数値または host:port にする必要があります。",
 			"tunnel.addressColumn.label": "ローカル アドレス",
 			"tunnel.addressColumn.tooltip": "転送されたポートをローカルで使用できるアドレス。",
 			"tunnel.focusContext": "ポート ビューがフォーカスされているかどうか。",
@@ -6802,17 +6986,22 @@
 			"tunnel.originColumn.tooltip": "転送されたポートの生成元のソース。拡張機能、ユーザーによる転送、静的転送、自動転送のいずれかを指定できます。",
 			"tunnel.portColumn.label": "ポート",
 			"tunnel.portColumn.tooltip": "転送されたポートのラベルとリモート ポート番号。",
-			"tunnel.privacyColumn.label": "プライバシー",
+			"tunnel.privacyColumn.label": "表示範囲",
 			"tunnel.privacyColumn.tooltip": "転送されたポートの可用性。",
-			"tunnel.privacyPrivate": "非公開",
-			"tunnel.privacyPublic": "公開",
 			"tunnel.processColumn.label": "実行中のプロセス",
 			"tunnel.processColumn.tooltip": "ポートを使用しているプロセスのコマンド ライン。",
+			"tunnelContext.privacyMenu": "ポートの表示範囲",
 			"tunnelContext.protocolMenu": "ポート プロトコルの変更",
+			"tunnelPrivacy.private": "非公開",
+			"tunnelPrivacy.unknown": "不明",
 			"tunnelView": "トンネル ビュー",
 			"tunnelView.runningProcess.inacessable": "プロセス情報を使用できません"
 		},
 		"vs/workbench/contrib/remote/common/remote.contribution": {
+			"invalidWorkspaceCancel": "キャンセル(&&C)",
+			"invalidWorkspaceDetail": "ワークスペースが存在しません。別のワークスペースを選択して開いてください。",
+			"invalidWorkspaceMessage": "ワークスペースが存在しません",
+			"invalidWorkspacePrimary": "ワークスペースを開く(&&O)...",
 			"remote": "リモート",
 			"remote.autoForwardPorts": "有効にすると、新しい実行中のプロセスが検出され、リッスンしているポートが自動的に転送されます。この設定を無効にしても、すべてのポートの転送を防ぐわけではありません。無効にした場合でも、拡張機能は引き続きポートの転送が可能であり、一部の URL を開ことにより、ポートが引き続き転送されます。",
 			"remote.autoForwardPortsSource": "`remote.autoForwardPorts` が true の場合にポートが自動的に転送されるソースを設定します。Windows と Mac のリモートでは、`process` オプションは無効になり、`output` が使用されます。有効にするには、再度読み込む必要があります。",
@@ -6832,15 +7021,18 @@
 			"remote.portsAttributes.openBrowserOnce": "ポートが自動的に転送されたときにブラウザーを開きます。ただし、セッションにおいて初回のポート転送時に限ります。設定によりますが、自動的に組込みブラウザーを開くことができます。",
 			"remote.portsAttributes.openPreview": "ポートが自動的に転送されるときに、同じウィンドウでプレビューを開きます。",
 			"remote.portsAttributes.patternError": "ポート番号、ポート番号の範囲、または正規表現でなければなりません。",
-			"remote.portsAttributes.port": "ポート、ポートの範囲 (例: \"40000-55000\")、または正規表現 (例: \".+\\\\/server.js\")。  ポート番号または範囲の場合、属性はそのポート番号またはポート番号の範囲に適用されます。正規表現を使用した属性は、関連付けられたプロセス コマンド ラインが正規表現に一致するポートに適用されます。",
+			"remote.portsAttributes.port": "ポート、ポートの範囲 (例: \"40000-55000\")、ホストとポート (例: \"db:1234\")、または正規表現 (例: \".+\\\\/server.js\")。  ポート番号または範囲の場合、属性はそのポート番号またはポート番号の範囲に適用されます。正規表現を使用した属性は、関連付けられたプロセス コマンド ラインが正規表現に一致するポートに適用されます。",
 			"remote.portsAttributes.protocol": "このポートを転送するときに使用するプロトコルです。",
 			"remote.portsAttributes.requireLocalPort": "True の場合、選択したローカルポートが転送に使用されていない場合は、モーダル ダイアログが表示されます。",
 			"remote.portsAttributes.silent": "このポートが自動的に転送されたときに通知を表示せず、何も実行しません。",
 			"remote.restoreForwardedPorts": "ワークスペースで転送したポートを復元します。",
 			"remoteExtensionLog": "リモート サーバー",
 			"ui": "UI 拡張機能の種類。リモート ウィンドウでは、これらの拡張機能はローカル マシンで使用可能な場合にのみ有効になります。",
-			"web": "web worker の拡張機能の種類。このような拡張機能は、web worker 拡張機能ホストで実行できます。",
 			"workspace": "ワークスペース拡張機能の種類。リモート ウィンドウでは、これらの拡張機能はリモートで使用可能な場合にのみ有効になります。"
+		},
+		"vs/workbench/contrib/remote/common/tunnelFactory": {
+			"tunnelPrivacy.private": "非公開",
+			"tunnelPrivacy.public": "公開"
 		},
 		"vs/workbench/contrib/remote/electron-sandbox/remote.contribution": {
 			"remote": "リモート",
@@ -6912,6 +7104,7 @@
 			"scm.providerCountBadge.hidden": "ソース管理プロバイダーのカウント バッジを非表示にします。",
 			"scm.providerCountBadge.visible": "ソース管理プロバイダーのカウント バッジを表示します。",
 			"scmConfigurationTitle": "SCM",
+			"showActionButton": "SCM ビューにアクション ボタンを表示するかどうかを制御します。",
 			"source control": "ソース管理",
 			"source control repositories": "ソース管理リポジトリ",
 			"sourceControlViewIcon": "ソース管理ビューの表示アイコン。"
@@ -6939,7 +7132,7 @@
 		"vs/workbench/contrib/search/browser/anythingQuickAccess": {
 			"closeEditor": "最近開いた項目から削除",
 			"fileAndSymbolResultsSeparator": "ファイルとシンボルの結果",
-			"filePickAriaLabelDirty": "{0}、ダーティ",
+			"filePickAriaLabelDirty": "{0} は変更が保存されていません",
 			"fileResultsSeparator": "結果ファイル",
 			"noAnythingResults": "一致する結果がありません",
 			"openToBottom": "一番下に開く",
@@ -6991,6 +7184,7 @@
 			"search.collapseAllResults": "検索結果を折りたたむか展開するかどうかを制御します。",
 			"search.collapseResults.auto": "結果が 10 件未満のファイルが展開されます。他のファイルは折りたたまれます。",
 			"search.followSymlinks": "検索中にシンボリック リンクをたどるかどうかを制御します。",
+			"search.forceSearchProcess": "有効にした場合、ローカル ウィンドウでの検索は拡張機能ホストではなく、常に個別の検索プロセスで実行されます。",
 			"search.globalFindClipboard": "macOS で検索ビューが共有の検索クリップボードを読み取りまたは変更するかどうかを制御します。",
 			"search.location": "検索をサイドバーのビューとして表示するか、より水平方向の空間をとるためにパネル領域のパネルとして表示するかを制御します。",
 			"search.location.deprecationMessage": "この設定は非推奨です。代わりに、検索アイコンを新しい場所にドラッグできます。",
@@ -7027,7 +7221,7 @@
 			"showTriggerActions": "ワークスペース内のシンボルへ移動...",
 			"symbolsQuickAccess": "ワークスペース内のシンボルへ移動",
 			"symbolsQuickAccessPlaceholder": "開くシンボルの名前を入力します。",
-			"useGlobalIgnoreFiles": "ファイルを検索するときに、グローバルの `.gitignore` と `.ignore` ファイルを使用するかどうかを制御します。",
+			"useGlobalIgnoreFiles": "ファイルを検索するときに、グローバルの `.gitignore` と `.ignore` ファイルを使用するかどうかを制御します。`#search.useIgnoreFiles#` を有効にする必要があります。",
 			"useIgnoreFiles": "ファイルを検索するときに、`.gitignore` ファイルと `.ignore` ファイルを使用するかどうかを制御します。",
 			"usePCRE2Deprecated": "廃止されました。PCRE2 でのみサポートされている正規表現機能を使用すると、PCRE2 が自動的に使用されます。",
 			"useRipgrep": "この設定は推奨されず、現在 \"search.usePCRE2\" にフォール バックします。",
@@ -7080,11 +7274,10 @@
 		"vs/workbench/contrib/search/browser/searchView": {
 			"ariaSearchResultsClearStatus": "検索結果がクリアされました",
 			"ariaSearchResultsStatus": "検索により {1} 個のファイル内の {0} 件の結果が返されました",
+			"disableOpenEditors": "ワークスペース全体での検索",
 			"emptySearch": "空の検索",
 			"excludes.enable": "有効にする",
 			"forTerm": " - 検索: {0}",
-			"label.excludes": "検索除外パターン",
-			"label.includes": "検索包含パターン",
 			"moreSearch": "詳細検索の切り替え",
 			"noOpenEditorResultsExcludes": "'{0}' 以外の開いているエディターで結果は見つかりませんでした - ",
 			"noOpenEditorResultsFound": "開いているエディターで結果は見つかりませんでした。設定の構成除外をレビューし、お客様の gitignore ファイルをご確認ください - ",
@@ -7094,13 +7287,15 @@
 			"noResultsFound": "結果がありません。除外構成の設定を確認し、gitignore ファイルを調べてください - ",
 			"noResultsIncludes": "'{0}' に結果はありません - ",
 			"noResultsIncludesExcludes": "'{0}' に '{1}' を除外した結果はありません - ",
+			"onlyOpenEditors": "開いているファイルのみ検索する",
+			"openEditors.disable": "無効化",
 			"openFolder": "フォルダーを開く",
 			"openInEditor.message": "エディターで開く",
 			"openInEditor.tooltip": "現在の検索結果をエディターにコピーする",
 			"openSettings.learnMore": "詳細を表示",
 			"openSettings.message": "設定を開く",
-			"placeholder.excludes": "(例: *.ts, src/**/exclude)",
-			"placeholder.includes": "(例: *.ts, src/**/include)",
+			"placeholder.excludes": "例: *.ts, src/**/exclude",
+			"placeholder.includes": "例: *.ts, src/**/include",
 			"removeAll.occurrence.file.confirmation.message": "{1} 個のファイルで {0} 件の出現箇所を '{2}' に置換しますか?",
 			"removeAll.occurrence.file.message": "{1} ファイル全体で {0} か所を置換しました。",
 			"removeAll.occurrence.files.confirmation.message": "{1} 個のファイルで {0} 件の出現箇所を '{2}' に置換しますか?",
@@ -7435,8 +7630,12 @@
 			"taskTerminalStatus.active": "実行中のタスク",
 			"taskTerminalStatus.errors": "タスクでエラーが発生しています",
 			"taskTerminalStatus.errorsInactive": "タスクにエラーが発生し、待機しています...",
+			"taskTerminalStatus.infos": "タスクに情報があります",
+			"taskTerminalStatus.infosInactive": "タスクに情報があり、待機しています...",
 			"taskTerminalStatus.succeeded": "タスク成功",
-			"taskTerminalStatus.succeededInactive": "タスクが成功して待機中..."
+			"taskTerminalStatus.succeededInactive": "タスクが成功して待機中...",
+			"taskTerminalStatus.warnings": "タスクに警告があります",
+			"taskTerminalStatus.warningsInactive": "タスクに警告があり、待機しています..."
 		},
 		"vs/workbench/contrib/tasks/browser/tasksQuickAccess": {
 			"TaskService.pickRunTask": "実行するタスクの選択",
@@ -7730,8 +7929,8 @@
 			"workbench.action.terminal.clear": "クリア",
 			"workbench.action.terminal.clearSelection": "選択のクリア",
 			"workbench.action.terminal.copySelection": "選択内容のコピー",
-			"workbench.action.terminal.createTerminalEditor": "Create New Terminal in Editor Area",
-			"workbench.action.terminal.createTerminalEditorSide": "Create New Terminal in Editor Area to the Side",
+			"workbench.action.terminal.createTerminalEditor": "エディター領域で新しいターミナルを作成",
+			"workbench.action.terminal.createTerminalEditorSide": "エディター領域の横に新しいターミナルを作成",
 			"workbench.action.terminal.detachSession": "セッションを切断",
 			"workbench.action.terminal.findNext": "次を検索",
 			"workbench.action.terminal.findPrevious": "前を検索",
@@ -7748,11 +7947,11 @@
 			"workbench.action.terminal.navigationModeExit": "ナビゲーション モードの終了",
 			"workbench.action.terminal.navigationModeFocusNext": "次の行にフォーカスを移動 (ナビゲーション モード)",
 			"workbench.action.terminal.navigationModeFocusPrevious": "前の行にフォーカスを移動 (ナビゲーション モード)",
-			"workbench.action.terminal.new": "Create New Terminal",
-			"workbench.action.terminal.newInActiveWorkspace": "Create New Terminal (In Active Workspace)",
-			"workbench.action.terminal.newWithCwd": "Create New Terminal Starting in a Custom Working Directory",
+			"workbench.action.terminal.new": "新しいターミナルを作成する",
+			"workbench.action.terminal.newInActiveWorkspace": "(アクティブなワークスペースで) ターミナルを作成する",
+			"workbench.action.terminal.newWithCwd": "カスタム作業ディレクトリで新しいターミナルの作成を開始する",
 			"workbench.action.terminal.newWithCwd.cwd": "ターミナル起動時のディレクトリ",
-			"workbench.action.terminal.newWithProfile": "Create New Terminal (With Profile)",
+			"workbench.action.terminal.newWithProfile": "(プロファイルを使用した) 新しいターミナルを作成する",
 			"workbench.action.terminal.newWithProfile.profileName": "作成するプロファイルの名前",
 			"workbench.action.terminal.newWorkspacePlaceholder": "新しいターミナルの作業ディレクトリを選択してください",
 			"workbench.action.terminal.openSettings": "ターミナル設定の構成",
@@ -7785,8 +7984,10 @@
 			"workbench.action.terminal.selectToPreviousCommand": "前のコマンドを選択",
 			"workbench.action.terminal.selectToPreviousLine": "前の行を選択",
 			"workbench.action.terminal.sendSequence": "ターミナルにカスタム シークエンスを送る",
+			"workbench.action.terminal.setFixedDimensions": "固定寸法の設定",
 			"workbench.action.terminal.showEnvironmentInformation": "環境情報の表示",
 			"workbench.action.terminal.showTabs": "タブの表示",
+			"workbench.action.terminal.sizeToContentWidth": "コンテンツの幅にサイズを切り替える",
 			"workbench.action.terminal.splitInActiveWorkspace": "(アクティブなワークスペースで) ターミナルの分割",
 			"workbench.action.terminal.switchTerminal": "ターミナルの切り替え",
 			"workbench.action.terminal.toggleEscapeSequenceLogging": "エスケープ シーケンスのログの切り替え",
@@ -7826,10 +8027,13 @@
 			"launchFailed.exitCodeOnly": "ターミナル プロセスが起動に失敗しました (終了コード: {0})。",
 			"migrateToProfile": "移行",
 			"no": "いいえ",
+			"setTerminalDimensionsColumn": "固定寸法の設定: 列",
+			"setTerminalDimensionsRow": "固定寸法の設定: 行",
 			"terminal.integrated.a11yPromptLabel": "ターミナル入力",
 			"terminal.integrated.a11yTooMuchOutput": "通知する出力が多すぎます。行に移動して手動で読み取ってください",
 			"terminal.integrated.copySelection.noSelection": "ターミナルにコピー対象の選択範囲がありません",
 			"terminal.slowRendering": "ターミナルの GPU アクセラレーションが使用中のコンピューターで遅くなっているようです。パフォーマンスの向上を見込めるものに切り替えて無効にしますか? [ターミナルの設定についてこちらを参照してください](https://code.visualstudio.com/docs/editor/integrated-terminal#_changing-how-the-terminal-is-rendered)。",
+			"terminalNavigationMode": "{0} と {1} を使用してターミナル バッファーを移動します",
 			"terminalProfileMigration": "ターミナルは非推奨の shell/shellArgs 設定を使用しています。プロファイルにこれを移行しますか?",
 			"terminalStaleTextBoxAriaLabel": "ターミナル {0} の環境が古くなっています。詳細については、[環境情報の表示] コマンドを実行してください",
 			"terminalTextBoxAriaLabel": "ターミナル {0}",
@@ -7845,6 +8049,7 @@
 			"miRunActiveFile": "アクティブなファイルの実行(&&A)",
 			"miRunSelectedText": "選択したテキストの実行(&&S)",
 			"miSplitTerminal": "ターミナルの分割(&&S)",
+			"splitTerminal": "ターミナルの分割",
 			"terminal.new": "新しいターミナル",
 			"workbench.action.terminal.changeColor": "色の変更...",
 			"workbench.action.terminal.changeIcon": "アイコンの変更...",
@@ -7859,6 +8064,7 @@
 			"workbench.action.terminal.selectAll": "すべてを選択",
 			"workbench.action.terminal.selectDefaultProfile": "既定のプロファイルの選択",
 			"workbench.action.terminal.showsTabs": "タブの表示",
+			"workbench.action.terminal.sizeToContentWidthInstance": "コンテンツの幅にサイズを切り替える",
 			"workbench.action.terminal.switchTerminal": "ターミナルの切り替え"
 		},
 		"vs/workbench/contrib/terminal/browser/terminalProcessManager": {
@@ -7881,9 +8087,9 @@
 			"terminalProfileAlreadyExists": "その名前のターミナルのプロファイルは既に存在します",
 			"terminalProfiles": "プロファイル",
 			"terminalProfiles.detected": "検出済み",
-			"terminalService.terminalCloseConfirmationPlural": "Do you want to terminal the {0} active terminal sessions?",
-			"terminalService.terminalCloseConfirmationSingular": "Do you want to terminate the active terminal session?",
-			"terminate": "Terminate"
+			"terminalService.terminalCloseConfirmationPlural": "{0} アクティブなターミナルセッションを終了しますか?",
+			"terminalService.terminalCloseConfirmationSingular": "アクティブなターミナルセッションを終了しますか?",
+			"terminate": "終了"
 		},
 		"vs/workbench/contrib/terminal/browser/terminalTabbedView": {
 			"hideTabs": "タブの非表示",
@@ -7927,8 +8133,15 @@
 			"terminalCursor.foreground": "ターミナルのカーソル前景色。"
 		},
 		"vs/workbench/contrib/terminal/common/terminalConfiguration": {
+			"cwd": "現在のターミナルの作業ディレクトリ",
+			"cwdFolder": "現在のターミナルの作業ディレクトリ。マルチ ルート ワークスペースの場合は表示され、または初期作業ディレクトリと値が異なる場合にはシングル ルート ワークスペースに表示されます。これは Windows では表示されません。",
+			"local": "リモート ワークスペース内のローカル ターミナルを示す",
 			"openDefaultSettingsJson": "既定の設定の JSON を開く",
 			"openDefaultSettingsJson.capitalized": "既定の設定 (JSON) を開く",
+			"process": "ターミナル プロセスの名前",
+			"separator": "値か固定のテキストで囲われたとき、条件付きの区切り記号 (\" - \") を表示します。",
+			"sequence": "プロセスが xterm.js に指定した名前",
+			"task": "このターミナルがタスクに関連付けられていることを示す",
 			"terminal.integrated.allowChords": "ターミナルでコードのキー バインドを許可するかどうかを指定します。これが true で、キーストロークでコードを生成した場合、'#terminal.integrated.commandsToSkipShell#' はバイパスされます。これを false に設定すると、Ctrl+K で (VS Code ではなく) シェルに移動したい場合に特に便利です。",
 			"terminal.integrated.allowMnemonics": "メニュー バー ニーモニック (Alt+F など) でメニュー バーを開くかどうかを指定します。これを true にした場合、すべての Alt キーストロークがシェルをスキップするようになることにご注意ください。これは、macOS では何の効果もありません。",
 			"terminal.integrated.altClickMovesCursor": "有効にすれば、`#editor.multiCursorModifier#` が `'alt'` (既定値) に設定されている場合に、alt または option キーを押しながらクリックすると、プロンプト カーソルがマウスの下に移動します。これは、お客様のシェルによっては正確に動作しないことがあります。",
@@ -7938,7 +8151,7 @@
 			"terminal.integrated.confirmOnExit.always": "ターミナルがあるかどうか常に確認します。",
 			"terminal.integrated.confirmOnExit.hasChildProcesses": "子プロセスがあるターミナルがあるかどうかを確認します。",
 			"terminal.integrated.confirmOnExit.never": "確認しません。",
-			"terminal.integrated.confirmOnKill": "子プロセスがある場合にターミナルの強制終了を確認するかどうかを制御します。エディターに設定すると、子プロセスがある場合、エディター領域のターミナルはダーティとしてマークされます。子プロセスの検出は、シェルの子プロセスとしてプロセスを実行しない Git Bash のようなシェルでは適切に機能しない可能性があることに注意してください。",
+			"terminal.integrated.confirmOnKill": "子プロセスがある場合にターミナルの強制終了を確認するかどうかを制御します。エディターに設定すると、子プロセスがある場合、エディター領域のターミナルは変更済みとしてマークされます。子プロセスの検出は、シェルの子プロセスとしてプロセスを実行しない Git Bash のようなシェルでは適切に機能しない可能性があることに注意してください。",
 			"terminal.integrated.confirmOnKill.always": "ターミナルがエディターとパネルのどちらにあるかを確認します。",
 			"terminal.integrated.confirmOnKill.editor": "ターミナルがエディター内にあるかどうかを確認します。",
 			"terminal.integrated.confirmOnKill.never": "確認しません。",
@@ -7947,7 +8160,7 @@
 			"terminal.integrated.cursorBlinking": "ターミナルでカーソルを点滅させるかどうかを制御します。",
 			"terminal.integrated.cursorStyle": "ターミナル カーソルのスタイルを制御します。",
 			"terminal.integrated.cursorWidth": "#terminal.integrated.cursorStyle#' が 'line' に設定されているときに、カーソルの幅を制御します。",
-			"terminal.integrated.customGlyphs": "Whether to draw custom glyphs for block element and box drawing characters instead of using the font, which typically yields better rendering with continuous lines. Note that this doesn't work with the DOM renderer",
+			"terminal.integrated.customGlyphs": "フォントを使用する代わりに、ブロック要素およびボックス描画文字のカスタム グリフを描画するかどうか。通常は、連続した直線を使用した方が適切なレンダリングを行います。これは DOM レンダラーでは動作しないことにご注意ください",
 			"terminal.integrated.cwd": "ターミナルが起動される明示的な開始パスです。これは、シェル プロセスの現在の作業ディレクトリ (cwd) として使用されます。これは特に、ルート ディレクトリが便利な cwd でない場合にワークスペースの設定で役立ちます。",
 			"terminal.integrated.defaultLocation": "新規に作成されたターミナルの表示場所を制御します。",
 			"terminal.integrated.defaultLocation.editor": "エディターでのターミナルの作成",
@@ -7989,6 +8202,10 @@
 			"terminal.integrated.macOptionIsMeta": "option キーを macOS 上のターミナルの meta キーとして扱うかどうかを制御します。",
 			"terminal.integrated.minimumContrastRatio": "各セルの前景色を設定すると、指定されたコントラスト比率に合うように変更されます。値の例:\r\n\r\n-1: 既定値。何も実行しません。\r\n-4.5: [WCAG AA コンプライアンス (最小)](https://www.w3.org/TR/UNDERSTANDING-WCAG20/visual-audio-contrast-contrast.html)。\r\n-7: [WCAG AAA コンプライアンス (拡張)](https://www.w3.org/TR/UNDERSTANDING-WCAG20/visual-audio-contrast7.html)。\r\n-21: 黒地に白、白地に黒。",
 			"terminal.integrated.mouseWheelScrollSensitivity": "マウス ホイールのスクロール イベントの 'deltaY' で使用される乗数です。",
+			"terminal.integrated.persistentSessionReviveProcess": "ターミナル プロセスをシャットダウンする必要がある場合 (ウィンドウやアプリケーションの終了時など)、以前のターミナル セッションの内容を復元し、次回ワークスペースを開いたときにプロセスを再作成するタイミングを決定します。プロセスの現在の作業ディレクトリの復元は、それがシェルでサポートされているかどうかによって異なります。",
+			"terminal.integrated.persistentSessionReviveProcess.never": "ターミナル バッファーの復元や、プロセスの再作成を行わないでください。",
+			"terminal.integrated.persistentSessionReviveProcess.onExit": "Windows または Linux で最後のウィンドウが閉じられた後、`workbench.action.quit` コマンドがトリガーされた場合 (コマンド パレット、キー バインド、メニュー) にプロセスの再活性化を行います。",
+			"terminal.integrated.persistentSessionReviveProcess.onExitAndWindowClose": "Windows または Linux で最後のウィンドウが閉じられた後、`workbench.action.quit` コマンドがトリガーされた場合 (コマンド パレット、キー バインド、メニュー)、またはウィンドウが閉じられた場合にプロセスの再活性化を行います。",
 			"terminal.integrated.rightClickBehavior": "右クリックに対するターミナルの反応を制御します。",
 			"terminal.integrated.rightClickBehavior.copyPaste": "選択範囲がある場合はコピーし、それ以外の場合は貼り付けます。",
 			"terminal.integrated.rightClickBehavior.default": "コンテキスト メニューを表示します。",
@@ -8013,6 +8230,7 @@
 			"terminal.integrated.tabs.location": "ターミナル タブの場所を、実際のターミナルの左または右のいずれかに制御します。",
 			"terminal.integrated.tabs.location.left": "ターミナルの左側にターミナル タブ ビューを表示する",
 			"terminal.integrated.tabs.location.right": "ターミナルの右側にターミナル タブ ビューを表示する",
+			"terminal.integrated.tabs.separator": "`terminal.integrated.title` および `terminal.integrated.description` で使用される区切り記号。",
 			"terminal.integrated.tabs.showActions": "新しいターミナル ボタンの横にターミナルの分割ボタンと強制終了ボタンを表示するかどうかを制御します。",
 			"terminal.integrated.tabs.showActions.always": "常にアクションを表示する",
 			"terminal.integrated.tabs.showActions.never": "アクションを表示しない",
@@ -8023,15 +8241,15 @@
 			"terminal.integrated.tabs.showActiveTerminal.never": "アクティブなターミナルを常に非表示にする",
 			"terminal.integrated.tabs.showActiveTerminal.singleTerminal": "アクティブなターミナルが開かれている唯一のターミナルを表示する",
 			"terminal.integrated.tabs.showActiveTerminal.singleTerminalOrNarrow": "アクティブなターミナルが開かれている唯一のターミナルを表示するか、タブ ビューがその狭義のテキストなし状態である場合",
-			"terminal.integrated.titleMode": "ターミナルのタイトルの設定方法を決定します。これは、ターミナルのタブまたはドロップダウン エントリに表示されます。",
 			"terminal.integrated.unicodeVersion": "ターミナルでの文字幅を評価するときに使用する Unicode のバージョンを制御します。絵文字や他のワイド文字で占める領域の大きさが正しくない場合や、バックスペースによる削除の量が多すぎるか少なすぎる場合には、この設定を微調整してみてください。",
 			"terminal.integrated.unicodeVersion.eleven": "バージョン 11 の Unicode。このバージョンでは、Unicode の最新バージョンを使用する最新のシステムでのサポートが向上しています。",
 			"terminal.integrated.unicodeVersion.six": "バージョン 6 の Unicode。これは古いバージョンであり、古いシステムで適切に動作するはずです。",
 			"terminal.integrated.windowsEnableConpty": "Windows ターミナル プロセス通信に ConPTY を使用するかどうかを指定します (Windows 10 のビルド番号 18309 以上が必要です)。これが false の場合は、winpty が使用されます。",
 			"terminal.integrated.wordSeparators": "ダブルクリックによる単語選択機能で単語区切り記号として扱われるすべての文字を含む文字列。",
+			"terminalDescription": "タイトルの右側に表示されるターミナルの説明を制御します。変数は以下のコンテキストに基づいて置換されます。",
 			"terminalIntegratedConfigurationTitle": "統合ターミナル",
-			"titleMode.executable": "このタイトルはターミナルで設定され、検出された前景プロセスの名前が使用されます。",
-			"titleMode.sequence": "タイトルはエスケープ シーケンスを介してプロセスによって設定されます。これは、シェルがタイトルを動的に設定する場合に便利です。"
+			"terminalTitle": "ターミナル タイトルを制御します。変数は以下のコンテキストに基づいて置換されます。",
+			"workspaceFolder": "ターミナルを起動したワークスペース"
 		},
 		"vs/workbench/contrib/terminal/common/terminalContextKey": {
 			"isSplitTerminalContextKey": "優先タブのターミナルがターミナルの分割かどうか。",
@@ -8057,7 +8275,8 @@
 			"workbench.action.terminal.changeIcon": "アイコンの変更...",
 			"workbench.action.terminal.focus": "ターミナルにフォーカス",
 			"workbench.action.terminal.moveToTerminalPanel": "ターミナルをパネルへ移動",
-			"workbench.action.terminal.rename": "名前の変更..."
+			"workbench.action.terminal.rename": "名前の変更...",
+			"workbench.action.terminal.sizeToContentWidthInstance": "コンテンツの幅にサイズを切り替える"
 		},
 		"vs/workbench/contrib/terminal/electron-sandbox/localTerminalService": {
 			"nonResponsivePtyHost": "ターミナルの pty ホスト プロセスへの接続が応答しないため、ターミナルが動作しなくなる可能性があります。",
@@ -8116,6 +8335,7 @@
 			"testing.searchForTestExtension": "テスト拡張機能の検索",
 			"testing.selectDefaultTestProfiles": "既定のプロファイルの選択",
 			"testing.showMostRecentOutput": "出力の表示",
+			"testing.sortByDuration": "期間順に並べ替え",
 			"testing.sortByLocation": "場所で並べ替え",
 			"testing.sortByStatus": "状態順で並べ替え",
 			"testing.toggleInlineTestOutput": "インライン テスト出力の切り替え",
@@ -8137,10 +8357,10 @@
 			"updateTestConfiguration": "テスト構成の更新"
 		},
 		"vs/workbench/contrib/testing/browser/testingDecorations": {
-			"actual.title": "実際:",
+			"actual.title": "実際",
 			"debug all test": "すべてのテストをデバッグする",
 			"debug test": "テストをデバッグ",
-			"expected.title": "期待値:",
+			"expected.title": "必要",
 			"peek failure": "エラーをクイック表示する",
 			"peekTestOutout": "ピーク テストの出力",
 			"reveal test": "テスト エクスプローラーで表示",
@@ -8153,8 +8373,8 @@
 		},
 		"vs/workbench/contrib/testing/browser/testingExplorerFilter": {
 			"filter": "フィルター",
-			"testExplorerFilter": "Filter (e.g. text, !exclude, @tag)",
-			"testExplorerFilterLabel": "Filter text for tests in the explorer",
+			"testExplorerFilter": "フィルター (例: テキスト、! 除外、@タグ)",
+			"testExplorerFilterLabel": "エクスプローラーでテスト用に、テキストをフィルター処理する",
 			"testing.filters.currentFile": "アクティブなファイルのみを表示",
 			"testing.filters.menu": "その他のフィルター...",
 			"testing.filters.removeTestExclusions": "すべてのテストを再表示",
@@ -8185,6 +8405,7 @@
 			"testing.reRunLastRun": "テスト実行の再実行",
 			"testing.revealInExplorer": "テスト エクスプローラーで表示",
 			"testing.showResultOutput": "結果出力の表示",
+			"testing.toggleTestingPeekHistory": "クイック表示でのテスト履歴の切り替え",
 			"testingOutputActual": "実際の結果",
 			"testingOutputExpected": "予期された結果",
 			"testingPeekLabel": "テスト結果メッセージ"
@@ -8361,8 +8582,8 @@
 			"later": "後で",
 			"noUpdatesAvailable": "現在入手可能な更新はありません。",
 			"read the release notes": "{0} v{1} へようこそ! リリース ノートを確認しますか?",
-			"relaunchDetailInsiders": "[再読み込み] ボタンを押すと、運用前のナイトリー バージョンの VSCode に切り替えることができます。",
-			"relaunchDetailStable": "[再読み込み] ボタンを押すと、毎月リリースされる VSCode の安定バージョンに切り替えることができます。",
+			"relaunchDetailInsiders": "[再読み込み] ボタンを押すと、VSCode の Insider バージョンに切り替えることができます。",
+			"relaunchDetailStable": "[再読み込み] ボタンを押すと、VSCode の安定バージョンに切り替えることができます。",
 			"relaunchMessage": "バージョンの変更を有効にするには、再読み込みが必要です",
 			"releaseNotes": "リリース ノート",
 			"reload": "再読み込み(&&R)",
@@ -8536,6 +8757,7 @@
 			"not found": "ID: {0} のマシンが見つかりません",
 			"placeholder": "マシンの名前を入力してください",
 			"remote sync activity title": "同期アクティビティ (リモート)",
+			"remoteToLocalDiff": "{0} ↔ {1}",
 			"reset": "同期されたデータのリセット",
 			"rightResourceName": "{0} (ローカル)",
 			"sideBySideLabels": "{0} ↔ {1}",
@@ -8545,6 +8767,7 @@
 			"turn off": "オフにする(&&T)",
 			"turn off sync on machine": "{0} の同期をオフにしますか?",
 			"valid message": "マシン名は、一意の、空ではない値である必要があります",
+			"workbench.actions.sync.compareWithLocal": "ローカルとの比較",
 			"workbench.actions.sync.editMachineName": "名前の編集",
 			"workbench.actions.sync.replaceCurrent": "復元",
 			"workbench.actions.sync.resolveResourceRef": "生の JSON 同期データの表示",
@@ -8575,7 +8798,9 @@
 			"watermark.openRecent": "最近開いた項目",
 			"watermark.quickAccess": "ファイルに移動する",
 			"watermark.showCommands": "すべてのコマンドの表示",
+			"watermark.showSettings": "設定を表示",
 			"watermark.startDebugging": "デバッグの開始",
+			"watermark.toggleFullscreen": "全画面表示の切り替え",
 			"watermark.toggleTerminal": "ターミナルの切り替え"
 		},
 		"vs/workbench/contrib/webview/browser/webview.contribution": {
@@ -8624,14 +8849,16 @@
 		},
 		"vs/workbench/contrib/welcome/gettingStarted/browser/gettingStarted": {
 			"allDone": "完了のマーク",
+			"checkboxTitle": "チェックをオンにすると、スタートアップ時にこのページが表示されます。",
 			"close": "非表示",
 			"footer": "{0} は使用状況データを収集します。{1} を読んで、{2} の方法をご確認ください。",
+			"getStarted": "作業の開始",
 			"gettingStarted.allStepsComplete": "{0} ステップすべてが完了",
 			"gettingStarted.editingEvolved": "進化した編集",
 			"gettingStarted.someStepsComplete": "{1} ステップのうち {0} ステップが完了",
 			"imageShowing": "{0} を示す画像",
 			"new": "新規",
-			"newItems": "新規アイテム",
+			"newItems": "更新",
 			"nextOne": "次のセクション",
 			"optOut": "オプトアウト",
 			"pickWalkthroughs": "チュートリアルを開きます...",
@@ -8641,16 +8868,15 @@
 			"showAll": "その他...",
 			"start": "開始",
 			"walkthroughs": "チュートリアル",
-			"welcome": "ようこそ",
 			"welcomeAriaLabel": "エディターをすぐに理解するための概要を表示します。",
 			"welcomePage.openFolderWithPath": "パス {1} のフォルダー {0} を開く",
 			"welcomePage.showOnStartup": "起動時にウェルカム ページを表示する"
 		},
 		"vs/workbench/contrib/welcome/gettingStarted/browser/gettingStarted.contribution": {
-			"Welcome": "ようこそ",
+			"getStarted": "作業の開始",
 			"help": "ヘルプ",
+			"miGetStarted": "作業の開始",
 			"pickWalkthroughs": "チュートリアルを開きます...",
-			"welcome": "ようこそ",
 			"welcome.goBack": "前に戻る",
 			"welcome.markStepComplete": "ステップ完了のマーク",
 			"welcome.markStepInomplete": "ステップを未完了としてマーク",
@@ -8661,8 +8887,6 @@
 		},
 		"vs/workbench/contrib/welcome/gettingStarted/browser/gettingStartedColors": {
 			"welcomePage.background": "ウェルカム ページの背景色。",
-			"welcomePage.buttonBackground": "ウェルカム ページのボタンの背景色。",
-			"welcomePage.buttonHoverBackground": "ウェルカム ページのボタンのホバー背景色。",
 			"welcomePage.progress.background": "ウェルカム ページの進行状況バーの前景色。",
 			"welcomePage.progress.foreground": "ウェルカム ページの進行状況バーの背景色。",
 			"welcomePage.tileBackground": "[はじめに] ページのタイルの背景色。",
@@ -8696,6 +8920,7 @@
 			"walkthroughs.steps.media.image.path.hc.string": "ハイコントラスト テーマのイメージへのパス。拡張ディレクトリに対する相対パスです。",
 			"walkthroughs.steps.media.image.path.light.string": "ライト テーマのイメージへのパス。拡張ディレクトリに対する相対パスです。",
 			"walkthroughs.steps.media.image.path.string": "ライト、ダーク、ハイコントラスト の各イメージへのパスで構成される、拡張ディレクトリへのパスです。コンテキストに応じて、イメージは400px から800px の幅に表示され、高さも同様の境界で表示されます。HIDPI ディスプレイをサポートするために、イメージは 1.5 x のスケールで描画されます。たとえば900物理ピクセル幅のイメージは、600論理ピクセルの幅として表示されます。",
+			"walkthroughs.steps.media.image.path.svg": "ワークベンチと一致するようにテーマをサポートするため、変数では svg へのパス、カラー トークンがサポートされています。",
 			"walkthroughs.steps.media.markdown.path": "拡張ディレクトリに対して相対的なマークダウン ドキュメントへのパスです。",
 			"walkthroughs.steps.oneOn.command": "指定したコマンドが実行されたときに、ステップを完了としてマークします。",
 			"walkthroughs.steps.title": "ステップのタイトル。",
@@ -8708,13 +8933,14 @@
 			"gettingStartedUnchecked": "完了していないチュートリアルのステップを表すために使用されます"
 		},
 		"vs/workbench/contrib/welcome/gettingStarted/browser/gettingStartedInput": {
-			"welcome": "ようこそ"
+			"getStarted": "作業の開始"
 		},
 		"vs/workbench/contrib/welcome/gettingStarted/browser/gettingStartedService": {
 			"builtin": "ビルトイン"
 		},
 		"vs/workbench/contrib/welcome/gettingStarted/common/gettingStartedContent": {
 			"browseLangExts": "言語拡張機能の参照",
+			"browsePopular": "人気の Web 拡張機能の閲覧",
 			"browseRecommended": "おすすめの拡張機能の参照",
 			"cloneRepo": "リポジトリのクローン",
 			"commandPalette": "コマンド パレットを開く",
@@ -8725,16 +8951,21 @@
 			"getting-started-setup-icon": "ウェルカム ページの設定カテゴリに使用されるアイコン",
 			"gettingStarted.beginner.description": "VS Code をすぐに開始して、必須の機能の概要を取得します。",
 			"gettingStarted.beginner.title": "基礎の学習",
-			"gettingStarted.commandPalette.description.interpolated": "コマンド パレットは、VS Code で任意のタスクを実行するためのキーボード方法です。使用頻度の高いコマンドを検索して**実践**し、時間を節約し、フローを維持します。\r\n{0}\r\n__ 'ビューの切り替え' を探します。",
+			"gettingStarted.commandPalette.description.interpolated": "コマンドは、VS Code で任意のタスクを実行するためのキーボード方法です。使用頻度の高いコマンドを検索して時間を節約し、フローを維持します。\r\n{0}\r\n__ 'ビューの切り替え' を探します。",
 			"gettingStarted.commandPalette.title": "すべてにアクセスするためのショートカット",
 			"gettingStarted.debug.description.interpolated": "起動構成を設定して、編集、ビルド、テスト、デバッグのループを高速化します。\r\n{0}",
 			"gettingStarted.debug.title": "動作中のコードを監視する",
 			"gettingStarted.extensions.description.interpolated": "拡張機能により、VS Code が強化されます。生産性を上げる便利なコツから、すぐに使える機能の拡張、まったく新しい機能の追加まで、多岐に渡ります。\r\n{0}",
 			"gettingStarted.extensions.title": "無限の拡張性",
+			"gettingStarted.extensionsWeb.description.interpolated": "拡張機能は VS Code のパワーアップです。Web で利用できる数が増加しています。\r\n{0}",
 			"gettingStarted.findLanguageExts.description.interpolated": "構文の強調表示、コード補完、リンティング、デバッグなどの機能でよりスマートにコードを記述します。多数の言語が組み込まれていますが、拡張機能としてさらに多くの言語を追加できます。\r\n{0}",
 			"gettingStarted.findLanguageExts.title": "すべての言語の豊富なサポート",
+			"gettingStarted.installGit.description.interpolated": "プロジェクト内の変更を追跡するために Git をインストールします。\r\n{0}",
+			"gettingStarted.installGit.title": "Git をインストール",
 			"gettingStarted.intermediate.description": "次のヒントとコツを使って、開発ワークフローを最適化します。",
 			"gettingStarted.intermediate.title": "生産性の向上",
+			"gettingStarted.menuBar.description.interpolated": "ドロップダウン メニューで充実したメニュー バーを利用でき、コードを入力するスペースを確保できます。その外観を切り替えることで、より速いアクセスが可能になります。\r\n{0}",
+			"gettingStarted.menuBar.title": "適度な UI の量",
 			"gettingStarted.newFile.description": "無題の新しいファイル、ノートブック、またはカスタム エディターを開きます。",
 			"gettingStarted.newFile.title": "新しいファイル...",
 			"gettingStarted.notebook.title": "ノートブックのカスタマイズ",
@@ -8758,12 +8989,15 @@
 			"gettingStarted.scmSetup.description.interpolated": "プロジェクトに、組み込みのバージョン管理を設定して、変更を追跡し、他のユーザーと共同作業を行います。\r\n{0}",
 			"gettingStarted.settings.description.interpolated": "好みに合わせて VS Code のあらゆるアスペクトと拡張機能を調整します。よく使用される設定は最初に表示されます。\r\n{0}",
 			"gettingStarted.settings.title": "設定の調整",
-			"gettingStarted.settingsSync.description.interpolated": "最適な VS Code 設定を失うことはありません。設定の同期によって、複数のインストール間で設定、キー バインド、拡張機能がバックアップおよび共有されます。\r\n{0}",
-			"gettingStarted.settingsSync.title": "デバイス間でのアイテムの同期",
+			"gettingStarted.settingsSync.description.interpolated": "重要な VS Code のカスタマイズをバックアップし、すべてのデバイスで更新します。\r\n{0}",
+			"gettingStarted.settingsSync.title": "他のデバイスとの同期",
 			"gettingStarted.setup.OpenFolder.description.interpolated": "コーディングを開始する準備ができました。プロジェクト フォルダーを開いて、ファイルをVS Codeに取り込みます。\r\n{0}",
 			"gettingStarted.setup.OpenFolder.title": "コードを開く",
+			"gettingStarted.setup.OpenFolderWeb.description.interpolated": "コーディングを開始する準備が整いました。ローカル プロジェクトまたはリモート リポジトリを開いて、ファイルを VS Code に取り込むことができます。\r\n{0}\r\n{1}",
 			"gettingStarted.setup.description": "最適なカスタマイズを見つけて、好みの VS Code にしてください。",
 			"gettingStarted.setup.title": "VS Code を開始する",
+			"gettingStarted.setupWeb.description": "最適なカスタマイズを見つけて、好みの Web 用 VS Code にしてください。",
+			"gettingStarted.setupWeb.title": "Web で VS Code を開始する",
 			"gettingStarted.shortcuts.description.interpolated": "お気に入りのコマンドを見つけたら、すぐにアクセスするためのカスタム キーボード ショートカットを作成します。\r\n{0}",
 			"gettingStarted.shortcuts.title": "ショートカットのカスタマイズ",
 			"gettingStarted.splitview.description.interpolated": "ファイルを左右、垂直、水平に並べて表示して、画面を最大限に活用します。\r\n{0}",
@@ -8772,8 +9006,10 @@
 			"gettingStarted.tasks.title": "プロジェクト タスクを自動化する",
 			"gettingStarted.terminal.description.interpolated": "コードのすぐ横で、シェル コマンドをすばやく実行し、ビルド出力を監視します。\r\n{0}",
 			"gettingStarted.terminal.title": "便利な組み込みターミナル",
-			"gettingStarted.topLevelCommandPalette.description": "コマンド パレットを使用して、VSCode のコマンドをすべて表示して実行します",
-			"gettingStarted.topLevelCommandPalette.title": "コマンドの実行...",
+			"gettingStarted.topLevelGitClone.description": "リモート リポジトリをローカル フォルダーにクローンする",
+			"gettingStarted.topLevelGitClone.title": "Git リポジトリのクローン...",
+			"gettingStarted.topLevelGitOpen.description": "リモート リポジトリまたはプル要求に接続して、閲覧、検索、編集、コミットを行う",
+			"gettingStarted.topLevelGitOpen.title": "リポジトリを開く...",
 			"gettingStarted.topLevelShowWalkthroughs.description": "",
 			"gettingStarted.topLevelShowWalkthroughs.title": "チュートリアルを開く...",
 			"gettingStarted.videoTutorial.description.interpolated": "VS Code の主要な機能については、一連の短く実際的なビデオ チュートリアルの最初のものをご覧ください。\r\n{0}",
@@ -8781,8 +9017,11 @@
 			"gettingStarted.workspaceTrust.description.interpolated": "{0} では、プロジェクト フォルダーで自動コードの実行を **許可または制限する** かどうかを決定できます。__(拡張機能、デバッグなどに必要)__。\r\nファイル/フォルダーを開くと、信頼を付与するよう求めるダイアログが表示されます。後でいつでも {1} できます。",
 			"gettingStarted.workspaceTrust.title": "コードの安全な閲覧と編集",
 			"initRepo": "Git リポジトリの初期化",
+			"installGit": "Git をインストール",
 			"keyboardShortcuts": "キーボード ショートカット",
-			"openInteractivePlayground": "対話型プレイグラウンドを開く",
+			"openEditorPlayground": "エディター プレイグラウンドを開く",
+			"openFolder": "フォルダーを開く",
+			"openRepository": "リポジトリを開く",
 			"openSCM": "オープン ソース管理",
 			"pickFolder": "フォルダーの選択",
 			"quickOpen": "ファイルをすばやく開く",
@@ -8791,6 +9030,7 @@
 			"showTerminal": "ターミナル パネルの表示",
 			"splitEditor": "エディターの分割",
 			"titleID": "色のテーマを参照する",
+			"toggleMenuBar": "メニュー バーの切り替え",
 			"tweakSettings": "自分の設定を調整",
 			"watch": "チュートリアルを見る",
 			"workspaceTrust": "ワークスペースの信頼"
@@ -8828,12 +9068,12 @@
 			"workbench.startupEditor.welcomePageInEmptyWorkbench": "空のワークベンチを開くとき、ウェルカム ページを開きます。"
 		},
 		"vs/workbench/contrib/welcome/walkThrough/browser/editor/editorWalkThrough": {
-			"editorWalkThrough": "対話型プレイグラウンド",
-			"editorWalkThrough.title": "対話型プレイグラウンド"
+			"editorWalkThrough": "対話型エディタープレイグラウンド",
+			"editorWalkThrough.title": "エディター プレイグラウンド"
 		},
 		"vs/workbench/contrib/welcome/walkThrough/browser/walkThrough.contribution": {
-			"miInteractivePlayground": "対話型プレイグラウンド(&&N)",
-			"walkThrough.editor.label": "対話型プレイグラウンド"
+			"miPlayground": "エディター プレイグラウンド(&&N)",
+			"walkThrough.editor.label": "プレイグラウンド"
 		},
 		"vs/workbench/contrib/welcome/walkThrough/browser/walkThroughPart": {
 			"walkThrough.embeddedEditorBackground": "対話型プレイグラウンドの埋め込みエディターの背景色。",
@@ -8917,7 +9157,7 @@
 			"dontTrustButton": "信頼しない",
 			"editTrustedUri": "パスの編集",
 			"hostColumnLabel": "ホスト",
-			"invalidTrust": "'{0}' is not valid and has too many path segments.",
+			"invalidTrust": "リポジトリ内の個々のフォルダーを信頼することはできません。",
 			"localAuthority": "ローカル",
 			"no untrustedSettings": "信頼が必要なワークスペース設定が適用されない",
 			"noTrustedFoldersDescriptions": "フォルダーまたはワークスペース ファイルをまだ信頼していません。",
@@ -8925,10 +9165,10 @@
 			"pickerTrustedUri": "ファイル ピッカーを開く",
 			"root element label": "ワークスペースの信頼を管理",
 			"selectTrustedUri": "信頼するフォルダーの選択",
-			"trustAll": "You will trust all repositories on {0}.",
+			"trustAll": "{0} 上のすべてのリポジトリを信頼します。",
 			"trustButton": "信頼する",
 			"trustMessage": "親フォルダー \"{0}\" または現在のフォルダー内のすべてのファイルの作成者を信頼します。",
-			"trustOrg": "You will trust all repositories and forks under '{0}'.",
+			"trustOrg": "{1} の '{0}' の下のすべてのリポジトリとフォークが信頼されます。",
 			"trustParentButton": "Trust Parent",
 			"trustUri": "信頼済みフォルダー",
 			"trustedDebugging": "デバッグが有効です",
@@ -8999,9 +9239,9 @@
 			"nothing": "編集は行われませんでした"
 		},
 		"vs/workbench/services/configuration/common/configurationEditingService": {
-			"errorConfigurationFileDirty": "ファイルが変更されているため、ユーザー設定を書き込めません。ユーザー設定ファイルを保存してから、もう一度お試しください。",
-			"errorConfigurationFileDirtyFolder": "ファイルが変更されているため、フォルダー設定を書き込めません。'{0}' フォルダー設定ファイルを保存してから、もう一度お試しください。",
-			"errorConfigurationFileDirtyWorkspace": "ファイルが変更されているため、ワークスペース設定を書き込めません。ワークスペース設定ファイルを保存してから、もう一度お試しください。",
+			"errorConfigurationFileDirty": "ファイルの変更が保存されていないため、ユーザー設定を書き込めません。ユーザー設定ファイルを保存してから、もう一度お試しください。",
+			"errorConfigurationFileDirtyFolder": "ファイルの変更が保存されていないため、フォルダー設定を書き込めません。'{0}' フォルダー設定ファイルを保存してから、もう一度お試しください。",
+			"errorConfigurationFileDirtyWorkspace": "ファイルの変更が保存されていないため、ワークスペース設定を書き込めません。ワークスペース設定ファイルを保存してから、もう一度お試しください。",
 			"errorConfigurationFileModifiedSince": "ファイルのコンテンツが新しくなっているため、ユーザー設定に書き込むことができません。",
 			"errorConfigurationFileModifiedSinceFolder": "ファイルのコンテンツが新しくなっているため、フォルダー設定に書き込むことができません。",
 			"errorConfigurationFileModifiedSinceWorkspace": "ファイルのコンテンツが新しくなっているため、ワークスペース設定に書き込むことができません。",
@@ -9018,12 +9258,12 @@
 			"errorInvalidWorkspaceConfigurationApplication": "{0} をワークスペース設定に書き込めません。この設定はユーザー設定にのみ書き込めます。",
 			"errorInvalidWorkspaceConfigurationMachine": "{0} をワークスペース設定に書き込めません。この設定はユーザー設定にのみ書き込めます。",
 			"errorInvalidWorkspaceTarget": "{0} はマルチ フォルダー ワークスペースでワークスペース スコープをサポートしていないため、ワークスペース設定を書き込むことができません。",
-			"errorLaunchConfigurationFileDirty": "ファイルが変更されているため、起動構成ファイルに書き込めません。ファイルを保存してから、もう一度お試しください。",
+			"errorLaunchConfigurationFileDirty": "ファイルの変更が保存されていないため、起動構成ファイルに書き込めません。ファイルを保存してから、もう一度お試しください。",
 			"errorLaunchConfigurationFileModifiedSince": "ファイルのコンテンツが新しくなっているため、起動構成ファイルに書き込むことができません。",
 			"errorNoWorkspaceOpened": "開いているワークスペースがないため、{0} に書き込むことができません。最初にワークスペースを開いてから、もう一度お試しください。",
-			"errorRemoteConfigurationFileDirty": "ファイルがダーティであるため、リモート ユーザー設定に書き込めませんでした。まずリモート ユーザー設定ファイルを保存してから、もう一度お試しください。",
+			"errorRemoteConfigurationFileDirty": "ファイルの変更が保存されていないため、リモート ユーザー設定を書き込めません。リモート ユーザー設定ファイルを保存してから、もう一度お試しください。",
 			"errorRemoteConfigurationFileModifiedSince": "ファイルのコンテンツが新しくなっているため、リモート ユーザー設定に書き込むことができません。",
-			"errorTasksConfigurationFileDirty": "ファイルが変更されているため、タスク構成ファイルに書き込めません。ファイルを保存してから、もう一度お試しください。",
+			"errorTasksConfigurationFileDirty": "ファイルの変更が保存されていないため、タスク構成ファイルに書き込めません。ファイルを保存してから、もう一度お試しください。",
 			"errorTasksConfigurationFileModifiedSince": "ファイルのコンテンツが新しくなっているため、タスク構成ファイルに書き込むことができません。",
 			"errorUnknownKey": "{1} は登録済みの構成ではないため、{0} に書き込むことができません。",
 			"folderTarget": "フォルダーの設定",
@@ -9036,7 +9276,7 @@
 			"workspaceTarget": "ワークスペースの設定"
 		},
 		"vs/workbench/services/configuration/common/jsonEditingService": {
-			"errorFileDirty": "ファイルがダーティ状態でありファイルに書き込めません。ファイルを保存してからもう一度お試しください。",
+			"errorFileDirty": "ファイルの変更が保存されていないため、ファイルに書き込めません。ファイルを保存してからもう一度お試しください。",
 			"errorInvalidFile": "ファイルに書き込めません。ファイルを開いて、ファイル内のエラー/警告を修正してからもう一度お試しください。"
 		},
 		"vs/workbench/services/configurationResolver/browser/configurationResolverService": {
@@ -9093,7 +9333,7 @@
 			"openFile.title": "ファイルを開く",
 			"openFileOrFolder.title": "ファイルまたはフォルダーを開く",
 			"openFolder.title": "フォルダーを開く",
-			"openWorkspace.title": "ワークスペースを開く",
+			"openWorkspace.title": "ファイルでワークスペースを開く",
 			"save": "保存(&&S)",
 			"saveAll": "すべて保存(&&S)",
 			"saveAsTitle": "名前を付けて保存",
@@ -9170,6 +9410,7 @@
 		},
 		"vs/workbench/services/extensionManagement/common/extensionManagementService": {
 			"Manifest is not found": "拡張機能 {0} をインストールできませんでした。マニフェストが見つかりません。",
+			"VS Code for Web": "Web 版の {0}",
 			"cancel": "キャンセル",
 			"cannot be installed": "'{0}' 拡張機能は、このセットアップで使用できないため、インストールできません。",
 			"extensionInstallWorkspaceTrustButton": "ワークスペースを信頼してインストールする",
@@ -9178,23 +9419,29 @@
 			"extensionInstallWorkspaceTrustMessage": "この拡張機能を有効にするには、信頼されたワークスペースが必要です。",
 			"install": "インストール",
 			"install and do no sync": "インストール (同期しない)",
+			"install anyways": "インストールする",
 			"install extension": "拡張機能のインストール",
 			"install extensions": "拡張機能のインストール",
 			"install multiple extensions": "拡張機能をインストールしてデバイス間で同期しますか?",
 			"install single extension": "'{0}' 拡張機能をインストールしてデバイス間で同期しますか?",
+			"limited support": "'{0}' には、{1} で制限された機能があります。",
 			"multipleDependentsError": "拡張機能 '{0}' をアンインストールできません。拡張機能 '{1}'、'{2}'、その他がこの拡張機能に依存しています。",
+			"non web extensions": "'{0}' には、{1} でサポートされていない拡張機能が含まれています。",
+			"non web extensions detail": "サポートされていない拡張機能が含まれています。",
+			"showExtensions": "拡張機能を表示する",
 			"singleDependentError": "拡張機能 '{0}' をアンインストールできません。拡張機能 '{1}' がこの拡張機能に依存しています。",
 			"twoDependentsError": "拡張機能 '{0}' をアンインストールできません。拡張機能 '{1}' と '{2}' がこの拡張機能に依存しています。"
 		},
 		"vs/workbench/services/extensionManagement/common/webExtensionsScannerService": {
-			"not a web extension": "この拡張機能は Web 拡張機能ではないため、'{0}' を追加できません。"
+			"not a web extension": "この拡張機能は Web 拡張機能ではないため、'{0}' を追加できません。",
+			"openInstalledWebExtensionsResource": "インストールされている Web 拡張機能リソースを開く"
 		},
 		"vs/workbench/services/extensionManagement/electron-sandbox/extensionManagementServerService": {
 			"local": "LOCAL",
 			"remote": "リモート"
 		},
 		"vs/workbench/services/extensionManagement/electron-sandbox/remoteExtensionManagementService": {
-			"incompatible": "VS Code '{1}' と互換性のない拡張機能 '{0}' をインストールできません。"
+			"notFoundCompatibleDependency": "'{0}' 拡張機能は、現在のバージョンの VS Code (バージョン {1}) と互換性がないため、インストールできません。"
 		},
 		"vs/workbench/services/extensionRecommendations/common/workspaceExtensionsConfig": {
 			"select for add": "拡張機能の推奨事項の追加先",
@@ -9296,7 +9543,6 @@
 			"vscode.extension.qna": "Marketplase の Q&A リンクを制御します。既定の Marketplace Q&A サイトを有効にするには、[marketplace] に設定します。カスタムの Q&A サイトの URL を提供するには、その文字列に設定します。Q&A を無効にする場合は、[false] に設定します。",
 			"vscode.extension.scripts.prepublish": "パッケージが VS Code 拡張機能として公開される前に実行されるスクリプト。",
 			"vscode.extension.scripts.uninstall": "VS コード拡張機能のフックをアンインストールします。 VS コードから拡張機能を完全にアンインストールした時に実行されるスクリプトです。スクリプトは、拡張機能をアンインストールした後に VS コードを再起動 (シャット ダウンしてから起動) したときに実行されます。Node スクリプトのみがサポートされます。",
-			"web": "web worker の拡張機能の種類。このような拡張機能は、web worker 拡張機能ホストで実行できます。",
 			"workspace": "ワークスペースの拡張子の種類。リモート ウィンドウでは、これらの拡張機能はリモートで使用可能な場合にのみ有効になります。"
 		},
 		"vs/workbench/services/extensions/common/extensionsUtil": {
@@ -9355,6 +9601,10 @@
 			"jsonsParseReportErrors": "{0} を解析できません: {1}。",
 			"missingNLSKey": "キー {0} のメッセージが見つかりませんでした。",
 			"notSemver": "拡張機能のバージョンが semver と互換性がありません。"
+		},
+		"vs/workbench/services/files/electron-browser/diskFileSystemProvider": {
+			"binFailed": "'{0}' をごみ箱に移動できませんでした",
+			"trashFailed": "'{0}' をごみ箱に移動できませんでした"
 		},
 		"vs/workbench/services/gettingStarted/common/gettingStartedContent": {
 			"getting-started-setup-icon": "作業の開始の設定カテゴリに使用されるアイコン",
@@ -9458,7 +9708,7 @@
 		"vs/workbench/services/keybinding/common/keybindingEditing": {
 			"emptyKeybindingsHeader": "既定値を上書きするには、このファイル内にキー バインドを挿入します",
 			"errorInvalidConfiguration": "キー バインド構成ファイルを書き込めません。配列型ではないオブジェクトが存在します。クリーン アップするファイルを開いてからもう一度お試しください。",
-			"errorKeybindingsFileDirty": "キーバインド構成ファイルが変更されているため書き込めません。まずファイルを保存してからもう一度お試しください。",
+			"errorKeybindingsFileDirty": "キーバインド構成ファイルの変更が保存されていないため書き込めません。まずファイルを保存してからもう一度お試しください。",
 			"parseErrors": "キー バインド構成ファイルに書き込めません。ファイルを開いて、ファイル内のエラー/警告を修正してからもう一度お試しください。"
 		},
 		"vs/workbench/services/label/common/labelService": {
@@ -9572,7 +9822,9 @@
 			"tunnel.staticallyForwarded": "静的転送"
 		},
 		"vs/workbench/services/remote/electron-sandbox/remoteAgentServiceImpl": {
-			"connectionError": "リモート拡張ホスト サーバーへの接続に失敗しました (エラー: {0})"
+			"connectionError": "リモート拡張ホスト サーバーへの接続に失敗しました (エラー: {0})",
+			"devTools": "開発者ツールを開く",
+			"directUrl": "ブラウザーで開く"
 		},
 		"vs/workbench/services/textMate/browser/abstractTextMateService": {
 			"alreadyDebugging": "既にログ記録しています。",
@@ -9601,9 +9853,13 @@
 		},
 		"vs/workbench/services/textfile/browser/textFileService": {
 			"confirmOverwrite": "{0} は既に存在します。上書きしますか?",
+			"deleted": "削除",
 			"fileBinaryError": "ファイルはバイナリである可能性があり、テキストとして開くことができません",
 			"irreversible": "'{0}' という名前のファイルまたはフォルダーは、フォルダー '{1}' に既に存在します。置き換えると、現在の内容が上書きされます。",
-			"replaceButtonLabel": "置換(&&R)"
+			"readonly": "読み取り専用",
+			"readonlyAndDeleted": "削除済み、読み取り専用",
+			"replaceButtonLabel": "置換(&&R)",
+			"textFileModelDecorations": "テキスト ファイル モデルの装飾"
 		},
 		"vs/workbench/services/textfile/common/textFileEditorModelManager": {
 			"genericSaveError": "'{0}' の保存に失敗しました: {1}"
@@ -9865,7 +10121,11 @@
 		},
 		"vs/workbench/services/workingCopy/common/fileWorkingCopyManager": {
 			"confirmOverwrite": "{0} は既に存在します。上書きしますか?",
+			"deleted": "削除",
+			"fileWorkingCopyDecorations": "ファイル作業コピーの装飾",
 			"irreversible": "'{0}' という名前のファイルまたはフォルダーは、フォルダー '{1}' に既に存在します。置き換えると、現在の内容が上書きされます。",
+			"readonly": "読み取り専用",
+			"readonlyAndDeleted": "削除済み、読み取り専用",
 			"replaceButtonLabel": "置換(&&R)"
 		},
 		"vs/workbench/services/workingCopy/common/storedFileWorkingCopy": {
@@ -9889,17 +10149,17 @@
 			"saveParticipants": "'{0}' を保存しています"
 		},
 		"vs/workbench/services/workingCopy/electron-sandbox/workingCopyBackupTracker": {
-			"backupBeforeShutdownDetail": "待機を停止し、ダーティ エディターを保存または元に戻すには、[キャンセル] をクリックしてください。",
-			"backupBeforeShutdownMessage": "ダーティ エディターのバックアップに予想以上に時間がかかっています...",
-			"backupErrorDetails": "最初にダーティ エディターを保存または復元してから、もう一度お試しください。",
-			"backupTrackerBackupFailed": "次のダーティなエディターをバックアップ場所に保存できませんでした。",
-			"backupTrackerConfirmFailed": "次のダーティなエディターを保存または復元できませんでした。",
-			"revertBeforeShutdown": "ダーティ エディターを元に戻すに予想以上に時間がかかっています...",
-			"saveBeforeShutdown": "ダーティ エディターの保存に予想以上に時間がかかっています..."
+			"backupBeforeShutdownDetail": "待機を停止し、変更が保存されていないエディターを保存または元に戻すには、[キャンセル] をクリックしてください。",
+			"backupBeforeShutdownMessage": "変更が保存されていないエディターのバックアップに予想以上に時間がかかっています...",
+			"backupErrorDetails": "最初に変更が保存されていないエディターを保存または復元してから、もう一度お試しください。",
+			"backupTrackerBackupFailed": "次の変更が保存されていないエディターをバックアップ場所に保存できませんでした。",
+			"backupTrackerConfirmFailed": "次の変更が保存されていないエディターを保存または元に戻すことができませんでした。",
+			"revertBeforeShutdown": "変更が保存されていないエディターを元に戻すのに予想以上に時間がかかっています...",
+			"saveBeforeShutdown": "変更が保存されていないエディターの保存に予想以上に時間がかかっています..."
 		},
 		"vs/workbench/services/workspaces/browser/abstractWorkspaceEditingService": {
 			"errorInvalidTaskConfiguration": "ワークスペース構成ファイルに書き込めません。ファイルを開いて、ファイル内のエラー/警告を修正してからもう一度お試しください。",
-			"errorWorkspaceConfigurationFileDirty": "ファイルが変更されているため、ワークスペース構成ファイルに書き込めません。ファイルを保存してから、もう一度お試しください。",
+			"errorWorkspaceConfigurationFileDirty": "ファイルの変更が保存されていないため、ワークスペース構成ファイルに書き込めません。ファイルを保存してから、もう一度お試しください。",
 			"openWorkspaceConfigurationFile": "ワークスペースの構成を開く",
 			"save": "保存",
 			"saveWorkspace": "ワークスペースを保存"
@@ -9915,6 +10175,10 @@
 			"saveWorkspaceMessage": "ワークスペースの構成をファイルとして保存しますか?",
 			"workspaceOpenedDetail": "ワークスペースは既に別のウィンドウで開いています。最初にそのウィンドウを閉じててから、もう一度やり直してください。",
 			"workspaceOpenedMessage": "ワークスペース '{0}' を保存できません"
+		},
+		"sql/base/browser/ui/editableDropdown/browser/dropdown": {
+			"editableDropdown.errorValidate": "一覧からオプションを選択する必要があります",
+			"selectBox": "ボックスを選択"
 		},
 		"sql/base/browser/ui/loadingSpinner/loadingSpinner": {
 			"loadingCompletedMessage": "読み込みが完了しました",
@@ -9945,6 +10209,9 @@
 		},
 		"sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin": {
 			"selectDeselectAll": "すべて選択/選択解除"
+		},
+		"sql/base/browser/ui/table/plugins/contextMenuColumn.plugin": {
+			"table.showActions": "アクションの表示"
 		},
 		"sql/base/browser/ui/table/plugins/headerFilter.plugin": {
 			"headerFilter.cancel": "キャンセル",
@@ -9987,7 +10254,7 @@
 			"enable remote": "この拡張機能を {0} で有効にするには、Azure Data Studio を再度読み込んでください。",
 			"enableWindowsBackgroundUpdates": "Windows で新しい Azure Data Studio バージョンをバックグラウンドでダウンロードしてインストールできるようにする",
 			"extensionsPolicy": "拡張機能をダウンロードするためのセキュリティ ポリシーを設定します。",
-			"incompatible": "Azure Data Studio '{1}' と互換性がないため、拡張機能 '{0}' をインストールできません。",
+			"incompatible": "Azure Data Studio '{2}' と互換性がないため、拡張機能 '{1}' のバージョン '{0}' をインストールできません。拡張機能をインストールするには、Azure Data Studio {3} に更新してください。",
 			"installExtensionCompletedAndReloadRequired": "拡張機能 {0} のインストールが完了しました。これを有効にするには、Azure Data Studio を再度読み込んでください。",
 			"maxMemoryForLargeFilesMB": "大きなファイルを開こうとすると再起動後に Azure Data Studio に対して使用できるメモリを制御します。コマンド ラインで '--max-memory=NEWSIZE' を指定する場合と同じ効果があります。",
 			"miNewNotebook": "新しいノートブック(&N)",
@@ -10155,6 +10422,9 @@
 		"sql/workbench/api/common/extHostNotebookDocumentsAndEditors": {
 			"navigationProviderRequired": "有効な providerId を持つ NavigationProvider をこのメソッドに渡す必要があります"
 		},
+		"sql/workbench/api/common/notebooks/vscodeExecuteProvider": {
+			"errorStartBeforeReady": "セッションを開始できません。マネージャーがまだ初期化されていません"
+		},
 		"sql/workbench/browser/actions": {
 			"clearSavedAccounts": "保存されているすべてのアカウントのクリア",
 			"configureDashboardLearnMore": "詳細情報",
@@ -10169,13 +10439,14 @@
 			"showConnectDialogOnStartup": "起動時に接続ダイアログを表示"
 		},
 		"sql/workbench/browser/designer/designer": {
+			"designer.actions": "その他の操作",
 			"designer.defaultRemoveRowConfirmationMessage": "この行を削除しますか?",
 			"designer.generalGroupName": "全般",
 			"designer.issueCountAlert": "{0} 件の検証の問題が見つかりました。",
 			"designer.issuesTabTitle": "問題 ({0} 件)",
 			"designer.loadingDesigner": "デザイナーの読み込み中...",
 			"designer.loadingDesignerCompleted": "デザイナーが読み込まれます",
-			"designer.moveRowText": "行の移動",
+			"designer.moveRowText": "移動",
 			"designer.processing": "処理中...",
 			"designer.processingChanges": "変更の処理中...",
 			"designer.processingChangesCompleted": "変更が処理されました",
@@ -10186,12 +10457,26 @@
 			"designer.scriptTabTitle": "スクリプト",
 			"designer.unknownComponentType": "コンポーネントの種類: {0} はサポートされていません"
 		},
+		"sql/workbench/browser/designer/designerIssuesTabPanelView": {
+			"designer.IssueListAriaLabel": "問題",
+			"designer.moreInfoLink": "詳細情報"
+		},
 		"sql/workbench/browser/designer/designerPropertiesPane": {
 			"tableDesigner.propertiesPaneTitle": "プロパティ",
 			"tableDesigner.propertiesPaneTitleWithContext": "{0} のプロパティ"
 		},
 		"sql/workbench/browser/designer/designerScriptEditor": {
 			"designer.textEditorAriaLabel": "デザイナー テキスト エディター。"
+		},
+		"sql/workbench/browser/designer/tableActions": {
+			"designer.addColumnAction": "新規追加",
+			"designer.insertAfterSelectedColumn": "後に挿入",
+			"designer.insertBeforeSelectedRow": "前に挿入",
+			"designer.moveRowDownAction": "下へ移動",
+			"designer.moveRowDownButtonAriaLabel": "選択した行を 1 つ下の位置に移動します",
+			"designer.moveRowUpAction": "上へ移動",
+			"designer.moveRowUpButtonAriaLabel": "選択した行を 1 つ上の位置に移動します",
+			"designer.newRowButtonAriaLabel": "`{0}` テーブルに新しい行を追加する"
 		},
 		"sql/workbench/browser/editData/editDataInput": {
 			"connectionFailure": "編集データ セッションの接続に失敗しました"
@@ -10208,8 +10493,7 @@
 			"resourceViewerInput.resourceViewer": "リソース ビューアー"
 		},
 		"sql/workbench/browser/editor/tableDesigner/tableDesignerInput": {
-			"tableDesigner.OperationInProgressWarning": "別の操作が進行中の間は、操作を実行できません。",
-			"tableDesigner.newTable": "新しいテーブル"
+			"tableDesigner.OperationInProgressWarning": "別の操作が進行中の間は、操作を実行できません。"
 		},
 		"sql/workbench/browser/modal/modal": {
 			"closeMessage": "閉じる",
@@ -10838,6 +11122,108 @@
 			"saveAsXml": "XML として保存",
 			"selectAll": "すべて選択"
 		},
+		"sql/workbench/contrib/executionPlan/browser/azdataGraphView": {
+			"invalidExecutionPlanZoomError": "ズーム レベルを 0 または負の値にすることはできません"
+		},
+		"sql/workbench/contrib/executionPlan/browser/compareExecutionPlanInput": {
+			"epCompare.editorName": "比較実行プラン"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditor": {
+			"compareExecutionPlanEditor": "比較実行プラン エディター"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView": {
+			"addExecutionPlanLabel": "実行プランの追加",
+			"epComapre.LoadingPlanCompleteMessage": "実行プランが正常に読み込まれました",
+			"epComapre.LoadingPlanMessage": "実行プランを読み込んでいます",
+			"epComapre.placeholderInfoboxText": "比較する実行プランの追加",
+			"epCompare.FileFilterDescription": "実行プラン ファイル",
+			"epCompare.comparePropertiesAction": "プロパティ",
+			"epCompare.comparisonProgess": "比較したプランの類似点を読み込んでいます",
+			"epCompare.searchNodeAction": "ノードの検索",
+			"epCompare.searchNodeActionAddedPlan": "ノードの検索 - プランの追加",
+			"epCompare.toggleOrientation": "方向の切り替え",
+			"epCompare.zoomInAction": "拡大",
+			"epCompare.zoomOutAction": "縮小",
+			"epCompare.zoomReset": "ズームのリセット",
+			"epCompare.zoomToFit": "ウィンドウのサイズに合わせて拡大",
+			"queryDropdownPrefix": "{1} のクエリ {0}: {2}"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView": {
+			"executionPlanComparisonPropertiesBottomOperation": "下位の操作: {0}",
+			"executionPlanComparisonPropertiesLeftOperation": "左操作: {0}",
+			"executionPlanComparisonPropertiesRightOperation": "右の操作: {0}",
+			"executionPlanComparisonPropertiesTopOperation": "上位の操作: {0}",
+			"executionPlanPropertiesEdgeOperationName": "Edge",
+			"nodePropertyViewNameNameColumnHeader": "名前",
+			"nodePropertyViewNameValueColumnBottomHeader": "値 (下位プラン)",
+			"nodePropertyViewNameValueColumnLeftHeader": "値 (左プラン)",
+			"nodePropertyViewNameValueColumnRightHeader": "値 (右プラン)",
+			"nodePropertyViewNameValueColumnTopHeader": "値 (上位プラン)"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanContribution": {
+			"executionPlanCompareCommandOriginalValue": "比較実行プラン",
+			"executionPlanCompareCommandValue": "比較実行プラン"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanEditor": {
+			"executionPlanEditor": "クエリ実行プラン エディター"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanFileView": {
+			"executionPlanFileLoadingComplete": "実行プランが生成されます",
+			"executionPlanFileLoadingFailed": "実行プランを読み込めませんでした",
+			"loadingExecutionPlanFile": "実行プランの生成"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView": {
+			"executionPlanPropertiesEdgeOperationName": "Edge",
+			"nodePropertyViewNameNameColumnHeader": "名前",
+			"nodePropertyViewNameValueColumnHeader": "値"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase": {
+			"ep.topOperationsCopyTableData": "コピー",
+			"executionPlanPropertyViewClose": "閉じる",
+			"executionPlanPropertyViewSortAlphabetically": "アルファベット順",
+			"executionPlanPropertyViewSortByDisplayOrder": "重要度",
+			"executionPlanPropertyViewSortReverseAlphabetically": "逆アルファベット順",
+			"nodePropertyViewTitle": "プロパティ"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanTab": {
+			"executionPlanTitle": "クエリ プラン (プレビュー)"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanView": {
+			"executionPlan.SaveFileDescription": "実行プラン ファイル",
+			"executionPlanCompareExecutionPlanAction": "比較実行プラン",
+			"executionPlanContextMenuDisableTooltip": "ヒントを無効にする",
+			"executionPlanContextMenuEnableTooltip": "ツールヒントを有効にする",
+			"executionPlanCustomZoom": "ズームのカスタマイズ",
+			"executionPlanDisableTooltip": "ヒントが無効になっています",
+			"executionPlanEnableTooltip": "ツールヒントが有効",
+			"executionPlanFitGraphLabel": "ウィンドウのサイズに合わせて拡大",
+			"executionPlanOpenGraphFile": "クエリ プラン XML の表示",
+			"executionPlanPropertiesActionLabel": "プロパティ",
+			"executionPlanSavePlanXML": "プラン ファイルの保存",
+			"executionPlanSearchNodeAction": "ノードの検索",
+			"executionPlanTopOperationsAction": "上位操作",
+			"executionPlanZoomInActionLabel": "拡大",
+			"executionPlanZoomOutActionLabel": "縮小",
+			"openQueryAction": "クエリを開く"
+		},
+		"sql/workbench/contrib/executionPlan/browser/executionPlanViewHeader": {
+			"planHeaderIndexAndCost": "クエリ {0}: クエリ コスト (スクリプトに対する相対): {1}%"
+		},
+		"sql/workbench/contrib/executionPlan/browser/widgets/customZoomWidget": {
+			"cancelCustomZoomAction": "閉じる (Esc)",
+			"customZoomApplyButton": "適用",
+			"customZoomApplyButtonTitle": "ズームの適用 (Enter)",
+			"invalidCustomZoomError": "1 〜 200 の間のズーム値を選択します",
+			"qpZoomValueLabel": "ズーム (%)",
+			"zoomAction": "ズーム (Enter)"
+		},
+		"sql/workbench/contrib/executionPlan/browser/widgets/nodeSearchWidget": {
+			"cancelSearchAction": "閉じる (Esc)",
+			"executionPlanSearchTypeContains": "含む",
+			"executionPlanSearchTypeEquals": "等しい",
+			"nextSearchItemAction": "次の一致 (Enter)",
+			"previousSearchItemAction": "前の一致 (Shift + Enter)"
+		},
 		"sql/workbench/contrib/extensions/browser/contributionRenders": {
 			"insight condition": "タイミング",
 			"insightId": "ID",
@@ -11054,7 +11440,7 @@
 		"sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component": {
 			"bold": "太字",
 			"buttonPreview": "マークダウン プレビューの切り替え - オフ",
-			"dropdownHeading": "見出し",
+			"headingDropdownLabel": "テキスト サイズ",
 			"highlight": "強調表示",
 			"insertCode": "コードの挿入",
 			"insertImage": "画像の挿入",
@@ -11073,9 +11459,9 @@
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/output.component": {
 			"componentRenderError": "コンポーネントのレンダリング エラー: {0}",
-			"noMimeTypeFound": "出力用の {0} レンダラーが見つかりませんでした。次の MIME の種類があります: {1}",
-			"noSelectorFound": "セレクター {0} のコンポーネントが見つかりませんでした",
-			"safe": "安全 "
+			"noMimeTypeFound": "出力用のレンダラーが見つかりませんでした。次の MIME の種類があります: {0}。",
+			"noSafeMimeTypeFound": "出力用の安全なレンダラーが見つかりませんでした。次の MIME の種類があります: {0}",
+			"noSelectorFound": "セレクター {0} のコンポーネントが見つかりませんでした"
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/placeholderCell.component": {
 			"clickOn": "次をクリック",
@@ -11217,6 +11603,10 @@
 		"sql/workbench/contrib/notebook/browser/notebookEditor": {
 			"notebookEditor.name": "ノートブック エディター"
 		},
+		"sql/workbench/contrib/notebook/browser/notebookEditor.component": {
+			"loadingNotebookCompletedMessage": "ノートブック {0} の読み込みが完了しました",
+			"loadingNotebookMessage": "ノートブック {0}を読み込んでいます"
+		},
 		"sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet": {
 			"notebookExplorer.name": "ノートブック",
 			"notebookExplorer.searchResults": "検索結果",
@@ -11301,7 +11691,7 @@
 			"plotlyError": "Plotly グラフの表示エラー: {0}"
 		},
 		"sql/workbench/contrib/objectExplorer/browser/serverTreeView": {
-			"serverTree.addConnection": "接続の追加",
+			"serverTree.newConnection": "新しい接続",
 			"servers.noConnections": "接続が見つかりません。"
 		},
 		"sql/workbench/contrib/objectExplorer/common/serverGroup.contribution": {
@@ -11398,14 +11788,19 @@
 			"status.query.flavor": "SQL 言語のフレーバー"
 		},
 		"sql/workbench/contrib/query/browser/gridPanel": {
+			"query.QueryErrorOccured": "クエリの実行中にエラーが発生しました。",
+			"query.QueryExecutionEnded": "クエリの実行が完了しました。",
+			"query.QueryExecutionStarted": "クエリの実行が開始されました。",
 			"resultsGrid": "結果グリッド",
 			"resultsGrid.maxRowCountExceeded": "フィルター/並べ替えに使用する行の最大数を超えました。更新するには、[ユーザーの設定] に移動し、設定を変更します: 'queryEditor.results.inMemoryDataProcessingThreshold'",
 			"xmlShowplan": "XML プラン表示"
 		},
 		"sql/workbench/contrib/query/browser/keyboardQueryActions": {
+			"ToggleActualPlanKeyboardAction": "実際の実行プランを有効または無効にする",
 			"ToggleFocusBetweenQueryEditorAndResultsAction": "クエリと結果の間のフォーカスの切り替え",
 			"cancelQueryKeyboardAction": "クエリのキャンセル",
 			"copyQueryWithResultsKeyboardAction": "結果を含むクエリのコピー",
+			"estimatedExecutionPlanKeyboardAction": "推定実行プランの表示",
 			"focusOnCurrentQueryKeyboardAction": "現在のクエリにフォーカスを移動する",
 			"parseSyntaxLabel": "クエリの解析",
 			"queryActions.notConnected": "サーバーに接続してください",
@@ -11415,7 +11810,6 @@
 			"queryShortcutNoEditor": "ショートカットを実行するにはエディター パラメーターが必須です",
 			"refreshIntellisenseKeyboardAction": "IntelliSense キャッシュの更新",
 			"runCurrentQueryKeyboardAction": "現在のクエリを実行",
-			"runCurrentQueryWithActualPlanKeyboardAction": "実際のプランで現在のクエリを実行",
 			"runQueryKeyboardAction": "クエリの実行",
 			"toggleQueryResultsKeyboardAction": "クエリ結果の切り替え"
 		},
@@ -11452,17 +11846,21 @@
 			"queryShortcutDescription": "ショートカット テキストをプロシージャ呼び出しまたはクエリ実行として実行するにはキー バインド workbench.action.query.shortcut{0} を設定します。クエリ エディターで選択したテキストはクエリの末尾でパラメーターとして渡されます。または、これを {arg} で参照することができます。"
 		},
 		"sql/workbench/contrib/query/browser/queryActions": {
+			"ExecutionPlan": "実行プラン",
 			"actualQueryPlan": "実際",
 			"cancelQueryLabel": "キャンセル",
 			"changeConnectionDatabaseLabel": "接続の変更",
 			"changeDatabase.failed": "データベースを変更できませんでした",
 			"changeDatabase.failedWithError": "データベースを変更できませんでした: {0}",
 			"connectDatabaseLabel": "接続",
+			"disableActualPlanLabel": "実際のプランを無効にする",
 			"disablesqlcmdLabel": "SQLCMD を無効にする",
 			"disconnectDatabaseLabel": "切断",
+			"enableActualPlanLabel": "実際のプランを有効にする",
 			"enablesqlcmdLabel": "SQLCMD を有効にする",
-			"estimatedQueryPlan": "説明",
+			"estimatedQueryPlan": "推定プラン",
 			"newQueryTask.newQuery": "新しいクエリ",
+			"query.multiSelectionNotSupported": "エディターが複数選択モードの場合、クエリの実行はサポートされません。",
 			"queryEditor.exportSqlAsNotebook": "ノートブックとしてエクスポート",
 			"runQueryLabel": "実行",
 			"selectDatabase": "データベースの選択"
@@ -11494,58 +11892,6 @@
 			"maxColumnWidth": "自動サイズ設定される列の最大幅 (ピクセル単位)",
 			"resultsGridConfigurationTitle": "結果グリッドとメッセージ",
 			"rowHeight": "ピクセル単位で行の高さを制御する"
-		},
-		"sql/workbench/contrib/queryHistory/browser/queryHistoryActions": {
-			"queryHistory.clearLabel": "すべての履歴をクリア",
-			"queryHistory.delete": "削除",
-			"queryHistory.disableCapture": "Query History キャプチャの一時停止",
-			"queryHistory.enableCapture": "Query History キャプチャの開始",
-			"queryHistory.openQuery": "クエリを開く",
-			"queryHistory.runQuery": "クエリの実行",
-			"queryHistory.toggleCaptureLabel": "Query History キャプチャの切り替え",
-			"toggleQueryHistory": "Query History の切り替え"
-		},
-		"sql/workbench/contrib/queryHistory/browser/queryHistoryRenderer": {
-			"failed": "失敗",
-			"succeeded": "成功"
-		},
-		"sql/workbench/contrib/queryHistory/browser/queryHistoryView": {
-			"noQueriesMessage": "表示するクエリがありません。",
-			"queryHistory.regTreeAriaLabel": "Query History"
-		},
-		"sql/workbench/contrib/queryHistory/electron-browser/queryHistory": {
-			"miViewQueryHistory": "Query History (&&Q)",
-			"queryHistory": "Query History",
-			"queryHistory.clearLabel": "すべての履歴をクリア",
-			"queryHistory.disableCapture": "Query History キャプチャの一時停止",
-			"queryHistory.enableCapture": "Query History キャプチャの開始",
-			"queryHistoryCaptureEnabled": "Query History キャプチャが有効かどうか。false の場合、実行されたクエリはキャプチャされません。",
-			"queryHistoryConfigurationTitle": "クエリ履歴",
-			"viewCategory": "表示"
-		},
-		"sql/workbench/contrib/queryPlan/browser/queryPlan": {
-			"queryPlanTitle": "クエリ プラン"
-		},
-		"sql/workbench/contrib/queryPlan/browser/queryPlanEditor": {
-			"queryPlanEditor": "クエリ プラン エディター"
-		},
-		"sql/workbench/contrib/queryPlan/browser/topOperations": {
-			"topOperations.actualExecutions": "実際の実行",
-			"topOperations.actualRebinds": "実際の再バインド数",
-			"topOperations.actualRewinds": "実際の巻き戻し数",
-			"topOperations.actualRows": "実際の行数",
-			"topOperations.estCPUCost": "推定 CPU コスト",
-			"topOperations.estCost": "推定コスト",
-			"topOperations.estIOCost": "推定 IO コスト",
-			"topOperations.estRebinds": "再バインドの推定数",
-			"topOperations.estRewinds": "巻き戻しの推定数",
-			"topOperations.estRows": "推定行数",
-			"topOperations.estSubtreeCost": "サブ ツリーの推定コスト",
-			"topOperations.object": "オブジェクト",
-			"topOperations.operation": "操作",
-			"topOperations.parallel": "並列",
-			"topOperations.partitioned": "パーティション分割",
-			"topOperationsTitle": "上位操作"
 		},
 		"sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution": {
 			"deployment.title": "新しい展開..."
@@ -11600,8 +11946,11 @@
 			"refreshError": "ノード '{0}' の更新でエラーが発生しました: {1}"
 		},
 		"sql/workbench/contrib/tableDesigner/browser/actions": {
-			"tableDesigner.generateScript": "スクリプトの生成",
-			"tableDesigner.publishTableChanges": "変更の発行..."
+			"tableDesigner.publishTableChanges": "変更の発行...",
+			"tableDesigner.saveTableChanges": "保存"
+		},
+		"sql/workbench/contrib/tableDesigner/browser/tableDesignerEditor": {
+			"tableDesigner.PreviewFeature": "プレビュー機能"
 		},
 		"sql/workbench/contrib/tasks/browser/tasks.contribution": {
 			"inProgressTasksChangesBadge": "{0} 個のタスクが進行中です",
@@ -11629,6 +11978,11 @@
 			"cancelTask.cancel": "キャンセル",
 			"errorMsgFromCancelTask": "タスクを取り消せませんでした。",
 			"taskAction.script": "スクリプト"
+		},
+		"sql/workbench/contrib/tsgops/browser/tsgopsActions": {
+			"hideActivityBarViewContainers": "拡張機能ビューレットを非表示にする",
+			"hidePanel": "パネルを非表示にする",
+			"hideSettings": "設定アイコンを非表示にする"
 		},
 		"sql/workbench/contrib/views/browser/treeView": {
 			"collapseAll": "すべて折りたたむ",
@@ -11781,6 +12135,22 @@
 			"asmt.noHandlerRegistered": "登録されているハンドラーがありません",
 			"asmt.providerIdNotValidError": "評価サービスとの対話には接続が必要です"
 		},
+		"sql/workbench/services/backupRestoreUrlBrowser/browser/urlBrowserDialog": {
+			"backupRestoreUrlBrowserDialog.account": "Azure アカウント",
+			"backupRestoreUrlBrowserDialog.backupFile": "バックアップ ファイル",
+			"backupRestoreUrlBrowserDialog.blobContainer": "BLOB コンテナー",
+			"backupRestoreUrlBrowserDialog.linkAccount": "アカウントのリンク",
+			"backupRestoreUrlBrowserDialog.sharedAccessSignature": "Shared Access Signature が生成されました",
+			"backupRestoreUrlBrowserDialog.sharedAccessSignatureButton": "資格情報の作成",
+			"backupRestoreUrlBrowserDialog.storageAccount": "ストレージ アカウント",
+			"backupRestoreUrlBrowserDialog.subscription": "Azure サブスクリプション",
+			"backupRestoreUrlBrowserDialog.tenant": "Azure AD テナント",
+			"fileBrowser.discard": "破棄",
+			"fileBrowser.ok": "OK"
+		},
+		"sql/workbench/services/backupRestoreUrlBrowser/browser/urlBrowserDialogService": {
+			"filebrowser.selectBlob": "BLOB の選択"
+		},
 		"sql/workbench/services/connection/browser/advancedPropertiesController": {
 			"advancedProperties.discard": "破棄",
 			"connectionAdvancedProperties": "詳細プロパティ"
@@ -11899,6 +12269,11 @@
 			"info": "情報",
 			"warning": "警告"
 		},
+		"sql/workbench/services/executionPlan/common/executionPlanService": {
+			"noHandlerRegistered": "有効な実行プラン ハンドラーが登録されていません",
+			"providerIdNotValidError": "ExecutionPlanService と対話するには、有効なプロバイダーが必要です",
+			"selectExecutionPlanProvider": "実行プランを開くプロバイダーを選択する"
+		},
 		"sql/workbench/services/fileBrowser/browser/fileBrowserDialog": {
 			"fileBrowser.discard": "破棄",
 			"fileBrowser.ok": "OK",
@@ -12016,6 +12391,7 @@
 			"standardKernelsTimeout": "ノートブック プロバイダー '{0}' の標準カーネルの可用性待機がタイムアウトしました"
 		},
 		"sql/workbench/services/notebook/browser/notebookViews/notebookViewModel": {
+			"Untitled": "無題",
 			"notebookView.nameTaken": "このノートブックには、 {0} という名前のビューが既に存在します。"
 		},
 		"sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension": {
@@ -12036,9 +12412,7 @@
 			"invalidMimeData": "{0} のデータは、文字列または文字列の配列である必要があります",
 			"nbNotSupported": "このファイルは有効なノートブック形式ではありません",
 			"nbformatNotRecognized": "認識されない nbformat v{0}.{1}",
-			"unknownCellType": "セルの種類 {0} が不明",
-			"unrecognizedOutput": "出力の種類 {0} を認識できません",
-			"unrecognizedOutputType": "出力の種類 {0} を認識できません"
+			"unknownCellType": "セルの種類 {0} が不明"
 		},
 		"sql/workbench/services/notebook/common/notebookRegistry": {
 			"carbon.extension.contributes.notebook.executionTarget": "Spark / SQL など、このマジックが示すオプションの実行対象",
@@ -12210,7 +12584,7 @@
 			"groupColor": "グループの色",
 			"groupDescription": "グループの説明",
 			"serverGroup.cancel": "キャンセル",
-			"serverGroup.colorValue": "色: {0}",
+			"serverGroup.colorValue": "グループの色: {0}",
 			"serverGroup.ok": "OK"
 		},
 		"sql/workbench/services/serverGroup/common/serverGroupViewModel": {
@@ -12310,6 +12684,16 @@
 			"tableDesigner.schemaTitle": "スキーマ",
 			"tableDesigner.tableObjectType": "テーブル"
 		},
+		"sql/workbench/services/tableDesigner/browser/tableDesignerPublishDialog": {
+			"tableDesigner.UpdateDatabase": "データベースの更新",
+			"tableDesigner.cancel": "取り消す",
+			"tableDesigner.generateScript": "スクリプトの生成",
+			"tableDesigner.previewDatabaseUpdates": "データベース更新のプレビュー"
+		},
+		"sql/workbench/services/tableDesigner/browser/tableDesignerService": {
+			"TableDesigner.closeApplication": "アプリケーションの終了(&&C)",
+			"TableDesigner.saveBeforeExit": "テーブル デザイナーに保存されていない変更があり、アプリケーションを閉じると失われます。アプリケーションを閉じますか?"
+		},
 		"sql/workbench/services/tasks/common/tasksService": {
 			"InProgressWarning": "1 つ以上のタスクを実行中です。終了してもよろしいですか?",
 			"taskService.no": "いいえ",
@@ -12319,166 +12703,25 @@
 			"miGettingStarted": "はじめに(&&S)",
 			"showReleaseNotes": "「はじめに」を表示する"
 		},
-		"sql/workbench/api/common/notebooks/vscodeExecuteProvider": {
-			"errorStartBeforeReady": "セッションを開始できません。マネージャーがまだ初期化されていません",
+		"sql/workbench/common/constants": {
 			"notebookMultipleRequestsError": "コード セルを実行できません。別のセルが現在実行されています。"
 		},
-		"sql/workbench/contrib/tableDesigner/browser/tableDesignerEditor": {
-			"tableDesigner.PreviewFeature": "プレビュー機能"
+		"sql/workbench/contrib/executionPlan/browser/executionPlanTreeTab": {
+			"ept.topOperationsCopyTableData": "コピー",
+			"ept.topOperationsCopyWithHeader": "ヘッダー付きのコピー",
+			"ept.topOperationsSelectAll": "すべて選択する",
+			"planTreeTab.title": "計画ツリー (プレビュー)",
+			"topOperationsTableTitle": "実行計画ツリー"
 		},
-		"sql/workbench/contrib/tsgops/browser/tsgopsActions": {
-			"hideActivityBarViewContainers": "拡張機能ビューレットを非表示にする",
-			"hidePanel": "パネルを非表示にする",
-			"hideSettings": "設定アイコンを非表示にする"
+		"sql/workbench/contrib/executionPlan/browser/topOperationsTab": {
+			"ep.topOperationsCopyTableData": "コピー",
+			"ep.topOperationsCopyWithHeader": "ヘッダー付きのコピー",
+			"ep.topOperationsSelectAll": "すべて選択",
+			"topOperationsTabTitle": "上位の操作 (プレビュー)",
+			"topOperationsTableTitle": "上位操作"
 		},
-		"sql/workbench/services/tableDesigner/browser/tableDesignerPublishDialog": {
-			"tableDesigner.UpdateDatabase": "データベースの更新",
-			"tableDesigner.cancel": "取り消す",
-			"tableDesigner.generateScript": "スクリプトの生成",
-			"tableDesigner.previewDatabaseUpdates": "データベース更新のプレビュー"
-		},
-		"sql/base/browser/ui/editableDropdown/browser/dropdown": {
-			"editableDropdown.errorValidate": "一覧からオプションを選択する必要があります",
-			"selectBox": "ボックスを選択"
-		},
-		"sql/workbench/browser/designer/designerIssuesTabPanelView": {
-			"designer.IssueListAriaLabel": "問題",
-			"designer.moreInfoLink": "詳細情報"
-		},
-		"sql/workbench/contrib/executionPlan/browser/executionPlanEditor": {
-			"executionPlanEditor": "クエリ実行プラン エディター"
-		},
-		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView": {
-			"executionPlanPropertiesEdgeOperationName": "Edge",
-			"nodePropertyViewNameNameColumnHeader": "名前",
-			"nodePropertyViewNameValueColumnHeader": "値"
-		},
-		"sql/workbench/contrib/executionPlan/browser/widgets/customZoomWidget": {
-			"cancelCustomZoomAction": "閉じる (Esc)",
-			"customZoomApplyButton": "適用",
-			"customZoomApplyButtonTitle": "ズームの適用 (Enter)",
-			"invalidCustomZoomError": "1 〜 200 の間のズーム値を選択します",
-			"qpZoomValueLabel": "ズーム (%)",
-			"zoomAction": "ズーム (Enter)"
-		},
-		"sql/workbench/contrib/executionPlan/browser/widgets/nodeSearchWidget": {
-			"cancelSearchAction": "閉じる (Esc)",
-			"executionPlanSearchTypeContains": "含む",
-			"executionPlanSearchTypeEquals": "等しい",
-			"nextSearchItemAction": "次の一致 (Enter)",
-			"previousSearchItemAction": "前の一致 (Shift + Enter)"
-		},
-		"sql/workbench/contrib/notebook/browser/notebookEditor.component": {
-			"loadingNotebookCompletedMessage": "ノートブック {0} の読み込みが完了しました",
-			"loadingNotebookMessage": "ノートブック {0}を読み込んでいます"
-		},
-		"sql/workbench/services/executionPlan/common/executionPlanService": {
-			"noHandlerRegistered": "有効な実行プラン ハンドラーが登録されていません",
-			"providerIdNotValidError": "ExecutionPlanService と対話するには、有効なプロバイダーが必要です",
-			"selectExecutionPlanProvider": "実行プランを開くプロバイダーを選択する"
-		},
-		"sql/base/browser/ui/table/plugins/contextMenuColumn.plugin": {
-			"table.showActions": "アクションの表示"
-		},
-		"sql/workbench/browser/designer/tableActions": {
-			"designer.addColumnAction": "新規追加",
-			"designer.insertAfterSelectedColumn": "後に挿入",
-			"designer.insertBeforeSelectedRow": "前に挿入",
-			"designer.moveRowDownAction": "下へ移動",
-			"designer.moveRowDownButtonAriaLabel": "選択した行を 1 つ下の位置に移動します",
-			"designer.moveRowUpAction": "上へ移動",
-			"designer.moveRowUpButtonAriaLabel": "選択した行を 1 つ上の位置に移動します",
-			"designer.newRowButtonAriaLabel": "`{0}` テーブルに新しい行を追加する"
-		},
-		"sql/workbench/contrib/executionPlan/browser/azdataGraphView": {
-			"invalidExecutionPlanZoomError": "ズーム レベルを 0 または負の値にすることはできません"
-		},
-		"sql/workbench/contrib/executionPlan/browser/compareExecutionPlanInput": {
-			"epCompare.editorName": "比較実行プラン"
-		},
-		"sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditor": {
-			"compareExecutionPlanEditor": "比較実行プラン エディター"
-		},
-		"sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView": {
-			"addExecutionPlanLabel": "実行プランの追加",
-			"epComapre.LoadingPlanCompleteMessage": "実行プランが正常に読み込まれました",
-			"epComapre.LoadingPlanMessage": "実行プランを読み込んでいます",
-			"epComapre.placeholderInfoboxText": "比較する実行プランの追加",
-			"epCompare.FileFilterDescription": "実行プラン ファイル",
-			"epCompare.comparePropertiesAction": "プロパティ",
-			"epCompare.comparisonProgess": "比較したプランの類似点を読み込んでいます",
-			"epCompare.toggleOrientation": "方向の切り替え",
-			"epCompare.zoomInAction": "拡大",
-			"epCompare.zoomOutAction": "縮小",
-			"epCompare.zoomReset": "ズームのリセット",
-			"epCompare.zoomToFit": "ウィンドウのサイズに合わせて拡大"
-		},
-		"sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView": {
-			"executionPlanComparisonPropertiesBottomOperation": "下位の操作: {0}",
-			"executionPlanComparisonPropertiesTopOperation": "上位の操作: {0}",
-			"executionPlanPropertiesEdgeOperationName": "Edge",
-			"nodePropertyViewNameNameColumnHeader": "名前",
-			"nodePropertyViewNameValueColumnBottomHeader": "値 (下位プラン)",
-			"nodePropertyViewNameValueColumnTopHeader": "値 (上位プラン)"
-		},
-		"sql/workbench/contrib/executionPlan/browser/executionPlanContribution": {
-			"executionPlanCompareCommandOriginalValue": "比較実行プラン",
-			"executionPlanCompareCommandValue": "比較実行プラン"
-		},
-		"sql/workbench/contrib/executionPlan/browser/executionPlanFileView": {
-			"executionPlanFileLoadingComplete": "実行プランが生成されます",
-			"executionPlanFileLoadingFailed": "実行プランを読み込めませんでした",
-			"loadingExecutionPlanFile": "実行プランの生成"
-		},
-		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase": {
-			"executionPlanPropertyViewClose": "閉じる",
-			"executionPlanPropertyViewSortAlphabetically": "アルファベット順",
-			"executionPlanPropertyViewSortByDisplayOrder": "項目別",
-			"executionPlanPropertyViewSortReverseAlphabetically": "逆アルファベット順",
-			"nodePropertyViewTitle": "プロパティ"
-		},
-		"sql/workbench/contrib/executionPlan/browser/executionPlanTab": {
-			"executionPlanTitle": "クエリ プラン (プレビュー)"
-		},
-		"sql/workbench/contrib/executionPlan/browser/executionPlanView": {
-			"executionPlan.SaveFileDescription": "実行プラン ファイル",
-			"executionPlanCompareExecutionPlanAction": "比較実行プラン",
-			"executionPlanContextMenuDisableTooltip": "ヒントを無効にする",
-			"executionPlanContextMenuEnableTooltip": "ツールヒントを有効にする",
-			"executionPlanCustomZoom": "ズームのカスタマイズ",
-			"executionPlanDisableTooltip": "ヒントが無効になっています",
-			"executionPlanEnableTooltip": "ツールヒントが有効",
-			"executionPlanFitGraphLabel": "ウィンドウのサイズに合わせて拡大",
-			"executionPlanOpenGraphFile": "クエリ プラン XML の表示",
-			"executionPlanPropertiesActionLabel": "プロパティ",
-			"executionPlanSavePlanXML": "プラン ファイルの保存",
-			"executionPlanSearchNodeAction": "ノードの検索",
-			"executionPlanZoomInActionLabel": "拡大",
-			"executionPlanZoomOutActionLabel": "縮小",
-			"openQueryAction": "クエリを開く"
-		},
-		"sql/workbench/contrib/executionPlan/browser/executionPlanViewHeader": {
-			"planHeaderIndexAndCost": "クエリ {0}: クエリ コスト (スクリプトに対する相対): {1}%"
-		},
-		"sql/workbench/services/backupRestoreUrlBrowser/browser/urlBrowserDialog": {
-			"backupRestoreUrlBrowserDialog.account": "Azure アカウント",
-			"backupRestoreUrlBrowserDialog.backupFile": "バックアップ ファイル",
-			"backupRestoreUrlBrowserDialog.blobContainer": "BLOB コンテナー",
-			"backupRestoreUrlBrowserDialog.linkAccount": "アカウントのリンク",
-			"backupRestoreUrlBrowserDialog.sharedAccessSignature": "Shared Access Signature が生成されました",
-			"backupRestoreUrlBrowserDialog.sharedAccessSignatureButton": "資格情報の作成",
-			"backupRestoreUrlBrowserDialog.storageAccount": "ストレージ アカウント",
-			"backupRestoreUrlBrowserDialog.subscription": "Azure サブスクリプション",
-			"backupRestoreUrlBrowserDialog.tenant": "Azure AD テナント",
-			"fileBrowser.discard": "破棄",
-			"fileBrowser.ok": "OK"
-		},
-		"sql/workbench/services/backupRestoreUrlBrowser/browser/urlBrowserDialogService": {
-			"filebrowser.selectBlob": "BLOB の選択"
-		},
-		"sql/workbench/services/tableDesigner/browser/tableDesignerService": {
-			"TableDesigner.closeApplication": "アプリケーションの終了(&&C)",
-			"TableDesigner.saveBeforeExit": "テーブル デザイナーに保存されていない変更があり、アプリケーションを閉じると失われます。アプリケーションを閉じますか?"
+		"sql/workbench/contrib/notebook/browser/models/outputProcessor": {
+			"notebookInvalidOutputTypeError": "出力の種類 '{0}' を認識できません。"
 		}
 	}
 }

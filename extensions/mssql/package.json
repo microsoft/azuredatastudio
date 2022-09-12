@@ -167,6 +167,11 @@
           "default": 2097152,
           "description": "%mssql.query.maxXmlCharsToStore%"
         },
+        "mssql.query.maxCharsToStore": {
+          "type": "number",
+          "default": 65535,
+          "description": "%mssql.query.maxCharsToStore%"
+        },
         "mssql.format.alignColumnDefinitionsInColumns": {
           "type": "boolean",
           "description": "%mssql.format.alignColumnDefinitionsInColumns%",
@@ -506,12 +511,12 @@
         },
         {
           "command": "mssql.designTable",
-          "when": "connectionProvider == MSSQL && nodeType == Table && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType == Table && nodeSubType != LedgerDropped && config.workbench.enablePreviewFeatures",
           "group": "0_query@3"
         },
         {
           "command": "mssql.newTable",
-          "when": "connectionProvider == MSSQL && nodeType == Folder && nodeLabel == Tables && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Tables && config.workbench.enablePreviewFeatures",
           "group": "0_query@1"
         }
       ],
@@ -523,7 +528,7 @@
         },
         {
           "command": "mssql.newTable",
-          "when": "connectionProvider == MSSQL && nodeType == Folder && nodeLabel == Tables && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Tables && config.workbench.enablePreviewFeatures",
           "group": "connection@1"
         }
       ],

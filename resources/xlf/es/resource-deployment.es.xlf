@@ -1565,32 +1565,32 @@ Seleccione otra suscripción que contenga al menos un servidor.</target>
         <target state="translated">Configuración de almacenamiento</target>
       </trans-unit>
       <trans-unit id="deployCluster.controllerDataStorageClaimSize">
-        <source xml:lang="en">Controller's data storage claim size</source>
-        <target state="translated">Tamaño de las notificaciones de almacenamiento de datos del controlador</target>
+        <source xml:lang="en">Controller's data storage claim size (Gigabytes)</source>
+        <target state="translated">Tamaño de las notificaciones de almacenamiento de datos del controlador (gigabytes)</target>
       </trans-unit>
       <trans-unit id="deployCluster.controllerDataStorageClass">
         <source xml:lang="en">Controller's data storage class</source>
         <target state="translated">Clase de almacenamiento de datos del controlador</target>
       </trans-unit>
       <trans-unit id="deployCluster.controllerLogsStorageClaimSize">
-        <source xml:lang="en">Controller's logs storage claim size</source>
-        <target state="translated">Tamaño de las notificaciones de almacenamiento de registros del controlador</target>
+        <source xml:lang="en">Controller's logs storage claim size (Gigabytes)</source>
+        <target state="translated">Tamaño de las notificaciones de almacenamiento de registros del controlador (gigabytes)</target>
       </trans-unit>
       <trans-unit id="deployCluster.controllerLogsStorageClass">
         <source xml:lang="en">Controller's logs storage class</source>
         <target state="translated">Clase de almacenamiento de registros del controlador</target>
       </trans-unit>
       <trans-unit id="deployCluster.dataPoolDataStorageClaimSize">
-        <source xml:lang="en">Data pool's data storage claim size</source>
-        <target state="translated">Tamaño de las notificaciones de almacenamiento de datos del grupo de datos</target>
+        <source xml:lang="en">Data pool's data storage claim size (Gigabytes)</source>
+        <target state="translated">Tamaño de las notificaciones de almacenamiento de datos del grupo de datos (gigabytes)  </target>
       </trans-unit>
       <trans-unit id="deployCluster.dataPoolDataStorageClass">
         <source xml:lang="en">Data pool's data storage class</source>
         <target state="translated">Clase de almacenamiento de datos del grupo de datos</target>
       </trans-unit>
       <trans-unit id="deployCluster.dataPoolLogsStorageClaimSize">
-        <source xml:lang="en">Data pool's logs storage claim size</source>
-        <target state="translated">Tamaño de las notificaciones de almacenamiento de registros del grupo de datos</target>
+        <source xml:lang="en">Data pool's logs storage claim size (Gigabytes)</source>
+        <target state="translated">Tamaño de las notificaciones de almacenamiento de registros del grupo de datos (gigabytes)</target>
       </trans-unit>
       <trans-unit id="deployCluster.dataPoolLogsStorageClass">
         <source xml:lang="en">Data pool's logs storage class</source>
@@ -1601,16 +1601,16 @@ Seleccione otra suscripción que contenga al menos un servidor.</target>
         <target state="translated">Ajustes de escala</target>
       </trans-unit>
       <trans-unit id="deployCluster.sqlServerMasterDataStorageClaimSize">
-        <source xml:lang="en">SQL Server master's data storage claim size</source>
-        <target state="translated">Tamaño de las notificaciones de almacenamiento de datos del servidor maestro de SQL Server</target>
+        <source xml:lang="en">SQL Server master's data storage claim size (Gigabytes)</source>
+        <target state="translated">Tamaño de las notificaciones de almacenamiento de datos del servidor maestro de SQL Server (gigabytes)</target>
       </trans-unit>
       <trans-unit id="deployCluster.sqlServerMasterDataStorageClass">
         <source xml:lang="en">SQL Server master's data storage class</source>
         <target state="translated">Clase de almacenamiento de datos del servidor maestro de SQL Server</target>
       </trans-unit>
       <trans-unit id="deployCluster.sqlServerMasterLogsStorageClaimSize">
-        <source xml:lang="en">SQL Server master's logs storage claim size</source>
-        <target state="translated">Tamaño de las notificaciones de almacenamiento de registros del servidor maestro de SQL Server</target>
+        <source xml:lang="en">SQL Server master's logs storage claim size (Gigabytes)</source>
+        <target state="translated">Tamaño de las notificaciones de almacenamiento de registros del servidor maestro de SQL Server (gigabytes)</target>
       </trans-unit>
       <trans-unit id="deployCluster.sqlServerMasterLogsStorageClass">
         <source xml:lang="en">SQL Server master's logs storage class</source>
@@ -1621,16 +1621,16 @@ Seleccione otra suscripción que contenga al menos un servidor.</target>
         <target state="translated">Usar la configuración del controlador</target>
       </trans-unit>
       <trans-unit id="deployCluster.storagePoolDataStorageClaimSize">
-        <source xml:lang="en">Storage pool's data storage claim size</source>
-        <target state="translated">Tamaño de las notificaciones de almacenamiento de datos del bloque de almacenamiento</target>
+        <source xml:lang="en">Storage pool's data storage claim size (Gigabytes)</source>
+        <target state="translated">Tamaño de las notificaciones de almacenamiento de datos del bloque de almacenamiento (gigabytes)</target>
       </trans-unit>
       <trans-unit id="deployCluster.storagePoolDataStorageClass">
         <source xml:lang="en">Storage pool's data storage class</source>
         <target state="translated">Clase de almacenamiento de datos del bloque de almacenamiento</target>
       </trans-unit>
       <trans-unit id="deployCluster.storagePoolLogsStorageClaimSize">
-        <source xml:lang="en">Storage pool's logs storage claim size</source>
-        <target state="translated">Tamaño de las notificaciones de almacenamiento de registros del bloque de almacenamiento</target>
+        <source xml:lang="en">Storage pool's logs storage claim size (Gigabytes)</source>
+        <target state="translated">Tamaño de las notificaciones de almacenamiento de registros del bloque de almacenamiento (gigabytes)</target>
       </trans-unit>
       <trans-unit id="deployCluster.storagePoolLogsStorageClass">
         <source xml:lang="en">Storage pool's logs storage class</source>
@@ -2250,6 +2250,10 @@ Seleccione otra suscripción que contenga al menos un servidor.</target>
         <source xml:lang="en">Deploy SQL Server 2019 container images</source>
         <target state="translated">Implementación de imágenes de contenedor de SQL Server 2019</target>
       </trans-unit>
+      <trans-unit id="docker-sql-2022-title">
+        <source xml:lang="en">Deploy SQL Server 2022 Preview container images</source>
+        <target state="translated">Implementación de imágenes de contenedor de Versión preliminar de SQL Server 2022</target>
+      </trans-unit>
       <trans-unit id="docker-sql-password-field">
         <source xml:lang="en">SQL Server password</source>
         <target state="translated">Contraseña de SQL Server</target>
@@ -2297,6 +2301,10 @@ Seleccione otra suscripción que contenga al menos un servidor.</target>
       <trans-unit id="sql-2019-display-name">
         <source xml:lang="en">SQL Server 2019</source>
         <target state="translated">SQL Server 2019</target>
+      </trans-unit>
+      <trans-unit id="sql-2022-display-name">
+        <source xml:lang="en">SQL Server 2022 Preview</source>
+        <target state="translated">Versión preliminar de SQL Server 2022</target>
       </trans-unit>
       <trans-unit id="sql-azure-database-server-display-name">
         <source xml:lang="en">Database Server</source>

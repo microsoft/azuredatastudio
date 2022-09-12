@@ -82,15 +82,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.Include" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Include]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[包括]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.PublishHistory" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Publish History]]></Val>
@@ -186,6 +177,24 @@
           <Val><![CDATA[Add Item]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[添加项]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.advancedOptionsButton" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Advanced...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[高级...]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.advancedPublishOptions" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Advanced Publish Options]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[高级发布选项]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1009,6 +1018,51 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.downloadError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Download error]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[下载错误]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.downloadProgress" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Download progress]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[下载进度]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.downloading" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Downloading]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[正在下载]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.downloadingDacFxDlls" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Downloading Microsoft.Build.Sql nuget to get build DLLs]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[正在下载 Microsoft.Build.Sql nuget 以获取生成 DLL]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.downloadingFromTo" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Downloading from {0} to {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[正在从 {0} 下载到 {1}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.edgeEulaAgreementTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Microsoft Azure SQL Edge License Agreement]]></Val>
@@ -1207,6 +1261,24 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.errorDownloading" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Error downloading {0}. Error: {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[下载 {0} 时出错。错误: {1}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.errorExtracting" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Error extracting files from {0}. Error: {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[从 {0} 中提取文件时出错。错误: {1}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.errorFindingBuildFilesLocation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error finding build files location: {0}]]></Val>
@@ -1221,6 +1293,15 @@
           <Val><![CDATA[Error trying to read {0} of project '{1}']]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[尝试读取项目“{1}”的 {0} 时出错]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.errorRetrievingBuildFiles" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Could not build project. Error retrieving files needed to build.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[无法生成项目。检索生成所需的文件时出错。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1270,6 +1351,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.excludeObjectTypes" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Exclude Object Types]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[排除对象类型]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.externalStream" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[External Stream]]></Val>
@@ -1303,6 +1393,18 @@
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[必须提供用于提取的目标信息才能创建数据库项目。]]></Val>
           </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.extractingDacFxDlls" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Extracting DacFx build DLLs to {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[将 DacFx 版本 DLL 提取到 {0}]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Extracting DacFx build DLLs]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1414,15 +1516,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.generalOptions" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[General Options]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[常规选项]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.generateScriptButtonText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Generate Script]]></Val>
@@ -1467,6 +1560,15 @@
           <Val><![CDATA[Import Elements]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[导入元素]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.include" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Include]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[包括]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1849,6 +1951,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.optionNotFoundWarningMessage" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[label: {0} does not exist in the options value name lookup]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[标签: 选项值名称查找中不存在 {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.outsideFolderPath" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Items with absolute path outside project folder are not supported. Please make sure the paths in the project file are relative to project folder.]]></Val>
@@ -2184,15 +2295,6 @@
           <Val><![CDATA[Failed to publish to new Azure SQL server. {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[无法发布到新 Azure SQL 服务器。{0}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.publishingOptions" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Publishing Options]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[发布选项]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3097,6 +3199,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-database-projects/package.sqlDatabaseProjects.collapseProjectNodes" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Whether project nodes start collapsed]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[项目节点是否启动已折叠]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-database-projects/package.sqlDatabaseProjects.convertToSdkStyleProject" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Convert to SDK-style project]]></Val>
@@ -3174,6 +3285,15 @@
           <Val><![CDATA[Generate SQL Project from OpenAPI/Swagger spec]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[从 OpenAPI/Swagger 规范生成 SQL 项目]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-database-projects/package.sqlDatabaseProjects.microsoftBuildSqlVersion" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Which version of Microsoft.Build.Sql SDK to use for building legacy sql projects. Example: 0.1.3-preview]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[用于生成旧版 SQL 项目的 Microsoft.Build.Sql SDK 版本。示例: 0.1.3-preview]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

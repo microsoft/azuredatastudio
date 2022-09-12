@@ -25,6 +25,7 @@ import { CancellationToken, CancellationTokenSource } from 'vs/base/common/cance
 import { IProgressService, ProgressLocation } from 'vs/platform/progress/common/progress';
 import { Promises, raceCancellation } from 'vs/base/common/async';
 import { IWorkingCopyEditorService } from 'vs/workbench/services/workingCopy/common/workingCopyEditorService';
+import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 
 export class NativeWorkingCopyBackupTracker extends WorkingCopyBackupTracker implements IWorkbenchContribution {
 
@@ -41,9 +42,10 @@ export class NativeWorkingCopyBackupTracker extends WorkingCopyBackupTracker imp
 		@IEnvironmentService private readonly environmentService: IEnvironmentService,
 		@IProgressService private readonly progressService: IProgressService,
 		@IWorkingCopyEditorService workingCopyEditorService: IWorkingCopyEditorService,
-		@IEditorService editorService: IEditorService
+		@IEditorService editorService: IEditorService,
+		@IEditorGroupsService editorGroupService: IEditorGroupsService
 	) {
-		super(workingCopyBackupService, workingCopyService, logService, lifecycleService, filesConfigurationService, workingCopyEditorService, editorService);
+		super(workingCopyBackupService, workingCopyService, logService, lifecycleService, filesConfigurationService, workingCopyEditorService, editorService, editorGroupService);
 	}
 
 	protected onBeforeShutdown(reason: ShutdownReason): boolean | Promise<boolean> {
@@ -113,7 +115,7 @@ export class NativeWorkingCopyBackupTracker extends WorkingCopyBackupTracker imp
 				return false; // do not block shutdown during extension development (https://github.com/microsoft/vscode/issues/115028)
 			}
 
-			this.showErrorDialog(localize('backupTrackerBackupFailed', "The following dirty editors could not be saved to the back up location."), remainingDirtyWorkingCopies, backupError);
+			this.showErrorDialog(localize('backupTrackerBackupFailed', "The following editors with unsaved changes could not be saved to the back up location."), remainingDirtyWorkingCopies, backupError);
 
 			return true; // veto (the backup failed)
 		}
@@ -129,7 +131,7 @@ export class NativeWorkingCopyBackupTracker extends WorkingCopyBackupTracker imp
 				return false; // do not block shutdown during extension development (https://github.com/microsoft/vscode/issues/115028)
 			}
 
-			this.showErrorDialog(localize('backupTrackerConfirmFailed', "The following dirty editors could not be saved or reverted."), remainingDirtyWorkingCopies, error);
+			this.showErrorDialog(localize('backupTrackerConfirmFailed', "The following editors with unsaved changes could not be saved or reverted."), remainingDirtyWorkingCopies, error);
 
 			return true; // veto (save or revert failed)
 		}
@@ -138,7 +140,7 @@ export class NativeWorkingCopyBackupTracker extends WorkingCopyBackupTracker imp
 	private showErrorDialog(msg: string, workingCopies: readonly IWorkingCopy[], error?: Error): void {
 		const dirtyWorkingCopies = workingCopies.filter(workingCopy => workingCopy.isDirty());
 
-		const advice = localize('backupErrorDetails', "Try saving or reverting the dirty editors first and then try again.");
+		const advice = localize('backupErrorDetails', "Try saving or reverting the editors with unsaved changes first and then try again.");
 		const detail = dirtyWorkingCopies.length
 			? getFileNamesMessage(dirtyWorkingCopies.map(x => x.name)) + '\n' + advice
 			: advice;
@@ -223,8 +225,8 @@ export class NativeWorkingCopyBackupTracker extends WorkingCopyBackupTracker imp
 				error = backupError;
 			}
 		},
-			localize('backupBeforeShutdownMessage', "Backing up dirty editors is taking longer than expected..."),
-			localize('backupBeforeShutdownDetail', "Click 'Cancel' to stop waiting and to save or revert dirty editors.")
+			localize('backupBeforeShutdownMessage', "Backing up editors with unsaved changes is taking longer than expected..."),
+			localize('backupBeforeShutdownDetail', "Click 'Cancel' to stop waiting and to save or revert editors with unsaved changes.")
 		);
 
 		return { backups, error };
@@ -294,7 +296,7 @@ export class NativeWorkingCopyBackupTracker extends WorkingCopyBackupTracker imp
 			if (result !== false) {
 				await Promises.settled(dirtyWorkingCopies.map(workingCopy => workingCopy.isDirty() ? workingCopy.save(saveOptions) : Promise.resolve(true)));
 			}
-		}, localize('saveBeforeShutdown', "Saving dirty editors is taking longer than expected..."));
+		}, localize('saveBeforeShutdown', "Saving editors with unsaved changes is taking longer than expected..."));
 	}
 
 	private doRevertAllBeforeShutdown(dirtyWorkingCopies: IWorkingCopy[]): Promise<void> {
@@ -311,7 +313,7 @@ export class NativeWorkingCopyBackupTracker extends WorkingCopyBackupTracker imp
 			// If we still have dirty working copies, revert those directly
 			// unless the revert operation was not successful (e.g. cancelled)
 			await Promises.settled(dirtyWorkingCopies.map(workingCopy => workingCopy.isDirty() ? workingCopy.revert(revertOptions) : Promise.resolve()));
-		}, localize('revertBeforeShutdown', "Reverting dirty editors is taking longer than expected..."));
+		}, localize('revertBeforeShutdown', "Reverting editors with unsaved changes is taking longer than expected..."));
 	}
 
 	private withProgressAndCancellation(promiseFactory: (token: CancellationToken) => Promise<void>, title: string, detail?: string): Promise<void> {

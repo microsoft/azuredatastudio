@@ -28,9 +28,6 @@
     <trans-unit id="connectionProfile">
       <source xml:lang="en">Select a connection profile</source>
     </trans-unit>
-    <trans-unit id="connectionProgressTitle">
-      <source xml:lang="en">Testing SQL Server connection...</source>
-    </trans-unit>
     <trans-unit id="connectionStringSetting">
       <source xml:lang="en">Connection string setting name</source>
     </trans-unit>
@@ -46,20 +43,27 @@
     <trans-unit id="doNotInstall">
       <source xml:lang="en">Do not install</source>
     </trans-unit>
+    <trans-unit id="dotnetResult">
+      <source xml:lang="en">Adding SQL nuget package:
+{0}</source>
+    </trans-unit>
     <trans-unit id="enterConnectionString">
       <source xml:lang="en">Enter connection string</source>
     </trans-unit>
     <trans-unit id="enterConnectionStringSettingName">
       <source xml:lang="en">Enter connection string setting name</source>
     </trans-unit>
-    <trans-unit id="enterObjectName">
-      <source xml:lang="en">Enter SQL table or view to query</source>
-    </trans-unit>
-    <trans-unit id="enterObjectNameToUpsert">
-      <source xml:lang="en">Enter SQL table to upsert into</source>
-    </trans-unit>
     <trans-unit id="enterPasswordPrompt">
       <source xml:lang="en">(Optional) Enter connection password to save in local.settings.json</source>
+    </trans-unit>
+    <trans-unit id="enterTableName">
+      <source xml:lang="en">Enter SQL table to query</source>
+    </trans-unit>
+    <trans-unit id="enterTableNameToUpsert">
+      <source xml:lang="en">Enter SQL table to upsert into</source>
+    </trans-unit>
+    <trans-unit id="enterViewName">
+      <source xml:lang="en">Enter SQL view to query</source>
     </trans-unit>
     <trans-unit id="errorNewAzureFunction">
       <source xml:lang="en">Error creating new Azure Function: {0}</source>
@@ -69,6 +73,9 @@
     </trans-unit>
     <trans-unit id="failedToParse">
       <source xml:lang="en">Failed to parse "{0}": {1}.</source>
+    </trans-unit>
+    <trans-unit id="failedToSetSetting">
+      <source xml:lang="en">Failed to set connection string app setting: {0}</source>
     </trans-unit>
     <trans-unit id="functionNameTitle">
       <source xml:lang="en">Function Name</source>
@@ -136,9 +143,6 @@
     <trans-unit id="selectButton">
       <source xml:lang="en">Select</source>
     </trans-unit>
-    <trans-unit id="selectConnectionError">
-      <source xml:lang="en">Failed to set connection string app setting: {0}</source>
-    </trans-unit>
     <trans-unit id="selectConnectionString">
       <source xml:lang="en">Select SQL connection string method</source>
     </trans-unit>
@@ -151,14 +155,23 @@
     <trans-unit id="selectSetting">
       <source xml:lang="en">Select SQL connection string setting from local.settings.json</source>
     </trans-unit>
+    <trans-unit id="selectSqlTableOrViewPrompt">
+      <source xml:lang="en">Select object type to insert or upsert into</source>
+    </trans-unit>
     <trans-unit id="selectTable">
       <source xml:lang="en">Select table to use</source>
     </trans-unit>
-    <trans-unit id="sqlTableOrViewToQuery">
-      <source xml:lang="en">SQL table or view to query</source>
+    <trans-unit id="selectView">
+      <source xml:lang="en">Select view to use</source>
+    </trans-unit>
+    <trans-unit id="sqlObjectToQuery">
+      <source xml:lang="en">SQL object to query</source>
     </trans-unit>
     <trans-unit id="sqlTableToUpsert">
       <source xml:lang="en">SQL table to upsert into</source>
+    </trans-unit>
+    <trans-unit id="table">
+      <source xml:lang="en">Table</source>
     </trans-unit>
     <trans-unit id="tableListProgressTitle">
       <source xml:lang="en">Fetching tables for selected database...</source>
@@ -180,6 +193,12 @@
     </trans-unit>
     <trans-unit id="valueMustNotBeEmpty">
       <source xml:lang="en">Value must not be empty</source>
+    </trans-unit>
+    <trans-unit id="view">
+      <source xml:lang="en">View</source>
+    </trans-unit>
+    <trans-unit id="viewListProgressTitle">
+      <source xml:lang="en">Fetching views for selected database...</source>
     </trans-unit>
     <trans-unit id="yesString">
       <source xml:lang="en">Yes</source>

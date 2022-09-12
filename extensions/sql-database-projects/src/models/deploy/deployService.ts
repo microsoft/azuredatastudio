@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ILocalDbDeployProfile, ILocalDbSetting, ISqlDbDeployProfile } from './deployProfile';
+import { ISqlDbDeployProfile } from './deployProfile';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import { Project } from '../project';
 import * as constants from '../../common/constants';
@@ -12,12 +12,8 @@ import * as vscode from 'vscode';
 import { ShellExecutionHelper } from '../../tools/shellExecutionHelper';
 import { AzureSqlClient } from './azureSqlClient';
 import { ConnectionService } from '../connections/connectionService';
+import { DockerImageSpec, IDockerSettings, IPublishToDockerSettings } from 'sqldbproj';
 
-interface DockerImageSpec {
-	label: string;
-	containerName: string;
-	tag: string
-}
 export class DeployService {
 
 	constructor(private _azureSqlClient = new AzureSqlClient(), private _outputChannel: vscode.OutputChannel, shellExecutionHelper: ShellExecutionHelper | undefined = undefined) {
@@ -35,28 +31,6 @@ export class DeployService {
 		} catch (error) {
 			throw Error(constants.dockerNotRunningError(utils.getErrorMessage(error)));
 		}
-	}
-
-	public getDockerImageSpec(projectName: string, baseImage: string, imageUniqueId?: string): DockerImageSpec {
-
-		imageUniqueId = imageUniqueId ?? UUID.generateUuid();
-		// Remove unsupported characters
-		//
-
-		// docker image name and tag can only include letters, digits, underscore, period and dash
-		const regexForDockerImageName = /[^a-zA-Z0-9_,\-]/g;
-
-		let imageProjectName = projectName.replace(regexForDockerImageName, '');
-		const tagMaxLength = 128;
-		const tag = baseImage.replace(':', '-').replace(constants.sqlServerDockerRegistry, '').replace(regexForDockerImageName, '');
-
-		// cut the name if it's too long
-		//
-		imageProjectName = imageProjectName.substring(0, tagMaxLength - (constants.dockerImageNamePrefix.length + tag.length + 2));
-		const imageLabel = `${constants.dockerImageLabelPrefix}-${imageProjectName}`.toLocaleLowerCase();
-		const imageTag = `${constants.dockerImageNamePrefix}-${imageProjectName}-${tag}`.toLocaleLowerCase();
-		const dockerName = `${constants.dockerImageNamePrefix}-${imageProjectName}-${imageUniqueId}`.toLocaleLowerCase();
-		return { label: imageLabel, tag: imageTag, containerName: dockerName };
 	}
 
 	/**
@@ -89,36 +63,23 @@ export class DeployService {
 		return undefined;
 	}
 
-	public async deployToContainer(profile: ILocalDbDeployProfile, project: Project): Promise<string | undefined> {
+	public async deployToContainer(profile: IPublishToDockerSettings, project: Project): Promise<string | undefined> {
 		return await this.executeTask(constants.deployDbTaskName, async () => {
-			if (!profile.localDbSetting) {
-				return undefined;
-			}
-
 			await this.verifyDocker();
 			this.logToOutput(constants.dockerImageMessage);
-			this.logToOutput(profile.localDbSetting.dockerBaseImage);
+			this.logToOutput(profile.dockerSettings.dockerBaseImage);
 
 			this.logToOutput(constants.dockerImageEulaMessage);
-			this.logToOutput(profile.localDbSetting.dockerBaseImageEula);
+			this.logToOutput(profile.dockerSettings.dockerBaseImageEula);
 
-			const imageSpec = this.getDockerImageSpec(project.projectFileName, profile.localDbSetting.dockerBaseImage);
+			const imageSpec = getDockerImageSpec(project.projectFileName, profile.dockerSettings.dockerBaseImage);
 
 			// If profile name is not set use the docker name to have a unique name
-			if (!profile.localDbSetting.profileName) {
-				profile.localDbSetting.profileName = imageSpec.containerName;
+			if (!profile.dockerSettings.profileName) {
+				profile.dockerSettings.profileName = imageSpec.containerName;
 			}
 
-			this.logToOutput(constants.cleaningDockerImagesMessage);
-			// Clean up existing docker image
-			const containerIds = await this.getCurrentDockerContainer(imageSpec.label);
-			if (containerIds.length > 0) {
-				const result = await vscode.window.showWarningMessage(constants.containerAlreadyExistForProject, constants.yesString, constants.noString);
-				if (result === constants.yesString) {
-					this.logToOutput(constants.cleaningDockerImagesMessage);
-					await this.cleanDockerObjects(containerIds, ['docker stop', 'docker rm']);
-				}
-			}
+			await this.cleanDockerObjectsIfNeeded(imageSpec.label);
 
 			this.logToOutput(constants.creatingDeploymentSettingsMessage);
 			// Create commands
@@ -127,7 +88,7 @@ export class DeployService {
 			this.logToOutput(constants.runningDockerMessage);
 			// Building the image and running the docker
 			//
-			const createdDockerId: string | undefined = await this.runDockerContainer(imageSpec, profile.localDbSetting);
+			const createdDockerId: string | undefined = await this.runDockerContainer(imageSpec, profile.dockerSettings);
 			this.logToOutput(`Docker container created. Id: ${createdDockerId}`);
 
 
@@ -144,7 +105,7 @@ export class DeployService {
 
 			if (runningDockerId) {
 				this.logToOutput(constants.dockerContainerCreatedMessage(runningDockerId));
-				return await this._connectionService.getConnection(profile.localDbSetting, false, 'master');
+				return await this._connectionService.getConnection(profile.dockerSettings, false, 'master');
 
 			} else {
 				this.logToOutput(constants.dockerContainerFailedToRunErrorMessage);
@@ -158,7 +119,7 @@ export class DeployService {
 		});
 	}
 
-	private async runDockerContainer(dockerImageSpec: DockerImageSpec, profile: ILocalDbSetting): Promise<string | undefined> {
+	private async runDockerContainer(dockerImageSpec: DockerImageSpec, profile: IDockerSettings): Promise<string | undefined> {
 
 		// Sensitive data to remove from output console
 		const sensitiveData = [profile.password];
@@ -211,6 +172,27 @@ export class DeployService {
 		return currentIds ? currentIds.split(/\r?\n/) : [];
 	}
 
+	/**
+	 * Checks if any containers with the specified label already exist, and if they do prompt the user whether they want to clean them up
+	 * @param imageLabel The label of the container to search for
+	 */
+	public async cleanDockerObjectsIfNeeded(imageLabel: string): Promise<void> {
+		this.logToOutput(constants.cleaningDockerImagesMessage);
+		// Clean up existing docker image
+		const containerIds = await this.getCurrentDockerContainer(imageLabel);
+		if (containerIds.length > 0) {
+			const result = await vscode.window.showQuickPick([constants.yesString, constants.noString],
+				{
+					title: constants.containerAlreadyExistForProject,
+					ignoreFocusOut: true
+				});
+			if (result === constants.yesString) {
+				this.logToOutput(constants.cleaningDockerImagesMessage);
+				await this.cleanDockerObjects(containerIds, ['docker stop', 'docker rm']);
+			}
+		}
+	}
+
 	public async cleanDockerObjects(ids: string[], commandsToClean: string[]): Promise<void> {
 		for (let index = 0; index < ids.length; index++) {
 			const id = ids[index];
@@ -222,4 +204,26 @@ export class DeployService {
 			}
 		}
 	}
+}
+
+export function getDockerImageSpec(projectName: string, baseImage: string, imageUniqueId?: string): DockerImageSpec {
+
+	imageUniqueId = imageUniqueId ?? UUID.generateUuid();
+	// Remove unsupported characters
+	//
+
+	// docker image name and tag can only include letters, digits, underscore, period and dash
+	const regexForDockerImageName = /[^a-zA-Z0-9_,\-]/g;
+
+	let imageProjectName = projectName.replace(regexForDockerImageName, '');
+	const tagMaxLength = 128;
+	const tag = baseImage.replace(':', '-').replace(constants.sqlServerDockerRegistry, '').replace(regexForDockerImageName, '');
+
+	// cut the name if it's too long
+	//
+	imageProjectName = imageProjectName.substring(0, tagMaxLength - (constants.dockerImageNamePrefix.length + tag.length + 2));
+	const imageLabel = `${constants.dockerImageLabelPrefix}-${imageProjectName}`.toLocaleLowerCase();
+	const imageTag = `${constants.dockerImageNamePrefix}-${imageProjectName}-${tag}`.toLocaleLowerCase();
+	const dockerName = `${constants.dockerImageNamePrefix}-${imageProjectName}-${imageUniqueId}`.toLocaleLowerCase();
+	return { label: imageLabel, tag: imageTag, containerName: dockerName };
 }

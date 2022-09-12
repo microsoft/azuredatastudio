@@ -7,6 +7,7 @@ import * as strings from 'vs/base/common/strings';
 import { URI } from 'vs/base/common/uri';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { ILocalization } from 'vs/platform/localizations/common/localizations';
+import { getRemoteName } from 'vs/platform/remote/common/remoteHosts';
 
 export const MANIFEST_CACHE_FOLDER = 'CachedExtensions';
 export const USER_MANIFEST_CACHE_FILE = 'user';
@@ -32,6 +33,9 @@ export interface IConfigurationProperty {
 }
 
 export interface IConfiguration {
+	id?: string,
+	order?: number,
+	title?: string,
 	properties: { [key: string]: IConfigurationProperty; };
 }
 
@@ -125,8 +129,9 @@ export interface IWalkthroughStep {
 	readonly title: string;
 	readonly description: string | undefined;
 	readonly media:
-	| { image: string | { dark: string, light: string, hc: string }, altText: string, markdown?: never }
-	| { markdown: string, image?: never }
+	| { image: string | { dark: string, light: string, hc: string }, altText: string, markdown?: never, svg?: never }
+	| { markdown: string, image?: never, svg?: never }
+	| { svg: string, altText: string, markdown?: never, image?: never }
 	readonly completionEvents?: string[];
 	/** @deprecated use `completionEvents: 'onCommand:...'` */
 	readonly doneOn?: { command: string };
@@ -350,8 +355,16 @@ export function isLanguagePackExtension(manifest: IExtensionManifest): boolean {
 	return manifest.contributes && manifest.contributes.localizations ? manifest.contributes.localizations.length > 0 : false;
 }
 
-export function isAuthenticaionProviderExtension(manifest: IExtensionManifest): boolean {
+export function isAuthenticationProviderExtension(manifest: IExtensionManifest): boolean {
 	return manifest.contributes && manifest.contributes.authentication ? manifest.contributes.authentication.length > 0 : false;
+}
+
+export function isResolverExtension(manifest: IExtensionManifest, remoteAuthority: string | undefined): boolean {
+	if (remoteAuthority && manifest.enableProposedApi) {
+		const activationEvent = `onResolveRemoteAuthority:${getRemoteName(remoteAuthority)}`;
+		return manifest.activationEvents?.indexOf(activationEvent) !== -1;
+	}
+	return false;
 }
 
 export const IBuiltinExtensionsScannerService = createDecorator<IBuiltinExtensionsScannerService>('IBuiltinExtensionsScannerService');

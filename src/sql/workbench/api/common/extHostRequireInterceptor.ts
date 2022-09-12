@@ -20,7 +20,7 @@ export class AzdataNodeModuleFactory implements INodeModuleFactory {
 
 	constructor(
 		private readonly _apiFactory: IAzdataExtensionApiFactory,
-		private readonly _extensionPaths: TernarySearchTree<string, IExtensionDescription>,
+		private readonly _extensionPaths: TernarySearchTree<URI, IExtensionDescription>,
 		private readonly _logService: ILogService
 	) {
 	}
@@ -28,7 +28,7 @@ export class AzdataNodeModuleFactory implements INodeModuleFactory {
 	public load(request: string, parent: URI): any {
 
 		// get extension id from filename and api for extension
-		const ext = this._extensionPaths.findSubstr(parent.fsPath);
+		const ext = this._extensionPaths.findSubstr(parent);
 		if (ext) {
 			let apiImpl = this._extApiImpl.get(ExtensionIdentifier.toKey(ext.identifier));
 			if (!apiImpl) {

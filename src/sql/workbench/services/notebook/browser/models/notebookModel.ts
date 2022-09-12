@@ -25,7 +25,7 @@ import { uriPrefixes } from 'sql/platform/connection/common/utils';
 import { ILogService } from 'vs/platform/log/common/log';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
-import { IAdsTelemetryService, ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
+import { IAdsTelemetryService, ITelemetryEvent, ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 import { Deferred } from 'sql/base/common/promise';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -478,12 +478,15 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	public sendNotebookTelemetryActionEvent(action: TelemetryKeys.TelemetryAction | TelemetryKeys.NbTelemetryAction, additionalProperties: ITelemetryEventProperties = {}): void {
+	public sendNotebookTelemetryActionEvent(action: TelemetryKeys.TelemetryAction | TelemetryKeys.NbTelemetryAction, additionalProperties: ITelemetryEventProperties = {}, connectionInfo?: IConnectionProfile): void {
 		let properties: ITelemetryEventProperties = deepClone(additionalProperties);
 		properties['azdata_notebook_guid'] = this.getMetaValue('azdata_notebook_guid');
-		this.adstelemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, action)
-			.withAdditionalProperties(properties)
-			.send();
+		let event: ITelemetryEvent = this.adstelemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, action)
+			.withAdditionalProperties(properties);
+		if (connectionInfo) {
+			event.withConnectionInfo(connectionInfo);
+		}
+		event.send();
 	}
 
 	private loadContentMetadata(metadata: INotebookMetadataInternal): void {
@@ -1317,6 +1320,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 							this._onValidConnectionSelected.fire(false);
 						}
 					});
+				this.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.ConnectionChanged, undefined, newConnection.toIConnectionProfile());
 			} else {
 				this._onValidConnectionSelected.fire(false);
 			}

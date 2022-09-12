@@ -62,6 +62,14 @@
         <source xml:lang="en">Add Item</source>
         <target state="translated">添加项</target>
       </trans-unit>
+      <trans-unit id="advancedOptionsButton">
+        <source xml:lang="en">Advanced...</source>
+        <target state="translated">高级...</target>
+      </trans-unit>
+      <trans-unit id="advancedPublishOptions">
+        <source xml:lang="en">Advanced Publish Options</source>
+        <target state="translated">高级发布选项</target>
+      </trans-unit>
       <trans-unit id="appSettingPrompt">
         <source xml:lang="en">Would you like to update Azure Function local.settings.json with the new connection string?</source>
         <target state="translated">是否要使用新的连接字符串更新 Azure 函数 local.settings.json?</target>
@@ -528,6 +536,10 @@
         <source xml:lang="en">Exclude</source>
         <target state="translated">不包括</target>
       </trans-unit>
+      <trans-unit id="excludeObjectTypes">
+        <source xml:lang="en">Exclude Object Types</source>
+        <target state="translated">排除对象类型</target>
+      </trans-unit>
       <trans-unit id="externalStream">
         <source xml:lang="en">External Stream</source>
         <target state="translated">外部 Stream</target>
@@ -611,6 +623,10 @@
       <trans-unit id="importElements">
         <source xml:lang="en">Import Elements</source>
         <target state="translated">导入元素</target>
+      </trans-unit>
+      <trans-unit id="include">
+        <source xml:lang="en">Include</source>
+        <target state="translated">包括</target>
       </trans-unit>
       <trans-unit id="installGlobally">
         <source xml:lang="en">Install globally</source>
@@ -768,6 +784,18 @@
         <source xml:lang="en">Open License Agreement</source>
         <target state="translated">打开许可协议</target>
       </trans-unit>
+      <trans-unit id="optionDescription">
+        <source xml:lang="en">Option Description</source>
+        <target state="translated">选项说明</target>
+      </trans-unit>
+      <trans-unit id="optionName">
+        <source xml:lang="en">Option Name</source>
+        <target state="translated">选项名称</target>
+      </trans-unit>
+      <trans-unit id="optionNotFoundWarningMessage">
+        <source xml:lang="en">label: {0} does not exist in the options value name lookup</source>
+        <target state="translated">标签: 选项值名称查找中不存在 {0}</target>
+      </trans-unit>
       <trans-unit id="outsideFolderPath">
         <source xml:lang="en">Items with absolute path outside project folder are not supported. Please make sure the paths in the project file are relative to project folder.</source>
         <target state="translated">不支持具有项目文件夹外绝对路径的项。请确保项目文件中的路径与项目文件夹相关。</target>
@@ -872,6 +900,10 @@
         <source xml:lang="en">Publish project</source>
         <target state="translated">发布项目</target>
       </trans-unit>
+      <trans-unit id="publishOptions">
+        <source xml:lang="en">Publish Options</source>
+        <target state="translated">发布选项</target>
+      </trans-unit>
       <trans-unit id="publishProjectSucceed">
         <source xml:lang="en">Database project published successfully</source>
         <target state="translated">已成功发布数据库项目</target>
@@ -927,6 +959,10 @@
       <trans-unit id="reloadValuesFromProjectButtonTitle">
         <source xml:lang="en">Reload values from project</source>
         <target state="translated">从项目中重新加载值</target>
+      </trans-unit>
+      <trans-unit id="reset">
+        <source xml:lang="en">Reset</source>
+        <target state="translated">重置</target>
       </trans-unit>
       <trans-unit id="resetAllVars">
         <source xml:lang="en">Reset all variables</source>
@@ -1316,6 +1352,10 @@
         <source xml:lang="en">Close Database Project</source>
         <target state="translated">关闭数据库项目</target>
       </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.collapseProjectNodes">
+        <source xml:lang="en">Whether project nodes start collapsed</source>
+        <target state="translated">项目节点是否启动已折叠</target>
+      </trans-unit>
       <trans-unit id="sqlDatabaseProjects.convertToSdkStyleProject">
         <source xml:lang="en">Convert to SDK-style project</source>
         <target state="translated">转换为 SDK 样式项目</target>
@@ -1407,6 +1447,10 @@
       <trans-unit id="sqlDatabaseProjects.openContainingFolder">
         <source xml:lang="en">Open Containing Folder</source>
         <target state="translated">打开所在的文件夹</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.openInDesigner">
+        <source xml:lang="en">Open in Designer</source>
+        <target state="translated">在设计器中打开</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.properties">
         <source xml:lang="en">Properties</source>

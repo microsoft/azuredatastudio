@@ -15,5 +15,6 @@ export const TelemetryReporter = new AdsTelemetryReporter(packageInfo.name, pack
 
 export enum TelemetryViews {
 	SchemaCompareMainWindow = 'SchemaCompareMainWindow',
-	SchemaCompareDialog = 'SchemaCompareDialog'
+	SchemaCompareDialog = 'SchemaCompareDialog',
+	SchemaCompareOptionsDialog = 'SchemaCompareOptionsDialog'
 }

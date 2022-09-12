@@ -20,6 +20,11 @@ import { TunnelFactoryContribution } from 'vs/workbench/contrib/remote/common/tu
 import { ShowCandidateContribution } from 'vs/workbench/contrib/remote/common/showCandidate';
 import { IConfigurationRegistry, Extensions as ConfigurationExtensions } from 'vs/platform/configuration/common/configurationRegistry';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
+import { IFileService } from 'vs/platform/files/common/files';
+import { IDialogService, IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
+import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
+import { firstOrDefault } from 'vs/base/common/arrays';
 
 export class LabelContribution implements IWorkbenchContribution {
 	constructor(
@@ -86,9 +91,72 @@ class RemoteLogOutputChannels implements IWorkbenchContribution {
 	}
 }
 
+class RemoteInvalidWorkspaceDetector extends Disposable implements IWorkbenchContribution {
+
+	constructor(
+		@IFileService private readonly fileService: IFileService,
+		@IDialogService private readonly dialogService: IDialogService,
+		@IWorkbenchEnvironmentService private readonly environmentService: IWorkbenchEnvironmentService,
+		@IWorkspaceContextService private readonly contextService: IWorkspaceContextService,
+		@IFileDialogService private readonly fileDialogService: IFileDialogService,
+		@IRemoteAgentService remoteAgentService: IRemoteAgentService
+	) {
+		super();
+
+		// When connected to a remote workspace, we currently cannot
+		// validate that the workspace exists before actually opening
+		// it. As such, we need to check on that after startup and guide
+		// the user to a valid workspace.
+		// (see https://github.com/microsoft/vscode/issues/133872)
+		if (this.environmentService.remoteAuthority) {
+			remoteAgentService.getEnvironment().then(remoteEnv => {
+				if (remoteEnv) {
+					// we use the presence of `remoteEnv` to figure out
+					// if we got a healthy remote connection
+					// (see https://github.com/microsoft/vscode/issues/135331)
+					this.validateRemoteWorkspace();
+				}
+			});
+		}
+	}
+
+	private async validateRemoteWorkspace(): Promise<void> {
+		const workspace = this.contextService.getWorkspace();
+		const workspaceUriToStat = workspace.configuration ?? firstOrDefault(workspace.folders)?.uri;
+		if (!workspaceUriToStat) {
+			return; // only when in workspace
+		}
+
+		const exists = await this.fileService.exists(workspaceUriToStat);
+		if (exists) {
+			return; // all good!
+		}
+
+		const res = await this.dialogService.confirm({
+			type: 'warning',
+			message: localize('invalidWorkspaceMessage', "Workspace does not exist"),
+			detail: localize('invalidWorkspaceDetail', "The workspace does not exist. Please select another workspace to open."),
+			primaryButton: localize('invalidWorkspacePrimary', "&&Open Workspace..."),
+			secondaryButton: localize('invalidWorkspaceCancel', "&&Cancel")
+		});
+
+		if (res.confirmed) {
+
+			// Pick Workspace
+			if (workspace.configuration) {
+				return this.fileDialogService.pickWorkspaceAndOpen({});
+			}
+
+			// Pick Folder
+			return this.fileDialogService.pickFolderAndOpen({});
+		}
+	}
+}
+
 const workbenchContributionsRegistry = Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench);
 workbenchContributionsRegistry.registerWorkbenchContribution(LabelContribution, LifecyclePhase.Starting);
 workbenchContributionsRegistry.registerWorkbenchContribution(RemoteChannelsContribution, LifecyclePhase.Starting);
+workbenchContributionsRegistry.registerWorkbenchContribution(RemoteInvalidWorkspaceDetector, LifecyclePhase.Starting);
 workbenchContributionsRegistry.registerWorkbenchContribution(RemoteLogOutputChannels, LifecyclePhase.Restored);
 workbenchContributionsRegistry.registerWorkbenchContribution(TunnelFactoryContribution, LifecyclePhase.Ready);
 workbenchContributionsRegistry.registerWorkbenchContribution(ShowCandidateContribution, LifecyclePhase.Ready);
@@ -97,13 +165,11 @@ const extensionKindSchema: IJSONSchema = {
 	type: 'string',
 	enum: [
 		'ui',
-		'workspace',
-		'web'
+		'workspace'
 	],
 	enumDescriptions: [
 		localize('ui', "UI extension kind. In a remote window, such extensions are enabled only when available on the local machine."),
-		localize('workspace', "Workspace extension kind. In a remote window, such extensions are enabled only when available on the remote."),
-		localize('web', "Web worker extension kind. Such an extension can execute in a web worker extension host.")
+		localize('workspace', "Workspace extension kind. In a remote window, such extensions are enabled only when available on the remote.")
 	],
 };
 
@@ -117,7 +183,7 @@ Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration)
 				type: 'object',
 				markdownDescription: localize('remote.extensionKind', "Override the kind of an extension. `ui` extensions are installed and run on the local machine while `workspace` extensions are run on the remote. By overriding an extension's default kind using this setting, you specify if that extension should be installed and enabled locally or remotely."),
 				patternProperties: {
-					'([a-z0-9A-Z][a-z0-9\-A-Z]*)\\.([a-z0-9A-Z][a-z0-9\-A-Z]*)$': {
+					'([a-z0-9A-Z][a-z0-9-A-Z]*)\\.([a-z0-9A-Z][a-z0-9-A-Z]*)$': {
 						oneOf: [{ type: 'array', items: extensionKindSchema }, extensionKindSchema],
 						default: ['ui'],
 					},
@@ -154,7 +220,7 @@ Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration)
 				patternProperties: {
 					'(^\\d+(\\-\\d+)?$)|(.+)': {
 						type: 'object',
-						description: localize('remote.portsAttributes.port', "A port, range of ports (ex. \"40000-55000\"), or regular expression (ex. \".+\\\\/server.js\").  For a port number or range, the attributes will apply to that port number or range of port numbers. Attributes which use a regular expression will apply to ports whose associated process command line matches the expression."),
+						description: localize('remote.portsAttributes.port', "A port, range of ports (ex. \"40000-55000\"), host and port (ex. \"db:1234\"), or regular expression (ex. \".+\\\\/server.js\").  For a port number or range, the attributes will apply to that port number or range of port numbers. Attributes which use a regular expression will apply to ports whose associated process command line matches the expression."),
 						properties: {
 							'onAutoForward': {
 								type: 'string',
@@ -200,7 +266,15 @@ Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration)
 				markdownDescription: localize('remote.portsAttributes', "Set properties that are applied when a specific port number is forwarded. For example:\n\n```\n\"3000\": {\n  \"label\": \"Application\"\n},\n\"40000-55000\": {\n  \"onAutoForward\": \"ignore\"\n},\n\".+\\\\/server.js\": {\n \"onAutoForward\": \"openPreview\"\n}\n```"),
 				defaultSnippets: [{ body: { '${1:3000}': { label: '${2:Application}', onAutoForward: 'openPreview' } } }],
 				errorMessage: localize('remote.portsAttributes.patternError', "Must be a port number, range of port numbers, or regular expression."),
-				additionalProperties: false
+				additionalProperties: false,
+				default: {
+					'443': {
+						'protocol': 'https'
+					},
+					'8443': {
+						'protocol': 'https'
+					}
+				}
 			},
 			'remote.otherPortsAttributes': {
 				type: 'object',

@@ -47,12 +47,13 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 
-import { IEditorInput, IEditorPane } from 'vs/workbench/common/editor';
+import { IEditorPane } from 'vs/workbench/common/editor';
 import { isINotebookInput } from 'sql/workbench/services/notebook/browser/interface';
 import { INotebookShowOptions } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { DEFAULT_NB_LANGUAGE_MODE, INTERACTIVE_LANGUAGE_MODE, INTERACTIVE_PROVIDER_ID, JUPYTER_PROVIDER_ID, NotebookLanguage } from 'sql/workbench/common/constants';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { SqlSerializationProvider } from 'sql/workbench/services/notebook/browser/sql/sqlSerializationProvider';
+import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 
 const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
 
@@ -185,7 +186,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	private _trustedCacheQueue: URI[] = [];
 	private _unTrustedCacheQueue: URI[] = [];
 	private _onCodeCellExecutionStart: Emitter<void> = new Emitter<void>();
-	private _notebookInputsMap: Map<string, IEditorInput> = new Map();
+	private _notebookInputsMap: Map<string, EditorInput> = new Map();
 
 	constructor(
 		@ILifecycleService lifecycleService: ILifecycleService,
@@ -260,7 +261,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		return uri;
 	}
 
-	public async createNotebookInputFromContents(providerId: string, contents?: nb.INotebookContents, resource?: UriComponents): Promise<IEditorInput> {
+	public async createNotebookInputFromContents(providerId: string, contents?: nb.INotebookContents, resource?: UriComponents): Promise<EditorInput> {
 		let uri: URI;
 		if (resource) {
 			uri = URI.revive(resource);
@@ -276,7 +277,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		return this.createNotebookInput(options, resource);
 	}
 
-	private async createNotebookInput(options: INotebookShowOptions, resource?: UriComponents): Promise<IEditorInput | undefined> {
+	private async createNotebookInput(options: INotebookShowOptions, resource?: UriComponents): Promise<EditorInput | undefined> {
 		let uri: URI;
 		if (resource) {
 			uri = URI.revive(resource);
@@ -288,7 +289,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		}
 		let isUntitled: boolean = uri.scheme === Schemas.untitled;
 
-		let fileInput: IEditorInput;
+		let fileInput: EditorInput;
 		let languageMode = options.providerId === INTERACTIVE_PROVIDER_ID ? INTERACTIVE_LANGUAGE_MODE : DEFAULT_NB_LANGUAGE_MODE;
 		let initialStringContents: string;
 		if (options.initialContent) {
@@ -307,7 +308,8 @@ export class NotebookService extends Disposable implements INotebookService {
 				const model = this._untitledEditorService.create({ untitledResource: uri, mode: languageMode, initialValue: initialStringContents });
 				fileInput = this._instantiationService.createInstance(UntitledTextEditorInput, model);
 			} else {
-				fileInput = this._editorService.createEditorInput({ forceFile: true, resource: uri, mode: languageMode });
+				let input: any = { forceFile: true, resource: uri, mode: languageMode };
+				fileInput = await this._editorService.createEditorInput(input);
 			}
 		}
 

@@ -6,10 +6,11 @@
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { ExtHostQueryEditorShape, SqlMainContext, MainThreadQueryEditorShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import * as azdata from 'azdata';
-import { IQueryEvent } from 'sql/workbench/services/query/common/queryModel';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { Disposable } from 'vs/workbench/api/common/extHostTypes';
 import { URI } from 'vs/base/common/uri';
+import { IQueryEvent } from 'sql/workbench/services/query/common/queryModel';
+import * as sqlTypeConverters from 'sql/workbench/api/common/sqlExtHostTypeConverters';
 
 class ExtHostQueryDocument implements azdata.queryeditor.QueryDocument {
 	constructor(
@@ -68,7 +69,7 @@ export class ExtHostQueryEditor implements ExtHostQueryEditorShape {
 		let listener: azdata.queryeditor.QueryEventListener = this._queryListeners[handle];
 		if (listener) {
 			let params = event.params && event.params.planXml ? event.params.planXml : event.params;
-			listener.onQueryEvent(event.type, new ExtHostQueryDocument(providerId, fileUri, this._proxy), params);
+			listener.onQueryEvent(event.type, new ExtHostQueryDocument(providerId, fileUri, this._proxy), params, sqlTypeConverters.QueryInfo.to(event.queryInfo));
 		}
 	}
 

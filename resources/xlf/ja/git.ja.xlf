@@ -934,6 +934,14 @@ These files will be FOREVER LOST.</source>
         <source xml:lang="en">Don't Show Again</source>
         <target state="translated">今後表示しない</target>
       </trans-unit>
+      <trans-unit id="no">
+        <source xml:lang="en">No</source>
+        <target state="translated">いいえ</target>
+      </trans-unit>
+      <trans-unit id="ok">
+        <source xml:lang="en">OK</source>
+        <target state="translated">OK</target>
+      </trans-unit>
       <trans-unit id="open">
         <source xml:lang="en">Open</source>
         <target state="translated">開く</target>
@@ -966,6 +974,18 @@ These files will be FOREVER LOST.</source>
         <source xml:lang="en">Successfully pushed.</source>
         <target state="translated">正常にプッシュされました。</target>
       </trans-unit>
+      <trans-unit id="scm button publish title">
+        <source xml:lang="en">$(cloud-upload) Publish Changes</source>
+        <target state="translated">$(cloud-upload) 変更の発行</target>
+      </trans-unit>
+      <trans-unit id="scm button publish tooltip">
+        <source xml:lang="en">Publish Changes</source>
+        <target state="translated">変更の発行</target>
+      </trans-unit>
+      <trans-unit id="scm button sync title">
+        <source xml:lang="en"> Sync Changes $(sync){0}{1}</source>
+        <target state="translated"> 変更 $(sync) の同期{0}{1}</target>
+      </trans-unit>
       <trans-unit id="staged changes">
         <source xml:lang="en">Staged Changes</source>
         <target state="translated">ステージされている変更</target>
@@ -977,6 +997,10 @@ These files will be FOREVER LOST.</source>
       <trans-unit id="sync is unpredictable">
         <source xml:lang="en">Syncing. Cancelling may cause serious damages to the repository</source>
         <target state="translated">同期中です。キャンセルすると、リポジトリに重大な損傷を与える可能性があります</target>
+      </trans-unit>
+      <trans-unit id="tooManyChangesWarning">
+        <source xml:lang="en">Too many changes were detected. Only the first {0} changes will be shown below.</source>
+        <target state="translated">検出された変更が多すぎます。最初の {0} の変更のみが下に表示されます。</target>
       </trans-unit>
       <trans-unit id="untracked">
         <source xml:lang="en">Untracked</source>
@@ -1772,6 +1796,22 @@ These files will be FOREVER LOST.</source>
         <source xml:lang="en">Controls whether to show a notification when a push is successful.</source>
         <target state="translated">プッシュが成功したときに通知を表示するかどうかを制御します。</target>
       </trans-unit>
+      <trans-unit id="config.showUnpublishedCommitsButton">
+        <source xml:lang="en">Controls whether to show an action button to sync or publish, if there are unpublished commits.</source>
+        <target state="translated">未公開のコミットがある場合に、同期または公開するアクション ボタンを表示するかどうかを制御します。</target>
+      </trans-unit>
+      <trans-unit id="config.showUnpublishedCommitsButton.always">
+        <source xml:lang="en">Always shows the action button, if there are unpublished commits.</source>
+        <target state="translated">未公開のコミットがある場合、常にアクション ボタンを表示します。</target>
+      </trans-unit>
+      <trans-unit id="config.showUnpublishedCommitsButton.never">
+        <source xml:lang="en">Never shows the action button.</source>
+        <target state="translated">アクション ボタンを表示しません。</target>
+      </trans-unit>
+      <trans-unit id="config.showUnpublishedCommitsButton.whenEmpty">
+        <source xml:lang="en">Only shows the action button if there are no other changes and there are unpublished commits.</source>
+        <target state="translated">他に変更がなく、未公開のコミットがある場合にのみ、アクション ボタンを表示します。</target>
+      </trans-unit>
       <trans-unit id="config.smartCommitChanges">
         <source xml:lang="en">Control which changes are automatically staged by Smart Commit.</source>
         <target state="translated">スマート コミットで変更を自動的にステージングするかどうかを制御します。</target>
@@ -1783,6 +1823,10 @@ These files will be FOREVER LOST.</source>
       <trans-unit id="config.smartCommitChanges.tracked">
         <source xml:lang="en">Automatically stage tracked changes only.</source>
         <target state="translated">自動的にステージングされた変更箇所のみ。</target>
+      </trans-unit>
+      <trans-unit id="config.statusLimit">
+        <source xml:lang="en">Controls how to limit the number of changes that can be parsed from Git status command. Can be set to 0 for no limit.</source>
+        <target state="translated">Git 状態コマンドで解析できる変更回数の制限方法を制御します。0 に設定すると制限なしにすることができます。</target>
       </trans-unit>
       <trans-unit id="config.suggestSmartCommit">
         <source xml:lang="en">Suggests to enable smart commit (commit all changes when there are no staged changes).</source>

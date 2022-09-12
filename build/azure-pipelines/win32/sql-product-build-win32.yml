@@ -1,7 +1,7 @@
 steps:
   - task: NodeTool@0
     inputs:
-      versionSpec: "14.x"
+      versionSpec: "16.x"
 
   - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
     inputs:
@@ -103,7 +103,6 @@ steps:
       $ErrorActionPreference = "Stop"
       exec { yarn gulp "package-rebuild-extensions" }
       exec { yarn gulp "vscode-win32-x64-min-ci" }
-      exec { yarn gulp "vscode-win32-x64-code-helper" }
       exec { yarn gulp "vscode-win32-x64-inno-updater" }
     displayName: Build
     env:

@@ -72,12 +72,12 @@ export function hyperLinkFormatter(row: number | undefined, cell: any | undefine
 		if (!value.isNull) {
 			cellClasses += ' xmlLink';
 			valueToDisplay = escape(value.displayValue);
-			return `<a class="${cellClasses}" href="#" >${valueToDisplay}</a>`;
+			return `<a class="${cellClasses}">${valueToDisplay}</a>`;
 		} else {
 			cellClasses += ' missing-value';
 		}
 	} else if (isHyperlinkCellValue(value)) {
-		return `<a class="${cellClasses}" href="#" >${escape(value.displayText)}</a>`;
+		return `<a class="${cellClasses}" title="${escape(value.displayText)}">${escape(value.displayText)}</a>`;
 	}
 	return `<span title="${valueToDisplay}" class="${cellClasses}">${valueToDisplay}</span>`;
 }

@@ -39,7 +39,7 @@ export class RowNumberColumn<T> implements Slick.Plugin<T> {
 
 	private handleHeaderClick(e: MouseEvent, args: Slick.OnHeaderClickEventArgs<T>): void {
 		if (args.column.id === 'rowNumber') {
-			this.grid.setActiveCell(0, 1);
+			this.grid.setActiveCell(this.grid.getViewport()?.top ?? 0, 1);
 			let selectionModel = this.grid.getSelectionModel();
 			if (selectionModel) {
 				selectionModel.setSelectedRanges([new Slick.Range(0, 0, this.grid.getDataLength() - 1, this.grid.getColumns().length - 1)]);

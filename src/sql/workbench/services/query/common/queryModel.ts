@@ -38,7 +38,7 @@ export interface IExecutionPlanInfo {
 }
 
 export interface IQueryInfo {
-	range: IRange[];
+	batchRanges: IRange[];
 	messages: IQueryMessage[];
 }
 

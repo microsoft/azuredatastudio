@@ -306,6 +306,7 @@ declare module 'azurecore' {
 		 * @param region The region value
 		 */
 		getRegionDisplayName(region?: string): string;
+		getProviderMetadataForAccount(account: AzureAccount): AzureAccountProviderMetadata;
 		provideResources(): azureResource.IAzureResourceProvider[];
 
 		runGraphQuery<T extends azureResource.AzureGraphResource>(account: AzureAccount, subscriptions: azureResource.AzureResourceSubscription[], ignoreErrors: boolean, query: string): Promise<ResourceQueryResult<T>>;
@@ -346,7 +347,8 @@ declare module 'azurecore' {
 			azureArcService = 'microsoft.azuredata/datacontrollers',
 			storageAccount = 'microsoft.storage/storageaccounts',
 			logAnalytics = 'microsoft.operationalinsights/workspaces',
-			cosmosDbAccount = 'microsoft.documentdb/databaseaccounts'
+			cosmosDbAccount = 'microsoft.documentdb/databaseaccounts',
+			mysqlFlexibleServer = 'microsoft.dbformysql/flexibleservers'
 		}
 
 		export interface IAzureResourceProvider extends azdata.DataProvider {

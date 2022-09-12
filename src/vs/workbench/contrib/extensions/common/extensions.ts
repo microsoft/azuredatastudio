@@ -47,6 +47,7 @@ export interface IExtension {
 	readonly identifier: IExtensionIdentifier;
 	readonly publisher: string;
 	readonly publisherDisplayName: string;
+	readonly publisherDomain?: { link: string, verified: boolean };
 	readonly version: string;
 	readonly latestVersion: string;
 	readonly description: string;
@@ -91,7 +92,7 @@ export interface IExtensionsWorkbenchService {
 	queryLocal(server?: IExtensionManagementServer): Promise<IExtension[]>;
 	queryGallery(token: CancellationToken): Promise<IPager<IExtension>>;
 	queryGallery(options: IQueryOptions, token: CancellationToken): Promise<IPager<IExtension>>;
-	canInstall(extension: IExtension): boolean;
+	canInstall(extension: IExtension): Promise<boolean>;
 	install(vsix: URI): Promise<IExtension>;
 	install(extension: IExtension, installOptins?: InstallOptions): Promise<IExtension>;
 	uninstall(extension: IExtension): Promise<void>;

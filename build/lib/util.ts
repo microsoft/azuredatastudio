@@ -227,7 +227,7 @@ export function rewriteSourceMappingURL(sourceMappingURLBase: string): NodeJS.Re
 		.pipe(es.mapSync<VinylFile, VinylFile>(f => {
 			const contents = (<Buffer>f.contents).toString('utf8');
 			const str = `//# sourceMappingURL=${sourceMappingURLBase}/${path.dirname(f.relative).replace(/\\/g, '/')}/$1`;
-			f.contents = Buffer.from(contents.replace(/\n\/\/# sourceMappingURL=(.*)$/gm, str));
+			f.contents = Buffer.from(contents.replace(/\n\/\/# sourceMappingURL=((?!data:).*)$/gm, str)); // {{SQL CARBON EDIT}} Don't rewrite embedded source maps - some of our dependencies have these (sanitize-html)
 			return f;
 		}));
 
@@ -345,7 +345,7 @@ export function acquireWebNodePaths() {
 	const root = path.join(__dirname, '..', '..');
 	const webPackageJSON = path.join(root, '/remote/web', 'package.json');
 	const webPackages = JSON.parse(fs.readFileSync(webPackageJSON, 'utf8')).dependencies;
-	const nodePaths: { [key: string]: string } = {};
+	const nodePaths: { [key: string]: string } = { };
 	for (const key of Object.keys(webPackages)) {
 		const packageJSON = path.join(root, 'node_modules', key, 'package.json');
 		const packageData = JSON.parse(fs.readFileSync(packageJSON, 'utf8'));
@@ -364,6 +364,23 @@ export function acquireWebNodePaths() {
 		nodePaths[key] = entryPoint;
 	}
 	return nodePaths;
+}
+
+export function createExternalLoaderConfig(webEndpoint?: string, commit?: string, quality?: string) {
+	if (!webEndpoint || !commit || !quality) {
+		return undefined;
+	}
+	webEndpoint = webEndpoint + `/${quality}/${commit}`;
+	let nodePaths = acquireWebNodePaths();
+	Object.keys(nodePaths).map(function (key, _) {
+		nodePaths[key] = `${webEndpoint}/node_modules/${key}/${nodePaths[key]}`;
+	});
+	const externalLoaderConfig = {
+		baseUrl: `${webEndpoint}/out`,
+		recordStats: true,
+		paths: nodePaths
+	};
+	return externalLoaderConfig;
 }
 
 export function buildWebNodePaths(outDir: string) {

@@ -10,10 +10,10 @@ const localize = nls.loadMessageBundle();
 export const arcDeploymentDeprecation = localize('arc.arcDeploymentDeprecation', "The Arc Deployment extension has been replaced by the Arc extension and has been uninstalled.");
 export function arcControllerDashboard(name: string): string { return localize('arc.controllerDashboard', "Azure Arc Data Controller Dashboard - {0}", name); }
 export function miaaDashboard(name: string): string { return localize('arc.miaaDashboard', "SQL managed instance - Azure Arc Dashboard - {0}", name); }
-export function postgresDashboard(name: string): string { return localize('arc.postgresDashboard', "PostgreSQL Hyperscale - Azure Arc Dashboard - {0}", name); }
+export function postgresDashboard(name: string): string { return localize('arc.postgresDashboard', "PostgreSQL server - Azure Arc Dashboard (Preview) - {0}", name); }
 
 export const dataControllersType = localize('arc.dataControllersType', "Azure Arc Data Controller");
-export const pgSqlType = localize('arc.pgSqlType', "PostgreSQL Hyperscale - Azure Arc");
+export const pgSqlType = localize('arc.pgSqlType', "PostgreSQL server - Azure Arc");
 export const miaaType = localize('arc.miaaType', "SQL managed instance - Azure Arc");
 
 export const overview = localize('arc.overview', "Overview");
@@ -130,7 +130,7 @@ export const noInstancesAvailable = localize('arc.noInstancesAvailable', "No ins
 export const connectToServer = localize('arc.connectToServer', "Connect to Server");
 export const connectToController = localize('arc.connectToController', "Connect to Existing Controller");
 export function connectToMSSql(name: string): string { return localize('arc.connectToMSSql', "Connect to SQL managed instance - Azure Arc ({0})", name); }
-export function connectToPGSql(name: string): string { return localize('arc.connectToPGSql', "Connect to PostgreSQL Hyperscale - Azure Arc ({0})", name); }
+export function connectToPGSql(name: string): string { return localize('arc.connectToPGSql', "Connect to PostgreSQL server - Azure Arc ({0})", name); }
 export const passwordToController = localize('arc.passwordToController', "Provide Password to Controller");
 export const controllerUrl = localize('arc.controllerUrl', "Controller URL");
 export const controllerUrlPlaceholder = localize('arc.controllerUrlPlaceholder', "https://<IP or hostname>:<port>");
@@ -171,7 +171,7 @@ export const postgresAdminUsername = localize('arc.postgresAdminUsername', "Admi
 export const nodeConfiguration = localize('arc.nodeConfiguration', "Node configuration");
 export const postgresVersion = localize('arc.postgresVersion', "PostgreSQL version");
 export const serverGroupType = localize('arc.serverGroupType', "Server group type");
-export const serverGroupNodes = localize('arc.serverGroupNodes', "Server group nodes");
+export const server = localize('arc.server', "Server");
 export const fullyQualifiedDomain = localize('arc.fullyQualifiedDomain', "Fully qualified domain");
 export const postgresArcProductName = localize('arc.postgresArcProductName', "Azure Database for PostgreSQL - Azure Arc");
 export const coordinator = localize('arc.coordinator', "Coordinator");
@@ -183,10 +183,10 @@ export const newDatabase = localize('arc.newDatabase', "New Database");
 export const databaseName = localize('arc.databaseName', "Database name");
 export const enterNewPassword = localize('arc.enterNewPassword', "Enter a new password");
 export const confirmNewPassword = localize('arc.confirmNewPassword', "Confirm the new password");
-export const learnAboutPostgresClients = localize('arc.learnAboutPostgresClients', "Learn more about Azure PostgreSQL Hyperscale client interfaces");
+export const learnAboutPostgresClients = localize('arc.learnAboutPostgresClients', "Learn more about Azure PostgreSQL client interfaces");
 export const coordinatorNodeParametersDescription = localize('arc.coordinatorNodeParametersDescription', " These server parameters of the Coordinator node can be set to custom (non-default) values. Search to find parameters.");
 export const workerNodesParametersDescription = localize('arc.workerNodesParametersDescription', " These server parameters of the Worker nodes can be set to custom (non-default) values. Search to find parameters.");
-export const learnAboutNodeParameters = localize('arc.learnAboutNodeParameters', "Learn more about database engine settings for Azure Arc-enabled PostgreSQL Hyperscale");
+export const learnAboutNodeParameters = localize('arc.learnAboutNodeParameters', "Learn more about database engine settings for Azure Arc-enabled PostgreSQL");
 export const noNodeParametersFound = localize('arc.noNodeParametersFound', "No worker server parameters found...");
 export const searchToFilter = localize('arc.searchToFilter', "Search to filter items...");
 export const scalingCompute = localize('arc.scalingCompute', "scaling compute vCores and memory.");
@@ -196,7 +196,7 @@ export const miaaBackupsDatabasesDescription = localize('arc.miaaBackupsDatabase
 export const pitrInfo = localize('arc.pitrInfo', "Specify how long you want to keep your point-in-time backups. Customize this for backup availability.");
 export const restoreInfo = localize('arc.restoreInfo', "Restore a database to an Azure Arc enabled SQL Managed Instance.");
 export const restorePointText = localize('arc.restorePointText', "Enter a restore point in the specified time format within given range of earliest and latest restore time.");
-export const postgresComputeAndStorageDescriptionPartTwo = localize('arc.postgres.computeAndStorageDescriptionPartTwo', "PostgreSQL Hyperscale server group by");
+export const postgresComputeAndStorageDescriptionPartTwo = localize('arc.postgres.computeAndStorageDescriptionPartTwo', "PostgreSQL by");
 export const computeAndStorageDescriptionPartThree = localize('arc.computeAndStorageDescriptionPartThree', "without downtime and by");
 export const computeAndStorageDescriptionPartFour = localize('arc.computeAndStorageDescriptionPartFour', "Before doing so, you need to ensure");
 export const computeAndStorageDescriptionPartFive = localize('arc.computeAndStorageDescriptionPartFive', "there are sufficient resources available");
@@ -205,24 +205,16 @@ export const computeAndStorageDescriptionPartSix = localize('arc.computeAndStora
 export const node = localize('arc.node', "node");
 export const nodes = localize('arc.nodes', "nodes");
 export const workerNodes = localize('arc.workerNodes', "Worker Nodes");
-export const coordinatorNode = localize('arc.coordinatorNode', "Coordinator Node");
 export const storagePerNode = localize('arc.storagePerNode', "storage per node");
 export const workerNodeCount = localize('arc.workerNodeCount', "Worker node count");
-export const configurationPerNode = localize('arc.configurationPerNode', "Configuration (per node)");
-export const configuration = localize('arc.configurationCoordinatorNode', "Configuration");
+export const computeConfiguration = localize('arc.computeConfiguration', "Compute Configuration");
+export const configurationPerNode = localize('arc.configurationPerNode', "Configuration");
+export const configuration = localize('arc.configurationCoordinatorNode', "Node Configuration");
 export const coresLimit = localize('arc.coresLimit', "CPU limit");
-export const workerCoresLimit = localize('arc.workerCoresLimit', "Worker Nodes CPU limit");
-export const coordinatorCoresLimit = localize('arc.coordinatorCoresLimit', "Coordinator Node CPU limit");
 export const coresRequest = localize('arc.coresRequest', "CPU request");
-export const workerCoresRequest = localize('arc.workerCoresRequest', "Worker Nodes CPU request");
-export const coordinatorCoresRequest = localize('arc.coordinatorCoresRequest', "Coordinator Node CPU request");
 export const memoryLimit = localize('arc.memoryLimit', "Memory limit (in GB)");
 export const retentionDays = localize('arc.retentionDays', "Point-In-Time Recovery retention (days)");
-export const workerMemoryLimit = localize('arc.workerMemoryLimit', "Worker Nodes Memory limit (in GB)");
-export const coordinatorMemoryLimit = localize('arc.coordinatorMemoryLimit', "Coordinator Node Memory limit (in GB)");
 export const memoryRequest = localize('arc.memoryRequest', "Memory request (in GB)");
-export const workerMemoryRequest = localize('arc.workerMemoryRequest', "Worker Nodes Memory request (in GB)");
-export const coordinatorMemoryRequest = localize('arc.coordinatorMemoryRequest', "Coordinator Node Memory request (in GB)");
 export const syncSecondaryToCommit = localize('arc.syncSecondaryToCommit', "Sync Secondary To Commit");
 export const arcResources = localize('arc.arcResources', "Azure Arc Resources");
 export const enterANonEmptyPassword = localize('arc.enterANonEmptyPassword', "Enter a non empty password or press escape to exit.");
@@ -242,7 +234,7 @@ export const connectToPostgresDescription = localize('arc.connectToPostgresDescr
 export const postgresExtension = localize('arc.postgresExtension', "microsoft.azuredatastudio-postgresql");
 export const podInitialized = localize('arc.podInitialized', "Pod is initialized.");
 export const podReady = localize('arc.podReady', "Pod is ready.");
-export const noPodIssuesDetected = localize('arc.noPodIssuesDetected', "There aren’t any known issues affecting this PostgreSQL Hyperscale instance.");
+export const noPodIssuesDetected = localize('arc.noPodIssuesDetected', "There aren’t any known issues affecting this PostgreSQL instance.");
 export const podIssuesDetected = localize('arc.podIssuesDetected', "The pods listed below are experiencing issues that may affect performance or availability.");
 export const containerReady = localize('arc.containerReady', "Pod containers are ready.");
 export const podScheduled = localize('arc.podScheduled', "Pod is schedulable.");
@@ -253,6 +245,10 @@ export function deletingInstance(name: string): string { return localize('arc.de
 export function installingExtension(name: string): string { return localize('arc.installingExtension', "Installing extension '{0}'...", name); }
 export function extensionInstalled(name: string): string { return localize('arc.extensionInstalled', "Extension '{0}' has been installed.", name); }
 export function updatingInstance(name: string): string { return localize('arc.updatingInstance', "Updating instance '{0}'...", name); }
+export function upgradingDirectDC(name: string, desiredVersion: string, resourceGroup: string): string { return localize('arc.upgradingDirectDC', "Upgrading data controller '{0}' with command 'az arcdata dc upgrade --desired-version {1} --name {0} --resource-group {2}'", name, desiredVersion, resourceGroup); }
+export function upgradingIndirectDC(name: string, desiredVersion: string, namespace: string): string { return localize('arc.upgradingIndirectDC', "Upgrading data controller '{0}' with command 'az arcdata dc upgrade --desired-version {1} --name {0} --k8s-namespace {2} --use-k8s'", name, desiredVersion, namespace); }
+export function upgradingDirectMiaa(name: string, resourceGroup: string): string { return localize('arc.upgradingDirectMiaa', "Upgrading SQL MIAA '{0}' with command 'az sql mi-arc upgrade --name {0} --resource-group {1}'", name, resourceGroup); }
+export function upgradingIndirectMiaa(name: string, namespace: string): string { return localize('arc.upgradingIndirectMiaa', "Upgrading SQL MIAA '{0}' with command 'az sql mi-arc upgrade --name {0} --k8s-namespace {1} --use-k8s'", name, namespace); }
 export function instanceDeleted(name: string): string { return localize('arc.instanceDeleted', "Instance '{0}' deleted", name); }
 export function instanceUpdated(name: string): string { return localize('arc.instanceUpdated', "Instance '{0}' updated", name); }
 export function extensionsDropped(name: string): string { return localize('arc.extensionsDropped', "Extensions '{0}' dropped", name); }
@@ -302,7 +298,7 @@ export function pageDiscardFailed(error: any): string { return localize('arc.pag
 export function databaseCreationFailed(name: string, error: any): string { return localize('arc.databaseCreationFailed', "Failed to create database {0}. {1}", name, getErrorMessage(error)); }
 export function connectToControllerFailed(url: string, error: any): string { return localize('arc.connectToControllerFailed', "Could not connect to controller {0}. {1}", url, getErrorMessage(error)); }
 export function connectToMSSqlFailed(serverName: string, error: any): string { return localize('arc.connectToMSSqlFailed', "Could not connect to SQL managed instance - Azure Arc Instance {0}. {1}", serverName, getErrorMessage(error)); }
-export function connectToPGSqlFailed(serverName: string, error: any): string { return localize('arc.connectToPGSqlFailed', "Could not connect to PostgreSQL Hyperscale - Azure Arc Instance {0}. {1}", serverName, getErrorMessage(error)); }
+export function connectToPGSqlFailed(serverName: string, error: any): string { return localize('arc.connectToPGSqlFailed', "Could not connect to PostgreSQL server - Azure Arc Instance {0}. {1}", serverName, getErrorMessage(error)); }
 export function missingExtension(extensionName: string): string { return localize('arc.missingExtension', "The {0} extension is required to view engine settings. Do you wish to install it now?", extensionName); }
 export function extensionInstallationFailed(extensionName: string): string { return localize('arc.extensionInstallationFailed', "Failed to install extension {0}.", extensionName); }
 export function fetchConfigFailed(name: string, error: any): string { return localize('arc.fetchConfigFailed', "An unexpected error occurred retrieving the config for '{0}'. {1}", name, getErrorMessage(error)); }

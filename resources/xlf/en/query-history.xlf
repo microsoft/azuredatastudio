@@ -1,17 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file original="extensions/query-history/package" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="queryHistory.captureEnabledDesc">
+      <source xml:lang="en">Whether Query History capture is enabled. If false queries executed will not be captured.</source>
+    </trans-unit>
     <trans-unit id="queryHistory.clear">
       <source xml:lang="en">Clear All History</source>
+    </trans-unit>
+    <trans-unit id="queryHistory.delete">
+      <source xml:lang="en">Delete</source>
     </trans-unit>
     <trans-unit id="queryHistory.description">
       <source xml:lang="en">View and run previously executed queries</source>
     </trans-unit>
+    <trans-unit id="queryHistory.disableCapture">
+      <source xml:lang="en">Pause Query History Capture</source>
+    </trans-unit>
     <trans-unit id="queryHistory.displayName">
       <source xml:lang="en">Query History</source>
     </trans-unit>
-    <trans-unit id="queryHistory.toggleCapture">
-      <source xml:lang="en">Toggle Query History Capture</source>
+    <trans-unit id="queryHistory.doubleClickAction">
+      <source xml:lang="en">The action taken when a history item is double clicked</source>
+    </trans-unit>
+    <trans-unit id="queryHistory.doubleClickAction.open">
+      <source xml:lang="en">Open a new disconnected editor with the query from the selected history item</source>
+    </trans-unit>
+    <trans-unit id="queryHistory.doubleClickAction.run">
+      <source xml:lang="en">Open a new connected editor with the query and connection from the selected history item and automatically run the query</source>
+    </trans-unit>
+    <trans-unit id="queryHistory.enableCapture">
+      <source xml:lang="en">Start Query History Capture</source>
+    </trans-unit>
+    <trans-unit id="queryHistory.noEntries">
+      <source xml:lang="en">No queries to display</source>
+    </trans-unit>
+    <trans-unit id="queryHistory.open">
+      <source xml:lang="en">Open Query</source>
+    </trans-unit>
+    <trans-unit id="queryHistory.run">
+      <source xml:lang="en">Run Query</source>
     </trans-unit>
 </body></file>
 </xliff>

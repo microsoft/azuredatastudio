@@ -4,18 +4,17 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Registry } from 'vs/platform/registry/common/platform';
-import { IEditorInput } from 'vs/workbench/common/editor';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { ServicesAccessor, IInstantiationService, BrandedService } from 'vs/platform/instantiation/common/instantiation';
 import { IDisposable, toDisposable } from 'vs/base/common/lifecycle';
 
-export type InputCreator = (servicesAccessor: ServicesAccessor, activeEditor: IEditorInput) => EditorInput | undefined;
-export type BaseInputCreator = (activeEditor: IEditorInput) => IEditorInput;
+export type InputCreator = (servicesAccessor: ServicesAccessor, activeEditor: EditorInput) => EditorInput | undefined;
+export type BaseInputCreator = (activeEditor: EditorInput) => EditorInput;
 
 export interface ILanguageAssociation {
-	convertInput(activeEditor: IEditorInput): Promise<EditorInput | undefined> | EditorInput | undefined;
-	syncConvertInput?(activeEditor: IEditorInput): EditorInput | undefined;
-	createBase(activeEditor: IEditorInput): IEditorInput;
+	convertInput(activeEditor: EditorInput): Promise<EditorInput | undefined> | EditorInput | undefined;
+	syncConvertInput?(activeEditor: EditorInput): EditorInput | undefined;
+	createBase(activeEditor: EditorInput): EditorInput;
 }
 
 type ILanguageAssociationSignature<Services extends BrandedService[]> = new (...services: Services) => ILanguageAssociation;

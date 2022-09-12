@@ -8,7 +8,7 @@ import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { ITaskbarContent, Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { AzdataGraphView } from 'sql/workbench/contrib/executionPlan/browser/azdataGraphView';
-import { ExecutionPlanComparisonPropertiesView } from 'sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView';
+import { ExecutionPlanCompareOrientation, ExecutionPlanComparisonPropertiesView } from 'sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView';
 import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
 import { IHorizontalSashLayoutProvider, ISashEvent, IVerticalSashLayoutProvider, Orientation, Sash } from 'vs/base/browser/ui/sash/sash';
 import { Action } from 'vs/base/common/actions';
@@ -19,18 +19,20 @@ import { IColorTheme, ICssStyleCollector, IThemeService, registerThemingParticip
 import * as DOM from 'vs/base/browser/dom';
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { localize } from 'vs/nls';
-import { addIconClassName, openPropertiesIconClassNames, polygonBorderColor, polygonFillColor, resetZoomIconClassName, splitScreenHorizontallyIconClassName, splitScreenVerticallyIconClassName, zoomInIconClassNames, zoomOutIconClassNames, zoomToFitIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/constants';
+import { addIconClassName, openPropertiesIconClassNames, polygonBorderColor, polygonFillColor, resetZoomIconClassName, searchIconClassNames, splitScreenHorizontallyIconClassName, splitScreenVerticallyIconClassName, zoomInIconClassNames, zoomOutIconClassNames, zoomToFitIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/constants';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { extname } from 'vs/base/common/path';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { InfoBox } from 'sql/workbench/browser/ui/infoBox/infoBox';
 import { LoadingSpinner } from 'sql/base/browser/ui/loadingSpinner/loadingSpinner';
-import { errorForeground, listHoverBackground, textLinkForeground } from 'vs/platform/theme/common/colorRegistry';
+import { contrastBorder, editorWidgetBackground, errorForeground, listHoverBackground, textLinkForeground, widgetShadow } from 'vs/platform/theme/common/colorRegistry';
 import { ExecutionPlanViewHeader } from 'sql/workbench/contrib/executionPlan/browser/executionPlanViewHeader';
 import { attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
 import { IProgressService, ProgressLocation } from 'vs/platform/progress/common/progress';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { ExecutionPlanWidgetController } from 'sql/workbench/contrib/executionPlan/browser/executionPlanWidgetController';
+import { NodeSearchWidget } from 'sql/workbench/contrib/executionPlan/browser/widgets/nodeSearchWidget';
 
 export class ExecutionPlanComparisonEditorView {
 
@@ -45,6 +47,8 @@ export class ExecutionPlanComparisonEditorView {
 	private _resetZoomAction: Action;
 	private _propertiesAction: Action;
 	private _toggleOrientationAction: Action;
+	private _searchNodeAction: Action;
+	private _searchNodeActionForAddedPlan: Action;
 
 	private _planComparisonContainer: HTMLElement;
 
@@ -56,7 +60,12 @@ export class ExecutionPlanComparisonEditorView {
 	private _sashContainer: HTMLElement;
 	private _horizontalSash: Sash;
 	private _verticalSash: Sash;
-	private _orientation: 'horizontal' | 'vertical' = 'horizontal';
+	private _orientation: ExecutionPlanCompareOrientation = ExecutionPlanCompareOrientation.Horizontal;
+
+	private _topWidgetContainer: HTMLElement;
+	public topWidgetController: ExecutionPlanWidgetController;
+	private _bottomWidgetContainer: HTMLElement;
+	public bottomWidgetController: ExecutionPlanWidgetController;
 
 	private _placeholderContainer: HTMLElement;
 	private _placeholderInfoboxContainer: HTMLElement;
@@ -77,10 +86,11 @@ export class ExecutionPlanComparisonEditorView {
 		bottomPolygon: azdata.executionPlan.ExecutionGraphComparisonResult
 	}> = new Map();
 
-	private get _activeTopPlanDiagram(): AzdataGraphView {
+	public get activeTopPlanDiagram(): AzdataGraphView | undefined {
 		if (this.topPlanDiagrams.length > 0) {
 			return this.topPlanDiagrams[this._activeTopPlanIndex];
 		}
+
 		return undefined;
 	}
 
@@ -95,10 +105,11 @@ export class ExecutionPlanComparisonEditorView {
 	private _bottomSimilarNode: Map<string, azdata.executionPlan.ExecutionGraphComparisonResult> = new Map();
 	private _latestRequestUuid: string;
 
-	private get _activeBottomPlanDiagram(): AzdataGraphView {
+	public get activeBottomPlanDiagram(): AzdataGraphView | undefined {
 		if (this.bottomPlanDiagrams.length > 0) {
 			return this.bottomPlanDiagrams[this._activeBottomPlanIndex];
 		}
+
 		return undefined;
 	}
 
@@ -108,7 +119,7 @@ export class ExecutionPlanComparisonEditorView {
 
 	constructor(
 		parentContainer: HTMLElement,
-		@IInstantiationService private _instantiationService: IInstantiationService,
+		@IInstantiationService private readonly _instantiationService: IInstantiationService,
 		@IThemeService private themeService: IThemeService,
 		@IExecutionPlanService private _executionPlanService: IExecutionPlanService,
 		@IFileDialogService private _fileDialogService: IFileDialogService,
@@ -139,6 +150,8 @@ export class ExecutionPlanComparisonEditorView {
 		this._zoomToFitAction = new ZoomToFitAction();
 		this._propertiesAction = this._instantiationService.createInstance(PropertiesAction);
 		this._toggleOrientationAction = new ToggleOrientation();
+		this._searchNodeAction = this._instantiationService.createInstance(SearchNodeAction, PlanIdentifier.Primary);
+		this._searchNodeActionForAddedPlan = this._instantiationService.createInstance(SearchNodeAction, PlanIdentifier.Added);
 		this._resetZoomAction = new ZoomReset();
 		const content: ITaskbarContent[] = [
 			{ action: this._addExecutionPlanAction },
@@ -147,7 +160,9 @@ export class ExecutionPlanComparisonEditorView {
 			{ action: this._zoomToFitAction },
 			{ action: this._resetZoomAction },
 			{ action: this._toggleOrientationAction },
-			{ action: this._propertiesAction }
+			{ action: this._propertiesAction },
+			{ action: this._searchNodeAction },
+			{ action: this._searchNodeActionForAddedPlan }
 		];
 		this._taskbar.setContent(content);
 		this.container.appendChild(this._taskbarContainer);
@@ -158,6 +173,7 @@ export class ExecutionPlanComparisonEditorView {
 		this.container.appendChild(this._planComparisonContainer);
 		this.initializeSplitView();
 		this.initializeProperties();
+		this.initializeWidgetControllers();
 	}
 
 	private initializeSplitView(): void {
@@ -185,18 +201,17 @@ export class ExecutionPlanComparisonEditorView {
 		this._topPlanDropdown = new SelectBox(['option 1', 'option2'], 'option1', this.contextViewService, this._topPlanDropdownContainer);
 		this._topPlanDropdown.render(this._topPlanDropdownContainer);
 		this._topPlanDropdown.onDidSelect(async (e) => {
-			if (this._activeBottomPlanDiagram) {
-				this._activeBottomPlanDiagram.clearSubtreePolygon();
-			}
-			this._activeTopPlanDiagram.clearSubtreePolygon();
+			this.activeBottomPlanDiagram?.clearSubtreePolygon();
+			this.activeTopPlanDiagram?.clearSubtreePolygon();
+
 			this._topPlanDiagramContainers.forEach(c => {
 				c.style.display = 'none';
 			});
 			this._topPlanDiagramContainers[e.index].style.display = '';
-			this.topPlanDiagrams[e.index].selectElement(undefined);
 			this._propertiesView.setTopElement(this._topPlanDiagramModels[e.index].root);
 			this._topPlanRecommendations.recommendations = this._topPlanDiagramModels[e.index].recommendations;
 			this._activeTopPlanIndex = e.index;
+
 			await this.getSkeletonNodes();
 		});
 		attachSelectBoxStyler(this._topPlanDropdown, this.themeService);
@@ -211,18 +226,17 @@ export class ExecutionPlanComparisonEditorView {
 		this._bottomPlanDropdown = new SelectBox(['option 1', 'option2'], 'option1', this.contextViewService, this._bottomPlanDropdownContainer);
 		this._bottomPlanDropdown.render(this._bottomPlanDropdownContainer);
 		this._bottomPlanDropdown.onDidSelect(async (e) => {
-			this._activeBottomPlanDiagram.clearSubtreePolygon();
-			if (this._activeTopPlanDiagram) {
-				this._activeTopPlanDiagram.clearSubtreePolygon();
-			}
+			this.activeBottomPlanDiagram?.clearSubtreePolygon();
+			this.activeTopPlanDiagram?.clearSubtreePolygon();
+
 			this._bottomPlanDiagramContainers.forEach(c => {
 				c.style.display = 'none';
 			});
 			this._bottomPlanDiagramContainers[e.index].style.display = '';
-			this.bottomPlanDiagrams[e.index].selectElement(undefined);
 			this._propertiesView.setTopElement(this._bottomPlanDiagramModels[e.index].root);
 			this._bottomPlanRecommendations.recommendations = this._bottomPlanDiagramModels[e.index].recommendations;
 			this._activeBottomPlanIndex = e.index;
+
 			await this.getSkeletonNodes();
 		});
 		attachSelectBoxStyler(this._bottomPlanDropdown, this.themeService);
@@ -271,6 +285,16 @@ export class ExecutionPlanComparisonEditorView {
 		this._propertiesContainer = DOM.$('.properties');
 		this._propertiesView = this._instantiationService.createInstance(ExecutionPlanComparisonPropertiesView, this._propertiesContainer);
 		this._planComparisonContainer.appendChild(this._propertiesContainer);
+	}
+
+	private initializeWidgetControllers(): void {
+		this._topWidgetContainer = DOM.$('.plan-action-container');
+		this._topPlanContainer.appendChild(this._topWidgetContainer);
+		this.topWidgetController = new ExecutionPlanWidgetController(this._topWidgetContainer);
+
+		this._bottomWidgetContainer = DOM.$('.plan-action-container');
+		this._bottomPlanContainer.appendChild(this._bottomWidgetContainer);
+		this.bottomWidgetController = new ExecutionPlanWidgetController(this._bottomWidgetContainer);
 	}
 
 	public async openAndAddExecutionPlanFile(): Promise<void> {
@@ -325,11 +349,15 @@ export class ExecutionPlanComparisonEditorView {
 					const id = e.id.replace(`element-`, '');
 					if (this._topSimilarNode.has(id)) {
 						const similarNode = this._topSimilarNode.get(id);
-						const element = this._activeBottomPlanDiagram.getElementById(`element-` + similarNode.matchingNodesId[0]);
-						if (similarNode.matchingNodesId.find(m => this._activeBottomPlanDiagram.getSelectedElement().id === `element-` + m) !== undefined) {
-							return;
+
+						if (this.activeBottomPlanDiagram) {
+							const element = this.activeBottomPlanDiagram.getElementById(`element-` + similarNode.matchingNodesId[0]);
+							if (this.activeBottomPlanDiagram.getSelectedElement() && similarNode.matchingNodesId.find(m => this.activeBottomPlanDiagram.getSelectedElement().id === `element-` + m) !== undefined) {
+								return;
+							}
+
+							this.activeBottomPlanDiagram.selectElement(element);
 						}
-						this._activeBottomPlanDiagram.selectElement(element);
 					}
 				});
 				this.topPlanDiagrams.push(diagram);
@@ -343,6 +371,7 @@ export class ExecutionPlanComparisonEditorView {
 			this._resetZoomAction.enabled = true;
 			this._zoomToFitAction.enabled = true;
 			this._toggleOrientationAction.enabled = true;
+			this._searchNodeAction.enabled = true;
 		} else {
 			this._bottomPlanDiagramModels = executionPlanGraphs;
 			this._bottomPlanDropdown.setOptions(executionPlanGraphs.map((e, index) => {
@@ -360,11 +389,15 @@ export class ExecutionPlanComparisonEditorView {
 					const id = e.id.replace(`element-`, '');
 					if (this._bottomSimilarNode.has(id)) {
 						const similarNode = this._bottomSimilarNode.get(id);
-						const element = this._activeTopPlanDiagram.getElementById(`element-` + similarNode.matchingNodesId[0]);
-						if (similarNode.matchingNodesId.find(m => this._activeTopPlanDiagram.getSelectedElement().id === `element-` + m) !== undefined) {
-							return;
+
+						if (this.activeTopPlanDiagram) {
+							const element = this.activeTopPlanDiagram.getElementById(`element-` + similarNode.matchingNodesId[0]);
+							if (this.activeTopPlanDiagram.getSelectedElement() && similarNode.matchingNodesId.find(m => this.activeTopPlanDiagram.getSelectedElement().id === `element-` + m) !== undefined) {
+								return;
+							}
+
+							this.activeTopPlanDiagram.selectElement(element);
 						}
-						this._activeTopPlanDiagram.selectElement(element);
 					}
 				});
 				this.bottomPlanDiagrams.push(diagram);
@@ -373,15 +406,17 @@ export class ExecutionPlanComparisonEditorView {
 			this._bottomPlanDropdown.select(preSelectIndex);
 			this._propertiesView.setBottomElement(executionPlanGraphs[0].root);
 			this._addExecutionPlanAction.enabled = false;
+			this._searchNodeActionForAddedPlan.enabled = true;
 		}
 		this.refreshSplitView();
 	}
 
 	private async getSkeletonNodes(): Promise<void> {
-		if (!this._activeBottomPlanDiagram) {
+		if (!this.activeBottomPlanDiagram) {
 			return;
 		}
-		this._progressService.withProgress(
+
+		await this._progressService.withProgress(
 			{
 				location: ProgressLocation.Notification,
 				title: localize('epCompare.comparisonProgess', "Loading similar areas in compared plans"),
@@ -406,9 +441,11 @@ export class ExecutionPlanComparisonEditorView {
 					this.getSimilarSubtrees(result.secondComparisonResult, true);
 					let colorIndex = 0;
 					this._polygonRootsMap.forEach((v, k) => {
-						this._activeTopPlanDiagram.drawSubtreePolygon(v.topPolygon.baseNode.id, polygonFillColor[colorIndex], polygonBorderColor[colorIndex]);
-						this._activeBottomPlanDiagram.drawSubtreePolygon(v.bottomPolygon.baseNode.id, polygonFillColor[colorIndex], polygonBorderColor[colorIndex]);
-						colorIndex += 1;
+						if (this.activeTopPlanDiagram && this.activeBottomPlanDiagram) {
+							this.activeTopPlanDiagram.drawSubtreePolygon(v.topPolygon.baseNode.id, polygonFillColor[colorIndex], polygonBorderColor[colorIndex]);
+							this.activeBottomPlanDiagram.drawSubtreePolygon(v.bottomPolygon.baseNode.id, polygonFillColor[colorIndex], polygonBorderColor[colorIndex]);
+							colorIndex += 1;
+						}
 					});
 				}
 				return;
@@ -452,7 +489,7 @@ export class ExecutionPlanComparisonEditorView {
 			this._topPlanContainer.style.minHeight = '200px';
 			this._topPlanContainer.style.minWidth = '';
 			this._topPlanContainer.style.flex = '1';
-			this._orientation = 'horizontal';
+			this._orientation = ExecutionPlanCompareOrientation.Horizontal;
 			this._toggleOrientationAction.class = splitScreenHorizontallyIconClassName;
 		} else {
 			this._sashContainer.style.width = '3px';
@@ -460,9 +497,11 @@ export class ExecutionPlanComparisonEditorView {
 			this.planSplitViewContainer.style.flexDirection = 'row';
 			this._topPlanContainer.style.minHeight = '';
 			this._topPlanContainer.style.minWidth = '200px';
-			this._orientation = 'vertical';
+			this._orientation = ExecutionPlanCompareOrientation.Vertical;
 			this._toggleOrientationAction.class = splitScreenVerticallyIconClassName;
 		}
+
+		this._propertiesView.orientation = this._orientation;
 		this._topPlanContainer.style.flex = '1';
 		this._bottomPlanContainer.style.flex = '1';
 	}
@@ -498,37 +537,40 @@ export class ExecutionPlanComparisonEditorView {
 	}
 
 	public zoomIn(): void {
-		this._activeTopPlanDiagram.zoomIn();
-		this._activeBottomPlanDiagram.zoomIn();
+		this.activeTopPlanDiagram?.zoomIn();
+		this.activeBottomPlanDiagram?.zoomIn();
+
 		this.syncZoom();
 	}
 
 	public zoomOut(): void {
-		this._activeTopPlanDiagram.zoomOut();
-		this._activeBottomPlanDiagram.zoomOut();
+		this.activeTopPlanDiagram?.zoomOut();
+		this.activeBottomPlanDiagram?.zoomOut();
+
 		this.syncZoom();
 	}
 
 	public zoomToFit(): void {
-		this._activeTopPlanDiagram.zoomToFit();
-		this._activeBottomPlanDiagram.zoomToFit();
+		this.activeTopPlanDiagram?.zoomToFit();
+		this.activeBottomPlanDiagram.zoomToFit();
+
 		this.syncZoom();
 	}
 
 	public resetZoom(): void {
-		if (this._activeTopPlanDiagram) {
-			this._activeTopPlanDiagram.setZoomLevel(100);
-		}
-		if (this._activeBottomPlanDiagram) {
-			this._activeBottomPlanDiagram.setZoomLevel(100);
-		}
+		this.activeTopPlanDiagram?.setZoomLevel(100);
+		this.activeBottomPlanDiagram?.setZoomLevel(100);
 	}
 
 	private syncZoom(): void {
-		if (this._activeTopPlanDiagram.getZoomLevel() < this._activeBottomPlanDiagram.getZoomLevel()) {
-			this._activeBottomPlanDiagram.setZoomLevel(this._activeTopPlanDiagram.getZoomLevel());
+		if (this.activeTopPlanDiagram === undefined && this.activeBottomPlanDiagram === undefined) {
+			return;
+		}
+
+		if (this.activeTopPlanDiagram.getZoomLevel() < this.activeBottomPlanDiagram.getZoomLevel()) {
+			this.activeBottomPlanDiagram.setZoomLevel(this.activeTopPlanDiagram.getZoomLevel());
 		} else {
-			this._activeTopPlanDiagram.setZoomLevel(this._activeBottomPlanDiagram.getZoomLevel());
+			this.activeTopPlanDiagram.setZoomLevel(this.activeBottomPlanDiagram.getZoomLevel());
 		}
 	}
 }
@@ -638,6 +680,41 @@ class PropertiesAction extends Action {
 	}
 }
 
+enum PlanIdentifier {
+	Primary = 0,
+	Added = 1
+}
+
+class SearchNodeAction extends Action {
+	public static ID = 'epCompare.searchNodeAction';
+	public static LABEL = localize('epCompare.searchNodeAction', 'Find Node');
+	public static LABEL_FOR_ADDED_PLAN = localize('epCompare.searchNodeActionAddedPlan', 'Find Node - Added Plan');
+
+	constructor(private readonly _planIdentifier: PlanIdentifier, @IInstantiationService private readonly _instantiationService: IInstantiationService, @IAdsTelemetryService private readonly _telemetryService: IAdsTelemetryService) {
+		const getLabelForAction = () => {
+			return _planIdentifier === PlanIdentifier.Added ? SearchNodeAction.LABEL_FOR_ADDED_PLAN : SearchNodeAction.LABEL;
+		};
+
+		super(SearchNodeAction.ID, getLabelForAction(), searchIconClassNames);
+		this.enabled = false;
+	}
+
+	public override async run(context: ExecutionPlanComparisonEditorView): Promise<void> {
+		let executionPlan = this._planIdentifier === PlanIdentifier.Added ? context.activeBottomPlanDiagram : context.activeTopPlanDiagram;
+		let widgetController = this._planIdentifier === PlanIdentifier.Added ? context.bottomWidgetController : context.topWidgetController;
+
+		if (executionPlan) {
+			this._telemetryService
+				.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.FindNode)
+				.withAdditionalProperties({ source: 'ComparisonView' })
+				.send();
+
+			let nodeSearchWidget = this._instantiationService.createInstance(NodeSearchWidget, widgetController, executionPlan);
+			widgetController.toggleWidget(nodeSearchWidget);
+		}
+	}
+}
+
 class HorizontalSash implements IHorizontalSashLayoutProvider {
 	constructor(private _context: ExecutionPlanComparisonEditorView) {
 	}
@@ -690,6 +767,30 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 		collector.addRule(`
 		.eps-container .comparison-editor .plan-comparison-container .split-view-container .plan-container .recommendations {
 			background-color: ${menuBackgroundColor};
+		}
+		`);
+	}
+	const shadow = theme.getColor(widgetShadow);
+	if (shadow) {
+		collector.addRule(`
+		.eps-container .comparison-editor .plan-comparison-container .split-view-container .plan-container .plan-action-container .child {
+			box-shadow: 0 0 8px 2px ${shadow};
+		}
+		`);
+	}
+	const widgetBackgroundColor = theme.getColor(editorWidgetBackground);
+	if (widgetBackgroundColor) {
+		collector.addRule(`
+		.eps-container .comparison-editor .plan-comparison-container .split-view-container .plan-container .plan-action-container .child {
+			background-color: ${widgetBackgroundColor};
+		}
+		`);
+	}
+	const widgetBorderColor = theme.getColor(contrastBorder);
+	if (widgetBorderColor) {
+		collector.addRule(`
+		.eps-container .comparison-editor .plan-comparison-container .split-view-container .plan-container .plan-action-container .child {
+			border: 1px solid ${widgetBorderColor};
 		}
 		`);
 	}

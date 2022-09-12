@@ -41,7 +41,7 @@ describe('Add Connection String Execute Step', () => {
 		// Include Password Prompt - Yes to include password
 		let quickPickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves((constants.yesString) as any);
 		// setup stub for setting local app setting with connection string
-		sinon.stub(fs.promises, 'writeFile');
+		sinon.stub(fs.promises, 'writeFile').resolves();
 		sinon.stub(azureFunctionUtils, 'setLocalAppSetting').withArgs(sinon.match.any, sinon.match.any, sinon.match.any).resolves(true);
 
 		// call execute step on the AzureWizardExecuteStep

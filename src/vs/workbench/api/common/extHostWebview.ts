@@ -5,6 +5,7 @@
 
 import { VSBuffer } from 'vs/base/common/buffer';
 import { Emitter, Event } from 'vs/base/common/event';
+import { Schemas } from 'vs/base/common/network';
 import { URI } from 'vs/base/common/uri';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { normalizeVersion, parseVersion } from 'vs/platform/extensions/common/extensionValidator';
@@ -73,6 +74,17 @@ export class ExtHostWebview implements vscode.Webview {
 	}
 
 	public get cspSource(): string {
+		const extensionLocation = this.#extension.extensionLocation;
+		if (extensionLocation.scheme === Schemas.https || extensionLocation.scheme === Schemas.http) {
+			// The extension is being served up from a CDN.
+			// Also include the CDN in the default csp.
+			let extensionCspRule = extensionLocation.toString();
+			if (!extensionCspRule.endsWith('/')) {
+				// Always treat the location as a directory so that we allow all content under it
+				extensionCspRule += '/';
+			}
+			return extensionCspRule + ' ' + webviewGenericCspSource;
+		}
 		return webviewGenericCspSource;
 	}
 
@@ -194,6 +206,7 @@ export function serializeWebviewOptions(
 	return {
 		enableCommandUris: options.enableCommandUris,
 		enableScripts: options.enableScripts,
+		enableForms: options.enableForms,
 		portMapping: options.portMapping,
 		localResourceRoots: options.localResourceRoots || getDefaultLocalResourceRoots(extension, workspace)
 	};
@@ -203,6 +216,7 @@ export function reviveOptions(options: extHostProtocol.IWebviewOptions): vscode.
 	return {
 		enableCommandUris: options.enableCommandUris,
 		enableScripts: options.enableScripts,
+		enableForms: options.enableForms,
 		portMapping: options.portMapping,
 		localResourceRoots: options.localResourceRoots?.map(components => URI.from(components)),
 	};

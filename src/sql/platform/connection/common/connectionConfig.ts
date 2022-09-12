@@ -48,6 +48,7 @@ export class ConnectionConfig {
 		const config = this.configurationService.inspect<IConnectionProfileGroup[]>(GROUPS_CONFIG_KEY);
 		let { userValue } = config;
 		const { workspaceValue } = config;
+		const sortBy = this.configurationService.getValue<string>(CONNECTIONS_SORT_BY_CONFIG_KEY);
 
 		if (userValue) {
 			if (workspaceValue) {
@@ -57,23 +58,8 @@ export class ConnectionConfig {
 			allGroups = allGroups.concat(userValue);
 		}
 
-		const sortBy = this.configurationService.getValue<string>(CONNECTIONS_SORT_BY_CONFIG_KEY);
-		let sortFunc: (a: IConnectionProfileGroup, b: IConnectionProfileGroup) => number;
-
 		if (sortBy === ConnectionsSortOrder.displayName) {
-			sortFunc = ((a, b) => {
-				if (a.name < b.name) {
-					return -1;
-				} else if (a.name > b.name) {
-					return 1;
-				} else {
-					return 0;
-				}
-			});
-		}
-
-		if (sortFunc) {
-			allGroups.sort(sortFunc);
+			allGroups.sort((a, b) => a.name.localeCompare(b.name));
 		}
 
 		return deepClone(allGroups).map(g => {
@@ -249,24 +235,10 @@ export class ConnectionConfig {
 		let connectionProfiles = this.getIConnectionProfileStores(getWorkspaceConnections).map(p => {
 			return ConnectionProfile.createFromStoredProfile(p, this._capabilitiesService);
 		});
-
 		const sortBy = this.configurationService.getValue<string>(CONNECTIONS_SORT_BY_CONFIG_KEY);
-		let sortFunc: (a: ConnectionProfile, b: ConnectionProfile) => number;
 
 		if (sortBy === ConnectionsSortOrder.displayName) {
-			sortFunc = ((a, b) => {
-				if (a.title < b.title) {
-					return -1;
-				} else if (a.title > b.title) {
-					return 1;
-				} else {
-					return 0;
-				}
-			});
-		}
-
-		if (sortFunc) {
-			connectionProfiles.sort(sortFunc);
+			connectionProfiles.sort((a, b) => a.title.localeCompare(b.title));
 		}
 
 		return connectionProfiles;

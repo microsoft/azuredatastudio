@@ -416,7 +416,7 @@ export const NOTEBOOK_VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(View
 	ctorDescriptor: new SyncDescriptor(NotebookExplorerViewPaneContainer),
 	openCommandActionDescriptor: {
 		id: VIEWLET_ID,
-		keybindings: { primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_B },
+		keybindings: { primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KeyB },
 		order: 0
 	},
 	icon: { id: notebookIconId },

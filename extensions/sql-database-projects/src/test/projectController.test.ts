@@ -30,8 +30,8 @@ import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialo
 import { IDacpacReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { CreateProjectFromDatabaseDialog } from '../dialogs/createProjectFromDatabaseDialog';
 import { ImportDataModel } from '../models/api/import';
-import { ItemType, SqlTargetPlatform } from 'sqldbproj';
-import { SystemDatabaseReferenceProjectEntry, SystemDatabase, EntryType, FileProjectEntry } from '../models/projectEntry';
+import { EntryType, ItemType, SqlTargetPlatform } from 'sqldbproj';
+import { SystemDatabaseReferenceProjectEntry, SystemDatabase, FileProjectEntry } from '../models/projectEntry';
 
 let testContext: TestContext;
 
@@ -366,28 +366,36 @@ describe('ProjectsController', function (): void {
 				let projController = TypeMoq.Mock.ofType(ProjectsController);
 				projController.callBase = true;
 				projController.setup(x => x.getPublishDialog(TypeMoq.It.isAny())).returns(() => publishDialog.object);
-
-				void projController.object.publishProject(new Project('FakePath'));
+				const proj = new Project('FakePath');
+				sinon.stub(proj, 'getProjectTargetVersion').returns('150');
+				void projController.object.publishProject(proj);
 				should(opened).equal(true);
 			});
 
 			it('Callbacks are hooked up and called from Publish dialog', async function (): Promise<void> {
-				const projPath = path.dirname(await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline));
-				await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, projPath);
-				const proj = new Project(projPath);
+				const projectFile = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline)
+				const projFolder = path.dirname(projectFile);
+				await testUtils.createTestDataSources(baselines.openDataSourcesBaseline, projFolder);
+				const proj = await Project.openProject(projectFile);
 
 				const publishHoller = 'hello from callback for publish()';
 				const generateHoller = 'hello from callback for generateScript()';
 
 				let holler = 'nothing';
 
-				let publishDialog = TypeMoq.Mock.ofType(PublishDatabaseDialog, undefined, undefined, proj);
-				publishDialog.callBase = true;
-				publishDialog.setup(x => x.getConnectionUri()).returns(() => Promise.resolve('fake|connection|uri'));
+				const setupPublishDialog = (): PublishDatabaseDialog => {
+					const dialog = new PublishDatabaseDialog(proj);
+					sinon.stub(dialog, 'getConnectionUri').returns(Promise.resolve('fake|connection|uri'));
+					return dialog;
+				};
+
+				let publishDialog = setupPublishDialog();
 
 				let projController = TypeMoq.Mock.ofType(ProjectsController);
 				projController.callBase = true;
-				projController.setup(x => x.getPublishDialog(TypeMoq.It.isAny())).returns(() => publishDialog.object);
+				projController.setup(x => x.getPublishDialog(TypeMoq.It.isAny())).returns(() => {
+					return publishDialog;
+				});
 				projController.setup(x => x.publishOrScriptProject(TypeMoq.It.isAny(), TypeMoq.It.isAny(), true)).returns(() => {
 					holler = publishHoller;
 					return Promise.resolve(undefined);
@@ -397,14 +405,15 @@ describe('ProjectsController', function (): void {
 					holler = generateHoller;
 					return Promise.resolve(undefined);
 				});
-				publishDialog.object.publishToExistingServer = true;
+				publishDialog.publishToExistingServer = true;
 				void projController.object.publishProject(proj);
-				await publishDialog.object.publishClick();
+				await publishDialog.publishClick();
 
 				should(holler).equal(publishHoller, 'executionCallback() is supposed to have been setup and called for Publish scenario');
 
+				publishDialog = setupPublishDialog();
 				void projController.object.publishProject(proj);
-				await publishDialog.object.generateScriptClick();
+				await publishDialog.generateScriptClick();
 
 				should(holler).equal(generateHoller, 'executionCallback() is supposed to have been setup and called for GenerateScript scenario');
 			});
@@ -603,6 +612,11 @@ describe('ProjectsController', function (): void {
 			const dataWorkspaceMock = TypeMoq.Mock.ofType<dataworkspace.IExtension>();
 			dataWorkspaceMock.setup(x => x.getProjectsInWorkspace(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve([vscode.Uri.file(project1.projectFilePath), vscode.Uri.file(project2.projectFilePath)]));
 			sinon.stub(vscode.extensions, 'getExtension').returns(<any>{ exports: dataWorkspaceMock.object });
+			sinon.stub(utils, 'getDacFxService').returns(<any>{
+				parseTSqlScript: (_: string, __: string) => {
+					return Promise.resolve({ containsCreateTableStatement: true });
+				}
+			});
 
 			// add project reference from project1 to project2
 			await projController.addDatabaseReferenceCallback(project1, {
@@ -633,7 +647,11 @@ describe('ProjectsController', function (): void {
 			const showErrorMessageSpy = sinon.spy(vscode.window, 'showErrorMessage');
 			const dataWorkspaceMock = TypeMoq.Mock.ofType<dataworkspace.IExtension>();
 			sinon.stub(vscode.extensions, 'getExtension').returns(<any>{ exports: dataWorkspaceMock.object });
-
+			sinon.stub(utils, 'getDacFxService').returns(<any>{
+				parseTSqlScript: (_: string, __: string) => {
+					return Promise.resolve({ containsCreateTableStatement: true });
+				}
+			});
 			// add dacpac reference to something in the same folder
 			should(project1.databaseReferences.length).equal(0, 'There should not be any database references to start with');
 

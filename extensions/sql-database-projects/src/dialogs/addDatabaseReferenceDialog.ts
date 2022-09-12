@@ -233,7 +233,7 @@ export class AddDatabaseReferenceDialog {
 		let flexRadioButtonsModel: azdataType.FlexContainer = this.view!.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
 			.withItems([this.projectRadioButton, this.systemDatabaseRadioButton, dacpacRadioButton])
-			.withProps({ ariaRole: 'radiogroup' })
+			.withProps({ ariaRole: 'radiogroup', ariaLabel: constants.referenceRadioButtonsGroupTitle })
 			.component();
 
 		return {

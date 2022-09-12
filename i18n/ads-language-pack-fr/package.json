@@ -2,7 +2,7 @@
 	"name": "ads-language-pack-fr",
 	"displayName": "French Language Pack for Azure Data Studio",
 	"description": "Language pack extension for French",
-	"version": "1.37.0",
+	"version": "1.39.0",
 	"publisher": "Microsoft",
 	"repository": {
 		"type": "git",
@@ -11,7 +11,7 @@
 	"license": "SEE SOURCE EULA LICENSE IN LICENSE.txt",
 	"engines": {
 		"vscode": "*",
-		"azdata": "^1.37.0"
+		"azdata": "^1.39.0"
 	},
 	"icon": "languagepack.png",
 	"categories": [
@@ -39,10 +39,6 @@
 					{
 						"id": "vscode.docker",
 						"path": "./translations/extensions/docker.i18n.json"
-					},
-					{
-						"id": "vscode.extension-editing",
-						"path": "./translations/extensions/extension-editing.i18n.json"
 					},
 					{
 						"id": "vscode.git-ui",
@@ -181,6 +177,10 @@
 						"path": "./translations/extensions/asde-deployment.i18n.json"
 					},
 					{
+						"id": "Microsoft.azcli",
+						"path": "./translations/extensions/azcli.i18n.json"
+					},
+					{
 						"id": "Microsoft.azurecore",
 						"path": "./translations/extensions/azurecore.i18n.json"
 					},
@@ -263,10 +263,6 @@
 					{
 						"id": "Microsoft.xml-language-features",
 						"path": "./translations/extensions/xml-language-features.i18n.json"
-					},
-					{
-						"id": "Microsoft.azcli",
-						"path": "./translations/extensions/azcli.i18n.json"
 					}
 				]
 			}

@@ -7,8 +7,19 @@
 	cursor: pointer;
 	-webkit-appearance: none;
 	opacity: 0.3;
+	width: 100%;
 }
 
 .colorbox.checked {
 	opacity: 1;
+}
+
+.colorbox-container {
+	margin: 5px;
+	text-align: center;
+	flex: 1 1 auto;
+}
+
+.colorbox-label {
+	user-select: text;
 }

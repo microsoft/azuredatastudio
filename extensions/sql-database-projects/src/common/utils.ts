@@ -15,7 +15,7 @@ import * as vscodeMssql from 'vscode-mssql';
 import * as fse from 'fs-extra';
 import * as which from 'which';
 import { promises as fs } from 'fs';
-import { Project } from '../models/project';
+import { ISqlProject, SqlTargetPlatform } from 'sqldbproj';
 
 export interface ValidationResult {
 	errorMessage: string;
@@ -322,27 +322,18 @@ export async function defaultAzureAccountServiceFactory(): Promise<vscodeMssql.I
 /*
  * Returns the default deployment options from DacFx, filtered to appropriate options for the given project.
  */
-export async function getDefaultPublishDeploymentOptions(project: Project): Promise<mssql.DeploymentOptions | vscodeMssql.DeploymentOptions> {
+export async function getDefaultPublishDeploymentOptions(project: ISqlProject): Promise<mssql.DeploymentOptions | vscodeMssql.DeploymentOptions> {
 	const schemaCompareService = await getSchemaCompareService();
 	const result = await schemaCompareService.schemaCompareGetDefaultOptions();
-	const deploymentOptions = result.defaultDeploymentOptions;
-	// re-include database-scoped credentials
-	if (getAzdataApi()) {
-		deploymentOptions.excludeObjectTypes.value = (deploymentOptions as mssql.DeploymentOptions).excludeObjectTypes.value?.filter(x => x !== mssql.SchemaObjectType.DatabaseScopedCredentials);
-	} else {
-		deploymentOptions.excludeObjectTypes.value = (deploymentOptions as vscodeMssql.DeploymentOptions).excludeObjectTypes.value?.filter(x => x !== vscodeMssql.SchemaObjectType.DatabaseScopedCredentials);
-	}
-
 	// this option needs to be true for same database references validation to work
 	if (project.databaseReferences.length > 0) {
-		deploymentOptions.includeCompositeObjects.value = true;
+		result.defaultDeploymentOptions.booleanOptionsDictionary.includeCompositeObjects.value = true;
 	}
 	return result.defaultDeploymentOptions;
 }
 
 export interface IPackageInfo {
 	name: string;
-	fullName: string;
 	version: string;
 	aiKey: string;
 }
@@ -363,11 +354,9 @@ export function getPackageInfo(packageJson?: any): IPackageInfo | undefined {
 	// package.vscode.json values replace the corresponding values in the package.json for the sql-database-projects-vscode extension
 	// so we need to read these values directly from the package.vscode.json to get the correct extension and publisher names
 	const extensionName = azdataApi ? packageJson.name : vscodePackageJson.name;
-	const publisher = azdataApi ? packageJson.publisher : vscodePackageJson.publisher;
 
 	return {
 		name: extensionName,
-		fullName: `${publisher}.${extensionName}`,
 		version: packageJson.version,
 		aiKey: packageJson.aiKey
 	};
@@ -699,4 +688,47 @@ export function throwIfNotConnected(connectionResult: azdataType.ConnectionResul
 	if (!connectionResult.connected) {
 		throw new Error(`${connectionResult.errorMessage} (${connectionResult.errorCode})`);
 	}
+}
+
+/**
+ * Checks whether or not the provided file contains a create table statement
+ * @param fullPath full path to file to check
+ * @param projectTargetVersion target version of sql project containing this file
+ * @returns true if file includes a create table statement, false if it doesn't
+ */
+export async function fileContainsCreateTableStatement(fullPath: string, projectTargetVersion: string): Promise<boolean> {
+	let containsCreateTableStatement = false;
+
+	if (getAzdataApi() && await exists(fullPath)) {
+		const dacFxService = await getDacFxService() as mssql.IDacFxService;
+		try {
+			const result = await dacFxService.parseTSqlScript(fullPath, projectTargetVersion);
+			containsCreateTableStatement = result.containsCreateTableStatement;
+		} catch (e) {
+			console.error(getErrorMessage(e));
+		}
+	}
+
+	return containsCreateTableStatement;
+}
+
+/**
+ * Gets target platform based on the server edition/version
+ * @param connectionId server connection profile id
+ * @returns target platform for the database project
+ */
+export async function getTargetPlatformFromServerVersion(connectionId: string): Promise<SqlTargetPlatform | undefined> {
+	const serverInfo = await getAzdataApi()!.connection.getServerInfo(connectionId);
+	const isCloud = serverInfo.isCloud;
+
+	let targetPlatform;
+	if (isCloud) {
+		const engineEdition = serverInfo.engineEditionId;
+		targetPlatform = engineEdition === getAzdataApi()!.DatabaseEngineEdition.SqlDataWarehouse ? SqlTargetPlatform.sqlDW : SqlTargetPlatform.sqlAzure;
+	} else {
+		const serverMajorVersion = serverInfo.serverMajorVersion;
+		targetPlatform = serverMajorVersion ? constants.onPremServerVersionToTargetPlatform.get(serverMajorVersion) : undefined;
+	}
+
+	return targetPlatform;
 }

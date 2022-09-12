@@ -9,10 +9,19 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
+			"queryHistory.captureEnabledDesc": "Query History キャプチャが有効かどうか。false の場合、実行されたクエリはキャプチャされません。",
 			"queryHistory.clear": "すべての履歴をクリア",
+			"queryHistory.delete": "削除",
 			"queryHistory.description": "以前に実行したクエリを表示して実行します",
+			"queryHistory.disableCapture": "Query History キャプチャの一時停止",
 			"queryHistory.displayName": "Query History",
-			"queryHistory.toggleCapture": "Query History キャプチャの切り替え"
+			"queryHistory.doubleClickAction": "履歴項目がダブルクリックされたときに実行されるアクション",
+			"queryHistory.doubleClickAction.open": "選択した履歴項目のクエリを使用して、切断された新しいエディターを開きます",
+			"queryHistory.doubleClickAction.run": "クエリーと選択した履歴項目からの接続を使用して新しい接続されたエディターを開き、クエリを自動的に実行します",
+			"queryHistory.enableCapture": "Query History キャプチャの開始",
+			"queryHistory.noEntries": "表示するクエリはありません",
+			"queryHistory.open": "クエリを開く",
+			"queryHistory.run": "クエリの実行"
 		}
 	}
 }

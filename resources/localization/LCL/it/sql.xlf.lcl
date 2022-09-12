@@ -933,6 +933,18 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
+      <Item ItemId=";@src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView.epCompare.searchNodeActionAdded" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) Plan" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Find Node - Added Plan]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Trova nodo - Piano aggiunto]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
       <Item ItemId=";@src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView.executionPlanComparisonProp" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) ertiesBottomOperation" ItemType="0" PsrId="308" Leaf="true">
@@ -940,6 +952,24 @@
             <Val><![CDATA[Bottom operation: {0}]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[Operazione inferiore: {0}]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+        <Item ItemId=";(...) ertiesLeftOperation" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Left operation: {0}]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Operazione a sinistra: {0}]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+        <Item ItemId=";(...) ertiesRightOperation" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Right operation: {0}]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Operazione a destra: {0}]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -985,6 +1015,24 @@
             <Val><![CDATA[Value (Bottom Plan)]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[Valore (piano inferiore)]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+        <Item ItemId=";(...) lumnLeftHeader" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Value (Left Plan)]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Valore (piano a sinistra)]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+        <Item ItemId=";(...) lumnRightHeader" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Value (Right Plan)]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Valore (piano a destra)]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -1263,18 +1311,6 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@src/sql/workbench/services/connection/browser/connectionDialogWidget.connectionDialog.connectionProviderNotSuppor" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) ted" ItemType="0" PsrId="308" Leaf="true">
-          <Str Cat="Text">
-            <Val><![CDATA[The extension that supports provider type '{0}' is not currently installed. Please install it and try again.]]></Val>
-            <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[L'estensione che supporta il tipo di provider '{0}' non è attualmente installata. Installarla e riprovare.]]></Val>
-            </Tgt>
-          </Str>
-          <Disp Icon="Str" />
-        </Item>
-      </Item>
       <Item ItemId=";@src/sql/workbench/services/connection/browser/connectionManagementService.connection.neverShowUnsupportedVersionW" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) arning" ItemType="0" PsrId="308" Leaf="true">
@@ -1294,6 +1330,18 @@
             <Val><![CDATA[The server version is not supported by Azure Data Studio, you may still connect to it but some features in Azure Data Studio might not work as expected.]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[La versione del server non è supportata da Azure Data Studio, è possibile comunque connettersi ad esso, ma alcune funzionalità di Azure Data Studio potrebbero non funzionare come previsto.]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@src/sql/workbench/services/connection/browser/connectionManagementService.connectionDialog.connectionProviderNotS" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) upported" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[The extension that supports provider type '{0}' is not currently installed. Do you want to view the extensions?]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[L'estensione che supporta il tipo di provider '{0}' non è attualmente installata. Visualizzare le estensioni?]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -3486,6 +3534,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/browser/designer/designer.designer.actions" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[More Actions]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Altre azioni]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/browser/designer/designer.designer.defaultRemoveRowConfirmationMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Are you sure you want to remove the row?]]></Val>
@@ -3542,10 +3599,13 @@
       </Item>
       <Item ItemId=";src/sql/workbench/browser/designer/designer.designer.moveRowText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Move Row]]></Val>
+          <Val><![CDATA[Move]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Sposta riga]]></Val>
+            <Val><![CDATA[Sposta]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Move Row]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7308,6 +7368,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView.epCompare.searchNodeAction" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Find Node]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Trova nodo]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView.epCompare.toggleOrientation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Toggle Orientation]]></Val>
@@ -7434,6 +7503,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase.ep.topOperationsCopyTableData" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Copy]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Copia]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase.executionPlanPropertyViewClose" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Close]]></Val>
@@ -7457,6 +7535,51 @@
           <Val><![CDATA[Query Plan (Preview)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Piano di query (Anteprima)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanTreeTab.ept.topOperationsCopyTableData" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Copy]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Copia]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanTreeTab.ept.topOperationsCopyWithHeader" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Copy with Header]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Copia con intestazione]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanTreeTab.ept.topOperationsSelectAll" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Select All]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Seleziona tutto]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanTreeTab.planTreeTab.title" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Plan Tree (Preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Albero dei piani (anteprima)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanTreeTab.topOperationsTableTitle" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Execution Plan Tree]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Albero del piano di esecuzione]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -7569,6 +7692,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanView.executionPlanTopOperationsAction" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Top Operations]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Operazioni più frequenti]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanView.executionPlanZoomInActionLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Zoom In]]></Val>
@@ -7601,6 +7733,51 @@
           <Val><![CDATA[Query {0}: Query cost (relative to the script): {1}%]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Query {0}: costo della query (relativo allo script): % {1}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/topOperationsTab.ep.topOperationsCopyTableData" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Copy]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Copia]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/topOperationsTab.ep.topOperationsCopyWithHeader" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Copy with Header]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Copia con intestazione]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/topOperationsTab.ep.topOperationsSelectAll" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Select All]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Seleziona tutto]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/topOperationsTab.topOperationsTabTitle" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Top Operations  (Preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Operazioni più frequenti (anteprima)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/topOperationsTab.topOperationsTableTitle" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Top Operations]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Operazioni più frequenti]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -7700,6 +7877,15 @@
           <Val><![CDATA[Previous Match (Shift+Enter)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Corrispondenza precedente (MAIUSC+INVIO)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/common/executionPlanInput.epCompare.executionPlanEditorName" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[ExecutionPlan]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ExecutionPlan]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -9243,11 +9429,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component.dropdownHeading" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";src/sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component.headingDropdownLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Heading]]></Val>
+          <Val><![CDATA[Text Size]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Intestazione]]></Val>
+            <Val><![CDATA[Dimensioni testo]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -11742,6 +11928,33 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/query/browser/gridPanel.query.QueryErrorOccured" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Error occured while executing the query.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Errore durante l'esecuzione della query.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/query/browser/gridPanel.query.QueryExecutionEnded" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Query execution completed.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Esecuzione attività completata.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/query/browser/gridPanel.query.QueryExecutionStarted" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Query execution started.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Esecuzione della query avviata.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/query/browser/gridPanel.resultsGrid" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Results grid]]></Val>
@@ -11768,6 +11981,15 @@
           <Val><![CDATA[XML Showplan]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Showplan XML]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/query/browser/keyboardQueryActions.ToggleActualPlanKeyboardAction" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Enable/Disable Actual Execution Plan]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Abilita/Disabilita piano di esecuzione effettivo]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -11885,15 +12107,6 @@
           <Val><![CDATA[Run Current Query]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Esegui query corrente]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/query/browser/keyboardQueryActions.runCurrentQueryWithActualPlanKeyboardAction" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Run Current Query with Actual Plan]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Esegui query corrente con piano effettivo]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -12174,6 +12387,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/query/browser/queryActions.ExecutionPlan" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Execution Plan]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Piano di esecuzione]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/query/browser/queryActions.actualQueryPlan" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Actual]]></Val>
@@ -12233,10 +12455,13 @@
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/query/browser/queryActions.disableActualPlanLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Exclude Actual Plan]]></Val>
+          <Val><![CDATA[Disable Actual Plan]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Escludi piano effettivo]]></Val>
+            <Val><![CDATA[Disabilita piano effettivo]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Exclude Actual Plan]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -12260,10 +12485,13 @@
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/query/browser/queryActions.enableActualPlanLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Include Actual Plan]]></Val>
+          <Val><![CDATA[Enable Actual Plan]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Includi piano effettivo]]></Val>
+            <Val><![CDATA[Abilita piano effettivo]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Include Actual Plan]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -12293,6 +12521,15 @@
           <Val><![CDATA[New Query]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Nuova query]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/query/browser/queryActions.query.multiSelectionNotSupported" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Running query is not supported when the editor is in multiple selection mode.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[L'esecuzione di query non è supportata quando l'editor è in modalità di selezione multipla.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -12500,348 +12737,6 @@
           <Val><![CDATA[Controls the row height in pixels]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Controlla l'altezza delle righe in pixel]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryHistory/browser/queryHistoryActions.queryHistory.clearLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Clear All History]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Cancella tutta la cronologia]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryHistory/browser/queryHistoryActions.queryHistory.delete" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Delete]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Elimina]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryHistory/browser/queryHistoryActions.queryHistory.disableCapture" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Pause Query History Capture]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Sospendi acquisizione della cronologia delle query]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryHistory/browser/queryHistoryActions.queryHistory.enableCapture" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Start Query History Capture]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Avvia acquisizione della cronologia delle query]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryHistory/browser/queryHistoryActions.queryHistory.openQuery" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Open Query]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Apri query]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryHistory/browser/queryHistoryActions.queryHistory.runQuery" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Run Query]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Esegui query]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryHistory/browser/queryHistoryActions.queryHistory.toggleCaptureLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Toggle Query History capture]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Attiva/Disattiva acquisizione della cronologia delle query]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryHistory/browser/queryHistoryActions.toggleQueryHistory" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Toggle Query History]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Attiva/Disattiva cronologia delle query]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryHistory/browser/queryHistoryRenderer.failed" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[failed]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[non riuscito]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryHistory/browser/queryHistoryRenderer.succeeded" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[succeeded]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[riuscito]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryHistory/browser/queryHistoryView.noQueriesMessage" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[No queries to display.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Non ci sono query da visualizzare.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryHistory/browser/queryHistoryView.queryHistory.regTreeAriaLabel" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Query History]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Cronologia delle query]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryHistory/electron-browser/queryHistory.miViewQueryHistory" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[&&Query History]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[&&Cronologia delle query]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryHistory/electron-browser/queryHistory.queryHistory" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Query History]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Cronologia delle query]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryHistory/electron-browser/queryHistory.queryHistory.clearLabel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Clear All History]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Cancella tutta la cronologia]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryHistory/electron-browser/queryHistory.queryHistory.disableCapture" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Pause Query History Capture]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Sospendi acquisizione della cronologia delle query]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryHistory/electron-browser/queryHistory.queryHistory.enableCapture" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Start Query History Capture]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Avvia acquisizione della cronologia delle query]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryHistory/electron-browser/queryHistory.queryHistoryCaptureEnabled" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Whether Query History capture is enabled. If false queries executed will not be captured.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Indica se l'acquisizione della cronologia delle query è abilitata. Se è false, le query eseguite non verranno acquisite.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryHistory/electron-browser/queryHistory.queryHistoryConfigurationTitle" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[QueryHistory]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Cronologia query]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryHistory/electron-browser/queryHistory.viewCategory" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[View]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Visualizza]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryPlan/browser/queryPlan.queryPlanTitle" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Query Plan]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Piano di query]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryPlan/browser/queryPlanEditor.queryPlanEditor" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Query Plan Editor]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Editor piano di query]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryPlan/browser/topOperations.topOperations.actualExecutions" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Actual Executions]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Esecuzioni effettive]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryPlan/browser/topOperations.topOperations.actualRebinds" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Actual Rebinds]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Riassociazioni effettive]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryPlan/browser/topOperations.topOperations.actualRewinds" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Actual Rewinds]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Ripristini effettivi]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryPlan/browser/topOperations.topOperations.actualRows" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Actual Rows]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Righe effettive]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryPlan/browser/topOperations.topOperations.estCPUCost" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Est CPU Cost]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Costo CPU stimato]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryPlan/browser/topOperations.topOperations.estCost" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Est Cost]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Costo stimato]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryPlan/browser/topOperations.topOperations.estIOCost" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Est IO Cost]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Costo IO stimato]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryPlan/browser/topOperations.topOperations.estRebinds" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Est Rebinds]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Riassociazioni stimate]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryPlan/browser/topOperations.topOperations.estRewinds" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Est Rewinds]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Ripristini stimati]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryPlan/browser/topOperations.topOperations.estRows" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Est Rows]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Righe stimate]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryPlan/browser/topOperations.topOperations.estSubtreeCost" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Est Subtree Cost]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Costo sottoalbero stimato]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryPlan/browser/topOperations.topOperations.object" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Object]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Oggetto]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryPlan/browser/topOperations.topOperations.operation" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Operation]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Operazione]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryPlan/browser/topOperations.topOperations.parallel" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Parallel]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[In parallelo]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryPlan/browser/topOperations.topOperations.partitioned" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Partitioned]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Partizionato]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/contrib/queryPlan/browser/topOperations.topOperationsTitle" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Top Operations]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Operazioni più frequenti]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -14748,38 +14643,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/services/connection/browser/connectionDialogWidget.connectionDialog.extensionNotInstalled" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[The extension '{0}' is required in order to connect to this resource. Please install it and try again.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[L'estensione '{0}' è necessaria per connettersi a questa risorsa. Installarla e riprovare.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";src/sql/workbench/services/connection/browser/connectionDialogWidget.connectionDialog.recentConnections" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Recent Connections]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Connessioni recenti]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/services/connection/browser/connectionDialogWidget.connectionDialog.viewExtension" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[View Extension]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Visualizza l'estensione]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/services/connection/browser/connectionDialogWidget.connectionDialog.viewExtensions" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[View Extensions]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Visualizza estensioni]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -14810,6 +14678,15 @@
           <Val><![CDATA[Are you sure you want to cancel this connection?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Annullare questa connessione?]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/connection/browser/connectionManagementService.connection.extensionNotInstalled" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The extension '{0}' is required in order to connect to this resource. Do you want to install it?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[L'estensione '{0}' è necessaria per connettersi a questa risorsa. Installarla?]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -17270,15 +17147,6 @@
           <Val><![CDATA[Cancel]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Annulla]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/services/serverGroup/browser/serverGroupDialog.serverGroup.colorValue" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Color: {0}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Colore: {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

@@ -127,7 +127,7 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 				} else {
 					ranges = [new Slick.Range(0, columnIndex, this.grid.getDataLength() - 1, columnIndex)];
 				}
-				this.grid.setActiveCell(0, columnIndex);
+				this.grid.setActiveCell(this.grid.getViewport()?.top ?? 0, columnIndex);
 				this.setSelectedRanges(ranges);
 			}
 		}

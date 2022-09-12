@@ -40,9 +40,10 @@ export function setup(opts: minimist.ParsedArgs) {
 			await app.workbench.sqlNotebook.addCellFromPlaceholder('Code');
 			await app.workbench.sqlNotebook.waitForPlaceholderGone();
 
-			const text1: string = 'SEL';
-			await app.workbench.sqlNotebook.waitForTypeInEditor(text1);
-			await app.code.dispatchKeybinding('ctrl+space bar');
+			await app.workbench.sqlNotebook.waitForTypeInEditor('S');
+			await app.workbench.sqlNotebook.waitForTypeInEditor('E');
+			await app.workbench.sqlNotebook.waitForTypeInEditor('L');
+			await app.code.dispatchKeybinding('ctrl+space');
 
 			// check for completion suggestions
 			await app.workbench.sqlNotebook.waitForSuggestionWidget();
@@ -64,64 +65,119 @@ export function setup(opts: minimist.ParsedArgs) {
 		});
 
 
-		// Python Notebooks
+		describe('Python notebooks', function () {
+			let pythonConfigured: boolean;
+			async function configurePython(app: Application): Promise<void> {
+				// Skip setting up python again if another test has already completed this configuration step
+				if (!pythonConfigured) {
+					await app.workbench.configurePythonDialog.waitForConfigurePythonDialog();
+					await app.workbench.configurePythonDialog.waitForPageOneLoaded();
+					await app.workbench.configurePythonDialog.next();
+					await app.workbench.configurePythonDialog.waitForPageTwoLoaded();
+					await app.workbench.configurePythonDialog.install();
+					// Close notification toasts, since they can interfere with the Manage Packages Dialog test
+					await app.workbench.notificationToast.closeNotificationToasts();
+					pythonConfigured = true;
+				}
+			}
 
-		it('can open new notebook, configure Python, and execute one cell', async function () {
-			this.timeout(600000); // set timeout to 10 minutes to ensure test does not timeout during python installation
-			const app = this.app as Application;
-			await app.workbench.sqlNotebook.newUntitledNotebook();
-			await app.workbench.sqlNotebook.addCell('code');
-			await app.workbench.sqlNotebook.waitForTypeInEditor('print("Hello world!")');
-			await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('SQL');
+			async function openAndRunNotebook(app: Application, filename: string): Promise<void> {
+				await app.workbench.sqlNotebook.openFile(filename);
+				await configurePython(app);
+				await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('Python 3');
 
-			await app.workbench.sqlNotebook.notebookToolbar.changeKernel('Python 3');
-			await app.workbench.configurePythonDialog.waitForConfigurePythonDialog();
-			await app.workbench.configurePythonDialog.waitForPageOneLoaded();
-			await app.workbench.configurePythonDialog.next();
-			await app.workbench.configurePythonDialog.waitForPageTwoLoaded();
-			await app.workbench.configurePythonDialog.install();
-			await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('Python 3');
+				await app.workbench.sqlNotebook.notebookToolbar.clearResults();
+				await app.workbench.sqlNotebook.waitForAllResultsGone();
+				await app.workbench.sqlNotebook.runAllCells();
+				await app.workbench.sqlNotebook.waitForAllResults();
 
-			await app.workbench.sqlNotebook.runActiveCell();
-			await app.workbench.sqlNotebook.waitForActiveCellResults();
-		});
+				await app.workbench.quickaccess.runCommand('workbench.action.files.save');
+				await app.workbench.quickaccess.runCommand('workbench.action.closeActiveEditor');
 
-		it('can add a new package from the Manage Packages wizard', async function () {
-			const app = this.app as Application;
-			await app.workbench.sqlNotebook.newUntitledNotebook();
-			await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('SQL');
-			await app.workbench.sqlNotebook.notebookToolbar.changeKernel('Python 3');
-			await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('Python 3');
+				await app.workbench.sqlNotebook.openFile(filename);
+				await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('Python 3');
+				await app.workbench.sqlNotebook.waitForAllResults();
+			}
 
-			await app.workbench.sqlNotebook.addCell('code');
-			await app.workbench.sqlNotebook.waitForTypeInEditor('import pyarrow');
-			await app.workbench.sqlNotebook.runActiveCell();
-			await app.workbench.sqlNotebook.waitForJupyterErrorOutput();
+			it('can open new notebook, configure Python, and execute one cell', async function () {
+				this.timeout(600000); // set timeout to 10 minutes to ensure test does not timeout during python installation
+				const app = this.app as Application;
+				await app.workbench.sqlNotebook.newUntitledNotebook();
+				await app.workbench.sqlNotebook.addCell('code');
+				await app.workbench.sqlNotebook.waitForTypeInEditor('print("Hello world!")');
+				await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('SQL');
 
-			await app.workbench.sqlNotebook.notebookToolbar.managePackages();
-			await app.workbench.managePackagesDialog.waitForManagePackagesDialog();
-			let packageVersion = await app.workbench.managePackagesDialog.addNewPackage('pyarrow');
-			await app.workbench.taskPanel.showTaskPanel();
-			await app.workbench.taskPanel.waitForTaskComplete(`Installing pyarrow ${packageVersion} succeeded`);
+				await app.workbench.sqlNotebook.notebookToolbar.changeKernel('Python 3');
+				await configurePython(app);
+				await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('Python 3');
 
-			// There should be no error output when running the cell after pyarrow has been installed
-			await app.workbench.sqlNotebook.runActiveCell();
-			await app.workbench.sqlNotebook.waitForActiveCellResultsGone();
-		});
+				await app.workbench.sqlNotebook.runActiveCell();
+				await app.workbench.sqlNotebook.waitForActiveCellResults();
+			});
 
-		it('can open ipynb file, run all, and save notebook with outputs', async function () {
-			const app = this.app as Application;
-			await openAndRunNotebook(app, 'hello.ipynb');
-		});
+			it('can add and remove new package from the Manage Packages wizard', async function () {
+				// Use arrow package so that it's at the top of the packages list when uninstalling later
+				const testPackageName = 'arrow';
 
-		it('can open ipynb file from path with spaces, run all, and save notebook with outputs', async function () {
-			const app = this.app as Application;
-			await openAndRunNotebook(app, 'helloWithSpaces.ipynb');
-		});
+				const app = this.app as Application;
+				await app.workbench.sqlNotebook.newUntitledNotebook();
+				await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('SQL');
+				await app.workbench.sqlNotebook.notebookToolbar.changeKernel('Python 3');
+				await configurePython(app);
+				await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('Python 3');
 
-		it('can open ipynb file from path with escaped spaces, run all, and save notebook with outputs', async function () {
-			const app = this.app as Application;
-			await openAndRunNotebook(app, 'helloWithEscapedSpaces.ipynb');
+				const importTestCode = `import ${testPackageName}`;
+				await app.workbench.sqlNotebook.addCell('code');
+				await app.workbench.sqlNotebook.waitForTypeInEditor(importTestCode);
+				await app.workbench.sqlNotebook.runActiveCell();
+				await app.workbench.sqlNotebook.waitForJupyterErrorOutput();
+
+				await app.workbench.sqlNotebook.notebookToolbar.managePackages();
+				await app.workbench.managePackagesDialog.waitForManagePackagesDialog();
+				let packageVersion = await app.workbench.managePackagesDialog.addNewPackage(testPackageName);
+				await app.workbench.taskPanel.showTaskPanel();
+				await app.workbench.taskPanel.waitForTaskComplete(`Installing ${testPackageName} ${packageVersion} succeeded`);
+
+				// There should be no error output when running the cell after pyarrow has been installed
+				await app.workbench.sqlNotebook.runActiveCell();
+				await app.workbench.sqlNotebook.waitForActiveCellResultsGone();
+
+				// Uninstall package and check if it throws the expected import error.
+				// This also functions as cleanup for subsequent test runs, since the test
+				// assumes the package isn't installed by default.
+				await app.workbench.sqlNotebook.notebookToolbar.managePackages();
+				await app.workbench.managePackagesDialog.waitForManagePackagesDialog();
+				await app.workbench.managePackagesDialog.removePackage(testPackageName);
+				await app.workbench.taskPanel.showTaskPanel();
+				await app.workbench.taskPanel.waitForTaskComplete(`Uninstalling ${testPackageName} ${packageVersion} succeeded`);
+
+				// Open a new notebook to verify that the package is uninstalled, since the old notebook's
+				// python instance retains a cached copy of the successfully imported module.
+				await app.workbench.quickaccess.runCommand('workbench.action.revertAndCloseActiveEditor');
+				await app.workbench.sqlNotebook.newUntitledNotebook();
+				await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('SQL');
+				await app.workbench.sqlNotebook.notebookToolbar.changeKernel('Python 3');
+				await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('Python 3');
+				await app.workbench.sqlNotebook.addCell('code');
+				await app.workbench.sqlNotebook.waitForTypeInEditor(importTestCode);
+				await app.workbench.sqlNotebook.runActiveCell();
+				await app.workbench.sqlNotebook.waitForJupyterErrorOutput();
+			});
+
+			it('can open ipynb file, run all, and save notebook with outputs', async function () {
+				const app = this.app as Application;
+				await openAndRunNotebook(app, 'hello.ipynb');
+			});
+
+			it('can open ipynb file from path with spaces, run all, and save notebook with outputs', async function () {
+				const app = this.app as Application;
+				await openAndRunNotebook(app, 'helloWithSpaces.ipynb');
+			});
+
+			it('can open ipynb file from path with escaped spaces, run all, and save notebook with outputs', async function () {
+				const app = this.app as Application;
+				await openAndRunNotebook(app, 'helloWithEscapedSpaces.ipynb');
+			});
 		});
 
 		afterEach(async function () {
@@ -217,37 +273,46 @@ export function setup(opts: minimist.ParsedArgs) {
 			});
 		});
 
-		describe('Cell Toolbar Actions', function () {
+		describe.skip('Cell Toolbar Actions', function () {
 			async function verifyCellToolbarBehavior(app: Application, toolbarAction: () => Promise<void>, selector: string, checkIfGone: boolean = false): Promise<void> {
-				const sampleText: string = 'Test Text';
+				// Run the test for each of the default text editor modes
+				for (let editMode of ['Markdown', 'Split View']) {
+					await app.workbench.settingsEditor.addUserSetting('notebook.defaultTextEditMode', `"${editMode}"`);
+					await app.workbench.quickaccess.runCommand('workbench.action.closeActiveEditor');
+					await app.workbench.sqlNotebook.newUntitledNotebook();
+					await app.workbench.sqlNotebook.addCellFromPlaceholder('Markdown');
+					let sampleText = `Markdown Toolbar Test - ${editMode}`;
+					await app.workbench.sqlNotebook.waitForTypeInEditor(sampleText);
+					await app.workbench.sqlNotebook.selectAllTextInEditor();
 
-				await app.workbench.sqlNotebook.newUntitledNotebook();
-				await app.workbench.sqlNotebook.addCellFromPlaceholder('Markdown');
-				await app.workbench.sqlNotebook.waitForPlaceholderGone();
-				await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Split View');
-				await app.workbench.sqlNotebook.waitForTypeInEditor(sampleText);
-				await app.workbench.sqlNotebook.selectAllTextInEditor();
-
-				await toolbarAction();
-				await app.code.dispatchKeybinding('escape');
-				if (checkIfGone) {
-					await app.workbench.sqlNotebook.waitForTextCellPreviewContentGone(selector);
-				} else {
-					await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, selector);
+					await toolbarAction();
+					await app.code.dispatchKeybinding('escape');
+					if (checkIfGone) {
+						await app.workbench.sqlNotebook.waitForTextCellPreviewContentGone(selector);
+					} else {
+						await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, selector);
+					}
+					await app.workbench.quickaccess.runCommand('workbench.action.revertAndCloseActiveEditor');
 				}
+				await app.workbench.settingsEditor.clearUserSettings();
 			}
 
 			async function verifyToolbarKeyboardShortcut(app: Application, keyboardShortcut: string, selector: string) {
-				await app.workbench.sqlNotebook.newUntitledNotebook();
-				await app.workbench.sqlNotebook.addCellFromPlaceholder('Markdown');
-				await app.workbench.sqlNotebook.waitForPlaceholderGone();
-				await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Markdown View');
-				let testText = 'Markdown Keyboard Shortcut Test';
-				await app.workbench.sqlNotebook.waitForTypeInEditor(testText);
-				await app.workbench.sqlNotebook.selectAllTextInEditor();
-				await app.code.dispatchKeybinding(keyboardShortcut);
-				await app.code.dispatchKeybinding('escape');
-				await app.workbench.sqlNotebook.waitForTextCellPreviewContent(testText, selector);
+				// Run the test for each of the default text editor modes
+				for (let editMode of ['Markdown', 'Split View']) {
+					await app.workbench.settingsEditor.addUserSetting('notebook.defaultTextEditMode', `"${editMode}"`);
+					await app.workbench.quickaccess.runCommand('workbench.action.closeActiveEditor');
+					await app.workbench.sqlNotebook.newUntitledNotebook();
+					await app.workbench.sqlNotebook.addCellFromPlaceholder('Markdown');
+					let testText = `Markdown Keyboard Shortcut Test - ${editMode}`;
+					await app.workbench.sqlNotebook.waitForTypeInEditor(testText);
+					await app.workbench.sqlNotebook.selectAllTextInEditor();
+					await app.code.dispatchKeybinding(keyboardShortcut);
+					await app.code.dispatchKeybinding('escape');
+					await app.workbench.sqlNotebook.waitForTextCellPreviewContent(testText, selector);
+					await app.workbench.quickaccess.runCommand('workbench.action.revertAndCloseActiveEditor');
+				}
+				await app.workbench.settingsEditor.clearUserSettings();
 			}
 
 			it('can bold selected text', async function () {
@@ -504,21 +569,4 @@ async function verifyElementRendered(app: Application, markdownString: string, e
 	// Verify link is shown outside of edit mode
 	await app.code.dispatchKeybinding('escape');
 	await app.code.waitForElement(element);
-}
-
-async function openAndRunNotebook(app: Application, filename: string): Promise<void> {
-	await app.workbench.sqlNotebook.openFile(filename);
-	await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('Python 3');
-
-	await app.workbench.sqlNotebook.notebookToolbar.clearResults();
-	await app.workbench.sqlNotebook.waitForAllResultsGone();
-	await app.workbench.sqlNotebook.runAllCells();
-	await app.workbench.sqlNotebook.waitForAllResults();
-
-	await app.workbench.quickaccess.runCommand('workbench.action.files.save');
-	await app.workbench.quickaccess.runCommand('workbench.action.closeActiveEditor');
-
-	await app.workbench.sqlNotebook.openFile(filename);
-	await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('Python 3');
-	await app.workbench.sqlNotebook.waitForAllResults();
 }

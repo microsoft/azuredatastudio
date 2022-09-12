@@ -32,7 +32,7 @@ import { Task } from 'sql/workbench/services/tasks/browser/tasksRegistry';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { ConnectionOptionSpecialType, IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { getCurrentGlobalConnection } from 'sql/workbench/browser/taskUtilities';
 import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/commands';
@@ -200,6 +200,7 @@ export class RunQueryAction extends QueryTaskbarAction {
 		editor: QueryEditor,
 		@IQueryModelService protected readonly queryModelService: IQueryModelService,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
+		@INotificationService private readonly notificationService: INotificationService,
 		@ICommandService private readonly commandService?: ICommandService
 	) {
 		super(connectionManagementService, editor, RunQueryAction.ID, RunQueryAction.EnabledClass);
@@ -238,6 +239,13 @@ export class RunQueryAction extends QueryTaskbarAction {
 		if (this.isConnected(editor)) {
 			// Hide IntelliSense suggestions list when running query to match SSMS behavior
 			this.commandService?.executeCommand('hideSuggestWidget');
+			// Do not execute when there are multiple selections in the editor until it can be properly handled.
+			// Otherwise only the first selection will be executed and cause unexpected issues.
+			if (editor.getSelections()?.length > 1) {
+				this.notificationService.error(nls.localize('query.multiSelectionNotSupported', "Running query is not supported when the editor is in multiple selection mode."));
+				return true;
+			}
+
 			// if the selection isn't empty then execute the selection
 			// otherwise, either run the statement or the script depending on parameter
 			let selection = editor.getSelection(false);
@@ -341,10 +349,11 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
  */
 export class ToggleActualExecutionPlanModeAction extends QueryTaskbarAction {
 	public static EnabledClass = 'enabledActualExecutionPlan';
+	public static DisabledClass = 'disabledActualExecutionPlan';
 	public static ID = 'toggleActualExecutionPlanModeAction';
 
-	private _enableActualPlanLabel = nls.localize('enableActualPlanLabel', "Include Actual Plan");
-	private _disableActualPlanLabel = nls.localize('disableActualPlanLabel', "Exclude Actual Plan");
+	private static readonly EnableActualPlanLabel = nls.localize('enableActualPlanLabel', "Enable Actual Plan");
+	private static readonly DisableActualPlanLabel = nls.localize('disableActualPlanLabel', "Disable Actual Plan");
 
 	constructor(
 		editor: QueryEditor,
@@ -369,7 +378,13 @@ export class ToggleActualExecutionPlanModeAction extends QueryTaskbarAction {
 
 	private updateLabel(): void {
 		// show option to disable actual plan mode if already enabled
-		this.label = this.isActualExecutionPlanMode ? this._disableActualPlanLabel : this._enableActualPlanLabel;
+		this.label = this.isActualExecutionPlanMode ? ToggleActualExecutionPlanModeAction.DisableActualPlanLabel : ToggleActualExecutionPlanModeAction.EnableActualPlanLabel;
+		if (this.isActualExecutionPlanMode) {
+			this.updateCssClass(ToggleActualExecutionPlanModeAction.DisabledClass);
+		}
+		else {
+			this.updateCssClass(ToggleActualExecutionPlanModeAction.EnabledClass);
+		}
 	}
 
 	public override async run(): Promise<void> {
@@ -640,7 +655,8 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 		@IContextViewService contextViewProvider: IContextViewService,
 		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@INotificationService private readonly notificationService: INotificationService,
-		@ILogService private readonly logService: ILogService
+		@ILogService private readonly logService: ILogService,
+		@ICapabilitiesService private readonly capabilitiesService: ICapabilitiesService
 	) {
 		super();
 		this._databaseListDropdown = $('.databaseListDropdown');
@@ -736,6 +752,8 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 							severity: Severity.Error,
 							message: nls.localize('changeDatabase.failed', "Failed to change database")
 						});
+					} else {
+						this._dropdown.options.strictSelection = true;
 					}
 				},
 				error => {
@@ -845,9 +863,16 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 	}
 
 	private updateConnection(databaseName: string): void {
-		// Ignore if the database name is not provided, this happens when the query editor connection is changed to
-		// a provider that does not support database.
-		if (!databaseName) {
+		if (!this._editor?.input) {
+			return;
+		}
+		const profile = this.connectionManagementService.getConnectionProfile(this._editor.input.uri);
+		if (!profile) {
+			return;
+		}
+		const supportDatabase = !!(this.capabilitiesService.getCapabilities(profile.providerName).connection.connectionOptions?.find(option => option.specialValueType === ConnectionOptionSpecialType.databaseName));
+		// Ignore if the provider does not support database.
+		if (!supportDatabase) {
 			return;
 		}
 		this._isConnected = true;
@@ -858,6 +883,12 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 		this._dropdown.value = databaseName;
 		this._dropdown.values = [databaseName];
 		this._dropdown.enabled = true;
+
+		// Set the strict selection to false so that it is allowed to not to have a database selected to begin with.
+		// e.g. MySQL allows server level query.
+		if (!databaseName) {
+			this._dropdown.options.strictSelection = false;
+		}
 		this.getDatabaseNames().then(databaseNames => {
 			this._dropdown.values = databaseNames;
 		}).catch(onUnexpectedError);
@@ -893,3 +924,7 @@ export class ExportAsNotebookAction extends QueryTaskbarAction {
 		this._commandService.executeCommand('mssql.exportSqlAsNotebook', this.editor.input.uri);
 	}
 }
+
+export const CATEGORIES = {
+	ExecutionPlan: { value: nls.localize('ExecutionPlan', 'Execution Plan'), original: 'Execution Plan' }
+};

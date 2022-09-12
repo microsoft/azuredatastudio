@@ -13,13 +13,13 @@ import * as ext from 'vs/workbench/common/contributions';
 import { ITaskService } from 'sql/workbench/services/tasks/common/tasksService';
 import { IActivityService, NumberBadge } from 'vs/workbench/services/activity/common/activity';
 import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
-import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
 import { ToggleTasksAction } from 'sql/workbench/contrib/tasks/browser/tasksActions';
 import { ViewPaneContainer } from 'vs/workbench/browser/parts/views/viewPaneContainer';
 import { IViewContainersRegistry, Extensions as ViewContainerExtensions, ViewContainer, ViewContainerLocation, IViewsRegistry } from 'vs/workbench/common/views';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { TASKS_CONTAINER_ID, TASKS_VIEW_ID } from 'sql/workbench/contrib/tasks/common/tasks';
 import { TaskHistoryView } from 'sql/workbench/contrib/tasks/browser/tasksView';
+import { IPaneCompositePartService } from 'vs/workbench/services/panecomposite/browser/panecomposite';
 
 export class StatusUpdater extends lifecycle.Disposable implements ext.IWorkbenchContribution {
 	static ID = 'data.taskhistory.statusUpdater';
@@ -29,12 +29,12 @@ export class StatusUpdater extends lifecycle.Disposable implements ext.IWorkbenc
 	constructor(
 		@IActivityService private readonly activityBarService: IActivityService,
 		@ITaskService private readonly taskService: ITaskService,
-		@IPanelService private readonly panelService: IPanelService
+		@IPaneCompositePartService private readonly panelService: IPaneCompositePartService
 	) {
 		super();
 
 		this._register(this.taskService.onAddNewTask(args => {
-			this.panelService.openPanel(TASKS_CONTAINER_ID, true);
+			this.panelService.openPaneComposite(TASKS_CONTAINER_ID, ViewContainerLocation.Panel, true);
 			this.onServiceChange();
 		}));
 
@@ -67,7 +67,7 @@ registry.registerWorkbenchAction(
 		ToggleTasksAction,
 		ToggleTasksAction.ID,
 		ToggleTasksAction.LABEL,
-		{ primary: KeyMod.CtrlCmd | KeyCode.KEY_T }),
+		{ primary: KeyMod.CtrlCmd | KeyCode.KeyT }),
 	'View: Toggle Tasks',
 	localize('viewCategory', "View")
 );

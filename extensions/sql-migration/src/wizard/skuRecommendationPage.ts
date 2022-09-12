@@ -5,6 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import * as utils from '../api/utils';
 import * as mssql from 'mssql';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationStateModel, MigrationTargetType, PerformanceDataSourceOptions, StateChangeEvent } from '../models/stateMachine';
@@ -67,10 +68,12 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private _skuScaleFactorText!: azdata.TextComponent;
 	private _skuTargetPercentileText!: azdata.TextComponent;
 	private _skuEnablePreviewSkuText!: azdata.TextComponent;
+	private _skuEnableElasticRecommendationsText!: azdata.TextComponent;
 
 	private assessmentGroupContainer!: azdata.FlexContainer;
 	private _disposables: vscode.Disposable[] = [];
 
+	private _serverName: string = '';
 	private _supportedProducts: Product[] = [
 		{
 			type: MigrationTargetType.SQLMI,
@@ -83,11 +86,11 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			name: constants.SKU_RECOMMENDATION_VM_CARD_TEXT,
 			icon: IconPathHelper.sqlVmLogo
 		},
-		// {
-		// 	type: MigrationTargetType.SQLDB,
-		// 	name: constants.SKU_RECOMMENDATION_DB_CARD_TEXT,
-		// 	icon: IconPathHelper.sqlDatabaseLogo
-		// }
+		{
+			type: MigrationTargetType.SQLDB,
+			name: constants.SKU_RECOMMENDATION_SQLDB_CARD_TEXT,
+			icon: IconPathHelper.sqlDatabaseLogo
+		}
 	];
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
@@ -97,60 +100,58 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	protected async registerContent(view: azdata.ModelView) {
 		this._view = view;
 		this._igComponent = this.createStatusComponent(view); // The first component giving basic information
-		this._assessmentStatusIcon = this._view.modelBuilder.image().withProps({
-			iconPath: IconPathHelper.completedMigration,
-			iconHeight: 17,
-			iconWidth: 17,
-			width: 20,
-			height: 20
-		}).component();
-		const igContainer = this._view.modelBuilder.flexContainer().withProps({
-			CSSStyles: {
-				'align-items': 'center'
-			}
-		}).component();
-		igContainer.addItem(this._assessmentStatusIcon, {
-			flex: '0 0 auto'
-		});
-		igContainer.addItem(this._igComponent, {
-			flex: '0 0 auto'
-		});
+		this._assessmentStatusIcon = this._view.modelBuilder.image()
+			.withProps({
+				iconPath: IconPathHelper.completedMigration,
+				iconHeight: 17,
+				iconWidth: 17,
+				width: 20,
+				height: 20
+			}).component();
+		const igContainer = this._view.modelBuilder.flexContainer()
+			.withProps({ CSSStyles: { 'align-items': 'center' } })
+			.component();
+		igContainer.addItem(this._assessmentStatusIcon, { flex: '0 0 auto' });
+		igContainer.addItem(this._igComponent, { flex: '0 0 auto' });
 
 		this._detailsComponent = this.createDetailsComponent(view); // The details of what can be moved
-		this._skipAssessmentCheckbox = view.modelBuilder.checkBox().withProps({
-			label: constants.SKU_RECOMMENDATION_ASSESSMENT_ERROR_BYPASS,
-			checked: false,
-			CSSStyles: {
-				...styles.SECTION_HEADER_CSS,
-				'margin': '10px 0 0 0',
-				'display': 'none'
-			},
-		}).component();
-		this._skipAssessmentSubText = view.modelBuilder.text().withProps({
-			value: constants.SKU_RECOMMENDATION_ASSESSMENT_ERROR_DETAIL,
-			CSSStyles: {
-				'margin': '0 0 0 15px',
-				'font-size': '13px',
-				'color': 'red',
-				'width': '590px',
-				'display': 'none'
-			},
-		}).component();
+		this._skipAssessmentCheckbox = view.modelBuilder.checkBox()
+			.withProps({
+				label: constants.SKU_RECOMMENDATION_ASSESSMENT_ERROR_BYPASS,
+				checked: false,
+				CSSStyles: {
+					...styles.SECTION_HEADER_CSS,
+					'margin': '10px 0 0 0',
+					'display': 'none'
+				},
+			}).component();
+		this._skipAssessmentSubText = view.modelBuilder.text()
+			.withProps({
+				value: constants.SKU_RECOMMENDATION_ASSESSMENT_ERROR_DETAIL,
+				CSSStyles: {
+					'margin': '0 0 0 15px',
+					'font-size': '13px',
+					'color': 'red',
+					'width': '590px',
+					'display': 'none'
+				},
+			}).component();
 
-		this._disposables.push(this._skipAssessmentCheckbox.onChanged(async (value) => {
-			await this._setAssessmentState(false, true);
-		}));
+		this._disposables.push(
+			this._skipAssessmentCheckbox.onChanged(
+				async (value) => await this._setAssessmentState(false, true)));
 
-		const refreshAssessmentButton = this._view.modelBuilder.button().withProps({
-			iconPath: IconPathHelper.refresh,
-			label: constants.REFRESH_ASSESSMENT_BUTTON_LABEL,
-			width: 160,
-			height: 24,
-			CSSStyles: {
-				...styles.BODY_CSS,
-				'margin': '12px 0 4px 0'
-			}
-		}).component();
+		const refreshAssessmentButton = this._view.modelBuilder.button()
+			.withProps({
+				iconPath: IconPathHelper.refresh,
+				label: constants.REFRESH_ASSESSMENT_BUTTON_LABEL,
+				width: 160,
+				height: 24,
+				CSSStyles: {
+					...styles.BODY_CSS,
+					'margin': '12px 0 4px 0'
+				}
+			}).component();
 
 		this._disposables.push(refreshAssessmentButton.onDidClick(async () => {
 			await this.startCardLoading();
@@ -158,95 +159,73 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			await this.constructDetails();
 		}));
 
-		const statusContainer = this._view.modelBuilder.flexContainer().withLayout({
-			flexFlow: 'column',
-		}).withItems(
-			[
+		const statusContainer = this._view.modelBuilder.flexContainer()
+			.withLayout({ flexFlow: 'column' })
+			.withItems([
 				igContainer,
 				this._detailsComponent,
 				refreshAssessmentButton,
 				this._skipAssessmentCheckbox,
-				this._skipAssessmentSubText,
-			]
-		).withProps({
-			CSSStyles: {
-				'margin': '0'
-			}
-		}).component();
+				this._skipAssessmentSubText])
+			.withProps({ CSSStyles: { 'margin': '0' } })
+			.component();
 		this._chooseTargetComponent = await this.createChooseTargetComponent(view);
 		const _azureRecommendationsContainer = this.createAzureRecommendationContainer(view);
 		this.assessmentGroupContainer = await this.createViewAssessmentsContainer();
-		this._formContainer = view.modelBuilder.formContainer().withFormItems(
-			[
-				{
-					title: '',
-					component: statusContainer
-				},
-				{
-					component: this._chooseTargetComponent
-				},
-				{
-					component: _azureRecommendationsContainer
-				},
-				{
-					component: this.assessmentGroupContainer
-				},
-			]
-		).withProps({
-			CSSStyles: {
-				'display': 'none',
-				'padding-top': '0',
-			}
-		});
+		this._formContainer = view.modelBuilder.formContainer()
+			.withFormItems([
+				{ component: statusContainer, title: '' },
+				{ component: this._chooseTargetComponent },
+				{ component: _azureRecommendationsContainer },
+				{ component: this.assessmentGroupContainer }])
+			.withProps({
+				CSSStyles: {
+					'display': 'none',
+					'padding-top': '0',
+				}
+			});
 
-		this._assessmentComponent = this._view.modelBuilder.flexContainer().withLayout({
-			height: '100%',
-			flexFlow: 'column'
-		}).withProps({
-			CSSStyles: {
-				'margin-left': '30px'
-			}
-		}).component();
+		this._assessmentComponent = this._view.modelBuilder.flexContainer()
+			.withLayout({ height: '100%', flexFlow: 'column' })
+			.withProps({ CSSStyles: { 'margin-left': '30px' } })
+			.component();
 
 		this._assessmentComponent.addItem(this.createAssessmentProgress(), { flex: '0 0 auto' });
 		this._assessmentComponent.addItem(await this.createAssessmentInfo(), { flex: '0 0 auto' });
 
-		this._rootContainer = this._view.modelBuilder.flexContainer().withLayout({
-			height: '100%',
-			flexFlow: 'column'
-		}).component();
+		this._rootContainer = this._view.modelBuilder.flexContainer()
+			.withLayout({ height: '100%', flexFlow: 'column' })
+			.withProps({ ariaLive: 'polite' })
+			.component();
 		this._rootContainer.addItem(this._assessmentComponent, { flex: '0 0 auto' });
 		this._rootContainer.addItem(this._formContainer.component(), { flex: '0 0 auto' });
 
-		this._disposables.push(this._view.onClosed(e => {
-			this._disposables.forEach(
-				d => { try { d.dispose(); } catch { } });
-		}));
+		this._disposables.push(this._view.onClosed(
+			e => this._disposables.forEach(
+				d => { try { d.dispose(); } catch { } })));
 
 		await this._view.initializeModel(this._rootContainer);
 	}
 
 	private createStatusComponent(view: azdata.ModelView): azdata.TextComponent {
-		const component = view.modelBuilder.text().withProps({
-			CSSStyles: {
-				...styles.SECTION_HEADER_CSS,
-				'margin-left': '8px'
-			}
-		}).component();
+		const component = view.modelBuilder.text()
+			.withProps({
+				CSSStyles: {
+					...styles.SECTION_HEADER_CSS,
+					'margin-left': '8px'
+				}
+			}).component();
 		return component;
 	}
 
 	private createDetailsComponent(view: azdata.ModelView): azdata.TextComponent {
-		const component = view.modelBuilder.text().withProps({
-			CSSStyles: {
-				...styles.BODY_CSS
-			}
-		}).component();
+		const component = view.modelBuilder.text()
+			.withProps({ CSSStyles: { ...styles.BODY_CSS } })
+			.component();
 		return component;
 	}
 
 	private async createChooseTargetComponent(view: azdata.ModelView): Promise<azdata.DivContainer> {
-
 		const chooseYourTargetText = this._view.modelBuilder.text().withProps({
 			value: constants.SKU_RECOMMENDATION_CHOOSE_A_TARGET,
 			CSSStyles: {
@@ -262,6 +241,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			cardWidth: '250px',
 			cardHeight: '340px',
 			iconPosition: 'left',
+			ariaLabel: constants.SKU_RECOMMENDATION_CHOOSE_A_TARGET,
 			CSSStyles: {
 				'margin-top': '0px',
 				'margin-left': '-15px',
@@ -336,87 +316,89 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				]
 			});
 
-			this._disposables.push(this._rbg.onLinkClick(async (e: azdata.RadioCardLinkClickEvent) => {
-				if (this.hasRecommendations()) {
-					const skuRecommendationResultsDialog = new SkuRecommendationResultsDialog(this.migrationStateModel, product.type);
-					if (e.cardId === skuRecommendationResultsDialog._targetType) {
-						await skuRecommendationResultsDialog.openDialog(e.cardId, this.migrationStateModel._skuRecommendationResults.recommendations);
+			this._disposables.push(
+				this._rbg.onLinkClick(async (e: azdata.RadioCardLinkClickEvent) => {
+					if (this.hasRecommendations()) {
+						if (e.cardId === product.type) {
+							const skuRecommendationResultsDialog = new SkuRecommendationResultsDialog(this.migrationStateModel, product.type);
+							await skuRecommendationResultsDialog.openDialog(
+								e.cardId,
+								this.migrationStateModel._skuRecommendationResults.recommendations);
+						}
 					}
-				}
-			}));
+				}));
 		});
 
 		this._disposables.push(this._rbg.onSelectionChanged(async (value) => {
 			if (value) {
 				this.assessmentGroupContainer.display = 'inline';
-				await this.changeTargetType(value.cardId);
+				this.changeTargetType(value.cardId);
 			}
 		}));
 
-		this._rbgLoader = this._view.modelBuilder.loadingComponent().withItem(
-			this._rbg
-		).component();
+		this._rbgLoader = this._view.modelBuilder.loadingComponent()
+			.withItem(this._rbg)
+			.component();
 
-		const component = this._view.modelBuilder.divContainer().withItems(
-			[
-				chooseYourTargetText,
-				this._rbgLoader
-			]
-		).component();
+		const component = this._view.modelBuilder.divContainer()
+			.withItems([chooseYourTargetText, this._rbgLoader])
+			.component();
 		return component;
 	}
 
 	private async createViewAssessmentsContainer(): Promise<azdata.FlexContainer> {
 		this._viewAssessmentsHelperText = this._view.modelBuilder.text().withProps({
 			value: constants.SKU_RECOMMENDATION_VIEW_ASSESSMENT_MI,
-			CSSStyles: {
-				...styles.SECTION_HEADER_CSS
-			},
+			CSSStyles: { ...styles.SECTION_HEADER_CSS },
 			width: WIZARD_INPUT_COMPONENT_WIDTH
 		}).component();
 
 		const button = this._view.modelBuilder.button().withProps({
 			label: constants.VIEW_SELECT_BUTTON_LABEL,
 			width: 100,
-			CSSStyles: {
-				'margin': '12px 0'
-			}
+			CSSStyles: { 'margin': '12px 0' }
 		}).component();
 
-		let serverName = this.migrationStateModel.serverName || (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
+		this._serverName = this.migrationStateModel.serverName || (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
 
-		let miDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, constants.ASSESSMENT_TILE(serverName), this, MigrationTargetType.SQLMI);
-		let vmDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, constants.ASSESSMENT_TILE(serverName), this, MigrationTargetType.SQLVM);
+		const miDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, constants.ASSESSMENT_TILE(this._serverName), this, MigrationTargetType.SQLMI);
+		const vmDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, constants.ASSESSMENT_TILE(this._serverName), this, MigrationTargetType.SQLVM);
+		const dbDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, constants.ASSESSMENT_TILE(this._serverName), this, MigrationTargetType.SQLDB);
 
 		this._disposables.push(button.onDidClick(async (e) => {
-			if (this._rbg.selectedCardId === MigrationTargetType.SQLVM) {
-				this._rbg.selectedCardId = MigrationTargetType.SQLVM;
-				await vmDialog.openDialog();
-			} else if (this._rbg.selectedCardId === MigrationTargetType.SQLMI) {
-				this._rbg.selectedCardId = MigrationTargetType.SQLMI;
-				await miDialog.openDialog();
+			switch (this._rbg.selectedCardId) {
+				case MigrationTargetType.SQLVM:
+					this._rbg.selectedCardId = MigrationTargetType.SQLVM;
+					return await vmDialog.openDialog();
+				case MigrationTargetType.SQLMI:
+					this._rbg.selectedCardId = MigrationTargetType.SQLMI;
+					return await miDialog.openDialog();
+				case MigrationTargetType.SQLDB:
+					this._rbg.selectedCardId = MigrationTargetType.SQLDB;
+					return await dbDialog.openDialog();
 			}
 		}));
 
-		this._databaseSelectedHelperText = this._view.modelBuilder.text().withProps({
-			CSSStyles: {
-				...styles.BODY_CSS,
-			}
-		}).component();
+		this._databaseSelectedHelperText = this._view.modelBuilder.text()
+			.withProps({
+				CSSStyles: { ...styles.BODY_CSS },
+				ariaLive: 'polite',
+			}).component();
 
-		const container = this._view.modelBuilder.flexContainer().withItems([
-			this._viewAssessmentsHelperText,
-			button,
-			this._databaseSelectedHelperText
-		]).withProps({
-			'display': 'none'
-		}).component();
+		const container = this._view.modelBuilder.flexContainer()
+			.withItems([
+				this._viewAssessmentsHelperText,
+				button,
+				this._databaseSelectedHelperText
+			]).withProps({
+				'display': 'none'
+			}).component();
 		return container;
 	}
 
-	private async changeTargetType(newTargetType: string) {
+	private changeTargetType(newTargetType: string): void {
 		switch (newTargetType) {
-			case MigrationTargetType.SQLMI: {
+			case MigrationTargetType.SQLMI:
 				const miDbs = this.migrationStateModel._miDbs.filter(
 					db => this.migrationStateModel._databasesForAssessment.findIndex(
 						dba => dba === db) >= 0);
@@ -425,9 +407,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				this.migrationStateModel._targetType = MigrationTargetType.SQLMI;
 				this.migrationStateModel._databasesForMigration = miDbs;
 				break;
-			}
-
-			case MigrationTargetType.SQLVM: {
+			case MigrationTargetType.SQLVM:
 				const vmDbs = this.migrationStateModel._vmDbs.filter(
 					db => this.migrationStateModel._databasesForAssessment.findIndex(
 						dba => dba === db) >= 0);
@@ -436,10 +416,20 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				this.migrationStateModel._targetType = MigrationTargetType.SQLVM;
 				this.migrationStateModel._databasesForMigration = vmDbs;
 				break;
-			}
+			case MigrationTargetType.SQLDB:
+				const dbDbs = this.migrationStateModel._sqldbDbs.filter(
+					db => this.migrationStateModel._databasesForAssessment.findIndex(
+						dba => dba === db) >= 0);
+
+				this._viewAssessmentsHelperText.value = constants.SKU_RECOMMENDATION_VIEW_ASSESSMENT_SQLDB;
+				this.migrationStateModel._targetType = MigrationTargetType.SQLDB;
+				this.migrationStateModel._databasesForMigration = dbDbs;
+				break;
 		}
 
-		this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(this.migrationStateModel._databasesForMigration.length, this.migrationStateModel._databasesForAssessment.length);
+		this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(
+			this.migrationStateModel._databasesForMigration.length,
+			this.migrationStateModel._databasesForAssessment.length);
 		this.migrationStateModel.refreshDatabaseBackupPage = true;
 	}
 
@@ -449,13 +439,11 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			level: azdata.window.MessageLevel.Error
 		};
 
-		const serverName = (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
-
 		if (this.migrationStateModel._runAssessments) {
 			const errors: string[] = [];
 			await this._setAssessmentState(true, false);
 			try {
-				await this.migrationStateModel.getDatabaseAssessments(MigrationTargetType.SQLMI);
+				await this.migrationStateModel.getDatabaseAssessments([MigrationTargetType.SQLMI, MigrationTargetType.SQLDB]);
 				const assessmentError = this.migrationStateModel._assessmentResults?.assessmentError;
 				if (assessmentError) {
 					errors.push(`message: ${assessmentError.message}${EOL}stack: ${assessmentError.stack}`);
@@ -465,30 +453,32 @@ export class SKURecommendationPage extends MigrationWizardPage {
 						e => `message: ${e.message}${EOL}errorSummary: ${e.errorSummary}${EOL}possibleCauses: ${e.possibleCauses}${EOL}guidance: ${e.guidance}${EOL}errorId: ${e.errorId}`)!);
 				}
 			} catch (e) {
-				errors.push(constants.SKU_RECOMMENDATION_ASSESSMENT_UNEXPECTED_ERROR(serverName, e));
+				errors.push(constants.SKU_RECOMMENDATION_ASSESSMENT_UNEXPECTED_ERROR(this._serverName, e));
 				logError(TelemetryViews.MigrationWizardSkuRecommendationPage, 'SkuRecommendationUnexpectedError', e);
 			} finally {
 				this.migrationStateModel._runAssessments = errors.length > 0;
 				if (errors.length > 0) {
 					this.wizard.message = {
-						text: constants.SKU_RECOMMENDATION_ASSESSMENT_ERROR(serverName),
+						text: constants.SKU_RECOMMENDATION_ASSESSMENT_ERROR(this._serverName),
 						description: errors.join(EOL),
 						level: azdata.window.MessageLevel.Error
 					};
 					this._assessmentStatusIcon.iconPath = IconPathHelper.error;
-					this._igComponent.value = constants.ASSESSMENT_FAILED(serverName);
-					this._detailsComponent.value = constants.SKU_RECOMMENDATION_ASSESSMENT_ERROR(serverName);
+					this._igComponent.value = constants.ASSESSMENT_FAILED(this._serverName);
+					this._detailsComponent.value = constants.SKU_RECOMMENDATION_ASSESSMENT_ERROR(this._serverName);
 				} else {
 					this._assessmentStatusIcon.iconPath = IconPathHelper.completedMigration;
-					this._igComponent.value = constants.ASSESSMENT_COMPLETED(serverName);
-					this._detailsComponent.value = constants.SKU_RECOMMENDATION_ALL_SUCCESSFUL(this.migrationStateModel._assessmentResults?.databaseAssessments?.length);
+					this._igComponent.value = constants.ASSESSMENT_COMPLETED(this._serverName);
+					this._detailsComponent.value = constants.SKU_RECOMMENDATION_ALL_SUCCESSFUL(
+						this.migrationStateModel._assessmentResults?.databaseAssessments?.length);
 				}
 			}
 		} else {
 			// use prior assessment results
 			this._assessmentStatusIcon.iconPath = IconPathHelper.completedMigration;
-			this._igComponent.value = constants.ASSESSMENT_COMPLETED(serverName);
-			this._detailsComponent.value = constants.SKU_RECOMMENDATION_ALL_SUCCESSFUL(this.migrationStateModel._assessmentResults?.databaseAssessments?.length);
+			this._igComponent.value = constants.ASSESSMENT_COMPLETED(this._serverName);
+			this._detailsComponent.value = constants.SKU_RECOMMENDATION_ALL_SUCCESSFUL(
+				this.migrationStateModel._assessmentResults?.databaseAssessments?.length);
 		}
 
 		if (this.migrationStateModel.savedInfo?.migrationTargetType) {
@@ -539,46 +529,46 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	}
 
 	private async _setAssessmentState(assessing: boolean, failedAssessment: boolean): Promise<void> {
-		let display: azdata.DisplayType = assessing ? 'block' : 'none';
-		await this._assessmentComponent.updateCssStyles({ 'display': display });
-		this._assessmentComponent.display = display;
-
-		display = !assessing && failedAssessment ? 'block' : 'none';
-		await this._skipAssessmentCheckbox.updateCssStyles({ 'display': display });
-		this._skipAssessmentCheckbox.display = display;
-		await this._skipAssessmentSubText.updateCssStyles({ 'display': display });
-		this._skipAssessmentSubText.display = display;
-
-		await this._formContainer.component().updateCssStyles({ 'display': !assessing ? 'block' : 'none' });
-
-		display = failedAssessment && !this._skipAssessmentCheckbox.checked ? 'none' : 'block';
-		await this._chooseTargetComponent.updateCssStyles({ 'display': display });
-		this._chooseTargetComponent.display = display;
-
-		display = !this._rbg.selectedCardId || failedAssessment && !this._skipAssessmentCheckbox.checked ? 'none' : 'inline';
-		await this.assessmentGroupContainer.updateCssStyles({ 'display': display });
-		this.assessmentGroupContainer.display = display;
-
-		display = (this._rbg.selectedCardId
-			&& (!failedAssessment || this._skipAssessmentCheckbox.checked)
-			&& this.migrationStateModel._databasesForMigration?.length > 0)
-			? 'inline'
-			: 'none';
+		await utils.updateControlDisplay(
+			this._assessmentComponent,
+			assessing,
+			'block');
+		await utils.updateControlDisplay(
+			this._skipAssessmentCheckbox,
+			!assessing && failedAssessment,
+			'block');
+		await utils.updateControlDisplay(
+			this._skipAssessmentSubText,
+			!assessing && failedAssessment,
+			'block');
+		await utils.updateControlDisplay(
+			this._formContainer.component(),
+			!assessing,
+			'block');
+		await utils.updateControlDisplay(
+			this._chooseTargetComponent,
+			!failedAssessment || this._skipAssessmentCheckbox.checked === true,
+			'block');
+		await utils.updateControlDisplay(
+			this.assessmentGroupContainer,
+			this._rbg.selectedCardId !== undefined && (!failedAssessment || this._skipAssessmentCheckbox.checked === true),
+			'inline');
 
 		this._assessmentLoader.loading = assessing;
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
+		if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
+			return;
+		}
+
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
-			const errors: string[] = [];
-			this.wizard.message = {
-				text: '',
-				level: azdata.window.MessageLevel.Error
-			};
+			this.wizard.message = { text: '' };
 			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
 				return true;
 			}
 
+			const errors: string[] = [];
 			if (this._rbg.selectedCardId === undefined || this._rbg.selectedCardId === '') {
 				errors.push(constants.SELECT_TARGET_TO_CONTINUE);
 			}
@@ -616,10 +606,13 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 	public async refreshCardText(showLoadingIcon: boolean = true): Promise<void> {
 		this._rbgLoader.loading = showLoadingIcon && true;
-		if (this._rbg.selectedCardId === MigrationTargetType.SQLMI) {
-			this.migrationStateModel._databasesForMigration = this.migrationStateModel._miDbs;
-		} else {
-			this.migrationStateModel._databasesForMigration = this.migrationStateModel._vmDbs;
+		switch (this._rbg.selectedCardId) {
+			case MigrationTargetType.SQLMI:
+				this.migrationStateModel._databasesForMigration = this.migrationStateModel._miDbs;
+			case MigrationTargetType.SQLDB:
+				this.migrationStateModel._databasesForMigration = this.migrationStateModel._sqldbDbs;
+			case MigrationTargetType.SQLVM:
+				this.migrationStateModel._databasesForMigration = this.migrationStateModel._vmDbs;
 		}
 
 		const dbCount = this.migrationStateModel._assessmentResults?.databaseAssessments?.length;
@@ -628,8 +621,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			if (!this.migrationStateModel._assessmentResults) {
 				this._rbg.cards[index].descriptions[CardDescriptionIndex.ASSESSMENT_STATUS].textValue = '';
 			} else {
-				// TO-DO: add the assessed db counts
-				// this._rbg.cards[index].descriptions[5].textValue = constants.ASSESSED_DBS(dbCount);
 				if (this.hasRecommendations()) {
 					this._rbg.cards[index].descriptions[CardDescriptionIndex.VIEW_SKU_DETAILS].linkDisplayValue = constants.VIEW_DETAILS;
 					this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textStyles = {
@@ -646,21 +637,28 @@ export class SKURecommendationPage extends MigrationWizardPage {
 						this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue =
 							constants.AZURE_RECOMMENDATION_CARD_IN_PROGRESS;
 					} else {
-						this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue = constants.AZURE_RECOMMENDATION_CARD_NOT_ENABLED;
+						this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue =
+							constants.AZURE_RECOMMENDATION_CARD_NOT_ENABLED;
 					}
 				}
 
 				let recommendation;
 				switch (product.type) {
 					case MigrationTargetType.SQLMI:
-						this._rbg.cards[index].descriptions[CardDescriptionIndex.ASSESSMENT_STATUS].textValue = constants.CAN_BE_MIGRATED(dbWithoutIssuesCount, dbCount);
+						this._rbg.cards[index].descriptions[CardDescriptionIndex.ASSESSMENT_STATUS].textValue =
+							constants.CAN_BE_MIGRATED(dbWithoutIssuesCount, dbCount);
 
 						if (this.hasRecommendations()) {
-							recommendation = this.migrationStateModel._skuRecommendationResults.recommendations.sqlMiRecommendationResults[0];
+							if (this.migrationStateModel._skuEnableElastic) {
+								recommendation = this.migrationStateModel._skuRecommendationResults.recommendations?.elasticSqlMiRecommendationResults[0];
+							} else {
+								recommendation = this.migrationStateModel._skuRecommendationResults.recommendations?.sqlMiRecommendationResults[0];
+							}
 
 							// result returned but no SKU recommended
-							if (!recommendation.targetSku) {
-								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue = constants.SKU_RECOMMENDATION_NO_RECOMMENDATION;
+							if (!recommendation?.targetSku) {
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue =
+									constants.SKU_RECOMMENDATION_NO_RECOMMENDATION;
 							}
 							else {
 								const serviceTier = recommendation.targetSku.category?.sqlServiceTier === mssql.AzureSqlPaaSServiceTier.GeneralPurpose
@@ -671,41 +669,64 @@ export class SKURecommendationPage extends MigrationWizardPage {
 									: recommendation.targetSku.category?.hardwareType === mssql.AzureSqlPaaSHardwareType.PremiumSeries
 										? constants.PREMIUM_SERIES
 										: constants.PREMIUM_SERIES_MEMORY_OPTIMIZED;
-								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue = constants.MI_CONFIGURATION_PREVIEW(hardwareType, serviceTier, recommendation.targetSku.computeSize!, recommendation.targetSku.storageMaxSizeInMb! / 1024);
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue =
+									constants.MI_CONFIGURATION_PREVIEW(
+										hardwareType,
+										serviceTier,
+										recommendation.targetSku.computeSize!,
+										recommendation.targetSku.storageMaxSizeInMb! / 1024);
 							}
 						}
 						break;
 
 					case MigrationTargetType.SQLVM:
-						this._rbg.cards[index].descriptions[CardDescriptionIndex.ASSESSMENT_STATUS].textValue = constants.CAN_BE_MIGRATED(dbCount, dbCount);
+						this._rbg.cards[index].descriptions[CardDescriptionIndex.ASSESSMENT_STATUS].textValue =
+							constants.CAN_BE_MIGRATED(dbCount, dbCount);
 
 						if (this.hasRecommendations()) {
-							recommendation = this.migrationStateModel._skuRecommendationResults.recommendations.sqlVmRecommendationResults[0];
+							// elastic model currently doesn't support SQL VM, so show the baseline model results regardless of user preference
+							recommendation = this.migrationStateModel._skuRecommendationResults.recommendations?.sqlVmRecommendationResults[0];
 
 							// result returned but no SKU recommended
-							if (!recommendation.targetSku) {
-								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue = constants.SKU_RECOMMENDATION_NO_RECOMMENDATION;
+							if (!recommendation?.targetSku) {
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue =
+									constants.SKU_RECOMMENDATION_NO_RECOMMENDATION;
 								this._rbg.cards[index].descriptions[CardDescriptionIndex.VM_CONFIGURATIONS].textValue = '';
 							}
 							else {
-								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue = constants.VM_CONFIGURATION(recommendation.targetSku.virtualMachineSize!.sizeName, recommendation.targetSku.virtualMachineSize!.vCPUsAvailable);
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue =
+									constants.VM_CONFIGURATION(
+										recommendation.targetSku.virtualMachineSize!.sizeName,
+										recommendation.targetSku.virtualMachineSize!.vCPUsAvailable);
 
-								const dataDisk = constants.STORAGE_CONFIGURATION(recommendation.targetSku.dataDiskSizes![0].size, recommendation.targetSku.dataDiskSizes!.length);
-								const storageDisk = constants.STORAGE_CONFIGURATION(recommendation.targetSku.logDiskSizes![0].size, recommendation.targetSku.logDiskSizes!.length);
+								const dataDisk = constants.STORAGE_CONFIGURATION(
+									recommendation.targetSku.dataDiskSizes![0].size,
+									recommendation.targetSku.dataDiskSizes!.length);
+								const storageDisk = constants.STORAGE_CONFIGURATION(
+									recommendation.targetSku.logDiskSizes![0].size,
+									recommendation.targetSku.logDiskSizes!.length);
 								const tempDb = recommendation.targetSku.tempDbDiskSizes!.length > 0
-									? constants.STORAGE_CONFIGURATION(recommendation.targetSku.logDiskSizes![0].size, recommendation.targetSku.logDiskSizes!.length)
+									? constants.STORAGE_CONFIGURATION(
+										recommendation.targetSku.logDiskSizes![0].size,
+										recommendation.targetSku.logDiskSizes!.length)
 									: constants.LOCAL_SSD;
-								this._rbg.cards[index].descriptions[CardDescriptionIndex.VM_CONFIGURATIONS].textValue = constants.VM_CONFIGURATION_PREVIEW(dataDisk, storageDisk, tempDb);
+								this._rbg.cards[index].descriptions[CardDescriptionIndex.VM_CONFIGURATIONS].textValue =
+									constants.VM_CONFIGURATION_PREVIEW(dataDisk, storageDisk, tempDb);
 							}
 						}
 						break;
 
 					case MigrationTargetType.SQLDB:
-						this._rbg.cards[index].descriptions[CardDescriptionIndex.ASSESSMENT_STATUS].textValue = constants.CAN_BE_MIGRATED(dbWithoutIssuesCount, dbCount);
+						this._rbg.cards[index].descriptions[CardDescriptionIndex.ASSESSMENT_STATUS].textValue =
+							constants.CAN_BE_MIGRATED(dbWithoutIssuesCount, dbCount);
 
 						if (this.hasRecommendations()) {
-							const successfulRecommendationsCount = this.migrationStateModel._skuRecommendationResults.recommendations.sqlDbRecommendationResults.filter(r => r.targetSku !== null).length;
-							this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue = constants.RECOMMENDATIONS_AVAILABLE(successfulRecommendationsCount);
+							const recommendations = this.migrationStateModel._skuEnableElastic
+								? this.migrationStateModel._skuRecommendationResults.recommendations!.elasticSqlDbRecommendationResults
+								: this.migrationStateModel._skuRecommendationResults.recommendations!.sqlDbRecommendationResults;
+							const successfulRecommendationsCount = recommendations.filter(r => r.targetSku !== null).length;
+							this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue =
+								constants.RECOMMENDATIONS_AVAILABLE(successfulRecommendationsCount);
 						}
 						break;
 				}
@@ -715,10 +736,10 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		await this._rbg.updateProperties({ cards: this._rbg.cards });
 
 		if (this._rbg.selectedCardId) {
-			await this.changeTargetType(this._rbg.selectedCardId);
+			this.changeTargetType(this._rbg.selectedCardId);
 		}
 
-		this._rbgLoader.loading = showLoadingIcon && false;
+		this._rbgLoader.loading = false;
 	}
 
 	public async startCardLoading(): Promise<void> {
@@ -726,9 +747,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		// but updating the card text will do for now
 		this._supportedProducts.forEach((product, index) => {
 			this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textValue = constants.LOADING_RECOMMENDATIONS;
-			this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textStyles = {
-				...styles.BODY_CSS,
-			};
+			this._rbg.cards[index].descriptions[CardDescriptionIndex.SKU_RECOMMENDATION].textStyles = { ...styles.BODY_CSS };
 			this._rbg.cards[index].descriptions[CardDescriptionIndex.VM_CONFIGURATIONS].textValue = '';
 		});
 
@@ -736,22 +755,24 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	}
 
 	private createAssessmentProgress(): azdata.FlexContainer {
+		this._assessmentLoader = this._view.modelBuilder.loadingComponent()
+			.component();
 
-		this._assessmentLoader = this._view.modelBuilder.loadingComponent().component();
+		this._assessmentProgress = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.ASSESSMENT_IN_PROGRESS,
+				CSSStyles: {
+					...styles.PAGE_TITLE_CSS,
+					'margin-right': '20px'
+				}
+			}).component();
 
-		this._assessmentProgress = this._view.modelBuilder.text().withProps({
-			value: constants.ASSESSMENT_IN_PROGRESS,
-			CSSStyles: {
-				...styles.PAGE_TITLE_CSS,
-				'margin-right': '20px'
-			}
-		}).component();
-
-		this._progressContainer = this._view.modelBuilder.flexContainer().withLayout({
-			height: '100%',
-			flexFlow: 'row',
-			alignItems: 'center'
-		}).component();
+		this._progressContainer = this._view.modelBuilder.flexContainer()
+			.withLayout({
+				height: '100%',
+				flexFlow: 'row',
+				alignItems: 'center'
+			}).component();
 
 		this._progressContainer.addItem(this._assessmentProgress, { flex: '0 0 auto' });
 		this._progressContainer.addItem(this._assessmentLoader, { flex: '0 0 auto' });
@@ -759,45 +780,50 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	}
 
 	private async createAssessmentInfo(): Promise<azdata.TextComponent> {
-		this._assessmentInfo = this._view.modelBuilder.text().withProps({
-			value: constants.ASSESSMENT_IN_PROGRESS_CONTENT((await this.migrationStateModel.getSourceConnectionProfile()).serverName),
-			CSSStyles: {
-				...styles.BODY_CSS,
-				'width': '660px'
-			}
-		}).component();
+		this._assessmentInfo = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.ASSESSMENT_IN_PROGRESS_CONTENT(this._serverName),
+				CSSStyles: {
+					...styles.BODY_CSS,
+					'width': '660px'
+				}
+			}).component();
 		return this._assessmentInfo;
 	}
 
 	private createAzureRecommendationContainer(_view: azdata.ModelView): azdata.FlexContainer {
-		const container = _view.modelBuilder.flexContainer().withProps({
-			CSSStyles: {
-				'flex-direction': 'column',
-				'max-width': '700px',
-				'margin-bottom': '1em',
-			}
-		}).component();
-		this._azureRecommendationSectionText = _view.modelBuilder.text().withProps({
-			value: constants.AZURE_RECOMMENDATION,
-			description: '',
-			CSSStyles: {
-				...styles.SECTION_HEADER_CSS,
-				'margin': '12px 0 8px',
-			}
-		}).component();
-		this._azureRecommendationInfoText = _view.modelBuilder.text().withProps({
-			value: constants.AZURE_RECOMMENDATION_STATUS_NOT_ENABLED,
-			CSSStyles: {
-				...styles.BODY_CSS,
-				'margin': '0',
-			}
-		}).component();
-		const learnMoreLink = _view.modelBuilder.hyperlink().withProps({
-			label: constants.LEARN_MORE,
-			ariaLabel: constants.LEARN_MORE,
-			url: 'https://aka.ms/ads-sql-sku-recommend',
-			showLinkIcon: true,
-		}).component();
+		const container = _view.modelBuilder.flexContainer()
+			.withProps({
+				CSSStyles: {
+					'flex-direction': 'column',
+					'max-width': '700px',
+					'margin-bottom': '1em',
+				}
+			}).component();
+		this._azureRecommendationSectionText = _view.modelBuilder.text()
+			.withProps({
+				value: constants.AZURE_RECOMMENDATION,
+				description: '',
+				CSSStyles: {
+					...styles.SECTION_HEADER_CSS,
+					'margin': '12px 0 8px',
+				}
+			}).component();
+		this._azureRecommendationInfoText = _view.modelBuilder.text()
+			.withProps({
+				value: constants.AZURE_RECOMMENDATION_STATUS_NOT_ENABLED,
+				CSSStyles: {
+					...styles.BODY_CSS,
+					'margin': '0',
+				}
+			}).component();
+		const learnMoreLink = _view.modelBuilder.hyperlink()
+			.withProps({
+				label: constants.LEARN_MORE,
+				ariaLabel: constants.LEARN_MORE,
+				url: 'https://aka.ms/ads-sql-sku-recommend',
+				showLinkIcon: true,
+			}).component();
 		const azureRecommendationsInfoContainer = _view.modelBuilder.flexContainer()
 			.withItems([
 				this._azureRecommendationInfoText,
@@ -818,19 +844,16 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 		}).component();
 		const getAzureRecommendationDialog = new GetAzureRecommendationDialog(this, this.wizard, this.migrationStateModel);
-		this._disposables.push(this._getAzureRecommendationButton.onDidClick(async (e) => {
-			await getAzureRecommendationDialog.openDialog();
-		}));
+		this._disposables.push(this._getAzureRecommendationButton.onDidClick(
+			async (e) => await getAzureRecommendationDialog.openDialog()));
 
-		this._skuGetRecommendationContainer = _view.modelBuilder.flexContainer().withProps({
-			CSSStyles: {
-				'flex-direction': 'column',
-			}
-		}).component();
+		this._skuGetRecommendationContainer = _view.modelBuilder.flexContainer()
+			.withProps({ CSSStyles: { 'flex-direction': 'column', } })
+			.component();
+
 		this._skuGetRecommendationContainer.addItems([
 			azureRecommendationsInfoContainer,
-			this._getAzureRecommendationButton,
-		]);
+			this._getAzureRecommendationButton]);
 
 		this._skuDataCollectionStatusContainer = this.createPerformanceCollectionStatusContainer(_view);
 		this._skuEditParametersContainer = this.createSkuEditParameters(_view);
@@ -844,30 +867,28 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	}
 
 	private createPerformanceCollectionStatusContainer(_view: azdata.ModelView): azdata.FlexContainer {
-		const container = _view.modelBuilder.flexContainer().withProps({
-			CSSStyles: {
-				'flex-direction': 'column',
-				'display': this.migrationStateModel.performanceCollectionNotStarted() ? 'none' : 'block',
-			}
-		}).component();
+		const container = _view.modelBuilder.flexContainer()
+			.withProps({
+				CSSStyles: {
+					'flex-direction': 'column',
+					'display': this.migrationStateModel.performanceCollectionNotStarted() ? 'none' : 'block',
+				}
+			}).component();
 
-		this._skuDataCollectionStatusIcon = _view.modelBuilder.image().withProps({
-			iconPath: IconPathHelper.inProgressMigration,
-			iconHeight: 16,
-			iconWidth: 16,
-			width: 16,
-			height: 16,
-			CSSStyles: {
-				'margin-right': '4px',
-			}
-		}).component();
-		this._skuDataCollectionStatusText = _view.modelBuilder.text().withProps({
-			value: '',
-			CSSStyles: {
-				...styles.BODY_CSS,
-				'margin': '0'
-			}
-		}).component();
+		this._skuDataCollectionStatusIcon = _view.modelBuilder.image()
+			.withProps({
+				iconPath: IconPathHelper.inProgressMigration,
+				iconHeight: 16,
+				iconWidth: 16,
+				width: 16,
+				height: 16,
+				CSSStyles: { 'margin-right': '4px' }
+			}).component();
+		this._skuDataCollectionStatusText = _view.modelBuilder.text()
+			.withProps({
+				value: '',
+				CSSStyles: { ...styles.BODY_CSS, 'margin': '0' }
+			}).component();
 
 		const statusIconTextContainer = _view.modelBuilder.flexContainer()
 			.withItems([
@@ -883,25 +904,27 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				}
 			}).component();
 
-		this._skuDataCollectionTimerText = _view.modelBuilder.text().withProps({
-			value: '',
-			CSSStyles: {
-				...styles.LIGHT_LABEL_CSS,
-				'margin': '0 0 8px 20px',
-			}
-		}).component();
+		this._skuDataCollectionTimerText = _view.modelBuilder.text()
+			.withProps({
+				value: '',
+				CSSStyles: {
+					...styles.LIGHT_LABEL_CSS,
+					'margin': '0 0 8px 20px',
+				}
+			}).component();
 
-		this._skuStopDataCollectionButton = this._view.modelBuilder.button().withProps({
-			iconPath: IconPathHelper.cancel,
-			label: constants.STOP_PERFORMANCE_COLLECTION,
-			width: 150,
-			height: 24,
-			CSSStyles: {
-				...styles.BODY_CSS,
-				'margin': '0',
-				'display': this.migrationStateModel.performanceCollectionInProgress() ? 'block' : 'none',
-			}
-		}).component();
+		this._skuStopDataCollectionButton = this._view.modelBuilder.button()
+			.withProps({
+				iconPath: IconPathHelper.cancel,
+				label: constants.STOP_PERFORMANCE_COLLECTION,
+				width: 150,
+				height: 24,
+				CSSStyles: {
+					...styles.BODY_CSS,
+					'margin': '0',
+					'display': this.migrationStateModel.performanceCollectionInProgress() ? 'block' : 'none',
+				}
+			}).component();
 		this._disposables.push(this._skuStopDataCollectionButton.onDidClick(async (e) => {
 			await this.migrationStateModel.stopPerfDataCollection();
 			await this.refreshAzureRecommendation();
@@ -918,16 +941,16 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				'display': this.migrationStateModel.performanceCollectionStopped() ? 'block' : 'none',
 			}
 		}).component();
-		this._disposables.push(this._skuRestartDataCollectionButton.onDidClick(async (e) => {
-			await this.migrationStateModel.startPerfDataCollection(
-				this.migrationStateModel._skuRecommendationPerformanceLocation,
-				this.migrationStateModel._performanceDataQueryIntervalInSeconds,
-				this.migrationStateModel._staticDataQueryIntervalInSeconds,
-				this.migrationStateModel._numberOfPerformanceDataQueryIterations,
-				this
-			);
-			await this.refreshSkuRecommendationComponents();
-		}));
+		this._disposables.push(
+			this._skuRestartDataCollectionButton.onDidClick(async (e) => {
+				await this.migrationStateModel.startPerfDataCollection(
+					this.migrationStateModel._skuRecommendationPerformanceLocation,
+					this.migrationStateModel._performanceDataQueryIntervalInSeconds,
+					this.migrationStateModel._staticDataQueryIntervalInSeconds,
+					this.migrationStateModel._numberOfPerformanceDataQueryIterations,
+					this);
+				await this.refreshSkuRecommendationComponents();
+			}));
 
 		this._refreshAzureRecommendationButton = this._view.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.refresh,
@@ -939,16 +962,18 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				'margin': '0 0 0 12px',
 			}
 		}).component();
-		this._disposables.push(this._refreshAzureRecommendationButton.onDidClick(async (e) => {
-			await this.refreshAzureRecommendation();
-		}));
-		this._skuLastRefreshTimeText = this._view.modelBuilder.text().withProps({
-			value: constants.LAST_REFRESHED_TIME(),
-			CSSStyles: {
-				...styles.SMALL_NOTE_CSS,
-				'margin': '0 0 4px 4px',
-			},
-		}).component();
+		this._disposables.push(
+			this._refreshAzureRecommendationButton.onDidClick(
+				async (e) => await this.refreshAzureRecommendation()));
+
+		this._skuLastRefreshTimeText = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.LAST_REFRESHED_TIME(),
+				CSSStyles: {
+					...styles.SMALL_NOTE_CSS,
+					'margin': '0 0 4px 4px',
+				},
+			}).component();
 		this._skuControlButtonsContainer = _view.modelBuilder.flexContainer()
 			.withProps({
 				CSSStyles: {
@@ -962,14 +987,13 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			this._skuStopDataCollectionButton,
 			this._skuRestartDataCollectionButton,
 			this._refreshAzureRecommendationButton,
-			this._skuLastRefreshTimeText,
-		]);
+			this._skuLastRefreshTimeText]);
 
 		container.addItems([
 			this._skuControlButtonsContainer,
 			statusIconTextContainer,
-			this._skuDataCollectionTimerText,
-		]);
+			this._skuDataCollectionTimerText]);
+
 		return container;
 	}
 
@@ -980,87 +1004,102 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				'display': this.migrationStateModel.performanceCollectionNotStarted() ? 'none' : 'block',
 			}
 		}).component();
-		const recommendationParametersSection = _view.modelBuilder.text().withProps({
-			value: constants.RECOMMENDATION_PARAMETERS,
-			CSSStyles: {
-				...styles.BODY_CSS,
-				'margin': '16px 0 8px'
-			}
-		}).component();
+		const recommendationParametersSection = _view.modelBuilder.text()
+			.withProps({
+				value: constants.RECOMMENDATION_PARAMETERS,
+				CSSStyles: {
+					...styles.BODY_CSS,
+					'margin': '16px 0 8px'
+				}
+			}).component();
 
-		const editParametersButton = this._view.modelBuilder.button().withProps({
-			iconPath: IconPathHelper.edit,
-			label: constants.EDIT_PARAMETERS,
-			width: 130,
-			height: 24,
-			CSSStyles: {
-				...styles.BODY_CSS,
-				'margin': '0',
-				'width': 'fit-content',
-			}
-		}).component();
+		const editParametersButton = this._view.modelBuilder.button()
+			.withProps({
+				iconPath: IconPathHelper.edit,
+				label: constants.EDIT_PARAMETERS,
+				width: 130,
+				height: 24,
+				CSSStyles: {
+					...styles.BODY_CSS,
+					'margin': '0',
+					'width': 'fit-content',
+				}
+			}).component();
 		let skuEditParametersDialog = new SkuEditParametersDialog(this, this.migrationStateModel);
-		this._disposables.push(editParametersButton.onDidClick(async () => {
-			await skuEditParametersDialog.openDialog();
-		}));
+		this._disposables.push(
+			editParametersButton.onDidClick(
+				async () => await skuEditParametersDialog.openDialog()));
 
 		const createParameterGroup = (label: string, value: string): {
 			flexContainer: azdata.FlexContainer,
 			text: azdata.TextComponent,
 		} => {
-			const parameterGroup = this._view.modelBuilder.flexContainer().withProps({
-				CSSStyles: {
-					'flex-direction': 'row',
-					'align-content': 'left',
-					'width': 'fit-content',
-					'margin-right': '24px',
-				}
-			}).component();
-			const labelText = this._view.modelBuilder.text().withProps({
-				value: label + ':',
-				CSSStyles: {
-					...styles.LIGHT_LABEL_CSS,
-					'width': 'fit-content',
-					'margin-right': '4px',
-				}
-			}).component();
-			const valueText = this._view.modelBuilder.text().withProps({
-				value: value,
-				CSSStyles: {
-					...styles.BODY_CSS,
-					'width': 'fit-content,',
-				}
-			}).component();
+			const parameterGroup = this._view.modelBuilder.flexContainer()
+				.withProps({
+					CSSStyles: {
+						'flex-direction': 'row',
+						'align-content': 'left',
+						'width': 'fit-content',
+						'margin-right': '24px',
+					}
+				}).component();
+			const labelText = this._view.modelBuilder.text()
+				.withProps({
+					value: label + ':',
+					CSSStyles: {
+						...styles.LIGHT_LABEL_CSS,
+						'width': 'fit-content',
+						'margin-right': '4px',
+					}
+				}).component();
+			const valueText = this._view.modelBuilder.text()
+				.withProps({
+					value: value,
+					CSSStyles: {
+						...styles.BODY_CSS,
+						'width': 'fit-content,',
+					}
+				}).component();
 			parameterGroup.addItems([
 				labelText,
-				valueText,
-			]);
+				valueText]);
 			return {
 				flexContainer: parameterGroup,
 				text: valueText,
 			};
 		};
 
-		const scaleFactorParameterGroup = createParameterGroup(constants.SCALE_FACTOR, this.migrationStateModel._skuScalingFactor.toString());
+		const scaleFactorParameterGroup = createParameterGroup(
+			constants.SCALE_FACTOR,
+			this.migrationStateModel._skuScalingFactor.toString());
 		this._skuScaleFactorText = scaleFactorParameterGroup.text;
 
-		const skuTargetPercentileParameterGroup = createParameterGroup(constants.PERCENTAGE_UTILIZATION, constants.PERCENTAGE(this.migrationStateModel._skuTargetPercentile));
+		const skuTargetPercentileParameterGroup = createParameterGroup(
+			constants.PERCENTAGE_UTILIZATION,
+			constants.PERCENTAGE(this.migrationStateModel._skuTargetPercentile));
 		this._skuTargetPercentileText = skuTargetPercentileParameterGroup.text;
 
-		const skuEnablePreviewParameterGroup = createParameterGroup(constants.ENABLE_PREVIEW_SKU, this.migrationStateModel._skuEnablePreview ? constants.YES : constants.NO);
+		const skuEnablePreviewParameterGroup = createParameterGroup(
+			constants.ENABLE_PREVIEW_SKU,
+			this.migrationStateModel._skuEnablePreview ? constants.YES : constants.NO);
 		this._skuEnablePreviewSkuText = skuEnablePreviewParameterGroup.text;
 
-		const parametersContainer = _view.modelBuilder.flexContainer().withProps({
-			CSSStyles: {
-				'margin': '8px 0',
-				'flex-direction': 'row',
-				'width': 'fit-content',
-			}
-		}).component();
+		const skuEnableElasticRecommendationsParameterGroup = createParameterGroup(constants.ELASTIC_RECOMMENDATION_LABEL, this.migrationStateModel._skuEnableElastic ? constants.YES : constants.NO);
+		this._skuEnableElasticRecommendationsText = skuEnableElasticRecommendationsParameterGroup.text;
+
+		const parametersContainer = _view.modelBuilder.flexContainer()
+			.withProps({
+				CSSStyles: {
+					'margin': '8px 0',
+					'flex-direction': 'row',
+					'width': 'fit-content',
+				}
+			}).component();
 		parametersContainer.addItems([
 			scaleFactorParameterGroup.flexContainer,
 			skuTargetPercentileParameterGroup.flexContainer,
 			skuEnablePreviewParameterGroup.flexContainer,
+			skuEnableElasticRecommendationsParameterGroup.flexContainer
 		]);
 
 		container.addItems([
@@ -1075,6 +1114,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this._skuScaleFactorText.value = this.migrationStateModel._skuScalingFactor.toString();
 		this._skuTargetPercentileText.value = constants.PERCENTAGE(this.migrationStateModel._skuTargetPercentile);
 		this._skuEnablePreviewSkuText.value = this.migrationStateModel._skuEnablePreview ? constants.YES : constants.NO;
+		this._skuEnableElasticRecommendationsText.value = this.migrationStateModel._skuEnableElastic ? constants.YES : constants.NO;
 		await this.refreshAzureRecommendation();
 	}
 
@@ -1082,6 +1122,16 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		await this.startCardLoading();
 		this._skuLastRefreshTimeText.value = constants.LAST_REFRESHED_TIME();
 		await this.migrationStateModel.getSkuRecommendations();
+
+		const skuRecommendationError = this.migrationStateModel._skuRecommendationResults?.recommendationError;
+		if (skuRecommendationError) {
+			this.wizard.message = {
+				text: constants.SKU_RECOMMENDATION_ERROR(this._serverName),
+				description: skuRecommendationError.message,
+				level: azdata.window.MessageLevel.Error
+			};
+		}
+
 		await this.refreshSkuRecommendationComponents();
 		this._skuLastRefreshTimeText.value = constants.LAST_REFRESHED_TIME(new Date().toLocaleString());
 	}
@@ -1168,7 +1218,10 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	}
 
 	private hasRecommendations(): boolean {
-		return this.migrationStateModel._skuRecommendationResults?.recommendations && !this.migrationStateModel._skuRecommendationResults?.recommendationError ? true : false;
+		return this.migrationStateModel._skuRecommendationResults?.recommendations
+			&& !this.migrationStateModel._skuRecommendationResults?.recommendationError
+			? true
+			: false;
 	}
 }
 

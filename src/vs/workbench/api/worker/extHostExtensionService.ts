@@ -29,7 +29,7 @@ namespace TrustedFunction {
 			// Malicious inputs  can escape the function body and execute immediately!
 			const fnArgs = args.slice(0, -1).join(',');
 			const fnBody = args.pop()!.toString();
-			const body = `(function anonymous(${fnArgs}) {\n${fnBody}\n})`;
+			const body = `(function anonymous(${fnArgs}) {${fnBody}\n})`;
 			return body;
 		}
 	});
@@ -153,7 +153,7 @@ export class ExtHostExtensionService extends AbstractExtHostExtensionService {
 	}
 
 	async $setRemoteEnvironment(_env: { [key: string]: string | null }): Promise<void> {
-		throw new Error('Not supported');
+		return;
 	}
 
 	private async _waitForDebuggerAttachment(waitTimeout = 5000) {

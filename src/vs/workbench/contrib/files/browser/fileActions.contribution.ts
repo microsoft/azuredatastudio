@@ -38,9 +38,9 @@ const registry = Registry.as<IWorkbenchActionRegistry>(ActionExtensions.Workbenc
 registry.registerWorkbenchAction(SyncActionDescriptor.from(GlobalCompareResourcesAction), 'File: Compare Active File With...', category.value, ActiveEditorContext);
 registry.registerWorkbenchAction(SyncActionDescriptor.from(FocusFilesExplorer), 'File: Focus on Files Explorer', category.value);
 registry.registerWorkbenchAction(SyncActionDescriptor.from(ShowActiveFileInExplorer), 'File: Reveal Active File in Side Bar', category.value);
-registry.registerWorkbenchAction(SyncActionDescriptor.from(CompareWithClipboardAction, { primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyCode.KEY_C) }), 'File: Compare Active File with Clipboard', category.value);
+registry.registerWorkbenchAction(SyncActionDescriptor.from(CompareWithClipboardAction, { primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KeyK, KeyCode.KeyC) }), 'File: Compare Active File with Clipboard', category.value);
 registry.registerWorkbenchAction(SyncActionDescriptor.from(ToggleAutoSaveAction), 'File: Toggle Auto Save', category.value);
-registry.registerWorkbenchAction(SyncActionDescriptor.from(ShowOpenedFileInNewWindow, { primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyCode.KEY_O) }), 'File: Open Active File in New Window', category.value, EmptyWorkspaceSupportContext);
+registry.registerWorkbenchAction(SyncActionDescriptor.from(ShowOpenedFileInNewWindow, { primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KeyK, KeyCode.KeyO) }), 'File: Open Active File in New Window', category.value, EmptyWorkspaceSupportContext);
 
 // Commands
 CommandsRegistry.registerCommand('_files.windowOpen', openWindowCommand);
@@ -101,7 +101,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: CUT_FILE_ID,
 	weight: KeybindingWeight.WorkbenchContrib + explorerCommandsWeightBonus,
 	when: ContextKeyExpr.and(FilesExplorerFocusCondition, ExplorerRootContext.toNegated(), ExplorerResourceNotReadonlyContext),
-	primary: KeyMod.CtrlCmd | KeyCode.KEY_X,
+	primary: KeyMod.CtrlCmd | KeyCode.KeyX,
 	handler: cutFileHandler,
 });
 
@@ -110,7 +110,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: COPY_FILE_ID,
 	weight: KeybindingWeight.WorkbenchContrib + explorerCommandsWeightBonus,
 	when: ContextKeyExpr.and(FilesExplorerFocusCondition, ExplorerRootContext.toNegated()),
-	primary: KeyMod.CtrlCmd | KeyCode.KEY_C,
+	primary: KeyMod.CtrlCmd | KeyCode.KeyC,
 	handler: copyFileHandler,
 });
 
@@ -120,7 +120,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: PASTE_FILE_ID,
 	weight: KeybindingWeight.WorkbenchContrib + explorerCommandsWeightBonus,
 	when: ContextKeyExpr.and(FilesExplorerFocusCondition, ExplorerResourceNotReadonlyContext),
-	primary: KeyMod.CtrlCmd | KeyCode.KEY_V,
+	primary: KeyMod.CtrlCmd | KeyCode.KeyV,
 	handler: pasteFileHandler
 });
 
@@ -210,7 +210,7 @@ appendToCommandPalette(COMPARE_WITH_SAVED_COMMAND_ID, { value: nls.localize('com
 appendToCommandPalette(SAVE_FILE_AS_COMMAND_ID, { value: SAVE_FILE_AS_LABEL, original: 'Save As...' }, category);
 appendToCommandPalette(NEW_FILE_COMMAND_ID, { value: NEW_FILE_LABEL, original: 'New File' }, category, WorkspaceFolderCountContext.notEqualsTo('0'));
 appendToCommandPalette(NEW_FOLDER_COMMAND_ID, { value: NEW_FOLDER_LABEL, original: 'New Folder' }, category, WorkspaceFolderCountContext.notEqualsTo('0'));
-appendToCommandPalette(DOWNLOAD_COMMAND_ID, { value: DOWNLOAD_LABEL, original: 'Download...' }, category, ContextKeyExpr.and(ResourceContextKey.Scheme.notEqualsTo(Schemas.file)));
+appendToCommandPalette(NEW_UNTITLED_FILE_COMMAND_ID, { value: NEW_UNTITLED_FILE_LABEL, original: 'New Untitled File' }, category);
 appendToCommandPalette(NEW_UNTITLED_FILE_COMMAND_ID, { value: locConstants.fileActionsContributionNewQuery, original: 'New Query' }, category); // {{SQL CARBON EDIT}} New Query label for normal untitled file
 appendToCommandPalette(NEW_UNTITLED_PLAIN_FILE_COMMAND_ID, { value: NEW_UNTITLED_FILE_LABEL, original: 'New File' }, category); // {{SQL CARBON EDIT}} New File label for untitled plain file
 
@@ -478,7 +478,7 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerContext, ({
 	order: 10,
 	command: {
 		id: DOWNLOAD_COMMAND_ID,
-		title: DOWNLOAD_LABEL,
+		title: DOWNLOAD_LABEL
 	},
 	when: ContextKeyExpr.or(
 		// native: for any remote resource

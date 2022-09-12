@@ -48,6 +48,16 @@ export class ExecutionPlanEditor extends EditorPane {
 	public layout(dimension: DOM.Dimension): void {
 	}
 
+	override clearInput(): void {
+		const currentInput = this.input as ExecutionPlanInput;
+		// clearing old input view if present in the editor
+		if (currentInput?._executionPlanFileViewUUID) {
+			const oldView = this._viewCache.executionPlanFileViewMap.get(currentInput._executionPlanFileViewUUID);
+			oldView.onHide(this._parentContainer);
+		}
+		super.clearInput();
+	}
+
 	public override async setInput(newInput: ExecutionPlanInput, options: IEditorOptions, context: IEditorOpenContext, token: CancellationToken): Promise<void> {
 		const oldInput = this.input as ExecutionPlanInput;
 
@@ -71,7 +81,7 @@ export class ExecutionPlanEditor extends EditorPane {
 		} else {
 			// creating a new view for the new input
 			newInput._executionPlanFileViewUUID = generateUuid();
-			newView = this._register(this._instantiationService.createInstance(ExecutionPlanFileView));
+			newView = this._register(this._instantiationService.createInstance(ExecutionPlanFileView, undefined));
 			newView.onShow(this._parentContainer);
 			newView.loadGraphFile({
 				graphFileContent: await newInput.content(),

@@ -25,7 +25,10 @@ export const LocalizedStrings = {
 	RESULTS_FOR_DATABASE: localize('asmt.sqlReport.resultForDatabase', "Results for database"),
 	RESULTS_FOR_INSTANCE: localize('asmt.sqlReport.resultForInstance', "Results for server"),
 	REPORT_ERROR: localize('asmt.sqlReport.Error', "Error"),
+	REPORT_HIGH: localize('asmt.sqlReport.High', "High"),
 	REPORT_WARNING: localize('asmt.sqlReport.Warning', "Warning"),
+	REPORT_MEDIUM: localize('asmt.sqlReport.Medium', "Medium"),
+	REPORT_LOW: localize('asmt.sqlReport.Low', "Low"),
 	REPORT_INFO: localize('asmt.sqlReport.Info', "Information"),
 	HELP_LINK_COLUMN_NAME: localize('asmt.column.helpLink', "Help Link"),
 	REPORT_SEVERITY_MESSAGE: function (severity: string, count: number) {

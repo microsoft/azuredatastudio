@@ -118,6 +118,8 @@ export class ServerGroupDialog extends Modal {
 		DOM.append(body, DOM.$('.dialog-label')).innerText = groupColorLabel;
 
 		this._serverGroupContainer = DOM.append(body, DOM.$('.group-color-options'));
+		this._serverGroupContainer.setAttribute('role', 'radiogroup');
+		this._serverGroupContainer.setAttribute('aria-label', groupColorLabel);
 		this.fillGroupColors(this._serverGroupContainer);
 
 		DOM.addStandardDisposableListener(this._serverGroupContainer, DOM.EventType.KEY_DOWN, (event: StandardKeyboardEvent) => {
@@ -190,24 +192,24 @@ export class ServerGroupDialog extends Modal {
 		for (let i = 0; i < this.withViewModel.colors.length; i++) {
 			const color = this.withViewModel.colors[i];
 
-			const colorColorBox = new Colorbox(container, {
+			const colorBox = new Colorbox(container, {
 				name: 'server-group-color',
 				class: ['server-group-color'],
-				label: localize('serverGroup.colorValue', "Color: {0}", color),
+				label: color
 			});
 
-			this._register(colorColorBox.onSelect((viaKeyboard) => {
+			this._register(colorBox.onSelect((viaKeyboard) => {
 				this.onSelectGroupColor(color);
 			}));
-			colorColorBox.style({
+			colorBox.style({
 				backgroundColor: Color.fromHex(color)
 			});
 
 			// Theme styler
-			this._register(attachCheckboxStyler(colorColorBox, this._themeService));
+			this._register(attachCheckboxStyler(colorBox, this._themeService));
 
 			// add the new colorbox to the color map
-			this._colorColorBoxesMap[i] = { color, colorbox: colorColorBox };
+			this._colorColorBoxesMap[i] = { color, colorbox: colorBox };
 		}
 	}
 

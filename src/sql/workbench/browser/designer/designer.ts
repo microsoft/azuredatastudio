@@ -16,7 +16,7 @@ import { Orientation, Sizing, SplitView } from 'vs/base/browser/ui/splitview/spl
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { IInputBoxStyles, InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import 'vs/css!./media/designer';
-import { ITableMouseEvent, ITableStyles } from 'sql/base/browser/ui/table/interfaces';
+import { ITableStyles } from 'sql/base/browser/ui/table/interfaces';
 import { IThemable } from 'vs/base/common/styler';
 import { Checkbox, ICheckboxStyles } from 'sql/base/browser/ui/checkbox/checkbox';
 import { Table } from 'sql/base/browser/ui/table/table';
@@ -51,6 +51,8 @@ import { RowMoveManager, RowMoveOnDragEventData } from 'sql/base/browser/ui/tabl
 import { ITaskbarContent, Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
 import { listFocusAndSelectionBackground } from 'sql/platform/theme/common/colors';
+import { timeout } from 'vs/base/common/async';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 export interface IDesignerStyle {
 	tabbedPanelStyles?: ITabbedPanelStyles;
@@ -206,7 +208,7 @@ export class Designer extends Disposable implements IThemable {
 			return this.createComponents(container, components, this._propertiesPane.componentMap, this._propertiesPane.groupHeaders, parentPath, 'PropertiesView');
 		}, (definition, component, viewModel) => {
 			this.setComponentValue(definition, component, viewModel);
-		});
+		}, this._instantiationService);
 	}
 
 	private styleComponent(component: TabbedPanel | InputBox | Checkbox | Table<Slick.SlickData> | SelectBox | Button | Dropdown): void {
@@ -282,6 +284,9 @@ export class Designer extends Disposable implements IThemable {
 
 
 	public setInput(input: DesignerComponentInput): void {
+		if (this._input) {
+			void this.submitPendingChanges().catch(onUnexpectedError);
+		}
 		this.saveUIState();
 		if (this._loadingTimeoutHandle) {
 			this.stopLoading();
@@ -303,7 +308,9 @@ export class Designer extends Disposable implements IThemable {
 		this._inputDisposable.add(this._input.onRefreshRequested(() => {
 			this.refresh();
 		}));
-
+		this._inputDisposable.add(this._input.onSubmitPendingEditRequested(async () => {
+			await this.submitPendingChanges();
+		}));
 		if (this._input.view === undefined) {
 			this._input.initialize();
 		} else {
@@ -317,6 +324,14 @@ export class Designer extends Disposable implements IThemable {
 	public override dispose(): void {
 		super.dispose();
 		this._inputDisposable?.dispose();
+	}
+
+	public async submitPendingChanges(): Promise<void> {
+		if (this._container.contains(document.activeElement) && document.activeElement instanceof HTMLInputElement) {
+			// Force the elements to fire the blur event to submit the pending changes.
+			document.activeElement.blur();
+			return timeout(10);
+		}
 	}
 
 	private clearUI(): void {
@@ -850,21 +865,15 @@ export class Designer extends Disposable implements IThemable {
 					this._actionsMap.get(taskbar).map(a => a.table = table);
 				}
 				const columns: Slick.Column<Slick.SlickData>[] = [];
-				if (tableProperties.canInsertRows || tableProperties.canMoveRows) {
-					// Add move context menu actions
-					this._register(table.onContextMenu((e) => {
-						this.openContextMenu(table, e, propertyPath, view, tableProperties);
-					}));
-				}
 				if (tableProperties.canMoveRows) {
 					// Add row move drag and drop
 					const moveRowsPlugin = new RowMoveManager({
 						cancelEditOnDrag: true,
 						id: 'moveRow',
 						iconCssClass: Codicon.grabber.classNames,
-						title: localize('designer.moveRowText', 'Move Row'),
-						width: 20,
-						resizable: false,
+						name: localize('designer.moveRowText', 'Move'),
+						width: 50,
+						resizable: true,
 						isFontIcon: true,
 						behavior: 'selectAndMove'
 					});
@@ -928,12 +937,14 @@ export class Designer extends Disposable implements IThemable {
 					}
 				}));
 				if (tableProperties.canRemoveRows) {
+					const removeText = localize('designer.removeRowText', "Remove");
 					const deleteRowColumn = new ButtonColumn({
 						id: 'deleteRow',
 						iconCssClass: Codicon.trash.classNames,
-						title: localize('designer.removeRowText', "Remove"),
-						width: 20,
-						resizable: false,
+						name: removeText,
+						title: removeText,
+						width: 60,
+						resizable: true,
 						isFontIcon: true,
 						enabledField: CanBeDeletedProperty
 					});
@@ -956,6 +967,27 @@ export class Designer extends Disposable implements IThemable {
 					});
 					table.registerPlugin(deleteRowColumn);
 					columns.push(deleteRowColumn.definition);
+				}
+				if (tableProperties.canInsertRows || tableProperties.canMoveRows) {
+					const moreActionsText = localize('designer.actions', "More Actions");
+					const actionsColumn = new ButtonColumn({
+						id: 'actions',
+						iconCssClass: Codicon.ellipsis.classNames,
+						name: moreActionsText,
+						title: moreActionsText,
+						width: 100,
+						resizable: true,
+						isFontIcon: true
+					});
+					this._register(actionsColumn.onClick((e) => {
+						this.openContextMenu(table, e.row, e.position, propertyPath, view, tableProperties);
+					}));
+					table.registerPlugin(actionsColumn);
+					columns.push(actionsColumn.definition);
+					// Add move context menu actions
+					this._register(table.onContextMenu((e) => {
+						this.openContextMenu(table, e.cell.row, e.anchor, propertyPath, view, tableProperties);
+					}));
 				}
 				table.columns = columns;
 				table.grid.onBeforeEditCell.subscribe((e, data): boolean => {
@@ -1029,12 +1061,12 @@ export class Designer extends Disposable implements IThemable {
 
 	private openContextMenu(
 		table: Table<Slick.SlickData>,
-		event: ITableMouseEvent,
+		rowIndex: number,
+		anchor: HTMLElement | { x: number, y: number },
 		propertyPath: DesignerPropertyPath,
 		view: DesignerUIArea,
 		tableProperties: DesignerTableProperties
 	): void {
-		const rowIndex = event.cell.row;
 		const tableActionContext: DesignerTableActionContext = {
 			table: table,
 			path: propertyPath,
@@ -1053,7 +1085,7 @@ export class Designer extends Disposable implements IThemable {
 			}
 		});
 		this._contextMenuService.showContextMenu({
-			getAnchor: () => event.anchor,
+			getAnchor: () => anchor,
 			getActions: () => actions,
 			getActionsContext: () => (tableActionContext)
 		});

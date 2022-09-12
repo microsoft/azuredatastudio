@@ -20,12 +20,12 @@
     "type": "git",
     "url": "https://github.com/Microsoft/azuredatastudio.git"
   },
-	"capabilities": {
+  "capabilities": {
     "virtualWorkspaces": false,
     "untrustedWorkspaces": {
       "supported": true
     }
-	},
+  },
   "extensionDependencies": [
     "Microsoft.mssql"
   ],
@@ -92,11 +92,13 @@
     }
   },
   "dependencies": {
-    "@microsoft/ads-extension-telemetry": "^1.1.3",
+    "@microsoft/ads-extension-telemetry": "^1.2.0",
     "htmlparser2": "^3.10.1",
     "vscode-nls": "^4.0.0"
   },
   "devDependencies": {
+    "@microsoft/azdata-test": "^1.5.2",
+    "@microsoft/vscodetestcover": "^1.2.1",
     "@types/mocha": "^7.0.2",
     "@types/node": "^12.11.7",
     "@types/sinon": "^9.0.4",
@@ -105,8 +107,7 @@
     "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.3",
     "sinon": "^9.0.2",
-    "typemoq": "^2.1.0",
-    "@microsoft/vscodetestcover": "^1.2.1"
+    "typemoq": "^2.1.0"
   },
   "__metadata": {
     "id": "33",

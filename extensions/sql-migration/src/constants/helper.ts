@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import { DatabaseMigration } from '../api/azure';
-import { MigrationStatus } from '../models/migrationLocalStorage';
+import { DefaultSettingValue } from '../api/utils';
 import { FileStorageType, MigrationMode, MigrationTargetType } from '../models/stateMachine';
 import * as loc from './strings';
 
@@ -15,8 +15,84 @@ export enum SQLTargetAssetType {
 	SQLDB = 'Microsoft.Sql/servers',
 }
 
-export function getMigrationTargetType(migration: DatabaseMigration): string {
-	const id = migration.id?.toLowerCase();
+export const ParallelCopyTypeCodes = {
+	None: 'None',
+	DynamicRange: 'DynamicRange',
+	PhysicalPartitionsOfTable: 'PhysicalPartitionsOfTable',
+};
+
+export const PipelineStatusCodes = {
+	// status codes: 'PreparingForCopy' | 'Copying' | 'CopyFinished' | 'RebuildingIndexes' | 'Succeeded' | 'Failed' |	'Canceled',
+	PreparingForCopy: 'PreparingForCopy',
+	Copying: 'Copying',
+	CopyFinished: 'CopyFinished',
+	RebuildingIndexes: 'RebuildingIndexes',
+	Succeeded: 'Succeeded',
+	Failed: 'Failed',
+	Canceled: 'Canceled',
+
+	// legacy status codes
+	Queued: 'Queued',
+	InProgress: 'InProgress',
+	Cancelled: 'Cancelled',
+};
+
+const _dateFormatter = new Intl.DateTimeFormat(
+	undefined, {
+	year: 'numeric',
+	month: '2-digit',
+	day: '2-digit',
+	hour: '2-digit',
+	minute: '2-digit',
+	second: '2-digit'
+});
+
+const _numberFormatter = new Intl.NumberFormat(
+	undefined, {
+	style: 'decimal',
+	useGrouping: true,
+	minimumIntegerDigits: 1,
+	minimumFractionDigits: 0,
+	maximumFractionDigits: 0,
+});
+
+export function formatDateTimeString(dateTime: string): string {
+	return dateTime
+		? _dateFormatter.format(new Date(dateTime))
+		: '';
+}
+
+export function formatTime(miliseconds: number): string {
+	if (miliseconds > 0) {
+		// hh:mm:ss
+		const matches = (new Date(miliseconds))?.toUTCString()?.match(/(\d\d:\d\d:\d\d)/) || [];
+		return matches?.length > 0 ? matches[0] : '';
+	}
+	return '';
+}
+
+export function formatNumber(value: number): string {
+	return value >= 0
+		? _numberFormatter.format(value)
+		: '';
+}
+
+export function formatCopyThroughPut(value: number): string {
+	return value >= 0
+		? loc.sizeFormatter.format(value / 1024)
+		: '';
+}
+
+export function formatSizeBytes(sizeBytes: number): string {
+	return formatSizeKb(sizeBytes / 1024);
+}
+
+export function formatSizeKb(sizeKb: number): string {
+	return loc.formatSizeMb(sizeKb / 1024);
+}
+
+export function getMigrationTargetType(migration: DatabaseMigration | undefined): string {
+	const id = migration?.id?.toLowerCase() || '';
 	if (id?.indexOf(SQLTargetAssetType.SQLMI.toLowerCase()) > -1) {
 		return loc.SQL_MANAGED_INSTANCE;
 	}
@@ -29,8 +105,8 @@ export function getMigrationTargetType(migration: DatabaseMigration): string {
 	return '';
 }
 
-export function getMigrationTargetTypeEnum(migration: DatabaseMigration): MigrationTargetType | undefined {
-	switch (migration.type) {
+export function getMigrationTargetTypeEnum(migration: DatabaseMigration | undefined): MigrationTargetType | undefined {
+	switch (migration?.type) {
 		case SQLTargetAssetType.SQLMI:
 			return MigrationTargetType.SQLMI;
 		case SQLTargetAssetType.SQLVM:
@@ -42,37 +118,91 @@ export function getMigrationTargetTypeEnum(migration: DatabaseMigration): Migrat
 	}
 }
 
-export function getMigrationMode(migration: DatabaseMigration): string {
+export function getMigrationMode(migration: DatabaseMigration | undefined): string {
 	return isOfflineMigation(migration)
 		? loc.OFFLINE
 		: loc.ONLINE;
 }
 
-export function getMigrationModeEnum(migration: DatabaseMigration): MigrationMode {
+export function getMigrationModeEnum(migration: DatabaseMigration | undefined): MigrationMode {
 	return isOfflineMigation(migration)
 		? MigrationMode.OFFLINE
 		: MigrationMode.ONLINE;
 }
 
-export function isOfflineMigation(migration: DatabaseMigration): boolean {
-	return migration.properties.offlineConfiguration?.offline === true;
+export function isOfflineMigation(migration: DatabaseMigration | undefined): boolean {
+	return migration?.properties?.offlineConfiguration?.offline === true;
 }
 
-export function isBlobMigration(migration: DatabaseMigration): boolean {
+export function isBlobMigration(migration: DatabaseMigration | undefined): boolean {
 	return migration?.properties?.backupConfiguration?.sourceLocation?.fileStorageType === FileStorageType.AzureBlob;
 }
 
-export function getMigrationStatus(migration: DatabaseMigration): string {
-	return migration.properties.migrationStatus
-		?? migration.properties.provisioningState;
+export function getMigrationStatus(migration: DatabaseMigration | undefined): string | undefined {
+	return migration?.properties.migrationStatus
+		?? migration?.properties.provisioningState;
 }
 
+export function getMigrationStatusString(migration: DatabaseMigration | undefined): string {
+	const migrationStatus = getMigrationStatus(migration) ?? DefaultSettingValue;
+	return loc.StatusLookup[migrationStatus] ?? migrationStatus;
+}
 
-export function canRetryMigration(status: string | undefined): boolean {
-	return status === undefined ||
-		status === MigrationStatus.Failed ||
-		status === MigrationStatus.Succeeded ||
-		status === MigrationStatus.Canceled;
+export function hasMigrationOperationId(migration: DatabaseMigration | undefined): boolean {
+	const migrationId = migration?.id ?? '';
+	const migationOperationId = migration?.properties?.migrationOperationId ?? '';
+	return migrationId.length > 0
+		&& migationOperationId.length > 0;
+}
+
+export function canCancelMigration(migration: DatabaseMigration | undefined): boolean {
+	const status = getMigrationStatus(migration);
+	return hasMigrationOperationId(migration)
+		&& (status === loc.MigrationStatus.InProgress ||
+			status === loc.MigrationStatus.Retriable ||
+			status === loc.MigrationStatus.Creating);
+}
+
+export function canDeleteMigration(migration: DatabaseMigration | undefined): boolean {
+	const status = getMigrationStatus(migration);
+	return status === loc.MigrationStatus.Canceled
+		|| status === loc.MigrationStatus.Failed
+		|| status === loc.MigrationStatus.Retriable
+		|| status === loc.MigrationStatus.Succeeded;
+}
+
+export function canRetryMigration(migration: DatabaseMigration | undefined): boolean {
+	const status = getMigrationStatus(migration);
+	return status === loc.MigrationStatus.Canceled
+		|| status === loc.MigrationStatus.Retriable
+		|| status === loc.MigrationStatus.Failed
+		|| status === loc.MigrationStatus.Succeeded;
+}
+
+export function canCutoverMigration(migration: DatabaseMigration | undefined): boolean {
+	const status = getMigrationStatus(migration);
+	return hasMigrationOperationId(migration)
+		&& status === loc.MigrationStatus.InProgress
+		&& isOnlineMigration(migration)
+		&& isFullBackupRestored(migration);
+}
+
+export function isActiveMigration(migration: DatabaseMigration | undefined): boolean {
+	const status = getMigrationStatus(migration);
+	return status === loc.MigrationStatus.Completing
+		|| status === loc.MigrationStatus.Retriable
+		|| status === loc.MigrationStatus.Creating
+		|| status === loc.MigrationStatus.InProgress;
+}
+
+export function isFullBackupRestored(migration: DatabaseMigration | undefined): boolean {
+	const fileName = migration?.properties?.migrationStatusDetails?.lastRestoredFilename ?? '';
+	return migration?.properties?.migrationStatusDetails?.isFullBackupRestored
+		|| fileName.length > 0;
+}
+
+export function isOnlineMigration(migration: DatabaseMigration | undefined): boolean {
+	return getMigrationModeEnum(migration) === MigrationMode.ONLINE;
 }
 
 export function selectDatabasesFromList(selectedDbs: string[], databaseTableValues: azdata.DeclarativeTableCellValue[][]): azdata.DeclarativeTableCellValue[][] {

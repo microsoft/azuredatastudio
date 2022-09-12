@@ -28,7 +28,8 @@
 	],
 	"ban-worker-calls": [
 		"vs/base/worker/defaultWorkerFactory.ts",
-		"vs/workbench/services/extensions/browser/webWorkerExtensionHost.ts"
+		"vs/workbench/services/extensions/browser/webWorkerExtensionHost.ts",
+		"vs/platform/sharedProcess/electron-browser/sharedProcessWorkerService.ts"
 	],
 	"ban-element-innerhtml-assignments": [
 		"sql/workbench/browser/modal/modal.ts",
@@ -59,6 +60,5 @@
 		"sql/workbench/services/notebook/browser/outputs/renderers.ts"
 	],
 	"ban-domparser-parsefromstring": [
-		"sql/workbench/contrib/queryPlan/browser/planXmlParser.ts"
 	]
 }

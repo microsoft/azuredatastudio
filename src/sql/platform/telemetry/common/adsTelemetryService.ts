@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import { IAdsTelemetryService, ITelemetryInfo, ITelemetryEvent, ITelemetryEventMeasures, ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 import { ILogService } from 'vs/platform/log/common/log';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import { ITelemetryService, TelemetryLevel } from 'vs/platform/telemetry/common/telemetry';
 import { EventName } from 'sql/platform/telemetry/common/telemetryKeys';
 
 
@@ -90,11 +90,15 @@ export class AdsTelemetryService implements IAdsTelemetryService {
 	) { }
 
 	setEnabled(value: boolean): void {
-		return this.telemetryService.setEnabled(value);
+		if (value) {
+			this.telemetryService.telemetryLevel = TelemetryLevel.USAGE;
+		} else {
+			this.telemetryService.telemetryLevel = TelemetryLevel.NONE;
+		}
 	}
 
 	get isOptedIn(): boolean {
-		return this.telemetryService.isOptedIn;
+		return this.telemetryService.telemetryLevel !== TelemetryLevel.NONE;
 	}
 
 	getTelemetryInfo(): Promise<ITelemetryInfo> {

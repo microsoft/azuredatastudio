@@ -489,187 +489,34 @@ declare module 'vscode-mssql' {
 		executeAndScript = 2
 	}
 
+	/**
+	* Interface containing deployment options of boolean type
+	*/
 	export interface DacDeployOptionPropertyBoolean {
 		value: boolean;
 		description: string;
 		displayName: string;
 	}
 
+	/**
+	* Interface containing deployment options of string[] type, value property holds enum names (nothing but option name) from <DacFx>\Product\Source\DeploymentApi\ObjectTypes.cs enum
+	*/
 	export interface DacDeployOptionPropertyObject {
-		value: SchemaObjectType[];
+		value: string[];
 		description: string;
 		displayName: string;
 	}
 
+	/*
+	* Interface containing Deployment options from <DacFx>\Source\DeploymentApi\DacDeployOptions.cs
+	* These property names should match with the properties defined in <sqltoolsservice>\src\Microsoft.SqlTools.ServiceLayer\DacFx\Contracts\DeploymentOptions.cs
+	*/
 	export interface DeploymentOptions {
-		ignoreTableOptions: DacDeployOptionPropertyBoolean;
-		ignoreSemicolonBetweenStatements: DacDeployOptionPropertyBoolean;
-		ignoreRouteLifetime: DacDeployOptionPropertyBoolean;
-		ignoreRoleMembership: DacDeployOptionPropertyBoolean;
-		ignoreQuotedIdentifiers: DacDeployOptionPropertyBoolean;
-		ignorePermissions: DacDeployOptionPropertyBoolean;
-		ignorePartitionSchemes: DacDeployOptionPropertyBoolean;
-		ignoreObjectPlacementOnPartitionScheme: DacDeployOptionPropertyBoolean;
-		ignoreNotForReplication: DacDeployOptionPropertyBoolean;
-		ignoreLoginSids: DacDeployOptionPropertyBoolean;
-		ignoreLockHintsOnIndexes: DacDeployOptionPropertyBoolean;
-		ignoreKeywordCasing: DacDeployOptionPropertyBoolean;
-		ignoreIndexPadding: DacDeployOptionPropertyBoolean;
-		ignoreIndexOptions: DacDeployOptionPropertyBoolean;
-		ignoreIncrement: DacDeployOptionPropertyBoolean;
-		ignoreIdentitySeed: DacDeployOptionPropertyBoolean;
-		ignoreUserSettingsObjects: DacDeployOptionPropertyBoolean;
-		ignoreFullTextCatalogFilePath: DacDeployOptionPropertyBoolean;
-		ignoreWhitespace: DacDeployOptionPropertyBoolean;
-		ignoreWithNocheckOnForeignKeys: DacDeployOptionPropertyBoolean;
-		verifyCollationCompatibility: DacDeployOptionPropertyBoolean;
-		unmodifiableObjectWarnings: DacDeployOptionPropertyBoolean;
-		treatVerificationErrorsAsWarnings: DacDeployOptionPropertyBoolean;
-		scriptRefreshModule: DacDeployOptionPropertyBoolean;
-		scriptNewConstraintValidation: DacDeployOptionPropertyBoolean;
-		scriptFileSize: DacDeployOptionPropertyBoolean;
-		scriptDeployStateChecks: DacDeployOptionPropertyBoolean;
-		scriptDatabaseOptions: DacDeployOptionPropertyBoolean;
-		scriptDatabaseCompatibility: DacDeployOptionPropertyBoolean;
-		scriptDatabaseCollation: DacDeployOptionPropertyBoolean;
-		runDeploymentPlanExecutors: DacDeployOptionPropertyBoolean;
-		registerDataTierApplication: DacDeployOptionPropertyBoolean;
-		populateFilesOnFileGroups: DacDeployOptionPropertyBoolean;
-		noAlterStatementsToChangeClrTypes: DacDeployOptionPropertyBoolean;
-		includeTransactionalScripts: DacDeployOptionPropertyBoolean;
-		includeCompositeObjects: DacDeployOptionPropertyBoolean;
-		allowUnsafeRowLevelSecurityDataMovement: DacDeployOptionPropertyBoolean;
-		ignoreWithNocheckOnCheckConstraints: DacDeployOptionPropertyBoolean;
-		ignoreFillFactor: DacDeployOptionPropertyBoolean;
-		ignoreFileSize: DacDeployOptionPropertyBoolean;
-		ignoreFilegroupPlacement: DacDeployOptionPropertyBoolean;
-		doNotAlterReplicatedObjects: DacDeployOptionPropertyBoolean;
-		doNotAlterChangeDataCaptureObjects: DacDeployOptionPropertyBoolean;
-		disableAndReenableDdlTriggers: DacDeployOptionPropertyBoolean;
-		deployDatabaseInSingleUserMode: DacDeployOptionPropertyBoolean;
-		createNewDatabase: DacDeployOptionPropertyBoolean;
-		compareUsingTargetCollation: DacDeployOptionPropertyBoolean;
-		commentOutSetVarDeclarations: DacDeployOptionPropertyBoolean;
-		blockWhenDriftDetected: DacDeployOptionPropertyBoolean;
-		blockOnPossibleDataLoss: DacDeployOptionPropertyBoolean;
-		backupDatabaseBeforeChanges: DacDeployOptionPropertyBoolean;
-		allowIncompatiblePlatform: DacDeployOptionPropertyBoolean;
-		allowDropBlockingAssemblies: DacDeployOptionPropertyBoolean;
-		dropConstraintsNotInSource: DacDeployOptionPropertyBoolean;
-		dropDmlTriggersNotInSource: DacDeployOptionPropertyBoolean;
-		dropExtendedPropertiesNotInSource: DacDeployOptionPropertyBoolean;
-		dropIndexesNotInSource: DacDeployOptionPropertyBoolean;
-		ignoreFileAndLogFilePath: DacDeployOptionPropertyBoolean;
-		ignoreExtendedProperties: DacDeployOptionPropertyBoolean;
-		ignoreDmlTriggerState: DacDeployOptionPropertyBoolean;
-		ignoreDmlTriggerOrder: DacDeployOptionPropertyBoolean;
-		ignoreDefaultSchema: DacDeployOptionPropertyBoolean;
-		ignoreDdlTriggerState: DacDeployOptionPropertyBoolean;
-		ignoreDdlTriggerOrder: DacDeployOptionPropertyBoolean;
-		ignoreCryptographicProviderFilePath: DacDeployOptionPropertyBoolean;
-		verifyDeployment: DacDeployOptionPropertyBoolean;
-		ignoreComments: DacDeployOptionPropertyBoolean;
-		ignoreColumnCollation: DacDeployOptionPropertyBoolean;
-		ignoreAuthorizer: DacDeployOptionPropertyBoolean;
-		ignoreAnsiNulls: DacDeployOptionPropertyBoolean;
-		generateSmartDefaults: DacDeployOptionPropertyBoolean;
-		dropStatisticsNotInSource: DacDeployOptionPropertyBoolean;
-		dropRoleMembersNotInSource: DacDeployOptionPropertyBoolean;
-		dropPermissionsNotInSource: DacDeployOptionPropertyBoolean;
-		dropObjectsNotInSource: DacDeployOptionPropertyBoolean;
-		ignoreColumnOrder: DacDeployOptionPropertyBoolean;
-		doNotDropObjectTypes: DacDeployOptionPropertyObject;
 		excludeObjectTypes: DacDeployOptionPropertyObject;
-		ignoreTablePartitionOptions: DacDeployOptionPropertyBoolean;
-		doNotEvaluateSqlCmdVariables: DacDeployOptionPropertyBoolean;
-		disableParallelismForEnablingIndexes: DacDeployOptionPropertyBoolean;
-		disableIndexesForDataPhase: DacDeployOptionPropertyBoolean;
-		restoreSequenceCurrentValue: DacDeployOptionPropertyBoolean;
-		rebuildIndexesOfflineForDataPhase: DacDeployOptionPropertyBoolean;
-		isAlwaysEncryptedParameterizationEnabled: DacDeployOptionPropertyBoolean;
-		preserveIdentityLastValues: DacDeployOptionPropertyBoolean;
-		allowExternalLibraryPaths: DacDeployOptionPropertyBoolean;
-		allowExternalLanguagePaths: DacDeployOptionPropertyBoolean;
-		hashObjectNamesInLogs: DacDeployOptionPropertyBoolean;
-		doNotDropWorkloadClassifiers: DacDeployOptionPropertyBoolean;
-		ignoreWorkloadClassifiers: DacDeployOptionPropertyBoolean;
-		ignoreDatabaseWorkloadGroups: DacDeployOptionPropertyBoolean;
-		doNotDropDatabaseWorkloadGroups: DacDeployOptionPropertyBoolean;
-	}
-
-	/**
-	 * Values from <DacFx>\Product\Source\DeploymentApi\ObjectTypes.cs
-	 */
-	export const enum SchemaObjectType {
-		Aggregates = 0,
-		ApplicationRoles = 1,
-		Assemblies = 2,
-		AssemblyFiles = 3,
-		AsymmetricKeys = 4,
-		BrokerPriorities = 5,
-		Certificates = 6,
-		ColumnEncryptionKeys = 7,
-		ColumnMasterKeys = 8,
-		Contracts = 9,
-		DatabaseOptions = 10,
-		DatabaseRoles = 11,
-		DatabaseTriggers = 12,
-		Defaults = 13,
-		ExtendedProperties = 14,
-		ExternalDataSources = 15,
-		ExternalFileFormats = 16,
-		ExternalTables = 17,
-		Filegroups = 18,
-		Files = 19,
-		FileTables = 20,
-		FullTextCatalogs = 21,
-		FullTextStoplists = 22,
-		MessageTypes = 23,
-		PartitionFunctions = 24,
-		PartitionSchemes = 25,
-		Permissions = 26,
-		Queues = 27,
-		RemoteServiceBindings = 28,
-		RoleMembership = 29,
-		Rules = 30,
-		ScalarValuedFunctions = 31,
-		SearchPropertyLists = 32,
-		SecurityPolicies = 33,
-		Sequences = 34,
-		Services = 35,
-		Signatures = 36,
-		StoredProcedures = 37,
-		SymmetricKeys = 38,
-		Synonyms = 39,
-		Tables = 40,
-		TableValuedFunctions = 41,
-		UserDefinedDataTypes = 42,
-		UserDefinedTableTypes = 43,
-		ClrUserDefinedTypes = 44,
-		Users = 45,
-		Views = 46,
-		XmlSchemaCollections = 47,
-		Audits = 48,
-		Credentials = 49,
-		CryptographicProviders = 50,
-		DatabaseAuditSpecifications = 51,
-		DatabaseEncryptionKeys = 52,
-		DatabaseScopedCredentials = 53,
-		Endpoints = 54,
-		ErrorMessages = 55,
-		EventNotifications = 56,
-		EventSessions = 57,
-		LinkedServerLogins = 58,
-		LinkedServers = 59,
-		Logins = 60,
-		MasterKeys = 61,
-		Routes = 62,
-		ServerAuditSpecifications = 63,
-		ServerRoleMembership = 64,
-		ServerRoles = 65,
-		ServerTriggers = 66,
-		ExternalStreams = 67,
-		ExternalStreamingJobs = 68
+		// key will be the boolean option name
+		booleanOptionsDictionary: { [key: string]: DacDeployOptionPropertyBoolean };
+		// key will be the object type enum name (nothing but option name)
+		objectTypesDictionary: { [key: string]: string };
 	}
 
 	/**

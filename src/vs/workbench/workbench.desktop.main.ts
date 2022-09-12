@@ -59,7 +59,7 @@ import 'vs/workbench/electron-browser/desktop.main';
 
 import 'vs/workbench/services/search/electron-browser/searchService';
 import 'vs/workbench/services/extensions/electron-browser/extensionService';
-import 'vs/workbench/services/remote/electron-browser/tunnelServiceImpl';
+import 'vs/platform/extensions/node/extensionHostStarter';
 
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -82,8 +82,6 @@ import { ISqlOAuthService } from 'sql/platform/oAuth/common/sqlOAuthService';
 import { SqlOAuthService } from 'sql/platform/oAuth/electron-browser/sqlOAuthServiceImpl';
 import { IClipboardService as sqlIClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { ClipboardService as sqlClipboardService } from 'sql/platform/clipboard/electron-browser/clipboardService';
-import { IQueryHistoryService } from 'sql/workbench/services/queryHistory/common/queryHistoryService';
-import { QueryHistoryService } from 'sql/workbench/services/queryHistory/common/queryHistoryServiceImpl';
 import { IAzureBlobService } from 'sql/platform/azureBlob/common/azureBlobService';
 import { AzureBlobService } from 'sql/workbench/services/azureBlob/browser/azureBlobService';
 import { IAzureAccountService } from 'sql/platform/azureAccount/common/azureAccountService';
@@ -91,7 +89,6 @@ import { AzureAccountService } from 'sql/workbench/services/azureAccount/browser
 
 registerSingleton(ISqlOAuthService, SqlOAuthService);
 registerSingleton(sqlIClipboardService, sqlClipboardService);
-registerSingleton(IQueryHistoryService, QueryHistoryService);
 registerSingleton(IAzureBlobService, AzureBlobService);
 registerSingleton(IAzureAccountService, AzureAccountService);
 // {{SQL CARBON EDIT}} - End
@@ -145,9 +142,6 @@ import 'vs/workbench/contrib/extensions/electron-browser/extensions.contribution
 // {{SQL CARBON EDIT}}
 // getting started
 import 'sql/workbench/update/electron-browser/gettingStarted.contribution';
-
-// query history
-import 'sql/workbench/contrib/queryHistory/electron-browser/queryHistory.contribution';
 
 // CLI
 import 'sql/workbench/contrib/commandLine/electron-browser/commandLine.contribution';

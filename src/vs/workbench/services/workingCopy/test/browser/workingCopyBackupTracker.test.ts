@@ -55,9 +55,10 @@ suite('WorkingCopyBackupTracker (browser)', function () {
 			@ILifecycleService lifecycleService: ILifecycleService,
 			@ILogService logService: ILogService,
 			@IWorkingCopyEditorService workingCopyEditorService: IWorkingCopyEditorService,
-			@IEditorService editorService: IEditorService
+			@IEditorService editorService: IEditorService,
+			@IEditorGroupsService editorGroupService: IEditorGroupsService
 		) {
-			super(workingCopyBackupService, filesConfigurationService, workingCopyService, lifecycleService, logService, workingCopyEditorService, editorService);
+			super(workingCopyBackupService, filesConfigurationService, workingCopyService, lifecycleService, logService, workingCopyEditorService, editorService, editorGroupService);
 		}
 
 		protected override getBackupScheduleDelay(): number {
@@ -88,14 +89,14 @@ suite('WorkingCopyBackupTracker (browser)', function () {
 		const disposables = new DisposableStore();
 
 		const workingCopyBackupService = new InMemoryTestWorkingCopyBackupService();
-		const instantiationService = workbenchInstantiationService();
+		const instantiationService = workbenchInstantiationService(undefined, disposables);
 		instantiationService.stub(IWorkingCopyBackupService, workingCopyBackupService);
 
 		const part = await createEditorPart(instantiationService, disposables);
+		instantiationService.stub(IEditorGroupsService, part);
 
 		disposables.add(registerTestResourceEditor());
 
-		instantiationService.stub(IEditorGroupsService, part);
 		instantiationService.stub(IWorkspaceTrustRequestService, new TestWorkspaceTrustRequestService(false));
 
 		const editorService: EditorService = instantiationService.createInstance(EditorService);
@@ -197,12 +198,12 @@ suite('WorkingCopyBackupTracker (browser)', function () {
 		const disposables = new DisposableStore();
 
 		const workingCopyBackupService = new InMemoryTestWorkingCopyBackupService();
-		const instantiationService = workbenchInstantiationService();
+		const instantiationService = workbenchInstantiationService(undefined, disposables);
 		instantiationService.stub(IWorkingCopyBackupService, workingCopyBackupService);
 
 		const part = await createEditorPart(instantiationService, disposables);
-
 		instantiationService.stub(IEditorGroupsService, part);
+
 		instantiationService.stub(IWorkspaceTrustRequestService, new TestWorkspaceTrustRequestService(false));
 
 		const editorService: EditorService = instantiationService.createInstance(EditorService);

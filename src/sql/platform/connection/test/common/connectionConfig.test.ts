@@ -250,7 +250,7 @@ suite('ConnectionConfig', () => {
 
 		assert.strictEqual(allGroups.length, testGroups.length, 'did not meet the expected length');
 		assert.ok(groupsAreEqual(allGroups, testGroups), 'the groups returned did not match expectation');
-		assert.ok(allGroups.slice(1).every((item, i) => allGroups[i].name <= item.name), 'the groups are not sorted correctly');
+		assert.ok(allGroups.slice(1).every((item, i) => allGroups[i].name.localeCompare(item.name) <= 0), 'the groups are not sorted correctly');
 	});
 
 	test('getAllGroups should return groups sorted by date added given datasource.connectionsSortOrder is set to \'' + ConnectionsSortOrder.dateAdded + '\'', () => {
@@ -420,7 +420,7 @@ suite('ConnectionConfig', () => {
 		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
 		let allConnections = config.getConnections(true);
 		assert.strictEqual(allConnections.length, testConnections.length, 'The result connections length is invalid');
-		assert.ok(allConnections.slice(1).every((item, i) => allConnections[i].title <= item.title), 'The connections are not sorted correctly');
+		assert.ok(allConnections.slice(1).every((item, i) => allConnections[i].title.localeCompare(item.title) <= 0), 'The connections are not sorted correctly');
 	});
 
 	test('getConnections should return connections sorted by date added given datasource.connectionsSortOrder is set to \'' + ConnectionsSortOrder.dateAdded + '\'', () => {

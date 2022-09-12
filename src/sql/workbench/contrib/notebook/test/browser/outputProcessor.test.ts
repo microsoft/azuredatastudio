@@ -149,7 +149,7 @@ function verifyGetDataForStreamOutput(output: nbformat.IStream): void {
 
 function verifyGetDataForErrorOutput(output: nbformat.IError): void {
 	const result = op.getData(output);
-	const tracedata = (output.traceback === undefined || output.traceback === []) ? undefined : output.traceback.join('\n');
+	const tracedata = (output.traceback === undefined || output.traceback.length === 0) ? undefined : output.traceback.join('\n');
 	// getData returns an object with single property: 'application/vnd.jupyter.stderr'
 	// this property is assigned to a '\n' delimited traceback data when it is present.
 	// when traceback is absent this property gets ename and evalue information with ': ' as delimiter unless

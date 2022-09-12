@@ -20,7 +20,6 @@ import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
 import { Project, reservedProjectFolders } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
-import { IDeploySettings } from '../models/IDeploySettings';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { ImportDataModel } from '../models/api/import';
@@ -37,14 +36,14 @@ import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/t
 import { IconPathHelper } from '../common/iconHelper';
 import { DashboardData, PublishData, Status } from '../models/dashboardData/dashboardData';
 import { getPublishDatabaseSettings, launchPublishTargetOption } from '../dialogs/publishDatabaseQuickpick';
-import { launchCreateAzureServerQuickPick, launchPublishToDockerContainerQuickpick } from '../dialogs/deployDatabaseQuickpick';
+import { launchCreateAzureServerQuickPick, getPublishToDockerSettings } from '../dialogs/deployDatabaseQuickpick';
 import { DeployService } from '../models/deploy/deployService';
-import { AddItemOptions, GenerateProjectFromOpenApiSpecOptions, ISqlProject, ItemType, SqlTargetPlatform } from 'sqldbproj';
+import { AddItemOptions, EntryType, GenerateProjectFromOpenApiSpecOptions, IDatabaseReferenceProjectEntry, ISqlProjectPublishSettings, IPublishToDockerSettings, ISqlProject, ItemType, SqlTargetPlatform } from 'sqldbproj';
 import { AutorestHelper } from '../tools/autorestHelper';
 import { createNewProjectFromDatabaseWithQuickpick } from '../dialogs/createProjectFromDatabaseQuickpick';
 import { addDatabaseReferenceQuickpick } from '../dialogs/addDatabaseReferenceQuickpick';
-import { ILocalDbDeployProfile, ISqlDbDeployProfile } from '../models/deploy/deployProfile';
-import { EntryType, FileProjectEntry, IDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry } from '../models/projectEntry';
+import { ISqlDbDeployProfile } from '../models/deploy/deployProfile';
+import { FileProjectEntry, SqlProjectReferenceProjectEntry } from '../models/projectEntry';
 import { UpdateProjectAction, UpdateProjectDataModel } from '../models/api/updateProject';
 import { AzureSqlClient } from '../models/deploy/azureSqlClient';
 import { ConnectionService } from '../models/connections/connectionService';
@@ -66,6 +65,11 @@ export enum TaskExecutionMode {
 
 export type AddDatabaseReferenceSettings = ISystemDatabaseReferenceSettings | IDacpacReferenceSettings | IProjectReferenceSettings;
 
+interface FileWatcherStatus {
+	fileWatcher: vscode.FileSystemWatcher;
+	containsCreateTableStatement: boolean;
+}
+
 /**
  * Controller for managing lifecycle of projects
  */
@@ -74,12 +78,13 @@ export class ProjectsController {
 	private buildHelper: BuildHelper;
 	private buildInfo: DashboardData[] = [];
 	private publishInfo: PublishData[] = [];
-	private deployService: DeployService;
+	public deployService: DeployService;
 	private connectionService: ConnectionService;
 	private azureSqlClient: AzureSqlClient;
 	private autorestHelper: AutorestHelper;
 
-	projFileWatchers = new Map<string, vscode.FileSystemWatcher>();
+	private projFileWatchers = new Map<string, vscode.FileSystemWatcher>();
+	private fileWatchers = new Map<string, FileWatcherStatus>();
 
 	constructor(private _outputChannel: vscode.OutputChannel) {
 		this.netCoreTool = new NetCoreTool(this._outputChannel);
@@ -231,8 +236,15 @@ export class ProjectsController {
 			this.buildInfo.shift();		// Remove the first element to maintain the length
 		}
 
-		// Check mssql extension for project dlls (tracking issue #10273)
-		await this.buildHelper.createBuildDirFolder();
+		// get dlls and targets file needed for building for legacy style projects
+		if (!project.isSdkStyleProject) {
+			const result = await this.buildHelper.createBuildDirFolder(this._outputChannel);
+
+			if (!result) {
+				void vscode.window.showErrorMessage(constants.errorRetrievingBuildFiles);
+				return '';
+			}
+		}
 
 		const options: ShellCommandOptions = {
 			commandTitle: 'Build',
@@ -317,39 +329,32 @@ export class ProjectsController {
 	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project or the Project itself
 	 * @param deployProfile
 	 */
-	public async publishToDockerContainer(context: Project | dataworkspace.WorkspaceTreeItem, deployProfile: ILocalDbDeployProfile): Promise<void> {
+	public async publishToDockerContainer(context: Project | dataworkspace.WorkspaceTreeItem, deployProfile: IPublishToDockerSettings): Promise<void> {
 		const project: Project = this.getProjectFromContext(context);
 		// Removing the path separator from the image base name to be able to add that in the telemetry. With the separator the name is flagged as user path which is not true
 		// We only need to know the image base parts so it's ok to use a different separator when adding to telemetry
-		const dockerImageNameForTelemetry = deployProfile.localDbSetting?.dockerBaseImage ? deployProfile.localDbSetting.dockerBaseImage.replace(/\//gi, '_') : '';
+		const dockerImageNameForTelemetry = deployProfile.dockerSettings.dockerBaseImage.replace(/\//gi, '_');
 		try {
 			TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.publishToContainer)
 				.withAdditionalProperties({ dockerBaseImage: dockerImageNameForTelemetry })
 				.send();
 
-			if (deployProfile && deployProfile.deploySettings) {
-				let connectionUri: string | undefined;
-				if (deployProfile.localDbSetting) {
-					void utils.showInfoMessageWithOutputChannel(constants.publishingProjectMessage, this._outputChannel);
-					connectionUri = await this.deployService.deployToContainer(deployProfile, project);
-					if (connectionUri) {
-						deployProfile.deploySettings.connectionUri = connectionUri;
-					}
-				}
+			void utils.showInfoMessageWithOutputChannel(constants.publishingProjectMessage, this._outputChannel);
+			const connectionUri = await this.deployService.deployToContainer(deployProfile, project);
+			if (connectionUri) {
+				deployProfile.sqlProjectPublishSettings.connectionUri = connectionUri;
+			}
 
-				if (deployProfile.deploySettings.connectionUri) {
-					const publishResult = await this.publishOrScriptProject(project, deployProfile.deploySettings, true);
-					if (publishResult && publishResult.success) {
-						if (deployProfile.localDbSetting) {
-							await this.connectionService.getConnection(deployProfile.localDbSetting, true, deployProfile.localDbSetting.dbName);
-						}
-						void vscode.window.showInformationMessage(constants.publishProjectSucceed);
-					} else {
-						void utils.showErrorMessageWithOutputChannel(constants.publishToContainerFailed, publishResult?.errorMessage || '', this._outputChannel);
-					}
+			if (deployProfile.sqlProjectPublishSettings.connectionUri) {
+				const publishResult = await this.publishOrScriptProject(project, deployProfile.sqlProjectPublishSettings, true);
+				if (publishResult && publishResult.success) {
+					await this.connectionService.getConnection(deployProfile.dockerSettings, true, deployProfile.dockerSettings.dbName);
+					void vscode.window.showInformationMessage(constants.publishProjectSucceed);
 				} else {
-					void utils.showErrorMessageWithOutputChannel(constants.publishToContainerFailed, constants.deployProjectFailedMessage, this._outputChannel);
+					void utils.showErrorMessageWithOutputChannel(constants.publishToContainerFailed, publishResult?.errorMessage || '', this._outputChannel);
 				}
+			} else {
+				void utils.showErrorMessageWithOutputChannel(constants.publishToContainerFailed, constants.deployProjectFailedMessage, this._outputChannel);
 			}
 		} catch (error) {
 			void utils.showErrorMessageWithOutputChannel(constants.publishToContainerFailed, error, this._outputChannel);
@@ -400,10 +405,12 @@ export class ProjectsController {
 		}
 
 		if (publishTarget === constants.PublishTargetType.docker) {
-			const deployProfile = await launchPublishToDockerContainerQuickpick(project);
-			if (deployProfile?.deploySettings && deployProfile?.localDbSetting) {
-				await this.publishToDockerContainer(project, deployProfile);
+			const publishToDockerSettings = await getPublishToDockerSettings(project);
+			if (!publishToDockerSettings) {
+				// User cancelled
+				return;
 			}
+			await this.publishToDockerContainer(project, publishToDockerSettings);
 		} else if (publishTarget === constants.PublishTargetType.newAzureServer) {
 			try {
 				const settings = await launchCreateAzureServerQuickPick(project, this.azureSqlClient);
@@ -415,7 +422,7 @@ export class ProjectsController {
 			}
 
 		} else {
-			let settings: IDeploySettings | undefined = await getPublishDatabaseSettings(project);
+			let settings: ISqlProjectPublishSettings | undefined = await getPublishDatabaseSettings(project);
 
 			if (settings) {
 				// 5. Select action to take
@@ -437,7 +444,7 @@ export class ProjectsController {
 	 * @param publish Whether to publish the deployment or just generate a script
 	 * @returns The DacFx result of the deployment
 	 */
-	public async publishOrScriptProject(project: Project, settings: IDeploySettings, publish: boolean): Promise<mssql.DacFxResult | undefined> {
+	public async publishOrScriptProject(project: Project, settings: ISqlProjectPublishSettings, publish: boolean): Promise<mssql.DacFxResult | undefined> {
 		const telemetryProps: Record<string, string> = {};
 		const telemetryMeasures: Record<string, number> = {};
 		const buildStartTime = new Date().getTime();
@@ -892,6 +899,41 @@ export class ProjectsController {
 		} catch (err) {
 			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
 		}
+	}
+
+	/**
+	 * Opens a file in the editor and adds a file watcher to check if a create table statement has been added
+	 * @param fileSystemUri uri of file
+	 * @param node node of file in the tree
+	 */
+	public async openFileWithWatcher(fileSystemUri: vscode.Uri, node: FileNode): Promise<void> {
+		await vscode.commands.executeCommand(constants.vscodeOpenCommand, fileSystemUri);
+		const projectTargetVersion = (node.root as ProjectRootTreeItem).project.getProjectTargetVersion();
+		const initiallyContainsCreateTableStatement = await utils.fileContainsCreateTableStatement(fileSystemUri.fsPath, projectTargetVersion);
+
+		const fileWatcher: vscode.FileSystemWatcher = vscode.workspace.createFileSystemWatcher(fileSystemUri.fsPath);
+		this.fileWatchers.set(fileSystemUri.fsPath, { fileWatcher: fileWatcher, containsCreateTableStatement: initiallyContainsCreateTableStatement });
+
+		fileWatcher.onDidChange(async (uri: vscode.Uri) => {
+			const afterContainsCreateTableStatement = await utils.fileContainsCreateTableStatement(fileSystemUri.fsPath, projectTargetVersion);
+			const previousStatus = this.fileWatchers.get(uri.fsPath)?.containsCreateTableStatement;
+
+			// if the contains create table statement status is different, reload the project so that the "Open in Designer" menu option
+			// on the file node is there if a create table statement has been added or removed if it's been removed
+			if (previousStatus !== afterContainsCreateTableStatement) {
+				utils.getDataWorkspaceExtensionApi().refreshProjectsTree();
+				this.fileWatchers.get(uri.fsPath)!.containsCreateTableStatement = afterContainsCreateTableStatement;
+			}
+		});
+
+		// stop watching for changes to the file after it's closed
+		const closeSqlproj = vscode.workspace.onDidCloseTextDocument((d) => {
+			if (this.fileWatchers.has(d.uri.fsPath)) {
+				this.fileWatchers.get(d.uri.fsPath)?.fileWatcher.dispose();
+				this.fileWatchers.delete(d.uri.fsPath);
+				closeSqlproj.dispose();
+			}
+		});
 	}
 
 	/**
@@ -1362,7 +1404,7 @@ export class ProjectsController {
 		if (utils.getAzdataApi()) {
 			let createProjectFromDatabaseDialog = this.getCreateProjectFromDatabaseDialog(profile as azdataType.IConnectionProfile);
 
-			createProjectFromDatabaseDialog.createProjectFromDatabaseCallback = async (model) => await this.createProjectFromDatabaseCallback(model);
+			createProjectFromDatabaseDialog.createProjectFromDatabaseCallback = async (model, connectionId) => await this.createProjectFromDatabaseCallback(model, connectionId);
 
 			await createProjectFromDatabaseDialog.openDialog();
 
@@ -1389,16 +1431,21 @@ export class ProjectsController {
 		return new CreateProjectFromDatabaseDialog(profile);
 	}
 
-	public async createProjectFromDatabaseCallback(model: ImportDataModel) {
+	public async createProjectFromDatabaseCallback(model: ImportDataModel, connectionId?: string) {
 		try {
 
 			const newProjFolderUri = model.filePath;
+			let targetPlatform: SqlTargetPlatform | undefined;
+			if (connectionId) {
+				targetPlatform = await utils.getTargetPlatformFromServerVersion(connectionId);
+			}
 
 			const newProjFilePath = await this.createNewProject({
 				newProjName: model.projName,
 				folderUri: vscode.Uri.file(newProjFolderUri),
 				projectTypeId: model.sdkStyle ? constants.emptySqlDatabaseSdkProjectTypeId : constants.emptySqlDatabaseProjectTypeId,
-				sdkStyle: model.sdkStyle
+				sdkStyle: model.sdkStyle,
+				targetPlatform: targetPlatform
 			});
 
 			model.filePath = path.dirname(newProjFilePath);

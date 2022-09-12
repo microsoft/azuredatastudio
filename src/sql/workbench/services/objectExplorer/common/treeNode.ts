@@ -43,6 +43,11 @@ export class TreeNode {
 	public nodeTypeId: string;
 
 	/**
+	 * The object type.
+	 */
+	public objectType: string;
+
+	/**
 	 * Label to display to the user, describing this node
 	 */
 	public label: string;
@@ -94,12 +99,13 @@ export class TreeNode {
 
 	public icon?: IconPath | SqlThemeIcon;
 
-	constructor(nodeTypeId: string, label: string, isAlwaysLeaf: boolean, nodePath: string,
+	constructor(nodeTypeId: string, objectType: string, label: string, isAlwaysLeaf: boolean, nodePath: string,
 		nodeSubType: string, nodeStatus?: string, parent?: TreeNode, metadata?: azdata.ObjectMetadata,
 		iconType?: string | SqlThemeIcon,
 		icon?: IconPath | SqlThemeIcon,
 		private _objectExplorerCallbacks?: ObjectExplorerCallbacks) {
 		this.nodeTypeId = nodeTypeId;
+		this.objectType = objectType;
 		this.label = label;
 		this.isAlwaysLeaf = isAlwaysLeaf;
 		this.nodePath = nodePath;

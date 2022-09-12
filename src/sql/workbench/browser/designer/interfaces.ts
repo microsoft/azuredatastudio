@@ -29,6 +29,11 @@ export interface DesignerComponentInput {
 	readonly onRefreshRequested: Event<void>;
 
 	/**
+	 * The event that is triggerd when force submit of the pending edit is requested.
+	 */
+	readonly onSubmitPendingEditRequested: Event<void>;
+
+	/**
 	 * Gets the object type display name.
 	 */
 	readonly objectTypeDisplayName: string;

@@ -17,7 +17,7 @@ steps:
 
   - task: NodeTool@0
     inputs:
-      versionSpec: "14.x"
+      versionSpec: "16.x"
 
   - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
     inputs:
@@ -137,7 +137,7 @@ steps:
       yarn smoketest --build "$APP_ROOT/$APP_NAME" --screenshots "$(build.artifactstagingdirectory)/smokeshots" --log "$(build.artifactstagingdirectory)/logs/darwin/smoke.log" --extensionsDir "$(build.sourcesdirectory)/extensions"
     displayName: Run smoke tests (Electron) (Continue on Error)
     continueOnError: true
-    condition: and(succeeded(), and(eq(variables['RUN_TESTS'], 'true'), ne(variables['SMOKE_FAIL_ON_ERROR'], 'true')))
+    condition: and(succeeded(), and(or(eq(variables['RUN_TESTS'], 'true'), eq(variables['RUN_SMOKE_TESTS'], 'true')), ne(variables['SMOKE_FAIL_ON_ERROR'], 'true')))
 
   - script: |
       set -e
@@ -145,7 +145,7 @@ steps:
       APP_NAME="`ls $APP_ROOT | head -n 1`"
       yarn smoketest --build "$APP_ROOT/$APP_NAME" --screenshots "$(build.artifactstagingdirectory)/smokeshots" --log "$(build.artifactstagingdirectory)/logs/darwin/smoke.log" --extensionsDir "$(build.sourcesdirectory)/extensions"
     displayName: Run smoke tests (Electron) (Fail on Error)
-    condition: and(succeeded(), and(eq(variables['RUN_TESTS'], 'true'), eq(variables['SMOKE_FAIL_ON_ERROR'], 'true')))
+    condition: and(succeeded(), and(or(eq(variables['RUN_TESTS'], 'true'), eq(variables['RUN_SMOKE_TESTS'], 'true')), eq(variables['SMOKE_FAIL_ON_ERROR'], 'true')))
 
   # - script: |
   #     set -e
@@ -213,12 +213,12 @@ steps:
     condition: always()
 
   - task: PublishTestResults@2
-    displayName: 'Publish Test Results test-results.xml'
+    displayName: 'Publish Test Results'
     inputs:
-      testResultsFiles: 'test-results.xml'
-      searchFolder: '$(Build.SourcesDirectory)'
+      testResultsFiles: "*-results.xml"
+      searchFolder: "$(Build.ArtifactStagingDirectory)/test-results"
     continueOnError: true
-    condition: and(succeededOrFailed(), eq(variables['RUN_TESTS'], 'true'))
+    condition: and(succeededOrFailed(), or(eq(variables['RUN_TESTS'], 'true'), eq(variables['RUN_SMOKE_TESTS'], 'true')))
 
   - task: PublishCodeCoverageResults@1
     displayName: 'Publish code coverage from $(Build.SourcesDirectory)/.build/coverage/cobertura-coverage.xml'

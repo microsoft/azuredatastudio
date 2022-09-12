@@ -18,6 +18,7 @@ import { IProductConfiguration } from 'vs/base/common/product';
 import { mark } from 'vs/base/common/performance';
 import { ICredentialsProvider } from 'vs/workbench/services/credentials/common/credentials';
 import { TunnelProviderFeatures } from 'vs/platform/remote/common/tunnel';
+import { MenuId, MenuRegistry } from 'vs/platform/actions/common/actions';
 
 interface IResourceUriProvider {
 	(uri: URI): URI;
@@ -35,6 +36,21 @@ interface ICommonTelemetryPropertiesResolver {
 
 interface IExternalUriResolver {
 	(uri: URI): Promise<URI>;
+}
+
+/**
+ * External URL opener
+ */
+interface IExternalURLOpener {
+
+	/**
+	 * Overrides the behavior when an external URL is about to be opened.
+	 * Returning false means that the URL wasn't handled, and the default
+	 * handling behavior should be used: `window.open(href, '_blank', 'noopener');`
+	 *
+	 * @returns true if URL was handled, false otherwise.
+	 */
+	openExternal(href: string): boolean | Promise<boolean>;
 }
 
 interface ITunnelProvider {
@@ -70,7 +86,12 @@ interface ITunnelOptions {
 
 	label?: string;
 
+	/**
+	 * @deprecated Use privacy instead
+	 */
 	public?: boolean;
+
+	privacy?: string;
 
 	protocol?: string;
 }
@@ -92,7 +113,12 @@ interface ITunnel {
 	 */
 	localAddress: string;
 
+	/**
+	 * @deprecated Use privacy instead
+	 */
 	public?: boolean;
+
+	privacy?: string;
 
 	/**
 	 * If protocol is not provided, it is assumed to be http, regardless of the localAddress
@@ -120,6 +146,12 @@ interface ICommand {
 	id: string,
 
 	/**
+	 * The optional label of the command. If provided, the command will appear
+	 * in the command palette.
+	 */
+	label?: string,
+
+	/**
 	 * A function that is being executed with any arguments passed over. The
 	 * return type will be send back to the caller.
 	 *
@@ -138,7 +170,7 @@ interface IHomeIndicator {
 
 	/**
 	 * The icon name for the home indicator. This needs to be one of the existing
-	 * icons from our Codicon icon set. For example `sync`.
+	 * icons from our Codicon icon set. For example `code`.
 	 */
 	icon: string;
 
@@ -146,6 +178,46 @@ interface IHomeIndicator {
 	 * A tooltip that will appear while hovering over the home indicator.
 	 */
 	title: string;
+}
+
+interface IWelcomeBanner {
+
+	/**
+	 * Welcome banner message to appear as text.
+	 */
+	message: string;
+
+	/**
+	 * Optional icon for the banner. This is either the URL to an icon to use
+	 * or the name of one of the existing icons from our Codicon icon set.
+	 *
+	 * If not provided a default icon will be used.
+	 */
+	icon?: string | UriComponents;
+
+	/**
+	 * Optional actions to appear as links after the welcome banner message.
+	 */
+	actions?: IWelcomeBannerAction[];
+}
+
+interface IWelcomeBannerAction {
+
+	/**
+	 * The link to open when clicking. Supports command invocation when
+	 * using the `command:<commandId>` value.
+	 */
+	href: string;
+
+	/**
+	 * The label to show for the action link.
+	 */
+	label: string;
+
+	/**
+	 * A tooltip that will appear while hovering over the action link.
+	 */
+	title?: string;
 }
 
 interface IWindowIndicator {
@@ -294,7 +366,7 @@ interface IWorkbenchConstructionOptions {
 	/**
 	 * [TEMPORARY]: This will be removed soon.
 	 * Use an unique origin for the web worker extension host.
-	 * Defaults to false.
+	 * Defaults to true.
 	 */
 	readonly __uniqueWebWorkerExtensionHostOrigin?: boolean;
 
@@ -312,6 +384,11 @@ interface IWorkbenchConstructionOptions {
 	 * Resolves an external uri before it is opened.
 	 */
 	readonly resolveExternalUri?: IExternalUriResolver;
+
+	/**
+	 * Support for URL callbacks.
+	 */
+	readonly externalURLOpener?: IExternalURLOpener;
 
 	/**
 	 * A provider for supplying tunneling functionality,
@@ -423,6 +500,12 @@ interface IWorkbenchConstructionOptions {
 	 * Optional home indicator to appear above the hamburger menu in the activity bar.
 	 */
 	readonly homeIndicator?: IHomeIndicator;
+
+	/**
+	 * Optional welcome banner to appear above the workbench. Can be dismissed by the
+	 * user.
+	 */
+	readonly welcomeBanner?: IWelcomeBanner;
 
 	/**
 	 * Optional override for the product configuration properties.
@@ -553,12 +636,19 @@ function create(domElement: HTMLElement, options: IWorkbenchConstructionOptions)
 
 	// Register commands if any
 	if (Array.isArray(options.commands)) {
-		for (const command of options.commands) {
+		for (const c of options.commands) {
+			const command: ICommand = c;
+
 			CommandsRegistry.registerCommand(command.id, (accessor, ...args) => {
 				// we currently only pass on the arguments but not the accessor
 				// to the command to reduce our exposure of internal API.
 				return command.handler(...args);
 			});
+
+			// Commands with labels appear in the command palette
+			if (command.label) {
+				MenuRegistry.appendMenuItem(MenuId.CommandPalette, { command: { id: command.id, title: command.label } });
+			}
 		}
 	}
 
@@ -686,6 +776,9 @@ export {
 	// External Uris
 	IExternalUriResolver,
 
+	// External URL Opener
+	IExternalURLOpener,
+
 	// Tunnel
 	ITunnelProvider,
 	ITunnelFactory,
@@ -701,6 +794,8 @@ export {
 
 	// Branding
 	IHomeIndicator,
+	IWelcomeBanner,
+	IWelcomeBannerAction,
 	IProductConfiguration,
 	IWindowIndicator,
 	IInitialColorTheme,

@@ -238,6 +238,7 @@ async function setupRepository(): Promise<void> {
 	}
 }
 
+// @ts-ignore ts6133 {{SQL CARBON EDIT}} Not used (see below)
 async function ensureStableCode(): Promise<void> {
 	if (opts.web || !opts['build']) {
 		return;
@@ -290,7 +291,7 @@ async function setup(): Promise<void> {
 	console.log('*** Test data:', testDataPath);
 	console.log('*** Preparing smoketest setup...');
 
-	await ensureStableCode();
+	// await ensureStableCode(); {{SQL CARBON EDIT}} Smoketests no longer need to download VS Code since they run against ADS
 	await setupRepository();
 
 	console.log('*** Smoketest setup done!\n');

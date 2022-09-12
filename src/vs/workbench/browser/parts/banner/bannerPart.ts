@@ -5,7 +5,7 @@
 
 import 'vs/css!./media/bannerpart';
 import { localize } from 'vs/nls';
-import { $, addDisposableListener, append, clearNode, EventType } from 'vs/base/browser/dom';
+import { $, addDisposableListener, append, asCSSUrl, clearNode, EventType } from 'vs/base/browser/dom';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Codicon, registerCodicon } from 'vs/base/common/codicons';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
@@ -26,6 +26,7 @@ import { CATEGORIES } from 'vs/workbench/common/actions';
 import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
+import { URI } from 'vs/base/common/uri';
 
 
 // Icons
@@ -63,6 +64,7 @@ registerThemingParticipant((theme, collector) => {
 const CONTEXT_BANNER_FOCUSED = new RawContextKey<boolean>('bannerFocused', false, localize('bannerFocused', "Whether the banner has keyboard focus"));
 
 export class BannerPart extends Part implements IBannerService {
+
 	declare readonly _serviceBrand: undefined;
 
 	// #region IView
@@ -79,8 +81,7 @@ export class BannerPart extends Part implements IBannerService {
 		return this.visible ? this.height : 0;
 	}
 
-	private _onDidChangeSize = new Emitter<{ width: number; height: number; } | undefined>();
-
+	private _onDidChangeSize = this._register(new Emitter<{ width: number; height: number; } | undefined>());
 	override get onDidChange() { return this._onDidChangeSize.event; }
 
 	//#endregion
@@ -178,7 +179,7 @@ export class BannerPart extends Part implements IBannerService {
 			this.visible = visible;
 			this.focusedActionIndex = -1;
 
-			this.layoutService.setBannerHidden(!visible);
+			this.layoutService.setPartHidden(!visible, Parts.BANNER_PART);
 			this._onDidChangeSize.fire(undefined);
 		}
 	}
@@ -228,7 +229,16 @@ export class BannerPart extends Part implements IBannerService {
 		// Icon
 		const iconContainer = append(this.element, $('div.icon-container'));
 		iconContainer.setAttribute('aria-hidden', 'true');
-		iconContainer.appendChild($(`div${item.icon.cssSelector}`));
+
+		if (item.icon instanceof Codicon) {
+			iconContainer.appendChild($(`div${item.icon.cssSelector}`));
+		} else {
+			iconContainer.classList.add('custom-icon');
+
+			if (URI.isUri(item.icon)) {
+				iconContainer.style.backgroundImage = asCSSUrl(item.icon);
+			}
+		}
 
 		// Message
 		const messageContainer = append(this.element, $('div.message-container'));
@@ -240,10 +250,7 @@ export class BannerPart extends Part implements IBannerService {
 			this.messageActionsContainer = append(this.element, $('div.message-actions-container'));
 
 			for (const action of item.actions) {
-				const actionLink = this._register(this.instantiationService.createInstance(Link, action, {}));
-				actionLink.el.tabIndex = -1;
-				actionLink.el.setAttribute('role', 'button');
-				this.messageActionsContainer.appendChild(actionLink.el);
+				this._register(this.instantiationService.createInstance(Link, this.messageActionsContainer, { ...action, tabIndex: -1 }, {}));
 			}
 		}
 

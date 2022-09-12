@@ -125,7 +125,7 @@ declare module 'azdata' {
 		}
 
 		/**
-		 * An event that is emitted when a [notebook document](#NotebookDocument) is closed.
+		 * An event that is emitted when a {@link NotebookDocument} is closed.
 		 */
 		export const onDidCloseNotebookDocument: vscode.Event<NotebookDocument>;
 
@@ -539,6 +539,17 @@ declare module 'azdata' {
 		appendData(data: any[][]): Thenable<void>;
 	}
 
+	export interface ListViewOption {
+		/**
+		 * The optional accessibility label for the column. Default is the label for the list view option.
+		 */
+		ariaLabel?: string;
+		/**
+		 * Specify the icon for the option. The value could the path to the icon or and ADS icon defined in {@link SqlThemeIcon}.
+		 */
+		icon?: IconPath;
+	}
+
 	export interface IconColumnCellValue {
 		/**
 		 * The icon to be displayed.
@@ -806,6 +817,7 @@ declare module 'azdata' {
 			ForeignKeys = 'foreignKeys',
 			CheckConstraints = 'checkConstraints',
 			Indexes = 'indexes',
+			PrimaryKey = 'primaryKey',
 			PrimaryKeyName = 'primaryKeyName',
 			PrimaryKeyDescription = 'primaryKeyDescription',
 			PrimaryKeyColumns = 'primaryKeyColumns'
@@ -934,6 +946,10 @@ declare module 'azdata' {
 			 */
 			additionalPrimaryKeyProperties?: DesignerDataPropertyInfo[];
 			/**
+			 * Components to be placed under the pre-defined tabs.
+			 */
+			additionalComponents?: DesignerDataPropertyWithTabInfo[];
+			/**
 			 * Whether to use advanced save mode. for advanced save mode, a publish changes dialog will be opened with preview of changes.
 			 */
 			useAdvancedSaveMode: boolean;
@@ -1003,6 +1019,16 @@ declare module 'azdata' {
 			 * The properties of the component.
 			 */
 			componentProperties: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties;
+		}
+
+		/**
+		 * The definition of the property in the designer with tab info.
+		 */
+		export interface DesignerDataPropertyWithTabInfo extends DesignerDataPropertyInfo {
+			/**
+			 * The tab info where this property belongs to.
+			 */
+			tab: TableProperty.Columns | TableProperty.PrimaryKey | TableProperty.ForeignKeys | TableProperty.CheckConstraints | TableProperty.Indexes;
 		}
 
 		/**
@@ -1227,6 +1253,14 @@ declare module 'azdata' {
 			 */
 			mimeType: string;
 			/**
+			 * Whether user confirmation is required, the default value is false.
+			 */
+			requireConfirmation?: boolean;
+			/**
+			 * The confirmation text.
+			 */
+			confirmationText?: string;
+			/**
 			 * The table schema validation error.
 			 */
 			schemaValidationError?: string;
@@ -1310,6 +1344,18 @@ declare module 'azdata' {
 			 * Warning/parallelism badges applicable to the current node
 			 */
 			badges: ExecutionPlanBadge[];
+			/**
+			 * Data to show in top operations table for the node.
+			 */
+			topOperationsData: TopOperationsDataItem[];
+			/**
+			 * Output row count associated with the node
+			 */
+			rowCountDisplayString: string;
+			/**
+			 * Cost string for the node
+			 */
+			costDisplayString: string;
 		}
 
 		export interface ExecutionPlanBadge {
@@ -1460,6 +1506,11 @@ declare module 'azdata' {
 			secondComparisonResult: ExecutionGraphComparisonResult;
 		}
 
+		export interface IsExecutionPlanResult {
+			isExecutionPlan: boolean;
+			queryExecutionPlanFileExtension: string;
+		}
+
 		export interface ExecutionPlanProvider extends DataProvider {
 			// execution plan service methods
 
@@ -1474,6 +1525,26 @@ declare module 'azdata' {
 			 * @param secondPlanFile file that contains the second execution plan.
 			 */
 			compareExecutionPlanGraph(firstPlanFile: ExecutionPlanGraphInfo, secondPlanFile: ExecutionPlanGraphInfo): Thenable<ExecutionPlanComparisonResult>;
+			/**
+			 * Determines if the provided value is an execution plan and returns the appropriate file extension.
+			 * @param value String that needs to be checked.
+			 */
+			isExecutionPlan(value: string): Thenable<IsExecutionPlanResult>;
+		}
+
+		export interface TopOperationsDataItem {
+			/**
+			 * Column name for the top operation data item
+			 */
+			columnName: string;
+			/**
+			 * Cell data type for the top operation data item
+			 */
+			dataType: ExecutionPlanGraphElementPropertyDataType;
+			/**
+			 * Cell value for the top operation data item
+			 */
+			displayValue: string | number | boolean;
 		}
 	}
 
@@ -1524,5 +1595,82 @@ declare module 'azdata' {
 		 * Link that is clicked
 		 */
 		link: LinkArea;
+	}
+
+	export interface TextComponentProperties {
+		/**
+		 * Corresponds to the aria-live accessibility attribute for this component
+		 */
+		ariaLive?: string;
+	}
+
+	export interface ContainerBuilder<TComponent extends Component, TLayout, TItemLayout, TPropertyBag extends ContainerProperties> extends ComponentBuilder<TComponent, TPropertyBag> {
+		/**
+		 * Sets the initial set of properties for the container being created
+		 * @param properties The properties to apply to the container
+		 */
+		withProps(properties: TPropertyBag): ContainerBuilder<TComponent, TLayout, TItemLayout, TPropertyBag>;
+	}
+
+	export interface ContainerProperties extends ComponentProperties {
+		/**
+		 * Corresponds to the aria-live accessibility attribute for this component
+		 */
+		ariaLive?: string;
+	}
+	export namespace queryeditor {
+
+		export interface QueryMessage {
+			/**
+			 * The message string
+			 */
+			message: string;
+			/**
+			 * Whether this message is an error message or not
+			 */
+			isError: boolean;
+			/**
+			 * The timestamp for when this message was sent
+			 */
+			time?: string;
+		}
+
+		/**
+		 * Information about a query that was executed
+		 */
+		export interface QueryInfo {
+			/**
+			 * Any messages that have been received from the query provider
+			 */
+			messages: QueryMessage[];
+			/**
+			 * The ranges for each batch that has executed so far
+			 */
+			batchRanges: vscode.Range[];
+		}
+
+		export interface QueryEventListener {
+			/**
+			 * An event that is fired for query events
+			 * @param type The type of query event
+			 * @param document The document this event was sent by
+			 * @param args The extra information for the event, if any
+			 * The args sent depend on the type of event :
+			 * queryStart: undefined
+			 * queryStop: undefined
+			 * executionPlan: string (the plan itself)
+			 * visualize: ResultSetSummary (the result set to be visualized)
+			 * @param queryInfo The information about the query that triggered this event
+			 */
+			onQueryEvent(type: QueryEventType, document: QueryDocument, args: ResultSetSummary | string | undefined, queryInfo: QueryInfo): void;
+		}
+	}
+
+	export interface NodeInfo {
+		/**
+		 * The object type of the node. Node type is used to determine the icon, the object type is the actual type of the node, e.g. for Tables node
+		 * under the database, the nodeType is Folder, the objectType is be Tables.
+		 */
+		objectType?: string;
 	}
 }

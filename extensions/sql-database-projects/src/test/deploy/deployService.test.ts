@@ -7,17 +7,18 @@ import * as should from 'should';
 import * as sinon from 'sinon';
 import * as baselines from '../baselines/baselines';
 import * as testUtils from '../testUtils';
-import { DeployService } from '../../models/deploy/deployService';
+import { DeployService, getDockerImageSpec } from '../../models/deploy/deployService';
 import { Project } from '../../models/project';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import { ILocalDbDeployProfile, ISqlDbDeployProfile } from '../../models/deploy/deployProfile';
+import { ISqlDbDeployProfile } from '../../models/deploy/deployProfile';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as constants from '../../common/constants';
 import { ShellExecutionHelper } from '../../tools/shellExecutionHelper';
 import * as TypeMoq from 'typemoq';
 import { AzureSqlClient } from '../../models/deploy/azureSqlClient';
 import { ConnectionService } from '../../models/connections/connectionService';
+import { IPublishToDockerSettings } from 'sqldbproj';
 
 export interface TestContext {
 	outputChannel: vscode.OutputChannel;
@@ -70,8 +71,13 @@ describe('deploy service', function (): void {
 
 	it('Should deploy a database to docker container successfully', async function (): Promise<void> {
 		const testContext = createContext();
-		const deployProfile: ILocalDbDeployProfile = {
-			localDbSetting: {
+		const deployProfile: IPublishToDockerSettings = {
+			sqlProjectPublishSettings: {
+				databaseName: 'dbName',
+				serverName: 'serverName',
+				connectionUri: 'connectionUri'
+			},
+			dockerSettings: {
 				dbName: 'test',
 				password: 'PLACEHOLDER',
 				port: 1433,
@@ -90,7 +96,7 @@ describe('deploy service', function (): void {
 		const deployService = new DeployService(testContext.azureSqlClient.object, testContext.outputChannel, shellExecutionHelper.object);
 		sandbox.stub(azdata.connection, 'connect').returns(Promise.resolve(mockConnectionResult));
 		sandbox.stub(azdata.connection, 'getUriForConnection').returns(Promise.resolve('connection'));
-		sandbox.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(constants.yesString));
+		sandbox.stub(vscode.window, 'showQuickPick').returns(<any>Promise.resolve(constants.yesString));
 		sandbox.stub(azdata.tasks, 'startBackgroundOperation').callThrough();
 
 		let connection = await deployService.deployToContainer(deployProfile, project1);
@@ -100,8 +106,13 @@ describe('deploy service', function (): void {
 
 	it('Should fail the deploy if docker is not running', async function (): Promise<void> {
 		const testContext = createContext();
-		const deployProfile: ILocalDbDeployProfile = {
-			localDbSetting: {
+		const deployProfile: IPublishToDockerSettings = {
+			sqlProjectPublishSettings: {
+				databaseName: 'dbName',
+				serverName: 'serverName',
+				connectionUri: 'connectionUri'
+			},
+			dockerSettings: {
 				dbName: 'test',
 				password: 'PLACEHOLDER',
 				port: 1433,
@@ -164,33 +175,31 @@ describe('deploy service', function (): void {
 	});
 
 	it('Should create docker image info correctly', () => {
-		const testContext = createContext();
-		const deployService = new DeployService(testContext.azureSqlClient.object, testContext.outputChannel);
 		const id = UUID.generateUuid().toLocaleLowerCase();
 		const baseImage = 'baseImage:latest';
 		const tag = baseImage.replace(':', '-').replace(constants.sqlServerDockerRegistry, '').replace(/[^a-zA-Z0-9_,\-]/g, '').toLocaleLowerCase();
 
-		should(deployService.getDockerImageSpec('project-name123_test', baseImage, id)).deepEqual({
+		should(getDockerImageSpec('project-name123_test', baseImage, id)).deepEqual({
 			label: `${constants.dockerImageLabelPrefix}-project-name123_test`,
 			containerName: `${constants.dockerImageNamePrefix}-project-name123_test-${id}`,
 			tag: `${constants.dockerImageNamePrefix}-project-name123_test-${tag}`
 		});
-		should(deployService.getDockerImageSpec('project-name1', baseImage, id)).deepEqual({
+		should(getDockerImageSpec('project-name1', baseImage, id)).deepEqual({
 			label: `${constants.dockerImageLabelPrefix}-project-name1`,
 			containerName: `${constants.dockerImageNamePrefix}-project-name1-${id}`,
 			tag: `${constants.dockerImageNamePrefix}-project-name1-${tag}`
 		});
-		should(deployService.getDockerImageSpec('project-name2$#', baseImage, id)).deepEqual({
+		should(getDockerImageSpec('project-name2$#', baseImage, id)).deepEqual({
 			label: `${constants.dockerImageLabelPrefix}-project-name2`,
 			containerName: `${constants.dockerImageNamePrefix}-project-name2-${id}`,
 			tag: `${constants.dockerImageNamePrefix}-project-name2-${tag}`
 		});
-		should(deployService.getDockerImageSpec('project - name3', baseImage, id)).deepEqual({
+		should(getDockerImageSpec('project - name3', baseImage, id)).deepEqual({
 			label: `${constants.dockerImageLabelPrefix}-project-name3`,
 			containerName: `${constants.dockerImageNamePrefix}-project-name3-${id}`,
 			tag: `${constants.dockerImageNamePrefix}-project-name3-${tag}`
 		});
-		should(deployService.getDockerImageSpec('project_name4', baseImage, id)).deepEqual({
+		should(getDockerImageSpec('project_name4', baseImage, id)).deepEqual({
 			label: `${constants.dockerImageLabelPrefix}-project_name4`,
 			containerName: `${constants.dockerImageNamePrefix}-project_name4-${id}`,
 			tag: `${constants.dockerImageNamePrefix}-project_name4-${tag}`
@@ -199,7 +208,7 @@ describe('deploy service', function (): void {
 
 		const reallyLongName = new Array(128 + 1).join('a').replace(/[^a-zA-Z0-9_,\-]/g, '');
 		const imageProjectName = reallyLongName.substring(0, 128 - (constants.dockerImageNamePrefix.length + tag.length + 2));
-		should(deployService.getDockerImageSpec(reallyLongName, baseImage, id)).deepEqual({
+		should(getDockerImageSpec(reallyLongName, baseImage, id)).deepEqual({
 			label: `${constants.dockerImageLabelPrefix}-${imageProjectName}`,
 			containerName: `${constants.dockerImageNamePrefix}-${imageProjectName}-${id}`,
 			tag: `${constants.dockerImageNamePrefix}-${imageProjectName}-${tag}`

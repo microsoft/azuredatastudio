@@ -4,7 +4,7 @@ parameters:
 steps:
   - task: NodeTool@0
     inputs:
-      versionSpec: "14.x"
+      versionSpec: "16.x"
 
   - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
     inputs:
@@ -121,7 +121,7 @@ steps:
       set -e
       DISPLAY=:10 ./scripts/test.sh --build --tfs "Unit Tests" --coverage
     displayName: Run unit tests (Electron)
-    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'), ne(variables['EXTENSIONS_ONLY'], 'true'))
 
   - script: |
       # Figure out the full absolute path of the product we just built
@@ -134,7 +134,7 @@ steps:
       VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/azuredatastudio-reh-linux-x64" \
       DISPLAY=:10 ./scripts/test-integration.sh --build --tfs "Integration Tests"
     displayName: Run integration tests (Electron)
-    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'), ne(variables['EXTENSIONS_ONLY'], 'true'))
 
   - script: |
       # Figure out the full absolute path of the product we just built
@@ -178,11 +178,13 @@ steps:
       set -e
       yarn gulp vscode-linux-x64-build-deb
     displayName: Build Deb
+    condition: and(succeeded(), ne(variables['EXTENSIONS_ONLY'], 'true'))
 
   - script: |
       set -e
       yarn gulp vscode-linux-x64-build-rpm
     displayName: Build Rpm
+    condition: and(succeeded(), ne(variables['EXTENSIONS_ONLY'], 'true'))
 
   - task: UseDotNet@2
     displayName: 'Install .NET Core sdk for signing'

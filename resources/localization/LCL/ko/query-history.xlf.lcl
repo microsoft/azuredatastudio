@@ -10,11 +10,29 @@
     <Disp Icon="Expand" Expand="true" Disp="true" LocTbl="false" />
     <Item ItemId=";Xliff Resources" ItemType="0" PsrId="308" Leaf="false">
       <Disp Icon="Str" Disp="true" LocTbl="false" />
+      <Item ItemId=";queryHistory.captureEnabledDesc" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Whether Query History capture is enabled. If false queries executed will not be captured.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[쿼리 기록 캡처가 사용하도록 설정되어 있는지 여부입니다. false이면 실행된 쿼리가 캡처되지 않습니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";queryHistory.clear" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Clear All History]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[모든 기록 지우기]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";queryHistory.delete" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Delete]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[삭제]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -28,6 +46,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";queryHistory.disableCapture" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Pause Query History Capture]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[쿼리 기록 캡처 일시 중지]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";queryHistory.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Query History]]></Val>
@@ -37,11 +64,65 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";queryHistory.toggleCapture" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";queryHistory.doubleClickAction" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Toggle Query History Capture]]></Val>
+          <Val><![CDATA[The action taken when a history item is double clicked]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[쿼리 기록 캡처 설정/해제]]></Val>
+            <Val><![CDATA[기록 항목을 두 번 클릭할 때 수행되는 작업]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";queryHistory.doubleClickAction.open" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Open a new disconnected editor with the query from the selected history item]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[선택한 기록 항목의 쿼리로 연결이 끊긴 새 편집기 열기]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";queryHistory.doubleClickAction.run" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Open a new connected editor with the query and connection from the selected history item and automatically run the query]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[선택한 기록 항목에서 쿼리 및 연결을 사용하여 연결된 새 편집기를 열고 쿼리를 자동으로 실행]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";queryHistory.enableCapture" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Start Query History Capture]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[쿼리 기록 캡처 시작]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";queryHistory.noEntries" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[No queries to display]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[표시할 쿼리 없음]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";queryHistory.open" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Open Query]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[쿼리 열기]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";queryHistory.run" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Run Query]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[쿼리 실행]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

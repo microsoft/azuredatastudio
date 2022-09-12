@@ -85,6 +85,13 @@ suite('NotebookMarkdownRenderer', () => {
 		assert.strictEqual(result.innerHTML, `<p><a href="https://www.test.com?test=&amp;test2=" data-href="https://www.test.com?test=&amp;test2=" title="https://www.test.com?test=&amp;test2=" is-markdown="true" is-absolute="false">test</a></p>`);
 	});
 
+	test('link to section in the same file', () => {
+		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `[#section](#section)`, isTrusted: true });
+		assert.strictEqual(result.innerHTML, `<p><a href="#section" data-href="#section" title="#section" is-markdown="true" is-absolute="false">#section</a></p>`);
+		result = notebookMarkdownRenderer.renderMarkdown({ value: `<a href="#section">section</a>`, isTrusted: true });
+		assert.strictEqual(result.innerHTML, `<p><a href="#section">section</a></p>`);
+	});
+
 	test('cell attachment image', () => {
 		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `![altText](attachment:ads.png)`, isTrusted: true }, { cellAttachments: JSON.parse('{"ads.png":{"image/png":"iVBORw0KGgoAAAANSUhEUgAAAggg=="}}') });
 		assert.strictEqual(result.innerHTML, `<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAggg==" alt="altText"></p>`, 'Cell attachment basic test failed when trusted');
@@ -103,6 +110,12 @@ suite('NotebookMarkdownRenderer', () => {
 
 		result = notebookMarkdownRenderer.renderMarkdown({ value: `![altText](attachment:ads.png)`, isTrusted: true }, { cellAttachments: JSON.parse('{"ads2.png":"image/png"}') });
 		assert.strictEqual(result.innerHTML, `<p><img src="attachment:ads.png" alt="altText"></p>`, 'Cell attachment no image data failed');
+
+		result = notebookMarkdownRenderer.renderMarkdown({ value: `![altText](attachment:ads.jpg)`, isTrusted: true }, { cellAttachments: JSON.parse('{"ads.jpg":{"image/jpeg":"iVBORw0KGgoAAAANSUhEUgAAAggg=="}}') });
+		assert.strictEqual(result.innerHTML, `<p><img src="data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAggg==" alt="altText"></p>`, 'Cell attachment jpg image data failed');
+
+		result = notebookMarkdownRenderer.renderMarkdown({ value: `![altText](attachment:ads!@#$%^&.jpg)`, isTrusted: true }, { cellAttachments: JSON.parse('{"ads!@#$%^&.jpg":{"image/jpeg":"iVBORw0KGgoAAAANSUhEUgAAAggg=="}}') });
+		assert.strictEqual(result.innerHTML, `<p><img src="data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAggg==" alt="altText"></p>`, 'Cell attachment image name with symbols failed');
 	});
 
 	suite('Schema validation', function () {
@@ -214,7 +227,7 @@ suite('NotebookMarkdownRenderer', () => {
 
 			test('Cell 8e45da0e-5c24-469e-8ae5-671313bd54a1', function (): void {
 				const markdown = '1.  List Item\n\n    \n\n2.  List Item 2';
-				const expectedValue = '<ol>\n<li><p>List Item</p></li>\n<li><p> List Item 2</p></li>\n</ol>\n';
+				const expectedValue = '<ol>\n<li><p>List Item</p></li>\n<li><p>List Item 2</p></li>\n</ol>\n';
 				const result = notebookMarkdownRenderer.renderMarkdown({ value: markdown, isTrusted: true }).innerHTML;
 				assert.strictEqual(result, expectedValue);
 			});
@@ -230,7 +243,7 @@ suite('NotebookMarkdownRenderer', () => {
 
 			test('Cell e6ad1eb3-7409-4199-9592-9d13f1e2d8a0', function (): void {
 				const markdown = '1. Text \n\nMore text \n\n    a. Sub-Text';
-				const expectedValue = '<ol>\n<li>Text </li>\n</ol>\n<p>More text </p><pre><code>a. Sub-Text\n</code></pre>\n';
+				const expectedValue = '<ol>\n<li>Text</li>\n</ol>\n<p>More text </p><pre><code>a. Sub-Text\n</code></pre>\n';
 				const result = notebookMarkdownRenderer.renderMarkdown({ value: markdown, isTrusted: true }).innerHTML;
 				assert.strictEqual(result, expectedValue);
 			});

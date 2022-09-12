@@ -202,7 +202,7 @@ This defines the set of options for this field to display. There are a number of
 
 * String array (`string[]`) - A static list of values that will be shown as a dropdown. Default value selected is defined as `FieldInfo.defaultValue`.
 
-* CategoryValue array (`azdata.CategoryValue[]`) - A static list of CategoryValue objects that will be shown as a dropdown. Each value will define a display name separate from its value - use this for values you want to display differently to the user (such as names for an Azure region).
+* CategoryValue array (`azdata.CategoryValue[]`) - A static list of CategoryValue objects that will be shown as a dropdown. Each value will define a display name separate from its value - use this for values you want to display differently to the user (such as names for an Azure region). If you use a CategoryValue array as your options, ensure you set the defaultValue to the CategoryValue's displayName rather than the name.
 
 * [OptionsInfo](#optionsinfo) - An object allowing more control over the option values.
 

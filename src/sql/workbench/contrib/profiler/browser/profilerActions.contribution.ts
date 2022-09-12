@@ -70,8 +70,8 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: 'profiler.newProfiler',
 	weight: KeybindingWeight.BuiltinExtension,
 	when: undefined,
-	primary: KeyMod.Alt | KeyCode.KEY_P,
-	mac: { primary: KeyMod.WinCtrl | KeyMod.Alt | KeyCode.KEY_P },
+	primary: KeyMod.Alt | KeyCode.KeyP,
+	mac: { primary: KeyMod.WinCtrl | KeyMod.Alt | KeyCode.KeyP },
 	handler: CommandsRegistry.getCommand('profiler.newProfiler').handler
 });
 
@@ -79,8 +79,8 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: 'profiler.toggleStartStop',
 	weight: KeybindingWeight.EditorContrib,
 	when: undefined,
-	primary: KeyMod.Alt | KeyCode.KEY_S,
-	mac: { primary: KeyMod.WinCtrl | KeyMod.Alt | KeyCode.KEY_S },
+	primary: KeyMod.Alt | KeyCode.KeyS,
+	mac: { primary: KeyMod.WinCtrl | KeyMod.Alt | KeyCode.KeyS },
 	handler: (accessor: ServicesAccessor) => {
 		let profilerService: IProfilerService = accessor.get(IProfilerService);
 		let editorService: IEditorService = accessor.get(IEditorService);

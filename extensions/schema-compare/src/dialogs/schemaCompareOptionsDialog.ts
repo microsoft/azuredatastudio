@@ -8,8 +8,8 @@ import * as vscode from 'vscode';
 import * as mssql from 'mssql';
 import * as loc from '../localizedConstants';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
-import { isNullOrUndefined } from 'util';
 import { SchemaCompareOptionsModel } from '../models/schemaCompareOptionsModel';
+import { TelemetryReporter, TelemetryViews } from '../telemetry';
 
 export class SchemaCompareOptionsDialog {
 	public dialog: azdata.window.Dialog;
@@ -24,7 +24,6 @@ export class SchemaCompareOptionsDialog {
 	private optionsTable: azdata.TableComponent;
 	private objectsTable: azdata.TableComponent;
 	private disposableListeners: vscode.Disposable[] = [];
-
 	private optionsChanged: boolean = false;
 
 	private optionsModel: SchemaCompareOptionsModel;
@@ -62,8 +61,10 @@ export class SchemaCompareOptionsDialog {
 	}
 
 	protected execute(): void {
+		// Update the model deploymentoptions with the updated table component values
 		this.optionsModel.setDeploymentOptions();
-		this.optionsModel.setObjectTypeOptions();
+		this.optionsModel.setIncludeObjectTypesToDeploymentOptions();
+		// Set the publish deploymentoptions with the updated table component values
 		this.schemaComparison.setDeploymentOptions(this.optionsModel.deploymentOptions);
 
 		const yesItem: vscode.MessageItem = {
@@ -82,7 +83,10 @@ export class SchemaCompareOptionsDialog {
 					this.schemaComparison.startCompare();
 				}
 			});
+
+			TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareOptionsDialog, 'OptionsChanged');
 		}
+
 		this.disposeListeners();
 	}
 
@@ -96,8 +100,9 @@ export class SchemaCompareOptionsDialog {
 		this.optionsModel.deploymentOptions = result.defaultDeploymentOptions;
 		this.optionsChanged = true;
 
-		// This will update the Map table with default values
-		this.optionsModel.InitializeUpdateOptionsMapTable();
+		// reset optionsvalueNameLookup with fresh deployment options
+		this.optionsModel.setOptionsToValueNameLookup();
+		this.optionsModel.setIncludeObjectTypesLookup();
 
 		await this.updateOptionsTable();
 		this.optionsFlexBuilder.removeItem(this.optionsTable);
@@ -106,10 +111,29 @@ export class SchemaCompareOptionsDialog {
 		await this.updateObjectsTable();
 		this.objectTypesFlexBuilder.removeItem(this.objectsTable);
 		this.objectTypesFlexBuilder.addItem(this.objectsTable, { CSSStyles: { 'overflow': 'scroll', 'height': '80vh' } });
+
+		TelemetryReporter.sendActionEvent(TelemetryViews.SchemaCompareOptionsDialog, 'ResetOptions');
 	}
 
 	private initializeSchemaCompareOptionsDialogTab(): void {
 		this.generalOptionsTab.registerContent(async view => {
+			// create loading component
+			const loader = view.modelBuilder.loadingComponent()
+				.withProps({
+					CSSStyles: {
+						'margin-top': '50%'
+					}
+				})
+				.component();
+
+			this.optionsFlexBuilder = view.modelBuilder.flexContainer()
+				.withLayout({
+					flexFlow: 'column'
+				}).component();
+
+			// adding loading component to the flexcontainer
+			this.optionsFlexBuilder.addItem(loader);
+			await view.initializeModel(this.optionsFlexBuilder);
 
 			this.descriptionHeading = view.modelBuilder.table().withProps({
 				data: [],
@@ -130,31 +154,32 @@ export class SchemaCompareOptionsDialog {
 			this.optionsTable = view.modelBuilder.table().component();
 			await this.updateOptionsTable();
 
+			// Get the description of the selected option
 			this.disposableListeners.push(this.optionsTable.onRowSelected(async () => {
-				let row = this.optionsTable.selectedRows[0];
-				let label = this.optionsModel.optionsLabels[row];
+				// selectedRows[0] contains selected row number
+				const row = this.optionsTable.selectedRows[0];
+				// data[row][1] contains the option display name
+				const displayName = this.optionsTable?.data[row!][1];
 				await this.descriptionText.updateProperties({
-					value: this.optionsModel.getDescription(label)
+					value: this.optionsModel.getOptionDescription(displayName)
 				});
 			}));
 
+			// Update deploy options value on checkbox onchange
 			this.disposableListeners.push(this.optionsTable.onCellAction((rowState) => {
-				let checkboxState = <azdata.ICheckboxCellActionEventArgs>rowState;
+				const checkboxState = <azdata.ICheckboxCellActionEventArgs>rowState;
 				if (checkboxState && checkboxState.row !== undefined) {
-					let label = this.optionsModel.optionsLabels[checkboxState.row];
-					this.optionsModel.optionsLookup[label] = checkboxState.checked;
+					// data[row][1] contains the option display name
+					const displayName = this.optionsTable?.data[checkboxState.row][1];
+					this.optionsModel.setOptionValue(displayName, checkboxState.checked);
 					this.optionsChanged = true;
 				}
 			}));
 
-			this.optionsFlexBuilder = view.modelBuilder.flexContainer()
-				.withLayout({
-					flexFlow: 'column'
-				}).component();
-
 			this.optionsFlexBuilder.addItem(this.optionsTable, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh' } });
 			this.optionsFlexBuilder.addItem(this.descriptionHeading, { CSSStyles: { 'font-weight': 'bold', 'height': '30px' } });
 			this.optionsFlexBuilder.addItem(this.descriptionText, { CSSStyles: { 'padding': '4px', 'margin-right': '10px', 'overflow': 'scroll', 'height': '10vh' } });
+			loader.loading = false;
 			await view.initializeModel(this.optionsFlexBuilder);
 			await this.optionsTable.focus();
 		});
@@ -171,11 +196,13 @@ export class SchemaCompareOptionsDialog {
 			this.objectsTable = view.modelBuilder.table().component();
 			await this.updateObjectsTable();
 
+			// Update inlcude object type options value on checkbox onchange
 			this.disposableListeners.push(this.objectsTable.onCellAction((rowState) => {
 				let checkboxState = <azdata.ICheckboxCellActionEventArgs>rowState;
 				if (checkboxState && checkboxState.row !== undefined) {
-					let label = this.optionsModel.objectTypeLabels[checkboxState.row];
-					this.optionsModel.objectsLookup[label] = checkboxState.checked;
+					// data[row][1] contains the include object type option display name
+					const displayName = this.objectsTable?.data[checkboxState.row][1];
+					this.optionsModel.setIncludeObjectTypesOptionValue(displayName, checkboxState.checked);
 					this.optionsChanged = true;
 				}
 			}));
@@ -218,7 +245,7 @@ export class SchemaCompareOptionsDialog {
 	}
 
 	private async updateObjectsTable(): Promise<void> {
-		let data = this.optionsModel.getObjectsData();
+		let data = this.optionsModel.getIncludeObjectTypesOptionsData();
 		await this.objectsTable.updateProperties({
 			data: data,
 			columns: [

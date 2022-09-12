@@ -148,6 +148,8 @@
 			"managePackages.backgroundInstallFailed": "未能安装 {0} {1}。错误: {2}",
 			"managePackages.backgroundInstallStarted": "正在安装 {0} {1}",
 			"managePackages.installButtonText": "安装",
+			"managePackages.installCompleteText": "已安装包",
+			"managePackages.installProgressText": "正在安装包",
 			"managePackages.invalidTextPlaceholder": "不适用",
 			"managePackages.noVersionsFound": "未找到指定包的任何有效版本",
 			"managePackages.packageNameTitle": "包名称",
@@ -168,7 +170,9 @@
 			"managePackages.packageCount": "找到 {0} 个 {1} 包",
 			"managePackages.packageType": "包类型",
 			"managePackages.pkgNameColumn": "名称",
-			"managePackages.uninstallButtonText": "卸载选定的包"
+			"managePackages.uninstallButtonText": "卸载选定的包",
+			"managePackages.uninstallCompleteText": "已卸载包",
+			"managePackages.uninstallProgressText": "正在卸载包"
 		},
 		"dist/dialog/managePackages/managePackagesDialog": {
 			"managePackages.cancelButtonText": "关闭",

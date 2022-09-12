@@ -47,7 +47,7 @@ suite('AsyncServerTreeDragAndDrop', () => {
 	let connectionProfileArray = [connectionProfile];
 	let connectionProfileGroupId = new ConnectionProfileGroup('name', undefined, 'd936bb32-422b-49c3-963f-ae9532d63dc5', 'color', 'description');
 	let connectionProfileGroupArray = [connectionProfileGroupId];
-	let treeNode = new TreeNode('Column', 'label', undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+	let treeNode = new TreeNode('Column', '', 'label', undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
 	let treeNodeArray = [treeNode];
 
 	setup(() => {

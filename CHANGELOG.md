@@ -1,5 +1,88 @@
 # Change Log
 
+## Version 1.39.1
+* Release date: August 30, 2022
+* Release status: General Availability
+## What's new in 1.39.1
+* Bug fixes in 1.39.1
+    * Fixed bug that caused Database Trees in server connections to not expand in the Object Explorer.
+
+| Platform																|
+| ---------------------------------------	|
+| [Windows User Installer][win-user]			|
+| [Windows System Installer][win-system]	|
+| [Windows ZIP][win-zip]									|
+| [macOS ZIP][osx-zip]										|
+| [Linux TAR.GZ][linux-zip]								|
+| [Linux RPM][linux-rpm]									|
+| [Linux DEB][linux-deb]									|
+
+[win-user]: https://go.microsoft.com/fwlink/?linkid=2204567
+[win-system]: https://go.microsoft.com/fwlink/?linkid=2204568
+[win-zip]: https://go.microsoft.com/fwlink/?linkid=2204772
+[osx-zip]: https://go.microsoft.com/fwlink/?linkid=2204569
+[linux-zip]: https://go.microsoft.com/fwlink/?linkid=2204773
+[linux-rpm]: https://go.microsoft.com/fwlink/?linkid=2204774
+[linux-deb]: https://go.microsoft.com/fwlink/?linkid=2204570
+
+## Version 1.39.0
+* Release date: August 24, 2022
+* Release status: General Availability
+## What's new in 1.39.0
+* New Features:
+    * Deployment Wizard - Azure Data Studio now supports SQL Server 2022 (Preview) in the Deployment Wizard for both local and container installation.
+    * Object Explorer - Added Ledger icons and scripting support to Object Explorer for Ledger objects.
+    * Dashboard - Added hexadecimal values to support color detection.
+    * Query Plan Viewer - Added the ability to copy text from cells in the Properties Pane of a query plan.
+    * Query Plan Viewer - Introduced a "find node" option in plan comparison to search for nodes in either the original or added plan.
+    * Table Designer - Now supports the ability to add included columns to a nonclustered index, and the ability to create filtered indexes.
+    * SQL Projects - Publish options were added to the Publish Dialog.
+    * Query History Extension - Added double-click support for query history to either open the query or immediately execute it, based on user configuration.
+
+* Bug Fixes:
+    * Dashboard - Fixed an accessibility issue that prevented users from being able to access tooltip information using the keyboard.
+    * Voiceover - Fixed a bug that caused voiceover errors across the Dashboard, SQL Projects, SQL Import Wizard, and SQL Migration extensions.
+    * Schema Compare - Fixed a bug that caused the UI to jump back to the top of the options list after selecting/deselecting any option.
+    * Schema Compare - Fixed a bug involving Schema Compare (.SCMP) file incompatibility with Database Project information causing errors when reading and using information stored in this file type.
+    * Object Explorer - Fixed a bug that caused menu items in Object Explorer not to show up for non-English languages.
+    * Table Designer - Fixed a bug that caused the History Table name not to be consistent with the current table name when working with System-Versioned Tables.
+    * Table Designer - Fixed a bug in the Primary Key settings that caused the "Allow Nulls" option to be checked, but disabled, preventing users from changing this option.
+    * Query Editor - Fixed a bug that prevented the SQLCMD in T-SQL from working correctly, giving false errors when running scripts in Azure Data Studio.
+    * Query Editor - Fixed a bug that caused user-specified zoom settings to reset to default when selecting JSON values after query that returned JSON dataset was ran.
+    * SQL Projects - Fixed a bug that caused the "Generate Script" command to not work correctly when targeting a new Azure SQL Database.
+    * Notebooks - Fixed a bug that caused pasted images to disappear from editor after going out of edit mode.
+    * Notebooks - Fixed a bug that caused a console error message to appear after opening a markdown file.
+    * Notebooks - Fixed a bug that prevented markdown cell toolbar shortcuts from working after creating a new split view cell.
+    * Notebooks - Fixed a bug that caused text cells to be erroneously created in split view mode when the notebook default text edit mode was set to "Markdown".
+
+## Version 1.38.0
+* Release date: July 27, 2022
+* Release status: General Availability
+## What's new in 1.38.0
+* New Features:
+    * VS Code merges to 1.62 - This release includes updates to VS Code from the three previous VS Code releases. Read [their release notes](https://code.visualstudio.com/updates/v1_62) to learn more.
+    * Table Designer - New column added to Table Designer for easier access to additional actions specific to individual rows.
+    * Query Plan Viewer - The Top Operations pane view now includes clickable links to operations in each of its rows to show the runtime statistics which can be used to evaluate estimated and actual rows when analyzing a plan.
+    * Query Plan Viewer - Improved UI on selected operation node in the Execution Plan.
+    * Query Plan Viewer - The keyboard command **CTRL + M** no longer executes queries. It now just enables or disables the actual execution plan creation when a query is executed.
+    * Query Plan Viewer - Plan labels are now updated in the Properties window when plans are compared and the orientation is toggled from horizontal to vertical, and back.
+    * Query Plan Viewer - Updates were made to the Command Palette. All execution plan commands are prefixed with "Execution Plan", so that they are easier to find and use.
+    * Query Plan Viewer - A collapse/expand functionality is now available at the operator level to allow users to hide or display sections of the plan during analysis.
+    * Query History - The Query History extension was refactored to be fully implemented in an extension. This makes the history view behave like all other extension views and also allows for searching and filtering in the view by selecting the view and typing in your search text.
+
+* Bug Fixes:
+    * Table Designer - Error found in edit data tab when switching back to previously selected column when adding a new row. To fix this, editing the table is now disabled while new rows are being added and only reenabled afterwards.
+    * Query Editor - Fixed coloring issues for new T-SQL functions in the Query Editor.
+    * Query Plan Viewer - Fixed bug that caused custom zoom level spinner to allow values outside valid range.
+    * Dashboard - Fixed issue that caused incorrect displaying of insight widgets on the dashboard.
+    * Notebooks - Fixed issue where keyboard shortcuts and toolbar buttons were not working when first creating a Split View markdown cell.
+    * Notebooks - Fixed issue where cell languages were not being set correctly when opening an ADS .NET Interactive notebook in VS Code.
+    * Notebooks - Fixed issue where notebook was being opened as empty when exporting a SQL query as a notebook.
+    * Notebooks - Disables install and uninstall buttons in Manage Packages dialog while a package is being installed or uninstalled.
+    * Notebooks - Fixed issue where cell toolbar buttons were not refreshing when converting cell type.
+    * Notebooks - Fixed issue where notebook was not opening if a cell contains an unsupported output type.
+    * Schema Compare - Fixed issue where views and stored procedures were not correctly recognized by schema compare after applying changes.
+
 ## Version 1.37.0
 * Release date: June 15, 2022
 * Release status: General Availability
@@ -22,25 +105,6 @@
     *  Schema Compare - Fixed issue with indexes not being added correctly when updating project from database.
     *  Notebooks - Fixed inconsistencies with notebook cell behavior and toolbars.
     *  Notebooks - Fixed issues with keyboard navigation.
-
-
-| Platform																|
-| ---------------------------------------	|
-| [Windows User Installer][win-user]			|
-| [Windows System Installer][win-system]	|
-| [Windows ZIP][win-zip]									|
-| [macOS ZIP][osx-zip]										|
-| [Linux TAR.GZ][linux-zip]								|
-| [Linux RPM][linux-rpm]									|
-| [Linux DEB][linux-deb]									|
-
-[win-user]: https://go.microsoft.com/fwlink/?linkid=2198663
-[win-system]: https://go.microsoft.com/fwlink/?linkid=2198878
-[win-zip]: https://go.microsoft.com/fwlink/?linkid=2198664
-[osx-zip]: https://go.microsoft.com/fwlink/?linkid=2198762
-[linux-zip]: https://go.microsoft.com/fwlink/?linkid=2198879
-[linux-rpm]: https://go.microsoft.com/fwlink/?linkid=2198880
-[linux-deb]: https://go.microsoft.com/fwlink/?linkid=2198763
 
 ## Version 1.36.2
 * Release date: May 20, 2022

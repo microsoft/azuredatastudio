@@ -7,7 +7,7 @@ import * as assert from 'assert';
 import { URI } from 'vs/base/common/uri';
 import { toResource } from 'vs/base/test/common/utils';
 import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
-import { workbenchInstantiationService, TestServiceAccessor, TestEditorService, getLastResolvedFileStat } from 'vs/workbench/test/browser/workbenchTestServices';
+import { workbenchInstantiationService, TestServiceAccessor, getLastResolvedFileStat } from 'vs/workbench/test/browser/workbenchTestServices';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorFactoryRegistry, Verbosity, EditorExtensions, EditorInputCapabilities } from 'vs/workbench/common/editor';
 import { EncodingMode, TextFileOperationError, TextFileOperationResult } from 'vs/workbench/services/textfile/common/textfiles';
@@ -21,9 +21,11 @@ import { IResourceEditorInput } from 'vs/platform/editor/common/editor';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { FileEditorInputSerializer } from 'vs/workbench/contrib/files/browser/editors/fileEditorHandler';
 import { InMemoryFileSystemProvider } from 'vs/platform/files/common/inMemoryFilesystemProvider';
+import { TextEditorService } from 'vs/workbench/services/textfile/common/textEditorService';
 
 suite('Files - FileEditorInput', () => {
 
+	let disposables: DisposableStore;
 	let instantiationService: IInstantiationService;
 	let accessor: TestServiceAccessor;
 
@@ -31,18 +33,23 @@ suite('Files - FileEditorInput', () => {
 		return instantiationService.createInstance(FileEditorInput, resource, preferredResource, preferredName, preferredDescription, undefined, preferredMode, preferredContents);
 	}
 
+	class TestTextEditorService extends TextEditorService {
+		override createTextEditor(input: IResourceEditorInput) {
+			return createFileInput(input.resource);
+		}
+	}
+
 	setup(() => {
+		disposables = new DisposableStore();
 		instantiationService = workbenchInstantiationService({
-			editorService: () => {
-				return new class extends TestEditorService {
-					override createEditorInput(input: IResourceEditorInput) {
-						return createFileInput(input.resource);
-					}
-				};
-			}
-		});
+			textEditorService: instantiationService => instantiationService.createInstance(TestTextEditorService)
+		}, disposables);
 
 		accessor = instantiationService.createInstance(TestServiceAccessor);
+	});
+
+	teardown(() => {
+		disposables.dispose();
 	});
 
 	test('Basics', async function () { // {{SQL CARBON EDIT}} skip test
@@ -172,17 +179,17 @@ suite('Files - FileEditorInput', () => {
 		assert.strictEqual(input.getPreferredMode(), mode);
 
 		const model = await input.resolve() as TextFileEditorModel;
-		assert.strictEqual(model.textEditorModel!.getModeId(), mode);
+		assert.strictEqual(model.textEditorModel!.getLanguageId(), mode);
 
 		input.setMode('text');
 		assert.strictEqual(input.getPreferredMode(), 'text');
-		assert.strictEqual(model.textEditorModel!.getModeId(), PLAINTEXT_MODE_ID);
+		assert.strictEqual(model.textEditorModel!.getLanguageId(), PLAINTEXT_MODE_ID);
 
 		const input2 = createFileInput(toResource.call(this, '/foo/bar/file.js'));
 		input2.setPreferredMode(mode);
 
 		const model2 = await input2.resolve() as TextFileEditorModel;
-		assert.strictEqual(model2.textEditorModel!.getModeId(), mode);
+		assert.strictEqual(model2.textEditorModel!.getLanguageId(), mode);
 	});
 
 	test('preferred contents', async function () {

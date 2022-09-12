@@ -42,7 +42,7 @@
 			"assocLabelPath": "带路径的文件",
 			"derivedDescription": "与具有名称相同但扩展名不同的同级文件的文件匹配。",
 			"derivedLabel": "具有同级文件的文件(按名称)",
-			"dirty": "一个更新的指示器，指示活动编辑器是否更新",
+			"dirty": "表明活动编辑器具有未保存更改的时间的指示器",
 			"falseDescription": "禁用该模式。",
 			"fileDescription": "与具有特定文件扩展名的所有文件匹配。",
 			"fileLabel": "按扩展名的文件",

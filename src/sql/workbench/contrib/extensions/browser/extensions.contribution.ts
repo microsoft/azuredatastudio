@@ -7,7 +7,7 @@ import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IWorkbenchActionRegistry, Extensions as WorkbenchActionExtensions } from 'vs/workbench/common/actions';
 import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
-import { ExtensionsLabel, IExtensionGalleryService, IGalleryExtension } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { ExtensionsLabel, IExtensionGalleryService, IGalleryExtension, TargetPlatform } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { OpenExtensionAuthoringDocsAction } from 'sql/workbench/contrib/extensions/browser/extensionsActions';
 import { localize } from 'vs/nls';
 import { deepClone } from 'vs/base/common/objects';
@@ -41,7 +41,7 @@ CommandsRegistry.registerCommand({
 	},
 	handler: async (accessor, arg: string): Promise<IGalleryExtension> => {
 		const extensionGalleryService = accessor.get(IExtensionGalleryService);
-		const extension = await extensionGalleryService.getCompatibleExtension({ id: arg });
+		const extension = await extensionGalleryService.getCompatibleExtension({ id: arg }, TargetPlatform.UNIVERSAL);
 		if (extension) {
 			return deepClone(extension);
 		} else {

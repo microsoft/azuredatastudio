@@ -36,6 +36,7 @@ if "%INTEGRATION_TEST_ELECTRON_PATH%"=="" (
 					compile-extension:machine-learning^
 					compile-extension:mssql^
 					compile-extension:notebook^
+					compile-extension:query-history^
 					compile-extension:resource-deployment^
 					compile-extension:sql-bindings^
 					compile-extension:sql-database-projects
@@ -92,25 +93,15 @@ echo *** starting dacpac tests ***
 echo *****************************
 call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\dacpac --extensionTestsPath=%~dp0\..\extensions\dacpac\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
 
+echo ********************************************
+echo *** starting data-workspace tests ***
+echo ********************************************
+call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\data-workspace --extensionTestsPath=%~dp0\..\extensions\data-workspace\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
+
 echo *****************************
 echo *** starting import tests ***
 echo *****************************
 call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\import --extensionTestsPath=%~dp0\..\extensions\import\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
-
-echo *************************************
-echo *** starting schema compare tests ***
-echo *************************************
-call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\schema-compare --extensionTestsPath=%~dp0\..\extensions\schema-compare\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
-
-echo *******************************
-echo *** starting notebook tests ***
-echo *******************************
-call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\notebook --extensionTestsPath=%~dp0\..\extensions\notebook\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
-
-echo ******************************************
-echo *** starting resource deployment tests ***
-echo ******************************************
-call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\resource-deployment --extensionTestsPath=%~dp0\..\extensions\resource-deployment\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
 
 echo *******************************
 echo *** starting machine-learning tests ***
@@ -122,6 +113,26 @@ REM echo *** starting mssql tests ***
 REM echo ******************************************
 REM call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\mssql --extensionTestsPath=%~dp0\..\extensions\mssql\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
 
+echo *******************************
+echo *** starting notebook tests ***
+echo *******************************
+call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\notebook --extensionTestsPath=%~dp0\..\extensions\notebook\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
+
+echo *******************************
+echo *** starting query-history tests ***
+echo *******************************
+call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\query-history --extensionTestsPath=%~dp0\..\extensions\query-history\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
+
+echo ******************************************
+echo *** starting resource deployment tests ***
+echo ******************************************
+call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\resource-deployment --extensionTestsPath=%~dp0\..\extensions\resource-deployment\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
+
+echo *************************************
+echo *** starting schema compare tests ***
+echo *************************************
+call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\schema-compare --extensionTestsPath=%~dp0\..\extensions\schema-compare\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
+
 echo ********************************************
 echo *** starting sql-bindings tests ***
 echo ********************************************
@@ -131,11 +142,6 @@ echo ********************************************
 echo *** starting sql-database-projects tests ***
 echo ********************************************
 call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\sql-database-projects --extensionTestsPath=%~dp0\..\extensions\sql-database-projects\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
-
-echo ********************************************
-echo *** starting data-workspace tests ***
-echo ********************************************
-call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\data-workspace --extensionTestsPath=%~dp0\..\extensions\data-workspace\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 

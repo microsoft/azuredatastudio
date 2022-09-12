@@ -110,6 +110,18 @@ nsfw/src/**
 nsfw/includes/**
 !nsfw/build/Release/*.node
 
+vscode-nsfw/binding.gyp
+vscode-nsfw/build/**
+vscode-nsfw/src/**
+vscode-nsfw/includes/**
+!vscode-nsfw/build/Release/*.node
+
+@parcel/watcher/binding.gyp
+@parcel/watcher/build/**
+@parcel/watcher/prebuilds/**
+@parcel/watcher/src/**
+!@parcel/watcher/build/Release/*.node
+
 vsda/build/**
 vsda/ci/**
 vsda/src/**

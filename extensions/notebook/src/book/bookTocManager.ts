@@ -58,7 +58,6 @@ export class BookTocManager implements IBookTocManager {
 	*/
 	getInitFile(files: string[]): path.ParsedPath | undefined {
 		let initFile = undefined;
-		//
 		const initFileIndex = files.findIndex(f => f === 'index.md');
 
 		// If it doesnt find a file named as 'index.md' then use the first file we find.
@@ -165,7 +164,7 @@ export class BookTocManager implements IBookTocManager {
 			contents.forEach(async (content) => {
 				let filePath = path.join(directory, content);
 				let fileStat = await fs.stat(filePath);
-				if (fileStat.isFile) {
+				if (fileStat.isFile()) {
 					//check if the file is in the moved files
 					let newPath = this.movedFiles.get(filePath);
 					if (newPath) {
@@ -177,7 +176,7 @@ export class BookTocManager implements IBookTocManager {
 							await fs.unlink(filePath);
 						}
 					}
-				} else if (fileStat.isDirectory) {
+				} else if (fileStat.isDirectory()) {
 					await this.cleanUp(filePath);
 				}
 			});

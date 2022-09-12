@@ -9,10 +9,19 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
+			"queryHistory.captureEnabledDesc": "Indique si la capture de l'historique des requêtes est activée. Si la valeur est false, les requêtes exécutées ne sont pas capturées.",
 			"queryHistory.clear": "Effacer tout l'historique",
+			"queryHistory.delete": "Supprimer",
 			"queryHistory.description": "Afficher et exécuter des requêtes exécutées précédemment",
+			"queryHistory.disableCapture": "Suspendre la capture de l'historique des requêtes",
 			"queryHistory.displayName": "Historique des requêtes",
-			"queryHistory.toggleCapture": "Activer/désactiver la capture de l'historique des requêtes"
+			"queryHistory.doubleClickAction": "L'action entreprise lorsqu'un élément de l'historique est double-cliqué",
+			"queryHistory.doubleClickAction.open": "Ouvrir un nouvel éditeur déconnecté avec la requête de l'élément d'historique sélectionné",
+			"queryHistory.doubleClickAction.run": "Ouvrir un nouvel éditeur connecté avec la requête et la connexion de l'élément d'historique sélectionné et exécuter automatiquement la requête",
+			"queryHistory.enableCapture": "Démarrer la capture de l'historique des requêtes",
+			"queryHistory.noEntries": "Aucune requête à afficher",
+			"queryHistory.open": "Ouvrir la requête",
+			"queryHistory.run": "Exécuter la requête"
 		}
 	}
 }

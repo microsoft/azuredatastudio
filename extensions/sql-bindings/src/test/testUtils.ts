@@ -14,7 +14,7 @@ export interface TestUtils {
 	context: vscode.ExtensionContext;
 	dacFxService: TypeMoq.IMock<mssql.IDacFxService>;
 	outputChannel: vscode.OutputChannel;
-	vscodeMssqlIExtension: TypeMoq.IMock<vscodeMssql.IExtension>
+	vscodeMssqlIExtension: TypeMoq.IMock<vscodeMssql.IExtension>;
 	dacFxMssqlService: TypeMoq.IMock<vscodeMssql.IDacFxService>;
 	schemaCompareService: TypeMoq.IMock<vscodeMssql.ISchemaCompareService>;
 	azureFunctionsExtensionApi: TypeMoq.IMock<AzureFunctionsExtensionApi>;
