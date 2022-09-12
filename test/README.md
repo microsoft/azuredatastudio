@@ -96,5 +96,3 @@ Once ran the combined coverage report will be located in `./test/coverage`.
 ### When debugging extension unit tests my breakpoints aren't being hit
 
 There's a known issue when code coverage is enabled that breakpoints won't be hit. See https://github.com/microsoft/azuredatastudio/issues/17985 for more details and a workaround.
-
-
