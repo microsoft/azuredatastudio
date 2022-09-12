@@ -125,7 +125,7 @@ declare module 'azdata' {
 		}
 
 		/**
-		 * An event that is emitted when a [notebook document](#NotebookDocument) is closed.
+		 * An event that is emitted when a {@link NotebookDocument} is closed.
 		 */
 		export const onDidCloseNotebookDocument: vscode.Event<NotebookDocument>;
 
