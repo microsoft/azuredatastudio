@@ -4030,6 +4030,9 @@
       <Item ItemId=";extensions/arc/package.arc.postgres.server.invalid.username" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[That username is disabled; please choose another username.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Dieser Benutzername ist deaktiviert, bitte wählen Sie einen anderen Benutzernamen aus.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4126,6 +4129,9 @@
       <Item ItemId=";extensions/arc/package.arc.postgres.server.username.placeholder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enter server admin login name]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Anmelde-ID für den Serveradministrator eingeben]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4594,8 +4600,8 @@
       <Item ItemId=";extensions/arc/package.arc.sql.invalid.username" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[That username is disabled; please choose another username.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[der SA-Benutzername ist deaktiviert, wählen Sie einen anderen Benutzernamen aus]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Dieser Benutzername ist deaktiviert, bitte wählen Sie einen anderen Benutzernamen aus.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[sa username is disabled, please choose another username]]></Val>
@@ -4874,7 +4880,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Enter admin name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Geben Sie den Administratornamen ein.]]></Val>
+            <Val><![CDATA[Administratornamen eingeben]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

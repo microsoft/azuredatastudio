@@ -4030,6 +4030,9 @@
       <Item ItemId=";extensions/arc/package.arc.postgres.server.invalid.username" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[That username is disabled; please choose another username.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ce nom d’utilisateur est désactivé, choisissez un autre nom d’utilisateur.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4118,7 +4121,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Admin username]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nom d'utilisateur de l'administrateur]]></Val>
+            <Val><![CDATA[Nom d’utilisateur de l’administrateur]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4126,6 +4129,9 @@
       <Item ItemId=";extensions/arc/package.arc.postgres.server.username.placeholder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enter server admin login name]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Entrez le nom de connexion de l’administrateur du serveur.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4559,7 +4565,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Enter instance name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Entrer le nom de l'instance]]></Val>
+            <Val><![CDATA[Entrer le nom de l’instance]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4594,8 +4600,8 @@
       <Item ItemId=";extensions/arc/package.arc.sql.invalid.username" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[That username is disabled; please choose another username.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[le nom d’utilisateur sa est désactivé, choisissez un autre nom d’utilisateur]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ce nom d’utilisateur est désactivé, choisissez un autre nom d’utilisateur.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[sa username is disabled, please choose another username]]></Val>
@@ -4874,7 +4880,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Enter admin name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Entrer le nom d'administrateur]]></Val>
+            <Val><![CDATA[Entrer le nom d’administrateur]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
