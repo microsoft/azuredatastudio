@@ -4030,6 +4030,9 @@
       <Item ItemId=";extensions/arc/package.arc.postgres.server.invalid.username" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[That username is disabled; please choose another username.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[해당 사용자 이름을 사용할 수 없습니다. 다른 사용자 이름을 선택하세요.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4118,7 +4121,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Admin username]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[관리자 사용자 이름]]></Val>
+            <Val><![CDATA[관리 사용자 이름]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4597,8 +4600,8 @@
       <Item ItemId=";extensions/arc/package.arc.sql.invalid.username" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[That username is disabled; please choose another username.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[sa 사용자 이름을 사용할 수 없습니다. 다른 사용자 이름을 선택하세요.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[해당 사용자 이름을 사용할 수 없습니다. 다른 사용자 이름을 선택하세요.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[sa username is disabled, please choose another username]]></Val>
