@@ -170,7 +170,9 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 			} else {
 				label = this.getServerInfo();
 			}
-		} else if (Object.keys(this.capabilitiesService.providers).length > 0) {
+		}
+		// The provider capabilities are registered at the same time at load time, we can assume all providers are registered as long as the collection is not empty.
+		else if (Object.keys(this.capabilitiesService.providers).length > 0) {
 			return localize('connection.unsupported', "Unsupported connection");
 		} else {
 			return localize('loading', "Loading...");
