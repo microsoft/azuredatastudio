@@ -32,7 +32,7 @@ export class CreateProjectFromDatabaseDialog {
 	private toDispose: vscode.Disposable[] = [];
 	private initDialogComplete: Deferred = new Deferred();
 
-	public createProjectFromDatabaseCallback: ((model: ImportDataModel) => any) | undefined;
+	public createProjectFromDatabaseCallback: ((model: ImportDataModel, connectionId?: string) => any) | undefined;
 
 	constructor(private profile: azdataType.IConnectionProfile | undefined) {
 		this.dialog = getAzdataApi()!.window.createModelViewDialog(constants.createProjectFromDatabaseDialogName, 'createProjectFromDatabaseDialog');
@@ -411,7 +411,7 @@ export class CreateProjectFromDatabaseDialog {
 		};
 
 		azdataApi!.window.closeDialog(this.dialog);
-		await this.createProjectFromDatabaseCallback!(model);
+		await this.createProjectFromDatabaseCallback!(model, this.connectionId!);
 
 		this.dispose();
 	}
