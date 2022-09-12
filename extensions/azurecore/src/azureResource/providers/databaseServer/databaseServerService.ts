@@ -15,7 +15,7 @@ export interface DbServerGraphData extends GraphData {
 	};
 }
 
-export const serversQuery = `where type == "${azureResource.AzureResourceType.sqlServer}"`;
+export const serversQuery = `where type == "${azureResource.AzureResourceType.sqlServer}" and kind != "v12.0,analytics"`;
 
 export class AzureResourceDatabaseServerService extends ResourceServiceBase<DbServerGraphData, azureResource.AzureResourceDatabaseServer> {
 

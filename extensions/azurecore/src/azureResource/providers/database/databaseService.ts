@@ -7,7 +7,7 @@ import { ServiceClientCredentials } from '@azure/ms-rest-js';
 import { IAzureResourceService } from '../../interfaces';
 import { serversQuery, DbServerGraphData } from '../databaseServer/databaseServerService';
 import { ResourceGraphClient } from '@azure/arm-resourcegraph';
-import { queryGraphResources, filterOutDiffKindServers, GraphData } from '../resourceTreeDataProviderBase';
+import { queryGraphResources, GraphData } from '../resourceTreeDataProviderBase';
 import { AzureAccount, azureResource } from 'azurecore';
 
 interface DatabaseGraphData extends GraphData {
@@ -23,8 +23,6 @@ export class AzureResourceDatabaseService implements IAzureResourceService<azure
 		let dbQueryPromise = queryGraphResources<GraphData>(resourceClient, subscriptions, `where type == "${azureResource.AzureResourceType.sqlDatabase}"`);
 		let servers: DbServerGraphData[] = await serverQueryPromise as DbServerGraphData[];
 		let dbByGraph: DatabaseGraphData[] = await dbQueryPromise as DatabaseGraphData[];
-
-		servers = await filterOutDiffKindServers(servers, resourceClient, subscriptions) as any as DbServerGraphData[];
 
 		// Group servers by resource group, then merge DB results with servers so we
 		// can get the login name and server fully qualified name to use for connections

@@ -65,25 +65,6 @@ export interface GraphData {
 	resourceGroup: string;
 }
 
-const synapseQuery = 'type == "microsoft.synapse/workspaces"';
-
-export async function filterOutDiffKindServers(serverList: GraphData[], resourceClient: ResourceGraphClient, subscriptions: azureResource.AzureResourceSubscription[]): Promise<GraphData[]> {
-	// Section - Synapse
-	const synapseServers = await queryGraphResources<GraphData>(resourceClient, subscriptions, synapseQuery);
-	return serverList.filter(function (element) {
-		for (let i = 0; i < synapseServers.length; i++) {
-			if (element.name === synapseServers[i].name
-				&& element.tenantId === synapseServers[i].tenantId
-				&& element.subscriptionId === synapseServers[i].subscriptionId
-				&& element.location === synapseServers[i].location
-				&& element.resourceGroup === (synapseServers[i] as any).properties.managedResourceGroupName) {
-				return false;
-			}
-		}
-		return true;
-	});
-}
-
 export async function queryGraphResources<T extends GraphData>(resourceClient: ResourceGraphClient, subscriptions: azureResource.AzureResourceSubscription[], resourceQuery: string): Promise<T[]> {
 	const allResources: T[] = [];
 	let totalProcessed = 0;

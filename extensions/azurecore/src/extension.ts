@@ -163,7 +163,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 		getSqlServers(account: azurecore.AzureAccount,
 			subscriptions: azurecore.azureResource.AzureResourceSubscription[],
 			ignoreErrors: boolean): Promise<azurecore.GetSqlServersResult> {
-			return azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, `where type == "${azurecore.azureResource.AzureResourceType.sqlServer}"`);
+			return azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, `where type == "${azurecore.azureResource.AzureResourceType.sqlServer}" and kind != "v12.0,analytics"`);
 		},
 		getSqlVMServers(account: azurecore.AzureAccount,
 			subscriptions: azurecore.azureResource.AzureResourceSubscription[],
