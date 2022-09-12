@@ -47,7 +47,6 @@ module.exports.unicodeFilter = [
 	'!build/win32/**',
 	'!extensions/markdown-language-features/notebook-out/*.js',
 	'!extensions/markdown-math/notebook-out/**',
-	'!extensions/notebook-renderers/renderer-out/**',
 	'!extensions/php-language-features/src/features/phpGlobalFunctions.ts',
 	'!extensions/typescript-language-features/test-workspace/**',
 	'!extensions/vscode-api-tests/testWorkspace/**',
@@ -130,7 +129,6 @@ module.exports.indentationFilter = [
 	'!extensions/markdown-language-features/media/*.js',
 	'!extensions/markdown-language-features/notebook-out/*.js',
 	'!extensions/markdown-math/notebook-out/*.js',
-	'!extensions/notebook-renderers/renderer-out/*.js',
 	'!extensions/simple-browser/media/*.js',
 
 	// {{SQL CARBON EDIT}} Except for our stuff
@@ -239,7 +237,7 @@ module.exports.copyrightFilter = [
 	'!**/*.py'
 ];
 
-	'!build/**/*' // {{SQL CARBON EDIT}}
+'!build/**/*' // {{SQL CARBON EDIT}}
 module.exports.tsFormattingFilter = [
 	'src/**/*.ts',
 	'test/**/*.ts',

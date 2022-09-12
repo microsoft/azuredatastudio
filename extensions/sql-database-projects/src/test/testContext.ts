@@ -98,7 +98,8 @@ export function createContext(): TestContext {
 			clear: () => { },
 			show: () => { },
 			hide: () => { },
-			dispose: () => { }
+			dispose: () => { },
+			replace: () => { }
 		}
 	};
 }

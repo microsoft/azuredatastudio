@@ -23,8 +23,6 @@ import { ITaskService } from 'sql/workbench/services/tasks/common/tasksService';
 import { IProfilerService } from 'sql/workbench/services/profiler/browser/interfaces';
 import { ISerializationService } from 'sql/platform/serialization/common/serializationService';
 import { IFileBrowserService } from 'sql/workbench/services/fileBrowser/common/interfaces';
-import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
-import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { serializableToMap } from 'sql/base/common/map';
 import { IAssessmentService } from 'sql/workbench/services/assessment/common/interfaces';
 import { IDataGridProviderService } from 'sql/workbench/services/dataGridProvider/common/dataGridProviderService';
@@ -32,6 +30,7 @@ import { IAdsTelemetryService, ITelemetryEventProperties } from 'sql/platform/te
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ITableDesignerService } from 'sql/workbench/services/tableDesigner/common/interface';
 import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
+import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
 /**
  * Main thread class for handling data protocol management registration.
  */

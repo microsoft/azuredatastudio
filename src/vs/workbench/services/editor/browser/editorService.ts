@@ -5,7 +5,7 @@
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IResourceEditorInput, IEditorOptions, EditorActivation, EditorResolution, IResourceEditorInputIdentifier, ITextResourceEditorInput } from 'vs/platform/editor/common/editor';
-import { SideBySideEditor, IEditorPane, GroupIdentifier, IUntitledTextResourceEditorInput, IResourceDiffEditorInput, EditorInputWithOptions, isEditorInputWithOptions, IEditorIdentifier, IEditorCloseEvent, ITextDiffEditorPane, IRevertOptions, SaveReason, EditorsOrder, IWorkbenchEditorConfiguration, EditorResourceAccessor, IVisibleEditorPane, EditorInputCapabilities, isResourceDiffEditorInput, IUntypedEditorInput, isResourceEditorInput, isEditorInput, isEditorInputWithOptionsAndGroup, GroupChangeKind } from 'vs/workbench/common/editor';
+import { SideBySideEditor, IEditorPane, GroupIdentifier, IUntitledTextResourceEditorInput, IResourceDiffEditorInput, EditorInputWithOptions, isEditorInputWithOptions, IEditorIdentifier, IEditorCloseEvent, ITextDiffEditorPane, IRevertOptions, SaveReason, EditorsOrder, IWorkbenchEditorConfiguration, EditorResourceAccessor, IVisibleEditorPane, EditorInputCapabilities, isResourceDiffEditorInput, IUntypedEditorInput, isResourceEditorInput, isEditorInput, isEditorInputWithOptionsAndGroup, IFileEditorInput, EditorExtensions, IEditorFactoryRegistry, IFindEditorOptions } from 'vs/workbench/common/editor';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { SideBySideEditorInput } from 'vs/workbench/common/editor/sideBySideEditorInput';
 import { ResourceMap } from 'vs/base/common/map';
@@ -927,7 +927,7 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 		const untitledInput = input as IUntitledTextResourceEditorInput;
 		if (untitledInput.forceUntitled || !untitledInput.resource || (untitledInput.resource.scheme === Schemas.untitled)) {
 			const untitledOptions = {
-				mode: untitledInput.mode,
+				mode: untitledInput.languageId,
 				initialValue: untitledInput.contents,
 				encoding: untitledInput.encoding
 			};
@@ -980,11 +980,11 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 				// File
 				//if (textResourceEditorInput.forceFile || this.fileService.canHandleResource(canonicalResource)) {
 				if (await this.fileService.canHandleResource(canonicalResource)) {
-					return this.fileEditorFactory.createFileEditor(canonicalResource, preferredResource, textResourceEditorInput.label, textResourceEditorInput.description, textResourceEditorInput.encoding, textResourceEditorInput.mode, textResourceEditorInput.contents, this.instantiationService);
+					return this.fileEditorFactory.createFileEditor(canonicalResource, preferredResource, textResourceEditorInput.label, textResourceEditorInput.description, textResourceEditorInput.encoding, textResourceEditorInput.languageId, textResourceEditorInput.contents, this.instantiationService);
 				}
 
 				// Resource
-				return this.instantiationService.createInstance(TextResourceEditorInput, canonicalResource, textResourceEditorInput.label, textResourceEditorInput.description, textResourceEditorInput.mode, textResourceEditorInput.contents);
+				return this.instantiationService.createInstance(TextResourceEditorInput, canonicalResource, textResourceEditorInput.label, textResourceEditorInput.description, textResourceEditorInput.languageId, textResourceEditorInput.contents);
 			}, cachedInput => {
 
 				// Untitled
@@ -1008,8 +1008,8 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 						cachedInput.setPreferredEncoding(textResourceEditorInput.encoding);
 					}
 
-					if (textResourceEditorInput.mode) {
-						cachedInput.setPreferredMode(textResourceEditorInput.mode);
+					if (textResourceEditorInput.languageId) {
+						cachedInput.setPreferredLanguageId(textResourceEditorInput.languageId);
 					}
 
 					if (typeof textResourceEditorInput.contents === 'string') {
@@ -1027,8 +1027,8 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 						cachedInput.setDescription(textResourceEditorInput.description);
 					}
 
-					if (textResourceEditorInput.mode) {
-						cachedInput.setPreferredMode(textResourceEditorInput.mode);
+					if (textResourceEditorInput.languageId) {
+						cachedInput.setPreferredLanguageId(textResourceEditorInput.languageId);
 					}
 
 					if (typeof textResourceEditorInput.contents === 'string') {

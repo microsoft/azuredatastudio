@@ -913,6 +913,7 @@ export class DefaultSettingsEditorModel extends AbstractSettingsModel implements
 			.map(filteredMatch => {
 				// Fix match ranges to offset from setting start line
 				return <ISettingMatch>{
+					matchType: SettingMatchType.None, // {{SQL CARBON EDIT}} - add missing property
 					setting: filteredMatch.setting,
 					score: filteredMatch.score,
 					matches: filteredMatch.matches && filteredMatch.matches.map(match => {

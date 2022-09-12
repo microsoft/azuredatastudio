@@ -9,7 +9,7 @@ import * as assert from 'assert';
 import { MarkdownTextTransformer, MarkdownButtonType, insertFormattedMarkdown } from 'sql/workbench/contrib/notebook/browser/markdownToolbarActions';
 import { NotebookService } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
-import { TestLifecycleService, TestEnvironmentService, TestAccessibilityService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { TestLifecycleService, TestEnvironmentService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
@@ -32,7 +32,8 @@ import { IEditor } from 'vs/editor/common/editorCommon';
 import { NotebookEditorStub } from 'sql/workbench/contrib/notebook/test/testCommon';
 import { Range } from 'vs/editor/common/core/range';
 import { IProductService } from 'vs/platform/product/common/productService';
-import { LanguageId } from 'vs/editor/common/modes';
+import { TestAccessibilityService } from 'vs/platform/accessibility/test/common/testAccessibilityService';
+import { LanguageId } from 'vs/editor/common/languages';
 
 suite('MarkdownTextTransformer', () => {
 	let markdownTextTransformer: MarkdownTextTransformer;
@@ -51,8 +52,10 @@ suite('MarkdownTextTransformer', () => {
 
 		instantiationService.stub(IAccessibilityService, new TestAccessibilityService());
 		instantiationService.stub(IContextKeyService, new MockContextKeyService());
-		instantiationService.stub(ICodeEditorService, new TestCodeEditorService());
-		instantiationService.stub(IThemeService, new TestThemeService());
+
+		let themeService = new TestThemeService();
+		instantiationService.stub(ICodeEditorService, new TestCodeEditorService(themeService));
+		instantiationService.stub(IThemeService, themeService);
 		instantiationService.stub(IEnvironmentService, TestEnvironmentService);
 		instantiationService.stub(IStorageService, new TestStorageService());
 
@@ -98,7 +101,13 @@ suite('MarkdownTextTransformer', () => {
 			}
 		};
 		// Create new text model
-		textModel = new TextModel('', { isForSimpleWidget: true, defaultEOL: DefaultEndOfLine.LF, detectIndentation: true, indentSize: 0, insertSpaces: false, largeFileOptimizations: false, tabSize: 4, trimAutoWhitespace: false, bracketPairColorizationOptions: { enabled: true } }, null, undefined, undoRedoService, modeService, languageConfigurationService);
+		textModel = new TextModel('', 'sql',
+			{
+				isForSimpleWidget: true, defaultEOL: DefaultEndOfLine.LF, detectIndentation: true,
+				indentSize: 0, insertSpaces: false, largeFileOptimizations: false, tabSize: 4, trimAutoWhitespace: false,
+				bracketPairColorizationOptions: { independentColorPoolPerBracketType: false, enabled: true }
+			}, undefined, undoRedoService, modeService,
+			languageConfigurationService);
 
 		// Couple widget with newly created text model
 		widget.setModel(textModel);

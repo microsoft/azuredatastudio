@@ -185,7 +185,7 @@ export class ExtHostTreeViews implements ExtHostTreeViewsShape {
 
 		const treeDataTransfer = await this.addAdditionalTransferItems(new Map(), treeView, sourceTreeItemHandles, token, operationUuid);
 		if (!treeDataTransfer) {
-			return;
+			return undefined;
 		}
 
 		return DataTransferConverter.toDataTransferDTO(treeDataTransfer);
@@ -311,9 +311,15 @@ export class ExtHostTreeView<T> extends Disposable {
 		this.dataProvider = options.treeDataProvider;
 		this.dndController = options.dragAndDropController;
 
+		// {{SQL CARBON MERGE TODO}}
 		// {{SQL CARBON EDIT}}
 		if (this.proxy) {
-			this.proxy.$registerTreeViewDataProvider(viewId, { showCollapseAll: !!options.showCollapseAll, canSelectMany: !!options.canSelectMany, canDragAndDrop: options.dragAndDropController !== undefined });
+			this.proxy.$registerTreeViewDataProvider(viewId, {
+				showCollapseAll: !!options.showCollapseAll, canSelectMany: !!options.canSelectMany,
+				dropMimeTypes: undefined, dragMimeTypes: undefined,
+				hasHandleDrag: options.dragAndDropController !== undefined,
+				hasHandleDrop: options.dragAndDropController !== undefined
+			});
 		}
 		this.dndController = options.dragAndDropController;
 		if (this.dataProvider.onDidChangeTreeData) {
@@ -476,7 +482,7 @@ export class ExtHostTreeView<T> extends Disposable {
 		}
 
 		if (!this.dndController?.handleDrag || (extensionTreeItems.length === 0)) {
-			return;
+			return undefined;
 		}
 		await this.dndController.handleDrag(extensionTreeItems, treeDataTransfer, token);
 		return treeDataTransfer;

@@ -134,8 +134,6 @@ export abstract class AbstractExtensionManagementService extends Disposable impl
 		this.participants.push(participant);
 	}
 
-		/* {{SQL CARBON EDIT}} Remove this check as we don't want to enforce the manifest versions matching since those are often coming directly from the main branch
-		*/
 	protected async installExtension(manifest: IExtensionManifest, extension: URI | IGalleryExtension, options: InstallOptions & InstallVSIXOptions): Promise<ILocalExtension> {
 		// only cache gallery extensions tasks
 		if (!URI.isUri(extension)) {

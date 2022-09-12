@@ -22,7 +22,7 @@ import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { ResolvedKeybinding } from 'vs/base/common/keybindings';
 import { ExtensionsInput, IExtensionEditorOptions } from 'vs/workbench/contrib/extensions/common/extensionsInput';
 import { IExtensionsWorkbenchService, IExtensionsViewPaneContainer, VIEWLET_ID, IExtension, ExtensionContainers, ExtensionEditorTab, ExtensionState } from 'vs/workbench/contrib/extensions/common/extensions';
-import { RatingsWidget, InstallCountWidget, RemoteBadgeWidget } from 'vs/workbench/contrib/extensions/browser/extensionsWidgets';
+import { RemoteBadgeWidget, ExtensionWidget } from 'vs/workbench/contrib/extensions/browser/extensionsWidgets';
 import { IEditorOpenContext } from 'vs/workbench/common/editor';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import {
@@ -305,17 +305,17 @@ export class ExtensionEditor extends EditorPane {
 		const publisherDisplayName = append(publisher, $('.publisher-name'));
 		// {{SQL CARBON EDIT}} remove rating and install count widgets
 		// const installCount = append(append(subtitle, $('.subtitle-entry')), $('span.install', { title: localize('install count', "Install count"), tabIndex: 0 }));
-		const installCountWidget = this.instantiationService.createInstance(InstallCountWidget, installCount, false);
+		// const installCountWidget = this.instantiationService.createInstance(InstallCountWidget, installCount, false);
 
 		// const rating = append(append(subtitle, $('.subtitle-entry')), $('span.rating.clickable', { title: localize('rating', "Rating"), tabIndex: 0 }));
-		const ratingsWidget = this.instantiationService.createInstance(RatingsWidget, rating, false);
+		// const ratingsWidget = this.instantiationService.createInstance(RatingsWidget, rating, false);
 
 		const widgets = [
 			remoteBadge,
 			versionWidget,
 			preReleaseWidget,
-			installCountWidget,
-			ratingsWidget,
+			// installCountWidget,
+			// ratingsWidget,
 		];
 
 		const description = append(details, $('.description'));
@@ -342,8 +342,8 @@ export class ExtensionEditor extends EditorPane {
 					this.instantiationService.createInstance(InstallAnotherVersionAction),
 				]
 			]),
-			this.instantiationService.createInstance(SwitchToPreReleaseVersionAction),
-			this.instantiationService.createInstance(SwitchToReleasedVersionAction),
+			// this.instantiationService.createInstance(SwitchToPreReleaseVersionAction),
+			// this.instantiationService.createInstance(SwitchToReleasedVersionAction),
 			this.instantiationService.createInstance(ToggleSyncExtensionAction),
 			new ExtensionEditorManageExtensionAction(this.scopedContextKeyService || this.contextKeyService, this.instantiationService),
 		];
@@ -366,7 +366,7 @@ export class ExtensionEditor extends EditorPane {
 		extensionActionBar.push(actions, { icon: true, label: true });
 		extensionActionBar.setFocusable(true);
 		// update focusable elements when the enablement of an action changes
-		this._register(Event.any(...actions.map(a => Event.filter(a.onDidChange, e => e.enabled !== undefined)))(() => {
+		this._register(Event.any(...actions.map(a => Event.filter(a.onDidChange, e => (<any>e).enabled !== undefined)))(() => {
 			extensionActionBar.setFocusable(false);
 			extensionActionBar.setFocusable(true);
 		}));

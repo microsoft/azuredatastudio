@@ -73,7 +73,7 @@ function updateMainI18nFile(existingTranslationFilePath, originalFilePath, messa
             delete objectContents[`${contentKey}`];
         }
     }
-    messages.contents = Object.assign(Object.assign({}, objectContents), messages.contents);
+    messages.contents = { ...objectContents, ...messages.contents };
     result[''] = [
         '--------------------------------------------------------------------------------------------',
         'Copyright (c) Microsoft Corporation. All rights reserved.',
@@ -241,7 +241,7 @@ function refreshLangpacks() {
         try {
             fs.statSync(locExtFolder);
         }
-        catch (_a) {
+        catch {
             console.log('Language is not included in ADS yet: ' + langId);
             continue;
         }
@@ -304,7 +304,7 @@ function refreshLangpacks() {
                             }
                             fs.statSync(path.join(translationDataFolder, curr.path.replace('./translations', '')));
                         }
-                        catch (_a) {
+                        catch {
                             nonExistantExtensions.push(curr);
                         }
                     }
@@ -358,7 +358,7 @@ function renameVscodeLangpacks() {
         try {
             fs.statSync(locVSCODEFolder);
         }
-        catch (_a) {
+        catch {
             console.log('vscode pack is not in ADS yet: ' + langId);
             continue;
         }

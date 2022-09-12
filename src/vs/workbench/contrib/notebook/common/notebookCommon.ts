@@ -564,7 +564,7 @@ export namespace CellUri {
 
 	export function parseCellOutputUri(uri: URI): { notebook: URI; outputId?: string } | undefined {
 		if (uri.scheme !== Schemas.vscodeNotebookCellOutput) {
-			return;
+			return undefined;
 		}
 
 		const match = /^op([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})?\,(.*)$/i.exec(uri.fragment);

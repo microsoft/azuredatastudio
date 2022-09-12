@@ -103,7 +103,7 @@ export class ProtocolMainService extends Disposable implements IProtocolMainServ
 		}
 
 		// finally block to load the resource
-		this.logService.error(`${Schemas.vscodeFileResource}: Refused to load resource ${fileUri.fsPath} from ${Schemas.vscodeFileResource}: protocol (original URL: ${request.url})`);
+		this.logService.error(`${Schemas.vscodeFileResource}: Refused to load resource ${path} from ${Schemas.vscodeFileResource}: protocol (original URL: ${request.url})`);
 
 		return callback({ error: -3 /* ABORTED */ });
 	}

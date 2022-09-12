@@ -495,7 +495,7 @@ export class EditorResolverService extends Disposable implements IEditorResolver
 	): Promise<EditorInput | undefined> {
 		const editorInfoForResource = this.findExistingEditorsForResource(resource, viewType);
 		if (!editorInfoForResource.length) {
-			return;
+			return undefined;
 		}
 
 		const editorToUse = editorInfoForResource[0];
@@ -505,7 +505,7 @@ export class EditorResolverService extends Disposable implements IEditorResolver
 			if (editor !== editorToUse.editor) {
 				const closed = await group.closeEditor(editor);
 				if (!closed) {
-					return;
+					return undefined;
 				}
 			}
 		}
@@ -515,7 +515,7 @@ export class EditorResolverService extends Disposable implements IEditorResolver
 			editorToUse.group.moveEditor(editorToUse.editor, targetGroup);
 			return editorToUse.editor;
 		}
-		return;
+		return undefined;
 	}
 
 	/**

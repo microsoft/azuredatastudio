@@ -9,7 +9,7 @@ import { ActionBar } from 'sql/base/browser/ui/taskbar/actionbar';
 import { ExecutionPlanPropertiesView } from 'sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesView';
 import { ExecutionPlanWidgetController } from 'sql/workbench/contrib/executionPlan/browser/executionPlanWidgetController';
 import { ExecutionPlanViewHeader } from 'sql/workbench/contrib/executionPlan/browser/executionPlanViewHeader';
-import { ISashEvent, ISashLayoutProvider, Orientation, Sash } from 'vs/base/browser/ui/sash/sash';
+import { IHorizontalSashLayoutProvider, ISashEvent, Orientation, Sash } from 'vs/base/browser/ui/sash/sash';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IFileService } from 'vs/platform/files/common/files';
@@ -21,7 +21,6 @@ import { EDITOR_FONT_DEFAULTS } from 'vs/editor/common/config/editorOptions';
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { openNewQuery } from 'sql/workbench/contrib/query/browser/queryActions';
 import { RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
-import { formatDocumentWithSelectedProvider, FormattingMode } from 'vs/editor/contrib/format/format';
 import { Progress } from 'vs/platform/progress/common/progress';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { Action, Separator } from 'vs/base/common/actions';
@@ -37,8 +36,9 @@ import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ExecutionPlanComparisonInput } from 'sql/workbench/contrib/executionPlan/browser/compareExecutionPlanInput';
 import { ExecutionPlanFileView } from 'sql/workbench/contrib/executionPlan/browser/executionPlanFileView';
 import { QueryResultsView } from 'sql/workbench/contrib/query/browser/queryResultsView';
+import { formatDocumentWithSelectedProvider, FormattingMode } from 'vs/editor/contrib/format/browser/format';
 
-export class ExecutionPlanView implements ISashLayoutProvider {
+export class ExecutionPlanView implements IHorizontalSashLayoutProvider {
 
 	// Underlying execution plan displayed in the view
 	private _model?: azdata.executionPlan.ExecutionPlanGraph;
@@ -283,7 +283,7 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 	}
 
 	public async openGraphFile() {
-		const input = this._untitledEditorService.create({ mode: this.model.graphFile.graphFileType, initialValue: this.model.graphFile.graphFileContent });
+		const input = this._untitledEditorService.create({ languageId: this.model.graphFile.graphFileType, initialValue: this.model.graphFile.graphFileContent });
 		await input.resolve();
 		await this._instantiationService.invokeFunction(formatDocumentWithSelectedProvider, input.textEditorModel, FormattingMode.Explicit, Progress.None, CancellationToken.None);
 		input.setDirty(false);

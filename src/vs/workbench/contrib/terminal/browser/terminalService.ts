@@ -165,7 +165,6 @@ export class TerminalService implements ITerminalService {
 		@ICommandService private readonly _commandService: ICommandService
 	) {
 		this._configHelper = this._instantiationService.createInstance(TerminalConfigHelper);
-				};
 		// the below avoids having to poll routinely.
 		// we update detected profiles when an instance is created so that,
 		// for example, we detect if you've installed a pwsh
@@ -219,10 +218,10 @@ export class TerminalService implements ITerminalService {
 		const quickPick = this._instantiationService.createInstance(TerminalProfileQuickpick);
 		const result = await quickPick.showAndGetResult(type);
 		if (!result) {
-			return;
+			return undefined;
 		}
 		if (typeof result === 'string') {
-			return;
+			return undefined;
 		}
 		let keyMods: IKeyMods | undefined = result.keyMods;
 		if (type === 'createInstance') {
@@ -235,7 +234,7 @@ export class TerminalService implements ITerminalService {
 					color: result.config.options?.color,
 					location: !!(keyMods?.alt && activeInstance) ? { splitActiveTerminal: true } : this.defaultLocation
 				});
-				return;
+				return undefined;
 			} else if (result.config && 'profileName' in result.config) {
 				if (keyMods?.alt && activeInstance) {
 					// create split, only valid if there's an active instance
@@ -938,7 +937,7 @@ export class TerminalService implements ITerminalService {
 			}
 		}
 
-		const config = options?.config || this._terminalProfileService.availableProfiles?.find(p => p.profileName === this._terminalProfileService.getDefaultProfileName());
+		const config: any = options?.config || this._terminalProfileService.availableProfiles?.find(p => p.profileName === this._terminalProfileService.getDefaultProfileName());
 		const shellLaunchConfig = config && 'extensionIdentifier' in config ? {} : this._terminalInstanceService.convertProfileToShellLaunchConfig(config || {});
 
 		// Get the contributed profile if it was provided
@@ -1095,10 +1094,10 @@ export class TerminalService implements ITerminalService {
 		// virtual workspaces
 		if (typeof shellLaunchConfig.cwd !== 'string' && shellLaunchConfig.cwd?.scheme === Schemas.file) {
 			if (VirtualWorkspaceContext.getValue(this._contextKeyService)) {
-				shellLaunchConfig.initialText = formatMessageForTerminal(nls.localize('localTerminalVirtualWorkspace', "âš  : This shell is open to a {0}local{1} folder, NOT to the virtual folder", '\x1b[3m', '\x1b[23m'), true);
+				shellLaunchConfig.initialText = formatMessageForTerminal(nls.localize('localTerminalVirtualWorkspace', "⚠ : This shell is open to a {0}local{1} folder, NOT to the virtual folder", '\x1b[3m', '\x1b[23m'), true);
 				shellLaunchConfig.type = 'Local';
 			} else if (this._remoteAgentService.getConnection()) {
-				shellLaunchConfig.initialText = formatMessageForTerminal(nls.localize('localTerminalRemote', "âš  : This shell is running on your {0}local{1} machine, NOT on the connected remote machine", '\x1b[3m', '\x1b[23m'), true);
+				shellLaunchConfig.initialText = formatMessageForTerminal(nls.localize('localTerminalRemote', "⚠ : This shell is running on your {0}local{1} machine, NOT on the connected remote machine", '\x1b[3m', '\x1b[23m'), true);
 				shellLaunchConfig.type = 'Local';
 			}
 		}

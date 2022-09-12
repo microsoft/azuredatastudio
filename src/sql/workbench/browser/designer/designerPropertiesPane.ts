@@ -8,7 +8,7 @@ import { CreateComponentsFunc, DesignerUIComponent, SetComponentValueFunc } from
 import { DesignerViewModel, DesignerDataPropertyInfo, DesignerPropertyPath } from 'sql/workbench/browser/designer/interfaces';
 import * as DOM from 'vs/base/browser/dom';
 import { equals } from 'vs/base/common/objects';
-import { MarkdownRenderer } from 'vs/editor/browser/core/markdownRenderer';
+import { MarkdownRenderer } from 'vs/editor/contrib/markdownRenderer/browser/markdownRenderer';
 import { localize } from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 

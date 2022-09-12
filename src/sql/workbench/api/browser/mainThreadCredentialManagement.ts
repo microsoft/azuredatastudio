@@ -10,8 +10,7 @@ import {
 } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { ICredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import * as azdata from 'azdata';
-import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
-import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
+import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadCredentialManagement)
 export class MainThreadCredentialManagement extends Disposable implements MainThreadCredentialManagementShape {

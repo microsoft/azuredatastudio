@@ -468,7 +468,7 @@ class CodeActionAdapter {
 			return undefined; // code actions only!
 		}
 		if (!this._provider.resolveCodeAction) {
-			return; // this should not happen...
+			return undefined; // this should not happen...
 		}
 		const resolvedItem = (await this._provider.resolveCodeAction(item, token)) ?? item;
 		return resolvedItem?.edit
@@ -749,7 +749,7 @@ export class DocumentSemanticTokensAdapter {
 			if (DocumentSemanticTokensAdapter._isCorrectSemanticTokensEdits(v)) {
 				return v;
 			}
-			return new SemanticTokensEdits(v.edits.map(edit => new SemanticTokensEdit(edit.start, edit.deleteCount, edit.data ? new Uint32Array(edit.data) : edit.data)), v.resultId);
+			return new SemanticTokensEdits(v.edits.map(edit => new SemanticTokensEdit(edit.start, edit.deleteCount, <any>(edit.data ? new Uint32Array(edit.data) : edit.data))), v.resultId);
 		}
 		return v;
 	}

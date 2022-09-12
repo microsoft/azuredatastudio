@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { MenuRegistry, ICommandAction } from 'vs/platform/actions/common/actions';
+import { MenuRegistry } from 'vs/platform/actions/common/actions';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { ITaskRegistry, ITaskHandler, ITask, ITaskHandlerDescription, ITaskOptions } from 'sql/workbench/services/tasks/common/tasks';
 import * as types from 'vs/base/common/types';
@@ -15,6 +15,7 @@ import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IdGenerator } from 'vs/base/common/idGenerator';
 import { ThemeIcon } from 'vs/platform/theme/common/themeService';
+import { ICommandAction } from 'vs/platform/action/common/action';
 
 const ids = new IdGenerator('task-icon-');
 

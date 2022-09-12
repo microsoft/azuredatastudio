@@ -15,7 +15,7 @@ import * as  vsTreeExt from 'vs/workbench/api/common/extHostTreeViews';
 import { Emitter } from 'vs/base/common/event';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { ILogService } from 'vs/platform/log/common/log';
-import { TreeDataTransferDTO } from 'vs/workbench/api/common/shared/treeDataTransfer';
+import { DataTransferDTO } from 'vs/workbench/api/common/shared/dataTransfer';
 
 export class ExtHostModelViewTreeViews implements ExtHostModelViewTreeViewsShape {
 	private _proxy: MainThreadModelViewShape;
@@ -85,7 +85,11 @@ export class ExtHostModelViewTreeViews implements ExtHostModelViewTreeViewsShape
 		return Promise.resolve(undefined);
 	}
 
-	$onDrop(treeViewId: string, treeDataTransferDTO: TreeDataTransferDTO, newParentItemHandle: string): Promise<void> {
+	$handleDrop(destinationViewId: string, treeDataTransfer: DataTransferDTO, targetHandle: string | undefined, token: vscode.CancellationToken, operationUuid?: string, sourceViewId?: string, sourceTreeItemHandles?: string[]): Promise<void> {
+		return Promise.resolve(undefined);
+	}
+
+	$handleDrag(sourceViewId: string, sourceTreeItemHandles: string[], operationUuid: string, token: vscode.CancellationToken): Promise<DataTransferDTO | undefined> {
 		return Promise.resolve(undefined);
 	}
 

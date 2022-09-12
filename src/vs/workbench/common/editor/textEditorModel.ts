@@ -212,7 +212,7 @@ export class BaseTextEditorModel extends EditorModel implements ITextEditorModel
 		return this.textEditorModel.createSnapshot(true /* preserve BOM */);
 	}
 
-	override isResolved(): this is IResolvedTextEditorModel {
+	override isResolved() { // {{SQL CARBON EDIT}} - constraint causing build errors
 		return !!this.textEditorModelHandle;
 	}
 

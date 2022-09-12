@@ -770,7 +770,7 @@ export class CloseEditorsInOtherGroupsAction extends Action {
 		const groupToSkip = context ? this.editorGroupService.getGroup(context.groupId) : this.editorGroupService.activeGroup;
 		await Promise.all(this.editorGroupService.getGroups(GroupsOrder.MOST_RECENTLY_ACTIVE).map(async group => {
 			if (groupToSkip && group.id === groupToSkip.id) {
-				return;
+				return undefined;
 			}
 
 			return group.closeAllEditors({ excludeSticky: true });

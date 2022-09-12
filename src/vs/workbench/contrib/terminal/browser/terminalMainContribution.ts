@@ -46,7 +46,7 @@ export class TerminalMainContribution implements IWorkbenchContribution {
 				}
 				const resolvedResource = terminalEditorService.resolveResource(instance || resource);
 				const editor = terminalEditorService.getInputFromResource(resolvedResource) || { editor: resolvedResource };
-				return {
+				return <any>{
 					editor,
 					options: {
 						...options,

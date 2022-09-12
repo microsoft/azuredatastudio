@@ -33,11 +33,11 @@ export class TerminalProfileQuickpick {
 		const result = await this._createAndShow(type);
 		const defaultProfileKey = `${TerminalSettingPrefix.DefaultProfile}${platformKey}`;
 		if (!result) {
-			return;
+			return undefined;
 		}
 		if (type === 'setDefault') {
 			if ('command' in result.profile) {
-				return; // Should never happen
+				return undefined; // Should never happen
 			} else if ('id' in result.profile) {
 				// extension contributed profile
 				await this._configurationService.updateValue(defaultProfileKey, result.profile.title, ConfigurationTarget.USER);

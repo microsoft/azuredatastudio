@@ -44,7 +44,7 @@ import { Extensions as LanguageAssociationExtensions, ILanguageAssociationRegist
 import * as path from 'vs/base/common/path';
 
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
+import { IExistingUntitledTextEditorOptions, INewUntitledTextEditorWithAssociatedResourceOptions, IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 
 import { IEditorPane } from 'vs/workbench/common/editor';
@@ -301,11 +301,11 @@ export class NotebookService extends Disposable implements INotebookService {
 			}
 		}
 		if (isUntitled && path.isAbsolute(uri.fsPath)) {
-			const model = this._untitledEditorService.create({ associatedResource: uri, mode: languageMode, initialValue: initialStringContents });
+			const model = this._untitledEditorService.create(<INewUntitledTextEditorWithAssociatedResourceOptions>{ associatedResource: uri, mode: languageMode, initialValue: initialStringContents });
 			fileInput = this._instantiationService.createInstance(UntitledTextEditorInput, model);
 		} else {
 			if (isUntitled) {
-				const model = this._untitledEditorService.create({ untitledResource: uri, mode: languageMode, initialValue: initialStringContents });
+				const model = this._untitledEditorService.create(<IExistingUntitledTextEditorOptions>{ untitledResource: uri, mode: languageMode, initialValue: initialStringContents });
 				fileInput = this._instantiationService.createInstance(UntitledTextEditorInput, model);
 			} else {
 				let input: any = { forceFile: true, resource: uri, mode: languageMode };

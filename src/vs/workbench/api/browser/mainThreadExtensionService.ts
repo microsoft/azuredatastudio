@@ -203,7 +203,7 @@ class ExtensionHostProxy implements IExtensionHostProxy {
 	}
 	async getCanonicalURI(remoteAuthority: string, uri: URI): Promise<URI | null> {
 		const uriComponents = await this._actual.$getCanonicalURI(remoteAuthority, uri);
-		return (uriComponents ? URI.revive(uriComponents) : uriComponents);
+		return <any>(uriComponents ? URI.revive(uriComponents) : uriComponents);
 	}
 	startExtensionHost(extensionsDelta: IExtensionDescriptionDelta): Promise<void> {
 		return this._actual.$startExtensionHost(extensionsDelta);

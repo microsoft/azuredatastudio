@@ -1387,7 +1387,7 @@ abstract class DiffEditorWidgetStyle extends Disposable {
 	}
 
 	// {{SQL CARBON EDIT}} - add reverse parameter
-	public getEditorsDiffDecorations(lineChanges: editorCommon.ILineChange[], ignoreTrimWhitespace: boolean, renderIndicators: boolean, originalWhitespaces: IEditorWhitespace[], modifiedWhitespaces: IEditorWhitespace[], originalEditor: editorBrowser.ICodeEditor, modifiedEditor: editorBrowser.ICodeEditor, reverse?: boolean): IEditorsDiffDecorationsWithZones {
+	public getEditorsDiffDecorations(lineChanges: ILineChange[], ignoreTrimWhitespace: boolean, renderIndicators: boolean, originalWhitespaces: IEditorWhitespace[], modifiedWhitespaces: IEditorWhitespace[], originalEditor: editorBrowser.ICodeEditor, modifiedEditor: editorBrowser.ICodeEditor, reverse?: boolean): IEditorsDiffDecorationsWithZones {
 		// Get view zones
 		modifiedWhitespaces = modifiedWhitespaces.sort((a, b) => {
 			return a.afterLineNumber - b.afterLineNumber;
@@ -1405,8 +1405,8 @@ abstract class DiffEditorWidgetStyle extends Disposable {
 
 		// {{SQL CARBON EDIT}}
 		// Get decorations & overview ruler zones
-		const originalDecorations = this._getOriginalEditorDecorations(lineChanges, ignoreTrimWhitespace, renderIndicators);
-		const modifiedDecorations = this._getModifiedEditorDecorations(lineChanges, ignoreTrimWhitespace, renderIndicators);
+		let originalDecorations = this._getOriginalEditorDecorations(zones, lineChanges, ignoreTrimWhitespace, renderIndicators);
+		let modifiedDecorations = this._getModifiedEditorDecorations(zones, lineChanges, ignoreTrimWhitespace, renderIndicators);
 		// {{SQL CARBON EDIT}}
 		if (reverse) {
 			[originalDecorations, modifiedDecorations] = [modifiedDecorations, originalDecorations];

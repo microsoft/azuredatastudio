@@ -21,13 +21,13 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { ILogService } from 'vs/platform/log/common/log';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { ILanguageMagic } from 'sql/workbench/services/notebook/browser/notebookService';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { URI } from 'vs/base/common/uri';
 import { getUriPrefix, uriPrefixes } from 'sql/platform/connection/common/utils';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { FutureInternal, notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 import { tryMatchCellMagic } from 'sql/workbench/services/notebook/browser/utils';
 import { notebookMultipleRequestsError } from 'sql/workbench/common/constants';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 
 export const sqlKernelError: string = localize("sqlKernelError", "SQL kernel error");
 export const MAX_ROWS = 5000;

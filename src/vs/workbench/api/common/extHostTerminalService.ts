@@ -312,7 +312,7 @@ export class ExtHostPseudoterminal implements ITerminalChildProcess {
 		// Attach the listeners
 		this._pty.onDidWrite(e => this._onProcessData.fire(e));
 		this._pty.onDidClose?.((e: number | void = undefined) => {
-			this._onProcessExit.fire(e === void 0 ? undefined : e);
+			this._onProcessExit.fire(e === void 0 ? undefined : <any>e);
 		});
 		this._pty.onDidOverrideDimensions?.(e => {
 			if (e) {
@@ -668,7 +668,7 @@ export abstract class BaseExtHostTerminalService extends Disposable implements I
 			return;
 		}
 		if (profile && !('options' in profile)) {
-			profile = { options: profile };
+			profile = { options: <any>profile };
 		}
 
 		if (!profile || !('options' in profile)) {

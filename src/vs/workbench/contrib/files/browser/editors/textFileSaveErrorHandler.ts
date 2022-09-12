@@ -413,7 +413,7 @@ async function acceptOrRevertLocalChangesCommand(accessor: ServicesAccessor, res
 
 	const editorPane = editorService.activeEditorPane;
 	if (!editorPane) {
-		return;
+		return undefined;
 	}
 
 	const editor = editorPane.input;

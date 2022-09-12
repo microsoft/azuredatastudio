@@ -1255,7 +1255,7 @@ export class TaskSequentializer {
 	private _pending?: IPendingTask;
 	private _next?: ISequentialTask;
 
-	hasPending(taskId?: number): this is ITaskSequentializerWithPendingTask {
+	hasPending(taskId?: number) { // {{SQL CARBON EDIT}} - type constraint causing compiler errors
 		if (!this._pending) {
 			return false;
 		}

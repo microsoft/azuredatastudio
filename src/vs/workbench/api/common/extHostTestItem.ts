@@ -5,7 +5,7 @@
 import * as editorRange from 'vs/editor/common/core/range';
 import { createPrivateApiFor, getPrivateApiFor, IExtHostTestItemApi } from 'vs/workbench/api/common/extHostTestingPrivateApi';
 import { TestId, TestIdPathParts } from 'vs/workbench/contrib/testing/common/testId';
-import { createTestItemChildren, ExtHostTestItemEvent, ITestChildrenLike, ITestItemApi, ITestItemChildren, TestItemCollection, TestItemEventOp } from 'vs/workbench/contrib/testing/common/testItemCollection';
+import { createTestItemChildren, ExtHostTestItemEvent, ITestItemChildren, TestItemCollection, TestItemEventOp } from 'vs/workbench/contrib/testing/common/testItemCollection';
 import { denamespaceTestTag, ITestItem, ITestItemContext } from 'vs/workbench/contrib/testing/common/testTypes';
 import type * as vscode from 'vscode';
 import * as Convert from 'vs/workbench/api/common/extHostTypeConverters';
@@ -166,8 +166,8 @@ export class ExtHostTestItemCollection extends TestItemCollection<TestItemImpl> 
 	constructor(controllerId: string, controllerLabel: string) {
 		super({
 			controllerId,
-			getApiFor: getPrivateApiFor as (impl: TestItemImpl) => ITestItemApi<TestItemImpl>,
-			getChildren: (item) => item.children as ITestChildrenLike<TestItemImpl>,
+			getApiFor: <any>getPrivateApiFor, // as (impl: TestItemImpl) => ITestItemApi<TestItemImpl>,
+			getChildren: (item) => <any>item.children, // as ITestChildrenLike<TestItemImpl>,
 			root: new TestItemRootImpl(controllerId, controllerLabel),
 			toITestItem: Convert.TestItem.from,
 		});

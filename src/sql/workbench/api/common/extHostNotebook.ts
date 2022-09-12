@@ -273,7 +273,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		rendererScripts?: vscode.NotebookRendererScript[]
 	): vscode.NotebookController {
 		let languagesHandler = (languages: string[]) => this._proxy.$updateKernelLanguages(viewType, viewType, languages);
-		let controller = new ADSNotebookController(extension, id, viewType, label, this._extHostNotebookDocumentsAndEditors, languagesHandler, getDocHandler, execHandler, extension.enableProposedApi ? rendererScripts : undefined);
+		let controller = new ADSNotebookController(extension, id, viewType, label, this._extHostNotebookDocumentsAndEditors, languagesHandler, getDocHandler, execHandler, extension.enabledApiProposals ? rendererScripts : undefined);
 		let newKernel: azdata.nb.IStandardKernel = {
 			name: viewType,
 			displayName: controller.label,

@@ -14,8 +14,8 @@ import { SqlMainContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { MainThreadAccountManagement } from 'sql/workbench/api/browser/mainThreadAccountManagement';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import { TestRPCProtocol } from 'vs/workbench/test/browser/api/testRPCProtocol';
 import { AzureResource } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { TestRPCProtocol } from 'vs/workbench/api/test/common/testRPCProtocol';
 
 const IRPCProtocol = createDecorator<IRPCProtocol>('rpcProtocol');
 

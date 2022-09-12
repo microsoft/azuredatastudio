@@ -294,12 +294,12 @@ export class NotebookEditor extends EditorPane implements IEditorPaneWithSelecti
 					id: 'workbench.notebook.action.openInTextEditor', label: localize('notebookOpenInTextEditor', "Open in Text Editor"), run: async () => {
 						const activeEditorPane = this._editorService.activeEditorPane;
 						if (!activeEditorPane) {
-							return;
+							return undefined;
 						}
 
 						const activeEditorResource = EditorResourceAccessor.getCanonicalUri(activeEditorPane.input);
 						if (!activeEditorResource) {
-							return;
+							return undefined;
 						}
 
 						if (activeEditorResource.toString() === input.resource?.toString()) {
@@ -313,7 +313,7 @@ export class NotebookEditor extends EditorPane implements IEditorPaneWithSelecti
 							});
 						}
 
-						return;
+						return undefined;
 					}
 				})
 			]);

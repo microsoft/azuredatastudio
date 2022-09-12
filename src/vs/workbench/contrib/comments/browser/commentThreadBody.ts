@@ -136,7 +136,7 @@ export class CommentThreadBody<T extends IRange | ICellRange = IRange> extends D
 			};
 		}
 
-		return;
+		return undefined;
 	}
 
 	updateCommentThread(commentThread: languages.CommentThread<T>) {

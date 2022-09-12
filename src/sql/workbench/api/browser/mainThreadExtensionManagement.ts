@@ -4,8 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { SqlMainContext, MainThreadExtensionManagementShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
-import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IExtensionManagementService, ILocalExtension } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { URI } from 'vs/base/common/uri';
@@ -13,6 +11,7 @@ import { IConfigurationService, ConfigurationTarget } from 'vs/platform/configur
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { localize } from 'vs/nls';
 import { ILogService } from 'vs/platform/log/common/log';
+import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadExtensionManagement)
 export class MainThreadExtensionManagement extends Disposable implements MainThreadExtensionManagementShape {

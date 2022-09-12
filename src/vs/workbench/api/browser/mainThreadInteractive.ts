@@ -5,8 +5,8 @@
 
 import { DisposableStore } from 'vs/base/common/lifecycle';
 import { PLAINTEXT_LANGUAGE_ID } from 'vs/editor/common/languages/modesRegistry';
-import { ExtHostContext, ExtHostInteractiveShape, MainContext, MainThreadInteractiveShape } from 'vs/workbench/api/common/extHost.protocol';
-import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
+import { ExtHostContext, ExtHostInteractiveShape, MainThreadInteractiveShape } from 'vs/workbench/api/common/extHost.protocol';
+import { IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
 import { IInteractiveDocumentService } from 'vs/workbench/contrib/interactive/browser/interactiveDocumentService';
 
 // @extHostNamedCustomer(MainContext.MainThreadInteractive)

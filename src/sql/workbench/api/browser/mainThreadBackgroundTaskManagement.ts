@@ -5,13 +5,11 @@
 
 import { ITaskService } from 'sql/workbench/services/tasks/common/tasksService';
 import { MainThreadBackgroundTaskManagementShape, SqlMainContext, ExtHostBackgroundTaskManagementShape, SqlExtHostContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
-
-import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
-import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { Disposable } from 'vs/base/common/lifecycle';
-
+import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
 
 import * as azdata from 'azdata';
+
 
 export enum TaskStatus {
 	NotStarted = 0,

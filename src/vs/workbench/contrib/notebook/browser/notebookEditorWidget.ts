@@ -2399,7 +2399,7 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditorD
 
 	private async _warmupAll(includeOutput: boolean) {
 		if (!this.hasModel() || !this.viewModel) {
-			return;
+			return undefined;
 		}
 
 		const cells = this.viewModel.viewCells;
@@ -2407,7 +2407,7 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditorD
 
 		for (let i = 0; i < cells.length; i++) {
 			if (cells[i].cellKind === CellKind.Markup && !this._webview!.markupPreviewMapping.has(cells[i].id)) {
-				requests.push(this.createMarkupPreview(cells[i]));
+				requests.push(this.createMarkupPreview(<any>cells[i]));
 			}
 		}
 

@@ -2,15 +2,15 @@
 
 import { mixin } from 'vs/base/common/objects';
 import * as nls from 'vs/nls';
-import { ICheckboxStyles } from 'vs/base/browser/ui/checkbox/checkbox';
 import { Emitter, Event as vsEvent } from 'vs/base/common/event';
 import * as strings from 'vs/base/common/strings';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { range } from 'vs/base/common/arrays';
 import * as dict from 'vs/base/common/collections';
+import { IToggleStyles } from 'vs/base/browser/ui/toggle/toggle';
 
-export interface ICheckboxSelectColumnOptions extends Slick.PluginOptions, ICheckboxStyles {
+export interface ICheckboxSelectColumnOptions extends Slick.PluginOptions, IToggleStyles {
 	columnId?: string;
 	cssClass?: string;
 	headerCssClass?: string;

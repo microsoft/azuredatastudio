@@ -161,12 +161,12 @@ export function createExtHostQuickOpen(mainContext: IMainContext, workspace: IEx
 
 		async $validateInput(input: string): Promise<string | { content: string; severity: Severity } | null | undefined> {
 			if (!this._validateInput) {
-				return;
+				return undefined;
 			}
 
 			const result = await this._validateInput(input);
 			if (!result || typeof result === 'string') {
-				return result;
+				return <any>result;
 			}
 
 			let severity: Severity;

@@ -301,7 +301,7 @@ export class InteractiveEditor extends EditorPane {
 				};
 			}
 		}
-		return;
+		return undefined;
 	}
 
 	override async setInput(input: InteractiveEditorInput, options: InteractiveEditorOptions | undefined, context: IEditorOpenContext, token: CancellationToken): Promise<void> {

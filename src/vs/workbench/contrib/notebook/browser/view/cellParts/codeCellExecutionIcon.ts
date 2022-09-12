@@ -86,6 +86,6 @@ export class CollapsedCodeCellExecutionIcon extends Disposable {
 			};
 		}
 
-		return;
+		return undefined; // {{SQL CARBON EDIT}} - not all paths return a value
 	}
 }

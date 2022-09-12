@@ -353,7 +353,7 @@ export class ExtHostEditorTabs implements IExtHostEditorTabs {
 				}
 			}
 		}
-		return;
+		return undefined;
 	}
 
 	private _findExtHostTabGroupFromApi(apiTabGroup: vscode.TabGroup): ExtHostEditorTabGroup | undefined {

@@ -5,9 +5,7 @@
 
 import * as azdata from 'azdata';
 import { SqlExtHostContext, SqlMainContext, ExtHostNotebookShape, MainThreadNotebookShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { Event, Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 
@@ -19,6 +17,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import type { FutureInternal } from 'sql/workbench/services/notebook/browser/interfaces';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { INotebookProviderRegistry, NotebookProviderRegistryId } from 'sql/workbench/services/notebook/common/notebookRegistry';
+import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
 
 const notebookRegistry = Registry.as<INotebookProviderRegistry>(NotebookProviderRegistryId);
 

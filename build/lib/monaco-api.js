@@ -559,13 +559,6 @@ class TypeScriptLanguageServiceHost {
         this._files = files;
         this._compilerOptions = compilerOptions;
     }
-    // {{SQL CARBON EDIT}} - provide missing methods
-    readFile() {
-        return undefined;
-    }
-    fileExists() {
-        return false;
-    }
     // --- language service host ---------------
     getCompilationSettings() {
         return this._compilerOptions;

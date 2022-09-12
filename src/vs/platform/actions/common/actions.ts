@@ -572,4 +572,21 @@ export function registerAction2(ctor: { new(): Action2 }): IDisposable {
 
 	return disposables;
 }
+
+// {{SQL CARBON EDIT}} - add this class back since it was removed upstream
+export class ExecuteCommandAction extends Action {
+
+	constructor(
+		id: string,
+		label: string,
+		@ICommandService private readonly _commandService: ICommandService) {
+
+		super(id, label);
+	}
+
+	override run(...args: any[]): Promise<void> {
+		return this._commandService.executeCommand(this.id, ...args);
+	}
+}
+
 //#endregion

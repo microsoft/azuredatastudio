@@ -120,13 +120,13 @@ export class SuggestInlineCompletions implements InlineCompletionsProvider<Inlin
 	async provideInlineCompletions(model: ITextModel, position: Position, context: InlineCompletionContext, token: CancellationToken): Promise<InlineCompletionResults | undefined> {
 
 		if (context.selectedSuggestionInfo) {
-			return;
+			return undefined;
 		}
 
 		const config = this._getEditorOption(EditorOption.quickSuggestions, model);
 		if (QuickSuggestionsOptions.isAllOff(config)) {
 			// quick suggest is off (for this model/language)
-			return;
+			return undefined;
 		}
 
 		model.tokenization.tokenizeIfCheap(position.lineNumber);
@@ -148,7 +148,7 @@ export class SuggestInlineCompletions implements InlineCompletionsProvider<Inlin
 
 		if (!wordInfo?.word && !triggerCharacterInfo) {
 			// not at word, not a trigger character
-			return;
+			return undefined;
 		}
 
 		// ensure that we have word information and that we are at the end of a word
@@ -157,7 +157,7 @@ export class SuggestInlineCompletions implements InlineCompletionsProvider<Inlin
 			wordInfo = model.getWordUntilPosition(position);
 		}
 		if (wordInfo.endColumn !== position.column) {
-			return;
+			return undefined;
 		}
 
 		let result: InlineCompletionResults;

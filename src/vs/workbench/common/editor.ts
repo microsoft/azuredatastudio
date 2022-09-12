@@ -1333,11 +1333,11 @@ export async function pathsToEditors(paths: IPathData[] | undefined, fileService
 		}
 
 		if (!exists && path.openOnlyIfExists) {
-			return undefined; // {{SQL CARBON EDIT}} @anthonydresser strict-null-checks
+			return undefined; // {{SQL CARBON EDIT}} strict-null-checks
 		}
 
 		if (type === FileType.Directory) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} strict-null-checks
 		}
 
 		const options: IEditorOptions = {

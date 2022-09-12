@@ -11,10 +11,9 @@ import {
 	SqlExtHostContext,
 	SqlMainContext
 } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
-import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { IAzureBlobService } from 'sql/platform/azureBlob/common/azureBlobService';
 import { AzureBlobService } from 'sql/workbench/services/azureBlob/browser/azureBlobService';
+import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadAzureBlob)
 export class MainThreadAzureBlob extends Disposable implements MainThreadAzureBlobShape {

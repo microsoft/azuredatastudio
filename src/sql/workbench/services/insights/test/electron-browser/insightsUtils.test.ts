@@ -12,7 +12,7 @@ import * as path from 'vs/base/common/path';
 import * as fs from 'fs';
 
 import { Workspace, toWorkspaceFolder, IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
-import { ConfigurationResolverService, BaseConfigurationResolverService } from 'vs/workbench/services/configurationResolver/browser/configurationResolverService';
+import { ConfigurationResolverService } from 'vs/workbench/services/configurationResolver/browser/configurationResolverService';
 import { TestFileService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { TestContextService } from 'vs/workbench/test/common/workbenchTestServices';
 import { URI } from 'vs/base/common/uri';
@@ -24,12 +24,13 @@ import { getRandomTestPath } from 'vs/base/test/node/testUtils';
 import { IProcessEnvironment } from 'vs/base/common/platform';
 import { NativeWorkbenchEnvironmentService } from 'vs/workbench/services/environment/electron-sandbox/environmentService';
 import { isEqual } from 'vs/base/common/resources';
-import { TestWorkbenchConfiguration } from 'vs/workbench/test/electron-browser/workbenchTestServices';
+import { BaseConfigurationResolverService } from 'vs/workbench/services/configurationResolver/browser/baseConfigurationResolverService';
+import { TestNativeWindowConfiguration } from 'vs/workbench/test/electron-browser/workbenchTestServices';
 
 class MockWorkbenchEnvironmentService extends NativeWorkbenchEnvironmentService {
 
 	constructor(public userEnv: IProcessEnvironment) {
-		super({ ...TestWorkbenchConfiguration, userEnv }, undefined);
+		super({ ...TestNativeWindowConfiguration, userEnv }, undefined);
 	}
 }
 
@@ -59,6 +60,7 @@ suite('Insights Utils tests', function () {
 			undefined,
 			undefined,
 			new TestContextService(),
+			undefined,
 			undefined,
 			undefined,
 			undefined);
@@ -94,6 +96,7 @@ suite('Insights Utils tests', function () {
 			contextService,
 			undefined,
 			undefined,
+			undefined,
 			undefined);
 
 		const fileService = new class extends TestFileService {
@@ -125,6 +128,7 @@ suite('Insights Utils tests', function () {
 			undefined,
 			undefined,
 			contextService,
+			undefined,
 			undefined,
 			undefined,
 			undefined);
@@ -160,6 +164,7 @@ suite('Insights Utils tests', function () {
 			undefined,
 			undefined,
 			contextService,
+			undefined,
 			undefined,
 			undefined,
 			undefined);
@@ -198,6 +203,7 @@ suite('Insights Utils tests', function () {
 			undefined,
 			undefined,
 			undefined,
+			undefined,
 			undefined);
 
 		const fileService = new class extends TestFileService {
@@ -229,6 +235,7 @@ suite('Insights Utils tests', function () {
 			undefined,
 			undefined,
 			undefined,
+			undefined,
 			undefined);
 
 		const fileService = new class extends TestFileService {
@@ -249,6 +256,7 @@ suite('Insights Utils tests', function () {
 	test('resolveQueryFilePath throws if invalid param var specified', async () => {
 		const invalidPath = path.join('${INVALID}', 'test.sql');
 		const configurationResolverService = new ConfigurationResolverService(
+			undefined,
 			undefined,
 			undefined,
 			undefined,

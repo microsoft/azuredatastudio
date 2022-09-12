@@ -26,6 +26,8 @@ import { ExtensionIdentifier } from 'vs/platform/extensions/common/extensions';
 import { ILineChange } from 'vs/editor/common/diff/diffComputer';
 import { IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
 import { IEditorControl } from 'vs/workbench/common/editor';
+import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
+import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 
 export interface IMainThreadEditorLocator {
 	getEditor(id: string): MainThreadTextEditor | undefined;

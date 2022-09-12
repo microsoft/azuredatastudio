@@ -13,7 +13,7 @@ import { EventEmitter } from 'events';
 import * as iconv from '@vscode/iconv-lite-umd';
 import * as filetype from 'file-type';
 import { assign, groupBy, IDisposable, toDisposable, dispose, mkdirp, readBytes, detectUnicodeEncoding, Encoding, onceEvent, splitInChunks, Limiter, Versions, isWindows } from './util';
-import { CancellationToken, Progress, Uri } from 'vscode';
+import { CancellationToken, ConfigurationChangeEvent, Uri, workspace } from 'vscode'; // {{SQL CARBON EDIT}} remove Progress
 import { detectEncoding } from './encoding';
 import { Ref, RefType, Branch, Remote, ForcePushMode, GitErrorCodes, LogOptions, Change, Status, CommitOptions, BranchQuery, ICloneOptions } from './api/git'; // {{SQL CARBON EDIT}} add ICloneOptions
 import * as byline from 'byline';

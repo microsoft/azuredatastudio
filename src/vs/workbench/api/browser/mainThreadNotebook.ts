@@ -196,7 +196,7 @@ CommandsRegistry.registerCommand('_executeDataToNotebook', async (accessor, ...a
 	const notebookService = accessor.get(INotebookService);
 	const info = await notebookService.withNotebookDataProvider(notebookType);
 	if (!(info instanceof SimpleNotebookProviderInfo)) {
-		return;
+		return undefined;
 	}
 
 	const dto = await info.serializer.dataToNotebook(bytes);
@@ -212,7 +212,7 @@ CommandsRegistry.registerCommand('_executeNotebookToData', async (accessor, ...a
 	const notebookService = accessor.get(INotebookService);
 	const info = await notebookService.withNotebookDataProvider(notebookType);
 	if (!(info instanceof SimpleNotebookProviderInfo)) {
-		return;
+		return undefined;
 	}
 
 	const data = NotebookDto.fromNotebookDataDto(dto.value);

@@ -77,12 +77,12 @@ class CellStatusBarLanguageDetectionProvider implements INotebookCellStatusBarIt
 	async provideCellStatusBarItems(uri: URI, index: number, token: CancellationToken): Promise<INotebookCellStatusBarItemList | undefined> {
 		const doc = this._notebookService.getNotebookTextModel(uri);
 		const cell = doc?.cells[index];
-		if (!cell) { return; }
+		if (!cell) { return undefined; }
 
 		const enablementConfig = this._configurationService.getValue('workbench.editor.languageDetectionHints');
 		const enabled = enablementConfig === 'always' || enablementConfig === 'notebookEditors';
 		if (!enabled) {
-			return;
+			return undefined;
 		}
 
 		const currentLanguageId = cell.cellKind === CellKind.Markup ?

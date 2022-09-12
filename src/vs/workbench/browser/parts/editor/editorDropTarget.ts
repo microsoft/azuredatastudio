@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/editordroptarget';
-import { LocalSelectionTransfer, DraggedEditorIdentifier, ResourcesDropHandler, DraggedEditorGroupIdentifier, DragAndDropObserver, containsDragType, CodeDataTransfers, extractFilesDropData } from 'vs/workbench/browser/dnd';
 import { DataTransfers } from 'vs/base/browser/dnd';
 import { addDisposableListener, DragAndDropObserver, EventHelper, EventType, isAncestor } from 'vs/base/browser/dom';
 import { renderFormattedText } from 'vs/base/browser/formattedTextRenderer';
@@ -19,7 +18,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { activeContrastBorder } from 'vs/platform/theme/common/colorRegistry';
 import { IThemeService, Themable } from 'vs/platform/theme/common/themeService';
 import { isTemporaryWorkspace, IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
-import { CodeDataTransfers, containsDragType, DraggedEditorGroupIdentifier, DraggedEditorIdentifier, DraggedTreeItemsIdentifier, Extensions as DragAndDropExtensions, extractTreeDropData, IDragAndDropContributionRegistry, LocalSelectionTransfer, ResourcesDropHandler } from 'vs/workbench/browser/dnd';
+import { CodeDataTransfers, containsDragType, DraggedEditorGroupIdentifier, DraggedEditorIdentifier, DraggedTreeItemsIdentifier, Extensions as DragAndDropExtensions, extractEditorsDropData, extractTreeDropData, IDragAndDropContributionRegistry, LocalSelectionTransfer, ResourcesDropHandler } from 'vs/workbench/browser/dnd';
 import { fillActiveEditorViewState, IEditorGroupsAccessor, IEditorGroupView } from 'vs/workbench/browser/parts/editor/editor';
 import { EditorInputCapabilities, IEditorIdentifier, IUntypedEditorInput } from 'vs/workbench/common/editor';
 import { EDITOR_DRAG_AND_DROP_BACKGROUND, EDITOR_DROP_INTO_PROMPT_BACKGROUND, EDITOR_DROP_INTO_PROMPT_BORDER, EDITOR_DROP_INTO_PROMPT_FOREGROUND } from 'vs/workbench/common/theme';
@@ -29,8 +28,8 @@ import { ITreeViewsService } from 'vs/workbench/services/views/browser/treeViews
 
 // {{SQL CARBON EDIT}}
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
-import { SnippetController2 } from 'vs/editor/contrib/snippet/snippetController2';
 import { supportsNodeNameDrop } from 'sql/workbench/services/objectExplorer/browser/dragAndDropController';
+import { SnippetController2 } from 'vs/editor/contrib/snippet/browser/snippetController2';
 
 interface IDropOperation {
 	splitDirection?: GroupDirection;
@@ -367,8 +366,11 @@ class DropOverlay extends Themable {
 			const dropHandler = this.instantiationService.createInstance(ResourcesDropHandler, { allowWorkspaceOpen: !isWeb || isTemporaryWorkspace(this.contextService.getWorkspace()) });
 
 			// {{SQL CARBON EDIT}}
-			const untitledOrFileResources = extractEditorsDropData(event);
-			if (!untitledOrFileResources.length) {
+			let untitledOrFileResources: any = undefined;
+			await this.instantiationService.invokeFunction(accessor => {
+				untitledOrFileResources = extractEditorsDropData(accessor, event);
+			});
+			if (untitledOrFileResources && !untitledOrFileResources.length) {
 				return;
 			}
 

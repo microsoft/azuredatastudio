@@ -21,13 +21,13 @@ import { InstantiationService } from 'vs/platform/instantiation/common/instantia
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { Schemas } from 'vs/base/common/network';
 import { URI } from 'vs/base/common/uri';
-import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { ICommandService, NullCommandService } from 'vs/platform/commands/common/commands';
 import { ControlType, IChartOption } from 'sql/workbench/contrib/charts/browser/chartOptions';
 import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
 import { ICellMetadata } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IModelContentChangedEvent } from 'vs/editor/common/textModelEvents';
 
 let instantiationService: IInstantiationService;
 

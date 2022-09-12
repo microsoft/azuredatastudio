@@ -56,7 +56,7 @@ import { SideBySideEditorInput } from 'vs/workbench/common/editor/sideBySideEdit
 import { AutomaticLanguageDetectionLikelyWrongClassification, AutomaticLanguageDetectionLikelyWrongId, IAutomaticLanguageDetectionLikelyWrongData, ILanguageDetectionService } from 'vs/workbench/services/languageDetection/common/languageDetectionWorkerService';
 
 // {{SQL CARBON EDIT}}
-import { setMode } from 'sql/workbench/browser/parts/editor/editorStatusModeSelect'; // {{SQL CARBON EDIT}}
+import { setLanguageId } from 'sql/workbench/browser/parts/editor/editorStatusModeSelect'; // {{SQL CARBON EDIT}}
 
 class SideBySideEditorEncodingSupport implements IEncodingSupport {
 	constructor(private primary: IEncodingSupport, private secondary: IEncodingSupport) { }
@@ -1241,7 +1241,7 @@ export class ChangeLanguageAction extends Action {
 				// Change language
 				if (typeof languageSelection !== 'undefined') {
 					// modeSupport.setMode(languageSelection.languageId);
-					this.instantiationService.invokeFunction(setMode, modeSupport, activeEditor, languageSelection.languageId); // {{SQL CARBON EDIT}} @anthonydresser use custom setMode
+					this.instantiationService.invokeFunction(setLanguageId, languageSupport, activeEditor, languageSelection.languageId); // {{SQL CARBON EDIT}} @anthonydresser use custom setMode
 
 					if (resource?.scheme === Schemas.untitled) {
 						type SetUntitledDocumentLanguageEvent = { to: string; from: string; modelPreference: string };

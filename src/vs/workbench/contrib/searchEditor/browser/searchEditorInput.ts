@@ -132,7 +132,7 @@ export class SearchEditorInput extends EditorInput {
 	}
 
 	override async save(group: GroupIdentifier, options?: ITextFileSaveOptions): Promise<EditorInput | undefined> {
-		if (((await this.getModels()).resultsModel).isDisposed()) { return; }
+		if (((await this.resolveModels()).resultsModel).isDisposed()) { return undefined; }
 
 		if (this.backingUri) {
 			await this.textFileService.write(this.backingUri, await this.serializeForDisk(), options);

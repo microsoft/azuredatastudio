@@ -7,7 +7,7 @@ import 'vs/css!./media/typeHierarchy';
 import { Dimension } from 'vs/base/browser/dom';
 import { Orientation, Sizing, SplitView } from 'vs/base/browser/ui/splitview/splitview';
 import { IAsyncDataTreeViewState } from 'vs/base/browser/ui/tree/asyncDataTree';
-import { ITreeNode, TreeMouseEventTarget } from 'vs/base/browser/ui/tree/tree';
+import { TreeMouseEventTarget } from 'vs/base/browser/ui/tree/tree';
 import { IAction } from 'vs/base/common/actions';
 import { Color } from 'vs/base/common/color';
 import { Event } from 'vs/base/common/event';
@@ -363,7 +363,7 @@ export class TypeHierarchyTreePeekWidget extends peekView.PeekViewWidget {
 
 		await this._tree.setInput(model, viewState);
 
-		const root = <ITreeNode<typeHTree.Type>>this._tree.getNode(model).children[0];
+		const root = <any>this._tree.getNode(model).children[0];
 		await this._tree.expand(root.element);
 
 		if (root.children.length === 0) {

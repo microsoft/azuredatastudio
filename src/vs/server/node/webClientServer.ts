@@ -51,7 +51,7 @@ export const enum CacheControl {
 /**
  * Serve a file at a given path or 404 if the file is missing.
  */
-export async function serveFile(filePath: string, cacheControl: CacheControl, logService: ILogService, req: http.IncomingMessage, res: http.ServerResponse, responseHeaders: Record<string, string>): Promise<void> {
+export async function serveFile(filePath: string, cacheControl: CacheControl, logService: ILogService, req: http.IncomingMessage, res: http.ServerResponse, responseHeaders: Record<string, string>): Promise<any> {
 	try {
 		const stat = await fsp.stat(filePath); // throws an error if file doesn't exist
 		if (cacheControl === CacheControl.ETAG) {
@@ -169,7 +169,7 @@ export class WebClientServer {
 	/**
 	 * Handle extension resources
 	 */
-	private async _handleWebExtensionResource(req: http.IncomingMessage, res: http.ServerResponse, parsedUrl: url.UrlWithParsedQuery): Promise<void> {
+	private async _handleWebExtensionResource(req: http.IncomingMessage, res: http.ServerResponse, parsedUrl: url.UrlWithParsedQuery): Promise<any> {
 		if (!this._webExtensionResourceUrlTemplate) {
 			return serveError(req, res, 500, 'No extension gallery service configured.');
 		}
@@ -235,7 +235,7 @@ export class WebClientServer {
 	/**
 	 * Handle HTTP requests for /
 	 */
-	private async _handleRoot(req: http.IncomingMessage, res: http.ServerResponse, parsedUrl: url.UrlWithParsedQuery): Promise<void> {
+	private async _handleRoot(req: http.IncomingMessage, res: http.ServerResponse, parsedUrl: url.UrlWithParsedQuery): Promise<any> {
 
 		const queryConnectionToken = parsedUrl.query[connectionTokenQueryName];
 		if (typeof queryConnectionToken === 'string') {
@@ -391,7 +391,7 @@ export class WebClientServer {
 	/**
 	 * Handle HTTP requests for /callback
 	 */
-	private async _handleCallback(res: http.ServerResponse): Promise<void> {
+	private async _handleCallback(res: http.ServerResponse): Promise<any> {
 		const filePath = FileAccess.asFileUri('vs/code/browser/workbench/callback.html', require).fsPath;
 		const data = (await fsp.readFile(filePath)).toString();
 		const cspDirectives = [

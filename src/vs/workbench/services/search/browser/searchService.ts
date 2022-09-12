@@ -111,7 +111,7 @@ export class LocalFileSearchWorkerClient extends Disposable implements ISearchRe
 				}));
 
 				const ignorePathCasing = this.uriIdentityService.extUri.ignorePathCasing(fq.folder);
-				const folderResults = await proxy.searchDirectory(handle, query, fq, queryId);
+				const folderResults = await proxy.searchDirectory(handle, query, fq, ignorePathCasing, queryId);
 				for (const folderResult of folderResults.results) {
 					results.push(reviveMatch(folderResult));
 				}
@@ -153,7 +153,7 @@ export class LocalFileSearchWorkerClient extends Disposable implements ISearchRe
 					return;
 				}
 				const caseSensitive = this.uriIdentityService.extUri.ignorePathCasing(fq.folder);
-				const folderResults = await proxy.listDirectory(handle, query, fq, queryId);
+				const folderResults = await proxy.listDirectory(handle, query, fq, caseSensitive, queryId);
 				for (const folderResult of folderResults.results) {
 					results.push({ resource: URI.joinPath(fq.folder, folderResult) });
 				}

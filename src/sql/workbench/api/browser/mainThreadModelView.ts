@@ -4,13 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { MainThreadModelViewShape, SqlMainContext, ExtHostModelViewShape, SqlExtHostContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
-import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { Disposable } from 'vs/base/common/lifecycle';
 
 
 import { IModelViewService } from 'sql/platform/modelComponents/browser/modelViewService';
 import { IItemConfig, IComponentShape, IModelView } from 'sql/platform/model/browser/modelViewService';
+import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
 
 
 @extHostNamedCustomer(SqlMainContext.MainThreadModelView)

@@ -26,7 +26,7 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { entries } from 'sql/base/common/collections';
 import { attachTabbedPanelStyler, attachModalDialogStyler } from 'sql/workbench/common/styler';
@@ -239,10 +239,10 @@ export class ConnectionDialogWidget extends Modal {
 
 		this._register(this._themeService.onDidColorThemeChange(e => this.updateTheme(e)));
 		this.updateTheme(this._themeService.getColorTheme());
-		this._panelSizeObserver = new ElementSizeObserver(this._panel.element, undefined, () => {
+		this._panelSizeObserver = this._register(new ElementSizeObserver(this._panel.element, undefined));
+		this._register(this._panelSizeObserver.onDidChange(() => {
 			this._panel.layout(new DOM.Dimension(this._panel.element.clientWidth, this._panel.element.clientHeight));
-		});
-		this._register(this._panelSizeObserver);
+		}));
 		this._panelSizeObserver.startObserving();
 	}
 

@@ -4,8 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
-import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 import { MainThreadModelViewDialogShape, SqlMainContext, ExtHostModelViewDialogShape, SqlExtHostContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
@@ -21,6 +19,7 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { IEditorPane } from 'vs/workbench/common/editor';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
+import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadModelViewDialog)
 export class MainThreadModelViewDialog extends Disposable implements MainThreadModelViewDialogShape {

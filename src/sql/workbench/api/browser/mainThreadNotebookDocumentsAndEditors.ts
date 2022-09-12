@@ -4,11 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { URI, UriComponents } from 'vs/base/common/uri';
 import { Event, Emitter } from 'vs/base/common/event';
-import { IExtHostContext, IUndoStopOptions } from 'vs/workbench/api/common/extHost.protocol';
+import { IUndoStopOptions } from 'vs/workbench/api/common/extHost.protocol';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Schemas } from 'vs/base/common/network';
@@ -27,6 +26,7 @@ import { localize } from 'vs/nls';
 import { IFileService } from 'vs/platform/files/common/files';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookEditor';
+import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();

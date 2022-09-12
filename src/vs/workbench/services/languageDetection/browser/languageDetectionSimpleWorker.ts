@@ -41,7 +41,7 @@ export class LanguageDetectionSimpleWorker extends EditorSimpleWorker {
 		const confidences: number[] = [];
 		const stopWatch = new StopWatch(true);
 		const documentTextSample = this.getTextForDetection(uri);
-		if (!documentTextSample) { return; }
+		if (!documentTextSample) { return undefined; }
 
 		const neuralResolver = async () => {
 			for await (const language of this.detectLanguagesImpl(documentTextSample)) {
@@ -82,7 +82,7 @@ export class LanguageDetectionSimpleWorker extends EditorSimpleWorker {
 
 	private getTextForDetection(uri: string): string | undefined {
 		const editorModel = this._getModel(uri);
-		if (!editorModel) { return; }
+		if (!editorModel) { return undefined; }
 
 		const end = editorModel.positionAt(10000);
 		const content = editorModel.getValueInRange({
@@ -96,7 +96,7 @@ export class LanguageDetectionSimpleWorker extends EditorSimpleWorker {
 
 	private async getRegexpModel(): Promise<RegexpModel | undefined> {
 		if (this._regexpLoadFailed) {
-			return;
+			return undefined;
 		}
 		if (this._regexpModel) {
 			return this._regexpModel;
@@ -108,13 +108,13 @@ export class LanguageDetectionSimpleWorker extends EditorSimpleWorker {
 		} catch (e) {
 			this._regexpLoadFailed = true;
 			// console.warn('error loading language detection model', e);
-			return;
+			return undefined;
 		}
 	}
 
 	private async runRegexpModel(content: string, langBiases: Record<string, number>, supportedLangs?: string[]): Promise<string | undefined> {
 		const regexpModel = await this.getRegexpModel();
-		if (!regexpModel) { return; }
+		if (!regexpModel) { return undefined; }
 
 		if (supportedLangs?.length) {
 			// When using supportedLangs, normally computed biases are too extreme. Just use a "bitmask" of sorts.

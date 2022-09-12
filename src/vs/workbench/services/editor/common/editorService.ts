@@ -113,7 +113,7 @@ export interface IEditorService {
 	/**
 	 * Emitted when any of the current visible editors changes.
 	 *
-	 * @see {@link IEditorService.visibleEditorPanes}
+	 * @see IEditorService.visibleEditorPanes
 	 */
 	readonly onDidVisibleEditorsChange: Event<void>;
 

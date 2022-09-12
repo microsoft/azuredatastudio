@@ -286,7 +286,7 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 		}));
 		this._register(this.configurationService.onDidChangeConfiguration(() => {
 			if (!this._taskSystem && !this._workspaceTasksPromise) {
-				return;
+				return undefined;
 			}
 			if (!this._taskSystem || this._taskSystem instanceof TerminalTaskSystem) {
 				this._outputChannel.clear();
@@ -1683,24 +1683,6 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 
 		if (saveBeforeRunTaskConfig === SaveBeforeRunConfigOptions.Never) {
 			return false;
-				// {{SQL CARBON EDIT}}
-				const taskNodeId = UUID.generateUuid();
-				let taskInfo: TaskInfo = {
-					databaseName: undefined,
-					serverName: undefined,
-					description: undefined,
-					isCancelable: false,
-					name: task._label,
-					providerName: undefined,
-					taskExecutionMode: 0,
-					taskId: taskNodeId,
-					status: TaskStatus.NotStarted
-				};
-				this.sqlTaskService.createNewTask(taskInfo);
-				this.lastRunTasksViewTask = taskInfo;
-
-				// {{SQL CARBON EDIT}}
-				return this.handleExecuteResult(executeResult, runSource);
 		} else if (saveBeforeRunTaskConfig === SaveBeforeRunConfigOptions.Prompt) {
 			const dialogOptions = await this.dialogService.show(
 				Severity.Info,
@@ -1734,8 +1716,25 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 				? await this.getTask(taskFolder, taskIdentifier) : task) ?? task;
 		}
 		await ProblemMatcherRegistry.onReady();
+		// {{SQL CARBON EDIT}}
+		const taskNodeId = UUID.generateUuid();
+		let taskInfo: TaskInfo = {
+			databaseName: undefined,
+			serverName: undefined,
+			description: undefined,
+			isCancelable: false,
+			name: task._label,
+			providerName: undefined,
+			taskExecutionMode: 0,
+			taskId: taskNodeId,
+			status: TaskStatus.NotStarted
+		};
+		this.sqlTaskService.createNewTask(taskInfo);
+		this.lastRunTasksViewTask = taskInfo;
 		let executeResult = this.getTaskSystem().run(taskToRun, resolver);
-		return this.handleExecuteResult(executeResult, runSource);
+
+		// {{SQL CARBON EDIT}}
+		return this.handleExecuteResult(executeResult, runSource, taskNodeId);
 	}
 
 	// {{SQL CARBON EDIT}}

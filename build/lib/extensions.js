@@ -4,7 +4,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.buildExtensionMedia = exports.webpackExtensions = exports.translatePackageJSON = exports.scanBuiltinExtensions = exports.packageMarketplaceExtensionsStream = exports.packageLocalExtensionsStream = exports.fromMarketplace = void 0;
+exports.buildExtensionMedia = exports.webpackExtensions = exports.translatePackageJSON = exports.packageRebuildExtensionsStream = exports.cleanRebuildExtensions = exports.packageExternalExtensionsStream = exports.scanBuiltinExtensions = exports.packageMarketplaceExtensionsStream = exports.packageLocalExtensionsStream = exports.vscodeExternalExtensions = exports.fromGithub = exports.fromMarketplace = exports.fromLocalNormal = exports.fromLocal = void 0;
 const es = require("event-stream");
 const fs = require("fs");
 const cp = require("child_process");
@@ -172,6 +172,7 @@ function fromLocalNormal(extensionPath) {
         .catch(err => result.emit('error', err));
     return result.pipe((0, stats_1.createStatsStream)(path.basename(extensionPath)));
 }
+exports.fromLocalNormal = fromLocalNormal;
 const userAgent = 'VSCode Build';
 const baseHeaders = {
     'X-Market-Client-Id': 'VSCode Build',
@@ -479,7 +480,6 @@ const esbuildMediaScripts = [
     'markdown-language-features/esbuild-notebook.js',
     'markdown-language-features/esbuild-preview.js',
     'markdown-math/esbuild.js',
-    'notebook-renderers/esbuild.js',
     'simple-browser/esbuild-preview.js',
 ];
 async function webpackExtensions(taskName, isWatch, webpackConfigLocations) {

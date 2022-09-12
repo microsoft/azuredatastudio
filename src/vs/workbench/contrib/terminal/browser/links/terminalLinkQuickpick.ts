@@ -48,7 +48,7 @@ export class TerminalLinkQuickpick {
 
 	private async _generatePicks(links: ILink[]): Promise<ITerminalLinkQuickPickItem[] | undefined> {
 		if (!links) {
-			return;
+			return undefined;
 		}
 		const linkKeys: Set<string> = new Set();
 		const picks: ITerminalLinkQuickPickItem[] = [];

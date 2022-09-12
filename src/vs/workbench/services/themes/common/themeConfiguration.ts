@@ -18,7 +18,7 @@ import { isWeb } from 'vs/base/common/platform';
 
 const DEFAULT_THEME_DARK_SETTING_VALUE = 'Default Dark Azure Data Studio'; // {{SQL CARBON EDIT}} replace default theme
 const DEFAULT_THEME_LIGHT_SETTING_VALUE = 'Default Light Azure Data Studio'; // {{SQL CARBON EDIT}} replace default theme
-const DEFAULT_THEME_HC_SETTING_VALUE = 'Default High Contrast';
+const DEFAULT_THEME_HC_DARK_SETTING_VALUE = 'Default High Contrast';
 const DEFAULT_THEME_HC_LIGHT_SETTING_VALUE = 'Default High Contrast Light';
 
 const DEFAULT_FILE_ICON_THEME_SETTING_VALUE = 'vs-seti';

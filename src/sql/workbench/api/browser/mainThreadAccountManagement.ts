@@ -12,10 +12,9 @@ import {
 	SqlExtHostContext,
 	SqlMainContext
 } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
-import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { UpdateAccountListEventParams } from 'sql/platform/accounts/common/eventTypes';
 import { values } from 'vs/base/common/collections';
+import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadAccountManagement)
 export class MainThreadAccountManagement extends Disposable implements MainThreadAccountManagementShape {

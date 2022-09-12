@@ -18,10 +18,8 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { Schemas } from 'vs/base/common/network';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
-import { optional } from 'vs/platform/instantiation/common/instantiation';
 import { getErrorMessage, onUnexpectedError } from 'vs/base/common/errors';
 import { generateUuid } from 'vs/base/common/uuid';
-import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
 import { HideInputTag, ParametersTag, InjectedParametersTag } from 'sql/platform/notebooks/common/outputRegistry';
 import { FutureInternal, notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 import { ICommandService } from 'vs/platform/commands/common/commands';
@@ -33,11 +31,12 @@ import { IInsightOptions } from 'sql/workbench/common/editor/query/chartState';
 import { IPosition } from 'vs/editor/common/core/position';
 import { CellOutputEdit, CellOutputDataEdit } from 'sql/workbench/services/notebook/browser/models/cellEdit';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IModeService } from 'vs/editor/common/services/modeService';
+import { ILanguageService } from 'vs/editor/common/languages/language';
 import { ICellMetadata } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { alert } from 'vs/base/browser/ui/aria/aria';
 import { CELL_URI_PATH_PREFIX } from 'sql/workbench/common/constants';
 import { DotnetInteractiveLanguagePrefix } from 'sql/workbench/api/common/notebooks/notebookUtils';
+import { IModelContentChangedEvent } from 'vs/editor/common/textModelEvents';
 
 let modelId = 0;
 const ads_execute_command = 'ads_execute_command';
@@ -99,11 +98,11 @@ export class CellModel extends Disposable implements ICellModel {
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
-		@optional(INotebookService) private _notebookService?: INotebookService,
-		@optional(ICommandService) private _commandService?: ICommandService,
-		@optional(IConfigurationService) private _configurationService?: IConfigurationService,
-		@optional(ILogService) private _logService?: ILogService,
-		@optional(IModeService) private _modeService?: IModeService
+		@INotebookService private _notebookService?: INotebookService,
+		@ICommandService private _commandService?: ICommandService,
+		@IConfigurationService private _configurationService?: IConfigurationService,
+		@ILogService private _logService?: ILogService,
+		@ILanguageService private _modeService?: ILanguageService
 	) {
 		super();
 		this.id = `${modelId++}`;

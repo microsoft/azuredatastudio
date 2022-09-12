@@ -42,11 +42,11 @@ import { ManageActionContext } from 'sql/workbench/browser/actions';
 import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerContext';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
-import { IModeService } from 'vs/editor/common/services/modeService';
 import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
 import { IEditorResolverService, RegisteredEditorPriority } from 'vs/workbench/services/editor/common/editorResolverService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ILogService } from 'vs/platform/log/common/log';
+import { ILanguageService } from 'vs/editor/common/languages/language';
 
 export const QueryEditorVisibleCondition = ContextKeyExpr.has(queryContext.queryEditorVisibleId);
 export const ResultsGridFocusCondition = ContextKeyExpr.and(ContextKeyExpr.has(queryContext.resultsVisibleId), ContextKeyExpr.has(queryContext.resultsGridFocussedId));
@@ -513,13 +513,13 @@ export class QueryEditorOverrideContribution extends Disposable implements IWork
 		@ILogService private _logService: ILogService,
 		@IEditorService private _editorService: IEditorService,
 		@IEditorResolverService private _editorResolverService: IEditorResolverService,
-		@IModeService private _modeService: IModeService
+		@ILanguageService private _modeService: ILanguageService
 	) {
 		super();
 		this.registerEditorOverrides();
 		// Refresh the editor overrides whenever the languages change so we ensure we always have
 		// the latest up to date list of extensions for each language
-		this._modeService.onLanguagesMaybeChanged(() => {
+		this._modeService.onDidChange(() => {
 			this.registerEditorOverrides();
 		});
 	}

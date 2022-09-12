@@ -137,7 +137,7 @@ export class TabCompletionController implements IEditorContribution {
 				},
 				provideCompletionItems: (_model, position) => {
 					if (_model !== model || !selection.containsPosition(position)) {
-						return;
+						return undefined;
 					}
 					const suggestions = this._activeSnippets.map(snippet => {
 						const range = Range.fromPositions(position.delta(0, -snippet.prefix.length), position);

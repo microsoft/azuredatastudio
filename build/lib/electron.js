@@ -67,11 +67,11 @@ function darwinBundleDocumentType(extensions, icon, nameOrSuffix, utis) {
 // 	return Object.keys(types).map((name: string): DarwinDocumentType => {
 // 		const extensions = types[name];
 // 		return {
-            name: name,
+//			name: name,
 // 			role: 'Editor',
 // 			ostypes: ['TEXT', 'utxt', 'TUTX', '****'],
 // 			extensions: Array.isArray(extensions) ? extensions : [extensions],
-            iconFile: 'resources/darwin/' + icon + '.icns',
+//			iconFile: 'resources/darwin/' + icon + '.icns',
 // 		} as DarwinDocumentType;
 // 	});
 // }
@@ -87,9 +87,6 @@ exports.config = {
     darwinHelpBookName: 'VS Code HelpBook',
     darwinBundleDocumentTypes: [
         darwinBundleDocumentType(['csv', 'json', 'sqlplan', 'sql', 'xml'], 'code_file'),
-        ], 'default', product.nameLong + ' document')
-        // Folder support ()
-        darwinBundleDocumentType([], 'default', 'Folder', ['public.folder'])
     ],
     darwinBundleURLTypes: [{
             role: 'Viewer',

@@ -2575,7 +2575,7 @@ export function parseExitResult(
 ): { code: number | undefined; message: string | undefined } | undefined {
 	// Only return a message if the exit code is non-zero
 	if (exitCodeOrError === undefined || exitCodeOrError === 0) {
-		return { code: exitCodeOrError, message: undefined };
+		return { code: <any>exitCodeOrError, message: undefined };
 	}
 
 	const code = typeof exitCodeOrError === 'number' ? exitCodeOrError : exitCodeOrError.code;

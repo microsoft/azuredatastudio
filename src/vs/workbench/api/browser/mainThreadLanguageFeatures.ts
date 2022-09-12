@@ -103,7 +103,7 @@ export class MainThreadLanguageFeatures extends Disposable implements MainThread
 	private static _reviveLocationDto(data?: ILocationDto[]): languages.Location[];
 	private static _reviveLocationDto(data: ILocationDto | ILocationDto[] | undefined): languages.Location | languages.Location[] | undefined {
 		if (!data) {
-			return undefined; // {{SQL CARBON EDIT}} strict-null-checks
+			return <any>data;
 		} else if (Array.isArray(data)) {
 			data.forEach(l => MainThreadLanguageFeatures._reviveLocationDto(l));
 			return <languages.Location[]>data;
@@ -146,8 +146,7 @@ export class MainThreadLanguageFeatures extends Disposable implements MainThread
 		if (data) {
 			data.forEach(code => reviveWorkspaceEditDto(code.edit));
 		}
-		return <modes.CodeAction[]>data;
-		return <modes.CodeAction[]><unknown>data; // {{SQL CARBON EDIT}} strict-null-check
+		return <languages.CodeAction[]><unknown>data;
 	}
 
 	private static _reviveLinkDTO(data: ILinkDto): languages.ILink {
@@ -361,7 +360,7 @@ export class MainThreadLanguageFeatures extends Disposable implements MainThread
 
 		if (supportsResolve) {
 			provider.resolveCodeAction = async (codeAction: languages.CodeAction, token: CancellationToken): Promise<languages.CodeAction> => {
-				const data = await this._proxy.$resolveCodeAction(handle, (<ICodeActionDto>codeAction).cacheId!, token);
+				const data = await this._proxy.$resolveCodeAction(handle, (<ICodeActionDto><unknown>codeAction).cacheId!, token);
 				codeAction.edit = reviveWorkspaceEditDto(data);
 				return codeAction;
 			};
@@ -495,7 +494,7 @@ export class MainThreadLanguageFeatures extends Disposable implements MainThread
 			provideCompletionItems: async (model: ITextModel, position: EditorPosition, context: languages.CompletionContext, token: CancellationToken): Promise<languages.CompletionList | undefined> => {
 				const result = await this._proxy.$provideCompletionItems(handle, model.uri, position, context, token);
 				if (!result) {
-					return <any>result; // {{SQL CARBON EDIT}}
+					return <any>result;
 				}
 				return {
 					suggestions: result[ISuggestResultDtoField.completions].map(d => MainThreadLanguageFeatures._inflateSuggestDto(result[ISuggestResultDtoField.defaultRanges], d)),
@@ -570,7 +569,7 @@ export class MainThreadLanguageFeatures extends Disposable implements MainThread
 			provideInlayHints: async (model: ITextModel, range: EditorRange, token: CancellationToken): Promise<languages.InlayHintList | undefined> => {
 				const result = await this._proxy.$provideInlayHints(handle, model.uri, range, token);
 				if (!result) {
-					return;
+					return undefined;
 				}
 				return {
 					hints: revive(result.hints),
@@ -744,7 +743,7 @@ export class MainThreadLanguageFeatures extends Disposable implements MainThread
 			provideOutgoingCalls: async (item, token) => {
 				const outgoing = await this._proxy.$provideCallHierarchyOutgoingCalls(handle, item._sessionId, item._itemId, token);
 				if (!outgoing) {
-					return undefined; // {{SQL CARBON EDIT}} strict-null-check
+					return outgoing;
 				}
 				outgoing.forEach(value => {
 					value.to = MainThreadLanguageFeatures._reviveCallHierarchyItemDto(value.to);
@@ -754,7 +753,7 @@ export class MainThreadLanguageFeatures extends Disposable implements MainThread
 			provideIncomingCalls: async (item, token) => {
 				const incoming = await this._proxy.$provideCallHierarchyIncomingCalls(handle, item._sessionId, item._itemId, token);
 				if (!incoming) {
-					return undefined; // {{SQL CARBON EDIT}} strict-null-check
+					return incoming;
 				}
 				incoming.forEach(value => {
 					value.from = MainThreadLanguageFeatures._reviveCallHierarchyItemDto(value.from);

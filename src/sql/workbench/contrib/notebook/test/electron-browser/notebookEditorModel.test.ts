@@ -19,7 +19,6 @@ import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/no
 import { NotebookService } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
 import { URI } from 'vs/base/common/uri';
 import { toResource } from 'vs/base/test/common/utils';
-import { IModelService } from 'vs/editor/common/services/modelService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
 import { NullLogService } from 'vs/platform/log/common/log';
@@ -42,13 +41,14 @@ import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTeleme
 import { IProductService } from 'vs/platform/product/common/productService';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { UndoRedoService } from 'vs/platform/undoRedo/common/undoRedoService';
+import { ILanguageService } from 'vs/editor/common/languages/language';
 
 
 class ServiceAccessor {
 	constructor(
 		@IEditorService public editorService: IEditorService,
 		@ITextFileService public textFileService: TestTextFileService,
-		@IModelService public modelService: IModelService
+		@ILanguageService public modelService: ILanguageService
 	) {
 	}
 }

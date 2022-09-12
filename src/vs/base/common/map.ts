@@ -859,7 +859,7 @@ export class ResourceSet implements Set<URI> {
 	constructor(entries: readonly URI[], toKey?: ResourceMapKeyFn);
 	constructor(entriesOrKey?: readonly URI[] | ResourceMapKeyFn, toKey?: ResourceMapKeyFn) {
 		if (!entriesOrKey || typeof entriesOrKey === 'function') {
-			this._map = new ResourceMap(entriesOrKey);
+			this._map = new ResourceMap(<any>entriesOrKey);
 		} else {
 			this._map = new ResourceMap(toKey);
 			entriesOrKey.forEach(this.add, this);

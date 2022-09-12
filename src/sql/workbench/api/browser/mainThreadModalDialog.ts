@@ -8,10 +8,9 @@ import 'vs/css!sql/media/icons/common-icons';
 import { WebViewDialog } from 'sql/workbench/contrib/webview/browser/webViewDialog';
 import { MainThreadModalDialogShape, SqlMainContext, SqlExtHostContext, ExtHostModalDialogsShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 
-import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
-import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Disposable } from 'vs/base/common/lifecycle';
+import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadModalDialog)
 export class MainThreadModalDialog extends Disposable implements MainThreadModalDialogShape {

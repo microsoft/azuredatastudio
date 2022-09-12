@@ -313,8 +313,6 @@ export function validateExtensionManifest(productVersion: string, productDate: P
 		if (typeof extensionManifest.activationEvents === 'undefined') {
 			validations.push([Severity.Error, nls.localize('extensionDescription.browser3', "properties `{0}` and `{1}` must both be specified or must both be omitted", 'activationEvents', 'browser')]);
 			return validations;
-		// {{SQL CARBON EDIT}}
-		azdata?: string;
 		}
 	}
 
@@ -340,8 +338,9 @@ export function isValidExtensionVersion(productVersion: string, productDate: Pro
 		return true;
 	}
 
-	// {{SQL CARBON EDIT}}
-	return isVersionValid(version, date, extensionDesc.engines.vscode, notices);
+	// {{SQL CARBON TODO}} - check azdata engine version
+	//return extensionDesc.engines.azdata ? extensionDesc.engines.azdata === '*' || isVersionValid(version, date, extensionDesc.engines.azdata, notices) : true;
+	return isVersionValid(productVersion, productDate, extensionManifest.engines.vscode, notices);
 }
 
 // {{SQL CARBON EDIT}}

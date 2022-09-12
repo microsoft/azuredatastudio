@@ -33,6 +33,7 @@ export interface IExtensionHostInitData {
 	remote: { isRemote: boolean; authority: string | undefined; connectionData: IRemoteConnectionData | null };
 	uiKind: UIKind;
 	messagePorts?: ReadonlyMap<string, MessagePortLike>;
+	vscodeVersion: string; // {{SQL CARBON EDIT}} add vscode version
 }
 
 export interface IEnvironment {

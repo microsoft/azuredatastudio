@@ -27,7 +27,7 @@ export class UniversalWatcher extends Disposable implements IUniversalWatcher {
 			if (request.recursive) {
 				recursiveWatchRequests.push(request);
 			} else {
-				nonRecursiveWatchRequests.push(request);
+				nonRecursiveWatchRequests.push(<any>request);
 			}
 		}
 

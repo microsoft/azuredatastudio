@@ -31,7 +31,7 @@ import { Emitter } from 'vs/base/common/event';
 import { coalesce } from 'vs/base/common/arrays';
 import { parse, stringify } from 'vs/base/common/marshalling';
 import { ILabelService } from 'vs/platform/label/common/label';
-import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
+import { hasWorkspaceFileExtension, isTemporaryWorkspace, IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { withNullAsUndefined } from 'vs/base/common/types';
 import { IDataTransfer } from 'vs/workbench/common/dnd';
 import { extractSelection } from 'vs/platform/opener/common/opener';
@@ -340,7 +340,7 @@ export class ResourcesDropHandler {
 		@IEditorService private readonly editorService: IEditorService,
 		@IWorkspaceEditingService private readonly workspaceEditingService: IWorkspaceEditingService,
 		@IHostService private readonly hostService: IHostService,
-		@IWorkspaceContextService private readonly contextService: IWorkspaceContextService
+		@IWorkspaceContextService private readonly contextService: IWorkspaceContextService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService
 	) {
 	}

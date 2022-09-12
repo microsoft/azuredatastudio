@@ -245,14 +245,6 @@ class TypeScriptLanguageServiceHost implements ts.LanguageServiceHost {
 		this._compilerOptions = compilerOptions;
 	}
 
-	// {{SQL CARBON EDIT}} - provide missing methods
-	readFile(): string | undefined {
-		return undefined;
-	}
-	fileExists(): boolean {
-		return false;
-	}
-
 	// --- language service host ---------------
 
 	getCompilationSettings(): ts.CompilerOptions {

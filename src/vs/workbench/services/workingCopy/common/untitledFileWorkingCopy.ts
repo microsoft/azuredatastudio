@@ -236,7 +236,7 @@ export class UntitledFileWorkingCopy<M extends IUntitledFileWorkingCopyModel> ex
 		this._onDidChangeContent.fire();
 	}
 
-	isResolved(): this is IResolvedUntitledFileWorkingCopy<M> {
+	isResolved() { // {{SQL CARBON EDIT}} - this type constraint is causing compiler errors
 		return !!this.model;
 	}
 

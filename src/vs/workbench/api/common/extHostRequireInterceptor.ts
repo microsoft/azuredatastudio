@@ -32,7 +32,7 @@ interface IAlternativeModuleProvider {
 	alternativeModuleName(name: string): string | undefined;
 }
 
-export interface INodeModuleFactory { // {{SQL CARBON EDIT}} export interface
+export interface INodeModuleFactory extends Partial<IAlternativeModuleProvider> { // {{SQL CARBON EDIT}} export interface
 	readonly nodeModuleName: string | string[];
 	load(request: string, parent: URI, original: LoadFunction): any;
 }
@@ -123,18 +123,18 @@ class NodeModuleAliasingModuleFactory implements IAlternativeModuleProvider {
 
 	public alternativeModuleName(name: string): string | undefined {
 		if (!this.re) {
-			return;
+			return undefined;
 		}
 
 		const result = this.re.exec(this.forceForwardSlashes(name));
 		if (!result) {
-			return;
+			return undefined;
 		}
 
 		const [, prefix, moduleName, suffix] = result;
 		const dealiased = NodeModuleAliasingModuleFactory.aliased.get(moduleName);
 		if (dealiased === undefined) {
-			return;
+			return undefined;
 		}
 
 		console.warn(`${moduleName} as been renamed to ${dealiased}, please update your imports`);

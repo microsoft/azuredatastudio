@@ -56,10 +56,11 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 	private readonly _onDidOpenVSCodeNotebook = new Emitter<vscode.NotebookDocument>();
 	private readonly _onDidCloseVSCodeNotebook = new Emitter<vscode.NotebookDocument>();
 	private readonly _onDidSaveVSCodeNotebook = new Emitter<vscode.NotebookDocument>();
-	private readonly _onDidChangeVSCodeCellMetadata = new Emitter<vscode.NotebookCellMetadataChangeEvent>();
-	private readonly _onDidChangeVSCodeDocumentMetadata = new Emitter<vscode.NotebookDocumentMetadataChangeEvent>();
-	private readonly _onDidChangeVSCodeCellOutputs = new Emitter<vscode.NotebookCellOutputsChangeEvent>();
-	private readonly _onDidChangeVSCodeNotebookCells = new Emitter<vscode.NotebookCellsChangeEvent>();
+	// {{SQL CARBON TODO}} - disable events
+	// private readonly _onDidChangeVSCodeCellMetadata = new Emitter<vscode.NotebookCellMetadataChangeEvent>();
+	// private readonly _onDidChangeVSCodeDocumentMetadata = new Emitter<vscode.NotebookDocumentMetadataChangeEvent>();
+	// private readonly _onDidChangeVSCodeCellOutputs = new Emitter<vscode.NotebookCellOutputsChangeEvent>();
+	// private readonly _onDidChangeVSCodeNotebookCells = new Emitter<vscode.NotebookCellsChangeEvent>();
 	private readonly _onDidChangeVSCodeExecutionState = new Emitter<vscode.NotebookCellExecutionStateChangeEvent>();
 	private readonly _onDidChangeVSCodeEditorSelection = new Emitter<vscode.NotebookEditorSelectionChangeEvent>();
 	private readonly _onDidChangeVSCodeEditorRanges = new Emitter<vscode.NotebookEditorVisibleRangesChangeEvent>();
@@ -69,10 +70,10 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 	readonly onDidOpenVSCodeNotebookDocument: Event<vscode.NotebookDocument> = this._onDidOpenVSCodeNotebook.event;
 	readonly onDidCloseVSCodeNotebookDocument: Event<vscode.NotebookDocument> = this._onDidCloseVSCodeNotebook.event;
 	readonly onDidSaveVSCodeNotebookDocument: Event<vscode.NotebookDocument> = this._onDidSaveVSCodeNotebook.event;
-	readonly onDidChangeVSCodeCellMetadata: Event<vscode.NotebookCellMetadataChangeEvent> = this._onDidChangeVSCodeCellMetadata.event;
-	readonly onDidChangeVSCodeDocumentMetadata: Event<vscode.NotebookDocumentMetadataChangeEvent> = this._onDidChangeVSCodeDocumentMetadata.event;
-	readonly onDidChangeVSCodeCellOutputs: Event<vscode.NotebookCellOutputsChangeEvent> = this._onDidChangeVSCodeCellOutputs.event;
-	readonly onDidChangeVSCodeNotebookCells: Event<vscode.NotebookCellsChangeEvent> = this._onDidChangeVSCodeNotebookCells.event;
+	// readonly onDidChangeVSCodeCellMetadata: Event<vscode.NotebookCellMetadataChangeEvent> = this._onDidChangeVSCodeCellMetadata.event;
+	// readonly onDidChangeVSCodeDocumentMetadata: Event<vscode.NotebookDocumentMetadataChangeEvent> = this._onDidChangeVSCodeDocumentMetadata.event;
+	// readonly onDidChangeVSCodeCellOutputs: Event<vscode.NotebookCellOutputsChangeEvent> = this._onDidChangeVSCodeCellOutputs.event;
+	// readonly onDidChangeVSCodeNotebookCells: Event<vscode.NotebookCellsChangeEvent> = this._onDidChangeVSCodeNotebookCells.event;
 	readonly onDidChangeVSCodeExecutionState: Event<vscode.NotebookCellExecutionStateChangeEvent> = this._onDidChangeVSCodeExecutionState.event;
 	readonly onDidChangeVSCodeEditorSelection: Event<vscode.NotebookEditorSelectionChangeEvent> = this._onDidChangeVSCodeEditorSelection.event;
 	readonly onDidChangeVSCodeEditorRanges: Event<vscode.NotebookEditorVisibleRangesChangeEvent> = this._onDidChangeVSCodeEditorRanges.event;

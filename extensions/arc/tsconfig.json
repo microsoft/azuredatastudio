@@ -2,20 +2,14 @@
 	"extends": "../tsconfig.base.json",
 	"compileOnSave": true,
 	"compilerOptions": {
-		"outDir": "./out",
 		"experimentalDecorators": true,
-		"types": ["node"],
-		"paths": {
-			"vscode": [
-				"../../src/vs/vscode.d.ts"
+		"outDir": "./out",
+		"lib": [
+			"es6",
+			"es2015.promise"
 		]
 	},
 	"include": [
-		"src/**/*",
-		"../../src/vscode-dts/vscode.d.ts",
-		"../../src/vscode-dts/vscode.proposed.inlayHints.d.ts",
-		"../../src/vscode-dts/vscode.proposed.languageStatus.d.ts",
-		"../../src/vscode-dts/vscode.proposed.resolvers.d.ts",
-		"../../src/vscode-dts/vscode.proposed.workspaceTrust.d.ts",
+		"src/**/*"
 	]
 }

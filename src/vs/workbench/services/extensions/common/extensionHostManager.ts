@@ -27,6 +27,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IExtensionHostProxy, IResolveAuthorityResult } from 'vs/workbench/services/extensions/common/extensionHostProxy';
 import { IExtensionDescriptionDelta } from 'vs/workbench/services/extensions/common/extensionHostProtocol';
+import { MainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 // Enable to see detailed message communication between window and extension host
 const LOG_EXTENSION_HOST_COMMUNICATION = false;
@@ -267,7 +268,7 @@ class ExtensionHostManager extends Disposable implements IExtensionHostManager {
 		this._rpcProtocol = new RPCProtocol(protocol, logger);
 		this._register(this._rpcProtocol.onDidChangeResponsiveState((responsiveState: ResponsiveState) => this._onDidChangeResponsiveState.fire(responsiveState)));
 		let extensionHostProxy: IExtensionHostProxy | null = null as IExtensionHostProxy | null;
-		let mainProxyIdentifiers: ProxyIdentifier<any>[] = [];
+		//let mainProxyIdentifiers: ProxyIdentifier<any>[] = [];
 		const extHostContext: IInternalExtHostContext = {
 			remoteAuthority: this._extensionHost.remoteAuthority,
 			extensionHostKind: this.kind,
@@ -283,7 +284,7 @@ class ExtensionHostManager extends Disposable implements IExtensionHostManager {
 				extensionHostProxy = value;
 			},
 			_setAllMainProxyIdentifiers: (value: ProxyIdentifier<any>[]): void => {
-				mainProxyIdentifiers = value;
+				//mainProxyIdentifiers = value;
 			},
 			//#endregion
 		};
@@ -319,8 +320,8 @@ class ExtensionHostManager extends Disposable implements IExtensionHostManager {
 			MainContext.MainThreadNotebookRenderers,
 			MainContext.MainThreadInteractive
 		];
-		const expected: ProxyIdentifier<any>[] = Object.keys(MainContext).map((key) => (<any>MainContext)[key]);
-		this._rpcProtocol.assertRegistered(mainProxyIdentifiers);
+		const expected: ProxyIdentifier<any>[] = Object.keys(MainContext).map((key) => (<any>MainContext)[key]).filter(v => !filtered.some(x => x === v));
+		this._rpcProtocol.assertRegistered(expected);
 
 		return extensionHostProxy;
 	}

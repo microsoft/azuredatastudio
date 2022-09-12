@@ -270,8 +270,8 @@ export interface IRelaxedExtensionManifest {
 	displayName?: string;
 	publisher: string;
 	version: string;
-	readonly engines: { readonly vscode: string };
-	readonly forceReload?: boolean; // {{SQL CARBON EDIT}} add field
+	engines: { vscode: string; azdata?: string }; // {{SQL CARBON EDIT}} add field
+	forceReload?: boolean; // {{SQL CARBON EDIT}} add field
 	description?: string;
 	main?: string;
 	browser?: string;

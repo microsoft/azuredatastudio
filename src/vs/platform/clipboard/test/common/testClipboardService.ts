@@ -4,13 +4,16 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { URI } from 'vs/base/common/uri';
-import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { ClipboardData, IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 
 export class TestClipboardService implements IClipboardService {
 
 	_serviceBrand: undefined;
 
 	private text: string | undefined = undefined;
+
+	async write(data: ClipboardData, type?: string): Promise<void> { // {{SQL CARBON EDIT}} - add method
+	}
 
 	async writeText(text: string, type?: string): Promise<void> {
 		this.text = text;

@@ -874,11 +874,13 @@ export const WINDOW_INACTIVE_BORDER = registerColor('window.inactiveBorder', {
 export const CARD_OVERLAY_FOREGROUND = registerColor('card.overlayForeground', {
 	dark: null,
 	light: null,
-	hc: null
+	hcDark: null,
+	hcLight: null
 }, localize('cardOverlayForeground', "The card overlay foreground color."));
 
 export const CARD_OVERLAY_BACKGROUND = registerColor('card.overlayBackground', {
 	dark: '#252526',
 	light: '#F3F3F3',
-	hc: '#000000'
+	hcDark: '#000000',
+	hcLight: '#FFFFFF',
 }, localize('cardOverlayBackground', "The card overlay background color."));

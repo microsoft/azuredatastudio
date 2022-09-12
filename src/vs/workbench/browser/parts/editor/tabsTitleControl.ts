@@ -6,7 +6,7 @@
 import 'vs/css!./media/tabstitlecontrol';
 import { isMacintosh, isWindows } from 'vs/base/common/platform';
 import { shorten } from 'vs/base/common/labels';
-import { EditorResourceAccessor, GroupIdentifier, Verbosity, IEditorPartOptions, SideBySideEditor, DEFAULT_EDITOR_ASSOCIATION, EditorInputCapabilities } from 'vs/workbench/common/editor';
+import { EditorResourceAccessor, GroupIdentifier, Verbosity, IEditorPartOptions, SideBySideEditor, EditorInputCapabilities, IUntypedEditorInput } from 'vs/workbench/common/editor'; // {{SQL CARBON EDIT}} - remove unused
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { computeEditorAriaLabel } from 'vs/workbench/browser/editor';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
@@ -35,19 +35,19 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { MergeGroupMode, IMergeGroupOptions, GroupsArrangement, IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { addDisposableListener, EventType, EventHelper, Dimension, scheduleAtNextAnimationFrame, findParentWithClass, clearNode, DragAndDropObserver } from 'vs/base/browser/dom';
 import { localize } from 'vs/nls';
-import { IEditorGroupsAccessor, IEditorGroupView, IEditorGroupTitleHeight } from 'vs/workbench/browser/parts/editor/editor'; // {{SQL CARBON EDIT}} Remove unused
+import { IEditorGroupsAccessor, IEditorGroupView, EditorServiceImpl, IEditorGroupTitleHeight } from 'vs/workbench/browser/parts/editor/editor';
 import { CloseOneEditorAction, UnpinEditorAction } from 'vs/workbench/browser/parts/editor/editorActions';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { BreadcrumbsControl } from 'vs/workbench/browser/parts/editor/breadcrumbsControl';
 import { IFileService } from 'vs/platform/files/common/files';
 import { assertAllDefined, assertIsDefined } from 'vs/base/common/types';
-// import { IEditorService } from 'vs/workbench/services/editor/common/editorService'; {{SQL CARBON EDIT}} Remove unused
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { basenameOrAuthority } from 'vs/base/common/resources';
 import { RunOnceScheduler } from 'vs/base/common/async';
 import { IPathService } from 'vs/workbench/services/path/common/pathService';
 import { IPath, win32, posix } from 'vs/base/common/path';
 import { coalesce, insert } from 'vs/base/common/arrays';
-import { isHighContrast } from 'vs/platform/theme/common/theme';
+import { ColorScheme, isHighContrast } from 'vs/platform/theme/common/theme';
 import { isSafari } from 'vs/base/browser/browser';
 import { equals } from 'vs/base/common/objects';
 import { EditorActivation } from 'vs/platform/editor/common/editor';
@@ -144,6 +144,7 @@ export class TabsTitleControl extends TitleControl {
 		@IThemeService themeService: IThemeService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IFileService fileService: IFileService,
+		@IEditorService private readonly editorService: EditorServiceImpl,
 		@IQueryEditorService private readonly queryEditorService: IQueryEditorService, // {{SQL CARBON EDIT}}
 		@IPathService private readonly pathService: IPathService,
 		@IEditorGroupsService private readonly editorGroupService: IEditorGroupsService,
@@ -1907,7 +1908,7 @@ export class TabsTitleControl extends TitleControl {
 		let sqlEditor = editor as any;
 		const tabColorMode = this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor')?.tabColorMode ?? 'off';
 		if (tabColorMode === 'off' || (tabColorMode !== 'border' && tabColorMode !== 'fill')
-			|| this.themeService.getColorTheme().type === ColorScheme.HIGH_CONTRAST || !sqlEditor.tabColor) {
+			|| this.themeService.getColorTheme().type === ColorScheme.HIGH_CONTRAST_DARK || !sqlEditor.tabColor) {
 			tabContainer.style.borderTopColor = '';
 			tabContainer.style.borderTopWidth = '';
 			tabContainer.style.borderTopStyle = '';

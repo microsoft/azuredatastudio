@@ -49,7 +49,7 @@ import { IExtHostWindow } from 'vs/workbench/api/common/extHostWindow';
 import { IExtHostWorkspace } from 'vs/workbench/api/common/extHostWorkspace';
 import { ProxyIdentifier } from 'vs/workbench/services/extensions/common/proxyIdentifier';
 import { ExtensionDescriptionRegistry } from 'vs/workbench/services/extensions/common/extensionDescriptionRegistry';
-import type * as vscode from 'vscode';
+import * as vscode from 'vscode';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { values } from 'vs/base/common/collections';
 import { ExtHostEditorInsets } from 'vs/workbench/api/common/extHostCodeInsets';
@@ -93,8 +93,12 @@ import { matchesScheme } from 'vs/platform/opener/common/opener';
 import { combinedDisposable } from 'vs/base/common/lifecycle';
 import { ExtHostNotebook } from 'sql/workbench/api/common/extHostNotebook';
 import { docCreationFailedError, functionalityNotSupportedError, invalidArgumentsError } from 'sql/base/common/locConstants';
-import { checkProposedApiEnabled, isProposedApiEnabled } from 'vs/workbench/services/extensions/common/extensions';
+import { checkProposedApiEnabled, ExtensionIdentifierSet, isProposedApiEnabled } from 'vs/workbench/services/extensions/common/extensions';
 import { IdGenerator } from 'vs/base/common/idGenerator';
+import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/common/extHostNotebookDocumentsAndEditors';
+import { VSCodeNotebookEditor } from 'sql/workbench/api/common/notebooks/vscodeNotebookEditor';
+import { VSCodeNotebookDocument } from 'sql/workbench/api/common/notebooks/vscodeNotebookDocument';
+import { convertToADSNotebookContents } from 'sql/workbench/api/common/notebooks/notebookUtils';
 
 export interface IExtensionRegistries {
 	mine: ExtensionDescriptionRegistry;
@@ -955,8 +959,15 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 				}
 				return new VSCodeNotebookDocument(doc);
 			},
+			onDidSaveNotebookDocument(listener, thisArg, disposables) {
+				// {{SQL CARBON TODO}} - disable event
+				return undefined
+				//return extHostNotebookDocuments.onDidSaveNotebookDocument(listener, thisArg, disposables);
+			},
 			onDidChangeNotebookDocument(listener, thisArg, disposables) {
-				return extHostNotebookDocuments.onDidChangeNotebookDocument(listener, thisArg, disposables);
+				// {{SQL CARBON TODO}} - disable event
+				return undefined;
+				//return extHostNotebookDocuments.onDidChangeNotebookDocument(listener, thisArg, disposables);
 			},
 			get onDidOpenNotebookDocument(): Event<vscode.NotebookDocument> {
 				// {{SQL CARBON EDIT}} Use our own notebooks
@@ -968,7 +979,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 			},
 			registerNotebookSerializer(viewType: string, serializer: vscode.NotebookSerializer, options?: vscode.NotebookDocumentContentOptions, registration?: vscode.NotebookRegistrationData) {
 				// {{SQL CARBON EDIT}} Use our own notebooks
-				return extHostNotebook.registerNotebookSerializer(viewType, serializer, options, extension.enableProposedApi ? registration : undefined);
+				return extHostNotebook.registerNotebookSerializer(viewType, serializer, options, extension.enabledApiProposals ? registration : undefined);
 			},
 			registerNotebookContentProvider: (viewType: string, provider: vscode.NotebookContentProvider, options?: vscode.NotebookDocumentContentOptions, registration?: vscode.NotebookRegistrationData) => {
 				// {{SQL CARBON EDIT}} Disable VS Code notebooks
@@ -1213,7 +1224,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 			createNotebookController(id: string, notebookType: string, label: string, handler?, rendererScripts?: vscode.NotebookRendererScript[]) {
 				// {{SQL CARBON EDIT}} Use our own notebooks
 				let getDocHandler = (notebookUri: URI) => extHostNotebookDocumentsAndEditors.getDocument(notebookUri.toString())?.document;
-				return extHostNotebook.createNotebookController(extension, id, notebookType, label, getDocHandler, handler, extension.enableProposedApi ? rendererScripts : undefined);
+				return extHostNotebook.createNotebookController(extension, id, notebookType, label, getDocHandler, handler, extension.enabledApiProposals ? rendererScripts : undefined);
 			},
 			registerNotebookCellStatusBarItemProvider: (notebookType: string, provider: vscode.NotebookCellStatusBarItemProvider) => {
 				// {{SQL CARBON EDIT}} Disable VS Code notebooks
@@ -1240,17 +1251,13 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 			},
 			onDidChangeNotebookCellExecutionState(listener, thisArgs?, disposables?) {
 				// {{SQL CARBON EDIT}} Use our own notebooks
-				return extHostNotebook.onDidChangeNotebookCellExecutionState(listener, thisArgs, disposables);
+				return extHostNotebookDocumentsAndEditors.onDidChangeVSCodeExecutionState(listener, thisArgs, disposables);
 			},
 			createNotebookProxyController(id: string, notebookType: string, label: string, handler: () => vscode.NotebookController | string | Thenable<vscode.NotebookController | string>) {
-				checkProposedApiEnabled(extension, 'notebookEditor');
-				return extHostNotebook.onDidChangeCellOutputs(listener, thisArgs, disposables);
-				checkProposedApiEnabled(extension, 'notebookEditor');
-				return extHostNotebook.onDidChangeCellMetadata(listener, thisArgs, disposables);
-				// {{SQL CARBON EDIT}} Disable VS Code notebooks
-				throw new Error(functionalityNotSupportedError);
-				checkProposedApiEnabled(extension, 'notebookConcatTextDocument');
-				return new ExtHostNotebookConcatDocument(extHostNotebook, extHostDocuments, notebook, selector);
+				//checkProposedApiEnabled(extension, 'notebookProxyController');
+				//return extHostNotebookProxyKernels.createNotebookProxyController(extension, id, notebookType, label, handler);
+				// {{SQL CARBON TODO}}
+				return undefined;
 			}
 		};
 
@@ -1301,7 +1308,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 			DebugAdapterInlineImplementation: extHostTypes.DebugAdapterInlineImplementation,
 			DebugAdapterNamedPipeServer: extHostTypes.DebugAdapterNamedPipeServer,
 			DebugAdapterServer: extHostTypes.DebugAdapterServer,
-			DebugConfigurationProviderTriggerKind: DebugConfigurationProviderTriggerKind,
+			DebugConfigurationProviderTriggerKind: vscode.DebugConfigurationProviderTriggerKind,
 			DebugConsoleMode: extHostTypes.DebugConsoleMode,
 			DecorationRangeBehavior: extHostTypes.DecorationRangeBehavior,
 			Diagnostic: extHostTypes.Diagnostic,

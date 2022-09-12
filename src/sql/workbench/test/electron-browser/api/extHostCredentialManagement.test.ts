@@ -13,7 +13,7 @@ import { ICredentialsService } from 'sql/platform/credentials/common/credentials
 import { Credential, CredentialProvider } from 'azdata';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { TestCredentialsService, TestCredentialsProvider } from 'sql/platform/credentials/test/common/testCredentialsService';
-import { TestRPCProtocol } from 'vs/workbench/test/browser/api/testRPCProtocol';
+import { TestRPCProtocol } from 'vs/workbench/api/test/common/testRPCProtocol';
 
 const IRPCProtocol = createDecorator<IRPCProtocol>('rpcProtocol');
 
