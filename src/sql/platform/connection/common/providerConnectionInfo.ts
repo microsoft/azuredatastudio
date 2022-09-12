@@ -146,12 +146,15 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	}
 
 	private getServerInfo() {
-		let title = this.serverName;
-		// Only show database name if the provider supports it.
-		if (this.serverCapabilities?.connectionOptions?.find(option => option.specialValueType === ConnectionOptionSpecialType.databaseName)) {
-			title += `, ${this.databaseName || '<default>'}`;
+		let title = '';
+		if (this.serverCapabilities) {
+			title = this.serverName;
+			// Only show database name if the provider supports it.
+			if (this.serverCapabilities.connectionOptions?.find(option => option.specialValueType === ConnectionOptionSpecialType.databaseName)) {
+				title += `, ${this.databaseName || '<default>'}`;
+			}
+			title += ` (${this.userName || this.authenticationType})`;
 		}
-		title += ` (${this.userName || this.authenticationType})`;
 		return title;
 	}
 
@@ -168,7 +171,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 				label = this.getServerInfo();
 			}
 		} else if (Object.keys(this.capabilitiesService.providers).length > 0) {
-			return localize('connection.unknownConnection', "Unknown connection");
+			return localize('connection.unsupported', "Unsupported connection");
 		} else {
 			return localize('loading', "Loading...");
 		}
