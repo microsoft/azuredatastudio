@@ -62,27 +62,31 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		this.resources = [
 			this.metadata.settings.armResource,
-			this.metadata.settings.sqlResource,
 			this.metadata.settings.graphResource,
-			this.metadata.settings.ossRdbmsResource,
-			this.metadata.settings.microsoftResource,
 			this.metadata.settings.azureKeyVaultResource
 		];
 
+		if (this.metadata.settings.sqlResource) {
+			this.resources.push(this.metadata.settings.sqlResource);
+		}
+		if (this.metadata.settings.ossRdbmsResource) {
+			this.resources.push(this.metadata.settings.ossRdbmsResource);
+		}
+		if (this.metadata.settings.microsoftResource) {
+			this.resources.push(this.metadata.settings.microsoftResource);
+		}
 		if (this.metadata.settings.azureDevOpsResource) {
-			this.resources = this.resources.concat(this.metadata.settings.azureDevOpsResource);
+			this.resources.push(this.metadata.settings.azureDevOpsResource);
 		}
-
 		if (this.metadata.settings.azureLogAnalyticsResource) {
-			this.resources = this.resources.concat(this.metadata.settings.azureLogAnalyticsResource);
+			this.resources.push(this.metadata.settings.azureLogAnalyticsResource);
 		}
-
 		if (this.metadata.settings.azureKustoResource) {
-			this.resources = this.resources.concat(this.metadata.settings.azureKustoResource);
+			this.resources.push(this.metadata.settings.azureKustoResource);
 		}
 
 		if (this.metadata.settings.powerBiResource) {
-			this.resources = this.resources.concat(this.metadata.settings.powerBiResource);
+			this.resources.push(this.metadata.settings.powerBiResource);
 		}
 
 		this.scopes = [...this.metadata.settings.scopes];
@@ -90,9 +94,12 @@ export abstract class AzureAuth implements vscode.Disposable {
 	}
 
 	public async startLogin(): Promise<AzureAccount | azdata.PromptFailedResult> {
-		let loginComplete: Deferred<void, Error>;
+		let loginComplete: Deferred<void, Error> | undefined = undefined;
 		try {
 			Logger.verbose('Starting login');
+			if (!this.metadata.settings.microsoftResource) {
+				throw new Error(localize('noMicrosoftResource', "Provider '{0}' does not have a Microsoft resource endpoint defined.", this.metadata.displayName));
+			}
 			const result = await this.login(this.commonTenant, this.metadata.settings.microsoftResource);
 			loginComplete = result.authComplete;
 			if (!result?.response) {
@@ -220,6 +227,9 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		// User didn't have any cached tokens, or the cached tokens weren't useful.
 		// For most users we can use the refresh token from the general microsoft resource to an access token of basically any type of resource we want.
+		if (!this.metadata.settings.microsoftResource) {
+			throw new Error(localize('noMicrosoftResource', "Provider '{0}' does not have a Microsoft resource endpoint defined.", this.metadata.displayName));
+		}
 		const baseTokens = await this.getSavedToken(this.commonTenant, this.metadata.settings.microsoftResource, account.key);
 		if (!baseTokens) {
 			Logger.error('User had no base tokens for the basic resource registered. This should not happen and indicates something went wrong with the authentication cycle');
@@ -251,7 +261,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	 * @returns The oauth token response or undefined. Undefined is returned when the user wants to ignore a tenant or chooses not to start the
 	 * re-authentication process for their tenant.
 	 */
-	public async refreshToken(tenant: Tenant, resource: Resource, refreshToken: RefreshToken | undefined): Promise<OAuthTokenResponse> | undefined {
+	public async refreshToken(tenant: Tenant, resource: Resource, refreshToken: RefreshToken | undefined): Promise<OAuthTokenResponse | undefined> {
 		Logger.pii('Refreshing token', [{ name: 'token', objOrArray: refreshToken }], []);
 		if (refreshToken) {
 			const postData: RefreshTokenPostData = {
@@ -268,7 +278,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		return this.handleInteractionRequired(tenant, resource);
 	}
 
-	public async getToken(tenant: Tenant, resource: Resource, postData: AuthorizationCodePostData | TokenPostData | RefreshTokenPostData): Promise<OAuthTokenResponse> {
+	public async getToken(tenant: Tenant, resource: Resource, postData: AuthorizationCodePostData | TokenPostData | RefreshTokenPostData): Promise<OAuthTokenResponse | undefined> {
 		Logger.verbose('Fetching token');
 		const tokenUrl = `${this.loginEndpointUrl}${tenant.id}/oauth2/token`;
 		const response = await this.makePostRequest(tokenUrl, postData);
@@ -317,7 +327,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			token: accessTokenString,
 			key: userKey
 		};
-		let refreshToken: RefreshToken;
+		let refreshToken: RefreshToken | undefined = undefined;
 
 		if (refreshTokenString) {
 			refreshToken = {
@@ -402,7 +412,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		}
 	}
 
-	public async getSavedToken(tenant: Tenant, resource: Resource, accountKey: azdata.AccountKey): Promise<{ accessToken: AccessToken, refreshToken: RefreshToken, expiresOn: string }> {
+	public async getSavedToken(tenant: Tenant, resource: Resource, accountKey: azdata.AccountKey): Promise<{ accessToken: AccessToken, refreshToken: RefreshToken | undefined, expiresOn: string } | undefined> {
 		const getMsg = localize('azure.cacheErrorGet', "Error when getting your account from the cache");
 		const parseMsg = localize('azure.cacheErrorParse', "Error when parsing your account from the cache");
 
@@ -411,8 +421,8 @@ export abstract class AzureAuth implements vscode.Disposable {
 			throw new AzureAuthError(getMsg, 'Getting account from cache failed', undefined);
 		}
 
-		let accessTokenString: string;
-		let refreshTokenString: string;
+		let accessTokenString: string | undefined = undefined;
+		let refreshTokenString: string | undefined = undefined;
 		let expiresOn: string;
 		try {
 			Logger.info('Fetching saved token');
@@ -430,7 +440,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 				return undefined;
 			}
 			const accessToken: AccessToken = JSON.parse(accessTokenString);
-			let refreshToken: RefreshToken;
+			let refreshToken: RefreshToken | undefined = undefined;
 			if (refreshTokenString) {
 				refreshToken = JSON.parse(refreshTokenString);
 			}
@@ -512,11 +522,11 @@ export abstract class AzureAuth implements vscode.Disposable {
 		const messageBody = localize('azurecore.consentDialog.body', "Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.", tenant.displayName, tenant.id, resource.id);
 		const result = await vscode.window.showInformationMessage(messageBody, { modal: true }, openItem, closeItem, dontAskAgainItem);
 
-		if (result.action) {
+		if (result?.action) {
 			await result.action(tenant.id);
 		}
 
-		return result.booleanResult;
+		return result?.booleanResult || false;
 	}
 	//#endregion
 
@@ -624,7 +634,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	//#endregion
 
 	//#region inconsequential
-	protected getTokenClaims(accessToken: string): TokenClaims | undefined {
+	protected getTokenClaims(accessToken: string): TokenClaims {
 		try {
 			const split = accessToken.split('.');
 			return JSON.parse(Buffer.from(split[1], 'base64').toString('binary'));
@@ -744,7 +754,7 @@ export interface TokenClaims { // https://docs.microsoft.com/en-us/azure/active-
 	ver: string;
 }
 
-export type OAuthTokenResponse = { accessToken: AccessToken, refreshToken: RefreshToken, tokenClaims: TokenClaims, expiresOn: string };
+export type OAuthTokenResponse = { accessToken: AccessToken, refreshToken: RefreshToken | undefined, tokenClaims: TokenClaims, expiresOn: string };
 
 export interface TokenPostData {
 	grant_type: 'refresh_token' | 'authorization_code' | 'urn:ietf:params:oauth:grant-type:device_code';
