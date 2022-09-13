@@ -11,6 +11,7 @@ import { TextWithIconColumn } from 'sql/base/browser/ui/table/plugins/textWithIc
 import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { BaseActionContext, ManageActionContext } from 'sql/workbench/browser/actions';
 import { getFlavor, ObjectListViewProperty } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
@@ -60,7 +61,8 @@ export class ExplorerTable extends Disposable {
 		private readonly menuService: IMenuService,
 		private readonly contextKeyService: IContextKeyService,
 		private readonly progressService: IEditorProgressService,
-		private readonly logService: ILogService) {
+		private readonly logService: ILogService,
+		private readonly dashboardService: IDashboardService) {
 		super();
 		this._explorerView = new ExplorerView(this.context);
 		const connectionInfo = this.bootStrapService.connectionManagementService.connectionInfo;
@@ -99,6 +101,10 @@ export class ExplorerTable extends Disposable {
 			this._table.updateRowCount();
 		}));
 		this._register(this._view.onFilterStateChange(() => {
+			this._table.grid.invalidateAllRows();
+			this._table.updateRowCount();
+		}));
+		this._register(this.dashboardService.onLayout(() => {
 			this._table.grid.invalidateAllRows();
 			this._table.updateRowCount();
 		}));
