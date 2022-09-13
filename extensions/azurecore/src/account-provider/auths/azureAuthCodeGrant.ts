@@ -19,6 +19,7 @@ import * as qs from 'qs';
 import { promises as fs } from 'fs';
 import { PublicClientApplication, CryptoProvider, AuthorizationUrlRequest, AuthorizationCodeRequest, AuthenticationResult } from '@azure/msal-node';
 
+
 const localize = nls.loadMessageBundle();
 
 interface AuthCodeResponse {
@@ -40,7 +41,6 @@ export class AzureAuthCodeGrant extends AzureAuth {
 	private cryptoProvider: CryptoProvider;
 	private server: SimpleWebServer;
 	private pkceCodes: CryptoValues;
-
 
 	constructor(
 		metadata: AzureAccountProviderMetadata,

@@ -13,7 +13,6 @@ import providerSettings from '../../../account-provider/providerSettings';
 import { AzureResource } from 'azdata';
 import { AxiosResponse } from 'axios';
 
-
 let azureAuthCodeGrant: TypeMoq.IMock<AzureAuthCodeGrant>;
 // let azureDeviceCode: TypeMoq.IMock<AzureDeviceCode>;
 

@@ -158,7 +158,6 @@ export class AzureAccountProviderService implements vscode.Disposable {
 			}
 			let simpleTokenCache = new SimpleTokenCache(tokenCacheKey, this._userStoragePath, noSystemKeychain, this._credentialProvider);
 			await simpleTokenCache.init();
-
 			const cachePath = path.join(this._userStoragePath, './cache.json');
 			//TODO: figure out new account name
 			const persistenceConfiguration = {

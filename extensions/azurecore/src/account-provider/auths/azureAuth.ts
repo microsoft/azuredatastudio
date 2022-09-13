@@ -135,7 +135,6 @@ export abstract class AzureAuth implements vscode.Disposable {
 				loginComplete?.resolve();
 				return account;
 			}
-
 		} catch (ex) {
 			Logger.error('Login failed');
 			if (ex instanceof AzureAuthError) {
@@ -301,12 +300,11 @@ export abstract class AzureAuth implements vscode.Disposable {
 				tenant: tenant.id,
 				resource: resource.endpoint
 			};
-
 			return this.getToken(tenant, resource, postData);
 		}
-
 		return this.handleInteractionRequired(tenant, resource);
 	}
+
 
 	/**
 	 * Gets the access token for the correct account and scope from the token cache, if the correct token doesn't exist in the token cache
@@ -348,7 +346,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 				id: account.tenantId,
 				displayName: ''
 			};
-			const authResult = await this.login(tenant, resource);
+			const authResult = await this.loginMsal(tenant, resource);
 			return authResult.response;
 		}
 		// Need: Account info
@@ -360,10 +358,6 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 	}
 
-	public async getTokenInteractive(authCodeRequest: AuthorizationCodeRequest): AuthenticationResult {
-		// TODO: this method
-	}
-
 	public async getToken(tenant: Tenant, resource: Resource, postData: AuthorizationCodePostData | TokenPostData | RefreshTokenPostData): Promise<OAuthTokenResponse> {
 		Logger.verbose('Fetching token');
 		const tokenUrl = `${this.loginEndpointUrl}${tenant.id}/oauth2/token`;
@@ -373,17 +367,18 @@ export abstract class AzureAuth implements vscode.Disposable {
 		if (response.data.error === 'interaction_required') {
 			return this.handleInteractionRequired(tenant, resource);
 		}
-
 		if (response.data.error) {
 			Logger.error('Response error!', response.data);
 			throw new AzureAuthError(localize('azure.responseError', "Token retrieval failed with an error. [Open developer tools]({0}) for more details.", 'command:workbench.action.toggleDevTools'), 'Token retrieval failed', undefined);
 		}
-
 		const accessTokenString = response.data.access_token;
 		const refreshTokenString = response.data.refresh_token;
 		const expiresOnString = response.data.expires_on;
-
 		return this.getTokenHelper(tenant, resource, accessTokenString, refreshTokenString, expiresOnString);
+	}
+
+	public async getTokenInteractive(authCodeRequest: AuthorizationCodeRequest): AuthenticationResult {
+
 	}
 
 	public async getTokenHelper(tenant: Tenant, resource: Resource, accessTokenString: string, refreshTokenString: string, expiresOnString: string): Promise<OAuthTokenResponse> {
@@ -578,7 +573,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	public async handleInteractionRequiredMsal(tenant: Tenant, resource: Resource): Promise<AuthenticationResult | undefined> {
 		const shouldOpen = await this.askUserForInteraction(tenant, resource);
 		if (shouldOpen) {
-			const result = await this.login(tenant, resource);
+			const result = await this.loginMsal(tenant, resource);
 			result?.authComplete?.resolve();
 			return result?.response;
 		}

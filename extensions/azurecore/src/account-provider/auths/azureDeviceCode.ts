@@ -13,7 +13,6 @@ import {
 	DeviceCodeCheckPostData,
 
 } from './azureAuth';
-
 import {
 	AzureAccountProviderMetadata,
 	AzureAuthType,
@@ -117,7 +116,6 @@ export class AzureDeviceCode extends AzureAuth {
 		azdata.accounts.endAutoOAuthDeviceCode();
 	}
 
-
 	private setupPolling(info: DeviceCodeLogin): Promise<DeviceCodeLoginResult> {
 		const timeoutMessage = localize('azure.timeoutDeviceCode', 'Timed out when waiting for device code login.');
 		const fiveMinutes = 5 * 60 * 1000;
@@ -164,7 +162,6 @@ export class AzureDeviceCode extends AzureAuth {
 			throw new Error(msg);
 		}
 	}
-
 
 	public override async autoOAuthCancelled(): Promise<void> {
 		return azdata.accounts.endAutoOAuthDeviceCode();
