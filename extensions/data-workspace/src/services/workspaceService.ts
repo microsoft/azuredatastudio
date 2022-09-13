@@ -26,7 +26,10 @@ export class WorkspaceService implements IWorkspaceService {
 	private openedProjects: vscode.Uri[] | undefined = undefined;
 	private excludedProjects: string[] | undefined;
 
-	constructor() { }
+	constructor() {
+		Logger.log(`Calling getProjectsInWorkspace() from WorkspaceService constructor`);
+		this.getProjectsInWorkspace(undefined, true).catch(err => Logger.error(`Error initializing projects in workspace ${err}`));
+	}
 
 	get isProjectProviderAvailable(): boolean {
 		Logger.log(`Checking ${vscode.extensions.all.length} extensions to see if there is a project provider is available`);
