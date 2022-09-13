@@ -11,7 +11,7 @@ import * as os from 'os';
 
 import { AppContext } from './appContext';
 import { AzureAccountProviderService } from './account-provider/azureAccountProviderService';
-
+import { serversQuery } from './azureResource/providers/databaseServer/serverQueryStrings';
 import { AzureResourceDatabaseServerProvider } from './azureResource/providers/databaseServer/databaseServerProvider';
 import { AzureResourceDatabaseServerService } from './azureResource/providers/databaseServer/databaseServerService';
 import { AzureResourceDatabaseProvider } from './azureResource/providers/database/databaseProvider';
@@ -163,7 +163,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 		getSqlServers(account: azurecore.AzureAccount,
 			subscriptions: azurecore.azureResource.AzureResourceSubscription[],
 			ignoreErrors: boolean): Promise<azurecore.GetSqlServersResult> {
-			return azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, `where type == "${azurecore.azureResource.AzureResourceType.sqlServer}" and kind != "v12.0,analytics"`);
+			return azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, serversQuery);
 		},
 		getSqlVMServers(account: azurecore.AzureAccount,
 			subscriptions: azurecore.azureResource.AzureResourceSubscription[],

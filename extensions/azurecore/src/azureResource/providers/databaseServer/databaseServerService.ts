@@ -6,6 +6,7 @@
 
 import { ResourceServiceBase, GraphData } from '../resourceTreeDataProviderBase';
 import { azureResource } from 'azurecore';
+import { serversQuery } from './serverQueryStrings';
 
 export interface DbServerGraphData extends GraphData {
 	properties: {
@@ -13,12 +14,9 @@ export interface DbServerGraphData extends GraphData {
 		administratorLogin: string;
 		connectivityEndpoints?: { sql: string };
 		managedResourceGroupName?: string;
+		sqlAdministratorLogin?: string;
 	};
 }
-
-export const synapseQuery = `where type == "microsoft.synapse/workspaces"`;
-
-export const serversQuery = `where type == "${azureResource.AzureResourceType.sqlServer}" and kind != "v12.0,analytics"`;
 
 export class AzureResourceDatabaseServerService extends ResourceServiceBase<DbServerGraphData, azureResource.AzureResourceDatabaseServer> {
 
@@ -31,7 +29,7 @@ export class AzureResourceDatabaseServerService extends ResourceServiceBase<DbSe
 			id: resource.id,
 			name: resource.name,
 			fullName: resource.properties.connectivityEndpoints?.sql || resource.properties.fullyQualifiedDomainName,
-			loginName: resource.properties.administratorLogin,
+			loginName: resource.properties.sqlAdministratorLogin || resource.properties.administratorLogin,
 			defaultDatabaseName: 'master',
 			subscription: {
 				id: resource.subscriptionId,

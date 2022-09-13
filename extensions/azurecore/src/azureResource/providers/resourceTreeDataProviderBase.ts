@@ -10,7 +10,7 @@ import { IAzureResourceService } from '../interfaces';
 import { AzureResourceErrorMessageUtil } from '../utils';
 import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 import { AzureAccount, azureResource } from 'azurecore';
-import { serversQuery, synapseQuery } from './databaseServer/databaseServerService';
+import { serversQuery, synapseQuery } from './databaseServer/serverQueryStrings';
 
 export abstract class ResourceTreeDataProviderBase<T extends azureResource.AzureResource> implements azureResource.IAzureResourceTreeDataProvider {
 	public browseConnectionMode: boolean = false;

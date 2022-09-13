@@ -5,7 +5,8 @@
 
 import { ServiceClientCredentials } from '@azure/ms-rest-js';
 import { IAzureResourceService } from '../../interfaces';
-import { serversQuery, synapseQuery, DbServerGraphData } from '../databaseServer/databaseServerService';
+import { DbServerGraphData } from '../databaseServer/databaseServerService';
+import { synapseQuery, serversQuery } from '../databaseServer/serverQueryStrings';
 import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 import { queryGraphResources, GraphData } from '../resourceTreeDataProviderBase';
 import { AzureAccount, azureResource } from 'azurecore';
@@ -58,7 +59,7 @@ export class AzureResourceDatabaseService implements IAzureResourceService<azure
 						id: db.id,
 						serverName: server.name,
 						serverFullName: server.properties.connectivityEndpoints?.sql || server.properties.fullyQualifiedDomainName,
-						loginName: server.properties.administratorLogin,
+						loginName: server.properties.sqlAdministratorLogin || server.properties.administratorLogin,
 						subscription: {
 							id: db.subscriptionId,
 							name: (subscriptions.find(sub => sub.id === db.subscriptionId))?.name
