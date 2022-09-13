@@ -13,7 +13,7 @@ import { Codicon } from 'vs/base/common/codicons';
 import { sortAlphabeticallyIconClassNames, sortByDisplayOrderIconClassNames, sortReverseAlphabeticallyIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/constants';
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { RESULTS_GRID_DEFAULTS } from 'sql/workbench/common/constants';
-import { contrastBorder, listHoverBackground } from 'vs/platform/theme/common/colorRegistry';
+import { contrastBorder, listHoverBackground, listInactiveSelectionBackground } from 'vs/platform/theme/common/colorRegistry';
 import { TreeGrid } from 'sql/base/browser/ui/table/treeGrid';
 import { ISashEvent, IVerticalSashLayoutProvider, Orientation, Sash } from 'vs/base/browser/ui/sash/sash';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
@@ -329,6 +329,16 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 		.properties .table-action-bar,
 		.mxTooltip {
 			border: 1px solid ${widgetBorderColor};
+		}
+		`);
+	}
+
+	const parentRowBackground = theme.getColor(listInactiveSelectionBackground);
+	if (parentRowBackground) {
+		collector.addRule(`
+		.eps-container .ui-widget-content.slick-row[aria-expanded="true"],
+		.eps-container .ui-widget-content.slick-row[aria-expanded="false"] {
+			background-color: ${parentRowBackground};
 		}
 		`);
 	}
