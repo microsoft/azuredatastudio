@@ -47,6 +47,10 @@ export class FindExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 	private renderAndStyleWidget() {
 		// Expensive Operation Dropdown
 		this._operationNameSelectBoxContainer = DOM.$('expensive-operation-name-select-box .dropdown-container');
+		const operationLabel = DOM.$('expensive-operation-name-select-box-label');
+		operationLabel.innerText = localize('expensiveOperationLabel', 'Metric:');
+
+		this._operationNameSelectBoxContainer.appendChild(operationLabel);
 		this.container.appendChild(this._operationNameSelectBoxContainer);
 
 		this._operationNameSelectBox = new SelectBox([
@@ -59,7 +63,8 @@ export class FindExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 		], COST_STRING, this.contextViewService, this._operationNameSelectBoxContainer);
 		this._operationNameSelectBox.render(this._operationNameSelectBoxContainer);
 		attachSelectBoxStyler(this._operationNameSelectBox, this.themeService);
-		this._operationNameSelectBoxContainer.style.width = '150px';
+		this._operationNameSelectBoxContainer.style.width = '200px';
+		this._operationNameSelectBoxContainer.style.marginRight = '5px';
 
 		this._operationNameSelectBox.onDidSelect(e => {
 			switch (e.selected) {
@@ -94,13 +99,13 @@ export class FindExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 			}
 		};
 
-		const findButton = new Button(this.container, {
+		const applyButton = new Button(this.container, {
 			title: localize('findExpensiveOperationButtonTitle', 'Find Expensive Operation (Enter)')
 		});
-		findButton.setWidth('60px');
-		findButton.label = localize('findExpensiveOperationApplyButton', 'Find');
+		applyButton.setWidth('60px');
+		applyButton.label = localize('findExpensiveOperationApplyButton', 'Apply');
 
-		findButton.onDidClick(async e => {
+		applyButton.onDidClick(async e => {
 			await new FindExpensiveOperationAction().run(self);
 		});
 

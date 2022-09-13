@@ -98,11 +98,17 @@ However we always want it to be the width of the container it is resizing.
 	flex-direction: row;
 	padding: 5px;
 	height: auto;
-	width: 240px;
+	width: 290px;
 }
 
 .eps-container .execution-plan .plan .plan-action-container .find-expensive-operation-widget .select-container {
 	margin-left: 5px;
+	display: flex;
+	align-items: center;
+}
+
+.eps-container .execution-plan .plan .plan-action-container .find-expensive-operation-widget .select-container expensive-operation-name-select-box-label {
+	margin-right: 5px;
 }
 
 .eps-container .execution-plan .plan .plan-action-container .find-expensive-operation-widget .select-container>select {
@@ -114,6 +120,8 @@ However we always want it to be the width of the container it is resizing.
 .top-operations-tab .top-operations-container .query-row {
 	padding: 5px;
 	font-weight: bolder;
+	margin-left: 5px;
+	margin-right: 5px;
 }
 
 /* execution plan header that contains the relative query cost, query statement and recommendations */
