@@ -11,7 +11,7 @@ import * as os from 'os';
 
 import { AppContext } from './appContext';
 import { AzureAccountProviderService } from './account-provider/azureAccountProviderService';
-import { serversQuery } from './azureResource/providers/databaseServer/serverQueryStrings';
+import { synapseQuery, serversQuery } from './azureResource/providers/databaseServer/serverQueryStrings';
 import { AzureResourceDatabaseServerProvider } from './azureResource/providers/databaseServer/databaseServerProvider';
 import { AzureResourceDatabaseServerService } from './azureResource/providers/databaseServer/databaseServerService';
 import { AzureResourceDatabaseProvider } from './azureResource/providers/database/databaseProvider';
@@ -160,10 +160,17 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			ignoreErrors: boolean): Promise<azurecore.GetManagedDatabasesResult> {
 			return azureResourceUtils.getManagedDatabases(account, subscription, managedInstance, ignoreErrors);
 		},
-		getSqlServers(account: azurecore.AzureAccount,
+		async getSqlServers(account: azurecore.AzureAccount,
 			subscriptions: azurecore.azureResource.AzureResourceSubscription[],
 			ignoreErrors: boolean): Promise<azurecore.GetSqlServersResult> {
-			return azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, serversQuery);
+			let serverResults = await azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, serversQuery);
+			let synapseResults = await azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, synapseQuery);
+			let returnResources = serverResults.resources.concat(synapseResults.resources);
+			let returnErrors = serverResults.errors.concat(serverResults.errors);
+			return {
+				resources: returnResources,
+				errors: returnErrors
+			};
 		},
 		getSqlVMServers(account: azurecore.AzureAccount,
 			subscriptions: azurecore.azureResource.AzureResourceSubscription[],
