@@ -61,8 +61,10 @@ export class FindExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 			ACTUAL_NUMBER_OF_ROWS_FOR_ALL_EXECUTIONS_STRING,
 			NUMBER_OF_ROWS_READ_STRING
 		], COST_STRING, this.contextViewService, this._operationNameSelectBoxContainer);
+
 		this._operationNameSelectBox.render(this._operationNameSelectBoxContainer);
-		attachSelectBoxStyler(this._operationNameSelectBox, this.themeService);
+		this._register(attachSelectBoxStyler(this._operationNameSelectBox, this.themeService));
+
 		this._operationNameSelectBoxContainer.style.width = '200px';
 		this._operationNameSelectBoxContainer.style.marginRight = '5px';
 
