@@ -4,9 +4,6 @@
     <trans-unit id="arc.USD">
       <source xml:lang="en">USD</source>
     </trans-unit>
-    <trans-unit id="arc.addingWorkerNodes">
-      <source xml:lang="en">adding worker nodes</source>
-    </trans-unit>
     <trans-unit id="arc.apply">
       <source xml:lang="en">Apply</source>
     </trans-unit>
@@ -72,9 +69,6 @@
     </trans-unit>
     <trans-unit id="arc.condition">
       <source xml:lang="en">Condition</source>
-    </trans-unit>
-    <trans-unit id="arc.configurationCoordinatorNode">
-      <source xml:lang="en">Node Configuration</source>
     </trans-unit>
     <trans-unit id="arc.configurationPerNode">
       <source xml:lang="en">Configuration</source>
@@ -163,9 +157,6 @@
     </trans-unit>
     <trans-unit id="arc.coordinatorEndpoint">
       <source xml:lang="en">Coordinator endpoint</source>
-    </trans-unit>
-    <trans-unit id="arc.coordinatorNodeConfigurationInformation">
-      <source xml:lang="en">You can configure the number of CPU cores and storage size that will apply to the coordinator node. Adjust the number of CPU cores and memory settings for your server group. To reset the requests and/or limits, pass in empty value.</source>
     </trans-unit>
     <trans-unit id="arc.coordinatorNodeParameters">
       <source xml:lang="en">Coordinator Node Parameters</source>
@@ -522,9 +513,6 @@
     </trans-unit>
     <trans-unit id="arc.node">
       <source xml:lang="en">node</source>
-    </trans-unit>
-    <trans-unit id="arc.nodeConfiguration">
-      <source xml:lang="en">Node configuration</source>
     </trans-unit>
     <trans-unit id="arc.nodes">
       <source xml:lang="en">nodes</source>
@@ -928,26 +916,14 @@
     <trans-unit id="arc.workerNodeCount">
       <source xml:lang="en">Worker node count</source>
     </trans-unit>
-    <trans-unit id="arc.workerNodeInformation">
-      <source xml:lang="en">It is possible to scale in and out your server group by reducing or increasing the number of worker nodes. The value must be 0 or greater than 1.</source>
-    </trans-unit>
     <trans-unit id="arc.workerNodeParameters">
       <source xml:lang="en">Worker Node Parameters</source>
     </trans-unit>
     <trans-unit id="arc.workerNodes">
       <source xml:lang="en">Worker Nodes</source>
     </trans-unit>
-    <trans-unit id="arc.workerNodesConfigurationInformation">
-      <source xml:lang="en">You can configure the number of CPU cores and storage size that will apply to all worker nodes. Adjust the number of CPU cores and memory settings for your server group. To reset the requests and/or limits, pass in empty value.</source>
-    </trans-unit>
-    <trans-unit id="arc.workerNodesDescription">
-      <source xml:lang="en">Expand your server group and scale your database by adding worker nodes.</source>
-    </trans-unit>
     <trans-unit id="arc.workerNodesParametersDescription">
       <source xml:lang="en"> These server parameters of the Worker nodes can be set to custom (non-default) values. Search to find parameters.</source>
-    </trans-unit>
-    <trans-unit id="arc.workerOneNodeValidationMessage">
-      <source xml:lang="en">Value of 1 is not supported.</source>
     </trans-unit>
     <trans-unit id="arc.yes">
       <source xml:lang="en">Yes</source>
