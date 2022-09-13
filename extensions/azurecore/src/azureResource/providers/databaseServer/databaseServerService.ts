@@ -11,8 +11,12 @@ export interface DbServerGraphData extends GraphData {
 	properties: {
 		fullyQualifiedDomainName: string;
 		administratorLogin: string;
+		connectivityEndpoints?: { sql: string };
+		managedResourceGroupName?: string;
 	};
 }
+
+export const synapseQuery = `where type == "microsoft.synapse/workspaces"`;
 
 export const serversQuery = `where type == "${azureResource.AzureResourceType.sqlServer}" and kind != "v12.0,analytics"`;
 
@@ -26,7 +30,7 @@ export class AzureResourceDatabaseServerService extends ResourceServiceBase<DbSe
 		return {
 			id: resource.id,
 			name: resource.name,
-			fullName: resource.properties.fullyQualifiedDomainName,
+			fullName: resource.properties.connectivityEndpoints?.sql || resource.properties.fullyQualifiedDomainName,
 			loginName: resource.properties.administratorLogin,
 			defaultDatabaseName: 'master',
 			subscription: {

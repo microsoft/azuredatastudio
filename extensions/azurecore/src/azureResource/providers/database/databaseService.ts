@@ -5,7 +5,7 @@
 
 import { ServiceClientCredentials } from '@azure/ms-rest-js';
 import { IAzureResourceService } from '../../interfaces';
-import { serversQuery, DbServerGraphData } from '../databaseServer/databaseServerService';
+import { serversQuery, synapseQuery, DbServerGraphData } from '../databaseServer/databaseServerService';
 import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 import { queryGraphResources, GraphData } from '../resourceTreeDataProviderBase';
 import { AzureAccount, azureResource } from 'azurecore';
@@ -19,18 +19,27 @@ export class AzureResourceDatabaseService implements IAzureResourceService<azure
 		const resourceClient = new ResourceGraphClient(credential, { baseUri: account.properties.providerSettings.settings.armResource.endpoint });
 
 		// Query servers and databases in parallel (start both promises before waiting on the 1st)
+		let synapseQueryPromise = queryGraphResources<GraphData>(resourceClient, subscriptions, synapseQuery);
 		let serverQueryPromise = queryGraphResources<GraphData>(resourceClient, subscriptions, serversQuery);
 		let dbQueryPromise = queryGraphResources<GraphData>(resourceClient, subscriptions, `where type == "${azureResource.AzureResourceType.sqlDatabase}"`);
-		let servers: DbServerGraphData[] = await serverQueryPromise as DbServerGraphData[];
+		let server1: DbServerGraphData[] = await serverQueryPromise as DbServerGraphData[];
+		let server2: DbServerGraphData[] = await synapseQueryPromise as DbServerGraphData[];
 		let dbByGraph: DatabaseGraphData[] = await dbQueryPromise as DatabaseGraphData[];
+		let servers: DbServerGraphData[] = server1.concat(server2);
 
 		// Group servers by resource group, then merge DB results with servers so we
 		// can get the login name and server fully qualified name to use for connections
 		let rgMap = new Map<string, DbServerGraphData[]>();
 		servers.forEach(s => {
-			let serversForRg = rgMap.get(s.resourceGroup) || [];
-			serversForRg.push(s);
-			rgMap.set(s.resourceGroup, serversForRg);
+			if (s.properties.connectivityEndpoints) {
+				let serversForRg = rgMap.get(s.properties.managedResourceGroupName) || [];
+				serversForRg.push(s);
+				rgMap.set(s.properties.managedResourceGroupName, serversForRg);
+			} else {
+				let serversForRg = rgMap.get(s.resourceGroup) || [];
+				serversForRg.push(s);
+				rgMap.set(s.resourceGroup, serversForRg);
+			}
 		});
 
 		// Match database ID. When calling exec [0] is full match, [1] is resource group name, [2] is server name
@@ -48,7 +57,7 @@ export class AzureResourceDatabaseService implements IAzureResourceService<azure
 						name: db.name,
 						id: db.id,
 						serverName: server.name,
-						serverFullName: server.properties.fullyQualifiedDomainName,
+						serverFullName: server.properties.connectivityEndpoints?.sql || server.properties.fullyQualifiedDomainName,
 						loginName: server.properties.administratorLogin,
 						subscription: {
 							id: db.subscriptionId,
