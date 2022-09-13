@@ -584,6 +584,7 @@ export enum SearchType {
 }
 
 export enum ExpensiveOperationType {
+	Off,
 	ActualElapsedTime,
 	ActualElapsedCpuTime,
 	Cost,

@@ -19,6 +19,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { Button } from 'sql/base/browser/ui/button/button';
 import { searchIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/constants';
 
+const OFF_STRING = localize('executionPlanOff', 'Off');
 const ACTUAL_ELAPSED_TIME_STRING = localize('executionPlanActualElapsedTime', 'Actual Elapsed Time');
 const ACTUAL_ELAPSED_CPU_TIME_STRING = localize('executionPlanActualElapsedCpuTime', 'Actual Elapsed CPU Time');
 const COST_STRING = localize('executionPlanCost', 'Cost');
@@ -41,6 +42,7 @@ export class FindExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 		@INotificationService public readonly notificationService: INotificationService
 	) {
 		super(DOM.$('.find-expensive-operation-widget'), 'findExpensiveOperation');
+
 		this.renderAndStyleWidget();
 	}
 
@@ -54,6 +56,7 @@ export class FindExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 		this.container.appendChild(this._operationNameSelectBoxContainer);
 
 		this._operationNameSelectBox = new SelectBox([
+			OFF_STRING,
 			ACTUAL_ELAPSED_TIME_STRING,
 			ACTUAL_ELAPSED_CPU_TIME_STRING,
 			COST_STRING,
@@ -70,6 +73,9 @@ export class FindExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 
 		this._register(this._operationNameSelectBox.onDidSelect(e => {
 			switch (e.selected) {
+				case OFF_STRING:
+					this._selectedExpensiveOperationType = ExpensiveOperationType.Off;
+					break;
 				case ACTUAL_ELAPSED_TIME_STRING:
 					this._selectedExpensiveOperationType = ExpensiveOperationType.ActualElapsedTime;
 					break;
@@ -94,13 +100,21 @@ export class FindExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 		const findExpensiveOperationAction = new FindExpensiveOperationAction();
 		this._register(findExpensiveOperationAction);
 
+		const clearExpensiveOperationAction = new TurnOffExpensiveOperationAction();
+		this._register(clearExpensiveOperationAction);
+
 		const cancelExpensiveOperationAction = new CancelExpensiveOperationAction();
 		this._register(cancelExpensiveOperationAction);
 
 		const self = this;
 		this._operationNameSelectBox.selectElem.onkeydown = async (ev) => {
 			if (ev.key === 'Enter') {
-				await findExpensiveOperationAction.run(self);
+				if (this._selectedExpensiveOperationType === ExpensiveOperationType.Off) {
+					await clearExpensiveOperationAction.run(self);
+				}
+				else {
+					await findExpensiveOperationAction.run(self);
+				}
 			}
 			else if (ev.key === 'Escape') {
 				this.widgetController.removeWidget(self);
@@ -114,7 +128,12 @@ export class FindExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 		applyButton.label = localize('findExpensiveOperationApplyButton', 'Apply');
 
 		this._register(applyButton.onDidClick(async e => {
-			await findExpensiveOperationAction.run(self);
+			if (this._selectedExpensiveOperationType === ExpensiveOperationType.Off) {
+				await clearExpensiveOperationAction.run(self);
+			}
+			else {
+				await findExpensiveOperationAction.run(self);
+			}
 		}));
 
 		// Adds Action bar
@@ -200,6 +219,19 @@ export class FindExpensiveOperationAction extends Action {
 		if (!result) {
 			context.notificationService.info(localize('invalidPropertyExecutionPlanMetric', 'Unable to locate a node using the specified metric.'));
 		}
+	}
+}
+
+export class TurnOffExpensiveOperationAction extends Action {
+	public static ID = 'qp.turnOffExpensiveOperationAction';
+	public static LABEL = localize('turnOffExpensiveOperationAction', 'Off');
+
+	constructor() {
+		super(TurnOffExpensiveOperationAction.ID, TurnOffExpensiveOperationAction.LABEL);
+	}
+
+	public override async run(context: FindExpensiveOperationWidget): Promise<void> {
+		context.executionPlanDiagram.clearExpensiveOperatorHighlighting();
 	}
 }
 
