@@ -9,6 +9,7 @@ import { IWorkspaceService } from './interfaces';
 import { ProjectsFailedToLoad, UnknownProjectsError } from './constants';
 import { WorkspaceTreeItem } from 'dataworkspace';
 import { TelemetryReporter } from './telemetry';
+import Logger from './logger';
 
 /**
  * Tree data provider for the workspace main view
@@ -24,6 +25,7 @@ export class WorkspaceTreeDataProvider implements vscode.TreeDataProvider<Worksp
 	readonly onDidChangeTreeData?: vscode.Event<void | WorkspaceTreeItem | null | undefined> | undefined = this._onDidChangeTreeData?.event;
 
 	async refresh(): Promise<void> {
+		Logger.log(`Refreshing projects tree`);
 		await this._workspaceService.getProjectsInWorkspace(undefined, true);
 		this._onDidChangeTreeData?.fire();
 	}
@@ -39,6 +41,7 @@ export class WorkspaceTreeDataProvider implements vscode.TreeDataProvider<Worksp
 		}
 		else {
 			// if the element is undefined return the project tree items
+			Logger.log(`Calling getProjectsInWorkspace() from getChildren()`);
 			const projects = await this._workspaceService.getProjectsInWorkspace(undefined, false);
 			await vscode.commands.executeCommand('setContext', 'isProjectsViewEmpty', projects.length === 0);
 			const unknownProjects: string[] = [];

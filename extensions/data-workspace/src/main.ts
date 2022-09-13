@@ -15,8 +15,10 @@ import { IconPathHelper } from './common/iconHelper';
 import { ProjectDashboard } from './dialogs/projectDashboard';
 import { getAzdataApi } from './common/utils';
 import { createNewProjectWithQuickpick } from './dialogs/newProjectQuickpick';
+import Logger from './common/logger';
 
 export async function activate(context: vscode.ExtensionContext): Promise<IExtension> {
+	Logger.log(`Starting Data Workspace activate()`);
 	const azdataApi = getAzdataApi();
 	void vscode.commands.executeCommand('setContext', 'azdataAvailable', !!azdataApi);
 	const workspaceService = new WorkspaceService();
@@ -73,6 +75,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 
 	IconPathHelper.setExtensionContext(context);
 
+	Logger.log(`Finished activating Data Workspace extension`);
 	return Promise.resolve(dataWorkspaceExtension);
 }
 
