@@ -68,7 +68,7 @@ export class FindExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 		this._operationNameSelectBoxContainer.style.width = '200px';
 		this._operationNameSelectBoxContainer.style.marginRight = '5px';
 
-		this._operationNameSelectBox.onDidSelect(e => {
+		this._register(this._operationNameSelectBox.onDidSelect(e => {
 			switch (e.selected) {
 				case ACTUAL_ELAPSED_TIME_STRING:
 					this._selectedExpensiveOperationType = ExpensiveOperationType.ActualElapsedTime;
@@ -88,13 +88,19 @@ export class FindExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 				case NUMBER_OF_ROWS_READ_STRING:
 					this._selectedExpensiveOperationType = ExpensiveOperationType.NumberOfRowsRead;
 			}
-		});
+		}));
 
 		// Apply Button
+		const findExpensiveOperationAction = new FindExpensiveOperationAction();
+		this._register(findExpensiveOperationAction);
+
+		const cancelExpensiveOperationAction = new CancelExpensiveOperationAction();
+		this._register(cancelExpensiveOperationAction);
+
 		const self = this;
 		this._operationNameSelectBox.selectElem.onkeydown = async (ev) => {
 			if (ev.key === 'Enter') {
-				await new FindExpensiveOperationAction().run(self);
+				await findExpensiveOperationAction.run(self);
 			}
 			else if (ev.key === 'Escape') {
 				this.widgetController.removeWidget(self);
@@ -107,14 +113,14 @@ export class FindExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 		applyButton.setWidth('60px');
 		applyButton.label = localize('findExpensiveOperationApplyButton', 'Apply');
 
-		applyButton.onDidClick(async e => {
-			await new FindExpensiveOperationAction().run(self);
-		});
+		this._register(applyButton.onDidClick(async e => {
+			await findExpensiveOperationAction.run(self);
+		}));
 
 		// Adds Action bar
 		this._actionBar = new ActionBar(this.container);
 		this._actionBar.context = this;
-		this._actionBar.pushAction(new CancelExpensiveOperationAction(), { label: false, icon: true });
+		this._actionBar.pushAction(cancelExpensiveOperationAction, { label: false, icon: true });
 	}
 
 	public focus() {

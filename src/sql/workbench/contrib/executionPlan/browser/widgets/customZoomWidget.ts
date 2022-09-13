@@ -39,7 +39,7 @@ export class CustomZoomWidget extends ExecutionPlanWidgetBase {
 			ariaLabel: zoomValueLabel,
 			flexibleWidth: false
 		});
-		attachInputBoxStyler(this.customZoomInputBox, this.themeService);
+		this._register(attachInputBoxStyler(this.customZoomInputBox, this.themeService));
 
 		const currentZoom = this.executionPlanDiagram.getZoomLevel();
 
@@ -62,9 +62,9 @@ export class CustomZoomWidget extends ExecutionPlanWidgetBase {
 		applyButton.setWidth('60px');
 		applyButton.label = localize('customZoomApplyButton', "Apply");
 
-		applyButton.onDidClick(async e => {
+		this._register(applyButton.onDidClick(async e => {
 			await new CustomZoomAction().run(self);
-		});
+		}));
 
 		// Adding action bar
 		this._actionBar = new ActionBar(this.container);
