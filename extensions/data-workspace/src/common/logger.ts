@@ -23,7 +23,10 @@ export class Log {
 
 	private now(): string {
 		const now = new Date();
-		return this.padLeft(now.getUTCHours() + '', 2, '0')
+		return this.padLeft(now.getUTCFullYear() + '', 2, '0')
+			+ '-' + this.padLeft(now.getUTCMonth() + '', 2, '0')
+			+ '-' + this.padLeft(now.getUTCDate() + '', 2, '0')
+			+ ' ' + this.padLeft(now.getUTCHours() + '', 2, '0')
 			+ ':' + this.padLeft(now.getMinutes() + '', 2, '0')
 			+ ':' + this.padLeft(now.getUTCSeconds() + '', 2, '0') + '.' + now.getMilliseconds();
 	}

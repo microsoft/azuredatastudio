@@ -19,6 +19,8 @@ import Logger from './common/logger';
 
 export async function activate(context: vscode.ExtensionContext): Promise<IExtension> {
 	Logger.log(`Starting Data Workspace activate()`);
+	const startTime = new Date().getTime();
+
 	const azdataApi = getAzdataApi();
 	void vscode.commands.executeCommand('setContext', 'azdataAvailable', !!azdataApi);
 	const workspaceService = new WorkspaceService();
@@ -75,7 +77,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 
 	IconPathHelper.setExtensionContext(context);
 
-	Logger.log(`Finished activating Data Workspace extension`);
+	Logger.log(`Finished activating Data Workspace extension. Total time = ${new Date().getTime() - startTime}ms`);
 	return Promise.resolve(dataWorkspaceExtension);
 }
 
