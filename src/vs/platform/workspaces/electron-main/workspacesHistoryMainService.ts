@@ -19,8 +19,7 @@ import { createDecorator } from 'vs/platform/instantiation/common/instantiation'
 import { ILifecycleMainService, LifecycleMainPhase } from 'vs/platform/lifecycle/electron-main/lifecycleMainService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IStateMainService } from 'vs/platform/state/electron-main/state';
-import { ICodeWindow } from 'vs/platform/windows/electron-main/windows';
-import { IRecent, IRecentFile, IRecentFolder, IRecentlyOpened, IRecentWorkspace, isRecentFile, isRecentFolder, isRecentWorkspace, isSingleFolderWorkspaceIdentifier, isWorkspaceIdentifier, IWorkspaceIdentifier, RecentlyOpenedStorageData, restoreRecentlyOpened, toStoreData, WORKSPACE_EXTENSION } from 'vs/platform/workspaces/common/workspaces';
+import { IRecent, IRecentFile, IRecentFolder, IRecentlyOpened, IRecentWorkspace, isRecentFile, isRecentFolder, isRecentWorkspace, IWorkspaceIdentifier, RecentlyOpenedStorageData, restoreRecentlyOpened, toStoreData, WORKSPACE_EXTENSION } from 'vs/platform/workspaces/common/workspaces';
 import { IWorkspacesManagementMainService } from 'vs/platform/workspaces/electron-main/workspacesManagementMainService';
 
 export const IWorkspacesHistoryMainService = createDecorator<IWorkspacesHistoryMainService>('workspacesHistoryMainService');
@@ -32,7 +31,7 @@ export interface IWorkspacesHistoryMainService {
 	readonly onDidChangeRecentlyOpened: CommonEvent<void>;
 
 	addRecentlyOpened(recents: IRecent[]): void;
-	getRecentlyOpened(include?: ICodeWindow): IRecentlyOpened;
+	getRecentlyOpened(): IRecentlyOpened;
 	removeRecentlyOpened(paths: URI[]): void;
 	clearRecentlyOpened(): void;
 
@@ -241,28 +240,9 @@ export class WorkspacesHistoryMainService extends Disposable implements IWorkspa
 		this._onDidChangeRecentlyOpened.fire();
 	}
 
-	getRecentlyOpened(include?: ICodeWindow): IRecentlyOpened {
+	getRecentlyOpened(): IRecentlyOpened {
 		const workspaces: Array<IRecentFolder | IRecentWorkspace> = [];
 		const files: IRecentFile[] = [];
-
-		// Add current workspace to beginning if set
-		const currentWorkspace = include?.config?.workspace;
-		if (isWorkspaceIdentifier(currentWorkspace) && !this.workspacesManagementMainService.isUntitledWorkspace(currentWorkspace)) {
-			workspaces.push({ workspace: currentWorkspace });
-		} else if (isSingleFolderWorkspaceIdentifier(currentWorkspace)) {
-			workspaces.push({ folderUri: currentWorkspace.uri });
-		}
-
-		// Add currently files to open to the beginning if any
-		const currentFiles = include?.config?.filesToOpenOrCreate;
-		if (currentFiles) {
-			for (let currentFile of currentFiles) {
-				const fileUri = currentFile.fileUri;
-				if (fileUri && this.indexOfFile(files, fileUri) === -1) {
-					files.push({ fileUri });
-				}
-			}
-		}
 
 		this.addEntriesFromStorage(workspaces, files);
 

@@ -54,7 +54,7 @@ export class AzureArcTreeDataProvider implements vscode.TreeDataProvider<TreeNod
 		if (controllerNode) {
 			controllerNode.model.info = model.info;
 		} else {
-			this._controllerNodes.push(new ControllerTreeNode(model, this._context, this));
+			this._controllerNodes.push(new ControllerTreeNode(model, this));
 		}
 		if (refreshTree) {
 			this._onDidChangeTreeData.fire(undefined);
@@ -85,7 +85,7 @@ export class AzureArcTreeDataProvider implements vscode.TreeDataProvider<TreeNod
 			const controllerMementos: ControllerInfo[] = this._context.globalState.get(mementoToken) || [];
 			this._controllerNodes = controllerMementos.map(memento => {
 				const controllerModel = new ControllerModel(this, memento);
-				return new ControllerTreeNode(controllerModel, this._context, this);
+				return new ControllerTreeNode(controllerModel, this);
 			});
 		} finally {
 			this._loading = false;

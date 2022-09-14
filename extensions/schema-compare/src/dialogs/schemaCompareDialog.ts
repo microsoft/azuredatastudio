@@ -350,6 +350,7 @@ export class SchemaCompareDialog {
 					break;
 				case mssql.SchemaCompareEndpointType.Project:
 					targetComponents.push(this.targetProjectFilePathComponent);
+					targetComponents.push(this.targetProjectStructureComponent);
 					break;
 			}
 

@@ -221,7 +221,7 @@ export interface IConnectionManagementService {
 	/**
 	 * Gets the default authentication type from the configuration service
 	 */
-	getDefaultAuthenticationTypeId(): string;
+	getDefaultAuthenticationTypeId(providerName: string): string;
 
 	/**
 	 * Cancels the connection
@@ -321,6 +321,13 @@ export interface IConnectionManagementService {
 	 * @returns array of connections
 	 */
 	getConnections(activeConnectionsOnly?: boolean): ConnectionProfile[];
+
+	/**
+	 * Handle the unsupported provider scenario.
+	 * @param providerName The provider name.
+	 * @returns Promise with a boolean value indicating whether the user has accepted the suggestion.
+	 */
+	handleUnsupportedProvider(providerName: string): Promise<boolean>;
 }
 
 export enum RunQueryOnConnectionMode {
