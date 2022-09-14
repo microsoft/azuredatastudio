@@ -44,11 +44,11 @@ export class ConfigurePythonDialog extends Dialog {
 	}
 
 	async next(): Promise<void> {
-		await this.code.waitAndClick(ConfigurePythonDialog.nextButton);
+		await this.code.waitAndClick(ConfigurePythonDialog.nextButton, 40, 22);
 	}
 
 	async install(): Promise<void> {
-		await this.code.waitAndClick(ConfigurePythonDialog.installButton);
+		await this.code.waitAndClick(ConfigurePythonDialog.installButton, 40, 22);
 
 		await this.waitForDialogGone();
 		return this._waitForInstallationComplete();
