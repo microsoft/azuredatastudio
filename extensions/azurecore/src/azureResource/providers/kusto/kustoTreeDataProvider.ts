@@ -60,21 +60,16 @@ export class KustoTreeDataProvider extends ResourceTreeDataProviderBase<azureRes
 		};
 	}
 
-	protected createContainerNode(): azureResource.IAzureResourceNode {
-		return {
-			account: undefined,
-			subscription: undefined,
-			tenantId: undefined,
-			treeItem: {
-				id: KustoTreeDataProvider.containerId,
-				label: KustoTreeDataProvider.containerLabel,
-				iconPath: {
-					dark: this._extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
-					light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')
-				},
-				collapsibleState: TreeItemCollapsibleState.Collapsed,
-				contextValue: AzureResourceItemType.databaseServerContainer
-			}
-		};
+	public async getRootChildren(): Promise<TreeItem[]> {
+		return [{
+			id: KustoTreeDataProvider.containerId,
+			label: KustoTreeDataProvider.containerLabel,
+			iconPath: {
+				dark: this._extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
+				light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')
+			},
+			collapsibleState: TreeItemCollapsibleState.Collapsed,
+			contextValue: AzureResourceItemType.databaseServerContainer
+		}];
 	}
 }

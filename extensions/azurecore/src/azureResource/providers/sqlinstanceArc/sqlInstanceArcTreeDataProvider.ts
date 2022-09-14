@@ -60,21 +60,16 @@ export class SqlInstanceArcTreeDataProvider extends ResourceTreeDataProviderBase
 		};
 	}
 
-	protected createContainerNode(): azureResource.IAzureResourceNode {
-		return {
-			account: undefined,
-			subscription: undefined,
-			tenantId: undefined,
-			treeItem: {
-				id: SqlInstanceArcTreeDataProvider.containerId,
-				label: SqlInstanceArcTreeDataProvider.containerLabel,
-				iconPath: {
-					dark: this._extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
-					light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')
-				},
-				collapsibleState: TreeItemCollapsibleState.Collapsed,
-				contextValue: AzureResourceItemType.databaseServerContainer
-			}
-		};
+	public async getRootChildren(): Promise<TreeItem[]> {
+		return [{
+			id: SqlInstanceArcTreeDataProvider.containerId,
+			label: SqlInstanceArcTreeDataProvider.containerLabel,
+			iconPath: {
+				dark: this._extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
+				light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')
+			},
+			collapsibleState: TreeItemCollapsibleState.Collapsed,
+			contextValue: AzureResourceItemType.databaseServerContainer
+		}];
 	}
 }
