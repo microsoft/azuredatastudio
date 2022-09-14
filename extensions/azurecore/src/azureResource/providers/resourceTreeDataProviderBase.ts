@@ -10,7 +10,6 @@ import { IAzureResourceService } from '../interfaces';
 import { AzureResourceErrorMessageUtil } from '../utils';
 import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 import { AzureAccount, azureResource } from 'azurecore';
-import { serversQuery, synapseQuery } from './databaseServer/serverQueryStrings';
 
 export abstract class ResourceTreeDataProviderBase<T extends azureResource.AzureResource> implements azureResource.IAzureResourceTreeDataProvider {
 	public browseConnectionMode: boolean = false;
@@ -126,10 +125,6 @@ export abstract class ResourceServiceBase<T extends GraphData, U extends azureRe
 		const convertedResources: U[] = [];
 		const resourceClient = new ResourceGraphClient(credential, { baseUri: account.properties.providerSettings.settings.armResource.endpoint });
 		let graphResources = await queryGraphResources<T>(resourceClient, subscriptions, this.query);
-		if (this.query === serversQuery) {
-			let synapseGraphResources = await queryGraphResources<T>(resourceClient, subscriptions, synapseQuery);
-			graphResources = graphResources.concat(synapseGraphResources);
-		}
 		const ids = new Set<string>();
 		graphResources.forEach((res) => {
 			if (!ids.has(res.id)) {
