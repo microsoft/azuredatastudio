@@ -7,6 +7,7 @@ import { ExecutionPlanWidgetBase } from 'sql/workbench/contrib/executionPlan/bro
 import { ActionBar } from 'sql/base/browser/ui/taskbar/actionbar';
 import * as DOM from 'vs/base/browser/dom';
 import { localize } from 'vs/nls';
+import * as errors from 'vs/base/common/errors';
 import { Codicon } from 'vs/base/common/codicons';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
@@ -15,9 +16,11 @@ import { Action } from 'vs/base/common/actions';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { AzDataGraphCell, AzdataGraphView, ExpensiveOperationType } from 'sql/workbench/contrib/executionPlan/browser/azdataGraphView';
 import { ExecutionPlanWidgetController } from 'sql/workbench/contrib/executionPlan/browser/executionPlanWidgetController';
-import { INotificationService } from 'vs/platform/notification/common/notification';
+import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { searchIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/constants';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 
 const OFF_STRING = localize('executionPlanOff', 'Off');
 const ACTUAL_ELAPSED_TIME_STRING = localize('executionPlanActualElapsedTime', 'Actual Elapsed Time');
@@ -39,14 +42,37 @@ export class FindExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 		public readonly executionPlanDiagram: AzdataGraphView,
 		@IContextViewService public readonly contextViewService: IContextViewService,
 		@IThemeService public readonly themeService: IThemeService,
-		@INotificationService public readonly notificationService: INotificationService
+		@INotificationService public readonly notificationService: INotificationService,
+		@IConfigurationService private readonly _configurationService: IConfigurationService,
+		@IStorageService private readonly _storageService: IStorageService
 	) {
 		super(DOM.$('.find-expensive-operation-widget'), 'findExpensiveOperation');
 
 		this.renderAndStyleWidget();
 	}
 
-	private renderAndStyleWidget() {
+	private getDefaultExpensiveOperationMetric(): ExpensiveOperationType {
+		let defaultMetricConfiguration = this._configurationService.getValue<string>('queryEditor.executionPlan.expensiveOperationMetric');
+
+		switch (defaultMetricConfiguration) {
+			case 'actualElapsedTime':
+				return ExpensiveOperationType.ActualElapsedTime;
+			case 'actualElapsedCpuTime':
+				return ExpensiveOperationType.ActualElapsedCpuTime;
+			case 'cost':
+				return ExpensiveOperationType.Cost;
+			case 'subtreeCost':
+				return ExpensiveOperationType.SubtreeCost;
+			case 'actualNumberOfRowsForAllExecutions':
+				return ExpensiveOperationType.ActualNumberOfRowsForAllExecutions;
+			case 'numberOfRowsRead':
+				return ExpensiveOperationType.NumberOfRowsRead;
+			default:
+				return ExpensiveOperationType.Off;
+		}
+	}
+
+	private renderAndStyleWidget(): void {
 		// Expensive Operation Dropdown
 		this._operationNameSelectBoxContainer = DOM.$('expensive-operation-name-select-box .dropdown-container');
 		const operationLabel = DOM.$('expensive-operation-name-select-box-label');
@@ -73,9 +99,6 @@ export class FindExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 
 		this._register(this._operationNameSelectBox.onDidSelect(e => {
 			switch (e.selected) {
-				case OFF_STRING:
-					this._selectedExpensiveOperationType = ExpensiveOperationType.Off;
-					break;
 				case ACTUAL_ELAPSED_TIME_STRING:
 					this._selectedExpensiveOperationType = ExpensiveOperationType.ActualElapsedTime;
 					break;
@@ -93,6 +116,9 @@ export class FindExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 					break;
 				case NUMBER_OF_ROWS_READ_STRING:
 					this._selectedExpensiveOperationType = ExpensiveOperationType.NumberOfRowsRead;
+					break;
+				default:
+					this._selectedExpensiveOperationType = ExpensiveOperationType.Off;
 			}
 		}));
 
@@ -115,6 +141,8 @@ export class FindExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 				else {
 					await findExpensiveOperationAction.run(self);
 				}
+
+				this.showStoreDefaultMetricPrompt();
 			}
 			else if (ev.key === 'Escape') {
 				this.widgetController.removeWidget(self);
@@ -134,12 +162,39 @@ export class FindExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 			else {
 				await findExpensiveOperationAction.run(self);
 			}
+
+			this.showStoreDefaultMetricPrompt();
 		}));
 
 		// Adds Action bar
 		this._actionBar = new ActionBar(this.container);
 		this._actionBar.context = this;
 		this._actionBar.pushAction(cancelExpensiveOperationAction, { label: false, icon: true });
+	}
+
+	public showStoreDefaultMetricPrompt(): void {
+		const currentDefaultExpensiveOperationMetric = this.getDefaultExpensiveOperationMetric();
+		if (this._selectedExpensiveOperationType === currentDefaultExpensiveOperationMetric || !this._storageService.getBoolean('qp.expensiveOperationMetric.showChangeDefaultExpensiveMetricPrompt', StorageScope.GLOBAL, true)) {
+			return;
+		}
+
+		const infoMessage = localize('queryExecutionPlan.showUpdateDefaultMetricInfo', 'Set chosen metric as the default for query execution plans?');
+		const promptChoices = [
+			{
+				label: localize('qp.expensiveOperationMetric.yes', 'Yes'),
+				run: () => this._configurationService.updateValue('queryEditor.executionPlan.expensiveOperationMetric', this._selectedExpensiveOperationType.toString()).catch(e => errors.onUnexpectedError(e))
+			},
+			{
+				label: localize('qp.expensiveOperationMetric.no', 'No'),
+				run: () => { }
+			},
+			{
+				label: localize('qp.expensiveOperationMetric.dontShowAgain', "Don't Show Again"),
+				run: () => this._storageService.store('qp.expensiveOperationMetric.showChangeDefaultExpensiveMetricPrompt', false, StorageScope.GLOBAL, StorageTarget.USER)
+			}
+		];
+
+		this.notificationService.prompt(Severity.Info, infoMessage, promptChoices, { sticky: true });
 	}
 
 	public focus() {

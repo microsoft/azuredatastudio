@@ -450,6 +450,12 @@ const queryEditorConfiguration: IConfigurationNode = {
 			'type': 'boolean',
 			'default': false,
 			'description': localize('queryEditor.promptToSaveGeneratedFiles', "Prompt to save generated SQL files")
+		},
+		'queryEditor.executionPlan.expensiveOperationMetric': {
+			'type': 'string',
+			'enum': ['off', 'actualElapsedTime', 'actualElapsedCpuTime', 'cost', 'subtreeCost', 'actualNumberOfRowsForAllExecutions', 'numberOfRowsRead'],
+			'default': 'cost',
+			'description': localize('queryEditor.executionPlan.expensiveOperationMetric', 'The default metric to use to highlight an expensive operation in query execution plans')
 		}
 	}
 };

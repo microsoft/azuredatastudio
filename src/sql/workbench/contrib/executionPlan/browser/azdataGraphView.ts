@@ -584,13 +584,13 @@ export enum SearchType {
 }
 
 export enum ExpensiveOperationType {
-	Off,
-	ActualElapsedTime,
-	ActualElapsedCpuTime,
-	Cost,
-	SubtreeCost,
-	ActualNumberOfRowsForAllExecutions,
-	NumberOfRowsRead
+	Off = 'off',
+	ActualElapsedTime = 'actualElapsedTime',
+	ActualElapsedCpuTime = 'actualElapsedCpuTime',
+	Cost = 'cost',
+	SubtreeCost = 'subtreeCost',
+	ActualNumberOfRowsForAllExecutions = 'actualNumberOfRowsForAllExecutions',
+	NumberOfRowsRead = 'numberOfRowsRead'
 }
 
 export interface SearchQuery {
