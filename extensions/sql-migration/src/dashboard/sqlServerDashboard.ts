@@ -339,6 +339,11 @@ export class DashboardWidget {
 
 		this._context.subscriptions.push(
 			vscode.commands.registerCommand(
+				MenuCommands.StartLoginMigration,
+				async () => await this.launchLoginMigrationWizard()));
+
+		this._context.subscriptions.push(
+			vscode.commands.registerCommand(
 				MenuCommands.OpenNotebooks,
 				async () => {
 					const input = vscode.window.createQuickPick<MigrationNotebookInfo>();
@@ -368,6 +373,11 @@ export class DashboardWidget {
 		this._context.subscriptions.push(azdata.tasks.registerTask(
 			MenuCommands.StartMigration,
 			async () => await this.launchMigrationWizard()));
+
+		this._context.subscriptions.push(azdata.tasks.registerTask(
+			MenuCommands.StartLoginMigration,
+			async () => await this.launchLoginMigrationWizard()));
+
 
 		this._context.subscriptions.push(
 			azdata.tasks.registerTask(
@@ -451,6 +461,45 @@ export class DashboardWidget {
 						this.stateModel,
 						this._onServiceContextChanged);
 					await wizardController.openWizard(connectionId);
+				}
+			}
+		}
+	}
+
+	public async launchLoginMigrationWizard(): Promise<void> {
+		const activeConnection = await azdata.connection.getCurrentConnection();
+		let connectionId: string = '';
+		let serverName: string = '';
+		if (!activeConnection) {
+			const connection = await azdata.connection.openConnectionDialog();
+			if (connection) {
+				connectionId = connection.connectionId;
+				serverName = connection.options.server;
+			}
+		} else {
+			connectionId = activeConnection.connectionId;
+			serverName = activeConnection.serverName;
+		}
+		if (serverName) {
+			const api = (await vscode.extensions.getExtension(mssql.extension.name)?.activate()) as mssql.IExtension;
+			if (api) {
+				this.stateModel = new MigrationStateModel(this._context, connectionId, api.sqlMigration);
+				this._context.subscriptions.push(this.stateModel);
+				const savedInfo = this.checkSavedInfo(serverName);
+				if (savedInfo) {
+					this.stateModel.savedInfo = savedInfo;
+					this.stateModel.serverName = serverName;
+					const savedAssessmentDialog = new SavedAssessmentDialog(
+						this._context,
+						this.stateModel,
+						this._onServiceContextChanged);
+					await savedAssessmentDialog.openDialog();
+				} else {
+					const wizardController = new WizardController(
+						this._context,
+						this.stateModel,
+						this._onServiceContextChanged);
+					await wizardController.openLoginWizard(connectionId);
 				}
 			}
 		}

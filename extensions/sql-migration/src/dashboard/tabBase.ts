@@ -95,6 +95,33 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 		}
 	}
 
+	// TODO AKMA
+	// Change this to a dropdown. for now creating a migrate login button.
+	// Dropbdown component doesn't exist. would take some work to set up.
+	// Need to link to correct login migraiton wizard
+	protected createNewLoginMigrationButton(): azdata.ButtonComponent {
+		const newLoginMigrationButton = this.view.modelBuilder.button()
+			.withProps({
+				buttonType: azdata.ButtonType.Normal,
+				label: loc.DESKTOP_LOGIN_MIGRATION_BUTTON_LABEL,
+				description: loc.DESKTOP_LOGIN_MIGRATION_BUTTON_DESCRIPTION,
+				height: 24,
+				iconHeight: 24,
+				iconWidth: 24,
+				iconPath: IconPathHelper.addNew,
+			}).component();
+		this.disposables.push(
+			newLoginMigrationButton.onDidClick(async () => {
+				const actionId = MenuCommands.StartLoginMigration;
+				const args = {
+					extensionId: SqlMigrationExtensionId,
+					issueTitle: loc.DASHBOARD_LOGIN_MIGRATE_TASK_BUTTON_TITLE,
+				};
+				return await vscode.commands.executeCommand(actionId, args);
+			}));
+		return newLoginMigrationButton;
+	}
+
 	protected createNewMigrationButton(): azdata.ButtonComponent {
 		const newMigrationButton = this.view.modelBuilder.button()
 			.withProps({

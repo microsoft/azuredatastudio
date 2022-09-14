@@ -294,6 +294,13 @@ export function TIME_IN_MINUTES(val: number): number {
 	return val * 60000;
 }
 
+// Login MIgration
+export const LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_DESCRIPTION = localize('sql.migration.login.wizard.target.description', " Select the target Azure SQL Managed Instance, Azure SQL VM, or Azure SQL database(s) where you want to migrate your logins.");
+export const LOGIN_MIGRATIONS_TARGET_TYPE_SELECTION_TITLE = localize('sql.migration.login.wizard.taget.type.title', "Azure SQL target type");
+export const LOGIN_MIGRATIONS_MI_TEXT = localize('sql.migration.login.mi.title', "Azure SQL Managed Instance");
+export const LOGIN_MIGRATIONS_DB_TEXT = localize('sql.migration.login.db.title', "Azure SQL Database");
+export const LOGIN_MIGRATIONS_VM_TEXT = localize('sql.migration.login.vm.title', "SQL Server on Azure Virtual Machine");
+
 // Azure SQL Target
 export const AZURE_SQL_TARGET_PAGE_TITLE = localize('sql.migration.wizard.target.title', "Azure SQL target");
 export function AZURE_SQL_TARGET_PAGE_DESCRIPTION(targetInstance: string = 'instance'): string {
@@ -400,6 +407,7 @@ export function SQLDB_NOT_READY_ERROR(sqldbName: string, state: string): string 
 	return localize('sql.migration.sqldb.not.ready', "The SQL database server '{0}' is unavailable for migration because it is currently in the '{1}' state. To continue, select an available SQL database server.", sqldbName, state);
 }
 
+export const SELECT_AN_TARGET_TYPE = localize('sql.migration.select.service.select.target.type.', "Select target Azure SQL Typeaccount");
 export const SELECT_AN_ACCOUNT = localize('sql.migration.select.service.select.a.', "Sign into Azure and select an account");
 export const SELECT_A_TENANT = localize('sql.migration.select.service.select.a.tenant', "Select a tenant");
 export const SELECT_A_SUBSCRIPTION = localize('sql.migration.select.service.select.a.subscription', "Select a subscription");
@@ -677,6 +685,8 @@ export const DASHBOARD_TITLE = localize('sql.migration.dashboard.title', "Azure 
 export const DASHBOARD_DESCRIPTION = localize('sql.migration.dashboard.description', "Determine the migration readiness of your SQL Server instances, identify a recommended Azure SQL target, and complete the migration of your SQL Server instance to Azure SQL Managed Instance, SQL Server on Azure Virtual Machines or Azure SQL Database.");
 export const DASHBOARD_MIGRATE_TASK_BUTTON_TITLE = localize('sql.migration.dashboard.migrate.task.button', "Migrate to Azure SQL");
 export const DASHBOARD_MIGRATE_TASK_BUTTON_DESCRIPTION = localize('sql.migration.dashboard.migrate.task.button.description', "Migrate a SQL Server instance to Azure SQL.");
+export const DASHBOARD_LOGIN_MIGRATE_TASK_BUTTON_TITLE = localize('sql.migration.dashboard.login.migrate.task.button', "Migrate logins to Azure SQL");
+export const DASHBOARD_LOGIN_MIGRATE_TASK_BUTTON_DESCRIPTION = localize('sql.migration.dashboard.login.migrate.task.button.description', "Migrate SQL Server logins to Azure SQL.");
 export const DATABASE_MIGRATION_STATUS = localize('sql.migration.database.migration.status', "Database migration status");
 export const HELP_TITLE = localize('sql.migration.dashboard.help.title', "Help articles and video links");
 export const PRE_REQ_TITLE = localize('sql.migration.pre.req.title', "Things you need before starting your Azure SQL migration:");
@@ -1026,6 +1036,8 @@ export const MIGRATION_SERVICE_DESCRIPTION = localize('sql.migration.select.serv
 // Desktop tabs
 export const DESKTOP_MIGRATION_BUTTON_LABEL = localize('sql.migration.tab.button.migration.label', 'New migration');
 export const DESKTOP_MIGRATION_BUTTON_DESCRIPTION = localize('sql.migration.tab.button.migration.description', 'Migrate to Azure SQL');
+export const DESKTOP_LOGIN_MIGRATION_BUTTON_LABEL = localize('sql.migration.tab.button.login.migration.label', 'New login migration');
+export const DESKTOP_LOGIN_MIGRATION_BUTTON_DESCRIPTION = localize('sql.migration.tab.button.login.migration.description', 'Migrate logins to Azure SQL');
 export const DESKTOP_SUPPORT_BUTTON_LABEL = localize('sql.migration.tab.button.support.label', 'New support request');
 export const DESKTOP_SUPPORT_BUTTON_DESCRIPTION = localize('sql.migration.tab.button.support.description', 'New support request');
 export const DESKTOP_FEEDBACK_BUTTON_LABEL = localize('sql.migration.tab.button.feedback.label', 'Feedback');
