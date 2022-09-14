@@ -972,6 +972,7 @@ export namespace designers {
 		ForeignKeys = 'foreignKeys',
 		CheckConstraints = 'checkConstraints',
 		Indexes = 'indexes',
+		PrimaryKey = 'primaryKey',
 		PrimaryKeyName = 'primaryKeyName',
 		PrimaryKeyDescription = 'primaryKeyDescription',
 		PrimaryKeyColumns = 'primaryKeyColumns'

@@ -10,6 +10,7 @@ import * as azdata from 'azdata';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { ICapabilitiesService, ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/platform/connection/common/interfaces';
+import { localize } from 'vs/nls';
 
 type SettableProperty = 'serverName' | 'authenticationType' | 'databaseName' | 'password' | 'connectionName' | 'userName';
 
@@ -145,12 +146,15 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	}
 
 	private getServerInfo() {
-		let title = this.serverName;
-		// Only show database name if the provider supports it.
-		if (this.serverCapabilities?.connectionOptions?.find(option => option.specialValueType === ConnectionOptionSpecialType.databaseName)) {
-			title += `, ${this.databaseName || '<default>'}`;
+		let title = '';
+		if (this.serverCapabilities) {
+			title = this.serverName;
+			// Only show database name if the provider supports it.
+			if (this.serverCapabilities.connectionOptions?.find(option => option.specialValueType === ConnectionOptionSpecialType.databaseName)) {
+				title += `, ${this.databaseName || '<default>'}`;
+			}
+			title += ` (${this.userName || this.authenticationType})`;
 		}
-		title += ` (${this.userName || this.authenticationType})`;
 		return title;
 	}
 
@@ -160,23 +164,24 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	public get title(): string {
 		let label = '';
 
-		if (this.connectionName) {
-			label = this.connectionName;
+		if (this.serverCapabilities) {
+			if (this.connectionName) {
+				label = this.connectionName;
+			} else {
+				label = this.getServerInfo();
+			}
+		}
+		// The provider capabilities are registered at the same time at load time, we can assume all providers are registered as long as the collection is not empty.
+		else if (Object.keys(this.capabilitiesService.providers).length > 0) {
+			return localize('connection.unsupported', "Unsupported connection");
 		} else {
-			label = this.getServerInfo();
+			return localize('loading', "Loading...");
 		}
 		return label;
 	}
 
 	public get serverInfo(): string {
 		return this.getServerInfo();
-	}
-
-	/**
-	 * Returns true if the capabilities and options are loaded correctly
-	 */
-	public get isConnectionOptionsValid(): boolean {
-		return !!this.serverCapabilities && this.title.indexOf('undefined') < 0;
 	}
 
 	public isPasswordRequired(): boolean {

@@ -23,6 +23,7 @@ import { AzureResourceItemType, AzureResourceServiceNames } from '../../../azure
 import { AzureResourceMessageTreeNode } from '../../../azureResource/messageTreeNode';
 import { generateGuid } from '../../../azureResource/utils';
 import { AzureAccount, azureResource } from 'azurecore';
+import allSettings from '../../../account-provider/providerSettings';
 
 // Mock services
 let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
@@ -55,7 +56,7 @@ const mockAccount: AzureAccount = {
 			}
 		],
 		providerSettings: {
-			settings: { },
+			settings: allSettings[0].metadata.settings,
 			id: 'azure',
 			displayName: 'Azure'
 		},

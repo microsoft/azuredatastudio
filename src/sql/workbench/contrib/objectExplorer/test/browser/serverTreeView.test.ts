@@ -169,8 +169,12 @@ suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 		mockTree.verify(x => x.select(TypeMoq.It.isAny()), TypeMoq.Times.never());
 	});
 
-	test('The tree refreshes when new capabilities are registered', () => {
+	test('The tree refreshes when new capabilities are registered', (done) => {
 		capabilitiesService.fireCapabilitiesRegistered(undefined, undefined);
-		mockRefreshTreeMethod.verify(x => x(), TypeMoq.Times.once());
+		// A debounce is added to the handler, we need to wait a bit before checking.
+		setTimeout(() => {
+			mockRefreshTreeMethod.verify(x => x(), TypeMoq.Times.once());
+			done();
+		}, 100);
 	});
 });

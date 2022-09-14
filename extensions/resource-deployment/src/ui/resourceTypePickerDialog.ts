@@ -138,8 +138,8 @@ export class ResourceTypePickerDialog extends DialogBase {
 				text: loc.resourceTypeCategoryListViewTitle
 			},
 			CSSStyles: {
-				'width': '140px',
-				'margin-top': '35px'
+				'margin-top': '35px',
+				'width': '140px'
 			},
 			options: items,
 			selectedOptionId: items[0].id,
