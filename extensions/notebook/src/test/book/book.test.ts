@@ -690,20 +690,22 @@ describe('BooksTreeViewTests', function () {
 					'toc': '- title: Home\n  url: /readme\n- title: Notebook1\n  url: /notebook1\n- title: Notebook2\n  url: /notebook2'
 				}
 			},
-			{
-				it: 'v2',
-				folderPaths: {
-					'configFile': path.join(rootFolderPath, '_config.yml'),
-					'tableofContentsFile': path.join(rootFolderPath, '_toc.yml'),
-					'notebook1File': path.join(rootFolderPath, 'notebook1.ipynb'),
-					'notebook2File': path.join(rootFolderPath, 'notebook2.ipynb'),
-					'markdownFile': path.join(rootFolderPath, 'readme.md')
-				},
-				contents: {
-					'config': 'title: Test Book',
-					'toc': '- title: Home\n  file: /readme\n- title: Notebook1\n  file: /notebook1\n- title: Notebook2\n  file: /notebook2'
-				}
-			}
+			// Disable book v2 tests temporarily
+			// Tracking the fix here https://github.com/microsoft/azuredatastudio/issues/20589
+			// {
+			// 	it: 'v2',
+			// 	folderPaths: {
+			// 		'configFile': path.join(rootFolderPath, '_config.yml'),
+			// 		'tableofContentsFile': path.join(rootFolderPath, '_toc.yml'),
+			// 		'notebook1File': path.join(rootFolderPath, 'notebook1.ipynb'),
+			// 		'notebook2File': path.join(rootFolderPath, 'notebook2.ipynb'),
+			// 		'markdownFile': path.join(rootFolderPath, 'readme.md')
+			// 	},
+			// 	contents: {
+			// 		'config': 'title: Test Book',
+			// 		'toc': '- title: Home\n  file: /readme\n- title: Notebook1\n  file: /notebook1\n- title: Notebook2\n  file: /notebook2'
+			// 	}
+			// }
 		];
 		runs.forEach(function (run) {
 			describe('BookTreeViewProvider.Commands on ' + run.it, function (): void {

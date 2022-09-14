@@ -24,14 +24,14 @@ export class AzureResourceSubscriptionTreeNode extends AzureResourceContainerTre
 	public constructor(
 		public readonly account: AzureAccount,
 		public readonly subscription: azureResource.AzureResourceSubscription,
-		public readonly tenatId: string,
+		public readonly tenantId: string,
 		appContext: AppContext,
 		treeChangeHandler: IAzureResourceTreeChangeHandler,
 		parent: TreeNode
 	) {
 		super(appContext, treeChangeHandler, parent);
 
-		this._id = `account_${this.account.key.accountId}.subscription_${this.subscription.id}.tenant_${this.tenatId}`;
+		this._id = `account_${this.account.key.accountId}.subscription_${this.subscription.id}.tenant_${this.tenantId}`;
 		this.setCacheKey(`${this._id}.resources`);
 	}
 
@@ -42,7 +42,7 @@ export class AzureResourceSubscriptionTreeNode extends AzureResourceContainerTre
 			const children: IAzureResourceNodeWithProviderId[] = [];
 
 			for (const resourceProviderId of await resourceService.listResourceProviderIds()) {
-				children.push(...await resourceService.getRootChildren(resourceProviderId, this.account, this.subscription, this.tenatId));
+				children.push(...await resourceService.getRootChildren(resourceProviderId, this.account, this.subscription, this.tenantId));
 			}
 
 			if (children.length === 0) {

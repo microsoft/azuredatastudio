@@ -59,21 +59,16 @@ export class CosmosDbMongoTreeDataProvider extends ResourceTreeDataProviderBase<
 		};
 	}
 
-	protected createContainerNode(): azureResource.IAzureResourceNode {
-		return {
-			account: undefined,
-			subscription: undefined,
-			tenantId: undefined,
-			treeItem: {
-				id: CosmosDbMongoTreeDataProvider.CONTAINER_ID,
-				label: CosmosDbMongoTreeDataProvider.CONTAINER_LABEL,
-				iconPath: {
-					dark: this._extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
-					light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')
-				},
-				collapsibleState: TreeItemCollapsibleState.Collapsed,
-				contextValue: AzureResourceItemType.databaseServerContainer
-			}
-		};
+	public async getRootChildren(): Promise<azdata.TreeItem[]> {
+		return [{
+			id: CosmosDbMongoTreeDataProvider.CONTAINER_ID,
+			label: CosmosDbMongoTreeDataProvider.CONTAINER_LABEL,
+			iconPath: {
+				dark: this._extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
+				light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')
+			},
+			collapsibleState: TreeItemCollapsibleState.Collapsed,
+			contextValue: AzureResourceItemType.databaseServerContainer
+		}];
 	}
 }
