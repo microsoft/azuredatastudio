@@ -36,6 +36,8 @@ export class AzureResourceDatabaseService implements IAzureResourceService<azure
 		let rgMap = new Map<string, (DbServerGraphData | SynapseWorkspaceGraphData)[]>();
 		combined.forEach(s => {
 			if ((s as SynapseWorkspaceGraphData).properties.connectivityEndpoints) {
+				// If the resource is a Synapse Workspace, we need to use the managedResourceGroupName
+				// (any SQL pools inside will use this instead of the regular resource group associated with the workspace itself).
 				let serversForRg = rgMap.get((s as SynapseWorkspaceGraphData).properties.managedResourceGroupName) || [];
 				serversForRg.push(s as SynapseWorkspaceGraphData);
 				rgMap.set((s as SynapseWorkspaceGraphData).properties.managedResourceGroupName, serversForRg);

@@ -17,6 +17,16 @@ export interface DbServerGraphData extends GraphData {
 	};
 }
 
+/**
+ * Properties returned by the Synapse query are different from the server ones and have to be treated differently.
+ *
+ * Instead of using fullyQualifiedDomainName, we currently have to return the SQL connectivity endpoint.
+ *
+ * administratorLogin is called sqlAdministratorLogin here.
+ *
+ * managedResourceGroupName is the actual resource group used by any SQL pools inside the workspace
+ * rather than the resource group for the workspace itself.
+ */
 export interface SynapseWorkspaceGraphData extends GraphData {
 	properties: {
 		connectivityEndpoints: { sql: string };
