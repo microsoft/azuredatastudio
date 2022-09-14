@@ -241,20 +241,26 @@ export class FindExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 			return result;
 		};
 
+		let expensiveOperationDelegate = getCost;
 		switch (this._selectedExpensiveOperationType) {
 			case ExpensiveOperationType.ActualElapsedTime:
-				return getElapsedTimeInMs;
+				expensiveOperationDelegate = getElapsedTimeInMs;
+				break;
 			case ExpensiveOperationType.ActualElapsedCpuTime:
-				return getElapsedCpuTimeInMs;
-			case ExpensiveOperationType.Cost:
-				return getCost;
+				expensiveOperationDelegate = getElapsedCpuTimeInMs;
+				break;
 			case ExpensiveOperationType.SubtreeCost:
-				return getSubtreeCost;
+				expensiveOperationDelegate = getSubtreeCost;
+				break;
 			case ExpensiveOperationType.ActualNumberOfRowsForAllExecutions:
-				return getRowsForAllExecutions;
+				expensiveOperationDelegate = getRowsForAllExecutions;
+				break;
 			case ExpensiveOperationType.NumberOfRowsRead:
-				return getNumberOfRowsRead;
+				expensiveOperationDelegate = getNumberOfRowsRead;
+				break;
 		}
+
+		return expensiveOperationDelegate;
 	}
 }
 
