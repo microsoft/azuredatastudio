@@ -38,6 +38,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		uriEventHandler: vscode.EventEmitter<vscode.Uri>,
 		private readonly forceDeviceCode: boolean = false
 	) {
+		this.clientApplication = clientApplication;
 		this.authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
 		vscode.workspace.onDidChangeConfiguration((changeEvent) => {
 			const impactProvider = changeEvent.affectsConfiguration(AzureAccountProvider.CONFIGURATION_SECTION);

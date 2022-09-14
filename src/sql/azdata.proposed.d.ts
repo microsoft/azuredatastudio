@@ -497,6 +497,10 @@ declare module 'azdata' {
 		 * A version string for an account
 		 */
 		accountVersion?: string;
+		/**
+		 * Auth Library used to add the account
+		 */
+		authLibrary?: string;
 	}
 
 	export interface Account {

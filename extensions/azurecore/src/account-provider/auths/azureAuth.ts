@@ -414,7 +414,8 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		const accountKey: azdata.AccountKey = {
 			providerId: this.metadata.id,
-			accountId: userKey
+			accountId: userKey,
+			authLibrary: this.authLibrary
 		};
 
 		await this.saveToken(tenant, resource, accountKey, result);
@@ -681,6 +682,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 				providerId: this.metadata.id,
 				accountId: key,
 				accountVersion: AzureAuth.ACCOUNT_VERSION,
+				authLibrary: this.authLibrary
 			},
 			name: displayName,
 			displayInfo: {
@@ -762,22 +764,34 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 	public async clearCredentials(account: azdata.AccountKey): Promise<void> {
 		try {
-			return this.deleteAccountCache(account);
+			// remove account based on authLibrary field, accounts added before this field was present will default to
+			// ADAL method of account removal
+			if (account.authLibrary === 'MSAL') {
+				return this.deleteAccountCacheMsal(account);
+			} else {
+				return this.deleteAccountCache(account);
+			}
 		} catch (ex) {
 			const msg = localize('azure.cacheErrrorRemove', "Error when removing your account from the cache.");
 			void vscode.window.showErrorMessage(msg);
 			Logger.error('Error when removing tokens.', ex);
 		}
 	}
+
 	public async deleteAccountCacheMsal(account: azdata.AccountKey): Promise<void> {
 		const tokenCache = this.clientApplication.getTokenCache();
 		let msalAccount = await tokenCache.getAccountByHomeId(account.accountId);
+		if (!msalAccount) {
+			Logger.error('MSAL: Unable to find account for removal');
+		}
 		await tokenCache.removeAccount(msalAccount);
 	}
 
 	public async deleteAccountCache(account: azdata.AccountKey): Promise<void> {
 		const results = await this.tokenCache.findCredentials(account.accountId);
-
+		if (!results) {
+			Logger.error('ADAL: Unable to find account for removal');
+		}
 		for (let { account } of results) {
 			await this.tokenCache.clearCredential(account);
 		}
