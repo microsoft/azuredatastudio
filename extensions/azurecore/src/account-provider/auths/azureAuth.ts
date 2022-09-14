@@ -60,6 +60,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			const impactLibrary = changeEvent.affectsConfiguration('azure.authenticationLibrary');
 			if (impactLibrary === true) {
 				this.authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
+				Logger.info(`Using Auth Library: ${this.authLibrary}`);
 			}
 		});
 		this.loginEndpointUrl = this.metadata.settings.host;
@@ -129,7 +130,6 @@ export abstract class AzureAuth implements vscode.Disposable {
 					key: result.response.account.homeAccountId,
 					tokenType: result.response.tokenType
 				};
-				// build token claims object
 				const tokenClaims = <TokenClaims>result.response.idTokenClaims;
 				const account = await this.hydrateAccount(token, tokenClaims);
 				loginComplete?.resolve();
@@ -319,16 +319,16 @@ export abstract class AzureAuth implements vscode.Disposable {
 	public async getTokenMsal(accountId: string, azureResource: azdata.AzureResource): Promise<AuthenticationResult> {
 		const cache = this.clientApplication.getTokenCache();
 		if (!cache) {
-			console.log('Error: Could not fetch token cache.');
+			Logger.error('Error: Could not fetch token cache.');
 		}
 		const resource = this.resources.find(s => s.azureResourceId === azureResource);
 		if (!resource) {
-			console.log('Error: Could not fetch the azure resource.');
+			Logger.error('Error: Could not fetch the azure resource.');
 		}
 		const accounts = await cache.getAllAccounts();
 		const account = await cache.getAccountByHomeId(accountId);
 		if (!account) {
-			console.log('Error: Could not fetch account when acquiring token');
+			Logger.error('Error: Could not fetch account when acquiring token');
 		}
 		let newScope = [`${resource.endpoint}/User.Read`];
 		// construct request
@@ -339,8 +339,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		try {
 			return await this.clientApplication.acquireTokenSilent(tokenRequest);
 		} catch (e) {
-			console.log('Failed to acquireTokenSilent');
-			console.log(e);
+			Logger.error('Failed to acquireTokenSilent', e);
 			// need to create an auth url request
 			const tenant: Tenant = {
 				id: account.tenantId,
@@ -436,18 +435,13 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 
 	public async getTenantsMsal(token: string): Promise<Tenant[]> {
-		interface TenantResponse { // https://docs.microsoft.com/en-us/rest/api/resources/tenants/list
-			id: string
-			tenantId: string
-			displayName?: string
-			tenantCategory?: string
-		}
 		const tenantUri = url.resolve(this.metadata.settings.armResource.endpoint, 'tenants?api-version=2019-11-01');
 		try {
 			Logger.verbose('Fetching tenants', tenantUri);
+			let tenantList: string[] = [];
 			const tenantResponse = await this.makeGetRequest(tenantUri, token);
 			const tenants: Tenant[] = tenantResponse.data.value.map((tenantInfo: TenantResponse) => {
-				Logger.verbose(`Tenant: ${tenantInfo.displayName}`);
+				tenantList.push(tenantInfo.displayName);
 				return {
 					id: tenantInfo.tenantId,
 					displayName: tenantInfo.displayName ? tenantInfo.displayName : localize('azureWorkAccountDisplayName', "Work or school account"),
@@ -455,7 +449,9 @@ export abstract class AzureAuth implements vscode.Disposable {
 					tenantCategory: tenantInfo.tenantCategory
 				} as Tenant;
 			});
+			Logger.verbose(`Tenants: ${tenantList}`);
 			const homeTenantIndex = tenants.findIndex(tenant => tenant.tenantCategory === 'Home');
+			// remove home tenant from list of tenants
 			if (homeTenantIndex >= 0) {
 				const homeTenant = tenants.splice(homeTenantIndex, 1);
 				tenants.unshift(homeTenant[0]);
@@ -470,19 +466,13 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 	//#region tenant calls
 	public async getTenants(token: AccessToken): Promise<Tenant[]> {
-		interface TenantResponse { // https://docs.microsoft.com/en-us/rest/api/resources/tenants/list
-			id: string
-			tenantId: string
-			displayName?: string
-			tenantCategory?: string
-		}
-
 		const tenantUri = url.resolve(this.metadata.settings.armResource.endpoint, 'tenants?api-version=2019-11-01');
 		try {
 			Logger.verbose('Fetching tenants', tenantUri);
+			let tenantList: string[] = [];
 			const tenantResponse = await this.makeGetRequest(tenantUri, token.token);
 			const tenants: Tenant[] = tenantResponse.data.value.map((tenantInfo: TenantResponse) => {
-				Logger.verbose(`Tenant: ${tenantInfo.displayName}`);
+				tenantList.push(tenantInfo.displayName);
 				return {
 					id: tenantInfo.tenantId,
 					displayName: tenantInfo.displayName ? tenantInfo.displayName : localize('azureWorkAccountDisplayName', "Work or school account"),
@@ -490,8 +480,9 @@ export abstract class AzureAuth implements vscode.Disposable {
 					tenantCategory: tenantInfo.tenantCategory
 				} as Tenant;
 			});
-
+			Logger.verbose(`Tenants: ${tenantList}`);
 			const homeTenantIndex = tenants.findIndex(tenant => tenant.tenantCategory === 'Home');
+			// remove home tenant from list of tenants
 			if (homeTenantIndex >= 0) {
 				const homeTenant = tenants.splice(homeTenantIndex, 1);
 				tenants.unshift(homeTenant[0]);
@@ -836,6 +827,13 @@ export interface RefreshToken extends AccountKey {
 	 * Account Key
 	 */
 	key: string
+}
+
+export interface TenantResponse { // https://docs.microsoft.com/en-us/rest/api/resources/tenants/list
+	id: string
+	tenantId: string
+	displayName?: string
+	tenantCategory?: string
 }
 
 export interface MultiTenantTokenResponse {

@@ -16,6 +16,7 @@ import * as loc from '../localizedConstants';
 import { PublicClientApplication } from '@azure/msal-node';
 import { DataProtectionScope, PersistenceCreator, PersistenceCachePlugin } from '@azure/msal-node-extensions';
 import * as path from 'path';
+import { Logger } from '../utils/Logger';
 
 let localize = nls.loadMessageBundle();
 
@@ -49,6 +50,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 			const impactLibrary = changeEvent.affectsConfiguration('azure.authenticationLibrary');
 			if (impactLibrary === true) {
 				this.authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
+				Logger.info(`Using Auth Library: ${this.authLibrary}`);
 			}
 		});
 		this._disposables.push(vscode.window.registerUriHandler(this._uriEventHandler));
