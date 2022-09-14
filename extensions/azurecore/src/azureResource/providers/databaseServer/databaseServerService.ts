@@ -17,7 +17,7 @@ export interface DbServerGraphData extends GraphData {
 	};
 }
 
-export interface DbSynapseGraphData extends GraphData {
+export interface SynapseWorkspaceGraphData extends GraphData {
 	properties: {
 		connectivityEndpoints: { sql: string };
 		managedResourceGroupName: string;
@@ -34,11 +34,12 @@ export class AzureResourceDatabaseServerService implements IAzureResourceService
 	public async getResources(subscriptions: azureResource.AzureResourceSubscription[], credential: ServiceClientCredentials, account: AzureAccount): Promise<azureResource.AzureResourceDatabaseServer[]> {
 		const convertedResources: azureResource.AzureResourceDatabaseServer[] = [];
 		const resourceClient = new ResourceGraphClient(credential, { baseUri: account.properties.providerSettings.settings.armResource.endpoint });
-		let graphResources: (DbSynapseGraphData | DbServerGraphData)[] = await queryGraphResources<DbServerGraphData>(resourceClient, subscriptions, this.query);
-		let synapseGraphResources: (DbSynapseGraphData | DbServerGraphData)[] = await queryGraphResources<DbSynapseGraphData>(resourceClient, subscriptions, synapseWorkspacesQuery);
-		graphResources = graphResources.concat(synapseGraphResources);
+		let combinedGraphResources: (DbServerGraphData | SynapseWorkspaceGraphData)[] = [];
+		let serverGraphResources: DbServerGraphData[] = await queryGraphResources<DbServerGraphData>(resourceClient, subscriptions, this.query);
+		let synapseGraphResources: SynapseWorkspaceGraphData[] = await queryGraphResources<SynapseWorkspaceGraphData>(resourceClient, subscriptions, synapseWorkspacesQuery);
+		combinedGraphResources = combinedGraphResources.concat(serverGraphResources).concat(synapseGraphResources);
 		const ids = new Set<string>();
-		graphResources.forEach((res) => {
+		combinedGraphResources.forEach((res) => {
 			if (!ids.has(res.id)) {
 				ids.add(res.id);
 				res.subscriptionName = subscriptions.find(sub => sub.id === res.subscriptionId).name;
@@ -50,13 +51,13 @@ export class AzureResourceDatabaseServerService implements IAzureResourceService
 		return convertedResources;
 	}
 
-	protected convertResource(resource: DbServerGraphData | DbSynapseGraphData): azureResource.AzureResourceDatabaseServer {
+	protected convertResource(resource: DbServerGraphData | SynapseWorkspaceGraphData): azureResource.AzureResourceDatabaseServer {
 
 		return {
 			id: resource.id,
 			name: resource.name,
-			fullName: (resource as any).properties.connectivityEndpoints ? (resource as DbSynapseGraphData).properties.connectivityEndpoints.sql : (resource as DbServerGraphData).properties.fullyQualifiedDomainName,
-			loginName: (resource as any).properties.connectivityEndpoints ? (resource as DbSynapseGraphData).properties.sqlAdministratorLogin : (resource as DbServerGraphData).properties.administratorLogin,
+			fullName: (resource as SynapseWorkspaceGraphData).properties.connectivityEndpoints?.sql ?? (resource as DbServerGraphData).properties.fullyQualifiedDomainName,
+			loginName: (resource as SynapseWorkspaceGraphData).properties.sqlAdministratorLogin ?? (resource as DbServerGraphData).properties.administratorLogin,
 			defaultDatabaseName: 'master',
 			subscription: {
 				id: resource.subscriptionId,
