@@ -28,7 +28,8 @@ export const ConnectionProviderAndExtensionMap = new Map<string, string>([
 	['PGSQL', 'microsoft.azuredatastudio-postgresql'],
 	['KUSTO', 'microsoft.kusto'],
 	['LOGANALYTICS', 'microsoft.azuremonitor'],
-	['COSMOSDB_MONGO', 'microsoft.azure-cosmosdb-ads-extension']
+	['COSMOSDB_MONGO', 'microsoft.azure-cosmosdb-ads-extension'],
+	['MySQL', 'microsoft.azuredatastudio-mysql']
 ]);
 
 /**

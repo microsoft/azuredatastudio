@@ -21,6 +21,9 @@ import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { MarkdownRenderer } from 'vs/editor/browser/core/markdownRenderer';
 import { Mimes } from 'vs/base/common/mime';
+import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
+import * as azdata from 'azdata';
+import { attachCheckboxStyler } from 'sql/platform/theme/common/styler';
 
 const OkText: string = localize('tableDesigner.UpdateDatabase', "Update Database");
 const CancelText: string = localize('tableDesigner.cancel', "Cancel");
@@ -34,8 +37,7 @@ export enum TableDesignerPublishDialogResult {
 
 export class TableDesignerPublishDialog extends Modal {
 
-	private _report?: string;
-	private _mimeType: string = Mimes.text;
+	private _report?: azdata.designers.GeneratePreviewReportResult;
 	private _okButton?: Button;
 	private _generateScriptButton?: Button;
 	private _cancelButton?: Button;
@@ -56,9 +58,8 @@ export class TableDesignerPublishDialog extends Modal {
 		this._markdownRenderer = instantiationService.createInstance(MarkdownRenderer, {});
 	}
 
-	public open(report: string, mimeType: string = Mimes.text): Promise<TableDesignerPublishDialogResult> {
+	public open(report: azdata.designers.GeneratePreviewReportResult): Promise<TableDesignerPublishDialogResult> {
 		this._report = report;
-		this._mimeType = mimeType;
 		this.render();
 		this.show();
 		const promise = new Promise<TableDesignerPublishDialogResult>((resolve) => {
@@ -74,6 +75,9 @@ export class TableDesignerPublishDialog extends Modal {
 		this._okButton = this.addFooterButton(OkText, () => this.handleOkButtonClick());
 		this._generateScriptButton = this.addFooterButton(GenerateScriptText, () => this.handleGenerateScriptButtonClick(), 'right', true);
 		this._cancelButton = this.addFooterButton(CancelText, () => this.handleCancelButtonClick(), 'right', true);
+		const requireConfirmation = this._report.requireConfirmation === true;
+		this._okButton.enabled = !requireConfirmation;
+		this._generateScriptButton.enabled = !requireConfirmation;
 		this._register(attachButtonStyler(this._okButton, this._themeService));
 		this._register(attachButtonStyler(this._generateScriptButton, this._themeService));
 		this._register(attachButtonStyler(this._cancelButton, this._themeService));
@@ -81,12 +85,25 @@ export class TableDesignerPublishDialog extends Modal {
 
 	protected renderBody(container: HTMLElement) {
 		const body = DOM.append(container, DOM.$('.table-designer-publish-dialog'));
-		if (this._mimeType === Mimes.markdown) {
-			const markdownElement = this._markdownRenderer.render({ value: this._report }).element;
-			DOM.append(body, markdownElement);
+		const reportContainer = DOM.append(body, DOM.$('.report-container'));
+		if (this._report.mimeType === Mimes.markdown) {
+			const markdownElement = this._markdownRenderer.render({ value: this._report.report }).element;
+			DOM.append(reportContainer, markdownElement);
 		} else {
 			// default to plain text
-			body.innerText = this._report;
+			reportContainer.innerText = this._report.report;
+		}
+		if (this._report.requireConfirmation && this._report.confirmationText) {
+			const checkboxContainer = DOM.append(body, DOM.$('div'));
+			const checkbox = new Checkbox(checkboxContainer, {
+				label: this._report.confirmationText,
+				checked: false
+			});
+			this._register(checkbox.onChange((checked) => {
+				this._okButton.enabled = checked;
+				this._generateScriptButton.enabled = checked;
+			}));
+			this._register(attachCheckboxStyler(checkbox, this._themeService));
 		}
 	}
 

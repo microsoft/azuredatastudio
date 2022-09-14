@@ -1209,6 +1209,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/big-data-cluster/dist/extension.bdc.deprecationWarning" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The Big Data Cluster add-on is being retired and Azure Data Studio functionality for it will be removed in an upcoming release. Read more about this and support going forward [here]5D;(https://go.microsoft.com/fwlink/?linkid=2207340).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Le module complémentaire du cluster Big Data est en cours de retrait et Azure Data Studio fonctionnalité de celui-ci sera supprimée dans une prochaine version. En savoir plus à ce sujet et au support à l’avenir [here]5D;(https://go.microsoft.com/fwlink/?linkid=2207340)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/big-data-cluster/dist/extension.mount.error.endpointNotFound" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Controller endpoint information was not found]]></Val>

@@ -2,7 +2,7 @@
 
 trigger:
   branches:
-    include: ["refs/tags/*"]
+    include: ["refs/tags/*.0"] # {{SQL CARBON EDIT}} Only run on major version releases
 
 pr: none
 

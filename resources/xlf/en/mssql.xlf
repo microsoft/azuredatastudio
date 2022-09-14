@@ -1036,8 +1036,11 @@
     <trans-unit id="mssql.query.lockTimeout">
       <source xml:lang="en">Enable SET LOCK TIMEOUT option (in milliseconds)</source>
     </trans-unit>
+    <trans-unit id="mssql.query.maxCharsToStore">
+      <source xml:lang="en">Maximum number of characters/bytes to store for each value in character/binary columns after running a query. Default value: 65,535. Valid value range: 1 to 2,147,483,647.</source>
+    </trans-unit>
     <trans-unit id="mssql.query.maxXmlCharsToStore">
-      <source xml:lang="en">Number of XML characters to store after running a query</source>
+      <source xml:lang="en">Maximum number of characters to store for each value in XML columns after running a query. Default value: 2,097,152. Valid value range: 1 to 2,147,483,647.</source>
     </trans-unit>
     <trans-unit id="mssql.query.noCount">
       <source xml:lang="en">Enable SET NOCOUNT option</source>
