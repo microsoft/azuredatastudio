@@ -32,7 +32,7 @@ export class AzureResourceDatabaseService implements IAzureResourceService<azure
 		// can get the login name and server fully qualified name to use for connections
 		let rgMap = new Map<string, (DbServerGraphData | DbSynapseGraphData)[]>();
 		servers.forEach(s => {
-			if (s.constructor.name === 'DbSynapseGraphData') {
+			if ((s as any).properties.connectivityEndpoints) {
 				let serversForRg = rgMap.get((s as DbSynapseGraphData).properties.managedResourceGroupName) || [];
 				serversForRg.push(s as DbSynapseGraphData);
 				rgMap.set((s as DbSynapseGraphData).properties.managedResourceGroupName, serversForRg);
@@ -58,8 +58,8 @@ export class AzureResourceDatabaseService implements IAzureResourceService<azure
 						name: db.name,
 						id: db.id,
 						serverName: server.name,
-						serverFullName: server.constructor.name === 'DbSynapseGraphData' ? (server as DbSynapseGraphData).properties.connectivityEndpoints.sql : (server as DbServerGraphData).properties.fullyQualifiedDomainName,
-						loginName: server.constructor.name === 'DbSynapseGraphData' ? (server as DbSynapseGraphData).properties.sqlAdministratorLogin : (server as DbServerGraphData).properties.administratorLogin,
+						serverFullName: (server as any).properties.connectivityEndpoints ? (server as DbSynapseGraphData).properties.connectivityEndpoints.sql : (server as DbServerGraphData).properties.fullyQualifiedDomainName,
+						loginName: (server as any).properties.connectivityEndpoints ? (server as DbSynapseGraphData).properties.sqlAdministratorLogin : (server as DbServerGraphData).properties.administratorLogin,
 						subscription: {
 							id: db.subscriptionId,
 							name: (subscriptions.find(sub => sub.id === db.subscriptionId))?.name

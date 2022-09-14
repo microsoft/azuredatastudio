@@ -55,8 +55,8 @@ export class AzureResourceDatabaseServerService implements IAzureResourceService
 		return {
 			id: resource.id,
 			name: resource.name,
-			fullName: resource.constructor.name === 'DbSynapseGraphData' ? (resource as DbSynapseGraphData).properties.connectivityEndpoints.sql : (resource as DbServerGraphData).properties.fullyQualifiedDomainName,
-			loginName: resource.constructor.name === 'DbSynapseGraphData' ? (resource as DbSynapseGraphData).properties.sqlAdministratorLogin : (resource as DbServerGraphData).properties.administratorLogin,
+			fullName: (resource as any).properties.connectivityEndpoints ? (resource as DbSynapseGraphData).properties.connectivityEndpoints.sql : (resource as DbServerGraphData).properties.fullyQualifiedDomainName,
+			loginName: (resource as any).properties.connectivityEndpoints ? (resource as DbSynapseGraphData).properties.sqlAdministratorLogin : (resource as DbServerGraphData).properties.administratorLogin,
 			defaultDatabaseName: 'master',
 			subscription: {
 				id: resource.subscriptionId,
