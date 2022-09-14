@@ -3,37 +3,40 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-
 import { ServiceClientCredentials } from '@azure/ms-rest-js';
 import { ResourceGraphClient } from '@azure/arm-resourcegraph';
-import { ResourceServiceBase, GraphData, queryGraphResources } from '../resourceTreeDataProviderBase';
+import { GraphData, queryGraphResources } from '../resourceTreeDataProviderBase';
 import { azureResource, AzureAccount } from 'azurecore';
-import { serversQuery, synapseQuery } from './serverQueryStrings';
+import { sqlServersQuery, synapseWorkspacesQuery } from './serverQueryStrings';
+import { IAzureResourceService } from '../../interfaces';
 
 export interface DbServerGraphData extends GraphData {
 	properties: {
 		fullyQualifiedDomainName: string;
 		administratorLogin: string;
-		connectivityEndpoints?: { sql: string };
-		managedResourceGroupName?: string;
-		sqlAdministratorLogin?: string;
 	};
 }
 
-export class AzureResourceDatabaseServerService extends ResourceServiceBase<DbServerGraphData, azureResource.AzureResourceDatabaseServer> {
+export interface DbSynapseGraphData extends GraphData {
+	properties: {
+		connectivityEndpoints: { sql: string };
+		managedResourceGroupName: string;
+		sqlAdministratorLogin: string;
+	};
+}
+
+export class AzureResourceDatabaseServerService implements IAzureResourceService<azureResource.AzureResourceDatabaseServer> {
 
 	protected get query(): string {
-		return serversQuery;
+		return sqlServersQuery;
 	}
 
-	public override async getResources(subscriptions: azureResource.AzureResourceSubscription[], credential: ServiceClientCredentials, account: AzureAccount): Promise<azureResource.AzureResourceDatabaseServer[]> {
+	public async getResources(subscriptions: azureResource.AzureResourceSubscription[], credential: ServiceClientCredentials, account: AzureAccount): Promise<azureResource.AzureResourceDatabaseServer[]> {
 		const convertedResources: azureResource.AzureResourceDatabaseServer[] = [];
 		const resourceClient = new ResourceGraphClient(credential, { baseUri: account.properties.providerSettings.settings.armResource.endpoint });
-		let graphResources = await queryGraphResources<DbServerGraphData>(resourceClient, subscriptions, this.query);
-		if (this.query === serversQuery) {
-			let synapseGraphResources = await queryGraphResources<DbServerGraphData>(resourceClient, subscriptions, synapseQuery);
-			graphResources = graphResources.concat(synapseGraphResources);
-		}
+		let graphResources: (DbSynapseGraphData | DbServerGraphData)[] = await queryGraphResources<DbServerGraphData>(resourceClient, subscriptions, this.query);
+		let synapseGraphResources: (DbSynapseGraphData | DbServerGraphData)[] = await queryGraphResources<DbSynapseGraphData>(resourceClient, subscriptions, synapseWorkspacesQuery);
+		graphResources = graphResources.concat(synapseGraphResources);
 		const ids = new Set<string>();
 		graphResources.forEach((res) => {
 			if (!ids.has(res.id)) {
@@ -47,12 +50,13 @@ export class AzureResourceDatabaseServerService extends ResourceServiceBase<DbSe
 		return convertedResources;
 	}
 
-	protected convertResource(resource: DbServerGraphData): azureResource.AzureResourceDatabaseServer {
+	protected convertResource(resource: DbServerGraphData | DbSynapseGraphData): azureResource.AzureResourceDatabaseServer {
+
 		return {
 			id: resource.id,
 			name: resource.name,
-			fullName: resource.properties.connectivityEndpoints?.sql || resource.properties.fullyQualifiedDomainName,
-			loginName: resource.properties.sqlAdministratorLogin || resource.properties.administratorLogin,
+			fullName: resource.constructor.name === 'DbSynapseGraphData' ? (resource as DbSynapseGraphData).properties.connectivityEndpoints.sql : (resource as DbServerGraphData).properties.fullyQualifiedDomainName,
+			loginName: resource.constructor.name === 'DbSynapseGraphData' ? (resource as DbSynapseGraphData).properties.sqlAdministratorLogin : (resource as DbServerGraphData).properties.administratorLogin,
 			defaultDatabaseName: 'master',
 			subscription: {
 				id: resource.subscriptionId,

@@ -124,7 +124,7 @@ export abstract class ResourceServiceBase<T extends GraphData, U extends azureRe
 	public async getResources(subscriptions: azureResource.AzureResourceSubscription[], credential: msRest.ServiceClientCredentials, account: AzureAccount): Promise<U[]> {
 		const convertedResources: U[] = [];
 		const resourceClient = new ResourceGraphClient(credential, { baseUri: account.properties.providerSettings.settings.armResource.endpoint });
-		let graphResources = await queryGraphResources<T>(resourceClient, subscriptions, this.query);
+		const graphResources = await queryGraphResources<T>(resourceClient, subscriptions, this.query);
 		const ids = new Set<string>();
 		graphResources.forEach((res) => {
 			if (!ids.has(res.id)) {

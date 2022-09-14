@@ -5,8 +5,8 @@
 
 import { ServiceClientCredentials } from '@azure/ms-rest-js';
 import { IAzureResourceService } from '../../interfaces';
-import { DbServerGraphData } from '../databaseServer/databaseServerService';
-import { synapseQuery, serversQuery } from '../databaseServer/serverQueryStrings';
+import { DbServerGraphData, DbSynapseGraphData } from '../databaseServer/databaseServerService';
+import { synapseWorkspacesQuery, sqlServersQuery } from '../databaseServer/serverQueryStrings';
 import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 import { queryGraphResources, GraphData } from '../resourceTreeDataProviderBase';
 import { AzureAccount, azureResource } from 'azurecore';
@@ -20,22 +20,22 @@ export class AzureResourceDatabaseService implements IAzureResourceService<azure
 		const resourceClient = new ResourceGraphClient(credential, { baseUri: account.properties.providerSettings.settings.armResource.endpoint });
 
 		// Query servers and databases in parallel (start both promises before waiting on the 1st)
-		let synapseQueryPromise = queryGraphResources<GraphData>(resourceClient, subscriptions, synapseQuery);
-		let serverQueryPromise = queryGraphResources<GraphData>(resourceClient, subscriptions, serversQuery);
+		let synapseQueryPromise = queryGraphResources<GraphData>(resourceClient, subscriptions, synapseWorkspacesQuery);
+		let serverQueryPromise = queryGraphResources<GraphData>(resourceClient, subscriptions, sqlServersQuery);
 		let dbQueryPromise = queryGraphResources<GraphData>(resourceClient, subscriptions, `where type == "${azureResource.AzureResourceType.sqlDatabase}"`);
-		let server1: DbServerGraphData[] = await serverQueryPromise as DbServerGraphData[];
-		let server2: DbServerGraphData[] = await synapseQueryPromise as DbServerGraphData[];
+		let server1: (DbServerGraphData | DbSynapseGraphData)[] = await serverQueryPromise as DbServerGraphData[];
+		let server2: (DbServerGraphData | DbSynapseGraphData)[] = await synapseQueryPromise as DbSynapseGraphData[];
 		let dbByGraph: DatabaseGraphData[] = await dbQueryPromise as DatabaseGraphData[];
-		let servers: DbServerGraphData[] = server1.concat(server2);
+		let servers: (DbServerGraphData | DbSynapseGraphData)[] = server1.concat(server2);
 
 		// Group servers by resource group, then merge DB results with servers so we
 		// can get the login name and server fully qualified name to use for connections
-		let rgMap = new Map<string, DbServerGraphData[]>();
+		let rgMap = new Map<string, (DbServerGraphData | DbSynapseGraphData)[]>();
 		servers.forEach(s => {
-			if (s.properties.connectivityEndpoints) {
-				let serversForRg = rgMap.get(s.properties.managedResourceGroupName) || [];
-				serversForRg.push(s);
-				rgMap.set(s.properties.managedResourceGroupName, serversForRg);
+			if (s.constructor.name === 'DbSynapseGraphData') {
+				let serversForRg = rgMap.get((s as DbSynapseGraphData).properties.managedResourceGroupName) || [];
+				serversForRg.push(s as DbSynapseGraphData);
+				rgMap.set((s as DbSynapseGraphData).properties.managedResourceGroupName, serversForRg);
 			} else {
 				let serversForRg = rgMap.get(s.resourceGroup) || [];
 				serversForRg.push(s);
@@ -58,8 +58,8 @@ export class AzureResourceDatabaseService implements IAzureResourceService<azure
 						name: db.name,
 						id: db.id,
 						serverName: server.name,
-						serverFullName: server.properties.connectivityEndpoints?.sql || server.properties.fullyQualifiedDomainName,
-						loginName: server.properties.sqlAdministratorLogin || server.properties.administratorLogin,
+						serverFullName: server.constructor.name === 'DbSynapseGraphData' ? (server as DbSynapseGraphData).properties.connectivityEndpoints.sql : (server as DbServerGraphData).properties.fullyQualifiedDomainName,
+						loginName: server.constructor.name === 'DbSynapseGraphData' ? (server as DbSynapseGraphData).properties.sqlAdministratorLogin : (server as DbServerGraphData).properties.administratorLogin,
 						subscription: {
 							id: db.subscriptionId,
 							name: (subscriptions.find(sub => sub.id === db.subscriptionId))?.name

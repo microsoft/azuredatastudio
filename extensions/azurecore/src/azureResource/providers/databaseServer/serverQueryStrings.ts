@@ -5,6 +5,7 @@
 
 import { azureResource } from 'azurecore';
 
-export const synapseQuery = `where type == "microsoft.synapse/workspaces"`;
+export const synapseWorkspacesQuery = `where type == "microsoft.synapse/workspaces"`;
 
-export const serversQuery = `where type == "${azureResource.AzureResourceType.sqlServer}" and kind != "v12.0,analytics"`;
+// Lists all Sql Servers except for Synapse Pool Servers (they have different properties and need to be handled separately)
+export const sqlServersQuery = `where type == "${azureResource.AzureResourceType.sqlServer}" and kind != "v12.0,analytics"`;
