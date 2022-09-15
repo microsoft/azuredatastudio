@@ -122,7 +122,7 @@ export async function getResourceGroups(appContext: AppContext, account?: AzureA
 		try {
 			const tokenResponse = await azdata.accounts.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.ResourceManagement);
 			if (!tokenResponse) {
-				throw new Error(`Could not fetch security token fetching resource groups for tenant ${tenant.id}`);
+				throw new Error(`Could not fetch security token fetching resource groups for tenant "${tenant.id}"`);
 			}
 			const token = tokenResponse.token;
 			const tokenType = tokenResponse.tokenType;
@@ -536,7 +536,7 @@ export function getProviderMetadataForAccount(account: AzureAccount): AzureAccou
 		return account.properties.providerSettings.id === provider.metadata.id;
 	});
 	if (!provider) {
-		throw new Error(`Could not find provider ${account.properties.providerSettings.id} for account ${account.displayInfo.displayName}`);
+		throw new Error(`Could not find provider ${account.properties.providerSettings.id} for account ${account.displayInfo.displayName} (${account.displayInfo.userId})`);
 	}
 
 	return provider.metadata;
