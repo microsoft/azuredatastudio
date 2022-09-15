@@ -11,7 +11,6 @@ import * as os from 'os';
 
 import { AppContext } from './appContext';
 import { AzureAccountProviderService } from './account-provider/azureAccountProviderService';
-import { synapseWorkspacesQuery, sqlServersQuery } from './azureResource/providers/databaseServer/serverQueryStrings';
 import { AzureResourceDatabaseServerProvider } from './azureResource/providers/databaseServer/databaseServerProvider';
 import { AzureResourceDatabaseServerService } from './azureResource/providers/databaseServer/databaseServerService';
 import { AzureResourceDatabaseProvider } from './azureResource/providers/database/databaseProvider';
@@ -163,14 +162,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 		async getSqlServers(account: azurecore.AzureAccount,
 			subscriptions: azurecore.azureResource.AzureResourceSubscription[],
 			ignoreErrors: boolean): Promise<azurecore.GetSqlServersResult> {
-			let serverResults = await azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, sqlServersQuery);
-			let synapseResults = await azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, synapseWorkspacesQuery);
-			let returnResources = serverResults.resources.concat(synapseResults.resources);
-			let returnErrors = serverResults.errors.concat(serverResults.errors);
-			return {
-				resources: returnResources,
-				errors: returnErrors
-			};
+			return azureResourceUtils.runResourceQuery(account, subscriptions, ignoreErrors, `where type == "${azurecore.azureResource.AzureResourceType.sqlServer}"`);
 		},
 		getSqlVMServers(account: azurecore.AzureAccount,
 			subscriptions: azurecore.azureResource.AzureResourceSubscription[],

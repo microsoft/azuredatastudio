@@ -19,10 +19,22 @@ export class AzureResourceDatabaseService implements IAzureResourceService<azure
 		const databases: azureResource.AzureResourceDatabase[] = [];
 		const resourceClient = new ResourceGraphClient(credential, { baseUri: account.properties.providerSettings.settings.armResource.endpoint });
 
-		// Query servers and databases in parallel (start both promises before waiting on the 1st)
+		// Query servers, synapse workspaces, and databases in parallel (start all promises before waiting on the 1st)
 		let servers: DbServerGraphData[];
 		let synapseWorkspaces: SynapseWorkspaceGraphData[];
 		let combined: (DbServerGraphData | SynapseWorkspaceGraphData)[] = [];
+		/**
+		 * We need to get the list of servers minus the Synapse Workspaces,
+		 * then we need to make another query to get them.
+		 *
+		 * This is done because the first query provides invalid endpoints for Synapse Workspaces
+		 * While the second one provides them as one of its properties.
+		 *
+		 * They have to be processed in different ways as their structure differs
+		 * in terms of properties. (See databaseServer/databaseServerService.ts for more info)
+		 *
+		 * Queries must be made separately due to union not being recognized by resourceGraph resource calls
+		 */
 		let synapseQueryPromise = queryGraphResources<GraphData>(resourceClient, subscriptions, synapseWorkspacesQuery);
 		let serverQueryPromise = queryGraphResources<GraphData>(resourceClient, subscriptions, sqlServersQuery);
 		let dbQueryPromise = queryGraphResources<GraphData>(resourceClient, subscriptions, `where type == "${azureResource.AzureResourceType.sqlDatabase}"`);
@@ -63,6 +75,7 @@ export class AzureResourceDatabaseService implements IAzureResourceService<azure
 						name: db.name,
 						id: db.id,
 						serverName: server.name,
+						// Determine if server object is for Synapse Workspace or not and get the needed property from the correct place.
 						serverFullName: (server as SynapseWorkspaceGraphData).properties.connectivityEndpoints?.sql ?? (server as DbServerGraphData).properties.fullyQualifiedDomainName,
 						loginName: (server as SynapseWorkspaceGraphData).properties.sqlAdministratorLogin ?? (server as DbServerGraphData).properties.administratorLogin,
 						subscription: {
