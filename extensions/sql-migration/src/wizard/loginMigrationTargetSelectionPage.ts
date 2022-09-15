@@ -31,7 +31,6 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 	private _azureResourceGroupDropdown!: azdata.DropDownComponent;
 	private _azureResourceDropdownLabel!: azdata.TextComponent;
 	private _azureResourceDropdown!: azdata.DropDownComponent;
-	private _azureResourceTable!: azdata.DeclarativeTableComponent;
 	private _resourceSelectionContainer!: azdata.FlexContainer;
 	private _resourceAuthenticationContainer!: azdata.FlexContainer;
 	private _targetUserNameInputBox!: azdata.InputBoxComponent;
@@ -120,7 +119,6 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 		}
 
 		if (this.migrationStateModel._didUpdateDatabasesForMigration) {
-			this._initializeSourceTargetDatabaseMap();
 			this._updateConnectionButtonState();
 		}
 
@@ -187,11 +185,6 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 						errors.push(constants.MISSING_TARGET_PASSWORD_ERROR);
 					}
 
-					// validate source and target database mapping
-					const mappingErrors = this._getSourceTargetMappingErrors();
-					if (mappingErrors.length > 0) {
-						errors.push(...mappingErrors);
-					}
 					break;
 			}
 
@@ -253,14 +246,30 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 					break;
 				}
 			}
+
+			switch (this.migrationStateModel._targetType) {
+				case MigrationTargetType.SQLMI:
+					this._pageDescription.value = constants.AZURE_SQL_TARGET_PAGE_DESCRIPTION(constants.SKU_RECOMMENDATION_MI_CARD_TEXT);
+					this._azureResourceDropdownLabel.value = constants.AZURE_SQL_DATABASE_MANAGED_INSTANCE;
+					this._azureResourceDropdown.ariaLabel = constants.AZURE_SQL_DATABASE_MANAGED_INSTANCE;
+					break;
+				case MigrationTargetType.SQLVM:
+					this._pageDescription.value = constants.AZURE_SQL_TARGET_PAGE_DESCRIPTION(constants.SKU_RECOMMENDATION_VM_CARD_TEXT);
+					this._azureResourceDropdownLabel.value = constants.AZURE_SQL_DATABASE_VIRTUAL_MACHINE;
+					this._azureResourceDropdown.ariaLabel = constants.AZURE_SQL_DATABASE_VIRTUAL_MACHINE;
+					break;
+				case MigrationTargetType.SQLDB:
+					this._pageDescription.value = constants.AZURE_SQL_TARGET_PAGE_DESCRIPTION(constants.SKU_RECOMMENDATION_SQLDB_CARD_TEXT);
+					this._azureResourceDropdownLabel.value = constants.AZURE_SQL_DATABASE;
+					this._azureResourceDropdown.ariaLabel = constants.AZURE_SQL_DATABASE;
+					this._updateConnectionButtonState();
+					break;
+			}
+			await this.populateAzureAccountsDropdown();
+			await this.populateTenantsDropdown();
+			await this.populateSubscriptionDropdown();
+			await this.populateLocationDropdown();
 			console.log(this.migrationStateModel._targetType);
-			// if (value && value !== 'undefined') {
-			// 	const selectedAccount = this.migrationStateModel._azureAccounts.find(account => account.displayInfo.displayName === value);
-			// 	this.migrationStateModel._azureAccount = (selectedAccount)
-			// 		? utils.deepClone(selectedAccount)!
-			// 		: undefined!;
-			// 	await this.populateTenantsDropdown();
-			// }
 		}));
 
 		const flexContainer = this._view.modelBuilder.flexContainer()
@@ -466,7 +475,10 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 
 		this._disposables.push(
 			this._targetUserNameInputBox.onTextChanged(
-				(value: string) => this.migrationStateModel._targetUserName = value ?? ''));
+				(value: string) => {
+					this.migrationStateModel._targetUserName = value ?? '';
+					this._updateConnectionButtonState();
+				}));
 
 		this._disposables.push(
 			this._targetUserNameInputBox.onValidityChanged(
@@ -490,7 +502,10 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 			}).component();
 		this._disposables.push(
 			this._targetPasswordInputBox.onTextChanged(
-				(value: string) => { this.migrationStateModel._targetPassword = value ?? ''; }));
+				(value: string) => {
+					this.migrationStateModel._targetPassword = value ?? '';
+					this._updateConnectionButtonState();
+				}));
 
 		this._disposables.push(
 			this._targetPasswordInputBox.onValidityChanged(
@@ -550,7 +565,6 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 						connectionButtonLoadingContainer.loading = false;
 					}
 				}
-				await this._populateResourceMappingTable(targetDatabases);
 			}));
 
 		const connectionContainer = this._view.modelBuilder.flexContainer()
@@ -566,39 +580,13 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 			.withProps({ CSSStyles: { 'margin': '15px 0 0 0' } })
 			.component();
 
-		const mapSourceHeading = this._view.modelBuilder.text()
-			.withProps({
-				value: constants.MAP_SOURCE_TARGET_HEADING,
-				width: WIZARD_INPUT_COMPONENT_WIDTH,
-				CSSStyles: {
-					'font-weight': '600',
-					'font-size': '16px',
-					'margin': '15px 0 0 0',
-				},
-			})
-			.component();
-		const mapSourceDetails = this._view.modelBuilder.text()
-			.withProps({
-				value: constants.MAP_SOURCE_TARGET_DESCRIPTION,
-				width: WIZARD_INPUT_COMPONENT_WIDTH,
-				CSSStyles: {
-					'font-size': '13px',
-					'margin': '15px 0 15px 0',
-				},
-			})
-			.component();
-		this._azureResourceTable = this._createResourceTable();
-
 		return this._view.modelBuilder.flexContainer()
 			.withItems([
 				targetUserNameLabel,
 				this._targetUserNameInputBox,
 				targetPasswordLabel,
 				this._targetPasswordInputBox,
-				connectionContainer,
-				mapSourceHeading,
-				mapSourceDetails,
-				this._azureResourceTable])
+				connectionContainer])
 			.withLayout({ flexFlow: 'column' })
 			.withProps({ CSSStyles: { 'margin': '15px 0 0 0' } })
 			.component();
@@ -735,9 +723,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 
 				this.migrationStateModel._sqlMigrationServices = undefined!;
 				if (isSqlDbTarget) {
-					await this._azureResourceTable.setDataValues([]);
 					this._targetPasswordInputBox.value = '';
-					this._initializeSourceTargetDatabaseMap();
 					this._updateConnectionButtonState();
 				}
 			}));
@@ -752,15 +738,6 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 			.component();
 	}
 
-	private _initializeSourceTargetDatabaseMap(): void {
-		// initialize source / target database map
-		this.migrationStateModel._sourceTargetMapping = new Map();
-		this.migrationStateModel._targetDatabaseNames = [];
-		this.migrationStateModel._databasesForMigration.forEach(
-			sourceDatabaseName => this.migrationStateModel._sourceTargetMapping.set(
-				sourceDatabaseName, undefined));
-	}
-
 	private _updateConnectionButtonState(): void {
 		const targetDatabaseServer = (this._azureResourceDropdown.value as azdata.CategoryValue)?.name ?? '';
 		const userName = this._targetUserNameInputBox.value ?? '';
@@ -768,53 +745,6 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 		this._testConectionButton.enabled = targetDatabaseServer.length > 0
 			&& userName.length > 0
 			&& password.length > 0;
-	}
-
-	private _createResourceTable(): azdata.DeclarativeTableComponent {
-		const columWidth = '50%';
-		const headerStyles = {
-			'padding': '0px',
-			'border-style': 'none',
-			'text-align': 'left',
-			'font-weight': '600',
-		};
-		const rowStyles = {
-			'padding': '1px 0px',
-			'border-style': 'none',
-			'text-align': 'left',
-			'white-space': 'nowrap',
-			'text-overflow': 'ellipsis',
-			'overflow': 'hidden',
-		};
-
-		return this._view.modelBuilder.declarativeTable()
-			.withProps({
-				ariaLabel: constants.MAP_SOURCE_TARGET_HEADING,
-				width: WIZARD_INPUT_COMPONENT_WIDTH,
-				data: [],
-				display: 'inline-block',
-				CSSStyles: { 'padding': '0px' },
-				columns: [
-					{
-						displayName: constants.MAP_SOURCE_COLUMN,
-						valueType: azdata.DeclarativeDataType.string,
-						width: columWidth,
-						isReadOnly: true,
-						rowCssStyles: rowStyles,
-						headerCssStyles: headerStyles,
-					},
-					{
-						displayName: constants.MAP_TARGET_COLUMN,
-						valueType: azdata.DeclarativeDataType.component,
-						width: columWidth,
-						isReadOnly: false,
-						rowCssStyles: rowStyles,
-						headerCssStyles: headerStyles,
-					},
-				],
-			})
-			.withValidation(table => table.dataValues !== undefined && table.dataValues.length > 0)
-			.component();
 	}
 
 	private async populateAzureAccountsDropdown(): Promise<void> {
@@ -978,99 +908,5 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 				this.migrationStateModel._targetServerInstance?.name,
 				true);
 		}
-	}
-
-	private async _populateResourceMappingTable(targetDatabases: TargetDatabaseInfo[]): Promise<void> {
-		// populate target database list
-		const databaseValues = this._getTargetDatabaseDropdownValues(
-			targetDatabases,
-			constants.NO_SQL_DATABASE_FOUND);
-
-		const data: azdata.DeclarativeTableCellValue[][] = this.migrationStateModel._databasesForMigration
-			.map(sourceDatabase => {
-				// target database dropdown
-				const targetDatabaseDropDown = this._view.modelBuilder.dropDown()
-					.withProps({
-						width: '100%',
-						required: true,
-						editable: true,
-						fireOnTextChange: true,
-						values: databaseValues,
-						placeholder: constants.MAP_TARGET_PLACEHOLDER,
-					})
-					.component();
-				this._disposables.push(
-					targetDatabaseDropDown.onValueChanged((targetDatabaseName: string) => {
-						const targetDatabaseInfo = targetDatabases.find(
-							targetDb => targetDb.databaseName === targetDatabaseName);
-						this.migrationStateModel._sourceTargetMapping.set(
-							sourceDatabase,
-							targetDatabaseInfo);
-						this.migrationStateModel._didDatabaseMappingChange = true;
-					}));
-
-				const targetDatabaseName = this.migrationStateModel._sourceTargetMapping.get(sourceDatabase)?.databaseName ?? '';
-				if (targetDatabaseName.length > 0) {
-					utils.selectDefaultDropdownValue(
-						targetDatabaseDropDown,
-						targetDatabaseName);
-				}
-
-				return [
-					<azdata.DeclarativeTableCellValue>{ value: sourceDatabase },
-					<azdata.DeclarativeTableCellValue>{ value: targetDatabaseDropDown },
-				];
-			}) || [];
-
-		await this._azureResourceTable.setDataValues(data);
-	}
-
-	private _getTargetDatabaseDropdownValues(
-		databases: TargetDatabaseInfo[],
-		resourceNotFoundMessage: string): azdata.CategoryValue[] {
-
-		if (databases?.length > 0) {
-			return databases.map<azdata.CategoryValue>(database => {
-				const databaseName = database.databaseName;
-				return { name: databaseName, displayName: databaseName };
-			});
-		}
-
-		return [{ name: '', displayName: resourceNotFoundMessage }];
-	}
-
-	private _getSourceTargetMappingErrors(): string[] {
-		// Validate source/target database mappings:
-		const errors: string[] = [];
-		const targetDatabaseKeys = new Map<string, string>();
-		const migrationDatabaseCount = this._azureResourceTable.dataValues?.length ?? 0;
-		this.migrationStateModel._targetDatabaseNames = [];
-		if (migrationDatabaseCount === 0) {
-			errors.push(constants.SQL_TARGET_MAPPING_ERROR_MISSING_TARGET);
-		} else {
-			for (let i = 0; i < this.migrationStateModel._databasesForMigration.length; i++) {
-				const sourceDatabaseName = this.migrationStateModel._databasesForMigration[i];
-				const targetDatabaseInfo = this.migrationStateModel._sourceTargetMapping.get(sourceDatabaseName);
-				const targetDatabaseName = targetDatabaseInfo?.databaseName;
-				if (targetDatabaseName && targetDatabaseName.length > 0) {
-					if (!targetDatabaseKeys.has(targetDatabaseName)) {
-						targetDatabaseKeys.set(targetDatabaseName, sourceDatabaseName);
-						this.migrationStateModel._targetDatabaseNames.push(targetDatabaseName);
-					} else {
-						const mappedSourceDatabaseName = targetDatabaseKeys.get(targetDatabaseName) ?? '';
-						// target mapped only once
-						errors.push(
-							constants.SQL_TARGET_CONNECTION_DUPLICATE_TARGET_MAPPING(
-								targetDatabaseName,
-								sourceDatabaseName,
-								mappedSourceDatabaseName));
-					}
-				} else {
-					// source/target has mapping
-					errors.push(constants.SQL_TARGET_CONNECTION_SOURCE_NOT_MAPPED(sourceDatabaseName));
-				}
-			}
-		}
-		return errors;
 	}
 }
