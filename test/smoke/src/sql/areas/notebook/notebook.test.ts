@@ -273,7 +273,7 @@ export function setup(opts: minimist.ParsedArgs) {
 			});
 		});
 
-		describe.skip('Cell Toolbar Actions', function () {
+		describe('Cell Toolbar Actions', function () {
 			async function verifyCellToolbarBehavior(app: Application, toolbarAction: () => Promise<void>, selector: string, checkIfGone: boolean = false): Promise<void> {
 				// Run the test for each of the default text editor modes
 				for (let editMode of ['Markdown', 'Split View']) {
