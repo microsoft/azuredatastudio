@@ -17,6 +17,8 @@ import * as which from 'which';
 import { promises as fs } from 'fs';
 import { ISqlProject, SqlTargetPlatform } from 'sqldbproj';
 
+const SqlDWEngineEdition = 6;
+
 export interface ValidationResult {
 	errorMessage: string;
 	validated: boolean
@@ -723,7 +725,7 @@ export async function getTargetPlatformFromServerVersion(serverInfo: azdataType.
 	let targetPlatform;
 	if (isCloud) {
 		const engineEdition = serverInfo.engineEditionId;
-		targetPlatform = engineEdition === 6 ? SqlTargetPlatform.sqlDW : SqlTargetPlatform.sqlAzure;		//DatabaseEngineEdition.SqlDataWarehouse = 6
+		targetPlatform = engineEdition === SqlDWEngineEdition ? SqlTargetPlatform.sqlDW : SqlTargetPlatform.sqlAzure;
 	} else {
 		const serverMajorVersion = serverInfo.serverMajorVersion;
 		targetPlatform = serverMajorVersion ? constants.onPremServerVersionToTargetPlatform.get(serverMajorVersion) : undefined;

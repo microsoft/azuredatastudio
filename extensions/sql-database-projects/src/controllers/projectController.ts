@@ -1431,7 +1431,7 @@ export class ProjectsController {
 		return new CreateProjectFromDatabaseDialog(profile);
 	}
 
-	public async createProjectFromDatabaseCallback(model: ImportDataModel, connectionInfo: string | mssqlVscode.IConnectionInfo | undefined) {
+	public async createProjectFromDatabaseCallback(model: ImportDataModel, connectionInfo?: string | mssqlVscode.IConnectionInfo) {
 		try {
 
 			const newProjFolderUri = model.filePath;
