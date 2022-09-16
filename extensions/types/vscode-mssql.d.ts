@@ -118,9 +118,27 @@ declare module 'vscode-mssql' {
 		/**
 		 * Get the server info for a connection
 		 * @param connectionInfo connection info of the connection
-	 	*/
-		 getServerInfo(connectionInfo: IConnectionInfo): ServerInfo
+		 */
+		getServerInfo(connectionInfo: IConnectionInfo): ServerInfo
 	}
+
+	/**
+	 * The possible values of the server engine edition
+	 * EngineEdition under https://docs.microsoft.com/sql/t-sql/functions/serverproperty-transact-sql is associated with these values
+	 */
+	 export const enum DatabaseEngineEdition {
+		Unknown = 0,
+		Personal = 1,
+		Standard = 2,
+		Enterprise = 3,
+		Express = 4,
+		SqlDatabase = 5,
+		SqlDataWarehouse = 6,
+		SqlStretchDatabase = 7,
+		SqlManagedInstance = 8,
+		SqlOnDemand = 11
+	}
+
 
 	/**
 	 * Information about a database connection
@@ -298,7 +316,7 @@ declare module 'vscode-mssql' {
 	/**
 	 * Information about a SQL Server instance.
 	 */
-	 export interface ServerInfo {
+	export interface ServerInfo {
 		/**
 		 * The major version of the SQL Server instance.
 		 */
