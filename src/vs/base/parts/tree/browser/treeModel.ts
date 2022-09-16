@@ -961,6 +961,7 @@ export class TreeModel {
 
 	public refresh(element: any = null, recursive: boolean = true): Promise<any> {
 		let self = this;
+		// Add loading spinner for item during refresh process.
 		this.addTraits('loading', [element]);
 		let item = this.getItem(element);
 
@@ -971,7 +972,12 @@ export class TreeModel {
 		let eventData: IRefreshEvent = { item: item, recursive: recursive };
 		this._onRefresh.fire(eventData);
 		return item.refresh(recursive).then(() => {
-			//Refresh loading status for item will be instantly lost upon refresh of self, need to restablish it for visibility for users.
+			/**
+			 * Refresh loading status for item will be instantly lost upon refresh of item self
+			 * (usually before the spinner shows). we need to temporarily bring it back upon
+			 * actual refresh completion to let the user know the refresh happened with a short
+			 * appearance of the loading spinner.
+			 */
 			this.addTraits('loading', [element]);
 			this._onDidRefresh.fire(eventData);
 			setTimeout(function () {
