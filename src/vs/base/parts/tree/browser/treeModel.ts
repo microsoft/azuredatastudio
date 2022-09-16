@@ -960,6 +960,8 @@ export class TreeModel {
 	}
 
 	public refresh(element: any = null, recursive: boolean = true): Promise<any> {
+		let self = this;
+		this.addTraits('loading', [element]);
 		let item = this.getItem(element);
 
 		if (!item) {
@@ -969,7 +971,12 @@ export class TreeModel {
 		let eventData: IRefreshEvent = { item: item, recursive: recursive };
 		this._onRefresh.fire(eventData);
 		return item.refresh(recursive).then(() => {
+			//Refresh loading status for item will be instantly lost upon refresh of self, need to restablish it for visibility for users.
+			this.addTraits('loading', [element]);
 			this._onDidRefresh.fire(eventData);
+			setTimeout(function () {
+				self.removeTraits('loading', [element]);
+			}, 1000);
 		});
 	}
 
