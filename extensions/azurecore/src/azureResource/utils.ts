@@ -5,7 +5,7 @@
 
 import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 import { TokenCredentials } from '@azure/ms-rest-js';
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import * as azdata from 'azdata';
 import { AzureRestResponse, GetResourceGroupsResult, GetSubscriptionsResult, ResourceQueryResult, GetBlobContainersResult, GetFileSharesResult, HttpRequestMethod, GetLocationsResult, GetManagedDatabasesResult, CreateResourceGroupResult, GetBlobsResult, GetStorageAccountAccessKeyResult, AzureAccount, azureResource, AzureAccountProviderMetadata } from 'azurecore';
 import { EOL } from 'os';
@@ -121,6 +121,9 @@ export async function getResourceGroups(appContext: AppContext, account?: AzureA
 	await Promise.all(account.properties.tenants.map(async (tenant: { id: string; }) => {
 		try {
 			const tokenResponse = await azdata.accounts.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.ResourceManagement);
+			if (!tokenResponse) {
+				throw new Error(`Could not fetch security token fetching resource groups for tenant "${tenant.id}"`);
+			}
 			const token = tokenResponse.token;
 			const tokenType = tokenResponse.tokenType;
 
@@ -220,6 +223,9 @@ export async function runResourceQuery<T extends azureResource.AzureGraphResourc
 		let resourceClient: ResourceGraphClient;
 		try {
 			const tokenResponse = await azdata.accounts.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.ResourceManagement);
+			if (!tokenResponse) {
+				throw new Error(`Could not fetch security token for query "${query}" on tenant ${tenant.id}`);
+			}
 			const token = tokenResponse.token;
 			const tokenType = tokenResponse.tokenType;
 			const credential = new TokenCredentials(token, tokenType);
@@ -354,7 +360,7 @@ export async function makeHttpRequest(account: AzureAccount, subscription: azure
 		return result;
 	}
 
-	let securityToken: azdata.accounts.AccountSecurityToken;
+	let securityToken: azdata.accounts.AccountSecurityToken | undefined = undefined;
 	try {
 		securityToken = await azdata.accounts.getAccountSecurityToken(
 			account,
@@ -363,13 +369,13 @@ export async function makeHttpRequest(account: AzureAccount, subscription: azure
 		);
 	} catch (err) {
 		console.error(err);
-		const error = new Error(unableToFetchTokenError(subscription.tenant));
+		const error = new Error(unableToFetchTokenError(subscription?.tenant || '<unknown>'));
 		if (!ignoreErrors) {
 			throw error;
 		}
 		result.errors.push(error);
 	}
-	if (result.errors.length > 0) {
+	if (result.errors.length > 0 || !securityToken) {
 		return result;
 	}
 
@@ -396,7 +402,7 @@ export async function makeHttpRequest(account: AzureAccount, subscription: azure
 		requestUrl = `${account.properties.providerSettings.settings.armResource.endpoint}${path}`;
 	}
 
-	let response;
+	let response: AxiosResponse | undefined;
 	switch (requestType) {
 		case HttpRequestMethod.GET:
 			response = await axios.get(requestUrl, config);
@@ -410,9 +416,21 @@ export async function makeHttpRequest(account: AzureAccount, subscription: azure
 		case HttpRequestMethod.DELETE:
 			response = await axios.delete(requestUrl, config);
 			break;
+		default:
+			const error = new Error(`Unknown RequestType "${requestType}"`);
+			if (!ignoreErrors) {
+				throw error;
+			}
+			result.errors.push(error);
 	}
 
-	if (response.status < 200 || response.status > 299) {
+	if (!response) {
+		const error = new Error(`No response to HTTP request ${requestUrl}`);
+		if (!ignoreErrors) {
+			throw error;
+		}
+		result.errors.push(error);
+	} else if (response.status < 200 || response.status > 299) {
 		let errorMessage: string[] = [];
 		errorMessage.push(response.status.toString());
 		errorMessage.push(response.statusText);
@@ -517,6 +535,9 @@ export function getProviderMetadataForAccount(account: AzureAccount): AzureAccou
 	const provider = providerSettings.find(provider => {
 		return account.properties.providerSettings.id === provider.metadata.id;
 	});
+	if (!provider) {
+		throw new Error(`Could not find provider ${account.properties.providerSettings.id} for account ${account.displayInfo.displayName} (${account.displayInfo.userId})`);
+	}
 
 	return provider.metadata;
 }
