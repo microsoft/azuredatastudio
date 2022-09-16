@@ -477,35 +477,6 @@ declare module 'azdata' {
 		type?: ExtensionNodeType;
 	}
 
-	export interface AccountDisplayInfo {
-		email?: string;
-		name?: string;
-	}
-
-	export interface AccountProvider {
-		/**
-		 * Generates a security token for the provided account and tenant
-		 * @param account The account to generate a security token for
-		 * @param resource The resource to get the token for
-		 * @return Promise to return a security token object
-		 */
-		getAccountSecurityToken(account: Account, tenant: string, resource: AzureResource): Thenable<accounts.AccountSecurityToken | undefined>;
-	}
-
-	export interface AccountKey {
-		/**
-		 * A version string for an account
-		 */
-		accountVersion?: string;
-	}
-
-	export interface Account {
-		/**
-		 * Specifies if an account should be deleted
-		 */
-		delete?: boolean;
-	}
-
 	export namespace workspace {
 		/**
 		 * Creates and enters a workspace at the specified location
@@ -669,15 +640,6 @@ declare module 'azdata' {
 		 * Notify clients that the URI for a connection has been changed.
 		 */
 		connectionUriChanged(newUri: string, oldUri: string): Thenable<void>;
-	}
-
-	export namespace accounts {
-		export interface AccountSecurityToken {
-			/**
-			 * Access token expiry timestamp
-			 */
-			expiresOn?: number
-		}
 	}
 
 	export enum DataProviderType {
