@@ -76,7 +76,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		};
 	}
 
-	protected async loginMsal(tenant: Tenant, resource: Resource): Promise<{ response: AuthenticationResult, authComplete: Deferred<void, Error> }> {
+	protected async loginMsal(tenant: Tenant, resource: Resource): Promise<{ response: AuthenticationResult, authComplete: Deferred<void, Error> }> | undefined {
 		let authCompleteDeferred: Deferred<void, Error>;
 		let authCompletePromise = new Promise<void>((resolve, reject) => authCompleteDeferred = { resolve, reject });
 		let authCodeRequest: AuthorizationCodeRequest;
@@ -88,11 +88,16 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		}
 
 		let result = await this.clientApplication.acquireTokenByCode(authCodeRequest);
-		console.log(result);
-		return {
-			response: result,
-			authComplete: authCompleteDeferred
-		};
+		if (!result) {
+			Logger.error('Failed to fetch token using auth code');
+			return undefined;
+		} else {
+			console.log(result);
+			return {
+				response: result,
+				authComplete: authCompleteDeferred
+			};
+		}
 	}
 
 	/**

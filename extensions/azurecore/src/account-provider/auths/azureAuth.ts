@@ -24,10 +24,11 @@ import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Logger } from '../../utils/Logger';
 import * as qs from 'qs';
 import { AzureAuthError } from './azureAuthError';
-import { AuthenticationResult, AuthorizationCodeRequest, PublicClientApplication } from '@azure/msal-node';
+import { AuthenticationResult, PublicClientApplication } from '@azure/msal-node';
 
 const localize = nls.loadMessageBundle();
 
+export type AuthLibrary = 'ADAL' | 'MSAL';
 
 export abstract class AzureAuth implements vscode.Disposable {
 	public static ACCOUNT_VERSION = '2.0';
@@ -43,7 +44,10 @@ export abstract class AzureAuth implements vscode.Disposable {
 	protected readonly scopesString: string;
 	protected readonly clientId: string;
 	protected readonly resources: Resource[];
-	public authLibrary: string;
+	private _authLibrary: AuthLibrary;
+	public get authLibrary() {
+		return this._authLibrary;
+	}
 
 
 	constructor(
@@ -55,12 +59,12 @@ export abstract class AzureAuth implements vscode.Disposable {
 		protected readonly authType: AzureAuthType,
 		public readonly userFriendlyName: string
 	) {
-		this.authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
+		this._authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
 		vscode.workspace.onDidChangeConfiguration((changeEvent) => {
 			const impactLibrary = changeEvent.affectsConfiguration('azure.authenticationLibrary');
 			if (impactLibrary === true) {
-				this.authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
-				Logger.info(`Using Auth Library: ${this.authLibrary}`);
+				this._authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
+				Logger.info(`Using Auth Library: ${this._authLibrary}`);
 			}
 		});
 		this.loginEndpointUrl = this.metadata.settings.host;
@@ -70,7 +74,6 @@ export abstract class AzureAuth implements vscode.Disposable {
 		};
 		this.redirectUri = this.metadata.settings.redirectUri;
 		this.clientId = this.metadata.settings.clientId;
-
 		this.resources = [
 			this.metadata.settings.armResource,
 			this.metadata.settings.sqlResource,
@@ -104,7 +107,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		let loginComplete: Deferred<void, Error>;
 		try {
 			Logger.verbose('Starting login');
-			if (this.authLibrary === 'ADAL') {
+			if (this._authLibrary === 'ADAL') {
 				const result = await this.login(this.commonTenant, this.metadata.settings.microsoftResource);
 				loginComplete = result.authComplete;
 				if (!result?.response) {
@@ -181,11 +184,10 @@ export abstract class AzureAuth implements vscode.Disposable {
 		} catch (ex) {
 			if (ex instanceof AzureAuthError) {
 				void vscode.window.showErrorMessage(ex.message);
-				Logger.error(ex.originalMessageAndException);
+				Logger.error(`Error refreshing access for account ${account.displayInfo.displayName}`, ex.originalMessageAndException);
 			} else {
 				Logger.error(ex);
 			}
-			Logger.error(ex);
 			account.isStale = true;
 			return account;
 		}
@@ -193,7 +195,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 	public async hydrateAccount(token: Token | AccessToken, tokenClaims: TokenClaims): Promise<AzureAccount> {
 		let account: azdata.Account;
-		if (this.authLibrary === 'ADAL') {
+		if (this._authLibrary === 'ADAL') {
 			const tenants = await this.getTenants({ ...token });
 			account = this.createAccount(tokenClaims, token.key, tenants);
 		} else {
@@ -211,7 +213,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		const resource = this.resources.find(s => s.azureResourceId === azureResource);
 		if (!resource) {
-			Logger.error('Invalid resource, not fetching', azureResource);
+			Logger.error(`Unable to find Azure resource ${azureResource} for account ${account.displayInfo.userId} and tenant ${tenantId}`);
 
 			return undefined;
 		}
@@ -415,7 +417,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		const accountKey: azdata.AccountKey = {
 			providerId: this.metadata.id,
 			accountId: userKey,
-			authLibrary: this.authLibrary
+			authLibrary: this._authLibrary
 		};
 
 		await this.saveToken(tenant, resource, accountKey, result);
@@ -682,7 +684,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 				providerId: this.metadata.id,
 				accountId: key,
 				accountVersion: AzureAuth.ACCOUNT_VERSION,
-				authLibrary: this.authLibrary
+				authLibrary: this._authLibrary
 			},
 			name: displayName,
 			displayInfo: {
