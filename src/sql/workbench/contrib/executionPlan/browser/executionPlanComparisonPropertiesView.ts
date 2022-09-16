@@ -120,7 +120,8 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 			bottomProps = this._model.bottomElement.properties;
 		}
 
-		this.populateTable(columns, this.convertPropertiesToTableRows(topProps, bottomProps, -1, 0));
+		const tableRows = this.convertPropertiesToTableRows(topProps, bottomProps, -1, 0);
+		this.populateTable(columns, tableRows);
 	}
 
 	private getPropertyTableColumns() {
@@ -168,6 +169,37 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 				return a[1].name.localeCompare(b[1].name);
 			}
 		}));
+	}
+
+	public sortPropertiesByDisplayValueEquivalency(props: Map<string, TablePropertiesMapEntry>): Map<string, TablePropertiesMapEntry> {
+		let unequalProperties: Map<string, TablePropertiesMapEntry> = new Map();
+		let equalProperties: Map<string, TablePropertiesMapEntry> = new Map();
+
+		[...props.entries()].forEach(prop => {
+			if (prop.length === 2) {
+				const [rowKey, rowEntry] = prop;
+				const topProp = rowEntry.topProp;
+				const bottomProp = rowEntry.bottomProp;
+
+				if (topProp?.displayValue.localeCompare(bottomProp?.displayValue) === 0) {
+					equalProperties.set(rowKey, rowEntry);
+				}
+				else {
+					unequalProperties.set(rowKey, rowEntry);
+				}
+			}
+		});
+
+		let map: Map<string, TablePropertiesMapEntry> = new Map();
+		unequalProperties.forEach((v, k) => {
+			map.set(k, v);
+		});
+
+		equalProperties.forEach((v, k) => {
+			map.set(k, v);
+		});
+
+		return map;
 	}
 
 	public sortPropertiesByImportance(props: Map<string, TablePropertiesMapEntry>): Map<string, TablePropertiesMapEntry> {
@@ -229,7 +261,12 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 
 		switch (this.sortType) {
 			case PropertiesSortType.DisplayOrder:
-				propertiesMap = this.sortPropertiesByImportance(propertiesMap);
+				if (bottomNode && bottomNode.length > 0) {
+					propertiesMap = this.sortPropertiesByDisplayValueEquivalency(propertiesMap);
+				}
+				else {
+					propertiesMap = this.sortPropertiesByImportance(propertiesMap);
+				}
 				break;
 			case PropertiesSortType.Alphabetical:
 				propertiesMap = this.sortPropertiesAlphabetically(propertiesMap);
