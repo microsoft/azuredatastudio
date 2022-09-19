@@ -960,7 +960,6 @@ export class TreeModel {
 	}
 
 	public refresh(element: any = null, recursive: boolean = true): Promise<any> {
-		let self = this;
 		// Add loading spinner for item during refresh process.
 		this.addTraits('loading', [element]);
 		let item = this.getItem(element);
@@ -971,7 +970,7 @@ export class TreeModel {
 
 		let eventData: IRefreshEvent = { item: item, recursive: recursive };
 		this._onRefresh.fire(eventData);
-		return item.refresh(recursive).then(() => {
+		return item.refresh(recursive).then(async () => {
 			/**
 			 * Refresh loading status for item will be instantly lost upon refresh of item self
 			 * (usually before the spinner shows). we need to temporarily bring it back upon
@@ -980,8 +979,8 @@ export class TreeModel {
 			 */
 			this.addTraits('loading', [element]);
 			this._onDidRefresh.fire(eventData);
-			setTimeout(function () {
-				self.removeTraits('loading', [element]);
+			setTimeout(() => {
+				this.removeTraits('loading', [element]);
 			}, 1000);
 		});
 	}
