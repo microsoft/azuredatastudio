@@ -20,7 +20,7 @@ import { entries } from 'sql/base/common/collections';
 import { values } from 'vs/base/common/collections';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ServerTreeActionProvider } from 'sql/workbench/services/objectExplorer/browser/serverTreeActionProvider';
-import { ITree } from 'vs/base/parts/tree/browser/tree';
+import { ITree } from 'sql/base/parts/tree/browser/tree';
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 

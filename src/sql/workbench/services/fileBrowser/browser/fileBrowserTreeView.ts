@@ -10,12 +10,12 @@ import { IFileBrowserService } from 'sql/workbench/services/fileBrowser/common/i
 import { FileNode } from 'sql/workbench/services/fileBrowser/common/fileNode';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import nls = require('vs/nls');
-import { DefaultFilter, DefaultAccessibilityProvider, DefaultDragAndDrop } from 'vs/base/parts/tree/browser/treeDefaults';
-import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
+import { DefaultFilter, DefaultAccessibilityProvider, DefaultDragAndDrop } from 'sql/base/parts/tree/browser/treeDefaults';
+import { Tree } from 'sql/base/parts/tree/browser/treeImpl';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { ITree } from 'vs/base/parts/tree/browser/tree';
+import { ITree } from 'sql/base/parts/tree/browser/tree';
 import { IExpandableTree } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 
 /**
