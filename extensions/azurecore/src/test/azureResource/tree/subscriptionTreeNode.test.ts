@@ -17,7 +17,8 @@ import { AzureResourceService } from '../../../azureResource/resourceService';
 import { AzureResourceResourceTreeNode } from '../../../azureResource/resourceTreeNode';
 import { IAzureResourceCacheService } from '../../../azureResource/interfaces';
 import { generateGuid } from '../../../azureResource/utils';
-import { AzureAccount, azureResource } from 'azurecore';
+import { AzureAccount, AzureAccountProperties, azureResource } from 'azurecore';
+import { TreeNode } from '../../../azureResource/treeNode';
 
 // Mock services
 let appContext: AppContext;
@@ -39,7 +40,7 @@ const mockAccount: AzureAccount = {
 		contextualDisplayName: 'test',
 		userId: 'test@email.com'
 	},
-	properties: undefined,
+	properties: TypeMoq.Mock.ofType<AzureAccountProperties>().object,
 	isStale: false
 };
 
@@ -95,7 +96,7 @@ describe('AzureResourceSubscriptionTreeNode.info', function(): void {
 	});
 
 	it('Should be correct when created.', async function(): Promise<void> {
-		const subscriptionTreeNode = new AzureResourceSubscriptionTreeNode(mockAccount, mockSubscription, mockTenantId, appContext, mockTreeChangeHandler.object, undefined);
+		const subscriptionTreeNode = new AzureResourceSubscriptionTreeNode(mockAccount, mockSubscription, mockTenantId, appContext, mockTreeChangeHandler.object, TypeMoq.Mock.ofType<TreeNode>().object);
 
 		should(subscriptionTreeNode.nodePathValue).equal(`account_${mockAccount.key.accountId}.subscription_${mockSubscription.id}.tenant_${mockTenantId}`);
 
@@ -148,7 +149,7 @@ describe('AzureResourceSubscriptionTreeNode.getChildren', function(): void {
 	});
 
 	it('Should return resource containers.', async function(): Promise<void> {
-		const subscriptionTreeNode = new AzureResourceSubscriptionTreeNode(mockAccount, mockSubscription, mockTenantId, appContext, mockTreeChangeHandler.object, undefined);
+		const subscriptionTreeNode = new AzureResourceSubscriptionTreeNode(mockAccount, mockSubscription, mockTenantId, appContext, mockTreeChangeHandler.object, TypeMoq.Mock.ofType<TreeNode>().object);
 		const children = await subscriptionTreeNode.getChildren();
 
 		mockResourceTreeDataProvider1.verify((o) => o.getRootChildren(), TypeMoq.Times.once());
