@@ -960,13 +960,14 @@ export class TreeModel {
 	}
 
 	public async refresh(element: any = null, recursive: boolean = true): Promise<any> {
-		// Add loading spinner for item during refresh process.
-		this.addTraits('loading', [element]);
 		let item = this.getItem(element);
 
 		if (!item) {
 			return Promise.resolve(null);
 		}
+
+		// Add loading spinner for item during refresh process.
+		this.addTraits('loading', [element]);
 
 		let eventData: IRefreshEvent = { item: item, recursive: recursive };
 		this._onRefresh.fire(eventData);
