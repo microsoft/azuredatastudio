@@ -10,18 +10,20 @@ import { localize } from 'vs/nls';
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Action } from 'vs/base/common/actions';
 import { Codicon } from 'vs/base/common/codicons';
-import { sortAlphabeticallyIconClassNames, sortByDisplayOrderIconClassNames, sortReverseAlphabeticallyIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/constants';
+import { searchIconClassNames, sortAlphabeticallyIconClassNames, sortByDisplayOrderIconClassNames, sortReverseAlphabeticallyIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/constants';
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { RESULTS_GRID_DEFAULTS } from 'sql/workbench/common/constants';
-import { contrastBorder, listHoverBackground, listInactiveSelectionBackground } from 'vs/platform/theme/common/colorRegistry';
+import { contrastBorder, inputBackground, listHoverBackground, listInactiveSelectionBackground } from 'vs/platform/theme/common/colorRegistry';
 import { TreeGrid } from 'sql/base/browser/ui/table/treeGrid';
 import { ISashEvent, IVerticalSashLayoutProvider, Orientation, Sash } from 'vs/base/browser/ui/sash/sash';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
-import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { isString } from 'vs/base/common/types';
 import { CopyKeybind } from 'sql/base/browser/ui/table/plugins/copyKeybind.plugin';
+import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
+import { deepClone } from 'vs/base/common/objects';
 
 export abstract class ExecutionPlanPropertiesViewBase implements IVerticalSashLayoutProvider {
 	// Title bar with close button action
@@ -29,6 +31,13 @@ export abstract class ExecutionPlanPropertiesViewBase implements IVerticalSashLa
 	private _titleBarTextContainer!: HTMLElement;
 	private _titleBarActionsContainer!: HTMLElement;
 	private _titleActions: ActionBar;
+
+
+	// search bar and functrion
+	private _propertiesSearchInput: InputBox;
+	private _propertiesSearchInputContainer: HTMLElement;
+
+	private _searchAndActionBarContainer: HTMLElement;
 
 	// Header container
 	private _headerContainer: HTMLElement;
@@ -50,11 +59,14 @@ export abstract class ExecutionPlanPropertiesViewBase implements IVerticalSashLa
 
 	private _selectionModel: CellSelectionModel<Slick.SlickData>;
 
+	private _tableData: Slick.SlickData[];
+
 	constructor(
 		public _parentContainer: HTMLElement,
 		private _themeService: IThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IContextMenuService private _contextMenuService: IContextMenuService
+		@IContextMenuService private _contextMenuService: IContextMenuService,
+		@IContextViewService private _contextViewService: IContextViewService
 	) {
 
 		const sashContainer = DOM.$('.properties-sash');
@@ -99,13 +111,27 @@ export abstract class ExecutionPlanPropertiesViewBase implements IVerticalSashLa
 		this._headerContainer = DOM.$('.header');
 		propertiesContent.appendChild(this._headerContainer);
 
+		this._searchAndActionBarContainer = DOM.$('.search-action-bar-container');
+		propertiesContent.appendChild(this._searchAndActionBarContainer);
+
 		this._headerActionsContainer = DOM.$('.table-action-bar');
-		propertiesContent.appendChild(this._headerActionsContainer);
+		this._searchAndActionBarContainer.appendChild(this._headerActionsContainer);
 		this._headerActions = new ActionBar(this._headerActionsContainer, {
 			orientation: ActionsOrientation.HORIZONTAL, context: this
 		});
 		this._headerActions.pushAction([new SortPropertiesByDisplayOrderAction(), new SortPropertiesAlphabeticallyAction(), new SortPropertiesReverseAlphabeticallyAction()], { icon: true, label: false });
 
+		this._propertiesSearchInputContainer = DOM.$('.table-search');
+		this._propertiesSearchInputContainer.classList.add('codicon', searchIconClassNames);
+		this._propertiesSearchInput = new InputBox(this._propertiesSearchInputContainer, this._contextViewService, {
+			ariaDescription: localize('tableSearchDescription', 'Search properties table'),
+			placeholder: localize('tableSearchPlaceholder', 'Filter for any field...')
+		});
+		this._propertiesSearchInput.element.classList.add('codicon', searchIconClassNames);
+		this._searchAndActionBarContainer.appendChild(this._propertiesSearchInputContainer);
+		this._propertiesSearchInput.onDidChange(e => {
+			this.searchTable(e);
+		});
 
 		this._tableContainer = DOM.$('.table-container');
 		propertiesContent.appendChild(this._tableContainer);
@@ -226,7 +252,9 @@ export abstract class ExecutionPlanPropertiesViewBase implements IVerticalSashLa
 	public populateTable(columns: Slick.Column<Slick.SlickData>[], data: { [key: string]: string }[]) {
 		this._tableComponent.columns = columns;
 		this._tableContainer.scrollTo(0, 0);
-		this._tableComponent.setData(data);
+		this._tableData = data;
+		this._propertiesSearchInput.value = '';
+		this._tableComponent.setData(this.flattenTableData(data, -1));
 		this.resizeTable();
 	}
 
@@ -245,6 +273,68 @@ export abstract class ExecutionPlanPropertiesViewBase implements IVerticalSashLa
 		this._tableComponent.resizeCanvas();
 	}
 
+	private searchTable(searchString: string): void {
+		if (searchString === '') {
+			this._tableComponent.setData(this.flattenTableData(this._tableData, -1));
+		} else {
+			this._tableComponent.setData(
+				this.flattenTableData(
+					this.searchNestedTableData(searchString, this._tableData).data,
+					-1)
+			);
+		}
+		this._tableComponent.rerenderGrid();
+	}
+
+	private searchNestedTableData(pattern: string, data: Slick.SlickData[]): { include: boolean, data: Slick.SlickData[] } {
+		let resultData: Slick.SlickData[] = [];
+		data.forEach(dataRow => {
+			let includeRow = false;
+			const columns = this._tableComponent.grid.getColumns();
+			for (let i = 0; i < columns.length; i++) {
+				let dataValue = '';
+				let rawDataValue = dataRow[columns[i].field];
+				if (isString(rawDataValue)) {
+					dataValue = rawDataValue;
+				} else if (rawDataValue !== undefined) {
+					dataValue = rawDataValue.text ?? rawDataValue.title;
+				}
+				if (dataValue.toLowerCase().includes(pattern.toLowerCase())) {
+					includeRow = true;
+					break;
+				}
+			}
+
+			const rowClone = deepClone(dataRow);
+			if (rowClone['treeGridChildren'] !== undefined) {
+				const result = this.searchNestedTableData(pattern, rowClone['treeGridChildren']);
+				rowClone['treeGridChildren'] = result.data;
+				includeRow = includeRow || result.include;
+			}
+
+			if (includeRow) {
+				if (rowClone['treeGridChildren'] !== undefined) {
+					rowClone['expanded'] = true;
+				}
+				resultData.push(rowClone);
+			}
+		});
+		return { include: resultData.length > 0, data: resultData };
+	}
+
+	private flattenTableData(nestedData: Slick.SlickData[], parentIndex: number, rows: Slick.SlickData[] = []): Slick.SlickData[] {
+		if (nestedData === undefined || nestedData.length === 0) {
+			return rows;
+		}
+		nestedData.forEach((dataRow) => {
+			rows.push(dataRow);
+			dataRow['parent'] = parentIndex;
+			if (dataRow['treeGridChildren']) {
+				this.flattenTableData(dataRow['treeGridChildren'], rows.length - 1, rows);
+			}
+		});
+		return rows;
+	}
 }
 
 
@@ -339,6 +429,15 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 		.eps-container .ui-widget-content.slick-row[aria-expanded="true"],
 		.eps-container .ui-widget-content.slick-row[aria-expanded="false"] {
 			background-color: ${parentRowBackground};
+		}
+		`);
+	}
+
+	const searchBarBackground = theme.getColor(inputBackground);
+	if (inputBackground) {
+		collector.addRule(`
+		.eps-container .properties .search-action-bar-container .table-search {
+			background-color: ${searchBarBackground};
 		}
 		`);
 	}

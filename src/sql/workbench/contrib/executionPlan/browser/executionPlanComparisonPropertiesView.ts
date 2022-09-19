@@ -15,7 +15,7 @@ import { InternalExecutionPlanElement } from 'sql/workbench/contrib/executionPla
 import { executionPlanComparisonPropertiesDifferent, executionPlanComparisonPropertiesUpArrow, executionPlanComparisonPropertiesDownArrow } from 'sql/workbench/contrib/executionPlan/browser/constants';
 import * as sqlExtHostType from 'sql/workbench/api/common/sqlExtHostTypes';
 import { TextWithIconColumn } from 'sql/base/browser/ui/table/plugins/textWithIconColumn';
-import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export enum ExecutionPlanCompareOrientation {
@@ -40,9 +40,10 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		parentContainer: HTMLElement,
 		@IThemeService themeService: IThemeService,
 		@IInstantiationService instantiationService: IInstantiationService,
-		@IContextMenuService contextMenuService: IContextMenuService
+		@IContextMenuService contextMenuService: IContextMenuService,
+		@IContextViewService contextViewService: IContextViewService
 	) {
-		super(parentContainer, themeService, instantiationService, contextMenuService);
+		super(parentContainer, themeService, instantiationService, contextMenuService, contextViewService);
 		this._model = <ExecutionPlanComparisonPropertiesViewModel>{};
 		this._parentContainer.style.display = 'none';
 		const header = DOM.$('.compare-operation-name');
@@ -119,8 +120,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		if (this._model.bottomElement?.properties) {
 			bottomProps = this._model.bottomElement.properties;
 		}
-
-		this.populateTable(columns, this.convertPropertiesToTableRows(topProps, bottomProps, -1, 0));
+		this.populateTable(columns, this.convertPropertiesToTableRows(topProps, bottomProps));
 	}
 
 	private getPropertyTableColumns() {
@@ -198,7 +198,8 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		}));
 	}
 
-	private convertPropertiesToTableRows(topNode: azdata.executionPlan.ExecutionPlanGraphElementProperty[], bottomNode: azdata.executionPlan.ExecutionPlanGraphElementProperty[], parentIndex: number, indent: number, rows: { [key: string]: string }[] = []): { [key: string]: string }[] {
+	private convertPropertiesToTableRows(topNode: azdata.executionPlan.ExecutionPlanGraphElementProperty[], bottomNode: azdata.executionPlan.ExecutionPlanGraphElementProperty[]): { [key: string]: string }[] {
+		const rows: { [key: string]: string }[] = [];
 		let propertiesMap: Map<string, TablePropertiesMapEntry> = new Map();
 
 		if (topNode) {
@@ -244,7 +245,6 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 			row['name'] = {
 				text: k
 			};
-			row['parent'] = parentIndex;
 
 			const topProp = v.topProp;
 			const bottomProp = v.bottomProp;
@@ -281,11 +281,11 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 				}
 				rows.push(row);
 				if (!isString(topProp.value) && !isString(bottomProp.value)) {
-					this.convertPropertiesToTableRows(topProp.value, bottomProp.value, rows.length - 1, indent + 2, rows);
+					row['treeGridChildren'] = this.convertPropertiesToTableRows(topProp.value, bottomProp.value);
 				} else if (isString(topProp?.value) && !isString(bottomProp.value)) {
-					this.convertPropertiesToTableRows(undefined, bottomProp.value, rows.length - 1, indent + 2, rows);
+					row['treeGridChildren'] = this.convertPropertiesToTableRows(undefined, bottomProp.value);
 				} else if (!isString(topProp.value) && !isString(bottomProp.value)) {
-					this.convertPropertiesToTableRows(topProp.value, undefined, rows.length - 1, indent + 2, rows);
+					row['treeGridChildren'] = this.convertPropertiesToTableRows(topProp.value, undefined);
 				}
 			} else if (topProp && !bottomProp) {
 				row['displayOrder'] = v.topProp.displayOrder;
@@ -296,7 +296,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 				if (!isString(topProp.value)) {
 					row['name'].iconCssClass += ` parent-row-styling`;
 					row['primary'].iconCssClass += ` parent-row-styling`;
-					this.convertPropertiesToTableRows(topProp.value, undefined, rows.length - 1, indent + 2, rows);
+					row['treeGridChildren'] = this.convertPropertiesToTableRows(topProp.value, undefined);
 				}
 			} else if (!topProp && bottomProp) {
 				row['displayOrder'] = v.bottomProp.displayOrder;
@@ -308,12 +308,11 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 				if (!isString(bottomProp.value)) {
 					row['name'].iconCssClass += ` parent-row-styling`;
 					row['secondary'].iconCssClass += ` parent-row-styling`;
-					this.convertPropertiesToTableRows(undefined, bottomProp.value, rows.length - 1, indent + 2, rows);
+					row['treeGridChildren'] = this.convertPropertiesToTableRows(undefined, bottomProp.value);
 				}
 			}
 
 		});
-
 		return rows;
 	}
 

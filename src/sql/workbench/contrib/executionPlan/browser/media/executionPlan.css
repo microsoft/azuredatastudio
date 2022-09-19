@@ -101,7 +101,7 @@ However we always want it to be the width of the container it is resizing.
 
 /* execution plan header that contains the relative query cost, query statement and recommendations */
 .eps-container .execution-plan .plan .header .query-row,
-.top-operations-tab .top-operations-container .query-row{
+.top-operations-tab .top-operations-container .query-row {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	display: -webkit-box;
@@ -185,6 +185,28 @@ However we always want it to be the width of the container it is resizing.
 	-webkit-margin-after: 0;
 	flex: 0 0 30px;
 	margin-top: 5px;
+}
+
+.eps-container .properties .search-action-bar-container .table-action-bar {
+	flex: auto
+}
+
+.eps-container .properties .search-action-bar-container .table-search {
+	flex: 1;
+	max-width: 300px;
+}
+
+.eps-container .properties .search-action-bar-container .table-search>div {
+	background-position-y: center;
+	background-position-x: 3px;
+}
+
+.eps-container .properties .search-action-bar-container .table-search input {
+	margin-left: 20px;
+}
+
+.eps-container .properties .search-action-bar-container {
+	display: flex;
 }
 
 /* Operation name styling in the properties view. */
@@ -804,16 +826,16 @@ However we always want it to be the width of the container it is resizing.
 	height: calc(100% - 50px);
 }
 
-.graph-cell{
+.graph-cell {
 	align-items: center;
 	position: relative;
 	width: fit-content;
 	height: 80px;
 	font-size: 10px;
-	font-family:'Monaco', 'Menlo', 'Consolas';
+	font-family: 'Monaco', 'Menlo', 'Consolas';
 }
 
-.graph-cell-body{
+.graph-cell-body {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -822,12 +844,12 @@ However we always want it to be the width of the container it is resizing.
 	outline: none !important;
 }
 
-.graph-cell-icon{
+.graph-cell-icon {
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size: cover;
-	width:30px;
-	height:30px;
+	width: 30px;
+	height: 30px;
 	align-self: center;
 	position: relative;
 }
@@ -837,8 +859,8 @@ However we always want it to be the width of the container it is resizing.
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size: cover;
-	width:12px;
-	height:12px;
+	width: 12px;
+	height: 12px;
 	bottom: 0;
 	right: -5px;
 }
@@ -846,9 +868,10 @@ However we always want it to be the width of the container it is resizing.
 .graph-cell .graph-cell-row-count {
 	position: absolute;
 	top: 30%;
-	left: calc(50% - 60px);
+	right: calc(50% + 17px);
+	margin-right: 3px;
 	min-width: 20px;
-	text-align: right;
+	text-align: left;
 	outline: none !important;
 }
 
@@ -861,7 +884,7 @@ However we always want it to be the width of the container it is resizing.
 	right: 0px;
 }
 
-.graph-cell-cost{
+.graph-cell-cost {
 	border-radius: 15px;
 	width: fit-content;
 	padding: 1px 8px 0px 8px;
