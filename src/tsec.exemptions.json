@@ -54,7 +54,7 @@
 		"sql/workbench/contrib/jobManagement/browser/jobHistoryTree.ts",
 		"sql/workbench/contrib/notebook/browser/outputs/mimeRenderer.component.ts",
 		"sql/workbench/contrib/notebook/browser/outputs/markdownOutput.component.ts",
-		"vs/base/parts/tree/browser/treeDefaults.ts"
+		"sql/base/parts/tree/browser/treeDefaults.ts"
 	],
 	"ban-script-content-assignments": [
 		"sql/workbench/services/notebook/browser/outputs/renderers.ts"
