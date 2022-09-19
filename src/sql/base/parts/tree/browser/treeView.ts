@@ -856,6 +856,7 @@ export class TreeView extends HeightMap {
 			let navigator = item.getNavigator();
 			let childItem: Model.Item | null;
 
+			// eslint-disable-next-line no-cond-assign
 			while (childItem = navigator.next()) {
 				childrenIds.push(childItem.id);
 			}
@@ -883,6 +884,7 @@ export class TreeView extends HeightMap {
 			let navigator = item.getNavigator();
 			let childItem: Model.Item | null;
 
+			// eslint-disable-next-line no-cond-assign
 			while (childItem = navigator.next()) {
 				afterModelItems.push(childItem);
 			}
@@ -1455,6 +1457,7 @@ export class TreeView extends HeightMap {
 				if (reaction!.bubble === _.DragOverBubble.BUBBLE_DOWN) {
 					let nav = item.getNavigator();
 					let child: Model.Item | null;
+					// eslint-disable-next-line no-cond-assign
 					while (child = nav.next()) {
 						viewItem = this.items[child.id];
 						if (viewItem) {
@@ -1570,7 +1573,7 @@ export class TreeView extends HeightMap {
 			if (el === this.scrollableElement.getDomNode() || el === document.body) {
 				return undefined;
 			}
-		} while (el = el.parentElement);
+		} while (el = el.parentElement); // eslint-disable-line no-cond-assign
 
 		return undefined;
 	}

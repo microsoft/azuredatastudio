@@ -49,6 +49,7 @@ export class HeightMap {
 		const startingIndex = i;
 		let itemsToInsert: IViewItem[] = [];
 
+		// eslint-disable-next-line no-cond-assign
 		while (item = iterator.next()) {
 			viewItem = this.createViewItem(item);
 			viewItem.top = totalSize + sizeDiff;
@@ -89,6 +90,7 @@ export class HeightMap {
 		let i = 0;
 		let sizeDiff = 0;
 
+		// eslint-disable-next-line no-cond-assign
 		while (itemId = iterator.next()) {
 			i = this.indexes[itemId];
 			viewItem = this.heightMap[i];
@@ -138,6 +140,7 @@ export class HeightMap {
 		let i: number, j: number | null = null;
 		let cummDiff = 0;
 
+		// eslint-disable-next-line no-cond-assign
 		while (item = iterator.next()) {
 			i = this.indexes[item.id];
 

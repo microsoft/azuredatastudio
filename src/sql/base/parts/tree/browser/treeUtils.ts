@@ -12,7 +12,7 @@ export function isEqualOrParent(tree: _.ITree, element: any, candidateParent: an
 		if (element === candidateParent) {
 			return true;
 		}
-	} while (element = nav.parent());
+	} while (element = nav.parent()); // eslint-disable-line no-cond-assign
 
 	return false;
 }
