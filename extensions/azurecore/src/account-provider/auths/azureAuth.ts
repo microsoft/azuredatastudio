@@ -18,15 +18,17 @@ import {
 import { Deferred } from '../interfaces';
 import * as url from 'url';
 
+import { SimpleTokenCache } from '../simpleTokenCache';
 import { MemoryDatabase } from '../utils/memoryDatabase';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Logger } from '../../utils/Logger';
 import * as qs from 'qs';
 import { AzureAuthError } from './azureAuthError';
-import { AuthenticationResult, AuthorizationCodeRequest, PublicClientApplication } from '@azure/msal-node';
+import { AuthenticationResult, PublicClientApplication } from '@azure/msal-node';
 
 const localize = nls.loadMessageBundle();
 
+export type AuthLibrary = 'ADAL' | 'MSAL';
 
 export abstract class AzureAuth implements vscode.Disposable {
 	public static ACCOUNT_VERSION = '2.0';
@@ -42,17 +44,29 @@ export abstract class AzureAuth implements vscode.Disposable {
 	protected readonly scopesString: string;
 	protected readonly clientId: string;
 	protected readonly resources: Resource[];
+	private _authLibrary: AuthLibrary;
+	public get authLibrary() {
+		return this._authLibrary;
+	}
 
 
 	constructor(
 		protected readonly metadata: AzureAccountProviderMetadata,
+		protected readonly tokenCache: SimpleTokenCache,
 		protected readonly context: vscode.ExtensionContext,
 		protected clientApplication: PublicClientApplication,
 		protected readonly uriEventEmitter: vscode.EventEmitter<vscode.Uri>,
 		protected readonly authType: AzureAuthType,
-		public readonly userFriendlyName: string,
+		public readonly userFriendlyName: string
 	) {
-		this.clientApplication = clientApplication;
+		this._authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
+		vscode.workspace.onDidChangeConfiguration((changeEvent) => {
+			const impactLibrary = changeEvent.affectsConfiguration('azure.authenticationLibrary');
+			if (impactLibrary === true) {
+				this._authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
+				Logger.info(`Using Auth Library: ${this._authLibrary}`);
+			}
+		});
 		this.loginEndpointUrl = this.metadata.settings.host;
 		this.commonTenant = {
 			id: 'common',
@@ -60,7 +74,6 @@ export abstract class AzureAuth implements vscode.Disposable {
 		};
 		this.redirectUri = this.metadata.settings.redirectUri;
 		this.clientId = this.metadata.settings.clientId;
-
 		this.resources = [
 			this.metadata.settings.armResource,
 			this.metadata.settings.sqlResource,
@@ -94,24 +107,37 @@ export abstract class AzureAuth implements vscode.Disposable {
 		let loginComplete: Deferred<void, Error>;
 		try {
 			Logger.verbose('Starting login');
-			const result = await this.login(this.commonTenant, this.metadata.settings.microsoftResource);
-			loginComplete = result.authComplete;
-			if (!result?.response) {
-				Logger.error('Authentication failed');
-				return {
-					canceled: false
+			if (this._authLibrary === 'ADAL') {
+				const result = await this.login(this.commonTenant, this.metadata.settings.microsoftResource);
+				loginComplete = result.authComplete;
+				if (!result?.response) {
+					Logger.error('Authentication failed');
+					return {
+						canceled: false
+					};
+				}
+				const account = await this.hydrateAccount(result.response.accessToken, result.response.tokenClaims);
+				loginComplete?.resolve();
+				return account;
+			} else {
+				const result = await this.loginMsal(this.commonTenant, this.metadata.settings.microsoftResource);
+				loginComplete = result.authComplete;
+				if (!result?.response) {
+					Logger.error('Authentication failed');
+					return {
+						canceled: false
+					};
+				}
+				const token: Token = {
+					token: result.response.accessToken,
+					key: result.response.account.homeAccountId,
+					tokenType: result.response.tokenType
 				};
+				const tokenClaims = <TokenClaims>result.response.idTokenClaims;
+				const account = await this.hydrateAccount(token, tokenClaims);
+				loginComplete?.resolve();
+				return account;
 			}
-			const token: Token = {
-				token: result.response.accessToken,
-				key: result.response.account.homeAccountId,
-				tokenType: result.response.tokenType
-			};
-			// build token claims object
-			const tokenClaims = <TokenClaims>result.response.idTokenClaims;
-			const account = await this.hydrateAccount(token, tokenClaims);
-			loginComplete?.resolve();
-			return account;
 		} catch (ex) {
 			Logger.error('Login failed');
 			if (ex instanceof AzureAuthError) {
@@ -134,13 +160,129 @@ export abstract class AzureAuth implements vscode.Disposable {
 		}
 	}
 
-	public async hydrateAccount(token: Token, tokenClaims: TokenClaims): Promise<AzureAccount> {
-		const tenants = await this.getTenants(token.token);
-		const account = this.createAccount(tokenClaims, token.key, tenants);
+	private getHomeTenant(account: AzureAccount): Tenant {
+		// Home is defined by the API
+		// Lets pick the home tenant - and fall back to commonTenant if they don't exist
+		return account.properties.tenants.find(t => t.tenantCategory === 'Home') ?? account.properties.tenants[0] ?? this.commonTenant;
+	}
+
+	public async refreshAccess(account: AzureAccount): Promise<AzureAccount> {
+		// Deprecated account - delete it.
+		if (account.key.accountVersion !== AzureAuth.ACCOUNT_VERSION) {
+			account.delete = true;
+			return account;
+		}
+		try {
+			const tenant = this.getHomeTenant(account);
+			const tokenResult = await this.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.MicrosoftResourceManagement);
+			if (!tokenResult) {
+				account.isStale = true;
+				return account;
+			}
+
+			return await this.hydrateAccount(tokenResult, this.getTokenClaims(tokenResult.token));
+		} catch (ex) {
+			if (ex instanceof AzureAuthError) {
+				void vscode.window.showErrorMessage(ex.message);
+				Logger.error(`Error refreshing access for account ${account.displayInfo.displayName}`, ex.originalMessageAndException);
+			} else {
+				Logger.error(ex);
+			}
+			account.isStale = true;
+			return account;
+		}
+	}
+
+	public async hydrateAccount(token: Token | AccessToken, tokenClaims: TokenClaims): Promise<AzureAccount> {
+		let account: azdata.Account;
+		if (this._authLibrary === 'ADAL') {
+			const tenants = await this.getTenants({ ...token });
+			account = this.createAccount(tokenClaims, token.key, tenants);
+		} else {
+			const tenants = await this.getTenantsMsal(token.token);
+			account = this.createAccount(tokenClaims, token.key, tenants);
+		}
 		return account;
 	}
 
-	protected abstract login(tenant: Tenant, resource: Resource): Promise<{ response: AuthenticationResult, authComplete: Deferred<void, Error> }>;
+	public async getAccountSecurityToken(account: AzureAccount, tenantId: string, azureResource: azdata.AzureResource): Promise<Token | undefined> {
+		if (account.isStale === true) {
+			Logger.error('Account was stale. No tokens being fetched.');
+			return undefined;
+		}
+
+		const resource = this.resources.find(s => s.azureResourceId === azureResource);
+		if (!resource) {
+			Logger.error(`Unable to find Azure resource ${azureResource} for account ${account.displayInfo.userId} and tenant ${tenantId}`);
+
+			return undefined;
+		}
+
+		const tenant = account.properties.tenants.find(t => t.id === tenantId);
+
+		if (!tenant) {
+			throw new AzureAuthError(localize('azure.tenantNotFound', "Specified tenant with ID '{0}' not found.", tenantId), `Tenant ${tenantId} not found.`, undefined);
+		}
+
+		const cachedTokens = await this.getSavedToken(tenant, resource, account.key);
+
+		// Let's check to see if we can just use the cached tokens to return to the user
+		if (cachedTokens?.accessToken) {
+			let expiry = Number(cachedTokens.expiresOn);
+			if (Number.isNaN(expiry)) {
+				Logger.error('Expiration time was not defined. This is expected on first launch');
+				expiry = 0;
+			}
+			const currentTime = new Date().getTime() / 1000;
+
+			let accessToken = cachedTokens.accessToken;
+			let expiresOn = Number(cachedTokens.expiresOn);
+			const remainingTime = expiry - currentTime;
+			const maxTolerance = 2 * 60; // two minutes
+
+			if (remainingTime < maxTolerance) {
+				const result = await this.refreshToken(tenant, resource, cachedTokens.refreshToken);
+				if (result) {
+					accessToken = result.accessToken;
+					expiresOn = Number(result.expiresOn);
+				}
+			}
+			// Let's just return here.
+			if (accessToken) {
+				return {
+					...accessToken,
+					expiresOn: expiresOn,
+					tokenType: 'Bearer'
+				};
+			}
+		}
+
+		// User didn't have any cached tokens, or the cached tokens weren't useful.
+		// For most users we can use the refresh token from the general microsoft resource to an access token of basically any type of resource we want.
+		const baseTokens = await this.getSavedToken(this.commonTenant, this.metadata.settings.microsoftResource, account.key);
+		if (!baseTokens) {
+			Logger.error('User had no base tokens for the basic resource registered. This should not happen and indicates something went wrong with the authentication cycle');
+			const msg = localize('azure.noBaseToken', 'Something failed with the authentication, or your tokens have been deleted from the system. Please try adding your account to Azure Data Studio again.');
+			account.isStale = true;
+			throw new AzureAuthError(msg, 'No base token found', undefined);
+		}
+		// Let's try to convert the access token type, worst case we'll have to prompt the user to do an interactive authentication.
+		const result = await this.refreshToken(tenant, resource, baseTokens.refreshToken);
+		if (result?.accessToken) {
+			return {
+				...result.accessToken,
+				expiresOn: Number(result.expiresOn),
+				tokenType: 'Bearer'
+			};
+		}
+		return undefined;
+	}
+
+
+
+	protected abstract login(tenant: Tenant, resource: Resource): Promise<{ response: OAuthTokenResponse, authComplete: Deferred<void, Error> }>;
+
+	protected abstract loginMsal(tenant: Tenant, resource: Resource): Promise<{ response: AuthenticationResult, authComplete: Deferred<void, Error> }>;
 
 	/**
 	 * Refreshes a token, if a refreshToken is passed in then we use that. If it is not passed in then we will prompt the user for consent.
@@ -150,6 +292,20 @@ export abstract class AzureAuth implements vscode.Disposable {
 	 * @returns The oauth token response or undefined. Undefined is returned when the user wants to ignore a tenant or chooses not to start the
 	 * re-authentication process for their tenant.
 	 */
+	public async refreshToken(tenant: Tenant, resource: Resource, refreshToken: RefreshToken | undefined): Promise<OAuthTokenResponse> | undefined {
+		Logger.pii('Refreshing token', [{ name: 'token', objOrArray: refreshToken }], []);
+		if (refreshToken) {
+			const postData: RefreshTokenPostData = {
+				grant_type: 'refresh_token',
+				client_id: this.clientId,
+				refresh_token: refreshToken.token,
+				tenant: tenant.id,
+				resource: resource.endpoint
+			};
+			return this.getToken(tenant, resource, postData);
+		}
+		return this.handleInteractionRequired(tenant, resource);
+	}
 
 
 	/**
@@ -161,20 +317,19 @@ export abstract class AzureAuth implements vscode.Disposable {
 	 */
 	// TODO: Need to add resource we are getting the token for
 	// Can replace most refreshToken calls with getToken, it does the same thing
-	public async getToken(accountId: string, azureResource: azdata.AzureResource): Promise<AuthenticationResult> {
-
+	// TODO: separate getToken for MSAL
+	public async getTokenMsal(accountId: string, azureResource: azdata.AzureResource): Promise<AuthenticationResult> {
 		const cache = this.clientApplication.getTokenCache();
 		if (!cache) {
-			console.log('Error: Could not fetch token cache.');
+			Logger.error('Error: Could not fetch token cache.');
 		}
 		const resource = this.resources.find(s => s.azureResourceId === azureResource);
 		if (!resource) {
-			console.log('Error: Could not fetch the azure resource.');
+			Logger.error(`Error: Could not fetch the azure resource ${azureResource} `);
 		}
-		const accounts = await cache.getAllAccounts();
 		const account = await cache.getAccountByHomeId(accountId);
 		if (!account) {
-			console.log('Error: Could not fetch account when acquiring token');
+			Logger.error('Error: Could not fetch account when acquiring token');
 		}
 		let newScope = [`${resource.endpoint}/User.Read`];
 		// construct request
@@ -182,30 +337,37 @@ export abstract class AzureAuth implements vscode.Disposable {
 			account: account,
 			scopes: newScope
 		};
-
 		try {
 			return await this.clientApplication.acquireTokenSilent(tokenRequest);
 		} catch (e) {
-			console.log('Failed to acquireTokenSilent');
-			console.log(e);
+			Logger.error('Failed to acquireTokenSilent', e);
 			// need to create an auth url request
 			const tenant: Tenant = {
 				id: account.tenantId,
 				displayName: ''
 			};
-			const authResult = await this.login(tenant, resource);
+			const authResult = await this.loginMsal(tenant, resource);
 			return authResult.response;
 		}
-		// Need: Account info
-		// Need: Scope
-		// Use account info to find correct account from cache
-		// Call clientApplication.getTokenSilent() in a try/catch
-		// In the catch if that fails, call clientApplication.getTokenInteractive
-		// return authResponse.accessToken
+
 	}
 
-	public async getTokenInteractive(authCodeRequest: AuthorizationCodeRequest): AuthenticationResult {
-
+	public async getToken(tenant: Tenant, resource: Resource, postData: AuthorizationCodePostData | TokenPostData | RefreshTokenPostData): Promise<OAuthTokenResponse> {
+		Logger.verbose('Fetching token');
+		const tokenUrl = `${this.loginEndpointUrl}${tenant.id}/oauth2/token`;
+		const response = await this.makePostRequest(tokenUrl, postData);
+		Logger.pii('Token: ', [{ name: 'access token', objOrArray: response.data }, { name: 'refresh token', objOrArray: response.data }], []);
+		if (response.data.error === 'interaction_required') {
+			return this.handleInteractionRequired(tenant, resource);
+		}
+		if (response.data.error) {
+			Logger.error('Response error!', response.data);
+			throw new AzureAuthError(localize('azure.responseError', "Token retrieval failed with an error. [Open developer tools]({0}) for more details.", 'command:workbench.action.toggleDevTools'), 'Token retrieval failed', undefined);
+		}
+		const accessTokenString = response.data.access_token;
+		const refreshTokenString = response.data.refresh_token;
+		const expiresOnString = response.data.expires_on;
+		return this.getTokenHelper(tenant, resource, accessTokenString, refreshTokenString, expiresOnString);
 	}
 
 	public async getTokenHelper(tenant: Tenant, resource: Resource, accessTokenString: string, refreshTokenString: string, expiresOnString: string): Promise<OAuthTokenResponse> {
@@ -253,29 +415,24 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		const accountKey: azdata.AccountKey = {
 			providerId: this.metadata.id,
-			accountId: userKey
+			accountId: userKey,
+			authLibrary: this._authLibrary
 		};
+
+		await this.saveToken(tenant, resource, accountKey, result);
 
 		return result;
 	}
 
 
-
-	//#region tenant calls
-	public async getTenants(token: string): Promise<Tenant[]> {
-		interface TenantResponse { // https://docs.microsoft.com/en-us/rest/api/resources/tenants/list
-			id: string
-			tenantId: string
-			displayName?: string
-			tenantCategory?: string
-		}
-
+	public async getTenantsMsal(token: string): Promise<Tenant[]> {
 		const tenantUri = url.resolve(this.metadata.settings.armResource.endpoint, 'tenants?api-version=2019-11-01');
 		try {
 			Logger.verbose('Fetching tenants', tenantUri);
+			let tenantList: string[] = [];
 			const tenantResponse = await this.makeGetRequest(tenantUri, token);
 			const tenants: Tenant[] = tenantResponse.data.value.map((tenantInfo: TenantResponse) => {
-				Logger.verbose(`Tenant: ${tenantInfo.displayName}`);
+				tenantList.push(tenantInfo.displayName);
 				return {
 					id: tenantInfo.tenantId,
 					displayName: tenantInfo.displayName ? tenantInfo.displayName : localize('azureWorkAccountDisplayName', "Work or school account"),
@@ -283,8 +440,40 @@ export abstract class AzureAuth implements vscode.Disposable {
 					tenantCategory: tenantInfo.tenantCategory
 				} as Tenant;
 			});
-
+			Logger.verbose(`Tenants: ${tenantList}`);
 			const homeTenantIndex = tenants.findIndex(tenant => tenant.tenantCategory === 'Home');
+			// remove home tenant from list of tenants
+			if (homeTenantIndex >= 0) {
+				const homeTenant = tenants.splice(homeTenantIndex, 1);
+				tenants.unshift(homeTenant[0]);
+			}
+			return tenants;
+		} catch (ex) {
+			Logger.error(`Error fetching tenants :${ex}`);
+			throw new Error('Error retrieving tenant information');
+		}
+	}
+
+
+	//#region tenant calls
+	public async getTenants(token: AccessToken): Promise<Tenant[]> {
+		const tenantUri = url.resolve(this.metadata.settings.armResource.endpoint, 'tenants?api-version=2019-11-01');
+		try {
+			Logger.verbose('Fetching tenants', tenantUri);
+			let tenantList: string[] = [];
+			const tenantResponse = await this.makeGetRequest(tenantUri, token.token);
+			const tenants: Tenant[] = tenantResponse.data.value.map((tenantInfo: TenantResponse) => {
+				tenantList.push(tenantInfo.displayName);
+				return {
+					id: tenantInfo.tenantId,
+					displayName: tenantInfo.displayName ? tenantInfo.displayName : localize('azureWorkAccountDisplayName', "Work or school account"),
+					userId: token.key,
+					tenantCategory: tenantInfo.tenantCategory
+				} as Tenant;
+			});
+			Logger.verbose(`Tenants: ${tenantList}`);
+			const homeTenantIndex = tenants.findIndex(tenant => tenant.tenantCategory === 'Home');
+			// remove home tenant from list of tenants
 			if (homeTenantIndex >= 0) {
 				const homeTenant = tenants.splice(homeTenantIndex, 1);
 				tenants.unshift(homeTenant[0]);
@@ -297,9 +486,83 @@ export abstract class AzureAuth implements vscode.Disposable {
 		}
 	}
 
-	//#region interaction handling
+	//#endregion
 
-	public async handleInteractionRequired(tenant: Tenant, resource: Resource): Promise<AuthenticationResult | undefined> {
+	//#region token management
+	private async saveToken(tenant: Tenant, resource: Resource, accountKey: azdata.AccountKey, { accessToken, refreshToken, expiresOn }: OAuthTokenResponse) {
+		const msg = localize('azure.cacheErrorAdd', "Error when adding your account to the cache.");
+		if (!tenant.id || !resource.id) {
+			Logger.pii('Tenant ID or resource ID was undefined', [], [], tenant, resource);
+			throw new AzureAuthError(msg, 'Adding account to cache failed', undefined);
+		}
+		try {
+			Logger.pii(`Saving access token`, [{ name: 'access_token', objOrArray: accessToken }], []);
+			await this.tokenCache.saveCredential(`${accountKey.accountId}_access_${resource.id}_${tenant.id}`, JSON.stringify(accessToken));
+			Logger.pii(`Saving refresh token`, [{ name: 'refresh_token', objOrArray: refreshToken }], []);
+			await this.tokenCache.saveCredential(`${accountKey.accountId}_refresh_${resource.id}_${tenant.id}`, JSON.stringify(refreshToken));
+			this.memdb.set(`${accountKey.accountId}_${tenant.id}_${resource.id}`, expiresOn);
+		} catch (ex) {
+			Logger.error(ex);
+			throw new AzureAuthError(msg, 'Adding account to cache failed', ex);
+		}
+	}
+
+	public async getSavedToken(tenant: Tenant, resource: Resource, accountKey: azdata.AccountKey): Promise<{ accessToken: AccessToken, refreshToken: RefreshToken, expiresOn: string }> {
+		const getMsg = localize('azure.cacheErrorGet', "Error when getting your account from the cache");
+		const parseMsg = localize('azure.cacheErrorParse', "Error when parsing your account from the cache");
+
+		if (!tenant.id || !resource.id) {
+			Logger.pii('Tenant ID or resource ID was undefined', [], [], tenant, resource);
+			throw new AzureAuthError(getMsg, 'Getting account from cache failed', undefined);
+		}
+
+		let accessTokenString: string;
+		let refreshTokenString: string;
+		let expiresOn: string;
+		try {
+			Logger.info('Fetching saved token');
+			accessTokenString = await this.tokenCache.getCredential(`${accountKey.accountId}_access_${resource.id}_${tenant.id}`);
+			refreshTokenString = await this.tokenCache.getCredential(`${accountKey.accountId}_refresh_${resource.id}_${tenant.id}`);
+			expiresOn = this.memdb.get(`${accountKey.accountId}_${tenant.id}_${resource.id}`);
+		} catch (ex) {
+			Logger.error(ex);
+			throw new AzureAuthError(getMsg, 'Getting account from cache failed', ex);
+		}
+
+		try {
+			if (!accessTokenString) {
+				Logger.error('No access token found');
+				return undefined;
+			}
+			const accessToken: AccessToken = JSON.parse(accessTokenString);
+			let refreshToken: RefreshToken;
+			if (refreshTokenString) {
+				refreshToken = JSON.parse(refreshTokenString);
+			}
+			Logger.pii('GetSavedToken ', [{ name: 'access', objOrArray: accessToken }, { name: 'refresh', objOrArray: refreshToken }], [], `expiresOn=${expiresOn}`);
+			return {
+				accessToken, refreshToken, expiresOn
+			};
+		} catch (ex) {
+			Logger.error(ex);
+			throw new AzureAuthError(parseMsg, 'Parsing account from cache failed', ex);
+		}
+	}
+	//#endregion
+
+
+	//#region interaction handling
+	public async handleInteractionRequiredMsal(tenant: Tenant, resource: Resource): Promise<AuthenticationResult | undefined> {
+		const shouldOpen = await this.askUserForInteraction(tenant, resource);
+		if (shouldOpen) {
+			const result = await this.loginMsal(tenant, resource);
+			result?.authComplete?.resolve();
+			return result?.response;
+		}
+		return undefined;
+	}
+
+	public async handleInteractionRequired(tenant: Tenant, resource: Resource): Promise<OAuthTokenResponse | undefined> {
 		const shouldOpen = await this.askUserForInteraction(tenant, resource);
 		if (shouldOpen) {
 			const result = await this.login(tenant, resource);
@@ -420,6 +683,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 				providerId: this.metadata.id,
 				accountId: key,
 				accountVersion: AzureAuth.ACCOUNT_VERSION,
+				authLibrary: this._authLibrary
 			},
 			name: displayName,
 			displayInfo: {
@@ -488,14 +752,26 @@ export abstract class AzureAuth implements vscode.Disposable {
 	protected toBase64UrlEncoding(base64string: string): string {
 		return base64string.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_'); // Need to use base64url encoding
 	}
-
-	public async deleteAllCache(): Promise<void> {
+	public async deleteAllCacheMsal(): Promise<void> {
 		this.clientApplication.clearCache();
+	}
+	public async deleteAllCache(): Promise<void> {
+		const results = await this.tokenCache.findCredentials('');
+
+		for (let { account } of results) {
+			await this.tokenCache.clearCredential(account);
+		}
 	}
 
 	public async clearCredentials(account: azdata.AccountKey): Promise<void> {
 		try {
-			return this.deleteAccountCache(account);
+			// remove account based on authLibrary field, accounts added before this field was present will default to
+			// ADAL method of account removal
+			if (account.authLibrary === 'MSAL') {
+				return this.deleteAccountCacheMsal(account);
+			} else {
+				return this.deleteAccountCache(account);
+			}
 		} catch (ex) {
 			const msg = localize('azure.cacheErrrorRemove', "Error when removing your account from the cache.");
 			void vscode.window.showErrorMessage(msg);
@@ -503,10 +779,23 @@ export abstract class AzureAuth implements vscode.Disposable {
 		}
 	}
 
-	public async deleteAccountCache(account: azdata.AccountKey): Promise<void> {
+	public async deleteAccountCacheMsal(account: azdata.AccountKey): Promise<void> {
 		const tokenCache = this.clientApplication.getTokenCache();
 		let msalAccount = await tokenCache.getAccountByHomeId(account.accountId);
+		if (!msalAccount) {
+			Logger.error('MSAL: Unable to find account for removal');
+		}
 		await tokenCache.removeAccount(msalAccount);
+	}
+
+	public async deleteAccountCache(account: azdata.AccountKey): Promise<void> {
+		const results = await this.tokenCache.findCredentials(account.accountId);
+		if (!results) {
+			Logger.error('ADAL: Unable to find account for removal');
+		}
+		for (let { account } of results) {
+			await this.tokenCache.clearCredential(account);
+		}
 	}
 
 	public async dispose() { }
@@ -542,6 +831,13 @@ export interface RefreshToken extends AccountKey {
 	 * Account Key
 	 */
 	key: string
+}
+
+export interface TenantResponse { // https://docs.microsoft.com/en-us/rest/api/resources/tenants/list
+	id: string
+	tenantId: string
+	displayName?: string
+	tenantCategory?: string
 }
 
 export interface MultiTenantTokenResponse {

@@ -125,13 +125,17 @@
               "All"
             ]
           },
-          "azure.aadLibrary": {
+          "azure.authenticationLibrary": {
             "type": "string",
-            "description": "%config.aadLibrary%",
+            "description": "%config.authenticationLibrary%",
             "default": "ADAL",
             "enum": [
               "ADAL",
               "MSAL"
+            ],
+            "enumDescriptions": [
+              "Azure Active Directory Authentication Library",
+              "Microsoft Authentication Library"
             ]
           }
         }

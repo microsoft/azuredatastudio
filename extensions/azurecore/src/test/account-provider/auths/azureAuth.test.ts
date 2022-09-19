@@ -12,8 +12,6 @@ import { Tenant, AzureAccount } from 'azurecore';
 import providerSettings from '../../../account-provider/providerSettings';
 import { AzureResource } from 'azdata';
 import { AxiosResponse } from 'axios';
-import { AuthenticationResult } from '@azure/msal-node';
-
 
 let azureAuthCodeGrant: TypeMoq.IMock<AzureAuthCodeGrant>;
 // let azureDeviceCode: TypeMoq.IMock<AzureDeviceCode>;
@@ -68,13 +66,13 @@ describe('Azure Authentication', function () {
 
 	it('accountHydration should yield a valid account', async function () {
 
-		azureAuthCodeGrant.setup(x => x.getTenants(mockToken.token)).returns((): Promise<Tenant[]> => {
+		azureAuthCodeGrant.setup(x => x.getTenants(mockToken)).returns((): Promise<Tenant[]> => {
 			return Promise.resolve([
 				mockTenant
 			]);
 		});
 
-		const response = await azureAuthCodeGrant.object.hydrateAccount(mockToken.token, mockClaims);
+		const response = await azureAuthCodeGrant.object.hydrateAccount(mockToken, mockClaims);
 		should(response.displayInfo.displayName).be.equal(`${mockClaims.name} - ${mockClaims.email}`, 'Account name should match');
 		should(response.displayInfo.userId).be.equal(mockClaims.sub, 'Account ID should match');
 		should(response.properties.tenants).be.deepEqual([mockTenant], 'Tenants should match');
@@ -95,7 +93,7 @@ describe('Azure Authentication', function () {
 		});
 
 		it('token recieved for ossRdbmns resource', async function () {
-			azureAuthCodeGrant.setup(x => x.getTenants(mockToken.token)).returns(() => {
+			azureAuthCodeGrant.setup(x => x.getTenants(mockToken)).returns(() => {
 				return Promise.resolve([
 					mockTenant
 				]);
@@ -220,8 +218,8 @@ describe('Azure Authentication', function () {
 
 			azureAuthCodeGrant.setup(x => x.handleInteractionRequired(mockTenant, provider.settings.microsoftResource)).returns(() => {
 				return Promise.resolve({
-					accessToken: mockAccessToken.token
-				} as AuthenticationResult);
+					accessToken: mockAccessToken
+				} as OAuthTokenResponse);
 			});
 
 

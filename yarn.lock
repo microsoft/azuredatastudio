@@ -115,16 +115,11 @@
     tslib "^2.2.0"
 
 "@azure/msal-browser@^2.24.0":
-  version "2.24.0"
-  resolved "https://registry.yarnpkg.com/@azure/msal-browser/-/msal-browser-2.24.0.tgz#74db155a534764a5db275d98c5c95b9b6a1d0612"
-  integrity sha512-P4Z8mQ6hTuA9ss3HCltso7fRmuX1raaU6444G35c0FhaD6hfqViFYRa7hk16AiAs9HkUQHbBaL3gLjKMpX3heA==
+  version "2.28.1"
+  resolved "https://registry.yarnpkg.com/@azure/msal-browser/-/msal-browser-2.28.1.tgz#68432ba789f1d2e7a67a38743fbbbb3fbbc5430b"
+  integrity sha512-5uAfwpNGBSRzBGTSS+5l4Zw6msPV7bEmq99n0U3n/N++iTcha+nIp1QujxTPuOLHmTNCeySdMx9qzGqWuy22zQ==
   dependencies:
-    "@azure/msal-common" "^6.3.0"
-
-"@azure/msal-common@^6.3.0":
-  version "6.3.0"
-  resolved "https://registry.yarnpkg.com/@azure/msal-common/-/msal-common-6.3.0.tgz#a0cdb6be1ae3cfdc5acf3c32979375a0fef433b2"
-  integrity sha512-ZyLq9GdnLBi/83YpysE86TFKbA0TuvfNAN5Psqu20cdAjLo/4rw4ttiItdh1G//XeGErHk9qn57gi2AYU1b5/Q==
+    "@azure/msal-common" "^7.3.0"
 
 "@azure/msal-common@^7.3.0":
   version "7.3.0"
@@ -142,13 +137,11 @@
     nan "^2.13.2"
 
 "@azure/msal-node@^1.9.0":
-  version "1.9.0"
-  resolved "https://registry.yarnpkg.com/@azure/msal-node/-/msal-node-1.9.0.tgz#d42d848d2997aa9559d6bd6e1ec4f602b29dc1ba"
-  integrity sha512-lw6ejz1WPqcdjkwp91Gidte98+kfGxHk9eYSmmpUChzrUUrZMFGvrtrvG3Qnr6bp5d4WijVge9LMe+2QQUMhoA==
+  version "1.12.1"
+  resolved "https://registry.yarnpkg.com/@azure/msal-node/-/msal-node-1.12.1.tgz#1e69189242709d59479fe1133f741ca6564f8020"
+  integrity sha512-m909lX9C8Ty01DBxbjr4KfAKWibohgRvY7hrdDo13U1ztlH+0Nbt7cPF1vrWonW/CRT4H4xtUa4LCNmivghggw==
   dependencies:
-    "@azure/msal-common" "^6.3.0"
-    axios "^0.21.4"
-    https-proxy-agent "^5.0.0"
+    "@azure/msal-common" "^7.3.0"
     jsonwebtoken "^8.5.1"
     uuid "^8.3.0"
 
@@ -1928,13 +1921,6 @@ aws4@^1.8.0:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.8.0.tgz#f0e003d9ca9e7f59c7a508945d7b2ef9a04a542f"
   integrity sha512-ReZxvNHIOv88FlT7rxcXIIC0fPt4KZqZbOlivyWtXLt8ESx84zd3kMC6iK5jVeS2qt+g7ftS7ye4fi06X5rtRQ==
-
-axios@^0.21.4:
-  version "0.21.4"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-0.21.4.tgz#c67b90dc0568e5c1cf2b0b858c43ba28e2eda575"
-  integrity sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==
-  dependencies:
-    follow-redirects "^1.14.0"
 
 "azdataGraph@github:Microsoft/azdataGraph#0.0.42":
   version "0.0.42"
@@ -4574,11 +4560,6 @@ flush-write-stream@^1.0.0, flush-write-stream@^1.0.2:
     inherits "^2.0.1"
     readable-stream "^2.0.4"
 
-follow-redirects@^1.14.0:
-  version "1.15.1"
-  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.1.tgz#0ca6a452306c9b276e4d3127483e29575e207ad5"
-  integrity sha512-yLAMQs+k0b2m7cVxpS1VKJVvoz7SS9Td1zss3XRwXj+ZDH00RJgnuLx7E44wx02kQLrdM3aOOy+FpzS7+8OizA==
-
 for-in@^1.0.1, for-in@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/for-in/-/for-in-1.0.2.tgz#81068d295a8142ec0ac726c6e2200c30fb6d5e80"
@@ -6767,7 +6748,7 @@ lodash.mergewith@^4.6.0:
 lodash.once@^4.0.0:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/lodash.once/-/lodash.once-4.1.1.tgz#0dd3971213c7c56df880977d504c88fb471a97ac"
-  integrity sha1-DdOXEhPHxW34gJd9UEyI+0cal6w=
+  integrity sha512-Sb487aTOCr9drQVL8pIxOzVhafOjZN9UU54hiN8PU3uAiSV7lx1yYNpbNmex2PK6dSJoNTSJUUswT651yww3Mg==
 
 lodash.some@^4.2.2:
   version "4.6.0"
@@ -7310,9 +7291,9 @@ ms@^2.1.1:
   integrity sha512-tgp+dl5cGk28utYktBsrFqA7HKgrhgPsg6Z/EfhWI4gl1Hwq8B/GmY/0oXZ6nF8hDVesS/FpnYaD/kOWhYQvyg==
 
 msal@^1.4.16:
-  version "1.4.16"
-  resolved "https://registry.yarnpkg.com/msal/-/msal-1.4.16.tgz#199fa0fa666c6356ca8e665651e027308466628e"
-  integrity sha512-Q6jIV5RG6mD9O0bzZrR/f8v5QikrVWU0sccwOyqWE1xlBkKYVKRa/L8Gxt1X58M+J/N9V0JskhvO4KIfRHlE8g==
+  version "1.4.17"
+  resolved "https://registry.yarnpkg.com/msal/-/msal-1.4.17.tgz#b78171c0471ede506eeaabc86343f8f4e2d01634"
+  integrity sha512-RjHwP2cCIWQ9iUIk1SziUMb9+jj5mC4OqG2w16E5yig8jySi/TwiFvKlwcjNrPsndph0HtgCtbENnk5julf3yQ==
   dependencies:
     tslib "^1.9.3"
 
