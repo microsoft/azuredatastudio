@@ -11,19 +11,20 @@ import * as Diff from 'vs/base/common/diff/diff';
 import * as Touch from 'vs/base/browser/touch';
 import * as Mouse from 'vs/base/browser/mouseEvent';
 import * as Keyboard from 'vs/base/browser/keyboardEvent';
-import * as Model from 'vs/base/parts/tree/browser/treeModel';
+import * as Model from 'sql/base/parts/tree/browser/treeModel';
 import * as dnd from './treeDnd';
 import { ArrayNavigator } from 'vs/base/common/navigator';
 import { ScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElement';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
-import { HeightMap, IViewItem } from 'vs/base/parts/tree/browser/treeViewModel';
-import * as _ from 'vs/base/parts/tree/browser/tree';
+import { HeightMap, IViewItem } from 'sql/base/parts/tree/browser/treeViewModel';
+import * as _ from 'sql/base/parts/tree/browser/tree';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { Event, Emitter } from 'vs/base/common/event';
 import { DataTransfers, StaticDND, IDragAndDropData } from 'vs/base/browser/dnd';
 import { DefaultTreestyler } from './treeDefaults';
 import { Delayer, timeout } from 'vs/base/common/async';
 import { MappedNavigator } from 'sql/base/common/navigator';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 export interface IRow {
 	element: HTMLElement | null;
@@ -62,8 +63,7 @@ export class RowCache implements Lifecycle.IDisposable {
 			try {
 				templateData = this.context.renderer!.renderTemplate(this.context.tree, templateId, content);
 			} catch (err) {
-				console.error('Tree usage error: exception while rendering template');
-				console.error(err);
+				onUnexpectedError(`Tree usage error: exception while rendering template ${err}`);
 			}
 
 			result = {
@@ -154,7 +154,7 @@ export class ViewItem implements IViewItem {
 	}
 
 	set loading(value: boolean) {
-		value ? this.addClass('loading') : this.removeClass('loading'); // {{SQL CARBON EDIT}} Use old icons - codicon font icons aren't working currently #7715
+		value ? this.addClass('loading') : this.removeClass('loading');
 	}
 
 	set draggable(value: boolean) {
@@ -270,8 +270,7 @@ export class ViewItem implements IViewItem {
 			try {
 				this.context.renderer!.renderElement(this.context.tree, this.model.getElement(), this.templateId, this.row!.templateData);
 			} catch (err) {
-				console.error('Tree usage error: exception while rendering element');
-				console.error(err);
+				onUnexpectedError(`Tree usage error: exception while rendering element. ${err}`);
 			}
 
 			if (this.context.horizontalScrolling) {
@@ -311,7 +310,7 @@ export class ViewItem implements IViewItem {
 			try {
 				container.insertBefore(this.element, afterElement);
 			} catch (e) {
-				console.warn('Failed to locate previous tree element');
+				onUnexpectedError('Failed to locate previous tree element');
 				container.appendChild(this.element);
 			}
 		}
@@ -409,7 +408,7 @@ export class TreeView extends HeightMap {
 	private treeStyler: _.ITreeStyler;
 	private rowsContainer: HTMLElement;
 	private scrollableElement: ScrollableElement;
-	// @ts-expect-error {{SQL CARBON EDIT}} This always errored - ignoring for now unless we find it impacting something
+	// @ts-expect-error This always errored - ignoring for now unless we find it impacting something
 	private msGesture: MSGesture | undefined;
 	private lastPointerType: string = '';
 
@@ -602,7 +601,7 @@ export class TreeView extends HeightMap {
 
 	private setupMSGesture(): void {
 		if ((<any>window).MSGesture) {
-			// @ts-expect-error {{SQL CARBON EDIT}} This always errored - ignoring for now unless we find it impacting something
+			// @ts-expect-error This always errored - ignoring for now unless we find it impacting something
 			this.msGesture = new MSGesture();
 			setTimeout(() => this.msGesture!.target = this.wrapper, 100); // TODO@joh, TODO@IETeam
 		}
@@ -1487,7 +1486,6 @@ export class TreeView extends HeightMap {
 			this.context.dnd!.drop(this.context.tree, this.currentDragAndDropData!, this.currentDropElement, event);
 			this.onDragEnd(e);
 		} else {
-			// {{SQL CARBON EDIT}}
 			this.context.dnd!.dropAbort(this.context.tree, this.currentDragAndDropData!);
 		}
 		this.cancelDragAndDropScrollInterval();
@@ -1498,7 +1496,6 @@ export class TreeView extends HeightMap {
 			this.currentDropTargets!.forEach(i => i.dropTarget = false);
 			this.currentDropTargets = [];
 		} else {
-			// {{SQL CARBON EDIT}}
 			this.context.dnd!.dropAbort(this.context.tree, this.currentDragAndDropData!);
 		}
 

@@ -11,7 +11,7 @@ import * as errors from 'vs/base/common/errors';
 import * as dom from 'vs/base/browser/dom';
 import * as mouse from 'vs/base/browser/mouseEvent';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import * as _ from 'vs/base/parts/tree/browser/tree';
+import * as _ from 'sql/base/parts/tree/browser/tree';
 import { IDragAndDropData } from 'vs/base/browser/dnd';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { createKeybinding, Keybinding, SimpleKeybinding } from 'vs/base/common/keybindings';
@@ -450,7 +450,6 @@ export class DefaultDragAndDrop implements _.IDragAndDrop {
 		return;
 	}
 
-	// {{SQL CARBON EDIT}}
 	public dropAbort(tree: _.ITree, data: IDragAndDropData): void { }
 }
 

@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { onUnexpectedError } from 'vs/base/common/errors';
 import { ArrayNavigator, INavigator } from 'vs/base/common/navigator';
 import { Item } from './treeModel';
 
@@ -38,7 +39,7 @@ export class HeightMap {
 			viewItem = this.heightMap[i - 1];
 
 			if (!viewItem) {
-				console.error('view item doesnt exist');
+				onUnexpectedError('view item doesn\'t exist');
 				return undefined;
 			}
 
@@ -93,7 +94,7 @@ export class HeightMap {
 			viewItem = this.heightMap[i];
 
 			if (!viewItem) {
-				console.error('view item doesnt exist');
+				onUnexpectedError('view item doesn\'t exist');
 				return;
 			}
 
