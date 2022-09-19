@@ -455,6 +455,10 @@ export class Item {
 
 			setNeedsChildrenRefresh(this);
 
+			if (!this.doesHaveChildren) {
+				//console.log('reached end of the line');
+			}
+
 			return Promise.resolve(this);
 		}
 
@@ -525,7 +529,10 @@ export class Item {
 
 			return result
 				.then(undefined, onUnexpectedError)
-				.then(() => this._onDidRefreshChildren.fire(eventData));
+				.then(() => this._onDidRefreshChildren.fire(eventData))
+				.then(() => {
+					//console.log('The refreshCompleted!');
+				});
 		};
 
 		return safe ? doRefresh() : this.lock.run(this, doRefresh);
@@ -978,6 +985,7 @@ export class TreeModel {
 		 * actual refresh completion to let the user know the refresh happened with a short
 		 * appearance of the loading spinner.
 		 */
+		//console.log('this was called back in original refresh!')
 		this.addTraits('loading', [element]);
 		this._onDidRefresh.fire(eventData);
 		setTimeout(() => {
