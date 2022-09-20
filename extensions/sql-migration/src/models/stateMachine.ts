@@ -72,9 +72,8 @@ export enum Page {
 	DatabaseSelector,
 	SKURecommendation,
 	TargetSelection,
-	MigrationMode,
-	DatabaseBackup,
 	IntegrationRuntime,
+	DatabaseBackup,
 	Summary
 }
 
@@ -1085,15 +1084,13 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 			case Page.IntegrationRuntime:
 				saveInfo.sqlMigrationService = this._sqlMigrationService;
+				saveInfo.migrationMode = this._databaseBackup.migrationMode;
+				saveInfo.networkContainerType = this._databaseBackup.networkContainerType;
 
 			case Page.DatabaseBackup:
-				saveInfo.networkContainerType = this._databaseBackup.networkContainerType;
 				saveInfo.networkShares = this._databaseBackup.networkShares;
 				saveInfo.blobs = this._databaseBackup.blobs;
 				saveInfo.targetDatabaseNames = this._targetDatabaseNames;
-
-			case Page.MigrationMode:
-				saveInfo.migrationMode = this._databaseBackup.migrationMode;
 
 			case Page.TargetSelection:
 				saveInfo.azureAccount = deepClone(this._azureAccount);

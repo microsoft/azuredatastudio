@@ -29,9 +29,6 @@ const blobFileErrorStrings = [constants.NO_BLOBFILES_FOUND, constants.SELECT_BLO
 export class DatabaseBackupPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
 
-	private _networkShareButton!: azdata.RadioButtonComponent;
-	private _blobContainerButton!: azdata.RadioButtonComponent;
-
 	private _sourceConnectionContainer!: azdata.FlexContainer;
 	private _networkShareContainer!: azdata.FlexContainer;
 	private _windowsUserAccountText!: azdata.InputBoxComponent;
@@ -63,7 +60,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private _networkShareTargetDatabaseNames: azdata.InputBoxComponent[] = [];
 	private _blobContainerTargetDatabaseNames: azdata.InputBoxComponent[] = [];
 	private _networkShareLocations: azdata.InputBoxComponent[] = [];
-	private _radioButtonContainer!: azdata.FlexContainer;
 	private _networkDetailsContainer!: azdata.FlexContainer;
 
 	private _existingDatabases: string[] = [];
@@ -76,13 +72,12 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private _migrationTableSection!: azdata.FlexContainer;
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
-		super(wizard, azdata.window.createWizardPage(constants.DATABASE_BACKUP_PAGE_TITLE), migrationStateModel);
+		super(wizard, azdata.window.createWizardPage(constants.DATA_SOURCE_CONFIGURATION_PAGE_TITLE), migrationStateModel);
 	}
 
 	protected async registerContent(view: azdata.ModelView): Promise<void> {
 		this._view = view;
 
-		this._radioButtonContainer = this.createBackupLocationComponent();
 		this._sourceConnectionContainer = this.createSourceCredentialsContainer();
 		this._networkDetailsContainer = this.createNetworkDetailsContainer();
 		this._targetDatabaseContainer = this.createTargetDatabaseContainer();
@@ -91,7 +86,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 		const form = this._view.modelBuilder.formContainer()
 			.withFormItems([
-				{ title: '', component: this._radioButtonContainer },
 				{ title: '', component: this._sourceConnectionContainer },
 				{ title: '', component: this._networkDetailsContainer },
 				{ title: '', component: this._migrationTableSection },
@@ -107,65 +101,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}));
 
 		await view.initializeModel(form);
-	}
-
-	private createBackupLocationComponent(): azdata.FlexContainer {
-		const buttonGroup = 'networkContainer';
-
-		const selectLocationText = this._view.modelBuilder.text()
-			.withProps({
-				value: constants.DATABASE_BACKUP_PAGE_DESCRIPTION,
-				CSSStyles: { ...styles.BODY_CSS }
-			}).component();
-
-		const backupChecksumInfoBox = this._view.modelBuilder.infoBox()
-			.withProps({
-				text: constants.DATABASE_BACKUP_CHECKSUM_INFO_TEXT,
-				style: 'information',
-				width: WIZARD_INPUT_COMPONENT_WIDTH,
-				CSSStyles: { ...styles.BODY_CSS }
-			}).component();
-
-		this._networkShareButton = this._view.modelBuilder.radioButton()
-			.withProps({
-				name: buttonGroup,
-				label: constants.DATABASE_BACKUP_NC_NETWORK_SHARE_RADIO_LABEL,
-				checked: this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE,
-				CSSStyles: { ...styles.BODY_CSS, 'margin': '0' }
-			}).component();
-
-		this._disposables.push(
-			this._networkShareButton.onDidChangeCheckedState(async checked => {
-				if (checked) {
-					await this.switchNetworkContainerFields(NetworkContainerType.NETWORK_SHARE);
-				}
-			}));
-
-		this._blobContainerButton = this._view.modelBuilder.radioButton()
-			.withProps({
-				name: buttonGroup,
-				label: constants.DATABASE_BACKUP_NC_BLOB_STORAGE_RADIO_LABEL,
-				checked: this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.BLOB_CONTAINER,
-				CSSStyles: { ...styles.BODY_CSS, 'margin': '0' }
-			}).component();
-
-		this._disposables.push(
-			this._blobContainerButton.onDidChangeCheckedState(async checked => {
-				if (checked) {
-					await this.switchNetworkContainerFields(NetworkContainerType.BLOB_CONTAINER);
-				}
-			}));
-
-		const flexContainer = this._view.modelBuilder.flexContainer()
-			.withItems([
-				selectLocationText,
-				backupChecksumInfoBox,
-				this._networkShareButton,
-				this._blobContainerButton])
-			.withLayout({ flexFlow: 'column' })
-			.component();
-
-		return flexContainer;
 	}
 
 	private createNetworkDetailsContainer(): azdata.FlexContainer {
@@ -675,7 +610,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 		await utils.updateControlDisplay(this._sourceConnectionContainer, isSqlDbTarget || isNetworkShare);
 		await utils.updateControlDisplay(this._migrationTableSection, isSqlDbTarget);
-		await utils.updateControlDisplay(this._radioButtonContainer, !isSqlDbTarget);
 		await utils.updateControlDisplay(this._networkDetailsContainer, !isSqlDbTarget);
 		await utils.updateControlDisplay(this._targetDatabaseContainer, !isSqlDbTarget);
 		await utils.updateControlDisplay(this._networkShareStorageAccountDetails, !isSqlDbTarget);
@@ -697,8 +631,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			return;
 		}
 		if (this.migrationStateModel.refreshDatabaseBackupPage) {
-			this._networkShareButton.checked = this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE;
-			this._blobContainerButton.checked = this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.BLOB_CONTAINER;
 			await this._updatePageControlsVisibility(this.migrationStateModel._databaseBackup.networkContainerType);
 
 			const isSqlDbTarget = this.migrationStateModel._targetType === MigrationTargetType.SQLDB;
@@ -1014,6 +946,10 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					level: azdata.window.MessageLevel.Error
 				};
 			}
+
+			// TODO: test if this code is needed
+			// this.wizard.nextButton.enabled = true;
+			await this.validateFields();
 		}
 
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
@@ -1137,18 +1073,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	}
 
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
-	}
-
-	private async switchNetworkContainerFields(containerType: NetworkContainerType): Promise<void> {
-		this.wizard.message = {
-			text: '',
-			level: azdata.window.MessageLevel.Error
-		};
-
-		this.wizard.nextButton.enabled = true;
-		this.migrationStateModel._databaseBackup.networkContainerType = containerType;
-		await this._updatePageControlsVisibility(containerType);
-		await this.validateFields();
 	}
 
 	private _validateTableSelection(): boolean {

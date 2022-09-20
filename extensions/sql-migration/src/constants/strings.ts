@@ -408,7 +408,7 @@ export function ACCOUNT_CREDENTIALS_REFRESH(accountName: string): string {
 export const SELECT_SERVICE_PLACEHOLDER = localize('sql.migration.select.service.select.migration.target', "Select a target server.");
 
 // database backup page
-export const DATABASE_BACKUP_PAGE_TITLE = localize('sql.migration.database.page.title', "Database backup");
+export const DATA_SOURCE_CONFIGURATION_PAGE_TITLE = localize('sql.migration.data.source.configuration.page.title', "Data source configuration");
 export const DATABASE_BACKUP_PAGE_DESCRIPTION = localize('sql.migration.database.page.description', "Select the location of the database backups to use during migration.");
 export const DATABASE_BACKUP_CHECKSUM_INFO_TEXT = localize('sql.migration.database.checksum.info.text', "Ensure that your backups were taken with the WITH CHECKSUM option.");
 export const DATABASE_BACKUP_NC_NETWORK_SHARE_RADIO_LABEL = localize('sql.migration.nc.network.share.radio.label', "My database backups are on a network share");

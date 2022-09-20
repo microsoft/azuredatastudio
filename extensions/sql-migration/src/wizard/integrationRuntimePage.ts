@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationStateModel, MigrationTargetType, NetworkContainerType, StateChangeEvent } from '../models/stateMachine';
+import { MigrationMode, MigrationStateModel, MigrationTargetType, NetworkContainerType, StateChangeEvent } from '../models/stateMachine';
 import { CreateSqlMigrationServiceDialog } from '../dialog/createSqlMigrationService/createSqlMigrationServiceDialog';
 import * as constants from '../constants/strings';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
@@ -32,10 +32,21 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 	private _copy2!: azdata.ButtonComponent;
 	private _refresh1!: azdata.ButtonComponent;
 	private _refresh2!: azdata.ButtonComponent;
+	private _onlineButton!: azdata.RadioButtonComponent;
+	private _offlineButton!: azdata.RadioButtonComponent;
+	private _radioButtonContainer!: azdata.FlexContainer;
+	private _networkShareButton!: azdata.RadioButtonComponent;
+	private _blobContainerButton!: azdata.RadioButtonComponent;
+	private _originalMigrationMode!: MigrationMode;
 	private _disposables: vscode.Disposable[] = [];
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.IR_PAGE_TITLE), migrationStateModel);
+		this.migrationStateModel._databaseBackup.migrationMode =
+			this.migrationStateModel._databaseBackup.migrationMode ||
+				this.migrationStateModel._targetType === MigrationTargetType.SQLDB
+				? MigrationMode.OFFLINE
+				: MigrationMode.ONLINE;
 	}
 
 	protected async registerContent(view: azdata.ModelView): Promise<void> {
@@ -49,8 +60,12 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			.withItems([this._statusLoadingComponent])
 			.component();
 
+		this._radioButtonContainer = this.createBackupLocationComponent();
+
 		const form = view.modelBuilder.formContainer()
 			.withFormItems([
+				{ component: this.migrationModeContainer() },
+				{ component: this._radioButtonContainer },
 				{ component: this.migrationServiceDropdownContainer() },
 				{ component: this._dmsInfoContainer }])
 			.withProps({ CSSStyles: { 'padding-top': '0' } })
@@ -64,10 +79,140 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		await view.initializeModel(form);
 	}
 
+	private migrationModeContainer(): azdata.FlexContainer {
+		const buttonGroup = 'migrationMode';
+		this._onlineButton = this._view.modelBuilder.radioButton()
+			.withProps({
+				label: constants.DATABASE_BACKUP_MIGRATION_MODE_ONLINE_LABEL,
+				name: buttonGroup,
+				checked: this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.ONLINE,
+				CSSStyles: { ...styles.LABEL_CSS, },
+			}).component();
+		const onlineDescription = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.DATABASE_BACKUP_MIGRATION_MODE_ONLINE_DESCRIPTION,
+				CSSStyles: { ...styles.NOTE_CSS, 'margin-left': '20px' }
+			}).component();
+		this._disposables.push(
+			this._onlineButton.onDidChangeCheckedState(checked => {
+				if (checked) {
+					this.migrationStateModel._databaseBackup.migrationMode = MigrationMode.ONLINE;
+				}
+			}));
+
+		this._offlineButton = this._view.modelBuilder.radioButton()
+			.withProps({
+				label: constants.DATABASE_BACKUP_MIGRATION_MODE_OFFLINE_LABEL,
+				name: buttonGroup,
+				checked: this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE,
+				CSSStyles: { ...styles.LABEL_CSS, 'margin-top': '12px' },
+			}).component();
+		const offlineDescription = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.DATABASE_BACKUP_MIGRATION_MODE_OFFLINE_DESCRIPTION,
+				CSSStyles: { ...styles.NOTE_CSS, 'margin-left': '20px' }
+			}).component();
+		this._disposables.push(
+			this._offlineButton.onDidChangeCheckedState(checked => {
+				if (checked) {
+					this.migrationStateModel._databaseBackup.migrationMode = MigrationMode.OFFLINE;
+				}
+			}));
+
+		const flexContainer = this._view.modelBuilder.flexContainer()
+			.withItems([
+				this._onlineButton,
+				onlineDescription,
+				this._offlineButton,
+				offlineDescription]
+			).withLayout({ flexFlow: 'column' })
+			.component();
+
+		return flexContainer;
+	}
+
+	private createBackupLocationComponent(): azdata.FlexContainer {
+		const buttonGroup = 'networkContainer';
+
+		const selectLocationText = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.DATABASE_BACKUP_PAGE_DESCRIPTION,
+				CSSStyles: { ...styles.BODY_CSS }
+			}).component();
+
+		const backupChecksumInfoBox = this._view.modelBuilder.infoBox()
+			.withProps({
+				text: constants.DATABASE_BACKUP_CHECKSUM_INFO_TEXT,
+				style: 'information',
+				width: WIZARD_INPUT_COMPONENT_WIDTH,
+				CSSStyles: { ...styles.BODY_CSS }
+			}).component();
+
+		this._networkShareButton = this._view.modelBuilder.radioButton()
+			.withProps({
+				name: buttonGroup,
+				label: constants.DATABASE_BACKUP_NC_NETWORK_SHARE_RADIO_LABEL,
+				checked: this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE,
+				CSSStyles: { ...styles.BODY_CSS, 'margin': '0' }
+			}).component();
+
+		this._disposables.push(
+			this._networkShareButton.onDidChangeCheckedState(async checked => {
+				if (checked) {
+					this.migrationStateModel._databaseBackup.networkContainerType = NetworkContainerType.NETWORK_SHARE;
+					await utils.updateControlDisplay(this._dmsInfoContainer, true);
+				}
+			}));
+
+		this._blobContainerButton = this._view.modelBuilder.radioButton()
+			.withProps({
+				name: buttonGroup,
+				label: constants.DATABASE_BACKUP_NC_BLOB_STORAGE_RADIO_LABEL,
+				checked: this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.BLOB_CONTAINER,
+				CSSStyles: { ...styles.BODY_CSS, 'margin': '0' }
+			}).component();
+
+		this._disposables.push(
+			this._blobContainerButton.onDidChangeCheckedState(async checked => {
+				if (checked) {
+					this.migrationStateModel._databaseBackup.networkContainerType = NetworkContainerType.BLOB_CONTAINER;
+					await utils.updateControlDisplay(this._dmsInfoContainer, false);
+				}
+			}));
+
+		const flexContainer = this._view.modelBuilder.flexContainer()
+			.withItems([
+				selectLocationText,
+				backupChecksumInfoBox,
+				this._networkShareButton,
+				this._blobContainerButton])
+			.withLayout({ flexFlow: 'column' })
+			.component();
+
+		return flexContainer;
+	}
+
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
 			return;
 		}
+
+		const isSqlDbTarget = this.migrationStateModel._targetType === MigrationTargetType.SQLDB;
+		const isNetworkShare = this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE;
+		this._onlineButton.enabled = !isSqlDbTarget;
+
+		if (isSqlDbTarget) {
+			this.migrationStateModel._databaseBackup.migrationMode = MigrationMode.OFFLINE;
+			this._offlineButton.checked = true;
+			await this._offlineButton.focus();
+		}
+		this._originalMigrationMode = this.migrationStateModel._databaseBackup.migrationMode;
+
+		this._networkShareButton.checked = this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE;
+		this._blobContainerButton.checked = this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.BLOB_CONTAINER;
+		await utils.updateControlDisplay(
+			this._radioButtonContainer,
+			!isSqlDbTarget);
 
 		this._subscription.value = this.migrationStateModel._targetSubscription.name;
 		this._location.value = await getLocationDisplayName(
@@ -75,8 +220,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 
 		await utils.updateControlDisplay(
 			this._dmsInfoContainer,
-			this.migrationStateModel._targetType === MigrationTargetType.SQLDB ||
-			this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE);
+			isSqlDbTarget || isNetworkShare);
 
 		await this.loadResourceGroupDropdown();
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
@@ -93,10 +237,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				};
 				return false;
 			}
-			if ((this.migrationStateModel._targetType === MigrationTargetType.SQLDB ||
-				this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE)
-				&& state !== 'Online') {
-
+			if ((isSqlDbTarget || isNetworkShare) && state !== 'Online') {
 				this.wizard.message = {
 					level: azdata.window.MessageLevel.Error,
 					text: constants.SERVICE_OFFLINE_ERROR
@@ -108,6 +249,9 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 	}
 
 	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
+		if (this._originalMigrationMode !== this.migrationStateModel._databaseBackup.migrationMode) {
+			this.migrationStateModel.refreshDatabaseBackupPage = true;
+		}
 		this.wizard.registerNavigationValidator((pageChangeInfo) => true);
 	}
 
@@ -201,8 +345,11 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 							this.migrationStateModel._targetType === MigrationTargetType.SQLDB ||
 							this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE);
 
+						const resourceGroupName = this.migrationStateModel._sqlMigrationServiceResourceGroup.name.toLowerCase();
 						const selectedDms = this.migrationStateModel._sqlMigrationServices.find(
-							dms => dms.name === value && dms.properties.resourceGroup.toLowerCase() === this.migrationStateModel._sqlMigrationServiceResourceGroup.name.toLowerCase());
+							dms => dms.name === value
+								&& dms.properties.resourceGroup.toLowerCase() === resourceGroupName);
+
 						if (selectedDms) {
 							this.migrationStateModel._sqlMigrationService = selectedDms;
 							await this.loadStatus();
