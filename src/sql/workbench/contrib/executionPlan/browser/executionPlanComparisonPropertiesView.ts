@@ -23,10 +23,6 @@ export enum ExecutionPlanCompareOrientation {
 	Vertical = 'vertical'
 }
 
-const topOperationLabel = localize('nodePropertyViewTopOperation', 'Top operation');
-const bottomOperationLabel = localize('nodePropertyViewBottomOperation', 'Bottom operation');
-const leftOperationLabel = localize('nodePropertyViewLeftOperation', 'Left operation');
-const rightOperationLabel = localize('nodePropertyViewRightOperation', 'Right operation');
 const topTitleColumnHeader = localize('nodePropertyViewNameValueColumnTopHeader', "Value (Top Plan)");
 const leftTitleColumnHeader = localize('nodePropertyViewNameValueColumnLeftHeader', "Value (Left Plan)");
 const rightTitleColumnHeader = localize('nodePropertyViewNameValueColumnRightHeader', "Value (Right Plan)");
@@ -65,8 +61,10 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 			this._primaryTarget = localize('executionPlanPropertiesEdgeOperationName', "Edge");
 		}
 
-		const operationOrientation = this._orientation === ExecutionPlanCompareOrientation.Horizontal ? topOperationLabel : leftOperationLabel;
-		let topTitleText = localize('executionPlanComparisonPropertiesTopOperation', "{0}: {1}", operationOrientation, this._primaryTarget);
+		const topTitleText = this._orientation === ExecutionPlanCompareOrientation.Horizontal
+			? ExecutionPlanComparisonPropertiesView.getTopOperationLabel(this._primaryTarget)
+			: ExecutionPlanComparisonPropertiesView.getLeftOperationLabel(this._primaryTarget);
+
 		this._primaryContainer.innerText = topTitleText;
 		this._primaryContainer.title = topTitleText;
 		this.refreshPropertiesTable();
@@ -80,23 +78,19 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 			this._secondaryTarget = localize('executionPlanPropertiesEdgeOperationName', "Edge");
 		}
 
-		const operationOrientation = this._orientation === ExecutionPlanCompareOrientation.Horizontal ? bottomOperationLabel : rightOperationLabel;
-		let bottomTitleText = localize('executionPlanComparisonPropertiesBottomOperation', "{0}: {1}", operationOrientation, this._secondaryTarget);
+		const bottomTitleText = this._orientation === ExecutionPlanCompareOrientation.Horizontal
+			? ExecutionPlanComparisonPropertiesView.getBottomOperationLabel(this._secondaryTarget)
+			: ExecutionPlanComparisonPropertiesView.getRightOperationLabel(this._secondaryTarget);
+
 		this._secondaryContainer.innerText = bottomTitleText;
 		this._secondaryContainer.title = bottomTitleText;
 		this.refreshPropertiesTable();
 	}
 
 	private updatePropertyContainerTitles(): void {
-		let primaryTitleText = '';
-		let secondaryTitleText = '';
-
-		const [primaryOperationOrientation, secondaryOperationOrientation] = this._orientation === ExecutionPlanCompareOrientation.Horizontal
-			? [topOperationLabel, bottomOperationLabel]
-			: [leftOperationLabel, rightOperationLabel];
-
-		primaryTitleText = localize('executionPlanComparisonPropertiesPrimaryOperation', "{0}: {1}", primaryOperationOrientation, this._primaryTarget);
-		secondaryTitleText = localize('executionPlanComparisonPropertiesSecondaryOperation', "{0}: {1}", secondaryOperationOrientation, this._secondaryTarget);
+		const [primaryTitleText, secondaryTitleText] = this._orientation === ExecutionPlanCompareOrientation.Horizontal
+			? [ExecutionPlanComparisonPropertiesView.getTopOperationLabel(this._primaryTarget), ExecutionPlanComparisonPropertiesView.getBottomOperationLabel(this._secondaryTarget)]
+			: [ExecutionPlanComparisonPropertiesView.getLeftOperationLabel(this._primaryTarget), ExecutionPlanComparisonPropertiesView.getRightOperationLabel(this._secondaryTarget)];
 
 		this._primaryContainer.innerText = primaryTitleText;
 		this._primaryContainer.title = primaryTitleText;
@@ -104,6 +98,22 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		this._secondaryContainer.title = secondaryTitleText;
 
 		this.updatePropertiesTableColumnHeaders();
+	}
+
+	private static getTopOperationLabel(target: string): string {
+		return localize('nodePropertyViewTopOperation', 'Top operation: {0}', target);
+	}
+
+	private static getBottomOperationLabel(target: string): string {
+		return localize('nodePropertyViewBottomOperation', 'Bottom operation: {0}', target);
+	}
+
+	private static getLeftOperationLabel(target: string): string {
+		return localize('nodePropertyViewLeftOperation', 'Left operation: {0}', target);
+	}
+
+	private static getRightOperationLabel(target: string): string {
+		return localize('nodePropertyViewRightOperation', 'Right operation: {0}', target);
 	}
 
 	public updatePropertiesTableColumnHeaders() {
