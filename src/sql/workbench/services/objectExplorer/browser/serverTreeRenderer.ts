@@ -8,7 +8,7 @@ import 'vs/css!./media/objectTypes/objecttypes';
 import * as dom from 'vs/base/browser/dom';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { ITree, IRenderer } from 'vs/base/parts/tree/browser/tree';
+import { ITree, IRenderer } from 'sql/base/parts/tree/browser/tree';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';

@@ -1015,6 +1015,7 @@ export class TreeModel {
 			let item: Item | null;
 			let nav = this.getNavigator();
 
+			// eslint-disable-next-line no-cond-assign
 			while (item = nav.next()) {
 				elements.push(item);
 			}
@@ -1106,6 +1107,7 @@ export class TreeModel {
 		let item: Item | null;
 		let nav = this.getNavigator();
 
+		// eslint-disable-next-line no-cond-assign
 		while (item = nav.next()) {
 			if (item.isExpanded()) {
 				result.push(item.getElement());
@@ -1236,6 +1238,7 @@ export class TreeModel {
 		if (selection.length === 0) {
 			let nav = this.getNavigator(this.input);
 
+			// eslint-disable-next-line no-cond-assign
 			while (item = nav.next()) {
 				previousItem = item;
 			}
