@@ -196,13 +196,16 @@ However we always want it to be the width of the container it is resizing.
 	max-width: 300px;
 }
 
-.eps-container .properties .search-action-bar-container .table-search>div {
+.eps-container .properties .search-action-bar-container .table-search>div,
+.top-operations-tab .top-operations-container .top-operations-header-search-bar>div {
 	background-position-y: center;
 	background-position-x: 3px;
 }
 
-.eps-container .properties .search-action-bar-container .table-search input {
+.eps-container .properties .search-action-bar-container .table-search input,
+.top-operations-tab .top-operations-container .top-operations-header-search-bar input {
 	margin-left: 20px;
+	width: calc(100% - 20px);
 }
 
 .eps-container .properties .search-action-bar-container {
@@ -338,7 +341,8 @@ However we always want it to be the width of the container it is resizing.
 }
 
 
-.eps-container .ep-search-icon {
+.eps-container .ep-search-icon,
+.top-operations-tab .ep-search-icon {
 	background-image: url(../images/actionIcons/search.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -346,7 +350,9 @@ However we always want it to be the width of the container it is resizing.
 }
 
 .vs-dark .eps-container .ep-search-icon,
-.hc-black .eps-container .ep-search-icon {
+.hc-black .eps-container .ep-search-icon,
+.vs-dark .top-operations-tab .ep-search-icon,
+.hc-black .top-operations-tab .ep-search-icon {
 	background-image: url(../images/actionIcons/searchDark.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -819,6 +825,19 @@ However we always want it to be the width of the container it is resizing.
 	width: 100%;
 	min-height: 300px;
 	overflow: scroll;
+}
+
+.top-operations-tab .top-operations-container .top-operations-header {
+	display: flex;
+	flex-direction: row;
+}
+
+.top-operations-tab .top-operations-container .top-operations-header .top-operations-header-info {
+	flex: 1;
+}
+
+.top-operations-tab .top-operations-container .top-operations-header .top-operations-header-search-bar {
+	min-width: 300px;
 }
 
 .top-operations-tab .top-operations-container .table-container {
