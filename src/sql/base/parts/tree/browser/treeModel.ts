@@ -259,7 +259,7 @@ export class Item {
 
 	private traits: { [trait: string]: boolean; };
 
-	public refreshStack = [];
+	public static originalItem: Item;
 
 	private readonly _onDidCreate = new Emitter<Item>();
 	readonly onDidCreate: Event<Item> = this._onDidCreate.event;
@@ -457,9 +457,9 @@ export class Item {
 
 			setNeedsChildrenRefresh(this);
 
-			if (!this.doesHaveChildren) {
-				console.log('reached end of the line');
-				this.refreshStack.pop();
+			// Refreshing item that isn't expanded or has no children.
+			if (this === Item.originalItem) {
+				this.loadCompleteSpinnerWheel();
 			}
 
 			return Promise.resolve(this);
@@ -534,12 +534,29 @@ export class Item {
 				.then(undefined, onUnexpectedError)
 				.then(() => this._onDidRefreshChildren.fire(eventData))
 				.then(() => {
-					console.log('The refreshCompleted!');
-					this.refreshStack.pop();
+					// All children have been refreshed, if object is original item to refresh, we can complete refresh.
+					if (this === Item.originalItem) {
+						this.loadCompleteSpinnerWheel();
+					}
 				});
 		};
 
 		return safe ? doRefresh() : this.lock.run(this, doRefresh);
+	}
+
+	private loadCompleteSpinnerWheel(): void {
+		/**
+		 * Refresh loading status for item will be instantly lost upon refresh of item self
+		 * (usually before the spinner shows). we need to temporarily bring it back upon
+		 * actual refresh completion to let the user know the refresh happened with a short
+		 * appearance of the loading spinner.
+		 */
+		Item.originalItem?.addTrait('loading');
+		setTimeout(() => {
+			Item.originalItem?.removeTrait('loading');
+			// Reset original item for next refresh.
+			Item.originalItem = undefined;
+		}, 1000);
 	}
 
 	private doRefresh(recursive: boolean, safe: boolean = false): Promise<any> {
@@ -548,7 +565,6 @@ export class Item {
 		this.updateVisibility();
 
 		this._onDidRefresh.fire(this);
-		this.refreshStack.push(this);
 
 		return this.refreshChildren(recursive, safe);
 	}
@@ -558,6 +574,10 @@ export class Item {
 	}
 
 	public refresh(recursive: boolean): Promise<any> {
+		// Root call for manual refresh, add loading spinner for item during refresh process.
+		this.addTrait('loading');
+		Item.originalItem = this;
+
 		return this.doRefresh(recursive);
 	}
 
@@ -978,24 +998,10 @@ export class TreeModel {
 			return Promise.resolve(null);
 		}
 
-		// Add loading spinner for item during refresh process.
-		this.addTraits('loading', [element]);
-
 		let eventData: IRefreshEvent = { item: item, recursive: recursive };
 		this._onRefresh.fire(eventData);
 		await item.refresh(recursive);
-		/**
-		 * Refresh loading status for item will be instantly lost upon refresh of item self
-		 * (usually before the spinner shows). we need to temporarily bring it back upon
-		 * actual refresh completion to let the user know the refresh happened with a short
-		 * appearance of the loading spinner.
-		 */
-		console.log('this was called back in original refresh!');
-		this.addTraits('loading', [element]);
 		this._onDidRefresh.fire(eventData);
-		setTimeout(() => {
-			this.removeTraits('loading', [element]);
-		}, 1000);
 	}
 
 	public expand(element: any): Promise<any> {
