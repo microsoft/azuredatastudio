@@ -23,6 +23,10 @@ export enum ExecutionPlanCompareOrientation {
 	Vertical = 'vertical'
 }
 
+const topOperationLabel = localize('nodePropertyViewTopOperation', 'Top operation');
+const bottomOperationLabel = localize('nodePropertyViewBottomOperation', 'Bottom operation');
+const leftOperationLabel = localize('nodePropertyViewLeftOperation', 'Left operation');
+const rightOperationLabel = localize('nodePropertyViewRightOperation', 'Right operation');
 const topTitleColumnHeader = localize('nodePropertyViewNameValueColumnTopHeader', "Value (Top Plan)");
 const leftTitleColumnHeader = localize('nodePropertyViewNameValueColumnLeftHeader', "Value (Left Plan)");
 const rightTitleColumnHeader = localize('nodePropertyViewNameValueColumnRightHeader', "Value (Right Plan)");
@@ -61,7 +65,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 			this._primaryTarget = localize('executionPlanPropertiesEdgeOperationName', "Edge");
 		}
 
-		const operationOrientation = this._orientation === ExecutionPlanCompareOrientation.Horizontal ? 'Top operation' : 'Left operation';
+		const operationOrientation = this._orientation === ExecutionPlanCompareOrientation.Horizontal ? topOperationLabel : leftOperationLabel;
 		let topTitleText = localize('executionPlanComparisonPropertiesTopOperation', "{0}: {1}", operationOrientation, this._primaryTarget);
 		this._primaryContainer.innerText = topTitleText;
 		this._primaryContainer.title = topTitleText;
@@ -76,7 +80,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 			this._secondaryTarget = localize('executionPlanPropertiesEdgeOperationName', "Edge");
 		}
 
-		const operationOrientation = this._orientation === ExecutionPlanCompareOrientation.Horizontal ? 'Bottom operation' : 'Right operation';
+		const operationOrientation = this._orientation === ExecutionPlanCompareOrientation.Horizontal ? bottomOperationLabel : rightOperationLabel;
 		let bottomTitleText = localize('executionPlanComparisonPropertiesBottomOperation', "{0}: {1}", operationOrientation, this._secondaryTarget);
 		this._secondaryContainer.innerText = bottomTitleText;
 		this._secondaryContainer.title = bottomTitleText;
@@ -88,8 +92,8 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		let secondaryTitleText = '';
 
 		const [primaryOperationOrientation, secondaryOperationOrientation] = this._orientation === ExecutionPlanCompareOrientation.Horizontal
-			? ['Top operation', 'Bottom operation']
-			: ['Left operation', 'Right operation'];
+			? [topOperationLabel, bottomOperationLabel]
+			: [leftOperationLabel, rightOperationLabel];
 
 		primaryTitleText = localize('executionPlanComparisonPropertiesPrimaryOperation', "{0}: {1}", primaryOperationOrientation, this._primaryTarget);
 		secondaryTitleText = localize('executionPlanComparisonPropertiesSecondaryOperation', "{0}: {1}", secondaryOperationOrientation, this._secondaryTarget);
