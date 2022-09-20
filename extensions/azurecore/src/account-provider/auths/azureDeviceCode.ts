@@ -107,7 +107,7 @@ export class AzureDeviceCode extends AzureAuth {
 
 		return {
 			response: result,
-			authComplete: authCompleteDeferred
+			authComplete: authCompleteDeferred!
 		};
 	}
 
@@ -120,7 +120,7 @@ export class AzureDeviceCode extends AzureAuth {
 		const timeoutMessage = localize('azure.timeoutDeviceCode', 'Timed out when waiting for device code login.');
 		const fiveMinutes = 5 * 60 * 1000;
 
-		return new Promise<DeviceCodeLoginResult | undefined>((resolve, reject) => {
+		return new Promise<DeviceCodeLoginResult>((resolve, reject) => {
 			let timeout: NodeJS.Timer;
 
 			const timer = setInterval(async () => {

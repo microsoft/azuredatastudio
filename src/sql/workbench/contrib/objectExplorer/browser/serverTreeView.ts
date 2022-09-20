@@ -9,7 +9,7 @@ import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiati
 import Severity from 'vs/base/common/severity';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachButtonStyler, attachListStyler } from 'vs/platform/theme/common/styler';
-import { ISelectionEvent, ITree } from 'vs/base/parts/tree/browser/tree';
+import { ISelectionEvent, ITree } from 'sql/base/parts/tree/browser/tree';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { localize } from 'vs/nls';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -42,6 +42,7 @@ import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objec
 import { coalesce } from 'vs/base/common/arrays';
 import { CONNECTIONS_SORT_BY_CONFIG_KEY } from 'sql/platform/connection/common/connectionConfig';
 import { IContextKey, IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
+import { debounce } from 'vs/base/common/decorators';
 
 export const CONTEXT_SERVER_TREE_VIEW = new RawContextKey<ServerTreeViewView>('serverTreeView.view', ServerTreeViewView.all);
 export const CONTEXT_SERVER_TREE_HAS_CONNECTIONS = new RawContextKey<boolean>('serverTreeView.hasConnections', false);
@@ -67,7 +68,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		@IThemeService private _themeService: IThemeService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@IConfigurationService private _configurationService: IConfigurationService,
-		@ICapabilitiesService capabilitiesService: ICapabilitiesService,
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@IKeybindingService private _keybindingService: IKeybindingService,
 		@IContextKeyService contextKeyService: IContextKeyService
@@ -78,21 +79,26 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 		this._onSelectionOrFocusChange = new Emitter();
 		this._actionProvider = this._instantiationService.createInstance(ServerTreeActionProvider);
-		capabilitiesService.onCapabilitiesRegistered(async () => {
-			if (this._tree instanceof AsyncServerTree) {
-				// Refresh the tree input now that the capabilities are registered so that we can
-				// get the full ConnectionProfiles with the server info updated properly
-				const treeInput = TreeUpdateUtils.getTreeInput(this._connectionManagementService)!;
-				await this._tree.setInput(treeInput);
-				this._treeSelectionHandler.onTreeActionStateChange(false);
-			} else {
-				if (this._connectionManagementService.hasRegisteredServers()) {
-					await this.refreshTree();
-					this._treeSelectionHandler.onTreeActionStateChange(false);
-				}
-			}
+		this._capabilitiesService.onCapabilitiesRegistered(async () => {
+			await this.handleOnCapabilitiesRegistered();
 		});
 		this.registerCommands();
+	}
+
+	@debounce(50)
+	private async handleOnCapabilitiesRegistered(): Promise<void> {
+		if (this._tree instanceof AsyncServerTree) {
+			// Refresh the tree input now that the capabilities are registered so that we can
+			// get the full ConnectionProfiles with the server info updated properly
+			const treeInput = TreeUpdateUtils.getTreeInput(this._connectionManagementService)!;
+			await this._tree.setInput(treeInput);
+			this._treeSelectionHandler.onTreeActionStateChange(false);
+		} else {
+			if (this._connectionManagementService.hasRegisteredServers()) {
+				await this.refreshTree();
+				this._treeSelectionHandler.onTreeActionStateChange(false);
+			}
+		}
 	}
 
 	public get view(): ServerTreeViewView {
@@ -532,7 +538,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 	}
 
 	private onSelected(event: any): void {
-		this._treeSelectionHandler.onTreeSelect(event, this._tree!, this._connectionManagementService, this._objectExplorerService, () => this._onSelectionOrFocusChange.fire());
+		this._treeSelectionHandler.onTreeSelect(event, this._tree!, this._connectionManagementService, this._objectExplorerService, this._capabilitiesService, () => this._onSelectionOrFocusChange.fire());
 		this._onSelectionOrFocusChange.fire();
 	}
 

@@ -248,7 +248,6 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 
 			const topProp = v.topProp;
 			const bottomProp = v.bottomProp;
-			const parentRowCellStyling = 'font-weight: bold';
 			let diffIconClass = '';
 			if (topProp && bottomProp) {
 				row['displayOrder'] = v.topProp.displayOrder;
@@ -276,8 +275,8 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 					title: removeLineBreaks(v.bottomProp.displayValue, ' ')
 				};
 				if ((topProp && !isString(topProp.value)) || (bottomProp && !isString(bottomProp.value))) {
-					row['name'].style = parentRowCellStyling;
-					row['primary'].style = parentRowCellStyling;
+					row['name'].iconCssClass += ` parent-row-styling`;
+					row['primary'].iconCssClass += ` parent-row-styling`;
 					row['secondary'].iconCssClass += ` parent-row-styling`;
 				}
 				rows.push(row);
@@ -295,8 +294,8 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 				};
 				rows.push(row);
 				if (!isString(topProp.value)) {
-					row['name'].style = parentRowCellStyling;
-					row['primary'].style = parentRowCellStyling;
+					row['name'].iconCssClass += ` parent-row-styling`;
+					row['primary'].iconCssClass += ` parent-row-styling`;
 					this.convertPropertiesToTableRows(topProp.value, undefined, rows.length - 1, indent + 2, rows);
 				}
 			} else if (!topProp && bottomProp) {
@@ -307,7 +306,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 				};
 				rows.push(row);
 				if (!isString(bottomProp.value)) {
-					row['name'].style = parentRowCellStyling;
+					row['name'].iconCssClass += ` parent-row-styling`;
 					row['secondary'].iconCssClass += ` parent-row-styling`;
 					this.convertPropertiesToTableRows(undefined, bottomProp.value, rows.length - 1, indent + 2, rows);
 				}

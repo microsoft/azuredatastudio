@@ -20,7 +20,7 @@ import { entries } from 'sql/base/common/collections';
 import { values } from 'vs/base/common/collections';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ServerTreeActionProvider } from 'sql/workbench/services/objectExplorer/browser/serverTreeActionProvider';
-import { ITree } from 'vs/base/parts/tree/browser/tree';
+import { ITree } from 'sql/base/parts/tree/browser/tree';
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
@@ -430,7 +430,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 						if (resultMap.size === allProviders.length) {
 							resolve(self.mergeResults(allProviders, resultMap, node.nodePath));
 
-							// Have to delete it after get all reponses otherwise couldn't find session for not the first response
+							// Have to delete it after get all responses otherwise couldn't find session for not the first response
 							if (newRequest) {
 								delete self._sessions[session.sessionId!].nodes[node.nodePath];
 							}

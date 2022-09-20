@@ -33,7 +33,7 @@ export class CosmosDbMongoService extends ResourceServiceBase<DbServerGraphData,
 			tenant: resource.tenantId,
 			subscription: {
 				id: resource.subscriptionId,
-				name: resource.subscriptionName
+				name: resource.subscriptionName || ''
 			}
 		};
 	}

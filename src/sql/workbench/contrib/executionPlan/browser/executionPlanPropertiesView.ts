@@ -128,8 +128,6 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 				break;
 		}
 
-		const parentRowCellStyling = 'font-weight: bold';
-
 		props.forEach((p, i) => {
 			let row = {};
 			rows.push(row);
@@ -138,12 +136,10 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 			if (!isString(p.value)) {
 				// Styling values in the parent row differently to make them more apparent and standout compared to the rest of the cells.
 				row['name'] = {
-					text: row['name'],
-					style: parentRowCellStyling
+					text: row['name']
 				};
 				row['value'] = {
-					text: removeLineBreaks(p.displayValue, ' '),
-					style: parentRowCellStyling
+					text: removeLineBreaks(p.displayValue, ' ')
 				};
 				row['tootltip'] = p.displayValue;
 				this.convertModelToTableRows(p.value, rows.length - 1, indent + 2, rows);

@@ -167,6 +167,11 @@
           "default": 2097152,
           "description": "%mssql.query.maxXmlCharsToStore%"
         },
+        "mssql.query.maxCharsToStore": {
+          "type": "number",
+          "default": 65535,
+          "description": "%mssql.query.maxCharsToStore%"
+        },
         "mssql.format.alignColumnDefinitionsInColumns": {
           "type": "boolean",
           "description": "%mssql.format.alignColumnDefinitionsInColumns%",
@@ -388,6 +393,11 @@
           "type": "boolean",
           "description": "%mssql.parallelMessageProcessing%",
           "default": false
+        },
+        "mssql.tableDesigner.preloadDatabaseModel": {
+          "type": "boolean",
+          "default": false,
+          "description": "%mssql.tableDesigner.preloadDatabaseModel%"
         }
       }
     },
@@ -506,7 +516,7 @@
         },
         {
           "command": "mssql.designTable",
-          "when": "connectionProvider == MSSQL && nodeType == Table && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType == Table && nodeSubType != LedgerDropped && config.workbench.enablePreviewFeatures",
           "group": "0_query@3"
         },
         {

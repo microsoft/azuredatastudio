@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as _ from 'vs/base/parts/tree/browser/tree';
+import * as _ from 'sql/base/parts/tree/browser/tree';
 import { IDragAndDropData } from 'vs/base/browser/dnd';
 
 export class ElementsDragAndDropData implements IDragAndDropData {
