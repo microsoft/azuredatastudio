@@ -259,6 +259,8 @@ export class Item {
 
 	private traits: { [trait: string]: boolean; };
 
+	public refreshStack = [];
+
 	private readonly _onDidCreate = new Emitter<Item>();
 	readonly onDidCreate: Event<Item> = this._onDidCreate.event;
 	private readonly _onDidReveal = new Emitter<IItemRevealEvent>();
@@ -456,7 +458,8 @@ export class Item {
 			setNeedsChildrenRefresh(this);
 
 			if (!this.doesHaveChildren) {
-				//console.log('reached end of the line');
+				console.log('reached end of the line');
+				this.refreshStack.pop();
 			}
 
 			return Promise.resolve(this);
@@ -531,7 +534,8 @@ export class Item {
 				.then(undefined, onUnexpectedError)
 				.then(() => this._onDidRefreshChildren.fire(eventData))
 				.then(() => {
-					//console.log('The refreshCompleted!');
+					console.log('The refreshCompleted!');
+					this.refreshStack.pop();
 				});
 		};
 
@@ -544,6 +548,7 @@ export class Item {
 		this.updateVisibility();
 
 		this._onDidRefresh.fire(this);
+		this.refreshStack.push(this);
 
 		return this.refreshChildren(recursive, safe);
 	}
@@ -985,7 +990,7 @@ export class TreeModel {
 		 * actual refresh completion to let the user know the refresh happened with a short
 		 * appearance of the loading spinner.
 		 */
-		//console.log('this was called back in original refresh!')
+		console.log('this was called back in original refresh!');
 		this.addTraits('loading', [element]);
 		this._onDidRefresh.fire(eventData);
 		setTimeout(() => {
