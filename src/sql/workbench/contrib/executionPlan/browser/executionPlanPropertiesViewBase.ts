@@ -33,6 +33,9 @@ export abstract class ExecutionPlanPropertiesViewBase implements IVerticalSashLa
 	// Header container
 	private _headerContainer: HTMLElement;
 
+	// Summary container
+	private _summaryContainer: HTMLElement;
+
 	// Properties actions
 	private _headerActionsContainer!: HTMLElement;
 	private _headerActions: ActionBar;
@@ -98,6 +101,9 @@ export abstract class ExecutionPlanPropertiesViewBase implements IVerticalSashLa
 
 		this._headerContainer = DOM.$('.header');
 		propertiesContent.appendChild(this._headerContainer);
+
+		this._summaryContainer = DOM.$('.summary');
+		propertiesContent.appendChild(this._summaryContainer);
 
 		this._headerActionsContainer = DOM.$('.table-action-bar');
 		propertiesContent.appendChild(this._headerActionsContainer);
@@ -197,6 +203,10 @@ export abstract class ExecutionPlanPropertiesViewBase implements IVerticalSashLa
 		this._headerContainer.appendChild(c);
 	}
 
+	public setSummary(c: HTMLElement): void {
+		this._summaryContainer.appendChild(c);
+	}
+
 	public set tableHeight(value: number) {
 		if (this.tableHeight !== value) {
 			this._tableHeight = value;
@@ -237,6 +247,7 @@ export abstract class ExecutionPlanPropertiesViewBase implements IVerticalSashLa
 	private resizeTable(): void {
 		const spaceOccupied = (this._titleBarContainer.getBoundingClientRect().height
 			+ this._headerContainer.getBoundingClientRect().height
+			+ this._summaryContainer.getBoundingClientRect().height
 			+ this._headerActionsContainer.getBoundingClientRect().height);
 
 		this.tableHeight = (this._parentContainer.getBoundingClientRect().height - spaceOccupied - 15);
