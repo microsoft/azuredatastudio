@@ -61,7 +61,8 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 			this._primaryTarget = localize('executionPlanPropertiesEdgeOperationName', "Edge");
 		}
 
-		let topTitleText = localize('executionPlanComparisonPropertiesTopOperation', "Top operation: {0}", this._primaryTarget);
+		const operationOrientation = this._orientation === ExecutionPlanCompareOrientation.Horizontal ? 'Top operation' : 'Left operation';
+		let topTitleText = localize('executionPlanComparisonPropertiesTopOperation', "{0}: {1}", operationOrientation, this._primaryTarget);
 		this._primaryContainer.innerText = topTitleText;
 		this._primaryContainer.title = topTitleText;
 		this.refreshPropertiesTable();
@@ -75,7 +76,8 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 			this._secondaryTarget = localize('executionPlanPropertiesEdgeOperationName', "Edge");
 		}
 
-		let bottomTitleText = localize('executionPlanComparisonPropertiesBottomOperation', "Bottom operation: {0}", this._secondaryTarget);
+		const operationOrientation = this._orientation === ExecutionPlanCompareOrientation.Horizontal ? 'Bottom operation' : 'Right operation';
+		let bottomTitleText = localize('executionPlanComparisonPropertiesBottomOperation', "{0}: {1}", operationOrientation, this._secondaryTarget);
 		this._secondaryContainer.innerText = bottomTitleText;
 		this._secondaryContainer.title = bottomTitleText;
 		this.refreshPropertiesTable();
@@ -85,14 +87,12 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		let primaryTitleText = '';
 		let secondaryTitleText = '';
 
-		if (this._orientation === ExecutionPlanCompareOrientation.Horizontal) {
-			primaryTitleText = localize('executionPlanComparisonPropertiesTopOperation', "Top operation: {0}", this._primaryTarget);
-			secondaryTitleText = localize('executionPlanComparisonPropertiesBottomOperation', "Bottom operation: {0}", this._secondaryTarget);
-		}
-		else {
-			primaryTitleText = localize('executionPlanComparisonPropertiesLeftOperation', "Left operation: {0}", this._primaryTarget);
-			secondaryTitleText = localize('executionPlanComparisonPropertiesRightOperation', "Right operation: {0}", this._secondaryTarget);
-		}
+		const [primaryOperationOrientation, secondaryOperationOrientation] = this._orientation === ExecutionPlanCompareOrientation.Horizontal
+			? ['Top operation', 'Bottom operation']
+			: ['Left operation', 'Right operation'];
+
+		primaryTitleText = localize('executionPlanComparisonPropertiesPrimaryOperation', "{0}: {1}", primaryOperationOrientation, this._primaryTarget);
+		secondaryTitleText = localize('executionPlanComparisonPropertiesSecondaryOperation', "{0}: {1}", secondaryOperationOrientation, this._secondaryTarget);
 
 		this._primaryContainer.innerText = primaryTitleText;
 		this._primaryContainer.title = primaryTitleText;
