@@ -59,6 +59,19 @@ const query_databases_with_size = `
 	`;
 
 export const excludeDatabases: string[] = [
+
+const query_login_tables_sql = `
+	SELECT
+		sp.name as login,
+		sp.type_desc as login_type,
+		sp.default_database_name,
+		case when sp.is_disabled = 1 then 'Disabled' else 'Enabled' end as status
+	FROM sys.server_principals sp
+	LEFT JOIN sys.sql_logins sl ON sp.principal_id = sl.principal_id
+	WHERE sp.type NOT IN ('G', 'R') AND sp.type_desc IN ('SQL_LOGIN', 'WINDOWS_LOGIN')
+	ORDER BY sp.name;`;
+
+export const excludeDatabses: string[] = [
 	'master',
 	'tempdb',
 	'msdb',
@@ -83,6 +96,13 @@ export interface TargetDatabaseInfo {
 	isReadOnly: boolean;
 	sourceTables: Map<string, TableInfo>;
 	targetTables: Map<string, TableInfo>;
+}
+
+export interface LoginTableInfo {
+	loginName: string;
+	loginType: string;
+	defaultDatabaseName: string;
+	status: string;
 }
 
 function getSqlDbConnectionProfile(
@@ -293,6 +313,7 @@ export function getSqlBoolean(value: azdata.DbCellValue): boolean {
 	return value.isNull ? false : value.displayValue === '1';
 }
 
+<<<<<<< HEAD
 export async function getDatabasesList(connectionProfile: azdata.connection.ConnectionProfile): Promise<azdata.DatabaseInfo[]> {
 	const ownerUri = await azdata.connection.getUriForConnection(connectionProfile.connectionId);
 	const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(
@@ -318,4 +339,52 @@ export async function getDatabasesList(connectionProfile: azdata.connection.Conn
 
 		return [];
 	}
+=======
+export async function collectSourceLogins(sourceConnectionId: string): Promise<LoginTableInfo[]> {
+	const ownerUri = await azdata.connection.getUriForConnection(sourceConnectionId);
+	const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(
+		'MSSQL',
+		azdata.DataProviderType.QueryProvider);
+
+	const results = await queryProvider.runQueryAndReturn(
+		ownerUri,
+		query_login_tables_sql);
+
+	return results.rows.map(row => {
+		return {
+			loginName: getSqlString(row[0]),
+			loginType: getSqlString(row[1]),
+			defaultDatabaseName: getSqlString(row[2]),
+			status: getSqlString(row[3]),
+		};
+	}) ?? [];
+}
+
+export async function collectTargetLogins(
+	targetServer: AzureSqlDatabaseServer,
+	userName: string,
+	password: string): Promise<string[]> {
+
+	const connectionProfile = getConnectionProfile(
+		targetServer.properties.fullyQualifiedDomainName,
+		targetServer.id,
+		userName,
+		password);
+
+	const result = await azdata.connection.connect(connectionProfile, false, false);
+	if (result.connected && result.connectionId) {
+		const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(
+			'MSSQL',
+			azdata.DataProviderType.QueryProvider);
+
+		const ownerUri = await azdata.connection.getUriForConnection(result.connectionId);
+		const results = await queryProvider.runQueryAndReturn(
+			ownerUri,
+			query_login_tables_sql);
+
+		return results.rows.map(row => getSqlString(row[0])) ?? [];
+	}
+
+	throw new Error(result.errorMessage);
+>>>>>>> 309021d1a82... Migrate source logins query and add target logins
 }
