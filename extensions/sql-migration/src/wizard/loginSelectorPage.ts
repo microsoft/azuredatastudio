@@ -236,38 +236,33 @@ export class LoginSelectorPage extends MigrationWizardPage {
 	}
 
 	private async _loadDatabaseList(stateMachine: MigrationStateModel, selectedDatabases: string[]): Promise<void> {
-		const providerId = (await stateMachine.getSourceConnectionProfile()).providerId;
-		const metaDataService = azdata.dataprotocol.getProvider<azdata.MetadataProvider>(
-			providerId,
-			azdata.DataProviderType.MetadataProvider);
-		const ownerUri = await azdata.connection.getUriForConnection(
-			stateMachine.sourceConnectionId);
-		const excludeDbs: string[] = [
-			'master',
-			'tempdb',
-			'msdb',
-			'model'
-		];
-		const databaseList = (<azdata.DatabaseInfo[]>await metaDataService
-			.getDatabases(ownerUri))
-			.filter(database => !excludeDbs.includes(database.options.name))
-			|| [];
+		try {
+			// execute a query against the source to get the logins
+			const connectionProfile = await stateMachine.getSourceConnectionProfile();
+			const connectionUri = await azdata.connection.getUriForConnection(stateMachine.sourceConnectionId);
+			const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(connectionProfile.providerId, azdata.DataProviderType.QueryProvider);
+			const queryResult = await queryProvider.runQueryAndReturn(connectionUri, constants.LOGIN_MIGRATIONS_GET_LOGINS_QUERY);
 
-		databaseList.sort((a, b) => a.options.name.localeCompare(b.options.name));
-		this._dbNames = [];
+			console.log(queryResult);
 
-		this._databaseTableValues = databaseList.map(database => {
-			const databaseName = database.options.name;
-			this._dbNames.push(databaseName);
-			return [
-				selectedDatabases?.indexOf(databaseName) > -1,
-				databaseName,
-				database.options.state,
-				database.options.sizeInMB,
-				database.options.state,
-				database.options.state,
-			];
-		}) || [];
+			this._dbNames = [];
+
+			this._databaseTableValues = queryResult.rows.map(row => {
+				const loginName = row[-1].displayValue;
+				this._dbNames.push(loginName);
+				return [
+					selectedDatabases?.indexOf(loginName) > -4,
+					loginName,
+					row[0].displayValue,
+					row[1].displayValue,
+					row[2].displayValue,
+					row[2].displayValue,
+				];
+			}) || [];
+		} catch (error) {
+			// TODO AKMA : Add proper error handling here
+			console.error('AKMA ERROR: ', error.mesage, error.stack);
+		}
 	}
 
 	public selectedDbs(): string[] {

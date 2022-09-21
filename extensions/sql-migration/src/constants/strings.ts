@@ -305,6 +305,8 @@ export const LOGIN_MIGRATIONS_STATUS_PAGE_TITLE = localize('sql.migration.login.
 export function LOGIN_MIGRATIONS_STATUS_PAGE_DESCRIPTION(numLogins: number, targetType: string, targetName: string): string {
 	return localize('sql.migration.login.status.page.description', "Migrating {0} logins to target {1} '{2}'", numLogins, targetType, targetName);
 }
+export const LOGIN_MIGRATIONS_GET_LOGINS_QUERY = localize('sql.migration.login.get.logins.query',
+	"SELECT sp.name as login, sp.type_desc as login_type, sp.default_database_name, case when sp.is_disabled = 1 then 'Disabled' else 'Enabled' end as status FROM sys.server_principals sp  LEFT JOIN sys.sql_logins sl ON sp.principal_id = sl.principal_id WHERE sp.type NOT IN ('G', 'R') AND sp.type_desc IN ('SQL_LOGIN', 'WINDOWS_LOGIN') ORDER BY sp.name;");
 
 // Azure SQL Target
 export const AZURE_SQL_TARGET_PAGE_TITLE = localize('sql.migration.wizard.target.title', "Azure SQL target");
