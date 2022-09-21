@@ -299,61 +299,30 @@ export class AzdataGraphView {
 		if (!node.id.toString().startsWith(`element-`)) {
 			node.id = `element-${node.id}`;
 		}
+
 		diagramNode.id = node.id;
+		diagramNode.icon = node.type;
+		diagramNode.metrics = this.populateProperties(node.properties);
 
-		if (node.type) {
-			diagramNode.icon = node.type;
+		diagramNode.badges = [];
+		for (let i = 0; node.badges && i < node.badges.length; i++) {
+			diagramNode.badges.push(this.getBadgeTypeString(node.badges[i].type));
 		}
 
-		if (node.properties) {
-			diagramNode.metrics = this.populateProperties(node.properties);
+		diagramNode.edges = this.populateEdges(node.edges);
+
+		diagramNode.children = [];
+		for (let i = 0; node.children && i < node.children.length; ++i) {
+			diagramNode.children.push(this.populate(node.children[i]));
 		}
 
-		if (node.badges) {
-			diagramNode.badges = [];
-			for (let i = 0; i < node.badges.length; i++) {
-				diagramNode.badges.push(this.getBadgeTypeString(node.badges[i].type));
-			}
-		}
-
-		if (node.edges) {
-			diagramNode.edges = this.populateEdges(node.edges);
-		}
-
-		if (node.children) {
-			diagramNode.children = [];
-			for (let i = 0; i < node.children.length; ++i) {
-				diagramNode.children.push(this.populate(node.children[i]));
-			}
-		}
-
-		if (node.description) {
-			diagramNode.description = node.description;
-		}
-
-		if (node.cost) {
-			diagramNode.cost = node.cost;
-		}
-
-		if (node.subTreeCost) {
-			diagramNode.subTreeCost = node.subTreeCost;
-		}
-
-		if (node.relativeCost) {
-			diagramNode.relativeCost = node.relativeCost;
-		}
-
-		if (node.elapsedTimeInMs) {
-			diagramNode.elapsedTimeInMs = node.elapsedTimeInMs;
-		}
-
-		if (node.elapsedCpuTimeInMs) {
-			diagramNode.elapsedCpuTimeInMs = node.elapsedCpuTimeInMs;
-		}
-
-		if (node.rowMetrics) {
-			diagramNode.rowMetrics = node.rowMetrics;
-		}
+		diagramNode.description = node.description;
+		diagramNode.cost = node.cost;
+		diagramNode.subTreeCost = node.subTreeCost;
+		diagramNode.relativeCost = node.relativeCost;
+		diagramNode.elapsedTimeInMs = node.elapsedTimeInMs;
+		diagramNode.elapsedCpuTimeInMs = node.elapsedCpuTimeInMs;
+		diagramNode.rowMetrics = node.rowMetrics;
 
 		return diagramNode;
 	}
@@ -386,7 +355,11 @@ export class AzdataGraphView {
 		}
 	}
 
-	private populateProperties(props: azdata.executionPlan.ExecutionPlanGraphElementProperty[]): AzDataGraphCellMetric[] {
+	private populateProperties(props: azdata.executionPlan.ExecutionPlanGraphElementProperty[] | undefined): AzDataGraphCellMetric[] {
+		if (!props) {
+			return [];
+		}
+
 		props.forEach(p => {
 			this._graphElementPropertiesSet.add(p.name);
 		});
@@ -401,7 +374,11 @@ export class AzdataGraphView {
 			});
 	}
 
-	private populateEdges(edges: InternalExecutionPlanEdge[]): AzDataGraphCellEdge[] {
+	private populateEdges(edges: InternalExecutionPlanEdge[] | undefined): AzDataGraphCellEdge[] {
+		if (!edges) {
+			return [];
+		}
+
 		return edges.map(e => {
 			e.id = this.createGraphElementId();
 			return {
