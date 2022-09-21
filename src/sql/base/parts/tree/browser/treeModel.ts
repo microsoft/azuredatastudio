@@ -732,6 +732,7 @@ export class Item {
 		this.firstChild = null;
 		this.lastChild = null;
 
+		// Get rid of timeout and selected item reference in case treeModel was in the middle of a refresh.
 		Item.originalItem = null;
 		clearTimeout(this.refreshLoadTimeout);
 		if (this.getAllTraits().includes('loading')) {
