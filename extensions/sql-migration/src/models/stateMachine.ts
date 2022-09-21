@@ -226,6 +226,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _perfDataCollectionIsCollecting!: boolean;
 
 	public _didLoginMigrationsSucceed!: boolean;
+	public _loginsForMigration!: string[];
 
 	public readonly _refreshGetSkuRecommendationIntervalInMinutes = 10;
 	public readonly _performanceDataQueryIntervalInSeconds = 30;

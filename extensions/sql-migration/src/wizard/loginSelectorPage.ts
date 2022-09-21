@@ -68,7 +68,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 
 		// TODO AKMA: Remove assessment stuff
 		const assessedDatabases = this.migrationStateModel._assessedDatabaseList ?? [];
-		const selectedLogins = this.migrationStateModel._databasesForAssessment;
+		const selectedLogins = this.migrationStateModel._loginsForMigration;
 		// run assessment if
 		// * no prior assessment
 		// * the prior assessment had an error or
@@ -221,7 +221,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		}));
 
 		// load unfiltered table list and pre-select list of databases saved in state
-		await this._filterTableList('', this.migrationStateModel._databasesForAssessment);
+		await this._filterTableList('', this.migrationStateModel._loginsForMigration);
 
 		const flex = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
@@ -239,13 +239,12 @@ export class LoginSelectorPage extends MigrationWizardPage {
 
 	private async _loadDatabaseList(stateMachine: MigrationStateModel, selectedLogins: string[]): Promise<void> {
 		const sourceLogins: LoginTableInfo[] = [];
-		// const targetLogins: string[] = [];
+		const targetLogins: string[] = [];
 
 		// execute a query against the source to get the logins
 		try {
-			const sourceLogins = await collectSourceLogins(stateMachine.sourceConnectionId);
+			sourceLogins.push(...await collectSourceLogins(stateMachine.sourceConnectionId));
 			console.log(sourceLogins);
-
 		} catch (error) {
 			this.wizard.message = {
 				level: azdata.window.MessageLevel.Error,
@@ -256,9 +255,8 @@ export class LoginSelectorPage extends MigrationWizardPage {
 
 		// execute a query against the target to get the logins
 		try {
-			const targetLogins = await collectTargetLogins(stateMachine._targetServerInstance as AzureSqlDatabaseServer, stateMachine._targetUserName, stateMachine._targetPassword);
+			targetLogins.push(...await collectTargetLogins(stateMachine._targetServerInstance as AzureSqlDatabaseServer, stateMachine._targetUserName, stateMachine._targetPassword));
 			console.log(targetLogins);
-
 		} catch (error) {
 			this.wizard.message = {
 				level: azdata.window.MessageLevel.Error,
@@ -301,6 +299,6 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		});
 
 		// TODO AKMA: change to logins for migration
-		this.migrationStateModel._databasesForAssessment = selectedLogins;
+		this.migrationStateModel._loginsForMigration = selectedLogins;
 	}
 }
