@@ -138,7 +138,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		let maxStackSize: number = this._configurationService.getValue('notebook.maxRichTextUndoHistory');
 		this._undoStack = new RichTextEditStack(maxStackSize);
 		this._redoStack = new RichTextEditStack(maxStackSize);
-		this._showHTMLInTextCell = this._configurationService.getValue('notebook.showHTMLInSplitView');
+		this._showHTMLInTextCell = this._configurationService.getValue('notebook.showHtmlInTextCell');
 
 		this._register(toDisposable(() => {
 			if (this.markdownResult) {
