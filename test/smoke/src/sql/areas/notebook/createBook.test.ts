@@ -21,7 +21,7 @@ export function setup(opts: minimist.ParsedArgs) {
 		afterSuite(opts);
 
 		let tmpDir = '';
-		it('can create new book with default content folder @UNSTABLE@', async function () {
+		it('can create new book with default content folder', async function () {
 			const app = this.app as Application;
 			// eslint-disable-next-line no-sync
 			tmpDir = tmp.dirSync().name;

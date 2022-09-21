@@ -473,7 +473,7 @@ export function setup(opts: minimist.ParsedArgs) {
 		});
 
 		describe('markdown', function () {
-			it('can create http link from markdown', async function () {
+			it('can create http link from markdown@UNSTABLE@', async function () {
 				const app = this.app as Application;
 				const markdownString = '[Microsoft homepage](http://www.microsoft.com)';
 				const linkSelector = '.notebook-cell.active .notebook-text a[href=\'http://www.microsoft.com\']';

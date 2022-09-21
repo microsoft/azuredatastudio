@@ -34,8 +34,10 @@ if (process.env.BUILD_ARTIFACTSTAGINGDIRECTORY) {
 }
 
 if (process.env.RUN_UNSTABLE_TESTS === 'true') {
+	console.info('running unstable test cases.');
 	options.grep = "@UNSTABLE@";
-	options.invert = true;
+} else{
+	console.info('running stable test cases.');
 }
 
 const mocha = new Mocha(options);

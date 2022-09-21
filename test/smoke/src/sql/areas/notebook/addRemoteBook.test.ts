@@ -19,7 +19,7 @@ export function setup(opts: minimist.ParsedArgs) {
 		beforeSuite(opts);
 		afterSuite(opts);
 
-		it.skip('can open remote book @UNSTABLE@', async function () { // Skip until the rate limit issue can be fixed
+		it.skip('can open remote book', async function () { // Skip until the rate limit issue can be fixed
 			const app = this.app as Application;
 			await app.workbench.quickaccess.runCommand(AddRemoteBookCommand);
 			await app.workbench.addRemoteBookDialog.setLocation('GitHub');
