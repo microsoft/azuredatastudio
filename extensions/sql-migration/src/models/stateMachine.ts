@@ -225,6 +225,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _perfDataCollectionErrors!: string[];
 	public _perfDataCollectionIsCollecting!: boolean;
 
+	public _didLoginMigrationsSucceed!: boolean;
+
 	public readonly _refreshGetSkuRecommendationIntervalInMinutes = 10;
 	public readonly _performanceDataQueryIntervalInSeconds = 30;
 	public readonly _staticDataQueryIntervalInSeconds = 60;
@@ -432,6 +434,30 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		this.generateSkuRecommendationTelemetry().catch(e => console.error(e));
 
 		return this._skuRecommendationResults;
+	}
+
+	public async startLoginMigration(): Promise<Boolean> {
+		try {
+			// execute a query against the source to get the correct instance name
+			const connectionUri = await azdata.connection.getUriForConnection(this._sourceConnectionId);
+			const sourceConnectionString = await azdata.connection.getConnectionString(connectionUri, true);
+
+			const response = (await this.migrationService.startLoginMigration(
+				sourceConnectionString,
+				sourceConnectionString,
+				this._databasesForAssessment))!;
+			this._didLoginMigrationsSucceed = response;
+		} catch (error) {
+			logError(TelemetryViews.LoginMigrationWizard, 'StartLoginMigrationFailed', error);
+
+			this._skuRecommendationResults = {
+				recommendations: this._skuRecommendationApiResponse,
+				recommendationError: error
+			};
+		}
+
+		// TODO AKMA : emit telemetry
+		return this._didLoginMigrationsSucceed;
 	}
 
 	private async generateSkuRecommendationTelemetry(): Promise<void> {

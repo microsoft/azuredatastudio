@@ -126,4 +126,24 @@ export class SqlMigrationService implements mssql.ISqlMigrationService {
 
 		return undefined;
 	}
+
+	async startLoginMigration(
+		sourceConnectionString: string,
+		targetConnectionString: string,
+		loginList: string[]) {
+		let params: contracts.StartLoginMigrationsParams = {
+			sourceConnectionString,
+			targetConnectionString,
+			loginList
+		};
+
+		try {
+			return this.client.sendRequest(contracts.StartLoginMigrationRequest.type, params);
+		}
+		catch (e) {
+			this.client.logFailedRequest(contracts.StartLoginMigrationRequest.type, e);
+		}
+
+		return undefined;
+	}
 }

@@ -711,6 +711,7 @@ declare module 'mssql' {
 		startPerfDataCollection(ownerUri: string, dataFolder: string, perfQueryIntervalInSec: number, staticQueryIntervalInSec: number, numberOfIterations: number): Promise<StartPerfDataCollectionResult | undefined>;
 		stopPerfDataCollection(): Promise<StopPerfDataCollectionResult | undefined>;
 		refreshPerfDataCollection(lastRefreshedTime: Date): Promise<RefreshPerfDataCollectionResult | undefined>;
+		startLoginMigration(sourceConnectionString: string, targetConnectionString: string, loginList: string[]): Promise<boolean | undefined>;
 	}
 
 	// SqlMigration interfaces  -----------------------------------------------------------------------

@@ -1151,6 +1151,16 @@ export namespace SqlMigrationRefreshPerfDataCollectionRequest {
 	export const type = new RequestType<SqlMigrationRefreshPerfDataCollectionParams, mssql.RefreshPerfDataCollectionResult, void, void>('migration/refreshperfdatacollection');
 }
 
+export interface StartLoginMigrationsParams {
+	sourceConnectionString: string;
+	targetConnectionString: string;
+	loginList: string[];
+}
+
+export namespace StartLoginMigrationRequest {
+	export const type = new RequestType<StartLoginMigrationsParams, boolean, void, void>('migration/startloginmigration');
+}
+
 // ------------------------------- <Sql Migration> -----------------------------
 
 // ------------------------------- < Table Designer > ------------------------------------
