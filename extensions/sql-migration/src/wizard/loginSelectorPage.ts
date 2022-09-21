@@ -10,7 +10,6 @@ import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import { debounce } from '../api/utils';
 import * as styles from '../constants/styles';
-import { IconPathHelper } from '../constants/iconPathHelper';
 
 export class LoginSelectorPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -21,7 +20,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 	private _disposables: vscode.Disposable[] = [];
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
-		super(wizard, azdata.window.createWizardPage(constants.DATABASE_FOR_ASSESSMENT_PAGE_TITLE), migrationStateModel);
+		super(wizard, azdata.window.createWizardPage(constants.LOGIN_MIGRATIONS_SELECT_LOGINS_PAGE_TITLE), migrationStateModel);
 	}
 
 	protected async registerContent(view: azdata.ModelView): Promise<void> {
@@ -53,6 +52,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 			}
 			if (this.selectedDbs().length === 0) {
 				this.wizard.message = {
+					// TODO AKMA: Change to logins
 					text: constants.SELECT_DATABASE_TO_CONTINUE,
 					level: azdata.window.MessageLevel.Error
 				};
@@ -63,6 +63,8 @@ export class LoginSelectorPage extends MigrationWizardPage {
 	}
 
 	public async onPageLeave(): Promise<void> {
+
+		// TODO AKMA: Remove assessment stuff
 		const assessedDatabases = this.migrationStateModel._assessedDatabaseList ?? [];
 		const selectedDatabases = this.migrationStateModel._databasesForAssessment;
 		// run assessment if
@@ -117,10 +119,11 @@ export class LoginSelectorPage extends MigrationWizardPage {
 			tableRows = this._databaseTableValues
 				.filter(row => {
 					const searchText = value?.toLowerCase();
-					return row[2]?.toLowerCase()?.indexOf(searchText) > -1	// database name
-						|| row[3]?.toLowerCase()?.indexOf(searchText) > -1	// state
-						|| row[4]?.toLowerCase()?.indexOf(searchText) > -1  // size
-						|| row[5]?.toLowerCase()?.indexOf(searchText) > -1;	// last backup date
+					return row[1]?.toLowerCase()?.indexOf(searchText) > -1	// source login
+						|| row[2]?.toLowerCase()?.indexOf(searchText) > -1	// login type
+						|| row[3]?.toLowerCase()?.indexOf(searchText) > -1  // default database
+						|| row[4]?.toLowerCase()?.indexOf(searchText) > -1  // status
+						|| row[5]?.toLowerCase()?.indexOf(searchText) > -1;	// target status
 				});
 		}
 
@@ -140,15 +143,8 @@ export class LoginSelectorPage extends MigrationWizardPage {
 	public async createRootContainer(view: azdata.ModelView): Promise<azdata.FlexContainer> {
 		await this._loadDatabaseList(this.migrationStateModel, this.migrationStateModel._assessedDatabaseList);
 
-		const text = this._view.modelBuilder.text().withProps({
-			value: constants.DATABASE_FOR_ASSESSMENT_DESCRIPTION,
-			CSSStyles: {
-				...styles.BODY_CSS
-			}
-		}).component();
-
 		this._dbCount = this._view.modelBuilder.text().withProps({
-			value: constants.DATABASES_SELECTED(
+			value: constants.LOGINS_SELECTED(
 				this.selectedDbs().length,
 				this._databaseTableValues.length),
 			CSSStyles: {
@@ -176,41 +172,40 @@ export class LoginSelectorPage extends MigrationWizardPage {
 						headerCssClass: cssClass,
 					},
 					{
-						value: 'databaseicon',
-						name: '',
-						width: 10,
-						type: azdata.ColumnType.icon,
-						headerCssClass: cssClass,
-						cssClass: cssClass,
-						resizable: false,
-					},
-					{
-						name: constants.DATABASE,
-						value: 'database',
+						name: constants.SOURCE_LOGIN,
+						value: 'sourceLogin',
 						type: azdata.ColumnType.text,
 						width: 360,
 						cssClass: cssClass,
 						headerCssClass: cssClass,
 					},
 					{
-						name: constants.STATUS,
+						name: constants.LOGIN_TYPE,
+						value: 'loginType',
+						type: azdata.ColumnType.text,
+						width: 80,
+						cssClass: cssClass,
+						headerCssClass: cssClass,
+					},
+					{
+						name: constants.DEFAULT_DATABASE,
+						value: 'defaultDatabase',
+						type: azdata.ColumnType.text,
+						width: 80,
+						cssClass: cssClass,
+						headerCssClass: cssClass,
+					},
+					{
+						name: constants.LOGIN_STATUS_COLUMN,
 						value: 'status',
 						type: azdata.ColumnType.text,
-						width: 80,
+						width: 130,
 						cssClass: cssClass,
 						headerCssClass: cssClass,
 					},
 					{
-						name: constants.SIZE,
-						value: 'size',
-						type: azdata.ColumnType.text,
-						width: 80,
-						cssClass: cssClass,
-						headerCssClass: cssClass,
-					},
-					{
-						name: constants.LAST_BACKUP,
-						value: 'lastBackup',
+						name: constants.LOGIN_TARGET_STATUS_COLUMN,
+						value: 'targetStatus',
 						type: azdata.ColumnType.text,
 						width: 130,
 						cssClass: cssClass,
@@ -234,7 +229,6 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				'margin': '0px 28px 0px 28px'
 			}
 		}).component();
-		flex.addItem(text, { flex: '0 0 auto' });
 		flex.addItem(this.createSearchComponent(), { flex: '0 0 auto' });
 		flex.addItem(this._dbCount, { flex: '0 0 auto' });
 		flex.addItem(this._databaseSelectorTable);
@@ -267,14 +261,11 @@ export class LoginSelectorPage extends MigrationWizardPage {
 			this._dbNames.push(databaseName);
 			return [
 				selectedDatabases?.indexOf(databaseName) > -1,
-				<azdata.IconColumnCellValue>{
-					icon: IconPathHelper.sqlDatabaseLogo,
-					title: databaseName,
-				},
 				databaseName,
 				database.options.state,
 				database.options.sizeInMB,
-				database.options.lastBackup,
+				database.options.state,
+				database.options.state,
 			];
 		}) || [];
 	}
@@ -291,10 +282,11 @@ export class LoginSelectorPage extends MigrationWizardPage {
 	private async updateValuesOnSelection() {
 		const selectedDatabases = this.selectedDbs() || [];
 		await this._dbCount.updateProperties({
-			'value': constants.DATABASES_SELECTED(
+			'value': constants.LOGINS_SELECTED(
 				selectedDatabases.length,
 				this._databaseSelectorTable.data?.length || 0)
 		});
+		// TODO AKMA: change to logins for migration
 		this.migrationStateModel._databasesForAssessment = selectedDatabases;
 	}
 }

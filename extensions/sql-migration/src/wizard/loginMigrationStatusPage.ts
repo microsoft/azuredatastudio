@@ -6,222 +6,272 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationMode, MigrationStateModel, MigrationTargetType, NetworkContainerType, StateChangeEvent } from '../models/stateMachine';
+import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
-import { createHeadingTextComponent, createInformationRow, createLabelTextComponent } from './wizardController';
-import { getResourceGroupFromId } from '../api/azure';
-import { TargetDatabaseSummaryDialog } from '../dialog/targetDatabaseSummary/targetDatabaseSummaryDialog';
+import { debounce } from '../api/utils';
 import * as styles from '../constants/styles';
 
 export class LoginMigrationStatusPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
-	private _flexContainer!: azdata.FlexContainer;
+	private _databaseSelectorTable!: azdata.TableComponent;
+	private _dbNames!: string[];
+	private _dbCount!: azdata.TextComponent;
+	private _databaseTableValues!: any[];
 	private _disposables: vscode.Disposable[] = [];
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
-		super(wizard, azdata.window.createWizardPage(constants.SUMMARY_PAGE_TITLE), migrationStateModel);
+		super(wizard, azdata.window.createWizardPage(constants.LOGIN_MIGRATIONS_STATUS_PAGE_TITLE), migrationStateModel);
 	}
 
 	protected async registerContent(view: azdata.ModelView): Promise<void> {
 		this._view = view;
-		this._flexContainer = view.modelBuilder.flexContainer()
-			.withLayout({ flexFlow: 'column' })
-			.component();
-		const form = view.modelBuilder.formContainer()
-			.withFormItems([{ component: this._flexContainer }])
-			.component();
 
-		this._disposables.push(
-			this._view.onClosed(e =>
-				this._disposables.forEach(
-					d => { try { d.dispose(); } catch { } })));
+		const flex = view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'row',
+			height: '100%',
+			width: '100%'
+		}).component();
+		flex.addItem(await this.createRootContainer(view), { flex: '1 1 auto' });
 
-		await view.initializeModel(form);
+		this._disposables.push(this._view.onClosed(e => {
+			this._disposables.forEach(
+				d => { try { d.dispose(); } catch { } });
+		}));
+
+		await view.initializeModel(flex);
 	}
 
-	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
-		const targetDatabaseSummary = new TargetDatabaseSummaryDialog(this.migrationStateModel);
-		const isSqlVmTarget = this.migrationStateModel._targetType === MigrationTargetType.SQLVM;
-		const isSqlMiTarget = this.migrationStateModel._targetType === MigrationTargetType.SQLMI;
-		const isSqlDbTarget = this.migrationStateModel._targetType === MigrationTargetType.SQLDB;
-		const isNetworkShare = this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE;
-
-		const targetDatabaseHyperlink = this._view.modelBuilder.hyperlink()
-			.withProps({
-				url: '',
-				label: (this.migrationStateModel._databasesForMigration?.length ?? 0).toString(),
-				CSSStyles: { ...styles.BODY_CSS, 'margin': '0px', 'width': '300px', }
-			}).component();
-
-		this._disposables.push(
-			targetDatabaseHyperlink.onDidClick(
-				async e => await targetDatabaseSummary.initialize()));
-
-		const targetDatabaseRow = this._view.modelBuilder.flexContainer()
-			.withLayout({ flexFlow: 'row', alignItems: 'center', })
-			.withItems([
-				createLabelTextComponent(
-					this._view,
-					constants.SUMMARY_DATABASE_COUNT_LABEL,
-					{ ...styles.BODY_CSS, 'width': '300px' }),
-				targetDatabaseHyperlink],
-				{ CSSStyles: { 'margin-right': '5px' } })
-			.component();
-
-		this._flexContainer
-			.addItems([
-				await createHeadingTextComponent(
-					this._view,
-					constants.SOURCE_DATABASES),
-				targetDatabaseRow,
-
-				await createHeadingTextComponent(
-					this._view,
-					constants.AZURE_SQL_TARGET_PAGE_TITLE),
-				createInformationRow(
-					this._view,
-					constants.ACCOUNTS_SELECTION_PAGE_TITLE,
-					this.migrationStateModel._azureAccount.displayInfo.displayName),
-				createInformationRow(
-					this._view,
-					constants.AZURE_SQL_TARGET_PAGE_TITLE,
-					isSqlVmTarget
-						? constants.SUMMARY_VM_TYPE
-						: isSqlMiTarget
-							? constants.SUMMARY_MI_TYPE
-							: constants.SUMMARY_SQLDB_TYPE),
-				createInformationRow(
-					this._view,
-					constants.SUBSCRIPTION,
-					this.migrationStateModel._targetSubscription.name),
-				createInformationRow(
-					this._view,
-					constants.LOCATION,
-					await this.migrationStateModel.getLocationDisplayName(
-						this.migrationStateModel._targetServerInstance.location)),
-				createInformationRow(
-					this._view,
-					constants.RESOURCE_GROUP,
-					getResourceGroupFromId(
-						this.migrationStateModel._targetServerInstance.id)),
-				createInformationRow(
-					this._view,
-					(isSqlVmTarget)
-						? constants.SUMMARY_VM_TYPE
-						: (isSqlMiTarget)
-							? constants.SUMMARY_MI_TYPE
-							: constants.SUMMARY_SQLDB_TYPE,
-					this.migrationStateModel._targetServerInstance.name),
-				await createHeadingTextComponent(
-					this._view,
-					constants.DATABASE_BACKUP_MIGRATION_MODE_LABEL),
-				createInformationRow(
-					this._view,
-					constants.MODE,
-					this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.ONLINE
-						? constants.DATABASE_BACKUP_MIGRATION_MODE_ONLINE_LABEL
-						: constants.DATABASE_BACKUP_MIGRATION_MODE_OFFLINE_LABEL),
-			]);
-
-		if (this.migrationStateModel._targetType !== MigrationTargetType.SQLDB) {
-			this._flexContainer.addItems([
-				await createHeadingTextComponent(
-					this._view,
-					constants.DATABASE_BACKUP_PAGE_TITLE),
-				await this.createNetworkContainerRows()]);
-		}
-
-		this._flexContainer.addItems([
-
-
-			await createHeadingTextComponent(
-				this._view,
-				constants.IR_PAGE_TITLE),
-			createInformationRow(
-				this._view, constants.SUBSCRIPTION,
-				this.migrationStateModel._targetSubscription.name),
-			createInformationRow(
-				this._view,
-				constants.LOCATION,
-				await this.migrationStateModel.getLocationDisplayName(
-					this.migrationStateModel._sqlMigrationService?.location!)),
-			createInformationRow(
-				this._view,
-				constants.RESOURCE_GROUP,
-				this.migrationStateModel._sqlMigrationService?.properties?.resourceGroup!),
-			createInformationRow(
-				this._view,
-				constants.IR_PAGE_TITLE,
-				this.migrationStateModel._sqlMigrationService?.name!)]);
-
-		if (isSqlDbTarget ||
-			(isNetworkShare && this.migrationStateModel._nodeNames?.length > 0)) {
-
-			this._flexContainer.addItem(
-				createInformationRow(
-					this._view,
-					constants.SHIR,
-					this.migrationStateModel._nodeNames.join(', ')));
-		}
+	public async onPageEnter(): Promise<void> {
+		this.wizard.registerNavigationValidator((pageChangeInfo) => {
+			this.wizard.message = {
+				text: '',
+				level: azdata.window.MessageLevel.Error
+			};
+			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
+				return true;
+			}
+			if (this.selectedDbs().length === 0) {
+				this.wizard.message = {
+					text: constants.SELECT_DATABASE_TO_CONTINUE,
+					level: azdata.window.MessageLevel.Error
+				};
+				return false;
+			}
+			return true;
+		});
 	}
 
-	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
-		this._flexContainer.clearItems();
-		this.wizard.registerNavigationValidator(async (pageChangeInfo) => true);
+	public async onPageLeave(): Promise<void> {
+		const assessedDatabases = this.migrationStateModel._assessedDatabaseList ?? [];
+		const selectedDatabases = this.migrationStateModel._databasesForAssessment;
+		// run assessment if
+		// * no prior assessment
+		// * the prior assessment had an error or
+		// * the assessed databases list is different from the selected databases list
+		this.migrationStateModel._runAssessments = !this.migrationStateModel._assessmentResults
+			|| !!this.migrationStateModel._assessmentResults?.assessmentError
+			|| assessedDatabases.length === 0
+			|| assessedDatabases.length !== selectedDatabases.length
+			|| assessedDatabases.some(db => selectedDatabases.indexOf(db) < 0);
+
+		this.wizard.message = {
+			text: '',
+			level: azdata.window.MessageLevel.Error
+		};
+
+		this.wizard.registerNavigationValidator((pageChangeInfo) => {
+			return true;
+		});
 	}
 
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
 	}
 
-	private async createNetworkContainerRows(): Promise<azdata.FlexContainer> {
-		const flexContainer = this._view.modelBuilder.flexContainer()
-			.withLayout({ flexFlow: 'column' })
-			.component();
+	private createSearchComponent(): azdata.DivContainer {
+		let resourceSearchBox = this._view.modelBuilder.inputBox().withProps({
+			stopEnterPropagation: true,
+			placeHolder: constants.SEARCH,
+			width: 200
+		}).component();
 
-		const networkShare = this.migrationStateModel._databaseBackup.networkShares[0];
-		switch (this.migrationStateModel._databaseBackup.networkContainerType) {
-			case NetworkContainerType.NETWORK_SHARE:
-				flexContainer.addItems([
-					createInformationRow(
-						this._view,
-						constants.BACKUP_LOCATION,
-						constants.NETWORK_SHARE),
-					createInformationRow(
-						this._view,
-						constants.USER_ACCOUNT,
-						networkShare.windowsUser),
-					await createHeadingTextComponent(
-						this._view,
-						constants.AZURE_STORAGE_ACCOUNT_TO_UPLOAD_BACKUPS),
-					createInformationRow(
-						this._view,
-						constants.SUBSCRIPTION,
-						this.migrationStateModel._databaseBackup.subscription.name),
-					createInformationRow(
-						this._view,
-						constants.LOCATION,
-						networkShare.storageAccount?.location),
-					createInformationRow(
-						this._view,
-						constants.RESOURCE_GROUP,
-						networkShare.storageAccount?.resourceGroup!),
-					createInformationRow(
-						this._view,
-						constants.STORAGE_ACCOUNT,
-						networkShare.storageAccount?.name!),
-				]);
-				break;
-			case NetworkContainerType.BLOB_CONTAINER:
-				flexContainer.addItems([
-					createInformationRow(
-						this._view,
-						constants.TYPE,
-						constants.BLOB_CONTAINER),
-					createInformationRow(
-						this._view,
-						constants.SUMMARY_AZURE_STORAGE_SUBSCRIPTION,
-						this.migrationStateModel._databaseBackup.subscription.name)]);
+		this._disposables.push(
+			resourceSearchBox.onTextChanged(value => this._filterTableList(value)));
+
+		const searchContainer = this._view.modelBuilder.divContainer().withItems([resourceSearchBox]).withProps({
+			CSSStyles: {
+				'width': '200px',
+				'margin-top': '8px'
+			}
+		}).component();
+
+		return searchContainer;
+	}
+
+	@debounce(500)
+	private async _filterTableList(value: string, selectedList?: string[]): Promise<void> {
+		const selectedRows: number[] = [];
+		const selectedDatabases = selectedList || this.selectedDbs();
+		let tableRows = this._databaseTableValues;
+		if (this._databaseTableValues && value?.length > 0) {
+			tableRows = this._databaseTableValues
+				.filter(row => {
+					const searchText = value?.toLowerCase();
+					return row[0]?.toLowerCase()?.indexOf(searchText) > -1	// source login
+						|| row[1]?.toLowerCase()?.indexOf(searchText) > -1	// login type
+						|| row[2]?.toLowerCase()?.indexOf(searchText) > -1  // default database
+						|| row[3]?.toLowerCase()?.indexOf(searchText) > -1;	// migration status
+				});
 		}
-		return flexContainer;
+
+		for (let row = 0; row < tableRows.length; row++) {
+			const database: string = tableRows[row][2];
+			if (selectedDatabases.includes(database)) {
+				selectedRows.push(row);
+			}
+		}
+
+		await this._databaseSelectorTable.updateProperty('data', tableRows);
+		this._databaseSelectorTable.selectedRows = selectedRows;
+		await this.updateValuesOnSelection();
+	}
+
+
+	public async createRootContainer(view: azdata.ModelView): Promise<azdata.FlexContainer> {
+		await this._loadDatabaseList(this.migrationStateModel, this.migrationStateModel._assessedDatabaseList);
+
+		const text = this._view.modelBuilder.text().withProps({
+			// TODO AKMA: Remove hardcoding
+			value: constants.LOGIN_MIGRATIONS_STATUS_PAGE_DESCRIPTION(2, 'Azure SQL Managed Instance', 'testMI'),
+			CSSStyles: {
+				...styles.BODY_CSS
+			}
+		}).component();
+
+		this._dbCount = this._view.modelBuilder.text().withProps({
+			value: constants.LOGINS_SELECTED(
+				this.selectedDbs().length,
+				this._databaseTableValues.length),
+			CSSStyles: {
+				...styles.BODY_CSS,
+				'margin-top': '8px'
+			},
+			ariaLive: 'polite'
+		}).component();
+
+		const cssClass = 'no-borders';
+		this._databaseSelectorTable = this._view.modelBuilder.table()
+			.withProps({
+				data: [],
+				width: 650,
+				height: '100%',
+				forceFitColumns: azdata.ColumnSizingMode.ForceFit,
+				columns: [
+					{
+						name: constants.SOURCE_LOGIN,
+						value: 'sourceLogin',
+						type: azdata.ColumnType.text,
+						width: 360,
+						cssClass: cssClass,
+						headerCssClass: cssClass,
+					},
+					{
+						name: constants.LOGIN_TYPE,
+						value: 'loginType',
+						type: azdata.ColumnType.text,
+						width: 80,
+						cssClass: cssClass,
+						headerCssClass: cssClass,
+					},
+					{
+						name: constants.DEFAULT_DATABASE,
+						value: 'defaultDatabase',
+						type: azdata.ColumnType.text,
+						width: 80,
+						cssClass: cssClass,
+						headerCssClass: cssClass,
+					},
+					{
+						name: constants.LOGIN_MIGRATION_STATUS_COLUMN,
+						value: 'migrationStatus',
+						type: azdata.ColumnType.text,
+						width: 130,
+						cssClass: cssClass,
+						headerCssClass: cssClass,
+					},
+				]
+			}).component();
+
+		this._disposables.push(this._databaseSelectorTable.onRowSelected(async (e) => {
+			await this.updateValuesOnSelection();
+		}));
+
+		// load unfiltered table list and pre-select list of databases saved in state
+		await this._filterTableList('', this.migrationStateModel._databasesForAssessment);
+
+		const flex = view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'column',
+			height: '100%',
+		}).withProps({
+			CSSStyles: {
+				'margin': '0px 28px 0px 28px'
+			}
+		}).component();
+		flex.addItem(text, { flex: '0 0 auto' });
+		flex.addItem(this.createSearchComponent(), { flex: '0 0 auto' });
+		flex.addItem(this._dbCount, { flex: '0 0 auto' });
+		flex.addItem(this._databaseSelectorTable);
+		return flex;
+	}
+
+	private async _loadDatabaseList(stateMachine: MigrationStateModel, selectedDatabases: string[]): Promise<void> {
+		const providerId = (await stateMachine.getSourceConnectionProfile()).providerId;
+		const metaDataService = azdata.dataprotocol.getProvider<azdata.MetadataProvider>(
+			providerId,
+			azdata.DataProviderType.MetadataProvider);
+		const ownerUri = await azdata.connection.getUriForConnection(
+			stateMachine.sourceConnectionId);
+		const excludeDbs: string[] = [
+			'master',
+			'tempdb',
+			'msdb',
+			'model'
+		];
+		const databaseList = (<azdata.DatabaseInfo[]>await metaDataService
+			.getDatabases(ownerUri))
+			.filter(database => !excludeDbs.includes(database.options.name))
+			|| [];
+
+		databaseList.sort((a, b) => a.options.name.localeCompare(b.options.name));
+		this._dbNames = [];
+
+		this._databaseTableValues = databaseList.map(database => {
+			const databaseName = database.options.name;
+			this._dbNames.push(databaseName);
+			return [
+				databaseName,
+				database.options.state,
+				database.options.sizeInMB,
+				database.options.state,
+			];
+		}) || [];
+	}
+
+	public selectedDbs(): string[] {
+		const rows = this._databaseSelectorTable?.data || [];
+		const databases = this._databaseSelectorTable?.selectedRows || [];
+		return databases
+			.filter(row => row < rows.length)
+			.map(row => rows[row][2])
+			|| [];
+	}
+
+	private async updateValuesOnSelection() {
+		const selectedDatabases = this.selectedDbs() || [];
+		await this._dbCount.updateProperties({
+			'value': constants.LOGINS_SELECTED(
+				selectedDatabases.length,
+				this._databaseSelectorTable.data?.length || 0)
+		});
+		this.migrationStateModel._databasesForAssessment = selectedDatabases;
 	}
 }

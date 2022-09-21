@@ -184,7 +184,7 @@ export class WizardController {
 		const serverName = (await stateModel.getSourceConnectionProfile()).serverName;
 		this._wizardObject = azdata.window.createWizard(
 			loc.WIZARD_TITLE(serverName),
-			'MigrationWizard',
+			'LoginMigrationWizard',
 			'wide');
 
 		this._wizardObject.generateScriptButton.enabled = false;
@@ -285,10 +285,10 @@ export class WizardController {
 		this._disposables.push(
 			this._wizardObject.doneButton.onClick(async (e) => {
 				try {
-					await stateModel.startMigration();
+					await stateModel.startLoginMigration();
 					await this.updateServiceContext(stateModel, this._serviceContextChangedEvent);
 				} catch (e) {
-					logError(TelemetryViews.MigrationWizardController, 'StartMigrationFailed', e);
+					logError(TelemetryViews.MigrationWizardController, 'StartLoginMigrationFailed', e);
 				} finally {
 					sendSqlMigrationActionEvent(
 						TelemetryViews.SqlMigrationWizard,

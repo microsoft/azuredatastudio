@@ -300,6 +300,11 @@ export const LOGIN_MIGRATIONS_TARGET_TYPE_SELECTION_TITLE = localize('sql.migrat
 export const LOGIN_MIGRATIONS_MI_TEXT = localize('sql.migration.login.mi.title', "Azure SQL Managed Instance");
 export const LOGIN_MIGRATIONS_DB_TEXT = localize('sql.migration.login.db.title', "Azure SQL Database");
 export const LOGIN_MIGRATIONS_VM_TEXT = localize('sql.migration.login.vm.title', "SQL Server on Azure Virtual Machine");
+export const LOGIN_MIGRATIONS_SELECT_LOGINS_PAGE_TITLE = localize('sql.migration.login.select.page.title', "Select login(s) to migrate");
+export const LOGIN_MIGRATIONS_STATUS_PAGE_TITLE = localize('sql.migration.login.status.page.title', "Migration Status");
+export function LOGIN_MIGRATIONS_STATUS_PAGE_DESCRIPTION(numLogins: number, targetType: string, targetName: string): string {
+	return localize('sql.migration.login.status.page.description', "Migrating {0} logins to target {1} '{2}'", numLogins, targetType, targetName);
+}
 
 // Azure SQL Target
 export const AZURE_SQL_TARGET_PAGE_TITLE = localize('sql.migration.wizard.target.title', "Azure SQL target");
@@ -407,7 +412,7 @@ export function SQLDB_NOT_READY_ERROR(sqldbName: string, state: string): string 
 	return localize('sql.migration.sqldb.not.ready', "The SQL database server '{0}' is unavailable for migration because it is currently in the '{1}' state. To continue, select an available SQL database server.", sqldbName, state);
 }
 
-export const SELECT_AN_TARGET_TYPE = localize('sql.migration.select.service.select.target.type.', "Select target Azure SQL Typeaccount");
+export const SELECT_AN_TARGET_TYPE = localize('sql.migration.select.service.select.target.type.', "Select target Azure SQL Type");
 export const SELECT_AN_ACCOUNT = localize('sql.migration.select.service.select.a.', "Sign into Azure and select an account");
 export const SELECT_A_TENANT = localize('sql.migration.select.service.select.a.tenant', "Select a tenant");
 export const SELECT_A_SUBSCRIPTION = localize('sql.migration.select.service.select.a.subscription', "Select a subscription");
@@ -807,6 +812,12 @@ export const OFFLINE = localize('sql.migration.offline', "Offline");
 export const DATABASE = localize('sql.migration.database', "Database");
 export const SRC_DATABASE = localize('sql.migration.src.database', "Source database");
 export const SRC_SERVER = localize('sql.migration.src.server', "Source name");
+export const SOURCE_LOGIN = localize('sql.migration.source.login', "Source login");
+export const LOGIN_TYPE = localize('sql.migration.login.type', "Login type");
+export const DEFAULT_DATABASE = localize('sql.migration.default.database', "Default database");
+export const LOGIN_STATUS_COLUMN = localize('sql.migration.login.status.column', "Status");
+export const LOGIN_TARGET_STATUS_COLUMN = localize('sql.migration.login.target.status.column', "Target Status");
+export const LOGIN_MIGRATION_STATUS_COLUMN = localize('sql.migration.login.migration.status.column', "Migration Status");
 
 export const STATUS_COLUMN = localize('sql.migration.database.status.column', "Migration status");
 export const DATABASE_MIGRATION_SERVICE = localize('sql.migration.database.migration.service', "Database Migration Service");
@@ -994,6 +1005,9 @@ export function DATABASES(selectedCount: number, totalCount: number): string {
 }
 export function DATABASES_SELECTED(selectedCount: number, totalCount: number): string {
 	return localize('sql.migration.databases.selected', "{0}/{1} databases selected", selectedCount, totalCount);
+}
+export function LOGINS_SELECTED(selectedCount: number, totalCount: number): string {
+	return localize('sql.migration.logins.selected', "{0}/{1} logins selected", selectedCount, totalCount);
 }
 export function ISSUES_COUNT(totalCount: number): string {
 	return localize('sql.migration.issues.count', "Issues ({0})", totalCount);

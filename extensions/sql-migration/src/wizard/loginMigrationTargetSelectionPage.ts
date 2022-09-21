@@ -266,7 +266,6 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 					break;
 			}
 			await this.populateAzureAccountsDropdown();
-			await this.populateTenantsDropdown();
 			await this.populateSubscriptionDropdown();
 			await this.populateLocationDropdown();
 			console.log(this.migrationStateModel._targetType);
