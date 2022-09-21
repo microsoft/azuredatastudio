@@ -62,6 +62,8 @@ export class LoginSelectorPage extends MigrationWizardPage {
 			}
 			return true;
 		});
+
+		// await this._loadDatabaseList(this.migrationStateModel, this.migrationStateModel._assessedDatabaseList);
 	}
 
 	public async onPageLeave(): Promise<void> {
@@ -116,7 +118,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 	private async _filterTableList(value: string, selectedList?: string[]): Promise<void> {
 		const selectedRows: number[] = [];
 		const selectedLogins = selectedList || this.selectedLogins();
-		let tableRows = this._loginTableValues;
+		let tableRows = this._loginTableValues ?? [];
 		if (this._loginTableValues && value?.length > 0) {
 			tableRows = this._loginTableValues
 				.filter(row => {
@@ -276,7 +278,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				row.loginType,
 				row.defaultDatabaseName,
 				row.status,
-				row.status, // TODO AKMA : Change this to loginName in targetLogins
+				targetLogins.some(targetLogin => targetLogin.toLowerCase() === loginName.toLocaleLowerCase()) ? 'Login found' : 'Login not found',
 			];
 		}) || [];
 	}
