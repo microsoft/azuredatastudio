@@ -35,14 +35,20 @@ if (process.env.BUILD_ARTIFACTSTAGINGDIRECTORY) {
 
 const mocha = new Mocha(options);
 
-// {{SQL CARBON EDIT}} - based on the environment variable to decide whether only the stable test cases should be run
-// Unstable test cases should have "@UNSTABLE@" in their name.
-if (process.env.RUN_UNSTABLE_TESTS === 'true') {
-	console.info('running all test cases.');
+// {{SQL CARBON EDIT}} - If grep option is specified, only run the matching test cases (local test case development/debug scenario),
+// otherwise the value of 'RUN_UNSTABLE_TESTS' environment variable will used to decide whether to run the stable test cases or the whole test suite.
+// Unstable test cases have "@UNSTABLE@" in their full name (test suite name + test name).
+if (!options.grep) {
+	if (process.env.RUN_UNSTABLE_TESTS === 'true') {
+		console.info('running all test cases.');
+	} else {
+		console.info('running stable test cases.');
+		mocha.grep('@UNSTABLE@').invert();
+	}
 } else {
-	console.info('running stable test cases.');
-	mocha.grep('@UNSTABLE@').invert();
+	console.info('running test cases match the grep option.');
 }
+// {{SQL CARBON EDIT}} - end of edit.
 
 mocha.addFile('out/main.js');
 mocha.run(failures => process.exit(failures ? -1 : 0));

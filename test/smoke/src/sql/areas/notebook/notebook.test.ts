@@ -195,7 +195,7 @@ export function setup(opts: minimist.ParsedArgs) {
 		});
 
 		describe('Notebook keyboard navigation', async () => {
-			it.skip('can enter and exit edit mode and navigate using keyboard nav', async function () {
+			it('can enter and exit edit mode and navigate using keyboard nav @UNSTABLE@', async function () {
 				const app = this.app as Application;
 				await app.workbench.sqlNotebook.newUntitledNotebook();
 				await app.workbench.sqlNotebook.addCellFromPlaceholder('Code'); // add new code cell
@@ -273,7 +273,7 @@ export function setup(opts: minimist.ParsedArgs) {
 			});
 		});
 
-		describe.skip('Cell Toolbar Actions', function () {
+		describe('Cell Toolbar Actions @UNSTABLE@', function () {
 			async function verifyCellToolbarBehavior(app: Application, toolbarAction: () => Promise<void>, selector: string, checkIfGone: boolean = false): Promise<void> {
 				// Run the test for each of the default text editor modes
 				for (let editMode of ['Markdown', 'Split View']) {
@@ -473,7 +473,7 @@ export function setup(opts: minimist.ParsedArgs) {
 		});
 
 		describe('markdown', function () {
-			it('can create http link from markdown@UNSTABLE@', async function () {
+			it('can create http link from markdown', async function () {
 				const app = this.app as Application;
 				const markdownString = '[Microsoft homepage](http://www.microsoft.com)';
 				const linkSelector = '.notebook-cell.active .notebook-text a[href=\'http://www.microsoft.com\']';
