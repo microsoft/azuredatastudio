@@ -24,8 +24,9 @@ import { isString } from 'vs/base/common/types';
 import { CopyKeybind } from 'sql/base/browser/ui/table/plugins/copyKeybind.plugin';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { deepClone } from 'vs/base/common/objects';
+import { Disposable } from 'vs/base/common/lifecycle';
 
-export abstract class ExecutionPlanPropertiesViewBase implements IVerticalSashLayoutProvider {
+export abstract class ExecutionPlanPropertiesViewBase extends Disposable implements IVerticalSashLayoutProvider {
 	// Title bar with close button action
 	private _titleBarContainer!: HTMLElement;
 	private _titleBarTextContainer!: HTMLElement;
@@ -68,16 +69,16 @@ export abstract class ExecutionPlanPropertiesViewBase implements IVerticalSashLa
 		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@IContextViewService private _contextViewService: IContextViewService
 	) {
-
+		super();
 		const sashContainer = DOM.$('.properties-sash');
 		this._parentContainer.appendChild(sashContainer);
 
-		this.resizeSash = new Sash(sashContainer, this, { orientation: Orientation.VERTICAL, size: 3 });
+		this.resizeSash = this._register(new Sash(sashContainer, this, { orientation: Orientation.VERTICAL, size: 3 }));
 		let originalWidth = 0;
-		this.resizeSash.onDidStart((e: ISashEvent) => {
+		this._register(this.resizeSash.onDidStart((e: ISashEvent) => {
 			originalWidth = this._parentContainer.clientWidth;
-		});
-		this.resizeSash.onDidChange((evt: ISashEvent) => {
+		}));
+		this._register(this.resizeSash.onDidChange((evt: ISashEvent) => {
 			const change = evt.startX - evt.currentX;
 			const newWidth = originalWidth + change;
 			if (newWidth < 200) {
@@ -85,9 +86,7 @@ export abstract class ExecutionPlanPropertiesViewBase implements IVerticalSashLa
 			}
 			this._parentContainer.style.flex = `0 0 ${newWidth}px`;
 			propertiesContent.style.width = `${newWidth}px`;
-		});
-		this.resizeSash.onDidEnd(() => {
-		});
+		}));
 
 		const propertiesContent = DOM.$('.properties-content');
 		this._parentContainer.appendChild(propertiesContent);
@@ -103,9 +102,9 @@ export abstract class ExecutionPlanPropertiesViewBase implements IVerticalSashLa
 
 		this._titleBarActionsContainer = DOM.$('.action-bar');
 		this._titleBarContainer.appendChild(this._titleBarActionsContainer);
-		this._titleActions = new ActionBar(this._titleBarActionsContainer, {
+		this._titleActions = this._register(new ActionBar(this._titleBarActionsContainer, {
 			orientation: ActionsOrientation.HORIZONTAL, context: this
-		});
+		}));
 		this._titleActions.pushAction([new ClosePropertyViewAction()], { icon: true, label: false });
 
 		this._headerContainer = DOM.$('.header');
@@ -116,22 +115,22 @@ export abstract class ExecutionPlanPropertiesViewBase implements IVerticalSashLa
 
 		this._headerActionsContainer = DOM.$('.table-action-bar');
 		this._searchAndActionBarContainer.appendChild(this._headerActionsContainer);
-		this._headerActions = new ActionBar(this._headerActionsContainer, {
+		this._headerActions = this._register(new ActionBar(this._headerActionsContainer, {
 			orientation: ActionsOrientation.HORIZONTAL, context: this
-		});
+		}));
 		this._headerActions.pushAction([new SortPropertiesByDisplayOrderAction(), new SortPropertiesAlphabeticallyAction(), new SortPropertiesReverseAlphabeticallyAction()], { icon: true, label: false });
 
 		this._propertiesSearchInputContainer = DOM.$('.table-search');
 		this._propertiesSearchInputContainer.classList.add('codicon', searchIconClassNames);
-		this._propertiesSearchInput = new InputBox(this._propertiesSearchInputContainer, this._contextViewService, {
+		this._propertiesSearchInput = this._register(new InputBox(this._propertiesSearchInputContainer, this._contextViewService, {
 			ariaDescription: localize('tableSearchDescription', 'Search properties table'),
 			placeholder: localize('tableSearchPlaceholder', 'Filter for any field...')
-		});
+		}));
 		this._propertiesSearchInput.element.classList.add('codicon', searchIconClassNames);
 		this._searchAndActionBarContainer.appendChild(this._propertiesSearchInputContainer);
-		this._propertiesSearchInput.onDidChange(e => {
+		this._register(this._propertiesSearchInput.onDidChange(e => {
 			this.searchTable(e);
-		});
+		}));
 
 		this._tableContainer = DOM.$('.table-container');
 		propertiesContent.appendChild(this._tableContainer);
@@ -141,7 +140,7 @@ export abstract class ExecutionPlanPropertiesViewBase implements IVerticalSashLa
 
 		this._selectionModel = new CellSelectionModel<Slick.SlickData>();
 
-		this._tableComponent = new TreeGrid(table, {
+		this._tableComponent = this._register(new TreeGrid(table, {
 			columns: []
 		}, {
 			rowHeight: RESULTS_GRID_DEFAULTS.rowHeight,
@@ -149,7 +148,7 @@ export abstract class ExecutionPlanPropertiesViewBase implements IVerticalSashLa
 			defaultColumnWidth: 120,
 			editable: true,
 			autoEdit: false
-		});
+		}));
 		attachTableStyler(this._tableComponent, this._themeService);
 		this._tableComponent.setSelectionModel(this._selectionModel);
 
@@ -157,20 +156,20 @@ export abstract class ExecutionPlanPropertiesViewBase implements IVerticalSashLa
 			this._instantiationService.createInstance(CopyTableData),
 		];
 
-		this._tableComponent.onContextMenu(e => {
+		this._register(this._tableComponent.onContextMenu(e => {
 			this._contextMenuService.showContextMenu({
 				getAnchor: () => e.anchor,
 				getActions: () => contextMenuAction,
 				getActionsContext: () => this.getCopyString()
 			});
-		});
+		}));
 
 		let copyHandler = new CopyKeybind<any>();
 		this._tableComponent.registerPlugin(copyHandler);
 
-		copyHandler.onCopy(e => {
+		this._register(copyHandler.onCopy(e => {
 			this._instantiationService.createInstance(CopyTableData).run(this.getCopyString());
-		});
+		}));
 
 		new ResizeObserver((e) => {
 			this.resizeSash.layout();

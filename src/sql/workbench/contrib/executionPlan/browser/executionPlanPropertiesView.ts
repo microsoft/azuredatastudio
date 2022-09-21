@@ -155,7 +155,7 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 		return props;
 	}
 
-	private convertModelToTableRows(props: azdata.executionPlan.ExecutionPlanGraphElementProperty[], parentIndex: number, rows: { [key: string]: string }[] = []): { [key: string]: string }[] {
+	private convertModelToTableRows(props: azdata.executionPlan.ExecutionPlanGraphElementProperty[] | undefined, parentIndex: number, rows: { [key: string]: string }[] = []): { [key: string]: string }[] {
 		if (!props) {
 			return rows;
 		}

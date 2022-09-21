@@ -167,8 +167,8 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 		headerContainer.classList.add('codicon', searchIconClassNames);
 
 		const topOperationsSearchInput = new InputBox(headerSearchBarContainer, this._contextViewService, {
-			ariaDescription: localize('tableSearchDescription', 'Search properties table'),
-			placeholder: localize('tableSearchPlaceholder', 'Filter for any field...')
+			ariaDescription: localize('topOperationTableSearchDescription', 'Search properties table'),
+			placeholder: localize('topOperationTableSearchPlaceholder', 'Filter for any field...')
 		});
 		topOperationsSearchInput.element.classList.add('codicon', searchIconClassNames);
 
