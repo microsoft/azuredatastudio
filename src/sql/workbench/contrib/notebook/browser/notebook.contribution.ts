@@ -356,6 +356,11 @@ configurationRegistry.registerConfiguration({
 			'minimum': 10,
 			'description': localize('notebook.maxRichTextUndoHistory', "The maximum number of changes stored in the undo history for the notebook Rich Text editor.")
 		},
+		'notebook.showHTMLInSplitView': {
+			'type': 'boolean',
+			'default': false,
+			'description': localize('notebook.showHTMLInSplitView', "Text is displayed as HTML in Split View Mode.")
+		},
 		'notebook.useAbsoluteFilePaths': {
 			'type': 'boolean',
 			'default': false,
