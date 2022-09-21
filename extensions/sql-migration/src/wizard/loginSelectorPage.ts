@@ -10,13 +10,15 @@ import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import { debounce } from '../api/utils';
 import * as styles from '../constants/styles';
+import { collectSourceLogins, collectTargetLogins, LoginTableInfo } from '../api/sqlUtils';
+import { AzureSqlDatabaseServer } from '../api/azure';
 
 export class LoginSelectorPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
-	private _databaseSelectorTable!: azdata.TableComponent;
-	private _dbNames!: string[];
-	private _dbCount!: azdata.TextComponent;
-	private _databaseTableValues!: any[];
+	private _loginSelectorTable!: azdata.TableComponent;
+	private _loginNames!: string[];
+	private _loginCount!: azdata.TextComponent;
+	private _loginTableValues!: any[];
 	private _disposables: vscode.Disposable[] = [];
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
@@ -50,7 +52,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
 				return true;
 			}
-			if (this.selectedDbs().length === 0) {
+			if (this.selectedLogins().length === 0) {
 				this.wizard.message = {
 					// TODO AKMA: Change to logins
 					text: constants.SELECT_DATABASE_TO_CONTINUE,
@@ -66,7 +68,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 
 		// TODO AKMA: Remove assessment stuff
 		const assessedDatabases = this.migrationStateModel._assessedDatabaseList ?? [];
-		const selectedDatabases = this.migrationStateModel._databasesForAssessment;
+		const selectedLogins = this.migrationStateModel._databasesForAssessment;
 		// run assessment if
 		// * no prior assessment
 		// * the prior assessment had an error or
@@ -74,8 +76,8 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		this.migrationStateModel._runAssessments = !this.migrationStateModel._assessmentResults
 			|| !!this.migrationStateModel._assessmentResults?.assessmentError
 			|| assessedDatabases.length === 0
-			|| assessedDatabases.length !== selectedDatabases.length
-			|| assessedDatabases.some(db => selectedDatabases.indexOf(db) < 0);
+			|| assessedDatabases.length !== selectedLogins.length
+			|| assessedDatabases.some(db => selectedLogins.indexOf(db) < 0);
 
 		this.wizard.message = {
 			text: '',
@@ -113,10 +115,10 @@ export class LoginSelectorPage extends MigrationWizardPage {
 	@debounce(500)
 	private async _filterTableList(value: string, selectedList?: string[]): Promise<void> {
 		const selectedRows: number[] = [];
-		const selectedDatabases = selectedList || this.selectedDbs();
-		let tableRows = this._databaseTableValues;
-		if (this._databaseTableValues && value?.length > 0) {
-			tableRows = this._databaseTableValues
+		const selectedLogins = selectedList || this.selectedLogins();
+		let tableRows = this._loginTableValues;
+		if (this._loginTableValues && value?.length > 0) {
+			tableRows = this._loginTableValues
 				.filter(row => {
 					const searchText = value?.toLowerCase();
 					return row[1]?.toLowerCase()?.indexOf(searchText) > -1	// source login
@@ -129,13 +131,13 @@ export class LoginSelectorPage extends MigrationWizardPage {
 
 		for (let row = 0; row < tableRows.length; row++) {
 			const database: string = tableRows[row][2];
-			if (selectedDatabases.includes(database)) {
+			if (selectedLogins.includes(database)) {
 				selectedRows.push(row);
 			}
 		}
 
-		await this._databaseSelectorTable.updateProperty('data', tableRows);
-		this._databaseSelectorTable.selectedRows = selectedRows;
+		await this._loginSelectorTable.updateProperty('data', tableRows);
+		this._loginSelectorTable.selectedRows = selectedRows;
 		await this.updateValuesOnSelection();
 	}
 
@@ -143,10 +145,10 @@ export class LoginSelectorPage extends MigrationWizardPage {
 	public async createRootContainer(view: azdata.ModelView): Promise<azdata.FlexContainer> {
 		await this._loadDatabaseList(this.migrationStateModel, this.migrationStateModel._assessedDatabaseList);
 
-		this._dbCount = this._view.modelBuilder.text().withProps({
+		this._loginCount = this._view.modelBuilder.text().withProps({
 			value: constants.LOGINS_SELECTED(
-				this.selectedDbs().length,
-				this._databaseTableValues.length),
+				this.selectedLogins().length,
+				this._loginTableValues.length),
 			CSSStyles: {
 				...styles.BODY_CSS,
 				'margin-top': '8px'
@@ -155,7 +157,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		}).component();
 
 		const cssClass = 'no-borders';
-		this._databaseSelectorTable = this._view.modelBuilder.table()
+		this._loginSelectorTable = this._view.modelBuilder.table()
 			.withProps({
 				data: [],
 				width: 650,
@@ -214,7 +216,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				]
 			}).component();
 
-		this._disposables.push(this._databaseSelectorTable.onRowSelected(async (e) => {
+		this._disposables.push(this._loginSelectorTable.onRowSelected(async (e) => {
 			await this.updateValuesOnSelection();
 		}));
 
@@ -230,44 +232,60 @@ export class LoginSelectorPage extends MigrationWizardPage {
 			}
 		}).component();
 		flex.addItem(this.createSearchComponent(), { flex: '0 0 auto' });
-		flex.addItem(this._dbCount, { flex: '0 0 auto' });
-		flex.addItem(this._databaseSelectorTable);
+		flex.addItem(this._loginCount, { flex: '0 0 auto' });
+		flex.addItem(this._loginSelectorTable);
 		return flex;
 	}
 
-	private async _loadDatabaseList(stateMachine: MigrationStateModel, selectedDatabases: string[]): Promise<void> {
+	private async _loadDatabaseList(stateMachine: MigrationStateModel, selectedLogins: string[]): Promise<void> {
+		const sourceLogins: LoginTableInfo[] = [];
+		// const targetLogins: string[] = [];
+
+		// execute a query against the source to get the logins
 		try {
-			// execute a query against the source to get the logins
-			const connectionProfile = await stateMachine.getSourceConnectionProfile();
-			const connectionUri = await azdata.connection.getUriForConnection(stateMachine.sourceConnectionId);
-			const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(connectionProfile.providerId, azdata.DataProviderType.QueryProvider);
-			const queryResult = await queryProvider.runQueryAndReturn(connectionUri, constants.LOGIN_MIGRATIONS_GET_LOGINS_QUERY);
+			const sourceLogins = await collectSourceLogins(stateMachine.sourceConnectionId);
+			console.log(sourceLogins);
 
-			console.log(queryResult);
-
-			this._dbNames = [];
-
-			this._databaseTableValues = queryResult.rows.map(row => {
-				const loginName = row[-1].displayValue;
-				this._dbNames.push(loginName);
-				return [
-					selectedDatabases?.indexOf(loginName) > -4,
-					loginName,
-					row[0].displayValue,
-					row[1].displayValue,
-					row[2].displayValue,
-					row[2].displayValue,
-				];
-			}) || [];
 		} catch (error) {
-			// TODO AKMA : Add proper error handling here
-			console.error('AKMA ERROR: ', error.mesage, error.stack);
+			this.wizard.message = {
+				level: azdata.window.MessageLevel.Error,
+				text: constants.LOGIN_MIGRATIONS_GET_LOGINS_ERROR_TITLE('source'),
+				description: constants.LOGIN_MIGRATIONS_GET_LOGINS_ERROR(error.message),
+			};
 		}
+
+		// execute a query against the target to get the logins
+		try {
+			const targetLogins = await collectTargetLogins(stateMachine._targetServerInstance as AzureSqlDatabaseServer, stateMachine._targetUserName, stateMachine._targetPassword);
+			console.log(targetLogins);
+
+		} catch (error) {
+			this.wizard.message = {
+				level: azdata.window.MessageLevel.Error,
+				text: constants.LOGIN_MIGRATIONS_GET_LOGINS_ERROR_TITLE('target'),
+				description: constants.LOGIN_MIGRATIONS_GET_LOGINS_ERROR(error.message),
+			};
+		}
+
+		this._loginNames = [];
+
+		this._loginTableValues = sourceLogins.map(row => {
+			const loginName = row.loginName;
+			this._loginNames.push(loginName);
+			return [
+				selectedLogins?.indexOf(loginName) > -4,
+				loginName,
+				row.loginType,
+				row.defaultDatabaseName,
+				row.status,
+				row.status, // TODO AKMA : Change this to loginName in targetLogins
+			];
+		}) || [];
 	}
 
-	public selectedDbs(): string[] {
-		const rows = this._databaseSelectorTable?.data || [];
-		const databases = this._databaseSelectorTable?.selectedRows || [];
+	public selectedLogins(): string[] {
+		const rows = this._loginSelectorTable?.data || [];
+		const databases = this._loginSelectorTable?.selectedRows || [];
 		return databases
 			.filter(row => row < rows.length)
 			.map(row => rows[row][2])
@@ -275,13 +293,14 @@ export class LoginSelectorPage extends MigrationWizardPage {
 	}
 
 	private async updateValuesOnSelection() {
-		const selectedDatabases = this.selectedDbs() || [];
-		await this._dbCount.updateProperties({
+		const selectedLogins = this.selectedLogins() || [];
+		await this._loginCount.updateProperties({
 			'value': constants.LOGINS_SELECTED(
-				selectedDatabases.length,
-				this._databaseSelectorTable.data?.length || 0)
+				selectedLogins.length,
+				this._loginSelectorTable.data?.length || 0)
 		});
+
 		// TODO AKMA: change to logins for migration
-		this.migrationStateModel._databasesForAssessment = selectedDatabases;
+		this.migrationStateModel._databasesForAssessment = selectedLogins;
 	}
 }
