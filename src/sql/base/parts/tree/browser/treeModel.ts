@@ -260,7 +260,7 @@ export class Item {
 	private traits: { [trait: string]: boolean; };
 
 	public static originalItem: Item;
-	private refreshLoadTimeout: NodeJS.Timeout;
+	private refreshLoadTimeout: any;
 
 	private readonly _onDidCreate = new Emitter<Item>();
 	readonly onDidCreate: Event<Item> = this._onDidCreate.event;
