@@ -33,6 +33,11 @@ if (process.env.BUILD_ARTIFACTSTAGINGDIRECTORY) {
 	};
 }
 
+if (process.env.RUN_UNSTABLE_TESTS === 'true') {
+	options.grep = "@UNSTABLE@";
+	options.invert = true;
+}
+
 const mocha = new Mocha(options);
 mocha.addFile('out/main.js');
 mocha.run(failures => process.exit(failures ? -1 : 0));
