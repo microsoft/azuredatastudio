@@ -33,8 +33,8 @@ const NUMBER_OF_ROWS_READ_STRING = localize('executionPlanNumberOfRowsRead', 'Nu
 export class FindExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 	private _actionBar: ActionBar;
 
+	public operationNameSelectBox: SelectBox;
 	private _operationNameSelectBoxContainer: HTMLElement;
-	private _operationNameSelectBox: SelectBox;
 	private _selectedExpensiveOperationType: ExpensiveOperationType = ExpensiveOperationType.Cost;
 
 	constructor(
@@ -81,7 +81,7 @@ export class FindExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 		this._operationNameSelectBoxContainer.appendChild(operationLabel);
 		this.container.appendChild(this._operationNameSelectBoxContainer);
 
-		this._operationNameSelectBox = new SelectBox([
+		this.operationNameSelectBox = new SelectBox([
 			OFF_STRING,
 			ACTUAL_ELAPSED_TIME_STRING,
 			ACTUAL_ELAPSED_CPU_TIME_STRING,
@@ -91,13 +91,13 @@ export class FindExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 			NUMBER_OF_ROWS_READ_STRING
 		], COST_STRING, this.contextViewService, this._operationNameSelectBoxContainer);
 
-		this._operationNameSelectBox.render(this._operationNameSelectBoxContainer);
-		this._register(attachSelectBoxStyler(this._operationNameSelectBox, this.themeService));
+		this.operationNameSelectBox.render(this._operationNameSelectBoxContainer);
+		this._register(attachSelectBoxStyler(this.operationNameSelectBox, this.themeService));
 
 		this._operationNameSelectBoxContainer.style.width = '200px';
 		this._operationNameSelectBoxContainer.style.marginRight = '5px';
 
-		this._register(this._operationNameSelectBox.onDidSelect(e => {
+		this._register(this.operationNameSelectBox.onDidSelect(e => {
 			switch (e.selected) {
 				case ACTUAL_ELAPSED_TIME_STRING:
 					this._selectedExpensiveOperationType = ExpensiveOperationType.ActualElapsedTime;
@@ -126,14 +126,14 @@ export class FindExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 		const findExpensiveOperationAction = new FindExpensiveOperationAction();
 		this._register(findExpensiveOperationAction);
 
-		const clearExpensiveOperationAction = new TurnOffExpensiveOperationAction();
+		const clearExpensiveOperationAction = new TurnOffExpensiveHighlightingOperationAction();
 		this._register(clearExpensiveOperationAction);
 
 		const cancelExpensiveOperationAction = new CancelExpensiveOperationAction();
 		this._register(cancelExpensiveOperationAction);
 
 		const self = this;
-		this._operationNameSelectBox.selectElem.onkeydown = async (ev) => {
+		this.operationNameSelectBox.selectElem.onkeydown = async (ev) => {
 			if (ev.key === 'Enter') {
 				if (this._selectedExpensiveOperationType === ExpensiveOperationType.Off) {
 					await clearExpensiveOperationAction.run(self);
@@ -150,7 +150,7 @@ export class FindExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 		};
 
 		const applyButton = new Button(this.container, {
-			title: localize('findExpensiveOperationButtonTitle', 'Find Expensive Operation (Enter)')
+			title: localize('findExpensiveOperationButtonTitle', 'Find Expensive Operation')
 		});
 		applyButton.setWidth('60px');
 		applyButton.label = localize('findExpensiveOperationApplyButton', 'Apply');
@@ -198,7 +198,7 @@ export class FindExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 	}
 
 	public focus() {
-		this._operationNameSelectBox.focus();
+		this.operationNameSelectBox.focus();
 	}
 
 	public getExpensiveOperationDelegate(): (cell: AzDataGraphCell) => number | undefined {
@@ -278,17 +278,18 @@ export class FindExpensiveOperationAction extends Action {
 		context.executionPlanDiagram.clearExpensiveOperatorHighlighting();
 		let result = context.executionPlanDiagram.highlightExpensiveOperator(expensiveOperationDelegate);
 		if (!result) {
-			context.notificationService.info(localize('invalidPropertyExecutionPlanMetric', 'Unable to locate a node using the specified metric.'));
+			const metric = context.operationNameSelectBox.value;
+			context.notificationService.warn(localize('invalidPropertyExecutionPlanMetric', 'No nodes found with the {0} metric.', metric));
 		}
 	}
 }
 
-export class TurnOffExpensiveOperationAction extends Action {
-	public static ID = 'qp.turnOffExpensiveOperationAction';
-	public static LABEL = localize('turnOffExpensiveOperationAction', 'Off');
+export class TurnOffExpensiveHighlightingOperationAction extends Action {
+	public static ID = 'qp.turnOffExpensiveHighlightingOperationAction';
+	public static LABEL = localize('turnOffExpensiveHighlightingOperationAction', 'Off');
 
 	constructor() {
-		super(TurnOffExpensiveOperationAction.ID, TurnOffExpensiveOperationAction.LABEL);
+		super(TurnOffExpensiveHighlightingOperationAction.ID, TurnOffExpensiveHighlightingOperationAction.LABEL);
 	}
 
 	public override async run(context: FindExpensiveOperationWidget): Promise<void> {

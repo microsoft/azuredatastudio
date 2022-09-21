@@ -525,7 +525,7 @@ export interface AzDataGraphCell {
 	/**
 	 * Row metrics for the node
 	 */
-	rowMetrics: azdata.executionPlan.Dictionary;
+	rowMetrics: Record<string, string | undefined>;
 }
 
 export interface AzDataGraphNodeBadge {

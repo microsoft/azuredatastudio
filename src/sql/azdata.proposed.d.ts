@@ -1340,7 +1340,7 @@ declare module 'azdata' {
 			/**
 			 * Row metrics for the node
 			 */
-			rowMetrics: Dictionary;
+			rowMetrics: Record<string, string | undefined>;
 		}
 
 		export interface ExecutionPlanBadge {
@@ -1530,13 +1530,6 @@ declare module 'azdata' {
 			 * Cell value for the top operation data item
 			 */
 			displayValue: string | number | boolean;
-		}
-
-		export interface Dictionary {
-			/**
-			 * Dictionary containing rows read metrics
-			 */
-			[key: string]: string | undefined;
 		}
 	}
 
