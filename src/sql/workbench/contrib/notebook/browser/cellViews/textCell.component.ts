@@ -114,7 +114,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private markdownRenderer: NotebookMarkdownRenderer;
 	private markdownResult: IMarkdownRenderResult;
 	private _htmlMarkdownConverter: HTMLMarkdownConverter;
-	private _showHTMLInTextCell: boolean;
 	private markdownPreviewLineHeight: number;
 	public readonly onDidClickLink = this._onDidClickLink.event;
 	public doubleClickEditEnabled: boolean;
@@ -138,7 +137,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		let maxStackSize: number = this._configurationService.getValue('notebook.maxRichTextUndoHistory');
 		this._undoStack = new RichTextEditStack(maxStackSize);
 		this._redoStack = new RichTextEditStack(maxStackSize);
-		this._showHTMLInTextCell = this._configurationService.getValue('notebook.showHtmlInTextCell');
 
 		this._register(toDisposable(() => {
 			if (this.markdownResult) {
@@ -358,11 +356,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	private updateCellSource(): void {
 		let textOutputElement = <HTMLElement>this.output.nativeElement;
-		if (this._showHTMLInTextCell) {
-			this.cellModel.source = textOutputElement.innerHTML;
-		} else {
-			this.cellModel.source = this._htmlMarkdownConverter.convert(textOutputElement.innerHTML);
-		}
+		this.cellModel.source = this._htmlMarkdownConverter.convert(textOutputElement.innerHTML);
 		this._changeRef.detectChanges();
 	}
 

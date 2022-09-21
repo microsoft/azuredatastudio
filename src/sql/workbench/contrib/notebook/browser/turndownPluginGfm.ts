@@ -170,11 +170,20 @@ export function taskListItems(turndownService) {
 	});
 }
 
+
 export function gfm(turndownService) {
 	turndownService.use([
 		highlightedCodeBlock,
 		strikethrough,
 		tables,
+		taskListItems
+	]);
+}
+
+export function gfmHtmlTables(turndownService) {
+	turndownService.use([
+		highlightedCodeBlock,
+		strikethrough,
 		taskListItems
 	]);
 }
