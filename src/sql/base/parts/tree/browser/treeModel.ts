@@ -260,6 +260,7 @@ export class Item {
 	private traits: { [trait: string]: boolean; };
 
 	public static originalItem: Item;
+	private refreshLoadTimeout: NodeJS.Timeout;
 
 	private readonly _onDidCreate = new Emitter<Item>();
 	readonly onDidCreate: Event<Item> = this._onDidCreate.event;
@@ -552,10 +553,11 @@ export class Item {
 		 * appearance of the loading spinner.
 		 */
 		Item.originalItem?.addTrait('loading');
-		setTimeout(() => {
+		this.refreshLoadTimeout = setTimeout(() => {
 			Item.originalItem?.removeTrait('loading');
 			// Reset original item for next refresh.
 			Item.originalItem = undefined;
+			this.refreshLoadTimeout = undefined;
 		}, 1000);
 	}
 
@@ -729,6 +731,12 @@ export class Item {
 		this.next = null;
 		this.firstChild = null;
 		this.lastChild = null;
+
+		Item.originalItem = null;
+		clearTimeout(this.refreshLoadTimeout);
+		if (this.getAllTraits().includes('loading')) {
+			this.removeTrait('loading');
+		}
 
 		this._onDidDispose.fire(this);
 
