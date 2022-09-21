@@ -33,13 +33,16 @@ if (process.env.BUILD_ARTIFACTSTAGINGDIRECTORY) {
 	};
 }
 
-options.grep = "@UNSTABLE@";
 const mocha = new Mocha(options);
+
+// {{SQL CARBON EDIT}} - based on the environment variable to decide whether only the stable test cases should be run
+// Unstable test cases should have "@UNSTABLE@" in their name.
 if (process.env.RUN_UNSTABLE_TESTS === 'true') {
-	console.info('running unstable test cases.');
+	console.info('running all test cases.');
 } else {
 	console.info('running stable test cases.');
-	mocha.invert();
+	mocha.grep('@UNSTABLE@').invert();
 }
+
 mocha.addFile('out/main.js');
 mocha.run(failures => process.exit(failures ? -1 : 0));
