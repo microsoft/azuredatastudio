@@ -36,7 +36,7 @@ if (process.env.BUILD_ARTIFACTSTAGINGDIRECTORY) {
 const mocha = new Mocha(options);
 
 // {{SQL CARBON EDIT}} - If grep option is specified, only run the matching test cases (local test case development/debug scenario),
-// otherwise the value of 'RUN_UNSTABLE_TESTS' environment variable will used to decide whether to run the stable test cases or the whole test suite.
+// otherwise the value of 'RUN_UNSTABLE_TESTS' environment variable will be used to determine whether to run the stable test cases or the whole test suite.
 // Unstable test cases have "@UNSTABLE@" in their full name (test suite name + test name).
 if (!options.grep) {
 	if (process.env.RUN_UNSTABLE_TESTS === 'true') {

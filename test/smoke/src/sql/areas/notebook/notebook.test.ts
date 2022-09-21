@@ -115,7 +115,7 @@ export function setup(opts: minimist.ParsedArgs) {
 				await app.workbench.sqlNotebook.waitForActiveCellResults();
 			});
 
-			it('can add and remove new package from the Manage Packages wizard', async function () {
+			it('can add and remove new package from the Manage Packages wizard @UNSTABLE@', async function () {
 				// Use arrow package so that it's at the top of the packages list when uninstalling later
 				const testPackageName = 'arrow';
 
@@ -506,7 +506,7 @@ export function setup(opts: minimist.ParsedArgs) {
 				await app.workbench.sqlNotebook.waitForActiveCellEditorContents(s => s.includes('- **_<u><mark>Markdown Test</mark></u>_**'));
 			});
 
-			it('can save and reopen WYSIWYG notebook', async function () {
+			it('can save and reopen WYSIWYG notebook @UNSTABLE@', async function () {
 				const app = this.app as Application;
 				const filename = 'emptyNotebook.ipynb';
 				await app.workbench.sqlNotebook.openFile(filename);
