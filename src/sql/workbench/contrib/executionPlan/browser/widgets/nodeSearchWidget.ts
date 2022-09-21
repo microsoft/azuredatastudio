@@ -184,7 +184,7 @@ export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 
 export class GoToNextMatchAction extends Action {
 	public static ID = 'qp.NextSearchAction';
-	public static LABEL = localize('nextSearchItemAction', "Next Match (Enter)");
+	public static LABEL = localize('nextSearchItemAction', "Next Match");
 
 	constructor() {
 		super(GoToNextMatchAction.ID, GoToNextMatchAction.LABEL, Codicon.arrowDown.classNames);
@@ -197,7 +197,7 @@ export class GoToNextMatchAction extends Action {
 
 export class GoToPreviousMatchAction extends Action {
 	public static ID = 'qp.PreviousSearchAction';
-	public static LABEL = localize('previousSearchItemAction', "Previous Match (Shift+Enter)");
+	public static LABEL = localize('previousSearchItemAction', "Previous Match");
 
 	constructor() {
 		super(GoToPreviousMatchAction.ID, GoToPreviousMatchAction.LABEL, Codicon.arrowUp.classNames);
@@ -210,7 +210,7 @@ export class GoToPreviousMatchAction extends Action {
 
 export class CancelSearch extends Action {
 	public static ID = 'qp.cancelSearchAction';
-	public static LABEL = localize('cancelSearchAction', "Close (Escape)");
+	public static LABEL = localize('cancelSearchAction', "Close");
 
 	constructor() {
 		super(CancelSearch.ID, CancelSearch.LABEL, Codicon.chromeClose.classNames);

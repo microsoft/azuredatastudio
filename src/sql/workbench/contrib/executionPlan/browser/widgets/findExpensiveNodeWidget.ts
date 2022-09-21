@@ -266,7 +266,7 @@ export class FindExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 
 export class FindExpensiveOperationAction extends Action {
 	public static ID = 'qp.findExpensiveOperationAction';
-	public static LABEL = localize('findExpensiveOperationAction', 'Find (Enter)');
+	public static LABEL = localize('findExpensiveOperationAction', 'Find');
 
 	constructor() {
 		super(FindExpensiveOperationAction.ID, FindExpensiveOperationAction.LABEL, searchIconClassNames);
@@ -298,7 +298,7 @@ export class TurnOffExpensiveOperationAction extends Action {
 
 export class CancelExpensiveOperationAction extends Action {
 	public static ID = 'qp.cancelExpensiveOperationAction';
-	public static LABEL = localize('cancelExpensiveOperationAction', 'Close (Escape)');
+	public static LABEL = localize('cancelExpensiveOperationAction', 'Close');
 
 	constructor() {
 		super(CancelExpensiveOperationAction.ID, CancelExpensiveOperationAction.LABEL, Codicon.chromeClose.classNames);
