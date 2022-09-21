@@ -246,7 +246,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		// execute a query against the source to get the logins
 		try {
 			sourceLogins.push(...await collectSourceLogins(stateMachine.sourceConnectionId));
-			console.log(sourceLogins);
+			console.log('AKMA DEBUG LOG: ', sourceLogins);
 		} catch (error) {
 			this.wizard.message = {
 				level: azdata.window.MessageLevel.Error,
@@ -257,8 +257,14 @@ export class LoginSelectorPage extends MigrationWizardPage {
 
 		// execute a query against the target to get the logins
 		try {
-			targetLogins.push(...await collectTargetLogins(stateMachine._targetServerInstance as AzureSqlDatabaseServer, stateMachine._targetUserName, stateMachine._targetPassword));
-			console.log(targetLogins);
+			if (stateMachine._targetServerInstance && stateMachine._targetUserName && stateMachine._targetPassword) {
+				targetLogins.push(...await collectTargetLogins(stateMachine._targetServerInstance as AzureSqlDatabaseServer, stateMachine._targetUserName, stateMachine._targetPassword));
+				console.log('AKMA DEBUG LOG: ', targetLogins);
+			}
+			// TODO AKMA : Remove following 3 lines
+			else {
+				console.log('AKMA DEBUG LOG: Target info is empty.');
+			}
 		} catch (error) {
 			this.wizard.message = {
 				level: azdata.window.MessageLevel.Error,
