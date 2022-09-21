@@ -39,7 +39,6 @@ interface CryptoValues {
 export class AzureAuthCodeGrant extends AzureAuth {
 	private static readonly USER_FRIENDLY_NAME: string = localize('azure.azureAuthCodeGrantName', 'Azure Auth Code Grant');
 	private cryptoProvider: CryptoProvider;
-	private server: SimpleWebServer;
 	private pkceCodes: CryptoValues;
 
 	constructor(
@@ -76,7 +75,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		};
 	}
 
-	protected async loginMsal(tenant: Tenant, resource: Resource): Promise<{ response: AuthenticationResult, authComplete: Deferred<void, Error> }> | undefined {
+	protected async loginMsal(tenant: Tenant, resource: Resource): Promise<{ response: AuthenticationResult | null, authComplete: Deferred<void, Error> }> {
 		let authCompleteDeferred: Deferred<void, Error>;
 		let authCompletePromise = new Promise<void>((resolve, reject) => authCompleteDeferred = { resolve, reject });
 		let authCodeRequest: AuthorizationCodeRequest;
@@ -89,13 +88,13 @@ export class AzureAuthCodeGrant extends AzureAuth {
 
 		let result = await this.clientApplication.acquireTokenByCode(authCodeRequest);
 		if (!result) {
-			Logger.error('Failed to fetch token using auth code');
-			return undefined;
+			Logger.error('Failed to acquireTokenByCode');
+			throw Error('Failed to fetch token using auth code');
 		} else {
 			console.log(result);
 			return {
 				response: result,
-				authComplete: authCompleteDeferred
+				authComplete: authCompleteDeferred!
 			};
 		}
 	}
@@ -125,27 +124,34 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		const port = (callbackUri.authority.match(/:([0-9]*)$/) || [])[1] || (callbackUri.scheme === 'https' ? 443 : 80);
 		const state = `${port},${encodeURIComponent(this.pkceCodes.nonce)},${encodeURIComponent(callbackUri.query)}`;
 
-		const loginQuery = {
-			response_type: 'code',
-			response_mode: 'query',
-			client_id: this.clientId,
-			redirect_uri: this.redirectUri,
-			state,
-			prompt: 'select_account',
-			code_challenge_method: this.pkceCodes.challengeMethod,
-			code_challenge: this.pkceCodes.codeChallenge,
-			resource: resource.id
-		};
+		try {
+			let authUrlRequest: AuthorizationUrlRequest;
+			authUrlRequest = {
+				scopes: this.scopes,
+				redirectUri: this.redirectUri,
+				codeChallenge: this.pkceCodes.codeChallenge,
+				codeChallengeMethod: this.pkceCodes.challengeMethod,
+				prompt: 'select_account',
+				state: state
+			};
+			let authCodeRequest: AuthorizationCodeRequest;
+			authCodeRequest = {
+				scopes: this.scopes,
+				redirectUri: this.redirectUri,
+				codeVerifier: this.pkceCodes.codeVerifier,
+				code: ''
+			};
+			let authCodeUrl = await this.clientApplication.getAuthCodeUrl(authUrlRequest);
+			await vscode.env.openExternal(vscode.Uri.parse(authCodeUrl));
+			const authCode = await this.handleWebResponse(state);
+			authCodeRequest.code = authCode;
+			console.log(authCodeRequest);
 
-		const signInUrl = `${this.loginEndpointUrl}${tenant.id}/oauth2/authorize?${qs.stringify(loginQuery)}`;
-		await vscode.env.openExternal(vscode.Uri.parse(signInUrl));
-		const authCode = await this.handleWebResponse(state);
-
-		return {
-			authCode,
-			codeVerifier: this.pkceCodes.codeVerifier,
-			redirectUri: this.redirectUri
-		};
+			return authCodeRequest;
+		} catch (e) {
+			Logger.error('MSAL: Error requesting auth code', e);
+			throw new AzureAuthError('error', 'Error requesting auth code', e);
+		}
 	}
 
 	private async loginWeb(tenant: Tenant, resource: Resource): Promise<AuthCodeResponse> {
@@ -208,11 +214,11 @@ export class AzureAuthCodeGrant extends AzureAuth {
 	}
 
 	private async loginDesktopMsal(tenant: Tenant, authCompletePromise: Promise<void>): Promise<AuthorizationCodeRequest> {
-		this.server = new SimpleWebServer();
+		const server = new SimpleWebServer();
 		let serverPort: string;
 
 		try {
-			serverPort = await this.server.startup();
+			serverPort = await server.startup();
 		} catch (ex) {
 			const msg = localize('azure.serverCouldNotStart', 'Server could not start. This could be a permissions error or an incompatibility on your system. You can try enabling device code authentication from settings.');
 			throw new AzureAuthError(msg, 'Server could not start', ex);
@@ -247,7 +253,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 			console.log(authCodeUrl);
 
 			await vscode.env.openExternal(vscode.Uri.parse(`http://localhost:${serverPort}/signin?nonce=${encodeURIComponent(this.pkceCodes.nonce)}`));
-			const authCode = await this.addServerListeners(this.server, this.pkceCodes.nonce, authCodeUrl, authCompletePromise);
+			const authCode = await this.addServerListeners(server, this.pkceCodes.nonce, authCodeUrl, authCompletePromise);
 
 			// const authCode = await this.listenForAuthCode(authCodeUrl);
 			authCodeRequest.code = authCode;
@@ -257,7 +263,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		}
 
 		catch (e) {
-			console.log(e);
+			Logger.error('MSAL: Error requesting auth code', e);
 			throw new AzureAuthError('error', 'Error requesting auth code', e);
 		}
 

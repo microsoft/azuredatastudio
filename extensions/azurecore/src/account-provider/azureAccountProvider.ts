@@ -28,7 +28,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 	private initComplete!: Deferred<void, Error>;
 	private initCompletePromise: Promise<void> = new Promise<void>((resolve, reject) => this.initComplete = { resolve, reject });
 	public clientApplication: PublicClientApplication;
-	public authLibrary: string;
+	public authLibrary: string | undefined;
 
 	constructor(
 		metadata: AzureAccountProviderMetadata,
@@ -140,13 +140,17 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 			return azureAuth?.getAccountSecurityToken(account, tenantId, resource);
 		} else {
 			let authResult = await azureAuth?.getTokenMsal(account.key.accountId, resource);
-			const token: Token = {
-				key: authResult.account.homeAccountId,
-				token: authResult.accessToken,
-				tokenType: authResult.tokenType,
-			};
-
-			return token;
+			if (!authResult || !authResult.account) {
+				Logger.error(`MSAL: getToken call failed`);
+				throw Error('Failed to get token');
+			} else {
+				const token: Token = {
+					key: authResult.account.homeAccountId,
+					token: authResult.accessToken,
+					tokenType: authResult.tokenType,
+				};
+				return token;
+			}
 		}
 	}
 

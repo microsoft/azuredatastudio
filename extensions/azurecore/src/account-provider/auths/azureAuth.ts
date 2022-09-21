@@ -28,7 +28,7 @@ import { AuthenticationResult, PublicClientApplication } from '@azure/msal-node'
 
 const localize = nls.loadMessageBundle();
 
-export type AuthLibrary = 'ADAL' | 'MSAL';
+export type AuthLibrary = 'ADAL' | 'MSAL' | undefined;
 
 export abstract class AzureAuth implements vscode.Disposable {
 	public static ACCOUNT_VERSION = '2.0';
@@ -111,10 +111,10 @@ export abstract class AzureAuth implements vscode.Disposable {
 		let loginComplete: Deferred<void, Error> | undefined = undefined;
 		try {
 			Logger.verbose('Starting login');
+			if (!this.metadata.settings.microsoftResource) {
+				throw new Error(localize('noMicrosoftResource', "Provider '{0}' does not have a Microsoft resource endpoint defined.", this.metadata.displayName));
+			}
 			if (this._authLibrary === 'ADAL') {
-				if (!this.metadata.settings.microsoftResource) {
-					throw new Error(localize('noMicrosoftResource', "Provider '{0}' does not have a Microsoft resource endpoint defined.", this.metadata.displayName));
-				}
 				const result = await this.login(this.commonTenant, this.metadata.settings.microsoftResource);
 				loginComplete = result.authComplete;
 				if (!result?.response) {
@@ -129,7 +129,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			} else {
 				const result = await this.loginMsal(this.commonTenant, this.metadata.settings.microsoftResource);
 				loginComplete = result.authComplete;
-				if (!result?.response) {
+				if (!result?.response || !result.response?.account) {
 					Logger.error('Authentication failed');
 					return {
 						canceled: false
@@ -292,7 +292,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 	protected abstract login(tenant: Tenant, resource: Resource): Promise<{ response: OAuthTokenResponse | undefined, authComplete: Deferred<void, Error> }>;
 
-	protected abstract loginMsal(tenant: Tenant, resource: Resource): Promise<{ response: AuthenticationResult, authComplete: Deferred<void, Error> }>;
+	protected abstract loginMsal(tenant: Tenant, resource: Resource): Promise<{ response: AuthenticationResult | null, authComplete: Deferred<void, Error> }>;
 
 	/**
 	 * Refreshes a token, if a refreshToken is passed in then we use that. If it is not passed in then we will prompt the user for consent.
@@ -327,20 +327,23 @@ export abstract class AzureAuth implements vscode.Disposable {
 	 */
 	// TODO: Need to add resource we are getting the token for
 	// Can replace most refreshToken calls with getToken, it does the same thing
-	public async getTokenMsal(accountId: string, azureResource: azdata.AzureResource): Promise<AuthenticationResult | undefined> {
+	public async getTokenMsal(accountId: string, azureResource: azdata.AzureResource): Promise<AuthenticationResult | null> {
 		const cache = this.clientApplication.getTokenCache();
 		if (!cache) {
 			Logger.error('Error: Could not fetch token cache.');
+			return null;
 		}
 		const resource = this.resources.find(s => s.azureResourceId === azureResource);
 		if (!resource) {
 			Logger.error(`Error: Could not fetch the azure resource ${azureResource} `);
+			return null;
 		}
 		const account = await cache.getAccountByHomeId(accountId);
 		if (!account) {
 			Logger.error('Error: Could not fetch account when acquiring token');
+			return null;
 		}
-		let newScope = [`${resource.endpoint}/User.Read`];
+		let newScope = [`${resource?.endpoint}/User.Read`];
 		// construct request
 		const tokenRequest = {
 			account: account,
@@ -441,7 +444,9 @@ export abstract class AzureAuth implements vscode.Disposable {
 			let tenantList: string[] = [];
 			const tenantResponse = await this.makeGetRequest(tenantUri, token);
 			const tenants: Tenant[] = tenantResponse.data.value.map((tenantInfo: TenantResponse) => {
-				tenantList.push(tenantInfo.displayName);
+				if (tenantInfo.displayName) {
+					tenantList.push(tenantInfo.displayName);
+				}
 				return {
 					id: tenantInfo.tenantId,
 					displayName: tenantInfo.displayName ? tenantInfo.displayName : localize('azureWorkAccountDisplayName', "Work or school account"),
@@ -472,7 +477,9 @@ export abstract class AzureAuth implements vscode.Disposable {
 			let tenantList: string[] = [];
 			const tenantResponse = await this.makeGetRequest(tenantUri, token.token);
 			const tenants: Tenant[] = tenantResponse.data.value.map((tenantInfo: TenantResponse) => {
-				tenantList.push(tenantInfo.displayName);
+				if (tenantInfo.displayName) {
+					tenantList.push(tenantInfo.displayName);
+				}
 				return {
 					id: tenantInfo.tenantId,
 					displayName: tenantInfo.displayName ? tenantInfo.displayName : localize('azureWorkAccountDisplayName', "Work or school account"),
@@ -561,14 +568,14 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 
 	//#region interaction handling
-	public async handleInteractionRequiredMsal(tenant: Tenant, resource: Resource): Promise<AuthenticationResult | undefined> {
+	public async handleInteractionRequiredMsal(tenant: Tenant, resource: Resource): Promise<AuthenticationResult | null> {
 		const shouldOpen = await this.askUserForInteraction(tenant, resource);
 		if (shouldOpen) {
 			const result = await this.loginMsal(tenant, resource);
 			result?.authComplete?.resolve();
 			return result?.response;
 		}
-		return undefined;
+		return null;
 	}
 
 	public async handleInteractionRequired(tenant: Tenant, resource: Resource): Promise<OAuthTokenResponse | undefined> {
@@ -792,7 +799,8 @@ export abstract class AzureAuth implements vscode.Disposable {
 		const tokenCache = this.clientApplication.getTokenCache();
 		let msalAccount = await tokenCache.getAccountByHomeId(account.accountId);
 		if (!msalAccount) {
-			Logger.error('MSAL: Unable to find account for removal');
+			Logger.error(`MSAL: Unable to find account ${account.accountId} for removal`);
+			throw Error(`Unable to find account ${account.accountId}`);
 		}
 		await tokenCache.removeAccount(msalAccount);
 	}

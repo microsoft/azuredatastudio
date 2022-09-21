@@ -57,7 +57,7 @@ export class AzureDeviceCode extends AzureAuth {
 
 	}
 
-	protected async loginMsal(tenant: Tenant, resource: Resource): Promise<{ response: AuthenticationResult, authComplete: Deferred<void, Error> }> {
+	protected async loginMsal(tenant: Tenant, resource: Resource): Promise<{ response: AuthenticationResult | null, authComplete: Deferred<void, Error> }> {
 		let authCompleteDeferred: Deferred<void, Error>;
 		let authCompletePromise = new Promise<void>((resolve, reject) => authCompleteDeferred = { resolve, reject });
 
@@ -74,7 +74,7 @@ export class AzureDeviceCode extends AzureAuth {
 
 		return {
 			response: authResult,
-			authComplete: authCompleteDeferred
+			authComplete: authCompleteDeferred!
 		};
 	}
 
