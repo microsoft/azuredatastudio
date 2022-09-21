@@ -454,6 +454,15 @@ const queryEditorConfiguration: IConfigurationNode = {
 		'queryEditor.executionPlan.expensiveOperationMetric': {
 			'type': 'string',
 			'enum': ['off', 'actualElapsedTime', 'actualElapsedCpuTime', 'cost', 'subtreeCost', 'actualNumberOfRowsForAllExecutions', 'numberOfRowsRead'],
+			'enumDescriptions': [
+				localize('queryEditor.executionPlan.expensiveOperationMetric.off', 'Expensive operation highlighting will be turned off for execution plans.'),
+				localize('queryEditor.executionPlan.expensiveOperationMetric.actualElapsedTime', 'Highlights the execution plan operation that took the most time.'),
+				localize('queryEditor.executionPlan.expensiveOperationMetric.actualElapsedCpuTime', 'Highlights the execution plan operation that used the most CPU time.'),
+				localize('queryEditor.executionPlan.cost', 'Highlights the execution plan operation with the highest cost.'),
+				localize('queryEditor.executionPlan.subtreeCost', 'Highlights the execution plan operation with the highest subtree cost.'),
+				localize('queryEditor.executionPlan.actualNumberOfRowsForAllExecutions', 'Highlights the execution plan operation with the greatest actual number of rows for all executions.'),
+				localize('queryEditor.executionPlan.numberOfRowsRead', 'Highlights the execution plan operation with the greatest number of rows read.')
+			],
 			'default': 'cost',
 			'description': localize('queryEditor.executionPlan.expensiveOperationMetric', 'The default metric to use to highlight an expensive operation in query execution plans')
 		}
