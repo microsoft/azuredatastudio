@@ -97,7 +97,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		}).component();
 
 		this._disposables.push(
-			resourceSearchBox.onTextChanged(value => this._filterTableList(value)));
+			resourceSearchBox.onTextChanged(value => this._filterTableList(value, this.migrationStateModel._loginsForMigration || [])));
 
 		const searchContainer = this._view.modelBuilder.divContainer().withItems([resourceSearchBox]).withProps({
 			CSSStyles: {
@@ -110,7 +110,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 	}
 
 	@debounce(500)
-	private async _filterTableList(value: string, selectedList?: string[]): Promise<void> {
+	private async _filterTableList(value: string, selectedList?: LoginTableInfo[]): Promise<void> {
 		const selectedRows: number[] = [];
 		const selectedLogins = selectedList || this.selectedLogins();
 		let tableRows = this._loginTableValues ?? [];
@@ -126,10 +126,10 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				});
 		}
 
-		for (let row = 0; row < tableRows.length; row++) {
-			const login: string = tableRows[row][1];
-			if (selectedLogins.includes(login)) {
-				selectedRows.push(row);
+		for (let rowIdx = 0; rowIdx < tableRows.length; rowIdx++) {
+			const login: string = tableRows[rowIdx][1];
+			if (selectedLogins.some(selectedLogin => selectedLogin.loginName.toLowerCase() === login.toLowerCase())) {
+				selectedRows.push(rowIdx);
 			}
 		}
 
@@ -258,7 +258,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 
 	private async _loadLoginList(): Promise<void> {
 		const stateMachine: MigrationStateModel = this.migrationStateModel;
-		const selectedLogins: string[] = stateMachine._loginsForMigration;
+		const selectedLogins: LoginTableInfo[] = stateMachine._loginsForMigration;
 		const sourceLogins: LoginTableInfo[] = [];
 		const targetLogins: string[] = [];
 
@@ -298,22 +298,29 @@ export class LoginSelectorPage extends MigrationWizardPage {
 			const loginName = row.loginName;
 			this._loginNames.push(loginName);
 			return [
-				selectedLogins?.some(login => login === loginName.toLocaleLowerCase()),
+				selectedLogins?.some(selectedLogin => selectedLogin.loginName.toLowerCase() === loginName.toLowerCase()),
 				loginName,
 				row.loginType,
 				row.defaultDatabaseName,
 				row.status,
-				targetLogins.some(targetLogin => targetLogin.toLowerCase() === loginName.toLocaleLowerCase()) ? 'Login found' : 'Login not found',
+				targetLogins.some(targetLogin => targetLogin.toLowerCase() === loginName.toLowerCase()) ? 'Login found' : 'Login not found',
 			];
 		}) || [];
 	}
 
-	public selectedLogins(): string[] {
+	public selectedLogins(): LoginTableInfo[] {
 		const rows = this._loginSelectorTable?.data || [];
 		const logins = this._loginSelectorTable?.selectedRows || [];
 		return logins
-			.filter(row => row < rows.length)
-			.map(row => rows[row][1] /* loginName */)
+			.filter(rowIdx => rowIdx < rows.length)
+			.map(rowIdx => {
+				return {
+					loginName: rows[rowIdx][1],
+					loginType: rows[rowIdx][2],
+					defaultDatabaseName: rows[rowIdx][3],
+					status: rows[rowIdx][4]
+				};
+			})
 			|| [];
 	}
 
@@ -334,7 +341,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		// Only uppdate next label if we are currently on this page
 		if (this._isCurrentPage) {
 			this.wizard.nextButton.label = constants.LOGIN_MIGRATE_BUTTON_TEXT;
-			this.wizard.nextButton.enabled = this.migrationStateModel._loginsForMigration && this.migrationStateModel._loginsForMigration.length > 0;
+			this.wizard.nextButton.enabled = this.migrationStateModel?._loginsForMigration.length > 0;
 		}
 	}
 
