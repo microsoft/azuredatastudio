@@ -77,6 +77,25 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
+		this.wizard.registerNavigationValidator((pageChangeInfo) => {
+			this.wizard.message = {
+				text: '',
+				level: azdata.window.MessageLevel.Error
+			};
+			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
+				return true;
+			}
+			if (!this.migrationStateModel._targetServerInstance || !this.migrationStateModel._targetUserName || !this.migrationStateModel._targetPassword) {
+				this.wizard.message = {
+					// TODO AKMA: Change to logins
+					text: constants.SELECT_DATABASE_TO_CONTINUE,
+					level: azdata.window.MessageLevel.Error
+				};
+				return false;
+			}
+			return true;
+		});
+
 		if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
 			return;
 		}
@@ -100,8 +119,15 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 		}
 
 		const isSqlDbTarget = this.migrationStateModel._targetType === MigrationTargetType.SQLDB;
-		await this._targetUserNameInputBox.updateProperty('required', isSqlDbTarget);
-		await this._targetPasswordInputBox.updateProperty('required', isSqlDbTarget);
+
+		if (this._targetUserNameInputBox) {
+			await this._targetUserNameInputBox.updateProperty('required', isSqlDbTarget);
+		}
+
+		if (this._targetPasswordInputBox) {
+			await this._targetPasswordInputBox.updateProperty('required', isSqlDbTarget);
+		}
+
 		await utils.updateControlDisplay(this._resourceAuthenticationContainer, isSqlDbTarget);
 		await this.populateAzureAccountsDropdown();
 
@@ -476,6 +502,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 			this._targetUserNameInputBox.onTextChanged(
 				(value: string) => {
 					this.migrationStateModel._targetUserName = value ?? '';
+					console.log('AKMA DEBUG LOG: target username: ', this.migrationStateModel._targetUserName);
 					this._updateConnectionButtonState();
 				}));
 
@@ -503,6 +530,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 			this._targetPasswordInputBox.onTextChanged(
 				(value: string) => {
 					this.migrationStateModel._targetPassword = value ?? '';
+					console.log('AKMA DEBUG LOG: target password: ', this.migrationStateModel._targetPassword);
 					this._updateConnectionButtonState();
 				}));
 
@@ -550,6 +578,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 								userName,
 								password));
 						await this._showConnectionResults(targetDatabases);
+						this.wizard.nextButton.enabled = true;
 					} catch (error) {
 						this.wizard.message = {
 							level: azdata.window.MessageLevel.Error,

@@ -44,6 +44,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(): Promise<void> {
+		this.updateNextButton();
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			this.wizard.message = {
 				text: '',
@@ -54,8 +55,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 			}
 			if (this.selectedLogins().length === 0) {
 				this.wizard.message = {
-					// TODO AKMA: Change to logins
-					text: constants.SELECT_DATABASE_TO_CONTINUE,
+					text: constants.SELECT_LOGIN_TO_CONTINUE,
 					level: azdata.window.MessageLevel.Error
 				};
 				return false;
@@ -63,32 +63,20 @@ export class LoginSelectorPage extends MigrationWizardPage {
 			return true;
 		});
 
-		// await this._loadDatabaseList(this.migrationStateModel, this.migrationStateModel._assessedDatabaseList);
+		await this._loadDatabaseList();
+
+		// load unfiltered table list and pre-select list of databases saved in state
+		await this._filterTableList('', this.migrationStateModel._loginsForMigration);
 	}
 
 	public async onPageLeave(): Promise<void> {
-
-		// TODO AKMA: Remove assessment stuff
-		const assessedDatabases = this.migrationStateModel._assessedDatabaseList ?? [];
-		const selectedLogins = this.migrationStateModel._loginsForMigration;
-		// run assessment if
-		// * no prior assessment
-		// * the prior assessment had an error or
-		// * the assessed databases list is different from the selected databases list
-		this.migrationStateModel._runAssessments = !this.migrationStateModel._assessmentResults
-			|| !!this.migrationStateModel._assessmentResults?.assessmentError
-			|| assessedDatabases.length === 0
-			|| assessedDatabases.length !== selectedLogins.length
-			|| assessedDatabases.some(db => selectedLogins.indexOf(db) < 0);
-
-		this.wizard.message = {
-			text: '',
-			level: azdata.window.MessageLevel.Error
-		};
+		// TODO AKMA : should i run login migration here? or on the next page
 
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			return true;
 		});
+
+		this.resetNextButton();
 	}
 
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
@@ -145,7 +133,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 
 
 	public async createRootContainer(view: azdata.ModelView): Promise<azdata.FlexContainer> {
-		await this._loadDatabaseList(this.migrationStateModel, this.migrationStateModel._assessedDatabaseList);
+		await this._loadDatabaseList();
 
 		this._loginCount = this._view.modelBuilder.text().withProps({
 			value: constants.LOGINS_SELECTED(
@@ -239,7 +227,9 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		return flex;
 	}
 
-	private async _loadDatabaseList(stateMachine: MigrationStateModel, selectedLogins: string[]): Promise<void> {
+	private async _loadDatabaseList(): Promise<void> {
+		const stateMachine: MigrationStateModel = this.migrationStateModel;
+		const selectedLogins: string[] = stateMachine._loginsForMigration;
 		const sourceLogins: LoginTableInfo[] = [];
 		const targetLogins: string[] = [];
 
@@ -279,7 +269,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 			const loginName = row.loginName;
 			this._loginNames.push(loginName);
 			return [
-				selectedLogins?.indexOf(loginName) > -4,
+				selectedLogins?.indexOf(loginName) > -3,
 				loginName,
 				row.loginType,
 				row.defaultDatabaseName,
@@ -294,7 +284,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		const databases = this._loginSelectorTable?.selectedRows || [];
 		return databases
 			.filter(row => row < rows.length)
-			.map(row => rows[row][2])
+			.map(row => rows[row][1] /* loginName */)
 			|| [];
 	}
 
@@ -308,5 +298,16 @@ export class LoginSelectorPage extends MigrationWizardPage {
 
 		// TODO AKMA: change to logins for migration
 		this.migrationStateModel._loginsForMigration = selectedLogins;
+		this.updateNextButton();
+	}
+
+	private updateNextButton() {
+		this.wizard.nextButton.label = constants.START_MIGRATION_TEXT;
+		this.wizard.nextButton.enabled = this.migrationStateModel._loginsForMigration && this.migrationStateModel._loginsForMigration.length > 0;
+	}
+
+	private resetNextButton() {
+		this.wizard.nextButton.label = constants.NEXT_LABEL;
+		this.wizard.nextButton.enabled = true;
 	}
 }
