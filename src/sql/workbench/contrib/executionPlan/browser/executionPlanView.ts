@@ -51,7 +51,7 @@ import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ExecutionPlanComparisonInput } from 'sql/workbench/contrib/executionPlan/browser/compareExecutionPlanInput';
 import { ExecutionPlanFileView } from 'sql/workbench/contrib/executionPlan/browser/executionPlanFileView';
 import { QueryResultsView } from 'sql/workbench/contrib/query/browser/queryResultsView';
-import { HighlightExpensiveOperationWidget } from 'sql/workbench/contrib/executionPlan/browser/widgets/findExpensiveNodeWidget';
+import { HighlightExpensiveOperationWidget } from 'sql/workbench/contrib/executionPlan/browser/widgets/highlightExpensiveNodeWidget';
 
 export class ExecutionPlanView implements ISashLayoutProvider {
 
