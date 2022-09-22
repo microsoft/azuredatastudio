@@ -226,7 +226,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 					<azdata.HyperlinkColumn>{
 						name: constants.LOGIN_TARGET_STATUS_COLUMN,
 						value: 'targetStatus',
-						width: 300,
+						width: 200,
 						type: azdata.ColumnType.hyperlink,
 						icon: IconPathHelper.inProgressMigration,
 						showText: true,
