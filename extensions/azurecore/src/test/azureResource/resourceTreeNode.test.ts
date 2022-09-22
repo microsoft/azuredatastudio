@@ -96,7 +96,7 @@ let appContext: AppContext;
 describe('AzureResourceResourceTreeNode.info', function (): void {
 	beforeEach(() => {
 		mockResourceTreeDataProvider = TypeMoq.Mock.ofType<azureResource.IAzureResourceTreeDataProvider>();
-		mockResourceTreeDataProvider.setup((o) => o.getTreeItem(mockResourceRootNode)).returns(() => mockResourceRootNode.treeItem);
+		mockResourceTreeDataProvider.setup((o) => o.getResourceTreeItem(mockResourceRootNode)).returns(() => Promise.resolve(mockResourceRootNode.treeItem));
 		mockResourceTreeDataProvider.setup((o) => o.getChildren(mockResourceRootNode)).returns(() => Promise.resolve(mockResourceNodes));
 
 		mockResourceProvider = TypeMoq.Mock.ofType<azureResource.IAzureResourceProvider>();
@@ -190,7 +190,7 @@ describe('AzureResourceResourceTreeNode.getChildren', function (): void {
 
 		const children = await resourceTreeNode.getChildren();
 
-		mockResourceTreeDataProvider.verify((o) => o.getChildren(), TypeMoq.Times.exactly(0));
+		mockResourceTreeDataProvider.verify((o) => o.getRootChildren(), TypeMoq.Times.exactly(0));
 
 		should(children).Array();
 		should(children.length).equal(0);

@@ -17,16 +17,12 @@ export abstract class ResourceTreeDataProviderBase<T extends azureResource.Azure
 	public constructor(protected _resourceService: IAzureResourceService<T>) {
 	}
 
-	public getTreeItem(element: azureResource.IAzureResourceNode): azdata.TreeItem | Thenable<azdata.TreeItem> {
+	public async getResourceTreeItem(element: azureResource.IAzureResourceNode): Promise<azdata.TreeItem> {
 		return element.treeItem;
 	}
 
-	public async getChildren(element?: azureResource.IAzureResourceNode): Promise<azureResource.IAzureResourceNode[]> {
+	public async getChildren(element: azureResource.IAzureResourceNode): Promise<azureResource.IAzureResourceNode[]> {
 		try {
-			if (!element) {
-				return [this.createContainerNode()];
-			}
-
 			let resources: T[] = await this.getResources(element);
 
 			return resources.map((resource) => <azureResource.IAzureResourceNode>{
@@ -51,7 +47,7 @@ export abstract class ResourceTreeDataProviderBase<T extends azureResource.Azure
 
 	protected abstract getTreeItemForResource(resource: T, account: AzureAccount): azdata.TreeItem;
 
-	protected abstract createContainerNode(): azureResource.IAzureResourceNode;
+	public abstract getRootChildren(): Promise<azdata.TreeItem[]>;
 }
 
 export interface GraphData {
