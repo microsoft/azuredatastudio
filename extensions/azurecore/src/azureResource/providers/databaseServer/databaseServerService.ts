@@ -67,7 +67,7 @@ export class AzureResourceDatabaseServerService implements IAzureResourceService
 		combinedGraphResources.forEach((res) => {
 			if (!ids.has(res.id)) {
 				ids.add(res.id);
-				res.subscriptionName = subscriptions.find(sub => sub.id === res.subscriptionId).name;
+				res.subscriptionName = subscriptions.find(sub => sub.id === res.subscriptionId)?.name;
 				const converted = this.convertResource(res);
 				convertedResources.push(converted);
 			}
@@ -87,7 +87,7 @@ export class AzureResourceDatabaseServerService implements IAzureResourceService
 			defaultDatabaseName: 'master',
 			subscription: {
 				id: resource.subscriptionId,
-				name: resource.subscriptionName
+				name: resource.subscriptionName || ''
 			},
 			tenant: resource.tenantId,
 			resourceGroup: resource.resourceGroup

@@ -68,6 +68,10 @@ export class AzureResourceDatabaseService implements IAzureResourceService<azure
 			let serversForRg = rgMap.get(db.resourceGroup);
 			if (serversForRg && !db.kind.endsWith('system') && svrIdRegExp.test(db.id)) {
 				const founds = svrIdRegExp.exec(db.id);
+				if (!founds) {
+					console.warn(`Could not parse server name from ID ${db.id}`);
+					return;
+				}
 				const serverName = founds[2];
 				let server = combined.find(s => s.name === serverName);
 				if (server) {
@@ -80,7 +84,7 @@ export class AzureResourceDatabaseService implements IAzureResourceService<azure
 						loginName: (server as SynapseWorkspaceGraphData).properties.sqlAdministratorLogin ?? (server as DbServerGraphData).properties.administratorLogin,
 						subscription: {
 							id: db.subscriptionId,
-							name: (subscriptions.find(sub => sub.id === db.subscriptionId))?.name
+							name: (subscriptions.find(sub => sub.id === db.subscriptionId))?.name || ''
 						},
 						tenant: db.tenantId,
 						resourceGroup: db.resourceGroup
