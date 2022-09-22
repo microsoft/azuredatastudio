@@ -455,7 +455,6 @@ export class Item {
 
 			setNeedsChildrenRefresh(this);
 
-
 			return Promise.resolve(this);
 		}
 
