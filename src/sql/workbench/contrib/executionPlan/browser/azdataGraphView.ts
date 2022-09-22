@@ -515,19 +515,19 @@ export interface CostMetrics {
 	/**
 	 * Estimate number of rows for all executions.
 	 */
-	estimateRowsForAllExecutions: string | undefined;
+	estimateRowsForAllExecutions: number | undefined;
 	/**
 	 * Estimated number of rows read.
 	 */
-	estimatedRowsRead: string | undefined;
+	estimatedRowsRead: number | undefined;
 	/**
 	 * The actual total number of rows.
 	 */
-	actualRows: string | undefined;
+	actualRows: number | undefined;
 	/**
 	 * The actual number of rows read.
 	 */
-	actualRowsRead: string | undefined;
+	actualRowsRead: number | undefined;
 }
 
 export interface AzDataGraphNodeBadge {
