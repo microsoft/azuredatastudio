@@ -170,7 +170,6 @@ export function taskListItems(turndownService) {
 	});
 }
 
-
 export function gfm(turndownService) {
 	turndownService.use([
 		highlightedCodeBlock,
