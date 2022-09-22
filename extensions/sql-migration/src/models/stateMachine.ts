@@ -446,15 +446,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			const response = (await this.migrationService.startLoginMigration(
 				sourceConnectionString,
 				sourceConnectionString,
-				this._databasesForAssessment))!;
+				this._loginsForMigration))!;
 			this._didLoginMigrationsSucceed = response;
 		} catch (error) {
 			logError(TelemetryViews.LoginMigrationWizard, 'StartLoginMigrationFailed', error);
-
-			this._skuRecommendationResults = {
-				recommendations: this._skuRecommendationApiResponse,
-				recommendationError: error
-			};
 		}
 
 		// TODO AKMA : emit telemetry
