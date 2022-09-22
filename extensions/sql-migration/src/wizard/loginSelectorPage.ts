@@ -308,7 +308,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 	private updateNextButton() {
 		// Only uppdate next label if we are currently on this page
 		if (this._isCurrentPage) {
-			this.wizard.nextButton.label = constants.START_MIGRATION_TEXT;
+			this.wizard.nextButton.label = constants.LOGIN_MIGRATE_BUTTON_TEXT;
 			this.wizard.nextButton.enabled = this.migrationStateModel._loginsForMigration && this.migrationStateModel._loginsForMigration.length > 0;
 		}
 	}
