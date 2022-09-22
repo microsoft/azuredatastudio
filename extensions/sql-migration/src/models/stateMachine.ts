@@ -14,7 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../telemtery';
 import { hashString, deepClone } from '../api/utils';
 import { SKURecommendationPage } from '../wizard/skuRecommendationPage';
-import { excludeDatabases, TargetDatabaseInfo } from '../api/sqlUtils';
+import { excludeDatabases, LoginTableInfo, TargetDatabaseInfo } from '../api/sqlUtils';
 const localize = nls.loadMessageBundle();
 
 export enum State {
@@ -226,7 +226,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _perfDataCollectionIsCollecting!: boolean;
 
 	public _didLoginMigrationsSucceed!: boolean;
-	public _loginsForMigration!: string[];
+	public _loginsForMigration!: LoginTableInfo[];
 
 	public readonly _refreshGetSkuRecommendationIntervalInMinutes = 10;
 	public readonly _performanceDataQueryIntervalInSeconds = 30;
@@ -443,10 +443,13 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			const connectionUri = await azdata.connection.getUriForConnection(this._sourceConnectionId);
 			const sourceConnectionString = await azdata.connection.getConnectionString(connectionUri, true);
 
+			console.log('AKMA DEBUG LOG: startLoginMIgration sourceConnectionString: ', sourceConnectionString);
+			console.log('AKMA DEBUG LOG: startLoginMIgration this._loginsForMigration: ', this._loginsForMigration);
+
 			const response = (await this.migrationService.startLoginMigration(
 				sourceConnectionString,
 				sourceConnectionString,
-				this._loginsForMigration))!;
+				this._loginsForMigration.map(row => row.loginName)))!;
 			this._didLoginMigrationsSucceed = response;
 		} catch (error) {
 			logError(TelemetryViews.LoginMigrationWizard, 'StartLoginMigrationFailed', error);

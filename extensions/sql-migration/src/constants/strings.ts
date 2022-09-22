@@ -1026,6 +1026,9 @@ export function DATABASES_SELECTED(selectedCount: number, totalCount: number): s
 export function LOGINS_SELECTED(selectedCount: number, totalCount: number): string {
 	return localize('sql.migration.logins.selected', "{0}/{1} logins selected", selectedCount, totalCount);
 }
+export function NUMBER_LOGINS_MIGRATING(migratingCount: number): string {
+	return localize('sql.migration.number.logins.migratin', "Migrating {0} logins", migratingCount);
+}
 export function ISSUES_COUNT(totalCount: number): string {
 	return localize('sql.migration.issues.count', "Issues ({0})", totalCount);
 }
