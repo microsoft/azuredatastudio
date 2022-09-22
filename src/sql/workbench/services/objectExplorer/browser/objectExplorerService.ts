@@ -430,7 +430,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 						if (resultMap.size === allProviders.length) {
 							resolve(self.mergeResults(allProviders, resultMap, node.nodePath));
 
-							// Have to delete it after get all reponses otherwise couldn't find session for not the first response
+							// Have to delete it after get all responses otherwise couldn't find session for not the first response
 							if (newRequest) {
 								delete self._sessions[session.sessionId!].nodes[node.nodePath];
 							}

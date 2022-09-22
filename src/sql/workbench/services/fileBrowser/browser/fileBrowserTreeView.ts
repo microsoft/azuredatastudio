@@ -123,7 +123,7 @@ export class FileBrowserTreeView extends Disposable implements IDisposable {
 			if (isSingleClick) {
 				this.onClickedCallback(event.selection[0]);
 			} else if (isDoubleClick) {
-				this.onDoublieClickedCallback(event.selection[0]);
+				this.onDoubleClickedCallback(event.selection[0]);
 			}
 		}
 	}
@@ -133,9 +133,9 @@ export class FileBrowserTreeView extends Disposable implements IDisposable {
 		this.onClickedCallback = fn;
 	}
 
-	public onDoublieClickedCallback: any;
+	public onDoubleClickedCallback: any;
 	public setOnDoubleClickedCallback(fn: any) {
-		this.onDoublieClickedCallback = fn;
+		this.onDoubleClickedCallback = fn;
 	}
 
 	/**
