@@ -12,6 +12,7 @@ import { debounce } from '../api/utils';
 import * as styles from '../constants/styles';
 import { collectSourceLogins, collectTargetLogins, LoginTableInfo } from '../api/sqlUtils';
 import { AzureSqlDatabaseServer } from '../api/azure';
+import { IconPathHelper } from '../constants/iconPathHelper';
 
 export class LoginSelectorPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -21,6 +22,8 @@ export class LoginSelectorPage extends MigrationWizardPage {
 	private _loginTableValues!: any[];
 	private _disposables: vscode.Disposable[] = [];
 	private _isCurrentPage: boolean;
+	private _refreshButton!: azdata.ButtonComponent;
+	private _refreshLoading!: azdata.LoadingComponent;
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.LOGIN_MIGRATIONS_SELECT_LOGINS_PAGE_TITLE), migrationStateModel);
@@ -139,6 +142,27 @@ export class LoginSelectorPage extends MigrationWizardPage {
 	public async createRootContainer(view: azdata.ModelView): Promise<azdata.FlexContainer> {
 		await this._loadLoginList();
 
+		this._refreshButton = this._view.modelBuilder.button()
+			.withProps({
+				buttonType: azdata.ButtonType.Normal,
+				iconHeight: 16,
+				iconWidth: 16,
+				iconPath: IconPathHelper.refresh,
+				label: constants.DATABASE_TABLE_REFRESH_LABEL,
+				width: 70,
+				CSSStyles: { 'margin': '15px 0 0 0' },
+			})
+			.component();
+
+		this._disposables.push(
+			this._refreshButton.onDidClick(
+				async e => await this._loadLoginList()));
+
+		this._refreshLoading = this._view.modelBuilder.loadingComponent()
+			.withItem(this._refreshButton)
+			.withProps({ loading: false })
+			.component();
+
 		this._loginCount = this._view.modelBuilder.text().withProps({
 			value: constants.LOGINS_SELECTED(
 				this.selectedLogins().length,
@@ -225,6 +249,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				'margin': '0px 28px 0px 28px'
 			}
 		}).component();
+		flex.addItem(this._refreshLoading);
 		flex.addItem(this.createSearchComponent(), { flex: '0 0 auto' });
 		flex.addItem(this._loginCount, { flex: '0 0 auto' });
 		flex.addItem(this._loginSelectorTable);
@@ -273,7 +298,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 			const loginName = row.loginName;
 			this._loginNames.push(loginName);
 			return [
-				selectedLogins?.indexOf(loginName) > -3,
+				selectedLogins?.some(login => login === loginName.toLocaleLowerCase()),
 				loginName,
 				row.loginType,
 				row.defaultDatabaseName,
