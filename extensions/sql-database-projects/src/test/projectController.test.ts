@@ -509,7 +509,7 @@ describe('ProjectsController', function (): void {
 					version: '1.0.0.0',
 					extractTarget: mssql.ExtractTarget['schemaObjectType'],
 					sdkStyle: false
-				});
+				}, undefined);
 
 				return Promise.resolve(undefined);
 			});
@@ -517,7 +517,7 @@ describe('ProjectsController', function (): void {
 			const projController = TypeMoq.Mock.ofType(ProjectsController);
 			projController.callBase = true;
 			projController.setup(x => x.getCreateProjectFromDatabaseDialog(TypeMoq.It.isAny())).returns(() => createProjectFromDatabaseDialog.object);
-			projController.setup(x => x.createProjectFromDatabaseCallback(TypeMoq.It.isAny())).returns(() => {
+			projController.setup(x => x.createProjectFromDatabaseCallback(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
 				holler = createProjectFromDbHoller;
 				return Promise.resolve(undefined);
 			});
