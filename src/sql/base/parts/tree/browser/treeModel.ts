@@ -259,8 +259,6 @@ export class Item {
 
 	private traits: { [trait: string]: boolean; };
 
-	public static originalItem: Item;
-	private refreshLoadTimeout: any;
 
 	private readonly _onDidCreate = new Emitter<Item>();
 	readonly onDidCreate: Event<Item> = this._onDidCreate.event;
@@ -458,10 +456,6 @@ export class Item {
 
 			setNeedsChildrenRefresh(this);
 
-			// Refreshing item that isn't expanded or has no children.
-			if (this === Item.originalItem) {
-				this.loadCompleteSpinnerWheel();
-			}
 
 			return Promise.resolve(this);
 		}
@@ -533,33 +527,12 @@ export class Item {
 
 			return result
 				.then(undefined, onUnexpectedError)
-				.then(() => this._onDidRefreshChildren.fire(eventData))
-				.then(() => {
-					// All children have been refreshed, if object is original item to refresh, we can complete refresh.
-					if (this === Item.originalItem) {
-						this.loadCompleteSpinnerWheel();
-					}
-				});
+				.then(() => this._onDidRefreshChildren.fire(eventData));
 		};
 
 		return safe ? doRefresh() : this.lock.run(this, doRefresh);
 	}
 
-	private loadCompleteSpinnerWheel(): void {
-		/**
-		 * Refresh loading status for item will be instantly lost upon refresh of item self
-		 * (usually before the spinner shows). we need to temporarily bring it back upon
-		 * actual refresh completion to let the user know the refresh happened with a short
-		 * appearance of the loading spinner.
-		 */
-		Item.originalItem?.addTrait('loading');
-		this.refreshLoadTimeout = setTimeout(() => {
-			Item.originalItem?.removeTrait('loading');
-			// Reset original item for next refresh.
-			Item.originalItem = undefined;
-			this.refreshLoadTimeout = undefined;
-		}, 1000);
-	}
 
 	private doRefresh(recursive: boolean, safe: boolean = false): Promise<any> {
 		this.doesHaveChildren = this.context.dataSource.hasChildren(this.context.tree, this.element);
@@ -576,10 +549,6 @@ export class Item {
 	}
 
 	public refresh(recursive: boolean): Promise<any> {
-		// Root call for manual refresh, add loading spinner for item during refresh process.
-		this.addTrait('loading');
-		Item.originalItem = this;
-
 		return this.doRefresh(recursive);
 	}
 
@@ -732,12 +701,6 @@ export class Item {
 		this.firstChild = null;
 		this.lastChild = null;
 
-		// Get rid of timeout and selected item reference in case treeModel was in the middle of a refresh.
-		Item.originalItem = null;
-		clearTimeout(this.refreshLoadTimeout);
-		if (this.getAllTraits().includes('loading')) {
-			this.removeTrait('loading');
-		}
 
 		this._onDidDispose.fire(this);
 
