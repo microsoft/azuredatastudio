@@ -321,8 +321,14 @@ export class AzdataGraphView {
 		diagramNode.subTreeCost = node.subTreeCost;
 		diagramNode.relativeCost = node.relativeCost;
 		diagramNode.elapsedTimeInMs = node.elapsedTimeInMs;
-		diagramNode.elapsedCpuTimeInMs = node.elapsedCpuTimeInMs;
-		diagramNode.rowMetrics = node.rowMetrics;
+
+		diagramNode.costMetrics = {
+			elapsedCpuTimeInMs: node.costMetrics.elapsedCpuTimeInMs ?? undefined,
+			actualRows: node.costMetrics.actualRows ?? undefined,
+			actualRowsRead: node.costMetrics.actualRowsRead ?? undefined,
+			estimateRowsForAllExecutions: node.costMetrics.estimateRowsForAllExecutions ?? undefined,
+			estimatedRowsRead: node.costMetrics.estimatedRowsRead ?? undefined
+		} as CostMetrics;
 
 		return diagramNode;
 	}
@@ -496,13 +502,32 @@ export interface AzDataGraphCell {
 	 */
 	elapsedTimeInMs: number;
 	/**
+	 * cost metrics for the node
+	 */
+	costMetrics: CostMetrics;
+}
+
+export interface CostMetrics {
+	/**
 	 * CPU Time taken by the node operation in milliseconds
 	 */
-	elapsedCpuTimeInMs: number;
+	elapsedCpuTimeInMs: number | undefined;
 	/**
-	 * Row metrics for the node
+	 * Estimate number of rows for all executions.
 	 */
-	rowMetrics: Record<string, string | undefined>;
+	estimateRowsForAllExecutions: string | undefined;
+	/**
+	 * Estimated number of rows read.
+	 */
+	estimatedRowsRead: string | undefined;
+	/**
+	 * The actual total number of rows.
+	 */
+	actualRows: string | undefined;
+	/**
+	 * The actual number of rows read.
+	 */
+	actualRowsRead: string | undefined;
 }
 
 export interface AzDataGraphNodeBadge {

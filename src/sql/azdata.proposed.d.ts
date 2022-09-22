@@ -1338,9 +1338,32 @@ declare module 'azdata' {
 			 */
 			costDisplayString: string;
 			/**
-			 * Row metrics for the node
+			 * Cost metrics for the node
 			 */
-			rowMetrics: Record<string, string | undefined>;
+			costMetrics: CostMetrics;
+		}
+
+		export interface CostMetrics {
+			/**
+			 * CPU Time taken by the node operation in milliseconds
+			 */
+			elapsedCpuTimeInMs: number | undefined;
+			/**
+			 * Estimate number of rows for all executions.
+			 */
+			estimateRowsForAllExecutions: string | undefined;
+			/**
+			 * Estimated number of rows read.
+			 */
+			estimatedRowsRead: string | undefined;
+			/**
+			 * The actual total number of rows.
+			 */
+			actualRows: string | undefined;
+			/**
+			 * The actual number of rows read.
+			 */
+			actualRowsRead: string | undefined;
 		}
 
 		export interface ExecutionPlanBadge {

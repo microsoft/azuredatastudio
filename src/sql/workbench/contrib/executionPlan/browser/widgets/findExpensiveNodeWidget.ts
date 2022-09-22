@@ -203,18 +203,18 @@ export class FindExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 
 	public getExpensiveOperationDelegate(): (cell: AzDataGraphCell) => number | undefined {
 		const getElapsedTimeInMs = (cell: AzDataGraphCell): number | undefined => cell.elapsedTimeInMs;
-		const getElapsedCpuTimeInMs = (cell: AzDataGraphCell): number | undefined => cell.elapsedCpuTimeInMs;
+		const getElapsedCpuTimeInMs = (cell: AzDataGraphCell): number | undefined => cell.costMetrics.elapsedCpuTimeInMs;
 		const getCost = (cell: AzDataGraphCell): number | undefined => cell.cost;
 		const getSubtreeCost = (cell: AzDataGraphCell): number | undefined => cell.subTreeCost;
 
 		const getRowsForAllExecutions = (cell: AzDataGraphCell): number | undefined => {
-			if (!cell.rowMetrics) {
+			if (!cell.costMetrics.actualRows && !cell.costMetrics.estimateRowsForAllExecutions) {
 				return undefined;
 			}
 
-			let result = Number(cell.rowMetrics['actualRows']);
+			let result = Number(cell.costMetrics.actualRows);
 			if (!result) {
-				result = Number(cell.rowMetrics['estimateRowsAllExecs']);
+				result = Number(cell.costMetrics.estimateRowsForAllExecutions);
 			}
 
 			if (isNaN(result)) {
@@ -225,13 +225,13 @@ export class FindExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 		};
 
 		const getNumberOfRowsRead = (cell: AzDataGraphCell): number | undefined => {
-			if (!cell.rowMetrics) {
+			if (!cell.costMetrics.actualRowsRead && !cell.costMetrics.estimatedRowsRead) {
 				return undefined;
 			}
 
-			let result = Number(cell.rowMetrics['actualRowsRead']);
+			let result = Number(cell.costMetrics.actualRowsRead);
 			if (!result) {
-				result = Number(cell.rowMetrics['estimatedRowsRead']);
+				result = Number(cell.costMetrics.estimatedRowsRead);
 			}
 
 			if (isNaN(result)) {
