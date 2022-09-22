@@ -51,7 +51,7 @@ import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ExecutionPlanComparisonInput } from 'sql/workbench/contrib/executionPlan/browser/compareExecutionPlanInput';
 import { ExecutionPlanFileView } from 'sql/workbench/contrib/executionPlan/browser/executionPlanFileView';
 import { QueryResultsView } from 'sql/workbench/contrib/query/browser/queryResultsView';
-import { FindExpensiveOperationWidget } from 'sql/workbench/contrib/executionPlan/browser/widgets/findExpensiveNodeWidget';
+import { HighlightExpensiveOperationWidget } from 'sql/workbench/contrib/executionPlan/browser/widgets/findExpensiveNodeWidget';
 
 export class ExecutionPlanView implements ISashLayoutProvider {
 
@@ -185,7 +185,7 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 			this._instantiationService.createInstance(SearchNodeAction, 'ActionBar'),
 			this._instantiationService.createInstance(PropertiesAction, 'ActionBar'),
 			this._instantiationService.createInstance(CompareExecutionPlanAction, 'ActionBar'),
-			this._instantiationService.createInstance(FindExpensiveOperationAction, 'ActionBar'),
+			this._instantiationService.createInstance(HighlightExpensiveOperationAction, 'ActionBar'),
 			this.actionBarToggleTopTip
 		];
 		// Setting up context menu
@@ -203,7 +203,7 @@ export class ExecutionPlanView implements ISashLayoutProvider {
 			this._instantiationService.createInstance(SearchNodeAction, 'ContextMenu'),
 			this._instantiationService.createInstance(PropertiesAction, 'ContextMenu'),
 			this._instantiationService.createInstance(CompareExecutionPlanAction, 'ContextMenu'),
-			this._instantiationService.createInstance(FindExpensiveOperationAction, 'ContextMenu'),
+			this._instantiationService.createInstance(HighlightExpensiveOperationAction, 'ContextMenu'),
 			this.contextMenuToggleTooltipAction,
 			new Separator(),
 		];
@@ -599,22 +599,22 @@ export class TopOperationsAction extends Action {
 	}
 }
 
-export class FindExpensiveOperationAction extends Action {
+export class HighlightExpensiveOperationAction extends Action {
 	public static ID = 'ep.findExpensiveOperation';
 	public static LABEL = localize('executionPlanFindExpensiveOperationAction', 'Find Expensive Operation');
 
 	constructor(private source: ExecutionPlanActionSource,
 		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService
 	) {
-		super(FindExpensiveOperationAction.ID, FindExpensiveOperationAction.LABEL, searchIconClassNames);
+		super(HighlightExpensiveOperationAction.ID, HighlightExpensiveOperationAction.LABEL, searchIconClassNames);
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
 		this.telemetryService
-			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.FindExpensiveOperation)
+			.createActionEvent(TelemetryKeys.TelemetryView.ExecutionPlan, TelemetryKeys.TelemetryAction.HighlightExpensiveOperation)
 			.withAdditionalProperties({ source: this.source })
 			.send();
 
-		context.widgetController.toggleWidget(context._instantiationService.createInstance(FindExpensiveOperationWidget, context.widgetController, context.executionPlanDiagram));
+		context.widgetController.toggleWidget(context._instantiationService.createInstance(HighlightExpensiveOperationWidget, context.widgetController, context.executionPlanDiagram));
 	}
 }

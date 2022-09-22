@@ -585,7 +585,7 @@ export enum SearchType {
 	LesserAndGreaterThan
 }
 
-export enum ExpensiveOperationType {
+export enum ExpensiveMetricType {
 	Off = 'off',
 	ActualElapsedTime = 'actualElapsedTime',
 	ActualElapsedCpuTime = 'actualElapsedCpuTime',

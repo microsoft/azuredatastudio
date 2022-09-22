@@ -14,7 +14,7 @@ import { attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { Action } from 'vs/base/common/actions';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
-import { AzDataGraphCell, AzdataGraphView, ExpensiveOperationType } from 'sql/workbench/contrib/executionPlan/browser/azdataGraphView';
+import { AzDataGraphCell, AzdataGraphView, ExpensiveMetricType } from 'sql/workbench/contrib/executionPlan/browser/azdataGraphView';
 import { ExecutionPlanWidgetController } from 'sql/workbench/contrib/executionPlan/browser/executionPlanWidgetController';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { Button } from 'sql/base/browser/ui/button/button';
@@ -30,12 +30,12 @@ const SUBTREE_COST_STRING = localize('executionPlanSubtreeCost', 'Subtree Cost')
 const ACTUAL_NUMBER_OF_ROWS_FOR_ALL_EXECUTIONS_STRING = localize('actualNumberOfRowsForAllExecutionsAction', 'Actual Number of Rows For All Executions');
 const NUMBER_OF_ROWS_READ_STRING = localize('executionPlanNumberOfRowsRead', 'Number of Rows Read');
 
-export class FindExpensiveOperationWidget extends ExecutionPlanWidgetBase {
+export class HighlightExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 	private _actionBar: ActionBar;
 
-	public operationNameSelectBox: SelectBox;
-	private _operationNameSelectBoxContainer: HTMLElement;
-	private _selectedExpensiveOperationType: ExpensiveOperationType = ExpensiveOperationType.Cost;
+	public expenseMetricSelectBox: SelectBox;
+	private _expenseMetricSelectBoxContainer: HTMLElement;
+	private _selectedExpensiveOperationType: ExpensiveMetricType = ExpensiveMetricType.Cost;
 
 	constructor(
 		public readonly widgetController: ExecutionPlanWidgetController,
@@ -51,37 +51,37 @@ export class FindExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 		this.renderAndStyleWidget();
 	}
 
-	private getDefaultExpensiveOperationMetric(): ExpensiveOperationType {
+	private getDefaultExpensiveOperationMetric(): ExpensiveMetricType {
 		let defaultMetricConfiguration = this._configurationService.getValue<string>('queryEditor.executionPlan.expensiveOperationMetric');
 
 		switch (defaultMetricConfiguration) {
 			case 'actualElapsedTime':
-				return ExpensiveOperationType.ActualElapsedTime;
+				return ExpensiveMetricType.ActualElapsedTime;
 			case 'actualElapsedCpuTime':
-				return ExpensiveOperationType.ActualElapsedCpuTime;
+				return ExpensiveMetricType.ActualElapsedCpuTime;
 			case 'cost':
-				return ExpensiveOperationType.Cost;
+				return ExpensiveMetricType.Cost;
 			case 'subtreeCost':
-				return ExpensiveOperationType.SubtreeCost;
+				return ExpensiveMetricType.SubtreeCost;
 			case 'actualNumberOfRowsForAllExecutions':
-				return ExpensiveOperationType.ActualNumberOfRowsForAllExecutions;
+				return ExpensiveMetricType.ActualNumberOfRowsForAllExecutions;
 			case 'numberOfRowsRead':
-				return ExpensiveOperationType.NumberOfRowsRead;
+				return ExpensiveMetricType.NumberOfRowsRead;
 			default:
-				return ExpensiveOperationType.Off;
+				return ExpensiveMetricType.Off;
 		}
 	}
 
 	private renderAndStyleWidget(): void {
 		// Expensive Operation Dropdown
-		this._operationNameSelectBoxContainer = DOM.$('expensive-operation-name-select-box .dropdown-container');
+		this._expenseMetricSelectBoxContainer = DOM.$('expensive-operation-name-select-box .dropdown-container');
 		const operationLabel = DOM.$('expensive-operation-name-select-box-label');
 		operationLabel.innerText = localize('expensiveOperationLabel', 'Metric:');
 
-		this._operationNameSelectBoxContainer.appendChild(operationLabel);
-		this.container.appendChild(this._operationNameSelectBoxContainer);
+		this._expenseMetricSelectBoxContainer.appendChild(operationLabel);
+		this.container.appendChild(this._expenseMetricSelectBoxContainer);
 
-		this.operationNameSelectBox = new SelectBox([
+		this.expenseMetricSelectBox = new SelectBox([
 			OFF_STRING,
 			ACTUAL_ELAPSED_TIME_STRING,
 			ACTUAL_ELAPSED_CPU_TIME_STRING,
@@ -89,47 +89,47 @@ export class FindExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 			SUBTREE_COST_STRING,
 			ACTUAL_NUMBER_OF_ROWS_FOR_ALL_EXECUTIONS_STRING,
 			NUMBER_OF_ROWS_READ_STRING
-		], COST_STRING, this.contextViewService, this._operationNameSelectBoxContainer);
+		], COST_STRING, this.contextViewService, this._expenseMetricSelectBoxContainer);
 
-		this.operationNameSelectBox.render(this._operationNameSelectBoxContainer);
-		this._register(attachSelectBoxStyler(this.operationNameSelectBox, this.themeService));
+		this.expenseMetricSelectBox.render(this._expenseMetricSelectBoxContainer);
+		this._register(attachSelectBoxStyler(this.expenseMetricSelectBox, this.themeService));
 
-		this._operationNameSelectBoxContainer.style.width = '200px';
-		this._operationNameSelectBoxContainer.style.marginRight = '5px';
+		this._expenseMetricSelectBoxContainer.style.width = '200px';
+		this._expenseMetricSelectBoxContainer.style.marginRight = '5px';
 
-		this._register(this.operationNameSelectBox.onDidSelect(e => {
+		this._register(this.expenseMetricSelectBox.onDidSelect(e => {
 			switch (e.selected) {
 				case ACTUAL_ELAPSED_TIME_STRING:
-					this._selectedExpensiveOperationType = ExpensiveOperationType.ActualElapsedTime;
+					this._selectedExpensiveOperationType = ExpensiveMetricType.ActualElapsedTime;
 					break;
 				case ACTUAL_ELAPSED_CPU_TIME_STRING:
-					this._selectedExpensiveOperationType = ExpensiveOperationType.ActualElapsedCpuTime;
+					this._selectedExpensiveOperationType = ExpensiveMetricType.ActualElapsedCpuTime;
 					break;
 				case COST_STRING:
-					this._selectedExpensiveOperationType = ExpensiveOperationType.Cost;
+					this._selectedExpensiveOperationType = ExpensiveMetricType.Cost;
 					break;
 				case SUBTREE_COST_STRING:
-					this._selectedExpensiveOperationType = ExpensiveOperationType.SubtreeCost;
+					this._selectedExpensiveOperationType = ExpensiveMetricType.SubtreeCost;
 					break;
 				case ACTUAL_NUMBER_OF_ROWS_FOR_ALL_EXECUTIONS_STRING:
-					this._selectedExpensiveOperationType = ExpensiveOperationType.ActualNumberOfRowsForAllExecutions;
+					this._selectedExpensiveOperationType = ExpensiveMetricType.ActualNumberOfRowsForAllExecutions;
 					break;
 				case NUMBER_OF_ROWS_READ_STRING:
-					this._selectedExpensiveOperationType = ExpensiveOperationType.NumberOfRowsRead;
+					this._selectedExpensiveOperationType = ExpensiveMetricType.NumberOfRowsRead;
 					break;
 				default:
-					this._selectedExpensiveOperationType = ExpensiveOperationType.Off;
+					this._selectedExpensiveOperationType = ExpensiveMetricType.Off;
 			}
 		}));
 
 		// Apply Button
-		const findExpensiveOperationAction = new FindExpensiveOperationAction();
+		const findExpensiveOperationAction = new HighlightExpensiveOperationAction();
 		this._register(findExpensiveOperationAction);
 
 		const clearExpensiveOperationAction = new TurnOffExpensiveHighlightingOperationAction();
 		this._register(clearExpensiveOperationAction);
 
-		const cancelExpensiveOperationAction = new CancelExpensiveOperationAction();
+		const cancelExpensiveOperationAction = new CancelHIghlightExpensiveOperationAction();
 		this._register(cancelExpensiveOperationAction);
 
 		const self = this;
@@ -140,7 +140,7 @@ export class FindExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 		applyButton.label = localize('findExpensiveOperationApplyButton', 'Apply');
 
 		this._register(applyButton.onDidClick(async e => {
-			if (this._selectedExpensiveOperationType === ExpensiveOperationType.Off) {
+			if (this._selectedExpensiveOperationType === ExpensiveMetricType.Off) {
 				await clearExpensiveOperationAction.run(self);
 			}
 			else {
@@ -182,7 +182,7 @@ export class FindExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 	}
 
 	public focus() {
-		this.operationNameSelectBox.focus();
+		this.expenseMetricSelectBox.focus();
 	}
 
 	public getExpensiveOperationDelegate(): (cell: AzDataGraphCell) => number | undefined {
@@ -227,19 +227,19 @@ export class FindExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 
 		let expensiveOperationDelegate = getCost;
 		switch (this._selectedExpensiveOperationType) {
-			case ExpensiveOperationType.ActualElapsedTime:
+			case ExpensiveMetricType.ActualElapsedTime:
 				expensiveOperationDelegate = getElapsedTimeInMs;
 				break;
-			case ExpensiveOperationType.ActualElapsedCpuTime:
+			case ExpensiveMetricType.ActualElapsedCpuTime:
 				expensiveOperationDelegate = getElapsedCpuTimeInMs;
 				break;
-			case ExpensiveOperationType.SubtreeCost:
+			case ExpensiveMetricType.SubtreeCost:
 				expensiveOperationDelegate = getSubtreeCost;
 				break;
-			case ExpensiveOperationType.ActualNumberOfRowsForAllExecutions:
+			case ExpensiveMetricType.ActualNumberOfRowsForAllExecutions:
 				expensiveOperationDelegate = getRowsForAllExecutions;
 				break;
-			case ExpensiveOperationType.NumberOfRowsRead:
+			case ExpensiveMetricType.NumberOfRowsRead:
 				expensiveOperationDelegate = getNumberOfRowsRead;
 				break;
 		}
@@ -248,21 +248,21 @@ export class FindExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 	}
 }
 
-export class FindExpensiveOperationAction extends Action {
+export class HighlightExpensiveOperationAction extends Action {
 	public static ID = 'qp.findExpensiveOperationAction';
 	public static LABEL = localize('findExpensiveOperationAction', 'Find');
 
 	constructor() {
-		super(FindExpensiveOperationAction.ID, FindExpensiveOperationAction.LABEL, searchIconClassNames);
+		super(HighlightExpensiveOperationAction.ID, HighlightExpensiveOperationAction.LABEL, searchIconClassNames);
 	}
 
-	public override async run(context: FindExpensiveOperationWidget): Promise<void> {
+	public override async run(context: HighlightExpensiveOperationWidget): Promise<void> {
 		const expensiveOperationDelegate: (cell: AzDataGraphCell) => number | undefined = context.getExpensiveOperationDelegate();
 
 		context.executionPlanDiagram.clearExpensiveOperatorHighlighting();
 		let result = context.executionPlanDiagram.highlightExpensiveOperator(expensiveOperationDelegate);
 		if (!result) {
-			const metric = context.operationNameSelectBox.value;
+			const metric = context.expenseMetricSelectBox.value;
 			context.notificationService.warn(localize('invalidPropertyExecutionPlanMetric', 'No nodes found with the {0} metric.', metric));
 		}
 	}
@@ -276,20 +276,20 @@ export class TurnOffExpensiveHighlightingOperationAction extends Action {
 		super(TurnOffExpensiveHighlightingOperationAction.ID, TurnOffExpensiveHighlightingOperationAction.LABEL);
 	}
 
-	public override async run(context: FindExpensiveOperationWidget): Promise<void> {
+	public override async run(context: HighlightExpensiveOperationWidget): Promise<void> {
 		context.executionPlanDiagram.clearExpensiveOperatorHighlighting();
 	}
 }
 
-export class CancelExpensiveOperationAction extends Action {
+export class CancelHIghlightExpensiveOperationAction extends Action {
 	public static ID = 'qp.cancelExpensiveOperationAction';
 	public static LABEL = localize('cancelExpensiveOperationAction', 'Close');
 
 	constructor() {
-		super(CancelExpensiveOperationAction.ID, CancelExpensiveOperationAction.LABEL, Codicon.chromeClose.classNames);
+		super(CancelHIghlightExpensiveOperationAction.ID, CancelHIghlightExpensiveOperationAction.LABEL, Codicon.chromeClose.classNames);
 	}
 
-	public override async run(context: FindExpensiveOperationWidget): Promise<void> {
+	public override async run(context: HighlightExpensiveOperationWidget): Promise<void> {
 		context.widgetController.removeWidget(context);
 	}
 }
