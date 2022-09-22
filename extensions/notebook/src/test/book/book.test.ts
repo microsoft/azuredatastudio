@@ -690,20 +690,22 @@ describe('BooksTreeViewTests', function () {
 					'toc': '- title: Home\n  url: /readme\n- title: Notebook1\n  url: /notebook1\n- title: Notebook2\n  url: /notebook2'
 				}
 			},
-			{
-				it: 'v2',
-				folderPaths: {
-					'configFile': path.join(rootFolderPath, '_config.yml'),
-					'tableofContentsFile': path.join(rootFolderPath, '_toc.yml'),
-					'notebook1File': path.join(rootFolderPath, 'notebook1.ipynb'),
-					'notebook2File': path.join(rootFolderPath, 'notebook2.ipynb'),
-					'markdownFile': path.join(rootFolderPath, 'readme.md')
-				},
-				contents: {
-					'config': 'title: Test Book',
-					'toc': '- title: Home\n  file: /readme\n- title: Notebook1\n  file: /notebook1\n- title: Notebook2\n  file: /notebook2'
-				}
-			}
+			// Disable book v2 tests temporarily
+			// Tracking the fix here https://github.com/microsoft/azuredatastudio/issues/20589
+			// {
+			// 	it: 'v2',
+			// 	folderPaths: {
+			// 		'configFile': path.join(rootFolderPath, '_config.yml'),
+			// 		'tableofContentsFile': path.join(rootFolderPath, '_toc.yml'),
+			// 		'notebook1File': path.join(rootFolderPath, 'notebook1.ipynb'),
+			// 		'notebook2File': path.join(rootFolderPath, 'notebook2.ipynb'),
+			// 		'markdownFile': path.join(rootFolderPath, 'readme.md')
+			// 	},
+			// 	contents: {
+			// 		'config': 'title: Test Book',
+			// 		'toc': '- title: Home\n  file: /readme\n- title: Notebook1\n  file: /notebook1\n- title: Notebook2\n  file: /notebook2'
+			// 	}
+			// }
 		];
 		runs.forEach(function (run) {
 			describe('BookTreeViewProvider.Commands on ' + run.it, function (): void {
@@ -768,8 +770,7 @@ describe('BooksTreeViewTests', function () {
 					should(executeCommandSpy.calledWith('markdown.showPreview')).be.true('openMarkdown should have called markdown.showPreview');
 				});
 
-				// skip test for failing on CI runs. Tracking the fix here https://github.com/microsoft/azuredatastudio/issues/20589
-				it.skip('should call showPreviewFile on openBook when showPreview flag is set', async () => {
+				it('should call showPreviewFile on openBook when showPreview flag is set', async () => {
 					await bookTreeViewProvider.closeBook(bookTreeViewProvider.books[0].bookItems[0]);
 					let showPreviewSpy = sinon.spy(bookTreeViewProvider, 'showPreviewFile');
 
@@ -778,8 +779,7 @@ describe('BooksTreeViewTests', function () {
 					should(showPreviewSpy.calledOnce).be.true('Should have called showPreviewFile.');
 				});
 
-				// skip test for failing on CI runs. Tracking the fix here https://github.com/microsoft/azuredatastudio/issues/20589
-				it.skip('should add book when bookPath contains special characters on openBook', async () => {
+				it('should add book when bookPath contains special characters on openBook', async () => {
 					let rootFolderPath2 = path.join(os.tmpdir(), `BookTestData(1)_${uuid.v4()}`);
 					let dataFolderPath2 = path.join(rootFolderPath2, '_data');
 					let contentFolderPath2 = path.join(rootFolderPath2, 'content');
