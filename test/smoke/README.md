@@ -8,6 +8,9 @@ Make sure you are on **Node v12.x**.
 # Build extensions in the VS Code repo (if needed)
 yarn && yarn compile
 
+# By default, only the stable test cases will be executed, to run all the test cases run the following script to set the 'RUN_UNSTABLE_TESTS' environment variable to true
+# export RUN_UNSTABLE_TESTS="true"
+
 # Dev (Electron)
 yarn smoketest
 
@@ -65,6 +68,12 @@ xattr -d com.apple.quarantine <path to server with web folder zip>
 cd test/smoke
 yarn watch
 ```
+
+### Mark test case as unstable
+
+A test case should be marked as unstable if it is failing due to test reliability issue and a fix cannot be made immediately. Unstable test cases won't be picked up in the normal build pipelines, there is a dedicated build pipeline to run the unstable test cases.
+
+To mark a test case as unstable, simply append the tag "@UNSTABLE@" to the title of the test case. Similarly, remove the tag if you want to mark it as stable.
 
 ## Troubleshooting
 
