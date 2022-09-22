@@ -269,6 +269,11 @@
       <source xml:lang="en">Controls whether or not the empty window is trusted by default within Azure Data Studio. When used with `#{0}#`, you can enable the full functionality of Azure Data Studio without prompting in an empty window.</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/base/parts/tree/browser/treeDefaults" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="collapse all">
+      <source xml:lang="en">Collapse All</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/platform/accounts/common/accountActions" source-language="en" datatype="plaintext"><body>
     <trans-unit id="NoAccountToRefresh">
       <source xml:lang="en">There is no account to refresh</source>
