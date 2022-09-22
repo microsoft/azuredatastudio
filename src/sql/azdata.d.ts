@@ -2341,6 +2341,11 @@ declare module 'azdata' {
 			 * What type of token this is (such as Bearer)
 			 */
 			tokenType?: string | undefined;
+
+			/**
+			 * Access token expiry timestamp
+			 */
+			expiresOn?: number | undefined
 		}
 
 		/**
@@ -2373,7 +2378,7 @@ declare module 'azdata' {
 		accountType: string;
 
 		/**
-		 * A display name that identifies the account, such as "User Name".
+		 * A display name that identifies the account, such as "User Name". Will include the e-mail address if available.
 		 */
 		displayName: string;
 
@@ -2381,6 +2386,14 @@ declare module 'azdata' {
 		 * Unique user id that identifies the account.
 		 */
 		userId: string;
+		/**
+		 * The e-mail address associated with this account
+		 */
+		email?: string;
+		/**
+		 * A display name that identifies the account, such as "User Name".
+		 */
+		name?: string;
 	}
 
 	/**
@@ -2401,6 +2414,11 @@ declare module 'azdata' {
 		 * Identifier for the account, unique to the provider
 		 */
 		accountId: string;
+
+		/**
+		 * A version string for an account
+		 */
+		accountVersion?: string;
 	}
 
 	/**
@@ -2426,6 +2444,11 @@ declare module 'azdata' {
 		 * Indicates if the account needs refreshing
 		 */
 		isStale: boolean;
+
+		/**
+		 * Specifies if an account should be deleted
+		 */
+		delete?: boolean;
 	}
 
 	export enum AzureResource {
@@ -2540,9 +2563,17 @@ declare module 'azdata' {
 		 * @param account The account to generate a security token for
 		 * @param resource The resource to get the token for
 		 * @return Promise to return a security token object
-		 * @deprecated use getAccountSecurityToken
+		 * @deprecated use {@link AccountProvider.getAccountSecurityToken}
 		 */
 		getSecurityToken(account: Account, resource: AzureResource): Thenable<{} | undefined>;
+
+		/**
+		 * Generates a security token for the provided account and tenant
+		 * @param account The account to generate a security token for
+		 * @param resource The resource to get the token for
+		 * @return Promise to return a security token object
+		 */
+		getAccountSecurityToken(account: Account, tenant: string, resource: AzureResource): Thenable<accounts.AccountSecurityToken | undefined>;
 
 		/**
 		 * Prompts the user to enter account information.
