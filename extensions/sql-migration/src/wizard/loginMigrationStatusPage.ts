@@ -8,8 +8,9 @@ import * as vscode from 'vscode';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
-import { debounce } from '../api/utils';
+import { debounce, getPipelineStatusImage } from '../api/utils';
 import * as styles from '../constants/styles';
+import { IconPathHelper } from '../constants/iconPathHelper';
 
 export class LoginMigrationStatusPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -108,10 +109,10 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 			tableRows = this._loginsTableValues
 				.filter(row => {
 					const searchText = value?.toLowerCase();
-					return row[0]?.toLowerCase()?.indexOf(searchText) > -1	// source login
-						|| row[1]?.toLowerCase()?.indexOf(searchText) > -1	// login type
-						|| row[2]?.toLowerCase()?.indexOf(searchText) > -1  // default database
-						|| row[3]?.toLowerCase()?.indexOf(searchText) > -1;	// migration status
+					return row[0]?.toLowerCase()?.indexOf(searchText) > -1			// source login
+						|| row[1]?.toLowerCase()?.indexOf(searchText) > -1			// login type
+						|| row[2]?.toLowerCase()?.indexOf(searchText) > -1  		// default database
+						|| row[3]?.title.toLowerCase()?.indexOf(searchText) > -1;	// migration status
 				});
 		}
 
@@ -170,11 +171,13 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 						cssClass: cssClass,
 						headerCssClass: cssClass,
 					},
-					{
+					<azdata.HyperlinkColumn>{
 						name: constants.LOGIN_MIGRATION_STATUS_COLUMN,
 						value: 'migrationStatus',
-						type: azdata.ColumnType.text,
-						width: 130,
+						width: 200,
+						type: azdata.ColumnType.hyperlink,
+						icon: IconPathHelper.inProgressMigration,
+						showText: true,
 						cssClass: cssClass,
 						headerCssClass: cssClass,
 					},
@@ -209,7 +212,10 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 				loginName,
 				login.loginType,
 				login.defaultDatabaseName,
-				'In progress'
+				<azdata.HyperlinkColumnCellValue>{
+					icon: getPipelineStatusImage('InProgress'), // TODO AKMA : change to new method
+					title: 'In progress', // TODO AKMA : Change hardcoding
+				},
 			];
 		}) || [];
 	}
