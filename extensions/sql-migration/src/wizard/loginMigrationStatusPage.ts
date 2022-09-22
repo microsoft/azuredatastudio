@@ -50,13 +50,6 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
 				return true;
 			}
-			if (this.selectedDbs().length === 0) {
-				this.wizard.message = {
-					text: constants.SELECT_DATABASE_TO_CONTINUE,
-					level: azdata.window.MessageLevel.Error
-				};
-				return false;
-			}
 			return true;
 		});
 	}
