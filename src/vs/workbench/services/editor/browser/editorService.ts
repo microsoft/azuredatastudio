@@ -927,7 +927,7 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 		const untitledInput = input as IUntitledTextResourceEditorInput;
 		if (untitledInput.forceUntitled || !untitledInput.resource || (untitledInput.resource.scheme === Schemas.untitled)) {
 			const untitledOptions = {
-				mode: untitledInput.languageId,
+				languageId: untitledInput.languageId,
 				initialValue: untitledInput.contents,
 				encoding: untitledInput.encoding
 			};

@@ -6,7 +6,7 @@
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
-import { MainThreadModelViewDialogShape, SqlMainContext, ExtHostModelViewDialogShape, SqlExtHostContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { MainThreadModelViewDialogShape, ExtHostModelViewDialogShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { Dialog, DialogTab, DialogButton, WizardPage, Wizard } from 'sql/workbench/services/dialog/common/dialogTypes';
 import { CustomDialogService, DefaultWizardOptions, DefaultDialogOptions } from 'sql/workbench/services/dialog/browser/customDialogService';
 import { IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails, IModelViewWizardPageDetails, IModelViewWizardDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -20,6 +20,7 @@ import { IEditorPane } from 'vs/workbench/common/editor';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
+import { SqlExtHostContext, SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadModelViewDialog)
 export class MainThreadModelViewDialog extends Disposable implements MainThreadModelViewDialogShape {

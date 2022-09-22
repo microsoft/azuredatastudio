@@ -11,13 +11,14 @@ import { Disposable } from 'vs/workbench/api/common/extHostTypes';
 import { localize } from 'vs/nls';
 import { URI, UriComponents } from 'vs/base/common/uri';
 
-import { ExtHostNotebookShape, MainThreadNotebookShape, SqlMainContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { ExtHostNotebookShape, MainThreadNotebookShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IExecuteManagerDetails, INotebookSessionDetails, INotebookKernelDetails, INotebookFutureDetails, FutureMessageType, ISerializationManagerDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { VSCodeSerializationProvider } from 'sql/workbench/api/common/notebooks/vscodeSerializationProvider';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { ADSNotebookController } from 'sql/workbench/api/common/notebooks/adsNotebookController';
 import { VSCodeExecuteProvider } from 'sql/workbench/api/common/notebooks/vscodeExecuteProvider';
 import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/common/extHostNotebookDocumentsAndEditors';
+import { SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 type Adapter = azdata.nb.NotebookSerializationProvider | azdata.nb.SerializationManager | azdata.nb.NotebookExecuteProvider | azdata.nb.ExecuteManager | azdata.nb.ISession | azdata.nb.IKernel | azdata.nb.IFuture;
 

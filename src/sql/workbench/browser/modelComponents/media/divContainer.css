@@ -1,0 +1,13 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.divContainer {
+	display: block;
+	height: 100%;
+}
+
+.divContainer:focus {
+	outline-offset: 2px
+}

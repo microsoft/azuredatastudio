@@ -16,7 +16,7 @@ import { ok } from 'vs/base/common/assert';
 import { localize } from 'vs/nls';
 
 import {
-	SqlMainContext, INotebookDocumentsAndEditorsDelta, ExtHostNotebookDocumentsAndEditorsShape,
+	INotebookDocumentsAndEditorsDelta, ExtHostNotebookDocumentsAndEditorsShape,
 	MainThreadNotebookDocumentsAndEditorsShape, INotebookShowOptions, INotebookModelChangedData
 } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { ExtHostNotebookDocumentData } from 'sql/workbench/api/common/extHostNotebookDocumentData';
@@ -24,6 +24,7 @@ import { ExtHostNotebookEditor } from 'sql/workbench/api/common/extHostNotebookE
 import { VSCodeNotebookDocument } from 'sql/workbench/api/common/notebooks/vscodeNotebookDocument';
 import { VSCodeNotebookEditor } from 'sql/workbench/api/common/notebooks/vscodeNotebookEditor';
 import { docNotFoundForUriError } from 'sql/base/common/locConstants';
+import { SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 type Adapter = azdata.nb.NavigationProvider;
 

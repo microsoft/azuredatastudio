@@ -5,12 +5,13 @@
 
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import {
-	SqlExtHostContext, ExtHostCredentialManagementShape,
-	MainThreadCredentialManagementShape, SqlMainContext
+	ExtHostCredentialManagementShape,
+	MainThreadCredentialManagementShape
 } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { ICredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import * as azdata from 'azdata';
 import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
+import { SqlExtHostContext, SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadCredentialManagement)
 export class MainThreadCredentialManagement extends Disposable implements MainThreadCredentialManagementShape {

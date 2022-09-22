@@ -21,7 +21,7 @@
 		"no-duplicate-case": "warn",
 		"no-duplicate-imports": "warn",
 		"no-eval": "warn",
-		"no-async-promise-executor": "off",
+		"no-async-promise-executor": "warn",
 		"no-extra-semi": "warn",
 		"no-new-wrappers": "warn",
 		"no-redeclare": "off",
@@ -117,6 +117,7 @@
 			],
 			"rules": {
 				"code-no-test-only": "error",
+				"code-no-unexternalized-strings": "off"
 			}
 		},
 		{
@@ -125,7 +126,7 @@
 			],
 			"rules": {
 				"no-sync": "warn",
-				"strict": ["warn", "never"],
+				"strict": ["warn", "never"]
 			}
 		},
 		{
@@ -134,14 +135,14 @@
 				"**/vscode.proposed.*.d.ts"
 			],
 			"rules": {
-				"vscode-dts-create-func": "warn",
-				"vscode-dts-literal-or-types": "warn",
-				"vscode-dts-interface-naming": "warn",
-				"vscode-dts-cancellation": "warn",
-				"vscode-dts-use-thenable": "warn",
-				"vscode-dts-region-comments": "warn",
-				"vscode-dts-vscode-in-comments": "warn",
-				"vscode-dts-provider-naming": [
+				"{vs,sql}code-dts-create-func": "warn",
+				"{vs,sql}code-dts-literal-or-types": "warn",
+				"{vs,sql}code-dts-interface-naming": "warn",
+				"{vs,sql}code-dts-cancellation": "warn",
+				"{vs,sql}code-dts-use-thenable": "warn",
+				"{vs,sql}code-dts-region-comments": "warn",
+				"{vs,sql}code-dts-vscode-in-comments": "warn",
+				"{vs,sql}code-dts-provider-naming": [
 					"warn",
 					{
 						"allowed": [
@@ -156,7 +157,7 @@
 						]
 					}
 				],
-				"vscode-dts-event-naming": [
+				"{vs,sql}code-dts-event-naming": [
 					"warn",
 					{
 						"allowed": [
@@ -212,7 +213,7 @@
 						// - electron-browser
 						"when": "hasBrowser",
 						"allow": [
-							"vs/css!./**/*"
+							"{vs,sql}/css!./**/*"
 						]
 					},
 					{
@@ -256,9 +257,9 @@
 							"url",
 							"util",
 							"v8-inspect-profiler",
-							"vscode-proxy-agent",
-							"vscode-regexpp",
-							"vscode-textmate",
+							"{vs,sql}code-proxy-agent",
+							"{vs,sql}code-regexpp",
+							"{vs,sql}code-textmate",
 							"windows-process-tree",
 							"worker_threads",
 							"xterm",
@@ -292,6 +293,7 @@
 					// e.g. "src/vs/base/~" will be expanded to:
 					//  - src/vs/base/common
 					//  - src/vs/base/worker
+					//  - src/vs/base/browser
 					//  - src/vs/base/electron-sandbox
 					//  - src/vs/base/node
 					//  - src/vs/base/electron-browser
@@ -304,150 +306,196 @@
 					//  - src/vs/base/test/electron-browser
 					//  - src/vs/base/test/electron-main
 					//
+					// When /~ is used in the restrictions, it will be replaced with the correct
 					// layers that can be used e.g. "src/vs/base/electron-sandbox" will be able
+					// to import "{common,browser,electron-sanbox}", etc.
 					//
+					// It is possible to use /~ in the restrictions property even without using it in
 					// the target property by adding a layer property.
 					{
-						"target": "src/vs/base/~",
+						"target": "src/{vs,sql}/base/~",
 						"restrictions": [
-							"vs/base/~"
+							"{vs,sql}/base/~"
 						]
 					},
 					{
-						"target": "src/vs/base/parts/*/~",
+						"target": "src/{vs,sql}/base/parts/*/~",
 						"restrictions": [
-							"vs/base/~",
-							"vs/base/parts/*/~"
+							"{vs,sql}/base/~",
+							"{vs,sql}/base/parts/*/~"
 						]
 					},
 					{
-						"target": "src/vs/platform/*/~",
+						"target": "src/{vs,sql}/platform/*/~",
 						"restrictions": [
-							"vs/base/~",
-							"vs/base/parts/*/~",
-							"vs/platform/*/~",
+							"{vs,sql}/base/~",
+							"{vs,sql}/base/parts/*/~",
+							"{vs,sql}/platform/*/~",
 							"tas-client-umd" // node module allowed even in /common/
 						]
 					},
 					{
-						"target": "src/vs/editor/~",
+						"target": "src/{vs,sql}/editor/~",
 						"restrictions": [
-							"vs/base/~",
-							"vs/base/parts/*/~",
-							"vs/platform/*/~",
-							"vs/editor/~"
+							"{vs,sql}/base/~",
+							"{vs,sql}/base/parts/*/~",
+							"{vs,sql}/platform/*/~",
+							"{vs,sql}/editor/~"
 						]
 					},
 					{
-						"target": "src/vs/editor/contrib/*/~",
+						"target": "src/{vs,sql}/editor/contrib/*/~",
 						"restrictions": [
-							"vs/base/~",
-							"vs/base/parts/*/~",
-							"vs/platform/*/~",
-							"vs/editor/~",
+							"{vs,sql}/base/~",
+							"{vs,sql}/base/parts/*/~",
+							"{vs,sql}/platform/*/~",
+							"{vs,sql}/editor/~",
+							"{vs,sql}/editor/contrib/*/~"
 						]
 					},
 					{
+						"target": "src/{vs,sql}/editor/standalone/~",
 						"restrictions": [
-							"vs/base/~",
-							"vs/base/parts/*/~",
-							"vs/platform/*/~",
-							"vs/editor/~",
-							"vs/editor/standalone/~"
+							"{vs,sql}/base/~",
+							"{vs,sql}/base/parts/*/~",
+							"{vs,sql}/platform/*/~",
+							"{vs,sql}/editor/~",
+							"{vs,sql}/editor/contrib/*/~",
+							"{vs,sql}/editor/standalone/~"
 						]
 					},
 					{
+						"target": "src/{vs,sql}/editor/editor.all.ts",
 						"layer": "browser",
 						"restrictions": [
-							"vs/base/~",
-							"vs/base/parts/*/~",
-							"vs/platform/*/~",
-							"vs/editor/~",
-							"vs/editor/contrib/*/~"
+							"{vs,sql}/base/~",
+							"{vs,sql}/base/parts/*/~",
+							"{vs,sql}/platform/*/~",
+							"{vs,sql}/editor/~",
+							"{vs,sql}/editor/contrib/*/~"
 						]
 					},
 					{
-						"target": "src/vs/editor/editor.worker.ts",
+						"target": "src/{vs,sql}/editor/editor.worker.ts",
 						"layer": "worker",
 						"restrictions": [
-							"vs/base/~",
-							"vs/base/parts/*/~",
-							"vs/platform/*/~",
-							"vs/editor/~"
+							"{vs,sql}/base/~",
+							"{vs,sql}/base/parts/*/~",
+							"{vs,sql}/platform/*/~",
+							"{vs,sql}/editor/~"
 						]
 					},
 					{
+						"target": "src/{vs,sql}/editor/{editor.api.ts,editor.main.ts}",
 						"layer": "browser",
 						"restrictions": [
-							"vs/base/~",
-							"vs/base/parts/*/~",
-							"vs/editor/~",
-							"vs/editor/contrib/*/~",
-							"vs/editor/standalone/~",
-							"vs/editor/*"
+							"{vs,sql}/base/~",
+							"{vs,sql}/base/parts/*/~",
+							"{vs,sql}/editor/~",
+							"{vs,sql}/editor/contrib/*/~",
+							"{vs,sql}/editor/standalone/~",
+							"{vs,sql}/editor/*"
 						]
 					},
 					{
-						"target": "src/vs/workbench/~",
+						"target": "**/{vs,sql}/workbench/contrib/**/browser/**",
 						"restrictions": [
-							"vs/base/~",
-							"vs/base/parts/*/~",
-							"vs/platform/*/~",
-							"vs/editor/~",
-							"vs/editor/contrib/*/~",
-							"vs/workbench/~",
-							"vs/workbench/services/*/~",
+							"vs/nls",
+							"vs/css!./**/*",
+							"azdata",
+							"vscode",
+							"**/{vs,sql}/base/**/{common,browser}/**",
+							"**/{vs,sql}/platform/**/{common,browser}/**",
+							"**/{vs,sql}/editor/**",
+							"**/{vs,sql}/workbench/{common,browser}/**",
+							"**/{vs,sql}/workbench/api/{common,browser}/**",
+							"**/{vs,sql}/workbench/services/**/{common,browser}/**",
+							"**/{vs,sql}/workbench/contrib/**/{common,browser}/**",
+							"@angular/*",
+							"rxjs/**",
+							"ng2-charts",
+							"chart.js",
+							"plotly.js",
+							"angular2-grid",
+							"kburtram-query-plan",
+							"html-to-image",
+							"turndown",
+							"gridstack",
+							"mark.js",
+							"vscode-textmate",
+							"vscode-oniguruma",
+							"iconv-lite-umd",
+							"jschardet",
+							"azdataGraph"
+						]
+					},
+					{
+						"target": "src/{vs,sql}/workbench/~",
+						"restrictions": [
+							"{vs,sql}/base/~",
+							"{vs,sql}/base/parts/*/~",
+							"{vs,sql}/platform/*/~",
+							"{vs,sql}/editor/~",
+							"{vs,sql}/editor/contrib/*/~",
+							"{vs,sql}/workbench/~",
+							"{vs,sql}/workbench/services/*/~",
 							"assert",
 							{
 								"when": "test",
-								"pattern": "vs/workbench/contrib/*/~"
+								"pattern": "{vs,sql}/workbench/contrib/*/~"
 							} // TODO@layers
 						]
 					},
 					{
-						"target": "src/vs/workbench/api/~",
+						"target": "src/{vs,sql}/workbench/api/~",
 						"restrictions": [
-							"vscode",
-							"vs/base/~",
-							"vs/base/parts/*/~",
-							"vs/platform/*/~",
-							"vs/editor/~",
-							"vs/editor/contrib/*/~",
-							"vs/workbench/api/~",
-							"vs/workbench/~",
-							"vs/workbench/services/*/~",
-							"vs/workbench/contrib/*/~"
+							"{vs,sql}code",
+							"{vs,sql}/base/~",
+							"{vs,sql}/base/parts/*/~",
+							"{vs,sql}/platform/*/~",
+							"{vs,sql}/editor/~",
+							"{vs,sql}/editor/contrib/*/~",
+							"{vs,sql}/workbench/api/~",
+							"{vs,sql}/workbench/~",
+							"{vs,sql}/workbench/services/*/~",
+							"{vs,sql}/workbench/contrib/*/~"
 						]
 					},
 					{
-							"vs/base/~",
-							"vs/base/parts/*/~",
-							"vs/platform/*/~",
-							"vs/editor/~",
-							"vs/editor/contrib/*/~",
-							"vs/workbench/~",
-							"vs/workbench/services/*/~",
+						"target": "src/{vs,sql}/workbench/services/*/~",
+						"restrictions": [
+							"{vs,sql}/base/~",
+							"{vs,sql}/base/parts/*/~",
+							"{vs,sql}/platform/*/~",
+							"{vs,sql}/editor/~",
+							"{vs,sql}/editor/contrib/*/~",
+							"{vs,sql}/workbench/~",
+							"{vs,sql}/workbench/services/*/~",
 							{
 								"when": "test",
+								"pattern": "{vs,sql}/workbench/contrib/*/~"
 							}, // TODO@layers
 							"tas-client-umd", // node module allowed even in /common/
-				"src/sql/base/browser/ui/table/plugins/cellSelectionModel.plugin.ts",
-				"src/sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin.ts",
-				"src/sql/base/browser/ui/table/plugins/headerFilter.plugin.ts",
-				"src/sql/base/browser/ui/table/plugins/rowDetailView.ts",
-				"src/sql/base/browser/ui/table/plugins/rowMoveManager.plugin.ts",
+							"src/sql/base/browser/ui/table/plugins/cellSelectionModel.plugin.ts",
+							"src/sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin.ts",
+							"src/sql/base/browser/ui/table/plugins/headerFilter.plugin.ts",
+							"src/sql/base/browser/ui/table/plugins/rowDetailView.ts",
+							"src/sql/base/browser/ui/table/plugins/rowMoveManager.plugin.ts"
 						]
 					},
 					{
+						"target": "src/{vs,sql}/workbench/contrib/*/~",
 						"restrictions": [
-							"vs/base/~",
-							"vs/base/parts/*/~",
-							"vs/platform/*/~",
-							"vs/editor/~",
-							"vs/editor/contrib/*/~",
-							"vs/workbench/~",
-							"vs/workbench/services/*/~",
-							"vs/workbench/contrib/*/~",
+							"{vs,sql}/base/~",
+							"{vs,sql}/base/parts/*/~",
+							"{vs,sql}/platform/*/~",
+							"{vs,sql}/editor/~",
+							"{vs,sql}/editor/contrib/*/~",
+							"{vs,sql}/workbench/~",
+							"{vs,sql}/workbench/services/*/~",
+							"{vs,sql}/workbench/contrib/*/~",
+							"{vs,sql}code-notebook-renderer", // Type only import
+							{
 								"when": "hasBrowser",
 								"pattern": "xterm"
 							}, // node module allowed even in /browser/
@@ -457,107 +505,113 @@
 							}, // node module allowed even in /browser/
 							{
 								"when": "hasBrowser",
-								"pattern": "vscode-textmate"
+								"pattern": "{vs,sql}code-textmate"
 							} // node module allowed even in /browser/
 						]
 					},
 					{
-						"target": "src/vs/code/~",
+						"target": "src/{vs,sql}/code/~",
 						"restrictions": [
-							"vs/base/~",
-							"vs/base/parts/*/~",
-							"vs/platform/*/~",
-							"vs/editor/~",
-							"vs/editor/contrib/*/~",
-							"vs/code/~",
+							"{vs,sql}/base/~",
+							"{vs,sql}/base/parts/*/~",
+							"{vs,sql}/platform/*/~",
+							"{vs,sql}/editor/~",
+							"{vs,sql}/editor/contrib/*/~",
+							"{vs,sql}/code/~",
 							{
 								"when": "hasBrowser",
-								"pattern": "vs/workbench/workbench.web.main"
+								"pattern": "{vs,sql}/workbench/workbench.web.main"
 							}
 						]
 					},
 					{
-						"target": "src/vs/server/~",
+						"target": "src/{vs,sql}/server/~",
 						"restrictions": [
-							"vs/base/~",
-							"vs/base/parts/*/~",
-							"vs/platform/*/~",
-							"vs/workbench/~",
-							"vs/workbench/api/~",
-							"vs/workbench/services/*/~",
-							"vs/workbench/contrib/*/~",
-							"vs/server/~"
+							"{vs,sql}/base/~",
+							"{vs,sql}/base/parts/*/~",
+							"{vs,sql}/platform/*/~",
+							"{vs,sql}/workbench/~",
+							"{vs,sql}/workbench/api/~",
+							"{vs,sql}/workbench/services/*/~",
+							"{vs,sql}/workbench/contrib/*/~",
+							"{vs,sql}/server/~"
 						]
 					},
 					{
+						"target": "src/{vs,sql}/workbench/workbench.common.main.ts",
 						"layer": "browser",
 						"restrictions": [
-							"vs/base/~",
-							"vs/base/parts/*/~",
-							"vs/platform/*/~",
-							"vs/editor/~",
-							"vs/editor/contrib/*/~",
-							"vs/editor/editor.all",
-							"vs/workbench/~",
-							"vs/workbench/api/~",
-							"vs/workbench/services/*/~",
-							"vs/workbench/contrib/*/~"
+							"{vs,sql}/base/~",
+							"{vs,sql}/base/parts/*/~",
+							"{vs,sql}/platform/*/~",
+							"{vs,sql}/editor/~",
+							"{vs,sql}/editor/contrib/*/~",
+							"{vs,sql}/editor/editor.all",
+							"{vs,sql}/workbench/~",
+							"{vs,sql}/workbench/api/~",
+							"{vs,sql}/workbench/services/*/~",
+							"{vs,sql}/workbench/contrib/*/~"
 						]
 					},
 					{
+						"target": "src/{vs,sql}/workbench/workbench.web.main.ts",
+						"layer": "browser",
 						"restrictions": [
-							"vs/base/~",
-							"vs/base/parts/*/~",
-							"vs/platform/*/~",
-							"vs/editor/~",
-							"vs/editor/contrib/*/~",
-							"vs/editor/editor.all",
-							"vs/workbench/~",
-							"vs/workbench/api/~",
-							"vs/workbench/services/*/~",
-							"vs/workbench/contrib/*/~",
-							"vs/workbench/workbench.common.main"
+							"{vs,sql}/base/~",
+							"{vs,sql}/base/parts/*/~",
+							"{vs,sql}/platform/*/~",
+							"{vs,sql}/editor/~",
+							"{vs,sql}/editor/contrib/*/~",
+							"{vs,sql}/editor/editor.all",
+							"{vs,sql}/workbench/~",
+							"{vs,sql}/workbench/api/~",
+							"{vs,sql}/workbench/services/*/~",
+							"{vs,sql}/workbench/contrib/*/~",
+							"{vs,sql}/workbench/workbench.common.main"
 						]
 					},
 					{
+						"target": "src/{vs,sql}/workbench/{workbench.sandbox.main.ts,workbench.desktop.sandbox.main.ts}",
 						"layer": "electron-sandbox",
 						"restrictions": [
-							"vs/base/*/~",
-							"vs/base/parts/*/~",
-							"vs/platform/*/~",
-							"vs/editor/~",
-							"vs/editor/contrib/*/~",
-							"vs/editor/editor.all",
-							"vs/workbench/~",
-							"vs/workbench/api/~",
-							"vs/workbench/services/*/~",
-							"vs/workbench/contrib/*/~",
-							"vs/workbench/workbench.sandbox.main"
+							"{vs,sql}/base/*/~",
+							"{vs,sql}/base/parts/*/~",
+							"{vs,sql}/platform/*/~",
+							"{vs,sql}/editor/~",
+							"{vs,sql}/editor/contrib/*/~",
+							"{vs,sql}/editor/editor.all",
+							"{vs,sql}/workbench/~",
+							"{vs,sql}/workbench/api/~",
+							"{vs,sql}/workbench/services/*/~",
+							"{vs,sql}/workbench/contrib/*/~",
+							"{vs,sql}/workbench/workbench.common.main",
+							"{vs,sql}/workbench/workbench.sandbox.main"
 						]
 					},
 					{
+						"target": "src/{vs,sql}/workbench/workbench.desktop.main.ts",
 						"layer": "electron-browser",
 						"restrictions": [
-							"vs/base/*/~",
-							"vs/base/parts/*/~",
-							"vs/platform/*/~",
-							"vs/editor/~",
-							"vs/editor/contrib/*/~",
-							"vs/editor/editor.all",
-							"vs/workbench/~",
-							"vs/workbench/api/~",
-							"vs/workbench/services/*/~",
-							"vs/workbench/contrib/*/~",
-							"vs/workbench/workbench.common.main",
-							"vs/workbench/workbench.sandbox.main"
+							"{vs,sql}/base/*/~",
+							"{vs,sql}/base/parts/*/~",
+							"{vs,sql}/platform/*/~",
+							"{vs,sql}/editor/~",
+							"{vs,sql}/editor/contrib/*/~",
+							"{vs,sql}/editor/editor.all",
+							"{vs,sql}/workbench/~",
+							"{vs,sql}/workbench/api/~",
+							"{vs,sql}/workbench/services/*/~",
+							"{vs,sql}/workbench/contrib/*/~",
+							"{vs,sql}/workbench/workbench.common.main",
+							"{vs,sql}/workbench/workbench.sandbox.main"
 						]
 					},
 					{
-						"target": "src/vs/workbench/{workbench.desktop.main.nls.js,workbench.web.main.nls.js}",
+						"target": "src/{vs,sql}/workbench/{workbench.desktop.main.nls.js,workbench.web.main.nls.js}",
 						"restrictions": []
 					},
 					{
-						"target": "src/vs/{css.d.ts,monaco.d.ts,nls.d.ts,nls.mock.ts}",
+						"target": "src/{vs,sql}/{css.d.ts,monaco.d.ts,nls.d.ts,nls.mock.ts}",
 						"restrictions": []
 					},
 					{
@@ -576,6 +630,9 @@
 				"test/**/*.ts"
 			],
 			"rules": {
+				"code-import-patterns": [
+					"warn",
+					{
 						"target": "test/smoke/**",
 						"restrictions": [
 							"test/automation",
@@ -617,6 +674,47 @@
 							"*" // node modules
 						]
 					}
+				]
+			}
+		},
+		{
+			"files": [
+				"src/{vs,sql}/server/*",
+
+				// {{SQL CARBON EDIT}} Ignore our own that don't use our copyright
+				"extensions/azuremonitor/src/prompts/**",
+				"extensions/azuremonitor/src/typings/findRemove.d.ts",
+				"extensions/kusto/src/prompts/**",
+				"extensions/mssql/src/hdfs/webhdfs.ts",
+				"extensions/mssql/src/prompts/**",
+				"extensions/mssql/src/typings/bufferStreamReader.d.ts",
+				"extensions/mssql/src/typings/findRemove.d.ts",
+				"extensions/notebook/resources/jupyter_config/**",
+				"extensions/notebook/src/intellisense/text.ts",
+				"extensions/notebook/src/prompts/**",
+				"extensions/resource-deployment/src/typings/linuxReleaseInfo.d.ts",
+				"src/sql/base/browser/ui/table/plugins/autoSizeColumns.plugin.ts",
+				"src/sql/base/browser/ui/table/plugins/cellSelectionModel.plugin.ts",
+				"src/sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin.ts",
+				"src/sql/base/browser/ui/table/plugins/headerFilter.plugin.ts",
+				"src/sql/base/browser/ui/table/plugins/rowDetailView.ts",
+				"src/sql/base/browser/ui/table/plugins/rowMoveManager.plugin.ts",
+				"src/sql/base/browser/ui/table/plugins/rowSelectionModel.plugin.ts",
+				"src/sql/workbench/services/notebook/browser/outputs/factories.ts",
+				"src/sql/workbench/services/notebook/browser/outputs/mimemodel.ts",
+				"src/sql/workbench/services/notebook/browser/outputs/registry.ts",
+				"src/sql/workbench/services/notebook/browser/outputs/renderMimeInterfaces.ts",
+				"src/sql/workbench/services/notebook/browser/outputs/sanitizer.ts",
+				"src/sql/workbench/contrib/notebook/browser/models/outputProcessor.ts",
+				"src/sql/workbench/contrib/notebook/browser/turndownPluginGfm.ts",
+				"src/sql/workbench/services/notebook/common/nbformat.ts",
+				"src/sql/workbench/services/notebook/browser/outputs/renderers.ts",
+				"src/sql/workbench/services/notebook/browser/outputs/tableRenderers.ts"
+			],
+			"rules": {
+				"header/header": [
+					// hygiene.js still checks that all files (even those in this directory) are MIT licensed.
+					"off"
 				]
 			}
 		}

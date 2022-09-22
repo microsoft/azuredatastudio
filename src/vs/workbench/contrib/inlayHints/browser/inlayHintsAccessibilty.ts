@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as dom from 'vs/base/browser/dom';
@@ -8,7 +8,7 @@ import { CancellationTokenSource } from 'vs/base/common/cancellation';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { DisposableStore } from 'vs/base/common/lifecycle';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
-import { EditorAction2, registerEditorContribution } from 'vs/editor/browser/editorExtensions';
+import { EditorAction2 } from 'vs/editor/browser/editorExtensions'; // {{SQL CARBON EDIT}} - remove unused
 import { IEditorContribution } from 'vs/editor/common/editorCommon';
 import { EditorContextKeys } from 'vs/editor/common/editorContextKeys';
 import { InlayHintItem, asCommandLink } from 'vs/editor/contrib/inlayHints/browser/inlayHints';
@@ -211,4 +211,5 @@ registerAction2(class StopReadHints extends EditorAction2 {
 	}
 });
 
-registerEditorContribution(InlayHintsAccessibility.ID, InlayHintsAccessibility);
+// {{SQL CARBON EDIT}} - disable until audio hints enabled
+//registerEditorContribution(InlayHintsAccessibility.ID, InlayHintsAccessibility);

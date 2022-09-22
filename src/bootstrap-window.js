@@ -139,7 +139,8 @@
 			'xterm-addon-search': `${baseNodeModulesPath}/xterm-addon-search/lib/xterm-addon-search.js`,
 			'xterm-addon-unicode11': `${baseNodeModulesPath}/xterm-addon-unicode11/lib/xterm-addon-unicode11.js`,
 			'xterm-addon-webgl': `${baseNodeModulesPath}/xterm-addon-webgl/lib/xterm-addon-webgl.js`,
-			'@vscode/iconv-lite-umd': `${baseNodeModulesPath}/@vscode/iconv-lite-umd/lib/iconv-lite-umd.js`,
+			'iconv-lite-umd': `${baseNodeModulesPath}/iconv-lite-umd/lib/iconv-lite-umd.js`,
+      '@vscode/iconv-lite-umd': `${baseNodeModulesPath}/@vscode/iconv-lite-umd/lib/iconv-lite-umd.js`,
 			'jschardet': `${baseNodeModulesPath}/jschardet/dist/jschardet.min.js`,
 			'@vscode/vscode-languagedetection': `${baseNodeModulesPath}/@vscode/vscode-languagedetection/dist/lib/index.js`,
       'vscode-regexp-languagedetection': `${baseNodeModulesPath}/vscode-regexp-languagedetection/dist/index.js`,
@@ -157,7 +158,7 @@
 			// the expected method and so nothing needs to be done - but if it's AMD then the VS Code loader will throw an error
 			// (Can only have one anonymous define call per script file). In order to make packages that do this load correctly
 			// we need to add them to the list below to tell the loader that these should be loaded using AMD as well
-			loaderConfig.amdModulesPattern = /(^vs\/)|(^vscode-textmate$)|(^vscode-oniguruma$)|(^xterm$)|(^xterm-addon-search$)|(^xterm-addon-unicode11$)|(^xterm-addon-webgl$)|(^iconv-lite-umd$)|(^jschardet$)|(^@vscode\/vscode-languagedetection$)|(^tas-client-umd$)/;
+			loaderConfig.amdModulesPattern = /(vs|sql)\/|(^vscode-textmate$)|(^vscode-oniguruma$)|(^xterm$)|(^xterm-addon-search$)|(^xterm-addon-unicode11$)|(^xterm-addon-webgl$)|(^iconv-lite-umd$)|(^jschardet$)|(^@vscode\/vscode-languagedetection$)|(^tas-client-umd$)|(^ansi_up$)|(^azdataGraph$)/;  // {{SQL CARBON EDIT}} include sql and ansi_up in regex
 		}
 
 		// Signal before require.config()

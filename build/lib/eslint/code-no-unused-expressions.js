@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 // FORKED FROM https://github.com/eslint/eslint/blob/b23ad0d789a909baf8d7c41a35bc53df932eaf30/lib/rules/no-unused-expressions.js
 // and added support for `OptionalCallExpression`, see https://github.com/facebook/create-react-app/issues/8107 and https://github.com/eslint/eslint/issues/12642
@@ -44,10 +44,7 @@ module.exports = {
         ]
     },
     create(context) {
-        const config = context.options[0] || {},
-            allowShortCircuit = config.allowShortCircuit || false,
-            allowTernary = config.allowTernary || false,
-            allowTaggedTemplates = config.allowTaggedTemplates || false;
+        const config = context.options[0] || {}, allowShortCircuit = config.allowShortCircuit || false, allowTernary = config.allowTernary || false, allowTaggedTemplates = config.allowTaggedTemplates || false;
         // eslint-disable-next-line jsdoc/require-description
         /**
          * @param node any node

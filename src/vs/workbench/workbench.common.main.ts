@@ -367,9 +367,10 @@ import 'vs/workbench/contrib/relauncher/browser/relauncher.contribution';
 // Tasks
 import 'vs/workbench/contrib/tasks/browser/task.contribution';
 
+// {{SQL CARBON EDIT}}
 // Remote
-import 'vs/workbench/contrib/remote/common/remote.contribution';
-import 'vs/workbench/contrib/remote/browser/remote.contribution';
+// import 'vs/workbench/contrib/remote/common/remote.contribution';
+// import 'vs/workbench/contrib/remote/browser/remote.contribution';
 
 // Emmet
 // import 'vs/workbench/contrib/emmet/browser/emmet.contribution'; {{SQL CARBON EDIT}}
@@ -461,8 +462,9 @@ import 'vs/workbench/contrib/workspaces/browser/workspaces.contribution';
 // List
 import 'vs/workbench/contrib/list/browser/list.contribution';
 
+// {{SQL CARBON EDIT}} - disable audio cues
 // Audio Cues
-import 'vs/workbench/contrib/audioCues/browser/audioCues.contribution';
+// import 'vs/workbench/contrib/audioCues/browser/audioCues.contribution';
 
 // Drop into editor
 import 'vs/workbench/contrib/dropIntoEditor/browser/dropIntoEditor.contibution';

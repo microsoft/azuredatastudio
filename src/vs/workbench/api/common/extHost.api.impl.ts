@@ -49,7 +49,7 @@ import { IExtHostWindow } from 'vs/workbench/api/common/extHostWindow';
 import { IExtHostWorkspace } from 'vs/workbench/api/common/extHostWorkspace';
 import { ProxyIdentifier } from 'vs/workbench/services/extensions/common/proxyIdentifier';
 import { ExtensionDescriptionRegistry } from 'vs/workbench/services/extensions/common/extensionDescriptionRegistry';
-import * as vscode from 'vscode';
+import type * as vscode from 'vscode';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { values } from 'vs/base/common/collections';
 import { ExtHostEditorInsets } from 'vs/workbench/api/common/extHostCodeInsets';
@@ -82,7 +82,7 @@ import { ExtHostUriOpeners } from 'vs/workbench/api/common/extHostUriOpener';
 import { IExtHostSecretState } from 'vs/workbench/api/common/exHostSecretState';
 import { IExtHostEditorTabs } from 'vs/workbench/api/common/extHostEditorTabs';
 import { IExtHostTelemetry } from 'vs/workbench/api/common/extHostTelemetry';
-// import { ExtHostNotebookKernels } from 'vs/workbench/api/common/extHostNotebookKernels'; {{SQL CARBON EDIT}} Disable VS Code notebooks
+import { ExtHostNotebookKernels } from 'vs/workbench/api/common/extHostNotebookKernels'; // {{SQL CARBON EDIT}} Disable VS Code notebooks
 import { TextSearchCompleteMessageType } from 'vs/workbench/services/search/common/searchExtTypes';
 // import { ExtHostNotebookRenderers } from 'vs/workbench/api/common/extHostNotebookRenderers'; {{SQL CARBON EDIT}} Disable VS Code notebooks
 import { Schemas } from 'vs/base/common/network';
@@ -91,14 +91,17 @@ import { matchesScheme } from 'vs/platform/opener/common/opener';
 // import { ExtHostNotebookDocuments } from 'vs/workbench/api/common/extHostNotebookDocuments'; {{SQL CARBON EDIT}} Disable VS Code notebooks
 // import { ExtHostInteractive } from 'vs/workbench/api/common/extHostInteractive'; {{SQL CARBON EDIT}} Remove until we need it
 import { combinedDisposable } from 'vs/base/common/lifecycle';
-import { ExtHostNotebook } from 'sql/workbench/api/common/extHostNotebook';
-import { docCreationFailedError, functionalityNotSupportedError, invalidArgumentsError } from 'sql/base/common/locConstants';
 import { checkProposedApiEnabled, ExtensionIdentifierSet, isProposedApiEnabled } from 'vs/workbench/services/extensions/common/extensions';
-import { IdGenerator } from 'vs/base/common/idGenerator';
+import { DebugConfigurationProviderTriggerKind } from 'vs/workbench/contrib/debug/common/debug';
+import { ExtHostNotebookProxyKernels } from 'vs/workbench/api/common/extHostNotebookProxyKernels';
+
+import { ExtHostNotebook } from 'sql/workbench/api/common/extHostNotebook'; // {{SQL CARBON EDIT}}
+import { docCreationFailedError, functionalityNotSupportedError, invalidArgumentsError } from 'sql/base/common/locConstants';
 import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/common/extHostNotebookDocumentsAndEditors';
 import { VSCodeNotebookEditor } from 'sql/workbench/api/common/notebooks/vscodeNotebookEditor';
 import { VSCodeNotebookDocument } from 'sql/workbench/api/common/notebooks/vscodeNotebookDocument';
 import { convertToADSNotebookContents } from 'sql/workbench/api/common/notebooks/notebookUtils';
+import { IdGenerator } from 'vs/base/common/idGenerator';
 
 export interface IExtensionRegistries {
 	mine: ExtensionDescriptionRegistry;
@@ -170,6 +173,10 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 	const extHostNotebookProxyKernels = rpcProtocol.set(ExtHostContext.ExtHostNotebookProxyKernels, new ExtHostNotebookProxyKernels(rpcProtocol, extHostNotebookKernels, extHostLogService));
 	const extHostNotebookRenderers = rpcProtocol.set(ExtHostContext.ExtHostNotebookRenderers, new ExtHostNotebookRenderers(rpcProtocol, extHostNotebook));
 	*/
+	// {{SQL CARBON TODO}} - need to use a ADS specific proxy
+	const extHostNotebookKernels = rpcProtocol.set(ExtHostContext.ExtHostNotebookKernels, new ExtHostNotebookKernels(rpcProtocol, initData, <any>extHostNotebook, extHostCommands, extHostLogService));
+	const extHostNotebookProxyKernels = rpcProtocol.set(ExtHostContext.ExtHostNotebookProxyKernels, new ExtHostNotebookProxyKernels(rpcProtocol, extHostNotebookKernels, extHostLogService));
+
 	const extHostEditors = rpcProtocol.set(ExtHostContext.ExtHostEditors, new ExtHostEditors(rpcProtocol, extHostDocumentsAndEditors));
 	const extHostTreeViews = rpcProtocol.set(ExtHostContext.ExtHostTreeViews, new ExtHostTreeViews(rpcProtocol.getProxy(MainContext.MainThreadTreeViews), extHostCommands, extHostLogService));
 	const extHostEditorInsets = rpcProtocol.set(ExtHostContext.ExtHostEditorInsets, new ExtHostEditorInsets(rpcProtocol.getProxy(MainContext.MainThreadEditorInsets), extHostEditors, initData.remote));
@@ -1255,9 +1262,8 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 			},
 			createNotebookProxyController(id: string, notebookType: string, label: string, handler: () => vscode.NotebookController | string | Thenable<vscode.NotebookController | string>) {
 				//checkProposedApiEnabled(extension, 'notebookProxyController');
-				//return extHostNotebookProxyKernels.createNotebookProxyController(extension, id, notebookType, label, handler);
+				return extHostNotebookProxyKernels.createNotebookProxyController(extension, id, notebookType, label, handler);
 				// {{SQL CARBON TODO}}
-				return undefined;
 			}
 		};
 
@@ -1308,7 +1314,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 			DebugAdapterInlineImplementation: extHostTypes.DebugAdapterInlineImplementation,
 			DebugAdapterNamedPipeServer: extHostTypes.DebugAdapterNamedPipeServer,
 			DebugAdapterServer: extHostTypes.DebugAdapterServer,
-			DebugConfigurationProviderTriggerKind: vscode.DebugConfigurationProviderTriggerKind,
+			DebugConfigurationProviderTriggerKind: DebugConfigurationProviderTriggerKind,
 			DebugConsoleMode: extHostTypes.DebugConsoleMode,
 			DecorationRangeBehavior: extHostTypes.DecorationRangeBehavior,
 			Diagnostic: extHostTypes.Diagnostic,

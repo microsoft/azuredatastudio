@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 // eslint-disable-next-line code-import-patterns
-import { ExtHostModelViewTreeViewsShape, SqlExtHostContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { ExtHostModelViewTreeViewsShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 // eslint-disable-next-line code-import-patterns
 import { IModelViewTreeViewDataProvider, ITreeComponentItem } from 'sql/workbench/common/views';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -13,6 +13,7 @@ import * as vsTreeView from 'vs/workbench/api/browser/mainThreadTreeViews';
 import { ResolvableTreeItem } from 'vs/workbench/common/views';
 import { deepClone } from 'vs/base/common/objects';
 import { IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
+import { SqlExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 
 export class ResolvableTreeComponentItem extends ResolvableTreeItem implements ITreeComponentItem {
 

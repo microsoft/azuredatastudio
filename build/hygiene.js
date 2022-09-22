@@ -5,8 +5,6 @@
 
 const filter = require('gulp-filter');
 const es = require('event-stream');
-const gulpeslint = require('gulp-eslint');
-const tsfmt = require('typescript-formatter');
 const VinylFile = require('vinyl');
 const vfs = require('vinyl-fs');
 const path = require('path');
@@ -21,7 +19,9 @@ const copyrightHeaderLines = [
 	' *--------------------------------------------------------------------------------------------*/',
 ];
 
-function hygiene(some) {
+function hygiene(some, linting = true) {
+	const gulpeslint = require('gulp-eslint');
+	const tsfmt = require('typescript-formatter');
 	let errorCount = 0;
 
 	const productJson = es.through(function (file) {
@@ -187,7 +187,7 @@ function hygiene(some) {
 	}
 
 	let count = 0;
-	return es.merge(typescript, javascript).pipe(
+	return es.merge(...streams).pipe(
 		es.through(
 			function (data) {
 				count++;
@@ -232,7 +232,7 @@ function createGitIndexVinyls(paths) {
 				}
 
 				cp.exec(
-					`git show :${relativePath}`,
+					process.platform === 'win32' ? `git show :${relativePath}` : `git show ':${relativePath}'`,
 					{ maxBuffer: 2000 * 1024, encoding: 'buffer' },
 					(err, out) => {
 						if (err) {

@@ -5,7 +5,6 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { SqlExtHostContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { ExtHostAccountManagement } from 'sql/workbench/api/common/extHostAccountManagement';
 import { ExtHostCredentialManagement } from 'sql/workbench/api/common/extHostCredentialManagement';
 import { ExtHostDataProtocol } from 'sql/workbench/api/common/extHostDataProtocol';
@@ -40,6 +39,7 @@ import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemet
 import { ExtHostAzureBlob } from 'sql/workbench/api/common/extHostAzureBlob';
 import { ExtHostAzureAccount } from 'sql/workbench/api/common/extHostAzureAccount';
 import { IExtHostExtensionService } from 'vs/workbench/api/common/extHostExtensionService';
+import { SqlExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 
 export interface IAzdataExtensionApiFactory {
 	(extension: IExtensionDescription): typeof azdata;

@@ -6,7 +6,7 @@
 import { localize } from 'vs/nls';
 import * as errors from 'vs/base/common/errors';
 import * as vscode from 'vscode';
-import { SqlMainContext, ExtHostModelViewTreeViewsShape, MainThreadModelViewShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { ExtHostModelViewTreeViewsShape, MainThreadModelViewShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { ITreeComponentItem } from 'sql/workbench/common/views';
 import { CommandsConverter } from 'vs/workbench/api/common/extHostCommands';
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
@@ -16,6 +16,7 @@ import { Emitter } from 'vs/base/common/event';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { ILogService } from 'vs/platform/log/common/log';
 import { DataTransferDTO } from 'vs/workbench/api/common/shared/dataTransfer';
+import { SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 export class ExtHostModelViewTreeViews implements ExtHostModelViewTreeViewsShape {
 	private _proxy: MainThreadModelViewShape;

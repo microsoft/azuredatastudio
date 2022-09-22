@@ -3,10 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { createProxyIdentifier } from 'vs/workbench/services/extensions/common/proxyIdentifier';
-
 import { URI, UriComponents } from 'vs/base/common/uri';
-
 import { IDisposable } from 'vs/base/common/lifecycle';
 
 import type * as azdata from 'azdata';
@@ -718,56 +715,6 @@ export interface MainThreadCredentialManagementShape extends IDisposable {
 }
 
 function ni() { return new Error('Not implemented'); }
-
-// --- proxy identifiers
-
-export const SqlMainContext = {
-	// SQL entries
-	MainThreadAccountManagement: createProxyIdentifier<MainThreadAccountManagementShape>('MainThreadAccountManagement'),
-	MainThreadAzureAccount: createProxyIdentifier<MainThreadAzureAccountShape>('MainThreadAzureAccount'),
-	MainThreadConnectionManagement: createProxyIdentifier<MainThreadConnectionManagementShape>('MainThreadConnectionManagement'),
-	MainThreadCredentialManagement: createProxyIdentifier<MainThreadCredentialManagementShape>('MainThreadCredentialManagement'),
-	MainThreadDataProtocol: createProxyIdentifier<MainThreadDataProtocolShape>('MainThreadDataProtocol'),
-	MainThreadObjectExplorer: createProxyIdentifier<MainThreadObjectExplorerShape>('MainThreadObjectExplorer'),
-	MainThreadBackgroundTaskManagement: createProxyIdentifier<MainThreadBackgroundTaskManagementShape>('MainThreadBackgroundTaskManagement'),
-	MainThreadResourceProvider: createProxyIdentifier<MainThreadResourceProviderShape>('MainThreadResourceProvider'),
-	MainThreadModalDialog: createProxyIdentifier<MainThreadModalDialogShape>('MainThreadModalDialog'),
-	MainThreadTasks: createProxyIdentifier<MainThreadTasksShape>('MainThreadTasks'),
-	MainThreadDashboardWebview: createProxyIdentifier<MainThreadDashboardWebviewShape>('MainThreadDashboardWebview'),
-	MainThreadModelView: createProxyIdentifier<MainThreadModelViewShape>('MainThreadModelView'),
-	MainThreadDashboard: createProxyIdentifier<MainThreadDashboardShape>('MainThreadDashboard'),
-	MainThreadModelViewDialog: createProxyIdentifier<MainThreadModelViewDialogShape>('MainThreadModelViewDialog'),
-	MainThreadQueryEditor: createProxyIdentifier<MainThreadQueryEditorShape>('MainThreadQueryEditor'),
-	MainThreadNotebook: createProxyIdentifier<MainThreadNotebookShape>('MainThreadNotebook'),
-	MainThreadNotebookDocumentsAndEditors: createProxyIdentifier<MainThreadNotebookDocumentsAndEditorsShape>('MainThreadNotebookDocumentsAndEditors'),
-	MainThreadExtensionManagement: createProxyIdentifier<MainThreadExtensionManagementShape>('MainThreadExtensionManagement'),
-	MainThreadWorkspace: createProxyIdentifier<MainThreadWorkspaceShape>('MainThreadWorkspace'),
-	MainThreadAzureBlob: createProxyIdentifier<MainThreadAzureBlobShape>('MainThreadAzureBlob'),
-};
-
-export const SqlExtHostContext = {
-	ExtHostAccountManagement: createProxyIdentifier<ExtHostAccountManagementShape>('ExtHostAccountManagement'),
-	ExtHostAzureAccount: createProxyIdentifier<ExtHostAzureAccountShape>('ExtHostAzureAccount'),
-	ExtHostConnectionManagement: createProxyIdentifier<ExtHostConnectionManagementShape>('ExtHostConnectionManagement'),
-	ExtHostCredentialManagement: createProxyIdentifier<ExtHostCredentialManagementShape>('ExtHostCredentialManagement'),
-	ExtHostDataProtocol: createProxyIdentifier<ExtHostDataProtocolShape>('ExtHostDataProtocol'),
-	ExtHostObjectExplorer: createProxyIdentifier<ExtHostObjectExplorerShape>('ExtHostObjectExplorer'),
-	ExtHostResourceProvider: createProxyIdentifier<ExtHostResourceProviderShape>('ExtHostResourceProvider'),
-	ExtHostModalDialogs: createProxyIdentifier<ExtHostModalDialogsShape>('ExtHostModalDialogs'),
-	ExtHostTasks: createProxyIdentifier<ExtHostTasksShape>('ExtHostTasks'),
-	ExtHostBackgroundTaskManagement: createProxyIdentifier<ExtHostBackgroundTaskManagementShape>('ExtHostBackgroundTaskManagement'),
-	ExtHostDashboardWebviews: createProxyIdentifier<ExtHostDashboardWebviewsShape>('ExtHostDashboardWebviews'),
-	ExtHostModelView: createProxyIdentifier<ExtHostModelViewShape>('ExtHostModelView'),
-	ExtHostModelViewTreeViews: createProxyIdentifier<ExtHostModelViewTreeViewsShape>('ExtHostModelViewTreeViews'),
-	ExtHostDashboard: createProxyIdentifier<ExtHostDashboardShape>('ExtHostDashboard'),
-	ExtHostModelViewDialog: createProxyIdentifier<ExtHostModelViewDialogShape>('ExtHostModelViewDialog'),
-	ExtHostQueryEditor: createProxyIdentifier<ExtHostQueryEditorShape>('ExtHostQueryEditor'),
-	ExtHostNotebook: createProxyIdentifier<ExtHostNotebookShape>('ExtHostNotebook'),
-	ExtHostNotebookDocumentsAndEditors: createProxyIdentifier<ExtHostNotebookDocumentsAndEditorsShape>('ExtHostNotebookDocumentsAndEditors'),
-	ExtHostExtensionManagement: createProxyIdentifier<ExtHostExtensionManagementShape>('ExtHostExtensionManagement'),
-	ExtHostWorkspace: createProxyIdentifier<ExtHostWorkspaceShape>('ExtHostWorkspace'),
-	ExtHostAzureBlob: createProxyIdentifier<ExtHostAzureBlobShape>('ExtHostAzureBlob')
-};
 
 export interface MainThreadDashboardShape extends IDisposable {
 

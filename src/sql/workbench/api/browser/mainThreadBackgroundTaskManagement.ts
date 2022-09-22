@@ -4,9 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ITaskService } from 'sql/workbench/services/tasks/common/tasksService';
-import { MainThreadBackgroundTaskManagementShape, SqlMainContext, ExtHostBackgroundTaskManagementShape, SqlExtHostContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { MainThreadBackgroundTaskManagementShape, ExtHostBackgroundTaskManagementShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
+import { SqlExtHostContext, SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 import * as azdata from 'azdata';
 

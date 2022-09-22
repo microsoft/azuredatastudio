@@ -7,13 +7,12 @@ import type * as azurecore from 'azurecore';
 import { Disposable } from 'vs/base/common/lifecycle';
 import {
 	ExtHostAzureAccountShape,
-	MainThreadAzureAccountShape,
-	SqlExtHostContext,
-	SqlMainContext
+	MainThreadAzureAccountShape
 } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IAzureAccountService } from 'sql/platform/azureAccount/common/azureAccountService';
 import { AzureAccountService } from 'sql/workbench/services/azureAccount/browser/azureAccountService';
 import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
+import { SqlExtHostContext, SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadAzureAccount)
 export class MainThreadAzureAccount extends Disposable implements MainThreadAzureAccountShape {

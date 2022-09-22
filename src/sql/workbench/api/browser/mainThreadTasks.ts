@@ -6,8 +6,6 @@
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 
 import {
-	SqlExtHostContext,
-	SqlMainContext,
 	ExtHostTasksShape,
 	MainThreadTasksShape
 } from 'sql/workbench/api/common/sqlExtHost.protocol';
@@ -17,6 +15,7 @@ import { IConnectionProfile } from 'azdata';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { TaskRegistry } from 'sql/workbench/services/tasks/browser/tasksRegistry';
 import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
+import { SqlExtHostContext, SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadTasks)
 export class MainThreadTasks extends Disposable implements MainThreadTasksShape {

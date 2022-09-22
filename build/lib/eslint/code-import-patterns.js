@@ -133,7 +133,7 @@ module.exports = new class {
                 continue;
             }
             const target = option.target;
-            const targetIsVS = /^src\/vs\//.test(target);
+            const targetIsVS = /^src\/{vs,sql}\//.test(target);
             const restrictions = (typeof option.restrictions === 'string' ? [option.restrictions] : option.restrictions).slice(0);
             if (targetIsVS) {
                 // Always add "vs/nls"
@@ -172,7 +172,7 @@ module.exports = new class {
         if (importPath[0] === '.') {
             const relativeFilename = getRelativeFilename(context);
             importPath = path.posix.join(path.posix.dirname(relativeFilename), importPath);
-            if (/^src\/vs\//.test(importPath)) {
+            if (/^src\/{vs,sql}\//.test(importPath)) {
                 // resolve using AMD base url
                 importPath = importPath.substring('src/'.length);
             }

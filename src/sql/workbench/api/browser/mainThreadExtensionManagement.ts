@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { SqlMainContext, MainThreadExtensionManagementShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { MainThreadExtensionManagementShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IExtensionManagementService, ILocalExtension } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { URI } from 'vs/base/common/uri';
@@ -12,6 +12,7 @@ import { INotificationService, Severity } from 'vs/platform/notification/common/
 import { localize } from 'vs/nls';
 import { ILogService } from 'vs/platform/log/common/log';
 import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
+import { SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadExtensionManagement)
 export class MainThreadExtensionManagement extends Disposable implements MainThreadExtensionManagementShape {

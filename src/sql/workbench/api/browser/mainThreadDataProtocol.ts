@@ -5,8 +5,8 @@
 
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import {
-	SqlExtHostContext, ExtHostDataProtocolShape,
-	MainThreadDataProtocolShape, SqlMainContext
+	ExtHostDataProtocolShape,
+	MainThreadDataProtocolShape
 } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
@@ -31,6 +31,8 @@ import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ITableDesignerService } from 'sql/workbench/services/tableDesigner/common/interface';
 import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
 import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
+import { SqlExtHostContext, SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
+
 /**
  * Main thread class for handling data protocol management registration.
  */

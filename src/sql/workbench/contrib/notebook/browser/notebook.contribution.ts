@@ -276,7 +276,7 @@ registerAction2(class extends Action2 {
 		});
 	}
 
-	run = async (accessor, options: { forceNewWindow: boolean, folderPath: URI }) => {
+	run = async (accessor, options: { forceNewWindow: boolean; folderPath: URI }) => {
 		const viewletService: IPaneCompositePartService = accessor.get(IPaneCompositePartService);
 		const viewDescriptorService: IViewDescriptorService = accessor.get(IViewDescriptorService);
 		const workspaceEditingService = accessor.get(IWorkspaceEditingService);
@@ -771,6 +771,9 @@ export class NotebookEditorOverrideContribution extends Disposable implements IW
 
 		// Add newly registered file extensions
 		allExtensions = allExtensions.concat(this._newFileExtensions);
+		if (allExtensions.length === 0) {
+			return;
+		}
 
 		// Create the selector from the list of all the language extensions we want to associate with the
 		// notebook editor

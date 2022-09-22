@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ICheckboxStyles } from 'vs/base/browser/ui/checkbox/checkbox';
+import { ICheckboxStyles } from 'sql/base/browser/ui/checkbox/checkbox';
 import { mixin } from 'sql/base/common/objects';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { Emitter, Event as vsEvent } from 'vs/base/common/event';
@@ -11,7 +11,7 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import 'vs/css!./media/checkboxSelectColumn.plugin';
 import * as nls from 'vs/nls';
 
-export interface ICheckboxSelectColumnOptions extends Slick.PluginOptions, IToggleStyles {
+export interface ICheckboxSelectColumnOptions extends Slick.PluginOptions, ICheckboxStyles {
 	columnId?: string;
 	cssClass?: string;
 	headerCssClass?: string;
@@ -128,7 +128,7 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 		this._grid.render();
 		this._grid.setActiveCell(row, this.index);
 		this.checkSelectAll();
-		if(this._options.actionOnCheck === ActionOnCheck.selectRow){
+		if (this._options.actionOnCheck === ActionOnCheck.selectRow) {
 			this.updateSelectedRows();
 		} else {
 			this._onChange.fire({ checked: false, row: row, column: this.index });
@@ -170,7 +170,7 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 		}
 
 		this._grid.updateColumnHeader(this._options.columnId!, `<input type="checkbox" tabIndex="0" ${this._headerCheckbox.checked ? 'checked' : ''} title=${HeaderCheckboxTitle}/>`, this._options.toolTip);
-		if(this._options.actionOnCheck === ActionOnCheck.selectRow){
+		if (this._options.actionOnCheck === ActionOnCheck.selectRow) {
 			this.updateSelectedRows();
 		}
 		this._grid.invalidateAllRows();

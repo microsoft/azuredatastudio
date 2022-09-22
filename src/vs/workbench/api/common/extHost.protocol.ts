@@ -73,6 +73,20 @@ import * as search from 'vs/workbench/services/search/common/search';
 
 // {{SQL CARBON EDIT}}
 import { ITreeItem as sqlITreeItem } from 'sql/workbench/common/views';
+import {
+	MainThreadAccountManagementShape, MainThreadAzureAccountShape, MainThreadAzureBlobShape,
+	MainThreadBackgroundTaskManagementShape, MainThreadConnectionManagementShape, MainThreadCredentialManagementShape,
+	MainThreadDashboardShape, MainThreadDashboardWebviewShape, MainThreadDataProtocolShape, MainThreadExtensionManagementShape,
+	MainThreadModalDialogShape, MainThreadModelViewDialogShape, MainThreadModelViewShape, MainThreadNotebookDocumentsAndEditorsShape,
+	MainThreadObjectExplorerShape, MainThreadQueryEditorShape, MainThreadResourceProviderShape, MainThreadTasksShape,
+	MainThreadNotebookShape as SqlMainThreadNotebookShape, MainThreadWorkspaceShape as SqlMainThreadWorkspaceShape,
+	ExtHostAccountManagementShape, ExtHostAzureAccountShape, ExtHostConnectionManagementShape, ExtHostCredentialManagementShape,
+	ExtHostDataProtocolShape, ExtHostObjectExplorerShape, ExtHostResourceProviderShape, ExtHostModalDialogsShape, ExtHostTasksShape,
+	ExtHostBackgroundTaskManagementShape, ExtHostDashboardWebviewsShape, ExtHostModelViewShape, ExtHostModelViewTreeViewsShape,
+	ExtHostDashboardShape, ExtHostModelViewDialogShape, ExtHostQueryEditorShape, ExtHostExtensionManagementShape, ExtHostAzureBlobShape,
+	ExtHostNotebookShape as SqlExtHostNotebookShape, ExtHostWorkspaceShape as SqlExtHostWorkspaceShape,
+	ExtHostNotebookDocumentsAndEditorsShape as SqlExtHostNotebookDocumentsAndEditorsShape
+} from 'sql/workbench/api/common/sqlExtHost.protocol';
 
 export interface IWorkspaceData extends IStaticWorkspaceData {
 	folders: { uri: UriComponents; name: string; index: number }[];
@@ -2367,4 +2381,54 @@ export const ExtHostContext = {
 	ExtHostTimeline: createProxyIdentifier<ExtHostTimelineShape>('ExtHostTimeline'),
 	ExtHostTesting: createProxyIdentifier<ExtHostTestingShape>('ExtHostTesting'),
 	ExtHostTelemetry: createProxyIdentifier<ExtHostTelemetryShape>('ExtHostTelemetry'),
+};
+
+// {{SQL CARBON EDIT}} - SQL extension proxy definitions, definitions must load in same order in both
+// main thread and extension host relative to vscode definitions to avoid RPC problems
+export const SqlMainContext = {
+	// SQL entries
+	MainThreadAccountManagement: createProxyIdentifier<MainThreadAccountManagementShape>('MainThreadAccountManagement'),
+	MainThreadAzureAccount: createProxyIdentifier<MainThreadAzureAccountShape>('MainThreadAzureAccount'),
+	MainThreadConnectionManagement: createProxyIdentifier<MainThreadConnectionManagementShape>('MainThreadConnectionManagement'),
+	MainThreadCredentialManagement: createProxyIdentifier<MainThreadCredentialManagementShape>('MainThreadCredentialManagement'),
+	MainThreadDataProtocol: createProxyIdentifier<MainThreadDataProtocolShape>('MainThreadDataProtocol'),
+	MainThreadObjectExplorer: createProxyIdentifier<MainThreadObjectExplorerShape>('MainThreadObjectExplorer'),
+	MainThreadBackgroundTaskManagement: createProxyIdentifier<MainThreadBackgroundTaskManagementShape>('MainThreadBackgroundTaskManagement'),
+	MainThreadResourceProvider: createProxyIdentifier<MainThreadResourceProviderShape>('MainThreadResourceProvider'),
+	MainThreadModalDialog: createProxyIdentifier<MainThreadModalDialogShape>('MainThreadModalDialog'),
+	MainThreadTasks: createProxyIdentifier<MainThreadTasksShape>('MainThreadTasks'),
+	MainThreadDashboardWebview: createProxyIdentifier<MainThreadDashboardWebviewShape>('MainThreadDashboardWebview'),
+	MainThreadModelView: createProxyIdentifier<MainThreadModelViewShape>('MainThreadModelView'),
+	MainThreadDashboard: createProxyIdentifier<MainThreadDashboardShape>('MainThreadDashboard'),
+	MainThreadModelViewDialog: createProxyIdentifier<MainThreadModelViewDialogShape>('MainThreadModelViewDialog'),
+	MainThreadQueryEditor: createProxyIdentifier<MainThreadQueryEditorShape>('MainThreadQueryEditor'),
+	MainThreadNotebook: createProxyIdentifier<SqlMainThreadNotebookShape>('MainThreadNotebook'),
+	MainThreadNotebookDocumentsAndEditors: createProxyIdentifier<MainThreadNotebookDocumentsAndEditorsShape>('MainThreadNotebookDocumentsAndEditors'),
+	MainThreadExtensionManagement: createProxyIdentifier<MainThreadExtensionManagementShape>('MainThreadExtensionManagement'),
+	MainThreadWorkspace: createProxyIdentifier<SqlMainThreadWorkspaceShape>('MainThreadWorkspace'),
+	MainThreadAzureBlob: createProxyIdentifier<MainThreadAzureBlobShape>('MainThreadAzureBlob'),
+};
+
+export const SqlExtHostContext = {
+	ExtHostAccountManagement: createProxyIdentifier<ExtHostAccountManagementShape>('ExtHostAccountManagement'),
+	ExtHostAzureAccount: createProxyIdentifier<ExtHostAzureAccountShape>('ExtHostAzureAccount'),
+	ExtHostConnectionManagement: createProxyIdentifier<ExtHostConnectionManagementShape>('ExtHostConnectionManagement'),
+	ExtHostCredentialManagement: createProxyIdentifier<ExtHostCredentialManagementShape>('ExtHostCredentialManagement'),
+	ExtHostDataProtocol: createProxyIdentifier<ExtHostDataProtocolShape>('ExtHostDataProtocol'),
+	ExtHostObjectExplorer: createProxyIdentifier<ExtHostObjectExplorerShape>('ExtHostObjectExplorer'),
+	ExtHostResourceProvider: createProxyIdentifier<ExtHostResourceProviderShape>('ExtHostResourceProvider'),
+	ExtHostModalDialogs: createProxyIdentifier<ExtHostModalDialogsShape>('ExtHostModalDialogs'),
+	ExtHostTasks: createProxyIdentifier<ExtHostTasksShape>('ExtHostTasks'),
+	ExtHostBackgroundTaskManagement: createProxyIdentifier<ExtHostBackgroundTaskManagementShape>('ExtHostBackgroundTaskManagement'),
+	ExtHostDashboardWebviews: createProxyIdentifier<ExtHostDashboardWebviewsShape>('ExtHostDashboardWebviews'),
+	ExtHostModelView: createProxyIdentifier<ExtHostModelViewShape>('ExtHostModelView'),
+	ExtHostModelViewTreeViews: createProxyIdentifier<ExtHostModelViewTreeViewsShape>('ExtHostModelViewTreeViews'),
+	ExtHostDashboard: createProxyIdentifier<ExtHostDashboardShape>('ExtHostDashboard'),
+	ExtHostModelViewDialog: createProxyIdentifier<ExtHostModelViewDialogShape>('ExtHostModelViewDialog'),
+	ExtHostQueryEditor: createProxyIdentifier<ExtHostQueryEditorShape>('ExtHostQueryEditor'),
+	ExtHostNotebook: createProxyIdentifier<SqlExtHostNotebookShape>('ExtHostNotebook'),
+	ExtHostNotebookDocumentsAndEditors: createProxyIdentifier<SqlExtHostNotebookDocumentsAndEditorsShape>('ExtHostNotebookDocumentsAndEditors'),
+	ExtHostExtensionManagement: createProxyIdentifier<ExtHostExtensionManagementShape>('ExtHostExtensionManagement'),
+	ExtHostWorkspace: createProxyIdentifier<SqlExtHostWorkspaceShape>('ExtHostWorkspace'),
+	ExtHostAzureBlob: createProxyIdentifier<ExtHostAzureBlobShape>('ExtHostAzureBlob')
 };
