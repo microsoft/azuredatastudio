@@ -66,9 +66,9 @@ export class LoginSelectorPage extends MigrationWizardPage {
 			return true;
 		});
 
-		await this._loadDatabaseList();
+		await this._loadLoginList();
 
-		// load unfiltered table list and pre-select list of databases saved in state
+		// load unfiltered table list and pre-select list of logins saved in state
 		await this._filterTableList('', this.migrationStateModel._loginsForMigration);
 	}
 
@@ -124,8 +124,8 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		}
 
 		for (let row = 0; row < tableRows.length; row++) {
-			const database: string = tableRows[row][2];
-			if (selectedLogins.includes(database)) {
+			const login: string = tableRows[row][1];
+			if (selectedLogins.includes(login)) {
 				selectedRows.push(row);
 			}
 		}
@@ -137,7 +137,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 
 
 	public async createRootContainer(view: azdata.ModelView): Promise<azdata.FlexContainer> {
-		await this._loadDatabaseList();
+		await this._loadLoginList();
 
 		this._loginCount = this._view.modelBuilder.text().withProps({
 			value: constants.LOGINS_SELECTED(
@@ -214,7 +214,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 			await this.updateValuesOnSelection();
 		}));
 
-		// load unfiltered table list and pre-select list of databases saved in state
+		// load unfiltered table list and pre-select list of logins saved in state
 		await this._filterTableList('', this.migrationStateModel._loginsForMigration);
 
 		const flex = view.modelBuilder.flexContainer().withLayout({
@@ -231,7 +231,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		return flex;
 	}
 
-	private async _loadDatabaseList(): Promise<void> {
+	private async _loadLoginList(): Promise<void> {
 		const stateMachine: MigrationStateModel = this.migrationStateModel;
 		const selectedLogins: string[] = stateMachine._loginsForMigration;
 		const sourceLogins: LoginTableInfo[] = [];
@@ -285,8 +285,8 @@ export class LoginSelectorPage extends MigrationWizardPage {
 
 	public selectedLogins(): string[] {
 		const rows = this._loginSelectorTable?.data || [];
-		const databases = this._loginSelectorTable?.selectedRows || [];
-		return databases
+		const logins = this._loginSelectorTable?.selectedRows || [];
+		return logins
 			.filter(row => row < rows.length)
 			.map(row => rows[row][1] /* loginName */)
 			|| [];
