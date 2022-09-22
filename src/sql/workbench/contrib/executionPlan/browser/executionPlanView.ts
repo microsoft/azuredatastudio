@@ -600,8 +600,8 @@ export class TopOperationsAction extends Action {
 }
 
 export class HighlightExpensiveOperationAction extends Action {
-	public static ID = 'ep.findExpensiveOperation';
-	public static LABEL = localize('executionPlanFindExpensiveOperationAction', 'Find Expensive Operation');
+	public static ID = 'ep.highlightExpensiveOperation';
+	public static LABEL = localize('executionPlanHighlightExpensiveOperationAction', 'Highlight Expensive Operation');
 
 	constructor(private source: ExecutionPlanActionSource,
 		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService

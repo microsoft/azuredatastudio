@@ -123,28 +123,28 @@ export class HighlightExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 		}));
 
 		// Apply Button
-		const findExpensiveOperationAction = new HighlightExpensiveOperationAction();
-		this._register(findExpensiveOperationAction);
+		const highlightExpensiveOperationAction = new HighlightExpensiveOperationAction();
+		this._register(highlightExpensiveOperationAction);
 
-		const clearExpensiveOperationAction = new TurnOffExpensiveHighlightingOperationAction();
-		this._register(clearExpensiveOperationAction);
+		const clearHighlightExpensiveOperationAction = new TurnOffExpensiveHighlightingOperationAction();
+		this._register(clearHighlightExpensiveOperationAction);
 
-		const cancelExpensiveOperationAction = new CancelHIghlightExpensiveOperationAction();
-		this._register(cancelExpensiveOperationAction);
+		const cancelHighlightExpensiveOperationAction = new CancelHIghlightExpensiveOperationAction();
+		this._register(cancelHighlightExpensiveOperationAction);
 
 		const self = this;
 		const applyButton = new Button(this.container, {
-			title: localize('findExpensiveOperationButtonTitle', 'Find Expensive Operation')
+			title: localize('highlightExpensiveOperationButtonTitle', 'Highlight Expensive Operation')
 		});
 		applyButton.setWidth('60px');
-		applyButton.label = localize('findExpensiveOperationApplyButton', 'Apply');
+		applyButton.label = localize('highlightExpensiveOperationApplyButton', 'Apply');
 
 		this._register(applyButton.onDidClick(async e => {
 			if (this._selectedExpensiveOperationType === ExpensiveMetricType.Off) {
-				await clearExpensiveOperationAction.run(self);
+				await clearHighlightExpensiveOperationAction.run(self);
 			}
 			else {
-				await findExpensiveOperationAction.run(self);
+				await highlightExpensiveOperationAction.run(self);
 			}
 
 			this.showStoreDefaultMetricPrompt();
@@ -153,7 +153,7 @@ export class HighlightExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 		// Adds Action bar
 		this._actionBar = new ActionBar(this.container);
 		this._actionBar.context = this;
-		this._actionBar.pushAction(cancelExpensiveOperationAction, { label: false, icon: true });
+		this._actionBar.pushAction(cancelHighlightExpensiveOperationAction, { label: false, icon: true });
 	}
 
 	public showStoreDefaultMetricPrompt(): void {
@@ -249,8 +249,8 @@ export class HighlightExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 }
 
 export class HighlightExpensiveOperationAction extends Action {
-	public static ID = 'qp.findExpensiveOperationAction';
-	public static LABEL = localize('findExpensiveOperationAction', 'Find');
+	public static ID = 'qp.highlightExpensiveOperationAction';
+	public static LABEL = localize('highlightExpensiveOperationAction', 'Apply');
 
 	constructor() {
 		super(HighlightExpensiveOperationAction.ID, HighlightExpensiveOperationAction.LABEL, searchIconClassNames);
