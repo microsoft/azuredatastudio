@@ -3,9 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { DefaultController, ICancelableEvent } from 'vs/base/parts/tree/browser/treeDefaults';
+import { DefaultController, ICancelableEvent } from 'sql/base/parts/tree/browser/treeDefaults';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { ITree } from 'vs/base/parts/tree/browser/tree';
+import { ITree } from 'sql/base/parts/tree/browser/tree';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { ClearSingleRecentConnectionAction } from 'sql/workbench/services/connection/browser/connectionActions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';

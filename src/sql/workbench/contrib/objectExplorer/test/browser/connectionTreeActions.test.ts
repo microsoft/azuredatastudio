@@ -35,7 +35,7 @@ import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKe
 import { TestListService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 import { ServerTreeDataSource } from 'sql/workbench/services/objectExplorer/browser/serverTreeDataSource';
-import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
+import { Tree } from 'sql/base/parts/tree/browser/treeImpl';
 import { AsyncServerTree } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { ConsoleLogger, LogService } from 'vs/platform/log/common/log';
 import { TestAccessibilityService } from 'vs/platform/accessibility/test/common/testAccessibilityService';

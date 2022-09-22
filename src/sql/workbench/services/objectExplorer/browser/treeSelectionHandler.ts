@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IConnectionManagementService, IConnectionCompletionOptions } from 'sql/platform/connection/common/connectionManagement';
-import { ITree } from 'vs/base/parts/tree/browser/tree';
+import { ITree } from 'sql/base/parts/tree/browser/tree';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 

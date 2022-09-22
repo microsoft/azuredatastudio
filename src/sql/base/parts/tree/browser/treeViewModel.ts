@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { onUnexpectedError } from 'vs/base/common/errors';
 import { ArrayNavigator, INavigator } from 'vs/base/common/navigator';
 import { Item } from './treeModel';
 
@@ -38,7 +39,7 @@ export class HeightMap {
 			viewItem = this.heightMap[i - 1];
 
 			if (!viewItem) {
-				console.error('view item doesnt exist');
+				onUnexpectedError('view item doesn\'t exist');
 				return undefined;
 			}
 
@@ -48,6 +49,7 @@ export class HeightMap {
 		const startingIndex = i;
 		let itemsToInsert: IViewItem[] = [];
 
+		// eslint-disable-next-line no-cond-assign
 		while (item = iterator.next()) {
 			viewItem = this.createViewItem(item);
 			viewItem.top = totalSize + sizeDiff;
@@ -88,12 +90,13 @@ export class HeightMap {
 		let i = 0;
 		let sizeDiff = 0;
 
+		// eslint-disable-next-line no-cond-assign
 		while (itemId = iterator.next()) {
 			i = this.indexes[itemId];
 			viewItem = this.heightMap[i];
 
 			if (!viewItem) {
-				console.error('view item doesnt exist');
+				onUnexpectedError('view item doesn\'t exist');
 				return;
 			}
 
@@ -137,6 +140,7 @@ export class HeightMap {
 		let i: number, j: number | null = null;
 		let cummDiff = 0;
 
+		// eslint-disable-next-line no-cond-assign
 		while (item = iterator.next()) {
 			i = this.indexes[item.id];
 
