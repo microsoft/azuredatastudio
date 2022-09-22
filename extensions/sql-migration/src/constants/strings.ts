@@ -294,7 +294,10 @@ export function TIME_IN_MINUTES(val: number): number {
 	return val * 60000;
 }
 
-// Login MIgration
+// Login
+export function LOGIN_WIZARD_TITLE(instanceName: string): string {
+	return localize('sql-migration.login.wizard.title', "Migrate logins from '{0}' to Azure SQL", instanceName);
+}
 export const LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_DESCRIPTION = localize('sql.migration.login.wizard.target.description', " Select the target Azure SQL Managed Instance, Azure SQL VM, or Azure SQL database(s) where you want to migrate your logins.");
 export const LOGIN_MIGRATIONS_TARGET_TYPE_SELECTION_TITLE = localize('sql.migration.login.wizard.taget.type.title', "Azure SQL target type");
 export const LOGIN_MIGRATIONS_MI_TEXT = localize('sql.migration.login.mi.title', "Azure SQL Managed Instance");
@@ -314,6 +317,7 @@ export function LOGIN_MIGRATIONS_GET_LOGINS_ERROR(message: string): string {
 	return localize('sql.migration.wizard.target.login.error', "Error getting login information: {0}", message);
 }
 export const SELECT_LOGIN_TO_CONTINUE = localize('sql.migration.select.database.to.continue', "Please select 1 or more logins for migration");
+export const LOGIN_MIGRATE_BUTTON_TEXT = localize('sql.migration.start.login.migration.button', "Migrate");
 
 // Azure SQL Target
 export const AZURE_SQL_TARGET_PAGE_TITLE = localize('sql.migration.wizard.target.title', "Azure SQL target");

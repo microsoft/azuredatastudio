@@ -183,7 +183,7 @@ export class WizardController {
 	private async createLoginWizard(stateModel: MigrationStateModel): Promise<void> {
 		const serverName = (await stateModel.getSourceConnectionProfile()).serverName;
 		this._wizardObject = azdata.window.createWizard(
-			loc.WIZARD_TITLE(serverName),
+			loc.LOGIN_WIZARD_TITLE(serverName),
 			'LoginMigrationWizard',
 			'wide');
 
