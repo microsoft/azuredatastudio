@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
-import { debounce } from '../api/utils';
+import { debounce, getLoginStatusImage, getLoginStatusMessage } from '../api/utils';
 import * as styles from '../constants/styles';
 import { collectSourceLogins, collectTargetLogins, LoginTableInfo } from '../api/sqlUtils';
 import { AzureSqlDatabaseServer } from '../api/azure';
@@ -121,7 +121,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 					return row[1]?.toLowerCase()?.indexOf(searchText) > -1	// source login
 						|| row[2]?.toLowerCase()?.indexOf(searchText) > -1	// login type
 						|| row[3]?.toLowerCase()?.indexOf(searchText) > -1  // default database
-						|| row[4]?.toLowerCase()?.indexOf(searchText) > -1  // status
+						|| row[4]?.title.toLowerCase()?.indexOf(searchText) > -1  // status
 						|| row[5]?.toLowerCase()?.indexOf(searchText) > -1;	// target status
 				});
 		}
@@ -223,11 +223,13 @@ export class LoginSelectorPage extends MigrationWizardPage {
 						cssClass: cssClass,
 						headerCssClass: cssClass,
 					},
-					{
+					<azdata.HyperlinkColumn>{
 						name: constants.LOGIN_TARGET_STATUS_COLUMN,
 						value: 'targetStatus',
-						type: azdata.ColumnType.text,
-						width: 130,
+						width: 300,
+						type: azdata.ColumnType.hyperlink,
+						icon: IconPathHelper.inProgressMigration,
+						showText: true,
 						cssClass: cssClass,
 						headerCssClass: cssClass,
 					},
@@ -297,13 +299,17 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		this._loginTableValues = sourceLogins.map(row => {
 			const loginName = row.loginName;
 			this._loginNames.push(loginName);
+			const isLoginOnTarget = targetLogins.some(targetLogin => targetLogin.toLowerCase() === loginName.toLowerCase());
 			return [
 				selectedLogins?.some(selectedLogin => selectedLogin.loginName.toLowerCase() === loginName.toLowerCase()),
 				loginName,
 				row.loginType,
 				row.defaultDatabaseName,
 				row.status,
-				targetLogins.some(targetLogin => targetLogin.toLowerCase() === loginName.toLowerCase()) ? 'Login found' : 'Login not found',
+				<azdata.HyperlinkColumnCellValue>{
+					icon: getLoginStatusImage(isLoginOnTarget),
+					title: getLoginStatusMessage(isLoginOnTarget),
+				},
 			];
 		}) || [];
 	}
@@ -318,7 +324,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 					loginName: rows[rowIdx][1],
 					loginType: rows[rowIdx][2],
 					defaultDatabaseName: rows[rowIdx][3],
-					status: rows[rowIdx][4]
+					status: rows[rowIdx][4].title,
 				};
 			})
 			|| [];

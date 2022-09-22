@@ -295,6 +295,22 @@ export function getMigrationStatusWithErrors(migration: azure.DatabaseMigration)
 	return constants.STATUS_VALUE(migrationStatus) + (constants.STATUS_WARNING_COUNT(migrationStatus, warningCount) ?? '');
 }
 
+export function getLoginStatusMessage(loginFound: boolean): string {
+	if (loginFound) {
+		return 'Login found';
+	} else {
+		return 'Login not found';
+	}
+}
+
+export function getLoginStatusImage(loginFound: boolean): IconPath {
+	if (loginFound) {
+		return IconPathHelper.completedMigration;
+	} else {
+		return IconPathHelper.notFound;
+	}
+}
+
 export function getPipelineStatusImage(status: string | undefined): IconPath {
 	// status codes: 'PreparingForCopy' | 'Copying' | 'CopyFinished' | 'RebuildingIndexes' | 'Succeeded' | 'Failed' |	'Canceled',
 	switch (status) {
