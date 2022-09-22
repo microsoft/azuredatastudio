@@ -313,6 +313,7 @@ export function LOGIN_MIGRATIONS_GET_LOGINS_ERROR_TITLE(targetType: string): str
 export function LOGIN_MIGRATIONS_GET_LOGINS_ERROR(message: string): string {
 	return localize('sql.migration.wizard.target.login.error', "Error getting login information: {0}", message);
 }
+export const SELECT_LOGIN_TO_CONTINUE = localize('sql.migration.select.database.to.continue', "Please select 1 or more logins for migration");
 
 // Azure SQL Target
 export const AZURE_SQL_TARGET_PAGE_TITLE = localize('sql.migration.wizard.target.title', "Azure SQL target");
@@ -975,7 +976,7 @@ export const USERNAME = localize('sql.migration.username', "User name");
 export const SIZE = localize('sql.migration.size', "Size (MB)");
 export const DATABASE_MIGRATE_TEXT = localize('sql.migrate.text', "Select the databases that you want to migrate to Azure SQL.");
 export const OFFLINE_CAPS = localize('sql.migration.offline.caps', "OFFLINE");
-export const SELECT_DATABASE_TO_CONTINUE = localize('sql.migration.select.database.to.continue', "Please select 1 or more databases to assess for migration");
+export const SELECT_DATABASE_TO_CONTINUE = localize('sql.migration.select.login.to.continue', "Please select 1 or more databases to assess for migration");
 
 //Assessment Dialog
 export const ISSUES = localize('sql.migration.issues', "Issues");
