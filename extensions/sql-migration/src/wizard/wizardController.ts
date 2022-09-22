@@ -189,8 +189,6 @@ export class WizardController {
 
 		this._wizardObject.generateScriptButton.enabled = false;
 		this._wizardObject.generateScriptButton.hidden = true;
-		const saveAndCloseButton = azdata.window.createButton(loc.SAVE_AND_CLOSE);
-		this._wizardObject.customButtons = [saveAndCloseButton];
 		const targetSelectionPage = new LoginMigrationTargetSelectionPage(this._wizardObject, stateModel);
 		const loginSelectorPage = new LoginSelectorPage(this._wizardObject, stateModel);
 		const migrationStatusPage = new LoginMigrationStatusPage(this._wizardObject, stateModel);
@@ -203,30 +201,9 @@ export class WizardController {
 
 		this._wizardObject.pages = pages.map(p => p.getwizardPage());
 
-		// kill existing data collection if user relaunches the wizard via new migration or retry existing migration
-		await this._model.refreshPerfDataCollection();
-		if ((!this._model.resumeAssessment || this._model.retryMigration) && this._model._perfDataCollectionIsCollecting) {
-			void this._model.stopPerfDataCollection();
-			void vscode.window.showInformationMessage(loc.AZURE_RECOMMENDATION_STOP_POPUP);
-		}
-
 		const wizardSetupPromises: Thenable<void>[] = [];
 		wizardSetupPromises.push(...pages.map(p => p.registerWizardContent()));
 		wizardSetupPromises.push(this._wizardObject.open());
-		if (this._model.retryMigration || this._model.resumeAssessment) {
-			if (this._model.savedInfo.closedPage >= Page.MigrationMode) {
-				this._model.refreshDatabaseBackupPage = true;
-			}
-
-			// if the user selected network share and selected save & close afterwards, it should always return to the database backup page so that
-			// the user can input their password again
-			if (this._model.savedInfo.closedPage >= Page.DatabaseBackup &&
-				this._model.savedInfo.networkContainerType === NetworkContainerType.NETWORK_SHARE) {
-				wizardSetupPromises.push(this._wizardObject.setCurrentPage(Page.DatabaseBackup));
-			} else {
-				wizardSetupPromises.push(this._wizardObject.setCurrentPage(this._model.savedInfo.closedPage));
-			}
-		}
 
 		this._model.extensionContext.subscriptions.push(
 			this._wizardObject.onPageChanged(
@@ -252,20 +229,6 @@ export class WizardController {
 		});
 
 		await Promise.all(wizardSetupPromises);
-		this._model.extensionContext.subscriptions.push(
-			this._wizardObject.onPageChanged(
-				async (pageChangeInfo: azdata.window.WizardPageChangeInfo) =>
-					await pages[0].onPageEnter(pageChangeInfo)));
-
-		this._disposables.push(
-			saveAndCloseButton.onClick(async () => {
-				await stateModel.saveInfo(serverName, this._wizardObject.currentPage);
-				await this._wizardObject.close();
-
-				if (stateModel.performanceCollectionInProgress()) {
-					void vscode.window.showInformationMessage(loc.SAVE_AND_CLOSE_POPUP);
-				}
-			}));
 
 		this._disposables.push(
 			this._wizardObject.cancelButton.onClick(e => {
@@ -280,13 +243,13 @@ export class WizardController {
 					{});
 			}));
 
-		this._wizardObject.doneButton.label = loc.START_MIGRATION_TEXT;
+		// this._wizardObject.doneButton.label = loc.START_MIGRATION_TEXT;
 
 		this._disposables.push(
 			this._wizardObject.doneButton.onClick(async (e) => {
 				try {
-					await stateModel.startLoginMigration();
-					await this.updateServiceContext(stateModel, this._serviceContextChangedEvent);
+					// await stateModel.startLoginMigration();
+					// await this.updateServiceContext(stateModel, this._serviceContextChangedEvent);
 				} catch (e) {
 					logError(TelemetryViews.MigrationWizardController, 'StartLoginMigrationFailed', e);
 				} finally {
