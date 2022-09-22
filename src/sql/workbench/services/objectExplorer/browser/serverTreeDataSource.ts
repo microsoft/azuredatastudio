@@ -63,6 +63,8 @@ export class ServerTreeDataSource implements IDataSource {
 		} else if (element instanceof TreeNode) {
 			let node = element;
 			if (node.children) {
+				// Grab the latest data from the server of the node's children.
+				await this._objectExplorerService.refreshTreeNode(node.getSession()!, node);
 				return node.children;
 			} else {
 				try {

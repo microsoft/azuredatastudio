@@ -126,7 +126,6 @@ export class ViewItem implements IViewItem {
 	public needsRender: boolean = false;
 	public uri: string | null = null;
 	public unbindDragStart: Lifecycle.IDisposable = Lifecycle.Disposable.None;
-	public loadingTimer: any;
 
 	public _styles: any;
 	private _draggable: boolean = false;
@@ -392,7 +391,6 @@ function reactionEquals(one: _.IDragOverReaction, other: _.IDragOverReaction | n
 export class TreeView extends HeightMap {
 
 	static readonly BINDING = 'monaco-tree-row';
-	static readonly LOADING_DECORATION_DELAY = 800;
 
 	private static counter: number = 0;
 	private instance: number;
@@ -845,10 +843,7 @@ export class TreeView extends HeightMap {
 		let viewItem = this.items[item.id];
 
 		if (viewItem && this.context.options.showLoading) {
-			viewItem.loadingTimer = setTimeout(() => {
-				viewItem.loadingTimer = 0;
-				viewItem.loading = true;
-			}, TreeView.LOADING_DECORATION_DELAY);
+			viewItem.loading = true;
 		}
 
 		if (!e.isNested) {
@@ -870,11 +865,6 @@ export class TreeView extends HeightMap {
 		let viewItem = this.items[item.id];
 
 		if (viewItem) {
-			if (viewItem.loadingTimer) {
-				clearTimeout(viewItem.loadingTimer);
-				viewItem.loadingTimer = 0;
-			}
-
 			viewItem.loading = false;
 		}
 
