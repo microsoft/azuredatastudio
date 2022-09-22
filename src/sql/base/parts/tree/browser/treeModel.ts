@@ -259,7 +259,6 @@ export class Item {
 
 	private traits: { [trait: string]: boolean; };
 
-
 	private readonly _onDidCreate = new Emitter<Item>();
 	readonly onDidCreate: Event<Item> = this._onDidCreate.event;
 	private readonly _onDidReveal = new Emitter<IItemRevealEvent>();
@@ -533,7 +532,6 @@ export class Item {
 		return safe ? doRefresh() : this.lock.run(this, doRefresh);
 	}
 
-
 	private doRefresh(recursive: boolean, safe: boolean = false): Promise<any> {
 		this.doesHaveChildren = this.context.dataSource.hasChildren(this.context.tree, this.element);
 		this.height = this._getHeight();
@@ -700,7 +698,6 @@ export class Item {
 		this.next = null;
 		this.firstChild = null;
 		this.lastChild = null;
-
 
 		this._onDidDispose.fire(this);
 
