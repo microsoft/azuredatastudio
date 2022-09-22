@@ -20,9 +20,11 @@ export class LoginSelectorPage extends MigrationWizardPage {
 	private _loginCount!: azdata.TextComponent;
 	private _loginTableValues!: any[];
 	private _disposables: vscode.Disposable[] = [];
+	private _isCurrentPage: boolean;
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.LOGIN_MIGRATIONS_SELECT_LOGINS_PAGE_TITLE), migrationStateModel);
+		this._isCurrentPage = false;
 	}
 
 	protected async registerContent(view: azdata.ModelView): Promise<void> {
@@ -44,6 +46,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(): Promise<void> {
+		this._isCurrentPage = true;
 		this.updateNextButton();
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			this.wizard.message = {
@@ -76,6 +79,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 			return true;
 		});
 
+		this._isCurrentPage = false;
 		this.resetNextButton();
 	}
 
@@ -247,7 +251,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 
 		// execute a query against the target to get the logins
 		try {
-			if (stateMachine._targetServerInstance && stateMachine._targetUserName && stateMachine._targetPassword) {
+			if (this.isTargetInstanceSet()) {
 				targetLogins.push(...await collectTargetLogins(stateMachine._targetServerInstance as AzureSqlDatabaseServer, stateMachine._targetUserName, stateMachine._targetPassword));
 				console.log('AKMA DEBUG LOG: ', targetLogins);
 			}
@@ -302,12 +306,20 @@ export class LoginSelectorPage extends MigrationWizardPage {
 	}
 
 	private updateNextButton() {
-		this.wizard.nextButton.label = constants.START_MIGRATION_TEXT;
-		this.wizard.nextButton.enabled = this.migrationStateModel._loginsForMigration && this.migrationStateModel._loginsForMigration.length > 0;
+		// Only uppdate next label if we are currently on this page
+		if (this._isCurrentPage) {
+			this.wizard.nextButton.label = constants.START_MIGRATION_TEXT;
+			this.wizard.nextButton.enabled = this.migrationStateModel._loginsForMigration && this.migrationStateModel._loginsForMigration.length > 0;
+		}
 	}
 
 	private resetNextButton() {
 		this.wizard.nextButton.label = constants.NEXT_LABEL;
 		this.wizard.nextButton.enabled = true;
+	}
+
+	private isTargetInstanceSet() {
+		const stateMachine: MigrationStateModel = this.migrationStateModel;
+		return stateMachine._targetServerInstance && stateMachine._targetUserName && stateMachine._targetPassword;
 	}
 }
