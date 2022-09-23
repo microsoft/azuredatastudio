@@ -70,13 +70,13 @@ export function setup(opts: minimist.ParsedArgs) {
 			async function configurePython(app: Application): Promise<void> {
 				// Skip setting up python again if another test has already completed this configuration step
 				if (!pythonConfigured) {
+					// Close notification toasts, since they can interfere with the Manage Packages Dialog test
+					await app.workbench.notificationToast.closeNotificationToasts();
 					await app.workbench.configurePythonDialog.waitForConfigurePythonDialog();
 					await app.workbench.configurePythonDialog.waitForPageOneLoaded();
 					await app.workbench.configurePythonDialog.next();
 					await app.workbench.configurePythonDialog.waitForPageTwoLoaded();
 					await app.workbench.configurePythonDialog.install();
-					// Close notification toasts, since they can interfere with the Manage Packages Dialog test
-					await app.workbench.notificationToast.closeNotificationToasts();
 					pythonConfigured = true;
 				}
 			}
@@ -275,6 +275,7 @@ export function setup(opts: minimist.ParsedArgs) {
 
 		describe('Cell Toolbar Actions', function () {
 			async function verifyCellToolbarBehavior(app: Application, toolbarAction: () => Promise<void>, selector: string, checkIfGone: boolean = false): Promise<void> {
+				await app.workbench.notificationToast.closeNotificationToasts();
 				// Run the test for each of the default text editor modes
 				for (let editMode of ['Markdown', 'Split View']) {
 					await app.workbench.settingsEditor.addUserSetting('notebook.defaultTextEditMode', `"${editMode}"`);
@@ -298,6 +299,7 @@ export function setup(opts: minimist.ParsedArgs) {
 			}
 
 			async function verifyToolbarKeyboardShortcut(app: Application, keyboardShortcut: string, selector: string) {
+				await app.workbench.notificationToast.closeNotificationToasts();
 				// Run the test for each of the default text editor modes
 				for (let editMode of ['Markdown', 'Split View']) {
 					await app.workbench.settingsEditor.addUserSetting('notebook.defaultTextEditMode', `"${editMode}"`);
