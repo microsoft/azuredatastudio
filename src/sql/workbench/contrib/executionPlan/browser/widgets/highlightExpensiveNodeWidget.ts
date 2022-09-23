@@ -136,7 +136,6 @@ export class HighlightExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 		const applyButton = new Button(this.container, {
 			title: localize('highlightExpensiveOperationButtonTitle', 'Highlight Expensive Operation')
 		});
-		applyButton.setWidth('60px');
 		applyButton.label = localize('highlightExpensiveOperationApplyButton', 'Apply');
 
 		this._register(applyButton.onDidClick(async e => {
