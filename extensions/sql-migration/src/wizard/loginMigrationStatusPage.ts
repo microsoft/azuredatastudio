@@ -66,6 +66,8 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 				'value': constants.LOGIN_MIGRATIONS_STATUS_PAGE_DESCRIPTION(this._getNumberOfLogins(), this.migrationStateModel._targetType, this.migrationStateModel._targetServerInstance.name)
 			});
 		}
+
+		await this.migrationStateModel.startLoginMigration();
 	}
 
 	public async onPageLeave(): Promise<void> {
