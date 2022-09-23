@@ -280,13 +280,10 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 					row['secondary'].iconCssClass += ` parent-row-styling`;
 				}
 				rows.push(row);
-				if (!isString(topProp.value) && !isString(bottomProp.value)) {
-					row['treeGridChildren'] = this.convertPropertiesToTableRows(topProp.value, bottomProp.value);
-				} else if (isString(topProp?.value) && !isString(bottomProp.value)) {
-					row['treeGridChildren'] = this.convertPropertiesToTableRows(undefined, bottomProp.value);
-				} else if (!isString(topProp.value) && !isString(bottomProp.value)) {
-					row['treeGridChildren'] = this.convertPropertiesToTableRows(topProp.value, undefined);
-				}
+				const topPropValue = isString(topProp.value) ? undefined : topProp.value;
+				const bottomPropValue = isString(bottomProp.value) ? undefined : bottomProp.value;
+				row['treeGridChildren'] = this.convertPropertiesToTableRows(topPropValue, bottomPropValue);
+
 			} else if (topProp && !bottomProp) {
 				row['displayOrder'] = v.topProp.displayOrder;
 				row['primary'] = {
