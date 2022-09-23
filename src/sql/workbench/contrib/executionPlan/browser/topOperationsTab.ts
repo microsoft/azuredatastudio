@@ -29,8 +29,7 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { ITableKeyboardEvent } from 'sql/base/browser/ui/table/interfaces';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
-import { searchIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/constants';
-
+import { searchIconClassNames, searchPlaceholder, topOperationsSearchDescription } from 'sql/workbench/contrib/executionPlan/browser/constants';
 
 const TABLE_SORT_COLUMN_KEY = 'tableCostColumnForSorting';
 
@@ -167,8 +166,8 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 		headerContainer.classList.add('codicon', searchIconClassNames);
 
 		const topOperationsSearchInput = new InputBox(headerSearchBarContainer, this._contextViewService, {
-			ariaDescription: localize('topOperationTableSearchDescription', 'Search properties table'),
-			placeholder: localize('topOperationTableSearchPlaceholder', 'Filter for any field...')
+			ariaDescription: topOperationsSearchDescription,
+			placeholder: searchPlaceholder
 		});
 		topOperationsSearchInput.element.classList.add('codicon', searchIconClassNames);
 

@@ -10,7 +10,7 @@ import { localize } from 'vs/nls';
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Action } from 'vs/base/common/actions';
 import { Codicon } from 'vs/base/common/codicons';
-import { searchIconClassNames, sortAlphabeticallyIconClassNames, sortByDisplayOrderIconClassNames, sortReverseAlphabeticallyIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/constants';
+import { propertiesSearchDescription, searchIconClassNames, searchPlaceholder, sortAlphabeticallyIconClassNames, sortByDisplayOrderIconClassNames, sortReverseAlphabeticallyIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/constants';
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { RESULTS_GRID_DEFAULTS } from 'sql/workbench/common/constants';
 import { contrastBorder, inputBackground, listHoverBackground, listInactiveSelectionBackground } from 'vs/platform/theme/common/colorRegistry';
@@ -123,8 +123,8 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 		this._propertiesSearchInputContainer = DOM.$('.table-search');
 		this._propertiesSearchInputContainer.classList.add('codicon', searchIconClassNames);
 		this._propertiesSearchInput = this._register(new InputBox(this._propertiesSearchInputContainer, this._contextViewService, {
-			ariaDescription: localize('tableSearchDescription', 'Search properties table'),
-			placeholder: localize('tableSearchPlaceholder', 'Filter for any field...')
+			ariaDescription: propertiesSearchDescription,
+			placeholder: searchPlaceholder
 		}));
 		this._propertiesSearchInput.element.classList.add('codicon', searchIconClassNames);
 		this._searchAndActionBarContainer.appendChild(this._propertiesSearchInputContainer);
