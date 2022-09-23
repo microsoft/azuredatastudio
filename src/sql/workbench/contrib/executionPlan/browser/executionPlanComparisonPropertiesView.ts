@@ -15,7 +15,7 @@ import { InternalExecutionPlanElement } from 'sql/workbench/contrib/executionPla
 import { executionPlanComparisonPropertiesDifferent, executionPlanComparisonPropertiesUpArrow, executionPlanComparisonPropertiesDownArrow } from 'sql/workbench/contrib/executionPlan/browser/constants';
 import * as sqlExtHostType from 'sql/workbench/api/common/sqlExtHostTypes';
 import { TextWithIconColumn } from 'sql/base/browser/ui/table/plugins/textWithIconColumn';
-import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export enum ExecutionPlanCompareOrientation {
@@ -56,9 +56,10 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		parentContainer: HTMLElement,
 		@IThemeService themeService: IThemeService,
 		@IInstantiationService instantiationService: IInstantiationService,
-		@IContextMenuService contextMenuService: IContextMenuService
+		@IContextMenuService contextMenuService: IContextMenuService,
+		@IContextViewService contextViewService: IContextViewService
 	) {
-		super(parentContainer, themeService, instantiationService, contextMenuService);
+		super(parentContainer, themeService, instantiationService, contextMenuService, contextViewService);
 		this._model = <ExecutionPlanComparisonPropertiesViewModel>{};
 		this._parentContainer.style.display = 'none';
 		const header = DOM.$('.compare-operation-name');
@@ -133,8 +134,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		if (this._model.secondaryElement?.properties) {
 			secondaryProps = this._model.secondaryElement.properties;
 		}
-
-		this.populateTable(columns, this.convertPropertiesToTableRows(primaryProps, secondaryProps, -1, 0));
+		this.populateTable(columns, this.convertPropertiesToTableRows(primaryProps, secondaryProps));
 	}
 
 	private getPropertyTableColumns() {
@@ -212,7 +212,8 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		}));
 	}
 
-	private convertPropertiesToTableRows(primaryNode: azdata.executionPlan.ExecutionPlanGraphElementProperty[], secondaryNode: azdata.executionPlan.ExecutionPlanGraphElementProperty[], parentIndex: number, indent: number, rows: { [key: string]: string }[] = []): { [key: string]: string }[] {
+	private convertPropertiesToTableRows(primaryNode: azdata.executionPlan.ExecutionPlanGraphElementProperty[], secondaryNode: azdata.executionPlan.ExecutionPlanGraphElementProperty[]): { [key: string]: string }[] {
+		const rows: { [key: string]: string }[] = [];
 		let propertiesMap: Map<string, TablePropertiesMapEntry> = new Map();
 
 		if (primaryNode) {
@@ -258,7 +259,6 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 			row['name'] = {
 				text: k
 			};
-			row['parent'] = parentIndex;
 
 			const primaryProp = v.primaryProp;
 			const secondaryProp = v.secondaryProp;
@@ -294,13 +294,10 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 					row['secondary'].iconCssClass += ` parent-row-styling`;
 				}
 				rows.push(row);
-				if (!isString(primaryProp.value) && !isString(secondaryProp.value)) {
-					this.convertPropertiesToTableRows(primaryProp.value, secondaryProp.value, rows.length - 1, indent + 2, rows);
-				} else if (isString(primaryProp?.value) && !isString(secondaryProp.value)) {
-					this.convertPropertiesToTableRows(undefined, secondaryProp.value, rows.length - 1, indent + 2, rows);
-				} else if (!isString(primaryProp.value) && !isString(secondaryProp.value)) {
-					this.convertPropertiesToTableRows(primaryProp.value, undefined, rows.length - 1, indent + 2, rows);
-				}
+				const topPropValue = isString(primaryProp.value) ? undefined : primaryProp.value;
+				const bottomPropValue = isString(secondaryProp.value) ? undefined : secondaryProp.value;
+				row['treeGridChildren'] = this.convertPropertiesToTableRows(topPropValue, bottomPropValue);
+
 			} else if (primaryProp && !secondaryProp) {
 				row['displayOrder'] = v.primaryProp.displayOrder;
 				row['primary'] = {
@@ -310,7 +307,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 				if (!isString(primaryProp.value)) {
 					row['name'].iconCssClass += ` parent-row-styling`;
 					row['primary'].iconCssClass += ` parent-row-styling`;
-					this.convertPropertiesToTableRows(primaryProp.value, undefined, rows.length - 1, indent + 2, rows);
+					row['treeGridChildren'] = this.convertPropertiesToTableRows(primaryProp.value, undefined);
 				}
 			} else if (!primaryProp && secondaryProp) {
 				row['displayOrder'] = v.secondaryProp.displayOrder;
@@ -322,12 +319,11 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 				if (!isString(secondaryProp.value)) {
 					row['name'].iconCssClass += ` parent-row-styling`;
 					row['secondary'].iconCssClass += ` parent-row-styling`;
-					this.convertPropertiesToTableRows(undefined, secondaryProp.value, rows.length - 1, indent + 2, rows);
+					row['treeGridChildren'] = this.convertPropertiesToTableRows(undefined, secondaryProp.value);
 				}
 			}
 
 		});
-
 		return rows;
 	}
 
