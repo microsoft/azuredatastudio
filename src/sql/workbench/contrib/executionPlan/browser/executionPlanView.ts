@@ -26,21 +26,7 @@ import { Progress } from 'vs/platform/progress/common/progress';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { Action, Separator } from 'vs/base/common/actions';
 import { localize } from 'vs/nls';
-import {
-	customZoomIconClassNames,
-	disableTooltipIconClassName,
-	enableTooltipIconClassName,
-	executionPlanCompareIconClassName,
-	executionPlanTopOperations,
-	openPlanFileIconClassNames,
-	openPropertiesIconClassNames,
-	openQueryIconClassNames,
-	savePlanIconClassNames,
-	searchIconClassNames,
-	zoomInIconClassNames,
-	zoomOutIconClassNames,
-	zoomToFitIconClassNames
-} from 'sql/workbench/contrib/executionPlan/browser/constants';
+import * as constants from 'sql/workbench/contrib/executionPlan/browser/constants';
 import { URI } from 'vs/base/common/uri';
 import { VSBuffer } from 'vs/base/common/buffer';
 import { CustomZoomWidget } from 'sql/workbench/contrib/executionPlan/browser/widgets/customZoomWidget';
@@ -339,7 +325,7 @@ export class OpenQueryAction extends Action {
 	constructor(private source: ExecutionPlanActionSource,
 		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService
 	) {
-		super(OpenQueryAction.ID, OpenQueryAction.LABEL, openQueryIconClassNames);
+		super(OpenQueryAction.ID, OpenQueryAction.LABEL, constants.openQueryIconClassNames);
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
@@ -359,7 +345,7 @@ export class PropertiesAction extends Action {
 	constructor(private source: ExecutionPlanActionSource,
 		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService
 	) {
-		super(PropertiesAction.ID, PropertiesAction.LABEL, openPropertiesIconClassNames);
+		super(PropertiesAction.ID, PropertiesAction.LABEL, constants.openPropertiesIconClassNames);
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
@@ -379,7 +365,7 @@ export class ZoomInAction extends Action {
 	constructor(private source: ExecutionPlanActionSource,
 		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService
 	) {
-		super(ZoomInAction.ID, ZoomInAction.LABEL, zoomInIconClassNames);
+		super(ZoomInAction.ID, ZoomInAction.LABEL, constants.zoomInIconClassNames);
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
@@ -399,7 +385,7 @@ export class ZoomOutAction extends Action {
 	constructor(private source: ExecutionPlanActionSource,
 		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService
 	) {
-		super(ZoomOutAction.ID, ZoomOutAction.LABEL, zoomOutIconClassNames);
+		super(ZoomOutAction.ID, ZoomOutAction.LABEL, constants.zoomOutIconClassNames);
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
@@ -419,7 +405,7 @@ export class ZoomToFitAction extends Action {
 	constructor(private source: ExecutionPlanActionSource,
 		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService
 	) {
-		super(ZoomToFitAction.ID, ZoomToFitAction.LABEL, zoomToFitIconClassNames);
+		super(ZoomToFitAction.ID, ZoomToFitAction.LABEL, constants.zoomToFitIconClassNames);
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
@@ -437,7 +423,7 @@ export class SavePlanFile extends Action {
 	public static LABEL = localize('executionPlanSavePlanXML', "Save Plan File");
 
 	constructor() {
-		super(SavePlanFile.ID, SavePlanFile.LABEL, savePlanIconClassNames);
+		super(SavePlanFile.ID, SavePlanFile.LABEL, constants.savePlanIconClassNames);
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
@@ -472,7 +458,7 @@ export class CustomZoomAction extends Action {
 	constructor(private source: ExecutionPlanActionSource,
 		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService
 	) {
-		super(CustomZoomAction.ID, CustomZoomAction.LABEL, customZoomIconClassNames);
+		super(CustomZoomAction.ID, CustomZoomAction.LABEL, constants.customZoomIconClassNames);
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
@@ -492,7 +478,7 @@ export class SearchNodeAction extends Action {
 	constructor(private source: ExecutionPlanActionSource,
 		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService
 	) {
-		super(SearchNodeAction.ID, SearchNodeAction.LABEL, searchIconClassNames);
+		super(SearchNodeAction.ID, SearchNodeAction.LABEL, constants.searchIconClassNames);
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
@@ -510,7 +496,7 @@ export class OpenPlanFile extends Action {
 	public static Label = localize('executionPlanOpenGraphFile', "Show Query Plan XML"); //TODO: add a contribution point for providers to set this text
 
 	constructor() {
-		super(OpenPlanFile.ID, OpenPlanFile.Label, openPlanFileIconClassNames);
+		super(OpenPlanFile.ID, OpenPlanFile.Label, constants.openPlanFileIconClassNames);
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
@@ -524,17 +510,17 @@ export class ActionBarToggleTooltip extends Action {
 	public static WHEN_TOOLTIPS_DISABLED_LABEL = localize('executionPlanDisableTooltip', "Tooltips disabled");
 
 	constructor() {
-		super(ActionBarToggleTooltip.ID, ActionBarToggleTooltip.WHEN_TOOLTIPS_ENABLED_LABEL, enableTooltipIconClassName);
+		super(ActionBarToggleTooltip.ID, ActionBarToggleTooltip.WHEN_TOOLTIPS_ENABLED_LABEL, constants.enableTooltipIconClassName);
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
 		const state = context.executionPlanDiagram.toggleTooltip();
 		if (!state) {
-			this.class = disableTooltipIconClassName;
+			this.class = constants.disableTooltipIconClassName;
 			this.label = ActionBarToggleTooltip.WHEN_TOOLTIPS_DISABLED_LABEL;
 			context.contextMenuToggleTooltipAction.label = ContextMenuTooltipToggle.WHEN_TOOLTIPS_DISABLED_LABEL;
 		} else {
-			this.class = enableTooltipIconClassName;
+			this.class = constants.enableTooltipIconClassName;
 			this.label = ActionBarToggleTooltip.WHEN_TOOLTIPS_ENABLED_LABEL;
 			context.contextMenuToggleTooltipAction.label = ContextMenuTooltipToggle.WHEN_TOOLTIPS_ENABLED_LABEL;
 		}
@@ -547,18 +533,18 @@ export class ContextMenuTooltipToggle extends Action {
 	public static WHEN_TOOLTIPS_DISABLED_LABEL = localize('executionPlanContextMenuEnableTooltip', "Enable Tooltips");
 
 	constructor() {
-		super(ContextMenuTooltipToggle.ID, ContextMenuTooltipToggle.WHEN_TOOLTIPS_ENABLED_LABEL, enableTooltipIconClassName);
+		super(ContextMenuTooltipToggle.ID, ContextMenuTooltipToggle.WHEN_TOOLTIPS_ENABLED_LABEL, constants.enableTooltipIconClassName);
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
 		const state = context.executionPlanDiagram.toggleTooltip();
 		if (!state) {
 			this.label = ContextMenuTooltipToggle.WHEN_TOOLTIPS_DISABLED_LABEL;
-			context.actionBarToggleTopTip.class = disableTooltipIconClassName;
+			context.actionBarToggleTopTip.class = constants.disableTooltipIconClassName;
 			context.actionBarToggleTopTip.label = ActionBarToggleTooltip.WHEN_TOOLTIPS_DISABLED_LABEL;
 		} else {
 			this.label = ContextMenuTooltipToggle.WHEN_TOOLTIPS_ENABLED_LABEL;
-			context.actionBarToggleTopTip.class = enableTooltipIconClassName;
+			context.actionBarToggleTopTip.class = constants.enableTooltipIconClassName;
 			context.actionBarToggleTopTip.label = ActionBarToggleTooltip.WHEN_TOOLTIPS_ENABLED_LABEL;
 		}
 	}
@@ -571,7 +557,7 @@ export class CompareExecutionPlanAction extends Action {
 	constructor(private source: ExecutionPlanActionSource,
 		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService
 	) {
-		super(CompareExecutionPlanAction.COMPARE_PLAN, CompareExecutionPlanAction.COMPARE_PLAN, executionPlanCompareIconClassName);
+		super(CompareExecutionPlanAction.COMPARE_PLAN, CompareExecutionPlanAction.COMPARE_PLAN, constants.executionPlanCompareIconClassName);
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
@@ -591,7 +577,7 @@ export class TopOperationsAction extends Action {
 
 	constructor
 		() {
-		super(TopOperationsAction.ID, TopOperationsAction.LABEL, executionPlanTopOperations);
+		super(TopOperationsAction.ID, TopOperationsAction.LABEL, constants.executionPlanTopOperations);
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
@@ -606,7 +592,7 @@ export class HighlightExpensiveOperationAction extends Action {
 	constructor(private source: ExecutionPlanActionSource,
 		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService
 	) {
-		super(HighlightExpensiveOperationAction.ID, HighlightExpensiveOperationAction.LABEL, searchIconClassNames);
+		super(HighlightExpensiveOperationAction.ID, HighlightExpensiveOperationAction.LABEL, constants.searchIconClassNames);
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {
