@@ -98,7 +98,7 @@ However we always want it to be the width of the container it is resizing.
 	flex-direction: row;
 	padding: 5px;
 	height: auto;
-	width: 260px;
+	width: auto;
 }
 
 .eps-container .execution-plan .plan .plan-action-container .find-expensive-operation-widget .select-container {
@@ -117,6 +117,8 @@ However we always want it to be the width of the container it is resizing.
 
 .eps-container .execution-plan .plan .plan-action-container .find-expensive-operation-widget .monaco-button.monaco-text-button {
 	width: auto;
+	padding-left: 15px;
+	padding-right: 15px;
 }
 
 /* execution plan header that contains the relative query cost, query statement and recommendations */
