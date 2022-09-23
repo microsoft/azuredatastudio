@@ -5,9 +5,9 @@
 
 import * as assert from 'assert';
 import * as lifecycle from 'vs/base/common/lifecycle';
-import * as _ from 'vs/base/parts/tree/browser/tree';
-import * as model from 'vs/base/parts/tree/browser/treeModel';
-import * as TreeDefaults from 'vs/base/parts/tree/browser/treeDefaults';
+import * as _ from 'sql/base/parts/tree/browser/tree';
+import * as model from 'sql/base/parts/tree/browser/treeModel';
+import * as TreeDefaults from 'sql/base/parts/tree/browser/treeDefaults';
 import { Event, Emitter } from 'vs/base/common/event';
 import { timeout } from 'vs/base/common/async';
 

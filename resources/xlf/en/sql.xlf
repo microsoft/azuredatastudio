@@ -269,6 +269,11 @@
       <source xml:lang="en">Controls whether or not the empty window is trusted by default within Azure Data Studio. When used with `#{0}#`, you can enable the full functionality of Azure Data Studio without prompting in an empty window.</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/base/parts/tree/browser/treeDefaults" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="collapse all">
+      <source xml:lang="en">Collapse All</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/platform/accounts/common/accountActions" source-language="en" datatype="plaintext"><body>
     <trans-unit id="NoAccountToRefresh">
       <source xml:lang="en">There is no account to refresh</source>
@@ -2404,20 +2409,14 @@
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="executionPlanComparisonPropertiesBottomOperation">
-      <source xml:lang="en">Bottom operation: {0}</source>
-    </trans-unit>
-    <trans-unit id="executionPlanComparisonPropertiesLeftOperation">
-      <source xml:lang="en">Left operation: {0}</source>
-    </trans-unit>
-    <trans-unit id="executionPlanComparisonPropertiesRightOperation">
-      <source xml:lang="en">Right operation: {0}</source>
-    </trans-unit>
-    <trans-unit id="executionPlanComparisonPropertiesTopOperation">
-      <source xml:lang="en">Top operation: {0}</source>
-    </trans-unit>
     <trans-unit id="executionPlanPropertiesEdgeOperationName">
       <source xml:lang="en">Edge</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewBottomOperation">
+      <source xml:lang="en">Bottom operation: {0}</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewLeftOperation">
+      <source xml:lang="en">Left operation: {0}</source>
     </trans-unit>
     <trans-unit id="nodePropertyViewNameNameColumnHeader">
       <source xml:lang="en">Name</source>
@@ -2433,6 +2432,12 @@
     </trans-unit>
     <trans-unit id="nodePropertyViewNameValueColumnTopHeader">
       <source xml:lang="en">Value (Top Plan)</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewRightOperation">
+      <source xml:lang="en">Right operation: {0}</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewTopOperation">
+      <source xml:lang="en">Top operation: {0}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanContribution" source-language="en" datatype="plaintext"><body>

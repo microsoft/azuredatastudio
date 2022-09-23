@@ -1905,6 +1905,33 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/mssql/dist/tableDesigner/tableDesigner.tableDesigner.no" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[No]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[否]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/dist/tableDesigner/tableDesigner.tableDesigner.turnOnPreloadingMessage" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Do you want to reduce the table designer load time by enabling the database model preloading? The database model will be preloaded when you expand the database node in object explorer.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[是否要啟用資料庫模型預先載入來縮短資料表設計工具的載入時間? 當您在物件總管中展開資料庫節點時，將會預先載入資料庫模型。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/dist/tableDesigner/tableDesigner.tableDesigner.yes" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Yes]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[是]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/mssql/dist/telemetry.serviceCrashMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} component exited unexpectedly. Please restart Azure Data Studio.]]></Val>
@@ -3200,6 +3227,15 @@
           <Val><![CDATA[Enable SET XACT_ABORT ON option]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[啟用 SET XACT_ABORT ON 選項]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/package.mssql.tableDesigner.preloadDatabaseModel" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Whether to preload the database model when the database node in the object explorer is expanded. When enabled, the loading time of table designer can be reduced. Note: You might see higher than normal memory usage if you need to expand a lot of database nodes.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[當物件總管中的資料庫節點展開時，是否要預先載入資料庫模型。啟用時，可以縮短資料表設計工具的載入時間。注意: 如果您需要展開許多資料庫節點，可能會看到高於一般的記憶體使用量。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

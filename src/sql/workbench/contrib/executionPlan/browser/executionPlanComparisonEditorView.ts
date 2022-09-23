@@ -208,7 +208,7 @@ export class ExecutionPlanComparisonEditorView {
 				c.style.display = 'none';
 			});
 			this._topPlanDiagramContainers[e.index].style.display = '';
-			this._propertiesView.setTopElement(this._topPlanDiagramModels[e.index].root);
+			this._propertiesView.setPrimaryElement(this._topPlanDiagramModels[e.index].root);
 			this._topPlanRecommendations.recommendations = this._topPlanDiagramModels[e.index].recommendations;
 			this._activeTopPlanIndex = e.index;
 
@@ -233,7 +233,7 @@ export class ExecutionPlanComparisonEditorView {
 				c.style.display = 'none';
 			});
 			this._bottomPlanDiagramContainers[e.index].style.display = '';
-			this._propertiesView.setTopElement(this._bottomPlanDiagramModels[e.index].root);
+			this._propertiesView.setPrimaryElement(this._bottomPlanDiagramModels[e.index].root);
 			this._bottomPlanRecommendations.recommendations = this._bottomPlanDiagramModels[e.index].recommendations;
 			this._activeBottomPlanIndex = e.index;
 
@@ -345,7 +345,7 @@ export class ExecutionPlanComparisonEditorView {
 				this._topPlanContainer.appendChild(graphContainer);
 				const diagram = this._instantiationService.createInstance(AzdataGraphView, graphContainer, e);
 				diagram.onElementSelected(e => {
-					this._propertiesView.setTopElement(e);
+					this._propertiesView.setPrimaryElement(e);
 					const id = e.id.replace(`element-`, '');
 					if (this._topSimilarNode.has(id)) {
 						const similarNode = this._topSimilarNode.get(id);
@@ -364,7 +364,7 @@ export class ExecutionPlanComparisonEditorView {
 				graphContainer.style.display = 'none';
 			});
 			this._topPlanDropdown.select(preSelectIndex);
-			this._propertiesView.setTopElement(executionPlanGraphs[0].root);
+			this._propertiesView.setPrimaryElement(executionPlanGraphs[0].root);
 			this._propertiesAction.enabled = true;
 			this._zoomInAction.enabled = true;
 			this._zoomOutAction.enabled = true;
@@ -385,7 +385,7 @@ export class ExecutionPlanComparisonEditorView {
 				this._bottomPlanContainer.appendChild(graphContainer);
 				const diagram = this._instantiationService.createInstance(AzdataGraphView, graphContainer, e);
 				diagram.onElementSelected(e => {
-					this._propertiesView.setBottomElement(e);
+					this._propertiesView.setSecondaryElement(e);
 					const id = e.id.replace(`element-`, '');
 					if (this._bottomSimilarNode.has(id)) {
 						const similarNode = this._bottomSimilarNode.get(id);
@@ -404,7 +404,7 @@ export class ExecutionPlanComparisonEditorView {
 				graphContainer.style.display = 'none';
 			});
 			this._bottomPlanDropdown.select(preSelectIndex);
-			this._propertiesView.setBottomElement(executionPlanGraphs[0].root);
+			this._propertiesView.setSecondaryElement(executionPlanGraphs[0].root);
 			this._addExecutionPlanAction.enabled = false;
 			this._searchNodeActionForAddedPlan.enabled = true;
 		}
