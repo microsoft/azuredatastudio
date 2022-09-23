@@ -33,7 +33,7 @@ export class MysqlFlexibleServerService extends ResourceServiceBase<DbServerGrap
 			tenant: resource.tenantId,
 			subscription: {
 				id: resource.subscriptionId,
-				name: resource.subscriptionName
+				name: resource.subscriptionName || ''
 			},
 			resourceGroup: resource.resourceGroup
 		};

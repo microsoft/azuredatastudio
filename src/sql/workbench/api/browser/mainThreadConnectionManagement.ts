@@ -141,6 +141,11 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 	}
 
 	public async $openConnectionDialog(providers: string[], initialConnectionProfile?: IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions): Promise<azdata.connection.Connection | undefined> {
+		if (initialConnectionProfile?.providerName && this._capabilitiesService.providers[initialConnectionProfile.providerName] === undefined) {
+			await this._connectionManagementService.handleUnsupportedProvider(initialConnectionProfile.providerName);
+			return undefined;
+		}
+
 		// Here we default to ConnectionType.editor which saves the connecton in the connection store by default
 		let connectionType = ConnectionType.editor;
 

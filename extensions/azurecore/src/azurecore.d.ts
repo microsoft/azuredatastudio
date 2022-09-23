@@ -72,12 +72,12 @@ declare module 'azurecore' {
 		/**
 		 * Host of the authority
 		 */
-		host?: string;
+		host: string;
 
 		/**
 		 * Identifier of the client application
 		 */
-		clientId?: string;
+		clientId: string;
 
 		/**
 		 * Information that describes the Microsoft resource management resource
@@ -87,7 +87,7 @@ declare module 'azurecore' {
 		/**
 		 * Information that describes the AAD graph resource
 		 */
-		graphResource?: Resource;
+		graphResource: Resource;
 
 		/**
 		 * Information that describes the MS graph resource
@@ -97,7 +97,7 @@ declare module 'azurecore' {
 		/**
 		 * Information that describes the Azure resource management resource
 		 */
-		armResource?: Resource;
+		armResource: Resource;
 
 		/**
 		 * Information that describes the SQL Azure resource
@@ -112,7 +112,7 @@ declare module 'azurecore' {
 		/**
 		 * Information that describes the Azure Key Vault resource
 		 */
-		azureKeyVaultResource?: Resource;
+		azureKeyVaultResource: Resource;
 
 		/**
 		 * Information that describes the Azure Dev Ops resource
@@ -132,7 +132,7 @@ declare module 'azurecore' {
 		/**
 		 * Information that describes the Azure Storage resource
 		 */
-		azureStorageResource?: Resource;
+		azureStorageResource: Resource;
 
 		/**
 		 * Information that describes the Power BI resource
@@ -153,11 +153,11 @@ declare module 'azurecore' {
 		siteId?: string;
 
 		/**
-		 * Redirect URI that is used to signify the end of the interactive aspect of sign it
+		 * Redirect URI that is used to signify the end of the interactive aspect of sign in
 		 */
-		redirectUri?: string;
+		redirectUri: string;
 
-		scopes?: string[]
+		scopes: string[]
 
 		portalEndpoint?: string
 	}
@@ -355,7 +355,22 @@ declare module 'azurecore' {
 			getTreeDataProvider(): IAzureResourceTreeDataProvider;
 		}
 
-		export interface IAzureResourceTreeDataProvider extends TreeDataProvider<IAzureResourceNode> {
+		export interface IAzureResourceTreeDataProvider {
+			 /**
+			  * Gets the root tree item nodes for this provider - these will be used as
+			  * direct children of the Account node in the Azure tree view.
+			  */
+			getRootChildren(): Promise<azdata.TreeItem[]>;
+			/**
+			 * Gets the children for a given {@link IAzureResourceNode}
+			 * @param element The parent node to get the children for
+			 */
+			getChildren(element: IAzureResourceNode): Promise<IAzureResourceNode[]>;
+			/**
+			 * Gets the tree item to display for a given {@link IAzureResourceNode}
+			 * @param element The resource node to get the TreeItem for
+			 */
+			getResourceTreeItem(element: IAzureResourceNode): Promise<azdata.TreeItem>;
 			browseConnectionMode: boolean;
 		}
 

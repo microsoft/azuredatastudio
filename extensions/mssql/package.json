@@ -393,6 +393,11 @@
           "type": "boolean",
           "description": "%mssql.parallelMessageProcessing%",
           "default": false
+        },
+        "mssql.tableDesigner.preloadDatabaseModel": {
+          "type": "boolean",
+          "default": false,
+          "description": "%mssql.tableDesigner.preloadDatabaseModel%"
         }
       }
     },

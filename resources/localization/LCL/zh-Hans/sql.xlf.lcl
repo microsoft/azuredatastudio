@@ -945,9 +945,21 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView.executionPlanComparisonProp" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView.executionPlanPropertiesEdge" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) ertiesBottomOperation" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) OperationName" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Edge]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[边缘]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView.nodePropertyViewBottomOpera" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) tion" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Bottom operation: {0}]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -956,41 +968,14 @@
           </Str>
           <Disp Icon="Str" />
         </Item>
-        <Item ItemId=";(...) ertiesLeftOperation" ItemType="0" PsrId="308" Leaf="true">
+      </Item>
+      <Item ItemId=";@src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView.nodePropertyViewLeftOperati" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) on" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Left operation: {0}]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[左侧操作: {0}]]></Val>
-            </Tgt>
-          </Str>
-          <Disp Icon="Str" />
-        </Item>
-        <Item ItemId=";(...) ertiesRightOperation" ItemType="0" PsrId="308" Leaf="true">
-          <Str Cat="Text">
-            <Val><![CDATA[Right operation: {0}]]></Val>
-            <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[右侧操作: {0}]]></Val>
-            </Tgt>
-          </Str>
-          <Disp Icon="Str" />
-        </Item>
-        <Item ItemId=";(...) ertiesTopOperation" ItemType="0" PsrId="308" Leaf="true">
-          <Str Cat="Text">
-            <Val><![CDATA[Top operation: {0}]]></Val>
-            <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[热门操作: {0}]]></Val>
-            </Tgt>
-          </Str>
-          <Disp Icon="Str" />
-        </Item>
-      </Item>
-      <Item ItemId=";@src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView.executionPlanPropertiesEdge" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) OperationName" ItemType="0" PsrId="308" Leaf="true">
-          <Str Cat="Text">
-            <Val><![CDATA[Edge]]></Val>
-            <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[边缘]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -1042,6 +1027,18 @@
             <Val><![CDATA[Value (Top Plan)]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[值(顶级计划)]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView.nodePropertyViewRightOperat" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ion" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Right operation: {0}]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[右侧操作: {0}]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -1311,18 +1308,6 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@src/sql/workbench/services/connection/browser/connectionDialogWidget.connectionDialog.connectionProviderNotSuppor" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) ted" ItemType="0" PsrId="308" Leaf="true">
-          <Str Cat="Text">
-            <Val><![CDATA[The extension that supports provider type '{0}' is not currently installed. Please install it and try again.]]></Val>
-            <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[当前未安装支持提供程序类型 \"{0}\" 的扩展。请安装它，然后重试。]]></Val>
-            </Tgt>
-          </Str>
-          <Disp Icon="Str" />
-        </Item>
-      </Item>
       <Item ItemId=";@src/sql/workbench/services/connection/browser/connectionManagementService.connection.neverShowUnsupportedVersionW" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) arning" ItemType="0" PsrId="308" Leaf="true">
@@ -1342,6 +1327,18 @@
             <Val><![CDATA[The server version is not supported by Azure Data Studio, you may still connect to it but some features in Azure Data Studio might not work as expected.]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[Azure Data Studio 不支持此服务器版本，你仍然可以连接到它，但 Azure Data Studio 中的某些功能可能无法按预期工作。]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@src/sql/workbench/services/connection/browser/connectionManagementService.connectionDialog.connectionProviderNotS" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) upported" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[The extension that supports provider type '{0}' is not currently installed. Do you want to view the extensions?]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[当前未安装支持提供程序类型 "{0}" 的扩展。是否要查看扩展?]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -2490,6 +2487,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/base/parts/tree/browser/treeDefaults.collapse all" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Collapse All]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[全部折叠]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/platform/accounts/common/accountActions.NoAccountToRefresh" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[There is no account to refresh]]></Val>
@@ -2603,6 +2609,24 @@
           <Val><![CDATA[There is already a connection with uri: {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[已存在与此 URI 的连接: {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/platform/connection/common/providerConnectionInfo.connection.unsupported" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Unsupported connection]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[不支持的连接]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/platform/connection/common/providerConnectionInfo.loading" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Loading...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[正在加载...]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -7427,6 +7451,15 @@
           <Val><![CDATA[Query {0} of {1}: {2}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[查询 {1}: {2} 的 {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView.nodePropertyViewTopOperation" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Top operation: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[热门操作: {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -14643,38 +14676,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/services/connection/browser/connectionDialogWidget.connectionDialog.extensionNotInstalled" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[The extension '{0}' is required in order to connect to this resource. Please install it and try again.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[若要连接到此资源，需要扩展 \"{0}\"。请安装它，然后重试。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";src/sql/workbench/services/connection/browser/connectionDialogWidget.connectionDialog.recentConnections" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Recent Connections]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[最近的连接]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/services/connection/browser/connectionDialogWidget.connectionDialog.viewExtension" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[View Extension]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[查看扩展]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/services/connection/browser/connectionDialogWidget.connectionDialog.viewExtensions" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[View Extensions]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[查看扩展]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -14705,6 +14711,15 @@
           <Val><![CDATA[Are you sure you want to cancel this connection?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[确定要取消此连接吗?]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/connection/browser/connectionManagementService.connection.extensionNotInstalled" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The extension '{0}' is required in order to connect to this resource. Do you want to install it?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[若要连接到此资源，需要扩展 "{0}"。是否要安装它?]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -16053,15 +16068,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/asyncServerTreeRenderer.loading" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Loading...]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[正在加载...]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/connectionTreeAction.DisconnectAction" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Disconnect]]></Val>
@@ -16193,15 +16199,6 @@
           <Val><![CDATA[Cannot expand as the required connection provider '{0}' was not found]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[无法展开，因为未找到所需的连接提供程序“{0}”]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/services/objectExplorer/browser/serverTreeRenderer.loading" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Loading...]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[正在加载...]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

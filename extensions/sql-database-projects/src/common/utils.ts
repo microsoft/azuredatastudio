@@ -714,17 +714,16 @@ export async function fileContainsCreateTableStatement(fullPath: string, project
 
 /**
  * Gets target platform based on the server edition/version
- * @param connectionId server connection profile id
+ * @param serverInfo server information
  * @returns target platform for the database project
  */
-export async function getTargetPlatformFromServerVersion(connectionId: string): Promise<SqlTargetPlatform | undefined> {
-	const serverInfo = await getAzdataApi()!.connection.getServerInfo(connectionId);
+export async function getTargetPlatformFromServerVersion(serverInfo: azdataType.ServerInfo | vscodeMssql.ServerInfo): Promise<SqlTargetPlatform | undefined> {
 	const isCloud = serverInfo.isCloud;
 
 	let targetPlatform;
 	if (isCloud) {
 		const engineEdition = serverInfo.engineEditionId;
-		targetPlatform = engineEdition === getAzdataApi()!.DatabaseEngineEdition.SqlDataWarehouse ? SqlTargetPlatform.sqlDW : SqlTargetPlatform.sqlAzure;
+		targetPlatform = engineEdition === vscodeMssql.DatabaseEngineEdition.SqlDataWarehouse ? SqlTargetPlatform.sqlDW : SqlTargetPlatform.sqlAzure;
 	} else {
 		const serverMajorVersion = serverInfo.serverMajorVersion;
 		targetPlatform = serverMajorVersion ? constants.onPremServerVersionToTargetPlatform.get(serverMajorVersion) : undefined;

@@ -9,10 +9,8 @@ import { IAzureResourceCacheService } from '../interfaces';
 
 export class AzureResourceCacheService implements IAzureResourceCacheService {
 	public constructor(
-		context: ExtensionContext
-	) {
-		this._context = context;
-	}
+		private _context: ExtensionContext
+	) { }
 
 	public generateKey(id: string): string {
 		return `${AzureResourceCacheService.cacheKeyPrefix}.${id}`;
@@ -25,8 +23,6 @@ export class AzureResourceCacheService implements IAzureResourceCacheService {
 	public async update<T>(key: string, value: T): Promise<void> {
 		await this._context.workspaceState.update(key, value);
 	}
-
-	private _context: ExtensionContext = undefined;
 
 	private static readonly cacheKeyPrefix = 'azure.resource.cache';
 }

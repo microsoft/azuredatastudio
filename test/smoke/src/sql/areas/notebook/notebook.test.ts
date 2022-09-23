@@ -115,7 +115,7 @@ export function setup(opts: minimist.ParsedArgs) {
 				await app.workbench.sqlNotebook.waitForActiveCellResults();
 			});
 
-			it('can add and remove new package from the Manage Packages wizard', async function () {
+			it('can add and remove new package from the Manage Packages wizard @UNSTABLE@', async function () {
 				// Use arrow package so that it's at the top of the packages list when uninstalling later
 				const testPackageName = 'arrow';
 
@@ -195,7 +195,7 @@ export function setup(opts: minimist.ParsedArgs) {
 		});
 
 		describe('Notebook keyboard navigation', async () => {
-			it.skip('can enter and exit edit mode and navigate using keyboard nav', async function () {
+			it('can enter and exit edit mode and navigate using keyboard nav @UNSTABLE@', async function () {
 				const app = this.app as Application;
 				await app.workbench.sqlNotebook.newUntitledNotebook();
 				await app.workbench.sqlNotebook.addCellFromPlaceholder('Code'); // add new code cell
@@ -273,7 +273,7 @@ export function setup(opts: minimist.ParsedArgs) {
 			});
 		});
 
-		describe('Cell Toolbar Actions', function () {
+		describe('Cell Toolbar Actions @UNSTABLE@', function () {
 			async function verifyCellToolbarBehavior(app: Application, toolbarAction: () => Promise<void>, selector: string, checkIfGone: boolean = false): Promise<void> {
 				await app.workbench.notificationToast.closeNotificationToasts();
 				// Run the test for each of the default text editor modes
@@ -508,7 +508,7 @@ export function setup(opts: minimist.ParsedArgs) {
 				await app.workbench.sqlNotebook.waitForActiveCellEditorContents(s => s.includes('- **_<u><mark>Markdown Test</mark></u>_**'));
 			});
 
-			it('can save and reopen WYSIWYG notebook', async function () {
+			it('can save and reopen WYSIWYG notebook @UNSTABLE@', async function () {
 				const app = this.app as Application;
 				const filename = 'emptyNotebook.ipynb';
 				await app.workbench.sqlNotebook.openFile(filename);
