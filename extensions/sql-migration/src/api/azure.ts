@@ -72,6 +72,10 @@ export async function createResourceGroup(account: azdata.Account, subscription:
 }
 
 export type SqlManagedInstance = azurecore.azureResource.AzureSqlManagedInstance;
+export function isSqlManagedInstance(instance: any): instance is SqlManagedInstance {
+	return (instance as SqlManagedInstance) !== undefined;
+}
+
 export async function getAvailableManagedInstanceProducts(account: azdata.Account, subscription: Subscription): Promise<SqlManagedInstance[]> {
 	const api = await getAzureCoreAPI();
 	const result = await api.getSqlManagedInstances(account, [subscription], false);
@@ -161,6 +165,10 @@ export interface PrivateEndpointConnectionProperties {
 export interface ServerPrivateEndpointConnection {
 	readonly id?: string;
 	readonly properties?: PrivateEndpointConnectionProperties;
+}
+
+export function isAzureSqlDatabaseServer(instance: any): instance is AzureSqlDatabaseServer {
+	return (instance as AzureSqlDatabaseServer) !== undefined;
 }
 
 export interface AzureSqlDatabaseServer {

@@ -143,7 +143,7 @@ function getSqlDbConnectionProfile(
 	};
 }
 
-function getConnectionProfile(
+export function getConnectionProfile(
 	serverName: string,
 	azureResourceId: string,
 	userName: string,

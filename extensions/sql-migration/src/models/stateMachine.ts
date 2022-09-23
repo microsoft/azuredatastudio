@@ -7,14 +7,14 @@ import * as azdata from 'azdata';
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import * as mssql from 'mssql';
-import { SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, SqlVMServer, getLocationDisplayName, getSqlManagedInstanceDatabases, AzureSqlDatabaseServer } from '../api/azure';
+import { SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, SqlVMServer, getLocationDisplayName, getSqlManagedInstanceDatabases, AzureSqlDatabaseServer, isSqlManagedInstance, isAzureSqlDatabaseServer } from '../api/azure';
 import * as constants from '../constants/strings';
 import * as nls from 'vscode-nls';
 import { v4 as uuidv4 } from 'uuid';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../telemtery';
 import { hashString, deepClone } from '../api/utils';
 import { SKURecommendationPage } from '../wizard/skuRecommendationPage';
-import { excludeDatabases, LoginTableInfo, TargetDatabaseInfo } from '../api/sqlUtils';
+import { excludeDatabases, getConnectionProfile, LoginTableInfo, TargetDatabaseInfo } from '../api/sqlUtils';
 const localize = nls.loadMessageBundle();
 
 export enum State {
@@ -187,6 +187,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _sourceDatabaseNames!: string[];
 	public _targetDatabaseNames!: string[];
 
+	public _targetServerName!: string;
 	public _targetUserName!: string;
 	public _targetPassword!: string;
 	public _sourceTargetMapping: Map<string, TargetDatabaseInfo | undefined> = new Map();
@@ -437,18 +438,69 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return this._skuRecommendationResults;
 	}
 
+	public async getSourceServerName(): Promise<string> {
+		return (await this.getSourceConnectionProfile()).serverName!;
+	}
+
+	public async getSourceUserName(): Promise<string> {
+		const connectionProfile = await this.getSourceConnectionProfile();
+		const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(connectionProfile.providerId, azdata.DataProviderType.QueryProvider);
+		const query = 'select SUSER_NAME()';
+		const results = await queryProvider.runQueryAndReturn(await (azdata.connection.getUriForConnection(this.sourceConnectionId)), query);
+		return results.rows[0][0].displayValue;
+	}
+
+	public async getSourceCreds(): Promise<string> {
+		return (await azdata.connection.getCredentials(this.sourceConnectionId)).password;
+	}
+
+	public async getSourceAuthType(): Promise<MigrationSourceAuthenticationType> {
+		const connectionProfile = await this.getSourceConnectionProfile();
+		return connectionProfile.authenticationType === AuthenticationType.SqlLogin
+			? MigrationSourceAuthenticationType.Sql
+			: connectionProfile.authenticationType === AuthenticationType.Integrated
+				? MigrationSourceAuthenticationType.Integrated
+				: undefined!;
+	}
+
+	public async getSourceConnectionString(): Promise<string> {
+		return await azdata.connection.getConnectionString(this._sourceConnectionId, true);
+	}
+
+	public async setTargetServerName(): Promise<void> {
+		if (isSqlManagedInstance(this._targetServerInstance) || isAzureSqlDatabaseServer(this._targetServerInstance)) {
+			this._targetServerName = this._targetServerName ?? this._targetServerInstance.properties.fullyQualifiedDomainName;
+		}
+	}
+
+	public async getTargetConnectionString(): Promise<string> {
+		await this.setTargetServerName();
+		const connectionProfile = getConnectionProfile(
+			this._targetServerName,
+			this._targetServerInstance.id,
+			this._targetUserName,
+			this._targetPassword);
+
+		const result = await azdata.connection.connect(connectionProfile, false, false);
+		if (result.connected && result.connectionId) {
+			return azdata.connection.getConnectionString(result.connectionId, true);
+		}
+
+		return '';
+	}
+
 	public async startLoginMigration(): Promise<Boolean> {
 		try {
-			// execute a query against the source to get the correct instance name
-			const connectionUri = await azdata.connection.getUriForConnection(this._sourceConnectionId);
-			const sourceConnectionString = await azdata.connection.getConnectionString(connectionUri, true);
-
+			const sourceConnectionString = await this.getSourceConnectionString();
+			const targetConnectionString = await this.getTargetConnectionString();
 			console.log('AKMA DEBUG LOG: startLoginMIgration sourceConnectionString: ', sourceConnectionString);
+			console.log('AKMA DEBUG LOG: startLoginMIgration targetConnectionString: ', targetConnectionString);
 			console.log('AKMA DEBUG LOG: startLoginMIgration this._loginsForMigration: ', this._loginsForMigration);
+			console.log('AKMA DEBUG LOG: startLoginMIgration this._loginsForMigration: ', this._loginsForMigration.map(row => row.loginName));
 
 			const response = (await this.migrationService.startLoginMigration(
 				sourceConnectionString,
-				sourceConnectionString,
+				targetConnectionString, // change to target once we get
 				this._loginsForMigration.map(row => row.loginName)))!;
 			this._didLoginMigrationsSucceed = response;
 		} catch (error) {
