@@ -2356,6 +2356,17 @@
       <source xml:lang="en">Compare Execution Plans</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/constants" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="ep.propertiesSearchDescription">
+      <source xml:lang="en">Search properties table</source>
+    </trans-unit>
+    <trans-unit id="ep.searchPlaceholder">
+      <source xml:lang="en">Filter for any field...</source>
+    </trans-unit>
+    <trans-unit id="ep.topOperationsSearchDescription">
+      <source xml:lang="en">Search top operations</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditor" source-language="en" datatype="plaintext"><body>
     <trans-unit id="compareExecutionPlanEditor">
       <source xml:lang="en">Compare Execution Plan Editor</source>
