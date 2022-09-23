@@ -52,6 +52,10 @@ export class SaveResultAction extends Action {
 	public static SAVEJSON_LABEL = localize('saveAsJson', "Save As JSON");
 	public static SAVEJSON_ICON = 'saveJson';
 
+	public static SAVEMARKDOWN_ID = 'grid.saveAsMarkdown';
+	public static SAVEMARKDOWN_LABEL = localize('saveAsMarkdown', "Save As Markdown");
+	public static SAVEMARKDOWN_ICON = 'saveCsv';
+
 	public static SAVEEXCEL_ID = 'grid.saveAsExcel';
 	public static SAVEEXCEL_LABEL = localize('saveAsExcel', "Save As Excel");
 	public static SAVEEXCEL_ICON = 'saveExcel';
