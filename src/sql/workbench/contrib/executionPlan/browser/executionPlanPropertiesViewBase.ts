@@ -285,7 +285,7 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 		this._tableComponent.rerenderGrid();
 	}
 
-	private searchNestedTableData(pattern: string, data: Slick.SlickData[]): { include: boolean, data: Slick.SlickData[] } {
+	private searchNestedTableData(search: string, data: Slick.SlickData[]): { include: boolean, data: Slick.SlickData[] } {
 		let resultData: Slick.SlickData[] = [];
 		data.forEach(dataRow => {
 			let includeRow = false;
@@ -298,7 +298,7 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 				} else if (rawDataValue !== undefined) {
 					dataValue = rawDataValue.text ?? rawDataValue.title;
 				}
-				if (dataValue.toLowerCase().includes(pattern.toLowerCase())) {
+				if (dataValue.toLowerCase().includes(search.toLowerCase())) {
 					includeRow = true;
 					break;
 				}
@@ -306,7 +306,7 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 
 			const rowClone = deepClone(dataRow);
 			if (rowClone['treeGridChildren'] !== undefined) {
-				const result = this.searchNestedTableData(pattern, rowClone['treeGridChildren']);
+				const result = this.searchNestedTableData(search, rowClone['treeGridChildren']);
 				rowClone['treeGridChildren'] = result.data;
 				includeRow = includeRow || result.include;
 			}
