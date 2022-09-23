@@ -203,6 +203,18 @@
     tmp "^0.0.33"
     yauzl "^2.10.0"
 
+"@microsoft/azdata-test@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@microsoft/azdata-test/-/azdata-test-2.0.2.tgz#dfdf8d983f5d34169b2a4a6dc8d3e529a9f9f94c"
+  integrity sha512-etbDFAsWPeXB1h1id0k+pNH539h73XGgxrG2mwQ8qRNTsjdU87ejU472blMXDnXbtU4CRYQWEATR/X5H0O60Fg==
+  dependencies:
+    http-proxy-agent "^2.1.0"
+    https-proxy-agent "^2.2.4"
+    mocha-junit-reporter "^1.17.0"
+    mocha-multi-reporters "^1.1.7"
+    rimraf "^2.6.3"
+    typemoq "^2.1.0"
+
 "@microsoft/vscodetestcover@^1.2.1":
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/@microsoft/vscodetestcover/-/vscodetestcover-1.2.1.tgz#65f25132075a465a7a99688204486ee2b65ac07b"

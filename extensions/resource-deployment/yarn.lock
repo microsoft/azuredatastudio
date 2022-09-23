@@ -227,13 +227,15 @@
   resolved "https://registry.yarnpkg.com/@microsoft/applicationinsights-shims/-/applicationinsights-shims-2.0.1.tgz#5d72fb7aaf4056c4fda54f9d7c93ccf8ca9bcbfd"
   integrity sha512-G0MXf6R6HndRbDy9BbEj0zrLeuhwt2nsXk2zKtF0TnYo39KgYqhYC2ayIzKPTm2KAE+xzD7rgyLdZnrcRvt9WQ==
 
-"@microsoft/azdata-test@^1.5.2":
-  version "1.5.2"
-  resolved "https://registry.yarnpkg.com/@microsoft/azdata-test/-/azdata-test-1.5.2.tgz#0a750eed6c686eaf98e63db580f119916a083d6a"
-  integrity sha512-m1WVNxkCqU8nkaRB0Q/DEq1wHej0Ev3bfyEmsPgX9znymY7MD9c1l6kRoHtPPmsYYDEjcCxO2QXUJAsNUeAKwg==
+"@microsoft/azdata-test@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@microsoft/azdata-test/-/azdata-test-2.0.2.tgz#dfdf8d983f5d34169b2a4a6dc8d3e529a9f9f94c"
+  integrity sha512-etbDFAsWPeXB1h1id0k+pNH539h73XGgxrG2mwQ8qRNTsjdU87ejU472blMXDnXbtU4CRYQWEATR/X5H0O60Fg==
   dependencies:
     http-proxy-agent "^2.1.0"
     https-proxy-agent "^2.2.4"
+    mocha-junit-reporter "^1.17.0"
+    mocha-multi-reporters "^1.1.7"
     rimraf "^2.6.3"
     typemoq "^2.1.0"
 
