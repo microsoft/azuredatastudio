@@ -1351,6 +1351,6 @@
     "should": "^13.2.3",
     "typemoq": "^2.1.0",
     "@microsoft/vscodetestcover": "^1.2.1",
-    "@microsoft/azdata-test": "^2.0.2"
+    "@microsoft/azdata-test": "^2.0.3"
   }
 }

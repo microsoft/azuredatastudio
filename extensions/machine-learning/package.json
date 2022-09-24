@@ -154,7 +154,7 @@
     "should": "^13.2.1",
     "typemoq": "^2.1.0",
     "lodash": "^4.17.21",
-    "@microsoft/azdata-test": "^2.0.2"
+    "@microsoft/azdata-test": "^2.0.3"
   },
   "__metadata": {
     "id": "65",

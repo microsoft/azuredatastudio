@@ -6,8 +6,7 @@
 import { getDefaultMochaOptions } from '@microsoft/azdata-test';
 import * as testRunner from '@microsoft/vscodetestcover';
 
-const options = getDefaultMochaOptions('Data Workspace Extension Tests');
-options.ui = 'tdd';
+const options = getDefaultMochaOptions('Data Workspace Extension Tests', 'tdd');
 
 testRunner.configure(options, { coverConfig: '../../coverConfig.json' });
 
