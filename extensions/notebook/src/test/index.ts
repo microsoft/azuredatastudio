@@ -6,6 +6,6 @@
 import { getDefaultMochaOptions } from '@microsoft/azdata-test';
 import * as testRunner from '@microsoft/vscodetestcover';
 
-testRunner.configure(getDefaultMochaOptions('otebook Extension Tests'), { coverConfig: '../../coverConfig.json' });
+testRunner.configure(getDefaultMochaOptions('Notebook Extension Tests'), { coverConfig: '../../coverConfig.json' });
 
 export = testRunner;
