@@ -17,6 +17,7 @@ import * as sqlExtHostType from 'sql/workbench/api/common/sqlExtHostTypes';
 import { TextWithIconColumn } from 'sql/base/browser/ui/table/plugins/textWithIconColumn';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 
 export enum ExecutionPlanCompareOrientation {
 	Horizontal = 'horizontal',
@@ -39,6 +40,22 @@ function getRightOperationLabel(target: string): string {
 	return localize('nodePropertyViewRightOperation', 'Right operation: {0}', target);
 }
 
+function getTopPlanIsGreaterThanBottomPlanSummaryPointTemplate(rowName: string): string {
+	return localize('nodePropertyViewTopPlanGreaterThanBottomPlan', '{0} is greater for the top plan than it is for the bottom plan.', rowName);
+}
+
+function getBottomPlanIsGreaterThanTopPlanSummaryPointTemplate(rowName: string): string {
+	return localize('nodePropertyViewBottomPlanGreaterThanTopPlan', '{0} is greater for the bottom plan than it is for the top plan.', rowName);
+}
+
+function getLeftPlanIsGreaterThanRightPlanSummaryPointTemplate(rowName: string): string {
+	return localize('nodePropertyViewLeftPlanGreaterThanRightPlan', '{0} is greater for the left plan than it is for the right plan.', rowName);
+}
+
+function getRightPlanIsGreaterThanLeftPlanSummaryPointTemplate(rowName: string): string {
+	return localize('nodePropertyViewRightPlanGreaterThanLeftPlan', '{0} is greater for the right plan than it is for the left plan.', rowName);
+}
+
 const topTitleColumnHeader = localize('nodePropertyViewNameValueColumnTopHeader', "Value (Top Plan)");
 const leftTitleColumnHeader = localize('nodePropertyViewNameValueColumnLeftHeader', "Value (Left Plan)");
 const rightTitleColumnHeader = localize('nodePropertyViewNameValueColumnRightHeader', "Value (Right Plan)");
@@ -46,6 +63,7 @@ const bottomTitleColumnHeader = localize('nodePropertyViewNameValueColumnBottomH
 
 export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanPropertiesViewBase {
 	private _model: ExecutionPlanComparisonPropertiesViewModel;
+	private _summaryTextContainer: HTMLElement;
 	private _primaryContainer: HTMLElement;
 	private _secondaryContainer: HTMLElement;
 	private _orientation: ExecutionPlanCompareOrientation = ExecutionPlanCompareOrientation.Horizontal;
@@ -57,17 +75,32 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		@IThemeService themeService: IThemeService,
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IContextMenuService contextMenuService: IContextMenuService,
-		@IContextViewService contextViewService: IContextViewService
+		@IContextViewService contextViewService: IContextViewService,
+		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService
 	) {
 		super(parentContainer, themeService, instantiationService, contextMenuService, contextViewService);
 		this._model = <ExecutionPlanComparisonPropertiesViewModel>{};
 		this._parentContainer.style.display = 'none';
 		const header = DOM.$('.compare-operation-name');
+
+		this._summaryTextContainer = DOM.$('.compare-operation-summary-text');
+		this.setSummary(this._summaryTextContainer);
+
 		this._primaryContainer = DOM.$('.compare-operation-name-text');
 		header.appendChild(this._primaryContainer);
+
 		this._secondaryContainer = DOM.$('.compare-operation-name-text');
 		header.appendChild(this._secondaryContainer);
+
 		this.setHeader(header);
+	}
+
+	private setSummaryElement(summary: string[]): void {
+		const EOL = this.textResourcePropertiesService.getEOL(undefined);
+		let summaryText = summary.join(EOL);
+		let summaryContainerText = localize('executionPlanSummaryForExpensiveOperators', "Summary: {0}{1}", EOL, summaryText);
+		this._summaryTextContainer.innerText = summaryContainerText;
+		this._summaryTextContainer.title = summaryContainerText;
 	}
 
 	public setPrimaryElement(e: InternalExecutionPlanElement): void {
@@ -134,7 +167,57 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		if (this._model.secondaryElement?.properties) {
 			secondaryProps = this._model.secondaryElement.properties;
 		}
-		this.populateTable(columns, this.convertPropertiesToTableRows(primaryProps, secondaryProps));
+
+		const tableRows = this.convertPropertiesToTableRows(primaryProps, secondaryProps);
+		this.setSummaryElement(this.getExpensivePropertySummary(tableRows));
+		this.populateTable(columns, tableRows);
+	}
+
+	private getExpensivePropertySummary(tableRows: { [key: string]: string }[]): string[] {
+		let summary: string[] = [];
+
+		tableRows.forEach(row => {
+			const rowName = row.name['text'];
+			if (row.primary && row.secondary) {
+				const primaryText = row.primary['text'].split(' ');
+				const secondaryTitle = row.secondary['title'].split(' ');
+
+				if (primaryText.length === secondaryTitle.length && primaryText.length <= 2 && secondaryTitle.length <= 2) {
+					const MAX_PROPERTY_SUMMARY_LENGTH = 3;
+
+					for (let i = 0; i < primaryText.length && summary.length < MAX_PROPERTY_SUMMARY_LENGTH; ++i) {
+						if (this.isNumber(primaryText[i]) && this.isNumber(secondaryTitle[i])) {
+							const primaryValue = Number(primaryText);
+							const secondaryValue = Number(secondaryTitle);
+
+							let summaryPoint: string;
+							if (primaryValue > secondaryValue) {
+								summaryPoint = this._orientation === ExecutionPlanCompareOrientation.Horizontal
+									? getTopPlanIsGreaterThanBottomPlanSummaryPointTemplate(rowName)
+									: getLeftPlanIsGreaterThanRightPlanSummaryPointTemplate(rowName);
+							}
+							else {
+								summaryPoint = this._orientation === ExecutionPlanCompareOrientation.Horizontal
+									? getBottomPlanIsGreaterThanTopPlanSummaryPointTemplate(rowName)
+									: getRightPlanIsGreaterThanLeftPlanSummaryPointTemplate(rowName);
+							}
+
+							summary.push(summaryPoint);
+						}
+					}
+				}
+			}
+		});
+
+		return summary;
+	}
+
+	private isNumber(text: string): boolean {
+		if (typeof text !== 'string') {
+			return false;
+		}
+
+		return !isNaN(parseInt(text)) && !isNaN(parseFloat(text));
 	}
 
 	private getPropertyTableColumns() {
