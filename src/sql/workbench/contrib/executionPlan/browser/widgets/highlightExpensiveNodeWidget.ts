@@ -52,7 +52,7 @@ export class HighlightExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 	}
 
 	private getDefaultExpensiveOperationMetric(): ExpensiveMetricType {
-		let defaultMetricConfiguration = this._configurationService.getValue<string>('queryEditor.executionPlan.expensiveOperationMetric');
+		const defaultMetricConfiguration = this._configurationService.getValue<string>('mssql.executionPlan.expensiveOperationMetric');
 
 		switch (defaultMetricConfiguration) {
 			case 'actualElapsedTime':
@@ -165,7 +165,7 @@ export class HighlightExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 		const promptChoices = [
 			{
 				label: localize('qp.expensiveOperationMetric.yes', 'Yes'),
-				run: () => this._configurationService.updateValue('queryEditor.executionPlan.expensiveOperationMetric', this._selectedExpensiveOperationType.toString()).catch(e => errors.onUnexpectedError(e))
+				run: () => this._configurationService.updateValue('mssql.executionPlan.expensiveOperationMetric', this._selectedExpensiveOperationType.toString()).catch(e => errors.onUnexpectedError(e))
 			},
 			{
 				label: localize('qp.expensiveOperationMetric.no', 'No'),
@@ -186,18 +186,33 @@ export class HighlightExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 
 	public getExpensiveOperationDelegate(): (cell: AzDataGraphCell) => number | undefined {
 		const getElapsedTimeInMs = (cell: AzDataGraphCell): number | undefined => cell.elapsedTimeInMs;
-		const getElapsedCpuTimeInMs = (cell: AzDataGraphCell): number | undefined => cell.costMetrics.elapsedCpuTimeInMs;
+
+		const getElapsedCpuTimeInMs = (cell: AzDataGraphCell): number | undefined => {
+			const elapsedCpuMetric = cell.costMetrics.find(m => m.name === 'ElapsedCpuTime');
+
+			if (elapsedCpuMetric === undefined) {
+				return undefined;
+			}
+			else {
+				return Number(elapsedCpuMetric.value);
+			}
+
+		};
+
 		const getCost = (cell: AzDataGraphCell): number | undefined => cell.cost;
 		const getSubtreeCost = (cell: AzDataGraphCell): number | undefined => cell.subTreeCost;
 
 		const getRowsForAllExecutions = (cell: AzDataGraphCell): number | undefined => {
-			if (!cell.costMetrics.actualRows && !cell.costMetrics.estimateRowsForAllExecutions) {
+			const actualRowsMetric = cell.costMetrics.find(m => m.name === 'ActualRows');
+			const estimateRowsForAllExecutionsMetric = cell.costMetrics.find(m => m.name === 'EstimateRowsAllExecs');
+
+			if (actualRowsMetric === undefined && estimateRowsForAllExecutionsMetric === undefined) {
 				return undefined;
 			}
 
-			let result = Number(cell.costMetrics.actualRows);
+			let result = Number(actualRowsMetric?.value);
 			if (!result) {
-				result = Number(cell.costMetrics.estimateRowsForAllExecutions);
+				result = Number(estimateRowsForAllExecutionsMetric?.value);
 			}
 
 			if (isNaN(result)) {
@@ -208,13 +223,16 @@ export class HighlightExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 		};
 
 		const getNumberOfRowsRead = (cell: AzDataGraphCell): number | undefined => {
-			if (!cell.costMetrics.actualRowsRead && !cell.costMetrics.estimatedRowsRead) {
+			const actualRowsReadMetric = cell.costMetrics.find(m => m.name === 'ActualRowsRead');
+			const estimatedRowsReadMetric = cell.costMetrics.find(m => m.name === 'EstimatedRowsRead');
+
+			if (actualRowsReadMetric === undefined && estimatedRowsReadMetric === undefined) {
 				return undefined;
 			}
 
-			let result = Number(cell.costMetrics.actualRowsRead);
+			let result = Number(actualRowsReadMetric?.value);
 			if (!result) {
-				result = Number(cell.costMetrics.estimatedRowsRead);
+				result = Number(estimatedRowsReadMetric?.value);
 			}
 
 			if (isNaN(result)) {

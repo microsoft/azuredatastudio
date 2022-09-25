@@ -256,6 +256,29 @@
           "default": false,
           "description": "%mssql.intelliSense.lowerCaseSuggestions%"
         },
+        "mssql.executionPlan.expensiveOperationMetric": {
+          "type": "string",
+          "description": "%mssql.executionPlan.expensiveOperationMetric%",
+          "default": "cost",
+          "enum": [
+            "off",
+            "actualElapsedTime",
+            "actualElapsedCpuTime",
+            "cost",
+            "subtreeCost",
+            "actualNumberOfRowsForAllExecutions",
+            "numberOfRowsRead"
+          ],
+          "enumDescriptions": [
+            "%mssql.executionPlan.expensiveOperationMetric.off%",
+	          "%mssql.executionPlan.expensiveOperationMetric.actualElapsedTime%",
+	          "%mssql.executionPlan.expensiveOperationMetric.actualElapsedCpuTime%",
+	          "%mssql.executionPlan.cost%",
+	          "%mssql.executionPlan.subtreeCost%",
+	          "%mssql.executionPlan.actualNumberOfRowsForAllExecutions%",
+	          "%mssql.executionPlan.numberOfRowsRead%"
+          ]
+        },
         "mssql.query.rowCount": {
           "type": "number",
           "default": 0,

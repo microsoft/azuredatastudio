@@ -1340,30 +1340,18 @@ declare module 'azdata' {
 			/**
 			 * Cost metrics for the node
 			 */
-			costMetrics: CostMetrics;
+			costMetrics: CostMetric[];
 		}
 
-		export interface CostMetrics {
+		export interface CostMetric {
 			/**
-			 * CPU Time taken by the node operation in milliseconds
+			 * Name of the cost metric.
 			 */
-			elapsedCpuTimeInMs: number | undefined;
+			name: string;
 			/**
-			 * Estimate number of rows for all executions.
+			 * The value of the cost metric
 			 */
-			estimateRowsForAllExecutions: number | undefined;
-			/**
-			 * Estimated number of rows read.
-			 */
-			estimatedRowsRead: number | undefined;
-			/**
-			 * The actual total number of rows.
-			 */
-			actualRows: number | undefined;
-			/**
-			 * The actual number of rows read.
-			 */
-			actualRowsRead: number | undefined;
+			value: number | undefined;
 		}
 
 		export interface ExecutionPlanBadge {
