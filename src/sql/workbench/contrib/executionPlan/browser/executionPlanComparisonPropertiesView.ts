@@ -427,23 +427,23 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		});
 
 		let formattedRows: { [key: string]: string }[] = [];
-		let commonRows: { [key: string]: string }[] = [];
+		let equalRows: { [key: string]: string }[] = [];
 		for (const [_, row] of Object.entries(rows)) {
 			if (row.primary && row.secondary && row.primary['text'] === row.secondary['title']) {
-				commonRows.push(row);
+				equalRows.push(row);
 			}
 			else {
 				formattedRows.push(row);
 			}
 		}
 
-		if (commonRows.length > 0) {
-			let commonRow = {};
-			commonRow['name'] = '';
-			commonRow['expanded'] = false;
-			commonRow['treeGridChildren'] = commonRows;
+		if (equalRows.length > 0) {
+			let equalRow = {};
+			equalRow['name'] = '';
+			equalRow['expanded'] = false;
+			equalRow['treeGridChildren'] = equalRows;
 
-			formattedRows.push(commonRow);
+			formattedRows.push(equalRow);
 		}
 
 		return formattedRows;
