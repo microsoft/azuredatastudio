@@ -45,7 +45,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 			if (impactProvider === true) {
 				this.handleAuthMapping(metadata, tokenCache, context, uriEventHandler);
 			}
-			const impactLibrary = changeEvent.affectsConfiguration(AzureAccountProvider.CONFIGURATION_SECTION);
+			const impactLibrary = changeEvent.affectsConfiguration('authenticationLibrary');
 			if (impactLibrary === true) {
 				this.authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
 			}
@@ -116,6 +116,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 			}
 			else {
 				//TODO: if msal: do this
+				account.isStale = false;
 				accounts.push(account);
 			}
 		}
