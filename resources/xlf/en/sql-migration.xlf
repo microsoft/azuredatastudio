@@ -369,6 +369,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.dashboard.title">
       <source xml:lang="en">Azure SQL Migration</source>
     </trans-unit>
+    <trans-unit id="sql.migration.data.source.configuration.page.title">
+      <source xml:lang="en">Data source configuration</source>
+    </trans-unit>
     <trans-unit id="sql.migration.data.uploaded.info">
       <source xml:lang="en">Comparison of the actual amount of data read from the source and the actual amount of data uploaded to the target.</source>
     </trans-unit>
@@ -437,9 +440,6 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.database.page.description">
       <source xml:lang="en">Select the location of the database backups to use during migration.</source>
-    </trans-unit>
-    <trans-unit id="sql.migration.database.page.title">
-      <source xml:lang="en">Database backup</source>
     </trans-unit>
     <trans-unit id="sql.migration.database.status.column">
       <source xml:lang="en">Migration status</source>
@@ -1444,7 +1444,7 @@ This may take some time.</source>
       <source xml:lang="en">To migrate to Azure SQL Managed Instance, view assessment results and select one or more databases.</source>
     </trans-unit>
     <trans-unit id="sql.migration.sku.recommendation.view.assessment.sqldb">
-      <source xml:lang="en">To migrate to Azure SQL Database, view assessment results and select one or more databases.</source>
+      <source xml:lang="en">To migrate to Azure SQL Database (PREVIEW), view assessment results and select one or more databases.</source>
     </trans-unit>
     <trans-unit id="sql.migration.sku.recommendation.view.assessment.vm">
       <source xml:lang="en">To migrate to SQL Server on Azure Virtual Machine, view assessment results and select one or more databases.</source>
@@ -1501,7 +1501,7 @@ This may take some time.</source>
       <source xml:lang="en">SQL tempdb</source>
     </trans-unit>
     <trans-unit id="sql.migration.sku.sqldb.card.title">
-      <source xml:lang="en">Azure SQL Database</source>
+      <source xml:lang="en">Azure SQL Database (PREVIEW)</source>
     </trans-unit>
     <trans-unit id="sql.migration.sku.stop.performance.collection">
       <source xml:lang="en">Stop data collection</source>
