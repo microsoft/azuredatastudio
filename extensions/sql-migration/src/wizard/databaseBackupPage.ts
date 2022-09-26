@@ -76,7 +76,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private _migrationTableSection!: azdata.FlexContainer;
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
-		super(wizard, azdata.window.createWizardPage(constants.DATABASE_BACKUP_PAGE_TITLE), migrationStateModel);
+		super(wizard, azdata.window.createWizardPage(constants.DATA_SOURCE_CONFIGURATION_PAGE_TITLE), migrationStateModel);
 	}
 
 	protected async registerContent(view: azdata.ModelView): Promise<void> {
@@ -1021,6 +1021,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				return true;
 			}
 
+			this.wizard.message = { text: '' };
 			const errors: string[] = [];
 			switch (this.migrationStateModel._databaseBackup.networkContainerType) {
 				case NetworkContainerType.NETWORK_SHARE:
@@ -1458,6 +1459,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 	private async _loadTableData(): Promise<void> {
 		this._refreshLoading.loading = true;
+		this.wizard.message = { text: '' };
 		const data: any[][] = [];
 
 		this.migrationStateModel._sourceTargetMapping.forEach((targetDatabaseInfo, sourceDatabaseName) => {
