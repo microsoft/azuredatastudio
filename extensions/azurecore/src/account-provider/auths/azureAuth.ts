@@ -24,7 +24,7 @@ import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Logger } from '../../utils/Logger';
 import * as qs from 'qs';
 import { AzureAuthError } from './azureAuthError';
-import { AuthenticationResult, InteractionRequiredAuthError, PublicClientApplication } from '@azure/msal-node';
+import { AuthenticationResult, PublicClientApplication } from '@azure/msal-node';
 
 const localize = nls.loadMessageBundle();
 
@@ -325,6 +325,8 @@ export abstract class AzureAuth implements vscode.Disposable {
 	 * @param azureResource
 	 * @returns The authentication result, including the access token
 	 */
+	// TODO: Need to add resource we are getting the token for
+	// Can replace most refreshToken calls with getToken, it does the same thing
 	public async getTokenMsal(accountId: string, azureResource: azdata.AzureResource): Promise<AuthenticationResult | null> {
 		const cache = this.clientApplication.getTokenCache();
 		if (!cache) {
@@ -341,9 +343,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			Logger.error('Error: Could not fetch account when acquiring token');
 			return null;
 		}
-
-		let newScope = [`${resource?.endpoint}.default`];
-
+		let newScope = [`${resource?.endpoint}/User.Read`];
 		// construct request
 		const tokenRequest = {
 			account: account,
@@ -353,19 +353,13 @@ export abstract class AzureAuth implements vscode.Disposable {
 			return await this.clientApplication.acquireTokenSilent(tokenRequest);
 		} catch (e) {
 			Logger.error('Failed to acquireTokenSilent', e);
-			if (e instanceof InteractionRequiredAuthError) {
-				// build refresh token request
-				const tenant: Tenant = {
-					id: account.tenantId,
-					displayName: ''
-				};
-				const authResult = await this.loginMsal(tenant, resource);
-				return authResult.response;
-			} else if (e.name === 'ClientAuthError') {
-				Logger.error(e.message);
-			}
-			Logger.error('Failed to silently acquire token, not InteractionRequiredAuthError');
-			return null;
+			// need to create an auth url request
+			const tenant: Tenant = {
+				id: account.tenantId,
+				displayName: ''
+			};
+			const authResult = await this.loginMsal(tenant, resource);
+			return authResult.response;
 		}
 
 	}
