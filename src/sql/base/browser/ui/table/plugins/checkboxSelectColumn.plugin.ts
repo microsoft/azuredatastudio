@@ -61,8 +61,8 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 
 	constructor(options?: ICheckboxSelectColumnOptions, columnIndex?: number) {
 		this._options = mixin(options, defaultOptions, false);
-		this._options.headerCssClass = (this._options.headerCssClass === undefined) ? this._options.headerCssClass + ' ' + defaultOptions.headerCssClass : defaultOptions.headerCssClass;
-		this._options.cssClass = (this._options.cssClass === undefined) ? this._options.cssClass + ' ' + defaultOptions.cssClass : defaultOptions.cssClass;
+		this._options.headerCssClass = options.headerCssClass ? options.headerCssClass + ' ' + defaultOptions.headerCssClass : defaultOptions.headerCssClass;
+		this._options.cssClass = options.cssClass ? options.cssClass + ' ' + defaultOptions.cssClass : defaultOptions.cssClass;
 		this.index = columnIndex ? columnIndex : 0;
 	}
 
