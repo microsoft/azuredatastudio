@@ -428,12 +428,12 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 
 		let formattedRows: { [key: string]: string }[] = [];
 		let commonRows: { [key: string]: string }[] = [];
-		for (const [key, value] of Object.entries(rows)) {
-			if (value.primary && value.secondary && value.primary['text'] === value.secondary['title']) {
-				commonRows.push(value);
+		for (const [_, row] of Object.entries(rows)) {
+			if (row.primary && row.secondary && row.primary['text'] === row.secondary['title']) {
+				commonRows.push(row);
 			}
 			else {
-				formattedRows.push(value);
+				formattedRows.push(row);
 			}
 		}
 
