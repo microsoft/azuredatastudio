@@ -70,8 +70,6 @@ export function setup(opts: minimist.ParsedArgs) {
 			async function configurePython(app: Application): Promise<void> {
 				// Skip setting up python again if another test has already completed this configuration step
 				if (!pythonConfigured) {
-					// Close notification toasts, since they can interfere with the Manage Packages Dialog test
-					await app.workbench.notificationToast.closeNotificationToasts();
 					await app.workbench.configurePythonDialog.waitForConfigurePythonDialog();
 					await app.workbench.configurePythonDialog.waitForPageOneLoaded();
 					await app.workbench.configurePythonDialog.next();
@@ -83,6 +81,8 @@ export function setup(opts: minimist.ParsedArgs) {
 
 			async function openAndRunNotebook(app: Application, filename: string): Promise<void> {
 				await app.workbench.sqlNotebook.openFile(filename);
+				// Close notification toasts, since they can interfere with the Manage Packages Dialog test
+				await app.workbench.notificationToast.closeNotificationToasts();
 				await configurePython(app);
 				await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('Python 3');
 
@@ -115,7 +115,7 @@ export function setup(opts: minimist.ParsedArgs) {
 				await app.workbench.sqlNotebook.waitForActiveCellResults();
 			});
 
-			it('can add and remove new package from the Manage Packages wizard @UNSTABLE@', async function () {
+			it('can add and remove new package from the Manage Packages wizard', async function () {
 				// Use arrow package so that it's at the top of the packages list when uninstalling later
 				const testPackageName = 'arrow';
 
@@ -273,7 +273,7 @@ export function setup(opts: minimist.ParsedArgs) {
 			});
 		});
 
-		describe('Cell Toolbar Actions @UNSTABLE@', function () {
+		describe('Cell Toolbar Actions', function () {
 			async function verifyCellToolbarBehavior(app: Application, toolbarAction: () => Promise<void>, selector: string, checkIfGone: boolean = false): Promise<void> {
 				await app.workbench.notificationToast.closeNotificationToasts();
 				// Run the test for each of the default text editor modes
