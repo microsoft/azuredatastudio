@@ -267,18 +267,35 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		}));
 	}
 
-	public sortPropertiesByImportance(props: Map<string, TablePropertiesMapEntry>): Map<string, TablePropertiesMapEntry> {
-		return new Map([...props.entries()].sort((a, b) => {
-			if (!a[1]?.displayOrder && !b[1]?.displayOrder) {
-				return 0;
-			} else if (!a[1]?.displayOrder) {
-				return -1;
-			} else if (!b[1]?.displayOrder) {
-				return 1;
-			} else {
-				return a[1].displayOrder - b[1].displayOrder;
+	public sortPropertiesByDisplayValueEquivalency(props: Map<string, TablePropertiesMapEntry>): Map<string, TablePropertiesMapEntry> {
+		let unequalProperties: Map<string, TablePropertiesMapEntry> = new Map();
+		let equalProperties: Map<string, TablePropertiesMapEntry> = new Map();
+
+		[...props.entries()].forEach(prop => {
+			if (prop.length === 2) {
+				const [rowKey, rowEntry] = prop;
+				const primaryProp = rowEntry.primaryProp;
+				const secondaryProp = rowEntry.secondaryProp;
+
+				if (primaryProp?.displayValue.localeCompare(secondaryProp?.displayValue) === 0) {
+					equalProperties.set(rowKey, rowEntry);
+				}
+				else {
+					unequalProperties.set(rowKey, rowEntry);
+				}
 			}
-		}));
+		});
+
+		let map: Map<string, TablePropertiesMapEntry> = new Map();
+		unequalProperties.forEach((v, k) => {
+			map.set(k, v);
+		});
+
+		equalProperties.forEach((v, k) => {
+			map.set(k, v);
+		});
+
+		return map;
 	}
 
 	public sortPropertiesReverseAlphabetically(props: Map<string, TablePropertiesMapEntry>): Map<string, TablePropertiesMapEntry> {
@@ -327,7 +344,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 
 		switch (this.sortType) {
 			case PropertiesSortType.DisplayOrder:
-				propertiesMap = this.sortPropertiesByImportance(propertiesMap);
+				propertiesMap = this.sortPropertiesByDisplayValueEquivalency(propertiesMap);
 				break;
 			case PropertiesSortType.Alphabetical:
 				propertiesMap = this.sortPropertiesAlphabetically(propertiesMap);
@@ -346,6 +363,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 			const primaryProp = v.primaryProp;
 			const secondaryProp = v.secondaryProp;
 			let diffIconClass = '';
+
 			if (primaryProp && secondaryProp) {
 				row['displayOrder'] = v.primaryProp.displayOrder;
 				if (v.primaryProp.displayValue !== v.secondaryProp.displayValue) {
@@ -407,7 +425,28 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 			}
 
 		});
-		return rows;
+
+		let formattedRows: { [key: string]: string }[] = [];
+		let commonRows: { [key: string]: string }[] = [];
+		for (const [key, value] of Object.entries(rows)) {
+			if (value.primary && value.secondary && value.primary['text'] === value.secondary['title']) {
+				commonRows.push(value);
+			}
+			else {
+				formattedRows.push(value);
+			}
+		}
+
+		if (commonRows.length > 0) {
+			let commonRow = {};
+			commonRow['name'] = '';
+			commonRow['expanded'] = false;
+			commonRow['treeGridChildren'] = commonRows;
+
+			formattedRows.push(commonRow);
+		}
+
+		return formattedRows;
 	}
 
 	set orientation(value: ExecutionPlanCompareOrientation) {
