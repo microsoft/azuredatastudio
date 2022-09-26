@@ -56,6 +56,7 @@ function getRightPlanIsGreaterThanLeftPlanSummaryPointTemplate(rowName: string):
 	return localize('nodePropertyViewRightPlanGreaterThanLeftPlan', '{0} is greater for the right plan than it is for the left plan.', rowName);
 }
 
+const equalPropertiesRowHeader = localize('nodePropertyViewNameEqualPropertiesRowHeader', 'Equal Properties');
 const topTitleColumnHeader = localize('nodePropertyViewNameValueColumnTopHeader', "Value (Top Plan)");
 const leftTitleColumnHeader = localize('nodePropertyViewNameValueColumnLeftHeader', "Value (Left Plan)");
 const rightTitleColumnHeader = localize('nodePropertyViewNameValueColumnRightHeader', "Value (Right Plan)");
@@ -439,7 +440,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 
 		if (equalRows.length > 0) {
 			let equalRow = {};
-			equalRow['name'] = '';
+			equalRow['name'] = equalPropertiesRowHeader;
 			equalRow['expanded'] = false;
 			equalRow['treeGridChildren'] = equalRows;
 
