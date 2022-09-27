@@ -6,7 +6,7 @@
 import { getDefaultMochaOptions } from '@microsoft/azdata-test';
 import * as testRunner from '@microsoft/vscodetestcover';
 
-const options = getDefaultMochaOptions('Integration Tests', 'tdd');
+const options = getDefaultMochaOptions('Extension Integration Tests', 'tdd');
 testRunner.configure(options, { coverConfig: '../../coverConfig.json' });
 
 export = testRunner;
