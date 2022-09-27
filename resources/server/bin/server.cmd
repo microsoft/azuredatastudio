@@ -12,7 +12,7 @@ if "%_FIRST_ARG:~0,9%"=="--inspect" (
 )
 
 :loop1
-if "%1"=="" goto after_loop
+if "%~1"=="" goto after_loop
 set RESTVAR=%RESTVAR% %1
 shift
 goto loop1

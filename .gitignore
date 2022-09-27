@@ -7,11 +7,13 @@ node_modules/
 extensions/**/dist/
 /out*/
 /extensions/**/out/
-src/vs/server
-resources/server
 build/node_modules
 coverage/
 test_data/
 test-results/
 yarn-error.log
 *.vsix
+vscode.lsif
+vscode.db
+/.profile-oss
+*.orig
