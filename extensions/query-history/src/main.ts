@@ -97,6 +97,10 @@ async function runQuery(item: QueryHistoryItem): Promise<void> {
 		{
 			content: item.queryText
 		}, item.connectionProfile?.providerId);
-	await azdata.queryeditor.connect(doc.uri, item.connectionProfile?.connectionId || '');
+	if (item.connectionProfile) {
+		await doc.connect(item.connectionProfile);
+	} else {
+		await azdata.queryeditor.connect(doc.uri, '');
+	}
 	azdata.queryeditor.runQuery(doc.uri);
 }
