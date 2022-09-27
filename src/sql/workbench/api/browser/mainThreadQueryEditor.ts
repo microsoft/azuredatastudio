@@ -18,6 +18,7 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { ILogService } from 'vs/platform/log/common/log';
 import { URI } from 'vs/base/common/uri';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadQueryEditor)
 export class MainThreadQueryEditor extends Disposable implements MainThreadQueryEditorShape {
@@ -32,7 +33,8 @@ export class MainThreadQueryEditor extends Disposable implements MainThreadQuery
 		@IEditorService private _editorService: IEditorService,
 		@IQueryManagementService private _queryManagementService: IQueryManagementService,
 		@ILogService private _logService: ILogService,
-		@IQueryEditorService private _queryEditorService: IQueryEditorService
+		@IQueryEditorService private _queryEditorService: IQueryEditorService,
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
 	) {
 		super();
 		if (extHostContext) {
@@ -70,34 +72,31 @@ export class MainThreadQueryEditor extends Disposable implements MainThreadQuery
 		});
 	}
 
-	private static connectionProfileToIConnectionProfile(connection: azdata.connection.ConnectionProfile): IConnectionProfile {
-		let profile: ConnectionProfile = new ConnectionProfile(undefined, undefined);
+	private connectionProfileToIConnectionProfile(connection: azdata.connection.ConnectionProfile): IConnectionProfile {
+		let profile: ConnectionProfile = new ConnectionProfile(this._capabilitiesService, connection);
 		profile.options = connection.options;
-		profile.providerName = connection.options['providerName'];
 		return profile.toIConnectionProfile();
 	}
 
-	public $connectWithProfile(fileUri: string, connection: azdata.connection.ConnectionProfile): Thenable<void> {
-		return new Promise<void>(async (resolve, reject) => {
-			let editors = this._editorService.visibleEditorPanes.filter(resource => {
-				return !!resource && resource.input.resource.toString() === fileUri;
-			});
-			let editor = editors && editors.length > 0 ? editors[0] : undefined;
-
-			let options: IConnectionCompletionOptions = {
-				params: { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.none, input: editor ? editor.input as any : undefined },
-				saveTheConnection: false,
-				showDashboard: false,
-				showConnectionDialogOnError: false,
-				showFirewallRuleOnError: false,
-			};
-
-			let profile: IConnectionProfile = MainThreadQueryEditor.connectionProfileToIConnectionProfile(connection);
-			let connectionResult = await this._connectionManagementService.connect(profile, fileUri, options);
-			if (connectionResult && connectionResult.connected) {
-				this._logService.info(`editor ${fileUri} connected`);
-			}
+	public async $connectWithProfile(fileUri: string, connection: azdata.connection.ConnectionProfile): Promise<void> {
+		let editors = this._editorService.visibleEditorPanes.filter(resource => {
+			return !!resource && resource.input.resource.toString() === fileUri;
 		});
+		let editor = editors && editors.length > 0 ? editors[0] : undefined;
+
+		let options: IConnectionCompletionOptions = {
+			params: { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.none, input: editor ? editor.input as any : undefined },
+			saveTheConnection: false,
+			showDashboard: false,
+			showConnectionDialogOnError: false,
+			showFirewallRuleOnError: false,
+		};
+
+		let profile: IConnectionProfile = this.connectionProfileToIConnectionProfile(connection);
+		let connectionResult = await this._connectionManagementService.connect(profile, fileUri, options);
+		if (connectionResult && connectionResult.connected) {
+			this._logService.info(`editor ${fileUri} connected`);
+		}
 	}
 
 	public $runQuery(fileUri: string, runCurrentQuery: boolean = true): void {

@@ -39,21 +39,28 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 	public isDisconnecting: boolean = false;
 
 	public constructor(
-		capabilitiesService: ICapabilitiesService,
-		model: string | azdata.IConnectionProfile | undefined) {
+		@ICapabilitiesService capabilitiesService: ICapabilitiesService,
+		model: string | azdata.IConnectionProfile | azdata.connection.ConnectionProfile | undefined) {
 		super(capabilitiesService, model);
 		if (model && !isString(model)) {
 			this.groupId = model.groupId;
 			this.groupFullName = model.groupFullName;
 			this.savePassword = model.savePassword;
 			this.saveProfile = model.saveProfile;
-			this._id = model.id;
+
 			this.azureTenantId = model.azureTenantId;
-			this.azureAccount = model.azureAccount;
-			this.azureResourceId = model.azureResourceId;
-			this.azurePortalEndpoint = model.azurePortalEndpoint;
-			if (this.capabilitiesService && model.providerName) {
-				let capabilities = this.capabilitiesService.getCapabilities(model.providerName);
+
+			// Special case setting properties to support both IConnectionProfile and azdata.connection.ConnectionProfile
+			// It's not great that we have multiple definitions in azdata, but we can't break that right now so just
+			// support both at least for the time being
+			const isIConnectionProfile = 'id' in model;
+			this._id = isIConnectionProfile ? model.id : model.connectionId;
+			// TODO: @chgagnon - Should we add these properties to azdata.connection.ConnectionProfile?
+			this.azureAccount = isIConnectionProfile ? model.azureAccount : '';
+			this.azureResourceId = isIConnectionProfile ? model.azureResourceId : '';
+			this.azurePortalEndpoint = isIConnectionProfile ? model.azurePortalEndpoint : '';
+			if (this.capabilitiesService && this.providerName) {
+				let capabilities = this.capabilitiesService.getCapabilities(this.providerName);
 				if (capabilities && capabilities.connection && capabilities.connection.connectionOptions) {
 					const options = capabilities.connection.connectionOptions;
 					let appNameOption = options.find(option => option.specialValueType === interfaces.ConnectionOptionSpecialType.appName);
@@ -62,13 +69,13 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 						this.options[appNameKey] = Constants.applicationName;
 					}
 				}
-				if (model.options.registeredServerDescription) {
-					this.registeredServerDescription = model.options.registeredServerDescription;
-				}
-				const expiry = model.options.expiresOn;
-				if (typeof expiry === 'number' && !Number.isNaN(expiry)) {
-					this.options.expiresOn = model.options.expiresOn;
-				}
+			}
+			if (model.options.registeredServerDescription) {
+				this.registeredServerDescription = model.options.registeredServerDescription;
+			}
+			const expiry = model.options.expiresOn;
+			if (typeof expiry === 'number' && !Number.isNaN(expiry)) {
+				this.options.expiresOn = model.options.expiresOn;
 			}
 			if (model.options?.originalDatabase) {
 				this.originalDatabase = model.options.originalDatabase;
