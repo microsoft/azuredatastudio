@@ -6,8 +6,6 @@
 .slick-header-columns .slick-header-column.slick-plugin-checkbox-select-column.ui-state-default,
 .slick-plugin-checkbox-select-column {
 	text-align: center;
-	border-bottom: 0px;
-	border-right: 0px;
 }
 
 .slick-plugin-checkbox-select-column > input,
