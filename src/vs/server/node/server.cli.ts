@@ -10,7 +10,7 @@ import * as _http from 'http';
 import * as _os from 'os';
 import { cwd } from 'vs/base/common/process';
 import { dirname, extname, resolve, join } from 'vs/base/common/path';
-import { parseArgs, buildHelpMessage, buildVersionMessage, OPTIONS, OptionDescriptions } from 'vs/platform/environment/node/argv';
+import { parseArgs, buildHelpMessage, buildVersionMessage, OPTIONS, OptionDescriptions, ErrorReporter } from 'vs/platform/environment/node/argv';
 import { NativeParsedArgs } from 'vs/platform/environment/common/argv';
 import { createWaitMarkerFile } from 'vs/platform/environment/node/wait';
 import { PipeCommand } from 'vs/workbench/api/node/extHostCLIServer';
@@ -32,7 +32,7 @@ interface ProductDescription {
 	executableName: string;
 }
 
-interface RemoteParsedArgs extends NativeParsedArgs { 'gitCredential'?: string; 'openExternal'?: boolean; }
+interface RemoteParsedArgs extends NativeParsedArgs { 'gitCredential'?: string; 'openExternal'?: boolean }
 
 
 const isSupportedForCmd = (optionId: keyof RemoteParsedArgs) => {
@@ -41,7 +41,7 @@ const isSupportedForCmd = (optionId: keyof RemoteParsedArgs) => {
 		case 'extensions-dir':
 		case 'export-default-configuration':
 		case 'install-source':
-		case 'driver':
+		case 'enable-smoke-test-driver':
 		case 'extensions-download-dir':
 		case 'builtin-extensions-dir':
 		case 'telemetry':
@@ -70,6 +70,8 @@ const isSupportedForPipe = (optionId: keyof RemoteParsedArgs) => {
 		case 'force':
 		case 'show-versions':
 		case 'category':
+		case 'verbose':
+		case 'remote':
 			return true;
 		default:
 			return false;
@@ -79,7 +81,7 @@ const isSupportedForPipe = (optionId: keyof RemoteParsedArgs) => {
 const cliPipe = process.env['VSCODE_IPC_HOOK_CLI'] as string;
 const cliCommand = process.env['VSCODE_CLIENT_COMMAND'] as string;
 const cliCommandCwd = process.env['VSCODE_CLIENT_COMMAND_CWD'] as string;
-const remoteAuthority = process.env['VSCODE_CLI_AUTHORITY'] as string;
+const cliRemoteAuthority = process.env['VSCODE_CLI_AUTHORITY'] as string;
 const cliStdInFilePath = process.env['VSCODE_STDIN_FILE_PATH'] as string;
 
 
@@ -103,21 +105,27 @@ export function main(desc: ProductDescription, args: string[]): void {
 		options['openExternal'] = { type: 'boolean' };
 	}
 
-	const errorReporter = {
+	const errorReporter: ErrorReporter = {
 		onMultipleValues: (id: string, usedValue: string) => {
 			console.error(`Option ${id} can only be defined once. Using value ${usedValue}.`);
 		},
 
 		onUnknownOption: (id: string) => {
 			console.error(`Ignoring option ${id}: not supported for ${desc.executableName}.`);
+		},
+
+		onDeprecatedOption: (deprecatedOption: string, message: string) => {
+			console.warn(`Option '${deprecatedOption}' is deprecated: ${message}`);
 		}
 	};
 
 	const parsedArgs = parseArgs(args, options, errorReporter);
-	const mapFileUri = remoteAuthority ? mapFileToRemoteUri : (uri: string) => uri;
+	const mapFileUri = cliRemoteAuthority ? mapFileToRemoteUri : (uri: string) => uri;
+
+	const verbose = !!parsedArgs['verbose'];
 
 	if (parsedArgs.help) {
-		console.log(buildHelpMessage(desc.productName, desc.executableName, desc.version, options, true));
+		console.log(buildHelpMessage(desc.productName, desc.executableName, desc.version, options));
 		return;
 	}
 	if (parsedArgs.version) {
@@ -126,19 +134,23 @@ export function main(desc: ProductDescription, args: string[]): void {
 	}
 	if (cliPipe) {
 		if (parsedArgs['openExternal']) {
-			openInBrowser(parsedArgs['_']);
+			openInBrowser(parsedArgs['_'], verbose);
 			return;
 		}
 	}
 
+	let remote: string | null | undefined = parsedArgs.remote;
+	if (remote === 'local' || remote === 'false' || remote === '') {
+		remote = null; // null represent a local window
+	}
 
-	let folderURIs = (parsedArgs['folder-uri'] || []).map(mapFileUri);
+	const folderURIs = (parsedArgs['folder-uri'] || []).map(mapFileUri);
 	parsedArgs['folder-uri'] = folderURIs;
 
-	let fileURIs = (parsedArgs['file-uri'] || []).map(mapFileUri);
+	const fileURIs = (parsedArgs['file-uri'] || []).map(mapFileUri);
 	parsedArgs['file-uri'] = fileURIs;
 
-	let inputPaths = parsedArgs['_'];
+	const inputPaths = parsedArgs['_'];
 	let hasReadStdinArg = false;
 	for (let input of inputPaths) {
 		if (input === '-') {
@@ -155,7 +167,7 @@ export function main(desc: ProductDescription, args: string[]): void {
 			let stdinFilePath = cliStdInFilePath;
 			if (!stdinFilePath) {
 				stdinFilePath = getStdinFilePath();
-				readFromStdin(stdinFilePath, !!parsedArgs.verbose); // throws error if file can not be written
+				readFromStdin(stdinFilePath, verbose); // throws error if file can not be written
 			}
 
 			// Make sure to open tmp file
@@ -186,10 +198,6 @@ export function main(desc: ProductDescription, args: string[]): void {
 		return;
 	}
 
-	if (remoteAuthority) {
-		parsedArgs['remote'] = remoteAuthority;
-	}
-
 	if (cliCommand) {
 		if (parsedArgs['install-extension'] !== undefined || parsedArgs['uninstall-extension'] !== undefined || parsedArgs['list-extensions']) {
 			const cmdLine: string[] = [];
@@ -201,7 +209,8 @@ export function main(desc: ProductDescription, args: string[]): void {
 					cmdLine.push(`--${opt}=${value}`);
 				}
 			});
-			const cp = _cp.fork(join(__dirname, 'main.js'), cmdLine, { stdio: 'inherit' });
+
+			const cp = _cp.fork(join(__dirname, '../../../server-main.js'), cmdLine, { stdio: 'inherit' });
 			cp.on('error', err => console.log(err));
 			return;
 		}
@@ -222,11 +231,14 @@ export function main(desc: ProductDescription, args: string[]): void {
 				newCommandline.push(`--${key}=${val.toString()}`);
 			}
 		}
+		if (remote !== null) {
+			newCommandline.push(`--remote=${remote || cliRemoteAuthority}`);
+		}
 
 		const ext = extname(cliCommand);
 		if (ext === '.bat' || ext === '.cmd') {
 			const processCwd = cliCommandCwd || cwd();
-			if (parsedArgs['verbose']) {
+			if (verbose) {
 				console.log(`Invoking: cmd.exe /C ${cliCommand} ${newCommandline.join(' ')} in ${processCwd}`);
 			}
 			_cp.spawn('cmd.exe', ['/C', cliCommand, ...newCommandline], {
@@ -236,22 +248,21 @@ export function main(desc: ProductDescription, args: string[]): void {
 		} else {
 			const cliCwd = dirname(cliCommand);
 			const env = { ...process.env, ELECTRON_RUN_AS_NODE: '1' };
+			newCommandline.unshift('--ms-enable-electron-run-as-node');
 			newCommandline.unshift('resources/app/out/cli.js');
-			if (parsedArgs['verbose']) {
-				console.log(`Invoking: ${cliCommand} ${newCommandline.join(' ')} in ${cliCwd}`);
+			if (verbose) {
+				console.log(`Invoking: cd "${cliCwd}" && ELECTRON_RUN_AS_NODE=1 "${cliCommand}" "${newCommandline.join('" "')}"`);
 			}
 			_cp.spawn(cliCommand, newCommandline, { cwd: cliCwd, env, stdio: ['inherit'] });
 		}
 	} else {
-		if (args.length === 0) {
-			console.log(buildHelpMessage(desc.productName, desc.executableName, desc.version, options, true));
-			return;
-		}
 		if (parsedArgs.status) {
 			sendToPipe({
 				type: 'status'
-			}).then((res: string) => {
+			}, verbose).then((res: string) => {
 				console.log(res);
+			}).catch(e => {
+				console.error('Error when requesting status:', e);
 			});
 			return;
 		}
@@ -263,14 +274,11 @@ export function main(desc: ProductDescription, args: string[]): void {
 				install: asExtensionIdOrVSIX(parsedArgs['install-extension']),
 				uninstall: asExtensionIdOrVSIX(parsedArgs['uninstall-extension']),
 				force: parsedArgs['force']
-			}).then((res: string) => {
+			}, verbose).then((res: string) => {
 				console.log(res);
+			}).catch(e => {
+				console.error('Error when invoking the extension management command:', e);
 			});
-			return;
-		}
-
-		if (!fileURIs.length && !folderURIs.length) {
-			console.log('At least one file or folder must be provided.');
 			return;
 		}
 
@@ -280,7 +288,7 @@ export function main(desc: ProductDescription, args: string[]): void {
 				console.log('At least one file must be provided to wait for.');
 				return;
 			}
-			waitMarkerFilePath = createWaitMarkerFile(parsedArgs.verbose);
+			waitMarkerFilePath = createWaitMarkerFile(verbose);
 		}
 
 		sendToPipe({
@@ -292,7 +300,10 @@ export function main(desc: ProductDescription, args: string[]): void {
 			gotoLineMode: parsedArgs.goto,
 			forceReuseWindow: parsedArgs['reuse-window'],
 			forceNewWindow: parsedArgs['new-window'],
-			waitMarkerFilePath
+			waitMarkerFilePath,
+			remoteAuthority: remote
+		}, verbose).catch(e => {
+			console.error('Error when invoking the open command:', e);
 		});
 
 		if (waitMarkerFilePath) {
@@ -307,7 +318,7 @@ async function waitForFileDeleted(path: string) {
 	}
 }
 
-function openInBrowser(args: string[]) {
+function openInBrowser(args: string[], verbose: boolean) {
 	let uris: string[] = [];
 	for (let location of args) {
 		try {
@@ -324,12 +335,17 @@ function openInBrowser(args: string[]) {
 		sendToPipe({
 			type: 'openExternal',
 			uris
+		}, verbose).catch(e => {
+			console.error('Error when invoking the open external command:', e);
 		});
 	}
 }
 
-function sendToPipe(args: PipeCommand): Promise<any> {
-	return new Promise<string>(resolve => {
+function sendToPipe(args: PipeCommand, verbose: boolean): Promise<any> {
+	if (verbose) {
+		console.log(JSON.stringify(args, null, '  '));
+	}
+	return new Promise<string>((resolve, reject) => {
 		const message = JSON.stringify(args);
 		if (!cliPipe) {
 			console.log('Message ' + message);
@@ -340,22 +356,41 @@ function sendToPipe(args: PipeCommand): Promise<any> {
 		const opts: _http.RequestOptions = {
 			socketPath: cliPipe,
 			path: '/',
-			method: 'POST'
+			method: 'POST',
+			headers: {
+				'content-type': 'application/json',
+				'accept': 'application/json'
+			}
 		};
 
 		const req = _http.request(opts, res => {
+			if (res.headers['content-type'] !== 'application/json') {
+				reject('Error in response: Invalid content type: Expected \'application/json\', is: ' + res.headers['content-type']);
+				return;
+			}
+
 			const chunks: string[] = [];
 			res.setEncoding('utf8');
 			res.on('data', chunk => {
 				chunks.push(chunk);
 			});
-			res.on('error', () => fatal('Error in response'));
+			res.on('error', (err) => fatal('Error in response.', err));
 			res.on('end', () => {
-				resolve(chunks.join(''));
+				const content = chunks.join('');
+				try {
+					const obj = JSON.parse(content);
+					if (res.statusCode === 200) {
+						resolve(obj);
+					} else {
+						reject(obj);
+					}
+				} catch (e) {
+					reject('Error in response: Unable to parse response as JSON: ' + content);
+				}
 			});
 		});
 
-		req.on('error', () => fatal('Error in request'));
+		req.on('error', (err) => fatal('Error in request.', err));
 		req.write(message);
 		req.end();
 	});
@@ -365,8 +400,8 @@ function asExtensionIdOrVSIX(inputs: string[] | undefined) {
 	return inputs?.map(input => /\.vsix$/i.test(input) ? pathToURI(input).href : input);
 }
 
-function fatal(err: any): void {
-	console.error('Unable to connect to VS Code server.');
+function fatal(message: string, err: any): void {
+	console.error('Unable to connect to VS Code server: ' + message);
 	console.error(err);
 	process.exit(1);
 }
@@ -404,7 +439,7 @@ function translatePath(input: string, mapFileUri: (input: string) => string, fol
 }
 
 function mapFileToRemoteUri(uri: string): string {
-	return uri.replace(/^file:\/\//, 'vscode-remote://' + remoteAuthority);
+	return uri.replace(/^file:\/\//, 'vscode-remote://' + cliRemoteAuthority);
 }
 
 let [, , productName, version, commit, executableName, ...remainingArgs] = process.argv;
