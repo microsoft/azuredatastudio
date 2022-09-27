@@ -6,9 +6,9 @@
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { QueryHistoryItem } from './queryHistoryItem';
-import { removeNewLines } from './utils';
+import { debounce, removeNewLines } from './utils';
 import { CAPTURE_ENABLED_CONFIG_SECTION, ITEM_SELECTED_COMMAND_ID, PERSIST_HISTORY_CONFIG_SECTION, QUERY_HISTORY_CONFIG_SECTION } from './constants';
-import { promises as fs } from 'fs';
+import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
 
@@ -16,6 +16,7 @@ const STORAGE_IV_KEY = 'queryHistory.storage-iv';
 const STORAGE_KEY_KEY = 'queryHistory.storage-key';
 const HISTORY_STORAGE_FILE_NAME = 'queryHistory.bin';
 const STORAGE_ENCRYPTION_ALGORITHM = 'aes-256-ctr';
+const HISTORY_DEBOUNCE_MS = 10000;
 const DEFAULT_CAPTURE_ENABLED = true;
 const DEFAULT_PERSIST_HISTORY = true;
 const successIcon = new vscode.ThemeIcon('check', new vscode.ThemeColor('testing.iconPassed'));
@@ -34,7 +35,7 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 
 	private _disposables: vscode.Disposable[] = [];
 
-	private writeHistoryFile: (() => Promise<void>) | undefined;
+	private writeHistoryFileWorker: (() => void) | undefined;
 
 
 	/**
@@ -59,8 +60,8 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 						}
 						this.queryTextMappings.delete(document.uri);
 						this._queryHistoryItems.unshift({ queryText, connectionProfile, timestamp: new Date().toLocaleString(), isSuccess });
-						await this.writeHistoryFile?.();
 						this._onDidChangeTreeData.fire(undefined);
+						this.writeHistoryFile();
 					} else if (type === 'queryStart') {
 						// We get the text and save it on queryStart because we want to get the query text immediately when
 						// the query is started but then only add the item when it finishes (so that we can properly determine the success of the execution).
@@ -124,7 +125,7 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 
 		try {
 			// Read and decrypt any previous history items
-			const encryptedItems = await fs.readFile(this._historyStorageFile);
+			const encryptedItems = await fs.promises.readFile(this._historyStorageFile);
 			const decipher = crypto.createDecipheriv(STORAGE_ENCRYPTION_ALGORITHM, key, iv);
 			const result = Buffer.concat([decipher.update(encryptedItems), decipher.final()]).toString();
 			this._queryHistoryItems = JSON.parse(result);
@@ -137,7 +138,7 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 				// a new one next time we write the history file
 				try {
 					const bakPath = path.join(path.dirname(this._historyStorageFile), `${HISTORY_STORAGE_FILE_NAME}.bak`);
-					await fs.rename(this._historyStorageFile, bakPath);
+					await fs.promises.rename(this._historyStorageFile, bakPath);
 				} catch (err) {
 					console.error(`Error moving corrupted history file. ${err}`);
 				}
@@ -145,8 +146,7 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 
 		}
 
-		// TODO: Debounce this
-		this.writeHistoryFile = async (): Promise<void> => {
+		this.writeHistoryFileWorker = (): void => {
 			if (this._persistHistory) {
 				try {
 					// We store the history entries in an encrypted file because they may contain sensitive information
@@ -154,7 +154,8 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 					const cipher = crypto.createCipheriv(STORAGE_ENCRYPTION_ALGORITHM, key!, iv!);
 					const stringifiedItems = JSON.stringify(this._queryHistoryItems);
 					const encryptedText = Buffer.concat([cipher.update(Buffer.from(stringifiedItems)), cipher.final()]);
-					await fs.writeFile(this._historyStorageFile, encryptedText);
+					// Use sync here so that we can write this out when the object is disposed
+					fs.writeFileSync(this._historyStorageFile, encryptedText);
 				} catch (err) {
 					console.error(`Error writing query history to disk. ${err}`);
 				}
@@ -162,15 +163,21 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 			}
 		};
 	}
+
+	@debounce(HISTORY_DEBOUNCE_MS)
+	private writeHistoryFile(): void {
+		this.writeHistoryFileWorker?.();
+	}
+
 	public async clearAll(): Promise<void> {
 		this._queryHistoryItems = [];
-		await this.writeHistoryFile?.();
+		this.writeHistoryFile();
 		this._onDidChangeTreeData.fire(undefined);
 	}
 
 	public async deleteItem(item: QueryHistoryItem): Promise<void> {
 		this._queryHistoryItems = this._queryHistoryItems.filter(n => n !== item);
-		await this.writeHistoryFile?.();
+		this.writeHistoryFile();
 		this._onDidChangeTreeData.fire(undefined);
 	}
 
@@ -190,6 +197,8 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 
 	public dispose(): void {
 		this._disposables.forEach(d => d.dispose());
+		// Call the worker directly to skip the debounce
+		this.writeHistoryFileWorker?.();
 	}
 
 	private async updateConfigurationValues(): Promise<void> {
@@ -199,13 +208,13 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 		if (!this._persistHistory) {
 			// If we're no longer persisting the history then clean up our storage file
 			try {
-				await fs.rmdir(this._historyStorageFile);
+				await fs.promises.rmdir(this._historyStorageFile);
 			} catch (err) {
 				// Best effort, we don't want other things to fail if we can't delete the file for some reason
 				console.error(`Error cleaning up query history storage ${this._historyStorageFile}. ${err}`);
 			}
 		} else {
-			await this.writeHistoryFile?.();
+			this.writeHistoryFile();
 		}
 	}
 
