@@ -8,9 +8,7 @@ import { Button } from 'sql/base/browser/ui/button/button';
 import { HideReason, Modal } from 'sql/workbench/browser/modal/modal';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 
-import Severity from 'vs/base/common/severity';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { SIDE_BAR_BACKGROUND, SIDE_BAR_FOREGROUND } from 'vs/workbench/common/theme';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
@@ -20,12 +18,13 @@ import * as DOM from 'vs/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
-import { onUnexpectedError } from 'vs/base/common/errors';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 
 const maxActions = 1;
+
+const passwordResetMessage: string = localize('connectionPasswordResetDialog.message', 'Password for this username has expired, enter a new password in order to login.');
 
 export class ConnectionPasswordResetDialog extends Modal {
 
@@ -34,8 +33,6 @@ export class ConnectionPasswordResetDialog extends Modal {
 	private _copyButton?: Button;
 	private _actionButtons: Button[] = [];
 	private _actions: IAction[] = [];
-	private _severity?: Severity;
-	private _message?: string;
 	private _messageDetails?: string;
 	private _okLabel: string;
 	private _closeLabel: string;
@@ -53,38 +50,23 @@ export class ConnectionPasswordResetDialog extends Modal {
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
 		super('', TelemetryKeys.ModalDialogName.ErrorMessage, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'normal', hasTitleIcon: true });
-		this._okLabel = localize('ConnectionMessageMessageDialog.ok', "OK");
-		this._closeLabel = localize('ConnectionMessageDialog.close', "Close");
+		this._okLabel = localize('ConnectionPasswordResetDialog.ok', "OK");
+		this._closeLabel = localize('ConnectionPasswordResetDialog.close', "Close");
 	}
 
 	protected renderBody(container: HTMLElement) {
-		this._body = DOM.append(container, DOM.$('div.error-dialog'));
+		this._body = DOM.append(container, DOM.$('div.password-reset-dialog'));
 	}
 
 	public override render() {
 		super.render();
 		this._register(attachModalDialogStyler(this, this._themeService));
-		this.createCopyButton();
 		this._actionButtons = [];
 		for (let i = 0; i < maxActions; i++) {
-			this._actionButtons.unshift(this.createStandardButton(localize('errorMessageDialog.action', "Action"), () => this.onActionSelected(i)));
+			this._actionButtons.unshift(this.createStandardButton(localize('ConnectionPasswordResetDialog.action', "Action"), () => this.onActionSelected(i)));
 		}
 		this._okButton = this.addFooterButton(this._okLabel, () => this.ok());
 		this._register(attachButtonStyler(this._okButton, this._themeService));
-	}
-
-	private createCopyButton() {
-		let copyButtonLabel = localize('copyDetails', "Copy details");
-		this._copyButton = this.addFooterButton(copyButtonLabel, () => {
-			if (this._messageDetails) {
-				this._clipboardService.writeText(this._messageDetails!).catch(err => onUnexpectedError(err));
-			}
-		}, 'left', true);
-		this._copyButton!.icon = {
-			id: 'codicon scriptToClipboard'
-		};
-		this._copyButton!.element.title = copyButtonLabel;
-		this._register(attachButtonStyler(this._copyButton!, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND, buttonForeground: SIDE_BAR_FOREGROUND }));
 	}
 
 	private createStandardButton(label: string, onSelect: () => void): Button {
@@ -108,21 +90,7 @@ export class ConnectionPasswordResetDialog extends Modal {
 
 	private updateDialogBody(): void {
 		DOM.clearNode(this._body!);
-		DOM.append(this._body!, DOM.$('div.error-message')).innerText = this._message!;
-	}
-
-	private updateIconTitle(): void {
-		switch (this._severity) {
-			case Severity.Error:
-				this.titleIconClassName = 'sql codicon error';
-				break;
-			case Severity.Warning:
-				this.titleIconClassName = 'sql codicon warning';
-				break;
-			case Severity.Info:
-				this.titleIconClassName = 'sql codicon info';
-				break;
-		}
+		DOM.append(this._body!, DOM.$('div.password-reset-message')).innerText = passwordResetMessage!;
 	}
 
 	/* espace key */
@@ -144,9 +112,7 @@ export class ConnectionPasswordResetDialog extends Modal {
 		this.hide(hideReason);
 	}
 
-	public open(severity: Severity, headerTitle: string, message: string, messageDetails?: string, actions?: IAction[]) {
-		this._severity = severity;
-		this._message = message;
+	public open(username: string, headerTitle: string, message: string, messageDetails?: string, actions?: IAction[]) {
 		this.title = headerTitle;
 		this._messageDetails = messageDetails;
 		if (this._messageDetails) {
@@ -154,9 +120,7 @@ export class ConnectionPasswordResetDialog extends Modal {
 		} else {
 			this._copyButton!.element.style.visibility = 'hidden';
 		}
-		if (this._message) {
-			this._bodyContainer.setAttribute('aria-description', this._message);
-		}
+		this._bodyContainer.setAttribute('aria-description', passwordResetMessage);
 		this.resetActions();
 		if (actions && actions.length > 0) {
 			for (let i = 0; i < maxActions && i < actions.length; i++) {
@@ -169,7 +133,7 @@ export class ConnectionPasswordResetDialog extends Modal {
 		} else {
 			this._okButton!.label = this._okLabel;
 		}
-		this.updateIconTitle();
+		this.titleIconClassName = 'sql password reset';
 		this.updateDialogBody();
 		this.show();
 		this._okButton!.focus();
