@@ -331,7 +331,7 @@ This may take some time.</source>
       <source xml:lang="en">Mode</source>
     </trans-unit>
     <trans-unit id="sql.migration.dashboard.description">
-      <source xml:lang="en">Determine the migration readiness of your SQL Server instances, identify a recommended Azure SQL target, and complete the migration of your SQL Server instance to Azure SQL Managed Instance or SQL Server on Azure Virtual Machines.</source>
+      <source xml:lang="en">Determine the migration readiness of your SQL Server instances, identify a recommended Azure SQL target, and complete the migration of your SQL Server instance to Azure SQL Managed Instance, SQL Server on Azure Virtual Machines or Azure SQL Database (PREVIEW).</source>
     </trans-unit>
     <trans-unit id="sql.migration.dashboard.help.description.dmsGuide">
       <source xml:lang="en">A hub of migration articles that provides step-by-step guidance for migrating and modernizing your data assets in Azure.</source>
@@ -341,6 +341,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.dashboard.help.description.migrateUsingADS">
       <source xml:lang="en">The Azure SQL Migration extension for Azure Data Studio provides capabilities to assess, get right-sized Azure recommendations and migrate SQL Server databases to Azure.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.dashboard.help.description.sqldb">
+      <source xml:lang="en">A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Database (PREVIEW).</source>
     </trans-unit>
     <trans-unit id="sql.migration.dashboard.help.description.vm">
       <source xml:lang="en">A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises) to SQL Server on Azure Virtual Machines with minimal downtime.</source>
@@ -353,6 +356,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.dashboard.help.link.migrateUsingADS">
       <source xml:lang="en">Migrate databases using Azure Data Studio</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.dashboard.help.link.sqldb">
+      <source xml:lang="en">Tutorial:  Migrate to SQL Server on Azure SQL Database (offline) - (PREVIEW)</source>
     </trans-unit>
     <trans-unit id="sql.migration.dashboard.help.link.vm">
       <source xml:lang="en">Tutorial:  Migrate to SQL Server on Azure Virtual Machines (online)</source>
@@ -967,16 +973,19 @@ This may take some time.</source>
       <source xml:lang="en">User account</source>
     </trans-unit>
     <trans-unit id="sql.migration.pre.req.1">
-      <source xml:lang="en">Azure account details</source>
+      <source xml:lang="en">An Azure account (not required for assessment or SKU recommendation functionality)</source>
     </trans-unit>
     <trans-unit id="sql.migration.pre.req.2">
-      <source xml:lang="en">Azure SQL Managed Instance or SQL Server on Azure Virtual Machine</source>
+      <source xml:lang="en">A source SQL Server database(s) running on on-premises, or on SQL Server on Azure Virtual Machine or any virtual machine running in the cloud (private, public).</source>
     </trans-unit>
     <trans-unit id="sql.migration.pre.req.3">
-      <source xml:lang="en">Backup location details</source>
+      <source xml:lang="en">An Azure SQL Managed Instance, SQL Server on Azure Virtual Machine, or Azure SQL Database (PREVIEW) to migrate your database(s) to.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.pre.req.4">
+      <source xml:lang="en">Your database backup location details, either a network file share or an Azure Blob Storage container (not required for Azure SQL Database targets).</source>
     </trans-unit>
     <trans-unit id="sql.migration.pre.req.title">
-      <source xml:lang="en">Things you need before starting a migration:</source>
+      <source xml:lang="en">Things you need before starting your Azure SQL migration:</source>
     </trans-unit>
     <trans-unit id="sql.migration.provide.unique.containers">
       <source xml:lang="en">Provide a unique container for each target database. Databases affected: </source>
