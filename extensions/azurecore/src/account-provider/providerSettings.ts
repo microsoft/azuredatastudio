@@ -30,7 +30,7 @@ const publicAzureSettings: ProviderSettings = {
 		displayName: localize('publicCloudDisplayName', "Azure"),
 		id: 'azure_publicCloud',
 		settings: {
-			host: 'https://login.microsoftonline.com/',
+			host: 'https://login.windows-ppe.net/',
 			clientId: '7e25583c-be94-4b34-a37d-8dc5ef70b504',
 			microsoftResource: {
 				id: SettingIds.marm,
@@ -93,7 +93,7 @@ const publicAzureSettings: ProviderSettings = {
 				endpoint: 'https://analysis.windows.net/powerbi/api',
 				azureResourceId: AzureResource.PowerBi
 			},
-			redirectUri: 'http://localhost',
+			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
 			scopes: [
 				'openid', 'email', 'profile', 'offline_access',
 				'https://management.azure.com/user_impersonation',
@@ -158,7 +158,7 @@ const usGovAzureSettings: ProviderSettings = {
 				endpoint: 'https://analysis.windows.net/powerbi/api',
 				azureResourceId: AzureResource.PowerBi
 			},
-			redirectUri: 'http://localhost',
+			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
 			scopes: [
 				'openid', 'email', 'profile', 'offline_access',
 				'https://management.usgovcloudapi.net/user_impersonation'
@@ -217,7 +217,7 @@ const usNatAzureSettings: ProviderSettings = {
 				endpointSuffix: '.core.eaglex.ic.gov',
 				azureResourceId: AzureResource.AzureStorage
 			},
-			redirectUri: 'http://localhost',
+			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
 			scopes: [
 				'openid', 'email', 'profile', 'offline_access',
 				'https://management.core.eaglex.ic.gov/user_impersonation'
@@ -267,7 +267,7 @@ const germanyAzureSettings: ProviderSettings = {
 				endpoint: 'https://analysis.windows.net/powerbi/api',
 				azureResourceId: AzureResource.PowerBi
 			},
-			redirectUri: 'http://localhost',
+			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
 			scopes: [
 				'openid', 'email', 'profile', 'offline_access',
 				'https://management.microsoftazure.de/user_impersonation'
@@ -331,7 +331,7 @@ const chinaAzureSettings: ProviderSettings = {
 				endpoint: 'https://analysis.windows.net/powerbi/api',
 				azureResourceId: AzureResource.PowerBi
 			},
-			redirectUri: 'http://localhost',
+			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
 			scopes: [
 				'openid', 'email', 'profile', 'offline_access',
 				'https://management.chinacloudapi.cn/user_impersonation'
