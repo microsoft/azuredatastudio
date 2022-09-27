@@ -39,7 +39,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 	public isDisconnecting: boolean = false;
 
 	public constructor(
-		@ICapabilitiesService capabilitiesService: ICapabilitiesService,
+		capabilitiesService: ICapabilitiesService,
 		model: string | azdata.IConnectionProfile | azdata.connection.ConnectionProfile | undefined) {
 		super(capabilitiesService, model);
 		if (model && !isString(model)) {
