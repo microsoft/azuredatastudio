@@ -302,6 +302,7 @@ export function setup(opts: minimist.ParsedArgs) {
 				await app.workbench.notificationToast.closeNotificationToasts();
 				// Run the test for each of the default text editor modes
 				for (let editMode of ['Markdown', 'Split View']) {
+					await app.code.dispatchKeybinding('escape');
 					await app.workbench.settingsEditor.addUserSetting('notebook.defaultTextEditMode', `"${editMode}"`);
 					await app.workbench.quickaccess.runCommand('workbench.action.closeActiveEditor');
 					await app.workbench.sqlNotebook.newUntitledNotebook();
