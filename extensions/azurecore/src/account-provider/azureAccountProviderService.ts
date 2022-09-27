@@ -17,6 +17,7 @@ import { PublicClientApplication } from '@azure/msal-node';
 import { DataProtectionScope, PersistenceCreator, PersistenceCachePlugin } from '@azure/msal-node-extensions';
 import * as path from 'path';
 import { Logger } from '../utils/Logger';
+import { AuthLibrary } from './auths/azureAuth';
 
 let localize = nls.loadMessageBundle();
 
@@ -42,7 +43,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 	private _event: events.EventEmitter = new events.EventEmitter();
 	private readonly _uriEventHandler: UriEventHandler = new UriEventHandler();
 	public clientApplication!: PublicClientApplication;
-	public authLibrary: string | undefined;
+	public authLibrary: AuthLibrary;
 
 	constructor(private _context: vscode.ExtensionContext, private _userStoragePath: string) {
 		this.authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');

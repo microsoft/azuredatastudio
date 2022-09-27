@@ -16,7 +16,7 @@ import { Deferred } from './interfaces';
 import { PublicClientApplication } from '@azure/msal-node';
 import { SimpleTokenCache } from './simpleTokenCache';
 import { Logger } from '../utils/Logger';
-import { MultiTenantTokenResponse, Token, AzureAuth } from './auths/azureAuth';
+import { MultiTenantTokenResponse, Token, AzureAuth, AuthLibrary } from './auths/azureAuth';
 import { AzureAuthCodeGrant } from './auths/azureAuthCodeGrant';
 import { AzureDeviceCode } from './auths/azureDeviceCode';
 
@@ -28,7 +28,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 	private initComplete!: Deferred<void, Error>;
 	private initCompletePromise: Promise<void> = new Promise<void>((resolve, reject) => this.initComplete = { resolve, reject });
 	public clientApplication: PublicClientApplication;
-	public authLibrary: string | undefined;
+	public authLibrary: AuthLibrary;
 
 	constructor(
 		metadata: AzureAccountProviderMetadata,
@@ -45,8 +45,8 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 			if (impactProvider === true) {
 				this.handleAuthMapping(metadata, tokenCache, context, uriEventHandler);
 			}
-			const impactLibrary = changeEvent.affectsConfiguration('authenticationLibrary');
-			if (impactLibrary === true) {
+			const library = changeEvent.affectsConfiguration('authenticationLibrary');
+			if (library === true) {
 				this.authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
 			}
 		});
@@ -141,7 +141,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 			return azureAuth?.getAccountSecurityToken(account, tenantId, resource);
 		} else {
 			let authResult = await azureAuth?.getTokenMsal(account.key.accountId, resource);
-			if (!authResult || !authResult.account) {
+			if (!authResult || !authResult.account || !authResult.account.idTokenClaims) {
 				Logger.error(`MSAL: getToken call failed`);
 				throw Error('Failed to get token');
 			} else {
@@ -149,6 +149,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 					key: authResult.account.homeAccountId,
 					token: authResult.accessToken,
 					tokenType: authResult.tokenType,
+					expiresOn: authResult.account.idTokenClaims.exp
 				};
 				return token;
 			}
