@@ -31,6 +31,7 @@ import { CmsConnectionController } from 'sql/workbench/services/connection/brows
 import { entries } from 'sql/base/common/collections';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
+import { ConnectionPasswordResetDialog } from 'sql/workbench/services/connection/browser/connectionPasswordResetDialog';
 
 export interface IConnectionValidateResult {
 	isValid: boolean;
@@ -63,6 +64,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	_serviceBrand: undefined;
 
 	private _connectionDialog: ConnectionDialogWidget;
+	private _passwordResetDialog: ConnectionPasswordResetDialog;
 	private _connectionControllerMap: { [providerName: string]: IConnectionComponentController } = {};
 	private _model: ConnectionProfile;
 	private _params: INewConnectionParams;
@@ -521,5 +523,11 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		}
 		this._logService.error(message);
 		this._errorMessageService.showDialog(severity, headerTitle, message, messageDetails, actions);
+	}
+
+	private showPasswordResetDialog(params: INewConnectionParams, connection: IConnectionProfile): void {
+		if (!this._passwordResetDialog) {
+			this._passwordResetDialog = this._instantiationService.createInstance(ConnectionPasswordResetDialog, connection.azureAccount);
+		}
 	}
 }

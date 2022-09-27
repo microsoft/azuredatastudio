@@ -41,17 +41,20 @@ export class ConnectionPasswordResetDialog extends Modal {
 	public onOk: Event<void> = this._onOk.event;
 
 	constructor(
+		username: string,
 		@IThemeService themeService: IThemeService,
 		@IClipboardService clipboardService: IClipboardService,
 		@ILayoutService layoutService: ILayoutService,
 		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@ILogService logService: ILogService,
-		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
+		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
 	) {
 		super('', TelemetryKeys.ModalDialogName.ErrorMessage, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'normal', hasTitleIcon: true });
 		this._okLabel = localize('ConnectionPasswordResetDialog.ok', "OK");
 		this._closeLabel = localize('ConnectionPasswordResetDialog.close', "Close");
+		if (!username) {
+		}
 	}
 
 	protected renderBody(container: HTMLElement) {
