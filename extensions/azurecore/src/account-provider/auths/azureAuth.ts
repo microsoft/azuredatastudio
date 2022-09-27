@@ -62,27 +62,31 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		this.resources = [
 			this.metadata.settings.armResource,
-			this.metadata.settings.sqlResource,
 			this.metadata.settings.graphResource,
-			this.metadata.settings.ossRdbmsResource,
-			this.metadata.settings.microsoftResource,
 			this.metadata.settings.azureKeyVaultResource
 		];
 
+		if (this.metadata.settings.sqlResource) {
+			this.resources.push(this.metadata.settings.sqlResource);
+		}
+		if (this.metadata.settings.ossRdbmsResource) {
+			this.resources.push(this.metadata.settings.ossRdbmsResource);
+		}
+		if (this.metadata.settings.microsoftResource) {
+			this.resources.push(this.metadata.settings.microsoftResource);
+		}
 		if (this.metadata.settings.azureDevOpsResource) {
-			this.resources = this.resources.concat(this.metadata.settings.azureDevOpsResource);
+			this.resources.push(this.metadata.settings.azureDevOpsResource);
 		}
-
 		if (this.metadata.settings.azureLogAnalyticsResource) {
-			this.resources = this.resources.concat(this.metadata.settings.azureLogAnalyticsResource);
+			this.resources.push(this.metadata.settings.azureLogAnalyticsResource);
 		}
-
 		if (this.metadata.settings.azureKustoResource) {
-			this.resources = this.resources.concat(this.metadata.settings.azureKustoResource);
+			this.resources.push(this.metadata.settings.azureKustoResource);
 		}
 
 		if (this.metadata.settings.powerBiResource) {
-			this.resources = this.resources.concat(this.metadata.settings.powerBiResource);
+			this.resources.push(this.metadata.settings.powerBiResource);
 		}
 
 		this.scopes = [...this.metadata.settings.scopes];
@@ -90,9 +94,12 @@ export abstract class AzureAuth implements vscode.Disposable {
 	}
 
 	public async startLogin(): Promise<AzureAccount | azdata.PromptFailedResult> {
-		let loginComplete: Deferred<void, Error>;
+		let loginComplete: Deferred<void, Error> | undefined = undefined;
 		try {
 			Logger.verbose('Starting login');
+			if (!this.metadata.settings.microsoftResource) {
+				throw new Error(localize('noMicrosoftResource', "Provider '{0}' does not have a Microsoft resource endpoint defined.", this.metadata.displayName));
+			}
 			const result = await this.login(this.commonTenant, this.metadata.settings.microsoftResource);
 			loginComplete = result.authComplete;
 			if (!result?.response) {
@@ -220,6 +227,9 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		// User didn't have any cached tokens, or the cached tokens weren't useful.
 		// For most users we can use the refresh token from the general microsoft resource to an access token of basically any type of resource we want.
+		if (!this.metadata.settings.microsoftResource) {
+			throw new Error(localize('noMicrosoftResource', "Provider '{0}' does not have a Microsoft resource endpoint defined.", this.metadata.displayName));
+		}
 		const baseTokens = await this.getSavedToken(this.commonTenant, this.metadata.settings.microsoftResource, account.key);
 		if (!baseTokens) {
 			Logger.error('User had no base tokens for the basic resource registered. This should not happen and indicates something went wrong with the authentication cycle');
@@ -241,7 +251,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 
 
-	protected abstract login(tenant: Tenant, resource: Resource): Promise<{ response: OAuthTokenResponse, authComplete: Deferred<void, Error> }>;
+	protected abstract login(tenant: Tenant, resource: Resource): Promise<{ response: OAuthTokenResponse | undefined, authComplete: Deferred<void, Error> }>;
 
 	/**
 	 * Refreshes a token, if a refreshToken is passed in then we use that. If it is not passed in then we will prompt the user for consent.
@@ -251,7 +261,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	 * @returns The oauth token response or undefined. Undefined is returned when the user wants to ignore a tenant or chooses not to start the
 	 * re-authentication process for their tenant.
 	 */
-	public async refreshToken(tenant: Tenant, resource: Resource, refreshToken: RefreshToken | undefined): Promise<OAuthTokenResponse> | undefined {
+	public async refreshToken(tenant: Tenant, resource: Resource, refreshToken: RefreshToken | undefined): Promise<OAuthTokenResponse | undefined> {
 		Logger.pii('Refreshing token', [{ name: 'token', objOrArray: refreshToken }], []);
 		if (refreshToken) {
 			const postData: RefreshTokenPostData = {
@@ -268,7 +278,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		return this.handleInteractionRequired(tenant, resource);
 	}
 
-	public async getToken(tenant: Tenant, resource: Resource, postData: AuthorizationCodePostData | TokenPostData | RefreshTokenPostData): Promise<OAuthTokenResponse> {
+	public async getToken(tenant: Tenant, resource: Resource, postData: AuthorizationCodePostData | TokenPostData | RefreshTokenPostData): Promise<OAuthTokenResponse | undefined> {
 		Logger.verbose('Fetching token');
 		const tokenUrl = `${this.loginEndpointUrl}${tenant.id}/oauth2/token`;
 		const response = await this.makePostRequest(tokenUrl, postData);
@@ -317,7 +327,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			token: accessTokenString,
 			key: userKey
 		};
-		let refreshToken: RefreshToken;
+		let refreshToken: RefreshToken | undefined = undefined;
 
 		if (refreshTokenString) {
 			refreshToken = {
@@ -402,7 +412,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		}
 	}
 
-	public async getSavedToken(tenant: Tenant, resource: Resource, accountKey: azdata.AccountKey): Promise<{ accessToken: AccessToken, refreshToken: RefreshToken, expiresOn: string }> {
+	public async getSavedToken(tenant: Tenant, resource: Resource, accountKey: azdata.AccountKey): Promise<{ accessToken: AccessToken, refreshToken: RefreshToken | undefined, expiresOn: string } | undefined> {
 		const getMsg = localize('azure.cacheErrorGet', "Error when getting your account from the cache");
 		const parseMsg = localize('azure.cacheErrorParse', "Error when parsing your account from the cache");
 
@@ -411,8 +421,8 @@ export abstract class AzureAuth implements vscode.Disposable {
 			throw new AzureAuthError(getMsg, 'Getting account from cache failed', undefined);
 		}
 
-		let accessTokenString: string;
-		let refreshTokenString: string;
+		let accessTokenString: string | undefined = undefined;
+		let refreshTokenString: string | undefined = undefined;
 		let expiresOn: string;
 		try {
 			Logger.info('Fetching saved token');
@@ -430,7 +440,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 				return undefined;
 			}
 			const accessToken: AccessToken = JSON.parse(accessTokenString);
-			let refreshToken: RefreshToken;
+			let refreshToken: RefreshToken | undefined = undefined;
 			if (refreshTokenString) {
 				refreshToken = JSON.parse(refreshTokenString);
 			}
@@ -512,11 +522,11 @@ export abstract class AzureAuth implements vscode.Disposable {
 		const messageBody = localize('azurecore.consentDialog.body', "Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.", tenant.displayName, tenant.id, resource.id);
 		const result = await vscode.window.showInformationMessage(messageBody, { modal: true }, openItem, closeItem, dontAskAgainItem);
 
-		if (result.action) {
+		if (result?.action) {
 			await result.action(tenant.id);
 		}
 
-		return result.booleanResult;
+		return result?.booleanResult || false;
 	}
 	//#endregion
 
@@ -624,7 +634,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	//#endregion
 
 	//#region inconsequential
-	protected getTokenClaims(accessToken: string): TokenClaims | undefined {
+	protected getTokenClaims(accessToken: string): TokenClaims {
 		try {
 			const split = accessToken.split('.');
 			return JSON.parse(Buffer.from(split[1], 'base64').toString('binary'));
@@ -720,31 +730,146 @@ export interface Token extends AccountKey {
 }
 
 export interface TokenClaims { // https://docs.microsoft.com/en-us/azure/active-directory/develop/id-tokens
+	/**
+	 * Identifies the intended recipient of the token. In id_tokens, the audience
+	 * is your app's Application ID, assigned to your app in the Azure portal.
+	 * This value should be validated. The token should be rejected if it fails
+	 * to match your app's Application ID.
+	 */
 	aud: string;
+	/**
+	 * Identifies the issuer, or "authorization server" that constructs and
+	 * returns the token. It also identifies the Azure AD tenant for which
+	 * the user was authenticated. If the token was issued by the v2.0 endpoint,
+	 * the URI will end in /v2.0. The GUID that indicates that the user is a consumer
+	 * user from a Microsoft account is 9188040d-6c67-4c5b-b112-36a304b66dad.
+	 * Your app should use the GUID portion of the claim to restrict the set of
+	 * tenants that can sign in to the app, if applicable.
+	 */
 	iss: string;
+	/**
+	 * "Issued At" indicates when the authentication for this token occurred.
+	 */
 	iat: number;
+	/**
+	 * Records the identity provider that authenticated the subject of the token.
+	 * This value is identical to the value of the Issuer claim unless the user
+	 * account not in the same tenant as the issuer - guests, for instance.
+	 * If the claim isn't present, it means that the value of iss can be used instead.
+	 * For personal accounts being used in an organizational context (for instance,
+	 * a personal account invited to an Azure AD tenant), the idp claim may be
+	 * 'live.com' or an STS URI containing the Microsoft account tenant
+	 * 9188040d-6c67-4c5b-b112-36a304b66dad.
+	 */
 	idp: string,
+	/**
+	 * The "nbf" (not before) claim identifies the time before which the JWT MUST NOT be accepted for processing.
+	 */
 	nbf: number;
+	/**
+	 * The "exp" (expiration time) claim identifies the expiration time on or
+	 * after which the JWT must not be accepted for processing. It's important
+	 * to note that in certain circumstances, a resource may reject the token
+	 * before this time. For example, if a change in authentication is required
+	 * or a token revocation has been detected.
+	 */
 	exp: number;
 	home_oid?: string;
+	/**
+	 * The code hash is included in ID tokens only when the ID token is issued with an
+	 * OAuth 2.0 authorization code. It can be used to validate the authenticity of an
+	 * authorization code. To understand how to do this validation, see the OpenID
+	 * Connect specification.
+	 */
 	c_hash: string;
+	/**
+	 * The access token hash is included in ID tokens only when the ID token is issued
+	 * from the /authorize endpoint with an OAuth 2.0 access token. It can be used to
+	 * validate the authenticity of an access token. To understand how to do this validation,
+	 * see the OpenID Connect specification. This is not returned on ID tokens from the /token endpoint.
+	 */
 	at_hash: string;
+	/**
+	 * An internal claim used by Azure AD to record data for token reuse. Should be ignored.
+	 */
 	aio: string;
+	/**
+	 * The primary username that represents the user. It could be an email address, phone number,
+	 * or a generic username without a specified format. Its value is mutable and might change
+	 * over time. Since it is mutable, this value must not be used to make authorization decisions.
+	 * It can be used for username hints, however, and in human-readable UI as a username. The profile
+	 * scope is required in order to receive this claim. Present only in v2.0 tokens.
+	 */
 	preferred_username: string;
+	/**
+	 * The email claim is present by default for guest accounts that have an email address.
+	 * Your app can request the email claim for managed users (those from the same tenant as the resource)
+	 * using the email optional claim. On the v2.0 endpoint, your app can also request the email OpenID
+	 * Connect scope - you don't need to request both the optional claim and the scope to get the claim.
+	 */
 	email: string;
+	/**
+	 * The name claim provides a human-readable value that identifies the subject of the token. The value
+	 * isn't guaranteed to be unique, it can be changed, and it's designed to be used only for display purposes.
+	 * The profile scope is required to receive this claim.
+	 */
 	name: string;
+	/**
+	 * The nonce matches the parameter included in the original /authorize request to the IDP. If it does not
+	 * match, your application should reject the token.
+	 */
 	nonce: string;
+	/**
+	 * The immutable identifier for an object in the Microsoft identity system, in this case, a user account.
+	 * This ID uniquely identifies the user across applications - two different applications signing in the
+	 * same user will receive the same value in the oid claim. The Microsoft Graph will return this ID as
+	 * the id property for a given user account. Because the oid allows multiple apps to correlate users,
+	 * the profile scope is required to receive this claim. Note that if a single user exists in multiple
+	 * tenants, the user will contain a different object ID in each tenant - they're considered different
+	 * accounts, even though the user logs into each account with the same credentials. The oid claim is a
+	 * GUID and cannot be reused.
+	 */
 	oid: string;
+	/**
+	 * The set of roles that were assigned to the user who is logging in.
+	 */
 	roles: string[];
+	/**
+	 * An internal claim used by Azure to revalidate tokens. Should be ignored.
+	 */
 	rh: string;
+	/**
+	 * The principal about which the token asserts information, such as the user
+	 * of an app. This value is immutable and cannot be reassigned or reused.
+	 * The subject is a pairwise identifier - it is unique to a particular application ID.
+	 * If a single user signs into two different apps using two different client IDs,
+	 * those apps will receive two different values for the subject claim.
+	 * This may or may not be wanted depending on your architecture and privacy requirements.
+	 */
 	sub: string;
+	/**
+	 * Represents the tenant that the user is signing in to. For work and school accounts,
+	 * the GUID is the immutable tenant ID of the organization that the user is signing in to.
+	 * For sign-ins to the personal Microsoft account tenant (services like Xbox, Teams for Life, or Outlook),
+	 * the value is 9188040d-6c67-4c5b-b112-36a304b66dad.
+	 */
 	tid: string;
+	/**
+	 * Only present in v1.0 tokens. Provides a human readable value that identifies the subject of the token.
+	 * This value is not guaranteed to be unique within a tenant and should be used only for display purposes.
+	 */
 	unique_name: string;
+	/**
+	 * Token identifier claim, equivalent to jti in the JWT specification. Unique, per-token identifier that is case-sensitive.
+	 */
 	uti: string;
+	/**
+	 * Indicates the version of the id_token.
+	 */
 	ver: string;
 }
 
-export type OAuthTokenResponse = { accessToken: AccessToken, refreshToken: RefreshToken, tokenClaims: TokenClaims, expiresOn: string };
+export type OAuthTokenResponse = { accessToken: AccessToken, refreshToken: RefreshToken | undefined, tokenClaims: TokenClaims, expiresOn: string };
 
 export interface TokenPostData {
 	grant_type: 'refresh_token' | 'authorization_code' | 'urn:ietf:params:oauth:grant-type:device_code';

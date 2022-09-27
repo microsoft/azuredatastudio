@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IConnectionManagementService, IConnectionCompletionOptions } from 'sql/platform/connection/common/connectionManagement';
-import { ITree } from 'vs/base/parts/tree/browser/tree';
+import { ITree } from 'sql/base/parts/tree/browser/tree';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 
@@ -12,6 +12,8 @@ import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/br
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 import { AsyncServerTree } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 export class TreeSelectionHandler {
 	// progressRunner: IProgressRunner;
@@ -47,14 +49,14 @@ export class TreeSelectionHandler {
 	/**
 	 * Handle selection of tree element
 	 */
-	public onTreeSelect(event: any, tree: AsyncServerTree | ITree, connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, connectionCompleteCallback: () => void) {
+	public onTreeSelect(event: any, tree: AsyncServerTree | ITree, connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, capabilitiesService: ICapabilitiesService, connectionCompleteCallback: () => void) {
 		let sendSelectionEvent = ((event: any, selection: any, isDoubleClick: boolean, userInteraction: boolean) => {
 			// userInteraction: defensive - don't touch this something else is handling it.
 			if (userInteraction === true && this._lastClicked && this._lastClicked[0] === selection[0]) {
 				this._lastClicked = undefined;
 			}
 			if (!TreeUpdateUtils.isInDragAndDrop) {
-				this.handleTreeItemSelected(connectionManagementService, objectExplorerService, isDoubleClick, this.isKeyboardEvent(event), selection, tree, connectionCompleteCallback);
+				this.handleTreeItemSelected(connectionManagementService, objectExplorerService, capabilitiesService, isDoubleClick, this.isKeyboardEvent(event), selection, tree, connectionCompleteCallback);
 			}
 		});
 
@@ -94,15 +96,20 @@ export class TreeSelectionHandler {
 	 *
 	 * @param connectionManagementService
 	 * @param objectExplorerService
+	 * @param capabilitiesService
 	 * @param isDoubleClick
 	 * @param isKeyboard
 	 * @param selection
 	 * @param tree
 	 * @param connectionCompleteCallback A function that gets called after a connection is established due to the selection, if needed
 	 */
-	private handleTreeItemSelected(connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, isDoubleClick: boolean, isKeyboard: boolean, selection: any[], tree: AsyncServerTree | ITree, connectionCompleteCallback: () => void): void {
+	private handleTreeItemSelected(connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, capabilitiesService: ICapabilitiesService, isDoubleClick: boolean, isKeyboard: boolean, selection: any[], tree: AsyncServerTree | ITree, connectionCompleteCallback: () => void): void {
 		if (tree instanceof AsyncServerTree) {
 			if (selection && selection.length > 0 && (selection[0] instanceof ConnectionProfile)) {
+				if (!capabilitiesService.getCapabilities(selection[0].providerName)) {
+					connectionManagementService.handleUnsupportedProvider(selection[0].providerName).catch(onUnexpectedError);
+					return;
+				}
 				this.onTreeActionStateChange(true);
 			}
 		} else {
@@ -116,6 +123,10 @@ export class TreeSelectionHandler {
 			};
 			if (selection && selection.length > 0 && (selection[0] instanceof ConnectionProfile)) {
 				connectionProfile = <ConnectionProfile>selection[0];
+				if (!capabilitiesService.getCapabilities(connectionProfile.providerName)) {
+					connectionManagementService.handleUnsupportedProvider(connectionProfile.providerName).catch(onUnexpectedError);
+					return;
+				}
 
 				if (connectionProfile) {
 					this.onTreeActionStateChange(true);

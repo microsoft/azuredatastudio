@@ -31,13 +31,6 @@ if "%INTEGRATION_TEST_ELECTRON_PATH%"=="" (
 	echo "Running integration tests with '%INTEGRATION_TEST_ELECTRON_PATH%' as build."
 )
 
-:: Default to only running stable tests if test grep isn't set
-if "%ADS_TEST_GREP%" == "" (
-	echo Running stable tests only
-	set ADS_TEST_GREP=@UNSTABLE@
-	SET ADS_TEST_INVERT_GREP=1
-)
-
 if "%SKIP_PYTHON_INSTALL_TEST%" == "1" (
 	echo Skipping Python installation tests.
 ) else (

@@ -103,7 +103,7 @@ describe('AzureResourceDatabaseServerTreeDataProvider.info', function (): void {
 	it('Should be correct when created.', async function (): Promise<void> {
 		const treeDataProvider = new AzureResourceDatabaseServerTreeDataProvider(mockDatabaseServerService.object, mockExtensionContext.object);
 
-		const treeItem = await treeDataProvider.getTreeItem(mockResourceRootNode);
+		const treeItem = await treeDataProvider.getResourceTreeItem(mockResourceRootNode);
 		should(treeItem.id).equal(mockResourceRootNode.treeItem.id);
 		should(treeItem.label).equal(mockResourceRootNode.treeItem.label);
 		should(treeItem.collapsibleState).equal(mockResourceRootNode.treeItem.collapsibleState);
@@ -128,19 +128,16 @@ describe('AzureResourceDatabaseServerTreeDataProvider.getChildren', function ():
 	it('Should return container node when element is undefined.', async function (): Promise<void> {
 		const treeDataProvider = new AzureResourceDatabaseServerTreeDataProvider(mockDatabaseServerService.object, mockExtensionContext.object);
 
-		const children = await treeDataProvider.getChildren();
+		const children = await treeDataProvider.getRootChildren();
 
 		should(children).Array();
 		should(children.length).equal(1);
 
 		const child = children[0];
-		should(child.account).undefined();
-		should(child.subscription).undefined();
-		should(child.tenantId).undefined();
-		should(child.treeItem.id).equal('azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainer');
-		should(child.treeItem.label).equal('SQL server');
-		should(child.treeItem.collapsibleState).equal(vscode.TreeItemCollapsibleState.Collapsed);
-		should(child.treeItem.contextValue).equal('azure.resource.itemType.databaseServerContainer');
+		should(child.id).equal('azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainer');
+		should(child.label).equal('SQL server');
+		should(child.collapsibleState).equal(vscode.TreeItemCollapsibleState.Collapsed);
+		should(child.contextValue).equal('azure.resource.itemType.databaseServerContainer');
 	});
 
 	it('Should return resource nodes when it is container node.', async function (): Promise<void> {

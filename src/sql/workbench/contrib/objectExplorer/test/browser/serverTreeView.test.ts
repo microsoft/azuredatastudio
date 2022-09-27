@@ -9,7 +9,7 @@ import { ConnectionManagementService } from 'sql/workbench/services/connection/b
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import * as TypeMoq from 'typemoq';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
-import { ITree } from 'vs/base/parts/tree/browser/tree';
+import { ITree } from 'sql/base/parts/tree/browser/tree';
 import { TestTree } from 'sql/workbench/test/treeMock';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
@@ -169,8 +169,12 @@ suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 		mockTree.verify(x => x.select(TypeMoq.It.isAny()), TypeMoq.Times.never());
 	});
 
-	test('The tree refreshes when new capabilities are registered', () => {
+	test('The tree refreshes when new capabilities are registered', (done) => {
 		capabilitiesService.fireCapabilitiesRegistered(undefined, undefined);
-		mockRefreshTreeMethod.verify(x => x(), TypeMoq.Times.once());
+		// A debounce is added to the handler, we need to wait a bit before checking.
+		setTimeout(() => {
+			mockRefreshTreeMethod.verify(x => x(), TypeMoq.Times.once());
+			done();
+		}, 100);
 	});
 });
