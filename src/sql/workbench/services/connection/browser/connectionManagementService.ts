@@ -27,7 +27,6 @@ import { AzureResource, ConnectionOptionSpecialType } from 'sql/workbench/api/co
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 
 import * as azdata from 'azdata';
-
 import * as nls from 'vs/nls';
 import * as errors from 'vs/base/common/errors';
 import { Disposable } from 'vs/base/common/lifecycle';
@@ -954,7 +953,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				this._logService.info(`Previous pending reconnect promise for uri ${uri} is rejected with error ${err}, will attempt to reconnect if necessary.`);
 			}
 		}
-
+		// TODO: need way to check auth library
+		// if msal: this.fillInOrClearToken
 		const expiry = profile.options.expiresOn;
 		if (typeof expiry === 'number' && !Number.isNaN(expiry)) {
 			const currentTime = new Date().getTime() / 1000;
