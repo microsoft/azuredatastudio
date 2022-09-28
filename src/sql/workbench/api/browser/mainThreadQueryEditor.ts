@@ -72,12 +72,6 @@ export class MainThreadQueryEditor extends Disposable implements MainThreadQuery
 		});
 	}
 
-	private connectionProfileToIConnectionProfile(connection: azdata.connection.ConnectionProfile): IConnectionProfile {
-		let profile: ConnectionProfile = new ConnectionProfile(this._capabilitiesService, connection);
-		profile.options = connection.options;
-		return profile.toIConnectionProfile();
-	}
-
 	public async $connectWithProfile(fileUri: string, connection: azdata.connection.ConnectionProfile): Promise<void> {
 		let editors = this._editorService.visibleEditorPanes.filter(resource => {
 			return !!resource && resource.input.resource.toString() === fileUri;
@@ -92,7 +86,7 @@ export class MainThreadQueryEditor extends Disposable implements MainThreadQuery
 			showFirewallRuleOnError: false,
 		};
 
-		let profile: IConnectionProfile = this.connectionProfileToIConnectionProfile(connection);
+		let profile: IConnectionProfile = new ConnectionProfile(this._capabilitiesService, connection).toIConnectionProfile();
 		let connectionResult = await this._connectionManagementService.connect(profile, fileUri, options);
 		if (connectionResult && connectionResult.connected) {
 			this._logService.info(`editor ${fileUri} connected`);
