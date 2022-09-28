@@ -11,8 +11,6 @@ import { TestConnectionManagementService } from 'sql/platform/connection/test/co
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { TestEditorInput, TestEditorService } from 'vs/workbench/test/browser/workbenchTestServices';
-import { EditorInput } from 'vs/workbench/common/editor/editorInput';
-import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
 import { URI } from 'vs/base/common/uri';
 
 suite('TaskUtilities', function () {
