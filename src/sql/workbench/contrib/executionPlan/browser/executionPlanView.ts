@@ -592,7 +592,7 @@ export class HighlightExpensiveOperationAction extends Action {
 	constructor(private source: ExecutionPlanActionSource,
 		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService
 	) {
-		super(HighlightExpensiveOperationAction.ID, HighlightExpensiveOperationAction.LABEL, constants.searchIconClassNames);
+		super(HighlightExpensiveOperationAction.ID, HighlightExpensiveOperationAction.LABEL, constants.highlightExpensiveOperationClassNames);
 	}
 
 	public override async run(context: ExecutionPlanView): Promise<void> {

@@ -481,6 +481,21 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
+.eps-container .ep-highlight-expensive-operation-icon {
+	background-image: url(../images/actionIcons/highlightExpensiveOperation.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.vs-dark .eps-container .ep-highlight-expensive-operation-icon,
+.hc-black .eps-container .ep-highlight-expensive-operation-icon {
+	background-image: url(../images/actionIcons/highlightExpensiveOperationDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
 .eps-container .ep-enable-tooltip-icon {
 	background-image: url(../images/actionIcons/enableTooltip.svg);
 	background-size: 16px 16px;
