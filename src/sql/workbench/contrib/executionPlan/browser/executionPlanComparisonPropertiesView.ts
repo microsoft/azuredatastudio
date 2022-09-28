@@ -14,7 +14,6 @@ import * as DOM from 'vs/base/browser/dom';
 import { InternalExecutionPlanElement } from 'sql/workbench/contrib/executionPlan/browser/azdataGraphView';
 import { executionPlanComparisonPropertiesDifferent, executionPlanComparisonPropertiesUpArrow, executionPlanComparisonPropertiesDownArrow } from 'sql/workbench/contrib/executionPlan/browser/constants';
 import * as sqlExtHostType from 'sql/workbench/api/common/sqlExtHostTypes';
-import { TextWithIconColumn } from 'sql/base/browser/ui/table/plugins/textWithIconColumn';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
