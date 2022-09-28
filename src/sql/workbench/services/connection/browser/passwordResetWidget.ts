@@ -54,14 +54,10 @@ export class PasswordResetWidget extends lifecycle.Disposable {
 		}
 	}
 
-	public createPasswordResetWidget(container: HTMLElement, authTypeChanged: boolean = false): void {
+	public createPasswordResetWidget(container: HTMLElement): void {
 		this._container = DOM.append(container, DOM.$('div.connection-table'));
-		this.fillInLoginForm(authTypeChanged);
-		this.registerListeners();
-	}
-
-	protected fillInLoginForm(authTypeChanged: boolean = false): void {
 		this.addLoginOptions();
+		this.registerListeners();
 	}
 
 	protected addLoginOptions(): void {
@@ -76,20 +72,22 @@ export class PasswordResetWidget extends lifecycle.Disposable {
 			ariaLabel: userNameOption.displayName
 		});
 		this._register(this._userNameInputBox);
+		this._userNameInputBox.disable();
 		// Password
 		let passwordOption = this._optionsMaps[ConnectionOptionSpecialType.password];
-		let password = DialogHelper.appendRow(this._container, passwordOption.displayName, 'connection-label', 'connection-input', 'password-row');
-		this._newPasswordInputBox = new InputBox(password, this._contextViewService, { ariaLabel: passwordOption.displayName });
+		let newPassword = DialogHelper.appendRow(this._container, passwordOption.displayName, 'connection-label', 'connection-input', 'new-password-row');
+		this._newPasswordInputBox = new InputBox(newPassword, this._contextViewService, { ariaLabel: passwordOption.displayName });
 		this._newPasswordInputBox.inputElement.type = 'password';
 		this._register(this._newPasswordInputBox);
+		let confirmPassword = DialogHelper.appendRow(this._container, passwordOption.displayName, 'connection-label', 'connection-input', 'confirm-password-row');
+		this._confirmPasswordInputBox = new InputBox(confirmPassword, this._contextViewService, { ariaLabel: passwordOption.displayName });
+		this._confirmPasswordInputBox.inputElement.type = 'password';
+		this._register(this._confirmPasswordInputBox);
 	}
 
 	private validateUsername(value: string, isOptionRequired: boolean): boolean {
-		let currentAuthType = undefined;
-		if (!currentAuthType || currentAuthType === AuthenticationType.SqlLogin) {
-			if (!value && isOptionRequired) {
-				return true;
-			}
+		if (!value && isOptionRequired) {
+			return true;
 		}
 		return false;
 	}
@@ -98,7 +96,7 @@ export class PasswordResetWidget extends lifecycle.Disposable {
 		// Theme styler
 		this._register(styler.attachInputBoxStyler(this._userNameInputBox, this._themeService));
 		this._register(styler.attachInputBoxStyler(this._newPasswordInputBox, this._themeService));
-		this._register(styler.attachInputBoxStyler(this._newPasswordInputBox, this._themeService));
+		this._register(styler.attachInputBoxStyler(this._confirmPasswordInputBox, this._themeService));
 	}
 
 
@@ -126,20 +124,6 @@ export class PasswordResetWidget extends lifecycle.Disposable {
 		}
 	}
 
-	protected getAuthTypeDisplayName(authTypeName: string) {
-		let displayName: string;
-		let authTypeOption: azdata.ConnectionOption = this._optionsMaps[ConnectionOptionSpecialType.authType];
-
-		if (authTypeOption) {
-			authTypeOption.categoryValues.forEach(c => {
-				if (c.name === authTypeName) {
-					displayName = c.displayName;
-				}
-			});
-		}
-		return displayName;
-	}
-
 	public get userName(): string {
 		return this._userNameInputBox.value;
 	}
@@ -162,7 +146,9 @@ export class PasswordResetWidget extends lifecycle.Disposable {
 			isFocused = true;
 		}
 
-		return isUserNameValid && isPasswordValid;
+		const isPasswordConfirmed = this._newPasswordInputBox.value === this._confirmPasswordInputBox.value;
+
+		return isUserNameValid && isPasswordValid && isPasswordConfirmed;
 	}
 
 	public async changePasswordForModel(model: IConnectionProfile): Promise<boolean> {
