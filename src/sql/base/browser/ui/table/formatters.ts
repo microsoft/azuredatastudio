@@ -111,6 +111,17 @@ export function textFormatter(row: number | undefined, cell: any | undefined, va
 		valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
 		titleValue = valueToDisplay;
 	}
+	else if (value && value.title) {
+		if (value.title) {
+			valueToDisplay = value.title;
+
+			if (value.style) {
+				cellStyle = value.style;
+			}
+		}
+		valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
+		titleValue = valueToDisplay;
+	}
 
 	return `<span title="${titleValue}" style="${cellStyle}" class="${cellClasses}">${valueToDisplay}</span>`;
 }

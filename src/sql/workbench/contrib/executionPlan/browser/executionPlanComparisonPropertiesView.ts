@@ -7,7 +7,7 @@ import { ExecutionPlanPropertiesViewBase, PropertiesSortType } from 'sql/workben
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import * as azdata from 'azdata';
 import { localize } from 'vs/nls';
-import { textFormatter } from 'sql/base/browser/ui/table/formatters';
+import { iconCssFormatter, textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { isString } from 'vs/base/common/types';
 import { removeLineBreaks } from 'sql/base/common/strings';
 import * as DOM from 'vs/base/browser/dom';
@@ -56,6 +56,9 @@ function getRightPlanIsGreaterThanLeftPlanSummaryPointTemplate(rowName: string):
 	return localize('nodePropertyViewRightPlanGreaterThanLeftPlan', '{0} is greater for the right plan than it is for the left plan.', rowName);
 }
 
+const notEqualTitle = localize('nodePropertyViewNameNotEqualTitle', 'Not equal to');
+const lessThanTitle = localize('nodePropertyViewNameLessThanTitle', 'Less than');
+const greaterThanTitle = localize('nodePropertyViewNameGreaterThanTitle', 'Greater than');
 const equalPropertiesRowHeader = localize('nodePropertyViewNameEqualPropertiesRowHeader', 'Equal Properties');
 const topTitleColumnHeader = localize('nodePropertyViewNameValueColumnTopHeader', "Value (Top Plan)");
 const leftTitleColumnHeader = localize('nodePropertyViewNameValueColumnLeftHeader', "Value (Left Plan)");
@@ -243,13 +246,23 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 			});
 		}
 		if (this._model.secondaryElement) {
-			columns.push(new TextWithIconColumn({
+			columns.push({
+				id: 'comparison',
+				name: '',
+				field: 'icon',
+				width: 40,
+				headerCssClass: 'prop-table-header',
+				formatter: iconCssFormatter
+			});
+
+			columns.push({
 				id: 'value2',
 				name: getPropertyViewNameValueColumnBottomHeaderForOrientation(this._orientation),
 				field: 'secondary',
 				width: 150,
 				headerCssClass: 'prop-table-header',
-			}).definition);
+				formatter: textFormatter
+			});
 		}
 		return columns;
 	}
@@ -367,35 +380,53 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 
 			if (primaryProp && secondaryProp) {
 				row['displayOrder'] = v.primaryProp.displayOrder;
+
+				let diffIcon = new Object() as DiffIcon;
 				if (v.primaryProp.displayValue !== v.secondaryProp.displayValue) {
 					switch (v.primaryProp.dataType) {
 						case sqlExtHostType.executionPlan.ExecutionPlanGraphElementPropertyDataType.Boolean:
-							diffIconClass = executionPlanComparisonPropertiesDifferent;
+							diffIcon.iconClass = executionPlanComparisonPropertiesDifferent;
+							diffIcon.title = notEqualTitle;
 							break;
 						case sqlExtHostType.executionPlan.ExecutionPlanGraphElementPropertyDataType.Number:
-							diffIconClass = (parseFloat(v.primaryProp.displayValue) > parseFloat(v.secondaryProp.displayValue)) ? executionPlanComparisonPropertiesDownArrow : executionPlanComparisonPropertiesUpArrow;
+							diffIcon = (parseFloat(v.primaryProp.displayValue) > parseFloat(v.secondaryProp.displayValue))
+								? { iconClass: executionPlanComparisonPropertiesDownArrow, title: greaterThanTitle }
+								: { iconClass: executionPlanComparisonPropertiesUpArrow, title: lessThanTitle };
+
 							break;
 						case sqlExtHostType.executionPlan.ExecutionPlanGraphElementPropertyDataType.String:
-							diffIconClass = executionPlanComparisonPropertiesDifferent;
+							diffIcon.iconClass = executionPlanComparisonPropertiesDifferent;
+							diffIcon.title = notEqualTitle;
 							break;
 						default:
-							diffIconClass = executionPlanComparisonPropertiesDifferent;
+							diffIcon.iconClass = executionPlanComparisonPropertiesDifferent;
+							diffIcon.title = notEqualTitle;
 							break;
 					}
 				}
+
 				row['primary'] = {
 					text: removeLineBreaks(v.primaryProp.displayValue, ' ')
 				};
+
+				row['icon'] = {
+					iconCssClass: diffIcon.iconClass,
+					title: diffIcon.title
+				};
+
 				row['secondary'] = {
-					iconCssClass: diffIconClass,
 					title: removeLineBreaks(v.secondaryProp.displayValue, ' ')
 				};
+
 				if ((primaryProp && !isString(primaryProp.value)) || (secondaryProp && !isString(secondaryProp.value))) {
 					row['name'].iconCssClass += ` parent-row-styling`;
 					row['primary'].iconCssClass += ` parent-row-styling`;
+					row['icon'].iconCssClass += 'parent-row-styling';
 					row['secondary'].iconCssClass += ` parent-row-styling`;
 				}
+
 				rows.push(row);
+
 				const topPropValue = isString(primaryProp.value) ? undefined : primaryProp.value;
 				const bottomPropValue = isString(secondaryProp.value) ? undefined : secondaryProp.value;
 				row['treeGridChildren'] = this.convertPropertiesToTableRows(topPropValue, bottomPropValue);
@@ -487,4 +518,9 @@ interface TablePropertiesMapEntry {
 	secondaryProp: azdata.executionPlan.ExecutionPlanGraphElementProperty,
 	displayOrder: number,
 	name: string
+}
+
+interface DiffIcon {
+	iconClass: string;
+	title: string;
 }
