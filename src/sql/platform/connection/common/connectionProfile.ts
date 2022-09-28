@@ -69,13 +69,13 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 						this.options[appNameKey] = Constants.applicationName;
 					}
 				}
-			}
-			if (model.options.registeredServerDescription) {
-				this.registeredServerDescription = model.options.registeredServerDescription;
-			}
-			const expiry = model.options.expiresOn;
-			if (typeof expiry === 'number' && !Number.isNaN(expiry)) {
-				this.options.expiresOn = model.options.expiresOn;
+				if (model.options.registeredServerDescription) {
+					this.registeredServerDescription = model.options.registeredServerDescription;
+				}
+				const expiry = model.options.expiresOn;
+				if (typeof expiry === 'number' && !Number.isNaN(expiry)) {
+					this.options.expiresOn = model.options.expiresOn;
+				}
 			}
 			if (model.options?.originalDatabase) {
 				this.originalDatabase = model.options.originalDatabase;
