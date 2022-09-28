@@ -46,7 +46,7 @@ The following migration modes are supported for the corresponding Azure SQL targ
 ## Need assistance or have questions/feedback
 You can submit ideas/suggestions for improvement and other feedback (including bugs) to the [Azure Community forum — Azure Database Migration Service](https://feedback.azure.com/d365community/forum/2dd7eb75-ef24-ec11-b6e6-000d3a4f0da0).
 
-If your migration is affected by unexpected issues, [open a support ticket to get assistance](https://azure.microsoft.com/en-us/support/create-ticket/).
+If your migration is affected by unexpected issues, [open a support ticket to get assistance](https://azure.microsoft.com/support/create-ticket/).
 
 ## Code of Conduct
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information, see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
