@@ -81,15 +81,8 @@ export class HighlightExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 		this._expenseMetricSelectBoxContainer.appendChild(operationLabel);
 		this.container.appendChild(this._expenseMetricSelectBoxContainer);
 
-		this.expenseMetricSelectBox = new SelectBox([
-			OFF_STRING,
-			ACTUAL_ELAPSED_TIME_STRING,
-			ACTUAL_ELAPSED_CPU_TIME_STRING,
-			COST_STRING,
-			SUBTREE_COST_STRING,
-			ACTUAL_NUMBER_OF_ROWS_FOR_ALL_EXECUTIONS_STRING,
-			NUMBER_OF_ROWS_READ_STRING
-		], COST_STRING, this.contextViewService, this._expenseMetricSelectBoxContainer);
+		const selectBoxOptions = this.getSelectBoxOptionsFromExecutionPlanDiagram();
+		this.expenseMetricSelectBox = new SelectBox(selectBoxOptions, COST_STRING, this.contextViewService, this._expenseMetricSelectBoxContainer);
 
 		this.expenseMetricSelectBox.render(this._expenseMetricSelectBoxContainer);
 		this._register(attachSelectBoxStyler(this.expenseMetricSelectBox, this.themeService));
@@ -153,6 +146,38 @@ export class HighlightExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 		this._actionBar = new ActionBar(this.container);
 		this._actionBar.context = this;
 		this._actionBar.pushAction(cancelHighlightExpensiveOperationAction, { label: false, icon: true });
+	}
+
+	private getSelectBoxOptionsFromExecutionPlanDiagram(): string[] {
+		const selectBoxOptions: string[] = [];
+
+		for (let expenseMetricType of this.executionPlanDiagram.expensiveMetricTypes) {
+			switch (expenseMetricType) {
+				case ExpensiveMetricType.Off:
+					selectBoxOptions.push(OFF_STRING);
+					break;
+				case ExpensiveMetricType.ActualElapsedTime:
+					selectBoxOptions.push(ACTUAL_ELAPSED_TIME_STRING);
+					break;
+				case ExpensiveMetricType.ActualElapsedCpuTime:
+					selectBoxOptions.push(ACTUAL_ELAPSED_CPU_TIME_STRING);
+					break;
+				case ExpensiveMetricType.Cost:
+					selectBoxOptions.push(COST_STRING);
+					break;
+				case ExpensiveMetricType.SubtreeCost:
+					selectBoxOptions.push(SUBTREE_COST_STRING);
+					break;
+				case ExpensiveMetricType.ActualNumberOfRowsForAllExecutions:
+					selectBoxOptions.push(ACTUAL_NUMBER_OF_ROWS_FOR_ALL_EXECUTIONS_STRING);
+					break;
+				case ExpensiveMetricType.NumberOfRowsRead:
+					selectBoxOptions.push(NUMBER_OF_ROWS_READ_STRING);
+					break;
+			}
+		}
+
+		return selectBoxOptions;
 	}
 
 	public showStoreDefaultMetricPrompt(): void {

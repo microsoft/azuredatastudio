@@ -25,6 +25,7 @@ export class AzdataGraphView {
 	private _diagram: any;
 	private _diagramModel: AzDataGraphCell;
 	private _cellInFocus: AzDataGraphCell;
+	public expensiveMetricTypes: Set<ExpensiveMetricType> = new Set();
 
 	private _graphElementPropertiesSet: Set<string> = new Set();
 
@@ -300,6 +301,8 @@ export class AzdataGraphView {
 			node.id = `element-${node.id}`;
 		}
 
+		this.expensiveMetricTypes.add(ExpensiveMetricType.Off);
+
 		diagramNode.id = node.id;
 		diagramNode.icon = node.type;
 		diagramNode.metrics = this.populateProperties(node.properties);
@@ -318,17 +321,42 @@ export class AzdataGraphView {
 
 		diagramNode.description = node.description;
 		diagramNode.cost = node.cost;
+		if (node.cost) {
+			this.expensiveMetricTypes.add(ExpensiveMetricType.Cost);
+		}
+
 		diagramNode.subTreeCost = node.subTreeCost;
+		if (node.subTreeCost) {
+			this.expensiveMetricTypes.add(ExpensiveMetricType.SubtreeCost);
+		}
+
 		diagramNode.relativeCost = node.relativeCost;
 		diagramNode.elapsedTimeInMs = node.elapsedTimeInMs;
+		if (node.elapsedTimeInMs) {
+			this.expensiveMetricTypes.add(ExpensiveMetricType.ActualElapsedTime);
+		}
 
 		let costMetrics = [];
 		for (let i = 0; node.costMetrics && i < node.costMetrics.length; ++i) {
 			costMetrics.push(node.costMetrics[i]);
+
+			this.loadMetricTypesFromCostMetrics(node.costMetrics[i].name);
 		}
 		diagramNode.costMetrics = costMetrics;
 
 		return diagramNode;
+	}
+
+	private loadMetricTypesFromCostMetrics(costMetricName: string): void {
+		if (costMetricName === 'ElapsedCpuTime') {
+			this.expensiveMetricTypes.add(ExpensiveMetricType.ActualElapsedCpuTime);
+		}
+		else if (costMetricName === 'EstimateRowsAllExecs' || costMetricName === 'ActualRows') {
+			this.expensiveMetricTypes.add(ExpensiveMetricType.ActualNumberOfRowsForAllExecutions);
+		}
+		else if (costMetricName === 'EstimatedRowsRead' || costMetricName === 'ActualRowsRead') {
+			this.expensiveMetricTypes.add(ExpensiveMetricType.NumberOfRowsRead);
+		}
 	}
 
 	private getBadgeTypeString(badgeType: sqlExtHostType.executionPlan.BadgeType): {
