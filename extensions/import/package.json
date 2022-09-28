@@ -88,12 +88,11 @@
     "@types/node": "^12.11.7",
     "@types/sinon": "^9.0.4",
     "mocha": "^7.1.1",
-    "mocha-junit-reporter": "^1.17.0",
-    "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.1",
     "sinon": "^9.0.2",
     "typemoq": "^2.1.0",
-    "@microsoft/vscodetestcover": "^1.2.1"
+    "@microsoft/vscodetestcover": "^1.2.1",
+    "@microsoft/azdata-test": "^2.0.3"
   },
   "__metadata": {
     "id": "23",

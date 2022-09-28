@@ -41,8 +41,7 @@
     "@azure/identity": "^2.1.0",
     "chai": "3.5.0",
     "mocha": "^7.1.1",
-    "mocha-junit-reporter": "^1.17.0",
-    "mocha-multi-reporters": "^1.1.7",
-    "@microsoft/vscodetestcover": "^1.2.1"
+    "@microsoft/vscodetestcover": "^1.2.1",
+    "@microsoft/azdata-test": "^2.0.3"
   }
 }
