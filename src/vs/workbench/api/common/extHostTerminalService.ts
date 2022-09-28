@@ -455,7 +455,7 @@ export abstract class BaseExtHostTerminalService extends Disposable implements I
 		if (id === null) {
 			this._activeTerminal = undefined;
 			if (original !== this._activeTerminal) {
-				this._onDidChangeActiveTerminal.fire(this._activeTerminal.value);
+				this._onDidChangeActiveTerminal.fire(undefined); // {{SQL CARBON EDIT}} This was set to undefined above so send that - this will be replaced with later refactorings that VS Code did
 			}
 			return;
 		}
