@@ -338,9 +338,8 @@ export function isValidExtensionVersion(productVersion: string, productDate: Pro
 		return true;
 	}
 
-	// {{SQL CARBON TODO}} - check azdata engine version
-	//return extensionDesc.engines.azdata ? extensionDesc.engines.azdata === '*' || isVersionValid(version, date, extensionDesc.engines.azdata, notices) : true;
-	return isVersionValid(productVersion, productDate, extensionManifest.engines.vscode, notices);
+	// {{SQL CARBON EDIT}}
+	return extensionManifest.engines.azdata ? extensionManifest.engines.azdata === '*' || isVersionValid(productVersion, productDate, extensionManifest.engines.vscode, notices) : true;
 }
 
 // {{SQL CARBON EDIT}}

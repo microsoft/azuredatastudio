@@ -29,10 +29,8 @@ const i18n = require('./lib/i18n');
 const { getProductionDependencies } = require('./lib/dependencies');
 const { config } = require('./lib/electron');
 const createAsar = require('./lib/asar').createAsar;
-const minimist = require('minimist');
 const { compileBuildTask } = require('./gulpfile.compile');
-const { compileExtensionsBuildTask, compileExtensionMediaBuildTask, compileLocalizationExtensionsBuildTask } = require('./gulpfile.extensions');
-const { getSettingsSearchBuildId, shouldSetupSettingsSearch } = require('./azure-pipelines/upload-configuration');
+const { compileExtensionsBuildTask, compileLocalizationExtensionsBuildTask } = require('./gulpfile.extensions');  // {{SQL CARBON EDIT}} Must handle localization code.
 
 // Build
 const vscodeEntryPoints = _.flatten([
@@ -50,6 +48,7 @@ const vscodeEntryPoints = _.flatten([
 const vscodeResources = [
 	'out-build/main.js',
 	'out-build/cli.js',
+	'out-build/driver.js',
 	'out-build/bootstrap.js',
 	'out-build/bootstrap-fork.js',
 	'out-build/bootstrap-amd.js',
@@ -156,7 +155,7 @@ const importExtensionsTask = task.define('import-extensions-xlfs', function () {
 			.pipe(extensionsFilter),
 		gulp.src(`./vscode-translations-export/ads-core/*.xlf`)
 	)
-	.pipe(vfs.dest(`./resources/xlf/en`));
+		.pipe(vfs.dest(`./resources/xlf/en`));
 });
 gulp.task(importExtensionsTask);
 // {{SQL CARBON EDIT}} end
@@ -272,7 +271,7 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 		const productJsonStream = gulp.src(['product.json'], { base: '.' })
 			.pipe(json(productJsonUpdate));
 
-		const license = gulp.src(['LICENSES.chromium.html', product.licenseFileName, 'ThirdPartyNotices.txt', 'licenses/**'], { base: '.', allowEmpty: true });
+		const license = gulp.src(['LICENSES.chromium.html', "LICENSE.txt", 'ThirdPartyNotices.txt', 'licenses/**'], { base: '.', allowEmpty: true });
 
 		// TODO the API should be copied to `out` during compile, not here
 		const api = gulp.src('src/vscode-dts/vscode.d.ts').pipe(rename('out/vscode-dts/vscode.d.ts'));
@@ -294,7 +293,7 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 			.pipe(jsFilter.restore)
 			.pipe(createAsar(path.join(process.cwd(), 'node_modules'), [
 				'**/*.node',
-				'**/@vscode/ripgrep/bin/*',
+				'**/vscode-ripgrep/bin/*',
 				'**/node-pty/build/Release/*',
 				'**/node-pty/lib/worker/conoutSocketWorker.js',
 				'**/node-pty/lib/shared/conout.js',
@@ -360,14 +359,12 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 				.pipe(replace('@@VERSION@@', version))
 				.pipe(replace('@@COMMIT@@', commit))
 				.pipe(replace('@@APPNAME@@', product.applicationName))
-				.pipe(replace('@@SERVERDATAFOLDER@@', product.serverDataFolderName || '.vscode-remote'))
+				.pipe(replace('@@DATAFOLDER@@', product.dataFolderName))
 				.pipe(replace('@@QUALITY@@', quality))
 				.pipe(rename(function (f) { f.basename = product.applicationName; f.extname = ''; })));
 
 			result = es.merge(result, gulp.src('resources/win32/VisualElementsManifest.xml', { base: 'resources/win32' })
 				.pipe(rename(product.nameShort + '.VisualElementsManifest.xml')));
-
-			result = es.merge(result, gulp.src('resources/win32/policies/**', { base: 'resources/win32' }));
 		} else if (platform === 'linux') {
 			result = es.merge(result, gulp.src('resources/linux/bin/code.sh', { base: '.' })
 				.pipe(replace('@@PRODNAME@@', product.nameLong))
@@ -383,7 +380,7 @@ const fileLengthFilter = filter([
 	'**',
 	'!extensions/import/*.docx',
 	'!extensions/admin-tool-ext-win/license/**'
-], {restore: true});
+], { restore: true });
 
 const filelength = es.through(function (file) {
 
@@ -434,7 +431,6 @@ BUILD_TARGETS.forEach(buildTarget => {
 		const vscodeTask = task.define(`vscode${dashed(platform)}${dashed(arch)}${dashed(minified)}`, task.series(
 			compileBuildTask,
 			compileExtensionsBuildTask,
-			compileExtensionMediaBuildTask,
 			minified ? minifyVSCodeTask : optimizeVSCodeTask,
 			vscodeTaskCI
 		));
@@ -533,7 +529,7 @@ gulp.task('vscode-translations-pull', function () {
 
 gulp.task('vscode-translations-import', function () {
 	// {{SQL CARBON EDIT}} - Replace function body with our own
-	return new Promise(function(resolve) {
+	return new Promise(function (resolve) {
 		[...i18n.defaultLanguages, ...i18n.extraLanguages].forEach(language => {
 			let languageId = language.translationId ? language.translationId : language.id;
 			gulp.src(`resources/xlf/${languageId}/**/*.xlf`)
@@ -544,3 +540,110 @@ gulp.task('vscode-translations-import', function () {
 	});
 	// {{SQL CARBON EDIT}} - End
 });
+
+// This task is only run for the MacOS build
+const generateVSCodeConfigurationTask = task.define('generate-vscode-configuration', () => {
+	return new Promise((resolve, reject) => {
+		const buildDir = process.env['AGENT_BUILDDIRECTORY'];
+		if (!buildDir) {
+			return reject(new Error('$AGENT_BUILDDIRECTORY not set'));
+		}
+
+		if (process.env.VSCODE_QUALITY !== 'insider' && process.env.VSCODE_QUALITY !== 'stable') {
+			return resolve();
+		}
+
+		const userDataDir = path.join(os.tmpdir(), 'tmpuserdata');
+		const extensionsDir = path.join(os.tmpdir(), 'tmpextdir');
+		const arch = process.env['VSCODE_ARCH'];
+		const appRoot = path.join(buildDir, `VSCode-darwin-${arch}`);
+		const appName = process.env.VSCODE_QUALITY === 'insider' ? 'Visual\\ Studio\\ Code\\ -\\ Insiders.app' : 'Visual\\ Studio\\ Code.app';
+		const appPath = path.join(appRoot, appName, 'Contents', 'Resources', 'app', 'bin', 'code');
+		const codeProc = cp.exec(
+			`${appPath} --export-default-configuration='${allConfigDetailsPath}' --wait --user-data-dir='${userDataDir}' --extensions-dir='${extensionsDir}'`,
+			(err, stdout, stderr) => {
+				clearTimeout(timer);
+				if (err) {
+					console.log(`err: ${err} ${err.message} ${err.toString()}`);
+					reject(err);
+				}
+
+				if (stdout) {
+					console.log(`stdout: ${stdout}`);
+				}
+
+				if (stderr) {
+					console.log(`stderr: ${stderr}`);
+				}
+
+				resolve();
+			}
+		);
+		const timer = setTimeout(() => {
+			codeProc.kill();
+			reject(new Error('export-default-configuration process timed out'));
+		}, 12 * 1000);
+
+		codeProc.on('error', err => {
+			clearTimeout(timer);
+			reject(err);
+		});
+	});
+});
+
+const allConfigDetailsPath = path.join(os.tmpdir(), 'configuration.json');
+gulp.task(task.define(
+	'upload-vscode-configuration',
+	task.series(
+		generateVSCodeConfigurationTask,
+		() => {
+			const azure = require('gulp-azure-storage');
+
+			if (!shouldSetupSettingsSearch()) {
+				const branch = process.env.BUILD_SOURCEBRANCH;
+				console.log(`Only runs on main and release branches, not ${branch}`);
+				return;
+			}
+
+			if (!fs.existsSync(allConfigDetailsPath)) {
+				throw new Error(`configuration file at ${allConfigDetailsPath} does not exist`);
+			}
+
+			const settingsSearchBuildId = getSettingsSearchBuildId(packageJson);
+			if (!settingsSearchBuildId) {
+				throw new Error('Failed to compute build number');
+			}
+
+			return gulp.src(allConfigDetailsPath)
+				.pipe(azure.upload({
+					account: process.env.AZURE_STORAGE_ACCOUNT,
+					key: process.env.AZURE_STORAGE_ACCESS_KEY,
+					container: 'configuration',
+					prefix: `${settingsSearchBuildId}/${commit}/`
+				}));
+		}
+	)
+));
+
+function shouldSetupSettingsSearch() {
+	const branch = process.env.BUILD_SOURCEBRANCH;
+	return branch && (/\/main$/.test(branch) || branch.indexOf('/release/') >= 0);
+}
+
+function getSettingsSearchBuildId(packageJson) {
+	try {
+		const branch = process.env.BUILD_SOURCEBRANCH;
+		const branchId = branch.indexOf('/release/') >= 0 ? 0 :
+			/\/main$/.test(branch) ? 1 :
+				2; // Some unexpected branch
+
+		const out = cp.execSync(`git rev-list HEAD --count`);
+		const count = parseInt(out.toString());
+
+		// <version number><commit count><branchId (avoid unlikely conflicts)>
+		// 1.25.1, 1,234,567 commits, main = 1250112345671
+		return util.versionStringToNumber(packageJson.version) * 1e8 + count * 10 + branchId;
+	} catch (e) {
+		throw new Error('Could not determine build number: ' + e.toString());
+	}
+}

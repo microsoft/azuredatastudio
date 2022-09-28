@@ -20,7 +20,8 @@ module.exports = {
         return {
             // /.../
             ['Literal[regex]']: (node) => {
-                const pattern = node.regex?.pattern;
+                var _a;
+                const pattern = (_a = node.regex) === null || _a === void 0 ? void 0 : _a.pattern;
                 if (_containsLookBehind(pattern)) {
                     context.report({
                         node,

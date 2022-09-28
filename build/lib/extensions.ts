@@ -5,12 +5,10 @@
 
 import * as es from 'event-stream';
 import * as fs from 'fs';
-import * as cp from 'child_process';
+// import * as cp from 'child_process';  // {{SQL CARBON EDIT}} -- remove unused
 import * as glob from 'glob';
 import * as gulp from 'gulp';
 import * as path from 'path';
-import * as through2 from 'through2';
-import got from 'got';
 import { Stream } from 'stream';
 import * as File from 'vinyl';
 import { createStatsStream } from './stats';
@@ -200,14 +198,13 @@ export function fromLocalNormal(extensionPath: string): Stream { // {{SQL CARBON
 	return result.pipe(createStatsStream(path.basename(extensionPath)));
 }
 
-const userAgent = 'VSCode Build';
 const baseHeaders = {
 	'X-Market-Client-Id': 'VSCode Build',
-	'User-Agent': userAgent,
+	'User-Agent': 'VSCode Build',
 	'X-Market-User-Id': '291C1CD0-051A-4123-9B4B-30D60EF52EE2',
 };
 
-export function fromMarketplace(serviceUrl: string, { name: extensionName, version, metadata }: IBuiltInExtension): Stream {
+export function fromMarketplace(extensionName: string, version: string, metadata: any): Stream {
 	const remote = require('gulp-remote-retry-src');
 	const json = require('gulp-json-editor') as typeof import('gulp-json-editor');
 
@@ -235,50 +232,6 @@ export function fromMarketplace(serviceUrl: string, { name: extensionName, versi
 		.pipe(json({ __metadata: metadata }))
 		.pipe(packageJsonFilter.restore);
 }
-
-const ghApiHeaders: Record<string, string> = {
-	Accept: 'application/vnd.github.v3+json',
-	'User-Agent': userAgent,
-};
-if (process.env.GITHUB_TOKEN) {
-	ghApiHeaders.Authorization = 'Basic ' + Buffer.from(process.env.GITHUB_TOKEN).toString('base64');
-}
-const ghDownloadHeaders = {
-	...ghApiHeaders,
-	Accept: 'application/octet-stream',
-};
-
-export function fromGithub({ name, version, repo, metadata }: IBuiltInExtension): Stream {
-	const remote = require('gulp-remote-retry-src');
-	const json = require('gulp-json-editor') as typeof import('gulp-json-editor');
-
-	fancyLog('Downloading extension from GH:', ansiColors.yellow(`${name}@${version}`), '...');
-
-	const packageJsonFilter = filter('package.json', { restore: true });
-
-	return remote([`/repos${new URL(repo).pathname}/releases/tags/v${version}`], {
-		base: 'https://api.github.com',
-		requestOptions: { headers: ghApiHeaders }
-	}).pipe(through2.obj(function (file, _enc, callback) {
-		const asset = JSON.parse(file.contents.toString()).assets.find((a: any) => a.name.endsWith('.vsix'));
-		if (!asset) {
-			return callback(new Error(`Could not find vsix in release of ${repo} @ ${version}`));
-		}
-
-		const res = got.stream(asset.url, { headers: ghDownloadHeaders, followRedirect: true });
-		file.contents = res.pipe(through2());
-		callback(null, file);
-	}))
-		.pipe(buffer())
-		.pipe(vzip.src())
-		.pipe(filter('extension/**'))
-		.pipe(rename(p => p.dirname = p.dirname!.replace(/^extension\/?/, '')))
-		.pipe(packageJsonFilter)
-		.pipe(buffer())
-		.pipe(json({ __metadata: metadata }))
-		.pipe(packageJsonFilter.restore);
-}
-
 const excludedExtensions = [
 	'vscode-api-tests',
 	'vscode-colorize-tests',
@@ -425,7 +378,7 @@ export function packageLocalExtensionsStream(forWeb: boolean): Stream {
 	);
 }
 
-export function packageMarketplaceExtensionsStream(forWeb: boolean, galleryServiceUrl?: string): Stream {
+export function packageMarketplaceExtensionsStream(forWeb: boolean): Stream {
 	const marketplaceExtensionsDescriptions = [
 		...builtInExtensions.filter(({ name }) => (forWeb ? !marketplaceWebExtensionsExclude.has(name) : true)),
 		...(forWeb ? webBuiltInExtensions : [])
@@ -434,7 +387,7 @@ export function packageMarketplaceExtensionsStream(forWeb: boolean, galleryServi
 		es.merge(
 			...marketplaceExtensionsDescriptions
 				.map(extension => {
-					const input = (galleryServiceUrl ? fromMarketplace(galleryServiceUrl, extension) : fromGithub(extension))
+					const input = fromMarketplace(extension.name, extension.version, extension.metadata)
 						.pipe(rename(p => p.dirname = `extensions/${extension.name}/${p.dirname}`));
 					return updateExtensionPackageJSON(input, (data: any) => {
 						delete data.scripts;
@@ -541,7 +494,7 @@ export function packageRebuildExtensionsStream(): NodeJS.ReadWriteStream {
 
 export function translatePackageJSON(packageJSON: string, packageNLSPath: string) {
 	interface NLSFormat {
-		[key: string]: string | { message: string; comment: string[] };
+		[key: string]: string | { message: string, comment: string[] };
 	}
 	const CharCode_PC = '%'.charCodeAt(0);
 	const packageNls: NLSFormat = JSON.parse(fs.readFileSync(packageNLSPath).toString());
@@ -566,15 +519,19 @@ export function translatePackageJSON(packageJSON: string, packageNLSPath: string
 
 const extensionsPath = path.join(root, 'extensions');
 
-// Additional projects to run esbuild on. These typically build code for webviews
-const esbuildMediaScripts = [
-	'markdown-language-features/esbuild-notebook.js',
-	'markdown-language-features/esbuild-preview.js',
-	'markdown-math/esbuild.js',
-	'simple-browser/esbuild-preview.js',
-];
+// Additional projects to webpack. These typically build code for webviews
+// const webpackMediaConfigFiles = [
+// 	//	'markdown-language-features/webpack.config.js',
+// 	'simple-browser/webpack.config.js',
+// ];
 
-export async function webpackExtensions(taskName: string, isWatch: boolean, webpackConfigLocations: { configPath: string; outputRoot?: string }[]) {
+// Additional projects to run esbuild on. These typically build code for webviews
+// const esbuildMediaScripts = [
+// 	'markdown-language-features/esbuild.js',
+// 	'markdown-math/esbuild.js',
+// ];
+
+export async function webpackExtensions(taskName: string, isWatch: boolean, webpackConfigLocations: { configPath: string, outputRoot?: string }[]) {
 	const webpack = require('webpack') as typeof import('webpack');
 
 	const webpackConfigs: webpack.Configuration[] = [];
@@ -643,46 +600,56 @@ export async function webpackExtensions(taskName: string, isWatch: boolean, webp
 	});
 }
 
-async function esbuildExtensions(taskName: string, isWatch: boolean, scripts: { script: string; outputRoot?: string }[]) {
-	function reporter(stdError: string, script: string) {
-		const matches = (stdError || '').match(/\> (.+): error: (.+)?/g);
-		fancyLog(`Finished ${ansiColors.green(taskName)} ${script} with ${matches ? matches.length : 0} errors.`);
-		for (const match of matches || []) {
-			fancyLog.error(match);
-		}
-	}
+// {{SQL CARBON EDIT}} -- remove unused
+// async function esbuildExtensions(taskName: string, isWatch: boolean, scripts: { script: string, outputRoot?: string }[]) {
+// 	function reporter(stdError: string, script: string) {
+// 		const matches = (stdError || '').match(/\> (.+): error: (.+)?/g);
+// 		fancyLog(`Finished ${ansiColors.green(taskName)} ${script} with ${matches ? matches.length : 0} errors.`);
+// 		for (const match of matches || []) {
+// 			fancyLog.error(match);
+// 		}
+// 	}
 
-	const tasks = scripts.map(({ script, outputRoot }) => {
-		return new Promise<void>((resolve, reject) => {
-			const args = [script];
-			if (isWatch) {
-				args.push('--watch');
-			}
-			if (outputRoot) {
-				args.push('--outputRoot', outputRoot);
-			}
-			const proc = cp.execFile(process.argv[0], args, {}, (error, _stdout, stderr) => {
-				if (error) {
-					return reject(error);
-				}
-				reporter(stderr, script);
-				if (stderr) {
-					return reject();
-				}
-				return resolve();
-			});
+// 	const tasks = scripts.map(({ script, outputRoot }) => {
+// 		return new Promise<void>((resolve, reject) => {
+// 			const args = [script];
+// 			if (isWatch) {
+// 				args.push('--watch');
+// 			}
+// 			if (outputRoot) {
+// 				args.push('--outputRoot', outputRoot);
+// 			}
+// 			const proc = cp.execFile(process.argv[0], args, {}, (error, _stdout, stderr) => {
+// 				if (error) {
+// 					return reject(error);
+// 				}
+// 				reporter(stderr, script);
+// 				if (stderr) {
+// 					return reject();
+// 				}
+// 				return resolve();
+// 			});
 
-			proc.stdout!.on('data', (data) => {
-				fancyLog(`${ansiColors.green(taskName)}: ${data.toString('utf8')}`);
-			});
-		});
-	});
-	return Promise.all(tasks);
-}
+// 			proc.stdout!.on('data', (data) => {
+// 				fancyLog(`${ansiColors.green(taskName)}: ${data.toString('utf8')}`);
+// 			});
+// 		});
+// 	});
+// 	return Promise.all(tasks);
+// }
 
-export async function buildExtensionMedia(isWatch: boolean, outputRoot?: string) {
-	return esbuildExtensions('esbuilding extension media', isWatch, esbuildMediaScripts.map(p => ({
-		script: path.join(extensionsPath, p),
-		outputRoot: outputRoot ? path.join(root, outputRoot, path.dirname(p)) : undefined
-	})));
+export async function buildExtensionMedia(_isWatch: boolean, _outputRoot?: string) {
+	return undefined;
+	// 	return Promise.all([
+	// 		// webpackExtensions('webpacking extension media', isWatch, webpackMediaConfigFiles.map(p => {
+	// 		// 	return {
+	// 		// 		configPath: path.join(extensionsPath, p),
+	// 		// 		outputRoot: outputRoot ? path.join(root, outputRoot, path.dirname(p)) : undefined
+	// 		// 	};
+	// 		// })),
+	// 		esbuildExtensions('esbuilding extension media', isWatch, esbuildMediaScripts.map(p => ({
+	// 			script: path.join(extensionsPath, p),
+	// 			outputRoot: outputRoot ? path.join(root, outputRoot, path.dirname(p)) : undefined
+	// 		}))),
+	// 	]);
 }

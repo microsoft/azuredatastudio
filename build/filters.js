@@ -234,10 +234,10 @@ module.exports.copyrightFilter = [
 	'!**/*.xlf',
 	'!**/*.dacpac',
 	'!**/*.bacpac',
-	'!**/*.py'
+	'!**/*.py',
+	'!build/**/*' // {{SQL CARBON EDIT}}
 ];
 
-'!build/**/*' // {{SQL CARBON EDIT}}
 module.exports.tsFormattingFilter = [
 	'src/**/*.ts',
 	'test/**/*.ts',
