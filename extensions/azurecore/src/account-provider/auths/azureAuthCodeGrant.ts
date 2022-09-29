@@ -157,7 +157,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 			response_type: 'code',
 			response_mode: 'query',
 			client_id: this.clientId,
-			redirect_uri: `${this.redirectUri}/redirect/`,
+			redirect_uri: `${this.redirectUri}:${serverPort}/redirect`,
 			state,
 			prompt: 'select_account',
 			code_challenge_method: 'S256',
@@ -170,7 +170,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		return {
 			authCode,
 			codeVerifier,
-			redirectUri: `${this.redirectUri}/redirect/`
+			redirectUri: `${this.redirectUri}:${serverPort}/redirect`
 		};
 
 	}
@@ -221,13 +221,11 @@ export class AzureAuthCodeGrant extends AzureAuth {
 			res.end();
 		});
 
-		server.on('/redirect', (req, reqUrl, res) => {
-			console.log('test');
-		});
-
 		return new Promise<string>((resolve, reject) => {
 			server.on('/redirect', (req, reqUrl, res) => {
-				console.log('test');
+				// await vscode.env.openExternal(vscode.Uri.parse(`http://localhost${url}`));
+				res.writeHead(302, { Location: `http://localhost/callback/${reqUrl.query.code}` });
+				res.end();
 			});
 
 			server.on('/callback', (req, reqUrl, res) => {
