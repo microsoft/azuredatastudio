@@ -157,7 +157,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 			response_type: 'code',
 			response_mode: 'query',
 			client_id: this.clientId,
-			redirect_uri: this.redirectUri,
+			redirect_uri: `${this.redirectUri}/redirect/`,
 			state,
 			prompt: 'select_account',
 			code_challenge_method: 'S256',
@@ -170,7 +170,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		return {
 			authCode,
 			codeVerifier,
-			redirectUri: this.redirectUri
+			redirectUri: `${this.redirectUri}/redirect/`
 		};
 
 	}
@@ -221,7 +221,15 @@ export class AzureAuthCodeGrant extends AzureAuth {
 			res.end();
 		});
 
+		server.on('/redirect', (req, reqUrl, res) => {
+			console.log('test');
+		});
+
 		return new Promise<string>((resolve, reject) => {
+			server.on('/redirect', (req, reqUrl, res) => {
+				console.log('test');
+			});
+
 			server.on('/callback', (req, reqUrl, res) => {
 				const state = reqUrl.query.state as string ?? '';
 				const code = reqUrl.query.code as string ?? '';
