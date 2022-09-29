@@ -597,7 +597,7 @@ However we always want it to be the width of the container it is resizing.
 	background-position: center;
 	background-repeat: no-repeat;
 	width: 16px;
-	height: auto;
+	height: 16px;
 }
 
 .vs-dark .eps-container .ep-properties-different,
@@ -607,9 +607,18 @@ However we always want it to be the width of the container it is resizing.
 	background-position: center;
 	background-repeat: no-repeat;
 	width: 16px;
-	height: auto;
+	height: 16px;
 }
 
+.eps-container .comparison-editor .plan-comparison-container .properties .properties-content .table-container .table .monaco-table .ui-widget .slick-viewport .grid-canvas .ui-widget-content.slick-row .slick-cell .grid-cell-value-container.icon.codicon.slick-icon-cell-content.codicon-chevron-left,
+.eps-container .comparison-editor .plan-comparison-container .properties .properties-content .table-container .table .monaco-table .ui-widget .slick-viewport .grid-canvas .ui-widget-content.slick-row .slick-cell .grid-cell-value-container.icon.codicon.slick-icon-cell-content.codicon-chevron-right {
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+	width: 16px;
+	height: 16px;
+	margin-left: -28px;
+}
 
 .eps-container .ep-properties-down-arrow {
 	background-image: url(../images/actionIcons/downArrow.svg);
@@ -617,7 +626,7 @@ However we always want it to be the width of the container it is resizing.
 	background-position: center;
 	background-repeat: no-repeat;
 	width: 16px;
-	height: auto;
+	height: 16px;
 }
 
 .vs-dark .eps-container .ep-properties-down-arrow,
@@ -627,7 +636,7 @@ However we always want it to be the width of the container it is resizing.
 	background-position: center;
 	background-repeat: no-repeat;
 	width: 16px;
-	height: auto;
+	height: 16px;
 }
 
 .eps-container .ep-properties-up-arrow {
@@ -636,7 +645,7 @@ However we always want it to be the width of the container it is resizing.
 	background-position: center;
 	background-repeat: no-repeat;
 	width: 16px;
-	height: auto;
+	height: 16px;
 }
 
 .vs-dark .eps-container .ep-properties-up-arrow,
@@ -646,7 +655,7 @@ However we always want it to be the width of the container it is resizing.
 	background-position: center;
 	background-repeat: no-repeat;
 	width: 16px;
-	height: auto;
+	height: 16px;
 }
 
 .eps-container .ep-top-operations {
