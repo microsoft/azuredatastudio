@@ -370,6 +370,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			const tenantResponse = await this.makeGetRequest(tenantUri, token.token);
 			if (tenantResponse.status !== 200) {
 				Logger.error(`Error with tenant response, status: ${tenantResponse.status} | status text: ${tenantResponse.statusText}`);
+				Logger.error(`Headers: ${JSON.stringify(tenantResponse.headers)}`);
 			}
 			const tenants: Tenant[] = tenantResponse.data.value.map((tenantInfo: TenantResponse) => {
 				Logger.verbose(`Tenant: ${tenantInfo.displayName}`);
