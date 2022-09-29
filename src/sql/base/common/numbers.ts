@@ -3,13 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.slick-header-columns .slick-header-column.slick-plugin-checkbox-select-column.ui-state-default,
-.slick-plugin-checkbox-select-column {
-	text-align: center;
-}
-
-.slick-plugin-checkbox-select-column > input,
-.slick-column-name > input[type='checkbox']{
-	margin: 0px;
-	vertical-align: middle;
+export function isNumber(text: string): boolean {
+	return !isNaN(parseInt(text)) && !isNaN(parseFloat(text));
 }

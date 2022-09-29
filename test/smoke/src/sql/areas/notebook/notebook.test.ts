@@ -164,7 +164,7 @@ export function setup(opts: minimist.ParsedArgs) {
 				await app.workbench.sqlNotebook.waitForJupyterErrorOutput();
 			});
 
-			it('can open ipynb file, run all, and save notebook with outputs', async function () {
+			it('can open ipynb file, run all, and save notebook with outputs @UNSTABLE@', async function () {
 				const app = this.app as Application;
 				await openAndRunNotebook(app, 'hello.ipynb');
 			});

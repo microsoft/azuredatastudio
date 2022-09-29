@@ -24,12 +24,12 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 
 	public constructor(
 		protected capabilitiesService: ICapabilitiesService,
-		model: string | azdata.IConnectionProfile | undefined
+		model: string | azdata.IConnectionProfile | azdata.connection.ConnectionProfile | undefined
 	) {
 		super();
 		// we can't really do a whole lot if we don't have a provider
-		if (isString(model) || (model && model.providerName)) {
-			this.providerName = isString(model) ? model : model.providerName;
+		if (model) {
+			this.providerName = isString(model) ? model : 'providerName' in model ? model.providerName : model.providerId;
 
 			if (!isString(model)) {
 				if (model.options && this.serverCapabilities) {
@@ -56,7 +56,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	 *
 	 * This handles the case where someone hasn't passed in a valid property bag, but doesn't cause errors when
 	 */
-	private updateSpecialValueType(typeName: SettableProperty, model: azdata.IConnectionProfile): void {
+	private updateSpecialValueType(typeName: SettableProperty, model: azdata.IConnectionProfile | azdata.connection.ConnectionProfile): void {
 		if (!this[typeName]) {
 			this[typeName] = model[typeName]!;
 		}

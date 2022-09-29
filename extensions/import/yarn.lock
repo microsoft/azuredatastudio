@@ -1699,7 +1699,7 @@ vscode-extension-telemetry@0.4.2:
 vscode-jsonrpc@3.5.0:
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/vscode-jsonrpc/-/vscode-jsonrpc-3.5.0.tgz#87239d9e166b2d7352245b8a813597804c1d63aa"
-  integrity sha1-hyOdnhZrLXNSJFuKgTWXgEwdY6o=
+  integrity sha512-LeE9LS1IOIRDZy5Xugrbk2tKeMa64vkRODrXPZbwyn2l/Q0e/jyYq8ze/Lo96sjOFiRe3HHbTVN39Ta8KN2RpA==
 
 vscode-languageclient@3.5.1:
   version "3.5.1"
@@ -1719,7 +1719,7 @@ vscode-languageserver-protocol@3.5.1:
 vscode-languageserver-types@3.5.0:
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/vscode-languageserver-types/-/vscode-languageserver-types-3.5.0.tgz#e48d79962f0b8e02de955e3f524908e2b19c0374"
-  integrity sha1-5I15li8LjgLelV4/UkkI4rGcA3Q=
+  integrity sha512-D4rUfu/oKYdc9Tmec0nEfedj+uXO2tZHR+eoHs9rE9G/QpRyZaHuug8ZUNGTGdO+ALLGgenL6bRpY8y3J9acHg==
 
 vscode-nls@^3.2.1:
   version "3.2.5"
