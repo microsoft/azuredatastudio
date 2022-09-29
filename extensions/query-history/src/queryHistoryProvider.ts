@@ -11,6 +11,7 @@ import { CAPTURE_ENABLED_CONFIG_SECTION, ITEM_SELECTED_COMMAND_ID, PERSIST_HISTO
 import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
+import * as loc from './localizedConstants';
 
 const STORAGE_IV_KEY = 'queryHistory.storage-iv';
 const STORAGE_KEY_KEY = 'queryHistory.storage-key';
@@ -134,6 +135,7 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 			// Ignore ENOENT errors, those are expected if the storage file doesn't exist (on first run or if results aren't being persisted)
 			if (err.code !== 'ENOENT') {
 				console.error(`Error deserializing stored history items. ${err}`);
+				void vscode.window.showWarningMessage(loc.errorLoading(err));
 				// Rename the file to avoid attempting to load a potentially corrupted or unreadable file every time we start up, we'll make
 				// a new one next time we write the history file
 				try {

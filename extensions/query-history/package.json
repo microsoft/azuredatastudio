@@ -26,9 +26,7 @@
       "supported": true
     }
   },
-  "extensionDependencies": [
-    "Microsoft.mssql"
-  ],
+  "extensionDependencies": [ ],
   "contributes": {
     "configuration": [
       {
@@ -193,7 +191,9 @@
       ]
     }
   },
-  "dependencies": {},
+  "dependencies": {
+    "vscode-nls": "^4.1.2"
+  },
   "devDependencies": {
     "@microsoft/azdata-test": "^2.0.3",
     "@microsoft/vscodetestcover": "^1.2.1",
