@@ -277,7 +277,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 
 			this._table = new Table<Slick.SlickData>(this._inputContainer.nativeElement, { dataProvider: this._tableData, columns: this._tableColumns }, options);
 			this._table.setData(this._tableData);
-			this._table.setSelectionModel(new RowSelectionModel({ selectActiveRow: false }));
+			this._table.setSelectionModel(new RowSelectionModel({ selectActiveRow: true }));
 
 			this._register(this._table);
 			this._register(attachTableStyler(this._table, this.themeService));
