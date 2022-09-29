@@ -285,6 +285,23 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		}));
 	}
 
+	public sortPropertiesByImportance(props: Map<string, TablePropertiesMapEntry>): Map<string, TablePropertiesMapEntry> {
+		return new Map([...props.entries()].sort((a, b) => {
+			if (!a[1]?.displayOrder && !b[1]?.displayOrder) {
+				return 0;
+			}
+			else if (!a[1]?.displayOrder) {
+				return -1;
+			}
+			else if (!b[1]?.displayOrder) {
+				return 1;
+			}
+			else {
+				return a[1].displayOrder - b[1].displayOrder;
+			}
+		}));
+	}
+
 	/**
 	 * This method will sort properties by having those with different values appear at the top,
 	 * and similar values appearing at the bottom of the table.
@@ -303,7 +320,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 	 * @param props Map of properties that will be organized.
 	 * @returns A new map with different values appearing at the top and similar values appearing at the bottom.
 	 */
-	public sortPropertiesByDisplayValueEquivalency(props: Map<string, TablePropertiesMapEntry>): Map<string, TablePropertiesMapEntry> {
+	public sortPropertiesByDisplayValueEquivalency(props: Map<string, TablePropertiesMapEntry>, sortProperties: (props: Map<string, TablePropertiesMapEntry>) => Map<string, TablePropertiesMapEntry>): Map<string, TablePropertiesMapEntry> {
 		let unequalProperties: Map<string, TablePropertiesMapEntry> = new Map();
 		let equalProperties: Map<string, TablePropertiesMapEntry> = new Map();
 
@@ -319,6 +336,9 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 				unequalProperties.set(rowKey, rowEntry);
 			}
 		});
+
+		unequalProperties = sortProperties(unequalProperties);
+		equalProperties = sortProperties(equalProperties);
 
 		let map: Map<string, TablePropertiesMapEntry> = new Map();
 		unequalProperties.forEach((v, k) => {
@@ -378,13 +398,13 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 
 		switch (this.sortType) {
 			case PropertiesSortType.DisplayOrder:
-				propertiesMap = this.sortPropertiesByDisplayValueEquivalency(propertiesMap);
+				propertiesMap = this.sortPropertiesByDisplayValueEquivalency(propertiesMap, this.sortPropertiesByImportance);
 				break;
 			case PropertiesSortType.Alphabetical:
-				propertiesMap = this.sortPropertiesAlphabetically(propertiesMap);
+				propertiesMap = this.sortPropertiesByDisplayValueEquivalency(propertiesMap, this.sortPropertiesAlphabetically);
 				break;
 			case PropertiesSortType.ReverseAlphabetical:
-				propertiesMap = this.sortPropertiesReverseAlphabetically(propertiesMap);
+				propertiesMap = this.sortPropertiesByDisplayValueEquivalency(propertiesMap, this.sortPropertiesReverseAlphabetically);
 				break;
 		}
 
