@@ -308,17 +308,15 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		let equalProperties: Map<string, TablePropertiesMapEntry> = new Map();
 
 		[...props.entries()].forEach(prop => {
-			if (prop.length === 2) {
-				const [rowKey, rowEntry] = prop;
-				const primaryProp = rowEntry.primaryProp;
-				const secondaryProp = rowEntry.secondaryProp;
+			const [rowKey, rowEntry] = prop;
+			const primaryProp = rowEntry.primaryProp;
+			const secondaryProp = rowEntry.secondaryProp;
 
-				if (primaryProp?.displayValue.localeCompare(secondaryProp?.displayValue) === 0) {
-					equalProperties.set(rowKey, rowEntry);
-				}
-				else {
-					unequalProperties.set(rowKey, rowEntry);
-				}
+			if (primaryProp?.displayValue.localeCompare(secondaryProp?.displayValue) === 0) {
+				equalProperties.set(rowKey, rowEntry);
+			}
+			else {
+				unequalProperties.set(rowKey, rowEntry);
 			}
 		});
 
