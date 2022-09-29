@@ -5,6 +5,7 @@
 
 import { ExecutionPlanPropertiesViewBase, PropertiesSortType } from 'sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { isNumber } from 'sql/base/common/numbers';
 import * as azdata from 'azdata';
 import { localize } from 'vs/nls';
 import { iconCssFormatter, textFormatter } from 'sql/base/browser/ui/table/formatters';
@@ -39,19 +40,19 @@ function getRightOperationLabel(target: string): string {
 	return localize('nodePropertyViewRightOperation', 'Right operation: {0}', target);
 }
 
-function getTopPlanIsGreaterThanBottomPlanSummaryPointTemplate(rowName: string): string {
+function getTopPlanIsGreaterThanBottomPlanSummaryTextTemplate(rowName: string): string {
 	return localize('nodePropertyViewTopPlanGreaterThanBottomPlan', '{0} is greater for the top plan than it is for the bottom plan.', rowName);
 }
 
-function getBottomPlanIsGreaterThanTopPlanSummaryPointTemplate(rowName: string): string {
+function getBottomPlanIsGreaterThanTopPlanSummaryTextTemplate(rowName: string): string {
 	return localize('nodePropertyViewBottomPlanGreaterThanTopPlan', '{0} is greater for the bottom plan than it is for the top plan.', rowName);
 }
 
-function getLeftPlanIsGreaterThanRightPlanSummaryPointTemplate(rowName: string): string {
+function getLeftPlanIsGreaterThanRightPlanSummaryTextTemplate(rowName: string): string {
 	return localize('nodePropertyViewLeftPlanGreaterThanRightPlan', '{0} is greater for the left plan than it is for the right plan.', rowName);
 }
 
-function getRightPlanIsGreaterThanLeftPlanSummaryPointTemplate(rowName: string): string {
+function getRightPlanIsGreaterThanLeftPlanSummaryTextTemplate(rowName: string): string {
 	return localize('nodePropertyViewRightPlanGreaterThanLeftPlan', '{0} is greater for the right plan than it is for the left plan.', rowName);
 }
 
@@ -176,6 +177,17 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		this.populateTable(columns, tableRows);
 	}
 
+	/**
+	 * This method returns an array of strings that that will make up the properties summary. The properties summary
+	 * will appear above the properties table when execution plans are being compared.
+	 * Each segment of that summary is in the following generic format:
+	 *
+	 * <row-name> is greater for the top plan than it is for the bottom plan.
+	 * <row-name> is greater for the bottom plan than it is for the top plan.
+	 *
+	 * @param tableRows The table rows that will appear in the properties table.
+	 * @returns The string array containing the segments of the summary.
+	 */
 	private getExpensivePropertySummary(tableRows: { [key: string]: string }[]): string[] {
 		let summary: string[] = [];
 
@@ -189,23 +201,23 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 					const MAX_PROPERTY_SUMMARY_LENGTH = 3;
 
 					for (let i = 0; i < primaryText.length && summary.length < MAX_PROPERTY_SUMMARY_LENGTH; ++i) {
-						if (this.isNumber(primaryText[i]) && this.isNumber(secondaryTitle[i])) {
+						if (isNumber(primaryText[i]) && isNumber(secondaryTitle[i])) {
 							const primaryValue = Number(primaryText);
 							const secondaryValue = Number(secondaryTitle);
 
-							let summaryPoint: string;
+							let summaryText: string;
 							if (primaryValue > secondaryValue) {
-								summaryPoint = this._orientation === ExecutionPlanCompareOrientation.Horizontal
-									? getTopPlanIsGreaterThanBottomPlanSummaryPointTemplate(rowName)
-									: getLeftPlanIsGreaterThanRightPlanSummaryPointTemplate(rowName);
+								summaryText = this._orientation === ExecutionPlanCompareOrientation.Horizontal
+									? getTopPlanIsGreaterThanBottomPlanSummaryTextTemplate(rowName)
+									: getLeftPlanIsGreaterThanRightPlanSummaryTextTemplate(rowName);
 							}
 							else {
-								summaryPoint = this._orientation === ExecutionPlanCompareOrientation.Horizontal
-									? getBottomPlanIsGreaterThanTopPlanSummaryPointTemplate(rowName)
-									: getRightPlanIsGreaterThanLeftPlanSummaryPointTemplate(rowName);
+								summaryText = this._orientation === ExecutionPlanCompareOrientation.Horizontal
+									? getBottomPlanIsGreaterThanTopPlanSummaryTextTemplate(rowName)
+									: getRightPlanIsGreaterThanLeftPlanSummaryTextTemplate(rowName);
 							}
 
-							summary.push(summaryPoint);
+							summary.push(summaryText);
 						}
 					}
 				}
@@ -213,14 +225,6 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		});
 
 		return summary;
-	}
-
-	private isNumber(text: string): boolean {
-		if (typeof text !== 'string') {
-			return false;
-		}
-
-		return !isNaN(parseInt(text)) && !isNaN(parseFloat(text));
 	}
 
 	private getPropertyTableColumns() {
@@ -280,6 +284,24 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		}));
 	}
 
+	/**
+	 * This method will sort properties by having those with different values appear at the top,
+	 * and similar values appearing at the bottom of the table.
+	 *
+	 * An example of this sort of sorting looks like this:
+	 *
+	 * Name							Value (Top plan)		Value (Bottom Plan)
+	 * -------------------------------------------------------------------------
+	 * Compile Time					38						37						<diff>
+	 * CompileCpu					38						37						<diff>
+	 * CompileMemory				5816					6424					<diff>
+	 * Estimated Number of Rows		1000					1000					<same>
+	 * Optimization Level			FULL					FULL					<same>
+	 * RetrievedFromCache			false					false					<same>
+	 *
+	 * @param props Map of properties that will be organized.
+	 * @returns A new map with different values appearing at the top and similar values appearing at the bottom.
+	 */
 	public sortPropertiesByDisplayValueEquivalency(props: Map<string, TablePropertiesMapEntry>): Map<string, TablePropertiesMapEntry> {
 		let unequalProperties: Map<string, TablePropertiesMapEntry> = new Map();
 		let equalProperties: Map<string, TablePropertiesMapEntry> = new Map();
