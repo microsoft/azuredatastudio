@@ -224,7 +224,15 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		return new Promise<string>((resolve, reject) => {
 			server.on('/redirect', (req, reqUrl, res) => {
 				const state = reqUrl.query.state as string ?? '';
-				const port = state.split(',')[0];
+				const split = state.split(',');
+				if (split.length !== 2) {
+					res.writeHead(400, { 'content-type': 'text/html' });
+					res.write(localize('azureAuth.stateError', 'Authentication failed due to a state mismatch, please close ADS and try again.'));
+					res.end();
+					reject(new Error('State mismatch'));
+					return;
+				}
+				const port = split[0];
 				res.writeHead(302, { Location: `http://127.0.0.1:${port}/callback${reqUrl.search}` });
 				res.end();
 			});
