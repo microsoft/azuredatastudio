@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!./media/errorMessageDialog';
+import 'vs/css!./media/connectionPasswordResetDialog';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { HideReason, Modal } from 'sql/workbench/browser/modal/modal';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
@@ -30,10 +30,8 @@ export class ConnectionPasswordResetDialog extends Modal {
 
 	private _body?: HTMLElement;
 	private _okButton?: Button;
-	private _copyButton?: Button;
 	private _actionButtons: Button[] = [];
 	private _actions: IAction[] = [];
-	private _messageDetails?: string;
 	private _okLabel: string;
 	private _closeLabel: string;
 
@@ -49,7 +47,7 @@ export class ConnectionPasswordResetDialog extends Modal {
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
 	) {
-		super('', TelemetryKeys.ModalDialogName.ErrorMessage, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'normal', hasTitleIcon: true });
+		super('', TelemetryKeys.ModalDialogName.ErrorMessage, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'normal' });
 		this._okLabel = localize('ConnectionPasswordResetDialog.ok', "OK");
 		this._closeLabel = localize('ConnectionPasswordResetDialog.close', "Close");
 	}
@@ -112,14 +110,8 @@ export class ConnectionPasswordResetDialog extends Modal {
 		this.hide(hideReason);
 	}
 
-	public open(username: string, headerTitle: string, message: string, messageDetails?: string, actions?: IAction[]) {
+	public open(username: string, headerTitle: string, actions?: IAction[]) {
 		this.title = headerTitle;
-		this._messageDetails = messageDetails;
-		if (this._messageDetails) {
-			this._copyButton!.element.style.visibility = 'visible';
-		} else {
-			this._copyButton!.element.style.visibility = 'hidden';
-		}
 		this._bodyContainer.setAttribute('aria-description', passwordResetMessage);
 		this.resetActions();
 		if (actions && actions.length > 0) {

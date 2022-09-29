@@ -503,7 +503,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			this._passwordResetDialog = this._instantiationService.createInstance(ConnectionPasswordResetDialog);
 			this._passwordResetDialog.render();
 		}
-		this._passwordResetDialog.open(connection.userName, `Reset the password`, `Password needs to be reset according to SQL Server policy`);
+		this._passwordResetDialog.open(connection.userName, `Set a new password`);
 	}
 
 	private showErrorDialog(severity: Severity, headerTitle: string, message: string, messageDetails?: string): void {
