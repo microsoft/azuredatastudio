@@ -13,11 +13,12 @@ import { isString } from 'vs/base/common/types';
 import { removeLineBreaks } from 'sql/base/common/strings';
 import * as DOM from 'vs/base/browser/dom';
 import { InternalExecutionPlanElement } from 'sql/workbench/contrib/executionPlan/browser/azdataGraphView';
-import { executionPlanComparisonPropertiesDifferent, executionPlanComparisonPropertiesUpArrow, executionPlanComparisonPropertiesDownArrow } from 'sql/workbench/contrib/executionPlan/browser/constants';
+import { executionPlanComparisonPropertiesDifferent } from 'sql/workbench/contrib/executionPlan/browser/constants';
 import * as sqlExtHostType from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
+import { Codicon } from 'vs/base/common/codicons';
 
 export enum ExecutionPlanCompareOrientation {
 	Horizontal = 'horizontal',
@@ -411,8 +412,8 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 							break;
 						case sqlExtHostType.executionPlan.ExecutionPlanGraphElementPropertyDataType.Number:
 							diffIcon = (parseFloat(v.primaryProp.displayValue) > parseFloat(v.secondaryProp.displayValue))
-								? { iconClass: executionPlanComparisonPropertiesDownArrow, title: greaterThanTitle }
-								: { iconClass: executionPlanComparisonPropertiesUpArrow, title: lessThanTitle };
+								? { iconClass: Codicon.chevronRight.classNames, title: greaterThanTitle }
+								: { iconClass: Codicon.chevronLeft.classNames, title: lessThanTitle };
 
 							break;
 						case sqlExtHostType.executionPlan.ExecutionPlanGraphElementPropertyDataType.String:
