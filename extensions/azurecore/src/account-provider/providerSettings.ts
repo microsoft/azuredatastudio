@@ -49,7 +49,7 @@ const publicAzureSettings: ProviderSettings = {
 			},
 			armResource: {
 				id: SettingIds.arm,
-				endpoint: 'https://management.azure.com',
+				endpoint: 'https://management-preview.azure.com',
 				azureResourceId: AzureResource.ResourceManagement
 			},
 			sqlResource: {
