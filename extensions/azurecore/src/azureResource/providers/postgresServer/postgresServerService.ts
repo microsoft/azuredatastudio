@@ -32,7 +32,7 @@ export class PostgresServerService extends ResourceServiceBase<DbServerGraphData
 			defaultDatabaseName: 'postgres',
 			subscription: {
 				id: resource.subscriptionId,
-				name: resource.subscriptionName
+				name: resource.subscriptionName || ''
 			},
 			tenant: resource.tenantId,
 			resourceGroup: resource.resourceGroup

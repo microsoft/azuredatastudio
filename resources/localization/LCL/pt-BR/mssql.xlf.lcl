@@ -1905,6 +1905,33 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/mssql/dist/tableDesigner/tableDesigner.tableDesigner.no" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[No]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Não]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/dist/tableDesigner/tableDesigner.tableDesigner.turnOnPreloadingMessage" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Do you want to reduce the table designer load time by enabling the database model preloading? The database model will be preloaded when you expand the database node in object explorer.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Deseja reduzir o tempo de carregamento do designer de tabela habilitando o pré-carregamento do modelo de banco de dados? O modelo de banco de dados será pré-carregado quando você expandir o nó de banco de dados no explorador de objetos.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/dist/tableDesigner/tableDesigner.tableDesigner.yes" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Yes]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Sim]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/mssql/dist/telemetry.serviceCrashMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} component exited unexpectedly. Please restart Azure Data Studio.]]></Val>
@@ -3084,12 +3111,24 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/mssql/package.mssql.query.maxCharsToStore" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Maximum number of characters/bytes to store for each value in character/binary columns after running a query. Default value: 65,535. Valid value range: 1 to 2,147,483,647.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Máximo de caracteres/bytes a serem armazenados em cada valor nas colunas caracter/binário depois de executar uma consulta. Valor padrão: 65.535. Intervalo de valor válido: 1 a 2.147.483.647.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/mssql/package.mssql.query.maxXmlCharsToStore" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Number of XML characters to store after running a query]]></Val>
+          <Val><![CDATA[Maximum number of characters to store for each value in XML columns after running a query. Default value: 2,097,152. Valid value range: 1 to 2,147,483,647.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Número de caracteres XML a serem armazenados após a execução de uma consulta]]></Val>
+            <Val><![CDATA[Máximo de caracteres a serem armazenados em cada valor nas colunas XML depois de executar uma consulta. Valor padrão: 2.097.152. Intervalo de valor válido: 1 a 2.147.483.647.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Number of XML characters to store after running a query]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3188,6 +3227,15 @@
           <Val><![CDATA[Enable SET XACT_ABORT ON option]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Habilitar a opção SET XACT_ABORT ON]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/package.mssql.tableDesigner.preloadDatabaseModel" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Whether to preload the database model when the database node in the object explorer is expanded. When enabled, the loading time of table designer can be reduced. Note: You might see higher than normal memory usage if you need to expand a lot of database nodes.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Se o modelo de banco de dados deve ser pré-carregado quando o nó do banco de dados no explorador de objetos for expandido. Quando ativado, o tempo de carregamento do designer de tabela pode ser reduzido. Nota: Você pode ver um uso de memória maior do que o normal se precisar expandir muitos nós de banco de dados.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

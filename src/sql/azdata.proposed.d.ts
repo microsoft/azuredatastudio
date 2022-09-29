@@ -125,7 +125,7 @@ declare module 'azdata' {
 		}
 
 		/**
-		 * An event that is emitted when a [notebook document](#NotebookDocument) is closed.
+		 * An event that is emitted when a {@link NotebookDocument} is closed.
 		 */
 		export const onDidCloseNotebookDocument: vscode.Event<NotebookDocument>;
 
@@ -477,35 +477,6 @@ declare module 'azdata' {
 		type?: ExtensionNodeType;
 	}
 
-	export interface AccountDisplayInfo {
-		email?: string;
-		name?: string;
-	}
-
-	export interface AccountProvider {
-		/**
-		 * Generates a security token for the provided account and tenant
-		 * @param account The account to generate a security token for
-		 * @param resource The resource to get the token for
-		 * @return Promise to return a security token object
-		 */
-		getAccountSecurityToken(account: Account, tenant: string, resource: AzureResource): Thenable<accounts.AccountSecurityToken | undefined>;
-	}
-
-	export interface AccountKey {
-		/**
-		 * A version string for an account
-		 */
-		accountVersion?: string;
-	}
-
-	export interface Account {
-		/**
-		 * Specifies if an account should be deleted
-		 */
-		delete?: boolean;
-	}
-
 	export namespace workspace {
 		/**
 		 * Creates and enters a workspace at the specified location
@@ -537,6 +508,17 @@ declare module 'azdata' {
 		 * Append data to an existing table data.
 		 */
 		appendData(data: any[][]): Thenable<void>;
+	}
+
+	export interface ListViewOption {
+		/**
+		 * The optional accessibility label for the column. Default is the label for the list view option.
+		 */
+		ariaLabel?: string;
+		/**
+		 * Specify the icon for the option. The value could the path to the icon or and ADS icon defined in {@link SqlThemeIcon}.
+		 */
+		icon?: IconPath;
 	}
 
 	export interface IconColumnCellValue {
@@ -658,15 +640,6 @@ declare module 'azdata' {
 		 * Notify clients that the URI for a connection has been changed.
 		 */
 		connectionUriChanged(newUri: string, oldUri: string): Thenable<void>;
-	}
-
-	export namespace accounts {
-		export interface AccountSecurityToken {
-			/**
-			 * Access token expiry timestamp
-			 */
-			expiresOn?: number
-		}
 	}
 
 	export enum DataProviderType {
@@ -806,6 +779,7 @@ declare module 'azdata' {
 			ForeignKeys = 'foreignKeys',
 			CheckConstraints = 'checkConstraints',
 			Indexes = 'indexes',
+			PrimaryKey = 'primaryKey',
 			PrimaryKeyName = 'primaryKeyName',
 			PrimaryKeyDescription = 'primaryKeyDescription',
 			PrimaryKeyColumns = 'primaryKeyColumns'
@@ -934,6 +908,10 @@ declare module 'azdata' {
 			 */
 			additionalPrimaryKeyProperties?: DesignerDataPropertyInfo[];
 			/**
+			 * Components to be placed under the pre-defined tabs.
+			 */
+			additionalComponents?: DesignerDataPropertyWithTabInfo[];
+			/**
 			 * Whether to use advanced save mode. for advanced save mode, a publish changes dialog will be opened with preview of changes.
 			 */
 			useAdvancedSaveMode: boolean;
@@ -1003,6 +981,16 @@ declare module 'azdata' {
 			 * The properties of the component.
 			 */
 			componentProperties: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties;
+		}
+
+		/**
+		 * The definition of the property in the designer with tab info.
+		 */
+		export interface DesignerDataPropertyWithTabInfo extends DesignerDataPropertyInfo {
+			/**
+			 * The tab info where this property belongs to.
+			 */
+			tab: TableProperty.Columns | TableProperty.PrimaryKey | TableProperty.ForeignKeys | TableProperty.CheckConstraints | TableProperty.Indexes;
 		}
 
 		/**
@@ -1226,6 +1214,14 @@ declare module 'azdata' {
 			 * Format (mimeType) of the report
 			 */
 			mimeType: string;
+			/**
+			 * Whether user confirmation is required, the default value is false.
+			 */
+			requireConfirmation?: boolean;
+			/**
+			 * The confirmation text.
+			 */
+			confirmationText?: string;
 			/**
 			 * The table schema validation error.
 			 */

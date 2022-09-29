@@ -2,7 +2,7 @@
   "name": "arc",
   "displayName": "%arc.displayName%",
   "description": "%arc.description%",
-  "version": "1.5.2",
+  "version": "1.6.0",
   "publisher": "Microsoft",
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/extension.png",
@@ -758,7 +758,8 @@
                               "regex": "^[a-z]([-a-z0-9]{0,11}[a-z0-9])?$",
                               "description": "%arc.sql.invalid.instance.name%"
                             }
-                          ]
+                          ],
+                          "placeHolder": "%arc.sql.instance.name.placeholder%"
                         },
                         {
                           "label": "%arc.sql.username%",
@@ -768,10 +769,11 @@
                           "validations": [
                             {
                               "type": "regex_match",
-                              "regex": "^(?!sa$)",
+                              "regex": "^(?!system$|sa$).*$",
                               "description": "%arc.sql.invalid.username%"
                             }
-                          ]
+                          ],
+                          "placeHolder": "%arc.sql.username.placeholder%"
                         },
                         {
                           "label": "%arc.password%",
@@ -1378,7 +1380,24 @@
                               "description": "%arc.postgres.server.name.validation.description%"
                             }
                           ],
-                          "required": true
+                          "required": true,
+                          "placeHolder": "%arc.postgres.server.name.placeholder%"
+                        },
+                        {
+                          "label": "%arc.postgres.server.username%",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_USERNAME",
+                          "type": "text",
+                          "required": true,
+                          "validations": [
+                            {
+                              "type": "regex_match",
+                              "regex": "^(?!system$).*$",
+                              "description": "%arc.postgres.server.invalid.username%"
+                            }
+                          ],
+                          "defaultValue": "",
+                          "enabled": true,
+                          "placeHolder": "%arc.postgres.server.username.placeholder%"
                         },
                         {
                           "label": "%arc.password%",
@@ -1390,6 +1409,17 @@
                           "required": true
                         },
                         {
+                          "label": "%arc.postgres.server.service.type%",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_SERVICE_TYPE",
+                          "type": "options",
+                          "required": true,
+                          "options": {
+                            "values": ["NodePort", "LoadBalancer"],
+                            "defaultValue": "NodePort",
+                            "optionsType": "radio"
+                          }
+                        },
+                        {
                           "label": "%arc.postgres.server.port%",
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_PORT",
                           "type": "number",
@@ -1399,9 +1429,15 @@
                               "description": "%should.be.integer%"
                             }
                           ],
-                          "defaultValue": "5432",
                           "min": 1,
                           "max": 65535
+                        },
+                        {
+                          "type": "checkbox",
+                          "label": "%arc.postgres.server.dev.use.label%",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_DEV_USE",
+                          "description": "%arc.postgres.server.dev.use.description%",
+                          "defaultValue": false
                         }
                       ]
                     },
@@ -1473,8 +1509,7 @@
                           "label": "%arc.storage-class.data.label%",
                           "description": "%arc.postgres.storage-class.data.description%",
                           "variableName": "AZDATA_NB_VAR_POSTGRES_STORAGE_CLASS_DATA",
-                          "type": "kube_storage_class",
-                          "required": true
+                          "type": "kube_storage_class"
                         },
                         {
                           "label": "%arc.postgres.server.volume.size.data.label%",
@@ -1488,28 +1523,12 @@
                           "label": "%arc.storage-class.logs.label%",
                           "description": "%arc.postgres.storage-class.logs.description%",
                           "variableName": "AZDATA_NB_VAR_POSTGRES_STORAGE_CLASS_LOGS",
-                          "type": "kube_storage_class",
-                          "required": true
+                          "type": "kube_storage_class"
                         },
                         {
                           "label": "%arc.postgres.server.volume.size.logs.label%",
                           "description": "%arc.postgres.server.volume.size.logs.description%",
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_VOLUME_SIZE_LOGS",
-                          "type": "number",
-                          "defaultValue": "5",
-                          "min": 1
-                        },
-                        {
-                          "label": "%arc.storage-class.backups.label%",
-                          "description": "%arc.postgres.storage-class.backups.description%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_STORAGE_CLASS_BACKUPS",
-                          "type": "kube_storage_class",
-                          "required": true
-                        },
-                        {
-                          "label": "%arc.postgres.server.volume.size.backups.label%",
-                          "description": "%arc.postgres.server.volume.size.backups.description%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_VOLUME_SIZE_BACKUPS",
                           "type": "number",
                           "defaultValue": "5",
                           "min": 1
@@ -1580,10 +1599,8 @@
     "@types/sinon": "^9.0.4",
     "@types/uuid": "^8.3.0",
     "@types/yamljs": "^0.2.31",
-    "@microsoft/azdata-test": "^1.5.1",
+    "@microsoft/azdata-test": "^2.0.3",
     "mocha": "^7.1.1",
-    "mocha-junit-reporter": "^1.17.0",
-    "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.3",
     "sinon": "^9.0.2",
     "typemoq": "2.1.0",

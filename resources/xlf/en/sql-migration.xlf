@@ -331,7 +331,7 @@ This may take some time.</source>
       <source xml:lang="en">Mode</source>
     </trans-unit>
     <trans-unit id="sql.migration.dashboard.description">
-      <source xml:lang="en">Determine the migration readiness of your SQL Server instances, identify a recommended Azure SQL target, and complete the migration of your SQL Server instance to Azure SQL Managed Instance or SQL Server on Azure Virtual Machines.</source>
+      <source xml:lang="en">Determine the migration readiness of your SQL Server instances, identify a recommended Azure SQL target, and complete the migration of your SQL Server instance to Azure SQL Managed Instance, SQL Server on Azure Virtual Machines or Azure SQL Database (PREVIEW).</source>
     </trans-unit>
     <trans-unit id="sql.migration.dashboard.help.description.dmsGuide">
       <source xml:lang="en">A hub of migration articles that provides step-by-step guidance for migrating and modernizing your data assets in Azure.</source>
@@ -341,6 +341,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.dashboard.help.description.migrateUsingADS">
       <source xml:lang="en">The Azure SQL Migration extension for Azure Data Studio provides capabilities to assess, get right-sized Azure recommendations and migrate SQL Server databases to Azure.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.dashboard.help.description.sqldb">
+      <source xml:lang="en">A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Database (PREVIEW).</source>
     </trans-unit>
     <trans-unit id="sql.migration.dashboard.help.description.vm">
       <source xml:lang="en">A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises) to SQL Server on Azure Virtual Machines with minimal downtime.</source>
@@ -353,6 +356,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.dashboard.help.link.migrateUsingADS">
       <source xml:lang="en">Migrate databases using Azure Data Studio</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.dashboard.help.link.sqldb">
+      <source xml:lang="en">Tutorial:  Migrate to SQL Server on Azure SQL Database (offline) - (PREVIEW)</source>
     </trans-unit>
     <trans-unit id="sql.migration.dashboard.help.link.vm">
       <source xml:lang="en">Tutorial:  Migrate to SQL Server on Azure Virtual Machines (online)</source>
@@ -368,6 +374,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.dashboard.title">
       <source xml:lang="en">Azure SQL Migration</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.data.source.configuration.page.title">
+      <source xml:lang="en">Data source configuration</source>
     </trans-unit>
     <trans-unit id="sql.migration.data.uploaded.info">
       <source xml:lang="en">Comparison of the actual amount of data read from the source and the actual amount of data uploaded to the target.</source>
@@ -437,9 +446,6 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.database.page.description">
       <source xml:lang="en">Select the location of the database backups to use during migration.</source>
-    </trans-unit>
-    <trans-unit id="sql.migration.database.page.title">
-      <source xml:lang="en">Database backup</source>
     </trans-unit>
     <trans-unit id="sql.migration.database.status.column">
       <source xml:lang="en">Migration status</source>
@@ -679,7 +685,7 @@ This may take some time.</source>
       <source xml:lang="en">To continue, select a valid virtual machine.</source>
     </trans-unit>
     <trans-unit id="sql.migration.ir.page.description">
-      <source xml:lang="en">Azure Database Migration Service orchestrates database migration activities and tracks their progress. You can select an existing Database Migration Service as an Azure SQL target if you have created one previously, or create a new one below.</source>
+      <source xml:lang="en">Azure Database Migration Service orchestrates database migration activities and tracks their progress. You can select an existing Database Migration Service if you have created one previously, or create a new one below.</source>
     </trans-unit>
     <trans-unit id="sql.migration.ir.page.sql.migration.service.not.found">
       <source xml:lang="en">No Database Migration Service found. Create a new one.</source>
@@ -695,6 +701,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.ir.setup.step3">
       <source xml:lang="en">Step 3: Click on 'Test connection' button to check the connection between Azure Database Migration Service and integration runtime</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.issue.aria.label">
+      <source xml:lang="en">Blocking Issue: {0}</source>
     </trans-unit>
     <trans-unit id="sql.migration.issues">
       <source xml:lang="en">Issues</source>
@@ -964,16 +973,19 @@ This may take some time.</source>
       <source xml:lang="en">User account</source>
     </trans-unit>
     <trans-unit id="sql.migration.pre.req.1">
-      <source xml:lang="en">Azure account details</source>
+      <source xml:lang="en">An Azure account (not required for assessment or SKU recommendation functionality)</source>
     </trans-unit>
     <trans-unit id="sql.migration.pre.req.2">
-      <source xml:lang="en">Azure SQL Managed Instance or SQL Server on Azure Virtual Machine</source>
+      <source xml:lang="en">A source SQL Server database(s) running on on-premises, or on SQL Server on Azure Virtual Machine or any virtual machine running in the cloud (private, public).</source>
     </trans-unit>
     <trans-unit id="sql.migration.pre.req.3">
-      <source xml:lang="en">Backup location details</source>
+      <source xml:lang="en">An Azure SQL Managed Instance, SQL Server on Azure Virtual Machine, or Azure SQL Database (PREVIEW) to migrate your database(s) to.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.pre.req.4">
+      <source xml:lang="en">Your database backup location details, either a network file share or an Azure Blob Storage container (not required for Azure SQL Database targets).</source>
     </trans-unit>
     <trans-unit id="sql.migration.pre.req.title">
-      <source xml:lang="en">Things you need before starting a migration:</source>
+      <source xml:lang="en">Things you need before starting your Azure SQL migration:</source>
     </trans-unit>
     <trans-unit id="sql.migration.provide.unique.containers">
       <source xml:lang="en">Provide a unique container for each target database. Databases affected: </source>
@@ -1441,7 +1453,7 @@ This may take some time.</source>
       <source xml:lang="en">To migrate to Azure SQL Managed Instance, view assessment results and select one or more databases.</source>
     </trans-unit>
     <trans-unit id="sql.migration.sku.recommendation.view.assessment.sqldb">
-      <source xml:lang="en">To migrate to Azure SQL Database, view assessment results and select one or more databases.</source>
+      <source xml:lang="en">To migrate to Azure SQL Database (PREVIEW), view assessment results and select one or more databases.</source>
     </trans-unit>
     <trans-unit id="sql.migration.sku.recommendation.view.assessment.vm">
       <source xml:lang="en">To migrate to SQL Server on Azure Virtual Machine, view assessment results and select one or more databases.</source>
@@ -1498,7 +1510,7 @@ This may take some time.</source>
       <source xml:lang="en">SQL tempdb</source>
     </trans-unit>
     <trans-unit id="sql.migration.sku.sqldb.card.title">
-      <source xml:lang="en">Azure SQL Database</source>
+      <source xml:lang="en">Azure SQL Database (PREVIEW)</source>
     </trans-unit>
     <trans-unit id="sql.migration.sku.stop.performance.collection">
       <source xml:lang="en">Stop data collection</source>
