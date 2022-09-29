@@ -223,7 +223,6 @@ export class AzureAuthCodeGrant extends AzureAuth {
 
 		return new Promise<string>((resolve, reject) => {
 			server.on('/redirect', (req, reqUrl, res) => {
-				// await vscode.env.openExternal(vscode.Uri.parse(`http://localhost${url}`));
 				const state = reqUrl.query.state as string ?? '';
 				const port = state.split(',')[0];
 				res.writeHead(302, { Location: `http://127.0.0.1:${port}/callback${reqUrl.search}` });
