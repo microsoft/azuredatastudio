@@ -39,3 +39,6 @@ export const UNSAVED_GROUP_ID = 'unsaved';
 /* Server Type Constants */
 export const sqlDataWarehouse = 'Azure SQL Data Warehouse';
 export const gen3Version = 12;
+
+/* Password Reset Error code */
+export const passwordErrorCode = 18488;

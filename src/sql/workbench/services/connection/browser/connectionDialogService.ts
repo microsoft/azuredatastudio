@@ -8,6 +8,7 @@ import {
 	ConnectionType, INewConnectionParams, IConnectionCompletionOptions, IConnectionResult
 } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionDialogWidget, OnShowUIResponse } from 'sql/workbench/services/connection/browser/connectionDialogWidget';
+import { ConnectionPasswordResetDialog } from 'sql/workbench/services/connection/browser/connectionPasswordResetDialog';
 import { ConnectionController } from 'sql/workbench/services/connection/browser/connectionController';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import * as Constants from 'sql/platform/connection/common/constants';
@@ -31,7 +32,6 @@ import { CmsConnectionController } from 'sql/workbench/services/connection/brows
 import { entries } from 'sql/base/common/collections';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
-//import { ConnectionPasswordResetDialog } from 'sql/workbench/services/connection/browser/connectionPasswordResetDialog';
 
 export interface IConnectionValidateResult {
 	isValid: boolean;
@@ -64,7 +64,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	_serviceBrand: undefined;
 
 	private _connectionDialog: ConnectionDialogWidget;
-	//private _passwordResetDialog: ConnectionPasswordResetDialog;
+	private _passwordResetDialog: ConnectionPasswordResetDialog;
 	private _connectionControllerMap: { [providerName: string]: IConnectionComponentController } = {};
 	private _model: ConnectionProfile;
 	private _params: INewConnectionParams;
@@ -275,10 +275,13 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			} else if (connectionResult && connectionResult.errorHandled) {
 				this._connectionDialog.resetConnection();
 				this._logService.debug(`ConnectionDialogService: Error handled and connection reset - Error: ${connectionResult.errorMessage}`);
-			} else {
+			} else if (connectionResult.errorCode !== Constants.passwordErrorCode) {
 				this._connectionDialog.resetConnection();
 				this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, connectionResult.callStack);
 				this._logService.debug(`ConnectionDialogService: Connection error: ${connectionResult.errorMessage}`);
+			} else {
+				this._connectionDialog.resetConnection();
+				this.showPasswordResetDialog(connection);
 			}
 		} catch (err) {
 			this._connecting = false;
@@ -495,6 +498,14 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		recentConnections.forEach(conn => conn.dispose());
 	}
 
+	private async showPasswordResetDialog(connection: IConnectionProfile): Promise<void> {
+		if (!this._passwordResetDialog) {
+			this._passwordResetDialog = this._instantiationService.createInstance(ConnectionPasswordResetDialog);
+			this._passwordResetDialog.render();
+		}
+		this._passwordResetDialog.open(connection.userName, `Reset the password`, `Password needs to be reset according to SQL Server policy`);
+	}
+
 	private showErrorDialog(severity: Severity, headerTitle: string, message: string, messageDetails?: string): void {
 		// Kerberos errors are currently very hard to understand, so adding handling of these to solve the common scenario
 		// note that ideally we would have an extensible service to handle errors by error code and provider, but for now
@@ -524,10 +535,4 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		this._logService.error(message);
 		this._errorMessageService.showDialog(severity, headerTitle, message, messageDetails, actions);
 	}
-
-	// private showPasswordResetDialog(params: INewConnectionParams, connection: IConnectionProfile): void {
-	// 	if (!this._passwordResetDialog) {
-	// 		this._passwordResetDialog = this._instantiationService.createInstance(ConnectionPasswordResetDialog, connection.azureAccount);
-	// 	}
-	// }
 }
