@@ -24,12 +24,33 @@ export const passwordChars = '***************';
 /* default authentication type setting name*/
 export const defaultAuthenticationType = 'defaultAuthenticationType';
 
+/**
+ * Well-known Authentication types commonly supported by connection providers.
+ */
 export enum AuthenticationType {
+	/**
+	 * Username and password
+	 */
 	SqlLogin = 'SqlLogin',
+	/**
+	 * Windows Authentication
+	 */
 	Integrated = 'Integrated',
+	/**
+	 * Azure Active Directory - Universal with MFA support
+	 */
 	AzureMFA = 'AzureMFA',
+	/**
+	 * Azure Active Directory - Password
+	 */
 	AzureMFAAndUser = 'AzureMFAAndUser',
+	/**
+	 * Datacenter Security Token Service Authentication
+	 */
 	DSTSAuth = 'dstsAuth',
+	/**
+	 * No authentication required
+	 */
 	None = 'None'
 }
 
