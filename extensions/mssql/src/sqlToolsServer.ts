@@ -32,6 +32,16 @@ const localize = nls.loadMessageBundle();
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
 const statusView = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
 
+// The mapping between MSSQL log level and the service downloader log level.
+const LogLevelMapping: { [key: string]: number } = {
+	[TracingLevel.All]: LogLevel.Verbose,
+	[TracingLevel.Critical]: LogLevel.Critical,
+	[TracingLevel.Error]: LogLevel.Error,
+	[TracingLevel.Information]: LogLevel.Information,
+	[TracingLevel.Verbose]: LogLevel.Verbose,
+	[TracingLevel.Warning]: LogLevel.Warning
+};
+
 export class SqlToolsServer {
 
 	private client: SqlOpsDataClient;
@@ -146,15 +156,7 @@ function handleServerProviderEvent(e: string, ...args: any[]): void {
 			outputChannel.appendLine(localize('entryExtractedChannelMsg', "Extracted {0} ({1}/{2})", args[0], args[1], args[2]));
 			break;
 		case Events.LOG_EMITTED:
-			const levelMapping: { [key: string]: number } = {
-				[TracingLevel.All]: LogLevel.Verbose,
-				[TracingLevel.Critical]: LogLevel.Critical,
-				[TracingLevel.Error]: LogLevel.Error,
-				[TracingLevel.Information]: LogLevel.Information,
-				[TracingLevel.Verbose]: LogLevel.Verbose,
-				[TracingLevel.Warning]: LogLevel.Warning
-			};
-			const configuredLevel: number | undefined = levelMapping[getConfigTracingLevel()];
+			const configuredLevel: number | undefined = LogLevelMapping[getConfigTracingLevel()];
 			const logLevel = args[0] as LogLevel;
 			const message = args[1] as string;
 			if (configuredLevel !== undefined && logLevel >= configuredLevel) {
