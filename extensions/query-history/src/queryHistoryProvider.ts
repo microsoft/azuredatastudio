@@ -46,6 +46,7 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 
 	constructor(private _context: vscode.ExtensionContext) {
 		this._historyStorageFile = path.join(this._context.globalStorageUri.fsPath, HISTORY_STORAGE_FILE_NAME);
+		// Kick off initialization but then continue on since that may take a while and we don't want to block extension activation
 		void this.initialize();
 		this._disposables.push(azdata.queryeditor.registerQueryEventListener({
 			onQueryEvent: async (type: azdata.queryeditor.QueryEventType, document: azdata.queryeditor.QueryDocument, args: azdata.ResultSetSummary | string | undefined, queryInfo?: azdata.queryeditor.QueryInfo) => {
@@ -91,6 +92,10 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 		}));
 	}
 
+	/**
+	 * Initializes the provider, loading the history from the previous session if it exists.
+	 * @returns
+	 */
 	private async initialize(): Promise<void> {
 		let iv: Buffer | undefined;
 		try {
@@ -164,6 +169,11 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 		};
 	}
 
+	/**
+	 * Write the query history items to our encrypted file. This is debounced to
+	 * prevent doing unnecessary writes if the user is executing many queries in
+	 * a row
+	 */
 	@debounce(HISTORY_DEBOUNCE_MS)
 	private writeHistoryFile(): void {
 		this.writeHistoryFileWorker?.();
