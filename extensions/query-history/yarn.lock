@@ -228,10 +228,10 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
-"@microsoft/azdata-test@^2.0.3":
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/@microsoft/azdata-test/-/azdata-test-2.0.3.tgz#652984efa2f5adc56cdae9029a4d5f33446b54d3"
-  integrity sha512-BgB6gGjQVXxnZHq7o5TlajZR/mJd/6AqbclrGzoyATvCEt92jRXhPzaY6XA/jMahdUGFSQwXpm45qRhZetwDig==
+"@microsoft/azdata-test@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@microsoft/azdata-test/-/azdata-test-3.0.0.tgz#5cc4f416e464e6127dc333afaf983ebe49a66f37"
+  integrity sha512-W0KsXlVF5l0SIcy0HuDqy289o/C1D5AfYxkrlezCeACKsEXyKBsecVojgAY/YN26K5L5AFKXJYaRcqOeq0k76w==
   dependencies:
     http-proxy-agent "^2.1.0"
     https-proxy-agent "^2.2.4"

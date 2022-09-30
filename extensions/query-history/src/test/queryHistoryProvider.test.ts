@@ -8,7 +8,6 @@ import * as vscode from 'vscode';
 import * as should from 'should';
 import 'mocha';
 import * as sinon from 'sinon';
-import * as typemoq from 'typemoq';
 import * as azdataTest from '@microsoft/azdata-test';
 import { QueryHistoryProvider } from '../queryHistoryProvider';
 import { QueryHistoryItem } from '../queryHistoryItem';
@@ -20,7 +19,7 @@ describe('QueryHistoryProvider', () => {
 	let textDocumentSandbox: sinon.SinonSandbox;
 	const testUri = vscode.Uri.parse('untitled://query1');
 
-	beforeEach(function (): void {
+	beforeEach(async function (): Promise<void> {
 		sinon.stub(azdata.queryeditor, 'registerQueryEventListener').callsFake((listener: azdata.queryeditor.QueryEventListener) => {
 			testListener = listener;
 			return { dispose: (): void => { } };
@@ -29,8 +28,11 @@ describe('QueryHistoryProvider', () => {
 		textDocumentSandbox.replaceGetter(vscode.workspace, 'textDocuments', () => [azdataTest.mocks.vscode.createTextDocumentMock(testUri).object]);
 		const getConnectionStub = sinon.stub(azdata.connection, 'getConnection');
 		getConnectionStub.resolves(<any>{});
-		const contextMock = typemoq.Mock.ofType<vscode.ExtensionContext>();
+		// const getConfigurationStub = sinon.stub(vscode.workspace, 'getConfiguration')
+		const contextMock = azdataTest.mocks.vscode.createExtensionContextMock();
 		testProvider = new QueryHistoryProvider(contextMock.object);
+		// Disable persistence during tests
+		await testProvider.setPersistenceEnabled(false);
 	});
 
 	afterEach(function (): void {
@@ -140,7 +142,7 @@ describe('QueryHistoryProvider', () => {
 	});
 
 	it('delete item when no items doesn\'t throw', async function () {
-		const testItem: QueryHistoryItem = { queryText: 'SELECT 1', connectionProfile: azdataTest.stubs.connectionProfile.createConnectionProfile(), timestamp: new Date().toLocaleString(), isSuccess: true };
+		const testItem: QueryHistoryItem = { queryText: 'SELECT 1', connectionProfile: azdataTest.stubs.azdata.createConnectionProfile(), timestamp: new Date().toLocaleString(), isSuccess: true };
 		await waitForItemRefresh(() => testProvider.deleteItem(testItem));
 		const children = testProvider.getChildren();
 		should(children).length(0, 'Should have no children after deleting item');
@@ -151,7 +153,7 @@ describe('QueryHistoryProvider', () => {
 		let children = testProvider.getChildren();
 		should(children).length(1, 'Should have 1 child initially');
 
-		const testItem: QueryHistoryItem = { queryText: 'SELECT 1', connectionProfile: azdataTest.stubs.connectionProfile.createConnectionProfile(), timestamp: new Date().toLocaleString(), isSuccess: true };
+		const testItem: QueryHistoryItem = { queryText: 'SELECT 1', connectionProfile: azdataTest.stubs.azdata.createConnectionProfile(), timestamp: new Date().toLocaleString(), isSuccess: true };
 		await waitForItemRefresh(() => testProvider.deleteItem(testItem));
 		children = testProvider.getChildren();
 		should(children).length(1, 'Should still have 1 child after deleting item');

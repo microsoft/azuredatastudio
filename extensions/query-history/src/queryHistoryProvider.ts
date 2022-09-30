@@ -48,6 +48,11 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 		this._historyStorageFile = path.join(this._context.globalStorageUri.fsPath, HISTORY_STORAGE_FILE_NAME);
 		// Kick off initialization but then continue on since that may take a while and we don't want to block extension activation
 		void this.initialize();
+		this._disposables.push(vscode.workspace.onDidChangeConfiguration(async e => {
+			if (e.affectsConfiguration(QUERY_HISTORY_CONFIG_SECTION)) {
+				await this.updateConfigurationValues();
+			}
+		}));
 		this._disposables.push(azdata.queryeditor.registerQueryEventListener({
 			onQueryEvent: async (type: azdata.queryeditor.QueryEventType, document: azdata.queryeditor.QueryDocument, args: azdata.ResultSetSummary | string | undefined, queryInfo?: azdata.queryeditor.QueryInfo) => {
 				if (this._captureEnabled && queryInfo) {
@@ -84,12 +89,6 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 				}
 			}
 		}));
-		void this.updateConfigurationValues();
-		this._disposables.push(vscode.workspace.onDidChangeConfiguration(async e => {
-			if (e.affectsConfiguration(QUERY_HISTORY_CONFIG_SECTION)) {
-				await this.updateConfigurationValues();
-			}
-		}));
 	}
 
 	/**
@@ -97,6 +96,9 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 	 * @returns
 	 */
 	private async initialize(): Promise<void> {
+		// First update our configuration values to make sure we have the settings the user has configured
+		await this.updateConfigurationValues();
+
 		let iv: Buffer | undefined;
 		try {
 			let ivString = await this._context.secrets.get(STORAGE_IV_KEY);
@@ -107,7 +109,7 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 				iv = Buffer.from(ivString, 'binary');
 			}
 		} catch (err) {
-			console.error(`Error getting persistance storage IV ${err}`);
+			console.error(`Error getting persistance storage IV: ${err}`);
 			// An IV is required to read/write the encrypted file so if we can't get it then just fail early
 			return;
 		}
@@ -122,33 +124,9 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 				await this._context.secrets.store(STORAGE_KEY_KEY, key);
 			}
 		} catch (err) {
-			console.error(`Error getting persistance storage key ${err}`);
+			console.error(`Error getting persistance storage key: ${err}`);
 			// A key is required to read/write the encrypted file so if we can't get it then just fail early
 			return;
-		}
-
-		try {
-			// Read and decrypt any previous history items
-			const encryptedItems = await fs.promises.readFile(this._historyStorageFile);
-			const decipher = crypto.createDecipheriv(STORAGE_ENCRYPTION_ALGORITHM, key, iv);
-			const result = Buffer.concat([decipher.update(encryptedItems), decipher.final()]).toString();
-			this._queryHistoryItems = JSON.parse(result);
-			this._onDidChangeTreeData.fire(undefined);
-		} catch (err) {
-			// Ignore ENOENT errors, those are expected if the storage file doesn't exist (on first run or if results aren't being persisted)
-			if (err.code !== 'ENOENT') {
-				console.error(`Error deserializing stored history items. ${err}`);
-				void vscode.window.showWarningMessage(loc.errorLoading(err));
-				// Rename the file to avoid attempting to load a potentially corrupted or unreadable file every time we start up, we'll make
-				// a new one next time we write the history file
-				try {
-					const bakPath = path.join(path.dirname(this._historyStorageFile), `${HISTORY_STORAGE_FILE_NAME}.bak`);
-					await fs.promises.rename(this._historyStorageFile, bakPath);
-				} catch (err) {
-					console.error(`Error moving corrupted history file. ${err}`);
-				}
-			}
-
 		}
 
 		this.writeHistoryFileWorker = (): void => {
@@ -162,11 +140,40 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 					// Use sync here so that we can write this out when the object is disposed
 					fs.writeFileSync(this._historyStorageFile, encryptedText);
 				} catch (err) {
-					console.error(`Error writing query history to disk. ${err}`);
+					console.error(`Error writing query history to disk: ${err}`);
 				}
 
 			}
 		};
+
+		// If we're not persisting the history then we can skip even trying to load the file (which shouldn't exist)
+		if (!this._persistHistory) {
+			return;
+		}
+
+		try {
+			// Read and decrypt any previous history items
+			const encryptedItems = await fs.promises.readFile(this._historyStorageFile);
+			const decipher = crypto.createDecipheriv(STORAGE_ENCRYPTION_ALGORITHM, key, iv);
+			const result = Buffer.concat([decipher.update(encryptedItems), decipher.final()]).toString();
+			this._queryHistoryItems = JSON.parse(result);
+			this._onDidChangeTreeData.fire(undefined);
+		} catch (err) {
+			// Ignore ENOENT errors, those are expected if the storage file doesn't exist (on first run or if results aren't being persisted)
+			if (err.code !== 'ENOENT') {
+				console.error(`Error deserializing stored history items: ${err}`);
+				void vscode.window.showWarningMessage(loc.errorLoading(err));
+				// Rename the file to avoid attempting to load a potentially corrupted or unreadable file every time we start up, we'll make
+				// a new one next time we write the history file
+				try {
+					const bakPath = path.join(path.dirname(this._historyStorageFile), `${HISTORY_STORAGE_FILE_NAME}.bak`);
+					await fs.promises.rename(this._historyStorageFile, bakPath);
+				} catch (err) {
+					console.error(`Error moving corrupted history file: ${err}`);
+				}
+			}
+
+		}
 	}
 
 	/**
@@ -220,8 +227,11 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 			try {
 				await fs.promises.rmdir(this._historyStorageFile);
 			} catch (err) {
-				// Best effort, we don't want other things to fail if we can't delete the file for some reason
-				console.error(`Error cleaning up query history storage ${this._historyStorageFile}. ${err}`);
+				// Ignore ENOENT errors, those are expected if the storage file doesn't exist (on first run or if results aren't being persisted)
+				if (err.code !== 'ENOENT') {
+					// Best effort, we don't want other things to fail if we can't delete the file for some reason
+					console.error(`Error cleaning up query history storage: ${this._historyStorageFile}. ${err}`);
+				}
 			}
 		} else {
 			this.writeHistoryFile();
@@ -236,5 +246,15 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 	public async setCaptureEnabled(enabled: boolean): Promise<void> {
 		this._captureEnabled = enabled;
 		return vscode.workspace.getConfiguration(QUERY_HISTORY_CONFIG_SECTION).update(CAPTURE_ENABLED_CONFIG_SECTION, this._captureEnabled, vscode.ConfigurationTarget.Global);
+	}
+
+	/**
+	 * Set whether query history persistence is currently enabled
+	 * @param enabled Whether persistence is currently enabled
+	 * @returns A promise that resolves when the value is updated and persisted to configuration
+	 */
+	public async setPersistenceEnabled(enabled: boolean): Promise<void> {
+		this._persistHistory = enabled;
+		return vscode.workspace.getConfiguration(QUERY_HISTORY_CONFIG_SECTION).update(PERSIST_HISTORY_CONFIG_SECTION, this._persistHistory, vscode.ConfigurationTarget.Global);
 	}
 }
