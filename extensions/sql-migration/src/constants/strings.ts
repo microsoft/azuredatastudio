@@ -133,7 +133,7 @@ export function SAVE_RECOMMENDATION_REPORT_SUCCESS(filePath: string): string {
 }
 
 // SKU
-export const AZURE_RECOMMENDATION = localize('sql.migration.sku.recommendation', "Azure recommendation");
+export const AZURE_RECOMMENDATION = localize('sql.migration.sku.recommendation', "Azure recommendation (PREVIEW)");
 export function RECOMMENDATIONS_TITLE(targetType: string): string {
 	return localize('sql.migration.sku.recommendations.title', "{0} Recommendations", targetType);
 }
