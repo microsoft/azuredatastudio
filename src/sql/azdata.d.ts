@@ -92,7 +92,6 @@ declare module 'azdata' {
 	 * Namespace for connection management
 	 */
 	export namespace connection {
-
 		/**
 		 * Connection profile primary class
 		 */

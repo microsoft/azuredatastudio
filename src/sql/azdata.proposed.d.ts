@@ -5,7 +5,6 @@
 
 // This is the place for API experiments and proposal.
 
-import { AuthenticationType } from 'sql/platform/connection/common/constants';
 import * as vscode from 'vscode';
 
 declare module 'azdata' {
@@ -404,7 +403,7 @@ declare module 'azdata' {
 	 * Add optional azureAccount for connectionWidget.
 	 */
 	export interface IConnectionProfile extends ConnectionInfo {
-		authenticationType: string | AuthenticationType;
+		authenticationType: string | connection.AuthenticationType;
 		azureAccount?: string;
 		azureResourceId?: string;
 		azurePortalEndpoint?: string;
