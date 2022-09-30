@@ -97,7 +97,7 @@ export abstract class ConnectToSqlDialog extends InitializingComponent {
 		const connectionProfile: azdata.IConnectionProfile = {
 			serverName: this.serverNameInputBox.value,
 			databaseName: '',
-			authenticationType: 'SqlLogin',
+			authenticationType: azdata.connection.AuthenticationType.SqlLogin,
 			providerName: this.providerName,
 			connectionName: '',
 			userName: this.usernameInputBox.value,

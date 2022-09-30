@@ -5,6 +5,7 @@
 
 // This is the place for API experiments and proposal.
 
+import { AuthenticationType } from 'sql/platform/connection/common/constants';
 import * as vscode from 'vscode';
 
 declare module 'azdata' {
@@ -403,9 +404,42 @@ declare module 'azdata' {
 	 * Add optional azureAccount for connectionWidget.
 	 */
 	export interface IConnectionProfile extends ConnectionInfo {
+		authenticationType: string | AuthenticationType;
 		azureAccount?: string;
 		azureResourceId?: string;
 		azurePortalEndpoint?: string;
+	}
+
+	export namespace connection {
+		/**
+		 * Well-known Authentication types commonly supported by connection providers.
+		 */
+		export enum AuthenticationType {
+			/**
+			 * Username and password
+			 */
+			SqlLogin = 'SqlLogin',
+			/**
+			 * Windows Authentication
+			 */
+			Integrated = 'Integrated',
+			/**
+			 * Azure Active Directory - Universal with MFA support
+			 */
+			AzureMFA = 'AzureMFA',
+			/**
+			 * Azure Active Directory - Password
+			 */
+			AzureMFAAndUser = 'AzureMFAAndUser',
+			/**
+			 * Datacenter Security Token Service Authentication
+			 */
+			DSTSAuth = 'dstsAuth',
+			/**
+			 * No authentication required
+			 */
+			None = 'None'
+		}
 	}
 
 	/*

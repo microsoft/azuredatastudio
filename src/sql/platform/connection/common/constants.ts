@@ -24,12 +24,14 @@ export const passwordChars = '***************';
 /* default authentication type setting name*/
 export const defaultAuthenticationType = 'defaultAuthenticationType';
 
-/* authentication types */
-export const sqlLogin = 'SqlLogin';
-export const integrated = 'Integrated';
-export const azureMFA = 'AzureMFA';
-export const azureMFAAndUser = 'AzureMFAAndUser';
-export const dstsAuth = 'dstsAuth';
+export enum AuthenticationType {
+	SqlLogin = 'SqlLogin',
+	Integrated = 'Integrated',
+	AzureMFA = 'AzureMFA',
+	AzureMFAAndUser = 'AzureMFAAndUser',
+	DSTSAuth = 'dstsAuth',
+	None = 'None'
+}
 
 /* CMS constants */
 export const cmsProviderName = 'MSSQL-CMS';
