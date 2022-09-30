@@ -173,7 +173,8 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 			secondaryProps = this._model.secondaryElement.properties;
 		}
 
-		const tableRows = this.convertPropertiesToTableRows(primaryProps, secondaryProps);
+		let tableRows = this.convertPropertiesToTableRows(primaryProps, secondaryProps);
+		tableRows = this.sortPropertiesByDisplayValueEquivalency(tableRows);
 		this.setSummaryElement(this.getExpensivePropertySummary(tableRows));
 		this.populateTable(columns, tableRows);
 	}
@@ -320,36 +321,61 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 	 * @param props Map of properties that will be organized.
 	 * @returns A new map with different values appearing at the top and similar values appearing at the bottom.
 	 */
-	public sortPropertiesByDisplayValueEquivalency(props: Map<string, TablePropertiesMapEntry>, sortProperties: (props: Map<string, TablePropertiesMapEntry>) => Map<string, TablePropertiesMapEntry>): Map<string, TablePropertiesMapEntry> {
-		let unequalProperties: Map<string, TablePropertiesMapEntry> = new Map();
-		let equalProperties: Map<string, TablePropertiesMapEntry> = new Map();
+	public sortPropertiesByDisplayValueEquivalency(props: any[]): any[] {
+		const [unequalProperties, equalProperties] = this.splitEqualFromUnequalProperties(props);
 
-		[...props.entries()].forEach(prop => {
-			const [rowKey, rowEntry] = prop;
-			const primaryProp = rowEntry.primaryProp;
-			const secondaryProp = rowEntry.secondaryProp;
+		const organizedProperties: any[] = [...unequalProperties];
 
-			if (primaryProp?.displayValue.localeCompare(secondaryProp?.displayValue) === 0) {
-				equalProperties.set(rowKey, rowEntry);
+		if (equalProperties.length > 0) {
+			const equivalentPropertiesRow = {};
+			equivalentPropertiesRow['name'] = equivalentPropertiesRowHeader;
+			equivalentPropertiesRow['expanded'] = false;
+			equivalentPropertiesRow['treeGridChildren'] = equalProperties;
+
+			organizedProperties.push(equivalentPropertiesRow);
+		}
+
+		return organizedProperties;
+	}
+
+	private splitEqualFromUnequalProperties(props: any[]): any[] {
+		const unequalProperties: any[] = [];
+		const equalProperties: any[] = [];
+
+		for (let prop of props) {
+			const treeGridChildren = prop['treeGridChildren'];
+
+			if (treeGridChildren?.length > 0) {
+				let [unequalSubProps, equalSubProps] = this.splitEqualFromUnequalProperties(treeGridChildren);
+
+				if (unequalSubProps.length > 0) {
+					let currentProp = JSON.parse(JSON.stringify(prop)); // Deep copy
+					currentProp['treeGridChildren'] = unequalSubProps;
+
+					unequalProperties.push(currentProp);
+				}
+
+				if (equalSubProps.length > 0) {
+					let currentProp = JSON.parse(JSON.stringify(prop)); // Deep copy
+					currentProp['treeGridChildren'] = equalSubProps;
+
+					equalProperties.push(currentProp);
+				}
 			}
 			else {
-				unequalProperties.set(rowKey, rowEntry);
+				const primary = prop['primary'];
+				const secondary = prop['secondary'];
+
+				if (primary && secondary && primary['text'] === secondary['title']) {
+					equalProperties.push(prop);
+				}
+				else {
+					unequalProperties.push(prop);
+				}
 			}
-		});
+		}
 
-		unequalProperties = sortProperties(unequalProperties);
-		equalProperties = sortProperties(equalProperties);
-
-		let map: Map<string, TablePropertiesMapEntry> = new Map();
-		unequalProperties.forEach((v, k) => {
-			map.set(k, v);
-		});
-
-		equalProperties.forEach((v, k) => {
-			map.set(k, v);
-		});
-
-		return map;
+		return [unequalProperties, equalProperties];
 	}
 
 	public sortPropertiesReverseAlphabetically(props: Map<string, TablePropertiesMapEntry>): Map<string, TablePropertiesMapEntry> {
@@ -398,13 +424,13 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 
 		switch (this.sortType) {
 			case PropertiesSortType.DisplayOrder:
-				propertiesMap = this.sortPropertiesByDisplayValueEquivalency(propertiesMap, this.sortPropertiesByImportance);
+				propertiesMap = this.sortPropertiesByImportance(propertiesMap);
 				break;
 			case PropertiesSortType.Alphabetical:
-				propertiesMap = this.sortPropertiesByDisplayValueEquivalency(propertiesMap, this.sortPropertiesAlphabetically);
+				propertiesMap = this.sortPropertiesAlphabetically(propertiesMap);
 				break;
 			case PropertiesSortType.ReverseAlphabetical:
-				propertiesMap = this.sortPropertiesByDisplayValueEquivalency(propertiesMap, this.sortPropertiesReverseAlphabetically);
+				propertiesMap = this.sortPropertiesReverseAlphabetically(propertiesMap);
 				break;
 		}
 
@@ -498,27 +524,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 
 		});
 
-		let formattedRows: { [key: string]: string }[] = [];
-		let equalRows: { [key: string]: string }[] = [];
-		for (const [_, row] of Object.entries(rows)) {
-			if (row.primary && row.secondary && row.primary['text'] === row.secondary['title']) {
-				equalRows.push(row);
-			}
-			else {
-				formattedRows.push(row);
-			}
-		}
-
-		if (equalRows.length > 0) {
-			let equalRow = {};
-			equalRow['name'] = equivalentPropertiesRowHeader;
-			equalRow['expanded'] = false;
-			equalRow['treeGridChildren'] = equalRows;
-
-			formattedRows.push(equalRow);
-		}
-
-		return formattedRows;
+		return rows;
 	}
 
 	set orientation(value: ExecutionPlanCompareOrientation) {
