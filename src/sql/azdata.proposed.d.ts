@@ -399,10 +399,10 @@ declare module 'azdata' {
 		title: string;
 	}
 
-	/*
-	 * Add optional azureAccount for connectionWidget.
-	 */
 	export interface IConnectionProfile extends ConnectionInfo {
+		/**
+		 * The type of authentication to use when connecting
+		 */
 		authenticationType: string | connection.AuthenticationType;
 		azureAccount?: string;
 		azureResourceId?: string;
