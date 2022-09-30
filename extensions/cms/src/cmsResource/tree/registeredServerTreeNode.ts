@@ -38,7 +38,7 @@ export class RegisteredServerTreeNode extends CmsResourceTreeNodeBase {
 			databaseName: '',
 			userName: undefined as string,
 			password: undefined as string,
-			authenticationType: 'Integrated',
+			authenticationType: azdata.connection.AuthenticationType.Integrated,
 			savePassword: false,
 			groupFullName: '',
 			groupId: '',

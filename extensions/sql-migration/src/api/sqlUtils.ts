@@ -50,11 +50,6 @@ export const excludeDatabses: string[] = [
 	'model'
 ];
 
-export enum AuthenticationType {
-	Integrated = 'Integrated',
-	SqlLogin = 'SqlLogin'
-}
-
 export interface TableInfo {
 	databaseName: string;
 	tableName: string;
@@ -89,14 +84,14 @@ function getSqlDbConnectionProfile(
 		databaseName: databaseName,
 		userName: userName,
 		password: password,
-		authenticationType: AuthenticationType.SqlLogin,
+		authenticationType: azdata.connection.AuthenticationType.SqlLogin,
 		savePassword: false,
 		saveProfile: false,
 		options: {
 			conectionName: '',
 			server: serverName,
 			database: databaseName,
-			authenticationType: AuthenticationType.SqlLogin,
+			authenticationType: azdata.connection.AuthenticationType.SqlLogin,
 			user: userName,
 			password: password,
 			connectionTimeout: 60,
@@ -125,7 +120,7 @@ function getConnectionProfile(
 		azureResourceId: azureResourceId,
 		userName: userName,
 		password: password,
-		authenticationType: AuthenticationType.SqlLogin,
+		authenticationType: azdata.connection.AuthenticationType.SqlLogin,
 		savePassword: false,
 		groupFullName: '',
 		groupId: '',
@@ -134,7 +129,7 @@ function getConnectionProfile(
 		options: {
 			conectionName: '',
 			server: serverName,
-			authenticationType: AuthenticationType.SqlLogin,
+			authenticationType: azdata.connection.AuthenticationType.SqlLogin,
 			user: userName,
 			password: password,
 			connectionTimeout: 60,

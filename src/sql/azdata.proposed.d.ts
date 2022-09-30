@@ -399,13 +399,46 @@ declare module 'azdata' {
 		title: string;
 	}
 
-	/*
-	 * Add optional azureAccount for connectionWidget.
-	 */
 	export interface IConnectionProfile extends ConnectionInfo {
+		/**
+		 * The type of authentication to use when connecting
+		 */
+		authenticationType: string | connection.AuthenticationType;
 		azureAccount?: string;
 		azureResourceId?: string;
 		azurePortalEndpoint?: string;
+	}
+
+	export namespace connection {
+		/**
+		 * Well-known Authentication types commonly supported by connection providers.
+		 */
+		export enum AuthenticationType {
+			/**
+			 * Username and password
+			 */
+			SqlLogin = 'SqlLogin',
+			/**
+			 * Windows Authentication
+			 */
+			Integrated = 'Integrated',
+			/**
+			 * Azure Active Directory - Universal with MFA support
+			 */
+			AzureMFA = 'AzureMFA',
+			/**
+			 * Azure Active Directory - Password
+			 */
+			AzureMFAAndUser = 'AzureMFAAndUser',
+			/**
+			 * Datacenter Security Token Service Authentication
+			 */
+			DSTSAuth = 'dstsAuth',
+			/**
+			 * No authentication required
+			 */
+			None = 'None'
+		}
 	}
 
 	/*
