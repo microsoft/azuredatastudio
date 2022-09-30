@@ -53,13 +53,6 @@ else {
 	console.log(`Running unit tests with '${process.env.INTEGRATION_TEST_ELECTRON_PATH}' as build.`);
 }
 
-if (!process.env.ADS_TEST_GREP) {
-	console.log('Running stable tests only');
-
-	process.env.ADS_TEST_GREP = '@UNSTABLE@';
-	process.env.ADS_TEST_INVERT_GREP = 1;
-}
-
 // execute tests
 
 for (const ext of argv.extensions) {

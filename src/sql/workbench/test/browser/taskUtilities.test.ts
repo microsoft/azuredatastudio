@@ -10,7 +10,8 @@ import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/br
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { TestEditorService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { TestEditorInput, TestEditorService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { URI } from 'vs/base/common/uri';
 
 suite('TaskUtilities', function () {
 	test('getCurrentGlobalConnection returns the selected OE server if a server or one of its children is selected', () => {
@@ -71,16 +72,17 @@ suite('TaskUtilities', function () {
 		mockConnectionManagementService.setup(x => x.isProfileConnected(TypeMoq.It.is(profile => profile === oeProfile || profile === tabProfile))).returns(() => true);
 
 		// Mock the workbench service to return the active tab connection
-		let tabConnectionUri = 'file://test_uri';
-		mockConnectionManagementService.setup(x => x.getConnectionProfile(tabConnectionUri)).returns(() => tabProfile);
+		const tabConnectionUri = URI.file('file://test_uri');
+		mockWorkbenchEditorService.setup(x => x.activeEditor).returns(() => new TestEditorInput(tabConnectionUri, 'my_type'));
+		mockConnectionManagementService.setup(x => x.getConnectionProfile(tabConnectionUri.toString(true))).returns(() => tabProfile);
 
 		// If I call getCurrentGlobalConnection, it should return the expected profile from the active tab
 		let actualProfile = TaskUtilities.getCurrentGlobalConnection(mockObjectExplorerService.object, mockConnectionManagementService.object, mockWorkbenchEditorService.object);
-		assert.strictEqual(actualProfile.databaseName, tabProfile.databaseName);
-		assert.strictEqual(actualProfile.authenticationType, tabProfile.authenticationType);
-		assert.strictEqual(actualProfile.password, tabProfile.password);
-		assert.strictEqual(actualProfile.serverName, tabProfile.serverName);
-		assert.strictEqual(actualProfile.userName, tabProfile.userName);
+		assert.strictEqual(actualProfile.databaseName, connectionProfile2.databaseName);
+		assert.strictEqual(actualProfile.authenticationType, connectionProfile2.authenticationType);
+		assert.strictEqual(actualProfile.password, connectionProfile2.password);
+		assert.strictEqual(actualProfile.serverName, connectionProfile2.serverName);
+		assert.strictEqual(actualProfile.userName, connectionProfile2.userName);
 	});
 
 	test('getCurrentGlobalConnection returns the connection from OE if there is no active tab, even if OE is not focused', () => {

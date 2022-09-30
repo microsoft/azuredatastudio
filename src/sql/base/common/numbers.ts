@@ -3,9 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { getDefaultMochaOptions } from '@microsoft/azdata-test';
-import * as testRunner from '@microsoft/vscodetestcover';
-
-testRunner.configure(getDefaultMochaOptions('MSSQL Extension Tests'), { coverConfig: '../../coverConfig.json' });
-
-export = testRunner;
+export function isNumber(text: string): boolean {
+	return !isNaN(parseInt(text)) && !isNaN(parseFloat(text));
+}

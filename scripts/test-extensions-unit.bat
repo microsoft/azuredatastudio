@@ -49,13 +49,6 @@ if "%INTEGRATION_TEST_ELECTRON_PATH%"=="" (
 	echo Running unit tests with '%INTEGRATION_TEST_ELECTRON_PATH%' as build.
 )
 
-:: Default to only running stable tests if test grep isn't set
-if "%ADS_TEST_GREP%" == "" (
-	echo "Running stable tests only"
-	set ADS_TEST_GREP=@UNSTABLE@
-	SET ADS_TEST_INVERT_GREP=1
-)
-
 set ALL_PLATFORMS_API_TESTS_EXTRA_ARGS=--disable-telemetry --crash-reporter-directory=%VSCODECRASHDIR% --no-cached-data --disable-updates --user-data-dir=%VSCODEUSERDATADIR% --remote-debugging-port=9222 --extensions-dir=%VSCODEEXTENSIONSDIR%
 
 echo ***************************************************

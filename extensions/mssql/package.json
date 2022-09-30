@@ -1326,7 +1326,7 @@
     "@microsoft/ads-kerberos": "^1.1.3",
     "buffer-stream-reader": "^0.1.1",
     "bytes": "^3.1.0",
-    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#1.2.4",
+    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#1.3.0",
     "error-ex": "^1.3.2",
     "figures": "^2.0.0",
     "find-remove": "1.2.1",
@@ -1348,10 +1348,9 @@
     "@types/stream-meter": "^0.0.22",
     "@types/through2": "^2.0.34",
     "mocha": "^7.1.1",
-    "mocha-junit-reporter": "^1.17.0",
-    "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.3",
     "typemoq": "^2.1.0",
-    "@microsoft/vscodetestcover": "^1.2.1"
+    "@microsoft/vscodetestcover": "^1.2.1",
+    "@microsoft/azdata-test": "^2.0.3"
   }
 }
