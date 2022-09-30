@@ -125,7 +125,7 @@ declare module 'vscode-mssql' {
 		/**
 		 * Well-known Authentication types.
 		 */
-		 export enum AuthenticationType {
+		 export const enum AuthenticationType {
 			/**
 			 * Username and password
 			 */
