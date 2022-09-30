@@ -92,8 +92,6 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 	}
 
 	private async initialize(): Promise<void> {
-		// await this._context.secrets.delete(STORAGE_IV_KEY);
-		// await this._context.secrets.delete(STORAGE_KEY_KEY);
 		let iv: Buffer | undefined;
 		try {
 			let ivString = await this._context.secrets.get(STORAGE_IV_KEY);
