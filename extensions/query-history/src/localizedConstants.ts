@@ -3,11 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
+import * as nls from 'vscode-nls';
+const localize = nls.loadMessageBundle();
 
-export interface QueryHistoryItem {
-	readonly queryText: string,
-	readonly connectionProfile: azdata.connection.ConnectionProfile | undefined,
-	readonly timestamp: string,
-	readonly isSuccess: boolean
-}
+export const errorLoading = (err: any): string => localize('errorLoading', "Error loading saved query history items. {0}", err.message ?? err);
+
