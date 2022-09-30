@@ -85,12 +85,25 @@ export function getConfigLogRetentionSeconds(): number {
 	}
 }
 
-export function getConfigTracingLevel(): string {
+/**
+ * The tracing level defined in the package.json
+ */
+export enum TracingLevel {
+	All = 'All',
+	Off = 'Off',
+	Critical = 'Critical',
+	Error = 'Error',
+	Warning = 'Warning',
+	Information = 'Information',
+	Verbose = 'Verbose'
+}
+
+export function getConfigTracingLevel(): TracingLevel {
 	let config = getConfiguration();
 	if (config) {
 		return config[configTracingLevel];
 	} else {
-		return undefined;
+		return TracingLevel.Critical;
 	}
 }
 
