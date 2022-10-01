@@ -20,7 +20,7 @@ import { MicrosoftAuthenticationSession } from './microsoft-authentication';
 
 const localize = nls.loadMessageBundle();
 
-const redirectUrl = 'http://localhost/redirect';
+const redirectUrl = 'https://vscode-redirect.azurewebsites.net/';
 const loginEndpointUrl = 'https://login.microsoftonline.com/';
 const clientId = 'aebc6443-996d-45c2-90f0-388ff96faa56';
 const tenant = 'organizations';
