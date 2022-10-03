@@ -45,8 +45,8 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 	 */
 	private queryTextMappings: Map<string, string> = new Map<string, string>();
 
-	constructor(private _context: vscode.ExtensionContext) {
-		this._historyStorageFile = path.join(this._context.globalStorageUri.fsPath, HISTORY_STORAGE_FILE_NAME);
+	constructor(private _context: vscode.ExtensionContext, storageUri: vscode.Uri) {
+		this._historyStorageFile = path.join(storageUri.fsPath, HISTORY_STORAGE_FILE_NAME);
 		// Kick off initialization but then continue on since that may take a while and we don't want to block extension activation
 		void this.initialize();
 		this._disposables.push(vscode.workspace.onDidChangeConfiguration(async e => {
