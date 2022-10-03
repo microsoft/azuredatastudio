@@ -191,14 +191,14 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 	 * @param tableRows The table rows that will appear in the properties table.
 	 * @returns The string array containing the segments of the summary.
 	 */
-	private getExpensivePropertySummary(tableRows: { [key: string]: string }[]): string[] {
+	private getExpensivePropertySummary(tableRows: TableRow[]): string[] {
 		let summary: string[] = [];
 
 		tableRows.forEach(row => {
-			const rowName = row.name['text'];
+			const rowName = (<RowContent>row.name).text;
 			if (row.primary && row.secondary) {
-				const primaryText = row.primary['text'].split(' ');
-				const secondaryTitle = row.secondary['title'].split(' ');
+				const primaryText = row.primary.text.split(' ');
+				const secondaryTitle = row.secondary.title.split(' ');
 
 				if (primaryText.length === secondaryTitle.length && primaryText.length <= 2 && secondaryTitle.length <= 2) {
 					const MAX_PROPERTY_SUMMARY_LENGTH = 3;
@@ -312,71 +312,71 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 	 *
 	 * Name							Value (Top plan)		Value (Bottom Plan)
 	 * -------------------------------------------------------------------------
-	 * Compile Time					38						37						<diff>
-	 * CompileCpu					38						37						<diff>
-	 * CompileMemory				5816					6424					<diff>
-	 * Estimated Number of Rows		1000					1000					<same>
-	 * Optimization Level			FULL					FULL					<same>
-	 * RetrievedFromCache			false					false					<same>
+	 * Compile Time					38						37						<unequal>
+	 * CompileCpu					38						37						<unequal>
+	 * CompileMemory				5816					6424					<unequal>
+	 * Estimated Number of Rows		1000					1000					<equal>
+	 * Optimization Level			FULL					FULL					<equal>
+	 * RetrievedFromCache			false					false					<equal>
 	 *
-	 * @param props Map of properties that will be organized.
-	 * @returns A new map with different values appearing at the top and similar values appearing at the bottom.
+	 * @param rows An array of TableRows that contains all the properties that will be organized.
+	 * @returns A new array of TableRows with unequal values appearing at the top and equal values appearing at the bottom.
 	 */
-	public sortPropertiesByDisplayValueEquivalency(props: any[]): any[] {
-		const [unequalProperties, equalProperties] = this.splitEqualFromUnequalProperties(props);
+	public sortPropertiesByDisplayValueEquivalency(rows: TableRow[]): TableRow[] {
+		const [unequalPropertyRows, equalPropertyRows] = this.splitEqualFromUnequalProperties(rows);
 
-		const organizedProperties: any[] = [...unequalProperties];
+		const organizedPropertyRows: TableRow[] = [...unequalPropertyRows];
 
-		if (equalProperties.length > 0) {
-			const equivalentPropertiesRow = {};
-			equivalentPropertiesRow['name'] = equivalentPropertiesRowHeader;
-			equivalentPropertiesRow['expanded'] = false;
-			equivalentPropertiesRow['treeGridChildren'] = equalProperties;
+		if (equalPropertyRows.length > 0) {
+			const equivalentPropertiesRow: TableRow = new Object() as TableRow;
+			equivalentPropertiesRow.name = equivalentPropertiesRowHeader;
+			equivalentPropertiesRow.expanded = false;
+			equivalentPropertiesRow.treeGridChildren = equalPropertyRows;
 
-			organizedProperties.push(equivalentPropertiesRow);
+			organizedPropertyRows.push(equivalentPropertiesRow);
 		}
 
-		return organizedProperties;
+		return organizedPropertyRows;
 	}
 
-	private splitEqualFromUnequalProperties(props: any[]): any[] {
-		const unequalProperties: any[] = [];
-		const equalProperties: any[] = [];
+	private splitEqualFromUnequalProperties(rows: TableRow[]): [TableRow[], TableRow[]] {
+		const unequalRows: TableRow[] = [];
+		const equalRows: TableRow[] = [];
 
-		for (let prop of props) {
-			const treeGridChildren = prop['treeGridChildren'];
+		for (let row of rows) {
+			const treeGridChildren = row.treeGridChildren;
 
 			if (treeGridChildren?.length > 0) {
-				let [unequalSubProps, equalSubProps] = this.splitEqualFromUnequalProperties(treeGridChildren);
+				let [unequalSubRows, equalSubRows] = this.splitEqualFromUnequalProperties(treeGridChildren);
 
-				if (unequalSubProps.length > 0) {
-					let currentProp = deepClone(prop);
-					currentProp['treeGridChildren'] = unequalSubProps;
+				if (unequalSubRows.length > 0) {
+					let currentRow = deepClone(row);
+					currentRow.treeGridChildren = unequalSubRows;
 
-					unequalProperties.push(currentProp);
+					unequalRows.push(currentRow);
 				}
 
-				if (equalSubProps.length > 0) {
-					let currentProp = deepClone(prop);
-					currentProp['treeGridChildren'] = equalSubProps;
+				if (equalSubRows.length > 0) {
+					let currentRow = deepClone(row);
+					currentRow.treeGridChildren = equalSubRows;
 
-					equalProperties.push(currentProp);
+					equalRows.push(currentRow);
 				}
 			}
 			else {
-				const primary = prop['primary'];
-				const secondary = prop['secondary'];
+				const primary = row.primary;
+				const secondary = row.secondary;
 
-				if (primary && secondary && primary['text'] === secondary['title']) {
-					equalProperties.push(prop);
+				if (primary && secondary && primary.text === secondary.title) {
+					equalRows.push(row);
 				}
 				else {
-					unequalProperties.push(prop);
+					unequalRows.push(row);
 				}
 			}
 		}
 
-		return [unequalProperties, equalProperties];
+		return [unequalRows, equalRows];
 	}
 
 	public sortPropertiesReverseAlphabetically(props: Map<string, TablePropertiesMapEntry>): Map<string, TablePropertiesMapEntry> {
@@ -393,8 +393,8 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		}));
 	}
 
-	private convertPropertiesToTableRows(primaryNode: azdata.executionPlan.ExecutionPlanGraphElementProperty[], secondaryNode: azdata.executionPlan.ExecutionPlanGraphElementProperty[]): { [key: string]: string }[] {
-		const rows: { [key: string]: string }[] = [];
+	private convertPropertiesToTableRows(primaryNode: azdata.executionPlan.ExecutionPlanGraphElementProperty[], secondaryNode: azdata.executionPlan.ExecutionPlanGraphElementProperty[]): TableRow[] {
+		const rows: TableRow[] = [];
 		let propertiesMap: Map<string, TablePropertiesMapEntry> = new Map();
 
 		if (primaryNode) {
@@ -436,17 +436,16 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		}
 
 		propertiesMap.forEach((v, k) => {
-			let row = {};
-			row['name'] = {
+			let row: TableRow = new Object() as TableRow;
+			row.name = {
 				text: k
 			};
 
 			const primaryProp = v.primaryProp;
 			const secondaryProp = v.secondaryProp;
-			let diffIconClass = '';
 
 			if (primaryProp && secondaryProp) {
-				row['displayOrder'] = v.primaryProp.displayOrder;
+				row.displayOrder = v.primaryProp.displayOrder;
 
 				let diffIcon = new Object() as DiffIcon;
 				if (v.primaryProp.displayValue !== v.secondaryProp.displayValue) {
@@ -472,54 +471,56 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 					}
 				}
 
-				row['primary'] = {
+				row.primary = {
 					text: removeLineBreaks(v.primaryProp.displayValue, ' ')
 				};
 
-				row['icon'] = {
-					iconCssClass: diffIcon.iconClass,
-					title: diffIcon.title
+				row.icon = {
+					iconCssClass: diffIcon.iconClass ?? '',
+					title: diffIcon.title ?? ''
 				};
 
-				row['secondary'] = {
-					title: removeLineBreaks(v.secondaryProp.displayValue, ' ')
+				row.secondary = {
+					title: removeLineBreaks(v.secondaryProp.displayValue, ' '),
 				};
 
 				if ((primaryProp && !isString(primaryProp.value)) || (secondaryProp && !isString(secondaryProp.value))) {
-					row['name'].iconCssClass += ` parent-row-styling`;
-					row['primary'].iconCssClass += ` parent-row-styling`;
-					row['icon'].iconCssClass += 'parent-row-styling';
-					row['secondary'].iconCssClass += ` parent-row-styling`;
+					const parentRowStyling = ' parent-row-styling';
+
+					row.name.iconCssClass = !row.name.iconCssClass ? parentRowStyling : row.name.iconCssClass + parentRowStyling;
+					row.primary.iconCssClass = !row.primary.iconCssClass ? parentRowStyling : row.primary.iconCssClass + parentRowStyling;
+					row.icon.iconCssClass = !row.icon.iconCssClass ? parentRowStyling : row.icon.iconCssClass + parentRowStyling;
+					row.secondary.iconCssClass = !row.secondary.iconCssClass ? parentRowStyling : row.secondary.iconCssClass + parentRowStyling;
 				}
 
 				rows.push(row);
 
 				const topPropValue = isString(primaryProp.value) ? undefined : primaryProp.value;
 				const bottomPropValue = isString(secondaryProp.value) ? undefined : secondaryProp.value;
-				row['treeGridChildren'] = this.convertPropertiesToTableRows(topPropValue, bottomPropValue);
+				row.treeGridChildren = this.convertPropertiesToTableRows(topPropValue, bottomPropValue);
 
 			} else if (primaryProp && !secondaryProp) {
-				row['displayOrder'] = v.primaryProp.displayOrder;
-				row['primary'] = {
+				row.displayOrder = v.primaryProp.displayOrder;
+				row.primary = {
 					text: v.primaryProp.displayValue
 				};
 				rows.push(row);
 				if (!isString(primaryProp.value)) {
-					row['name'].iconCssClass += ` parent-row-styling`;
-					row['primary'].iconCssClass += ` parent-row-styling`;
-					row['treeGridChildren'] = this.convertPropertiesToTableRows(primaryProp.value, undefined);
+					row.name.iconCssClass += ` parent-row-styling`;
+					row.primary.iconCssClass += ` parent-row-styling`;
+					row.treeGridChildren = this.convertPropertiesToTableRows(primaryProp.value, undefined);
 				}
 			} else if (!primaryProp && secondaryProp) {
-				row['displayOrder'] = v.secondaryProp.displayOrder;
-				row['secondary'] = {
+				row.displayOrder = v.secondaryProp.displayOrder;
+				row.secondary = {
 					title: v.secondaryProp.displayValue,
-					iconCssClass: diffIconClass
+					iconCssClass: ''
 				};
 				rows.push(row);
 				if (!isString(secondaryProp.value)) {
-					row['name'].iconCssClass += ` parent-row-styling`;
-					row['secondary'].iconCssClass += ` parent-row-styling`;
-					row['treeGridChildren'] = this.convertPropertiesToTableRows(undefined, secondaryProp.value);
+					row.name.iconCssClass += ` parent-row-styling`;
+					row.secondary.iconCssClass += ` parent-row-styling`;
+					row.treeGridChildren = this.convertPropertiesToTableRows(undefined, secondaryProp.value);
 				}
 			}
 
@@ -570,4 +571,20 @@ interface TablePropertiesMapEntry {
 interface DiffIcon {
 	iconClass: string;
 	title: string;
+}
+
+interface TableRow extends Slick.SlickData {
+	displayOrder: number;
+	icon: RowContent;
+	name: RowContent | string;
+	primary: RowContent;
+	secondary: RowContent;
+	expanded: boolean;
+	treeGridChildren: TableRow[];
+}
+
+interface RowContent {
+	iconCssClass?: string;
+	text?: string;
+	title?: string;
 }
