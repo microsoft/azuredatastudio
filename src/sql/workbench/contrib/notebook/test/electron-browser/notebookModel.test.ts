@@ -33,7 +33,7 @@ import { TestConnectionManagementService } from 'sql/platform/connection/test/co
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { NotebookEditorContentLoader } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { SessionManager } from 'sql/workbench/contrib/notebook/test/emptySessionClasses';
-import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { AuthenticationType, mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { uriPrefixes } from 'sql/platform/connection/common/utils';
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
@@ -1071,7 +1071,7 @@ suite('notebook model', function (): void {
 			groupFullName: 'testGroup',
 			serverName: 'testServerName',
 			databaseName: 'testDatabaseName',
-			authenticationType: 'integrated',
+			authenticationType: AuthenticationType.Integrated,
 			password: 'test',
 			userName: 'testUsername',
 			groupId: undefined,
@@ -1091,7 +1091,7 @@ suite('notebook model', function (): void {
 			groupFullName: 'testGroup',
 			serverName: 'testServerName',
 			databaseName: 'testDatabaseName',
-			authenticationType: 'integrated',
+			authenticationType: AuthenticationType.Integrated,
 			password: 'test',
 			userName: 'testUsername',
 			groupId: undefined,

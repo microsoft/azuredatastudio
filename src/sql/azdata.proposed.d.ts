@@ -125,7 +125,7 @@ declare module 'azdata' {
 		}
 
 		/**
-		 * An event that is emitted when a [notebook document](#NotebookDocument) is closed.
+		 * An event that is emitted when a {@link NotebookDocument} is closed.
 		 */
 		export const onDidCloseNotebookDocument: vscode.Event<NotebookDocument>;
 
@@ -399,13 +399,46 @@ declare module 'azdata' {
 		title: string;
 	}
 
-	/*
-	 * Add optional azureAccount for connectionWidget.
-	 */
 	export interface IConnectionProfile extends ConnectionInfo {
+		/**
+		 * The type of authentication to use when connecting
+		 */
+		authenticationType: string | connection.AuthenticationType;
 		azureAccount?: string;
 		azureResourceId?: string;
 		azurePortalEndpoint?: string;
+	}
+
+	export namespace connection {
+		/**
+		 * Well-known Authentication types commonly supported by connection providers.
+		 */
+		export enum AuthenticationType {
+			/**
+			 * Username and password
+			 */
+			SqlLogin = 'SqlLogin',
+			/**
+			 * Windows Authentication
+			 */
+			Integrated = 'Integrated',
+			/**
+			 * Azure Active Directory - Universal with MFA support
+			 */
+			AzureMFA = 'AzureMFA',
+			/**
+			 * Azure Active Directory - Password
+			 */
+			AzureMFAAndUser = 'AzureMFAAndUser',
+			/**
+			 * Datacenter Security Token Service Authentication
+			 */
+			DSTSAuth = 'dstsAuth',
+			/**
+			 * No authentication required
+			 */
+			None = 'None'
+		}
 	}
 
 	/*
@@ -475,35 +508,6 @@ declare module 'azdata' {
 		payload?: IConnectionProfile;
 		childProvider?: string;
 		type?: ExtensionNodeType;
-	}
-
-	export interface AccountDisplayInfo {
-		email?: string;
-		name?: string;
-	}
-
-	export interface AccountProvider {
-		/**
-		 * Generates a security token for the provided account and tenant
-		 * @param account The account to generate a security token for
-		 * @param resource The resource to get the token for
-		 * @return Promise to return a security token object
-		 */
-		getAccountSecurityToken(account: Account, tenant: string, resource: AzureResource): Thenable<accounts.AccountSecurityToken | undefined>;
-	}
-
-	export interface AccountKey {
-		/**
-		 * A version string for an account
-		 */
-		accountVersion?: string;
-	}
-
-	export interface Account {
-		/**
-		 * Specifies if an account should be deleted
-		 */
-		delete?: boolean;
 	}
 
 	export namespace workspace {
@@ -671,15 +675,6 @@ declare module 'azdata' {
 		connectionUriChanged(newUri: string, oldUri: string): Thenable<void>;
 	}
 
-	export namespace accounts {
-		export interface AccountSecurityToken {
-			/**
-			 * Access token expiry timestamp
-			 */
-			expiresOn?: number
-		}
-	}
-
 	export enum DataProviderType {
 		TableDesignerProvider = 'TableDesignerProvider',
 		ExecutionPlanProvider = 'ExecutionPlanProvider'
@@ -817,6 +812,7 @@ declare module 'azdata' {
 			ForeignKeys = 'foreignKeys',
 			CheckConstraints = 'checkConstraints',
 			Indexes = 'indexes',
+			PrimaryKey = 'primaryKey',
 			PrimaryKeyName = 'primaryKeyName',
 			PrimaryKeyDescription = 'primaryKeyDescription',
 			PrimaryKeyColumns = 'primaryKeyColumns'
@@ -945,6 +941,10 @@ declare module 'azdata' {
 			 */
 			additionalPrimaryKeyProperties?: DesignerDataPropertyInfo[];
 			/**
+			 * Components to be placed under the pre-defined tabs.
+			 */
+			additionalComponents?: DesignerDataPropertyWithTabInfo[];
+			/**
 			 * Whether to use advanced save mode. for advanced save mode, a publish changes dialog will be opened with preview of changes.
 			 */
 			useAdvancedSaveMode: boolean;
@@ -1014,6 +1014,16 @@ declare module 'azdata' {
 			 * The properties of the component.
 			 */
 			componentProperties: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties;
+		}
+
+		/**
+		 * The definition of the property in the designer with tab info.
+		 */
+		export interface DesignerDataPropertyWithTabInfo extends DesignerDataPropertyInfo {
+			/**
+			 * The tab info where this property belongs to.
+			 */
+			tab: TableProperty.Columns | TableProperty.PrimaryKey | TableProperty.ForeignKeys | TableProperty.CheckConstraints | TableProperty.Indexes;
 		}
 
 		/**
@@ -1237,6 +1247,14 @@ declare module 'azdata' {
 			 * Format (mimeType) of the report
 			 */
 			mimeType: string;
+			/**
+			 * Whether user confirmation is required, the default value is false.
+			 */
+			requireConfirmation?: boolean;
+			/**
+			 * The confirmation text.
+			 */
+			confirmationText?: string;
 			/**
 			 * The table schema validation error.
 			 */

@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ITree } from 'vs/base/parts/tree/browser/tree';
-import treedefaults = require('vs/base/parts/tree/browser/treeDefaults');
+import { ITree } from 'sql/base/parts/tree/browser/tree';
+import treedefaults = require('sql/base/parts/tree/browser/treeDefaults');
 import { IMouseEvent } from 'vs/base/browser/mouseEvent';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 

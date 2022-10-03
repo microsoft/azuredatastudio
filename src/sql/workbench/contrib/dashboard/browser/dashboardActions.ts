@@ -25,20 +25,25 @@ export const DE_MANAGE_COMMAND_ID = 'dataExplorer.manage';
 // Manage
 CommandsRegistry.registerCommand({
 	id: DE_MANAGE_COMMAND_ID,
-	handler: (accessor, args: TreeViewItemHandleArg) => {
+	handler: async (accessor, args: TreeViewItemHandleArg) => {
 		if (args.$treeItem) {
 			const connectionService = accessor.get(IConnectionManagementService);
 			const capabilitiesService = accessor.get(ICapabilitiesService);
-			let options = {
-				showDashboard: true,
-				saveTheConnection: false,
-				params: undefined,
-				showConnectionDialogOnError: true,
-				showFirewallRuleOnError: true
-			};
-			let profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
-			let uri = generateUri(profile, 'dashboard');
-			return connectionService.connect(new ConnectionProfile(capabilitiesService, args.$treeItem.payload), uri, options);
+			const providerName = args.$treeItem?.payload?.providerName;
+			if (providerName && capabilitiesService.providers[providerName] === undefined) {
+				await connectionService.handleUnsupportedProvider(providerName);
+			} else {
+				let options = {
+					showDashboard: true,
+					saveTheConnection: false,
+					params: undefined,
+					showConnectionDialogOnError: true,
+					showFirewallRuleOnError: true
+				};
+				let profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
+				let uri = generateUri(profile, 'dashboard');
+				return connectionService.connect(new ConnectionProfile(capabilitiesService, args.$treeItem.payload), uri, options);
+			}
 		}
 		return Promise.resolve(true);
 	}
@@ -99,6 +104,11 @@ export class OEManageConnectionAction extends Action {
 		if (!connectionProfile) {
 			// This should never happen. There should be always a valid connection if the manage action is called for
 			// an OE node or a database node
+			return true;
+		}
+
+		if (!this._capabilitiesService.getCapabilities(connectionProfile.providerName)) {
+			this._connectionManagementService.handleUnsupportedProvider(connectionProfile.providerName);
 			return true;
 		}
 

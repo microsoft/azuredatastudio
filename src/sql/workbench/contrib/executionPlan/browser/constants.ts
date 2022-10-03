@@ -3,6 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { localize } from 'vs/nls';
+
 let imageBasePath = require.toUrl('./images/icons/');
 export let executionPlanNodeIconPaths =
 {
@@ -367,3 +369,8 @@ export const polygonFillColor: string[] = [
 	`rgba(70, 104, 197, 0.1)`,   // "f2 blue purple"
 	`rgba(226, 229, 132, 0.1)`,  // "j2 khaki"
 ];
+
+//constant strings
+export const propertiesSearchDescription = localize('ep.propertiesSearchDescription', 'Search properties table');
+export const topOperationsSearchDescription = localize('ep.topOperationsSearchDescription', 'Search top operations');
+export const searchPlaceholder = localize('ep.searchPlaceholder', 'Filter for any field...');

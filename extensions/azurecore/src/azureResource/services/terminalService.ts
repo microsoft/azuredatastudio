@@ -36,7 +36,7 @@ const handleNeverUsed = async (): Promise<void> => {
 
 	const option = await vscode.window.showInformationMessage<TerminalMessageItem>(neverUsedString, openAzureShellButton, okButton);
 
-	if (option.action === TerminalOption.OPEN_SITE) {
+	if (option?.action === TerminalOption.OPEN_SITE) {
 		void vscode.env.openExternal(vscode.Uri.parse('https://aka.ms/AA83f8f'));
 	}
 };
@@ -50,6 +50,9 @@ export class AzureTerminalService implements IAzureTerminalService {
 
 	public async getOrCreateCloudConsole(account: AzureAccount, tenant: Tenant): Promise<void> {
 		const token = await azdata.accounts.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.MicrosoftResourceManagement);
+		if (!token) {
+			throw new Error('Did not receive security token when creating cloud console');
+		}
 		const settings: AxiosRequestConfig = {
 			headers: {
 				'Accept': 'application/json',
@@ -76,7 +79,7 @@ export class AzureTerminalService implements IAzureTerminalService {
 
 		const consoleRequestUri = this.getConsoleRequestUri(metadata.settings.armResource.endpoint);
 		if (preferredLocation) {
-			settings.headers['x-ms-console-preferred-location'] = preferredLocation;
+			settings.headers!['x-ms-console-preferred-location'] = preferredLocation;
 		}
 
 		let provisionResult: AxiosResponse<any>;
@@ -143,9 +146,9 @@ class AzureTerminal implements vscode.Pseudoterminal {
 	private readonly writeEmitter: vscode.EventEmitter<string>;
 	public readonly onDidWrite: vscode.Event<string>;
 
-	private socket: WS;
-	private intervalTimer: NodeJS.Timer;
-	private terminalDimensions: vscode.TerminalDimensions;
+	private socket: WS | undefined = undefined;
+	private intervalTimer: NodeJS.Timer | undefined = undefined;
+	private terminalDimensions: vscode.TerminalDimensions | undefined;
 
 	constructor(private readonly consoleUri: string, private readonly token: string, private shell: string) {
 		this.writeEmitter = new vscode.EventEmitter<string>();
@@ -209,7 +212,7 @@ class AzureTerminal implements vscode.Pseudoterminal {
 
 			// Keep alives
 			this.intervalTimer = setInterval(() => {
-				this.socket.ping();
+				this.socket?.ping();
 			}, 5000);
 		} catch (ex) {
 			console.log(ex);
@@ -217,10 +220,13 @@ class AzureTerminal implements vscode.Pseudoterminal {
 	}
 
 
-	private async establishTerminal(dimensions: vscode.TerminalDimensions): Promise<string> {
+	private async establishTerminal(dimensions: vscode.TerminalDimensions | undefined): Promise<string | undefined> {
 		let terminalResult: AxiosResponse<any>;
 		try {
-			terminalResult = await axios.post(`${this.consoleUri}/terminals?rows=${dimensions.rows}&cols=${dimensions.columns}&shell=${this.shell}`, undefined, {
+			const url = dimensions ?
+				`${this.consoleUri}/terminals?rows=${dimensions.rows}&cols=${dimensions.columns}&shell=${this.shell}`
+				: `${this.consoleUri}/terminals?shell=${this.shell}`;
+			terminalResult = await axios.post(url, undefined, {
 				headers: {
 					'Accept': 'application/json',
 					'Content-Type': 'application/json',
@@ -228,7 +234,7 @@ class AzureTerminal implements vscode.Pseudoterminal {
 				}
 			});
 		} catch (ex) {
-			console.log(ex, ex.response);
+			console.log(`Error establishing terminal. ${ex}, ${ex.response}`);
 			await handleNeverUsed();
 			return undefined;
 		}

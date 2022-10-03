@@ -110,7 +110,7 @@ export const mockConnectionProfile: azdata.IConnectionProfile = {
 	databaseName: 'My Database',
 	userName: 'My User',
 	password: 'My Pwd',
-	authenticationType: 'SqlLogin',
+	authenticationType: azdata.connection.AuthenticationType.SqlLogin,
 	savePassword: false,
 	groupFullName: 'My groupName',
 	groupId: 'My GroupId',
@@ -122,7 +122,7 @@ export const mockConnectionProfile: azdata.IConnectionProfile = {
 		database: 'My Database',
 		user: 'My User',
 		password: 'My Pwd',
-		authenticationType: 'SqlLogin',
+		authenticationType: azdata.connection.AuthenticationType.SqlLogin,
 		connectionName: 'My Connection Name'
 	}
 };

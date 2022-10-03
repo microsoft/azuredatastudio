@@ -354,6 +354,7 @@ export const parentTreeItemUnknown = localize('parentTreeItemUnknown', "Cannot a
 export const prePostDeployCount = localize('prePostDeployCount', "To successfully build, update the project to have one pre-deployment script and/or one post-deployment script");
 export const invalidProjectReload = localize('invalidProjectReload', "Cannot access provided database project. Only valid, open database projects can be reloaded.");
 export const externalStreamingJobValidationPassed = localize('externalStreamingJobValidationPassed', "Validation of external streaming job passed.");
+export const errorRetrievingBuildFiles = localize('errorRetrievingBuildFiles', "Could not build project. Error retrieving files needed to build.");
 export function projectAlreadyOpened(path: string) { return localize('projectAlreadyOpened', "Project '{0}' is already opened.", path); }
 export function projectAlreadyExists(name: string, path: string) { return localize('projectAlreadyExists', "A project named {0} already exists in {1}.", name, path); }
 export function noFileExist(fileName: string) { return localize('noFileExist', "File {0} doesn't exist", fileName); }
@@ -534,11 +535,6 @@ export const activeDirectoryInteractive = 'active directory interactive';
 export const userIdSetting = 'User ID';
 export const passwordSetting = 'Password';
 
-// Authentication types
-export const integratedAuth = 'Integrated';
-export const azureMfaAuth = 'AzureMFA';
-export const sqlAuth = 'SqlAuth';
-
 export const azureAddAccount = localize('azureAddAccount', "Add an Account...");
 
 // Tree item types
@@ -593,6 +589,15 @@ export const targetPlatformToVersion: Map<string, string> = new Map<string, stri
 	[SqlTargetPlatform.sqlDW, 'Dw']
 ]);
 
+export const onPremServerVersionToTargetPlatform: Map<number, SqlTargetPlatform> = new Map<number, SqlTargetPlatform>([
+	[11, SqlTargetPlatform.sqlServer2012],
+	[12, SqlTargetPlatform.sqlServer2014],
+	[13, SqlTargetPlatform.sqlServer2016],
+	[14, SqlTargetPlatform.sqlServer2017],
+	[15, SqlTargetPlatform.sqlServer2019],
+	[16, SqlTargetPlatform.sqlServer2022]
+]);
+
 // DW is special since the system dacpac folder has a different name from the target platform
 export const AzureDwFolder = 'AzureDw';
 
@@ -614,4 +619,18 @@ export enum PublishTargetType {
 	newAzureServer = 'newAzureServer'
 }
 
+// Configuration keys
 export const CollapseProjectNodesKey = 'collapseProjectNodes';
+export const microsoftBuildSqlVersionKey = 'microsoftBuildSqlVersion';
+
+// httpClient
+export const downloadError = localize('downloadError', "Download error");
+export const downloadProgress = localize('downloadProgress', "Download progress");
+export const downloading = localize('downloading', "Downloading");
+
+// buildHelper
+export const downloadingDacFxDlls = localize('downloadingDacFxDlls', "Downloading Microsoft.Build.Sql nuget to get build DLLs");
+export function downloadingFromTo(from: string, to: string) { return localize('downloadingFromTo', "Downloading from {0} to {1}", from, to); }
+export function extractingDacFxDlls(location: string) { return localize('extractingDacFxDlls', "Extracting DacFx build DLLs to {0}", location); }
+export function errorDownloading(url: string, error: string) { return localize('errorDownloading', "Error downloading {0}. Error: {1}", url, error); }
+export function errorExtracting(path: string, error: string) { return localize('errorExtracting', "Error extracting files from {0}. Error: {1}", path, error); }
