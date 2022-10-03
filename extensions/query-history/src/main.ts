@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { DOUBLE_CLICK_ACTION_CONFIG_SECTION, ITEM_SELECTED_COMMAND_ID, QUERY_HISTORY_CONFIG_SECTION } from './constants';
 import { QueryHistoryItem } from './queryHistoryItem';
-import { QueryHistoryProvider } from './queryHistoryProvider';
+import { QueryHistoryProvider, setLoadingContext } from './queryHistoryProvider';
 import { promises as fs } from 'fs';
 
 let lastSelectedItem: { item: QueryHistoryItem | undefined, time: number | undefined } = {
@@ -29,6 +29,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 			console.error(`Error creating query history global storage folder ${context.globalStorageUri.fsPath}. ${err}`);
 		}
 	}
+	await setLoadingContext(true);
 	const treeDataProvider = new QueryHistoryProvider(context, storageUri);
 	context.subscriptions.push(treeDataProvider);
 	const treeView = vscode.window.createTreeView('queryHistory', {
