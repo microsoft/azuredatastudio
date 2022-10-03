@@ -19,6 +19,7 @@ import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import * as styles from '../constants/styles';
 import { SkuEditParametersDialog } from '../dialog/skuRecommendationResults/skuEditParametersDialog';
 import { logError, TelemetryViews } from '../telemtery';
+import { TdeConfigurationDialog } from '../dialog/tdeConfiguration/tdeConfigurationDialog';
 
 export interface Product {
 	type: MigrationTargetType;
@@ -46,6 +47,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private _rootContainer!: azdata.FlexContainer;
 	private _viewAssessmentsHelperText!: azdata.TextComponent;
 	private _databaseSelectedHelperText!: azdata.TextComponent;
+	private _tdedatabaseSelectedHelperText!: azdata.TextComponent;
 
 	private _azureRecommendationSectionText!: azdata.TextComponent;
 
@@ -71,7 +73,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private _skuEnableElasticRecommendationsText!: azdata.TextComponent;
 
 	private assessmentGroupContainer!: azdata.FlexContainer;
+	private _tdeInfoContainer!: azdata.FlexContainer;
 	private _disposables: vscode.Disposable[] = [];
+	private _tdeConfigurationDialog!: TdeConfigurationDialog;
 
 	private _serverName: string = '';
 	private _supportedProducts: Product[] = [
@@ -172,12 +176,14 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this._chooseTargetComponent = await this.createChooseTargetComponent(view);
 		const _azureRecommendationsContainer = this.createAzureRecommendationContainer(view);
 		this.assessmentGroupContainer = await this.createViewAssessmentsContainer();
+		this._tdeInfoContainer = await this.createTdeInfoContainer();
 		this._formContainer = view.modelBuilder.formContainer()
 			.withFormItems([
 				{ component: statusContainer, title: '' },
 				{ component: this._chooseTargetComponent },
 				{ component: _azureRecommendationsContainer },
-				{ component: this.assessmentGroupContainer }])
+				{ component: this.assessmentGroupContainer },
+				{ component: this._tdeInfoContainer }])
 			.withProps({
 				CSSStyles: {
 					'display': 'none',
@@ -344,6 +350,40 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			.withItems([chooseYourTargetText, this._rbgLoader])
 			.component();
 		return component;
+	}
+
+	private async createTdeInfoContainer(): Promise<azdata.FlexContainer> {
+		const container = this._view.modelBuilder.flexContainer().withProps({
+			CSSStyles: {
+				'flex-direction': 'column'
+			}
+		}).component();
+
+		const editButton = this._view.modelBuilder.button().withProps({
+			label: constants.TDE_BUTTON_CAPTION,
+			width: 180,
+			CSSStyles: {
+				...styles.BODY_CSS,
+				'margin': '0',
+			}
+		}).component();
+		this._tdeConfigurationDialog = new TdeConfigurationDialog(this, this.wizard, this.migrationStateModel);
+		this._disposables.push(editButton.onDidClick(
+			async (e) => await this._tdeConfigurationDialog.openDialog()));
+
+		this._tdedatabaseSelectedHelperText = this._view.modelBuilder.text()
+			.withProps({
+				CSSStyles: { ...styles.BODY_CSS },
+				ariaLive: 'polite',
+			}).component();
+
+		container.addItems([
+			editButton,
+			this._tdedatabaseSelectedHelperText]);
+
+		await utils.updateControlDisplay(container, false);
+
+		return container;
 	}
 
 	private async createViewAssessmentsContainer(): Promise<azdata.FlexContainer> {
@@ -739,7 +779,44 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			this.changeTargetType(this._rbg.selectedCardId);
 		}
 
+		await this.refreshTdeView();
+
 		this._rbgLoader.loading = false;
+	}
+
+	private async refreshTdeView() {
+
+		if (this.migrationStateModel._targetType !== MigrationTargetType.SQLMI) {
+
+			//Reset the encrypted databases counter on the model to ensure the certificates migration is ignored.
+			this.migrationStateModel.tdeMigrationConfig.setTdeEnabledDatabasesCount(0);
+
+			return;
+		}
+
+		const encryptedDbCount = this.migrationStateModel._assessmentResults.databaseAssessments.filter(
+			db => this.migrationStateModel._databasesForMigration.findIndex(dba => dba === db.name) >= 0 &&
+				db.issues.findIndex(iss => iss.ruleId === constants.TDE_RULE_ID && iss.appliesToMigrationTargetPlatform === MigrationTargetType.SQLMI) >= 0
+		);
+		const hasencryptedDb = encryptedDbCount.length > 0;
+
+		//Set encrypted databases
+		this.migrationStateModel.tdeMigrationConfig.setTdeEnabledDatabasesCount(encryptedDbCount.length);
+
+		if (hasencryptedDb) {
+			//Set the text when there are encrypted databases.
+
+			const tdeMsg = (this.migrationStateModel.tdeMigrationConfig.isTdeMigrationMethodAdsConfirmed) ? constants.TDE_WIZARD_MSG_TDE : constants.TDE_WIZARD_MSG_MANUAL;
+			this._tdedatabaseSelectedHelperText.value = constants.TDE_MSG_DATABASES_SELECTED(encryptedDbCount.length, tdeMsg);
+
+			if (!this.migrationStateModel.tdeMigrationConfig.shownBefore()) {
+				await this._tdeConfigurationDialog.openDialog();
+			}
+		} else {
+			this._tdedatabaseSelectedHelperText.value = constants.TDE_WIZARD_MSG_EMPTY;
+		}
+
+		await utils.updateControlDisplay(this._tdeInfoContainer, hasencryptedDb);
 	}
 
 	public async startCardLoading(): Promise<void> {

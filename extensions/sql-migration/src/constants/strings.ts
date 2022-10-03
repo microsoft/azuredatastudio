@@ -1045,3 +1045,25 @@ export const SQLDB_COL_COPY_DURATION = localize('sql.migration.sqldb.column.copy
 export const SQLDB_COL_PARRALEL_COPY_TYPE = localize('sql.migration.sqldb.column.parallelcopytype', 'Parallel copy type');
 export const SQLDB_COL_USED_PARALLEL_COPIES = localize('sql.migration.sqldb.column.usedparallelcopies', 'Used parallel copies');
 export const SQLDB_COL_COPY_START = localize('sql.migration.sqldb.column.copystart', 'Copy start');
+
+
+//TDE Configuration Dialog
+export const TDE_WIZARD_TITLE = localize('sql.migration.tde.wizard.title', "Encrypted database selected.");
+export const TDE_WIZARD_DESCRIPTION = localize('sql.migration.tde.wizard.description', "To migrate an encrypted database you need to provide access to the encryption certificates or migrate certificates manually before proceeding with the migration.");
+export const TDE_WIZARD_MIGRATION_CAPTION = localize('sql.migration.tde.wizard.optionscaption', "Certificate migration");
+export const TDE_WIZARD_MIGRATION_OPTION_ADS = localize('sql.migration.tde.wizard.optionads', "Export my certificates and private key and provide to target database for migration.");
+export const TDE_WIZARD_MIGRATION_OPTION_ADS_CONFIRM = localize('sql.migration.tde.wizard.optionadsconfirm', "I give consent to use my credentials for accessing the certificates.");
+export const TDE_WIZARD_MIGRATION_OPTION_MANUAL = localize('sql.migration.tde.wizard.optionmanual', "I don't want ADS to export the certificates. I will manually do it myself.");
+export const TDE_BUTTON_CAPTION = localize('sql.migration.tde.button.caption', "Edit");
+export const TDE_WIZARD_MSG_MANUAL = localize('sql.migration.tde.msg.manual', "You have choosen to manually migrate certificates.");
+export const TDE_WIZARD_MSG_TDE = localize('sql.migration.tde.msg.tde', "You have given access to ADS to migrate the encryption certificates and database.");
+export const TDE_WIZARD_MSG_EMPTY = localize('sql.migration.tde.msg.empty', "No encrypted database selected.");
+export const TDE_RULE_ID = localize('sql.migration.tde.rule.id', "SyntaxError"); //TdeEnabled
+
+export function TDE_MSG_DATABASES_SELECTED(selected: number, message: string): string {
+	return localize('sql.migration.tde.msg.databases.selected', "{0} TDE databases selected for migration. {1}", selected, message);
+}
+
+export function TDE_WIZARD_DATABASES_SELECTED(encryptedCount: number, totalCount: number): string {
+	return localize('sql.migration.tde.wizard.databases.selected', "{0} out of {1} selected database is using transparent data encryption.", encryptedCount, totalCount);
+}
