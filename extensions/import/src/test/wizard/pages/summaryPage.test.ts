@@ -163,7 +163,7 @@ describe('import extension summary page tests', function () {
 			options: {
 				azureAccount: getAzureAccounts()[1].key.accountId,
 				azureTenantId: 'azureAccount2Tenant',
-				authenticationType: 'AzureMFA'
+				authenticationType: azdata.connection.AuthenticationType.AzureMFA
 			}
 		};
 

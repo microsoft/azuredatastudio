@@ -5,11 +5,14 @@
 	"queryHistory.doubleClickAction": "The action taken when a history item is double clicked",
 	"queryHistory.doubleClickAction.open": "Open a new disconnected editor with the query from the selected history item",
 	"queryHistory.doubleClickAction.run": "Open a new connected editor with the query and connection from the selected history item and automatically run the query",
+	"queryHistory.persistHistory": "Whether query history is persisted across restarts. If false then the history will be cleared when the application exits.",
 	"queryHistory.open": "Open Query",
 	"queryHistory.run": "Run Query",
 	"queryHistory.delete": "Delete",
 	"queryHistory.clear": "Clear All History",
 	"queryHistory.disableCapture": "Pause Query History Capture",
 	"queryHistory.enableCapture": "Start Query History Capture",
-	"queryHistory.noEntries": "No queries to display"
+	"queryHistory.noEntries": "No queries to display",
+	"queryHistory.maxEntries": "Maximum number of entries to store. 0 means unlimited entries are stored. Increasing this limit may impact performance, especially if persistence is enabled.",
+	"queryHistory.openStorageFolder": "Open storage folder"
 }

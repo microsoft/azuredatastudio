@@ -207,10 +207,10 @@
   dependencies:
     "@vscode/extension-telemetry" "^0.6.2"
 
-"@microsoft/ads-service-downloader@0.2.4":
-  version "0.2.4"
-  resolved "https://registry.yarnpkg.com/@microsoft/ads-service-downloader/-/ads-service-downloader-0.2.4.tgz#905a11eb2da19673629852d9764fb9fb94ad81bd"
-  integrity sha512-3J0YjH29a5pP+5Yu0HF7itRBZpNOgUN34Gh/p0Py/TQr7qUzZSXwOM+fWD1nCea+q9t8mfHr0yuy0aeDX+33vQ==
+"@microsoft/ads-service-downloader@1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@microsoft/ads-service-downloader/-/ads-service-downloader-1.0.2.tgz#76cc9a44074525ac65a6ea15f8b5ee7eac87efbe"
+  integrity sha512-Qpc5HNLywVZbSxeUC4S7d+VRAUddrYjkIfDXl76UwCA0iuwzi71RtciEgWfCWAZMm9CbKTIbtFGh4pYw+h81nQ==
   dependencies:
     async-retry "^1.2.3"
     eventemitter2 "^5.0.1"

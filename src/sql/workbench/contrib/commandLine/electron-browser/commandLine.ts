@@ -291,10 +291,10 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 		*/
 		profile.authenticationType =
 			args.authenticationType ? args.authenticationType :
-				args.integrated ? Constants.integrated :
-					args.aad ? Constants.azureMFA :
-						(args.user && args.user.length > 0) ? args.user.includes('@') ? Constants.azureMFA : Constants.sqlLogin :
-							Constants.integrated;
+				args.integrated ? Constants.AuthenticationType.Integrated :
+					args.aad ? Constants.AuthenticationType.AzureMFA :
+						(args.user && args.user.length > 0) ? args.user.includes('@') ? Constants.AuthenticationType.AzureMFA : Constants.AuthenticationType.SqlLogin :
+							Constants.AuthenticationType.Integrated;
 
 		profile.connectionName = '';
 		profile.setOptionValue('applicationName', Constants.applicationName);

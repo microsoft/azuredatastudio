@@ -265,6 +265,7 @@ export const collapseExpandNodeIconPaths = {
 };
 
 export const savePlanIconClassNames = 'ep-save-plan-icon';
+export const highlightExpensiveOperationClassNames = 'ep-highlight-expensive-operation-icon';
 export const openPropertiesIconClassNames = 'ep-open-properties-icon';
 export const openQueryIconClassNames = 'ep-open-query-icon';
 export const openPlanFileIconClassNames = 'ep-open-plan-file-icon';
