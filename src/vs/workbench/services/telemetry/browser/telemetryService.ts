@@ -64,7 +64,7 @@ export class TelemetryService extends Disposable implements ITelemetryService {
 			// If remote server is present send telemetry through that, else use the client side appender
 			const appenders = [];
 			const isInternal = isInternalTelemetry(productService, configurationService);
-			const telemetryProvider: ITelemetryAppender = remoteAgentService.getConnection() !== null ? { log: remoteAgentService.logTelemetry.bind(remoteAgentService), flush: remoteAgentService.flushTelemetry.bind(remoteAgentService) } : new OneDataSystemWebAppender(isInternal, 'monacoworkbench', null, productService.aiConfig?.ariaKey);
+			const telemetryProvider: ITelemetryAppender = remoteAgentService.getConnection() !== null ? { log: remoteAgentService.logTelemetry.bind(remoteAgentService), flush: remoteAgentService.flushTelemetry.bind(remoteAgentService) } : new OneDataSystemWebAppender(isInternal, 'adsworkbench', null, productService.aiConfig?.ariaKey); // {{SQL CARBON EDIT}} Use our own event prefix
 			appenders.push(telemetryProvider);
 			appenders.push(new TelemetryLogAppender(loggerService, environmentService));
 			const config: ITelemetryServiceConfig = {
