@@ -54,6 +54,7 @@ import { DEFAULT_NB_LANGUAGE_MODE, INTERACTIVE_LANGUAGE_MODE, INTERACTIVE_PROVID
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { SqlSerializationProvider } from 'sql/workbench/services/notebook/browser/sql/sqlSerializationProvider';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
+import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 
 const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
 
@@ -178,6 +179,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	private _onNotebookEditorAdd = new Emitter<INotebookEditor>();
 	private _onNotebookEditorRemove = new Emitter<INotebookEditor>();
 	private _onNotebookEditorRename = new Emitter<INotebookEditor>();
+	private _onNotebookKernelsAdded = new Emitter<IStandardKernelWithProvider[]>();
 	private _editors = new Map<string, INotebookEditor>();
 	private _fileToProviderDescriptions = new Map<string, ProviderDescriptionRegistration[]>();
 	private _providerToStandardKernels = new Map<string, StandardKernelsDescriptor>(); // Note: providerId key here should be in upper case
@@ -526,6 +528,19 @@ export class NotebookService extends Disposable implements INotebookService {
 		}
 		descriptor.instance = standardKernels;
 		this._providerToStandardKernels.set(providerUpperCase, descriptor);
+
+		// Emit update event if the provider is not one of the default options
+		if (provider.provider !== SQL_NOTEBOOK_PROVIDER && provider.provider !== JUPYTER_PROVIDER_ID) {
+			this._onNotebookKernelsAdded.fire(standardKernels.map(kernel => {
+				return {
+					name: kernel.name,
+					displayName: kernel.displayName,
+					connectionProviderIds: kernel.connectionProviderIds,
+					notebookProvider: provider.provider,
+					supportedLanguages: kernel.supportedLanguages,
+				};
+			}));
+		}
 	}
 
 	getSupportedFileExtensions(): string[] {
@@ -630,6 +645,10 @@ export class NotebookService extends Disposable implements INotebookService {
 
 	get onNotebookEditorRename(): Event<INotebookEditor> {
 		return this._onNotebookEditorRename.event;
+	}
+
+	get onNotebookKernelsAdded(): Event<IStandardKernelWithProvider[]> {
+		return this._onNotebookKernelsAdded.event;
 	}
 
 	addNotebookEditor(editor: INotebookEditor): void {

@@ -135,6 +135,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		@IConfigurationService private configurationService: IConfigurationService,
 		@IUndoRedoService private undoService: IUndoRedoService,
 		@ICapabilitiesService private _capabilitiesService?: ICapabilitiesService,
+		@INotebookService private _notebookService?: INotebookService,
 	) {
 		super();
 		if (!_notebookOptions || !_notebookOptions.notebookUri || !_notebookOptions.executeManagers) {
@@ -147,6 +148,13 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._notebookOptions.layoutChanged(() => this._layoutChanged.fire());
 		}
 		this._defaultKernel = _notebookOptions.defaultKernel;
+		if (this._notebookService) {
+			this._register(this._notebookService.onNotebookKernelsAdded(kernels => {
+				this._standardKernels.push(...kernels);
+				this.setKernelDisplayNameMapsWithStandardKernels();
+				this._kernelsChangedEmitter.fire(this._activeClientSession.kernel);
+			}));
+		}
 	}
 
 	private get serializationManagers(): ISerializationManager[] {
