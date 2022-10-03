@@ -522,6 +522,9 @@ export function TABLE_SELECTION_COUNT(selectedCount: number, rowCount: number): 
 export function TABLE_SELECTED_COUNT(selectedCount: number, rowCount: number): string {
 	return localize('sql.migration.table.selected.count', "{0} of {1} tables selected", selectedCount, rowCount);
 }
+export function MISSING_TARGET_TABLES_COUNT(tables: number): string {
+	return localize('sql.migration.table.missing.count', "Missing target tables excluded from list: {0}", tables);
+}
 export const DATABASE_MISSING_TABLES = localize('sql.migratino.database.missing.tables', "0 tables found.");
 export const DATABASE_LOADING_TABLES = localize('sql.migratino.database.loading.tables', "Loading tables list...");
 export const TABLE_SELECTION_FILTER = localize('sql.migratino.table.selection.filter', "Filter tables");
