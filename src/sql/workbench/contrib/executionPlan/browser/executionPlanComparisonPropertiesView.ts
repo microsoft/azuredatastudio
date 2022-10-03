@@ -19,6 +19,7 @@ import { IContextMenuService, IContextViewService } from 'vs/platform/contextvie
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { Codicon } from 'vs/base/common/codicons';
+import { deepClone } from 'vs/base/common/objects';
 
 export enum ExecutionPlanCompareOrientation {
 	Horizontal = 'horizontal',
@@ -349,14 +350,14 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 				let [unequalSubProps, equalSubProps] = this.splitEqualFromUnequalProperties(treeGridChildren);
 
 				if (unequalSubProps.length > 0) {
-					let currentProp = JSON.parse(JSON.stringify(prop)); // Deep copy
+					let currentProp = deepClone(prop);
 					currentProp['treeGridChildren'] = unequalSubProps;
 
 					unequalProperties.push(currentProp);
 				}
 
 				if (equalSubProps.length > 0) {
-					let currentProp = JSON.parse(JSON.stringify(prop)); // Deep copy
+					let currentProp = deepClone(prop);
 					currentProp['treeGridChildren'] = equalSubProps;
 
 					equalProperties.push(currentProp);
