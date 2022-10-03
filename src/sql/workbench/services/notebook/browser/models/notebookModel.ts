@@ -975,7 +975,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				kernelSpec: this._defaultKernel
 			});
 			if (!this._activeClientSession) {
-				this.updateActiveClientSession(clientSession);
+				this._activeClientSession = clientSession;
 			}
 
 			// If a connection profile is passed in and _activeConnection isn't yet set, use that. Otherwise, use _activeConnection
@@ -1019,11 +1019,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._activeClientSession = undefined;
 			await this.startSession(this.executeManager, this._selectedKernelDisplayName, true);
 		}
-	}
-
-	// When changing kernel, update the active session
-	private updateActiveClientSession(clientSession: IClientSession) {
-		this._activeClientSession = clientSession;
 	}
 
 	public async setDefaultKernelAndProviderId(): Promise<void> {
