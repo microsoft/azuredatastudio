@@ -49,7 +49,6 @@ else
 
 	# Configuration for more verbose output
 	export VSCODE_CLI=1
-	export ELECTRON_ENABLE_STACK_DUMPING=1
 	export ELECTRON_ENABLE_LOGGING=1
 
 	echo "Storing crash reports into '$VSCODECRASHDIR'."
@@ -58,27 +57,27 @@ else
 fi
 
 if [ -z "$INTEGRATION_TEST_APP_NAME" ]; then
-	after_suite() {
-		pkill -P $$
-		true;
-	}
+	kill_app() { true; }
 else
-	after_suite() {
-		pkill -P $$
-		killall $INTEGRATION_TEST_APP_NAME || true;
-	}
+	kill_app() { killall $INTEGRATION_TEST_APP_NAME || true; }
 fi
 
+print_subprocesses() {
+	echo "Subprocesses:"
+	ps -ef | grep $INTEGRATION_TEST_APP_NAME | grep -v grep
+}
 
 # Tests standalone (AMD)
 
+echo
+echo "### node.js integration tests"
+echo
 ./scripts/test.sh --runGlob **/*.integrationTest.js "$@"
-after_suite
 
 
 # Tests in the extension host
 
-ALL_PLATFORMS_API_TESTS_EXTRA_ARGS="--disable-telemetry --skip-welcome --skip-release-notes --crash-reporter-directory=$VSCODECRASHDIR --logsPath=$VSCODELOGSDIR --no-cached-data --disable-updates --disable-extensions --disable-workspace-trust --user-data-dir=$VSCODEUSERDATADIR"
+ALL_PLATFORMS_API_TESTS_EXTRA_ARGS="--disable-telemetry --skip-welcome --skip-release-notes --crash-reporter-directory=$VSCODECRASHDIR --logsPath=$VSCODELOGSDIR --no-cached-data --disable-updates --disable-keytar --disable-extensions --disable-workspace-trust --user-data-dir=$VSCODEUSERDATADIR"
 
 # {{SQL CARBON EDIT}} Don't run tests for unused extensions
 # "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS $ROOT/extensions/vscode-api-tests/testWorkspace --enable-proposed-api=vscode.vscode-api-tests --extensionDevelopmentPath=$ROOT/extensions/vscode-api-tests --extensionTestsPath=$ROOT/extensions/vscode-api-tests/out/singlefolder-tests $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
@@ -99,11 +98,23 @@ ALL_PLATFORMS_API_TESTS_EXTRA_ARGS="--disable-telemetry --skip-welcome --skip-re
 # "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS $ROOT/extensions/emmet/test-workspace --extensionDevelopmentPath=$ROOT/extensions/emmet --extensionTestsPath=$ROOT/extensions/emmet/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
 # after_suite
 
+echo
+echo "### Git tests"
+echo
+print_subprocesses
 "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS $(mktemp -d 2>/dev/null) --enable-proposed-api=vscode.git --extensionDevelopmentPath=$ROOT/extensions/git --extensionTestsPath=$ROOT/extensions/git/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
-after_suite
+kill_app
+print_subprocesses
 
+
+echo
+echo "### Azure Core tests"
+echo
+print_subprocesses
 "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS $ROOT/extensions/azurecore/test-fixtures --extensionDevelopmentPath=$ROOT/extensions/azurecore --extensionTestsPath=$ROOT/extensions/azurecore/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
-after_suite
+kill_app
+print_subprocesses
+
 
 # "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS $(mktemp -d 2>/dev/null) --extensionDevelopmentPath=$ROOT/extensions/ipynb --extensionTestsPath=$ROOT/extensions/ipynb/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
 # after_suite
