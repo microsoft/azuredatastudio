@@ -157,7 +157,7 @@
         },
         {
           "command": "queryHistory.disableCapture",
-          "when": "view == queryHistory && config.queryHistory.capatureEnabled",
+          "when": "view == queryHistory && config.queryHistory.captureEnabled",
           "group": "QueryHistory@5"
         },
         {
