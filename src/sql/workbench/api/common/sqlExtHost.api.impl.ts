@@ -40,6 +40,7 @@ import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemet
 import { ExtHostAzureBlob } from 'sql/workbench/api/common/extHostAzureBlob';
 import { ExtHostAzureAccount } from 'sql/workbench/api/common/extHostAzureAccount';
 import { IExtHostExtensionService } from 'vs/workbench/api/common/extHostExtensionService';
+import { AuthenticationType } from 'sql/platform/connection/common/constants';
 
 export interface IAzdataExtensionApiFactory {
 	(extension: IExtensionDescription): typeof azdata;
@@ -106,6 +107,9 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 			// namespace: connection
 			const connection: typeof azdata.connection = {
 				// "azdata" API definition
+
+				AuthenticationType: AuthenticationType,
+
 				ConnectionProfile: sqlExtHostTypes.ConnectionProfile,
 
 				getCurrentConnection(): Thenable<azdata.connection.ConnectionProfile> {

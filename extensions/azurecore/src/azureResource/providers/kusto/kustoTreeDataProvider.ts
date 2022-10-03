@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ExtensionNodeType, TreeItem } from 'azdata';
+import { connection, ExtensionNodeType, TreeItem } from 'azdata';
 import { TreeItemCollapsibleState, ExtensionContext } from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
@@ -43,7 +43,7 @@ export class KustoTreeDataProvider extends ResourceTreeDataProviderBase<azureRes
 				databaseName: databaseServer.defaultDatabaseName,
 				userName: databaseServer.loginName,
 				password: '',
-				authenticationType: 'AzureMFA',
+				authenticationType: connection.AuthenticationType.AzureMFA,
 				savePassword: true,
 				groupFullName: '',
 				groupId: '',

@@ -1143,10 +1143,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dashboard.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Determine the migration readiness of your SQL Server instances, identify a recommended Azure SQL target, and complete the migration of your SQL Server instance to Azure SQL Managed Instance or SQL Server on Azure Virtual Machines.]]></Val>
+          <Val><![CDATA[Determine the migration readiness of your SQL Server instances, identify a recommended Azure SQL target, and complete the migration of your SQL Server instance to Azure SQL Managed Instance, SQL Server on Azure Virtual Machines or Azure SQL Database (PREVIEW).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[确定 SQL Server 实例的迁移准备情况，确定建议的 Azure SQL 目标，并完成 SQL Server 实例到 Azure 虚拟机上的 Azure SQL 托管实例或 SQL Server 的迁移。]]></Val>
+            <Val><![CDATA[确定 SQL Server 实例的迁移准备情况，确定建议的 Azure SQL 目标，并完成 SQL Server 实例向 Azure SQL 托管实例、Azure 虚拟机上的 SQL Server 或 Azure SQL 数据库(预览)的迁移。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Determine the migration readiness of your SQL Server instances, identify a recommended Azure SQL target, and complete the migration of your SQL Server instance to Azure SQL Managed Instance or SQL Server on Azure Virtual Machines.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1173,6 +1176,15 @@
           <Val><![CDATA[The Azure SQL Migration extension for Azure Data Studio provides capabilities to assess, get right-sized Azure recommendations and migrate SQL Server databases to Azure.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Azure Data Studio 的 Azure SQL 迁移扩展提供评估、获取适当大小的 Azure 建议以及将 SQL Server 数据库迁移到 Azure 的功能。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dashboard.help.description.sqldb" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Database (PREVIEW).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[将数据库从 SQL Server 实例(本地或 Azure 虚拟机中)迁移到 Azure SQL 数据库(预览)的分步教程。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1209,6 +1221,15 @@
           <Val><![CDATA[Migrate databases using Azure Data Studio]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[使用 Azure Data Studio 迁移数据库]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dashboard.help.link.sqldb" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Tutorial:  Migrate to SQL Server on Azure SQL Database (offline) - (PREVIEW)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[教程: 迁移到 Azure SQL 数据库上的 SQL Server (脱机)–(预览)]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1260,6 +1281,15 @@
           <Val><![CDATA[Azure SQL Migration]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Azure SQL 迁移]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.data.source.configuration.page.title" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Data source configuration]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[数据源配置]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1491,18 +1521,6 @@
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Select the location of your database backups to use for migration.]]></Val>
-          </Prev>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.database.page.title" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Database backup]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[数据库备份]]></Val>
-          </Tgt>
-          <Prev Cat="Text">
-            <Val><![CDATA[Database Backup]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -3237,39 +3255,57 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.pre.req.1" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure account details]]></Val>
+          <Val><![CDATA[An Azure account (not required for assessment or SKU recommendation functionality)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure 帐户详细信息]]></Val>
+            <Val><![CDATA[Azure 帐户(非评估或 SKU 建议功能所需)]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure account details]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.pre.req.2" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure SQL Managed Instance or SQL Server on Azure Virtual Machine]]></Val>
+          <Val><![CDATA[A source SQL Server database(s) running on on-premises, or on SQL Server on Azure Virtual Machine or any virtual machine running in the cloud (private, public).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure SQL 托管实例或 Azure 虚拟机上的 SQL Server]]></Val>
+            <Val><![CDATA[在本地或 Azure 虚拟机中的 SQL Server 或云(私有、公共)中运行的任何虚拟机上的源 SQL Server 数据库。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure SQL Managed Instance or SQL Server on Azure Virtual Machine]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.pre.req.3" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Backup location details]]></Val>
+          <Val><![CDATA[An Azure SQL Managed Instance, SQL Server on Azure Virtual Machine, or Azure SQL Database (PREVIEW) to migrate your database(s) to.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[备份位置详细信息]]></Val>
+            <Val><![CDATA[要将你的数据库迁移到的 Azure SQL 托管实例、Azure 虚拟机上的 SQL Server 或 Azure SQL 数据库(预览)。]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Backup location details]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.pre.req.4" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Your database backup location details, either a network file share or an Azure Blob Storage container (not required for Azure SQL Database targets).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[你的数据库备份位置详细信息，可以是网络文件共享或 Azure Blob 存储容器(非 Azure SQL 数据库目标所需)。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.pre.req.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Things you need before starting a migration:]]></Val>
+          <Val><![CDATA[Things you need before starting your Azure SQL migration:]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[开始迁移之前需要执行的操作:]]></Val>
+            <Val><![CDATA[开始 Azure SQL 迁移之前的必需项:]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Things you need before starting migration:]]></Val>
+            <Val><![CDATA[Things you need before starting a migration:]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -4722,10 +4758,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.recommendation.view.assessment.sqldb" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[To migrate to Azure SQL Database, view assessment results and select one or more databases.]]></Val>
+          <Val><![CDATA[To migrate to Azure SQL Database (PREVIEW), view assessment results and select one or more databases.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[要迁移到 Azure SQL 数据库，请查看评估结果并选择一个或多个数据库。]]></Val>
+            <Val><![CDATA[要迁移到 Azure SQL 数据库(预览)，请查看评估结果并选择一个或多个数据库。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[To migrate to Azure SQL Database, view assessment results and select one or more databases.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4899,10 +4938,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.sqldb.card.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure SQL Database]]></Val>
+          <Val><![CDATA[Azure SQL Database (PREVIEW)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure SQL 数据库]]></Val>
+            <Val><![CDATA[Azure SQL 数据库(预览)]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure SQL Database]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
