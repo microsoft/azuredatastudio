@@ -2,39 +2,35 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { Contracts, TelemetryClient } from 'applicationinsights';
+import { ITelemetryItem, ITelemetryUnloadState } from '@microsoft/1ds-core-js';
 import * as assert from 'assert';
-import { AppInsightsAppender } from 'vs/platform/telemetry/node/appInsightsAppender';
+import { OneDataSystemWebAppender } from 'vs/platform/telemetry/browser/1dsAppender';
+import { IAppInsightsCore } from 'vs/platform/telemetry/common/1dsAppender';
 
-class AppInsightsMock extends TelemetryClient {
-	public override config: any;
-	public override channel: any;
-	public events: Contracts.EventTelemetry[] = [];
+class AppInsightsCoreMock implements IAppInsightsCore {
+	pluginVersionString: string = 'Test Runner';
+	public events: any[] = [];
 	public IsTrackingPageView: boolean = false;
 	public exceptions: any[] = [];
 
-	constructor() {
-		super('testKey');
+	public track(event: ITelemetryItem) {
+		this.events.push(event.baseData);
 	}
 
-	public override trackEvent(event: any) {
-		this.events.push(event);
-	}
-
-	public override flush(options: any): void {
-		// called on dispose
+	public unload(isAsync: boolean, unloadComplete: (unloadState: ITelemetryUnloadState) => void): void {
+		// No-op
 	}
 }
 
 suite('AIAdapter', () => {
-	let appInsightsMock: AppInsightsMock;
-	let adapter: AppInsightsAppender;
-	let prefix = 'prefix';
+	let appInsightsMock: AppInsightsCoreMock;
+	let adapter: OneDataSystemWebAppender;
+	const prefix = 'prefix';
 
 
 	setup(() => {
-		appInsightsMock = new AppInsightsMock();
-		adapter = new AppInsightsAppender(prefix, undefined!, () => appInsightsMock);
+		appInsightsMock = new AppInsightsCoreMock();
+		adapter = new OneDataSystemWebAppender(false, prefix, undefined!, () => appInsightsMock);
 	});
 
 	teardown(() => {
@@ -49,11 +45,11 @@ suite('AIAdapter', () => {
 	});
 
 	test('addional data', () => {
-		adapter = new AppInsightsAppender(prefix, { first: '1st', second: 2, third: true }, () => appInsightsMock);
+		adapter = new OneDataSystemWebAppender(false, prefix, { first: '1st', second: 2, third: true }, () => appInsightsMock);
 		adapter.log('testEvent');
 
 		assert.strictEqual(appInsightsMock.events.length, 1);
-		let [first] = appInsightsMock.events;
+		const [first] = appInsightsMock.events;
 		assert.strictEqual(first.name, `${prefix}/testEvent`);
 		assert.strictEqual(first.properties!['first'], '1st');
 		assert.strictEqual(first.measurements!['second'], 2);
@@ -68,26 +64,26 @@ suite('AIAdapter', () => {
 		assert(reallyLongPropertyName.length > 150);
 
 		let reallyLongPropertyValue = 'abcdefghijklmnopqrstuvwxyz012345678901234567890123';
-		for (let i = 0; i < 21; i++) {
+		for (let i = 0; i < 400; i++) {
 			reallyLongPropertyValue += 'abcdefghijklmnopqrstuvwxyz012345678901234567890123';
 		}
-		assert(reallyLongPropertyValue.length > 1024);
+		assert(reallyLongPropertyValue.length > 8192);
 
-		let data = Object.create(null);
+		const data = Object.create(null);
 		data[reallyLongPropertyName] = '1234';
 		data['reallyLongPropertyValue'] = reallyLongPropertyValue;
 		adapter.log('testEvent', data);
 
 		assert.strictEqual(appInsightsMock.events.length, 1);
 
-		for (let prop in appInsightsMock.events[0].properties!) {
+		for (const prop in appInsightsMock.events[0].properties!) {
 			assert(prop.length < 150);
-			assert(appInsightsMock.events[0].properties![prop].length < 1024);
+			assert(appInsightsMock.events[0].properties![prop].length < 8192);
 		}
 	});
 
 	test('Different data types', () => {
-		let date = new Date();
+		const date = new Date();
 		adapter.log('testEvent', { favoriteDate: date, likeRed: false, likeBlue: true, favoriteNumber: 1, favoriteColor: 'blue', favoriteCars: ['bmw', 'audi', 'ford'] });
 
 		assert.strictEqual(appInsightsMock.events.length, 1);
