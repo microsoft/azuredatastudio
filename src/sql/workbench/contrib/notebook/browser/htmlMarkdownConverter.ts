@@ -37,10 +37,10 @@ export class HTMLMarkdownConverter {
 	private turndownService: TurndownService;
 	private renderTablesInHtml: boolean;
 
-	constructor(private notebookUri: URI, @IConfigurationService private configurationService: IConfigurationService,) {
+	constructor(private notebookUri: URI, @IConfigurationService private configurationService: IConfigurationService) {
 		this.turndownService = new TurndownService({ 'emDelimiter': '_', 'bulletListMarker': '-', 'headingStyle': 'atx', blankReplacement: blankReplacement });
-		this.renderTablesInHtml = configurationService.getValue('notebook.renderTablesInHtml');
 		this.setTurndownOptions();
+		this.renderTablesInHtml = this.configurationService.getValue('notebook.renderTablesInHtml');
 	}
 
 	public convert(html: string): string {

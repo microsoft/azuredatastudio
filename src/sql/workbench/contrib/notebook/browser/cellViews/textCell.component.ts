@@ -17,6 +17,8 @@ import { Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
+import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { toDisposable } from 'vs/base/common/lifecycle';
 import { IMarkdownRenderResult } from 'vs/editor/browser/core/markdownRenderer';
 
@@ -32,6 +34,7 @@ import { highlightSelectedText } from 'sql/workbench/contrib/notebook/browser/ut
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { promptReloadNotebooks } from 'sql/workbench/contrib/notebook/common/constants';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
@@ -117,6 +120,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private markdownPreviewLineHeight: number;
 	public readonly onDidClickLink = this._onDidClickLink.event;
 	public doubleClickEditEnabled: boolean;
+	public renderTablesInHtml: boolean;
 	private _editorHeight: number;
 	private readonly _markdownMaxHeight = 4000;
 
@@ -128,7 +132,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IConfigurationService) private _configurationService: IConfigurationService,
-		@Inject(INotebookService) override notebookService: INotebookService
+		@Inject(INotebookService) override notebookService: INotebookService,
+		@Inject(INotificationService) private _notificationService: INotificationService,
+		@Inject(IHostService) private readonly hostService: IHostService,
 	) {
 		super();
 		this.markdownRenderer = this._instantiationService.createInstance(NotebookMarkdownRenderer);
@@ -137,6 +143,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		let maxStackSize: number = this._configurationService.getValue('notebook.maxRichTextUndoHistory');
 		this._undoStack = new RichTextEditStack(maxStackSize);
 		this._redoStack = new RichTextEditStack(maxStackSize);
+		this.renderTablesInHtml = this._configurationService.getValue('notebook.renderTablesInHtml');
 
 		this._register(toDisposable(() => {
 			if (this.markdownResult) {
@@ -154,6 +161,17 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				this._undoStack.maxStackSize = newStackSize;
 				this._redoStack.maxStackSize = newStackSize;
 			}
+		}));
+
+		this._register(this._configurationService.onDidChangeConfiguration(e => {
+			this.renderTablesInHtml = this._configurationService.getValue('notebook.renderTablesInHtml');
+			this._notificationService.prompt(Severity.Info, promptReloadNotebooks,
+				[{
+					label: localize('reload', "Reload"),
+					run: () => {
+						this.hostService.reload();
+					}
+				}]);
 		}));
 	}
 
