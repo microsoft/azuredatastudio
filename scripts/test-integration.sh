@@ -58,7 +58,6 @@ fi
 
 if [ -z "$INTEGRATION_TEST_APP_NAME" ]; then
 	kill_app() {
-		echo "Killing integration test app"
 		true;
 	}
 else
