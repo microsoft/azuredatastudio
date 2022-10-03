@@ -57,14 +57,20 @@ else
 fi
 
 if [ -z "$INTEGRATION_TEST_APP_NAME" ]; then
-	kill_app() { true; }
+	kill_app() {
+		echo "Killing integration test app"
+		true;
+	}
 else
-	kill_app() { killall $INTEGRATION_TEST_APP_NAME || true; }
+	kill_app() {
+		echo "Killing integration test app"
+		killall $INTEGRATION_TEST_APP_NAME || true;
+	}
 fi
 
 print_subprocesses() {
 	echo "Subprocesses:"
-	ps -ef | grep $INTEGRATION_TEST_APP_NAME | grep -v grep
+	ps -axf | grep $$
 }
 
 # Tests standalone (AMD)
@@ -72,8 +78,9 @@ print_subprocesses() {
 echo
 echo "### node.js integration tests"
 echo
+print_subprocesses
 ./scripts/test.sh --runGlob **/*.integrationTest.js "$@"
-
+print_subprocesses
 
 # Tests in the extension host
 
@@ -103,6 +110,7 @@ echo "### Git tests"
 echo
 print_subprocesses
 "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS $(mktemp -d 2>/dev/null) --enable-proposed-api=vscode.git --extensionDevelopmentPath=$ROOT/extensions/git --extensionTestsPath=$ROOT/extensions/git/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
+print_subprocesses
 kill_app
 print_subprocesses
 
@@ -112,6 +120,7 @@ echo "### Azure Core tests"
 echo
 print_subprocesses
 "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS $ROOT/extensions/azurecore/test-fixtures --extensionDevelopmentPath=$ROOT/extensions/azurecore --extensionTestsPath=$ROOT/extensions/azurecore/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
+print_subprocesses
 kill_app
 print_subprocesses
 
