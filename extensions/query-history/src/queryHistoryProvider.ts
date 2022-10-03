@@ -292,7 +292,9 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 	 */
 	public async updateNoEntriesContext(): Promise<void> {
 		// Only show the "No Entries" text if there's no loaded entries - otherwise it will show the text until
-		// the tree view actually displays the items
+		// the tree view actually displays the items.
+		// Note that we only have to call this when deleting items, not adding, since that's the only time outside
+		// the initial load that we may end up with 0 items in the list.
 		return vscode.commands.executeCommand('setContext', CONTEXT_NOENTRIES, this._queryHistoryItems.length === 0);
 	}
 }
