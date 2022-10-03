@@ -13,5 +13,6 @@
 	"queryHistory.disableCapture": "Pause Query History Capture",
 	"queryHistory.enableCapture": "Start Query History Capture",
 	"queryHistory.noEntries": "No queries to display",
-	"queryHistory.maxEntries": "Maximum number of entries to store. 0 means unlimited entries are stored. Increasing this limit may impact performance, especially if persistence is enabled."
+	"queryHistory.maxEntries": "Maximum number of entries to store. 0 means unlimited entries are stored. Increasing this limit may impact performance, especially if persistence is enabled.",
+	"queryHistory.openStorageFolder": "Open storage folder"
 }

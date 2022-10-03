@@ -98,6 +98,11 @@
         "title": "%queryHistory.enableCapture%",
         "category": "%queryHistory.displayName%",
         "icon": "$(play)"
+      },
+      {
+        "command": "queryHistory.openStorageFolder",
+        "title": "%queryHistory.openStorageFolder%",
+        "category": "%queryHistory.displayName%"
       }
     ],
     "menus": {
