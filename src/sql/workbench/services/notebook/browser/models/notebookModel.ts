@@ -154,7 +154,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				let fileExt = path.extname(this._notebookOptions.notebookUri.path);
 				if (kernels[0]?.supportedFileExtensions?.includes(fileExt)) {
 					this._standardKernels.push(...kernels);
-					this.setKernelDisplayNameMapsWithStandardKernels();
+					this.setDisplayNameMapsForKernels(kernels);
 					this._kernelsChangedEmitter.fire(this._activeClientSession.kernel);
 				}
 			}));
@@ -413,7 +413,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public set standardKernels(kernels: notebookUtils.IStandardKernelWithProvider[]) {
 		this._standardKernels = kernels;
-		this.setKernelDisplayNameMapsWithStandardKernels();
+		this.setDisplayNameMapsForKernels(kernels);
 	}
 
 	public getApplicableConnectionProviderIds(kernelDisplayName: string): string[] {
@@ -1574,8 +1574,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	 * Set maps with values to have a way to determine the connection
 	 * provider and notebook provider ids from a kernel display name
 	 */
-	private setKernelDisplayNameMapsWithStandardKernels(): void {
-		this._standardKernels.forEach(kernel => {
+	private setDisplayNameMapsForKernels(kernels: notebookUtils.IStandardKernelWithProvider[]): void {
+		kernels.forEach(kernel => {
 			let displayName = kernel.displayName;
 			if (!displayName) {
 				displayName = kernel.name;
