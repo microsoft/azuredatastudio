@@ -428,7 +428,7 @@ export class NotebookService extends Disposable implements INotebookService {
 			if (!this._executeProviders.has(p.id)) {
 				this._executeProviders.set(p.id, new ExecuteProviderDescriptor(p.id));
 			}
-			this.addStandardKernels(registration);
+			this.addStandardKernels(registration, registration.fileExtensions);
 		} else {
 			// Standard kernels might get registered later for VSCode notebooks, so add a descriptor to wait on
 			if (!this._providerToStandardKernels.has(p.id)) {
@@ -508,7 +508,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	// in the kernels dropdown list before a SessionManager has been started; this way,
 	// every NotebookProvider doesn't need to have an active SessionManager in order to contribute
 	// kernels to the dropdown
-	private addStandardKernels(provider: ProviderDescriptionRegistration) {
+	private addStandardKernels(provider: ProviderDescriptionRegistration, supportedFileExtensions?: string[]) {
 		let providerUpperCase = provider.provider.toUpperCase();
 		let descriptor = this._providerToStandardKernels.get(providerUpperCase);
 		if (!descriptor) {
@@ -538,6 +538,7 @@ export class NotebookService extends Disposable implements INotebookService {
 					connectionProviderIds: kernel.connectionProviderIds,
 					notebookProvider: provider.provider,
 					supportedLanguages: kernel.supportedLanguages,
+					supportedFileExtensions: supportedFileExtensions
 				};
 			}));
 		}

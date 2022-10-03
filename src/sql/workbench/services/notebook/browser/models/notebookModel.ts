@@ -40,6 +40,7 @@ import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 import { deepClone } from 'vs/base/common/objects';
 import { DotnetInteractiveDisplayName } from 'sql/workbench/api/common/notebooks/notebookUtils';
 import { IPYKERNEL_DISPLAY_NAME } from 'sql/workbench/common/constants';
+import * as path from 'vs/base/common/path';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -150,9 +151,12 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._defaultKernel = _notebookOptions.defaultKernel;
 		if (this._notebookService) {
 			this._register(this._notebookService.onNotebookKernelsAdded(kernels => {
-				this._standardKernels.push(...kernels);
-				this.setKernelDisplayNameMapsWithStandardKernels();
-				this._kernelsChangedEmitter.fire(this._activeClientSession.kernel);
+				let fileExt = path.extname(this._notebookOptions.notebookUri.path);
+				if (kernels[0]?.supportedFileExtensions?.includes(fileExt)) {
+					this._standardKernels.push(...kernels);
+					this.setKernelDisplayNameMapsWithStandardKernels();
+					this._kernelsChangedEmitter.fire(this._activeClientSession.kernel);
+				}
 			}));
 		}
 	}
