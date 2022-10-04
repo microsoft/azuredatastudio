@@ -140,25 +140,25 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 
 		this.writeHistoryFileWorker = (): void => {
 			if (this._persistHistory) {
-				const writeStorageFileAction = new TimedAction(TelemetryViews.QueryHistoryProvider, TelemetryActions.WriteStorageFile,
-					{},
-					{
-						NumItems: this._queryHistoryItems.length
-					});
+
 				try {
 					// We store the history entries in an encrypted file because they may contain sensitive information
 					// such as passwords (even in the query text itself)
 					const cipher = crypto.createCipheriv(STORAGE_ENCRYPTION_ALGORITHM, key!, iv!);
 					const stringifiedItems = JSON.stringify(this._queryHistoryItems);
-					writeStorageFileAction.additionalMeasures['ItemsLengthChars'] = stringifiedItems.length;
 					const encryptedText = Buffer.concat([cipher.update(Buffer.from(stringifiedItems)), cipher.final()]);
+					const writeStorageFileAction = new TimedAction(TelemetryViews.QueryHistoryProvider, TelemetryActions.WriteStorageFile,
+						{},
+						{
+							NumItems: this._queryHistoryItems.length,
+							ItemLengthChars: stringifiedItems.length
+						});
 					// Use sync here so that we can write this out when the object is disposed
 					fs.writeFileSync(this._historyStorageFile, encryptedText);
+					writeStorageFileAction.send();
 				} catch (err) {
 					TelemetryReporter.sendErrorEvent(TelemetryViews.QueryHistoryProvider, 'WriteStorageFile');
 					console.error(`Error writing query history to disk: ${err}`);
-				} finally {
-					writeStorageFileAction.send();
 				}
 
 			}
@@ -169,10 +169,12 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 			return;
 		}
 
-		const readStorageFileAction = new TimedAction(TelemetryViews.QueryHistoryProvider, TelemetryActions.ReadStorageFile);
+
 		try {
+			const readStorageFileAction = new TimedAction(TelemetryViews.QueryHistoryProvider, TelemetryActions.ReadStorageFile);
 			// Read and decrypt any previous history items
 			const encryptedItems = await fs.promises.readFile(this._historyStorageFile);
+			readStorageFileAction.send();
 			const decipher = crypto.createDecipheriv(STORAGE_ENCRYPTION_ALGORITHM, key, iv);
 			const result = Buffer.concat([decipher.update(encryptedItems), decipher.final()]).toString();
 			this._queryHistoryItems = JSON.parse(result);
@@ -193,8 +195,6 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 					console.error(`Error moving corrupted history file: ${err}`);
 				}
 			}
-		} finally {
-			readStorageFileAction.send();
 		}
 
 		await this.updateNoEntriesContext();
