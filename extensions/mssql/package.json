@@ -261,6 +261,29 @@
           "default": false,
           "description": "%mssql.intelliSense.lowerCaseSuggestions%"
         },
+        "mssql.executionPlan.expensiveOperationMetric": {
+          "type": "string",
+          "description": "%mssql.executionPlan.expensiveOperationMetric%",
+          "default": "cost",
+          "enum": [
+            "off",
+            "actualElapsedTime",
+            "actualElapsedCpuTime",
+            "cost",
+            "subtreeCost",
+            "actualNumberOfRowsForAllExecutions",
+            "numberOfRowsRead"
+          ],
+          "enumDescriptions": [
+            "%mssql.executionPlan.expensiveOperationMetric.off%",
+	          "%mssql.executionPlan.expensiveOperationMetric.actualElapsedTime%",
+	          "%mssql.executionPlan.expensiveOperationMetric.actualElapsedCpuTime%",
+	          "%mssql.executionPlan.cost%",
+	          "%mssql.executionPlan.subtreeCost%",
+	          "%mssql.executionPlan.actualNumberOfRowsForAllExecutions%",
+	          "%mssql.executionPlan.numberOfRowsRead%"
+          ]
+        },
         "mssql.query.rowCount": {
           "type": "number",
           "default": 0,
@@ -1332,7 +1355,7 @@
     "find-remove": "1.2.1",
     "request": "^2.88.0",
     "request-light": "^0.3.0",
-    "@microsoft/ads-service-downloader": "0.2.4",
+    "@microsoft/ads-service-downloader": "1.0.4",
     "stream-meter": "^1.0.4",
     "through2": "^3.0.1",
     "tough-cookie": "^3.0.1",

@@ -92,11 +92,42 @@ However we always want it to be the width of the container it is resizing.
 	width: 240px;
 }
 
+/* Find expensive operation view */
+.eps-container .execution-plan .plan .plan-action-container .find-expensive-operation-widget {
+	display: flex;
+	flex-direction: row;
+	padding: 5px;
+	height: auto;
+	width: auto;
+}
+
+.eps-container .execution-plan .plan .plan-action-container .find-expensive-operation-widget .select-container {
+	margin-left: 5px;
+	display: flex;
+	align-items: center;
+}
+
+.eps-container .execution-plan .plan .plan-action-container .find-expensive-operation-widget .select-container expensive-operation-name-select-box-label {
+	margin-right: 5px;
+}
+
+.eps-container .execution-plan .plan .plan-action-container .find-expensive-operation-widget .select-container>select {
+	height: 100%;
+}
+
+.eps-container .execution-plan .plan .plan-action-container .find-expensive-operation-widget .monaco-button.monaco-text-button {
+	width: auto;
+	padding-left: 15px;
+	padding-right: 15px;
+}
+
 /* execution plan header that contains the relative query cost, query statement and recommendations */
 .eps-container .execution-plan .plan .header,
 .top-operations-tab .top-operations-container .query-row {
 	padding: 5px;
 	font-weight: bolder;
+	margin-left: 5px;
+	margin-right: 5px;
 }
 
 /* execution plan header that contains the relative query cost, query statement and recommendations */
@@ -473,6 +504,21 @@ However we always want it to be the width of the container it is resizing.
 
 .eps-container .ep-zoom-icon {
 	background-image: url(../images/actionIcons/zoomDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.eps-container .ep-highlight-expensive-operation-icon {
+	background-image: url(../images/actionIcons/highlightExpensiveOperation.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.vs-dark .eps-container .ep-highlight-expensive-operation-icon,
+.hc-black .eps-container .ep-highlight-expensive-operation-icon {
+	background-image: url(../images/actionIcons/highlightExpensiveOperationDark.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;

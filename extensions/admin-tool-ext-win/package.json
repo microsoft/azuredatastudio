@@ -108,7 +108,7 @@
   },
   "dependencies": {
     "@microsoft/ads-extension-telemetry": "^1.2.0",
-    "@microsoft/ads-service-downloader": "0.2.4",
+    "@microsoft/ads-service-downloader": "1.0.4",
     "vscode-nls": "^4.1.2"
   },
   "devDependencies": {
