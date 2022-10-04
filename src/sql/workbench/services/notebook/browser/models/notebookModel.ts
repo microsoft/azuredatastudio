@@ -39,7 +39,7 @@ import { AddCellEdit, CellOutputEdit, ConvertCellTypeEdit, DeleteCellEdit, MoveC
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 import { deepClone } from 'vs/base/common/objects';
 import { DotnetInteractiveDisplayName } from 'sql/workbench/api/common/notebooks/notebookUtils';
-import { IPYKERNEL_DISPLAY_NAME } from 'sql/workbench/common/constants';
+import { DEFAULT_NB_LANGUAGE_MODE, IPYKERNEL_DISPLAY_NAME } from 'sql/workbench/common/constants';
 import * as path from 'vs/base/common/path';
 
 /*
@@ -152,7 +152,13 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (this._notebookService) {
 			this._register(this._notebookService.onNotebookKernelsAdded(kernels => {
 				let fileExt = path.extname(this._notebookOptions.notebookUri.path);
-				if (kernels[0]?.supportedFileExtensions?.includes(fileExt)) {
+				if (!fileExt) {
+					let languageMode = this._notebookOptions.input.languageMode;
+					if (languageMode && languageMode !== DEFAULT_NB_LANGUAGE_MODE) {
+						fileExt = `.${languageMode}`;
+					}
+				}
+				if (fileExt && kernels[0]?.supportedFileExtensions?.includes(fileExt)) {
 					this._standardKernels.push(...kernels);
 					this.setDisplayNameMapsForKernels(kernels);
 					this._kernelsChangedEmitter.fire(this._activeClientSession.kernel);

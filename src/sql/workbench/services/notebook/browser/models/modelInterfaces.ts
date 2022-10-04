@@ -27,6 +27,7 @@ import { IPosition } from 'vs/editor/common/core/position';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 import { INotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { INotebookInput } from 'sql/workbench/services/notebook/browser/interface';
 
 
 export enum ViewMode {
@@ -623,6 +624,7 @@ export interface INotebookModelOptions {
 	connectionService: IConnectionManagementService;
 	capabilitiesService: ICapabilitiesService;
 	editorLoadedTimestamp?: number;
+	input?: INotebookInput;
 }
 
 export interface ICellMagicMapper {
