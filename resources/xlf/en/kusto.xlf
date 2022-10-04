@@ -13,7 +13,7 @@
 </body></file>
   <file original="extensions/kusto/dist/kustoServer" source-language="en" datatype="plaintext"><body>
     <trans-unit id="downloadServiceDoneChannelMsg">
-      <source xml:lang="en">Done installing {0}</source>
+      <source xml:lang="en">Downloaded {0}</source>
     </trans-unit>
     <trans-unit id="downloadingServiceChannelMsg">
       <source xml:lang="en">Downloading {0}</source>
