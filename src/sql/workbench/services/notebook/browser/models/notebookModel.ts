@@ -14,7 +14,7 @@ import { NotebookChangeType, CellType, CellTypes } from 'sql/workbench/services/
 import { KernelsLanguage, nbversion } from 'sql/workbench/services/notebook/common/notebookConstants';
 import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import { IExecuteManager, SQL_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_PROVIDER, ISerializationManager, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
+import { IExecuteManager, SQL_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_PROVIDER, ISerializationManager, INotebookService, DEFAULT_NOTEBOOK_FILETYPE } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookContexts } from 'sql/workbench/services/notebook/browser/models/notebookContexts';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { INotification, Severity, INotificationService } from 'vs/platform/notification/common/notification';
@@ -150,11 +150,14 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 		this._defaultKernel = _notebookOptions.defaultKernel;
 		if (this._notebookService) {
-			this._register(this._notebookService.onNotebookKernelsAdded(kernels => {
+			this._register(this._notebookService.onNotebookKernelsAdded(async kernels => {
+				await this._sessionLoadFinished.promise;
 				let fileExt = path.extname(this._notebookOptions.notebookUri.path);
 				if (!fileExt) {
 					let languageMode = this._notebookOptions.input.languageMode;
-					if (languageMode && languageMode !== DEFAULT_NB_LANGUAGE_MODE) {
+					if (languageMode === DEFAULT_NB_LANGUAGE_MODE) {
+						fileExt = DEFAULT_NOTEBOOK_FILETYPE;
+					} else if (languageMode) {
 						fileExt = `.${languageMode}`;
 					}
 				}
