@@ -189,6 +189,12 @@
     "viewsWelcome": [
       {
         "view": "queryHistory",
+        "when": "queryHistory.loading",
+        "contents": "%queryHistory.loading%"
+      },
+      {
+        "view": "queryHistory",
+        "when": "queryHistory.noEntries",
         "contents": "%queryHistory.noEntries%"
       }
     ],
