@@ -20,7 +20,6 @@ import { SaveTableChangesAction } from 'sql/workbench/contrib/tableDesigner/brow
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { DesignerPaneSeparator } from 'sql/platform/theme/common/colorRegistry';
-import { localize } from 'vs/nls';
 
 export class TableDesignerEditor extends EditorPane {
 	public static readonly ID: string = 'workbench.editor.tableDesigner';
@@ -53,8 +52,6 @@ export class TableDesignerEditor extends EditorPane {
 		const container = parent.appendChild(DOM.$('.table-designer-main-container'));
 		const topRowContainer = container.appendChild(DOM.$('.top-row-container'));
 		const actionbarContainer = topRowContainer.appendChild(DOM.$('.actionbar-container'));
-		const previewFlag = topRowContainer.appendChild(DOM.$('.preview-flag-container.codicon.info'));
-		previewFlag.innerText = localize('tableDesigner.PreviewFeature', "Preview feature");
 		const designerContainer = container.appendChild(DOM.$('.designer-container'));
 		const actionbar = new ActionBar(actionbarContainer);
 		this._register(actionbar);
