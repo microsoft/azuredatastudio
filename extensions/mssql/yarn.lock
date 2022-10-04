@@ -189,10 +189,10 @@
   dependencies:
     nan "^2.14.0"
 
-"@microsoft/ads-service-downloader@1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@microsoft/ads-service-downloader/-/ads-service-downloader-1.0.2.tgz#76cc9a44074525ac65a6ea15f8b5ee7eac87efbe"
-  integrity sha512-Qpc5HNLywVZbSxeUC4S7d+VRAUddrYjkIfDXl76UwCA0iuwzi71RtciEgWfCWAZMm9CbKTIbtFGh4pYw+h81nQ==
+"@microsoft/ads-service-downloader@1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@microsoft/ads-service-downloader/-/ads-service-downloader-1.0.3.tgz#687fc14c0eca3d68cb57168d141f4a3f7950173c"
+  integrity sha512-R4uuuES0cIwKcY2Z7PfslNgGV4X+qV+BEGpC/TCKhr8AI3QHPVkWfN0WziFZNvQM60LkiG9f+JXpyktu4KEu9Q==
   dependencies:
     async-retry "^1.2.3"
     eventemitter2 "^5.0.1"
