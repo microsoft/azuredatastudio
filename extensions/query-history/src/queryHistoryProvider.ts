@@ -150,7 +150,7 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 					// such as passwords (even in the query text itself)
 					const cipher = crypto.createCipheriv(STORAGE_ENCRYPTION_ALGORITHM, key!, iv!);
 					const stringifiedItems = JSON.stringify(this._queryHistoryItems);
-					writeStorageFileAction.additionalMeasures['ItemsLength'] = stringifiedItems.length;
+					writeStorageFileAction.additionalMeasures['ItemsLengthChars'] = stringifiedItems.length;
 					const encryptedText = Buffer.concat([cipher.update(Buffer.from(stringifiedItems)), cipher.final()]);
 					// Use sync here so that we can write this out when the object is disposed
 					fs.writeFileSync(this._historyStorageFile, encryptedText);
