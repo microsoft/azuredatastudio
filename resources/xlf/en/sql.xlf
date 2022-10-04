@@ -4617,11 +4617,6 @@ Error: {1}</source>
       <source xml:lang="en">Save</source>
     </trans-unit>
 </body></file>
-  <file original="src/sql/workbench/contrib/tableDesigner/browser/tableDesignerEditor" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="tableDesigner.PreviewFeature">
-      <source xml:lang="en">Preview feature</source>
-    </trans-unit>
-</body></file>
   <file original="src/sql/workbench/contrib/tasks/browser/tasks.contribution" source-language="en" datatype="plaintext"><body>
     <trans-unit id="inProgressTasksChangesBadge">
       <source xml:lang="en">{0} in progress tasks</source>
