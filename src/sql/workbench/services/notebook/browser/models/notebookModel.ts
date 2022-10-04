@@ -151,7 +151,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._defaultKernel = _notebookOptions.defaultKernel;
 		if (this._notebookService) {
 			this._register(this._notebookService.onNotebookKernelsAdded(async kernels => {
-				await this._sessionLoadFinished.promise;
 				let fileExt = path.extname(this._notebookOptions.notebookUri.path);
 				if (!fileExt) {
 					let languageMode = this._notebookOptions.input.languageMode;
