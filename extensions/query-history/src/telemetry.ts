@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as AdsTelemetryReporter from '@microsoft/ads-extension-telemetry';
+import AdsTelemetryReporter from '@microsoft/ads-extension-telemetry';
 
 export interface PackageInfo {
 	name: string;
