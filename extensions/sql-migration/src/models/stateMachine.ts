@@ -889,7 +889,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					dataSource: currentConnection?.serverName!,
 					authentication: this._authenticationType,
 					userName: this._sqlServerUsername,
-					password: this._sqlServerPassword
+					password: this._sqlServerPassword,
+					trustServerCertificate: currentConnection?.options.trustServerCertificate ?? false
 				},
 				scope: this._targetServerInstance.id,
 				offlineConfiguration: {
