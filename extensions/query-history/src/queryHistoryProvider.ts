@@ -150,7 +150,7 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 					const writeStorageFileAction = new TimedAction(TelemetryViews.QueryHistoryProvider, TelemetryActions.WriteStorageFile,
 						{},
 						{
-							NumItems: this._queryHistoryItems.length,
+							ItemCount: this._queryHistoryItems.length,
 							ItemLengthChars: stringifiedItems.length
 						});
 					// Use sync here so that we can write this out when the object is disposed
