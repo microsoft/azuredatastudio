@@ -16,7 +16,6 @@ import * as utils from '../api/utils';
 import { logError, TelemetryViews } from '../telemtery';
 import * as styles from '../constants/styles';
 import { TableMigrationSelectionDialog } from '../dialog/tableMigrationSelection/tableMigrationSelectionDialog';
-import { AuthenticationType } from '../api/sqlUtils';
 
 const WIZARD_TABLE_COLUMN_WIDTH = '200px';
 const WIZARD_TABLE_COLUMN_WIDTH_SMALL = '170px';
@@ -660,9 +659,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						this.migrationStateModel.sourceConnectionId)), query);
 
 				const username = results.rows[0][0].displayValue;
-				this.migrationStateModel._authenticationType = connectionProfile.authenticationType === AuthenticationType.SqlLogin
+				this.migrationStateModel._authenticationType = connectionProfile.authenticationType === azdata.connection.AuthenticationType.SqlLogin
 					? MigrationSourceAuthenticationType.Sql
-					: connectionProfile.authenticationType === AuthenticationType.Integrated
+					: connectionProfile.authenticationType === azdata.connection.AuthenticationType.Integrated
 						? MigrationSourceAuthenticationType.Integrated
 						: undefined!;
 				this._sourceHelpText.value = constants.SQL_SOURCE_DETAILS(
@@ -957,6 +956,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				return true;
 			}
 
+			this.wizard.message = { text: '' };
 			const errors: string[] = [];
 			switch (this.migrationStateModel._databaseBackup.networkContainerType) {
 				case NetworkContainerType.NETWORK_SHARE:
@@ -1382,6 +1382,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 	private async _loadTableData(): Promise<void> {
 		this._refreshLoading.loading = true;
+		this.wizard.message = { text: '' };
 		const data: any[][] = [];
 
 		this.migrationStateModel._sourceTargetMapping.forEach((targetDatabaseInfo, sourceDatabaseName) => {

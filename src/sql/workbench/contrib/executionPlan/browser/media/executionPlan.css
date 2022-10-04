@@ -92,16 +92,47 @@ However we always want it to be the width of the container it is resizing.
 	width: 240px;
 }
 
+/* Find expensive operation view */
+.eps-container .execution-plan .plan .plan-action-container .find-expensive-operation-widget {
+	display: flex;
+	flex-direction: row;
+	padding: 5px;
+	height: auto;
+	width: auto;
+}
+
+.eps-container .execution-plan .plan .plan-action-container .find-expensive-operation-widget .select-container {
+	margin-left: 5px;
+	display: flex;
+	align-items: center;
+}
+
+.eps-container .execution-plan .plan .plan-action-container .find-expensive-operation-widget .select-container expensive-operation-name-select-box-label {
+	margin-right: 5px;
+}
+
+.eps-container .execution-plan .plan .plan-action-container .find-expensive-operation-widget .select-container>select {
+	height: 100%;
+}
+
+.eps-container .execution-plan .plan .plan-action-container .find-expensive-operation-widget .monaco-button.monaco-text-button {
+	width: auto;
+	padding-left: 15px;
+	padding-right: 15px;
+}
+
 /* execution plan header that contains the relative query cost, query statement and recommendations */
 .eps-container .execution-plan .plan .header,
 .top-operations-tab .top-operations-container .query-row {
 	padding: 5px;
 	font-weight: bolder;
+	margin-left: 5px;
+	margin-right: 5px;
 }
 
 /* execution plan header that contains the relative query cost, query statement and recommendations */
 .eps-container .execution-plan .plan .header .query-row,
-.top-operations-tab .top-operations-container .query-row{
+.top-operations-tab .top-operations-container .query-row {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	display: -webkit-box;
@@ -185,6 +216,31 @@ However we always want it to be the width of the container it is resizing.
 	-webkit-margin-after: 0;
 	flex: 0 0 30px;
 	margin-top: 5px;
+}
+
+.eps-container .properties .search-action-bar-container .table-action-bar {
+	flex: auto
+}
+
+.eps-container .properties .search-action-bar-container .table-search {
+	flex: 1;
+	max-width: 300px;
+}
+
+.eps-container .properties .search-action-bar-container .table-search>div,
+.top-operations-tab .top-operations-container .top-operations-header-search-bar>div {
+	background-position-y: center;
+	background-position-x: 3px;
+}
+
+.eps-container .properties .search-action-bar-container .table-search input,
+.top-operations-tab .top-operations-container .top-operations-header-search-bar input {
+	margin-left: 20px;
+	width: calc(100% - 20px);
+}
+
+.eps-container .properties .search-action-bar-container {
+	display: flex;
 }
 
 /* Operation name styling in the properties view. */
@@ -316,7 +372,8 @@ However we always want it to be the width of the container it is resizing.
 }
 
 
-.eps-container .ep-search-icon {
+.eps-container .ep-search-icon,
+.top-operations-tab .ep-search-icon {
 	background-image: url(../images/actionIcons/search.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -324,7 +381,9 @@ However we always want it to be the width of the container it is resizing.
 }
 
 .vs-dark .eps-container .ep-search-icon,
-.hc-black .eps-container .ep-search-icon {
+.hc-black .eps-container .ep-search-icon,
+.vs-dark .top-operations-tab .ep-search-icon,
+.hc-black .top-operations-tab .ep-search-icon {
 	background-image: url(../images/actionIcons/searchDark.svg);
 	background-size: 16px 16px;
 	background-position: center;
@@ -450,6 +509,21 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
+.eps-container .ep-highlight-expensive-operation-icon {
+	background-image: url(../images/actionIcons/highlightExpensiveOperation.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.vs-dark .eps-container .ep-highlight-expensive-operation-icon,
+.hc-black .eps-container .ep-highlight-expensive-operation-icon {
+	background-image: url(../images/actionIcons/highlightExpensiveOperationDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
 .eps-container .ep-enable-tooltip-icon {
 	background-image: url(../images/actionIcons/enableTooltip.svg);
 	background-size: 16px 16px;
@@ -569,7 +643,7 @@ However we always want it to be the width of the container it is resizing.
 	background-position: center;
 	background-repeat: no-repeat;
 	width: 16px;
-	height: auto;
+	height: 16px;
 }
 
 .vs-dark .eps-container .ep-properties-different,
@@ -579,9 +653,18 @@ However we always want it to be the width of the container it is resizing.
 	background-position: center;
 	background-repeat: no-repeat;
 	width: 16px;
-	height: auto;
+	height: 16px;
 }
 
+.eps-container .comparison-editor .plan-comparison-container .properties .properties-content .table-container .table .monaco-table .ui-widget .slick-viewport .grid-canvas .ui-widget-content.slick-row .slick-cell .grid-cell-value-container.icon.codicon.slick-icon-cell-content.codicon-chevron-left,
+.eps-container .comparison-editor .plan-comparison-container .properties .properties-content .table-container .table .monaco-table .ui-widget .slick-viewport .grid-canvas .ui-widget-content.slick-row .slick-cell .grid-cell-value-container.icon.codicon.slick-icon-cell-content.codicon-chevron-right {
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+	width: 16px;
+	height: 16px;
+	margin-left: -28px;
+}
 
 .eps-container .ep-properties-down-arrow {
 	background-image: url(../images/actionIcons/downArrow.svg);
@@ -589,7 +672,7 @@ However we always want it to be the width of the container it is resizing.
 	background-position: center;
 	background-repeat: no-repeat;
 	width: 16px;
-	height: auto;
+	height: 16px;
 }
 
 .vs-dark .eps-container .ep-properties-down-arrow,
@@ -599,7 +682,7 @@ However we always want it to be the width of the container it is resizing.
 	background-position: center;
 	background-repeat: no-repeat;
 	width: 16px;
-	height: auto;
+	height: 16px;
 }
 
 .eps-container .ep-properties-up-arrow {
@@ -608,7 +691,7 @@ However we always want it to be the width of the container it is resizing.
 	background-position: center;
 	background-repeat: no-repeat;
 	width: 16px;
-	height: auto;
+	height: 16px;
 }
 
 .vs-dark .eps-container .ep-properties-up-arrow,
@@ -618,7 +701,7 @@ However we always want it to be the width of the container it is resizing.
 	background-position: center;
 	background-repeat: no-repeat;
 	width: 16px;
-	height: auto;
+	height: 16px;
 }
 
 .eps-container .ep-top-operations {
@@ -799,21 +882,34 @@ However we always want it to be the width of the container it is resizing.
 	overflow: scroll;
 }
 
+.top-operations-tab .top-operations-container .top-operations-header {
+	display: flex;
+	flex-direction: row;
+}
+
+.top-operations-tab .top-operations-container .top-operations-header .top-operations-header-info {
+	flex: 1;
+}
+
+.top-operations-tab .top-operations-container .top-operations-header .top-operations-header-search-bar {
+	min-width: 300px;
+}
+
 .top-operations-tab .top-operations-container .table-container {
 	flex: 1;
 	height: calc(100% - 50px);
 }
 
-.graph-cell{
+.graph-cell {
 	align-items: center;
 	position: relative;
 	width: fit-content;
 	height: 80px;
 	font-size: 10px;
-	font-family:'Monaco', 'Menlo', 'Consolas';
+	font-family: 'Monaco', 'Menlo', 'Consolas';
 }
 
-.graph-cell-body{
+.graph-cell-body {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -822,12 +918,12 @@ However we always want it to be the width of the container it is resizing.
 	outline: none !important;
 }
 
-.graph-cell-icon{
+.graph-cell-icon {
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size: cover;
-	width:30px;
-	height:30px;
+	width: 30px;
+	height: 30px;
 	align-self: center;
 	position: relative;
 }
@@ -837,8 +933,8 @@ However we always want it to be the width of the container it is resizing.
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size: cover;
-	width:12px;
-	height:12px;
+	width: 12px;
+	height: 12px;
 	bottom: 0;
 	right: -5px;
 }
@@ -846,9 +942,10 @@ However we always want it to be the width of the container it is resizing.
 .graph-cell .graph-cell-row-count {
 	position: absolute;
 	top: 30%;
-	left: calc(50% - 60px);
+	right: calc(50% + 17px);
+	margin-right: 3px;
 	min-width: 20px;
-	text-align: right;
+	text-align: left;
 	outline: none !important;
 }
 
@@ -861,7 +958,7 @@ However we always want it to be the width of the container it is resizing.
 	right: 0px;
 }
 
-.graph-cell-cost{
+.graph-cell-cost {
 	border-radius: 15px;
 	width: fit-content;
 	padding: 1px 8px 0px 8px;

@@ -678,7 +678,8 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				removeRowConfirmationMessage: options.removeRowConfirmationMessage,
 				showRemoveRowConfirmation: options.showRemoveRowConfirmation,
 				showItemDetailInPropertiesView: false,
-				labelForAddNewButton: options.labelForAddNewButton ?? localize('tableDesigner.addNewColumnToPrimaryKey', "Add Column")
+				labelForAddNewButton: options.labelForAddNewButton ?? localize('tableDesigner.addNewColumnToPrimaryKey', "Add Column"),
+				canMoveRows: options.canMoveRows
 			}
 		});
 

@@ -182,10 +182,10 @@
   resolved "https://registry.yarnpkg.com/@istanbuljs/schema/-/schema-0.1.2.tgz#26520bf09abe4a5644cd5414e37125a8954241dd"
   integrity sha512-tsAQNx32a8CoFhjhijUIhI4kccIAgmGhy8LZMZgGfmXcpMbPRUqn5LWmgRttILi6yeGmBJd2xsPkFMs0PzgPCw==
 
-"@microsoft/ads-service-downloader@0.2.4":
-  version "0.2.4"
-  resolved "https://registry.yarnpkg.com/@microsoft/ads-service-downloader/-/ads-service-downloader-0.2.4.tgz#905a11eb2da19673629852d9764fb9fb94ad81bd"
-  integrity sha512-3J0YjH29a5pP+5Yu0HF7itRBZpNOgUN34Gh/p0Py/TQr7qUzZSXwOM+fWD1nCea+q9t8mfHr0yuy0aeDX+33vQ==
+"@microsoft/ads-service-downloader@1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@microsoft/ads-service-downloader/-/ads-service-downloader-1.0.2.tgz#76cc9a44074525ac65a6ea15f8b5ee7eac87efbe"
+  integrity sha512-Qpc5HNLywVZbSxeUC4S7d+VRAUddrYjkIfDXl76UwCA0iuwzi71RtciEgWfCWAZMm9CbKTIbtFGh4pYw+h81nQ==
   dependencies:
     async-retry "^1.2.3"
     eventemitter2 "^5.0.1"
@@ -195,6 +195,18 @@
     tar "^6.1.11"
     tmp "^0.0.33"
     yauzl "^2.10.0"
+
+"@microsoft/azdata-test@^2.0.3":
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@microsoft/azdata-test/-/azdata-test-2.0.3.tgz#652984efa2f5adc56cdae9029a4d5f33446b54d3"
+  integrity sha512-BgB6gGjQVXxnZHq7o5TlajZR/mJd/6AqbclrGzoyATvCEt92jRXhPzaY6XA/jMahdUGFSQwXpm45qRhZetwDig==
+  dependencies:
+    http-proxy-agent "^2.1.0"
+    https-proxy-agent "^2.2.4"
+    mocha-junit-reporter "^1.17.0"
+    mocha-multi-reporters "^1.1.7"
+    rimraf "^2.6.3"
+    typemoq "^2.1.0"
 
 "@microsoft/vscodetestcover@^1.2.1":
   version "1.2.1"
@@ -842,7 +854,7 @@ http-proxy-agent@^2.1.0:
     agent-base "4"
     debug "3.1.0"
 
-https-proxy-agent@^2.2.3:
+https-proxy-agent@^2.2.3, https-proxy-agent@^2.2.4:
   version "2.2.4"
   resolved "https://registry.yarnpkg.com/https-proxy-agent/-/https-proxy-agent-2.2.4.tgz#4ee7a737abd92678a293d9b34a1af4d0d08c787b"
   integrity sha512-OmvfoQ53WLjtA9HeYP9RNrWMJzzAz1JGaSFr1nijg0PVR1JaD/xbJq1mdEIIlxGpXp9eSe/O2LgU9DJmTPd0Eg==
@@ -1687,7 +1699,7 @@ vscode-extension-telemetry@0.4.2:
 vscode-jsonrpc@3.5.0:
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/vscode-jsonrpc/-/vscode-jsonrpc-3.5.0.tgz#87239d9e166b2d7352245b8a813597804c1d63aa"
-  integrity sha1-hyOdnhZrLXNSJFuKgTWXgEwdY6o=
+  integrity sha512-LeE9LS1IOIRDZy5Xugrbk2tKeMa64vkRODrXPZbwyn2l/Q0e/jyYq8ze/Lo96sjOFiRe3HHbTVN39Ta8KN2RpA==
 
 vscode-languageclient@3.5.1:
   version "3.5.1"
@@ -1707,7 +1719,7 @@ vscode-languageserver-protocol@3.5.1:
 vscode-languageserver-types@3.5.0:
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/vscode-languageserver-types/-/vscode-languageserver-types-3.5.0.tgz#e48d79962f0b8e02de955e3f524908e2b19c0374"
-  integrity sha1-5I15li8LjgLelV4/UkkI4rGcA3Q=
+  integrity sha512-D4rUfu/oKYdc9Tmec0nEfedj+uXO2tZHR+eoHs9rE9G/QpRyZaHuug8ZUNGTGdO+ALLGgenL6bRpY8y3J9acHg==
 
 vscode-nls@^3.2.1:
   version "3.2.5"

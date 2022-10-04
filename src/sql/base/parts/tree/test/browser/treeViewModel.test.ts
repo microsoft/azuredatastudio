@@ -5,7 +5,7 @@
 
 import * as assert from 'assert';
 import { ArrayNavigator } from 'vs/base/common/navigator';
-import { HeightMap, IViewItem } from 'vs/base/parts/tree/browser/treeViewModel';
+import { HeightMap, IViewItem } from 'sql/base/parts/tree/browser/treeViewModel';
 
 function makeItem(id: any, height: any): any {
 	return {

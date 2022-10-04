@@ -269,6 +269,11 @@
       <source xml:lang="en">Controls whether or not the empty window is trusted by default within Azure Data Studio. When used with `#{0}#`, you can enable the full functionality of Azure Data Studio without prompting in an empty window.</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/base/parts/tree/browser/treeDefaults" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="collapse all">
+      <source xml:lang="en">Collapse All</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/platform/accounts/common/accountActions" source-language="en" datatype="plaintext"><body>
     <trans-unit id="NoAccountToRefresh">
       <source xml:lang="en">There is no account to refresh</source>
@@ -314,6 +319,14 @@
     </trans-unit>
     <trans-unit id="connectionStatusManager.uriAlreadyInConnectionsList">
       <source xml:lang="en">There is already a connection with uri: {0}</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/platform/connection/common/providerConnectionInfo" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="connection.unsupported">
+      <source xml:lang="en">Unsupported connection</source>
+    </trans-unit>
+    <trans-unit id="loading">
+      <source xml:lang="en">Loading...</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/platform/dashboard/browser/insightRegistry" source-language="en" datatype="plaintext"><body>
@@ -2343,6 +2356,17 @@
       <source xml:lang="en">Compare Execution Plans</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/constants" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="ep.propertiesSearchDescription">
+      <source xml:lang="en">Search properties table</source>
+    </trans-unit>
+    <trans-unit id="ep.searchPlaceholder">
+      <source xml:lang="en">Filter for any field...</source>
+    </trans-unit>
+    <trans-unit id="ep.topOperationsSearchDescription">
+      <source xml:lang="en">Search top operations</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditor" source-language="en" datatype="plaintext"><body>
     <trans-unit id="compareExecutionPlanEditor">
       <source xml:lang="en">Compare Execution Plan Editor</source>
@@ -2396,23 +2420,38 @@
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="executionPlanComparisonPropertiesBottomOperation">
-      <source xml:lang="en">Bottom operation: {0}</source>
-    </trans-unit>
-    <trans-unit id="executionPlanComparisonPropertiesLeftOperation">
-      <source xml:lang="en">Left operation: {0}</source>
-    </trans-unit>
-    <trans-unit id="executionPlanComparisonPropertiesRightOperation">
-      <source xml:lang="en">Right operation: {0}</source>
-    </trans-unit>
-    <trans-unit id="executionPlanComparisonPropertiesTopOperation">
-      <source xml:lang="en">Top operation: {0}</source>
-    </trans-unit>
     <trans-unit id="executionPlanPropertiesEdgeOperationName">
       <source xml:lang="en">Edge</source>
     </trans-unit>
+    <trans-unit id="executionPlanSummaryForExpensiveOperators">
+      <source xml:lang="en">Summary: {0}{1}</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewBottomOperation">
+      <source xml:lang="en">Bottom operation: {0}</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewBottomPlanGreaterThanTopPlan">
+      <source xml:lang="en">{0} is greater for the bottom plan than it is for the top plan.</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewLeftOperation">
+      <source xml:lang="en">Left operation: {0}</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewLeftPlanGreaterThanRightPlan">
+      <source xml:lang="en">{0} is greater for the left plan than it is for the right plan.</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewNameEquivalentPropertiesRowHeader">
+      <source xml:lang="en">Equivalent Properties</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewNameGreaterThanTitle">
+      <source xml:lang="en">Greater than</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewNameLessThanTitle">
+      <source xml:lang="en">Less than</source>
+    </trans-unit>
     <trans-unit id="nodePropertyViewNameNameColumnHeader">
       <source xml:lang="en">Name</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewNameNotEqualTitle">
+      <source xml:lang="en">Not equal to</source>
     </trans-unit>
     <trans-unit id="nodePropertyViewNameValueColumnBottomHeader">
       <source xml:lang="en">Value (Bottom Plan)</source>
@@ -2425,6 +2464,18 @@
     </trans-unit>
     <trans-unit id="nodePropertyViewNameValueColumnTopHeader">
       <source xml:lang="en">Value (Top Plan)</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewRightOperation">
+      <source xml:lang="en">Right operation: {0}</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewRightPlanGreaterThanLeftPlan">
+      <source xml:lang="en">{0} is greater for the right plan than it is for the left plan.</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewTopOperation">
+      <source xml:lang="en">Top operation: {0}</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewTopPlanGreaterThanBottomPlan">
+      <source xml:lang="en">{0} is greater for the top plan than it is for the bottom plan.</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanContribution" source-language="en" datatype="plaintext"><body>
@@ -5681,11 +5732,6 @@ Error: {1}</source>
       <source xml:lang="en">Contributes notebook provider descriptions.</source>
     </trans-unit>
 </body></file>
-  <file original="src/sql/workbench/services/objectExplorer/browser/asyncServerTreeRenderer" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="loading">
-      <source xml:lang="en">Loading...</source>
-    </trans-unit>
-</body></file>
   <file original="src/sql/workbench/services/objectExplorer/browser/connectionTreeAction" source-language="en" datatype="plaintext"><body>
     <trans-unit id="DisconnectAction">
       <source xml:lang="en">Disconnect</source>
@@ -5735,11 +5781,6 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="noProviderFound">
       <source xml:lang="en">Cannot expand as the required connection provider '{0}' was not found</source>
-    </trans-unit>
-</body></file>
-  <file original="src/sql/workbench/services/objectExplorer/browser/serverTreeRenderer" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="loading">
-      <source xml:lang="en">Loading...</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/objectExplorer/browser/treeCreationUtils" source-language="en" datatype="plaintext"><body>

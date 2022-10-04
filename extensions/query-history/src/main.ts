@@ -7,7 +7,8 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { DOUBLE_CLICK_ACTION_CONFIG_SECTION, ITEM_SELECTED_COMMAND_ID, QUERY_HISTORY_CONFIG_SECTION } from './constants';
 import { QueryHistoryItem } from './queryHistoryItem';
-import { QueryHistoryProvider } from './queryHistoryProvider';
+import { QueryHistoryProvider, setLoadingContext } from './queryHistoryProvider';
+import { promises as fs } from 'fs';
 
 let lastSelectedItem: { item: QueryHistoryItem | undefined, time: number | undefined } = {
 	item: undefined,
@@ -19,7 +20,17 @@ let lastSelectedItem: { item: QueryHistoryItem | undefined, time: number | undef
 const DOUBLE_CLICK_TIMEOUT_MS = 500;
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
-	const treeDataProvider = new QueryHistoryProvider();
+	// Create the global storage folder now for storing the query history persistance file
+	const storageUri = context.globalStorageUri;
+	try {
+		await fs.mkdir(storageUri.fsPath);
+	} catch (err) {
+		if (err.code !== 'EEXIST') {
+			console.error(`Error creating query history global storage folder ${context.globalStorageUri.fsPath}. ${err}`);
+		}
+	}
+	await setLoadingContext(true);
+	const treeDataProvider = new QueryHistoryProvider(context, storageUri);
 	context.subscriptions.push(treeDataProvider);
 	const treeView = vscode.window.createTreeView('queryHistory', {
 		treeDataProvider,
@@ -63,16 +74,19 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 		return runQuery(item);
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('queryHistory.delete', (item: QueryHistoryItem) => {
-		treeDataProvider.deleteItem(item);
+		return treeDataProvider.deleteItem(item);
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('queryHistory.clear', () => {
-		treeDataProvider.clearAll();
+		return treeDataProvider.clearAll();
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('queryHistory.disableCapture', async () => {
 		return treeDataProvider.setCaptureEnabled(false);
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('queryHistory.enableCapture', async () => {
 		return treeDataProvider.setCaptureEnabled(true);
+	}));
+	context.subscriptions.push(vscode.commands.registerCommand('queryHistory.openStorageFolder', async () => {
+		return vscode.env.openExternal(storageUri);
 	}));
 }
 
@@ -88,6 +102,10 @@ async function runQuery(item: QueryHistoryItem): Promise<void> {
 		{
 			content: item.queryText
 		}, item.connectionProfile?.providerId);
-	await azdata.queryeditor.connect(doc.uri, item.connectionProfile?.connectionId || '');
+	if (item.connectionProfile) {
+		await doc.connect(item.connectionProfile);
+	} else {
+		await azdata.queryeditor.connect(doc.uri, '');
+	}
 	azdata.queryeditor.runQuery(doc.uri);
 }

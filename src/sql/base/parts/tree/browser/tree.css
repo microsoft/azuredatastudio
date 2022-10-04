@@ -60,7 +60,6 @@
 	opacity: 0.3;
 }
 
-/* {{SQL CARBON EDIT}} lower css settings
 /* Expansion */
 .monaco-tree .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children > .content:before {
 	content: ' ';
@@ -77,12 +76,10 @@
 	background-image: url('tree-expanded-light.svg');
 }
 
-/* {{SQL CARBON EDIT}} -- Display a high-contrast arrow when an expandable item is selected and expanded */
 .monaco-tree.focused .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children.selected.expanded:not(.loading) > .content:before {
 	background-image: url('tree-expanded-hc.svg');
 }
 
-/* {{SQL CARBON EDIT}} -- Display a high-contrast arrow when an expandable item is selected and collapsed */
 .monaco-tree.focused .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children.selected:not(.loading) > .content:before {
 	background-image: url('tree-collapsed-hc.svg');
 }

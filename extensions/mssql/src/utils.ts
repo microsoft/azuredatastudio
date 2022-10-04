@@ -21,6 +21,7 @@ const configLogFilesRemovalLimit = 'logFilesRemovalLimit';
 const extensionConfigSectionName = 'mssql';
 const configLogDebugInfo = 'logDebugInfo';
 const parallelMessageProcessingConfig = 'parallelMessageProcessing';
+const tableDesignerPreloadConfig = 'tableDesigner.preloadDatabaseModel';
 
 /**
  *
@@ -84,12 +85,41 @@ export function getConfigLogRetentionSeconds(): number {
 	}
 }
 
-export function getConfigTracingLevel(): string {
+/**
+ * The tracing level defined in the package.json
+ */
+export enum TracingLevel {
+	All = 'All',
+	Off = 'Off',
+	Critical = 'Critical',
+	Error = 'Error',
+	Warning = 'Warning',
+	Information = 'Information',
+	Verbose = 'Verbose'
+}
+
+export function getConfigTracingLevel(): TracingLevel {
 	let config = getConfiguration();
 	if (config) {
 		return config[configTracingLevel];
 	} else {
-		return undefined;
+		return TracingLevel.Critical;
+	}
+}
+
+export function getConfigPreloadDatabaseModel(): boolean {
+	let config = getConfiguration();
+	if (config) {
+		return config.get<boolean>(tableDesignerPreloadConfig);
+	} else {
+		return false;
+	}
+}
+
+export function setConfigPreloadDatabaseModel(enable: boolean): void {
+	let config = getConfiguration();
+	if (config) {
+		void config.update(tableDesignerPreloadConfig, enable, true);
 	}
 }
 

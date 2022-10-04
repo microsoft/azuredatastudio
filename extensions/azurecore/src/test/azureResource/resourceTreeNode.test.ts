@@ -14,6 +14,7 @@ import { AppContext } from '../../appContext';
 import { AzureResourceServiceNames } from '../../azureResource/constants';
 import settings from '../../account-provider/providerSettings';
 import { AzureAccount, azureResource } from 'azurecore';
+import { TreeNode } from '../../azureResource/treeNode';
 
 // Mock test data
 const mockAccount: AzureAccount = {
@@ -96,7 +97,7 @@ let appContext: AppContext;
 describe('AzureResourceResourceTreeNode.info', function (): void {
 	beforeEach(() => {
 		mockResourceTreeDataProvider = TypeMoq.Mock.ofType<azureResource.IAzureResourceTreeDataProvider>();
-		mockResourceTreeDataProvider.setup((o) => o.getTreeItem(mockResourceRootNode)).returns(() => mockResourceRootNode.treeItem);
+		mockResourceTreeDataProvider.setup((o) => o.getResourceTreeItem(mockResourceRootNode)).returns(() => Promise.resolve(mockResourceRootNode.treeItem));
 		mockResourceTreeDataProvider.setup((o) => o.getChildren(mockResourceRootNode)).returns(() => Promise.resolve(mockResourceNodes));
 
 		mockResourceProvider = TypeMoq.Mock.ofType<azureResource.IAzureResourceProvider>();
@@ -107,7 +108,7 @@ describe('AzureResourceResourceTreeNode.info', function (): void {
 		resourceService.registerResourceProvider(mockResourceProvider.object);
 		resourceService.areResourceProvidersLoaded = true;
 
-		appContext = new AppContext(undefined);
+		appContext = new AppContext(TypeMoq.Mock.ofType<vscode.ExtensionContext>().object);
 		appContext.registerService(AzureResourceServiceNames.resourceService, resourceService);
 	});
 
@@ -115,7 +116,7 @@ describe('AzureResourceResourceTreeNode.info', function (): void {
 		const resourceTreeNode = new AzureResourceResourceTreeNode({
 			resourceProviderId: mockResourceProviderId,
 			resourceNode: mockResourceRootNode
-		}, undefined, appContext);
+		}, TypeMoq.Mock.ofType<TreeNode>().object, appContext);
 
 		should(resourceTreeNode.nodePathValue).equal(mockResourceRootNode.treeItem.id);
 
@@ -147,7 +148,7 @@ describe('AzureResourceResourceTreeNode.getChildren', function (): void {
 		resourceService.registerResourceProvider(mockResourceProvider.object);
 		resourceService.areResourceProvidersLoaded = true;
 
-		appContext = new AppContext(undefined);
+		appContext = new AppContext(TypeMoq.Mock.ofType<vscode.ExtensionContext>().object);
 		appContext.registerService(AzureResourceServiceNames.resourceService, resourceService);
 	});
 
@@ -156,7 +157,7 @@ describe('AzureResourceResourceTreeNode.getChildren', function (): void {
 			resourceProviderId: mockResourceProviderId,
 			resourceNode: mockResourceRootNode
 		},
-			undefined, appContext);
+			TypeMoq.Mock.ofType<TreeNode>().object, appContext);
 
 		const children = await resourceTreeNode.getChildren();
 
@@ -186,11 +187,11 @@ describe('AzureResourceResourceTreeNode.getChildren', function (): void {
 		const resourceTreeNode = new AzureResourceResourceTreeNode({
 			resourceProviderId: mockResourceProviderId,
 			resourceNode: mockResourceNode1
-		}, undefined, appContext);
+		}, TypeMoq.Mock.ofType<TreeNode>().object, appContext);
 
 		const children = await resourceTreeNode.getChildren();
 
-		mockResourceTreeDataProvider.verify((o) => o.getChildren(), TypeMoq.Times.exactly(0));
+		mockResourceTreeDataProvider.verify((o) => o.getRootChildren(), TypeMoq.Times.exactly(0));
 
 		should(children).Array();
 		should(children.length).equal(0);
