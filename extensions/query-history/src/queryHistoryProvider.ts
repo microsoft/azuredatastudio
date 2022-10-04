@@ -12,7 +12,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
 import * as loc from './localizedConstants';
-import { sendSettingChangedEvent, TelemetryActions, TelemetryReporter, TelemetryViews, TimedAction } from './telemetry';
+import { sendSettingChangedEvent, TelemetryActions, TelemetryReporter, TelemetryViews } from './telemetry';
 
 const STORAGE_IV_KEY = 'queryHistory.storage-iv';
 const STORAGE_KEY_KEY = 'queryHistory.storage-key';
@@ -51,7 +51,7 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 	constructor(private _context: vscode.ExtensionContext, storageUri: vscode.Uri) {
 		this._historyStorageFile = path.join(storageUri.fsPath, HISTORY_STORAGE_FILE_NAME);
 		// Kick off initialization but then continue on since that may take a while and we don't want to block extension activation
-		const initializeAction = new TimedAction(TelemetryViews.QueryHistoryProvider, TelemetryActions.Initialize);
+		const initializeAction = TelemetryReporter.createTimedAction(TelemetryViews.QueryHistoryProvider, TelemetryActions.Initialize);
 		this._initPromise = this.initialize().then(() => initializeAction.send());
 		this._disposables.push(vscode.workspace.onDidChangeConfiguration(async e => {
 			if (e.affectsConfiguration(QUERY_HISTORY_CONFIG_SECTION) || e.affectsConfiguration(MAX_ENTRIES_CONFIG_SECTION)) {
@@ -147,12 +147,10 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 					const cipher = crypto.createCipheriv(STORAGE_ENCRYPTION_ALGORITHM, key!, iv!);
 					const stringifiedItems = JSON.stringify(this._queryHistoryItems);
 					const encryptedText = Buffer.concat([cipher.update(Buffer.from(stringifiedItems)), cipher.final()]);
-					const writeStorageFileAction = new TimedAction(TelemetryViews.QueryHistoryProvider, TelemetryActions.WriteStorageFile,
-						{},
-						{
-							ItemCount: this._queryHistoryItems.length,
-							ItemLengthChars: stringifiedItems.length
-						});
+					const writeStorageFileAction = TelemetryReporter.createTimedAction(TelemetryViews.QueryHistoryProvider, TelemetryActions.WriteStorageFile).withAdditionalMeasures({
+						ItemCount: this._queryHistoryItems.length,
+						ItemLengthChars: stringifiedItems.length
+					});
 					// Use sync here so that we can write this out when the object is disposed
 					fs.writeFileSync(this._historyStorageFile, encryptedText);
 					writeStorageFileAction.send();
@@ -171,7 +169,7 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 
 
 		try {
-			const readStorageFileAction = new TimedAction(TelemetryViews.QueryHistoryProvider, TelemetryActions.ReadStorageFile);
+			const readStorageFileAction = TelemetryReporter.createTimedAction(TelemetryViews.QueryHistoryProvider, TelemetryActions.ReadStorageFile);
 			// Read and decrypt any previous history items
 			const encryptedItems = await fs.promises.readFile(this._historyStorageFile);
 			readStorageFileAction.send();
