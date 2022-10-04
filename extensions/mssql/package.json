@@ -539,24 +539,24 @@
         },
         {
           "command": "mssql.designTable",
-          "when": "connectionProvider == MSSQL && nodeType == Table && nodeSubType != LedgerDropped && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType == Table && nodeSubType != LedgerDropped",
           "group": "0_query@3"
         },
         {
           "command": "mssql.newTable",
-          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Tables && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Tables",
           "group": "0_query@1"
         }
       ],
       "dataExplorer/context": [
         {
           "command": "mssql.designTable",
-          "when": "connectionProvider == MSSQL && nodeType == Table && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType == Table",
           "group": "connection@3"
         },
         {
           "command": "mssql.newTable",
-          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Tables && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Tables",
           "group": "connection@1"
         }
       ],
