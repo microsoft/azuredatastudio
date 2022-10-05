@@ -182,7 +182,8 @@ suite('notebook model', function (): void {
 			cellMagicMapper: undefined,
 			defaultKernel: undefined,
 			layoutChanged: undefined,
-			capabilitiesService: capabilitiesService
+			capabilitiesService: capabilitiesService,
+			getInputLanguageMode: () => undefined
 		};
 		clientSessionOptions = {
 			executeManager: defaultModelOptions.executeManagers[0],

@@ -106,7 +106,8 @@ suite('Notebook Find Model', function (): void {
 			cellMagicMapper: undefined,
 			defaultKernel: undefined,
 			layoutChanged: undefined,
-			capabilitiesService: capabilitiesService.object
+			capabilitiesService: capabilitiesService.object,
+			getInputLanguageMode: () => undefined
 		};
 		mockClientSession = TypeMoq.Mock.ofType<IClientSession>(ClientSession, undefined, defaultModelOptions);
 		mockClientSession.setup(c => c.initialize()).returns(() => {
