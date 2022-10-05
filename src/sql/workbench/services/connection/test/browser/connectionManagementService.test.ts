@@ -61,7 +61,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		databaseName: 'database',
 		userName: 'user',
 		password: 'password',
-		authenticationType: 'integrated',
+		authenticationType: Constants.AuthenticationType.Integrated,
 		savePassword: true,
 		groupFullName: 'g2/g2-2',
 		groupId: 'group id',
@@ -121,7 +121,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			c => c.serverName === connectionProfileWithEmptyUnsavedPassword.serverName))).returns(
 				() => Promise.resolve({ profile: connectionProfileWithEmptyUnsavedPassword, savedCred: false }));
 		connectionStore.setup(x => x.isPasswordRequired(TypeMoq.It.isAny())).returns((profile) => {
-			if (profile.authenticationType === Constants.azureMFA) {
+			if (profile.authenticationType === Constants.AuthenticationType.AzureMFA) {
 				return false;
 			}
 			return true;
@@ -1649,7 +1649,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	test('addSavedPassword fills in Azure access tokens for Azure accounts', async () => {
 		// Set up a connection profile that uses Azure
 		let azureConnectionProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, connectionProfile);
-		azureConnectionProfile.authenticationType = 'AzureMFA';
+		azureConnectionProfile.authenticationType = Constants.AuthenticationType.AzureMFA;
 		let username = 'testuser@microsoft.com';
 		azureConnectionProfile.azureAccount = username;
 		let servername = 'test-database.database.windows.net';
@@ -1688,7 +1688,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			token: testToken,
 			tokenType: 'Bearer'
 		}));
-		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is(profile => profile.authenticationType === 'AzureMFA'))).returns(profile => Promise.resolve({
+		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is(profile => profile.authenticationType === Constants.AuthenticationType.AzureMFA))).returns(profile => Promise.resolve({
 			profile: profile,
 			savedCred: false
 		}));
@@ -1705,7 +1705,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		const uri: string = 'Editor Uri';
 		// Set up a connection profile that uses Azure
 		const azureConnectionProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, connectionProfile);
-		azureConnectionProfile.authenticationType = 'AzureMFA';
+		azureConnectionProfile.authenticationType = Constants.AuthenticationType.AzureMFA;
 		const username = 'testuser@microsoft.com';
 		azureConnectionProfile.azureAccount = username;
 		const servername = 'test-database.database.windows.net';
@@ -1747,7 +1747,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			]);
 		});
 
-		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is(profile => profile.authenticationType === 'AzureMFA'))).returns(profile => Promise.resolve({
+		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is(profile => profile.authenticationType === Constants.AuthenticationType.AzureMFA))).returns(profile => Promise.resolve({
 			profile: profile,
 			savedCred: false
 		}));
@@ -1776,7 +1776,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	test('addSavedPassword fills in Azure access token for selected tenant', async () => {
 		// Set up a connection profile that uses Azure
 		let azureConnectionProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, connectionProfile);
-		azureConnectionProfile.authenticationType = 'AzureMFA';
+		azureConnectionProfile.authenticationType = Constants.AuthenticationType.AzureMFA;
 		let username = 'testuser@microsoft.com';
 		azureConnectionProfile.azureAccount = username;
 		let servername = 'test-database.database.windows.net';
@@ -1814,7 +1814,7 @@ suite('SQL ConnectionManagementService tests', () => {
 
 		let returnedToken = { token: 'testToken', tokenType: 'Bearer' };
 		accountManagementService.setup(x => x.getAccountSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(returnedToken));
-		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is(profile => profile.authenticationType === 'AzureMFA'))).returns(profile => Promise.resolve({
+		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is(profile => profile.authenticationType === Constants.AuthenticationType.AzureMFA))).returns(profile => Promise.resolve({
 			profile: profile,
 			savedCred: false
 		}));
@@ -1918,7 +1918,7 @@ export function createConnectionProfile(id: string, password?: string): Connecti
 		groupFullName: 'testGroup',
 		serverName: 'testServerName',
 		databaseName: 'testDatabaseName',
-		authenticationType: Constants.integrated,
+		authenticationType: Constants.AuthenticationType.Integrated,
 		password: password ?? 'test',
 		userName: 'testUsername',
 		groupId: undefined,

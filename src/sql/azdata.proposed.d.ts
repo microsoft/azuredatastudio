@@ -399,13 +399,46 @@ declare module 'azdata' {
 		title: string;
 	}
 
-	/*
-	 * Add optional azureAccount for connectionWidget.
-	 */
 	export interface IConnectionProfile extends ConnectionInfo {
+		/**
+		 * The type of authentication to use when connecting
+		 */
+		authenticationType: string | connection.AuthenticationType;
 		azureAccount?: string;
 		azureResourceId?: string;
 		azurePortalEndpoint?: string;
+	}
+
+	export namespace connection {
+		/**
+		 * Well-known Authentication types commonly supported by connection providers.
+		 */
+		export enum AuthenticationType {
+			/**
+			 * Username and password
+			 */
+			SqlLogin = 'SqlLogin',
+			/**
+			 * Windows Authentication
+			 */
+			Integrated = 'Integrated',
+			/**
+			 * Azure Active Directory - Universal with MFA support
+			 */
+			AzureMFA = 'AzureMFA',
+			/**
+			 * Azure Active Directory - Password
+			 */
+			AzureMFAAndUser = 'AzureMFAAndUser',
+			/**
+			 * Datacenter Security Token Service Authentication
+			 */
+			DSTSAuth = 'dstsAuth',
+			/**
+			 * No authentication required
+			 */
+			None = 'None'
+		}
 	}
 
 	/*
@@ -1312,6 +1345,10 @@ declare module 'azdata' {
 			 */
 			elapsedTimeInMs: number;
 			/**
+			 * CPU time taken by the node operation in milliseconds
+			 */
+			elapsedCpuTimeInMs: number;
+			/**
 			 * Node properties to be shown in the tooltip
 			 */
 			properties: ExecutionPlanGraphElementProperty[];
@@ -1351,6 +1388,21 @@ declare module 'azdata' {
 			 * Cost string for the node
 			 */
 			costDisplayString: string;
+			/**
+			 * Cost metrics for the node
+			 */
+			costMetrics: CostMetric[];
+		}
+
+		export interface CostMetric {
+			/**
+			 * Name of the cost metric.
+			 */
+			name: string;
+			/**
+			 * The value of the cost metric
+			 */
+			value: number | undefined;
 		}
 
 		export interface ExecutionPlanBadge {

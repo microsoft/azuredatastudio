@@ -95,6 +95,10 @@ export class TargetSelectionPage extends MigrationWizardPage {
 				this._azureResourceDropdownLabel.value = constants.AZURE_SQL_DATABASE;
 				this._azureResourceDropdown.ariaLabel = constants.AZURE_SQL_DATABASE;
 				this._updateConnectionButtonState();
+				if (this.migrationStateModel._didUpdateDatabasesForMigration) {
+					await this._resetTargetMapping();
+					this.migrationStateModel._didUpdateDatabasesForMigration = false;
+				}
 				break;
 		}
 
@@ -940,6 +944,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 						this.migrationStateModel._sourceTargetMapping.set(
 							sourceDatabase,
 							targetDatabaseInfo);
+						this.migrationStateModel.refreshDatabaseBackupPage = true;
 						this.migrationStateModel._didDatabaseMappingChange = true;
 					}));
 

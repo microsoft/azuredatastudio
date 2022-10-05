@@ -15,8 +15,6 @@ import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { integrated, azureMFA } from 'sql/platform/connection/common/constants';
-import { AuthenticationType } from 'sql/workbench/services/connection/browser/connectionWidget';
 import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
 import { ConnectionViewletPanel } from 'sql/workbench/contrib/dataExplorer/browser/connectionViewletPanel';
@@ -31,6 +29,7 @@ workbenchRegistry.registerWorkbenchContribution(ConnectionStatusbarItem, Lifecyc
 
 import 'sql/workbench/contrib/connection/common/connectionTreeProviderExentionPoint';
 import { ServerTreeViewView } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
+import { AuthenticationType } from 'sql/platform/connection/common/constants';
 
 // Connection Dashboard registration
 
@@ -124,8 +123,8 @@ CommandsRegistry.registerCommand('azdata.connect',
 		const capabilitiesServices = accessor.get(ICapabilitiesService);
 		const connectionManagementService = accessor.get(IConnectionManagementService);
 		if (args && args.serverName && args.providerName
-			&& (args.authenticationType === integrated
-				|| args.authenticationType === azureMFA
+			&& (args.authenticationType === AuthenticationType.Integrated
+				|| args.authenticationType === AuthenticationType.AzureMFA
 				|| (args.userName && args.password))) {
 			const profile: azdata.IConnectionProfile = {
 				serverName: args.serverName,
@@ -178,7 +177,7 @@ configurationRegistry.registerConfiguration({
 		},
 		'sql.defaultAuthenticationType': {
 			'type': 'string',
-			'enum': ['SqlLogin', 'AzureMFA', `AzureMFAAndUser`, 'Integrated'],
+			'enum': [AuthenticationType.SqlLogin, AuthenticationType.AzureMFA, AuthenticationType.AzureMFAAndUser, AuthenticationType.Integrated],
 			'description': localize('sql.defaultAuthenticationTypeDescription', "Default authentication type to use when connecting to Azure resources. "),
 			'enumDescriptions': [
 				localize('sql.defaultAuthenticationType.SqlLogin', "Sql Login"),
@@ -186,7 +185,7 @@ configurationRegistry.registerConfiguration({
 				localize('sql.defaultAuthenticationType.AzureMFAAndUser', "Azure Active Directory - Password"),
 				localize('sql.defaultAuthenticationType.Integrated', "Windows Authentication"),
 			],
-			'default': 'AzureMFA'
+			'default': AuthenticationType.AzureMFA
 		},
 		'sql.defaultEngine': {
 			'type': 'string',

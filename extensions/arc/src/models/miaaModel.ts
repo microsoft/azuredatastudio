@@ -209,7 +209,7 @@ export class MiaaModel extends ResourceModel {
 		return {
 			serverName: `${ipAndPort.ip},${ipAndPort.port}`,
 			databaseName: '',
-			authenticationType: 'SqlLogin',
+			authenticationType: azdata.connection.AuthenticationType.SqlLogin,
 			providerName: loc.miaaProviderName,
 			connectionName: '',
 			userName: this._miaaInfo.userName || '',
