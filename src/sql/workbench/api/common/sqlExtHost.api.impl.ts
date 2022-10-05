@@ -606,9 +606,13 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				ExecutionPlanGraphElementPropertyBetterValue: sqlExtHostTypes.executionPlan.ExecutionPlanGraphElementPropertyBetterValue
 			};
 
+			// Dev/OSS builds don't have a quality set - give it a value here so it's more clear
+			let quality = initData.quality || 'dev';
+			// Special case rc1 quality, that should be treated as stable by extensions
+			quality = quality === 'rc1' ? 'stable' : quality;
 			const env: typeof azdata.env = {
 				AppQuality: sqlExtHostTypes.env.AppQuality,
-				quality: initData.quality || 'dev' // Dev/OSS builds don't have a quality set - give it a value here so it's more clear
+				quality
 			};
 
 			return {
