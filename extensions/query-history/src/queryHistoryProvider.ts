@@ -7,11 +7,12 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { QueryHistoryItem } from './queryHistoryItem';
 import { debounce, removeNewLines } from './utils';
-import { CAPTURE_ENABLED_CONFIG_SECTION, ITEM_SELECTED_COMMAND_ID, PERSIST_HISTORY_CONFIG_SECTION, QUERY_HISTORY_CONFIG_SECTION } from './constants';
+import { CAPTURE_ENABLED_CONFIG_SECTION, CONTEXT_LOADING, CONTEXT_NOENTRIES, ITEM_SELECTED_COMMAND_ID, MAX_ENTRIES_CONFIG_SECTION, PERSIST_HISTORY_CONFIG_SECTION, QUERY_HISTORY_CONFIG_SECTION } from './constants';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
 import * as loc from './localizedConstants';
+import { sendSettingChangedEvent, TelemetryActions, TelemetryReporter, TelemetryViews, TimedAction } from './telemetry';
 
 const STORAGE_IV_KEY = 'queryHistory.storage-iv';
 const STORAGE_KEY_KEY = 'queryHistory.storage-key';
@@ -20,6 +21,7 @@ const STORAGE_ENCRYPTION_ALGORITHM = 'aes-256-ctr';
 const HISTORY_DEBOUNCE_MS = 10000;
 const DEFAULT_CAPTURE_ENABLED = true;
 const DEFAULT_PERSIST_HISTORY = true;
+const DEFAULT_MAX_ENTRIES = 100;
 const successIcon = new vscode.ThemeIcon('check', new vscode.ThemeColor('testing.iconPassed'));
 const failedIcon = new vscode.ThemeIcon('error', new vscode.ThemeColor('testing.iconFailed'));
 
@@ -31,8 +33,10 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 	private _queryHistoryItems: QueryHistoryItem[] = [];
 	private _captureEnabled: boolean = DEFAULT_CAPTURE_ENABLED;
 	private _persistHistory: boolean = DEFAULT_PERSIST_HISTORY;
-
+	private _maxEntries: number = DEFAULT_MAX_ENTRIES;
 	private _historyStorageFile: string;
+
+	private _initPromise: Promise<void> | undefined = undefined;
 
 	private _disposables: vscode.Disposable[] = [];
 
@@ -44,12 +48,13 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 	 */
 	private queryTextMappings: Map<string, string> = new Map<string, string>();
 
-	constructor(private _context: vscode.ExtensionContext) {
-		this._historyStorageFile = path.join(this._context.globalStorageUri.fsPath, HISTORY_STORAGE_FILE_NAME);
+	constructor(private _context: vscode.ExtensionContext, storageUri: vscode.Uri) {
+		this._historyStorageFile = path.join(storageUri.fsPath, HISTORY_STORAGE_FILE_NAME);
 		// Kick off initialization but then continue on since that may take a while and we don't want to block extension activation
-		void this.initialize();
+		const initializeAction = new TimedAction(TelemetryViews.QueryHistoryProvider, TelemetryActions.Initialize);
+		this._initPromise = this.initialize().then(() => initializeAction.send());
 		this._disposables.push(vscode.workspace.onDidChangeConfiguration(async e => {
-			if (e.affectsConfiguration(QUERY_HISTORY_CONFIG_SECTION)) {
+			if (e.affectsConfiguration(QUERY_HISTORY_CONFIG_SECTION) || e.affectsConfiguration(MAX_ENTRIES_CONFIG_SECTION)) {
 				await this.updateConfigurationValues();
 			}
 		}));
@@ -67,6 +72,7 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 						}
 						this.queryTextMappings.delete(document.uri);
 						this._queryHistoryItems.unshift({ queryText, connectionProfile, timestamp: new Date().toLocaleString(), isSuccess });
+						this.trimExtraEntries();
 						this._onDidChangeTreeData.fire(undefined);
 						this.writeHistoryFile();
 					} else if (type === 'queryStart') {
@@ -78,6 +84,7 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 						// We need to compare URIs, but the event Uri comes in as string so while it should be in the same format as
 						// the textDocument uri.toString() we parse it into a vscode.Uri first to be absolutely sure.
 						if (textEditor?.document.uri.toString() !== vscode.Uri.parse(document.uri).toString()) {
+							TelemetryReporter.sendErrorEvent(TelemetryViews.QueryHistoryProvider, 'UriMismatch');
 							// If we couldn't find the document then we can't get the text so just log the error and move on
 							console.error(`Active text editor ${textEditor?.document.uri} does not match URI ${document.uri} for query event`);
 							return;
@@ -110,6 +117,7 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 			}
 		} catch (err) {
 			console.error(`Error getting persistance storage IV: ${err}`);
+			TelemetryReporter.sendErrorEvent(TelemetryViews.QueryHistoryProvider, 'InitializingIV');
 			// An IV is required to read/write the encrypted file so if we can't get it then just fail early
 			return;
 		}
@@ -125,21 +133,31 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 			}
 		} catch (err) {
 			console.error(`Error getting persistance storage key: ${err}`);
+			TelemetryReporter.sendErrorEvent(TelemetryViews.QueryHistoryProvider, 'InitializingKey');
 			// A key is required to read/write the encrypted file so if we can't get it then just fail early
 			return;
 		}
 
 		this.writeHistoryFileWorker = (): void => {
 			if (this._persistHistory) {
+
 				try {
 					// We store the history entries in an encrypted file because they may contain sensitive information
 					// such as passwords (even in the query text itself)
 					const cipher = crypto.createCipheriv(STORAGE_ENCRYPTION_ALGORITHM, key!, iv!);
 					const stringifiedItems = JSON.stringify(this._queryHistoryItems);
 					const encryptedText = Buffer.concat([cipher.update(Buffer.from(stringifiedItems)), cipher.final()]);
+					const writeStorageFileAction = new TimedAction(TelemetryViews.QueryHistoryProvider, TelemetryActions.WriteStorageFile,
+						{},
+						{
+							ItemCount: this._queryHistoryItems.length,
+							ItemLengthChars: stringifiedItems.length
+						});
 					// Use sync here so that we can write this out when the object is disposed
 					fs.writeFileSync(this._historyStorageFile, encryptedText);
+					writeStorageFileAction.send();
 				} catch (err) {
+					TelemetryReporter.sendErrorEvent(TelemetryViews.QueryHistoryProvider, 'WriteStorageFile');
 					console.error(`Error writing query history to disk: ${err}`);
 				}
 
@@ -151,9 +169,12 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 			return;
 		}
 
+
 		try {
+			const readStorageFileAction = new TimedAction(TelemetryViews.QueryHistoryProvider, TelemetryActions.ReadStorageFile);
 			// Read and decrypt any previous history items
 			const encryptedItems = await fs.promises.readFile(this._historyStorageFile);
+			readStorageFileAction.send();
 			const decipher = crypto.createDecipheriv(STORAGE_ENCRYPTION_ALGORITHM, key, iv);
 			const result = Buffer.concat([decipher.update(encryptedItems), decipher.final()]).toString();
 			this._queryHistoryItems = JSON.parse(result);
@@ -161,6 +182,7 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 		} catch (err) {
 			// Ignore ENOENT errors, those are expected if the storage file doesn't exist (on first run or if results aren't being persisted)
 			if (err.code !== 'ENOENT') {
+				TelemetryReporter.sendErrorEvent(TelemetryViews.QueryHistoryProvider, 'ReadStorageFile');
 				console.error(`Error deserializing stored history items: ${err}`);
 				void vscode.window.showWarningMessage(loc.errorLoading(err));
 				// Rename the file to avoid attempting to load a potentially corrupted or unreadable file every time we start up, we'll make
@@ -169,11 +191,16 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 					const bakPath = path.join(path.dirname(this._historyStorageFile), `${HISTORY_STORAGE_FILE_NAME}.bak`);
 					await fs.promises.rename(this._historyStorageFile, bakPath);
 				} catch (err) {
+					TelemetryReporter.sendErrorEvent(TelemetryViews.QueryHistoryProvider, 'MovingBadStorageFile');
 					console.error(`Error moving corrupted history file: ${err}`);
 				}
 			}
-
 		}
+
+		await this.updateNoEntriesContext();
+		// Done loading so hide the loading welcome text
+		await setLoadingContext(false);
+		this._initPromise = undefined;
 	}
 
 	/**
@@ -189,12 +216,14 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 	public async clearAll(): Promise<void> {
 		this._queryHistoryItems = [];
 		this.writeHistoryFile();
+		await this.updateNoEntriesContext();
 		this._onDidChangeTreeData.fire(undefined);
 	}
 
 	public async deleteItem(item: QueryHistoryItem): Promise<void> {
 		this._queryHistoryItems = this._queryHistoryItems.filter(n => n !== item);
 		this.writeHistoryFile();
+		await this.updateNoEntriesContext();
 		this._onDidChangeTreeData.fire(undefined);
 	}
 
@@ -207,7 +236,8 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 		return treeItem;
 	}
 
-	public getChildren(element?: QueryHistoryItem): QueryHistoryItem[] {
+	public async getChildren(element?: QueryHistoryItem): Promise<QueryHistoryItem[]> {
+		await this._initPromise;
 		// We only have top level items
 		return this._queryHistoryItems;
 	}
@@ -220,21 +250,50 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 
 	private async updateConfigurationValues(): Promise<void> {
 		const configSection = vscode.workspace.getConfiguration(QUERY_HISTORY_CONFIG_SECTION);
-		this._captureEnabled = configSection.get(CAPTURE_ENABLED_CONFIG_SECTION, DEFAULT_CAPTURE_ENABLED);
-		this._persistHistory = configSection.get(PERSIST_HISTORY_CONFIG_SECTION, DEFAULT_PERSIST_HISTORY);
+		const newCaptureEnabled = configSection.get(CAPTURE_ENABLED_CONFIG_SECTION, DEFAULT_CAPTURE_ENABLED);
+		if (this._captureEnabled !== newCaptureEnabled) {
+			sendSettingChangedEvent('CaptureEnabled', String(this._captureEnabled), String(newCaptureEnabled));
+			this._captureEnabled = newCaptureEnabled;
+		}
+		const newPersistHistory = configSection.get(PERSIST_HISTORY_CONFIG_SECTION, DEFAULT_PERSIST_HISTORY);
+		if (this._persistHistory !== newPersistHistory) {
+			sendSettingChangedEvent('PersistHistory', String(this._persistHistory), String(newPersistHistory));
+			this._persistHistory = newPersistHistory;
+		}
+		const newMaxEntries = configSection.get(MAX_ENTRIES_CONFIG_SECTION, DEFAULT_MAX_ENTRIES);
+		if (this._maxEntries !== newMaxEntries) {
+			sendSettingChangedEvent('MaxEntries', String(this._maxEntries), String(newMaxEntries));
+			this._maxEntries = newMaxEntries;
+		}
+		this.trimExtraEntries();
 		if (!this._persistHistory) {
+			// We're not persisting history so we can immediately set loading to false to immediately
+			// hide the loading text.
+			await setLoadingContext(false);
+			this._initPromise = undefined;
 			// If we're no longer persisting the history then clean up our storage file
 			try {
 				await fs.promises.rmdir(this._historyStorageFile);
 			} catch (err) {
 				// Ignore ENOENT errors, those are expected if the storage file doesn't exist (on first run or if results aren't being persisted)
 				if (err.code !== 'ENOENT') {
+					TelemetryReporter.sendErrorEvent(TelemetryViews.QueryHistoryProvider, 'CleaningUpStorageFile');
 					// Best effort, we don't want other things to fail if we can't delete the file for some reason
 					console.error(`Error cleaning up query history storage: ${this._historyStorageFile}. ${err}`);
 				}
 			}
 		} else {
 			this.writeHistoryFile();
+		}
+	}
+
+	/**
+	 * Removes the oldest entries from the items list if there are more than maxEntries
+	 * currently being tracked.
+	 */
+	private trimExtraEntries(): void {
+		if (this._queryHistoryItems.length > this._maxEntries) {
+			this._queryHistoryItems.length = this._maxEntries;
 		}
 	}
 
@@ -257,4 +316,27 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 		this._persistHistory = enabled;
 		return vscode.workspace.getConfiguration(QUERY_HISTORY_CONFIG_SECTION).update(PERSIST_HISTORY_CONFIG_SECTION, this._persistHistory, vscode.ConfigurationTarget.Global);
 	}
+
+	/**
+	 * Sets the 'queryHistory.noEntries context, which is used to display the "No Entries" text in the
+	 * tree view when there are no entries stored.
+	 * @returns A promise that completes when the setContext command has been executed
+	 */
+	public async updateNoEntriesContext(): Promise<void> {
+		// Only show the "No Entries" text if there's no loaded entries - otherwise it will show the text until
+		// the tree view actually displays the items.
+		// Note that we only have to call this when deleting items, not adding, since that's the only time outside
+		// the initial load that we may end up with 0 items in the list.
+		return vscode.commands.executeCommand('setContext', CONTEXT_NOENTRIES, this._queryHistoryItems.length === 0);
+	}
+}
+
+/**
+ * Sets the 'queryHistory.loaded' context, which is used to display the loading message in the tree view
+ * while entries are being loaded from disk.
+ * @param loading The loaded state to set
+ * @returns A promise that completes when the setContext command has been executed
+ */
+export async function setLoadingContext(loading: boolean): Promise<void> {
+	return vscode.commands.executeCommand('setContext', CONTEXT_LOADING, loading);
 }

@@ -407,7 +407,7 @@
         },
         {
           "command": "sqlDatabaseProjects.openInDesigner",
-          "when": "azdataAvailable && view == dataworkspace.views.main && viewItem == databaseProject.itemType.file.table && config.workbench.enablePreviewFeatures",
+          "when": "azdataAvailable && view == dataworkspace.views.main && viewItem == databaseProject.itemType.file.table",
           "group": "6_dbProjects_openInDesigner"
         },
         {

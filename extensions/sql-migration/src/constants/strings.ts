@@ -94,6 +94,9 @@ export const SKU_RECOMMENDATION_CHOOSE_A_TARGET = localize('sql.migration.wizard
 export const SKU_RECOMMENDATION_MI_CARD_TEXT = localize('sql.migration.sku.mi.card.title', "Azure SQL Managed Instance");
 export const SKU_RECOMMENDATION_SQLDB_CARD_TEXT = localize('sql.migration.sku.sqldb.card.title', "Azure SQL Database (PREVIEW)");
 export const SKU_RECOMMENDATION_VM_CARD_TEXT = localize('sql.migration.sku.vm.card.title', "SQL Server on Azure Virtual Machine");
+export const SKU_RECOMMENDATION_MI_TARGET_TEXT = localize('sql.migration.sku.mi.target.title', "Azure SQL Managed Instance");
+export const SKU_RECOMMENDATION_SQLDB_TARGET_TEXT = localize('sql.migration.sku.sqldb.target.title', "Azure SQL Database");
+export const SKU_RECOMMENDATION_VM_TARGET_TEXT = localize('sql.migration.sku.vm.target.title', "SQL Server on Azure Virtual Machine");
 export const SELECT_AZURE_MI = localize('sql.migration.select.azure.mi', "Select your target Azure subscription and your target Azure SQL Managed Instance.");
 export const SELECT_AZURE_VM = localize('sql.migration.select.azure.vm', "Select your target Azure Subscription and your target SQL Server on Azure Virtual Machine for your target.");
 export const SKU_RECOMMENDATION_VIEW_ASSESSMENT_MI = localize('sql.migration.sku.recommendation.view.assessment.mi', "To migrate to Azure SQL Managed Instance, view assessment results and select one or more databases.");
@@ -130,7 +133,7 @@ export function SAVE_RECOMMENDATION_REPORT_SUCCESS(filePath: string): string {
 }
 
 // SKU
-export const AZURE_RECOMMENDATION = localize('sql.migration.sku.recommendation', "Azure recommendation");
+export const AZURE_RECOMMENDATION = localize('sql.migration.sku.recommendation', "Azure recommendation (PREVIEW)");
 export function RECOMMENDATIONS_TITLE(targetType: string): string {
 	return localize('sql.migration.sku.recommendations.title', "{0} Recommendations", targetType);
 }
@@ -519,6 +522,9 @@ export function TABLE_SELECTION_COUNT(selectedCount: number, rowCount: number): 
 export function TABLE_SELECTED_COUNT(selectedCount: number, rowCount: number): string {
 	return localize('sql.migration.table.selected.count', "{0} of {1} tables selected", selectedCount, rowCount);
 }
+export function MISSING_TARGET_TABLES_COUNT(tables: number): string {
+	return localize('sql.migration.table.missing.count', "Missing target tables excluded from list: {0}", tables);
+}
 export const DATABASE_MISSING_TABLES = localize('sql.migratino.database.missing.tables', "0 tables found.");
 export const DATABASE_LOADING_TABLES = localize('sql.migratino.database.loading.tables', "Loading tables list...");
 export const TABLE_SELECTION_FILTER = localize('sql.migratino.table.selection.filter', "Filter tables");
@@ -659,7 +665,7 @@ export const DASHBOARD_REFRESH_MIGRATIONS_TITLE = localize('sql.migration.refres
 export const DASHBOARD_REFRESH_MIGRATIONS_LABEL = localize('sql.migration.refresh.migrations.error.label', "An error occurred while refreshing the migrations list.  Please check your linked Azure connection and click refresh to try again.");
 
 export const DASHBOARD_TITLE = localize('sql.migration.dashboard.title', "Azure SQL Migration");
-export const DASHBOARD_DESCRIPTION = localize('sql.migration.dashboard.description', "Determine the migration readiness of your SQL Server instances, identify a recommended Azure SQL target, and complete the migration of your SQL Server instance to Azure SQL Managed Instance, SQL Server on Azure Virtual Machines or Azure SQL Database (PREVIEW).");
+export const DASHBOARD_DESCRIPTION = localize('sql.migration.dashboard.description', "Determine the migration readiness of your SQL Server instances, identify a recommended Azure SQL target, and complete the migration of your SQL Server instance to Azure SQL Managed Instance, SQL Server on Azure Virtual Machines or Azure SQL Database.");
 export const DASHBOARD_MIGRATE_TASK_BUTTON_TITLE = localize('sql.migration.dashboard.migrate.task.button', "Migrate to Azure SQL");
 export const DASHBOARD_MIGRATE_TASK_BUTTON_DESCRIPTION = localize('sql.migration.dashboard.migrate.task.button.description', "Migrate a SQL Server instance to Azure SQL.");
 export const DATABASE_MIGRATION_STATUS = localize('sql.migration.database.migration.status', "Database migration status");
@@ -667,7 +673,7 @@ export const HELP_TITLE = localize('sql.migration.dashboard.help.title', "Help a
 export const PRE_REQ_TITLE = localize('sql.migration.pre.req.title', "Things you need before starting your Azure SQL migration:");
 export const PRE_REQ_1 = localize('sql.migration.pre.req.1', "An Azure account (not required for assessment or SKU recommendation functionality)");
 export const PRE_REQ_2 = localize('sql.migration.pre.req.2', "A source SQL Server database(s) running on on-premises, or on SQL Server on Azure Virtual Machine or any virtual machine running in the cloud (private, public).");
-export const PRE_REQ_3 = localize('sql.migration.pre.req.3', "An Azure SQL Managed Instance, SQL Server on Azure Virtual Machine, or Azure SQL Database (PREVIEW) to migrate your database(s) to.");
+export const PRE_REQ_3 = localize('sql.migration.pre.req.3', "An Azure SQL Managed Instance, SQL Server on Azure Virtual Machine, or Azure SQL Database to migrate your database(s) to.");
 export const PRE_REQ_4 = localize('sql.migration.pre.req.4', "Your database backup location details, either a network file share or an Azure Blob Storage container (not required for Azure SQL Database targets).");
 export const MIGRATION_IN_PROGRESS = localize('sql.migration.migration.in.progress', "Database migrations in progress");
 export const MIGRATION_FAILED = localize('sql.migration.failed', "Database migrations failed");

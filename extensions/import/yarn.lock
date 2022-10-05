@@ -182,10 +182,10 @@
   resolved "https://registry.yarnpkg.com/@istanbuljs/schema/-/schema-0.1.2.tgz#26520bf09abe4a5644cd5414e37125a8954241dd"
   integrity sha512-tsAQNx32a8CoFhjhijUIhI4kccIAgmGhy8LZMZgGfmXcpMbPRUqn5LWmgRttILi6yeGmBJd2xsPkFMs0PzgPCw==
 
-"@microsoft/ads-service-downloader@1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@microsoft/ads-service-downloader/-/ads-service-downloader-1.0.2.tgz#76cc9a44074525ac65a6ea15f8b5ee7eac87efbe"
-  integrity sha512-Qpc5HNLywVZbSxeUC4S7d+VRAUddrYjkIfDXl76UwCA0iuwzi71RtciEgWfCWAZMm9CbKTIbtFGh4pYw+h81nQ==
+"@microsoft/ads-service-downloader@1.0.4":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@microsoft/ads-service-downloader/-/ads-service-downloader-1.0.4.tgz#94e13461d655d0864cbf93978247cbd1097e7863"
+  integrity sha512-XVJ3RW4X5mzlPYeJnwTii5/6ywVib4UqCtrvxwRWSFe214Hi8jO2zNxzcpamiTCnHm2b8wZAuWGfsvIShbf/yg==
   dependencies:
     async-retry "^1.2.3"
     eventemitter2 "^5.0.1"

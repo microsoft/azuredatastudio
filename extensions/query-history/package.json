@@ -55,6 +55,12 @@
             "type": "boolean",
             "default": true,
             "description": "%queryHistory.persistHistory%"
+          },
+          "queryHistory.maxEntries": {
+            "type": "integer",
+            "default": 100,
+            "minimum": 0,
+            "description": "%queryHistory.maxEntries%"
           }
         }
       }
@@ -92,6 +98,11 @@
         "title": "%queryHistory.enableCapture%",
         "category": "%queryHistory.displayName%",
         "icon": "$(play)"
+      },
+      {
+        "command": "queryHistory.openStorageFolder",
+        "title": "%queryHistory.openStorageFolder%",
+        "category": "%queryHistory.displayName%"
       }
     ],
     "menus": {
@@ -157,7 +168,7 @@
         },
         {
           "command": "queryHistory.disableCapture",
-          "when": "view == queryHistory && config.queryHistory.capatureEnabled",
+          "when": "view == queryHistory && config.queryHistory.captureEnabled",
           "group": "QueryHistory@5"
         },
         {
@@ -178,6 +189,12 @@
     "viewsWelcome": [
       {
         "view": "queryHistory",
+        "when": "queryHistory.loading",
+        "contents": "%queryHistory.loading%"
+      },
+      {
+        "view": "queryHistory",
+        "when": "queryHistory.noEntries",
         "contents": "%queryHistory.noEntries%"
       }
     ],
@@ -192,6 +209,7 @@
     }
   },
   "dependencies": {
+    "@microsoft/ads-extension-telemetry": "1.2.0",
     "vscode-nls": "^4.1.2"
   },
   "devDependencies": {

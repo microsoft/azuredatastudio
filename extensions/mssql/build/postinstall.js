@@ -24,6 +24,7 @@
 			readline.clearLine(process.stdout, 0);
 			process.stdout.write(`${event}${values && values.length > 0 ? ` - ${values.join(' ')}` : ''}`);
 		});
+		console.log(`Installing SQL tools service, target runtime: ${runtime}.`);
 		let serviceInstallFolder = installer.getInstallDirectory(runtime);
 		await new Promise((rs, rj) => rimraf(serviceInstallFolder, (e) => e ? rj(e) : rs()));
 		await installer.installService(runtime);
