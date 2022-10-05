@@ -171,7 +171,8 @@ suite('NotebookViews', function (): void {
 			cellMagicMapper: undefined,
 			defaultKernel: undefined,
 			layoutChanged: undefined,
-			capabilitiesService: capabilitiesService.object
+			capabilitiesService: capabilitiesService.object,
+			getInputLanguageMode: () => undefined
 		};
 	}
 

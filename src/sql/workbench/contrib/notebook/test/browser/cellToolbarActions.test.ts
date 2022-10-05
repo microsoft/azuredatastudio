@@ -236,7 +236,8 @@ export async function createandLoadNotebookModel(codeContent?: nb.INotebookConte
 		cellMagicMapper: undefined,
 		defaultKernel: undefined,
 		layoutChanged: undefined,
-		capabilitiesService: undefined
+		capabilitiesService: undefined,
+		getInputLanguageMode: () => undefined
 	};
 	return new NotebookModel(defaultModelOptions, undefined, undefined, undefined, new NullAdsTelemetryService(), undefined, undefined, undoRedoService);
 }
