@@ -530,7 +530,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		this._providerToStandardKernels.set(providerUpperCase, descriptor);
 
 		// Emit update event if the provider is not one of the default options
-		if (provider.provider !== SQL_NOTEBOOK_PROVIDER && provider.provider !== JUPYTER_PROVIDER_ID) {
+		if (provider.provider !== SQL_NOTEBOOK_PROVIDER && provider.provider !== JUPYTER_PROVIDER_ID && standardKernels.length > 0) {
 			this._onNotebookKernelsAdded.fire(standardKernels.map(kernel => {
 				return {
 					name: kernel.name,
