@@ -39,32 +39,32 @@ stages:
           - template: darwin/sql-product-build-darwin-signing.yml
           timeoutInMinutes: 60
 
-  - stage: Linux
-    jobs:
-      - job: Linux
-        condition: and(succeeded(), eq(variables['VSCODE_BUILD_LINUX'], 'true'))
+  - ${{ if eq(variables['VSCODE_BUILD_LINUX'], true) }}:
+    - stage: Linux
         pool:
           vmImage: 'Ubuntu-20.04'
         container: linux-x64
         dependsOn:
-        - Compile
-        steps:
-        - template: linux/sql-product-build-linux.yml
-          parameters:
-            extensionsToUnitTest: ["admin-tool-ext-win", "agent", "azcli", "azurecore", "cms", "dacpac", "data-workspace", "import", "machine-learning", "notebook", "resource-deployment", "schema-compare", "sql-bindings", "sql-database-projects"]
-        timeoutInMinutes: 90
+          - Compile
+      jobs:
+        - job: Linux
+          steps:
+          - template: linux/sql-product-build-linux.yml
+            parameters:
+              extensionsToUnitTest: ["admin-tool-ext-win", "agent", "azcli", "azurecore", "cms", "dacpac", "data-workspace", "import", "machine-learning", "notebook", "resource-deployment", "schema-compare", "sql-bindings", "sql-database-projects"]
+          timeoutInMinutes: 90
 
-  - stage: Windows
-    jobs:
-      - job: Windows
-        condition: and(succeeded(), eq(variables['VSCODE_BUILD_WIN32'], 'true'))
+  - ${{ if eq(variables['VSCODE_BUILD_WIN32'], true) }}:
+    - stage: Windows
         pool:
           vmImage: 'windows-2019'
         dependsOn:
-        - Compile
-        steps:
-        - template: win32/sql-product-build-win32.yml
-        timeoutInMinutes: 90
+          - Compile
+      jobs:
+        - job: Windows
+          steps:
+          - template: win32/sql-product-build-win32.yml
+          timeoutInMinutes: 90
 
     # disable due to invalid machine pool (karlb 3/9/2022)
     # - job: Windows_Test
@@ -78,21 +78,21 @@ stages:
     #   - template: win32/sql-product-test-win32.yml
     #   timeoutInMinutes: 90
 
-  - stage: Release
-    jobs:
-      - job: Release
-        condition: and(succeeded(), or(eq(variables['VSCODE_RELEASE'], 'true'), and(eq(variables['VSCODE_QUALITY'], 'insider'), eq(variables['Build.Reason'], 'Schedule'))))
+  - ${{ if or(eq(variables['VSCODE_RELEASE'], 'true'), and(eq(variables['VSCODE_QUALITY'], 'insider'), eq(variables['Build.Reason'], 'Schedule'))) }}:
+    - stage: Release
         pool:
           vmImage: 'Ubuntu-20.04'
         dependsOn:
-        - macOS
-        - Linux
-        - Windows
-      # disable due to invalid machine pool (karlb 3/9/2022)
-      #  - Windows_Test
-        - macOS_Signing
-        steps:
-        - template: sql-release.yml
+          - macOS
+          - Linux
+          - Windows
+        # disable due to invalid machine pool (karlb 3/9/2022)
+        #  - Windows_Test
+          - macOS_Signing
+      jobs:
+        - job: Release
+          steps:
+          - template: sql-release.yml
 
 trigger: none
 pr: none
