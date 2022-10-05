@@ -23,7 +23,7 @@ import { INotebookEditOperation, NotebookEditOperationType } from 'sql/workbench
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { uriPrefixes } from 'sql/platform/connection/common/utils';
 import { ILogService } from 'vs/platform/log/common/log';
-import { getErrorMessage } from 'vs/base/common/errors';
+import { getErrorMessage, onUnexpectedError } from 'vs/base/common/errors';
 import { notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 import { IAdsTelemetryService, ITelemetryEvent, ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 import { Deferred } from 'sql/base/common/promise';
@@ -150,24 +150,31 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 		this._defaultKernel = _notebookOptions.defaultKernel;
 		if (this._notebookService) {
-			this._register(this._notebookService.onNotebookKernelsAdded(async kernels => {
-				let fileExt = path.extname(this._notebookOptions.notebookUri.path);
-				if (!fileExt) {
-					let languageMode = this._notebookOptions.getInputLanguageMode();
-					if (languageMode === DEFAULT_NB_LANGUAGE_MODE) {
-						fileExt = DEFAULT_NOTEBOOK_FILETYPE;
-					} else if (languageMode) {
-						fileExt = `.${languageMode}`;
-					}
-				}
-				// All kernels from the same provider share the same supported file extensions,
-				// so we only need to check the first one here.
-				if (fileExt && kernels[0]?.supportedFileExtensions?.includes(fileExt)) {
-					this._standardKernels.push(...kernels);
-					this.setDisplayNameMapsForKernels(kernels);
-					this._kernelsChangedEmitter.fire(this._activeClientSession.kernel);
-				}
-			}));
+			this._register(this._notebookService.onNotebookKernelsAdded(async kernels => this.handleNewKernelsAdded(kernels).catch(error => onUnexpectedError(error))));
+		}
+	}
+
+	private async handleNewKernelsAdded(kernels: notebookUtils.IStandardKernelWithProvider[]): Promise<void> {
+		let fileExt = path.extname(this._notebookOptions.notebookUri.path);
+		if (!fileExt) {
+			let languageMode = this._notebookOptions.getInputLanguageMode();
+			if (languageMode === DEFAULT_NB_LANGUAGE_MODE) {
+				fileExt = DEFAULT_NOTEBOOK_FILETYPE;
+			} else if (languageMode) {
+				fileExt = `.${languageMode}`;
+			}
+		}
+		// All kernels from the same provider share the same supported file extensions,
+		// so we only need to check the first one here.
+		if (fileExt && kernels[0]?.supportedFileExtensions?.includes(fileExt)) {
+			this._standardKernels.push(...kernels);
+			this.setDisplayNameMapsForKernels(kernels);
+
+			// Also get corresponding execute managers so that kernel changing works
+			let manager = await this._notebookService.getOrCreateExecuteManager(kernels[0].notebookProvider, this.notebookUri);
+			this._notebookOptions.executeManagers.push(manager);
+
+			this._kernelsChangedEmitter.fire(this._activeClientSession.kernel);
 		}
 	}
 
