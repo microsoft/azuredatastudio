@@ -883,7 +883,7 @@ export class SqlDatabaseTree {
 			this._dbNames = this._model._assessmentResults?.databaseAssessments.map(da => da.name);
 			this._model._assessmentResults?.databaseAssessments.forEach((db) => {
 				let selectable = true;
-				if (db.issues.find(item => item.databaseRestoreFails)) {
+				if (db.issues.find(issue => issue.databaseRestoreFails && issue.appliesToMigrationTargetPlatform === this._targetType)) {
 					selectable = false;
 				}
 				this._databaseTableValues.push([
