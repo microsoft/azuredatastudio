@@ -14,7 +14,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../telemtery';
 import { hashString, deepClone } from '../api/utils';
 import { SKURecommendationPage } from '../wizard/skuRecommendationPage';
-import { excludeDatabses, TargetDatabaseInfo } from '../api/sqlUtils';
+import { excludeDatabses, getSqlString, TargetDatabaseInfo } from '../api/sqlUtils';
+import * as queries from '../constants/queries';
 const localize = nls.loadMessageBundle();
 
 export enum State {
@@ -1187,6 +1188,38 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			return true;
 		} catch {
 			return false;
+		}
+	}
+
+	//Get QueryProvider
+	private async runQueryWithResults(queryString: string): Promise<azdata.SimpleExecuteResult> {
+		const connectionProfile = await this.getSourceConnectionProfile();
+		const connectionUri = await azdata.connection.getUriForConnection(this._sourceConnectionId);
+		const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(connectionProfile.providerId, azdata.DataProviderType.QueryProvider);
+
+		return await queryProvider.runQueryAndReturn(connectionUri, queryString);
+	}
+
+	public async getDatabasesList(): Promise<azdata.DatabaseInfo[]> {
+		try {
+			const queryResult = await this.runQueryWithResults(queries.SELECT_ALL_DB_W_SIZE);
+
+			const result = queryResult.rows.map(row => {
+				return {
+					options: {
+						name: getSqlString(row[0]),
+						state: getSqlString(row[1]),
+						sizeInMB: getSqlString(row[2]),
+					}
+				};
+			}) ?? [];
+
+			return result;
+		} catch (error) {
+			console.error(error);
+			logError(TelemetryViews.SkuRecommendationWizard, TelemetryAction.GetDatabasesListFailed, error);
+
+			return [];
 		}
 	}
 }
