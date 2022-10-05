@@ -170,7 +170,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._standardKernels.push(...kernels);
 			this.setDisplayNameMapsForKernels(kernels);
 
-			// Also get corresponding execute managers so that kernel changing works
+			// Also get corresponding execute manager so that we can change to the new kernels
 			let manager = await this._notebookService.getOrCreateExecuteManager(kernels[0].notebookProvider, this.notebookUri);
 			this._notebookOptions.executeManagers.push(manager);
 
