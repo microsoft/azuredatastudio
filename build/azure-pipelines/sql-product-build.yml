@@ -40,7 +40,8 @@ stages:
           timeoutInMinutes: 60
 
   - stage: Linux
-    - job: Linux
+    jobs:
+      - job: Linux
         condition: and(succeeded(), eq(variables['VSCODE_BUILD_LINUX'], 'true'))
         pool:
           vmImage: 'Ubuntu-20.04'
@@ -54,7 +55,8 @@ stages:
         timeoutInMinutes: 90
 
   - stage: Windows
-    - job: Windows
+    jobs:
+      - job: Windows
         condition: and(succeeded(), eq(variables['VSCODE_BUILD_WIN32'], 'true'))
         pool:
           vmImage: 'windows-2019'
@@ -77,7 +79,8 @@ stages:
     #   timeoutInMinutes: 90
 
   - stage: Release
-    - job: Release
+    jobs:
+      - job: Release
         condition: and(succeeded(), or(eq(variables['VSCODE_RELEASE'], 'true'), and(eq(variables['VSCODE_QUALITY'], 'insider'), eq(variables['Build.Reason'], 'Schedule'))))
         pool:
           vmImage: 'Ubuntu-20.04'
