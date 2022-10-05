@@ -118,9 +118,12 @@ export function ASSESSMENT_TILE(serverName: string): string {
 	return localize('sql.migration.assessment', "Assessment results for '{0}'", serverName);
 }
 export function CAN_BE_MIGRATED(eligibleDbs: number, totalDbs: number): string {
-	return localize('sql.migration.can.be.migrated', "{0}/{1} databases can be migrated", eligibleDbs, totalDbs);
+	return localize('sql.migration.can.be.migrated', "{0}/{1} databases can be migrated without issues", eligibleDbs, totalDbs);
 }
-export const ASSESSMENT_MIGRATION_WARNING = localize('sql.migration.assessment.migration.warning', "Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines.");
+
+export const ASSESSMENT_MIGRATION_WARNING = localize('sql.migration.assessment.migration.warning', "Databases that are not ready for migration to Azure SQL Managed Instance or Azure SQL Database can be migrated to SQL Server on Azure Virtual Machines.");
+export const ASSESSMENT_MIGRATION_WARNING_SQLDB = localize('sql.migration.assessment.migration.warning.sqldb', "Databases that are not ready for migration to Azure SQL Database can be migrated to SQL Server on Azure Virtual Machines. Alternatively, review assessment results for Azure SQL Managed Instance migration readiness.");
+export const ASSESSMENT_MIGRATION_WARNING_SQLMI = localize('sql.migration.assessment.migration.warning.sqlmi', "Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines. Alternatively, review assessment results for Azure SQL Database migration readiness.");
 export const DATABASES_TABLE_TILE = localize('sql.migration.databases.table.title', "Databases");
 export const SQL_SERVER_INSTANCE = localize('sql.migration.sql.server.instance', "SQL Server instance");
 export const SAVE_ASSESSMENT_REPORT = localize('sql.migration.save.assessment.report', "Save assessment report");
