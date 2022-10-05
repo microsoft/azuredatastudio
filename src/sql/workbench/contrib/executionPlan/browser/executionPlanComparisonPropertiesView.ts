@@ -363,7 +363,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 				}
 
 				if (equalSubRows.length > 0) {
-					let currentRow = deepClone(row);
+					const currentRow = deepClone(row);
 					currentRow.treeGridChildren = equalSubRows;
 
 					equalRows.push(currentRow);
