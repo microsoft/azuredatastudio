@@ -27,7 +27,7 @@ export class AzureResourceSubscriptionService implements IAzureResourceSubscript
 		const subscriptions: azureResource.AzureResourceSubscription[] = [];
 		let gotSubscriptions = false;
 		const errors: Error[] = [];
-
+		const authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
 		for (const tenantId of tenantIds ?? account.properties.tenants.map(t => t.id)) {
 			try {
 				const token = await azdata.accounts.getAccountSecurityToken(account, tenantId, azdata.AzureResource.ResourceManagement);
@@ -53,6 +53,10 @@ export class AzureResourceSubscriptionService implements IAzureResourceSubscript
 				console.warn(errorMsg);
 				errors.push(error);
 				void vscode.window.showWarningMessage(errorMsg);
+			}
+			// We don't need to loop through multiple tenants for MSAL, it just grabs subscriptions based on one account
+			if (authLibrary === 'MSAL') {
+				break;
 			}
 		}
 		if (!gotSubscriptions) {
