@@ -12,6 +12,9 @@ export interface IQueryEditorConfiguration {
 			readonly textIdentifier: string,
 			readonly encoding: string
 		},
+		readonly saveAsExcel: {
+			readonly includeHeaders: boolean,
+		},
 		readonly saveAsXml: {
 			readonly formatted: boolean,
 			readonly encoding: string
