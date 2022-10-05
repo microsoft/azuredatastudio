@@ -8,7 +8,7 @@ import AdsTelemetryReporter from '@microsoft/ads-extension-telemetry';
 
 const packageJson = vscode.extensions.getExtension('Microsoft.resource-deployment')!.packageJSON;
 
-export const TelemetryReporter = new AdsTelemetryReporter(packageJson.name, packageJson.version, packageJson.aiKey);
+export const TelemetryReporter = new AdsTelemetryReporter<TelemetryView, TelemetryAction>(packageJson.name, packageJson.version, packageJson.aiKey);
 
 export enum TelemetryView {
 	ResourceTypeWizard = 'ResourceTypeWizard'
