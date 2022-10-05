@@ -606,6 +606,11 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				ExecutionPlanGraphElementPropertyBetterValue: sqlExtHostTypes.executionPlan.ExecutionPlanGraphElementPropertyBetterValue
 			};
 
+			const env: typeof azdata.env = {
+				AppQuality: sqlExtHostTypes.env.AppQuality,
+				quality: initData.quality || 'dev' // Dev/OSS builds don't have a quality set - give it a value here so it's more clear
+			};
+
 			return {
 				version: initData.version,
 				accounts,
@@ -658,7 +663,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				sqlAssessment,
 				TextType: sqlExtHostTypes.TextType,
 				designers: designers,
-				executionPlan: executionPlan
+				executionPlan: executionPlan,
+				env
 			};
 		},
 		extHostNotebook: extHostNotebook,
