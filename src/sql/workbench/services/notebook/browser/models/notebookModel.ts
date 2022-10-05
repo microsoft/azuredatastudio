@@ -160,6 +160,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						fileExt = `.${languageMode}`;
 					}
 				}
+				// All kernels from the same provider share the same supported file extensions,
+				// so we only need to check the first one here.
 				if (fileExt && kernels[0]?.supportedFileExtensions?.includes(fileExt)) {
 					this._standardKernels.push(...kernels);
 					this.setDisplayNameMapsForKernels(kernels);
