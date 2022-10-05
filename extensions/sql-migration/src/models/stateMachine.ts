@@ -1216,7 +1216,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 			return result;
 		} catch (error) {
-			console.error(error);
 			logError(TelemetryViews.SkuRecommendationWizard, TelemetryAction.GetDatabasesListFailed, error);
 
 			return [];

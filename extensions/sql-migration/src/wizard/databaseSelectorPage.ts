@@ -119,8 +119,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 					const searchText = value?.toLowerCase();
 					return row[2]?.toLowerCase()?.indexOf(searchText) > -1	// database name
 						|| row[3]?.toLowerCase()?.indexOf(searchText) > -1	// state
-						|| row[4]?.toLowerCase()?.indexOf(searchText) > -1  // size
-						|| row[5]?.toLowerCase()?.indexOf(searchText) > -1;	// last backup date
+						|| row[4]?.toLowerCase()?.indexOf(searchText) > -1; // size
 				});
 		}
 
