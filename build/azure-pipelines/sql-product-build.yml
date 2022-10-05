@@ -41,11 +41,11 @@ stages:
 
   - ${{ if eq(variables['VSCODE_BUILD_LINUX'], true) }}:
     - stage: Linux
-        pool:
-          vmImage: 'Ubuntu-20.04'
-        container: linux-x64
-        dependsOn:
-          - Compile
+      pool:
+        vmImage: 'Ubuntu-20.04'
+      container: linux-x64
+      dependsOn:
+        - Compile
       jobs:
         - job: Linux
           steps:
@@ -56,10 +56,10 @@ stages:
 
   - ${{ if eq(variables['VSCODE_BUILD_WIN32'], true) }}:
     - stage: Windows
-        pool:
-          vmImage: 'windows-2019'
-        dependsOn:
-          - Compile
+      pool:
+        vmImage: 'windows-2019'
+      dependsOn:
+        - Compile
       jobs:
         - job: Windows
           steps:
@@ -80,15 +80,15 @@ stages:
 
   - ${{ if or(eq(variables['VSCODE_RELEASE'], 'true'), and(eq(variables['VSCODE_QUALITY'], 'insider'), eq(variables['Build.Reason'], 'Schedule'))) }}:
     - stage: Release
-        pool:
-          vmImage: 'Ubuntu-20.04'
-        dependsOn:
-          - macOS
-          - Linux
-          - Windows
+      pool:
+        vmImage: 'Ubuntu-20.04'
+      dependsOn:
+        - macOS
+        - Linux
+        - Windows
         # disable due to invalid machine pool (karlb 3/9/2022)
         #  - Windows_Test
-          - macOS_Signing
+        - macOS_Signing
       jobs:
         - job: Release
           steps:
