@@ -885,7 +885,7 @@ export class SqlDatabaseTree {
 				}
 				this._databaseTableValues.push([
 					{
-						value: selectedDbs.includes(db.name),
+						value: selectedDbs.includes(db.name) && selectable,
 						style: styleLeft,
 						enabled: selectable
 					},
