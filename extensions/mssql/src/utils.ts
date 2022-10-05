@@ -128,11 +128,10 @@ export async function getParallelMessageProcessingConfig(): Promise<boolean> {
 	if (!config) {
 		return false;
 	}
-	const quality = await getProductQuality();
 	const setting = config.inspect(parallelMessageProcessingConfig);
 	// For dev environment, we want to enable the feature by default unless it is set explicitely.
 	// Note: the quality property is not set for dev environment, we can use this to determine whether it is dev environment.
-	return (quality === undefined && setting.globalValue === undefined && setting.workspaceValue === undefined) ? true : config[parallelMessageProcessingConfig];
+	return (azdata.env.quality === azdata.env.AppQuality.dev && setting.globalValue === undefined && setting.workspaceValue === undefined) ? true : config[parallelMessageProcessingConfig];
 }
 
 export function getLogFileName(prefix: string, pid: number): string {
@@ -396,7 +395,3 @@ export async function getOrDownloadServer(config: IConfig, handleServerEvent?: (
 	return serverdownloader.getOrDownloadServer();
 }
 
-async function getProductQuality(): Promise<string> {
-	const content = await fs.readFile(path.join(vscode.env.appRoot, 'product.json'));
-	return JSON.parse(content?.toString())?.quality;
-}
