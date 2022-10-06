@@ -239,10 +239,10 @@
     "@microsoft/applicationinsights-shims" "^2.0.1"
     "@microsoft/dynamicproto-js" "^1.1.6"
 
-"@microsoft/ads-extension-telemetry@^1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@microsoft/ads-extension-telemetry/-/ads-extension-telemetry-1.2.0.tgz#f54e464ac887440727fe9862f8ff32be17aeab3a"
-  integrity sha512-dEp+RVJYo4uebMLvBJqJF8IABufJRp+PWHZx+3xe6SgAC37oYhcwR/glExhp3Nj3A2v3vjso6YQ/Wd5TG27FPQ==
+"@microsoft/ads-extension-telemetry@^1.3.1":
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/@microsoft/ads-extension-telemetry/-/ads-extension-telemetry-1.3.1.tgz#fa757ee88eac91b21c3a68562da6441c2ad15c39"
+  integrity sha512-8Zd7RwwN7ZufMoWFmc1bwzmQc1RV7/jf/Ua33YL1+P0ZwHoWFOhf/b0lwvAVzi9TB/7oD5zA5yv7A/i2sSTn6Q==
   dependencies:
     "@vscode/extension-telemetry" "^0.6.2"
 

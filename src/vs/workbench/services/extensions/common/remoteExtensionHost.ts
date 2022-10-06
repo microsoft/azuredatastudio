@@ -227,6 +227,7 @@ export class RemoteExtensionHost extends Disposable implements IExtensionHost {
 			commit: this._productService.commit,
 			version: this._productService.version,
 			vscodeVersion: this._productService.vscodeVersion, // {{SQL CARBON EDIT}} add vscode version
+			quality: this._productService.quality, // {{SQL CARBON EDIT}} Add quality
 			parentPid: remoteInitData.pid,
 			environment: {
 				isExtensionDevelopmentDebug,

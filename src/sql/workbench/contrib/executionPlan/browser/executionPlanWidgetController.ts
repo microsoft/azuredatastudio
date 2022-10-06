@@ -26,6 +26,7 @@ export class ExecutionPlanWidgetController {
 	public removeWidget(widget: ExecutionPlanWidgetBase) {
 		if (widget.identifier) {
 			if (this._executionPlanWidgetMap.has(widget.identifier)) {
+				widget.dispose();
 				this._parentContainer.removeChild(this._executionPlanWidgetMap.get(widget.identifier).container);
 				this._executionPlanWidgetMap.delete(widget.identifier);
 			} else {

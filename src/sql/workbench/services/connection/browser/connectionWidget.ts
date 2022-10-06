@@ -35,15 +35,7 @@ import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMess
 import Severity from 'vs/base/common/severity';
 import { ConnectionStringOptions } from 'sql/platform/capabilities/common/capabilitiesService';
 import { isFalsyOrWhitespace } from 'vs/base/common/strings';
-
-export enum AuthenticationType {
-	SqlLogin = 'SqlLogin',
-	Integrated = 'Integrated',
-	AzureMFA = 'AzureMFA',
-	AzureMFAAndUser = 'AzureMFAAndUser',
-	dSTSAuth = 'dstsAuth',
-	None = 'None' // Kusto supports no authentication
-}
+import { AuthenticationType } from 'sql/platform/connection/common/constants';
 
 const ConnectionStringText = localize('connectionWidget.connectionString', "Connection string");
 
@@ -83,7 +75,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	protected _databaseNameInputBox: Dropdown;
 	protected _advancedButton: Button;
 	private static readonly _authTypes: AuthenticationType[] =
-		[AuthenticationType.AzureMFA, AuthenticationType.AzureMFAAndUser, AuthenticationType.Integrated, AuthenticationType.SqlLogin, AuthenticationType.dSTSAuth, AuthenticationType.None];
+		[AuthenticationType.AzureMFA, AuthenticationType.AzureMFAAndUser, AuthenticationType.Integrated, AuthenticationType.SqlLogin, AuthenticationType.DSTSAuth, AuthenticationType.None];
 	private static readonly _osByName = {
 		Windows: OperatingSystem.Windows,
 		Macintosh: OperatingSystem.Macintosh,
@@ -528,7 +520,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			// Immediately show/hide appropriate elements though so user gets immediate feedback while we load accounts
 			this._tableContainer.classList.remove('hide-username');
 			this._tableContainer.classList.remove('hide-azure-accounts');
-		} else if (currentAuthType === AuthenticationType.dSTSAuth) {
+		} else if (currentAuthType === AuthenticationType.DSTSAuth) {
 			this._accountManagementService.getAccountsForProvider('dstsAuth').then(accounts => {
 				if (accounts && accounts.length > 0) {
 					accounts[0].key.providerArgs = {
@@ -891,7 +883,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		if (this.authenticationType === AuthenticationType.AzureMFAAndUser || this.authenticationType === AuthenticationType.AzureMFA) {
 			return this._azureAccountDropdown.value;
 		}
-		if (this.authenticationType === AuthenticationType.dSTSAuth) {
+		if (this.authenticationType === AuthenticationType.DSTSAuth) {
 			return this._token;
 		}
 		return undefined;

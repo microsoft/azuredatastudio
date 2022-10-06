@@ -92,11 +92,42 @@ However we always want it to be the width of the container it is resizing.
 	width: 240px;
 }
 
+/* Find expensive operation view */
+.eps-container .execution-plan .plan .plan-action-container .find-expensive-operation-widget {
+	display: flex;
+	flex-direction: row;
+	padding: 5px;
+	height: auto;
+	width: auto;
+}
+
+.eps-container .execution-plan .plan .plan-action-container .find-expensive-operation-widget .select-container {
+	margin-left: 5px;
+	display: flex;
+	align-items: center;
+}
+
+.eps-container .execution-plan .plan .plan-action-container .find-expensive-operation-widget .select-container expensive-operation-name-select-box-label {
+	margin-right: 5px;
+}
+
+.eps-container .execution-plan .plan .plan-action-container .find-expensive-operation-widget .select-container>select {
+	height: 100%;
+}
+
+.eps-container .execution-plan .plan .plan-action-container .find-expensive-operation-widget .monaco-button.monaco-text-button {
+	width: auto;
+	padding-left: 15px;
+	padding-right: 15px;
+}
+
 /* execution plan header that contains the relative query cost, query statement and recommendations */
 .eps-container .execution-plan .plan .header,
 .top-operations-tab .top-operations-container .query-row {
 	padding: 5px;
 	font-weight: bolder;
+	margin-left: 5px;
+	margin-right: 5px;
 }
 
 /* execution plan header that contains the relative query cost, query statement and recommendations */
@@ -478,6 +509,21 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
+.eps-container .ep-highlight-expensive-operation-icon {
+	background-image: url(../images/actionIcons/highlightExpensiveOperation.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.vs-dark .eps-container .ep-highlight-expensive-operation-icon,
+.hc-black .eps-container .ep-highlight-expensive-operation-icon {
+	background-image: url(../images/actionIcons/highlightExpensiveOperationDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
 .eps-container .ep-enable-tooltip-icon {
 	background-image: url(../images/actionIcons/enableTooltip.svg);
 	background-size: 16px 16px;
@@ -597,7 +643,7 @@ However we always want it to be the width of the container it is resizing.
 	background-position: center;
 	background-repeat: no-repeat;
 	width: 16px;
-	height: auto;
+	height: 16px;
 }
 
 .vs-dark .eps-container .ep-properties-different,
@@ -607,9 +653,18 @@ However we always want it to be the width of the container it is resizing.
 	background-position: center;
 	background-repeat: no-repeat;
 	width: 16px;
-	height: auto;
+	height: 16px;
 }
 
+.eps-container .comparison-editor .plan-comparison-container .properties .properties-content .table-container .table .monaco-table .ui-widget .slick-viewport .grid-canvas .ui-widget-content.slick-row .slick-cell .grid-cell-value-container.icon.codicon.slick-icon-cell-content.codicon-chevron-left,
+.eps-container .comparison-editor .plan-comparison-container .properties .properties-content .table-container .table .monaco-table .ui-widget .slick-viewport .grid-canvas .ui-widget-content.slick-row .slick-cell .grid-cell-value-container.icon.codicon.slick-icon-cell-content.codicon-chevron-right {
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+	width: 16px;
+	height: 16px;
+	margin-left: -28px;
+}
 
 .eps-container .ep-properties-down-arrow {
 	background-image: url(../images/actionIcons/downArrow.svg);
@@ -617,7 +672,7 @@ However we always want it to be the width of the container it is resizing.
 	background-position: center;
 	background-repeat: no-repeat;
 	width: 16px;
-	height: auto;
+	height: 16px;
 }
 
 .vs-dark .eps-container .ep-properties-down-arrow,
@@ -627,7 +682,7 @@ However we always want it to be the width of the container it is resizing.
 	background-position: center;
 	background-repeat: no-repeat;
 	width: 16px;
-	height: auto;
+	height: 16px;
 }
 
 .eps-container .ep-properties-up-arrow {
@@ -636,7 +691,7 @@ However we always want it to be the width of the container it is resizing.
 	background-position: center;
 	background-repeat: no-repeat;
 	width: 16px;
-	height: auto;
+	height: 16px;
 }
 
 .vs-dark .eps-container .ep-properties-up-arrow,
@@ -646,7 +701,7 @@ However we always want it to be the width of the container it is resizing.
 	background-position: center;
 	background-repeat: no-repeat;
 	width: 16px;
-	height: auto;
+	height: 16px;
 }
 
 .eps-container .ep-top-operations {

@@ -11,7 +11,7 @@ import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Action } from 'vs/base/common/actions';
 import { Codicon } from 'vs/base/common/codicons';
 import { propertiesSearchDescription, searchIconClassNames, searchPlaceholder, sortAlphabeticallyIconClassNames, sortByDisplayOrderIconClassNames, sortReverseAlphabeticallyIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/constants';
-import { attachTableStyler } from 'sql/platform/theme/common/styler';
+import { attachInputBoxStyler, attachTableStyler } from 'sql/platform/theme/common/styler';
 import { RESULTS_GRID_DEFAULTS } from 'sql/workbench/common/constants';
 import { contrastBorder, inputBackground, listHoverBackground, listInactiveSelectionBackground } from 'vs/platform/theme/common/colorRegistry';
 import { TreeGrid } from 'sql/base/browser/ui/table/treeGrid';
@@ -126,6 +126,7 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 			ariaDescription: propertiesSearchDescription,
 			placeholder: searchPlaceholder
 		}));
+		attachInputBoxStyler(this._propertiesSearchInput, this._themeService);
 		this._propertiesSearchInput.element.classList.add('codicon', searchIconClassNames);
 		this._searchAndActionBarContainer.appendChild(this._propertiesSearchInputContainer);
 		this._register(this._propertiesSearchInput.onDidChange(e => {

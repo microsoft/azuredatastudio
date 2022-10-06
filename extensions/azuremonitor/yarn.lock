@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@microsoft/ads-service-downloader@0.2.4":
-  version "0.2.4"
-  resolved "https://registry.yarnpkg.com/@microsoft/ads-service-downloader/-/ads-service-downloader-0.2.4.tgz#905a11eb2da19673629852d9764fb9fb94ad81bd"
-  integrity sha512-3J0YjH29a5pP+5Yu0HF7itRBZpNOgUN34Gh/p0Py/TQr7qUzZSXwOM+fWD1nCea+q9t8mfHr0yuy0aeDX+33vQ==
+"@microsoft/ads-service-downloader@1.0.4":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@microsoft/ads-service-downloader/-/ads-service-downloader-1.0.4.tgz#94e13461d655d0864cbf93978247cbd1097e7863"
+  integrity sha512-XVJ3RW4X5mzlPYeJnwTii5/6ywVib4UqCtrvxwRWSFe214Hi8jO2zNxzcpamiTCnHm2b8wZAuWGfsvIShbf/yg==
   dependencies:
     async-retry "^1.2.3"
     eventemitter2 "^5.0.1"

@@ -3,6 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
+
 /*
 	TODO: Due to a runtime error, I duplicated this file at these 2 locations:
 	$/extensions/integration-test/src/testConfig.ts
@@ -45,7 +47,7 @@ let connectionProviderMapping: { [key: string]: { name: string; displayName: str
 let authenticationTypeMapping: { [key: string]: { name: string; displayName: string } } = {};
 connectionProviderMapping[ConnectionProvider.SQLServer] = { name: 'MSSQL', displayName: 'Microsoft SQL Server' };
 
-authenticationTypeMapping[AuthenticationType.SqlLogin] = { name: 'SqlLogin', displayName: 'SQL Login' };
+authenticationTypeMapping[AuthenticationType.SqlLogin] = { name: azdata.connection.AuthenticationType.SqlLogin, displayName: 'SQL Login' };
 authenticationTypeMapping[AuthenticationType.Windows] = { name: 'Integrated', displayName: 'Windows Authentication' };
 
 export function getConfigValue(name: string): string {

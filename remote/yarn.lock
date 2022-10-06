@@ -198,9 +198,9 @@ array-uniq@^1.0.2:
   resolved "https://registry.yarnpkg.com/array-uniq/-/array-uniq-1.0.3.tgz#af6ac877a25cc7f74e058894753858dfdb24fdb6"
   integrity sha1-r2rId6Jcx/dOBYiUdThY39sk/bY=
 
-"azdataGraph@github:Microsoft/azdataGraph#0.0.42":
-  version "0.0.42"
-  resolved "https://codeload.github.com/Microsoft/azdataGraph/tar.gz/86f72ee9c9ea78a31c9ad2f402fb24d40e50c75b"
+"azdataGraph@github:Microsoft/azdataGraph#0.0.45":
+  version "0.0.45"
+  resolved "https://codeload.github.com/Microsoft/azdataGraph/tar.gz/8675ac6dfc60aad331ccbf7e4145b9eaa25e7304"
 
 bindings@^1.5.0:
   version "1.5.0"
