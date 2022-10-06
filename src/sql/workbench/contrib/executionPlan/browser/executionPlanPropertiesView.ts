@@ -10,7 +10,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { removeLineBreaks } from 'sql/base/common/strings';
 import { isString } from 'vs/base/common/types';
 import { textFormatter } from 'sql/base/browser/ui/table/formatters';
-import { ExecutionPlanPropertiesViewBase, PropertiesSortType, PropertyRowExpansionState } from 'sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase';
+import { ExecutionPlanPropertiesViewBase, PropertiesSortType } from 'sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
@@ -113,7 +113,7 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 		this.populateTable(columns, tableRows);
 	}
 
-	public expandOrCollapsePropertiesTable(): void {
+	public expandOrCollapsePropertiesTable(expand: boolean): void {
 		const columns: Slick.Column<Slick.SlickData>[] = [
 			{
 				id: 'name',
@@ -134,15 +134,7 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 		];
 
 		const tableRows = this.convertPropertiesToTableRows(this._model.graphElement?.properties);
-		switch (this.propertyRowExpansionState) {
-			case PropertyRowExpansionState.ExpandAll:
-				this.expandOrCollapsePropertyTableRows(tableRows, true);
-				break;
-			case PropertyRowExpansionState.CollapseAll:
-				this.expandOrCollapsePropertyTableRows(tableRows, false);
-				break;
-		}
-
+		this.expandOrCollapsePropertyTableRows(tableRows, expand);
 		this.populateTable(columns, tableRows);
 	}
 

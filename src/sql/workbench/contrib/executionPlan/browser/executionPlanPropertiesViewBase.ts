@@ -55,7 +55,6 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 	private _tableHeight;
 
 	public sortType: PropertiesSortType = PropertiesSortType.DisplayOrder;
-	public propertyRowExpansionState: PropertyRowExpansionState = PropertyRowExpansionState.Default;
 
 	public resizeSash: Sash;
 
@@ -251,7 +250,7 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 	}
 
 	public abstract refreshPropertiesTable();
-	public abstract expandOrCollapsePropertiesTable();
+	public abstract expandOrCollapsePropertiesTable(expand: boolean);
 
 	public toggleVisibility(): void {
 		this._parentContainer.style.display = this._parentContainer.style.display === 'none' ? 'flex' : 'none';
@@ -433,8 +432,7 @@ export class ExpandAllPropertiesAction extends Action {
 	}
 
 	public override async run(context: ExecutionPlanPropertiesViewBase): Promise<void> {
-		context.propertyRowExpansionState = PropertyRowExpansionState.ExpandAll;
-		context.expandOrCollapsePropertiesTable();
+		context.expandOrCollapsePropertiesTable(true);
 	}
 }
 
@@ -447,15 +445,8 @@ export class CollapseAllPropertiesAction extends Action {
 	}
 
 	public override async run(context: ExecutionPlanPropertiesViewBase): Promise<void> {
-		context.propertyRowExpansionState = PropertyRowExpansionState.CollapseAll;
-		context.expandOrCollapsePropertiesTable();
+		context.expandOrCollapsePropertiesTable(false);
 	}
-}
-
-export enum PropertyRowExpansionState {
-	Default,
-	ExpandAll,
-	CollapseAll
 }
 
 registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
