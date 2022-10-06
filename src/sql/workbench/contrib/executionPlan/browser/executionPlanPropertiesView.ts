@@ -113,7 +113,7 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 		this.populateTable(columns, tableRows);
 	}
 
-	public expandOrCollapsePropertiesTable(expand: boolean): void {
+	public setPropertyRowsExpanded(expand: boolean): void {
 		const columns: Slick.Column<Slick.SlickData>[] = [
 			{
 				id: 'name',

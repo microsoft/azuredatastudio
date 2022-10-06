@@ -250,7 +250,7 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 	}
 
 	public abstract refreshPropertiesTable();
-	public abstract expandOrCollapsePropertiesTable(expand: boolean);
+	public abstract setPropertyRowsExpanded(expand: boolean);
 
 	public toggleVisibility(): void {
 		this._parentContainer.style.display = this._parentContainer.style.display === 'none' ? 'flex' : 'none';
@@ -432,7 +432,7 @@ export class ExpandAllPropertiesAction extends Action {
 	}
 
 	public override async run(context: ExecutionPlanPropertiesViewBase): Promise<void> {
-		context.expandOrCollapsePropertiesTable(true);
+		context.setPropertyRowsExpanded(true);
 	}
 }
 
@@ -445,7 +445,7 @@ export class CollapseAllPropertiesAction extends Action {
 	}
 
 	public override async run(context: ExecutionPlanPropertiesViewBase): Promise<void> {
-		context.expandOrCollapsePropertiesTable(false);
+		context.setPropertyRowsExpanded(false);
 	}
 }
 

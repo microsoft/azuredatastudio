@@ -148,7 +148,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		this.populateTable(columns, tableRows);
 	}
 
-	public expandOrCollapsePropertiesTable(expand: boolean): void {
+	public setPropertyRowsExpanded(expand: boolean): void {
 		const columns: Slick.Column<Slick.SlickData>[] = this.getPropertyTableColumns();
 
 		let primaryProps = [];
