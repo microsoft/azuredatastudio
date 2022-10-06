@@ -7,7 +7,9 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { DOUBLE_CLICK_ACTION_CONFIG_SECTION, ITEM_SELECTED_COMMAND_ID, QUERY_HISTORY_CONFIG_SECTION } from './constants';
 import { QueryHistoryItem } from './queryHistoryItem';
-import { QueryHistoryProvider } from './queryHistoryProvider';
+import { QueryHistoryProvider, setLoadingContext } from './queryHistoryProvider';
+import { promises as fs } from 'fs';
+import { TelemetryActions, TelemetryReporter, TelemetryViews } from './telemetry';
 
 let lastSelectedItem: { item: QueryHistoryItem | undefined, time: number | undefined } = {
 	item: undefined,
@@ -19,7 +21,18 @@ let lastSelectedItem: { item: QueryHistoryItem | undefined, time: number | undef
 const DOUBLE_CLICK_TIMEOUT_MS = 500;
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
-	const treeDataProvider = new QueryHistoryProvider();
+	// Create the global storage folder now for storing the query history persistance file
+	const storageUri = context.globalStorageUri;
+	try {
+		await fs.mkdir(storageUri.fsPath);
+	} catch (err) {
+		if (err.code !== 'EEXIST') {
+			TelemetryReporter.sendErrorEvent(TelemetryViews.QueryHistory, 'CreatingStorageFolder');
+			console.error(`Error creating query history global storage folder ${context.globalStorageUri.fsPath}. ${err}`);
+		}
+	}
+	await setLoadingContext(true);
+	const treeDataProvider = new QueryHistoryProvider(context, storageUri);
 	context.subscriptions.push(treeDataProvider);
 	const treeView = vscode.window.createTreeView('queryHistory', {
 		treeDataProvider,
@@ -33,6 +46,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 		const clickTime = new Date().getTime();
 		if (lastSelectedItem.item === selectedItem && lastSelectedItem.time && (clickTime - lastSelectedItem.time) < DOUBLE_CLICK_TIMEOUT_MS) {
 			const doubleClickAction = vscode.workspace.getConfiguration(QUERY_HISTORY_CONFIG_SECTION).get<string>(DOUBLE_CLICK_ACTION_CONFIG_SECTION);
+			TelemetryReporter.sendActionEvent(TelemetryViews.QueryHistory, TelemetryActions.DoubleClick, doubleClickAction);
 			switch (doubleClickAction) {
 				case 'run':
 					await runQuery(selectedItem);
@@ -63,10 +77,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 		return runQuery(item);
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('queryHistory.delete', (item: QueryHistoryItem) => {
-		treeDataProvider.deleteItem(item);
+		return treeDataProvider.deleteItem(item);
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('queryHistory.clear', () => {
-		treeDataProvider.clearAll();
+		return treeDataProvider.clearAll();
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('queryHistory.disableCapture', async () => {
 		return treeDataProvider.setCaptureEnabled(false);
@@ -74,20 +88,43 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 	context.subscriptions.push(vscode.commands.registerCommand('queryHistory.enableCapture', async () => {
 		return treeDataProvider.setCaptureEnabled(true);
 	}));
+	context.subscriptions.push(vscode.commands.registerCommand('queryHistory.openStorageFolder', async () => {
+		return vscode.env.openExternal(storageUri);
+	}));
 }
 
 async function openQuery(item: QueryHistoryItem): Promise<void> {
-	await azdata.queryeditor.openQueryDocument(
-		{
-			content: item.queryText
-		}, item.connectionProfile?.providerId);
+	try {
+		await azdata.queryeditor.openQueryDocument(
+			{
+				content: item.queryText
+			}, item.connectionProfile?.providerId);
+	} catch (err) {
+		TelemetryReporter.sendErrorEvent(TelemetryViews.QueryHistory, 'OpenQuery');
+	}
+
 }
 
 async function runQuery(item: QueryHistoryItem): Promise<void> {
-	const doc = await azdata.queryeditor.openQueryDocument(
-		{
-			content: item.queryText
-		}, item.connectionProfile?.providerId);
-	await azdata.queryeditor.connect(doc.uri, item.connectionProfile?.connectionId || '');
-	azdata.queryeditor.runQuery(doc.uri);
+	let step = 'OpenDoc';
+	try {
+		const doc = await azdata.queryeditor.openQueryDocument(
+			{
+				content: item.queryText
+			}, item.connectionProfile?.providerId);
+		if (item.connectionProfile) {
+			step = 'ConnectWithProfile';
+			await doc.connect(item.connectionProfile);
+		} else {
+			step = 'ConnectWithoutProfile';
+			await azdata.queryeditor.connect(doc.uri, '');
+		}
+		step = 'Run';
+		azdata.queryeditor.runQuery(doc.uri);
+	} catch (err) {
+		TelemetryReporter.createErrorEvent(TelemetryViews.QueryHistory, 'RunQuery')
+			.withAdditionalProperties({ step })
+			.send();
+	}
+
 }

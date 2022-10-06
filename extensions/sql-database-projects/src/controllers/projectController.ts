@@ -1420,7 +1420,7 @@ export class ProjectsController {
 			}
 			const model = await createNewProjectFromDatabaseWithQuickpick(profile as mssqlVscode.IConnectionInfo);
 			if (model) {
-				await this.createProjectFromDatabaseCallback(model);
+				await this.createProjectFromDatabaseCallback(model, profile as mssqlVscode.IConnectionInfo);
 			}
 			return undefined;
 		}
@@ -1431,13 +1431,22 @@ export class ProjectsController {
 		return new CreateProjectFromDatabaseDialog(profile);
 	}
 
-	public async createProjectFromDatabaseCallback(model: ImportDataModel, connectionId?: string) {
+	public async createProjectFromDatabaseCallback(model: ImportDataModel, connectionInfo?: string | mssqlVscode.IConnectionInfo) {
 		try {
 
 			const newProjFolderUri = model.filePath;
 			let targetPlatform: SqlTargetPlatform | undefined;
-			if (connectionId) {
-				targetPlatform = await utils.getTargetPlatformFromServerVersion(connectionId);
+			let serverInfo;
+			if (connectionInfo) {
+				if (typeof connectionInfo === 'string') {
+					serverInfo = await utils.getAzdataApi()!.connection.getServerInfo(connectionInfo);
+				} else {
+					serverInfo = (await utils.getVscodeMssqlApi()).getServerInfo(connectionInfo);
+				}
+			}
+
+			if (serverInfo) {
+				targetPlatform = await utils.getTargetPlatformFromServerVersion(serverInfo);
 			}
 
 			const newProjFilePath = await this.createNewProject({
@@ -1593,7 +1602,7 @@ export class ProjectsController {
 		target.targetScripts = await this.getProjectScriptFiles(target.projectFilePath);
 		target.dataSchemaProvider = await this.getProjectDatabaseSchemaProvider(target.projectFilePath);
 
-		TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, 'SchemaComparisonStarted');
+		TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.SchemaComparisonStarted);
 
 		// Perform schema comparison.  Results are cached in SqlToolsService under the operationId
 		const comparisonResult: mssql.SchemaCompareResult = await service.schemaCompare(
@@ -1609,7 +1618,7 @@ export class ProjectsController {
 			return;
 		}
 
-		TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, 'SchemaComparisonFinished')
+		TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.SchemaComparisonFinished)
 			.withAdditionalProperties({
 				'endTime': Date.now().toString(),
 				'operationId': comparisonResult.operationId

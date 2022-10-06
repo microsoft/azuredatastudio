@@ -12,7 +12,7 @@ import { generateGuid } from '../../utils';
 import { IAzureResourceService } from '../../interfaces';
 import { ResourceTreeDataProviderBase } from '../resourceTreeDataProviderBase';
 import { azureResource } from 'azurecore';
-import { Account, ExtensionNodeType, TreeItem } from 'azdata';
+import { Account, ExtensionNodeType, TreeItem, connection } from 'azdata';
 
 export class MysqlFlexibleServerTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabaseServer> {
 	private static readonly MYSQL_FLEXIBLE_SERVER_PROVIDER_ID = 'MySQL';
@@ -43,7 +43,7 @@ export class MysqlFlexibleServerTreeDataProvider extends ResourceTreeDataProvide
 				databaseName: databaseServer.defaultDatabaseName,
 				userName: databaseServer.loginName,
 				password: '',
-				authenticationType: 'SqlLogin',
+				authenticationType: connection.AuthenticationType.SqlLogin,
 				savePassword: true,
 				groupFullName: '',
 				groupId: '',

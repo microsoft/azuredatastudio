@@ -9,7 +9,7 @@ import * as sinon from 'sinon';
 import * as vscode from 'vscode';
 import { Deferred } from '../../../common/promise';
 import { FilePicker } from '../../../ui/components/filePicker';
-import { createModelViewMock } from '@microsoft/azdata-test/out/mocks/modelView/modelViewMock';
+import { createModelViewMock } from '@microsoft/azdata-test/out/mocks/azdata/modelView';
 import { StubButton } from '@microsoft/azdata-test/out/stubs/modelView/stubButton';
 
 let filePicker: FilePicker;

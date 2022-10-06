@@ -50,9 +50,15 @@ This will permanently delete **ALL** history rows.
 
 This action is also available from the command palette (**Query History: Clear All History**) and as an action button on the panel.
 
+### Configuration
+
+Configuration settings can be found in the `Query History` section. See the `Feature Contributions` tab for details on all the avilable settings.
+
 ### Data Storage
 
-Currently all information is stored in-memory and not persisted upon application exit. There is no limit to the number of entries stored, new entries will be continuously added as long as capture is enabled unless entries are deleted or the entire history is cleared.
+If persistence is not enabled then all information is stored in-memory and not persisted upon application exit. If persistence is enabled then information is written to disk in an encrypted file which can be located by running the `Query History: Open storage folder` command.
+
+ The number of entries stored is controlled by the `queryHistory.maxEntries` configuration, once that many entries have been stored then any new entries will cause the oldest item to be removed.
 
 ## Code of Conduct
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.

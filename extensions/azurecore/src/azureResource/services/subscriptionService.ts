@@ -36,8 +36,8 @@ export class AzureResourceSubscriptionService implements IAzureResourceSubscript
 					const newSubs = await subClient.subscriptions.list();
 					subscriptions.push(...newSubs.map(newSub => {
 						return {
-							id: newSub.subscriptionId,
-							name: newSub.displayName,
+							id: newSub.subscriptionId || '',
+							name: newSub.displayName || '',
 							tenant: tenantId
 						};
 					}));
