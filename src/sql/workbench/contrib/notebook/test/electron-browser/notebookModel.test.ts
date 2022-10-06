@@ -1101,7 +1101,7 @@ suite('notebook model', function (): void {
 		});
 		timeoutPromise = new Promise<void>((resolve, reject) => setTimeout(() => {
 			resolve();
-		}, 2000));
+		}, 1000));
 
 		kernelsAddedEmitter.fire([invalidKernel]);
 		await Promise.race([kernelsAddedPromise, timeoutPromise]);
