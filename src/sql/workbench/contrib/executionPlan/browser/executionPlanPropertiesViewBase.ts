@@ -279,6 +279,16 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 		this._tableComponent.columns = columns;
 	}
 
+	protected setExpansionModeForAllCollapsiblePropertyRows(tableRows: Slick.SlickData[], expand: boolean): void {
+		tableRows.forEach(row => {
+			if (row.treeGridChildren && row.treeGridChildren.length > 0) {
+				row.expanded = expand;
+
+				this.setExpansionModeForAllCollapsiblePropertyRows(row.treeGridChildren, expand);
+			}
+		});
+	}
+
 	private resizeTable(): void {
 		const spaceOccupied = (this._titleBarContainer.getBoundingClientRect().height
 			+ this._headerContainer.getBoundingClientRect().height

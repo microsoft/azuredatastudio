@@ -189,16 +189,6 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		this.populateTable(columns, tableRows);
 	}
 
-	private setExpansionModeForAllCollapsiblePropertyRows(tableRows: Slick.SlickData[], expand: boolean): void {
-		tableRows.forEach(row => {
-			if (row.treeGridChildren && row.treeGridChildren.length > 0) {
-				row.expanded = expand;
-
-				this.setExpansionModeForAllCollapsiblePropertyRows(row.treeGridChildren, expand);
-			}
-		});
-	}
-
 	/**
 	 * This method returns an array of strings that that will make up the properties summary. The properties summary
 	 * will appear above the properties table when execution plans are being compared.

@@ -122,16 +122,6 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 		this.populateTable(columns, tableRows);
 	}
 
-	private setExpansionModeForAllCollapsiblePropertyRows(tableRows: Slick.SlickData[], expand: boolean): void {
-		tableRows.forEach(row => {
-			if (row.treeGridChildren && row.treeGridChildren.length > 0) {
-				row.expanded = expand;
-
-				this.setExpansionModeForAllCollapsiblePropertyRows(row.treeGridChildren, expand);
-			}
-		});
-	}
-
 	private convertPropertiesToTableRows(properties: azdata.executionPlan.ExecutionPlanGraphElementProperty[] | undefined): Slick.SlickData[] {
 		if (!properties) {
 			return [];
