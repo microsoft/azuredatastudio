@@ -15,7 +15,7 @@
 	async function installService() {
 		const absoluteConfigPath = require.resolve('../config.json');
 		const config = require(absoluteConfigPath);
-		const runtime = (await platform.PlatformInformation.getCurrent()).runtimeId;
+		let runtime = (await platform.PlatformInformation.getCurrent()).runtimeId;
 		const arch = process.env['npm_config_arch'];
 
 		// We use macOS on x64 to produce arm64 build, as a result, we need to overwrite the runtime if the arch is arm64
