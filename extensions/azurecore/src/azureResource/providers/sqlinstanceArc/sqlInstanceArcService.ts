@@ -29,7 +29,7 @@ export class SqlInstanceArcResourceService extends ResourceServiceBase<SqlInstan
 			defaultDatabaseName: 'master',
 			subscription: {
 				id: resource.subscriptionId,
-				name: resource.subscriptionName
+				name: resource.subscriptionName || ''
 			},
 			tenant: resource.tenantId,
 			resourceGroup: resource.resourceGroup

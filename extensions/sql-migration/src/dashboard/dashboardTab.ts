@@ -237,7 +237,8 @@ export class DashboardTab extends TabBase<DashboardTab> {
 				value: [
 					loc.PRE_REQ_1,
 					loc.PRE_REQ_2,
-					loc.PRE_REQ_3
+					loc.PRE_REQ_3,
+					loc.PRE_REQ_4,
 				],
 				CSSStyles: {
 					...styles.SMALL_NOTE_CSS,
@@ -321,7 +322,7 @@ export class DashboardTab extends TabBase<DashboardTab> {
 			.withLayout({
 				flexFlow: 'column',
 				width: '440px',
-				height: '365px',
+				height: '436px',
 				justifyContent: 'flex-start',
 			}).withProps({
 				CSSStyles: {
@@ -357,6 +358,11 @@ export class DashboardTab extends TabBase<DashboardTab> {
 				title: loc.DASHBOARD_HELP_LINK_VM_TUTORIAL,
 				description: loc.DASHBOARD_HELP_DESCRIPTION_VMTUTORIAL,
 				link: 'https://docs.microsoft.com/azure/dms/tutorial-sql-server-to-virtual-machine-online-ads'
+			},
+			{
+				title: loc.DASHBOARD_HELP_LINK_SQLDB_TUTORIAL,
+				description: loc.DASHBOARD_HELP_DESCRIPTION_SQLDBTUTORIAL,
+				link: 'https://docs.microsoft.com/azure/dms/tutorial-sql-server-to-sql-db-offline-ads'
 			},
 			{
 				title: loc.DASHBOARD_HELP_LINK_DMS_GUIDE,
@@ -578,7 +584,7 @@ export class DashboardTab extends TabBase<DashboardTab> {
 			.withLayout({
 				flexFlow: 'column',
 				width: '400px',
-				height: '365px',
+				height: '436px',
 				justifyContent: 'flex-start',
 			})
 			.withProps({

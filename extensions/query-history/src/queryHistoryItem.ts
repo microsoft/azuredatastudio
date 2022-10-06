@@ -8,6 +8,6 @@ import * as azdata from 'azdata';
 export interface QueryHistoryItem {
 	readonly queryText: string,
 	readonly connectionProfile: azdata.connection.ConnectionProfile | undefined,
-	readonly timestamp: Date,
+	readonly timestamp: string,
 	readonly isSuccess: boolean
 }

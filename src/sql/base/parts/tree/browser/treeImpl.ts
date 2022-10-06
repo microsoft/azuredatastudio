@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./tree';
-import * as TreeDefaults from 'vs/base/parts/tree/browser/treeDefaults';
-import * as Model from 'vs/base/parts/tree/browser/treeModel';
+import * as TreeDefaults from 'sql/base/parts/tree/browser/treeDefaults';
+import * as Model from 'sql/base/parts/tree/browser/treeModel';
 import * as View from './treeView';
-import * as _ from 'vs/base/parts/tree/browser/tree';
+import * as _ from 'sql/base/parts/tree/browser/tree';
 import { INavigator, MappedNavigator } from 'sql/base/common/navigator';
 import { Event, Emitter, Relay } from 'vs/base/common/event';
 import { Color } from 'vs/base/common/color';
@@ -189,7 +189,6 @@ export class Tree implements _.ITree {
 		return this.model.reveal(element, relativeTop);
 	}
 
-	// {{SQL CARBON EDIT}}	- add back deleted VS Code tree methods
 	public getExpandedElements(): any[] {
 		return this.model.getExpandedElements();
 	}
@@ -212,8 +211,6 @@ export class Tree implements _.ITree {
 	public set ariaLabel(value: string) {
 		this.getHTMLElement().setAttribute('aria-label', value);
 	}
-	// {{SQL CARBON EDIT}} - end block
-
 
 	public getHighlight(): any {
 		return this.model.getHighlight();
@@ -283,7 +280,7 @@ export class Tree implements _.ITree {
 		this.model.setFocus(null, eventPayload);
 	}
 
-	// {{SQL CARBON EDIT}} @todo anthonydresser 4/12/19 we need to refactor our code to not need these methods
+	// @todo anthonydresser 4/12/19 we need to refactor our code to not need these methods
 	public addTraits(trait: string, elements: any[]): void {
 		this.model.addTraits(trait, elements);
 	}
@@ -299,7 +296,7 @@ export class Tree implements _.ITree {
 	public deselect(element: any, eventPayload?: any): void {
 		this.model.deselect(element, eventPayload);
 	}
-	// {{SQL CARBON EDIT}} end
+	// END @todo
 
 	getNavigator(fromElement?: any, subTreeOnly?: boolean): INavigator<any> {
 		return new MappedNavigator(this.model.getNavigator(fromElement, subTreeOnly), i => i && i.getElement());

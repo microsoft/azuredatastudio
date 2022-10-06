@@ -19,17 +19,16 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	options: { [name: string]: any } = {};
 
 	private _providerName?: string;
-	private static readonly SqlAuthentication = 'SqlLogin';
 	public static readonly ProviderPropertyName = 'providerName';
 
 	public constructor(
 		protected capabilitiesService: ICapabilitiesService,
-		model: string | azdata.IConnectionProfile | undefined
+		model: string | azdata.IConnectionProfile | azdata.connection.ConnectionProfile | undefined
 	) {
 		super();
 		// we can't really do a whole lot if we don't have a provider
-		if (isString(model) || (model && model.providerName)) {
-			this.providerName = isString(model) ? model : model.providerName;
+		if (model) {
+			this.providerName = isString(model) ? model : 'providerName' in model ? model.providerName : model.providerId;
 
 			if (!isString(model)) {
 				if (model.options && this.serverCapabilities) {
@@ -56,7 +55,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	 *
 	 * This handles the case where someone hasn't passed in a valid property bag, but doesn't cause errors when
 	 */
-	private updateSpecialValueType(typeName: SettableProperty, model: azdata.IConnectionProfile): void {
+	private updateSpecialValueType(typeName: SettableProperty, model: azdata.IConnectionProfile | azdata.connection.ConnectionProfile): void {
 		if (!this[typeName]) {
 			this[typeName] = model[typeName]!;
 		}
@@ -194,7 +193,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 			option => option.specialValueType === ConnectionOptionSpecialType.password)!; // i guess we are going to assume there is a password field
 		let isPasswordRequired = optionMetadata.isRequired;
 		if (this.providerName === Constants.mssqlProviderName) {
-			isPasswordRequired = this.authenticationType === ProviderConnectionInfo.SqlAuthentication && optionMetadata.isRequired;
+			isPasswordRequired = this.authenticationType === Constants.AuthenticationType.SqlLogin && optionMetadata.isRequired;
 		}
 		return isPasswordRequired;
 	}

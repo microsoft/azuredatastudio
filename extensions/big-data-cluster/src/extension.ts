@@ -139,7 +139,7 @@ async function getMountProps(explorerContext?: azdata.ObjectExplorerContext): Pr
 	let profile = explorerContext.connectionProfile;
 	let mountProps: MountHdfsProperties = {
 		url: endpoint,
-		auth: profile.authenticationType === 'SqlLogin' ? 'basic' : 'integrated',
+		auth: profile.authenticationType === azdata.connection.AuthenticationType.SqlLogin ? 'basic' : 'integrated',
 		username: profile.userName,
 		password: profile.password,
 		hdfsPath: getHdsfPath(explorerContext.nodeInfo.nodePath)

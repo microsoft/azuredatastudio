@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { FileNode } from 'sql/workbench/services/fileBrowser/common/fileNode';
-import { ITree, IRenderer } from 'vs/base/parts/tree/browser/tree';
+import { ITree, IRenderer } from 'sql/base/parts/tree/browser/tree';
 import { FileKind } from 'vs/platform/files/common/files';
 import { URI } from 'vs/base/common/uri';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';

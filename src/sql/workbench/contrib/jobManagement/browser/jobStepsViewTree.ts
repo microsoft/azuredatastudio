@@ -5,8 +5,8 @@
 
 
 import * as DOM from 'vs/base/browser/dom';
-import * as tree from 'vs/base/parts/tree/browser/tree';
-import * as TreeDefaults from 'vs/base/parts/tree/browser/treeDefaults';
+import * as tree from 'sql/base/parts/tree/browser/tree';
+import * as TreeDefaults from 'sql/base/parts/tree/browser/treeDefaults';
 import { IMouseEvent } from 'vs/base/browser/mouseEvent';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';

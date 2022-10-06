@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ServerProvider, IConfig, Events } from '@microsoft/ads-service-downloader';
+import { ServerProvider, IConfig, Events, LogLevel } from '@microsoft/ads-service-downloader';
 import { ServerOptions, TransportKind } from 'vscode-languageclient';
 import * as Constants from './constants';
 import * as vscode from 'vscode';
@@ -75,7 +75,7 @@ export class AzureMonitorServer {
 		this.config.strictSSL = vscode.workspace.getConfiguration('http').get('proxyStrictSSL') || true;
 
 		const serverdownloader = new ServerProvider(this.config);
-		serverdownloader.eventEmitter.onAny(() => generateHandleServerProviderEvent());
+		serverdownloader.eventEmitter.onAny(generateHandleServerProviderEvent());
 		return serverdownloader.getOrDownloadServer();
 	}
 
@@ -94,7 +94,7 @@ function generateServerOptions(logPath: string, executablePath: string): ServerO
 
 function generateHandleServerProviderEvent() {
 	let dots = 0;
-	return (e: string, ...args: any[]) => {
+	return (e: string | string[], ...args: any[]) => {
 		switch (e) {
 			case Events.INSTALL_START:
 				outputChannel.show(true);
@@ -118,7 +118,14 @@ function generateHandleServerProviderEvent() {
 				}
 				break;
 			case Events.DOWNLOAD_END:
-				outputChannel.appendLine(localize('downloadServiceDoneChannelMsg', "Done installing {0}", Constants.serviceName));
+				// Start a new line to end the dots from the DOWNLOAD_PROGRESS event.
+				outputChannel.appendLine('');
+				outputChannel.appendLine(localize('downloadServiceDoneChannelMsg', "Downloaded {0}", Constants.serviceName));
+				break;
+			case Events.LOG_EMITTED:
+				if (args[0] >= LogLevel.Warning) {
+					outputChannel.appendLine(args[1]);
+				}
 				break;
 			default:
 				console.error(`Unknown event from Server Provider ${e}`);

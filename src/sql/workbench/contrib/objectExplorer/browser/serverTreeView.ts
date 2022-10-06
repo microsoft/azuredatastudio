@@ -9,7 +9,7 @@ import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiati
 import Severity from 'vs/base/common/severity';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachButtonStyler, attachListStyler } from 'vs/platform/theme/common/styler';
-import { ISelectionEvent, ITree } from 'vs/base/parts/tree/browser/tree';
+import { ISelectionEvent, ITree } from 'sql/base/parts/tree/browser/tree';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { localize } from 'vs/nls';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
