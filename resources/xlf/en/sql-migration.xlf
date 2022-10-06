@@ -76,7 +76,13 @@
 This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.assessment.migration.warning">
-      <source xml:lang="en">Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines.</source>
+      <source xml:lang="en">Databases that are not ready for migration to Azure SQL Managed Instance or Azure SQL Database can be migrated to SQL Server on Azure Virtual Machines.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.assessment.migration.warning.sqldb">
+      <source xml:lang="en">Databases that are not ready for migration to Azure SQL Database can be migrated to SQL Server on Azure Virtual Machines. Alternatively, review assessment results for Azure SQL Managed Instance migration readiness.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.assessment.migration.warning.sqlmi">
+      <source xml:lang="en">Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines. Alternatively, review assessment results for Azure SQL Database migration readiness.</source>
     </trans-unit>
     <trans-unit id="sql.migration.assessment.results">
       <source xml:lang="en">Assessment results</source>
@@ -178,7 +184,7 @@ This may take some time.</source>
       <source xml:lang="en">Select a storage account value first.</source>
     </trans-unit>
     <trans-unit id="sql.migration.can.be.migrated">
-      <source xml:lang="en">{0}/{1} databases can be migrated</source>
+      <source xml:lang="en">{0}/{1} databases can be migrated without issues</source>
     </trans-unit>
     <trans-unit id="sql.migration.cancel">
       <source xml:lang="en">Cancel</source>
