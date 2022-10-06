@@ -36,7 +36,7 @@ stages:
       - job: macOS_Signing
         variables:
           VSCODE_ARCH: x64
-        condition: eq(variables['signed'], true)
+        condition: and(succeeded(), eq(variables['signed'], true))
         dependsOn:
         - macOS
         steps:
@@ -53,9 +53,9 @@ stages:
       - job: macOS_Signing_ARM64
         variables:
           VSCODE_ARCH: arm64
-        condition: eq(variables['signed'], true)
+        condition: and(succeeded(), eq(variables['signed'], true))
         dependsOn:
-        - macOS
+        - macOS_ARM64
         steps:
         - template: darwin/sql-product-build-darwin-signing.yml
         timeoutInMinutes: 60
