@@ -8,6 +8,7 @@ import { azureResource } from 'azurecore';
 import { AzureSqlDatabase, AzureSqlDatabaseServer } from './azure';
 import { generateGuid } from './utils';
 import * as utils from '../api/utils';
+import { TelemetryAction, TelemetryViews, logError } from '../telemtery';
 
 const query_database_tables_sql = `
 	SELECT
@@ -42,6 +43,20 @@ const query_target_databases_sql = `
 		db.name not in ('master', 'tempdb', 'model', 'msdb')
 		AND is_distributor <> 1
 	ORDER BY db.name;`;
+
+const query_databases_with_size = `
+	WITH
+		db_size
+		AS
+		(
+			SELECT database_id, CAST(SUM(size) * 8.0 / 1024 AS INTEGER) size
+			FROM sys.master_files with (nolock)
+			GROUP BY database_id
+		)
+	SELECT name, state_desc AS state, db_size.size
+	FROM sys.databases with (nolock) LEFT JOIN db_size ON sys.databases.database_id = db_size.database_id
+	WHERE sys.databases.state = 0
+	`;
 
 export const excludeDatabses: string[] = [
 	'master',
@@ -274,4 +289,31 @@ export function getSqlNumber(value: azdata.DbCellValue): number {
 
 export function getSqlBoolean(value: azdata.DbCellValue): boolean {
 	return value.isNull ? false : value.displayValue === '1';
+}
+
+export async function getDatabasesList(sourceConnectionId: string): Promise<azdata.DatabaseInfo[]> {
+	const ownerUri = await azdata.connection.getUriForConnection(sourceConnectionId);
+	const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(
+		'MSSQL',
+		azdata.DataProviderType.QueryProvider);
+
+	try {
+		const queryResult = await queryProvider.runQueryAndReturn(ownerUri, query_databases_with_size);
+
+		const result = queryResult.rows.map(row => {
+			return {
+				options: {
+					name: getSqlString(row[0]),
+					state: getSqlString(row[1]),
+					sizeInMB: getSqlString(row[2]),
+				}
+			};
+		}) ?? [];
+
+		return result;
+	} catch (error) {
+		logError(TelemetryViews.Utils, TelemetryAction.GetDatabasesListFailed, error);
+
+		return [];
+	}
 }
