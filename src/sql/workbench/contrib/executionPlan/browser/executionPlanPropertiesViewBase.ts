@@ -272,7 +272,7 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 	/**
 	 * Expands or collapses the rows of the properties table recursively.
 	 *
-	 * @param rows The rows to be expanded.
+	 * @param rows The rows to be expanded or collapsed.
 	 * @param expand Flag indicating if the rows should be expanded or collapsed.
 	 */
 	protected expandOrCollapsePropertyTableRows(rows: Slick.SlickData[], expand: boolean): void {
