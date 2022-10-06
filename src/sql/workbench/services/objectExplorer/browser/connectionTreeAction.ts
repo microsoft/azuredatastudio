@@ -9,7 +9,7 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { ITree } from 'vs/base/parts/tree/browser/tree';
+import { ITree } from 'sql/base/parts/tree/browser/tree';
 import { IObjectExplorerService, ServerTreeViewView } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import Severity from 'vs/base/common/severity';

@@ -25,7 +25,7 @@ import { ObjectExplorerActionsContext } from 'sql/workbench/services/objectExplo
 import { IConnectionResult, IConnectionParams } from 'sql/platform/connection/common/connectionManagement';
 import { TreeSelectionHandler } from 'sql/workbench/services/objectExplorer/browser/treeSelectionHandler';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
-import { UNSAVED_GROUP_ID, mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { UNSAVED_GROUP_ID, mssqlProviderName, AuthenticationType } from 'sql/platform/connection/common/constants';
 import { $ } from 'vs/base/browser/dom';
 import { OEManageConnectionAction } from 'sql/workbench/contrib/dashboard/browser/dashboardActions';
 import { IViewsService, IView, ViewContainerLocation, ViewContainer, IViewPaneContainer } from 'vs/workbench/common/views';
@@ -35,7 +35,7 @@ import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKe
 import { TestAccessibilityService, TestListService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 import { ServerTreeDataSource } from 'sql/workbench/services/objectExplorer/browser/serverTreeDataSource';
-import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
+import { Tree } from 'sql/base/parts/tree/browser/treeImpl';
 import { AsyncServerTree } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { ConsoleLogger, LogService } from 'vs/platform/log/common/log';
 
@@ -96,7 +96,7 @@ suite('SQL Connection Tree Action tests', () => {
 			groupFullName: 'testGroup',
 			serverName: 'testServerName',
 			databaseName: 'testDatabaseName',
-			authenticationType: 'integrated',
+			authenticationType: AuthenticationType.Integrated,
 			password: 'test',
 			userName: 'testUsername',
 			groupId: undefined,
@@ -183,7 +183,7 @@ suite('SQL Connection Tree Action tests', () => {
 			groupFullName: 'testGroup',
 			serverName: 'testServerName',
 			databaseName: 'testDatabaseName',
-			authenticationType: 'integrated',
+			authenticationType: AuthenticationType.Integrated,
 			password: 'test',
 			userName: 'testUsername',
 			groupId: undefined,
@@ -228,7 +228,7 @@ suite('SQL Connection Tree Action tests', () => {
 			groupFullName: 'testGroup',
 			serverName: 'testServerName',
 			databaseName: 'testDatabaseName',
-			authenticationType: 'integrated',
+			authenticationType: AuthenticationType.Integrated,
 			password: 'test',
 			userName: 'testUsername',
 			groupId: undefined,
@@ -304,7 +304,7 @@ suite('SQL Connection Tree Action tests', () => {
 			groupFullName: 'testGroup',
 			serverName: 'testServerName',
 			databaseName: 'testDatabaseName',
-			authenticationType: 'integrated',
+			authenticationType: AuthenticationType.Integrated,
 			password: 'test',
 			userName: 'testUsername',
 			groupId: undefined,
@@ -349,7 +349,7 @@ suite('SQL Connection Tree Action tests', () => {
 			groupFullName: 'testGroup',
 			serverName: 'testServerName',
 			databaseName: 'testDatabaseName',
-			authenticationType: 'integrated',
+			authenticationType: AuthenticationType.Integrated,
 			password: 'test',
 			userName: 'testUsername',
 			groupId: undefined,
@@ -746,7 +746,7 @@ suite('SQL Connection Tree Action tests', () => {
 			groupFullName: 'testGroup',
 			serverName: 'testServerName',
 			databaseName: 'testDatabaseName',
-			authenticationType: 'integrated',
+			authenticationType: AuthenticationType.Integrated,
 			password: 'test',
 			userName: 'testUsername',
 			groupId: undefined,

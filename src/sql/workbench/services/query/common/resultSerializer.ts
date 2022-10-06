@@ -191,6 +191,7 @@ export class ResultSerializer {
 
 		// get save results config from vscode config
 		let saveConfig = this._configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.saveAsCsv;
+
 		// if user entered config, set options
 		if (saveConfig) {
 			if (saveConfig.includeHeaders !== undefined) {
@@ -215,21 +216,23 @@ export class ResultSerializer {
 
 	private getConfigForJson(): SaveResultsRequestParams {
 		// JSON does not currently have special conditions
-		let saveResultsParams = <SaveResultsRequestParams>{ resultFormat: SaveFormat.JSON as string };
-		return saveResultsParams;
+		return <SaveResultsRequestParams>{ resultFormat: SaveFormat.JSON as string };
 	}
 
 	private getConfigForExcel(): SaveResultsRequestParams {
-		// get save results config from vscode config
-		// Note: we are currently using the configSaveAsCsv setting since it has the option mssql.saveAsCsv.includeHeaders
-		// and we want to have just 1 setting that lists this.
-		let config = this.getConfigForCsv();
-		config.resultFormat = SaveFormat.EXCEL;
-		config.delimiter = undefined;
-		config.lineSeperator = undefined;
-		config.textIdentifier = undefined;
-		config.encoding = undefined;
-		return config;
+		let saveResultsParams = <SaveResultsRequestParams>{ resultFormat: SaveFormat.EXCEL as string };
+
+		// Get save results config from vscode config
+		let saveConfig = this._configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.saveAsExcel;
+
+		// If user entered config, set options
+		if (saveConfig) {
+			if (saveConfig.includeHeaders !== undefined) {
+				saveResultsParams.includeHeaders = saveConfig.includeHeaders;
+			}
+		}
+
+		return saveResultsParams;
 	}
 
 	private getConfigForXml(): SaveResultsRequestParams {
@@ -237,6 +240,7 @@ export class ResultSerializer {
 
 		// get save results config from vscode config
 		let saveConfig = this._configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.saveAsXml;
+
 		// if user entered config, set options
 		if (saveConfig) {
 			if (saveConfig.formatted !== undefined) {
@@ -251,7 +255,14 @@ export class ResultSerializer {
 	}
 
 
-	private getParameters(uri: string, filePath: URI, batchIndex: number, resultSetNo: number, format: string, selection?: Slick.Range): SaveResultsRequestParams {
+	private getParameters(
+		uri: string,
+		filePath: URI,
+		batchIndex: number,
+		resultSetNo: number,
+		format: string,
+		selection?: Slick.Range
+	): SaveResultsRequestParams {
 		let saveResultsParams = this.getBasicSaveParameters(format);
 		saveResultsParams.filePath = filePath.fsPath;
 		saveResultsParams.ownerUri = uri;

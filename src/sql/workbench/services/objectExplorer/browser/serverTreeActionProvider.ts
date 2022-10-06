@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ITree } from 'vs/base/parts/tree/browser/tree';
+import { ITree } from 'sql/base/parts/tree/browser/tree';
 import { IAction, Separator } from 'vs/base/common/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';

@@ -102,6 +102,7 @@ export interface IWorkspaceData extends IStaticWorkspaceData {
 export interface IInitData {
 	version: string;
 	vscodeVersion: string; // {{SQL CARBON EDIT}} add vscodeVersion
+	quality?: string; // {{SQL CARBON EDIT}} add quality
 	commit?: string;
 	parentPid: number;
 	environment: IEnvironment;

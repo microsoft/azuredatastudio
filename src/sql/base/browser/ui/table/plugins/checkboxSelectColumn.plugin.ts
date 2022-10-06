@@ -1,14 +1,15 @@
-// Adopted and converted to typescript from https://github.com/6pac/SlickGrid/blob/master/plugins/slick.checkboxselectcolumn.js
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
-import { mixin } from 'vs/base/common/objects';
-import * as nls from 'vs/nls';
-import { ICheckboxStyles } from 'vs/base/browser/ui/checkbox/checkbox';
-import { Emitter, Event as vsEvent } from 'vs/base/common/event';
-import * as strings from 'vs/base/common/strings';
+import { ICheckboxStyles } from 'sql/base/browser/ui/checkbox/checkbox';
+import { mixin } from 'sql/base/common/objects';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { Emitter, Event as vsEvent } from 'vs/base/common/event';
 import { KeyCode } from 'vs/base/common/keyCodes';
-import { range } from 'vs/base/common/arrays';
-import * as dict from 'vs/base/common/collections';
+import 'vs/css!./media/checkboxSelectColumn.plugin';
+import * as nls from 'vs/nls';
 
 export interface ICheckboxSelectColumnOptions extends Slick.PluginOptions, ICheckboxStyles {
 	columnId?: string;
@@ -21,16 +22,16 @@ export interface ICheckboxSelectColumnOptions extends Slick.PluginOptions, IChec
 	actionOnCheck?: ActionOnCheck;
 }
 
-// Actions expected on checkbox click
-export enum ActionOnCheck {
-	selectRow = 0,
-	customAction = 1
-}
-
 export interface ICheckboxCellActionEventArgs {
 	checked: boolean;
 	row: number;
 	column: number;
+}
+
+// Actions expected on checkbox click
+export enum ActionOnCheck {
+	selectRow = 0,
+	customAction = 1
 }
 
 interface ICheckboxColumnValue {
@@ -42,205 +43,33 @@ const HeaderCheckboxTitle: string = nls.localize('selectDeselectAll', "Select/De
 
 const defaultOptions: ICheckboxSelectColumnOptions = {
 	columnId: '_checkbox_selector',
-	cssClass: undefined,
-	headerCssClass: undefined,
+	cssClass: 'slick-plugin-checkbox-select-column',
+	headerCssClass: 'slick-plugin-checkbox-select-column',
 	toolTip: undefined,
 	width: 30
 };
 
-const checkboxTemplate = `<div style="display: flex; align-items: center; flex-direction: column">
-								<input type="checkbox" {0} title="{1}" aria-label="{1}" {2} />
-							</div>`;
-
 export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Plugin<T> {
-	private _options: ICheckboxSelectColumnOptions;
+
 	private _grid!: Slick.Grid<T>;
 	private _handler = new Slick.EventHandler();
-	private _selectedRowsLookup: dict.INumberDictionary<boolean> = {};
-	private _selectedCheckBoxLookup: { [key: string]: boolean } = {};
-	private _useState = false;
-
+	private _options: ICheckboxSelectColumnOptions;
+	public index: number;
+	private _headerCheckbox: HTMLInputElement;
 	private _onChange = new Emitter<ICheckboxCellActionEventArgs>();
 	public readonly onChange: vsEvent<ICheckboxCellActionEventArgs> = this._onChange.event;
-	public index: number;
 
 	constructor(options?: ICheckboxSelectColumnOptions, columnIndex?: number) {
 		this._options = mixin(options, defaultOptions, false);
+		this._options.headerCssClass = options.headerCssClass ? options.headerCssClass + ' ' + defaultOptions.headerCssClass : defaultOptions.headerCssClass;
+		this._options.cssClass = options.cssClass ? options.cssClass + ' ' + defaultOptions.cssClass : defaultOptions.cssClass;
 		this.index = columnIndex ? columnIndex : 0;
-	}
-
-	public init(grid: Slick.Grid<T>): void {
-		this._grid = grid;
-		this._handler
-			.subscribe(this._grid.onSelectedRowsChanged, (e: Event, args: Slick.OnSelectedRowsChangedEventArgs<T>) => this.handleSelectedRowsChanged(e, args))
-			.subscribe(this._grid.onClick, (e: DOMEvent, args: Slick.OnClickEventArgs<T>) => this.handleClick(e as MouseEvent, args))
-			.subscribe(this._grid.onHeaderClick, (e: DOMEvent, args: Slick.OnHeaderClickEventArgs<T>) => this.handleHeaderClick(e as MouseEvent, args))
-			.subscribe(this._grid.onKeyDown, (e: DOMEvent, args: Slick.OnKeyDownEventArgs<T>) => this.handleKeyDown(e as KeyboardEvent, args));
-	}
-
-	public destroy(): void {
-		this._handler.unsubscribeAll();
-	}
-
-	private handleSelectedRowsChanged(e: Event, args: Slick.OnSelectedRowsChangedEventArgs<T>): void {
-		if (this.isCustomActionRequested()) {
-			// do not assume anything for column based on row selection
-			// we can emit event here later if required.
-			return;
-		}
-
-		const selectedRows = this._grid.getSelectedRows();
-		let lookup: dict.INumberDictionary<boolean> = {}, row: number, i: number;
-		for (i = 0; i < selectedRows.length; i++) {
-			row = selectedRows[i];
-			lookup[row] = true;
-			if (lookup[row] !== this._selectedRowsLookup[row]) {
-				this._grid.invalidateRow(row);
-				delete this._selectedRowsLookup[row];
-			}
-		}
-		dict.forEach(this._selectedRowsLookup, (e) => this._grid.invalidateRow(Number(e.key)));
-		this._selectedRowsLookup = lookup;
-		this._grid.render();
-
-		if (!this._options.title) {
-			// when no title is specified, show the select all/deselect all checkbox
-			const headerCheckboxChecked = selectedRows.length > 0 && selectedRows.length === this._grid.getDataLength();
-			this._grid.updateColumnHeader(this._options.columnId!, this.getCheckboxHtml(headerCheckboxChecked, HeaderCheckboxTitle, true), this._options.toolTip);
-		}
-	}
-
-	private handleKeyDown(e: KeyboardEvent, args: Slick.OnKeyDownEventArgs<T>): void {
-		if (this._grid.getColumns()[args.cell] && this._grid.getColumns()[args.cell].id !== this._options.columnId
-			|| !(this.getCheckboxPropertyValue(args.row).enabled)
-		) {
-			return;
-		}
-
-		const event = new StandardKeyboardEvent(e);
-		let handled = false;
-		if (event.equals(KeyCode.Space)) {
-			// if editing, try to commit
-			if (!this._grid.getEditorLock().isActive() || this._grid.getEditorLock().commitCurrentEdit()) {
-				if (this.isCustomActionRequested()) {
-					this.toggleCheckBox(args.row, args.cell, true);
-				}
-				else {
-					this.toggleRowSelection(args.row);
-				}
-			}
-			handled = true;
-		} else if (event.equals(KeyCode.Enter)) {
-			if (this.isCustomActionRequested()) {
-				this.toggleCheckBox(args.row, args.cell, true);
-			}
-			else {
-				this.toggleRowSelection(args.row);
-			}
-			handled = true;
-		}
-		if (handled) {
-			e.preventDefault();
-			e.stopPropagation();
-		}
-	}
-
-	private handleClick(e: Event, args: Slick.OnClickEventArgs<T>): void {
-		// clicking on a row select checkbox
-		if (this._grid.getColumns()[args.cell] && this._grid.getColumns()[args.cell].id === this._options.columnId && jQuery(e.target!).is('input[type="checkbox"]')) {
-			// if editing, try to commit
-			if (this._grid.getEditorLock().isActive() && !this._grid.getEditorLock().commitCurrentEdit()) {
-				e.preventDefault();
-				e.stopImmediatePropagation();
-				return;
-			}
-
-			if (this.isCustomActionRequested()) {
-				this.toggleCheckBox(args.row, args.cell, false);
-			}
-			else {
-				this.toggleRowSelection(args.row);
-			}
-			e.stopPropagation();
-			e.stopImmediatePropagation();
-		}
-	}
-
-	private toggleRowSelection(row: number): void {
-		if (this._selectedRowsLookup[row]) {
-			this._grid.setSelectedRows(this._grid.getSelectedRows().filter(n => n !== row));
-		} else {
-			this._grid.setSelectedRows(this._grid.getSelectedRows().concat(row));
-		}
-	}
-
-	private toggleCheckBox(row: number, col: number, reRender: boolean): void {
-		this._useState = true;
-
-		if (this._selectedCheckBoxLookup[row]) {
-			delete this._selectedCheckBoxLookup[row];
-			this._onChange.fire({ checked: false, row: row, column: col });
-		} else {
-			this._selectedCheckBoxLookup[row] = true;
-			this._onChange.fire({ checked: true, row: row, column: col });
-		}
-
-		if (reRender) {
-			// ensure that grid reflects the change
-			this._grid.invalidateRow(row);
-			this._grid.render();
-		}
-
-		//Ensure that the focus stays on current selected checkbox cell
-		this._grid.setActiveCell(row, col);
-		if (this._grid.getActiveCellNode()) {
-			this._grid.getActiveCellNode().focus();
-		}
-
-		// set selected row to the row of this checkbox
-		this._grid.setSelectedRows([row]);
-	}
-
-	// This call is to handle reactive changes in check box UI
-	// This DOES NOT fire UI change Events
-	reactiveCheckboxCheck(row: number, value: boolean) {
-		value ? this._selectedCheckBoxLookup[row] = true : delete this._selectedCheckBoxLookup[row];
-
-		// update row to call formatter
-		this._grid.updateRow(row);
-
-		// ensure that grid reflects the change
-		this._grid.scrollRowIntoView(row);
-	}
-
-	private handleHeaderClick(e: Event, args: Slick.OnHeaderClickEventArgs<T>): void {
-		if (this.isCustomActionRequested()) {
-			// do not assume action for column based on header click.
-			// we can emit event here later if required.
-			return;
-		}
-		if (!this._options.title && args.column.id === this._options.columnId && jQuery(e.target!).is('input[type="checkbox"]')) {
-			// if editing, try to commit
-			if (this._grid.getEditorLock().isActive() && !this._grid.getEditorLock().commitCurrentEdit()) {
-				e.preventDefault();
-				e.stopImmediatePropagation();
-				return;
-			}
-
-			const headerCheckboxChecked = jQuery(e.target!).is(':checked');
-			this._grid.setSelectedRows(headerCheckboxChecked ? range(this._grid.getDataLength()) : []);
-			this._grid.updateColumnHeader(this._options.columnId!,
-				this.getCheckboxHtml(headerCheckboxChecked, this._options.toolTip),
-				this._options.toolTip);
-			e.preventDefault();
-			e.stopPropagation();
-		}
 	}
 
 	public get definition(): Slick.Column<T> {
 		return {
 			id: this._options.columnId,
-			name: this._options.title || strings.format(checkboxTemplate, '', ''),
+			name: this._options.title || `<input type="checkbox" tabIndex="0" title=${HeaderCheckboxTitle}/>`,
 			toolTip: this._options.toolTip,
 			field: 'sel',
 			width: this._options.width,
@@ -253,43 +82,127 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 	}
 
 	private checkboxSelectionFormatter(row: number, cell: number, value: any, columnDef: Slick.Column<T>, dataContext: T): string {
-		if (this.isCustomActionRequested()) {
-			return this.checkboxTemplateCustom(row);
-		}
-
-		// If checkbox is a row selector, we don't have requirement to enable/disable it, so always leave it enabled
-		return this.getCheckboxHtml(this._selectedRowsLookup[row], this._options.title, true);
+		const state = this.getCheckboxPropertyValue(row);
+		const checked = state.checked ? 'checked' : '';
+		const enable = state.enabled ? '' : 'disabled';
+		return `<input type="checkbox" style="pointer-events: none;" tabIndex="-1" ${checked} ${enable}/>`;
 	}
 
-	checkboxTemplateCustom(row: number): string {
-		const propertyValue = this.getCheckboxPropertyValue(row);
-		// use state after toggles
-		if (this._useState) {
-			return this.getCheckboxHtml(this._selectedCheckBoxLookup[row], this._options.title, propertyValue.enabled);
-		}
 
-		// use data for first time rendering
-		// note: make sure Init is called before using this._grid
-		if (propertyValue.checked) {
-			this._selectedCheckBoxLookup[row] = true;
-		}
-		else {
-			delete this._selectedCheckBoxLookup[row];
-		}
-		return this.getCheckboxHtml(propertyValue.checked, this._options.title, propertyValue.enabled);
+	public init(grid: Slick.Grid<T>): void {
+		this._grid = grid;
+		this._handler
+			.subscribe(this._grid.onClick, (e: Event, args: Slick.OnClickEventArgs<T>) => this.handleClick(e, args))
+			.subscribe(this._grid.onKeyDown, (e: DOMEvent, args: Slick.OnKeyDownEventArgs<T>) => this.handleKeyDown(e as KeyboardEvent, args))
+			.subscribe(this._grid.onHeaderClick, (e: Event, args: Slick.OnHeaderClickEventArgs<T>) => this.handleHeaderClick(e, args))
+			.subscribe(this._grid.onHeaderCellRendered, (e: Event, args: Slick.OnHeaderCellRenderedEventArgs<T>) => this.handleHeaderCellRendered(e, args));
 	}
 
-	private isCustomActionRequested(): boolean {
-		return (this._options.actionOnCheck === ActionOnCheck.customAction);
+	private handleClick(e: DOMEvent, args: Slick.OnClickEventArgs<T>): void {
+		if (args.cell !== this.index) {
+			return;
+		}
+		this.toggleCellCheckbox(args.row);
+		e.stopPropagation();
+		e.stopImmediatePropagation();
+		e.preventDefault();
 	}
 
-	private getCheckboxHtml(checked: boolean, title: string, enabled: boolean = true): string {
-		return strings.format(checkboxTemplate, checked ? 'checked' : '', title, enabled ? '' : 'disabled');
+	private handleKeyDown(e: KeyboardEvent, args: Slick.OnKeyDownEventArgs<T>): void {
+		const event = new StandardKeyboardEvent(e);
+		if (args.cell !== this.index) {
+			return;
+		}
+		if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
+			this.toggleCellCheckbox(args.row);
+			e.stopPropagation();
+			e.stopImmediatePropagation();
+			e.preventDefault();
+		}
+	}
+
+	private toggleCellCheckbox(row: number): void {
+		const currentValue = this.getCheckboxPropertyValue(row);
+		this.setCheckboxPropertyValue(row, !currentValue.checked);
+		this._grid.invalidateRow(row);
+		this._grid.render();
+		this._grid.setActiveCell(row, this.index);
+		this.checkSelectAll();
+		if(this._options.actionOnCheck === ActionOnCheck.selectRow){
+			this.updateSelectedRows();
+		} else {
+			this._onChange.fire({ checked: false, row: row, column: this.index });
+		}
+	}
+
+	private updateSelectedRows(): void {
+		const checkedRows = [];
+		const rows = this._grid.getDataLength();
+		for (let i = 0; i < rows; i++) {
+			if (this.getCheckboxPropertyValue(i).checked) {
+				checkedRows.push(i);
+			}
+		}
+		this._grid.setSelectedRows(checkedRows);
+	}
+
+	private handleHeaderClick(e: Event, args?: Slick.OnHeaderClickEventArgs<T>): void {
+		this.onHeaderCheckboxStateChange();
+		e.preventDefault();
+		e.stopPropagation();
+	}
+
+	private handleHeaderKeyDown(e: KeyboardEvent): void {
+		const event = new StandardKeyboardEvent(e);
+		if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
+			this._headerCheckbox.checked = !this._headerCheckbox.checked;
+			this.onHeaderCheckboxStateChange();
+			this._headerCheckbox.focus();
+			event.preventDefault();
+			event.stopPropagation();
+		}
+	}
+
+	public onHeaderCheckboxStateChange(): void {
+		const rows = this._grid.getDataLength();
+		for (let i = 0; i < rows; i++) {
+			this.setCheckboxPropertyValue(i, this._headerCheckbox.checked);
+		}
+
+		this._grid.updateColumnHeader(this._options.columnId!, `<input type="checkbox" tabIndex="0" ${this._headerCheckbox.checked ? 'checked' : ''} title=${HeaderCheckboxTitle}/>`, this._options.toolTip);
+		if(this._options.actionOnCheck === ActionOnCheck.selectRow){
+			this.updateSelectedRows();
+		}
+		this._grid.invalidateAllRows();
+		this._grid.render();
+	}
+
+	private handleHeaderCellRendered(e: Event, args: Slick.OnHeaderCellRenderedEventArgs<T>): void {
+		if (args.column.id === this._options.columnId) {
+			this._headerCheckbox = <HTMLInputElement>args.node.firstChild.firstChild;
+			this._headerCheckbox.onkeydown = (e) => this.handleHeaderKeyDown(e);
+		}
+	}
+
+	private checkSelectAll(): void {
+		const rows = this._grid.getDataLength();
+		let checked = true;
+		for (let i = 0; i < rows; i++) {
+			if (!this.getCheckboxPropertyValue(i).checked) {
+				checked = false;
+				break;
+			}
+		}
+		this._headerCheckbox.checked = checked;
+	}
+
+	public destroy(): void {
+		this._handler.unsubscribeAll();
 	}
 
 	private getCheckboxPropertyValue(row: number): ICheckboxColumnValue {
 		const dataItem = this._grid?.getDataItem(row);
-		const propertyValue = (dataItem && this._options.title) ? dataItem[this._options.title] : undefined;
+		const propertyValue = dataItem[this._options.title];
 		let checkboxEnabled: boolean = true;
 		let checkboxChecked: boolean = false;
 		if (typeof propertyValue === 'boolean') {
@@ -304,5 +217,18 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 			checked: checkboxChecked,
 			enabled: checkboxEnabled
 		};
+	}
+
+	private setCheckboxPropertyValue(row: number, value: boolean): void {
+		const dataItem = this._grid?.getDataItem(row);
+		const propertyValue = dataItem[this._options.title];
+		if (typeof propertyValue === 'boolean') {
+			(<any>dataItem)[this._options.title] = value;
+		} else {
+			(<any>dataItem)[this._options.title] = {
+				checked: value,
+				enabled: propertyValue.enabled
+			};
+		}
 	}
 }

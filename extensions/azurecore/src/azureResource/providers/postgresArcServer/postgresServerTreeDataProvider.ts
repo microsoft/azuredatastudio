@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ExtensionNodeType, TreeItem } from 'azdata';
+import { ExtensionNodeType, TreeItem, connection } from 'azdata';
 import { TreeItemCollapsibleState, ExtensionContext } from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
@@ -43,7 +43,7 @@ export class PostgresServerArcTreeDataProvider extends ResourceTreeDataProviderB
 				databaseName: databaseServer.defaultDatabaseName,
 				userName: `${databaseServer.loginName}@${databaseServer.fullName}`,
 				password: '',
-				authenticationType: 'SqlLogin',
+				authenticationType: connection.AuthenticationType.SqlLogin,
 				savePassword: true,
 				groupFullName: '',
 				groupId: '',
@@ -63,21 +63,16 @@ export class PostgresServerArcTreeDataProvider extends ResourceTreeDataProviderB
 		};
 	}
 
-	protected createContainerNode(): azureResource.IAzureResourceNode {
-		return {
-			account: undefined,
-			subscription: undefined,
-			tenantId: undefined,
-			treeItem: {
-				id: PostgresServerArcTreeDataProvider.containerId,
-				label: PostgresServerArcTreeDataProvider.containerLabel,
-				iconPath: {
-					dark: this._extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
-					light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')
-				},
-				collapsibleState: TreeItemCollapsibleState.Collapsed,
-				contextValue: AzureResourceItemType.databaseServerContainer
-			}
-		};
+	public async getRootChildren(): Promise<TreeItem[]> {
+		return [{
+			id: PostgresServerArcTreeDataProvider.containerId,
+			label: PostgresServerArcTreeDataProvider.containerLabel,
+			iconPath: {
+				dark: this._extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
+				light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')
+			},
+			collapsibleState: TreeItemCollapsibleState.Collapsed,
+			contextValue: AzureResourceItemType.databaseServerContainer
+		}];
 	}
 }

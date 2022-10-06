@@ -11,7 +11,7 @@ import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { Event } from 'vs/base/common/event';
 import { IAction } from 'vs/base/common/actions';
 import { Color } from 'vs/base/common/color';
-import { IItemCollapseEvent, IItemExpandEvent } from 'vs/base/parts/tree/browser/treeModel';
+import { IItemCollapseEvent, IItemExpandEvent } from 'sql/base/parts/tree/browser/treeModel';
 import { IDragAndDropData } from 'vs/base/browser/dnd';
 
 export interface ITree {
@@ -207,7 +207,7 @@ export interface ITree {
 	 */
 	clearFocus(eventPayload?: any): void;
 
-	// {{SQL CARBON EDIT}} @todo anthonydresser 4/12/19 we need to refactor our code to not need these methods
+	// @todo anthonydresser 4/12/19 we need to refactor our code to not need these methods
 	/**
 	 * Adds the trait to elements.
 	 */
@@ -227,7 +227,7 @@ export interface ITree {
 	 * Deselects an element.
 	 */
 	deselect(element: any, eventPayload?: any): void;
-	// {{SQL CARBON EDIT}} END
+	// END @todo
 
 	/**
 	 * Returns a navigator which allows to discover the visible and
@@ -475,14 +475,14 @@ export interface IDragOverReaction {
 	autoExpand?: boolean;
 }
 
-// {{SQL CARBON EDIT}} @todo anthonydresser 4/12/19 refactor to not need this
+// @todo anthonydresser 4/12/19 refactor to not need this
 export const DRAG_OVER_REJECT: IDragOverReaction = { accept: false };
 export const DRAG_OVER_ACCEPT: IDragOverReaction = { accept: true };
 export const DRAG_OVER_ACCEPT_BUBBLE_UP: IDragOverReaction = { accept: true, bubble: DragOverBubble.BUBBLE_UP };
 export const DRAG_OVER_ACCEPT_BUBBLE_DOWN = (autoExpand = false) => ({ accept: true, bubble: DragOverBubble.BUBBLE_DOWN, autoExpand });
 export const DRAG_OVER_ACCEPT_BUBBLE_UP_COPY: IDragOverReaction = { accept: true, bubble: DragOverBubble.BUBBLE_UP, effect: DragOverEffect.COPY };
 export const DRAG_OVER_ACCEPT_BUBBLE_DOWN_COPY = (autoExpand = false) => ({ accept: true, bubble: DragOverBubble.BUBBLE_DOWN, effect: DragOverEffect.COPY, autoExpand });
-// {{SQL CARBON EDIT}} END
+// END @todo
 
 export interface IDragAndDrop {
 
@@ -513,8 +513,6 @@ export interface IDragAndDrop {
 	 */
 	drop(tree: ITree, data: IDragAndDropData, targetElement: any, originalEvent: Mouse.DragMouseEvent): void;
 
-
-	// {{SQL CARBON EDIT}}
 	/**
 	 * Handles the action of canceled drag-and-drop activities
 	 */

@@ -111,8 +111,7 @@ export class SummaryPage extends MigrationWizardPage {
 						: (isSqlMiTarget)
 							? constants.SUMMARY_MI_TYPE
 							: constants.SUMMARY_SQLDB_TYPE,
-					await this.migrationStateModel.getLocationDisplayName(
-						this.migrationStateModel._targetServerInstance.name!)),
+					this.migrationStateModel._targetServerInstance.name),
 				await createHeadingTextComponent(
 					this._view,
 					constants.DATABASE_BACKUP_MIGRATION_MODE_LABEL),
@@ -128,7 +127,7 @@ export class SummaryPage extends MigrationWizardPage {
 			this._flexContainer.addItems([
 				await createHeadingTextComponent(
 					this._view,
-					constants.DATABASE_BACKUP_PAGE_TITLE),
+					constants.DATA_SOURCE_CONFIGURATION_PAGE_TITLE),
 				await this.createNetworkContainerRows()]);
 		}
 

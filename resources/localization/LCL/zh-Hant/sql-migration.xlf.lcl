@@ -1143,10 +1143,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dashboard.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Determine the migration readiness of your SQL Server instances, identify a recommended Azure SQL target, and complete the migration of your SQL Server instance to Azure SQL Managed Instance or SQL Server on Azure Virtual Machines.]]></Val>
+          <Val><![CDATA[Determine the migration readiness of your SQL Server instances, identify a recommended Azure SQL target, and complete the migration of your SQL Server instance to Azure SQL Managed Instance, SQL Server on Azure Virtual Machines or Azure SQL Database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[判斷您 SQL Server 執行個體的移轉準備情況、識別建議的 Azure SQL 目標，以及將您的 SQL Server 執行個體移轉到 Azure SQL 受控執行個體或 Azure 虛擬機器上的 SQL Server。]]></Val>
+            <Val><![CDATA[判斷您 SQL Server 執行個體的移轉整備度、識別建議的 Azure SQL 目標，並完成將您的 SQL Server 執行個體移轉到 Azure SQL 受控執行個體、Azure 虛擬機器上的 SQL Server 或 Azure SQL Database。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Determine the migration readiness of your SQL Server instances, identify a recommended Azure SQL target, and complete the migration of your SQL Server instance to Azure SQL Managed Instance, SQL Server on Azure Virtual Machines or Azure SQL Database (PREVIEW).]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1173,6 +1176,15 @@
           <Val><![CDATA[The Azure SQL Migration extension for Azure Data Studio provides capabilities to assess, get right-sized Azure recommendations and migrate SQL Server databases to Azure.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Azure Data Studio 的 Azure SQL 移轉擴充功能提供評估、取得正確大小的 Azure 建議，以及將 SQL Server 資料庫移轉至 Azure 的功能。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dashboard.help.description.sqldb" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Database (PREVIEW).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[將資料庫從 SQL Server 執行個體 (內部部署或 Azure 虛擬機器) 移轉至 Azure SQL 資料庫 (預覽) 的逐步教學課程。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1209,6 +1221,15 @@
           <Val><![CDATA[Migrate databases using Azure Data Studio]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[使用 Azure Data Studio 來移轉資料庫]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dashboard.help.link.sqldb" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Tutorial:  Migrate to SQL Server on Azure SQL Database (offline) - (PREVIEW)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[教學課程: 移轉至 Azure SQL Database 上的 SQL Server (離線) - (預覽)]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1260,6 +1281,15 @@
           <Val><![CDATA[Azure SQL Migration]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Azure SQL 移轉]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.data.source.configuration.page.title" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Data source configuration]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[資料來源設定]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1491,18 +1521,6 @@
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Select the location of your database backups to use for migration.]]></Val>
-          </Prev>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.database.page.title" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Database backup]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[資料庫備份]]></Val>
-          </Tgt>
-          <Prev Cat="Text">
-            <Val><![CDATA[Database Backup]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -2286,12 +2304,12 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.ir.page.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Database Migration Service orchestrates database migration activities and tracks their progress. You can select an existing Database Migration Service as an Azure SQL target if you have created one previously, or create a new one below.]]></Val>
+          <Val><![CDATA[Azure Database Migration Service orchestrates database migration activities and tracks their progress. You can select an existing Database Migration Service if you have created one previously, or create a new one below.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure 資料庫移轉服務可協調資料庫移轉活動並追蹤其進度。如果您之前已建立資料庫移轉服務，可選取現有的資料庫移轉服務做為 Azure SQL 目標，或是在下方建立一個新的。]]></Val>
+            <Val><![CDATA[Azure 資料庫移轉服務可協調資料庫移轉活動並追蹤其進度。如果您之前已建立資料庫移轉服務，可選取現有的資料庫移轉服務，或是在下方建立一個新的。]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Azure Database Migration Service (DMS) orchestrates database migration activities and tracks their progress. You can select an existing DMS for Azure SQL target if you have created one previously or create a new one below.]]></Val>
+            <Val><![CDATA[Azure Database Migration Service orchestrates database migration activities and tracks their progress. You can select an existing Database Migration Service as an Azure SQL target if you have created one previously, or create a new one below.]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -2344,6 +2362,15 @@
           <Prev Cat="Text">
             <Val><![CDATA[Step 3: Click on 'Test connection' button to check the connection between Azure Database Migration Service and Integration Runtime]]></Val>
           </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.issue.aria.label" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Blocking Issue: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[執行問題: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3228,39 +3255,57 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.pre.req.1" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure account details]]></Val>
+          <Val><![CDATA[An Azure account (not required for assessment or SKU recommendation functionality)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure 帳戶詳細資料]]></Val>
+            <Val><![CDATA[Azure 帳戶 (評定或 SKU 建議功能不需要)]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure account details]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.pre.req.2" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure SQL Managed Instance or SQL Server on Azure Virtual Machine]]></Val>
+          <Val><![CDATA[A source SQL Server database(s) running on on-premises, or on SQL Server on Azure Virtual Machine or any virtual machine running in the cloud (private, public).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure 虛擬機器上的 Azure SQL 受控執行個體或 SQL Server]]></Val>
+            <Val><![CDATA[在內部部署或 Azure 虛擬機器上的 SQL Server 上執行的來源 SQL Server 資料庫，或雲端中執行的任何虛擬機器 (私人、公用)。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure SQL Managed Instance or SQL Server on Azure Virtual Machine]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.pre.req.3" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Backup location details]]></Val>
+          <Val><![CDATA[An Azure SQL Managed Instance, SQL Server on Azure Virtual Machine, or Azure SQL Database to migrate your database(s) to.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[備份位置詳細資料]]></Val>
+            <Val><![CDATA[要移轉資料庫的目標 Azure SQL 受控執行個體、Azure 虛擬機器上的 SQL Server 或 Azure SQL 資料庫。]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[An Azure SQL Managed Instance, SQL Server on Azure Virtual Machine, or Azure SQL Database (PREVIEW) to migrate your database(s) to.]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.pre.req.4" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Your database backup location details, either a network file share or an Azure Blob Storage container (not required for Azure SQL Database targets).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[您的資料庫備份位置詳細資料，網路檔案共用或 Azure Blob 儲存體容器 (Azure SQL Database 目標不需要)。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.pre.req.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Things you need before starting a migration:]]></Val>
+          <Val><![CDATA[Things you need before starting your Azure SQL migration:]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[開始移轉前需具備的事項:]]></Val>
+            <Val><![CDATA[開始 Azure SQL 移轉之前所需的項目:]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Things you need before starting migration:]]></Val>
+            <Val><![CDATA[Things you need before starting a migration:]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -4537,6 +4582,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.mi.target.title" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Azure SQL Managed Instance]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure SQL 受控執行個體]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.ms" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} ms]]></Val>
@@ -4692,10 +4746,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.recommendation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure recommendation]]></Val>
+          <Val><![CDATA[Azure recommendation (PREVIEW)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure 建議]]></Val>
+            <Val><![CDATA[Azure 建議 (預覽)]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure recommendation]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4713,10 +4770,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.recommendation.view.assessment.sqldb" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[To migrate to Azure SQL Database, view assessment results and select one or more databases.]]></Val>
+          <Val><![CDATA[To migrate to Azure SQL Database (PREVIEW), view assessment results and select one or more databases.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[若要移轉至 Azure SQL Database，請檢視評定結果並選取一或多個資料庫。]]></Val>
+            <Val><![CDATA[若要移轉至 Azure SQL Database (預覽)，請檢視評定結果並選取一或多個資料庫。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[To migrate to Azure SQL Database, view assessment results and select one or more databases.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4890,6 +4950,18 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.sqldb.card.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
+          <Val><![CDATA[Azure SQL Database (PREVIEW)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure SQL Database (預覽)]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure SQL Database]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.sqldb.target.title" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
           <Val><![CDATA[Azure SQL Database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Azure SQL Database]]></Val>
@@ -5050,6 +5122,15 @@
           <Prev Cat="Text">
             <Val><![CDATA[SQL Server on Azure Virtual Machine (IaaS)]]></Val>
           </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.vm.target.title" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[SQL Server on Azure Virtual Machine]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure 虛擬機器上的 SQL Server]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -5748,6 +5829,15 @@
           <Val><![CDATA[Table migration status: {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[資料表移轉狀態: {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.table.missing.count" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Missing target tables excluded from list: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[清單中排除的遺失目標資料表: {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

@@ -21,6 +21,7 @@ const configLogFilesRemovalLimit = 'logFilesRemovalLimit';
 const extensionConfigSectionName = 'mssql';
 const configLogDebugInfo = 'logDebugInfo';
 const parallelMessageProcessingConfig = 'parallelMessageProcessing';
+const tableDesignerPreloadConfig = 'tableDesigner.preloadDatabaseModel';
 
 /**
  *
@@ -84,12 +85,41 @@ export function getConfigLogRetentionSeconds(): number {
 	}
 }
 
-export function getConfigTracingLevel(): string {
+/**
+ * The tracing level defined in the package.json
+ */
+export enum TracingLevel {
+	All = 'All',
+	Off = 'Off',
+	Critical = 'Critical',
+	Error = 'Error',
+	Warning = 'Warning',
+	Information = 'Information',
+	Verbose = 'Verbose'
+}
+
+export function getConfigTracingLevel(): TracingLevel {
 	let config = getConfiguration();
 	if (config) {
 		return config[configTracingLevel];
 	} else {
-		return undefined;
+		return TracingLevel.Critical;
+	}
+}
+
+export function getConfigPreloadDatabaseModel(): boolean {
+	let config = getConfiguration();
+	if (config) {
+		return config.get<boolean>(tableDesignerPreloadConfig);
+	} else {
+		return false;
+	}
+}
+
+export function setConfigPreloadDatabaseModel(enable: boolean): void {
+	let config = getConfiguration();
+	if (config) {
+		void config.update(tableDesignerPreloadConfig, enable, true);
 	}
 }
 
@@ -98,11 +128,10 @@ export async function getParallelMessageProcessingConfig(): Promise<boolean> {
 	if (!config) {
 		return false;
 	}
-	const quality = await getProductQuality();
 	const setting = config.inspect(parallelMessageProcessingConfig);
 	// For dev environment, we want to enable the feature by default unless it is set explicitely.
 	// Note: the quality property is not set for dev environment, we can use this to determine whether it is dev environment.
-	return (quality === undefined && setting.globalValue === undefined && setting.workspaceValue === undefined) ? true : config[parallelMessageProcessingConfig];
+	return (azdata.env.quality === azdata.env.AppQuality.dev && setting.globalValue === undefined && setting.workspaceValue === undefined) ? true : config[parallelMessageProcessingConfig];
 }
 
 export function getLogFileName(prefix: string, pid: number): string {
@@ -366,7 +395,3 @@ export async function getOrDownloadServer(config: IConfig, handleServerEvent?: (
 	return serverdownloader.getOrDownloadServer();
 }
 
-async function getProductQuality(): Promise<string> {
-	const content = await fs.readFile(path.join(vscode.env.appRoot, 'product.json'));
-	return JSON.parse(content?.toString())?.quality;
-}

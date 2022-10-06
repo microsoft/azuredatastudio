@@ -189,10 +189,10 @@
   dependencies:
     nan "^2.14.0"
 
-"@microsoft/ads-service-downloader@0.2.4":
-  version "0.2.4"
-  resolved "https://registry.yarnpkg.com/@microsoft/ads-service-downloader/-/ads-service-downloader-0.2.4.tgz#905a11eb2da19673629852d9764fb9fb94ad81bd"
-  integrity sha512-3J0YjH29a5pP+5Yu0HF7itRBZpNOgUN34Gh/p0Py/TQr7qUzZSXwOM+fWD1nCea+q9t8mfHr0yuy0aeDX+33vQ==
+"@microsoft/ads-service-downloader@1.0.4":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@microsoft/ads-service-downloader/-/ads-service-downloader-1.0.4.tgz#94e13461d655d0864cbf93978247cbd1097e7863"
+  integrity sha512-XVJ3RW4X5mzlPYeJnwTii5/6ywVib4UqCtrvxwRWSFe214Hi8jO2zNxzcpamiTCnHm2b8wZAuWGfsvIShbf/yg==
   dependencies:
     async-retry "^1.2.3"
     eventemitter2 "^5.0.1"
@@ -202,6 +202,18 @@
     tar "^6.1.11"
     tmp "^0.0.33"
     yauzl "^2.10.0"
+
+"@microsoft/azdata-test@^2.0.3":
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@microsoft/azdata-test/-/azdata-test-2.0.3.tgz#652984efa2f5adc56cdae9029a4d5f33446b54d3"
+  integrity sha512-BgB6gGjQVXxnZHq7o5TlajZR/mJd/6AqbclrGzoyATvCEt92jRXhPzaY6XA/jMahdUGFSQwXpm45qRhZetwDig==
+  dependencies:
+    http-proxy-agent "^2.1.0"
+    https-proxy-agent "^2.2.4"
+    mocha-junit-reporter "^1.17.0"
+    mocha-multi-reporters "^1.1.7"
+    rimraf "^2.6.3"
+    typemoq "^2.1.0"
 
 "@microsoft/vscodetestcover@^1.2.1":
   version "1.2.1"
@@ -530,9 +542,9 @@ dashdash@^1.12.0:
   dependencies:
     assert-plus "^1.0.0"
 
-"dataprotocol-client@github:Microsoft/sqlops-dataprotocolclient#1.2.4":
-  version "1.2.4"
-  resolved "https://codeload.github.com/Microsoft/sqlops-dataprotocolclient/tar.gz/3fbb5cebd29958f07d450fd9b1a969faf489c6a8"
+"dataprotocol-client@github:Microsoft/sqlops-dataprotocolclient#1.3.0":
+  version "1.3.0"
+  resolved "https://codeload.github.com/Microsoft/sqlops-dataprotocolclient/tar.gz/c0863d0aa6f4c37252940e6753f5fdf6a2a9fbb1"
   dependencies:
     vscode-languageclient "5.2.1"
 

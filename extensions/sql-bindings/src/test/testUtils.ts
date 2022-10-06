@@ -58,6 +58,9 @@ export class MockVscodeMssqlIExtension implements vscodeMssql.IExtension {
 	createConnectionDetails(_: vscodeMssql.IConnectionInfo): vscodeMssql.ConnectionDetails {
 		throw new Error('Method not implemented.');
 	}
+	getServerInfo(_: vscodeMssql.IConnectionInfo): vscodeMssql.ServerInfo {
+		throw new Error('Method not implemented.');
+	}
 }
 
 export function createTestUtils(): TestUtils {
@@ -85,7 +88,7 @@ export function createTestCredentials(): vscodeMssql.IConnectionInfo {
 		accountId: 'test-account-id',
 		tenantId: 'test-tenant-id',
 		port: 1234,
-		authenticationType: 'SqlLogin',
+		authenticationType: vscodeMssql.AuthenticationType.SqlLogin,
 		azureAccountToken: '',
 		expiresOn: 0,
 		encrypt: false,
