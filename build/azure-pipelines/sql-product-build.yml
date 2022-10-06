@@ -27,11 +27,32 @@ stages:
         - Compile
       jobs:
         - job: macOS
+          variables:
+            VSCODE_ARCH: x64
           steps:
           - template: darwin/sql-product-build-darwin.yml
           timeoutInMinutes: 90
 
         - job: macOS_Signing
+          variables:
+            VSCODE_ARCH: x64
+          condition: eq(variables['signed'], true))
+          dependsOn:
+          - macOS
+          steps:
+          - template: darwin/sql-product-build-darwin-signing.yml
+          timeoutInMinutes: 60
+
+        - job: macOS_ARM64
+          variables:
+            VSCODE_ARCH: arm64
+          steps:
+          - template: darwin/sql-product-build-darwin.yml
+          timeoutInMinutes: 90
+
+        - job: macOS_Signing_ARM64
+          variables:
+            VSCODE_ARCH: arm64
           condition: eq(variables['signed'], true))
           dependsOn:
           - macOS
