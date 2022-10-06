@@ -10,7 +10,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { removeLineBreaks } from 'sql/base/common/strings';
 import { isString } from 'vs/base/common/types';
 import { textFormatter } from 'sql/base/browser/ui/table/formatters';
-import { ExecutionPlanPropertiesViewBase, PropertiesSortType, PropertyRowExpansionMode } from 'sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase';
+import { ExecutionPlanPropertiesViewBase, PropertiesSortType, PropertyRowExpansionState } from 'sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
@@ -110,12 +110,36 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 		];
 
 		const tableRows = this.convertPropertiesToTableRows(this._model.graphElement?.properties);
-		switch (this.propertyRowExpansionMode) {
-			case PropertyRowExpansionMode.ExpandAll:
-				this.setExpansionModeForAllCollapsiblePropertyRows(tableRows, true);
+		this.populateTable(columns, tableRows);
+	}
+
+	public expandOrCollapsePropertiesTable(): void {
+		const columns: Slick.Column<Slick.SlickData>[] = [
+			{
+				id: 'name',
+				name: localize('nodePropertyViewNameNameColumnHeader', "Name"),
+				field: 'name',
+				width: 250,
+				headerCssClass: 'prop-table-header',
+				formatter: textFormatter
+			},
+			{
+				id: 'value',
+				name: localize('nodePropertyViewNameValueColumnHeader', "Value"),
+				field: 'value',
+				width: 250,
+				headerCssClass: 'prop-table-header',
+				formatter: textFormatter
+			}
+		];
+
+		const tableRows = this.convertPropertiesToTableRows(this._model.graphElement?.properties);
+		switch (this.propertyRowExpansionState) {
+			case PropertyRowExpansionState.ExpandAll:
+				this.expandOrCollapsePropertyTableRows(tableRows, true);
 				break;
-			case PropertyRowExpansionMode.CollapseAll:
-				this.setExpansionModeForAllCollapsiblePropertyRows(tableRows, false);
+			case PropertyRowExpansionState.CollapseAll:
+				this.expandOrCollapsePropertyTableRows(tableRows, false);
 				break;
 		}
 

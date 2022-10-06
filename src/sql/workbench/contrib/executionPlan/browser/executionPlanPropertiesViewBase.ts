@@ -55,7 +55,7 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 	private _tableHeight;
 
 	public sortType: PropertiesSortType = PropertiesSortType.DisplayOrder;
-	public propertyRowExpansionMode: PropertyRowExpansionMode = PropertyRowExpansionMode.Default;
+	public propertyRowExpansionState: PropertyRowExpansionState = PropertyRowExpansionState.Default;
 
 	public resizeSash: Sash;
 
@@ -251,6 +251,7 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 	}
 
 	public abstract refreshPropertiesTable();
+	public abstract expandOrCollapsePropertiesTable();
 
 	public toggleVisibility(): void {
 		this._parentContainer.style.display = this._parentContainer.style.display === 'none' ? 'flex' : 'none';
@@ -269,12 +270,18 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 		this._tableComponent.columns = columns;
 	}
 
-	protected setExpansionModeForAllCollapsiblePropertyRows(tableRows: Slick.SlickData[], expand: boolean): void {
-		tableRows.forEach(row => {
+	/**
+	 * Expands or collapses the rows of the properties table recursively.
+	 *
+	 * @param rows The rows to be expanded.
+	 * @param expand Flag indicating if the rows should be expanded or collapsed.
+	 */
+	protected expandOrCollapsePropertyTableRows(rows: Slick.SlickData[], expand: boolean): void {
+		rows.forEach(row => {
 			if (row.treeGridChildren && row.treeGridChildren.length > 0) {
 				row.expanded = expand;
 
-				this.setExpansionModeForAllCollapsiblePropertyRows(row.treeGridChildren, expand);
+				this.expandOrCollapsePropertyTableRows(row.treeGridChildren, expand);
 			}
 		});
 	}
@@ -426,8 +433,8 @@ export class ExpandAllPropertiesAction extends Action {
 	}
 
 	public override async run(context: ExecutionPlanPropertiesViewBase): Promise<void> {
-		context.propertyRowExpansionMode = PropertyRowExpansionMode.ExpandAll;
-		context.refreshPropertiesTable();
+		context.propertyRowExpansionState = PropertyRowExpansionState.ExpandAll;
+		context.expandOrCollapsePropertiesTable();
 	}
 }
 
@@ -440,12 +447,12 @@ export class CollapseAllPropertiesAction extends Action {
 	}
 
 	public override async run(context: ExecutionPlanPropertiesViewBase): Promise<void> {
-		context.propertyRowExpansionMode = PropertyRowExpansionMode.CollapseAll;
-		context.refreshPropertiesTable();
+		context.propertyRowExpansionState = PropertyRowExpansionState.CollapseAll;
+		context.expandOrCollapsePropertiesTable();
 	}
 }
 
-export enum PropertyRowExpansionMode {
+export enum PropertyRowExpansionState {
 	Default,
 	ExpandAll,
 	CollapseAll

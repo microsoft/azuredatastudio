@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ExecutionPlanPropertiesViewBase, PropertiesSortType, PropertyRowExpansionMode } from 'sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase';
+import { ExecutionPlanPropertiesViewBase, PropertiesSortType, PropertyRowExpansionState } from 'sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import * as azdata from 'azdata';
 import { localize } from 'vs/nls';
@@ -145,12 +145,30 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 
 		let tableRows = this.convertPropertiesToTableRows(primaryProps, secondaryProps);
 		tableRows = this.sortPropertiesByDisplayValueEquivalency(tableRows);
-		switch (this.propertyRowExpansionMode) {
-			case PropertyRowExpansionMode.ExpandAll:
-				this.setExpansionModeForAllCollapsiblePropertyRows(tableRows, true);
+		this.populateTable(columns, tableRows);
+	}
+
+	public expandOrCollapsePropertiesTable(): void {
+		const columns: Slick.Column<Slick.SlickData>[] = this.getPropertyTableColumns();
+
+		let primaryProps = [];
+		let secondaryProps = [];
+		if (this._model.primaryElement?.properties) {
+			primaryProps = this._model.primaryElement.properties;
+		}
+		if (this._model.secondaryElement?.properties) {
+			secondaryProps = this._model.secondaryElement.properties;
+		}
+
+		let tableRows = this.convertPropertiesToTableRows(primaryProps, secondaryProps);
+		tableRows = this.sortPropertiesByDisplayValueEquivalency(tableRows);
+
+		switch (this.propertyRowExpansionState) {
+			case PropertyRowExpansionState.ExpandAll:
+				this.expandOrCollapsePropertyTableRows(tableRows, true);
 				break;
-			case PropertyRowExpansionMode.CollapseAll:
-				this.setExpansionModeForAllCollapsiblePropertyRows(tableRows, false);
+			case PropertyRowExpansionState.CollapseAll:
+				this.expandOrCollapsePropertyTableRows(tableRows, false);
 				break;
 		}
 
