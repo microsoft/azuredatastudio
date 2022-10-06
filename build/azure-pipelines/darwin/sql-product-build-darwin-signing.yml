@@ -14,7 +14,7 @@ steps:
 
   - script: |
       pushd $(Build.SourcesDirectory)/.build/drop/darwin/archive
-      mv azuredatastudio-darwin-$(VSCODE_ARCH)-unsigned.zip azuredatastudio-$(VSCODE_ARCH)-darwin.zip
+      mv azuredatastudio-darwin-$(VSCODE_ARCH)-unsigned.zip azuredatastudio-darwin-$(VSCODE_ARCH).zip
     displayName: 'Rename the file'
 
   - task: UseDotNet@2
