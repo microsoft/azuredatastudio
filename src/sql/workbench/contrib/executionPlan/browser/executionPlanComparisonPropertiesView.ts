@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ExecutionPlanPropertiesViewBase, PropertiesSortType } from 'sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase';
+import { ExecutionPlanPropertiesViewBase, PropertiesSortType, PropertyRowExpansionMode } from 'sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { isNumber } from 'sql/base/common/numbers';
 import * as azdata from 'azdata';
@@ -176,8 +176,27 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 
 		let tableRows = this.convertPropertiesToTableRows(primaryProps, secondaryProps);
 		tableRows = this.sortPropertiesByDisplayValueEquivalency(tableRows);
+		switch (this.propertyRowExpansionMode) {
+			case PropertyRowExpansionMode.ExpandAll:
+				this.setExpansionModeForAllCollapsiblePropertyRows(tableRows, true);
+				break;
+			case PropertyRowExpansionMode.CollapseAll:
+				this.setExpansionModeForAllCollapsiblePropertyRows(tableRows, false);
+				break;
+		}
+
 		this.setSummaryElement(this.getExpensivePropertySummary(tableRows));
 		this.populateTable(columns, tableRows);
+	}
+
+	private setExpansionModeForAllCollapsiblePropertyRows(tableRows: Slick.SlickData[], expand: boolean): void {
+		tableRows.forEach(row => {
+			if (row.treeGridChildren && row.treeGridChildren.length > 0) {
+				row.expanded = expand;
+
+				this.setExpansionModeForAllCollapsiblePropertyRows(row.treeGridChildren, expand);
+			}
+		});
 	}
 
 	/**

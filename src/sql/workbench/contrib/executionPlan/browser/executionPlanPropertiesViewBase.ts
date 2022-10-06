@@ -58,6 +58,7 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 	private _tableHeight;
 
 	public sortType: PropertiesSortType = PropertiesSortType.DisplayOrder;
+	public propertyRowExpansionMode: PropertyRowExpansionMode = PropertyRowExpansionMode.Default;
 
 	public resizeSash: Sash;
 
@@ -124,7 +125,13 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 		this._headerActions = this._register(new ActionBar(this._headerActionsContainer, {
 			orientation: ActionsOrientation.HORIZONTAL, context: this
 		}));
-		this._headerActions.pushAction([new SortPropertiesByDisplayOrderAction(), new SortPropertiesAlphabeticallyAction(), new SortPropertiesReverseAlphabeticallyAction()], { icon: true, label: false });
+		this._headerActions.pushAction([
+			new SortPropertiesByDisplayOrderAction(),
+			new SortPropertiesAlphabeticallyAction(),
+			new SortPropertiesReverseAlphabeticallyAction(),
+			new ExpandAllPropertiesAction(),
+			new CollapseAllPropertiesAction()
+		], { icon: true, label: false });
 
 		this._propertiesSearchInputContainer = DOM.$('.table-search');
 		this._propertiesSearchInputContainer.classList.add('codicon', searchIconClassNames);
@@ -409,6 +416,40 @@ export enum PropertiesSortType {
 	DisplayOrder,
 	Alphabetical,
 	ReverseAlphabetical
+}
+
+export class ExpandAllPropertiesAction extends Action {
+	public static ID = 'ep.propertiesView.expandAllProperties';
+	public static LABEL = localize('executionPlanExpandAllProperties', 'Expand All');
+
+	constructor() {
+		super(ExpandAllPropertiesAction.ID, ExpandAllPropertiesAction.LABEL, Codicon.expandAll.classNames);
+	}
+
+	public override async run(context: ExecutionPlanPropertiesViewBase): Promise<void> {
+		context.propertyRowExpansionMode = PropertyRowExpansionMode.ExpandAll;
+		context.refreshPropertiesTable();
+	}
+}
+
+export class CollapseAllPropertiesAction extends Action {
+	public static ID = 'ep.propertiesView.expandAllProperties';
+	public static LABEL = localize('executionPlanExpandAllProperties', 'Expand All');
+
+	constructor() {
+		super(CollapseAllPropertiesAction.ID, CollapseAllPropertiesAction.LABEL, Codicon.collapseAll.classNames);
+	}
+
+	public override async run(context: ExecutionPlanPropertiesViewBase): Promise<void> {
+		context.propertyRowExpansionMode = PropertyRowExpansionMode.CollapseAll;
+		context.refreshPropertiesTable();
+	}
+}
+
+export enum PropertyRowExpansionMode {
+	Default,
+	ExpandAll,
+	CollapseAll
 }
 
 registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {

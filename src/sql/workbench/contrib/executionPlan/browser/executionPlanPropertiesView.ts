@@ -10,7 +10,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { removeLineBreaks } from 'sql/base/common/strings';
 import { isString } from 'vs/base/common/types';
 import { textFormatter } from 'sql/base/browser/ui/table/formatters';
-import { ExecutionPlanPropertiesViewBase, PropertiesSortType } from 'sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase';
+import { ExecutionPlanPropertiesViewBase, PropertiesSortType, PropertyRowExpansionMode } from 'sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
@@ -109,10 +109,30 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 			}
 		];
 
-		this.populateTable(columns, this.convertPropertiesToTableRows(this._model.graphElement?.properties));
+		const tableRows = this.convertPropertiesToTableRows(this._model.graphElement?.properties);
+		switch (this.propertyRowExpansionMode) {
+			case PropertyRowExpansionMode.ExpandAll:
+				this.setExpansionModeForAllCollapsiblePropertyRows(tableRows, true);
+				break;
+			case PropertyRowExpansionMode.CollapseAll:
+				this.setExpansionModeForAllCollapsiblePropertyRows(tableRows, false);
+				break;
+		}
+
+		this.populateTable(columns, tableRows);
 	}
 
-	private convertPropertiesToTableRows(properties: azdata.executionPlan.ExecutionPlanGraphElementProperty[]): Slick.SlickData[] {
+	private setExpansionModeForAllCollapsiblePropertyRows(tableRows: Slick.SlickData[], expand: boolean): void {
+		tableRows.forEach(row => {
+			if (row.treeGridChildren && row.treeGridChildren.length > 0) {
+				row.expanded = expand;
+
+				this.setExpansionModeForAllCollapsiblePropertyRows(row.treeGridChildren, expand);
+			}
+		});
+	}
+
+	private convertPropertiesToTableRows(properties: azdata.executionPlan.ExecutionPlanGraphElementProperty[] | undefined): Slick.SlickData[] {
 		if (!properties) {
 			return [];
 		}
