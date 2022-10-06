@@ -6,11 +6,11 @@ resources:
 
 stages:
   - stage: Compile
-    pool:
-      vmImage: 'Ubuntu-20.04'
-    container: linux-x64
     jobs:
     - job: Compile
+      pool:
+        vmImage: 'Ubuntu-20.04'
+      container: linux-x64
       steps:
       - script: |
           set -e
@@ -62,13 +62,13 @@ stages:
 
   - stage: Linux
     condition: and(succeeded(), eq(variables['VSCODE_BUILD_LINUX'], true))
-    pool:
-      vmImage: 'Ubuntu-20.04'
-    container: linux-x64
     dependsOn:
       - Compile
     jobs:
       - job: Linux
+        pool:
+          vmImage: 'Ubuntu-20.04'
+        container: linux-x64
         steps:
         - template: linux/sql-product-build-linux.yml
           parameters:
