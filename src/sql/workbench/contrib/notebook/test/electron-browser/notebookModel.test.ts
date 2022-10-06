@@ -1048,8 +1048,17 @@ suite('notebook model', function (): void {
 		mockNotebookService.setup(s => s.getOrCreateExecuteManager(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns(() => Promise.resolve(mockExecuteManager.object));
 
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService, undoRedoService, undefined, mockNotebookService.object);
+		model.standardKernels = [{
+			name: 'SQL',
+			displayName: 'SQL',
+			connectionProviderIds: [],
+			notebookProvider: 'sql',
+			supportedLanguages: ['sql'],
+			supportedFileExtensions: ['.ipynb']
+		}];
 		await model.loadContents();
 
+		assert.strictEqual(model.standardKernels.length, 1, 'Should start with only 1 kernel in the notebook model.');
 		assert.strictEqual(model.executeManagers.length, 1, 'Should start with only 1 execute manager in the notebook model.');
 
 		let expectedKernel: IStandardKernelWithProvider = {
