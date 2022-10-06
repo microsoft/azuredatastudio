@@ -14,7 +14,7 @@ import { TestDialogService } from 'vs/platform/dialogs/test/common/testDialogSer
 
 import { URI } from 'vs/base/common/uri';
 
-import { ExecuteManagerStub, SerializationManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
+import { ExecuteManagerStub, NotebookServiceStub, SerializationManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { NotebookModel, SplitCell } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
 import { IClientSession, INotebookModelOptions, NotebookContentChange, IClientSessionOptions, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
@@ -42,8 +42,10 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { UndoRedoService } from 'vs/platform/undoRedo/common/undoRedoService';
-import { SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
+import { DEFAULT_NOTEBOOK_FILETYPE, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
+import { Emitter } from 'vs/base/common/event';
+import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -183,7 +185,7 @@ suite('notebook model', function (): void {
 			defaultKernel: undefined,
 			layoutChanged: undefined,
 			capabilitiesService: capabilitiesService,
-			getInputLanguageMode: () => undefined
+			getInputLanguageMode: () => 'notebook'
 		};
 		clientSessionOptions = {
 			executeManager: defaultModelOptions.executeManagers[0],
@@ -1032,6 +1034,42 @@ suite('notebook model', function (): void {
 		let cell = model.addCell(CellTypes.Code);
 		assert.strictEqual(model.cells.length, expectedNotebookContent.cells.length + 1, 'New cell was not added to list of cells.');
 		assert.strictEqual(cell.language, expectedNotebookContent.metadata.language_info.name);
+	});
+
+	test('Should update kernels list when new kernels are installed', async function () {
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
+		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
+		defaultModelOptions.contentLoader = mockContentManager.object;
+
+		let kernelsAddedEmitter = new Emitter<IStandardKernelWithProvider[]>();
+		let mockNotebookService = TypeMoq.Mock.ofType(NotebookServiceStub);
+		mockNotebookService.setup(s => s.onNotebookKernelsAdded).returns(() => kernelsAddedEmitter.event);
+
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService, undoRedoService, undefined, mockNotebookService.object);
+		await model.loadContents();
+
+		assert.strictEqual(model.executeManagers.length, 1, 'Should start with only 1 execute manager in the notebook model.');
+
+		let expectedKernel: IStandardKernelWithProvider = {
+			name: 'csharp-test',
+			displayName: 'CSharpTest',
+			connectionProviderIds: undefined,
+			notebookProvider: 'csharp-test',
+			supportedLanguages: ['csharp'],
+			supportedFileExtensions: [DEFAULT_NOTEBOOK_FILETYPE]
+		};
+		let kernelsAddedPromise = new Promise<void>(resolve => {
+			model.kernelsChanged(kernel => {
+				resolve();
+			});
+		});
+		let timeoutPromise = new Promise<void>((resolve, reject) => setTimeout(() => {
+			reject('KernelsAdded event failed to fire within expected time.');
+		}, 4000));
+		await Promise.race([kernelsAddedPromise, timeoutPromise]);
+
+		assert.strictEqual(model.standardKernels.length, 2, 'New kernel was not registered.');
+		assert.deepStrictEqual(model.standardKernels[1], expectedKernel);
 	});
 
 	async function loadModelAndStartClientSession(notebookContent: nb.INotebookContents): Promise<NotebookModel> {
