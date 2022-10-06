@@ -1083,7 +1083,32 @@ suite('notebook model', function (): void {
 
 		assert.strictEqual(model.standardKernels.length, 2, 'New kernel was not registered.');
 		assert.strictEqual(model.executeManagers.length, 2, 'Should create another execute manager when adding a new provider\'s kernel.');
-		assert.deepStrictEqual(model.standardKernels[1], expectedKernel);
+		assert.deepStrictEqual(model.standardKernels[1], expectedKernel, 'Did not add expected kernel.');
+
+		// Shouldn't add kernel if it's for a different file extension
+		let invalidKernel = {
+			name: 'html-test',
+			displayName: 'HtmlTest',
+			connectionProviderIds: undefined,
+			notebookProvider: 'html-test',
+			supportedLanguages: ['html'],
+			supportedFileExtensions: ['.html']
+		};
+		kernelsAddedPromise = new Promise<void>((resolve, reject) => {
+			model.kernelsChanged(kernel => {
+				reject('Should not have added a new kernel');
+			});
+		});
+		timeoutPromise = new Promise<void>((resolve, reject) => setTimeout(() => {
+			resolve();
+		}, 2000));
+
+		kernelsAddedEmitter.fire([invalidKernel]);
+		await Promise.race([kernelsAddedPromise, timeoutPromise]);
+
+		assert.strictEqual(model.standardKernels.length, 2, 'Should not have registered invalid kernel.');
+		assert.strictEqual(model.executeManagers.length, 2, 'Should not have created another execute manager for invalid kernel.');
+		assert.deepStrictEqual(model.standardKernels[1], expectedKernel, 'Did not keep old kernel.');
 	});
 
 	async function loadModelAndStartClientSession(notebookContent: nb.INotebookContents): Promise<NotebookModel> {
