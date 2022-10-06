@@ -109,9 +109,6 @@ stages:
       - Windows
       # disable due to invalid machine pool (karlb 3/9/2022)
       #  - Windows_Test
-      - macOS_Signing
-      - macOS_ARM64
-      - macOS_ARM64_Signing
     jobs:
       - job: Release
         steps:
