@@ -54,7 +54,7 @@ export class AzureResourceSubscriptionService implements IAzureResourceSubscript
 				errors.push(error);
 				void vscode.window.showWarningMessage(errorMsg);
 			}
-			// We don't need to loop through multiple tenants for MSAL, it just grabs subscriptions based on one account
+			// We don't need to loop through multiple tenants for MSAL, it does not use tenant info to fetch subscriptions, and fetches all subscriptions in single call.
 			if (authLibrary === 'MSAL') {
 				break;
 			}
