@@ -10,7 +10,7 @@ import { localize } from 'vs/nls';
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Action } from 'vs/base/common/actions';
 import { Codicon } from 'vs/base/common/codicons';
-import { propertiesSearchDescription, searchIconClassNames, searchPlaceholder, sortAlphabeticallyIconClassNames, sortByDisplayOrderIconClassNames, sortReverseAlphabeticallyIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/constants';
+import { filterIconClassNames, propertiesSearchDescription, searchPlaceholder, sortAlphabeticallyIconClassNames, sortByDisplayOrderIconClassNames, sortReverseAlphabeticallyIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/constants';
 import { attachInputBoxStyler, attachTableStyler } from 'sql/platform/theme/common/styler';
 import { RESULTS_GRID_DEFAULTS } from 'sql/workbench/common/constants';
 import { contrastBorder, inputBackground, listHoverBackground, listInactiveSelectionBackground } from 'vs/platform/theme/common/colorRegistry';
@@ -127,13 +127,13 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 		this._headerActions.pushAction([new SortPropertiesByDisplayOrderAction(), new SortPropertiesAlphabeticallyAction(), new SortPropertiesReverseAlphabeticallyAction()], { icon: true, label: false });
 
 		this._propertiesSearchInputContainer = DOM.$('.table-search');
-		this._propertiesSearchInputContainer.classList.add('codicon', searchIconClassNames);
+		this._propertiesSearchInputContainer.classList.add('codicon', filterIconClassNames);
 		this._propertiesSearchInput = this._register(new InputBox(this._propertiesSearchInputContainer, this._contextViewService, {
 			ariaDescription: propertiesSearchDescription,
 			placeholder: searchPlaceholder
 		}));
 		attachInputBoxStyler(this._propertiesSearchInput, this._themeService);
-		this._propertiesSearchInput.element.classList.add('codicon', searchIconClassNames);
+		this._propertiesSearchInput.element.classList.add('codicon', filterIconClassNames);
 		this._searchAndActionBarContainer.appendChild(this._propertiesSearchInputContainer);
 		this._register(this._propertiesSearchInput.onDidChange(e => {
 			this.searchTable(e);
@@ -310,7 +310,7 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 				} else if (rawDataValue !== undefined) {
 					dataValue = rawDataValue.text ?? rawDataValue.title;
 				}
-				if (dataValue.toLowerCase().includes(search.toLowerCase())) {
+				if (dataValue?.toLowerCase().includes(search.toLowerCase())) {
 					includeRow = true;
 					break;
 				}

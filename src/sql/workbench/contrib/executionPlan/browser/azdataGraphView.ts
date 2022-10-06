@@ -138,6 +138,9 @@ export class AzdataGraphView {
 	 */
 	public zoomToFit(): void {
 		this._diagram.zoomToFit();
+		if (this.getZoomLevel() > 200) {
+			this.setZoomLevel(200);
+		}
 	}
 
 	/**
