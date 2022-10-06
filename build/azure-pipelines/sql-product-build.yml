@@ -36,7 +36,7 @@ stages:
       - job: macOS_Signing
         variables:
           VSCODE_ARCH: x64
-        condition: eq(variables['signed'], true))
+        condition: eq(variables['signed'], true)
         dependsOn:
         - macOS
         steps:
@@ -53,7 +53,7 @@ stages:
       - job: macOS_Signing_ARM64
         variables:
           VSCODE_ARCH: arm64
-        condition: eq(variables['signed'], true))
+        condition: eq(variables['signed'], true)
         dependsOn:
         - macOS
         steps:
