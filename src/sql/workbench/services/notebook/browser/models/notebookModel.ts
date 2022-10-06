@@ -174,7 +174,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			let manager = await this._notebookService.getOrCreateExecuteManager(kernels[0].notebookProvider, this.notebookUri);
 			this._notebookOptions.executeManagers.push(manager);
 
-			this._kernelsChangedEmitter.fire(this._activeClientSession.kernel);
+			this._kernelsChangedEmitter.fire(this._activeClientSession?.kernel);
 		}
 	}
 

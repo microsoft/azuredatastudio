@@ -42,7 +42,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { UndoRedoService } from 'vs/platform/undoRedo/common/undoRedoService';
-import { DEFAULT_NOTEBOOK_FILETYPE, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
+import { DEFAULT_NOTEBOOK_FILETYPE, IExecuteManager, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
 import { Emitter } from 'vs/base/common/event';
 import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
@@ -1044,6 +1044,8 @@ suite('notebook model', function (): void {
 		let kernelsAddedEmitter = new Emitter<IStandardKernelWithProvider[]>();
 		let mockNotebookService = TypeMoq.Mock.ofType(NotebookServiceStub);
 		mockNotebookService.setup(s => s.onNotebookKernelsAdded).returns(() => kernelsAddedEmitter.event);
+		let mockExecuteManager = TypeMoq.Mock.ofType<IExecuteManager>(ExecuteManagerStub);
+		mockNotebookService.setup(s => s.getOrCreateExecuteManager(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns(() => Promise.resolve(mockExecuteManager.object));
 
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService, undoRedoService, undefined, mockNotebookService.object);
 		await model.loadContents();
@@ -1066,9 +1068,12 @@ suite('notebook model', function (): void {
 		let timeoutPromise = new Promise<void>((resolve, reject) => setTimeout(() => {
 			reject('KernelsAdded event failed to fire within expected time.');
 		}, 4000));
+
+		kernelsAddedEmitter.fire([expectedKernel]);
 		await Promise.race([kernelsAddedPromise, timeoutPromise]);
 
 		assert.strictEqual(model.standardKernels.length, 2, 'New kernel was not registered.');
+		assert.strictEqual(model.executeManagers.length, 2, 'Should create another execute manager when adding a new provider\'s kernel.');
 		assert.deepStrictEqual(model.standardKernels[1], expectedKernel);
 	});
 
