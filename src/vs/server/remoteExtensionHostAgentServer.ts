@@ -8,11 +8,10 @@ import * as fs from 'fs';
 import * as http from 'http';
 import * as net from 'net';
 import * as url from 'url';
-import { release, hostname } from 'os';
 import * as perf from 'vs/base/common/performance';
 import { performance } from 'perf_hooks';
 import { VSBuffer } from 'vs/base/common/buffer';
-import { Disposable, toDisposable } from 'vs/base/common/lifecycle';
+import { Disposable } from 'vs/base/common/lifecycle';
 import { generateUuid } from 'vs/base/common/uuid';
 import { Promises } from 'vs/base/node/pfs';
 import { findFreePort } from 'vs/base/node/ports';
@@ -43,10 +42,6 @@ import { IDownloadService } from 'vs/platform/download/common/download';
 import { DownloadServiceChannelClient } from 'vs/platform/download/common/downloadIpc';
 import { ILocalizationsService } from 'vs/platform/localizations/common/localizations';
 import { LocalizationsService } from 'vs/platform/localizations/node/localizations';
-import { AppInsightsAppender } from 'vs/platform/telemetry/node/appInsightsAppender';
-import { ITelemetryServiceConfig } from 'vs/platform/telemetry/common/telemetryService';
-import { resolveCommonProperties } from 'vs/platform/telemetry/common/commonProperties';
-import { getMachineId } from 'vs/base/node/id';
 import { FileService } from 'vs/platform/files/common/fileService';
 import { DiskFileSystemProvider } from 'vs/platform/files/node/diskFileSystemProvider';
 import { IFileService } from 'vs/platform/files/common/files';
@@ -76,11 +71,11 @@ import { ExtensionManagementCLIService } from 'vs/platform/extensionManagement/c
 import { SpdLogLogger } from 'vs/platform/log/node/spdlogLog';
 import { IPtyService, TerminalSettingId } from 'vs/platform/terminal/common/terminal';
 import { PtyHostService } from 'vs/platform/terminal/node/ptyHostService';
-import { IRemoteTelemetryService, RemoteNullTelemetryService, RemoteTelemetryService } from 'vs/server/remoteTelemetryService';
+import { IRemoteTelemetryService, RemoteNullTelemetryService } from 'vs/server/remoteTelemetryService';
 
 const SHUTDOWN_TIMEOUT = 5 * 60 * 1000;
 
-const eventPrefix = 'monacoworkbench';
+// const eventPrefix = 'monacoworkbench'; {{SQL CARBON EDIT}} Unused
 
 class SocketServer<TContext = string> extends IPCServer<TContext> {
 
@@ -281,6 +276,7 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 		services.set(IRequestService, new SyncDescriptor(RequestService));
 
 		let appInsightsAppender: ITelemetryAppender = NullAppender;
+		/* {{SQL CARBON EDIT}} Remove telemetry service when switching to 1DS. Since we're behind VS Code they've made more changes here, but we don't use the remote stuff anyways
 		if (!this._environmentService.args['disable-telemetry'] && this._productService.enableTelemetry) {
 			if (this._productService.aiConfig && this._productService.aiConfig.asimovKey) {
 				appInsightsAppender = new AppInsightsAppender(eventPrefix, null, this._productService.aiConfig.asimovKey);
@@ -296,8 +292,9 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 
 			services.set(IRemoteTelemetryService, new SyncDescriptor(RemoteTelemetryService, [config]));
 		} else {
-			services.set(IRemoteTelemetryService, RemoteNullTelemetryService);
-		}
+		*/
+		services.set(IRemoteTelemetryService, RemoteNullTelemetryService);
+		// }
 
 		services.set(IExtensionGalleryService, new SyncDescriptor(ExtensionGalleryServiceWithNoStorageService));
 

@@ -30,5 +30,6 @@
 		"ddnet.microsoft.com",
 		"europe.corp.microsoft.com"
 	],
-	"urlProtocol": "azuredatastudio"
+	"urlProtocol": "azuredatastudio",
+	"enableTelemetry": true
 }
