@@ -239,5 +239,5 @@ export async function createandLoadNotebookModel(codeContent?: nb.INotebookConte
 		capabilitiesService: undefined,
 		getInputLanguageMode: () => undefined
 	};
-	return new NotebookModel(defaultModelOptions, undefined, undefined, undefined, new NullAdsTelemetryService(), undefined, undefined, undoRedoService);
+	return new NotebookModel(defaultModelOptions, undefined, undefined, undefined, new NullAdsTelemetryService(), undefined, undefined, undoRedoService, undefined);
 }

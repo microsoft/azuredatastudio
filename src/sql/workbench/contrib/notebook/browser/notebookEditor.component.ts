@@ -143,7 +143,7 @@ export class NotebookEditorComponent extends AngularDisposable {
 			capabilitiesService: this.capabilitiesService,
 			editorLoadedTimestamp: this._notebookParams.input.editorOpenedTimestamp,
 			getInputLanguageMode: () => this._notebookParams.input.languageMode // Can't pass in languageMode directly since it can change after the editor loads
-		}, this.profile, this.logService, this.notificationService, this.adstelemetryService, this.connectionManagementService, this._configurationService, this._undoService, this.capabilitiesService, this.notebookService);
+		}, this.profile, this.logService, this.notificationService, this.adstelemetryService, this.connectionManagementService, this._configurationService, this._undoService, this.notebookService, this.capabilitiesService);
 
 		let trusted = await this.notebookService.isNotebookTrustCached(this._notebookParams.notebookUri, this.isDirty());
 		this.model = this._register(model);

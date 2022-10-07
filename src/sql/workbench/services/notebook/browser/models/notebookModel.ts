@@ -135,8 +135,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
 		@IConfigurationService private configurationService: IConfigurationService,
 		@IUndoRedoService private undoService: IUndoRedoService,
+		@INotebookService private _notebookService: INotebookService,
 		@ICapabilitiesService private _capabilitiesService?: ICapabilitiesService,
-		@INotebookService private _notebookService?: INotebookService,
 	) {
 		super();
 		if (!_notebookOptions || !_notebookOptions.notebookUri || !_notebookOptions.executeManagers) {
@@ -149,9 +149,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._notebookOptions.layoutChanged(() => this._layoutChanged.fire());
 		}
 		this._defaultKernel = _notebookOptions.defaultKernel;
-		if (this._notebookService) {
-			this._register(this._notebookService.onNotebookKernelsAdded(async kernels => this.handleNewKernelsAdded(kernels).catch(error => onUnexpectedError(error))));
-		}
+
+		this._register(this._notebookService.onNotebookKernelsAdded(async kernels => this.handleNewKernelsAdded(kernels).catch(error => onUnexpectedError(error))));
 	}
 
 	private async handleNewKernelsAdded(kernels: notebookUtils.IStandardKernelWithProvider[]): Promise<void> {
