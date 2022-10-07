@@ -71,11 +71,11 @@ import { ExtensionManagementCLIService } from 'vs/platform/extensionManagement/c
 import { SpdLogLogger } from 'vs/platform/log/node/spdlogLog';
 import { IPtyService, TerminalSettingId } from 'vs/platform/terminal/common/terminal';
 import { PtyHostService } from 'vs/platform/terminal/node/ptyHostService';
-import { IRemoteTelemetryService, RemoteNullTelemetryService, RemoteTelemetryService } from 'vs/server/remoteTelemetryService';
+import { IRemoteTelemetryService, RemoteNullTelemetryService } from 'vs/server/remoteTelemetryService';
 
 const SHUTDOWN_TIMEOUT = 5 * 60 * 1000;
 
-const eventPrefix = 'monacoworkbench';
+// const eventPrefix = 'monacoworkbench'; {{SQL CARBON EDIT}} Unused
 
 class SocketServer<TContext = string> extends IPCServer<TContext> {
 
