@@ -259,7 +259,7 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 		}
 	}
 
-	public get languageMode(): string {
+	public get languageMode(): string | undefined {
 		if (this._textInput instanceof UntitledTextEditorInput) {
 			return this._textInput.model.getMode();
 		} else {
