@@ -109,8 +109,7 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 			}
 		];
 
-		const tableRows = this.convertPropertiesToTableRows(this._model.graphElement?.properties);
-		this.populateTable(columns, tableRows);
+		this.populateTable(columns, this.convertPropertiesToTableRows(this._model.graphElement?.properties));
 	}
 
 	private convertPropertiesToTableRows(properties: azdata.executionPlan.ExecutionPlanGraphElementProperty[] | undefined): Slick.SlickData[] {
