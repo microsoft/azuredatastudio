@@ -148,8 +148,8 @@ class CliMain extends Disposable {
 		const appenders: OneDataSystemAppender[] = [];
 		const isInternal = isInternalTelemetry(productService, configurationService);
 		if (supportsTelemetry(productService, environmentService)) {
-			if (productService.aiConfig && productService.aiConfig.asimovKey) {
-				appenders.push(new OneDataSystemAppender(isInternal, 'adsworkbench', null, productService.aiConfig.asimovKey)); // {{SQL CARBON EDIT}} Use our own event prefix
+			if (productService.aiConfig && productService.aiConfig.ariaKey) {
+				appenders.push(new OneDataSystemAppender(isInternal, 'adsworkbench', null, productService.aiConfig.ariaKey)); // {{SQL CARBON EDIT}} Use our own event prefix
 			}
 
 			const { appRoot, extensionsPath, installSourcePath } = environmentService;
