@@ -273,8 +273,8 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 		this._tableComponent.columns = columns;
 	}
 
-	public expandOrCollapsePropertyTableRows(expand: boolean): void {
-		this.expandOrCollapsePropertyTableRowsHelper(this._tableComponent.getData().getItems(), expand);
+	public setPropertyRowsExpanded(expand: boolean): void {
+		this.setPropertyRowsExpandedHelper(this._tableComponent.getData().getItems(), expand);
 		this.repopulateTable();
 	}
 
@@ -284,12 +284,12 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 	 * @param rows The rows to be expanded or collapsed.
 	 * @param expand Flag indicating if the rows should be expanded or collapsed.
 	 */
-	private expandOrCollapsePropertyTableRowsHelper(rows: Slick.SlickData[], expand: boolean): void {
+	private setPropertyRowsExpandedHelper(rows: Slick.SlickData[], expand: boolean): void {
 		rows.forEach(row => {
 			if (row.treeGridChildren && row.treeGridChildren.length > 0) {
 				row.expanded = expand;
 
-				this.expandOrCollapsePropertyTableRowsHelper(row.treeGridChildren, expand);
+				this.setPropertyRowsExpandedHelper(row.treeGridChildren, expand);
 			}
 		});
 	}
@@ -441,7 +441,7 @@ export class ExpandAllPropertiesAction extends Action {
 	}
 
 	public override async run(context: ExecutionPlanPropertiesViewBase): Promise<void> {
-		context.expandOrCollapsePropertyTableRows(true);
+		context.setPropertyRowsExpanded(true);
 	}
 }
 
@@ -454,7 +454,7 @@ export class CollapseAllPropertiesAction extends Action {
 	}
 
 	public override async run(context: ExecutionPlanPropertiesViewBase): Promise<void> {
-		context.expandOrCollapsePropertyTableRows(false);
+		context.setPropertyRowsExpanded(false);
 	}
 }
 
