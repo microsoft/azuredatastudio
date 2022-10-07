@@ -278,8 +278,8 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 		let appInsightsAppender: ITelemetryAppender = NullAppender;
 		/* {{SQL CARBON EDIT}} Remove telemetry service when switching to 1DS. Since we're behind VS Code they've made more changes here, but we don't use the remote stuff anyways
 		if (!this._environmentService.args['disable-telemetry'] && this._productService.enableTelemetry) {
-			if (this._productService.aiConfig && this._productService.aiConfig.asimovKey) {
-				appInsightsAppender = new AppInsightsAppender(eventPrefix, null, this._productService.aiConfig.asimovKey);
+			if (this._productService.aiConfig && this._productService.aiConfig.ariaKey) {
+				appInsightsAppender = new AppInsightsAppender(eventPrefix, null, this._productService.aiConfig.ariaKey);
 				this._register(toDisposable(() => appInsightsAppender!.flush())); // Ensure the AI appender is disposed so that it flushes remaining data
 			}
 
