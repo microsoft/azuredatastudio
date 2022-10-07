@@ -31,10 +31,12 @@ import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { nb } from 'azdata';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
-import { ExecuteManagerStub, SerializationManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
+import { ExecuteManagerStub, NotebookServiceStub, SerializationManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { UndoRedoService } from 'vs/platform/undoRedo/common/undoRedoService';
 import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
+import { Emitter } from 'vs/base/common/event';
+import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 
 suite('CellToolbarActions', function (): void {
 	suite('removeDuplicatedAndStartingSeparators', function (): void {
@@ -239,5 +241,8 @@ export async function createandLoadNotebookModel(codeContent?: nb.INotebookConte
 		capabilitiesService: undefined,
 		getInputLanguageMode: () => undefined
 	};
-	return new NotebookModel(defaultModelOptions, undefined, undefined, undefined, new NullAdsTelemetryService(), undefined, undefined, undoRedoService, undefined);
+	let mockNotebookService = TypeMoq.Mock.ofType(NotebookServiceStub);
+	mockNotebookService.setup(s => s.onNotebookKernelsAdded).returns(() => new Emitter<IStandardKernelWithProvider[]>().event);
+
+	return new NotebookModel(defaultModelOptions, undefined, undefined, undefined, new NullAdsTelemetryService(), undefined, undefined, undoRedoService, mockNotebookService.object);
 }

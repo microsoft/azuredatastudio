@@ -11,7 +11,7 @@ import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTeleme
 import { NotebookEditorContentLoader } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { DeleteViewAction, InsertCellAction } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsActions';
 import { SessionManager } from 'sql/workbench/contrib/notebook/test/emptySessionClasses';
-import { ExecuteManagerStub, SerializationManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
+import { ExecuteManagerStub, NotebookServiceStub, SerializationManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
 import { ICellModel, INotebookModelOptions, ViewMode } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
@@ -35,6 +35,8 @@ import { InsertCellsModal } from 'sql/workbench/contrib/notebook/browser/noteboo
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
 import { SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
+import { Emitter } from 'vs/base/common/event';
+import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 
 let initialNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -199,8 +201,10 @@ suite('Notebook Views Actions', function (): void {
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(contents));
 		defaultModelOptions.contentLoader = mockContentManager.object;
+		let mockNotebookService = TypeMoq.Mock.ofType(NotebookServiceStub);
+		mockNotebookService.setup(s => s.onNotebookKernelsAdded).returns(() => new Emitter<IStandardKernelWithProvider[]>().event);
 
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService, undefined, undefined);
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService, undefined, mockNotebookService.object);
 		await model.loadContents();
 		await model.requestModelLoad();
 
