@@ -446,8 +446,8 @@ export class ExpandAllPropertiesAction extends Action {
 }
 
 export class CollapseAllPropertiesAction extends Action {
-	public static ID = 'ep.propertiesView.expandAllProperties';
-	public static LABEL = localize('executionPlanExpandAllProperties', 'Expand All');
+	public static ID = 'ep.propertiesView.collapseAllProperties';
+	public static LABEL = localize('executionPlanCollapseAllProperties', 'Collapse All');
 
 	constructor() {
 		super(CollapseAllPropertiesAction.ID, CollapseAllPropertiesAction.LABEL, Codicon.collapseAll.classNames);
