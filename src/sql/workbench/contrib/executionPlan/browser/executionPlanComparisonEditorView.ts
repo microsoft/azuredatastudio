@@ -12,7 +12,7 @@ import { ExecutionPlanCompareOrientation, ExecutionPlanComparisonPropertiesView 
 import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
 import { IHorizontalSashLayoutProvider, ISashEvent, IVerticalSashLayoutProvider, Orientation, Sash } from 'vs/base/browser/ui/sash/sash';
 import { Action } from 'vs/base/common/actions';
-import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IColorTheme, ICssStyleCollector, IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
@@ -128,7 +128,8 @@ export class ExecutionPlanComparisonEditorView {
 		@IContextViewService readonly contextViewService: IContextViewService,
 		@ITextFileService private readonly _textFileService: ITextFileService,
 		@INotificationService private _notificationService: INotificationService,
-		@IProgressService private _progressService: IProgressService
+		@IProgressService private _progressService: IProgressService,
+		@IContextMenuService private _contextMenuService: IContextMenuService
 	) {
 
 		this.container = DOM.$('.comparison-editor');
@@ -184,7 +185,27 @@ export class ExecutionPlanComparisonEditorView {
 		this.planSplitViewContainer = DOM.$('.split-view-container');
 		this._planComparisonContainer.appendChild(this.planSplitViewContainer);
 
+		const self = this;
 		this._placeholderContainer = DOM.$('.placeholder');
+
+		const contextMenuAction = [
+			this._instantiationService.createInstance(AddExecutionPlanAction)
+		];
+		this._placeholderContainer.oncontextmenu = (e: MouseEvent) => {
+			if (contextMenuAction) {
+				this._contextMenuService.showContextMenu({
+					getAnchor: () => {
+						return {
+							x: e.x,
+							y: e.y
+						};
+					},
+					getActions: () => contextMenuAction,
+					getActionsContext: () => (self)
+				});
+			}
+		};
+
 		this._placeholderInfoboxContainer = DOM.$('.placeholder-infobox');
 		this._placeholderLoading = new LoadingSpinner(this._placeholderContainer, {
 			fullSize: true,
