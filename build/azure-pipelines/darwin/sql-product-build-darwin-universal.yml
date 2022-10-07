@@ -105,8 +105,8 @@ steps:
 
   - script: |
       set -e
-      unzip $(agent.builddirectory)/azuredatastudio-darwin-x64-unsigned.zip -d $(agent.builddirectory)/azuredatastudio-darwin-x64
-      unzip $(agent.builddirectory)/azuredatastudio-darwin-arm64-unsigned.zip -d $(agent.builddirectory)/azuredatastudio-darwin-arm64
+      unzip $(agent.builddirectory)/drop/darwin/archive/azuredatastudio-darwin-x64-unsigned.zip -d $(agent.builddirectory)/azuredatastudio-darwin-x64
+      unzip $(agent.builddirectory)/drop/darwin/archive/azuredatastudio-darwin-arm64-unsigned.zip -d $(agent.builddirectory)/azuredatastudio-darwin-arm64
       DEBUG=* node build/darwin/create-universal-app.js
     displayName: Create Universal App
 
