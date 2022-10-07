@@ -148,24 +148,6 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		this.populateTable(columns, tableRows);
 	}
 
-	public setPropertyRowsExpanded(expand: boolean): void {
-		const columns: Slick.Column<Slick.SlickData>[] = this.getPropertyTableColumns();
-
-		let primaryProps = [];
-		let secondaryProps = [];
-		if (this._model.primaryElement?.properties) {
-			primaryProps = this._model.primaryElement.properties;
-		}
-		if (this._model.secondaryElement?.properties) {
-			secondaryProps = this._model.secondaryElement.properties;
-		}
-
-		let tableRows = this.convertPropertiesToTableRows(primaryProps, secondaryProps);
-		tableRows = this.sortPropertiesByDisplayValueEquivalency(tableRows);
-		this.expandOrCollapsePropertyTableRows(tableRows, expand);
-		this.populateTable(columns, tableRows);
-	}
-
 	private getPropertyTableColumns() {
 		const columns: Slick.Column<Slick.SlickData>[] = [];
 

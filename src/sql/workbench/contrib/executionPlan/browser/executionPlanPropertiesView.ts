@@ -113,31 +113,6 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 		this.populateTable(columns, tableRows);
 	}
 
-	public setPropertyRowsExpanded(expand: boolean): void {
-		const columns: Slick.Column<Slick.SlickData>[] = [
-			{
-				id: 'name',
-				name: localize('nodePropertyViewNameNameColumnHeader', "Name"),
-				field: 'name',
-				width: 250,
-				headerCssClass: 'prop-table-header',
-				formatter: textFormatter
-			},
-			{
-				id: 'value',
-				name: localize('nodePropertyViewNameValueColumnHeader', "Value"),
-				field: 'value',
-				width: 250,
-				headerCssClass: 'prop-table-header',
-				formatter: textFormatter
-			}
-		];
-
-		const tableRows = this.convertPropertiesToTableRows(this._model.graphElement?.properties);
-		this.expandOrCollapsePropertyTableRows(tableRows, expand);
-		this.populateTable(columns, tableRows);
-	}
-
 	private convertPropertiesToTableRows(properties: azdata.executionPlan.ExecutionPlanGraphElementProperty[] | undefined): Slick.SlickData[] {
 		if (!properties) {
 			return [];

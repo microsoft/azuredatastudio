@@ -250,7 +250,6 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 	}
 
 	public abstract refreshPropertiesTable();
-	public abstract setPropertyRowsExpanded(expand: boolean);
 
 	public toggleVisibility(): void {
 		this._parentContainer.style.display = this._parentContainer.style.display === 'none' ? 'flex' : 'none';
@@ -265,8 +264,18 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 		this.resizeTable();
 	}
 
+	private repopulateTable() {
+		this._tableComponent.setData(this.flattenTableData(this._tableData, -1));
+		this.resizeTable();
+	}
+
 	public updateTableColumns(columns: Slick.Column<Slick.SlickData>[]) {
 		this._tableComponent.columns = columns;
+	}
+
+	public expandOrCollapsePropertyTableRows(expand: boolean): void {
+		this.expandOrCollapsePropertyTableRowsHelper(this._tableComponent.getData().getItems(), expand);
+		this.repopulateTable();
 	}
 
 	/**
@@ -275,12 +284,12 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 	 * @param rows The rows to be expanded or collapsed.
 	 * @param expand Flag indicating if the rows should be expanded or collapsed.
 	 */
-	protected expandOrCollapsePropertyTableRows(rows: Slick.SlickData[], expand: boolean): void {
+	private expandOrCollapsePropertyTableRowsHelper(rows: Slick.SlickData[], expand: boolean): void {
 		rows.forEach(row => {
 			if (row.treeGridChildren && row.treeGridChildren.length > 0) {
 				row.expanded = expand;
 
-				this.expandOrCollapsePropertyTableRows(row.treeGridChildren, expand);
+				this.expandOrCollapsePropertyTableRowsHelper(row.treeGridChildren, expand);
 			}
 		});
 	}
@@ -432,7 +441,7 @@ export class ExpandAllPropertiesAction extends Action {
 	}
 
 	public override async run(context: ExecutionPlanPropertiesViewBase): Promise<void> {
-		context.setPropertyRowsExpanded(true);
+		context.expandOrCollapsePropertyTableRows(true);
 	}
 }
 
@@ -445,7 +454,7 @@ export class CollapseAllPropertiesAction extends Action {
 	}
 
 	public override async run(context: ExecutionPlanPropertiesViewBase): Promise<void> {
-		context.setPropertyRowsExpanded(false);
+		context.expandOrCollapsePropertyTableRows(false);
 	}
 }
 
