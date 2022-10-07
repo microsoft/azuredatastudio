@@ -4,4 +4,4 @@
  *--------------------------------------------------------------------------------------------*/
 import { localize } from 'vs/nls';
 
-export const promptReloadNotebooks = localize('promptReloadNotebooks', "The setting for how tables are displayed in text cells has been changed. Please reload Azure Data Studio or reopen current notebooks to enable it.");
+export const promptReloadNotebooks = localize('promptReloadNotebooks', "The setting for how tables are displayed in text cells has been changed. Reload current text cells to enable it.");
