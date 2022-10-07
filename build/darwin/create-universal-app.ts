@@ -58,6 +58,7 @@ async function main() {
 		LSRequiresNativeExecution: true
 	});
 	await fs.writeFile(infoPlistPath, plist.build(infoPlistJson), 'utf8');
+	await fs.remove(path.join(buildDir, 'azuredatastudio-darwin-arm64', appName, '/Contents/Resources/app/extensions/mssql/sqltoolsservice'));
 
 	// Verify if native module architecture is correct
 	const findOutput = await spawn('find', [outAppPath, '-name', 'keytar.node'])

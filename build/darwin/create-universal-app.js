@@ -51,6 +51,7 @@ async function main() {
         LSRequiresNativeExecution: true
     });
     await fs.writeFile(infoPlistPath, plist.build(infoPlistJson), 'utf8');
+    await fs.remove(path.join(buildDir, 'azuredatastudio-darwin-arm64', appName, '/Contents/Resources/app/extensions/mssql/sqltoolsservice'));
     // Verify if native module architecture is correct
     const findOutput = await (0, cross_spawn_promise_1.spawn)('find', [outAppPath, '-name', 'keytar.node']);
     const lipoOutput = await (0, cross_spawn_promise_1.spawn)('lipo', ['-archs', findOutput.replace(/\n$/, "")]);
