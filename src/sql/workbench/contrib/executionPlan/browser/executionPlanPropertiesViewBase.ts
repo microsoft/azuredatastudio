@@ -118,7 +118,13 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 		this._headerActions = this._register(new ActionBar(this._headerActionsContainer, {
 			orientation: ActionsOrientation.HORIZONTAL, context: this
 		}));
-		this._headerActions.pushAction([new SortPropertiesByDisplayOrderAction(), new SortPropertiesAlphabeticallyAction(), new SortPropertiesReverseAlphabeticallyAction()], { icon: true, label: false });
+		this._headerActions.pushAction([
+			new SortPropertiesByDisplayOrderAction(),
+			new SortPropertiesAlphabeticallyAction(),
+			new SortPropertiesReverseAlphabeticallyAction(),
+			new ExpandAllPropertiesAction(),
+			new CollapseAllPropertiesAction()
+		], { icon: true, label: false });
 
 		this._propertiesSearchInputContainer = DOM.$('.table-search');
 		this._propertiesSearchInputContainer.classList.add('codicon', searchIconClassNames);
@@ -258,8 +264,34 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 		this.resizeTable();
 	}
 
+	private repopulateTable() {
+		this._tableComponent.setData(this.flattenTableData(this._tableData, -1));
+		this.resizeTable();
+	}
+
 	public updateTableColumns(columns: Slick.Column<Slick.SlickData>[]) {
 		this._tableComponent.columns = columns;
+	}
+
+	public setPropertyRowsExpanded(expand: boolean): void {
+		this.setPropertyRowsExpandedHelper(this._tableComponent.getData().getItems(), expand);
+		this.repopulateTable();
+	}
+
+	/**
+	 * Expands or collapses the rows of the properties table recursively.
+	 *
+	 * @param rows The rows to be expanded or collapsed.
+	 * @param expand Flag indicating if the rows should be expanded or collapsed.
+	 */
+	private setPropertyRowsExpandedHelper(rows: Slick.SlickData[], expand: boolean): void {
+		rows.forEach(row => {
+			if (row.treeGridChildren && row.treeGridChildren.length > 0) {
+				row.expanded = expand;
+
+				this.setPropertyRowsExpandedHelper(row.treeGridChildren, expand);
+			}
+		});
 	}
 
 	private resizeTable(): void {
@@ -398,6 +430,32 @@ export enum PropertiesSortType {
 	DisplayOrder,
 	Alphabetical,
 	ReverseAlphabetical
+}
+
+export class ExpandAllPropertiesAction extends Action {
+	public static ID = 'ep.propertiesView.expandAllProperties';
+	public static LABEL = localize('executionPlanExpandAllProperties', 'Expand All');
+
+	constructor() {
+		super(ExpandAllPropertiesAction.ID, ExpandAllPropertiesAction.LABEL, Codicon.expandAll.classNames);
+	}
+
+	public override async run(context: ExecutionPlanPropertiesViewBase): Promise<void> {
+		context.setPropertyRowsExpanded(true);
+	}
+}
+
+export class CollapseAllPropertiesAction extends Action {
+	public static ID = 'ep.propertiesView.collapseAllProperties';
+	public static LABEL = localize('executionPlanCollapseAllProperties', 'Collapse All');
+
+	constructor() {
+		super(CollapseAllPropertiesAction.ID, CollapseAllPropertiesAction.LABEL, Codicon.collapseAll.classNames);
+	}
+
+	public override async run(context: ExecutionPlanPropertiesViewBase): Promise<void> {
+		context.setPropertyRowsExpanded(false);
+	}
 }
 
 registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
