@@ -19,7 +19,7 @@ import { IColorTheme, ICssStyleCollector, IThemeService, registerThemingParticip
 import * as DOM from 'vs/base/browser/dom';
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { localize } from 'vs/nls';
-import { addIconClassName, openPropertiesIconClassNames, polygonBorderColor, polygonFillColor, resetZoomIconClassName, searchIconClassNames, splitScreenHorizontallyIconClassName, splitScreenVerticallyIconClassName, zoomInIconClassNames, zoomOutIconClassNames, zoomToFitIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/constants';
+import { addIconClassName, disableTooltipIconClassName, enableTooltipIconClassName, openPropertiesIconClassNames, polygonBorderColor, polygonFillColor, resetZoomIconClassName, searchIconClassNames, splitScreenHorizontallyIconClassName, splitScreenVerticallyIconClassName, zoomInIconClassNames, zoomOutIconClassNames, zoomToFitIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/constants';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { extname } from 'vs/base/common/path';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -49,6 +49,7 @@ export class ExecutionPlanComparisonEditorView {
 	private _toggleOrientationAction: Action;
 	private _searchNodeAction: Action;
 	private _searchNodeActionForAddedPlan: Action;
+	private _toggleTooltipAction: Action;
 
 	private _planComparisonContainer: HTMLElement;
 
@@ -104,6 +105,7 @@ export class ExecutionPlanComparisonEditorView {
 	private _bottomPlanRecommendations: ExecutionPlanViewHeader;
 	private _bottomSimilarNode: Map<string, azdata.executionPlan.ExecutionGraphComparisonResult> = new Map();
 	private _latestRequestUuid: string;
+	private _areTooltipsEnabled: boolean = true;
 
 	public get activeBottomPlanDiagram(): AzdataGraphView | undefined {
 		if (this.bottomPlanDiagrams.length > 0) {
@@ -153,6 +155,7 @@ export class ExecutionPlanComparisonEditorView {
 		this._searchNodeAction = this._instantiationService.createInstance(SearchNodeAction, PlanIdentifier.Primary);
 		this._searchNodeActionForAddedPlan = this._instantiationService.createInstance(SearchNodeAction, PlanIdentifier.Added);
 		this._resetZoomAction = new ZoomReset();
+		this._toggleTooltipAction = new ActionBarToggleTooltip();
 		const content: ITaskbarContent[] = [
 			{ action: this._addExecutionPlanAction },
 			{ action: this._zoomInAction },
@@ -162,7 +165,8 @@ export class ExecutionPlanComparisonEditorView {
 			{ action: this._toggleOrientationAction },
 			{ action: this._propertiesAction },
 			{ action: this._searchNodeAction },
-			{ action: this._searchNodeActionForAddedPlan }
+			{ action: this._searchNodeActionForAddedPlan },
+			{ action: this._toggleTooltipAction }
 		];
 		this._taskbar.setContent(content);
 		this.container.appendChild(this._taskbarContainer);
@@ -352,7 +356,7 @@ export class ExecutionPlanComparisonEditorView {
 
 						if (this.activeBottomPlanDiagram) {
 							const element = this.activeBottomPlanDiagram.getElementById(`element-` + similarNode.matchingNodesId[0]);
-							if (this.activeBottomPlanDiagram.getSelectedElement() && similarNode.matchingNodesId.find(m => this.activeBottomPlanDiagram.getSelectedElement().id === `element-` + m) !== undefined) {
+							if (similarNode.matchingNodesId.find(m => this.activeBottomPlanDiagram.getSelectedElement().id === `element-` + m) !== undefined) {
 								return;
 							}
 
@@ -407,6 +411,9 @@ export class ExecutionPlanComparisonEditorView {
 			this._propertiesView.setSecondaryElement(executionPlanGraphs[0].root);
 			this._addExecutionPlanAction.enabled = false;
 			this._searchNodeActionForAddedPlan.enabled = true;
+			if (!this._areTooltipsEnabled) {
+				this.activeBottomPlanDiagram.toggleTooltip();
+			}
 		}
 		this.refreshSplitView();
 	}
@@ -479,6 +486,18 @@ export class ExecutionPlanComparisonEditorView {
 
 	public togglePropertiesView(): void {
 		this._propertiesContainer.style.display = this._propertiesContainer.style.display === 'none' ? '' : 'none';
+	}
+
+	public toggleTooltips(): boolean {
+		let state: boolean;
+		if (this.activeTopPlanDiagram) {
+			state = this.activeTopPlanDiagram.toggleTooltip();
+		}
+		if (this.activeBottomPlanDiagram) {
+			state = this.activeBottomPlanDiagram.toggleTooltip();
+		}
+		this._areTooltipsEnabled = state;
+		return state;
 	}
 
 	public toggleOrientation(): void {
@@ -677,6 +696,27 @@ class PropertiesAction extends Action {
 			.send();
 
 		context.togglePropertiesView();
+	}
+}
+
+export class ActionBarToggleTooltip extends Action {
+	public static ID = 'ep.tooltipToggleActionBar';
+	public static WHEN_TOOLTIPS_ENABLED_LABEL = localize('executionPlanEnableTooltip', "Tooltips enabled");
+	public static WHEN_TOOLTIPS_DISABLED_LABEL = localize('executionPlanDisableTooltip', "Tooltips disabled");
+
+	constructor() {
+		super(ActionBarToggleTooltip.ID, ActionBarToggleTooltip.WHEN_TOOLTIPS_ENABLED_LABEL, enableTooltipIconClassName);
+	}
+
+	public override async run(context: ExecutionPlanComparisonEditorView): Promise<void> {
+		const state = context.toggleTooltips();
+		if (!state) {
+			this.class = disableTooltipIconClassName;
+			this.label = ActionBarToggleTooltip.WHEN_TOOLTIPS_DISABLED_LABEL;
+		} else {
+			this.class = enableTooltipIconClassName;
+			this.label = ActionBarToggleTooltip.WHEN_TOOLTIPS_ENABLED_LABEL;
+		}
 	}
 }
 

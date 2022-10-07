@@ -10,7 +10,16 @@
     <Disp Icon="Expand" Expand="true" Disp="true" LocTbl="false" />
     <Item ItemId=";Xliff Resources" ItemType="0" PsrId="308" Leaf="false">
       <Disp Icon="Str" Disp="true" LocTbl="false" />
-      <Item ItemId=";queryHistory.captureEnabledDesc" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/query-history/dist/localizedConstants.errorLoading" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Error loading saved query history items. {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ошибка при загрузке сохраненных элементов журнала запросов. {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/query-history/package.queryHistory.captureEnabledDesc" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Whether Query History capture is enabled. If false queries executed will not be captured.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -19,7 +28,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";queryHistory.clear" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/query-history/package.queryHistory.clear" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Clear All History]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -28,7 +37,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";queryHistory.delete" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/query-history/package.queryHistory.delete" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Delete]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -37,7 +46,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";queryHistory.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/query-history/package.queryHistory.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[View and run previously executed queries]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -46,7 +55,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";queryHistory.disableCapture" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/query-history/package.queryHistory.disableCapture" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Pause Query History Capture]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -55,7 +64,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";queryHistory.displayName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/query-history/package.queryHistory.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Query History]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -64,7 +73,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";queryHistory.doubleClickAction" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/query-history/package.queryHistory.doubleClickAction" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The action taken when a history item is double clicked]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -73,7 +82,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";queryHistory.doubleClickAction.open" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/query-history/package.queryHistory.doubleClickAction.open" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Open a new disconnected editor with the query from the selected history item]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -82,7 +91,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";queryHistory.doubleClickAction.run" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/query-history/package.queryHistory.doubleClickAction.run" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Open a new connected editor with the query and connection from the selected history item and automatically run the query]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -91,7 +100,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";queryHistory.enableCapture" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/query-history/package.queryHistory.enableCapture" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Start Query History Capture]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -100,7 +109,25 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";queryHistory.noEntries" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/query-history/package.queryHistory.loading" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Loading saved entries...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Загрузка сохраненных записей...]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/query-history/package.queryHistory.maxEntries" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Maximum number of entries to store. 0 means unlimited entries are stored. Increasing this limit may impact performance, especially if persistence is enabled.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Максимальное число записей для хранения. 0 означает, что хранится неограниченное число записей. Увеличение этого ограничения может повлиять на производительность, особенно если включена сохраняемость.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/query-history/package.queryHistory.noEntries" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No queries to display]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -109,7 +136,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";queryHistory.open" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/query-history/package.queryHistory.open" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Open Query]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -118,11 +145,29 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";queryHistory.run" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/query-history/package.queryHistory.openStorageFolder" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Open storage folder]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Открыть папку хранилища]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/query-history/package.queryHistory.persistHistory" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Whether query history is persisted across restarts. If false then the history will be cleared when the application exits.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Сохраняется ли история запросов при перезапусках. Если ЛОЖЬ, то журнал будет очищен при выходе из приложения.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/query-history/package.queryHistory.run" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Run Query]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Выполнить запрос]]></Val>
+            <Val><![CDATA[Запуск запроса]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

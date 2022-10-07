@@ -174,6 +174,8 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		if (this._autoscroll) {
 			this._grid.scrollRowIntoView(this._data.getLength() - 1, false);
 		}
+		this.ariaRowCount = this.grid.getDataLength();
+		this.ariaColumnCount = this.grid.getColumns().length;
 	}
 
 	set columns(columns: Slick.Column<T>[]) {
@@ -194,6 +196,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 			this._data = new TableDataView<T>(data);
 		}
 		this._grid.setData(this._data, true);
+		this.updateRowCount();
 	}
 
 	getData(): IDisposableDataProvider<T> {

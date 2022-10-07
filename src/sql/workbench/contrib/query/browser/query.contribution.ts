@@ -382,6 +382,11 @@ const queryEditorConfiguration: IConfigurationNode = {
 			'description': localize('queryEditor.results.saveAsCsv.textIdentifier', "Character used for enclosing text fields when saving results as CSV"),
 			'default': '\"'
 		},
+		'queryEditor.results.saveAsExcel.includeHeaders': {
+			'type': 'boolean',
+			'description': localize('queryEditor.results.saveAsExcel.includeHeaders', "When true, column headers are included when saving results as an Excel file"),
+			'default': true
+		},
 		'queryEditor.results.saveAsCsv.encoding': {
 			'type': 'string',
 			'description': localize('queryEditor.results.saveAsCsv.encoding', "File encoding used when saving results as CSV"),

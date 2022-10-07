@@ -865,9 +865,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * @param connection The connection to fill in or update
 	 */
 	private async fillInOrClearToken(connection: interfaces.IConnectionProfile): Promise<boolean> {
-		if (connection.authenticationType !== Constants.azureMFA
-			&& connection.authenticationType !== Constants.azureMFAAndUser
-			&& connection.authenticationType !== Constants.dstsAuth) {
+		if (connection.authenticationType !== Constants.AuthenticationType.AzureMFA
+			&& connection.authenticationType !== Constants.AuthenticationType.AzureMFAAndUser
+			&& connection.authenticationType !== Constants.AuthenticationType.DSTSAuth) {
 			connection.options['azureAccountToken'] = undefined;
 			return true;
 		}
@@ -875,7 +875,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		let azureResource = this.getAzureResourceForConnection(connection);
 		const accounts = await this._accountManagementService.getAccounts();
 
-		if (connection.authenticationType === Constants.dstsAuth) {
+		if (connection.authenticationType === Constants.AuthenticationType.DSTSAuth) {
 			let dstsAccounts = accounts.filter(a => a.key.providerId.startsWith('dstsAuth'));
 			if (dstsAccounts.length <= 0) {
 				connection.options['azureAccountToken'] = undefined;
@@ -894,7 +894,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 		const azureAccounts = accounts.filter(a => a.key.providerId.startsWith('azure'));
 		if (azureAccounts && azureAccounts.length > 0) {
-			let accountId = (connection.authenticationType === Constants.azureMFA || connection.authenticationType === Constants.azureMFAAndUser) ? connection.azureAccount : connection.userName;
+			let accountId = (connection.authenticationType === Constants.AuthenticationType.AzureMFA || connection.authenticationType === Constants.AuthenticationType.AzureMFAAndUser) ? connection.azureAccount : connection.userName;
 			let account = azureAccounts.find(account => account.key.accountId === accountId);
 			if (account) {
 				this._logService.debug(`Getting security token for Azure account ${account.key.accountId}`);

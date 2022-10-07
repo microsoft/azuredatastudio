@@ -14,7 +14,7 @@ import { ExecutionPlanState } from 'sql/workbench/common/editor/query/executionP
 import { Table } from 'sql/base/browser/ui/table/table';
 import { hyperLinkFormatter, textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { RESULTS_GRID_DEFAULTS } from 'sql/workbench/common/constants';
-import { attachTableStyler } from 'sql/platform/theme/common/styler';
+import { attachInputBoxStyler, attachTableStyler } from 'sql/platform/theme/common/styler';
 import { IColorTheme, ICssStyleCollector, IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { ExecutionPlanViewHeader } from 'sql/workbench/contrib/executionPlan/browser/executionPlanViewHeader';
 import { QueryResultsView } from 'sql/workbench/contrib/query/browser/queryResultsView';
@@ -23,11 +23,13 @@ import { CopyKeybind } from 'sql/base/browser/ui/table/plugins/copyKeybind.plugi
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 import * as sqlExtHostType from 'sql/workbench/api/common/sqlExtHostTypes';
 import { listHoverBackground } from 'vs/platform/theme/common/colorRegistry';
-import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { Action } from 'vs/base/common/actions';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { ITableKeyboardEvent } from 'sql/base/browser/ui/table/interfaces';
 import { Disposable } from 'vs/base/common/lifecycle';
+import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
+import { filterIconClassNames, searchPlaceholder, topOperationsSearchDescription } from 'sql/workbench/contrib/executionPlan/browser/constants';
 
 const TABLE_SORT_COLUMN_KEY = 'tableCostColumnForSorting';
 
@@ -59,6 +61,7 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 		@IThemeService private _themeService: IThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
+		@IContextViewService private _contextViewService: IContextViewService
 	) {
 		super();
 	}
@@ -145,13 +148,31 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 				name: c,
 				field: c.toString(),
 				formatter: i === 0 ? hyperLinkFormatter : textFormatter,
-				sortable: true,
+				sortable: true
 			};
 		});
 
 		const topOperationContainer = DOM.$('.top-operations-container');
 		this._container.appendChild(topOperationContainer);
-		const header = this._instantiationService.createInstance(ExecutionPlanViewHeader, topOperationContainer, {
+
+		const headerContainer = DOM.$('.top-operations-header');
+		topOperationContainer.appendChild(headerContainer);
+
+		const headerInfoContainer = DOM.$('.top-operations-header-info');
+		headerContainer.appendChild(headerInfoContainer);
+
+		const headerSearchBarContainer = DOM.$('.top-operations-header-search-bar');
+		headerContainer.appendChild(headerSearchBarContainer);
+		headerContainer.classList.add('codicon', filterIconClassNames);
+
+		const topOperationsSearchInput = new InputBox(headerSearchBarContainer, this._contextViewService, {
+			ariaDescription: topOperationsSearchDescription,
+			placeholder: searchPlaceholder
+		});
+		attachInputBoxStyler(topOperationsSearchInput, this._themeService);
+		topOperationsSearchInput.element.classList.add('codicon', filterIconClassNames);
+
+		const header = this._instantiationService.createInstance(ExecutionPlanViewHeader, headerInfoContainer, {
 			planIndex: index,
 		});
 		header.query = graph.query;
@@ -207,7 +228,7 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 			columns: columns,
 			sorter: (args) => {
 				const column = args.sortCol.field;
-				dataMap.sort((a, b) => {
+				const sortedData = table.getData().getItems().sort((a, b) => {
 					let result = -1;
 
 					if (!a[column]) {
@@ -237,7 +258,7 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 					}
 					return args.sortAsc ? result : -result;
 				});
-				table.setData(dataMap);
+				table.setData(sortedData);
 			}
 		}, {
 			rowHeight: RESULTS_GRID_DEFAULTS.rowHeight,
@@ -267,6 +288,29 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 			this._instantiationService.createInstance(CopyTableDataWithHeader),
 			this._instantiationService.createInstance(SelectAll)
 		];
+
+		this._register(topOperationsSearchInput.onDidChange(e => {
+			const filter = e.toLowerCase();
+			if (filter) {
+				const filteredData = dataMap.filter(row => {
+					let includeRow = false;
+					for (let i = 0; i < columns.length; i++) {
+						const columnField = columns[i].field;
+						if (row[columnField]) {
+							const text = row[columnField].displayText ?? row[columnField].text;
+							if (text.toLowerCase().includes(filter)) {
+								includeRow = true;
+							}
+						}
+					}
+					return includeRow;
+				});
+				table.setData(filteredData);
+			} else {
+				table.setData(dataMap);
+			}
+			table.rerenderGrid();
+		}));
 
 		this._register(table.onKeyDown((evt: ITableKeyboardEvent) => {
 			if (evt.event.ctrlKey && (evt.event.key === 'a' || evt.event.key === 'A')) {
