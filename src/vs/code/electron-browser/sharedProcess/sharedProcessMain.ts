@@ -249,7 +249,7 @@ class SharedProcessMain extends Disposable {
 			appenders.push(logAppender);
 			const { appRoot, extensionsPath, installSourcePath } = environmentService;
 			if (productService.aiConfig?.ariaKey) {
-				const collectorAppender = new OneDataSystemAppender(internalTelemetry, 'adsworkbench', null, productService.aiConfig.ariaKey);
+				const collectorAppender = new OneDataSystemAppender(internalTelemetry, 'adsworkbench', null, productService.aiConfig.ariaKey); // {{SQL CARBON EDIT}} Use our own event prefix
 				this._register(toDisposable(() => collectorAppender.flush())); // Ensure the 1DS appender is disposed so that it flushes remaining data
 				appenders.push(collectorAppender);
 			}
