@@ -390,6 +390,24 @@ However we always want it to be the width of the container it is resizing.
 	background-repeat: no-repeat;
 }
 
+.eps-container .ep-filter-icon,
+.top-operations-tab .ep-filter-icon {
+	background-image: url(../images/actionIcons/filter.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.vs-dark .eps-container .ep-filter-icon,
+.hc-black .eps-container .ep-filter-icon,
+.vs-dark .top-operations-tab .ep-filter-icon,
+.hc-black .top-operations-tab .ep-filter-icon {
+	background-image: url(../images/actionIcons/filterDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
 .eps-container .ep-sort-alphabetically-icon {
 	background-image: url(../images/actionIcons/sortAlphabetically.svg);
 	background-size: 16px 16px;
