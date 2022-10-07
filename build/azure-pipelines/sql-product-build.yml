@@ -63,22 +63,25 @@ stages:
         - template: darwin/sql-product-build-darwin-signing.yml
         timeoutInMinutes: 60
 
-      # - job: macOS_Universal
-      #   variables:
-      #     VSCODE_ARCH: universal
-      #   steps:
-      #   - template: darwin/sql-product-build-darwin-universal.yml
-      #   timeoutInMinutes: 90
+      - job: macOS_Universal
+        variables:
+          VSCODE_ARCH: universal
+        dependsOn:
+        - macOS
+        - macOS_ARM64
+        steps:
+        - template: darwin/sql-product-build-darwin-universal.yml
+        timeoutInMinutes: 90
 
-      # - job: macOS_Signing_Universal
-      #   variables:
-      #     VSCODE_ARCH: arm64
-      #   condition: and(succeeded(), eq(variables['signed'], true))
-      #   dependsOn:
-      #   - macOS_Signing_ARM64
-      #   steps:
-      #   - template: darwin/sql-product-build-darwin-signing.yml
-      #   timeoutInMinutes: 60
+      - job: macOS_Signing_Universal
+        variables:
+          VSCODE_ARCH: universal
+        condition: and(succeeded(), eq(variables['signed'], true))
+        dependsOn:
+        - macOS_Universal
+        steps:
+        - template: darwin/sql-product-build-darwin-signing.yml
+        timeoutInMinutes: 60
 
   - stage: Linux
     condition: and(succeeded(), eq(variables['VSCODE_BUILD_LINUX'], true))
