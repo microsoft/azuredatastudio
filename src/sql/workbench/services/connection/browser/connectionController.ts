@@ -6,6 +6,7 @@
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionComponentCallbacks, IConnectionComponentController, IConnectionValidateResult } from 'sql/workbench/services/connection/browser/connectionDialogService';
 import { AdvancedPropertiesController } from 'sql/workbench/services/connection/browser/advancedPropertiesController';
+import { ChangePasswordController } from 'sql/workbench/services/connection/browser/changePasswordController';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import * as Constants from 'sql/platform/connection/common/constants';
@@ -20,6 +21,7 @@ import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/c
 
 export class ConnectionController implements IConnectionComponentController {
 	private _advancedController: AdvancedPropertiesController;
+	private _changePasswordController: ChangePasswordController;
 	private _model: IConnectionProfile;
 	private _providerName: string;
 	protected _callback: IConnectionComponentCallbacks;
@@ -116,6 +118,15 @@ export class ConnectionController implements IConnectionComponentController {
 		if (this._model.options.azureTenantId !== azureTenantId) {
 			this._model.azureTenantId = azureTenantId;
 		}
+	}
+
+	protected handleConnectionChangeProperties(): void {
+		if (!this._changePasswordController) {
+			this._changePasswordController = this._instantiationService.createInstance(ChangePasswordController, () => { });
+		}
+		let passwordChangeOption = this._providerOptions.filter(
+			(property) => (property.specialValueType === ConnectionOptionSpecialType.password || property.specialValueType === ConnectionOptionSpecialType.userName));
+		this._changePasswordController.showDialog(passwordChangeOption, this._model.options);
 	}
 
 	protected handleOnAdvancedProperties(): void {

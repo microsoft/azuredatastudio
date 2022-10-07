@@ -8,6 +8,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import * as azdata from 'azdata';
 import { localize } from 'vs/nls';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export class ChangePasswordController {
 	private _passwordDialog: OptionsDialog;
@@ -25,14 +26,16 @@ export class ChangePasswordController {
 
 	public showDialog(providerOptions: azdata.ConnectionOption[], options: { [name: string]: any }): void {
 		this._options = options;
-		let serviceOptions = providerOptions.map(option => ChangePasswordController.connectionOptionToServiceOption(option));
-		this.advancedDialog.open(serviceOptions, this._options);
+		let usernameOption = providerOptions.filter((property) => property.specialValueType === ConnectionOptionSpecialType.userName);
+		let passwordOption = providerOptions.filter((property) => property.specialValueType === ConnectionOptionSpecialType.password);
+		let serviceOptions = passwordOption.map(option => ChangePasswordController.connectionOptionToServiceOption(option));
+		this.passwordDialog(usernameOption.toString()).open(serviceOptions, this._options);
 	}
 
-	public get advancedDialog() {
+	public passwordDialog(username: string): OptionsDialog {
 		if (!this._passwordDialog) {
 			this._passwordDialog = this._instantiationService.createInstance(
-				OptionsDialog, localize('passwordChangeProperties', "Change password to continue login."), TelemetryKeys.ModalDialogName.PasswordChangeProperties, { hasBackButton: false, cancelLabel: localize('changePasswordProperties.Cancel', "Cancel") });
+				OptionsDialog, localize('passwordChangeProperties', 'Change password for \"{0}\" to continue login.', username), TelemetryKeys.ModalDialogName.PasswordChangeProperties, { hasBackButton: false, cancelLabel: localize('changePasswordProperties.Cancel', "Cancel") });
 			this._passwordDialog.onCloseEvent(() => this._onCloseChangePasswordProperties());
 			this._passwordDialog.onOk(() => this.handleOnOk());
 			this._passwordDialog.render();
