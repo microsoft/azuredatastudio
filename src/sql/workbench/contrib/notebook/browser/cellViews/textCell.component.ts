@@ -18,7 +18,6 @@ import { URI } from 'vs/base/common/uri';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
-import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { toDisposable } from 'vs/base/common/lifecycle';
 import { IMarkdownRenderResult } from 'vs/editor/browser/core/markdownRenderer';
 
@@ -134,7 +133,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		@Inject(IConfigurationService) private _configurationService: IConfigurationService,
 		@Inject(INotebookService) override notebookService: INotebookService,
 		@Inject(INotificationService) private _notificationService: INotificationService,
-		@Inject(IHostService) private readonly hostService: IHostService,
 	) {
 		super();
 		this.markdownRenderer = this._instantiationService.createInstance(NotebookMarkdownRenderer);
@@ -161,17 +159,22 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				this._undoStack.maxStackSize = newStackSize;
 				this._redoStack.maxStackSize = newStackSize;
 			}
-		}));
-
-		this._register(this._configurationService.onDidChangeConfiguration(e => {
-			this.renderTablesInHtml = this._configurationService.getValue('notebook.renderTablesInHtml');
-			this._notificationService.prompt(Severity.Info, promptReloadNotebooks,
-				[{
-					label: localize('reload', "Reload"),
-					run: () => {
-						this.hostService.reload();
-					}
-				}]);
+			if (e.affectsConfiguration('notebook.renderTablesInHtml')) {
+				this._htmlMarkdownConverter = this._instantiationService.createInstance(HTMLMarkdownConverter, this.notebookUri);
+				this.updateCellSource();
+				if (this.isEditMode) {
+					this._notificationService.prompt(Severity.Info, promptReloadNotebooks, [{
+						label: 'Reload',
+						run: () => {
+							this.markdowncodeCell.map(code => code.refreshCell());
+						}
+					}, {
+						label: 'Cancel',
+						run: () => { }
+					}]
+					);
+				}
+			}
 		}));
 	}
 
@@ -374,7 +377,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	private updateCellSource(): void {
 		let textOutputElement = <HTMLElement>this.output.nativeElement;
-		this.cellModel.source = this._htmlMarkdownConverter.convert(textOutputElement.innerHTML);
+		let newCellSource = this._htmlMarkdownConverter.convert(textOutputElement.innerHTML);
+		this.cellModel.source = newCellSource;
 		this._changeRef.detectChanges();
 	}
 

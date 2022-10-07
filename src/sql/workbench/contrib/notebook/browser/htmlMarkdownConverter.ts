@@ -35,26 +35,28 @@ const markdownReplacements = [
 
 export class HTMLMarkdownConverter {
 	private turndownService: TurndownService;
-	private renderTablesInHtml: boolean;
 
 	constructor(private notebookUri: URI, @IConfigurationService private configurationService: IConfigurationService) {
 		this.turndownService = new TurndownService({ 'emDelimiter': '_', 'bulletListMarker': '-', 'headingStyle': 'atx', blankReplacement: blankReplacement });
 		this.setTurndownOptions();
-		this.renderTablesInHtml = this.configurationService.getValue('notebook.renderTablesInHtml');
 	}
 
 	public convert(html: string): string {
 		return this.turndownService.turndown(html, { gfm: true });
 	}
 
-	private setTurndownOptions() {
-		this.turndownService.keep(['style']);
-		if (this.renderTablesInHtml) {
+	public setTableTurndownOptions() {
+		if (this.configurationService.getValue('notebook.renderTablesInHtml')) {
 			this.turndownService.keep(['table', 'tr', 'th', 'td']);
 			this.turndownService.use(turndownPluginGfm.gfmHtmlTables);
 		} else {
 			this.turndownService.use(turndownPluginGfm.gfm);
 		}
+	}
+
+	private setTurndownOptions() {
+		this.turndownService.keep(['style']);
+		this.setTableTurndownOptions();
 		this.turndownService.addRule('pre', {
 			filter: 'pre',
 			replacement: function (content, node) {
