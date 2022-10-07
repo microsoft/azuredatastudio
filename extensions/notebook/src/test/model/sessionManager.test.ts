@@ -263,7 +263,7 @@ describe('Jupyter Session', function (): void {
 				id: 'id',
 				providerName: 'MSSQL',
 				options: {
-					authenticationType: 'SqlLogin',
+					authenticationType: connection.AuthenticationType.SqlLogin,
 				},
 				password: '',
 				savePassword: false,
@@ -340,7 +340,7 @@ describe('Jupyter Session', function (): void {
 			id: 'id',
 			providerName: 'MSSQL',
 			options: {
-				authenticationType: 'SqlLogin',
+				authenticationType: connection.AuthenticationType.SqlLogin,
 			},
 			password: '',
 			savePassword: false,
@@ -366,7 +366,7 @@ describe('Jupyter Session', function (): void {
 			id: 'id',
 			providerName: 'provider',
 			options: {
-				authenticationType: 'SqlLogin',
+				authenticationType: connection.AuthenticationType.SqlLogin,
 			},
 			password: '',
 			savePassword: false,

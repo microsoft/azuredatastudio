@@ -29,7 +29,7 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { ITableKeyboardEvent } from 'sql/base/browser/ui/table/interfaces';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
-import { searchIconClassNames, searchPlaceholder, topOperationsSearchDescription } from 'sql/workbench/contrib/executionPlan/browser/constants';
+import { filterIconClassNames, searchPlaceholder, topOperationsSearchDescription } from 'sql/workbench/contrib/executionPlan/browser/constants';
 
 const TABLE_SORT_COLUMN_KEY = 'tableCostColumnForSorting';
 
@@ -163,14 +163,14 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 
 		const headerSearchBarContainer = DOM.$('.top-operations-header-search-bar');
 		headerContainer.appendChild(headerSearchBarContainer);
-		headerContainer.classList.add('codicon', searchIconClassNames);
+		headerContainer.classList.add('codicon', filterIconClassNames);
 
 		const topOperationsSearchInput = new InputBox(headerSearchBarContainer, this._contextViewService, {
 			ariaDescription: topOperationsSearchDescription,
 			placeholder: searchPlaceholder
 		});
 		attachInputBoxStyler(topOperationsSearchInput, this._themeService);
-		topOperationsSearchInput.element.classList.add('codicon', searchIconClassNames);
+		topOperationsSearchInput.element.classList.add('codicon', filterIconClassNames);
 
 		const header = this._instantiationService.createInstance(ExecutionPlanViewHeader, headerInfoContainer, {
 			planIndex: index,

@@ -2,6 +2,8 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
+import * as vscodeMssql from 'vscode-mssql';
 import * as fs from 'fs';
 import * as vscode from 'vscode';
 import * as path from 'path';
@@ -9,7 +11,6 @@ import * as utils from './utils';
 import * as constants from './constants';
 import * as azureFunctionsContracts from '../contracts/azureFunctions/azureFunctionsContracts';
 import { BindingType, IConnectionStringInfo, ObjectType } from 'sql-bindings';
-import { ConnectionDetails, IConnectionInfo } from 'vscode-mssql';
 // https://github.com/microsoft/vscode-azurefunctions/blob/main/src/vscode-azurefunctions.api.d.ts
 import { AzureFunctionsExtensionApi } from '../../../types/vscode-azurefunctions.api';
 // https://github.com/microsoft/vscode-azuretools/blob/main/ui/api.d.ts
@@ -306,7 +307,7 @@ export async function promptForObjectType(): Promise<ObjectType | undefined> {
  * @param objectType (optional) type of object to query/upsert into
  * @returns the object name from user's input or menu choice
  */
-export async function promptForObjectName(bindingType: BindingType, connectionInfo?: IConnectionInfo, objectType?: ObjectType): Promise<string | undefined> {
+export async function promptForObjectName(bindingType: BindingType, connectionInfo?: vscodeMssql.IConnectionInfo, objectType?: ObjectType): Promise<string | undefined> {
 	// show the connection string methods (user input and connection profile options)
 	let connectionURI: string | undefined;
 	let selectedDatabase: string | undefined;
@@ -344,7 +345,7 @@ export async function promptForObjectName(bindingType: BindingType, connectionIn
  * if left undefined we prompt the user for the connection info
  * @returns connection string setting name to be used for the createFunction API
  */
-export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.Uri | undefined, connectionInfo?: IConnectionInfo): Promise<IConnectionStringInfo | undefined> {
+export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.Uri | undefined, connectionInfo?: vscodeMssql.IConnectionInfo): Promise<IConnectionStringInfo | undefined> {
 	let connectionStringSettingName: string | undefined;
 
 	// show the settings from project's local.settings.json if there's an AF functions project
@@ -495,16 +496,16 @@ export async function promptAndUpdateConnectionStringSetting(projectUri: vscode.
  * @param localSettingsPath path to the local.settings.json file
  * @returns the updated connection string based on password prompts
  */
-export async function promptConnectionStringPasswordAndUpdateConnectionString(connectionInfo: IConnectionInfo, localSettingsPath: string): Promise<string | undefined> {
+export async function promptConnectionStringPasswordAndUpdateConnectionString(connectionInfo: vscodeMssql.IConnectionInfo, localSettingsPath: string): Promise<string | undefined> {
 	let includePassword: string | undefined;
 	let connectionString: string = '';
-	let connectionDetails: ConnectionDetails;
+	let connectionDetails: vscodeMssql.ConnectionDetails;
 	let userPassword: string | undefined;
 	const vscodeMssqlApi = await utils.getVscodeMssqlApi();
 	connectionDetails = { options: connectionInfo };
 
 	try {
-		if (connectionInfo.authenticationType === 'SqlLogin' && connectionInfo.password) {
+		if (connectionInfo.authenticationType === vscodeMssql.AuthenticationType.SqlLogin && connectionInfo.password) {
 			// Prompt to include password in connection string if authentication type is SqlLogin and connection has password saved
 			includePassword = await vscode.window.showQuickPick([constants.yesString, constants.noString], {
 				title: constants.includePassword,
@@ -517,18 +518,18 @@ export async function promptConnectionStringPasswordAndUpdateConnectionString(co
 			}
 		}
 
-		if (includePassword !== constants.yesString || !connectionInfo.password || connectionInfo.authenticationType !== 'SqlLogin') {
+		if (includePassword !== constants.yesString || !connectionInfo.password || connectionInfo.authenticationType !== vscodeMssql.AuthenticationType.SqlLogin) {
 			// get connection string to not include the password if connection info does not include password,
 			// or user chooses to not include password (or if user cancels out of include password prompt), or authentication type is not SQL login
 			connectionString = await vscodeMssqlApi.getConnectionString(connectionDetails, false, false);
 
-			if (connectionInfo.authenticationType !== 'SqlLogin') {
+			if (connectionInfo.authenticationType !== vscodeMssql.AuthenticationType.SqlLogin) {
 				// temporarily fix until STS is fix to not include the placeholder: https://github.com/microsoft/sqltoolsservice/issues/1508
 				// if authentication type is not SQL login, remove password in connection string
 				connectionString = connectionString.replace(`Password=${constants.passwordPlaceholder};`, '');
 			}
 
-			if (!connectionInfo.password && connectionInfo.authenticationType === 'SqlLogin') {
+			if (!connectionInfo.password && connectionInfo.authenticationType === vscodeMssql.AuthenticationType.SqlLogin) {
 				// if a connection exists but does not have password saved we ask user if they would like to enter it and save it in local.settings.json
 				userPassword = await vscode.window.showInputBox({
 					prompt: constants.enterPasswordPrompt,
@@ -542,7 +543,7 @@ export async function promptConnectionStringPasswordAndUpdateConnectionString(co
 				}
 			}
 
-			if (!userPassword && connectionInfo.authenticationType === 'SqlLogin') {
+			if (!userPassword && connectionInfo.authenticationType === vscodeMssql.AuthenticationType.SqlLogin) {
 				// show warning message that user will have to enter password manually later in local.settings.json
 				// if they choose to not to include password, if connection info does not include password
 				void vscode.window.showWarningMessage(constants.userPasswordLater, constants.openFile, constants.closeButton).then(async (result) => {
@@ -580,7 +581,7 @@ export async function promptSelectDatabase(connectionURI: string): Promise<strin
 	return selectedDatabase;
 }
 
-export async function getConnectionURI(connectionInfo: IConnectionInfo): Promise<string | undefined> {
+export async function getConnectionURI(connectionInfo: vscodeMssql.IConnectionInfo): Promise<string | undefined> {
 	const vscodeMssqlApi = await utils.getVscodeMssqlApi();
 	let connectionURI: string = '';
 	try {
