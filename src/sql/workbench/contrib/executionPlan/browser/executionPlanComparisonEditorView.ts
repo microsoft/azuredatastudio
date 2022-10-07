@@ -23,7 +23,6 @@ import { addIconClassName, disableTooltipIconClassName, enableTooltipIconClassNa
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { extname } from 'vs/base/common/path';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import { InfoBox } from 'sql/workbench/browser/ui/infoBox/infoBox';
 import { LoadingSpinner } from 'sql/base/browser/ui/loadingSpinner/loadingSpinner';
 import { contrastBorder, editorWidgetBackground, errorForeground, listHoverBackground, textLinkForeground, widgetShadow } from 'vs/platform/theme/common/colorRegistry';
 import { ExecutionPlanViewHeader } from 'sql/workbench/contrib/executionPlan/browser/executionPlanViewHeader';
@@ -69,8 +68,8 @@ export class ExecutionPlanComparisonEditorView {
 	public bottomWidgetController: ExecutionPlanWidgetController;
 
 	private _placeholderContainer: HTMLElement;
+	private _placeholderTaskbar: Taskbar;
 	private _placeholderInfoboxContainer: HTMLElement;
-	private _placeholderInfobox: InfoBox;
 	private _placeholderLoading: LoadingSpinner;
 
 	private _topPlanContainer: HTMLElement;
@@ -207,6 +206,17 @@ export class ExecutionPlanComparisonEditorView {
 		};
 
 		this._placeholderInfoboxContainer = DOM.$('.placeholder-infobox');
+
+		this._placeholderTaskbar = new Taskbar(this._placeholderInfoboxContainer, {
+			orientation: ActionsOrientation.HORIZONTAL
+		});
+		this._placeholderTaskbar.context = this;
+
+		const content: ITaskbarContent[] = [
+			{ action: this._instantiationService.createInstance(AddExecutionPlanAction) }
+		];
+		this._placeholderTaskbar.setContent(content);
+
 		this._placeholderLoading = new LoadingSpinner(this._placeholderContainer, {
 			fullSize: true,
 			showText: true
@@ -214,11 +224,6 @@ export class ExecutionPlanComparisonEditorView {
 		this._placeholderContainer.appendChild(this._placeholderInfoboxContainer);
 		this._placeholderLoading.loadingMessage = localize('epComapre.LoadingPlanMessage', "Loading execution plan");
 		this._placeholderLoading.loadingCompletedMessage = localize('epComapre.LoadingPlanCompleteMessage', "Execution plan successfully loaded");
-		this._placeholderInfobox = this._instantiationService.createInstance(InfoBox, this._placeholderInfoboxContainer, {
-			style: 'information',
-			text: ''
-		});
-		this._placeholderInfobox.text = localize('epComapre.placeholderInfoboxText', "Add execution plans to compare");
 
 		this._topPlanContainer = DOM.$('.plan-container');
 		this.planSplitViewContainer.appendChild(this._topPlanContainer);
