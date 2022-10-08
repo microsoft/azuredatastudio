@@ -10,20 +10,40 @@ const fs = require("fs-extra");
 const path = require("path");
 const plist = require("plist");
 const product = require("../../product.json");
+const glob = require("glob"); // {{SQL CARBON EDIT}}
 async function main() {
     const buildDir = process.env['AGENT_BUILDDIRECTORY'];
     const arch = process.env['VSCODE_ARCH'];
     if (!buildDir) {
         throw new Error('$AGENT_BUILDDIRECTORY not set');
     }
+    // {{SQL CARBON EDIT}}
+    const x64AppNameBase = 'azuredatastudio-darwin-x64';
+    const arm64AppNameBase = 'azuredatastudio-darwin-arm64';
+    // {{SQL CARBON EDIT}} - END
     const appName = product.nameLong + '.app';
-    const x64AppPath = path.join(buildDir, 'azuredatastudio-darwin-x64', appName); // {{SQL CARBON EDIT}} - CHANGE VSCode to azuredatastudio
-    const arm64AppPath = path.join(buildDir, 'azuredatastudio-darwin-arm64', appName); // {{SQL CARBON EDIT}} - CHANGE VSCode to azuredatastudio
+    const x64AppPath = path.join(buildDir, x64AppNameBase, appName); // {{SQL CARBON EDIT}} - CHANGE VSCode to azuredatastudio
+    const arm64AppPath = path.join(buildDir, arm64AppNameBase, appName); // {{SQL CARBON EDIT}} - CHANGE VSCode to azuredatastudio
     const x64AsarPath = path.join(x64AppPath, 'Contents', 'Resources', 'app', 'node_modules.asar');
     const arm64AsarPath = path.join(arm64AppPath, 'Contents', 'Resources', 'app', 'node_modules.asar');
     const outAppPath = path.join(buildDir, `azuredatastudio-darwin-${arch}`, appName); // {{SQL CARBON EDIT}} - CHANGE VSCode to azuredatastudio
     const productJsonPath = path.resolve(outAppPath, 'Contents', 'Resources', 'app', 'product.json');
     const infoPlistPath = path.resolve(outAppPath, 'Contents', 'Info.plist');
+    // {{SQL CARBON EDIT}}
+    const stsPath = '/Contents/Resources/app/extensions/mssql/sqltoolsservice';
+    await fs.remove(path.join(x64AppPath, stsPath));
+    await fs.remove(path.join(arm64AppPath, stsPath));
+    glob(path.join(x64AppPath, '/Contents/Resources/app/**/nls.metadata.json'), (err, files) => {
+        if (err) {
+            console.warn(`Error occured while looking for nls.metadata.json files: ${err}`);
+        }
+        files.forEach(async (file) => {
+            const fileToReplace = file.replace(x64AppNameBase, arm64AppNameBase);
+            console.debug(`replacing file '${fileToReplace}' with '${file}'`);
+            await fs.move(file, fileToReplace, { overwrite: true });
+        });
+    });
+    // {{SQL CARBON EDIT}} - END
     await (0, vscode_universal_bundler_1.makeUniversalApp)({
         x64AppPath,
         arm64AppPath,
@@ -51,7 +71,6 @@ async function main() {
         LSRequiresNativeExecution: true
     });
     await fs.writeFile(infoPlistPath, plist.build(infoPlistJson), 'utf8');
-    await fs.remove(path.join(buildDir, 'azuredatastudio-darwin-arm64', appName, '/Contents/Resources/app/extensions/mssql/sqltoolsservice'));
     // Verify if native module architecture is correct
     const findOutput = await (0, cross_spawn_promise_1.spawn)('find', [outAppPath, '-name', 'keytar.node']);
     const lipoOutput = await (0, cross_spawn_promise_1.spawn)('lipo', ['-archs', findOutput.replace(/\n$/, "")]);
