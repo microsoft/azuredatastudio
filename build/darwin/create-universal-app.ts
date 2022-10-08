@@ -47,7 +47,7 @@ async function main() {
 		files.forEach(async file => {
 			const fileToReplace = file.replace(x64AppNameBase, arm64AppNameBase);
 			console.debug(`replacing file '${fileToReplace}' with '${file}'`);
-			await fs.move(file, fileToReplace, { overwrite: true });
+			await fs.copy(file, fileToReplace, { overwrite: true });
 		});
 	});
 	// {{SQL CARBON EDIT}} - END
