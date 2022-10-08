@@ -36,6 +36,7 @@ async function main() {
     glob(path.join(x64AppPath, '/Contents/Resources/app/**/nls.metadata.json'), (err, files) => {
         if (err) {
             console.warn(`Error occured while looking for nls.metadata.json files: ${err}`);
+            return;
         }
         files.forEach(async (file) => {
             const fileToReplace = file.replace(x64AppNameBase, arm64AppNameBase);
