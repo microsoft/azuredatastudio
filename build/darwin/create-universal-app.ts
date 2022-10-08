@@ -37,8 +37,15 @@ async function main() {
 
 	// {{SQL CARBON EDIT}}
 	const stsPath = '/Contents/Resources/app/extensions/mssql/sqltoolsservice';
-	await fs.remove(path.join(x64AppPath, stsPath));
-	await fs.remove(path.join(arm64AppPath, stsPath));
+	const tempSTSDir = path.join(buildDir, 'sqltoolsservice');
+	const x64STSDir = path.join(x64AppPath, stsPath);
+	const arm64STSDir = path.join(arm64AppPath, stsPath);
+	const targetSTSDirs = [x64STSDir, arm64STSDir];
+	await fs.copy(x64STSDir, tempSTSDir);
+	targetSTSDirs.forEach(async dir => {
+		await fs.remove(dir);
+	});
+
 	glob(path.join(x64AppPath, '/Contents/Resources/app/**/nls.metadata.json'), (err, files) => {
 		if (err) {
 			console.warn(`Error occured while looking for nls.metadata.json files: ${err}`);
@@ -88,6 +95,9 @@ async function main() {
 	if (lipoOutput.replace(/\n$/, "") !== 'x86_64 arm64') {
 		throw new Error(`Invalid arch, got : ${lipoOutput}`)
 	}
+
+	// {{SQL CARBON EDIT}} - copy the sts back to its original place
+	await fs.copy(tempSTSDir, path.join(outAppPath, stsPath), { overwrite: true });
 }
 
 if (require.main === module) {
