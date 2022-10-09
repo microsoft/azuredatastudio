@@ -271,6 +271,7 @@ export const openQueryIconClassNames = 'ep-open-query-icon';
 export const openPlanFileIconClassNames = 'ep-open-plan-file-icon';
 export const saveIconClassNames = 'ep-save-icon';
 export const searchIconClassNames = 'ep-search-icon';
+export const filterIconClassNames = 'ep-filter-icon';
 export const sortAlphabeticallyIconClassNames = 'ep-sort-alphabetically-icon';
 export const sortReverseAlphabeticallyIconClassNames = 'ep-sort-reverse-alphabetically-icon';
 export const sortByDisplayOrderIconClassNames = 'ep-sort-display-order-icon';
