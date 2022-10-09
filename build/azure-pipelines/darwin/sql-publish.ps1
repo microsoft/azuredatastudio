@@ -16,7 +16,7 @@ $CommitId = $VersionJson.commit
 $Flavors = "x64","arm64","universal"
 $FlavorSuffixes = "","-arm64","-universal"
 
-For($i = 0; $i < $Flavors.length; $i++)
+For($i = 0; $i -lt $Flavors.Length; $i++)
 {
 	$Flavor = $Flavors[$i]
 	$FlavorSuffix = $FlavorSuffixes[$i]
