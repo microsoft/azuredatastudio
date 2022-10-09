@@ -110,7 +110,6 @@ steps:
       ./scripts/test.sh --build --tfs "Unit Tests" --coverage
     displayName: Run unit tests
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
-    #condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'), eq(variables['VSCODE_ARCH'], 'x64'))
 
   - script: |
       # Figure out the full absolute path of the product we just built
@@ -124,7 +123,6 @@ steps:
       ./scripts/test-integration.sh --build --tfs "Integration Tests"
     displayName: Run integration tests (Electron)
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
-    # condition: and(succeeded(), eq(variables['VSCODE_ARCH'], 'x64'), eq(variables['RUN_TESTS'], 'true'))
 
   - script: |
       set -e
@@ -141,7 +139,6 @@ steps:
     displayName: Run smoke tests (Electron) (Continue on Error)
     continueOnError: true
     condition: and(succeeded(), and(or(eq(variables['RUN_TESTS'], 'true'), eq(variables['RUN_SMOKE_TESTS'], 'true')), ne(variables['SMOKE_FAIL_ON_ERROR'], 'true')))
-    #condition: and(succeeded(), eq(variables['VSCODE_ARCH'], 'x64'), and(or(eq(variables['RUN_TESTS'], 'true'), eq(variables['RUN_SMOKE_TESTS'], 'true')), ne(variables['SMOKE_FAIL_ON_ERROR'], 'true')))
 
   - script: |
       set -e
@@ -150,7 +147,6 @@ steps:
       yarn smoketest --build "$APP_ROOT/$APP_NAME" --screenshots "$(build.artifactstagingdirectory)/smokeshots" --log "$(build.artifactstagingdirectory)/logs/darwin/smoke.log" --extensionsDir "$(build.sourcesdirectory)/extensions"
     displayName: Run smoke tests (Electron) (Fail on Error)
     condition: and(succeeded(), and(or(eq(variables['RUN_TESTS'], 'true'), eq(variables['RUN_SMOKE_TESTS'], 'true')), eq(variables['SMOKE_FAIL_ON_ERROR'], 'true')))
-    #condition: and(succeeded(), eq(variables['VSCODE_ARCH'], 'x64'), and(or(eq(variables['RUN_TESTS'], 'true'), eq(variables['RUN_SMOKE_TESTS'], 'true')), eq(variables['SMOKE_FAIL_ON_ERROR'], 'true')))
 
   # - script: |
   #     set -e
@@ -224,7 +220,6 @@ steps:
       searchFolder: "$(Build.ArtifactStagingDirectory)/test-results"
     continueOnError: true
     condition: and(succeededOrFailed(), or(eq(variables['RUN_TESTS'], 'true'), eq(variables['RUN_SMOKE_TESTS'], 'true')))
-    #condition: and(succeededOrFailed(), eq(variables['VSCODE_ARCH'], 'x64'), or(eq(variables['RUN_TESTS'], 'true'), eq(variables['RUN_SMOKE_TESTS'], 'true')))
 
   - task: PublishCodeCoverageResults@1
     displayName: 'Publish code coverage from $(Build.SourcesDirectory)/.build/coverage/cobertura-coverage.xml'
@@ -234,7 +229,6 @@ steps:
       reportDirectory: '$(Build.SourcesDirectory)/.build/coverage'
     continueOnError: true
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
-    #condition: and(succeeded(), eq(variables['VSCODE_ARCH'], 'x64'), eq(variables['RUN_TESTS'], 'true'))
 
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
     displayName: 'Component Detection'
