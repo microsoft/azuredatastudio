@@ -36,16 +36,29 @@ async function main() {
 	const infoPlistPath = path.resolve(outAppPath, 'Contents', 'Info.plist');
 
 	// {{SQL CARBON EDIT}}
+	// Current STS arm64 builds doesn't work on osx-arm64, we need to use the x64 version of STS on osx-arm64 until the issue is fixed.
+	// Tracked by: https://github.com/microsoft/azuredatastudio/issues/20775
+	// makeUniversalApp function will complain if the x64 ADS and arm64 ADS have the same STS binaries, to workaround the issue, we need
+	// to delete STS from both of them and then copy it to the universal app.
 	const stsPath = '/Contents/Resources/app/extensions/mssql/sqltoolsservice';
 	const tempSTSDir = path.join(buildDir, 'sqltoolsservice');
 	const x64STSDir = path.join(x64AppPath, stsPath);
 	const arm64STSDir = path.join(arm64AppPath, stsPath);
 	const targetSTSDirs = [x64STSDir, arm64STSDir];
+
+	// backup the x64 STS to a temporary directory, later it will be copied to the universal app directory.
 	await fs.copy(x64STSDir, tempSTSDir);
+
+	// delete STS directories from both x64 ADS and arm64 ADS.
 	targetSTSDirs.forEach(async dir => {
 		await fs.remove(dir);
 	});
 
+	// makeUniversalApp requires the non-binary files in arm64 and x64 versions to be exactly the same,
+	// but sometimes the content of nls.metadata.json files could be different due to the fact that method JSON.stringify() is
+	// non-deterministic, the order of the properties might differ.
+	// the nls.metadata.json files are produced by https://github.com/microsoft/azuredatastudio/blob/711203ac4082919a814114e0910d171db3388b3f/src/vs/nls.build.js#L166
+	// To workaround the issue, we need to replace these files in arm64 ADS with the files from x64 ADS.
 	glob(path.join(x64AppPath, '/Contents/Resources/app/**/nls.metadata.json'), (err, files) => {
 		if (err) {
 			console.warn(`Error occured while looking for nls.metadata.json files: ${err}`);
@@ -53,7 +66,7 @@ async function main() {
 		}
 		files.forEach(async file => {
 			const fileToReplace = file.replace(x64AppNameBase, arm64AppNameBase);
-			console.debug(`replacing file '${fileToReplace}' with '${file}'`);
+			console.debug(`Replacing file '${fileToReplace}' with '${file}'`);
 			await fs.copy(file, fileToReplace, { overwrite: true });
 		});
 	});
@@ -96,7 +109,7 @@ async function main() {
 		throw new Error(`Invalid arch, got : ${lipoOutput}`)
 	}
 
-	// {{SQL CARBON EDIT}} - copy the sts back to its original place
+	// {{SQL CARBON EDIT}} - copy SQLTOOLSService to universal app folder
 	await fs.copy(tempSTSDir, path.join(outAppPath, stsPath), { overwrite: true });
 }
 

@@ -18,9 +18,10 @@
 		let runtime = (await platform.PlatformInformation.getCurrent()).runtimeId;
 		const arch = process.env['npm_config_arch'];
 
-		// We use macOS on x64 to produce arm64 build, as a result, we need to overwrite the runtime if the arch is arm64
+		// In the build pipeline, macOS x64 image is used to produce arm64 build,
+		// we need to check the environment variable to determine the actual target runtime.
 		if (runtime === platform.Runtime.OSX && arch === 'arm64') {
-			console.log(`Change the target runtime to OSX_ARM64`);
+			console.log(`Set the target runtime to OSX_ARM64`);
 			runtime = platform.Runtime.OSX_ARM64;
 		}
 		// fix path since it won't be correct
