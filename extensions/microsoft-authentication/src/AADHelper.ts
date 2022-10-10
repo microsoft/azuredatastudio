@@ -19,7 +19,7 @@ import path = require('path');
 
 const localize = nls.loadMessageBundle();
 
-const redirectUrl = 'https://vscode.dev/redirect';
+const redirectUrl = 'http://localhost/redirect';
 const loginEndpointUrl = 'https://login.microsoftonline.com/';
 const DEFAULT_CLIENT_ID = 'aebc6443-996d-45c2-90f0-388ff96faa56';
 const DEFAULT_TENANT = 'organizations';
