@@ -3,12 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IConfig, Events } from '@microsoft/ads-service-downloader';
+import { IConfig, Events, LogLevel } from '@microsoft/ads-service-downloader';
 import { ServerOptions, TransportKind } from 'vscode-languageclient';
 import * as Constants from './constants';
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { getCommonLaunchArgsAndCleanupOldLogFiles, getOrDownloadServer, getParallelMessageProcessingConfig } from './utils';
+import { getCommonLaunchArgsAndCleanupOldLogFiles, getConfigTracingLevel, getOrDownloadServer, getParallelMessageProcessingConfig, TracingLevel } from './utils';
 import { Telemetry, LanguageClientErrorHandler } from './telemetry';
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
 import { TelemetryFeature, AgentServicesFeature, SerializationFeature, AccountFeature, SqlAssessmentServicesFeature, ProfilerFeature, TableDesignerFeature, ExecutionPlanServiceFeature } from './features';
@@ -31,6 +31,16 @@ import { AzureBlobService } from './azureBlob/azureBlobService';
 const localize = nls.loadMessageBundle();
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
 const statusView = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
+
+// The mapping between MSSQL log level and the service downloader log level.
+const LogLevelMapping: { [key: string]: number } = {
+	[TracingLevel.All]: LogLevel.Verbose,
+	[TracingLevel.Critical]: LogLevel.Critical,
+	[TracingLevel.Error]: LogLevel.Error,
+	[TracingLevel.Information]: LogLevel.Information,
+	[TracingLevel.Verbose]: LogLevel.Verbose,
+	[TracingLevel.Warning]: LogLevel.Warning
+};
 
 export class SqlToolsServer {
 
@@ -144,6 +154,14 @@ function handleServerProviderEvent(e: string, ...args: any[]): void {
 			break;
 		case Events.ENTRY_EXTRACTED:
 			outputChannel.appendLine(localize('entryExtractedChannelMsg', "Extracted {0} ({1}/{2})", args[0], args[1], args[2]));
+			break;
+		case Events.LOG_EMITTED:
+			const configuredLevel: number | undefined = LogLevelMapping[getConfigTracingLevel()];
+			const logLevel = args[0] as LogLevel;
+			const message = args[1] as string;
+			if (configuredLevel !== undefined && logLevel >= configuredLevel) {
+				outputChannel.appendLine(message);
+			}
 			break;
 	}
 }
