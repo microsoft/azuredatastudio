@@ -32,6 +32,10 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ExecutionPlanWidgetController } from 'sql/workbench/contrib/executionPlan/browser/executionPlanWidgetController';
 import { NodeSearchWidget } from 'sql/workbench/contrib/executionPlan/browser/widgets/nodeSearchWidget';
+import { Button } from 'sql/base/browser/ui/button/button';
+import { attachButtonStyler } from 'vs/platform/theme/common/styler';
+
+const ADD_EXECUTION_PLAN_STRING = localize('epCompare.addExecutionPlanLabel', 'Add execution plan');
 
 export class ExecutionPlanComparisonEditorView {
 
@@ -68,7 +72,7 @@ export class ExecutionPlanComparisonEditorView {
 	public bottomWidgetController: ExecutionPlanWidgetController;
 
 	private _placeholderContainer: HTMLElement;
-	private _placeholderTaskbar: Taskbar;
+	private _placeholderButton: Button;
 	private _placeholderInfoboxContainer: HTMLElement;
 	private _placeholderLoading: LoadingSpinner;
 
@@ -207,15 +211,15 @@ export class ExecutionPlanComparisonEditorView {
 
 		this._placeholderInfoboxContainer = DOM.$('.placeholder-infobox');
 
-		this._placeholderTaskbar = new Taskbar(this._placeholderInfoboxContainer, {
-			orientation: ActionsOrientation.HORIZONTAL
+		this._placeholderButton = new Button(this._placeholderInfoboxContainer);
+		attachButtonStyler(this._placeholderButton, this.themeService);
+		this._placeholderButton.label = ADD_EXECUTION_PLAN_STRING;
+		this._placeholderButton.ariaLabel = ADD_EXECUTION_PLAN_STRING;
+		this._placeholderButton.enabled = true;
+		this._placeholderButton.onDidClick(e => {
+			const addExecutionPlanAction = this._instantiationService.createInstance(AddExecutionPlanAction);
+			addExecutionPlanAction.run(self);
 		});
-		this._placeholderTaskbar.context = this;
-
-		const content: ITaskbarContent[] = [
-			{ action: this._instantiationService.createInstance(AddExecutionPlanAction) }
-		];
-		this._placeholderTaskbar.setContent(content);
 
 		this._placeholderLoading = new LoadingSpinner(this._placeholderContainer, {
 			fullSize: true,
