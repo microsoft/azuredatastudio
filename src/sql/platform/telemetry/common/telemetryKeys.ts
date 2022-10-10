@@ -81,6 +81,7 @@ export const enum TelemetryAction {
 	GeneratePreviewReport = 'GeneratePreviewReport',
 	GetDataGridItems = 'GetDataGridItems',
 	GetDataGridColumns = 'GetDataGridColumns',
+	HighlightExpensiveOperation = 'HighlightExpensiveOperation',
 	ModelViewDashboardOpened = 'ModelViewDashboardOpened',
 	ModalDialogClosed = 'ModalDialogClosed',
 	ModalDialogOpened = 'ModalDialogOpened',

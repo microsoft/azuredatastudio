@@ -2406,9 +2406,9 @@ aws4@^1.8.0:
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.11.0.tgz#d61f46d83b2519250e2784daf5b09479a8b41c59"
   integrity sha512-xh1Rl34h6Fi1DC2WWKfxUTVqRsNnr6LsKz2+hfwDxQJWmrx8+c7ylaqBMcHfl1U1r2dsifOvKX3LQuLNZ+XSvA==
 
-"azdataGraph@github:Microsoft/azdataGraph#0.0.42":
-  version "0.0.42"
-  resolved "https://codeload.github.com/Microsoft/azdataGraph/tar.gz/86f72ee9c9ea78a31c9ad2f402fb24d40e50c75b"
+"azdataGraph@github:Microsoft/azdataGraph#0.0.45":
+  version "0.0.45"
+  resolved "https://codeload.github.com/Microsoft/azdataGraph/tar.gz/8675ac6dfc60aad331ccbf7e4145b9eaa25e7304"
 
 babel-plugin-dynamic-import-node@^2.3.3:
   version "2.3.3"

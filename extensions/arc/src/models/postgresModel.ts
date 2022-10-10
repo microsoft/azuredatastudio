@@ -192,7 +192,7 @@ export class PostgresModel extends ResourceModel {
 		return {
 			serverName: `${ipAndPort.ip},${ipAndPort.port}`,
 			databaseName: '',
-			authenticationType: 'SqlLogin',
+			authenticationType: azdata.connection.AuthenticationType.SqlLogin,
 			providerName: loc.postgresProviderName,
 			connectionName: '',
 			userName: this._pgInfo.userName || '',

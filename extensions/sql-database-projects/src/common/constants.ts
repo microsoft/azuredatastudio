@@ -535,11 +535,6 @@ export const activeDirectoryInteractive = 'active directory interactive';
 export const userIdSetting = 'User ID';
 export const passwordSetting = 'Password';
 
-// Authentication types
-export const integratedAuth = 'Integrated';
-export const azureMfaAuth = 'AzureMFA';
-export const sqlAuth = 'SqlAuth';
-
 export const azureAddAccount = localize('azureAddAccount', "Add an Account...");
 
 // Tree item types

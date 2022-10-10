@@ -865,9 +865,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * @param connection The connection to fill in or update
 	 */
 	private async fillInOrClearToken(connection: interfaces.IConnectionProfile): Promise<boolean> {
-		if (connection.authenticationType !== Constants.azureMFA
-			&& connection.authenticationType !== Constants.azureMFAAndUser
-			&& connection.authenticationType !== Constants.dstsAuth) {
+		if (connection.authenticationType !== Constants.AuthenticationType.AzureMFA
+			&& connection.authenticationType !== Constants.AuthenticationType.AzureMFAAndUser
+			&& connection.authenticationType !== Constants.AuthenticationType.DSTSAuth) {
 			connection.options['azureAccountToken'] = undefined;
 			return true;
 		}
@@ -875,7 +875,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		let azureResource = this.getAzureResourceForConnection(connection);
 		const accounts = await this._accountManagementService.getAccounts();
 
-		if (connection.authenticationType === Constants.dstsAuth) {
+		if (connection.authenticationType === Constants.AuthenticationType.DSTSAuth) {
 			let dstsAccounts = accounts.filter(a => a.key.providerId.startsWith('dstsAuth'));
 			if (dstsAccounts.length <= 0) {
 				connection.options['azureAccountToken'] = undefined;
@@ -894,7 +894,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 		const azureAccounts = accounts.filter(a => a.key.providerId.startsWith('azure'));
 		if (azureAccounts && azureAccounts.length > 0) {
-			let accountId = (connection.authenticationType === Constants.azureMFA || connection.authenticationType === Constants.azureMFAAndUser) ? connection.azureAccount : connection.userName;
+			let accountId = (connection.authenticationType === Constants.AuthenticationType.AzureMFA || connection.authenticationType === Constants.AuthenticationType.AzureMFAAndUser) ? connection.azureAccount : connection.userName;
 			let account = azureAccounts.find(account => account.key.accountId === accountId);
 			if (account) {
 				this._logService.debug(`Getting security token for Azure account ${account.key.accountId}`);
@@ -1658,17 +1658,28 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return connections;
 	}
 
-	async handleUnsupportedProvider(providerName: string): Promise<boolean> {
-		const extensionId = ConnectionProviderAndExtensionMap.get(providerName);
+	public async handleUnsupportedProvider(providerId: string): Promise<boolean> {
+		const extensionId = ConnectionProviderAndExtensionMap.get(providerId);
 		const message = extensionId ? nls.localize('connection.extensionNotInstalled', "The extension '{0}' is required in order to connect to this resource. Do you want to install it?", extensionId) :
-			nls.localize('connectionDialog.connectionProviderNotSupported', "The extension that supports provider type '{0}' is not currently installed. Do you want to view the extensions?", providerName);
+			nls.localize('connectionDialog.connectionProviderNotSupported', "The extension that supports provider type '{0}' is not currently installed. Do you want to view the extensions?", providerId);
 		const result = await this._dialogService.confirm({
 			message: message,
 			type: 'question'
 		});
 		if (result.confirmed) {
 			if (extensionId) {
-				await this._commandService.executeCommand('extension.open', extensionId);
+				const providerRegistered = new Promise<void>(resolve => {
+					const eventHandler = this._capabilitiesService.onCapabilitiesRegistered(e => {
+						if (e.id === providerId) {
+							resolve();
+							eventHandler.dispose();
+						}
+					});
+				});
+				// Install the extension and then wait for the provider to be registered to ensure that everything is ready for the caller to use
+				await this._commandService.executeCommand('workbench.extensions.installExtension', extensionId);
+				await providerRegistered;
+
 			} else {
 				await this._paneCompositePartService.openPaneComposite(ExtensionsViewletID, ViewContainerLocation.Sidebar);
 			}

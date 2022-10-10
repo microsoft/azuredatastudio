@@ -42,7 +42,7 @@ export class CosmosDbMongoTreeDataProvider extends ResourceTreeDataProviderBase<
 				serverName: databaseServer.name,
 				userName: databaseServer.loginName,
 				password: '',
-				authenticationType: 'AzureMFA',
+				authenticationType: azdata.connection.AuthenticationType.AzureMFA,
 				savePassword: true,
 				groupFullName: '',
 				groupId: '',

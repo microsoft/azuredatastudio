@@ -1,8 +1,8 @@
 # Azure SQL Migration
-The Azure SQL Migration extension in Azure Data Studio brings together a simplified assessment, recommendation, and migration experience that delivers the following capabilities:
+The [Azure SQL Migration extension for Azure Data Studio](https://docs.microsoft.com/sql/azure-data-studio/extensions/azure-sql-migration-extension) brings together a simplified assessment, recommendation, and migration experience that delivers the following capabilities:
 - A responsive user interface that provides you with an end-to-end migration experience that starts with a migration readiness assessment, SKU recommendation (based on performance data), and finalizes with the actual migration to Azure SQL.
 - An enhanced assessment mechanism that can evaluate SQL Server instances, identifying databases that are ready for migration to the different Azure SQL targets.
-- A SKU recommendation engine that collects performance data from the source SQL Server instance on-premises, generating right-sized SKU recommendations based on your Azure SQL target.
+- A SKU recommendation engine (Preview) that collects performance data from the source SQL Server instance on-premises, generating right-sized SKU recommendations based on your Azure SQL target.
 - A reliable Azure service powered by Azure Database Migration Service that orchestrates data movement activities to deliver a seamless migration experience.
 - The ability to run online (for migrations requiring minimal downtime) or offline (for migrations where downtime persists through the migration) migration modes to suit your business requirements.
 - The flexibility to create and configure a self-hosted integration runtime to provide your own compute for accessing the source SQL Server and backups in your on-premises environment.
@@ -18,12 +18,11 @@ Open the Azure Data Studio marketplace, select and install the latest version of
 - A source SQL Server database(s) running on-premises, or on SQL Server on Azure Virtual Machine or any virtual machine running in the cloud (private, public).
 - An Azure SQL Managed Instance, SQL Server on Azure Virtual Machine, or Azure SQL Database to migrate your database(s) to.
     > Azure SQL Database offline migrations are still in public preview.
-- Your database backup location details, either a network file share or an Azure Blob Storage container.
-
+- Your database backup location details, either a network file share or an Azure Blob Storage container (not required for Azure SQL Database targets).
 ## Getting started
 Refer to [Migrate databases using the Azure SQL Migration extension for Azure Data Studio](https://docs.microsoft.com/azure/dms/migration-using-azure-data-studio) for detailed documentation on capabilities and concepts.
 
-## Assessment and SKU recommendation
+## Assessment and SKU recommendation (Preview)
 The assessment and SKU recommendation feature evaluates the source SQL Server database(s) for migration readiness.
 
 It also generates right-sized SKU recommendations for your Azure target to meet the performance requirements of the source SQL Server database(s) with minimal cost. [Learn more.](https://aka.ms/ads-sql-sku-recommend)
@@ -32,13 +31,12 @@ It also generates right-sized SKU recommendations for your Azure target to meet 
 The Azure SQL Migration extension supports database migrations to the following Azure SQL targets.
 - [Azure SQL Managed Instance](https://docs.microsoft.com/azure/azure-sql/managed-instance/sql-managed-instance-paas-overview)
 - [SQL Server on Azure Virtual Machines](https://docs.microsoft.com/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview)
-- [Azure SQL Database (Public preview)](https://docs.microsoft.com/azure/azure-sql/database/sql-database-paas-overview?view=azuresql)
+- [Azure SQL Database (Preview)](https://docs.microsoft.com/azure/azure-sql/database/sql-database-paas-overview?view=azuresql)
 
 
 ## Migration modes
 The following migration modes are supported for the corresponding Azure SQL targets.
 - Online - The source SQL Server database is available for read and write activity, while the database backups (full + log) are continuously restored on the Azure SQL target. Application downtime is limited to the duration of the cutover at the end of migration.
-
     > Online migrations to Azure SQL Database targets are not yet supported.
 - Offline - The source SQL Server database cannot be used for write activity, while the database backup files are restored on the Azure SQL target. Application downtime persists from the start until the completion of the migration process.
     > Azure SQL Database offline migrations are still in public preview.
