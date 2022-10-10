@@ -288,9 +288,30 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.assessment.migration.warning" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines.]]></Val>
+          <Val><![CDATA[Databases that are not ready for migration to Azure SQL Managed Instance or Azure SQL Database can be migrated to SQL Server on Azure Virtual Machines.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure SQL Managed Instance への移行準備が整っていないデータベースは、Azure Virtual Machines の SQL Server に移行させることができます。]]></Val>
+            <Val><![CDATA[Azure SQL Managed Instance または Azure SQL Database への移行準備が整っていないデータベースは、Azure Virtual Machines の SQL Server に移行させることができます。]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines.]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.assessment.migration.warning.sqldb" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Databases that are not ready for migration to Azure SQL Database can be migrated to SQL Server on Azure Virtual Machines. Alternatively, review assessment results for Azure SQL Managed Instance migration readiness.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure SQL Database への移行準備が整っていないデータベースは、Azure Virtual Machines の SQL Server に移行できます。または、Azure SQL Managed Instance 移行の準備度に関する評価結果を確認します。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.assessment.migration.warning.sqlmi" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines. Alternatively, review assessment results for Azure SQL Database migration readiness.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure SQL Managed Instance への移行準備が整っていないデータベースは、Azure Virtual Machines の SQL Serverに移行できます。または、Azure SQL Managed Instance 移行の準備度に関する評価結果を確認します。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -636,12 +657,12 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.can.be.migrated" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[{0}/{1} databases can be migrated]]></Val>
+          <Val><![CDATA[{0}/{1} databases can be migrated without issues]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0}/{1} 個のデータベースを移行できます]]></Val>
+            <Val><![CDATA[{0}/{1} 個のデータベースはイシューなく移行可能]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[{0} out of {1} databases can be migrated]]></Val>
+            <Val><![CDATA[{0}/{1} databases can be migrated]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1144,8 +1165,8 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dashboard.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Determine the migration readiness of your SQL Server instances, identify a recommended Azure SQL target, and complete the migration of your SQL Server instance to Azure SQL Managed Instance, SQL Server on Azure Virtual Machines or Azure SQL Database.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[SQL Server インスタンスの移行準備を判断し、推奨されるAzure SQLターゲットを特定し、Azure SQL Managed Instance、Azure Virtual Machines上のSQL Server、またはAzure SQL Database (プレビュー) へのSQL Serverインスタンスの移行を完了します。]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL Server インスタンスの移行準備状況を判断し、推奨されるAzure SQLターゲットを特定し、SQL Server インスタンスの Azure SQL Managed Instance への移行、Azure Virtual Machines または Azure SQL Database でのSQL Serverを完了します。]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Determine the migration readiness of your SQL Server instances, identify a recommended Azure SQL target, and complete the migration of your SQL Server instance to Azure SQL Managed Instance, SQL Server on Azure Virtual Machines or Azure SQL Database (PREVIEW).]]></Val>
@@ -3280,8 +3301,8 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.pre.req.3" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[An Azure SQL Managed Instance, SQL Server on Azure Virtual Machine, or Azure SQL Database to migrate your database(s) to.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[データベースの移行先となる Azure Virtual Machine 上のAzure SQL Managed Instance、SQL Server、または Azure SQL Database (プレビュー)。]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[データベースの移行先となる Azure SQL Managed Instance、Azure Virtual Machine 上のSQL Server、または Azure SQL Database。]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[An Azure SQL Managed Instance, SQL Server on Azure Virtual Machine, or Azure SQL Database (PREVIEW) to migrate your database(s) to.]]></Val>
@@ -4747,8 +4768,8 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.recommendation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure recommendation (PREVIEW)]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Azure のレコメンデーション]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure のレコメンデーション (プレビュー)]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Azure recommendation]]></Val>
@@ -5836,6 +5857,9 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.table.missing.count" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Missing target tables excluded from list: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[リストから除外されたターゲット テーブルがありません: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

@@ -12672,6 +12672,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/query/browser/query.contribution.queryEditor.results.saveAsExcel.includeHeaders" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[When true, column headers are included when saving results as an Excel file]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Se è impostata su true, le intestazioni di colonna vengono incluse quando si salvano i risultati in formato Excel]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/query/browser/query.contribution.queryEditor.results.saveAsXml.encoding" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File encoding used when saving results as XML]]></Val>

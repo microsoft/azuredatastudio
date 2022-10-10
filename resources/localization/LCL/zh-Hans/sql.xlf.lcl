@@ -1208,6 +1208,9 @@
         <Item ItemId=";(...) utionsAction" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Actual Number of Rows For All Executions]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[所有执行的实际行数]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1229,6 +1232,9 @@
         <Item ItemId=";(...) uTime" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Actual Elapsed CPU Time]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[实际占用的 CPU 时间]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1238,6 +1244,9 @@
         <Item ItemId=";(...) me" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Actual Elapsed Time]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[实际占用的时间]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1268,6 +1277,9 @@
         <Item ItemId=";(...) uttonTitle" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Highlight Expensive Operation]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[突出显示高开销操作]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1277,6 +1289,9 @@
         <Item ItemId=";(...) Metric" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[No nodes found with the {0} metric.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[找不到具有 {0} 指标的节点。]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1316,6 +1331,9 @@
         <Item ItemId=";(...) eDefaultMetricInfo" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Set chosen metric as the default for query execution plans?]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[将所选指标设置为查询执行计划的默认项?]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -7956,6 +7974,9 @@
       <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanView.executionPlanHighlightExpensiveOperationAction" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Highlight Expensive Operation]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[突出显示高开销操作]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -8109,8 +8130,8 @@
       <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/widgets/customZoomWidget.customZoomApplyButtonTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Apply Zoom]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[应用缩放(Enter)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[应用缩放]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Apply Zoom (Enter)]]></Val>
@@ -8152,7 +8173,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Cost]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[费用]]></Val>
+            <Val><![CDATA[成本]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -8178,6 +8199,9 @@
       <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/widgets/highlightExpensiveNodeWidget.executionPlanSubtreeCost" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Subtree Cost]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[子树成本]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -8185,7 +8209,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Metric:]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[度量:]]></Val>
+            <Val><![CDATA[指标:]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -12644,6 +12668,15 @@
           <Val><![CDATA[Character used for enclosing text fields when saving results as CSV]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[将结果保存为 CSV 时用于封装文本字段的字符]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/query/browser/query.contribution.queryEditor.results.saveAsExcel.includeHeaders" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[When true, column headers are included when saving results as an Excel file]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[如果为 true，则在将结果另存为 Excel 文件时包含列标题]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
