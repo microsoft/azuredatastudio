@@ -4335,6 +4335,9 @@ Error: {1}</source>
     <trans-unit id="queryEditor.results.saveAsCsv.textIdentifier">
       <source xml:lang="en">Character used for enclosing text fields when saving results as CSV</source>
     </trans-unit>
+    <trans-unit id="queryEditor.results.saveAsExcel.includeHeaders">
+      <source xml:lang="en">When true, column headers are included when saving results as an Excel file</source>
+    </trans-unit>
     <trans-unit id="queryEditor.results.saveAsXml.encoding">
       <source xml:lang="en">File encoding used when saving results as XML</source>
     </trans-unit>
