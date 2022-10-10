@@ -57,16 +57,11 @@ async function main() {
 	// but sometimes the content of nls.metadata.json files could be different(only the order of the entries).
 	// To workaround the issue, we need to replace these files in arm64 ADS with the files from x64 ADS.
 	// Tracked by issue: https://github.com/microsoft/azuredatastudio/issues/20792
-	glob(path.join(x64AppPath, '/Contents/Resources/app/**/nls.metadata.json'), (err, files) => {
-		if (err) {
-			console.warn(`Error occured while looking for nls.metadata.json files: ${err}`);
-			return;
-		}
-		files.forEach(async file => {
-			const fileToReplace = file.replace(x64AppNameBase, arm64AppNameBase);
-			console.debug(`Replacing file '${fileToReplace}' with '${file}'`);
-			await fs.copy(file, fileToReplace, { overwrite: true });
-		});
+	const sourceFiles = glob.sync(path.join(x64AppPath, '/Contents/Resources/app/**/nls.metadata.json'));
+	sourceFiles.forEach(source => {
+		const target = source.replace(x64AppNameBase, arm64AppNameBase);
+		console.debug(`Replacing file '${target}' with '${source}'`);
+		fs.copySync(source, target, { overwrite: true });
 	});
 	// {{SQL CARBON EDIT}} - END
 

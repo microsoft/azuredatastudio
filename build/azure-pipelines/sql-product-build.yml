@@ -28,6 +28,7 @@ stages:
     jobs:
       - job: macOS
         variables:
+          NPM_CONFIG_ARCH: x64
           VSCODE_ARCH: x64
         steps:
         - template: darwin/sql-product-build-darwin.yml
@@ -45,8 +46,9 @@ stages:
 
       - job: macOS_ARM64
         variables:
+          NPM_CONFIG_ARCH: arm64
           VSCODE_ARCH: arm64
-          # Do not run tests for arm64 builds
+          # Do not run tests for arm64 build
           RUN_TESTS: false
           RUN_SMOKE_TESTS: false
         steps:
@@ -65,12 +67,16 @@ stages:
 
       - job: macOS_Universal
         variables:
+          NPM_CONFIG_ARCH: x64
           VSCODE_ARCH: universal
+          # Do not run tests for universal build
+          RUN_TESTS: false
+          RUN_SMOKE_TESTS: false
         dependsOn:
         - macOS
         - macOS_ARM64
         steps:
-        - template: darwin/sql-product-build-darwin-universal.yml
+        - template: darwin/sql-product-build-darwin.yml
         timeoutInMinutes: 90
 
       - job: macOS_Signing_Universal

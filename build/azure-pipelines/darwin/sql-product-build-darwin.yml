@@ -52,7 +52,7 @@ steps:
 
   - script: |
       mkdir -p .build
-      node build/azure-pipelines/common/sql-computeNodeModulesCacheKey.js $VSCODE_ARCH > .build/yarnlockhash
+      node build/azure-pipelines/common/sql-computeNodeModulesCacheKey.js $(NPM_CONFIG_ARCH) > .build/yarnlockhash
     displayName: Prepare yarn cache key
 
   - task: Cache@2
@@ -71,7 +71,7 @@ steps:
 
   - script: |
       set -e
-      export npm_config_arch=$(VSCODE_ARCH)
+      export npm_config_arch=$(NPM_CONFIG_ARCH)
       CHILD_CONCURRENCY=1 yarn --frozen-lockfile
     displayName: Install dependencies
     env:
@@ -104,6 +104,7 @@ steps:
     displayName: Build
     env:
       VSCODE_MIXIN_PASSWORD: $(github-distro-mixin-password)
+    condition: and(succeeded(), ne(variables['VSCODE_ARCH'], 'universal'))
 
   - script: |
       set -e
@@ -128,6 +129,7 @@ steps:
       set -e
       yarn gulp compile-extensions
     displayName: Compile Extensions
+    condition: and(succeeded(), ne(variables['VSCODE_ARCH'], 'universal'))
 
   # Per https://developercommunity.visualstudio.com/t/variablesexpressions-dont-work-with-continueonerro/1187733 we can't use variables
   # in continueOnError directly so instead make two copies of the task and only run one or the other based on the SMOKE_FAIL_ON_ERROR value
@@ -156,6 +158,22 @@ steps:
   #   displayName: Run smoke tests (Browser)
   #   continueOnError: true
   #   condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+
+  - task: DownloadBuildArtifacts@0
+    displayName: 'Download arm64 and x64 packages'
+    inputs:
+      downloadType: specific
+      itemPattern: 'drop/darwin/archive/azuredatastudio-darwin-@(arm64|x64)-unsigned.zip'
+      downloadPath: $(agent.builddirectory)
+    condition: and(succeeded(), eq(variables['VSCODE_ARCH'], 'universal'))
+
+  - script: |
+      set -e
+      unzip $(agent.builddirectory)/drop/darwin/archive/azuredatastudio-darwin-x64-unsigned.zip -d $(agent.builddirectory)/azuredatastudio-darwin-x64
+      unzip $(agent.builddirectory)/drop/darwin/archive/azuredatastudio-darwin-arm64-unsigned.zip -d $(agent.builddirectory)/azuredatastudio-darwin-arm64
+      DEBUG=* node build/darwin/create-universal-app.js
+    displayName: Create Universal App
+    condition: and(succeeded(), eq(variables['VSCODE_ARCH'], 'universal'))
 
   - script: |
       set -e
