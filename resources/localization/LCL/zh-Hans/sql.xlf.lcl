@@ -7527,8 +7527,8 @@
       <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/compareExecutionPlanInput.epCompare.editorName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[CompareExecutionPlans]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[比较执行计划]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[CompareExecutionPlans]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Compare Execution Plans]]></Val>
