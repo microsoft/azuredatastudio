@@ -379,10 +379,14 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 							diffIcon.title = notEqualTitle;
 							break;
 						case sqlExtHostType.executionPlan.ExecutionPlanGraphElementPropertyDataType.Number:
-							diffIcon = (parseFloat(v.primaryProp.displayValue) > parseFloat(v.secondaryProp.displayValue))
-								? { iconClass: Codicon.chevronRight.classNames, title: greaterThanTitle }
-								: { iconClass: Codicon.chevronLeft.classNames, title: lessThanTitle };
-
+							if (v.primaryProp.betterValue === sqlExtHostType.executionPlan.ExecutionPlanGraphElementPropertyBetterValue.None) {
+								diffIcon.title = notEqualTitle;
+								diffIcon.iconClass = executionPlanComparisonPropertiesDifferent;
+							} else {
+								diffIcon = (parseFloat(v.primaryProp.displayValue) > parseFloat(v.secondaryProp.displayValue))
+									? { iconClass: Codicon.chevronRight.classNames, title: greaterThanTitle }
+									: { iconClass: Codicon.chevronLeft.classNames, title: lessThanTitle };
+							}
 							break;
 						case sqlExtHostType.executionPlan.ExecutionPlanGraphElementPropertyDataType.String:
 							diffIcon.iconClass = executionPlanComparisonPropertiesDifferent;
