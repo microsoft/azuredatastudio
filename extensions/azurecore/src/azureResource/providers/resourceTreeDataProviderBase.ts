@@ -17,16 +17,12 @@ export abstract class ResourceTreeDataProviderBase<T extends azureResource.Azure
 	public constructor(protected _resourceService: IAzureResourceService<T>) {
 	}
 
-	public getTreeItem(element: azureResource.IAzureResourceNode): azdata.TreeItem | Thenable<azdata.TreeItem> {
+	public async getResourceTreeItem(element: azureResource.IAzureResourceNode): Promise<azdata.TreeItem> {
 		return element.treeItem;
 	}
 
-	public async getChildren(element?: azureResource.IAzureResourceNode): Promise<azureResource.IAzureResourceNode[]> {
+	public async getChildren(element: azureResource.IAzureResourceNode): Promise<azureResource.IAzureResourceNode[]> {
 		try {
-			if (!element) {
-				return [this.createContainerNode()];
-			}
-
 			let resources: T[] = await this.getResources(element);
 
 			return resources.map((resource) => <azureResource.IAzureResourceNode>{
@@ -43,6 +39,9 @@ export abstract class ResourceTreeDataProviderBase<T extends azureResource.Azure
 
 	private async getResources(element: azureResource.IAzureResourceNode): Promise<T[]> {
 		const response = await azdata.accounts.getAccountSecurityToken(element.account, element.tenantId, azdata.AzureResource.ResourceManagement);
+		if (!response) {
+			throw new Error(`Did not receive security token when getting resources for account ${element.account.displayInfo.displayName}`);
+		}
 		const credential = new msRest.TokenCredentials(response.token, response.tokenType);
 
 		const resources: T[] = await this._resourceService.getResources([element.subscription], credential, element.account) || <T[]>[];
@@ -51,7 +50,7 @@ export abstract class ResourceTreeDataProviderBase<T extends azureResource.Azure
 
 	protected abstract getTreeItemForResource(resource: T, account: AzureAccount): azdata.TreeItem;
 
-	protected abstract createContainerNode(): azureResource.IAzureResourceNode;
+	public abstract getRootChildren(): Promise<azdata.TreeItem[]>;
 }
 
 export interface GraphData {
@@ -129,7 +128,7 @@ export abstract class ResourceServiceBase<T extends GraphData, U extends azureRe
 		graphResources.forEach((res) => {
 			if (!ids.has(res.id)) {
 				ids.add(res.id);
-				res.subscriptionName = subscriptions.find(sub => sub.id === res.subscriptionId).name;
+				res.subscriptionName = subscriptions.find(sub => sub.id === res.subscriptionId)?.name;
 				const converted = this.convertResource(res);
 				convertedResources.push(converted);
 			}

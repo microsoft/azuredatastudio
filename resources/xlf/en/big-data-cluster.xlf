@@ -405,6 +405,9 @@
     <trans-unit id="bdc.dashboard.title">
       <source xml:lang="en">Big Data Cluster Dashboard -</source>
     </trans-unit>
+    <trans-unit id="bdc.deprecationWarning">
+      <source xml:lang="en">The Big Data Cluster add-on is being retired and Azure Data Studio functionality for it will be removed in an upcoming release. Read more about this and support going forward [here](https://go.microsoft.com/fwlink/?linkid=2207340).</source>
+    </trans-unit>
     <trans-unit id="mount.error.endpointNotFound">
       <source xml:lang="en">Controller endpoint information was not found</source>
     </trans-unit>

@@ -972,6 +972,7 @@ export namespace designers {
 		ForeignKeys = 'foreignKeys',
 		CheckConstraints = 'checkConstraints',
 		Indexes = 'indexes',
+		PrimaryKey = 'primaryKey',
 		PrimaryKeyName = 'primaryKeyName',
 		PrimaryKeyDescription = 'primaryKeyDescription',
 		PrimaryKeyColumns = 'primaryKeyColumns'
@@ -1055,5 +1056,16 @@ export namespace executionPlan {
 		True = 2,
 		False = 3,
 		None = 4
+	}
+}
+
+export namespace env {
+	/**
+	 * Well-known app quality values
+	 */
+	export enum AppQuality {
+		stable = 'stable',
+		insider = 'insider',
+		dev = 'dev'
 	}
 }

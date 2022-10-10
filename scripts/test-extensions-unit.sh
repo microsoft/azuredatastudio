@@ -15,13 +15,6 @@ VSCODEEXTDIR=`mktemp -d -t adsext_XXXXXXXXXX 2>/dev/null`
 VSCODECRASHDIR=$ROOT/.build/crashes
 cd $ROOT
 
-# Default to only running stable tests if test grep isn't set
-if [[ "$ADS_TEST_GREP" == "" ]]; then
-	echo Running stable tests only
-	export ADS_TEST_GREP=@UNSTABLE@
-	export ADS_TEST_INVERT_GREP=1
-fi
-
 # Figure out which Electron to use for running tests
 if [ -z "$INTEGRATION_TEST_ELECTRON_PATH" ]
 then

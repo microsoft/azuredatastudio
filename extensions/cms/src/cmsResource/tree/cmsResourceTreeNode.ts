@@ -38,7 +38,7 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 			let nodes: CmsResourceTreeNodeBase[] = [];
 			if (!this.ownerUri) {
 				// Set back password to get ownerUri
-				if (this.connection.options.authenticationType === 'SqlLogin' && this.connection.options.savePassword === true) {
+				if (this.connection.options.authenticationType === azdata.connection.AuthenticationType.SqlLogin && this.connection.options.savePassword === true) {
 					this.connection.options.password = await this.appContext.cmsUtils.getPassword(this.connection.options.user);
 				}
 			}

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import { convertSize, convertSizeToNumber } from 'sql/base/browser/dom';
+import { convertSize, convertSizeToNumber, validateCalcExpression } from 'sql/base/browser/dom';
 
 suite('DOM Tests', () => {
 
@@ -54,5 +54,35 @@ suite('DOM Tests', () => {
 		const expected = 0;
 		const actual = convertSizeToNumber(undefined);
 		assert.strictEqual(expected, actual);
+	});
+
+	test('Validating different calc expressions', () => {
+		const calcExpressionsTestInputs = [
+			{ input: 'calc(10px+10px)', expected: false },
+			{ input: 'calc(76.8px--50%)', expected: false },
+			{ input: 'calc(10px +10px)', expected: false },
+			{ input: 'calc(10px- -50%)', expected: false },
+			{ input: 'calc(10vmin + 10px)', expected: true },
+			{ input: 'calc(10% - -50.7%)', expected: true },
+			{ input: 'calc(103px - -50%)', expected: true },
+			{ input: 'calc(10px +10px)', expected: false },
+			{ input: 'calc(10px --50%)', expected: false },
+			{ input: 'calc(10vmin + 10px )', expected: true },
+			{ input: 'calc( 10% - -50.7%)', expected: true },
+			{ input: 'calc( 103px - -50%)', expected: true },
+			{ input: 'calc( 10%  - -50.7%)', expected: true },
+			{ input: 'calc( 10% --50.7% )', expected: false },
+			{ input: 'calc( 10.89% - -50.7% )', expected: true },
+			{ input: 'calc( 103px  - -50%)', expected: true },
+			{ input: 'calc', expected: false },
+			{ input: 'calc(sdfs   - sdf)', expected: false },
+			{ input: 'calc(15sdfs   - 456svbdf)', expected: false },
+			{ input: 'calc( bpx45 - 45px)', expected: false },
+			{ input: 'calc( 34px - 45g)', expected: false }
+		];
+
+		calcExpressionsTestInputs.forEach((run) => {
+			assert.strictEqual(run.expected, validateCalcExpression(run.input), `error validating calc expression: ${run.input}`);
+		});
 	});
 });

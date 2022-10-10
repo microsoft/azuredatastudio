@@ -269,6 +269,11 @@
       <source xml:lang="en">Controls whether or not the empty window is trusted by default within Azure Data Studio. When used with `#{0}#`, you can enable the full functionality of Azure Data Studio without prompting in an empty window.</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/base/parts/tree/browser/treeDefaults" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="collapse all">
+      <source xml:lang="en">Collapse All</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/platform/accounts/common/accountActions" source-language="en" datatype="plaintext"><body>
     <trans-unit id="NoAccountToRefresh">
       <source xml:lang="en">There is no account to refresh</source>
@@ -314,6 +319,14 @@
     </trans-unit>
     <trans-unit id="connectionStatusManager.uriAlreadyInConnectionsList">
       <source xml:lang="en">There is already a connection with uri: {0}</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/platform/connection/common/providerConnectionInfo" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="connection.unsupported">
+      <source xml:lang="en">Unsupported connection</source>
+    </trans-unit>
+    <trans-unit id="loading">
+      <source xml:lang="en">Loading...</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/platform/dashboard/browser/insightRegistry" source-language="en" datatype="plaintext"><body>
@@ -2340,7 +2353,18 @@
 </body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/compareExecutionPlanInput" source-language="en" datatype="plaintext"><body>
     <trans-unit id="epCompare.editorName">
-      <source xml:lang="en">Compare Execution Plans</source>
+      <source xml:lang="en">CompareExecutionPlans</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/constants" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="ep.propertiesSearchDescription">
+      <source xml:lang="en">Search properties table</source>
+    </trans-unit>
+    <trans-unit id="ep.searchPlaceholder">
+      <source xml:lang="en">Filter for any field...</source>
+    </trans-unit>
+    <trans-unit id="ep.topOperationsSearchDescription">
+      <source xml:lang="en">Search top operations</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditor" source-language="en" datatype="plaintext"><body>
@@ -2391,28 +2415,40 @@
     <trans-unit id="epCompare.zoomToFit">
       <source xml:lang="en">Zoom to fit</source>
     </trans-unit>
+    <trans-unit id="executionPlanDisableTooltip">
+      <source xml:lang="en">Tooltips disabled</source>
+    </trans-unit>
+    <trans-unit id="executionPlanEnableTooltip">
+      <source xml:lang="en">Tooltips enabled</source>
+    </trans-unit>
     <trans-unit id="queryDropdownPrefix">
       <source xml:lang="en">Query {0} of {1}: {2}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="executionPlanComparisonPropertiesBottomOperation">
-      <source xml:lang="en">Bottom operation: {0}</source>
-    </trans-unit>
-    <trans-unit id="executionPlanComparisonPropertiesLeftOperation">
-      <source xml:lang="en">Left operation: {0}</source>
-    </trans-unit>
-    <trans-unit id="executionPlanComparisonPropertiesRightOperation">
-      <source xml:lang="en">Right operation: {0}</source>
-    </trans-unit>
-    <trans-unit id="executionPlanComparisonPropertiesTopOperation">
-      <source xml:lang="en">Top operation: {0}</source>
-    </trans-unit>
     <trans-unit id="executionPlanPropertiesEdgeOperationName">
       <source xml:lang="en">Edge</source>
     </trans-unit>
+    <trans-unit id="nodePropertyViewBottomOperation">
+      <source xml:lang="en">Bottom operation: {0}</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewLeftOperation">
+      <source xml:lang="en">Left operation: {0}</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewNameEquivalentPropertiesRowHeader">
+      <source xml:lang="en">Equivalent Properties</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewNameGreaterThanTitle">
+      <source xml:lang="en">Greater than</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewNameLessThanTitle">
+      <source xml:lang="en">Less than</source>
+    </trans-unit>
     <trans-unit id="nodePropertyViewNameNameColumnHeader">
       <source xml:lang="en">Name</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewNameNotEqualTitle">
+      <source xml:lang="en">Not equal to</source>
     </trans-unit>
     <trans-unit id="nodePropertyViewNameValueColumnBottomHeader">
       <source xml:lang="en">Value (Bottom Plan)</source>
@@ -2425,6 +2461,12 @@
     </trans-unit>
     <trans-unit id="nodePropertyViewNameValueColumnTopHeader">
       <source xml:lang="en">Value (Top Plan)</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewRightOperation">
+      <source xml:lang="en">Right operation: {0}</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewTopOperation">
+      <source xml:lang="en">Top operation: {0}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanContribution" source-language="en" datatype="plaintext"><body>
@@ -2465,6 +2507,12 @@
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase" source-language="en" datatype="plaintext"><body>
     <trans-unit id="ep.topOperationsCopyTableData">
       <source xml:lang="en">Copy</source>
+    </trans-unit>
+    <trans-unit id="executionPlanCollapseAllProperties">
+      <source xml:lang="en">Collapse All</source>
+    </trans-unit>
+    <trans-unit id="executionPlanExpandAllProperties">
+      <source xml:lang="en">Expand All</source>
     </trans-unit>
     <trans-unit id="executionPlanPropertyViewClose">
       <source xml:lang="en">Close</source>
@@ -2529,6 +2577,9 @@
     <trans-unit id="executionPlanFitGraphLabel">
       <source xml:lang="en">Zoom to fit</source>
     </trans-unit>
+    <trans-unit id="executionPlanHighlightExpensiveOperationAction">
+      <source xml:lang="en">Highlight Expensive Operation</source>
+    </trans-unit>
     <trans-unit id="executionPlanOpenGraphFile">
       <source xml:lang="en">Show Query Plan XML</source>
     </trans-unit>
@@ -2580,13 +2631,13 @@
 </body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/widgets/customZoomWidget" source-language="en" datatype="plaintext"><body>
     <trans-unit id="cancelCustomZoomAction">
-      <source xml:lang="en">Close (Escape)</source>
+      <source xml:lang="en">Close</source>
     </trans-unit>
     <trans-unit id="customZoomApplyButton">
       <source xml:lang="en">Apply</source>
     </trans-unit>
     <trans-unit id="customZoomApplyButtonTitle">
-      <source xml:lang="en">Apply Zoom (Enter)</source>
+      <source xml:lang="en">Apply Zoom</source>
     </trans-unit>
     <trans-unit id="invalidCustomZoomError">
       <source xml:lang="en">Select a zoom value between 1 to 200</source>
@@ -2595,12 +2646,68 @@
       <source xml:lang="en">Zoom (percent)</source>
     </trans-unit>
     <trans-unit id="zoomAction">
-      <source xml:lang="en">Zoom (Enter)</source>
+      <source xml:lang="en">Zoom</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/widgets/highlightExpensiveNodeWidget" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="actualNumberOfRowsForAllExecutionsAction">
+      <source xml:lang="en">Actual Number of Rows For All Executions</source>
+    </trans-unit>
+    <trans-unit id="cancelExpensiveOperationAction">
+      <source xml:lang="en">Close</source>
+    </trans-unit>
+    <trans-unit id="executionPlanActualElapsedCpuTime">
+      <source xml:lang="en">Actual Elapsed CPU Time</source>
+    </trans-unit>
+    <trans-unit id="executionPlanActualElapsedTime">
+      <source xml:lang="en">Actual Elapsed Time</source>
+    </trans-unit>
+    <trans-unit id="executionPlanCost">
+      <source xml:lang="en">Cost</source>
+    </trans-unit>
+    <trans-unit id="executionPlanNumberOfRowsRead">
+      <source xml:lang="en">Number of Rows Read</source>
+    </trans-unit>
+    <trans-unit id="executionPlanOff">
+      <source xml:lang="en">Off</source>
+    </trans-unit>
+    <trans-unit id="executionPlanSubtreeCost">
+      <source xml:lang="en">Subtree Cost</source>
+    </trans-unit>
+    <trans-unit id="expensiveOperationLabel">
+      <source xml:lang="en">Metric:</source>
+    </trans-unit>
+    <trans-unit id="highlightExpensiveOperationAction">
+      <source xml:lang="en">Apply</source>
+    </trans-unit>
+    <trans-unit id="highlightExpensiveOperationApplyButton">
+      <source xml:lang="en">Apply</source>
+    </trans-unit>
+    <trans-unit id="highlightExpensiveOperationButtonTitle">
+      <source xml:lang="en">Highlight Expensive Operation</source>
+    </trans-unit>
+    <trans-unit id="invalidPropertyExecutionPlanMetric">
+      <source xml:lang="en">No nodes found with the {0} metric.</source>
+    </trans-unit>
+    <trans-unit id="qp.expensiveOperationMetric.dontShowAgain">
+      <source xml:lang="en">Don't Show Again</source>
+    </trans-unit>
+    <trans-unit id="qp.expensiveOperationMetric.no">
+      <source xml:lang="en">No</source>
+    </trans-unit>
+    <trans-unit id="qp.expensiveOperationMetric.yes">
+      <source xml:lang="en">Yes</source>
+    </trans-unit>
+    <trans-unit id="queryExecutionPlan.showUpdateDefaultMetricInfo">
+      <source xml:lang="en">Set chosen metric as the default for query execution plans?</source>
+    </trans-unit>
+    <trans-unit id="turnOffExpensiveHighlightingOperationAction">
+      <source xml:lang="en">Off</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/widgets/nodeSearchWidget" source-language="en" datatype="plaintext"><body>
     <trans-unit id="cancelSearchAction">
-      <source xml:lang="en">Close (Escape)</source>
+      <source xml:lang="en">Close</source>
     </trans-unit>
     <trans-unit id="executionPlanSearchTypeContains">
       <source xml:lang="en">Contains</source>
@@ -2609,10 +2716,10 @@
       <source xml:lang="en">Equals</source>
     </trans-unit>
     <trans-unit id="nextSearchItemAction">
-      <source xml:lang="en">Next Match (Enter)</source>
+      <source xml:lang="en">Next Match</source>
     </trans-unit>
     <trans-unit id="previousSearchItemAction">
-      <source xml:lang="en">Previous Match (Shift+Enter)</source>
+      <source xml:lang="en">Previous Match</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/executionPlan/common/executionPlanInput" source-language="en" datatype="plaintext"><body>
@@ -4225,6 +4332,9 @@ Error: {1}</source>
     <trans-unit id="queryEditor.results.saveAsCsv.textIdentifier">
       <source xml:lang="en">Character used for enclosing text fields when saving results as CSV</source>
     </trans-unit>
+    <trans-unit id="queryEditor.results.saveAsExcel.includeHeaders">
+      <source xml:lang="en">When true, column headers are included when saving results as an Excel file</source>
+    </trans-unit>
     <trans-unit id="queryEditor.results.saveAsXml.encoding">
       <source xml:lang="en">File encoding used when saving results as XML</source>
     </trans-unit>
@@ -4505,11 +4615,6 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="tableDesigner.saveTableChanges">
       <source xml:lang="en">Save</source>
-    </trans-unit>
-</body></file>
-  <file original="src/sql/workbench/contrib/tableDesigner/browser/tableDesignerEditor" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="tableDesigner.PreviewFeature">
-      <source xml:lang="en">Preview feature</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/tasks/browser/tasks.contribution" source-language="en" datatype="plaintext"><body>
@@ -5132,20 +5237,8 @@ Error: {1}</source>
     <trans-unit id="connectionDialog.connect">
       <source xml:lang="en">Connect</source>
     </trans-unit>
-    <trans-unit id="connectionDialog.connectionProviderNotSupported">
-      <source xml:lang="en">The extension that supports provider type '{0}' is not currently installed. Please install it and try again.</source>
-    </trans-unit>
-    <trans-unit id="connectionDialog.extensionNotInstalled">
-      <source xml:lang="en">The extension '{0}' is required in order to connect to this resource. Please install it and try again.</source>
-    </trans-unit>
     <trans-unit id="connectionDialog.recentConnections">
       <source xml:lang="en">Recent Connections</source>
-    </trans-unit>
-    <trans-unit id="connectionDialog.viewExtension">
-      <source xml:lang="en">View Extension</source>
-    </trans-unit>
-    <trans-unit id="connectionDialog.viewExtensions">
-      <source xml:lang="en">View Extensions</source>
     </trans-unit>
     <trans-unit id="noRecentConnections">
       <source xml:lang="en">No recent connection</source>
@@ -5157,6 +5250,9 @@ Error: {1}</source>
   <file original="src/sql/workbench/services/connection/browser/connectionManagementService" source-language="en" datatype="plaintext"><body>
     <trans-unit id="cancelConnectionConfirmation">
       <source xml:lang="en">Are you sure you want to cancel this connection?</source>
+    </trans-unit>
+    <trans-unit id="connection.extensionNotInstalled">
+      <source xml:lang="en">The extension '{0}' is required in order to connect to this resource. Do you want to install it?</source>
     </trans-unit>
     <trans-unit id="connection.invalidConnectionResult">
       <source xml:lang="en">Connection result is invalid</source>
@@ -5172,6 +5268,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="connection.unsupportedServerVersionWarning">
       <source xml:lang="en">The server version is not supported by Azure Data Studio, you may still connect to it but some features in Azure Data Studio might not work as expected.</source>
+    </trans-unit>
+    <trans-unit id="connectionDialog.connectionProviderNotSupported">
+      <source xml:lang="en">The extension that supports provider type '{0}' is not currently installed. Do you want to view the extensions?</source>
     </trans-unit>
     <trans-unit id="connectionManagementService.noProviderForUri">
       <source xml:lang="en">Could not find provider for uri: {0}</source>
@@ -5687,11 +5786,6 @@ Error: {1}</source>
       <source xml:lang="en">Contributes notebook provider descriptions.</source>
     </trans-unit>
 </body></file>
-  <file original="src/sql/workbench/services/objectExplorer/browser/asyncServerTreeRenderer" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="loading">
-      <source xml:lang="en">Loading...</source>
-    </trans-unit>
-</body></file>
   <file original="src/sql/workbench/services/objectExplorer/browser/connectionTreeAction" source-language="en" datatype="plaintext"><body>
     <trans-unit id="DisconnectAction">
       <source xml:lang="en">Disconnect</source>
@@ -5741,11 +5835,6 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="noProviderFound">
       <source xml:lang="en">Cannot expand as the required connection provider '{0}' was not found</source>
-    </trans-unit>
-</body></file>
-  <file original="src/sql/workbench/services/objectExplorer/browser/serverTreeRenderer" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="loading">
-      <source xml:lang="en">Loading...</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/objectExplorer/browser/treeCreationUtils" source-language="en" datatype="plaintext"><body>

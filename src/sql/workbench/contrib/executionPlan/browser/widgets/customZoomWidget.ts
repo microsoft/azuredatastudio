@@ -39,7 +39,7 @@ export class CustomZoomWidget extends ExecutionPlanWidgetBase {
 			ariaLabel: zoomValueLabel,
 			flexibleWidth: false
 		});
-		attachInputBoxStyler(this.customZoomInputBox, this.themeService);
+		this._register(attachInputBoxStyler(this.customZoomInputBox, this.themeService));
 
 		const currentZoom = this.executionPlanDiagram.getZoomLevel();
 
@@ -57,14 +57,14 @@ export class CustomZoomWidget extends ExecutionPlanWidgetBase {
 		};
 
 		const applyButton = new Button(this.container, {
-			title: localize('customZoomApplyButtonTitle', "Apply Zoom (Enter)")
+			title: localize('customZoomApplyButtonTitle', "Apply Zoom")
 		});
 		applyButton.setWidth('60px');
 		applyButton.label = localize('customZoomApplyButton', "Apply");
 
-		applyButton.onDidClick(async e => {
+		this._register(applyButton.onDidClick(async e => {
 			await new CustomZoomAction().run(self);
-		});
+		}));
 
 		// Adding action bar
 		this._actionBar = new ActionBar(this.container);
@@ -80,7 +80,7 @@ export class CustomZoomWidget extends ExecutionPlanWidgetBase {
 
 export class CustomZoomAction extends Action {
 	public static ID = 'qp.customZoomAction';
-	public static LABEL = localize('zoomAction', "Zoom (Enter)");
+	public static LABEL = localize('zoomAction', "Zoom");
 
 	constructor() {
 		super(CustomZoomAction.ID, CustomZoomAction.LABEL, zoomIconClassNames);
@@ -101,7 +101,7 @@ export class CustomZoomAction extends Action {
 
 export class CancelZoom extends Action {
 	public static ID = 'qp.cancelCustomZoomAction';
-	public static LABEL = localize('cancelCustomZoomAction', "Close (Escape)");
+	public static LABEL = localize('cancelCustomZoomAction', "Close");
 
 	constructor() {
 		super(CancelZoom.ID, CancelZoom.LABEL, Codicon.chromeClose.classNames);

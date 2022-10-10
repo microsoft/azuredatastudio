@@ -60,20 +60,20 @@ export class AzureResourceResourceTreeNode extends TreeNode {
 		const treeItem = this.resourceNodeWithProviderId.resourceNode.treeItem;
 
 		return {
-			label: <any>treeItem.label,
+			label: typeof treeItem.label === 'object' ? treeItem.label.label : treeItem.label || '',
 			isLeaf: treeItem.collapsibleState === TreeItemCollapsibleState.None ? true : false,
 			errorMessage: undefined,
 			metadata: undefined,
 			nodePath: this.generateNodePath(),
 			nodeStatus: undefined,
-			nodeType: treeItem.contextValue,
+			nodeType: treeItem.contextValue || '',
 			nodeSubType: undefined,
 			iconType: treeItem.contextValue
 		};
 	}
 
 	public get nodePathValue(): string {
-		return this.resourceNodeWithProviderId.resourceNode.treeItem.id;
+		return this.resourceNodeWithProviderId.resourceNode.treeItem.id || '';
 	}
 
 }

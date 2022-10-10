@@ -9,6 +9,7 @@ import { ConnectionConfig } from 'sql/platform/connection/common/connectionConfi
 import { fixupConnectionCredentials } from 'sql/platform/connection/common/connectionInfo';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
+import { AuthenticationType } from 'sql/platform/connection/common/constants';
 import { IConnectionProfile, ProfileMatcher } from 'sql/platform/connection/common/interfaces';
 import { ICredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import { isDisposable } from 'vs/base/common/lifecycle';
@@ -90,9 +91,9 @@ export class ConnectionStore {
 					}
 					return { profile: credentialsItem, savedCred: !!savedCred };
 				});
-		} else if (credentialsItem.authenticationType === 'AzureMFA' || credentialsItem.authenticationType === 'dstsAuth' && credentialsItem.azureAccount) {
+		} else if (credentialsItem.authenticationType === AuthenticationType.AzureMFA || credentialsItem.authenticationType === AuthenticationType.DSTSAuth && credentialsItem.azureAccount) {
 			return Promise.resolve({ profile: credentialsItem, savedCred: true });
-		} else if (credentialsItem.authenticationType === 'None') {
+		} else if (credentialsItem.authenticationType === AuthenticationType.None) {
 			// Kusto supports no authentication
 			return Promise.resolve({ profile: credentialsItem, savedCred: true });
 		} else {

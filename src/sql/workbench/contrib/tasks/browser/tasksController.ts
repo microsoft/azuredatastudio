@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ITree, ContextMenuEvent } from 'vs/base/parts/tree/browser/tree';
-import * as treedefaults from 'vs/base/parts/tree/browser/treeDefaults';
+import { ITree, ContextMenuEvent } from 'sql/base/parts/tree/browser/tree';
+import * as treedefaults from 'sql/base/parts/tree/browser/treeDefaults';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IMouseEvent } from 'vs/base/browser/mouseEvent';

@@ -35,7 +35,6 @@ interface CryptoValues {
 
 export class AzureAuthCodeGrant extends AzureAuth {
 	private static readonly USER_FRIENDLY_NAME: string = localize('azure.azureAuthCodeGrantName', 'Azure Auth Code Grant');
-	private server: SimpleWebServer;
 
 	constructor(
 		metadata: AzureAccountProviderMetadata,
@@ -47,7 +46,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 	}
 
 
-	protected async login(tenant: Tenant, resource: Resource): Promise<{ response: OAuthTokenResponse, authComplete: Deferred<void, Error> }> {
+	protected async login(tenant: Tenant, resource: Resource): Promise<{ response: OAuthTokenResponse | undefined, authComplete: Deferred<void, Error> }> {
 		let authCompleteDeferred: Deferred<void, Error>;
 		let authCompletePromise = new Promise<void>((resolve, reject) => authCompleteDeferred = { resolve, reject });
 		let authResponse: AuthCodeResponse;
@@ -60,7 +59,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 
 		return {
 			response: await this.getTokenWithAuthorizationCode(tenant, resource, authResponse),
-			authComplete: authCompleteDeferred
+			authComplete: authCompleteDeferred!
 		};
 	}
 
@@ -143,11 +142,11 @@ export class AzureAuthCodeGrant extends AzureAuth {
 	}
 
 	private async loginDesktop(tenant: Tenant, resource: Resource, authCompletePromise: Promise<void>): Promise<AuthCodeResponse> {
-		this.server = new SimpleWebServer();
+		const server = new SimpleWebServer();
 		let serverPort: string;
 
 		try {
-			serverPort = await this.server.startup();
+			serverPort = await server.startup();
 		} catch (ex) {
 			const msg = localize('azure.serverCouldNotStart', 'Server could not start. This could be a permissions error or an incompatibility on your system. You can try enabling device code authentication from settings.');
 			throw new AzureAuthError(msg, 'Server could not start', ex);
@@ -158,7 +157,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 			response_type: 'code',
 			response_mode: 'query',
 			client_id: this.clientId,
-			redirect_uri: this.redirectUri,
+			redirect_uri: `${this.redirectUri}:${serverPort}/redirect`,
 			state,
 			prompt: 'select_account',
 			code_challenge_method: 'S256',
@@ -167,11 +166,11 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		};
 		const loginUrl = `${this.loginEndpointUrl}${tenant.id}/oauth2/authorize?${qs.stringify(loginQuery)}`;
 		await vscode.env.openExternal(vscode.Uri.parse(`http://localhost:${serverPort}/signin?nonce=${encodeURIComponent(nonce)}`));
-		const authCode = await this.addServerListeners(this.server, nonce, loginUrl, authCompletePromise);
+		const authCode = await this.addServerListeners(server, nonce, loginUrl, authCompletePromise);
 		return {
 			authCode,
 			codeVerifier,
-			redirectUri: this.redirectUri
+			redirectUri: `${this.redirectUri}:${serverPort}/redirect`
 		};
 
 	}
@@ -223,6 +222,21 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		});
 
 		return new Promise<string>((resolve, reject) => {
+			server.on('/redirect', (req, reqUrl, res) => {
+				const state = reqUrl.query.state as string ?? '';
+				const split = state.split(',');
+				if (split.length !== 2) {
+					res.writeHead(400, { 'content-type': 'text/html' });
+					res.write(localize('azureAuth.stateError', 'Authentication failed due to a state mismatch, please close ADS and try again.'));
+					res.end();
+					reject(new Error('State mismatch'));
+					return;
+				}
+				const port = split[0];
+				res.writeHead(302, { Location: `http://127.0.0.1:${port}/callback${reqUrl.search}` });
+				res.end();
+			});
+
 			server.on('/callback', (req, reqUrl, res) => {
 				const state = reqUrl.query.state as string ?? '';
 				const code = reqUrl.query.code as string ?? '';

@@ -31,18 +31,25 @@ export class AzureResourceSubscriptionService implements IAzureResourceSubscript
 		for (const tenantId of tenantIds ?? account.properties.tenants.map(t => t.id)) {
 			try {
 				const token = await azdata.accounts.getAccountSecurityToken(account, tenantId, azdata.AzureResource.ResourceManagement);
-				const subClient = new SubscriptionClient(new TokenCredentials(token.token, token.tokenType), { baseUri: account.properties.providerSettings.settings.armResource.endpoint });
-				const newSubs = await subClient.subscriptions.list();
-				subscriptions.push(...newSubs.map(newSub => {
-					return {
-						id: newSub.subscriptionId,
-						name: newSub.displayName,
-						tenant: tenantId
-					};
-				}));
-				gotSubscriptions = true;
+				if (token !== undefined) {
+					const subClient = new SubscriptionClient(new TokenCredentials(token.token, token.tokenType), { baseUri: account.properties.providerSettings.settings.armResource.endpoint });
+					const newSubs = await subClient.subscriptions.list();
+					subscriptions.push(...newSubs.map(newSub => {
+						return {
+							id: newSub.subscriptionId || '',
+							name: newSub.displayName || '',
+							tenant: tenantId
+						};
+					}));
+					gotSubscriptions = true;
+				}
+				else if (!account.isStale) {
+					const errorMsg = localize('azure.resource.tenantTokenError', "Failed to acquire Access Token for account '{0}' (tenant '{1}').", account.displayInfo.displayName, tenantId);
+					console.warn(errorMsg);
+					void vscode.window.showWarningMessage(errorMsg);
+				}
 			} catch (error) {
-				const errorMsg = localize('azure.resource.tenantSubscriptionsError', "Failed to get subscriptions for account {0} (tenant '{1}'). {2}", account.key.accountId, tenantId, AzureResourceErrorMessageUtil.getErrorMessage(error));
+				const errorMsg = localize('azure.resource.tenantSubscriptionsError', "Failed to get subscriptions for account {0} (tenant '{1}'). {2}", account.displayInfo.displayName, tenantId, AzureResourceErrorMessageUtil.getErrorMessage(error));
 				console.warn(errorMsg);
 				errors.push(error);
 				void vscode.window.showWarningMessage(errorMsg);
