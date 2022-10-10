@@ -16,7 +16,10 @@ import { sendSettingChangedEvent, TelemetryActions, TelemetryReporter, Telemetry
 
 const STORAGE_IV_KEY = 'queryHistory.storage-iv';
 const STORAGE_KEY_KEY = 'queryHistory.storage-key';
-const HISTORY_STORAGE_FILE_NAME = 'queryHistory.bin';
+// We use a different file for every flavor of ADS because the secret storage is unique per-flavor and so we will have
+// a different key/IV pair for each flavor with no easy way to transfer/read them. This means that each flavor of ADS
+// will have its own unique history - even if they're all stored in the same location.
+const HISTORY_STORAGE_FILE_NAME = azdata.env.quality === azdata.env.AppQuality.stable ? 'queryHistory.bin' : `queryHistory.${azdata.env.quality}.bin`;
 const STORAGE_ENCRYPTION_ALGORITHM = 'aes-256-ctr';
 const HISTORY_DEBOUNCE_MS = 10000;
 const DEFAULT_CAPTURE_ENABLED = true;
