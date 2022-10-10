@@ -2423,20 +2423,11 @@
     <trans-unit id="executionPlanPropertiesEdgeOperationName">
       <source xml:lang="en">Edge</source>
     </trans-unit>
-    <trans-unit id="executionPlanSummaryForExpensiveOperators">
-      <source xml:lang="en">Summary: {0}{1}</source>
-    </trans-unit>
     <trans-unit id="nodePropertyViewBottomOperation">
       <source xml:lang="en">Bottom operation: {0}</source>
     </trans-unit>
-    <trans-unit id="nodePropertyViewBottomPlanGreaterThanTopPlan">
-      <source xml:lang="en">{0} is greater for the bottom plan than it is for the top plan.</source>
-    </trans-unit>
     <trans-unit id="nodePropertyViewLeftOperation">
       <source xml:lang="en">Left operation: {0}</source>
-    </trans-unit>
-    <trans-unit id="nodePropertyViewLeftPlanGreaterThanRightPlan">
-      <source xml:lang="en">{0} is greater for the left plan than it is for the right plan.</source>
     </trans-unit>
     <trans-unit id="nodePropertyViewNameEquivalentPropertiesRowHeader">
       <source xml:lang="en">Equivalent Properties</source>
@@ -2468,14 +2459,8 @@
     <trans-unit id="nodePropertyViewRightOperation">
       <source xml:lang="en">Right operation: {0}</source>
     </trans-unit>
-    <trans-unit id="nodePropertyViewRightPlanGreaterThanLeftPlan">
-      <source xml:lang="en">{0} is greater for the right plan than it is for the left plan.</source>
-    </trans-unit>
     <trans-unit id="nodePropertyViewTopOperation">
       <source xml:lang="en">Top operation: {0}</source>
-    </trans-unit>
-    <trans-unit id="nodePropertyViewTopPlanGreaterThanBottomPlan">
-      <source xml:lang="en">{0} is greater for the top plan than it is for the bottom plan.</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanContribution" source-language="en" datatype="plaintext"><body>
