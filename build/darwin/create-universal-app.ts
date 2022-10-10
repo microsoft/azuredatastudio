@@ -45,11 +45,10 @@ async function main() {
 	const x64STSDir = path.join(x64AppPath, stsPath);
 	const arm64STSDir = path.join(arm64AppPath, stsPath);
 	const targetSTSDirs = [x64STSDir, arm64STSDir];
-
 	// backup the x64 STS to a temporary directory, later it will be copied to the universal app directory.
 	await fs.copy(x64STSDir, tempSTSDir);
-
 	// delete STS directories from both x64 ADS and arm64 ADS.
+	console.debug(`Removing SqlToolsService folders.`);
 	targetSTSDirs.forEach(async dir => {
 		await fs.remove(dir);
 	});
@@ -59,6 +58,7 @@ async function main() {
 	// non-deterministic, the order of the properties might differ.
 	// the nls.metadata.json files are produced by https://github.com/microsoft/azuredatastudio/blob/711203ac4082919a814114e0910d171db3388b3f/src/vs/nls.build.js#L166
 	// To workaround the issue, we need to replace these files in arm64 ADS with the files from x64 ADS.
+	// Tracked by issue: https://github.com/microsoft/azuredatastudio/issues/20792
 	glob(path.join(x64AppPath, '/Contents/Resources/app/**/nls.metadata.json'), (err, files) => {
 		if (err) {
 			console.warn(`Error occured while looking for nls.metadata.json files: ${err}`);
@@ -109,7 +109,8 @@ async function main() {
 		throw new Error(`Invalid arch, got : ${lipoOutput}`)
 	}
 
-	// {{SQL CARBON EDIT}} - copy SQLTOOLSService to universal app folder
+	// {{SQL CARBON EDIT}}
+	console.debug(`Copying SqlToolsService to the universal app folder.`);
 	await fs.copy(tempSTSDir, path.join(outAppPath, stsPath), { overwrite: true });
 }
 
