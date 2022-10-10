@@ -108,13 +108,18 @@ export class SqlDatabaseTree {
 		this._rootContainer.addItem(this._resultComponent, { flex: '0 0 auto' });
 		this._rootContainer.addItem(selectDbMessage, { flex: '1 1 auto' });
 
-		if (this._targetType === MigrationTargetType.SQLMI ||
-			this._targetType === MigrationTargetType.SQLDB) {
-			if (!!this._model._assessmentResults?.issues.find(value => value.databaseRestoreFails) ||
-				!!this._model._assessmentResults?.databaseAssessments.find(d => !!d.issues.find(issue => issue.databaseRestoreFails))) {
+		if (this._targetType === MigrationTargetType.SQLMI) {
+			if (this._model._assessmentResults?.databaseAssessments.some(db => db.issues.find(issue => issue.databaseRestoreFails && issue.appliesToMigrationTargetPlatform === MigrationTargetType.SQLMI))) {
 				dialog.message = {
 					level: azdata.window.MessageLevel.Warning,
-					text: constants.ASSESSMENT_MIGRATION_WARNING,
+					text: constants.ASSESSMENT_MIGRATION_WARNING_SQLMI,
+				};
+			}
+		} else if (this._targetType === MigrationTargetType.SQLDB) {
+			if (this._model._assessmentResults?.databaseAssessments.some(db => db.issues.find(issue => issue.databaseRestoreFails && issue.appliesToMigrationTargetPlatform === MigrationTargetType.SQLDB))) {
+				dialog.message = {
+					level: azdata.window.MessageLevel.Warning,
+					text: constants.ASSESSMENT_MIGRATION_WARNING_SQLDB,
 				};
 			}
 		}
@@ -883,7 +888,7 @@ export class SqlDatabaseTree {
 			this._dbNames = this._model._assessmentResults?.databaseAssessments.map(da => da.name);
 			this._model._assessmentResults?.databaseAssessments.forEach((db) => {
 				let selectable = true;
-				if (db.issues.find(item => item.databaseRestoreFails)) {
+				if (db.issues.find(issue => issue.databaseRestoreFails && issue.appliesToMigrationTargetPlatform === this._targetType)) {
 					selectable = false;
 				}
 				this._databaseTableValues.push([
