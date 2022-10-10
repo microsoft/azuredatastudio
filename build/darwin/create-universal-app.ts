@@ -54,9 +54,7 @@ async function main() {
 	});
 
 	// makeUniversalApp requires the non-binary files in arm64 and x64 versions to be exactly the same,
-	// but sometimes the content of nls.metadata.json files could be different due to the fact that method JSON.stringify() is
-	// non-deterministic, the order of the properties might differ.
-	// the nls.metadata.json files are produced by https://github.com/microsoft/azuredatastudio/blob/711203ac4082919a814114e0910d171db3388b3f/src/vs/nls.build.js#L166
+	// but sometimes the content of nls.metadata.json files could be different(only the order of the entries).
 	// To workaround the issue, we need to replace these files in arm64 ADS with the files from x64 ADS.
 	// Tracked by issue: https://github.com/microsoft/azuredatastudio/issues/20792
 	glob(path.join(x64AppPath, '/Contents/Resources/app/**/nls.metadata.json'), (err, files) => {
