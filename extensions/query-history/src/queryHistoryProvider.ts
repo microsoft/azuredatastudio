@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { QueryHistoryItem } from './queryHistoryItem';
 import { debounce, removeNewLines } from './utils';
-import { CAPTURE_ENABLED_CONFIG_SECTION, ITEM_SELECTED_COMMAND_ID, PERSIST_HISTORY_CONFIG_SECTION, QUERY_HISTORY_CONFIG_SECTION } from './constants';
+import { CAPTURE_ENABLED_CONFIG_SECTION, ITEM_SELECTED_COMMAND_ID, MAX_ENTRIES_CONFIG_SECTION, PERSIST_HISTORY_CONFIG_SECTION, QUERY_HISTORY_CONFIG_SECTION } from './constants';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
@@ -20,6 +20,7 @@ const STORAGE_ENCRYPTION_ALGORITHM = 'aes-256-ctr';
 const HISTORY_DEBOUNCE_MS = 10000;
 const DEFAULT_CAPTURE_ENABLED = true;
 const DEFAULT_PERSIST_HISTORY = true;
+const DEFAULT_MAX_ENTRIES = 100;
 const successIcon = new vscode.ThemeIcon('check', new vscode.ThemeColor('testing.iconPassed'));
 const failedIcon = new vscode.ThemeIcon('error', new vscode.ThemeColor('testing.iconFailed'));
 
@@ -31,7 +32,7 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 	private _queryHistoryItems: QueryHistoryItem[] = [];
 	private _captureEnabled: boolean = DEFAULT_CAPTURE_ENABLED;
 	private _persistHistory: boolean = DEFAULT_PERSIST_HISTORY;
-
+	private _maxEntries: number = DEFAULT_MAX_ENTRIES;
 	private _historyStorageFile: string;
 
 	private _disposables: vscode.Disposable[] = [];
@@ -49,7 +50,7 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 		// Kick off initialization but then continue on since that may take a while and we don't want to block extension activation
 		void this.initialize();
 		this._disposables.push(vscode.workspace.onDidChangeConfiguration(async e => {
-			if (e.affectsConfiguration(QUERY_HISTORY_CONFIG_SECTION)) {
+			if (e.affectsConfiguration(QUERY_HISTORY_CONFIG_SECTION) || e.affectsConfiguration(MAX_ENTRIES_CONFIG_SECTION)) {
 				await this.updateConfigurationValues();
 			}
 		}));
@@ -67,6 +68,7 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 						}
 						this.queryTextMappings.delete(document.uri);
 						this._queryHistoryItems.unshift({ queryText, connectionProfile, timestamp: new Date().toLocaleString(), isSuccess });
+						this.trimExtraEntries();
 						this._onDidChangeTreeData.fire(undefined);
 						this.writeHistoryFile();
 					} else if (type === 'queryStart') {
@@ -222,6 +224,8 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 		const configSection = vscode.workspace.getConfiguration(QUERY_HISTORY_CONFIG_SECTION);
 		this._captureEnabled = configSection.get(CAPTURE_ENABLED_CONFIG_SECTION, DEFAULT_CAPTURE_ENABLED);
 		this._persistHistory = configSection.get(PERSIST_HISTORY_CONFIG_SECTION, DEFAULT_PERSIST_HISTORY);
+		this._maxEntries = configSection.get(MAX_ENTRIES_CONFIG_SECTION, DEFAULT_MAX_ENTRIES);
+		this.trimExtraEntries();
 		if (!this._persistHistory) {
 			// If we're no longer persisting the history then clean up our storage file
 			try {
@@ -235,6 +239,16 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 			}
 		} else {
 			this.writeHistoryFile();
+		}
+	}
+
+	/**
+	 * Removes the oldest entries from the items list if there are more than maxEntries
+	 * currently being tracked.
+	 */
+	private trimExtraEntries(): void {
+		if (this._queryHistoryItems.length > this._maxEntries) {
+			this._queryHistoryItems.length = this._maxEntries;
 		}
 	}
 

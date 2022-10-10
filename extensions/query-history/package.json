@@ -55,6 +55,12 @@
             "type": "boolean",
             "default": true,
             "description": "%queryHistory.persistHistory%"
+          },
+          "queryHistory.maxEntries": {
+            "type": "integer",
+            "default": 100,
+            "minimum": 0,
+            "description": "%queryHistory.maxEntries%"
           }
         }
       }
