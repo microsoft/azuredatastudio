@@ -310,7 +310,7 @@ export class SqlDatabaseTree {
 
 
 		this._disposables.push(this._instanceTable.onRowSelected(async (e) => {
-			this._activeIssues = this._model._assessmentResults?.issues;
+			this._activeIssues = this._model._assessmentResults?.issues.filter(issue => issue.appliesToMigrationTargetPlatform === this._targetType);
 			this._dbName.value = this._serverName;
 			await this._resultComponent.updateCssStyles({
 				'display': 'block'
@@ -877,7 +877,7 @@ export class SqlDatabaseTree {
 					style: styleLeft
 				},
 				{
-					value: this._model._assessmentResults?.issues?.length,
+					value: this._model._assessmentResults?.issues?.filter(issue => issue.appliesToMigrationTargetPlatform === this._targetType).length,
 					style: styleRight
 				}
 			]];
