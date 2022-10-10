@@ -14,7 +14,7 @@ import { NotebookChangeType, CellType, CellTypes } from 'sql/workbench/services/
 import { KernelsLanguage, nbversion } from 'sql/workbench/services/notebook/common/notebookConstants';
 import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import { IExecuteManager, SQL_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_PROVIDER, ISerializationManager, INotebookService, DEFAULT_NOTEBOOK_FILETYPE } from 'sql/workbench/services/notebook/browser/notebookService';
+import { IExecuteManager, SQL_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_PROVIDER, ISerializationManager, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookContexts } from 'sql/workbench/services/notebook/browser/models/notebookContexts';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { INotification, Severity, INotificationService } from 'vs/platform/notification/common/notification';
@@ -39,8 +39,9 @@ import { AddCellEdit, CellOutputEdit, ConvertCellTypeEdit, DeleteCellEdit, MoveC
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 import { deepClone } from 'vs/base/common/objects';
 import { DotnetInteractiveDisplayName } from 'sql/workbench/api/common/notebooks/notebookUtils';
-import { DEFAULT_NB_LANGUAGE_MODE, IPYKERNEL_DISPLAY_NAME } from 'sql/workbench/common/constants';
+import { IPYKERNEL_DISPLAY_NAME } from 'sql/workbench/common/constants';
 import * as path from 'vs/base/common/path';
+import { IModeService } from 'vs/editor/common/services/modeService';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -136,7 +137,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		@IConfigurationService private configurationService: IConfigurationService,
 		@IUndoRedoService private undoService: IUndoRedoService,
 		@INotebookService private _notebookService: INotebookService,
-		@ICapabilitiesService private _capabilitiesService?: ICapabilitiesService,
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
+		@IModeService private _modeService: IModeService,
 	) {
 		super();
 		if (!_notebookOptions || !_notebookOptions.notebookUri || !_notebookOptions.executeManagers) {
@@ -154,18 +156,23 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	private async handleNewKernelsAdded(kernels: notebookUtils.IStandardKernelWithProvider[]): Promise<void> {
+		let extensions: string[];
 		let fileExt = path.extname(this._notebookOptions.notebookUri.path);
 		if (!fileExt) {
 			let languageMode = this._notebookOptions.getInputLanguageMode();
-			if (languageMode === DEFAULT_NB_LANGUAGE_MODE) {
-				fileExt = DEFAULT_NOTEBOOK_FILETYPE;
-			} else if (languageMode) {
-				fileExt = `.${languageMode}`;
+			if (languageMode) {
+				let languageName = this._modeService.getLanguageName(languageMode);
+				let fileExtensions = this._modeService.getExtensions(languageName);
+				if (fileExtensions?.length > 0) {
+					extensions = fileExtensions;
+				}
 			}
+		} else {
+			extensions = [fileExt];
 		}
 		// All kernels from the same provider share the same supported file extensions,
 		// so we only need to check the first one here.
-		if (fileExt && kernels[0]?.supportedFileExtensions?.includes(fileExt)) {
+		if (extensions?.some(ext => kernels[0]?.supportedFileExtensions?.includes(ext))) {
 			this._standardKernels.push(...kernels);
 			this.setDisplayNameMapsForKernels(kernels);
 
