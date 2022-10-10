@@ -419,9 +419,16 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 
 			} else if (primaryProp && !secondaryProp) {
 				row.displayOrder = v.primaryProp.displayOrder;
+
 				row.primary = {
 					text: v.primaryProp.displayValue
 				};
+
+				row.icon = {
+					iconCssClass: executionPlanComparisonPropertiesDifferent,
+					title: notEqualTitle
+				};
+
 				rows.push(row);
 				if (!isString(primaryProp.value)) {
 					row.name.iconCssClass += ` parent-row-styling`;
@@ -430,10 +437,17 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 				}
 			} else if (!primaryProp && secondaryProp) {
 				row.displayOrder = v.secondaryProp.displayOrder;
+
 				row.secondary = {
 					title: v.secondaryProp.displayValue,
 					iconCssClass: ''
 				};
+
+				row.icon = {
+					iconCssClass: executionPlanComparisonPropertiesDifferent,
+					title: notEqualTitle
+				};
+
 				rows.push(row);
 				if (!isString(secondaryProp.value)) {
 					row.name.iconCssClass += ` parent-row-styling`;
