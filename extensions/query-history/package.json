@@ -26,9 +26,7 @@
       "supported": true
     }
   },
-  "extensionDependencies": [
-    "Microsoft.mssql"
-  ],
+  "extensionDependencies": [ ],
   "contributes": {
     "configuration": [
       {
@@ -52,6 +50,11 @@
               "%queryHistory.doubleClickAction.open%",
               "%queryHistory.doubleClickAction.run%"
             ]
+          },
+          "queryHistory.persistHistory": {
+            "type": "boolean",
+            "default": true,
+            "description": "%queryHistory.persistHistory%"
           }
         }
       }
@@ -188,9 +191,11 @@
       ]
     }
   },
-  "dependencies": {},
+  "dependencies": {
+    "vscode-nls": "^4.1.2"
+  },
   "devDependencies": {
-    "@microsoft/azdata-test": "^2.0.3",
+    "@microsoft/azdata-test": "^3.0.0",
     "@microsoft/vscodetestcover": "^1.2.1",
     "@types/mocha": "^7.0.2",
     "@types/node": "^12.11.7",
