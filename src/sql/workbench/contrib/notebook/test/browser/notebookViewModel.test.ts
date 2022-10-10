@@ -253,7 +253,7 @@ suite('NotebookViewModel', function (): void {
 		let mockNotebookService = TypeMoq.Mock.ofType(NotebookServiceStub);
 		mockNotebookService.setup(s => s.onNotebookKernelsAdded).returns(() => new Emitter<IStandardKernelWithProvider[]>().event);
 
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService, undefined, mockNotebookService.object);
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService, undefined, mockNotebookService.object, undefined, undefined);
 		await model.loadContents();
 		await model.requestModelLoad();
 

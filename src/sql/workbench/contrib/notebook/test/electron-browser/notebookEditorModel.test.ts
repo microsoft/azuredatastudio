@@ -989,7 +989,7 @@ suite('Notebook Editor Model', function (): void {
 		let mockNotebookService = TypeMoq.Mock.ofType(NotebookServiceStub);
 		mockNotebookService.setup(s => s.onNotebookKernelsAdded).returns(() => new Emitter<IStandardKernelWithProvider[]>().event);
 
-		notebookModel = new NotebookModel(options, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService, undoRedoService, mockNotebookService.object);
+		notebookModel = new NotebookModel(options, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService, undoRedoService, mockNotebookService.object, undefined, undefined);
 		await notebookModel.loadContents();
 	}
 

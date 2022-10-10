@@ -244,5 +244,5 @@ export async function createandLoadNotebookModel(codeContent?: nb.INotebookConte
 	let mockNotebookService = TypeMoq.Mock.ofType(NotebookServiceStub);
 	mockNotebookService.setup(s => s.onNotebookKernelsAdded).returns(() => new Emitter<IStandardKernelWithProvider[]>().event);
 
-	return new NotebookModel(defaultModelOptions, undefined, undefined, undefined, new NullAdsTelemetryService(), undefined, undefined, undoRedoService, mockNotebookService.object);
+	return new NotebookModel(defaultModelOptions, undefined, undefined, undefined, new NullAdsTelemetryService(), undefined, undefined, undoRedoService, mockNotebookService.object, undefined, undefined);
 }
