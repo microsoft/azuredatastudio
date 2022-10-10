@@ -138,7 +138,9 @@ function handleServerProviderEvent(e: string, ...args: any[]): void {
 			}
 			break;
 		case Events.DOWNLOAD_END:
-			outputChannel.appendLine(localize('downloadServiceDoneChannelMsg', "Done installing {0}", Constants.serviceName));
+			// Start a new line to end the dots from the DOWNLOAD_PROGRESS event.
+			outputChannel.appendLine('');
+			outputChannel.appendLine(localize('downloadServiceDoneChannelMsg', "Downloaded {0}", Constants.serviceName));
 			break;
 		case Events.ENTRY_EXTRACTED:
 			outputChannel.appendLine(localize('entryExtractedChannelMsg', "Extracted {0} ({1}/{2})", args[0], args[1], args[2]));

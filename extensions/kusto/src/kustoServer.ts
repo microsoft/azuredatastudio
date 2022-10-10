@@ -116,7 +116,9 @@ function generateHandleServerProviderEvent() {
 				}
 				break;
 			case Events.DOWNLOAD_END:
-				outputChannel.appendLine(localize('downloadServiceDoneChannelMsg', "Done installing {0}", Constants.serviceName));
+				// Start a new line to end the dots from the DOWNLOAD_PROGRESS event.
+				outputChannel.appendLine('');
+				outputChannel.appendLine(localize('downloadServiceDoneChannelMsg', "Downloaded {0}", Constants.serviceName));
 				break;
 			default:
 				console.error(`Unknown event from Server Provider ${e}`);
