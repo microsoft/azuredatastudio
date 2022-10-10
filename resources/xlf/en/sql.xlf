@@ -2382,11 +2382,11 @@
     <trans-unit id="epComapre.LoadingPlanMessage">
       <source xml:lang="en">Loading execution plan</source>
     </trans-unit>
-    <trans-unit id="epComapre.placeholderInfoboxText">
-      <source xml:lang="en">Add execution plans to compare</source>
-    </trans-unit>
     <trans-unit id="epCompare.FileFilterDescription">
       <source xml:lang="en">Execution Plan Files</source>
+    </trans-unit>
+    <trans-unit id="epCompare.addExecutionPlanLabel">
+      <source xml:lang="en">Add execution plan</source>
     </trans-unit>
     <trans-unit id="epCompare.comparePropertiesAction">
       <source xml:lang="en">Properties</source>
