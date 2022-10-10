@@ -265,17 +265,23 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 			const treeGridChildren = row.treeGridChildren;
 
 			if (treeGridChildren?.length > 0) {
-				let [unequalSubRows, equalSubRows] = this.splitEqualFromUnequalProperties(treeGridChildren);
+				const [unequalSubRows, equalSubRows] = this.splitEqualFromUnequalProperties(treeGridChildren);
 
 				if (unequalSubRows.length > 0) {
-					let currentRow = deepClone(row);
+					const currentRow = deepClone(row);
 					currentRow.treeGridChildren = unequalSubRows;
+					currentRow.expanded = true;
+
+					currentRow.icon = {
+						iconCssClass: executionPlanComparisonPropertiesDifferent,
+						title: notEqualTitle
+					};
 
 					unequalRows.push(currentRow);
 				}
 
 				if (equalSubRows.length > 0) {
-					let currentRow = deepClone(row);
+					const currentRow = deepClone(row);
 					currentRow.treeGridChildren = equalSubRows;
 
 					equalRows.push(currentRow);
