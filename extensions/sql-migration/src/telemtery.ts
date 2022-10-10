@@ -60,8 +60,7 @@ export enum TelemetryAction {
 	GetDBSkuRecommendation = 'GetDBSkuRecommendation',
 	GetInstanceRequirements = 'GetInstanceRequirements',
 	StartDataCollection = 'StartDataCollection',
-	StopDataCollection = 'StopDataCollection',
-	GetDatabasesListFailed = 'GetDatabasesListFailed'
+	StopDataCollection = 'StopDataCollection'
 }
 
 export function logError(telemetryView: TelemetryViews, err: string, error: any): void {
