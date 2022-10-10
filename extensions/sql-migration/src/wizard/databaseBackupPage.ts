@@ -122,7 +122,11 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				text: constants.DATABASE_BACKUP_CHECKSUM_INFO_TEXT,
 				style: 'information',
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
-				CSSStyles: { ...styles.BODY_CSS }
+				CSSStyles: { ...styles.BODY_CSS },
+				links: [{
+					text: constants.READ_MORE,
+					url: 'https://learn.microsoft.com/sql/relational-databases/backup-restore/enable-or-disable-backup-checksums-during-backup-or-restore-sql-server'
+				}]
 			}).component();
 
 		this._networkShareButton = this._view.modelBuilder.radioButton()
