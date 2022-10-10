@@ -211,7 +211,7 @@ export class ExecutionPlanComparisonEditorView {
 
 		this._placeholderInfoboxContainer = DOM.$('.placeholder-infobox');
 
-		this._placeholderButton = new Button(this._placeholderInfoboxContainer);
+		this._placeholderButton = new Button(this._placeholderInfoboxContainer, { secondary: true });
 		attachButtonStyler(this._placeholderButton, this.themeService);
 		this._placeholderButton.label = ADD_EXECUTION_PLAN_STRING;
 		this._placeholderButton.ariaLabel = ADD_EXECUTION_PLAN_STRING;
