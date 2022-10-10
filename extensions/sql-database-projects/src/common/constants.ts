@@ -296,6 +296,7 @@ export const projectLocationPlaceholderText = localize('projectLocationPlacehold
 export const browseButtonText = localize('browseButtonText', "Browse folder");
 export const selectFolderStructure = localize('selectFolderStructure', "Select folder structure");
 export const folderStructureLabel = localize('folderStructureLabel', "Folder structure");
+export const importPermissionsLabel = localize('importPermissionsLabel', "Import permissions");
 export const WorkspaceFileExtension = '.code-workspace';
 export const browseEllipsisWithIcon = `$(folder) ${localize('browseEllipsis', "Browse...")}`;
 export const selectProjectLocation = localize('selectProjectLocation', "Select project location");

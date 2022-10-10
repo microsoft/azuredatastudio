@@ -508,6 +508,7 @@ export interface ExtractParams {
 	ownerUri: string;
 	extractTarget?: mssql.ExtractTarget;
 	taskExecutionMode: TaskExecutionMode;
+	importPermissions?: boolean;
 }
 
 export interface DeployParams {
