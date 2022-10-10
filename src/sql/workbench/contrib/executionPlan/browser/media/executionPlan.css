@@ -878,8 +878,7 @@ However we always want it to be the width of the container it is resizing.
 	overflow: hidden;
 }
 
-.eps-container .comparison-editor .editor-toolbar .action-item .codicon.action-label,
-.eps-container .comparison-editor .plan-comparison-container .split-view-container .placeholder .placeholder-infobox .action-item .codicon.action-label {
+.eps-container .comparison-editor .editor-toolbar .action-item .codicon.action-label {
 	padding-left: 20px;
 }
 
