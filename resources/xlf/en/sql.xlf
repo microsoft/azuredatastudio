@@ -2353,7 +2353,7 @@
 </body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/compareExecutionPlanInput" source-language="en" datatype="plaintext"><body>
     <trans-unit id="epCompare.editorName">
-      <source xml:lang="en">Compare Execution Plans</source>
+      <source xml:lang="en">CompareExecutionPlans</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/constants" source-language="en" datatype="plaintext"><body>
@@ -2414,6 +2414,12 @@
     </trans-unit>
     <trans-unit id="epCompare.zoomToFit">
       <source xml:lang="en">Zoom to fit</source>
+    </trans-unit>
+    <trans-unit id="executionPlanDisableTooltip">
+      <source xml:lang="en">Tooltips disabled</source>
+    </trans-unit>
+    <trans-unit id="executionPlanEnableTooltip">
+      <source xml:lang="en">Tooltips enabled</source>
     </trans-unit>
     <trans-unit id="queryDropdownPrefix">
       <source xml:lang="en">Query {0} of {1}: {2}</source>
@@ -2501,6 +2507,12 @@
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase" source-language="en" datatype="plaintext"><body>
     <trans-unit id="ep.topOperationsCopyTableData">
       <source xml:lang="en">Copy</source>
+    </trans-unit>
+    <trans-unit id="executionPlanCollapseAllProperties">
+      <source xml:lang="en">Collapse All</source>
+    </trans-unit>
+    <trans-unit id="executionPlanExpandAllProperties">
+      <source xml:lang="en">Expand All</source>
     </trans-unit>
     <trans-unit id="executionPlanPropertyViewClose">
       <source xml:lang="en">Close</source>
