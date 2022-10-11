@@ -10,7 +10,7 @@ import { localize } from 'vs/nls';
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Action } from 'vs/base/common/actions';
 import { Codicon } from 'vs/base/common/codicons';
-import { propertiesSearchDescription, searchIconClassNames, searchPlaceholder, sortAlphabeticallyIconClassNames, sortByDisplayOrderIconClassNames, sortReverseAlphabeticallyIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/constants';
+import { filterIconClassNames, propertiesSearchDescription, searchPlaceholder, sortAlphabeticallyIconClassNames, sortByDisplayOrderIconClassNames, sortReverseAlphabeticallyIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/constants';
 import { attachInputBoxStyler, attachTableStyler } from 'sql/platform/theme/common/styler';
 import { RESULTS_GRID_DEFAULTS } from 'sql/workbench/common/constants';
 import { contrastBorder, inputBackground, listHoverBackground, listInactiveSelectionBackground } from 'vs/platform/theme/common/colorRegistry';
@@ -42,9 +42,6 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 
 	// Header container
 	private _headerContainer: HTMLElement;
-
-	// Summary container
-	private _summaryContainer: HTMLElement;
 
 	// Properties actions
 	private _headerActionsContainer!: HTMLElement;
@@ -113,9 +110,6 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 		this._headerContainer = DOM.$('.header');
 		propertiesContent.appendChild(this._headerContainer);
 
-		this._summaryContainer = DOM.$('.summary');
-		propertiesContent.appendChild(this._summaryContainer);
-
 		this._searchAndActionBarContainer = DOM.$('.search-action-bar-container');
 		propertiesContent.appendChild(this._searchAndActionBarContainer);
 
@@ -124,16 +118,22 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 		this._headerActions = this._register(new ActionBar(this._headerActionsContainer, {
 			orientation: ActionsOrientation.HORIZONTAL, context: this
 		}));
-		this._headerActions.pushAction([new SortPropertiesByDisplayOrderAction(), new SortPropertiesAlphabeticallyAction(), new SortPropertiesReverseAlphabeticallyAction()], { icon: true, label: false });
+		this._headerActions.pushAction([
+			new SortPropertiesByDisplayOrderAction(),
+			new SortPropertiesAlphabeticallyAction(),
+			new SortPropertiesReverseAlphabeticallyAction(),
+			new ExpandAllPropertiesAction(),
+			new CollapseAllPropertiesAction()
+		], { icon: true, label: false });
 
 		this._propertiesSearchInputContainer = DOM.$('.table-search');
-		this._propertiesSearchInputContainer.classList.add('codicon', searchIconClassNames);
+		this._propertiesSearchInputContainer.classList.add('codicon', filterIconClassNames);
 		this._propertiesSearchInput = this._register(new InputBox(this._propertiesSearchInputContainer, this._contextViewService, {
 			ariaDescription: propertiesSearchDescription,
 			placeholder: searchPlaceholder
 		}));
 		attachInputBoxStyler(this._propertiesSearchInput, this._themeService);
-		this._propertiesSearchInput.element.classList.add('codicon', searchIconClassNames);
+		this._propertiesSearchInput.element.classList.add('codicon', filterIconClassNames);
 		this._searchAndActionBarContainer.appendChild(this._propertiesSearchInputContainer);
 		this._register(this._propertiesSearchInput.onDidChange(e => {
 			this.searchTable(e);
@@ -229,10 +229,6 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 		this._headerContainer.appendChild(c);
 	}
 
-	public setSummary(c: HTMLElement): void {
-		this._summaryContainer.appendChild(c);
-	}
-
 	public set tableHeight(value: number) {
 		if (this.tableHeight !== value) {
 			this._tableHeight = value;
@@ -268,14 +264,39 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 		this.resizeTable();
 	}
 
+	private repopulateTable() {
+		this._tableComponent.setData(this.flattenTableData(this._tableData, -1));
+		this.resizeTable();
+	}
+
 	public updateTableColumns(columns: Slick.Column<Slick.SlickData>[]) {
 		this._tableComponent.columns = columns;
+	}
+
+	public setPropertyRowsExpanded(expand: boolean): void {
+		this.setPropertyRowsExpandedHelper(this._tableComponent.getData().getItems(), expand);
+		this.repopulateTable();
+	}
+
+	/**
+	 * Expands or collapses the rows of the properties table recursively.
+	 *
+	 * @param rows The rows to be expanded or collapsed.
+	 * @param expand Flag indicating if the rows should be expanded or collapsed.
+	 */
+	private setPropertyRowsExpandedHelper(rows: Slick.SlickData[], expand: boolean): void {
+		rows.forEach(row => {
+			if (row.treeGridChildren && row.treeGridChildren.length > 0) {
+				row.expanded = expand;
+
+				this.setPropertyRowsExpandedHelper(row.treeGridChildren, expand);
+			}
+		});
 	}
 
 	private resizeTable(): void {
 		const spaceOccupied = (this._titleBarContainer.getBoundingClientRect().height
 			+ this._headerContainer.getBoundingClientRect().height
-			+ this._summaryContainer.getBoundingClientRect().height
 			+ this._headerActionsContainer.getBoundingClientRect().height);
 
 		this.tableHeight = (this._parentContainer.getBoundingClientRect().height - spaceOccupied - 15);
@@ -310,7 +331,7 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 				} else if (rawDataValue !== undefined) {
 					dataValue = rawDataValue.text ?? rawDataValue.title;
 				}
-				if (dataValue.toLowerCase().includes(search.toLowerCase())) {
+				if (dataValue?.toLowerCase().includes(search.toLowerCase())) {
 					includeRow = true;
 					break;
 				}
@@ -409,6 +430,32 @@ export enum PropertiesSortType {
 	DisplayOrder,
 	Alphabetical,
 	ReverseAlphabetical
+}
+
+export class ExpandAllPropertiesAction extends Action {
+	public static ID = 'ep.propertiesView.expandAllProperties';
+	public static LABEL = localize('executionPlanExpandAllProperties', 'Expand All');
+
+	constructor() {
+		super(ExpandAllPropertiesAction.ID, ExpandAllPropertiesAction.LABEL, Codicon.expandAll.classNames);
+	}
+
+	public override async run(context: ExecutionPlanPropertiesViewBase): Promise<void> {
+		context.setPropertyRowsExpanded(true);
+	}
+}
+
+export class CollapseAllPropertiesAction extends Action {
+	public static ID = 'ep.propertiesView.collapseAllProperties';
+	public static LABEL = localize('executionPlanCollapseAllProperties', 'Collapse All');
+
+	constructor() {
+		super(CollapseAllPropertiesAction.ID, CollapseAllPropertiesAction.LABEL, Codicon.collapseAll.classNames);
+	}
+
+	public override async run(context: ExecutionPlanPropertiesViewBase): Promise<void> {
+		context.setPropertyRowsExpanded(false);
+	}
 }
 
 registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {

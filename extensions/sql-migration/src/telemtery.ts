@@ -11,7 +11,7 @@ let packageInfo = {
 	aiKey: packageJson.aiKey
 };
 
-export const TelemetryReporter = new AdsTelemetryReporter(packageInfo.name, packageInfo.version, packageInfo.aiKey);
+export const TelemetryReporter = new AdsTelemetryReporter<TelemetryViews, TelemetryAction>(packageInfo.name, packageInfo.version, packageInfo.aiKey);
 
 export enum TelemetryViews {
 	SqlServerDashboard = 'SqlServerDashboard',

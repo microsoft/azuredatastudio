@@ -4,87 +4,142 @@ resources:
     image: sqltoolscontainers.azurecr.io/linux-build-agent:6
     endpoint: SqlToolsContainers
 
-jobs:
-- job: Compile
-  pool:
-    vmImage: 'Ubuntu-20.04'
-  container: linux-x64
-  steps:
-  - script: |
-      set -e
-      echo "##vso[build.addbuildtag]$(VSCODE_QUALITY)"
-    displayName: Add Quality Build Tag
-  - template: sql-product-compile.yml
-  timeoutInMinutes: 120
+stages:
+  - stage: Compile
+    jobs:
+    - job: Compile
+      pool:
+        vmImage: 'Ubuntu-20.04'
+      container: linux-x64
+      steps:
+      - script: |
+          set -e
+          echo "##vso[build.addbuildtag]$(VSCODE_QUALITY)"
+        displayName: Add Quality Build Tag
+      - template: sql-product-compile.yml
+      timeoutInMinutes: 120
 
-- job: macOS
-  condition: and(succeeded(), eq(variables['VSCODE_BUILD_MACOS'], 'true'), ne(variables['VSCODE_QUALITY'], 'saw'))
-  pool:
-    vmImage: 'macos-latest'
-  dependsOn:
-  - Compile
-  steps:
-  - template: darwin/sql-product-build-darwin.yml
-  timeoutInMinutes: 90
+  - stage: macOS
+    condition: and(succeeded(), eq(variables['VSCODE_BUILD_MACOS'], 'true'), ne(variables['VSCODE_QUALITY'], 'saw'))
+    pool:
+      vmImage: 'macos-latest'
+    dependsOn:
+      - Compile
+    jobs:
+      - job: macOS
+        variables:
+          NPM_CONFIG_ARCH: x64
+          VSCODE_ARCH: x64
+        steps:
+        - template: darwin/sql-product-build-darwin.yml
+        timeoutInMinutes: 90
 
-- job: macOS_Signing
-  condition: and(succeeded(), eq(variables['VSCODE_BUILD_MACOS'], 'true'), eq(variables['signed'], true), ne(variables['VSCODE_QUALITY'], 'saw'))
-  pool:
-    vmImage: 'macos-latest'
-  dependsOn:
-  - macOS
-  steps:
-  - template: darwin/sql-product-build-darwin-signing.yml
-  timeoutInMinutes: 60
+      - job: macOS_Signing
+        variables:
+          VSCODE_ARCH: x64
+        condition: and(succeeded(), eq(variables['signed'], true))
+        dependsOn:
+        - macOS
+        steps:
+        - template: darwin/sql-product-build-darwin-signing.yml
+        timeoutInMinutes: 60
 
-- job: Linux
-  condition: and(succeeded(), eq(variables['VSCODE_BUILD_LINUX'], 'true'))
-  pool:
-    vmImage: 'Ubuntu-20.04'
-  container: linux-x64
-  dependsOn:
-  - Compile
-  steps:
-  - template: linux/sql-product-build-linux.yml
-    parameters:
-      extensionsToUnitTest: ["admin-tool-ext-win", "agent", "azcli", "azurecore", "cms", "dacpac", "data-workspace", "import", "machine-learning", "notebook", "resource-deployment", "schema-compare", "sql-bindings", "sql-database-projects"]
-  timeoutInMinutes: 90
+      - job: macOS_ARM64
+        variables:
+          NPM_CONFIG_ARCH: arm64
+          VSCODE_ARCH: arm64
+          # Do not run tests for arm64 build
+          RUN_TESTS: false
+          RUN_SMOKE_TESTS: false
+        steps:
+        - template: darwin/sql-product-build-darwin.yml
+        timeoutInMinutes: 90
 
-- job: Windows
-  condition: and(succeeded(), eq(variables['VSCODE_BUILD_WIN32'], 'true'))
-  pool:
-    vmImage: 'windows-2019'
-  dependsOn:
-  - Compile
-  steps:
-  - template: win32/sql-product-build-win32.yml
-  timeoutInMinutes: 90
+      - job: macOS_Signing_ARM64
+        variables:
+          VSCODE_ARCH: arm64
+        condition: and(succeeded(), eq(variables['signed'], true))
+        dependsOn:
+        - macOS_ARM64
+        steps:
+        - template: darwin/sql-product-build-darwin-signing.yml
+        timeoutInMinutes: 60
 
-# disable due to invalid machine pool (karlb 3/9/2022)
-# - job: Windows_Test
-#   condition: and(succeeded(), eq(variables['VSCODE_BUILD_WIN32'], 'true'))
-#   pool:
-#     name: mssqltools
-#   dependsOn:
-#   - Linux
-#   - Windows
-#   steps:
-#   - template: win32/sql-product-test-win32.yml
-#   timeoutInMinutes: 90
+      - job: macOS_Universal
+        variables:
+          NPM_CONFIG_ARCH: x64
+          VSCODE_ARCH: universal
+          # Do not run tests for universal build
+          RUN_TESTS: false
+          RUN_SMOKE_TESTS: false
+        dependsOn:
+        - macOS
+        - macOS_ARM64
+        steps:
+        - template: darwin/sql-product-build-darwin.yml
+        timeoutInMinutes: 90
 
-- job: Release
-  condition: and(succeeded(), or(eq(variables['VSCODE_RELEASE'], 'true'), and(eq(variables['VSCODE_QUALITY'], 'insider'), eq(variables['Build.Reason'], 'Schedule'))))
-  pool:
-    vmImage: 'Ubuntu-20.04'
-  dependsOn:
-  - macOS
-  - Linux
-  - Windows
-# disable due to invalid machine pool (karlb 3/9/2022)
-#  - Windows_Test
-  - macOS_Signing
-  steps:
-  - template: sql-release.yml
+      - job: macOS_Signing_Universal
+        variables:
+          VSCODE_ARCH: universal
+        condition: and(succeeded(), eq(variables['signed'], true))
+        dependsOn:
+        - macOS_Universal
+        steps:
+        - template: darwin/sql-product-build-darwin-signing.yml
+        timeoutInMinutes: 60
+
+  - stage: Linux
+    condition: and(succeeded(), eq(variables['VSCODE_BUILD_LINUX'], true))
+    dependsOn:
+      - Compile
+    jobs:
+      - job: Linux
+        pool:
+          vmImage: 'Ubuntu-20.04'
+        container: linux-x64
+        steps:
+        - template: linux/sql-product-build-linux.yml
+          parameters:
+            extensionsToUnitTest: ["admin-tool-ext-win", "agent", "azcli", "azurecore", "cms", "dacpac", "data-workspace", "import", "machine-learning", "notebook", "resource-deployment", "schema-compare", "sql-bindings", "sql-database-projects"]
+        timeoutInMinutes: 90
+
+  - stage: Windows
+    condition: and(succeeded(), eq(variables['VSCODE_BUILD_WIN32'], true))
+    pool:
+      vmImage: 'windows-2019'
+    dependsOn:
+      - Compile
+    jobs:
+      - job: Windows
+        steps:
+        - template: win32/sql-product-build-win32.yml
+        timeoutInMinutes: 90
+
+    # disable due to invalid machine pool (karlb 3/9/2022)
+    # - job: Windows_Test
+    #   condition: and(succeeded(), eq(variables['VSCODE_BUILD_WIN32'], 'true'))
+    #   pool:
+    #     name: mssqltools
+    #   dependsOn:
+    #   - Linux
+    #   - Windows
+    #   steps:
+    #   - template: win32/sql-product-test-win32.yml
+    #   timeoutInMinutes: 90
+
+  - stage: Release
+    condition: and(succeeded(), or(eq(variables['VSCODE_RELEASE'], 'true'), and(eq(variables['VSCODE_QUALITY'], 'insider'), eq(variables['Build.Reason'], 'Schedule'))))
+    pool:
+      vmImage: 'Ubuntu-20.04'
+    dependsOn:
+      - macOS
+      - Linux
+      - Windows
+    jobs:
+      - job: Release
+        steps:
+        - template: sql-release.yml
 
 trigger: none
 pr: none

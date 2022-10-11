@@ -438,7 +438,7 @@ export class DataResourceDataProvider implements IGridDataProvider {
 		if (!this.canSerialize) {
 			return Promise.resolve(undefined);
 		}
-		// TODO implement selection support
+
 		let columns = this._resultSet.columnInfo;
 		let rowLength = this._rows.length;
 		let minRow = 0;
@@ -482,13 +482,21 @@ export class DataResourceDataProvider implements IGridDataProvider {
 			return result;
 		};
 
-		let serializeRequestParams: SerializeDataParams = <SerializeDataParams>Object.assign(serializer.getBasicSaveParameters(format), <Partial<SerializeDataParams>>{
+		// This code path uses the serialization service which uses a different request parameter
+		// interface than the query execution service's saveResults handlers. Here, we take the
+		// format-specific request params (eg, includeHeaders for CSV) and merge the format-agnostic
+		// request params for the serialization request (eg, saveFormat, filePath).
+		let formatSpecificParams = serializer.getBasicSaveParameters(format);
+		let formatAgnosticParams = <Partial<SerializeDataParams>>{
 			saveFormat: format,
-			columns: columns,
 			filePath: filePath.fsPath,
-			getRowRange: (rowStart, includeHeaders, numberOfRows) => getRows(rowStart, includeHeaders, numberOfRows),
-			rowCount: rowLength
-		});
+			columns: columns,
+			rowCount: rowLength,
+			getRowRange: (rowStart: number, includeHeaders: boolean, numberOfRows?: number) =>
+				getRows(rowStart, includeHeaders, numberOfRows),
+		};
+		let serializeRequestParams = <SerializeDataParams>Object.assign(formatSpecificParams, formatAgnosticParams);
+
 		return this._serializationService.serializeResults(serializeRequestParams);
 	}
 

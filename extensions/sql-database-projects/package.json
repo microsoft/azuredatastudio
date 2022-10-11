@@ -407,7 +407,7 @@
         },
         {
           "command": "sqlDatabaseProjects.openInDesigner",
-          "when": "azdataAvailable && view == dataworkspace.views.main && viewItem == databaseProject.itemType.file.table && config.workbench.enablePreviewFeatures",
+          "when": "azdataAvailable && view == dataworkspace.views.main && viewItem == databaseProject.itemType.file.table",
           "group": "6_dbProjects_openInDesigner"
         },
         {
@@ -478,7 +478,7 @@
     }
   },
   "dependencies": {
-    "@microsoft/ads-extension-telemetry": "^1.2.0",
+    "@microsoft/ads-extension-telemetry": "^1.3.1",
     "@xmldom/xmldom": "^0.8.2",
     "axios": "^0.27.2",
     "extract-zip": "^2.0.1",
