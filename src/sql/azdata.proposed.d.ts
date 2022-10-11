@@ -8,6 +8,23 @@
 import * as vscode from 'vscode';
 
 declare module 'azdata' {
+
+	export namespace env {
+		/**
+		 * Well-known app quality values
+		 */
+		export enum AppQuality {
+			stable = 'stable',
+			insider = 'insider',
+			dev = 'dev'
+		}
+
+		/**
+		 * The version of Azure Data Studio this is currently running as - such as `stable`, or `insider`
+		 */
+		export const quality: AppQuality | string | undefined;
+	}
+
 	export namespace nb {
 		export interface NotebookDocument {
 			/**

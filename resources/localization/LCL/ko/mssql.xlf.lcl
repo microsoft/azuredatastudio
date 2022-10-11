@@ -1799,10 +1799,13 @@
       </Item>
       <Item ItemId=";extensions/mssql/dist/sqlToolsServer.downloadServiceDoneChannelMsg" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Done installing {0}]]></Val>
+          <Val><![CDATA[Downloaded {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} 설치 완료]]></Val>
+            <Val><![CDATA[{0}을(를) 다운로드함]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Done installing {0}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2828,6 +2831,78 @@
           <Val><![CDATA[Enabled]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[사용]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/package.mssql.executionPlan.actualNumberOfRowsForAllExecutions" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Highlights the execution plan operation with the greatest actual number of rows for all executions.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[모든 실행에 대한 실제 행 수가 가장 많은 실행 계획 작업을 강조 표시합니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/package.mssql.executionPlan.cost" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Highlights the execution plan operation with the highest cost.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[가장 높은 비용으로 실행 계획 작업을 강조 표시합니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/package.mssql.executionPlan.expensiveOperationMetric" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The default metric to use to highlight an expensive operation in query execution plans]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[쿼리 실행 계획에서 비용이 많이 드는 작업을 강조 표시하는 데 사용할 기본 메트릭]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/package.mssql.executionPlan.expensiveOperationMetric.actualElapsedCpuTime" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Highlights the execution plan operation that used the most CPU time.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[CPU 시간을 가장 많이 사용한 실행 계획 작업을 강조 표시합니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/package.mssql.executionPlan.expensiveOperationMetric.actualElapsedTime" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Highlights the execution plan operation that took the most time.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[가장 많은 시간이 걸린 실행 계획 작업을 강조 표시합니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/package.mssql.executionPlan.expensiveOperationMetric.off" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Expensive operation highlighting will be turned off for execution plans.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[실행 계획에 대해 비용이 많이 드는 작업 강조 표시가 꺼집니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/package.mssql.executionPlan.numberOfRowsRead" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Highlights the execution plan operation with the greatest number of rows read.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[읽은 행 수가 가장 많은 실행 계획 작업을 강조 표시합니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/mssql/package.mssql.executionPlan.subtreeCost" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Highlights the execution plan operation with the highest subtree cost.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[하위 트리 비용이 가장 높은 실행 계획 작업을 강조 표시합니다.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

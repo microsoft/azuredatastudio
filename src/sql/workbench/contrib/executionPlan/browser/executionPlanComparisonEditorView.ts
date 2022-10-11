@@ -12,18 +12,17 @@ import { ExecutionPlanCompareOrientation, ExecutionPlanComparisonPropertiesView 
 import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
 import { IHorizontalSashLayoutProvider, ISashEvent, IVerticalSashLayoutProvider, Orientation, Sash } from 'vs/base/browser/ui/sash/sash';
 import { Action } from 'vs/base/common/actions';
-import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IColorTheme, ICssStyleCollector, IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import * as DOM from 'vs/base/browser/dom';
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { localize } from 'vs/nls';
-import { addIconClassName, openPropertiesIconClassNames, polygonBorderColor, polygonFillColor, resetZoomIconClassName, searchIconClassNames, splitScreenHorizontallyIconClassName, splitScreenVerticallyIconClassName, zoomInIconClassNames, zoomOutIconClassNames, zoomToFitIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/constants';
+import { addIconClassName, disableTooltipIconClassName, enableTooltipIconClassName, openPropertiesIconClassNames, polygonBorderColor, polygonFillColor, resetZoomIconClassName, searchIconClassNames, splitScreenHorizontallyIconClassName, splitScreenVerticallyIconClassName, zoomInIconClassNames, zoomOutIconClassNames, zoomToFitIconClassNames } from 'sql/workbench/contrib/executionPlan/browser/constants';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { extname } from 'vs/base/common/path';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import { InfoBox } from 'sql/workbench/browser/ui/infoBox/infoBox';
 import { LoadingSpinner } from 'sql/base/browser/ui/loadingSpinner/loadingSpinner';
 import { contrastBorder, editorWidgetBackground, errorForeground, listHoverBackground, textLinkForeground, widgetShadow } from 'vs/platform/theme/common/colorRegistry';
 import { ExecutionPlanViewHeader } from 'sql/workbench/contrib/executionPlan/browser/executionPlanViewHeader';
@@ -33,6 +32,10 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ExecutionPlanWidgetController } from 'sql/workbench/contrib/executionPlan/browser/executionPlanWidgetController';
 import { NodeSearchWidget } from 'sql/workbench/contrib/executionPlan/browser/widgets/nodeSearchWidget';
+import { Button } from 'sql/base/browser/ui/button/button';
+import { attachButtonStyler } from 'vs/platform/theme/common/styler';
+
+const ADD_EXECUTION_PLAN_STRING = localize('epCompare.addExecutionPlanLabel', 'Add execution plan');
 
 export class ExecutionPlanComparisonEditorView {
 
@@ -49,6 +52,7 @@ export class ExecutionPlanComparisonEditorView {
 	private _toggleOrientationAction: Action;
 	private _searchNodeAction: Action;
 	private _searchNodeActionForAddedPlan: Action;
+	private _toggleTooltipAction: Action;
 
 	private _planComparisonContainer: HTMLElement;
 
@@ -68,8 +72,8 @@ export class ExecutionPlanComparisonEditorView {
 	public bottomWidgetController: ExecutionPlanWidgetController;
 
 	private _placeholderContainer: HTMLElement;
+	private _placeholderButton: Button;
 	private _placeholderInfoboxContainer: HTMLElement;
-	private _placeholderInfobox: InfoBox;
 	private _placeholderLoading: LoadingSpinner;
 
 	private _topPlanContainer: HTMLElement;
@@ -104,6 +108,7 @@ export class ExecutionPlanComparisonEditorView {
 	private _bottomPlanRecommendations: ExecutionPlanViewHeader;
 	private _bottomSimilarNode: Map<string, azdata.executionPlan.ExecutionGraphComparisonResult> = new Map();
 	private _latestRequestUuid: string;
+	private _areTooltipsEnabled: boolean = true;
 
 	public get activeBottomPlanDiagram(): AzdataGraphView | undefined {
 		if (this.bottomPlanDiagrams.length > 0) {
@@ -126,7 +131,8 @@ export class ExecutionPlanComparisonEditorView {
 		@IContextViewService readonly contextViewService: IContextViewService,
 		@ITextFileService private readonly _textFileService: ITextFileService,
 		@INotificationService private _notificationService: INotificationService,
-		@IProgressService private _progressService: IProgressService
+		@IProgressService private _progressService: IProgressService,
+		@IContextMenuService private _contextMenuService: IContextMenuService
 	) {
 
 		this.container = DOM.$('.comparison-editor');
@@ -153,6 +159,7 @@ export class ExecutionPlanComparisonEditorView {
 		this._searchNodeAction = this._instantiationService.createInstance(SearchNodeAction, PlanIdentifier.Primary);
 		this._searchNodeActionForAddedPlan = this._instantiationService.createInstance(SearchNodeAction, PlanIdentifier.Added);
 		this._resetZoomAction = new ZoomReset();
+		this._toggleTooltipAction = new ActionBarToggleTooltip();
 		const content: ITaskbarContent[] = [
 			{ action: this._addExecutionPlanAction },
 			{ action: this._zoomInAction },
@@ -162,7 +169,8 @@ export class ExecutionPlanComparisonEditorView {
 			{ action: this._toggleOrientationAction },
 			{ action: this._propertiesAction },
 			{ action: this._searchNodeAction },
-			{ action: this._searchNodeActionForAddedPlan }
+			{ action: this._searchNodeActionForAddedPlan },
+			{ action: this._toggleTooltipAction }
 		];
 		this._taskbar.setContent(content);
 		this.container.appendChild(this._taskbarContainer);
@@ -180,8 +188,39 @@ export class ExecutionPlanComparisonEditorView {
 		this.planSplitViewContainer = DOM.$('.split-view-container');
 		this._planComparisonContainer.appendChild(this.planSplitViewContainer);
 
+		const self = this;
 		this._placeholderContainer = DOM.$('.placeholder');
+
+		const contextMenuAction = [
+			this._instantiationService.createInstance(AddExecutionPlanAction)
+		];
+		this._placeholderContainer.oncontextmenu = (e: MouseEvent) => {
+			if (contextMenuAction) {
+				this._contextMenuService.showContextMenu({
+					getAnchor: () => {
+						return {
+							x: e.x,
+							y: e.y
+						};
+					},
+					getActions: () => contextMenuAction,
+					getActionsContext: () => (self)
+				});
+			}
+		};
+
 		this._placeholderInfoboxContainer = DOM.$('.placeholder-infobox');
+
+		this._placeholderButton = new Button(this._placeholderInfoboxContainer, { secondary: true });
+		attachButtonStyler(this._placeholderButton, this.themeService);
+		this._placeholderButton.label = ADD_EXECUTION_PLAN_STRING;
+		this._placeholderButton.ariaLabel = ADD_EXECUTION_PLAN_STRING;
+		this._placeholderButton.enabled = true;
+		this._placeholderButton.onDidClick(e => {
+			const addExecutionPlanAction = this._instantiationService.createInstance(AddExecutionPlanAction);
+			addExecutionPlanAction.run(self);
+		});
+
 		this._placeholderLoading = new LoadingSpinner(this._placeholderContainer, {
 			fullSize: true,
 			showText: true
@@ -189,11 +228,6 @@ export class ExecutionPlanComparisonEditorView {
 		this._placeholderContainer.appendChild(this._placeholderInfoboxContainer);
 		this._placeholderLoading.loadingMessage = localize('epComapre.LoadingPlanMessage', "Loading execution plan");
 		this._placeholderLoading.loadingCompletedMessage = localize('epComapre.LoadingPlanCompleteMessage', "Execution plan successfully loaded");
-		this._placeholderInfobox = this._instantiationService.createInstance(InfoBox, this._placeholderInfoboxContainer, {
-			style: 'information',
-			text: ''
-		});
-		this._placeholderInfobox.text = localize('epComapre.placeholderInfoboxText', "Add execution plans to compare");
 
 		this._topPlanContainer = DOM.$('.plan-container');
 		this.planSplitViewContainer.appendChild(this._topPlanContainer);
@@ -407,6 +441,9 @@ export class ExecutionPlanComparisonEditorView {
 			this._propertiesView.setSecondaryElement(executionPlanGraphs[0].root);
 			this._addExecutionPlanAction.enabled = false;
 			this._searchNodeActionForAddedPlan.enabled = true;
+			if (!this._areTooltipsEnabled) {
+				this.activeBottomPlanDiagram.toggleTooltip();
+			}
 		}
 		this.refreshSplitView();
 	}
@@ -479,6 +516,18 @@ export class ExecutionPlanComparisonEditorView {
 
 	public togglePropertiesView(): void {
 		this._propertiesContainer.style.display = this._propertiesContainer.style.display === 'none' ? '' : 'none';
+	}
+
+	public toggleTooltips(): boolean {
+		let state: boolean;
+		if (this.activeTopPlanDiagram) {
+			state = this.activeTopPlanDiagram.toggleTooltip();
+		}
+		if (this.activeBottomPlanDiagram) {
+			state = this.activeBottomPlanDiagram.toggleTooltip();
+		}
+		this._areTooltipsEnabled = state;
+		return state;
 	}
 
 	public toggleOrientation(): void {
@@ -677,6 +726,27 @@ class PropertiesAction extends Action {
 			.send();
 
 		context.togglePropertiesView();
+	}
+}
+
+export class ActionBarToggleTooltip extends Action {
+	public static ID = 'ep.tooltipToggleActionBar';
+	public static WHEN_TOOLTIPS_ENABLED_LABEL = localize('executionPlanEnableTooltip', "Tooltips enabled");
+	public static WHEN_TOOLTIPS_DISABLED_LABEL = localize('executionPlanDisableTooltip', "Tooltips disabled");
+
+	constructor() {
+		super(ActionBarToggleTooltip.ID, ActionBarToggleTooltip.WHEN_TOOLTIPS_ENABLED_LABEL, enableTooltipIconClassName);
+	}
+
+	public override async run(context: ExecutionPlanComparisonEditorView): Promise<void> {
+		const state = context.toggleTooltips();
+		if (!state) {
+			this.class = disableTooltipIconClassName;
+			this.label = ActionBarToggleTooltip.WHEN_TOOLTIPS_DISABLED_LABEL;
+		} else {
+			this.class = enableTooltipIconClassName;
+			this.label = ActionBarToggleTooltip.WHEN_TOOLTIPS_ENABLED_LABEL;
+		}
 	}
 }
 

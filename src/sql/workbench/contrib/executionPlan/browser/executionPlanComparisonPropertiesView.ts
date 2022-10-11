@@ -5,7 +5,6 @@
 
 import { ExecutionPlanPropertiesViewBase, PropertiesSortType } from 'sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { isNumber } from 'sql/base/common/numbers';
 import * as azdata from 'azdata';
 import { localize } from 'vs/nls';
 import { iconCssFormatter, textFormatter } from 'sql/base/browser/ui/table/formatters';
@@ -17,7 +16,6 @@ import { executionPlanComparisonPropertiesDifferent } from 'sql/workbench/contri
 import * as sqlExtHostType from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { Codicon } from 'vs/base/common/codicons';
 import { deepClone } from 'vs/base/common/objects';
 
@@ -42,22 +40,6 @@ function getRightOperationLabel(target: string): string {
 	return localize('nodePropertyViewRightOperation', 'Right operation: {0}', target);
 }
 
-function getTopPlanIsGreaterThanBottomPlanSummaryTextTemplate(rowName: string): string {
-	return localize('nodePropertyViewTopPlanGreaterThanBottomPlan', '{0} is greater for the top plan than it is for the bottom plan.', rowName);
-}
-
-function getBottomPlanIsGreaterThanTopPlanSummaryTextTemplate(rowName: string): string {
-	return localize('nodePropertyViewBottomPlanGreaterThanTopPlan', '{0} is greater for the bottom plan than it is for the top plan.', rowName);
-}
-
-function getLeftPlanIsGreaterThanRightPlanSummaryTextTemplate(rowName: string): string {
-	return localize('nodePropertyViewLeftPlanGreaterThanRightPlan', '{0} is greater for the left plan than it is for the right plan.', rowName);
-}
-
-function getRightPlanIsGreaterThanLeftPlanSummaryTextTemplate(rowName: string): string {
-	return localize('nodePropertyViewRightPlanGreaterThanLeftPlan', '{0} is greater for the right plan than it is for the left plan.', rowName);
-}
-
 const notEqualTitle = localize('nodePropertyViewNameNotEqualTitle', 'Not equal to');
 const lessThanTitle = localize('nodePropertyViewNameLessThanTitle', 'Less than');
 const greaterThanTitle = localize('nodePropertyViewNameGreaterThanTitle', 'Greater than');
@@ -69,7 +51,6 @@ const bottomTitleColumnHeader = localize('nodePropertyViewNameValueColumnBottomH
 
 export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanPropertiesViewBase {
 	private _model: ExecutionPlanComparisonPropertiesViewModel;
-	private _summaryTextContainer: HTMLElement;
 	private _primaryContainer: HTMLElement;
 	private _secondaryContainer: HTMLElement;
 	private _orientation: ExecutionPlanCompareOrientation = ExecutionPlanCompareOrientation.Horizontal;
@@ -81,16 +62,12 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		@IThemeService themeService: IThemeService,
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IContextMenuService contextMenuService: IContextMenuService,
-		@IContextViewService contextViewService: IContextViewService,
-		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService
+		@IContextViewService contextViewService: IContextViewService
 	) {
 		super(parentContainer, themeService, instantiationService, contextMenuService, contextViewService);
 		this._model = <ExecutionPlanComparisonPropertiesViewModel>{};
 		this._parentContainer.style.display = 'none';
 		const header = DOM.$('.compare-operation-name');
-
-		this._summaryTextContainer = DOM.$('.compare-operation-summary-text');
-		this.setSummary(this._summaryTextContainer);
 
 		this._primaryContainer = DOM.$('.compare-operation-name-text');
 		header.appendChild(this._primaryContainer);
@@ -99,14 +76,6 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		header.appendChild(this._secondaryContainer);
 
 		this.setHeader(header);
-	}
-
-	private setSummaryElement(summary: string[]): void {
-		const EOL = this.textResourcePropertiesService.getEOL(undefined);
-		let summaryText = summary.join(EOL);
-		let summaryContainerText = localize('executionPlanSummaryForExpensiveOperators', "Summary: {0}{1}", EOL, summaryText);
-		this._summaryTextContainer.innerText = summaryContainerText;
-		this._summaryTextContainer.title = summaryContainerText;
 	}
 
 	public setPrimaryElement(e: InternalExecutionPlanElement): void {
@@ -176,58 +145,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 
 		let tableRows = this.convertPropertiesToTableRows(primaryProps, secondaryProps);
 		tableRows = this.sortPropertiesByDisplayValueEquivalency(tableRows);
-		this.setSummaryElement(this.getExpensivePropertySummary(tableRows));
 		this.populateTable(columns, tableRows);
-	}
-
-	/**
-	 * This method returns an array of strings that that will make up the properties summary. The properties summary
-	 * will appear above the properties table when execution plans are being compared.
-	 * Each segment of that summary is in the following generic format:
-	 *
-	 * <row-name> is greater for the top plan than it is for the bottom plan.
-	 * <row-name> is greater for the bottom plan than it is for the top plan.
-	 *
-	 * @param tableRows The table rows that will appear in the properties table.
-	 * @returns The string array containing the segments of the summary.
-	 */
-	private getExpensivePropertySummary(tableRows: TableRow[]): string[] {
-		let summary: string[] = [];
-
-		tableRows.forEach(row => {
-			const rowName = (<RowContent>row.name).text;
-			if (row.primary && row.secondary) {
-				const primaryText = row.primary.text.split(' ');
-				const secondaryTitle = row.secondary.title.split(' ');
-
-				if (primaryText.length === secondaryTitle.length && primaryText.length <= 2 && secondaryTitle.length <= 2) {
-					const MAX_PROPERTY_SUMMARY_LENGTH = 3;
-
-					for (let i = 0; i < primaryText.length && summary.length < MAX_PROPERTY_SUMMARY_LENGTH; ++i) {
-						if (isNumber(primaryText[i]) && isNumber(secondaryTitle[i])) {
-							const primaryValue = Number(primaryText);
-							const secondaryValue = Number(secondaryTitle);
-
-							let summaryText: string;
-							if (primaryValue > secondaryValue) {
-								summaryText = this._orientation === ExecutionPlanCompareOrientation.Horizontal
-									? getTopPlanIsGreaterThanBottomPlanSummaryTextTemplate(rowName)
-									: getLeftPlanIsGreaterThanRightPlanSummaryTextTemplate(rowName);
-							}
-							else {
-								summaryText = this._orientation === ExecutionPlanCompareOrientation.Horizontal
-									? getBottomPlanIsGreaterThanTopPlanSummaryTextTemplate(rowName)
-									: getRightPlanIsGreaterThanLeftPlanSummaryTextTemplate(rowName);
-							}
-
-							summary.push(summaryText);
-						}
-					}
-				}
-			}
-		});
-
-		return summary;
 	}
 
 	private getPropertyTableColumns() {
@@ -347,17 +265,23 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 			const treeGridChildren = row.treeGridChildren;
 
 			if (treeGridChildren?.length > 0) {
-				let [unequalSubRows, equalSubRows] = this.splitEqualFromUnequalProperties(treeGridChildren);
+				const [unequalSubRows, equalSubRows] = this.splitEqualFromUnequalProperties(treeGridChildren);
 
 				if (unequalSubRows.length > 0) {
-					let currentRow = deepClone(row);
+					const currentRow = deepClone(row);
 					currentRow.treeGridChildren = unequalSubRows;
+					currentRow.expanded = true;
+
+					currentRow.icon = {
+						iconCssClass: executionPlanComparisonPropertiesDifferent,
+						title: notEqualTitle
+					};
 
 					unequalRows.push(currentRow);
 				}
 
 				if (equalSubRows.length > 0) {
-					let currentRow = deepClone(row);
+					const currentRow = deepClone(row);
 					currentRow.treeGridChildren = equalSubRows;
 
 					equalRows.push(currentRow);
@@ -455,10 +379,14 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 							diffIcon.title = notEqualTitle;
 							break;
 						case sqlExtHostType.executionPlan.ExecutionPlanGraphElementPropertyDataType.Number:
-							diffIcon = (parseFloat(v.primaryProp.displayValue) > parseFloat(v.secondaryProp.displayValue))
-								? { iconClass: Codicon.chevronRight.classNames, title: greaterThanTitle }
-								: { iconClass: Codicon.chevronLeft.classNames, title: lessThanTitle };
-
+							if (v.primaryProp.betterValue === sqlExtHostType.executionPlan.ExecutionPlanGraphElementPropertyBetterValue.None) {
+								diffIcon.title = notEqualTitle;
+								diffIcon.iconClass = executionPlanComparisonPropertiesDifferent;
+							} else {
+								diffIcon = (parseFloat(v.primaryProp.displayValue) > parseFloat(v.secondaryProp.displayValue))
+									? { iconClass: Codicon.chevronRight.classNames, title: greaterThanTitle }
+									: { iconClass: Codicon.chevronLeft.classNames, title: lessThanTitle };
+							}
 							break;
 						case sqlExtHostType.executionPlan.ExecutionPlanGraphElementPropertyDataType.String:
 							diffIcon.iconClass = executionPlanComparisonPropertiesDifferent;
@@ -501,9 +429,16 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 
 			} else if (primaryProp && !secondaryProp) {
 				row.displayOrder = v.primaryProp.displayOrder;
+
 				row.primary = {
 					text: v.primaryProp.displayValue
 				};
+
+				row.icon = {
+					iconCssClass: executionPlanComparisonPropertiesDifferent,
+					title: notEqualTitle
+				};
+
 				rows.push(row);
 				if (!isString(primaryProp.value)) {
 					row.name.iconCssClass += ` parent-row-styling`;
@@ -512,10 +447,17 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 				}
 			} else if (!primaryProp && secondaryProp) {
 				row.displayOrder = v.secondaryProp.displayOrder;
+
 				row.secondary = {
 					title: v.secondaryProp.displayValue,
 					iconCssClass: ''
 				};
+
+				row.icon = {
+					iconCssClass: executionPlanComparisonPropertiesDifferent,
+					title: notEqualTitle
+				};
+
 				rows.push(row);
 				if (!isString(secondaryProp.value)) {
 					row.name.iconCssClass += ` parent-row-styling`;

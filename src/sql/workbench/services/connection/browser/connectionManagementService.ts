@@ -1658,17 +1658,28 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return connections;
 	}
 
-	async handleUnsupportedProvider(providerName: string): Promise<boolean> {
-		const extensionId = ConnectionProviderAndExtensionMap.get(providerName);
+	public async handleUnsupportedProvider(providerId: string): Promise<boolean> {
+		const extensionId = ConnectionProviderAndExtensionMap.get(providerId);
 		const message = extensionId ? nls.localize('connection.extensionNotInstalled', "The extension '{0}' is required in order to connect to this resource. Do you want to install it?", extensionId) :
-			nls.localize('connectionDialog.connectionProviderNotSupported', "The extension that supports provider type '{0}' is not currently installed. Do you want to view the extensions?", providerName);
+			nls.localize('connectionDialog.connectionProviderNotSupported', "The extension that supports provider type '{0}' is not currently installed. Do you want to view the extensions?", providerId);
 		const result = await this._dialogService.confirm({
 			message: message,
 			type: 'question'
 		});
 		if (result.confirmed) {
 			if (extensionId) {
-				await this._commandService.executeCommand('extension.open', extensionId);
+				const providerRegistered = new Promise<void>(resolve => {
+					const eventHandler = this._capabilitiesService.onCapabilitiesRegistered(e => {
+						if (e.id === providerId) {
+							resolve();
+							eventHandler.dispose();
+						}
+					});
+				});
+				// Install the extension and then wait for the provider to be registered to ensure that everything is ready for the caller to use
+				await this._commandService.executeCommand('workbench.extensions.installExtension', extensionId);
+				await providerRegistered;
+
 			} else {
 				await this._paneCompositePartService.openPaneComposite(ExtensionsViewletID, ViewContainerLocation.Sidebar);
 			}
