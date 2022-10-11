@@ -13,12 +13,22 @@ $Version = $VersionJson.version
 $Quality = $VersionJson.quality
 $CommitId = $VersionJson.commit
 
-$ZipName = "azuredatastudio-darwin.zip"
-$Zip = "$artifactsDir\darwin\archive\$ZipName"
-$UploadName = "azuredatastudio-macos-$Version"
+$Flavors = "x64","arm64","universal"
+$FlavorSuffixes = "","-arm64","-universal"
 
-If (-NOT ($Quality -eq "stable")) {
-	$UploadName = "$UploadName-$Quality"
+For($i = 0; $i -lt $Flavors.Length; $i++)
+{
+	$Flavor = $Flavors[$i]
+	$FlavorSuffix = $FlavorSuffixes[$i]
+	$ZipName = "azuredatastudio-darwin-$Flavor.zip"
+	$Zip = "$artifactsDir\darwin\archive\$ZipName"
+	$UploadName = "azuredatastudio-macos$FlavorSuffix-$Version"
+
+	If (-NOT ($Quality -eq "stable")) {
+		$UploadName = "$UploadName-$Quality"
+	}
+
+	$Platform = "darwin$FlavorSuffix"
+
+	node $sourcesDir\build\azure-pipelines\common\publish.js $Quality $Platform archive "$UploadName.zip" $Version true $Zip $CommitId
 }
-
-node $sourcesDir\build\azure-pipelines\common\publish.js $Quality darwin archive "$UploadName.zip" $Version true $Zip $CommitId
