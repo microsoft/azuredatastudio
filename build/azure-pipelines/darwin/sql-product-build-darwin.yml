@@ -106,25 +106,24 @@ steps:
       VSCODE_MIXIN_PASSWORD: $(github-distro-mixin-password)
     condition: and(succeeded(), ne(variables['VSCODE_ARCH'], 'universal'))
 
-  # {{SQL CARBON TODO}} - reenable
-  # - script: |
-  #     set -e
-  #     ./scripts/test.sh --build --tfs "Unit Tests" --coverage
-  #   displayName: Run unit tests
-  #   condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+  - script: |
+      set -e
+      ./scripts/test.sh --build --tfs "Unit Tests" --coverage
+    displayName: Run unit tests
+    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
-  # - script: |
-  #     # Figure out the full absolute path of the product we just built
-  #     # including the remote server and configure the integration tests
-  #     # to run with these builds instead of running out of sources.
-  #     set -e
+  - script: |
+      # Figure out the full absolute path of the product we just built
+      # including the remote server and configure the integration tests
+      # to run with these builds instead of running out of sources.
+      set -e
       APP_ROOT=$(agent.builddirectory)/azuredatastudio-darwin-x64
-  #     APP_NAME="`ls $APP_ROOT | head -n 1`"
-  #     INTEGRATION_TEST_ELECTRON_PATH="$APP_ROOT/$APP_NAME/Contents/MacOS/Electron" \
-  #     VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/azuredatastudio-reh-darwin" \
-  #     ./scripts/test-integration.sh --build --tfs "Integration Tests"
-  #   displayName: Run integration tests (Electron)
-  #   condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+      APP_NAME="`ls $APP_ROOT | head -n 1`"
+      INTEGRATION_TEST_ELECTRON_PATH="$APP_ROOT/$APP_NAME/Contents/MacOS/Electron" \
+      VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/azuredatastudio-reh-darwin" \
+      ./scripts/test-integration.sh --build --tfs "Integration Tests"
+    displayName: Run integration tests (Electron)
+    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
   - script: |
       set -e
@@ -232,23 +231,22 @@ steps:
     displayName: 'Publish Artifact: drop'
     condition: always()
 
-  # {{SQL CARBON TODO}} - reenable
-  # - task: PublishTestResults@2
-  #   displayName: 'Publish Test Results'
-  #   inputs:
-  #     testResultsFiles: "*-results.xml"
-  #     searchFolder: "$(Build.ArtifactStagingDirectory)/test-results"
-  #   continueOnError: true
-  #   condition: and(succeededOrFailed(), or(eq(variables['RUN_TESTS'], 'true'), eq(variables['RUN_SMOKE_TESTS'], 'true')))
-  # {{SQL CARBON TODO}} - reenable
-  # - task: PublishCodeCoverageResults@1
-  #   displayName: 'Publish code coverage from $(Build.SourcesDirectory)/.build/coverage/cobertura-coverage.xml'
-  #   inputs:
-  #     codeCoverageTool: Cobertura
-  #     summaryFileLocation: '$(Build.SourcesDirectory)/.build/coverage/cobertura-coverage.xml'
-  #     reportDirectory: '$(Build.SourcesDirectory)/.build/coverage'
-  #   continueOnError: true
-  #   condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+  - task: PublishTestResults@2
+    displayName: 'Publish Test Results'
+    inputs:
+      testResultsFiles: "*-results.xml"
+      searchFolder: "$(Build.ArtifactStagingDirectory)/test-results"
+    continueOnError: true
+    condition: and(succeededOrFailed(), or(eq(variables['RUN_TESTS'], 'true'), eq(variables['RUN_SMOKE_TESTS'], 'true')))
+
+  - task: PublishCodeCoverageResults@1
+    displayName: 'Publish code coverage from $(Build.SourcesDirectory)/.build/coverage/cobertura-coverage.xml'
+    inputs:
+      codeCoverageTool: Cobertura
+      summaryFileLocation: '$(Build.SourcesDirectory)/.build/coverage/cobertura-coverage.xml'
+      reportDirectory: '$(Build.SourcesDirectory)/.build/coverage'
+    continueOnError: true
+    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
     displayName: 'Component Detection'

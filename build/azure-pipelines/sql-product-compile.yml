@@ -77,19 +77,17 @@ steps:
     node build/azure-pipelines/mixin
   displayName: Mix in quality
 
-# {{SQL CARBON TODO}} - reenable
 # Run these separately to avoid OOM errors on pipeline machines
 - script: |
     set -e
     yarn npm-run-all -lp core-ci extensions-ci
-#    yarn npm-run-all -lp hygiene eslint valid-layers-check
+    yarn npm-run-all -lp hygiene eslint valid-layers-check
   displayName: Compile & Hygiene
 
-# {{SQL CARBON TODO}} - reenable
-# - script: |
-#     set -e
-#     yarn npm-run-all -lp sqllint extensions-lint
-#   displayName: SQL Hygiene
+- script: |
+    set -e
+    yarn npm-run-all -lp sqllint extensions-lint
+  displayName: SQL Hygiene
 
 - script: |
     set -e

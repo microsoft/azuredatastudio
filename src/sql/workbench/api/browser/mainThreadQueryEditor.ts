@@ -131,7 +131,7 @@ export class MainThreadQueryEditor extends Disposable implements MainThreadQuery
 
 		let editor = editors && editors.length > 0 ? editors[0] : undefined;
 		if (editor) {
-			// {{SQL CARBON TODO}} - cast imcomptible types?
+			// {{SQL CARBON TODO}} - cast incompatible type to unknown
 			let queryEditor = (<unknown>editor) as QueryEditor;
 			if (queryEditor) {
 				queryEditor.registerQueryModelViewTab(title, componentId);
