@@ -133,7 +133,18 @@ export async function createNewProjectFromDatabaseWithQuickpick(connectionInfo?:
 		return undefined;
 	}
 
-	// 5. SDK-style project or not
+	// 6. Include permissions or not
+	const includePermissions = await vscode.window.showQuickPick(
+		[constants.noStringDefault, constants.yesString],
+		{ title: 'Include permissions in project', ignoreFocusOut: true }
+	);
+
+	if (!includePermissions) {
+		// User cancelled
+		return undefined;
+	}
+
+	// 7. SDK-style project or not
 	let sdkStyle;
 	const sdkLearnMoreButton: vscode.QuickInputButton = {
 		iconPath: new vscode.ThemeIcon('link-external'),
