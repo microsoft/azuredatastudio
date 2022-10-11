@@ -122,35 +122,35 @@ declare module 'vscode-mssql' {
 		getServerInfo(connectionInfo: IConnectionInfo): ServerInfo
 	}
 
+	/**
+	 * Well-known Authentication types.
+	 */
+	export const enum AuthenticationType {
 		/**
-		 * Well-known Authentication types.
+		 * Username and password
 		 */
-		 export const enum AuthenticationType {
-			/**
-			 * Username and password
-			 */
-			SqlLogin = 'SqlLogin',
-			/**
-			 * Windows Authentication
-			 */
-			Integrated = 'Integrated',
-			/**
-			 * Azure Active Directory - Universal with MFA support
-			 */
-			AzureMFA = 'AzureMFA',
-			/**
-			 * Azure Active Directory - Password
-			 */
-			AzureMFAAndUser = 'AzureMFAAndUser',
-			/**
-			 * Datacenter Security Token Service Authentication
-			 */
-			DSTSAuth = 'dstsAuth',
-			/**
-			 * No authentication required
-			 */
-			None = 'None'
-		}
+		SqlLogin = 'SqlLogin',
+		/**
+		 * Windows Authentication
+		 */
+		Integrated = 'Integrated',
+		/**
+		 * Azure Active Directory - Universal with MFA support
+		 */
+		AzureMFA = 'AzureMFA',
+		/**
+		 * Azure Active Directory - Password
+		 */
+		AzureMFAAndUser = 'AzureMFAAndUser',
+		/**
+		 * Datacenter Security Token Service Authentication
+		 */
+		DSTSAuth = 'dstsAuth',
+		/**
+		 * No authentication required
+		 */
+		None = 'None'
+	}
 
 	/**
 	 * The possible values of the server engine edition
@@ -415,7 +415,7 @@ declare module 'vscode-mssql' {
 		exportBacpac(databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
 		importBacpac(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
 		extractDacpac(databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
-		createProjectFromDatabase(databaseName: string, targetFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, extractTarget: ExtractTarget, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
+		createProjectFromDatabase(databaseName: string, targetFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, extractTarget: ExtractTarget, taskExecutionMode: TaskExecutionMode, includePermissions?: boolean): Thenable<DacFxResult>;
 		deployDacpac(packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: TaskExecutionMode, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: DeploymentOptions): Thenable<DacFxResult>;
 		generateDeployScript(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: DeploymentOptions): Thenable<DacFxResult>;
 		generateDeployPlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<GenerateDeployPlanResult>;
