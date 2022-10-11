@@ -18,7 +18,7 @@ Registry.as<IConfigurationRegistry>(ConfigExtensions.Configuration).registerConf
 	'title': nls.localize('previewFeatures.configTitle', "Preview Features"),
 	'type': 'object',
 	'properties': {
-		CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES: {
+		'workbench.enablePreviewFeatures': {
 			'type': 'boolean',
 			'default': undefined,
 			'description': nls.localize('previewFeatures.configEnable', "Enable unreleased preview features")
