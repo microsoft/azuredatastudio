@@ -18,6 +18,10 @@ import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { AzdataGraphView, SearchType } from 'sql/workbench/contrib/executionPlan/browser/azdataGraphView';
 import { ExecutionPlanWidgetController } from 'sql/workbench/contrib/executionPlan/browser/executionPlanWidgetController';
 
+const SELECT_PROPERTY_TYPE_TITLE = localize('executionPlanSelectPropertyTypeTitle', 'Select property type');
+const SELECT_SEARCH_TYPE_TITLE = localize('executionPlanSelectSearchTypeTitle', 'Select search type');
+const ENTER_SEARCH_VALUE_TITLE = localize('executionPlanEnterValueTitle', 'Enter search value');
+
 const CONTAINS_DISPLAY_STRING = localize("executionPlanSearchTypeContains", 'Contains');
 const EQUALS_DISPLAY_STRING = localize("executionPlanSearchTypeEquals", 'Equals');
 const GREATER_DISPLAY_STRING = '>';
@@ -55,6 +59,7 @@ export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 		this.container.appendChild(this._propertyNameSelectBoxContainer);
 		const propDropdownOptions = this._executionPlanDiagram.getUniqueElementProperties();
 		this._propertyNameSelectBox = new SelectBox(propDropdownOptions, propDropdownOptions[0], this.contextViewService, this._propertyNameSelectBoxContainer);
+		this._propertyNameSelectBox.setAriaLabel(SELECT_PROPERTY_TYPE_TITLE);
 		this._register(attachSelectBoxStyler(this._propertyNameSelectBox, this.themeService));
 		this._propertyNameSelectBoxContainer.style.width = '150px';
 		this._propertyNameSelectBox.render(this._propertyNameSelectBoxContainer);
@@ -74,6 +79,7 @@ export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 			LESSER_EQUAL_DISPLAY_STRING,
 			LESSER_AND_GREATER_DISPLAY_STRING
 		], EQUALS_DISPLAY_STRING, this.contextViewService, this._searchTypeSelectBoxContainer);
+		this._searchTypeSelectBox.setAriaLabel(SELECT_SEARCH_TYPE_TITLE);
 		this._searchTypeSelectBox.render(this._searchTypeSelectBoxContainer);
 		this._register(attachSelectBoxStyler(this._searchTypeSelectBox, this.themeService));
 		this._searchTypeSelectBoxContainer.style.width = '100px';
@@ -105,6 +111,7 @@ export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 
 		// search text input box
 		this._searchTextInputBox = new InputBox(this.container, this.contextViewService, {});
+		this._searchTextInputBox.setAriaLabel(ENTER_SEARCH_VALUE_TITLE);
 		this._register(attachInputBoxStyler(this._searchTextInputBox, this.themeService));
 		this._searchTextInputBox.element.style.marginLeft = '5px';
 		this._register(this._searchTextInputBox.onDidChange(e => {
