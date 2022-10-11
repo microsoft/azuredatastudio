@@ -9,12 +9,11 @@ import { IconPathHelper } from '../constants/iconPathHelper';
 import { getCurrentMigrations, getSelectedServiceStatus } from '../models/migrationLocalStorage';
 import * as loc from '../constants/strings';
 import { filterMigrations, getMigrationDuration, getMigrationStatusImage, getMigrationStatusWithErrors, getMigrationTime, MenuCommands } from '../api/utils';
-import { getMigrationTargetType, getMigrationMode, getMigrationModeEnum, canCancelMigration, canCutoverMigration, getMigrationStatus } from '../constants/helper';
+import { getMigrationTargetType, getMigrationMode, canCancelMigration, canCutoverMigration, getMigrationStatus } from '../constants/helper';
 import { DatabaseMigration, getResourceName } from '../api/azure';
 import { logError, TelemetryViews } from '../telemtery';
 import { SelectMigrationServiceDialog } from '../dialog/selectMigrationService/selectMigrationServiceDialog';
 import { AdsMigrationStatus, EmptySettingValue, ServiceContextChangeEvent, TabBase } from './tabBase';
-import { MigrationMode } from '../models/stateMachine';
 import { DashboardStatusBar } from './DashboardStatusBar';
 
 export const MigrationsListTabId = 'MigrationsListTab';
