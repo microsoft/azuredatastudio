@@ -5,7 +5,7 @@
 
 (async () => {
 	const serviceDownloader = require('@microsoft/ads-service-downloader').ServiceDownloadProvider;
-	const platform = require('@microsoft/ads-service-downloader/out/platform').PlatformInformation;
+	const platform = require('@microsoft/ads-service-downloader/out/platform');
 	const path = require('path');
 	const fs = require('fs').promises;
 	const rimraf = require('rimraf');
@@ -15,7 +15,15 @@
 	async function installService() {
 		const absoluteConfigPath = require.resolve('../config.json');
 		const config = require(absoluteConfigPath);
-		const runtime = (await platform.getCurrent()).runtimeId;
+		let runtime = (await platform.PlatformInformation.getCurrent()).runtimeId;
+		const arch = process.env['npm_config_arch'];
+
+		// In the build pipeline, macOS x64 image is used to produce arm64 build,
+		// we need to check the environment variable to determine the actual target runtime.
+		if (runtime === platform.Runtime.OSX && arch === 'arm64') {
+			console.log(`Set the target runtime to OSX_ARM64`);
+			runtime = platform.Runtime.OSX_ARM64;
+		}
 		// fix path since it won't be correct
 		config.installDirectory = path.join(path.dirname(absoluteConfigPath), config.installDirectory);
 		let installer = new serviceDownloader(config);
