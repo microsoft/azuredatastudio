@@ -581,8 +581,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 	private _getMenuCommands(migration: DatabaseMigration): string[] {
 		const menuCommands: string[] = [];
 
-		if (getMigrationModeEnum(migration) === MigrationMode.ONLINE &&
-			canCutoverMigration(migration)) {
+		if (canCutoverMigration(migration)) {
 			menuCommands.push(MenuCommands.Cutover);
 		}
 
