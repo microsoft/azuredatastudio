@@ -23,6 +23,7 @@ import { INotebookShowOptions } from 'sql/workbench/api/common/sqlExtHost.protoc
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { ICodeEditorViewState } from 'vs/editor/common/editorCommon';
+import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 
 export const SERVICE_ID = 'sqlNotebookService';
 export const INotebookService = createDecorator<INotebookService>(SERVICE_ID);
@@ -55,6 +56,7 @@ export interface INotebookService {
 	readonly onNotebookEditorAdd: Event<INotebookEditor>;
 	readonly onNotebookEditorRemove: Event<INotebookEditor>;
 	onNotebookEditorRename: Event<INotebookEditor>;
+	readonly onNotebookKernelsAdded: Event<IStandardKernelWithProvider[]>;
 
 	readonly isRegistrationComplete: boolean;
 	readonly registrationComplete: Promise<void>;

@@ -403,7 +403,7 @@ export class SortPropertiesReverseAlphabeticallyAction extends Action {
 	public static LABEL = localize('executionPlanPropertyViewSortReverseAlphabetically', "Reverse Alphabetical");
 
 	constructor() {
-		super(SortPropertiesAlphabeticallyAction.ID, SortPropertiesAlphabeticallyAction.LABEL, sortReverseAlphabeticallyIconClassNames);
+		super(SortPropertiesReverseAlphabeticallyAction.ID, SortPropertiesReverseAlphabeticallyAction.LABEL, sortReverseAlphabeticallyIconClassNames);
 	}
 
 	public override async run(context: ExecutionPlanPropertiesViewBase): Promise<void> {

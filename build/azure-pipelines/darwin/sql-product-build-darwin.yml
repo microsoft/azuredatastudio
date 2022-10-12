@@ -208,19 +208,9 @@ steps:
       set -e
       mkdir -p .build/darwin/archive
       pushd ../azuredatastudio-darwin-$(VSCODE_ARCH)
-      ditto -c -k --keepParent *.app $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin-$(VSCODE_ARCH).zip
-      popd
-    displayName: 'Archive (no signing)'
-    condition: and(succeeded(), eq(variables['signed'], false))
-
-  - script: |
-      set -e
-      mkdir -p .build/darwin/archive
-      pushd ../azuredatastudio-darwin-$(VSCODE_ARCH)
       ditto -c -k --keepParent *.app $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin-$(VSCODE_ARCH)-unsigned.zip
       popd
     displayName: 'Archive'
-    condition: and(succeeded(), eq(variables['signed'], true))
 
   - script: |
       set -e

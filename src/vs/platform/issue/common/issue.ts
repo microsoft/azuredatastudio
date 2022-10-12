@@ -59,6 +59,7 @@ export interface IssueReporterData extends WindowData {
 	extensionId?: string;
 	experiments?: string;
 	restrictedMode: boolean;
+	previewFeaturesEnabled: boolean; // {{SQL CARBON EDIT}} Add preview features flag
 	githubAccessToken: string;
 	readonly issueTitle?: string;
 	readonly issueBody?: string;

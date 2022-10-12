@@ -9,7 +9,12 @@ import { DOUBLE_CLICK_ACTION_CONFIG_SECTION, ITEM_SELECTED_COMMAND_ID, QUERY_HIS
 import { QueryHistoryItem } from './queryHistoryItem';
 import { QueryHistoryProvider, setLoadingContext } from './queryHistoryProvider';
 import { promises as fs } from 'fs';
-import { TelemetryActions, TelemetryReporter, TelemetryViews } from './telemetry';
+import { sendSettingChangedEvent, TelemetryActions, TelemetryReporter, TelemetryViews } from './telemetry';
+
+type DoubleClickAction = 'open' | 'run';
+
+const DEFAULT_DOUBLECLICK_ACTION: DoubleClickAction = 'open';
+let doubleClickAction: string = DEFAULT_DOUBLECLICK_ACTION;
 
 let lastSelectedItem: { item: QueryHistoryItem | undefined, time: number | undefined } = {
 	item: undefined,
@@ -39,13 +44,21 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 		canSelectMany: false
 	});
 	context.subscriptions.push(treeView);
+	context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(async e => {
+		if (e.affectsConfiguration(`${QUERY_HISTORY_CONFIG_SECTION}.${DOUBLE_CLICK_ACTION_CONFIG_SECTION}`)) {
+			const newDoubleClickAction = getDoubleClickAction();
+			if (newDoubleClickAction !== doubleClickAction) {
+				sendSettingChangedEvent('DoubleClickAction', doubleClickAction, newDoubleClickAction);
+			}
+			doubleClickAction = newDoubleClickAction;
+		}
+	}));
 	// This is an internal-only command so not adding to package.json
 	context.subscriptions.push(vscode.commands.registerCommand(ITEM_SELECTED_COMMAND_ID, async (selectedItem: QueryHistoryItem) => {
 		// VS Code doesn't provide a native way to detect a double-click so we track it ourselves by keeping track of the last item clicked and
 		// when it was clicked to compare, then if a click happens on the same element quickly enough we trigger the configured action
 		const clickTime = new Date().getTime();
 		if (lastSelectedItem.item === selectedItem && lastSelectedItem.time && (clickTime - lastSelectedItem.time) < DOUBLE_CLICK_TIMEOUT_MS) {
-			const doubleClickAction = vscode.workspace.getConfiguration(QUERY_HISTORY_CONFIG_SECTION).get<string>(DOUBLE_CLICK_ACTION_CONFIG_SECTION);
 			TelemetryReporter.sendActionEvent(TelemetryViews.QueryHistory, TelemetryActions.DoubleClick, doubleClickAction);
 			switch (doubleClickAction) {
 				case 'run':
@@ -126,5 +139,8 @@ async function runQuery(item: QueryHistoryItem): Promise<void> {
 			.withAdditionalProperties({ step })
 			.send();
 	}
+}
 
+export function getDoubleClickAction(): string {
+	return vscode.workspace.getConfiguration(QUERY_HISTORY_CONFIG_SECTION).get<string>(DOUBLE_CLICK_ACTION_CONFIG_SECTION, DEFAULT_DOUBLECLICK_ACTION);
 }
