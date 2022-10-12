@@ -27,7 +27,7 @@ export const IOEShimService = createDecorator<IOEShimService>(SERVICE_ID);
 export interface IOEShimService {
 	_serviceBrand: undefined;
 	getChildren(node: ITreeItem, viewId: string): Promise<ITreeItem[]>;
-	disconnectNode(viewId: string, node: ITreeItem): Promise<boolean>;
+	disconnectNode(node: ITreeItem): Promise<boolean>;
 	providerExists(providerId: string): boolean;
 	isNodeConnected(viewId: string, node: ITreeItem): boolean;
 	getNodeInfoForTreeItem(treeItem: ITreeItem): azdata.NodeInfo | undefined;
@@ -109,12 +109,12 @@ export class OEShimService extends Disposable implements IOEShimService {
 		return connProfile;
 	}
 
-	public async disconnectNode(viewId: string, node: ITreeItem): Promise<boolean> {
+	public async disconnectNode(node: ITreeItem): Promise<boolean> {
 		if (node.sessionId !== undefined) {
-			const closed = (await this.oe.closeSession(node.childProvider!, this.oe.getSession(node.sessionId!)!))!.success;
+			const closed = (await this.oe.closeSession(node.childProvider!, this.oe.getSession(node.sessionId)!))!.success;
 			return closed;
 		}
-		return Promise.resolve(false);
+		return false;
 	}
 
 	public async getChildren(node: ITreeItem, viewId: string): Promise<ITreeItem[]> {

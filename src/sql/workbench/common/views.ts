@@ -30,6 +30,9 @@ export interface ITreeItem extends vsITreeItem {
 	sqlIcon?: string;
 	type?: NodeType;
 	nodeInfo?: NodeInfo;
+	/**
+	 * The Object Explorer session id that the tree item belongs to.
+	 */
 	sessionId?: string;
 }
 
