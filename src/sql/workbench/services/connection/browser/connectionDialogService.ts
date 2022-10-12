@@ -8,7 +8,6 @@ import {
 	ConnectionType, INewConnectionParams, IConnectionCompletionOptions, IConnectionResult
 } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionDialogWidget, OnShowUIResponse } from 'sql/workbench/services/connection/browser/connectionDialogWidget';
-import { ConnectionPasswordResetDialog } from 'sql/workbench/services/connection/browser/connectionPasswordResetDialog';
 import { ConnectionController } from 'sql/workbench/services/connection/browser/connectionController';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import * as Constants from 'sql/platform/connection/common/constants';
@@ -42,6 +41,7 @@ export interface IConnectionComponentCallbacks {
 	onSetConnectButton: (enable: boolean) => void;
 	onCreateNewServerGroup?: () => void;
 	onAdvancedProperties?: () => void;
+	onPasswordChange?: () => void;
 	onSetAzureTimeOut?: () => void;
 	onFetchDatabases?: (serverName: string, authenticationType: string, userName?: string, password?: string, token?: string) => Promise<string[]>;
 	onAzureTenantSelection?: (azureTenantId?: string) => void;
@@ -64,7 +64,6 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	_serviceBrand: undefined;
 
 	private _connectionDialog: ConnectionDialogWidget;
-	private _passwordResetDialog: ConnectionPasswordResetDialog;
 	private _connectionControllerMap: { [providerName: string]: IConnectionComponentController } = {};
 	private _model: ConnectionProfile;
 	private _params: INewConnectionParams;
@@ -499,11 +498,6 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	}
 
 	private async showPasswordResetDialog(connection: IConnectionProfile): Promise<void> {
-		if (!this._passwordResetDialog) {
-			this._passwordResetDialog = this._instantiationService.createInstance(ConnectionPasswordResetDialog);
-			this._passwordResetDialog.render();
-		}
-		this._passwordResetDialog.open(connection.userName, `Set a new password`);
 	}
 
 	private showErrorDialog(severity: Severity, headerTitle: string, message: string, messageDetails?: string): void {

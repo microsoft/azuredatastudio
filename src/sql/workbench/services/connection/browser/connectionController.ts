@@ -15,6 +15,7 @@ import * as Utils from 'sql/platform/connection/common/utils';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ConnectionWidget } from 'sql/workbench/services/connection/browser/connectionWidget';
+import { PasswordResetWidget } from 'sql/workbench/services/connection/browser/passwordResetWidget';
 import { IServerGroupController } from 'sql/platform/serverGroup/common/serverGroupController';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
@@ -26,6 +27,7 @@ export class ConnectionController implements IConnectionComponentController {
 	private _providerName: string;
 	protected _callback: IConnectionComponentCallbacks;
 	protected _connectionWidget: ConnectionWidget;
+	protected _passwordResetWidget: PasswordResetWidget;
 	protected _providerOptions: azdata.ConnectionOption[];
 	/* key: uri, value : list of databases */
 	protected _databaseCache = new Map<string, string[]>();
@@ -47,6 +49,7 @@ export class ConnectionController implements IConnectionComponentController {
 			onSetConnectButton: (enable: boolean) => this._callback.onSetConnectButton(enable),
 			onCreateNewServerGroup: () => this.onCreateNewServerGroup(),
 			onAdvancedProperties: () => this.handleOnAdvancedProperties(),
+			onPasswordChange: () => this.handleConnectionChangeProperties(),
 			onSetAzureTimeOut: () => this.handleonSetAzureTimeOut(),
 			onFetchDatabases: (serverName: string, authenticationType: string, userName?: string, password?: string, authToken?: string) => this.onFetchDatabases(
 				serverName, authenticationType, userName, password, authToken).then(result => {
@@ -54,6 +57,20 @@ export class ConnectionController implements IConnectionComponentController {
 				}),
 			onAzureTenantSelection: (azureTenantId?: string) => this.onAzureTenantSelection(azureTenantId),
 		}, providerName);
+
+		this._passwordResetWidget = this._instantiationService.createInstance(PasswordResetWidget, specialOptions, {
+			onSetConnectButton: (enable: boolean) => this._callback.onSetConnectButton(enable),
+			onCreateNewServerGroup: () => this.onCreateNewServerGroup(),
+			onAdvancedProperties: () => this.handleOnAdvancedProperties(),
+			onPasswordChange: () => this.handleConnectionChangeProperties(),
+			onSetAzureTimeOut: () => this.handleonSetAzureTimeOut(),
+			onFetchDatabases: (serverName: string, authenticationType: string, userName?: string, password?: string, authToken?: string) => this.onFetchDatabases(
+				serverName, authenticationType, userName, password, authToken).then(result => {
+					return result;
+				}),
+			onAzureTenantSelection: (azureTenantId?: string) => this.onAzureTenantSelection(azureTenantId),
+		});
+
 		this._providerName = providerName;
 	}
 
@@ -141,6 +158,10 @@ export class ConnectionController implements IConnectionComponentController {
 	public showUiComponent(container: HTMLElement): void {
 		this._databaseCache = new Map<string, string[]>();
 		this._connectionWidget.createConnectionWidget(container);
+	}
+
+	public showConnectionChange(): void {
+		this._passwordResetWidget.activatePasswordResetDialog();
 	}
 
 	private flattenGroups(group: ConnectionProfileGroup, allGroups: IConnectionProfileGroup[]): void {

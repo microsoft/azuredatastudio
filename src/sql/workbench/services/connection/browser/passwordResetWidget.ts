@@ -54,6 +54,10 @@ export class PasswordResetWidget extends lifecycle.Disposable {
 		}
 	}
 
+	public activatePasswordResetDialog(): void {
+		this._callbacks.onPasswordChange();
+	}
+
 	public createPasswordResetWidget(container: HTMLElement): void {
 		this._container = DOM.append(container, DOM.$('div.connection-table'));
 		this.addLoginOptions();
