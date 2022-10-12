@@ -138,11 +138,13 @@ stages:
     # Ideally, we should be able to use the condition `and(succeeded(), eq(variables['VSCODE_RELEASE'], 'true')` to achieve what we want. The VSCODE_RELEASE variable can be defined as overwritable or non-overwritable based on whether we want to
     # release from the pipeline. Unfortunately ADO doesn't allow the use of variables for scheduled job as per:
     # https://learn.microsoft.com/en-us/azure/devops/pipelines/process/scheduled-triggers?view=azure-devops&tabs=yaml#scheduled-triggers, as a result, we cannot set the VSCODE_RELEASE variable to true for scheduled Insider builds.
-
+    #
     # Implementation:
-    # The variable AUTO_RELEASE_INSIDER is defined as non-overwritable to control whether scheduled builds in the pipeline with insider quality should be released automatically.
-    # The variable VSCODE_RELEASE is defined as overwritable/non-overwritable based on whether we want to release from the pipeline. The default value is false for both scenarios.
-    condition: and(succeeded(), or(eq(variables['VSCODE_RELEASE'], 'true'), and(eq(variables['AUTO_RELEASE_INSIDER'], 'true'), eq(variables['VSCODE_QUALITY'], 'insider'), eq(variables['Build.Reason'], 'Schedule'))))
+    # Set the VSCODE_RELEASE variable's default value to true and add the release tag for following scenarios:
+    # 1. The build is a scheduled insiders build.
+    # 2. The build is not an insiders build. e.g. rc1, stable, saw.
+    # To release an ad-hoc insiders build, manually add 'Release' tag to the build.
+    condition: and(succeeded(), eq(variables['VSCODE_RELEASE'], 'true'), or(ne(variables['VSCODE_QUALITY'], 'insider'), and(eq(variables['VSCODE_QUALITY'], 'insider'), eq(variables['Build.Reason'], 'Schedule'))))
     pool:
       vmImage: 'Ubuntu-20.04'
     dependsOn:
@@ -150,7 +152,7 @@ stages:
       - Linux
       - Windows
     jobs:
-      - job: Release
+      - job: Add Release Tag
         steps:
         - template: sql-release.yml
 
