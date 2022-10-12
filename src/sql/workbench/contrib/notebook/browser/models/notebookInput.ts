@@ -26,7 +26,6 @@ import { NotebookTextFileModel } from 'sql/workbench/contrib/notebook/browser/mo
 import { TextResourceEditorModel } from 'vs/workbench/common/editor/textResourceEditorModel';
 import { UntitledTextEditorModel, IUntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
-import { AbstractResourceEditorInput } from 'vs/workbench/common/editor/resourceEditorInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
 import { BinaryEditorModel } from 'vs/workbench/common/editor/binaryEditorModel';
 import { NotebookFindModel } from 'sql/workbench/contrib/notebook/browser/find/notebookFindModel';
@@ -216,7 +215,7 @@ export class NotebookEditorModel extends EditorModel {
 	}
 }
 
-type TextInput = AbstractResourceEditorInput | UntitledTextEditorInput | FileEditorInput;
+type TextInput = UntitledTextEditorInput | FileEditorInput;
 
 export abstract class NotebookInput extends EditorInput implements INotebookInput {
 	private _providerId: string;
@@ -257,6 +256,10 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 		if (this._textInput) {
 			this.hookDirtyListener(this._textInput.onDidChangeDirty, () => this._onDidChangeDirty.fire());
 		}
+	}
+
+	public get languageMode(): string {
+		return this._textInput.getMode();
 	}
 
 	public get textInput(): TextInput {

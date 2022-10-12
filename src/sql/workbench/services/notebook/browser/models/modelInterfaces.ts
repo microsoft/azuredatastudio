@@ -622,6 +622,7 @@ export interface INotebookModelOptions {
 	notificationService: INotificationService;
 	connectionService: IConnectionManagementService;
 	capabilitiesService: ICapabilitiesService;
+	getInputLanguageMode: () => string;
 	editorLoadedTimestamp?: number;
 }
 

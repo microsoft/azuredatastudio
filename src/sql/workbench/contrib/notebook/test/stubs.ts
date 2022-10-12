@@ -236,6 +236,9 @@ export class ServerManagerStub implements nb.ServerManager {
 }
 
 export class NotebookServiceStub implements INotebookService {
+	get onNotebookKernelsAdded(): vsEvent.Event<IStandardKernelWithProvider[]> {
+		throw new Error('Method not implemented.');
+	}
 	getNotebookURIForCell(cellUri: URI): URI {
 		throw new Error('Method not implemented.');
 	}
