@@ -130,12 +130,12 @@ stages:
 
   - stage: Release
     # Requirements:
-    # 1. Release can be created only from builds in a particular pipeline, but not all builds of it should be released automatically.
-    # 2. A build will be released only when the release variable is set to true.
+    # 1. Release can be created only from builds of the official build pipeline, but not all builds of it should be released automatically.
+    # 2. A build should be released only when the release variable is set to true.
     # 3. The daily scheduled Insiders build should be released automatically.
     #
     # Limitation:
-    # Ideally, we should be able to use the condition as `and(succeeded(), eq(variables['VSCODE_RELEASE'], 'true')`. The VSCODE_RELEASE variable can be defined as overwritable or non-overwritable based on whether we want to
+    # Ideally, we should be able to use the condition `and(succeeded(), eq(variables['VSCODE_RELEASE'], 'true')` to achieve what we want. The VSCODE_RELEASE variable can be defined as overwritable or non-overwritable based on whether we want to
     # release from the pipeline. Unfortunately ADO doesn't allow the use of variables for scheduled job as per:
     # https://learn.microsoft.com/en-us/azure/devops/pipelines/process/scheduled-triggers?view=azure-devops&tabs=yaml#scheduled-triggers, as a result, we cannot set the VSCODE_RELEASE variable to true for scheduled Insider builds.
 
