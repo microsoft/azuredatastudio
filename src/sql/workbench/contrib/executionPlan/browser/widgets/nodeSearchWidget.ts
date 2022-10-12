@@ -18,7 +18,7 @@ import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { AzdataGraphView, SearchType } from 'sql/workbench/contrib/executionPlan/browser/azdataGraphView';
 import { ExecutionPlanWidgetController } from 'sql/workbench/contrib/executionPlan/browser/executionPlanWidgetController';
 
-const SELECT_PROPERTY_TYPE_TITLE = localize('executionPlanSelectPropertyTypeTitle', 'Select property type');
+const SELECT_PROPERTY_TITLE = localize('executionPlanSelectPropertyTitle', 'Select property');
 const SELECT_SEARCH_TYPE_TITLE = localize('executionPlanSelectSearchTypeTitle', 'Select search type');
 const ENTER_SEARCH_VALUE_TITLE = localize('executionPlanEnterValueTitle', 'Enter search value');
 
@@ -59,7 +59,7 @@ export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 		this.container.appendChild(this._propertyNameSelectBoxContainer);
 		const propDropdownOptions = this._executionPlanDiagram.getUniqueElementProperties();
 		this._propertyNameSelectBox = new SelectBox(propDropdownOptions, propDropdownOptions[0], this.contextViewService, this._propertyNameSelectBoxContainer);
-		this._propertyNameSelectBox.setAriaLabel(SELECT_PROPERTY_TYPE_TITLE);
+		this._propertyNameSelectBox.setAriaLabel(SELECT_PROPERTY_TITLE);
 		this._register(attachSelectBoxStyler(this._propertyNameSelectBox, this.themeService));
 		this._propertyNameSelectBoxContainer.style.width = '150px';
 		this._propertyNameSelectBox.render(this._propertyNameSelectBoxContainer);
