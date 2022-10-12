@@ -13,6 +13,7 @@ import * as path from 'path';
 import * as crypto from 'crypto';
 import * as loc from './localizedConstants';
 import { sendSettingChangedEvent, TelemetryActions, TelemetryReporter, TelemetryViews } from './telemetry';
+import { getDoubleClickAction } from './main';
 
 const STORAGE_IV_KEY = 'queryHistory.storage-iv';
 const STORAGE_KEY_KEY = 'queryHistory.storage-key';
@@ -55,10 +56,17 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 		this._historyStorageFile = path.join(storageUri.fsPath, HISTORY_STORAGE_FILE_NAME);
 		// Kick off initialization but then continue on since that may take a while and we don't want to block extension activation
 		const initializeAction = TelemetryReporter.createTimedAction(TelemetryViews.QueryHistoryProvider, TelemetryActions.Initialize);
-		this._initPromise = this.initialize().then(() => initializeAction.send());
+		this._initPromise = this.initialize().then(() => {
+			initializeAction.withAdditionalProperties({
+				'setting.persistHistory': String(this._persistHistory),
+				'setting.maxEntries': String(this._maxEntries),
+				'setting.captureEnabled': String(this._captureEnabled),
+				'setting.doubleClickAction': getDoubleClickAction()
+			}).send();
+		});
 		this._disposables.push(vscode.workspace.onDidChangeConfiguration(async e => {
-			if (e.affectsConfiguration(QUERY_HISTORY_CONFIG_SECTION) || e.affectsConfiguration(MAX_ENTRIES_CONFIG_SECTION)) {
-				await this.updateConfigurationValues();
+			if (e.affectsConfiguration(QUERY_HISTORY_CONFIG_SECTION)) {
+				await this.updateConfigurationValues(true);
 			}
 		}));
 		this._disposables.push(azdata.queryeditor.registerQueryEventListener({
@@ -249,23 +257,25 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 		this.writeHistoryFileWorker?.();
 	}
 
-	private async updateConfigurationValues(): Promise<void> {
+	private async updateConfigurationValues(sendChangedEvents: boolean = false): Promise<void> {
 		const configSection = vscode.workspace.getConfiguration(QUERY_HISTORY_CONFIG_SECTION);
 		const newCaptureEnabled = configSection.get(CAPTURE_ENABLED_CONFIG_SECTION, DEFAULT_CAPTURE_ENABLED);
-		if (this._captureEnabled !== newCaptureEnabled) {
+		if (sendChangedEvents && this._captureEnabled !== newCaptureEnabled) {
 			sendSettingChangedEvent('CaptureEnabled', String(this._captureEnabled), String(newCaptureEnabled));
-			this._captureEnabled = newCaptureEnabled;
 		}
+		this._captureEnabled = newCaptureEnabled;
+
 		const newPersistHistory = configSection.get(PERSIST_HISTORY_CONFIG_SECTION, DEFAULT_PERSIST_HISTORY);
-		if (this._persistHistory !== newPersistHistory) {
+		if (sendChangedEvents && this._persistHistory !== newPersistHistory) {
 			sendSettingChangedEvent('PersistHistory', String(this._persistHistory), String(newPersistHistory));
-			this._persistHistory = newPersistHistory;
 		}
+		this._persistHistory = newPersistHistory;
+
 		const newMaxEntries = configSection.get(MAX_ENTRIES_CONFIG_SECTION, DEFAULT_MAX_ENTRIES);
-		if (this._maxEntries !== newMaxEntries) {
+		if (sendChangedEvents && this._maxEntries !== newMaxEntries) {
 			sendSettingChangedEvent('MaxEntries', String(this._maxEntries), String(newMaxEntries));
-			this._maxEntries = newMaxEntries;
 		}
+		this._maxEntries = newMaxEntries;
 		this.trimExtraEntries();
 		if (!this._persistHistory) {
 			// We're not persisting history so we can immediately set loading to false to immediately

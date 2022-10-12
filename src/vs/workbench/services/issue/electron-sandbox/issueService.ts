@@ -20,6 +20,8 @@ import { ITASExperimentService } from 'vs/workbench/services/experiment/common/e
 import { IAuthenticationService } from 'vs/workbench/services/authentication/browser/authenticationService';
 import { registerMainProcessRemoteService } from 'vs/platform/ipc/electron-sandbox/services';
 import { IWorkspaceTrustManagementService } from 'vs/platform/workspace/common/workspaceTrust';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration'; // {{SQL CARBON EDIT}} Add preview features flag
+import { CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES } from 'sql/workbench/common/constants'; // {{SQL CARBON EDIT}} Add preview features flag
 
 export class WorkbenchIssueService implements IWorkbenchIssueService {
 	declare readonly _serviceBrand: undefined;
@@ -33,7 +35,8 @@ export class WorkbenchIssueService implements IWorkbenchIssueService {
 		@IWorkspaceTrustManagementService private readonly workspaceTrustManagementService: IWorkspaceTrustManagementService,
 		@IProductService private readonly productService: IProductService,
 		@ITASExperimentService private readonly experimentService: ITASExperimentService,
-		@IAuthenticationService private readonly authenticationService: IAuthenticationService
+		@IAuthenticationService private readonly authenticationService: IAuthenticationService,
+		@IConfigurationService private readonly configurationService: IConfigurationService // {{SQL CARBON EDIT}} Add preview features flag
 	) { }
 
 	async openReporter(dataOverrides: Partial<IssueReporterData> = {}): Promise<void> {
@@ -89,6 +92,7 @@ export class WorkbenchIssueService implements IWorkbenchIssueService {
 			enabledExtensions: extensionData,
 			experiments: experiments?.join('\n'),
 			restrictedMode: !this.workspaceTrustManagementService.isWorkspaceTrusted(),
+			previewFeaturesEnabled: this.configurationService.getValue(CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES), // {{SQL CARBON EDIT}} Add preview features flag
 			githubAccessToken,
 		}, dataOverrides);
 		return this.issueService.openReporter(issueReporterData);
