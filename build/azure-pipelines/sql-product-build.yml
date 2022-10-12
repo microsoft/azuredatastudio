@@ -141,7 +141,7 @@ stages:
 
     # Implementation:
     # The variable AUTO_RELEASE_INSIDER is defined as non-overwritable to control whether scheduled builds in the pipeline with insider quality should be released automatically.
-    # The variable VSCODE_RELEASE is defined as overwritable/non-overwritable based on whether we want to release from the pipeline. The default value is always false.
+    # The variable VSCODE_RELEASE is defined as overwritable/non-overwritable based on whether we want to release from the pipeline. The default value is false for both scenarios.
     condition: and(succeeded(), or(eq(variables['VSCODE_RELEASE'], 'true'), and(eq(variables['AUTO_RELEASE_INSIDER'], 'true'), eq(variables['VSCODE_QUALITY'], 'insider'), eq(variables['Build.Reason'], 'Schedule'))))
     pool:
       vmImage: 'Ubuntu-20.04'
