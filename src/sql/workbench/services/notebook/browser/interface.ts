@@ -23,7 +23,7 @@ export abstract class INotebookInput extends EditorInput {
 	readonly standardKernels: IStandardKernelWithProvider[];
 	readonly providersLoaded: Promise<void>;
 	readonly showActions: boolean;
-	readonly languageMode: string | undefined;
+	readonly languageMode: string;
 }
 
 export function isINotebookInput(value: any): value is INotebookInput {
