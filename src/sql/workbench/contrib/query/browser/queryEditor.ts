@@ -46,6 +46,7 @@ import { ITextResourceConfigurationService } from 'vs/editor/common/services/tex
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionOptionSpecialType } from 'sql/platform/connection/common/interfaces';
 import { ICodeEditorViewState } from 'vs/editor/common/editorCommon';
+import { CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES } from 'sql/workbench/common/constants';
 
 const QUERY_EDITOR_VIEW_STATE_PREFERENCE_KEY = 'queryEditorViewState';
 
@@ -211,7 +212,7 @@ export class QueryEditor extends EditorPane {
 		this._exportAsNotebookAction = this.instantiationService.createInstance(actions.ExportAsNotebookAction, this);
 		this.setTaskbarContent();
 		this._register(this.configurationService.onDidChangeConfiguration(e => {
-			if (e.affectsConfiguration('workbench.enablePreviewFeatures')) {
+			if (e.affectsConfiguration(CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES)) {
 				this.setTaskbarContent();
 			}
 		}));
@@ -297,7 +298,7 @@ export class QueryEditor extends EditorPane {
 	}
 
 	private setTaskbarContent(): void {
-		const previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
+		const previewFeaturesEnabled = this.configurationService.getValue(CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES);
 		const fileExtension = path.extname(this.input?.uri || '');
 		const providerId = this.currentProvider;
 		const content: ITaskbarContent[] = [

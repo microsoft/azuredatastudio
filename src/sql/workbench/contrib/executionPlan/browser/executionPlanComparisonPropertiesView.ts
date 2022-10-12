@@ -265,17 +265,23 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 			const treeGridChildren = row.treeGridChildren;
 
 			if (treeGridChildren?.length > 0) {
-				let [unequalSubRows, equalSubRows] = this.splitEqualFromUnequalProperties(treeGridChildren);
+				const [unequalSubRows, equalSubRows] = this.splitEqualFromUnequalProperties(treeGridChildren);
 
 				if (unequalSubRows.length > 0) {
-					let currentRow = deepClone(row);
+					const currentRow = deepClone(row);
 					currentRow.treeGridChildren = unequalSubRows;
+					currentRow.expanded = true;
+
+					currentRow.icon = {
+						iconCssClass: executionPlanComparisonPropertiesDifferent,
+						title: notEqualTitle
+					};
 
 					unequalRows.push(currentRow);
 				}
 
 				if (equalSubRows.length > 0) {
-					let currentRow = deepClone(row);
+					const currentRow = deepClone(row);
 					currentRow.treeGridChildren = equalSubRows;
 
 					equalRows.push(currentRow);
@@ -373,10 +379,14 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 							diffIcon.title = notEqualTitle;
 							break;
 						case sqlExtHostType.executionPlan.ExecutionPlanGraphElementPropertyDataType.Number:
-							diffIcon = (parseFloat(v.primaryProp.displayValue) > parseFloat(v.secondaryProp.displayValue))
-								? { iconClass: Codicon.chevronRight.classNames, title: greaterThanTitle }
-								: { iconClass: Codicon.chevronLeft.classNames, title: lessThanTitle };
-
+							if (v.primaryProp.betterValue === sqlExtHostType.executionPlan.ExecutionPlanGraphElementPropertyBetterValue.None) {
+								diffIcon.title = notEqualTitle;
+								diffIcon.iconClass = executionPlanComparisonPropertiesDifferent;
+							} else {
+								diffIcon = (parseFloat(v.primaryProp.displayValue) > parseFloat(v.secondaryProp.displayValue))
+									? { iconClass: Codicon.chevronRight.classNames, title: greaterThanTitle }
+									: { iconClass: Codicon.chevronLeft.classNames, title: lessThanTitle };
+							}
 							break;
 						case sqlExtHostType.executionPlan.ExecutionPlanGraphElementPropertyDataType.String:
 							diffIcon.iconClass = executionPlanComparisonPropertiesDifferent;

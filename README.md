@@ -25,7 +25,9 @@ Go to our [download page](https://aka.ms/getazuredatastudio) for more specific i
 - [Windows User Installer - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/win32-x64-user/insider)
 - [Windows System Installer - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/win32-x64/insider)
 - [Windows ZIP - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/win32-x64-archive/insider)
-- [macOS ZIP - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/darwin/insider)
+- [macOS ZIP (Universal) - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/darwin-universal/insider)
+- [macOS ZIP (Intel Chip) - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/darwin/insider)
+- [macOS ZIP (Apple Silicon) - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/darwin-arm64/insider)
 - [Linux TAR.GZ - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/linux-x64/insider)
 
 See the [change log](https://github.com/Microsoft/azuredatastudio/blob/main/CHANGELOG.md) for additional details of what's in this release.

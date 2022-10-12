@@ -26,6 +26,8 @@ export const ToggleWholeWordCommandId = 'toggleSearchWholeWord';
 export const ToggleRegexCommandId = 'toggleSearchRegex';
 export const AddCursorsAtSearchResults = 'addCursorsAtSearchResults';
 
+export const CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES = 'workbench.enablePreviewFeatures';
+
 export const SearchViewFocusedKey = new RawContextKey<boolean>('notebookSearchViewletFocus', false);
 export const InputBoxFocusedKey = new RawContextKey<boolean>('inputBoxFocus', false);
 export const SearchInputBoxFocusedKey = new RawContextKey<boolean>('searchInputBoxFocus', false);
