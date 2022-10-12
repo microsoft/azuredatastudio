@@ -136,8 +136,8 @@ stages:
     #
     # Limitation:
     # Ideally, we should be able to use the condition `and(succeeded(), eq(variables['VSCODE_RELEASE'], 'true')` to achieve what we want. The VSCODE_RELEASE variable can be defined as overwritable or non-overwritable based on whether we want to
-    # release from the pipeline. Unfortunately ADO doesn't allow the use of variables for scheduled job as per:
-    # https://learn.microsoft.com/en-us/azure/devops/pipelines/process/scheduled-triggers?view=azure-devops&tabs=yaml#scheduled-triggers, as a result, we cannot set the VSCODE_RELEASE variable to true for scheduled Insider builds.
+    # release from the pipeline. Unfortunately ADO doesn't allow overriding variable values for scheduled runs. (see https://learn.microsoft.com/en-us/azure/devops/pipelines/process/scheduled-triggers?view=azure-devops&tabs=yaml#scheduled-triggers).
+    # This means we can't simply set VSCODE_RELEASE to true only for scheduled builds and have to set it to true for all runs of the pipeline by default.
     #
     # Implementation:
     # Set the VSCODE_RELEASE variable's default value to true and add the release tag for following scenarios:
