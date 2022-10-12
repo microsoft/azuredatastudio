@@ -174,7 +174,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 				const MSAL_CONFIG = {
 					auth: {
 						clientId: provider.metadata.settings.clientId,
-						redirect_uri: provider.metadata.settings.redirectUri
+						redirect_uri: `${provider.metadata.settings.redirectUri}/redirect`
 					},
 					cache: {
 						cachePlugin: new PersistenceCachePlugin(persistence)

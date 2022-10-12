@@ -230,7 +230,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 			let authUrlRequest: AuthorizationUrlRequest;
 			authUrlRequest = {
 				scopes: this.scopes,
-				redirectUri: this.redirectUri,
+				redirectUri: `${this.redirectUri}:${serverPort}/redirect`,
 				codeChallenge: this.pkceCodes.codeChallenge,
 				codeChallengeMethod: this.pkceCodes.challengeMethod,
 				prompt: 'select_account',
@@ -239,7 +239,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 			let authCodeRequest: AuthorizationCodeRequest;
 			authCodeRequest = {
 				scopes: this.scopes,
-				redirectUri: this.redirectUri,
+				redirectUri: `${this.redirectUri}:${serverPort}/redirect`,
 				codeVerifier: this.pkceCodes.codeVerifier,
 				code: ''
 			};
