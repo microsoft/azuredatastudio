@@ -112,7 +112,7 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 		this.populateTable(columns, this.convertPropertiesToTableRows(this._model.graphElement?.properties));
 	}
 
-	private convertPropertiesToTableRows(properties: azdata.executionPlan.ExecutionPlanGraphElementProperty[]): Slick.SlickData[] {
+	private convertPropertiesToTableRows(properties: azdata.executionPlan.ExecutionPlanGraphElementProperty[] | undefined): Slick.SlickData[] {
 		if (!properties) {
 			return [];
 		}

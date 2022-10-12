@@ -2353,7 +2353,7 @@
 </body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/compareExecutionPlanInput" source-language="en" datatype="plaintext"><body>
     <trans-unit id="epCompare.editorName">
-      <source xml:lang="en">Compare Execution Plans</source>
+      <source xml:lang="en">CompareExecutionPlans</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/constants" source-language="en" datatype="plaintext"><body>
@@ -2382,11 +2382,11 @@
     <trans-unit id="epComapre.LoadingPlanMessage">
       <source xml:lang="en">Loading execution plan</source>
     </trans-unit>
-    <trans-unit id="epComapre.placeholderInfoboxText">
-      <source xml:lang="en">Add execution plans to compare</source>
-    </trans-unit>
     <trans-unit id="epCompare.FileFilterDescription">
       <source xml:lang="en">Execution Plan Files</source>
+    </trans-unit>
+    <trans-unit id="epCompare.addExecutionPlanLabel">
+      <source xml:lang="en">Add execution plan</source>
     </trans-unit>
     <trans-unit id="epCompare.comparePropertiesAction">
       <source xml:lang="en">Properties</source>
@@ -2415,6 +2415,12 @@
     <trans-unit id="epCompare.zoomToFit">
       <source xml:lang="en">Zoom to fit</source>
     </trans-unit>
+    <trans-unit id="executionPlanDisableTooltip">
+      <source xml:lang="en">Tooltips disabled</source>
+    </trans-unit>
+    <trans-unit id="executionPlanEnableTooltip">
+      <source xml:lang="en">Tooltips enabled</source>
+    </trans-unit>
     <trans-unit id="queryDropdownPrefix">
       <source xml:lang="en">Query {0} of {1}: {2}</source>
     </trans-unit>
@@ -2423,20 +2429,11 @@
     <trans-unit id="executionPlanPropertiesEdgeOperationName">
       <source xml:lang="en">Edge</source>
     </trans-unit>
-    <trans-unit id="executionPlanSummaryForExpensiveOperators">
-      <source xml:lang="en">Summary: {0}{1}</source>
-    </trans-unit>
     <trans-unit id="nodePropertyViewBottomOperation">
       <source xml:lang="en">Bottom operation: {0}</source>
     </trans-unit>
-    <trans-unit id="nodePropertyViewBottomPlanGreaterThanTopPlan">
-      <source xml:lang="en">{0} is greater for the bottom plan than it is for the top plan.</source>
-    </trans-unit>
     <trans-unit id="nodePropertyViewLeftOperation">
       <source xml:lang="en">Left operation: {0}</source>
-    </trans-unit>
-    <trans-unit id="nodePropertyViewLeftPlanGreaterThanRightPlan">
-      <source xml:lang="en">{0} is greater for the left plan than it is for the right plan.</source>
     </trans-unit>
     <trans-unit id="nodePropertyViewNameEquivalentPropertiesRowHeader">
       <source xml:lang="en">Equivalent Properties</source>
@@ -2468,14 +2465,8 @@
     <trans-unit id="nodePropertyViewRightOperation">
       <source xml:lang="en">Right operation: {0}</source>
     </trans-unit>
-    <trans-unit id="nodePropertyViewRightPlanGreaterThanLeftPlan">
-      <source xml:lang="en">{0} is greater for the right plan than it is for the left plan.</source>
-    </trans-unit>
     <trans-unit id="nodePropertyViewTopOperation">
       <source xml:lang="en">Top operation: {0}</source>
-    </trans-unit>
-    <trans-unit id="nodePropertyViewTopPlanGreaterThanBottomPlan">
-      <source xml:lang="en">{0} is greater for the top plan than it is for the bottom plan.</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanContribution" source-language="en" datatype="plaintext"><body>
@@ -2516,6 +2507,12 @@
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase" source-language="en" datatype="plaintext"><body>
     <trans-unit id="ep.topOperationsCopyTableData">
       <source xml:lang="en">Copy</source>
+    </trans-unit>
+    <trans-unit id="executionPlanCollapseAllProperties">
+      <source xml:lang="en">Collapse All</source>
+    </trans-unit>
+    <trans-unit id="executionPlanExpandAllProperties">
+      <source xml:lang="en">Expand All</source>
     </trans-unit>
     <trans-unit id="executionPlanPropertyViewClose">
       <source xml:lang="en">Close</source>
@@ -4334,6 +4331,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="queryEditor.results.saveAsCsv.textIdentifier">
       <source xml:lang="en">Character used for enclosing text fields when saving results as CSV</source>
+    </trans-unit>
+    <trans-unit id="queryEditor.results.saveAsExcel.includeHeaders">
+      <source xml:lang="en">When true, column headers are included when saving results as an Excel file</source>
     </trans-unit>
     <trans-unit id="queryEditor.results.saveAsXml.encoding">
       <source xml:lang="en">File encoding used when saving results as XML</source>

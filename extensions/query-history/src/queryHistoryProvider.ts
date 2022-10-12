@@ -12,11 +12,15 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
 import * as loc from './localizedConstants';
-import { sendSettingChangedEvent, TelemetryActions, TelemetryReporter, TelemetryViews, TimedAction } from './telemetry';
+import { sendSettingChangedEvent, TelemetryActions, TelemetryReporter, TelemetryViews } from './telemetry';
+import { getDoubleClickAction } from './main';
 
 const STORAGE_IV_KEY = 'queryHistory.storage-iv';
 const STORAGE_KEY_KEY = 'queryHistory.storage-key';
-const HISTORY_STORAGE_FILE_NAME = 'queryHistory.bin';
+// We use a different file for every flavor of ADS because the secret storage is unique per-flavor and so we will have
+// a different key/IV pair for each flavor with no easy way to transfer/read them. This means that each flavor of ADS
+// will have its own unique history - even if they're all stored in the same location.
+const HISTORY_STORAGE_FILE_NAME = azdata.env.quality === azdata.env.AppQuality.stable ? 'queryHistory.bin' : `queryHistory.${azdata.env.quality}.bin`;
 const STORAGE_ENCRYPTION_ALGORITHM = 'aes-256-ctr';
 const HISTORY_DEBOUNCE_MS = 10000;
 const DEFAULT_CAPTURE_ENABLED = true;
@@ -51,11 +55,18 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 	constructor(private _context: vscode.ExtensionContext, storageUri: vscode.Uri) {
 		this._historyStorageFile = path.join(storageUri.fsPath, HISTORY_STORAGE_FILE_NAME);
 		// Kick off initialization but then continue on since that may take a while and we don't want to block extension activation
-		const initializeAction = new TimedAction(TelemetryViews.QueryHistoryProvider, TelemetryActions.Initialize);
-		this._initPromise = this.initialize().then(() => initializeAction.send());
+		const initializeAction = TelemetryReporter.createTimedAction(TelemetryViews.QueryHistoryProvider, TelemetryActions.Initialize);
+		this._initPromise = this.initialize().then(() => {
+			initializeAction.withAdditionalProperties({
+				'setting.persistHistory': String(this._persistHistory),
+				'setting.maxEntries': String(this._maxEntries),
+				'setting.captureEnabled': String(this._captureEnabled),
+				'setting.doubleClickAction': getDoubleClickAction()
+			}).send();
+		});
 		this._disposables.push(vscode.workspace.onDidChangeConfiguration(async e => {
-			if (e.affectsConfiguration(QUERY_HISTORY_CONFIG_SECTION) || e.affectsConfiguration(MAX_ENTRIES_CONFIG_SECTION)) {
-				await this.updateConfigurationValues();
+			if (e.affectsConfiguration(QUERY_HISTORY_CONFIG_SECTION)) {
+				await this.updateConfigurationValues(true);
 			}
 		}));
 		this._disposables.push(azdata.queryeditor.registerQueryEventListener({
@@ -147,12 +158,10 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 					const cipher = crypto.createCipheriv(STORAGE_ENCRYPTION_ALGORITHM, key!, iv!);
 					const stringifiedItems = JSON.stringify(this._queryHistoryItems);
 					const encryptedText = Buffer.concat([cipher.update(Buffer.from(stringifiedItems)), cipher.final()]);
-					const writeStorageFileAction = new TimedAction(TelemetryViews.QueryHistoryProvider, TelemetryActions.WriteStorageFile,
-						{},
-						{
-							ItemCount: this._queryHistoryItems.length,
-							ItemLengthChars: stringifiedItems.length
-						});
+					const writeStorageFileAction = TelemetryReporter.createTimedAction(TelemetryViews.QueryHistoryProvider, TelemetryActions.WriteStorageFile).withAdditionalMeasures({
+						ItemCount: this._queryHistoryItems.length,
+						ItemLengthChars: stringifiedItems.length
+					});
 					// Use sync here so that we can write this out when the object is disposed
 					fs.writeFileSync(this._historyStorageFile, encryptedText);
 					writeStorageFileAction.send();
@@ -171,7 +180,7 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 
 
 		try {
-			const readStorageFileAction = new TimedAction(TelemetryViews.QueryHistoryProvider, TelemetryActions.ReadStorageFile);
+			const readStorageFileAction = TelemetryReporter.createTimedAction(TelemetryViews.QueryHistoryProvider, TelemetryActions.ReadStorageFile);
 			// Read and decrypt any previous history items
 			const encryptedItems = await fs.promises.readFile(this._historyStorageFile);
 			readStorageFileAction.send();
@@ -248,23 +257,25 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 		this.writeHistoryFileWorker?.();
 	}
 
-	private async updateConfigurationValues(): Promise<void> {
+	private async updateConfigurationValues(sendChangedEvents: boolean = false): Promise<void> {
 		const configSection = vscode.workspace.getConfiguration(QUERY_HISTORY_CONFIG_SECTION);
 		const newCaptureEnabled = configSection.get(CAPTURE_ENABLED_CONFIG_SECTION, DEFAULT_CAPTURE_ENABLED);
-		if (this._captureEnabled !== newCaptureEnabled) {
+		if (sendChangedEvents && this._captureEnabled !== newCaptureEnabled) {
 			sendSettingChangedEvent('CaptureEnabled', String(this._captureEnabled), String(newCaptureEnabled));
-			this._captureEnabled = newCaptureEnabled;
 		}
+		this._captureEnabled = newCaptureEnabled;
+
 		const newPersistHistory = configSection.get(PERSIST_HISTORY_CONFIG_SECTION, DEFAULT_PERSIST_HISTORY);
-		if (this._persistHistory !== newPersistHistory) {
+		if (sendChangedEvents && this._persistHistory !== newPersistHistory) {
 			sendSettingChangedEvent('PersistHistory', String(this._persistHistory), String(newPersistHistory));
-			this._persistHistory = newPersistHistory;
 		}
+		this._persistHistory = newPersistHistory;
+
 		const newMaxEntries = configSection.get(MAX_ENTRIES_CONFIG_SECTION, DEFAULT_MAX_ENTRIES);
-		if (this._maxEntries !== newMaxEntries) {
+		if (sendChangedEvents && this._maxEntries !== newMaxEntries) {
 			sendSettingChangedEvent('MaxEntries', String(this._maxEntries), String(newMaxEntries));
-			this._maxEntries = newMaxEntries;
 		}
+		this._maxEntries = newMaxEntries;
 		this.trimExtraEntries();
 		if (!this._persistHistory) {
 			// We're not persisting history so we can immediately set loading to false to immediately

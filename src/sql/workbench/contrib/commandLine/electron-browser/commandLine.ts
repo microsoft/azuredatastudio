@@ -128,6 +128,16 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 		}
 		let connectedContext: azdata.ConnectedContext = undefined;
 		if (profile) {
+			if (profile.providerName && !this._capabilitiesService.providers[profile.providerName]) {
+				const installed = await this._connectionManagementService.handleUnsupportedProvider(profile.providerName);
+				if (!installed) {
+					// User cancelled install prompt so exit early since we won't be able to connect
+					return;
+				}
+				// Recreate the profile here now that we have our provider registered so that we get the correct
+				// option names. See https://github.com/microsoft/azuredatastudio/issues/20773 for details about the issue
+				profile = this.readProfileFromArgs(args);
+			}
 			if (this._notificationService) {
 				this._notificationService.status(localize('connectingLabel', "Connecting: {0}", profile.serverName), { hideAfter: 2500 });
 			}
@@ -138,7 +148,7 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 				let updatedProfile = this._connectionManagementService.getConnectionProfileById(profile.id);
 				connectedContext = { connectionProfile: new ConnectionProfile(this._capabilitiesService, updatedProfile).toIConnectionProfile() };
 			} catch (err) {
-				this.logService.warn('Failed to connect due to error' + getErrorMessage(err));
+				this.logService.warn('Failed to connect due to error: ' + getErrorMessage(err));
 			}
 		}
 		if (commandName) {
