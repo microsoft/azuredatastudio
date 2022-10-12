@@ -156,6 +156,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	private async handleNewKernelsAdded(kernels: notebookUtils.IStandardKernelWithProvider[]): Promise<void> {
+		// Kernels are file-specific, so we need to check the file extension to see if the kernel is supported for this notebook.
 		let extensions: string[];
 		let fileExt = path.extname(this._notebookOptions.notebookUri.path);
 		if (!fileExt) {
