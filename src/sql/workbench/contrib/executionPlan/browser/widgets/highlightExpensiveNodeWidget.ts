@@ -22,6 +22,8 @@ import { searchIconClassNames } from 'sql/workbench/contrib/executionPlan/browse
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 
+const SELECT_EXPENSE_METRIC_TITLE = localize('executionPlanSelectExpenseMetricTitle', 'Select expense metric');
+
 const OFF_STRING = localize('executionPlanOff', 'Off');
 const ACTUAL_ELAPSED_TIME_STRING = localize('executionPlanActualElapsedTime', 'Actual Elapsed Time');
 const ACTUAL_ELAPSED_CPU_TIME_STRING = localize('executionPlanActualElapsedCpuTime', 'Actual Elapsed CPU Time');
@@ -83,6 +85,7 @@ export class HighlightExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 
 		const selectBoxOptions = this.getSelectBoxOptionsFromExecutionPlanDiagram();
 		this.expenseMetricSelectBox = new SelectBox(selectBoxOptions, COST_STRING, this.contextViewService, this._expenseMetricSelectBoxContainer);
+		this.expenseMetricSelectBox.setAriaLabel(SELECT_EXPENSE_METRIC_TITLE);
 
 		this.expenseMetricSelectBox.render(this._expenseMetricSelectBoxContainer);
 		this._register(attachSelectBoxStyler(this.expenseMetricSelectBox, this.themeService));
