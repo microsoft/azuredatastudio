@@ -498,6 +498,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	}
 
 	private async showPasswordResetDialog(connection: IConnectionProfile): Promise<void> {
+		(this._connectionControllerMap[connection.providerName] as ConnectionController).showConnectionChange();
 	}
 
 	private showErrorDialog(severity: Severity, headerTitle: string, message: string, messageDetails?: string): void {
