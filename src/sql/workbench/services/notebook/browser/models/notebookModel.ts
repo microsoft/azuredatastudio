@@ -170,7 +170,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				if (fileExtensions?.length > 0) {
 					extensions = fileExtensions;
 				} else {
-					this.logService.warn(`Could not retrieve file extensions for language mode '${languageMode}'`);
+					this.logService.warn(`Could not retrieve file extensions for language mode '${languageMode}' in notebook '${this._notebookOptions.notebookUri.toString()}'`);
 				}
 			} else {
 				this.logService.warn(`Could not determine language mode for notebook '${this._notebookOptions.notebookUri.toString()}'`);
