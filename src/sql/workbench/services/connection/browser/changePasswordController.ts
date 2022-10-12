@@ -26,10 +26,10 @@ export class ChangePasswordController {
 
 	public showDialog(providerOptions: azdata.ConnectionOption[], options: { [name: string]: any }): void {
 		this._options = options;
-		let usernameOption = providerOptions.filter((property) => property.specialValueType === ConnectionOptionSpecialType.userName);
 		let passwordOption = providerOptions.filter((property) => property.specialValueType === ConnectionOptionSpecialType.password);
+		passwordOption = passwordOption.concat(passwordOption[0]);
 		let serviceOptions = passwordOption.map(option => ChangePasswordController.connectionOptionToServiceOption(option));
-		this.passwordDialog(usernameOption.toString()).open(serviceOptions, this._options);
+		this.passwordDialog(this._options.user).open(serviceOptions, this._options);
 	}
 
 	public passwordDialog(username: string): OptionsDialog {
