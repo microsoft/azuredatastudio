@@ -141,6 +141,7 @@ export class IssueReporter extends Disposable {
 		this.handleExtensionData(configuration.data.enabledExtensions);
 		this.updateExperimentsInfo(configuration.data.experiments);
 		this.updateRestrictedMode(configuration.data.restrictedMode);
+		this.updatePreviewFeaturesEnabled(configuration.data.previewFeaturesEnabled); // {{SQL CARBON EDIT}} Add preview features flag
 	}
 
 	render(): void {
@@ -1153,6 +1154,11 @@ export class IssueReporter extends Disposable {
 
 	private updateRestrictedMode(restrictedMode: boolean) {
 		this.issueReporterModel.update({ restrictedMode });
+	}
+
+	// {{SQL CARBON EDIT}} Add preview features flag
+	private updatePreviewFeaturesEnabled(previewFeaturesEnabled: boolean) {
+		this.issueReporterModel.update({ previewFeaturesEnabled });
 	}
 
 	private updateExperimentsInfo(experimentInfo: string | undefined) {

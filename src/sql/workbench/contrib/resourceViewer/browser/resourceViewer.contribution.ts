@@ -24,6 +24,7 @@ import { localize } from 'vs/nls';
 import { Extensions as ViewContainerExtensions, IViewsRegistry, IViewContainersRegistry, ViewContainerLocation } from 'vs/workbench/common/views';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IProductService } from 'vs/platform/product/common/productService';
+import { CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES } from 'sql/workbench/common/constants';
 import { registerIcon } from 'vs/platform/theme/common/iconRegistry';
 
 CommandsRegistry.registerCommand({
@@ -57,7 +58,7 @@ class ResourceViewerContributor implements IWorkbenchContribution {
 		@IProductService readonly productService: IProductService
 	) {
 		// Only show for insiders and dev
-		if (['insider', ''].includes(productService.quality ?? '') && configurationService.getValue('workbench.enablePreviewFeatures')) {
+		if (['insider', ''].includes(productService.quality ?? '') && configurationService.getValue(CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES)) {
 			registerResourceViewerContainer();
 		}
 	}
