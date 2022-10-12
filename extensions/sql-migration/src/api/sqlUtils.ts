@@ -113,21 +113,23 @@ function getConnectionProfile(
 	azureResourceId: string,
 	userName: string,
 	password: string): azdata.IConnectionProfile {
+
+	const connectId = generateGuid();
 	return {
 		serverName: serverName,
-		id: generateGuid(),
-		connectionName: undefined,
+		id: connectId,
+		connectionName: connectId,
 		azureResourceId: azureResourceId,
 		userName: userName,
 		password: password,
 		authenticationType: azdata.connection.AuthenticationType.SqlLogin,
 		savePassword: false,
-		groupFullName: '',
-		groupId: '',
+		groupFullName: connectId,
+		groupId: connectId,
 		providerName: 'MSSQL',
 		saveProfile: false,
 		options: {
-			conectionName: '',
+			conectionName: connectId,
 			server: serverName,
 			authenticationType: azdata.connection.AuthenticationType.SqlLogin,
 			user: userName,
