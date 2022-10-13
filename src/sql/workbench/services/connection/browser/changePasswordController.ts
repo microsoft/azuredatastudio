@@ -5,7 +5,7 @@
 
 import { OptionsDialog } from 'sql/workbench/browser/modal/optionsDialog';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import * as azdata from 'azdata';
+import { ConnectionOption, ServiceOption } from 'azdata';
 import { localize } from 'vs/nls';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -24,10 +24,22 @@ export class ChangePasswordController {
 		this._options = this._passwordDialog.optionValues;
 	}
 
-	public showDialog(providerOptions: azdata.ConnectionOption[], options: { [name: string]: any }): void {
+	public showDialog(providerOptions: ConnectionOption[], options: { [name: string]: any }): void {
 		this._options = options;
 		let passwordOption = providerOptions.filter((property) => property.specialValueType === ConnectionOptionSpecialType.password);
-		passwordOption = passwordOption.concat(passwordOption[0]);
+		let confirmBox: ConnectionOption = {
+			name: 'passwordConfirm',
+			displayName: 'Confirm Password',
+			description: 'Confirm password to change to',
+			groupName: passwordOption[0].groupName,
+			valueType: passwordOption[0].valueType,
+			specialValueType: ConnectionOptionSpecialType.password,
+			defaultValue: passwordOption[0].defaultValue,
+			categoryValues: passwordOption[0].categoryValues,
+			isIdentity: passwordOption[0].isIdentity,
+			isRequired: true
+		};
+		passwordOption.push(confirmBox);
 		let serviceOptions = passwordOption.map(option => ChangePasswordController.connectionOptionToServiceOption(option));
 		this.passwordDialog(this._options.user).open(serviceOptions, this._options);
 	}
@@ -47,7 +59,9 @@ export class ChangePasswordController {
 		this._passwordDialog = dialog;
 	}
 
-	public static connectionOptionToServiceOption(connectionOption: azdata.ConnectionOption): azdata.ServiceOption {
+
+
+	public static connectionOptionToServiceOption(connectionOption: ConnectionOption): ServiceOption {
 		return {
 			name: connectionOption.name,
 			displayName: connectionOption.displayName,
