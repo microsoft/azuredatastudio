@@ -777,7 +777,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 						const dbIndex = this.migrationStateModel._sourceDatabaseNames?.indexOf(sourceDatabaseName);
 						if (dbIndex > -1) {
-							targetDatabaseName = originalTargetDatabaseNames[dbIndex] ?? targetDatabaseName;
+							targetDatabaseName = isSqlDbTarget
+								? targetDatabaseName
+								: originalTargetDatabaseNames[dbIndex] ?? targetDatabaseName;
 							networkShare = originalNetworkShares[dbIndex] ?? networkShare;
 							blob = originalBlobs[dbIndex] ?? blob;
 						} else {
