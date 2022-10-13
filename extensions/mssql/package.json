@@ -949,20 +949,6 @@
         {
           "specialValueType": null,
           "isIdentity": false,
-          "name": "asynchronousProcessing",
-          "displayName": "%mssql.connectionOptions.asynchronousProcessing.displayName%",
-          "description": "%mssql.connectionOptions.asynchronousProcessing.description%",
-          "groupName": "%mssql.connectionOptions.groupName.initialization%",
-          "valueType": "boolean",
-          "defaultValue": null,
-          "objectType": null,
-          "categoryValues": null,
-          "isRequired": false,
-          "isArray": false
-        },
-        {
-          "specialValueType": null,
-          "isIdentity": false,
           "name": "connectTimeout",
           "displayName": "%mssql.connectionOptions.connectTimeout.displayName%",
           "description": "%mssql.connectionOptions.connectTimeout.description%",

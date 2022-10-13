@@ -46,19 +46,6 @@ suite('Advanced options helper tests', () => {
 			isArray: undefined
 		};
 
-		booleanOption = {
-			name: 'asynchronousProcessing',
-			displayName: 'Asynchronous processing enabled',
-			description: 'When true, enables usage of the Asynchronous functionality in the .Net Framework Data Provider',
-			groupName: 'Initialization',
-			categoryValues: null,
-			defaultValue: null,
-			isRequired: false,
-			valueType: ServiceOptionType.boolean,
-			objectType: undefined,
-			isArray: undefined
-		};
-
 		numberOption = {
 			name: 'connectTimeout',
 			displayName: 'Connect Timeout',
@@ -228,7 +215,7 @@ suite('Advanced options helper tests', () => {
 		booleanOption.defaultValue = null;
 		booleanOption.isRequired = false;
 		possibleInputs = [];
-		options['asynchronousProcessing'] = true;
+		options['trustServerCertificate'] = true;
 		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(booleanOption, options, possibleInputs);
 		assert.strictEqual(optionValue, 'True');
 		assert.strictEqual(possibleInputs.length, 3);
@@ -241,7 +228,7 @@ suite('Advanced options helper tests', () => {
 		booleanOption.defaultValue = null;
 		booleanOption.isRequired = true;
 		possibleInputs = [];
-		options['asynchronousProcessing'] = 'False';
+		options['trustServerCertificate'] = 'False';
 		let optionValue = OptionsDialogHelper.getOptionValueAndCategoryValues(booleanOption, options, possibleInputs);
 		assert.strictEqual(optionValue, 'False');
 		assert.strictEqual(possibleInputs.length, 2);
