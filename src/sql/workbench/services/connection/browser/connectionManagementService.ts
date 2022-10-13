@@ -427,6 +427,28 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	/**
+	 * Changes password, opens the connection and saves the profile in the settings.
+	 */
+	public changePasswordAndConnectWithSave(connection: interfaces.IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks):
+		Promise<IConnectionResult> {
+		if (!options) {
+			options = {
+				saveTheConnection: true,
+				showDashboard: false,
+				params: undefined,
+				showConnectionDialogOnError: false,
+				showFirewallRuleOnError: true
+			};
+		}
+
+		this.sendChangePasswordRequest(connection, uri);
+
+		// Do not override options.saveTheConnection as this is for saving to the server groups, not the MRU.
+		// MRU save always happens through a different path using tryAddActiveConnection
+		return this.connectWithOptions(connection, uri, options, callbacks);
+	}
+
+	/**
 	 * Opens a new connection and saves the profile in the settings.
 	 * This method doesn't load the password because it only gets called from the
 	 * connection dialog and password should be already in the profile
@@ -1012,6 +1034,28 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 		return this._providers.get(providerId).onReady.then(provider => {
 			provider.disconnect(uri);
+			return true;
+		});
+	}
+
+	private async sendChangePasswordRequest(connection: interfaces.IConnectionProfile, uri: string): Promise<boolean> {
+		let connectionInfo = Object.assign({}, {
+			options: connection.options
+		});
+
+		let testPassword = '';
+
+		await this._extensionService.activateByEvent(`onConnect:${connection.providerName}`);
+
+		return this._providers.get(connection.providerName).onReady.then((provider) => {
+			provider.changePassword(uri, connectionInfo, testPassword);
+			this._onConnectRequestSent.fire();
+			// Connections are made per URI so while there may possibly be multiple editors with
+			// that URI they all share the same state
+			const editor = this._editorService.findEditors(URI.parse(uri))[0]?.editor;
+			// TODO make this generic enough to handle non-SQL languages too
+			const language = editor instanceof QueryEditorInput && editor.state.isSqlCmdMode ? 'sqlcmd' : 'sql';
+			this.doChangeLanguageFlavor(uri, language, connection.providerName);
 			return true;
 		});
 	}
