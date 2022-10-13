@@ -73,6 +73,11 @@ export abstract class ExtHostDataProtocolShape {
 	$disconnect(handle: number, connectionUri: string): Thenable<boolean> { throw ni(); }
 
 	/**
+	 * Change password for username then connect to data source with provided info.
+	 */
+	$changePassword(handle: number, connectionUri: string, connection: azdata.ConnectionInfo, newPassword: string): Thenable<boolean> { throw ni(); }
+
+	/**
 	 * Cancel a connection to a data source using the provided connectionUri string.
 	 */
 	$cancelConnect(handle: number, connectionUri: string): Thenable<boolean> { throw ni(); }
