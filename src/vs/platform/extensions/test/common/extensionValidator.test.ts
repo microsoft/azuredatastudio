@@ -407,7 +407,7 @@ suite('Extension Version Validator', () => {
 		testIsValidVersion('1.11.0', '^1.10.0-20200101', true);
 	});
 
-	test('isValidExtensionVersion checks browser only extensions', () => {
+	test.skip('isValidExtensionVersion checks browser only extensions', () => {
 		const manifest = {
 			name: 'test',
 			publisher: 'test',
