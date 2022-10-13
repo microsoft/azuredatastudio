@@ -152,7 +152,7 @@ stages:
       - Linux
       - Windows
     jobs:
-      - job: Add Release Tag
+      - job: Add_Release_Tag
         steps:
         - template: sql-release.yml
 
