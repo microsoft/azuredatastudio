@@ -46,6 +46,19 @@ suite('Advanced options helper tests', () => {
 			isArray: undefined
 		};
 
+		booleanOption = {
+			name: 'trustServerCertificate',
+			displayName: 'Trust Server Certificate enabled',
+			description: 'When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate',
+			groupName: 'Initialization',
+			categoryValues: null,
+			defaultValue: null,
+			isRequired: false,
+			valueType: ServiceOptionType.boolean,
+			objectType: undefined,
+			isArray: undefined
+		};
+
 		numberOption = {
 			name: 'connectTimeout',
 			displayName: 'Connect Timeout',
