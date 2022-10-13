@@ -489,7 +489,7 @@ export class DataResourceDataProvider implements IGridDataProvider {
 		// request params for the serialization request (eg, saveFormat, filePath).
 		let formatSpecificParams = serializer.getBasicSaveParameters(format);
 		let formatAgnosticParams = <Partial<SerializeDataParams>>{
-			saveFormat: format as string,
+			saveFormat: format,
 			filePath: filePath.fsPath,
 			columns: columns,
 			rowCount: rowLength,

@@ -54,7 +54,7 @@ export class SaveResultAction extends Action {
 
 	public static SAVEMARKDOWN_ID = 'grid.saveAsMarkdown';
 	public static SAVEMARKDOWN_LABEL = localize('saveAsMarkdown', "Save As Markdown");
-	public static SAVEMARKDOWN_ICON = 'saveCsv';
+	public static SAVEMARKDOWN_ICON = 'saveMarkdown';
 
 	public static SAVEEXCEL_ID = 'grid.saveAsExcel';
 	public static SAVEEXCEL_LABEL = localize('saveAsExcel', "Save As Excel");
