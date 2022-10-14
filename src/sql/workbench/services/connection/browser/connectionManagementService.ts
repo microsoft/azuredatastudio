@@ -581,6 +581,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					if (callbacks.onConnectReject) {
 						callbacks.onConnectReject(connectionNotAcceptedError);
 					}
+					if (connectionResult.errorCode === Constants.passwordErrorCode) {
+						connectionResult.uriForPasswordChange = uri;
+					}
 					return connectionResult;
 				}
 			});
@@ -1044,7 +1047,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			options: connection.options
 		});
 
-		let testPassword = '';
+		let testPassword = 'Bafwefgwrger';
 
 		await this._extensionService.activateByEvent(`onConnect:${connection.providerName}`);
 

@@ -280,7 +280,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				this._logService.debug(`ConnectionDialogService: Connection error: ${connectionResult.errorMessage}`);
 			} else {
 				this._connectionDialog.resetConnection();
-				this._connectionManagementService.changePasswordAndConnectWithSave(connection, uri, options, params && params.input);
+				this._connectionManagementService.changePasswordAndConnectWithSave(connection, connectionResult.uriForPasswordChange, options, params && params.input);
 				//this.showPasswordResetDialog(connection);
 			}
 		} catch (err) {
