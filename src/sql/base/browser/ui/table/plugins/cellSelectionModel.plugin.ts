@@ -3,6 +3,7 @@
 
 import { mixin } from 'vs/base/common/objects';
 import { isUndefinedOrNull } from 'vs/base/common/types';
+import * as platform from 'vs/base/common/platform';
 
 import { CellRangeSelector, ICellRangeSelector } from 'sql/base/browser/ui/table/plugins/cellRangeSelector';
 
@@ -106,6 +107,10 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 		}
 	}
 
+	private isMultiSelection(e: MouseEvent): boolean {
+		return platform.isMacintosh ? e.metaKey : e.ctrlKey;
+	}
+
 	private handleHeaderClick(e: MouseEvent, args: Slick.OnHeaderClickEventArgs<T>) {
 		if ((e.target as EventTargetWithClassName).className === 'slick-resizable-handle') {
 			return;
@@ -127,7 +132,7 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 					: new Slick.Range(0, columnIndex, rowCount - 1, columnIndex);
 
 				// When CTRL is pressed, we need to merge the new selection with existing selections
-				const rangesToBeMerged: Slick.Range[] = e.ctrlKey ? this.getSelectedRanges() : [];
+				const rangesToBeMerged: Slick.Range[] = this.isMultiSelection(e) ? this.getSelectedRanges() : [];
 				const result = this.insertIntoSelections(rangesToBeMerged, newlySelectedRange);
 				this.setSelectedRanges(result);
 				newActiveCell = { row: this.grid.getViewport()?.top ?? 0, cell: columnIndex };
@@ -254,7 +259,7 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 		}
 
 		// When the CTRL key is pressed, we need to merge the new selection with the existing selections.
-		const rangesToBeMerged: Slick.Range[] = e.ctrlKey ? this.getSelectedRanges() : [];
+		const rangesToBeMerged: Slick.Range[] = this.isMultiSelection(e) ? this.getSelectedRanges() : [];
 		const result = this.insertIntoSelections(rangesToBeMerged, newlySelectedRange);
 		this.setSelectedRanges(result);
 
