@@ -445,7 +445,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 		// Do not override options.saveTheConnection as this is for saving to the server groups, not the MRU.
 		// MRU save always happens through a different path using tryAddActiveConnection
-		return this.connectWithOptions(connection, uri, options, callbacks);
+		//return this.connectWithOptions(connection, uri, options, callbacks);
+		return null;
 	}
 
 	/**
