@@ -168,20 +168,6 @@
         {
           "specialValueType": null,
           "isIdentity": false,
-          "name": "asynchronousProcessing",
-          "displayName": "%cms.connectionOptions.asynchronousProcessing.displayName%",
-          "description": "%cms.connectionOptions.asynchronousProcessing.description%",
-          "groupName": "%cms.connectionOptions.groupName.initialization%",
-          "valueType": "boolean",
-          "defaultValue": null,
-          "objectType": null,
-          "categoryValues": null,
-          "isRequired": false,
-          "isArray": false
-        },
-        {
-          "specialValueType": null,
-          "isIdentity": false,
           "name": "connectTimeout",
           "displayName": "%cms.connectionOptions.connectTimeout.displayName%",
           "description": "%cms.connectionOptions.connectTimeout.description%",

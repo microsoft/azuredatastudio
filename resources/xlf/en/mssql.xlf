@@ -605,7 +605,7 @@
 </body></file>
   <file original="extensions/mssql/dist/sqlToolsServer" source-language="en" datatype="plaintext"><body>
     <trans-unit id="downloadServiceDoneChannelMsg">
-      <source xml:lang="en">Done installing {0}</source>
+      <source xml:lang="en">Downloaded {0}</source>
     </trans-unit>
     <trans-unit id="downloadingServiceChannelMsg">
       <source xml:lang="en">Downloading {0}</source>
@@ -723,12 +723,6 @@
     </trans-unit>
     <trans-unit id="mssql.connectionOptions.applicationName.displayName">
       <source xml:lang="en">Application name</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.asynchronousProcessing.description">
-      <source xml:lang="en">When true, enables usage of the Asynchronous functionality in the .Net Framework Data Provider</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.asynchronousProcessing.displayName">
-      <source xml:lang="en">Asynchronous processing</source>
     </trans-unit>
     <trans-unit id="mssql.connectionOptions.attachDbFilename.displayName">
       <source xml:lang="en">Attach DB filename</source>
@@ -951,6 +945,30 @@
     </trans-unit>
     <trans-unit id="mssql.enabled">
       <source xml:lang="en">Enabled</source>
+    </trans-unit>
+    <trans-unit id="mssql.executionPlan.actualNumberOfRowsForAllExecutions">
+      <source xml:lang="en">Highlights the execution plan operation with the greatest actual number of rows for all executions.</source>
+    </trans-unit>
+    <trans-unit id="mssql.executionPlan.cost">
+      <source xml:lang="en">Highlights the execution plan operation with the highest cost.</source>
+    </trans-unit>
+    <trans-unit id="mssql.executionPlan.expensiveOperationMetric">
+      <source xml:lang="en">The default metric to use to highlight an expensive operation in query execution plans</source>
+    </trans-unit>
+    <trans-unit id="mssql.executionPlan.expensiveOperationMetric.actualElapsedCpuTime">
+      <source xml:lang="en">Highlights the execution plan operation that used the most CPU time.</source>
+    </trans-unit>
+    <trans-unit id="mssql.executionPlan.expensiveOperationMetric.actualElapsedTime">
+      <source xml:lang="en">Highlights the execution plan operation that took the most time.</source>
+    </trans-unit>
+    <trans-unit id="mssql.executionPlan.expensiveOperationMetric.off">
+      <source xml:lang="en">Expensive operation highlighting will be turned off for execution plans.</source>
+    </trans-unit>
+    <trans-unit id="mssql.executionPlan.numberOfRowsRead">
+      <source xml:lang="en">Highlights the execution plan operation with the greatest number of rows read.</source>
+    </trans-unit>
+    <trans-unit id="mssql.executionPlan.subtreeCost">
+      <source xml:lang="en">Highlights the execution plan operation with the highest subtree cost.</source>
     </trans-unit>
     <trans-unit id="mssql.exportNotebookToSql">
       <source xml:lang="en">Export Notebook as SQL</source>

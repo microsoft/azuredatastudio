@@ -52,7 +52,7 @@ steps:
 
   - script: |
       mkdir -p .build
-      node build/azure-pipelines/common/sql-computeNodeModulesCacheKey.js > .build/yarnlockhash
+      node build/azure-pipelines/common/sql-computeNodeModulesCacheKey.js $(NPM_CONFIG_ARCH) > .build/yarnlockhash
     displayName: Prepare yarn cache key
 
   - task: Cache@2
@@ -71,6 +71,7 @@ steps:
 
   - script: |
       set -e
+      export npm_config_arch=$(NPM_CONFIG_ARCH)
       CHILD_CONCURRENCY=1 yarn --frozen-lockfile
     displayName: Install dependencies
     env:
@@ -99,10 +100,11 @@ steps:
   - script: |
       set -e
       yarn gulp package-rebuild-extensions
-      yarn gulp vscode-darwin-x64-min-ci
+      yarn gulp vscode-darwin-$(VSCODE_ARCH)-min-ci
     displayName: Build
     env:
       VSCODE_MIXIN_PASSWORD: $(github-distro-mixin-password)
+    condition: and(succeeded(), ne(variables['VSCODE_ARCH'], 'universal'))
 
   - script: |
       set -e
@@ -115,7 +117,7 @@ steps:
       # including the remote server and configure the integration tests
       # to run with these builds instead of running out of sources.
       set -e
-      APP_ROOT=$(agent.builddirectory)/azuredatastudio-darwin-x64
+      APP_ROOT=$(agent.builddirectory)/azuredatastudio-darwin-$(VSCODE_ARCH)
       APP_NAME="`ls $APP_ROOT | head -n 1`"
       INTEGRATION_TEST_ELECTRON_PATH="$APP_ROOT/$APP_NAME/Contents/MacOS/Electron" \
       VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/azuredatastudio-reh-darwin" \
@@ -127,12 +129,13 @@ steps:
       set -e
       yarn gulp compile-extensions
     displayName: Compile Extensions
+    condition: and(succeeded(), ne(variables['VSCODE_ARCH'], 'universal'))
 
   # Per https://developercommunity.visualstudio.com/t/variablesexpressions-dont-work-with-continueonerro/1187733 we can't use variables
   # in continueOnError directly so instead make two copies of the task and only run one or the other based on the SMOKE_FAIL_ON_ERROR value
   - script: |
       set -e
-      APP_ROOT=$(agent.builddirectory)/azuredatastudio-darwin-x64
+      APP_ROOT=$(agent.builddirectory)/azuredatastudio-darwin-$(VSCODE_ARCH)
       APP_NAME="`ls $APP_ROOT | head -n 1`"
       yarn smoketest --build "$APP_ROOT/$APP_NAME" --screenshots "$(build.artifactstagingdirectory)/smokeshots" --log "$(build.artifactstagingdirectory)/logs/darwin/smoke.log" --extensionsDir "$(build.sourcesdirectory)/extensions"
     displayName: Run smoke tests (Electron) (Continue on Error)
@@ -141,7 +144,7 @@ steps:
 
   - script: |
       set -e
-      APP_ROOT=$(agent.builddirectory)/azuredatastudio-darwin-x64
+      APP_ROOT=$(agent.builddirectory)/azuredatastudio-darwin-$(VSCODE_ARCH)
       APP_NAME="`ls $APP_ROOT | head -n 1`"
       yarn smoketest --build "$APP_ROOT/$APP_NAME" --screenshots "$(build.artifactstagingdirectory)/smokeshots" --log "$(build.artifactstagingdirectory)/logs/darwin/smoke.log" --extensionsDir "$(build.sourcesdirectory)/extensions"
     displayName: Run smoke tests (Electron) (Fail on Error)
@@ -156,9 +159,25 @@ steps:
   #   continueOnError: true
   #   condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
+  - task: DownloadBuildArtifacts@0
+    displayName: 'Download arm64 and x64 packages'
+    inputs:
+      downloadType: specific
+      itemPattern: 'drop/darwin/archive/azuredatastudio-darwin-@(arm64|x64)-unsigned.zip'
+      downloadPath: $(agent.builddirectory)
+    condition: and(succeeded(), eq(variables['VSCODE_ARCH'], 'universal'))
+
   - script: |
       set -e
-      pushd ../azuredatastudio-darwin-x64
+      unzip $(agent.builddirectory)/drop/darwin/archive/azuredatastudio-darwin-x64-unsigned.zip -d $(agent.builddirectory)/azuredatastudio-darwin-x64
+      unzip $(agent.builddirectory)/drop/darwin/archive/azuredatastudio-darwin-arm64-unsigned.zip -d $(agent.builddirectory)/azuredatastudio-darwin-arm64
+      DEBUG=* node build/darwin/create-universal-app.js
+    displayName: Create Universal App
+    condition: and(succeeded(), eq(variables['VSCODE_ARCH'], 'universal'))
+
+  - script: |
+      set -e
+      pushd ../azuredatastudio-darwin-$(VSCODE_ARCH)
       ls
 
       echo "Cleaning the application"
@@ -188,20 +207,10 @@ steps:
   - script: |
       set -e
       mkdir -p .build/darwin/archive
-      pushd ../azuredatastudio-darwin-x64
-      ditto -c -k --keepParent *.app $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin.zip
-      popd
-    displayName: 'Archive (no signing)'
-    condition: and(succeeded(), eq(variables['signed'], false))
-
-  - script: |
-      set -e
-      mkdir -p .build/darwin/archive
-      pushd ../azuredatastudio-darwin-x64
-      ditto -c -k --keepParent *.app $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin-unsigned.zip
+      pushd ../azuredatastudio-darwin-$(VSCODE_ARCH)
+      ditto -c -k --keepParent *.app $(Build.SourcesDirectory)/.build/darwin/archive/azuredatastudio-darwin-$(VSCODE_ARCH)-unsigned.zip
       popd
     displayName: 'Archive'
-    condition: and(succeeded(), eq(variables['signed'], true))
 
   - script: |
       set -e

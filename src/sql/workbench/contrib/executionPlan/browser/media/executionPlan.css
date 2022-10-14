@@ -17,6 +17,7 @@
 .eps-container .execution-plan {
 	width: 100%;
 	min-height: 500px;
+	min-width: 470px;
 	display: flex;
 	overflow: hidden;
 	flex: 1;
@@ -68,7 +69,7 @@ However we always want it to be the width of the container it is resizing.
 	flex-direction: row;
 	padding: 5px;
 	height: auto;
-	width: 470px;
+	width: 420px;
 }
 
 /* input bar styling in search node action view */
@@ -81,6 +82,10 @@ However we always want it to be the width of the container it is resizing.
 .eps-container .execution-plan .plan .plan-action-container .search-node-widget .select-container>select,
 .eps-container .comparison-editor .plan-comparison-container .split-view-container .plan-container .plan-action-container .search-node-widget .select-container>select {
 	height: 100%;
+}
+
+.eps-container .execution-plan .plan .plan-action-container .search-node-widget .input {
+	width: 100px;
 }
 
 /* Custom zoom action view */
@@ -385,6 +390,24 @@ However we always want it to be the width of the container it is resizing.
 .vs-dark .top-operations-tab .ep-search-icon,
 .hc-black .top-operations-tab .ep-search-icon {
 	background-image: url(../images/actionIcons/searchDark.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.eps-container .ep-filter-icon,
+.top-operations-tab .ep-filter-icon {
+	background-image: url(../images/actionIcons/filter.svg);
+	background-size: 16px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.vs-dark .eps-container .ep-filter-icon,
+.hc-black .eps-container .ep-filter-icon,
+.vs-dark .top-operations-tab .ep-filter-icon,
+.hc-black .top-operations-tab .ep-filter-icon {
+	background-image: url(../images/actionIcons/filterDark.svg);
 	background-size: 16px 16px;
 	background-position: center;
 	background-repeat: no-repeat;

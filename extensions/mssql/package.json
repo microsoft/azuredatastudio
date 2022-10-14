@@ -539,24 +539,24 @@
         },
         {
           "command": "mssql.designTable",
-          "when": "connectionProvider == MSSQL && nodeType == Table && nodeSubType != LedgerDropped && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType == Table && nodeSubType != LedgerDropped",
           "group": "0_query@3"
         },
         {
           "command": "mssql.newTable",
-          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Tables && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Tables",
           "group": "0_query@1"
         }
       ],
       "dataExplorer/context": [
         {
           "command": "mssql.designTable",
-          "when": "connectionProvider == MSSQL && nodeType == Table && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType == Table",
           "group": "connection@3"
         },
         {
           "command": "mssql.newTable",
-          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Tables && config.workbench.enablePreviewFeatures",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && objectType == Tables",
           "group": "connection@1"
         }
       ],
@@ -943,20 +943,6 @@
               "name": "ReadOnly"
             }
           ],
-          "isRequired": false,
-          "isArray": false
-        },
-        {
-          "specialValueType": null,
-          "isIdentity": false,
-          "name": "asynchronousProcessing",
-          "displayName": "%mssql.connectionOptions.asynchronousProcessing.displayName%",
-          "description": "%mssql.connectionOptions.asynchronousProcessing.description%",
-          "groupName": "%mssql.connectionOptions.groupName.initialization%",
-          "valueType": "boolean",
-          "defaultValue": null,
-          "objectType": null,
-          "categoryValues": null,
           "isRequired": false,
           "isArray": false
         },
@@ -1355,7 +1341,7 @@
     "find-remove": "1.2.1",
     "request": "^2.88.0",
     "request-light": "^0.3.0",
-    "@microsoft/ads-service-downloader": "1.0.2",
+    "@microsoft/ads-service-downloader": "1.0.4",
     "stream-meter": "^1.0.4",
     "through2": "^3.0.1",
     "tough-cookie": "^3.0.1",
