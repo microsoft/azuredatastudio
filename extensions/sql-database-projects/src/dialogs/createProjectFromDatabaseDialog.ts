@@ -26,6 +26,7 @@ export class CreateProjectFromDatabaseDialog {
 	public projectNameTextBox: azdataType.InputBoxComponent | undefined;
 	public projectLocationTextBox: azdataType.InputBoxComponent | undefined;
 	public folderStructureDropDown: azdataType.DropDownComponent | undefined;
+	public includePermissionsCheckbox: azdataType.CheckBoxComponent | undefined;
 	public sdkStyleCheckbox: azdataType.CheckBoxComponent | undefined;
 	private formBuilder: azdataType.FormBuilder | undefined;
 	private connectionId: string | undefined;
@@ -109,8 +110,10 @@ export class CreateProjectFromDatabaseDialog {
 			targetProjectFormSection.addItems([projectNameRow, projectLocationRow]);
 
 			const folderStructureRow = this.createFolderStructureRow(view);
-			const createProjectSettingsFormSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
-			createProjectSettingsFormSection.addItems([folderStructureRow]);
+
+			this.includePermissionsCheckbox = view.modelBuilder.checkBox().withProps({
+				label: constants.includePermissionsLabel,
+			}).component();
 
 			// could also potentially be radio buttons once there's a term to refer to "legacy" style sqlprojs
 			this.sdkStyleCheckbox = view.modelBuilder.checkBox().withProps({
@@ -150,7 +153,10 @@ export class CreateProjectFromDatabaseDialog {
 						title: constants.createProjectSettings,
 						components: [
 							{
-								component: createProjectSettingsFormSection,
+								component: folderStructureRow,
+							},
+							{
+								component: this.includePermissionsCheckbox
 							},
 							{
 								component: sdkFormComponentGroup
@@ -407,7 +413,8 @@ export class CreateProjectFromDatabaseDialog {
 			filePath: this.projectLocationTextBox!.value!,
 			version: '1.0.0.0',
 			extractTarget: mapExtractTargetEnum(<string>this.folderStructureDropDown!.value),
-			sdkStyle: this.sdkStyleCheckbox?.checked!
+			sdkStyle: this.sdkStyleCheckbox?.checked!,
+			includePermissions: this.includePermissionsCheckbox?.checked
 		};
 
 		azdataApi!.window.closeDialog(this.dialog);
