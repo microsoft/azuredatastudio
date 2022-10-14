@@ -134,15 +134,17 @@ export async function createNewProjectFromDatabaseWithQuickpick(connectionInfo?:
 	}
 
 	// 6. Include permissions or not
-	const includePermissions = await vscode.window.showQuickPick(
+	const includePermissionsResult = await vscode.window.showQuickPick(
 		[constants.noStringDefault, constants.yesString],
-		{ title: 'Include permissions in project', ignoreFocusOut: true }
+		{ title: constants.includePermissionsInProject, ignoreFocusOut: true }
 	);
 
-	if (!includePermissions) {
+	if (!includePermissionsResult) {
 		// User cancelled
 		return undefined;
 	}
+
+	const includePermissions = includePermissionsResult === constants.yesString;
 
 	// 7. SDK-style project or not
 	let sdkStyle;
@@ -193,6 +195,7 @@ export async function createNewProjectFromDatabaseWithQuickpick(connectionInfo?:
 		filePath: projectLocation,
 		version: '1.0.0.0',
 		extractTarget: mapExtractTargetEnum(folderStructure),
-		sdkStyle: sdkStyle
+		sdkStyle: sdkStyle,
+		includePermissions: includePermissions
 	};
 }
