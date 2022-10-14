@@ -11,7 +11,7 @@ import { removeLineBreaks } from 'sql/base/common/strings';
 import { isString } from 'vs/base/common/types';
 import { textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { ExecutionPlanPropertiesViewBase, PropertiesSortType } from 'sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase';
-import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase {
@@ -24,8 +24,9 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 		@IThemeService themeService: IThemeService,
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IContextMenuService contextMenuService: IContextMenuService,
+		@IContextViewService contextViewService: IContextViewService
 	) {
-		super(parentContainer, themeService, instantiationService, contextMenuService);
+		super(parentContainer, themeService, instantiationService, contextMenuService, contextViewService);
 		this._model = <ExecutionPlanPropertiesView>{};
 		this._operationName = DOM.$('h3');
 		this._operationName.classList.add('operation-name');
@@ -108,14 +109,38 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 			}
 		];
 
-		this.populateTable(columns, this.convertModelToTableRows(this._model.graphElement.properties, -1, 0));
+		this.populateTable(columns, this.convertPropertiesToTableRows(this._model.graphElement?.properties));
 	}
 
-	private convertModelToTableRows(props: azdata.executionPlan.ExecutionPlanGraphElementProperty[], parentIndex: number, indent: number, rows: { [key: string]: string }[] = []): { [key: string]: string }[] {
-		if (!props) {
-			return rows;
+	private convertPropertiesToTableRows(properties: azdata.executionPlan.ExecutionPlanGraphElementProperty[] | undefined): Slick.SlickData[] {
+		if (!properties) {
+			return [];
 		}
+		const sortedProperties = this.sortProperties(properties);
+		const rows: Slick.SlickData[] = [];
+		sortedProperties.forEach((property, index) => {
+			let row = {};
+			row['name'] = property.name;
+			if (!isString(property.value)) {
+				// Styling values in the parent row differently to make them more apparent and standout compared to the rest of the cells.
+				row['name'] = {
+					text: row['name']
+				};
+				row['value'] = {
+					text: removeLineBreaks(property.displayValue, ' ')
+				};
+				row['tootltip'] = property.displayValue;
+				row['treeGridChildren'] = this.convertPropertiesToTableRows(property.value);
+			} else {
+				row['value'] = removeLineBreaks(property.displayValue, ' ');
+				row['tooltip'] = property.displayValue;
+			}
+			rows.push(row);
+		});
+		return rows;
+	}
 
+	private sortProperties(props: azdata.executionPlan.ExecutionPlanGraphElementProperty[]): azdata.executionPlan.ExecutionPlanGraphElementProperty[] {
 		switch (this.sortType) {
 			case PropertiesSortType.DisplayOrder:
 				props = this.sortPropertiesByImportance(props);
@@ -126,6 +151,13 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 			case PropertiesSortType.ReverseAlphabetical:
 				props = this.sortPropertiesReverseAlphabetically(props);
 				break;
+		}
+		return props;
+	}
+
+	private convertModelToTableRows(props: azdata.executionPlan.ExecutionPlanGraphElementProperty[] | undefined, parentIndex: number, rows: { [key: string]: string }[] = []): { [key: string]: string }[] {
+		if (!props) {
+			return rows;
 		}
 
 		props.forEach((p, i) => {
@@ -142,9 +174,11 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 					text: removeLineBreaks(p.displayValue, ' ')
 				};
 				row['tootltip'] = p.displayValue;
-				this.convertModelToTableRows(p.value, rows.length - 1, indent + 2, rows);
+				this.convertModelToTableRows(p.value, rows.length - 1, rows);
 			} else {
-				row['value'] = removeLineBreaks(p.displayValue, ' ');
+				row['value'] = {
+					text: removeLineBreaks(p.displayValue, ' ')
+				};
 				row['tooltip'] = p.displayValue;
 			}
 		});

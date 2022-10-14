@@ -25,6 +25,7 @@ export class AzdataGraphView {
 	private _diagram: any;
 	private _diagramModel: AzDataGraphCell;
 	private _cellInFocus: AzDataGraphCell;
+	public expensiveMetricTypes: Set<ExpensiveMetricType> = new Set();
 
 	private _graphElementPropertiesSet: Set<string> = new Set();
 
@@ -70,10 +71,13 @@ export class AzdataGraphView {
 		this.onElementSelected = this._onElementSelectedEmitter.event;
 		this._diagram.graph.getSelectionModel().addListener('change', (sender, evt) => {
 			if (evt.properties?.removed) {
-				if (this._cellInFocus?.id === evt.properties.removed[0].id) {
+				if (this._cellInFocus?.id === evt.properties.removed[0]?.id) {
 					return;
 				}
 				const newSelection = evt.properties.removed[0];
+				if (!newSelection) {
+					return;
+				}
 				this._onElementSelectedEmitter.fire(this.getElementById(newSelection.id));
 				this.centerElement(this.getElementById(newSelection.id));
 				this._cellInFocus = evt.properties.removed[0];
@@ -134,6 +138,9 @@ export class AzdataGraphView {
 	 */
 	public zoomToFit(): void {
 		this._diagram.zoomToFit();
+		if (this.getZoomLevel() > 200) {
+			this.setZoomLevel(200);
+		}
 	}
 
 	/**
@@ -227,6 +234,13 @@ export class AzdataGraphView {
 		return resultNodes;
 	}
 
+	public clearExpensiveOperatorHighlighting(): void {
+		this._diagram.clearExpensiveOperatorHighlighting();
+	}
+
+	public highlightExpensiveOperator(predicate: (cell: AzDataGraphCell) => number): boolean {
+		return this._diagram.highlightExpensiveOperator(predicate);
+	}
 
 	/**
 	 * Brings a graph element to the center of the parent view.
@@ -292,38 +306,63 @@ export class AzdataGraphView {
 		if (!node.id.toString().startsWith(`element-`)) {
 			node.id = `element-${node.id}`;
 		}
+
+		this.expensiveMetricTypes.add(ExpensiveMetricType.Off);
+
 		diagramNode.id = node.id;
+		diagramNode.icon = node.type;
+		diagramNode.metrics = this.populateProperties(node.properties);
 
-		if (node.type) {
-			diagramNode.icon = node.type;
+		diagramNode.badges = [];
+		for (let i = 0; node.badges && i < node.badges.length; i++) {
+			diagramNode.badges.push(this.getBadgeTypeString(node.badges[i].type));
 		}
 
-		if (node.properties) {
-			diagramNode.metrics = this.populateProperties(node.properties);
+		diagramNode.edges = this.populateEdges(node.edges);
+
+		diagramNode.children = [];
+		for (let i = 0; node.children && i < node.children.length; ++i) {
+			diagramNode.children.push(this.populate(node.children[i]));
 		}
 
-		if (node.badges) {
-			diagramNode.badges = [];
-			for (let i = 0; i < node.badges.length; i++) {
-				diagramNode.badges.push(this.getBadgeTypeString(node.badges[i].type));
-			}
+		diagramNode.description = node.description;
+		diagramNode.cost = node.cost;
+		if (node.cost) {
+			this.expensiveMetricTypes.add(ExpensiveMetricType.Cost);
 		}
 
-		if (node.edges) {
-			diagramNode.edges = this.populateEdges(node.edges);
+		diagramNode.subTreeCost = node.subTreeCost;
+		if (node.subTreeCost) {
+			this.expensiveMetricTypes.add(ExpensiveMetricType.SubtreeCost);
 		}
 
-		if (node.children) {
-			diagramNode.children = [];
-			for (let i = 0; i < node.children.length; ++i) {
-				diagramNode.children.push(this.populate(node.children[i]));
-			}
+		diagramNode.relativeCost = node.relativeCost;
+		diagramNode.elapsedTimeInMs = node.elapsedTimeInMs;
+		if (node.elapsedTimeInMs) {
+			this.expensiveMetricTypes.add(ExpensiveMetricType.ActualElapsedTime);
 		}
 
-		if (node.description) {
-			diagramNode.description = node.description;
+		let costMetrics = [];
+		for (let i = 0; node.costMetrics && i < node.costMetrics.length; ++i) {
+			costMetrics.push(node.costMetrics[i]);
+
+			this.loadMetricTypesFromCostMetrics(node.costMetrics[i].name);
 		}
+		diagramNode.costMetrics = costMetrics;
+
 		return diagramNode;
+	}
+
+	private loadMetricTypesFromCostMetrics(costMetricName: string): void {
+		if (costMetricName === 'ElapsedCpuTime') {
+			this.expensiveMetricTypes.add(ExpensiveMetricType.ActualElapsedCpuTime);
+		}
+		else if (costMetricName === 'EstimateRowsAllExecs' || costMetricName === 'ActualRows') {
+			this.expensiveMetricTypes.add(ExpensiveMetricType.ActualNumberOfRowsForAllExecutions);
+		}
+		else if (costMetricName === 'EstimatedRowsRead' || costMetricName === 'ActualRowsRead') {
+			this.expensiveMetricTypes.add(ExpensiveMetricType.NumberOfRowsRead);
+		}
 	}
 
 	private getBadgeTypeString(badgeType: sqlExtHostType.executionPlan.BadgeType): {
@@ -354,7 +393,11 @@ export class AzdataGraphView {
 		}
 	}
 
-	private populateProperties(props: azdata.executionPlan.ExecutionPlanGraphElementProperty[]): AzDataGraphCellMetric[] {
+	private populateProperties(props: azdata.executionPlan.ExecutionPlanGraphElementProperty[] | undefined): AzDataGraphCellMetric[] {
+		if (!props) {
+			return [];
+		}
+
 		props.forEach(p => {
 			this._graphElementPropertiesSet.add(p.name);
 		});
@@ -369,7 +412,11 @@ export class AzdataGraphView {
 			});
 	}
 
-	private populateEdges(edges: InternalExecutionPlanEdge[]): AzDataGraphCellEdge[] {
+	private populateEdges(edges: InternalExecutionPlanEdge[] | undefined): AzDataGraphCellEdge[] {
+		if (!edges) {
+			return [];
+		}
+
 		return edges.map(e => {
 			e.id = this.createGraphElementId();
 			return {
@@ -470,6 +517,37 @@ export interface AzDataGraphCell {
 	 */
 	description: string;
 	badges: AzDataGraphNodeBadge[];
+	/**
+	 * Cost associated with the node
+	 */
+	cost: number;
+	/**
+	 * Cost of the node subtree
+	 */
+	subTreeCost: number;
+	/**
+	 * Relative cost of the node compared to its siblings.
+	 */
+	relativeCost: number;
+	/**
+	 * Time taken by the node operation in milliseconds
+	 */
+	elapsedTimeInMs: number;
+	/**
+	 * cost metrics for the node
+	 */
+	costMetrics: CostMetric[];
+}
+
+export interface CostMetric {
+	/**
+	 * Name of the cost metric.
+	 */
+	name: string;
+	/**
+	 * The value of the cost metric
+	 */
+	value: number | undefined;
 }
 
 export interface AzDataGraphNodeBadge {
@@ -526,6 +604,17 @@ export enum SearchType {
 	LesserThanEqualTo,
 	LesserAndGreaterThan
 }
+
+export enum ExpensiveMetricType {
+	Off = 'off',
+	ActualElapsedTime = 'actualElapsedTime',
+	ActualElapsedCpuTime = 'actualElapsedCpuTime',
+	Cost = 'cost',
+	SubtreeCost = 'subtreeCost',
+	ActualNumberOfRowsForAllExecutions = 'actualNumberOfRowsForAllExecutions',
+	NumberOfRowsRead = 'numberOfRowsRead'
+}
+
 export interface SearchQuery {
 	/**
 	 * property name to be searched

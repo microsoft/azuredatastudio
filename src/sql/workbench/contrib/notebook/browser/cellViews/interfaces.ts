@@ -82,7 +82,7 @@ export abstract class CellView extends AngularDisposable implements OnDestroy, I
 						className: findRangeSpecificClass,
 						each: function (node, range) {
 							// node is the marked DOM element
-							node.scrollIntoView({ behavior: 'smooth', block: 'center' });
+							node.scrollIntoView({ block: 'center' });
 						}
 					});
 				}

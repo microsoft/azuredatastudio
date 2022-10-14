@@ -296,6 +296,7 @@ export const projectLocationPlaceholderText = localize('projectLocationPlacehold
 export const browseButtonText = localize('browseButtonText', "Browse folder");
 export const selectFolderStructure = localize('selectFolderStructure', "Select folder structure");
 export const folderStructureLabel = localize('folderStructureLabel', "Folder structure");
+export const includePermissionsLabel = localize('includePermissionsLabel', "Include permissions");
 export const WorkspaceFileExtension = '.code-workspace';
 export const browseEllipsisWithIcon = `$(folder) ${localize('browseEllipsis', "Browse...")}`;
 export const selectProjectLocation = localize('selectProjectLocation', "Select project location");
@@ -534,11 +535,6 @@ export const authenticationSetting = 'Authentication';
 export const activeDirectoryInteractive = 'active directory interactive';
 export const userIdSetting = 'User ID';
 export const passwordSetting = 'Password';
-
-// Authentication types
-export const integratedAuth = 'Integrated';
-export const azureMfaAuth = 'AzureMFA';
-export const sqlAuth = 'SqlAuth';
 
 export const azureAddAccount = localize('azureAddAccount', "Add an Account...");
 

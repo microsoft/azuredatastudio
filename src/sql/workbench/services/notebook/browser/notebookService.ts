@@ -23,6 +23,8 @@ import { INotebookShowOptions } from 'sql/workbench/api/common/sqlExtHost.protoc
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { ICodeEditorViewState } from 'vs/editor/common/editorCommon';
+import { JUPYTER_PROVIDER_ID } from 'sql/workbench/common/constants';
+import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 
 export const SERVICE_ID = 'sqlNotebookService';
 export const INotebookService = createDecorator<INotebookService>(SERVICE_ID);
@@ -31,6 +33,8 @@ export const DEFAULT_NOTEBOOK_PROVIDER = 'builtin';
 export const DEFAULT_NOTEBOOK_FILETYPE = '.ipynb';
 export const SQL_NOTEBOOK_PROVIDER = 'sql';
 export const OVERRIDE_EDITOR_THEMING_SETTING = 'notebook.overrideEditorTheming';
+
+export const DefaultNotebookProviders = [SQL_NOTEBOOK_PROVIDER, JUPYTER_PROVIDER_ID];
 
 export interface ILanguageMagic {
 	magic: string;
@@ -55,6 +59,7 @@ export interface INotebookService {
 	readonly onNotebookEditorAdd: Event<INotebookEditor>;
 	readonly onNotebookEditorRemove: Event<INotebookEditor>;
 	onNotebookEditorRename: Event<INotebookEditor>;
+	readonly onNotebookKernelsAdded: Event<IStandardKernelWithProvider[]>;
 
 	readonly isRegistrationComplete: boolean;
 	readonly registrationComplete: Promise<void>;

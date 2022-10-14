@@ -19,7 +19,7 @@ describe('QueryHistoryProvider', () => {
 	let textDocumentSandbox: sinon.SinonSandbox;
 	const testUri = vscode.Uri.parse('untitled://query1');
 
-	beforeEach(function (): void {
+	beforeEach(async function (): Promise<void> {
 		sinon.stub(azdata.queryeditor, 'registerQueryEventListener').callsFake((listener: azdata.queryeditor.QueryEventListener) => {
 			testListener = listener;
 			return { dispose: (): void => { } };
@@ -28,21 +28,24 @@ describe('QueryHistoryProvider', () => {
 		textDocumentSandbox.replaceGetter(vscode.workspace, 'textDocuments', () => [azdataTest.mocks.vscode.createTextDocumentMock(testUri).object]);
 		const getConnectionStub = sinon.stub(azdata.connection, 'getConnection');
 		getConnectionStub.resolves(<any>{});
-		testProvider = new QueryHistoryProvider();
+		const contextMock = azdataTest.mocks.vscode.createExtensionContextMock();
+		testProvider = new QueryHistoryProvider(contextMock.object, contextMock.object.globalStorageUri);
+		// Disable persistence during tests
+		await testProvider.setPersistenceEnabled(false);
 	});
 
 	afterEach(function (): void {
 		sinon.restore();
 	});
 
-	it('There should be no children initially', function () {
-		const children = testProvider.getChildren();
+	it('There should be no children initially', async function () {
+		const children = await testProvider.getChildren();
 		should(children).length(0);
 	});
 
-	it('Clearing empty list does not throw', function () {
-		testProvider.clearAll();
-		const children = testProvider.getChildren();
+	it('Clearing empty list does not throw', async function () {
+		await testProvider.clearAll();
+		const children = await testProvider.getChildren();
 		should(children).length(0);
 	});
 
@@ -50,7 +53,7 @@ describe('QueryHistoryProvider', () => {
 		const types: azdata.queryeditor.QueryEventType[] = ['executionPlan', 'queryStart', 'queryUpdate', 'visualize'];
 		for (const type of types) {
 			await fireQueryEventAndWaitForRefresh(type, <any>{ uri: testUri.toString() }, { messages: [], batchRanges: [] }, 2000);
-			const children = testProvider.getChildren();
+			const children = await testProvider.getChildren();
 			should(children).length(0, `Should have no children after ${type} event`);
 		}
 	});
@@ -58,7 +61,7 @@ describe('QueryHistoryProvider', () => {
 	it('queryStop events cause children to be added', async function () {
 		setupTextEditorMock('SELECT 1');
 		await fireQueryStartAndStopAndWaitForRefresh(testUri);
-		const children = testProvider.getChildren();
+		const children = await testProvider.getChildren();
 		should(children).length(1, 'Should have one child after adding item');
 
 		await fireQueryStartAndStopAndWaitForRefresh(testUri);
@@ -69,7 +72,7 @@ describe('QueryHistoryProvider', () => {
 		const content = 'SELECT 1\nSELECT 2';
 		setupTextEditorMock(content);
 		await fireQueryStartAndStopAndWaitForRefresh(testUri);
-		const children = testProvider.getChildren();
+		const children = await testProvider.getChildren();
 		should(children).length(1, 'Should have one child after adding item');
 		should(children[0].queryText).be.equal(content, 'item content should be full text content');
 	});
@@ -79,7 +82,7 @@ describe('QueryHistoryProvider', () => {
 		const rangeWithContent2: azdataTest.mocks.vscode.RangeWithContent = { range: new vscode.Range(new vscode.Position(3, 0), new vscode.Position(3, 5)), content: 'SELECT 2' };
 		setupTextEditorMock([rangeWithContent1, rangeWithContent2], [new vscode.Selection(rangeWithContent1.range.start, rangeWithContent1.range.end)]);
 		await fireQueryStartAndStopAndWaitForRefresh(testUri);
-		const children = testProvider.getChildren();
+		const children = await testProvider.getChildren();
 		should(children).length(1, 'Should have one child after adding item');
 		should(children[0].queryText).be.equal(rangeWithContent1.content, 'item content should be only active selection');
 	});
@@ -90,7 +93,7 @@ describe('QueryHistoryProvider', () => {
 		const message2: azdata.queryeditor.QueryMessage = { message: 'Error message', isError: true };
 		const message3: azdata.queryeditor.QueryMessage = { message: 'Message 2', isError: false };
 		await fireQueryStartAndStopAndWaitForRefresh(testUri, { messages: [message1, message2, message3], batchRanges: [] });
-		const children = testProvider.getChildren();
+		const children = await testProvider.getChildren();
 		should(children).length(1, 'Should have one child after adding item');
 		should(children[0].isSuccess).be.false('Event with errors should have error icon');
 	});
@@ -101,7 +104,7 @@ describe('QueryHistoryProvider', () => {
 		const message2: azdata.queryeditor.QueryMessage = { message: 'Message 2', isError: false };
 		const message3: azdata.queryeditor.QueryMessage = { message: 'Message 3', isError: false };
 		await fireQueryStartAndStopAndWaitForRefresh(testUri, { messages: [message1, message2, message3], batchRanges: [] });
-		const children = testProvider.getChildren();
+		const children = await testProvider.getChildren();
 		should(children).length(1, 'Should have one child after adding item');
 		should(children[0].isSuccess).be.true('Event without errors should have check icon');
 	});
@@ -111,17 +114,17 @@ describe('QueryHistoryProvider', () => {
 		const queryDocumentMock = azdataTest.mocks.azdata.queryeditor.createQueryDocumentMock(unknownUri.toString());
 		// Since we didn't find the text document we'll never update the item list so add a timeout since that event will never fire
 		await fireQueryEventAndWaitForRefresh('queryStop', queryDocumentMock.object, { messages: [], batchRanges: [] }, 2000);
-		const children = testProvider.getChildren();
+		const children = await testProvider.getChildren();
 		should(children).length(0, 'Should not have any children');
 	});
 
 	it('can clear all with one child', async function () {
 		await fireQueryStartAndStopAndWaitForRefresh(testUri);
-		let children = testProvider.getChildren();
+		let children = await testProvider.getChildren();
 		should(children).length(1, 'Should have one child after adding item');
 
 		await waitForItemRefresh(() => testProvider.clearAll());
-		children = testProvider.getChildren();
+		children = await testProvider.getChildren();
 		should(children).length(0, 'Should have no children after clearing');
 	});
 
@@ -129,29 +132,29 @@ describe('QueryHistoryProvider', () => {
 		await fireQueryStartAndStopAndWaitForRefresh(testUri);
 		await fireQueryStartAndStopAndWaitForRefresh(testUri);
 		await fireQueryStartAndStopAndWaitForRefresh(testUri);
-		let children = testProvider.getChildren();
+		let children = await testProvider.getChildren();
 		should(children).length(3, 'Should have 3 children after adding item');
 
 		await waitForItemRefresh(() => testProvider.clearAll());
-		children = testProvider.getChildren();
+		children = await testProvider.getChildren();
 		should(children).length(0, 'Should have no children after clearing');
 	});
 
 	it('delete item when no items doesn\'t throw', async function () {
-		const testItem: QueryHistoryItem = { queryText: 'SELECT 1', connectionProfile: azdataTest.stubs.connectionProfile.createConnectionProfile(), timestamp: new Date(), isSuccess: true };
+		const testItem: QueryHistoryItem = { queryText: 'SELECT 1', connectionProfile: azdataTest.stubs.azdata.createConnectionProfile(), timestamp: new Date().toLocaleString(), isSuccess: true };
 		await waitForItemRefresh(() => testProvider.deleteItem(testItem));
-		const children = testProvider.getChildren();
+		const children = await testProvider.getChildren();
 		should(children).length(0, 'Should have no children after deleting item');
 	});
 
 	it('delete item that doesn\'t exist doesn\'t throw', async function () {
 		await fireQueryStartAndStopAndWaitForRefresh(testUri);
-		let children = testProvider.getChildren();
+		let children = await testProvider.getChildren();
 		should(children).length(1, 'Should have 1 child initially');
 
-		const testItem: QueryHistoryItem = { queryText: 'SELECT 1', connectionProfile: azdataTest.stubs.connectionProfile.createConnectionProfile(), timestamp: new Date(), isSuccess: true };
+		const testItem: QueryHistoryItem = { queryText: 'SELECT 1', connectionProfile: azdataTest.stubs.azdata.createConnectionProfile(), timestamp: new Date().toLocaleString(), isSuccess: true };
 		await waitForItemRefresh(() => testProvider.deleteItem(testItem));
-		children = testProvider.getChildren();
+		children = await testProvider.getChildren();
 		should(children).length(1, 'Should still have 1 child after deleting item');
 	});
 
@@ -159,31 +162,31 @@ describe('QueryHistoryProvider', () => {
 		await fireQueryStartAndStopAndWaitForRefresh(testUri);
 		await fireQueryStartAndStopAndWaitForRefresh(testUri);
 		await fireQueryStartAndStopAndWaitForRefresh(testUri);
-		const firstChildren = testProvider.getChildren();
+		const firstChildren = await testProvider.getChildren();
 		should(firstChildren).length(3, 'Should have 3 children initially');
 
 		let itemToDelete: QueryHistoryItem = firstChildren[1];
 		await waitForItemRefresh(() => testProvider.deleteItem(itemToDelete));
-		const secondChildren = testProvider.getChildren();
+		const secondChildren = await testProvider.getChildren();
 		should(secondChildren).length(2, 'Should still have 2 child after deleting item');
 		should(secondChildren[0]).be.equal(firstChildren[0], 'First item should still exist after deleting first item');
 		should(secondChildren[1]).be.equal(firstChildren[2], 'Second item should still exist after deleting first item');
 
 		itemToDelete = secondChildren[0];
 		await waitForItemRefresh(() => testProvider.deleteItem(itemToDelete));
-		const thirdChildren = testProvider.getChildren();
+		const thirdChildren = await testProvider.getChildren();
 		should(thirdChildren).length(1, 'Should still have 1 child after deleting item');
 		should(thirdChildren[0]).be.equal(secondChildren[1], 'Second item should still exist after deleting second item');
 
 		itemToDelete = thirdChildren[0];
 		await waitForItemRefresh(() => testProvider.deleteItem(itemToDelete));
-		const fourthChildren = testProvider.getChildren();
+		const fourthChildren = await testProvider.getChildren();
 		should(fourthChildren).length(0, 'Should have no children after deleting all items');
 	});
 
 	it('pausing capture causes children not to be added', async function () {
 		await fireQueryStartAndStopAndWaitForRefresh(testUri);
-		const children = testProvider.getChildren();
+		const children = await testProvider.getChildren();
 		should(children).length(1, 'Should have one child after adding initial item');
 
 		await testProvider.setCaptureEnabled(false);
@@ -213,16 +216,16 @@ describe('QueryHistoryProvider', () => {
 	}
 
 	async function fireQueryEventAndWaitForRefresh(type: azdata.queryeditor.QueryEventType, document: azdata.queryeditor.QueryDocument, queryInfo: azdata.queryeditor.QueryInfo, timeoutMs?: number): Promise<void> {
-		await waitForItemRefresh(() => testListener.onQueryEvent(type, document, undefined, queryInfo), timeoutMs);
+		await waitForItemRefresh(async () => testListener.onQueryEvent(type, document, undefined, queryInfo), timeoutMs);
 	}
 
-	async function waitForItemRefresh(func: Function, timeoutMs?: number): Promise<void> {
+	async function waitForItemRefresh(func: () => Promise<void>, timeoutMs?: number): Promise<void> {
 		const promises: Promise<any>[] = [azdataTest.helpers.eventToPromise(testProvider.onDidChangeTreeData)];
 		const timeoutPromise = timeoutMs ? new Promise<void>(r => setTimeout(() => r(), timeoutMs)) : undefined;
 		if (timeoutPromise) {
 			promises.push(timeoutPromise);
 		}
-		func();
+		await func();
 		await Promise.race(promises);
 	}
 });

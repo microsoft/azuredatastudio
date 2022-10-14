@@ -9,7 +9,6 @@ import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationSourceAuthenticationType, MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import { createLabelTextComponent, createHeadingTextComponent, WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
-import { AuthenticationType } from '../api/sqlUtils';
 
 export class SqlSourceConfigurationPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -60,9 +59,9 @@ export class SqlSourceConfigurationPage extends MigrationWizardPage {
 		const query = 'select SUSER_NAME()';
 		const results = await queryProvider.runQueryAndReturn(await (azdata.connection.getUriForConnection(this.migrationStateModel.sourceConnectionId)), query);
 		const username = results.rows[0][0].displayValue;
-		this.migrationStateModel._authenticationType = connectionProfile.authenticationType === AuthenticationType.SqlLogin
+		this.migrationStateModel._authenticationType = connectionProfile.authenticationType === azdata.connection.AuthenticationType.SqlLogin
 			? MigrationSourceAuthenticationType.Sql
-			: connectionProfile.authenticationType === AuthenticationType.Integrated
+			: connectionProfile.authenticationType === azdata.connection.AuthenticationType.Integrated
 				? MigrationSourceAuthenticationType.Integrated
 				: undefined!;
 
