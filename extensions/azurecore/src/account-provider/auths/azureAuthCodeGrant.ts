@@ -234,6 +234,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 				codeChallenge: this.pkceCodes.codeChallenge,
 				codeChallengeMethod: this.pkceCodes.challengeMethod,
 				prompt: 'select_account',
+				authority: `https://login.microsoftonline.com/${this.commonTenant.id}`,
 				state: state
 			};
 			let authCodeRequest: AuthorizationCodeRequest;
