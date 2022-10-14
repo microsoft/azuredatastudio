@@ -2671,6 +2671,9 @@
     <trans-unit id="executionPlanOff">
       <source xml:lang="en">Off</source>
     </trans-unit>
+    <trans-unit id="executionPlanSelectExpenseMetricTitle">
+      <source xml:lang="en">Select expense metric</source>
+    </trans-unit>
     <trans-unit id="executionPlanSubtreeCost">
       <source xml:lang="en">Subtree Cost</source>
     </trans-unit>
@@ -2709,11 +2712,20 @@
     <trans-unit id="cancelSearchAction">
       <source xml:lang="en">Close</source>
     </trans-unit>
+    <trans-unit id="executionPlanEnterValueTitle">
+      <source xml:lang="en">Enter search value</source>
+    </trans-unit>
     <trans-unit id="executionPlanSearchTypeContains">
       <source xml:lang="en">Contains</source>
     </trans-unit>
     <trans-unit id="executionPlanSearchTypeEquals">
       <source xml:lang="en">Equals</source>
+    </trans-unit>
+    <trans-unit id="executionPlanSelectPropertyTitle">
+      <source xml:lang="en">Select property</source>
+    </trans-unit>
+    <trans-unit id="executionPlanSelectSearchTypeTitle">
+      <source xml:lang="en">Select search type</source>
     </trans-unit>
     <trans-unit id="nextSearchItemAction">
       <source xml:lang="en">Next Match</source>

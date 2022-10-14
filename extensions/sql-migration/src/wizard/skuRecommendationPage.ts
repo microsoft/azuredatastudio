@@ -558,10 +558,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
-		if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
-			return;
-		}
-
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			this.wizard.message = { text: '' };
 			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
@@ -585,20 +581,14 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 			return true;
 		});
-		this.wizard.nextButton.enabled = false;
 		await this.constructDetails();
 		this.wizard.nextButton.enabled = this.migrationStateModel._assessmentResults !== undefined;
 	}
 
 	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
+		this.wizard.message = { text: '' };
+		this.wizard.registerNavigationValidator((pageChangeInfo) => true);
 		this.eventListener?.dispose();
-		this.wizard.message = {
-			text: '',
-			level: azdata.window.MessageLevel.Error
-		};
-		this.wizard.registerNavigationValidator((pageChangeInfo) => {
-			return true;
-		});
 	}
 
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
