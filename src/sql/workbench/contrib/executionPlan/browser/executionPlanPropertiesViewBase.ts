@@ -75,15 +75,19 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 
 		this.resizeSash = this._register(new Sash(sashContainer, this, { orientation: Orientation.VERTICAL, size: 3 }));
 		let originalWidth = 0;
+
 		this._register(this.resizeSash.onDidStart((e: ISashEvent) => {
 			originalWidth = this._parentContainer.clientWidth;
 		}));
+
 		this._register(this.resizeSash.onDidChange((evt: ISashEvent) => {
 			const change = evt.startX - evt.currentX;
 			const newWidth = originalWidth + change;
+
 			if (newWidth < 200) {
 				return;
 			}
+
 			this._parentContainer.style.flex = `0 0 ${newWidth}px`;
 			propertiesContent.style.width = `${newWidth}px`;
 		}));
@@ -105,7 +109,7 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 		this._titleActions = this._register(new ActionBar(this._titleBarActionsContainer, {
 			orientation: ActionsOrientation.HORIZONTAL, context: this
 		}));
-		this._titleActions.pushAction([new ClosePropertyViewAction()], { icon: true, label: false });
+		this._titleActions.pushAction([this._register(new ClosePropertyViewAction())], { icon: true, label: false });
 
 		this._headerContainer = DOM.$('.header');
 		propertiesContent.appendChild(this._headerContainer);
@@ -115,24 +119,28 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 
 		this._headerActionsContainer = DOM.$('.table-action-bar');
 		this._searchAndActionBarContainer.appendChild(this._headerActionsContainer);
+
 		this._headerActions = this._register(new ActionBar(this._headerActionsContainer, {
 			orientation: ActionsOrientation.HORIZONTAL, context: this
 		}));
+
 		this._headerActions.pushAction([
-			new SortPropertiesByDisplayOrderAction(),
-			new SortPropertiesAlphabeticallyAction(),
-			new SortPropertiesReverseAlphabeticallyAction(),
-			new ExpandAllPropertiesAction(),
-			new CollapseAllPropertiesAction()
+			this._register(new SortPropertiesByDisplayOrderAction()),
+			this._register(new SortPropertiesAlphabeticallyAction()),
+			this._register(new SortPropertiesReverseAlphabeticallyAction()),
+			this._register(new ExpandAllPropertiesAction()),
+			this._register(new CollapseAllPropertiesAction())
 		], { icon: true, label: false });
 
 		this._propertiesSearchInputContainer = DOM.$('.table-search');
 		this._propertiesSearchInputContainer.classList.add('codicon', filterIconClassNames);
+
 		this._propertiesSearchInput = this._register(new InputBox(this._propertiesSearchInputContainer, this._contextViewService, {
 			ariaDescription: propertiesSearchDescription,
 			placeholder: searchPlaceholder
 		}));
-		attachInputBoxStyler(this._propertiesSearchInput, this._themeService);
+
+		this._register(attachInputBoxStyler(this._propertiesSearchInput, this._themeService));
 		this._propertiesSearchInput.element.classList.add('codicon', filterIconClassNames);
 		this._searchAndActionBarContainer.appendChild(this._propertiesSearchInputContainer);
 		this._register(this._propertiesSearchInput.onDidChange(e => {
@@ -156,11 +164,12 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 			editable: true,
 			autoEdit: false
 		}));
-		attachTableStyler(this._tableComponent, this._themeService);
+
+		this._register(attachTableStyler(this._tableComponent, this._themeService));
 		this._tableComponent.setSelectionModel(this._selectionModel);
 
 		const contextMenuAction = [
-			this._instantiationService.createInstance(CopyTableData),
+			this._register(this._instantiationService.createInstance(CopyTableData)),
 		];
 
 		this._register(this._tableComponent.onContextMenu(e => {
@@ -184,10 +193,10 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 		}).observe(_parentContainer);
 	}
 
-
 	public getCopyString(): string {
-		const selectedDataRange = this._selectionModel.getSelectedRanges()[0];
 		let csvString = '';
+
+		const selectedDataRange = this._selectionModel.getSelectedRanges()[0];
 		if (selectedDataRange) {
 			const data = [];
 
@@ -204,10 +213,12 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 				}
 				data.push(row);
 			}
+
 			csvString = data.map(row =>
 				row.map(x => `${x}`).join('\t')
 			).join('\n');
 		}
+
 		return csvString;
 	}
 
@@ -315,6 +326,7 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 					-1)
 			);
 		}
+
 		this._tableComponent.rerenderGrid();
 	}
 
@@ -322,15 +334,18 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 		let resultData: Slick.SlickData[] = [];
 		data.forEach(dataRow => {
 			let includeRow = false;
+
 			const columns = this._tableComponent.grid.getColumns();
 			for (let i = 0; i < columns.length; i++) {
 				let dataValue = '';
+
 				let rawDataValue = dataRow[columns[i].field];
 				if (isString(rawDataValue)) {
 					dataValue = rawDataValue;
 				} else if (rawDataValue !== undefined) {
 					dataValue = rawDataValue.text ?? rawDataValue.title;
 				}
+
 				if (dataValue?.toLowerCase().includes(search.toLowerCase())) {
 					includeRow = true;
 					break;
@@ -348,9 +363,11 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 				if (rowClone['treeGridChildren'] !== undefined) {
 					rowClone['expanded'] = true;
 				}
+
 				resultData.push(rowClone);
 			}
 		});
+
 		return { include: resultData.length > 0, data: resultData };
 	}
 
@@ -358,13 +375,16 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 		if (nestedData === undefined || nestedData.length === 0) {
 			return rows;
 		}
+
 		nestedData.forEach((dataRow) => {
 			rows.push(dataRow);
 			dataRow['parent'] = parentIndex;
+
 			if (dataRow['treeGridChildren']) {
 				this.flattenTableData(dataRow['treeGridChildren'], rows.length - 1, rows);
 			}
 		});
+
 		return rows;
 	}
 }

@@ -724,7 +724,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 						graphFileType: result.queryExecutionPlanFileExtension
 					};
 
-					const executionPlanInput = this.instantiationService.createInstance(ExecutionPlanInput, undefined, executionPlanGraphInfo);
+					const executionPlanInput = this._register(this.instantiationService.createInstance(ExecutionPlanInput, undefined, executionPlanGraphInfo));
 					await this.editorService.openEditor(executionPlanInput);
 				}
 				else {
@@ -798,7 +798,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			this.currentHeight = size;
 		}
 		// Table is always called with Orientation as VERTICAL
-		this.table.layout(size, Orientation.VERTICAL);
+		this.table?.layout(size, Orientation.VERTICAL);
 	}
 
 	public get minimumSize(): number {
