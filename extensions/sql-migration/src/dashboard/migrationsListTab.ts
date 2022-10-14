@@ -559,6 +559,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 				const buttonState = <azdata.ICellActionEventArgs>rowState;
 				const migration = this._filteredMigrations[rowState.row];
 				switch (buttonState?.column) {
+					// "Migration status" column
 					case 2:
 						const status = getMigrationStatus(migration);
 						const statusMessage = loc.DATABASE_MIGRATION_STATUS_LABEL(status);
@@ -569,6 +570,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 							statusMessage,
 							errors);
 						break;
+					// "Source database" column
 					case 0:
 						await this._openMigrationDetails(migration);
 						break;
