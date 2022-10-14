@@ -36,6 +36,7 @@ import { Emitter } from 'vs/base/common/event';
 import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { ICommandService, NullCommandService } from 'vs/platform/commands/common/commands';
+import { ILanguageService } from 'vs/editor/common/languages/language';
 
 let initialNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -237,6 +238,7 @@ suite('NotebookViewModel', function (): void {
 			override async serializeNotebookStateChange(notebookUri: URI, changeType: NotebookChangeType, cell?: ICellModel, isTrusted?: boolean): Promise<void> { }
 			override notifyCellExecutionStarted(): void { }
 		});
+		instantiationService.stub(ILanguageService, new class extends mock<ILanguageService>() { });
 
 
 		defaultModelOptions = {

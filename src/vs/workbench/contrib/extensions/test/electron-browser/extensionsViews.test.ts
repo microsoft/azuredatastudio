@@ -48,7 +48,7 @@ import { platform } from 'vs/base/common/platform';
 import { arch } from 'vs/base/common/process';
 import { IProductService } from 'vs/platform/product/common/productService';
 
-suite('ExtensionsListView Tests', () => {
+suite.skip('ExtensionsListView Tests', () => {
 
 	let instantiationService: TestInstantiationService;
 	let testableView: ExtensionsListView;

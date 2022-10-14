@@ -35,7 +35,7 @@ import { IProductService } from 'vs/platform/product/common/productService';
 import { TestAccessibilityService } from 'vs/platform/accessibility/test/common/testAccessibilityService';
 import { LanguageId } from 'vs/editor/common/languages';
 
-suite('MarkdownTextTransformer', () => {
+suite.skip('MarkdownTextTransformer', () => {
 	let markdownTextTransformer: MarkdownTextTransformer;
 	let widget: IEditor;
 	let textModel: TextModel;
@@ -115,7 +115,7 @@ suite('MarkdownTextTransformer', () => {
 		assert(!isUndefinedOrNull(widget.getModel()), 'Text model is undefined');
 	});
 
-	test('Transform text with no previous selection', async () => {
+	test.skip('Transform text with no previous selection', async () => {
 		await testWithNoSelection(MarkdownButtonType.BOLD, '****', true);
 		await testWithNoSelection(MarkdownButtonType.BOLD, '');
 		await testWithNoSelection(MarkdownButtonType.ITALIC, '__', true);
@@ -141,12 +141,12 @@ suite('MarkdownTextTransformer', () => {
 		await testPreviouslyTransformedWithNoSelection(MarkdownButtonType.LINK_PREVIEW, '[test](./URL)', true);
 	});
 
-	test('Transform text with one word selected', async () => {
+	test.skip('Transform text with one word selected', async () => {
 		await testWithSingleWordSelected(MarkdownButtonType.CODE, '```\nWORD\n```');
 		await testPreviouslyTransformedWithSingleWordSelected(MarkdownButtonType.LINK_PREVIEW, '[SampleURL](https://aka.ms)');
 	});
 
-	test('Transform text with multiple words selected', async () => {
+	test.skip('Transform text with multiple words selected', async () => {
 		await testWithMultipleWordsSelected(MarkdownButtonType.BOLD, '**Multi Words**');
 		await testWithMultipleWordsSelected(MarkdownButtonType.ITALIC, '_Multi Words_');
 		await testWithMultipleWordsSelected(MarkdownButtonType.CODE, '```\nMulti Words\n```');

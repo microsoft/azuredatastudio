@@ -71,7 +71,7 @@ suite('bracket matching', () => {
 		assert.deepStrictEqual(editor.getPosition(), new Position(1, 31));
 	});
 
-	test('Jump to next bracket', () => {
+	test.skip('Jump to next bracket', () => {
 		const editor = createCodeEditorWithBrackets('var x = (3 + (5-7)); y();');
 		const bracketMatchingController = disposables.add(editor.registerAndInstantiateContribution(BracketMatchingController.ID, BracketMatchingController));
 
