@@ -181,7 +181,7 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 		topOperationContainer.appendChild(tableContainer);
 		this._topOperationsContainers.push(topOperationContainer);
 
-		const rowNumberColumn = new RowNumberColumn({ numberOfRows: dataMap.length });
+		const rowNumberColumn = new RowNumberColumn({ autoCellSelection: false });
 		columns.unshift(rowNumberColumn.getColumnDefinition());
 
 		let copyHandler = new CopyKeybind<any>();
@@ -222,7 +222,7 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 			});
 		}));
 
-		const selectionModel = new CellSelectionModel<Slick.SlickData>();
+		const selectionModel = new CellSelectionModel<Slick.SlickData>({ hasRowSelector: true });
 
 		const table = new Table<Slick.SlickData>(tableContainer, {
 			columns: columns,

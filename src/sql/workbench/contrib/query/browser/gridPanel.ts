@@ -353,7 +353,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	private table: Table<T>;
 	private actionBar: ActionBar;
 	private container = document.createElement('div');
-	private selectionModel = new CellSelectionModel<T>();
+	private selectionModel = new CellSelectionModel<T>({ hasRowSelector: true });
 	private styles: ITableStyles;
 	private currentHeight: number;
 	private dataProvider: HybridDataProvider<T>;
@@ -498,7 +498,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		collection.setCollectionChangedCallback((startIndex, count) => {
 			this.renderGridDataRowsRange(startIndex, count);
 		});
-		this.rowNumberColumn = new RowNumberColumn({ numberOfRows: this.resultSet.rowCount });
+		this.rowNumberColumn = new RowNumberColumn({ autoCellSelection: false });
 		this.columns.unshift(this.rowNumberColumn.getColumnDefinition());
 		let tableOptions: Slick.GridOptions<T> = {
 			rowHeight: this.rowHeight,
