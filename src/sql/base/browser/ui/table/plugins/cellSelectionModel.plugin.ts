@@ -124,6 +124,7 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 			if (this.options.hasRowSelector && columnIndex === 0) {
 				// When the row selector's header is clicked, all cells should be selected
 				this.setSelectedRanges([new Slick.Range(0, 1, rowCount - 1, columnCount - 1)]);
+				// The first data cell in the view should be selected.
 				newActiveCell = { row: this.grid.getViewport()?.top ?? 0, cell: 1 };
 			}
 			else if (this.grid.canCellBeSelected(0, columnIndex)) {
@@ -135,6 +136,7 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 				const rangesToBeMerged: Slick.Range[] = this.isMultiSelection(e) ? this.getSelectedRanges() : [];
 				const result = this.insertIntoSelections(rangesToBeMerged, newlySelectedRange);
 				this.setSelectedRanges(result);
+				// The first data cell of the target column in the view should be selected.
 				newActiveCell = { row: this.grid.getViewport()?.top ?? 0, cell: columnIndex };
 			}
 
@@ -264,6 +266,8 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 		this.setSelectedRanges(result);
 
 		// Find out the new active cell
+		// If the row selector is clicked, the first data cell in the row should be the new active cell,
+		// otherwise, the target cell should be the new active cell.
 		const newActiveCell: Slick.Cell = isRowSelectorClicked ? { cell: 1, row: args.row } : { cell: args.cell, row: args.row };
 		this.grid.setActiveCell(newActiveCell.row, newActiveCell.cell);
 	}

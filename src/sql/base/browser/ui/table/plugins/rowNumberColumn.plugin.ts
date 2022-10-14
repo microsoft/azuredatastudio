@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { FilterableColumn } from 'sql/base/browser/ui/table/interfaces';
+import { mixin } from 'vs/base/common/objects';
 
 export interface IRowNumberColumnOptions {
 	cssClass?: string;
@@ -14,11 +15,16 @@ export interface IRowNumberColumnOptions {
 	autoCellSelection?: boolean;
 }
 
+const defaultOptions: IRowNumberColumnOptions = {
+	autoCellSelection: true
+};
+
 export class RowNumberColumn<T> implements Slick.Plugin<T> {
 	private handler = new Slick.EventHandler();
 	private grid!: Slick.Grid<T>;
 
-	constructor(private options: IRowNumberColumnOptions = {}) {
+	constructor(private options?: IRowNumberColumnOptions) {
+		this.options = mixin(this.options, defaultOptions, false);
 	}
 
 	public init(grid: Slick.Grid<T>) {
@@ -33,7 +39,7 @@ export class RowNumberColumn<T> implements Slick.Plugin<T> {
 	}
 
 	private handleClick(e: MouseEvent, args: Slick.OnClickEventArgs<T>): void {
-		if (this.grid.getColumns()[args.cell].id === 'rowNumber' && this.options.autoCellSelection !== false) {
+		if (this.grid.getColumns()[args.cell].id === 'rowNumber' && this.options.autoCellSelection) {
 			this.grid.setActiveCell(args.row, 1);
 			if (this.grid.getSelectionModel()) {
 				this.grid.setSelectedRows([args.row]);
@@ -42,7 +48,7 @@ export class RowNumberColumn<T> implements Slick.Plugin<T> {
 	}
 
 	private handleHeaderClick(e: MouseEvent, args: Slick.OnHeaderClickEventArgs<T>): void {
-		if (args.column.id === 'rowNumber' && this.options.autoCellSelection !== false) {
+		if (args.column.id === 'rowNumber' && this.options.autoCellSelection) {
 			this.grid.setActiveCell(this.grid.getViewport()?.top ?? 0, 1);
 			let selectionModel = this.grid.getSelectionModel();
 			if (selectionModel) {
