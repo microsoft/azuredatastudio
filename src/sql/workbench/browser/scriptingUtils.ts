@@ -38,7 +38,6 @@ const targetDatabaseEngineEditionMap = {
 };
 
 const ScriptingFailedDialogTitle = nls.localize('scriptingFailed', "Scripting Failed");
-const SelectScriptNotGeneratedError = nls.localize('selectScriptNotGeneratedError', "Failed to generate select script for the selected object.");
 
 /**
  * Select the top rows from an object
@@ -60,7 +59,7 @@ export async function scriptSelect(connectionProfile: IConnectionProfile, metada
 			};
 			await connectionService.connect(connectionProfile, owner.uri, options);
 		} else {
-			throw new Error(SelectScriptNotGeneratedError);
+			throw new Error(nls.localize('selectScriptNotGeneratedError', "Failed to generate select script for the selected object."));
 		}
 	} catch (err) {
 		errorMessageService.showDialog(Severity.Error, ScriptingFailedDialogTitle, err?.message ?? err);
@@ -87,7 +86,7 @@ export async function scriptEditSelect(connectionProfile: IConnectionProfile, me
 			};
 			await connectionService.connect(connectionProfile, owner.uri, options);
 		} else {
-			throw new Error(SelectScriptNotGeneratedError);
+			throw new Error(nls.localize('selectScriptForEditNotGeneratedError', "Failed to generate script for Edit Data editor."));
 		}
 	}
 	catch (err) {
