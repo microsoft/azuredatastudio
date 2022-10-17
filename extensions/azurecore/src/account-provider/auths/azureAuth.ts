@@ -39,6 +39,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 	protected readonly loginEndpointUrl: string;
 	public readonly commonTenant: Tenant;
+	public readonly organizationsTenant: Tenant;
 	protected readonly redirectUri: string;
 	protected readonly scopes: string[];
 	protected readonly scopesString: string;
@@ -71,6 +72,10 @@ export abstract class AzureAuth implements vscode.Disposable {
 		this.commonTenant = {
 			id: 'common',
 			displayName: 'common',
+		};
+		this.organizationsTenant = {
+			id: 'organizations',
+			displayName: 'organizations',
 		};
 		this.redirectUri = this.metadata.settings.redirectUri;
 		this.clientId = this.metadata.settings.clientId;
@@ -127,7 +132,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 				loginComplete?.resolve();
 				return account;
 			} else {
-				const result = await this.loginMsal(this.commonTenant, this.metadata.settings.microsoftResource);
+				const result = await this.loginMsal(this.organizationsTenant, this.metadata.settings.microsoftResource);
 				loginComplete = result.authComplete;
 				if (!result?.response || !result.response?.account) {
 					Logger.error('Authentication failed');
@@ -681,7 +686,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			accountIssuer = 'msft';
 		}
 
-		const name = tokenClaims.name ?? tokenClaims.email ?? tokenClaims.unique_name;
+		const name = tokenClaims.name ?? tokenClaims.email ?? tokenClaims.unique_name ?? tokenClaims.preferred_username;
 		const email = tokenClaims.email ?? tokenClaims.unique_name;
 
 		let displayName = name;
