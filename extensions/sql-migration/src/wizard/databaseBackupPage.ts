@@ -125,7 +125,10 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				CSSStyles: { ...styles.BODY_CSS },
 				links: [{
 					text: constants.READ_MORE,
-					url: 'https://learn.microsoft.com/sql/relational-databases/backup-restore/enable-or-disable-backup-checksums-during-backup-or-restore-sql-server'
+					url: 'https://learn.microsoft.com/sql/relational-databases/backup-restore/enable-or-disable-backup-checksums-during-backup-or-restore-sql-server',
+					accessibilityInformation: {
+						label: constants.DATABASE_BACKUP_CHECKSUM_LABEL
+					}
 				}]
 			}).component();
 
