@@ -472,7 +472,7 @@ export const INVALID_RESOURCE_GROUP_ERROR = localize('sql.migration.invalid.reso
 export const INVALID_STORAGE_ACCOUNT_ERROR = localize('sql.migration.invalid.storageAccount.error', "To continue, select a valid storage account.");
 export const MISSING_TARGET_USERNAME_ERROR = localize('sql.migration.missing.targetUserName.error', "To continue, enter a valid target user name.");
 export const MISSING_TARGET_PASSWORD_ERROR = localize('sql.migration.missing.targetPassword.error', "To continue, enter a valid target password.");
-export const DATABASE_BACKUP_CHECKSUM_LABEL = localize('sql.migration.data.source.checksum.label', "Enable or disable backup checksums during backup or restore on SQL Server");
+export const DATABASE_BACKUP_CHECKSUM_LABEL = localize('sql.migration.data.source.checksum.label', "'Learn more about enabling or disabling backup checksums during backup or restore on SQL Server");
 
 export const TARGET_TABLE_NOT_EMPTY = localize('sql.migration.target.table.not.empty', "Target table is not empty.");
 export const TARGET_TABLE_MISSING = localize('sql.migration.target.table.missing', "Target table does not exist");
