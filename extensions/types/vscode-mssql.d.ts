@@ -178,35 +178,35 @@ declare module 'vscode-mssql' {
 		osVersion: string;
 	}
 
+	/**
+	 * Well-known Authentication types.
+	 */
+	export const enum AuthenticationType {
 		/**
-		 * Well-known Authentication types.
+		 * Username and password
 		 */
-		 export const enum AuthenticationType {
-			/**
-			 * Username and password
-			 */
-			SqlLogin = 'SqlLogin',
-			/**
-			 * Windows Authentication
-			 */
-			Integrated = 'Integrated',
-			/**
-			 * Azure Active Directory - Universal with MFA support
-			 */
-			AzureMFA = 'AzureMFA',
-			/**
-			 * Azure Active Directory - Password
-			 */
-			AzureMFAAndUser = 'AzureMFAAndUser',
-			/**
-			 * Datacenter Security Token Service Authentication
-			 */
-			DSTSAuth = 'dstsAuth',
-			/**
-			 * No authentication required
-			 */
-			None = 'None'
-		}
+		SqlLogin = 'SqlLogin',
+		/**
+		 * Windows Authentication
+		 */
+		Integrated = 'Integrated',
+		/**
+		 * Azure Active Directory - Universal with MFA support
+		 */
+		AzureMFA = 'AzureMFA',
+		/**
+		 * Azure Active Directory - Password
+		 */
+		AzureMFAAndUser = 'AzureMFAAndUser',
+		/**
+		 * Datacenter Security Token Service Authentication
+		 */
+		DSTSAuth = 'dstsAuth',
+		/**
+		 * No authentication required
+		 */
+		None = 'None'
+	}
 
 	/**
 	 * The possible values of the server engine edition
