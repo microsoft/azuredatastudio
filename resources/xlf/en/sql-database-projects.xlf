@@ -498,6 +498,9 @@
     <trans-unit id="include">
       <source xml:lang="en">Include</source>
     </trans-unit>
+    <trans-unit id="includePermissionsLabel">
+      <source xml:lang="en">Include permissions</source>
+    </trans-unit>
     <trans-unit id="installGlobally">
       <source xml:lang="en">Install globally</source>
     </trans-unit>
