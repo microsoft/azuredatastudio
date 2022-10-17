@@ -14,6 +14,10 @@ describe('Data Sources: DataSource operations', function (): void {
 		await baselines.loadBaselines();
 	});
 
+	after(() => {
+		testUtils.deleteGeneratedTestFolder();
+	});
+
 	it.skip('Should read DataSources from datasource.json', async function (): Promise<void> {
 		const dataSourcePath = await testUtils.createTestDataSources(baselines.openDataSourcesBaseline);
 		const dataSourceList = await dataSources.load(dataSourcePath);

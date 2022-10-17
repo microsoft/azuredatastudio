@@ -21,6 +21,10 @@ describe('Update Project From Database Dialog', () => {
 		sinon.restore();
 	});
 
+	after(() => {
+		testUtils.deleteGeneratedTestFolder();
+	});
+
 	it('Should populate endpoints correctly when no context passed', async function (): Promise<void> {
 		const dialog = new UpdateProjectFromDatabaseDialog(undefined, undefined);
 		await dialog.openDialog();
