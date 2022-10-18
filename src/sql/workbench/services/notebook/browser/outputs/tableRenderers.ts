@@ -49,7 +49,7 @@ export function renderDataResource(
 
 	// In order to show row numbers, we need to put the row number column
 	// ahead of all of the other columns, and register the plugin below
-	let rowNumberColumn = new RowNumberColumn({ numberOfRows: source.length });
+	let rowNumberColumn = new RowNumberColumn();
 	columnsTransformed.unshift(rowNumberColumn.getColumnDefinition());
 
 	let transformedData = transformData(sourceObject.data, columnsTransformed);
