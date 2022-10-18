@@ -597,6 +597,9 @@ export class KernelsDropdown extends SelectBox {
 		this._register(this.model.kernelChanged((changedArgs: azdata.nb.IKernelChangedArgs) => {
 			this.updateKernel(changedArgs.newValue, changedArgs.nbKernelAlias);
 		}));
+		this._register(this.model.kernelsChanged(kernel => {
+			this.updateKernel(kernel);
+		}));
 		let kernel = this.model.clientSession && this.model.clientSession.kernel;
 		this.updateKernel(kernel);
 	}

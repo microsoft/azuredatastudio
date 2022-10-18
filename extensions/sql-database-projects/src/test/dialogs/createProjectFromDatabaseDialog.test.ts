@@ -109,7 +109,8 @@ describe('Create Project From Database Dialog', () => {
 			filePath: 'testLocation',
 			version: '1.0.0.0',
 			extractTarget: mssql.ExtractTarget.schemaObjectType,
-			sdkStyle: true
+			sdkStyle: true,
+			includePermissions: undefined
 		};
 
 		dialog.createProjectFromDatabaseCallback = (m) => { model = m; };

@@ -135,10 +135,11 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		const columns: Slick.Column<Slick.SlickData>[] = this.getPropertyTableColumns();
 
 		let primaryProps = [];
-		let secondaryProps = [];
 		if (this._model.primaryElement?.properties) {
 			primaryProps = this._model.primaryElement.properties;
 		}
+
+		let secondaryProps = [];
 		if (this._model.secondaryElement?.properties) {
 			secondaryProps = this._model.secondaryElement.properties;
 		}
@@ -379,10 +380,14 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 							diffIcon.title = notEqualTitle;
 							break;
 						case sqlExtHostType.executionPlan.ExecutionPlanGraphElementPropertyDataType.Number:
-							diffIcon = (parseFloat(v.primaryProp.displayValue) > parseFloat(v.secondaryProp.displayValue))
-								? { iconClass: Codicon.chevronRight.classNames, title: greaterThanTitle }
-								: { iconClass: Codicon.chevronLeft.classNames, title: lessThanTitle };
-
+							if (v.primaryProp.betterValue === sqlExtHostType.executionPlan.ExecutionPlanGraphElementPropertyBetterValue.None) {
+								diffIcon.title = notEqualTitle;
+								diffIcon.iconClass = executionPlanComparisonPropertiesDifferent;
+							} else {
+								diffIcon = (parseFloat(v.primaryProp.displayValue) > parseFloat(v.secondaryProp.displayValue))
+									? { iconClass: Codicon.chevronRight.classNames, title: greaterThanTitle }
+									: { iconClass: Codicon.chevronLeft.classNames, title: lessThanTitle };
+							}
 							break;
 						case sqlExtHostType.executionPlan.ExecutionPlanGraphElementPropertyDataType.String:
 							diffIcon.iconClass = executionPlanComparisonPropertiesDifferent;
@@ -436,6 +441,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 				};
 
 				rows.push(row);
+
 				if (!isString(primaryProp.value)) {
 					row.name.iconCssClass += ` parent-row-styling`;
 					row.primary.iconCssClass += ` parent-row-styling`;
@@ -455,6 +461,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 				};
 
 				rows.push(row);
+
 				if (!isString(secondaryProp.value)) {
 					row.name.iconCssClass += ` parent-row-styling`;
 					row.secondary.iconCssClass += ` parent-row-styling`;
@@ -471,6 +478,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		if (this._orientation === value) {
 			return;
 		}
+
 		this._orientation = value;
 		this.updatePropertyContainerTitles();
 	}

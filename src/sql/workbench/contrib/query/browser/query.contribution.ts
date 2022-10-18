@@ -288,6 +288,14 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 });
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
+	id: gridActions.GRID_SAVEMARKDOWN_ID,
+	weight: KeybindingWeight.EditorContrib,
+	when: ResultsGridFocusCondition,
+	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KeyR, KeyMod.CtrlCmd | KeyCode.KeyM),
+	handler: gridCommands.saveAsMarkdown
+});
+
+KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: gridActions.GRID_SAVEEXCEL_ID,
 	weight: KeybindingWeight.EditorContrib,
 	when: ResultsGridFocusCondition,
@@ -383,6 +391,21 @@ const queryEditorConfiguration: IConfigurationNode = {
 			'type': 'string',
 			'description': localize('queryEditor.results.saveAsCsv.encoding', "File encoding used when saving results as CSV"),
 			'default': 'utf-8'
+		},
+		'queryEditor.results.saveAsMarkdown.encoding': {
+			'type': 'string',
+			'description': localize('queryEditor.results.saveAsMarkdown.encoding', "File encoding used when saving results as Markdown"),
+			'default': 'utf-8'
+		},
+		'queryEditor.results.saveAsMarkdown.includeHeaders': {
+			'type': 'boolean',
+			'description': localize('queryEditor.results.saveAsMarkdown.includeHeaders', "When true, column headers are included when saving results as a Markdown file"),
+			'default': true
+		},
+		'queryEditor.results.saveAsMarkdown.lineSeparator': {
+			'type': 'string',
+			'description': localize('queryEditor.results.saveAsMarkdown.lineSeparator', "Character(s) to use to separate lines when exporting to Markdown, defaults to system line endings"),
+			'default': null
 		},
 		'queryEditor.results.saveAsXml.formatted': {
 			'type': 'boolean',
