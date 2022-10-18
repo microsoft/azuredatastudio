@@ -26,8 +26,8 @@ describe('Publish Database Dialog', () => {
 		testContext = createContext();
 	});
 
-	after(() => {
-		testUtils.deleteGeneratedTestFolder();
+	after(async function(): Promise<void> {
+		await testUtils.deleteGeneratedTestFolder();
 	});
 
 	it('Should open dialog successfully ', async function (): Promise<void> {

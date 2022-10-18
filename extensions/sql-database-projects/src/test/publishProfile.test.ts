@@ -29,8 +29,8 @@ describe('Publish profile tests', function (): void {
 		sinon.restore();
 	});
 
-	after(() => {
-		testUtils.deleteGeneratedTestFolder();
+	after(async function(): Promise<void> {
+		await testUtils.deleteGeneratedTestFolder();
 	});
 
 	it('Should read database name, integrated security connection string, and SQLCMD variables from publish profile', async function (): Promise<void> {

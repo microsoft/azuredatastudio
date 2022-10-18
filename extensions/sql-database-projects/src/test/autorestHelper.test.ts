@@ -25,8 +25,8 @@ describe('Autorest tests', function (): void {
 		sinon.restore();
 	});
 
-	after(() => {
-		testUtils.deleteGeneratedTestFolder();
+	after(async function(): Promise<void> {
+		await testUtils.deleteGeneratedTestFolder();
 	});
 
 	it('Should detect autorest', async function (): Promise<void> {

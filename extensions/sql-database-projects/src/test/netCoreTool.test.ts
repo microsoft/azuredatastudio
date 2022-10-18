@@ -25,8 +25,8 @@ describe('NetCoreTool: Net core tests', function (): void {
 		testContext = createContext();
 	});
 
-	after(() => {
-		deleteGeneratedTestFolder();
+	after(async function(): Promise<void> {
+		await deleteGeneratedTestFolder();
 	});
 
 	it('Should override dotnet default value with settings', async function (): Promise<void> {

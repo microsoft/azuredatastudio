@@ -21,7 +21,7 @@ describe('Tests to verify utils functions', function (): void {
 		should(await exists(path.join(testFolderPath, 'folder2', 'file4.sql'))).equal(true);
 		should(await exists(path.join(testFolderPath, 'folder4', 'file2.sql'))).equal(false);
 
-		deleteGeneratedTestFolder();
+		await deleteGeneratedTestFolder();
 	});
 
 	it('Should get correct relative paths of files/folders', async () => {

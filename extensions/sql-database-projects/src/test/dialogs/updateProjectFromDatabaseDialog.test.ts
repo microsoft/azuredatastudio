@@ -21,8 +21,8 @@ describe('Update Project From Database Dialog', () => {
 		sinon.restore();
 	});
 
-	after(() => {
-		testUtils.deleteGeneratedTestFolder();
+	after(async function(): Promise<void> {
+		await testUtils.deleteGeneratedTestFolder();
 	});
 
 	it('Should populate endpoints correctly when no context passed', async function (): Promise<void> {

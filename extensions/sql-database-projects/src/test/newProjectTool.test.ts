@@ -29,8 +29,8 @@ describe('NewProjectTool: New project tool tests', function (): void {
 		sinon.stub(vscode.extensions, 'getExtension').returns(<any>{ exports: dataWorkspaceMock.object});
 	});
 
-	after(() => {
-		deleteGeneratedTestFolder();
+	after(async function(): Promise<void> {
+		await deleteGeneratedTestFolder();
 	});
 
 	afterEach(async function () {

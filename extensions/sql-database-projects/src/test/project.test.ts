@@ -30,8 +30,8 @@ describe('Project: sqlproj content operations', function (): void {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline);
 	});
 
-	after(() => {
-		testUtils.deleteGeneratedTestFolder();
+	after(async function(): Promise<void> {
+		await testUtils.deleteGeneratedTestFolder();
 	});
 
 	it('Should read Project from sqlproj', async function (): Promise<void> {
@@ -918,8 +918,8 @@ describe('Project: sdk style project content operations', function (): void {
 		sinon.restore();
 	});
 
-	after(() => {
-		testUtils.deleteGeneratedTestFolder();
+	after(async function(): Promise<void> {
+		await testUtils.deleteGeneratedTestFolder();
 	});
 
 	it('Should read project from sqlproj and files and folders by globbing', async function (): Promise<void> {
@@ -1568,8 +1568,8 @@ describe('Project: add SQLCMD Variables', function (): void {
 		await baselines.loadBaselines();
 	});
 
-	after(() => {
-		testUtils.deleteGeneratedTestFolder();
+	after(async function(): Promise<void> {
+		await testUtils.deleteGeneratedTestFolder();
 	});
 
 	it('Should update .sqlproj with new sqlcmd variables', async function (): Promise<void> {
@@ -1597,8 +1597,8 @@ describe('Project: properties', function (): void {
 		await baselines.loadBaselines();
 	});
 
-	after(() => {
-		testUtils.deleteGeneratedTestFolder();
+	after(async function(): Promise<void> {
+		await testUtils.deleteGeneratedTestFolder();
 	});
 
 	it('Should read target database version', async function (): Promise<void> {
@@ -1766,8 +1766,8 @@ describe('Project: round trip updates', function (): void {
 		sinon.restore();
 	});
 
-	after(() => {
-		testUtils.deleteGeneratedTestFolder();
+	after(async function(): Promise<void> {
+		await testUtils.deleteGeneratedTestFolder();
 	});
 
 	it('Should update SSDT project to work in ADS', async function (): Promise<void> {
@@ -1857,8 +1857,8 @@ describe('Project: legacy to SDK-style updates', function (): void {
 		sinon.restore();
 	});
 
-	after(() => {
-		testUtils.deleteGeneratedTestFolder();
+	after(async function(): Promise<void> {
+		await testUtils.deleteGeneratedTestFolder();
 	});
 
 	it('Should update legacy style project to SDK-style', async function (): Promise<void> {

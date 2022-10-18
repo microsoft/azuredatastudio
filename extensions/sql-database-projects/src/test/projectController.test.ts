@@ -48,8 +48,8 @@ describe('ProjectsController', function (): void {
 		sinon.restore();
 	});
 
-	after(() => {
-		testUtils.deleteGeneratedTestFolder();
+	after(async function(): Promise<void> {
+		await testUtils.deleteGeneratedTestFolder();
 	});
 
 	describe('project controller operations', function (): void {
