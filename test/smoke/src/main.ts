@@ -30,7 +30,7 @@ import { setup as setupDataMultirootTests } from './areas/multiroot/multiroot.te
 import { setup as setupDataLocalizationTests } from './areas/workbench/localization.test';
 import { setup as setupLaunchTests } from './areas/workbench/launch.test';*/
 import { setup as setupTerminalProfileTests } from './areas/terminal/terminal-profiles.test';
-import { setup as setupTerminalTabsTests } from './areas/terminal/terminal-tabs.test'; */
+import { setup as setupTerminalTabsTests } from './areas/terminal/terminal-tabs.test'; * /
 
 const rootPath = path.join(__dirname, '..', '..', '..');
 
@@ -153,283 +153,284 @@ console.log(`Using extensions dir : ${extensionsPath}`);
 const logPath = opts.log ? path.resolve(opts.log) : null;
 if (logPath) {
 	mkdirp.sync(path.dirname(logPath));
-function fail(errorMessage): void {
-	logger.log(errorMessage);
-	if (!opts.verbose) {
-		console.error(errorMessage);
-	}
-	process.exit(1);
-}
-
-let quality: Quality;
-let version: string | undefined;
-
-function parseVersion(version: string): { major: number; minor: number; patch: number } {
-	const [, major, minor, patch] = /^(\d+)\.(\d+)\.(\d+)/.exec(version)!;
-	return { major: parseInt(major), minor: parseInt(minor), patch: parseInt(patch) };
-}
-
-//
-// #### Electron Smoke Tests ####
-//
-if (!opts.web) {
-	let testCodePath = opts.build;
-	let electronPath: string;
-
-	if (testCodePath) {
-		electronPath = getBuildElectronPath(testCodePath);
-		version = getBuildVersion(testCodePath);
-	} else {
-		testCodePath = getDevElectronPath();
-		electronPath = testCodePath;
-		process.env.VSCODE_REPOSITORY = rootPath;
-		process.env.VSCODE_DEV = '1';
-		process.env.VSCODE_CLI = '1';
+	function fail(errorMessage): void {
+		logger.log(errorMessage);
+		if (!opts.verbose) {
+			console.error(errorMessage);
+		}
+		process.exit(1);
 	}
 
-	if (!fs.existsSync(electronPath || '')) {
-		fail(`Can't find VSCode at ${electronPath}. Please run VSCode once first (scripts/code.sh, scripts\\code.bat) and try again.`);
+	let quality: Quality;
+	let version: string | undefined;
+
+	function parseVersion(version: string): { major: number; minor: number; patch: number } {
+		const [, major, minor, patch] = /^(\d+)\.(\d+)\.(\d+)/.exec(version)!;
+		return { major: parseInt(major), minor: parseInt(minor), patch: parseInt(patch) };
 	}
 
-	if (process.env.VSCODE_DEV === '1') {
-		quality = Quality.Dev;
-	} else if (electronPath.indexOf('Code - Insiders') >= 0 /* macOS/Windows */ || electronPath.indexOf('code-insiders') /* Linux */ >= 0) {
-		quality = Quality.Insiders;
-	} else {
-		quality = Quality.Stable;
-	}
+	//
+	// #### Electron Smoke Tests ####
+	//
+	if (!opts.web) {
+		let testCodePath = opts.build;
+		let electronPath: string;
 
-	if (opts.remote) {
-		logger.log(`Running desktop remote smoke tests against ${electronPath}`);
-	} else {
-		logger.log(`Running desktop smoke tests against ${electronPath}`);
-	}
-}
-
-//
-// #### Web Smoke Tests ####
-//
-else {
-	const testCodeServerPath = opts.build || process.env.VSCODE_REMOTE_SERVER_PATH;
-
-	if (typeof testCodeServerPath === 'string') {
-		if (!fs.existsSync(testCodeServerPath)) {
-			fail(`Can't find Code server at ${testCodeServerPath}.`);
+		if (testCodePath) {
+			electronPath = getBuildElectronPath(testCodePath);
+			version = getBuildVersion(testCodePath);
 		} else {
-			logger.log(`Running web smoke tests against ${testCodeServerPath}`);
+			testCodePath = getDevElectronPath();
+			electronPath = testCodePath;
+			process.env.VSCODE_REPOSITORY = rootPath;
+			process.env.VSCODE_DEV = '1';
+			process.env.VSCODE_CLI = '1';
+		}
+
+		if (!fs.existsSync(electronPath || '')) {
+			fail(`Can't find VSCode at ${electronPath}. Please run VSCode once first (scripts/code.sh, scripts\\code.bat) and try again.`);
+		}
+
+		if (process.env.VSCODE_DEV === '1') {
+			quality = Quality.Dev;
+		} else if (electronPath.indexOf('Code - Insiders') >= 0 /* macOS/Windows */ || electronPath.indexOf('code-insiders') /* Linux */ >= 0) {
+			quality = Quality.Insiders;
+		} else {
+			quality = Quality.Stable;
+		}
+
+		if (opts.remote) {
+			logger.log(`Running desktop remote smoke tests against ${electronPath}`);
+		} else {
+			logger.log(`Running desktop smoke tests against ${electronPath}`);
 		}
 	}
 
-	if (!testCodeServerPath) {
-		process.env.VSCODE_REPOSITORY = rootPath;
-		process.env.VSCODE_DEV = '1';
-		process.env.VSCODE_CLI = '1';
+	//
+	// #### Web Smoke Tests ####
+	//
+	else {
+		const testCodeServerPath = opts.build || process.env.VSCODE_REMOTE_SERVER_PATH;
 
-		logger.log(`Running web smoke out of sources`);
-	}
-
-	if (process.env.VSCODE_DEV === '1') {
-		quality = Quality.Dev;
-	} else {
-		quality = Quality.Insiders;
-	}
-}
-
-const userDataDir = path.join(testDataPath, 'd');
-
-async function setupRepository(): Promise<void> {
-	if (opts['test-repo']) {
-		logger.log('Copying test project repository:', opts['test-repo']);
-		rimraf.sync(workspacePath);
-		// not platform friendly
-		if (process.platform === 'win32') {
-			cp.execSync(`xcopy /E "${opts['test-repo']}" "${workspacePath}"\\*`);
-		} else {
-			cp.execSync(`cp -R "${opts['test-repo']}" "${workspacePath}"`);
+		if (typeof testCodeServerPath === 'string') {
+			if (!fs.existsSync(testCodeServerPath)) {
+				fail(`Can't find Code server at ${testCodeServerPath}.`);
+			} else {
+				logger.log(`Running web smoke tests against ${testCodeServerPath}`);
+			}
 		}
-	} else {
-		if (!fs.existsSync(workspacePath)) {
-			logger.log('Cloning test project repository...');
-			const res = cp.spawnSync('git', ['clone', testRepoUrl, workspacePath], { stdio: 'inherit' });
+
+		if (!testCodeServerPath) {
+			process.env.VSCODE_REPOSITORY = rootPath;
+			process.env.VSCODE_DEV = '1';
+			process.env.VSCODE_CLI = '1';
+
+			logger.log(`Running web smoke out of sources`);
+		}
+
+		if (process.env.VSCODE_DEV === '1') {
+			quality = Quality.Dev;
+		} else {
+			quality = Quality.Insiders;
+		}
+	}
+
+	const userDataDir = path.join(testDataPath, 'd');
+
+	async function setupRepository(): Promise<void> {
+		if (opts['test-repo']) {
+			logger.log('Copying test project repository:', opts['test-repo']);
+			rimraf.sync(workspacePath);
+			// not platform friendly
+			if (process.platform === 'win32') {
+				cp.execSync(`xcopy /E "${opts['test-repo']}" "${workspacePath}"\\*`);
+			} else {
+				cp.execSync(`cp -R "${opts['test-repo']}" "${workspacePath}"`);
+			}
+		} else {
 			if (!fs.existsSync(workspacePath)) {
-				throw new Error(`Clone operation failed: ${res.stderr.toString()}`);
+				logger.log('Cloning test project repository...');
+				const res = cp.spawnSync('git', ['clone', testRepoUrl, workspacePath], { stdio: 'inherit' });
+				if (!fs.existsSync(workspacePath)) {
+					throw new Error(`Clone operation failed: ${res.stderr.toString()}`);
+				}
+			} else {
+				logger.log('Cleaning test project repository...');
+				cp.spawnSync('git', ['fetch'], { cwd: workspacePath, stdio: 'inherit' });
+				cp.spawnSync('git', ['reset', '--hard', 'FETCH_HEAD'], { cwd: workspacePath, stdio: 'inherit' });
+				cp.spawnSync('git', ['clean', '-xdf'], { cwd: workspacePath, stdio: 'inherit' });
 			}
-		} else {
-			logger.log('Cleaning test project repository...');
-			cp.spawnSync('git', ['fetch'], { cwd: workspacePath, stdio: 'inherit' });
-			cp.spawnSync('git', ['reset', '--hard', 'FETCH_HEAD'], { cwd: workspacePath, stdio: 'inherit' });
-			cp.spawnSync('git', ['clean', '-xdf'], { cwd: workspacePath, stdio: 'inherit' });
 		}
 	}
-}
 
-// @ts-ignore ts6133 {{SQL CARBON EDIT}} Not used (see below)
-async function ensureStableCode(): Promise<void> {
-	let stableCodePath = opts['stable-build'];
-	if (!stableCodePath) {
-		const { major, minor } = parseVersion(version!);
-		const majorMinorVersion = `${major}.${minor - 1}`;
-		const versionsReq = await retry(() => measureAndLog(fetch('https://update.code.visualstudio.com/api/releases/stable', { headers: { 'x-api-version': '2' } }), 'versionReq', logger), 1000, 20);
+	// @ts-ignore ts6133 {{SQL CARBON EDIT}} Not used (see below)
+	async function ensureStableCode(): Promise<void> {
+		let stableCodePath = opts['stable-build'];
+		if (!stableCodePath) {
+			const { major, minor } = parseVersion(version!);
+			const majorMinorVersion = `${major}.${minor - 1}`;
+			const versionsReq = await retry(() => measureAndLog(fetch('https://update.code.visualstudio.com/api/releases/stable', { headers: { 'x-api-version': '2' } }), 'versionReq', logger), 1000, 20);
 
-		if (!versionsReq.ok) {
-			throw new Error('Could not fetch releases from update server');
-		}
+			if (!versionsReq.ok) {
+				throw new Error('Could not fetch releases from update server');
+			}
 
-		const versions: { version: string }[] = await measureAndLog(versionsReq.json(), 'versionReq.json()', logger);
-		const prefix = `${majorMinorVersion}.`;
-		const previousVersion = versions.find(v => v.version.startsWith(prefix));
+			const versions: { version: string }[] = await measureAndLog(versionsReq.json(), 'versionReq.json()', logger);
+			const prefix = `${majorMinorVersion}.`;
+			const previousVersion = versions.find(v => v.version.startsWith(prefix));
 
-		if (!previousVersion) {
-			throw new Error(`Could not find suitable stable version ${majorMinorVersion}`);
-		}
+			if (!previousVersion) {
+				throw new Error(`Could not find suitable stable version ${majorMinorVersion}`);
+			}
 
-		logger.log(`Found VS Code v${version}, downloading previous VS Code version ${previousVersion.version}...`);
+			logger.log(`Found VS Code v${version}, downloading previous VS Code version ${previousVersion.version}...`);
 
-		let lastProgressMessage: string | undefined = undefined;
-		let lastProgressReportedAt = 0;
-		const stableCodeDestination = path.join(testDataPath, 's');
-		const stableCodeExecutable = await retry(() => measureAndLog(vscodetest.download({
-			cachePath: stableCodeDestination,
-			version: previousVersion.version,
-			extractSync: true,
-			reporter: {
-				report: report => {
-					let progressMessage = `download stable code progress: ${report.stage}`;
-					const now = Date.now();
-					if (progressMessage !== lastProgressMessage || now - lastProgressReportedAt > 10000) {
-						lastProgressMessage = progressMessage;
-						lastProgressReportedAt = now;
+			let lastProgressMessage: string | undefined = undefined;
+			let lastProgressReportedAt = 0;
+			const stableCodeDestination = path.join(testDataPath, 's');
+			const stableCodeExecutable = await retry(() => measureAndLog(vscodetest.download({
+				cachePath: stableCodeDestination,
+				version: previousVersion.version,
+				extractSync: true,
+				reporter: {
+					report: report => {
+						let progressMessage = `download stable code progress: ${report.stage}`;
+						const now = Date.now();
+						if (progressMessage !== lastProgressMessage || now - lastProgressReportedAt > 10000) {
+							lastProgressMessage = progressMessage;
+							lastProgressReportedAt = now;
 
-						if (report.stage === 'downloading') {
-							progressMessage += ` (${report.bytesSoFar}/${report.totalBytes})`;
+							if (report.stage === 'downloading') {
+								progressMessage += ` (${report.bytesSoFar}/${report.totalBytes})`;
+							}
+
+							logger.log(progressMessage);
 						}
-
-						logger.log(progressMessage);
+					},
+					error: error => logger.log(`download stable code error: ${error}`)
+				}
+			}), 'download stable code', logger), 1000, 3, () => new Promise<void>((resolve, reject) => {
+				rimraf(stableCodeDestination, { maxBusyTries: 10 }, error => {
+					if (error) {
+						reject(error);
+					} else {
+						resolve();
 					}
-				},
-				error: error => logger.log(`download stable code error: ${error}`)
+				});
+			}));
+
+			if (process.platform === 'darwin') {
+				// Visual Studio Code.app/Contents/MacOS/Electron
+				stableCodePath = path.dirname(path.dirname(path.dirname(stableCodeExecutable)));
+			} else {
+				// VSCode/Code.exe (Windows) | VSCode/code (Linux)
+				stableCodePath = path.dirname(stableCodeExecutable);
 			}
-		}), 'download stable code', logger), 1000, 3, () => new Promise<void>((resolve, reject) => {
-			rimraf(stableCodeDestination, { maxBusyTries: 10 }, error => {
-				if (error) {
-					reject(error);
-				} else {
-					resolve();
-				}
-			});
-		}));
-
-		if (process.platform === 'darwin') {
-			// Visual Studio Code.app/Contents/MacOS/Electron
-			stableCodePath = path.dirname(path.dirname(path.dirname(stableCodeExecutable)));
-		} else {
-			// VSCode/Code.exe (Windows) | VSCode/code (Linux)
-			stableCodePath = path.dirname(stableCodeExecutable);
 		}
+
+		if (!fs.existsSync(stableCodePath)) {
+			throw new Error(`Can't find Stable VSCode at ${stableCodePath}.`);
+		}
+
+		logger.log(`Using stable build ${stableCodePath} for migration tests`);
+
+		opts['stable-build'] = stableCodePath;
 	}
 
-	if (!fs.existsSync(stableCodePath)) {
-		throw new Error(`Can't find Stable VSCode at ${stableCodePath}.`);
+	async function setup(): Promise<void> {
+		logger.log('Test data path:', testDataPath);
+		logger.log('Preparing smoketest setup...');
+
+		if (!opts.web && !opts.remote && opts.build) {
+			// only enabled when running with --build and not in web or remote
+			await measureAndLog(ensureStableCode(logger), 'ensureStableCode', logger);
+		}
+		await measureAndLog(setupRepository(), 'setupRepository', logger);
+
+		logger.log('Smoketest setup done!\n');
 	}
 
-	logger.log(`Using stable build ${stableCodePath} for migration tests`);
+	// Before all tests run setup
+	before(async function () {
+		this.timeout(5 * 60 * 1000); // increase since we download VSCode
 
-	opts['stable-build'] = stableCodePath;
-}
+		this.defaultOptions = {
+			quality,
+			codePath: opts.build,
+			workspacePath,
+			userDataDir,
+			extensionsPath,
+			logger,
+			logsPath: path.join(logsRootPath, 'suite_unknown'),
+			verbose: opts.verbose,
+			remote: opts.remote,
+			web: opts.web,
+			tracing: opts.tracing,
+			headless: opts.headless,
+			browser: opts.browser,
+			extraArgs: (opts.electronArgs || '').split(' ').map(arg => arg.trim()).filter(arg => !!arg)
+		};
 
-async function setup(): Promise<void> {
-	logger.log('Test data path:', testDataPath);
-	logger.log('Preparing smoketest setup...');
+		await setup();
+		const options = this.defaultOptions = await createOptions();
+		await setup(options.logger);
+	});
 
-	if (!opts.web && !opts.remote && opts.build) {
-		// only enabled when running with --build and not in web or remote
-	await measureAndLog(ensureStableCode(logger), 'ensureStableCode', logger);
-	}
-	await measureAndLog(setupRepository(), 'setupRepository', logger);
+	// After main suite (after all tests)
+	after(async function () {
+		if (opts.log) {
+			const logsDir = path.join(userDataDir, 'logs');
+			const destLogsDir = path.join(path.dirname(opts.log), 'logs');
 
-	logger.log('Smoketest setup done!\n');
-}
+			// {{ SQL CARBON EDIT }}
+			/**
+			 * The logs directory is not present during the ADS web build, but is during the Darwin build.
+			 * In situations where the directory is missing and a copy attempt is made, bash exits with code 255 and raises an error
+			 * explaining that there's no such file or directory. This prevents that error from occurring.
+			 */
+			try {
+				await promisify(ncp)(logsDir, destLogsDir);
+			}
+			catch (ex) {
+				console.warn(`Caught exception from ncp: ${ex}`);
+			}
+		}
 
-// Before all tests run setup
-before(async function () {
-	this.timeout(5 * 60 * 1000); // increase since we download VSCode
-
-	this.defaultOptions = {
-		quality,
-		codePath: opts.build,
-		workspacePath,
-		userDataDir,
-		extensionsPath,
-		logger,
-		logsPath: path.join(logsRootPath, 'suite_unknown'),
-		verbose: opts.verbose,
-		remote: opts.remote,
-		web: opts.web,
-		tracing: opts.tracing,
-		headless: opts.headless,
-		browser: opts.browser,
-		extraArgs: (opts.electronArgs || '').split(' ').map(arg => arg.trim()).filter(arg => !!arg)
-	};
-
-	await setup();
-	const options = this.defaultOptions = await createOptions();
-	await setup(options.logger);
-});
-
-// After main suite (after all tests)
-after(async function () {
-	if (opts.log) {
-		const logsDir = path.join(userDataDir, 'logs');
-		const destLogsDir = path.join(path.dirname(opts.log), 'logs');
-
-		// {{ SQL CARBON EDIT }}
-		/**
-		 * The logs directory is not present during the ADS web build, but is during the Darwin build.
-		 * In situations where the directory is missing and a copy attempt is made, bash exits with code 255 and raises an error
-		 * explaining that there's no such file or directory. This prevents that error from occurring.
-		 */
 		try {
-			await promisify(ncp)(logsDir, destLogsDir);
+			let deleted = false;
+			await measureAndLog(Promise.race([
+				new Promise<void>((resolve, reject) => rimraf(testDataPath, { maxBusyTries: 10 }, error => {
+					if (error) {
+						reject(error);
+					} else {
+						deleted = true;
+						resolve();
+					}
+				})),
+				timeout(30000).then(() => {
+					if (!deleted) {
+						throw new Error('giving up after 30s');
+					}
+				})
+			]), 'rimraf(testDataPath)', logger);
+		} catch (error) {
+			logger.log(`Unable to delete smoke test workspace: ${error}. This indicates some process is locking the workspace folder.`);
 		}
-		catch (ex) {
-			console.warn(`Caught exception from ncp: ${ex}`);
-		}
-	}
+	});
 
-	try {
-		let deleted = false;
-		await measureAndLog(Promise.race([
-			new Promise<void>((resolve, reject) => rimraf(testDataPath, { maxBusyTries: 10 }, error => {
-				if (error) {
-					reject(error);
-				} else {
-					deleted = true;
-					resolve();
-				}
-			})),
-			timeout(30000).then(() => {
-				if (!deleted) {
-					throw new Error('giving up after 30s');
-				}
-			})
-		]), 'rimraf(testDataPath)', logger);
-	} catch (error) {
-		logger.log(`Unable to delete smoke test workspace: ${error}. This indicates some process is locking the workspace folder.`);
-	}
-});
-
-describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
+	describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
 	/* {{SQL CARBON EDIT}} Disable unused tests
-	if (!opts.web) { setupDataLossTests(() => opts['stable-build'] /* Do not change, deferred for a reason! */, logger); }
-	setupPreferencesTests(logger);
-	setupSearchTests(logger);
-	setupNotebookTests(logger);
-	setupLanguagesTests(logger);
-	if (opts.web) { setupTerminalTests(logger); } // Tests require playwright driver (https://github.com/microsoft/vscode/issues/146811)
-	setupStatusbarTests(logger);
-	if (quality !== Quality.Dev) { setupExtensionTests(logger); }
-	setupMultirootTests(logger);
-	if (!opts.web && !opts.remote && quality !== Quality.Dev) { setupLocalizationTests(logger); }
-	if (!opts.web && !opts.remote) { setupLaunchTests(logger); }
-	*/
+	if (!opts.web) { setupDataLossTests(() => opts['stable-build'] /* Do not change, deferred for a reason! */, logger);
+}
+setupPreferencesTests(logger);
+setupSearchTests(logger);
+setupNotebookTests(logger);
+setupLanguagesTests(logger);
+if (opts.web) { setupTerminalTests(logger); } // Tests require playwright driver (https://github.com/microsoft/vscode/issues/146811)
+setupStatusbarTests(logger);
+if (quality !== Quality.Dev) { setupExtensionTests(logger); }
+setupMultirootTests(logger);
+if (!opts.web && !opts.remote && quality !== Quality.Dev) { setupLocalizationTests(logger); }
+if (!opts.web && !opts.remote) { setupLaunchTests(logger); }
+	* /
 });
