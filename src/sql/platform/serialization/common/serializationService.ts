@@ -17,6 +17,7 @@ const saveAsNotSupported = localize('saveAsNotSupported', "Saving results into d
 const defaultBatchSize = 500;
 
 export interface SerializeDataParams {
+	serializationProviderId: string;
 	/**
 	 * 'csv', 'json', 'excel', 'xml'
 	 */
@@ -115,7 +116,13 @@ export class SerializationService implements ISerializationService {
 		}
 		try {
 			// Create a new session with the provider and send initial data
-			let provider = this.providers[0].provider;
+			let provider = this.providers.find(provider => provider.providerId === serializationRequest.serializationProviderId).provider;
+			if (!provider) {
+				return <azdata.SerializeDataResult>{
+					messages: localize('missingSerializationProviderError', "Could not find a serialization provider with the specified ID '{0}'", serializationRequest.serializationProviderId),
+					succeeded: false
+				};
+			}
 			let index = 0;
 			let startRequestParams = this.createStartRequest(serializationRequest, index);
 			index = index + startRequestParams.rows.length;

@@ -48,6 +48,7 @@ import { getChartMaxRowCount, notifyMaxRowCountExceeded } from 'sql/workbench/co
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 @Component({
 	selector: GridOutputComponent.SELECTOR,
@@ -489,6 +490,7 @@ export class DataResourceDataProvider implements IGridDataProvider {
 		// request params for the serialization request (eg, saveFormat, filePath).
 		let formatSpecificParams = serializer.getBasicSaveParameters(format);
 		let formatAgnosticParams = <Partial<SerializeDataParams>>{
+			serializationProviderId: mssqlProviderName,
 			saveFormat: format,
 			filePath: filePath.fsPath,
 			columns: columns,
