@@ -1,7 +1,15 @@
-**/build/*/**/*.js
-**/dist/**/*.js
+**/vs/nls.build.js
+**/vs/nls.js
+**/vs/css.build.js
+**/vs/css.js
+**/vs/loader.js
+**/dompurify/**
+**/marked/**
+**/semver/**
+**/test/**/*.js
+**/node_modules/**
 **/extensions/**/out/**
-/extensions/**/build/**
+**/extensions/**/build/**
 /extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts
 /extensions/big-data-cluster/src/bigDataCluster/controller/clusterApiGenerated2.ts
 **/extensions/**/colorize-fixtures/**
@@ -14,6 +22,7 @@
 /extensions/types
 /extensions/typescript-language-features/test-workspace/**
 /test/automation/out
+/resources/web/code-web.js
 **/extensions/vscode-api-tests/testWorkspace/**
 **/extensions/vscode-api-tests/testWorkspace2/**
 **/fixtures/**
