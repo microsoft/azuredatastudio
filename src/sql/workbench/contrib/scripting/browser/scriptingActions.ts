@@ -96,13 +96,14 @@ CommandsRegistry.registerCommand({
 			const connectionManagementService = accessor.get(IConnectionManagementService);
 			const scriptingService = accessor.get(IScriptingService);
 			const progressService = accessor.get(IProgressService);
+			const errorMessageService = accessor.get(IErrorMessageService);
 			const profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
 			const baseContext: BaseActionContext = {
 				profile: profile,
 				object: oeShimService.getNodeInfoForTreeItem(args.$treeItem)!.metadata
 			};
 			const scriptSelectAction = new ScriptSelectAction(ScriptSelectAction.ID, ScriptSelectAction.LABEL,
-				queryEditorService, connectionManagementService, scriptingService);
+				queryEditorService, connectionManagementService, scriptingService, errorMessageService);
 			await progressService.withProgress({ location: VIEWLET_ID }, async () => await scriptSelectAction.run(baseContext));
 		}
 	}
@@ -167,13 +168,14 @@ CommandsRegistry.registerCommand({
 			const connectionManagementService = accessor.get(IConnectionManagementService);
 			const scriptingService = accessor.get(IScriptingService);
 			const progressService = accessor.get(IProgressService);
+			const errorMessageService = accessor.get(IErrorMessageService);
 			const profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
 			const baseContext: BaseActionContext = {
 				profile: profile,
 				object: oeShimService.getNodeInfoForTreeItem(args.$treeItem)!.metadata
 			};
 			const editDataAction = new EditDataAction(EditDataAction.ID, EditDataAction.LABEL,
-				queryEditorService, connectionManagementService, scriptingService);
+				queryEditorService, connectionManagementService, scriptingService, errorMessageService);
 			await progressService.withProgress({ location: VIEWLET_ID }, async () => await editDataAction.run(baseContext));
 		}
 	}
@@ -356,9 +358,10 @@ export class ExplorerScriptSelectAction extends ScriptSelectAction {
 		@IQueryEditorService queryEditorService: IQueryEditorService,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
 		@IScriptingService scriptingService: IScriptingService,
-		@IProgressService private readonly progressService: IProgressService
+		@IProgressService private readonly progressService: IProgressService,
+		@IErrorMessageService errorMessageService: IErrorMessageService
 	) {
-		super(id, label, queryEditorService, connectionManagementService, scriptingService);
+		super(id, label, queryEditorService, connectionManagementService, scriptingService, errorMessageService);
 	}
 
 	public override async run(actionContext: BaseActionContext): Promise<void> {
