@@ -29,6 +29,7 @@ export class ExecutionPlanComparisonInput extends EditorInput {
 		const existingNames = this._editorService.editors.map(editor => editor.getName());
 		let i = 1;
 		this._editorName = `${this.editorNamePrefix}_${i}`;
+
 		while (existingNames.includes(this._editorName)) {
 			i++;
 			this._editorName = `${this.editorNamePrefix}_${i}`;

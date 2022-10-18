@@ -84,7 +84,7 @@ export class HighlightExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 		this.container.appendChild(this._expenseMetricSelectBoxContainer);
 
 		const selectBoxOptions = this.getSelectBoxOptionsFromExecutionPlanDiagram();
-		this.expenseMetricSelectBox = new SelectBox(selectBoxOptions, COST_STRING, this.contextViewService, this._expenseMetricSelectBoxContainer);
+		this.expenseMetricSelectBox = this._register(new SelectBox(selectBoxOptions, COST_STRING, this.contextViewService, this._expenseMetricSelectBoxContainer));
 		this.expenseMetricSelectBox.setAriaLabel(SELECT_EXPENSE_METRIC_TITLE);
 
 		this.expenseMetricSelectBox.render(this._expenseMetricSelectBoxContainer);
@@ -119,19 +119,15 @@ export class HighlightExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 		}));
 
 		// Apply Button
-		const highlightExpensiveOperationAction = new HighlightExpensiveOperationAction();
-		this._register(highlightExpensiveOperationAction);
-
-		const clearHighlightExpensiveOperationAction = new TurnOffExpensiveHighlightingOperationAction();
-		this._register(clearHighlightExpensiveOperationAction);
-
-		const cancelHighlightExpensiveOperationAction = new CancelHIghlightExpensiveOperationAction();
-		this._register(cancelHighlightExpensiveOperationAction);
+		const highlightExpensiveOperationAction = this._register(new HighlightExpensiveOperationAction());
+		const clearHighlightExpensiveOperationAction = this._register(new TurnOffExpensiveHighlightingOperationAction());
+		const cancelHighlightExpensiveOperationAction = this._register(new CancelHIghlightExpensiveOperationAction());
 
 		const self = this;
-		const applyButton = new Button(this.container, {
+		const applyButton = this._register(new Button(this.container, {
 			title: localize('highlightExpensiveOperationButtonTitle', 'Highlight Expensive Operation')
-		});
+		}));
+
 		applyButton.label = localize('highlightExpensiveOperationApplyButton', 'Apply');
 
 		this._register(applyButton.onDidClick(async e => {
@@ -146,7 +142,7 @@ export class HighlightExpensiveOperationWidget extends ExecutionPlanWidgetBase {
 		}));
 
 		// Adds Action bar
-		this._actionBar = new ActionBar(this.container);
+		this._actionBar = this._register(new ActionBar(this.container));
 		this._actionBar.context = this;
 		this._actionBar.pushAction(cancelHighlightExpensiveOperationAction, { label: false, icon: true });
 	}

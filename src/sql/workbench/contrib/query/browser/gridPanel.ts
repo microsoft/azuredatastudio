@@ -353,7 +353,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	private table: Table<T>;
 	private actionBar: ActionBar;
 	private container = document.createElement('div');
-	private selectionModel = new CellSelectionModel<T>();
+	private selectionModel = new CellSelectionModel<T>({ hasRowSelector: true });
 	private styles: ITableStyles;
 	private currentHeight: number;
 	private dataProvider: HybridDataProvider<T>;
@@ -498,7 +498,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		collection.setCollectionChangedCallback((startIndex, count) => {
 			this.renderGridDataRowsRange(startIndex, count);
 		});
-		this.rowNumberColumn = new RowNumberColumn({ numberOfRows: this.resultSet.rowCount });
+		this.rowNumberColumn = new RowNumberColumn({ autoCellSelection: false });
 		this.columns.unshift(this.rowNumberColumn.getColumnDefinition());
 		let tableOptions: Slick.GridOptions<T> = {
 			rowHeight: this.rowHeight,
@@ -726,7 +726,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 						graphFileType: result.queryExecutionPlanFileExtension
 					};
 
-					const executionPlanInput = this.instantiationService.createInstance(ExecutionPlanInput, undefined, executionPlanGraphInfo);
+					const executionPlanInput = this._register(this.instantiationService.createInstance(ExecutionPlanInput, undefined, executionPlanGraphInfo));
 					await this.editorService.openEditor(executionPlanInput);
 				}
 				else {
@@ -800,7 +800,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			this.currentHeight = size;
 		}
 		// Table is always called with Orientation as VERTICAL
-		this.table.layout(size, Orientation.VERTICAL);
+		this.table?.layout(size, Orientation.VERTICAL);
 	}
 
 	public get minimumSize(): number {
@@ -953,6 +953,7 @@ class GridTable<T> extends GridTableBase<T> {
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEMARKDOWN_ID, SaveResultAction.SAVEMARKDOWN_LABEL, SaveResultAction.SAVEMARKDOWN_ICON, SaveFormat.MARKDOWN),
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML),
 			this.instantiationService.createInstance(ChartDataAction)
 		);
@@ -969,6 +970,7 @@ class GridTable<T> extends GridTableBase<T> {
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEMARKDOWN_ID, SaveResultAction.SAVEMARKDOWN_LABEL, SaveResultAction.SAVEMARKDOWN_ICON, SaveFormat.MARKDOWN),
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML),
 		];
 	}

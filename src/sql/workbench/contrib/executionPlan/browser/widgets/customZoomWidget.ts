@@ -34,11 +34,12 @@ export class CustomZoomWidget extends ExecutionPlanWidgetBase {
 
 		// Custom zoom input box
 		const zoomValueLabel = localize("qpZoomValueLabel", 'Zoom (percent)');
-		this.customZoomInputBox = new InputBox(this.container, this.contextViewService, {
+
+		this.customZoomInputBox = this._register(new InputBox(this.container, this.contextViewService, {
 			type: 'number',
 			ariaLabel: zoomValueLabel,
 			flexibleWidth: false
-		});
+		}));
 		this._register(attachInputBoxStyler(this.customZoomInputBox, this.themeService));
 
 		const currentZoom = this.executionPlanDiagram.getZoomLevel();
@@ -48,28 +49,28 @@ export class CustomZoomWidget extends ExecutionPlanWidgetBase {
 
 		// Setting up keyboard shortcuts
 		const self = this;
-		this.customZoomInputBox.element.onkeydown = async (ev) => {
+		this._register(DOM.addDisposableListener(this.customZoomInputBox.element, DOM.EventType.KEY_DOWN, async (ev: KeyboardEvent) => {
 			if (ev.key === 'Enter') {
-				await new CustomZoomAction().run(self);
+				await this._register(new CustomZoomAction()).run(self);
 			} else if (ev.key === 'Escape') {
 				this.widgetController.removeWidget(self);
 			}
-		};
+		}));
 
-		const applyButton = new Button(this.container, {
+		const applyButton = this._register(new Button(this.container, {
 			title: localize('customZoomApplyButtonTitle', "Apply Zoom")
-		});
+		}));
 		applyButton.setWidth('60px');
 		applyButton.label = localize('customZoomApplyButton', "Apply");
 
 		this._register(applyButton.onDidClick(async e => {
-			await new CustomZoomAction().run(self);
+			await this._register(new CustomZoomAction()).run(self);
 		}));
 
 		// Adding action bar
-		this._actionBar = new ActionBar(this.container);
+		this._actionBar = this._register(new ActionBar(this.container));
 		this._actionBar.context = this;
-		this._actionBar.pushAction(new CancelZoom(), { label: false, icon: true });
+		this._actionBar.pushAction(this._register(new CancelZoom()), { label: false, icon: true });
 	}
 
 	// Setting initial focus to input box
@@ -93,7 +94,7 @@ export class CustomZoomAction extends Action {
 			context.widgetController.removeWidget(context);
 		} else {
 			context.notificationService.error(
-				localize('invalidCustomZoomError', "Select a zoom value between 1 to 200")
+				localize('invalidCustomZoomError', "Select a zoom value between 1 to 200") // TODO lewissanchez: Ask Aasim about this error message after removing zoom limit.
 			);
 		}
 	}

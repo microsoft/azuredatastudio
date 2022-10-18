@@ -1083,12 +1083,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (provider && provider !== this._providerId) {
 				this._providerId = provider;
 			} else if (!provider) {
-				this.notebookOptions.executeManagers.forEach(m => {
-					if (m.providerId !== SQL_NOTEBOOK_PROVIDER) {
-						// We don't know which provider it is before that provider is chosen to query its specs. Choosing the "last" one registered.
-						this._providerId = m.providerId;
-					}
-				});
+				this._providerId = SQL_NOTEBOOK_PROVIDER;
 			}
 			this._defaultKernel = this._savedKernelInfo;
 		} else if (this._defaultKernel) {

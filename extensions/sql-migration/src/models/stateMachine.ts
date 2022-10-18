@@ -380,7 +380,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			const connectionProfile = await this.getSourceConnectionProfile();
 			const connectionUri = await azdata.connection.getUriForConnection(this._sourceConnectionId);
 			const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(connectionProfile.providerId, azdata.DataProviderType.QueryProvider);
-			const queryString = 'select @@servername;';
+			const queryString = 'SELECT SERVERPROPERTY(\'ServerName\');';
 			const queryResult = await queryProvider.runQueryAndReturn(connectionUri, queryString);
 
 			if (queryResult.rowCount > 0) {

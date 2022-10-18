@@ -61,7 +61,7 @@ export class ExecutionPlanEditorOverrideContribution extends Disposable implemen
 			}
 		});
 
-		this._editorResolverService.registerEditor(
+		this._register(this._editorResolverService.registerEditor(
 			this.getGlobForFileExtensions(supportedFileFormats),
 			{
 				id: ExecutionPlanEditor.ID,
@@ -74,11 +74,11 @@ export class ExecutionPlanEditorOverrideContribution extends Disposable implemen
 					graphFileContent: undefined,
 					graphFileType: undefined
 				};
+				const executionPlanInput = this._register(this._instantiationService.createInstance(ExecutionPlanInput, editorInput.resource, executionPlanGraphInfo));
 
-				const executionPlanInput = this._instantiationService.createInstance(ExecutionPlanInput, editorInput.resource, executionPlanGraphInfo);
 				return { editor: executionPlanInput, options: editorInput.options, group: group };
 			}
-		);
+		));
 	}
 
 	private getGlobForFileExtensions(extensions: string[]): string {
