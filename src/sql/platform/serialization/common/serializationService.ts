@@ -116,7 +116,7 @@ export class SerializationService implements ISerializationService {
 		}
 		try {
 			// Create a new session with the provider and send initial data
-			let provider = this.providers.find(provider => provider.providerId === serializationRequest.serializationProviderId).provider;
+			let provider = this.providers.find(provider => provider.providerId === serializationRequest.serializationProviderId)?.provider;
 			if (!provider) {
 				return <azdata.SerializeDataResult>{
 					messages: localize('missingSerializationProviderError', "Could not find a serialization provider with the specified ID '{0}'", serializationRequest.serializationProviderId),
