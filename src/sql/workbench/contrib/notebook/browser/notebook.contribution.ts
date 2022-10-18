@@ -51,7 +51,7 @@ import { ImageMimeTypes, TextCellEditModes } from 'sql/workbench/services/notebo
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
-import { DEFAULT_NOTEBOOK_FILETYPE, IExecuteManager, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
+import { DefaultNotebookProviders, DEFAULT_NOTEBOOK_FILETYPE, IExecuteManager } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookExplorerViewletViewsContribution } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { IEditorResolverService, RegisteredEditorPriority } from 'vs/workbench/services/editor/common/editorResolverService';
@@ -750,7 +750,7 @@ export class NotebookEditorOverrideContribution extends Disposable implements IW
 			this.registerEditorOverrides();
 		});
 		notebookRegistry.onNewDescriptionRegistration(({ id, registration }) => {
-			if (id !== JUPYTER_PROVIDER_ID && id !== SQL_NOTEBOOK_PROVIDER && registration?.fileExtensions?.length > 0) {
+			if (!DefaultNotebookProviders.includes(id) && registration?.fileExtensions?.length > 0) {
 				let extensions = registration.fileExtensions
 					.filter(ext => ext?.length > 0 && ext.toLowerCase() !== DEFAULT_NOTEBOOK_FILETYPE);
 				this._newFileExtensions = this._newFileExtensions.concat(extensions);
