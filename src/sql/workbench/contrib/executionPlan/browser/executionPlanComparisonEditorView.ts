@@ -34,10 +34,11 @@ import { ExecutionPlanWidgetController } from 'sql/workbench/contrib/executionPl
 import { NodeSearchWidget } from 'sql/workbench/contrib/executionPlan/browser/widgets/nodeSearchWidget';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
+import { Disposable } from 'vs/base/common/lifecycle';
 
 const ADD_EXECUTION_PLAN_STRING = localize('epCompare.addExecutionPlanLabel', 'Add execution plan');
 
-export class ExecutionPlanComparisonEditorView {
+export class ExecutionPlanComparisonEditorView extends Disposable {
 
 	public container: HTMLElement;
 
@@ -134,6 +135,7 @@ export class ExecutionPlanComparisonEditorView {
 		@IProgressService private _progressService: IProgressService,
 		@IContextMenuService private _contextMenuService: IContextMenuService
 	) {
+		super();
 
 		this.container = DOM.$('.comparison-editor');
 		parentContainer.appendChild(this.container);
@@ -144,22 +146,16 @@ export class ExecutionPlanComparisonEditorView {
 
 	// creating and adding editor toolbar actions
 	private initializeToolbar(): void {
-		this._taskbarContainer = DOM.$('.editor-toolbar');
-		this._taskbar = new Taskbar(this._taskbarContainer, {
-			orientation: ActionsOrientation.HORIZONTAL,
-
-		});
-		this._taskbar.context = this;
-		this._addExecutionPlanAction = this._instantiationService.createInstance(AddExecutionPlanAction);
-		this._zoomOutAction = new ZoomOutAction();
-		this._zoomInAction = new ZoomInAction();
-		this._zoomToFitAction = new ZoomToFitAction();
-		this._propertiesAction = this._instantiationService.createInstance(PropertiesAction);
-		this._toggleOrientationAction = new ToggleOrientation();
-		this._searchNodeAction = this._instantiationService.createInstance(SearchNodeAction, PlanIdentifier.Primary);
-		this._searchNodeActionForAddedPlan = this._instantiationService.createInstance(SearchNodeAction, PlanIdentifier.Added);
-		this._resetZoomAction = new ZoomReset();
-		this._toggleTooltipAction = new ActionBarToggleTooltip();
+		this._addExecutionPlanAction = this._register(this._instantiationService.createInstance(AddExecutionPlanAction));
+		this._zoomOutAction = this._register(new ZoomOutAction());
+		this._zoomInAction = this._register(new ZoomInAction());
+		this._zoomToFitAction = this._register(new ZoomToFitAction());
+		this._propertiesAction = this._register(this._instantiationService.createInstance(PropertiesAction));
+		this._toggleOrientationAction = this._register(new ToggleOrientation());
+		this._searchNodeAction = this._register(this._instantiationService.createInstance(SearchNodeAction, PlanIdentifier.Primary));
+		this._searchNodeActionForAddedPlan = this._register(this._instantiationService.createInstance(SearchNodeAction, PlanIdentifier.Added));
+		this._resetZoomAction = this._register(new ZoomReset());
+		this._toggleTooltipAction = this._register(new ActionBarToggleTooltip());
 		const content: ITaskbarContent[] = [
 			{ action: this._addExecutionPlanAction },
 			{ action: this._zoomInAction },
@@ -172,6 +168,12 @@ export class ExecutionPlanComparisonEditorView {
 			{ action: this._searchNodeActionForAddedPlan },
 			{ action: this._toggleTooltipAction }
 		];
+
+		this._taskbarContainer = DOM.$('.editor-toolbar');
+		this._taskbar = this._register(new Taskbar(this._taskbarContainer, {
+			orientation: ActionsOrientation.HORIZONTAL,
+		}));
+		this._taskbar.context = this;
 		this._taskbar.setContent(content);
 		this.container.appendChild(this._taskbarContainer);
 	}
@@ -192,9 +194,10 @@ export class ExecutionPlanComparisonEditorView {
 		this._placeholderContainer = DOM.$('.placeholder');
 
 		const contextMenuAction = [
-			this._instantiationService.createInstance(AddExecutionPlanAction)
+			this._register(this._instantiationService.createInstance(AddExecutionPlanAction))
 		];
-		this._placeholderContainer.oncontextmenu = (e: MouseEvent) => {
+
+		this._register(DOM.addDisposableListener(this._placeholderContainer, DOM.EventType.CONTEXT_MENU, (e: MouseEvent) => {
 			if (contextMenuAction) {
 				this._contextMenuService.showContextMenu({
 					getAnchor: () => {
@@ -207,24 +210,25 @@ export class ExecutionPlanComparisonEditorView {
 					getActionsContext: () => (self)
 				});
 			}
-		};
+		}));
 
 		this._placeholderInfoboxContainer = DOM.$('.placeholder-infobox');
 
-		this._placeholderButton = new Button(this._placeholderInfoboxContainer, { secondary: true });
-		attachButtonStyler(this._placeholderButton, this.themeService);
+		this._placeholderButton = this._register(new Button(this._placeholderInfoboxContainer, { secondary: true }));
+		this._register(attachButtonStyler(this._placeholderButton, this.themeService));
 		this._placeholderButton.label = ADD_EXECUTION_PLAN_STRING;
 		this._placeholderButton.ariaLabel = ADD_EXECUTION_PLAN_STRING;
 		this._placeholderButton.enabled = true;
-		this._placeholderButton.onDidClick(e => {
-			const addExecutionPlanAction = this._instantiationService.createInstance(AddExecutionPlanAction);
-			addExecutionPlanAction.run(self);
-		});
 
-		this._placeholderLoading = new LoadingSpinner(this._placeholderContainer, {
+		this._register(this._placeholderButton.onDidClick(e => {
+			const addExecutionPlanAction = this._register(this._instantiationService.createInstance(AddExecutionPlanAction));
+			addExecutionPlanAction.run(self);
+		}));
+
+		this._placeholderLoading = this._register(new LoadingSpinner(this._placeholderContainer, {
 			fullSize: true,
 			showText: true
-		});
+		}));
 		this._placeholderContainer.appendChild(this._placeholderInfoboxContainer);
 		this._placeholderLoading.loadingMessage = localize('epComapre.LoadingPlanMessage', "Loading execution plan");
 		this._placeholderLoading.loadingCompletedMessage = localize('epComapre.LoadingPlanCompleteMessage', "Execution plan successfully loaded");
@@ -232,9 +236,10 @@ export class ExecutionPlanComparisonEditorView {
 		this._topPlanContainer = DOM.$('.plan-container');
 		this.planSplitViewContainer.appendChild(this._topPlanContainer);
 		this._topPlanDropdownContainer = DOM.$('.dropdown-container');
-		this._topPlanDropdown = new SelectBox(['option 1', 'option2'], 'option1', this.contextViewService, this._topPlanDropdownContainer);
+		this._topPlanDropdown = this._register(new SelectBox(['option 1', 'option2'], 'option1', this.contextViewService, this._topPlanDropdownContainer));
 		this._topPlanDropdown.render(this._topPlanDropdownContainer);
-		this._topPlanDropdown.onDidSelect(async (e) => {
+
+		this._register(this._topPlanDropdown.onDidSelect(async (e) => {
 			this.activeBottomPlanDiagram?.clearSubtreePolygon();
 			this.activeTopPlanDiagram?.clearSubtreePolygon();
 
@@ -247,19 +252,21 @@ export class ExecutionPlanComparisonEditorView {
 			this._activeTopPlanIndex = e.index;
 
 			await this.getSkeletonNodes();
-		});
-		attachSelectBoxStyler(this._topPlanDropdown, this.themeService);
+		}));
+
+		this._register(attachSelectBoxStyler(this._topPlanDropdown, this.themeService));
 		this._topPlanContainer.appendChild(this._topPlanDropdownContainer);
-		this._topPlanRecommendations = this._instantiationService.createInstance(ExecutionPlanViewHeader, this._topPlanContainer, undefined);
+		this._topPlanRecommendations = this._register(this._instantiationService.createInstance(ExecutionPlanViewHeader, this._topPlanContainer, undefined));
 
 		this.initializeSash();
 
 		this._bottomPlanContainer = DOM.$('.plan-container');
 		this.planSplitViewContainer.appendChild(this._bottomPlanContainer);
 		this._bottomPlanDropdownContainer = DOM.$('.dropdown-container');
-		this._bottomPlanDropdown = new SelectBox(['option 1', 'option2'], 'option1', this.contextViewService, this._bottomPlanDropdownContainer);
+		this._bottomPlanDropdown = this._register(new SelectBox(['option 1', 'option2'], 'option1', this.contextViewService, this._bottomPlanDropdownContainer));
 		this._bottomPlanDropdown.render(this._bottomPlanDropdownContainer);
-		this._bottomPlanDropdown.onDidSelect(async (e) => {
+
+		this._register(this._bottomPlanDropdown.onDidSelect(async (e) => {
 			this.activeBottomPlanDiagram?.clearSubtreePolygon();
 			this.activeTopPlanDiagram?.clearSubtreePolygon();
 
@@ -272,24 +279,27 @@ export class ExecutionPlanComparisonEditorView {
 			this._activeBottomPlanIndex = e.index;
 
 			await this.getSkeletonNodes();
-		});
-		attachSelectBoxStyler(this._bottomPlanDropdown, this.themeService);
+		}));
+
+		this._register(attachSelectBoxStyler(this._bottomPlanDropdown, this.themeService));
 
 		this._bottomPlanContainer.appendChild(this._bottomPlanDropdownContainer);
-		this._bottomPlanRecommendations = this._instantiationService.createInstance(ExecutionPlanViewHeader, this._bottomPlanContainer, undefined);
+		this._bottomPlanRecommendations = this._register(this._instantiationService.createInstance(ExecutionPlanViewHeader, this._bottomPlanContainer, undefined));
 	}
 
 	private initializeSash(): void {
 		this._sashContainer = DOM.$('.sash-container');
 		this.planSplitViewContainer.appendChild(this._sashContainer);
-		this._verticalSash = new Sash(this._sashContainer, new VerticalSash(this), { orientation: Orientation.VERTICAL, size: 3 });
+		this._verticalSash = this._register(new Sash(this._sashContainer, new VerticalSash(this), { orientation: Orientation.VERTICAL, size: 3 }));
 
 		let originalWidth;
 		let change = 0;
-		this._verticalSash.onDidStart((e: ISashEvent) => {
+
+		this._register(this._verticalSash.onDidStart((e: ISashEvent) => {
 			originalWidth = this._topPlanContainer.offsetWidth;
-		});
-		this._verticalSash.onDidChange((evt: ISashEvent) => {
+		}));
+
+		this._register(this._verticalSash.onDidChange((evt: ISashEvent) => {
 			change = evt.startX - evt.currentX;
 			const newWidth = originalWidth - change;
 			if (newWidth < 200) {
@@ -297,14 +307,16 @@ export class ExecutionPlanComparisonEditorView {
 			}
 			this._topPlanContainer.style.minWidth = '200px';
 			this._topPlanContainer.style.flex = `0 0 ${newWidth}px`;
-		});
+		}));
 
-		this._horizontalSash = new Sash(this._sashContainer, new HorizontalSash(this), { orientation: Orientation.HORIZONTAL, size: 3 });
+		this._horizontalSash = this._register(new Sash(this._sashContainer, new HorizontalSash(this), { orientation: Orientation.HORIZONTAL, size: 3 }));
 		let startHeight;
-		this._horizontalSash.onDidStart((e: ISashEvent) => {
+
+		this._register(this._horizontalSash.onDidStart((e: ISashEvent) => {
 			startHeight = this._topPlanContainer.offsetHeight;
-		});
-		this._horizontalSash.onDidChange((evt: ISashEvent) => {
+		}));
+
+		this._register(this._horizontalSash.onDidChange((evt: ISashEvent) => {
 			change = evt.startY - evt.currentY;
 			const newHeight = startHeight - change;
 			if (newHeight < 200) {
@@ -312,12 +324,12 @@ export class ExecutionPlanComparisonEditorView {
 			}
 			this._topPlanContainer.style.minHeight = '200px';
 			this._topPlanContainer.style.flex = `0 0 ${newHeight}px`;
-		});
+		}));
 	}
 
 	private initializeProperties(): void {
 		this._propertiesContainer = DOM.$('.properties');
-		this._propertiesView = this._instantiationService.createInstance(ExecutionPlanComparisonPropertiesView, this._propertiesContainer);
+		this._propertiesView = this._register(this._instantiationService.createInstance(ExecutionPlanComparisonPropertiesView, this._propertiesContainer));
 		this._planComparisonContainer.appendChild(this._propertiesContainer);
 	}
 
@@ -343,6 +355,7 @@ export class ExecutionPlanComparisonEditorView {
 				canSelectMany: false,
 				canSelectFiles: true
 			});
+
 			if (openedFileUris?.length === 1) {
 				this._placeholderInfoboxContainer.style.display = 'none';
 				this._placeholderLoading.loading = true;
@@ -354,6 +367,7 @@ export class ExecutionPlanComparisonEditorView {
 				});
 				await this.addExecutionPlanGraph(executionPlanGraphs.graphs, 0);
 			}
+
 			this._placeholderInfoboxContainer.style.display = '';
 			this._placeholderLoading.loading = false;
 			this._placeholderInfoboxContainer.style.display = '';
@@ -367,6 +381,7 @@ export class ExecutionPlanComparisonEditorView {
 	public async addExecutionPlanGraph(executionPlanGraphs: azdata.executionPlan.ExecutionPlanGraph[], preSelectIndex: number): Promise<void> {
 		if (!this._topPlanDiagramModels) {
 			this._topPlanDiagramModels = executionPlanGraphs;
+
 			this._topPlanDropdown.setOptions(executionPlanGraphs.map((e, index) => {
 				return {
 					text: this.createQueryDropdownPrefixString(e.query, index + 1, executionPlanGraphs.length)
@@ -377,26 +392,30 @@ export class ExecutionPlanComparisonEditorView {
 				const graphContainer = DOM.$('.plan-diagram');
 				this._topPlanDiagramContainers.push(graphContainer);
 				this._topPlanContainer.appendChild(graphContainer);
-				const diagram = this._instantiationService.createInstance(AzdataGraphView, graphContainer, e);
-				diagram.onElementSelected(e => {
+
+				const diagram = this._register(this._instantiationService.createInstance(AzdataGraphView, graphContainer, e));
+				this._register(diagram.onElementSelected(e => {
 					this._propertiesView.setPrimaryElement(e);
+
 					const id = e.id.replace(`element-`, '');
 					if (this._topSimilarNode.has(id)) {
 						const similarNode = this._topSimilarNode.get(id);
 
 						if (this.activeBottomPlanDiagram) {
-							const element = this.activeBottomPlanDiagram.getElementById(`element-` + similarNode.matchingNodesId[0]);
 							if (similarNode.matchingNodesId.find(m => this.activeBottomPlanDiagram.getSelectedElement().id === `element-` + m) !== undefined) {
 								return;
 							}
 
+							const element = this.activeBottomPlanDiagram.getElementById(`element-` + similarNode.matchingNodesId[0]);
 							this.activeBottomPlanDiagram.selectElement(element);
 						}
 					}
-				});
+				}));
+
 				this.topPlanDiagrams.push(diagram);
 				graphContainer.style.display = 'none';
 			});
+
 			this._topPlanDropdown.select(preSelectIndex);
 			this._propertiesView.setPrimaryElement(executionPlanGraphs[0].root);
 			this._propertiesAction.enabled = true;
@@ -408,43 +427,51 @@ export class ExecutionPlanComparisonEditorView {
 			this._searchNodeAction.enabled = true;
 		} else {
 			this._bottomPlanDiagramModels = executionPlanGraphs;
+
 			this._bottomPlanDropdown.setOptions(executionPlanGraphs.map((e, index) => {
 				return {
 					text: this.createQueryDropdownPrefixString(e.query, index + 1, executionPlanGraphs.length)
 				};
 			}));
+
 			executionPlanGraphs.forEach((e, i) => {
 				const graphContainer = DOM.$('.plan-diagram');
 				this._bottomPlanDiagramContainers.push(graphContainer);
 				this._bottomPlanContainer.appendChild(graphContainer);
-				const diagram = this._instantiationService.createInstance(AzdataGraphView, graphContainer, e);
-				diagram.onElementSelected(e => {
+				const diagram = this._register(this._instantiationService.createInstance(AzdataGraphView, graphContainer, e));
+
+				this._register(diagram.onElementSelected(e => {
 					this._propertiesView.setSecondaryElement(e);
+
 					const id = e.id.replace(`element-`, '');
 					if (this._bottomSimilarNode.has(id)) {
 						const similarNode = this._bottomSimilarNode.get(id);
 
 						if (this.activeTopPlanDiagram) {
-							const element = this.activeTopPlanDiagram.getElementById(`element-` + similarNode.matchingNodesId[0]);
 							if (this.activeTopPlanDiagram.getSelectedElement() && similarNode.matchingNodesId.find(m => this.activeTopPlanDiagram.getSelectedElement().id === `element-` + m) !== undefined) {
 								return;
 							}
 
+							const element = this.activeTopPlanDiagram.getElementById(`element-` + similarNode.matchingNodesId[0]);
 							this.activeTopPlanDiagram.selectElement(element);
 						}
 					}
-				});
+				}));
+
 				this.bottomPlanDiagrams.push(diagram);
 				graphContainer.style.display = 'none';
 			});
+
 			this._bottomPlanDropdown.select(preSelectIndex);
 			this._propertiesView.setSecondaryElement(executionPlanGraphs[0].root);
 			this._addExecutionPlanAction.enabled = false;
 			this._searchNodeActionForAddedPlan.enabled = true;
+
 			if (!this._areTooltipsEnabled) {
 				this.activeBottomPlanDiagram.toggleTooltip();
 			}
 		}
+
 		this.refreshSplitView();
 	}
 
@@ -463,19 +490,24 @@ export class ExecutionPlanComparisonEditorView {
 				this._polygonRootsMap = new Map();
 				this._topSimilarNode = new Map();
 				this._bottomSimilarNode = new Map();
+
 				if (this._topPlanDiagramModels && this._bottomPlanDiagramModels) {
 					this._topPlanDiagramModels[this._activeTopPlanIndex].graphFile.graphFileType = 'sqlplan';
 					this._bottomPlanDiagramModels[this._activeBottomPlanIndex].graphFile.graphFileType = 'sqlplan';
 
 					const currentRequestId = generateUuid();
 					this._latestRequestUuid = currentRequestId;
+
 					const result = await this._executionPlanService.compareExecutionPlanGraph(this._topPlanDiagramModels[this._activeTopPlanIndex].graphFile,
 						this._bottomPlanDiagramModels[this._activeBottomPlanIndex].graphFile);
+
 					if (currentRequestId !== this._latestRequestUuid) {
 						return;
 					}
+
 					this.getSimilarSubtrees(result.firstComparisonResult);
 					this.getSimilarSubtrees(result.secondComparisonResult, true);
+
 					let colorIndex = 0;
 					this._polygonRootsMap.forEach((v, k) => {
 						if (this.activeTopPlanDiagram && this.activeBottomPlanDiagram) {
@@ -494,6 +526,7 @@ export class ExecutionPlanComparisonEditorView {
 		if (comparedNode.hasMatch) {
 			if (!isBottomPlan) {
 				this._topSimilarNode.set(`${comparedNode.baseNode.id}`, comparedNode);
+
 				if (!this._polygonRootsMap.has(comparedNode.groupIndex)) {
 					this._polygonRootsMap.set(comparedNode.groupIndex, {
 						topPolygon: comparedNode,
@@ -502,6 +535,7 @@ export class ExecutionPlanComparisonEditorView {
 				}
 			} else {
 				this._bottomSimilarNode.set(`${comparedNode.baseNode.id}`, comparedNode);
+
 				if (this._polygonRootsMap.get(comparedNode.groupIndex).bottomPolygon === undefined) {
 					const polygonMapEntry = this._polygonRootsMap.get(comparedNode.groupIndex);
 					polygonMapEntry.bottomPolygon = comparedNode;
@@ -779,7 +813,7 @@ class SearchNodeAction extends Action {
 				.withAdditionalProperties({ source: 'ComparisonView' })
 				.send();
 
-			let nodeSearchWidget = this._instantiationService.createInstance(NodeSearchWidget, widgetController, executionPlan);
+			let nodeSearchWidget = this._register(this._instantiationService.createInstance(NodeSearchWidget, widgetController, executionPlan));
 			widgetController.toggleWidget(nodeSearchWidget);
 		}
 	}
