@@ -729,7 +729,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				const username = results.rows[0][0].displayValue;
 				this.migrationStateModel._authenticationType = connectionProfile.authenticationType === 'SqlLogin'
 					? MigrationSourceAuthenticationType.Sql
-					: connectionProfile.authenticationType === 'Integrated'
+					: connectionProfile.authenticationType === 'Integrated' // TODO: use azdata.connection.AuthenticationType.Integrated  after next ADS release
 						? MigrationSourceAuthenticationType.Integrated
 						: undefined!;
 				this._sourceHelpText.value = constants.SQL_SOURCE_DETAILS(

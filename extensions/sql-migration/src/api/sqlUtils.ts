@@ -122,7 +122,7 @@ function getConnectionProfile(
 		azureResourceId: azureResourceId,
 		userName: userName,
 		password: password,
-		authenticationType: 'SqlLogin',
+		authenticationType: 'SqlLogin', // TODO: use azdata.connection.AuthenticationType.SqlLogin after next ADS release
 		savePassword: false,
 		groupFullName: connectId,
 		groupId: connectId,
