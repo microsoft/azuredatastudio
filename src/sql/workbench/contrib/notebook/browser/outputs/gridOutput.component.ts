@@ -488,19 +488,11 @@ export class DataResourceDataProvider implements IGridDataProvider {
 		// interface than the query execution service's saveResults handlers. Here, we take the
 		// format-specific request params (eg, includeHeaders for CSV) and merge the format-agnostic
 		// request params for the serialization request (eg, saveFormat, filePath).
-		let providerId: string;
-		switch (this.cellModel.notebookModel.currentKernelAlias) {
-			case 'Kusto':
-			case 'LogAnalytics':
-				providerId = this.cellModel.notebookModel.currentKernelAlias.toUpperCase();
-				break;
-			default:
-				providerId = mssqlProviderName;
-				break;
-		}
+		let connProviders = this.cellModel.notebookModel.getApplicableConnectionProviderIds(this.cellModel.notebookModel.selectedKernelDisplayName);
+		let provider = connProviders?.length ? connProviders[0] : mssqlProviderName;
 		let formatSpecificParams = serializer.getBasicSaveParameters(format);
 		let formatAgnosticParams = <Partial<SerializeDataParams>>{
-			serializationProviderId: providerId,
+			serializationProviderId: provider,
 			saveFormat: format,
 			filePath: filePath.fsPath,
 			columns: columns,
