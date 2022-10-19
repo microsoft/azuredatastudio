@@ -152,19 +152,20 @@ steps:
   #   displayName: 'Run Extension Unit Tests'
   #   condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
-  - bash: |
-      set -e
-      mkdir -p $(Build.ArtifactStagingDirectory)/logs/linux-x64
-      cd /tmp
-      for folder in adsuser*/
-      do
-      folder=${folder%/}
-      # Only archive directories we want for debugging purposes
-      tar -czvf $(Build.ArtifactStagingDirectory)/logs/linux-x64/$folder.tar.gz $folder/User $folder/logs
-      done
-    displayName: Archive Logs
-    continueOnError: true
-    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+  # {{SQL CARBON TODO}}
+  # - bash: |
+  #     set -e
+  #     mkdir -p $(Build.ArtifactStagingDirectory)/logs/linux-x64
+  #     cd /tmp
+  #     for folder in adsuser*/
+  #     do
+  #     folder=${folder%/}
+  #     # Only archive directories we want for debugging purposes
+  #     tar -czvf $(Build.ArtifactStagingDirectory)/logs/linux-x64/$folder.tar.gz $folder/User $folder/logs
+  #     done
+  #   displayName: Archive Logs
+  #   continueOnError: true
+  #   condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
   - script: |
       set -e
@@ -222,13 +223,14 @@ steps:
       ./build/azure-pipelines/linux/createDrop.sh
     displayName: Create Drop
 
-  - script: |
-      set -e
-      shopt -s globstar
-      mkdir -p $(Build.ArtifactStagingDirectory)/test-results/coverage
-      cp --parents -r $(Build.SourcesDirectory)/extensions/*/coverage/** $(Build.ArtifactStagingDirectory)/test-results/coverage
-    displayName: Copy Coverage
-    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+  # {{SQL CARBON TODO}}
+  # - script: |
+  #     set -e
+  #     shopt -s globstar
+  #     mkdir -p $(Build.ArtifactStagingDirectory)/test-results/coverage
+  #     cp --parents -r $(Build.SourcesDirectory)/extensions/*/coverage/** $(Build.ArtifactStagingDirectory)/test-results/coverage
+  #   displayName: Copy Coverage
+  #   condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
   - task: PublishTestResults@2
     displayName: 'Publish Test Results test-results.xml'
