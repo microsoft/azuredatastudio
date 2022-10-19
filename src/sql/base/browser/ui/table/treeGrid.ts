@@ -14,6 +14,7 @@ import { AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { createTreeGridExpandableColumnFormatter, textFormatter } from 'sql/base/browser/ui/table/formatters';
+import { escape } from 'sql/base/common/strings';
 
 function defaultTreeGridFilter<T extends Slick.SlickData>(data: T[], columns: FilterableColumn<T>[], cellValueGetter: CellValueGetter = defaultCellValueGetter): T[] {
 	let filteredData = defaultFilter(data, columns, cellValueGetter);
@@ -194,7 +195,7 @@ export class TreeGrid<T extends Slick.SlickData> extends Table<T> {
 		}
 
 		if (content.length > 1) {
-			this.styleElement.innerHTML += '\n' + content.join('\n');
+			this.styleElement.innerHTML += escape('\n' + content.join('\n'));
 		}
 	}
 }
