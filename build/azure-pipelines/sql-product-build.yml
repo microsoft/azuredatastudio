@@ -51,6 +51,7 @@ stages:
           # Do not run tests for arm64 build
           RUN_TESTS: false
           RUN_SMOKE_TESTS: false
+        condition: and(succeeded(), eq(variables['VSCODE_BUILD_MACOS_ARM64'], 'true'))
         steps:
         - template: darwin/sql-product-build-darwin.yml
         timeoutInMinutes: 90
@@ -58,7 +59,7 @@ stages:
       - job: macOS_Signing_ARM64
         variables:
           VSCODE_ARCH: arm64
-        condition: and(succeeded(), eq(variables['signed'], true))
+        condition: and(succeeded(), eq(variables['signed'], true), eq(variables['VSCODE_BUILD_MACOS_ARM64'], 'true'))
         dependsOn:
         - macOS_ARM64
         steps:
@@ -72,6 +73,7 @@ stages:
           # Do not run tests for universal build
           RUN_TESTS: false
           RUN_SMOKE_TESTS: false
+        condition: and(succeeded(), eq(variables['VSCODE_BUILD_MACOS_ARM64'], 'true'))
         dependsOn:
         - macOS
         - macOS_ARM64
@@ -82,7 +84,7 @@ stages:
       - job: macOS_Signing_Universal
         variables:
           VSCODE_ARCH: universal
-        condition: and(succeeded(), eq(variables['signed'], true))
+        condition: and(succeeded(), eq(variables['signed'], true), eq(variables['VSCODE_BUILD_MACOS_ARM64'], 'true'))
         dependsOn:
         - macOS_Universal
         steps:
