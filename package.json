@@ -1,7 +1,7 @@
 {
   "name": "azuredatastudio",
   "version": "1.40.0",
-  "distro": "dbd465b085bab33005a12c52e2c04fc7fea29923",
+  "distro": "ab25a6d17792123a8c68700923ccc0a5cc3f4f4e",
   "author": {
     "name": "Microsoft Corporation"
   },
@@ -56,7 +56,8 @@
     "hygiene": "node --max_old_space_size=4095 ./node_modules/gulp/bin/gulp.js hygiene",
     "core-ci": "node --max_old_space_size=4095 ./node_modules/gulp/bin/gulp.js core-ci",
     "extensions-ci": "node --max_old_space_size=4095 ./node_modules/gulp/bin/gulp.js extensions-ci",
-    "sqllint": "node --max_old_space_size=4095 ./node_modules/eslint/bin/eslint.js --no-eslintrc -c .eslintrc.sql.ts.json --rulesdir ./build/lib/eslint --ext .ts ./src/sql"
+    "sqllint": "node --max_old_space_size=4095 ./node_modules/eslint/bin/eslint.js --no-eslintrc -c .eslintrc.sql.ts.json --rulesdir ./build/lib/eslint --ext .ts ./src/sql",
+    "extensions-lint": "node --max_old_space_size=4095 ./node_modules/eslint/bin/eslint.js --rulesdir ./build/lib/eslint --ext .ts ./extensions"
   },
   "dependencies": {
     "@angular/animations": "~4.1.3",

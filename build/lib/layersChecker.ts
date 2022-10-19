@@ -106,7 +106,7 @@ const RULES: IRule[] = [
 
 	// Common: vs/platform/window/common/window.ts
 	{
-		target: '**/vs/platform/windows/common/windows.ts',
+		target: '**/{vs,sql}/platform/window/common/window.ts',
 		allowedTypes: CORE_TYPES,
 		disallowedTypes: [/* Ignore native types that are defined from here */],
 		disallowedDefinitions: [

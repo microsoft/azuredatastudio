@@ -40,7 +40,7 @@ import { formatDocumentWithSelectedProvider, FormattingMode } from 'vs/editor/co
 import { HighlightExpensiveOperationWidget } from 'sql/workbench/contrib/executionPlan/browser/widgets/highlightExpensiveNodeWidget';
 import { Disposable } from 'vs/base/common/lifecycle';
 
-export class ExecutionPlanView implements IHorizontalSashLayoutProvider {
+export class ExecutionPlanView extends Disposable implements IHorizontalSashLayoutProvider {
 
 	// Underlying execution plan displayed in the view
 	private _model?: azdata.executionPlan.ExecutionPlanGraph;

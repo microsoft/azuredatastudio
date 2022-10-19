@@ -124,7 +124,7 @@ suite('MainThreadDocumentsAndEditors', () => {
 				}
 			},
 			new TestPathService(),
-			new TestInstantiationService(),			
+			new TestInstantiationService(),
 			<INotebookService>{ // {{SQL CARBON EDIT}}
 				getSupportedFileExtensions: () => ['.ipynb']
 			}

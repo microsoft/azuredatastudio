@@ -151,7 +151,7 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 		return false;
 	}
 
-	triggerQueryChange(_options?: { preserveFocus?: boolean, triggeredOnType?: boolean, delay?: number }) {
+	triggerQueryChange(_options?: { preserveFocus?: boolean; triggeredOnType?: boolean; delay?: number }) {
 		const options = { preserveFocus: true, triggeredOnType: false, delay: 0, ..._options };
 
 		if (!this.pauseSearching) {
@@ -402,8 +402,8 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 	}
 
 	protected override createView(viewDescriptor: IViewDescriptor, options: IViewletViewOptions): ViewPane {
-		// {{SQL CARBON TODO}} - remove options parameter?
-		let viewletPanel = this.instantiationService.createInstance(viewDescriptor.ctorDescriptor.ctor) as ViewPane;
+		// {{SQL CARBON TODO}} - don't cast to never
+		let viewletPanel = this.instantiationService.createInstance(viewDescriptor.ctorDescriptor.ctor, <never>options) as ViewPane;
 		this._register(viewletPanel);
 		return viewletPanel;
 	}

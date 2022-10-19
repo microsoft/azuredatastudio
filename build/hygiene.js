@@ -154,11 +154,11 @@ function hygiene(some, linting = true) {
 		.pipe(productJsonFilter)
 		.pipe(process.env['BUILD_SOURCEVERSION'] ? es.through() : productJson)
 		.pipe(productJsonFilter.restore)
+		.pipe(filter(indentationFilter))
+		.pipe(indentation)
 		.pipe(unicodeFilterStream)
 		.pipe(unicode)
 		.pipe(unicodeFilterStream.restore)
-		.pipe(filter(indentationFilter))
-		.pipe(indentation)
 		.pipe(filter(copyrightFilter))
 		.pipe(copyrights);
 

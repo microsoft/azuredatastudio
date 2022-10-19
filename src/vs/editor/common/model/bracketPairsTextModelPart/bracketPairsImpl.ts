@@ -15,7 +15,7 @@ import { IModelContentChangedEvent, IModelLanguageChangedEvent, IModelOptionsCha
 import { ILanguageConfigurationService } from 'vs/editor/common/languages/languageConfigurationRegistry';
 import { ignoreBracketsInToken } from 'vs/editor/common/languages/supports';
 import { RichEditBrackets, BracketsUtils, RichEditBracket } from 'vs/editor/common/languages/supports/richEditBrackets';
-import { compareBy, findLast, findLastMaxBy } from 'vs/base/common/arrays';
+import { findLast } from 'vs/base/common/arrays'; // {{SQL CARBON EDIT}} - remove unused
 import { LanguageBracketsConfiguration } from 'vs/editor/common/languages/supports/languageBracketsConfiguration';
 
 export class BracketPairsTextModelPart extends Disposable implements IBracketPairsTextModelPart {
@@ -158,29 +158,31 @@ export class BracketPairsTextModelPart extends Disposable implements IBracketPai
 	}
 
 	public matchBracket(position: IPosition, maxDuration?: number): [Range, Range] | null {
-		if (this.canBuildAST) {
-			const bracketPair = findLastMaxBy(
-				this.getBracketPairsInRange(
-					Range.fromPositions(position, position)
-				).filter(
-					(item) =>
-						item.closingBracketRange !== undefined &&
-						(item.openingBracketRange.containsPosition(position) ||
-							item.closingBracketRange.containsPosition(position))
-				),
-				compareBy(
-					(item) =>
-						item.openingBracketRange.containsPosition(position)
-							? item.openingBracketRange
-							: item.closingBracketRange,
-					Range.compareRangesUsingStarts
-				)
-			);
-			if (bracketPair) {
-				return [bracketPair.openingBracketRange, bracketPair.closingBracketRange!];
-			}
-			return null;
-		} else {
+		// {{SQL CARBON TODO}} - disable new bracket matching since it is not compatible with Notebook implementation
+		// if (this.canBuildAST) {
+		// 	const bracketPair = findLastMaxBy(
+		// 		this.getBracketPairsInRange(
+		// 			Range.fromPositions(position, position)
+		// 		).filter(
+		// 			(item) =>
+		// 				item.closingBracketRange !== undefined &&
+		// 				(item.openingBracketRange.containsPosition(position) ||
+		// 					item.closingBracketRange.containsPosition(position))
+		// 		),
+		// 		compareBy(
+		// 			(item) =>
+		// 				item.openingBracketRange.containsPosition(position)
+		// 					? item.openingBracketRange
+		// 					: item.closingBracketRange,
+		// 			Range.compareRangesUsingStarts
+		// 		)
+		// 	);
+		// 	if (bracketPair) {
+		// 		return [bracketPair.openingBracketRange, bracketPair.closingBracketRange!];
+		// 	}
+		// 	return null;
+		// } else
+		{
 			// Fallback to old bracket matching code:
 			const continueSearchPredicate = createTimeBasedContinueBracketSearchPredicate(maxDuration);
 			return this._matchBracket(this.textModel.validatePosition(position), continueSearchPredicate);

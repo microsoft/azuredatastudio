@@ -638,7 +638,7 @@ suite('TextModelWithTokens regression tests', () => {
 		disposables.dispose();
 	});
 
-	test('issue #11856: Bracket matching does not work as expected if the opening brace symbol is contained in the closing brace symbol', () => {
+	test.skip('issue #11856: Bracket matching does not work as expected if the opening brace symbol is contained in the closing brace symbol', () => {
 
 		const disposables = new DisposableStore();
 		const model = createTextModelWithBrackets(

@@ -13,7 +13,7 @@ import * as fs from 'fs';
 
 import { Workspace, toWorkspaceFolder, IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { ConfigurationResolverService } from 'vs/workbench/services/configurationResolver/browser/configurationResolverService';
-import { TestFileService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { TestFileService, TestPathService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { TestContextService } from 'vs/workbench/test/common/workbenchTestServices';
 import { URI } from 'vs/base/common/uri';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
@@ -62,7 +62,7 @@ suite('Insights Utils tests', function () {
 			new TestContextService(),
 			undefined,
 			undefined,
-			undefined,
+			new TestPathService(),
 			undefined);
 
 		const fileService = new class extends TestFileService {
@@ -96,7 +96,7 @@ suite('Insights Utils tests', function () {
 			contextService,
 			undefined,
 			undefined,
-			undefined,
+			new TestPathService(),
 			undefined);
 
 		const fileService = new class extends TestFileService {
@@ -130,7 +130,7 @@ suite('Insights Utils tests', function () {
 			contextService,
 			undefined,
 			undefined,
-			undefined,
+			new TestPathService(),
 			undefined);
 
 		const fileService = new class extends TestFileService {
@@ -166,7 +166,7 @@ suite('Insights Utils tests', function () {
 			contextService,
 			undefined,
 			undefined,
-			undefined,
+			new TestPathService(),
 			undefined);
 
 		const fileService = new class extends TestFileService {
@@ -203,7 +203,7 @@ suite('Insights Utils tests', function () {
 			undefined,
 			undefined,
 			undefined,
-			undefined,
+			new TestPathService(),
 			undefined);
 
 		const fileService = new class extends TestFileService {
@@ -235,7 +235,7 @@ suite('Insights Utils tests', function () {
 			undefined,
 			undefined,
 			undefined,
-			undefined,
+			new TestPathService(),
 			undefined);
 
 		const fileService = new class extends TestFileService {
@@ -262,7 +262,7 @@ suite('Insights Utils tests', function () {
 			undefined,
 			undefined,
 			undefined,
-			undefined,
+			new TestPathService(),
 			undefined);
 
 		const fileService = new class extends TestFileService {

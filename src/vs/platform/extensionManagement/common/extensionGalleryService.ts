@@ -665,20 +665,15 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 	}
 
 	async getCompatibleExtension(extension: IGalleryExtension, includePreRelease: boolean, targetPlatform: TargetPlatform): Promise<IGalleryExtension | null> {
-		if (isNotWebExtensionInWebTargetPlatform(extension.allTargetPlatforms, targetPlatform)) {
-			return null;
-		}
-		if (await this.isExtensionCompatible(extension, includePreRelease, targetPlatform)) {
-			return extension;
+		// {{SQL CARBON EDIT}}
+		// Change to original version: removed the extension version validation
+		// Reason: This method is used to find the matching gallery extension for the locally installed extension,
+		//         since we only have one entry for each extension (not in-scope to enable mutiple version support for now),
+		//         if the new version of extension is not compatible, the extension won't be displayed properly.
+		if (extension) {
+			return Promise.resolve(extension);
 		}
 		return null;
-		// {{SQL CARBON EDIT}} - disable gallery query
-		// const query = new Query()
-		// 	.withFlags(Flags.IncludeVersions)
-		// 	.withPage(1, 1)
-		// 	.withFilter(FilterType.ExtensionId, extension.identifier.uuid);
-		// const { extensions } = await this.queryGalleryExtensions(query, { targetPlatform, compatible: true, includePreRelease }, CancellationToken.None);
-		// return extensions[0] || null;
 	}
 
 	async isExtensionCompatible(extension: IGalleryExtension, includePreRelease: boolean, targetPlatform: TargetPlatform): Promise<boolean> {
@@ -929,7 +924,7 @@ abstract class AbstractExtensionGalleryService implements IExtensionGalleryServi
 	 * The result of querying the gallery returns all the extensions because it's only reading a static file.
 	 * So this method should apply all the filters and return the actual result
 	 */
-	private createQueryResult(query: Query, galleryExtensions: IRawGalleryExtension[]): { galleryExtensions: IRawGalleryExtension[], total: number; } {
+	private createQueryResult(query: Query, galleryExtensions: IRawGalleryExtension[]): { galleryExtensions: IRawGalleryExtension[]; total: number } {
 
 		// Filtering
 		let filteredExtensions = galleryExtensions;

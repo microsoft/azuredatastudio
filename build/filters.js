@@ -140,6 +140,7 @@ module.exports.indentationFilter = [
 	'!extensions/mssql/sqltoolsservice/**',
 	'!extensions/import/flatfileimportservice/**',
 	'!extensions/admin-tool-ext-win/ssmsmin/**',
+	'!extensions/admin-tool-ext-win/license/**',
 	'!extensions/resource-deployment/notebooks/**',
 	'!extensions/mssql/notebooks/**',
 	'!extensions/azurehybridtoolkit/notebooks/**',

@@ -391,9 +391,11 @@ export abstract class AbstractExtensionManagementService extends Disposable impl
 			throw new ExtensionManagementError(`Missing manifest for extension ${extension.identifier.id}`, ExtensionManagementErrorCode.Invalid);
 		}
 
+		/* {{SQL CARBON EDIT}} Remove this check as we don't want to enforce the manifest versions matching since those are often coming directly from the main branch
 		if (manifest.version !== compatibleExtension.version) {
 			throw new ExtensionManagementError(`Cannot install '${extension.identifier.id}' extension because of version mismatch in Marketplace`, ExtensionManagementErrorCode.Invalid);
 		}
+		*/
 
 		return { extension: compatibleExtension, manifest };
 	}
