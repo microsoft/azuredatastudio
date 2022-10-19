@@ -59,7 +59,7 @@ stages:
       - job: macOS_Signing_ARM64
         variables:
           VSCODE_ARCH: arm64
-        condition: and(succeeded(), eq(variables['signed'], true), eq(variables['VSCODE_BUILD_MACOS_ARM64'], 'true'))
+        condition: and(succeeded(), eq(variables['signed'], true))
         dependsOn:
         - macOS_ARM64
         steps:
