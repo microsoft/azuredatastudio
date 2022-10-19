@@ -17,7 +17,10 @@ const saveAsNotSupported = localize('saveAsNotSupported', "Saving results into d
 const defaultBatchSize = 500;
 
 export interface SerializeDataParams {
-	serializationProviderId: string; // The serializer to use for this request. Typically this is the ID of the connection provider used to run the query.
+	/**
+	 *  The serializer to use for this request. Typically this is the ID of the connection provider used to run the query.
+	 */
+	serializationProviderId: string;
 	/**
 	 * 'csv', 'json', 'excel', 'xml'
 	 */
