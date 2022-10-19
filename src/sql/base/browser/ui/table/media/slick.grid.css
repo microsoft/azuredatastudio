@@ -198,7 +198,3 @@
 	display: inline-block;
 	flex: 1 1 auto;
 }
-
-.slick-cell.selected .codicon.toggle {
-	color: #e0e0e0;
-}

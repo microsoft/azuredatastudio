@@ -5,7 +5,7 @@
 
 import 'vs/css!./media/slick.grid';
 
-import { FilterableColumn, ITableConfiguration } from 'sql/base/browser/ui/table/interfaces';
+import { FilterableColumn, ITableConfiguration, ITableStyles } from 'sql/base/browser/ui/table/interfaces';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 import { generateUuid } from 'vs/base/common/uuid';
@@ -178,6 +178,23 @@ export class TreeGrid<T extends Slick.SlickData> extends Table<T> {
 				}
 				dataRow.parentGuid = parentRow._guid;
 			}
+		}
+	}
+
+	override style(styles: ITableStyles): void {
+		super.style(styles);
+		const content: string[] = [];
+
+		if (styles.listFocusAndSelectionForeground) {
+			content.push(`.monaco-table.${this.idPrefix}.focused .slick-row .selected.active .codicon.toggle { color: ${styles.listFocusAndSelectionForeground}; }`);
+		}
+
+		if (styles.listInactiveSelectionForeground) {
+			content.push(`.monaco-table.${this.idPrefix} .slick-row .selected.active .codicon.toggle { color: ${styles.listInactiveSelectionForeground}; }`);
+		}
+
+		if (content.length > 1) {
+			this.styleElement.innerHTML += '\n' + content.join('\n');
 		}
 	}
 }
