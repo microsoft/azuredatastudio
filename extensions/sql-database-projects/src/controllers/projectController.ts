@@ -1510,7 +1510,7 @@ export class ProjectsController {
 		if (azdataApi) {
 			await (service as mssql.IDacFxService).createProjectFromDatabase(model.database, model.filePath, model.projName, model.version, model.connectionUri, model.extractTarget as mssql.ExtractTarget, azdataApi.TaskExecutionMode.execute, model.includePermissions);
 		} else {
-			await (service as mssqlVscode.IDacFxService).createProjectFromDatabase(model.database, model.filePath, model.projName, model.version, model.connectionUri, model.extractTarget as mssqlVscode.ExtractTarget, TaskExecutionMode.execute as unknown as mssqlVscode.TaskExecutionMode);
+			await (service as mssqlVscode.IDacFxService).createProjectFromDatabase(model.database, model.filePath, model.projName, model.version, model.connectionUri, model.extractTarget as mssqlVscode.ExtractTarget, TaskExecutionMode.execute as unknown as mssqlVscode.TaskExecutionMode, model.includePermissions);
 		}
 		// TODO: Check for success; throw error
 	}
