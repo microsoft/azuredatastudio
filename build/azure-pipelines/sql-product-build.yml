@@ -73,7 +73,6 @@ stages:
           # Do not run tests for universal build
           RUN_TESTS: false
           RUN_SMOKE_TESTS: false
-        condition: and(succeeded(), eq(variables['VSCODE_BUILD_MACOS_ARM64'], 'true'))
         dependsOn:
         - macOS
         - macOS_ARM64
@@ -84,7 +83,7 @@ stages:
       - job: macOS_Signing_Universal
         variables:
           VSCODE_ARCH: universal
-        condition: and(succeeded(), eq(variables['signed'], true), eq(variables['VSCODE_BUILD_MACOS_ARM64'], 'true'))
+        condition: and(succeeded(), eq(variables['signed'], true))
         dependsOn:
         - macOS_Universal
         steps:
