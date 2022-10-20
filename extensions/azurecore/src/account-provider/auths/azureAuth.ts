@@ -688,7 +688,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		}
 
 		const name = tokenClaims.name ?? tokenClaims.email ?? tokenClaims.unique_name ?? tokenClaims.preferred_username;
-		const email = tokenClaims.email ?? tokenClaims.unique_name;
+		const email = tokenClaims.email ?? tokenClaims.unique_name ?? tokenClaims.preferred_username;
 
 		let displayName = name;
 		if (email) {
