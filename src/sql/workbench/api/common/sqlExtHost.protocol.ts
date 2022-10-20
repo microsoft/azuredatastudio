@@ -3,12 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import {
-	createMainContextProxyIdentifier as createMainId,
-	createExtHostContextProxyIdentifier as createExtId
-} from 'vs/workbench/services/extensions/common/proxyIdentifier';
 import { URI, UriComponents } from 'vs/base/common/uri';
-
 import { IDisposable } from 'vs/base/common/lifecycle';
 
 import type * as azdata from 'azdata';
@@ -28,9 +23,9 @@ import {
 import { IUndoStopOptions } from 'vs/workbench/api/common/extHost.protocol';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { EditorViewColumn } from 'vs/workbench/api/common/shared/editor';
-import { TreeDataTransferDTO } from 'vs/workbench/api/common/shared/treeDataTransfer';
 import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 import { IQueryEvent } from 'sql/workbench/services/query/common/queryModel';
+import { DataTransferDTO } from 'vs/workbench/api/common/shared/dataTransfer';
 
 export abstract class ExtHostAzureBlobShape {
 	public $createSas(connectionUri: string, blobContainerUri: string, blobStorageKey: string, storageAccountName: string, expirationDate: string): Thenable<mssql.CreateSasResponse> { throw ni(); }
@@ -721,56 +716,6 @@ export interface MainThreadCredentialManagementShape extends IDisposable {
 
 function ni() { return new Error('Not implemented'); }
 
-// --- proxy identifiers
-
-export const SqlMainContext = {
-	// SQL entries
-	MainThreadAccountManagement: createMainId<MainThreadAccountManagementShape>('MainThreadAccountManagement'),
-	MainThreadAzureAccount: createMainId<MainThreadAzureAccountShape>('MainThreadAzureAccount'),
-	MainThreadConnectionManagement: createMainId<MainThreadConnectionManagementShape>('MainThreadConnectionManagement'),
-	MainThreadCredentialManagement: createMainId<MainThreadCredentialManagementShape>('MainThreadCredentialManagement'),
-	MainThreadDataProtocol: createMainId<MainThreadDataProtocolShape>('MainThreadDataProtocol'),
-	MainThreadObjectExplorer: createMainId<MainThreadObjectExplorerShape>('MainThreadObjectExplorer'),
-	MainThreadBackgroundTaskManagement: createMainId<MainThreadBackgroundTaskManagementShape>('MainThreadBackgroundTaskManagement'),
-	MainThreadResourceProvider: createMainId<MainThreadResourceProviderShape>('MainThreadResourceProvider'),
-	MainThreadModalDialog: createMainId<MainThreadModalDialogShape>('MainThreadModalDialog'),
-	MainThreadTasks: createMainId<MainThreadTasksShape>('MainThreadTasks'),
-	MainThreadDashboardWebview: createMainId<MainThreadDashboardWebviewShape>('MainThreadDashboardWebview'),
-	MainThreadModelView: createMainId<MainThreadModelViewShape>('MainThreadModelView'),
-	MainThreadDashboard: createMainId<MainThreadDashboardShape>('MainThreadDashboard'),
-	MainThreadModelViewDialog: createMainId<MainThreadModelViewDialogShape>('MainThreadModelViewDialog'),
-	MainThreadQueryEditor: createMainId<MainThreadQueryEditorShape>('MainThreadQueryEditor'),
-	MainThreadNotebook: createMainId<MainThreadNotebookShape>('MainThreadNotebook'),
-	MainThreadNotebookDocumentsAndEditors: createMainId<MainThreadNotebookDocumentsAndEditorsShape>('MainThreadNotebookDocumentsAndEditors'),
-	MainThreadExtensionManagement: createMainId<MainThreadExtensionManagementShape>('MainThreadExtensionManagement'),
-	MainThreadWorkspace: createMainId<MainThreadWorkspaceShape>('MainThreadWorkspace'),
-	MainThreadAzureBlob: createMainId<MainThreadAzureBlobShape>('MainThreadAzureBlob'),
-};
-
-export const SqlExtHostContext = {
-	ExtHostAccountManagement: createExtId<ExtHostAccountManagementShape>('ExtHostAccountManagement'),
-	ExtHostAzureAccount: createExtId<ExtHostAzureAccountShape>('ExtHostAzureAccount'),
-	ExtHostConnectionManagement: createExtId<ExtHostConnectionManagementShape>('ExtHostConnectionManagement'),
-	ExtHostCredentialManagement: createExtId<ExtHostCredentialManagementShape>('ExtHostCredentialManagement'),
-	ExtHostDataProtocol: createExtId<ExtHostDataProtocolShape>('ExtHostDataProtocol'),
-	ExtHostObjectExplorer: createExtId<ExtHostObjectExplorerShape>('ExtHostObjectExplorer'),
-	ExtHostResourceProvider: createExtId<ExtHostResourceProviderShape>('ExtHostResourceProvider'),
-	ExtHostModalDialogs: createExtId<ExtHostModalDialogsShape>('ExtHostModalDialogs'),
-	ExtHostTasks: createExtId<ExtHostTasksShape>('ExtHostTasks'),
-	ExtHostBackgroundTaskManagement: createExtId<ExtHostBackgroundTaskManagementShape>('ExtHostBackgroundTaskManagement'),
-	ExtHostDashboardWebviews: createExtId<ExtHostDashboardWebviewsShape>('ExtHostDashboardWebviews'),
-	ExtHostModelView: createExtId<ExtHostModelViewShape>('ExtHostModelView'),
-	ExtHostModelViewTreeViews: createExtId<ExtHostModelViewTreeViewsShape>('ExtHostModelViewTreeViews'),
-	ExtHostDashboard: createExtId<ExtHostDashboardShape>('ExtHostDashboard'),
-	ExtHostModelViewDialog: createExtId<ExtHostModelViewDialogShape>('ExtHostModelViewDialog'),
-	ExtHostQueryEditor: createExtId<ExtHostQueryEditorShape>('ExtHostQueryEditor'),
-	ExtHostNotebook: createExtId<ExtHostNotebookShape>('ExtHostNotebook'),
-	ExtHostNotebookDocumentsAndEditors: createExtId<ExtHostNotebookDocumentsAndEditorsShape>('ExtHostNotebookDocumentsAndEditors'),
-	ExtHostExtensionManagement: createExtId<ExtHostExtensionManagementShape>('ExtHostExtensionManagement'),
-	ExtHostWorkspace: createExtId<ExtHostWorkspaceShape>('ExtHostWorkspace'),
-	ExtHostAzureBlob: createExtId<ExtHostAzureBlobShape>('ExtHostAzureBlob')
-};
-
 export interface MainThreadDashboardShape extends IDisposable {
 
 }
@@ -827,7 +772,9 @@ export interface ExtHostModelViewShape {
 
 export interface ExtHostModelViewTreeViewsShape {
 	$getChildren(treeViewId: string, treeItemHandle?: string): Promise<ITreeComponentItem[]>;
-	$onDrop(treeViewId: string, treeDataTransfer: TreeDataTransferDTO, newParentTreeItemHandle: string): Promise<void>;
+	$handleDrop(destinationViewId: string, treeDataTransfer: DataTransferDTO, targetHandle: string | undefined, token: vscode.CancellationToken, operationUuid?: string, sourceViewId?: string, sourceTreeItemHandles?: string[]): Promise<void>;
+	$handleDrag(sourceViewId: string, sourceTreeItemHandles: string[], operationUuid: string, token: vscode.CancellationToken): Promise<DataTransferDTO | undefined>;
+
 	$createTreeView(handle: number, componentId: string, options: { treeDataProvider: vscode.TreeDataProvider<any> }, extension: IExtensionDescription): azdata.TreeComponentView<any>;
 	$onNodeCheckedChanged(treeViewId: string, treeItemHandle?: string, checked?: boolean): void;
 	$onNodeSelected(treeViewId: string, nodes: string[]): void;

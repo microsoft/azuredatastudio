@@ -12,7 +12,6 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IDataResource } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { getEolString, shouldIncludeHeaders, shouldRemoveNewLines } from 'sql/workbench/services/query/common/queryRunner';
 import { ResultSetSummary, ResultSetSubset, ICellValue } from 'sql/workbench/services/query/common/query';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -48,6 +47,7 @@ import { getChartMaxRowCount, notifyMaxRowCountExceeded } from 'sql/workbench/co
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 @Component({

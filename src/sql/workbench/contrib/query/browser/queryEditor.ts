@@ -32,7 +32,6 @@ import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/file
 import { URI } from 'vs/base/common/uri';
 import { IFileService, FileChangesEvent } from 'vs/platform/files/common/files';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { IModeService } from 'vs/editor/common/services/modeService';
 import { QueryEditorInput, IQueryEditorStateChange } from 'sql/workbench/common/editor/query/queryEditorInput';
 import { QueryResultsEditor } from 'sql/workbench/contrib/query/browser/queryResultsEditor';
 import * as queryContext from 'sql/workbench/contrib/query/common/queryContext';
@@ -42,11 +41,12 @@ import { IRange } from 'vs/editor/common/core/range';
 import { UntitledQueryEditorInput } from 'sql/base/query/browser/untitledQueryEditorInput';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IEditorOptions } from 'vs/platform/editor/common/editor';
-import { ITextResourceConfigurationService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionOptionSpecialType } from 'sql/platform/connection/common/interfaces';
 import { ICodeEditorViewState } from 'vs/editor/common/editorCommon';
 import { CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES } from 'sql/workbench/common/constants';
+import { ITextResourceConfigurationService } from 'vs/editor/common/services/textResourceConfiguration';
+import { ILanguageService } from 'vs/editor/common/languages/language';
 
 const QUERY_EDITOR_VIEW_STATE_PREFERENCE_KEY = 'queryEditorViewState';
 
@@ -112,7 +112,7 @@ export class QueryEditor extends EditorPane {
 		@IEditorService private readonly editorService: IEditorService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
-		@IModeService private readonly modeService: IModeService,
+		@ILanguageService private readonly modeService: ILanguageService,
 		@ITextResourceConfigurationService textResourceConfigurationService: ITextResourceConfigurationService,
 		@ICapabilitiesService private readonly capabilitiesService: ICapabilitiesService
 	) {
@@ -132,7 +132,8 @@ export class QueryEditor extends EditorPane {
 			return;
 		}
 		const changes = [];
-		for (const [, change] of deleted) {
+		for (let i = 0; i < deleted.length; ++i) {
+			let change = deleted[i];
 			changes.push(change);
 		}
 		if (changes.length) {

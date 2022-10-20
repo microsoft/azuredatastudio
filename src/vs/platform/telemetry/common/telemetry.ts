@@ -5,13 +5,13 @@
 
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { ClassifiedEvent, GDPRClassification, StrictPropertyCheck } from 'vs/platform/telemetry/common/gdprTypings';
+import { IObservableValue } from 'vs/base/common/observableValue';
 
 export const ITelemetryService = createDecorator<ITelemetryService>('telemetryService');
 
 export interface ITelemetryInfo {
 	sessionId: string;
 	machineId: string;
-	instanceId: string;
 	firstSessionDate: string;
 	msftInternal?: boolean;
 }
@@ -47,7 +47,7 @@ export interface ITelemetryService {
 
 	setExperimentProperty(name: string, value: string): void;
 
-	telemetryLevel: TelemetryLevel;
+	readonly telemetryLevel: IObservableValue<TelemetryLevel>;
 }
 
 export interface ITelemetryEndpoint {
@@ -66,7 +66,6 @@ export interface ICustomEndpointTelemetryService {
 }
 
 // Keys
-export const instanceStorageKey = 'telemetry.instanceId';
 export const currentSessionDateStorageKey = 'telemetry.currentSessionDate';
 export const firstSessionDateStorageKey = 'telemetry.firstSessionDate';
 export const lastSessionDateStorageKey = 'telemetry.lastSessionDate';

@@ -1,6 +1,7 @@
 {
 	"parserOptions": {
-		"project": "./extensions/kusto/tsconfig.json"
+		"project": "./extensions/kusto/tsconfig.json",
+		"createDefaultProgram": true
 	},
 	"rules": {
 		// Disabled until the issues can be fixed

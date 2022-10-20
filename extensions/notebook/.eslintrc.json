@@ -1,6 +1,7 @@
 {
 	"parserOptions": {
-		"project": "./extensions/notebook/tsconfig.json"
+		"project": "./extensions/notebook/tsconfig.json",
+		"createDefaultProgram": true
 	},
 	"rules": {
 		"@typescript-eslint/no-floating-promises": [

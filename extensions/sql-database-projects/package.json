@@ -496,6 +496,7 @@
     "@microsoft/vscodetestcover": "^1.2.1",
     "@types/fs-extra": "^5.0.0",
     "@types/mocha": "^7.0.2",
+    "@types/semver": "^7.3.1",
     "@types/request": "^2.48.8",
     "@types/sinon": "^9.0.4",
     "@types/which": "^2.0.1",

@@ -194,7 +194,7 @@ export class ChartDataAction extends Action {
 					[TelemetryKeys.TelemetryPropertyName.ChartMaxRowCountExceeded]: maxRowCountExceeded
 				})
 			.send();
-		const activeEditor = this.editorService.activeEditorPane as QueryEditor;
+		const activeEditor = <QueryEditor><unknown>this.editorService.activeEditorPane;
 		activeEditor.chart({ batchId: context.batchId, resultId: context.resultId });
 	}
 }
