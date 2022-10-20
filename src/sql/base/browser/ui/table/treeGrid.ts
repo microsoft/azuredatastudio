@@ -194,8 +194,8 @@ export class TreeGrid<T extends Slick.SlickData> extends Table<T> {
 			content.push(`.monaco-table.${this.idPrefix} .slick-row .selected.active .codicon.toggle { color: ${styles.listInactiveSelectionForeground}; }`);
 		}
 
-		if (content.length > 1) {
-			this.styleElement.innerHTML += escape('\n' + content.join('\n'));
+		if (content.length > 0) {
+			this.styleElement.innerText += escape('\n' + content.join('\n'));
 		}
 	}
 }
