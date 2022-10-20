@@ -352,6 +352,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		// construct request
 		const tokenRequest = {
 			account: account,
+			authority: `https://login.microsoftonline.com/${this.organizationsTenant.id}`,
 			scopes: newScope
 		};
 		try {
