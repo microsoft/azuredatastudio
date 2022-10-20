@@ -279,7 +279,8 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 			rowHeight: RESULTS_GRID_DEFAULTS.rowHeight,
 			forceFitColumns: false,
 			defaultColumnWidth: 120,
-			showRowNumber: true
+			showRowNumber: true,
+			useF3KeyToSortColumns: true
 		}));
 
 		table.setSelectionModel(selectionModel);
