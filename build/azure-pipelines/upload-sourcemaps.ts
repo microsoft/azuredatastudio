@@ -12,12 +12,10 @@ import * as vfs from 'vinyl-fs';
 import * as util from '../lib/util';
 // @ts-ignore
 import * as deps from '../lib/dependencies';
-import { ClientSecretCredential } from '@azure/identity';
 const azure = require('gulp-azure-storage');
 
 const root = path.dirname(path.dirname(__dirname));
-const commit = process.env['VSCODE_DISTRO_COMMIT'] || process.env['BUILD_SOURCEVERSION'];
-const credential = new ClientSecretCredential(process.env['AZURE_TENANT_ID']!, process.env['AZURE_CLIENT_ID']!, process.env['AZURE_CLIENT_SECRET']!);
+const commit = util.getVersion(root);
 
 // optionally allow to pass in explicit base/maps to upload
 const [, , base, maps] = process.argv;
@@ -30,15 +28,15 @@ function src(base: string, maps = `${base}/**/*.map`) {
 		}));
 }
 
-function main(): Promise<void> {
-	const sources: any[] = [];
+function main() {
+	const sources = [];
 
 	// vscode client maps (default)
 	if (!base) {
 		const vs = src('out-vscode-min'); // client source-maps only
 		sources.push(vs);
 
-		const productionDependencies: { name: string; path: string; version: string }[] = deps.getProductionDependencies(root);
+		const productionDependencies: { name: string, path: string, version: string }[] = deps.getProductionDependencies(root);
 		const productionDependenciesSrc = productionDependencies.map(d => path.relative(root, d.path)).map(d => `./${d}/**/*.map`);
 		const nodeModules = vfs.src(productionDependenciesSrc, { base: '.' })
 			.pipe(util.cleanNodeModules(path.join(root, 'build', '.moduleignore')));
@@ -53,25 +51,17 @@ function main(): Promise<void> {
 		sources.push(src(base, maps));
 	}
 
-	return new Promise((c, e) => {
-		es.merge(...sources)
-			.pipe(es.through(function (data: Vinyl) {
-				console.log('Uploading Sourcemap', data.relative); // debug
-				this.emit('data', data);
-			}))
-			.pipe(azure.upload({
-				account: process.env.AZURE_STORAGE_ACCOUNT,
-				credential,
-				container: 'sourcemaps',
-				prefix: commit + '/'
-			}))
-			.on('end', () => c())
-			.on('error', (err: any) => e(err));
-	});
+	return es.merge(...sources)
+		.pipe(es.through(function (data: Vinyl) {
+			console.log('Uploading Sourcemap', data.relative); // debug
+			this.emit('data', data);
+		}))
+		.pipe(azure.upload({
+			account: process.env.AZURE_STORAGE_ACCOUNT,
+			key: process.env.AZURE_STORAGE_ACCESS_KEY,
+			container: 'sourcemaps',
+			prefix: commit + '/'
+		}));
 }
 
-main().catch(err => {
-	console.error(err);
-	process.exit(1);
-});
-
+main();
