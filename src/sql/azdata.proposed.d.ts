@@ -45,25 +45,6 @@ declare module 'azdata' {
 			 * The list of languages that are supported for this kernel.
 			 */
 			supportedLanguages?: string[];
-			/**
-			 * The original name for this kernel.
-			 */
-			oldName?: string;
-			/**
-			 * The original display name for this kernel.
-			 */
-			oldDisplayName?: string;
-			/**
-			 * The original language name for this kernel.
-			 */
-			oldLanguage?: string;
-		}
-
-		export interface ILanguageInfo {
-			/**
-			 * The original name for this language.
-			 */
-			oldName?: string;
 		}
 
 		export interface IStandardKernel {

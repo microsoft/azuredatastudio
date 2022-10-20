@@ -561,12 +561,6 @@ export interface ICellMetadata {
 	tags?: string[] | undefined;
 	azdata_cell_guid?: string | undefined;
 	connection_name?: string;
-	/**
-	 * .NET Interactive metadata. This is only required for compatibility with the .NET Interactive extension.
-	 */
-	dotnet_interactive?: {
-		language: string;
-	}
 }
 
 export interface ISerializationManagerDetails {
