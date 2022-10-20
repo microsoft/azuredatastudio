@@ -343,11 +343,6 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		}
 	}
 
-	async $tryCreateNotebookDocument(providerId: string, contents?: azdata.nb.INotebookContents): Promise<UriComponents> {
-		let input = await this._notebookService.createNotebookInputFromContents(providerId, contents);
-		return input.resource;
-	}
-
 	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): Promise<string> {
 		return Promise.resolve(this.doOpenEditor(resource, options));
 	}

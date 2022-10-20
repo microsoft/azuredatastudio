@@ -21,7 +21,6 @@ import {
 } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { ExtHostNotebookDocumentData } from 'sql/workbench/api/common/extHostNotebookDocumentData';
 import { ExtHostNotebookEditor } from 'sql/workbench/api/common/extHostNotebookEditor';
-import { docNotFoundForUriError } from 'sql/base/common/locConstants';
 import { SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 type Adapter = azdata.nb.NavigationProvider;
@@ -191,37 +190,6 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 	//#endregion
 
 	//#region Extension accessible methods
-	async createNotebookDocument(providerId: string, contents?: azdata.nb.INotebookContents): Promise<URI> {
-		let uriComps = await this._proxy.$tryCreateNotebookDocument(providerId, contents);
-		let uri = URI.revive(uriComps);
-		let notebookCells = contents?.cells?.map<azdata.nb.NotebookCell>(cellContents => {
-			return {
-				contents: cellContents,
-				uri: undefined
-			};
-		});
-
-		let documentData = new ExtHostNotebookDocumentData(
-			this._proxy,
-			uri,
-			providerId,
-			false,
-			notebookCells ?? []
-		);
-		this._documents.set(uri.toString(), documentData);
-		this._onDidOpenNotebook.fire(documentData.document);
-
-		return uri;
-	}
-
-	async openNotebookDocument(uri: vscode.Uri): Promise<azdata.nb.NotebookDocument> {
-		let docData = this._documents.get(uri.toString());
-		if (!docData) {
-			throw new Error(docNotFoundForUriError);
-		}
-		return docData.document;
-	}
-
 	showNotebookDocument(uri: vscode.Uri, showOptions: azdata.nb.NotebookShowOptions): Thenable<azdata.nb.NotebookEditor> {
 		return this.doShowNotebookDocument(uri, showOptions);
 	}

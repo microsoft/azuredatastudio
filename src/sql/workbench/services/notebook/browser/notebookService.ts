@@ -21,7 +21,6 @@ import { IEditorPane } from 'vs/workbench/common/editor';
 import { INotebookInput } from 'sql/workbench/services/notebook/browser/interface';
 import { INotebookShowOptions } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
-import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { ICodeEditorViewState } from 'vs/editor/common/editorCommon';
 import { JUPYTER_PROVIDER_ID } from 'sql/workbench/common/constants';
 import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
@@ -146,13 +145,9 @@ export interface INotebookService {
 	 */
 	notifyCellExecutionStarted(): void;
 
-	createNotebookInputFromContents(providerId: string, contents?: azdata.nb.INotebookContents, resource?: UriComponents): Promise<EditorInput | undefined>;
-
 	openNotebook(resource: UriComponents, options: INotebookShowOptions): Promise<IEditorPane | undefined>;
 
 	getUntitledUriPath(originalTitle: string): string;
-
-	getNotebookURIForCell(cellUri: URI): URI | undefined;
 }
 
 export interface IExecuteProvider {

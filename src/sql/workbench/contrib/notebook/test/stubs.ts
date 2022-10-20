@@ -24,7 +24,6 @@ import { INotebookView, INotebookViewCard, INotebookViewMetadata, INotebookViews
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 import { INotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 
 export class NotebookModelStub implements INotebookModel {
 	constructor(private _languageInfo?: nb.ILanguageInfo, private _cells?: ICellModel[], private _testContents?: nb.INotebookContents) {
@@ -239,13 +238,7 @@ export class NotebookServiceStub implements INotebookService {
 	get onNotebookKernelsAdded(): vsEvent.Event<IStandardKernelWithProvider[]> {
 		throw new Error('Method not implemented.');
 	}
-	getNotebookURIForCell(cellUri: URI): URI {
-		throw new Error('Method not implemented.');
-	}
 	getSupportedLanguagesForProvider(provider: string, kernelDisplayName?: string): Promise<string[]> {
-		throw new Error('Method not implemented.');
-	}
-	createNotebookInputFromContents(providerId: string, contents?: nb.INotebookContents, resource?: UriComponents): Promise<EditorInput> {
 		throw new Error('Method not implemented.');
 	}
 	_serviceBrand: undefined;

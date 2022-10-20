@@ -263,22 +263,6 @@ export class NotebookService extends Disposable implements INotebookService {
 		return uri;
 	}
 
-	public async createNotebookInputFromContents(providerId: string, contents?: nb.INotebookContents, resource?: UriComponents): Promise<EditorInput> {
-		let uri: URI;
-		if (resource) {
-			uri = URI.revive(resource);
-		} else {
-			uri = this.getUntitledFileUri();
-			resource = uri;
-		}
-
-		let options: INotebookShowOptions = {
-			providerId: providerId,
-			initialContent: contents
-		};
-		return this.createNotebookInput(options, resource);
-	}
-
 	private async createNotebookInput(options: INotebookShowOptions, resource?: UriComponents): Promise<EditorInput | undefined> {
 		let uri: URI;
 		if (resource) {
@@ -373,19 +357,6 @@ export class NotebookService extends Disposable implements INotebookService {
 			nextVal++;
 		}
 		return title;
-	}
-
-	public getNotebookURIForCell(cellUri: URI): URI | undefined {
-		for (let editor of this.listNotebookEditors()) {
-			if (editor.cells) {
-				for (let cell of editor.cells) {
-					if (cell.cellUri === cellUri) {
-						return editor.notebookParams.notebookUri;
-					}
-				}
-			}
-		}
-		return undefined;
 	}
 
 	private updateSQLRegistrationWithConnectionProviders() {
