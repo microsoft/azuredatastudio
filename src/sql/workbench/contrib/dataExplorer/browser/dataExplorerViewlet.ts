@@ -89,7 +89,7 @@ export class DataExplorerViewPaneContainer extends ViewPaneContainer {
 	}
 
 	protected override createView(viewDescriptor: IViewDescriptor, options: IViewletViewOptions): ViewPane {
-		let viewletPanel = this.instantiationService.createInstance(viewDescriptor.ctorDescriptor.ctor, options) as ViewPane;
+		let viewletPanel = (<any>this.instantiationService).createInstance(viewDescriptor.ctorDescriptor.ctor, options) as ViewPane;
 		this._register(viewletPanel);
 		return viewletPanel;
 	}

@@ -54,18 +54,23 @@ const vscodeResources = [
 	'out-build/bootstrap-amd.js',
 	'out-build/bootstrap-node.js',
 	'out-build/bootstrap-window.js',
-	'out-build/vs/**/*.{svg,png,html,jpg}',
+	'out-build/vs/**/*.{svg,png,html,jpg,opus}',
 	'!out-build/vs/code/browser/**/*.html',
 	'!out-build/vs/editor/standalone/**/*.svg',
 	'out-build/vs/base/common/performance.js',
+	'out-build/vs/base/common/stripComments.js',
 	'out-build/vs/base/node/languagePacks.js',
 	'out-build/vs/base/node/{stdForkStart.js,terminateProcess.sh,cpuUsage.sh,ps.sh}',
 	'out-build/vs/base/browser/ui/codicons/codicon/**',
 	'out-build/vs/base/parts/sandbox/electron-browser/preload.js',
 	'out-build/vs/platform/environment/node/userDataPath.js',
+	'out-build/vs/platform/extensions/node/extensionHostStarterWorkerMain.js',
 	'out-build/vs/workbench/browser/media/*-theme.css',
 	'out-build/vs/workbench/contrib/debug/**/*.json',
 	'out-build/vs/workbench/contrib/externalTerminal/**/*.scpt',
+	'out-build/vs/workbench/contrib/terminal/browser/media/*.ps1',
+	'out-build/vs/workbench/contrib/terminal/browser/media/*.sh',
+	'out-build/vs/workbench/contrib/terminal/browser/media/*.zsh',
 	'out-build/vs/workbench/contrib/webview/browser/pre/*.js',
 	'out-build/vs/**/markdown.css',
 	'out-build/vs/workbench/contrib/tasks/**/*.json',
@@ -150,7 +155,7 @@ const importExtensionsTask = task.define('import-extensions-xlfs', function () {
 			.pipe(extensionsFilter),
 		gulp.src(`./vscode-translations-export/ads-core/*.xlf`)
 	)
-	.pipe(vfs.dest(`./resources/xlf/en`));
+		.pipe(vfs.dest(`./resources/xlf/en`));
 });
 gulp.task(importExtensionsTask);
 // {{SQL CARBON EDIT}} end
@@ -223,7 +228,7 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 			'vs/base/parts/sandbox/electron-browser/preload.js',
 			'vs/workbench/workbench.desktop.main.js',
 			'vs/workbench/workbench.desktop.main.css',
-			'vs/workbench/services/extensions/node/extensionHostProcess.js',
+			'vs/workbench/api/node/extensionHostProcess.js',
 			'vs/code/electron-browser/workbench/workbench.html',
 			'vs/code/electron-browser/workbench/workbench.js'
 		]);
@@ -266,10 +271,10 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 		const productJsonStream = gulp.src(['product.json'], { base: '.' })
 			.pipe(json(productJsonUpdate));
 
-		const license = gulp.src(['LICENSES.chromium.html', product.licenseFileName, 'ThirdPartyNotices.txt', 'licenses/**'], { base: '.', allowEmpty: true });
+		const license = gulp.src(['LICENSES.chromium.html', 'LICENSE.txt', 'ThirdPartyNotices.txt', 'licenses/**'], { base: '.', allowEmpty: true });
 
 		// TODO the API should be copied to `out` during compile, not here
-		const api = gulp.src('src/vs/vscode.d.ts').pipe(rename('out/vs/vscode.d.ts'));
+		const api = gulp.src('src/vscode-dts/vscode.d.ts').pipe(rename('out/vscode-dts/vscode.d.ts'));
 		// {{SQL CARBON EDIT}}
 		const dataApi = gulp.src('src/sql/azdata.d.ts').pipe(rename('out/sql/azdata.d.ts'));
 
@@ -367,15 +372,6 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 				.pipe(rename('bin/' + product.applicationName)));
 		}
 
-		// submit all stats that have been collected
-		// during the build phase
-		if (opts.stats) {
-			result.on('end', () => {
-				const { submitAllStats } = require('./lib/stats');
-				submitAllStats(product, commit).then(() => console.log('Submitted bundle stats!'));
-			});
-		}
-
 		return result.pipe(vfs.dest(destination));
 	};
 }
@@ -384,7 +380,7 @@ const fileLengthFilter = filter([
 	'**',
 	'!extensions/import/*.docx',
 	'!extensions/admin-tool-ext-win/license/**'
-], {restore: true});
+], { restore: true });
 
 const filelength = es.through(function (file) {
 
@@ -533,7 +529,7 @@ gulp.task('vscode-translations-pull', function () {
 
 gulp.task('vscode-translations-import', function () {
 	// {{SQL CARBON EDIT}} - Replace function body with our own
-	return new Promise(function(resolve) {
+	return new Promise(function (resolve) {
 		[...i18n.defaultLanguages, ...i18n.extraLanguages].forEach(language => {
 			let languageId = language.translationId ? language.translationId : language.id;
 			gulp.src(`resources/xlf/${languageId}/**/*.xlf`)

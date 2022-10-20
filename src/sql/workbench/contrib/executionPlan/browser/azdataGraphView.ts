@@ -6,7 +6,7 @@
 import * as azdataGraphModule from 'azdataGraph';
 import * as azdata from 'azdata';
 import * as sqlExtHostType from 'sql/workbench/api/common/sqlExtHostTypes';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { isString } from 'vs/base/common/types';
 import { badgeIconPaths, collapseExpandNodeIconPaths, executionPlanNodeIconPaths } from 'sql/workbench/contrib/executionPlan/browser/constants';
 import { localize } from 'vs/nls';

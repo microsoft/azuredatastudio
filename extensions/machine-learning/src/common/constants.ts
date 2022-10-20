@@ -197,10 +197,15 @@ export const azureModelsTitle = localize('models.azureModelsTitle', "Azure model
 export const localModelsTitle = localize('models.localModelsTitle', "Local models");
 export const modelSourcesTitle = localize('models.modelSourcesTitle', "Source location");
 export const modelSourcePageTitle = localize('models.modelSourcePageTitle', "Select model source type");
+// allow-any-unicode-next-line
 export const localModelSourceDescriptionForImport = localize('models.localModelSourceDescriptionForImport', "‘File Upload’ is selected. This allows you to import a model file from your local machine into a model database in this SQL instance. Click ‘Next’ to continue.​");
+// allow-any-unicode-next-line
 export const azureModelSourceDescriptionForImport = localize('models.azureModelSourceDescriptionForImport', "‘Azure Machine Learning’ is selected. This allows you to import models stored in Azure Machine Learning workspaces in a model database in this SQL instance. Click ‘Next’ to continue.​​");
+// allow-any-unicode-next-line
 export const localModelSourceDescriptionForPredict = localize('models.localModelSourceDescriptionForPredict', "‘File Upload’ is selected. This allows you to upload a model file from your local machine.  Click ‘Next’ to continue.​​");
+// allow-any-unicode-next-line
 export const importedModelSourceDescriptionForPredict = localize('models.importedModelSourceDescriptionForPredict', "‘Imported Models’ is selected. This allows you to choose from models stored in a model table in your database.  Click ‘Next’ to continue.​");
+// allow-any-unicode-next-line
 export const azureModelSourceDescriptionForPredict = localize('models.azureModelSourceDescriptionForPredict', "‘Azure Machine Learning’ is selected. This allows you to choose from models stored in Azure Machine Learning workspaces. Click ‘Next’ to continue.​");
 export const modelImportTargetPageTitle = localize('models.modelImportTargetPageTitle', "Select or enter the location to import the models to");
 export const columnSelectionPageTitle = localize('models.columnSelectionPageTitle', "Map source data to model");
@@ -245,7 +250,9 @@ export const invalidModelImportTargetError = localize('models.invalidModelImport
 
 export const columnDataTypeMismatchWarningHelper = localize('models.columnDataTypeMismatchWarningHelper', "Click to review warning details");
 export const columnDataTypeMismatchWarningHeading = localize('models.columnDataTypeMismatchWarningHeading', "Differences in data type");
+// allow-any-unicode-next-line
 export const columnDataTypeMismatchWarning = localize('models.columnDataTypeMismatchWarning', "The data type of the source table column does not match the required input field’s type.");
+// allow-any-unicode-next-line
 export const outputColumnDataTypeNotSupportedWarning = localize('models.outputColumnDataTypeNotSupportedWarning', "The data type of output column does not match the output field’s type.");
 
 

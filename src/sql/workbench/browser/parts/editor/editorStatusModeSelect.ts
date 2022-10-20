@@ -11,15 +11,15 @@ import { localize } from 'vs/nls';
 import { Registry } from 'vs/platform/registry/common/platform';
 
 import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
-import { IModeSupport } from 'vs/workbench/services/textfile/common/textfiles';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
+import { ILanguageSupport } from 'vs/workbench/services/textfile/common/textfiles';
 
 const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
 
 /**
  * Handles setting a mode from the editor status and converts inputs if necessary
  */
-export async function setMode(accessor: ServicesAccessor, modeSupport: IModeSupport, activeEditor: EditorInput, language: string): Promise<void> {
+export async function setLanguageId(accessor: ServicesAccessor, modeSupport: ILanguageSupport, activeEditor: EditorInput, language: string): Promise<void> {
 	const editorService = accessor.get(IEditorService);
 	const activeWidget = getCodeEditor(editorService.activeTextEditorControl);
 	const activeControl = editorService.activeEditorPane;
@@ -33,7 +33,7 @@ export async function setMode(accessor: ServicesAccessor, modeSupport: IModeSupp
 			notificationService.error(localize('languageChangeUnsupported', "Changing editor types on unsaved files is unsupported"));
 			return;
 		}
-		modeSupport.setMode(language);
+		modeSupport.setLanguageId(language);
 		let input: EditorInput;
 		if (oldInputCreator) { // only transform the input if we have someone who knows how to deal with it (e.x QueryInput -> UntitledInput, etc)
 			input = oldInputCreator.createBase(activeEditor);

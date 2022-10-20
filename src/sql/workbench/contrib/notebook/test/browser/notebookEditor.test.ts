@@ -28,8 +28,6 @@ import { Schemas } from 'vs/base/common/network';
 import { URI } from 'vs/base/common/uri';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IOverlayWidget, IOverlayWidgetPosition } from 'vs/editor/browser/editorBrowser';
-import { ITextResourceConfigurationService } from 'vs/editor/common/services/textResourceConfigurationService';
-import { FindReplaceStateChangedEvent, INewFindReplaceState } from 'vs/editor/contrib/find/findState';
 import { getRandomString } from 'vs/editor/test/common/model/linesTextBuffer/textBufferAutoTestUtils';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ContextViewService } from 'vs/platform/contextview/browser/contextViewService';
@@ -58,6 +56,8 @@ import { IProductService } from 'vs/platform/product/common/productService';
 import { IHostColorSchemeService } from 'vs/workbench/services/themes/common/hostColorSchemeService';
 import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
 import { IEditorOptions } from 'vs/platform/editor/common/editor';
+import { ITextResourceConfigurationService } from 'vs/editor/common/services/textResourceConfiguration';
+import { FindReplaceStateChangedEvent, INewFindReplaceState } from 'vs/editor/contrib/find/browser/findState';
 
 class NotebookModelStub extends stubs.NotebookModelStub {
 	public contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -620,7 +620,9 @@ async function findStateChangeSetup(instantiationService: TestInstantiationServi
 		matchesPosition: false,
 		matchesCount: false,
 		currentMatch: false,
-		loop: false
+		loop: false,
+		isSearching: false,
+		filters: undefined
 	};
 
 	const notebookEditor = createNotebookEditor(instantiationService, workbenchThemeService, notebookService);

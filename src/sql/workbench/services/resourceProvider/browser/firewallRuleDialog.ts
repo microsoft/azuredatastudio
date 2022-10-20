@@ -26,11 +26,11 @@ import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { IAccountPickerService } from 'sql/workbench/services/accountManagement/browser/accountPicker';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ILogService } from 'vs/platform/log/common/log';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 
 // TODO: Make the help link 1) extensible (01/08/2018, https://github.com/Microsoft/azuredatastudio/issues/450)
 // in case that other non-Azure sign in is to be used

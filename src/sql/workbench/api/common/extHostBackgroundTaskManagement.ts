@@ -4,11 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
-import { ExtHostBackgroundTaskManagementShape, SqlMainContext, MainThreadBackgroundTaskManagementShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { ExtHostBackgroundTaskManagementShape, MainThreadBackgroundTaskManagementShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { Emitter } from 'vs/base/common/event';
 import { generateUuid } from 'vs/base/common/uuid';
+import { SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 export enum TaskStatus {
 	NotStarted = 0,

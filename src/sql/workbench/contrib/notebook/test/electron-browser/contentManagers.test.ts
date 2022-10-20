@@ -61,7 +61,11 @@ suite('Local Content Manager', function (): void {
 			}
 			override async writeFile(resource: URI, bufferOrReadable: VSBuffer | VSBufferReadable, options?: IWriteFileOptions): Promise<IFileStatWithMetadata> {
 				await pfs.Promises.writeFile(resource.fsPath, bufferOrReadable.toString());
-				return { resource: resource, mtime: 0, etag: '', size: 0, name: '', isDirectory: false, ctime: 0, isFile: true, isSymbolicLink: false, readonly: false };
+				return {
+					resource: resource, mtime: 0, etag: '', size: 0, name: '',
+					isDirectory: false, ctime: 0, isFile: true, isSymbolicLink: false,
+					readonly: false, children: []
+				};
 			}
 		};
 		instantiationService.set(IFileService, fileService);

@@ -48,7 +48,8 @@ export function createContext(): TestContext {
 			clear: () => { },
 			show: () => { },
 			hide: () => { },
-			dispose: () => { }
+			dispose: () => { },
+			replace: () => { }
 		},
 		azureSqlClient: TypeMoq.Mock.ofType(AzureSqlClient)
 	};
@@ -229,7 +230,7 @@ describe('deploy service', function (): void {
 				session: {
 					subscription: {
 						subscriptionId: 'subscriptionId',
-					},token: {
+					}, token: {
 						key: '',
 						token: '',
 						tokenType: '',

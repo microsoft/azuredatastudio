@@ -216,4 +216,6 @@ class CustomOutputChannel implements vscode.OutputChannel {
 	}
 	dispose(): void {
 	}
+	replace(_value: string): void {
+	}
 }
