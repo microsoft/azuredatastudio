@@ -40,7 +40,7 @@ function collect(ts: typeof import('typescript'), node: ts.Node, fn: (node: ts.N
 	return result;
 }
 
-function clone<T>(object: T): T {
+function clone<T extends object>(object: T): T {
 	const result = <T>{};
 	for (const id in object) {
 		result[id] = object[id];
@@ -59,7 +59,7 @@ function template(lines: string[]): string {
 	return `/*---------------------------------------------------------
  * Copyright (C) Microsoft Corporation. All rights reserved.
  *--------------------------------------------------------*/
-define([], [${ wrap + lines.map(l => indent + l).join(',\n') + wrap}]);`;
+define([], [${wrap + lines.map(l => indent + l).join(',\n') + wrap}]);`;
 }
 
 /**
@@ -155,20 +155,22 @@ module _nls {
 			this.lib = ts.ScriptSnapshot.fromString('');
 		}
 
-		// {{SQL CARBON EDIT}} - provide missing methods
-		readFile(): string | undefined {
-			return undefined;
-		}
-		fileExists(): boolean {
-			return false;
-		}
-
 		getCompilationSettings = () => this.options;
 		getScriptFileNames = () => [this.filename];
 		getScriptVersion = () => '1';
 		getScriptSnapshot = (name: string) => name === this.filename ? this.file : this.lib;
 		getCurrentDirectory = () => '';
 		getDefaultLibFileName = () => 'lib.d.ts';
+
+		readFile(path: string, _encoding?: string): string | undefined {
+			if (path === this.filename) {
+				return this.file.getText(0, this.file.getLength());
+			}
+			return undefined;
+		}
+		fileExists(path: string): boolean {
+			return path === this.filename;
+		}
 	}
 
 	function isCallExpressionWithinTextSpanCollectStep(ts: typeof import('typescript'), textSpan: ts.TextSpan, node: ts.Node): CollectStepResult {

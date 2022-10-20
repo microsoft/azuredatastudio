@@ -558,10 +558,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
-		if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
-			return;
-		}
-
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			this.wizard.message = { text: '' };
 			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
@@ -585,20 +581,14 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 			return true;
 		});
-		this.wizard.nextButton.enabled = false;
 		await this.constructDetails();
 		this.wizard.nextButton.enabled = this.migrationStateModel._assessmentResults !== undefined;
 	}
 
 	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
+		this.wizard.message = { text: '' };
+		this.wizard.registerNavigationValidator((pageChangeInfo) => true);
 		this.eventListener?.dispose();
-		this.wizard.message = {
-			text: '',
-			level: azdata.window.MessageLevel.Error
-		};
-		this.wizard.registerNavigationValidator((pageChangeInfo) => {
-			return true;
-		});
 	}
 
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
@@ -616,7 +606,14 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		}
 
 		const dbCount = this.migrationStateModel._assessmentResults?.databaseAssessments?.length;
-		const dbWithoutIssuesCount = this.migrationStateModel._assessmentResults?.databaseAssessments?.filter(db => db.issues?.length === 0).length;
+		const dbWithoutIssuesForMiCount = this.migrationStateModel._assessmentResults?.databaseAssessments?.filter(db =>
+			!db.issues?.some(issue => issue.appliesToMigrationTargetPlatform === MigrationTargetType.SQLMI)
+		).length;
+		const dbWithoutIssuesForVmCount = dbCount;
+		const dbWithoutIssuesForDbCount = this.migrationStateModel._assessmentResults?.databaseAssessments?.filter(db =>
+			!db.issues?.some(issue => issue.appliesToMigrationTargetPlatform === MigrationTargetType.SQLDB)
+		).length;
+
 		this._supportedProducts.forEach((product, index) => {
 			if (!this.migrationStateModel._assessmentResults) {
 				this._rbg.cards[index].descriptions[CardDescriptionIndex.ASSESSMENT_STATUS].textValue = '';
@@ -646,7 +643,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				switch (product.type) {
 					case MigrationTargetType.SQLMI:
 						this._rbg.cards[index].descriptions[CardDescriptionIndex.ASSESSMENT_STATUS].textValue =
-							constants.CAN_BE_MIGRATED(dbWithoutIssuesCount, dbCount);
+							constants.CAN_BE_MIGRATED(dbWithoutIssuesForMiCount, dbCount);
 
 						if (this.hasRecommendations()) {
 							if (this.migrationStateModel._skuEnableElastic) {
@@ -681,7 +678,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 					case MigrationTargetType.SQLVM:
 						this._rbg.cards[index].descriptions[CardDescriptionIndex.ASSESSMENT_STATUS].textValue =
-							constants.CAN_BE_MIGRATED(dbCount, dbCount);
+							constants.CAN_BE_MIGRATED(dbWithoutIssuesForVmCount, dbCount);
 
 						if (this.hasRecommendations()) {
 							// elastic model currently doesn't support SQL VM, so show the baseline model results regardless of user preference
@@ -718,7 +715,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 					case MigrationTargetType.SQLDB:
 						this._rbg.cards[index].descriptions[CardDescriptionIndex.ASSESSMENT_STATUS].textValue =
-							constants.CAN_BE_MIGRATED(dbWithoutIssuesCount, dbCount);
+							constants.CAN_BE_MIGRATED(dbWithoutIssuesForDbCount, dbCount);
 
 						if (this.hasRecommendations()) {
 							const recommendations = this.migrationStateModel._skuEnableElastic

@@ -89,10 +89,13 @@ export class TreeGrid<T extends Slick.SlickData> extends Table<T> {
 				const rowElement = this._tableContainer.querySelector(`div [role="row"][aria-rowindex="${(i + 1)}"]`);
 				// If the row element is found in the dom, we are setting the required aria attributes for it.
 				if (rowElement) {
-					if (rowData.expanded !== undefined) {
-						rowElement.ariaExpanded = rowData.expanded;
-					} else {
-						rowElement.removeAttribute('aria-expanded');
+					const cellDiv = <HTMLElement>rowElement.querySelector(`.slick-cell.l0`);
+					if (cellDiv) {
+						if (rowData.expanded !== undefined) {
+							cellDiv.ariaExpanded = rowData.expanded;
+						} else {
+							cellDiv.removeAttribute('aria-expanded');
+						}
 					}
 					if (rowData.setSize !== undefined) {
 						rowElement.ariaSetSize = rowData.setSize;

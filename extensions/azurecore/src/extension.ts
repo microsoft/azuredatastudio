@@ -39,6 +39,8 @@ import { PostgresServerArcProvider } from './azureResource/providers/postgresArc
 import { PostgresServerArcService } from './azureResource/providers/postgresArcServer/postgresServerService';
 import { CosmosDbMongoProvider } from './azureResource/providers/cosmosdb/mongo/cosmosDbMongoProvider';
 import { CosmosDbMongoService } from './azureResource/providers/cosmosdb/mongo/cosmosDbMongoService';
+import { MysqlFlexibleServerProvider } from './azureResource/providers/mysqlFlexibleServer/mysqlFlexibleServerProvider';
+import { MysqlFlexibleServerService } from './azureResource/providers/mysqlFlexibleServer/mysqlFlexibleServerService';
 import * as azurecore from 'azurecore';
 import * as azureResourceUtils from './azureResource/utils';
 import * as utils from './utils';
@@ -136,7 +138,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 				new AzureResourceDatabaseProvider(new AzureResourceDatabaseService(), extensionContext),
 				new SqlInstanceProvider(new SqlInstanceResourceService(), extensionContext),
 				new PostgresServerProvider(new PostgresServerService(), extensionContext),
-				new CosmosDbMongoProvider(new CosmosDbMongoService(), extensionContext)
+				new CosmosDbMongoProvider(new CosmosDbMongoService(), extensionContext),
+				new MysqlFlexibleServerProvider(new MysqlFlexibleServerService(), extensionContext)
 			];
 			if (arcFeaturedEnabled) {
 				providers.push(
@@ -230,7 +233,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 // Create the folder for storing the token caches
 async function findOrMakeStoragePath() {
 	let defaultLogLocation = getDefaultLogLocation();
-	let storagePath = path.join(defaultLogLocation, loc.extensionName);
+	let storagePath = path.join(defaultLogLocation, constants.AzureTokenFolderName);
 
 	try {
 		await fs.mkdir(defaultLogLocation, { recursive: true });

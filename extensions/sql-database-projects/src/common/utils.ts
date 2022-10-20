@@ -15,7 +15,7 @@ import * as vscodeMssql from 'vscode-mssql';
 import * as fse from 'fs-extra';
 import * as which from 'which';
 import { promises as fs } from 'fs';
-import { ISqlProject } from 'sqldbproj';
+import { ISqlProject, SqlTargetPlatform } from 'sqldbproj';
 
 export interface ValidationResult {
 	errorMessage: string;
@@ -688,4 +688,46 @@ export function throwIfNotConnected(connectionResult: azdataType.ConnectionResul
 	if (!connectionResult.connected) {
 		throw new Error(`${connectionResult.errorMessage} (${connectionResult.errorCode})`);
 	}
+}
+
+/**
+ * Checks whether or not the provided file contains a create table statement
+ * @param fullPath full path to file to check
+ * @param projectTargetVersion target version of sql project containing this file
+ * @returns true if file includes a create table statement, false if it doesn't
+ */
+export async function fileContainsCreateTableStatement(fullPath: string, projectTargetVersion: string): Promise<boolean> {
+	let containsCreateTableStatement = false;
+
+	if (getAzdataApi() && await exists(fullPath)) {
+		const dacFxService = await getDacFxService() as mssql.IDacFxService;
+		try {
+			const result = await dacFxService.parseTSqlScript(fullPath, projectTargetVersion);
+			containsCreateTableStatement = result.containsCreateTableStatement;
+		} catch (e) {
+			console.error(getErrorMessage(e));
+		}
+	}
+
+	return containsCreateTableStatement;
+}
+
+/**
+ * Gets target platform based on the server edition/version
+ * @param serverInfo server information
+ * @returns target platform for the database project
+ */
+export async function getTargetPlatformFromServerVersion(serverInfo: azdataType.ServerInfo | vscodeMssql.ServerInfo): Promise<SqlTargetPlatform | undefined> {
+	const isCloud = serverInfo.isCloud;
+
+	let targetPlatform;
+	if (isCloud) {
+		const engineEdition = serverInfo.engineEditionId;
+		targetPlatform = engineEdition === vscodeMssql.DatabaseEngineEdition.SqlDataWarehouse ? SqlTargetPlatform.sqlDW : SqlTargetPlatform.sqlAzure;
+	} else {
+		const serverMajorVersion = serverInfo.serverMajorVersion;
+		targetPlatform = serverMajorVersion ? constants.onPremServerVersionToTargetPlatform.get(serverMajorVersion) : undefined;
+	}
+
+	return targetPlatform;
 }

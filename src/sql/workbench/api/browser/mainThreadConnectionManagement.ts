@@ -3,10 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { SqlExtHostContext, SqlMainContext, ExtHostConnectionManagementShape, MainThreadConnectionManagementShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { ExtHostConnectionManagementShape, MainThreadConnectionManagementShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import * as azdata from 'azdata';
-import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
-import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { IConnectionManagementService, ConnectionType, IConnectionParams } from 'sql/platform/connection/common/connectionManagement';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -19,6 +17,8 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { deepClone } from 'vs/base/common/objects';
+import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
+import { SqlExtHostContext, SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadConnectionManagement)
 export class MainThreadConnectionManagement extends Disposable implements MainThreadConnectionManagementShape {
@@ -141,6 +141,11 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 	}
 
 	public async $openConnectionDialog(providers: string[], initialConnectionProfile?: IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions): Promise<azdata.connection.Connection | undefined> {
+		if (initialConnectionProfile?.providerName && this._capabilitiesService.providers[initialConnectionProfile.providerName] === undefined) {
+			await this._connectionManagementService.handleUnsupportedProvider(initialConnectionProfile.providerName);
+			return undefined;
+		}
+
 		// Here we default to ConnectionType.editor which saves the connecton in the connection store by default
 		let connectionType = ConnectionType.editor;
 

@@ -9,7 +9,7 @@ import { RunQueryOnConnectionMode } from 'sql/platform/connection/common/connect
 import { InsightActionContext } from 'sql/workbench/browser/actions';
 import { openNewQuery } from 'sql/workbench/contrib/query/browser/queryActions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { isString } from 'vs/base/common/types';
 
 export class RunInsightQueryAction extends Action {

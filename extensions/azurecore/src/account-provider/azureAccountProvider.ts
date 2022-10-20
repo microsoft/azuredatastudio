@@ -25,7 +25,7 @@ const localize = nls.loadMessageBundle();
 export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disposable {
 	private static readonly CONFIGURATION_SECTION = 'accounts.azure.auth';
 	private readonly authMappings = new Map<AzureAuthType, AzureAuth>();
-	private initComplete: Deferred<void, Error>;
+	private initComplete!: Deferred<void, Error>;
 	private initCompletePromise: Promise<void> = new Promise<void>((resolve, reject) => this.initComplete = { resolve, reject });
 
 	constructor(
@@ -58,14 +58,15 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		this.authMappings.clear();
 		const configuration = vscode.workspace.getConfiguration(AzureAccountProvider.CONFIGURATION_SECTION);
 
-		const codeGrantMethod: boolean = configuration.get('codeGrant');
-		const deviceCodeMethod: boolean = configuration.get('deviceCode');
+		const codeGrantMethod: boolean = configuration.get<boolean>('codeGrant', false);
+		const deviceCodeMethod: boolean = configuration.get<boolean>('deviceCode', false);
 
 		if (codeGrantMethod === true && !this.forceDeviceCode) {
 			this.authMappings.set(AzureAuthType.AuthCodeGrant, new AzureAuthCodeGrant(metadata, tokenCache, context, uriEventHandler));
-		}
-		if (deviceCodeMethod === true || this.forceDeviceCode) {
+		} else if (deviceCodeMethod === true || this.forceDeviceCode) {
 			this.authMappings.set(AzureAuthType.DeviceCode, new AzureDeviceCode(metadata, tokenCache, context, uriEventHandler));
+		} else {
+			console.error('No authentication methods selected');
 		}
 	}
 
@@ -74,12 +75,17 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 			return this.authMappings.values().next().value;
 		}
 
-		const authType: AzureAuthType = account?.properties?.azureAuthType;
+		const authType: AzureAuthType | undefined = account?.properties?.azureAuthType;
 		if (authType) {
-			return this.authMappings.get(authType);
-		} else {
-			return this.authMappings.values().next().value;
+			const authMapping = this.authMappings.get(authType);
+			if (authMapping) {
+				return authMapping;
+			}
 		}
+		if (this.authMappings.size === 0) {
+			throw new Error('No authentication mappings selected');
+		}
+		return this.authMappings.values().next().value;
 	}
 
 	initialize(storedAccounts: AzureAccount[]): Thenable<AzureAccount[]> {

@@ -19,7 +19,6 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IEditorAction } from 'vs/editor/common/editorCommon';
 import { IOverlayWidget } from 'vs/editor/browser/editorBrowser';
-import { FindReplaceState, FindReplaceStateChangedEvent } from 'vs/editor/contrib/find/findState';
 import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -32,7 +31,8 @@ import { localize } from 'vs/nls';
 import { CopyKeybind } from 'sql/base/browser/ui/table/plugins/copyKeybind.plugin';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { handleCopyRequest } from 'sql/workbench/contrib/profiler/browser/profilerCopyHandler';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
+import { FindReplaceState, FindReplaceStateChangedEvent } from 'vs/editor/contrib/find/browser/findState';
 
 export interface ProfilerTableViewState {
 	scrollTop: number;

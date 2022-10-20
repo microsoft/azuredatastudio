@@ -25,7 +25,9 @@ Go to our [download page](https://aka.ms/getazuredatastudio) for more specific i
 - [Windows User Installer - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/win32-x64-user/insider)
 - [Windows System Installer - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/win32-x64/insider)
 - [Windows ZIP - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/win32-x64-archive/insider)
-- [macOS ZIP - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/darwin/insider)
+- [macOS ZIP (Universal) - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/darwin-universal/insider)
+- [macOS ZIP (Intel Chip) - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/darwin/insider)
+- [macOS ZIP (Apple Silicon) - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/darwin-arm64/insider)
 - [Linux TAR.GZ - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/linux-x64/insider)
 
 See the [change log](https://github.com/Microsoft/azuredatastudio/blob/main/CHANGELOG.md) for additional details of what's in this release.
@@ -131,10 +133,10 @@ Copyright (c) Microsoft Corporation. All rights reserved.
 
 Licensed under the [Source EULA](LICENSE.txt).
 
-[win-user]: https://go.microsoft.com/fwlink/?linkid=2198663
-[win-system]: https://go.microsoft.com/fwlink/?linkid=2198878
-[win-zip]: https://go.microsoft.com/fwlink/?linkid=2198664
-[osx-zip]: https://go.microsoft.com/fwlink/?linkid=2198762
-[linux-zip]: https://go.microsoft.com/fwlink/?linkid=2198879
-[linux-rpm]: https://go.microsoft.com/fwlink/?linkid=2198880
-[linux-deb]: https://go.microsoft.com/fwlink/?linkid=2198763
+[win-user]: https://go.microsoft.com/fwlink/?linkid=2204567
+[win-system]: https://go.microsoft.com/fwlink/?linkid=2204568
+[win-zip]: https://go.microsoft.com/fwlink/?linkid=2204772
+[osx-zip]: https://go.microsoft.com/fwlink/?linkid=2204569
+[linux-zip]: https://go.microsoft.com/fwlink/?linkid=2204773
+[linux-rpm]: https://go.microsoft.com/fwlink/?linkid=2204774
+[linux-deb]: https://go.microsoft.com/fwlink/?linkid=2204570

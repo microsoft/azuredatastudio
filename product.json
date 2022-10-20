@@ -6,6 +6,11 @@
 	"win32MutexName": "azuredatastudio",
 	"licenseName": "Microsoft EULA",
 	"licenseUrl": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/LICENSE.txt",
+	"serverGreeting": [],
+	"serverLicense": [],
+	"serverLicensePrompt": "",
+	"serverApplicationName": "code-server-oss",
+	"serverDataFolderName": ".vscode-server-oss",
 	"win32DirName": "Azure Data Studio",
 	"win32NameVersion": "Azure Data Studio",
 	"win32RegValueName": "azuredatastudio",
@@ -26,6 +31,7 @@
 	"telemetryOptOutUrl": "https://github.com/Microsoft/azuredatastudio/wiki/How-to-Disable-Telemetry-Reporting",
 	"urlProtocol": "azuredatastudio-oss",
 	"enableTelemetry": true,
+	"webviewContentExternalBaseUrlTemplate": "https://{{uuid}}.vscode-webview.net/insider/69df0500a8963fc469161c038a14a39384d5a303/out/vs/workbench/contrib/webview/browser/pre/",
 	"npsSurveyUrl": "https://aka.ms/azuredatastudio-nps",
 	"aiConfig": {
 		"asimovKey": "AIF-37eefaf0-8022-4671-a3fb-64752724682e"
@@ -37,7 +43,7 @@
 	"gettingStartedUrl": "https://go.microsoft.com/fwlink/?linkid=862039",
 	"releaseNotesUrl": "https://go.microsoft.com/fwlink/?linkid=875578",
 	"documentationUrl": "https://go.microsoft.com/fwlink/?linkid=862277",
-	"vscodeVersion": "1.62.0",
+	"vscodeVersion": "1.67.0",
 	"commit": "9ca6200018fc206d67a47229f991901a8a453781",
 	"date": "2017-12-15T12:00:00.000Z",
 	"recommendedExtensions": [
@@ -86,11 +92,5 @@
 		"serviceUrl": "https://sqlopsextensions.blob.core.windows.net/marketplace/v1/extensionsGallery.json"
 	},
 	"builtInExtensions": [
-		{
-			"version": "1.61.0",
-			"name": "Microsoft.sqlservernotebook",
-			"version": "0.5.0",
-			"repo": "https://github.com/microsoft/azuredatastudio"
-		}
 	]
 }

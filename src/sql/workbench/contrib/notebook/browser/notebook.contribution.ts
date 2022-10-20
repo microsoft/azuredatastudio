@@ -8,7 +8,7 @@ import { EditorPaneDescriptor, IEditorPaneRegistry } from 'vs/workbench/browser/
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { localize } from 'vs/nls';
-import { IEditorFactoryRegistry, ActiveEditorContext, EditorExtensions } from 'vs/workbench/common/editor';
+import { IEditorFactoryRegistry, EditorExtensions } from 'vs/workbench/common/editor';
 import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/untitledNotebookInput';
 import { FileNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/fileNotebookInput';
@@ -44,7 +44,6 @@ import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellVi
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions, IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { NotebookThemingContribution } from 'sql/workbench/contrib/notebook/browser/notebookThemingContribution';
 import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
-import { ToggleTabFocusModeAction } from 'vs/editor/contrib/toggleTabFocusMode/toggleTabFocusMode';
 import 'vs/css!./media/notebook.contribution';
 import { isMacintosh } from 'vs/base/common/platform';
 import { SearchSortOrder } from 'vs/workbench/services/search/common/search';
@@ -52,12 +51,11 @@ import { ImageMimeTypes, TextCellEditModes } from 'sql/workbench/services/notebo
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
-import { DEFAULT_NOTEBOOK_FILETYPE, IExecuteManager, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
+import { DefaultNotebookProviders, DEFAULT_NOTEBOOK_FILETYPE, IExecuteManager } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookExplorerViewletViewsContribution } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { IEditorResolverService, RegisteredEditorPriority } from 'vs/workbench/services/editor/common/editorResolverService';
 import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
-import { IModeService } from 'vs/editor/common/services/modeService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
 import { useNewMarkdownRendererKey } from 'sql/workbench/contrib/notebook/common/notebookCommon';
@@ -66,6 +64,9 @@ import { INotebookProviderRegistry, NotebookProviderRegistryId } from 'sql/workb
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { IPaneCompositePartService } from 'vs/workbench/services/panecomposite/browser/panecomposite';
 import { IViewDescriptorService, ViewContainerLocation } from 'vs/workbench/common/views';
+import { ToggleTabFocusModeAction } from 'vs/editor/contrib/toggleTabFocusMode/browser/toggleTabFocusMode';
+import { ActiveEditorContext } from 'vs/workbench/common/contextkeys';
+import { ILanguageService } from 'vs/editor/common/languages/language';
 
 Registry.as<IEditorFactoryRegistry>(EditorExtensions.EditorFactory)
 	.registerEditorSerializer(FileNotebookInput.ID, FileNoteBookEditorSerializer);
@@ -275,7 +276,7 @@ registerAction2(class extends Action2 {
 		});
 	}
 
-	run = async (accessor, options: { forceNewWindow: boolean, folderPath: URI }) => {
+	run = async (accessor, options: { forceNewWindow: boolean; folderPath: URI }) => {
 		const viewletService: IPaneCompositePartService = accessor.get(IPaneCompositePartService);
 		const viewDescriptorService: IViewDescriptorService = accessor.get(IViewDescriptorService);
 		const workspaceEditingService = accessor.get(IWorkspaceEditingService);
@@ -739,17 +740,17 @@ export class NotebookEditorOverrideContribution extends Disposable implements IW
 		@ILogService private _logService: ILogService,
 		@IEditorService private _editorService: IEditorService,
 		@IEditorResolverService private _editorResolverService: IEditorResolverService,
-		@IModeService private _modeService: IModeService
+		@ILanguageService private _modeService: ILanguageService
 	) {
 		super();
 		this.registerEditorOverrides();
 		// Refresh the editor overrides whenever the languages change so we ensure we always have
 		// the latest up to date list of extensions for each language
-		this._modeService.onLanguagesMaybeChanged(() => {
+		this._modeService.onDidChange(() => {
 			this.registerEditorOverrides();
 		});
 		notebookRegistry.onNewDescriptionRegistration(({ id, registration }) => {
-			if (id !== JUPYTER_PROVIDER_ID && id !== SQL_NOTEBOOK_PROVIDER && registration?.fileExtensions?.length > 0) {
+			if (!DefaultNotebookProviders.includes(id) && registration?.fileExtensions?.length > 0) {
 				let extensions = registration.fileExtensions
 					.filter(ext => ext?.length > 0 && ext.toLowerCase() !== DEFAULT_NOTEBOOK_FILETYPE);
 				this._newFileExtensions = this._newFileExtensions.concat(extensions);
@@ -770,6 +771,9 @@ export class NotebookEditorOverrideContribution extends Disposable implements IW
 
 		// Add newly registered file extensions
 		allExtensions = allExtensions.concat(this._newFileExtensions);
+		if (allExtensions.length === 0) {
+			return;
+		}
 
 		// Create the selector from the list of all the language extensions we want to associate with the
 		// notebook editor

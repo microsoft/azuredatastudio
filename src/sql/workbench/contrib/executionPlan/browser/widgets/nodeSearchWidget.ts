@@ -18,6 +18,10 @@ import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { AzdataGraphView, SearchType } from 'sql/workbench/contrib/executionPlan/browser/azdataGraphView';
 import { ExecutionPlanWidgetController } from 'sql/workbench/contrib/executionPlan/browser/executionPlanWidgetController';
 
+const SELECT_PROPERTY_TITLE = localize('executionPlanSelectPropertyTitle', 'Select property');
+const SELECT_SEARCH_TYPE_TITLE = localize('executionPlanSelectSearchTypeTitle', 'Select search type');
+const ENTER_SEARCH_VALUE_TITLE = localize('executionPlanEnterValueTitle', 'Enter search value');
+
 const CONTAINS_DISPLAY_STRING = localize("executionPlanSearchTypeContains", 'Contains');
 const EQUALS_DISPLAY_STRING = localize("executionPlanSearchTypeEquals", 'Equals');
 const GREATER_DISPLAY_STRING = '>';
@@ -53,19 +57,24 @@ export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 		// property name dropdown
 		this._propertyNameSelectBoxContainer = DOM.$('.search-widget-property-name-select-box .dropdown-container');
 		this.container.appendChild(this._propertyNameSelectBoxContainer);
-		const propDropdownOptions = this._executionPlanDiagram.getUniqueElementProperties();
-		this._propertyNameSelectBox = new SelectBox(propDropdownOptions, propDropdownOptions[0], this.contextViewService, this._propertyNameSelectBoxContainer);
-		attachSelectBoxStyler(this._propertyNameSelectBox, this.themeService);
 		this._propertyNameSelectBoxContainer.style.width = '150px';
+
+		const propDropdownOptions = this._executionPlanDiagram.getUniqueElementProperties();
+		this._propertyNameSelectBox = this._register(new SelectBox(propDropdownOptions, propDropdownOptions[0], this.contextViewService, this._propertyNameSelectBoxContainer));
+		this._propertyNameSelectBox.setAriaLabel(SELECT_PROPERTY_TITLE);
+		this._register(attachSelectBoxStyler(this._propertyNameSelectBox, this.themeService));
 		this._propertyNameSelectBox.render(this._propertyNameSelectBoxContainer);
-		this._propertyNameSelectBox.onDidSelect(e => {
+
+		this._register(this._propertyNameSelectBox.onDidSelect(e => {
 			this._usePreviousSearchResult = false;
-		});
+		}));
 
 		// search type dropdown
 		this._searchTypeSelectBoxContainer = DOM.$('.search-widget-search-type-select-box .dropdown-container');
+		this._searchTypeSelectBoxContainer.style.width = '100px';
 		this.container.appendChild(this._searchTypeSelectBoxContainer);
-		this._searchTypeSelectBox = new SelectBox([
+
+		this._searchTypeSelectBox = this._register(new SelectBox([
 			EQUALS_DISPLAY_STRING,
 			CONTAINS_DISPLAY_STRING,
 			GREATER_DISPLAY_STRING,
@@ -73,11 +82,12 @@ export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 			GREATER_EQUAL_DISPLAY_STRING,
 			LESSER_EQUAL_DISPLAY_STRING,
 			LESSER_AND_GREATER_DISPLAY_STRING
-		], EQUALS_DISPLAY_STRING, this.contextViewService, this._searchTypeSelectBoxContainer);
+		], EQUALS_DISPLAY_STRING, this.contextViewService, this._searchTypeSelectBoxContainer));
+		this._searchTypeSelectBox.setAriaLabel(SELECT_SEARCH_TYPE_TITLE);
 		this._searchTypeSelectBox.render(this._searchTypeSelectBoxContainer);
-		attachSelectBoxStyler(this._searchTypeSelectBox, this.themeService);
-		this._searchTypeSelectBoxContainer.style.width = '100px';
-		this._searchTypeSelectBox.onDidSelect(e => {
+		this._register(attachSelectBoxStyler(this._searchTypeSelectBox, this.themeService));
+
+		this._register(this._searchTypeSelectBox.onDidSelect(e => {
 			this._usePreviousSearchResult = false;
 			switch (e.selected) {
 				case EQUALS_DISPLAY_STRING:
@@ -101,35 +111,39 @@ export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 				case LESSER_AND_GREATER_DISPLAY_STRING:
 					this._selectedSearchType = SearchType.LesserAndGreaterThan;
 			}
-		});
+		}));
 
 		// search text input box
-		this._searchTextInputBox = new InputBox(this.container, this.contextViewService, {});
-		attachInputBoxStyler(this._searchTextInputBox, this.themeService);
+		this._searchTextInputBox = this._register(new InputBox(this.container, this.contextViewService, {}));
+		this._searchTextInputBox.setAriaLabel(ENTER_SEARCH_VALUE_TITLE);
 		this._searchTextInputBox.element.style.marginLeft = '5px';
-		this._searchTextInputBox.onDidChange(e => {
+		this._register(attachInputBoxStyler(this._searchTextInputBox, this.themeService));
+		this._register(this._searchTextInputBox.onDidChange(e => {
 			this._usePreviousSearchResult = false;
-		});
-
+		}));
 
 		// setting up key board shortcuts
+		const goToPreviousMatchAction = this._register(new GoToPreviousMatchAction());
+		const goToNextMatchAction = this._register(new GoToNextMatchAction());
+		const cancelSearchAction = this._register(new CancelSearch());
+
 		const self = this;
-		this._searchTextInputBox.element.onkeydown = async e => {
+		this._register(DOM.addDisposableListener(this._searchTextInputBox.element, DOM.EventType.KEY_DOWN, async (e: KeyboardEvent) => {
 			if (e.key === 'Enter' && e.shiftKey) {
-				await new GoToPreviousMatchAction().run(self);
+				await goToPreviousMatchAction.run(self);
 			} else if (e.key === 'Enter') {
-				await new GoToNextMatchAction().run(self);
+				await goToNextMatchAction.run(self);
 			} else if (e.key === 'Escape') {
-				await new CancelSearch().run(self);
+				await cancelSearchAction.run(self);
 			}
-		};
+		}));
 
 		// Adding action bar
-		this._actionBar = new ActionBar(this.container);
+		this._actionBar = this._register(new ActionBar(this.container));
 		this._actionBar.context = this;
-		this._actionBar.pushAction(new GoToPreviousMatchAction(), { label: false, icon: true });
-		this._actionBar.pushAction(new GoToNextMatchAction(), { label: false, icon: true });
-		this._actionBar.pushAction(new CancelSearch(), { label: false, icon: true });
+		this._actionBar.pushAction(goToPreviousMatchAction, { label: false, icon: true });
+		this._actionBar.pushAction(goToNextMatchAction, { label: false, icon: true });
+		this._actionBar.pushAction(cancelSearchAction, { label: false, icon: true });
 	}
 
 	// Initial focus is set to the search text input box
@@ -139,6 +153,7 @@ export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 
 	public searchNodes(): void {
 		this._currentSearchResultIndex = 0;
+
 		this._searchResults = this._executionPlanDiagram.searchNodes({
 			propertyName: this._propertyNameSelectBox.value,
 			value: this._searchTextInputBox.value,
@@ -155,6 +170,7 @@ export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 
 		this._executionPlanDiagram.centerElement(this._searchResults[this._currentSearchResultIndex]);
 		this._executionPlanDiagram.selectElement(this._searchResults[this._currentSearchResultIndex]);
+
 		this._currentSearchResultIndex = this._currentSearchResultIndex === this._searchResults.length - 1 ?
 			this._currentSearchResultIndex = 0 :
 			this._currentSearchResultIndex = ++this._currentSearchResultIndex;
@@ -167,6 +183,7 @@ export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 
 		this._executionPlanDiagram.centerElement(this._searchResults[this._currentSearchResultIndex]);
 		this._executionPlanDiagram.selectElement(this._searchResults[this._currentSearchResultIndex]);
+
 		this._currentSearchResultIndex = this._currentSearchResultIndex === 0 ?
 			this._currentSearchResultIndex = this._searchResults.length - 1 :
 			this._currentSearchResultIndex = --this._currentSearchResultIndex;
@@ -175,7 +192,7 @@ export class NodeSearchWidget extends ExecutionPlanWidgetBase {
 
 export class GoToNextMatchAction extends Action {
 	public static ID = 'qp.NextSearchAction';
-	public static LABEL = localize('nextSearchItemAction', "Next Match (Enter)");
+	public static LABEL = localize('nextSearchItemAction', "Next Match");
 
 	constructor() {
 		super(GoToNextMatchAction.ID, GoToNextMatchAction.LABEL, Codicon.arrowDown.classNames);
@@ -188,7 +205,7 @@ export class GoToNextMatchAction extends Action {
 
 export class GoToPreviousMatchAction extends Action {
 	public static ID = 'qp.PreviousSearchAction';
-	public static LABEL = localize('previousSearchItemAction', "Previous Match (Shift+Enter)");
+	public static LABEL = localize('previousSearchItemAction', "Previous Match");
 
 	constructor() {
 		super(GoToPreviousMatchAction.ID, GoToPreviousMatchAction.LABEL, Codicon.arrowUp.classNames);
@@ -201,7 +218,7 @@ export class GoToPreviousMatchAction extends Action {
 
 export class CancelSearch extends Action {
 	public static ID = 'qp.cancelSearchAction';
-	public static LABEL = localize('cancelSearchAction', "Close (Escape)");
+	public static LABEL = localize('cancelSearchAction', "Close");
 
 	constructor() {
 		super(CancelSearch.ID, CancelSearch.LABEL, Codicon.chromeClose.classNames);

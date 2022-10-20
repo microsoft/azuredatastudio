@@ -11,6 +11,7 @@
 // We need to translate cursor_pos in the Jupyter protocol (in characters)
 // to js offset (with surrogate pairs taking two spots).
 
+// allow-any-unicode-next-line
 const HAS_SURROGATES: boolean = '𝐚'.length > 1;
 
 /**
