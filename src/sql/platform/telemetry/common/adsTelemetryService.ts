@@ -4,9 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { IAdsTelemetryService, ITelemetryInfo, ITelemetryEvent, ITelemetryEventMeasures, ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
+import { IAdsTelemetryService, ITelemetryEvent, ITelemetryEventMeasures, ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 import { ILogService } from 'vs/platform/log/common/log';
-import { ITelemetryService, TelemetryLevel } from 'vs/platform/telemetry/common/telemetry';
+import { ITelemetryInfo, ITelemetryService, TelemetryLevel } from 'vs/platform/telemetry/common/telemetry';
 import { EventName } from 'sql/platform/telemetry/common/telemetryKeys';
 
 
@@ -90,15 +90,16 @@ export class AdsTelemetryService implements IAdsTelemetryService {
 	) { }
 
 	setEnabled(value: boolean): void {
-		if (value) {
-			this.telemetryService.telemetryLevel = TelemetryLevel.USAGE;
-		} else {
-			this.telemetryService.telemetryLevel = TelemetryLevel.NONE;
-		}
+		// if (value) {
+		// 	this.telemetryService.telemetryLevel = TelemetryLevel.USAGE;
+		// } else {
+		// 	this.telemetryService.telemetryLevel = TelemetryLevel.NONE;
+		// }
+		throw "Telemetry level is readonly";
 	}
 
 	get isOptedIn(): boolean {
-		return this.telemetryService.telemetryLevel !== TelemetryLevel.NONE;
+		return this.telemetryService.telemetryLevel.value !== TelemetryLevel.NONE;
 	}
 
 	getTelemetryInfo(): Promise<ITelemetryInfo> {
@@ -231,7 +232,8 @@ export class NullAdsTelemetryService implements IAdsTelemetryService {
 		return Promise.resolve({
 			sessionId: '',
 			machineId: '',
-			instanceId: ''
+			firstSessionDate: '',
+			msftInternal: false
 		});
 	}
 	createViewEvent(view: string): ITelemetryEvent { return new NullTelemetryEventImpl(); }

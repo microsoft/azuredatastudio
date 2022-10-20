@@ -3,9 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { SqlExtHostContext, SqlMainContext, ExtHostQueryEditorShape, MainThreadQueryEditorShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
-import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
+import { ExtHostQueryEditorShape, MainThreadQueryEditorShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -19,6 +17,8 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { URI } from 'vs/base/common/uri';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
+import { SqlExtHostContext, SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadQueryEditor)
 export class MainThreadQueryEditor extends Disposable implements MainThreadQueryEditorShape {
@@ -131,7 +131,8 @@ export class MainThreadQueryEditor extends Disposable implements MainThreadQuery
 
 		let editor = editors && editors.length > 0 ? editors[0] : undefined;
 		if (editor) {
-			let queryEditor = editor as QueryEditor;
+			// {{SQL CARBON TODO}} - cast incompatible type to unknown
+			let queryEditor = (<unknown>editor) as QueryEditor;
 			if (queryEditor) {
 				queryEditor.registerQueryModelViewTab(title, componentId);
 			}

@@ -9,7 +9,6 @@ import { IClipboardService } from 'sql/platform/clipboard/common/clipboardServic
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { Modal } from 'sql/workbench/browser/modal/modal';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -22,6 +21,7 @@ import { IInputOptions, MessageType } from 'vs/base/browser/ui/inputbox/inputBox
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { INotebookView } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 
 export class ViewOptionsModal extends Modal {
 	private _submitButton: Button;

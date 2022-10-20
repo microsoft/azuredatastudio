@@ -22,9 +22,11 @@ export class CommandManager {
 		this.commands.clear();
 	}
 
-	public register<T extends Command>(command: T): T {
+	public register<T extends Command>(command: T): vscode.Disposable {
 		this.registerCommand(command.id, command.execute, command);
-		return command;
+		return new vscode.Disposable(() => {
+			this.commands.delete(command.id);
+		});
 	}
 
 	// {{SQL CARBON EDIT}}

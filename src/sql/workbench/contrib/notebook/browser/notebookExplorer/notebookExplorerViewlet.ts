@@ -30,7 +30,6 @@ import { IChangeEvent } from 'vs/workbench/contrib/search/common/searchModel';
 import { Delayer } from 'vs/base/common/async';
 import { ITextQuery, IPatternInfo } from 'vs/workbench/services/search/common/search';
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
-import { QueryBuilder, ITextQueryBuilderOptions } from 'vs/workbench/contrib/search/common/queryBuilder';
 import { IFileService } from 'vs/platform/files/common/files';
 import { getOutOfWorkspaceEditorResources } from 'vs/workbench/contrib/search/common/search';
 import { NotebookSearchView } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookSearch';
@@ -40,6 +39,7 @@ import { TreeViewPane } from 'vs/workbench/browser/parts/views/treeView';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
+import { ITextQueryBuilderOptions, QueryBuilder } from 'vs/workbench/services/search/common/queryBuilder';
 
 export const VIEWLET_ID = 'workbench.view.notebooks';
 
@@ -151,7 +151,7 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 		return false;
 	}
 
-	triggerQueryChange(_options?: { preserveFocus?: boolean, triggeredOnType?: boolean, delay?: number }) {
+	triggerQueryChange(_options?: { preserveFocus?: boolean; triggeredOnType?: boolean; delay?: number }) {
 		const options = { preserveFocus: true, triggeredOnType: false, delay: 0, ..._options };
 
 		if (!this.pauseSearching) {
@@ -402,7 +402,8 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 	}
 
 	protected override createView(viewDescriptor: IViewDescriptor, options: IViewletViewOptions): ViewPane {
-		let viewletPanel = this.instantiationService.createInstance(viewDescriptor.ctorDescriptor.ctor, options) as ViewPane;
+		// {{SQL CARBON TODO}} - don't cast to never
+		let viewletPanel = this.instantiationService.createInstance(viewDescriptor.ctorDescriptor.ctor, <never>options) as ViewPane;
 		this._register(viewletPanel);
 		return viewletPanel;
 	}

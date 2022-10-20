@@ -8,6 +8,9 @@
 		],
 	},
 	"include": [
-		"src/**/*"
+		"src/**/*",
+		"../../src/vscode-dts/vscode.d.ts",
+		"../../../../src/sql/azdata.d.ts",
+		"../../../../src/sql/azdata.proposed.d.ts"
 	]
 }

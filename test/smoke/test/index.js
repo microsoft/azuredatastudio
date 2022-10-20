@@ -3,22 +3,25 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-const path = require('path');
+//@ts-check
+'use strict';
+
+const { join } = require('path');
 const Mocha = require('mocha');
 const minimist = require('minimist');
 
 const [, , ...args] = process.argv;
 const opts = minimist(args, {
-	boolean: 'web',
+	boolean: ['web'],
 	string: ['f', 'g']
 });
 
-const suite = opts['web'] ? 'Browser Smoke Tests' : 'Smoke Tests';
+const suite = opts['web'] ? 'Browser Smoke Tests' : 'Desktop Smoke Tests';
 
 const options = {
 	color: true,
-	timeout: 300000,
-	slow: 30000,
+	timeout: 2 * 60 * 1000,
+	slow: 30 * 1000,
 	grep: opts['f'] || opts['g']
 };
 
@@ -28,7 +31,7 @@ if (process.env.BUILD_ARTIFACTSTAGINGDIRECTORY) {
 		reporterEnabled: 'spec, mocha-junit-reporter',
 		mochaJunitReporterReporterOptions: {
 			testsuitesTitle: `${suite} ${process.platform}`,
-			mochaFile: path.join(process.env.BUILD_ARTIFACTSTAGINGDIRECTORY, `test-results/${process.platform}-${process.arch}-${suite.toLowerCase().replace(/[^\w]/g, '-')}-results.xml`)
+			mochaFile: join(process.env.BUILD_ARTIFACTSTAGINGDIRECTORY, `test-results/${process.platform}-${process.arch}-${suite.toLowerCase().replace(/[^\w]/g, '-')}-results.xml`)
 		}
 	};
 }
@@ -52,4 +55,38 @@ if (!options.grep) {
 const mocha = new Mocha(options);
 
 mocha.addFile('out/main.js');
-mocha.run(failures => process.exit(failures ? -1 : 0));
+mocha.run(failures => {
+
+	// Indicate location of log files for further diagnosis
+	if (failures) {
+		const rootPath = join(__dirname, '..', '..', '..');
+		const logPath = join(rootPath, '.build', 'logs');
+
+		if (process.env.BUILD_ARTIFACTSTAGINGDIRECTORY) {
+			console.log(`
+###################################################################
+#                                                                 #
+# Logs are attached as build artefact and can be downloaded       #
+# from the build Summary page (Summary -> Related -> N published) #
+#                                                                 #
+# Show playwright traces on: https://trace.playwright.dev/        #
+#                                                                 #
+###################################################################
+		`);
+		} else {
+			console.log(`
+#############################################
+#
+# Log files of client & server are stored into
+# '${logPath}'.
+#
+# Logs of the smoke test runner are stored into
+# 'smoke-test-runner.log' in respective folder.
+#
+#############################################
+		`);
+		}
+	}
+
+	process.exit(failures ? -1 : 0);
+});

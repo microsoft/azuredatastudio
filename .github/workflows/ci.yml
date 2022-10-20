@@ -141,9 +141,10 @@ jobs:
         id: electron-unit-tests
         run: DISPLAY=:10 ./scripts/test.sh --runGlob "**/sql/**/*.test.js" --coverage
 
-      - name: Run Extension Unit Tests (Electron)
-        id: electron-extension-unit-tests
-        run: DISPLAY=:10 ./scripts/test-extensions-unit.sh
+      # {{SQL CARBON TODO}} - reenable
+      # - name: Run Extension Unit Tests (Electron)
+      #   id: electron-extension-unit-tests
+      #   run: DISPLAY=:10 ./scripts/test-extensions-unit.sh
 
       # {{SQL CARBON EDIT}} Add coveralls. We merge first to get around issue where parallel builds weren't being combined correctly
       - name: Combine code coverage files
