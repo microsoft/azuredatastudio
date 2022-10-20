@@ -37,7 +37,7 @@ suite('ExtHostNotebook Tests', () => {
 			drain: () => { return undefined; },
 			dispose: () => { return; },
 		};
-		extHostNotebook = new ExtHostNotebook(mainContext, undefined);
+		extHostNotebook = new ExtHostNotebook(mainContext);
 		notebookUri = URI.parse('file:/user/default/my.ipynb');
 		serializationProviderMock = TypeMoq.Mock.ofType(SerializationProviderStub, TypeMoq.MockBehavior.Loose);
 		serializationProviderMock.callBase = true;

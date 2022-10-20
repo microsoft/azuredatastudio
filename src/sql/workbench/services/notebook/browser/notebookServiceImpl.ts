@@ -429,12 +429,6 @@ export class NotebookService extends Disposable implements INotebookService {
 				this._executeProviders.set(p.id, new ExecuteProviderDescriptor(p.id));
 			}
 			this.addStandardKernels(registration, registration.fileExtensions);
-		} else {
-			// Standard kernels might get registered later for VSCode notebooks, so add a descriptor to wait on
-			if (!this._providerToStandardKernels.has(p.id)) {
-				let descriptor = new StandardKernelsDescriptor(p.id);
-				this._providerToStandardKernels.set(p.id.toUpperCase(), descriptor);
-			}
 		}
 
 		// Emit activation event if the provider is not one of the default options

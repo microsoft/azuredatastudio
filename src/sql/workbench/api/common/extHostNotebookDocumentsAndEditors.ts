@@ -21,8 +21,6 @@ import {
 } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { ExtHostNotebookDocumentData } from 'sql/workbench/api/common/extHostNotebookDocumentData';
 import { ExtHostNotebookEditor } from 'sql/workbench/api/common/extHostNotebookEditor';
-import { VSCodeNotebookDocument } from 'sql/workbench/api/common/notebooks/vscodeNotebookDocument';
-import { VSCodeNotebookEditor } from 'sql/workbench/api/common/notebooks/vscodeNotebookEditor';
 import { docNotFoundForUriError } from 'sql/base/common/locConstants';
 import { SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
@@ -52,44 +50,12 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 	readonly onDidCloseNotebookDocument: Event<azdata.nb.NotebookDocument> = this._onDidCloseNotebook.event;
 	readonly onDidChangeNotebookCell: Event<azdata.nb.NotebookCellChangeEvent> = this._onDidChangeNotebookCell.event;
 
-	private readonly _onDidChangeVisibleVSCodeEditors = new Emitter<vscode.NotebookEditor[]>();
-	private readonly _onDidChangeActiveVSCodeEditor = new Emitter<vscode.NotebookEditor>();
-	private readonly _onDidOpenVSCodeNotebook = new Emitter<vscode.NotebookDocument>();
-	private readonly _onDidCloseVSCodeNotebook = new Emitter<vscode.NotebookDocument>();
-	private readonly _onDidSaveVSCodeNotebook = new Emitter<vscode.NotebookDocument>();
-	// {{SQL CARBON TODO}} - disable events
-	// private readonly _onDidChangeVSCodeCellMetadata = new Emitter<vscode.NotebookCellMetadataChangeEvent>();
-	// private readonly _onDidChangeVSCodeDocumentMetadata = new Emitter<vscode.NotebookDocumentMetadataChangeEvent>();
-	// private readonly _onDidChangeVSCodeCellOutputs = new Emitter<vscode.NotebookCellOutputsChangeEvent>();
-	// private readonly _onDidChangeVSCodeNotebookCells = new Emitter<vscode.NotebookCellsChangeEvent>();
-	private readonly _onDidChangeVSCodeExecutionState = new Emitter<vscode.NotebookCellExecutionStateChangeEvent>();
-	private readonly _onDidChangeVSCodeEditorSelection = new Emitter<vscode.NotebookEditorSelectionChangeEvent>();
-	private readonly _onDidChangeVSCodeEditorRanges = new Emitter<vscode.NotebookEditorVisibleRangesChangeEvent>();
-
-	readonly onDidChangeVisibleVSCodeEditors: Event<vscode.NotebookEditor[]> = this._onDidChangeVisibleVSCodeEditors.event;
-	readonly onDidChangeActiveVSCodeEditor: Event<vscode.NotebookEditor> = this._onDidChangeActiveVSCodeEditor.event;
-	readonly onDidOpenVSCodeNotebookDocument: Event<vscode.NotebookDocument> = this._onDidOpenVSCodeNotebook.event;
-	readonly onDidCloseVSCodeNotebookDocument: Event<vscode.NotebookDocument> = this._onDidCloseVSCodeNotebook.event;
-	readonly onDidSaveVSCodeNotebookDocument: Event<vscode.NotebookDocument> = this._onDidSaveVSCodeNotebook.event;
-	// readonly onDidChangeVSCodeCellMetadata: Event<vscode.NotebookCellMetadataChangeEvent> = this._onDidChangeVSCodeCellMetadata.event;
-	// readonly onDidChangeVSCodeDocumentMetadata: Event<vscode.NotebookDocumentMetadataChangeEvent> = this._onDidChangeVSCodeDocumentMetadata.event;
-	// readonly onDidChangeVSCodeCellOutputs: Event<vscode.NotebookCellOutputsChangeEvent> = this._onDidChangeVSCodeCellOutputs.event;
-	// readonly onDidChangeVSCodeNotebookCells: Event<vscode.NotebookCellsChangeEvent> = this._onDidChangeVSCodeNotebookCells.event;
-	readonly onDidChangeVSCodeExecutionState: Event<vscode.NotebookCellExecutionStateChangeEvent> = this._onDidChangeVSCodeExecutionState.event;
-	readonly onDidChangeVSCodeEditorSelection: Event<vscode.NotebookEditorSelectionChangeEvent> = this._onDidChangeVSCodeEditorSelection.event;
-	readonly onDidChangeVSCodeEditorRanges: Event<vscode.NotebookEditorVisibleRangesChangeEvent> = this._onDidChangeVSCodeEditorRanges.event;
-
 	constructor(
 		private readonly _mainContext: IMainContext,
 	) {
 		if (this._mainContext) {
 			this._proxy = this._mainContext.getProxy(SqlMainContext.MainThreadNotebookDocumentsAndEditors);
 		}
-
-		this.onDidChangeVisibleNotebookEditors(editors => this._onDidChangeVisibleVSCodeEditors.fire(editors.map(editor => new VSCodeNotebookEditor(editor))));
-		this.onDidChangeActiveNotebookEditor(editor => this._onDidChangeActiveVSCodeEditor.fire(new VSCodeNotebookEditor(editor)));
-		this.onDidOpenNotebookDocument(notebook => this._onDidOpenVSCodeNotebook.fire(new VSCodeNotebookDocument(notebook)));
-		this.onDidCloseNotebookDocument(notebook => this._onDidCloseVSCodeNotebook.fire(new VSCodeNotebookDocument(notebook)));
 	}
 
 	dispose() {
