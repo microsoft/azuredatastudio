@@ -104,7 +104,9 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 	private async _initialize(storedAccounts: AzureAccount[]): Promise<AzureAccount[]> {
 		const accounts: AzureAccount[] = [];
 		console.log(`Initializing stored accounts ${JSON.stringify(accounts)}`);
-		for (let account of storedAccounts) {
+		const authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
+		const updatedAccounts = storedAccounts.filter(account => account.key.authLibrary === authLibrary);
+		for (let account of updatedAccounts) {
 			if (this.authLibrary === 'ADAL') {
 				const azureAuth = this.getAuthMethod(account);
 				if (!azureAuth) {

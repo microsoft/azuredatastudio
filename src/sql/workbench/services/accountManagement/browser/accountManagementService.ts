@@ -24,6 +24,8 @@ import { values } from 'vs/base/common/collections';
 import { ILogService } from 'vs/platform/log/common/log';
 import { INotificationService, Severity, INotification } from 'vs/platform/notification/common/notification';
 import { Action } from 'vs/base/common/actions';
+import { DisposableStore } from 'vs/base/common/lifecycle';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export class AccountManagementService implements IAccountManagementService {
 	// CONSTANTS ///////////////////////////////////////////////////////////
@@ -36,6 +38,8 @@ export class AccountManagementService implements IAccountManagementService {
 	private _accountDialogController?: AccountDialogController;
 	private _autoOAuthDialogController?: AutoOAuthDialogController;
 	private _mementoContext?: Memento;
+	protected readonly disposables = new DisposableStore();
+	private readonly configurationService: IConfigurationService;
 
 	// EVENT EMITTERS //////////////////////////////////////////////////////
 	private _addAccountProviderEmitter: Emitter<AccountProviderAddedEventParams>;
@@ -54,7 +58,8 @@ export class AccountManagementService implements IAccountManagementService {
 		@IClipboardService private _clipboardService: IClipboardService,
 		@IOpenerService private _openerService: IOpenerService,
 		@ILogService private readonly _logService: ILogService,
-		@INotificationService private readonly _notificationService: INotificationService
+		@INotificationService private readonly _notificationService: INotificationService,
+		@IConfigurationService configurationService: IConfigurationService
 	) {
 		this._mementoContext = new Memento(AccountManagementService.ACCOUNT_MEMENTO, this._storageService);
 		const mementoObj = this._mementoContext.getMemento(StorageScope.GLOBAL, StorageTarget.MACHINE);
@@ -64,8 +69,10 @@ export class AccountManagementService implements IAccountManagementService {
 		this._addAccountProviderEmitter = new Emitter<AccountProviderAddedEventParams>();
 		this._removeAccountProviderEmitter = new Emitter<azdata.AccountProviderMetadata>();
 		this._updateAccountListEmitter = new Emitter<UpdateAccountListEventParams>();
+		this.configurationService = configurationService;
 
 		_storageService.onWillSaveState(() => this.shutdown());
+		this.registerListeners();
 	}
 
 	private get autoOAuthDialogController(): AutoOAuthDialogController {
@@ -136,6 +143,9 @@ export class AccountManagementService implements IAccountManagementService {
 				}
 
 				let result = await this._accountStore.addOrUpdate(account);
+				if (!result) {
+					this._logService.error('adding account failed');
+				}
 				if (result.accountAdded) {
 					// Add the account to the list
 					provider.accounts.push(result.changedAccount);
@@ -458,10 +468,13 @@ export class AccountManagementService implements IAccountManagementService {
 			});
 		}
 
+		const authLibrary = this.configurationService.getValue('azure.authenticationLibrary');
+		let updatedAccounts = provider.accounts.filter(account => account.key.authLibrary === authLibrary);
+
 		// Step 2) Fire the event
 		let eventArg: UpdateAccountListEventParams = {
 			providerId: provider.metadata.id,
-			accountList: provider.accounts
+			accountList: updatedAccounts
 		};
 		this._updateAccountListEmitter.fire(eventArg);
 	}
@@ -474,6 +487,39 @@ export class AccountManagementService implements IAccountManagementService {
 		if (indexToRemove >= 0) {
 			provider.accounts.splice(indexToRemove, 1, modifiedAccount);
 		}
+	}
+
+	private registerListeners(): void {
+		this.disposables.add(this.configurationService.onDidChangeConfiguration(async e => {
+			if (e.affectsConfiguration('azure.authenticationLibrary')) {
+				const authLibrary = this.configurationService.getValue('azure.authenticationLibrary');
+				if (authLibrary) {
+					let accounts = await this._accountStore.getAllAccounts();
+					if (accounts) {
+						let updatedAccounts = accounts.filter(account => account.key.authLibrary === authLibrary);
+						let eventArg: UpdateAccountListEventParams;
+						if (updatedAccounts.length > 0) {
+							updatedAccounts.forEach(account => {
+								if (account.key.authLibrary === 'MSAL') {
+									account.isStale = false;
+								}
+							});
+							eventArg = {
+								providerId: updatedAccounts[0].key.providerId,
+								accountList: updatedAccounts
+							};
+
+						} else { // default to public cloud if no accounts
+							eventArg = {
+								providerId: 'azure_publicCloud',
+								accountList: updatedAccounts
+							};
+						}
+						this._updateAccountListEmitter.fire(eventArg);
+					}
+				}
+			}
+		}));
 	}
 }
 

@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import { AppContext } from './appContext';
 import { AzureResourceServiceNames } from './azureResource/constants';
 import { IAzureResourceSubscriptionService } from './azureResource/interfaces';
@@ -30,7 +31,8 @@ export class AzureDataGridProvider implements azdata.DataGridProvider {
 	public title = loc.azureResourcesGridTitle;
 
 	public async getDataGridItems() {
-		const accounts = await azdata.accounts.getAllAccounts();
+		const authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
+		const accounts = (await azdata.accounts.getAllAccounts()).filter(account => account.key.authLibrary === authLibrary);
 		const items: any[] = [];
 		await Promise.all(accounts.map(async (account) => {
 			await Promise.all(account.properties.tenants.map(async (tenant: { id: string; }) => {
