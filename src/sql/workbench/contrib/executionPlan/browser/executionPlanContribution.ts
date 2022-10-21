@@ -120,15 +120,10 @@ CommandsRegistry.registerCommand(COMPARE_EXECUTION_PLAN_COMMAND_ID, (accessors: 
 	});
 });
 
-export const executionPlanConfigurationBaseNode = Object.freeze<IConfigurationNode>({
+const executionPlanContribution: IConfigurationNode = {
 	id: 'executionPlan',
-	order: 5,
 	type: 'object',
 	title: localize('executionPlanConfigurationTitle', "Execution Plan"),
-});
-
-const executionPlanContribution: IConfigurationNode = {
-	...executionPlanConfigurationBaseNode,
 	properties: {
 		'executionPlan.tooltips.enableOnHoverTooltips': {
 			'type': 'boolean',
@@ -136,7 +131,7 @@ const executionPlanContribution: IConfigurationNode = {
 			'default': false
 		},
 	}
-}
+};
 
 const configurationRegistry = <IConfigurationRegistry>Registry.as(ConfigExtensions.Configuration);
 configurationRegistry.registerConfiguration(executionPlanContribution);
