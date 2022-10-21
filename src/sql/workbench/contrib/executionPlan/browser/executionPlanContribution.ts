@@ -23,6 +23,7 @@ import { localize } from 'vs/nls';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { CATEGORIES } from 'sql/workbench/contrib/query/browser/queryActions';
+import { IConfigurationRegistry, Extensions as ConfigExtensions, IConfigurationNode } from 'vs/platform/configuration/common/configurationRegistry';
 
 // Execution Plan editor registration
 
@@ -118,3 +119,24 @@ CommandsRegistry.registerCommand(COMPARE_EXECUTION_PLAN_COMMAND_ID, (accessors: 
 		pinned: true
 	});
 });
+
+export const executionPlanConfigurationBaseNode = Object.freeze<IConfigurationNode>({
+	id: 'executionPlan',
+	order: 5,
+	type: 'object',
+	title: localize('executionPlanConfigurationTitle', "Execution Plan"),
+});
+
+const executionPlanContribution: IConfigurationNode = {
+	...executionPlanConfigurationBaseNode,
+	properties: {
+		'executionPlan.tooltips.enableOnHoverTooltips': {
+			'type': 'boolean',
+			'description': localize('executionPlan.tooltips.enableOnHoverTooltips', "When true, enables tooltips on hover for execution plan. When false, tooltips are shown on node click or F3 key press."),
+			'default': false
+		},
+	}
+}
+
+const configurationRegistry = <IConfigurationRegistry>Registry.as(ConfigExtensions.Configuration);
+configurationRegistry.registerConfiguration(executionPlanContribution);
