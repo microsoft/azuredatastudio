@@ -157,7 +157,7 @@ steps:
   - script: |
       set -e
       ./scripts/test.sh --build --tfs "Unit Tests"
-    displayName: Run unit tests (Electron)
+    displayName: Run core unit tests
     timeoutInMinutes: 15
 
   - script: |
@@ -182,7 +182,7 @@ steps:
       INTEGRATION_TEST_ELECTRON_PATH="$APP_ROOT/$APP_NAME/Contents/MacOS/Electron" \
       VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/vscode-reh-darwin-$(VSCODE_ARCH)" \
       ./scripts/test-integration.sh --build --tfs "Integration Tests"
-    displayName: Run integration tests (Electron)
+    displayName: Run core integration tests
     timeoutInMinutes: 20
 
   - script: |
@@ -222,7 +222,7 @@ steps:
       APP_NAME="`ls $APP_ROOT | head -n 1`"
       yarn smoketest-no-compile --tracing --build "$APP_ROOT/$APP_NAME"
     timeoutInMinutes: 20
-    displayName: Run smoke tests (Electron)
+    displayName: Run core smoke tests
 
   - script: |
       set -e
