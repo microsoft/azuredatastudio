@@ -128,7 +128,7 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 		this._grid.render();
 		this._grid.setActiveCell(row, this.index);
 		this.checkSelectAll();
-		if(this._options.actionOnCheck === ActionOnCheck.selectRow){
+		if (this._options.actionOnCheck === ActionOnCheck.selectRow) {
 			this.updateSelectedRows();
 		} else {
 			this._onChange.fire({ checked: false, row: row, column: this.index });
@@ -170,7 +170,7 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 		}
 
 		this._grid.updateColumnHeader(this._options.columnId!, `<input type="checkbox" tabIndex="0" ${this._headerCheckbox.checked ? 'checked' : ''} title=${HeaderCheckboxTitle}/>`, this._options.toolTip);
-		if(this._options.actionOnCheck === ActionOnCheck.selectRow){
+		if (this._options.actionOnCheck === ActionOnCheck.selectRow) {
 			this.updateSelectedRows();
 		}
 		this._grid.invalidateAllRows();

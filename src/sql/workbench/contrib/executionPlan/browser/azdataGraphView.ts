@@ -6,7 +6,7 @@
 import * as azdataGraphModule from 'azdataGraph';
 import * as azdata from 'azdata';
 import * as sqlExtHostType from 'sql/workbench/api/common/sqlExtHostTypes';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { isString } from 'vs/base/common/types';
 import { badgeIconPaths, collapseExpandNodeIconPaths, executionPlanNodeIconPaths } from 'sql/workbench/contrib/executionPlan/browser/constants';
 import { localize } from 'vs/nls';
@@ -14,13 +14,14 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { foreground } from 'vs/platform/theme/common/colorRegistry';
 import { generateUuid } from 'vs/base/common/uuid';
+import { Disposable } from 'vs/base/common/lifecycle';
 const azdataGraph = azdataGraphModule();
 
 /**
  * This view holds the azdataGraph diagram and provides different
  * methods to manipulate the azdataGraph
  */
-export class AzdataGraphView {
+export class AzdataGraphView extends Disposable {
 
 	private _diagram: any;
 	private _diagramModel: AzDataGraphCell;
@@ -37,6 +38,8 @@ export class AzdataGraphView {
 		private _executionPlan: azdata.executionPlan.ExecutionPlanGraph,
 		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService,
 	) {
+		super();
+
 		this._diagramModel = this.populate(this._executionPlan.root);
 
 		let queryPlanConfiguration = {
@@ -58,13 +61,13 @@ export class AzdataGraphView {
 		this._diagram.graph.setCellsDisconnectable(false); // preventing graph edges to be disconnected from source and target nodes.
 		this._diagram.graph.tooltipHandler.delay = 700; // increasing delay for tooltips
 
-		registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
+		this._register(registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
 			const iconLabelColor = theme.getColor(foreground);
 			if (iconLabelColor) {
 				this._diagram.setTextFontColor(iconLabelColor);
 				this._diagram.setEdgeColor(iconLabelColor);
 			}
-		});
+		}));
 	}
 
 	private initializeGraphEvents(): void {
@@ -74,10 +77,12 @@ export class AzdataGraphView {
 				if (this._cellInFocus?.id === evt.properties.removed[0]?.id) {
 					return;
 				}
+
 				const newSelection = evt.properties.removed[0];
 				if (!newSelection) {
 					return;
 				}
+
 				this._onElementSelectedEmitter.fire(this.getElementById(newSelection.id));
 				this.centerElement(this.getElementById(newSelection.id));
 				this._cellInFocus = evt.properties.removed[0];
@@ -102,7 +107,9 @@ export class AzdataGraphView {
 		} else {
 			cell = this._diagram.graph.model.getCell((<azdata.executionPlan.ExecutionPlanNode>this._executionPlan.root).id);
 		}
+
 		this._diagram.graph.getSelectionModel().setCell(cell);
+
 		if (bringToCenter) {
 			this.centerElement(element);
 		}
@@ -116,6 +123,7 @@ export class AzdataGraphView {
 		if (cell?.id) {
 			return this.getElementById(cell.id);
 		}
+
 		return undefined;
 	}
 
@@ -158,6 +166,7 @@ export class AzdataGraphView {
 		if (level < 1) {
 			throw new Error(localize('invalidExecutionPlanZoomError', "Zoom level cannot be 0 or negative"));
 		}
+
 		this._diagram.zoomTo(level);
 	}
 
@@ -168,11 +177,13 @@ export class AzdataGraphView {
 	public getElementById(id: string): InternalExecutionPlanElement | undefined {
 		const nodeStack: azdata.executionPlan.ExecutionPlanNode[] = [];
 		nodeStack.push(this._executionPlan.root);
+
 		while (nodeStack.length !== 0) {
 			const currentNode = nodeStack.pop();
 			if (currentNode.id === id) {
 				return currentNode;
 			}
+
 			if (currentNode.edges) {
 				for (let i = 0; i < currentNode.edges.length; i++) {
 					if ((<InternalExecutionPlanEdge>currentNode.edges[i]).id === id) {
@@ -180,8 +191,10 @@ export class AzdataGraphView {
 					}
 				}
 			}
+
 			nodeStack.push(...currentNode.children);
 		}
+
 		return undefined;
 	}
 
@@ -225,12 +238,15 @@ export class AzdataGraphView {
 						matchFound = matchingProp.value < searchQuery.value || matchingProp.value > searchQuery.value;
 						break;
 				}
+
 				if (matchFound) {
 					resultNodes.push(currentNode);
 				}
 			}
+
 			nodeStack.push(...currentNode.children);
 		}
+
 		return resultNodes;
 	}
 
@@ -303,13 +319,14 @@ export class AzdataGraphView {
 		diagramNode.tooltipTitle = node.name;
 		diagramNode.rowCountDisplayString = node.rowCountDisplayString;
 		diagramNode.costDisplayString = node.costDisplayString;
-		if (!node.id.toString().startsWith(`element-`)) {
-			node.id = `element-${node.id}`;
-		}
 
 		this.expensiveMetricTypes.add(ExpensiveMetricType.Off);
 
+		if (!node.id.toString().startsWith(`element-`)) {
+			node.id = `element-${node.id}`;
+		}
 		diagramNode.id = node.id;
+
 		diagramNode.icon = node.type;
 		diagramNode.metrics = this.populateProperties(node.properties);
 
@@ -401,6 +418,7 @@ export class AzdataGraphView {
 		props.forEach(p => {
 			this._graphElementPropertiesSet.add(p.name);
 		});
+
 		return props.filter(e => isString(e.displayValue) && e.showInTooltip)
 			.sort((a, b) => a.displayOrder - b.displayOrder)
 			.map(e => {
@@ -449,6 +467,7 @@ export class AzdataGraphView {
 		} else {
 			this._diagram.graph.tooltipHandler.setEnabled(true);
 		}
+
 		return this._diagram.graph.tooltipHandler.enabled;
 	}
 

@@ -9,7 +9,6 @@ import { makeUniversalApp } from 'vscode-universal-bundler';
 import { spawn } from '@malept/cross-spawn-promise';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import * as plist from 'plist';
 import * as product from '../../product.json';
 import * as glob from 'glob'; // {{SQL CARBON EDIT}}
 
@@ -33,7 +32,6 @@ async function main() {
 	const arm64AsarPath = path.join(arm64AppPath, 'Contents', 'Resources', 'app', 'node_modules.asar');
 	const outAppPath = path.join(buildDir, `azuredatastudio-darwin-${arch}`, appName); // {{SQL CARBON EDIT}} - CHANGE VSCode to azuredatastudio
 	const productJsonPath = path.resolve(outAppPath, 'Contents', 'Resources', 'app', 'product.json');
-	const infoPlistPath = path.resolve(outAppPath, 'Contents', 'Info.plist');
 
 	// {{SQL CARBON EDIT}}
 	// Current STS arm64 builds doesn't work on osx-arm64, we need to use the x64 version of STS on osx-arm64 until the issue is fixed.
@@ -76,6 +74,7 @@ async function main() {
 			'CodeResources',
 			'fsevents.node',
 			'Info.plist', // TODO@deepak1556: regressed with 11.4.2 internal builds
+			'MainMenu.nib', // Generated sequence is not deterministic with Xcode 13
 			'.npmrc'
 		],
 		outAppPath,
@@ -88,18 +87,11 @@ async function main() {
 	});
 	await fs.writeJson(productJsonPath, productJson);
 
-	let infoPlistString = await fs.readFile(infoPlistPath, 'utf8');
-	let infoPlistJson = plist.parse(infoPlistString);
-	Object.assign(infoPlistJson, {
-		LSRequiresNativeExecution: true
-	});
-	await fs.writeFile(infoPlistPath, plist.build(infoPlistJson), 'utf8');
-
 	// Verify if native module architecture is correct
-	const findOutput = await spawn('find', [outAppPath, '-name', 'keytar.node'])
-	const lipoOutput = await spawn('lipo', ['-archs', findOutput.replace(/\n$/, "")]);
-	if (lipoOutput.replace(/\n$/, "") !== 'x86_64 arm64') {
-		throw new Error(`Invalid arch, got : ${lipoOutput}`)
+	const findOutput = await spawn('find', [outAppPath, '-name', 'keytar.node']);
+	const lipoOutput = await spawn('lipo', ['-archs', findOutput.replace(/\n$/, '')]);
+	if (lipoOutput.replace(/\n$/, '') !== 'x86_64 arm64') {
+		throw new Error(`Invalid arch, got : ${lipoOutput}`);
 	}
 
 	// {{SQL CARBON EDIT}}

@@ -10,8 +10,6 @@ const path = require("path");
 const glob = require("glob");
 const rename = require("gulp-rename");
 const ext = require("./extensions");
-//imports for langpack refresh.
-const event_stream_1 = require("event-stream");
 const i18n = require("./i18n");
 const fs = require("fs");
 const File = require("vinyl");
@@ -103,7 +101,7 @@ function modifyI18nPackFiles(existingTranslationFolder, resultingTranslationPath
     let mainPack = { version: i18n.i18nPackVersion, contents: {} };
     let extensionsPacks = {};
     let errors = [];
-    return (0, event_stream_1.through)(function (xlf) {
+    return es.through(function (xlf) {
         let rawResource = path.basename(xlf.relative, '.xlf');
         let resource = rawResource.substring(0, rawResource.lastIndexOf('.'));
         let contents = xlf.contents.toString();

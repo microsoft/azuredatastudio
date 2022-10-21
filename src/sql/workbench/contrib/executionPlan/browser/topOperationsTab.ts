@@ -69,9 +69,11 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 	public scrollToIndex(index: number) {
 		index = index - 1;
 		this._topOperationsContainers[index].scrollIntoView(true);
+
 		this._tables.forEach(t => {
 			t.getSelectionModel().setSelectedRanges([]);
 		});
+
 		this._tables[index].getSelectionModel().setSelectedRanges([new Slick.Range(0, 1, 0, 1)]);
 		this._tables[index].focus();
 	}
@@ -95,6 +97,7 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 		while (this._container.firstChild) {
 			this._container.removeChild(this._container.firstChild);
 		}
+
 		this._input.graphs.forEach((g, i) => {
 			this.convertExecutionPlanGraphToTable(g, i);
 		});
@@ -102,17 +105,19 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 
 
 	public convertExecutionPlanGraphToTable(graph: azdata.executionPlan.ExecutionPlanGraph, index: number): Table<Slick.SlickData> {
-
 		const dataMap: { [key: string]: any }[] = [];
 		const columnValues: string[] = [];
 
 		const stack: azdata.executionPlan.ExecutionPlanNode[] = [];
 		stack.push(...graph.root.children);
+
 		while (stack.length !== 0) {
 			const node = stack.pop();
 			const row: { [key: string]: any } = {};
+
 			node.topOperationsData.forEach((d, i) => {
 				let displayText = d.displayValue.toString();
+
 				if (i === 0) {
 					row[d.columnName] = {
 						displayText: displayText,
@@ -126,14 +131,18 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 						dataType: d.dataType
 					};
 				}
+
 				if (columnValues.indexOf(d.columnName) === -1) {
 					columnValues.splice(i, 0, d.columnName);
 				}
 			});
+
 			row['nodeId'] = node.id;
+
 			if (node.children) {
 				node.children.forEach(c => stack.push(c));
 			}
+
 			row[TABLE_SORT_COLUMN_KEY] = node.cost;
 			dataMap.push(row);
 		}
@@ -165,35 +174,37 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 		headerContainer.appendChild(headerSearchBarContainer);
 		headerContainer.classList.add('codicon', filterIconClassNames);
 
-		const topOperationsSearchInput = new InputBox(headerSearchBarContainer, this._contextViewService, {
+		const topOperationsSearchInput = this._register(new InputBox(headerSearchBarContainer, this._contextViewService, {
 			ariaDescription: topOperationsSearchDescription,
 			placeholder: searchPlaceholder
-		});
-		attachInputBoxStyler(topOperationsSearchInput, this._themeService);
+		}));
+		this._register(attachInputBoxStyler(topOperationsSearchInput, this._themeService));
 		topOperationsSearchInput.element.classList.add('codicon', filterIconClassNames);
 
-		const header = this._instantiationService.createInstance(ExecutionPlanViewHeader, headerInfoContainer, {
+		const header = this._register(this._instantiationService.createInstance(ExecutionPlanViewHeader, headerInfoContainer, {
 			planIndex: index,
-		});
+		}));
 		header.query = graph.query;
 		header.relativeCost = graph.root.relativeCost;
+
 		const tableContainer = DOM.$('.table-container');
 		topOperationContainer.appendChild(tableContainer);
 		this._topOperationsContainers.push(topOperationContainer);
 
-		const rowNumberColumn = new RowNumberColumn({ numberOfRows: dataMap.length });
+		const rowNumberColumn = new RowNumberColumn({ autoCellSelection: false });
 		columns.unshift(rowNumberColumn.getColumnDefinition());
 
 		let copyHandler = new CopyKeybind<any>();
 		this._register(copyHandler.onCopy(e => {
+			let csvString = '';
 
 			const selectedDataRange = selectionModel.getSelectedRanges()[0];
-			let csvString = '';
 			if (selectedDataRange) {
 				const data = [];
 
 				for (let rowIndex = selectedDataRange.fromRow; rowIndex <= selectedDataRange.toRow; rowIndex++) {
-					const dataRow = table.getData().getItem(rowIndex);
+					const dataRow = this._register(table.getData()).getItem(rowIndex);
+
 					const row = [];
 					for (let colIndex = selectedDataRange.fromCell; colIndex <= selectedDataRange.toCell; colIndex++) {
 						const dataItem = dataRow[table.columns[colIndex].field];
@@ -203,8 +214,10 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 							row.push(' ');
 						}
 					}
+
 					data.push(row);
 				}
+
 				csvString = data.map(row =>
 					row.map(x => `${x}`).join('\t')
 				).join('\n');
@@ -214,7 +227,6 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 				for (let colIndex = selectedDataRange.fromCell; colIndex <= selectedDataRange.toCell; colIndex++) {
 					columns.push(table.columns[colIndex].name);
 				}
-
 			}
 
 			this._instantiationService.createInstance(CopyTableData).run({
@@ -222,13 +234,14 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 			});
 		}));
 
-		const selectionModel = new CellSelectionModel<Slick.SlickData>();
+		const selectionModel = new CellSelectionModel<Slick.SlickData>({ hasRowSelector: true });
 
-		const table = new Table<Slick.SlickData>(tableContainer, {
+		const table = this._register(new Table<Slick.SlickData>(tableContainer, {
 			columns: columns,
 			sorter: (args) => {
 				const column = args.sortCol.field;
-				const sortedData = table.getData().getItems().sort((a, b) => {
+
+				const sortedData = this._register(table.getData()).getItems().sort((a, b) => {
 					let result = -1;
 
 					if (!a[column]) {
@@ -256,8 +269,10 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 							}
 						}
 					}
+
 					return args.sortAsc ? result : -result;
 				});
+
 				table.setData(sortedData);
 			}
 		}, {
@@ -265,13 +280,13 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 			forceFitColumns: false,
 			defaultColumnWidth: 120,
 			showRowNumber: true
-		});
+		}));
+
 		table.setSelectionModel(selectionModel);
 		table.setData(dataMap);
-
 		table.registerPlugin(copyHandler);
-
 		table.setTableTitle(localize('topOperationsTableTitle', "Top Operations"));
+
 		this._register(table.onClick(e => {
 			if (e.cell.cell === 1) {
 				const row = table.getData().getItem(e.cell.row);
@@ -283,17 +298,13 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 		}));
 
 		this._tables.push(table);
-		const contextMenuAction = [
-			this._instantiationService.createInstance(CopyTableData),
-			this._instantiationService.createInstance(CopyTableDataWithHeader),
-			this._instantiationService.createInstance(SelectAll)
-		];
 
 		this._register(topOperationsSearchInput.onDidChange(e => {
 			const filter = e.toLowerCase();
 			if (filter) {
 				const filteredData = dataMap.filter(row => {
 					let includeRow = false;
+
 					for (let i = 0; i < columns.length; i++) {
 						const columnField = columns[i].field;
 						if (row[columnField]) {
@@ -303,18 +314,21 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 							}
 						}
 					}
+
 					return includeRow;
 				});
+
 				table.setData(filteredData);
 			} else {
 				table.setData(dataMap);
 			}
+
 			table.rerenderGrid();
 		}));
 
 		this._register(table.onKeyDown((evt: ITableKeyboardEvent) => {
 			if (evt.event.ctrlKey && (evt.event.key === 'a' || evt.event.key === 'A')) {
-				selectionModel.setSelectedRanges([new Slick.Range(0, 1, table.getData().getLength() - 1, table.columns.length - 1)]);
+				selectionModel.setSelectedRanges([new Slick.Range(0, 1, this._register(table.getData()).getLength() - 1, table.columns.length - 1)]);
 				table.focus();
 				evt.event.preventDefault();
 				evt.event.stopPropagation();
@@ -322,15 +336,17 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 		}));
 
 		this._register(table.onContextMenu(e => {
-			const selectedDataRange = selectionModel.getSelectedRanges()[0];
 			let csvString = '';
 			let csvStringWithHeader = '';
+
+			const selectedDataRange = selectionModel.getSelectedRanges()[0];
 			if (selectedDataRange) {
 				const data = [];
 
 				for (let rowIndex = selectedDataRange.fromRow; rowIndex <= selectedDataRange.toRow; rowIndex++) {
-					const dataRow = table.getData().getItem(rowIndex);
+					const dataRow = this._register(table.getData()).getItem(rowIndex);
 					const row = [];
+
 					for (let colIndex = selectedDataRange.fromCell; colIndex <= selectedDataRange.toCell; colIndex++) {
 						const dataItem = dataRow[table.columns[colIndex].field];
 						if (dataItem) {
@@ -339,20 +355,27 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 							row.push('');
 						}
 					}
+
 					data.push(row);
 				}
+
 				csvString = data.map(row =>
 					row.map(x => `${x}`).join('\t')
 				).join('\n');
 
 				const columns = [];
-
 				for (let colIndex = selectedDataRange.fromCell; colIndex <= selectedDataRange.toCell; colIndex++) {
 					columns.push(table.columns[colIndex].name);
 				}
 
 				csvStringWithHeader = columns.join('\t') + '\n' + csvString;
 			}
+
+			const contextMenuAction = [
+				this._register(this._instantiationService.createInstance(CopyTableData)),
+				this._register(this._instantiationService.createInstance(CopyTableDataWithHeader)),
+				this._register(this._instantiationService.createInstance(SelectAll))
+			];
 
 			this._contextMenuService.showContextMenu({
 				getAnchor: () => e.anchor,
@@ -364,13 +387,14 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 					selectionTextWithHeader: csvStringWithHeader
 				})
 			});
-
 		}));
-		attachTableStyler(table, this._themeService);
+
+		this._register(attachTableStyler(table, this._themeService));
 
 		new ResizeObserver((e) => {
 			table.layout(new DOM.Dimension(tableContainer.clientWidth, tableContainer.clientHeight));
 		}).observe(tableContainer);
+
 		return table;
 	}
 
