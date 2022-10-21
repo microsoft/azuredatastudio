@@ -200,6 +200,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 		ExtHostContext.ExtHostNotebookDocuments,
 		ExtHostContext.ExtHostNotebookEditors,
 		ExtHostContext.ExtHostNotebookKernels,
+		ExtHostContext.ExtHostNotebookProxyKernels,
 		ExtHostContext.ExtHostNotebookRenderers,
 		ExtHostContext.ExtHostInteractive
 	]);

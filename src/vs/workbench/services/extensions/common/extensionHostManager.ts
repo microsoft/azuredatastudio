@@ -317,6 +317,7 @@ class ExtensionHostManager extends Disposable implements IExtensionHostManager {
 			MainContext.MainThreadNotebookDocuments,
 			MainContext.MainThreadNotebookEditors,
 			MainContext.MainThreadNotebookKernels,
+			MainContext.MainThreadNotebookProxyKernels,
 			MainContext.MainThreadNotebookRenderers,
 			MainContext.MainThreadInteractive
 		];
