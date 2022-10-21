@@ -39,7 +39,6 @@ import { DatabaseEngineEdition, ServiceOptionType } from 'sql/workbench/api/comm
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { IFileBrowserDialogController } from 'sql/workbench/services/fileBrowser/common/fileBrowserDialogController';
 import { ILogService } from 'vs/platform/log/common/log';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { attachModalDialogStyler, attachTabbedPanelStyler } from 'sql/workbench/common/styler';
 import { fileFiltersSet } from 'sql/workbench/services/restore/common/constants';
@@ -48,6 +47,7 @@ import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
 import { IBackupRestoreUrlBrowserDialogService } from 'sql/workbench/services/backupRestoreUrlBrowser/common/urlBrowserDialogService';
 import { MediaDeviceType } from 'sql/workbench/contrib/backup/common/constants';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 
 interface FileListElement {
 	logicalFileName: string;

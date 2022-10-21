@@ -727,9 +727,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						this.migrationStateModel.sourceConnectionId)), query);
 
 				const username = results.rows[0][0].displayValue;
-				this.migrationStateModel._authenticationType = connectionProfile.authenticationType === azdata.connection.AuthenticationType.SqlLogin
+				this.migrationStateModel._authenticationType = connectionProfile.authenticationType === 'SqlLogin'
 					? MigrationSourceAuthenticationType.Sql
-					: connectionProfile.authenticationType === azdata.connection.AuthenticationType.Integrated
+					: connectionProfile.authenticationType === 'Integrated' // TODO: use azdata.connection.AuthenticationType.Integrated  after next ADS release
 						? MigrationSourceAuthenticationType.Integrated
 						: undefined!;
 				this._sourceHelpText.value = constants.SQL_SOURCE_DETAILS(
@@ -777,7 +777,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 						const dbIndex = this.migrationStateModel._sourceDatabaseNames?.indexOf(sourceDatabaseName);
 						if (dbIndex > -1) {
-							targetDatabaseName = originalTargetDatabaseNames[dbIndex] ?? targetDatabaseName;
+							targetDatabaseName = isSqlDbTarget
+								? targetDatabaseName
+								: originalTargetDatabaseNames[dbIndex] ?? targetDatabaseName;
 							networkShare = originalNetworkShares[dbIndex] ?? networkShare;
 							blob = originalBlobs[dbIndex] ?? blob;
 						} else {

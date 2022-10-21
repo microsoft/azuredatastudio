@@ -2,9 +2,17 @@
 	"extends": "../tsconfig.base.json",
 	"compilerOptions": {
 		"outDir": "./out",
-		"noUnusedParameters": false
+		"noUnusedParameters": false,
+		"downlevelIteration": true,
+		"types": [
+			"node"
+		]
 	},
 	"include": [
-		"src/**/*"
+		"src/**/*",
+		"../../src/vscode-dts/vscode.d.ts",
+		"../../src/vscode-dts/vscode.proposed.terminalDataWriteEvent.d.ts",
+		"../../../../src/sql/azdata.d.ts",
+		"../../../../src/sql/azdata.proposed.d.ts"
 	]
 }

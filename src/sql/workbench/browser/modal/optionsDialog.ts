@@ -24,12 +24,12 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { append, $, clearNode } from 'vs/base/browser/dom';
 import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ServiceOptionType } from 'sql/platform/connection/common/interfaces';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { GroupHeaderBackground } from 'sql/platform/theme/common/colorRegistry';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 
 export interface IOptionsDialogOptions extends IModalOptions {
 	cancelLabel?: string;

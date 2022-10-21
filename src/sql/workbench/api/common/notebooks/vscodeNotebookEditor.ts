@@ -12,7 +12,9 @@ export class VSCodeNotebookEditor implements vscode.NotebookEditor {
 	private readonly _document: vscode.NotebookDocument;
 
 	constructor(editor: azdata.nb.NotebookEditor) {
-		this._document = new VSCodeNotebookDocument(editor.document);
+		if (editor) {
+			this._document = new VSCodeNotebookDocument(editor.document);
+		}
 	}
 
 	public get document(): vscode.NotebookDocument {

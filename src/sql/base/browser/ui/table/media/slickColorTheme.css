@@ -63,6 +63,11 @@
 	background-image: url("saveExcel.svg");
 }
 
+.vs .codicon.saveMarkdown {
+	/* ResultToMarkdown_16x_vscode */
+	background-image: url("saveMarkdown.svg");
+}
+
 .vs .codicon.saveXml {
 	/* ResultToXML_16x_vscode */
 	background-image: url("saveXml.svg");
@@ -170,6 +175,12 @@
 .hc-black .codicon.saveExcel {
 	/* ResultToXlsx_16x_vscode_inverse.svg */
 	background-image: url("saveExcel_inverse.svg");
+}
+
+.vs-dark .codicon.saveMarkdown,
+.hc-black .codicon.saveMarkdown {
+	/* ResultToMarkdown_16x_vscode_inverse.svg */
+	background-image: url("saveMarkdown_inverse.svg");
 }
 
 .vs-dark .codicon.saveXml,

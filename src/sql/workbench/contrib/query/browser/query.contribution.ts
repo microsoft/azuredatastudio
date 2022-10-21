@@ -42,11 +42,11 @@ import { ManageActionContext } from 'sql/workbench/browser/actions';
 import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerContext';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
-import { IModeService } from 'vs/editor/common/services/modeService';
 import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
 import { IEditorResolverService, RegisteredEditorPriority } from 'vs/workbench/services/editor/common/editorResolverService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ILogService } from 'vs/platform/log/common/log';
+import { ILanguageService } from 'vs/editor/common/languages/language';
 
 export const QueryEditorVisibleCondition = ContextKeyExpr.has(queryContext.queryEditorVisibleId);
 export const ResultsGridFocusCondition = ContextKeyExpr.and(ContextKeyExpr.has(queryContext.resultsVisibleId), ContextKeyExpr.has(queryContext.resultsGridFocussedId));
@@ -288,6 +288,14 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 });
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
+	id: gridActions.GRID_SAVEMARKDOWN_ID,
+	weight: KeybindingWeight.EditorContrib,
+	when: ResultsGridFocusCondition,
+	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KeyR, KeyMod.CtrlCmd | KeyCode.KeyM),
+	handler: gridCommands.saveAsMarkdown
+});
+
+KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: gridActions.GRID_SAVEEXCEL_ID,
 	weight: KeybindingWeight.EditorContrib,
 	when: ResultsGridFocusCondition,
@@ -383,6 +391,21 @@ const queryEditorConfiguration: IConfigurationNode = {
 			'type': 'string',
 			'description': localize('queryEditor.results.saveAsCsv.encoding', "File encoding used when saving results as CSV"),
 			'default': 'utf-8'
+		},
+		'queryEditor.results.saveAsMarkdown.encoding': {
+			'type': 'string',
+			'description': localize('queryEditor.results.saveAsMarkdown.encoding', "File encoding used when saving results as Markdown"),
+			'default': 'utf-8'
+		},
+		'queryEditor.results.saveAsMarkdown.includeHeaders': {
+			'type': 'boolean',
+			'description': localize('queryEditor.results.saveAsMarkdown.includeHeaders', "When true, column headers are included when saving results as a Markdown file"),
+			'default': true
+		},
+		'queryEditor.results.saveAsMarkdown.lineSeparator': {
+			'type': 'string',
+			'description': localize('queryEditor.results.saveAsMarkdown.lineSeparator', "Character(s) to use to separate lines when exporting to Markdown, defaults to system line endings"),
+			'default': null
 		},
 		'queryEditor.results.saveAsXml.formatted': {
 			'type': 'boolean',
@@ -518,13 +541,13 @@ export class QueryEditorOverrideContribution extends Disposable implements IWork
 		@ILogService private _logService: ILogService,
 		@IEditorService private _editorService: IEditorService,
 		@IEditorResolverService private _editorResolverService: IEditorResolverService,
-		@IModeService private _modeService: IModeService
+		@ILanguageService private _modeService: ILanguageService
 	) {
 		super();
 		this.registerEditorOverrides();
 		// Refresh the editor overrides whenever the languages change so we ensure we always have
 		// the latest up to date list of extensions for each language
-		this._modeService.onLanguagesMaybeChanged(() => {
+		this._modeService.onDidChange(() => {
 			this.registerEditorOverrides();
 		});
 	}

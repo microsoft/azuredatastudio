@@ -36,7 +36,6 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILogService } from 'vs/platform/log/common/log';
 import { TaskRegistry } from 'sql/workbench/services/tasks/browser/tasksRegistry';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPane';
@@ -51,6 +50,7 @@ import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { IInsightsConfigDetails } from 'sql/platform/extensions/common/extensions';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 
 const labelDisplay = nls.localize("insights.item", "Item");
 const valueDisplay = nls.localize("insights.value", "Value");

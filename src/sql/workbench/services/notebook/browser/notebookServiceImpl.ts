@@ -10,7 +10,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 
 import {
 	INotebookService, IExecuteManager, IExecuteProvider,
-	DEFAULT_NOTEBOOK_FILETYPE, INotebookEditor, SQL_NOTEBOOK_PROVIDER, INavigationProvider, ILanguageMagic, NavigationProviders, unsavedBooksContextKey, ISerializationProvider, ISerializationManager
+	DEFAULT_NOTEBOOK_FILETYPE, INotebookEditor, SQL_NOTEBOOK_PROVIDER, INavigationProvider, ILanguageMagic, NavigationProviders, unsavedBooksContextKey, ISerializationProvider, ISerializationManager, DefaultNotebookProviders
 } from 'sql/workbench/services/notebook/browser/notebookService';
 import { RenderMimeRegistry } from 'sql/workbench/services/notebook/browser/outputs/registry';
 import { standardRendererFactories } from 'sql/workbench/services/notebook/browser/outputs/factories';
@@ -44,16 +44,17 @@ import { Extensions as LanguageAssociationExtensions, ILanguageAssociationRegist
 import * as path from 'vs/base/common/path';
 
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
+import { IExistingUntitledTextEditorOptions, INewUntitledTextEditorWithAssociatedResourceOptions, IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 
 import { IEditorPane } from 'vs/workbench/common/editor';
 import { isINotebookInput } from 'sql/workbench/services/notebook/browser/interface';
 import { INotebookShowOptions } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { DEFAULT_NB_LANGUAGE_MODE, INTERACTIVE_LANGUAGE_MODE, INTERACTIVE_PROVIDER_ID, JUPYTER_PROVIDER_ID, NotebookLanguage } from 'sql/workbench/common/constants';
+import { DEFAULT_NB_LANGUAGE_MODE, INTERACTIVE_LANGUAGE_MODE, INTERACTIVE_PROVIDER_ID, NotebookLanguage } from 'sql/workbench/common/constants';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { SqlSerializationProvider } from 'sql/workbench/services/notebook/browser/sql/sqlSerializationProvider';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
+import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 
 const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
 
@@ -178,6 +179,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	private _onNotebookEditorAdd = new Emitter<INotebookEditor>();
 	private _onNotebookEditorRemove = new Emitter<INotebookEditor>();
 	private _onNotebookEditorRename = new Emitter<INotebookEditor>();
+	private _onNotebookKernelsAdded = new Emitter<IStandardKernelWithProvider[]>();
 	private _editors = new Map<string, INotebookEditor>();
 	private _fileToProviderDescriptions = new Map<string, ProviderDescriptionRegistration[]>();
 	private _providerToStandardKernels = new Map<string, StandardKernelsDescriptor>(); // Note: providerId key here should be in upper case
@@ -301,11 +303,11 @@ export class NotebookService extends Disposable implements INotebookService {
 			}
 		}
 		if (isUntitled && path.isAbsolute(uri.fsPath)) {
-			const model = this._untitledEditorService.create({ associatedResource: uri, mode: languageMode, initialValue: initialStringContents });
+			const model = this._untitledEditorService.create(<INewUntitledTextEditorWithAssociatedResourceOptions>{ associatedResource: uri, mode: languageMode, initialValue: initialStringContents });
 			fileInput = this._instantiationService.createInstance(UntitledTextEditorInput, model);
 		} else {
 			if (isUntitled) {
-				const model = this._untitledEditorService.create({ untitledResource: uri, mode: languageMode, initialValue: initialStringContents });
+				const model = this._untitledEditorService.create(<IExistingUntitledTextEditorOptions>{ untitledResource: uri, mode: languageMode, initialValue: initialStringContents });
 				fileInput = this._instantiationService.createInstance(UntitledTextEditorInput, model);
 			} else {
 				let input: any = { forceFile: true, resource: uri, mode: languageMode };
@@ -426,7 +428,7 @@ export class NotebookService extends Disposable implements INotebookService {
 			if (!this._executeProviders.has(p.id)) {
 				this._executeProviders.set(p.id, new ExecuteProviderDescriptor(p.id));
 			}
-			this.addStandardKernels(registration);
+			this.addStandardKernels(registration, registration.fileExtensions);
 		} else {
 			// Standard kernels might get registered later for VSCode notebooks, so add a descriptor to wait on
 			if (!this._providerToStandardKernels.has(p.id)) {
@@ -436,7 +438,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		}
 
 		// Emit activation event if the provider is not one of the default options
-		if (p.id !== SQL_NOTEBOOK_PROVIDER && p.id !== JUPYTER_PROVIDER_ID) {
+		if (!DefaultNotebookProviders.includes(p.id)) {
 			this._extensionService.whenInstalledExtensionsRegistered()
 				.then(() => this._extensionService.activateByEvent(`onNotebook:${p.id}`))
 				.then(() => this._extensionService.activateByEvent(`onNotebook:*`))
@@ -506,7 +508,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	// in the kernels dropdown list before a SessionManager has been started; this way,
 	// every NotebookProvider doesn't need to have an active SessionManager in order to contribute
 	// kernels to the dropdown
-	private addStandardKernels(provider: ProviderDescriptionRegistration) {
+	private addStandardKernels(provider: ProviderDescriptionRegistration, supportedFileExtensions?: string[]) {
 		let providerUpperCase = provider.provider.toUpperCase();
 		let descriptor = this._providerToStandardKernels.get(providerUpperCase);
 		if (!descriptor) {
@@ -526,6 +528,20 @@ export class NotebookService extends Disposable implements INotebookService {
 		}
 		descriptor.instance = standardKernels;
 		this._providerToStandardKernels.set(providerUpperCase, descriptor);
+
+		// Emit update event if the provider is not one of the default options
+		if (!DefaultNotebookProviders.includes(provider.provider) && standardKernels.length > 0) {
+			this._onNotebookKernelsAdded.fire(standardKernels.map(kernel => {
+				return {
+					name: kernel.name,
+					displayName: kernel.displayName,
+					connectionProviderIds: kernel.connectionProviderIds,
+					notebookProvider: provider.provider,
+					supportedLanguages: kernel.supportedLanguages,
+					supportedFileExtensions: supportedFileExtensions
+				};
+			}));
+		}
 	}
 
 	getSupportedFileExtensions(): string[] {
@@ -630,6 +646,10 @@ export class NotebookService extends Disposable implements INotebookService {
 
 	get onNotebookEditorRename(): Event<INotebookEditor> {
 		return this._onNotebookEditorRename.event;
+	}
+
+	get onNotebookKernelsAdded(): Event<IStandardKernelWithProvider[]> {
+		return this._onNotebookKernelsAdded.event;
 	}
 
 	addNotebookEditor(editor: INotebookEditor): void {

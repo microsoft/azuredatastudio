@@ -18,12 +18,12 @@ import { localize } from 'vs/nls';
 import { IAction } from 'vs/base/common/actions';
 import * as DOM from 'vs/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 
 const maxActions = 1;
 

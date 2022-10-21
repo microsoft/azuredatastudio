@@ -8,14 +8,15 @@ else
 	ROOT=$(dirname $(dirname $(readlink -f $0)))
 	# {{SQL CARBON EDIT}} Completed disable sandboxing via --no-sandbox since we still see failures on our test runs
 	# --disable-setuid-sandbox: setuid sandboxes requires root and is used in containers so we disable this
-	# --disable-dev-shm-usage --use-gl=swiftshader: when run on docker containers where size of /dev/shm
+	# --disable-dev-shm-usage: when run on docker containers where size of /dev/shm
 	# partition < 64MB which causes OOM failure for chromium compositor that uses the partition for shared memory
-	LINUX_EXTRA_ARGS="--no-sandbox --disable-dev-shm-usage --use-gl=swiftshader"
+	LINUX_EXTRA_ARGS="--disable-dev-shm-usage --use-gl=swiftshader"
 fi
 
 VSCODEUSERDATADIR=`mktemp -d 2>/dev/null`
 VSCODECRASHDIR=$ROOT/.build/crashes
 VSCODELOGSDIR=$ROOT/.build/logs/integration-tests
+
 cd $ROOT
 
 # Figure out which Electron to use for running tests
@@ -37,6 +38,7 @@ else
 				# compile-extension:vscode-api-tests \
 				# compile-extension:vscode-colorize-tests \
 				# compile-extension:vscode-custom-editor-tests \
+				# compile-extension:vscode-notebook-tests \
 				# compile-extension:markdown-language-features \
 				# compile-extension:typescript-language-features \
 				# compile-extension:emmet \
@@ -56,16 +58,6 @@ else
 	echo "Running integration tests with '$INTEGRATION_TEST_ELECTRON_PATH' as build."
 fi
 
-if [ -z "$INTEGRATION_TEST_APP_NAME" ]; then
-	kill_app() {
-		true;
-	}
-else
-	kill_app() {
-		echo "Killing integration test app"
-		killall $INTEGRATION_TEST_APP_NAME || true;
-	}
-fi
 
 print_subprocesses() {
 	echo "Subprocesses:"

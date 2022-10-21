@@ -12,8 +12,6 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { CellMagicMapper } from 'sql/workbench/contrib/notebook/browser/models/cellMagicMapper';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
-import { ILogService } from 'vs/platform/log/common/log';
 import { IModelFactory, ViewMode, NotebookContentChange, INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -23,12 +21,10 @@ import { IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common
 import { IAction, SubmenuAction } from 'vs/base/common/actions';
 import { IMenuService, MenuId } from 'vs/platform/actions/common/actions';
 import { fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 import { INotebookView } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 import { Deferred } from 'sql/base/common/promise';
 import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
-import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 import { localize } from 'vs/nls';
 import * as path from 'vs/base/common/path';
 
@@ -53,19 +49,15 @@ export class NotebookEditorComponent extends AngularDisposable {
 	public ViewMode = ViewMode; //For use of the enum in the template
 
 	constructor(
-		@Inject(ILogService) private readonly logService: ILogService,
 		@Inject(IBootstrapParams) private _notebookParams: INotebookParams,
 		@Inject(INotebookService) private notebookService: INotebookService,
 		@Inject(ICapabilitiesService) private capabilitiesService: ICapabilitiesService,
 		@Inject(IContextKeyService) private contextKeyService: IContextKeyService,
 		@Inject(IMenuService) private menuService: IMenuService,
 		@Inject(INotificationService) private notificationService: INotificationService,
-		@Inject(IAdsTelemetryService) private adstelemetryService: IAdsTelemetryService,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
-		@Inject(IConfigurationService) private _configurationService: IConfigurationService,
 		@Inject(IConnectionManagementService) private connectionManagementService: IConnectionManagementService,
-		@Inject(IUndoRedoService) private _undoService: IUndoRedoService,
 	) {
 		super();
 		this.updateProfile();
@@ -128,7 +120,7 @@ export class NotebookEditorComponent extends AngularDisposable {
 
 	private async createModelAndLoadContents(): Promise<void> {
 		let providerInfo = await this._notebookParams.providerInfo;
-		let model = new NotebookModel({
+		let model = this.instantiationService.createInstance(NotebookModel, {
 			factory: this.modelFactory,
 			notebookUri: this._notebookParams.notebookUri,
 			connectionService: this.connectionManagementService,
@@ -141,8 +133,9 @@ export class NotebookEditorComponent extends AngularDisposable {
 			defaultKernel: this._notebookParams.input.defaultKernel,
 			layoutChanged: this._notebookParams.input.layoutChanged,
 			capabilitiesService: this.capabilitiesService,
-			editorLoadedTimestamp: this._notebookParams.input.editorOpenedTimestamp
-		}, this.profile, this.logService, this.notificationService, this.adstelemetryService, this.connectionManagementService, this._configurationService, this._undoService, this.capabilitiesService);
+			editorLoadedTimestamp: this._notebookParams.input.editorOpenedTimestamp,
+			getInputLanguageMode: () => this._notebookParams.input.languageMode // Can't pass in languageMode directly since it can change after the editor loads
+		}, this.profile);
 
 		let trusted = await this.notebookService.isNotebookTrustCached(this._notebookParams.notebookUri, this.isDirty());
 		this.model = this._register(model);

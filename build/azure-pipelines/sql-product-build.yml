@@ -51,6 +51,7 @@ stages:
           # Do not run tests for arm64 build
           RUN_TESTS: false
           RUN_SMOKE_TESTS: false
+        condition: and(succeeded(), eq(variables['VSCODE_BUILD_MACOS_ARM64'], 'true'))
         steps:
         - template: darwin/sql-product-build-darwin.yml
         timeoutInMinutes: 90
@@ -129,7 +130,22 @@ stages:
     #   timeoutInMinutes: 90
 
   - stage: Release
-    condition: and(succeeded(), or(eq(variables['VSCODE_RELEASE'], 'true'), and(eq(variables['VSCODE_QUALITY'], 'insider'), eq(variables['Build.Reason'], 'Schedule'))))
+    # Requirements:
+    # 1. Release can be created only from builds of the official build pipeline, but not all builds of it should be released automatically.
+    # 2. A build should be released only when the release variable is set to true.
+    # 3. The daily scheduled Insiders build should be released automatically.
+    #
+    # Limitation:
+    # Ideally, we should be able to use the condition `and(succeeded(), eq(variables['VSCODE_RELEASE'], 'true')` to achieve what we want. The VSCODE_RELEASE variable can be defined as overwritable or non-overwritable based on whether we want to
+    # release from the pipeline. Unfortunately ADO doesn't allow overriding variable values for scheduled runs. (see https://learn.microsoft.com/en-us/azure/devops/pipelines/process/scheduled-triggers?view=azure-devops&tabs=yaml#scheduled-triggers).
+    # This means we can't simply set VSCODE_RELEASE to true only for scheduled builds and have to set it to true for all runs of the pipeline by default.
+    #
+    # Implementation:
+    # Set the VSCODE_RELEASE variable's default value to true and add the release tag for following scenarios:
+    # 1. The build is a scheduled insiders build.
+    # 2. The build is not an insiders build. e.g. rc1, stable, saw.
+    # To release an ad-hoc insiders build, manually add 'Release' tag to the build.
+    condition: and(succeeded(), eq(variables['VSCODE_RELEASE'], 'true'), or(ne(variables['VSCODE_QUALITY'], 'insider'), and(eq(variables['VSCODE_QUALITY'], 'insider'), eq(variables['Build.Reason'], 'Schedule'))))
     pool:
       vmImage: 'Ubuntu-20.04'
     dependsOn:
@@ -137,7 +153,7 @@ stages:
       - Linux
       - Windows
     jobs:
-      - job: Release
+      - job: Add_Release_Tag
         steps:
         - template: sql-release.yml
 

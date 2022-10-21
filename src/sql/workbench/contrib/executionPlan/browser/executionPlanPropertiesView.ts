@@ -116,11 +116,14 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 		if (!properties) {
 			return [];
 		}
+
 		const sortedProperties = this.sortProperties(properties);
 		const rows: Slick.SlickData[] = [];
+
 		sortedProperties.forEach((property, index) => {
 			let row = {};
 			row['name'] = property.name;
+
 			if (!isString(property.value)) {
 				// Styling values in the parent row differently to make them more apparent and standout compared to the rest of the cells.
 				row['name'] = {
@@ -131,12 +134,15 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 				};
 				row['tootltip'] = property.displayValue;
 				row['treeGridChildren'] = this.convertPropertiesToTableRows(property.value);
+
 			} else {
 				row['value'] = removeLineBreaks(property.displayValue, ' ');
 				row['tooltip'] = property.displayValue;
 			}
+
 			rows.push(row);
 		});
+
 		return rows;
 	}
 
@@ -165,6 +171,7 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 			rows.push(row);
 			row['name'] = p.name;
 			row['parent'] = parentIndex;
+
 			if (!isString(p.value)) {
 				// Styling values in the parent row differently to make them more apparent and standout compared to the rest of the cells.
 				row['name'] = {

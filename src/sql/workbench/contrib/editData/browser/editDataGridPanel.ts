@@ -392,7 +392,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		let maxHeight = this.getMaxHeight(resultSet.rowCount);
 		let minHeight = this.getMinHeight(resultSet.rowCount);
 
-		let rowNumberColumn = new RowNumberColumn({ numberOfRows: resultSet.rowCount });
+		let rowNumberColumn = new RowNumberColumn();
 
 		// Store the result set from the event
 		let dataSet: IGridDataSet = {

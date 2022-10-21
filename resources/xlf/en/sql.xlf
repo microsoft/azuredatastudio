@@ -946,14 +946,14 @@
     <trans-unit id="scriptNotFoundForObject">
       <source xml:lang="en">No script was returned when scripting as {0} on object {1}</source>
     </trans-unit>
-    <trans-unit id="scriptSelectNotFound">
-      <source xml:lang="en">No script was returned when calling select script on object </source>
-    </trans-unit>
     <trans-unit id="scriptingFailed">
       <source xml:lang="en">Scripting Failed</source>
     </trans-unit>
     <trans-unit id="selectOperationName">
       <source xml:lang="en">Select</source>
+    </trans-unit>
+    <trans-unit id="selectScriptNotGeneratedError">
+      <source xml:lang="en">Failed to generate select script for the selected object.</source>
     </trans-unit>
     <trans-unit id="updateOperationName">
       <source xml:lang="en">Update</source>
@@ -2339,6 +2339,9 @@
     <trans-unit id="saveAsJson">
       <source xml:lang="en">Save As JSON</source>
     </trans-unit>
+    <trans-unit id="saveAsMarkdown">
+      <source xml:lang="en">Save As Markdown</source>
+    </trans-unit>
     <trans-unit id="saveAsXml">
       <source xml:lang="en">Save As XML</source>
     </trans-unit>
@@ -2671,6 +2674,9 @@
     <trans-unit id="executionPlanOff">
       <source xml:lang="en">Off</source>
     </trans-unit>
+    <trans-unit id="executionPlanSelectExpenseMetricTitle">
+      <source xml:lang="en">Select expense metric</source>
+    </trans-unit>
     <trans-unit id="executionPlanSubtreeCost">
       <source xml:lang="en">Subtree Cost</source>
     </trans-unit>
@@ -2709,11 +2715,20 @@
     <trans-unit id="cancelSearchAction">
       <source xml:lang="en">Close</source>
     </trans-unit>
+    <trans-unit id="executionPlanEnterValueTitle">
+      <source xml:lang="en">Enter search value</source>
+    </trans-unit>
     <trans-unit id="executionPlanSearchTypeContains">
       <source xml:lang="en">Contains</source>
     </trans-unit>
     <trans-unit id="executionPlanSearchTypeEquals">
       <source xml:lang="en">Equals</source>
+    </trans-unit>
+    <trans-unit id="executionPlanSelectPropertyTitle">
+      <source xml:lang="en">Select property</source>
+    </trans-unit>
+    <trans-unit id="executionPlanSelectSearchTypeTitle">
+      <source xml:lang="en">Select search type</source>
     </trans-unit>
     <trans-unit id="nextSearchItemAction">
       <source xml:lang="en">Next Match</source>
@@ -4172,6 +4187,9 @@ Error: {1}</source>
     <trans-unit id="saveAsJson">
       <source xml:lang="en">Save As JSON</source>
     </trans-unit>
+    <trans-unit id="saveAsMarkdown">
+      <source xml:lang="en">Save As Markdown</source>
+    </trans-unit>
     <trans-unit id="saveAsXml">
       <source xml:lang="en">Save As XML</source>
     </trans-unit>
@@ -4334,6 +4352,15 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="queryEditor.results.saveAsExcel.includeHeaders">
       <source xml:lang="en">When true, column headers are included when saving results as an Excel file</source>
+    </trans-unit>
+    <trans-unit id="queryEditor.results.saveAsMarkdown.encoding">
+      <source xml:lang="en">File encoding used when saving results as Markdown</source>
+    </trans-unit>
+    <trans-unit id="queryEditor.results.saveAsMarkdown.includeHeaders">
+      <source xml:lang="en">When true, column headers are included when saving results as a Markdown file</source>
+    </trans-unit>
+    <trans-unit id="queryEditor.results.saveAsMarkdown.lineSeparator">
+      <source xml:lang="en">Character(s) to use to separate lines when exporting to Markdown, defaults to system line endings</source>
     </trans-unit>
     <trans-unit id="queryEditor.results.saveAsXml.encoding">
       <source xml:lang="en">File encoding used when saving results as XML</source>
@@ -5990,6 +6017,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="resultsSerializer.saveAsFileExtensionJSONTitle">
       <source xml:lang="en">JSON</source>
+    </trans-unit>
+    <trans-unit id="resultsSerializer.saveAsFileExtensionMarkdownTitle">
+      <source xml:lang="en">Markdown</source>
     </trans-unit>
     <trans-unit id="resultsSerializer.saveAsFileExtensionTXTTitle">
       <source xml:lang="en">Plain Text</source>

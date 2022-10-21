@@ -1,6 +1,7 @@
 {
 	"parserOptions": {
-		"project": "./extensions/dacpac/tsconfig.json"
+		"project": "./extensions/dacpac/tsconfig.json",
+		"createDefaultProgram": true
 	},
 	"rules": {
 		// Disabled until the issues can be fixed

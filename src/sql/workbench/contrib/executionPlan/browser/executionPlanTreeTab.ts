@@ -75,6 +75,7 @@ export class ExecutionPlanTreeTabView extends Disposable implements IPanelView {
 		while (this._container.firstChild) {
 			this._container.removeChild(this._container.firstChild);
 		}
+
 		this._input.graphs.forEach((g, i) => {
 			this.convertExecutionPlanGraphToTreeGrid(g, i);
 		});
@@ -84,13 +85,16 @@ export class ExecutionPlanTreeTabView extends Disposable implements IPanelView {
 		let dataMap: { [key: string]: any }[] = [];
 		const columnValues: string[] = [];
 		const stack: { node: azdata.executionPlan.ExecutionPlanNode, parentIndex: number }[] = [];
+
 		stack.push({
 			node: graph.root,
 			parentIndex: -1,
 		});
+
 		while (stack.length !== 0) {
 			const treeGridNode = stack.pop();
 			const row: { [key: string]: any } = {};
+
 			treeGridNode.node.topOperationsData.forEach((d, i) => {
 				let displayText = d.displayValue.toString();
 
@@ -104,10 +108,12 @@ export class ExecutionPlanTreeTabView extends Disposable implements IPanelView {
 					columnValues.splice(i, 0, d.columnName);
 				}
 			});
+
 			row['nodeId'] = treeGridNode.node.id;
 			row['parent'] = treeGridNode.parentIndex;
 			row['parentNodeId'] = dataMap[treeGridNode.parentIndex] ? dataMap[treeGridNode.parentIndex]['nodeId'] : undefined;
 			row['expanded'] = true;
+
 			if (treeGridNode.node.children) {
 				treeGridNode.node.children.forEach(c => stack.push({
 					node: c,
@@ -132,26 +138,29 @@ export class ExecutionPlanTreeTabView extends Disposable implements IPanelView {
 
 		const topOperationContainer = DOM.$('.top-operations-container');
 		this._container.appendChild(topOperationContainer);
-		const header = this._instantiationService.createInstance(ExecutionPlanViewHeader, topOperationContainer, {
+
+		const header = this._register(this._instantiationService.createInstance(ExecutionPlanViewHeader, topOperationContainer, {
 			planIndex: index,
-		});
+		}));
 		header.query = graph.query;
 		header.relativeCost = graph.root.relativeCost;
+
 		const tableContainer = DOM.$('.table-container');
 		topOperationContainer.appendChild(tableContainer);
 		this._planTreeContainers.push(topOperationContainer);
 
 		let copyHandler = new CopyKeybind<any>();
 		this._register(copyHandler.onCopy(e => {
+			let csvString = '';
 
 			const selectedDataRange = selectionModel.getSelectedRanges()[0];
-			let csvString = '';
 			if (selectedDataRange) {
 				const data = [];
 
 				for (let rowIndex = selectedDataRange.fromRow; rowIndex <= selectedDataRange.toRow; rowIndex++) {
 					const dataRow = treeGrid.getData().getItem(rowIndex);
 					const row = [];
+
 					for (let colIndex = selectedDataRange.fromCell; colIndex <= selectedDataRange.toCell; colIndex++) {
 						const dataItem = dataRow[treeGrid.grid.getColumns()[colIndex].field];
 						if (dataItem) {
@@ -160,8 +169,10 @@ export class ExecutionPlanTreeTabView extends Disposable implements IPanelView {
 							row.push(' ');
 						}
 					}
+
 					data.push(row);
 				}
+
 				csvString = data.map(row =>
 					row.map(x => `${x}`).join('\t')
 				).join('\n');
@@ -174,21 +185,23 @@ export class ExecutionPlanTreeTabView extends Disposable implements IPanelView {
 
 			}
 
-			this._instantiationService.createInstance(CopyTableData).run({
+			this._register(this._instantiationService.createInstance(CopyTableData)).run({
 				selectedText: csvString
 			});
 		}));
 
 		const selectionModel = new CellSelectionModel<Slick.SlickData>();
 
-		const treeGrid = new TreeGrid<Slick.SlickData>(tableContainer, {
+		const treeGrid = this._register(new TreeGrid<Slick.SlickData>(tableContainer, {
 			columns: columns,
 			sorter: (args) => {
 				const sortColumn = args.sortCol.field;
+
 				let data = deepClone(dataMap);
 				if (data.length === 0) {
-					data = treeGrid.getData().getItems();
+					data = this._register(treeGrid.getData()).getItems();
 				}
+
 				const sortedData = [];
 				const rootRow = data[0];
 				const stack: { row: Slick.SlickData, originalIndex: number }[] = [];
@@ -196,8 +209,9 @@ export class ExecutionPlanTreeTabView extends Disposable implements IPanelView {
 
 				while (stack.length !== 0) {
 					const currentTreeGridRow = stack.pop();
-					let currentTreeGridRowChildren: { row: Slick.SlickData, originalIndex: number }[] = [];
 					sortedData.push(currentTreeGridRow.row);
+
+					let currentTreeGridRowChildren: { row: Slick.SlickData, originalIndex: number }[] = [];
 					for (let i = 0; i < data.length; i++) {
 						if (data[i].parentNodeId === currentTreeGridRow.row.nodeId) {
 							currentTreeGridRowChildren.push({ row: data[i], originalIndex: i });
@@ -207,6 +221,7 @@ export class ExecutionPlanTreeTabView extends Disposable implements IPanelView {
 					currentTreeGridRowChildren = currentTreeGridRowChildren.sort((a, b) => {
 						const aRow = a.row;
 						const bRow = b.row;
+
 						let result = -1;
 						if (!aRow[sortColumn]) {
 							result = 1;
@@ -217,6 +232,7 @@ export class ExecutionPlanTreeTabView extends Disposable implements IPanelView {
 								const dataType = aRow[sortColumn].dataType;
 								const aText = aRow[sortColumn].text;
 								const bText = bRow[sortColumn].text;
+
 								if (aText === bText) {
 									result = 0;
 								} else {
@@ -232,6 +248,7 @@ export class ExecutionPlanTreeTabView extends Disposable implements IPanelView {
 								}
 							}
 						}
+
 						return args.sortAsc ? result : -result;
 					});
 
@@ -241,6 +258,7 @@ export class ExecutionPlanTreeTabView extends Disposable implements IPanelView {
 
 					stack.push(...currentTreeGridRowChildren);
 				}
+
 				dataMap = sortedData;
 				treeGrid.setData(sortedData);
 			}
@@ -249,24 +267,23 @@ export class ExecutionPlanTreeTabView extends Disposable implements IPanelView {
 			forceFitColumns: false,
 			defaultColumnWidth: 120,
 			showRowNumber: true
-		});
+		}));
+
 		treeGrid.setSelectionModel(selectionModel);
 		treeGrid.setData(dataMap);
-
 		treeGrid.registerPlugin(copyHandler);
-
 		treeGrid.setTableTitle(localize('topOperationsTableTitle', "Execution Plan Tree"));
-
 		this._treeGrids.push(treeGrid);
+
 		const contextMenuAction = [
-			this._instantiationService.createInstance(CopyTableData),
-			this._instantiationService.createInstance(CopyTableDataWithHeader),
-			this._instantiationService.createInstance(SelectAll)
+			this._register(this._instantiationService.createInstance(CopyTableData)),
+			this._register(this._instantiationService.createInstance(CopyTableDataWithHeader)),
+			this._register(this._instantiationService.createInstance(SelectAll))
 		];
 
 		this._register(treeGrid.onKeyDown((evt: ITableKeyboardEvent) => {
 			if (evt.event.ctrlKey && (evt.event.key === 'a' || evt.event.key === 'A')) {
-				selectionModel.setSelectedRanges([new Slick.Range(0, 0, treeGrid.getData().getLength() - 1, treeGrid.grid.getColumns().length - 1)]);
+				selectionModel.setSelectedRanges([new Slick.Range(0, 0, this._register(treeGrid.getData()).getLength() - 1, treeGrid.grid.getColumns().length - 1)]);
 				treeGrid.focus();
 				evt.event.preventDefault();
 				evt.event.stopPropagation();
@@ -274,14 +291,16 @@ export class ExecutionPlanTreeTabView extends Disposable implements IPanelView {
 		}));
 
 		this._register(treeGrid.onContextMenu(e => {
-			const selectedDataRange = selectionModel.getSelectedRanges()[0];
 			let csvString = '';
 			let csvStringWithHeader = '';
+
+			const selectedDataRange = selectionModel.getSelectedRanges()[0];
 			if (selectedDataRange) {
 				const data = [];
 
 				for (let rowIndex = selectedDataRange.fromRow; rowIndex <= selectedDataRange.toRow; rowIndex++) {
-					const dataRow = treeGrid.getData().getItem(rowIndex);
+					const dataRow = this._register(treeGrid.getData()).getItem(rowIndex); // TODO lewissanchez: ask if it's okay to register disposable data providers like this.
+
 					const row = [];
 					for (let colIndex = selectedDataRange.fromCell; colIndex <= selectedDataRange.toCell; colIndex++) {
 						const dataItem = dataRow[treeGrid.grid.getColumns()[colIndex].field];
@@ -291,14 +310,15 @@ export class ExecutionPlanTreeTabView extends Disposable implements IPanelView {
 							row.push('');
 						}
 					}
+
 					data.push(row);
 				}
+
 				csvString = data.map(row =>
 					row.map(x => `${x}`).join('\t')
 				).join('\n');
 
 				const columns = [];
-
 				for (let colIndex = selectedDataRange.fromCell; colIndex <= selectedDataRange.toCell; colIndex++) {
 					columns.push(treeGrid.grid.getColumns()[colIndex].name);
 				}
@@ -318,11 +338,13 @@ export class ExecutionPlanTreeTabView extends Disposable implements IPanelView {
 			});
 
 		}));
-		attachTableStyler(treeGrid, this._themeService);
+
+		this._register(attachTableStyler(treeGrid, this._themeService));
 
 		new ResizeObserver((e) => {
 			treeGrid.layout(new DOM.Dimension(tableContainer.clientWidth, tableContainer.clientHeight));
 		}).observe(tableContainer);
+
 		return treeGrid;
 	}
 
@@ -330,10 +352,13 @@ export class ExecutionPlanTreeTabView extends Disposable implements IPanelView {
 		this._container.style.width = dimension.width + 'px';
 		this._container.style.height = dimension.height + 'px';
 	}
+
 	remove?(): void {
 	}
+
 	onShow?(): void {
 	}
+
 	onHide?(): void {
 	}
 }
@@ -342,14 +367,11 @@ export class CopyTableData extends Action {
 	public static ID = 'ept.CopyTableData';
 	public static LABEL = localize('ept.topOperationsCopyTableData', "Copy");
 
-	constructor(
-		@IClipboardService private _clipboardService: IClipboardService
-	) {
+	constructor(@IClipboardService private _clipboardService: IClipboardService) {
 		super(CopyTableData.ID, CopyTableData.LABEL, '');
 	}
 
 	public override async run(context: ContextMenuModel): Promise<void> {
-
 		this._clipboardService.writeText(context.selectedText);
 	}
 }
@@ -358,14 +380,11 @@ export class CopyTableDataWithHeader extends Action {
 	public static ID = 'ept.CopyTableDataWithHeader';
 	public static LABEL = localize('ept.topOperationsCopyWithHeader', "Copy with Header");
 
-	constructor(
-		@IClipboardService private _clipboardService: IClipboardService
-	) {
+	constructor(@IClipboardService private _clipboardService: IClipboardService) {
 		super(CopyTableDataWithHeader.ID, CopyTableDataWithHeader.LABEL, '');
 	}
 
 	public override async run(context: ContextMenuModel): Promise<void> {
-
 		this._clipboardService.writeText(context.selectionTextWithHeader);
 	}
 }
@@ -374,8 +393,7 @@ export class SelectAll extends Action {
 	public static ID = 'ept.SelectAllTableData';
 	public static LABEL = localize('ept.topOperationsSelectAll', "Select All");
 
-	constructor(
-	) {
+	constructor() {
 		super(SelectAll.ID, SelectAll.LABEL, '');
 	}
 

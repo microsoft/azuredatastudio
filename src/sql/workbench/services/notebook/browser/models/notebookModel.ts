@@ -23,7 +23,7 @@ import { INotebookEditOperation, NotebookEditOperationType } from 'sql/workbench
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { uriPrefixes } from 'sql/platform/connection/common/utils';
 import { ILogService } from 'vs/platform/log/common/log';
-import { getErrorMessage } from 'vs/base/common/errors';
+import { getErrorMessage, onUnexpectedError } from 'vs/base/common/errors';
 import { notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 import { IAdsTelemetryService, ITelemetryEvent, ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 import { Deferred } from 'sql/base/common/promise';
@@ -40,6 +40,8 @@ import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 import { deepClone } from 'vs/base/common/objects';
 import { DotnetInteractiveDisplayName } from 'sql/workbench/api/common/notebooks/notebookUtils';
 import { IPYKERNEL_DISPLAY_NAME } from 'sql/workbench/common/constants';
+import * as path from 'vs/base/common/path';
+import { ILanguageService } from 'vs/editor/common/languages/language';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -134,7 +136,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
 		@IConfigurationService private configurationService: IConfigurationService,
 		@IUndoRedoService private undoService: IUndoRedoService,
-		@ICapabilitiesService private _capabilitiesService?: ICapabilitiesService,
+		@INotebookService private _notebookService: INotebookService,
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
+		@ILanguageService private _modeService: ILanguageService,
 	) {
 		super();
 		if (!_notebookOptions || !_notebookOptions.notebookUri || !_notebookOptions.executeManagers) {
@@ -147,6 +151,45 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._notebookOptions.layoutChanged(() => this._layoutChanged.fire());
 		}
 		this._defaultKernel = _notebookOptions.defaultKernel;
+
+		this._register(this._notebookService.onNotebookKernelsAdded(async kernels => this.handleNewKernelsAdded(kernels).catch(error => onUnexpectedError(error))));
+	}
+
+	// Add new kernels to the model's list as they're registered so that we don't
+	// need to restart the notebook to select them in the kernel dropdown.
+	private async handleNewKernelsAdded(kernels: notebookUtils.IStandardKernelWithProvider[]): Promise<void> {
+		// Kernels are file-specific, so we need to check the file extension
+		// to see if the kernel is supported for this notebook.
+		let extensions: readonly string[];
+		let fileExt = path.extname(this._notebookOptions.notebookUri.path);
+		if (!fileExt) {
+			let languageMode = this._notebookOptions.getInputLanguageMode();
+			if (languageMode) {
+				let languageName = this._modeService.getLanguageName(languageMode);
+				let fileExtensions = this._modeService.getExtensions(languageName);
+				if (fileExtensions?.length > 0) {
+					extensions = fileExtensions;
+				} else {
+					this.logService.warn(`Could not retrieve file extensions for language mode '${languageMode}' in notebook '${this._notebookOptions.notebookUri.toString()}'`);
+				}
+			} else {
+				this.logService.warn(`Could not determine language mode for notebook '${this._notebookOptions.notebookUri.toString()}'`);
+			}
+		} else {
+			extensions = [fileExt];
+		}
+		// All kernels from the same provider share the same supported file extensions,
+		// so we only need to check the first one here.
+		if (extensions?.some(ext => kernels[0]?.supportedFileExtensions?.includes(ext))) {
+			this._standardKernels.push(...kernels);
+			this.setDisplayNameMapsForKernels(kernels);
+
+			// Also add corresponding execute manager so that we can change to the new kernels
+			let manager = await this._notebookService.getOrCreateExecuteManager(kernels[0].notebookProvider, this.notebookUri);
+			this._notebookOptions.executeManagers.push(manager);
+
+			this._kernelsChangedEmitter.fire(this._activeClientSession?.kernel);
+		}
 	}
 
 	private get serializationManagers(): ISerializationManager[] {
@@ -401,7 +444,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public set standardKernels(kernels: notebookUtils.IStandardKernelWithProvider[]) {
 		this._standardKernels = kernels;
-		this.setKernelDisplayNameMapsWithStandardKernels();
+		this.setDisplayNameMapsForKernels(kernels);
 	}
 
 	public getApplicableConnectionProviderIds(kernelDisplayName: string): string[] {
@@ -1040,12 +1083,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (provider && provider !== this._providerId) {
 				this._providerId = provider;
 			} else if (!provider) {
-				this.notebookOptions.executeManagers.forEach(m => {
-					if (m.providerId !== SQL_NOTEBOOK_PROVIDER) {
-						// We don't know which provider it is before that provider is chosen to query its specs. Choosing the "last" one registered.
-						this._providerId = m.providerId;
-					}
-				});
+				this._providerId = SQL_NOTEBOOK_PROVIDER;
 			}
 			this._defaultKernel = this._savedKernelInfo;
 		} else if (this._defaultKernel) {
@@ -1567,8 +1605,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	 * Set maps with values to have a way to determine the connection
 	 * provider and notebook provider ids from a kernel display name
 	 */
-	private setKernelDisplayNameMapsWithStandardKernels(): void {
-		this._standardKernels.forEach(kernel => {
+	private setDisplayNameMapsForKernels(kernels: notebookUtils.IStandardKernelWithProvider[]): void {
+		kernels.forEach(kernel => {
 			let displayName = kernel.displayName;
 			if (!displayName) {
 				displayName = kernel.name;

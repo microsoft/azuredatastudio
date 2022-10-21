@@ -1191,6 +1191,18 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
+      <Item ItemId=";@src/sql/workbench/contrib/executionPlan/browser/widgets/highlightExpensiveNodeWidget.executionPlanSelectExpenseMe" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) tricTitle" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Select expense metric]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Выберите метрику расходов]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
       <Item ItemId=";@src/sql/workbench/contrib/executionPlan/browser/widgets/highlightExpensiveNodeWidget.highlightExpensiveOperationA" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) ction" ItemType="0" PsrId="308" Leaf="true">
@@ -7590,20 +7602,20 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView.epComapre.placeholderInfoboxText" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Add execution plans to compare]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Добавьте планы выполнения для сравнения]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView.epCompare.FileFilterDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Execution Plan Files]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Файлы плана выполнения]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView.epCompare.addExecutionPlanLabel" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Add execution plan]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Добавить план выполнения]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -8205,6 +8217,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/widgets/nodeSearchWidget.executionPlanEnterValueTitle" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Enter search value]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Введите значение поиска]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/widgets/nodeSearchWidget.executionPlanSearchTypeContains" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Contains]]></Val>
@@ -8219,6 +8240,24 @@
           <Val><![CDATA[Equals]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Равно]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/widgets/nodeSearchWidget.executionPlanSelectPropertyTitle" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Select property]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Выберите свойство]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/widgets/nodeSearchWidget.executionPlanSelectSearchTypeTitle" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Select search type]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Выберите тип поиска]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
