@@ -105,7 +105,6 @@ import { ILanguageFeaturesService } from 'vs/editor/common/services/languageFeat
 import { NotebookInfo } from 'vs/editor/common/languageFeatureRegistry';
 import { COMMENTEDITOR_DECORATION_KEY } from 'vs/workbench/contrib/comments/browser/commentReply';
 import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService';
-import { cellToolbarCompatibilityMessage } from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}}
 
 
 /*--------------------------------------------------------------------------------------------- */
@@ -767,20 +766,19 @@ configurationRegistry.registerConfiguration({
 		// 	},
 		// 	default: []
 		// },
-		[NotebookSetting.cellToolbarLocation]: {
-			description: cellToolbarCompatibilityMessage, // {{SQL CARBON EDIT}}
-			type: 'object',
-			additionalProperties: {
-				markdownDescription: nls.localize('notebook.cellToolbarLocation.viewType', "Configure the cell toolbar position for for specific file types"),
-				type: 'string',
-				enum: ['left', 'right', 'hidden']
-			},
-			default: {
-				'default': 'right'
-			},
-			tags: ['notebookLayout']
-		},
-		// {{SQL CARBON EDIT}} Remove unused VS Code Notebook configurations
+		// [NotebookSetting.cellToolbarLocation]: {
+		// 	description: nls.localize('notebook.cellToolbarLocation.description', "Where the cell toolbar should be shown, or whether it should be hidden."),
+		// 	type: 'object',
+		// 	additionalProperties: {
+		// 		markdownDescription: nls.localize('notebook.cellToolbarLocation.viewType', "Configure the cell toolbar position for for specific file types"),
+		// 		type: 'string',
+		// 		enum: ['left', 'right', 'hidden']
+		// 	},
+		// 	default: {
+		// 		'default': 'right'
+		// 	},
+		// 	tags: ['notebookLayout']
+		// },
 		// [ShowCellStatusBar]: {
 		// 	description: nls.localize('notebook.showCellStatusbar.description', "Whether the cell status bar should be shown."),
 		// 	type: 'string',
