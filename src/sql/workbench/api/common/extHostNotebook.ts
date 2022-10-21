@@ -169,10 +169,6 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	}
 
 	$requestExecute(kernelId: number, content: azdata.nb.IExecuteRequest, disposeOnDone?: boolean): Thenable<INotebookFutureDetails> {
-		// Revive request's URIs to restore functions
-		content.notebookUri = URI.revive(content.notebookUri);
-		content.cellUri = URI.revive(content.cellUri);
-
 		let kernel = this._getAdapter<azdata.nb.IKernel>(kernelId);
 		let future = kernel.requestExecute(content, disposeOnDone);
 		let futureId = this._addNewAdapter(future);

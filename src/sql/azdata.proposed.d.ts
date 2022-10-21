@@ -78,21 +78,9 @@ declare module 'azdata' {
 
 		export interface IExecuteRequest {
 			/**
-			 * URI of the notebook document that is sending this execute request.
-			 */
-			notebookUri: vscode.Uri;
-			/**
-			 * URI of the notebook cell that is sending this execute request.
-			 */
-			cellUri: vscode.Uri;
-			/**
 			 * The language of the notebook document that is executing this request.
 			 */
 			language: string;
-			/**
-			 * The index of the cell which the code being executed is from.
-			 */
-			cellIndex: number;
 		}
 
 		export interface INotebookMetadata {
