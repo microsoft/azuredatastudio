@@ -15,7 +15,6 @@ import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/
 import { foreground } from 'vs/platform/theme/common/colorRegistry';
 import { generateUuid } from 'vs/base/common/uuid';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { status } from 'vs/base/browser/ui/aria/aria';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 const azdataGraph = azdataGraphModule();
 
@@ -105,10 +104,6 @@ export class AzdataGraphView extends Disposable {
 					this.selectElement(this.getElementById(getPreviousSelection.id));
 				}
 			}
-		});
-
-		this._diagram.graph.addListener('tooltipShown', (sender, evt) => {
-			status(evt.properties.tooltip.textContent);
 		});
 	}
 
