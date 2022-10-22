@@ -288,6 +288,7 @@ export function minifyTask(src: string, sourceMapBaseUrl?: string): (cb: any) =>
 			postcss([cssnano({ preset: 'default' })]),
 			cssFilter.restore,
 			svgFilter,
+			// {{SQL CARBON EDIT}} - Disable the removeViewBox option because some SVG files ADS needs will not scale properly when the view box information is removed.
 			svgmin({
 				plugins: [
 					{ removeViewBox: false }
