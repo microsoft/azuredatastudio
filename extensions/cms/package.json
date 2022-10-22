@@ -643,9 +643,9 @@
     "vscode-nls": "^4.0.0"
   },
   "devDependencies": {
-    "@types/mocha": "^9.1.1",
+    "@types/mocha": "^7.0.2",
     "@types/node": "^12.11.7",
-    "mocha": "^9.2.2",
+    "mocha": "^7.1.1",
     "should": "^13.2.1",
     "@microsoft/vscodetestcover": "^1.2.1",
     "typemoq": "^2.1.0",

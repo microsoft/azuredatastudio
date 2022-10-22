@@ -1352,11 +1352,11 @@
   "devDependencies": {
     "@types/bytes": "^3.0.0",
     "@types/chai": "^4.2.11",
-    "@types/mocha": "^9.1.1",
+    "@types/mocha": "^7.0.2",
     "@types/request": "^2.48.2",
     "@types/stream-meter": "^0.0.22",
     "@types/through2": "^2.0.34",
-    "mocha": "^9.2.2",
+    "mocha": "^7.1.1",
     "should": "^13.2.3",
     "typemoq": "^2.1.0",
     "@microsoft/vscodetestcover": "^1.2.1",
