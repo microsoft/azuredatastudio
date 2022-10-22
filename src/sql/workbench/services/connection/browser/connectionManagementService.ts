@@ -498,17 +498,13 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				// a connection management info. See https://github.com/microsoft/azuredatastudio/issues/16556
 				this.tryAddActiveConnection(connectionMgmtInfo, connection, options.saveTheConnection);
 
-
-
 				if (callbacks.onConnectSuccess) {
 					callbacks.onConnectSuccess(options.params, connectionResult.connectionProfile);
 				}
 				if (options.saveTheConnection || isEdit) {
 					let matcher: interfaces.ProfileMatcher;
 					if (isEdit) {
-						matcher = (a: interfaces.IConnectionProfile, b: interfaces.IConnectionProfile) => {
-							return a.id === b.id;
-						};
+						matcher = (a: interfaces.IConnectionProfile, b: interfaces.IConnectionProfile) => a.id === options.params.oldProfileId;
 					}
 
 					await this.saveToSettings(uri, connection, matcher).then(value => {
