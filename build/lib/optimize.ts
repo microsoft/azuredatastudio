@@ -288,7 +288,11 @@ export function minifyTask(src: string, sourceMapBaseUrl?: string): (cb: any) =>
 			postcss([cssnano({ preset: 'default' })]),
 			cssFilter.restore,
 			svgFilter,
-			svgmin(),
+			svgmin({
+				plugins: [
+					{ removeViewBox: false }
+				]
+			}),
 			svgFilter.restore,
 			(<any>sourcemaps).mapSources((sourcePath: string) => {
 				if (sourcePath === 'bootstrap-fork.js') {
