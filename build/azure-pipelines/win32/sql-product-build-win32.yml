@@ -140,7 +140,7 @@ steps:
   #   displayName: Run unit tests (Electron)
   #   condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
-  # {{SQL CARBON TODO}} - disable while investigating
+  # {{SQL CARBON TODO}} -- reenable
   # - powershell: |
   #     # Figure out the full absolute path of the product we just built
   #     # including the remote server and configure the integration tests
