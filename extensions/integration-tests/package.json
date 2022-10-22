@@ -35,12 +35,12 @@
   },
   "devDependencies": {
     "@types/chai": "3.4.34",
-    "@types/mocha": "^7.0.2",
+    "@types/mocha": "^9.1.1",
     "@types/node": "^10.14.8",
     "@azure/keyvault-secrets": "^4.4.0",
     "@azure/identity": "^2.1.0",
     "chai": "3.5.0",
-    "mocha": "^7.1.1",
+    "mocha": "^9.2.2",
     "@microsoft/vscodetestcover": "^1.2.1",
     "@microsoft/azdata-test": "^2.0.3"
   }
