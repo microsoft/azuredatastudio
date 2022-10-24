@@ -104,7 +104,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IModelService) private _modelService: IModelService,
-		@Inject(ILanguageService) private _modeService: ILanguageService,
+		@Inject(ILanguageService) private _languageService: ILanguageService,
 		@Inject(IConfigurationService) private _configurationService: IConfigurationService,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(ILogService) private readonly logService: ILogService,
@@ -407,7 +407,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 
 	private updateLanguageMode(): void {
 		if (this._editorModel && this._editor) {
-			let modeValue = this._modeService.createById(this.cellModel.language);
+			let modeValue = this._languageService.createById(this.cellModel.language);
 			this._modelService.setMode(this._editorModel, modeValue);
 		}
 	}
@@ -490,10 +490,10 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 				description = localize('cellLanguageDescriptionConfigured', "({0})", lang);
 			}
 
-			const languageName = this._modeService.getLanguageName(lang) ?? lang;
+			const languageName = this._languageService.getLanguageName(lang) ?? lang;
 			const item = <ILanguagePickInput>{
 				label: languageName,
-				iconClasses: getIconClasses(this._modelService, this._modeService, this.getFakeResource(languageName, this._modeService)),
+				iconClasses: getIconClasses(this._modelService, this._languageService, this.getFakeResource(languageName, this._languageService)),
 				description,
 				languageId: lang
 			};
@@ -519,14 +519,14 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 	/**
 	 * Copied from coreActions.ts
 	 */
-	private getFakeResource(lang: string, modeService: ILanguageService): URI | undefined {
+	private getFakeResource(lang: string, languageService: ILanguageService): URI | undefined {
 		let fakeResource: URI | undefined;
 
-		const extensions = modeService.getExtensions(lang);
+		const extensions = languageService.getExtensions(lang);
 		if (extensions?.length) {
 			fakeResource = URI.file(extensions[0]);
 		} else {
-			const filenames = modeService.getFilenames(lang);
+			const filenames = languageService.getFilenames(lang);
 			if (filenames?.length) {
 				fakeResource = URI.file(filenames[0]);
 			}
