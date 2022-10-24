@@ -159,7 +159,7 @@ describe('Project: sqlproj content operations', function (): void {
 		let uri = project.getSystemDacpacUri(constants.masterDacpac);
 		let ssdtUri = project.getSystemDacpacSsdtUri(constants.masterDacpac);
 		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '160', constants.masterDacpac)).fsPath);
-		should.equal(ssdtUri.fsPath, Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', '150', 'SqlSchemas', constants.masterDacpac)).fsPath);
+		should.equal(ssdtUri.fsPath, Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', '160', 'SqlSchemas', constants.masterDacpac)).fsPath);
 
 		await project.changeTargetPlatform(constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlServer2016)!);
 		uri = project.getSystemDacpacUri(constants.masterDacpac);
@@ -192,8 +192,8 @@ describe('Project: sqlproj content operations', function (): void {
 		let projFileText = await fs.readFile(projFilePath);
 
 		should.equal(project.databaseReferences.length, 1, 'System db reference should have been added');
-		should(projFileText.includes(convertSlashesForSqlProj(Uri.file(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '160', constants.masterDacpac)).fsPath.substring(1)))).be.true('System db reference path should be 150');
-		should(projFileText.includes(convertSlashesForSqlProj(Uri.file(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', '150', 'SqlSchemas', constants.masterDacpac)).fsPath.substring(1)))).be.true('System db SSDT reference path should be 150');
+		should(projFileText.includes(convertSlashesForSqlProj(Uri.file(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '160', constants.masterDacpac)).fsPath.substring(1)))).be.true('System db reference path should be 160');
+		should(projFileText.includes(convertSlashesForSqlProj(Uri.file(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', '160', 'SqlSchemas', constants.masterDacpac)).fsPath.substring(1)))).be.true('System db SSDT reference path should be 160');
 
 		await project.changeTargetPlatform(constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlServer2016)!);
 		projFileText = await fs.readFile(projFilePath);
@@ -218,7 +218,7 @@ describe('Project: sqlproj content operations', function (): void {
 		let uri = project.getSystemDacpacUri(constants.msdbDacpac);
 		let ssdtUri = project.getSystemDacpacSsdtUri(constants.msdbDacpac);
 		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '160', constants.msdbDacpac)).fsPath);
-		should.equal(ssdtUri.fsPath, Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', '150', 'SqlSchemas', constants.msdbDacpac)).fsPath);
+		should.equal(ssdtUri.fsPath, Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', '160', 'SqlSchemas', constants.msdbDacpac)).fsPath);
 
 		await project.changeTargetPlatform(constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlServer2016)!);
 		uri = project.getSystemDacpacUri(constants.msdbDacpac);
