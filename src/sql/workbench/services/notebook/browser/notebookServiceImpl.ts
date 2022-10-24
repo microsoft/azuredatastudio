@@ -303,14 +303,14 @@ export class NotebookService extends Disposable implements INotebookService {
 			}
 		}
 		if (isUntitled && path.isAbsolute(uri.fsPath)) {
-			const model = this._untitledEditorService.create(<INewUntitledTextEditorWithAssociatedResourceOptions>{ associatedResource: uri, mode: languageMode, initialValue: initialStringContents });
+			const model = this._untitledEditorService.create(<INewUntitledTextEditorWithAssociatedResourceOptions>{ associatedResource: uri, languageId: languageMode, initialValue: initialStringContents });
 			fileInput = this._instantiationService.createInstance(UntitledTextEditorInput, model);
 		} else {
 			if (isUntitled) {
-				const model = this._untitledEditorService.create(<IExistingUntitledTextEditorOptions>{ untitledResource: uri, mode: languageMode, initialValue: initialStringContents });
+				const model = this._untitledEditorService.create(<IExistingUntitledTextEditorOptions>{ untitledResource: uri, languageId: languageMode, initialValue: initialStringContents });
 				fileInput = this._instantiationService.createInstance(UntitledTextEditorInput, model);
 			} else {
-				let input: any = { forceFile: true, resource: uri, mode: languageMode };
+				let input: any = { forceFile: true, resource: uri, languageId: languageMode };
 				fileInput = await this._editorService.createEditorInput(input);
 			}
 		}
