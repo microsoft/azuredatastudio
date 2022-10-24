@@ -949,8 +949,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				this._logService.info(`Previous pending reconnect promise for uri ${uri} is rejected with error ${err}, will attempt to reconnect if necessary.`);
 			}
 		}
-		// TODO: need way to check auth library
-		// if msal: this.fillInOrClearToken
 		const expiry = profile.options.expiresOn;
 		if (typeof expiry === 'number' && !Number.isNaN(expiry)) {
 			const currentTime = new Date().getTime() / 1000;
