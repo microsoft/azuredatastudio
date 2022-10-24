@@ -51,7 +51,7 @@ export const NBFORMAT = 4;
 export const NBFORMAT_MINOR = 2;
 
 export const enum NotebookLanguage {
-	Notebook = 'Notebook',
+	Notebook = 'notebook',
 	Ipynb = 'ipynb'
 }
 export interface INotebookSearchConfigurationProperties {
