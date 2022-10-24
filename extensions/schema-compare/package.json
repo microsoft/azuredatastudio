@@ -7,7 +7,7 @@
   "preview": false,
   "engines": {
     "vscode": "^1.25.0",
-    "azdata": ">=1.38.0"
+    "azdata": ">=1.40.0"
   },
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/extension.png",
