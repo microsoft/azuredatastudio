@@ -1,7 +1,7 @@
 {
   "name": "azuredatastudio",
   "version": "1.40.0",
-  "distro": "ab25a6d17792123a8c68700923ccc0a5cc3f4f4e",
+  "distro": "97a42096c8e31ea70ebc1776b670a584d858073e",
   "author": {
     "name": "Microsoft Corporation"
   },
@@ -78,7 +78,7 @@
     "angular2-grid": "2.0.6",
     "ansi_up": "^5.1.0",
     "applicationinsights": "1.4.2",
-    "azdataGraph": "github:Microsoft/azdataGraph#0.0.46",
+    "azdataGraph": "github:Microsoft/azdataGraph#0.0.49",
     "chart.js": "^2.9.4",
     "chokidar": "3.5.1",
     "graceful-fs": "4.2.8",
@@ -124,7 +124,7 @@
   },
   "devDependencies": {
     "7zip": "0.0.6",
-    "@playwright/test": "1.21.0",
+    "@playwright/test": "1.26.0",
     "@types/applicationinsights": "0.20.0",
     "@types/chart.js": "2.9.4",
     "@types/cookie": "^0.3.3",

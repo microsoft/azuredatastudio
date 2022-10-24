@@ -47,10 +47,10 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { IExistingUntitledTextEditorOptions, INewUntitledTextEditorWithAssociatedResourceOptions, IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 
-import { IEditorPane } from 'vs/workbench/common/editor';
+import { IEditorPane, IUntypedFileEditorInput } from 'vs/workbench/common/editor';
 import { isINotebookInput } from 'sql/workbench/services/notebook/browser/interface';
 import { INotebookShowOptions } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { DEFAULT_NB_LANGUAGE_MODE, INTERACTIVE_LANGUAGE_MODE, INTERACTIVE_PROVIDER_ID, NotebookLanguage } from 'sql/workbench/common/constants';
+import { INTERACTIVE_PROVIDER_ID, NotebookLanguage } from 'sql/workbench/common/constants';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { SqlSerializationProvider } from 'sql/workbench/services/notebook/browser/sql/sqlSerializationProvider';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
@@ -292,7 +292,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		let isUntitled: boolean = uri.scheme === Schemas.untitled;
 
 		let fileInput: EditorInput;
-		let languageMode = options.providerId === INTERACTIVE_PROVIDER_ID ? INTERACTIVE_LANGUAGE_MODE : DEFAULT_NB_LANGUAGE_MODE;
+		let languageId = options.providerId === INTERACTIVE_PROVIDER_ID ? NotebookLanguage.Interactive : NotebookLanguage.Notebook;
 		let initialStringContents: string;
 		if (options.initialContent) {
 			if (typeof options.initialContent === 'string') {
@@ -303,14 +303,24 @@ export class NotebookService extends Disposable implements INotebookService {
 			}
 		}
 		if (isUntitled && path.isAbsolute(uri.fsPath)) {
-			const model = this._untitledEditorService.create(<INewUntitledTextEditorWithAssociatedResourceOptions>{ associatedResource: uri, mode: languageMode, initialValue: initialStringContents });
+			const options: INewUntitledTextEditorWithAssociatedResourceOptions = {
+				associatedResource: uri,
+				languageId,
+				initialValue: initialStringContents
+			}
+			const model = this._untitledEditorService.create(options);
 			fileInput = this._instantiationService.createInstance(UntitledTextEditorInput, model);
 		} else {
 			if (isUntitled) {
-				const model = this._untitledEditorService.create(<IExistingUntitledTextEditorOptions>{ untitledResource: uri, mode: languageMode, initialValue: initialStringContents });
+				const options: IExistingUntitledTextEditorOptions = {
+					untitledResource: uri,
+					languageId,
+					initialValue: initialStringContents
+				}
+				const model = this._untitledEditorService.create(options);
 				fileInput = this._instantiationService.createInstance(UntitledTextEditorInput, model);
 			} else {
-				let input: any = { forceFile: true, resource: uri, mode: languageMode };
+				let input: IUntypedFileEditorInput = { forceFile: true, resource: uri, languageId };
 				fileInput = await this._editorService.createEditorInput(input);
 			}
 		}

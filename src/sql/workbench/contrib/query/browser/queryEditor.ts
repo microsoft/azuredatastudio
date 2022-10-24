@@ -112,7 +112,7 @@ export class QueryEditor extends EditorPane {
 		@IEditorService private readonly editorService: IEditorService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
-		@ILanguageService private readonly modeService: ILanguageService,
+		@ILanguageService private readonly languageService: ILanguageService,
 		@ITextResourceConfigurationService textResourceConfigurationService: ITextResourceConfigurationService,
 		@ICapabilitiesService private readonly capabilitiesService: ICapabilitiesService
 	) {
@@ -312,10 +312,10 @@ export class QueryEditor extends EditorPane {
 
 		// TODO: Allow query provider to provide the language mode.
 		if (this.input instanceof UntitledQueryEditorInput) {
-			if ((providerId === 'KUSTO') || this.modeService.getExtensions('Kusto').indexOf(fileExtension) > -1) {
+			if ((providerId === 'KUSTO') || this.languageService.getExtensions('Kusto').indexOf(fileExtension) > -1) {
 				this.input.setMode('kusto');
 			}
-			else if (providerId === 'LOGANALYTICS' || this.modeService.getExtensions('LogAnalytics').indexOf(fileExtension) > -1) {
+			else if (providerId === 'LOGANALYTICS' || this.languageService.getExtensions('LogAnalytics').indexOf(fileExtension) > -1) {
 				this.input.setMode('loganalytics');
 			}
 		}

@@ -93,8 +93,6 @@ export class ConnectionConfig {
 				});
 				if (sameProfileInList) {
 					let profileIndex = profiles.findIndex(value => value === sameProfileInList);
-					newProfile.id = sameProfileInList.id;
-					connectionProfile.id = sameProfileInList.id;
 					profiles[profileIndex] = newProfile;
 				} else {
 					profiles.push(newProfile);

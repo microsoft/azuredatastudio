@@ -36,7 +36,7 @@ import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/t
 import { IconPathHelper } from '../common/iconHelper';
 import { DashboardData, PublishData, Status } from '../models/dashboardData/dashboardData';
 import { getPublishDatabaseSettings, launchPublishTargetOption } from '../dialogs/publishDatabaseQuickpick';
-import { launchCreateAzureServerQuickPick, getPublishToDockerSettings } from '../dialogs/deployDatabaseQuickpick';
+import { launchCreateAzureServerQuickPick } from '../dialogs/deployDatabaseQuickpick';
 import { DeployService } from '../models/deploy/deployService';
 import { AddItemOptions, EntryType, GenerateProjectFromOpenApiSpecOptions, IDatabaseReferenceProjectEntry, ISqlProjectPublishSettings, IPublishToDockerSettings, ISqlProject, ItemType, SqlTargetPlatform } from 'sqldbproj';
 import { AutorestHelper } from '../tools/autorestHelper';
@@ -47,6 +47,7 @@ import { FileProjectEntry, SqlProjectReferenceProjectEntry } from '../models/pro
 import { UpdateProjectAction, UpdateProjectDataModel } from '../models/api/updateProject';
 import { AzureSqlClient } from '../models/deploy/azureSqlClient';
 import { ConnectionService } from '../models/connections/connectionService';
+import { getPublishToDockerSettings } from '../dialogs/publishToDockerQuickpick';
 
 const maxTableLength = 10;
 
