@@ -37,7 +37,6 @@ import { IAction, Separator } from 'vs/base/common/actions';
 import { ILogService } from 'vs/platform/log/common/log';
 import { localize } from 'vs/nls';
 import { IGridDataProvider } from 'sql/workbench/services/query/common/gridDataProvider';
-import { formatDocumentWithSelectedProvider, FormattingMode } from 'vs/editor/contrib/format/format';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { GridPanelState, GridTableState } from 'sql/workbench/common/editor/query/gridTableState';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
@@ -51,9 +50,10 @@ import { FilterButtonWidth, HeaderFilter } from 'sql/base/browser/ui/table/plugi
 import { HybridDataProvider } from 'sql/base/browser/ui/table/hybridDataProvider';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { alert, status } from 'vs/base/browser/ui/aria/aria';
-import { CopyAction } from 'vs/editor/contrib/clipboard/clipboard';
 import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
 import { ExecutionPlanInput } from 'sql/workbench/contrib/executionPlan/common/executionPlanInput';
+import { CopyAction } from 'vs/editor/contrib/clipboard/browser/clipboard';
+import { formatDocumentWithSelectedProvider, FormattingMode } from 'vs/editor/contrib/format/browser/format';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -731,7 +731,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 				}
 				else {
 					const content = value.displayValue;
-					const input = this.untitledEditorService.create({ mode: column.isXml ? 'xml' : 'json', initialValue: content });
+					const input = this.untitledEditorService.create({ languageId: column.isXml ? 'xml' : 'json', initialValue: content });
 					await input.resolve();
 					await this.instantiationService.invokeFunction(formatDocumentWithSelectedProvider, input.textEditorModel, FormattingMode.Explicit, Progress.None, CancellationToken.None);
 					input.setDirty(false);

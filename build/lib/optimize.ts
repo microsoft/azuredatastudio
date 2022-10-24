@@ -254,9 +254,11 @@ export function minifyTask(src: string, sourceMapBaseUrl?: string): (cb: any) =>
 		const cssnano = require('cssnano') as typeof import('cssnano');
 		const postcss = require('gulp-postcss') as typeof import('gulp-postcss');
 		const sourcemaps = require('gulp-sourcemaps') as typeof import('gulp-sourcemaps');
+		const svgmin = require('gulp-svgmin') as typeof import('gulp-svgmin');
 
 		const jsFilter = filter('**/*.js', { restore: true });
 		const cssFilter = filter('**/*.css', { restore: true });
+		const svgFilter = filter('**/*.svg', { restore: true });
 
 		pump(
 			gulp.src([src + '/**', '!' + src + '/**/*.map']),
@@ -285,6 +287,14 @@ export function minifyTask(src: string, sourceMapBaseUrl?: string): (cb: any) =>
 			cssFilter,
 			postcss([cssnano({ preset: 'default' })]),
 			cssFilter.restore,
+			svgFilter,
+			// {{SQL CARBON EDIT}} - Disable the removeViewBox option because some SVG files ADS needs will not scale properly when the view box information is removed.
+			svgmin({
+				plugins: [
+					{ removeViewBox: false }
+				]
+			}),
+			svgFilter.restore,
 			(<any>sourcemaps).mapSources((sourcePath: string) => {
 				if (sourcePath === 'bootstrap-fork.js') {
 					return 'bootstrap-fork.orig.js';

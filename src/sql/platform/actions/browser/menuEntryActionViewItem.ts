@@ -6,7 +6,8 @@
 import { asCSSUrl, createCSSRule } from 'vs/base/browser/dom';
 import { IdGenerator } from 'vs/base/common/idGenerator';
 import { IDisposable, toDisposable, dispose } from 'vs/base/common/lifecycle';
-import { ICommandAction, MenuItemAction } from 'vs/platform/actions/common/actions';
+import { MenuItemAction } from 'vs/platform/actions/common/actions';
+import { ICommandAction } from 'vs/platform/action/common/action';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { ThemeIcon } from 'vs/platform/theme/common/themeService';

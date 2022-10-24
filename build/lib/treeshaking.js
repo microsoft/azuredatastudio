@@ -167,13 +167,6 @@ class TypeScriptLanguageServiceHost {
         this._files = files;
         this._compilerOptions = compilerOptions;
     }
-    // {{SQL CARBON EDIT}} - provide missing methods
-    readFile() {
-        return undefined;
-    }
-    fileExists() {
-        return false;
-    }
     // --- language service host ---------------
     getCompilationSettings() {
         return this._compilerOptions;
@@ -211,6 +204,12 @@ class TypeScriptLanguageServiceHost {
     }
     isDefaultLibFileName(fileName) {
         return fileName === this.getDefaultLibFileName(this._compilerOptions);
+    }
+    readFile(path, _encoding) {
+        return this._files[path] || this._libs[path];
+    }
+    fileExists(path) {
+        return path in this._files || path in this._libs;
     }
 }
 //#endregion
@@ -251,6 +250,52 @@ function nodeOrChildIsBlack(node) {
 function isSymbolWithDeclarations(symbol) {
     return !!(symbol && symbol.declarations);
 }
+function isVariableStatementWithSideEffects(ts, node) {
+    if (!ts.isVariableStatement(node)) {
+        return false;
+    }
+    let hasSideEffects = false;
+    const visitNode = (node) => {
+        if (hasSideEffects) {
+            // no need to go on
+            return;
+        }
+        if (ts.isCallExpression(node) || ts.isNewExpression(node)) {
+            // TODO: assuming `createDecorator` and `refineServiceDecorator` calls are side-effect free
+            const isSideEffectFree = /(createDecorator|refineServiceDecorator)/.test(node.expression.getText());
+            if (!isSideEffectFree) {
+                hasSideEffects = true;
+            }
+        }
+        node.forEachChild(visitNode);
+    };
+    node.forEachChild(visitNode);
+    return hasSideEffects;
+}
+function isStaticMemberWithSideEffects(ts, node) {
+    if (!ts.isPropertyDeclaration(node)) {
+        return false;
+    }
+    if (!node.modifiers) {
+        return false;
+    }
+    if (!node.modifiers.some(mod => mod.kind === ts.SyntaxKind.StaticKeyword)) {
+        return false;
+    }
+    let hasSideEffects = false;
+    const visitNode = (node) => {
+        if (hasSideEffects) {
+            // no need to go on
+            return;
+        }
+        if (ts.isCallExpression(node) || ts.isNewExpression(node)) {
+            hasSideEffects = true;
+        }
+        node.forEachChild(visitNode);
+    };
+    node.forEachChild(visitNode);
+    return hasSideEffects;
+}
 function markNodes(ts, languageService, options) {
     const program = languageService.getProgram();
     if (!program) {
@@ -288,6 +333,9 @@ function markNodes(ts, languageService, options) {
                     }
                 }
                 return;
+            }
+            if (isVariableStatementWithSideEffects(ts, node)) {
+                enqueue_black(node);
             }
             if (ts.isExpressionStatement(node)
                 || ts.isIfStatement(node)
@@ -447,6 +495,9 @@ function markNodes(ts, languageService, options) {
                                 || memberName === 'dispose' // TODO: keeping all `dispose` methods
                                 || /^_(.*)Brand$/.test(memberName || '') // TODO: keeping all members ending with `Brand`...
                             ) {
+                                enqueue_black(member);
+                            }
+                            if (isStaticMemberWithSideEffects(ts, member)) {
                                 enqueue_black(member);
                             }
                         }

@@ -19,7 +19,6 @@ import { INotebookParams, INotebookService, NotebookRange } from 'sql/workbench/
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ACTION_IDS, NOTEBOOK_MAX_MATCHES, IFindNotebookController, FindWidget, IConfigurationChangedEvent } from 'sql/workbench/contrib/notebook/browser/find/notebookFindWidget';
 import { IOverlayWidget } from 'vs/editor/browser/editorBrowser';
-import { FindReplaceState, FindReplaceStateChangedEvent } from 'vs/editor/contrib/find/findState';
 import { ICodeEditorViewState, IEditorAction } from 'vs/editor/common/editorCommon';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
@@ -36,6 +35,7 @@ import { TimeoutTimer } from 'vs/base/common/async';
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { IEditorOptions } from 'vs/platform/editor/common/editor';
+import { FindReplaceState, FindReplaceStateChangedEvent } from 'vs/editor/contrib/find/browser/findState';
 
 export class NotebookEditor extends EditorPane implements IFindNotebookController {
 
@@ -372,7 +372,9 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 			matchesPosition: false,
 			matchesCount: false,
 			currentMatch: false,
-			loop: true
+			loop: true,
+			isSearching: false,
+			filters: false
 		};
 		this._notebookModel.cells?.forEach(cell => {
 			this._register(cell.onCellModeChanged((state) => {
@@ -488,7 +490,9 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 			matchesPosition: false,
 			matchesCount: false,
 			currentMatch: false,
-			loop: true
+			loop: true,
+			isSearching: false,
+			filters: false
 		};
 		this._onFindStateChange(changeEvent).catch(e => { onUnexpectedError(e); });
 	}

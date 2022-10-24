@@ -20,9 +20,9 @@ import { Color } from 'vs/base/common/color';
 import { getOrDefault } from 'vs/base/common/objects';
 import { isNumber } from 'vs/base/common/types';
 import { clamp } from 'vs/base/common/numbers';
-import { GlobalMouseMoveMonitor } from 'vs/base/browser/globalMouseMoveMonitor';
 import { GridPosition } from 'sql/base/common/gridPosition';
 import { GridRange, IGridRange } from 'sql/base/common/gridRange';
+import { GlobalPointerMoveMonitor } from 'vs/base/browser/globalPointerMoveMonitor';
 
 interface ITraitChangeEvent {
 	indexes: IGridRange[];
@@ -437,7 +437,7 @@ export class MouseController<T> implements IDisposable {
 	readonly multipleSelectionController?: IMultipleSelectionController<T>;
 	private openController: IOpenController;
 	private disposables: IDisposable[] = [];
-	private readonly _mouseMoveMonitor = new GlobalMouseMoveMonitor<ITableMouseEvent<T>>();
+	private readonly _mouseMoveMonitor = new GlobalPointerMoveMonitor<ITableMouseEvent<T>>();
 
 	private startMouseEvent?: ITableMouseEvent<T>;
 
@@ -481,10 +481,10 @@ export class MouseController<T> implements IDisposable {
 		if (document.activeElement !== e.browserEvent.target) {
 			this.table.domFocus();
 		}
-		const merger = (lastEvent: ITableMouseEvent<T> | null, currentEvent: MouseEvent): ITableMouseEvent<T> => {
+		const merger = (lastEvent: ITableMouseEvent<T> | null, currentEvent: PointerEvent): ITableMouseEvent<T> => {
 			return this.view.toMouseEvent(currentEvent);
 		};
-		this._mouseMoveMonitor.startMonitoring(e.browserEvent.target as HTMLElement, e.buttons, merger, e => this.onMouseMove(e), () => this.onMouseStop());
+		this._mouseMoveMonitor.startMonitoring(e.browserEvent.target as HTMLElement, e.browserEvent.pointerId, e.buttons, merger, e => this.onMouseMove(e), () => this.onMouseStop());
 		this.onPointer(e);
 	}
 

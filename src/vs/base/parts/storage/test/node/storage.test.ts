@@ -222,72 +222,95 @@ flakySuite('Storage Library', function () {
 		await storage.close();
 	});
 
-	test.skip('conflicting updates', async () => { // {{SQL CARBON EDIT}} test is disabled due to failures
+	test('explicit flush', async () => {
 		let storage = new Storage(new SQLiteStorageDatabase(join(testDir, 'storage.db')));
 		await storage.init();
 
-		let changes = new Set<string>();
-		storage.onDidChangeStorage(key => {
-			changes.add(key);
-		});
-
-		const set1Promise = storage.set('foo', 'bar1');
-		const set2Promise = storage.set('foo', 'bar2');
-		const set3Promise = storage.set('foo', 'bar3');
+		storage.set('foo', 'bar');
+		storage.set('bar', 'foo');
 
 		let flushPromiseResolved = false;
 		storage.whenFlushed().then(() => flushPromiseResolved = true);
 
-		strictEqual(storage.get('foo'), 'bar3');
-		strictEqual(changes.size, 1);
-		ok(changes.has('foo'));
+		strictEqual(flushPromiseResolved, false);
 
-		let setPromiseResolved = false;
-		await Promise.all([set1Promise, set2Promise, set3Promise]).then(() => setPromiseResolved = true);
-		ok(setPromiseResolved);
-		ok(flushPromiseResolved);
+		await storage.flush(0);
 
-		changes = new Set<string>();
-
-		const set4Promise = storage.set('bar', 'foo');
-		const delete1Promise = storage.delete('bar');
-
-		ok(!storage.get('bar'));
-
-		strictEqual(changes.size, 1);
-		ok(changes.has('bar'));
-
-		let setAndDeletePromiseResolved = false;
-		await Promise.all([set4Promise, delete1Promise]).then(() => setAndDeletePromiseResolved = true);
-		ok(setAndDeletePromiseResolved);
+		strictEqual(flushPromiseResolved, true);
 
 		await storage.close();
 	});
 
-	test.skip('corrupt DB recovers', async () => { // {{SQL CARBON EDIT}} test is disabled due to failures
-		const storageFile = join(testDir, 'storage.db');
+	test('conflicting updates', () => {
+		return runWithFakedTimers({}, async function () {
+			let storage = new Storage(new SQLiteStorageDatabase(join(testDir, 'storage.db')));
+			await storage.init();
 
-		let storage = new Storage(new SQLiteStorageDatabase(storageFile));
-		await storage.init();
+			let changes = new Set<string>();
+			storage.onDidChangeStorage(key => {
+				changes.add(key);
+			});
 
-		await storage.set('bar', 'foo');
+			const set1Promise = storage.set('foo', 'bar1');
+			const set2Promise = storage.set('foo', 'bar2');
+			const set3Promise = storage.set('foo', 'bar3');
 
-		await Promises.writeFile(storageFile, 'This is a broken DB');
+			let flushPromiseResolved = false;
+			storage.whenFlushed().then(() => flushPromiseResolved = true);
 
-		await storage.set('foo', 'bar');
+			strictEqual(storage.get('foo'), 'bar3');
+			strictEqual(changes.size, 1);
+			ok(changes.has('foo'));
 
-		strictEqual(storage.get('bar'), 'foo');
-		strictEqual(storage.get('foo'), 'bar');
+			let setPromiseResolved = false;
+			await Promise.all([set1Promise, set2Promise, set3Promise]).then(() => setPromiseResolved = true);
+			ok(setPromiseResolved);
+			ok(flushPromiseResolved);
 
-		await storage.close();
+			changes = new Set<string>();
 
-		storage = new Storage(new SQLiteStorageDatabase(storageFile));
-		await storage.init();
+			const set4Promise = storage.set('bar', 'foo');
+			const delete1Promise = storage.delete('bar');
 
-		strictEqual(storage.get('bar'), 'foo');
-		strictEqual(storage.get('foo'), 'bar');
+			ok(!storage.get('bar'));
 
-		await storage.close();
+			strictEqual(changes.size, 1);
+			ok(changes.has('bar'));
+
+			let setAndDeletePromiseResolved = false;
+			await Promise.all([set4Promise, delete1Promise]).then(() => setAndDeletePromiseResolved = true);
+			ok(setAndDeletePromiseResolved);
+
+			await storage.close();
+		});
+	});
+
+	test('corrupt DB recovers', async () => {
+		return runWithFakedTimers({}, async function () {
+			const storageFile = join(testDir, 'storage.db');
+
+			let storage = new Storage(new SQLiteStorageDatabase(storageFile));
+			await storage.init();
+
+			await storage.set('bar', 'foo');
+
+			await Promises.writeFile(storageFile, 'This is a broken DB');
+
+			await storage.set('foo', 'bar');
+
+			strictEqual(storage.get('bar'), 'foo');
+			strictEqual(storage.get('foo'), 'bar');
+
+			await storage.close();
+
+			storage = new Storage(new SQLiteStorageDatabase(storageFile));
+			await storage.init();
+
+			strictEqual(storage.get('bar'), 'foo');
+			strictEqual(storage.get('foo'), 'bar');
+
+			await storage.close();
+		});
 	});
 });
 

@@ -33,15 +33,15 @@ export class FileNotebookInput extends NotebookInput {
 	}
 
 	public getPreferredMode(): string {
-		return this.textInput.getPreferredMode();
+		return this.textInput.getPreferredLanguageId();
 	}
 
 	public setMode(mode: string): void {
-		this.textInput.setMode(mode);
+		this.textInput.setLanguageId(mode);
 	}
 
 	public setPreferredMode(mode: string): void {
-		this.textInput.setPreferredMode(mode);
+		this.textInput.setPreferredLanguageId(mode);
 	}
 
 	override get typeId(): string {
