@@ -1,4 +1,4 @@
-# Query History *(preview)*
+# Query History
 
 Adds a Query History view for viewing and running past executed queries.
 

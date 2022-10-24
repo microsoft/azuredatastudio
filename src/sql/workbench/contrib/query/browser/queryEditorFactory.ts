@@ -31,7 +31,7 @@ export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 	static readonly isDefault = true;
 	/**
 	 * The language IDs that are associated with the query editor. These are case sensitive for comparing with what's
-	 * registered in the ModeService registry.
+	 * registered in the LanguageService registry.
 	 */
 	static readonly languages = ['kusto', 'loganalytics', 'sql'];	//TODO Add language id here for new languages supported in query editor. Make it easier to contribute new extension's languageID
 

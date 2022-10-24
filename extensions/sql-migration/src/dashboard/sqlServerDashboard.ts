@@ -9,7 +9,7 @@ import * as mssql from 'mssql';
 import { promises as fs } from 'fs';
 import { DatabaseMigration, getMigrationDetails } from '../api/azure';
 import { MenuCommands, SqlMigrationExtensionId } from '../api/utils';
-import { canCancelMigration, canRetryMigration } from '../constants/helper';
+import { canCancelMigration, canCutoverMigration, canRetryMigration } from '../constants/helper';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { MigrationNotebookInfo, NotebookPathHelper } from '../constants/notebookPathHelper';
 import * as loc from '../constants/strings';
@@ -158,7 +158,7 @@ export class DashboardWidget {
 					try {
 						await this.clearError(args.connectionId);
 						const migration = await this._getMigrationById(args.migrationId, args.migrationOperationId);
-						if (canRetryMigration(migration)) {
+						if (canCutoverMigration(migration)) {
 							const cutoverDialogModel = new MigrationCutoverDialogModel(
 								await MigrationLocalStorage.getMigrationServiceContext(),
 								migration!);

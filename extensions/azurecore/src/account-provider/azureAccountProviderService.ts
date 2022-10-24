@@ -7,6 +7,7 @@ import * as azdata from 'azdata';
 import * as events from 'events';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
+import * as os from 'os';
 import { SimpleTokenCache } from './simpleTokenCache';
 import providerSettings from './providerSettings';
 import { AzureAccountProvider as AzureAccountProvider } from './azureAccountProvider';
@@ -14,7 +15,7 @@ import { AzureAccountProviderMetadata } from 'azurecore';
 import { ProviderSettings } from './interfaces';
 import * as loc from '../localizedConstants';
 import { PublicClientApplication } from '@azure/msal-node';
-import { DataProtectionScope, PersistenceCreator, PersistenceCachePlugin } from '@azure/msal-node-extensions';
+import { DataProtectionScope, PersistenceCachePlugin, FilePersistenceWithDataProtection, KeychainPersistence, LibSecretPersistence } from '@azure/msal-node-extensions';
 import * as path from 'path';
 import { Logger } from '../utils/Logger';
 import { AuthLibrary } from './auths/azureAuth';
@@ -162,27 +163,43 @@ export class AzureAccountProviderService implements vscode.Disposable {
 			let simpleTokenCache = new SimpleTokenCache(tokenCacheKey, this._userStoragePath, noSystemKeychain, this._credentialProvider);
 			await simpleTokenCache.init();
 			const cachePath = path.join(this._userStoragePath, './cache.json');
-			//TODO: figure out new account name
-			const persistenceConfiguration = {
-				cachePath,
-				dataProtectionScope: DataProtectionScope.CurrentUser,
-				serviceName: 'azuredatastudio',
-				accountName: 'test',
-				usePlaintextFileOnLinux: false,
-			};
-			await PersistenceCreator.createPersistence(persistenceConfiguration).then(async (persistence) => {
-				const MSAL_CONFIG = {
-					auth: {
-						clientId: provider.metadata.settings.clientId,
-						redirect_uri: `${provider.metadata.settings.redirectUri}/redirect`
-					},
-					cache: {
-						cachePlugin: new PersistenceCachePlugin(persistence)
-					}
-				};
-				this.clientApplication = new PublicClientApplication(MSAL_CONFIG);
-
-			});
+			let platform = os.platform();
+			let persistence;
+			const serviceName = 'azuredatastudio';
+			const accountName = 'account';
+			let persistenceCachePlugin: PersistenceCachePlugin;
+			switch (platform) {
+				case 'win32':
+					const dataProtectionScope = DataProtectionScope.CurrentUser;
+					const optionalEntropy = "";
+					persistence = await FilePersistenceWithDataProtection.create(cachePath, dataProtectionScope, optionalEntropy);
+					break;
+				case 'darwin':
+					persistence = await KeychainPersistence.create(cachePath, serviceName, accountName);
+					break;
+				case 'linux':
+					persistence = await LibSecretPersistence.create(cachePath, serviceName, accountName);
+					break;
+			}
+			const lockOptions = {
+				retryNumber: 100,
+				retryDelay: 50
+			}
+			if (!persistence) {
+				Logger.error('unable to create persistence');
+				throw new Error('unable to creat persistence');
+			}
+			persistenceCachePlugin = new PersistenceCachePlugin(persistence, lockOptions); // or any of the other ones.
+			const MSAL_CONFIG = {
+				auth: {
+					clientId: provider.metadata.settings.clientId,
+					redirect_uri: `${provider.metadata.settings.redirectUri}/redirect`
+				},
+				cache: {
+					cachePlugin: persistenceCachePlugin
+				}
+			}
+			this.clientApplication = new PublicClientApplication(MSAL_CONFIG);
 
 			const isSaw: boolean = vscode.env.appName.toLowerCase().indexOf('saw') > 0;
 			let accountProvider = new AzureAccountProvider(provider.metadata as AzureAccountProviderMetadata, simpleTokenCache, this._context, this.clientApplication, this._uriEventHandler, isSaw);

@@ -45,7 +45,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 			if (impactProvider === true) {
 				this.handleAuthMapping(metadata, tokenCache, context, uriEventHandler);
 			}
-			const library = changeEvent.affectsConfiguration('authenticationLibrary');
+			const library = changeEvent.affectsConfiguration('azure.authenticationLibrary');
 			if (library === true) {
 				this.authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
 			}
@@ -105,7 +105,21 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		const accounts: AzureAccount[] = [];
 		console.log(`Initializing stored accounts ${JSON.stringify(accounts)}`);
 		const authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
-		const updatedAccounts = storedAccounts.filter(account => account.key.authLibrary === authLibrary);
+		const updatedAccounts = storedAccounts.filter(account => {
+			if (account.key.authLibrary) {
+				if (account.key.authLibrary === authLibrary) {
+					return true;
+				} else {
+					return false;
+				}
+			} else {
+				if (authLibrary === 'ADAL') {
+					return true;
+				} else {
+					return false;
+				}
+			}
+		});
 		for (let account of updatedAccounts) {
 			if (this.authLibrary === 'ADAL') {
 				const azureAuth = this.getAuthMethod(account);
@@ -117,7 +131,6 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 				}
 			}
 			else {
-				//TODO: if msal: do this
 				account.isStale = false;
 				accounts.push(account);
 			}
@@ -142,7 +155,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		if (this.authLibrary === 'ADAL') {
 			return azureAuth?.getAccountSecurityToken(account, tenantId, resource);
 		} else {
-			let authResult = await azureAuth?.getTokenMsal(account.key.accountId, resource);
+			let authResult = await azureAuth?.getTokenMsal(account.key.accountId, resource, tenantId);
 			if (!authResult || !authResult.account || !authResult.account.idTokenClaims) {
 				Logger.error(`MSAL: getToken call failed`);
 				throw Error('Failed to get token');
@@ -210,7 +223,6 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 
 		return pick.azureAuth.startLogin();
 	}
-	//TODO: might need to change refresh logic based on new msal library
 	refresh(account: AzureAccount): Thenable<AzureAccount | azdata.PromptFailedResult> {
 		return this._refresh(account);
 	}

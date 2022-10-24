@@ -469,6 +469,12 @@ declare module 'azdata' {
 
 	export interface ConnectionOption {
 		defaultValueOsOverrides?: DefaultValueOsOverride[];
+
+		/**
+		 * When set to true, the respective connection option will be rendered on the main connection dialog
+		 * and not the Advanced Options window.
+		 */
+		showOnConnectionDialog?: boolean;
 	}
 
 	export interface TaskInfo {
@@ -527,26 +533,7 @@ declare module 'azdata' {
 		type?: ExtensionNodeType;
 	}
 
-	export interface AccountDisplayInfo {
-		email?: string;
-		name?: string;
-	}
-
-	export interface AccountProvider {
-		/**
-		 * Generates a security token for the provided account and tenant
-		 * @param account The account to generate a security token for
-		 * @param resource The resource to get the token for
-		 * @return Promise to return a security token object
-		 */
-		getAccountSecurityToken(account: Account, tenant: string, resource: AzureResource): Thenable<accounts.AccountSecurityToken | undefined>;
-	}
-
 	export interface AccountKey {
-		/**
-		 * A version string for an account
-		 */
-		accountVersion?: string;
 		/**
 		 * Auth Library used to add the account
 		 */

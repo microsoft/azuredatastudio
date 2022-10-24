@@ -30,7 +30,21 @@ export class ConnectionDialogTreeProvider implements vscode.TreeDataProvider<Tre
 		azdata.accounts.onDidChangeAccounts(async (e: azdata.DidChangeAccountsParams) => {
 			// This event sends it per provider, we need to make sure we get all the azure related accounts
 			const authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
-			let accounts = (await azdata.accounts.getAllAccounts()).filter(account => account.key.authLibrary === authLibrary);
+			let accounts = (await azdata.accounts.getAllAccounts()).filter(account => {
+				if (account.key.authLibrary) {
+					if (account.key.authLibrary === authLibrary) {
+						return true;
+					} else {
+						return false;
+					}
+				} else {
+					if (authLibrary === 'ADAL') {
+						return true;
+					} else {
+						return false;
+					}
+				}
+			});
 			accounts = accounts.filter(a => a.key.providerId.startsWith('azure'));
 			// the onDidChangeAccounts event will trigger in many cases where the accounts didn't actually change
 			// the notifyNodeChanged event triggers a refresh which triggers a getChildren which can trigger this callback
@@ -56,10 +70,26 @@ export class ConnectionDialogTreeProvider implements vscode.TreeDataProvider<Tre
 		}
 
 		if (this.accounts && this.accounts.length > 0) {
+			const authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
+			let accounts = this.accounts.filter(account => {
+				if (account.key.authLibrary) {
+					if (account.key.authLibrary === authLibrary) {
+						return true;
+					} else {
+						return false;
+					}
+				} else {
+					if (authLibrary === 'ADAL') {
+						return true;
+					} else {
+						return false;
+					}
+				}
+			});
 			const accountNodes: FlatAccountTreeNode[] = [];
 			const errorMessages: string[] = [];
 			// We are doing sequential account loading to avoid the Azure request throttling
-			for (const account of this.accounts) {
+			for (const account of accounts) {
 				try {
 					const accountNode = new FlatAccountTreeNode(account, this.appContext, this);
 					await accountNode.updateLabel();
@@ -87,7 +117,21 @@ export class ConnectionDialogTreeProvider implements vscode.TreeDataProvider<Tre
 	private async loadAccounts(): Promise<void> {
 		try {
 			const authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
-			this.accounts = (await azdata.accounts.getAllAccounts()).filter(account => account.key.authLibrary === authLibrary);
+			this.accounts = (await azdata.accounts.getAllAccounts()).filter(account => {
+				if (account.key.authLibrary) {
+					if (account.key.authLibrary === authLibrary) {
+						return true;
+					} else {
+						return false;
+					}
+				} else {
+					if (authLibrary === 'ADAL') {
+						return true;
+					} else {
+						return false;
+					}
+				}
+			});
 			// System has been initialized
 			this.setSystemInitialized();
 			this._onDidChangeTreeData.fire(undefined);

@@ -541,13 +541,13 @@ export class QueryEditorOverrideContribution extends Disposable implements IWork
 		@ILogService private _logService: ILogService,
 		@IEditorService private _editorService: IEditorService,
 		@IEditorResolverService private _editorResolverService: IEditorResolverService,
-		@ILanguageService private _modeService: ILanguageService
+		@ILanguageService private _languageService: ILanguageService
 	) {
 		super();
 		this.registerEditorOverrides();
 		// Refresh the editor overrides whenever the languages change so we ensure we always have
 		// the latest up to date list of extensions for each language
-		this._modeService.onDidChange(() => {
+		this._languageService.onDidChange(() => {
 			this.registerEditorOverrides();
 		});
 	}
@@ -556,7 +556,7 @@ export class QueryEditorOverrideContribution extends Disposable implements IWork
 		this._registeredOverrides.clear();
 		// List of language IDs to associate the query editor for. These are case sensitive.
 		QueryEditorLanguageAssociation.languages.map(lang => {
-			const langExtensions = this._modeService.getExtensions(lang);
+			const langExtensions = this._languageService.getExtensions(lang);
 			if (langExtensions.length === 0) {
 				return;
 			}

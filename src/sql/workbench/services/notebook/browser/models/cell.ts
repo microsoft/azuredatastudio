@@ -102,7 +102,7 @@ export class CellModel extends Disposable implements ICellModel {
 		@ICommandService private _commandService?: ICommandService,
 		@IConfigurationService private _configurationService?: IConfigurationService,
 		@ILogService private _logService?: ILogService,
-		@ILanguageService private _modeService?: ILanguageService
+		@ILanguageService private _languageService?: ILanguageService
 	) {
 		super();
 		this.id = `${modelId++}`;
@@ -414,8 +414,8 @@ export class CellModel extends Disposable implements ICellModel {
 		let result: string;
 		if (this._cellType === CellTypes.Markdown) {
 			result = 'Markdown';
-		} else if (this._modeService) {
-			let language = this._modeService.getLanguageName(this.language);
+		} else if (this._languageService) {
+			let language = this._languageService.getLanguageName(this.language);
 			result = language ?? this.language;
 		} else {
 			result = this.language;

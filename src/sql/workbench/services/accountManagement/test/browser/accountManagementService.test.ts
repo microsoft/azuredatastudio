@@ -18,6 +18,7 @@ import { EventVerifierSingle } from 'sql/base/test/common/event';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { AccountDialog } from 'sql/workbench/services/accountManagement/browser/accountDialog';
 import { Emitter } from 'vs/base/common/event';
+import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 
 // SUITE CONSTANTS /////////////////////////////////////////////////////////
 const hasAccountProvider: azdata.AccountProviderMetadata = {
@@ -530,9 +531,10 @@ function getTestState(): AccountManagementState {
 		.returns(() => mockAccountStore.object);
 
 	const testNotificationService = new TestNotificationService();
+	const testConfigurationService = new TestConfigurationService();
 
 	// Create the account management service
-	let ams = new AccountManagementService(mockInstantiationService.object, new TestStorageService(), undefined!, undefined!, undefined!, testNotificationService, undefined);
+	let ams = new AccountManagementService(mockInstantiationService.object, new TestStorageService(), undefined!, undefined!, undefined!, testNotificationService, testConfigurationService);
 
 	// Wire up event handlers
 	let evUpdate = new EventVerifierSingle<UpdateAccountListEventParams>();

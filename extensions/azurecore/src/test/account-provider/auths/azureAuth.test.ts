@@ -51,8 +51,21 @@ describe('Azure Authentication', function () {
 
 		mockAccount = {
 			isStale: false,
+			displayInfo: {
+				contextualDisplayName: 'test',
+				accountType: 'test',
+				displayName: 'test',
+				userId: 'test'
+			},
+			key: {
+				providerId: 'test',
+				accountId: 'test'
+			},
 			properties: {
-				tenants: [mockTenant]
+				owningTenant: mockTenant,
+				tenants: [mockTenant],
+				providerSettings: provider,
+				isMsAccount: true
 			}
 		} as AzureAccount;
 

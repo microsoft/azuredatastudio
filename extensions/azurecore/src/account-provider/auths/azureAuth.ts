@@ -24,7 +24,7 @@ import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Logger } from '../../utils/Logger';
 import * as qs from 'qs';
 import { AzureAuthError } from './azureAuthError';
-import { AuthenticationResult, InteractionRequiredAuthError, PublicClientApplication } from '@azure/msal-node';
+import { AccountInfo, AuthenticationResult, InteractionRequiredAuthError, PublicClientApplication } from '@azure/msal-node';
 
 const localize = nls.loadMessageBundle();
 
@@ -39,7 +39,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 	protected readonly loginEndpointUrl: string;
 	public readonly commonTenant: Tenant;
-	public readonly organizationsTenant: Tenant;
+	public readonly organizationTenant: Tenant;
 	protected readonly redirectUri: string;
 	protected readonly scopes: string[];
 	protected readonly scopesString: string;
@@ -61,6 +61,9 @@ export abstract class AzureAuth implements vscode.Disposable {
 		public readonly userFriendlyName: string
 	) {
 		this._authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
+		if (!this._authLibrary) {
+			this._authLibrary = 'ADAL';
+		}
 		vscode.workspace.onDidChangeConfiguration((changeEvent) => {
 			const impactLibrary = changeEvent.affectsConfiguration('azure.authenticationLibrary');
 			if (impactLibrary === true) {
@@ -73,7 +76,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			id: 'common',
 			displayName: 'common',
 		};
-		this.organizationsTenant = {
+		this.organizationTenant = {
 			id: 'organizations',
 			displayName: 'organizations',
 		};
@@ -132,10 +135,10 @@ export abstract class AzureAuth implements vscode.Disposable {
 				loginComplete?.resolve();
 				return account;
 			} else {
-				const result = await this.loginMsal(this.organizationsTenant, this.metadata.settings.microsoftResource);
+				const result = await this.loginMsal(this.organizationTenant, this.metadata.settings.microsoftResource);
 				loginComplete = result.authComplete;
 				if (!result?.response || !result.response?.account) {
-					Logger.error('Authentication failed');
+					Logger.error(`Authentication failed: ${loginComplete}`);
 					return {
 						canceled: false
 					};
@@ -172,12 +175,6 @@ export abstract class AzureAuth implements vscode.Disposable {
 		}
 	}
 
-	private getHomeTenant(account: AzureAccount): Tenant {
-		// Home is defined by the API
-		// Lets pick the home tenant - and fall back to commonTenant if they don't exist
-		return account.properties.tenants.find(t => t.tenantCategory === 'Home') ?? account.properties.tenants[0] ?? this.commonTenant;
-	}
-
 	public async refreshAccess(account: AzureAccount): Promise<AzureAccount> {
 		// Deprecated account - delete it.
 		if (account.key.accountVersion !== AzureAuth.ACCOUNT_VERSION) {
@@ -185,7 +182,10 @@ export abstract class AzureAuth implements vscode.Disposable {
 			return account;
 		}
 		try {
-			const tenant = this.getHomeTenant(account);
+			// There can be multiple home tenants
+			// We want to return the one that owns the Azure account.
+			// Not doing so can result in token being issued for the wrong tenant
+			const tenant = account.properties.owningTenant;
 			const tokenResult = await this.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.MicrosoftResourceManagement);
 			if (!tokenResult) {
 				account.isStale = true;
@@ -226,11 +226,17 @@ export abstract class AzureAuth implements vscode.Disposable {
 		const resource = this.resources.find(s => s.azureResourceId === azureResource);
 		if (!resource) {
 			Logger.error(`Unable to find Azure resource ${azureResource} for account ${account.displayInfo.userId} and tenant ${tenantId}`);
-
 			return undefined;
 		}
 
-		const tenant = account.properties.tenants.find(t => t.id === tenantId);
+		if (!account.properties.owningTenant) {
+			// Should never happen
+			throw new AzureAuthError(localize('azure.owningTenantNotFound', "Owning Tenant information not found for account."), 'Owning tenant not found.', undefined);
+		}
+
+		const tenant = account.properties.owningTenant?.id === tenantId
+			? account.properties.owningTenant
+			: account.properties.tenants.find(t => t.id === tenantId);
 
 		if (!tenant) {
 			throw new AzureAuthError(localize('azure.tenantNotFound', "Specified tenant with ID '{0}' not found.", tenantId), `Tenant ${tenantId} not found.`, undefined);
@@ -330,7 +336,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	 * @param azureResource
 	 * @returns The authentication result, including the access token
 	 */
-	public async getTokenMsal(accountId: string, azureResource: azdata.AzureResource): Promise<AuthenticationResult | null> {
+	public async getTokenMsal(accountId: string, azureResource: azdata.AzureResource, tenantId: string): Promise<AuthenticationResult | null> {
 		const cache = this.clientApplication.getTokenCache();
 		if (!cache) {
 			Logger.error('Error: Could not fetch token cache.');
@@ -341,19 +347,32 @@ export abstract class AzureAuth implements vscode.Disposable {
 			Logger.error(`Error: Could not fetch the azure resource ${azureResource} `);
 			return null;
 		}
-		const account = await cache.getAccountByHomeId(accountId);
+		let account: AccountInfo | null;
+		// if the accountId is a home ID, it will include a "." character
+		if (accountId.includes(".")) {
+			account = await cache.getAccountByHomeId(accountId);
+		} else {
+			account = await cache.getAccountByLocalId(accountId);
+		}
 		if (!account) {
 			Logger.error('Error: Could not fetch account when acquiring token');
 			return null;
 		}
-
-		let newScope = [`${resource?.endpoint}.default`];
+		let newScope;
+		if (resource.azureResourceId === azdata.AzureResource.ResourceManagement) {
+			newScope = [`${resource?.endpoint}user_impersonation`];
+		} else {
+			newScope = [`${resource?.endpoint}.default`];
+		}
 
 		// construct request
+		// forceRefresh needs to be set true here in order to fetch the correct token, due to this issue
+		// https://github.com/AzureAD/microsoft-authentication-library-for-js/issues/3687
 		const tokenRequest = {
 			account: account,
-			authority: `https://login.microsoftonline.com/${this.organizationsTenant.id}`,
-			scopes: newScope
+			authority: `https://login.microsoftonline.com/${tenantId}`,
+			scopes: newScope,
+			forceRefresh: true
 		};
 		try {
 			return await this.clientApplication.acquireTokenSilent(tokenRequest);
@@ -680,7 +699,8 @@ export abstract class AzureAuth implements vscode.Disposable {
 		// Determine if this is a microsoft account
 		let accountIssuer = 'unknown';
 
-		if (tokenClaims.iss === 'https://sts.windows.net/72f988bf-86f1-41af-91ab-2d7cd011db47/') {
+		if (tokenClaims.iss === 'https://sts.windows.net/72f988bf-86f1-41af-91ab-2d7cd011db47/' ||
+			tokenClaims.iss === 'https://login.microsoftonline.com/72f988bf-86f1-41af-91ab-2d7cd011db47/v2.0') {
 			accountIssuer = 'corp';
 		}
 		if (tokenClaims?.idp === 'live.com') {
@@ -689,6 +709,10 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		const name = tokenClaims.name ?? tokenClaims.email ?? tokenClaims.unique_name ?? tokenClaims.preferred_username;
 		const email = tokenClaims.email ?? tokenClaims.unique_name ?? tokenClaims.preferred_username;
+
+		// Read more about tid > https://learn.microsoft.com/azure/active-directory/develop/id-tokens
+		const owningTenant = tenants.find(t => t.id === tokenClaims.tid)
+			?? { 'id': tokenClaims.tid, 'displayName': 'Microsoft Account' };
 
 		let displayName = name;
 		if (email) {
@@ -730,6 +754,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			properties: {
 				providerSettings: this.metadata,
 				isMsAccount: accountIssuer === 'msft',
+				owningTenant: owningTenant,
 				tenants,
 				azureAuthType: this.authType
 			},
@@ -776,7 +801,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	protected getTokenClaims(accessToken: string): TokenClaims {
 		try {
 			const split = accessToken.split('.');
-			return JSON.parse(Buffer.from(split[1], 'base64').toString('binary'));
+			return JSON.parse(Buffer.from(split[1], 'base64').toString('UTF8'));
 		} catch (ex) {
 			throw new Error('Unable to read token claims: ' + JSON.stringify(ex));
 		}
@@ -814,7 +839,13 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 	public async deleteAccountCacheMsal(account: azdata.AccountKey): Promise<void> {
 		const tokenCache = this.clientApplication.getTokenCache();
-		let msalAccount = await tokenCache.getAccountByHomeId(account.accountId);
+		let msalAccount: AccountInfo | null;
+		// if the accountId is a home ID, it will include a "." character
+		if (account.accountId.includes(".")) {
+			msalAccount = await tokenCache.getAccountByHomeId(account.accountId);
+		} else {
+			msalAccount = await tokenCache.getAccountByLocalId(account.accountId);
+		}
 		if (!msalAccount) {
 			Logger.error(`MSAL: Unable to find account ${account.accountId} for removal`);
 			throw Error(`Unable to find account ${account.accountId}`);

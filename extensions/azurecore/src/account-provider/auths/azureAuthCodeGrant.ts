@@ -89,9 +89,9 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		let result = await this.clientApplication.acquireTokenByCode(authCodeRequest);
 		if (!result) {
 			Logger.error('Failed to acquireTokenByCode');
+			Logger.error(`Auth Code Request: ${JSON.stringify(authCodeRequest)}`)
 			throw Error('Failed to fetch token using auth code');
 		} else {
-			console.log(result);
 			return {
 				response: result,
 				authComplete: authCompleteDeferred!
@@ -145,7 +145,6 @@ export class AzureAuthCodeGrant extends AzureAuth {
 			await vscode.env.openExternal(vscode.Uri.parse(authCodeUrl));
 			const authCode = await this.handleWebResponse(state);
 			authCodeRequest.code = authCode;
-			console.log(authCodeRequest);
 
 			return authCodeRequest;
 		} catch (e) {
@@ -247,19 +246,11 @@ export class AzureAuthCodeGrant extends AzureAuth {
 			};
 			let authCodeUrl = await this.clientApplication.getAuthCodeUrl(authUrlRequest);
 
-			// TODO: listen for the auth code that gets returned
-			// 1. set up the listener
-			// 2. open the URL
-			// 3. wait for login?
-
-			console.log(authCodeUrl);
 
 			await vscode.env.openExternal(vscode.Uri.parse(`http://localhost:${serverPort}/signin?nonce=${encodeURIComponent(this.pkceCodes.nonce)}`));
 			const authCode = await this.addServerListeners(server, this.pkceCodes.nonce, authCodeUrl, authCompletePromise);
 
-			// const authCode = await this.listenForAuthCode(authCodeUrl);
 			authCodeRequest.code = authCode;
-			console.log(authCodeRequest);
 
 			return authCodeRequest;
 		}
