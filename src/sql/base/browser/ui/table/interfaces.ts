@@ -36,7 +36,3 @@ export interface ITableKeyboardEvent {
 	cell?: { row: number, cell: number };
 	event: KeyboardEvent;
 }
-
-export interface ISlickGridOptions<T> extends Slick.GridOptions<T> {
-	useF3KeyToSortColumns?: boolean;
-}

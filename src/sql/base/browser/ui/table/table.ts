@@ -8,7 +8,7 @@ import 'vs/css!./media/slick.grid';
 import 'vs/css!./media/slickColorTheme';
 
 import { TableDataView } from './tableDataView';
-import { ITableSorter, ITableMouseEvent, ITableConfiguration, ITableStyles, ITableKeyboardEvent, ISlickGridOptions } from 'sql/base/browser/ui/table/interfaces';
+import { ITableSorter, ITableMouseEvent, ITableConfiguration, ITableStyles, ITableKeyboardEvent } from 'sql/base/browser/ui/table/interfaces';
 
 import * as DOM from 'vs/base/browser/dom';
 import { mixin } from 'vs/base/common/objects';
@@ -65,7 +65,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 	private _onBlur = new Emitter<void>();
 	public readonly onBlur = this._onBlur.event;
 
-	constructor(parent: HTMLElement, configuration?: ITableConfiguration<T>, options?: ISlickGridOptions<T>) {
+	constructor(parent: HTMLElement, configuration?: ITableConfiguration<T>, options?: Slick.GridOptions<T>) {
 		super();
 		if (!configuration || !configuration.dataProvider || isArray(configuration.dataProvider)) {
 			this._data = new TableDataView<T>(configuration && configuration.dataProvider as Array<T>);
@@ -138,20 +138,6 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 
 		this._grid.onKeyDown.subscribe((e: Slick.EventData, args: Slick.OnKeyDownEventArgs<T>) => {
 			const evt = (e as JQuery.Event).originalEvent as KeyboardEvent;
-			if (evt.key === 'F3' && options.useF3KeyToSortColumns) {
-				let sortAsc = true;
-				const sortedColumn = this._grid.getSortColumns()[0];
-				if (sortedColumn && sortedColumn.columnId === this._grid.getColumns()[args.cell].id) {
-					sortAsc = !sortedColumn.sortAsc;
-				}
-				this._grid.onSort.notify({
-					multiColumnSort: false,
-					sortCol: this.columns[args.cell],
-					sortAsc: sortAsc,
-					grid: this._grid
-				});
-				this.grid.setSortColumn(this.columns[args.cell].id, sortAsc);
-			}
 			this._onKeyDown.fire({
 				event: evt,
 				cell: {

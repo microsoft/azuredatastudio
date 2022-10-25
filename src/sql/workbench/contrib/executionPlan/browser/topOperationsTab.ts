@@ -279,8 +279,7 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 			rowHeight: RESULTS_GRID_DEFAULTS.rowHeight,
 			forceFitColumns: false,
 			defaultColumnWidth: 120,
-			showRowNumber: true,
-			useF3KeyToSortColumns: true
+			showRowNumber: true
 		}));
 
 		table.setSelectionModel(selectionModel);
@@ -333,6 +332,15 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 				table.focus();
 				evt.event.preventDefault();
 				evt.event.stopPropagation();
+			}
+		}));
+
+		this._register(table.onKeyDown(e => {
+			if (e.event.key === 'F3') {
+				table.grid.sortColumnByActiveCell();
+				e.event.preventDefault();
+				e.event.stopPropagation();
+
 			}
 		}));
 
