@@ -4775,7 +4775,7 @@
 							"files": [
 								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://tallent.us/column-aligner-ads/column-aligner-ads-1.0.0.vsix"
+									"source": "https://github.com/richardtallent/column-aligner/releases/tag/v1.0.0"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
