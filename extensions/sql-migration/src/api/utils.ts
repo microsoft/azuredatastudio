@@ -268,7 +268,6 @@ export function getSessionIdHeader(sessionId: string): { [key: string]: string }
 	return { 'SqlMigrationSessionId': sessionId };
 }
 
-//
 export function getMigrationStatusWithErrors(migration: azure.DatabaseMigration): string {
 	const properties = migration.properties;
 	const migrationStatus = getMigrationStatus(migration) ?? '';
@@ -280,21 +279,15 @@ export function getMigrationStatusWithErrors(migration: azure.DatabaseMigration)
 	warningCount += properties.migrationFailureError?.message?.length > 0 ? 1 : 0;
 
 	// file upload blocking errors
-	// warningCount += properties.migrationStatusDetails?.fileUploadBlockingErrors?.length ?? 0;
 	warningCount += properties.migrationStatusWarnings?.fileUploadBlockingErrorCount ?? 0;
 
 	// restore blocking reason
-	// warningCount += properties.migrationStatusDetails?.restoreBlockingReason ? 1 : 0;
 	warningCount += properties.migrationStatusWarnings?.restoreBlockingReason ? 1 : 0;
 
 	// complete restore error message
 	warningCount += properties.migrationStatusWarnings?.completeRestoreErrorMessage ? 1 : 0;
 
-	// sql data copy errors
-	warningCount += properties.migrationStatusDetails?.sqlDataCopyErrors?.length ?? 0;
-
-	return constants.STATUS_VALUE(migrationStatus, warningCount)
-		+ (constants.STATUS_WARNING_COUNT(migrationStatus, warningCount) ?? '');
+	return constants.STATUS_VALUE(migrationStatus) + (constants.STATUS_WARNING_COUNT(migrationStatus, warningCount) ?? '');
 }
 
 export function getPipelineStatusImage(status: string | undefined): IconPath {
