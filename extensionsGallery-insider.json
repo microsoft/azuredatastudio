@@ -4816,6 +4816,67 @@
 					],
 					"statistics": [],
 					"flags": "preview"
+				},
+{
+					"extensionId": "94",
+					"extensionName": "column-aligner-ads",
+					"displayName": "Column Aligner",
+					"shortDescription": "This extension provides a shortcut key to consistently align the selected rows to the nearest tabstop",
+					"publisher": {
+						"displayName": "Richard Tallent",
+						"publisherId": "RichardTallentVS",
+						"publisherName": "Richard Tallent"
+					},
+					"versions": [
+						{
+							"version": "1.0.0",
+							"lastUpdated": "10/23/2022",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://tallent.us/column-aligner-ads/column-aligner-ads-1.0.0.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/richardtallent/column-aligner-ads/main/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
+									"source": "https://raw.githubusercontent.com/richardtallent/column-aligner-ads/main/CHANGELOG.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/richardtallent/column-aligner-ads/main/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/richardtallent/column-aligner-ads/main/LICENSE"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": ">=1.62.0"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/richardtallent/column-aligner-ads"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": ""
 				}
 			],
 			"resultMetadata": [
