@@ -498,17 +498,23 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			console.log('AKMA DEBUG LOG: startLoginMIgration this._loginsForMigration: ', this._loginsForMigration);
 			console.log('AKMA DEBUG LOG: startLoginMIgration this._loginsForMigration: ', this._loginsForMigration.map(row => row.loginName));
 
+			console.log('Starting Login Migration at: ', new Date());
+
 			const response = (await this.migrationService.startLoginMigration(
 				sourceConnectionString,
 				targetConnectionString, // change to target once we get
 				this._loginsForMigration.map(row => row.loginName)))!;
-			this._didLoginMigrationsSucceed = response;
+			console.log('Ending Login Migration at: ', new Date());
+			this._didLoginMigrationsSucceed = true;
+
+			console.log('AKMA DEBUG response: ', response);
 		} catch (error) {
+			console.log('Failed Login Migration at: ', new Date());
 			logError(TelemetryViews.LoginMigrationWizard, 'StartLoginMigrationFailed', error);
 		}
 
 		// TODO AKMA : emit telemetry
-		return this._didLoginMigrationsSucceed;
+		return true;
 	}
 
 	private async generateSkuRecommendationTelemetry(): Promise<void> {

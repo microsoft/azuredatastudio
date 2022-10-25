@@ -82,11 +82,12 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 			level: azdata.window.MessageLevel.Information
 		};
 		// DEMO AKMA : Toggle this to show other info option
-		const connectionProfile: azdata.connection.ConnectionProfile = await this.migrationStateModel.getSourceConnectionProfile();
-		this.wizard.message = {
-			text: constants.LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_PERMISSIONS_WARNING(connectionProfile.userName, connectionProfile.serverName),
-			level: azdata.window.MessageLevel.Information
-		};
+		// const connectionProfile: azdata.connection.ConnectionProfile = await this.migrationStateModel.getSourceConnectionProfile();
+		// this.wizard.message = {
+		// 	text: constants.LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_PERMISSIONS_WARNING(connectionProfile.userName, connectionProfile.serverName),
+		// 	level: azdata.window.MessageLevel.Information
+		// };
+		// TODO AKMA : change to infoxbox info instead of banner, see other page
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			this.wizard.message = {
 				text: '',
@@ -129,16 +130,17 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 		}
 
 		const isSqlDbTarget = this.migrationStateModel._targetType === MigrationTargetType.SQLDB;
+		console.log(isSqlDbTarget);
 
 		if (this._targetUserNameInputBox) {
-			await this._targetUserNameInputBox.updateProperty('required', isSqlDbTarget);
+			await this._targetUserNameInputBox.updateProperty('required', true);
 		}
 
 		if (this._targetPasswordInputBox) {
-			await this._targetPasswordInputBox.updateProperty('required', isSqlDbTarget);
+			await this._targetPasswordInputBox.updateProperty('required', true);
 		}
 
-		await utils.updateControlDisplay(this._resourceAuthenticationContainer, isSqlDbTarget);
+		await utils.updateControlDisplay(this._resourceAuthenticationContainer, true);
 		await this.populateAzureAccountsDropdown();
 
 		if (this._migrationTargetPlatform !== this.migrationStateModel._targetType) {
@@ -711,6 +713,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 							const selectedVm = this.migrationStateModel._targetSqlVirtualMachines.find(vm => vm.name === value);
 							if (selectedVm) {
 								this.migrationStateModel._targetServerInstance = utils.deepClone(selectedVm)! as SqlVMServer;
+								console.log('AKMA DEBUG LOG: selectedVm: ', this.migrationStateModel._targetServerInstance);
 							}
 							break;
 						case MigrationTargetType.SQLMI:
@@ -720,6 +723,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 
 							if (selectedMi) {
 								this.migrationStateModel._targetServerInstance = utils.deepClone(selectedMi)! as azureResource.AzureSqlManagedInstance;
+								console.log('AKMA DEBUG LOG: selectedMi: ', this.migrationStateModel._targetServerInstance);
 
 								this.wizard.message = { text: '' };
 								if (this.migrationStateModel._targetServerInstance.properties.state !== 'Ready') {
@@ -738,6 +742,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 
 							if (sqlDatabaseServer) {
 								this.migrationStateModel._targetServerInstance = utils.deepClone(sqlDatabaseServer)! as AzureSqlDatabaseServer;
+								console.log('AKMA DEBUG LOG: selectedDB: ', sqlDatabaseServer);
 								this.wizard.message = { text: '' };
 								if (this.migrationStateModel._targetServerInstance.properties.state === 'Ready') {
 									this._targetUserNameInputBox.value = this.migrationStateModel._targetServerInstance.properties.administratorLogin;
