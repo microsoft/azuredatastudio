@@ -112,15 +112,9 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		if (configuration && configuration.sorter) {
 			this._sorter = configuration.sorter;
 			this._grid.onSort.subscribe((e, args) => {
-				// Getting the currently active cell.
-				const activeCell = this._grid.getActiveCell();
 				this._sorter!(args);
 				this._grid.invalidate();
 				this._grid.render();
-				if (activeCell) {
-					// Restoring the active cell after the grid is re-rendered.
-					this._grid.setActiveCell(activeCell.row, activeCell.cell);
-				}
 			});
 		}
 
@@ -136,7 +130,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this.mapMouseEvent(this._grid.onDblClick, this._onDoubleClick);
 		this._grid.onColumnsResized.subscribe(() => this._onColumnResize.fire());
 
-		this._grid.onKeyDown.subscribe((e: Slick.EventData, args: Slick.OnKeyDownEventArgs<T>) => {
+		this._grid.onKeyDown.subscribe((e, args: Slick.OnKeyDownEventArgs<T>) => {
 			const evt = (e as JQuery.Event).originalEvent as KeyboardEvent;
 			this._onKeyDown.fire({
 				event: evt,
