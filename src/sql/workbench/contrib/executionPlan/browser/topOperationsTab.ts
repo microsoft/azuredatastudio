@@ -335,6 +335,15 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 			}
 		}));
 
+		this._register(table.onKeyDown(e => {
+			if (e.event.key === 'F3') {
+				table.grid.sortColumnByActiveCell();
+				e.event.preventDefault();
+				e.event.stopPropagation();
+
+			}
+		}));
+
 		this._register(table.onContextMenu(e => {
 			let csvString = '';
 			let csvStringWithHeader = '';

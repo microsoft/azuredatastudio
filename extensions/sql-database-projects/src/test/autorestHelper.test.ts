@@ -25,6 +25,10 @@ describe('Autorest tests', function (): void {
 		sinon.restore();
 	});
 
+	after(async function(): Promise<void> {
+		await testUtils.deleteGeneratedTestFolder();
+	});
+
 	it('Should detect autorest', async function (): Promise<void> {
 		sinon.stub(window, 'showInformationMessage').returns(<any>Promise.resolve(runViaNpx)); // stub a selection in case test runner doesn't have autorest installed
 

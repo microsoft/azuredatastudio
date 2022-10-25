@@ -946,6 +946,11 @@ declare namespace Slick {
 		public getSortColumns(): { columnId: string; sortAsc: boolean }[];
 
 		/**
+		 * sorts the table by the active cell column values.
+		 */
+		public sortColumnByActiveCell(): void;
+
+		/**
 		* Updates an existing column definition and a corresponding header DOM element with the new title and tooltip.
 		* @param columnId Column id.
 		* @param title New column name.

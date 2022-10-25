@@ -4,13 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'mocha';
-import { apiService } from '../../services/apiService';
-import * as assert from 'assert';
+import * as vscode from 'vscode';
 
-describe('API Service Tests', function (): void {
-	// {{SQL CARBON TODO}} - investigate why this fails intermittently
-	it.skip('get azurecoreApi returns azure api', () => {
-		const api = apiService.azurecoreApi;
-		assert(api !== undefined);
+describe('Extension activate test', () => {
+	it('Extension should activate correctly', async function (): Promise<void> {
+		await vscode.extensions.getExtension('Microsoft.admin-tool-ext-win')!.activate();
 	});
 });
