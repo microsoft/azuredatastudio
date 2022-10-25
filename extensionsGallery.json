@@ -4801,7 +4801,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": ">=1.39.0"
+									"value": ">=1.62.0"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
