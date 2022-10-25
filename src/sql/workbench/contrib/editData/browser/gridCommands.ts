@@ -63,6 +63,10 @@ export const saveAsJson = (accessor: ServicesAccessor) => {
 	runActionOnActiveResultsEditor(accessor, GridContentEvents.SaveAsJSON);
 };
 
+export const saveAsMarkdown = (accessor: ServicesAccessor) => {
+	runActionOnActiveResultsEditor(accessor, GridContentEvents.SaveAsMarkdown);
+};
+
 export const saveAsExcel = (accessor: ServicesAccessor) => {
 	runActionOnActiveResultsEditor(accessor, GridContentEvents.SaveAsExcel);
 };

@@ -48,7 +48,8 @@ export function createContext(): TestContext {
 			clear: () => { },
 			show: () => { },
 			hide: () => { },
-			dispose: () => { }
+			dispose: () => { },
+			replace: () => { }
 		},
 		azureSqlClient: TypeMoq.Mock.ofType(AzureSqlClient)
 	};
@@ -67,6 +68,10 @@ describe('deploy service', function (): void {
 
 	beforeEach(() => {
 		sandbox = sinon.createSandbox();
+	});
+
+	after(async function(): Promise<void> {
+		await testUtils.deleteGeneratedTestFolder();
 	});
 
 	it('Should deploy a database to docker container successfully', async function (): Promise<void> {
@@ -229,7 +234,7 @@ describe('deploy service', function (): void {
 				session: {
 					subscription: {
 						subscriptionId: 'subscriptionId',
-					},token: {
+					}, token: {
 						key: '',
 						token: '',
 						tokenType: '',

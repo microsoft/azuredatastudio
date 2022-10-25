@@ -75,7 +75,7 @@ export class CreateInsightAction extends Action {
 			}
 		};
 
-		let input = this.untitledEditorService.create({ mode: 'json', initialValue: JSON.stringify(widgetConfig) });
+		let input = this.untitledEditorService.create({ languageId: 'json', initialValue: JSON.stringify(widgetConfig) });
 		try {
 			await this.editorService.openEditor(this.instantiationService.createInstance(UntitledTextEditorInput, input), { pinned: true });
 		} catch (error) {

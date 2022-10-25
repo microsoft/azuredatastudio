@@ -30,8 +30,8 @@ function getDefaultOptions<T>(): Slick.GridOptions<T> {
 }
 
 export class Table<T extends Slick.SlickData> extends Widget implements IDisposable {
-	private styleElement: HTMLStyleElement;
-	private idPrefix: string;
+	protected styleElement: HTMLStyleElement;
+	protected idPrefix: string;
 
 	protected _grid: Slick.Grid<T>;
 	protected _columns: Slick.Column<T>[];

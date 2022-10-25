@@ -19,7 +19,6 @@ import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/bro
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
-import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
 import type { FutureInternal } from 'sql/workbench/services/notebook/browser/interfaces';
 import { ICellValue, ResultSetSummary } from 'sql/workbench/services/query/common/query';
 import { QueryResultId } from 'sql/workbench/services/notebook/browser/models/cell';
@@ -27,6 +26,7 @@ import { IPosition } from 'vs/editor/common/core/position';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 import { INotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IModelContentChangedEvent } from 'vs/editor/common/textModelEvents';
 
 
 export enum ViewMode {
@@ -622,6 +622,7 @@ export interface INotebookModelOptions {
 	notificationService: INotificationService;
 	connectionService: IConnectionManagementService;
 	capabilitiesService: ICapabilitiesService;
+	getInputLanguageMode: () => string;
 	editorLoadedTimestamp?: number;
 }
 

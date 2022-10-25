@@ -30,7 +30,7 @@ import { IntervalTimer, createCancelablePromise } from 'vs/base/common/async';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { toDisposable } from 'vs/base/common/lifecycle';
-import { isPromiseCanceledError } from 'vs/base/common/errors';
+import { isCancellationError } from 'vs/base/common/errors';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IFileService } from 'vs/platform/files/common/files';
 import { URI } from 'vs/base/common/uri';
@@ -101,7 +101,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 							}
 						},
 						error => {
-							if (isPromiseCanceledError(error)) {
+							if (isCancellationError(error)) {
 								return;
 							}
 							if (this._inited) {

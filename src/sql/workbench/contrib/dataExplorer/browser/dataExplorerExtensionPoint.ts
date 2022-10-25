@@ -109,7 +109,7 @@ export class DataExplorerContainerExtensionHandler implements IWorkbenchContribu
 							when: ContextKeyExpr.deserialize(item.when),
 							canToggleVisibility: true,
 							canMoveView: true,
-							treeView: container.id === VIEWLET_ID ? this.instantiationService.createInstance(CustomTreeView, item.id, item.name) : this.instantiationService.createInstance(VSCustomTreeView, item.id, item.name),
+							treeView: container.id === VIEWLET_ID ? this.instantiationService.createInstance(CustomTreeView, item.id, item.name) : this.instantiationService.createInstance(VSCustomTreeView, item.id, item.name, VIEWLET_ID),
 							collapsed: this.showCollapsed(container),
 							extensionId: extension.description.identifier,
 							originalContainerId: entry.key

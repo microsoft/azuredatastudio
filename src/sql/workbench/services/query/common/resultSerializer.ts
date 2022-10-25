@@ -38,6 +38,7 @@ export interface SaveResultsResponse {
 export enum SaveFormat {
 	CSV = 'csv',
 	JSON = 'json',
+	MARKDOWN = 'markdown',
 	EXCEL = 'excel',
 	XML = 'xml'
 }
@@ -128,6 +129,9 @@ export class ResultSerializer {
 			case SaveFormat.JSON:
 				fileName = fileName + '.json';
 				break;
+			case SaveFormat.MARKDOWN:
+				fileName = fileName + '.md';
+				break;
 			case SaveFormat.EXCEL:
 				fileName = fileName + '.xlsx';
 				break;
@@ -153,6 +157,10 @@ export class ResultSerializer {
 				fileFilter.name = nls.localize('resultsSerializer.saveAsFileExtensionJSONTitle', "JSON");
 				fileFilter.extensions = ['json'];
 				break;
+			case SaveFormat.MARKDOWN:
+				fileFilter.name = nls.localize('resultsSerializer.saveAsFileExtensionMarkdownTitle', "Markdown");
+				fileFilter.extensions = ['md'];
+				break;
 			case SaveFormat.EXCEL:
 				fileFilter.name = nls.localize('resultsSerializer.saveAsFileExtensionExcelTitle', "Excel Workbook");
 				fileFilter.extensions = ['xlsx'];
@@ -170,21 +178,20 @@ export class ResultSerializer {
 		return fileFilters;
 	}
 
-	public getBasicSaveParameters(format: string): SaveResultsRequestParams {
-		let saveResultsParams: SaveResultsRequestParams;
-
-		if (format === SaveFormat.CSV) {
-			saveResultsParams = this.getConfigForCsv();
-		} else if (format === SaveFormat.JSON) {
-			saveResultsParams = this.getConfigForJson();
-		} else if (format === SaveFormat.EXCEL) {
-			saveResultsParams = this.getConfigForExcel();
-		} else if (format === SaveFormat.XML) {
-			saveResultsParams = this.getConfigForXml();
+	public getBasicSaveParameters(format: SaveFormat): SaveResultsRequestParams {
+		switch (format) {
+			case SaveFormat.CSV:
+				return this.getConfigForCsv();
+			case SaveFormat.EXCEL:
+				return this.getConfigForExcel();
+			case SaveFormat.JSON:
+				return this.getConfigForJson();
+			case SaveFormat.MARKDOWN:
+				return this.getConfigForMarkdown();
+			case SaveFormat.XML:
+				return this.getConfigForXml();
 		}
-		return saveResultsParams!; // this could be unsafe
 	}
-
 
 	private getConfigForCsv(): SaveResultsRequestParams {
 		let saveResultsParams = <SaveResultsRequestParams>{ resultFormat: SaveFormat.CSV as string };
@@ -217,6 +224,26 @@ export class ResultSerializer {
 	private getConfigForJson(): SaveResultsRequestParams {
 		// JSON does not currently have special conditions
 		return <SaveResultsRequestParams>{ resultFormat: SaveFormat.JSON as string };
+	}
+
+	private getConfigForMarkdown(): SaveResultsRequestParams {
+		let saveResultsParams = <SaveResultsRequestParams>{ resultFormat: SaveFormat.MARKDOWN as string };
+
+		// Get config from VSCode config and build params with it if user has set config
+		const saveConfig = this._configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.saveAsMarkdown;
+		if (saveConfig) {
+			if (saveConfig.encoding) {
+				saveResultsParams.encoding = saveConfig.encoding;
+			}
+			if (saveConfig.includeHeaders !== undefined) {
+				saveResultsParams.includeHeaders = saveConfig.includeHeaders;
+			}
+			if (saveConfig.lineSeparator !== undefined) {
+				saveResultsParams.lineSeperator = saveConfig.lineSeparator;
+			}
+		}
+
+		return saveResultsParams;
 	}
 
 	private getConfigForExcel(): SaveResultsRequestParams {
@@ -260,7 +287,7 @@ export class ResultSerializer {
 		filePath: URI,
 		batchIndex: number,
 		resultSetNo: number,
-		format: string,
+		format: SaveFormat,
 		selection?: Slick.Range
 	): SaveResultsRequestParams {
 		let saveResultsParams = this.getBasicSaveParameters(format);

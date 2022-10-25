@@ -18,6 +18,7 @@ import { isUndefined } from 'vs/base/common/types';
 import { ILogService } from 'vs/platform/log/common/log';
 import * as nls from 'vs/nls';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES } from 'sql/workbench/common/constants';
 
 export const SERVICE_ID = 'queryManagementService';
 
@@ -336,7 +337,7 @@ export class QueryManagementService implements IQueryManagementService {
 	public onResultSetUpdated(resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void {
 		this._notify(resultSetInfo.ownerUri, (runner: QueryRunner) => {
 			runner.handleResultSetUpdated(resultSetInfo.resultSetSummary);
-			if (resultSetInfo.executionPlans && this._configurationService.getValue('workbench.enablePreviewFeatures')) {
+			if (resultSetInfo.executionPlans && this._configurationService.getValue<boolean>(CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES)) {
 				runner.handleExecutionPlanAvailable(resultSetInfo.executionPlans);
 			}
 		});

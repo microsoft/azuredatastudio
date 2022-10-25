@@ -95,7 +95,7 @@ steps:
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
-      exec { node build/azure-pipelines/mixin }
+      exec { node build/azure-pipelines/sql-mixin }
     displayName: Mix in quality
 
   - powershell: |
@@ -140,26 +140,27 @@ steps:
   #   displayName: Run unit tests (Electron)
   #   condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
-  - powershell: |
-      # Figure out the full absolute path of the product we just built
-      # including the remote server and configure the integration tests
-      # to run with these builds instead of running out of sources.
-      . build/azure-pipelines/win32/exec.ps1
-      $ErrorActionPreference = "Stop"
-      $AppRoot = "$(agent.builddirectory)\azuredatastudio-win32-x64"
-      $AppProductJson = Get-Content -Raw -Path "$AppRoot\resources\app\product.json" | ConvertFrom-Json
-      $AppNameShort = $AppProductJson.nameShort
-      # exec { $env:INTEGRATION_TEST_ELECTRON_PATH = "$AppRoot\$AppNameShort.exe"; $env:VSCODE_REMOTE_SERVER_PATH = "$(agent.builddirectory)\azuredatastudio-reh-win32-x64"; .\scripts\test-integration.bat --build --tfs "Integration Tests" }
-    displayName: Run integration tests (Electron)
-    condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
-
+  # {{SQL CARBON TODO}} -- reenable
   # - powershell: |
+  #     # Figure out the full absolute path of the product we just built
+  #     # including the remote server and configure the integration tests
+  #     # to run with these builds instead of running out of sources.
   #     . build/azure-pipelines/win32/exec.ps1
   #     $ErrorActionPreference = "Stop"
-  #     exec { .\scripts\test-unstable.bat --build --tfs }
-  #   continueOnError: true
-  #   condition: and(succeeded(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
-  #   displayName: Run unstable tests
+  #     $AppRoot = "$(agent.builddirectory)\azuredatastudio-win32-x64"
+  #     $AppProductJson = Get-Content -Raw -Path "$AppRoot\resources\app\product.json" | ConvertFrom-Json
+  #     $AppNameShort = $AppProductJson.nameShort
+  #     # exec { $env:INTEGRATION_TEST_ELECTRON_PATH = "$AppRoot\$AppNameShort.exe"; $env:VSCODE_REMOTE_SERVER_PATH = "$(agent.builddirectory)\azuredatastudio-reh-win32-x64"; .\scripts\test-integration.bat --build --tfs "Integration Tests" }
+  #   displayName: Run integration tests (Electron)
+  #   condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+
+  - powershell: |
+      . build/azure-pipelines/win32/exec.ps1
+      $ErrorActionPreference = "Stop"
+      exec { .\scripts\test-unstable.bat --build --tfs }
+    continueOnError: true
+    condition: and(succeeded(), eq(variables['RUN_UNSTABLE_TESTS'], 'true'))
+    displayName: Run unstable tests
 
   - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
     displayName: 'Sign out code'
