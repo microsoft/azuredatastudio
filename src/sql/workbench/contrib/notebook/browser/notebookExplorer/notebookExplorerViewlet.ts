@@ -40,6 +40,8 @@ import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { ITextQueryBuilderOptions, QueryBuilder } from 'vs/workbench/services/search/common/queryBuilder';
+import { registerIcon } from 'vs/platform/theme/common/iconRegistry';
+import { Codicon } from 'vs/base/common/codicons';
 
 export const VIEWLET_ID = 'workbench.view.notebooks';
 
@@ -409,8 +411,7 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 	}
 }
 
-export const notebookIconId = 'book';
-
+export const NotebookViewIcon = registerIcon('ads-notebook', Codicon.notebook, localize('ads-notebook', 'Icon represent a notebook.'));
 export const NOTEBOOK_VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({
 	id: VIEWLET_ID,
 	title: localize('notebookExplorer.name', "Notebooks"),
@@ -420,7 +421,7 @@ export const NOTEBOOK_VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(View
 		keybindings: { primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KeyB },
 		order: 0
 	},
-	icon: { id: notebookIconId },
+	icon: NotebookViewIcon,
 	order: 6,
 	storageId: `${VIEWLET_ID}.state`
 }, ViewContainerLocation.Sidebar);
