@@ -58,7 +58,6 @@ suite('ConnectionStore', () => {
 				defaultValue: undefined!,
 				isIdentity: true,
 				isRequired: true,
-				showOnConnectionDialog: false,
 				specialValueType: ConnectionOptionSpecialType.connectionName,
 				valueType: ServiceOptionType.string
 			},
@@ -71,7 +70,6 @@ suite('ConnectionStore', () => {
 				defaultValue: undefined!,
 				isIdentity: true,
 				isRequired: true,
-				showOnConnectionDialog: false,
 				specialValueType: ConnectionOptionSpecialType.serverName,
 				valueType: ServiceOptionType.string
 			},
@@ -84,7 +82,6 @@ suite('ConnectionStore', () => {
 				defaultValue: undefined!,
 				isIdentity: true,
 				isRequired: true,
-				showOnConnectionDialog: false,
 				specialValueType: ConnectionOptionSpecialType.databaseName,
 				valueType: ServiceOptionType.string
 			},
@@ -97,7 +94,6 @@ suite('ConnectionStore', () => {
 				defaultValue: undefined!,
 				isIdentity: true,
 				isRequired: true,
-				showOnConnectionDialog: false,
 				specialValueType: ConnectionOptionSpecialType.userName,
 				valueType: ServiceOptionType.string
 			},
@@ -110,7 +106,6 @@ suite('ConnectionStore', () => {
 				defaultValue: undefined!,
 				isIdentity: true,
 				isRequired: true,
-				showOnConnectionDialog: false,
 				specialValueType: ConnectionOptionSpecialType.authType,
 				valueType: ServiceOptionType.string
 			},
@@ -123,7 +118,6 @@ suite('ConnectionStore', () => {
 				defaultValue: undefined!,
 				isIdentity: true,
 				isRequired: true,
-				showOnConnectionDialog: false,
 				specialValueType: ConnectionOptionSpecialType.password,
 				valueType: ServiceOptionType.string
 			}
