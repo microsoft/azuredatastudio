@@ -82,7 +82,7 @@ import { ExtHostUriOpeners } from 'vs/workbench/api/common/extHostUriOpener';
 import { IExtHostSecretState } from 'vs/workbench/api/common/exHostSecretState';
 import { IExtHostEditorTabs } from 'vs/workbench/api/common/extHostEditorTabs';
 import { IExtHostTelemetry } from 'vs/workbench/api/common/extHostTelemetry';
-import { ExtHostNotebookKernels } from 'vs/workbench/api/common/extHostNotebookKernels'; // {{SQL CARBON EDIT}} Disable VS Code notebooks
+// import { ExtHostNotebookKernels } from 'vs/workbench/api/common/extHostNotebookKernels'; {{SQL CARBON EDIT}} Disable VS Code notebooks
 import { TextSearchCompleteMessageType } from 'vs/workbench/services/search/common/searchExtTypes';
 // import { ExtHostNotebookRenderers } from 'vs/workbench/api/common/extHostNotebookRenderers'; {{SQL CARBON EDIT}} Disable VS Code notebooks
 import { Schemas } from 'vs/base/common/network';
@@ -93,7 +93,7 @@ import { matchesScheme } from 'vs/platform/opener/common/opener';
 import { combinedDisposable } from 'vs/base/common/lifecycle';
 import { checkProposedApiEnabled, ExtensionIdentifierSet, isProposedApiEnabled } from 'vs/workbench/services/extensions/common/extensions';
 import { DebugConfigurationProviderTriggerKind } from 'vs/workbench/contrib/debug/common/debug';
-import { ExtHostNotebookProxyKernels } from 'vs/workbench/api/common/extHostNotebookProxyKernels';
+// import { ExtHostNotebookProxyKernels } from 'vs/workbench/api/common/extHostNotebookProxyKernels'; {{SQL CARBON EDIT}} Disable VS Code notebooks
 
 import { ExtHostNotebook } from 'sql/workbench/api/common/extHostNotebook'; // {{SQL CARBON EDIT}}
 import { docCreationFailedError, functionalityNotSupportedError, invalidArgumentsError } from 'sql/base/common/locConstants';
@@ -169,13 +169,10 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 	const extHostNotebook = rpcProtocol.set(ExtHostContext.ExtHostNotebook, new ExtHostNotebookController(rpcProtocol, extHostCommands, extHostDocumentsAndEditors, extHostDocuments, extensionStoragePaths));
 	const extHostNotebookDocuments = rpcProtocol.set(ExtHostContext.ExtHostNotebookDocuments, new ExtHostNotebookDocuments(extHostNotebook));
 	const extHostNotebookEditors = rpcProtocol.set(ExtHostContext.ExtHostNotebookEditors, new ExtHostNotebookEditors(extHostLogService, rpcProtocol, extHostNotebook));
-	const extHostNotebookKernels = rpcProtocol.set(ExtHostContext.ExtHostNotebookKernels, new ExtHostNotebookKernels(rpcProtocol, initData, extHostNotebook, extHostCommands, extHostLogService));
-	const extHostNotebookProxyKernels = rpcProtocol.set(ExtHostContext.ExtHostNotebookProxyKernels, new ExtHostNotebookProxyKernels(rpcProtocol, extHostNotebookKernels, extHostLogService));
 	const extHostNotebookRenderers = rpcProtocol.set(ExtHostContext.ExtHostNotebookRenderers, new ExtHostNotebookRenderers(rpcProtocol, extHostNotebook));
-	*/
-	// {{SQL CARBON TODO}} - need to use a ADS specific proxy
 	const extHostNotebookKernels = rpcProtocol.set(ExtHostContext.ExtHostNotebookKernels, new ExtHostNotebookKernels(rpcProtocol, initData, <any>extHostNotebook, extHostCommands, extHostLogService));
 	const extHostNotebookProxyKernels = rpcProtocol.set(ExtHostContext.ExtHostNotebookProxyKernels, new ExtHostNotebookProxyKernels(rpcProtocol, extHostNotebookKernels, extHostLogService));
+	*/
 
 	const extHostEditors = rpcProtocol.set(ExtHostContext.ExtHostEditors, new ExtHostEditors(rpcProtocol, extHostDocumentsAndEditors));
 	const extHostTreeViews = rpcProtocol.set(ExtHostContext.ExtHostTreeViews, new ExtHostTreeViews(rpcProtocol.getProxy(MainContext.MainThreadTreeViews), extHostCommands, extHostLogService));
@@ -210,6 +207,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 		ExtHostContext.ExtHostNotebookEditors,
 		ExtHostContext.ExtHostNotebookKernels,
 		ExtHostContext.ExtHostNotebookRenderers,
+		ExtHostContext.ExtHostNotebookProxyKernels,
 		ExtHostContext.ExtHostInteractive
 	]);
 	const expected: ProxyIdentifier<any>[] = values(ExtHostContext).filter(v => !filteredProxies.has(v));
@@ -967,14 +965,12 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 				return new VSCodeNotebookDocument(doc);
 			},
 			onDidSaveNotebookDocument(listener, thisArg, disposables) {
-				// {{SQL CARBON TODO}} - disable event
-				return undefined
-				//return extHostNotebookDocuments.onDidSaveNotebookDocument(listener, thisArg, disposables);
+				// {{SQL CARBON EDIT}} Use our own notebooks
+				return extHostNotebookDocumentsAndEditors.onDidSaveVSCodeNotebookDocument(listener, thisArg, disposables);
 			},
 			onDidChangeNotebookDocument(listener, thisArg, disposables) {
-				// {{SQL CARBON TODO}} - disable event
-				return undefined;
-				//return extHostNotebookDocuments.onDidChangeNotebookDocument(listener, thisArg, disposables);
+				// {{SQL CARBON EDIT}} Use our own notebooks
+				return extHostNotebookDocumentsAndEditors.onDidChangeVSCodeNotebookDocument(listener, thisArg, disposables);
 			},
 			get onDidOpenNotebookDocument(): Event<vscode.NotebookDocument> {
 				// {{SQL CARBON EDIT}} Use our own notebooks
@@ -1261,9 +1257,10 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 				return extHostNotebookDocumentsAndEditors.onDidChangeVSCodeExecutionState(listener, thisArgs, disposables);
 			},
 			createNotebookProxyController(id: string, notebookType: string, label: string, handler: () => vscode.NotebookController | string | Thenable<vscode.NotebookController | string>) {
-				//checkProposedApiEnabled(extension, 'notebookProxyController');
-				return extHostNotebookProxyKernels.createNotebookProxyController(extension, id, notebookType, label, handler);
-				// {{SQL CARBON TODO}}
+				// {{SQL CARBON EDIT}} Disable VS Code notebooks
+				throw new Error(functionalityNotSupportedError);
+				// checkProposedApiEnabled(extension, 'notebookProxyController');
+				// return extHostNotebookProxyKernels.createNotebookProxyController(extension, id, notebookType, label, handler);
 			}
 		};
 
