@@ -775,9 +775,9 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			if (this._customOptionWidgets) {
 				this._customOptionWidgets.forEach((widget, i) => {
 					if (widget instanceof SelectBox) {
-						(widget as SelectBox).selectWithOptionName(this.getModelValue(connectionInfo.options[this._customOptions[i].name]));
+						widget.selectWithOptionName(this.getModelValue(connectionInfo.options[this._customOptions[i].name]));
 					} else {
-						(widget as InputBox).value = this.getModelValue(connectionInfo.options[this._customOptions[i].name]);
+						widget.value = this.getModelValue(connectionInfo.options[this._customOptions[i].name]);
 					}
 				});
 			}
