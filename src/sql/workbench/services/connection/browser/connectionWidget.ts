@@ -852,9 +852,9 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			this._authTypeSelectBox.disable();
 		}
 		if (this._customOptionWidgets) {
-			for (let i = 0; i < this._customOptionWidgets.length; i++) {
-				this._customOptionWidgets[i].disable();
-			}
+			this._customOptionWidgets.forEach(widget => {
+				widget.disable();
+			});
 		}
 		if (this._connectionStringOptions.isEnabled) {
 			this._connectionStringInputBox.disable();
@@ -894,9 +894,9 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			this._databaseNameInputBox.enabled = true;
 		}
 		if (this._customOptionWidgets) {
-			for (let i = 0; i < this._customOptionWidgets.length; i++) {
-				this._customOptionWidgets[i].enable();
-			}
+			this._customOptionWidgets.forEach(widget => {
+				widget.enable();
+			});
 		}
 		if (this._connectionStringOptions.isEnabled) {
 			this._connectionStringInputBox.enable();
