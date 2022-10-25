@@ -152,6 +152,7 @@ suite('ConnectionDialogService tests', () => {
 						defaultValue: undefined,
 						isIdentity: true,
 						isRequired: true,
+						showOnConnectionDialog: false,
 						specialValueType: ConnectionOptionSpecialType.authType,
 						valueType: ServiceOptionType.string
 					}

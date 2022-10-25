@@ -44,6 +44,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 				defaultValue: undefined!,
 				isIdentity: true,
 				isRequired: true,
+				showOnConnectionDialog: false,
 				specialValueType: ConnectionOptionSpecialType.connectionName,
 				valueType: ServiceOptionType.string
 			},
@@ -56,6 +57,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 				defaultValue: undefined!,
 				isIdentity: true,
 				isRequired: true,
+				showOnConnectionDialog: false,
 				specialValueType: ConnectionOptionSpecialType.serverName,
 				valueType: ServiceOptionType.string
 			},
@@ -68,6 +70,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 				defaultValue: undefined!,
 				isIdentity: true,
 				isRequired: true,
+				showOnConnectionDialog: false,
 				specialValueType: ConnectionOptionSpecialType.databaseName,
 				valueType: ServiceOptionType.string
 			},
@@ -80,6 +83,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 				defaultValue: undefined!,
 				isIdentity: true,
 				isRequired: true,
+				showOnConnectionDialog: false,
 				specialValueType: ConnectionOptionSpecialType.userName,
 				valueType: ServiceOptionType.string
 			},
@@ -92,6 +96,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 				defaultValue: undefined!,
 				isIdentity: true,
 				isRequired: true,
+				showOnConnectionDialog: false,
 				specialValueType: ConnectionOptionSpecialType.authType,
 				valueType: ServiceOptionType.string
 			},
@@ -104,6 +109,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 				defaultValue: undefined!,
 				isIdentity: true,
 				isRequired: true,
+				showOnConnectionDialog: false,
 				specialValueType: ConnectionOptionSpecialType.password,
 				valueType: ServiceOptionType.string
 			},
@@ -116,6 +122,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 				defaultValue: undefined!,
 				isIdentity: false,
 				isRequired: false,
+				showOnConnectionDialog: true,
 				specialValueType: undefined!,
 				valueType: ServiceOptionType.string
 			}
@@ -200,7 +207,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 
 	test('constructor should initialize the options given a valid model with options', () => {
 		let options: { [key: string]: string } = {};
-		options['encrypt'] = 'test value';
+		options['encrypt'] = 'true';
 		let conn2 = Object.assign({}, connectionProfile, { options: options });
 		let conn = new ProviderConnectionInfo(capabilitiesService, conn2);
 
@@ -210,12 +217,15 @@ suite('SQL ProviderConnectionInfo tests', () => {
 		assert.strictEqual(conn.authenticationType, conn2.authenticationType);
 		assert.strictEqual(conn.password, conn2.password);
 		assert.strictEqual(conn.userName, conn2.userName);
-		assert.strictEqual(conn.options['encrypt'], 'test value');
+		assert.strictEqual(conn.options['encrypt'], 'true');
 	});
 
 	test('getOptionsKey should create a valid unique id', () => {
+		let options: { [key: string]: string } = {};
+		options['encrypt'] = 'true';
+		connectionProfile.options = options;
 		let conn = new ProviderConnectionInfo(capabilitiesService, connectionProfile);
-		let expectedId = 'providerName:MSSQL|authenticationType:|databaseName:database|serverName:new server|userName:user';
+		let expectedId = 'providerName:MSSQL|authenticationType:|databaseName:database|encrypt:true|serverName:new server|userName:user';
 		let id = conn.getOptionsKey();
 		assert.strictEqual(id, expectedId);
 	});

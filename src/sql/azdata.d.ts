@@ -640,6 +640,8 @@ declare module 'azdata' {
 
 		isIdentity: boolean;
 
+		showOnConnectionDialog: boolean;
+
 		isRequired: boolean;
 	}
 

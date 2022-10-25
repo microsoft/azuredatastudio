@@ -27,6 +27,7 @@ suite('Advanced properties dialog tests', () => {
 				defaultValue: undefined,
 				isIdentity: true,
 				isRequired: true,
+				showOnConnectionDialog: false,
 				specialValueType: null,
 				valueType: ServiceOptionType.string
 			},
@@ -39,6 +40,7 @@ suite('Advanced properties dialog tests', () => {
 				defaultValue: undefined,
 				isIdentity: true,
 				isRequired: true,
+				showOnConnectionDialog: false,
 				specialValueType: null,
 				valueType: ServiceOptionType.string
 			},
@@ -51,6 +53,7 @@ suite('Advanced properties dialog tests', () => {
 				defaultValue: undefined,
 				isIdentity: true,
 				isRequired: true,
+				showOnConnectionDialog: false,
 				specialValueType: null,
 				valueType: ServiceOptionType.string
 			},
@@ -63,6 +66,7 @@ suite('Advanced properties dialog tests', () => {
 				defaultValue: undefined,
 				isIdentity: true,
 				isRequired: true,
+				showOnConnectionDialog: false,
 				specialValueType: null,
 				valueType: ServiceOptionType.string
 			},
@@ -75,6 +79,7 @@ suite('Advanced properties dialog tests', () => {
 				defaultValue: undefined,
 				isIdentity: true,
 				isRequired: true,
+				showOnConnectionDialog: false,
 				specialValueType: null,
 				valueType: ServiceOptionType.string
 			}
