@@ -256,8 +256,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	protected addCustomConnectionOptions(): void {
 		if (this._customOptions.length > 0) {
 			this._customOptionWidgets = [];
-			for (let i = 0; i < this._customOptions.length; i++) {
-				let option = this._customOptions[i];
+			this._customOptions.forEach((option, i) => {
 				let customOptionsContainer = DialogHelper.appendRow(this._tableContainer, option.displayName, 'connection-label', 'connection-input', 'custom-connection-options');
 				switch (option.valueType) {
 					case ServiceOptionType.boolean:
@@ -276,7 +275,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 						break;
 				}
 				this._register(this._customOptionWidgets[i]);
-			}
+			});
 		}
 	}
 
@@ -774,13 +773,13 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			}
 
 			if (this._customOptionWidgets) {
-				for (let i = 0; i < this._customOptionWidgets.length; i++) {
-					if (this._customOptionWidgets[i] instanceof SelectBox) {
-						(this._customOptionWidgets[i] as SelectBox).selectWithOptionName(this.getModelValue(connectionInfo.options[this._customOptions[i].name]));
+				this._customOptionWidgets.forEach((widget, i) => {
+					if (widget instanceof SelectBox) {
+						(widget as SelectBox).selectWithOptionName(this.getModelValue(connectionInfo.options[this._customOptions[i].name]));
 					} else {
-						(this._customOptionWidgets[i] as InputBox).value = this.getModelValue(connectionInfo.options[this._customOptions[i].name]);
+						(widget as InputBox).value = this.getModelValue(connectionInfo.options[this._customOptions[i].name]);
 					}
-				}
+				});
 			}
 
 			if (this.authType === AuthenticationType.AzureMFA || this.authType === AuthenticationType.AzureMFAAndUser) {
@@ -1023,9 +1022,9 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				model.connectionName = this.connectionName;
 				model.databaseName = this.databaseName;
 				if (this._customOptionWidgets) {
-					for (let i = 0; i < this._customOptionWidgets.length; i++) {
-						model.options[this._customOptions[i].name] = this._customOptionWidgets[i].value;
-					}
+					this._customOptionWidgets.forEach((widget, i) => {
+						model.options[this._customOptions[i].name] = widget.value;
+					});
 				}
 				if (this._serverGroupSelectBox) {
 					if (this._serverGroupSelectBox.value === this.DefaultServerGroup.name) {
