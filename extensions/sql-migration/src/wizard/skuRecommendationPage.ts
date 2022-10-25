@@ -1216,7 +1216,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		await this.refreshCardText(false);
 	}
 
-	private hasRecommendations(): boolean {
+	public hasRecommendations(): boolean {
 		return this.migrationStateModel._skuRecommendationResults?.recommendations
 			&& !this.migrationStateModel._skuRecommendationResults?.recommendationError
 			? true

@@ -301,7 +301,9 @@ export class SkuEditParametersDialog {
 		this.migrationStateModel._skuEnablePreview = this._enablePreviewValue;
 		this.migrationStateModel._skuEnableElastic = this._enableElasticRecommendation;
 		await this.skuRecommendationPage.refreshSkuParameters();
-		await this.skuRecommendationPage.refreshAzureRecommendation();
+		if (this.skuRecommendationPage.hasRecommendations()) {
+			await this.skuRecommendationPage.refreshAzureRecommendation();
+		}
 	}
 
 	public get isOpen(): boolean {
