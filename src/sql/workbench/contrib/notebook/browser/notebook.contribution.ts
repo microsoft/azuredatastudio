@@ -740,13 +740,13 @@ export class NotebookEditorOverrideContribution extends Disposable implements IW
 		@ILogService private _logService: ILogService,
 		@IEditorService private _editorService: IEditorService,
 		@IEditorResolverService private _editorResolverService: IEditorResolverService,
-		@ILanguageService private _modeService: ILanguageService
+		@ILanguageService private _languageService: ILanguageService
 	) {
 		super();
 		this.registerEditorOverrides();
 		// Refresh the editor overrides whenever the languages change so we ensure we always have
 		// the latest up to date list of extensions for each language
-		this._modeService.onDidChange(() => {
+		this._languageService.onDidChange(() => {
 			this.registerEditorOverrides();
 		});
 		notebookRegistry.onNewDescriptionRegistration(({ id, registration }) => {
@@ -765,7 +765,7 @@ export class NotebookEditorOverrideContribution extends Disposable implements IW
 
 		// List of built-in language IDs to associate the query editor for. These are case sensitive.
 		NotebookEditorLanguageAssociation.languages.forEach(lang => {
-			const langExtensions = this._modeService.getExtensions(lang);
+			const langExtensions = this._languageService.getExtensions(lang);
 			allExtensions = allExtensions.concat(langExtensions);
 		});
 

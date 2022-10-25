@@ -41,8 +41,6 @@ export const RESOURCE_VIEWER_TYPEID = 'workbench.editorInput.resourceViewerInput
 export const JUPYTER_PROVIDER_ID = 'jupyter';
 export const IPYKERNEL_DISPLAY_NAME = 'Python 3 (ipykernel)';
 export const INTERACTIVE_PROVIDER_ID = 'dotnet-interactive';
-export const INTERACTIVE_LANGUAGE_MODE = 'dib';
-export const DEFAULT_NB_LANGUAGE_MODE = 'notebook';
 export const TSGOPS_WEB_QUALITY = 'tsgops-image';
 export const CELL_URI_PATH_PREFIX = 'notebook-editor-';
 
@@ -51,8 +49,9 @@ export const NBFORMAT = 4;
 export const NBFORMAT_MINOR = 2;
 
 export const enum NotebookLanguage {
-	Notebook = 'Notebook',
-	Ipynb = 'ipynb'
+	Notebook = 'notebook',
+	Ipynb = 'ipynb',
+	Interactive = 'dib'
 }
 export interface INotebookSearchConfigurationProperties {
 	exclude: glob.IExpression;

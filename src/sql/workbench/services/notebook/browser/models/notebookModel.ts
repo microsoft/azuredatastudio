@@ -138,7 +138,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		@IUndoRedoService private undoService: IUndoRedoService,
 		@INotebookService private _notebookService: INotebookService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
-		@ILanguageService private _modeService: ILanguageService,
+		@ILanguageService private _languageService: ILanguageService,
 	) {
 		super();
 		if (!_notebookOptions || !_notebookOptions.notebookUri || !_notebookOptions.executeManagers) {
@@ -165,8 +165,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (!fileExt) {
 			let languageMode = this._notebookOptions.getInputLanguageMode();
 			if (languageMode) {
-				let languageName = this._modeService.getLanguageName(languageMode);
-				let fileExtensions = this._modeService.getExtensions(languageName);
+				let languageName = this._languageService.getLanguageName(languageMode);
+				let fileExtensions = this._languageService.getExtensions(languageName);
 				if (fileExtensions?.length > 0) {
 					extensions = fileExtensions;
 				} else {
