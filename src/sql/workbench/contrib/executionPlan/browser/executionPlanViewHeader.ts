@@ -11,8 +11,9 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { removeLineBreaks } from 'sql/base/common/strings';
+import { Disposable } from 'vs/base/common/lifecycle';
 
-export class ExecutionPlanViewHeader {
+export class ExecutionPlanViewHeader extends Disposable {
 
 	private _graphIndex: number;    // Index of the graph in the view
 	private _relativeCost: number;  // Relative cost of the graph to the script
@@ -28,7 +29,9 @@ export class ExecutionPlanViewHeader {
 	public constructor(
 		private _parentContainer: HTMLElement,
 		headerData: PlanHeaderData | undefined,
-		@IInstantiationService public readonly _instantiationService: IInstantiationService) {
+		@IInstantiationService public readonly _instantiationService: IInstantiationService
+	) {
+		super();
 
 		if (headerData) {
 			this._graphIndex = headerData.planIndex;
@@ -67,6 +70,7 @@ export class ExecutionPlanViewHeader {
 		recommendations.forEach(r => {
 			r.displayString = removeLineBreaks(r.displayString);
 		});
+
 		this._recommendations = recommendations;
 		this.renderRecommendations();
 	}
@@ -97,19 +101,19 @@ export class ExecutionPlanViewHeader {
 			while (this._recommendationsContainer.firstChild) {
 				this._recommendationsContainer.removeChild(this._recommendationsContainer.firstChild);
 			}
-			this._recommendations.forEach(r => {
 
-				const link = new Button(this._recommendationsContainer, {
+			this._recommendations.forEach(r => {
+				const link = this._register(new Button(this._recommendationsContainer, {
 					title: r.displayString,
 					secondary: true,
-				});
+				}));
 
 				link.label = r.displayString;
 
 				//Enabling on click action for recommendations. It will open the recommendation File
-				link.onDidClick(e => {
+				this._register(link.onDidClick(e => {
 					this._instantiationService.invokeFunction(openNewQuery, undefined, r.queryWithDescription, RunQueryOnConnectionMode.none);
-				});
+				}));
 			});
 		}
 	}

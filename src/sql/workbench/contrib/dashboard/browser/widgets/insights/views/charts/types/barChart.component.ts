@@ -8,7 +8,7 @@ import { mixin } from 'sql/base/common/objects';
 import { IChartConfig } from 'sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/interfaces';
 
 import * as colors from 'vs/platform/theme/common/colorRegistry';
-import { editorLineNumbers } from 'vs/editor/common/view/editorColorRegistry';
+import { editorLineNumbers } from 'vs/editor/common/core/editorColorRegistry';
 import { ChangeDetectorRef, Inject, forwardRef } from '@angular/core';
 import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';

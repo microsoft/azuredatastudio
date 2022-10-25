@@ -8,26 +8,24 @@ import * as assert from 'assert';
 
 import { URI } from 'vs/base/common/uri';
 import { ExecuteManagerStub, NotebookServiceStub, SerializationManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
-import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
-import { IClientSession, INotebookModelOptions } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { CellTypes, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
+import { ICellModel, IClientSession, INotebookModelOptions } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
-import { NullLogService } from 'vs/platform/log/common/log';
+import { ILogService, NullLogService } from 'vs/platform/log/common/log';
 import { NotebookFindModel } from 'sql/workbench/contrib/notebook/browser/find/notebookFindModel';
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
 import { Deferred } from 'sql/base/common/promise';
 import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { Memento } from 'vs/workbench/common/memento';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
-import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { ClientSession } from 'sql/workbench/services/notebook/browser/models/clientSession';
-import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
+import { mock, TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
 import { NotebookEditorContentLoader } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
-import { NotebookRange, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
+import { INotebookService, NotebookRange, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookMarkdownRenderer } from 'sql/workbench/contrib/notebook/browser/outputs/notebookMarkdown';
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -36,6 +34,9 @@ import { SessionManager } from 'sql/workbench/contrib/notebook/test/emptySession
 import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
 import { Emitter } from 'vs/base/common/event';
 import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
+import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
+import { ICommandService, NullCommandService } from 'vs/platform/commands/common/commands';
+import { ILanguageService } from 'vs/editor/common/languages/language';
 
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -67,7 +68,7 @@ let sessionReady: Deferred<void>;
 let mockModelFactory: TypeMoq.Mock<ModelFactory>;
 let notificationService: TypeMoq.Mock<INotificationService>;
 let capabilitiesService: TypeMoq.Mock<ICapabilitiesService>;
-let instantiationService: IInstantiationService;
+let instantiationService: TestInstantiationService;
 let serviceCollection = new ServiceCollection();
 
 suite('Notebook Find Model', function (): void {
@@ -94,8 +95,17 @@ suite('Notebook Find Model', function (): void {
 		queryConnectionService = TypeMoq.Mock.ofType(TestConnectionManagementService, TypeMoq.MockBehavior.Loose, memento.object, undefined, new TestStorageService());
 		queryConnectionService.callBase = true;
 
-		instantiationService = new InstantiationService(serviceCollection, true);
 		configurationService = new TestConfigurationService();
+		serviceCollection.set(ICommandService, NullCommandService);
+		serviceCollection.set(IConfigurationService, configurationService);
+		serviceCollection.set(ILogService, new NullLogService());
+		instantiationService = new TestInstantiationService(serviceCollection, true);
+		instantiationService.stub(INotebookService, new class extends mock<INotebookService>() {
+			override async serializeNotebookStateChange(notebookUri: URI, changeType: NotebookChangeType, cell?: ICellModel, isTrusted?: boolean): Promise<void> { }
+			override notifyCellExecutionStarted(): void { }
+		});
+		instantiationService.stub(ILanguageService, new class extends mock<ILanguageService>() { });
+
 		defaultModelOptions = {
 			notebookUri: defaultUri,
 			factory: new ModelFactory(instantiationService),

@@ -51,6 +51,7 @@ stages:
           # Do not run tests for arm64 build
           RUN_TESTS: false
           RUN_SMOKE_TESTS: false
+        condition: and(succeeded(), eq(variables['VSCODE_BUILD_MACOS_ARM64'], 'true'))
         steps:
         - template: darwin/sql-product-build-darwin.yml
         timeoutInMinutes: 90

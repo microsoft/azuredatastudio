@@ -41,7 +41,7 @@ import { deepClone } from 'vs/base/common/objects';
 import { DotnetInteractiveDisplayName } from 'sql/workbench/api/common/notebooks/notebookUtils';
 import { IPYKERNEL_DISPLAY_NAME } from 'sql/workbench/common/constants';
 import * as path from 'vs/base/common/path';
-import { IModeService } from 'vs/editor/common/services/modeService';
+import { ILanguageService } from 'vs/editor/common/languages/language';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -138,7 +138,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		@IUndoRedoService private undoService: IUndoRedoService,
 		@INotebookService private _notebookService: INotebookService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
-		@IModeService private _modeService: IModeService,
+		@ILanguageService private _languageService: ILanguageService,
 	) {
 		super();
 		if (!_notebookOptions || !_notebookOptions.notebookUri || !_notebookOptions.executeManagers) {
@@ -160,13 +160,13 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private async handleNewKernelsAdded(kernels: notebookUtils.IStandardKernelWithProvider[]): Promise<void> {
 		// Kernels are file-specific, so we need to check the file extension
 		// to see if the kernel is supported for this notebook.
-		let extensions: string[];
+		let extensions: readonly string[];
 		let fileExt = path.extname(this._notebookOptions.notebookUri.path);
 		if (!fileExt) {
 			let languageMode = this._notebookOptions.getInputLanguageMode();
 			if (languageMode) {
-				let languageName = this._modeService.getLanguageName(languageMode);
-				let fileExtensions = this._modeService.getExtensions(languageName);
+				let languageName = this._languageService.getLanguageName(languageMode);
+				let fileExtensions = this._languageService.getExtensions(languageName);
 				if (fileExtensions?.length > 0) {
 					extensions = fileExtensions;
 				} else {

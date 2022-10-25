@@ -12,7 +12,6 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IDataResource } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { getEolString, shouldIncludeHeaders, shouldRemoveNewLines } from 'sql/workbench/services/query/common/queryRunner';
 import { ResultSetSummary, ResultSetSubset, ICellValue } from 'sql/workbench/services/query/common/query';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -48,6 +47,8 @@ import { getChartMaxRowCount, notifyMaxRowCountExceeded } from 'sql/workbench/co
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 @Component({
 	selector: GridOutputComponent.SELECTOR,
@@ -487,8 +488,20 @@ export class DataResourceDataProvider implements IGridDataProvider {
 		// interface than the query execution service's saveResults handlers. Here, we take the
 		// format-specific request params (eg, includeHeaders for CSV) and merge the format-agnostic
 		// request params for the serialization request (eg, saveFormat, filePath).
+		let provider = this.cellModel.notebookModel.context?.providerName;
+		if (!provider) {
+			// If no connection currently exists, then pick the first connection provider for the current kernel.
+			// If there's still no provider, then fallback to the default MSSQL one.
+			let connProviders = this.cellModel.notebookModel.getApplicableConnectionProviderIds(this.cellModel.notebookModel.selectedKernelDisplayName);
+			if (connProviders?.length > 0) {
+				provider = connProviders[0];
+			} else {
+				provider = mssqlProviderName;
+			}
+		}
 		let formatSpecificParams = serializer.getBasicSaveParameters(format);
 		let formatAgnosticParams = <Partial<SerializeDataParams>>{
+			serializationProviderId: provider,
 			saveFormat: format,
 			filePath: filePath.fsPath,
 			columns: columns,

@@ -8,7 +8,6 @@ const vscode_universal_bundler_1 = require("vscode-universal-bundler");
 const cross_spawn_promise_1 = require("@malept/cross-spawn-promise");
 const fs = require("fs-extra");
 const path = require("path");
-const plist = require("plist");
 const product = require("../../product.json");
 const glob = require("glob"); // {{SQL CARBON EDIT}}
 async function main() {
@@ -28,7 +27,6 @@ async function main() {
     const arm64AsarPath = path.join(arm64AppPath, 'Contents', 'Resources', 'app', 'node_modules.asar');
     const outAppPath = path.join(buildDir, `azuredatastudio-darwin-${arch}`, appName); // {{SQL CARBON EDIT}} - CHANGE VSCode to azuredatastudio
     const productJsonPath = path.resolve(outAppPath, 'Contents', 'Resources', 'app', 'product.json');
-    const infoPlistPath = path.resolve(outAppPath, 'Contents', 'Info.plist');
     // {{SQL CARBON EDIT}}
     // Current STS arm64 builds doesn't work on osx-arm64, we need to use the x64 version of STS on osx-arm64 until the issue is fixed.
     // Tracked by: https://github.com/microsoft/azuredatastudio/issues/20775
@@ -68,6 +66,7 @@ async function main() {
             'CodeResources',
             'fsevents.node',
             'Info.plist',
+            'MainMenu.nib',
             '.npmrc'
         ],
         outAppPath,
@@ -78,16 +77,10 @@ async function main() {
         darwinUniversalAssetId: 'darwin-universal'
     });
     await fs.writeJson(productJsonPath, productJson);
-    let infoPlistString = await fs.readFile(infoPlistPath, 'utf8');
-    let infoPlistJson = plist.parse(infoPlistString);
-    Object.assign(infoPlistJson, {
-        LSRequiresNativeExecution: true
-    });
-    await fs.writeFile(infoPlistPath, plist.build(infoPlistJson), 'utf8');
     // Verify if native module architecture is correct
     const findOutput = await (0, cross_spawn_promise_1.spawn)('find', [outAppPath, '-name', 'keytar.node']);
-    const lipoOutput = await (0, cross_spawn_promise_1.spawn)('lipo', ['-archs', findOutput.replace(/\n$/, "")]);
-    if (lipoOutput.replace(/\n$/, "") !== 'x86_64 arm64') {
+    const lipoOutput = await (0, cross_spawn_promise_1.spawn)('lipo', ['-archs', findOutput.replace(/\n$/, '')]);
+    if (lipoOutput.replace(/\n$/, '') !== 'x86_64 arm64') {
         throw new Error(`Invalid arch, got : ${lipoOutput}`);
     }
     // {{SQL CARBON EDIT}}

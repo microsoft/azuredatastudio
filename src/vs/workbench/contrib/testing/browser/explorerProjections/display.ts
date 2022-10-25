@@ -3,4 +3,4 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-export const flatTestItemDelimiter = ' › ';
+export const flatTestItemDelimiter = ' \u203A ';

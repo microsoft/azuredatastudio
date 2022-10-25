@@ -11,7 +11,7 @@ import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
 import { IConnectionComponentCallbacks } from 'sql/workbench/services/connection/browser/connectionDialogService';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { IConnectionProfile, ServiceOptionType } from 'sql/platform/connection/common/interfaces';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -68,11 +68,13 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	protected _container: HTMLElement;
 	protected _serverGroupSelectBox: SelectBox;
 	protected _authTypeSelectBox: SelectBox;
+	protected _customOptions: azdata.ConnectionOption[];
 	protected _optionsMaps: { [optionType: number]: azdata.ConnectionOption };
 	protected _tableContainer: HTMLElement;
 	protected _providerName: string;
 	protected _connectionNameInputBox: InputBox;
 	protected _databaseNameInputBox: Dropdown;
+	protected _customOptionWidgets: (InputBox | SelectBox)[];
 	protected _advancedButton: Button;
 	private static readonly _authTypes: AuthenticationType[] =
 		[AuthenticationType.AzureMFA, AuthenticationType.AzureMFAAndUser, AuthenticationType.Integrated, AuthenticationType.SqlLogin, AuthenticationType.DSTSAuth, AuthenticationType.None];
@@ -115,6 +117,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	) {
 		super();
 		this._callbacks = callbacks;
+		this._customOptions = options.filter(a => a.showOnConnectionDialog === true);
 		this._optionsMaps = {};
 		for (let i = 0; i < options.length; i++) {
 			let option = options[i];
@@ -177,6 +180,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		this.addAuthenticationTypeOption(authTypeChanged);
 		this.addLoginOptions();
 		this.addDatabaseOption();
+		this.addCustomConnectionOptions();
 		this.addServerGroupOption();
 		this.addConnectionNameOptions();
 		this.addAdvancedOptions();
@@ -234,12 +238,44 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		const userNameOption: azdata.ConnectionOption = this._optionsMaps[ConnectionOptionSpecialType.userName];
 		this._serverNameInputBox.required = !this.useConnectionString;
 		this._userNameInputBox.required = (!this.useConnectionString) && userNameOption?.isRequired;
+		this._userNameInputBox.value = '';
+		if (this.useConnectionString) {
+			this._tableContainer.classList.add('hide-customOptions');
+		} else {
+			this._tableContainer.classList.remove('hide-customOptions');
+		}
 	}
 
 	protected addAuthenticationTypeOption(authTypeChanged: boolean = false): void {
 		if (this._optionsMaps[ConnectionOptionSpecialType.authType]) {
 			let authType = DialogHelper.appendRow(this._tableContainer, this._optionsMaps[ConnectionOptionSpecialType.authType].displayName, 'connection-label', 'connection-input', 'auth-type-row');
 			DialogHelper.appendInputSelectBox(authType, this._authTypeSelectBox);
+		}
+	}
+
+	protected addCustomConnectionOptions(): void {
+		if (this._customOptions.length > 0) {
+			this._customOptionWidgets = [];
+			this._customOptions.forEach((option, i) => {
+				let customOptionsContainer = DialogHelper.appendRow(this._tableContainer, option.displayName, 'connection-label', 'connection-input', 'custom-connection-options');
+				switch (option.valueType) {
+					case ServiceOptionType.boolean:
+						this._customOptionWidgets[i] = new SelectBox([localize('boolean.true', 'True'), localize('boolean.false', 'False')], option.defaultValue, this._contextViewService, customOptionsContainer, { ariaLabel: option.displayName });
+						DialogHelper.appendInputSelectBox(customOptionsContainer, this._customOptionWidgets[i] as SelectBox);
+						this._register(styler.attachSelectBoxStyler(this._customOptionWidgets[i] as SelectBox, this._themeService));
+						break;
+					case ServiceOptionType.category:
+						this._customOptionWidgets[i] = new SelectBox(option.categoryValues.map(c => c.displayName), option.defaultValue, this._contextViewService, customOptionsContainer, { ariaLabel: option.displayName });
+						DialogHelper.appendInputSelectBox(customOptionsContainer, this._customOptionWidgets[i] as SelectBox);
+						this._register(styler.attachSelectBoxStyler(this._customOptionWidgets[i] as SelectBox, this._themeService));
+						break;
+					default:
+						this._customOptionWidgets[i] = new InputBox(customOptionsContainer, this._contextViewService, { ariaLabel: option.displayName });
+						this._register(styler.attachInputBoxStyler(this._customOptionWidgets[i] as InputBox, this._themeService));
+						break;
+				}
+				this._register(this._customOptionWidgets[i]);
+			});
 		}
 	}
 
@@ -491,6 +527,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 
 	protected onAuthTypeSelected(selectedAuthType: string) {
 		let currentAuthType = this.getMatchingAuthType(selectedAuthType);
+		this._userNameInputBox.value === '';
+		this._passwordInputBox.value === '';
 		this._userNameInputBox.hideMessage();
 		this._passwordInputBox.hideMessage();
 		this._azureAccountDropdown.hideMessage();
@@ -734,6 +772,16 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				this._tableContainer.classList.add('hide-azure-accounts');
 			}
 
+			if (this._customOptionWidgets) {
+				this._customOptionWidgets.forEach((widget, i) => {
+					if (widget instanceof SelectBox) {
+						widget.selectWithOptionName(this.getModelValue(connectionInfo.options[this._customOptions[i].name]));
+					} else {
+						widget.value = this.getModelValue(connectionInfo.options[this._customOptions[i].name]);
+					}
+				});
+			}
+
 			if (this.authType === AuthenticationType.AzureMFA || this.authType === AuthenticationType.AzureMFAAndUser) {
 				this.fillInAzureAccountOptions().then(async () => {
 					let tenantId = connectionInfo.azureTenantId;
@@ -802,7 +850,11 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		if (this._authTypeSelectBox) {
 			this._authTypeSelectBox.disable();
 		}
-
+		if (this._customOptionWidgets) {
+			this._customOptionWidgets.forEach(widget => {
+				widget.disable();
+			});
+		}
 		if (this._connectionStringOptions.isEnabled) {
 			this._connectionStringInputBox.disable();
 			this._defaultInputOptionRadioButton.enabled = false;
@@ -839,6 +891,11 @@ export class ConnectionWidget extends lifecycle.Disposable {
 
 		if (this._databaseNameInputBox) {
 			this._databaseNameInputBox.enabled = true;
+		}
+		if (this._customOptionWidgets) {
+			this._customOptionWidgets.forEach(widget => {
+				widget.enable();
+			});
 		}
 		if (this._connectionStringOptions.isEnabled) {
 			this._connectionStringInputBox.enable();
@@ -964,6 +1021,11 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				model.savePassword = this._rememberPasswordCheckBox.checked;
 				model.connectionName = this.connectionName;
 				model.databaseName = this.databaseName;
+				if (this._customOptionWidgets) {
+					this._customOptionWidgets.forEach((widget, i) => {
+						model.options[this._customOptions[i].name] = widget.value;
+					});
+				}
 				if (this._serverGroupSelectBox) {
 					if (this._serverGroupSelectBox.value === this.DefaultServerGroup.name) {
 						model.groupFullName = '';

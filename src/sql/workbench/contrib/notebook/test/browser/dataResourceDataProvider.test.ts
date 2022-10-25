@@ -79,7 +79,7 @@ suite('Data Resource Data Provider', function () {
 		fileDialogService = new TestFileDialogService(pathService);
 		notificationService = new TestNotificationService();
 		serializationService = new SerializationService(undefined, undefined); //_connectionService _capabilitiesService
-		serializationService.registerProvider('testProviderId', new TestSerializationProvider());
+		serializationService.registerProvider('MSSQL', new TestSerializationProvider());
 		serializer = new ResultSerializer(
 			undefined, // IQueryManagementService
 			undefined, // IConfigurationService

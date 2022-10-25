@@ -54,7 +54,7 @@ export namespace Schemas {
 
 	export const vscodeRemoteResource = 'vscode-remote-resource';
 
-	export const userData = 'vscode-userdata';
+	export const vscodeUserData = 'vscode-userdata';
 
 	export const vscodeCustomEditor = 'vscode-custom-editor';
 
@@ -73,6 +73,9 @@ export namespace Schemas {
 
 	export const vscodeTerminal = 'vscode-terminal';
 
+	/**
+	 * Scheme used internally for webviews that aren't linked to a resource (i.e. not custom editors)
+	 */
 	export const webviewPanel = 'webview-panel';
 
 	/**
@@ -95,14 +98,22 @@ export namespace Schemas {
 	 * Scheme used for temporary resources
 	 */
 	export const tmp = 'tmp';
+
+	/**
+	 * Scheme used vs live share
+	 */
+	export const vsls = 'vsls';
 }
+
+export const connectionTokenCookieName = 'vscode-tkn';
+export const connectionTokenQueryName = 'tkn';
 
 class RemoteAuthoritiesImpl {
 	private readonly _defaultWebPort = 80; // {{SQL CARBON EDIT}}
 
-	private readonly _hosts: { [authority: string]: string | undefined; } = Object.create(null);
-	private readonly _ports: { [authority: string]: number | undefined; } = Object.create(null);
-	private readonly _connectionTokens: { [authority: string]: string | undefined; } = Object.create(null);
+	private readonly _hosts: { [authority: string]: string | undefined } = Object.create(null);
+	private readonly _ports: { [authority: string]: number | undefined } = Object.create(null);
+	private readonly _connectionTokens: { [authority: string]: string | undefined } = Object.create(null);
 	private _preferredWebSchema: 'http' | 'https' = 'http';
 	private _delegate: ((uri: URI) => URI) | null = null;
 
@@ -123,6 +134,10 @@ class RemoteAuthoritiesImpl {
 		this._connectionTokens[authority] = connectionToken;
 	}
 
+	getPreferredWebSchema(): 'http' | 'https' {
+		return this._preferredWebSchema;
+	}
+
 	rewrite(uri: URI): URI {
 		if (this._delegate) {
 			return this._delegate(uri);
@@ -136,7 +151,7 @@ class RemoteAuthoritiesImpl {
 		const connectionToken = this._connectionTokens[authority];
 		let query = `path=${encodeURIComponent(uri.path)}`;
 		if (typeof connectionToken === 'string') {
-			query += `&tkn=${encodeURIComponent(connectionToken)}`;
+			query += `&${connectionTokenQueryName}=${encodeURIComponent(connectionToken)}`;
 		}
 		return URI.from({
 			scheme: platform.isWeb ? this._preferredWebSchema : Schemas.vscodeRemoteResource,
@@ -177,7 +192,7 @@ class FileAccessImpl {
 				// ...and we run in native environments
 				platform.isNative ||
 				// ...or web worker extensions on desktop
-				(typeof platform.globals.importScripts === 'function' && platform.globals.origin === `${Schemas.vscodeFileResource}://${FileAccessImpl.FALLBACK_AUTHORITY}`)
+				(platform.isWebWorker && platform.globals.origin === `${Schemas.vscodeFileResource}://${FileAccessImpl.FALLBACK_AUTHORITY}`)
 			)
 		) {
 			return uri.with({

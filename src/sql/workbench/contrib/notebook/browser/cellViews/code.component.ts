@@ -17,8 +17,6 @@ import * as themeColors from 'vs/workbench/common/theme';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITextModel } from 'vs/editor/common/model';
 import * as DOM from 'vs/base/browser/dom';
-import { IModeService } from 'vs/editor/common/services/modeService';
-import { IModelService } from 'vs/editor/common/services/modelService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { Event, Emitter } from 'vs/base/common/event';
 import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
@@ -41,6 +39,8 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 import { getIconClasses } from 'vs/editor/common/services/getIconClasses';
 import { URI } from 'vs/base/common/uri';
 import { ILanguagePickInput } from 'vs/workbench/contrib/notebook/browser/controller/editActions';
+import { ILanguageService } from 'vs/editor/common/languages/language';
+import { IModelService } from 'vs/editor/common/services/model';
 
 export const CODE_SELECTOR: string = 'code-component';
 const MARKDOWN_CLASS = 'markdown';
@@ -104,7 +104,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IModelService) private _modelService: IModelService,
-		@Inject(IModeService) private _modeService: IModeService,
+		@Inject(ILanguageService) private _languageService: ILanguageService,
 		@Inject(IConfigurationService) private _configurationService: IConfigurationService,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(ILogService) private readonly logService: ILogService,
@@ -407,7 +407,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 
 	private updateLanguageMode(): void {
 		if (this._editorModel && this._editor) {
-			let modeValue = this._modeService.create(this.cellModel.language);
+			let modeValue = this._languageService.createById(this.cellModel.language);
 			this._modelService.setMode(this._editorModel, modeValue);
 		}
 	}
@@ -490,10 +490,10 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 				description = localize('cellLanguageDescriptionConfigured', "({0})", lang);
 			}
 
-			const languageName = this._modeService.getLanguageName(lang) ?? lang;
+			const languageName = this._languageService.getLanguageName(lang) ?? lang;
 			const item = <ILanguagePickInput>{
 				label: languageName,
-				iconClasses: getIconClasses(this._modelService, this._modeService, this.getFakeResource(languageName, this._modeService)),
+				iconClasses: getIconClasses(this._modelService, this._languageService, this.getFakeResource(languageName, this._languageService)),
 				description,
 				languageId: lang
 			};
@@ -519,14 +519,14 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 	/**
 	 * Copied from coreActions.ts
 	 */
-	private getFakeResource(lang: string, modeService: IModeService): URI | undefined {
+	private getFakeResource(lang: string, languageService: ILanguageService): URI | undefined {
 		let fakeResource: URI | undefined;
 
-		const extensions = modeService.getExtensions(lang);
+		const extensions = languageService.getExtensions(lang);
 		if (extensions?.length) {
 			fakeResource = URI.file(extensions[0]);
 		} else {
-			const filenames = modeService.getFilenames(lang);
+			const filenames = languageService.getFilenames(lang);
 			if (filenames?.length) {
 				fakeResource = URI.file(filenames[0]);
 			}

@@ -14,11 +14,12 @@ import * as nls from 'vs/nls';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 
-import { SqlMainContext, ExtHostModelViewShape, MainThreadModelViewShape, ExtHostModelViewTreeViewsShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { ExtHostModelViewShape, MainThreadModelViewShape, ExtHostModelViewTreeViewsShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IItemConfig, ModelComponentTypes, IComponentShape, IComponentEventArgs, ComponentEventType, ColumnSizingMode, ModelViewAction } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { ILogService } from 'vs/platform/log/common/log';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 class ModelBuilderImpl implements azdata.ModelBuilder {
 	private nextComponentId: number;

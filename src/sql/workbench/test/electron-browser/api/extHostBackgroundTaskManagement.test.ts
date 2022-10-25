@@ -23,7 +23,11 @@ suite('ExtHostBackgroundTaskManagement Tests', () => {
 			$updateTask: (taskProgressInfo: azdata.TaskProgressInfo) => nothing
 		});
 		let mainContext = <IMainContext>{
-			getProxy: proxyType => mockProxy.object
+			getProxy: proxyType => <any>mockProxy.object,
+			set: () => { return; },
+			assertRegistered: () => { return; },
+			drain: () => { return undefined; },
+			dispose: () => { return; }
 		};
 
 		mockProxy.setup(x => x.$registerTask(It.isAny())).callback(() => {

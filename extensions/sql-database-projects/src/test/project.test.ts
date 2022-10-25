@@ -30,6 +30,10 @@ describe('Project: sqlproj content operations', function (): void {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline);
 	});
 
+	after(async function(): Promise<void> {
+		await testUtils.deleteGeneratedTestFolder();
+	});
+
 	it('Should read Project from sqlproj', async function (): Promise<void> {
 		const project: Project = await Project.openProject(projFilePath);
 
@@ -914,6 +918,10 @@ describe('Project: sdk style project content operations', function (): void {
 		sinon.restore();
 	});
 
+	after(async function(): Promise<void> {
+		await testUtils.deleteGeneratedTestFolder();
+	});
+
 	it('Should read project from sqlproj and files and folders by globbing', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectBaseline);
 		await testUtils.createDummyFileStructureWithPrePostDeployScripts(false, undefined, path.dirname(projFilePath));
@@ -1551,12 +1559,17 @@ describe('Project: sdk style project content operations', function (): void {
 		should(project.files.find(f => f.type === EntryType.File && f.relativePath === externalFileRelativePath)).not.equal(undefined);
 		projFileText = (await fs.readFile(projFilePath)).toString();
 		should(projFileText.includes(`<Build Include="${externalFileRelativePath}" />`)).equal(true, projFileText);
+		await fs.rm(externalSqlFile);
 	});
 });
 
 describe('Project: add SQLCMD Variables', function (): void {
 	before(async function (): Promise<void> {
 		await baselines.loadBaselines();
+	});
+
+	after(async function(): Promise<void> {
+		await testUtils.deleteGeneratedTestFolder();
 	});
 
 	it('Should update .sqlproj with new sqlcmd variables', async function (): Promise<void> {
@@ -1582,6 +1595,10 @@ describe('Project: add SQLCMD Variables', function (): void {
 describe('Project: properties', function (): void {
 	before(async function (): Promise<void> {
 		await baselines.loadBaselines();
+	});
+
+	after(async function(): Promise<void> {
+		await testUtils.deleteGeneratedTestFolder();
 	});
 
 	it('Should read target database version', async function (): Promise<void> {
@@ -1749,6 +1766,10 @@ describe('Project: round trip updates', function (): void {
 		sinon.restore();
 	});
 
+	after(async function(): Promise<void> {
+		await testUtils.deleteGeneratedTestFolder();
+	});
+
 	it('Should update SSDT project to work in ADS', async function (): Promise<void> {
 		await testUpdateInRoundTrip(baselines.SSDTProjectFileBaseline, baselines.SSDTProjectAfterUpdateBaseline);
 	});
@@ -1834,6 +1855,10 @@ describe('Project: legacy to SDK-style updates', function (): void {
 
 	beforeEach(function (): void {
 		sinon.restore();
+	});
+
+	after(async function(): Promise<void> {
+		await testUtils.deleteGeneratedTestFolder();
 	});
 
 	it('Should update legacy style project to SDK-style', async function (): Promise<void> {

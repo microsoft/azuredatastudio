@@ -23,7 +23,6 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { Deferred } from 'sql/base/common/promise';
 import { NotebookTextFileModel } from 'sql/workbench/contrib/notebook/browser/models/notebookTextFileModel';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { TextResourceEditorModel } from 'vs/workbench/common/editor/textResourceEditorModel';
 import { UntitledTextEditorModel, IUntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
@@ -40,6 +39,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { Extensions as LanguageAssociationExtensions, ILanguageAssociationRegistry } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { NotebookLanguage } from 'sql/workbench/common/constants';
 import { convertToInternalInteractiveKernelMetadata } from 'sql/workbench/api/common/notebooks/notebookUtils';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
@@ -259,7 +259,7 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 	}
 
 	public get languageMode(): string {
-		return this._textInput.getMode();
+		return this._textInput.getLanguageId();
 	}
 
 	public get textInput(): TextInput {
@@ -335,7 +335,7 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 
 	override async save(groupId: number, options?: ITextFileSaveOptions): Promise<EditorInput | undefined> {
 		await this.updateModel();
-		let input = await this.textInput.save(groupId, options);
+		let input: any = await this.textInput.save(groupId, options);
 		await this.setTrustForNewEditor(input);
 		const langAssociation = languageAssociationRegistry.getAssociationForLanguage(NotebookLanguage.Ipynb);
 		return langAssociation.convertInput(input);
@@ -343,7 +343,7 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 
 	override async saveAs(group: number, options?: ITextFileSaveOptions): Promise<EditorInput | undefined> {
 		await this.updateModel();
-		let input = await this.textInput.saveAs(group, options);
+		let input: any = await this.textInput.saveAs(group, options);
 		await this.setTrustForNewEditor(input);
 		const langAssociation = languageAssociationRegistry.getAssociationForLanguage(NotebookLanguage.Ipynb);
 		return langAssociation.convertInput(input);
@@ -458,11 +458,11 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 
 	private async assignProviders(): Promise<void> {
 		await this.extensionService.whenInstalledExtensionsRegistered();
-		let mode: string;
+		let languageId: string | undefined = undefined;
 		if (this._textInput instanceof UntitledTextEditorInput) {
-			mode = this._textInput.model.getMode();
+			languageId = this._textInput.model.getLanguageId();
 		}
-		let providerIds: string[] = getProvidersForFileName(this._title, this.notebookService, mode);
+		let providerIds: string[] = getProvidersForFileName(this._title, this.notebookService, languageId);
 		if (providerIds && providerIds.length > 0) {
 			this._providerId = providerIds.filter(provider => provider !== DEFAULT_NOTEBOOK_PROVIDER)[0];
 			this._providers = providerIds;
