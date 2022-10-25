@@ -711,7 +711,7 @@ declare module 'mssql' {
 		startPerfDataCollection(ownerUri: string, dataFolder: string, perfQueryIntervalInSec: number, staticQueryIntervalInSec: number, numberOfIterations: number): Promise<StartPerfDataCollectionResult | undefined>;
 		stopPerfDataCollection(): Promise<StopPerfDataCollectionResult | undefined>;
 		refreshPerfDataCollection(lastRefreshedTime: Date): Promise<RefreshPerfDataCollectionResult | undefined>;
-		startLoginMigration(sourceConnectionString: string, targetConnectionString: string, loginList: string[]): Promise<boolean | undefined>;
+		startLoginMigration(sourceConnectionString: string, targetConnectionString: string, loginList: string[]): Promise<StartLoginMigrationResult | undefined>;
 	}
 
 	// SqlMigration interfaces  -----------------------------------------------------------------------
@@ -819,5 +819,9 @@ declare module 'mssql' {
 		 * @returns A created shared access signature token
 		 */
 		createSas(connectionUri: string, blobContainerUri: string, blobStorageKey: string, storageAccountName: string, expirationDate: string): Promise<CreateSasResponse>;
+	}
+
+	export interface StartLoginMigrationResult {
+		exceptionMap: { [login: string]: any };
 	}
 }

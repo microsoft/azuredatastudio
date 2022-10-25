@@ -130,7 +130,7 @@ export class SqlMigrationService implements mssql.ISqlMigrationService {
 	async startLoginMigration(
 		sourceConnectionString: string,
 		targetConnectionString: string,
-		loginList: string[]) {
+		loginList: string[]): Promise<mssql.StartLoginMigrationResult | undefined> {
 		let params: contracts.StartLoginMigrationsParams = {
 			sourceConnectionString,
 			targetConnectionString,

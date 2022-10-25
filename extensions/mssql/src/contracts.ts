@@ -1158,7 +1158,7 @@ export interface StartLoginMigrationsParams {
 }
 
 export namespace StartLoginMigrationRequest {
-	export const type = new RequestType<StartLoginMigrationsParams, boolean, void, void>('migration/startloginmigration');
+	export const type = new RequestType<StartLoginMigrationsParams, mssql.StartLoginMigrationResult, void, void>('migration/startloginmigration');
 }
 
 // ------------------------------- <Sql Migration> -----------------------------
