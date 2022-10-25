@@ -4757,7 +4757,7 @@
 					"flags": "preview"
 				},
 				{
-					"extensionId": "93",
+					"extensionId": "94",
 					"extensionName": "column-aligner-ads",
 					"displayName": "Column Aligner",
 					"shortDescription": "This extension provides a shortcut key to consistently align the selected rows to the nearest tabstop",
@@ -4774,12 +4774,8 @@
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
-									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"assetType": "Microsoft.SQLOps.DownloadPage",
 									"source": "https://tallent.us/column-aligner-ads/column-aligner-ads-1.0.0.vsix"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/Azure/azure-cosmosdb-ads-extension/main/resources/catalog/CosmosDBExtension.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
