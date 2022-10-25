@@ -469,6 +469,12 @@ declare module 'azdata' {
 
 	export interface ConnectionOption {
 		defaultValueOsOverrides?: DefaultValueOsOverride[];
+
+		/**
+		 * When set to true, the respective connection option will be rendered on the main connection dialog
+		 * and not the Advanced Options window.
+		 */
+		showOnConnectionDialog?: boolean;
 	}
 
 	export interface TaskInfo {

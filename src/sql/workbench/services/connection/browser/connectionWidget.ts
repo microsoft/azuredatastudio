@@ -262,23 +262,21 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				let customOptionsContainer = DialogHelper.appendRow(this._tableContainer, option.displayName, 'connection-label', 'connection-input', 'custom-connection-options');
 				switch (option.valueType) {
 					case ServiceOptionType.boolean:
-						this._customOptionWidgets[i] = new SelectBox(['True', 'False'], option.defaultValue, this._contextViewService, customOptionsContainer, { ariaLabel: option.displayName });
-						this._register(this._customOptionWidgets[i]);
+						this._customOptionWidgets[i] = new SelectBox([localize('boolean.true', 'True'), localize('boolean.false', 'False')], option.defaultValue, this._contextViewService, customOptionsContainer, { ariaLabel: option.displayName });
 						DialogHelper.appendInputSelectBox(customOptionsContainer, this._customOptionWidgets[i] as SelectBox);
 						this._register(styler.attachSelectBoxStyler(this._customOptionWidgets[i] as SelectBox, this._themeService));
 						break;
 					case ServiceOptionType.category:
 						this._customOptionWidgets[i] = new SelectBox(option.categoryValues.map(c => c.displayName), option.defaultValue, this._contextViewService, customOptionsContainer, { ariaLabel: option.displayName });
-						this._register(this._customOptionWidgets[i]);
 						DialogHelper.appendInputSelectBox(customOptionsContainer, this._customOptionWidgets[i] as SelectBox);
 						this._register(styler.attachSelectBoxStyler(this._customOptionWidgets[i] as SelectBox, this._themeService));
 						break;
 					default:
 						this._customOptionWidgets[i] = new InputBox(customOptionsContainer, this._contextViewService, { ariaLabel: option.displayName });
-						this._register(this._customOptionWidgets[i]);
 						this._register(styler.attachInputBoxStyler(this._customOptionWidgets[i] as InputBox, this._themeService));
 						break;
 				}
+				this._register(this._customOptionWidgets[i]);
 			}
 		}
 	}

@@ -640,12 +640,6 @@ declare module 'azdata' {
 
 		isIdentity: boolean;
 
-		/**
-		 * When set to true, the respective connection option will be rendered on the main connection dialog
-		 * and not the Advanced Options window.
-		 */
-		showOnConnectionDialog?: boolean;
-
 		isRequired: boolean;
 	}
 
