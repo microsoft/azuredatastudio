@@ -411,6 +411,7 @@ import 'vs/workbench/contrib/surveys/browser/languageSurveys.contribution';
 
 // Welcome
 import 'vs/workbench/contrib/welcomeOverlay/browser/welcomeOverlay';
+import 'sql/workbench/contrib/welcome/page/browser/welcomePage.contribution'; // {{SQL CARBON EDIT}} - add welcome page contribution
 // import 'vs/workbench/contrib/welcomeGettingStarted/browser/gettingStarted.contribution'; // {{SQL CARBON EDIT}} - remove vscode getting started
 import 'vs/workbench/contrib/welcomeWalkthrough/browser/walkThrough.contribution';
 import 'vs/workbench/contrib/welcomeViews/common/viewsWelcome.contribution';
