@@ -36,7 +36,6 @@ import Severity from 'vs/base/common/severity';
 import { ConnectionStringOptions } from 'sql/platform/capabilities/common/capabilitiesService';
 import { isFalsyOrWhitespace } from 'vs/base/common/strings';
 import { AuthenticationType } from 'sql/platform/connection/common/constants';
-import { Widget } from 'vs/base/browser/ui/widget';
 
 const ConnectionStringText = localize('connectionWidget.connectionString', "Connection string");
 
@@ -75,7 +74,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	protected _providerName: string;
 	protected _connectionNameInputBox: InputBox;
 	protected _databaseNameInputBox: Dropdown;
-	protected _customOptionWidgets: Widget[];
+	protected _customOptionWidgets: (InputBox | SelectBox)[];
 	protected _advancedButton: Button;
 	private static readonly _authTypes: AuthenticationType[] =
 		[AuthenticationType.AzureMFA, AuthenticationType.AzureMFAAndUser, AuthenticationType.Integrated, AuthenticationType.SqlLogin, AuthenticationType.DSTSAuth, AuthenticationType.None];
@@ -776,7 +775,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 
 			if (this._customOptionWidgets) {
 				for (let i = 0; i < this._customOptionWidgets.length; i++) {
-					if (this._customOptions[i].valueType === ServiceOptionType.boolean || this._customOptions[i].valueType === ServiceOptionType.category) {
+					if (this._customOptionWidgets[i] instanceof SelectBox) {
 						(this._customOptionWidgets[i] as SelectBox).selectWithOptionName(this.getModelValue(connectionInfo.options[this._customOptions[i].name]));
 					} else {
 						(this._customOptionWidgets[i] as InputBox).value = this.getModelValue(connectionInfo.options[this._customOptions[i].name]);
@@ -854,11 +853,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		}
 		if (this._customOptionWidgets) {
 			for (let i = 0; i < this._customOptionWidgets.length; i++) {
-				if (this._customOptions[i].valueType === ServiceOptionType.boolean || this._customOptions[i].valueType === ServiceOptionType.category) {
-					(this._customOptionWidgets[i] as SelectBox).disable();
-				} else {
-					(this._customOptionWidgets[i] as InputBox).disable();
-				}
+				this._customOptionWidgets[i].disable();
 			}
 		}
 		if (this._connectionStringOptions.isEnabled) {
@@ -900,11 +895,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		}
 		if (this._customOptionWidgets) {
 			for (let i = 0; i < this._customOptionWidgets.length; i++) {
-				if (this._customOptions[i].valueType === ServiceOptionType.boolean || this._customOptions[i].valueType === ServiceOptionType.category) {
-					(this._customOptionWidgets[i] as SelectBox).enable();
-				} else {
-					(this._customOptionWidgets[i] as InputBox).enable();
-				}
+				this._customOptionWidgets[i].enable();
 			}
 		}
 		if (this._connectionStringOptions.isEnabled) {
@@ -1033,11 +1024,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				model.databaseName = this.databaseName;
 				if (this._customOptionWidgets) {
 					for (let i = 0; i < this._customOptionWidgets.length; i++) {
-						if (this._customOptions[i].valueType === ServiceOptionType.boolean || this._customOptions[i].valueType === ServiceOptionType.category) {
-							model.options[this._customOptions[i].name] = (this._customOptionWidgets[i] as SelectBox).value;
-						} else {
-							model.options[this._customOptions[i].name] = (this._customOptionWidgets[i] as InputBox).value;
-						}
+						model.options[this._customOptions[i].name] = this._customOptionWidgets[i].value;
 					}
 				}
 				if (this._serverGroupSelectBox) {
