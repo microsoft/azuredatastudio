@@ -187,7 +187,8 @@ export function canCutoverMigration(migration: DatabaseMigration | undefined): b
 	const status = getMigrationStatus(migration);
 	return hasMigrationOperationId(migration)
 		&& isOnlineMigration(migration)
-		&& (status === loc.MigrationState.ReadyForCutover || isFullBackupRestored(migration));
+		&& (status === loc.MigrationState.ReadyForCutover || status === loc.MigrationState.InProgress)		// TODO: InProgress condition can be eventually deprecated
+		&& isFullBackupRestored(migration);
 }
 
 export function isActiveMigration(migration: DatabaseMigration | undefined): boolean {
