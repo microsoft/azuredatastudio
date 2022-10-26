@@ -719,7 +719,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	}
 
 	private getModelValue(value: string): string {
-		return value ? value : '';
+		return value !== undefined ? value : '';
 	}
 
 	public fillInConnectionInputs(connectionInfo: IConnectionProfile) {
