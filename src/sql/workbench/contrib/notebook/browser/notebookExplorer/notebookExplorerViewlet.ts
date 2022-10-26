@@ -411,7 +411,7 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 	}
 }
 
-export const NotebookViewIcon = registerIcon('ads-notebook', Codicon.notebook, localize('ads-notebook', 'Icon represent a notebook.'));
+export const NotebooksViewIcon = registerIcon('ads-notebooks', Codicon.notebook, localize('ads-notebook', 'Icon represent a notebook.'));
 export const NOTEBOOK_VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({
 	id: VIEWLET_ID,
 	title: localize('notebookExplorer.name', "Notebooks"),
@@ -421,7 +421,7 @@ export const NOTEBOOK_VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(View
 		keybindings: { primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KeyB },
 		order: 0
 	},
-	icon: NotebookViewIcon,
+	icon: NotebooksViewIcon,
 	order: 6,
 	storageId: `${VIEWLET_ID}.state`
 }, ViewContainerLocation.Sidebar);
