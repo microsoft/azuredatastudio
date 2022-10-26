@@ -785,7 +785,8 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 			},
 			get activeNotebookEditor(): vscode.NotebookEditor | undefined {
 				// {{SQL CARBON EDIT}} Use our own notebooks
-				return new VSCodeNotebookEditor(extHostNotebookDocumentsAndEditors.getActiveEditor());
+				let activeEditor = extHostNotebookDocumentsAndEditors.getActiveEditor();
+				return activeEditor ? new VSCodeNotebookEditor(activeEditor) : undefined;
 			},
 			onDidChangeActiveNotebookEditor(listener, thisArgs?, disposables?) {
 				// {{SQL CARBON EDIT}} Use our own notebooks
