@@ -42,7 +42,7 @@ class ExtensionsScannerService extends AbstractExtensionsScannerService implemen
 
 }
 
-suite('NativeExtensionsScanerService Test', () => {
+suite.skip('NativeExtensionsScanerService Test', () => {
 
 	const disposables = new DisposableStore();
 	let instantiationService: TestInstantiationService;
