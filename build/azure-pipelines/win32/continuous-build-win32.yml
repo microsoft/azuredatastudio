@@ -56,7 +56,7 @@ steps:
 
   - powershell: |
       .\scripts\test.bat --tfs "Unit Tests"
-    displayName: Run Core Unit Tests
+    displayName: Run Core Unit Tests # {{SQL CARBON EDIT}} Rename to core for clarity
 
   # - powershell: | {{SQL CARBON EDIT}} disable
   #     yarn test-browser --browser chromium --browser firefox --tfs "Browser Unit Tests"
@@ -64,7 +64,7 @@ steps:
 
   # - powershell: | {{SQL CARBON EDIT}} disable
   #     .\scripts\test-integration.bat --tfs "Integration Tests"
-  #   displayName: Run Core Integration Tests
+  #   displayName: Run Core Integration Tests # {{SQL CARBON EDIT}} Rename to core for clarity
 
   - task: PublishPipelineArtifact@0
     displayName: "Publish Crash Reports"

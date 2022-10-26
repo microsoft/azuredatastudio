@@ -137,7 +137,7 @@ steps:
   #     $ErrorActionPreference = "Stop"
   #     exec { yarn electron x64 }
   #     exec { .\scripts\test.bat --build --coverage --reporter mocha-junit-reporter --tfs "Unit Tests" }
-  #   displayName: Run core unit tests
+  #   displayName: Run core unit tests # {{SQL CARBON EDIT}} Rename to core for clarity
   #   condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
   # {{SQL CARBON TODO}} -- reenable
@@ -151,7 +151,7 @@ steps:
   #     $AppProductJson = Get-Content -Raw -Path "$AppRoot\resources\app\product.json" | ConvertFrom-Json
   #     $AppNameShort = $AppProductJson.nameShort
   #     # exec { $env:INTEGRATION_TEST_ELECTRON_PATH = "$AppRoot\$AppNameShort.exe"; $env:VSCODE_REMOTE_SERVER_PATH = "$(agent.builddirectory)\azuredatastudio-reh-win32-x64"; .\scripts\test-integration.bat --build --tfs "Integration Tests" }
-  #   displayName: Run core integration tests
+  #   displayName: Run core integration tests # {{SQL CARBON EDIT}} Rename to core for clarity
   #   condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
   - powershell: |

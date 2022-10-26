@@ -49,7 +49,7 @@ steps:
 
   - script: |
       ./scripts/test.sh --tfs "Unit Tests"
-    displayName: Run Core Unit Tests
+    displayName: Run Core Unit Tests # {{SQL CARBON EDIT}} Rename to core for clarity
 
   # - script: | {{SQL CARBON EDIT}} disable
   #     yarn test-browser --browser chromium --browser webkit --browser firefox --tfs "Browser Unit Tests"
@@ -57,7 +57,7 @@ steps:
 
   # - script: | {{SQL CARBON EDIT}} disable
   #     ./scripts/test-integration.sh --tfs "Integration Tests"
-  #   displayName: Run Core Integration Tests
+  #   displayName: Run Core Integration Tests # {{SQL CARBON EDIT}} Rename to core for clarity
 
   - task: PublishPipelineArtifact@0
     inputs:
