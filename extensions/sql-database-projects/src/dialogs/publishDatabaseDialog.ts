@@ -246,14 +246,10 @@ export class PublishDatabaseDialog {
 			let dockerBaseImage = this.getBaseDockerImageName();
 			const baseImages = getDockerBaseImages(this.project.getProjectTargetVersion());
 			const imageInfo = baseImages.find(x => x.name === dockerBaseImage);
-
-			// selecting the image tag isn't currently exposed in the publish dialog, so this adds the tag matching the target platform
-			// to make sure the correct image is used for the project's target platform when the docker base image is SQL Server
-			// dockerBaseImage = getDefaultDockerImageWithTag(this.project.getProjectTargetVersion(), dockerBaseImage, imageInfo);
-
-
-			let imageName = imageInfo?.name;
+			const imageName = imageInfo?.name;
 			const imageTag = this.imageTagDropDown!.value;
+
+			// Add the image tag if it's not the latest
 			if (imageTag && imageTag !== constants.dockerImageDefaultTag) {
 				dockerBaseImage = `${imageName}:${imageTag}`;
 			}
@@ -615,26 +611,24 @@ export class PublishDatabaseDialog {
 
 		this.baseDockerImageDropDown = view.modelBuilder.dropDown().withProps({
 			values: baseImagesValues,
-			value: baseImagesValues[0],
 			ariaLabel: constants.baseDockerImage(name),
 			width: cssStyles.publishDialogTextboxWidth,
 			enabled: true
 		}).component();
 
 		const imageInfo = baseImages.find(x => x.displayName === (<azdataType.CategoryValue>this.baseDockerImageDropDown?.value)?.displayName);
-
-		let imageTags = await uiUtils.getImageTags(imageInfo!, this.project.getProjectTargetVersion());
+		const imageTags = await uiUtils.getImageTags(imageInfo!, this.project.getProjectTargetVersion());
 
 		this.imageTagDropDown = view.modelBuilder.dropDown().withProps({
 			values: imageTags,
-			ariaLabel: 'Image tag',
+			ariaLabel: constants.imageTag,
 			width: cssStyles.publishDialogTextboxWidth,
 			enabled: true
 		}).component();
 
 		const agreementInfo = baseImages[0].agreementInfo;
 		const baseImageDropDownRow = this.createFormRow(view, constants.baseDockerImage(name), this.baseDockerImageDropDown);
-		const imageTagDropDownRow = this.createFormRow(view, 'image', this.imageTagDropDown);
+		const imageTagDropDownRow = this.createFormRow(view, constants.imageTag, this.imageTagDropDown);
 
 		this.eulaCheckBox = view.modelBuilder.checkBox().withProps({
 			ariaLabel: getAgreementDisplayText(agreementInfo),
@@ -666,10 +660,10 @@ export class PublishDatabaseDialog {
 				}
 			}
 
+			// update image tag dropdown with the image tags for the selected base image
 			const imageInfo = baseImages.find(x => x.displayName === baseImage?.displayName);
-			let imageTags = await uiUtils.getImageTags(imageInfo!, this.project.getProjectTargetVersion());
+			const imageTags = await uiUtils.getImageTags(imageInfo!, this.project.getProjectTargetVersion());
 			this.imageTagDropDown!.values = imageTags;
-			this.imageTagDropDown!.value = imageTags[0];
 		});
 		return this.localDbSection;
 	}
