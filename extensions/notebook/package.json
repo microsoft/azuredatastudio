@@ -757,7 +757,19 @@
           }
         ]
       }
-    ]
+    ],
+    "notebooks": [
+			{
+				"type": "jupyter-notebook",
+				"displayName": "Jupyter Notebook",
+				"selector": [
+					{
+						"filenamePattern": "*.ipynb"
+					}
+				],
+				"priority": "default"
+			}
+		]
   },
   "dependencies": {
     "@jupyterlab/services": "^3.2.1",
