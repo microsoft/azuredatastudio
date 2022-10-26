@@ -417,7 +417,6 @@ export const SELECT_SERVICE_PLACEHOLDER = localize('sql.migration.select.service
 // database backup page
 export const DATA_SOURCE_CONFIGURATION_PAGE_TITLE = localize('sql.migration.data.source.configuration.page.title', "Data source configuration");
 export const DATABASE_BACKUP_PAGE_DESCRIPTION = localize('sql.migration.database.page.description', "Select the location of the database backups to use during migration.");
-export const DATABASE_BACKUP_CHECKSUM_INFO_TEXT = localize('sql.migration.database.checksum.info.text', "Ensure that your backups were taken with the WITH CHECKSUM option.");
 export const DATABASE_BACKUP_NC_NETWORK_SHARE_RADIO_LABEL = localize('sql.migration.nc.network.share.radio.label', "My database backups are on a network share");
 export const DATABASE_BACKUP_NC_BLOB_STORAGE_RADIO_LABEL = localize('sql.migration.nc.blob.storage.radio.label', "My database backups are in an Azure Storage Blob Container");
 export const DATABASE_BACKUP_NETWORK_SHARE_HEADER_TEXT = localize('sql.migration.network.share.header.text', "Network share details");
