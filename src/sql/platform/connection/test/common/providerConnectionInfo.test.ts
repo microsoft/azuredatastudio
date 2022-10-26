@@ -216,10 +216,11 @@ suite('SQL ProviderConnectionInfo tests', () => {
 
 	test('getOptionsKey should create a valid unique id', () => {
 		let options: { [key: string]: string } = {};
+		// Setting custom options are not yet considered for profile identity
 		options['encrypt'] = 'true';
 		connectionProfile.options = options;
 		let conn = new ProviderConnectionInfo(capabilitiesService, connectionProfile);
-		let expectedId = 'providerName:MSSQL|authenticationType:|databaseName:database|encrypt:true|serverName:new server|userName:user';
+		let expectedId = 'providerName:MSSQL|authenticationType:|databaseName:database|serverName:new server|userName:user';
 		let id = conn.getOptionsKey();
 		assert.strictEqual(id, expectedId);
 	});
