@@ -32,11 +32,13 @@ registerAction2(class extends Action2 {
 				primary: KeyMod.Alt + KeyMod.CtrlCmd + KeyMod.WinCtrl + KeyCode.KeyN,
 				weight: KeybindingWeight.WorkbenchContrib,
 			},
-			menu: {
-				id: MenuId.MenubarFileMenu,
-				group: '1_new',
-				order: 2
-			}
+			// {{SQL CARBON EDIT}} - Start
+			// menu: {
+			// 	id: MenuId.MenubarFileMenu,
+			// 	group: '1_new',
+			// 	order: 2
+			// }
+			// {{SQL CARBON EDIT}} - End
 		});
 	}
 
