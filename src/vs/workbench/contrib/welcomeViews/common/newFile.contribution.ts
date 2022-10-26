@@ -32,13 +32,12 @@ registerAction2(class extends Action2 {
 				primary: KeyMod.Alt + KeyMod.CtrlCmd + KeyMod.WinCtrl + KeyCode.KeyN,
 				weight: KeybindingWeight.WorkbenchContrib,
 			},
-			// {{SQL CARBON EDIT}} - Start
+			// {{SQL CARBON EDIT}} - ADS has its own New File menu
 			// menu: {
 			// 	id: MenuId.MenubarFileMenu,
 			// 	group: '1_new',
 			// 	order: 2
 			// }
-			// {{SQL CARBON EDIT}} - End
 		});
 	}
 
