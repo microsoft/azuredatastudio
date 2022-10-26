@@ -122,7 +122,7 @@ steps:
       INTEGRATION_TEST_ELECTRON_PATH="$APP_ROOT/$APP_NAME/Contents/MacOS/Electron" \
       VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/azuredatastudio-reh-darwin" \
       ./scripts/test-integration.sh --build --tfs "Integration Tests"
-    displayName: Run core integration tests # {{SQL CARBON EDIT}} Rename to core for clarity
+    displayName: Run core integration tests
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
   - script: |
@@ -139,7 +139,7 @@ steps:
   #     APP_ROOT=$(agent.builddirectory)/azuredatastudio-darwin-$(VSCODE_ARCH)
   #     APP_NAME="`ls $APP_ROOT | head -n 1`"
   #     yarn smoketest --build "$APP_ROOT/$APP_NAME" --screenshots "$(build.artifactstagingdirectory)/smokeshots" --log "$(build.artifactstagingdirectory)/logs/darwin/smoke.log" --extensionsDir "$(build.sourcesdirectory)/extensions" --extraArgs "--disable-extension Microsoft.kusto --disable-extension Microsoft.azuremonitor"
-  #   displayName: Run core smoke tests (Continue on Error) # {{SQL CARBON EDIT}} Rename to core for clarity
+  #   displayName: Run core smoke tests (Continue on Error)
   #   continueOnError: true
   #   condition: and(succeeded(), and(or(eq(variables['RUN_TESTS'], 'true'), eq(variables['RUN_SMOKE_TESTS'], 'true')), ne(variables['SMOKE_FAIL_ON_ERROR'], 'true')))
 
@@ -148,7 +148,7 @@ steps:
   #     APP_ROOT=$(agent.builddirectory)/azuredatastudio-darwin-$(VSCODE_ARCH)
   #     APP_NAME="`ls $APP_ROOT | head -n 1`"
   #     yarn smoketest --build "$APP_ROOT/$APP_NAME" --screenshots "$(build.artifactstagingdirectory)/smokeshots" --log "$(build.artifactstagingdirectory)/logs/darwin/smoke.log" --extensionsDir "$(build.sourcesdirectory)/extensions"
-  #   displayName: Run core smoke tests (Fail on Error) # {{SQL CARBON EDIT}} Rename to core for clarity
+  #   displayName: Run core smoke tests (Fail on Error)
   #   condition: and(succeeded(), and(or(eq(variables['RUN_TESTS'], 'true'), eq(variables['RUN_SMOKE_TESTS'], 'true')), eq(variables['SMOKE_FAIL_ON_ERROR'], 'true')))
 
   # - script: |
