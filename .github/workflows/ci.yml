@@ -74,10 +74,10 @@ jobs:
       - name: Run Core Unit Tests # {{SQL CARBON EDIT}} Rename to core for clarity
         run: .\scripts\test.bat
 
-      # {{SQL CARBON EDIT}} Rename to core for clarity
       # - name: Run Unit Tests (Browser) {{SQL CARBON EDIT}} disable for now
       #   run: yarn test-browser --browser chromium
 
+      # {{SQL CARBON EDIT}} Rename to core for clarity
       # - name: Run Core Integration Tests {{SQL CARBON EDIT}} disable for now
       #   run: .\scripts\test-integration.bat
 
