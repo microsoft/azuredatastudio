@@ -9,6 +9,7 @@ import { DEFAULT_LETTER_SPACING, DEFAULT_LINE_HEIGHT, TerminalCursorStyle, DEFAU
 import { TerminalLocationString, TerminalSettingId } from 'vs/platform/terminal/common/terminal';
 import { isMacintosh, isWindows } from 'vs/base/common/platform';
 import { Registry } from 'vs/platform/registry/common/platform';
+import * as loc from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}} For strings we need to change
 
 const terminalDescriptors = '\n- ' + [
 	'`\${cwd}`: ' + localize("cwd", "the terminal's current working directory"),
@@ -264,7 +265,7 @@ const terminalConfiguration: IConfigurationNode = {
 			default: 1000
 		},
 		[TerminalSettingId.DetectLocale]: {
-			markdownDescription: localize('terminal.integrated.detectLocale', "Controls whether to detect and set the `$LANG` environment variable to a UTF-8 compliant option since VS Code's terminal only supports UTF-8 encoded data coming from the shell."),
+			markdownDescription: loc.terminalIntegratedDetectLocaleDescrption, // {{SQL CARBON EDIT}} VS Code -> ADS
 			type: 'string',
 			enum: ['auto', 'off', 'on'],
 			markdownEnumDescriptions: [
@@ -350,12 +351,7 @@ const terminalConfiguration: IConfigurationNode = {
 			default: false
 		},
 		[TerminalSettingId.CommandsToSkipShell]: {
-			markdownDescription: localize(
-				'terminal.integrated.commandsToSkipShell',
-				"A set of command IDs whose keybindings will not be sent to the shell but instead always be handled by VS Code. This allows keybindings that would normally be consumed by the shell to act instead the same as when the terminal is not focused, for example `Ctrl+P` to launch Quick Open.\n\n&nbsp;\n\nMany commands are skipped by default. To override a default and pass that command's keybinding to the shell instead, add the command prefixed with the `-` character. For example add `-workbench.action.quickOpen` to allow `Ctrl+P` to reach the shell.\n\n&nbsp;\n\nThe following list of default skipped commands is truncated when viewed in Settings Editor. To see the full list, {1} and search for the first command from the list below.\n\n&nbsp;\n\nDefault Skipped Commands:\n\n{0}",
-				DEFAULT_COMMANDS_TO_SKIP_SHELL.sort().map(command => `- ${command}`).join('\n'),
-				`[${localize('openDefaultSettingsJson', "open the default settings JSON")}](command:workbench.action.openRawDefaultSettings '${localize('openDefaultSettingsJson.capitalized', "Open Default Settings (JSON)")}')`
-			),
+			markdownDescription: loc.terminalIntegratedCommandsToSkipShellDescrption(DEFAULT_COMMANDS_TO_SKIP_SHELL), // {{SQL CARBON EDIT}} VS Code -> ADS
 			type: 'array',
 			items: {
 				type: 'string'
@@ -363,7 +359,7 @@ const terminalConfiguration: IConfigurationNode = {
 			default: []
 		},
 		[TerminalSettingId.AllowChords]: {
-			markdownDescription: localize('terminal.integrated.allowChords', "Whether or not to allow chord keybindings in the terminal. Note that when this is true and the keystroke results in a chord it will bypass `#terminal.integrated.commandsToSkipShell#`, setting this to false is particularly useful when you want ctrl+k to go to your shell (not VS Code)."),
+			markdownDescription: loc.terminalIntegratedAllowChordsDescription, // {{SQL CARBON EDIT}} VS Code -> ADS
 			type: 'boolean',
 			default: true
 		},
@@ -374,7 +370,7 @@ const terminalConfiguration: IConfigurationNode = {
 		},
 		[TerminalSettingId.EnvMacOs]: {
 			restricted: true,
-			markdownDescription: localize('terminal.integrated.env.osx', "Object with environment variables that will be added to the VS Code process to be used by the terminal on macOS. Set to `null` to delete the environment variable."),
+			markdownDescription: loc.terminalIntegratedEnvOsxDescription, // {{SQL CARBON EDIT}} VS Code -> ADS
 			type: 'object',
 			additionalProperties: {
 				type: ['string', 'null']
@@ -383,7 +379,7 @@ const terminalConfiguration: IConfigurationNode = {
 		},
 		[TerminalSettingId.EnvLinux]: {
 			restricted: true,
-			markdownDescription: localize('terminal.integrated.env.linux', "Object with environment variables that will be added to the VS Code process to be used by the terminal on Linux. Set to `null` to delete the environment variable."),
+			markdownDescription: loc.terminalIntegratedEnvLinuxDescription, // {{SQL CARBON EDIT}} VS Code -> ADS
 			type: 'object',
 			additionalProperties: {
 				type: ['string', 'null']
@@ -392,7 +388,7 @@ const terminalConfiguration: IConfigurationNode = {
 		},
 		[TerminalSettingId.EnvWindows]: {
 			restricted: true,
-			markdownDescription: localize('terminal.integrated.env.windows', "Object with environment variables that will be added to the VS Code process to be used by the terminal on Windows. Set to `null` to delete the environment variable."),
+			markdownDescription: loc.terminalIntegratedEnvWindowsDescription, // {{SQL CARBON EDIT}} VS Code -> ADS
 			type: 'object',
 			additionalProperties: {
 				type: ['string', 'null']
@@ -521,7 +517,7 @@ const terminalConfiguration: IConfigurationNode = {
 			default: true
 		},
 		[TerminalSettingId.AutoReplies]: {
-			markdownDescription: localize('terminal.integrated.autoReplies', "A set of messages that when encountered in the terminal will be automatically responded to. Provided the message is specific enough, this can help automate away common responses.\n\nRemarks:\n\n- Use {0} to automatically respond to the terminate batch job prompt on Windows.\n- The message includes escape sequences so the reply might not happen with styled text.\n- Each reply can only happen once every second.\n- Use {1} in the reply to mean the enter key.\n- To unset a default key, set the value to null.\n- Restart VS Code if new don't apply.", '`"Terminate batch job (Y/N)": "\\r"`', '`"\\r"`'),
+			markdownDescription: loc.terminalIntegratedAutoRepliesDescription, // {{SQL CARBON EDIT}} VS Code -> ADS
 			type: 'object',
 			additionalProperties: {
 				oneOf: [{
