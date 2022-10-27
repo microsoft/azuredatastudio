@@ -44,7 +44,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	public viewId: string;
 	public books: BookModel[] = [];
 	public currentBook: BookModel | undefined;
-	supportedTypes = ['text/treeitems'];
+	dropMimeTypes = ['application/vnd.code.tree.BookTreeViewProvider'];
+	dragMimeTypes = ['text/uri-list'];
 
 	constructor(workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext, openAsUntitled: boolean, view: string, public providerId: string) {
 		this._openAsUntitled = openAsUntitled;
@@ -762,33 +763,31 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		return sourcesByBook;
 	}
 
-	// {{SQL CARBON MERGE TODO}} -- need to reimplement drag-and-drop with current interface
-	// async onDrop(sources: vscode.TreeDataTransfer, target: BookTreeItem): Promise<void> {
-	// 	if (target.contextValue === BookTreeItemType.savedBook || target.contextValue === BookTreeItemType.section) {
-	// 		sendNotebookActionEvent(NbTelemetryView.Book, NbTelemetryAction.DragAndDrop);
-	// 		// gets the tree items that are dragged and dropped
-	// 		let treeItems = JSON.parse(await sources.items.get(this.supportedTypes[0])!.asString()) as BookTreeItem[];
-	// 		let rootItems = this.getLocalRoots(treeItems);
-	// 		rootItems = rootItems.filter(item => item.resourceUri !== target.resourceUri);
-	// 		if (rootItems && target) {
-	// 			let sourcesByBook = this.groupTreeItemsByBookModel(rootItems);
-	// 			const targetBook = this.books.find(book => book.bookPath === target.book.root);
-	// 			for (let [book, items] of sourcesByBook) {
-	// 				this.bookTocManager = new BookTocManager(book, targetBook);
-	// 				this.bookTocManager.enableDnd = true;
-	// 				await this.bookTocManager.updateBook(items, target);
-	// 			}
-	// 		}
-	// 	}
-	// }
-
-	// new dnd interface
-	readonly dropMimeTypes: readonly string[];
-	readonly dragMimeTypes: readonly string[];
 	handleDrag(treeItems: readonly BookTreeItem[], dataTransfer: vscode.DataTransfer, token: vscode.CancellationToken): Thenable<void> | void {
-		return undefined;  // not implemented
+		dataTransfer.set('application/vnd.code.tree.BookTreeViewProvider', new vscode.DataTransferItem(treeItems));
 	}
-	handleDrop(target: BookTreeItem | undefined, dataTransfer: vscode.DataTransfer, token: vscode.CancellationToken): Thenable<void> | void {
+
+	async handleDrop(target: BookTreeItem | undefined, sources: vscode.DataTransfer, token: vscode.CancellationToken): Promise<void> {
+		const transferItem = sources.get('application/vnd.code.tree.BookTreeViewProvider');
+		if (!transferItem) {
+			return;
+		}
+		if (target.contextValue === BookTreeItemType.savedBook || target.contextValue === BookTreeItemType.section) {
+			sendNotebookActionEvent(NbTelemetryView.Book, NbTelemetryAction.DragAndDrop);
+			// gets the tree items that are dragged and dropped
+			const treeItems: BookTreeItem[] = transferItem.value;
+			let rootItems = this.getLocalRoots(treeItems);
+			rootItems = rootItems.filter(item => item.resourceUri !== target.resourceUri);
+			if (rootItems && target) {
+				let sourcesByBook = this.groupTreeItemsByBookModel(rootItems);
+				const targetBook = this.books.find(book => book.bookPath === target.book.root);
+				for (let [book, items] of sourcesByBook) {
+					this.bookTocManager = new BookTocManager(book, targetBook);
+					this.bookTocManager.enableDnd = true;
+					await this.bookTocManager.updateBook(items, target);
+				}
+			}
+		}
 	}
 
 	/**
