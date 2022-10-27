@@ -354,6 +354,7 @@ export abstract class AbstractExtensionsScannerService extends Disposable implem
 			excludeObsolete,
 			validate,
 			this.productService.version,
+			this.productService.vscodeVersion, // {{SQL CARBON EDIT}} Add vs code version so we can compare both engines
 			this.productService.date,
 			this.productService.commit,
 			!this.environmentService.isBuilt,
@@ -373,6 +374,7 @@ class ExtensionScannerInput {
 		public readonly excludeObsolete: boolean,
 		public readonly validate: boolean,
 		public readonly productVersion: string,
+		public readonly vsCodeProductVersion: string, // {{SQL CARBON EDIT}} Add vs code version so we can compare both engines
 		public readonly productDate: string | undefined,
 		public readonly productCommit: string | undefined,
 		public readonly devMode: boolean,
@@ -443,7 +445,7 @@ class ExtensionsScanner extends Disposable {
 					if (input.type === ExtensionType.User && basename(c.resource).indexOf('.') === 0) {
 						return null;
 					}
-					const extensionScannerInput = new ExtensionScannerInput(c.resource, input.mtime, input.type, input.excludeObsolete, input.validate, input.productVersion, input.productDate, input.productCommit, input.devMode, input.language, input.translations);
+					const extensionScannerInput = new ExtensionScannerInput(c.resource, input.mtime, input.type, input.excludeObsolete, input.validate, input.productVersion, input.vsCodeProductVersion, input.productDate, input.productCommit, input.devMode, input.language, input.translations); // {{SQL CARBON EDIT}} Add vs code version so we can compare both engines
 					const extension = await this.scanExtension(extensionScannerInput);
 					return extension && !obsolete[ExtensionKey.create(extension).toString()] ? extension : null;
 				}));
@@ -504,7 +506,7 @@ class ExtensionsScanner extends Disposable {
 
 	validate(extension: IRelaxedScannedExtension, input: ExtensionScannerInput): IRelaxedScannedExtension {
 		let isValid = true;
-		const validations = validateExtensionManifest(input.productVersion, input.productDate, input.location, extension.manifest, extension.isBuiltin);
+		const validations = validateExtensionManifest(input.productVersion, input.vsCodeProductVersion, input.productDate, input.location, extension.manifest, extension.isBuiltin); // {{SQL CARBON EDIT}} Add vs code version so we can compare both engines
 		for (const [severity, message] of validations) {
 			if (severity === Severity.Error) {
 				isValid = false;
