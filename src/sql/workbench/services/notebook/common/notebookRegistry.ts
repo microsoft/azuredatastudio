@@ -9,6 +9,7 @@ import { localize } from 'vs/nls';
 import * as platform from 'vs/platform/registry/common/platform';
 import * as azdata from 'azdata';
 import { Event, Emitter } from 'vs/base/common/event';
+import { DEFAULT_NOTEBOOK_FILETYPE, VSCODE_JUPYTER_PROVIDER_ID } from 'sql/workbench/common/constants';
 
 export const NotebookProviderRegistryId = 'notebooks.providers.registry';
 
@@ -136,7 +137,17 @@ class NotebookProviderRegistry implements INotebookProviderRegistry {
 	updateProviderKernels(providerId: string, kernels: azdata.nb.IStandardKernel[]): void {
 		let registration = this._providerDescriptionRegistration.get(providerId);
 		if (!registration) {
-			throw new Error(this.providerNotInRegistryError(providerId));
+			// Newer versions of the Jupyter extension don't contribute a provider for the default file type, so
+			// register the original provider details here to preserve backwards compatibility for .NET Interactive
+			if (providerId === VSCODE_JUPYTER_PROVIDER_ID) {
+				registration = {
+					provider: VSCODE_JUPYTER_PROVIDER_ID,
+					fileExtensions: [DEFAULT_NOTEBOOK_FILETYPE],
+					standardKernels: undefined
+				};
+			} else {
+				throw new Error(this.providerNotInRegistryError(providerId));
+			}
 		}
 		registration.standardKernels = kernels;
 
