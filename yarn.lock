@@ -2102,9 +2102,9 @@ aws4@^1.8.0:
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.11.0.tgz#d61f46d83b2519250e2784daf5b09479a8b41c59"
   integrity sha512-xh1Rl34h6Fi1DC2WWKfxUTVqRsNnr6LsKz2+hfwDxQJWmrx8+c7ylaqBMcHfl1U1r2dsifOvKX3LQuLNZ+XSvA==
 
-"azdataGraph@github:Microsoft/azdataGraph#0.0.49":
-  version "0.0.49"
-  resolved "https://codeload.github.com/Microsoft/azdataGraph/tar.gz/f5fd03f79d29ebd8fce35d3289a2b4dbde2d6dc5"
+"azdataGraph@github:Microsoft/azdataGraph#0.0.54":
+  version "0.0.52"
+  resolved "https://codeload.github.com/Microsoft/azdataGraph/tar.gz/4cce41781e138614007c4239b23fc6954af59703"
 
 bach@^1.0.0:
   version "1.2.0"
@@ -9649,9 +9649,9 @@ slice-ansi@^2.1.0:
     astral-regex "^1.0.0"
     is-fullwidth-code-point "^2.0.0"
 
-"slickgrid@github:Microsoft/SlickGrid.ADS#2.3.37":
-  version "2.3.37"
-  resolved "https://codeload.github.com/Microsoft/SlickGrid.ADS/tar.gz/1de979b3cf66cee46846e5e0d2edbc938c8d6563"
+"slickgrid@github:Microsoft/SlickGrid.ADS#2.3.38":
+  version "2.3.38"
+  resolved "https://codeload.github.com/Microsoft/SlickGrid.ADS/tar.gz/da030666877487c7407db928be3a28b5ce3668a2"
 
 smart-buffer@^4.2.0:
   version "4.2.0"
