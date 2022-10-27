@@ -327,14 +327,18 @@ export class QueryEditor extends EditorPane {
 		}
 
 		// TODO: Allow extensions to contribute toolbar actions.
-		if (previewFeaturesEnabled && providerId === 'MSSQL') {
+		if (providerId === 'MSSQL') {
 			content.push(
 				{ element: Taskbar.createTaskbarSeparator() },
 				{ action: this._estimatedQueryPlanAction },
 				{ action: this._toggleActualExecutionPlanMode },
-				{ action: this._toggleSqlcmdMode },
-				{ action: this._exportAsNotebookAction }
 			);
+			if (previewFeaturesEnabled) {
+				content.push(
+					{ action: this._toggleSqlcmdMode },
+					{ action: this._exportAsNotebookAction }
+				);
+			}
 		}
 
 		this.taskbar.setContent(content);
