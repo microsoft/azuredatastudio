@@ -686,7 +686,8 @@ export abstract class AzureAuth implements vscode.Disposable {
 		// Determine if this is a microsoft account
 		let accountIssuer = 'unknown';
 
-		if (tokenClaims.iss === 'https://sts.windows.net/72f988bf-86f1-41af-91ab-2d7cd011db47/') {
+		if (tokenClaims.iss === 'https://sts.windows.net/72f988bf-86f1-41af-91ab-2d7cd011db47/' ||
+			tokenClaims.iss === 'https://login.microsoftonline.com/72f988bf-86f1-41af-91ab-2d7cd011db47/v2.0') {
 			accountIssuer = 'corp';
 		}
 		if (tokenClaims?.idp === 'live.com') {
@@ -820,7 +821,13 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 	public async deleteAccountCacheMsal(account: azdata.AccountKey): Promise<void> {
 		const tokenCache = this.clientApplication.getTokenCache();
-		let msalAccount = await tokenCache.getAccountByHomeId(account.accountId);
+		let msalAccount: AccountInfo | null;
+		// if the accountId is a home ID, it will include a "." character
+		if (account.accountId.includes(".")) {
+			msalAccount = await tokenCache.getAccountByHomeId(account.accountId);
+		} else {
+			msalAccount = await tokenCache.getAccountByLocalId(account.accountId);
+		}
 		if (!msalAccount) {
 			Logger.error(`MSAL: Unable to find account ${account.accountId} for removal`);
 			throw Error(`Unable to find account ${account.accountId}`);

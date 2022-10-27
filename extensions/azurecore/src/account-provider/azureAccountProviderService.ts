@@ -162,12 +162,11 @@ export class AzureAccountProviderService implements vscode.Disposable {
 			let simpleTokenCache = new SimpleTokenCache(tokenCacheKey, this._userStoragePath, noSystemKeychain, this._credentialProvider);
 			await simpleTokenCache.init();
 			const cachePath = path.join(this._userStoragePath, './cache.json');
-			//TODO: figure out new account name
 			const persistenceConfiguration = {
 				cachePath,
 				dataProtectionScope: DataProtectionScope.CurrentUser,
 				serviceName: 'azuredatastudio',
-				accountName: 'test',
+				accountName: 'msal-account',
 				usePlaintextFileOnLinux: false,
 			};
 			await PersistenceCreator.createPersistence(persistenceConfiguration).then(async (persistence) => {
