@@ -71,6 +71,22 @@ export class AzureResourceTreeProvider implements vscode.TreeDataProvider<TreeNo
 
 		try {
 			if (this.accounts && this.accounts.length > 0) {
+				const authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
+				this.accounts = this.accounts.filter(account => {
+					if (account.key.authLibrary) {
+						if (account.key.authLibrary === authLibrary) {
+							return true;
+						} else {
+							return false;
+						}
+					} else {
+						if (authLibrary === 'ADAL') {
+							return true;
+						} else {
+							return false;
+						}
+					}
+				});
 				return this.accounts.map((account) => new AzureResourceAccountTreeNode(account, this.appContext, this));
 			} else {
 				return [new AzureResourceAccountNotSignedInTreeNode()];
