@@ -84,6 +84,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _contextsLoadingEmitter = new Emitter<void>();
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
 	private _kernelsChangedEmitter = new Emitter<nb.IKernel>();
+	private _kernelsAddedEmitter = new Emitter<nb.IKernel>();
 	private _kernelChangedEmitter = new Emitter<nb.IKernelChangedArgs>();
 	private _viewModeChangedEmitter = new Emitter<ViewMode>();
 	private _layoutChanged = new Emitter<void>();
@@ -187,7 +188,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			let manager = await this._notebookService.getOrCreateExecuteManager(kernels[0].notebookProvider, this.notebookUri);
 			this._notebookOptions.executeManagers.push(manager);
 
-			this._kernelsChangedEmitter.fire(this._activeClientSession?.kernel);
+			this._kernelsAddedEmitter.fire(this._activeClientSession?.kernel);
 		}
 	}
 
@@ -262,6 +263,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public get kernelsChanged(): Event<nb.IKernel> {
 		return this._kernelsChangedEmitter.event;
+	}
+
+	public get kernelsAdded(): Event<nb.IKernel> {
+		return this._kernelsAddedEmitter.event;
 	}
 
 	public get layoutChanged(): Event<void> {
