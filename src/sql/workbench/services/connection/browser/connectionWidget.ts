@@ -256,11 +256,14 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	protected addCustomConnectionOptions(): void {
 		if (this._customOptions.length > 0) {
 			this._customOptionWidgets = [];
+			let trueInputValue = localize('boolean.true', 'True');
+			let falseInputValue = localize('boolean.false', 'False');
 			this._customOptions.forEach((option, i) => {
 				let customOptionsContainer = DialogHelper.appendRow(this._tableContainer, option.displayName, 'connection-label', 'connection-input', 'custom-connection-options');
 				switch (option.valueType) {
 					case ServiceOptionType.boolean:
-						this._customOptionWidgets[i] = new SelectBox([localize('boolean.true', 'True'), localize('boolean.false', 'False')], option.defaultValue, this._contextViewService, customOptionsContainer, { ariaLabel: option.displayName });
+						let optionValue = (option.defaultValue.toString() === true.toString() || option.defaultValue === trueInputValue) ? trueInputValue : falseInputValue;
+						this._customOptionWidgets[i] = new SelectBox([trueInputValue, falseInputValue], optionValue, this._contextViewService, customOptionsContainer, { ariaLabel: option.displayName });
 						DialogHelper.appendInputSelectBox(customOptionsContainer, this._customOptionWidgets[i] as SelectBox);
 						this._register(styler.attachSelectBoxStyler(this._customOptionWidgets[i] as SelectBox, this._themeService));
 						break;
@@ -774,10 +777,13 @@ export class ConnectionWidget extends lifecycle.Disposable {
 
 			if (this._customOptionWidgets) {
 				this._customOptionWidgets.forEach((widget, i) => {
-					if (widget instanceof SelectBox) {
-						widget.selectWithOptionName(this.getModelValue(connectionInfo.options[this._customOptions[i].name]));
-					} else {
-						widget.value = this.getModelValue(connectionInfo.options[this._customOptions[i].name]);
+					let value = this.getModelValue(connectionInfo.options[this._customOptions[i].name]);
+					if (value !== '') {
+						if (widget instanceof SelectBox) {
+							widget.selectWithOptionName(value);
+						} else {
+							widget.value = value;
+						}
 					}
 				});
 			}

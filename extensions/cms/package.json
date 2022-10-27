@@ -224,7 +224,7 @@
           "description": "%cms.connectionOptions.encrypt.description%",
           "groupName": "%cms.connectionOptions.groupName.security%",
           "valueType": "boolean",
-          "defaultValue": null,
+          "defaultValue": true,
           "objectType": null,
           "categoryValues": null,
           "isRequired": false,
@@ -253,11 +253,12 @@
           "description": "%cms.connectionOptions.trustServerCertificate.description%",
           "groupName": "%cms.connectionOptions.groupName.security%",
           "valueType": "boolean",
-          "defaultValue": null,
+          "defaultValue": false,
           "objectType": null,
           "categoryValues": null,
           "isRequired": false,
-          "isArray": false
+          "isArray": false,
+          "showOnConnectionDialog": true
         },
         {
           "specialValueType": null,
