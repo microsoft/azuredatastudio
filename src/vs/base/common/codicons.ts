@@ -615,7 +615,7 @@ export namespace CSSIcon {
 		let [, id, modifier] = match;
 
 		// {{SQL CARBON EDIT}} Modifying method to not add 'codicon' in front of sql carbon icons.
-		let sqlCarbonIcons: string[] = [SqlIconId.book, SqlIconId.dataExplorer, SqlIconId.activeConnectionsAction, SqlIconId.addServerAction, SqlIconId.addServerGroupAction, SqlIconId.serverPage];
+		let sqlCarbonIcons: string[] = [SqlIconId.activeConnectionsAction, SqlIconId.addServerAction, SqlIconId.addServerGroupAction, SqlIconId.serverPage];
 		if (sqlCarbonIcons.includes(id)) {
 			return ['codicon', id];
 			// {{SQL CARBON EDIT}} End of edit
