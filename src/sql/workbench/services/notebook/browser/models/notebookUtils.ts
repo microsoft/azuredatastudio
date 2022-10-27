@@ -5,9 +5,9 @@
 
 import * as path from 'vs/base/common/path';
 import { nb, ServerInfo } from 'azdata';
-import { DEFAULT_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_FILETYPE, INotebookService, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
+import { DEFAULT_NOTEBOOK_PROVIDER, INotebookService, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
 import { URI } from 'vs/base/common/uri';
-import { NotebookLanguage } from 'sql/workbench/common/constants';
+import { DEFAULT_NOTEBOOK_FILETYPE, NotebookLanguage } from 'sql/workbench/common/constants';
 
 export const clusterEndpointsProperty = 'clusterEndpoints';
 export const hadoopEndpointNameGateway = 'gateway';

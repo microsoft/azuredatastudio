@@ -165,8 +165,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (!fileExt) {
 			let languageMode = this._notebookOptions.getInputLanguageMode();
 			if (languageMode) {
-				let languageName = this._languageService.getLanguageName(languageMode);
-				let fileExtensions = this._languageService.getExtensions(languageName);
+				let fileExtensions = this._languageService.getExtensions(languageMode);
 				if (fileExtensions?.length > 0) {
 					extensions = fileExtensions;
 				} else {

@@ -51,7 +51,7 @@ import { ImageMimeTypes, TextCellEditModes } from 'sql/workbench/services/notebo
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
-import { DefaultNotebookProviders, DEFAULT_NOTEBOOK_FILETYPE, IExecuteManager } from 'sql/workbench/services/notebook/browser/notebookService';
+import { DefaultNotebookProviders, IExecuteManager } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookExplorerViewletViewsContribution } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { IEditorResolverService, RegisteredEditorPriority } from 'vs/workbench/services/editor/common/editorResolverService';
@@ -59,7 +59,7 @@ import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/file
 import { ILogService } from 'vs/platform/log/common/log';
 import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
 import { useNewMarkdownRendererKey } from 'sql/workbench/contrib/notebook/common/notebookCommon';
-import { JUPYTER_PROVIDER_ID, NotebookLanguage } from 'sql/workbench/common/constants';
+import { DEFAULT_NOTEBOOK_FILETYPE, JUPYTER_PROVIDER_ID, NotebookLanguage } from 'sql/workbench/common/constants';
 import { INotebookProviderRegistry, NotebookProviderRegistryId } from 'sql/workbench/services/notebook/common/notebookRegistry';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { IPaneCompositePartService } from 'vs/workbench/services/panecomposite/browser/panecomposite';
