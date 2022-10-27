@@ -393,7 +393,8 @@ export class ExecutionPlanComparisonEditorView extends Disposable {
 				this._topPlanDiagramContainers.push(graphContainer);
 				this._topPlanContainer.appendChild(graphContainer);
 
-				const diagram = this._register(this._instantiationService.createInstance(AzdataGraphView, graphContainer, e));
+				const diagramName = localize('executionPlanComparison.topPlanDiagram.name', 'Top execution Plan {0}', i + 1);
+				const diagram = this._register(this._instantiationService.createInstance(AzdataGraphView, graphContainer, e, diagramName));
 				this._register(diagram.onElementSelected(e => {
 					this._propertiesView.setPrimaryElement(e);
 
@@ -438,7 +439,9 @@ export class ExecutionPlanComparisonEditorView extends Disposable {
 				const graphContainer = DOM.$('.plan-diagram');
 				this._bottomPlanDiagramContainers.push(graphContainer);
 				this._bottomPlanContainer.appendChild(graphContainer);
-				const diagram = this._register(this._instantiationService.createInstance(AzdataGraphView, graphContainer, e));
+
+				const diagramName = localize('executionPlanComparison.bottomPlanDiagram.name', 'Bottom execution Plan {0}', i + 1);
+				const diagram = this._register(this._instantiationService.createInstance(AzdataGraphView, graphContainer, e, diagramName));
 
 				this._register(diagram.onElementSelected(e => {
 					this._propertiesView.setSecondaryElement(e);
