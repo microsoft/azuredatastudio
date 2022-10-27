@@ -376,7 +376,9 @@ export class AccountDialog extends Modal {
 		this._splitView!.layout(DOM.getContentHeight(this._container!));
 
 		// Set the initial items of the list
-		providerView.updateAccounts(newProvider.initialAccounts);
+		const authLibrary = this._configurationService.getValue('azure.authenticationLibrary');
+		let updatedAccounts = newProvider.initialAccounts.filter(account => account.key.authLibrary ?? 'ADAL' === authLibrary);
+		providerView.updateAccounts(updatedAccounts);
 
 		if (newProvider.initialAccounts.length > 0 && this._splitViewContainer!.hidden) {
 			this.showSplitView();
@@ -413,7 +415,9 @@ export class AccountDialog extends Modal {
 		if (!providerMapping || !providerMapping.view) {
 			return;
 		}
-		providerMapping.view.updateAccounts(args.accountList);
+		const authLibrary = this._configurationService.getValue('azure.authenticationLibrary');
+		let updatedAccounts = args.accountList.filter(account => account.key.authLibrary ?? 'ADAL' === authLibrary);
+		providerMapping.view.updateAccounts(updatedAccounts);
 
 		if (args.accountList.length > 0 && this._splitViewContainer!.hidden) {
 			this.showSplitView();

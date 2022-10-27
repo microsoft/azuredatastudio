@@ -32,7 +32,7 @@ export class AzureDataGridProvider implements azdata.DataGridProvider {
 
 	public async getDataGridItems() {
 		const authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
-		const accounts = (await azdata.accounts.getAllAccounts()).filter(account => account.key.authLibrary === authLibrary);
+		const accounts = (await azdata.accounts.getAllAccounts()).filter(account => account.key.authLibrary ?? 'ADAL' === authLibrary);
 		const items: any[] = [];
 		await Promise.all(accounts.map(async (account) => {
 			await Promise.all(account.properties.tenants.map(async (tenant: { id: string; }) => {

@@ -119,7 +119,7 @@ class ResourceLoader {
 		this._state = LoaderState.Loading;
 
 		const authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
-		const accounts = (await azdata.accounts.getAllAccounts()).filter(account => account.key.authLibrary === authLibrary);
+		const accounts = (await azdata.accounts.getAllAccounts()).filter(account => account.key.authLibrary ?? 'ADAL' === authLibrary);
 
 		for (const account of accounts) {
 			for (const tenant of account.properties.tenants) {

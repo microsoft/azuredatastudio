@@ -30,7 +30,7 @@ export class AzureResourceTreeProvider implements vscode.TreeDataProvider<TreeNo
 		azdata.accounts.onDidChangeAccounts(async (e: azdata.DidChangeAccountsParams) => {
 			// This event sends it per provider, we need to make sure we get all the azure related accounts
 			const authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
-			let accounts = (await azdata.accounts.getAllAccounts()).filter(account => account.key.authLibrary === authLibrary);
+			let accounts = (await azdata.accounts.getAllAccounts()).filter(account => account.key.authLibrary ?? 'ADAL' === authLibrary);
 			accounts = accounts.filter(a => a.key.providerId.startsWith('azure'));
 			// the onDidChangeAccounts event will trigger in many cases where the accounts didn't actually change
 			// the notifyNodeChanged event triggers a refresh which triggers a getChildren which can trigger this callback
@@ -69,7 +69,7 @@ export class AzureResourceTreeProvider implements vscode.TreeDataProvider<TreeNo
 	private async loadAccounts(): Promise<void> {
 		try {
 			const authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
-			this.accounts = (await azdata.accounts.getAllAccounts()).filter(account => account.key.authLibrary === authLibrary);
+			this.accounts = (await azdata.accounts.getAllAccounts()).filter(account => account.key.authLibrary ?? 'ADAL' === authLibrary);
 			// System has been initialized
 			this.setSystemInitialized();
 			this._onDidChangeTreeData.fire(undefined);
