@@ -68,6 +68,13 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 						let appNameKey = appNameOption.name;
 						this.options[appNameKey] = Constants.applicationName;
 					}
+					// Set values for advanced options received in model.
+					Object.keys(model.options).forEach(a => {
+						let option = options.find(opt => opt.name === a);
+						if (option) {
+							this.options[option.name] = model.options[a];
+						}
+					});
 				}
 				if (model.options.registeredServerDescription) {
 					this.registeredServerDescription = model.options.registeredServerDescription;

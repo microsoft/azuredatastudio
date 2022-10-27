@@ -42,7 +42,7 @@ export class ConnectionService {
 				saveProfile: false,
 				id: '',
 				connectionName: profile.profileName,
-				options: [],
+				options: { 'encrypt': 'false' },
 				authenticationType: azdataApi.connection.AuthenticationType.SqlLogin
 			};
 			return await azdataApi.connection.connect(connectionProfile, saveConnectionAndPassword, false);
