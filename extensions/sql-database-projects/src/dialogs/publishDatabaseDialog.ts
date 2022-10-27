@@ -617,14 +617,22 @@ export class PublishDatabaseDialog {
 		}).component();
 
 		const imageInfo = baseImages.find(x => x.displayName === (<azdataType.CategoryValue>this.baseDockerImageDropDown?.value)?.displayName);
-		const imageTags = await uiUtils.getImageTags(imageInfo!, this.project.getProjectTargetVersion());
+		const imageTags = await uiUtils.getImageTags(imageInfo!, this.project.getProjectTargetVersion(), true);
 
 		this.imageTagDropDown = view.modelBuilder.dropDown().withProps({
 			values: imageTags,
+			value: imageTags[0],
 			ariaLabel: constants.imageTag,
 			width: cssStyles.publishDialogTextboxWidth,
-			enabled: true
+			enabled: true,
+			editable: true,
+			required: true,
+			fireOnTextChange: true
 		}).component();
+
+		this.imageTagDropDown.onValueChanged(() => {
+			this.tryEnableGenerateScriptAndOkButtons();
+		});
 
 		const agreementInfo = baseImages[0].agreementInfo;
 		const baseImageDropDownRow = this.createFormRow(view, constants.baseDockerImage(name), this.baseDockerImageDropDown);
@@ -662,8 +670,9 @@ export class PublishDatabaseDialog {
 
 			// update image tag dropdown with the image tags for the selected base image
 			const imageInfo = baseImages.find(x => x.displayName === baseImage?.displayName);
-			const imageTags = await uiUtils.getImageTags(imageInfo!, this.project.getProjectTargetVersion());
+			const imageTags = await uiUtils.getImageTags(imageInfo!, this.project.getProjectTargetVersion(), true);
 			this.imageTagDropDown!.values = imageTags;
+			this.imageTagDropDown!.value = imageTags[0];
 		});
 		return this.localDbSection;
 	}
@@ -919,7 +928,7 @@ export class PublishDatabaseDialog {
 			!utils.isEmptyString(this.serverAdminPasswordTextBox?.value) &&
 			utils.isValidSQLPassword(this.serverAdminPasswordTextBox?.value || '', constants.defaultLocalServerAdminName) &&
 			this.serverAdminPasswordTextBox?.value === this.serverConfigAdminPasswordTextBox?.value
-			&& this.eulaCheckBox?.checked) {
+			&& this.imageTagDropDown!.value && this.eulaCheckBox?.checked) {
 			publishEnabled = true; // only publish is supported for container
 		}
 
