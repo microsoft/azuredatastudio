@@ -24,7 +24,7 @@ import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Logger } from '../../utils/Logger';
 import * as qs from 'qs';
 import { AzureAuthError } from './azureAuthError';
-import { AuthenticationResult, InteractionRequiredAuthError, PublicClientApplication } from '@azure/msal-node';
+import { AccountInfo, AuthenticationResult, InteractionRequiredAuthError, PublicClientApplication } from '@azure/msal-node';
 
 const localize = nls.loadMessageBundle();
 
@@ -341,7 +341,13 @@ export abstract class AzureAuth implements vscode.Disposable {
 			Logger.error(`Error: Could not fetch the azure resource ${azureResource} `);
 			return null;
 		}
-		const account = await cache.getAccountByHomeId(accountId);
+		let account: AccountInfo | null;
+		// if the accountId is a home ID, it will include a "." character
+		if (accountId.includes(".")) {
+			account = await cache.getAccountByHomeId(accountId);
+		} else {
+			account = await cache.getAccountByLocalId(accountId);
+		}
 		if (!account) {
 			Logger.error('Error: Could not fetch account when acquiring token');
 			return null;
