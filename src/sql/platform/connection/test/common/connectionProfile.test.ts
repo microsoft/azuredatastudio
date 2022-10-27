@@ -44,7 +44,7 @@ suite('SQL ConnectionProfileInfo tests', () => {
 		groupFullName: 'g2/g2-2',
 		groupId: 'group id',
 		providerId: mssqlProviderName,
-		options: {},
+		options: { 'encrypt': true },
 		saveProfile: true,
 		connectionId: 'my id'
 	};
@@ -199,6 +199,8 @@ suite('SQL ConnectionProfileInfo tests', () => {
 		assert.strictEqual(conn.groupFullName, connectionProfile.groupFullName);
 		assert.strictEqual(conn.savePassword, connectionProfile.savePassword);
 		assert.strictEqual(conn.providerName, connectionProfile.providerId);
+		assert.strictEqual(conn.options, connectionProfile.options)
+		assert.strictEqual(conn.options['encrypt'], connectionProfile.options['encrypt'])
 	});
 
 	test('getOptionsKey should create a valid unique id', () => {

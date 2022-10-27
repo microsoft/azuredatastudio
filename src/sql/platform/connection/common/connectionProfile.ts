@@ -47,7 +47,6 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 			this.groupFullName = model.groupFullName;
 			this.savePassword = model.savePassword;
 			this.saveProfile = model.saveProfile;
-
 			this.azureTenantId = model.azureTenantId;
 
 			// Special case setting properties to support both IConnectionProfile and azdata.connection.ConnectionProfile
