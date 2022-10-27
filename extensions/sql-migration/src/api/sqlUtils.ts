@@ -291,10 +291,10 @@ export function getSqlBoolean(value: azdata.DbCellValue): boolean {
 	return value.isNull ? false : value.displayValue === '1';
 }
 
-export async function getDatabasesList(sourceConnectionId: string): Promise<azdata.DatabaseInfo[]> {
-	const ownerUri = await azdata.connection.getUriForConnection(sourceConnectionId);
+export async function getDatabasesList(connectionProfile: azdata.connection.ConnectionProfile): Promise<azdata.DatabaseInfo[]> {
+	const ownerUri = await azdata.connection.getUriForConnection(connectionProfile.connectionId);
 	const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(
-		'MSSQL',
+		connectionProfile.providerId,
 		azdata.DataProviderType.QueryProvider);
 
 	try {
