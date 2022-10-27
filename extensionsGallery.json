@@ -4778,6 +4778,10 @@
 									"source": "https://github.com/richardtallent/column-aligner/releases/tag/v1.0.0"
 								},
 								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/richardtallent/column-aligner-ads/main/images/icon.png"
+								},
+								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
 									"source": "https://raw.githubusercontent.com/richardtallent/column-aligner-ads/main/README.md"
 								},
