@@ -11,7 +11,7 @@ import * as constants from '../constants/strings';
 import { debounce } from '../api/utils';
 import * as styles from '../constants/styles';
 import { IconPathHelper } from '../constants/iconPathHelper';
-import { getDatabasesList, excludeDatabses } from '../api/sqlUtils';
+import { getDatabasesList, excludeDatabases } from '../api/sqlUtils';
 
 export class DatabaseSelectorPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -237,7 +237,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		const allDatabases = (<azdata.DatabaseInfo[]>await getDatabasesList(this.migrationStateModel.sourceConnectionId));
 
 		const databaseList = allDatabases
-			.filter(database => !excludeDatabses.includes(database.options.name))
+			.filter(database => !excludeDatabases.includes(database.options.name))
 			|| [];
 
 		databaseList.sort((a, b) => a.options.name.localeCompare(b.options.name));

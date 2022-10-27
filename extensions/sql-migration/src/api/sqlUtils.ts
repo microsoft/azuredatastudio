@@ -58,7 +58,7 @@ const query_databases_with_size = `
 	WHERE sys.databases.state = 0
 	`;
 
-export const excludeDatabses: string[] = [
+export const excludeDatabases: string[] = [
 	'master',
 	'tempdb',
 	'msdb',
@@ -276,7 +276,7 @@ export async function collectAzureTargetDatabases(
 				targetServerName));
 	}
 	return databaseList.filter(
-		database => !excludeDatabses.includes(database.name)) ?? [];
+		database => !excludeDatabases.includes(database.name)) ?? [];
 }
 
 export function getSqlString(value: azdata.DbCellValue): string {
