@@ -1280,7 +1280,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	private async updateKernelInfoOnKernelChange(kernel: nb.IKernel, kernelAlias?: string) {
 		await this.updateKernelInfo(kernel);
-		kernelAlias = this.kernelAliases.find(kernel => this._defaultLanguageInfo?.name === kernel.toLowerCase()) ?? kernelAlias;
+
 		// In order to change from kernel alias to other kernel, set kernelAlias to undefined in order to update to new kernel language info
 		if (this._selectedKernelDisplayName !== kernelAlias && this._selectedKernelDisplayName) {
 			kernelAlias = undefined;
