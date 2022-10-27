@@ -45,7 +45,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 			if (impactProvider === true) {
 				this.handleAuthMapping(metadata, tokenCache, context, uriEventHandler);
 			}
-			const library = changeEvent.affectsConfiguration('authenticationLibrary');
+			const library = changeEvent.affectsConfiguration('azure.authenticationLibrary');
 			if (library === true) {
 				this.authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
 			}
