@@ -377,7 +377,22 @@ export class AccountDialog extends Modal {
 
 		// Set the initial items of the list
 		const authLibrary = this._configurationService.getValue('azure.authenticationLibrary');
-		let updatedAccounts = newProvider.initialAccounts.filter(account => account.key.authLibrary ?? 'ADAL' === authLibrary);
+		let updatedAccounts = newProvider.initialAccounts.filter(account => {
+			if (account.key.authLibrary) {
+				if (account.key.authLibrary === authLibrary) {
+					return true;
+				} else {
+					return false;
+				}
+			} else {
+				if (authLibrary === 'ADAL') {
+					return true;
+				} else {
+					return false;
+				}
+			}
+		});
+
 		providerView.updateAccounts(updatedAccounts);
 
 		if (newProvider.initialAccounts.length > 0 && this._splitViewContainer!.hidden) {
@@ -416,7 +431,21 @@ export class AccountDialog extends Modal {
 			return;
 		}
 		const authLibrary = this._configurationService.getValue('azure.authenticationLibrary');
-		let updatedAccounts = args.accountList.filter(account => account.key.authLibrary ?? 'ADAL' === authLibrary);
+		let updatedAccounts = args.accountList.filter(account => {
+			if (account.key.authLibrary) {
+				if (account.key.authLibrary === authLibrary) {
+					return true;
+				} else {
+					return false;
+				}
+			} else {
+				if (authLibrary === 'ADAL') {
+					return true;
+				} else {
+					return false;
+				}
+			}
+		});
 		providerMapping.view.updateAccounts(updatedAccounts);
 
 		if (args.accountList.length > 0 && this._splitViewContainer!.hidden) {

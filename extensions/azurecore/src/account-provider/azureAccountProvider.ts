@@ -105,7 +105,21 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		const accounts: AzureAccount[] = [];
 		console.log(`Initializing stored accounts ${JSON.stringify(accounts)}`);
 		const authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
-		const updatedAccounts = storedAccounts.filter(account => account.key.authLibrary ?? 'ADAL' === authLibrary);
+		const updatedAccounts = storedAccounts.filter(account => {
+			if (account.key.authLibrary) {
+				if (account.key.authLibrary === authLibrary) {
+					return true;
+				} else {
+					return false;
+				}
+			} else {
+				if (authLibrary === 'ADAL') {
+					return true;
+				} else {
+					return false;
+				}
+			}
+		});
 		for (let account of updatedAccounts) {
 			if (this.authLibrary === 'ADAL') {
 				const azureAuth = this.getAuthMethod(account);

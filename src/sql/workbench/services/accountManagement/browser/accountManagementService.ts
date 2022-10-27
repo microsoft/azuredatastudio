@@ -469,7 +469,21 @@ export class AccountManagementService implements IAccountManagementService {
 		}
 
 		const authLibrary = this.configurationService.getValue('azure.authenticationLibrary');
-		let updatedAccounts = provider.accounts.filter(account => account.key.authLibrary ?? 'ADAL' === authLibrary);
+		let updatedAccounts = provider.accounts.filter(account => {
+			if (account.key.authLibrary) {
+				if (account.key.authLibrary === authLibrary) {
+					return true;
+				} else {
+					return false;
+				}
+			} else {
+				if (authLibrary === 'ADAL') {
+					return true;
+				} else {
+					return false;
+				}
+			}
+		});
 
 		// Step 2) Fire the event
 		let eventArg: UpdateAccountListEventParams = {
@@ -496,7 +510,21 @@ export class AccountManagementService implements IAccountManagementService {
 				if (authLibrary) {
 					let accounts = await this._accountStore.getAllAccounts();
 					if (accounts) {
-						let updatedAccounts = accounts.filter(account => account.key.authLibrary ?? 'ADAL' === authLibrary);
+						let updatedAccounts = accounts.filter(account => {
+							if (account.key.authLibrary) {
+								if (account.key.authLibrary === authLibrary) {
+									return true;
+								} else {
+									return false;
+								}
+							} else {
+								if (authLibrary === 'ADAL') {
+									return true;
+								} else {
+									return false;
+								}
+							}
+						});
 						let eventArg: UpdateAccountListEventParams;
 						if (updatedAccounts.length > 0) {
 							updatedAccounts.forEach(account => {
