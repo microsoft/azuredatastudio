@@ -123,6 +123,10 @@
 	display: none;
 }
 
+.hide-customOptions .custom-connection-options {
+	display: none;
+}
+
 .hide-refresh-link .azure-account-row.refresh-credentials-link {
 	display: none;
 }

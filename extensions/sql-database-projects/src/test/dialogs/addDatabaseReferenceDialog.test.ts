@@ -31,6 +31,10 @@ describe('Add Database Reference Dialog', () => {
 		sinon.restore();
 	});
 
+	after(async function(): Promise<void> {
+		await testUtils.deleteGeneratedTestFolder();
+	});
+
 	it('Should open dialog successfully', async function (): Promise<void> {
 		const project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
 		const dialog = new AddDatabaseReferenceDialog(project);

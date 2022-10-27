@@ -95,6 +95,10 @@ const profilerViewTemplateSchema: IJSONSchema = {
 				{
 					name: 'DatabaseName',
 					eventsMapped: ['database_name']
+				},
+				{
+					name: 'HostName',
+					eventsMapped: ['client_hostname']
 				}
 			]
 		},

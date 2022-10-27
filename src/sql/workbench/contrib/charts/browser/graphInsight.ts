@@ -8,7 +8,7 @@ import * as chartjs from 'chart.js';
 import { mixin } from 'sql/base/common/objects';
 import { localize } from 'vs/nls';
 import * as colors from 'vs/platform/theme/common/colorRegistry';
-import { editorLineNumbers } from 'vs/editor/common/view/editorColorRegistry';
+import { editorLineNumbers } from 'vs/editor/common/core/editorColorRegistry';
 import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
 
 import { IInsight, IPointDataSet, customMixin } from './interfaces';

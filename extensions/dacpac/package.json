@@ -99,6 +99,7 @@
   "devDependencies": {
     "@microsoft/azdata-test": "^2.0.3",
     "@microsoft/vscodetestcover": "^1.2.1",
+    "@types/htmlparser2": "^3.10.1",
     "@types/mocha": "^7.0.2",
     "@types/node": "^12.11.7",
     "@types/sinon": "^9.0.4",

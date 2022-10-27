@@ -5,7 +5,7 @@
 
 import * as assert from 'assert';
 import * as sinon from 'sinon';
-import { setMode } from 'sql/workbench/browser/parts/editor/editorStatusModeSelect';
+import { setLanguageId } from 'sql/workbench/browser/parts/editor/editorStatusModeSelect';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { QueryEditorLanguageAssociation } from 'sql/workbench/contrib/query/browser/queryEditorFactory';
 import { NotebookEditorLanguageAssociation } from 'sql/workbench/contrib/notebook/browser/models/notebookEditorFactory';
@@ -61,9 +61,9 @@ suite('set mode', () => {
 		instantiationService.stub(IEditorService, editorService);
 		const replaceEditorStub = sinon.stub(editorService, 'replaceEditors').callsFake(() => Promise.resolve());
 		const stub = sinon.stub();
-		const modeSupport = { setMode: stub };
+		const modeSupport = { setLanguageId: stub };
 		const activeEditor = createFileInput(URI.file('/test/file.txt'), undefined, 'plaintext', undefined);
-		await instantiationService.invokeFunction(setMode, modeSupport, activeEditor, 'json');
+		await instantiationService.invokeFunction(setLanguageId, modeSupport, activeEditor, 'json');
 		assert(stub.calledOnce);
 		assert(stub.calledWithExactly('json'));
 		assert(replaceEditorStub.notCalled);
@@ -74,11 +74,11 @@ suite('set mode', () => {
 		const editorService = new MockEditorService('sql');
 		instantiationService.stub(IEditorService, editorService);
 		const stub = sinon.stub();
-		const modeSupport = { setMode: stub };
+		const modeSupport = { setLanguageId: stub };
 		const uri = URI.file('/test/file.sql');
 		const textInput = createFileInput(uri, undefined, 'sql', undefined);
 		const activeEditor = instantiationService.createInstance(FileQueryEditorInput, '', textInput, instantiationService.createInstance(QueryResultsInput, uri.toString()));
-		await instantiationService.invokeFunction(setMode, modeSupport, activeEditor, 'notebooks');
+		await instantiationService.invokeFunction(setLanguageId, modeSupport, activeEditor, 'notebooks');
 		assert(stub.calledOnce);
 		assert(stub.calledWithExactly('notebooks'));
 	});
@@ -88,11 +88,11 @@ suite('set mode', () => {
 		const editorService = new MockEditorService('sql');
 		instantiationService.stub(IEditorService, editorService);
 		const stub = sinon.stub();
-		const modeSupport = { setMode: stub };
+		const modeSupport = { setLanguageId: stub };
 		const uri = URI.file('/test/file.sql');
 		const textInput = createFileInput(uri, undefined, 'sql', undefined);
 		const activeEditor = instantiationService.createInstance(FileQueryEditorInput, '', textInput, instantiationService.createInstance(QueryResultsInput, uri.toString()));
-		await instantiationService.invokeFunction(setMode, modeSupport, activeEditor, 'plaintext');
+		await instantiationService.invokeFunction(setLanguageId, modeSupport, activeEditor, 'plaintext');
 		assert(stub.calledOnce);
 		assert(stub.calledWithExactly('plaintext'));
 	});
@@ -102,9 +102,9 @@ suite('set mode', () => {
 		const editorService = new MockEditorService('plaintext');
 		instantiationService.stub(IEditorService, editorService);
 		const stub = sinon.stub();
-		const modeSupport = { setMode: stub };
+		const modeSupport = { setLanguageId: stub };
 		const activeEditor = createFileInput(URI.file('/test/file.txt'), undefined, 'plaintext', undefined);
-		await instantiationService.invokeFunction(setMode, modeSupport, activeEditor, 'sql');
+		await instantiationService.invokeFunction(setLanguageId, modeSupport, activeEditor, 'sql');
 		assert(stub.calledOnce);
 		assert(stub.calledWithExactly('sql'));
 	});
@@ -117,10 +117,10 @@ suite('set mode', () => {
 		instantiationService.stub(INotificationService, TestNotificationService);
 		(instantiationService as TestInstantiationService).stub(INotificationService, 'error', errorStub);
 		const stub = sinon.stub();
-		const modeSupport = { setMode: stub };
+		const modeSupport = { setLanguageId: stub };
 		const activeEditor = createFileInput(URI.file('/test/file.txt'), undefined, 'plaintext', undefined);
 		sinon.stub(activeEditor, 'isDirty').callsFake(() => true);
-		await instantiationService.invokeFunction(setMode, modeSupport, activeEditor, 'sql');
+		await instantiationService.invokeFunction(setLanguageId, modeSupport, activeEditor, 'sql');
 		assert(stub.notCalled);
 		assert(errorStub.calledOnce);
 	});
