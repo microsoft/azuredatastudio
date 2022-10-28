@@ -36,6 +36,7 @@ export class ErrorMessageDialog extends Modal {
 	private _actions: IAction[] = [];
 	private _severity?: Severity;
 	private _message?: string;
+	private _instructionText?: string;
 	private _messageDetails?: string;
 	private _okLabel: string;
 	private _closeLabel: string;
@@ -109,6 +110,9 @@ export class ErrorMessageDialog extends Modal {
 	private updateDialogBody(): void {
 		DOM.clearNode(this._body!);
 		DOM.append(this._body!, DOM.$('div.error-message')).innerText = this._message!;
+		if (this._instructionText) {
+			DOM.append(this._body!, DOM.$('div.error-instruction-text')).innerText = this._instructionText!;
+		}
 	}
 
 	private updateIconTitle(): void {
@@ -144,9 +148,10 @@ export class ErrorMessageDialog extends Modal {
 		this.hide(hideReason);
 	}
 
-	public open(severity: Severity, headerTitle: string, message: string, messageDetails?: string, actions?: IAction[]) {
+	public open(severity: Severity, headerTitle: string, message: string, messageDetails?: string, actions?: IAction[], instructionText?: string) {
 		this._severity = severity;
 		this._message = message;
+		this._instructionText = instructionText;
 		this.title = headerTitle;
 		this._messageDetails = messageDetails;
 		if (this._messageDetails) {

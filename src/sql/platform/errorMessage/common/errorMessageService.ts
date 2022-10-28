@@ -10,5 +10,5 @@ import { createDecorator } from 'vs/platform/instantiation/common/instantiation'
 export const IErrorMessageService = createDecorator<IErrorMessageService>('errorMessageService');
 export interface IErrorMessageService {
 	_serviceBrand: undefined;
-	showDialog(severity: Severity, headerTitle: string, message: string, messageDetails?: string, actions?: IAction[]): void;
+	showDialog(severity: Severity, headerTitle: string, message: string, messageDetails?: string, actions?: IAction[], instructionText?: string): void;
 }

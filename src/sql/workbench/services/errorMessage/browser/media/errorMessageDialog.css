@@ -22,6 +22,11 @@
 	user-select: text;
 }
 
+.error-dialog .error-instruction-text{
+	margin-top: 60px;
+	font-weight: 700;
+}
+
 .modal .footer-button a.monaco-button.monaco-text-button.codicon.scriptToClipboard {
 	width: 120px;
 }
