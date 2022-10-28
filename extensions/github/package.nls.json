@@ -1,6 +1,6 @@
 {
 	"displayName": "GitHub",
-	"description": "GitHub features for VS Code",
+	"description": "GitHub features for Azure Data Studio",
 	"config.gitAuthentication": "Controls whether to enable automatic GitHub authentication for git commands within Azure Data Studio.",
 	"config.gitProtocol": "Controls which protocol is used to clone a GitHub repository",
 	"welcome.publishFolder": {
