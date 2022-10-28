@@ -10,7 +10,7 @@ import * as types from 'vs/base/common/types';
 import * as azdata from 'azdata';
 import { getWrappedString } from 'sql/workbench/common/sqlWorkbenchUtils';
 
-export function appendRow(container: HTMLElement, label: string, labelClass: string, cellContainerClass: string, rowContainerClass?: string | Array<string>, showRequiredIndicator: boolean = false, title?: string): HTMLElement {
+export function appendRow(container: HTMLElement, label: string, labelClass: string, cellContainerClass: string, rowContainerClass?: string | Array<string>, showRequiredIndicator: boolean = false, title?: string, titleMaxWidth?: number): HTMLElement {
 	let rowContainer = append(container, $('tr'));
 	if (rowContainerClass) {
 		if (types.isString(rowContainerClass)) {
@@ -23,7 +23,11 @@ export function appendRow(container: HTMLElement, label: string, labelClass: str
 	labelContainer.style.display = 'flex';
 
 	if (title) {
-		labelContainer.title = getWrappedString(title, 100);
+		if (!titleMaxWidth) {
+			// Set max width of title to be 100 by default.
+			titleMaxWidth = 100;
+		}
+		labelContainer.title = getWrappedString(title, titleMaxWidth);
 	}
 
 	append(labelContainer, $('div')).innerText = label;

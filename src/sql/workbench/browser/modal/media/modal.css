@@ -282,6 +282,10 @@
 	background: url('show_details.svg') center center no-repeat;
 }
 
+.dialog-message.info .dialog-message-icon {
+	background: url('info_notification_inverse.svg') center center no-repeat;
+}
+
 .hc-black .dialog-message.warning .dialog-message-icon {
 	background: url('warning_notification_inverse.svg') center center no-repeat;
 }

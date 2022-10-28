@@ -17,6 +17,14 @@ modelview-text div#textContainer {
 	margin-left: 5px;
 }
 
+.vs .modelview-text-tooltip {
+	background-image: url('info.svg')
+}
+
+.vs-dark .modelview-text-tooltip, .hc-black .modelview-text-tooltip {
+	background-image: url('info_inverse.svg')
+}
+
 .modelview-text-tooltip .modelview-text-tooltip-content {
 	visibility: hidden;
 	text-align: left;
