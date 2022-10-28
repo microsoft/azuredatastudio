@@ -15,7 +15,7 @@ import { AzureAccountProviderMetadata } from 'azurecore';
 import { ProviderSettings } from './interfaces';
 import * as loc from '../localizedConstants';
 import { PublicClientApplication } from '@azure/msal-node';
-import { DataProtectionScope, PersistenceCreator, PersistenceCachePlugin, FilePersistenceWithDataProtection, KeychainPersistence, LibSecretPersistence } from '@azure/msal-node-extensions';
+import { DataProtectionScope, PersistenceCachePlugin, FilePersistenceWithDataProtection, KeychainPersistence, LibSecretPersistence } from '@azure/msal-node-extensions';
 import * as path from 'path';
 import { Logger } from '../utils/Logger';
 import { AuthLibrary } from './auths/azureAuth';
