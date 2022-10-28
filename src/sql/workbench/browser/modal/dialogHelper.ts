@@ -23,11 +23,9 @@ export function appendRow(container: HTMLElement, label: string, labelClass: str
 	labelContainer.style.display = 'flex';
 
 	if (title) {
-		if (!titleMaxWidth) {
-			// Set max width of title to be 100 by default.
-			titleMaxWidth = 100;
-		}
-		labelContainer.title = getWrappedString(title, titleMaxWidth);
+		labelContainer.classList.add("codicon");
+		labelContainer.classList.add("info-icon");
+		labelContainer.title = titleMaxWidth ? getWrappedString(title, titleMaxWidth) : title;
 	}
 
 	append(labelContainer, $('div')).innerText = label;
