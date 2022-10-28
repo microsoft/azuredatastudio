@@ -46,9 +46,7 @@ export function getWrappedString(str: string, maxWidth: number): string {
 			res += [str.slice(0, maxWidth), newLineStr].join('');
 			str = str.slice(maxWidth);
 		}
-
 	}
-
 	return res + str;
 }
 
