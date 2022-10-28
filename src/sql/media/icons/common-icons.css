@@ -652,3 +652,27 @@ Includes non-masked style declarations. */
 	width: 32px;
 	height: 32px;
 }
+
+/** Info icons **/
+
+.dialog-message.info .dialog-message-icon {
+	background: url('info_inverse.svg') center center no-repeat;
+}
+
+.vs .optionsDialog-options .optionsDialog-description .modal-title {
+	background-image: url('info.svg')
+}
+
+.vs-dark .optionsDialog-options .optionsDialog-description .modal-title,
+.hc-black .optionsDialog-options .optionsDialog-description .modal-title {
+	background-image: url('info_inverse.svg')
+}
+
+.custom-connection-options .connection-label .dialog-label-container{
+	background-image: url('info.svg');
+}
+
+.vs-dark .custom-connection-options .connection-label .dialog-label-container,
+.hc-black .custom-connection-options .connection-label .dialog-label-container {
+	background-image: url('info_inverse.svg');
+}

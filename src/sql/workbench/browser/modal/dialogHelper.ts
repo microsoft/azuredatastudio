@@ -6,10 +6,9 @@
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { append, $ } from 'vs/base/browser/dom';
-
 import * as types from 'vs/base/common/types';
-
 import * as azdata from 'azdata';
+import { getWrappedString } from 'sql/workbench/common/sqlWorkbenchUtils';
 
 export function appendRow(container: HTMLElement, label: string, labelClass: string, cellContainerClass: string, rowContainerClass?: string | Array<string>, showRequiredIndicator: boolean = false, title?: string): HTMLElement {
 	let rowContainer = append(container, $('tr'));
@@ -24,7 +23,7 @@ export function appendRow(container: HTMLElement, label: string, labelClass: str
 	labelContainer.style.display = 'flex';
 
 	if (title) {
-		labelContainer.title = title;
+		labelContainer.title = getWrappedString(title, 100);
 	}
 
 	append(labelContainer, $('div')).innerText = label;

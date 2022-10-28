@@ -63,6 +63,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	private _defaultDatabaseName: string = localize('defaultDatabaseOption', "<Default>");
 	private _loadingDatabaseName: string = localize('loadingDatabaseOption', "Loading...");
 	private _serverGroupDisplayString: string = localize('serverGroup', "Server group");
+	private _trueInputValue: string = localize('boolean.true', 'True');
+	private _falseInputValue: string = localize('boolean.false', 'False');
 	private _token: string;
 	private _connectionStringOptions: ConnectionStringOptions;
 	protected _container: HTMLElement;
@@ -256,14 +258,13 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	protected addCustomConnectionOptions(): void {
 		if (this._customOptions.length > 0) {
 			this._customOptionWidgets = [];
-			let trueInputValue = localize('boolean.true', 'True');
-			let falseInputValue = localize('boolean.false', 'False');
 			this._customOptions.forEach((option, i) => {
 				let customOptionsContainer = DialogHelper.appendRow(this._tableContainer, option.displayName, 'connection-label', 'connection-input', 'custom-connection-options', false, option.description);
 				switch (option.valueType) {
 					case ServiceOptionType.boolean:
-						let optionValue = (option.defaultValue.toString() === true.toString() || option.defaultValue === trueInputValue) ? trueInputValue : falseInputValue;
-						this._customOptionWidgets[i] = new SelectBox([trueInputValue, falseInputValue], optionValue, this._contextViewService, customOptionsContainer, { ariaLabel: option.displayName });
+						// Convert 'defaultValue' to string for comparison as it can be boolean here.
+						let optionValue = (option.defaultValue.toString() === true.toString()) ? this._trueInputValue : this._falseInputValue;
+						this._customOptionWidgets[i] = new SelectBox([this._trueInputValue, this._falseInputValue], optionValue, this._contextViewService, customOptionsContainer, { ariaLabel: option.displayName });
 						DialogHelper.appendInputSelectBox(customOptionsContainer, this._customOptionWidgets[i] as SelectBox);
 						this._register(styler.attachSelectBoxStyler(this._customOptionWidgets[i] as SelectBox, this._themeService));
 						break;
