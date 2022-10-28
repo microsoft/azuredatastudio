@@ -257,6 +257,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._activeClientSession;
 	}
 
+	/**
+	 * Event that gets fired after the kernel is changed from starting a session or selecting one from the kernel dropdown.
+	 */
 	public get kernelChanged(): Event<nb.IKernelChangedArgs> {
 		return this._kernelChangedEmitter.event;
 	}
@@ -265,6 +268,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._kernelsChangedEmitter.event;
 	}
 
+	/**
+	 * Event that gets fired when new kernels are added to the model from new notebook providers in the registry.
+	 */
 	public get kernelsAdded(): Event<nb.IKernel> {
 		return this._kernelsAddedEmitter.event;
 	}
