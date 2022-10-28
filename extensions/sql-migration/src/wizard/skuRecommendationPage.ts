@@ -789,19 +789,22 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		if (this.migrationStateModel._targetType !== MigrationTargetType.SQLMI) {
 
 			//Reset the encrypted databases counter on the model to ensure the certificates migration is ignored.
-			this.migrationStateModel.tdeMigrationConfig.setTdeEnabledDatabasesCount(0);
+			this.migrationStateModel.tdeMigrationConfig.setTdeEnabledDatabasesCount([]);
 
 			return;
 		}
 
-		const encryptedDbCount = this.migrationStateModel._assessmentResults.databaseAssessments.filter(
-			db => this.migrationStateModel._databasesForMigration.findIndex(dba => dba === db.name) >= 0 &&
-				db.issues.findIndex(iss => iss.ruleId === constants.TDE_RULE_ID && iss.appliesToMigrationTargetPlatform === MigrationTargetType.SQLMI) >= 0
-		);
+		const encryptedDbCount = this.migrationStateModel._assessmentResults.databaseAssessments
+			.filter(
+				db => this.migrationStateModel._databasesForMigration.findIndex(dba => dba === db.name) >= 0 &&
+					db.issues.findIndex(iss => iss.ruleId === constants.TDE_RULE_ID && iss.appliesToMigrationTargetPlatform === MigrationTargetType.SQLMI) >= 0
+			)
+			.map(db => db.name);
+
 		const hasencryptedDb = encryptedDbCount.length > 0;
 
 		//Set encrypted databases
-		this.migrationStateModel.tdeMigrationConfig.setTdeEnabledDatabasesCount(encryptedDbCount.length);
+		this.migrationStateModel.tdeMigrationConfig.setTdeEnabledDatabasesCount(encryptedDbCount);
 
 		if (hasencryptedDb) {
 			//Set the text when there are encrypted databases.

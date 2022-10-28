@@ -21,6 +21,7 @@ export class TdeConfigurationDialog {
 
 	private _adsMethodConfirmationContainer!: azdata.FlexContainer;
 	private _adsConfirmationCheckBox!: azdata.CheckBoxComponent;
+	private _manualMethodWarningContainer!: azdata.FlexContainer;
 
 	constructor(public skuRecommendationPage: SKURecommendationPage, public wizard: azdata.window.Wizard, public migrationStateModel: MigrationStateModel) {
 	}
@@ -67,20 +68,19 @@ export class TdeConfigurationDialog {
 			CSSStyles: {
 				...styles.BODY_CSS,
 				'margin-top': '8px',
-			}
-		}).component();
-		const learnMoreLink = _view.modelBuilder.hyperlink()
-			.withProps({
-				label: constants.LEARN_MORE,
-				ariaLabel: constants.LEARN_MORE,
+			},
+			links: [{
+				text: constants.LEARN_MORE,
 				url: 'https://learn.microsoft.com/sql/relational-databases/security/encryption/transparent-data-encryption',
-				showLinkIcon: true,
-			}).component();
+				accessibilityInformation: {
+					label: constants.LEARN_MORE
+				}
+			}]
+		}).component();
 		const selectDataSourceRadioButtons = this.createMethodsContainer(_view);
 		container.addItems([
 			encrypted_description1,
 			encrypted_description2,
-			learnMoreLink,
 			selectDataSourceRadioButtons,
 		]);
 		return container;
@@ -132,20 +132,21 @@ export class TdeConfigurationDialog {
 				}
 			}));
 
-		// const learnMoreLink = _view.modelBuilder.hyperlink()
-		// 	.withProps({
-		// 		label: constants.LEARN_MORE,
-		// 		ariaLabel: constants.LEARN_MORE,
-		// 		url: 'https://learn.microsoft.com/sql/relational-databases/security/encryption/transparent-data-encryption',
-		// 		showLinkIcon: true,
-		// 	}).component();
-
 		this._adsMethodConfirmationContainer = this.createAdsConfirmationContainer(_view);
 
 		adsMethodContainer.addItems([
 			adsMethodButton,
-			//learnMoreLink,
 			this._adsMethodConfirmationContainer]);
+
+		const manualMethodContainer = _view.modelBuilder.flexContainer()
+			.withProps(
+				{
+					CSSStyles: {
+						'flex-direction': 'column',
+						'display': 'inline'
+					}
+				})
+			.component();
 
 		const manualMethodButton = _view.modelBuilder.radioButton()
 			.withProps({
@@ -154,6 +155,7 @@ export class TdeConfigurationDialog {
 				checked: this.migrationStateModel.tdeMigrationConfig.isTdeMigrationMethodManual(),
 				CSSStyles: { ...styles.BODY_CSS }
 			}).component();
+
 		this._disposables.push(
 			manualMethodButton.onDidChangeCheckedState(async checked => {
 				if (checked) {
@@ -162,9 +164,16 @@ export class TdeConfigurationDialog {
 				}
 			}));
 
+		this._manualMethodWarningContainer = this.createManualWarningContainer(_view);
+
+		manualMethodContainer.addItems([
+			manualMethodButton,
+			this._manualMethodWarningContainer
+		]);
+
 		radioButtonContainer.addItems([
 			adsMethodContainer,
-			manualMethodButton]);
+			manualMethodContainer]);
 
 		const container = _view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
@@ -204,11 +213,43 @@ export class TdeConfigurationDialog {
 		return container;
 	}
 
+	private createManualWarningContainer(_view: azdata.ModelView): azdata.FlexContainer {
+		const container = _view.modelBuilder.flexContainer().withProps({
+			CSSStyles: {
+				'flex-direction': 'column'
+			}
+		}).component();
+
+		const manualMethodConfirmationDialog = _view.modelBuilder.infoBox()
+			.withProps({
+				text: constants.TDE_WIZARD_MIGRATION_OPTION_MANUAL_WARNING,
+				style: 'warning',
+				CSSStyles: {
+					...styles.BODY_CSS,
+					'margin': '4px 14px 0px 14px'
+				},
+				links: [{
+					text: constants.LEARN_MORE,
+					url: 'https://learn.microsoft.com/en-us/azure/azure-sql/managed-instance/tde-certificate-migrate',
+					accessibilityInformation: {
+						label: constants.LEARN_MORE
+					}
+				}]
+			}).component();
+
+		container.addItems([
+			manualMethodConfirmationDialog]);
+		return container;
+	}
+
 	private async updateUI(): Promise<void> {
 		const useAds = this.migrationStateModel.tdeMigrationConfig.isTdeMigrationMethodAds();
 
 		this._adsConfirmationCheckBox.checked = this.migrationStateModel.tdeMigrationConfig.isTdeMigrationMethodAdsConfirmed();
 		await utils.updateControlDisplay(this._adsMethodConfirmationContainer, useAds);
+
+		const useManual = this.migrationStateModel.tdeMigrationConfig.isTdeMigrationMethodManual();
+		await utils.updateControlDisplay(this._manualMethodWarningContainer, useManual);
 
 		this.dialog!.okButton.enabled = this.migrationStateModel.tdeMigrationConfig.isTdeMigrationMethodSet();
 	}

@@ -1049,7 +1049,7 @@ export const SQLDB_COL_COPY_START = localize('sql.migration.sqldb.column.copysta
 
 //TDE Configuration Dialog
 export const TDE_WIZARD_TITLE = localize('sql.migration.tde.wizard.title', "Encrypted database selected.");
-export const TDE_WIZARD_DESCRIPTION = localize('sql.migration.tde.wizard.description', "To migrate an encrypted database you need to provide access to the encryption certificates or migrate certificates manually before proceeding with the migration.");
+export const TDE_WIZARD_DESCRIPTION = localize('sql.migration.tde.wizard.description', "To migrate an encrypted database you need to provide access to the encryption certificates or migrate certificates manually before proceeding with the migration. {0}.");
 export const TDE_WIZARD_MIGRATION_CAPTION = localize('sql.migration.tde.wizard.optionscaption', "Certificate migration");
 export const TDE_WIZARD_MIGRATION_OPTION_ADS = localize('sql.migration.tde.wizard.optionads', "Export my certificates and private key and provide to target database for migration.");
 export const TDE_WIZARD_MIGRATION_OPTION_ADS_CONFIRM = localize('sql.migration.tde.wizard.optionadsconfirm', "I give consent to use my credentials for accessing the certificates.");
@@ -1058,7 +1058,15 @@ export const TDE_BUTTON_CAPTION = localize('sql.migration.tde.button.caption', "
 export const TDE_WIZARD_MSG_MANUAL = localize('sql.migration.tde.msg.manual', "You have choosen to manually migrate certificates.");
 export const TDE_WIZARD_MSG_TDE = localize('sql.migration.tde.msg.tde', "You have given access to ADS to migrate the encryption certificates and database.");
 export const TDE_WIZARD_MSG_EMPTY = localize('sql.migration.tde.msg.empty', "No encrypted database selected.");
-export const TDE_RULE_ID = localize('sql.migration.tde.rule.id', "SyntaxError"); //TdeEnabled
+export const TDE_RULE_ID = localize('sql.migration.tde.rule.id', "SyntaxError"); //Name of the TDE rule 'TdeEnabled'
+
+export function TDE_MIGRATION_ERROR(message: string): string {
+	return localize('sql.migration.starting.migration.error', "An error occurred while starting the certificate migration: '{0}'", message);
+}
+
+export function TDE_MIGRATION_ERROR_DB(name: string, message: string): string {
+	return localize('sql.migration.starting.migration.dberror', "Error migrating certificate for database {0}. {1}", name, message);
+}
 
 export function TDE_MSG_DATABASES_SELECTED(selected: number, message: string): string {
 	return localize('sql.migration.tde.msg.databases.selected', "{0} TDE databases selected for migration. {1}", selected, message);
@@ -1067,3 +1075,6 @@ export function TDE_MSG_DATABASES_SELECTED(selected: number, message: string): s
 export function TDE_WIZARD_DATABASES_SELECTED(encryptedCount: number, totalCount: number): string {
 	return localize('sql.migration.tde.wizard.databases.selected', "{0} out of {1} selected database is using transparent data encryption.", encryptedCount, totalCount);
 }
+
+
+export const TDE_WIZARD_MIGRATION_OPTION_MANUAL_WARNING = localize('sql.migration.tde.wizard.optionmanual.warning', "You must migrate the credentials before proceeding with the migration otherwise the migration will fail. {0}.");

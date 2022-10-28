@@ -824,20 +824,25 @@ declare module 'mssql' {
 
 	// SqlMigration interfaces  BEGIN -----------------------------------------------------------------------
 	export interface TdeMigrationRequest {
+		encryptedDatabases: string[];
 		sourceSqlConnectionString: string;
 		targetSubscriptionId: string;
 		targetResourceGroupName: string;
 		targetManagedInstanceName: string;
 	}
 
-	export interface TdeMigrationResult {
+	export interface TdeMigrationEntryResult {
+		dbName: string;
 		success: boolean;
-		errors: ErrorModel[];
+		errorMessage: string;
+	}
+
+	export interface TdeMigrationResult {
+		migrationStatuses: TdeMigrationEntryResult[];
 	}
 
 	export interface ITdeMigrationService {
-		//migrateCertificate(request: TdeMigrationRequest): Promise<TdeMigrationResult>;
-		migrateCertificate(sourceSqlConnectionString: string, targetSubscriptionId: string, targetResourceGroupName: string, targetManagedInstanceName: string): Promise<TdeMigrationResult>;
+		migrateCertificate(encryptedDatabases: string[], sourceSqlConnectionString: string, targetSubscriptionId: string, targetResourceGroupName: string, targetManagedInstanceName: string): Promise<TdeMigrationResult>;
 	}
 	// SqlMigration interfaces END -----------------------------------------------------------------------
 }

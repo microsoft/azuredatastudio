@@ -5,6 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import { EOL } from 'os';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationMode, MigrationStateModel, MigrationTargetType, NetworkContainerType, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
@@ -12,6 +13,7 @@ import { createHeadingTextComponent, createInformationRow, createLabelTextCompon
 import { getResourceGroupFromId } from '../api/azure';
 import { TargetDatabaseSummaryDialog } from '../dialog/targetDatabaseSummary/targetDatabaseSummaryDialog';
 import * as styles from '../constants/styles';
+import { logError, TelemetryViews, TelemetryErrorName } from '../telemtery';
 
 export class SummaryPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -163,6 +165,29 @@ export class SummaryPage extends MigrationWizardPage {
 					constants.SHIR,
 					this.migrationStateModel._nodeNames.join(', ')));
 		}
+
+
+		this.wizard.registerNavigationValidator(async (pageChangeInfo) => {
+			this.wizard.message = { text: '' };
+			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
+				return true;
+			}
+
+			const operationResult = await this.migrationStateModel.startTdeMigration();
+
+			if (!operationResult.success) {
+				const errorDetails = operationResult.errors.join(EOL);
+
+				logError(TelemetryViews.MigrationLocalStorage, TelemetryErrorName.StartMigrationFailed, errorDetails);
+
+				this.wizard.message = {
+					text: errorDetails,
+					level: azdata.window.MessageLevel.Error
+				};
+				return false;
+			}
+			return true;
+		});
 	}
 
 	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {

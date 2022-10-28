@@ -29,8 +29,9 @@ export class TdeMigrationService implements mssql.ITdeMigrationService {
 		context.registerService(constants.TdeMigrationService, this);
 	}
 
-	async migrateCertificate(sourceSqlConnectionString: string, targetSubscriptionId: string, targetResourceGroupName: string, targetManagedInstanceName: string): Promise<mssql.TdeMigrationResult> {
+	async migrateCertificate(tdeEnabledDatabases: string[], sourceSqlConnectionString: string, targetSubscriptionId: string, targetResourceGroupName: string, targetManagedInstanceName: string): Promise<mssql.TdeMigrationResult> {
 		let params: contracts.TdeMigrationParams = {
+			encryptedDatabases: tdeEnabledDatabases,
 			sourceSqlConnectionString: sourceSqlConnectionString,
 			targetSubscriptionId: targetSubscriptionId,
 			targetResourceGroupName: targetResourceGroupName,

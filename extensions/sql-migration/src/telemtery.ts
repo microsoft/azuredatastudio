@@ -64,6 +64,10 @@ export enum TelemetryAction {
 	StopDataCollection = 'StopDataCollection'
 }
 
+export enum TelemetryErrorName {
+	StartMigrationFailed = 'StartMigrationFailed'
+}
+
 export function logError(telemetryView: TelemetryViews, err: string, error: any): void {
 	console.log(error);
 	TelemetryReporter.sendErrorEvent(telemetryView, err);

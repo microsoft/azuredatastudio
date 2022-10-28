@@ -151,7 +151,6 @@ export class WizardController {
 		this._disposables.push(
 			this._wizardObject.doneButton.onClick(async (e) => {
 				try {
-					await stateModel.startTdeMigration();
 					return;
 					await stateModel.startMigration();
 					await this.updateServiceContext(stateModel, this._serviceContextChangedEvent);

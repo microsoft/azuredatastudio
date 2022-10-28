@@ -1226,6 +1226,7 @@ export namespace TdeMigrateRequest {
 }
 
 export interface TdeMigrationParams {
+	encryptedDatabases: string[];
 	sourceSqlConnectionString: string;
 	targetSubscriptionId: string;
 	targetResourceGroupName: string;

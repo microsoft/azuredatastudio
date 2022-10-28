@@ -876,38 +876,36 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		).map(t => t.name);
 	}
 
-	public async startTdeMigration() {
-		try {
-			const sqlConnections = await azdata.connection.getConnections();
-			const currentConnection = sqlConnections.find(
-				value => value.connectionId === this.sourceConnectionId);
-			if (currentConnection === undefined) {
-				return;
+	public async startTdeMigration(): Promise<OperationResult> {
+		const result: OperationResult = {
+			success: false,
+			errors: []
+		};
+
+		if (this.tdeMigrationConfig.getTdeEnabledDatabasesCount() > 1) {
+			try {
+
+				let tdeEnabledDatabases = this.tdeMigrationConfig.getTdeEnabledDatabases();
+				const connectionString = await azdata.connection.getConnectionString(this.sourceConnectionId, true);
+
+				const migrationResult = await this.tdeMigrationService.migrateCertificate(
+					tdeEnabledDatabases,
+					connectionString,
+					this._targetSubscription?.id,
+					this._resourceGroup?.name,
+					this._targetServerInstance.name);
+
+				result.errors = migrationResult.migrationStatuses
+					.filter(entry => !entry.success)
+					.map(entry => constants.TDE_MIGRATION_ERROR_DB(entry.dbName, entry.errorMessage));
+
+			} catch (e) {
+				result.errors = [constants.TDE_MIGRATION_ERROR(e.message)];
 			}
-			const connectionString = await azdata.connection.getConnectionString(currentConnection.connectionId, true);
-			// const request = new mssql.TdeMigrationRequest(
-
-			// );
-
-			let result = await this.tdeMigrationService.migrateCertificate(
-				connectionString,
-				this._targetSubscription?.id,
-				this._resourceGroup?.name,
-				this._targetServerInstance.name);
-
-			console.log(result);
-
-		} catch (e) {
-			void vscode.window.showErrorMessage(
-				localize(
-					'sql.migration.starting.migration.error',
-					"An error occurred while starting the migration: '{0}'",
-					e.message));
-			logError(TelemetryViews.MigrationLocalStorage, 'StartMigrationFailed', e);
 		}
-		finally {
 
-		}
+		result.success = result.errors.length === 0; //Set success when there are no errors.
+		return result;
 	}
 
 	public async startMigration() {
@@ -1247,12 +1245,18 @@ export interface SkuRecommendation {
 	recommendationError?: Error;
 }
 
+export interface OperationResult {
+	success: boolean;
+	errors: string[];
+}
+
 export class TdeMigrationModel {
 	public _exportUsingADS?: boolean | undefined;
 	public _adsExportConfirmation: boolean;
 	public _encryptedDbCount: number;
 	public _configurationCompleted: boolean;
 	public _shownBefore: boolean;
+	public _encryptedDbs: string[];
 
 	constructor(
 	) {
@@ -1260,6 +1264,7 @@ export class TdeMigrationModel {
 		this._adsExportConfirmation = false;
 		this._configurationCompleted = false;
 		this._shownBefore = false;
+		this._encryptedDbs = [];
 	}
 
 	//If the configuration dialog was shown already.
@@ -1277,9 +1282,15 @@ export class TdeMigrationModel {
 		return this._encryptedDbCount;
 	}
 
+	//The list of encrypted databaes
+	public getTdeEnabledDatabases(): string[] {
+		return this._encryptedDbs;
+	}
+
 	//Sets the databases that are
-	public setTdeEnabledDatabasesCount(encryptedDbCount: number): void {
-		this._encryptedDbCount = encryptedDbCount;
+	public setTdeEnabledDatabasesCount(encryptedDbs: string[]): void {
+		this._encryptedDbs = encryptedDbs;
+		this._encryptedDbCount = encryptedDbs.length;
 	}
 
 	//Sets the certificate migration method
