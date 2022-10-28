@@ -155,7 +155,7 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 	}
 
 	private isCheckAllHeaderCheckboxShown(): boolean {
-		return this._options.title === undefined || this._options.title === '';
+		return !this._options.title;
 	}
 
 	private handleHeaderKeyDown(e: KeyboardEvent): void {
