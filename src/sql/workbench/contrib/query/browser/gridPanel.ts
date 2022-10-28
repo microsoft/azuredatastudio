@@ -726,7 +726,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 						graphFileType: result.queryExecutionPlanFileExtension
 					};
 
-					const executionPlanInput = this._register(this.instantiationService.createInstance(ExecutionPlanInput, undefined, executionPlanGraphInfo));
+					const executionPlanInput = this.instantiationService.createInstance(ExecutionPlanInput, undefined, executionPlanGraphInfo);
 					await this.editorService.openEditor(executionPlanInput);
 				}
 				else {
