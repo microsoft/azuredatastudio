@@ -34,7 +34,7 @@ import { filterIconClassNames, searchPlaceholder, topOperationsSearchDescription
 const TABLE_SORT_COLUMN_KEY = 'tableCostColumnForSorting';
 
 export class TopOperationsTab extends Disposable implements IPanelTab {
-	public readonly title = localize('topOperationsTabTitle', "Top Operations  (Preview)");
+	public readonly title = localize('topOperationsTabTitle', "Top Operations");
 	public readonly identifier: string = 'TopOperationsTab';
 	public readonly view: TopOperationsTabView;
 

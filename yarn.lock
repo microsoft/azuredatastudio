@@ -2045,9 +2045,9 @@ aws4@^1.8.0:
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.11.0.tgz#d61f46d83b2519250e2784daf5b09479a8b41c59"
   integrity sha512-xh1Rl34h6Fi1DC2WWKfxUTVqRsNnr6LsKz2+hfwDxQJWmrx8+c7ylaqBMcHfl1U1r2dsifOvKX3LQuLNZ+XSvA==
 
-"azdataGraph@github:Microsoft/azdataGraph#0.0.49":
-  version "0.0.49"
-  resolved "https://codeload.github.com/Microsoft/azdataGraph/tar.gz/f5fd03f79d29ebd8fce35d3289a2b4dbde2d6dc5"
+"azdataGraph@github:Microsoft/azdataGraph#0.0.54":
+  version "0.0.52"
+  resolved "https://codeload.github.com/Microsoft/azdataGraph/tar.gz/4cce41781e138614007c4239b23fc6954af59703"
 
 bach@^1.0.0:
   version "1.2.0"
@@ -3844,10 +3844,10 @@ electron-to-chromium@^1.4.188:
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.189.tgz#4e5b221dc44e09e9dddc9abbc6457857dee7ba25"
   integrity sha512-dQ6Zn4ll2NofGtxPXaDfY2laIa6NyCQdqXYHdwH90GJQW0LpJJib0ZU/ERtbb0XkBEmUD2eJtagbOie3pdMiPg==
 
-electron@17.4.5:
-  version "17.4.5"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-17.4.5.tgz#a1d9c22fc7acfeced4f56caef68bb53988aceb97"
-  integrity sha512-OuJH+cVko69/o/zxsQXpjoLaIEQLZ/yVSd82bShRBdKc3JVfVo2cCejjpeizq/Q4VjWyT494BodDSS2hz/47cQ==
+electron@17.4.11:
+  version "17.4.11"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-17.4.11.tgz#82899a44336bf8f1af15c6312c7f51ae3f4a519b"
+  integrity sha512-mdSWM2iY/Bh5bKzd5drYS3mf8JWyR9P9UXZA2uLEZ+1fhgLEVkY9qu501QHoMsKlNwgn96EreQC+dfdQ75VTcA==
   dependencies:
     "@electron/get" "^1.13.0"
     "@types/node" "^14.6.2"

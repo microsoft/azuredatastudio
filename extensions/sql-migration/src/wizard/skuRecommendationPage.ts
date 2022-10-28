@@ -486,6 +486,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		}
 
 		let shouldGetSkuRecommendations = false;
+
+		// recommendations were already generated, then the user went back and changed the list of databases
+		// so recommendations should be re-generated
 		if (this.hasRecommendations() && this.migrationStateModel.hasRecommendedDatabaseListChanged()) {
 			shouldGetSkuRecommendations = true;
 		}
@@ -1112,7 +1115,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this._skuTargetPercentileText.value = constants.PERCENTAGE(this.migrationStateModel._skuTargetPercentile);
 		this._skuEnablePreviewSkuText.value = this.migrationStateModel._skuEnablePreview ? constants.YES : constants.NO;
 		this._skuEnableElasticRecommendationsText.value = this.migrationStateModel._skuEnableElastic ? constants.YES : constants.NO;
-		await this.refreshAzureRecommendation();
 	}
 
 	public async refreshAzureRecommendation(): Promise<void> {
@@ -1214,7 +1216,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		await this.refreshCardText(false);
 	}
 
-	private hasRecommendations(): boolean {
+	public hasRecommendations(): boolean {
 		return this.migrationStateModel._skuRecommendationResults?.recommendations
 			&& !this.migrationStateModel._skuRecommendationResults?.recommendationError
 			? true

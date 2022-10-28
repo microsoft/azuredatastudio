@@ -215,7 +215,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 		let idNames = [];
 		if (this.serverCapabilities) {
 			idNames = this.serverCapabilities.connectionOptions.map(o => {
-				if ((o.specialValueType || o.isIdentity || o.showOnConnectionDialog)
+				if ((o.specialValueType || o.isIdentity)
 					&& o.specialValueType !== ConnectionOptionSpecialType.password
 					&& o.specialValueType !== ConnectionOptionSpecialType.connectionName) {
 					return o.name;
