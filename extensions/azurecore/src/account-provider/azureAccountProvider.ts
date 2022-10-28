@@ -156,7 +156,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		if (this.authLibrary === 'ADAL') {
 			return azureAuth?.getAccountSecurityToken(account, tenantId, resource);
 		} else {
-			let authResult = await azureAuth?.getTokenMsal(account.key.accountId, resource);
+			let authResult = await azureAuth?.getTokenMsal(account.key.accountId, resource, tenantId);
 			if (!authResult || !authResult.account || !authResult.account.idTokenClaims) {
 				Logger.error(`MSAL: getToken call failed`);
 				throw Error('Failed to get token');

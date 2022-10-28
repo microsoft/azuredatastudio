@@ -330,7 +330,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	 * @param azureResource
 	 * @returns The authentication result, including the access token
 	 */
-	public async getTokenMsal(accountId: string, azureResource: azdata.AzureResource): Promise<AuthenticationResult | null> {
+	public async getTokenMsal(accountId: string, azureResource: azdata.AzureResource, tenantId: string): Promise<AuthenticationResult | null> {
 		const cache = this.clientApplication.getTokenCache();
 		if (!cache) {
 			Logger.error('Error: Could not fetch token cache.');
@@ -352,14 +352,21 @@ export abstract class AzureAuth implements vscode.Disposable {
 			Logger.error('Error: Could not fetch account when acquiring token');
 			return null;
 		}
-
-		let newScope = [`${resource?.endpoint}.default`];
+		let newScope;
+		if (resource.azureResourceId === azdata.AzureResource.ResourceManagement) {
+			newScope = [`${resource?.endpoint}user_impersonation`];
+		} else {
+			newScope = [`${resource?.endpoint}.default`];
+		}
 
 		// construct request
+		// forceRefresh needs to be set true here in order to fetch the correct token, due to this issue
+		// https://github.com/AzureAD/microsoft-authentication-library-for-js/issues/3687
 		const tokenRequest = {
 			account: account,
-			authority: `https://login.microsoftonline.com/${this.organizationsTenant.id}`,
-			scopes: newScope
+			authority: `https://login.microsoftonline.com/${tenantId}`,
+			scopes: newScope,
+			forceRefresh: true
 		};
 		try {
 			return await this.clientApplication.acquireTokenSilent(tokenRequest);
