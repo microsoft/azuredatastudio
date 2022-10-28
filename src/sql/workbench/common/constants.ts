@@ -39,10 +39,13 @@ export const FILE_QUERY_EDITOR_TYPEID = 'workbench.editorInput.fileQueryInput';
 export const RESOURCE_VIEWER_TYPEID = 'workbench.editorInput.resourceViewerInput';
 
 export const JUPYTER_PROVIDER_ID = 'jupyter';
+export const VSCODE_JUPYTER_PROVIDER_ID = 'jupyter-notebook';
 export const IPYKERNEL_DISPLAY_NAME = 'Python 3 (ipykernel)';
 export const INTERACTIVE_PROVIDER_ID = 'dotnet-interactive';
 export const TSGOPS_WEB_QUALITY = 'tsgops-image';
 export const CELL_URI_PATH_PREFIX = 'notebook-editor-';
+
+export const DEFAULT_NOTEBOOK_FILETYPE = '.ipynb';
 
 // The version of the notebook file format that we support
 export const NBFORMAT = 4;
