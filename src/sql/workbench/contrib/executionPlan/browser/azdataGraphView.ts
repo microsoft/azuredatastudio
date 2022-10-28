@@ -16,6 +16,7 @@ import { foreground } from 'vs/platform/theme/common/colorRegistry';
 import { generateUuid } from 'vs/base/common/uuid';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { status } from 'vs/base/browser/ui/aria/aria';
 const azdataGraph = azdataGraphModule();
 
 /**
@@ -37,6 +38,7 @@ export class AzdataGraphView extends Disposable {
 	constructor(
 		private _parentContainer: HTMLElement,
 		private _executionPlan: azdata.executionPlan.ExecutionPlanGraph,
+		executionPlanDiagramName: string,
 		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService,
 		@IConfigurationService readonly configurationService: IConfigurationService
 	) {
@@ -53,6 +55,7 @@ export class AzdataGraphView extends Disposable {
 			showTooltipOnClick: configurationService.getValue<boolean>('executionPlan.tooltips.enableOnHoverTooltips') ? false : true,
 		};
 		this._diagram = new azdataGraph.azdataQueryPlan(queryPlanConfiguration);
+		(<any>this._parentContainer.firstChild).ariaLabel = localize('executionPlanComparison.bottomPlanDiagram.ariaLabel', '{0}, use arrow keys to navigate between nodes', executionPlanDiagramName);
 
 		this.setGraphProperties();
 		this._cellInFocus = this._diagram.graph.getSelectionCell();
@@ -104,6 +107,10 @@ export class AzdataGraphView extends Disposable {
 					this.selectElement(this.getElementById(getPreviousSelection.id));
 				}
 			}
+		});
+
+		this._diagram.graph.addListener('tooltipShown', (sender, evt) => {
+			status(evt.properties.tooltip.textContent);
 		});
 	}
 

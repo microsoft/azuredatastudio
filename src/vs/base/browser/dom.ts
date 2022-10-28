@@ -1458,6 +1458,7 @@ const defaultSafeProtocols = [
 	Schemas.http,
 	Schemas.https,
 	Schemas.command,
+	Schemas.vscodeFileResource // {{SQL CARBON EDIT}} Add allowed schema for welcome page support
 ];
 
 /**

@@ -215,13 +215,25 @@ suite('SQL ProviderConnectionInfo tests', () => {
 	});
 
 	test('getOptionsKey should create a valid unique id', () => {
-		let options: { [key: string]: string } = {};
-		options['encrypt'] = 'true';
-		connectionProfile.options = options;
 		let conn = new ProviderConnectionInfo(capabilitiesService, connectionProfile);
-		let expectedId = 'providerName:MSSQL|authenticationType:|databaseName:database|encrypt:true|serverName:new server|userName:user';
+		// **IMPORTANT** This should NEVER change without thorough review and consideration of side effects. This key controls
+		//				 things like how passwords are saved, which means if its changed then serious side effects will occur.
+		let expectedId = 'providerName:MSSQL|authenticationType:|databaseName:database|serverName:new server|userName:user';
 		let id = conn.getOptionsKey();
 		assert.strictEqual(id, expectedId);
+	});
+
+	test('getOptionsKey should create the same ID regardless of optional options', () => {
+		const conn1 = new ProviderConnectionInfo(capabilitiesService, connectionProfile);
+		let id1 = conn1.getOptionsKey();
+
+		connectionProfile.options = {
+			'encrypt': true
+		};
+		const conn2 = new ProviderConnectionInfo(capabilitiesService, connectionProfile);
+		const id2 = conn2.getOptionsKey();
+
+		assert.strictEqual(id1, id2);
 	});
 
 	test('getOptionsKey should create different id for different server names', () => {

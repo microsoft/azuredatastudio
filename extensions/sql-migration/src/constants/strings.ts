@@ -930,7 +930,6 @@ export const ENTER_YOUR_SQL_CREDS = localize('sql.migration.enter.your.sql.cred'
 export const SERVER = localize('sql.migration.server', "Server");
 export const USERNAME = localize('sql.migration.username', "User name");
 export const SIZE = localize('sql.migration.size', "Size (MB)");
-export const LAST_BACKUP = localize('sql.migration.last.backup', "Last backup");
 export const DATABASE_MIGRATE_TEXT = localize('sql.migrate.text', "Select the databases that you want to migrate to Azure SQL.");
 export const OFFLINE_CAPS = localize('sql.migration.offline.caps', "OFFLINE");
 export const SELECT_DATABASE_TO_CONTINUE = localize('sql.migration.select.database.to.continue', "Please select 1 or more databases to assess for migration");
