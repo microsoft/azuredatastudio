@@ -519,9 +519,9 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		// Set instructionText for MSSQL Provider Encryption error code -2146893019 thrown by SqlClient when certificate validation fails.
 		let instructionText: string;
 		if (errorCode === -2146893019) {
-			instructionText = `Encryption was enabled on this connection, review your SSL and certificate configuration for the target SQL Server, or enable Trust server certificate in the connection dialog.
+			instructionText = `Encryption was enabled on this connection, review your SSL and certificate configuration for the target SQL Server, or enable 'Trust server certificate' in the connection dialog.
 
-			Do you want to enable Trust server certificate on this connection and retry?`;
+			Do you want to enable 'Trust server certificate' on this connection and retry?`;
 			actions.push(new Action('trustServerCert', "Enable Trust server certificate", null, true, async () => {
 				this._model.options['trustServerCertificate'] = true;
 				await this.handleOnConnect(this._connectionDialog.newConnectionParams, this._model as IConnectionProfile);
