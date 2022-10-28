@@ -247,7 +247,7 @@ export class PublishDatabaseDialog {
 			const baseImages = getDockerBaseImages(this.project.getProjectTargetVersion());
 			const imageInfo = baseImages.find(x => x.name === dockerBaseImage);
 			const imageName = imageInfo?.name;
-			const imageTag = this.imageTagDropDown!.value;
+			const imageTag = this.imageTagDropDown?.value;
 
 			// Add the image tag if it's not the latest
 			if (imageTag && imageTag !== constants.dockerImageDefaultTag) {
