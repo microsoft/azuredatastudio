@@ -659,6 +659,14 @@ Includes non-masked style declarations. */
 	background: url('info_inverse.svg') center center no-repeat;
 }
 
+.vs .modelview-text-tooltip {
+	background-image: url('info.svg')
+}
+
+.vs-dark .modelview-text-tooltip, .hc-black .modelview-text-tooltip {
+	background-image: url('info_inverse.svg')
+}
+
 .vs .optionsDialog-options .optionsDialog-description .modal-title {
 	background-image: url('info.svg')
 }
