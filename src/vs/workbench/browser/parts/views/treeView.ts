@@ -1366,7 +1366,7 @@ export class CustomTreeViewDragAndDrop implements ITreeDragAndDrop<ITreeItem> {
 			if (additionalDataTransfer) {
 				const unlistedTypes: string[] = [];
 				for (const item of additionalDataTransfer.entries()) {
-					if ((item[0] !== this.treeMimeType) && (dndController.dragMimeTypes?.findIndex(value => value === item[0]) < 0)) {
+					if ((item[0] !== this.treeMimeType) && (dndController.dragMimeTypes.findIndex(value => value === item[0]) < 0)) {
 						unlistedTypes.push(item[0]);
 					}
 				}
