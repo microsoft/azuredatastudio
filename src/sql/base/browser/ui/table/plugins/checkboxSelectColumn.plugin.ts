@@ -94,8 +94,10 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 		this._handler
 			.subscribe(this._grid.onClick, (e: Event, args: Slick.OnClickEventArgs<T>) => this.handleClick(e, args))
 			.subscribe(this._grid.onKeyDown, (e: DOMEvent, args: Slick.OnKeyDownEventArgs<T>) => this.handleKeyDown(e as KeyboardEvent, args))
-			.subscribe(this._grid.onHeaderClick, (e: Event, args: Slick.OnHeaderClickEventArgs<T>) => this.handleHeaderClick(e, args))
 			.subscribe(this._grid.onHeaderCellRendered, (e: Event, args: Slick.OnHeaderCellRenderedEventArgs<T>) => this.handleHeaderCellRendered(e, args));
+		if (this.isCheckAllHeaderCheckboxShown()) {
+			this._handler.subscribe(this._grid.onHeaderClick, (e: Event, args: Slick.OnHeaderClickEventArgs<T>) => this.handleHeaderClick(e, args));
+		}
 	}
 
 	private handleClick(e: DOMEvent, args: Slick.OnClickEventArgs<T>): void {
@@ -147,11 +149,9 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 	}
 
 	private handleHeaderClick(e: Event, args?: Slick.OnHeaderClickEventArgs<T>): void {
-		if (this.isCheckAllHeaderCheckboxShown()) {
-			this.onHeaderCheckboxStateChange();
-			e.preventDefault();
-			e.stopPropagation();
-		}
+		this.onHeaderCheckboxStateChange();
+		e.preventDefault();
+		e.stopPropagation();
 	}
 
 	private isCheckAllHeaderCheckboxShown(): boolean {
