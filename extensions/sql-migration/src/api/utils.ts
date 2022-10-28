@@ -328,11 +328,12 @@ export function getMigrationStatusImage(migration: azure.DatabaseMigration): Ico
 	const status = getMigrationStatus(migration);
 	switch (status) {
 		case constants.MigrationState.InProgress:
-		case constants.MigrationState.ReadyForCutover:
 		case constants.MigrationState.UploadingFullBackup:
 		case constants.MigrationState.UploadingLogBackup:
 		case constants.MigrationState.Restoring:
 			return IconPathHelper.inProgressMigration;
+		case constants.MigrationState.ReadyForCutover:
+			return IconPathHelper.cutover;
 		case constants.MigrationState.Succeeded:
 			return IconPathHelper.completedMigration;
 		case constants.MigrationState.Creating:

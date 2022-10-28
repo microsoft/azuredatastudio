@@ -840,7 +840,7 @@ export const StatusLookup: LookupTable<string | undefined> = {
 	[MigrationState.Retriable]: localize('sql.migration.status.retriable', 'Retriable'),
 	[MigrationState.Succeeded]: localize('sql.migration.status.succeeded', 'Succeeded'),
 	[MigrationState.UploadingFullBackup]: localize('sql.migration.status.uploadingfullbackup', 'Uploading full backup'),
-	[MigrationState.UploadingLogBackup]: localize('sql.migration.status.uploadinglogbackup', 'Uploading log backup'),
+	[MigrationState.UploadingLogBackup]: localize('sql.migration.status.uploadinglogbackup', 'Uploading log backup(s)'),
 	default: undefined
 };
 
