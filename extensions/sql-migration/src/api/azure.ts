@@ -691,9 +691,9 @@ export interface MigrationStatusDetails {
 }
 
 export interface MigrationStatusWarnings {
-	restoreBlockingReason: string;
-	completeRestoreErrorMessage: string;
-	fileUploadBlockingErrorCount: number;
+	restoreBlockingReason?: string;
+	completeRestoreErrorMessage?: string;
+	fileUploadBlockingErrorCount?: number;
 }
 
 export interface CopyProgressDetail {

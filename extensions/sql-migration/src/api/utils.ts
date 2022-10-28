@@ -282,10 +282,10 @@ export function getMigrationStatusWithErrors(migration: azure.DatabaseMigration)
 	warningCount += properties.migrationStatusWarnings?.fileUploadBlockingErrorCount ?? 0;
 
 	// restore blocking reason
-	warningCount += properties.migrationStatusWarnings?.restoreBlockingReason ? 1 : 0;
+	warningCount += (properties.migrationStatusWarnings?.restoreBlockingReason ?? '').length > 0 ? 1 : 0;
 
 	// complete restore error message
-	warningCount += properties.migrationStatusWarnings?.completeRestoreErrorMessage ? 1 : 0;
+	warningCount += (properties.migrationStatusWarnings?.completeRestoreErrorMessage ?? '').length > 0 ? 1 : 0;
 
 	return constants.STATUS_VALUE(migrationStatus) + (constants.STATUS_WARNING_COUNT(migrationStatus, warningCount) ?? '');
 }

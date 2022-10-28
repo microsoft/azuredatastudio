@@ -970,7 +970,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 								userName: this._sqlServerUsername,
 								password: this._sqlServerPassword,
 								encryptConnection: true,
-								trustServerCertificate: false,
+								trustServerCertificate: currentConnection?.options.trustServerCertificate ?? false,
 							};
 							requestBody.properties.targetSqlConnection = {
 								dataSource: sqlDbTarget.properties.fullyQualifiedDomainName,
