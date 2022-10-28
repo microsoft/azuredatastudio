@@ -310,13 +310,13 @@ export class ExtHostTreeView<T> extends Disposable {
 		}
 		this.dataProvider = options.treeDataProvider;
 		this.dndController = options.dragAndDropController;
+
+		// {{SQL CARBON EDIT}}
 		const dropMimeTypes = options.dragAndDropController?.dropMimeTypes ?? [];
 		const dragMimeTypes = options.dragAndDropController?.dragMimeTypes ?? [];
 		const hasHandleDrag = !!options.dragAndDropController?.handleDrag;
 		const hasHandleDrop = !!options.dragAndDropController?.handleDrop;
 
-		// {{SQL CARBON MERGE TODO}}
-		// {{SQL CARBON EDIT}}
 		if (this.proxy) {
 			this.proxy.$registerTreeViewDataProvider(viewId, {
 				showCollapseAll: !!options.showCollapseAll, canSelectMany: !!options.canSelectMany, dropMimeTypes, dragMimeTypes, hasHandleDrag, hasHandleDrop
