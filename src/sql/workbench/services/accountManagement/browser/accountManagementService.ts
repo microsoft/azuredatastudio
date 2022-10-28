@@ -469,26 +469,29 @@ export class AccountManagementService implements IAccountManagementService {
 		}
 
 		const authLibrary = this.configurationService.getValue('azure.authenticationLibrary');
-		let updatedAccounts = provider.accounts.filter(account => {
-			if (account.key.authLibrary) {
-				if (account.key.authLibrary === authLibrary) {
-					return true;
+		let updatedAccounts;
+		if (authLibrary) {
+			updatedAccounts = provider.accounts.filter(account => {
+				if (account.key.authLibrary) {
+					if (account.key.authLibrary === authLibrary) {
+						return true;
+					} else {
+						return false;
+					}
 				} else {
-					return false;
+					if (authLibrary === 'ADAL') {
+						return true;
+					} else {
+						return false;
+					}
 				}
-			} else {
-				if (authLibrary === 'ADAL') {
-					return true;
-				} else {
-					return false;
-				}
-			}
-		});
+			});
+		}
 
 		// Step 2) Fire the event
 		let eventArg: UpdateAccountListEventParams = {
 			providerId: provider.metadata.id,
-			accountList: updatedAccounts
+			accountList: updatedAccounts ?? provider.accounts
 		};
 		this._updateAccountListEmitter.fire(eventArg);
 	}
