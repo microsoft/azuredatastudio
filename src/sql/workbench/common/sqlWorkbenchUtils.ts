@@ -26,7 +26,10 @@ export function getSqlConfigValue<T>(workspaceConfigService: IConfigurationServi
  * @param maxWidth max width to be allowed for wrapped text
  * @returns wrapped string
  */
-export function getWrappedString(str: string, maxWidth: number): string {
+export function wrapStringWithUnicodeNewLine(str: string, maxWidth: number): string {
+	if (!str) {
+		return null;
+	}
 	let newLineStr = `
 `;
 	let res = '';
@@ -34,7 +37,7 @@ export function getWrappedString(str: string, maxWidth: number): string {
 		let found = false;
 		// Inserts new line at first whitespace of the line
 		for (let i = maxWidth - 1; i >= 0; i--) {
-			if (testWhite(str.charAt(i))) {
+			if (testWhitespace(str.charAt(i))) {
 				res = res + [str.slice(0, i), newLineStr].join('');
 				str = str.slice(i + 1);
 				found = true;
@@ -50,7 +53,7 @@ export function getWrappedString(str: string, maxWidth: number): string {
 	return res + str;
 }
 
-function testWhite(x: string) {
+function testWhitespace(x: string) {
 	var white = new RegExp(/^\s$/);
 	return white.test(x.charAt(0));
 }

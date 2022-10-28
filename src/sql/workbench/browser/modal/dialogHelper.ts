@@ -8,7 +8,7 @@ import { Button } from 'sql/base/browser/ui/button/button';
 import { append, $ } from 'vs/base/browser/dom';
 import * as types from 'vs/base/common/types';
 import * as azdata from 'azdata';
-import { getWrappedString } from 'sql/workbench/common/sqlWorkbenchUtils';
+import { wrapStringWithUnicodeNewLine } from 'sql/workbench/common/sqlWorkbenchUtils';
 
 export function appendRow(container: HTMLElement, label: string, labelClass: string, cellContainerClass: string, rowContainerClass?: string | Array<string>, showRequiredIndicator: boolean = false, title?: string, titleMaxWidth?: number): HTMLElement {
 	let rowContainer = append(container, $('tr'));
@@ -25,7 +25,7 @@ export function appendRow(container: HTMLElement, label: string, labelClass: str
 	if (title) {
 		labelContainer.classList.add("codicon");
 		labelContainer.classList.add("info-icon");
-		labelContainer.title = titleMaxWidth ? getWrappedString(title, titleMaxWidth) : title;
+		labelContainer.title = titleMaxWidth ? wrapStringWithUnicodeNewLine(title, titleMaxWidth) : title;
 	}
 
 	append(labelContainer, $('div')).innerText = label;
