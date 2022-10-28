@@ -247,11 +247,6 @@ export class AzureAuthCodeGrant extends AzureAuth {
 			};
 			let authCodeUrl = await this.clientApplication.getAuthCodeUrl(authUrlRequest);
 
-			// TODO: listen for the auth code that gets returned
-			// 1. set up the listener
-			// 2. open the URL
-			// 3. wait for login?
-
 			console.log(authCodeUrl);
 
 			await vscode.env.openExternal(vscode.Uri.parse(`http://localhost:${serverPort}/signin?nonce=${encodeURIComponent(this.pkceCodes.nonce)}`));

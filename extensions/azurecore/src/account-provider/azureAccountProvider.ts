@@ -131,7 +131,6 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 				}
 			}
 			else {
-				//TODO: if msal: do this
 				account.isStale = false;
 				accounts.push(account);
 			}
@@ -224,7 +223,6 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 
 		return pick.azureAuth.startLogin();
 	}
-	//TODO: might need to change refresh logic based on new msal library
 	refresh(account: AzureAccount): Thenable<AzureAccount | azdata.PromptFailedResult> {
 		return this._refresh(account);
 	}
