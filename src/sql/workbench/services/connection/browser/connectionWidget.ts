@@ -259,7 +259,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			let trueInputValue = localize('boolean.true', 'True');
 			let falseInputValue = localize('boolean.false', 'False');
 			this._customOptions.forEach((option, i) => {
-				let customOptionsContainer = DialogHelper.appendRow(this._tableContainer, option.displayName, 'connection-label', 'connection-input', 'custom-connection-options');
+				let customOptionsContainer = DialogHelper.appendRow(this._tableContainer, option.displayName, 'connection-label', 'connection-input', 'custom-connection-options', false, option.description);
 				switch (option.valueType) {
 					case ServiceOptionType.boolean:
 						let optionValue = (option.defaultValue.toString() === true.toString() || option.defaultValue === trueInputValue) ? trueInputValue : falseInputValue;
