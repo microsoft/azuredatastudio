@@ -524,7 +524,6 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			Do you want to enable Trust server certificate on this connection and retry?`;
 			actions.push(new Action('trustServerCert', "Enable Trust server certificate", null, true, async () => {
 				this._model.options['trustServerCertificate'] = true;
-				this._connectionDialog.close();
 				await this.handleOnConnect(this._connectionDialog.newConnectionParams, this._model as IConnectionProfile);
 				return;
 			}));
