@@ -89,7 +89,7 @@ export class ErrorMessageDialog extends Modal {
 	}
 
 	private createStandardButton(label: string, onSelect: () => void): Button {
-		let button = this.addFooterButton(label, onSelect, 'right', true);
+		let button = this.addFooterButton(label, onSelect, 'right', false);
 		this._register(attachButtonStyler(button, this._themeService));
 		return button;
 	}
@@ -170,14 +170,25 @@ export class ErrorMessageDialog extends Modal {
 				button.label = actions[i].label;
 				button.element.style.visibility = 'visible';
 			}
-			this._okButton!.label = this._closeLabel;
+			//Remove and add button again to update style.
+			this.removeFooterButton(this._okLabel);
+			this.removeFooterButton(this._closeLabel);
+			this._okButton = this.addFooterButton(this._closeLabel, () => this.ok(), undefined, true);
 		} else {
-			this._okButton!.label = this._okLabel;
+			//Remove and add button again to update style
+			this.removeFooterButton(this._okLabel);
+			this.removeFooterButton(this._closeLabel);
+			this._okButton = this.addFooterButton(this._okLabel, () => this.ok());
 		}
+		this._register(attachButtonStyler(this._okButton, this._themeService));
 		this.updateIconTitle();
 		this.updateDialogBody();
 		this.show();
-		this._okButton!.focus();
+		if (actions && actions.length > 0) {
+			this._actionButtons[0].focus();
+		} else {
+			this._okButton!.focus();
+		}
 	}
 
 	private resetActions(): void {
