@@ -182,7 +182,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		// Before a permanent fix is available, to workaround the issue, we can get the current zoom level and
 		// set it so that the electron's zoom level is consistent with the vscode configuration.
 		const currentZoom: number = this.configurationService.getValue(zoomLevelConfiguration);
-		this.configurationService.updateValue(zoomLevelConfiguration, currentZoom - 1).then(() => {
+		this.configurationService.updateValue(zoomLevelConfiguration, currentZoom).then(() => {
 			return this.configurationService.updateValue(zoomLevelConfiguration, currentZoom);
 		}).catch(onUnexpectedError);
 	}
