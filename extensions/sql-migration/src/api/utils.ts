@@ -162,19 +162,23 @@ export function filterMigrations(databaseMigrations: azure.DatabaseMigration[], 
 			return filteredMigration.filter(
 				value => {
 					const status = getMigrationStatus(value);
-					return status === constants.MigrationStatus.InProgress
-						|| status === constants.MigrationStatus.Retriable
-						|| status === constants.MigrationStatus.Creating;
+					return status === constants.MigrationState.InProgress
+						|| status === constants.MigrationState.ReadyForCutover
+						|| status === constants.MigrationState.UploadingFullBackup
+						|| status === constants.MigrationState.UploadingLogBackup
+						|| status === constants.MigrationState.Restoring
+						|| status === constants.MigrationState.Retriable
+						|| status === constants.MigrationState.Creating;
 				});
 		case AdsMigrationStatus.SUCCEEDED:
 			return filteredMigration.filter(
-				value => getMigrationStatus(value) === constants.MigrationStatus.Succeeded);
+				value => getMigrationStatus(value) === constants.MigrationState.Succeeded);
 		case AdsMigrationStatus.FAILED:
 			return filteredMigration.filter(
-				value => getMigrationStatus(value) === constants.MigrationStatus.Failed);
+				value => getMigrationStatus(value) === constants.MigrationState.Failed);
 		case AdsMigrationStatus.COMPLETING:
 			return filteredMigration.filter(
-				value => getMigrationStatus(value) === constants.MigrationStatus.Completing);
+				value => getMigrationStatus(value) === constants.MigrationState.Completing);
 	}
 	return filteredMigration;
 }
@@ -323,20 +327,25 @@ export function getPipelineStatusImage(status: string | undefined): IconPath {
 export function getMigrationStatusImage(migration: azure.DatabaseMigration): IconPath {
 	const status = getMigrationStatus(migration);
 	switch (status) {
-		case constants.MigrationStatus.InProgress:
+		case constants.MigrationState.InProgress:
+		case constants.MigrationState.UploadingFullBackup:
+		case constants.MigrationState.UploadingLogBackup:
+		case constants.MigrationState.Restoring:
 			return IconPathHelper.inProgressMigration;
-		case constants.MigrationStatus.Succeeded:
+		case constants.MigrationState.ReadyForCutover:
+			return IconPathHelper.cutover;
+		case constants.MigrationState.Succeeded:
 			return IconPathHelper.completedMigration;
-		case constants.MigrationStatus.Creating:
+		case constants.MigrationState.Creating:
 			return IconPathHelper.notStartedMigration;
-		case constants.MigrationStatus.Completing:
+		case constants.MigrationState.Completing:
 			return IconPathHelper.completingCutover;
-		case constants.MigrationStatus.Retriable:
+		case constants.MigrationState.Retriable:
 			return IconPathHelper.retry;
-		case constants.MigrationStatus.Canceling:
-		case constants.MigrationStatus.Canceled:
+		case constants.MigrationState.Canceling:
+		case constants.MigrationState.Canceled:
 			return IconPathHelper.cancel;
-		case constants.MigrationStatus.Failed:
+		case constants.MigrationState.Failed:
 		default:
 			return IconPathHelper.error;
 	}
