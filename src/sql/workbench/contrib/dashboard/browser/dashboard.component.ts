@@ -31,7 +31,7 @@ export class DashboardComponent extends AngularDisposable implements OnInit {
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrapService: CommonServiceInterface,
 		@Inject(forwardRef(() => Router)) private _router: Router,
-		@Inject(forwardRef(() => ActivatedRoute)) private route: ActivatedRoute,
+		@Inject(forwardRef(() => ActivatedRoute)) private activeRoute: ActivatedRoute,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService
 	) {
 		super();
@@ -43,7 +43,7 @@ export class DashboardComponent extends AngularDisposable implements OnInit {
 		const profile: IConnectionProfile = this._bootstrapService.getOriginalConnectionProfile();
 		if (profile && (!profile.databaseName || Utils.isServerConnection(profile))) {
 			// Route to the server page as this is the default database
-			this._router.navigate(['server-dashboard'], { relativeTo: this.route, skipLocationChange: true }).catch(onUnexpectedError);
+			this._router.navigate(['server-dashboard'], { relativeTo: this.activeRoute, skipLocationChange: true }).catch(onUnexpectedError);
 		}
 	}
 
