@@ -21,17 +21,16 @@ export function getSqlConfigValue<T>(workspaceConfigService: IConfigurationServi
 }
 
 /**
- * Wraps provided string using Unicode character U+000A LINE FEED (LF) that qualifies as line break to wrap text in title attributes (tooltips).
+ * Wraps provided string using \n that qualifies as line break to wrap text in title attributes (tooltips).
  * @param str string to be wrapped
  * @param maxWidth max width to be allowed for wrapped text
  * @returns wrapped string
  */
-export function wrapStringWithUnicodeNewLine(str: string, maxWidth: number): string {
+export function wrapStringWithNewLine(str: string | undefined, maxWidth: number): string | undefined {
 	if (!str) {
-		return null;
+		return str;
 	}
-	let newLineStr = `
-`;
+	let newLineStr = `\n`;
 	let res = '';
 	while (str.length > maxWidth) {
 		let found = false;
