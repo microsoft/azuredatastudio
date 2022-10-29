@@ -106,6 +106,16 @@
 	content: url("help_inverse.svg");
 }
 
+.codicon.info-icon,
+.vs .codicon.info-icon {
+	background-image: url("info.svg");
+}
+
+.vs-dark .codicon.info-icon,
+.hc-black .codicon.info-icon {
+	background-image: url("info_inverse.svg");
+}
+
 .vs .codicon.success,
 .vs-dark .codicon.success,
 .hc-black .codicon.success {
