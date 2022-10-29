@@ -531,8 +531,12 @@ export class ConnectionWidget extends lifecycle.Disposable {
 
 	protected onAuthTypeSelected(selectedAuthType: string) {
 		let currentAuthType = this.getMatchingAuthType(selectedAuthType);
-		this._userNameInputBox.value = '';
-		this._passwordInputBox.value = '';
+		if (currentAuthType !== AuthenticationType.SqlLogin) {
+			if (currentAuthType !== AuthenticationType.AzureMFA && currentAuthType !== AuthenticationType.AzureMFAAndUser) {
+				this._userNameInputBox.value = '';
+			}
+			this._passwordInputBox.value = '';
+		}
 		this._userNameInputBox.hideMessage();
 		this._passwordInputBox.hideMessage();
 		this._azureAccountDropdown.hideMessage();
