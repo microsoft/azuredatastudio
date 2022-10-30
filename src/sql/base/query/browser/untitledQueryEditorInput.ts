@@ -36,8 +36,7 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IUntit
 		@IConfigurationService configurationService: IConfigurationService,
 		@IInstantiationService instantiationService: IInstantiationService,
 		@ILogService private readonly logService: ILogService,
-		@IEditorResolverService private readonly editorResolverService: IEditorResolverService,
-
+		@IEditorResolverService private readonly editorResolverService: IEditorResolverService
 	) {
 		super(description, text, results, connectionManagementService, queryModelService, configurationService, instantiationService);
 		// Set the mode explicitely to stop the auto language detection service from changing the mode unexpectedly.
@@ -83,7 +82,7 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IUntit
 				newInput.state.setState(this.state);
 				return newInput;
 			} else {
-				throw new Error(`Could not resolved editor for resource '{newUriString}'`);
+				throw new Error(`Could not resolved editor for resource '${newUriString}'`);
 			}
 		}
 		catch (error) {
