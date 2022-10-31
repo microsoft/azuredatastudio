@@ -9,10 +9,24 @@ import * as path from 'path';
 import * as url from 'url';
 import * as fs from 'fs';
 import got from 'got';
+import * as stream from 'stream';
+import { promisify } from 'util';
+const pipeline = promisify(stream.pipeline);
+import { mkdir, rm, rmdir } from 'fs/promises';
+import yauzl from 'yauzl-promise';
+
 const ROOT_DIR = path.join(path.dirname(url.fileURLToPath(import.meta.url)), '..');
+const DOWNLOADED_EXT_DIR = path.join(ROOT_DIR, '.downloaded-extensions');
 
 const MICROSOFT_SQLOPS_DOWNLOADPAGE = 'Microsoft.SQLOps.DownloadPage';
 const MICROSOFT_VISUALSTUDIO_SERVICES_VSIXPACKAGE = 'Microsoft.VisualStudio.Services.VSIXPackage';
+const MICROSOFT_VISUALSTUDIO_CODE_ENGINE = 'Microsoft.VisualStudio.Code.Engine';
+const MICROSOFT_AZDATAENGINE = 'Microsoft.AzDataEngine';
+
+const STABLE = 'extensionsGallery';
+const STABLE_DOWNLOADED_EXT_DIR = path.join(DOWNLOADED_EXT_DIR, STABLE);
+const INSIDERS = 'extensionsGallery-insider';
+const INSIDERS_DOWNLOADED_EXT_DIR = path.join(DOWNLOADED_EXT_DIR, INSIDERS);
 
 /**
  * This file is for validating the extension gallery files to ensure that they adhere to the expected schema defined in
@@ -73,9 +87,7 @@ async function validateResults(galleryFilePath, resultsJson) {
     if (!resultsJson.extensions || !resultsJson.extensions.length) {
         throw new Error(`${galleryFilePath} - No extensions\n${JSON.stringify(resultsJson)}`)
     }
-    for (const extension of resultsJson.extensions) {
-        await validateExtension(galleryFilePath, extension);
-    }
+    await Promise.all(resultsJson.extensions.map(e => validateExtension(galleryFilePath, e)));
 
     if (!resultsJson.resultMetadata || !resultsJson.resultMetadata.length) {
         throw new Error(`${galleryFilePath} - No resultMetadata\n${JSON.stringify(resultsJson)}`)
@@ -117,8 +129,11 @@ async function validateExtension(galleryFilePath, extensionJson) {
     if (!extensionJson.versions || !extensionJson.versions.length) {
         throw new Error(`${galleryFilePath} - Invalid versions\n${JSON.stringify(extensionJson)}`)
     }
+    if (extensionJson.versions.length !== 1) {
+        throw new Error(`${galleryFilePath} - Only one version is currently supported\n${JSON.stringify(extensionJson)}`)
+    }
     for (const version of extensionJson.versions) {
-        await validateVersion(galleryFilePath, extensionName, version);
+        await validateVersion(galleryFilePath, extensionName, extensionJson, version);
     }
 
     if (!extensionJson.statistics || extensionJson.statistics.length === undefined) {
@@ -159,7 +174,7 @@ function validateExtensionStatistics(galleryFilePath, extensionName, extensionSt
  *     properties?: IRawGalleryExtensionProperty[];
  * }
  */
-async function validateVersion(galleryFilePath, extensionName, extensionVersionJson) {
+async function validateVersion(galleryFilePath, extensionName, extensionJson, extensionVersionJson) {
     if (!extensionVersionJson.version) {
         throw new Error(`${galleryFilePath} - ${extensionName} - No version\n${JSON.stringify(extensionVersionJson)}`)
     }
@@ -182,17 +197,13 @@ async function validateVersion(galleryFilePath, extensionName, extensionVersionJ
     validateHasRequiredAssets(galleryFilePath, extensionName, extensionVersionJson.files);
 
     for (const file of extensionVersionJson.files) {
-        await validateExtensionFile(galleryFilePath, extensionName, file);
+        await validateExtensionFile(galleryFilePath, extensionName, extensionJson, file);
     }
     if (extensionVersionJson.properties && extensionVersionJson.properties.length) {
         extensionVersionJson.properties.forEach(property => validateExtensionProperty(galleryFilePath, extensionName, property));
-        const azdataEngineVersion = extensionVersionJson.properties.find(property => property.key === 'Microsoft.AzDataEngine' && (property.value.startsWith('>=') || property.value === '*'))
+        const azdataEngineVersion = extensionVersionJson.properties.find(property => property.key === MICROSOFT_AZDATAENGINE && (property.value.startsWith('>=') || property.value === '*'))
         if (!azdataEngineVersion) {
             throw new Error(`${galleryFilePath} - ${extensionName} - No valid Microsoft.AzdataEngine property found. Value must be either * or >=x.x.x where x.x.x is the minimum Azure Data Studio version the extension requires\n${JSON.stringify(extensionVersionJson.properties)}`)
-        }
-        const vscodeEngineVersion = extensionVersionJson.properties.find(property => property.key === 'Microsoft.VisualStudio.Code.Engine');
-        if (vscodeEngineVersion && vscodeEngineVersion.value.startsWith('>=') && azdataEngineVersion.value.startsWith('>=')) {
-            throw new Error(`${galleryFilePath} - ${extensionName} - Both Microsoft.AzDataEngine and Microsoft.VisualStudio.Code.Engine should not have minimum versions. Each Azure Data Studio version is tied to a specific VS Code version and so having both is redundant.`)
         }
     } else {
         throw new Error(`${galleryFilePath} - ${extensionName} - No properties, extensions must have an AzDataEngine version defined`)
@@ -279,9 +290,10 @@ const allowedHosts = [
  *     assetType: string;
  *     source: string;
  * }
- * Will also validate that the source URL provided is valid.
+ * Will also validate that the source URL provided is valid, and if it's a direct VSIX link that the
+ * package metadata matches what's in the gallery.
  */
-async function validateExtensionFile(galleryFilePath, extensionName, extensionFileJson) {
+async function validateExtensionFile(galleryFilePath, extensionName, extensionJson, extensionFileJson) {
     if (!extensionFileJson.assetType) {
         throw new Error(`${galleryFilePath} - ${extensionName} - No assetType\n${JSON.stringify(extensionFileJson)}`)
     }
@@ -297,13 +309,136 @@ async function validateExtensionFile(galleryFilePath, extensionName, extensionFi
     }
 
     // Validate the source URL
-    try {
-        const response = await got(extensionFileJson.source);
-        if (response.statusCode !== 200) {
-            throw new Error(`${response.statusCode}: ${response.statusMessage}`);
+    if (extensionFileJson.assetType === MICROSOFT_VISUALSTUDIO_SERVICES_VSIXPACKAGE) {
+        const downloadVsixPath = path.join(DOWNLOADED_EXT_DIR, path.basename(galleryFilePath, '.json'), `${extensionName}.vsix`);
+        // Download VSIX into temp download location
+        try {
+            const vsixDownloadStream = got.stream(extensionFileJson.source);
+            const vsixWriteStream = fs.createWriteStream(downloadVsixPath);
+            await pipeline(vsixDownloadStream, vsixWriteStream);
+            vsixWriteStream.close();
+        } catch (err) {
+            throw new Error(`${galleryFilePath} - ${extensionName} - Error downloading ${extensionFileJson.assetType} with URL ${extensionFileJson.source}. ${err}`);
         }
-    } catch (err) {
-        throw new Error(`${galleryFilePath} - ${extensionName} - Error fetching ${extensionFileJson.assetType} with URL ${extensionFileJson.source}. ${err}`);
+
+        const vsixUnzipDir = path.join(DOWNLOADED_EXT_DIR, path.basename(galleryFilePath, '.json'), extensionName);
+        const packageJsonWritePath = path.join(vsixUnzipDir, 'package.json');
+        // Extract the package.json from the downloaded VSIX
+        try {
+            const vsix = await yauzl.open(downloadVsixPath, { autoClose: true });
+            await mkdir(vsixUnzipDir);
+            await vsix.walkEntries(async (entry) => {
+                // We only care about the root package.json for right now
+                if (entry.fileName == 'extension/package.json') {
+                    await mkdir(path.dirname(packageJsonWritePath), { recursive: true });
+                    const entryWriteStream = fs.createWriteStream(packageJsonWritePath);
+                    const entryReadStream = await entry.openReadStream({ autoClose: true });
+                    await pipeline(entryReadStream, entryWriteStream);
+                    entryWriteStream.close();
+                }
+            });
+        } catch (err) {
+            throw new Error(`${galleryFilePath} - ${extensionName} - Error extracting package.json from ${downloadVsixPath}. ${err}`);
+        }
+
+        // Validate that the package.json metadata matches the gallery metadata
+        try {
+            const packageJson = JSON.parse(fs.readFileSync(packageJsonWritePath));
+            validatePackageJson(extensionJson, packageJson);
+        } catch (err) {
+            throw new Error(`${galleryFilePath} - ${extensionName} - Error validating package.json. ${err}`);
+        }
+    } else {
+        try {
+            const response = await got(extensionFileJson.source);
+            if (response.statusCode !== 200) {
+                throw new Error(`${response.statusCode}: ${response.statusMessage}`);
+            }
+        } catch (err) {
+            throw new Error(`${galleryFilePath} - ${extensionName} - Error fetching ${extensionFileJson.assetType} with URL ${extensionFileJson.source}. ${err}`);
+        }
+    }
+}
+
+/**
+ * Mappings of publisher IDs in the extension gallery to the list of valid aliases for that publisher in the package.json
+ */
+const publisherMappings = {
+    'Microsoft': ['ms-vscode', 'VisualStudioExptTeam']
+}
+
+/**
+ * Validates that the entries in the package.json for the given extension matches those specified in the extension gallery.
+ *
+ * @param extensionJson The JSON object for this extension from the gallery
+ * @param packageJson The JSON object for this extension from the package.json of the extension
+ */
+function validatePackageJson(extensionJson, packageJson) {
+    // Check names match
+    if (extensionJson.extensionName !== packageJson.name) {
+        throw new Error(`Extension name in gallery (${extensionJson.extensionName}) does not match extension name in package.json (${packageJson.name})`);
+    }
+
+    // Check publishers match
+    if (extensionJson.publisher.publisherId !== packageJson.publisher && publisherMappings[extensionJson.publisher.publisherId]?.find(m => m === packageJson.publisher) === undefined) {
+        throw new Error(`Publisher in gallery (${extensionJson.publisher.publisherId}) does not match publisher in package.json (${packageJson.publisher})`);
+    }
+
+    // Check versions match
+    const extensionJsonVersion = extensionJson.versions[0].version;
+    if (extensionJsonVersion !== packageJson.version) {
+        throw new Error(`Version in gallery (${extensionJsonVersion}) does not match version in package.json (${packageJson.version})`);
+    }
+
+    // Check vs code engine matches
+    const extensionVsCodeEngine = extensionJson.versions[0].properties.find(p => p.key === MICROSOFT_VISUALSTUDIO_CODE_ENGINE)?.value;
+    const packageVsCodeEngine = packageJson.engines?.vscode;
+    validateEngineVersionMatches(MICROSOFT_VISUALSTUDIO_CODE_ENGINE, 'vscode', extensionVsCodeEngine, packageVsCodeEngine);
+
+    // Check azdata engine matches
+    const extensionAzdataEngine = extensionJson.versions[0].properties.find(p => p.key === MICROSOFT_AZDATAENGINE)?.value;
+    const packageAzdataEngine = packageJson.engines?.azdata;
+    validateEngineVersionMatches(MICROSOFT_AZDATAENGINE, 'azdata', extensionAzdataEngine, packageAzdataEngine);
+
+    // Check that if gallery has preview flag the package.json does as well
+    // (note that currently multiple flags aren't supported by ADS so we can just check for strict equals on the gallery)
+    if (extensionJson.flags === 'preview' && packageJson.preview != true) {
+        throw new Error(`Gallery has preview flag but package.json does not have preview property set to true`);
+    }
+
+    // Check that if the gallery doesn't have the preview flag the package.json doesn't either
+    // (note that currently multiple flags aren't supported by ADS so we can just check for strict equals on the gallery)
+    if (extensionJson.flags !== 'preview' && packageJson.preview === true) {
+        throw new Error(`Gallery does not have preview flag but package.json has preview property set to true`);
+    }
+}
+
+function validateEngineVersionMatches(extensionGalleryEngineName, packageEngineName, extensionGalleryVersion, packageVersion) {
+    // Normalize the engine versions since both ^ and >= are supported
+    const normalizedExtensionGalleryVersion = extensionGalleryVersion?.replace(">=", "^");
+    const normalizedPackageVersion = packageVersion?.replace(">=", "^");
+
+    // Treat * and undefined as equal
+    if (normalizedExtensionGalleryVersion === '*' && normalizedPackageVersion === undefined) {
+        return;
+    }
+
+    if (normalizedExtensionGalleryVersion === undefined && normalizedPackageVersion === '*') {
+        return;
+    }
+
+    // Package.json has non-* version but gallery doesn't
+    if (normalizedExtensionGalleryVersion === undefined && normalizedPackageVersion !== undefined) {
+        throw new Error(`Extension gallery does not have engine version specified (${extensionGalleryEngineName}) but package.json has ${packageVersion} (${packageEngineName})`);
+    }
+
+    // Gallery has non-* version but package.json doesn't
+    if (normalizedExtensionGalleryVersion !== undefined && normalizedPackageVersion === undefined) {
+        throw new Error(`package.json does not have engine version specified (${packageEngineName}) but extension gallery has ${extensionGalleryVersion} (${extensionGalleryEngineName})`);
+    }
+
+    if (normalizedExtensionGalleryVersion !== normalizedPackageVersion) {
+        throw new Error(`package.json version ${packageVersion} (${packageEngineName}) does not match extension gallery version ${extensionGalleryVersion} (${extensionGalleryEngineName})`);
     }
 }
 
@@ -336,6 +471,21 @@ function validateResultMetadata(galleryFilePath, extensionCount, resultMetadataJ
         }
     })
 }
+
+async function cleanDownloadedExtensionFolder(downloadedExtDir) {
+    // Delete folder if it exists
+    try {
+        await rm(downloadedExtDir, { recursive: true, force: true });
+    } catch (err) {
+        if (err.code !== 'ENOENT') {
+            throw err;
+        }
+    }
+    await mkdir(downloadedExtDir, { recursive: true });
+}
+
+await cleanDownloadedExtensionFolder(STABLE_DOWNLOADED_EXT_DIR);
+await cleanDownloadedExtensionFolder(INSIDERS_DOWNLOADED_EXT_DIR);
 
 await Promise.all([
     validateExtensionGallery(path.join(ROOT_DIR, 'extensionsGallery.json')),
