@@ -34,7 +34,7 @@ import { filterIconClassNames, searchPlaceholder, topOperationsSearchDescription
 const TABLE_SORT_COLUMN_KEY = 'tableCostColumnForSorting';
 
 export class TopOperationsTab extends Disposable implements IPanelTab {
-	public readonly title = localize('topOperationsTabTitle', "Top Operations  (Preview)");
+	public readonly title = localize('topOperationsTabTitle', "Top Operations");
 	public readonly identifier: string = 'TopOperationsTab';
 	public readonly view: TopOperationsTabView;
 
@@ -332,6 +332,15 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 				table.focus();
 				evt.event.preventDefault();
 				evt.event.stopPropagation();
+			}
+		}));
+
+		this._register(table.onKeyDown(e => {
+			if (e.event.key === 'F3') {
+				table.grid.sortColumnByActiveCell();
+				e.event.preventDefault();
+				e.event.stopPropagation();
+
 			}
 		}));
 

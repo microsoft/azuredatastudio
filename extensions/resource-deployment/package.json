@@ -534,12 +534,12 @@
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
-    "@types/mocha": "^9.1.1",
+    "@types/mocha": "^7.0.2",
     "@types/semver": "^7.3.1",
     "@types/sinon": "^9.0.8",
     "@types/yamljs": "0.2.30",
     "@microsoft/azdata-test": "^2.0.3",
-    "mocha": "^9.2.2",
+    "mocha": "^7.1.1",
     "should": "^13.2.3",
     "sinon": "^9.2.0",
     "typemoq": "^2.1.0",

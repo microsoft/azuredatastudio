@@ -83,7 +83,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _contextsChangedEmitter = new Emitter<void>();
 	private _contextsLoadingEmitter = new Emitter<void>();
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
-	private _kernelsChangedEmitter = new Emitter<nb.IKernel>();
+	private _kernelsAddedEmitter = new Emitter<nb.IKernel>();
 	private _kernelChangedEmitter = new Emitter<nb.IKernelChangedArgs>();
 	private _viewModeChangedEmitter = new Emitter<ViewMode>();
 	private _layoutChanged = new Emitter<void>();
@@ -138,7 +138,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		@IUndoRedoService private undoService: IUndoRedoService,
 		@INotebookService private _notebookService: INotebookService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
-		@ILanguageService private _modeService: ILanguageService,
+		@ILanguageService private _languageService: ILanguageService,
 	) {
 		super();
 		if (!_notebookOptions || !_notebookOptions.notebookUri || !_notebookOptions.executeManagers) {
@@ -165,8 +165,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (!fileExt) {
 			let languageMode = this._notebookOptions.getInputLanguageMode();
 			if (languageMode) {
-				let languageName = this._modeService.getLanguageName(languageMode);
-				let fileExtensions = this._modeService.getExtensions(languageName);
+				let fileExtensions = this._languageService.getExtensions(languageMode);
 				if (fileExtensions?.length > 0) {
 					extensions = fileExtensions;
 				} else {
@@ -188,7 +187,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			let manager = await this._notebookService.getOrCreateExecuteManager(kernels[0].notebookProvider, this.notebookUri);
 			this._notebookOptions.executeManagers.push(manager);
 
-			this._kernelsChangedEmitter.fire(this._activeClientSession?.kernel);
+			this._kernelsAddedEmitter.fire(this._activeClientSession?.kernel);
 		}
 	}
 
@@ -257,12 +256,18 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._activeClientSession;
 	}
 
+	/**
+	 * Event that gets fired after the kernel is changed from starting a session or selecting one from the kernel dropdown.
+	 */
 	public get kernelChanged(): Event<nb.IKernelChangedArgs> {
 		return this._kernelChangedEmitter.event;
 	}
 
-	public get kernelsChanged(): Event<nb.IKernel> {
-		return this._kernelsChangedEmitter.event;
+	/**
+	 * Event that gets fired when new kernels are added to the model from new notebook providers in the registry.
+	 */
+	public get kernelsAdded(): Event<nb.IKernel> {
+		return this._kernelsAddedEmitter.event;
 	}
 
 	public get layoutChanged(): Event<void> {
@@ -1021,9 +1026,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			clientSession.onKernelChanging(async (e) => {
 				await this.loadActiveContexts(e);
 			});
-			clientSession.statusChanged(async (session) => {
-				this._kernelsChangedEmitter.fire(session.kernel);
-			});
 			await clientSession.initialize().then(() => {
 				this._sessionLoadFinished.resolve();
 			});
@@ -1280,7 +1282,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	private async updateKernelInfoOnKernelChange(kernel: nb.IKernel, kernelAlias?: string) {
 		await this.updateKernelInfo(kernel);
-		kernelAlias = this.kernelAliases.find(kernel => this._defaultLanguageInfo?.name === kernel.toLowerCase()) ?? kernelAlias;
+		if (!kernelAlias) {
+			kernelAlias = this.kernelAliases.find(k => this._defaultLanguageInfo?.name === k.toLowerCase());
+		}
 		// In order to change from kernel alias to other kernel, set kernelAlias to undefined in order to update to new kernel language info
 		if (this._selectedKernelDisplayName !== kernelAlias && this._selectedKernelDisplayName) {
 			kernelAlias = undefined;

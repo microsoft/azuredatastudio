@@ -94,7 +94,7 @@ suite.skip('MarkdownTextTransformer', () => {
 			onDidChange: (_a: any) => { }
 		};
 
-		let modeService: any = {
+		let languageService: any = {
 			languageIdCodec: {
 				encodeLanguageId: (languageId: string) => { return <LanguageId>undefined; },
 				decodeLanguageId: (languageId: LanguageId) => { return <string>undefined; }
@@ -106,7 +106,7 @@ suite.skip('MarkdownTextTransformer', () => {
 				isForSimpleWidget: true, defaultEOL: DefaultEndOfLine.LF, detectIndentation: true,
 				indentSize: 0, insertSpaces: false, largeFileOptimizations: false, tabSize: 4, trimAutoWhitespace: false,
 				bracketPairColorizationOptions: { independentColorPoolPerBracketType: false, enabled: true }
-			}, undefined, undoRedoService, modeService,
+			}, undefined, undoRedoService, languageService,
 			languageConfigurationService);
 
 		// Couple widget with newly created text model

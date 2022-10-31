@@ -288,7 +288,12 @@ export function minifyTask(src: string, sourceMapBaseUrl?: string): (cb: any) =>
 			postcss([cssnano({ preset: 'default' })]),
 			cssFilter.restore,
 			svgFilter,
-			svgmin(),
+			// {{SQL CARBON EDIT}} - Disable the removeViewBox option because some SVG files ADS needs will not scale properly when the view box information is removed.
+			svgmin({
+				plugins: [
+					{ removeViewBox: false }
+				]
+			}),
 			svgFilter.restore,
 			(<any>sourcemaps).mapSources((sourcePath: string) => {
 				if (sourcePath === 'bootstrap-fork.js') {
