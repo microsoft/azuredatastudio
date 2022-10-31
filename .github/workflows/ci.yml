@@ -71,13 +71,14 @@ jobs:
       - name: Compile and Download
         run: yarn npm-run-all --max_old_space_size=4095 -lp compile "electron x64" # {{SQL CARBON EDIT}} Remove unused options playwright-install download-builtin-extensions
 
-      - name: Run Unit Tests (Electron)
+      - name: Run Core Unit Tests # {{SQL CARBON EDIT}} Rename to core for clarity
         run: .\scripts\test.bat
 
       # - name: Run Unit Tests (Browser) {{SQL CARBON EDIT}} disable for now
       #   run: yarn test-browser --browser chromium
 
-      # - name: Run Integration Tests (Electron) {{SQL CARBON EDIT}} disable for now
+      # {{SQL CARBON EDIT}} Rename to core for clarity
+      # - name: Run Core Integration Tests {{SQL CARBON EDIT}} disable for now
       #   run: .\scripts\test-integration.bat
 
   linux:
@@ -137,11 +138,11 @@ jobs:
         env:
           SQL_NO_INLINE_SOURCEMAP: 1
 
-      - name: Run Unit Tests (Electron)
+      - name: Run Core Unit Tests # {{SQL CARBON EDIT}} Rename to core for clarity
         id: electron-unit-tests
         run: DISPLAY=:10 ./scripts/test.sh --runGlob "**/sql/**/*.test.js" --coverage
 
-      - name: Run Extension Unit Tests (Electron)
+      - name: Run Extension Unit Tests # {{SQL CARBON EDIT}} Rename to core for clarity
         id: electron-extension-unit-tests
         run: DISPLAY=:10 ./scripts/test-extensions-unit.sh
 
@@ -158,7 +159,8 @@ jobs:
       #   id: browser-unit-tests
       #   run: DISPLAY=:10 yarn test-browser --browser chromium
 
-      # - name: Run Integration Tests (Electron) {{SQL CARBON EDIT}} Skip for now
+      # {{SQL CARBON EDIT}} Rename to core for clarity
+      # - name: Run Core Integration Tests {{SQL CARBON EDIT}} Skip for now
       #   id: electron-integration-tests
       #   run: DISPLAY=:10 ./scripts/test-integration.sh
 
@@ -215,13 +217,14 @@ jobs:
           security default-keychain -s $RUNNER_TEMP/buildagent.keychain
           security unlock-keychain -p pwd $RUNNER_TEMP/buildagent.keychain
 
-      - name: Run Unit Tests (Electron)
+      - name: Run Core Unit Tests # {{SQL CARBON EDIT}} Rename to core for clarity
         run: DISPLAY=:10 ./scripts/test.sh
 
       # - name: Run Unit Tests (Browser) {{SQL CARBON EDIT}} Skip for now
       #   run: DISPLAY=:10 yarn test-browser --browser chromium
 
-      # - name: Run Integration Tests (Electron) {{SQL CARBON EDIT}} Skip for now
+      # {{SQL CARBON EDIT}} Rename to core for clarity
+      # - name: Run Core Integration Tests {{SQL CARBON EDIT}} Skip for now
       #   run: DISPLAY=:10 ./scripts/test-integration.sh
 
   hygiene:

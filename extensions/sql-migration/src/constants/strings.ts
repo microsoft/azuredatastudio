@@ -10,15 +10,20 @@ import { MigrationSourceAuthenticationType } from '../models/stateMachine';
 import { formatNumber, ParallelCopyTypeCodes, PipelineStatusCodes } from './helper';
 const localize = nls.loadMessageBundle();
 
-export enum MigrationStatus {
-	Failed = 'Failed',
-	Succeeded = 'Succeeded',
-	InProgress = 'InProgress',
+// mirrors MigrationState as defined in RP
+export enum MigrationState {
 	Canceled = 'Canceled',
+	Canceling = 'Canceling',
 	Completing = 'Completing',
 	Creating = 'Creating',
-	Canceling = 'Canceling',
+	Failed = 'Failed',
+	InProgress = 'InProgress',
+	ReadyForCutover = 'ReadyForCutover',
+	Restoring = 'Restoring',
 	Retriable = 'Retriable',
+	Succeeded = 'Succeeded',
+	UploadingFullBackup = 'UploadingFullBackup',
+	UploadingLogBackup = 'UploadingLogBackup',
 }
 
 export enum ProvisioningState {
@@ -417,7 +422,6 @@ export const SELECT_SERVICE_PLACEHOLDER = localize('sql.migration.select.service
 // database backup page
 export const DATA_SOURCE_CONFIGURATION_PAGE_TITLE = localize('sql.migration.data.source.configuration.page.title', "Data source configuration");
 export const DATABASE_BACKUP_PAGE_DESCRIPTION = localize('sql.migration.database.page.description', "Select the location of the database backups to use during migration.");
-export const DATABASE_BACKUP_CHECKSUM_INFO_TEXT = localize('sql.migration.database.checksum.info.text', "Ensure that your backups were taken with the WITH CHECKSUM option.");
 export const DATABASE_BACKUP_NC_NETWORK_SHARE_RADIO_LABEL = localize('sql.migration.nc.network.share.radio.label', "My database backups are on a network share");
 export const DATABASE_BACKUP_NC_BLOB_STORAGE_RADIO_LABEL = localize('sql.migration.nc.blob.storage.radio.label', "My database backups are in an Azure Storage Blob Container");
 export const DATABASE_BACKUP_NETWORK_SHARE_HEADER_TEXT = localize('sql.migration.network.share.header.text', "Network share details");
@@ -807,11 +811,8 @@ export const MIGRATION_MODE = localize('sql.migration.cutover.type', "Mode");
 export const START_TIME = localize('sql.migration.start.time', "Start time");
 export const FINISH_TIME = localize('sql.migration.finish.time', "Finish time");
 
-export function STATUS_VALUE(status: string, count: number): string {
-	if (count > 0) {
-		return localize('sql.migration.status.error.count.some', "{0} (", StatusLookup[status] ?? status);
-	}
-	return localize('sql.migration.status.error.count.none', "{0}", StatusLookup[status] ?? status);
+export function STATUS_VALUE(status: string): string {
+	return localize('sql.migration.status.value', "{0}", StatusLookup[status] ?? status);
 }
 
 export const MIGRATION_ERROR_DETAILS_TITLE = localize('sql.migration.error.details.title', "Migration error details");
@@ -828,14 +829,18 @@ export interface LookupTable<T> {
 }
 
 export const StatusLookup: LookupTable<string | undefined> = {
-	[MigrationStatus.InProgress]: localize('sql.migration.status.inprogress', 'In progress'),
-	[MigrationStatus.Succeeded]: localize('sql.migration.status.succeeded', 'Succeeded'),
-	[MigrationStatus.Creating]: localize('sql.migration.status.creating', 'Creating'),
-	[MigrationStatus.Completing]: localize('sql.migration.status.completing', 'Completing'),
-	[MigrationStatus.Retriable]: localize('sql.migration.status.retriable', 'Retriable'),
-	[MigrationStatus.Canceling]: localize('sql.migration.status.canceling', 'Canceling'),
-	[MigrationStatus.Canceled]: localize('sql.migration.status.canceled', 'Canceled'),
-	[MigrationStatus.Failed]: localize('sql.migration.status.failed', 'Failed'),
+	[MigrationState.Canceled]: localize('sql.migration.status.canceled', 'Canceled'),
+	[MigrationState.Canceling]: localize('sql.migration.status.canceling', 'Canceling'),
+	[MigrationState.Completing]: localize('sql.migration.status.completing', 'Completing'),
+	[MigrationState.Creating]: localize('sql.migration.status.creating', 'Creating'),
+	[MigrationState.Failed]: localize('sql.migration.status.failed', 'Failed'),
+	[MigrationState.InProgress]: localize('sql.migration.status.inprogress', 'In progress'),
+	[MigrationState.ReadyForCutover]: localize('sql.migration.status.readyforcutover', 'Ready for cutover'),
+	[MigrationState.Restoring]: localize('sql.migration.status.restoring', 'Restoring'),
+	[MigrationState.Retriable]: localize('sql.migration.status.retriable', 'Retriable'),
+	[MigrationState.Succeeded]: localize('sql.migration.status.succeeded', 'Succeeded'),
+	[MigrationState.UploadingFullBackup]: localize('sql.migration.status.uploadingfullbackup', 'Uploading full backup'),
+	[MigrationState.UploadingLogBackup]: localize('sql.migration.status.uploadinglogbackup', 'Uploading log backup(s)'),
 	default: undefined
 };
 
@@ -862,25 +867,29 @@ export const ParallelCopyType: LookupTable<string | undefined> = {
 };
 
 export function STATUS_WARNING_COUNT(status: string, count: number): string | undefined {
-	if (status === MigrationStatus.InProgress ||
-		status === MigrationStatus.Creating ||
-		status === MigrationStatus.Completing) {
+	if (status === MigrationState.InProgress ||
+		status === MigrationState.ReadyForCutover ||
+		status === MigrationState.UploadingFullBackup ||
+		status === MigrationState.UploadingLogBackup ||
+		status === MigrationState.Restoring ||
+		status === MigrationState.Creating ||
+		status === MigrationState.Completing) {
 		switch (count) {
 			case 0:
 				return undefined;
 			case 1:
-				return localize('sql.migration.status.warning.count.single', "{0} Warning)", count);
+				return localize('sql.migration.status.warning.count.single', " ({0} warning)", count);
 			default:
-				return localize('sql.migration.status.warning.count.multiple', "{0} Warnings)", count);
+				return localize('sql.migration.status.warning.count.multiple', " ({0} warnings)", count);
 		}
 	} else {
 		switch (count) {
 			case 0:
 				return undefined;
 			case 1:
-				return localize('sql.migration.status.error.count.single', "{0} Error)", count);
+				return localize('sql.migration.status.error.count.single', " ({0} error)", count);
 			default:
-				return localize('sql.migration.status.error.count.multiple', "{0} Errors)", count);
+				return localize('sql.migration.status.error.count.multiple', " ({0} errors)", count);
 		}
 	}
 }
@@ -934,7 +943,6 @@ export const ENTER_YOUR_SQL_CREDS = localize('sql.migration.enter.your.sql.cred'
 export const SERVER = localize('sql.migration.server', "Server");
 export const USERNAME = localize('sql.migration.username', "User name");
 export const SIZE = localize('sql.migration.size', "Size (MB)");
-export const LAST_BACKUP = localize('sql.migration.last.backup', "Last backup");
 export const DATABASE_MIGRATE_TEXT = localize('sql.migrate.text', "Select the databases that you want to migrate to Azure SQL.");
 export const OFFLINE_CAPS = localize('sql.migration.offline.caps', "OFFLINE");
 export const SELECT_DATABASE_TO_CONTINUE = localize('sql.migration.select.database.to.continue', "Please select 1 or more databases to assess for migration");

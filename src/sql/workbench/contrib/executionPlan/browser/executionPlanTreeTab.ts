@@ -26,7 +26,7 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import { deepClone } from 'vs/base/common/objects';
 
 export class ExecutionPlanTreeTab extends Disposable implements IPanelTab {
-	public readonly title: string = localize('planTreeTab.title', 'Plan Tree (Preview)');
+	public readonly title: string = localize('planTreeTab.title', 'Plan Tree');
 	public readonly identifier: string = 'planTreeTab';
 	public readonly view: ExecutionPlanTreeTabView;
 
