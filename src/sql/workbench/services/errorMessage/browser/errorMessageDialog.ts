@@ -41,6 +41,7 @@ export class ErrorMessageDialog extends Modal {
 	private _messageDetails?: string;
 	private _okLabel: string;
 	private _closeLabel: string;
+	private _readMoreLabel: string;
 
 	private _onOk = new Emitter<void>();
 	public onOk: Event<void> = this._onOk.event;
@@ -57,6 +58,7 @@ export class ErrorMessageDialog extends Modal {
 		super('', TelemetryKeys.ModalDialogName.ErrorMessage, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'normal', hasTitleIcon: true });
 		this._okLabel = localize('errorMessageDialog.ok', "OK");
 		this._closeLabel = localize('errorMessageDialog.close', "Close");
+		this._readMoreLabel = localize('errorMessageDialog.readMore', "Read More");
 	}
 
 	protected renderBody(container: HTMLElement) {
@@ -115,7 +117,7 @@ export class ErrorMessageDialog extends Modal {
 			let childElement = DOM.$('div.error-instruction-text');
 			childElement.innerText = this._instructionText!;
 			if (this._readMoreLink) {
-				childElement.innerHTML += ` <a href="${this._readMoreLink}">Read more</a>`;
+				childElement.innerHTML += ` <a href="${this._readMoreLink}">${this._readMoreLabel}</a>`;
 			}
 			DOM.append(this._body!, childElement);
 		}
