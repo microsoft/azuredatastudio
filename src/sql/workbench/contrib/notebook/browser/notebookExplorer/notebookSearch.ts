@@ -344,7 +344,7 @@ export class NotebookSearchView extends SearchView {
 		const onError = (e: any) => {
 			clearTimeout(slowTimer);
 			this.state = SearchUIState.Idle;
-			if (errors.isPromiseCanceledError(e)) {
+			if (errors.isCancellationError(e)) {
 				return onComplete(undefined);
 			} else {
 				this.updateActions();

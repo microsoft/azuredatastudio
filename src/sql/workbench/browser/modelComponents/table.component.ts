@@ -70,7 +70,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 	private _table: Table<Slick.SlickData>;
 	private _tableData: TableDataView<Slick.SlickData>;
 	private _tableColumns;
-	private _checkboxColumns: CheckboxSelectColumn<{}>[] = [];
+	private _checkboxColumns: Map<string, CheckboxSelectColumn<Slick.SlickData>> = new Map();
 	private _buttonColumns: ButtonColumn<{}>[] = [];
 	private _hyperlinkColumns: HyperlinkColumn<{}>[] = [];
 	private _contextMenuColumns: ContextMenuColumn<{}>[] = [];
@@ -373,7 +373,9 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 			this._table.setSelectedRows(this.selectedRows);
 		}
 
-		Object.keys(this._checkboxColumns).forEach(col => this.registerPlugins(col, this._checkboxColumns[col]));
+		this._checkboxColumns.forEach((column, columnName) => {
+			this.registerPlugins(columnName, column);
+		})
 		Object.keys(this._buttonColumns).forEach(col => this.registerPlugins(col, this._buttonColumns[col]));
 		Object.keys(this._hyperlinkColumns).forEach(col => this.registerPlugins(col, this._hyperlinkColumns[col]));
 		Object.keys(this._contextMenuColumns).forEach(col => this.registerPlugins(col, this._contextMenuColumns[col]));
@@ -420,25 +422,25 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 
 			const checkInfo: azdata.CheckBoxCell = cellInfo as azdata.CheckBoxCell;
 			if (checkInfo) {
-				this._checkboxColumns[checkInfo.columnName].reactiveCheckboxCheck(checkInfo.row, checkInfo.checked);
+				this._checkboxColumns.get(checkInfo.columnName).reactiveCheckboxCheck(checkInfo.row, checkInfo.checked);
 			}
 		});
 	}
 
 	private createCheckBoxPlugin(col: azdata.CheckboxColumn, index: number) {
 		let name = col.value;
-		if (!this._checkboxColumns[col.value]) {
+		if (!this._checkboxColumns.has(col.value)) {
 			const checkboxAction = <ActionOnCheck>(col.options ? (<any>col.options).actionOnCheckbox : col.action);
-			this._checkboxColumns[col.value] = new CheckboxSelectColumn({
+			this._checkboxColumns.set(col.value, new CheckboxSelectColumn({
 				title: col.value,
 				toolTip: col.toolTip,
 				width: col.width,
 				cssClass: col.cssClass,
 				headerCssClass: col.headerCssClass,
 				actionOnCheck: checkboxAction
-			}, index);
+			}, index));
 
-			this._register(this._checkboxColumns[col.value].onChange((state) => {
+			this._register(this._checkboxColumns.get(col.value).onChange((state) => {
 				this.fireEvent({
 					eventType: ComponentEventType.onCellAction,
 					args: {

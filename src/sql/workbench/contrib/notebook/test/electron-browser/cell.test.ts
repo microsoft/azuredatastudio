@@ -9,32 +9,38 @@ import * as assert from 'assert';
 
 import * as objects from 'vs/base/common/objects';
 
-import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
+import { CellTypes, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
 import { NotebookModelStub, ClientSessionStub, KernelStub, FutureStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { EmptyFuture } from 'sql/workbench/contrib/notebook/test/emptySessionClasses';
 import { CellEditModes, ICellModel, ICellModelOptions, IClientSession, INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { Deferred } from 'sql/base/common/promise';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { Schemas } from 'vs/base/common/network';
 import { URI } from 'vs/base/common/uri';
-import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { ICommandService, NullCommandService } from 'vs/platform/commands/common/commands';
 import { ControlType, IChartOption } from 'sql/workbench/contrib/charts/browser/chartOptions';
 import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
 import { ICellMetadata } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IModelContentChangedEvent } from 'vs/editor/common/textModelEvents';
+import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
+import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
+import { mock } from 'vs/base/test/common/mock';
 
-let instantiationService: IInstantiationService;
+let instantiationService: TestInstantiationService;
 
 suite('Cell Model', function (): void {
+
 	let serviceCollection = new ServiceCollection();
 	serviceCollection.set(ICommandService, NullCommandService);
-	instantiationService = new InstantiationService(serviceCollection, true);
+	instantiationService = new TestInstantiationService(serviceCollection);
+	instantiationService.stub(INotebookService, new class extends mock<INotebookService>() {
+		override async serializeNotebookStateChange(notebookUri: URI, changeType: NotebookChangeType, cell?: ICellModel, isTrusted?: boolean): Promise<void> { }
+		override notifyCellExecutionStarted(): void { }
+	});
 
 	let factory = new ModelFactory(instantiationService);
 	test('Should set default values if none defined', async function (): Promise<void> {

@@ -30,8 +30,8 @@ function getDefaultOptions<T>(): Slick.GridOptions<T> {
 }
 
 export class Table<T extends Slick.SlickData> extends Widget implements IDisposable {
-	private styleElement: HTMLStyleElement;
-	private idPrefix: string;
+	protected styleElement: HTMLStyleElement;
+	protected idPrefix: string;
 
 	protected _grid: Slick.Grid<T>;
 	protected _columns: Slick.Column<T>[];
@@ -174,6 +174,8 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		if (this._autoscroll) {
 			this._grid.scrollRowIntoView(this._data.getLength() - 1, false);
 		}
+		this.ariaRowCount = this.grid.getDataLength();
+		this.ariaColumnCount = this.grid.getColumns().length;
 	}
 
 	set columns(columns: Slick.Column<T>[]) {
@@ -194,6 +196,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 			this._data = new TableDataView<T>(data);
 		}
 		this._grid.setData(this._data, true);
+		this.updateRowCount();
 	}
 
 	getData(): IDisposableDataProvider<T> {

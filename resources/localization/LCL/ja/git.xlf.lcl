@@ -752,7 +752,7 @@
         <Str Cat="Text">
           <Val><![CDATA[There are no changes to stash.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[一時退避する変更がありません。]]></Val>
+            <Val><![CDATA[スタッシュする変更がありません。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -833,7 +833,7 @@
         <Str Cat="Text">
           <Val><![CDATA[There are no stashes in the repository.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[リポジトリ内に一時退避内容はありません。]]></Val>
+            <Val><![CDATA[リポジトリ内にスタッシュはありません。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -950,7 +950,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Pick a stash to apply]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[適用する一時退避内容を選択してください]]></Val>
+            <Val><![CDATA[適用するスタッシュを選択してください]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -959,7 +959,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Pick a stash to drop]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[ドロップする一時退避を削除する]]></Val>
+            <Val><![CDATA[ドロップするスタッシュを選択する]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -968,7 +968,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Pick a stash to pop]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[適用して削除する一時退避内容を選択してください]]></Val>
+            <Val><![CDATA[ポップするスタッシュを選択する]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1049,7 +1049,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Optionally provide a stash message]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[必要に応じて一時退避メッセージを入力してください]]></Val>
+            <Val><![CDATA[必要に応じてスタッシュ メッセージを提示する]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1166,7 +1166,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Save All & Stash]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[すべてを保存して一時退避する]]></Val>
+            <Val><![CDATA[すべてを保存してスタッシュする]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1265,7 +1265,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Stash Anyway]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[このまま一時退避]]></Val>
+            <Val><![CDATA[このままスタッシュ]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1274,7 +1274,7 @@
         <Str Cat="Text">
           <Val><![CDATA[There were merge conflicts while applying the stash.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[一時退避内容を適用している間に、マージの競合がありました。]]></Val>
+            <Val><![CDATA[スタッシュを適用している間に、マージの競合がありました。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1283,7 +1283,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Stash message]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[一時退避メッセージ]]></Val>
+            <Val><![CDATA[スタッシュ メッセージ]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1292,7 +1292,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Stash & Checkout]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[一時退避してチェックアウト]]></Val>
+            <Val><![CDATA[スタッシュしてチェックアウト]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1301,7 +1301,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Are you sure you want to drop the stash: {0}?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[一時退避内容 {0} を削除しますか?]]></Val>
+            <Val><![CDATA[スタッシュ {0} を削除しますか?]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1391,7 +1391,7 @@
         <Str Cat="Text">
           <Val><![CDATA[There are {0} unsaved files.]D;]A;]D;]A;Would you like to save them before stashing?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} 個の保存されていないファイルがあります。]D;]A;]D;]A;一時退避する前に保存しますか?]]></Val>
+            <Val><![CDATA[{0} 個の保存されていないファイルがあります。]D;]A;]D;]A;スタッシュする前に保存しますか?]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1400,7 +1400,7 @@
         <Str Cat="Text">
           <Val><![CDATA[The following file has unsaved changes which won't be included in the stash if you proceed: {0}.]D;]A;]D;]A;Would you like to save it before stashing?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[次のファイルには保存されていない変更があり、続行すると stash に含められません: {0}。]D;]A;]D;]A;一時退避する前に保存しますか?]]></Val>
+            <Val><![CDATA[次のファイルには保存されていない変更があり、続行するとスタッシュに含められません: {0}。]D;]A;]D;]A;スタッシュする前に保存しますか?]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2966,7 +2966,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Stash]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[一時退避]]></Val>
+            <Val><![CDATA[スタッシュ]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2975,7 +2975,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Apply Stash...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[一時退避内容を適用...]]></Val>
+            <Val><![CDATA[スタッシュを適用...]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2984,7 +2984,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Apply Latest Stash]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[最新の一時退避内容を適用]]></Val>
+            <Val><![CDATA[最新のスタッシュを適用]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2993,7 +2993,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Drop Stash...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[一時退避を削除する...]]></Val>
+            <Val><![CDATA[スタッシュを削除する...]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3002,7 +3002,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Stash (Include Untracked)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[一時退避 (未追跡ファイルを含む)]]></Val>
+            <Val><![CDATA[スタッシュ (未追跡ファイルを含む)]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3011,7 +3011,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Pop Stash...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[一時退避内容を適用して削除...]]></Val>
+            <Val><![CDATA[スタッシュをポップする...]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3020,7 +3020,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Pop Latest Stash]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[最新の一時退避内容を適用して削除]]></Val>
+            <Val><![CDATA[最新のスタッシュをポップ]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3209,7 +3209,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Stash any changes before pulling and restore them after successful pull.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[プルする前にすべての変更を一時退避し、プル成功後に復元します。]]></Val>
+            <Val><![CDATA[プルする前にすべての変更をスタッシュし、プル成功後に復元します。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3704,7 +3704,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Controls whether Git should check for unsaved files before stashing changes.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[変更を一時退避する前に Git で保存していないファイルを確認すべきかどうかを制御します。]]></Val>
+            <Val><![CDATA[変更をスタッシュする前に Git で保存していないファイルを確認すべきかどうかを制御します。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3992,7 +3992,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Controls whether to use the message from the commit input box as the default stash message.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[コミット入力ボックスからのメッセージを既定の stash メッセージとして使用するかどうかを制御します。]]></Val>
+            <Val><![CDATA[コミット入力ボックスからのメッセージを既定のスタッシュ メッセージとして使用するかどうかを制御します。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4100,7 +4100,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Stash]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[一時退避]]></Val>
+            <Val><![CDATA[スタッシュ]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

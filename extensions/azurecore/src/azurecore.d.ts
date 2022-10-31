@@ -355,7 +355,22 @@ declare module 'azurecore' {
 			getTreeDataProvider(): IAzureResourceTreeDataProvider;
 		}
 
-		export interface IAzureResourceTreeDataProvider extends TreeDataProvider<IAzureResourceNode> {
+		export interface IAzureResourceTreeDataProvider {
+			 /**
+			  * Gets the root tree item nodes for this provider - these will be used as
+			  * direct children of the Account node in the Azure tree view.
+			  */
+			getRootChildren(): Promise<azdata.TreeItem[]>;
+			/**
+			 * Gets the children for a given {@link IAzureResourceNode}
+			 * @param element The parent node to get the children for
+			 */
+			getChildren(element: IAzureResourceNode): Promise<IAzureResourceNode[]>;
+			/**
+			 * Gets the tree item to display for a given {@link IAzureResourceNode}
+			 * @param element The resource node to get the TreeItem for
+			 */
+			getResourceTreeItem(element: IAzureResourceNode): Promise<azdata.TreeItem>;
 			browseConnectionMode: boolean;
 		}
 

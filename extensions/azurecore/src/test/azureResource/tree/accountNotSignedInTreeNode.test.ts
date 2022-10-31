@@ -23,8 +23,8 @@ describe('AzureResourceAccountNotSignedInTreeNode.info', function(): void {
 		should(treeItem.contextValue).equal(AzureResourceItemType.message);
 		should(treeItem.collapsibleState).equal(vscode.TreeItemCollapsibleState.None);
 		should(treeItem.command).not.undefined();
-		should(treeItem.command.title).equal(label);
-		should(treeItem.command.command).equal('azure.resource.signin');
+		should(treeItem.command?.title).equal(label);
+		should(treeItem.command?.command).equal('azure.resource.signin');
 
 		const nodeInfo = treeNode.getNodeInfo();
 		should(nodeInfo.isLeaf).true();

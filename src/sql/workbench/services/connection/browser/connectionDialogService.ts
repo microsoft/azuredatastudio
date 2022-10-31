@@ -158,7 +158,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			defaultAuthenticationType = WorkbenchUtils.getSqlConfigValue<string>(this._configurationService, Constants.defaultAuthenticationType);
 		}
 
-		return defaultAuthenticationType || Constants.sqlLogin;  // as a fallback, default to sql login if the value from settings is not available
+		return defaultAuthenticationType || Constants.AuthenticationType.SqlLogin;  // as a fallback, default to sql login if the value from settings is not available
 
 	}
 
@@ -177,11 +177,6 @@ export class ConnectionDialogService implements IConnectionDialogService {
 					return;
 				}
 				profile = result.connection;
-
-				if (params.oldProfileId && params.isEditConnection) {
-					profile.id = params.oldProfileId;
-				}
-
 				profile.serverName = trim(profile.serverName);
 
 				// append the port to the server name for SQL Server connections

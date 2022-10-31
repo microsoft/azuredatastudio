@@ -200,10 +200,10 @@
     "@microsoft/applicationinsights-shims" "^2.0.1"
     "@microsoft/dynamicproto-js" "^1.1.6"
 
-"@microsoft/ads-extension-telemetry@^1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@microsoft/ads-extension-telemetry/-/ads-extension-telemetry-1.2.0.tgz#f54e464ac887440727fe9862f8ff32be17aeab3a"
-  integrity sha512-dEp+RVJYo4uebMLvBJqJF8IABufJRp+PWHZx+3xe6SgAC37oYhcwR/glExhp3Nj3A2v3vjso6YQ/Wd5TG27FPQ==
+"@microsoft/ads-extension-telemetry@^1.3.1":
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/@microsoft/ads-extension-telemetry/-/ads-extension-telemetry-1.3.1.tgz#fa757ee88eac91b21c3a68562da6441c2ad15c39"
+  integrity sha512-8Zd7RwwN7ZufMoWFmc1bwzmQc1RV7/jf/Ua33YL1+P0ZwHoWFOhf/b0lwvAVzi9TB/7oD5zA5yv7A/i2sSTn6Q==
   dependencies:
     "@vscode/extension-telemetry" "^0.6.2"
 
@@ -220,13 +220,15 @@
   resolved "https://registry.yarnpkg.com/@microsoft/applicationinsights-shims/-/applicationinsights-shims-2.0.1.tgz#5d72fb7aaf4056c4fda54f9d7c93ccf8ca9bcbfd"
   integrity sha512-G0MXf6R6HndRbDy9BbEj0zrLeuhwt2nsXk2zKtF0TnYo39KgYqhYC2ayIzKPTm2KAE+xzD7rgyLdZnrcRvt9WQ==
 
-"@microsoft/azdata-test@^1.5.2":
-  version "1.5.2"
-  resolved "https://registry.yarnpkg.com/@microsoft/azdata-test/-/azdata-test-1.5.2.tgz#0a750eed6c686eaf98e63db580f119916a083d6a"
-  integrity sha512-m1WVNxkCqU8nkaRB0Q/DEq1wHej0Ev3bfyEmsPgX9znymY7MD9c1l6kRoHtPPmsYYDEjcCxO2QXUJAsNUeAKwg==
+"@microsoft/azdata-test@^2.0.3":
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@microsoft/azdata-test/-/azdata-test-2.0.3.tgz#652984efa2f5adc56cdae9029a4d5f33446b54d3"
+  integrity sha512-BgB6gGjQVXxnZHq7o5TlajZR/mJd/6AqbclrGzoyATvCEt92jRXhPzaY6XA/jMahdUGFSQwXpm45qRhZetwDig==
   dependencies:
     http-proxy-agent "^2.1.0"
     https-proxy-agent "^2.2.4"
+    mocha-junit-reporter "^1.17.0"
+    mocha-multi-reporters "^1.1.7"
     rimraf "^2.6.3"
     typemoq "^2.1.0"
 
@@ -286,10 +288,31 @@
   resolved "https://registry.yarnpkg.com/@sinonjs/text-encoding/-/text-encoding-0.7.1.tgz#8da5c6530915653f3a1f38fd5f101d8c3f8079c5"
   integrity sha512-+iTbntw2IZPb/anVDbypzfQa+ay64MW0Zo8aJ8gZPWMMK6/OubMVb6lUPMagqjOPnmtauXnFCACVl3O7ogjeqQ==
 
+"@types/domutils@*":
+  version "1.7.4"
+  resolved "https://registry.yarnpkg.com/@types/domutils/-/domutils-1.7.4.tgz#bb5f1807673e295782614b0a383b4dc1ecd2af97"
+  integrity sha512-w542nRQ0vpXQjLYP52LKqrugQtUq580dEDiDIyZ6IBmV8a3LXjGVNxfj/jUQxS0kDsbZAWsSxQOcTfVX3HRdwg==
+  dependencies:
+    domhandler "^2.4.0"
+
+"@types/htmlparser2@^3.10.1":
+  version "3.10.3"
+  resolved "https://registry.yarnpkg.com/@types/htmlparser2/-/htmlparser2-3.10.3.tgz#9ee664e1620cbac4c9c724ed0373a2b832dbdece"
+  integrity sha512-XA74aD+acytofnZic9n83Rxy/IZ259299bYPx5SEyx7uymPi79lRyKDkhJlsuCaPHB7rEoTEhRN4Vm2G5WmHHg==
+  dependencies:
+    "@types/domutils" "*"
+    "@types/node" "*"
+    domhandler "^2.4.0"
+
 "@types/mocha@^7.0.2":
   version "7.0.2"
   resolved "https://registry.yarnpkg.com/@types/mocha/-/mocha-7.0.2.tgz#b17f16cf933597e10d6d78eae3251e692ce8b0ce"
   integrity sha512-ZvO2tAcjmMi8V/5Z3JsyofMe3hasRcaw88cto5etSVMwVQfeivGAlEYmaQgceUSVYFofVjT+ioHsATjdWcFt1w==
+
+"@types/node@*":
+  version "18.7.11"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.7.11.tgz#486e72cfccde88da24e1f23ff1b7d8bfb64e6250"
+  integrity sha512-KZhFpSLlmK/sdocfSAjqPETTMd0ug6HIMIAwkwUpU79olnZdQtMxpQP+G1wDzCH7na+FltSIhbaZuKdwZ8RDrw==
 
 "@types/node@^12.11.7":
   version "12.12.7"
@@ -565,7 +588,7 @@ domelementtype@1, domelementtype@^1.3.0, domelementtype@^1.3.1:
   resolved "https://registry.yarnpkg.com/domelementtype/-/domelementtype-1.3.1.tgz#d048c44b37b0d10a7f2a3d5fee3f4333d790481f"
   integrity sha512-BSKB+TSpMpFI/HOxCNr1O8aMOTZ8hT3pM3GQ0w/mWRmkhEDSFJkkyzz4XQsBV44BChwGkrDfMyjVD0eA2aFV3w==
 
-domhandler@^2.3.0:
+domhandler@^2.3.0, domhandler@^2.4.0:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/domhandler/-/domhandler-2.4.2.tgz#8805097e933d65e85546f726d60f5eb88b44f803"
   integrity sha512-JiK04h0Ht5u/80fdLMCEmV4zkNh2BcoMFBmZ/91WtYZ8qVXSKjiw7fXMgFPnHcSZgOo3XdinHvmnDUeMf5R4wA==

@@ -161,7 +161,7 @@ export function OptionNotFoundWarningMessage(label: string) { return localize('o
 export const SqlServerName = 'SQL server';
 export const AzureSqlServerName = 'Azure SQL server';
 export const SqlServerDockerImageName = 'Microsoft SQL Server';
-export const SqlServerDocker2022ImageName = 'Microsoft SQL Server 2022 (preview)';
+export const SqlServerDocker2022ImageName = 'Microsoft SQL Server 2022';
 export const AzureSqlDbFullDockerImageName = 'Azure SQL Database emulator Full';
 export const AzureSqlDbLiteDockerImageName = 'Azure SQL Database emulator Lite';
 export const AzureSqlLogicalServerName = 'Azure SQL logical server';
@@ -296,6 +296,8 @@ export const projectLocationPlaceholderText = localize('projectLocationPlacehold
 export const browseButtonText = localize('browseButtonText', "Browse folder");
 export const selectFolderStructure = localize('selectFolderStructure', "Select folder structure");
 export const folderStructureLabel = localize('folderStructureLabel', "Folder structure");
+export const includePermissionsLabel = localize('includePermissionsLabel', "Include permissions");
+export const includePermissionsInProject = localize('includePermissionsInProject', "Include permissions in project");
 export const WorkspaceFileExtension = '.code-workspace';
 export const browseEllipsisWithIcon = `$(folder) ${localize('browseEllipsis', "Browse...")}`;
 export const selectProjectLocation = localize('selectProjectLocation', "Select project location");
@@ -535,11 +537,6 @@ export const activeDirectoryInteractive = 'active directory interactive';
 export const userIdSetting = 'User ID';
 export const passwordSetting = 'Password';
 
-// Authentication types
-export const integratedAuth = 'Integrated';
-export const azureMfaAuth = 'AzureMFA';
-export const sqlAuth = 'SqlAuth';
-
 export const azureAddAccount = localize('azureAddAccount', "Add an Account...");
 
 // Tree item types
@@ -606,7 +603,7 @@ export const onPremServerVersionToTargetPlatform: Map<number, SqlTargetPlatform>
 // DW is special since the system dacpac folder has a different name from the target platform
 export const AzureDwFolder = 'AzureDw';
 
-export const defaultTargetPlatform = SqlTargetPlatform.sqlServer2019; // TODO: update to 2022 when it's GA
+export const defaultTargetPlatform = SqlTargetPlatform.sqlServer2022;
 export const defaultDSP = targetPlatformToVersion.get(defaultTargetPlatform)!;
 
 /**

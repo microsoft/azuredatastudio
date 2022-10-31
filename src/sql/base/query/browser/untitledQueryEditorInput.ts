@@ -13,13 +13,12 @@ import { IResolvedTextEditorModel } from 'vs/editor/common/services/resolverServ
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { IUntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 import { EncodingMode } from 'vs/workbench/services/textfile/common/textfiles';
-import { GroupIdentifier, ISaveOptions, EditorInputCapabilities } from 'vs/workbench/common/editor';
+import { GroupIdentifier, ISaveOptions, EditorInputCapabilities, IUntypedEditorInput } from 'vs/workbench/common/editor';
 import { FileQueryEditorInput } from 'sql/workbench/contrib/query/browser/fileQueryEditorInput';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
 import { UNTITLED_QUERY_EDITOR_TYPEID } from 'sql/workbench/common/constants';
 import { IUntitledQueryEditorInput } from 'sql/base/query/common/untitledQueryEditorInput';
-import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 
 export class UntitledQueryEditorInput extends QueryEditorInput implements IUntitledQueryEditorInput {
 
@@ -38,7 +37,7 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IUntit
 		// Set the mode explicitely to stop the auto language detection service from changing the mode unexpectedly.
 		// the auto language detection service won't do the language change only if the mode is explicitely set.
 		// if the mode (e.g. kusto, sql) do not exist for whatever reason, we will default it to sql.
-		text.setMode(text.getMode() ?? 'sql');
+		text.setLanguageId(text.getLanguageId() ?? 'sql');
 	}
 
 	public override resolve(): Promise<IUntitledTextEditorModel & IResolvedTextEditorModel> {
@@ -53,20 +52,20 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IUntit
 		return this.text.model.hasAssociatedFilePath;
 	}
 
-	override async save(group: GroupIdentifier, options?: ISaveOptions): Promise<EditorInput | undefined> {
+	override async save(group: GroupIdentifier, options?: ISaveOptions): Promise<IUntypedEditorInput | undefined> {
 		let fileEditorInput = await this.text.save(group, options);
 		return this.createFileQueryEditorInput(fileEditorInput);
 	}
 
-	override async saveAs(group: GroupIdentifier, options?: ISaveOptions): Promise<EditorInput | undefined> {
+	override async saveAs(group: GroupIdentifier, options?: ISaveOptions): Promise<IUntypedEditorInput | undefined> {
 		let fileEditorInput = await this.text.saveAs(group, options);
 		return this.createFileQueryEditorInput(fileEditorInput);
 	}
 
-	private async createFileQueryEditorInput(fileEditorInput: EditorInput): Promise<EditorInput> {
+	private async createFileQueryEditorInput(fileEditorInput: IUntypedEditorInput): Promise<IUntypedEditorInput> {
 		// Create our own FileQueryEditorInput wrapper here so that the existing state (connection, results, etc) can be transferred from this input to the new file input.
 		try {
-			let newUri = fileEditorInput.resource.toString(true);
+			let newUri = (<any>fileEditorInput).resource.toString(true);
 			await this.changeConnectionUri(newUri);
 			this._results.uri = newUri;
 			let newInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (fileEditorInput as FileEditorInput), this.results);
@@ -85,11 +84,11 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IUntit
 	}
 
 	public setMode(mode: string): void {
-		this.text.setMode(mode);
+		this.text.setLanguageId(mode);
 	}
 
 	public getMode(): string | undefined {
-		return this.text.getMode();
+		return this.text.getLanguageId();
 	}
 
 	override get typeId(): string {

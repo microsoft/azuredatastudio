@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { SqlExtHostContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { SqlExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { ExtHostAccountManagement } from 'sql/workbench/api/common/extHostAccountManagement';
 import { ExtHostCredentialManagement } from 'sql/workbench/api/common/extHostCredentialManagement';
 import { ExtHostDataProtocol } from 'sql/workbench/api/common/extHostDataProtocol';
@@ -40,6 +40,7 @@ import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemet
 import { ExtHostAzureBlob } from 'sql/workbench/api/common/extHostAzureBlob';
 import { ExtHostAzureAccount } from 'sql/workbench/api/common/extHostAzureAccount';
 import { IExtHostExtensionService } from 'vs/workbench/api/common/extHostExtensionService';
+import { AuthenticationType } from 'sql/platform/connection/common/constants';
 
 export interface IAzdataExtensionApiFactory {
 	(extension: IExtensionDescription): typeof azdata;
@@ -106,6 +107,9 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 			// namespace: connection
 			const connection: typeof azdata.connection = {
 				// "azdata" API definition
+
+				AuthenticationType: AuthenticationType,
+
 				ConnectionProfile: sqlExtHostTypes.ConnectionProfile,
 
 				getCurrentConnection(): Thenable<azdata.connection.ConnectionProfile> {
@@ -602,6 +606,15 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				ExecutionPlanGraphElementPropertyBetterValue: sqlExtHostTypes.executionPlan.ExecutionPlanGraphElementPropertyBetterValue
 			};
 
+			// Dev/OSS builds don't have a quality set - give it a value here so it's more clear
+			let quality = initData.quality || 'dev';
+			// Special case rc1 quality, that should be treated as stable by extensions
+			quality = quality === 'rc1' ? 'stable' : quality;
+			const env: typeof azdata.env = {
+				AppQuality: sqlExtHostTypes.env.AppQuality,
+				quality
+			};
+
 			return {
 				version: initData.version,
 				accounts,
@@ -654,7 +667,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				sqlAssessment,
 				TextType: sqlExtHostTypes.TextType,
 				designers: designers,
-				executionPlan: executionPlan
+				executionPlan: executionPlan,
+				env
 			};
 		},
 		extHostNotebook: extHostNotebook,

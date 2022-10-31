@@ -237,7 +237,8 @@ export class DashboardTab extends TabBase<DashboardTab> {
 				value: [
 					loc.PRE_REQ_1,
 					loc.PRE_REQ_2,
-					loc.PRE_REQ_3
+					loc.PRE_REQ_3,
+					loc.PRE_REQ_4,
 				],
 				CSSStyles: {
 					...styles.SMALL_NOTE_CSS,
@@ -321,7 +322,7 @@ export class DashboardTab extends TabBase<DashboardTab> {
 			.withLayout({
 				flexFlow: 'column',
 				width: '440px',
-				height: '365px',
+				height: '436px',
 				justifyContent: 'flex-start',
 			}).withProps({
 				CSSStyles: {
@@ -346,22 +347,27 @@ export class DashboardTab extends TabBase<DashboardTab> {
 			{
 				title: loc.DASHBOARD_HELP_LINK_MIGRATE_USING_ADS,
 				description: loc.DASHBOARD_HELP_DESCRIPTION_MIGRATE_USING_ADS,
-				link: 'https://docs.microsoft.com/azure/dms/migration-using-azure-data-studio'
+				link: 'https://learn.microsoft.com/azure/dms/migration-using-azure-data-studio'
 			},
 			{
 				title: loc.DASHBOARD_HELP_LINK_MI_TUTORIAL,
 				description: loc.DASHBOARD_HELP_DESCRIPTION_MI_TUTORIAL,
-				link: 'https://docs.microsoft.com/azure/dms/tutorial-sql-server-managed-instance-online-ads'
+				link: 'https://learn.microsoft.com/azure/dms/tutorial-sql-server-managed-instance-online-ads'
 			},
 			{
 				title: loc.DASHBOARD_HELP_LINK_VM_TUTORIAL,
 				description: loc.DASHBOARD_HELP_DESCRIPTION_VMTUTORIAL,
-				link: 'https://docs.microsoft.com/azure/dms/tutorial-sql-server-to-virtual-machine-online-ads'
+				link: 'https://learn.microsoft.com/azure/dms/tutorial-sql-server-to-virtual-machine-online-ads'
+			},
+			{
+				title: loc.DASHBOARD_HELP_LINK_SQLDB_TUTORIAL,
+				description: loc.DASHBOARD_HELP_DESCRIPTION_SQLDBTUTORIAL,
+				link: 'https://learn.microsoft.com/azure/dms/tutorial-sql-server-azure-sql-database-offline-ads'
 			},
 			{
 				title: loc.DASHBOARD_HELP_LINK_DMS_GUIDE,
 				description: loc.DASHBOARD_HELP_DESCRIPTION_DMS_GUIDE,
-				link: 'https://docs.microsoft.com/data-migration/'
+				link: 'https://learn.microsoft.com/data-migration/'
 			},
 		];
 
@@ -578,7 +584,7 @@ export class DashboardTab extends TabBase<DashboardTab> {
 			.withLayout({
 				flexFlow: 'column',
 				width: '400px',
-				height: '365px',
+				height: '436px',
 				justifyContent: 'flex-start',
 			})
 			.withProps({

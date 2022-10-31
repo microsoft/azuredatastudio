@@ -7,7 +7,7 @@
   "preview": true,
   "engines": {
     "vscode": "^1.30.1",
-    "azdata": ">=1.38.0"
+    "azdata": ">=1.40.0"
   },
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/sqlDatabaseProjects.png",
@@ -407,7 +407,7 @@
         },
         {
           "command": "sqlDatabaseProjects.openInDesigner",
-          "when": "azdataAvailable && view == dataworkspace.views.main && viewItem == databaseProject.itemType.file.table && config.workbench.enablePreviewFeatures",
+          "when": "azdataAvailable && view == dataworkspace.views.main && viewItem == databaseProject.itemType.file.table",
           "group": "6_dbProjects_openInDesigner"
         },
         {
@@ -478,8 +478,8 @@
     }
   },
   "dependencies": {
-    "@microsoft/ads-extension-telemetry": "^1.2.0",
-    "@xmldom/xmldom": "^0.8.2",
+    "@microsoft/ads-extension-telemetry": "^1.3.1",
+    "@xmldom/xmldom": "^0.8.3",
     "axios": "^0.27.2",
     "extract-zip": "^2.0.1",
     "fast-glob": "^3.2.7",
@@ -496,16 +496,16 @@
     "@microsoft/vscodetestcover": "^1.2.1",
     "@types/fs-extra": "^5.0.0",
     "@types/mocha": "^7.0.2",
+    "@types/semver": "^7.3.1",
     "@types/request": "^2.48.8",
     "@types/sinon": "^9.0.4",
     "@types/which": "^2.0.1",
     "@types/xml-formatter": "^1.1.0",
     "mocha": "^7.1.1",
-    "mocha-junit-reporter": "^1.17.0",
-    "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.1",
     "sinon": "^9.0.2",
-    "typemoq": "^2.1.0"
+    "typemoq": "^2.1.0",
+    "@microsoft/azdata-test": "^2.0.3"
   },
   "__metadata": {
     "id": "70",

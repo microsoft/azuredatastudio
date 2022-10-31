@@ -324,10 +324,10 @@ export interface IConnectionManagementService {
 
 	/**
 	 * Handle the unsupported provider scenario.
-	 * @param providerName The provider name.
+	 * @param providerId The provider ID
 	 * @returns Promise with a boolean value indicating whether the user has accepted the suggestion.
 	 */
-	handleUnsupportedProvider(providerName: string): Promise<boolean>;
+	handleUnsupportedProvider(providerId: string): Promise<boolean>;
 }
 
 export enum RunQueryOnConnectionMode {

@@ -9,7 +9,7 @@ import * as azdata from 'azdata';
  * Mock CredentialsProvider to be used for testing
  */
 export class CredentialsTestProvider implements azdata.CredentialProvider {
-	handle: number;
+	handle: number = 0;
 
 	public storedCredentials: { [K: string]: azdata.Credential } = {};
 

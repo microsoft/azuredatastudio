@@ -12,7 +12,7 @@ import { generateGuid } from '../../utils';
 import { IAzureResourceService } from '../../interfaces';
 import { ResourceTreeDataProviderBase } from '../resourceTreeDataProviderBase';
 import { azureResource } from 'azurecore';
-import { Account, ExtensionNodeType, TreeItem } from 'azdata';
+import { Account, ExtensionNodeType, TreeItem, connection } from 'azdata';
 
 export class MysqlFlexibleServerTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabaseServer> {
 	private static readonly MYSQL_FLEXIBLE_SERVER_PROVIDER_ID = 'MySQL';
@@ -43,7 +43,7 @@ export class MysqlFlexibleServerTreeDataProvider extends ResourceTreeDataProvide
 				databaseName: databaseServer.defaultDatabaseName,
 				userName: databaseServer.loginName,
 				password: '',
-				authenticationType: 'SqlLogin',
+				authenticationType: connection.AuthenticationType.SqlLogin,
 				savePassword: true,
 				groupFullName: '',
 				groupId: '',
@@ -61,21 +61,16 @@ export class MysqlFlexibleServerTreeDataProvider extends ResourceTreeDataProvide
 		};
 	}
 
-	protected createContainerNode(): azureResource.IAzureResourceNode {
-		return {
-			account: undefined,
-			subscription: undefined,
-			tenantId: undefined,
-			treeItem: {
-				id: MysqlFlexibleServerTreeDataProvider.CONTAINER_ID,
-				label: MysqlFlexibleServerTreeDataProvider.CONTAINER_LABEL,
-				iconPath: {
-					dark: this._extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
-					light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')
-				},
-				collapsibleState: TreeItemCollapsibleState.Collapsed,
-				contextValue: AzureResourceItemType.databaseServerContainer
-			}
-		};
+	public async getRootChildren(): Promise<TreeItem[]> {
+		return [{
+			id: MysqlFlexibleServerTreeDataProvider.CONTAINER_ID,
+			label: MysqlFlexibleServerTreeDataProvider.CONTAINER_LABEL,
+			iconPath: {
+				dark: this._extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
+				light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')
+			},
+			collapsibleState: TreeItemCollapsibleState.Collapsed,
+			contextValue: AzureResourceItemType.databaseServerContainer
+		}];
 	}
 }

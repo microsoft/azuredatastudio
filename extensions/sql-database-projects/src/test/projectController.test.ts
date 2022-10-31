@@ -5,7 +5,6 @@
 
 import * as should from 'should';
 import * as path from 'path';
-import * as os from 'os';
 import * as vscode from 'vscode';
 import * as TypeMoq from 'typemoq';
 import * as sinon from 'sinon';
@@ -49,11 +48,15 @@ describe('ProjectsController', function (): void {
 		sinon.restore();
 	});
 
+	after(async function(): Promise<void> {
+		await testUtils.deleteGeneratedTestFolder();
+	});
+
 	describe('project controller operations', function (): void {
 		describe('Project file operations and prompting', function (): void {
 			it('Should create new sqlproj file with correct values', async function (): Promise<void> {
 				const projController = new ProjectsController(testContext.outputChannel);
-				const projFileDir = path.join(os.tmpdir(), `TestProject_${new Date().getTime()}`);
+				const projFileDir = path.join(testUtils.generateBaseFolderName(), `TestProject_${new Date().getTime()}`);
 
 				const projFilePath = await projController.createNewProject({
 					newProjName: 'TestProjectName',
@@ -70,7 +73,7 @@ describe('ProjectsController', function (): void {
 
 			it('Should create new sqlproj file with correct specified target platform', async function (): Promise<void> {
 				const projController = new ProjectsController(testContext.outputChannel);
-				const projFileDir = path.join(os.tmpdir(), `TestProject_${new Date().getTime()}`);
+				const projFileDir = path.join(testUtils.generateBaseFolderName(), `TestProject_${new Date().getTime()}`);
 				const projTargetPlatform = SqlTargetPlatform.sqlAzure; // default is SQL Server 2019
 
 				const projFilePath = await projController.createNewProject({
@@ -447,6 +450,7 @@ describe('ProjectsController', function (): void {
 				should(publishedDacpacPath).not.equal('', 'published dacpac path should be set');
 				should(builtDacpacPath).not.equal(publishedDacpacPath, 'built and published dacpac paths should be different');
 				should(postCopyContents).equal(fakeDacpacContents, 'contents of built and published dacpacs should match');
+				await fs.rm(publishedDacpacPath);
 			});
 		});
 	});
@@ -509,7 +513,7 @@ describe('ProjectsController', function (): void {
 					version: '1.0.0.0',
 					extractTarget: mssql.ExtractTarget['schemaObjectType'],
 					sdkStyle: false
-				});
+				}, undefined);
 
 				return Promise.resolve(undefined);
 			});
@@ -517,7 +521,7 @@ describe('ProjectsController', function (): void {
 			const projController = TypeMoq.Mock.ofType(ProjectsController);
 			projController.callBase = true;
 			projController.setup(x => x.getCreateProjectFromDatabaseDialog(TypeMoq.It.isAny())).returns(() => createProjectFromDatabaseDialog.object);
-			projController.setup(x => x.createProjectFromDatabaseCallback(TypeMoq.It.isAny())).returns(() => {
+			projController.setup(x => x.createProjectFromDatabaseCallback(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
 				holler = createProjectFromDbHoller;
 				return Promise.resolve(undefined);
 			});

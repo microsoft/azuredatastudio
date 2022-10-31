@@ -17,7 +17,7 @@ import { AzureResourceAccountTreeNode } from '../../../azureResource/tree/accoun
 import { AzureResourceAccountNotSignedInTreeNode } from '../../../azureResource/tree/accountNotSignedInTreeNode';
 import { AzureResourceServiceNames } from '../../../azureResource/constants';
 import { generateGuid } from '../../../azureResource/utils';
-import { AzureAccount } from 'azurecore';
+import { AzureAccount, AzureAccountProperties } from 'azurecore';
 
 // Mock services
 let mockAppContext: AppContext;
@@ -37,7 +37,7 @@ const mockAccount1: AzureAccount = {
 		contextualDisplayName: 'test',
 		userId: 'test@email.com'
 	},
-	properties: undefined,
+	properties: TypeMoq.Mock.ofType<AzureAccountProperties>().object,
 	isStale: false
 };
 const mockAccount2: AzureAccount = {
@@ -51,7 +51,7 @@ const mockAccount2: AzureAccount = {
 		contextualDisplayName: 'test',
 		userId: 'test@email.com'
 	},
-	properties: undefined,
+	properties: TypeMoq.Mock.ofType<AzureAccountProperties>().object,
 	isStale: false
 };
 const mockAccounts = [mockAccount1, mockAccount2];
@@ -94,7 +94,7 @@ describe('AzureResourceTreeProvider.getChildren', function (): void {
 	});
 
 	it('Should handle when there is no accounts.', async function (): Promise<void> {
-		sinon.stub(azdata.accounts, 'getAllAccounts').returns(Promise.resolve(undefined));
+		sinon.stub(azdata.accounts, 'getAllAccounts').returns(Promise.resolve([]));
 
 		const treeProvider = new AzureResourceTreeProvider(mockAppContext);
 		treeProvider.isSystemInitialized = true;

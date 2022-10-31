@@ -193,7 +193,7 @@ export class NotebookFindDecorations implements IDisposable {
 		// expand the cell if it's collapsed and scroll into view
 		match.cell.isCollapsed = false;
 		if (matchEditor) {
-			matchEditor.getContainer().scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+			matchEditor.getContainer().scrollIntoView({ block: 'nearest' });
 			matchEditor.getControl().revealRangeInCenterIfOutsideViewport(match, ScrollType.Smooth);
 		}
 	}

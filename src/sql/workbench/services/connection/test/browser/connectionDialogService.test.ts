@@ -100,12 +100,16 @@ suite('ConnectionDialogService tests', () => {
 		testInstantiationService.stub(IConnectionManagementService, mockConnectionManagementService.object);
 		testInstantiationService.stub(IContextKeyService, new MockContextKeyService());
 		testInstantiationService.stub(IThemeService, new TestThemeService());
-		testInstantiationService.stub(ILayoutService, new TestLayoutService());
+
+		let layoutService: ILayoutService = new TestLayoutService();
+		testInstantiationService.stub(ILayoutService, layoutService);
 		testInstantiationService.stub(IAdsTelemetryService, new NullAdsTelemetryService());
 		testInstantiationService.stub(IConnectionTreeService, new ConnectionTreeService());
 		testInstantiationService.stub(ICapabilitiesService, new TestCapabilitiesService());
+
+		let logService: ILogService = new NullLogService();
 		connectionDialogService = new ConnectionDialogService(testInstantiationService, capabilitiesService, errorMessageService.object,
-			new TestConfigurationService(), new BrowserClipboardService(), NullCommandService, new NullLogService());
+			new TestConfigurationService(), new BrowserClipboardService(layoutService, logService), NullCommandService, logService);
 		(connectionDialogService as any)._connectionManagementService = mockConnectionManagementService.object;
 		let providerDisplayNames = ['Mock SQL Server'];
 		let providerNameToDisplayMap = { 'MSSQL': 'Mock SQL Server' };
@@ -115,6 +119,7 @@ suite('ConnectionDialogService tests', () => {
 		mockConnectionManagementService.setup(x => x.getConnectionGroups(TypeMoq.It.isAny())).returns(() => {
 			return [new ConnectionProfileGroup('test_group', undefined, 'test_group')];
 		});
+		mockConnectionManagementService.setup(x => x.getConnectionIconId(TypeMoq.It.isAnyString())).returns(() => '');
 		mockConnectionManagementService.setup(x => x.getProviderProperties(TypeMoq.It.isAny())).returns(() => {
 			return <ConnectionProviderProperties>{
 				connectionStringOptions: {
@@ -177,6 +182,7 @@ suite('ConnectionDialogService tests', () => {
 		mockConnectionManagementService.setup(x => x.addSavedPassword(TypeMoq.It.isAny())).returns(() => {
 			return Promise.resolve(connectionProfile);
 		});
+		mockConnectionManagementService.setup(x => x.isConnected(undefined, TypeMoq.It.isAny())).returns(() => true);
 		mockWidget = TypeMoq.Mock.ofType(ConnectionWidget, TypeMoq.MockBehavior.Strict, [], undefined, 'MSSQL', undefined, undefined, mockConnectionManagementService.object);
 		mockWidget.setup(x => x.focusOnOpen());
 		mockWidget.setup(x => x.handleOnConnecting());
