@@ -71,7 +71,7 @@ import { IExtensionsScannerService } from 'vs/platform/extensionManagement/commo
 import { ExtensionsScannerService } from 'vs/server/node/extensionsScannerService';
 import { OneDataSystemAppender } from 'vs/platform/telemetry/node/1dsAppender';
 
-const eventPrefix = 'monacoworkbench';
+const eventPrefix = 'adsworkbench'; // {{SQL CARBON EDIT}} Use our own event prefix
 
 export async function setupServerServices(connectionToken: ServerConnectionToken, args: ServerParsedArgs, REMOTE_DATA_FOLDER: string, disposables: DisposableStore) {
 	const services = new ServiceCollection();
