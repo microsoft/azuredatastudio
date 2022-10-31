@@ -36,7 +36,7 @@ export class BreadcrumbComponent implements OnInit, OnDestroy {
 	constructor(
 		@Inject(forwardRef(() => IBreadcrumbService)) private _breadcrumbService: IBreadcrumbService,
 		@Inject(forwardRef(() => Router)) private _router: Router,
-		@Inject(forwardRef(() => ActivatedRoute)) private activeRoute: ActivatedRoute,
+		@Inject(forwardRef(() => ActivatedRoute)) private _activeRoute: ActivatedRoute,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef
 	) { }
 
@@ -54,6 +54,6 @@ export class BreadcrumbComponent implements OnInit, OnDestroy {
 	}
 
 	public route(link: any[]): Promise<boolean> {
-		return this._router.navigate(link, { relativeTo: this.activeRoute, skipLocationChange: true });
+		return this._router.navigate(link, { relativeTo: this._activeRoute, skipLocationChange: true });
 	}
 }

@@ -53,7 +53,7 @@ export class ExplorerTable extends Disposable {
 	private _propertiesToDisplay: ObjectListViewProperty[];
 
 	constructor(private parentElement: HTMLElement,
-		private activeRoute: ActivatedRoute,
+		private readonly activeRoute: ActivatedRoute,
 		private readonly router: Router,
 		private readonly context: string,
 		private readonly bootStrapService: CommonServiceInterface,
