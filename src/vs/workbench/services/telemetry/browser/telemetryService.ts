@@ -17,7 +17,6 @@ import { TelemetryLogAppender } from 'vs/platform/telemetry/common/telemetryLogA
 import { ITelemetryServiceConfig, TelemetryService as BaseTelemetryService } from 'vs/platform/telemetry/common/telemetryService';
 import { getTelemetryLevel, isInternalTelemetry, ITelemetryAppender, NullTelemetryService, supportsTelemetry } from 'vs/platform/telemetry/common/telemetryUtils';
 import { IBrowserWorkbenchEnvironmentService } from 'vs/workbench/services/environment/browser/environmentService';
-import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 import { IRemoteAgentService } from 'vs/workbench/services/remote/common/remoteAgentService';
 import { resolveWorkbenchCommonProperties } from 'vs/workbench/services/telemetry/browser/workbenchCommonProperties';
 
@@ -54,7 +53,7 @@ export class TelemetryService extends Disposable implements ITelemetryService {
 	 * ensure its not adblocked and we can send telemetry
 	 */
 	private initializeService(
-		environmentService: IWorkbenchEnvironmentService,
+		environmentService: IBrowserWorkbenchEnvironmentService,
 		loggerService: ILoggerService,
 		configurationService: IConfigurationService,
 		storageService: IStorageService,
@@ -71,7 +70,7 @@ export class TelemetryService extends Disposable implements ITelemetryService {
 			appenders.push(new TelemetryLogAppender(loggerService, environmentService));
 			const config: ITelemetryServiceConfig = {
 				appenders,
-				commonProperties: resolveWorkbenchCommonProperties(storageService, productService.commit, productService.version, environmentService.remoteAuthority, productService.embedderIdentifier, environmentService.options && environmentService.options.resolveCommonTelemetryProperties),
+				commonProperties: resolveWorkbenchCommonProperties(storageService, productService.commit, productService.version, environmentService.remoteAuthority, productService.embedderIdentifier, productService.removeTelemetryMachineId, environmentService.options && environmentService.options.resolveCommonTelemetryProperties),
 				sendErrorTelemetry: this.sendErrorTelemetry,
 			};
 

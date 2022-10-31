@@ -90,7 +90,6 @@ import { ipcSharedProcessTunnelChannelName, ISharedProcessTunnelService } from '
 import { SharedProcessTunnelService } from 'vs/platform/tunnel/node/sharedProcessTunnelService';
 import { ipcSharedProcessWorkerChannelName, ISharedProcessWorkerConfiguration, ISharedProcessWorkerService } from 'vs/platform/sharedProcess/common/sharedProcessWorkerService';
 import { SharedProcessWorkerService } from 'vs/platform/sharedProcess/electron-browser/sharedProcessWorkerService';
-import { IUserConfigurationFileService, UserConfigurationFileServiceId } from 'vs/platform/configuration/common/userConfigurationFileService';
 import { OneDataSystemAppender } from 'vs/platform/telemetry/node/1dsAppender';
 import { IUriIdentityService } from 'vs/platform/uriIdentity/common/uriIdentity';
 import { UriIdentityService } from 'vs/platform/uriIdentity/common/uriIdentityService';
@@ -268,7 +267,7 @@ class SharedProcessMain extends Disposable {
 		if (supportsTelemetry(productService, environmentService)) {
 			const logAppender = new TelemetryLogAppender(loggerService, environmentService);
 			appenders.push(logAppender);
-			const { appRoot, extensionsPath, installSourcePath } = environmentService;
+			const { installSourcePath } = environmentService;
 			if (productService.aiConfig?.ariaKey) {
 				const collectorAppender = new OneDataSystemAppender(internalTelemetry, 'adsworkbench', null, productService.aiConfig.ariaKey); // {{SQL CARBON EDIT}} Use our own event prefix
 				this._register(toDisposable(() => collectorAppender.flush())); // Ensure the 1DS appender is disposed so that it flushes remaining data
