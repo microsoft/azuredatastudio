@@ -24,6 +24,8 @@ import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
+import { Link } from 'vs/platform/opener/browser/link';
+import { IOpenerService } from 'vs/platform/opener/common/opener';
 
 const maxActions = 1;
 
@@ -53,7 +55,8 @@ export class ErrorMessageDialog extends Modal {
 		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@ILogService logService: ILogService,
-		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
+		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
+		@IOpenerService private readonly _openerService: IOpenerService
 	) {
 		super('', TelemetryKeys.ModalDialogName.ErrorMessage, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'normal', hasTitleIcon: true });
 		this._okLabel = localize('errorMessageDialog.ok', "OK");
@@ -117,7 +120,11 @@ export class ErrorMessageDialog extends Modal {
 			let childElement = DOM.$('div.error-instruction-text');
 			childElement.innerText = this._instructionText!;
 			if (this._readMoreLink) {
-				childElement.innerHTML += ` <a href="${this._readMoreLink}">${this._readMoreLabel}</a>`;
+				let link = new Link(childElement, {
+					label: this._readMoreLabel,
+					href: this._readMoreLink
+				}, undefined, this._openerService);
+				childElement.appendChild(link.el);
 			}
 			DOM.append(this._body!, childElement);
 		}
