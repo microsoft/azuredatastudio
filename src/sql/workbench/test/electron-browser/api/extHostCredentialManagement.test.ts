@@ -6,14 +6,14 @@
 import * as assert from 'assert';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { ExtHostCredentialManagement } from 'sql/workbench/api/common/extHostCredentialManagement';
-import { SqlMainContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IRPCProtocol } from 'vs/workbench/services/extensions/common/proxyIdentifier';
 import { MainThreadCredentialManagement } from 'sql/workbench/api/browser/mainThreadCredentialManagement';
 import { ICredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import { Credential, CredentialProvider } from 'azdata';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { TestCredentialsService, TestCredentialsProvider } from 'sql/platform/credentials/test/common/testCredentialsService';
-import { TestRPCProtocol } from 'vs/workbench/test/browser/api/testRPCProtocol';
+import { TestRPCProtocol } from 'vs/workbench/api/test/common/testRPCProtocol';
+import { SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 const IRPCProtocol = createDecorator<IRPCProtocol>('rpcProtocol');
 

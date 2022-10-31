@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Disposable } from 'vs/base/common/lifecycle';
-import { ExtHostContext, ExtHostNotebookRenderersShape, IExtHostContext, MainThreadNotebookRenderersShape } from 'vs/workbench/api/common/extHost.protocol'; // {{SQL CARBON EDIT}} Remove MainContext
-// import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers'; {{SQL CARBON EDIT}}
+import { ExtHostContext, ExtHostNotebookRenderersShape, MainThreadNotebookRenderersShape } from 'vs/workbench/api/common/extHost.protocol';
+import { IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
 import { INotebookRendererMessagingService } from 'vs/workbench/contrib/notebook/common/notebookRendererMessagingService';
 
 // @extHostNamedCustomer(MainContext.MainThreadNotebookRenderers) {{SQL CARBON EDIT}}

@@ -5,7 +5,7 @@
 
 import 'vs/css!./media/slick.grid';
 
-import { FilterableColumn, ITableConfiguration } from 'sql/base/browser/ui/table/interfaces';
+import { FilterableColumn, ITableConfiguration, ITableStyles } from 'sql/base/browser/ui/table/interfaces';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 import { generateUuid } from 'vs/base/common/uuid';
@@ -14,6 +14,7 @@ import { AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { createTreeGridExpandableColumnFormatter, textFormatter } from 'sql/base/browser/ui/table/formatters';
+import { escape } from 'sql/base/common/strings';
 
 function defaultTreeGridFilter<T extends Slick.SlickData>(data: T[], columns: FilterableColumn<T>[], cellValueGetter: CellValueGetter = defaultCellValueGetter): T[] {
 	let filteredData = defaultFilter(data, columns, cellValueGetter);
@@ -89,10 +90,13 @@ export class TreeGrid<T extends Slick.SlickData> extends Table<T> {
 				const rowElement = this._tableContainer.querySelector(`div [role="row"][aria-rowindex="${(i + 1)}"]`);
 				// If the row element is found in the dom, we are setting the required aria attributes for it.
 				if (rowElement) {
-					if (rowData.expanded !== undefined) {
-						rowElement.ariaExpanded = rowData.expanded;
-					} else {
-						rowElement.removeAttribute('aria-expanded');
+					const cellDiv = <HTMLElement>rowElement.querySelector(`.slick-cell.l0`);
+					if (cellDiv) {
+						if (rowData.expanded !== undefined) {
+							cellDiv.ariaExpanded = rowData.expanded;
+						} else {
+							cellDiv.removeAttribute('aria-expanded');
+						}
 					}
 					if (rowData.setSize !== undefined) {
 						rowElement.ariaSetSize = rowData.setSize;
@@ -178,6 +182,23 @@ export class TreeGrid<T extends Slick.SlickData> extends Table<T> {
 				}
 				dataRow.parentGuid = parentRow._guid;
 			}
+		}
+	}
+
+	override style(styles: ITableStyles): void {
+		super.style(styles);
+		const content: string[] = [];
+
+		if (styles.listFocusAndSelectionForeground) {
+			content.push(`.monaco-table.${this.idPrefix}.focused .slick-row .selected.active .codicon.toggle { color: ${styles.listFocusAndSelectionForeground}; }`);
+		}
+
+		if (styles.listInactiveSelectionForeground) {
+			content.push(`.monaco-table.${this.idPrefix} .slick-row .selected.active .codicon.toggle { color: ${styles.listInactiveSelectionForeground}; }`);
+		}
+
+		if (content.length > 0) {
+			this.styleElement.innerText += escape('\n' + content.join('\n'));
 		}
 	}
 }

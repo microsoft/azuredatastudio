@@ -84,6 +84,10 @@ export let executionPlanNodeIconPaths =
 
 	parallelism: imageBasePath + 'parallelism.png',
 
+	parallelismDistribute: imageBasePath + 'parallelism_distribute.png',
+
+	parallelismRepartition: imageBasePath + 'parallelism_repartition.png',
+
 	parameterTableScan: imageBasePath + 'parameter_table_scan.png',
 
 	print: imageBasePath + 'print.png',

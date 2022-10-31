@@ -3,13 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as editorCommon from 'vs/editor/common/editorCommon';
+import { ILineChange } from 'vs/editor/common/diff/diffComputer';
 
 /**
  * Swaps the original and modified line changes
  * @param lineChanges The line changes to be reversed
  */
-export function reverseLineChanges(lineChanges: editorCommon.ILineChange[]): editorCommon.ILineChange[] {
+export function reverseLineChanges(lineChanges: ILineChange[]): ILineChange[] {
 	let reversedLineChanges = lineChanges.map(linechange => {
 		return {
 			modifiedStartLineNumber: linechange.originalStartLineNumber,

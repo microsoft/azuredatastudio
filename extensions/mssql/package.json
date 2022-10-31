@@ -949,20 +949,6 @@
         {
           "specialValueType": null,
           "isIdentity": false,
-          "name": "asynchronousProcessing",
-          "displayName": "%mssql.connectionOptions.asynchronousProcessing.displayName%",
-          "description": "%mssql.connectionOptions.asynchronousProcessing.description%",
-          "groupName": "%mssql.connectionOptions.groupName.initialization%",
-          "valueType": "boolean",
-          "defaultValue": null,
-          "objectType": null,
-          "categoryValues": null,
-          "isRequired": false,
-          "isArray": false
-        },
-        {
-          "specialValueType": null,
-          "isIdentity": false,
           "name": "connectTimeout",
           "displayName": "%mssql.connectionOptions.connectTimeout.displayName%",
           "description": "%mssql.connectionOptions.connectTimeout.description%",
@@ -1056,11 +1042,12 @@
           "description": "%mssql.connectionOptions.encrypt.description%",
           "groupName": "%mssql.connectionOptions.groupName.security%",
           "valueType": "boolean",
-          "defaultValue": null,
+          "defaultValue": "true",
           "objectType": null,
           "categoryValues": null,
           "isRequired": false,
-          "isArray": false
+          "isArray": false,
+          "showOnConnectionDialog": true
         },
         {
           "specialValueType": null,
@@ -1084,11 +1071,12 @@
           "description": "%mssql.connectionOptions.trustServerCertificate.description%",
           "groupName": "%mssql.connectionOptions.groupName.security%",
           "valueType": "boolean",
-          "defaultValue": null,
+          "defaultValue": "false",
           "objectType": null,
           "categoryValues": null,
           "isRequired": false,
-          "isArray": false
+          "isArray": false,
+          "showOnConnectionDialog": true
         },
         {
           "specialValueType": null,

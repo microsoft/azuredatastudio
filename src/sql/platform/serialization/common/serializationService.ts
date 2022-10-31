@@ -18,6 +18,10 @@ const defaultBatchSize = 500;
 
 export interface SerializeDataParams {
 	/**
+	 *  The serializer to use for this request. Typically this is the ID of the connection provider used to run the query.
+	 */
+	serializationProviderId: string;
+	/**
 	 * 'csv', 'json', 'excel', 'xml'
 	 */
 	saveFormat: string;
@@ -115,7 +119,13 @@ export class SerializationService implements ISerializationService {
 		}
 		try {
 			// Create a new session with the provider and send initial data
-			let provider = this.providers[0].provider;
+			let provider = this.providers.find(provider => provider.providerId === serializationRequest.serializationProviderId)?.provider;
+			if (!provider) {
+				return <azdata.SerializeDataResult>{
+					messages: localize('missingSerializationProviderError', "Could not find a serialization provider with the specified ID '{0}'", serializationRequest.serializationProviderId),
+					succeeded: false
+				};
+			}
 			let index = 0;
 			let startRequestParams = this.createStartRequest(serializationRequest, index);
 			index = index + startRequestParams.rows.length;

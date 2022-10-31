@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Disposable } from 'vs/base/common/lifecycle';
+import { IObservableValue } from 'vs/base/common/observableValue';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { ILoggerService } from 'vs/platform/log/common/log';
@@ -15,6 +16,7 @@ import { ITelemetryData, ITelemetryInfo, ITelemetryService, TelemetryLevel, TELE
 import { TelemetryLogAppender } from 'vs/platform/telemetry/common/telemetryLogAppender';
 import { ITelemetryServiceConfig, TelemetryService as BaseTelemetryService } from 'vs/platform/telemetry/common/telemetryService';
 import { getTelemetryLevel, isInternalTelemetry, ITelemetryAppender, NullTelemetryService, supportsTelemetry } from 'vs/platform/telemetry/common/telemetryUtils';
+import { IBrowserWorkbenchEnvironmentService } from 'vs/workbench/services/environment/browser/environmentService';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 import { IRemoteAgentService } from 'vs/workbench/services/remote/common/remoteAgentService';
 import { resolveWorkbenchCommonProperties } from 'vs/workbench/services/telemetry/browser/workbenchCommonProperties';
@@ -27,7 +29,7 @@ export class TelemetryService extends Disposable implements ITelemetryService {
 	public readonly sendErrorTelemetry = true;
 
 	constructor(
-		@IWorkbenchEnvironmentService environmentService: IWorkbenchEnvironmentService,
+		@IBrowserWorkbenchEnvironmentService environmentService: IBrowserWorkbenchEnvironmentService,
 		@ILoggerService loggerService: ILoggerService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IStorageService storageService: IStorageService,
@@ -73,7 +75,7 @@ export class TelemetryService extends Disposable implements ITelemetryService {
 				sendErrorTelemetry: this.sendErrorTelemetry,
 			};
 
-			return this._register(new BaseTelemetryService(config, configurationService));
+			return this._register(new BaseTelemetryService(config, configurationService, productService));
 		}
 		return this.impl;
 	}
@@ -82,7 +84,7 @@ export class TelemetryService extends Disposable implements ITelemetryService {
 		return this.impl.setExperimentProperty(name, value);
 	}
 
-	get telemetryLevel(): TelemetryLevel {
+	get telemetryLevel(): IObservableValue<TelemetryLevel> {
 		return this.impl.telemetryLevel;
 	}
 

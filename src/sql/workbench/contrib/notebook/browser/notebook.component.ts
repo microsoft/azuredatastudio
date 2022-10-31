@@ -36,14 +36,14 @@ import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
 import { FileOperationError, FileOperationResult } from 'vs/platform/files/common/files';
 import { isValidBasename } from 'vs/base/common/extpath';
 import { basename } from 'vs/base/common/resources';
-import { toErrorMessage } from 'vs/base/common/errorMessage';
+import { createErrorWithActions, toErrorMessage } from 'vs/base/common/errorMessage';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
-import { getErrorMessage, onUnexpectedError, createErrorWithActions } from 'vs/base/common/errors';
+import { getErrorMessage, onUnexpectedError } from 'vs/base/common/errors';
 import { CodeCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/codeCell.component';
 import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
@@ -403,8 +403,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			if (error) {
 				// Offer to create a file from the error if we have a file not found and the name is valid
 				if ((<FileOperationError>error).fileOperationResult === FileOperationResult.FILE_NOT_FOUND && isValidBasename(basename(this.notebookParams.notebookUri))) {
-					let errorWithAction = createErrorWithActions(toErrorMessage(error), {
-						actions: [
+					let errorWithAction = createErrorWithActions(toErrorMessage(error),
+						[
 							new Action('workbench.files.action.createMissingFile', localize('createFile', "Create File"), undefined, true, () => {
 								let operations = new Array(1);
 								operations[0] = {
@@ -420,7 +420,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 								}));
 							})
 						]
-					});
+					);
 					this.notificationService.error(errorWithAction);
 
 					let editors = this.editorService.visibleEditorPanes;

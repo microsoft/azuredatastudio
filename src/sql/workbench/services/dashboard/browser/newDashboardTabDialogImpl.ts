@@ -23,10 +23,10 @@ import { NewDashboardTabViewModel, IDashboardUITab } from 'sql/workbench/service
 import { IDashboardTab } from 'sql/workbench/services/dashboard/browser/common/interfaces';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { ILogService } from 'vs/platform/log/common/log';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 
 class ExtensionListDelegate implements IListVirtualDelegate<IDashboardUITab> {
 

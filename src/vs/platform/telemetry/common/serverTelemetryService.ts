@@ -26,7 +26,7 @@ export class ServerTelemetryService extends TelemetryService implements IServerT
 		@IConfigurationService _configurationService: IConfigurationService,
 		@IProductService _productService: IProductService
 	) {
-		super(config, _configurationService);
+		super(config, _configurationService, _productService);
 		this._injectedTelemetryLevel = injectedTelemetryLevel;
 	}
 

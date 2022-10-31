@@ -59,9 +59,9 @@ export class SqlSourceConfigurationPage extends MigrationWizardPage {
 		const query = 'select SUSER_NAME()';
 		const results = await queryProvider.runQueryAndReturn(await (azdata.connection.getUriForConnection(this.migrationStateModel.sourceConnectionId)), query);
 		const username = results.rows[0][0].displayValue;
-		this.migrationStateModel._authenticationType = connectionProfile.authenticationType === azdata.connection.AuthenticationType.SqlLogin
+		this.migrationStateModel._authenticationType = connectionProfile.authenticationType === 'SqlLogin'
 			? MigrationSourceAuthenticationType.Sql
-			: connectionProfile.authenticationType === azdata.connection.AuthenticationType.Integrated
+			: connectionProfile.authenticationType === 'Integrated'
 				? MigrationSourceAuthenticationType.Integrated
 				: undefined!;
 

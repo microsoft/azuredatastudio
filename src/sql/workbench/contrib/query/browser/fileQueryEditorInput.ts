@@ -63,16 +63,16 @@ export class FileQueryEditorInput extends QueryEditorInput {
 		this.text.setPreferredEncoding(encoding);
 	}
 
-	public getPreferredMode(): string {
-		return this.text.getPreferredMode();
+	public getPreferredLanguageId(): string {
+		return this.text.getPreferredLanguageId();
 	}
 
-	public setMode(mode: string) {
-		this.text.setMode(mode);
+	public setLanguageId(mode: string) {
+		this.text.setLanguageId(mode);
 	}
 
-	public setPreferredMode(mode: string) {
-		this.text.setPreferredMode(mode);
+	public setPreferredLanguageId(mode: string) {
+		this.text.setPreferredLanguageId(mode);
 	}
 
 	public setForceOpenAsText() {
@@ -92,8 +92,8 @@ export class FileQueryEditorInput extends QueryEditorInput {
 	}
 
 	override async saveAs(group: GroupIdentifier, options?: ISaveOptions): Promise<EditorInput | undefined> {
-		let newEditorInput = await this.text.saveAs(group, options);
-		let newUri = newEditorInput.resource.toString(true);
+		let newEditorInput = <EditorInput>await this.text.saveAs(group, options);
+		let newUri = (newEditorInput).resource.toString(true);
 		if (newUri === this.uri) {
 			// URI is the same location, no need to change URI for the query in services, just return input.
 			return newEditorInput;

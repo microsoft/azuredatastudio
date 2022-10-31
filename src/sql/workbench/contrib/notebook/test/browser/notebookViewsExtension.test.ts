@@ -11,23 +11,21 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { URI } from 'vs/base/common/uri';
 
-import { ExecuteManagerStub, SerializationManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
+import { ExecuteManagerStub, NotebookServiceStub, SerializationManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
-import { INotebookModelOptions } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { ICellModel, INotebookModelOptions } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { Memento } from 'vs/workbench/common/memento';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
+import { mock, TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
-import { NullLogService } from 'vs/platform/log/common/log';
+import { ILogService, NullLogService } from 'vs/platform/log/common/log';
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
 import { NotebookEditorContentLoader } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { SessionManager } from 'sql/workbench/contrib/notebook/test/emptySessionClasses';
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
-import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
+import { CellTypes, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -35,8 +33,13 @@ import { TestDialogService } from 'vs/platform/dialogs/test/common/testDialogSer
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { UndoRedoService } from 'vs/platform/undoRedo/common/undoRedoService';
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
-import { SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
+import { INotebookService, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
+import { Emitter } from 'vs/base/common/event';
+import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
+import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
+import { ICommandService, NullCommandService } from 'vs/platform/commands/common/commands';
+import { ILanguageService } from 'vs/editor/common/languages/language';
 
 let initialNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -64,7 +67,7 @@ let defaultUri = URI.file('/some/path.ipynb');
 let notificationService: TypeMoq.Mock<INotificationService>;
 let capabilitiesService: TypeMoq.Mock<ICapabilitiesService>;
 let dialogService: TypeMoq.Mock<IDialogService>;
-let instantiationService: IInstantiationService;
+let instantiationService: TestInstantiationService;
 let configurationService: IConfigurationService;
 let undoRedoService: IUndoRedoService;
 
@@ -156,9 +159,19 @@ suite('NotebookViews', function (): void {
 		memento.setup(x => x.getMemento(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => void 0);
 		queryConnectionService = TypeMoq.Mock.ofType(TestConnectionManagementService, TypeMoq.MockBehavior.Loose, memento.object, undefined, new TestStorageService());
 		queryConnectionService.callBase = true;
-
-		instantiationService = new InstantiationService(serviceCollection, true);
 		configurationService = new TestConfigurationService();
+
+		serviceCollection.set(ICommandService, NullCommandService);
+		serviceCollection.set(IConfigurationService, configurationService);
+		serviceCollection.set(ILogService, new NullLogService());
+
+		instantiationService = new TestInstantiationService(serviceCollection, true);
+		instantiationService.stub(INotebookService, new class extends mock<INotebookService>() {
+			override async serializeNotebookStateChange(notebookUri: URI, changeType: NotebookChangeType, cell?: ICellModel, isTrusted?: boolean): Promise<void> { }
+			override notifyCellExecutionStarted(): void { }
+		});
+		instantiationService.stub(ILanguageService, new class extends mock<ILanguageService>() { });
+
 		defaultModelOptions = {
 			notebookUri: defaultUri,
 			factory: new ModelFactory(instantiationService),
@@ -171,7 +184,8 @@ suite('NotebookViews', function (): void {
 			cellMagicMapper: undefined,
 			defaultKernel: undefined,
 			layoutChanged: undefined,
-			capabilitiesService: capabilitiesService.object
+			capabilitiesService: capabilitiesService.object,
+			getInputLanguageMode: () => undefined
 		};
 	}
 
@@ -179,8 +193,10 @@ suite('NotebookViews', function (): void {
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(initialNotebookContent));
 		defaultModelOptions.contentLoader = mockContentManager.object;
+		let mockNotebookService = TypeMoq.Mock.ofType(NotebookServiceStub);
+		mockNotebookService.setup(s => s.onNotebookKernelsAdded).returns(() => new Emitter<IStandardKernelWithProvider[]>().event);
 
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService, undoRedoService, undefined);
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService, undoRedoService, mockNotebookService.object, undefined, undefined);
 		await model.loadContents();
 		await model.requestModelLoad();
 

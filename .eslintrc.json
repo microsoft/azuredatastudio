@@ -11,21 +11,23 @@
 		"header"
 	],
 	"rules": {
+		"no-undef": "off",
+		"no-unused-vars": "off",
 		"constructor-super": "warn",
-		"curly": "warn",
+		"curly": "off",
 		"eqeqeq": "warn",
 		"no-buffer-constructor": "warn",
 		"no-caller": "warn",
 		"no-debugger": "warn",
 		"no-duplicate-case": "warn",
-		"no-duplicate-imports": "warn",
+		"no-duplicate-imports": "off",
 		"no-eval": "warn",
 		"no-async-promise-executor": "off",
 		"no-extra-semi": "warn",
 		"no-new-wrappers": "warn",
 		"no-redeclare": "off",
 		"no-sparse-arrays": "warn",
-		"no-throw-literal": "warn",
+		"no-throw-literal": "off",
 		"no-unsafe-finally": "warn",
 		"no-unused-labels": "warn",
 		"no-restricted-globals": [
@@ -40,10 +42,10 @@
 			"orientation",
 			"context"
 		], // non-complete list of globals that are easy to access unintentionally
-		"no-var": "warn",
+		"no-var": "off",
 		"jsdoc/no-types": "warn",
 		"semi": "off",
-		"@typescript-eslint/semi": "warn",
+		"@typescript-eslint/semi": "off",
 		"@typescript-eslint/naming-convention": [
 			"warn",
 			{
@@ -54,15 +56,15 @@
 			}
 		],
 		"code-no-unused-expressions": [
-			"warn",
+			"off",
 			{
 				"allowTernary": true
 			}
 		],
-		"code-translation-remind": "warn",
+		"code-translation-remind": "off",
 		"code-no-nls-in-standalone-editor": "warn",
 		"code-no-standalone-editor": "warn",
-		"code-no-unexternalized-strings": "warn",
+		"code-no-unexternalized-strings": "off",
 		"code-layering": [
 			"warn",
 			{
@@ -90,7 +92,7 @@
 			}
 		],
 		"code-import-patterns": [
-			"warn",
+			"off",
 			// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			// !!! Do not relax these rules !!!
 			// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

@@ -655,8 +655,9 @@ export interface DatabaseMigrationProperties {
 	scope: string;
 	provisioningState: 'Succeeded' | 'Failed' | 'Creating';
 	provisioningError: string;
-	migrationStatus: 'InProgress' | 'Failed' | 'Succeeded' | 'Creating' | 'Completing' | 'Canceling';
+	migrationStatus: 'Canceled' | 'Canceling' | 'Completing' | 'Creating' | 'Failed' | 'InProgress' | 'ReadyForCutover' | 'Restoring' | 'Retriable' | 'Succeeded' | 'UploadingFullBackup' | 'UploadingLogBackup';
 	migrationStatusDetails?: MigrationStatusDetails;
+	migrationStatusWarnings?: MigrationStatusWarnings;
 	startedOn: string;
 	endedOn: string;
 	sourceDatabaseName: string;
@@ -687,6 +688,12 @@ export interface MigrationStatusDetails {
 	invalidFiles: string[];
 	listOfCopyProgressDetails: CopyProgressDetail[];
 	sqlDataCopyErrors: string[];
+}
+
+export interface MigrationStatusWarnings {
+	restoreBlockingReason?: string;
+	completeRestoreErrorMessage?: string;
+	fileUploadBlockingErrorCount?: number;
 }
 
 export interface CopyProgressDetail {
