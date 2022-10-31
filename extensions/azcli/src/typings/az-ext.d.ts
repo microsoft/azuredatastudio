@@ -174,18 +174,18 @@ declare module 'az-ext' {
 			endpoints: {
 				logSearchDashboard: string, // https://127.0.0.1:30777/kibana/app/kibana#/discover?_a=(query:(language:kuery,query:'custom_resource_name:miaa1'))
 				metricsDashboard: string, // https://127.0.0.1:30777/grafana/d/40q72HnGk/sql-managed-instance-metrics?var-hostname=miaa1-0
-				mirroring: string,
+				mirroring: string, // 10.91.90.25:3448
 				primaryEndpoint?: string // "10.91.86.39:32718"
 			},
 			highAvailability: {
-				lastUpdateTime: string,
-				mirroringCertificate: string
+				lastUpdateTime: string, // "2022-02-07T06:08:20.500688Z"
+				mirroringCertificate: string // "-----BEGIN CERTIFICATE-----****-----END CERTIFICATE-----\n"
 			},
-			lastUpdateTime: string,
-			observedGeneration: string,
+			lastUpdateTime: string, // "2022-02-07T06:08:20.500688Z"
+			observedGeneration: string, // 1
 			roles: {
 				sql: {
-					lastUpdateTime: string,
+					lastUpdateTime: string, // "2022-02-07T06:08:20.500688Z"
 					readyReplicas: string // "1/1"
 				}
 			},
@@ -236,18 +236,18 @@ declare module 'az-ext' {
 			endpoints: {
 				logSearchDashboard: string, // https://127.0.0.1:30777/kibana/app/kibana#/discover?_a=(query:(language:kuery,query:'custom_resource_name:miaa1'))
 				metricsDashboard: string, // https://127.0.0.1:30777/grafana/d/40q72HnGk/sql-managed-instance-metrics?var-hostname=miaa1-0
-				mirroring: string,
+				mirroring: string, // 10.91.90.25:3448
 				primaryEndpoint?: string // "10.91.86.39:32718"
 			},
 			highAvailability: {
-				lastUpdateTime: string,
-				mirroringCertificate: string
+				lastUpdateTime: string, // "2022-02-07T06:08:20.500688Z"
+				mirroringCertificate: string // "-----BEGIN CERTIFICATE-----****-----END CERTIFICATE-----\n"
 			},
-			lastUpdateTime: string,
-			observedGeneration: string,
+			lastUpdateTime: string, // "2022-02-07T06:08:20.500688Z"
+			observedGeneration: string, // 1
 			roles: {
 				sql: {
-					lastUpdateTime: string,
+					lastUpdateTime: string, // "2022-02-07T06:08:20.500688Z"
 					readyReplicas: string // "1/1"
 				}
 			},
@@ -374,18 +374,18 @@ declare module 'az-ext' {
 					endpoints: {
 						logSearchDashboard: string, // https://127.0.0.1:30777/kibana/app/kibana#/discover?_a=(query:(language:kuery,query:'custom_resource_name:miaa1'))
 						metricsDashboard: string, // https://127.0.0.1:30777/grafana/d/40q72HnGk/sql-managed-instance-metrics?var-hostname=miaa1-0
-						mirroring: string,
+						mirroring: string, // 10.91.90.25:3448
 						primaryEndpoint?: string // "10.91.86.39:32718"
 					},
 					highAvailability: {
-						lastUpdateTime: string,
-						mirroringCertificate: string
+						lastUpdateTime: string, // "2022-02-07T06:08:20.500688Z"
+						mirroringCertificate: string // "-----BEGIN CERTIFICATE-----****-----END CERTIFICATE-----\n"
 					},
-					lastUpdateTime: string,
-					observedGeneration: string,
+					lastUpdateTime: string, // "2022-02-07T06:08:20.500688Z"
+					observedGeneration: string, // 1
 					roles: {
 						sql: {
-							lastUpdateTime: string,
+							lastUpdateTime: string, // "2022-02-07T06:08:20.500688Z"
 							readyReplicas: string // "1/1"
 						}
 					},
