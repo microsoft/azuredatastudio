@@ -37,6 +37,7 @@ export class ErrorMessageDialog extends Modal {
 	private _severity?: Severity;
 	private _message?: string;
 	private _instructionText?: string;
+	private _readMoreLink?: string;
 	private _messageDetails?: string;
 	private _okLabel: string;
 	private _closeLabel: string;
@@ -111,7 +112,12 @@ export class ErrorMessageDialog extends Modal {
 		DOM.clearNode(this._body!);
 		DOM.append(this._body!, DOM.$('div.error-message')).innerText = this._message!;
 		if (this._instructionText) {
-			DOM.append(this._body!, DOM.$('div.error-instruction-text')).innerText = this._instructionText!;
+			let childElement = DOM.$('div.error-instruction-text');
+			childElement.innerText = this._instructionText!;
+			if (this._readMoreLink) {
+				childElement.innerHTML += ` <a href="${this._readMoreLink}">Read more</a>`;
+			}
+			DOM.append(this._body!, childElement);
 		}
 	}
 
@@ -148,10 +154,11 @@ export class ErrorMessageDialog extends Modal {
 		this.hide(hideReason);
 	}
 
-	public open(severity: Severity, headerTitle: string, message: string, messageDetails?: string, actions?: IAction[], instructionText?: string) {
+	public open(severity: Severity, headerTitle: string, message: string, messageDetails?: string, actions?: IAction[], instructionText?: string, readMoreLink?: string): void {
 		this._severity = severity;
 		this._message = message;
 		this._instructionText = instructionText;
+		this._readMoreLink = readMoreLink;
 		this.title = headerTitle;
 		this._messageDetails = messageDetails;
 		if (this._messageDetails) {
@@ -163,7 +170,7 @@ export class ErrorMessageDialog extends Modal {
 			this._bodyContainer.setAttribute('aria-description', this._message);
 		}
 		this.resetActions();
-		if (actions && actions.length > 0) {
+		if (actions?.length > 0) {
 			for (let i = 0; i < maxActions && i < actions.length; i++) {
 				this._actions.push(actions[i]);
 				let button = this._actionButtons[i];
@@ -180,11 +187,10 @@ export class ErrorMessageDialog extends Modal {
 			this.removeFooterButton(this._closeLabel);
 			this._okButton = this.addFooterButton(this._okLabel, () => this.ok());
 		}
-		this._register(attachButtonStyler(this._okButton, this._themeService));
 		this.updateIconTitle();
 		this.updateDialogBody();
 		this.show();
-		if (actions && actions.length > 0) {
+		if (actions?.length > 0) {
 			this._actionButtons[0].focus();
 		} else {
 			this._okButton!.focus();

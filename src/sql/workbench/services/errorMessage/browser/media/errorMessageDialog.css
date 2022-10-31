@@ -6,7 +6,7 @@
 .error-dialog {
 	padding: 15px;
 	overflow: auto;
-	height: 200px;
+	height: 210px;
 }
 
 .error-dialog .codicon.error, .error-dialog .codicon.warning , .error-dialog .codicon.info {
@@ -23,7 +23,7 @@
 }
 
 .error-dialog .error-instruction-text{
-	margin-top: 60px;
+	margin-top: 40px;
 	font-weight: 700;
 }
 
