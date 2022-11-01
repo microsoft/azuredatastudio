@@ -45,6 +45,9 @@ export class DashboardComponent extends AngularDisposable implements OnInit {
 			// Route to the server page as this is the default database
 			this._router.navigate(['server-dashboard'], { relativeTo: this._activeRoute, skipLocationChange: true }).catch(onUnexpectedError);
 		}
+		else {
+			this._router.navigate(['database-dashboard'], { relativeTo: this._activeRoute, skipLocationChange: true }).catch(onUnexpectedError);
+		}
 	}
 
 	private updateTheme(theme: IColorTheme): void {
