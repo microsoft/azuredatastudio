@@ -56,6 +56,11 @@ flakySuite('Native Modules (all platforms)', () => {
 		assert.ok(typeof sqlite3.Database === 'function', testErrorMessage('@vscode/sqlite3'));
 	});
 
+	test('@vscode/ripgrep', async () => {
+		const ripgrep = await import('@vscode/ripgrep');
+		assert.ok(typeof ripgrep.rgPath === 'function', testErrorMessage('@vscode/ripgrep'));
+	});
+
 	test('vscode-encrypt', async () => {
 		try {
 			const vscodeEncrypt: Encryption = require.__$__nodeRequire('vscode-encrypt');
