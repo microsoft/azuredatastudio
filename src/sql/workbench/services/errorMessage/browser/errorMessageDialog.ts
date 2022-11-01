@@ -120,11 +120,10 @@ export class ErrorMessageDialog extends Modal {
 			let childElement = DOM.$('div.error-instruction-text');
 			childElement.innerText = this._instructionText!;
 			if (this._readMoreLink) {
-				let link = new Link(childElement, {
+				new Link(childElement, {
 					label: this._readMoreLabel,
 					href: this._readMoreLink
 				}, undefined, this._openerService);
-				childElement.appendChild(link.el);
 			}
 			DOM.append(this._body!, childElement);
 		}
