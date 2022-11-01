@@ -471,8 +471,10 @@ export class AccountManagementService implements IAccountManagementService {
 		}
 
 		const authLibrary: AuthLibrary = this.configurationService.getValue('azure.authenticationLibrary');
-		let updatedAccounts = filterAccounts(provider.accounts, authLibrary);
-
+		let updatedAccounts: azdata.Account[]
+		if (authLibrary) {
+			updatedAccounts = filterAccounts(provider.accounts, authLibrary);
+		}
 		// Step 2) Fire the event
 		let eventArg: UpdateAccountListEventParams = {
 			providerId: provider.metadata.id,

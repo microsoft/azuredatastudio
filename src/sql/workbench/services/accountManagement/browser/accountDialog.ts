@@ -378,8 +378,10 @@ export class AccountDialog extends Modal {
 
 		// Set the initial items of the list
 		const authLibrary: AuthLibrary = this._configurationService.getValue('azure.authenticationLibrary');
-		let updatedAccounts = filterAccounts(newProvider.initialAccounts, authLibrary);
-
+		let updatedAccounts: azdata.Account[];
+		if (authLibrary) {
+			updatedAccounts = filterAccounts(newProvider.initialAccounts, authLibrary);
+		}
 		providerView.updateAccounts(updatedAccounts);
 
 		if (newProvider.initialAccounts.length > 0 && this._splitViewContainer!.hidden) {
@@ -418,7 +420,10 @@ export class AccountDialog extends Modal {
 			return;
 		}
 		const authLibrary: AuthLibrary = this._configurationService.getValue('azure.authenticationLibrary');
-		let updatedAccounts = filterAccounts(args.accountList, authLibrary);
+		let updatedAccounts: azdata.Account[];
+		if (authLibrary) {
+			updatedAccounts = filterAccounts(args.accountList, authLibrary);
+		}
 		providerMapping.view.updateAccounts(updatedAccounts);
 
 		if (args.accountList.length > 0 && this._splitViewContainer!.hidden) {

@@ -590,7 +590,9 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		const accounts = await this._accountManagementService.getAccounts();
 		const updatedAccounts = accounts.filter(a => a.key.providerId.startsWith('azure'));
 		const authLibrary: AuthLibrary = this.configurationService.getValue('azure.authenticationLibrary');
-		this._azureAccountList = filterAccounts(updatedAccounts, authLibrary);
+		if (authLibrary) {
+			this._azureAccountList = filterAccounts(updatedAccounts, authLibrary);
+		}
 
 		let accountDropdownOptions: SelectOptionItemSQL[] = this._azureAccountList.map(account => {
 			return {
