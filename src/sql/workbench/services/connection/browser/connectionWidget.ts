@@ -37,6 +37,7 @@ import { ConnectionStringOptions } from 'sql/platform/capabilities/common/capabi
 import { isFalsyOrWhitespace } from 'vs/base/common/strings';
 import { AuthenticationType } from 'sql/platform/connection/common/constants';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { AuthLibrary, filterAccounts } from 'sql/workbench/services/accountManagement/browser/accountDialog';
 
 const ConnectionStringText = localize('connectionWidget.connectionString', "Connection string");
 
@@ -588,22 +589,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		let oldSelection = this._azureAccountDropdown.value;
 		const accounts = await this._accountManagementService.getAccounts();
 		const updatedAccounts = accounts.filter(a => a.key.providerId.startsWith('azure'));
-		const authLibrary = this.configurationService.getValue('azure.authenticationLibrary');
-		this._azureAccountList = updatedAccounts.filter(account => {
-			if (account.key.authLibrary) {
-				if (account.key.authLibrary === authLibrary) {
-					return true;
-				} else {
-					return false;
-				}
-			} else {
-				if (authLibrary === 'ADAL') {
-					return true;
-				} else {
-					return false;
-				}
-			}
-		});
+		const authLibrary: AuthLibrary = this.configurationService.getValue('azure.authenticationLibrary');
+		this._azureAccountList = filterAccounts(updatedAccounts, authLibrary);
 
 		let accountDropdownOptions: SelectOptionItemSQL[] = this._azureAccountList.map(account => {
 			return {

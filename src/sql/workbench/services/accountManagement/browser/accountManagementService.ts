@@ -26,6 +26,7 @@ import { INotificationService, Severity, INotification } from 'vs/platform/notif
 import { Action } from 'vs/base/common/actions';
 import { DisposableStore } from 'vs/base/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { AuthLibrary, filterAccounts } from 'sql/workbench/services/accountManagement/browser/accountDialog';
 
 export class AccountManagementService implements IAccountManagementService {
 	// CONSTANTS ///////////////////////////////////////////////////////////
@@ -145,6 +146,7 @@ export class AccountManagementService implements IAccountManagementService {
 				let result = await this._accountStore.addOrUpdate(account);
 				if (!result) {
 					this._logService.error('adding account failed');
+					throw Error('Adding account failed, check Azure Accounts log for more info.')
 				}
 				if (result.accountAdded) {
 					// Add the account to the list
@@ -468,25 +470,8 @@ export class AccountManagementService implements IAccountManagementService {
 			});
 		}
 
-		const authLibrary = this.configurationService.getValue('azure.authenticationLibrary');
-		let updatedAccounts;
-		if (authLibrary) {
-			updatedAccounts = provider.accounts.filter(account => {
-				if (account.key.authLibrary) {
-					if (account.key.authLibrary === authLibrary) {
-						return true;
-					} else {
-						return false;
-					}
-				} else {
-					if (authLibrary === 'ADAL') {
-						return true;
-					} else {
-						return false;
-					}
-				}
-			});
-		}
+		const authLibrary: AuthLibrary = this.configurationService.getValue('azure.authenticationLibrary');
+		let updatedAccounts = filterAccounts(provider.accounts, authLibrary);
 
 		// Step 2) Fire the event
 		let eventArg: UpdateAccountListEventParams = {
@@ -509,25 +494,11 @@ export class AccountManagementService implements IAccountManagementService {
 	private registerListeners(): void {
 		this.disposables.add(this.configurationService.onDidChangeConfiguration(async e => {
 			if (e.affectsConfiguration('azure.authenticationLibrary')) {
-				const authLibrary = this.configurationService.getValue('azure.authenticationLibrary');
+				const authLibrary: AuthLibrary = this.configurationService.getValue('azure.authenticationLibrary');
 				if (authLibrary) {
 					let accounts = await this._accountStore.getAllAccounts();
 					if (accounts) {
-						let updatedAccounts = accounts.filter(account => {
-							if (account.key.authLibrary) {
-								if (account.key.authLibrary === authLibrary) {
-									return true;
-								} else {
-									return false;
-								}
-							} else {
-								if (authLibrary === 'ADAL') {
-									return true;
-								} else {
-									return false;
-								}
-							}
-						});
+						let updatedAccounts = filterAccounts(accounts, authLibrary);
 						let eventArg: UpdateAccountListEventParams;
 						if (updatedAccounts.length > 0) {
 							updatedAccounts.forEach(account => {

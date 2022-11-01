@@ -39,7 +39,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 	protected readonly loginEndpointUrl: string;
 	public readonly commonTenant: Tenant;
-	public readonly organizationsTenant: Tenant;
+	public readonly organizationTenant: Tenant;
 	protected readonly redirectUri: string;
 	protected readonly scopes: string[];
 	protected readonly scopesString: string;
@@ -73,7 +73,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			id: 'common',
 			displayName: 'common',
 		};
-		this.organizationsTenant = {
+		this.organizationTenant = {
 			id: 'organizations',
 			displayName: 'organizations',
 		};
@@ -132,10 +132,10 @@ export abstract class AzureAuth implements vscode.Disposable {
 				loginComplete?.resolve();
 				return account;
 			} else {
-				const result = await this.loginMsal(this.organizationsTenant, this.metadata.settings.microsoftResource);
+				const result = await this.loginMsal(this.organizationTenant, this.metadata.settings.microsoftResource);
 				loginComplete = result.authComplete;
 				if (!result?.response || !result.response?.account) {
-					Logger.error('Authentication failed');
+					Logger.error(`Authentication failed: ${loginComplete}`);
 					return {
 						canceled: false
 					};
