@@ -6,7 +6,7 @@
 import { ManageAction, ManageActionContext } from 'sql/workbench/browser/actions';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IAngularEventingService } from 'sql/platform/angularEventing/browser/angularEventingService';
-import { ExecuteCommandAction } from 'vs/platform/actions/common/actions';
+import { ExecuteCommandAction } from 'vs/workbench/browser/parts/editor/editorActions';
 
 export class ExplorerManageAction extends ManageAction {
 	public static override readonly ID = 'explorerwidget.manage';
@@ -24,7 +24,9 @@ export class ExplorerManageAction extends ManageAction {
 }
 
 export class CustomExecuteCommandAction extends ExecuteCommandAction {
-	override run(context: ManageActionContext): Promise<any> {
-		return super.run(context.profile);
+	override run(): Promise<any> {
+		// {{SQL CARBON TODO}}
+		//return super.run(context.profile);
+		return super.run();
 	}
 }

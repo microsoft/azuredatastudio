@@ -23,14 +23,12 @@ import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { URI } from 'vs/base/common/uri';
 import { Schemas } from 'vs/base/common/network';
 import * as nls from 'vs/nls';
-import { IModelService } from 'vs/editor/common/services/modelService';
 import { DisposableStore, IDisposable } from 'vs/base/common/lifecycle';
 import { Command } from 'vs/editor/browser/editorExtensions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { ContextKeyExpr, IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
-import { CommonFindController, FindStartFocusAction } from 'vs/editor/contrib/find/findController';
 import * as types from 'vs/base/common/types';
 import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 import { ColorScheme } from 'vs/platform/theme/common/theme';
@@ -48,12 +46,14 @@ import { CopyKeybind } from 'sql/base/browser/ui/table/plugins/copyKeybind.plugi
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 import { handleCopyRequest } from 'sql/workbench/contrib/profiler/browser/profilerCopyHandler';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
 import { UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 import { IEditorOptions } from 'vs/platform/editor/common/editor';
 import { IEditorGroup, IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
+import { IModelService } from 'vs/editor/common/services/model';
+import { CommonFindController, FindStartFocusAction } from 'vs/editor/contrib/find/browser/findController';
 
 class BasicView implements IView {
 	public get element(): HTMLElement {
@@ -318,14 +318,14 @@ export class ProfilerEditor extends EditorPane {
 		let theme = this.themeService.getColorTheme();
 		if (theme.type === ColorScheme.DARK) {
 			profilerTableContainer.classList.add(VS_DARK_THEME);
-		} else if (theme.type === ColorScheme.HIGH_CONTRAST) {
+		} else if (theme.type === ColorScheme.HIGH_CONTRAST_DARK) {
 			profilerTableContainer.classList.add(VS_HC_THEME);
 		}
 		this.themeService.onDidColorThemeChange(e => {
 			profilerTableContainer.classList.remove(VS_DARK_THEME, VS_HC_THEME);
 			if (e.type === ColorScheme.DARK) {
 				profilerTableContainer.classList.add(VS_DARK_THEME);
-			} else if (e.type === ColorScheme.HIGH_CONTRAST) {
+			} else if (e.type === ColorScheme.HIGH_CONTRAST_DARK) {
 				profilerTableContainer.classList.add(VS_HC_THEME);
 			}
 		});

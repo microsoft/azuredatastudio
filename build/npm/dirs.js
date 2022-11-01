@@ -23,6 +23,7 @@ exports.dirs = [
 	'extensions/dacpac',
 	'extensions/data-workspace',
 	'extensions/git',
+	'extensions/git-base',
 	'extensions/github',
 	'extensions/github-authentication',
 	'extensions/image-preview',

@@ -9,12 +9,11 @@ import { IconPathHelper } from '../constants/iconPathHelper';
 import { getCurrentMigrations, getSelectedServiceStatus } from '../models/migrationLocalStorage';
 import * as loc from '../constants/strings';
 import { filterMigrations, getMigrationDuration, getMigrationStatusImage, getMigrationStatusWithErrors, getMigrationTime, MenuCommands } from '../api/utils';
-import { getMigrationTargetType, getMigrationMode, getMigrationModeEnum, canCancelMigration, canCutoverMigration, getMigrationStatus } from '../constants/helper';
+import { getMigrationTargetType, getMigrationMode, canCancelMigration, canCutoverMigration } from '../constants/helper';
 import { DatabaseMigration, getResourceName } from '../api/azure';
 import { logError, TelemetryViews } from '../telemtery';
 import { SelectMigrationServiceDialog } from '../dialog/selectMigrationService/selectMigrationServiceDialog';
 import { AdsMigrationStatus, EmptySettingValue, ServiceContextChangeEvent, TabBase } from './tabBase';
-import { MigrationMode } from '../models/stateMachine';
 import { DashboardStatusBar } from './DashboardStatusBar';
 
 export const MigrationsListTabId = 'MigrationsListTab';
@@ -468,7 +467,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 						headerCssClass: headerCssStyles,
 						name: loc.SRC_DATABASE,
 						value: 'sourceDatabase',
-						width: 190,
+						width: 170,
 						type: azdata.ColumnType.hyperlink,
 					},
 					{
@@ -476,7 +475,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 						headerCssClass: headerCssStyles,
 						name: loc.SRC_SERVER,
 						value: 'sourceServer',
-						width: 190,
+						width: 170,
 						type: azdata.ColumnType.text,
 					},
 					<azdata.HyperlinkColumn>{
@@ -484,7 +483,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 						headerCssClass: headerCssStyles,
 						name: loc.STATUS_COLUMN,
 						value: 'status',
-						width: 120,
+						width: 160,
 						type: azdata.ColumnType.hyperlink,
 					},
 					{
@@ -559,9 +558,9 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 				const buttonState = <azdata.ICellActionEventArgs>rowState;
 				const migration = this._filteredMigrations[rowState.row];
 				switch (buttonState?.column) {
+					// "Migration status" column
 					case 2:
-						const status = getMigrationStatus(migration);
-						const statusMessage = loc.DATABASE_MIGRATION_STATUS_LABEL(status);
+						const statusMessage = loc.DATABASE_MIGRATION_STATUS_LABEL(getMigrationStatusWithErrors(migration));
 						const errors = this.getMigrationErrors(migration!);
 
 						this.showDialogMessage(
@@ -569,6 +568,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 							statusMessage,
 							errors);
 						break;
+					// "Source database" column
 					case 0:
 						await this._openMigrationDetails(migration);
 						break;
@@ -581,8 +581,7 @@ export class MigrationsListTab extends TabBase<MigrationsListTab> {
 	private _getMenuCommands(migration: DatabaseMigration): string[] {
 		const menuCommands: string[] = [];
 
-		if (getMigrationModeEnum(migration) === MigrationMode.ONLINE &&
-			canCutoverMigration(migration)) {
+		if (canCutoverMigration(migration)) {
 			menuCommands.push(MenuCommands.Cutover);
 		}
 

@@ -20,6 +20,7 @@ const root = path.dirname(__dirname);
 const commit = util.getVersion(root);
 const plumber = require('gulp-plumber');
 const ext = require('./lib/extensions');
+const product = require('../product.json');
 
 const extensionsPath = path.join(path.dirname(__dirname), 'extensions');
 
@@ -34,46 +35,51 @@ const compilations = glob.sync('**/tsconfig.json', {
 	cwd: extensionsPath,
 	ignore: ['**/out/**', '**/node_modules/**']
 });
-// const compilations = [
-	// 'configuration-editing/build/tsconfig.json',
-	// 'configuration-editing/tsconfig.json',
-	// 'css-language-features/client/tsconfig.json',
-	// 'css-language-features/server/tsconfig.json',
-	// 'debug-auto-launch/tsconfig.json',
-	// 'debug-server-ready/tsconfig.json',
-	// 'emmet/tsconfig.json',
-	// 'extension-editing/tsconfig.json',
-	// 'git/tsconfig.json',
-	// 'github-authentication/tsconfig.json',
-	// 'github/tsconfig.json',
-	// 'grunt/tsconfig.json',
-	// 'gulp/tsconfig.json',
-	// 'html-language-features/client/tsconfig.json',
-	// 'html-language-features/server/tsconfig.json',
-	// 'image-preview/tsconfig.json',
-	// 'ipynb/tsconfig.json',
-	// 'jake/tsconfig.json',
-	// 'json-language-features/client/tsconfig.json',
-	// 'json-language-features/server/tsconfig.json',
-	// 'markdown-language-features/preview-src/tsconfig.json',
-	// 'markdown-language-features/tsconfig.json',
-	// 'markdown-math/tsconfig.json',
-	// 'merge-conflict/tsconfig.json',
-	// 'microsoft-authentication/tsconfig.json',
-	// 'npm/tsconfig.json',
-	// 'php-language-features/tsconfig.json',
-	// 'search-result/tsconfig.json',
-	// 'simple-browser/tsconfig.json',
-	// 'typescript-language-features/test-workspace/tsconfig.json',
-	// 'typescript-language-features/tsconfig.json',
-	// 'vscode-api-tests/tsconfig.json',
-	// 'vscode-colorize-tests/tsconfig.json',
-	// 'vscode-custom-editor-tests/tsconfig.json',
-	// 'vscode-notebook-tests/tsconfig.json',
-	// 'vscode-test-resolver/tsconfig.json'
-// ];
 
-const getBaseUrl = out => `https://sqlopsbuilds.blob.core.windows.net/sourcemaps/${commit}/${out}`;
+/**
+const compilations = [
+	'authentication-proxy/tsconfig.json',
+	'configuration-editing/build/tsconfig.json',
+	'configuration-editing/tsconfig.json',
+	'css-language-features/client/tsconfig.json',
+	'css-language-features/server/tsconfig.json',
+	'debug-auto-launch/tsconfig.json',
+	'debug-server-ready/tsconfig.json',
+	'emmet/tsconfig.json',
+	'extension-editing/tsconfig.json',
+	'git/tsconfig.json',
+	'git-base/tsconfig.json',
+	'github-authentication/tsconfig.json',
+	'github/tsconfig.json',
+	'grunt/tsconfig.json',
+	'gulp/tsconfig.json',
+	'html-language-features/client/tsconfig.json',
+	'html-language-features/server/tsconfig.json',
+	'image-preview/tsconfig.json',
+	'ipynb/tsconfig.json',
+	'jake/tsconfig.json',
+	'json-language-features/client/tsconfig.json',
+	'json-language-features/server/tsconfig.json',
+	'markdown-language-features/preview-src/tsconfig.json',
+	'markdown-language-features/tsconfig.json',
+	'markdown-math/tsconfig.json',
+	'merge-conflict/tsconfig.json',
+	'microsoft-authentication/tsconfig.json',
+	'npm/tsconfig.json',
+	'php-language-features/tsconfig.json',
+	'search-result/tsconfig.json',
+	'simple-browser/tsconfig.json',
+	'typescript-language-features/test-workspace/tsconfig.json',
+	'typescript-language-features/tsconfig.json',
+	'vscode-api-tests/tsconfig.json',
+	'vscode-colorize-tests/tsconfig.json',
+	'vscode-custom-editor-tests/tsconfig.json',
+	'vscode-notebook-tests/tsconfig.json',
+	'vscode-test-resolver/tsconfig.json'
+];
+*/
+
+const getBaseUrl = out => `https://sqlopsbuilds.blob.core.windows.net/sourcemaps/${commit}/${out}`; // {{SQL CARBON EDIT}} Use our own sourcemaps URL
 
 const tasks = compilations.map(function (tsconfigFile) {
 	const absolutePath = path.join(extensionsPath, tsconfigFile);
@@ -215,6 +221,7 @@ exports.watchExtensionMedia = watchExtensionMedia;
 
 const compileExtensionMediaBuildTask = task.define('compile-extension-media-build', () => ext.buildExtensionMedia(false, '.build/extensions'));
 gulp.task(compileExtensionMediaBuildTask);
+exports.compileExtensionMediaBuildTask = compileExtensionMediaBuildTask;
 
 //#endregion
 
@@ -224,7 +231,7 @@ const cleanExtensionsBuildTask = task.define('clean-extensions-build', util.rimr
 const compileExtensionsBuildTask = task.define('compile-extensions-build', task.series(
 	cleanExtensionsBuildTask,
 	task.define('bundle-extensions-build', () => ext.packageLocalExtensionsStream(false).pipe(gulp.dest('.build'))),
-	task.define('bundle-marketplace-extensions-build', () => ext.packageMarketplaceExtensionsStream(false).pipe(gulp.dest('.build'))),
+	task.define('bundle-marketplace-extensions-build', () => { ext.packageMarketplaceExtensionsStream(false, product.extensionsGallery?.serviceUrl).pipe(gulp.dest('.build')) }), // {{SQL CARBON EDIT}}
 ));
 
 gulp.task(compileExtensionsBuildTask);
@@ -240,7 +247,7 @@ exports.compileExtensionsBuildTask = compileExtensionsBuildTask;
 //Get every extension in 'extensions' to create XLF files.
 const exportCompilations = glob.sync('**/package.json', {
 	cwd: extensionsPath,
-	ignore: ['**/out/**', '**/node_modules/**', '**/sqltoolsservice/**',  'package.json']
+	ignore: ['**/out/**', '**/node_modules/**', '**/sqltoolsservice/**', 'package.json']
 });
 
 //Run the localization packaging task on all extensions in ADS.
@@ -285,6 +292,9 @@ const watchWebExtensionsTask = task.define('watch-web', () => buildWebExtensions
 gulp.task(watchWebExtensionsTask);
 exports.watchWebExtensionsTask = watchWebExtensionsTask;
 
+/**
+ * @param {boolean} isWatch
+ */
 async function buildWebExtensions(isWatch) {
 	const webpackConfigLocations = await nodeUtil.promisify(glob)(
 		path.join(extensionsPath, '**', 'extension-browser.webpack.config.js'),

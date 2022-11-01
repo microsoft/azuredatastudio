@@ -39,3 +39,11 @@
 .monaco-workbench.hc-black .actions-container .action-label.server-page {
 	background-image: url('server_page_inverse.svg') !important;
 }
+
+/* styles for action labels - without these, the buttons for the Servers view will not be sized correctly */
+.monaco-pane-view .pane > .pane-header > .actions .action-label.icon,
+.monaco-pane-view .pane > .pane-header > .actions .action-label.codicon {
+	background-size: 16px;
+	background-position: center center;
+	background-repeat: no-repeat;
+}

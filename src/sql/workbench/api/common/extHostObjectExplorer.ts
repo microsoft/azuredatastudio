@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
-import { ExtHostObjectExplorerShape, SqlMainContext, MainThreadObjectExplorerShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { IMainContext, SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
+import { ExtHostObjectExplorerShape, MainThreadObjectExplorerShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { ExtHostCommands } from 'vs/workbench/api/common/extHostCommands';

@@ -152,7 +152,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 					if (!targetMi || resourceDropdownValue === constants.NO_MANAGED_INSTANCE_FOUND) {
 						errors.push(constants.INVALID_MANAGED_INSTANCE_ERROR);
 					}
-					if (targetMi.properties.state !== 'Ready') {
+					if (targetMi?.properties?.state !== 'Ready') {
 						errors.push(constants.MI_NOT_READY_ERROR(targetMi.name, targetMi.properties.state));
 					}
 					break;
@@ -168,7 +168,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 						errors.push(constants.INVALID_SQL_DATABASE_ERROR);
 					}
 					// TODO: verify what state check is needed/possible?
-					if (targetSqlDB.properties.state !== 'Ready') {
+					if (targetSqlDB?.properties?.state !== 'Ready') {
 						errors.push(constants.SQLDB_NOT_READY_ERROR(targetSqlDB.name, targetSqlDB.properties.state));
 					}
 
@@ -666,6 +666,8 @@ export class TargetSelectionPage extends MigrationWizardPage {
 							}
 							break;
 					}
+
+					await this._validateFields();
 				} else {
 					this.migrationStateModel._targetServerInstance = undefined!;
 					if (isSqlDbTarget) {
@@ -751,7 +753,10 @@ export class TargetSelectionPage extends MigrationWizardPage {
 					},
 				],
 			})
-			.withValidation(table => table.dataValues !== undefined && table.dataValues.length > 0)
+			.withValidation(
+				table =>
+					this.migrationStateModel._targetType !== MigrationTargetType.SQLDB
+					|| (table.dataValues !== undefined && table.dataValues.length > 0))
 			.component();
 	}
 
@@ -1011,5 +1016,17 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			}
 		}
 		return errors;
+	}
+
+	private async _validateFields(): Promise<void> {
+		await this._azureAccountsDropdown.validate();
+		await this._accountTenantDropdown.validate();
+		await this._azureSubscriptionDropdown.validate();
+		await this._azureLocationDropdown.validate();
+		await this._azureResourceGroupDropdown.validate();
+		await this._azureResourceDropdown.validate();
+		await this._targetPasswordInputBox.validate();
+		await this._targetUserNameInputBox.validate();
+		await this._azureResourceTable.validate();
 	}
 }
