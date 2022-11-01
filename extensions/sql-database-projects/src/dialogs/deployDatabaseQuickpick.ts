@@ -214,7 +214,6 @@ export async function launchCreateAzureServerQuickPick(project: Project, azureSq
 
 	return {
 		// TODO add tenant
-		// TODO receive encrypt/trustservercertificate from user
 		deploySettings: settings,
 		sqlDbSetting: {
 			tenantId: session.tenantId,
