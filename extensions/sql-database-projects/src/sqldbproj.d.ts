@@ -319,9 +319,7 @@ declare module 'sqldbproj' {
 		port: number,
 		dbName: string,
 		profileName?: string,
-		connectionRetryTimeout?: number,
-		encrypt?: boolean,
-		trustServerCertificate?: boolean
+		connectionRetryTimeout?: number
 	}
 
 	/**

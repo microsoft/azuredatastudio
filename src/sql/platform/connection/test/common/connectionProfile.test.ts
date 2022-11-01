@@ -44,7 +44,10 @@ suite('SQL ConnectionProfileInfo tests', () => {
 		groupFullName: 'g2/g2-2',
 		groupId: 'group id',
 		providerId: mssqlProviderName,
-		options: { 'encrypt': false },
+		options: {
+			'encrypt': true,
+			'trustServerCertificate': true
+		},
 		saveProfile: true,
 		connectionId: 'my id'
 	};
@@ -137,7 +140,33 @@ suite('SQL ConnectionProfileInfo tests', () => {
 				isRequired: true,
 				specialValueType: ConnectionOptionSpecialType.password,
 				valueType: ServiceOptionType.string
-			}
+			},
+			{
+				name: 'encrypt',
+				displayName: undefined!,
+				description: undefined!,
+				groupName: undefined!,
+				categoryValues: undefined!,
+				defaultValue: "true",
+				isIdentity: false,
+				showOnConnectionDialog: true,
+				isRequired: false,
+				specialValueType: undefined,
+				valueType: ServiceOptionType.boolean
+			},
+			{
+				name: 'trustServerCertificate',
+				displayName: undefined!,
+				description: undefined!,
+				groupName: undefined!,
+				categoryValues: undefined!,
+				defaultValue: "false",
+				isIdentity: false,
+				showOnConnectionDialog: true,
+				isRequired: false,
+				specialValueType: undefined,
+				valueType: ServiceOptionType.boolean
+			},
 		];
 		msSQLCapabilities = {
 			providerId: mssqlProviderName,
@@ -199,8 +228,8 @@ suite('SQL ConnectionProfileInfo tests', () => {
 		assert.strictEqual(conn.groupFullName, connectionProfile.groupFullName);
 		assert.strictEqual(conn.savePassword, connectionProfile.savePassword);
 		assert.strictEqual(conn.providerName, connectionProfile.providerId);
-		assert.strictEqual(conn.options, connectionProfile.options)
-		assert.strictEqual(conn.options['encrypt'], connectionProfile.options['encrypt'])
+		assert.strictEqual(conn.options['encrypt'], connectionProfile.options['encrypt']);
+		assert.strictEqual(conn.options['trustServerCertificate'], connectionProfile.options['trustServerCertificate']);
 	});
 
 	test('getOptionsKey should create a valid unique id', () => {

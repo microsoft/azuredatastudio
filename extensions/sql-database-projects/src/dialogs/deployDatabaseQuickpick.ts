@@ -224,8 +224,6 @@ export async function launchCreateAzureServerQuickPick(project: Project, azureSq
 			password: password,
 			port: 1433,
 			dbName: '',
-			encrypt: false,
-			trustServerCertificate: false,
 			session: session,
 			resourceGroupName: resourceGroup.name || '',
 			location: locationName

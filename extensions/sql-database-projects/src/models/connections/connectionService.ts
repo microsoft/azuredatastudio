@@ -43,8 +43,8 @@ export class ConnectionService {
 				id: '',
 				connectionName: profile.profileName,
 				options: {
-					'encrypt': profile.encrypt,
-					'trustServerCertificate': profile.trustServerCertificate
+					'encrypt': true,
+					'trustServerCertificate': true
 				},
 				authenticationType: azdataApi.connection.AuthenticationType.SqlLogin
 			};
