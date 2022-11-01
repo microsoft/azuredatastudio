@@ -194,6 +194,7 @@ export function invalidSQLPasswordMessage(name: string) { return localize('inval
 export function passwordNotMatch(name: string) { return localize('passwordNotMatch', "{0} password doesn't match the confirmation password", name); }
 export const portMustBeNumber = localize('portMustNotBeNumber', "Port must a be number");
 export const valueCannotBeEmpty = localize('valueCannotBeEmpty', "Value cannot be empty");
+export const imageTag = localize('imageTag', "Image tag");
 export const dockerImageLabelPrefix = 'source=sqldbproject';
 export const dockerImageNamePrefix = 'sqldbproject';
 export const dockerImageDefaultTag = 'latest';
