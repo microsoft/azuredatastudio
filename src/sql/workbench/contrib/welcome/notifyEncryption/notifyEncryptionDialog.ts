@@ -31,9 +31,9 @@ export class NotifyEncryptionDialog extends ErrorMessageDialog {
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
+		@IOpenerService openerService: IOpenerService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IStorageService private _storageService: IStorageService,
-		@IOpenerService openerService: IOpenerService
+		@IStorageService private _storageService: IStorageService
 	) {
 		super(themeService, clipboardService, layoutService, telemetryService, contextKeyService, logService, textResourcePropertiesService, openerService);
 	}
