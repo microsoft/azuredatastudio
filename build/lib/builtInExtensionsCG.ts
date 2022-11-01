@@ -30,6 +30,8 @@ async function downloadExtensionDetails(extension: IExtensionDefinition): Promis
 		promises.push(new Promise<{ fileName: string; body: Buffer | undefined | null }>(resolve => {
 			got(`${repositoryContentBaseUrl}/${fileName}`)
 				.then(response => {
+					console.log(response);
+					console.log('-------------------------------');
 					resolve({ fileName, body: response.rawBody });
 				})
 				.catch(error => {
@@ -45,6 +47,7 @@ async function downloadExtensionDetails(extension: IExtensionDefinition): Promis
 	console.log(extensionLabel);
 	const results = await Promise.all(promises);
 	for (const result of results) {
+		console.log(result);
 		if (result.body) {
 			const extensionFolder = path.join(rootCG, extension.name);
 			fs.mkdirSync(extensionFolder, { recursive: true });
