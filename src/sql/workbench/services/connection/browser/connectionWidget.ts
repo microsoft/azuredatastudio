@@ -65,6 +65,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	private _defaultDatabaseName: string = localize('defaultDatabaseOption', "<Default>");
 	private _loadingDatabaseName: string = localize('loadingDatabaseOption', "Loading...");
 	private _serverGroupDisplayString: string = localize('serverGroup', "Server group");
+	private _trueInputValue: string = localize('boolean.true', 'True');
+	private _falseInputValue: string = localize('boolean.false', 'False');
 	private _token: string;
 	private _connectionStringOptions: ConnectionStringOptions;
 	protected _container: HTMLElement;
@@ -262,10 +264,12 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		if (this._customOptions.length > 0) {
 			this._customOptionWidgets = [];
 			this._customOptions.forEach((option, i) => {
-				let customOptionsContainer = DialogHelper.appendRow(this._tableContainer, option.displayName, 'connection-label', 'connection-input', 'custom-connection-options');
+				let customOptionsContainer = DialogHelper.appendRow(this._tableContainer, option.displayName, 'connection-label', 'connection-input', 'custom-connection-options', false, option.description, 100);
 				switch (option.valueType) {
 					case ServiceOptionType.boolean:
-						this._customOptionWidgets[i] = new SelectBox([localize('boolean.true', 'True'), localize('boolean.false', 'False')], option.defaultValue, this._contextViewService, customOptionsContainer, { ariaLabel: option.displayName });
+						// Convert 'defaultValue' to string for comparison as it can be boolean here.
+						let optionValue = (option.defaultValue.toString() === true.toString()) ? this._trueInputValue : this._falseInputValue;
+						this._customOptionWidgets[i] = new SelectBox([this._trueInputValue, this._falseInputValue], optionValue, this._contextViewService, customOptionsContainer, { ariaLabel: option.displayName });
 						DialogHelper.appendInputSelectBox(customOptionsContainer, this._customOptionWidgets[i] as SelectBox);
 						this._register(styler.attachSelectBoxStyler(this._customOptionWidgets[i] as SelectBox, this._themeService));
 						break;
@@ -532,8 +536,12 @@ export class ConnectionWidget extends lifecycle.Disposable {
 
 	protected onAuthTypeSelected(selectedAuthType: string) {
 		let currentAuthType = this.getMatchingAuthType(selectedAuthType);
-		this._userNameInputBox.value === '';
-		this._passwordInputBox.value === '';
+		if (currentAuthType !== AuthenticationType.SqlLogin) {
+			if (currentAuthType !== AuthenticationType.AzureMFA && currentAuthType !== AuthenticationType.AzureMFAAndUser) {
+				this._userNameInputBox.value = '';
+			}
+			this._passwordInputBox.value = '';
+		}
 		this._userNameInputBox.hideMessage();
 		this._passwordInputBox.hideMessage();
 		this._azureAccountDropdown.hideMessage();
@@ -784,10 +792,13 @@ export class ConnectionWidget extends lifecycle.Disposable {
 
 			if (this._customOptionWidgets) {
 				this._customOptionWidgets.forEach((widget, i) => {
-					if (widget instanceof SelectBox) {
-						widget.selectWithOptionName(this.getModelValue(connectionInfo.options[this._customOptions[i].name]));
-					} else {
-						widget.value = this.getModelValue(connectionInfo.options[this._customOptions[i].name]);
+					let value = this.getModelValue(connectionInfo.options[this._customOptions[i].name]);
+					if (value !== '') {
+						if (widget instanceof SelectBox) {
+							widget.selectWithOptionName(value);
+						} else {
+							widget.value = value;
+						}
 					}
 				});
 			}

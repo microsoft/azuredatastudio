@@ -111,6 +111,16 @@
 	font-weight: 600;
 }
 
+.custom-connection-options .connection-label .dialog-label-container,
+.vs-dark .custom-connection-options .connection-label .dialog-label-container,
+.hc-black .custom-connection-options .connection-label .dialog-label-container {
+	background-size: 9px;
+	background-repeat: no-repeat;
+	background-position: right;
+	padding-right: 18px;
+	float: left;
+}
+
 .hide-azure-accounts .azure-account-row {
 	display: none;
 }

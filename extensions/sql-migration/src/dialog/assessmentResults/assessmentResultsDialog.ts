@@ -45,14 +45,9 @@ export class AssessmentResultsDialog {
 		return new Promise<void>((resolve, reject) => {
 			dialog.registerContent(async (view) => {
 				try {
-					/**
-					 * When using 100% height in the dialog, the container extends beyond the screen.
-					 * This causes a vertical scrollbar to appear. To fix that, 33px needs to be
-					 * subtracted from 100%.
-					 */
 					const flex = view.modelBuilder.flexContainer().withLayout({
 						flexFlow: 'row',
-						height: 'calc( 100% - 33px )',
+						height: '100%',
 						width: '100%'
 					}).component();
 					flex.addItem(await this._tree.createRootContainer(dialog, view), { flex: '1 1 auto' });
