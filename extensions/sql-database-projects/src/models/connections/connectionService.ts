@@ -79,6 +79,7 @@ export class ConnectionService {
 				multipleActiveResultSets: undefined,
 				packetSize: undefined,
 				persistSecurityInfo: undefined,
+				hostNameInCertificate: undefined,
 				pooling: undefined,
 				replication: undefined,
 				trustServerCertificate: undefined,
