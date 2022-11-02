@@ -11,9 +11,8 @@ import { IAzureResourceSubscriptionService } from '../interfaces';
 import { TokenCredentials } from '@azure/ms-rest-js';
 import { AzureSubscriptionError } from '../errors';
 import { AzureResourceErrorMessageUtil } from '../utils';
+import { Logger } from '../../utils/Logger';
 
-import * as nls from 'vscode-nls';
-const localize = nls.loadMessageBundle();
 
 export class AzureResourceSubscriptionService implements IAzureResourceSubscriptionService {
 	/**
@@ -44,11 +43,11 @@ export class AzureResourceSubscriptionService implements IAzureResourceSubscript
 					gotSubscriptions = true;
 				}
 				else if (!account.isStale) {
-					console.warn(`Failed to acquire Access Token for account '${account.displayInfo.displayName}' (tenant '${tenantId}').`);
+					Logger.error(`Failed to acquire Access Token for account '${account.displayInfo.displayName}' (tenant '${tenantId}').`);
 					void vscode.window.showWarningMessage(`Failed to acquire Access Token for account '${account.displayInfo.displayName}' (tenant '${tenantId}').`);
 				}
 			} catch (error) {
-				console.warn(`Failed to get subscriptions for account ${account.displayInfo.displayName} (tenant '${tenantId}'). ${AzureResourceErrorMessageUtil.getErrorMessage(error)}`);
+				Logger.error(`Failed to get subscriptions for account ${account.displayInfo.displayName} (tenant '${tenantId}'). ${AzureResourceErrorMessageUtil.getErrorMessage(error)}`);
 				errors.push(error);
 				void vscode.window.showWarningMessage(`Failed to get subscriptions for account ${account.displayInfo.displayName} (tenant '${tenantId}'). ${AzureResourceErrorMessageUtil.getErrorMessage(error)}`);
 			}
