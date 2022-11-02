@@ -132,7 +132,7 @@
   resolved "https://registry.yarnpkg.com/@azure/msal-common/-/msal-common-7.6.0.tgz#b52e97ef540275f72611cff57937dfa0b34cdcca"
   integrity sha512-XqfbglUTVLdkHQ8F9UQJtKseRr3sSnr9ysboxtoswvaMVaEfvyLtMoHv9XdKUfOc0qKGzNgRFd9yRjIWVepl6Q==
 
-"@azure/msal-node-extensions@^1.0.0-alpha.22":
+"@azure/msal-node-extensions@^1.0.0-alpha.25":
   version "1.0.0-alpha.25"
   resolved "https://registry.yarnpkg.com/@azure/msal-node-extensions/-/msal-node-extensions-1.0.0-alpha.25.tgz#3259e1fd32b6107f61a402dce22caab53e81527c"
   integrity sha512-7pOUdE2OZO2omA1DBAJhVGHJo8laqw+x5JgV/XLzyogapduAzps3lbM/G3VV+VuEb0KG1QHkpaOF/6eftPssKw==
