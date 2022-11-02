@@ -260,7 +260,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 
 	private async _loadLoginList(): Promise<void> {
 		const stateMachine: MigrationStateModel = this.migrationStateModel;
-		const selectedLogins: LoginTableInfo[] = stateMachine._loginsForMigration;
+		const selectedLogins: LoginTableInfo[] = stateMachine._loginsForMigration || [];
 		const sourceLogins: LoginTableInfo[] = [];
 		const targetLogins: string[] = [];
 
@@ -347,7 +347,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 		// Only uppdate next label if we are currently on this page
 		if (this._isCurrentPage) {
 			this.wizard.nextButton.label = constants.LOGIN_MIGRATE_BUTTON_TEXT;
-			this.wizard.nextButton.enabled = this.migrationStateModel?._loginsForMigration.length > 0;
+			this.wizard.nextButton.enabled = this.migrationStateModel?._loginsForMigration?.length > 0;
 		}
 	}
 
