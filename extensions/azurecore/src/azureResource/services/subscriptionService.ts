@@ -44,15 +44,13 @@ export class AzureResourceSubscriptionService implements IAzureResourceSubscript
 					gotSubscriptions = true;
 				}
 				else if (!account.isStale) {
-					const errorMsg = localize('azure.resource.tenantTokenError', "Failed to acquire Access Token for account '{0}' (tenant '{1}').", account.displayInfo.displayName, tenantId);
-					console.warn(errorMsg);
-					void vscode.window.showWarningMessage(errorMsg);
+					console.warn(`Failed to acquire Access Token for account '${account.displayInfo.displayName}' (tenant '${tenantId}').`);
+					void vscode.window.showWarningMessage(`Failed to acquire Access Token for account '${account.displayInfo.displayName}' (tenant '${tenantId}').`);
 				}
 			} catch (error) {
-				const errorMsg = localize('azure.resource.tenantSubscriptionsError', "Failed to get subscriptions for account {0} (tenant '{1}'). {2}", account.displayInfo.displayName, tenantId, AzureResourceErrorMessageUtil.getErrorMessage(error));
-				console.warn(errorMsg);
+				console.warn(`Failed to get subscriptions for account ${account.displayInfo.displayName} (tenant '${tenantId}'). ${AzureResourceErrorMessageUtil.getErrorMessage(error)}`);
 				errors.push(error);
-				void vscode.window.showWarningMessage(errorMsg);
+				void vscode.window.showWarningMessage(`Failed to get subscriptions for account ${account.displayInfo.displayName} (tenant '${tenantId}'). ${AzureResourceErrorMessageUtil.getErrorMessage(error)}`);
 			}
 		}
 		if (!gotSubscriptions) {
