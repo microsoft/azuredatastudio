@@ -959,7 +959,7 @@ export class TreeModel {
 		return this.input ? this.input.getElement() : null;
 	}
 
-	public refresh(element: any = null, recursive: boolean = true): Promise<any> {
+	public async refresh(element: any = null, recursive: boolean = true): Promise<any> {
 		let item = this.getItem(element);
 
 		if (!item) {
@@ -968,9 +968,8 @@ export class TreeModel {
 
 		let eventData: IRefreshEvent = { item: item, recursive: recursive };
 		this._onRefresh.fire(eventData);
-		return item.refresh(recursive).then(() => {
-			this._onDidRefresh.fire(eventData);
-		});
+		await item.refresh(recursive);
+		this._onDidRefresh.fire(eventData);
 	}
 
 	public expand(element: any): Promise<any> {
