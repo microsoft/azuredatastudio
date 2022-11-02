@@ -25,6 +25,7 @@ import { CopyKeybind } from 'sql/base/browser/ui/table/plugins/copyKeybind.plugi
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { deepClone } from 'vs/base/common/objects';
 import { Disposable } from 'vs/base/common/lifecycle';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 
 export abstract class ExecutionPlanPropertiesViewBase extends Disposable implements IVerticalSashLayoutProvider {
 	// Title bar with close button action
@@ -67,7 +68,8 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 		private _themeService: IThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
-		@IContextViewService private _contextViewService: IContextViewService
+		@IContextViewService private _contextViewService: IContextViewService,
+		@IAccessibilityService accessibilityService: IAccessibilityService
 	) {
 		super();
 		const sashContainer = DOM.$('.properties-sash');
@@ -155,7 +157,7 @@ export abstract class ExecutionPlanPropertiesViewBase extends Disposable impleme
 
 		this._selectionModel = new CellSelectionModel<Slick.SlickData>();
 
-		this._tableComponent = this._register(new TreeGrid(table, {
+		this._tableComponent = this._register(new TreeGrid(table, accessibilityService, {
 			columns: []
 		}, {
 			rowHeight: RESULTS_GRID_DEFAULTS.rowHeight,
