@@ -479,7 +479,7 @@
   },
   "dependencies": {
     "@microsoft/ads-extension-telemetry": "^1.3.1",
-    "@xmldom/xmldom": "^0.8.3",
+    "@xmldom/xmldom": "0.8.4",
     "axios": "^0.27.2",
     "extract-zip": "^2.0.1",
     "fast-glob": "^3.2.7",
@@ -493,19 +493,19 @@
     "xml-formatter": "2.1.0"
   },
   "devDependencies": {
+    "@microsoft/azdata-test": "^2.0.3",
     "@microsoft/vscodetestcover": "^1.2.1",
     "@types/fs-extra": "^5.0.0",
     "@types/mocha": "^7.0.2",
-    "@types/semver": "^7.3.1",
     "@types/request": "^2.48.8",
+    "@types/semver": "^7.3.1",
     "@types/sinon": "^9.0.4",
     "@types/which": "^2.0.1",
     "@types/xml-formatter": "^1.1.0",
     "mocha": "^7.1.1",
     "should": "^13.2.1",
     "sinon": "^9.0.2",
-    "typemoq": "^2.1.0",
-    "@microsoft/azdata-test": "^2.0.3"
+    "typemoq": "^2.1.0"
   },
   "__metadata": {
     "id": "70",

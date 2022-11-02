@@ -131,7 +131,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this._grid.onColumnsResized.subscribe(() => this._onColumnResize.fire());
 
 		this._grid.onKeyDown.subscribe((e, args: Slick.OnKeyDownEventArgs<T>) => {
-			const evt = (e as JQuery.Event).originalEvent as KeyboardEvent;
+			const evt = (e as JQuery.TriggeredEvent).originalEvent as KeyboardEvent;
 			this._onKeyDown.fire({
 				event: evt,
 				cell: {
@@ -151,7 +151,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 
 	private mapMouseEvent(slickEvent: Slick.Event<any>, emitter: Emitter<ITableMouseEvent>) {
 		slickEvent.subscribe((e: Slick.EventData) => {
-			const originalEvent = (e as JQuery.Event).originalEvent;
+			const originalEvent = (e as JQuery.TriggeredEvent).originalEvent;
 			const cell = this._grid.getCellFromEvent(originalEvent);
 			const anchor = originalEvent instanceof MouseEvent ? { x: originalEvent.x, y: originalEvent.y } : originalEvent.srcElement as HTMLElement;
 			emitter.fire({ anchor, cell });
