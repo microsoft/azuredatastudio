@@ -226,7 +226,7 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 						markCurrent = new Mark(elementContainingText.children[range.startColumn]);
 						markCurrent?.mark(this.searchTerm, {
 							className: findRangeSpecificClass,
-							each: function (node, range) {
+							each: function (node) {
 								// node is the marked DOM element
 								node.scrollIntoView({ behavior: 'smooth', block: 'center' });
 							}
@@ -253,7 +253,7 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 						separateWordSearch: true,
 					});
 					// if there are grids
-					let grids = document.querySelectorAll(GRID_CLASS);
+					let grids = document.querySelectorAll<HTMLElement>(GRID_CLASS);
 					grids?.forEach(g => {
 						markAllOccurances = new Mark(g);
 						markAllOccurances.mark(this.searchTerm, {
@@ -281,7 +281,7 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 				markAllOccurances.unmark({ acrossElements: true, className: findRangeSpecificClass });
 				this.highlightRange = undefined;
 				// if there is a grid
-				let grids = document.querySelectorAll(GRID_CLASS);
+				let grids = document.querySelectorAll<HTMLElement>(GRID_CLASS);
 				grids?.forEach(g => {
 					markAllOccurances = new Mark(g);
 					markAllOccurances.unmark({ acrossElements: true, className: findHighlightClass });
