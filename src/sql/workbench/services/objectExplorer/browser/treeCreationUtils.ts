@@ -134,7 +134,8 @@ export class TreeCreationUtils {
 					indentPixels: 10,
 					twistiePixels: 20,
 					ariaLabel: nls.localize('treeCreation.regTreeAriaLabel', "Servers"),
-					horizontalScrollMode: horizontalScrollMode ? ScrollbarVisibility.Auto : ScrollbarVisibility.Hidden
+					horizontalScrollMode: horizontalScrollMode ? ScrollbarVisibility.Auto : ScrollbarVisibility.Hidden,
+					showLoading: true
 				});
 		}
 
