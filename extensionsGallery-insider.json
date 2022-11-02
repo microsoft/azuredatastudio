@@ -4531,7 +4531,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/dotnet/interactive/main/src/dotnet-interactive-vscode-ads/images/icon.png"
+									"source": "https://raw.githubusercontent.com/dotnet/interactive/main/src/dotnet-interactive-vscode/images/icon.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
