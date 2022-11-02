@@ -61,14 +61,12 @@ export class AzureDeviceCode extends AzureAuth {
 		let authCompleteDeferred: Deferred<void, Error>;
 		let authCompletePromise = new Promise<void>((resolve, reject) => authCompleteDeferred = { resolve, reject });
 
-		//TODO: construct device code callback
 		const deviceCodeRequest: DeviceCodeRequest = {
 			scopes: this.scopes,
 			authority: `https://login.microsoftonline.com/${tenant.id}`,
 			deviceCodeCallback: async (response) => {
 				await azdata.accounts.beginAutoOAuthDeviceCode(this.metadata.id, this.pageTitle, response.message, response.userCode, response.verificationUri);
 			}
-			// deviceCodeCallback code response message should be shown to the user
 		};
 		const authResult = await this.clientApplication.acquireTokenByDeviceCode(deviceCodeRequest);
 		this.closeOnceComplete(authCompletePromise).catch(Logger.error);
