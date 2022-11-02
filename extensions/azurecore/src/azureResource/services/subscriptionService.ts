@@ -13,6 +13,8 @@ import { AzureSubscriptionError } from '../errors';
 import { AzureResourceErrorMessageUtil } from '../utils';
 import { Logger } from '../../utils/Logger';
 
+import * as nls from 'vscode-nls';
+const localize = nls.loadMessageBundle();
 
 export class AzureResourceSubscriptionService implements IAzureResourceSubscriptionService {
 	/**
@@ -43,13 +45,15 @@ export class AzureResourceSubscriptionService implements IAzureResourceSubscript
 					gotSubscriptions = true;
 				}
 				else if (!account.isStale) {
+					const errorMsg = localize('azure.resource.tenantTokenError', "Failed to acquire Access Token for account '{0}' (tenant '{1}').", account.displayInfo.displayName, tenantId);
 					Logger.error(`Failed to acquire Access Token for account '${account.displayInfo.displayName}' (tenant '${tenantId}').`);
-					void vscode.window.showWarningMessage(`Failed to acquire Access Token for account '${account.displayInfo.displayName}' (tenant '${tenantId}').`);
+					void vscode.window.showWarningMessage(errorMsg);
 				}
 			} catch (error) {
+				const errorMsg = localize('azure.resource.tenantSubscriptionsError', "Failed to get subscriptions for account {0} (tenant '{1}'). {2}", account.displayInfo.displayName, tenantId, AzureResourceErrorMessageUtil.getErrorMessage(error));
 				Logger.error(`Failed to get subscriptions for account ${account.displayInfo.displayName} (tenant '${tenantId}'). ${AzureResourceErrorMessageUtil.getErrorMessage(error)}`);
 				errors.push(error);
-				void vscode.window.showWarningMessage(`Failed to get subscriptions for account ${account.displayInfo.displayName} (tenant '${tenantId}'). ${AzureResourceErrorMessageUtil.getErrorMessage(error)}`);
+				void vscode.window.showWarningMessage(errorMsg);
 			}
 		}
 		if (!gotSubscriptions) {
