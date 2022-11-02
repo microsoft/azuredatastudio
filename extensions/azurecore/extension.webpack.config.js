@@ -37,14 +37,6 @@ module.exports = withDefaults({
 	entry: {
 		extension: './src/extension.ts'
 	},
-	externals: externals,
-	module: {
-		rules: [
-			{
-				test: /\.node$/,
-				loader: 'node-loader',
-			}
-		]
-	}
+	externals: externals
 
 });
