@@ -38,11 +38,16 @@ declare module 'azurecore' {
 		azureAuthType?: AzureAuthType
 
 		providerSettings: AzureAccountProviderMetadata;
+
 		/**
 		 * Whether or not the account is a Microsoft account
 		 */
 		isMsAccount: boolean;
 
+		/**
+		 * Defines the tenant the Azure Account belongs to.
+		 */
+		owningTenant: Tenant;
 		/**
 		 * A list of tenants (aka directories) that the account belongs to
 		 */
@@ -356,10 +361,10 @@ declare module 'azurecore' {
 		}
 
 		export interface IAzureResourceTreeDataProvider {
-			 /**
-			  * Gets the root tree item nodes for this provider - these will be used as
-			  * direct children of the Account node in the Azure tree view.
-			  */
+			/**
+			 * Gets the root tree item nodes for this provider - these will be used as
+			 * direct children of the Account node in the Azure tree view.
+			 */
 			getRootChildren(): Promise<azdata.TreeItem[]>;
 			/**
 			 * Gets the children for a given {@link IAzureResourceNode}
