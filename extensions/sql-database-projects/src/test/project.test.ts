@@ -30,7 +30,7 @@ describe('Project: sqlproj content operations', function (): void {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline);
 	});
 
-	after(async function(): Promise<void> {
+	after(async function (): Promise<void> {
 		await testUtils.deleteGeneratedTestFolder();
 	});
 
@@ -158,8 +158,8 @@ describe('Project: sqlproj content operations', function (): void {
 
 		let uri = project.getSystemDacpacUri(constants.masterDacpac);
 		let ssdtUri = project.getSystemDacpacSsdtUri(constants.masterDacpac);
-		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '150', constants.masterDacpac)).fsPath);
-		should.equal(ssdtUri.fsPath, Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', '150', 'SqlSchemas', constants.masterDacpac)).fsPath);
+		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '160', constants.masterDacpac)).fsPath);
+		should.equal(ssdtUri.fsPath, Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', '160', 'SqlSchemas', constants.masterDacpac)).fsPath);
 
 		await project.changeTargetPlatform(constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlServer2016)!);
 		uri = project.getSystemDacpacUri(constants.masterDacpac);
@@ -192,8 +192,8 @@ describe('Project: sqlproj content operations', function (): void {
 		let projFileText = await fs.readFile(projFilePath);
 
 		should.equal(project.databaseReferences.length, 1, 'System db reference should have been added');
-		should(projFileText.includes(convertSlashesForSqlProj(Uri.file(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '150', constants.masterDacpac)).fsPath.substring(1)))).be.true('System db reference path should be 150');
-		should(projFileText.includes(convertSlashesForSqlProj(Uri.file(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', '150', 'SqlSchemas', constants.masterDacpac)).fsPath.substring(1)))).be.true('System db SSDT reference path should be 150');
+		should(projFileText.includes(convertSlashesForSqlProj(Uri.file(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '160', constants.masterDacpac)).fsPath.substring(1)))).be.true('System db reference path should be 160');
+		should(projFileText.includes(convertSlashesForSqlProj(Uri.file(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', '160', 'SqlSchemas', constants.masterDacpac)).fsPath.substring(1)))).be.true('System db SSDT reference path should be 160');
 
 		await project.changeTargetPlatform(constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlServer2016)!);
 		projFileText = await fs.readFile(projFilePath);
@@ -217,8 +217,8 @@ describe('Project: sqlproj content operations', function (): void {
 
 		let uri = project.getSystemDacpacUri(constants.msdbDacpac);
 		let ssdtUri = project.getSystemDacpacSsdtUri(constants.msdbDacpac);
-		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '150', constants.msdbDacpac)).fsPath);
-		should.equal(ssdtUri.fsPath, Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', '150', 'SqlSchemas', constants.msdbDacpac)).fsPath);
+		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '160', constants.msdbDacpac)).fsPath);
+		should.equal(ssdtUri.fsPath, Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', '160', 'SqlSchemas', constants.msdbDacpac)).fsPath);
 
 		await project.changeTargetPlatform(constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlServer2016)!);
 		uri = project.getSystemDacpacUri(constants.msdbDacpac);
@@ -335,7 +335,7 @@ describe('Project: sqlproj content operations', function (): void {
 		await project.addProjectReference({
 			projectName: 'project1',
 			projectGuid: '',
-			projectRelativePath: Uri.file(path.join('..','project1', 'project1.sqlproj')),
+			projectRelativePath: Uri.file(path.join('..', 'project1', 'project1.sqlproj')),
 			suppressMissingDependenciesErrors: false
 		});
 		should(project.databaseReferences.length).equal(1, 'There should be a database reference after adding a reference to project1');
@@ -358,7 +358,7 @@ describe('Project: sqlproj content operations', function (): void {
 		await project.addProjectReference({
 			projectName: 'project1',
 			projectGuid: '',
-			projectRelativePath: Uri.file(path.join('..','project1', 'project1.sqlproj')),
+			projectRelativePath: Uri.file(path.join('..', 'project1', 'project1.sqlproj')),
 			databaseName: 'testdbName',
 			databaseVariable: 'testdb',
 			suppressMissingDependenciesErrors: false
@@ -386,7 +386,7 @@ describe('Project: sqlproj content operations', function (): void {
 		await project.addProjectReference({
 			projectName: 'project1',
 			projectGuid: '',
-			projectRelativePath: Uri.file(path.join('..','project1', 'project1.sqlproj')),
+			projectRelativePath: Uri.file(path.join('..', 'project1', 'project1.sqlproj')),
 			databaseName: 'testdbName',
 			databaseVariable: 'testdb',
 			serverName: 'otherServerName',
@@ -594,7 +594,7 @@ describe('Project: sqlproj content operations', function (): void {
 
 		// 1. Add a folder to the project
 		const existingFolderUri = fileList[2];
-		const folderStats =  await fs.stat(existingFolderUri.fsPath);
+		const folderStats = await fs.stat(existingFolderUri.fsPath);
 		should(folderStats.isDirectory()).equal(true, 'Third entry in fileList should be a subfolder');
 
 		const folderEntry = await project.addToProject([existingFolderUri]);
@@ -918,7 +918,7 @@ describe('Project: sdk style project content operations', function (): void {
 		sinon.restore();
 	});
 
-	after(async function(): Promise<void> {
+	after(async function (): Promise<void> {
 		await testUtils.deleteGeneratedTestFolder();
 	});
 
@@ -970,7 +970,7 @@ describe('Project: sdk style project content operations', function (): void {
 
 	it('Should handle pre/post/none deploy scripts outside of project folder', async function (): Promise<void> {
 		const testFolderPath = await testUtils.generateTestFolderPath();
-		const mainProjectPath =  path.join(testFolderPath, 'project');
+		const mainProjectPath = path.join(testFolderPath, 'project');
 		const otherFolderPath = path.join(testFolderPath, 'other');
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectWithGlobsSpecifiedBaseline, mainProjectPath);
 		await testUtils.createDummyFileStructure(false, undefined, path.dirname(projFilePath));
@@ -991,7 +991,7 @@ describe('Project: sdk style project content operations', function (): void {
 
 	it('Should handle globbing patterns listed in sqlproj', async function (): Promise<void> {
 		const testFolderPath = await testUtils.generateTestFolderPath();
-		const mainProjectPath =  path.join(testFolderPath, 'project');
+		const mainProjectPath = path.join(testFolderPath, 'project');
 		const otherFolderPath = path.join(testFolderPath, 'other');
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectWithGlobsSpecifiedBaseline, mainProjectPath);
 		await testUtils.createDummyFileStructure(false, undefined, path.dirname(projFilePath));
@@ -1024,7 +1024,7 @@ describe('Project: sdk style project content operations', function (): void {
 
 	it('Should handle Build Remove in sqlproj', async function (): Promise<void> {
 		const testFolderPath = await testUtils.generateTestFolderPath();
-		const mainProjectPath =  path.join(testFolderPath, 'project');
+		const mainProjectPath = path.join(testFolderPath, 'project');
 		const otherFolderPath = path.join(testFolderPath, 'other');
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectWithBuildRemoveBaseline, mainProjectPath);
 		await testUtils.createDummyFileStructure(false, undefined, path.dirname(projFilePath));
@@ -1114,7 +1114,7 @@ describe('Project: sdk style project content operations', function (): void {
 
 	it('Should handle excluding files included by glob patterns', async function (): Promise<void> {
 		const testFolderPath = await testUtils.generateTestFolderPath();
-		const mainProjectPath =  path.join(testFolderPath, 'project');
+		const mainProjectPath = path.join(testFolderPath, 'project');
 		const otherFolderPath = path.join(testFolderPath, 'other');
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectWithGlobsSpecifiedBaseline, mainProjectPath);
 		await testUtils.createDummyFileStructure(false, undefined, path.dirname(projFilePath));
@@ -1568,7 +1568,7 @@ describe('Project: add SQLCMD Variables', function (): void {
 		await baselines.loadBaselines();
 	});
 
-	after(async function(): Promise<void> {
+	after(async function (): Promise<void> {
 		await testUtils.deleteGeneratedTestFolder();
 	});
 
@@ -1597,7 +1597,7 @@ describe('Project: properties', function (): void {
 		await baselines.loadBaselines();
 	});
 
-	after(async function(): Promise<void> {
+	after(async function (): Promise<void> {
 		await testUtils.deleteGeneratedTestFolder();
 	});
 
@@ -1766,7 +1766,7 @@ describe('Project: round trip updates', function (): void {
 		sinon.restore();
 	});
 
-	after(async function(): Promise<void> {
+	after(async function (): Promise<void> {
 		await testUtils.deleteGeneratedTestFolder();
 	});
 
@@ -1857,7 +1857,7 @@ describe('Project: legacy to SDK-style updates', function (): void {
 		sinon.restore();
 	});
 
-	after(async function(): Promise<void> {
+	after(async function (): Promise<void> {
 		await testUtils.deleteGeneratedTestFolder();
 	});
 
@@ -1940,7 +1940,7 @@ describe('Project: legacy to SDK-style updates', function (): void {
 
 	it('Should keep Build Includes for files outside of project folder', async function (): Promise<void> {
 		const testFolderPath = await testUtils.generateTestFolderPath();
-		const mainProjectPath =  path.join(testFolderPath, 'project');
+		const mainProjectPath = path.join(testFolderPath, 'project');
 		const otherFolderPath = path.join(testFolderPath, 'other');
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline, mainProjectPath);
 		let list: Uri[] = [];

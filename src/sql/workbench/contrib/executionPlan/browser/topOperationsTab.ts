@@ -30,11 +30,12 @@ import { ITableKeyboardEvent } from 'sql/base/browser/ui/table/interfaces';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { filterIconClassNames, searchPlaceholder, topOperationsSearchDescription } from 'sql/workbench/contrib/executionPlan/browser/constants';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 
 const TABLE_SORT_COLUMN_KEY = 'tableCostColumnForSorting';
 
 export class TopOperationsTab extends Disposable implements IPanelTab {
-	public readonly title = localize('topOperationsTabTitle', "Top Operations  (Preview)");
+	public readonly title = localize('topOperationsTabTitle', "Top Operations");
 	public readonly identifier: string = 'TopOperationsTab';
 	public readonly view: TopOperationsTabView;
 
@@ -61,7 +62,8 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 		@IThemeService private _themeService: IThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
-		@IContextViewService private _contextViewService: IContextViewService
+		@IContextViewService private _contextViewService: IContextViewService,
+		@IAccessibilityService private _accessibilityService: IAccessibilityService
 	) {
 		super();
 	}
@@ -236,7 +238,7 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 
 		const selectionModel = new CellSelectionModel<Slick.SlickData>({ hasRowSelector: true });
 
-		const table = this._register(new Table<Slick.SlickData>(tableContainer, {
+		const table = this._register(new Table<Slick.SlickData>(tableContainer, this._accessibilityService, {
 			columns: columns,
 			sorter: (args) => {
 				const column = args.sortCol.field;
@@ -332,6 +334,15 @@ export class TopOperationsTabView extends Disposable implements IPanelView {
 				table.focus();
 				evt.event.preventDefault();
 				evt.event.stopPropagation();
+			}
+		}));
+
+		this._register(table.onKeyDown(e => {
+			if (e.event.key === 'F3') {
+				table.grid.sortColumnByActiveCell();
+				e.event.preventDefault();
+				e.event.stopPropagation();
+
 			}
 		}));
 

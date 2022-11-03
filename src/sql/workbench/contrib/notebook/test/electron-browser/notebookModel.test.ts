@@ -40,8 +40,8 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { UndoRedoService } from 'vs/platform/undoRedo/common/undoRedoService';
-import { DEFAULT_NOTEBOOK_FILETYPE, IExecuteManager, INotebookService, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
-import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
+import { IExecuteManager, INotebookService, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
+import { DEFAULT_NOTEBOOK_FILETYPE, NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
 import { Emitter } from 'vs/base/common/event';
 import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
@@ -1085,7 +1085,7 @@ suite('notebook model', function (): void {
 			supportedFileExtensions: [DEFAULT_NOTEBOOK_FILETYPE]
 		};
 		let kernelsAddedPromise = new Promise<void>(resolve => {
-			model.kernelsChanged(kernel => {
+			model.kernelsAdded(kernel => {
 				resolve();
 			});
 		});
@@ -1110,7 +1110,7 @@ suite('notebook model', function (): void {
 			supportedFileExtensions: ['.html']
 		};
 		kernelsAddedPromise = new Promise<void>((resolve, reject) => {
-			model.kernelsChanged(kernel => {
+			model.kernelsAdded(kernel => {
 				reject('Should not have added a new kernel');
 			});
 		});

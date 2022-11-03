@@ -161,7 +161,7 @@ export function OptionNotFoundWarningMessage(label: string) { return localize('o
 export const SqlServerName = 'SQL server';
 export const AzureSqlServerName = 'Azure SQL server';
 export const SqlServerDockerImageName = 'Microsoft SQL Server';
-export const SqlServerDocker2022ImageName = 'Microsoft SQL Server 2022 (preview)';
+export const SqlServerDocker2022ImageName = 'Microsoft SQL Server 2022';
 export const AzureSqlDbFullDockerImageName = 'Azure SQL Database emulator Full';
 export const AzureSqlDbLiteDockerImageName = 'Azure SQL Database emulator Lite';
 export const AzureSqlLogicalServerName = 'Azure SQL logical server';
@@ -194,6 +194,7 @@ export function invalidSQLPasswordMessage(name: string) { return localize('inval
 export function passwordNotMatch(name: string) { return localize('passwordNotMatch', "{0} password doesn't match the confirmation password", name); }
 export const portMustBeNumber = localize('portMustNotBeNumber', "Port must a be number");
 export const valueCannotBeEmpty = localize('valueCannotBeEmpty', "Value cannot be empty");
+export const imageTag = localize('imageTag', "Image tag");
 export const dockerImageLabelPrefix = 'source=sqldbproject';
 export const dockerImageNamePrefix = 'sqldbproject';
 export const dockerImageDefaultTag = 'latest';
@@ -603,7 +604,7 @@ export const onPremServerVersionToTargetPlatform: Map<number, SqlTargetPlatform>
 // DW is special since the system dacpac folder has a different name from the target platform
 export const AzureDwFolder = 'AzureDw';
 
-export const defaultTargetPlatform = SqlTargetPlatform.sqlServer2019; // TODO: update to 2022 when it's GA
+export const defaultTargetPlatform = SqlTargetPlatform.sqlServer2022;
 export const defaultDSP = targetPlatformToVersion.get(defaultTargetPlatform)!;
 
 /**

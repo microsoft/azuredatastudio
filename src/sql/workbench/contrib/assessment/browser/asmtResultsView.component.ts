@@ -48,6 +48,7 @@ import { ConnectionManagementInfo } from 'sql/platform/connection/common/connect
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { attachTableFilterStyler } from 'sql/platform/theme/common/styler';
 import { DASHBOARD_BORDER } from 'sql/workbench/common/theme';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 
 export const ASMTRESULTSVIEW_SELECTOR: string = 'asmt-results-view-component';
 export const ROW_HEIGHT: number = 25;
@@ -144,7 +145,8 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 		@Inject(IDashboardService) _dashboardService: IDashboardService,
 		@Inject(IAdsTelemetryService) private _telemetryService: IAdsTelemetryService,
 		@Inject(ILogService) protected _logService: ILogService,
-		@Inject(IContextViewService) private _contextViewService: IContextViewService
+		@Inject(IContextViewService) private _contextViewService: IContextViewService,
+		@Inject(IAccessibilityService) private _accessibilityService: IAccessibilityService
 	) {
 		super();
 		let self = this;
@@ -352,7 +354,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 			this.initActionBar(databaseInvokeAsmt, databaseSelectAsmt);
 		}
 
-		this._table = this._register(new Table(this._gridEl.nativeElement, { columns }, options));
+		this._table = this._register(new Table(this._gridEl.nativeElement, this._accessibilityService, { columns }, options));
 		this._table.grid.setData(this.dataView, true);
 		this._table.registerPlugin(<any>this.rowDetail);
 		this._table.registerPlugin(filterPlugin);

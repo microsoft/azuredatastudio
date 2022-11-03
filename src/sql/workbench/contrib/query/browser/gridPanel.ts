@@ -54,6 +54,7 @@ import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/comm
 import { ExecutionPlanInput } from 'sql/workbench/contrib/executionPlan/common/executionPlanInput';
 import { CopyAction } from 'vs/editor/contrib/clipboard/browser/clipboard';
 import { formatDocumentWithSelectedProvider, FormattingMode } from 'vs/editor/contrib/format/browser/format';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -407,7 +408,8 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		@IThemeService private readonly themeService: IThemeService,
 		@IContextViewService private readonly contextViewService: IContextViewService,
 		@INotificationService private readonly notificationService: INotificationService,
-		@IExecutionPlanService private readonly executionPlanService: IExecutionPlanService
+		@IExecutionPlanService private readonly executionPlanService: IExecutionPlanService,
+		@IAccessibilityService private readonly accessibilityService: IAccessibilityService
 	) {
 		super();
 
@@ -522,7 +524,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 				inMemoryDataProcessing: this.options.inMemoryDataProcessing,
 				inMemoryDataCountThreshold: this.options.inMemoryDataCountThreshold
 			});
-		this.table = this._register(new Table(this.tableContainer, { dataProvider: this.dataProvider, columns: this.columns }, tableOptions));
+		this.table = this._register(new Table(this.tableContainer, this.accessibilityService, { dataProvider: this.dataProvider, columns: this.columns }, tableOptions));
 		this.table.setTableTitle(localize('resultsGrid', "Results grid"));
 		this.table.setSelectionModel(this.selectionModel);
 		this.table.registerPlugin(new MouseWheelSupport());
@@ -726,7 +728,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 						graphFileType: result.queryExecutionPlanFileExtension
 					};
 
-					const executionPlanInput = this._register(this.instantiationService.createInstance(ExecutionPlanInput, undefined, executionPlanGraphInfo));
+					const executionPlanInput = this.instantiationService.createInstance(ExecutionPlanInput, undefined, executionPlanGraphInfo);
 					await this.editorService.openEditor(executionPlanInput);
 				}
 				else {
@@ -921,14 +923,15 @@ class GridTable<T> extends GridTableBase<T> {
 		@IThemeService themeService: IThemeService,
 		@IContextViewService contextViewService: IContextViewService,
 		@INotificationService notificationService: INotificationService,
-		@IExecutionPlanService executionPlanService: IExecutionPlanService
+		@IExecutionPlanService executionPlanService: IExecutionPlanService,
+		@IAccessibilityService accessibilityService: IAccessibilityService
 	) {
 		super(state, resultSet, {
 			actionOrientation: ActionsOrientation.VERTICAL,
 			inMemoryDataProcessing: true,
 			showActionBar: true,
 			inMemoryDataCountThreshold: configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.inMemoryDataProcessingThreshold,
-		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService, contextViewService, notificationService, executionPlanService);
+		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService, contextViewService, notificationService, executionPlanService, accessibilityService);
 		this._gridDataProvider = this.instantiationService.createInstance(QueryGridDataProvider, this._runner, resultSet.batchId, resultSet.id);
 		this.providerId = this._runner.getProviderId();
 	}

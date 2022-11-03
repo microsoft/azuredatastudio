@@ -32,6 +32,7 @@ export class ConnectionService {
 		const azdataApi = utils.getAzdataApi();
 		const vscodeMssqlApi = azdataApi ? undefined : await utils.getVscodeMssqlApi();
 		if (azdataApi) {
+			// TODO receive encrypt/trustservercertificate from profile.
 			const connectionProfile = {
 				password: profile.password,
 				serverName: `${profile.serverName},${profile.port}`,
@@ -42,7 +43,10 @@ export class ConnectionService {
 				saveProfile: false,
 				id: '',
 				connectionName: profile.profileName,
-				options: [],
+				options: {
+					'encrypt': true,
+					'trustServerCertificate': true
+				},
 				authenticationType: azdataApi.connection.AuthenticationType.SqlLogin
 			};
 			return await azdataApi.connection.connect(connectionProfile, saveConnectionAndPassword, false);
