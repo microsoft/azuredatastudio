@@ -61,6 +61,9 @@ export abstract class AzureAuth implements vscode.Disposable {
 		public readonly userFriendlyName: string
 	) {
 		this._authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
+		if (!this._authLibrary) {
+			this._authLibrary = 'ADAL';
+		}
 		vscode.workspace.onDidChangeConfiguration((changeEvent) => {
 			const impactLibrary = changeEvent.affectsConfiguration('azure.authenticationLibrary');
 			if (impactLibrary === true) {
