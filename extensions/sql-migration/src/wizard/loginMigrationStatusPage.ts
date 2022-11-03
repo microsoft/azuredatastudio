@@ -68,6 +68,8 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 		}
 
 		await this.migrationStateModel.startLoginMigration();
+		await this._loadMigratingLoginsList(this.migrationStateModel);
+		await this._filterTableList('');
 	}
 
 	public async onPageLeave(): Promise<void> {
@@ -186,6 +188,31 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 				]
 			}).component();
 
+		this._disposables.push(
+			this._migratingLoginsTable.onCellAction!(async (rowState: azdata.ICellActionEventArgs) => {
+				const buttonState = <azdata.ICellActionEventArgs>rowState;
+				switch (buttonState?.column) {
+					case 3:
+						const loginName = this._migratingLoginsTable!.data[rowState.row][0];
+						const status = this._migratingLoginsTable!.data[rowState.row][3].title;
+						const statusMessage = constants.DATABASE_MIGRATION_STATUS_LABEL(status);
+						var errors = "";
+
+						if (this.migrationStateModel._loginMigrationsResult?.exceptionMap) {
+							const exception_key = Object.keys(this.migrationStateModel._loginMigrationsResult.exceptionMap).find(key => key.toLocaleLowerCase() === loginName.toLocaleLowerCase());
+							if (exception_key) {
+								errors = this.migrationStateModel._loginMigrationsResult.exceptionMap[exception_key][0].Message;
+							}
+						}
+
+						this.showDialogMessage(
+							constants.DATABASE_MIGRATION_STATUS_TITLE,
+							statusMessage,
+							errors);
+						break;
+				}
+			}));
+
 		// load unfiltered table list
 		await this._filterTableList('');
 
@@ -210,13 +237,26 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 
 		this._loginsTableValues = loginList.map(login => {
 			const loginName = login.loginName;
+
+			var status = "InProgress";
+			var title = "In progress";
+			if (stateMachine._didLoginMigrationsSucceed && stateMachine._loginMigrationsResult) {
+				status = "Succeeded";
+				title = "Succeeded";
+				var didLoginFail = Object.keys(stateMachine._loginMigrationsResult.exceptionMap).some(key => key.toLocaleLowerCase() === loginName.toLocaleLowerCase());
+				if (didLoginFail) {
+					status = "Failed"
+					title = "Failed"
+				}
+			}
+
 			return [
 				loginName,
 				login.loginType,
 				login.defaultDatabaseName,
 				<azdata.HyperlinkColumnCellValue>{
-					icon: getPipelineStatusImage('InProgress'), // TODO AKMA : change to new method
-					title: 'In progress', // TODO AKMA : Change hardcoding
+					icon: getPipelineStatusImage(status), // TODO AKMA : change to new method
+					title: title, // TODO AKMA : Change hardcoding
 				},
 			];
 		}) || [];
