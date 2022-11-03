@@ -746,14 +746,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.5.0",
-							"lastUpdated": "9/27/2021",
+							"version": "1.5.1",
+							"lastUpdated": "11/2/2022",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/import/import-1.5.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/import/import-1.5.1.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -793,7 +793,7 @@
 						}
 					],
 					"statistics": [],
-					"flags": "preview"
+					"flags": ""
 				},
 				{
 					"extensionId": "25",
@@ -1535,14 +1535,14 @@
 					},
 					"versions": [
 						{
-							"version": "4.0.0",
-							"lastUpdated": "9/9/2022",
+							"version": "4.0.1",
+							"lastUpdated": "11/2/2022",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sanddance/azdata-sanddance-4.0.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sanddance/azdata-sanddance-4.0.1.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -4036,14 +4036,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.1.1",
-							"lastUpdated": "10/19/2022",
+							"version": "1.1.2",
+							"lastUpdated": "11/02/2022",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-migration/sql-migration-1.1.1.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-migration/sql-migration-1.1.2.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -4531,19 +4531,19 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/dotnet/interactive/main/src/dotnet-interactive-vscode-ads/images/icon.png"
+									"source": "https://raw.githubusercontent.com/dotnet/interactive/main/src/dotnet-interactive-vscode/images/icon.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/dotnet/interactive/main/src/dotnet-interactive-vscode-ads/README.md"
+									"source": "https://raw.githubusercontent.com/dotnet/interactive/main/src/dotnet-interactive-vscode/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/dotnet/interactive/main/src/dotnet-interactive-vscode-ads/package.json"
+									"source": "https://raw.githubusercontent.com/dotnet/interactive/main/src/dotnet-interactive-vscode/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/dotnet/interactive/main/src/dotnet-interactive-vscode-ads/License.txt"
+									"source": "https://raw.githubusercontent.com/dotnet/interactive/main/src/dotnet-interactive-vscode/License.txt"
 								}
 							],
 							"properties": [
