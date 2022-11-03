@@ -134,6 +134,13 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 
 		this._grid.onKeyDown.subscribe((e, args: Slick.OnKeyDownEventArgs<T>) => {
 			const evt = (e as JQuery.TriggeredEvent).originalEvent as KeyboardEvent;
+
+			/**
+			 * Adding a keyboard shortcut Alt+left/right arrow to change column width. This is a
+			 * workaround to provide an alternative to column header mouse drag based resizing.
+			 * TODO: Make the shortcut configurable or provide a way to focus on column headers
+			 * so that users can focus a header and then use the arrow keys to resize columns.
+			 */
 			const stdEvt = new StandardKeyboardEvent(evt);
 			if (stdEvt.altKey && [KeyCode.LeftArrow, KeyCode.RightArrow].includes(stdEvt.keyCode)) {
 				const activeCell = this._grid.getActiveCell();
