@@ -51,6 +51,21 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 	protected async registerContent(view: azdata.ModelView): Promise<void> {
 		this._view = view;
 
+		const dataMigrationInfoBox = this._view.modelBuilder.infoBox()
+			.withProps({
+				style: 'information',
+				text: constants.LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_DATA_MIGRATION_WARNING,
+				CSSStyles: { ...styles.BODY_CSS }
+			}).component();
+
+		const connectionProfile: azdata.connection.ConnectionProfile = await this.migrationStateModel.getSourceConnectionProfile();
+		const permissionsInfoBox = this._view.modelBuilder.infoBox()
+			.withProps({
+				style: 'information',
+				text: constants.LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_PERMISSIONS_WARNING(connectionProfile.userName, connectionProfile.serverName),
+				CSSStyles: { ...styles.BODY_CSS }
+			}).component();
+
 		this._pageDescription = this._view.modelBuilder.text()
 			.withProps({
 				value: constants.LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_DESCRIPTION,
@@ -59,6 +74,8 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 
 		const form = this._view.modelBuilder.formContainer()
 			.withFormItems([
+				{ component: dataMigrationInfoBox },
+				{ component: permissionsInfoBox },
 				{ component: this._pageDescription },
 				{ component: this.createAzureSqlTargetTypeDropdown() },
 				{ component: this.createAzureAccountsDropdown() },
@@ -77,17 +94,6 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
-		this.wizard.message = {
-			text: constants.LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_DATA_MIGRATION_WARNING,
-			level: azdata.window.MessageLevel.Information
-		};
-		// DEMO AKMA : Toggle this to show other info option
-		// const connectionProfile: azdata.connection.ConnectionProfile = await this.migrationStateModel.getSourceConnectionProfile();
-		// this.wizard.message = {
-		// 	text: constants.LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_PERMISSIONS_WARNING(connectionProfile.userName, connectionProfile.serverName),
-		// 	level: azdata.window.MessageLevel.Information
-		// };
-		// TODO AKMA : change to infoxbox info instead of banner, see other page
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			this.wizard.message = {
 				text: '',
