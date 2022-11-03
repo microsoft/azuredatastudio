@@ -183,7 +183,12 @@ export abstract class AzureAuth implements vscode.Disposable {
 			return undefined;
 		}
 
-		const tenant = account.properties.owningTenant.id === tenantId
+		if (!account.properties.owningTenant) {
+			// Should never happen
+			throw new AzureAuthError(localize('azure.owningTenantNotFound', "Owning Tenant information not found for account."), 'Owning tenant not found.', undefined);
+		}
+
+		const tenant = account.properties.owningTenant?.id === tenantId
 			? account.properties.owningTenant
 			: account.properties.tenants.find(t => t.id === tenantId);
 
