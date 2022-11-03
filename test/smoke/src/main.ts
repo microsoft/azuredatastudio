@@ -322,8 +322,8 @@ function createOptions(): ApplicationOptions {
 		logger: new MultiLogger(loggers),
 		verbose: opts.verbose,
 		logsPath: logPath ?? '',
-		// screenshotsPath, // {{ SQL CARBON TODO }} Can no longer take screenshots as an option
-		// log, // {{ SQL CARBON TODO }} Can no longer take 'log' as an application option.
+		// screenshotsPath, // {{ SQL CARBON TODO }} 'screenshotPath' is no longer a valid attribute option for ApplicationOption
+		// log, // {{ SQL CARBON TODO }} 'log' is no longer a valid attribute option for ApplicationOption
 		remote: opts.remote,
 		web: opts.web,
 		headless: opts.headless,

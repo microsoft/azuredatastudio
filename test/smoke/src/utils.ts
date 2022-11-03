@@ -182,7 +182,7 @@ export function installCommonAfterHandlers(opts: minimist.ParsedArgs, appFn?: ()
 	});
 }
 
-// {{ SQL CARBON EDIT }}
+// {{ SQL CARBON EDIT }} defined beforeSuite
 export function beforeSuite(opts: minimist.ParsedArgs, optionsTransform?: (opts: ApplicationOptions) => Promise<ApplicationOptions>) {
 	beforeEach(async function () {
 		const app = this.app as Application;
@@ -213,7 +213,7 @@ export function beforeSuite(opts: minimist.ParsedArgs, optionsTransform?: (opts:
 	});
 }
 
-// {{ SQL CARBON EDIT }}
+// {{ SQL CARBON EDIT }} defined afterSuite
 export function afterSuite(opts: minimist.ParsedArgs) {
 	afterEach(async function () {
 		const app = this.app as Application;
