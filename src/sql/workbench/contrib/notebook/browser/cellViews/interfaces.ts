@@ -73,7 +73,7 @@ export abstract class CellView extends AngularDisposable implements OnDestroy, I
 				let elements = this.getHtmlElements();
 				if (elements?.length >= range.startLineNumber) {
 					let elementContainingText = elements[range.startLineNumber - 1];
-					let cellActive = range.cell.active;
+					let isCellActive = range.cell.active;
 					let markCurrent = new Mark(elementContainingText); // to highlight the current item of them all.
 					markCurrent.markRanges([{
 						start: range.startColumn - 1, //subtracting 1 since markdown html is 0 indexed.
@@ -81,7 +81,7 @@ export abstract class CellView extends AngularDisposable implements OnDestroy, I
 					}], {
 						className: findRangeSpecificClass,
 						each: function (node, range) {
-							if (cellActive) {
+							if (isCellActive) {
 								// node is the marked DOM element
 								node.scrollIntoView({ block: 'center' });
 							}
