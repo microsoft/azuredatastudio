@@ -20,6 +20,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { range } from 'vs/base/common/arrays';
 import { AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
 import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
+import { IAccessibilityProvider } from 'sql/base/browser/ui/accessibility/accessibilityProvider';
 
 function getDefaultOptions<T>(): Slick.GridOptions<T> {
 	return <Slick.GridOptions<T>>{
@@ -65,7 +66,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 	private _onBlur = new Emitter<void>();
 	public readonly onBlur = this._onBlur.event;
 
-	constructor(parent: HTMLElement, configuration?: ITableConfiguration<T>, options?: Slick.GridOptions<T>) {
+	constructor(parent: HTMLElement, accessibilityProvider: IAccessibilityProvider, configuration?: ITableConfiguration<T>, options?: Slick.GridOptions<T>) {
 		super();
 		if (!configuration || !configuration.dataProvider || isArray(configuration.dataProvider)) {
 			this._data = new TableDataView<T>(configuration && configuration.dataProvider as Array<T>);
@@ -76,6 +77,10 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this._register(this._data);
 
 		let newOptions = mixin(options || {}, getDefaultOptions<T>(), false);
+
+		if (accessibilityProvider?.isScreenReaderOptimized()) {
+			newOptions.disableColumnBasedCellVirtualization = true;
+		}
 
 		this._container = document.createElement('div');
 		this._container.className = 'monaco-table';
@@ -131,7 +136,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this._grid.onColumnsResized.subscribe(() => this._onColumnResize.fire());
 
 		this._grid.onKeyDown.subscribe((e, args: Slick.OnKeyDownEventArgs<T>) => {
-			const evt = (e as JQuery.Event).originalEvent as KeyboardEvent;
+			const evt = (e as JQuery.TriggeredEvent).originalEvent as KeyboardEvent;
 			this._onKeyDown.fire({
 				event: evt,
 				cell: {
@@ -151,7 +156,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 
 	private mapMouseEvent(slickEvent: Slick.Event<any>, emitter: Emitter<ITableMouseEvent>) {
 		slickEvent.subscribe((e: Slick.EventData) => {
-			const originalEvent = (e as JQuery.Event).originalEvent;
+			const originalEvent = (e as JQuery.TriggeredEvent).originalEvent;
 			const cell = this._grid.getCellFromEvent(originalEvent);
 			const anchor = originalEvent instanceof MouseEvent ? { x: originalEvent.x, y: originalEvent.y } : originalEvent.srcElement as HTMLElement;
 			emitter.fire({ anchor, cell });

@@ -14,6 +14,7 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IInsightOptions, InsightType } from 'sql/workbench/contrib/charts/common/interfaces';
 import { IInsightData } from 'sql/platform/dashboard/browser/insightRegistry';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 
 export class TableInsight extends Disposable implements IInsight {
 	public static readonly types = [InsightType.Table];
@@ -25,7 +26,8 @@ export class TableInsight extends Disposable implements IInsight {
 	public options: IInsightOptions = { type: InsightType.Table };
 
 	constructor(container: HTMLElement, options: any,
-		@IThemeService themeService: IThemeService
+		@IThemeService themeService: IThemeService,
+		@IAccessibilityService accessibilityService: IAccessibilityService
 	) {
 		super();
 		let tableContainer = $('div');
@@ -33,7 +35,7 @@ export class TableInsight extends Disposable implements IInsight {
 		tableContainer.style.height = '100%';
 		container.appendChild(tableContainer);
 		this.dataView = new TableDataView();
-		this.table = new Table(tableContainer, { dataProvider: this.dataView }, { showRowNumber: true });
+		this.table = new Table(tableContainer, accessibilityService, { dataProvider: this.dataView }, { showRowNumber: true });
 		this.table.setSelectionModel(new CellSelectionModel());
 		this._register(attachTableStyler(this.table, themeService));
 	}

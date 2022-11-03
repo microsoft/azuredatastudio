@@ -5,7 +5,7 @@
 
 /* Node Modules */
 import { Injectable, Inject, forwardRef } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 /* SQL imports */
 import { IDashboardComponentParams, IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
@@ -69,6 +69,7 @@ export class DashboardServiceInterface extends CommonServiceInterface {
 		@Inject(IQueryManagementService) queryManagementService: IQueryManagementService,
 		@Inject(IBootstrapParams) params: IDashboardComponentParams,
 		@Inject(forwardRef(() => Router)) private _router: Router,
+		@Inject(forwardRef(() => ActivatedRoute)) private _activeRoute: ActivatedRoute,
 		@Inject(INotificationService) private _notificationService: INotificationService,
 		@Inject(IAngularEventingService) private angularEventingService: IAngularEventingService,
 		@Inject(IConfigurationService) private _configService: IConfigurationService
@@ -117,7 +118,7 @@ export class DashboardServiceInterface extends CommonServiceInterface {
 							if (this._router.url === '/database-dashboard') {
 								this._updatePage.fire();
 							} else {
-								this._router.navigate(['database-dashboard']).catch(onUnexpectedError);
+								this._router.navigate(['database-dashboard'], { relativeTo: this._activeRoute, skipLocationChange: true }).catch(onUnexpectedError);
 							}
 						} else {
 							this._notificationService.notify({
@@ -135,7 +136,7 @@ export class DashboardServiceInterface extends CommonServiceInterface {
 				);
 				break;
 			case AngularEventType.NAV_SERVER:
-				this._router.navigate(['server-dashboard']).catch(onUnexpectedError);
+				this._router.navigate(['server-dashboard'], { relativeTo: this._activeRoute, skipLocationChange: true }).catch(onUnexpectedError);
 				break;
 			case AngularEventType.DELETE_WIDGET:
 				this._onDeleteWidget.fire(event.payload.id);
