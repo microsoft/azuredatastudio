@@ -20,6 +20,8 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { range } from 'vs/base/common/arrays';
 import { AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
 import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
 
 function getDefaultOptions<T>(): Slick.GridOptions<T> {
 	return <Slick.GridOptions<T>>{
@@ -132,12 +134,12 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 
 		this._grid.onKeyDown.subscribe((e, args: Slick.OnKeyDownEventArgs<T>) => {
 			const evt = (e as JQuery.TriggeredEvent).originalEvent as KeyboardEvent;
-			if (evt.altKey && [37, 39].includes(evt.keyCode)) {
-
+			const stdEvt = new StandardKeyboardEvent(evt);
+			if (stdEvt.altKey && [KeyCode.LeftArrow, KeyCode.RightArrow].includes(stdEvt.keyCode)) {
 				const activeCell = this._grid.getActiveCell();
 				if (activeCell) {
 					const columns = this._grid.getColumns();
-					if (evt.keyCode === 37) {
+					if (stdEvt.keyCode === KeyCode.LeftArrow) {
 						if (columns[activeCell.cell].width > 10) {
 							columns[activeCell.cell].width -= 10;
 						}
@@ -146,8 +148,8 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 					}
 					this._grid.setColumns(columns);
 					this.grid.setActiveCell(activeCell.row, activeCell.cell);
-					evt.stopPropagation();
-					evt.preventDefault();
+					stdEvt.stopPropagation();
+					stdEvt.preventDefault();
 				}
 			}
 			this._onKeyDown.fire({
