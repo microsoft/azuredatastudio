@@ -183,7 +183,9 @@ export abstract class AzureAuth implements vscode.Disposable {
 			return undefined;
 		}
 
-		const tenant = account.properties.tenants.find(t => t.id === tenantId);
+		const tenant = account.properties.owningTenant.id === tenantId
+			? account.properties.owningTenant
+			: account.properties.tenants.find(t => t.id === tenantId);
 
 		if (!tenant) {
 			throw new AzureAuthError(localize('azure.tenantNotFound', "Specified tenant with ID '{0}' not found.", tenantId), `Tenant ${tenantId} not found.`, undefined);
@@ -553,7 +555,10 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		const name = tokenClaims.name ?? tokenClaims.email ?? tokenClaims.unique_name;
 		const email = tokenClaims.email ?? tokenClaims.unique_name;
-		const owningTenant = tenants.find(t => t.id === tokenClaims.tid);
+
+		// Read more about tid > https://learn.microsoft.com/azure/active-directory/develop/id-tokens
+		const owningTenant = tenants.find(t => t.id === tokenClaims.tid)
+			?? { 'id': tokenClaims.tid, 'displayName': 'Microsoft Account' };
 
 		let displayName = name;
 		if (email) {

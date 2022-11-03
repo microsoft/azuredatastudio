@@ -45,7 +45,8 @@ declare module 'azurecore' {
 		isMsAccount: boolean;
 
 		/**
-		 * Defines the tenant the Azure Account belongs to.
+		 * Represents the tenant that the user would be signing in to. For work and school accounts, the GUID is the immutable tenant ID of the organization that the user is signing in to.
+		 * For sign-ins to the personal Microsoft account tenant (services like Xbox, Teams for Life, or Outlook), the value is 9188040d-6c67-4c5b-b112-36a304b66dad.
 		 */
 		owningTenant: Tenant;
 		/**
