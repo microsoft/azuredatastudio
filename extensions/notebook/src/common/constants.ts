@@ -28,6 +28,7 @@ export const allowRoot = 'allowRoot';
 
 export const winPlatform = 'win32';
 export const macPlatform = 'darwin';
+export const linuxPlatform = 'linux';
 
 export const jupyterNotebookProviderId = 'jupyter';
 export const jupyterConfigRootFolder = 'jupyter_config';
