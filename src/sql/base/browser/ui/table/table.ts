@@ -146,12 +146,18 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 				const activeCell = this._grid.getActiveCell();
 				if (activeCell) {
 					const columns = this._grid.getColumns();
+					/**
+					 * increasing/decreasing the column width by 10px as 1px will be too slow to make
+					 * a noticeable change
+					 */
+					const columnWidthChangeDelta = 10;
+					const minColumnWidth = 10;
 					if (stdEvt.keyCode === KeyCode.LeftArrow) {
-						if (columns[activeCell.cell].width > 10) {
-							columns[activeCell.cell].width -= 10;
+						if (columns[activeCell.cell].width > minColumnWidth) {
+							columns[activeCell.cell].width -= columnWidthChangeDelta;
 						}
 					} else {
-						columns[activeCell.cell].width += 10;
+						columns[activeCell.cell].width += columnWidthChangeDelta;
 					}
 					this._grid.setColumns(columns);
 					this.grid.setActiveCell(activeCell.row, activeCell.cell);
