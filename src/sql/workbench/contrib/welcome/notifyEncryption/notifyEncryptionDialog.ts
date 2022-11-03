@@ -42,8 +42,10 @@ export class NotifyEncryptionDialog extends ErrorMessageDialog {
 	}
 
 	public override open(): void {
-		if (this._storageService.get(NotifyEncryptionDialog.NOTIFY_ENCRYPT_SHOWN, StorageScope.GLOBAL) ||
-			!this._connectionManagementService.getConnections()?.some(conn => conn.providerName === mssqlProviderName)) {
+		if (this._storageService.get(NotifyEncryptionDialog.NOTIFY_ENCRYPT_SHOWN, StorageScope.GLOBAL)
+			|| !this._connectionManagementService.getConnections()?.some(conn => conn.providerName === mssqlProviderName)) {
+			// avoid connections added later triggering this dialog
+			this._storageService.store(NotifyEncryptionDialog.NOTIFY_ENCRYPT_SHOWN, true, StorageScope.GLOBAL, StorageTarget.MACHINE);
 			return;
 		}
 
