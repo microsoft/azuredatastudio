@@ -273,8 +273,8 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 	}
 
 	private handleKeyDown(e: KeyboardEvent) {
-		/***
-		 * Кey codes
+		/*
+		 * Key codes
 		 * 37 left
 		 * 38 up
 		 * 39 right

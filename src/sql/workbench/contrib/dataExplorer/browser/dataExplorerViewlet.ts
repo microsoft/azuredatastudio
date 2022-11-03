@@ -23,9 +23,11 @@ import { ViewPane } from 'vs/workbench/browser/parts/views/viewPane';
 import { ViewPaneContainer } from 'vs/workbench/browser/parts/views/viewPaneContainer';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
-import { SqlIconId } from 'sql/base/common/codicons';
+import { registerIcon } from 'vs/platform/theme/common/iconRegistry';
+import { Codicon } from 'vs/base/common/codicons';
 
 export const VIEWLET_ID = 'workbench.view.connections';
+export const ConnectionsViewIcon = registerIcon('ads-connections', Codicon.serverEnvironment, localize('ads-connections', 'Icon represent a server.'));
 
 export class DataExplorerViewletViewsContribution implements IWorkbenchContribution {
 
@@ -89,7 +91,7 @@ export class DataExplorerViewPaneContainer extends ViewPaneContainer {
 	}
 
 	protected override createView(viewDescriptor: IViewDescriptor, options: IViewletViewOptions): ViewPane {
-		let viewletPanel = this.instantiationService.createInstance(viewDescriptor.ctorDescriptor.ctor, options) as ViewPane;
+		let viewletPanel = (<any>this.instantiationService).createInstance(viewDescriptor.ctorDescriptor.ctor, options) as ViewPane;
 		this._register(viewletPanel);
 		return viewletPanel;
 	}
@@ -105,7 +107,7 @@ export const VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(ViewContainer
 		keybindings: { primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KeyD },
 		order: 0
 	},
-	icon: { id: SqlIconId.dataExplorer },
+	icon: ConnectionsViewIcon,
 	order: 0,
 	storageId: `${VIEWLET_ID}.state`
 }, ViewContainerLocation.Sidebar, { isDefault: true });

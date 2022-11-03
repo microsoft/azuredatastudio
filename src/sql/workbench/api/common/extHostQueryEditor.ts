@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
-import { ExtHostQueryEditorShape, SqlMainContext, MainThreadQueryEditorShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { IMainContext, SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
+import { ExtHostQueryEditorShape, MainThreadQueryEditorShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import * as azdata from 'azdata';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { Disposable } from 'vs/workbench/api/common/extHostTypes';
@@ -44,7 +44,7 @@ export class ExtHostQueryEditor implements ExtHostQueryEditorShape {
 	constructor(
 		mainContext: IMainContext
 	) {
-		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadQueryEditor);
+		this._proxy = <MainThreadQueryEditorShape><unknown>mainContext.getProxy(SqlMainContext.MainThreadQueryEditor);
 	}
 
 	public $connect(fileUri: string, connectionId: string): Thenable<void> {

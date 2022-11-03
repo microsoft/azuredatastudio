@@ -16,6 +16,7 @@ import { AzureAccount, azureResource } from 'azurecore';
 
 export class SqlInstanceArcTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabaseServer> {
 	private static readonly containerId = 'azure.resource.providers.sqlInstanceArcContainer';
+	// allow-any-unicode-next-line
 	private static readonly containerLabel = localize('azure.resource.providers.sqlInstanceArcContainerLabel', "SQL managed instance – Azure Arc");
 
 	public constructor(

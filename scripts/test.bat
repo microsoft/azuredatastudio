@@ -24,7 +24,7 @@ if "%ADS_TEST_GREP%" == "" (
 
 :: Run tests
 set ELECTRON_ENABLE_LOGGING=1
-%CODE% .\test\unit\electron\index.js %*
+%CODE% .\test\unit\electron\index.js --crash-reporter-directory=%~dp0\..\.build\crashes %*
 
 popd
 

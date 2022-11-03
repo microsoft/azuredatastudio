@@ -1042,11 +1042,12 @@
           "description": "%mssql.connectionOptions.encrypt.description%",
           "groupName": "%mssql.connectionOptions.groupName.security%",
           "valueType": "boolean",
-          "defaultValue": null,
+          "defaultValue": "true",
           "objectType": null,
           "categoryValues": null,
           "isRequired": false,
-          "isArray": false
+          "isArray": false,
+          "showOnConnectionDialog": true
         },
         {
           "specialValueType": null,
@@ -1070,11 +1071,12 @@
           "description": "%mssql.connectionOptions.trustServerCertificate.description%",
           "groupName": "%mssql.connectionOptions.groupName.security%",
           "valueType": "boolean",
-          "defaultValue": null,
+          "defaultValue": "false",
           "objectType": null,
           "categoryValues": null,
           "isRequired": false,
-          "isArray": false
+          "isArray": false,
+          "showOnConnectionDialog": true
         },
         {
           "specialValueType": null,

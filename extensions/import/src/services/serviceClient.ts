@@ -169,4 +169,6 @@ class CustomOutputChannel implements vscode.OutputChannel {
 	// tslint:disable-next-line:no-empty
 	dispose(): void {
 	}
+	replace(_value: string): void {
+	}
 }

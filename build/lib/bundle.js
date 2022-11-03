@@ -14,15 +14,19 @@ const vm = require("vm");
 function bundle(entryPoints, config, callback) {
     const entryPointsMap = {};
     entryPoints.forEach((module) => {
+        if (entryPointsMap[module.name]) {
+            throw new Error(`Cannot have two entry points with the same name '${module.name}'`);
+        }
         entryPointsMap[module.name] = module;
     });
     const allMentionedModulesMap = {};
     entryPoints.forEach((module) => {
+        var _a, _b;
         allMentionedModulesMap[module.name] = true;
-        (module.include || []).forEach(function (includedModule) {
+        (_a = module.include) === null || _a === void 0 ? void 0 : _a.forEach(function (includedModule) {
             allMentionedModulesMap[includedModule] = true;
         });
-        (module.exclude || []).forEach(function (excludedModule) {
+        (_b = module.exclude) === null || _b === void 0 ? void 0 : _b.forEach(function (excludedModule) {
             allMentionedModulesMap[excludedModule] = true;
         });
     });

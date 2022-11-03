@@ -117,14 +117,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				CSSStyles: { ...styles.BODY_CSS }
 			}).component();
 
-		const backupChecksumInfoBox = this._view.modelBuilder.infoBox()
-			.withProps({
-				text: constants.DATABASE_BACKUP_CHECKSUM_INFO_TEXT,
-				style: 'information',
-				width: WIZARD_INPUT_COMPONENT_WIDTH,
-				CSSStyles: { ...styles.BODY_CSS }
-			}).component();
-
 		this._networkShareButton = this._view.modelBuilder.radioButton()
 			.withProps({
 				name: buttonGroup,
@@ -158,7 +150,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		const flexContainer = this._view.modelBuilder.flexContainer()
 			.withItems([
 				selectLocationText,
-				backupChecksumInfoBox,
 				this._networkShareButton,
 				this._blobContainerButton])
 			.withLayout({ flexFlow: 'column' })
@@ -727,9 +718,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						this.migrationStateModel.sourceConnectionId)), query);
 
 				const username = results.rows[0][0].displayValue;
-				this.migrationStateModel._authenticationType = connectionProfile.authenticationType === azdata.connection.AuthenticationType.SqlLogin
+				this.migrationStateModel._authenticationType = connectionProfile.authenticationType === 'SqlLogin'
 					? MigrationSourceAuthenticationType.Sql
-					: connectionProfile.authenticationType === azdata.connection.AuthenticationType.Integrated
+					: connectionProfile.authenticationType === 'Integrated' // TODO: use azdata.connection.AuthenticationType.Integrated  after next ADS release
 						? MigrationSourceAuthenticationType.Integrated
 						: undefined!;
 				this._sourceHelpText.value = constants.SQL_SOURCE_DETAILS(

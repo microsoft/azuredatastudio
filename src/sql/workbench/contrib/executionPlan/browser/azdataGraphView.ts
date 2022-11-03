@@ -6,7 +6,7 @@
 import * as azdataGraphModule from 'azdataGraph';
 import * as azdata from 'azdata';
 import * as sqlExtHostType from 'sql/workbench/api/common/sqlExtHostTypes';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { isString } from 'vs/base/common/types';
 import { badgeIconPaths, collapseExpandNodeIconPaths, executionPlanNodeIconPaths } from 'sql/workbench/contrib/executionPlan/browser/constants';
 import { localize } from 'vs/nls';
@@ -15,6 +15,8 @@ import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/
 import { foreground } from 'vs/platform/theme/common/colorRegistry';
 import { generateUuid } from 'vs/base/common/uuid';
 import { Disposable } from 'vs/base/common/lifecycle';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { status } from 'vs/base/browser/ui/aria/aria';
 const azdataGraph = azdataGraphModule();
 
 /**
@@ -36,7 +38,9 @@ export class AzdataGraphView extends Disposable {
 	constructor(
 		private _parentContainer: HTMLElement,
 		private _executionPlan: azdata.executionPlan.ExecutionPlanGraph,
+		executionPlanDiagramName: string,
 		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService,
+		@IConfigurationService readonly configurationService: IConfigurationService
 	) {
 		super();
 
@@ -47,13 +51,25 @@ export class AzdataGraphView extends Disposable {
 			queryPlanGraph: this._diagramModel,
 			iconPaths: executionPlanNodeIconPaths,
 			badgeIconPaths: badgeIconPaths,
-			expandCollapsePaths: collapseExpandNodeIconPaths
+			expandCollapsePaths: collapseExpandNodeIconPaths,
+			showTooltipOnClick: configurationService.getValue<boolean>('executionPlan.tooltips.enableOnHoverTooltips') ? false : true,
 		};
 		this._diagram = new azdataGraph.azdataQueryPlan(queryPlanConfiguration);
+		(<any>this._parentContainer.firstChild).ariaLabel = localize('executionPlanComparison.bottomPlanDiagram.ariaLabel', '{0}, use arrow keys to navigate between nodes', executionPlanDiagramName);
 
 		this.setGraphProperties();
 		this._cellInFocus = this._diagram.graph.getSelectionCell();
 		this.initializeGraphEvents();
+
+		configurationService.onDidChangeConfiguration(e => {
+			if (e.affectedKeys.includes('executionPlan.tooltips.enableOnHoverTooltips')) {
+				const enableHoverOnTooltip = configurationService.getValue<boolean>('executionPlan.tooltips.enableOnHoverTooltips');
+				if (this._diagram) {
+					this._diagram.setShowTooltipOnClick(!enableHoverOnTooltip);
+					this._diagram.showTooltip(this._diagram.graph.showTooltip);
+				}
+			}
+		});
 	}
 
 	private setGraphProperties(): void {
@@ -84,7 +100,6 @@ export class AzdataGraphView extends Disposable {
 				}
 
 				this._onElementSelectedEmitter.fire(this.getElementById(newSelection.id));
-				this.centerElement(this.getElementById(newSelection.id));
 				this._cellInFocus = evt.properties.removed[0];
 			} else {
 				if (evt.properties?.added) {
@@ -92,6 +107,10 @@ export class AzdataGraphView extends Disposable {
 					this.selectElement(this.getElementById(getPreviousSelection.id));
 				}
 			}
+		});
+
+		this._diagram.graph.addListener('tooltipShown', (sender, evt) => {
+			status(evt.properties.tooltip.textContent);
 		});
 	}
 
@@ -462,13 +481,8 @@ export class AzdataGraphView extends Disposable {
 	 * @returns state of the tooltip after toggling
 	 */
 	public toggleTooltip(): boolean {
-		if (this._diagram.graph.tooltipHandler.enabled) {
-			this._diagram.graph.tooltipHandler.setEnabled(false);
-		} else {
-			this._diagram.graph.tooltipHandler.setEnabled(true);
-		}
-
-		return this._diagram.graph.tooltipHandler.enabled;
+		this._diagram.showTooltip(!this._diagram.graph.showTooltip);
+		return this._diagram.graph.showTooltip;
 	}
 
 	public drawSubtreePolygon(subtreeRoot: string, fillColor: string, borderColor: string): void {
