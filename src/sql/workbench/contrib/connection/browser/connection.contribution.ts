@@ -118,7 +118,8 @@ CommandsRegistry.registerCommand('azdata.connect',
 		authenticationType?: AuthenticationType,
 		userName?: string,
 		password?: string,
-		databaseName?: string
+		databaseName?: string,
+		options?: { [name: string]: any }
 	}) {
 		const capabilitiesServices = accessor.get(ICapabilitiesService);
 		const connectionManagementService = accessor.get(IConnectionManagementService);
@@ -139,7 +140,7 @@ CommandsRegistry.registerCommand('azdata.connect',
 				saveProfile: true,
 				id: undefined,
 				groupId: undefined,
-				options: {}
+				options: args.options
 			};
 			const connectionProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesServices, profile);
 
