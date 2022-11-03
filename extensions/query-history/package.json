@@ -2,7 +2,7 @@
   "name": "query-history",
   "displayName": "%queryHistory.displayName%",
   "description": "%queryHistory.description%",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "publisher": "Microsoft",
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/extension.png",
