@@ -132,6 +132,24 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 
 		this._grid.onKeyDown.subscribe((e, args: Slick.OnKeyDownEventArgs<T>) => {
 			const evt = (e as JQuery.TriggeredEvent).originalEvent as KeyboardEvent;
+			if (evt.altKey && [37, 39].includes(evt.keyCode)) {
+
+				const activeCell = this._grid.getActiveCell();
+				if (activeCell) {
+					const columns = this._grid.getColumns();
+					if (evt.keyCode === 37) {
+						if (columns[activeCell.cell].width > 10) {
+							columns[activeCell.cell].width -= 10;
+						}
+					} else {
+						columns[activeCell.cell].width += 10;
+					}
+					this._grid.setColumns(columns);
+					this.grid.setActiveCell(activeCell.row, activeCell.cell);
+					evt.stopPropagation();
+					evt.preventDefault();
+				}
+			}
 			this._onKeyDown.fire({
 				event: evt,
 				cell: {
