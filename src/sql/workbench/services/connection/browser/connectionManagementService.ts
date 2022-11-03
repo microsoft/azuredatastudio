@@ -1043,7 +1043,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			options: connection.options
 		});
 
-		let testPassword = 'Bafwefgwrger';
+		let testPassword = 'Bafw3g$@ra2';
 
 		await this._extensionService.activateByEvent(`onConnect:${connection.providerName}`);
 
