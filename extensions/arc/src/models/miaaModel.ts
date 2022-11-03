@@ -123,7 +123,7 @@ export class MiaaModel extends ResourceModel {
 			}
 
 			// If we have an external endpoint configured then fetch the databases now
-			if (this._config.status.endpoints.primaryEndpoint) {
+			if (this._config.status.endpoints.primary) {
 				this.getDatabases(false).catch(_err => {
 					// If an error occurs still fire the event so callers can know to
 					// update (e.g. so dashboards don't show the loading icon forever)
@@ -205,7 +205,7 @@ export class MiaaModel extends ResourceModel {
 	}
 
 	protected createConnectionProfile(): azdata.IConnectionProfile {
-		const ipAndPort = parseIpAndPort(this.config?.status.endpoints.primaryEndpoint || '');
+		const ipAndPort = parseIpAndPort(this.config?.status.endpoints.primary || '');
 		return {
 			serverName: `${ipAndPort.ip},${ipAndPort.port}`,
 			databaseName: '',
