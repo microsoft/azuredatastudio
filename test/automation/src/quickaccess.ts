@@ -8,7 +8,8 @@ import { Code } from './code';
 import { QuickInput } from './quickinput';
 import { basename, isAbsolute } from 'path';
 
-enum QuickAccessKind {
+// {{ SQL CARBON EDIT }} exporting enum
+export enum QuickAccessKind {
 	Files = 1,
 	Commands,
 	Symbols
@@ -131,7 +132,8 @@ export class QuickAccess {
 		await this.editors.selectTab(fileName);
 	}
 
-	private async openQuickAccessWithRetry(kind: QuickAccessKind, value?: string): Promise<void> {
+	// {{SQL CARBON EDIT}} - Removed private access specifier
+	async openQuickAccessWithRetry(kind: QuickAccessKind, value?: string): Promise<void> {
 		let retries = 0;
 
 		// Other parts of code might steal focus away from quickinput :(

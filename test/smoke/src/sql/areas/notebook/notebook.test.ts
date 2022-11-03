@@ -180,12 +180,25 @@ export function setup(opts: minimist.ParsedArgs) {
 			});
 		});
 
+		beforeEach(async function () {
+			const app = this.app as Application;
+
+			const name = this.currentTest!.fullTitle().replace(/[^a-z0-9\-]/ig, '_');
+			await app.code.driver.startTracing(name);
+		});
+
 		afterEach(async function () {
 			const app = this.app as Application;
+
+			const name = this.currentTest!.fullTitle().replace(/[^a-z0-9\-]/ig, '_');
 			// If the test failed, take a screenshot before closing the active editor.
 			if (this.currentTest!.state === 'failed') {
 				const name = this.currentTest!.fullTitle().replace(/[^a-z0-9\-]/ig, '_');
-				await app.captureScreenshot(`${name} (screenshot before revertAndCloseActiveEditor action)`);
+
+				await app.code.driver.stopTracing(name, true); // True, captures a screenshot
+			}
+			else {
+				await app.code.driver.stopTracing(name, false); // False, doesn't capture a screenshot
 			}
 
 			await app.workbench.quickaccess.runCommand('workbench.action.revertAndCloseActiveEditor');

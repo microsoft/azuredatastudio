@@ -304,11 +304,12 @@ function createOptions(): ApplicationOptions {
 		loggers.push(new ConsoleLogger());
 	}
 
-	let log: string | undefined = undefined;
+	// {{ SQL CARBON TODO }} ApplicationOptions interface no longer contains a log attribute.
+	// let log: string | undefined = undefined;
 
 	if (opts.log) {
 		loggers.push(new FileLogger(opts.log));
-		log = 'trace';
+		// log = 'trace';
 	}
 
 	return {
@@ -317,11 +318,12 @@ function createOptions(): ApplicationOptions {
 		workspacePath,
 		userDataDir,
 		extensionsPath,
-		waitTime: parseInt(opts['wait-time'] || '0') || 20,
+		// waitTime: parseInt(opts['wait-time'] || '0') || 20, // {{ SQL CARBON TODO }} 'waitTime' is no longer a valid ApplicationOption attribute
 		logger: new MultiLogger(loggers),
 		verbose: opts.verbose,
-		log,
-		screenshotsPath,
+		logsPath: logPath ?? '',
+		// screenshotsPath, // {{ SQL CARBON TODO }} Can no longer take screenshots as an option
+		// log, // {{ SQL CARBON TODO }} Can no longer take 'log' as an application option.
 		remote: opts.remote,
 		web: opts.web,
 		headless: opts.headless,
