@@ -26,6 +26,7 @@ import { IAction } from 'vs/base/common/actions';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { Disposable } from 'vs/base/common/lifecycle';
 import * as nls from 'vs/nls';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { createAndFillInContextMenuActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { IMenuService, MenuId } from 'vs/platform/actions/common/actions';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
@@ -63,7 +64,8 @@ export class ExplorerTable extends Disposable {
 		private readonly contextKeyService: IContextKeyService,
 		private readonly progressService: IEditorProgressService,
 		private readonly logService: ILogService,
-		private readonly dashboardService: IDashboardService) {
+		private readonly dashboardService: IDashboardService,
+		readonly accessibilityService: IAccessibilityService) {
 		super();
 		this._explorerView = new ExplorerView(this.context);
 		const connectionInfo = this.bootStrapService.connectionManagementService.connectionInfo;
@@ -72,7 +74,7 @@ export class ExplorerTable extends Disposable {
 		this._view = new TableDataView<Slick.SlickData>(undefined, undefined, undefined, (data: Slick.SlickData[]): Slick.SlickData[] => {
 			return explorerFilter.filter(this._filterStr, data);
 		});
-		this._table = new Table<Slick.SlickData>(parentElement, { dataProvider: this._view }, { forceFitColumns: true });
+		this._table = new Table<Slick.SlickData>(parentElement, accessibilityService, { dataProvider: this._view }, { forceFitColumns: true });
 		this._table.setSelectionModel(new RowSelectionModel());
 		this._actionsColumn = new ButtonColumn<Slick.SlickData>({
 			id: 'actions',

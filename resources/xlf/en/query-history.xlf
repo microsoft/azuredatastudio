@@ -4,6 +4,12 @@
     <trans-unit id="errorLoading">
       <source xml:lang="en">Error loading saved query history items. {0}</source>
     </trans-unit>
+    <trans-unit id="failed">
+      <source xml:lang="en">Failed</source>
+    </trans-unit>
+    <trans-unit id="succeeded">
+      <source xml:lang="en">Succeeded</source>
+    </trans-unit>
 </body></file>
   <file original="extensions/query-history/package" source-language="en" datatype="plaintext"><body>
     <trans-unit id="queryHistory.captureEnabledDesc">

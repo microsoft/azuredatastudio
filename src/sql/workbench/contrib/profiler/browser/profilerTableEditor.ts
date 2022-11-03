@@ -33,6 +33,7 @@ import { IClipboardService } from 'sql/platform/clipboard/common/clipboardServic
 import { handleCopyRequest } from 'sql/workbench/contrib/profiler/browser/profilerCopyHandler';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { FindReplaceState, FindReplaceStateChangedEvent } from 'vs/editor/contrib/find/browser/findState';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 
 export interface ProfilerTableViewState {
 	scrollTop: number;
@@ -68,7 +69,8 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 		@IStorageService storageService: IStorageService,
 		@IStatusbarService private _statusbarService: IStatusbarService,
 		@IClipboardService private _clipboardService: IClipboardService,
-		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService
+		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService,
+		@IAccessibilityService private readonly _accessibilityService: IAccessibilityService
 	) {
 		super(ProfilerTableEditor.ID, telemetryService, _themeService, storageService);
 		this._actionMap[ACTION_IDS.FIND_NEXT] = this._instantiationService.createInstance(ProfilerFindNext, this);
@@ -84,7 +86,7 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 		this._overlay.style.zIndex = '4';
 		parent.appendChild(this._overlay);
 
-		this._profilerTable = new Table(parent, {
+		this._profilerTable = new Table(parent, this._accessibilityService, {
 			sorter: (args) => {
 				let input = this.input as ProfilerInput;
 				if (input && input.data) {

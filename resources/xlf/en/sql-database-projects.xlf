@@ -492,11 +492,17 @@
     <trans-unit id="hr">
       <source xml:lang="en">hr</source>
     </trans-unit>
+    <trans-unit id="imageTag">
+      <source xml:lang="en">Image tag</source>
+    </trans-unit>
     <trans-unit id="importElements">
       <source xml:lang="en">Import Elements</source>
     </trans-unit>
     <trans-unit id="include">
       <source xml:lang="en">Include</source>
+    </trans-unit>
+    <trans-unit id="includePermissionsInProject">
+      <source xml:lang="en">Include permissions in project</source>
     </trans-unit>
     <trans-unit id="includePermissionsLabel">
       <source xml:lang="en">Include permissions</source>

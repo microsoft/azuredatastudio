@@ -343,10 +343,10 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 	private handleMiaaConfigUpdated(): void {
 		if (this._miaaModel.config) {
 			this._instanceProperties.status = this._miaaModel.config.status.state || '-';
-			this._instanceProperties.externalEndpoint = this._miaaModel.config.status.endpoints.primaryEndpoint || loc.notConfigured;
+			this._instanceProperties.externalEndpoint = this._miaaModel.config.status.endpoints.primary || loc.notConfigured;
 			this._instanceProperties.vCores = this._miaaModel.config.spec?.scheduling?.default?.resources?.limits?.cpu?.toString() || '';
-			this._databasesMessage.value = !this._miaaModel.config.status.endpoints.primaryEndpoint ? loc.noExternalEndpoint : '';
-			if (!this._miaaModel.config.status.endpoints.primaryEndpoint) {
+			this._databasesMessage.value = !this._miaaModel.config.status.endpoints.primary ? loc.noExternalEndpoint : '';
+			if (!this._miaaModel.config.status.endpoints.primary) {
 				this._databasesContainer.removeItem(this._connectToServerLoading);
 			}
 		}
@@ -375,7 +375,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		} else {
 			// If we don't have an endpoint then there's no point in showing the connect button - but the logic
 			// to display text informing the user of this is already handled by the handleMiaaConfigUpdated
-			if (this._miaaModel?.config?.status.endpoints.primaryEndpoint) {
+			if (this._miaaModel?.config?.status.endpoints.primary) {
 				this._connectToServerLoading.loading = false;
 				this._connectToServerButton.enabled = true;
 			}
