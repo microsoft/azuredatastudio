@@ -651,9 +651,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 				: 'warning';
 		this._connectionResultsInfoBox.text = hasError
 			? constants.SQL_TARGET_CONNECTION_ERROR(errorMessage)
-			: hasDatabases
-				? constants.SQL_TARGET_CONNECTION_SUCCESS(databases.length.toLocaleString())
-				: constants.SQL_TARGET_MISSING_SOURCE_DATABASES;
+			: constants.SQL_TARGET_CONNECTION_SUCCESS_LOGINS(databases.length.toLocaleString());
 		await utils.updateControlDisplay(this._connectionResultsInfoBox, true);
 	}
 

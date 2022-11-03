@@ -299,7 +299,7 @@ export function LOGIN_WIZARD_TITLE(instanceName: string): string {
 	return localize('sql-migration.login.wizard.title', "Migrate logins from '{0}' to Azure SQL", instanceName);
 }
 export const LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_DESCRIPTION = localize('sql.migration.login.wizard.target.description', "Select the target Azure SQL Managed Instance, Azure SQL VM, or Azure SQL database(s) where you want to migrate your logins.");
-export const LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_DATA_MIGRATION_WARNING = localize('sql.migration.login.wizard.target.data.migration.warning', "You must successfully migrate all your database(s) to the target before starting the login migration else the migration will fail. Also if the source and target database names are not same then some permissions may not be applied properly. Learn more");
+export const LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_DATA_MIGRATION_WARNING = localize('sql.migration.login.wizard.target.data.migration.warning', "You must successfully migrate all your database(s) to the target before starting the login migration else the migration will fail. Also if the source and target database names are not same then some permissions may not be applied properly. Learn more");
 export function LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_PERMISSIONS_WARNING(userName: string, instanceName: string): string {
 	return localize('sql.migration.login.wizard.target.permission.warning', "Please ensure that the current user ({0}) has enough permissions to get all login information for the current instance ({1}).", userName, instanceName);
 }
@@ -341,6 +341,11 @@ export function SQL_TARGET_CONNECTION_SUCCESS(databaseCount: string): string {
 }
 
 export const SQL_TARGET_MISSING_SOURCE_DATABASES = localize('sql.migration.wizard.source.missing', 'Connection was successful but did not find any target databases.');
+
+export function SQL_TARGET_CONNECTION_SUCCESS_LOGINS(databaseCount: string): string {
+	return localize('sql.login.migration.wizard.target.connection.success', "Connection was successful.", databaseCount);
+}
+
 export const SQL_TARGET_MAPPING_ERROR_MISSING_TARGET = localize(
 	'sql.migration.wizard.target.missing',
 	'Database mapping error. Missing target databases to migrate.  Please configure the target server connection and click connect to collect the list of available database migration targets.');
