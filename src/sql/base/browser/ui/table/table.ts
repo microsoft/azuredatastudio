@@ -22,6 +22,7 @@ import { AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
 import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
+import { IAccessibilityProvider } from 'sql/base/browser/ui/accessibility/accessibilityProvider';
 
 function getDefaultOptions<T>(): Slick.GridOptions<T> {
 	return <Slick.GridOptions<T>>{
@@ -67,7 +68,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 	private _onBlur = new Emitter<void>();
 	public readonly onBlur = this._onBlur.event;
 
-	constructor(parent: HTMLElement, configuration?: ITableConfiguration<T>, options?: Slick.GridOptions<T>) {
+	constructor(parent: HTMLElement, accessibilityProvider: IAccessibilityProvider, configuration?: ITableConfiguration<T>, options?: Slick.GridOptions<T>) {
 		super();
 		if (!configuration || !configuration.dataProvider || isArray(configuration.dataProvider)) {
 			this._data = new TableDataView<T>(configuration && configuration.dataProvider as Array<T>);
@@ -78,6 +79,10 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this._register(this._data);
 
 		let newOptions = mixin(options || {}, getDefaultOptions<T>(), false);
+
+		if (accessibilityProvider?.isScreenReaderOptimized()) {
+			newOptions.disableColumnBasedCellVirtualization = true;
+		}
 
 		this._container = document.createElement('div');
 		this._container.className = 'monaco-table';

@@ -301,11 +301,9 @@ export class HighlightExpensiveOperationAction extends Action {
 		const expensiveOperationDelegate: (cell: AzDataGraphCell) => number | undefined = context.getExpensiveOperationDelegate();
 
 		context.executionPlanDiagram.clearExpensiveOperatorHighlighting();
-		let result = context.executionPlanDiagram.highlightExpensiveOperator(expensiveOperationDelegate);
-		if (!result) {
-			const metric = context.expenseMetricSelectBox.value;
-			context.notificationService.warn(localize('invalidPropertyExecutionPlanMetric', 'No nodes found with the {0} metric.', metric));
-		}
+		context.executionPlanDiagram.highlightExpensiveOperator(expensiveOperationDelegate);
+		// lewissanchez TODO: Add focus logic to center the highlighted node. Removed the error message logic since the expensive operation widget
+		// is only populated with plan metrics that are contained in a plan.
 	}
 }
 

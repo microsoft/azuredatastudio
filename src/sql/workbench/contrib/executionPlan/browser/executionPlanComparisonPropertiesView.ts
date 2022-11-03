@@ -18,6 +18,7 @@ import { IContextMenuService, IContextViewService } from 'vs/platform/contextvie
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Codicon } from 'vs/base/common/codicons';
 import { deepClone } from 'vs/base/common/objects';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 
 export enum ExecutionPlanCompareOrientation {
 	Horizontal = 'horizontal',
@@ -62,9 +63,10 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		@IThemeService themeService: IThemeService,
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IContextMenuService contextMenuService: IContextMenuService,
-		@IContextViewService contextViewService: IContextViewService
+		@IContextViewService contextViewService: IContextViewService,
+		@IAccessibilityService accessibilityService: IAccessibilityService
 	) {
-		super(parentContainer, themeService, instantiationService, contextMenuService, contextViewService);
+		super(parentContainer, themeService, instantiationService, contextMenuService, contextViewService, accessibilityService);
 		this._model = <ExecutionPlanComparisonPropertiesViewModel>{};
 		this._parentContainer.style.display = 'none';
 		const header = DOM.$('.compare-operation-name');

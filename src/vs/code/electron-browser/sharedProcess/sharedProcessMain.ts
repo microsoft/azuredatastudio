@@ -63,8 +63,7 @@ import { ICustomEndpointTelemetryService, ITelemetryService } from 'vs/platform/
 import { TelemetryAppenderChannel } from 'vs/platform/telemetry/common/telemetryIpc';
 import { TelemetryLogAppender } from 'vs/platform/telemetry/common/telemetryLogAppender';
 import { TelemetryService } from 'vs/platform/telemetry/common/telemetryService';
-import { supportsTelemetry, ITelemetryAppender, NullAppender, NullTelemetryService, getPiiPathsFromEnvironment } from 'vs/platform/telemetry/common/telemetryUtils';
-import { AppInsightsAppender } from 'vs/platform/telemetry/node/appInsightsAppender';
+import { supportsTelemetry, ITelemetryAppender, NullAppender, NullTelemetryService, isInternalTelemetry, getPiiPathsFromEnvironment } from 'vs/platform/telemetry/common/telemetryUtils';
 import { CustomEndpointTelemetryService } from 'vs/platform/telemetry/node/customEndpointTelemetryService';
 import { LocalReconnectConstants, TerminalIpcChannels, TerminalSettingId } from 'vs/platform/terminal/common/terminal';
 import { ILocalPtyService } from 'vs/platform/terminal/electron-sandbox/terminal';
@@ -91,6 +90,7 @@ import { ipcSharedProcessTunnelChannelName, ISharedProcessTunnelService } from '
 import { SharedProcessTunnelService } from 'vs/platform/tunnel/node/sharedProcessTunnelService';
 import { ipcSharedProcessWorkerChannelName, ISharedProcessWorkerConfiguration, ISharedProcessWorkerService } from 'vs/platform/sharedProcess/common/sharedProcessWorkerService';
 import { SharedProcessWorkerService } from 'vs/platform/sharedProcess/electron-browser/sharedProcessWorkerService';
+import { OneDataSystemAppender } from 'vs/platform/telemetry/node/1dsAppender';
 import { IUriIdentityService } from 'vs/platform/uriIdentity/common/uriIdentity';
 import { UriIdentityService } from 'vs/platform/uriIdentity/common/uriIdentityService';
 import { isLinux } from 'vs/base/common/platform';
@@ -263,16 +263,15 @@ class SharedProcessMain extends Disposable {
 		// Telemetry
 		let telemetryService: ITelemetryService;
 		const appenders: ITelemetryAppender[] = [];
+		const internalTelemetry = isInternalTelemetry(productService, configurationService);
 		if (supportsTelemetry(productService, environmentService)) {
 			const logAppender = new TelemetryLogAppender(loggerService, environmentService);
 			appenders.push(logAppender);
 			const { installSourcePath } = environmentService;
-
-			// Application Insights
-			if (productService.aiConfig && productService.aiConfig.asimovKey) {
-				const appInsightsAppender = new AppInsightsAppender('adsworkbench', null, productService.aiConfig.asimovKey); // {{SQL CARBON EDIT}} Use our own event prefix
-				this._register(toDisposable(() => appInsightsAppender.flush())); // Ensure the AI appender is disposed so that it flushes remaining data
-				appenders.push(appInsightsAppender);
+			if (productService.aiConfig?.ariaKey) {
+				const collectorAppender = new OneDataSystemAppender(internalTelemetry, 'adsworkbench', null, productService.aiConfig.ariaKey); // {{SQL CARBON EDIT}} Use our own event prefix
+				this._register(toDisposable(() => collectorAppender.flush())); // Ensure the 1DS appender is disposed so that it flushes remaining data
+				appenders.push(collectorAppender);
 			}
 
 			telemetryService = new TelemetryService({
