@@ -108,10 +108,13 @@ export class NotebookUriHandler implements vscode.UriHandler {
 					preserveFocus: true
 				});
 			} else {
-				// Append a numbered suffix to the path if an untitled text document already has the same title
+				// Append a numbered suffix to the path if an untitled text document already has the same title.
+				// Duplicates should be formatted as 'Readme-0.txt', not 'Readme.txt-0'
 				let updatedPath: string;
+				let fileExt = path.extname(untitledUri.fsPath);
+				let baseFileName = untitledUri.fsPath.slice(0, untitledUri.fsPath.length - fileExt.length);
 				for (let titleCounter = 1; vscode.workspace.textDocuments.some(doc => doc.isUntitled && doc.fileName === untitledUri.fsPath); titleCounter++) {
-					updatedPath = `${untitledUri.fsPath}-${titleCounter}`;
+					updatedPath = `${baseFileName}-${titleCounter}${fileExt}`;
 				}
 				if (updatedPath) {
 					untitledUri = untitledUri.with({ path: updatedPath });
