@@ -218,6 +218,9 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 	//#endregion
 
 	//#region Extension accessible methods
+	/**
+	 * Attempts to create a new notebook with the specified provider and contents. Used for VS Code extension compatibility.
+	 */
 	async createNotebookDocument(providerId: string, contents?: azdata.nb.INotebookContents): Promise<URI> {
 		let uriComps = await this._proxy.$tryCreateNotebookDocument(providerId, contents);
 		let uri = URI.revive(uriComps);
@@ -241,39 +244,15 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 		return uri;
 	}
 
+	/**
+	 * Attempts to open an existing notebook. Used for VS Code extension compatibility.
+	 */
 	async openNotebookDocument(uri: vscode.Uri): Promise<azdata.nb.NotebookDocument> {
 		let docData = this._documents.get(uri.toString());
 		if (!docData) {
 			throw new Error(docNotFoundForUriError);
 		}
 		return docData.document;
-	}
-
-	public async openUntitledNotebookDocument(showOptions: azdata.nb.NotebookShowOptions) {
-		let options: INotebookShowOptions = {};
-		if (showOptions) {
-			options.preserveFocus = showOptions.preserveFocus;
-			options.preview = showOptions.preview;
-			options.position = showOptions.viewColumn;
-			options.providerId = showOptions.providerId;
-			options.connectionProfile = showOptions.connectionProfile;
-			options.defaultKernel = showOptions.defaultKernel;
-			if (showOptions.initialContent) {
-				if (typeof (showOptions.initialContent) !== 'string') {
-					options.initialContent = JSON.stringify(showOptions.initialContent);
-				} else {
-					options.initialContent = showOptions.initialContent;
-				}
-			}
-			options.initialDirtyState = showOptions.initialDirtyState;
-		}
-		let id = await this._proxy.$tryOpenUntitledNotebookDocument(options);
-		let editor = this.getEditor(id);
-		if (editor) {
-			return editor;
-		} else {
-			throw new Error(`Failed to open new untitled notebook document.`);
-		}
 	}
 
 	showNotebookDocument(uri: vscode.Uri, showOptions: azdata.nb.NotebookShowOptions): Thenable<azdata.nb.NotebookEditor> {

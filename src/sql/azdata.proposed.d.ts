@@ -26,8 +26,6 @@ declare module 'azdata' {
 	}
 
 	export namespace nb {
-		export function openUntitledNotebookDocument(showOptions: NotebookShowOptions): Thenable<NotebookEditor>;
-
 		export interface NotebookDocument {
 			/**
 			 * Sets the trust mode for the notebook document.

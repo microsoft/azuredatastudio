@@ -345,35 +345,45 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		}
 	}
 
+	/**
+	 * Attempts to create a new notebook with the specified provider and contents. Used for VS Code extension compatibility.
+	 */
 	async $tryCreateNotebookDocument(providerId: string, contents?: azdata.nb.INotebookContents): Promise<UriComponents> {
 		let input = await this._notebookService.createNotebookInputFromContents(providerId, contents);
 		return input.resource;
 	}
 
-	async $tryOpenUntitledNotebookDocument(options: INotebookShowOptions): Promise<string> {
-		let filePath = await this.createPrefixedNotebookFilePath();
-		let docUri: URI = URI.from({ scheme: Schemas.untitled, path: filePath });
-		return this.$tryShowNotebookDocument(docUri, options);
+	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): Promise<string> {
+		// Append a numbered suffix if an untitled notebook is already open with the same path
+		if (resource.scheme === Schemas.untitled) {
+			if (!resource.path || this.untitledEditorTitleExists(resource.path)) {
+				resource.path = this.createPrefixedNotebookFilePath(resource.path);
+			}
+		}
+		return Promise.resolve(this.doOpenEditor(resource, options));
 	}
 
-	private async createPrefixedNotebookFilePath(): Promise<string> {
+	private untitledEditorTitleExists(filePath: string): boolean {
+		return !!this._untitledEditorService.get(URI.from({ scheme: Schemas.untitled, path: filePath }));
+	}
+
+	private createPrefixedNotebookFilePath(prefix?: string): string {
+		if (!prefix) {
+			prefix = 'Notebook';
+		}
 		let prefixFileName = (counter: number): string => {
-			return `Notebook-${counter}`;
+			return `${prefix}-${counter}`;
 		};
 
 		let counter = 1;
 		// Get document name and check if it exists
 		let filePath = prefixFileName(counter);
-		while (this._untitledEditorService.get(URI.from({ scheme: Schemas.untitled, path: filePath }))) {
+		while (this.untitledEditorTitleExists(filePath)) {
 			counter++;
 			filePath = prefixFileName(counter);
 		}
 
 		return filePath;
-	}
-
-	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): Promise<string> {
-		return Promise.resolve(this.doOpenEditor(resource, options));
 	}
 
 	$trySetTrusted(uriComponent: UriComponents, isTrusted: boolean): Promise<boolean> {

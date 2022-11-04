@@ -564,9 +564,6 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				get onDidChangeNotebookCell() {
 					return extHostNotebookDocumentsAndEditors.onDidChangeNotebookCell;
 				},
-				openUntitledNotebookDocument(showOptions: azdata.nb.NotebookShowOptions) {
-					return extHostNotebookDocumentsAndEditors.openUntitledNotebookDocument(showOptions);
-				},
 				showNotebookDocument(uri: vscode.Uri, showOptions: azdata.nb.NotebookShowOptions) {
 					return extHostNotebookDocumentsAndEditors.showNotebookDocument(uri, showOptions);
 				},

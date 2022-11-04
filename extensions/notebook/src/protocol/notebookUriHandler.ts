@@ -101,13 +101,22 @@ export class NotebookUriHandler implements vscode.UriHandler {
 				}
 				contents = await this.download(url);
 			}
+			let untitledUri = uri.with({ authority: '', scheme: 'untitled', path: path.basename(uri.fsPath) });
 			if (path.extname(uri.fsPath) === '.ipynb') {
-				await azdata.nb.openUntitledNotebookDocument({
+				await azdata.nb.showNotebookDocument(untitledUri, {
 					initialContent: contents,
 					preserveFocus: true
 				});
 			} else {
-				let doc = await vscode.workspace.openTextDocument(uri.with({ authority: '', scheme: 'untitled', path: path.basename(uri.fsPath) }));
+				// Append a numbered suffix to the path if an untitled text document already has the same title
+				let updatedPath: string;
+				for (let titleCounter = 1; vscode.workspace.textDocuments.some(doc => doc.isUntitled && doc.fileName === untitledUri.fsPath); titleCounter++) {
+					updatedPath = `${untitledUri.fsPath}-${titleCounter}`;
+				}
+				if (updatedPath) {
+					untitledUri = untitledUri.with({ path: updatedPath });
+				}
+				let doc = await vscode.workspace.openTextDocument(untitledUri);
 				let editor = await vscode.window.showTextDocument(doc, vscode.ViewColumn.Active, true);
 				await editor.edit(builder => {
 					builder.insert(new vscode.Position(0, 0), contents);
