@@ -1045,6 +1045,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 		let testPassword = 'Bafw3g$@ra2';
 
+		// TODO - need to change the connection password option for the profile,
+		// then add the changed profile to the connectionStatusManager so callback and connection works.
+
+		//connection.options['password'] = testPassword;
+
 		await this._extensionService.activateByEvent(`onConnect:${connection.providerName}`);
 
 		return this._providers.get(connection.providerName).onReady.then((provider) => {
