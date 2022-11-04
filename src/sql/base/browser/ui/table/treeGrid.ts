@@ -16,6 +16,7 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import { createTreeGridExpandableColumnFormatter, textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { escape } from 'sql/base/common/strings';
 import { IAccessibilityProvider } from 'sql/base/browser/ui/accessibility/accessibilityProvider';
+import { IQuickInputProvider } from 'sql/base/browser/ui/qucikInput/quickInputProvider';
 
 function defaultTreeGridFilter<T extends Slick.SlickData>(data: T[], columns: FilterableColumn<T>[], cellValueGetter: CellValueGetter = defaultCellValueGetter): T[] {
 	let filteredData = defaultFilter(data, columns, cellValueGetter);
@@ -39,8 +40,8 @@ function defaultTreeGridFilter<T extends Slick.SlickData>(data: T[], columns: Fi
  * TreeGrid component displays a hierarchical table data grouped into expandable and collapsible nodes.
  */
 export class TreeGrid<T extends Slick.SlickData> extends Table<T> {
-	constructor(parent: HTMLElement, accessibilityProvider: IAccessibilityProvider, configuration?: ITableConfiguration<T>, options?: Slick.GridOptions<T>) {
-		super(parent, accessibilityProvider, configuration, options);
+	constructor(parent: HTMLElement, accessibilityProvider: IAccessibilityProvider, quickInputProvider: IQuickInputProvider, configuration?: ITableConfiguration<T>, options?: Slick.GridOptions<T>) {
+		super(parent, accessibilityProvider, quickInputProvider, configuration, options);
 		this._tableContainer.setAttribute('role', 'treegrid');
 		if (configuration?.dataProvider && configuration.dataProvider instanceof TableDataView) {
 			this._data = configuration.dataProvider;
