@@ -163,7 +163,7 @@ steps:
       VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/azuredatastudio-reh-linux-x64" \
       DISPLAY=:10 ./scripts/test-extensions-unit.sh --build --tfs "Extension Unit Tests"
     displayName: Run Extension Unit Tests (Fail on Error)
-    condition: and(succeeded(), and(eq(variables['RUN_TESTS'], 'true'), eq(variables['EXTENSION_UNIT_TESTS_FAIL_ON_ERROR'], 'true')))
+    condition: and(succeeded(), and(eq(variables['RUN_TESTS'], 'true'), ne(variables['EXTENSION_UNIT_TESTS_FAIL_ON_ERROR'], 'false')))
 
   - bash: |
       set -e
