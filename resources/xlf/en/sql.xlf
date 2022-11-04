@@ -2790,9 +2790,6 @@ Default Skipped Commands:
     <trans-unit id="highlightExpensiveOperationButtonTitle">
       <source xml:lang="en">Highlight Expensive Operation</source>
     </trans-unit>
-    <trans-unit id="invalidPropertyExecutionPlanMetric">
-      <source xml:lang="en">No nodes found with the {0} metric.</source>
-    </trans-unit>
     <trans-unit id="qp.expensiveOperationMetric.dontShowAgain">
       <source xml:lang="en">Don't Show Again</source>
     </trans-unit>
