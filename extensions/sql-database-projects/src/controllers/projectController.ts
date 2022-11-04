@@ -96,6 +96,7 @@ export class ProjectsController {
 		this.autorestHelper = new AutorestHelper(this._outputChannel);
 	}
 
+	//#region Dashboard
 	public getDashboardPublishData(projectFile: string): (string | dataworkspace.IconCellValue)[][] {
 		const infoRows: (string | dataworkspace.IconCellValue)[][] = [];
 
@@ -156,9 +157,9 @@ export class ProjectsController {
 		return infoRows;
 	}
 
-	public refreshProjectsTree(workspaceTreeItem: dataworkspace.WorkspaceTreeItem): void {
-		(workspaceTreeItem.treeDataProvider as SqlDatabaseProjectTreeViewProvider).notifyTreeDataChanged();
-	}
+	//#endregion
+
+	//#region Create new project
 
 	/**
 	 * Creates a new folder with the project name in the specified location, and places the new .sqlproj inside it
@@ -211,6 +212,36 @@ export class ProjectsController {
 
 		return newProjFilePath;
 	}
+
+	/**
+	 * Adds the template files for the provided project type
+	 * @param newProjFilePath path to project to add template files to
+	 * @param projectTypeId project type id
+	 */
+	private async addTemplateFiles(newProjFilePath: string, projectTypeId: string): Promise<void> {
+		if (projectTypeId === constants.emptySqlDatabaseProjectTypeId || newProjFilePath === '') {
+			return;
+		}
+
+		if (projectTypeId === constants.edgeSqlDatabaseProjectTypeId) {
+			const project = await Project.openProject(newProjFilePath);
+
+			await this.createFileFromTemplate(project, templates.get(ItemType.table), 'DataTable.sql', { 'OBJECT_NAME': 'DataTable' });
+			await this.createFileFromTemplate(project, templates.get(ItemType.dataSource), 'EdgeHubInputDataSource.sql', { 'OBJECT_NAME': 'EdgeHubInputDataSource', 'LOCATION': 'edgehub://' });
+			await this.createFileFromTemplate(project, templates.get(ItemType.dataSource), 'SqlOutputDataSource.sql', { 'OBJECT_NAME': 'SqlOutputDataSource', 'LOCATION': 'sqlserver://tcp:.,1433' });
+			await this.createFileFromTemplate(project, templates.get(ItemType.fileFormat), 'StreamFileFormat.sql', { 'OBJECT_NAME': 'StreamFileFormat' });
+			await this.createFileFromTemplate(project, templates.get(ItemType.externalStream), 'EdgeHubInputStream.sql', { 'OBJECT_NAME': 'EdgeHubInputStream', 'DATA_SOURCE_NAME': 'EdgeHubInputDataSource', 'LOCATION': 'input', 'OPTIONS': ',\n\tFILE_FORMAT = StreamFileFormat' });
+			await this.createFileFromTemplate(project, templates.get(ItemType.externalStream), 'SqlOutputStream.sql', { 'OBJECT_NAME': 'SqlOutputStream', 'DATA_SOURCE_NAME': 'SqlOutputDataSource', 'LOCATION': 'TSQLStreaming.dbo.DataTable', 'OPTIONS': '' });
+			await this.createFileFromTemplate(project, templates.get(ItemType.externalStreamingJob), 'EdgeStreamingJob.sql', { 'OBJECT_NAME': 'EdgeStreamingJob' });
+		}
+	}
+
+	private async createFileFromTemplate(project: Project, itemType: templates.ProjectScriptType, relativePath: string, expansionMacros: Record<string, string>): Promise<void> {
+		const newFileText = templates.macroExpansion(itemType.templateScript, expansionMacros);
+		await project.addScriptItem(relativePath, newFileText, itemType.type);
+	}
+
+	//#endregion
 
 	/**
 	 * Builds a project, producing a dacpac
@@ -289,6 +320,8 @@ export class ProjectsController {
 			return '';
 		}
 	}
+
+	//#region Publish
 
 	/**
 	 * Publishes a project to a new Azure server
@@ -392,6 +425,10 @@ export class ProjectsController {
 		} else {
 			return this.publishDatabase(project);
 		}
+	}
+
+	public getPublishDialog(project: Project): PublishDatabaseDialog {
+		return new PublishDatabaseDialog(project);
 	}
 
 	/**
@@ -536,6 +573,13 @@ export class ProjectsController {
 		return result;
 	}
 
+	//#endregion
+
+	/**
+	 * Launches the schema compare extension with the source and target
+	 * @param source source for schema compare. Either a connection or project node
+	 * @param targetParam target for schema compare
+	 */
 	public async schemaCompare(source: dataworkspace.WorkspaceTreeItem | azdataType.IConnectionProfile, targetParam: any = undefined): Promise<void> {
 		try {
 			// check if schema compare extension is installed
@@ -574,68 +618,7 @@ export class ProjectsController {
 		}
 	}
 
-	public async getProjectScriptFiles(projectFilePath: string): Promise<string[]> {
-		const project = await Project.openProject(projectFilePath);
-
-		return project.files
-			.filter(f => f.fsUri.fsPath.endsWith(constants.sqlFileExtension))
-			.map(f => f.fsUri.fsPath);
-	}
-
-	public async getProjectDatabaseSchemaProvider(projectFilePath: string): Promise<string> {
-		const project = await Project.openProject(projectFilePath);
-		return project.getProjectTargetVersion();
-	}
-
-	public async schemaComparePublishProjectChanges(operationId: string, projectFilePath: string, folderStructure: string): Promise<mssql.SchemaComparePublishProjectResult> {
-		const ext = vscode.extensions.getExtension(mssql.extension.name)!;
-		const service = (await ext.activate() as mssql.IExtension).schemaCompare;
-
-		const projectPath = path.dirname(projectFilePath);
-
-		let fs: mssql.ExtractTarget;
-
-		switch (folderStructure) {
-			case constants.file:
-				fs = mssql.ExtractTarget.file;
-				break;
-			case constants.flat:
-				fs = mssql.ExtractTarget.flat;
-				break;
-			case constants.objectType:
-				fs = mssql.ExtractTarget.objectType;
-				break;
-			case constants.schema:
-				fs = mssql.ExtractTarget.schema;
-				break;
-			case constants.schemaObjectType:
-			default:
-				fs = mssql.ExtractTarget.schemaObjectType;
-				break;
-		}
-
-		const result: mssql.SchemaComparePublishProjectResult = await service.schemaComparePublishProjectChanges(operationId, projectPath, fs, utils.getAzdataApi()!.TaskExecutionMode.execute);
-
-		if (!result.errorMessage) {
-			const project = await Project.openProject(projectFilePath);
-
-			let toAdd: vscode.Uri[] = [];
-			result.addedFiles.forEach((f: any) => toAdd.push(vscode.Uri.file(f)));
-			await project.addToProject(toAdd);
-
-			let toRemove: vscode.Uri[] = [];
-			result.deletedFiles.forEach((f: any) => toRemove.push(vscode.Uri.file(f)));
-
-			let toRemoveEntries: FileProjectEntry[] = [];
-			toRemove.forEach(f => toRemoveEntries.push(new FileProjectEntry(f, f.path.replace(projectPath + '\\', ''), EntryType.File)));
-
-			toRemoveEntries.forEach(async f => await project.exclude(f));
-
-			await this.buildProject(project);
-		}
-
-		return result;
-	}
+	//#region Add/Exclude/Delete Item
 
 	public async addFolderPrompt(treeNode: dataworkspace.WorkspaceTreeItem): Promise<void> {
 		const project = this.getProjectFromContext(treeNode);
@@ -664,6 +647,24 @@ export class ProjectsController {
 		} catch (err) {
 			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
 		}
+	}
+
+	private async promptForNewObjectName(itemType: templates.ProjectScriptType, _project: ISqlProject, folderPath: string, fileExtension?: string, defaultName?: string): Promise<string | undefined> {
+		const suggestedName = defaultName ?? itemType.friendlyName.replace(/\s+/g, '');
+		let counter: number = 0;
+
+		do {
+			counter++;
+		} while (counter < Number.MAX_SAFE_INTEGER
+			&& await utils.exists(path.join(folderPath, `${suggestedName}${counter}${(fileExtension ?? '')}`)));
+
+		const itemObjectName = await vscode.window.showInputBox({
+			prompt: constants.newObjectNamePrompt(itemType.friendlyName),
+			value: `${suggestedName}${counter}`,
+			ignoreFocusOut: true,
+		});
+
+		return itemObjectName;
 	}
 
 	public isReservedFolder(absoluteFolderPath: string, projectFolderPath: string): boolean {
@@ -830,21 +831,6 @@ export class ProjectsController {
 		}
 	}
 
-	private getFileProjectEntry(project: Project, context: BaseProjectTreeItem): FileProjectEntry | undefined {
-		const root = context.root as ProjectRootTreeItem;
-		const fileOrFolder = context as FileNode ? context as FileNode : context as FolderNode;
-
-		if (root && fileOrFolder) {
-			// use relative path and not tree paths for files and folder
-			const allFileEntries = project.files.concat(project.preDeployScripts).concat(project.postDeployScripts).concat(project.noneDeployScripts);
-
-			// trim trailing slash since folders with and without a trailing slash are allowed in a sqlproj
-			const trimmedUri = utils.trimChars(utils.getPlatformSafeFileEntryPath(utils.trimUri(root.fileSystemUri, fileOrFolder.fileSystemUri)), '/');
-			return allFileEntries.find(x => utils.trimChars(utils.getPlatformSafeFileEntryPath(x.relativePath), '/') === trimmedUri);
-		}
-		return project.files.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(context.root.projectUri, context.projectUri)));
-	}
-
 	private getDatabaseReference(project: Project, context: BaseProjectTreeItem): IDatabaseReferenceProjectEntry | undefined {
 		const root = context.root as ProjectRootTreeItem;
 		const databaseReference = context as DatabaseReferenceTreeItem;
@@ -855,6 +841,8 @@ export class ProjectsController {
 
 		return undefined;
 	}
+
+	//#endregion
 
 	/**
 	 * Opens the folder containing the project
@@ -999,6 +987,8 @@ export class ProjectsController {
 		});
 	}
 
+	//#region database references
+
 	/**
 	 * Adds a database reference to the project
 	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project
@@ -1019,6 +1009,10 @@ export class ProjectsController {
 			}
 			return undefined;
 		}
+	}
+
+	public getAddDatabaseReferenceDialog(project: Project): AddDatabaseReferenceDialog {
+		return new AddDatabaseReferenceDialog(project);
 	}
 
 	/**
@@ -1064,6 +1058,8 @@ export class ProjectsController {
 		}
 	}
 
+	//#endregion
+
 	/**
 	 * Validates the contents of an external streaming job's query against the last-built dacpac.
 	 * If no dacpac exists at the output path, one will be built first.
@@ -1106,6 +1102,8 @@ export class ProjectsController {
 
 		return result;
 	}
+
+	//#region AutoRest methods
 
 	public async selectAutorestSpecFile(): Promise<string | undefined> {
 		let quickpickSelection = await vscode.window.showQuickPick(
@@ -1195,6 +1193,10 @@ export class ProjectsController {
 			});
 	}
 
+	/**
+	 * Adds the provided project in the workspace, opening it in the projects viewlet
+	 * @param projectFilePath
+	 */
 	public async openProjectInWorkspace(projectFilePath: string): Promise<void> {
 		const workspaceApi = utils.getDataWorkspaceExtensionApi();
 		await workspaceApi.validateWorkspace();
@@ -1222,6 +1224,11 @@ export class ProjectsController {
 		return name;
 	}
 
+	/**
+	 * Prompts the user with vscode quickpicks to select an OpenApi or Swagger spec to generate sql project from
+	 * @param options optional options to pass in instead of using quickpicks to prompt
+	 * @returns created sql project
+	 */
 	public async generateProjectFromOpenApiSpec(options?: GenerateProjectFromOpenApiSpecOptions): Promise<Project | undefined> {
 		try {
 			TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.generateProjectFromOpenApiSpec);
@@ -1325,37 +1332,23 @@ export class ProjectsController {
 		return files;
 	}
 
+	//#endregion
+
 	//#region Helper methods
 
-	public getPublishDialog(project: Project): PublishDatabaseDialog {
-		return new PublishDatabaseDialog(project);
-	}
+	private getFileProjectEntry(project: Project, context: BaseProjectTreeItem): FileProjectEntry | undefined {
+		const root = context.root as ProjectRootTreeItem;
+		const fileOrFolder = context as FileNode ? context as FileNode : context as FolderNode;
 
-	public getAddDatabaseReferenceDialog(project: Project): AddDatabaseReferenceDialog {
-		return new AddDatabaseReferenceDialog(project);
-	}
+		if (root && fileOrFolder) {
+			// use relative path and not tree paths for files and folder
+			const allFileEntries = project.files.concat(project.preDeployScripts).concat(project.postDeployScripts).concat(project.noneDeployScripts);
 
-	private async addTemplateFiles(newProjFilePath: string, projectTypeId: string): Promise<void> {
-		if (projectTypeId === constants.emptySqlDatabaseProjectTypeId || newProjFilePath === '') {
-			return;
+			// trim trailing slash since folders with and without a trailing slash are allowed in a sqlproj
+			const trimmedUri = utils.trimChars(utils.getPlatformSafeFileEntryPath(utils.trimUri(root.fileSystemUri, fileOrFolder.fileSystemUri)), '/');
+			return allFileEntries.find(x => utils.trimChars(utils.getPlatformSafeFileEntryPath(x.relativePath), '/') === trimmedUri);
 		}
-
-		if (projectTypeId === constants.edgeSqlDatabaseProjectTypeId) {
-			const project = await Project.openProject(newProjFilePath);
-
-			await this.createFileFromTemplate(project, templates.get(ItemType.table), 'DataTable.sql', { 'OBJECT_NAME': 'DataTable' });
-			await this.createFileFromTemplate(project, templates.get(ItemType.dataSource), 'EdgeHubInputDataSource.sql', { 'OBJECT_NAME': 'EdgeHubInputDataSource', 'LOCATION': 'edgehub://' });
-			await this.createFileFromTemplate(project, templates.get(ItemType.dataSource), 'SqlOutputDataSource.sql', { 'OBJECT_NAME': 'SqlOutputDataSource', 'LOCATION': 'sqlserver://tcp:.,1433' });
-			await this.createFileFromTemplate(project, templates.get(ItemType.fileFormat), 'StreamFileFormat.sql', { 'OBJECT_NAME': 'StreamFileFormat' });
-			await this.createFileFromTemplate(project, templates.get(ItemType.externalStream), 'EdgeHubInputStream.sql', { 'OBJECT_NAME': 'EdgeHubInputStream', 'DATA_SOURCE_NAME': 'EdgeHubInputDataSource', 'LOCATION': 'input', 'OPTIONS': ',\n\tFILE_FORMAT = StreamFileFormat' });
-			await this.createFileFromTemplate(project, templates.get(ItemType.externalStream), 'SqlOutputStream.sql', { 'OBJECT_NAME': 'SqlOutputStream', 'DATA_SOURCE_NAME': 'SqlOutputDataSource', 'LOCATION': 'TSQLStreaming.dbo.DataTable', 'OPTIONS': '' });
-			await this.createFileFromTemplate(project, templates.get(ItemType.externalStreamingJob), 'EdgeStreamingJob.sql', { 'OBJECT_NAME': 'EdgeStreamingJob' });
-		}
-	}
-
-	private async createFileFromTemplate(project: Project, itemType: templates.ProjectScriptType, relativePath: string, expansionMacros: Record<string, string>): Promise<void> {
-		const newFileText = templates.macroExpansion(itemType.templateScript, expansionMacros);
-		await project.addScriptItem(relativePath, newFileText, itemType.type);
+		return project.files.find(x => utils.getPlatformSafeFileEntryPath(x.relativePath) === utils.getPlatformSafeFileEntryPath(utils.trimUri(context.root.projectUri, context.projectUri)));
 	}
 
 	private getProjectFromContext(context: Project | BaseProjectTreeItem | dataworkspace.WorkspaceTreeItem): Project {
@@ -1374,27 +1367,28 @@ export class ProjectsController {
 		}
 	}
 
-	private async promptForNewObjectName(itemType: templates.ProjectScriptType, _project: ISqlProject, folderPath: string, fileExtension?: string, defaultName?: string): Promise<string | undefined> {
-		const suggestedName = defaultName ?? itemType.friendlyName.replace(/\s+/g, '');
-		let counter: number = 0;
-
-		do {
-			counter++;
-		} while (counter < Number.MAX_SAFE_INTEGER
-			&& await utils.exists(path.join(folderPath, `${suggestedName}${counter}${(fileExtension ?? '')}`)));
-
-		const itemObjectName = await vscode.window.showInputBox({
-			prompt: constants.newObjectNamePrompt(itemType.friendlyName),
-			value: `${suggestedName}${counter}`,
-			ignoreFocusOut: true,
-		});
-
-		return itemObjectName;
-	}
-
 	private getRelativePath(treeNode: BaseProjectTreeItem): string {
 		return treeNode instanceof FolderNode ? utils.trimUri(treeNode.root.projectUri, treeNode.projectUri) : '';
 	}
+
+	private getConnectionProfileFromContext(context: azdataType.IConnectionProfile | mssqlVscode.ITreeNodeInfo | undefined): azdataType.IConnectionProfile | mssqlVscode.IConnectionInfo | undefined {
+		if (!context) {
+			return undefined;
+		}
+
+		// depending on where import new project is launched from, the connection profile could be passed as just
+		// the profile or it could be wrapped in another object
+		return (<any>context)?.connectionProfile ?? (context as mssqlVscode.ITreeNodeInfo).connectionInfo ?? context;
+	}
+
+	private refreshProjectsTree(workspaceTreeItem: dataworkspace.WorkspaceTreeItem): void {
+		(workspaceTreeItem.treeDataProvider as SqlDatabaseProjectTreeViewProvider).notifyTreeDataChanged();
+	}
+
+
+	//#endregion
+
+	//#region Create project from database
 
 	/**
 	 * Creates a new SQL database project from the existing database,
@@ -1488,22 +1482,6 @@ export class ProjectsController {
 		}
 	}
 
-	public setFilePath(model: ImportDataModel) {
-		if (model.extractTarget === mssql.ExtractTarget.file) {
-			model.filePath = path.join(model.filePath, `${model.projName}.sql`); // File extractTarget specifies the exact file rather than the containing folder
-		}
-	}
-
-	private getConnectionProfileFromContext(context: azdataType.IConnectionProfile | mssqlVscode.ITreeNodeInfo | undefined): azdataType.IConnectionProfile | mssqlVscode.IConnectionInfo | undefined {
-		if (!context) {
-			return undefined;
-		}
-
-		// depending on where import new project is launched from, the connection profile could be passed as just
-		// the profile or it could be wrapped in another object
-		return (<any>context)?.connectionProfile ?? (context as mssqlVscode.ITreeNodeInfo).connectionInfo ?? context;
-	}
-
 	public async createProjectFromDatabaseApiCall(model: ImportDataModel): Promise<void> {
 		const service = await utils.getDacFxService();
 		const azdataApi = utils.getAzdataApi();
@@ -1516,6 +1494,53 @@ export class ProjectsController {
 		// TODO: Check for success; throw error
 	}
 
+	public setFilePath(model: ImportDataModel) {
+		if (model.extractTarget === mssql.ExtractTarget.file) {
+			model.filePath = path.join(model.filePath, `${model.projName}.sql`); // File extractTarget specifies the exact file rather than the containing folder
+		}
+	}
+
+	/**
+	 * Generate a flat list of all files and folder under a folder.
+	 */
+	public async generateList(absolutePath: string): Promise<vscode.Uri[]> {
+		let fileFolderList: vscode.Uri[] = [];
+
+		if (!await utils.exists(absolutePath)) {
+			if (await utils.exists(absolutePath + constants.sqlFileExtension)) {
+				absolutePath += constants.sqlFileExtension;
+			} else {
+				void vscode.window.showErrorMessage(constants.cannotResolvePath(absolutePath));
+				return fileFolderList;
+			}
+		}
+
+		const files = [absolutePath];
+		do {
+			const filepath = files.pop();
+
+			if (filepath) {
+				const stat = await fs.stat(filepath);
+
+				if (stat.isDirectory()) {
+					fileFolderList.push(vscode.Uri.file(filepath));
+					(await fs
+						.readdir(filepath))
+						.forEach((f: string) => files.push(path.join(filepath, f)));
+				}
+				else if (stat.isFile()) {
+					fileFolderList.push(vscode.Uri.file(filepath));
+				}
+			}
+
+		} while (files.length !== 0);
+
+		return fileFolderList;
+	}
+
+	//#endregion
+
+	//#region Update project from database
 	/**
 	 * Display dialog for user to configure existing SQL Project with the changes/differences from a database
 	 */
@@ -1593,6 +1618,11 @@ export class ProjectsController {
 		return;
 	}
 
+	/**
+	 * Performs a schema compare of the source and target and updates the project with the results
+	 * @param source source for schema comparison
+	 * @param target target sql project for schema comparison to update
+	 */
 	private async schemaCompareAndUpdateProject(source: mssql.SchemaCompareEndpointInfo, target: mssql.SchemaCompareEndpointInfo): Promise<void> {
 		// Run schema comparison
 		const ext = vscode.extensions.getExtension(mssql.extension.name)!;
@@ -1640,45 +1670,79 @@ export class ProjectsController {
 		}
 	}
 
-	/**
-	 * Generate a flat list of all files and folder under a folder.
-	 */
-	public async generateList(absolutePath: string): Promise<vscode.Uri[]> {
-		let fileFolderList: vscode.Uri[] = [];
+	public async getProjectScriptFiles(projectFilePath: string): Promise<string[]> {
+		const project = await Project.openProject(projectFilePath);
 
-		if (!await utils.exists(absolutePath)) {
-			if (await utils.exists(absolutePath + constants.sqlFileExtension)) {
-				absolutePath += constants.sqlFileExtension;
-			} else {
-				void vscode.window.showErrorMessage(constants.cannotResolvePath(absolutePath));
-				return fileFolderList;
-			}
+		return project.files
+			.filter(f => f.fsUri.fsPath.endsWith(constants.sqlFileExtension))
+			.map(f => f.fsUri.fsPath);
+	}
+
+	public async getProjectDatabaseSchemaProvider(projectFilePath: string): Promise<string> {
+		const project = await Project.openProject(projectFilePath);
+		return project.getProjectTargetVersion();
+	}
+
+	/**
+	 * Updates the provided project with the results of the schema compare
+	 * @param operationId id of the schema comparison to update the project with
+	 * @param projectFilePath path to sql project to update
+	 * @param folderStructure folder structure to use when updating the target project
+	 * @returns
+	 */
+	public async schemaComparePublishProjectChanges(operationId: string, projectFilePath: string, folderStructure: string): Promise<mssql.SchemaComparePublishProjectResult> {
+		const ext = vscode.extensions.getExtension(mssql.extension.name)!;
+		const service = (await ext.activate() as mssql.IExtension).schemaCompare;
+
+		const projectPath = path.dirname(projectFilePath);
+
+		let fs: mssql.ExtractTarget;
+
+		switch (folderStructure) {
+			case constants.file:
+				fs = mssql.ExtractTarget.file;
+				break;
+			case constants.flat:
+				fs = mssql.ExtractTarget.flat;
+				break;
+			case constants.objectType:
+				fs = mssql.ExtractTarget.objectType;
+				break;
+			case constants.schema:
+				fs = mssql.ExtractTarget.schema;
+				break;
+			case constants.schemaObjectType:
+			default:
+				fs = mssql.ExtractTarget.schemaObjectType;
+				break;
 		}
 
-		const files = [absolutePath];
-		do {
-			const filepath = files.pop();
+		const result: mssql.SchemaComparePublishProjectResult = await service.schemaComparePublishProjectChanges(operationId, projectPath, fs, utils.getAzdataApi()!.TaskExecutionMode.execute);
 
-			if (filepath) {
-				const stat = await fs.stat(filepath);
+		if (!result.errorMessage) {
+			const project = await Project.openProject(projectFilePath);
 
-				if (stat.isDirectory()) {
-					fileFolderList.push(vscode.Uri.file(filepath));
-					(await fs
-						.readdir(filepath))
-						.forEach((f: string) => files.push(path.join(filepath, f)));
-				}
-				else if (stat.isFile()) {
-					fileFolderList.push(vscode.Uri.file(filepath));
-				}
-			}
+			let toAdd: vscode.Uri[] = [];
+			result.addedFiles.forEach((f: any) => toAdd.push(vscode.Uri.file(f)));
+			await project.addToProject(toAdd);
 
-		} while (files.length !== 0);
+			let toRemove: vscode.Uri[] = [];
+			result.deletedFiles.forEach((f: any) => toRemove.push(vscode.Uri.file(f)));
 
-		return fileFolderList;
+			let toRemoveEntries: FileProjectEntry[] = [];
+			toRemove.forEach(f => toRemoveEntries.push(new FileProjectEntry(f, f.path.replace(projectPath + '\\', ''), EntryType.File)));
+
+			toRemoveEntries.forEach(async f => await project.exclude(f));
+
+			await this.buildProject(project);
+		}
+
+		return result;
 	}
 
 	//#endregion
+
+
 }
 
 export interface NewProjectParams {
