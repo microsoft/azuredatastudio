@@ -39,7 +39,6 @@ import { DatabaseEngineEdition, ServiceOptionType } from 'sql/workbench/api/comm
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { IFileBrowserDialogController } from 'sql/workbench/services/fileBrowser/common/fileBrowserDialogController';
 import { ILogService } from 'vs/platform/log/common/log';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { attachModalDialogStyler, attachTabbedPanelStyler } from 'sql/workbench/common/styler';
 import { fileFiltersSet } from 'sql/workbench/services/restore/common/constants';
@@ -48,6 +47,8 @@ import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/browser/dropdown';
 import { IBackupRestoreUrlBrowserDialogService } from 'sql/workbench/services/backupRestoreUrlBrowser/common/urlBrowserDialogService';
 import { MediaDeviceType } from 'sql/workbench/contrib/backup/common/constants';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 
 interface FileListElement {
 	logicalFileName: string;
@@ -157,7 +158,8 @@ export class RestoreDialog extends Modal {
 		@IBackupRestoreUrlBrowserDialogService private backupRestoreUrlBrowserDialogService: IBackupRestoreUrlBrowserDialogService,
 		@IClipboardService clipboardService: IClipboardService,
 		@ILogService logService: ILogService,
-		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
+		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
+		@IAccessibilityService private _accessibilityService: IAccessibilityService
 	) {
 		super(localize('RestoreDialogTitle', "Restore database"), TelemetryKeys.ModalDialogName.Restore, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { hasErrors: true, width: 'wide', hasSpinner: true });
 		// view model
@@ -308,7 +310,7 @@ export class RestoreDialog extends Modal {
 		this._restorePlanTableContainer = DOM.append(restorePlanElement, DOM.$('.dialog-input-section.restore-list'));
 		DOM.hide(this._restorePlanTableContainer);
 		this._restorePlanData = new TableDataView<Slick.SlickData>();
-		this._restorePlanTable = this._register(new Table<Slick.SlickData>(this._restorePlanTableContainer,
+		this._restorePlanTable = this._register(new Table<Slick.SlickData>(this._restorePlanTableContainer, this._accessibilityService,
 			{ dataProvider: this._restorePlanData, columns: this._restorePlanColumn }, { enableColumnReorder: false }));
 		this._restorePlanTable.setTableTitle(localize('restorePlan', "Restore plan"));
 		this._restorePlanTable.setSelectionModel(new RowSelectionModel({ selectActiveRow: false }));
@@ -359,7 +361,7 @@ export class RestoreDialog extends Modal {
 			field: 'restoreAs'
 		}];
 		this._fileListData = new TableDataView<FileListElement>();
-		this._fileListTable = this._register(new Table<FileListElement>(this._fileListTableContainer,
+		this._fileListTable = this._register(new Table<FileListElement>(this._fileListTableContainer, this._accessibilityService,
 			{ dataProvider: this._fileListData, columns }, { enableColumnReorder: false }));
 		this._fileListTable.setSelectionModel(new RowSelectionModel());
 

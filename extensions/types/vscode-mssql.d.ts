@@ -118,15 +118,101 @@ declare module 'vscode-mssql' {
 		/**
 		 * Get the server info for a connection
 		 * @param connectionInfo connection info of the connection
+		 * @returns server information
 		 */
 		getServerInfo(connectionInfo: IConnectionInfo): ServerInfo
+	}
+
+	/**
+	 * Information about a SQL Server instance.
+	 */
+	export interface ServerInfo {
+		/**
+		 * The major version of the SQL Server instance.
+		 */
+		serverMajorVersion: number;
+
+		/**
+		 * The minor version of the SQL Server instance.
+		 */
+		serverMinorVersion: number;
+
+		/**
+		 * The build of the SQL Server instance.
+		 */
+		serverReleaseVersion: number;
+
+		/**
+		 * The ID of the engine edition of the SQL Server instance.
+		 */
+		engineEditionId: number;
+
+		/**
+		 * String containing the full server version text.
+		 */
+		serverVersion: string;
+
+		/**
+		 * String describing the product level of the server.
+		 */
+		serverLevel: string;
+
+		/**
+		 * The edition of the SQL Server instance.
+		 */
+		serverEdition: string;
+
+		/**
+		 * Whether the SQL Server instance is running in the cloud (Azure) or not.
+		 */
+		isCloud: boolean;
+
+		/**
+		 * The version of Azure that the SQL Server instance is running on, if applicable.
+		 */
+		azureVersion: number;
+
+		/**
+		 * The Operating System version string of the machine running the SQL Server instance.
+		 */
+		osVersion: string;
+	}
+
+	/**
+	 * Well-known Authentication types.
+	 */
+	export const enum AuthenticationType {
+		/**
+		 * Username and password
+		 */
+		SqlLogin = 'SqlLogin',
+		/**
+		 * Windows Authentication
+		 */
+		Integrated = 'Integrated',
+		/**
+		 * Azure Active Directory - Universal with MFA support
+		 */
+		AzureMFA = 'AzureMFA',
+		/**
+		 * Azure Active Directory - Password
+		 */
+		AzureMFAAndUser = 'AzureMFAAndUser',
+		/**
+		 * Datacenter Security Token Service Authentication
+		 */
+		DSTSAuth = 'dstsAuth',
+		/**
+		 * No authentication required
+		 */
+		None = 'None'
 	}
 
 	/**
 	 * The possible values of the server engine edition
 	 * EngineEdition under https://docs.microsoft.com/sql/t-sql/functions/serverproperty-transact-sql is associated with these values
 	 */
-	 export const enum DatabaseEngineEdition {
+	export const enum DatabaseEngineEdition {
 		Unknown = 0,
 		Personal = 1,
 		Standard = 2,
@@ -138,7 +224,6 @@ declare module 'vscode-mssql' {
 		SqlManagedInstance = 8,
 		SqlOnDemand = 11
 	}
-
 
 	/**
 	 * Information about a database connection
@@ -313,61 +398,6 @@ declare module 'vscode-mssql' {
 		connectionString: string | undefined;
 	}
 
-	/**
-	 * Information about a SQL Server instance.
-	 */
-	export interface ServerInfo {
-		/**
-		 * The major version of the SQL Server instance.
-		 */
-		serverMajorVersion: number;
-
-		/**
-		 * The minor version of the SQL Server instance.
-		 */
-		serverMinorVersion: number;
-
-		/**
-		 * The build of the SQL Server instance.
-		 */
-		serverReleaseVersion: number;
-
-		/**
-		 * The ID of the engine edition of the SQL Server instance.
-		 */
-		engineEditionId: number;
-
-		/**
-		 * String containing the full server version text.
-		 */
-		serverVersion: string;
-
-		/**
-		 * String describing the product level of the server.
-		 */
-		serverLevel: string;
-
-		/**
-		 * The edition of the SQL Server instance.
-		 */
-		serverEdition: string;
-
-		/**
-		 * Whether the SQL Server instance is running in the cloud (Azure) or not.
-		 */
-		isCloud: boolean;
-
-		/**
-		 * The version of Azure that the SQL Server instance is running on, if applicable.
-		 */
-		azureVersion: number;
-
-		/**
-		 * The Operating System version string of the machine running the SQL Server instance.
-		 */
-		osVersion: string;
-	}
-
 	export const enum ExtractTarget {
 		dacpac = 0,
 		file = 1,
@@ -385,7 +415,7 @@ declare module 'vscode-mssql' {
 		exportBacpac(databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
 		importBacpac(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
 		extractDacpac(databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
-		createProjectFromDatabase(databaseName: string, targetFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, extractTarget: ExtractTarget, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
+		createProjectFromDatabase(databaseName: string, targetFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, extractTarget: ExtractTarget, taskExecutionMode: TaskExecutionMode, includePermissions?: boolean): Thenable<DacFxResult>;
 		deployDacpac(packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: TaskExecutionMode, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: DeploymentOptions): Thenable<DacFxResult>;
 		generateDeployScript(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode, sqlCommandVariableValues?: Record<string, string>, deploymentOptions?: DeploymentOptions): Thenable<DacFxResult>;
 		generateDeployPlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<GenerateDeployPlanResult>;
@@ -642,6 +672,7 @@ declare module 'vscode-mssql' {
 		ownerUri: string;
 		extractTarget?: ExtractTarget;
 		taskExecutionMode: TaskExecutionMode;
+		includePermissions?: boolean;
 	}
 
 	export interface DeployParams {

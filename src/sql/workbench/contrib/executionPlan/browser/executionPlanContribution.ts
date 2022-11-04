@@ -23,6 +23,7 @@ import { localize } from 'vs/nls';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { CATEGORIES } from 'sql/workbench/contrib/query/browser/queryActions';
+import { IConfigurationRegistry, Extensions as ConfigExtensions, IConfigurationNode } from 'vs/platform/configuration/common/configurationRegistry';
 
 // Execution Plan editor registration
 
@@ -61,7 +62,7 @@ export class ExecutionPlanEditorOverrideContribution extends Disposable implemen
 			}
 		});
 
-		this._editorResolverService.registerEditor(
+		this._register(this._editorResolverService.registerEditor(
 			this.getGlobForFileExtensions(supportedFileFormats),
 			{
 				id: ExecutionPlanEditor.ID,
@@ -74,11 +75,11 @@ export class ExecutionPlanEditorOverrideContribution extends Disposable implemen
 					graphFileContent: undefined,
 					graphFileType: undefined
 				};
+				const executionPlanInput = this._register(this._instantiationService.createInstance(ExecutionPlanInput, editorInput.resource, executionPlanGraphInfo));
 
-				const executionPlanInput = this._instantiationService.createInstance(ExecutionPlanInput, editorInput.resource, executionPlanGraphInfo);
 				return { editor: executionPlanInput, options: editorInput.options, group: group };
 			}
-		);
+		));
 	}
 
 	private getGlobForFileExtensions(extensions: string[]): string {
@@ -118,3 +119,19 @@ CommandsRegistry.registerCommand(COMPARE_EXECUTION_PLAN_COMMAND_ID, (accessors: 
 		pinned: true
 	});
 });
+
+const executionPlanContribution: IConfigurationNode = {
+	id: 'executionPlan',
+	type: 'object',
+	title: localize('executionPlanConfigurationTitle', "Execution Plan"),
+	properties: {
+		'executionPlan.tooltips.enableOnHoverTooltips': {
+			'type': 'boolean',
+			'description': localize('executionPlan.tooltips.enableOnHoverTooltips', "When true, enables tooltips on hover for execution plan. When false, tooltips are shown on node click or F3 key press."),
+			'default': false
+		},
+	}
+};
+
+const configurationRegistry = <IConfigurationRegistry>Registry.as(ConfigExtensions.Configuration);
+configurationRegistry.registerConfiguration(executionPlanContribution);

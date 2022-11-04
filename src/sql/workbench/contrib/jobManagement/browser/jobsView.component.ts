@@ -34,6 +34,7 @@ import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { attachTableFilterStyler } from 'sql/platform/theme/common/styler';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 export const ROW_HEIGHT: number = 45;
@@ -108,7 +109,8 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		@Inject(IKeybindingService) keybindingService: IKeybindingService,
 		@Inject(IDashboardService) _dashboardService: IDashboardService,
 		@Inject(IAdsTelemetryService) private _telemetryService: IAdsTelemetryService,
-		@Inject(IContextViewService) private _contextViewService: IContextViewService
+		@Inject(IContextViewService) private _contextViewService: IContextViewService,
+		@Inject(IAccessibilityService) private _accessibilityService: IAccessibilityService
 	) {
 		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService, _agentViewComponent);
 		let jobCacheObjectMap = this._jobManagementService.jobCacheObjectMap;
@@ -188,7 +190,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		jQuery(this._gridEl.nativeElement).empty();
 		jQuery(this.actionBarContainer.nativeElement).empty();
 		this.initActionBar();
-		this._table = new Table(this._gridEl.nativeElement, { columns }, options);
+		this._table = new Table(this._gridEl.nativeElement, this._accessibilityService, { columns }, options);
 		this._table.grid.setData(this.dataView, true);
 		this._table.grid.onClick.subscribe((e, args) => {
 			let job = self.getJob(args);

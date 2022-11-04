@@ -14,7 +14,7 @@ import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProje
 import { ProjectsController } from '../controllers/projectController';
 import { Project } from '../models/project';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
-import { getPublishToDockerSettings } from '../dialogs/deployDatabaseQuickpick';
+import { getPublishToDockerSettings } from '../dialogs/publishToDockerQuickpick';
 import { getDockerImageSpec } from '../models/deploy/deployService';
 
 export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvider, sqldbproj.IExtension {

@@ -11,7 +11,7 @@ const packageJson = require('../package.json');
 
 let packageInfo = Utils.getPackageInfo(packageJson);
 
-export const TelemetryReporter = new AdsTelemetryReporter(packageInfo.name, packageInfo.version, packageInfo.aiKey);
+export const TelemetryReporter = new AdsTelemetryReporter<TelemetryViews, TelemetryAction>(packageInfo.name, packageInfo.version, packageInfo.aiKey);
 
 export enum TelemetryViews {
 	DataTierApplicationWizard = 'DataTierApplicationWizard'
@@ -23,5 +23,7 @@ export enum TelemetryAction {
 	GenerateDeployPlan = 'GenerateDeployPlan',
 	ExtractDacpac = 'ExtractDacpacOperation',
 	ExportBacpac = 'ExportBacpacOperation',
-	ImportBacpac = 'ImportBacpacOperation'
+	ImportBacpac = 'ImportBacpacOperation',
+	ConnectionDialogCancelled = 'ConnectionDialogCancelled',
+	WizardCanceled = 'WizardCanceled'
 }

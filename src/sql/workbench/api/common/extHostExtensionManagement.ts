@@ -5,8 +5,8 @@
 
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
-import { ExtHostExtensionManagementShape, MainThreadExtensionManagementShape, SqlMainContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
-
+import { ExtHostExtensionManagementShape, MainThreadExtensionManagementShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 export class ExtHostExtensionManagement implements ExtHostExtensionManagementShape {
 

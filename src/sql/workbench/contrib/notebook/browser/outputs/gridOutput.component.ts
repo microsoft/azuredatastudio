@@ -12,7 +12,6 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IDataResource } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { getEolString, shouldIncludeHeaders, shouldRemoveNewLines } from 'sql/workbench/services/query/common/queryRunner';
 import { ResultSetSummary, ResultSetSubset, ICellValue } from 'sql/workbench/services/query/common/query';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -48,6 +47,9 @@ import { getChartMaxRowCount, notifyMaxRowCountExceeded } from 'sql/workbench/co
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IExecutionPlanService } from 'sql/workbench/services/executionPlan/common/interfaces';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 
 @Component({
 	selector: GridOutputComponent.SELECTOR,
@@ -239,12 +241,13 @@ class DataResourceTable extends GridTableBase<any> {
 		@IThemeService themeService: IThemeService,
 		@IContextViewService contextViewService: IContextViewService,
 		@INotificationService notificationService: INotificationService,
-		@IExecutionPlanService executionPlanService: IExecutionPlanService
+		@IExecutionPlanService executionPlanService: IExecutionPlanService,
+		@IAccessibilityService accessibilityService: IAccessibilityService,
 	) {
 		super(state, createResultSet(source), {
 			actionOrientation: ActionsOrientation.HORIZONTAL,
 			inMemoryDataProcessing: true
-		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService, contextViewService, notificationService, executionPlanService);
+		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService, contextViewService, notificationService, executionPlanService, accessibilityService);
 		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, source, this.resultSet, this.cellModel);
 		this._chart = this.instantiationService.createInstance(ChartView, false);
 
@@ -276,6 +279,7 @@ class DataResourceTable extends GridTableBase<any> {
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEMARKDOWN_ID, SaveResultAction.SAVEMARKDOWN_LABEL, SaveResultAction.SAVEMARKDOWN_ICON, SaveFormat.MARKDOWN),
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML),
 			this.instantiationService.createInstance(NotebookChartAction, this)
 		];
@@ -438,7 +442,7 @@ export class DataResourceDataProvider implements IGridDataProvider {
 		if (!this.canSerialize) {
 			return Promise.resolve(undefined);
 		}
-		// TODO implement selection support
+
 		let columns = this._resultSet.columnInfo;
 		let rowLength = this._rows.length;
 		let minRow = 0;
@@ -482,13 +486,33 @@ export class DataResourceDataProvider implements IGridDataProvider {
 			return result;
 		};
 
-		let serializeRequestParams: SerializeDataParams = <SerializeDataParams>Object.assign(serializer.getBasicSaveParameters(format), <Partial<SerializeDataParams>>{
+		// This code path uses the serialization service which uses a different request parameter
+		// interface than the query execution service's saveResults handlers. Here, we take the
+		// format-specific request params (eg, includeHeaders for CSV) and merge the format-agnostic
+		// request params for the serialization request (eg, saveFormat, filePath).
+		let provider = this.cellModel.notebookModel.context?.providerName;
+		if (!provider) {
+			// If no connection currently exists, then pick the first connection provider for the current kernel.
+			// If there's still no provider, then fallback to the default MSSQL one.
+			let connProviders = this.cellModel.notebookModel.getApplicableConnectionProviderIds(this.cellModel.notebookModel.selectedKernelDisplayName);
+			if (connProviders?.length > 0) {
+				provider = connProviders[0];
+			} else {
+				provider = mssqlProviderName;
+			}
+		}
+		let formatSpecificParams = serializer.getBasicSaveParameters(format);
+		let formatAgnosticParams = <Partial<SerializeDataParams>>{
+			serializationProviderId: provider,
 			saveFormat: format,
-			columns: columns,
 			filePath: filePath.fsPath,
-			getRowRange: (rowStart, includeHeaders, numberOfRows) => getRows(rowStart, includeHeaders, numberOfRows),
-			rowCount: rowLength
-		});
+			columns: columns,
+			rowCount: rowLength,
+			getRowRange: (rowStart: number, includeHeaders: boolean, numberOfRows?: number) =>
+				getRows(rowStart, includeHeaders, numberOfRows),
+		};
+		let serializeRequestParams = <SerializeDataParams>Object.assign(formatSpecificParams, formatAgnosticParams);
+
 		return this._serializationService.serializeResults(serializeRequestParams);
 	}
 

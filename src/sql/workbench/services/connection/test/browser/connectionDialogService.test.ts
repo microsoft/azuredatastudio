@@ -100,12 +100,16 @@ suite('ConnectionDialogService tests', () => {
 		testInstantiationService.stub(IConnectionManagementService, mockConnectionManagementService.object);
 		testInstantiationService.stub(IContextKeyService, new MockContextKeyService());
 		testInstantiationService.stub(IThemeService, new TestThemeService());
-		testInstantiationService.stub(ILayoutService, new TestLayoutService());
+
+		let layoutService: ILayoutService = new TestLayoutService();
+		testInstantiationService.stub(ILayoutService, layoutService);
 		testInstantiationService.stub(IAdsTelemetryService, new NullAdsTelemetryService());
 		testInstantiationService.stub(IConnectionTreeService, new ConnectionTreeService());
 		testInstantiationService.stub(ICapabilitiesService, new TestCapabilitiesService());
+
+		let logService: ILogService = new NullLogService();
 		connectionDialogService = new ConnectionDialogService(testInstantiationService, capabilitiesService, errorMessageService.object,
-			new TestConfigurationService(), new BrowserClipboardService(), NullCommandService, new NullLogService());
+			new TestConfigurationService(), new BrowserClipboardService(layoutService, logService), NullCommandService, logService);
 		(connectionDialogService as any)._connectionManagementService = mockConnectionManagementService.object;
 		let providerDisplayNames = ['Mock SQL Server'];
 		let providerNameToDisplayMap = { 'MSSQL': 'Mock SQL Server' };

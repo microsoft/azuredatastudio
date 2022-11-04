@@ -36,7 +36,7 @@ import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/t
 import { IconPathHelper } from '../common/iconHelper';
 import { DashboardData, PublishData, Status } from '../models/dashboardData/dashboardData';
 import { getPublishDatabaseSettings, launchPublishTargetOption } from '../dialogs/publishDatabaseQuickpick';
-import { launchCreateAzureServerQuickPick, getPublishToDockerSettings } from '../dialogs/deployDatabaseQuickpick';
+import { launchCreateAzureServerQuickPick } from '../dialogs/deployDatabaseQuickpick';
 import { DeployService } from '../models/deploy/deployService';
 import { AddItemOptions, EntryType, GenerateProjectFromOpenApiSpecOptions, IDatabaseReferenceProjectEntry, ISqlProjectPublishSettings, IPublishToDockerSettings, ISqlProject, ItemType, SqlTargetPlatform } from 'sqldbproj';
 import { AutorestHelper } from '../tools/autorestHelper';
@@ -47,6 +47,7 @@ import { FileProjectEntry, SqlProjectReferenceProjectEntry } from '../models/pro
 import { UpdateProjectAction, UpdateProjectDataModel } from '../models/api/updateProject';
 import { AzureSqlClient } from '../models/deploy/azureSqlClient';
 import { ConnectionService } from '../models/connections/connectionService';
+import { getPublishToDockerSettings } from '../dialogs/publishToDockerQuickpick';
 
 const maxTableLength = 10;
 
@@ -1508,9 +1509,9 @@ export class ProjectsController {
 		const azdataApi = utils.getAzdataApi();
 
 		if (azdataApi) {
-			await (service as mssql.IDacFxService).createProjectFromDatabase(model.database, model.filePath, model.projName, model.version, model.connectionUri, model.extractTarget as mssql.ExtractTarget, azdataApi.TaskExecutionMode.execute);
+			await (service as mssql.IDacFxService).createProjectFromDatabase(model.database, model.filePath, model.projName, model.version, model.connectionUri, model.extractTarget as mssql.ExtractTarget, azdataApi.TaskExecutionMode.execute, model.includePermissions);
 		} else {
-			await (service as mssqlVscode.IDacFxService).createProjectFromDatabase(model.database, model.filePath, model.projName, model.version, model.connectionUri, model.extractTarget as mssqlVscode.ExtractTarget, TaskExecutionMode.execute as unknown as mssqlVscode.TaskExecutionMode);
+			await (service as mssqlVscode.IDacFxService).createProjectFromDatabase(model.database, model.filePath, model.projName, model.version, model.connectionUri, model.extractTarget as mssqlVscode.ExtractTarget, TaskExecutionMode.execute as unknown as mssqlVscode.TaskExecutionMode, model.includePermissions);
 		}
 		// TODO: Check for success; throw error
 	}
@@ -1602,7 +1603,7 @@ export class ProjectsController {
 		target.targetScripts = await this.getProjectScriptFiles(target.projectFilePath);
 		target.dataSchemaProvider = await this.getProjectDatabaseSchemaProvider(target.projectFilePath);
 
-		TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, 'SchemaComparisonStarted');
+		TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.SchemaComparisonStarted);
 
 		// Perform schema comparison.  Results are cached in SqlToolsService under the operationId
 		const comparisonResult: mssql.SchemaCompareResult = await service.schemaCompare(
@@ -1618,7 +1619,7 @@ export class ProjectsController {
 			return;
 		}
 
-		TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, 'SchemaComparisonFinished')
+		TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.SchemaComparisonFinished)
 			.withAdditionalProperties({
 				'endTime': Date.now().toString(),
 				'operationId': comparisonResult.operationId

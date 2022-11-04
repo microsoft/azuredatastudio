@@ -7,7 +7,6 @@ import * as DOM from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorOpenContext } from 'vs/workbench/common/editor';
 import { getZoomLevel } from 'vs/base/browser/browser';
-import { Configuration } from 'vs/editor/browser/config/configuration';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -16,11 +15,12 @@ import * as types from 'vs/base/common/types';
 
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { BareResultsGridInfo, getBareResultsGridInfoStyles } from 'sql/workbench/contrib/query/browser/queryResultsEditor';
-import { EditDataGridPanel } from 'sql/workbench/contrib/editData/browser/editDataGridPanel';
 import { EditDataResultsInput } from 'sql/workbench/browser/editData/editDataResultsInput';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IEditorOptions } from 'vs/platform/editor/common/editor';
+import { applyFontInfo } from 'vs/editor/browser/config/domFontInfo';
+import { EditDataGridPanel } from 'sql/workbench/contrib/editData/browser/editDataGridPanel';
 
 export class EditDataResultsEditor extends EditorPane {
 
@@ -75,7 +75,7 @@ export class EditDataResultsEditor extends EditorPane {
 
 	private _applySettings() {
 		if (this.input && this.input.container) {
-			Configuration.applyFontInfoSlow(this.getContainer(), this._rawOptions);
+			applyFontInfo(this.getContainer(), this._rawOptions);
 			if (!this.input.css) {
 				this.input.css = DOM.createStyleSheet(this.input.container);
 			}

@@ -16,6 +16,7 @@ import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumn
 import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';
 import { RESULTS_GRID_DEFAULTS } from 'sql/workbench/common/constants';
 import { values } from 'vs/base/common/collections';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 
 /**
  * Render DataResource as a grid into a host node.
@@ -49,13 +50,13 @@ export function renderDataResource(
 
 	// In order to show row numbers, we need to put the row number column
 	// ahead of all of the other columns, and register the plugin below
-	let rowNumberColumn = new RowNumberColumn({ numberOfRows: source.length });
+	let rowNumberColumn = new RowNumberColumn();
 	columnsTransformed.unshift(rowNumberColumn.getColumnDefinition());
 
 	let transformedData = transformData(sourceObject.data, columnsTransformed);
 	tableResultsData.push(transformedData);
 
-	let detailTable = new Table(tableContainer, {
+	let detailTable = new Table(tableContainer, options.accessibilityService, {
 		dataProvider: tableResultsData, columns: columnsTransformed
 	}, {
 		rowHeight: RESULTS_GRID_DEFAULTS.rowHeight,
@@ -135,5 +136,10 @@ export namespace renderDataResource {
 		 * Theme service used to react to theme change events
 		 */
 		themeService?: IThemeService;
+
+		/**
+		 * Accessibility service used to get screen reader optimization flag state
+		 */
+		accessibilityService: IAccessibilityService;
 	}
 }

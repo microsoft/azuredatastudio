@@ -142,6 +142,9 @@
     <trans-unit id="activateLanguagePack">
       <source xml:lang="en">In order to use Azure Data Studio in {0}, Azure Data Studio needs to restart.</source>
     </trans-unit>
+    <trans-unit id="appName">
+      <source xml:lang="en">`${appName}`: e.g. Azure Data Studio.</source>
+    </trans-unit>
     <trans-unit id="azuredatastudio">
       <source xml:lang="en">Azure Data Studio</source>
     </trans-unit>
@@ -217,6 +220,12 @@
     <trans-unit id="objectExplorer.context">
       <source xml:lang="en">The object explorer item context menu</source>
     </trans-unit>
+    <trans-unit id="openDefaultSettingsJson">
+      <source xml:lang="en">open the default settings JSON</source>
+    </trans-unit>
+    <trans-unit id="openDefaultSettingsJson.capitalized">
+      <source xml:lang="en">Open Default Settings (JSON)</source>
+    </trans-unit>
     <trans-unit id="postDisableTooltip">
       <source xml:lang="en">Please reload Azure Data Studio to disable this extension.</source>
     </trans-unit>
@@ -238,8 +247,64 @@
     <trans-unit id="showReleaseNotes">
       <source xml:lang="en">Show Release Notes after an update. The Release Notes are opened in a new web browser window.</source>
     </trans-unit>
+    <trans-unit id="sql.versionMismatch">
+      <source xml:lang="en">Extension is not compatible with Azure Data Studio {0}. Extension requires: {1}.</source>
+    </trans-unit>
+    <trans-unit id="sql.versionMismatchVsCode">
+      <source xml:lang="en">Extension is not compatible with Azure Data Studio {0}. Extension requires a newer VS Code Engine Version {1}, which is newer than what is currently supported ({2}).</source>
+    </trans-unit>
+    <trans-unit id="sql.versionSyntax">
+      <source xml:lang="en">Could not parse `{0}` value {1}. Please use, for example: ^1.22.0, ^1.22.x, etc.</source>
+    </trans-unit>
     <trans-unit id="sql.watcherExclude">
       <source xml:lang="en">Configure glob patterns of file paths to exclude from file watching. Patterns must match on absolute paths, i.e. prefix with `**/` or the full path to match properly and suffix with `/**` to match files within a path (for example `**/build/output/**` or `/Users/name/workspaces/project/build/output/**`). Changing this setting requires a restart. When you experience Azure Data Studio consuming lots of CPU time on startup, you can exclude large folders to reduce the initial load.</source>
+    </trans-unit>
+    <trans-unit id="terminal.integrated.allowChords">
+      <source xml:lang="en">Whether or not to allow chord keybindings in the terminal. Note that when this is true and the keystroke results in a chord it will bypass `#terminal.integrated.commandsToSkipShell#`, setting this to false is particularly useful when you want ctrl+k to go to your shell (not Azure Data Studio).</source>
+    </trans-unit>
+    <trans-unit id="terminal.integrated.autoReplies">
+      <source xml:lang="en">A set of messages that when encountered in the terminal will be automatically responded to. Provided the message is specific enough, this can help automate away common responses.
+
+Remarks:
+
+- Use {0} to automatically respond to the terminate batch job prompt on Windows.
+- The message includes escape sequences so the reply might not happen with styled text.
+- Each reply can only happen once every second.
+- Use {1} in the reply to mean the enter key.
+- To unset a default key, set the value to null.
+- Restart Azured Data Studio if new don't apply.</source>
+    </trans-unit>
+    <trans-unit id="terminal.integrated.commandsToSkipShell">
+      <source xml:lang="en">A set of command IDs whose keybindings will not be sent to the shell but instead always be handled by Azure Data Studio. This allows keybindings that would normally be consumed by the shell to act instead the same as when the terminal is not focused, for example `Ctrl+P` to launch Quick Open.
+
+&amp;nbsp;
+
+Many commands are skipped by default. To override a default and pass that command's keybinding to the shell instead, add the command prefixed with the `-` character. For example add `-workbench.action.quickOpen` to allow `Ctrl+P` to reach the shell.
+
+&amp;nbsp;
+
+The following list of default skipped commands is truncated when viewed in Settings Editor. To see the full list, {1} and search for the first command from the list below.
+
+&amp;nbsp;
+
+Default Skipped Commands:
+
+{0}</source>
+    </trans-unit>
+    <trans-unit id="terminal.integrated.detectLocale">
+      <source xml:lang="en">Controls whether to detect and set the `$LANG` environment variable to a UTF-8 compliant option since Azure Data Studio's terminal only supports UTF-8 encoded data coming from the shell.</source>
+    </trans-unit>
+    <trans-unit id="terminal.integrated.env.linux">
+      <source xml:lang="en">Object with environment variables that will be added to the Azure Data Studio process to be used by the terminal on Linux. Set to `null` to delete the environment variable.</source>
+    </trans-unit>
+    <trans-unit id="terminal.integrated.env.osx">
+      <source xml:lang="en">Object with environment variables that will be added to the Azure Data Studio process to be used by the terminal on macOS. Set to `null` to delete the environment variable.</source>
+    </trans-unit>
+    <trans-unit id="terminal.integrated.env.windows">
+      <source xml:lang="en">Object with environment variables that will be added to the Azure Data Studio process to be used by the terminal on Windows. Set to `null` to delete the environment variable.</source>
+    </trans-unit>
+    <trans-unit id="terminal.integrated.inheritEnv">
+      <source xml:lang="en">Whether new shells should inherit their environment from Azure Data Studio, which may source a login shell to ensure $PATH and other development variables are initialized. This has no effect on Windows.</source>
     </trans-unit>
     <trans-unit id="uninstallExtensionComplete">
       <source xml:lang="en">Please reload Azure Data Studio to complete the uninstallation of the extension {0}.</source>
@@ -346,6 +411,9 @@
     </trans-unit>
 </body></file>
   <file original="src/sql/platform/serialization/common/serializationService" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="missingSerializationProviderError">
+      <source xml:lang="en">Could not find a serialization provider with the specified ID '{0}'</source>
+    </trans-unit>
     <trans-unit id="noSerializationProvider">
       <source xml:lang="en">Cannot serialize data as no provider has been registered</source>
     </trans-unit>
@@ -357,11 +425,11 @@
     </trans-unit>
 </body></file>
   <file original="src/sql/platform/theme/common/colorRegistry" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="buttonDropdo0wnBoxShadow">
+      <source xml:lang="en">The button dropdown box shadow color</source>
+    </trans-unit>
     <trans-unit id="buttonDropdownBackgroundHover">
       <source xml:lang="en">The button dropdown background hover color</source>
-    </trans-unit>
-    <trans-unit id="buttonDropdownBoxShadow">
-      <source xml:lang="en">The button dropdown box shadow color</source>
     </trans-unit>
     <trans-unit id="calloutDialogBodyBackground">
       <source xml:lang="en">Callout dialog body background.</source>
@@ -839,6 +907,12 @@
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/browser/modal/optionsDialogHelper" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="boolean.false">
+      <source xml:lang="en">False</source>
+    </trans-unit>
+    <trans-unit id="boolean.true">
+      <source xml:lang="en">True</source>
+    </trans-unit>
     <trans-unit id="optionsDialog.defaultGroupName">
       <source xml:lang="en">General</source>
     </trans-unit>
@@ -946,14 +1020,17 @@
     <trans-unit id="scriptNotFoundForObject">
       <source xml:lang="en">No script was returned when scripting as {0} on object {1}</source>
     </trans-unit>
-    <trans-unit id="scriptSelectNotFound">
-      <source xml:lang="en">No script was returned when calling select script on object </source>
-    </trans-unit>
     <trans-unit id="scriptingFailed">
       <source xml:lang="en">Scripting Failed</source>
     </trans-unit>
     <trans-unit id="selectOperationName">
       <source xml:lang="en">Select</source>
+    </trans-unit>
+    <trans-unit id="selectScriptForEditNotGeneratedError">
+      <source xml:lang="en">Failed to generate script for Edit Data editor.</source>
+    </trans-unit>
+    <trans-unit id="selectScriptNotGeneratedError">
+      <source xml:lang="en">Failed to generate select script for the selected object.</source>
     </trans-unit>
     <trans-unit id="updateOperationName">
       <source xml:lang="en">Update</source>
@@ -2270,6 +2347,9 @@
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/dataExplorer/browser/dataExplorerViewlet" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="ads-connections">
+      <source xml:lang="en">Icon represent a server.</source>
+    </trans-unit>
     <trans-unit id="dataExplorer.servers">
       <source xml:lang="en">Servers</source>
     </trans-unit>
@@ -2339,6 +2419,9 @@
     <trans-unit id="saveAsJson">
       <source xml:lang="en">Save As JSON</source>
     </trans-unit>
+    <trans-unit id="saveAsMarkdown">
+      <source xml:lang="en">Save As Markdown</source>
+    </trans-unit>
     <trans-unit id="saveAsXml">
       <source xml:lang="en">Save As XML</source>
     </trans-unit>
@@ -2347,13 +2430,27 @@
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/azdataGraphView" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="executionPlanComparison.bottomPlanDiagram.ariaLabel">
+      <source xml:lang="en">{0}, use arrow keys to navigate between nodes</source>
+    </trans-unit>
     <trans-unit id="invalidExecutionPlanZoomError">
       <source xml:lang="en">Zoom level cannot be 0 or negative</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/compareExecutionPlanInput" source-language="en" datatype="plaintext"><body>
     <trans-unit id="epCompare.editorName">
-      <source xml:lang="en">Compare Execution Plans</source>
+      <source xml:lang="en">CompareExecutionPlans</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/constants" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="ep.propertiesSearchDescription">
+      <source xml:lang="en">Search properties table</source>
+    </trans-unit>
+    <trans-unit id="ep.searchPlaceholder">
+      <source xml:lang="en">Filter for any field...</source>
+    </trans-unit>
+    <trans-unit id="ep.topOperationsSearchDescription">
+      <source xml:lang="en">Search top operations</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditor" source-language="en" datatype="plaintext"><body>
@@ -2371,11 +2468,11 @@
     <trans-unit id="epComapre.LoadingPlanMessage">
       <source xml:lang="en">Loading execution plan</source>
     </trans-unit>
-    <trans-unit id="epComapre.placeholderInfoboxText">
-      <source xml:lang="en">Add execution plans to compare</source>
-    </trans-unit>
     <trans-unit id="epCompare.FileFilterDescription">
       <source xml:lang="en">Execution Plan Files</source>
+    </trans-unit>
+    <trans-unit id="epCompare.addExecutionPlanLabel">
+      <source xml:lang="en">Add execution plan</source>
     </trans-unit>
     <trans-unit id="epCompare.comparePropertiesAction">
       <source xml:lang="en">Properties</source>
@@ -2404,28 +2501,46 @@
     <trans-unit id="epCompare.zoomToFit">
       <source xml:lang="en">Zoom to fit</source>
     </trans-unit>
+    <trans-unit id="executionPlanComparison.bottomPlanDiagram.name">
+      <source xml:lang="en">Bottom execution Plan {0}</source>
+    </trans-unit>
+    <trans-unit id="executionPlanComparison.topPlanDiagram.name">
+      <source xml:lang="en">Top execution Plan {0}</source>
+    </trans-unit>
+    <trans-unit id="executionPlanDisableTooltip">
+      <source xml:lang="en">Tooltips disabled</source>
+    </trans-unit>
+    <trans-unit id="executionPlanEnableTooltip">
+      <source xml:lang="en">Tooltips enabled</source>
+    </trans-unit>
     <trans-unit id="queryDropdownPrefix">
       <source xml:lang="en">Query {0} of {1}: {2}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="executionPlanComparisonPropertiesBottomOperation">
-      <source xml:lang="en">Bottom operation: {0}</source>
-    </trans-unit>
-    <trans-unit id="executionPlanComparisonPropertiesLeftOperation">
-      <source xml:lang="en">Left operation: {0}</source>
-    </trans-unit>
-    <trans-unit id="executionPlanComparisonPropertiesRightOperation">
-      <source xml:lang="en">Right operation: {0}</source>
-    </trans-unit>
-    <trans-unit id="executionPlanComparisonPropertiesTopOperation">
-      <source xml:lang="en">Top operation: {0}</source>
-    </trans-unit>
     <trans-unit id="executionPlanPropertiesEdgeOperationName">
       <source xml:lang="en">Edge</source>
     </trans-unit>
+    <trans-unit id="nodePropertyViewBottomOperation">
+      <source xml:lang="en">Bottom operation: {0}</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewLeftOperation">
+      <source xml:lang="en">Left operation: {0}</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewNameEquivalentPropertiesRowHeader">
+      <source xml:lang="en">Equivalent Properties</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewNameGreaterThanTitle">
+      <source xml:lang="en">Greater than</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewNameLessThanTitle">
+      <source xml:lang="en">Less than</source>
+    </trans-unit>
     <trans-unit id="nodePropertyViewNameNameColumnHeader">
       <source xml:lang="en">Name</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewNameNotEqualTitle">
+      <source xml:lang="en">Not equal to</source>
     </trans-unit>
     <trans-unit id="nodePropertyViewNameValueColumnBottomHeader">
       <source xml:lang="en">Value (Bottom Plan)</source>
@@ -2439,13 +2554,25 @@
     <trans-unit id="nodePropertyViewNameValueColumnTopHeader">
       <source xml:lang="en">Value (Top Plan)</source>
     </trans-unit>
+    <trans-unit id="nodePropertyViewRightOperation">
+      <source xml:lang="en">Right operation: {0}</source>
+    </trans-unit>
+    <trans-unit id="nodePropertyViewTopOperation">
+      <source xml:lang="en">Top operation: {0}</source>
+    </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanContribution" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="executionPlan.tooltips.enableOnHoverTooltips">
+      <source xml:lang="en">When true, enables tooltips on hover for execution plan. When false, tooltips are shown on node click or F3 key press.</source>
+    </trans-unit>
     <trans-unit id="executionPlanCompareCommandOriginalValue">
       <source xml:lang="en">Compare execution plans</source>
     </trans-unit>
     <trans-unit id="executionPlanCompareCommandValue">
       <source xml:lang="en">Compare execution plans</source>
+    </trans-unit>
+    <trans-unit id="executionPlanConfigurationTitle">
+      <source xml:lang="en">Execution Plan</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanEditor" source-language="en" datatype="plaintext"><body>
@@ -2479,6 +2606,12 @@
     <trans-unit id="ep.topOperationsCopyTableData">
       <source xml:lang="en">Copy</source>
     </trans-unit>
+    <trans-unit id="executionPlanCollapseAllProperties">
+      <source xml:lang="en">Collapse All</source>
+    </trans-unit>
+    <trans-unit id="executionPlanExpandAllProperties">
+      <source xml:lang="en">Expand All</source>
+    </trans-unit>
     <trans-unit id="executionPlanPropertyViewClose">
       <source xml:lang="en">Close</source>
     </trans-unit>
@@ -2497,7 +2630,7 @@
 </body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanTab" source-language="en" datatype="plaintext"><body>
     <trans-unit id="executionPlanTitle">
-      <source xml:lang="en">Query Plan (Preview)</source>
+      <source xml:lang="en">Query Plan</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanTreeTab" source-language="en" datatype="plaintext"><body>
@@ -2511,7 +2644,7 @@
       <source xml:lang="en">Select All</source>
     </trans-unit>
     <trans-unit id="planTreeTab.title">
-      <source xml:lang="en">Plan Tree (Preview)</source>
+      <source xml:lang="en">Plan Tree</source>
     </trans-unit>
     <trans-unit id="topOperationsTableTitle">
       <source xml:lang="en">Execution Plan Tree</source>
@@ -2520,6 +2653,9 @@
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanView" source-language="en" datatype="plaintext"><body>
     <trans-unit id="executionPlan.SaveFileDescription">
       <source xml:lang="en">Execution Plan Files</source>
+    </trans-unit>
+    <trans-unit id="executionPlan.diagram.ariaLabel">
+      <source xml:lang="en">Execution Plan {0}</source>
     </trans-unit>
     <trans-unit id="executionPlanCompareExecutionPlanAction">
       <source xml:lang="en">Compare execution plan</source>
@@ -2541,6 +2677,9 @@
     </trans-unit>
     <trans-unit id="executionPlanFitGraphLabel">
       <source xml:lang="en">Zoom to fit</source>
+    </trans-unit>
+    <trans-unit id="executionPlanHighlightExpensiveOperationAction">
+      <source xml:lang="en">Highlight Expensive Operation</source>
     </trans-unit>
     <trans-unit id="executionPlanOpenGraphFile">
       <source xml:lang="en">Show Query Plan XML</source>
@@ -2585,7 +2724,7 @@
       <source xml:lang="en">Select All</source>
     </trans-unit>
     <trans-unit id="topOperationsTabTitle">
-      <source xml:lang="en">Top Operations  (Preview)</source>
+      <source xml:lang="en">Top Operations</source>
     </trans-unit>
     <trans-unit id="topOperationsTableTitle">
       <source xml:lang="en">Top Operations</source>
@@ -2593,13 +2732,13 @@
 </body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/widgets/customZoomWidget" source-language="en" datatype="plaintext"><body>
     <trans-unit id="cancelCustomZoomAction">
-      <source xml:lang="en">Close (Escape)</source>
+      <source xml:lang="en">Close</source>
     </trans-unit>
     <trans-unit id="customZoomApplyButton">
       <source xml:lang="en">Apply</source>
     </trans-unit>
     <trans-unit id="customZoomApplyButtonTitle">
-      <source xml:lang="en">Apply Zoom (Enter)</source>
+      <source xml:lang="en">Apply Zoom</source>
     </trans-unit>
     <trans-unit id="invalidCustomZoomError">
       <source xml:lang="en">Select a zoom value between 1 to 200</source>
@@ -2608,12 +2747,71 @@
       <source xml:lang="en">Zoom (percent)</source>
     </trans-unit>
     <trans-unit id="zoomAction">
-      <source xml:lang="en">Zoom (Enter)</source>
+      <source xml:lang="en">Zoom</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/widgets/highlightExpensiveNodeWidget" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="actualNumberOfRowsForAllExecutionsAction">
+      <source xml:lang="en">Actual Number of Rows For All Executions</source>
+    </trans-unit>
+    <trans-unit id="cancelExpensiveOperationAction">
+      <source xml:lang="en">Close</source>
+    </trans-unit>
+    <trans-unit id="executionPlanActualElapsedCpuTime">
+      <source xml:lang="en">Actual Elapsed CPU Time</source>
+    </trans-unit>
+    <trans-unit id="executionPlanActualElapsedTime">
+      <source xml:lang="en">Actual Elapsed Time</source>
+    </trans-unit>
+    <trans-unit id="executionPlanCost">
+      <source xml:lang="en">Cost</source>
+    </trans-unit>
+    <trans-unit id="executionPlanNumberOfRowsRead">
+      <source xml:lang="en">Number of Rows Read</source>
+    </trans-unit>
+    <trans-unit id="executionPlanOff">
+      <source xml:lang="en">Off</source>
+    </trans-unit>
+    <trans-unit id="executionPlanSelectExpenseMetricTitle">
+      <source xml:lang="en">Select expense metric</source>
+    </trans-unit>
+    <trans-unit id="executionPlanSubtreeCost">
+      <source xml:lang="en">Subtree Cost</source>
+    </trans-unit>
+    <trans-unit id="expensiveOperationLabel">
+      <source xml:lang="en">Metric:</source>
+    </trans-unit>
+    <trans-unit id="highlightExpensiveOperationAction">
+      <source xml:lang="en">Apply</source>
+    </trans-unit>
+    <trans-unit id="highlightExpensiveOperationApplyButton">
+      <source xml:lang="en">Apply</source>
+    </trans-unit>
+    <trans-unit id="highlightExpensiveOperationButtonTitle">
+      <source xml:lang="en">Highlight Expensive Operation</source>
+    </trans-unit>
+    <trans-unit id="qp.expensiveOperationMetric.dontShowAgain">
+      <source xml:lang="en">Don't Show Again</source>
+    </trans-unit>
+    <trans-unit id="qp.expensiveOperationMetric.no">
+      <source xml:lang="en">No</source>
+    </trans-unit>
+    <trans-unit id="qp.expensiveOperationMetric.yes">
+      <source xml:lang="en">Yes</source>
+    </trans-unit>
+    <trans-unit id="queryExecutionPlan.showUpdateDefaultMetricInfo">
+      <source xml:lang="en">Set chosen metric as the default for query execution plans?</source>
+    </trans-unit>
+    <trans-unit id="turnOffExpensiveHighlightingOperationAction">
+      <source xml:lang="en">Off</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/widgets/nodeSearchWidget" source-language="en" datatype="plaintext"><body>
     <trans-unit id="cancelSearchAction">
-      <source xml:lang="en">Close (Escape)</source>
+      <source xml:lang="en">Close</source>
+    </trans-unit>
+    <trans-unit id="executionPlanEnterValueTitle">
+      <source xml:lang="en">Enter search value</source>
     </trans-unit>
     <trans-unit id="executionPlanSearchTypeContains">
       <source xml:lang="en">Contains</source>
@@ -2621,11 +2819,17 @@
     <trans-unit id="executionPlanSearchTypeEquals">
       <source xml:lang="en">Equals</source>
     </trans-unit>
+    <trans-unit id="executionPlanSelectPropertyTitle">
+      <source xml:lang="en">Select property</source>
+    </trans-unit>
+    <trans-unit id="executionPlanSelectSearchTypeTitle">
+      <source xml:lang="en">Select search type</source>
+    </trans-unit>
     <trans-unit id="nextSearchItemAction">
-      <source xml:lang="en">Next Match (Enter)</source>
+      <source xml:lang="en">Next Match</source>
     </trans-unit>
     <trans-unit id="previousSearchItemAction">
-      <source xml:lang="en">Previous Match (Shift+Enter)</source>
+      <source xml:lang="en">Previous Match</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/executionPlan/common/executionPlanInput" source-language="en" datatype="plaintext"><body>
@@ -3667,6 +3871,9 @@ Error: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="ads-notebook">
+      <source xml:lang="en">Icon represent a notebook.</source>
+    </trans-unit>
     <trans-unit id="notebookExplorer.name">
       <source xml:lang="en">Notebooks</source>
     </trans-unit>
@@ -3899,6 +4106,9 @@ Error: {1}</source>
     <trans-unit id="data">
       <source xml:lang="en">Data</source>
     </trans-unit>
+    <trans-unit id="executionPlan">
+      <source xml:lang="en">Execution Plan</source>
+    </trans-unit>
     <trans-unit id="notebook">
       <source xml:lang="en">Notebook</source>
     </trans-unit>
@@ -4078,6 +4288,9 @@ Error: {1}</source>
     <trans-unit id="saveAsJson">
       <source xml:lang="en">Save As JSON</source>
     </trans-unit>
+    <trans-unit id="saveAsMarkdown">
+      <source xml:lang="en">Save As Markdown</source>
+    </trans-unit>
     <trans-unit id="saveAsXml">
       <source xml:lang="en">Save As XML</source>
     </trans-unit>
@@ -4237,6 +4450,18 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="queryEditor.results.saveAsCsv.textIdentifier">
       <source xml:lang="en">Character used for enclosing text fields when saving results as CSV</source>
+    </trans-unit>
+    <trans-unit id="queryEditor.results.saveAsExcel.includeHeaders">
+      <source xml:lang="en">When true, column headers are included when saving results as an Excel file</source>
+    </trans-unit>
+    <trans-unit id="queryEditor.results.saveAsMarkdown.encoding">
+      <source xml:lang="en">File encoding used when saving results as Markdown</source>
+    </trans-unit>
+    <trans-unit id="queryEditor.results.saveAsMarkdown.includeHeaders">
+      <source xml:lang="en">When true, column headers are included when saving results as a Markdown file</source>
+    </trans-unit>
+    <trans-unit id="queryEditor.results.saveAsMarkdown.lineSeparator">
+      <source xml:lang="en">Character(s) to use to separate lines when exporting to Markdown, defaults to system line endings</source>
     </trans-unit>
     <trans-unit id="queryEditor.results.saveAsXml.encoding">
       <source xml:lang="en">File encoding used when saving results as XML</source>
@@ -4405,6 +4630,9 @@ Error: {1}</source>
     <trans-unit id="resourceViewer">
       <source xml:lang="en">Resource Viewer</source>
     </trans-unit>
+    <trans-unit id="resourceViewerIcon">
+      <source xml:lang="en">Icon for resource viewer.</source>
+    </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/resourceViewer/browser/resourceViewerActions" source-language="en" datatype="plaintext"><body>
     <trans-unit id="resourceViewer.refresh">
@@ -4520,11 +4748,6 @@ Error: {1}</source>
       <source xml:lang="en">Save</source>
     </trans-unit>
 </body></file>
-  <file original="src/sql/workbench/contrib/tableDesigner/browser/tableDesignerEditor" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="tableDesigner.PreviewFeature">
-      <source xml:lang="en">Preview feature</source>
-    </trans-unit>
-</body></file>
   <file original="src/sql/workbench/contrib/tasks/browser/tasks.contribution" source-language="en" datatype="plaintext"><body>
     <trans-unit id="inProgressTasksChangesBadge">
       <source xml:lang="en">{0} in progress tasks</source>
@@ -4633,6 +4856,17 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="enablePreviewFeatures.yes">
       <source xml:lang="en">Yes (recommended)</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/contrib/welcome/notifyEncryption/notifyEncryptionDialog" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="notifyEncryption.message">
+      <source xml:lang="en">Azure Data Studio now has encryption enabled by default for all SQL Server connections. This may result in your existing connections no longer working.{0}We recommend you review the link below for more details.</source>
+    </trans-unit>
+    <trans-unit id="notifyEncryption.moreInfoLink">
+      <source xml:lang="en">More information</source>
+    </trans-unit>
+    <trans-unit id="notifyEncryption.title">
+      <source xml:lang="en">Important Update</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/welcome/page/browser/az_data_welcome_page" source-language="en" datatype="plaintext"><body>
@@ -4902,6 +5136,39 @@ Error: {1}</source>
       <source xml:lang="en">The window will reload after installing additional support for {0}.</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/contrib/welcome/page/browser/welcomePage.contribution" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="miWelcome">
+      <source xml:lang="en">&amp;&amp;Welcome</source>
+      <note>&amp;&amp; denotes a mnemonic</note>
+    </trans-unit>
+    <trans-unit id="workbench.startupEditor">
+      <source xml:lang="en">Controls which editor is shown at startup, if none are restored from the previous session.</source>
+    </trans-unit>
+    <trans-unit id="workbench.startupEditor.newUntitledFile">
+      <source xml:lang="en">Open a new untitled file (only applies when opening an empty window).</source>
+      <note>This is the description for a setting. Values surrounded by single quotes are not to be translated.</note>
+    </trans-unit>
+    <trans-unit id="workbench.startupEditor.none">
+      <source xml:lang="en">Start without an editor.</source>
+      <note>This is the description for a setting. Values surrounded by single quotes are not to be translated.</note>
+    </trans-unit>
+    <trans-unit id="workbench.startupEditor.readme">
+      <source xml:lang="en">Open the README when opening a folder that contains one, fallback to 'welcomePage' otherwise. Note: This is only observed as a global configuration, it will be ignored if set in a workspace or folder configuration.</source>
+      <note>This is the description for a setting. Values surrounded by single quotes are not to be translated.</note>
+    </trans-unit>
+    <trans-unit id="workbench.startupEditor.welcomePage">
+      <source xml:lang="en">Open the Welcome page, with content to aid in getting started with Azure Data Studio and extensions.</source>
+      <note>This is the description for a setting. Values surrounded by single quotes are not to be translated.</note>
+    </trans-unit>
+    <trans-unit id="workbench.startupEditor.welcomePageInEmptyWorkbench">
+      <source xml:lang="en">Open the Welcome page when opening an empty workbench.</source>
+      <note>This is the description for a setting. Values surrounded by single quotes are not to be translated.</note>
+    </trans-unit>
+    <trans-unit id="workbench.startupEditor.welcomePageWithTour">
+      <source xml:lang="en">Open the welcome page with Getting Started Tour (default)</source>
+      <note>This is the description for a setting. Values surrounded by single quotes are not to be translated.</note>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/services/accountManagement/browser/accountDialog" source-language="en" datatype="plaintext"><body>
     <trans-unit id="accountDialog.addConnection">
       <source xml:lang="en">Add an account</source>
@@ -5116,6 +5383,9 @@ Error: {1}</source>
     <trans-unit id="connectionError">
       <source xml:lang="en">Connection error</source>
     </trans-unit>
+    <trans-unit id="enableTrustServerCertificate">
+      <source xml:lang="en">Enable Trust server certificate</source>
+    </trans-unit>
     <trans-unit id="kerberosErrorStart">
       <source xml:lang="en">Connection failed due to Kerberos error.</source>
     </trans-unit>
@@ -5124,6 +5394,14 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="kerberosKinit">
       <source xml:lang="en">If you have previously connected you may need to re-run kinit.</source>
+    </trans-unit>
+    <trans-unit id="runKinit">
+      <source xml:lang="en">Run Kinit</source>
+    </trans-unit>
+    <trans-unit id="trustServerCertInstructionText">
+      <source xml:lang="en">Encryption was enabled on this connection, review your SSL and certificate configuration for the target SQL Server, or enable 'Trust server certificate' in the connection dialog.
+
+			Note: A self-signed certificate offers only limited protection and is not a recommended practice for production environments. Do you want to enable 'Trust server certificate' on this connection and retry? </source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/connection/browser/connectionDialogWidget" source-language="en" datatype="plaintext"><body>
@@ -5199,6 +5477,12 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="advanced">
       <source xml:lang="en">Advanced...</source>
+    </trans-unit>
+    <trans-unit id="boolean.false">
+      <source xml:lang="en">False</source>
+    </trans-unit>
+    <trans-unit id="boolean.true">
+      <source xml:lang="en">True</source>
     </trans-unit>
     <trans-unit id="connection.azureAccountDropdownLabel">
       <source xml:lang="en">Account</source>
@@ -5304,6 +5588,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="errorMessageDialog.ok">
       <source xml:lang="en">OK</source>
+    </trans-unit>
+    <trans-unit id="errorMessageDialog.readMore">
+      <source xml:lang="en">Read More</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/errorMessage/browser/errorMessageService" source-language="en" datatype="plaintext"><body>
@@ -5898,6 +6185,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="resultsSerializer.saveAsFileExtensionJSONTitle">
       <source xml:lang="en">JSON</source>
+    </trans-unit>
+    <trans-unit id="resultsSerializer.saveAsFileExtensionMarkdownTitle">
+      <source xml:lang="en">Markdown</source>
     </trans-unit>
     <trans-unit id="resultsSerializer.saveAsFileExtensionTXTTitle">
       <source xml:lang="en">Plain Text</source>

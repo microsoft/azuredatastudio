@@ -8,8 +8,8 @@ import { Emitter } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { URI } from 'vs/base/common/uri';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IProcessDataEvent, ITerminalChildProcess, ITerminalLaunchError, IProcessProperty, IProcessPropertyMap, ProcessPropertyType, ProcessCapability, IProcessReadyEvent } from 'vs/platform/terminal/common/terminal';
-import { IPtyHostProcessReplayEvent } from 'vs/platform/terminal/common/terminalProcess';
+import { IProcessDataEvent, ITerminalChildProcess, ITerminalLaunchError, IProcessProperty, IProcessPropertyMap, ProcessPropertyType, IProcessReadyEvent } from 'vs/platform/terminal/common/terminal';
+import { IPtyHostProcessReplayEvent, ISerializedCommandDetectionCapability } from 'vs/platform/terminal/common/terminalProcess';
 import { RemoteTerminalChannelClient } from 'vs/workbench/contrib/terminal/common/remoteTerminalChannel';
 import { IRemoteAgentService } from 'vs/workbench/services/remote/common/remoteAgentService';
 
@@ -22,6 +22,8 @@ export class RemotePty extends Disposable implements ITerminalChildProcess {
 	readonly onDidChangeProperty = this._onDidChangeProperty.event;
 	private readonly _onProcessExit = this._register(new Emitter<number | undefined>());
 	readonly onProcessExit = this._onProcessExit.event;
+	private readonly _onRestoreCommands = this._register(new Emitter<ISerializedCommandDetectionCapability>());
+	readonly onRestoreCommands = this._onRestoreCommands.event;
 
 	private _startBarrier: Barrier;
 
@@ -37,9 +39,6 @@ export class RemotePty extends Disposable implements ITerminalChildProcess {
 		resolvedShellLaunchConfig: {},
 		overrideDimensions: undefined
 	};
-
-	private _capabilities: ProcessCapability[] = [];
-	get capabilities(): ProcessCapability[] { return this._capabilities; }
 
 	get id(): number { return this._id; }
 
@@ -129,11 +128,11 @@ export class RemotePty extends Disposable implements ITerminalChildProcess {
 		return this._properties.cwd || this._properties.initialCwd;
 	}
 
-	async refreshProperty<T extends ProcessPropertyType>(type: ProcessPropertyType): Promise<IProcessPropertyMap[T]> {
+	async refreshProperty<T extends ProcessPropertyType>(type: T): Promise<IProcessPropertyMap[T]> {
 		return this._remoteTerminalChannel.refreshProperty(this._id, type);
 	}
 
-	async updateProperty<T extends ProcessPropertyType>(type: ProcessPropertyType, value: IProcessPropertyMap[T]): Promise<any> {
+	async updateProperty<T extends ProcessPropertyType>(type: T, value: IProcessPropertyMap[T]): Promise<void> {
 		return this._remoteTerminalChannel.updateProperty(this._id, type, value);
 	}
 
@@ -147,7 +146,6 @@ export class RemotePty extends Disposable implements ITerminalChildProcess {
 		return this._remoteTerminalChannel.processBinary(this._id, e);
 	}
 	handleReady(e: IProcessReadyEvent) {
-		this._capabilities = e.capabilities;
 		this._onProcessReady.fire(e);
 	}
 	handleDidChangeProperty({ type, value }: IProcessProperty<any>) {
@@ -180,6 +178,10 @@ export class RemotePty extends Disposable implements ITerminalChildProcess {
 			}
 		} finally {
 			this._inReplay = false;
+		}
+
+		if (e.commands) {
+			this._onRestoreCommands.fire(e.commands);
 		}
 
 		// remove size override

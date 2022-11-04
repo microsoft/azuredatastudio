@@ -168,20 +168,6 @@
         {
           "specialValueType": null,
           "isIdentity": false,
-          "name": "asynchronousProcessing",
-          "displayName": "%cms.connectionOptions.asynchronousProcessing.displayName%",
-          "description": "%cms.connectionOptions.asynchronousProcessing.description%",
-          "groupName": "%cms.connectionOptions.groupName.initialization%",
-          "valueType": "boolean",
-          "defaultValue": null,
-          "objectType": null,
-          "categoryValues": null,
-          "isRequired": false,
-          "isArray": false
-        },
-        {
-          "specialValueType": null,
-          "isIdentity": false,
           "name": "connectTimeout",
           "displayName": "%cms.connectionOptions.connectTimeout.displayName%",
           "description": "%cms.connectionOptions.connectTimeout.description%",
@@ -238,11 +224,12 @@
           "description": "%cms.connectionOptions.encrypt.description%",
           "groupName": "%cms.connectionOptions.groupName.security%",
           "valueType": "boolean",
-          "defaultValue": null,
+          "defaultValue": "true",
           "objectType": null,
           "categoryValues": null,
           "isRequired": false,
-          "isArray": false
+          "isArray": false,
+          "showOnConnectionDialog": true
         },
         {
           "specialValueType": null,
@@ -266,11 +253,12 @@
           "description": "%cms.connectionOptions.trustServerCertificate.description%",
           "groupName": "%cms.connectionOptions.groupName.security%",
           "valueType": "boolean",
-          "defaultValue": null,
+          "defaultValue": "false",
           "objectType": null,
           "categoryValues": null,
           "isRequired": false,
-          "isArray": false
+          "isArray": false,
+          "showOnConnectionDialog": true
         },
         {
           "specialValueType": null,
@@ -659,12 +647,11 @@
   "devDependencies": {
     "@types/mocha": "^7.0.2",
     "@types/node": "^12.11.7",
-    "mocha-junit-reporter": "^1.17.0",
-    "mocha-multi-reporters": "^1.1.7",
     "mocha": "^7.1.1",
     "should": "^13.2.1",
     "@microsoft/vscodetestcover": "^1.2.1",
-    "typemoq": "^2.1.0"
+    "typemoq": "^2.1.0",
+    "@microsoft/azdata-test": "^2.0.3"
   },
   "__metadata": {
     "id": "40",

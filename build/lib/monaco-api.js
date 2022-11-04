@@ -559,13 +559,6 @@ class TypeScriptLanguageServiceHost {
         this._files = files;
         this._compilerOptions = compilerOptions;
     }
-    // {{SQL CARBON EDIT}} - provide missing methods
-    readFile() {
-        return undefined;
-    }
-    fileExists() {
-        return false;
-    }
     // --- language service host ---------------
     getCompilationSettings() {
         return this._compilerOptions;
@@ -603,6 +596,12 @@ class TypeScriptLanguageServiceHost {
     }
     isDefaultLibFileName(fileName) {
         return fileName === this.getDefaultLibFileName(this._compilerOptions);
+    }
+    readFile(path, _encoding) {
+        return this._files[path] || this._libs[path];
+    }
+    fileExists(path) {
+        return path in this._files || path in this._libs;
     }
 }
 function execute() {

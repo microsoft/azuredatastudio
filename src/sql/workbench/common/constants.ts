@@ -26,6 +26,8 @@ export const ToggleWholeWordCommandId = 'toggleSearchWholeWord';
 export const ToggleRegexCommandId = 'toggleSearchRegex';
 export const AddCursorsAtSearchResults = 'addCursorsAtSearchResults';
 
+export const CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES = 'workbench.enablePreviewFeatures';
+
 export const SearchViewFocusedKey = new RawContextKey<boolean>('notebookSearchViewletFocus', false);
 export const InputBoxFocusedKey = new RawContextKey<boolean>('inputBoxFocus', false);
 export const SearchInputBoxFocusedKey = new RawContextKey<boolean>('searchInputBoxFocus', false);
@@ -37,20 +39,22 @@ export const FILE_QUERY_EDITOR_TYPEID = 'workbench.editorInput.fileQueryInput';
 export const RESOURCE_VIEWER_TYPEID = 'workbench.editorInput.resourceViewerInput';
 
 export const JUPYTER_PROVIDER_ID = 'jupyter';
+export const VSCODE_JUPYTER_PROVIDER_ID = 'jupyter-notebook';
 export const IPYKERNEL_DISPLAY_NAME = 'Python 3 (ipykernel)';
 export const INTERACTIVE_PROVIDER_ID = 'dotnet-interactive';
-export const INTERACTIVE_LANGUAGE_MODE = 'dib';
-export const DEFAULT_NB_LANGUAGE_MODE = 'notebook';
 export const TSGOPS_WEB_QUALITY = 'tsgops-image';
 export const CELL_URI_PATH_PREFIX = 'notebook-editor-';
+
+export const DEFAULT_NOTEBOOK_FILETYPE = '.ipynb';
 
 // The version of the notebook file format that we support
 export const NBFORMAT = 4;
 export const NBFORMAT_MINOR = 2;
 
 export const enum NotebookLanguage {
-	Notebook = 'Notebook',
-	Ipynb = 'ipynb'
+	Notebook = 'notebook',
+	Ipynb = 'ipynb',
+	Interactive = 'dib'
 }
 export interface INotebookSearchConfigurationProperties {
 	exclude: glob.IExpression;

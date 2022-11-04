@@ -158,7 +158,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			defaultAuthenticationType = WorkbenchUtils.getSqlConfigValue<string>(this._configurationService, Constants.defaultAuthenticationType);
 		}
 
-		return defaultAuthenticationType || Constants.sqlLogin;  // as a fallback, default to sql login if the value from settings is not available
+		return defaultAuthenticationType || Constants.AuthenticationType.SqlLogin;  // as a fallback, default to sql login if the value from settings is not available
 
 	}
 
@@ -177,11 +177,6 @@ export class ConnectionDialogService implements IConnectionDialogService {
 					return;
 				}
 				profile = result.connection;
-
-				if (params.oldProfileId && params.isEditConnection) {
-					profile.id = params.oldProfileId;
-				}
-
 				profile.serverName = trim(profile.serverName);
 
 				// append the port to the server name for SQL Server connections
@@ -224,7 +219,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		} else {
 			if (params && params.input && params.connectionType === ConnectionType.editor) {
 				this._connectionManagementService.cancelEditorConnection(params.input);
-			} else {
+			} else if (!params.isEditConnection) { // Do not cancel connected connection if this is Edit mode.
 				this._connectionManagementService.cancelConnection(this._model);
 			}
 			if (params && params.input && params.input.onConnectCanceled) {
@@ -275,7 +270,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				this._logService.debug(`ConnectionDialogService: Error handled and connection reset - Error: ${connectionResult.errorMessage}`);
 			} else {
 				this._connectionDialog.resetConnection();
-				this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, connectionResult.callStack);
+				this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, connectionResult.callStack, connectionResult.errorCode);
 				this._logService.debug(`ConnectionDialogService: Connection error: ${connectionResult.errorMessage}`);
 			}
 		} catch (err) {
@@ -461,7 +456,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		await this.showDialogWithModel();
 
 		if (connectionResult && connectionResult.errorMessage) {
-			this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, connectionResult.callStack);
+			this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, connectionResult.callStack, connectionResult.errorCode);
 		}
 	}
 
@@ -493,7 +488,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		recentConnections.forEach(conn => conn.dispose());
 	}
 
-	private showErrorDialog(severity: Severity, headerTitle: string, message: string, messageDetails?: string): void {
+	private showErrorDialog(severity: Severity, headerTitle: string, message: string, messageDetails?: string, errorCode?: number): void {
 		// Kerberos errors are currently very hard to understand, so adding handling of these to solve the common scenario
 		// note that ideally we would have an extensible service to handle errors by error code and provider, but for now
 		// this solves the most common "hard error" that we've noticed
@@ -507,7 +502,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				localize('kerberosHelpLink', "Help configuring Kerberos is available at {0}", helpLink),
 				localize('kerberosKinit', "If you have previously connected you may need to re-run kinit.")
 			].join('\r\n');
-			actions.push(new Action('Kinit', 'Run kinit', null, true, async () => {
+			actions.push(new Action('Kinit', localize('runKinit', "Run Kinit"), undefined, true, async () => {
 				this._connectionDialog.close();
 				await this._clipboardService.writeText('kinit\r');
 				await this._commandService.executeCommand('workbench.action.terminal.focus');
@@ -517,9 +512,25 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				}, 10);
 				return;
 			}));
-
 		}
+
 		this._logService.error(message);
-		this._errorMessageService.showDialog(severity, headerTitle, message, messageDetails, actions);
+
+		// Set instructionText for MSSQL Provider Encryption error code -2146893019 thrown by SqlClient when certificate validation fails.
+		if (errorCode === -2146893019) {
+			let enableTrustServerCert = localize('enableTrustServerCertificate', "Enable Trust server certificate");
+			let instructionText = localize('trustServerCertInstructionText', `Encryption was enabled on this connection, review your SSL and certificate configuration for the target SQL Server, or enable 'Trust server certificate' in the connection dialog.
+
+			Note: A self-signed certificate offers only limited protection and is not a recommended practice for production environments. Do you want to enable 'Trust server certificate' on this connection and retry? `);
+			let readMoreLink = "https://learn.microsoft.com/sql/database-engine/configure-windows/enable-encrypted-connections-to-the-database-engine"
+			actions.push(new Action('trustServerCert', enableTrustServerCert, undefined, true, async () => {
+				this._model.options[Constants.trustServerCertificate] = true;
+				await this.handleOnConnect(this._connectionDialog.newConnectionParams, this._model as IConnectionProfile);
+				return;
+			}));
+			this._errorMessageService.showDialog(severity, headerTitle, message, messageDetails, actions, instructionText, readMoreLink);
+		} else {
+			this._errorMessageService.showDialog(severity, headerTitle, message, messageDetails, actions);
+		}
 	}
 }

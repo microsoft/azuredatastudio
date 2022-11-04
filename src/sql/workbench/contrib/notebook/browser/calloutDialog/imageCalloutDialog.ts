@@ -17,7 +17,6 @@ import { IPathService } from 'vs/workbench/services/path/common/pathService';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { Deferred } from 'sql/base/common/promise';
@@ -27,6 +26,7 @@ import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
 import { attachCalloutDialogStyler } from 'sql/workbench/common/styler';
 import * as path from 'vs/base/common/path';
 import { unquoteText } from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/utils';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 
 export interface IImageCalloutDialogOptions {
 	insertTitle?: string,
@@ -195,7 +195,7 @@ export class ImageCalloutDialog extends Modal {
 
 	private registerListeners(): void {
 		this._register(styler.attachInputBoxStyler(this._imageUrlInputBox, this._themeService));
-		this._register(styler.attachCheckboxStyler(this._imageEmbedCheckbox, this._themeService));
+		this._register(styler.attachToggleStyler(this._imageEmbedCheckbox, this._themeService));
 	}
 
 	public insert(): void {

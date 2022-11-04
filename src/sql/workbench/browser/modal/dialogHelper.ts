@@ -6,12 +6,11 @@
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { append, $ } from 'vs/base/browser/dom';
-
 import * as types from 'vs/base/common/types';
-
 import * as azdata from 'azdata';
+import { wrapStringWithNewLine } from 'sql/workbench/common/sqlWorkbenchUtils';
 
-export function appendRow(container: HTMLElement, label: string, labelClass: string, cellContainerClass: string, rowContainerClass?: string | Array<string>, showRequiredIndicator: boolean = false): HTMLElement {
+export function appendRow(container: HTMLElement, label: string, labelClass: string, cellContainerClass: string, rowContainerClass?: string | Array<string>, showRequiredIndicator: boolean = false, title?: string, titleMaxWidth?: number): HTMLElement {
 	let rowContainer = append(container, $('tr'));
 	if (rowContainerClass) {
 		if (types.isString(rowContainerClass)) {
@@ -22,6 +21,13 @@ export function appendRow(container: HTMLElement, label: string, labelClass: str
 	}
 	const labelContainer = append(append(rowContainer, $(`td.${labelClass}`)), $('div.dialog-label-container'));
 	labelContainer.style.display = 'flex';
+
+	if (title) {
+		labelContainer.classList.add("codicon");
+		labelContainer.classList.add("info-icon");
+		labelContainer.title = titleMaxWidth ? wrapStringWithNewLine(title, titleMaxWidth) : title;
+	}
+
 	append(labelContainer, $('div')).innerText = label;
 	if (showRequiredIndicator) {
 		const indicator = append(labelContainer, $('span.required-indicator'));
