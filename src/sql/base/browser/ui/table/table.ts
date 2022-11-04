@@ -172,6 +172,8 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 						validateInput: async (value: string) => {
 							if (!Number(value)) {
 								return localize('table.resizeColumn.invalid', "Invalid column width");
+							} else if (parseInt(value) <= 0) {
+								return localize('table.resizeColumn.negativeSize', "Size cannot be 0 or negative");
 							}
 							return undefined;
 						}
