@@ -73,7 +73,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 	constructor(
 		parent: HTMLElement,
 		accessibilityProvider: IAccessibilityProvider,
-		quickInputProvider: IQuickInputProvider,
+		private _quickInputProvider: IQuickInputProvider,
 		configuration?: ITableConfiguration<T>,
 		options?: Slick.GridOptions<T>) {
 		super();
@@ -146,46 +146,12 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 
 		this._grid.onKeyDown.subscribe(async (e, args: Slick.OnKeyDownEventArgs<T>) => {
 			const evt = (e as JQuery.TriggeredEvent).originalEvent as KeyboardEvent;
-
-			/**
-			 * Adding a keyboard shortcut Alt+left/right arrow to change column width. This is a
-			 * workaround to provide an alternative to column header mouse drag based resizing.
-			 * TODO: Make the shortcut configurable or provide a way to focus on column headers
-			 * so that users can focus a header and then use the arrow keys to resize columns.
-			 */
 			const stdEvt = new StandardKeyboardEvent(evt);
-
 			if (stdEvt.altKey && stdEvt.shiftKey && stdEvt.keyCode === KeyCode.KeyS) {
-
-				const activeCell = this._grid.getActiveCell();
-				if (activeCell) {
-					const columns = this._grid.getColumns();
-					/**
-					 * increasing/decreasing the column width by 10px as 1px will be too slow to make
-					 * a noticeable change
-					 */
-
-					const newColumnWidth = await quickInputProvider.input({
-						placeHolder: localize('table.resizeColumn', "Provide new column width"),
-						prompt: localize('table.resizeColumn', "Provide new column width"),
-						value: columns[activeCell.cell].width.toString(),
-						validateInput: async (value: string) => {
-							if (!Number(value)) {
-								return localize('table.resizeColumn.invalid', "Invalid column width");
-							} else if (parseInt(value) <= 0) {
-								return localize('table.resizeColumn.negativeSize', "Size cannot be 0 or negative");
-							}
-							return undefined;
-						}
-					});
-
-					if (newColumnWidth) {
-						columns[activeCell.cell].width = parseInt(newColumnWidth);
-						this._grid.setColumns(columns);
-						this.grid.setActiveCell(activeCell.row, activeCell.cell);
-						stdEvt.stopPropagation();
-						stdEvt.preventDefault();
-					}
+				const newWidth = this.resizeActiveCellColumnByQuickInput();
+				if (newWidth) {
+					stdEvt.stopPropagation();
+					stdEvt.preventDefault();
 				}
 			}
 			this._onKeyDown.fire({
@@ -196,6 +162,35 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 				}
 			});
 		});
+	}
+
+	private async resizeActiveCellColumnByQuickInput(): Promise<number | undefined> {
+		const activeCell = this._grid.getActiveCell();
+		if (activeCell) {
+			const columns = this._grid.getColumns();
+			if (columns[activeCell.cell].resizable) {
+				const newColumnWidth = await this._quickInputProvider.input({
+					placeHolder: localize('table.resizeColumn', "Provide new column width"),
+					prompt: localize('table.resizeColumn', "Provide new column width"),
+					value: columns[activeCell.cell].width.toString(),
+					validateInput: async (value: string) => {
+						if (!Number(value)) {
+							return localize('table.resizeColumn.invalid', "Invalid column width");
+						} else if (parseInt(value) <= 0) {
+							return localize('table.resizeColumn.negativeSize', "Size cannot be 0 or negative");
+						}
+						return undefined;
+					}
+				});
+				if (newColumnWidth) {
+					columns[activeCell.cell].width = parseInt(newColumnWidth);
+					this._grid.setColumns(columns);
+					this.grid.setActiveCell(activeCell.row, activeCell.cell);
+				}
+				return parseInt(newColumnWidth);
+			}
+		}
+		return undefined;
 	}
 
 	public rerenderGrid() {
