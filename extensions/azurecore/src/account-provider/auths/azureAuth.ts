@@ -226,7 +226,6 @@ export abstract class AzureAuth implements vscode.Disposable {
 		const resource = this.resources.find(s => s.azureResourceId === azureResource);
 		if (!resource) {
 			Logger.error(`Unable to find Azure resource ${azureResource} for account ${account.displayInfo.userId} and tenant ${tenantId}`);
-
 			return undefined;
 		}
 
