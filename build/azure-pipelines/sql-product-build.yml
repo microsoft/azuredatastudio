@@ -106,7 +106,7 @@ stages:
         timeoutInMinutes: 90
 
   - stage: Windows
-    condition: and(succeeded(), or(eq(variables['VSCODE_BUILD_WIN32'], true), eq(variables['VSCODE_BUILD_WIN32_ARM64'], true))))
+    condition: and(succeeded(), or(eq(variables['VSCODE_BUILD_WIN32'], true), eq(variables['VSCODE_BUILD_WIN32_ARM64'], true)))
     pool:
       vmImage: 'windows-2019'
     dependsOn:
