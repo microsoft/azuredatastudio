@@ -107,7 +107,7 @@ export class NotebookUriHandler implements vscode.UriHandler {
 					preserveFocus: true
 				});
 			} else {
-				let doc = await vscode.workspace.openTextDocument(vscode.Uri.from({ path: path.basename(uri.fsPath), scheme: 'untitled' }));
+				let doc = await vscode.workspace.openTextDocument(uri.with({ authority: '', scheme: 'untitled', path: path.basename(uri.fsPath) }));
 				let editor = await vscode.window.showTextDocument(doc, vscode.ViewColumn.Active, true);
 				await editor.edit(builder => {
 					builder.insert(new vscode.Position(0, 0), contents);
