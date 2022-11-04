@@ -117,7 +117,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private markdownPreviewLineHeight: number;
 	public readonly onDidClickLink = this._onDidClickLink.event;
 	public doubleClickEditEnabled: boolean;
-	public renderTablesInHtml: boolean;
 	private _editorHeight: number;
 	private readonly _markdownMaxHeight = 4000;
 
@@ -138,7 +137,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		let maxStackSize: number = this._configurationService.getValue('notebook.maxRichTextUndoHistory');
 		this._undoStack = new RichTextEditStack(maxStackSize);
 		this._redoStack = new RichTextEditStack(maxStackSize);
-		this.renderTablesInHtml = this._configurationService.getValue('notebook.renderTablesInHtml');
 
 		this._register(toDisposable(() => {
 			if (this.markdownResult) {
@@ -156,13 +154,11 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				this._undoStack.maxStackSize = newStackSize;
 				this._redoStack.maxStackSize = newStackSize;
 			}
-			if (e.affectsConfiguration('notebook.renderTablesInHtml')) {
-				this._htmlMarkdownConverter = this._instantiationService.createInstance(HTMLMarkdownConverter, this.notebookUri);
-			}
 		}));
 	}
 
 	public reloadTables(): void {
+		this._htmlMarkdownConverter = this._instantiationService.createInstance(HTMLMarkdownConverter, this.notebookUri);
 		if (this.previewMode) {
 			this.updateCellSource();
 		} else {

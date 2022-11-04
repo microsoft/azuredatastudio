@@ -8,7 +8,7 @@ import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, V
 
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
-import { INotificationService, INotification, Severity } from 'vs/platform/notification/common/notification';
+import { INotificationService, INotification } from 'vs/platform/notification/common/notification';
 import { localize } from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
@@ -58,7 +58,6 @@ import { RedoCommand, UndoCommand } from 'vs/editor/browser/editorExtensions';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { debounce } from 'vs/base/common/decorators';
-import * as loc from 'sql/workbench/contrib/notebook/common/constants';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 const PRIORITY = 105;
@@ -115,16 +114,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
 			this.doubleClickEditEnabled = this._configurationService.getValue('notebook.enableDoubleClickEdit');
 			if (e.affectsConfiguration('notebook.renderTablesInHtml')) {
-				this.notificationService.prompt(Severity.Info, loc.promptReloadTextCells, [{
-					label: loc.reload,
-					run: () => {
-						this.textCells.forEach(cell => cell.reloadTables());
-					}
-				}, {
-					label: 'Cancel',
-					run: () => { }
-				}]
-				);
+				this.textCells.forEach(cell => cell.reloadTables());
 			}
 		}));
 		this._register(RedoCommand.addImplementation(PRIORITY, 'notebook-cells-undo-redo', () => {

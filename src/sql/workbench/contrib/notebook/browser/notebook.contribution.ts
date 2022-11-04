@@ -360,7 +360,7 @@ configurationRegistry.registerConfiguration({
 		'notebook.renderTablesInHtml': {
 			'type': 'boolean',
 			'default': false,
-			'description': localize('notebook.renderTablesInHtml', "Display tables in HTML format in text cells instead of converting to markdown tables.")
+			'description': localize('notebook.renderTablesInHtml', "Display and save tables in HTML format in text cells instead of converting to markdown tables.")
 		},
 		'notebook.useAbsoluteFilePaths': {
 			'type': 'boolean',

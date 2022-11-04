@@ -45,7 +45,7 @@ export class HTMLMarkdownConverter {
 		return this.turndownService.turndown(html, { gfm: true });
 	}
 
-	public setTableTurndownOptions() {
+	private setTableTurndownOptions() {
 		if (this.configurationService.getValue('notebook.renderTablesInHtml')) {
 			this.turndownService.keep(['table', 'tr', 'th', 'td']);
 			this.turndownService.use(turndownPluginGfm.gfmHtmlTables);
