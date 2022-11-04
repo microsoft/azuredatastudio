@@ -12,7 +12,7 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 import { IQuestion, QuestionTypes } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
-import { getErrorMessage, isEditorTitleFree } from '../common/utils';
+import { getErrorMessage } from '../common/utils';
 import * as constants from '../common/constants';
 import { readJson } from 'fs-extra';
 
@@ -101,15 +101,13 @@ export class NotebookUriHandler implements vscode.UriHandler {
 				}
 				contents = await this.download(url);
 			}
-			let untitledUriPath = this.getUntitledUriPath(path.basename(uri.fsPath));
-			let untitledUri = uri.with({ authority: '', scheme: 'untitled', path: untitledUriPath });
 			if (path.extname(uri.fsPath) === '.ipynb') {
-				await azdata.nb.showNotebookDocument(untitledUri, {
+				await azdata.nb.openUntitledNotebookDocument({
 					initialContent: contents,
 					preserveFocus: true
 				});
 			} else {
-				let doc = await vscode.workspace.openTextDocument(untitledUri);
+				let doc = await vscode.workspace.openTextDocument(vscode.Uri.from({ path: path.basename(uri.fsPath), scheme: 'untitled' }));
 				let editor = await vscode.window.showTextDocument(doc, vscode.ViewColumn.Active, true);
 				await editor.edit(builder => {
 					builder.insert(new vscode.Position(0, 0), contents);
@@ -142,22 +140,5 @@ export class NotebookUriHandler implements vscode.UriHandler {
 				resolve(body);
 			});
 		});
-	}
-
-	private getUntitledUriPath(originalTitle: string): string {
-		let title = originalTitle;
-		let nextVal = 0;
-		let ext = path.extname(title);
-		while (!isEditorTitleFree(title)) {
-			if (ext) {
-				// Need it to be `Readme-0.txt` not `Readme.txt-0`
-				let titleStart = originalTitle.slice(0, originalTitle.length - ext.length);
-				title = `${titleStart}-${nextVal}${ext}`;
-			} else {
-				title = `${originalTitle}-${nextVal}`;
-			}
-			nextVal++;
-		}
-		return title;
 	}
 }

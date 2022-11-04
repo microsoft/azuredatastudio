@@ -28,6 +28,7 @@ import { ITextFileService } from 'vs/workbench/services/textfile/common/textfile
 import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookEditor';
 import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
 import { SqlExtHostContext, SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
+import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -321,7 +322,8 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@INotebookService private readonly _notebookService: INotebookService,
 		@IFileService private readonly _fileService: IFileService,
-		@ITextFileService private readonly _textFileService: ITextFileService
+		@ITextFileService private readonly _textFileService: ITextFileService,
+		@IUntitledTextEditorService private readonly _untitledEditorService: IUntitledTextEditorService,
 	) {
 		super();
 		if (extHostContext) {
@@ -346,6 +348,28 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 	async $tryCreateNotebookDocument(providerId: string, contents?: azdata.nb.INotebookContents): Promise<UriComponents> {
 		let input = await this._notebookService.createNotebookInputFromContents(providerId, contents);
 		return input.resource;
+	}
+
+	async $tryOpenUntitledNotebookDocument(options: INotebookShowOptions): Promise<string> {
+		let filePath = await this.createPrefixedNotebookFilePath();
+		let docUri: URI = URI.from({ scheme: Schemas.untitled, path: filePath });
+		return this.$tryShowNotebookDocument(docUri, options);
+	}
+
+	private async createPrefixedNotebookFilePath(): Promise<string> {
+		let prefixFileName = (counter: number): string => {
+			return `Notebook-${counter}`;
+		};
+
+		let counter = 1;
+		// Get document name and check if it exists
+		let filePath = prefixFileName(counter);
+		while (this._untitledEditorService.get(URI.from({ scheme: Schemas.untitled, path: filePath }))) {
+			counter++;
+			filePath = prefixFileName(counter);
+		}
+
+		return filePath;
 	}
 
 	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): Promise<string> {

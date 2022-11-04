@@ -992,6 +992,7 @@ export interface MainThreadNotebookDocumentsAndEditorsShape extends IDisposable 
 	$trySetTrusted(_uri: UriComponents, isTrusted: boolean): Thenable<boolean>;
 	$trySaveDocument(uri: UriComponents): Thenable<boolean>;
 	$tryCreateNotebookDocument(providerId: string, contents?: azdata.nb.INotebookContents): Promise<UriComponents>;
+	$tryOpenUntitledNotebookDocument(options: INotebookShowOptions): Promise<string>;
 	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): Promise<string>;
 	$tryApplyEdits(id: string, modelVersionId: number, edits: INotebookEditOperation[], opts: IUndoStopOptions): Promise<boolean>;
 	$runCell(id: string, cellUri: UriComponents): Promise<boolean>;

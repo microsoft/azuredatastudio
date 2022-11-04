@@ -249,6 +249,33 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 		return docData.document;
 	}
 
+	public async openUntitledNotebookDocument(showOptions: azdata.nb.NotebookShowOptions) {
+		let options: INotebookShowOptions = {};
+		if (showOptions) {
+			options.preserveFocus = showOptions.preserveFocus;
+			options.preview = showOptions.preview;
+			options.position = showOptions.viewColumn;
+			options.providerId = showOptions.providerId;
+			options.connectionProfile = showOptions.connectionProfile;
+			options.defaultKernel = showOptions.defaultKernel;
+			if (showOptions.initialContent) {
+				if (typeof (showOptions.initialContent) !== 'string') {
+					options.initialContent = JSON.stringify(showOptions.initialContent);
+				} else {
+					options.initialContent = showOptions.initialContent;
+				}
+			}
+			options.initialDirtyState = showOptions.initialDirtyState;
+		}
+		let id = await this._proxy.$tryOpenUntitledNotebookDocument(options);
+		let editor = this.getEditor(id);
+		if (editor) {
+			return editor;
+		} else {
+			throw new Error(`Failed to open new untitled notebook document.`);
+		}
+	}
+
 	showNotebookDocument(uri: vscode.Uri, showOptions: azdata.nb.NotebookShowOptions): Thenable<azdata.nb.NotebookEditor> {
 		return this.doShowNotebookDocument(uri, showOptions);
 	}
