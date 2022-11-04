@@ -1103,7 +1103,7 @@ export class ProjectsController {
 		return result;
 	}
 
-	//#region AutoRest methods
+	//#region AutoRest
 
 	public async selectAutorestSpecFile(): Promise<string | undefined> {
 		let quickpickSelection = await vscode.window.showQuickPick(
@@ -1541,6 +1541,7 @@ export class ProjectsController {
 	//#endregion
 
 	//#region Update project from database
+
 	/**
 	 * Display dialog for user to configure existing SQL Project with the changes/differences from a database
 	 */
@@ -1741,8 +1742,6 @@ export class ProjectsController {
 	}
 
 	//#endregion
-
-
 }
 
 export interface NewProjectParams {
