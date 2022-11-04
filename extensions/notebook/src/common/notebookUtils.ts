@@ -102,7 +102,7 @@ export class NotebookUtils {
 	}
 
 	public async analyzeNotebook(oeContext?: azdata.ObjectExplorerContext): Promise<void> {
-		let editor = await azdata.nb.openUntitledNotebookDocument({
+		let editor = await azdata.nb.showNotebookDocument(vscode.Uri.from({ scheme: 'untitled' }), {
 			connectionProfile: oeContext ? oeContext.connectionProfile : undefined,
 			providerId: JUPYTER_NOTEBOOK_PROVIDER,
 			preview: false,
