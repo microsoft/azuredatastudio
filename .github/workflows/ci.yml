@@ -138,7 +138,7 @@ jobs:
         env:
           SQL_NO_INLINE_SOURCEMAP: 1
 
-      - name: Run Core Unit Tests # {{SQL CARBON EDIT}} Run core unit tests
+      - name: Run Core Unit Tests # {{SQL CARBON EDIT}} Rename to core for clarity
         id: electron-unit-tests
         run: DISPLAY=:10 ./scripts/test.sh --runGlob "**/sql/**/*.test.js" --coverage
 
