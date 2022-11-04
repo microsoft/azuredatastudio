@@ -273,7 +273,7 @@ export class AzdataGraphView extends Disposable {
 		this._diagram.clearExpensiveOperatorHighlighting();
 	}
 
-	public highlightExpensiveOperator(predicate: (cell: AzDataGraphCell) => number): boolean {
+	public highlightExpensiveOperator(predicate: (cell: AzDataGraphCell) => number): string {
 		return this._diagram.highlightExpensiveOperator(predicate);
 	}
 
