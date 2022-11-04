@@ -57,10 +57,15 @@ describe('Azure Authentication', function () {
 				displayName: 'test',
 				userId: 'test'
 			},
-			key: 'test',
+			key: {
+				providerId: 'test',
+				accountId: 'test'
+			},
 			properties: {
 				owningTenant: mockTenant,
 				tenants: [mockTenant],
+				providerSettings: provider,
+				isMsAccount: true
 			}
 		} as AzureAccount;
 
