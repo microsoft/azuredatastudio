@@ -149,7 +149,7 @@ steps:
       DISPLAY=:10 ./scripts/test-extensions-unit.sh --build --tfs "Extension Unit Tests"
     displayName: Run Extension Unit Tests (Continue on Error)
     continueOnError: true
-    condition: and(succeeded(), and(eq(variables['RUN_TESTS'], 'true'), ne(variables['EXTENSION_UNIT_TESTS_FAIL_ON_ERROR'], 'true')))
+    condition: and(succeeded(), and(eq(variables['RUN_TESTS'], 'true'), eq(variables['EXTENSION_UNIT_TESTS_FAIL_ON_ERROR'], 'false')))
 
   - script: |
       # Figure out the full absolute path of the product we just built
