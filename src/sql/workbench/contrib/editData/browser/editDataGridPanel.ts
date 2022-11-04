@@ -35,6 +35,7 @@ import { Event } from 'vs/base/common/event';
 import { equals } from 'vs/base/common/arrays';
 import * as DOM from 'vs/base/browser/dom';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 
 export class EditDataGridPanel extends GridParentComponent {
 	// The time(in milliseconds) we wait before refreshing the grid.
@@ -69,8 +70,14 @@ export class EditDataGridPanel extends GridParentComponent {
 	private dirtyCells: number[] = [];
 	protected plugins = new Array<Slick.Plugin<any>>();
 	private newlinePattern: string;
+	// User inputted string saved in case of an invalid edit
+	private lastEnteredString: string;
 	// List of column names with their indexes stored.
 	private columnNameToIndex: { [columnNumber: number]: string } = {};
+
+	// Prevent the cell submission function from being called multiple times.
+	private cellSubmitInProgress: boolean;
+
 	// Edit Data functions
 	public onActiveCellChanged: (event: Slick.OnActiveCellChangedEventArgs<any>) => void;
 	public onCellEditEnd: (event: Slick.OnCellChangeEventArgs<any>) => void;
@@ -99,7 +106,8 @@ export class EditDataGridPanel extends GridParentComponent {
 		@IConfigurationService configurationService: IConfigurationService,
 		@IClipboardService clipboardService: IClipboardService,
 		@IQueryEditorService queryEditorService: IQueryEditorService,
-		@ILogService logService: ILogService
+		@ILogService logService: ILogService,
+		@IAccessibilityService private accessibilityService: IAccessibilityService
 	) {
 		super(contextMenuService, keybindingService, contextKeyService, configurationService, clipboardService, queryEditorService, logService);
 		this.nativeElement = document.createElement('div');
@@ -295,6 +303,11 @@ export class EditDataGridPanel extends GridParentComponent {
 			return;
 		}
 
+		if (this.cellSubmitInProgress) {
+			return;
+		}
+
+
 		// get the cell we have just immediately clicked (to set as the new active cell in handleChanges).
 		this.lastClickedCell = { row, column };
 
@@ -304,7 +317,9 @@ export class EditDataGridPanel extends GridParentComponent {
 		}
 
 		// disable editing the grid temporarily as any text entered while the grid is being refreshed will be lost upon completion.
+		this.cellSubmitInProgress = true;
 		this.updateEnabledState(false);
+		this.cellSubmitInProgress = false;
 
 		let cellSelectTasks: Promise<void> = this.submitCurrentCellChange(
 			(result: EditUpdateCellResult) => {
@@ -315,7 +330,10 @@ export class EditDataGridPanel extends GridParentComponent {
 			},
 			(error) => {
 				// Cell update failed, jump back to the last cell we were on
+				this.cellSubmitInProgress = true;
 				this.updateEnabledState(true);
+				this.cellSubmitInProgress = false;
+				this.lastClickedCell = { row: self.currentCell.row, column: self.currentCell.column };
 				self.focusCell(self.currentCell.row, self.currentCell.column, true);
 				return Promise.reject(null);
 			});
@@ -331,7 +349,10 @@ export class EditDataGridPanel extends GridParentComponent {
 					return Promise.resolve();
 				}, error => {
 					// Committing failed, jump back to the last selected cell
+					this.cellSubmitInProgress = true;
 					this.updateEnabledState(true);
+					this.cellSubmitInProgress = false;
+					this.lastClickedCell = { row: self.currentCell.row, column: self.currentCell.column };
 					self.focusCell(self.currentCell.row, self.currentCell.column);
 					return Promise.reject(null);
 				});
@@ -340,7 +361,9 @@ export class EditDataGridPanel extends GridParentComponent {
 
 		// At the end of a successful cell select, update the currently selected cell
 		cellSelectTasks = cellSelectTasks.then(() => {
+			this.cellSubmitInProgress = true;
 			this.updateEnabledState(true);
+			this.cellSubmitInProgress = false;
 			self.setCurrentCell(row, column);
 			self.focusCell(row, column);
 		});
@@ -568,8 +591,14 @@ export class EditDataGridPanel extends GridParentComponent {
 				.then(() => {
 					return this.removeRow(currentNewRowIndex);
 				}).then(() => {
+					// Restore cell value after deleting/refreshing new row.
+					if (this.currentCell && this.isNullRow(this.currentCell.row) && this.lastEnteredString) {
+						this.focusCell(this.currentCell.row, this.currentCell.column);
+						document.execCommand('selectAll');
+						document.execCommand('delete');
+						document.execCommand('insertText', false, this.lastEnteredString);
+					}
 					this.newRowVisible = false;
-					this.resetCurrentCell();
 				});
 		} else {
 			try {
@@ -615,6 +644,8 @@ export class EditDataGridPanel extends GridParentComponent {
 				return self.dataService.updateCell(sessionRowId, self.currentCell.column - 1, this.newlinePattern ? self.currentEditCellValue.replace('\u0000', this.newlinePattern) : self.currentEditCellValue);
 			}).then(
 				result => {
+					// last entered input is no longer needed as we have entered a valid input to commit.
+					self.lastEnteredString = undefined;
 					self.currentEditCellValue = undefined;
 					let refreshPromise: Thenable<void> = Promise.resolve();
 					if (refreshGrid) {
@@ -625,7 +656,16 @@ export class EditDataGridPanel extends GridParentComponent {
 					});
 				},
 				error => {
-					return errorHandler(error);
+					// save the user's current input so that it can be restored after revert.
+					self.lastEnteredString = self.currentEditCellValue;
+					self.currentEditCellValue = undefined;
+					let refreshPromise: Thenable<void> = Promise.resolve();
+					if (refreshGrid) {
+						refreshPromise = this.revertCurrentRow();
+					}
+					return refreshPromise.then(() => {
+						return errorHandler(error);
+					});
 				}
 			);
 		}
@@ -855,7 +895,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			};
 
 			if (dataSet.columnDefinitions) {
-				this.table = new Table(this.nativeElement.appendChild(newGridContainer), { dataProvider: this.gridDataProvider, columns: dataSet.columnDefinitions }, options);
+				this.table = new Table(this.nativeElement.appendChild(newGridContainer), this.accessibilityService, { dataProvider: this.gridDataProvider, columns: dataSet.columnDefinitions }, options);
 				for (let plugin of this.plugins) {
 					this.table.registerPlugin(plugin);
 				}
@@ -865,7 +905,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			}
 		}
 		else {
-			this.table = new Table(this.nativeElement.appendChild(newGridContainer));
+			this.table = new Table(this.nativeElement.appendChild(newGridContainer), this.accessibilityService);
 		}
 	}
 

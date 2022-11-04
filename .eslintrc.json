@@ -219,7 +219,9 @@
 					"azurecore",
 					"**/{vs,sql}/base/common/**",
 					"**/{vs,sql}/base/parts/*/common/**",
-					"**/{vs,sql}/platform/*/common/**"
+					"**/{vs,sql}/platform/*/common/**",
+					"@microsoft/1ds-post-js",
+					"@microsoft/1ds-core-js"
 				]
 			},
 			{
@@ -257,7 +259,9 @@
 					"**/{vs,sql}/base/{common,node}/**",
 					"**/{vs,sql}/base/parts/*/{common,node}/**",
 					"**/{vs,sql}/platform/*/{common,node}/**",
-					"@vscode/*", "@parcel/*", "*" // node modules
+					"@vscode/*", "@parcel/*", "*", // node modules
+					"@microsoft/1ds-post-js",
+					"@microsoft/1ds-core-js"
 				]
 			},
 			{
@@ -306,7 +310,9 @@
 					"**/{vs,sql}/base/test/{common,browser}/**",
 					"**/{vs,sql}/base/parts/*/common/**", // {{SQL CARBON EDIT}}
 					"**/{vs,sql}/platform/*/{common,browser}/**",
-					"**/{vs,sql}/platform/*/test/{common,browser}/**"
+					"**/{vs,sql}/platform/*/test/{common,browser}/**",
+					"@microsoft/1ds-post-js",
+					"@microsoft/1ds-core-js"
 				]
 			},
 			{

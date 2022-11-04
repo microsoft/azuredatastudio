@@ -350,9 +350,6 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 				this._findDecorations.getCount(),
 				this._currentMatch
 			);
-			if (this._finder.getDomNode().style.visibility === 'visible' && this._previousMatch !== this._currentMatch) {
-				this._setCurrentFindMatch(this._currentMatch);
-			}
 		}
 	}
 

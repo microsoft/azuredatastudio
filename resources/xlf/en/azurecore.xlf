@@ -28,6 +28,9 @@
     <trans-unit id="azure.noUniqueIdentifier">
       <source xml:lang="en">The user had no unique identifier within AAD</source>
     </trans-unit>
+    <trans-unit id="azure.owningTenantNotFound">
+      <source xml:lang="en">Owning Tenant information not found for account.</source>
+    </trans-unit>
     <trans-unit id="azure.responseError">
       <source xml:lang="en">Token retrieval failed with an error. [Open developer tools]({0}) for more details.</source>
     </trans-unit>

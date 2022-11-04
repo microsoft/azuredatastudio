@@ -219,7 +219,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		} else {
 			if (params && params.input && params.connectionType === ConnectionType.editor) {
 				this._connectionManagementService.cancelEditorConnection(params.input);
-			} else {
+			} else if (!params.isEditConnection) { // Do not cancel connected connection if this is Edit mode.
 				this._connectionManagementService.cancelConnection(this._model);
 			}
 			if (params && params.input && params.input.onConnectCanceled) {
