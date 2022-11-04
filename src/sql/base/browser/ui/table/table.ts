@@ -23,6 +23,8 @@ import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { IAccessibilityProvider } from 'sql/base/browser/ui/accessibility/accessibilityProvider';
+import { IQuickInputProvider } from 'sql/base/browser/ui/qucikInput/quickInputProvider';
+import { localize } from 'vs/nls';
 
 function getDefaultOptions<T>(): Slick.GridOptions<T> {
 	return <Slick.GridOptions<T>>{
@@ -68,7 +70,12 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 	private _onBlur = new Emitter<void>();
 	public readonly onBlur = this._onBlur.event;
 
-	constructor(parent: HTMLElement, accessibilityProvider: IAccessibilityProvider, configuration?: ITableConfiguration<T>, options?: Slick.GridOptions<T>) {
+	constructor(
+		parent: HTMLElement,
+		accessibilityProvider: IAccessibilityProvider,
+		quickInputProvider: IQuickInputProvider,
+		configuration?: ITableConfiguration<T>,
+		options?: Slick.GridOptions<T>) {
 		super();
 		if (!configuration || !configuration.dataProvider || isArray(configuration.dataProvider)) {
 			this._data = new TableDataView<T>(configuration && configuration.dataProvider as Array<T>);
@@ -137,7 +144,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this.mapMouseEvent(this._grid.onDblClick, this._onDoubleClick);
 		this._grid.onColumnsResized.subscribe(() => this._onColumnResize.fire());
 
-		this._grid.onKeyDown.subscribe((e, args: Slick.OnKeyDownEventArgs<T>) => {
+		this._grid.onKeyDown.subscribe(async (e, args: Slick.OnKeyDownEventArgs<T>) => {
 			const evt = (e as JQuery.TriggeredEvent).originalEvent as KeyboardEvent;
 
 			/**
@@ -147,7 +154,9 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 			 * so that users can focus a header and then use the arrow keys to resize columns.
 			 */
 			const stdEvt = new StandardKeyboardEvent(evt);
-			if (stdEvt.altKey && [KeyCode.LeftArrow, KeyCode.RightArrow].includes(stdEvt.keyCode)) {
+
+			if (stdEvt.altKey && stdEvt.shiftKey && stdEvt.keyCode === KeyCode.KeyS) {
+
 				const activeCell = this._grid.getActiveCell();
 				if (activeCell) {
 					const columns = this._grid.getColumns();
@@ -155,19 +164,26 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 					 * increasing/decreasing the column width by 10px as 1px will be too slow to make
 					 * a noticeable change
 					 */
-					const columnWidthChangeDelta = 10;
-					const minColumnWidth = 10;
-					if (stdEvt.keyCode === KeyCode.LeftArrow) {
-						if (columns[activeCell.cell].width > minColumnWidth) {
-							columns[activeCell.cell].width -= columnWidthChangeDelta;
+
+					const newColumnWidth = await quickInputProvider.input({
+						placeHolder: localize('table.resizeColumn', "Provide new column width"),
+						prompt: localize('table.resizeColumn', "Provide new column width"),
+						value: columns[activeCell.cell].width.toString(),
+						validateInput: async (value: string) => {
+							if (!Number(value)) {
+								return localize('table.resizeColumn.invalid', "Invalid column width");
+							}
+							return undefined;
 						}
-					} else {
-						columns[activeCell.cell].width += columnWidthChangeDelta;
+					});
+
+					if (newColumnWidth) {
+						columns[activeCell.cell].width = parseInt(newColumnWidth);
+						this._grid.setColumns(columns);
+						this.grid.setActiveCell(activeCell.row, activeCell.cell);
+						stdEvt.stopPropagation();
+						stdEvt.preventDefault();
 					}
-					this._grid.setColumns(columns);
-					this.grid.setActiveCell(activeCell.row, activeCell.cell);
-					stdEvt.stopPropagation();
-					stdEvt.preventDefault();
 				}
 			}
 			this._onKeyDown.fire({
