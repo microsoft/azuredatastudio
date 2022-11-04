@@ -527,7 +527,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			Note: A self-signed certificate offers only limited protection and is not a recommended practice for production environments. Do you want to enable 'Trust server certificate' on this connection and retry? `);
 			let readMoreLink = "https://learn.microsoft.com/sql/database-engine/configure-windows/enable-encrypted-connections-to-the-database-engine"
 			actions.push(new Action('trustServerCert', enableTrustServerCert, undefined, true, async () => {
-				this._telemetryService?.createActionEvent(TelemetryKeys.TelemetryView.ConnectionDialog, TelemetryKeys.TelemetryAction.EnableTrustServerCertificate)
+				this._telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.ConnectionDialog, TelemetryKeys.TelemetryAction.EnableTrustServerCertificate);
 				this._model.options[Constants.trustServerCertificate] = true;
 				await this.handleOnConnect(this._connectionDialog.newConnectionParams, this._model as IConnectionProfile);
 				return;
