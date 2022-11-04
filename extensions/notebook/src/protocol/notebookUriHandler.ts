@@ -109,6 +109,7 @@ export class NotebookUriHandler implements vscode.UriHandler {
 				});
 			} else {
 				// Append a numbered suffix to the path if an untitled text document already has the same title.
+				// The UntitledTextEditorService won't create automatically incremented titles if we provide a filePath like here.
 				// Duplicates should be formatted as 'Readme-1.txt', not 'Readme.txt-1'
 				let updatedPath: string;
 				let fileExt = path.extname(untitledUri.fsPath);
