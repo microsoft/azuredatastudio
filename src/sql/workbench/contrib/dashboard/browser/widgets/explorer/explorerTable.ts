@@ -33,6 +33,7 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IEditorProgressService } from 'vs/platform/progress/common/progress';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 
 const ShowActionsText: string = nls.localize('dashboard.explorer.actions', "Show Actions");
@@ -65,7 +66,8 @@ export class ExplorerTable extends Disposable {
 		private readonly progressService: IEditorProgressService,
 		private readonly logService: ILogService,
 		private readonly dashboardService: IDashboardService,
-		readonly accessibilityService: IAccessibilityService) {
+		readonly accessibilityService: IAccessibilityService,
+		readonly quickInputService: IQuickInputService) {
 		super();
 		this._explorerView = new ExplorerView(this.context);
 		const connectionInfo = this.bootStrapService.connectionManagementService.connectionInfo;
@@ -74,7 +76,7 @@ export class ExplorerTable extends Disposable {
 		this._view = new TableDataView<Slick.SlickData>(undefined, undefined, undefined, (data: Slick.SlickData[]): Slick.SlickData[] => {
 			return explorerFilter.filter(this._filterStr, data);
 		});
-		this._table = new Table<Slick.SlickData>(parentElement, accessibilityService, { dataProvider: this._view }, { forceFitColumns: true });
+		this._table = new Table<Slick.SlickData>(parentElement, accessibilityService, quickInputService, { dataProvider: this._view }, { forceFitColumns: true });
 		this._table.setSelectionModel(new RowSelectionModel());
 		this._actionsColumn = new ButtonColumn<Slick.SlickData>({
 			id: 'actions',

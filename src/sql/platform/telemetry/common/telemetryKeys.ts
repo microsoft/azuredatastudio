@@ -76,6 +76,7 @@ export const enum TelemetryAction {
 	DeleteAgentProxy = 'DeleteAgentProxy',
 	DeleteConnection = 'DeleteConnection',
 	DeleteServerGroup = 'DeleteServerGroup',
+	EnableTrustServerCertificate = 'EnableTrustServerCertificate',
 	FindNode = 'FindNode',
 	FirewallRuleRequested = 'FirewallRuleCreated',
 	GenerateScript = 'GenerateScript',
