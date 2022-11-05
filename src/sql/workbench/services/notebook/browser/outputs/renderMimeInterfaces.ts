@@ -5,6 +5,7 @@
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ReadonlyJSONObject } from 'sql/workbench/services/notebook/common/jsonext';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 
 /**
  * A namespace for rendermime associated interfaces.
@@ -45,6 +46,7 @@ export namespace IRenderMime {
 		readonly themeService: IThemeService;
 
 		readonly accessibilityService: IAccessibilityService;
+		readonly quickInputService: IQuickInputService;
 	}
 
 	/**
