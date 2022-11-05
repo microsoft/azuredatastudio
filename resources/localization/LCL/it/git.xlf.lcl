@@ -4300,18 +4300,27 @@
       <Item ItemId=";extensions/git/package.view.workbench.scm.missing.guide.linux" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Source control depends on Git being installed.]D;]A;[Download Git for Linux]5D;(https://git-scm.com/download/linux)]D;]A;After installing, please [reload]5D;(command:workbench.action.reloadWindow) (or [troubleshoot]5D;(command:git.showOutput)). Additional source control providers can be installed [from the Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Il controllo del codice sorgente dipende dall'installazione di Git.]D;]A;[Scaricare Git per Linux]5D;(https://git-scm.com/download/linux)]D;]A;Dopo l'installazione, [ricaricare]5D;(command:workbench.action.reloadWindow) (o [eseguire la risoluzione dei problemi]5D;(command:git.showOutput)). È possibile installare altri provider di controllo del codice sorgente [dal Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/package.view.workbench.scm.missing.guide.mac" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[[Download Git for macOS]5D;(https://git-scm.com/download/mac)]D;]A;After installing, please [reload]5D;(command:workbench.action.reloadWindow) (or [troubleshoot]5D;(command:git.showOutput)). Additional source control providers can be installed [from the Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[[Scaricare Git per macOS]5D;(https://git-scm.com/download/mac)]D;]A;Dopo l'installazione, [ricaricare]5D;(command:workbench.action.reloadWindow) (o [eseguire la risoluzione dei problemi]5D;(command:git.showOutput)). È possibile installare altri provider di controllo del codice sorgente [dal Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/package.view.workbench.scm.missing.guide.windows" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[[Download Git for Windows]5D;(https://git-scm.com/download/win)]D;]A;After installing, please [reload]5D;(command:workbench.action.reloadWindow) (or [troubleshoot]5D;(command:git.showOutput)). Additional source control providers can be installed [from the Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[[Scaricare Git per Windows]5D;(https://git-scm.com/download/win)]D;]A;Dopo l'installazione, [ricaricare]5D;(command:workbench.action.reloadWindow) (o [eseguire la risoluzione dei problemi]5D;(command:git.showOutput)). È possibile installare altri provider di controllo del codice sorgente [dal Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

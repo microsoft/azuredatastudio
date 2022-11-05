@@ -4300,18 +4300,27 @@
       <Item ItemId=";extensions/git/package.view.workbench.scm.missing.guide.linux" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Source control depends on Git being installed.]D;]A;[Download Git for Linux]5D;(https://git-scm.com/download/linux)]D;]A;After installing, please [reload]5D;(command:workbench.action.reloadWindow) (or [troubleshoot]5D;(command:git.showOutput)). Additional source control providers can be installed [from the Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Системе управления версиями требуется установка Git.]D;]A;[Скачать Git для Linux]5D;(https://git-scm.com/download/linux)]D;]A;После установки выполните [перезагрузку]5D;(command:workbench.action.reloadWindow) (или [устранение неполадок]5D;(command:git.showOutput)). Возможна установка дополнительных поставщиков управления версиями [из Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/package.view.workbench.scm.missing.guide.mac" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[[Download Git for macOS]5D;(https://git-scm.com/download/mac)]D;]A;After installing, please [reload]5D;(command:workbench.action.reloadWindow) (or [troubleshoot]5D;(command:git.showOutput)). Additional source control providers can be installed [from the Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[[Скачать Git для macOS]5D;(https://git-scm.com/download/mac)]D;]A;После установки выполните [перезагрузку]5D;(command:workbench.action.reloadWindow) (или [устранение неполадок]5D;(command:git.showOutput)). Можно установить дополнительных поставщиков системы управления версиями [из Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/package.view.workbench.scm.missing.guide.windows" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[[Download Git for Windows]5D;(https://git-scm.com/download/win)]D;]A;After installing, please [reload]5D;(command:workbench.action.reloadWindow) (or [troubleshoot]5D;(command:git.showOutput)). Additional source control providers can be installed [from the Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[[Скачать Git для Windows]5D;(https://git-scm.com/download/win)]D;]A;После установки выполните [перезагрузку]5D;(command:workbench.action.reloadWindow) (или [устранение неполадок]5D;(command:git.showOutput)). Можно установить дополнительных поставщиков системы управления версиями [из Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
