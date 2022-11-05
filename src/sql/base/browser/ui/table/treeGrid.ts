@@ -16,7 +16,7 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import { createTreeGridExpandableColumnFormatter, textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { escape } from 'sql/base/common/strings';
 import { IAccessibilityProvider } from 'sql/base/browser/ui/accessibility/accessibilityProvider';
-import { IQuickInputProvider } from 'sql/base/browser/ui/qucikInput/quickInputProvider';
+import { IQuickInputProvider } from 'sql/base/browser/ui/quickInput/quickInputProvider';
 
 function defaultTreeGridFilter<T extends Slick.SlickData>(data: T[], columns: FilterableColumn<T>[], cellValueGetter: CellValueGetter = defaultCellValueGetter): T[] {
 	let filteredData = defaultFilter(data, columns, cellValueGetter);
