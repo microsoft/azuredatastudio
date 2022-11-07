@@ -228,6 +228,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public _didLoginMigrationsSucceed!: boolean;
 	public _loginsForMigration!: LoginTableInfo[];
+	public _aadDomainName!: string;
+	public _loginMigrationsResult!: mssql.StartLoginMigrationResult;
 
 	public readonly _refreshGetSkuRecommendationIntervalInMinutes = 10;
 	public readonly _performanceDataQueryIntervalInSeconds = 30;
@@ -454,14 +456,14 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return (await azdata.connection.getCredentials(this.sourceConnectionId)).password;
 	}
 
-	public async getSourceAuthType(): Promise<MigrationSourceAuthenticationType> {
-		const connectionProfile = await this.getSourceConnectionProfile();
-		return connectionProfile.authenticationType === AuthenticationType.SqlLogin
-			? MigrationSourceAuthenticationType.Sql
-			: connectionProfile.authenticationType === AuthenticationType.Integrated
-				? MigrationSourceAuthenticationType.Integrated
-				: undefined!;
-	}
+	// public async getSourceAuthType(): Promise<MigrationSourceAuthenticationType> {
+	// 	const connectionProfile = await this.getSourceConnectionProfile();
+	// 	return connectionProfile.authenticationType === AuthenticationType.SqlLogin
+	// 		? MigrationSourceAuthenticationType.Sql
+	// 		: connectionProfile.authenticationType === AuthenticationType.Integrated
+	// 			? MigrationSourceAuthenticationType.Integrated
+	// 			: undefined!;
+	// }
 
 	public async getSourceConnectionString(): Promise<string> {
 		return await azdata.connection.getConnectionString(this._sourceConnectionId, true);
@@ -489,6 +491,47 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return '';
 	}
 
+	private updateLoginMigrationResults(newResult: mssql.StartLoginMigrationResult): void {
+		if (this._loginMigrationsResult && this._loginMigrationsResult.exceptionMap) {
+			for (var key in newResult.exceptionMap) {
+				this._loginMigrationsResult.exceptionMap[key] = [...this._loginMigrationsResult.exceptionMap[key] || [], newResult.exceptionMap[key]]
+			}
+		} else {
+			this._loginMigrationsResult = newResult;
+		}
+	}
+
+	// public async startLoginMigration(): Promise<Boolean> {
+	// 	try {
+	// 		const sourceConnectionString = await this.getSourceConnectionString();
+	// 		const targetConnectionString = await this.getTargetConnectionString();
+	// 		console.log('AKMA DEBUG LOG: startLoginMIgration sourceConnectionString: ', sourceConnectionString);
+	// 		console.log('AKMA DEBUG LOG: startLoginMIgration targetConnectionString: ', targetConnectionString);
+	// 		console.log('AKMA DEBUG LOG: startLoginMIgration this._loginsForMigration: ', this._loginsForMigration);
+	// 		console.log('AKMA DEBUG LOG: startLoginMIgration this._loginsForMigration: ', this._loginsForMigration.map(row => row.loginName));
+
+	// 		console.log('Starting Login Migration at: ', new Date());
+
+	// 		const response = (await this.migrationService.startLoginMigration(
+	// 			sourceConnectionString,
+	// 			targetConnectionString, // change to target once we get
+	// 			this._loginsForMigration.map(row => row.loginName),
+	// 			this._aadDomainName
+	// 		))!;
+	// 		console.log('Ending Login Migration at: ', new Date());
+	// 		this._didLoginMigrationsSucceed = true;
+	// 		this._loginMigrationsResult = response;
+
+	// 		console.log('AKMA DEBUG response: ', response);
+	// 	} catch (error) {
+	// 		console.log('Failed Login Migration at: ', new Date());
+	// 		logError(TelemetryViews.LoginMigrationWizard, 'StartLoginMigrationFailed', error);
+	// 	}
+
+	// 	// TODO AKMA : emit telemetry
+	// 	return true;
+	// }
+
 	public async startLoginMigration(): Promise<Boolean> {
 		try {
 			const sourceConnectionString = await this.getSourceConnectionString();
@@ -500,11 +543,54 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 			console.log('Starting Login Migration at: ', new Date());
 
-			const response = (await this.migrationService.startLoginMigration(
+			// 		const response = (await this.migrationService.startLoginMigration(
+			// 			sourceConnectionString,
+			// 			targetConnectionString, // change to target once we get
+			// 			this._loginsForMigration.map(row => row.loginName),
+			// 			this._aadDomainName
+			// 		))!;
+
+			console.time("migrateLogins")
+			var response = (await this.migrationService.migrateLogins(
 				sourceConnectionString,
-				targetConnectionString, // change to target once we get
-				this._loginsForMigration.map(row => row.loginName)))!;
+				targetConnectionString,
+				this._loginsForMigration.map(row => row.loginName),
+				this._aadDomainName
+			))!;
+			console.timeEnd("migrateLogins")
+			// console.log('Login migration response after migrateLogins: ', response);
+
+			this.updateLoginMigrationResults(response)
+			// console.log('Login migration result: ', this._loginMigrationsResult);
+
+			console.time("establishUserMapping")
+			response = (await this.migrationService.establishUserMapping(
+				sourceConnectionString,
+				targetConnectionString,
+				this._loginsForMigration.map(row => row.loginName),
+				this._aadDomainName
+			))!;
+			console.timeEnd("establishUserMapping")
+			// console.log('Login migration response after establishUserMapping: ', response);
+
+			this.updateLoginMigrationResults(response)
+			// console.log('Login migration result: ', this._loginMigrationsResult);
+
+			console.time("migrateServerRolesAndSetPermissions")
+			response = (await this.migrationService.migrateServerRolesAndSetPermissions(
+				sourceConnectionString,
+				targetConnectionString,
+				this._loginsForMigration.map(row => row.loginName),
+				this._aadDomainName
+			))!;
+			console.timeEnd("migrateServerRolesAndSetPermissions")
+			// console.log('Login migration response after migrateServerRolesAndSetPermissions: ', response);
+
+			this.updateLoginMigrationResults(response)
+			// console.log('Login migration result: ', this._loginMigrationsResult);
+
 			console.log('Ending Login Migration at: ', new Date());
+			console.log('Login migration response: ', response);
 			this._didLoginMigrationsSucceed = true;
 
 			console.log('AKMA DEBUG response: ', response);

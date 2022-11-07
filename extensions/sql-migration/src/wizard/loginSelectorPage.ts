@@ -340,6 +340,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 
 		// TODO AKMA: change to logins for migration
 		this.migrationStateModel._loginsForMigration = selectedLogins;
+		this.migrationStateModel._aadDomainName = "";
 		this.updateNextButton();
 	}
 
