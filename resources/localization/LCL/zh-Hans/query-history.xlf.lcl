@@ -32,7 +32,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Succeeded]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[已成功]]></Val>
+            <Val><![CDATA[成功]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
