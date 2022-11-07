@@ -1048,7 +1048,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		// TODO - need to change the connection password option for the profile,
 		// then add the changed profile to the connectionStatusManager so callback and connection works.
 
-		//connection.options['password'] = testPassword;
+		connection.options['password'] = testPassword;
+		this._connectionStatusManager.deleteConnection(connection.id);
+		this._connectionStatusManager.addConnection(connection, connection.id)
 
 		await this._extensionService.activateByEvent(`onConnect:${connection.providerName}`);
 
