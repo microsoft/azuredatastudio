@@ -18,6 +18,7 @@
 			"azure.microsoftCorpAccount": "Microsoft Corp",
 			"azure.noBaseToken": "Ocorreu um erro com a autenticação ou os tokens foram excluídos do sistema. Tente adicionar a sua conta no Azure Data Studio novamente.",
 			"azure.noUniqueIdentifier": "O usuário não tinha um identificador exclusivo no AAD",
+			"azure.owningTenantNotFound": "As informações do locatário não foram encontradas para a conta.",
 			"azure.responseError": "Falha na recuperação de token com um erro. [Abrir ferramentas para desenvolvedores] ({0}) para obter mais detalhes.",
 			"azure.tenantNotFound": "Locatário especificado com ID '{0}' não encontrado.",
 			"azureAuth.unidentifiedError": "Erro não identificado com a autenticação do Azure",
@@ -25,7 +26,8 @@
 			"azurecore.consentDialog.body": "O locatário '{0} ({1})' requer que você seja autenticado novamente para acessar os recursos de {2}. Pressione Abrir para iniciar o processo de autenticação.",
 			"azurecore.consentDialog.cancel": "Cancelar",
 			"azurecore.consentDialog.ignore": "Ignorar Locatário",
-			"azurecore.consentDialog.open": "Abrir"
+			"azurecore.consentDialog.open": "Abrir",
+			"noMicrosoftResource": "O provedor '{0}' não tem um ponto de extremidade de recurso da Microsoft definido."
 		},
 		"dist/account-provider/auths/azureAuthCodeGrant": {
 			"azure.azureAuthCodeGrantName": "Concessão de Código de Autenticação do Azure",
@@ -83,6 +85,9 @@
 		"dist/azureResource/providers/kusto/kustoTreeDataProvider": {
 			"azure.resource.providers.KustoContainerLabel": "Cluster do Azure Data Explorer"
 		},
+		"dist/azureResource/providers/mysqlFlexibleServer/mysqlFlexibleServerTreeDataProvider": {
+			"azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel": "Banco de dados do Azure para o servidor MySQL Flexível"
+		},
 		"dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider": {
 			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "Hiperescala do PostgreSQL – Azure Arc"
 		},
@@ -99,7 +104,8 @@
 			"azure.resource.resourceTreeNode.noResourcesLabel": "Nenhum recurso encontrado"
 		},
 		"dist/azureResource/services/subscriptionService": {
-			"azure.resource.tenantSubscriptionsError": "Falha ao obter assinaturas da conta {0} (locatário '{1}'). {2}"
+			"azure.resource.tenantSubscriptionsError": "Falha ao obter assinaturas da conta {0} (locatário '{1}'). {2}",
+			"azure.resource.tenantTokenError": "Falha ao adquirir o token de acesso para a conta '{0}' (locatário '{1}')."
 		},
 		"dist/azureResource/services/terminalService": {
 			"azure.cloudShell": "Azure Cloud Shell (Versão Prévia) {0} ({1})",
