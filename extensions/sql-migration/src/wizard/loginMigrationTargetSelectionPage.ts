@@ -94,6 +94,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
+		this.wizard.nextButton.enabled = false;
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			this.wizard.message = {
 				text: '',
@@ -596,7 +597,6 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 								userName,
 								password));
 						await this._showConnectionResults(targetDatabases);
-						this.wizard.nextButton.enabled = true;
 					} catch (error) {
 						this.wizard.message = {
 							level: azdata.window.MessageLevel.Error,
@@ -653,6 +653,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 			? constants.SQL_TARGET_CONNECTION_ERROR(errorMessage)
 			: constants.SQL_TARGET_CONNECTION_SUCCESS_LOGINS(databases.length.toLocaleString());
 		await utils.updateControlDisplay(this._connectionResultsInfoBox, true);
+		this.wizard.nextButton.enabled = !hasError;
 	}
 
 	private _createResourceDropdowns(): azdata.FlexContainer {
