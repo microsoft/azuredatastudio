@@ -126,7 +126,7 @@ export class Terminal {
 	}
 
 	async assertSingleTab(label: TerminalLabel, editor?: boolean): Promise<void> {
-		let regex = undefined;
+		let regex: RegExp | undefined = undefined; // {{SQL CARBON EDIT}} Added type specification
 		if (label.name && label.description) {
 			regex = new RegExp(label.name + ' - ' + label.description);
 		} else if (label.name) {
