@@ -82,6 +82,7 @@ function buildWin32Setup(arch, target) {
 		const outputPath = setupDir(arch, target);
 		mkdirp.sync(outputPath);
 
+		arch = 'x64';
 		const originalProductJsonPath = path.join(sourcePath, 'resources/app/product.json');
 		const productJsonPath = path.join(outputPath, 'product.json');
 		const productJson = JSON.parse(fs.readFileSync(originalProductJsonPath, 'utf8'));
