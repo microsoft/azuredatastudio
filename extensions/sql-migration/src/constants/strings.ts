@@ -325,6 +325,7 @@ export const LOGIN_MIGRATE_BUTTON_TEXT = localize('sql.migration.start.login.mig
 export function LOGIN_MIGRATIONS_GET_CONNECTION_STRING(dataSource: string, id: string, pass: string): string {
 	return localize('sql.migration.login.get.connection.string', "data source={0};initial catalog=master;user id={1};password={2};TrustServerCertificate=True;Integrated Security=false;", dataSource, id, pass);
 }
+export const LOGIN_MIGRATION_IN_PROGRESS = localize('sql.migration.login..in.progress', "Login migration in progress");
 
 // Azure SQL Target
 export const AZURE_SQL_TARGET_PAGE_TITLE = localize('sql.migration.wizard.target.title', "Azure SQL target");
@@ -1034,8 +1035,8 @@ export function DATABASES_SELECTED(selectedCount: number, totalCount: number): s
 export function LOGINS_SELECTED(selectedCount: number, totalCount: number): string {
 	return localize('sql.migration.logins.selected', "{0}/{1} logins selected", selectedCount, totalCount);
 }
-export function NUMBER_LOGINS_MIGRATING(migratingCount: number): string {
-	return localize('sql.migration.number.logins.migratin', "Migrating {0} logins", migratingCount);
+export function NUMBER_LOGINS_MIGRATING(displayedMigratingCount: number, totalMigratingCount: number): string {
+	return localize('sql.migration.number.logins.migrating', "{0}/{1} migrating logins displayed", displayedMigratingCount, totalMigratingCount);
 }
 export function ISSUES_COUNT(totalCount: number): string {
 	return localize('sql.migration.issues.count', "Issues ({0})", totalCount);

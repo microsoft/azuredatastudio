@@ -19,6 +19,11 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 	private _loginCount!: azdata.TextComponent;
 	private _loginsTableValues!: any[];
 	private _disposables: vscode.Disposable[] = [];
+	private _progressLoaderContainer!: azdata.FlexContainer;
+	private _migrationProgress!: azdata.TextComponent;
+	private _progressLoader!: azdata.LoadingComponent;
+	private _progressContainer!: azdata.FlexContainer;
+	private _migrationProgressDetails!: azdata.TextComponent;
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.LOGIN_MIGRATIONS_STATUS_PAGE_TITLE), migrationStateModel);
@@ -61,13 +66,12 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 
 		if (this.migrationStateModel._targetServerInstance) {
 			// TODO AKMA : remove debug below and pretty-ify this.migrationStateModel._targetType with proper spacing
-			console.log('AKMA DEBUG LOG: target server: ', this.migrationStateModel._targetServerInstance);
 			await this._textBox.updateProperties({
-				'value': constants.LOGIN_MIGRATIONS_STATUS_PAGE_DESCRIPTION(this._getNumberOfLogins(), this.migrationStateModel._targetType, this.migrationStateModel._targetServerInstance.name)
+				'value': constants.LOGIN_MIGRATIONS_STATUS_PAGE_DESCRIPTION(this._getNumberOfDisplayedLogins(), this.migrationStateModel._targetType, this.migrationStateModel._targetServerInstance.name)
 			});
 		}
 
-		await this.migrationStateModel.startLoginMigration();
+		// await this.migrationStateModel.startLoginMigration();
 		await this._loadMigratingLoginsList(this.migrationStateModel);
 		await this._filterTableList('');
 	}
@@ -84,6 +88,44 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 	}
 
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
+	}
+
+	private createMigrationProgressLoader(): azdata.FlexContainer {
+		this._progressLoader = this._view.modelBuilder.loadingComponent()
+			.component();
+
+		this._migrationProgress = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.LOGIN_MIGRATION_IN_PROGRESS,
+				CSSStyles: {
+					...styles.PAGE_TITLE_CSS,
+					'margin-right': '20px'
+				}
+			}).component();
+
+		this._progressLoaderContainer = this._view.modelBuilder.flexContainer()
+			.withLayout({
+				height: '100%',
+				flexFlow: 'row',
+				alignItems: 'center'
+			}).component();
+
+		this._progressLoaderContainer.addItem(this._migrationProgress, { flex: '0 0 auto' });
+		this._progressLoaderContainer.addItem(this._progressLoader, { flex: '0 0 auto' });
+
+		return this._progressLoaderContainer;
+	}
+
+	private async createMigrationProgressDetails(): Promise<azdata.TextComponent> {
+		this._migrationProgressDetails = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.ASSESSMENT_IN_PROGRESS_CONTENT("servername"),
+				CSSStyles: {
+					...styles.BODY_CSS,
+					'width': '660px'
+				}
+			}).component();
+		return this._migrationProgressDetails;
 	}
 
 	private createSearchComponent(): azdata.DivContainer {
@@ -121,11 +163,20 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 		}
 
 		await this._migratingLoginsTable.updateProperty('data', tableRows);
-		await this.updateLoginCount();
+		await this.updateDisplayedLoginCount();
+		await this.updateTotalLoginCount();
 	}
 
 	public async createRootContainer(view: azdata.ModelView): Promise<azdata.FlexContainer> {
 		await this._loadMigratingLoginsList(this.migrationStateModel);
+
+		this._progressContainer = this._view.modelBuilder.flexContainer()
+			.withLayout({ height: '100%', flexFlow: 'column' })
+			.withProps({ CSSStyles: { 'margin-bottom': '30px' } })
+			.component();
+
+		this._progressContainer.addItem(this.createMigrationProgressLoader(), { flex: '0 0 auto' });
+		this._progressContainer.addItem(await this.createMigrationProgressDetails(), { flex: '0 0 auto' });
 
 		this._textBox = this._view.modelBuilder.text().withProps({
 			value: constants.LOGIN_MIGRATIONS_STATUS_PAGE_DESCRIPTION(0, '', ''),
@@ -135,7 +186,7 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 		}).component();
 
 		this._loginCount = this._view.modelBuilder.text().withProps({
-			value: constants.NUMBER_LOGINS_MIGRATING(this._loginsTableValues.length),
+			value: constants.NUMBER_LOGINS_MIGRATING(this._loginsTableValues.length, this._loginsTableValues.length),
 			CSSStyles: {
 				...styles.BODY_CSS,
 				'margin-top': '8px'
@@ -224,6 +275,7 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 				'margin': '0px 28px 0px 28px'
 			}
 		}).component();
+		flex.addItem(this._progressContainer, { flex: '0 0 auto' });
 		flex.addItem(this._textBox, { flex: '0 0 auto' });
 		flex.addItem(this.createSearchComponent(), { flex: '0 0 auto' });
 		flex.addItem(this._loginCount, { flex: '0 0 auto' });
@@ -262,14 +314,25 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 		}) || [];
 	}
 
-	private async updateLoginCount() {
-		await this._loginCount.updateProperties({
-			// 'value': constants.NUMBER_LOGINS_MIGRATING(this._migratingLoginsTable.data?.length || 0)
-			'value': constants.NUMBER_LOGINS_MIGRATING(this._getNumberOfLogins())
+
+	private async updateTotalLoginCount() {
+		await this._textBox.updateProperties({
+			'value': constants.LOGIN_MIGRATIONS_STATUS_PAGE_DESCRIPTION(this._getTotalNumberOfLogins(), this.migrationStateModel._targetType, this.migrationStateModel._targetServerInstance.name)
 		});
 	}
 
-	private _getNumberOfLogins(): number {
+	private _getTotalNumberOfLogins(): number {
+		return this._loginsTableValues?.length || 0;
+	}
+
+	private async updateDisplayedLoginCount() {
+		await this._loginCount.updateProperties({
+			// 'value': constants.NUMBER_LOGINS_MIGRATING(this._migratingLoginsTable.data?.length || 0)
+			'value': constants.NUMBER_LOGINS_MIGRATING(this._getNumberOfDisplayedLogins(), this._getTotalNumberOfLogins())
+		});
+	}
+
+	private _getNumberOfDisplayedLogins(): number {
 		return this._migratingLoginsTable?.data?.length || 0;
 	}
 }
