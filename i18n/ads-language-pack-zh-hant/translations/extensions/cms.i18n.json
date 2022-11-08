@@ -47,8 +47,6 @@
 			"cms.connectionOptions.applicationIntent.displayName": "應用程式的意圖",
 			"cms.connectionOptions.applicationName.description": "應用程式的名稱",
 			"cms.connectionOptions.applicationName.displayName": "應用程式名稱",
-			"cms.connectionOptions.asynchronousProcessing.description": "若為 True，則允許使用 .Net Framework Data Provider 中的非同步功能",
-			"cms.connectionOptions.asynchronousProcessing.displayName": "非同步處理",
 			"cms.connectionOptions.attachDbFilename.displayName": "附加 DB 檔案名稱",
 			"cms.connectionOptions.attachedDBFileName.description": "主要檔案的名稱，包含可附加資料庫的完整路徑名稱",
 			"cms.connectionOptions.attachedDBFileName.displayName": "已附加的 DB 檔案名稱",

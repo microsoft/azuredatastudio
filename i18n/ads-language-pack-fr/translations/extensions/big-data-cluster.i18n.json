@@ -149,6 +149,7 @@
 		},
 		"dist/extension": {
 			"bdc.dashboard.title": "Tableau de bord de cluster Big Data -",
+			"bdc.deprecationWarning": "Le module complémentaire du cluster Big Data est en cours de retrait et Azure Data Studio fonctionnalité de celui-ci sera supprimée dans une prochaine version. En savoir plus à ce sujet et au support à l’avenir [here](https://go.microsoft.com/fwlink/?linkid=2207340)",
 			"mount.error.endpointNotFound": "Informations de point de terminaison du contrôleur introuvables",
 			"textConfirmRemoveController": "Voulez-vous vraiment supprimer '{0}' ?",
 			"textNo": "Non",

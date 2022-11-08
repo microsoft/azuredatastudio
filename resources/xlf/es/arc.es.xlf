@@ -6,10 +6,6 @@
         <source xml:lang="en">USD</source>
         <target state="translated">USD</target>
       </trans-unit>
-      <trans-unit id="arc.addingWorkerNodes">
-        <source xml:lang="en">adding worker nodes</source>
-        <target state="translated">agregando nodos de trabajo</target>
-      </trans-unit>
       <trans-unit id="arc.apply">
         <source xml:lang="en">Apply</source>
         <target state="translated">Aplicar</target>
@@ -90,17 +86,17 @@
         <source xml:lang="en">without downtime and by</source>
         <target state="translated">sin tiempo de inactividad y por</target>
       </trans-unit>
+      <trans-unit id="arc.computeConfiguration">
+        <source xml:lang="en">Compute Configuration</source>
+        <target state="translated">Configuración de proceso</target>
+      </trans-unit>
       <trans-unit id="arc.condition">
         <source xml:lang="en">Condition</source>
         <target state="translated">Condición</target>
       </trans-unit>
-      <trans-unit id="arc.configurationCoordinatorNode">
+      <trans-unit id="arc.configurationPerNode">
         <source xml:lang="en">Configuration</source>
         <target state="translated">Configuración</target>
-      </trans-unit>
-      <trans-unit id="arc.configurationPerNode">
-        <source xml:lang="en">Configuration (per node)</source>
-        <target state="translated">Configuración (por nodo)</target>
       </trans-unit>
       <trans-unit id="arc.configureRP">
         <source xml:lang="en">Configure retention policy</source>
@@ -135,12 +131,12 @@
         <target state="translated">No se pudo conectar con la instancia administrada de SQL: instancia de Azure Arc {0}. {1}</target>
       </trans-unit>
       <trans-unit id="arc.connectToPGSql">
-        <source xml:lang="en">Connect to PostgreSQL Hyperscale - Azure Arc ({0})</source>
-        <target state="translated">Conexión a hiperescala de PostgreSQL: Azure Arc ({0})</target>
+        <source xml:lang="en">Connect to PostgreSQL server - Azure Arc ({0})</source>
+        <target state="translated">Conexión al servidor PostgreSQL: Azure Arc ({0})</target>
       </trans-unit>
       <trans-unit id="arc.connectToPGSqlFailed">
-        <source xml:lang="en">Could not connect to PostgreSQL Hyperscale - Azure Arc Instance {0}. {1}</source>
-        <target state="translated">No se pudo conectar a hiperescala de PostgreSQL: instancia de Azure Arc {0}. {1}</target>
+        <source xml:lang="en">Could not connect to PostgreSQL server - Azure Arc Instance {0}. {1}</source>
+        <target state="translated">No se pudo conectar con el servidor PostgreSQL: instancia de Azure Arc {0}. {1}</target>
       </trans-unit>
       <trans-unit id="arc.connectToPostgresDescription">
         <source xml:lang="en">A connection to the server is required to show and set database engine settings, which will require the PostgreSQL Extension to be installed.</source>
@@ -211,33 +207,9 @@
         <source xml:lang="en">Coordinator</source>
         <target state="translated">Coordinador</target>
       </trans-unit>
-      <trans-unit id="arc.coordinatorCoresLimit">
-        <source xml:lang="en">Coordinator Node CPU limit</source>
-        <target state="translated">Límite de CPU del nodo de coordinación</target>
-      </trans-unit>
-      <trans-unit id="arc.coordinatorCoresRequest">
-        <source xml:lang="en">Coordinator Node CPU request</source>
-        <target state="translated">Solicitud de CPU del nodo de coordinación</target>
-      </trans-unit>
       <trans-unit id="arc.coordinatorEndpoint">
         <source xml:lang="en">Coordinator endpoint</source>
         <target state="translated">Punto de conexión del coordinador</target>
-      </trans-unit>
-      <trans-unit id="arc.coordinatorMemoryLimit">
-        <source xml:lang="en">Coordinator Node Memory limit (in GB)</source>
-        <target state="translated">Límite de memoria de nodo de coordinación (en GB)</target>
-      </trans-unit>
-      <trans-unit id="arc.coordinatorMemoryRequest">
-        <source xml:lang="en">Coordinator Node Memory request (in GB)</source>
-        <target state="translated">Solicitud de memoria de nodo de coordinación (en GB)</target>
-      </trans-unit>
-      <trans-unit id="arc.coordinatorNode">
-        <source xml:lang="en">Coordinator Node</source>
-        <target state="translated">Nodo de coordinación</target>
-      </trans-unit>
-      <trans-unit id="arc.coordinatorNodeConfigurationInformation">
-        <source xml:lang="en">You can configure the number of CPU cores and storage size that will apply to the coordinator node. Adjust the number of CPU cores and memory settings for your server group. To reset the requests and/or limits, pass in empty value.</source>
-        <target state="translated">Puede configurar el número de núcleos de CPU y el tamaño de almacenamiento que se aplicará al nodo de coordinación. Ajuste el número de núcleos de CPU y la configuración de memoria para su grupo de servidores. Para restablecer las solicitudes o los límites, utilice un valor vacío.</target>
       </trans-unit>
       <trans-unit id="arc.coordinatorNodeParameters">
         <source xml:lang="en">Coordinator Node Parameters</source>
@@ -570,12 +542,12 @@
         <target state="translated">Último momento dado</target>
       </trans-unit>
       <trans-unit id="arc.learnAboutNodeParameters">
-        <source xml:lang="en">Learn more about database engine settings for Azure Arc-enabled PostgreSQL Hyperscale</source>
-        <target state="translated">Más información sobre la configuración del motor de base de datos para hiperescala de PostgreSQL habilitada para Azure Arc</target>
+        <source xml:lang="en">Learn more about database engine settings for Azure Arc-enabled PostgreSQL</source>
+        <target state="translated">Más información sobre la configuración del motor de base de datos para PostgreSQL habilitada para Azure Arc</target>
       </trans-unit>
       <trans-unit id="arc.learnAboutPostgresClients">
-        <source xml:lang="en">Learn more about Azure PostgreSQL Hyperscale client interfaces</source>
-        <target state="translated">Más información sobre las interfaces de cliente de hiperescala de Azure PostgreSQL</target>
+        <source xml:lang="en">Learn more about Azure PostgreSQL client interfaces</source>
+        <target state="translated">Más información sobre las interfaces de cliente de Azure PostgreSQL</target>
       </trans-unit>
       <trans-unit id="arc.learnMore">
         <source xml:lang="en">Learn More.</source>
@@ -698,8 +670,8 @@
         <target state="translated">No se encontraron parámetros de servidor de trabajo...</target>
       </trans-unit>
       <trans-unit id="arc.noPodIssuesDetected">
-        <source xml:lang="en">There aren’t any known issues affecting this PostgreSQL Hyperscale instance.</source>
-        <target state="translated">No hay ningún problema conocido que afecte a esta instancia de hiperescala de PostgreSQL.</target>
+        <source xml:lang="en">There aren’t any known issues affecting this PostgreSQL instance.</source>
+        <target state="translated">No hay ningún problema conocido que afecte a esta instancia de PostgreSQL.</target>
       </trans-unit>
       <trans-unit id="arc.noUpgrades">
         <source xml:lang="en">The current version is the latest version. No upgrades available.</source>
@@ -712,10 +684,6 @@
       <trans-unit id="arc.node">
         <source xml:lang="en">node</source>
         <target state="translated">nodo</target>
-      </trans-unit>
-      <trans-unit id="arc.nodeConfiguration">
-        <source xml:lang="en">Node configuration</source>
-        <target state="translated">Configuración del nodo</target>
       </trans-unit>
       <trans-unit id="arc.nodes">
         <source xml:lang="en">nodes</source>
@@ -818,8 +786,8 @@
         <target state="translated">Se necesita una conexión para mostrar y establecer la configuración del motor de base de datos.</target>
       </trans-unit>
       <trans-unit id="arc.pgSqlType">
-        <source xml:lang="en">PostgreSQL Hyperscale - Azure Arc</source>
-        <target state="translated">Hiperescala de PostgreSQL: Azure Arc</target>
+        <source xml:lang="en">PostgreSQL server - Azure Arc</source>
+        <target state="translated">Servidor PostgreSQL: Azure Arc</target>
       </trans-unit>
       <trans-unit id="arc.pitr">
         <source xml:lang="en">Point in time restore</source>
@@ -866,8 +834,8 @@
         <target state="translated">Seleccione un pod en la lista desplegable para obtener información detallada sobre el estado.</target>
       </trans-unit>
       <trans-unit id="arc.postgres.computeAndStorageDescriptionPartTwo">
-        <source xml:lang="en">PostgreSQL Hyperscale server group by</source>
-        <target state="translated">Grupo de servidores de hiperescala de PostgreSQL por</target>
+        <source xml:lang="en">PostgreSQL by</source>
+        <target state="translated">PostgreSQL por</target>
       </trans-unit>
       <trans-unit id="arc.postgresAdminUsername">
         <source xml:lang="en">Admin username</source>
@@ -882,8 +850,8 @@
         <target state="translated">Puede escalar Azure Arc: habilitado</target>
       </trans-unit>
       <trans-unit id="arc.postgresDashboard">
-        <source xml:lang="en">PostgreSQL Hyperscale - Azure Arc Dashboard - {0}</source>
-        <target state="translated">Hiperescala de PostgreSQL: panel de Azure Arc - {0}</target>
+        <source xml:lang="en">PostgreSQL server - Azure Arc Dashboard (Preview) - {0}</source>
+        <target state="translated">Servidor PostgreSQL: panel de Azure Arc (versión preliminar) - {0}</target>
       </trans-unit>
       <trans-unit id="arc.postgresExtension">
         <source xml:lang="en">microsoft.azuredatastudio-postgresql</source>
@@ -1065,13 +1033,13 @@
         <source xml:lang="en">Select from available client connection strings below.</source>
         <target state="translated">Seleccione una de las cadenas de conexión de cliente disponibles a continuación.</target>
       </trans-unit>
+      <trans-unit id="arc.server">
+        <source xml:lang="en">Server</source>
+        <target state="translated">Servidor</target>
+      </trans-unit>
       <trans-unit id="arc.serverEndpoint">
         <source xml:lang="en">Server Endpoint</source>
         <target state="translated">Punto de conexión del servidor</target>
-      </trans-unit>
-      <trans-unit id="arc.serverGroupNodes">
-        <source xml:lang="en">Server group nodes</source>
-        <target state="translated">Nodos de grupo de servidores</target>
       </trans-unit>
       <trans-unit id="arc.serverGroupType">
         <source xml:lang="en">Server group type</source>
@@ -1249,29 +1217,9 @@
         <source xml:lang="en">Worker</source>
         <target state="translated">Trabajador</target>
       </trans-unit>
-      <trans-unit id="arc.workerCoresLimit">
-        <source xml:lang="en">Worker Nodes CPU limit</source>
-        <target state="translated">Límite de CPU de nodos de trabajo</target>
-      </trans-unit>
-      <trans-unit id="arc.workerCoresRequest">
-        <source xml:lang="en">Worker Nodes CPU request</source>
-        <target state="translated">Solicitud de CPU de nodos de trabajo</target>
-      </trans-unit>
-      <trans-unit id="arc.workerMemoryLimit">
-        <source xml:lang="en">Worker Nodes Memory limit (in GB)</source>
-        <target state="translated">Límite de memoria de nodos de trabajo (en GB)</target>
-      </trans-unit>
-      <trans-unit id="arc.workerMemoryRequest">
-        <source xml:lang="en">Worker Nodes Memory request (in GB)</source>
-        <target state="translated">Solicitud de memoria de nodos de trabajo (en GB)</target>
-      </trans-unit>
       <trans-unit id="arc.workerNodeCount">
         <source xml:lang="en">Worker node count</source>
         <target state="translated">Número de nodos de trabajo</target>
-      </trans-unit>
-      <trans-unit id="arc.workerNodeInformation">
-        <source xml:lang="en">It is possible to scale in and out your server group by reducing or increasing the number of worker nodes. The value must be 0 or greater than 1.</source>
-        <target state="translated">Es posible escalar y cambiar el grupo de servidores reduciendo o aumentando el número de nodos de trabajo. El valor debe ser 0 o mayor que 1.</target>
       </trans-unit>
       <trans-unit id="arc.workerNodeParameters">
         <source xml:lang="en">Worker Node Parameters</source>
@@ -1281,21 +1229,9 @@
         <source xml:lang="en">Worker Nodes</source>
         <target state="translated">Nodos de trabajo</target>
       </trans-unit>
-      <trans-unit id="arc.workerNodesConfigurationInformation">
-        <source xml:lang="en">You can configure the number of CPU cores and storage size that will apply to all worker nodes. Adjust the number of CPU cores and memory settings for your server group. To reset the requests and/or limits, pass in empty value.</source>
-        <target state="translated">Puede configurar el número de núcleos de CPU y el tamaño de almacenamiento que se aplicará a todos los nodos de trabajo. Ajuste el número de núcleos de CPU y la configuración de memoria para su grupo de servidores. Para restablecer las solicitudes o los límites, utilice un valor vacío.</target>
-      </trans-unit>
-      <trans-unit id="arc.workerNodesDescription">
-        <source xml:lang="en">Expand your server group and scale your database by adding worker nodes.</source>
-        <target state="translated">Agregue nodos de trabajo para expandir el grupo de servidores y escalar la base de datos.</target>
-      </trans-unit>
       <trans-unit id="arc.workerNodesParametersDescription">
         <source xml:lang="en"> These server parameters of the Worker nodes can be set to custom (non-default) values. Search to find parameters.</source>
         <target state="translated"> Estos parámetros de servidor de los nodos de trabajo se pueden establecer en valores personalizados (no predeterminados). Buscar parámetros.</target>
-      </trans-unit>
-      <trans-unit id="arc.workerOneNodeValidationMessage">
-        <source xml:lang="en">Value of 1 is not supported.</source>
-        <target state="translated">No se admite el valor de 1.</target>
       </trans-unit>
       <trans-unit id="arc.yes">
         <source xml:lang="en">Yes</source>
@@ -1365,37 +1301,49 @@
         <source xml:lang="en">I accept {0} and {1}.</source>
         <target state="translated">Acepto {0} y {1}.</target>
       </trans-unit>
+      <trans-unit id="arc.agreement.help.text.azure.marketplace.terms">
+        <source xml:lang="en">Azure Marketplace Terms</source>
+        <target state="translated">Términos de Azure Marketplace</target>
+      </trans-unit>
+      <trans-unit id="arc.agreement.help.text.learn.more">
+        <source xml:lang="en">Learn more</source>
+        <target state="translated">Más información</target>
+      </trans-unit>
+      <trans-unit id="arc.agreement.help.text.privacy.policy">
+        <source xml:lang="en">Privacy policy</source>
+        <target state="translated">Directiva de privacidad</target>
+      </trans-unit>
+      <trans-unit id="arc.agreement.help.text.terms.of.use">
+        <source xml:lang="en">Terms of use</source>
+        <target state="translated">Términos de uso</target>
+      </trans-unit>
+      <trans-unit id="arc.agreement.postgres.help.text">
+        <source xml:lang="en">PostgreSQL Server - Azure Arc is one of the database engines available as part of Azure Arc-enabled data services and it can be deployed on the infrastructure of your choice. {0}. 
+ 
+ By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.</source>
+        <target state="translated">Servidor PostgreSQL: Azure Arc es uno de los motores de base de datos disponibles como parte de los servicios de datos habilitados para Azure Arc y se puede implementar en la infraestructura que prefiera. {0}. 
+ 
+ Al hacer clic en "De script a cuaderno" o "Implementar", (a) acepto los términos legales y las declaraciones de privacidad asociados a cada oferta de Marketplace enumerada a continuación; (b) autorizo a Microsoft a facturar, de acuerdo con mi método de pago actual, las cuotas relativas a las ofertas con la misma frecuencia de facturación que mi suscripción de Azure; y (c) autorizo a Microsoft a compartir mi información de contacto y los datos de transacción y uso con los proveedores de dichas ofertas para fines de soporte técnico, facturación y otras actividades transaccionales. Microsoft no proporciona derechos sobre ofertas de terceros. Para más información, consulte {1}, {2} y {3}.</target>
+      </trans-unit>
+      <trans-unit id="arc.agreement.postgres.help.text.learn.more.ariaLabel">
+        <source xml:lang="en">Learn more about PostgreSQL Server - Azure Arc</source>
+        <target state="translated">Más información sobre el servidor PostgreSQL: Azure Arc</target>
+      </trans-unit>
       <trans-unit id="arc.agreement.postgres.terms.conditions">
-        <source xml:lang="en">Azure Arc-enabled PostgreSQL Hyperscale terms and conditions</source>
-        <target state="translated">Términos y condiciones de hiperescala de PostgreSQL habilitados para Azure Arc</target>
+        <source xml:lang="en">PostgreSQL Server - Azure Arc terms and conditions</source>
+        <target state="translated">Servidor PostgreSQL: términos y condiciones de Azure Arc</target>
       </trans-unit>
       <trans-unit id="arc.agreement.sql.help.text">
-        <source xml:lang="en">Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}. 
+        <source xml:lang="en">Azure Arc-enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}. 
  
  By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.</source>
         <target state="translated">La instancia administrada habilitada para Azure Arc proporciona a SQL Server acceso y compatibilidad de características que se pueden implementar en la infraestructura de su elección. {0}. 
  
  Al hacer clic en "De script a cuaderno" o "Implementar", (a) acepto los términos legales y las declaraciones de privacidad asociados a cada oferta de Marketplace enumerada a continuación; (b) autorizo a Microsoft a facturar, de acuerdo con mi método de pago actual, las cuotas relativas a las ofertas con la misma frecuencia de facturación que mi suscripción de Azure; y (c) autorizo a Microsoft a compartir mi información de contacto y los datos de transacción y uso con los proveedores de dichas ofertas para fines de soporte técnico, facturación y otras actividades transaccionales. Microsoft no proporciona derechos sobre ofertas de terceros. Para más información, consulte {1}, {2} y {3}.</target>
       </trans-unit>
-      <trans-unit id="arc.agreement.sql.help.text.azure.marketplace.terms">
-        <source xml:lang="en">Azure Marketplace Terms</source>
-        <target state="translated">Términos de Azure Marketplace</target>
-      </trans-unit>
-      <trans-unit id="arc.agreement.sql.help.text.learn.more">
-        <source xml:lang="en">Learn more</source>
-        <target state="translated">Más información</target>
-      </trans-unit>
       <trans-unit id="arc.agreement.sql.help.text.learn.more.ariaLabel">
-        <source xml:lang="en">Learn more about Azure Arc enabled Managed Instance</source>
+        <source xml:lang="en">Learn more about Azure Arc-enabled Managed Instance</source>
         <target state="translated">Más información sobre la instancia administrada habilitada para Azure Arc</target>
-      </trans-unit>
-      <trans-unit id="arc.agreement.sql.help.text.privacy.policy">
-        <source xml:lang="en">Privacy policy</source>
-        <target state="translated">Directiva de privacidad</target>
-      </trans-unit>
-      <trans-unit id="arc.agreement.sql.help.text.terms.of.use">
-        <source xml:lang="en">Terms of use</source>
-        <target state="translated">Términos de uso</target>
       </trans-unit>
       <trans-unit id="arc.agreement.sql.terms.conditions">
         <source xml:lang="en">Azure SQL managed instance - Azure Arc terms and conditions</source>
@@ -1753,133 +1701,117 @@
         <source xml:lang="en">Password</source>
         <target state="translated">Contraseña</target>
       </trans-unit>
-      <trans-unit id="arc.postgres.server.group.coordinator.cores.limit.description">
+      <trans-unit id="arc.postgres.server.cores.limit.description">
         <source xml:lang="en">The maximum number of CPU cores for the Postgres instance that can be used on the coordinator node. Fractional cores are supported.</source>
         <target state="translated">Número máximo de núcleos de CPU para la instancia de Postgres que se puede usar por nodo de coordinación. Se admiten núcleos fraccionarios.</target>
       </trans-unit>
-      <trans-unit id="arc.postgres.server.group.coordinator.cores.limit.label">
+      <trans-unit id="arc.postgres.server.cores.limit.label">
         <source xml:lang="en">CPU limit</source>
         <target state="translated">Límite de CPU</target>
       </trans-unit>
-      <trans-unit id="arc.postgres.server.group.coordinator.cores.request.description">
+      <trans-unit id="arc.postgres.server.cores.request.description">
         <source xml:lang="en">The minimum number of CPU cores that must be available on the coordinator node to schedule the service. Fractional cores are supported.</source>
         <target state="translated">Número mínimo de núcleos de CPU que deben estar disponibles en el nodo de coordinación para programar el servicio. Se admiten núcleos fraccionarios.</target>
       </trans-unit>
-      <trans-unit id="arc.postgres.server.group.coordinator.cores.request.label">
+      <trans-unit id="arc.postgres.server.cores.request.label">
         <source xml:lang="en">CPU request</source>
         <target state="translated">Solicitud de CPU</target>
       </trans-unit>
-      <trans-unit id="arc.postgres.server.group.coordinator.memory.limit.description">
-        <source xml:lang="en">The memory limit of the Postgres instance on the coordinator node in GB.</source>
-        <target state="translated">Límite de memoria de la instancia de Postgres en el nodo de coordinación en GB.</target>
+      <trans-unit id="arc.postgres.server.dev.use.description">
+        <source xml:lang="en">Check the box to indicate this instance will be used for development or testing purposes only. This instance will not be billed.</source>
+        <target state="translated">Active la casilla para indicar que esta instancia se utilizará solo con fines de prueba o desarrollo. Esta instancia no se facturará.</target>
       </trans-unit>
-      <trans-unit id="arc.postgres.server.group.coordinator.memory.limit.label">
-        <source xml:lang="en">Memory limit (GB)</source>
-        <target state="translated">Límite de memoria (GB)</target>
+      <trans-unit id="arc.postgres.server.dev.use.label">
+        <source xml:lang="en">For development use only</source>
+        <target state="translated">Solo para uso de desarrollo</target>
       </trans-unit>
-      <trans-unit id="arc.postgres.server.group.coordinator.memory.request.description">
-        <source xml:lang="en">The memory request of the Postgres instance on the coordinator node in GB.</source>
-        <target state="translated">Solicitud de memoria de la instancia de Postgres en el nodo de coordinación en GB.</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.coordinator.memory.request.label">
-        <source xml:lang="en">Memory request (GB)</source>
-        <target state="translated">Solicitud de memoria (GB)</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.engine.version">
+      <trans-unit id="arc.postgres.server.engine.version">
         <source xml:lang="en">Engine Version</source>
         <target state="translated">Versión del motor</target>
       </trans-unit>
-      <trans-unit id="arc.postgres.server.group.extensions.description">
+      <trans-unit id="arc.postgres.server.extensions.description">
         <source xml:lang="en">A comma-separated list of the Postgres extensions that should be loaded on startup. Please refer to the postgres documentation for supported values.</source>
         <target state="translated">Lista separada por comas de las extensiones Postgres que deben cargarse durante el inicio. Consulte la documentación de Postgres para obtener información sobre los valores admitidos.</target>
       </trans-unit>
-      <trans-unit id="arc.postgres.server.group.extensions.label">
+      <trans-unit id="arc.postgres.server.extensions.label">
         <source xml:lang="en">Extensions</source>
         <target state="translated">Extensiones</target>
       </trans-unit>
-      <trans-unit id="arc.postgres.server.group.name">
-        <source xml:lang="en">Server group name</source>
-        <target state="translated">Nombre del grupo de servidores</target>
+      <trans-unit id="arc.postgres.server.invalid.username">
+        <source xml:lang="en">That username is disabled; please choose another username.</source>
+        <target state="translated">Ese nombre de usuario está deshabilitado; elija otro nombre de usuario.</target>
       </trans-unit>
-      <trans-unit id="arc.postgres.server.group.name.validation.description">
-        <source xml:lang="en">Server group name must consist of lower case alphanumeric characters or '-', start with a letter, end with an alphanumeric character, and be 11 characters or fewer in length.</source>
-        <target state="translated">El nombre del grupo de servidores debe incluir caracteres alfanuméricos en minúsculas o "-", empezar con una letra, terminar con un carácter alfanumérico y tener 11 caracteres de longitud o menos.</target>
+      <trans-unit id="arc.postgres.server.memory.limit.description">
+        <source xml:lang="en">The memory limit of the Postgres instance on the coordinator node in GB.</source>
+        <target state="translated">Límite de memoria de la instancia de Postgres en el nodo de coordinación en GB.</target>
       </trans-unit>
-      <trans-unit id="arc.postgres.server.group.port">
+      <trans-unit id="arc.postgres.server.memory.limit.label">
+        <source xml:lang="en">Memory limit (GB)</source>
+        <target state="translated">Límite de memoria (GB)</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.memory.request.description">
+        <source xml:lang="en">The memory request of the Postgres instance on the coordinator node in GB.</source>
+        <target state="translated">Solicitud de memoria de la instancia de Postgres en el nodo de coordinación en GB.</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.memory.request.label">
+        <source xml:lang="en">Memory request (GB)</source>
+        <target state="translated">Solicitud de memoria (GB)</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.name">
+        <source xml:lang="en">Server name</source>
+        <target state="translated">Nombre del servidor</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.name.placeholder">
+        <source xml:lang="en">Enter server name</source>
+        <target state="translated">Escribir un nombre del servidor</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.name.validation.description">
+        <source xml:lang="en">Server name must consist of lower case alphanumeric characters or '-', start with a letter, end with an alphanumeric character, and be 11 characters or fewer in length.</source>
+        <target state="translated">El nombre de servidor debe constar de caracteres alfanuméricos en minúsculas o "-", empezar con una letra, terminar con un carácter alfanumérico y tener 11 caracteres o menos de longitud.</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.port">
         <source xml:lang="en">Port</source>
         <target state="translated">Puerto</target>
       </trans-unit>
-      <trans-unit id="arc.postgres.server.group.volume.size.backups.description">
+      <trans-unit id="arc.postgres.server.service.type">
+        <source xml:lang="en">Service type</source>
+        <target state="translated">Tipo de servicio</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.username">
+        <source xml:lang="en">Admin username</source>
+        <target state="translated">Nombre de usuario del administrador</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.username.placeholder">
+        <source xml:lang="en">Enter server admin login name</source>
+        <target state="translated">Escribir el nombre de usuario del administrador del servidor</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.volume.size.backups.description">
         <source xml:lang="en">The size of the storage volume to be used for backups in GB.</source>
         <target state="translated">El tamaño del volumen de almacenamiento que se usará en las copias de seguridad, en GB.</target>
       </trans-unit>
-      <trans-unit id="arc.postgres.server.group.volume.size.backups.label">
+      <trans-unit id="arc.postgres.server.volume.size.backups.label">
         <source xml:lang="en">Volume Size GB (Backups)</source>
         <target state="translated">Tamaño de volumen en GB (copias de seguridad)</target>
       </trans-unit>
-      <trans-unit id="arc.postgres.server.group.volume.size.data.description">
+      <trans-unit id="arc.postgres.server.volume.size.data.description">
         <source xml:lang="en">The size of the storage volume to be used for data in GB.</source>
         <target state="translated">Tamaño del volumen de almacenamiento que usará para los datos en GB.</target>
       </trans-unit>
-      <trans-unit id="arc.postgres.server.group.volume.size.data.label">
+      <trans-unit id="arc.postgres.server.volume.size.data.label">
         <source xml:lang="en">Volume Size GB (Data)</source>
         <target state="translated">Tamaño del volumen en GB (datos)</target>
       </trans-unit>
-      <trans-unit id="arc.postgres.server.group.volume.size.logs.description">
+      <trans-unit id="arc.postgres.server.volume.size.logs.description">
         <source xml:lang="en">The size of the storage volume to be used for logs in GB.</source>
         <target state="translated">El tamaño del volumen de almacenamiento que se usará para los registros, en GB.</target>
       </trans-unit>
-      <trans-unit id="arc.postgres.server.group.volume.size.logs.label">
+      <trans-unit id="arc.postgres.server.volume.size.logs.label">
         <source xml:lang="en">Volume Size GB (Logs)</source>
         <target state="translated">Tamaño de volumen en GB (registros)</target>
       </trans-unit>
-      <trans-unit id="arc.postgres.server.group.workers.cores.limit.description">
-        <source xml:lang="en">The maximum number of CPU cores for the Postgres instance that can be used per node. Fractional cores are supported.</source>
-        <target state="translated">Número máximo de núcleos de CPU para la instancia de Postgres que se puede usar por nodo. Se admiten núcleos fraccionarios.</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.workers.cores.limit.label">
-        <source xml:lang="en">CPU limit (cores per node)</source>
-        <target state="translated">Límite de CPU (núcleos por nodo)</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.workers.cores.request.description">
-        <source xml:lang="en">The minimum number of CPU cores that must be available per node to schedule the service. Fractional cores are supported.</source>
-        <target state="translated">La cantidad mínima de núcleos de CPU que deben estar disponibles por nodo para programar el servicio. Se admiten núcleos fraccionales.</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.workers.cores.request.label">
-        <source xml:lang="en">CPU request (cores per node)</source>
-        <target state="translated">Solicitud de CPU (núcleos por nodo)</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.workers.description">
-        <source xml:lang="en">The number of worker nodes to provision in a sharded cluster, or zero (the default) for single-node Postgres.</source>
-        <target state="translated">El número de nodos de trabajo que se van a aprovisionar en un clúster con particiones, o cero (valor predeterminado) para Postgres de un solo nodo.</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.workers.label">
-        <source xml:lang="en">Number of workers</source>
-        <target state="translated">Número de trabajos</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.workers.memory.limit.description">
-        <source xml:lang="en">The memory limit of the Postgres instance per node in GB.</source>
-        <target state="translated">El límite de memoria de la instancia de Postgres por nodo en GB.</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.workers.memory.limit.label">
-        <source xml:lang="en">Memory limit (GB per node)</source>
-        <target state="translated">Límite de memoria (GB por nodo)</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.workers.memory.request.description">
-        <source xml:lang="en">The memory request of the Postgres instance per node in GB.</source>
-        <target state="translated">Solicitud de memoria de la instancia de Postgres por nodo en GB.</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.workers.memory.request.label">
-        <source xml:lang="en">Memory request (GB per node)</source>
-        <target state="translated">Solicitud de memoria (GB por nodo)</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.settings.resource.coordinator.title">
-        <source xml:lang="en">Coordinator Node Compute Configuration</source>
-        <target state="translated">Configuración del proceso del nodo de coordinación</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.settings.resource.worker.title">
-        <source xml:lang="en">Worker Nodes Compute Configuration</source>
-        <target state="translated">Configuración de proceso de nodos de trabajo</target>
+      <trans-unit id="arc.postgres.settings.resource.compute.config.title">
+        <source xml:lang="en">Compute Configuration</source>
+        <target state="translated">Configuración de proceso</target>
       </trans-unit>
       <trans-unit id="arc.postgres.settings.section.title">
         <source xml:lang="en">General settings</source>
@@ -1902,12 +1834,12 @@
         <target state="translated">La clase de almacenamiento que se va a usar para los volúmenes persistentes de registros</target>
       </trans-unit>
       <trans-unit id="arc.postgres.wizard.page1.title">
-        <source xml:lang="en">Provide Azure enabled PostgreSQL Hyperscale server group parameters</source>
-        <target state="translated">Proporcionar los parámetros del grupo de servidores de hiperescala de PostgreSQL habilitado para Azure</target>
+        <source xml:lang="en">Provide PostgreSQL server parameters</source>
+        <target state="translated">Proporcionar parámetros de servidor PostgreSQL</target>
       </trans-unit>
       <trans-unit id="arc.postgres.wizard.title">
-        <source xml:lang="en">Deploy an Azure Arc-enabled PostgreSQL Hyperscale server group</source>
-        <target state="translated">Implementar un grupo de servidores de hiperescala de PostgreSQL habilitada para Azure Arc</target>
+        <source xml:lang="en">Deploy a PostgreSQL Server - Azure Arc (Preview)</source>
+        <target state="translated">Implementar un servidor PostgreSQL: Azure Arc (versión preliminar)</target>
       </trans-unit>
       <trans-unit id="arc.sql.connection.settings.section.title">
         <source xml:lang="en">SQL Connection information</source>
@@ -2037,6 +1969,10 @@
         <source xml:lang="en">Instance name</source>
         <target state="translated">Nombre de la instancia</target>
       </trans-unit>
+      <trans-unit id="arc.sql.instance.name.placeholder">
+        <source xml:lang="en">Enter instance name</source>
+        <target state="translated">Escribir nombre de la instancia</target>
+      </trans-unit>
       <trans-unit id="arc.sql.instance.retention.policy.title">
         <source xml:lang="en">SQL Instance Backup Retention Policy</source>
         <target state="translated">Directiva de retención de copia de seguridad de la instancia de SQL</target>
@@ -2050,8 +1986,8 @@
         <target state="translated">El nombre de instancia debe constar de caracteres alfanuméricos en minúsculas o "-", empezar con una letra, terminar con un carácter alfanumérico y tener 13 caracteres o menos de longitud.</target>
       </trans-unit>
       <trans-unit id="arc.sql.invalid.username">
-        <source xml:lang="en">sa username is disabled, please choose another username</source>
-        <target state="translated">El nombre de usuario de sa está deshabilitado; elija otro nombre de usuario.</target>
+        <source xml:lang="en">That username is disabled; please choose another username.</source>
+        <target state="translated">Ese nombre de usuario está deshabilitado; elija otro nombre de usuario.</target>
       </trans-unit>
       <trans-unit id="arc.sql.license.type.description">
         <source xml:lang="en">Apply the Azure Hybrid Benefit if you already own a SQL Server License</source>
@@ -2154,8 +2090,12 @@
         <target state="translated">2 réplicas</target>
       </trans-unit>
       <trans-unit id="arc.sql.username">
-        <source xml:lang="en">Username</source>
-        <target state="translated">Nombre de usuario</target>
+        <source xml:lang="en">Managed Instance admin login</source>
+        <target state="translated">Inicio de sesión de administrador de instancia administrada</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.username.placeholder">
+        <source xml:lang="en">Enter admin name</source>
+        <target state="translated">Escribir nombre del administrador</target>
       </trans-unit>
       <trans-unit id="arc.sql.volume.size.backups.description">
         <source xml:lang="en">The size of the storage volume to be used for backups in gibibytes.</source>
@@ -2292,12 +2232,12 @@
         <target state="translated">La cantidad de memoria solicitada debe ser menor o igual que el límite de memoria.</target>
       </trans-unit>
       <trans-unit id="resource.type.arc.postgres.description">
-        <source xml:lang="en">Deploy PostgreSQL Hyperscale server groups into an Azure Arc environment</source>
-        <target state="translated">Permite implementar grupos de servidores de hiperescala de PostgreSQL en un entorno de Azure Arc.</target>
+        <source xml:lang="en">Deploy a PostgreSQL server into an Azure Arc environment</source>
+        <target state="translated">Implementación de un servidor PostgreSQL en un entorno de Azure Arc</target>
       </trans-unit>
       <trans-unit id="resource.type.arc.postgres.display.name">
-        <source xml:lang="en">PostgreSQL Hyperscale server groups - Azure Arc</source>
-        <target state="translated">Grupos de servidores de hiperescala de PostgreSQL: Azure Arc</target>
+        <source xml:lang="en">PostgreSQL Server - Azure Arc (Preview)</source>
+        <target state="translated">Servidor PostgreSQL: Azure Arc (versión preliminar)</target>
       </trans-unit>
       <trans-unit id="resource.type.arc.sql.description">
         <source xml:lang="en">Managed SQL Instance service for app developers in a customer-managed environment</source>

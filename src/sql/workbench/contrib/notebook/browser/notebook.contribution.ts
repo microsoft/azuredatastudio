@@ -357,6 +357,11 @@ configurationRegistry.registerConfiguration({
 			'minimum': 10,
 			'description': localize('notebook.maxRichTextUndoHistory', "The maximum number of changes stored in the undo history for the notebook Rich Text editor.")
 		},
+		'notebook.renderTablesInHtml': {
+			'type': 'boolean',
+			'default': false,
+			'description': localize('notebook.renderTablesInHtml', "Display and save tables in HTML format in text cells instead of converting to markdown tables.")
+		},
 		'notebook.useAbsoluteFilePaths': {
 			'type': 'boolean',
 			'default': false,

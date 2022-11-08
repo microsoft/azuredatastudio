@@ -4243,8 +4243,8 @@
       <Item ItemId=";extensions/git/package.view.workbench.scm.disabled" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[If you would like to use git features, please enable git in your [settings]5D;(command:workbench.action.openSettings?%5B%22git.enabled%22%5D).]D;]A;To learn more about how to use git and source control in VS Code [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Se você quiser usar os recursos do git, habilite o git em suas [configurações]5D;(command:workbench.action.openSettings?%5B%22git.enabled%22%5D).]D;]A;Para saber mais sobre como usar o git e o controle do código-fonte no Azure Data Studio [leia nossa documentação]5D;(https://aka.ms/vscode-scm).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Se você quiser usar os recursos do git, habilite o Git nas suas [configurações]5D;(command:workbench.action.openSettings?%5B%22git.enabled%22%5D).]D;]A;Para saber mais sobre como usar o git e o controle do código-fonte no VS Code [leia nossos documentos]5D;(https://aka.ms/vscode-scm).]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[If you would like to use git features, please enable git in your [settings]5D;(command:workbench.action.openSettings?%5B%22git.enabled%22%5D).]D;]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>

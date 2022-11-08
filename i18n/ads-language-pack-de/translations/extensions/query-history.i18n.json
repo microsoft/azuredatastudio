@@ -8,6 +8,11 @@
 	],
 	"version": "1.0.0",
 	"contents": {
+		"dist/localizedConstants": {
+			"errorLoading": "Fehler beim Laden gespeicherter Abfrageverlaufselemente. {0}",
+			"failed": "Fehlerhaft",
+			"succeeded": "Erfolgreich"
+		},
 		"package": {
 			"queryHistory.captureEnabledDesc": "Gibt an, ob die Erfassung des Abfrageverlaufs aktiviert ist. Bei Festlegung auf FALSE werden ausgeführte Abfragen nicht erfasst.",
 			"queryHistory.clear": "Gesamten Verlauf löschen",
@@ -19,8 +24,12 @@
 			"queryHistory.doubleClickAction.open": "Öffnen eines neuen getrennten Editors mit der Abfrage aus dem ausgewählten Verlaufselement",
 			"queryHistory.doubleClickAction.run": "Öffnen eines neuen verbundenen Editors mit der Abfrage und der Verbindung aus dem ausgewählten Verlaufselement, und automatisches Ausführen der Abfrage",
 			"queryHistory.enableCapture": "Erfassung des Abfrageverlaufs starten",
+			"queryHistory.loading": "Gespeicherte Einträge werden geladen...",
+			"queryHistory.maxEntries": "Maximale Anzahl der zu speichernden Einträge. 0 (Null) bedeutet, dass unbegrenzte Einträge gespeichert werden. Das Erhöhen dieses Grenzwerts kann sich auf die Leistung auswirken, insbesondere dann, wenn Persistenz aktiviert ist.",
 			"queryHistory.noEntries": "Keine anzuzeigenden Abfragen vorhanden",
 			"queryHistory.open": "Abfrage öffnen",
+			"queryHistory.openStorageFolder": "Speicherordner öffnen",
+			"queryHistory.persistHistory": "Gibt an, ob der Abfrageverlauf bei Neustarts beibehalten wird. FALSCH gibt an, dass der Verlauf beim Beenden der Anwendung gelöscht wird.",
 			"queryHistory.run": "Abfrage ausführen"
 		}
 	}

@@ -26,6 +26,7 @@ import { ContextMenuAnchor } from 'sql/workbench/contrib/resourceViewer/browser/
 import { LoadingSpinnerPlugin } from 'sql/base/browser/ui/table/plugins/loadingSpinner.plugin';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 
 export class ResourceViewerTable extends Disposable {
 
@@ -41,14 +42,15 @@ export class ResourceViewerTable extends Disposable {
 		@ICommandService private _commandService: ICommandService,
 		@INotificationService private _notificationService: INotificationService,
 		@IContextViewService private _contextViewService: IContextViewService,
-		@IAccessibilityService private _accessibilityService: IAccessibilityService) {
+		@IAccessibilityService private _accessibilityService: IAccessibilityService,
+		@IQuickInputService private _quickInputService: IQuickInputService) {
 		super();
 		let filterFn = (data: Array<azdata.DataGridItem>): Array<azdata.DataGridItem> => {
 			return data.filter(item => this.filter(item));
 		};
 
 		this._dataView = new TableDataView<azdata.DataGridItem>(undefined, undefined, undefined, filterFn);
-		this._resourceViewerTable = this._register(new Table(parent, this._accessibilityService, {
+		this._resourceViewerTable = this._register(new Table(parent, this._accessibilityService, this._quickInputService, {
 			sorter: (args) => {
 				this._dataView.sort(args);
 			}

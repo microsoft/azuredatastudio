@@ -238,7 +238,7 @@
 			"usernameAndPasswordRequired": "O nome de usuário e a senha são obrigatórios"
 		},
 		"dist/sqlToolsServer": {
-			"downloadServiceDoneChannelMsg": "Concluída a instalação de {0}",
+			"downloadServiceDoneChannelMsg": "Baixado {0}",
 			"downloadingServiceChannelMsg": "Baixando {0}",
 			"downloadingServiceSizeChannelMsg": "({0} KB)",
 			"downloadingServiceStatusMsg": "Baixando {0}",
@@ -251,7 +251,10 @@
 			"startingServiceStatusMsg": "Iniciando {0}"
 		},
 		"dist/tableDesigner/tableDesigner": {
-			"tableDesigner.NewTable": "Nova Tabela"
+			"tableDesigner.NewTable": "Nova Tabela",
+			"tableDesigner.no": "Não",
+			"tableDesigner.turnOnPreloadingMessage": "Deseja reduzir o tempo de carregamento do designer de tabela habilitando o pré-carregamento do modelo de banco de dados? O modelo de banco de dados será pré-carregado quando você expandir o nó de banco de dados no explorador de objetos.",
+			"tableDesigner.yes": "Sim"
 		},
 		"dist/telemetry": {
 			"serviceCrashMessage": "O componente {0} foi encerrado inesperadamente. Reinicie o Azure Data Studio.",
@@ -279,8 +282,6 @@
 			"mssql.connectionOptions.applicationIntent.displayName": "Intenção do aplicativo",
 			"mssql.connectionOptions.applicationName.description": "O nome do aplicativo",
 			"mssql.connectionOptions.applicationName.displayName": "Nome do aplicativo",
-			"mssql.connectionOptions.asynchronousProcessing.description": "Quando true, permite o uso da funcionalidade assíncrona no provedor de dados do .NET Framework",
-			"mssql.connectionOptions.asynchronousProcessing.displayName": "Processamento assíncrono",
 			"mssql.connectionOptions.attachDbFilename.displayName": "Anexar o nome do arquivo de BD",
 			"mssql.connectionOptions.attachedDBFileName.description": "O nome do arquivo principal, incluindo o nome do caminho completo, de um banco de dados anexável",
 			"mssql.connectionOptions.attachedDBFileName.displayName": "Nome do arquivo de BD anexado",
@@ -355,6 +356,14 @@
 			"mssql.connectionOptions.workstationId.displayName": "ID da estação de trabalho",
 			"mssql.disabled": "Desabilitado",
 			"mssql.enabled": "Habilitado",
+			"mssql.executionPlan.actualNumberOfRowsForAllExecutions": "Realça a operação do plano de execução com o maior número real de linhas para todas as execuções.",
+			"mssql.executionPlan.cost": "Realça a operação do plano de execução com o custo mais alto.",
+			"mssql.executionPlan.expensiveOperationMetric": "A métrica padrão a ser usada para realçar uma operação cara em planos de execução de consulta",
+			"mssql.executionPlan.expensiveOperationMetric.actualElapsedCpuTime": "Realça a operação do plano de execução que usou mais tempo de CPU.",
+			"mssql.executionPlan.expensiveOperationMetric.actualElapsedTime": "Realça a operação do plano de execução que levou mais tempo.",
+			"mssql.executionPlan.expensiveOperationMetric.off": "O realce de operações caras será desativado para planos de execução.",
+			"mssql.executionPlan.numberOfRowsRead": "Realça a operação do plano de execução com o maior número de linhas lidas.",
+			"mssql.executionPlan.subtreeCost": "Realça a operação do plano de execução com o custo de subárvore mais alto.",
 			"mssql.exportNotebookToSql": "Exportar o Notebook como SQL",
 			"mssql.exportSqlAsNotebook": "Exportar o SQL como Notebook",
 			"mssql.format.alignColumnDefinitionsInColumns": "Definições de coluna devem ser alinhadas?",
@@ -386,7 +395,8 @@
 			"mssql.query.executionTimeout": "Um tempo limite de execução 0 indica uma espera ilimitada (sem tempo limite)",
 			"mssql.query.implicitTransactions": "Habilitar SET IMPLICIT_TRANSACTIONS",
 			"mssql.query.lockTimeout": "Habilitar a opção SET LOCK TIMEOUT (em milissegundos)",
-			"mssql.query.maxXmlCharsToStore": "Número de caracteres XML a serem armazenados após a execução de uma consulta",
+			"mssql.query.maxCharsToStore": "Máximo de caracteres/bytes a serem armazenados em cada valor nas colunas caracter/binário depois de executar uma consulta. Valor padrão: 65.535. Intervalo de valor válido: 1 a 2.147.483.647.",
+			"mssql.query.maxXmlCharsToStore": "Máximo de caracteres a serem armazenados em cada valor nas colunas XML depois de executar uma consulta. Valor padrão: 2.097.152. Intervalo de valor válido: 1 a 2.147.483.647.",
 			"mssql.query.noCount": "Habilitar a opção SET NOCOUNT",
 			"mssql.query.noExec": "Habilitar a opção SET NOEXEC",
 			"mssql.query.parseOnly": "Habilitar a opção SET PARSEONLY",
@@ -398,6 +408,7 @@
 			"mssql.query.textSize": "O tamanho máximo de dados text e ntext retornados de uma instrução SELECT",
 			"mssql.query.transactionIsolationLevel": "Habilitar a opção SET TRANSACTION ISOLATION LEVEL",
 			"mssql.query.xactAbortOn": "Habilitar a opção SET XACT_ABORT ON",
+			"mssql.tableDesigner.preloadDatabaseModel": "Se o modelo de banco de dados deve ser pré-carregado quando o nó do banco de dados no explorador de objetos for expandido. Quando ativado, o tempo de carregamento do designer de tabela pode ser reduzido. Nota: Você pode ver um uso de memória maior do que o normal se precisar expandir muitos nós de banco de dados.",
 			"mssql.tracingLevel": "[Opcional] Registre o nível para serviços de back-end. O Azure Data Studio gera um nome de arquivo sempre que é iniciado e, quando o arquivo já existe, as entradas de logs são acrescentadas a esse arquivo. Para a limpeza de arquivos de log antigos, confira as configurações logRetentionMinutes e logFilesRemovalLimit. O tracingLevel padrão não registra uma grande quantidade de log. A alteração de detalhamento pode levar ao aumento dos requisitos de log e de espaço em disco para os logs. Erro inclui Crítico, Aviso inclui Erro, informações incluem Aviso e Detalhado inclui Informações",
 			"mssqlCluster.copyPath": "Copiar Caminho",
 			"mssqlCluster.deleteFiles": "Excluir",

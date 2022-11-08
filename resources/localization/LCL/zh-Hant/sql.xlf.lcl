@@ -914,6 +914,9 @@
         <Item ItemId=";(...) el" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[{0}, use arrow keys to navigate between nodes]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[{0}，使用方向鍵在節點之間瀏覽]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -959,6 +962,9 @@
         <Item ItemId=";(...) lanDiagram.name" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Bottom execution Plan {0}]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[底層執行計畫 {0}]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -968,6 +974,9 @@
         <Item ItemId=";(...) Diagram.name" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Top execution Plan {0}]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[頂層執行計畫 {0}]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1124,6 +1133,9 @@
         <Item ItemId=";(...) ltips" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[When true, enables tooltips on hover for execution plan. When false, tooltips are shown on node click or F3 key press.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[若為 true，會在暫留時啟用執行計畫暫留的工具提示。若為 false，則會在節點點擊或 F3 按鍵時顯示工具提示。]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1267,18 +1279,6 @@
             <Val><![CDATA[Highlight Expensive Operation]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[醒目提示成本過高的作業]]></Val>
-            </Tgt>
-          </Str>
-          <Disp Icon="Str" />
-        </Item>
-      </Item>
-      <Item ItemId=";@src/sql/workbench/contrib/executionPlan/browser/widgets/highlightExpensiveNodeWidget.invalidPropertyExecutionPlan" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) Metric" ItemType="0" PsrId="308" Leaf="true">
-          <Str Cat="Text">
-            <Val><![CDATA[No nodes found with the {0} metric.]]></Val>
-            <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[找不到具有 {0} 計量的節點。]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -1487,6 +1487,9 @@
         <Item ItemId=";(...) ur" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Open the welcome page with Getting Started Tour (default)]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[使用使用者入門導覽 (預設) 開啟歡迎頁面]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -2328,6 +2331,33 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/base/browser/ui/table/table.table.resizeColumn" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Provide new column width]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[提供新的資料行寬度]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/base/browser/ui/table/table.table.resizeColumn.invalid" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Invalid column width]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[資料行寬度無效]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/base/browser/ui/table/table.table.resizeColumn.negativeSize" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Size cannot be 0 or negative]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[大小不可以是 0 或負數]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/base/browser/ui/taskbar/overflowActionbar.toggleMore" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Toggle More]]></Val>
@@ -2376,6 +2406,9 @@
       <Item ItemId=";src/sql/base/common/locConstants.appName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[`${appName}`: e.g. Azure Data Studio.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA['${appName}': 例如 Azure Data Studio。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2682,18 +2715,27 @@
       <Item ItemId=";src/sql/base/common/locConstants.sql.versionMismatch" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Extension is not compatible with Azure Data Studio {0}. Extension requires: {1}.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[延伸模組與 Azure Data Studio {0} 不相容。延伸模組需要: {1}。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.sql.versionMismatchVsCode" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Extension is not compatible with Azure Data Studio {0}. Extension requires a newer VS Code Engine Version {1}, which is newer than what is currently supported ({2}).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[延伸模組與 Azure Data Studio {0} 不相容。延伸模組需要更新的 VS Code 引擎版本 {1}，該版本較目前支援的版本 ({2}) 更新。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.sql.versionSyntax" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Could not parse `{0}` value {1}. Please use, for example: ^1.22.0, ^1.22.x, etc.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[無法解析 `{0}` 值 {1}。請使用範例: ^1.22.0、^1.22.x 等。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2712,48 +2754,72 @@
       <Item ItemId=";src/sql/base/common/locConstants.terminal.integrated.allowChords" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Whether or not to allow chord keybindings in the terminal. Note that when this is true and the keystroke results in a chord it will bypass `#terminal.integrated.commandsToSkipShell#`, setting this to false is particularly useful when you want ctrl+k to go to your shell (not Azure Data Studio).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[是否允許在終端內同步選取按鍵繫結關係。請注意，當此設定為 true 時，同步選取的按鍵輸入結果會跳過 `#terminal.integrated.commandsToSkipShell#`，如果希望按 ctrl+k 能前往殼層 (不是 Azure Data Studio)，請將此項設定為 false。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.terminal.integrated.autoReplies" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[A set of messages that when encountered in the terminal will be automatically responded to. Provided the message is specific enough, this can help automate away common responses.]D;]A;]D;]A;Remarks:]D;]A;]D;]A;- Use {0} to automatically respond to the terminate batch job prompt on Windows.]D;]A;- The message includes escape sequences so the reply might not happen with styled text.]D;]A;- Each reply can only happen once every second.]D;]A;- Use {1} in the reply to mean the enter key.]D;]A;- To unset a default key, set the value to null.]D;]A;- Restart Azured Data Studio if new don't apply.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[在終端中遇到這一組訊息時，系統將會自動回覆。如果訊息夠具體，有助於自動處理常見的回覆。]D;]A;]D;]A;備註:]D;]A;]D;]A;- 使用 {0} 自動回應 Windows 上的終端批次工作提示。]D;]A;- 該訊息包含逸出序列，因此可能不會使用樣式文字進行回覆。]D;]A;- 每個回覆每秒只能發生一次。]D;]A;- 在回覆中使用 {1} 表示輸入索引鍵。]D;]A;- 若要取消設定預設索引鍵，請將值設定為 null。]D;]A;- 若新的不適用，請重新啟動 Azure Data Studio。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.terminal.integrated.commandsToSkipShell" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[A set of command IDs whose keybindings will not be sent to the shell but instead always be handled by Azure Data Studio. This allows keybindings that would normally be consumed by the shell to act instead the same as when the terminal is not focused, for example `Ctrl+P` to launch Quick Open.]D;]A;]D;]A;&nbsp;]D;]A;]D;]A;Many commands are skipped by default. To override a default and pass that command's keybinding to the shell instead, add the command prefixed with the `-` character. For example add `-workbench.action.quickOpen` to allow `Ctrl+P` to reach the shell.]D;]A;]D;]A;&nbsp;]D;]A;]D;]A;The following list of default skipped commands is truncated when viewed in Settings Editor. To see the full list, {1} and search for the first command from the list below.]D;]A;]D;]A;&nbsp;]D;]A;]D;]A;Default Skipped Commands:]D;]A;]D;]A;{0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[一組命令識別碼，其按鍵繫結關係一律由 Azure Data Studio 處理，而不會傳送到殼層。如此一來，通常由殼層取用的按鍵繫結關係，將能像焦點不在終端機時般地運作。例如 `Ctrl+P` 會啟動 Quick Open。]D;]A;]D;]A;&nbsp;]D;]A;]D;]A;根據預設，會跳過許多命令。若要覆寫預設，並將命令的按鍵繫結關係改為傳遞給殼層，請新增命令，並在其字首加上 `-` 字元。例如，新增 `-workbench.action.quickOpen` 可讓 `Ctrl+P` 傳送到殼層。]D;]A;]D;]A;&nbsp;]D;]A;]D;]A;在設定編輯器中檢視下列預設會跳過的命令清單時，會有截斷情形。若要查看完整的清單，{1}，然後從下面的清單中搜尋第一個命令。]D;]A;]D;]A;&nbsp;]D;]A;]D;]A;預設會跳過的命令:]D;]A;]D;]A;{0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.terminal.integrated.detectLocale" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Controls whether to detect and set the `$LANG` environment variable to a UTF-8 compliant option since Azure Data Studio's terminal only supports UTF-8 encoded data coming from the shell.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[因為 Azure Data Studio 的終端只支援來自殼層的 UTF-8 編碼資料，所以控制是否要偵測 `$LANG` 環境變數，並將其設為 UTF-8 相容選項。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.terminal.integrated.env.linux" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Object with environment variables that will be added to the Azure Data Studio process to be used by the terminal on Linux. Set to `null` to delete the environment variable.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[具有環境變數的物件，會新增至 Linux 終端使用的 Azure Data Studio 處理序。設為 `null` 可刪除環境變數。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.terminal.integrated.env.osx" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Object with environment variables that will be added to the Azure Data Studio process to be used by the terminal on macOS. Set to `null` to delete the environment variable.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[具有環境變數的物件，會新增至 macOS 終端使用的 Azure Data Studio 處理序。設為 `null` 可刪除環境變數。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.terminal.integrated.env.windows" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Object with environment variables that will be added to the Azure Data Studio process to be used by the terminal on Windows. Set to `null` to delete the environment variable.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[具有環境變數的物件，會新增至 Windows 終端使用的 Azure Data Studio 處理序。設為 `null` 可刪除環境變數。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.terminal.integrated.inheritEnv" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Whether new shells should inherit their environment from Azure Data Studio, which may source a login shell to ensure $PATH and other development variables are initialized. This has no effect on Windows.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[新殼層是否應該從 Azure Data Studio 繼承其環境，而 VS Code 可能會提供登入殼層，以確保 $PATH 和其他開發變數已初始化。這對 Windows 沒有影響。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3024,6 +3090,9 @@
       <Item ItemId=";src/sql/platform/serialization/common/serializationService.missingSerializationProviderError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Could not find a serialization provider with the specified ID '{0}']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[找不到具有指定識別碼 '{0}' 的序列化提供者]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4668,6 +4737,9 @@
       <Item ItemId=";src/sql/workbench/browser/scriptingUtils.selectScriptForEditNotGeneratedError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to generate script for Edit Data editor.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[無法為「編輯資料」編輯器產生指令碼。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7518,6 +7590,9 @@
       <Item ItemId=";src/sql/workbench/contrib/dataExplorer/browser/dataExplorerViewlet.ads-connections" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Icon represent a server.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[代表伺服器的圖示。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7933,7 +8008,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Execution Plan]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[執行計劃]]></Val>
+            <Val><![CDATA[執行計畫]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -8079,8 +8154,8 @@
       <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanTreeTab.planTreeTab.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Plan Tree]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[計畫樹狀目錄 (預覽)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[方案樹狀]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Plan Tree (Preview)]]></Val>
@@ -8109,6 +8184,9 @@
       <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanView.executionPlan.diagram.ariaLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Execution Plan {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[執行計畫 {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -8296,7 +8374,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Top Operations]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[前幾項作業]]></Val>
+            <Val><![CDATA[頂層作業]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Top Operations  (Preview)]]></Val>
@@ -11361,6 +11439,9 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet.ads-notebook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Icon represent a notebook.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[代表筆記本的圖示。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -11962,7 +12043,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Execution Plan]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[執行計劃]]></Val>
+            <Val><![CDATA[執行計畫]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -13443,6 +13524,9 @@
       <Item ItemId=";src/sql/workbench/contrib/resourceViewer/browser/resourceViewer.contribution.resourceViewerIcon" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Icon for resource viewer.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[資源檢視器的圖示。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -13964,7 +14048,13 @@
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/welcome/notifyEncryption/notifyEncryptionDialog.notifyEncryption.message" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Data Studio now has encryption enabled by default for all SQL Server connections. This may result in your existing connections no longer working.{0}We recommend you review the link below for more details.]]></Val>
+          <Val><![CDATA[Azure Data Studio now has encryption enabled by default for all SQL Server connections. This may result in your existing connections no longer working unless certain Encryption related connection properties are changed.{0}We recommend you review the link below for more details.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Data Studio 現在會針對所有 SQL Server 連線預設啟用加密。除非您變更特定加密相關連線屬性，否則這可能會導致現有的連線無法再使用。{0}建議您檢閱下列連結以了解更多詳細資料。]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure Data Studio now has encryption enabled by default for all SQL Server connections. This may result in your existing connections no longer working.{0}We recommend you review the link below for more details.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -13980,6 +14070,9 @@
       <Item ItemId=";src/sql/workbench/contrib/welcome/notifyEncryption/notifyEncryptionDialog.notifyEncryption.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Important Update]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[重要更新]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -14478,6 +14571,9 @@
       <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/welcomePage.contribution.workbench.startupEditor.welcomePage" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Open the Welcome page, with content to aid in getting started with Azure Data Studio and extensions.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[開啟包含協助開始使用 Azure Data Studio 和延伸模組內容的歡迎頁面。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -15315,6 +15411,9 @@
       <Item ItemId=";src/sql/workbench/services/connection/browser/connectionDialogService.enableTrustServerCertificate" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enable Trust server certificate]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[啟用信任伺服器憑證]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -15348,12 +15447,18 @@
       <Item ItemId=";src/sql/workbench/services/connection/browser/connectionDialogService.runKinit" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Run Kinit]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[執行 Kinit]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/services/connection/browser/connectionDialogService.trustServerCertInstructionText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Encryption was enabled on this connection, review your SSL and certificate configuration for the target SQL Server, or enable 'Trust server certificate' in the connection dialog.]D;]A;]D;]A;			Note: A self-signed certificate offers only limited protection and is not a recommended practice for production environments. Do you want to enable 'Trust server certificate' on this connection and retry? ]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[已在此連線上啟用加密、檢閱目標 SQL Server 的 SSL 與憑證設定，或在連線對話方塊中啟用 [信任伺服器憑證]5D;。			]D;]A;]D;]A;注意: 自我簽署憑證只提供有限的保護，且不是實際執行環境的建議做法。您要在此連線上啟用 [信任伺服器憑證]5D; 並重試嗎? ]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -15832,7 +15937,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Read More]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[進一步了解]]></Val>
+            <Val><![CDATA[深入了解]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

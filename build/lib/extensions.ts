@@ -308,7 +308,6 @@ const externalExtensions = [
 	'dacpac',
 	'import',
 	'kusto',
-	'liveshare',
 	'machine-learning',
 	'profiler',
 	'query-history',

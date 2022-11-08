@@ -149,6 +149,7 @@
 		},
 		"dist/extension": {
 			"bdc.dashboard.title": "大数据群集仪表板 -",
+			"bdc.deprecationWarning": "大数据群集加载项即将停用，将在即将发布的版本中删除其 Azure Data Studio 功能。在[此处](https://go.microsoft.com/fwlink/?linkid=2207340)阅读有关此事件和今后的支持的详细信息。",
 			"mount.error.endpointNotFound": "未找到控制器终结点信息",
 			"textConfirmRemoveController": "确定要删除 \"{0}\" 吗?",
 			"textNo": "否",
