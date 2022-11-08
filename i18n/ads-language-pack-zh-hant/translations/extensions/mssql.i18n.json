@@ -238,7 +238,7 @@
 			"usernameAndPasswordRequired": "需要使用者名稱與密碼"
 		},
 		"dist/sqlToolsServer": {
-			"downloadServiceDoneChannelMsg": "已完成 {0} 的安裝",
+			"downloadServiceDoneChannelMsg": "已下載 {0}",
 			"downloadingServiceChannelMsg": "正在下載 {0}",
 			"downloadingServiceSizeChannelMsg": "({0} KB)",
 			"downloadingServiceStatusMsg": "正在下載 {0}",
@@ -251,7 +251,10 @@
 			"startingServiceStatusMsg": "正在啟動 {0}"
 		},
 		"dist/tableDesigner/tableDesigner": {
-			"tableDesigner.NewTable": "新增資料表"
+			"tableDesigner.NewTable": "新增資料表",
+			"tableDesigner.no": "否",
+			"tableDesigner.turnOnPreloadingMessage": "是否要啟用資料庫模型預先載入來縮短資料表設計工具的載入時間? 當您在物件總管中展開資料庫節點時，將會預先載入資料庫模型。",
+			"tableDesigner.yes": "是"
 		},
 		"dist/telemetry": {
 			"serviceCrashMessage": "{0} 個元件意外結束。請重新啟動 Azure Data Studio。",
@@ -279,8 +282,6 @@
 			"mssql.connectionOptions.applicationIntent.displayName": "應用程式的意圖",
 			"mssql.connectionOptions.applicationName.description": "應用程式的名稱",
 			"mssql.connectionOptions.applicationName.displayName": "應用程式名稱",
-			"mssql.connectionOptions.asynchronousProcessing.description": "若為 True，則允許使用 .Net Framework Data Provider 中的非同步功能",
-			"mssql.connectionOptions.asynchronousProcessing.displayName": "非同步處理",
 			"mssql.connectionOptions.attachDbFilename.displayName": "附加 DB 檔案名稱",
 			"mssql.connectionOptions.attachedDBFileName.description": "主要檔案的名稱，包含可附加資料庫的完整路徑名稱",
 			"mssql.connectionOptions.attachedDBFileName.displayName": "已附加的 DB 檔案名稱",
@@ -355,6 +356,14 @@
 			"mssql.connectionOptions.workstationId.displayName": "工作站識別碼",
 			"mssql.disabled": "已停用",
 			"mssql.enabled": "已啟用",
+			"mssql.executionPlan.actualNumberOfRowsForAllExecutions": "使用所有執行的最大實際資料列數來醒目提示執行計畫作業。",
+			"mssql.executionPlan.cost": "以最高成本醒目提示執行計畫作業。",
+			"mssql.executionPlan.expensiveOperationMetric": "用來在查詢執行計畫中醒目提示成本高的作業的預設計量",
+			"mssql.executionPlan.expensiveOperationMetric.actualElapsedCpuTime": "醒目提示使用最多 CPU 時間的執行計畫作業。",
+			"mssql.executionPlan.expensiveOperationMetric.actualElapsedTime": "醒目提示花費最多時間的執行計畫作業。",
+			"mssql.executionPlan.expensiveOperationMetric.off": "將會針對執行計畫關閉高成本的作業醒目提示。",
+			"mssql.executionPlan.numberOfRowsRead": "以讀取的資料列數目上限醒目提示執行計畫作業。",
+			"mssql.executionPlan.subtreeCost": "以最高樹狀子目錄成本醒目提示執行計畫作業。",
 			"mssql.exportNotebookToSql": "將筆記本匯出為 SQL",
 			"mssql.exportSqlAsNotebook": "將 SQL 匯出為筆記本",
 			"mssql.format.alignColumnDefinitionsInColumns": "行定義是否一致?",
@@ -386,7 +395,8 @@
 			"mssql.query.executionTimeout": "執行逾時為 0 表示無限等候 (不逾時)",
 			"mssql.query.implicitTransactions": "啟用 SET IMPLICIT_TRANSACTIONS",
 			"mssql.query.lockTimeout": "啟用 SET LOCK TIMEOUT 選項 (毫秒)",
-			"mssql.query.maxXmlCharsToStore": "執行查詢之後要儲存的 XML 字元數目",
+			"mssql.query.maxCharsToStore": "執行查詢之後，字元/二進位資料行中每個值儲存的字元/位元組數目上限。預設值: 65，535。有效值範圍: 1 到 2，147，483，647。",
+			"mssql.query.maxXmlCharsToStore": "執行查詢後，XML 資料行中每個值儲存的最大字元數。預設值: 2，097，152。有效值範圍: 1 到 2，147，483，647。",
 			"mssql.query.noCount": "啟用 SET NOCOUNT 選項",
 			"mssql.query.noExec": "啟用 SET NOEXEC 選項",
 			"mssql.query.parseOnly": "啟用 SET PARSEONLY 選項",
@@ -398,6 +408,7 @@
 			"mssql.query.textSize": "SELECT 陳述式所傳回 text 與 Ntext 資料的大小上限",
 			"mssql.query.transactionIsolationLevel": "啟用 SET TRANSACTION ISOLATION LEVEL 選項",
 			"mssql.query.xactAbortOn": "啟用 SET XACT_ABORT ON 選項",
+			"mssql.tableDesigner.preloadDatabaseModel": "當物件總管中的資料庫節點展開時，是否要預先載入資料庫模型。啟用時，可以縮短資料表設計工具的載入時間。注意: 如果您需要展開許多資料庫節點，可能會看到高於一般的記憶體使用量。",
 			"mssql.tracingLevel": "[選用] 後端服務的記錄層級。每當 Azure Data Studio 啟動，或是檔案已經有附加至該檔案的記錄項目時，Azure Data Studio 都會產生檔案名稱。如需清除舊記錄檔，請查看 logRetentionMinutes 和 logFilesRemovalLimit 設定。預設 tracingLevel 不會記錄太多項目。變更詳細資訊可能會導致大量記錄和記錄的磁碟空間需求。錯誤包含嚴重，警告包含錯誤，資訊包含警告而詳細資訊包含資訊",
 			"mssqlCluster.copyPath": "複製路徑",
 			"mssqlCluster.deleteFiles": "刪除",

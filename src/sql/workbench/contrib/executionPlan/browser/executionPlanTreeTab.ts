@@ -25,6 +25,7 @@ import { CopyKeybind } from 'sql/base/browser/ui/table/plugins/copyKeybind.plugi
 import { Disposable } from 'vs/base/common/lifecycle';
 import { deepClone } from 'vs/base/common/objects';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 
 export class ExecutionPlanTreeTab extends Disposable implements IPanelTab {
 	public readonly title: string = localize('planTreeTab.title', 'Plan Tree');
@@ -53,7 +54,8 @@ export class ExecutionPlanTreeTabView extends Disposable implements IPanelView {
 		@IThemeService private _themeService: IThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
-		@IAccessibilityService private accessibilityService: IAccessibilityService
+		@IAccessibilityService private _accessibilityService: IAccessibilityService,
+		@IQuickInputService private _quickInputService: IQuickInputService
 	) {
 		super();
 	}
@@ -194,7 +196,7 @@ export class ExecutionPlanTreeTabView extends Disposable implements IPanelView {
 
 		const selectionModel = new CellSelectionModel<Slick.SlickData>();
 
-		const treeGrid = this._register(new TreeGrid<Slick.SlickData>(tableContainer, this.accessibilityService, {
+		const treeGrid = this._register(new TreeGrid<Slick.SlickData>(tableContainer, this._accessibilityService, this._quickInputService, {
 			columns: columns,
 			sorter: (args) => {
 				const sortColumn = args.sortCol.field;

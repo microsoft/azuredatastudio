@@ -835,8 +835,8 @@
   <file original="extensions/mssql/dist/sqlToolsServer" source-language="en" datatype="plaintext" target-language="de">
     <body>
       <trans-unit id="downloadServiceDoneChannelMsg">
-        <source xml:lang="en">Done installing {0}</source>
-        <target state="translated">Die Installation von {0} wurde abgeschlossen.</target>
+        <source xml:lang="en">Downloaded {0}</source>
+        <target state="translated">{0} wurde heruntergeladen</target>
       </trans-unit>
       <trans-unit id="downloadingServiceChannelMsg">
         <source xml:lang="en">Downloading {0}</source>
@@ -885,6 +885,18 @@
       <trans-unit id="tableDesigner.NewTable">
         <source xml:lang="en">New Table</source>
         <target state="translated">Neue Tabelle</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.no">
+        <source xml:lang="en">No</source>
+        <target state="translated">Nein</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.turnOnPreloadingMessage">
+        <source xml:lang="en">Do you want to reduce the table designer load time by enabling the database model preloading? The database model will be preloaded when you expand the database node in object explorer.</source>
+        <target state="translated">Möchten Sie die Ladezeit des Tabellen-Designers reduzieren, indem Sie das Vorabladen des Datenbankmodells aktivieren? Das Datenbankmodell wird vorab geladen, wenn Sie den Datenbankknoten im Objekt-Explorer erweitern.</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.yes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">Ja</target>
       </trans-unit>
     </body>
   </file>
@@ -985,14 +997,6 @@
       <trans-unit id="mssql.connectionOptions.applicationName.displayName">
         <source xml:lang="en">Application name</source>
         <target state="translated">Anwendungsname</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.asynchronousProcessing.description">
-        <source xml:lang="en">When true, enables usage of the Asynchronous functionality in the .Net Framework Data Provider</source>
-        <target state="translated">Bei Festlegung auf TRUE wird die Verwendung der asynchronen Verarbeitung im .NET Framework-Datenanbieter ermöglicht.</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.asynchronousProcessing.displayName">
-        <source xml:lang="en">Asynchronous processing</source>
-        <target state="translated">Asynchrone Verarbeitung</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.attachDbFilename.displayName">
         <source xml:lang="en">Attach DB filename</source>
@@ -1290,6 +1294,38 @@
         <source xml:lang="en">Enabled</source>
         <target state="translated">Aktiviert</target>
       </trans-unit>
+      <trans-unit id="mssql.executionPlan.actualNumberOfRowsForAllExecutions">
+        <source xml:lang="en">Highlights the execution plan operation with the greatest actual number of rows for all executions.</source>
+        <target state="translated">Hebt den Ausführungsplanvorgang mit der größten tatsächlichen Anzahl von Zeilen für alle Ausführungen hervor.</target>
+      </trans-unit>
+      <trans-unit id="mssql.executionPlan.cost">
+        <source xml:lang="en">Highlights the execution plan operation with the highest cost.</source>
+        <target state="translated">Hebt den Ausführungsplanvorgang mit den höchsten Kosten hervor.</target>
+      </trans-unit>
+      <trans-unit id="mssql.executionPlan.expensiveOperationMetric">
+        <source xml:lang="en">The default metric to use to highlight an expensive operation in query execution plans</source>
+        <target state="translated">Die Standardmetrik, die verwendet werden soll, um einen teuren Vorgang in Abfrageausführungsplänen hervorzuheben.</target>
+      </trans-unit>
+      <trans-unit id="mssql.executionPlan.expensiveOperationMetric.actualElapsedCpuTime">
+        <source xml:lang="en">Highlights the execution plan operation that used the most CPU time.</source>
+        <target state="translated">Hebt den Ausführungsplanvorgang hervor, der die meiste CPU-Zeit beansprucht hat.</target>
+      </trans-unit>
+      <trans-unit id="mssql.executionPlan.expensiveOperationMetric.actualElapsedTime">
+        <source xml:lang="en">Highlights the execution plan operation that took the most time.</source>
+        <target state="translated">Hebt den Ausführungsplanvorgang hervor, der am längsten gedauert hat.</target>
+      </trans-unit>
+      <trans-unit id="mssql.executionPlan.expensiveOperationMetric.off">
+        <source xml:lang="en">Expensive operation highlighting will be turned off for execution plans.</source>
+        <target state="translated">Die Hervorhebung aufwendiger Vorgänge wird für Ausführungspläne deaktiviert.</target>
+      </trans-unit>
+      <trans-unit id="mssql.executionPlan.numberOfRowsRead">
+        <source xml:lang="en">Highlights the execution plan operation with the greatest number of rows read.</source>
+        <target state="translated">Hebt den Ausführungsplanvorgang mit der größten Anzahl gelesener Zeilen hervor.</target>
+      </trans-unit>
+      <trans-unit id="mssql.executionPlan.subtreeCost">
+        <source xml:lang="en">Highlights the execution plan operation with the highest subtree cost.</source>
+        <target state="translated">Hebt den Ausführungsplanvorgang mit den höchsten Unterstrukturkosten hervor.</target>
+      </trans-unit>
       <trans-unit id="mssql.exportNotebookToSql">
         <source xml:lang="en">Export Notebook as SQL</source>
         <target state="translated">Notebook als SQL exportieren</target>
@@ -1414,9 +1450,13 @@
         <source xml:lang="en">Enable SET LOCK TIMEOUT option (in milliseconds)</source>
         <target state="translated">SET LOCK TIMEOUT-Option aktivieren (in Millisekunden)</target>
       </trans-unit>
+      <trans-unit id="mssql.query.maxCharsToStore">
+        <source xml:lang="en">Maximum number of characters/bytes to store for each value in character/binary columns after running a query. Default value: 65,535. Valid value range: 1 to 2,147,483,647.</source>
+        <target state="translated">Die maximale Anzahl von Zeichen/Bytes, die nach dem Ausführen einer Abfrage für jeden Wert in Zeichenspalten/binären Spalten gespeichert werden sollen. Standardwert: 65.535. Gültiger Wertebereich: 1 bis 2.147.483.647.</target>
+      </trans-unit>
       <trans-unit id="mssql.query.maxXmlCharsToStore">
-        <source xml:lang="en">Number of XML characters to store after running a query</source>
-        <target state="translated">Anzahl von XML-Zeichen, die nach dem Ausführen einer Abfrage gespeichert werden sollen</target>
+        <source xml:lang="en">Maximum number of characters to store for each value in XML columns after running a query. Default value: 2,097,152. Valid value range: 1 to 2,147,483,647.</source>
+        <target state="translated">Die maximale Anzahl von Zeichen, die nach dem Ausführen einer Abfrage für jeden Wert in XML-Spalten gespeichert werden sollen. Standardwert: 2.097.152. Gültiger Wertebereich: 1 bis 2.147.483.647.</target>
       </trans-unit>
       <trans-unit id="mssql.query.noCount">
         <source xml:lang="en">Enable SET NOCOUNT option</source>
@@ -1461,6 +1501,10 @@
       <trans-unit id="mssql.query.xactAbortOn">
         <source xml:lang="en">Enable SET XACT_ABORT ON option</source>
         <target state="translated">SET XACT_ABORT ON-Option aktivieren</target>
+      </trans-unit>
+      <trans-unit id="mssql.tableDesigner.preloadDatabaseModel">
+        <source xml:lang="en">Whether to preload the database model when the database node in the object explorer is expanded. When enabled, the loading time of table designer can be reduced. Note: You might see higher than normal memory usage if you need to expand a lot of database nodes.</source>
+        <target state="translated">Gibt an, ob das Datenbankmodell vorab geladen werden soll, wenn der Datenbankknoten im Objekt-Explorer erweitert wird. Wenn diese Option aktiviert ist, kann die Ladezeit des Tabellen-Designers reduziert werden. Hinweis: Wenn Sie viele Datenbankknoten erweitern müssen, wird möglicherweise eine höhere Speicherauslastung als normal angezeigt.</target>
       </trans-unit>
       <trans-unit id="mssql.tracingLevel">
         <source xml:lang="en">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</source>

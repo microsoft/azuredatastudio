@@ -835,8 +835,8 @@
   <file original="extensions/mssql/dist/sqlToolsServer" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="downloadServiceDoneChannelMsg">
-        <source xml:lang="en">Done installing {0}</source>
-        <target state="translated">{0} のインストールが完了しました</target>
+        <source xml:lang="en">Downloaded {0}</source>
+        <target state="translated">ダウンロード済み {0}</target>
       </trans-unit>
       <trans-unit id="downloadingServiceChannelMsg">
         <source xml:lang="en">Downloading {0}</source>
@@ -885,6 +885,18 @@
       <trans-unit id="tableDesigner.NewTable">
         <source xml:lang="en">New Table</source>
         <target state="translated">新しいテーブル</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.no">
+        <source xml:lang="en">No</source>
+        <target state="translated">いいえ</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.turnOnPreloadingMessage">
+        <source xml:lang="en">Do you want to reduce the table designer load time by enabling the database model preloading? The database model will be preloaded when you expand the database node in object explorer.</source>
+        <target state="translated">データベース モデルの事前読み込みを有効にして、テーブル デザイナーの読み込み時間を短縮しますか? オブジェクト エクスプローラーでデータベース ノードを展開すると、データベース モデルが事前に読み込まれます。</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.yes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">はい</target>
       </trans-unit>
     </body>
   </file>
@@ -985,14 +997,6 @@
       <trans-unit id="mssql.connectionOptions.applicationName.displayName">
         <source xml:lang="en">Application name</source>
         <target state="translated">アプリケーション名</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.asynchronousProcessing.description">
-        <source xml:lang="en">When true, enables usage of the Asynchronous functionality in the .Net Framework Data Provider</source>
-        <target state="translated">True の場合は、.Net Framework Data Provider の非同期機能を使用できるようになります</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.asynchronousProcessing.displayName">
-        <source xml:lang="en">Asynchronous processing</source>
-        <target state="translated">非同期処理</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.attachDbFilename.displayName">
         <source xml:lang="en">Attach DB filename</source>
@@ -1290,6 +1294,38 @@
         <source xml:lang="en">Enabled</source>
         <target state="translated">有効</target>
       </trans-unit>
+      <trans-unit id="mssql.executionPlan.actualNumberOfRowsForAllExecutions">
+        <source xml:lang="en">Highlights the execution plan operation with the greatest actual number of rows for all executions.</source>
+        <target state="translated">すべての実行の実際の行数が最も多い実行プランの操作を強調表示します。</target>
+      </trans-unit>
+      <trans-unit id="mssql.executionPlan.cost">
+        <source xml:lang="en">Highlights the execution plan operation with the highest cost.</source>
+        <target state="translated">コストが最も高い実行プラン操作を強調表示します。</target>
+      </trans-unit>
+      <trans-unit id="mssql.executionPlan.expensiveOperationMetric">
+        <source xml:lang="en">The default metric to use to highlight an expensive operation in query execution plans</source>
+        <target state="translated">クエリ実行プランで負荷の高い操作を強調表示するために使用する既定のメトリック</target>
+      </trans-unit>
+      <trans-unit id="mssql.executionPlan.expensiveOperationMetric.actualElapsedCpuTime">
+        <source xml:lang="en">Highlights the execution plan operation that used the most CPU time.</source>
+        <target state="translated">CPU 時間が最も多く使用された実行プラン操作を強調表示します。</target>
+      </trans-unit>
+      <trans-unit id="mssql.executionPlan.expensiveOperationMetric.actualElapsedTime">
+        <source xml:lang="en">Highlights the execution plan operation that took the most time.</source>
+        <target state="translated">最も時間がかかった実行プランの操作を強調表示します。</target>
+      </trans-unit>
+      <trans-unit id="mssql.executionPlan.expensiveOperationMetric.off">
+        <source xml:lang="en">Expensive operation highlighting will be turned off for execution plans.</source>
+        <target state="translated">実行プランでは、負荷の高い操作の強調表示がオフになります。</target>
+      </trans-unit>
+      <trans-unit id="mssql.executionPlan.numberOfRowsRead">
+        <source xml:lang="en">Highlights the execution plan operation with the greatest number of rows read.</source>
+        <target state="translated">読み取られた行数が最も多い実行プラン操作を強調表示します。</target>
+      </trans-unit>
+      <trans-unit id="mssql.executionPlan.subtreeCost">
+        <source xml:lang="en">Highlights the execution plan operation with the highest subtree cost.</source>
+        <target state="translated">サブツリー コストが最も高い実行プラン操作を強調表示します。</target>
+      </trans-unit>
       <trans-unit id="mssql.exportNotebookToSql">
         <source xml:lang="en">Export Notebook as SQL</source>
         <target state="translated">ノートブックを SQL としてエクスポート</target>
@@ -1414,9 +1450,13 @@
         <source xml:lang="en">Enable SET LOCK TIMEOUT option (in milliseconds)</source>
         <target state="translated">SET LOCK TIMEOUT オプションを有効にする (ミリ秒単位)</target>
       </trans-unit>
+      <trans-unit id="mssql.query.maxCharsToStore">
+        <source xml:lang="en">Maximum number of characters/bytes to store for each value in character/binary columns after running a query. Default value: 65,535. Valid value range: 1 to 2,147,483,647.</source>
+        <target state="translated">クエリの実行後に、文字/バイナリ列の各値に格納する最大文字数/バイト数。既定値: 65,535。有効な値の範囲: 1 から 2,147,483,647。</target>
+      </trans-unit>
       <trans-unit id="mssql.query.maxXmlCharsToStore">
-        <source xml:lang="en">Number of XML characters to store after running a query</source>
-        <target state="translated">クエリの実行後に格納する XML 文字の数</target>
+        <source xml:lang="en">Maximum number of characters to store for each value in XML columns after running a query. Default value: 2,097,152. Valid value range: 1 to 2,147,483,647.</source>
+        <target state="translated">クエリの実行後に XML 列の各値に格納する最大文字数。既定値: 2,097,152。有効な値の範囲: 1 から 2,147,483,647。</target>
       </trans-unit>
       <trans-unit id="mssql.query.noCount">
         <source xml:lang="en">Enable SET NOCOUNT option</source>
@@ -1461,6 +1501,10 @@
       <trans-unit id="mssql.query.xactAbortOn">
         <source xml:lang="en">Enable SET XACT_ABORT ON option</source>
         <target state="translated">SET XACT_ABORT ON オプションを有効にする</target>
+      </trans-unit>
+      <trans-unit id="mssql.tableDesigner.preloadDatabaseModel">
+        <source xml:lang="en">Whether to preload the database model when the database node in the object explorer is expanded. When enabled, the loading time of table designer can be reduced. Note: You might see higher than normal memory usage if you need to expand a lot of database nodes.</source>
+        <target state="translated">オブジェクト エクスプローラーのデータベース ノードが展開されたときに、データベース モデルを事前に読み込むかどうか。有効にすると、テーブル デザイナーの読み込み時間を短縮できます。注: 多数のデータベース ノードの展開が必要な場合、通常よりも多くのメモリが使用される可能性があります。</target>
       </trans-unit>
       <trans-unit id="mssql.tracingLevel">
         <source xml:lang="en">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</source>

@@ -835,8 +835,8 @@
   <file original="extensions/mssql/dist/sqlToolsServer" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="downloadServiceDoneChannelMsg">
-        <source xml:lang="en">Done installing {0}</source>
-        <target state="translated">已完成 {0} 的安裝</target>
+        <source xml:lang="en">Downloaded {0}</source>
+        <target state="translated">已下載 {0}</target>
       </trans-unit>
       <trans-unit id="downloadingServiceChannelMsg">
         <source xml:lang="en">Downloading {0}</source>
@@ -885,6 +885,18 @@
       <trans-unit id="tableDesigner.NewTable">
         <source xml:lang="en">New Table</source>
         <target state="translated">新增資料表</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.no">
+        <source xml:lang="en">No</source>
+        <target state="translated">否</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.turnOnPreloadingMessage">
+        <source xml:lang="en">Do you want to reduce the table designer load time by enabling the database model preloading? The database model will be preloaded when you expand the database node in object explorer.</source>
+        <target state="translated">是否要啟用資料庫模型預先載入來縮短資料表設計工具的載入時間? 當您在物件總管中展開資料庫節點時，將會預先載入資料庫模型。</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.yes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">是</target>
       </trans-unit>
     </body>
   </file>
@@ -985,14 +997,6 @@
       <trans-unit id="mssql.connectionOptions.applicationName.displayName">
         <source xml:lang="en">Application name</source>
         <target state="translated">應用程式名稱</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.asynchronousProcessing.description">
-        <source xml:lang="en">When true, enables usage of the Asynchronous functionality in the .Net Framework Data Provider</source>
-        <target state="translated">若為 True，則允許使用 .Net Framework Data Provider 中的非同步功能</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.asynchronousProcessing.displayName">
-        <source xml:lang="en">Asynchronous processing</source>
-        <target state="translated">非同步處理</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.attachDbFilename.displayName">
         <source xml:lang="en">Attach DB filename</source>
@@ -1290,6 +1294,38 @@
         <source xml:lang="en">Enabled</source>
         <target state="translated">已啟用</target>
       </trans-unit>
+      <trans-unit id="mssql.executionPlan.actualNumberOfRowsForAllExecutions">
+        <source xml:lang="en">Highlights the execution plan operation with the greatest actual number of rows for all executions.</source>
+        <target state="translated">使用所有執行的最大實際資料列數來醒目提示執行計畫作業。</target>
+      </trans-unit>
+      <trans-unit id="mssql.executionPlan.cost">
+        <source xml:lang="en">Highlights the execution plan operation with the highest cost.</source>
+        <target state="translated">以最高成本醒目提示執行計畫作業。</target>
+      </trans-unit>
+      <trans-unit id="mssql.executionPlan.expensiveOperationMetric">
+        <source xml:lang="en">The default metric to use to highlight an expensive operation in query execution plans</source>
+        <target state="translated">用來在查詢執行計畫中醒目提示成本高的作業的預設計量</target>
+      </trans-unit>
+      <trans-unit id="mssql.executionPlan.expensiveOperationMetric.actualElapsedCpuTime">
+        <source xml:lang="en">Highlights the execution plan operation that used the most CPU time.</source>
+        <target state="translated">醒目提示使用最多 CPU 時間的執行計畫作業。</target>
+      </trans-unit>
+      <trans-unit id="mssql.executionPlan.expensiveOperationMetric.actualElapsedTime">
+        <source xml:lang="en">Highlights the execution plan operation that took the most time.</source>
+        <target state="translated">醒目提示花費最多時間的執行計畫作業。</target>
+      </trans-unit>
+      <trans-unit id="mssql.executionPlan.expensiveOperationMetric.off">
+        <source xml:lang="en">Expensive operation highlighting will be turned off for execution plans.</source>
+        <target state="translated">將會針對執行計畫關閉高成本的作業醒目提示。</target>
+      </trans-unit>
+      <trans-unit id="mssql.executionPlan.numberOfRowsRead">
+        <source xml:lang="en">Highlights the execution plan operation with the greatest number of rows read.</source>
+        <target state="translated">以讀取的資料列數目上限醒目提示執行計畫作業。</target>
+      </trans-unit>
+      <trans-unit id="mssql.executionPlan.subtreeCost">
+        <source xml:lang="en">Highlights the execution plan operation with the highest subtree cost.</source>
+        <target state="translated">以最高樹狀子目錄成本醒目提示執行計畫作業。</target>
+      </trans-unit>
       <trans-unit id="mssql.exportNotebookToSql">
         <source xml:lang="en">Export Notebook as SQL</source>
         <target state="translated">將筆記本匯出為 SQL</target>
@@ -1414,9 +1450,13 @@
         <source xml:lang="en">Enable SET LOCK TIMEOUT option (in milliseconds)</source>
         <target state="translated">啟用 SET LOCK TIMEOUT 選項 (毫秒)</target>
       </trans-unit>
+      <trans-unit id="mssql.query.maxCharsToStore">
+        <source xml:lang="en">Maximum number of characters/bytes to store for each value in character/binary columns after running a query. Default value: 65,535. Valid value range: 1 to 2,147,483,647.</source>
+        <target state="translated">執行查詢之後，字元/二進位資料行中每個值儲存的字元/位元組數目上限。預設值: 65，535。有效值範圍: 1 到 2，147，483，647。</target>
+      </trans-unit>
       <trans-unit id="mssql.query.maxXmlCharsToStore">
-        <source xml:lang="en">Number of XML characters to store after running a query</source>
-        <target state="translated">執行查詢之後要儲存的 XML 字元數目</target>
+        <source xml:lang="en">Maximum number of characters to store for each value in XML columns after running a query. Default value: 2,097,152. Valid value range: 1 to 2,147,483,647.</source>
+        <target state="translated">執行查詢後，XML 資料行中每個值儲存的最大字元數。預設值: 2，097，152。有效值範圍: 1 到 2，147，483，647。</target>
       </trans-unit>
       <trans-unit id="mssql.query.noCount">
         <source xml:lang="en">Enable SET NOCOUNT option</source>
@@ -1461,6 +1501,10 @@
       <trans-unit id="mssql.query.xactAbortOn">
         <source xml:lang="en">Enable SET XACT_ABORT ON option</source>
         <target state="translated">啟用 SET XACT_ABORT ON 選項</target>
+      </trans-unit>
+      <trans-unit id="mssql.tableDesigner.preloadDatabaseModel">
+        <source xml:lang="en">Whether to preload the database model when the database node in the object explorer is expanded. When enabled, the loading time of table designer can be reduced. Note: You might see higher than normal memory usage if you need to expand a lot of database nodes.</source>
+        <target state="translated">當物件總管中的資料庫節點展開時，是否要預先載入資料庫模型。啟用時，可以縮短資料表設計工具的載入時間。注意: 如果您需要展開許多資料庫節點，可能會看到高於一般的記憶體使用量。</target>
       </trans-unit>
       <trans-unit id="mssql.tracingLevel">
         <source xml:lang="en">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</source>

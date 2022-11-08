@@ -8,6 +8,11 @@
 	],
 	"version": "1.0.0",
 	"contents": {
+		"dist/localizedConstants": {
+			"errorLoading": "Error al cargar los elementos del historial de consultas guardadas. {0}",
+			"failed": "Erróneo",
+			"succeeded": "Correcto"
+		},
 		"package": {
 			"queryHistory.captureEnabledDesc": "Si la captura del historial de consultas está habilitada. De no ser así, las consultas ejecutadas no se capturarán.",
 			"queryHistory.clear": "Borrar todo el historial",
@@ -19,8 +24,12 @@
 			"queryHistory.doubleClickAction.open": "Abrir un nuevo editor desconectado con la consulta del elemento de historial seleccionado",
 			"queryHistory.doubleClickAction.run": "Abrir un nuevo editor conectado con la consulta y la conexión desde el elemento de historial seleccionado y ejecute automáticamente la consulta.",
 			"queryHistory.enableCapture": "Iniciar la captura del historial de consultas",
+			"queryHistory.loading": "Cargando entradas guardadas...",
+			"queryHistory.maxEntries": "Número máximo de entradas que se van a almacenar. 0 significa que se almacenan entradas ilimitadas. Aumentar este límite puede afectar al rendimiento, especialmente si la persistencia está habilitada.",
 			"queryHistory.noEntries": "No hay consultas que mostrar",
 			"queryHistory.open": "Abrir consulta",
+			"queryHistory.openStorageFolder": "Abrir carpeta de almacenamiento",
+			"queryHistory.persistHistory": "Si el historial de consultas se conserva entre reinicios. Si es false, el historial se borrará cuando se cierre la aplicación.",
 			"queryHistory.run": "Ejecutar consulta"
 		}
 	}

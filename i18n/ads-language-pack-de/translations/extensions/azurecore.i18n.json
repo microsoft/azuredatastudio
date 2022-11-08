@@ -18,6 +18,7 @@
 			"azure.microsoftCorpAccount": "Microsoft Corp",
 			"azure.noBaseToken": "Bei der Authentifizierung ist ein Fehler aufgetreten, oder Ihre Token wurden aus dem System gelöscht. Versuchen Sie erneut, Ihr Konto in Azure Data Studio hinzuzufügen.",
 			"azure.noUniqueIdentifier": "Der Benutzer wies in AAD keinen eindeutigen Bezeichner auf.",
+			"azure.owningTenantNotFound": "Informationen zum Besitzer des Mandanten wurden für das Konto nicht gefunden.",
 			"azure.responseError": "Fehler beim Abrufen des Tokens. [Entwicklertools öffnen] ({0}) für weitere Details.",
 			"azure.tenantNotFound": "Der angegebene Mandant mit der ID \"{0}\" wurde nicht gefunden.",
 			"azureAuth.unidentifiedError": "Unbekannter Fehler bei der Azure-Authentifizierung.",
@@ -25,7 +26,8 @@
 			"azurecore.consentDialog.body": "Für Ihren Mandanten \"{0} ({1})\" müssen Sie sich erneut authentifizieren, um auf {2}-Ressourcen zuzugreifen. Klicken Sie auf \"Öffnen\", um den Authentifizierungsvorgang zu starten.",
 			"azurecore.consentDialog.cancel": "Abbrechen",
 			"azurecore.consentDialog.ignore": "Mandanten ignorieren",
-			"azurecore.consentDialog.open": "Öffnen"
+			"azurecore.consentDialog.open": "Öffnen",
+			"noMicrosoftResource": "Für den Anbieter \"{0}\" ist kein Microsoft-Ressourcenendpunkt definiert."
 		},
 		"dist/account-provider/auths/azureAuthCodeGrant": {
 			"azure.azureAuthCodeGrantName": "Azure-Authentifizierungscodezuweisung",
@@ -83,6 +85,9 @@
 		"dist/azureResource/providers/kusto/kustoTreeDataProvider": {
 			"azure.resource.providers.KustoContainerLabel": "Azure Data Explorer-Cluster"
 		},
+		"dist/azureResource/providers/mysqlFlexibleServer/mysqlFlexibleServerTreeDataProvider": {
+			"azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel": "Azure Database for MySQL – Flexibler Server"
+		},
 		"dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider": {
 			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "PostgreSQL Hyperscale – Azure Arc"
 		},
@@ -99,7 +104,8 @@
 			"azure.resource.resourceTreeNode.noResourcesLabel": "Keine Ressourcen gefunden."
 		},
 		"dist/azureResource/services/subscriptionService": {
-			"azure.resource.tenantSubscriptionsError": "Fehler beim Abrufen von Abonnements für das Konto {0} (Mandant \"{1}\"). {2}"
+			"azure.resource.tenantSubscriptionsError": "Fehler beim Abrufen von Abonnements für das Konto {0} (Mandant \"{1}\"). {2}",
+			"azure.resource.tenantTokenError": "Fehler beim Abrufen des Zugriffstokens für Konto \"{0}\" (Mandant \"{1}\")."
 		},
 		"dist/azureResource/services/terminalService": {
 			"azure.cloudShell": "Azure Cloud Shell (Vorschau) {0} ({1})",

@@ -14,7 +14,7 @@
 			"kusto.missingLinkedAzureAccount": "Azure Data Studio는 Always Encrypted의 열 마스터 키에 액세스하려면 Azure Key Vault에 연결해야 하지만, 연결된 Azure 계정을 사용할 수 없습니다. 연결된 Azure 계정을 추가하고 쿼리를 다시 시도하세요."
 		},
 		"dist/kustoServer": {
-			"downloadServiceDoneChannelMsg": "{0} 설치 완료",
+			"downloadServiceDoneChannelMsg": "{0}을(를) 다운로드함",
 			"downloadingServiceChannelMsg": "{0} 다운로드 중",
 			"downloadingServiceSizeChannelMsg": "({0}KB)",
 			"downloadingServiceStatusMsg": "{0} 다운로드 중",
