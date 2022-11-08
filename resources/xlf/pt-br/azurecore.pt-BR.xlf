@@ -38,6 +38,10 @@
         <source xml:lang="en">The user had no unique identifier within AAD</source>
         <target state="translated">O usuário não tinha um identificador exclusivo no AAD</target>
       </trans-unit>
+      <trans-unit id="azure.owningTenantNotFound">
+        <source xml:lang="en">Owning Tenant information not found for account.</source>
+        <target state="translated">As informações do locatário não foram encontradas para a conta.</target>
+      </trans-unit>
       <trans-unit id="azure.responseError">
         <source xml:lang="en">Token retrieval failed with an error. [Open developer tools]({0}) for more details.</source>
         <target state="translated">Falha na recuperação de token com um erro. [Abrir ferramentas para desenvolvedores] ({0}) para obter mais detalhes.</target>
@@ -69,6 +73,10 @@
       <trans-unit id="azurecore.consentDialog.open">
         <source xml:lang="en">Open</source>
         <target state="translated">Abrir</target>
+      </trans-unit>
+      <trans-unit id="noMicrosoftResource">
+        <source xml:lang="en">Provider '{0}' does not have a Microsoft resource endpoint defined.</source>
+        <target state="translated">O provedor '{0}' não tem um ponto de extremidade de recurso da Microsoft definido.</target>
       </trans-unit>
     </body>
   </file>
@@ -248,6 +256,14 @@
       </trans-unit>
     </body>
   </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/mysqlFlexibleServer/mysqlFlexibleServerTreeDataProvider" source-language="en" datatype="plaintext" target-language="pt-BR">
+    <body>
+      <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel">
+        <source xml:lang="en">Azure Database for MySQL Flexible server</source>
+        <target state="translated">Banco de dados do Azure para o servidor MySQL Flexível</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/azurecore/dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel">
@@ -293,6 +309,10 @@
       <trans-unit id="azure.resource.tenantSubscriptionsError">
         <source xml:lang="en">Failed to get subscriptions for account {0} (tenant '{1}'). {2}</source>
         <target state="translated">Falha ao obter assinaturas da conta {0} (locatário '{1}'). {2}</target>
+      </trans-unit>
+      <trans-unit id="azure.resource.tenantTokenError">
+        <source xml:lang="en">Failed to acquire Access Token for account '{0}' (tenant '{1}').</source>
+        <target state="translated">Falha ao adquirir o token de acesso para a conta '{0}' (locatário '{1}').</target>
       </trans-unit>
     </body>
   </file>
