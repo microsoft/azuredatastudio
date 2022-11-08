@@ -59,15 +59,6 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 				defaultTargetPlatform: constants.defaultTargetPlatform,
 				sdkStyleOption: true,
 				sdkStyleLearnMoreUrl: constants.sdkLearnMoreUrl
-			},
-			{
-				id: constants.edgeSqlDatabaseProjectTypeId,
-				projectFileExtension: constants.sqlprojExtension.replace(/\./g, ''),
-				displayName: constants.edgeProjectTypeDisplayName,
-				description: constants.edgeProjectTypeDescription,
-				icon: IconPathHelper.sqlEdgeProject,
-				sdkStyleOption: true,
-				sdkStyleLearnMoreUrl: constants.sdkLearnMoreUrl
 			}
 		];
 	}
