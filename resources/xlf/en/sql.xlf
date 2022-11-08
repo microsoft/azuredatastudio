@@ -3640,6 +3640,9 @@ Error: {1}</source>
     <trans-unit id="notebook.maxRichTextUndoHistory">
       <source xml:lang="en">The maximum number of changes stored in the undo history for the notebook Rich Text editor.</source>
     </trans-unit>
+    <trans-unit id="notebook.renderTablesInHtml">
+      <source xml:lang="en">Display and save tables in HTML format in text cells instead of converting to markdown tables.</source>
+    </trans-unit>
     <trans-unit id="notebook.richTextModeDescription">
       <source xml:lang="en">Text is displayed as Rich Text (also known as WYSIWYG).</source>
     </trans-unit>
