@@ -14,7 +14,7 @@
 			"kusto.missingLinkedAzureAccount": "Azure Data Studio muss Azure Key Vault kontaktieren, um auf einen Spaltenhauptschlüssel für Always Encrypted zuzugreifen, aber es ist kein verknüpftes Azure-Konto verfügbar. Fügen Sie ein verknüpftes Azure-Konto hinzu, und wiederholen Sie die Abfrage."
 		},
 		"dist/kustoServer": {
-			"downloadServiceDoneChannelMsg": "Die Installation von {0} wurde abgeschlossen",
+			"downloadServiceDoneChannelMsg": "{0} wurde heruntergeladen",
 			"downloadingServiceChannelMsg": "\"{0}\" wird heruntergeladen",
 			"downloadingServiceSizeChannelMsg": "({0} KB)",
 			"downloadingServiceStatusMsg": "\"{0}\" wird heruntergeladen",

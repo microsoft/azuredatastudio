@@ -182,6 +182,22 @@
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/base/browser/ui/table/table" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="table.resizeColumn">
+        <source xml:lang="en">Provide new column width</source>
+        <target state="translated">새 열 너비 제공</target>
+      </trans-unit>
+      <trans-unit id="table.resizeColumn.invalid">
+        <source xml:lang="en">Invalid column width</source>
+        <target state="translated">잘못된 열 너비</target>
+      </trans-unit>
+      <trans-unit id="table.resizeColumn.negativeSize">
+        <source xml:lang="en">Size cannot be 0 or negative</source>
+        <target state="translated">크기는 0 또는 음수일 수 없음</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/base/browser/ui/taskbar/overflowActionbar" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="toggleMore">
@@ -207,6 +223,10 @@
       <trans-unit id="activateLanguagePack">
         <source xml:lang="en">In order to use Azure Data Studio in {0}, Azure Data Studio needs to restart.</source>
         <target state="translated">{0}에서 Azure Data Studio를 사용하려면 Azure Data Studio를 다시 시작해야 합니다.</target>
+      </trans-unit>
+      <trans-unit id="appName">
+        <source xml:lang="en">`${appName}`: e.g. Azure Data Studio.</source>
+        <target state="translated">`${appName}`: 예 - Azure Data Studio.</target>
       </trans-unit>
       <trans-unit id="azuredatastudio">
         <source xml:lang="en">Azure Data Studio</source>
@@ -307,6 +327,14 @@
         <source xml:lang="en">The object explorer item context menu</source>
         <target state="translated">개체 탐색기 항목 상황에 맞는 메뉴</target>
       </trans-unit>
+      <trans-unit id="openDefaultSettingsJson">
+        <source xml:lang="en">open the default settings JSON</source>
+        <target state="translated">기본 설정 JSON 열기</target>
+      </trans-unit>
+      <trans-unit id="openDefaultSettingsJson.capitalized">
+        <source xml:lang="en">Open Default Settings (JSON)</source>
+        <target state="translated">기본 설정 열기(JSON)</target>
+      </trans-unit>
       <trans-unit id="postDisableTooltip">
         <source xml:lang="en">Please reload Azure Data Studio to disable this extension.</source>
         <target state="translated">이 확장을 사용하지 않으려면 Azure Data Studio를 다시 로드하세요.</target>
@@ -335,9 +363,99 @@
         <source xml:lang="en">Show Release Notes after an update. The Release Notes are opened in a new web browser window.</source>
         <target state="translated">업데이트 후 릴리스 정보를 표시합니다. 릴리스 정보는 새 웹 브라우저 창에서 열립니다.</target>
       </trans-unit>
+      <trans-unit id="sql.versionMismatch">
+        <source xml:lang="en">Extension is not compatible with Azure Data Studio {0}. Extension requires: {1}.</source>
+        <target state="translated">확장이 Azure Data Studio {0}과(와) 호환되지 않습니다. 확장에 {1}이(가) 필요합니다.</target>
+      </trans-unit>
+      <trans-unit id="sql.versionMismatchVsCode">
+        <source xml:lang="en">Extension is not compatible with Azure Data Studio {0}. Extension requires a newer VS Code Engine Version {1}, which is newer than what is currently supported ({2}).</source>
+        <target state="translated">확장은 Azure Data Studio {0}과(와) 호환되지 않습니다. 확장에는 현재 지원되는 버전({2})보다 최신 버전인 최신 VS Code Engine 버전 {1}이(가) 필요합니다.</target>
+      </trans-unit>
+      <trans-unit id="sql.versionSyntax">
+        <source xml:lang="en">Could not parse `{0}` value {1}. Please use, for example: ^1.22.0, ^1.22.x, etc.</source>
+        <target state="translated">`{0}` 값 {1}을(를) 구문 분석할 수 없습니다. 예를 들어 ^1.22.0, ^1.22.x 등을 사용하세요.</target>
+      </trans-unit>
       <trans-unit id="sql.watcherExclude">
         <source xml:lang="en">Configure glob patterns of file paths to exclude from file watching. Patterns must match on absolute paths, i.e. prefix with `**/` or the full path to match properly and suffix with `/**` to match files within a path (for example `**/build/output/**` or `/Users/name/workspaces/project/build/output/**`). Changing this setting requires a restart. When you experience Azure Data Studio consuming lots of CPU time on startup, you can exclude large folders to reduce the initial load.</source>
         <target state="translated">파일 감시에서 제외할 파일 경로의 GLOB 패턴을 구성합니다. 패턴은 절대 경로에서 일치해야 합니다. 즉, 적절하게 일치하려면 접두사가 '**/'이거나 전체 경로여야 하고, 경로 내 파일과 일치하려면 접미사가 '/**'여야 합니다(예: '**/build/output/**' 또는 '/Users/name/workspaces/project/build/output/**'). 이 설정을 변경하려면 다시 시작해야 합니다. 시작할 때 Azure Data Studio에서 CPU 시간을 많이 소비하는 경우 큰 폴더를 제외하여 초기 로드를 줄일 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="terminal.integrated.allowChords">
+        <source xml:lang="en">Whether or not to allow chord keybindings in the terminal. Note that when this is true and the keystroke results in a chord it will bypass `#terminal.integrated.commandsToSkipShell#`, setting this to false is particularly useful when you want ctrl+k to go to your shell (not Azure Data Studio).</source>
+        <target state="translated">터미널에서 동시 키 바인딩을 허용할지 여부입니다. 이 설정이 true이고 키 입력이 동시에 발생하는 경우 `#terminal.integrated.commandsToSkipShell#`가 무시되고, 이 설정을 false로 설정하면 &lt;ctrl+k&gt;를 눌러 셸(Azure Data Studio 아님)로 이동하려는 경우에 특히 유용합니다.</target>
+      </trans-unit>
+      <trans-unit id="terminal.integrated.autoReplies">
+        <source xml:lang="en">A set of messages that when encountered in the terminal will be automatically responded to. Provided the message is specific enough, this can help automate away common responses.
+
+Remarks:
+
+- Use {0} to automatically respond to the terminate batch job prompt on Windows.
+- The message includes escape sequences so the reply might not happen with styled text.
+- Each reply can only happen once every second.
+- Use {1} in the reply to mean the enter key.
+- To unset a default key, set the value to null.
+- Restart Azured Data Studio if new don't apply.</source>
+        <target state="translated">터미널에서 발견되면 자동으로 응답되는 메시지 집합입니다. 메시지가 충분히 구체적인 경우 일반적인 응답을 자동화하는 데 도움이 될 수 있습니다.
+
+비고:
+
+- {0}을(를) 사용하여 Windows에서 일괄 작업 종료 프롬프트에 자동으로 응답합니다.
+- 메시지에는 이스케이프 시퀀스가 포함되어 있어 스타일이 지정된 텍스트에서는 응답이 발생하지 않을 수 있습니다.
+- 각 회신은 1초에 한 번만 발생할 수 있습니다.
+- Enter 키를 의미하려면 회신에 {1}을(를) 사용하세요.
+- 기본 키를 설정 해제하려면 값을 null로 설정하세요.
+- 새 항목이 적용되지 않으면 VS Code를 다시 시작합니다.</target>
+      </trans-unit>
+      <trans-unit id="terminal.integrated.commandsToSkipShell">
+        <source xml:lang="en">A set of command IDs whose keybindings will not be sent to the shell but instead always be handled by Azure Data Studio. This allows keybindings that would normally be consumed by the shell to act instead the same as when the terminal is not focused, for example `Ctrl+P` to launch Quick Open.
+
+&amp;nbsp;
+
+Many commands are skipped by default. To override a default and pass that command's keybinding to the shell instead, add the command prefixed with the `-` character. For example add `-workbench.action.quickOpen` to allow `Ctrl+P` to reach the shell.
+
+&amp;nbsp;
+
+The following list of default skipped commands is truncated when viewed in Settings Editor. To see the full list, {1} and search for the first command from the list below.
+
+&amp;nbsp;
+
+Default Skipped Commands:
+
+{0}</source>
+        <target state="translated">키 바인딩이 셸에 전송되지 않고 항상 Azure Data Studio에서 처리되는 명령 ID 세트입니다. 따라서 보통은 셸에서 사용되어 터미널에 포커스가 없을 때와 동일하게 작동하는 키 바인딩을 사용할 수 있습니다(예: 'Ctrl+P'를 사용하여 Quick Open 시작).
+
+&amp;nbsp;
+
+기본적으로 많은 명령을 건너뜁니다. 기본값을 무시하고 대신 해당 명령의 키 바인딩을 셸에 전달하려면 `-` 문자가 접두사로 붙은 명령을 추가하세요. 예를 들어 `Ctrl+P`가 쉘에 도달할 수 있도록 `-workbench.action.quickOpen`을 추가합니다.
+
+&amp;nbsp;
+
+다음과 같은 기본 건너뛰는 명령 목록은 설정 편집기에서 볼 때 잘립니다. 전체 목록을 보려면 아래 목록에서 첫 번째 명령을 {1} 및 검색하세요.
+
+&amp;nbsp;
+
+기본 건너뛴 명령:
+
+{0}</target>
+      </trans-unit>
+      <trans-unit id="terminal.integrated.detectLocale">
+        <source xml:lang="en">Controls whether to detect and set the `$LANG` environment variable to a UTF-8 compliant option since Azure Data Studio's terminal only supports UTF-8 encoded data coming from the shell.</source>
+        <target state="translated">Azure Data Studio 터미널은 셸에서 들어오는, UTF-8로 인코딩된 데이터만 지원하므로 '$LANG' 환경 변수를 검색하고 UTF-8 규격 옵션으로 설정할지 여부를 제어합니다.</target>
+      </trans-unit>
+      <trans-unit id="terminal.integrated.env.linux">
+        <source xml:lang="en">Object with environment variables that will be added to the Azure Data Studio process to be used by the terminal on Linux. Set to `null` to delete the environment variable.</source>
+        <target state="translated">Linux의 터미널에서 사용할 Azure Data Studio 프로세스에 추가될 환경 변수가 있는 개체입니다. 환경 변수를 삭제하려면 'null'로 설정하세요.</target>
+      </trans-unit>
+      <trans-unit id="terminal.integrated.env.osx">
+        <source xml:lang="en">Object with environment variables that will be added to the Azure Data Studio process to be used by the terminal on macOS. Set to `null` to delete the environment variable.</source>
+        <target state="translated">macOS의 터미널에서 사용할 Azure Data Studio 프로세스에 추가될 환경 변수가 있는 개체입니다. 환경 변수를 삭제하려면 'null'로 설정하세요.</target>
+      </trans-unit>
+      <trans-unit id="terminal.integrated.env.windows">
+        <source xml:lang="en">Object with environment variables that will be added to the Azure Data Studio process to be used by the terminal on Windows. Set to `null` to delete the environment variable.</source>
+        <target state="translated">Windows 터미널에서 사용할 Azure Data Studio 프로세스에 추가되는 환경 변수를 포함하는 개체입니다. 환경 변수를 삭제하려면 'null'로 설정합니다.</target>
+      </trans-unit>
+      <trans-unit id="terminal.integrated.inheritEnv">
+        <source xml:lang="en">Whether new shells should inherit their environment from Azure Data Studio, which may source a login shell to ensure $PATH and other development variables are initialized. This has no effect on Windows.</source>
+        <target state="translated">새 셸에서 $PATH 및 기타 개발 변수가 초기화되도록 로그인 셸을 제공할 수 있는 Azure Data Studio에서 환경을 상속해야 하는지 여부입니다. 이는 Windows에는 영향을 주지 않습니다.</target>
       </trans-unit>
       <trans-unit id="uninstallExtensionComplete">
         <source xml:lang="en">Please reload Azure Data Studio to complete the uninstallation of the extension {0}.</source>
@@ -374,6 +492,14 @@
       <trans-unit id="workspace.trust.emptyWindow.description">
         <source xml:lang="en">Controls whether or not the empty window is trusted by default within Azure Data Studio. When used with `#{0}#`, you can enable the full functionality of Azure Data Studio without prompting in an empty window.</source>
         <target state="translated">빈 창이 기본적으로 Azure Data Studio 내에서 신뢰할 수 있는지 여부를 제어합니다. '#{0}#’와(과) 함께 사용하는 경우 빈 창에서 메시지를 표시하지 않고 Azure Data Studio 전체 기능을 사용하도록 설정할 수 있습니다.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/base/parts/tree/browser/treeDefaults" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="collapse all">
+        <source xml:lang="en">Collapse All</source>
+        <target state="translated">모두 축소</target>
       </trans-unit>
     </body>
   </file>
@@ -445,6 +571,18 @@
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/platform/connection/common/providerConnectionInfo" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="connection.unsupported">
+        <source xml:lang="en">Unsupported connection</source>
+        <target state="translated">지원되지 않는 연결</target>
+      </trans-unit>
+      <trans-unit id="loading">
+        <source xml:lang="en">Loading...</source>
+        <target state="translated">로드 중...</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/platform/dashboard/browser/insightRegistry" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="schema.dashboardWidgets.InsightsRegistry">
@@ -471,6 +609,10 @@
   </file>
   <file original="src/sql/platform/serialization/common/serializationService" source-language="en" datatype="plaintext" target-language="ko">
     <body>
+      <trans-unit id="missingSerializationProviderError">
+        <source xml:lang="en">Could not find a serialization provider with the specified ID '{0}'</source>
+        <target state="translated">지정된 ID가 '{0}'인 직렬화 공급자를 찾을 수 없습니다.</target>
+      </trans-unit>
       <trans-unit id="noSerializationProvider">
         <source xml:lang="en">Cannot serialize data as no provider has been registered</source>
         <target state="translated">공급자가 등록되지 않은 경우 데이터를 직렬화할 수 없습니다.</target>
@@ -487,13 +629,13 @@
   </file>
   <file original="src/sql/platform/theme/common/colorRegistry" source-language="en" datatype="plaintext" target-language="ko">
     <body>
+      <trans-unit id="buttonDropdo0wnBoxShadow">
+        <source xml:lang="en">The button dropdown box shadow color</source>
+        <target state="translated">단추 드롭다운 상자 그림자 색</target>
+      </trans-unit>
       <trans-unit id="buttonDropdownBackgroundHover">
         <source xml:lang="en">The button dropdown background hover color</source>
         <target state="translated">단추 드롭다운 배경 가리키기 색</target>
-      </trans-unit>
-      <trans-unit id="buttonDropdownBoxShadow">
-        <source xml:lang="en">The button dropdown box shadow color</source>
-        <target state="translated">단추 드롭다운 상자 그림자 색</target>
       </trans-unit>
       <trans-unit id="calloutDialogBodyBackground">
         <source xml:lang="en">Callout dialog body background.</source>
@@ -1160,6 +1302,14 @@
   </file>
   <file original="src/sql/workbench/browser/modal/optionsDialogHelper" source-language="en" datatype="plaintext" target-language="ko">
     <body>
+      <trans-unit id="boolean.false">
+        <source xml:lang="en">False</source>
+        <target state="translated">False</target>
+      </trans-unit>
+      <trans-unit id="boolean.true">
+        <source xml:lang="en">True</source>
+        <target state="translated">True</target>
+      </trans-unit>
       <trans-unit id="optionsDialog.defaultGroupName">
         <source xml:lang="en">General</source>
         <target state="translated">일반</target>
@@ -1316,10 +1466,6 @@
         <source xml:lang="en">No script was returned when scripting as {0} on object {1}</source>
         <target state="translated">개체 {1}에서 {0}(으)로 스크립팅했으나 스크립트가 반환되지 않았습니다.</target>
       </trans-unit>
-      <trans-unit id="scriptSelectNotFound">
-        <source xml:lang="en">No script was returned when calling select script on object </source>
-        <target state="translated">개체에 대해 스크립트 선택을 호출할 때 스크립트가 반환되지 않았습니다. </target>
-      </trans-unit>
       <trans-unit id="scriptingFailed">
         <source xml:lang="en">Scripting Failed</source>
         <target state="translated">스크립트 실패</target>
@@ -1327,6 +1473,14 @@
       <trans-unit id="selectOperationName">
         <source xml:lang="en">Select</source>
         <target state="translated">선택</target>
+      </trans-unit>
+      <trans-unit id="selectScriptForEditNotGeneratedError">
+        <source xml:lang="en">Failed to generate script for Edit Data editor.</source>
+        <target state="translated">데이터 편집 편집기에 대한 스크립트를 생성하지 못했습니다.</target>
+      </trans-unit>
+      <trans-unit id="selectScriptNotGeneratedError">
+        <source xml:lang="en">Failed to generate select script for the selected object.</source>
+        <target state="translated">선택한 개체에 대한 선택 스크립트를 생성하지 못했습니다.</target>
       </trans-unit>
       <trans-unit id="updateOperationName">
         <source xml:lang="en">Update</source>
@@ -3172,6 +3326,10 @@
   </file>
   <file original="src/sql/workbench/contrib/dataExplorer/browser/dataExplorerViewlet" source-language="en" datatype="plaintext" target-language="ko">
     <body>
+      <trans-unit id="ads-connections">
+        <source xml:lang="en">Icon represent a server.</source>
+        <target state="translated">아이콘은 서버를 나타냅니다.</target>
+      </trans-unit>
       <trans-unit id="dataExplorer.servers">
         <source xml:lang="en">Servers</source>
         <target state="translated">서버</target>
@@ -3272,6 +3430,10 @@
         <source xml:lang="en">Save As JSON</source>
         <target state="translated">JSON으로 저장</target>
       </trans-unit>
+      <trans-unit id="saveAsMarkdown">
+        <source xml:lang="en">Save As Markdown</source>
+        <target state="translated">Markdown으로 저장</target>
+      </trans-unit>
       <trans-unit id="saveAsXml">
         <source xml:lang="en">Save As XML</source>
         <target state="translated">XML로 저장</target>
@@ -3284,6 +3446,10 @@
   </file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/azdataGraphView" source-language="en" datatype="plaintext" target-language="ko">
     <body>
+      <trans-unit id="executionPlanComparison.bottomPlanDiagram.ariaLabel">
+        <source xml:lang="en">{0}, use arrow keys to navigate between nodes</source>
+        <target state="translated">{0}, 화살표 키를 사용하여 노드 간 탐색</target>
+      </trans-unit>
       <trans-unit id="invalidExecutionPlanZoomError">
         <source xml:lang="en">Zoom level cannot be 0 or negative</source>
         <target state="translated">확대/축소 수준은 0 또는 음수일 수 없음</target>
@@ -3293,8 +3459,24 @@
   <file original="src/sql/workbench/contrib/executionPlan/browser/compareExecutionPlanInput" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="epCompare.editorName">
-        <source xml:lang="en">Compare Execution Plans</source>
-        <target state="translated">실행 계획 비교</target>
+        <source xml:lang="en">CompareExecutionPlans</source>
+        <target state="translated">CompareExecutionPlans</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/constants" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="ep.propertiesSearchDescription">
+        <source xml:lang="en">Search properties table</source>
+        <target state="translated">속성 테이블 검색</target>
+      </trans-unit>
+      <trans-unit id="ep.searchPlaceholder">
+        <source xml:lang="en">Filter for any field...</source>
+        <target state="translated">모든 필드에 대해 필터링</target>
+      </trans-unit>
+      <trans-unit id="ep.topOperationsSearchDescription">
+        <source xml:lang="en">Search top operations</source>
+        <target state="translated">상위 작업 검색</target>
       </trans-unit>
     </body>
   </file>
@@ -3320,13 +3502,13 @@
         <source xml:lang="en">Loading execution plan</source>
         <target state="translated">실행 계획을 로드하는 중</target>
       </trans-unit>
-      <trans-unit id="epComapre.placeholderInfoboxText">
-        <source xml:lang="en">Add execution plans to compare</source>
-        <target state="translated">비교할 실행 계획 추가</target>
-      </trans-unit>
       <trans-unit id="epCompare.FileFilterDescription">
         <source xml:lang="en">Execution Plan Files</source>
         <target state="translated">실행 계획 파일</target>
+      </trans-unit>
+      <trans-unit id="epCompare.addExecutionPlanLabel">
+        <source xml:lang="en">Add execution plan</source>
+        <target state="translated">실행 계획 추가</target>
       </trans-unit>
       <trans-unit id="epCompare.comparePropertiesAction">
         <source xml:lang="en">Properties</source>
@@ -3364,6 +3546,22 @@
         <source xml:lang="en">Zoom to fit</source>
         <target state="translated">크기에 맞게 확대/축소</target>
       </trans-unit>
+      <trans-unit id="executionPlanComparison.bottomPlanDiagram.name">
+        <source xml:lang="en">Bottom execution Plan {0}</source>
+        <target state="translated">최하위 실행 계획 {0}</target>
+      </trans-unit>
+      <trans-unit id="executionPlanComparison.topPlanDiagram.name">
+        <source xml:lang="en">Top execution Plan {0}</source>
+        <target state="translated">최상위 실행 계획 {0}</target>
+      </trans-unit>
+      <trans-unit id="executionPlanDisableTooltip">
+        <source xml:lang="en">Tooltips disabled</source>
+        <target state="translated">도구 설명 사용 안 함</target>
+      </trans-unit>
+      <trans-unit id="executionPlanEnableTooltip">
+        <source xml:lang="en">Tooltips enabled</source>
+        <target state="translated">도구 설명 활성화함</target>
+      </trans-unit>
       <trans-unit id="queryDropdownPrefix">
         <source xml:lang="en">Query {0} of {1}: {2}</source>
         <target state="translated">쿼리 {0}/{1}: {2}</target>
@@ -3372,29 +3570,37 @@
   </file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView" source-language="en" datatype="plaintext" target-language="ko">
     <body>
-      <trans-unit id="executionPlanComparisonPropertiesBottomOperation">
-        <source xml:lang="en">Bottom operation: {0}</source>
-        <target state="translated">맨 아래 작업: {0}</target>
-      </trans-unit>
-      <trans-unit id="executionPlanComparisonPropertiesLeftOperation">
-        <source xml:lang="en">Left operation: {0}</source>
-        <target state="translated">왼쪽 작업: {0}</target>
-      </trans-unit>
-      <trans-unit id="executionPlanComparisonPropertiesRightOperation">
-        <source xml:lang="en">Right operation: {0}</source>
-        <target state="translated">오른쪽 작업: {0}</target>
-      </trans-unit>
-      <trans-unit id="executionPlanComparisonPropertiesTopOperation">
-        <source xml:lang="en">Top operation: {0}</source>
-        <target state="translated">맨 위 작업: {0}</target>
-      </trans-unit>
       <trans-unit id="executionPlanPropertiesEdgeOperationName">
         <source xml:lang="en">Edge</source>
         <target state="translated">Edge</target>
       </trans-unit>
+      <trans-unit id="nodePropertyViewBottomOperation">
+        <source xml:lang="en">Bottom operation: {0}</source>
+        <target state="translated">맨 아래 작업: {0}</target>
+      </trans-unit>
+      <trans-unit id="nodePropertyViewLeftOperation">
+        <source xml:lang="en">Left operation: {0}</source>
+        <target state="translated">왼쪽 작업: {0}</target>
+      </trans-unit>
+      <trans-unit id="nodePropertyViewNameEquivalentPropertiesRowHeader">
+        <source xml:lang="en">Equivalent Properties</source>
+        <target state="translated">해당 속성</target>
+      </trans-unit>
+      <trans-unit id="nodePropertyViewNameGreaterThanTitle">
+        <source xml:lang="en">Greater than</source>
+        <target state="translated">보다 큼</target>
+      </trans-unit>
+      <trans-unit id="nodePropertyViewNameLessThanTitle">
+        <source xml:lang="en">Less than</source>
+        <target state="translated">보다 작음</target>
+      </trans-unit>
       <trans-unit id="nodePropertyViewNameNameColumnHeader">
         <source xml:lang="en">Name</source>
         <target state="translated">이름</target>
+      </trans-unit>
+      <trans-unit id="nodePropertyViewNameNotEqualTitle">
+        <source xml:lang="en">Not equal to</source>
+        <target state="translated">같지 않음</target>
       </trans-unit>
       <trans-unit id="nodePropertyViewNameValueColumnBottomHeader">
         <source xml:lang="en">Value (Bottom Plan)</source>
@@ -3412,10 +3618,22 @@
         <source xml:lang="en">Value (Top Plan)</source>
         <target state="translated">값(맨 위 플랜)</target>
       </trans-unit>
+      <trans-unit id="nodePropertyViewRightOperation">
+        <source xml:lang="en">Right operation: {0}</source>
+        <target state="translated">오른쪽 작업: {0}</target>
+      </trans-unit>
+      <trans-unit id="nodePropertyViewTopOperation">
+        <source xml:lang="en">Top operation: {0}</source>
+        <target state="translated">맨 위 작업: {0}</target>
+      </trans-unit>
     </body>
   </file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanContribution" source-language="en" datatype="plaintext" target-language="ko">
     <body>
+      <trans-unit id="executionPlan.tooltips.enableOnHoverTooltips">
+        <source xml:lang="en">When true, enables tooltips on hover for execution plan. When false, tooltips are shown on node click or F3 key press.</source>
+        <target state="translated">true인 경우 실행 계획에 대한 마우스 오버 시 도구 설명을 활성화합니다. false인 경우 노드 클릭 또는 F3 키 누름 시 도구 설명이 표시됩니다.</target>
+      </trans-unit>
       <trans-unit id="executionPlanCompareCommandOriginalValue">
         <source xml:lang="en">Compare execution plans</source>
         <target state="translated">실행 계획 비교</target>
@@ -3423,6 +3641,10 @@
       <trans-unit id="executionPlanCompareCommandValue">
         <source xml:lang="en">Compare execution plans</source>
         <target state="translated">실행 계획 비교</target>
+      </trans-unit>
+      <trans-unit id="executionPlanConfigurationTitle">
+        <source xml:lang="en">Execution Plan</source>
+        <target state="translated">실행 계획</target>
       </trans-unit>
     </body>
   </file>
@@ -3472,6 +3694,14 @@
         <source xml:lang="en">Copy</source>
         <target state="translated">복사</target>
       </trans-unit>
+      <trans-unit id="executionPlanCollapseAllProperties">
+        <source xml:lang="en">Collapse All</source>
+        <target state="translated">모두 축소</target>
+      </trans-unit>
+      <trans-unit id="executionPlanExpandAllProperties">
+        <source xml:lang="en">Expand All</source>
+        <target state="translated">모두 확장</target>
+      </trans-unit>
       <trans-unit id="executionPlanPropertyViewClose">
         <source xml:lang="en">Close</source>
         <target state="translated">닫기</target>
@@ -3497,8 +3727,8 @@
   <file original="src/sql/workbench/contrib/executionPlan/browser/executionPlanTab" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="executionPlanTitle">
-        <source xml:lang="en">Query Plan (Preview)</source>
-        <target state="translated">쿼리 계획(미리 보기)</target>
+        <source xml:lang="en">Query Plan</source>
+        <target state="translated">쿼리 계획</target>
       </trans-unit>
     </body>
   </file>
@@ -3517,8 +3747,8 @@
         <target state="translated">모두 선택</target>
       </trans-unit>
       <trans-unit id="planTreeTab.title">
-        <source xml:lang="en">Plan Tree (Preview)</source>
-        <target state="translated">계획 트리(미리 보기)</target>
+        <source xml:lang="en">Plan Tree</source>
+        <target state="translated">플랜 트리</target>
       </trans-unit>
       <trans-unit id="topOperationsTableTitle">
         <source xml:lang="en">Execution Plan Tree</source>
@@ -3531,6 +3761,10 @@
       <trans-unit id="executionPlan.SaveFileDescription">
         <source xml:lang="en">Execution Plan Files</source>
         <target state="translated">실행 계획 파일</target>
+      </trans-unit>
+      <trans-unit id="executionPlan.diagram.ariaLabel">
+        <source xml:lang="en">Execution Plan {0}</source>
+        <target state="translated">실행 계획 {0}</target>
       </trans-unit>
       <trans-unit id="executionPlanCompareExecutionPlanAction">
         <source xml:lang="en">Compare execution plan</source>
@@ -3559,6 +3793,10 @@
       <trans-unit id="executionPlanFitGraphLabel">
         <source xml:lang="en">Zoom to fit</source>
         <target state="translated">크기에 맞게</target>
+      </trans-unit>
+      <trans-unit id="executionPlanHighlightExpensiveOperationAction">
+        <source xml:lang="en">Highlight Expensive Operation</source>
+        <target state="translated">비용이 많이 드는 작업 강조 표시</target>
       </trans-unit>
       <trans-unit id="executionPlanOpenGraphFile">
         <source xml:lang="en">Show Query Plan XML</source>
@@ -3619,8 +3857,8 @@
         <target state="translated">모두 선택</target>
       </trans-unit>
       <trans-unit id="topOperationsTabTitle">
-        <source xml:lang="en">Top Operations  (Preview)</source>
-        <target state="translated">상위 작업(미리 보기)</target>
+        <source xml:lang="en">Top Operations</source>
+        <target state="translated">주요 작업</target>
       </trans-unit>
       <trans-unit id="topOperationsTableTitle">
         <source xml:lang="en">Top Operations</source>
@@ -3631,16 +3869,16 @@
   <file original="src/sql/workbench/contrib/executionPlan/browser/widgets/customZoomWidget" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="cancelCustomZoomAction">
-        <source xml:lang="en">Close (Escape)</source>
-        <target state="translated">닫기(이스케이프)</target>
+        <source xml:lang="en">Close</source>
+        <target state="translated">닫기</target>
       </trans-unit>
       <trans-unit id="customZoomApplyButton">
         <source xml:lang="en">Apply</source>
         <target state="translated">적용</target>
       </trans-unit>
       <trans-unit id="customZoomApplyButtonTitle">
-        <source xml:lang="en">Apply Zoom (Enter)</source>
-        <target state="translated">확대/축소 적용(Enter)</target>
+        <source xml:lang="en">Apply Zoom</source>
+        <target state="translated">확대/축소 적용</target>
       </trans-unit>
       <trans-unit id="invalidCustomZoomError">
         <source xml:lang="en">Select a zoom value between 1 to 200</source>
@@ -3651,16 +3889,96 @@
         <target state="translated">확대/축소(백분율)</target>
       </trans-unit>
       <trans-unit id="zoomAction">
-        <source xml:lang="en">Zoom (Enter)</source>
-        <target state="translated">확대/축소(Enter)</target>
+        <source xml:lang="en">Zoom</source>
+        <target state="translated">Zoom</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/executionPlan/browser/widgets/highlightExpensiveNodeWidget" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="actualNumberOfRowsForAllExecutionsAction">
+        <source xml:lang="en">Actual Number of Rows For All Executions</source>
+        <target state="translated">모든 실행에 대한 실제 행 수</target>
+      </trans-unit>
+      <trans-unit id="cancelExpensiveOperationAction">
+        <source xml:lang="en">Close</source>
+        <target state="translated">닫기</target>
+      </trans-unit>
+      <trans-unit id="executionPlanActualElapsedCpuTime">
+        <source xml:lang="en">Actual Elapsed CPU Time</source>
+        <target state="translated">실제 경과된 CPU 시간</target>
+      </trans-unit>
+      <trans-unit id="executionPlanActualElapsedTime">
+        <source xml:lang="en">Actual Elapsed Time</source>
+        <target state="translated">실제 경과 시간</target>
+      </trans-unit>
+      <trans-unit id="executionPlanCost">
+        <source xml:lang="en">Cost</source>
+        <target state="translated">비용</target>
+      </trans-unit>
+      <trans-unit id="executionPlanNumberOfRowsRead">
+        <source xml:lang="en">Number of Rows Read</source>
+        <target state="translated">읽은 행 수</target>
+      </trans-unit>
+      <trans-unit id="executionPlanOff">
+        <source xml:lang="en">Off</source>
+        <target state="translated">끄기</target>
+      </trans-unit>
+      <trans-unit id="executionPlanSelectExpenseMetricTitle">
+        <source xml:lang="en">Select expense metric</source>
+        <target state="translated">경비 메트릭 선택</target>
+      </trans-unit>
+      <trans-unit id="executionPlanSubtreeCost">
+        <source xml:lang="en">Subtree Cost</source>
+        <target state="translated">하위 트리 비용</target>
+      </trans-unit>
+      <trans-unit id="expensiveOperationLabel">
+        <source xml:lang="en">Metric:</source>
+        <target state="translated">메트릭:</target>
+      </trans-unit>
+      <trans-unit id="highlightExpensiveOperationAction">
+        <source xml:lang="en">Apply</source>
+        <target state="translated">적용</target>
+      </trans-unit>
+      <trans-unit id="highlightExpensiveOperationApplyButton">
+        <source xml:lang="en">Apply</source>
+        <target state="translated">적용</target>
+      </trans-unit>
+      <trans-unit id="highlightExpensiveOperationButtonTitle">
+        <source xml:lang="en">Highlight Expensive Operation</source>
+        <target state="translated">비용이 많이 드는 작업 강조 표시</target>
+      </trans-unit>
+      <trans-unit id="qp.expensiveOperationMetric.dontShowAgain">
+        <source xml:lang="en">Don't Show Again</source>
+        <target state="translated">다시 표시 안 함</target>
+      </trans-unit>
+      <trans-unit id="qp.expensiveOperationMetric.no">
+        <source xml:lang="en">No</source>
+        <target state="translated">아니요</target>
+      </trans-unit>
+      <trans-unit id="qp.expensiveOperationMetric.yes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">예</target>
+      </trans-unit>
+      <trans-unit id="queryExecutionPlan.showUpdateDefaultMetricInfo">
+        <source xml:lang="en">Set chosen metric as the default for query execution plans?</source>
+        <target state="translated">선택한 메트릭을 쿼리 실행 계획의 기본값으로 설정하시겠습니까?</target>
+      </trans-unit>
+      <trans-unit id="turnOffExpensiveHighlightingOperationAction">
+        <source xml:lang="en">Off</source>
+        <target state="translated">끄기</target>
       </trans-unit>
     </body>
   </file>
   <file original="src/sql/workbench/contrib/executionPlan/browser/widgets/nodeSearchWidget" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="cancelSearchAction">
-        <source xml:lang="en">Close (Escape)</source>
-        <target state="translated">닫기(이스케이프)</target>
+        <source xml:lang="en">Close</source>
+        <target state="translated">닫기</target>
+      </trans-unit>
+      <trans-unit id="executionPlanEnterValueTitle">
+        <source xml:lang="en">Enter search value</source>
+        <target state="translated">검색 값 입력</target>
       </trans-unit>
       <trans-unit id="executionPlanSearchTypeContains">
         <source xml:lang="en">Contains</source>
@@ -3670,13 +3988,29 @@
         <source xml:lang="en">Equals</source>
         <target state="translated">같음</target>
       </trans-unit>
+      <trans-unit id="executionPlanSelectPropertyTitle">
+        <source xml:lang="en">Select property</source>
+        <target state="translated">속성 선택</target>
+      </trans-unit>
+      <trans-unit id="executionPlanSelectSearchTypeTitle">
+        <source xml:lang="en">Select search type</source>
+        <target state="translated">검색 유형 선택</target>
+      </trans-unit>
       <trans-unit id="nextSearchItemAction">
-        <source xml:lang="en">Next Match (Enter)</source>
-        <target state="translated">다음 일치 항목(Enter)</target>
+        <source xml:lang="en">Next Match</source>
+        <target state="translated">다음 검색 결과</target>
       </trans-unit>
       <trans-unit id="previousSearchItemAction">
-        <source xml:lang="en">Previous Match (Shift+Enter)</source>
-        <target state="translated">이전 일치 항목(Shift+Enter)</target>
+        <source xml:lang="en">Previous Match</source>
+        <target state="translated">이전 검색 결과</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/executionPlan/common/executionPlanInput" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="epCompare.executionPlanEditorName">
+        <source xml:lang="en">ExecutionPlan</source>
+        <target state="translated">ExecutionPlan</target>
       </trans-unit>
     </body>
   </file>
@@ -5108,6 +5442,10 @@ Error: {1}</source>
   </file>
   <file original="src/sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet" source-language="en" datatype="plaintext" target-language="ko">
     <body>
+      <trans-unit id="ads-notebook">
+        <source xml:lang="en">Icon represent a notebook.</source>
+        <target state="translated">아이콘은 전자 필기장을 나타냅니다.</target>
+      </trans-unit>
       <trans-unit id="notebookExplorer.name">
         <source xml:lang="en">Notebooks</source>
         <target state="translated">Notebook</target>
@@ -5436,6 +5774,10 @@ Error: {1}</source>
         <source xml:lang="en">Data</source>
         <target state="translated">데이터</target>
       </trans-unit>
+      <trans-unit id="executionPlan">
+        <source xml:lang="en">Execution Plan</source>
+        <target state="translated">실행 계획</target>
+      </trans-unit>
       <trans-unit id="notebook">
         <source xml:lang="en">Notebook</source>
         <target state="translated">Notebook</target>
@@ -5684,6 +6026,10 @@ Error: {1}</source>
         <source xml:lang="en">Save As JSON</source>
         <target state="translated">JSON으로 저장</target>
       </trans-unit>
+      <trans-unit id="saveAsMarkdown">
+        <source xml:lang="en">Save As Markdown</source>
+        <target state="translated">Markdown으로 저장</target>
+      </trans-unit>
       <trans-unit id="saveAsXml">
         <source xml:lang="en">Save As XML</source>
         <target state="translated">XML로 저장</target>
@@ -5903,6 +6249,22 @@ Error: {1}</source>
       <trans-unit id="queryEditor.results.saveAsCsv.textIdentifier">
         <source xml:lang="en">Character used for enclosing text fields when saving results as CSV</source>
         <target state="translated">결과를 CSV로 저장할 때 텍스트 필드를 묶는 데 사용하는 문자</target>
+      </trans-unit>
+      <trans-unit id="queryEditor.results.saveAsExcel.includeHeaders">
+        <source xml:lang="en">When true, column headers are included when saving results as an Excel file</source>
+        <target state="translated">true이면 결과를 Excel 파일로 저장할 때 열 머리글이 포함됩니다.</target>
+      </trans-unit>
+      <trans-unit id="queryEditor.results.saveAsMarkdown.encoding">
+        <source xml:lang="en">File encoding used when saving results as Markdown</source>
+        <target state="translated">결과를 Markdown으로 저장할 때 사용되는 파일 인코딩</target>
+      </trans-unit>
+      <trans-unit id="queryEditor.results.saveAsMarkdown.includeHeaders">
+        <source xml:lang="en">When true, column headers are included when saving results as a Markdown file</source>
+        <target state="translated">true이면 결과를 Markdown 파일로 저장할 때 열 머리글이 포함됩니다.</target>
+      </trans-unit>
+      <trans-unit id="queryEditor.results.saveAsMarkdown.lineSeparator">
+        <source xml:lang="en">Character(s) to use to separate lines when exporting to Markdown, defaults to system line endings</source>
+        <target state="translated">Markdown으로 내보낼 때 줄을 구분하는 데 사용할 문자입니다. 기본값은 시스템 줄 끝입니다.</target>
       </trans-unit>
       <trans-unit id="queryEditor.results.saveAsXml.encoding">
         <source xml:lang="en">File encoding used when saving results as XML</source>
@@ -6136,6 +6498,10 @@ Error: {1}</source>
         <source xml:lang="en">Resource Viewer</source>
         <target state="translated">리소스 뷰어</target>
       </trans-unit>
+      <trans-unit id="resourceViewerIcon">
+        <source xml:lang="en">Icon for resource viewer.</source>
+        <target state="translated">리소스 뷰어의 아이콘입니다.</target>
+      </trans-unit>
     </body>
   </file>
   <file original="src/sql/workbench/contrib/resourceViewer/browser/resourceViewerActions" source-language="en" datatype="plaintext" target-language="ko">
@@ -6302,14 +6668,6 @@ Error: {1}</source>
       </trans-unit>
     </body>
   </file>
-  <file original="src/sql/workbench/contrib/tableDesigner/browser/tableDesignerEditor" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="tableDesigner.PreviewFeature">
-        <source xml:lang="en">Preview feature</source>
-        <target state="translated">미리 보기 기능</target>
-      </trans-unit>
-    </body>
-  </file>
   <file original="src/sql/workbench/contrib/tasks/browser/tasks.contribution" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="inProgressTasksChangesBadge">
@@ -6465,6 +6823,22 @@ Error: {1}</source>
       <trans-unit id="enablePreviewFeatures.yes">
         <source xml:lang="en">Yes (recommended)</source>
         <target state="translated">예(추천)</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/welcome/notifyEncryption/notifyEncryptionDialog" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="notifyEncryption.message">
+        <source xml:lang="en">Azure Data Studio now has encryption enabled by default for all SQL Server connections. This may result in your existing connections no longer working unless certain Encryption related connection properties are changed.{0}We recommend you review the link below for more details.</source>
+        <target state="translated">이제 Azure Data Studio에서 모든 SQL Server 연결에 대해 기본적으로 암호화를 사용합니다. 이로 인해 특정 암호화 관련 연결 속성이 변경되지 않는 한 기존 연결이 더 이상 작동하지 않을 수 있습니다.{0}아래 링크에서 자세한 내용을 검토하는 것이 좋습니다.</target>
+      </trans-unit>
+      <trans-unit id="notifyEncryption.moreInfoLink">
+        <source xml:lang="en">More information</source>
+        <target state="translated">추가 정보</target>
+      </trans-unit>
+      <trans-unit id="notifyEncryption.title">
+        <source xml:lang="en">Important Update</source>
+        <target state="translated">중요 업데이트</target>
       </trans-unit>
     </body>
   </file>
@@ -6828,6 +7202,49 @@ Error: {1}</source>
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/contrib/welcome/page/browser/welcomePage.contribution" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="miWelcome">
+        <source xml:lang="en">&amp;&amp;Welcome</source>
+        <note>&amp;&amp; denotes a mnemonic</note>
+        <target state="translated">시작(&amp;&amp;W)</target>
+      </trans-unit>
+      <trans-unit id="workbench.startupEditor">
+        <source xml:lang="en">Controls which editor is shown at startup, if none are restored from the previous session.</source>
+        <target state="translated">이전 세션에서 복원된 편집기가 없는 경우 시작 시 편집기의 표시 여부를 제어합니다.</target>
+      </trans-unit>
+      <trans-unit id="workbench.startupEditor.newUntitledFile">
+        <source xml:lang="en">Open a new untitled file (only applies when opening an empty window).</source>
+        <note>This is the description for a setting. Values surrounded by single quotes are not to be translated.</note>
+        <target state="translated">새로운 제목 없는 파일을 엽니다(빈 창을 여는 경우에만 적용됨).</target>
+      </trans-unit>
+      <trans-unit id="workbench.startupEditor.none">
+        <source xml:lang="en">Start without an editor.</source>
+        <note>This is the description for a setting. Values surrounded by single quotes are not to be translated.</note>
+        <target state="translated">편집기를 사용하지 않고 시작합니다.</target>
+      </trans-unit>
+      <trans-unit id="workbench.startupEditor.readme">
+        <source xml:lang="en">Open the README when opening a folder that contains one, fallback to 'welcomePage' otherwise. Note: This is only observed as a global configuration, it will be ignored if set in a workspace or folder configuration.</source>
+        <note>This is the description for a setting. Values surrounded by single quotes are not to be translated.</note>
+        <target state="translated">폴더가 포함된 폴더를 열 때 README를 열고, 그렇지 않으면 'welcomePage'로 대체합니다. 참고: 이 항목은 전역 ccnfiguration으로만 관찰되며, 작업 영역 또는 폴더 구성에 설정된 경우 무시됩니다.</target>
+      </trans-unit>
+      <trans-unit id="workbench.startupEditor.welcomePage">
+        <source xml:lang="en">Open the Welcome page, with content to aid in getting started with Azure Data Studio and extensions.</source>
+        <note>This is the description for a setting. Values surrounded by single quotes are not to be translated.</note>
+        <target state="translated">Azure Data Studio 및 확장을 시작하는 데 도움이 되는 콘텐츠가 포함된 시작 페이지를 엽니다.</target>
+      </trans-unit>
+      <trans-unit id="workbench.startupEditor.welcomePageInEmptyWorkbench">
+        <source xml:lang="en">Open the Welcome page when opening an empty workbench.</source>
+        <note>This is the description for a setting. Values surrounded by single quotes are not to be translated.</note>
+        <target state="translated">빈 워크벤치를 열 때 시작 페이지를 엽니다.</target>
+      </trans-unit>
+      <trans-unit id="workbench.startupEditor.welcomePageWithTour">
+        <source xml:lang="en">Open the welcome page with Getting Started Tour (default)</source>
+        <note>This is the description for a setting. Values surrounded by single quotes are not to be translated.</note>
+        <target state="translated">시작하기 둘러보기로 시작 페이지 열기(기본값)</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/services/accountManagement/browser/accountDialog" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="accountDialog.addConnection">
@@ -7134,6 +7551,10 @@ Error: {1}</source>
         <source xml:lang="en">Connection error</source>
         <target state="translated">연결 오류</target>
       </trans-unit>
+      <trans-unit id="enableTrustServerCertificate">
+        <source xml:lang="en">Enable Trust server certificate</source>
+        <target state="translated">신뢰 서버 인증서 활성화</target>
+      </trans-unit>
       <trans-unit id="kerberosErrorStart">
         <source xml:lang="en">Connection failed due to Kerberos error.</source>
         <target state="translated">Kerberos 오류로 인해 연결이 실패했습니다.</target>
@@ -7145,6 +7566,18 @@ Error: {1}</source>
       <trans-unit id="kerberosKinit">
         <source xml:lang="en">If you have previously connected you may need to re-run kinit.</source>
         <target state="translated">이전에 연결된 경우 kinit을 다시 실행해야 할 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="runKinit">
+        <source xml:lang="en">Run Kinit</source>
+        <target state="translated">Kinit 실행</target>
+      </trans-unit>
+      <trans-unit id="trustServerCertInstructionText">
+        <source xml:lang="en">Encryption was enabled on this connection, review your SSL and certificate configuration for the target SQL Server, or enable 'Trust server certificate' in the connection dialog.
+
+			Note: A self-signed certificate offers only limited protection and is not a recommended practice for production environments. Do you want to enable 'Trust server certificate' on this connection and retry? </source>
+        <target state="translated">이 연결에서 암호화가 사용 설정되었습니다. 대상 SQL Server의 SSL 및 인증서 구성을 검토하거나 연결 대화 상자에서 '신뢰할 수 있는 서버 인증서'를 사용 설정하세요.
+
+ 참고: 자체 서명된 인증서 제한된 보호만 제공하며 프로덕션 환경에서는 권장되지 않습니다. 이 연결에서 '신뢰할 수 있는 서버 인증서'를 활성화하고 다시 시도하시겠습니까? </target>
       </trans-unit>
     </body>
   </file>
@@ -7174,25 +7607,9 @@ Error: {1}</source>
         <source xml:lang="en">Connect</source>
         <target state="translated">연결</target>
       </trans-unit>
-      <trans-unit id="connectionDialog.connectionProviderNotSupported">
-        <source xml:lang="en">The extension that supports provider type '{0}' is not currently installed. Please install it and try again.</source>
-        <target state="translated">'{0}' 공급자 유형을 지원하는 확장이 현재 설치되어 있지 않습니다. 설치하고 다시 시도하세요.</target>
-      </trans-unit>
-      <trans-unit id="connectionDialog.extensionNotInstalled">
-        <source xml:lang="en">The extension '{0}' is required in order to connect to this resource. Please install it and try again.</source>
-        <target state="translated">이 리소스에 연결하려면 '{0}' 확장이 필요합니다. 설치하고 다시 시도하세요.</target>
-      </trans-unit>
       <trans-unit id="connectionDialog.recentConnections">
         <source xml:lang="en">Recent Connections</source>
         <target state="translated">최근 연결</target>
-      </trans-unit>
-      <trans-unit id="connectionDialog.viewExtension">
-        <source xml:lang="en">View Extension</source>
-        <target state="translated">확장 보기</target>
-      </trans-unit>
-      <trans-unit id="connectionDialog.viewExtensions">
-        <source xml:lang="en">View Extensions</source>
-        <target state="translated">확장 보기</target>
       </trans-unit>
       <trans-unit id="noRecentConnections">
         <source xml:lang="en">No recent connection</source>
@@ -7209,6 +7626,10 @@ Error: {1}</source>
       <trans-unit id="cancelConnectionConfirmation">
         <source xml:lang="en">Are you sure you want to cancel this connection?</source>
         <target state="translated">이 연결을 취소하시겠습니까?</target>
+      </trans-unit>
+      <trans-unit id="connection.extensionNotInstalled">
+        <source xml:lang="en">The extension '{0}' is required in order to connect to this resource. Do you want to install it?</source>
+        <target state="translated">이 리소스에 연결하려면 '{0}' 확장이 필요합니다. 해당 확장을 설치하시겠습니까?</target>
       </trans-unit>
       <trans-unit id="connection.invalidConnectionResult">
         <source xml:lang="en">Connection result is invalid</source>
@@ -7229,6 +7650,10 @@ Error: {1}</source>
       <trans-unit id="connection.unsupportedServerVersionWarning">
         <source xml:lang="en">The server version is not supported by Azure Data Studio, you may still connect to it but some features in Azure Data Studio might not work as expected.</source>
         <target state="translated">서버 버전은 Azure Data Studio에서 지원되지 않으므로 계속 연결할 수 있지만 Azure Data Studio의 일부 기능이 예상대로 작동하지 않을 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="connectionDialog.connectionProviderNotSupported">
+        <source xml:lang="en">The extension that supports provider type '{0}' is not currently installed. Do you want to view the extensions?</source>
+        <target state="translated">'{0}' 공급자 유형을 지원하는 확장이 현재 설치되어 있지 않습니다. 확장을 보시겠습니까?</target>
       </trans-unit>
       <trans-unit id="connectionManagementService.noProviderForUri">
         <source xml:lang="en">Could not find provider for uri: {0}</source>
@@ -7257,6 +7682,14 @@ Error: {1}</source>
       <trans-unit id="advanced">
         <source xml:lang="en">Advanced...</source>
         <target state="translated">고급...</target>
+      </trans-unit>
+      <trans-unit id="boolean.false">
+        <source xml:lang="en">False</source>
+        <target state="translated">False</target>
+      </trans-unit>
+      <trans-unit id="boolean.true">
+        <source xml:lang="en">True</source>
+        <target state="translated">True</target>
       </trans-unit>
       <trans-unit id="connection.azureAccountDropdownLabel">
         <source xml:lang="en">Account</source>
@@ -7405,6 +7838,10 @@ Error: {1}</source>
       <trans-unit id="errorMessageDialog.ok">
         <source xml:lang="en">OK</source>
         <target state="translated">확인</target>
+      </trans-unit>
+      <trans-unit id="errorMessageDialog.readMore">
+        <source xml:lang="en">Read More</source>
+        <target state="translated">더 읽기</target>
       </trans-unit>
     </body>
   </file>
@@ -7961,14 +8398,6 @@ Error: {1}</source>
       </trans-unit>
     </body>
   </file>
-  <file original="src/sql/workbench/services/objectExplorer/browser/asyncServerTreeRenderer" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="loading">
-        <source xml:lang="en">Loading...</source>
-        <target state="translated">로드 중...</target>
-      </trans-unit>
-    </body>
-  </file>
   <file original="src/sql/workbench/services/objectExplorer/browser/connectionTreeAction" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="DisconnectAction">
@@ -8038,14 +8467,6 @@ Error: {1}</source>
       <trans-unit id="noProviderFound">
         <source xml:lang="en">Cannot expand as the required connection provider '{0}' was not found</source>
         <target state="translated">필요한 연결 공급자 '{0}'을(를) 찾을 수 없으므로 확장할 수 없습니다.</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="src/sql/workbench/services/objectExplorer/browser/serverTreeRenderer" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="loading">
-        <source xml:lang="en">Loading...</source>
-        <target state="translated">로드 중...</target>
       </trans-unit>
     </body>
   </file>
@@ -8262,6 +8683,10 @@ Error: {1}</source>
       <trans-unit id="resultsSerializer.saveAsFileExtensionJSONTitle">
         <source xml:lang="en">JSON</source>
         <target state="translated">JSON</target>
+      </trans-unit>
+      <trans-unit id="resultsSerializer.saveAsFileExtensionMarkdownTitle">
+        <source xml:lang="en">Markdown</source>
+        <target state="translated">Markdown</target>
       </trans-unit>
       <trans-unit id="resultsSerializer.saveAsFileExtensionTXTTitle">
         <source xml:lang="en">Plain Text</source>
@@ -8526,10 +8951,6 @@ Error: {1}</source>
       <trans-unit id="serverGroup.cancel">
         <source xml:lang="en">Cancel</source>
         <target state="translated">취소</target>
-      </trans-unit>
-      <trans-unit id="serverGroup.colorValue">
-        <source xml:lang="en">Group Color: {0}</source>
-        <target state="translated">그룹 색: {0}</target>
       </trans-unit>
       <trans-unit id="serverGroup.ok">
         <source xml:lang="en">OK</source>

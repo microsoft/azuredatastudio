@@ -546,6 +546,10 @@
         <source xml:lang="en">Big Data Cluster Dashboard -</source>
         <target state="translated">巨量資料叢集儀表板 -</target>
       </trans-unit>
+      <trans-unit id="bdc.deprecationWarning">
+        <source xml:lang="en">The Big Data Cluster add-on is being retired and Azure Data Studio functionality for it will be removed in an upcoming release. Read more about this and support going forward [here](https://go.microsoft.com/fwlink/?linkid=2207340).</source>
+        <target state="translated">即將淘汰 Big Data Cluster 附加元件，而其 Azure Data Studio 功能將在即將推出的版本中移除。在[這裡](https://go.microsoft.com/fwlink/?linkid=2207340)閱讀更多有關此資訊以及往後的支援。</target>
+      </trans-unit>
       <trans-unit id="mount.error.endpointNotFound">
         <source xml:lang="en">Controller endpoint information was not found</source>
         <target state="translated">找不到控制器端點資訊</target>

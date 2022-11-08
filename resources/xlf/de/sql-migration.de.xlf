@@ -22,6 +22,34 @@
         <source xml:lang="en">Select the databases that you want to migrate to Azure SQL.</source>
         <target state="translated">Wählen Sie die Datenbank(en) aus, die Sie zu Azure SQL migrieren möchten.</target>
       </trans-unit>
+      <trans-unit id="sql.migratino.database.loading.tables">
+        <source xml:lang="en">Loading tables list...</source>
+        <target state="translated">Tabellenliste wird geladen...</target>
+      </trans-unit>
+      <trans-unit id="sql.migratino.database.missing.tables">
+        <source xml:lang="en">0 tables found.</source>
+        <target state="translated">Es wurden 0 Tabellen gefunden.</target>
+      </trans-unit>
+      <trans-unit id="sql.migratino.table.selection.filter">
+        <source xml:lang="en">Filter tables</source>
+        <target state="translated">Filtern von Tabellen</target>
+      </trans-unit>
+      <trans-unit id="sql.migratino.table.selection.status.column">
+        <source xml:lang="en">Has rows</source>
+        <target state="translated">Hat Zeilen</target>
+      </trans-unit>
+      <trans-unit id="sql.migratino.table.selection.tablename.column">
+        <source xml:lang="en">Table name</source>
+        <target state="translated">Tabellenname</target>
+      </trans-unit>
+      <trans-unit id="sql.migratino.table.selection.update.button">
+        <source xml:lang="en">Update</source>
+        <target state="translated">Aktualisieren</target>
+      </trans-unit>
+      <trans-unit id="sql.migratino.table.selection.update.cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">Abbrechen</target>
+      </trans-unit>
       <trans-unit id="sql.migration.account.credentials.refresh.required">
         <source xml:lang="en">{0} (requires credentials refresh)</source>
         <target state="translated">{0} (erfordert Aktualisierung der Anmeldeinformationen)</target>
@@ -75,8 +103,16 @@ This may take some time.</source>
 Dies kann einige Zeit dauern.</target>
       </trans-unit>
       <trans-unit id="sql.migration.assessment.migration.warning">
-        <source xml:lang="en">Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines.</source>
-        <target state="translated">Datenbanken, die nicht für die Migration zu Azure SQL Managed Instance bereit sind, können zu SQL Server in Azure Virtual Machines migriert werden.</target>
+        <source xml:lang="en">Databases that are not ready for migration to Azure SQL Managed Instance or Azure SQL Database can be migrated to SQL Server on Azure Virtual Machines.</source>
+        <target state="translated">Datenbanken, die nicht für die Migration zu Azure SQL Managed Instance oder Azure SQL-Datenbank bereit sind, können zu SQL Server auf Microsoft Azure Virtual Machines migriert werden.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.assessment.migration.warning.sqldb">
+        <source xml:lang="en">Databases that are not ready for migration to Azure SQL Database can be migrated to SQL Server on Azure Virtual Machines. Alternatively, review assessment results for Azure SQL Managed Instance migration readiness.</source>
+        <target state="translated">Datenbanken, die nicht für die Migration zu Azure SQL-Datenbank bereit sind, können zu SQL Server auf Microsoft Azure Virtual Machines migriert werden. Alternativ können Sie die Bewertungsergebnisse für die Azure SQL Managed Instance-Migrationsbereitschaft überprüfen.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.assessment.migration.warning.sqlmi">
+        <source xml:lang="en">Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines. Alternatively, review assessment results for Azure SQL Database migration readiness.</source>
+        <target state="translated">Datenbanken, die nicht für die Migration zu Azure SQL Managed Instance bereit sind, können zu SQL Server auf Microsoft Azure Virtual Machines migriert werden. Alternativ können Sie die Bewertungsergebnisse für die Azure SQL-Datenbank-Migrationsbereitschaft überprüfen.</target>
       </trans-unit>
       <trans-unit id="sql.migration.assessment.results">
         <source xml:lang="en">Assessment results</source>
@@ -111,8 +147,8 @@ Dies kann einige Zeit dauern.</target>
         <target state="translated">Azure SQL</target>
       </trans-unit>
       <trans-unit id="sql.migration.azure.sql.database">
-        <source xml:lang="en">Azure SQL Database</source>
-        <target state="translated">Azure SQL-Datenbank</target>
+        <source xml:lang="en">Azure SQL Database Server</source>
+        <target state="translated">Azure SQL-Datenbank-Server</target>
       </trans-unit>
       <trans-unit id="sql.migration.azure.sql.database.managed.instance">
         <source xml:lang="en">Azure SQL Managed Instance</source>
@@ -211,8 +247,8 @@ Dies kann einige Zeit dauern.</target>
         <target state="translated">Wählen Sie zuerst einen Speicherkontowert aus.</target>
       </trans-unit>
       <trans-unit id="sql.migration.can.be.migrated">
-        <source xml:lang="en">{0}/{1} databases can be migrated</source>
-        <target state="translated">{0}/{1} Datenbanken können migriert werden.</target>
+        <source xml:lang="en">{0}/{1} databases can be migrated without issues</source>
+        <target state="translated">{0}/{1} Datenbanken können ohne Probleme migriert werden.</target>
       </trans-unit>
       <trans-unit id="sql.migration.cancel">
         <source xml:lang="en">Cancel</source>
@@ -257,6 +293,10 @@ Dies kann einige Zeit dauern.</target>
       <trans-unit id="sql.migration.confirm.checkbox.message">
         <source xml:lang="en">I confirm there are no additional log backups to provide and want to complete cutover.</source>
         <target state="translated">Ich bestätige, dass keine zusätzlichen Protokollsicherungen zur Verfügung stehen und der Cutover abgeschlossen werden soll.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.connection.label">
+        <source xml:lang="en">Connect</source>
+        <target state="translated">Verbinden</target>
       </trans-unit>
       <trans-unit id="sql.migration.connection.status">
         <source xml:lang="en">Connection status</source>
@@ -411,8 +451,8 @@ Dies kann einige Zeit dauern.</target>
         <target state="translated">Modus</target>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.description">
-        <source xml:lang="en">Determine the migration readiness of your SQL Server instances, identify a recommended Azure SQL target, and complete the migration of your SQL Server instance to Azure SQL Managed Instance or SQL Server on Azure Virtual Machines.</source>
-        <target state="translated">Ermitteln Sie die Migrationsbereitschaft Ihrer SQL Server-Instanzen, identifizieren Sie ein empfohlenes Azure SQL-Ziel, und schließen Sie die Migration Ihrer SQL Server-Instanz zu Azure SQL Managed Instance oder SQL Server in Azure Virtual Machines ab.</target>
+        <source xml:lang="en">Determine the migration readiness of your SQL Server instances, identify a recommended Azure SQL target, and complete the migration of your SQL Server instance to Azure SQL Managed Instance, SQL Server on Azure Virtual Machines or Azure SQL Database.</source>
+        <target state="translated">Ermitteln Sie die Migrationsbereitschaft Ihrer SQL Server-Instanzen, identifizieren Sie ein empfohlenes Azure SQL-Ziel, und schließen Sie die Migration Ihrer SQL Server-Instanz zu Azure SQL Managed Instance, SQL Server auf Azure Virtual Machines oder Azure SQL-Datenbank ab.</target>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.help.description.dmsGuide">
         <source xml:lang="en">A hub of migration articles that provides step-by-step guidance for migrating and modernizing your data assets in Azure.</source>
@@ -425,6 +465,10 @@ Dies kann einige Zeit dauern.</target>
       <trans-unit id="sql.migration.dashboard.help.description.migrateUsingADS">
         <source xml:lang="en">The Azure SQL Migration extension for Azure Data Studio provides capabilities to assess, get right-sized Azure recommendations and migrate SQL Server databases to Azure.</source>
         <target state="translated">Die Azure SQL Migrationserweiterung für Azure Data Studio bietet Funktionen zum Bewerten, Abrufen der passenden Azure-Empfehlungen und migrieren von SQL Server-Datenbanken zu Azure.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.dashboard.help.description.sqldb">
+        <source xml:lang="en">A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Database (PREVIEW).</source>
+        <target state="translated">Ein Tutorial mit einer Schrittanleitung zum Migrieren von Datenbanken aus einer SQL Server-Instanz (lokal oder Azure Virtual Machines) zu Azure SQL-Datenbank (VORSCHAU) zu migrieren.</target>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.help.description.vm">
         <source xml:lang="en">A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises) to SQL Server on Azure Virtual Machines with minimal downtime.</source>
@@ -441,6 +485,10 @@ Dies kann einige Zeit dauern.</target>
       <trans-unit id="sql.migration.dashboard.help.link.migrateUsingADS">
         <source xml:lang="en">Migrate databases using Azure Data Studio</source>
         <target state="translated">Datenbanken mithilfe von Azure Data Studio migrieren</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.dashboard.help.link.sqldb">
+        <source xml:lang="en">Tutorial:  Migrate to SQL Server on Azure SQL Database (offline) - (PREVIEW)</source>
+        <target state="translated">Tutorial: Migrieren zu SQL Server auf Azure SQL-Datenbank (offline) – (VORSCHAU)</target>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.help.link.vm">
         <source xml:lang="en">Tutorial:  Migrate to SQL Server on Azure Virtual Machines (online)</source>
@@ -461,6 +509,10 @@ Dies kann einige Zeit dauern.</target>
       <trans-unit id="sql.migration.dashboard.title">
         <source xml:lang="en">Azure SQL Migration</source>
         <target state="translated">Azure SQL-Migration</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.data.source.configuration.page.title">
+        <source xml:lang="en">Data source configuration</source>
+        <target state="translated">Datenquellenkonfiguration</target>
       </trans-unit>
       <trans-unit id="sql.migration.data.uploaded.info">
         <source xml:lang="en">Comparison of the actual amount of data read from the source and the actual amount of data uploaded to the target.</source>
@@ -490,9 +542,17 @@ Dies kann einige Zeit dauern.</target>
         <source xml:lang="en">An error occurred while accessing database details.</source>
         <target state="translated">Fehler beim Zugriff auf Datenbankdetails.</target>
       </trans-unit>
-      <trans-unit id="sql.migration.database.checksum.info.text">
-        <source xml:lang="en">Ensure that your backups were taken with the WITH CHECKSUM option.</source>
-        <target state="translated">Stellen Sie sicher, dass Ihre Sicherungen mit der WITH CHECKSUM-Option erstellt wurden.</target>
+      <trans-unit id="sql.migration.database.connection.error">
+        <source xml:lang="en">An error occurred while connecting to target migration database.</source>
+        <target state="translated">Fehler beim Herstellen einer Verbindung mit der Zielmigrationsdatenbank.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.database.connection.error.message">
+        <source xml:lang="en">Connection error:{0} {1}</source>
+        <target state="translated">Verbindungsfehler:{0} {1}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.database.loading">
+        <source xml:lang="en">Loading database table list..</source>
+        <target state="translated">Datenbanktabellenliste wird geladen...</target>
       </trans-unit>
       <trans-unit id="sql.migration.database.migration.mode.description">
         <source xml:lang="en">To migrate to the Azure SQL target, choose a migration mode based on your downtime requirements.</source>
@@ -542,21 +602,41 @@ Dies kann einige Zeit dauern.</target>
         <source xml:lang="en">Select the location of the database backups to use during migration.</source>
         <target state="translated">Wählen Sie den Speicherort der Datenbanksicherungen aus, die während der Migration verwendet werden sollen.</target>
       </trans-unit>
-      <trans-unit id="sql.migration.database.page.title">
-        <source xml:lang="en">Database backup</source>
-        <target state="translated">Datenbanksicherung</target>
-      </trans-unit>
-      <trans-unit id="sql.migration.database.private.endpoint.info.text">
-        <source xml:lang="en">Ensure that the Azure Storage account does not use a private endpoint.</source>
-        <target state="translated">Stellen Sie sicher, dass das Azure Storage-Konto keinen privaten Endpunkt verwendet.</target>
-      </trans-unit>
       <trans-unit id="sql.migration.database.status.column">
         <source xml:lang="en">Migration status</source>
         <target state="translated">Migrationsstatus</target>
       </trans-unit>
+      <trans-unit id="sql.migration.database.table.refresh.label">
+        <source xml:lang="en">Refresh</source>
+        <target state="translated">Aktualisieren</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.database.table.selection.description">
+        <source xml:lang="en">To migrate to the Azure SQL target, select tables in each database for migration.</source>
+        <target state="translated">Um zum Azure SQL-Ziel zu migrieren, wählen Sie für die Migration Tabellen in jeder Datenbank aus.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.database.table.selection.label">
+        <source xml:lang="en">Migration table selection</source>
+        <target state="translated">Migrationstabellenauswahl</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.database.table.source.column.label">
+        <source xml:lang="en">Source database</source>
+        <target state="translated">Quelldatenbank</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.database.table.tables.column.label">
+        <source xml:lang="en">Select tables</source>
+        <target state="translated">Tabellen auswählen</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.database.table.target.column.label">
+        <source xml:lang="en">Target database</source>
+        <target state="translated">Zieldatenbank</target>
+      </trans-unit>
       <trans-unit id="sql.migration.database.to.be.migrated">
         <source xml:lang="en">Database to be migrated</source>
         <target state="translated">Zu migrierende Datenbank</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.database.validate.selection">
+        <source xml:lang="en">Please select target database tables to migrate to.  At least one database with one table is required.</source>
+        <target state="translated">Bitte wählen Sie die Zieldatenbanktabellen aus, zu denen migriert werden soll.  Mindestens eine Datenbank mit einer Tabelle ist erforderlich.</target>
       </trans-unit>
       <trans-unit id="sql.migration.databases">
         <source xml:lang="en">Databases ({0}/{1})</source>
@@ -669,6 +749,10 @@ Dies kann einige Zeit dauern.</target>
       <trans-unit id="sql.migration.error">
         <source xml:lang="en">Error</source>
         <target state="translated">Fehler</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.error.aria.view.details">
+        <source xml:lang="en">Click to view error details</source>
+        <target state="translated">Klicken Sie, um Details zum Fehler anzuzeigen</target>
       </trans-unit>
       <trans-unit id="sql.migration.error.details.label">
         <source xml:lang="en">Migration error(s))</source>
@@ -810,6 +894,10 @@ Dies kann einige Zeit dauern.</target>
         <source xml:lang="en">Enter a valid name for the Migration Service.</source>
         <target state="translated">Geben Sie einen gültigen Namen für den Migration Service ein.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.invalid.sqldatabase.error">
+        <source xml:lang="en">To continue, select a valid Azure SQL Database server.</source>
+        <target state="translated">Wählen Sie einen gültigen Azure SQL-Datenbank-Server aus, um fortzufahren.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.invalid.storageAccount.error">
         <source xml:lang="en">To continue, select a valid storage account.</source>
         <target state="translated">Wählen Sie ein gültiges Speicherkonto aus, um den Vorgang fortzusetzen.</target>
@@ -831,8 +919,8 @@ Dies kann einige Zeit dauern.</target>
         <target state="translated">Wählen Sie einen gültigen virtuellen Computer aus, um den Vorgang fortzusetzen.</target>
       </trans-unit>
       <trans-unit id="sql.migration.ir.page.description">
-        <source xml:lang="en">Azure Database Migration Service orchestrates database migration activities and tracks their progress. You can select an existing Database Migration Service as an Azure SQL target if you have created one previously, or create a new one below.</source>
-        <target state="translated">Azure Database Migration Service orchestriert Datenbankmigrationsaktivitäten und verfolgt deren Fortschritt nach. Sie können einen vorhandenen Database Migration Service als Azure SQL-Ziel auswählen, wenn Sie zuvor einen erstellt haben, oder unten einen neuen erstellen.</target>
+        <source xml:lang="en">Azure Database Migration Service orchestrates database migration activities and tracks their progress. You can select an existing Database Migration Service if you have created one previously, or create a new one below.</source>
+        <target state="translated">Azure Database Migration Service orchestriert Datenbankmigrationsaktivitäten und verfolgt deren Fortschritt. Sie können einen bestehenden Datenbankmigrationsdienst auswählen, wenn Sie zuvor einen erstellt haben, oder unten einen neuen erstellen.</target>
       </trans-unit>
       <trans-unit id="sql.migration.ir.page.sql.migration.service.not.found">
         <source xml:lang="en">No Database Migration Service found. Create a new one.</source>
@@ -853,6 +941,10 @@ Dies kann einige Zeit dauern.</target>
       <trans-unit id="sql.migration.ir.setup.step3">
         <source xml:lang="en">Step 3: Click on 'Test connection' button to check the connection between Azure Database Migration Service and integration runtime</source>
         <target state="translated">Schritt 3: Klicken Sie auf die Schaltfläche "Verbindung testen", um die Verbindung zwischen Azure Database Migration Service und Integration Runtime zu überprüfen</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.issue.aria.label">
+        <source xml:lang="en">Blocking Issue: {0}</source>
+        <target state="translated">Blockierproblem: {0}</target>
       </trans-unit>
       <trans-unit id="sql.migration.issues">
         <source xml:lang="en">Issues</source>
@@ -898,10 +990,6 @@ Dies kann einige Zeit dauern.</target>
         <source xml:lang="en">Last applied LSN</source>
         <target state="translated">Zuletzt angewendete LSN</target>
       </trans-unit>
-      <trans-unit id="sql.migration.last.backup">
-        <source xml:lang="en">Last backup</source>
-        <target state="translated">Letzte Sicherung</target>
-      </trans-unit>
       <trans-unit id="sql.migration.last.scan.completed">
         <source xml:lang="en">Last scan completed: {0}</source>
         <target state="translated">Letzte abgeschlossene Überprüfung: {0}</target>
@@ -921,6 +1009,26 @@ Dies kann einige Zeit dauern.</target>
       <trans-unit id="sql.migration.location">
         <source xml:lang="en">Location</source>
         <target state="translated">Speicherort</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.map.source.column">
+        <source xml:lang="en">Source database</source>
+        <target state="translated">Quelldatenbank</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.map.target.column">
+        <source xml:lang="en">Target database</source>
+        <target state="translated">Zieldatenbank</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.map.target.description">
+        <source xml:lang="en">Select the target database where you would like to migrate your source database to.  You can choose a target database for only one source database.</source>
+        <target state="translated">Wählen Sie die Zieldatenbank aus, zu der Sie Ihre Quelldatenbank migrieren möchten.  Sie können eine Zieldatenbank nur für eine Quelldatenbank auswählen.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.map.target.heading">
+        <source xml:lang="en">Map selected source databases to target databases for migration</source>
+        <target state="translated">Zuordnen ausgewählter Quelldatenbanken zu Zieldatenbanken für die Migration</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.map.target.placeholder">
+        <source xml:lang="en">Select a target database</source>
+        <target state="translated">Wählen Sie eine Zieldatenbank aus</target>
       </trans-unit>
       <trans-unit id="sql.migration.mi.not.ready">
         <source xml:lang="en">The managed instance '{0}' is unavailable for migration because it is currently in the '{1}' state. To continue, select an available managed instance.</source>
@@ -957,6 +1065,14 @@ Dies kann einige Zeit dauern.</target>
       <trans-unit id="sql.migration.mins">
         <source xml:lang="en">{0} mins</source>
         <target state="translated">{0} Min.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.missing.targetPassword.error">
+        <source xml:lang="en">To continue, enter a valid target password.</source>
+        <target state="translated">Geben Sie ein gültiges Zielkennwort ein, um fortzufahren.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.missing.targetUserName.error">
+        <source xml:lang="en">To continue, enter a valid target user name.</source>
+        <target state="translated">Geben Sie einen gültigen Zielbenutzernamen ein, um fortzufahren.</target>
       </trans-unit>
       <trans-unit id="sql.migration.mode">
         <source xml:lang="en">Mode</source>
@@ -1071,8 +1187,12 @@ Dies kann einige Zeit dauern.</target>
         <target state="translated">Es wurden keine Dateifreigaben gefunden.</target>
       </trans-unit>
       <trans-unit id="sql.migration.no.issues.mi">
-        <source xml:lang="en">No issues found for migrating to SQL Server on Azure SQL Managed Instance.</source>
-        <target state="translated">Für die Migration zu SQL Server auf Azure SQL Managed Instance wurden keine Probleme gefunden.</target>
+        <source xml:lang="en">No issues found for migrating to Azure SQL Managed Instance.</source>
+        <target state="translated">Für die Migration zu Azure SQL Managed Instance wurden keine Probleme gefunden.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.no.issues.sqldb">
+        <source xml:lang="en">No issues found for migrating to Azure SQL Database.</source>
+        <target state="translated">Für die Migration zu Azure SQL-Datenbank wurden keine Probleme gefunden.</target>
       </trans-unit>
       <trans-unit id="sql.migration.no.issues.vm">
         <source xml:lang="en">No issues found for migrating to SQL Server on Azure Virtual Machine.</source>
@@ -1093,6 +1213,14 @@ Dies kann einige Zeit dauern.</target>
       <trans-unit id="sql.migration.no.results">
         <source xml:lang="en">Assessment results are unavailable.</source>
         <target state="translated">Bewertungsergebnisse sind nicht verfügbar.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.no.sqldatabase.found">
+        <source xml:lang="en">No Azure SQL databases found.</source>
+        <target state="translated">Es wurden keine Azure SQL-Datenbanken gefunden.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.no.sqldatabaseserver.found">
+        <source xml:lang="en">No Azure SQL database servers found.</source>
+        <target state="translated">Es wurden keine Azure SQL-Datenbank-Server gefunden.</target>
       </trans-unit>
       <trans-unit id="sql.migration.no.storageAccount.found">
         <source xml:lang="en">No storage accounts found.</source>
@@ -1158,25 +1286,37 @@ Dies kann einige Zeit dauern.</target>
         <source xml:lang="en">Physical partitions</source>
         <target state="translated">Physische Partitionen</target>
       </trans-unit>
+      <trans-unit id="sql.migration.password.label">
+        <source xml:lang="en">Target password</source>
+        <target state="translated">Zielkennwort</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.password.placeholder">
+        <source xml:lang="en">Enter the target password</source>
+        <target state="translated">Geben Sie das Zielkennwort ein</target>
+      </trans-unit>
       <trans-unit id="sql.migration.path.user.account">
         <source xml:lang="en">User account</source>
         <target state="translated">Benutzerkonto</target>
       </trans-unit>
       <trans-unit id="sql.migration.pre.req.1">
-        <source xml:lang="en">Azure account details</source>
-        <target state="translated">Azure-Kontodetails</target>
+        <source xml:lang="en">An Azure account (not required for assessment or SKU recommendation functionality)</source>
+        <target state="translated">Ein Azure-Konto (nicht erforderlich für Bewertungs- oder SKU-Empfehlungsfunktionen)</target>
       </trans-unit>
       <trans-unit id="sql.migration.pre.req.2">
-        <source xml:lang="en">Azure SQL Managed Instance or SQL Server on Azure Virtual Machine</source>
-        <target state="translated">Azure SQL Managed Instance oder SQL Server auf einem virtuellen Azure-Computer</target>
+        <source xml:lang="en">A source SQL Server database(s) running on on-premises, or on SQL Server on Azure Virtual Machine or any virtual machine running in the cloud (private, public).</source>
+        <target state="translated">Eine oder mehrere SQL Server-Quelldatenbanken, die lokal oder auf SQL Server auf einer Azure-VM oder einem beliebigen virtuellen Computer in der Cloud (privat, öffentlich) ausgeführt werden.</target>
       </trans-unit>
       <trans-unit id="sql.migration.pre.req.3">
-        <source xml:lang="en">Backup location details</source>
-        <target state="translated">Details zum Sicherungsspeicherort</target>
+        <source xml:lang="en">An Azure SQL Managed Instance, SQL Server on Azure Virtual Machine, or Azure SQL Database to migrate your database(s) to.</source>
+        <target state="translated">Eine Azure SQL Managed Instance, einen SQL Server auf einer Azure-VM oder eine Azure SQL-Datenbank, zu dem Ihre Datenbank(en) migriert werden sollen.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.pre.req.4">
+        <source xml:lang="en">Your database backup location details, either a network file share or an Azure Blob Storage container (not required for Azure SQL Database targets).</source>
+        <target state="translated">Details zum Speicherort Ihrer Datenbanksicherung, entweder eine Netzwerkdateifreigabe oder ein Azure Blob Storage- Container (für Azure SQL-Datenbankziele nicht erforderlich).</target>
       </trans-unit>
       <trans-unit id="sql.migration.pre.req.title">
-        <source xml:lang="en">Things you need before starting a migration:</source>
-        <target state="translated">Vor dem Starten der Migration erforderliche Elemente:</target>
+        <source xml:lang="en">Things you need before starting your Azure SQL migration:</source>
+        <target state="translated">Dinge, die Sie benötigen, bevor Sie ihre Azure SQL-Migration starten:</target>
       </trans-unit>
       <trans-unit id="sql.migration.provide.unique.containers">
         <source xml:lang="en">Provide a unique container for each target database. Databases affected: </source>
@@ -1246,6 +1386,14 @@ Dies kann einige Zeit dauern.</target>
         <source xml:lang="en">Resource group created</source>
         <target state="translated">Ressourcengruppe erstellt</target>
       </trans-unit>
+      <trans-unit id="sql.migration.save.assessment.report">
+        <source xml:lang="en">Save assessment report</source>
+        <target state="translated">Bewertungsbericht speichern</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.save.assessment.report.success">
+        <source xml:lang="en">Successfully saved assessment report to {0}.</source>
+        <target state="translated">Der Bewertungsbericht wurde erfolgreich in {0} gespeichert.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.save.close">
         <source xml:lang="en">Save and close</source>
         <target state="translated">Speichern und schließen</target>
@@ -1253,6 +1401,14 @@ Dies kann einige Zeit dauern.</target>
       <trans-unit id="sql.migration.save.close.popup">
         <source xml:lang="en">Configuration saved. Performance data collection will remain running in the background. You can stop the collection when you want to.</source>
         <target state="translated">Konfiguration gespeichert. Die Leistungsdatensammlung wird weiterhin im Hintergrund ausgeführt. Sie können die Sammlung beenden, wenn Sie möchten.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.save.recommendation.report">
+        <source xml:lang="en">Save recommendation report</source>
+        <target state="translated">Empfehlungsbericht speichern</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.save.recommendation.report.success">
+        <source xml:lang="en">Successfully saved recommendation report to {0}.</source>
+        <target state="translated">Der Empfehlungsbericht wurde erfolgreich in {0} gespeichert.</target>
       </trans-unit>
       <trans-unit id="sql.migration.saved.assessment.cancel">
         <source xml:lang="en">Cancel</source>
@@ -1349,6 +1505,10 @@ Dies kann einige Zeit dauern.</target>
       <trans-unit id="sql.migration.select.service.select.location.error">
         <source xml:lang="en">An error occurred while loading locations. Please check your Azure connection and try again.</source>
         <target state="translated">Fehler beim Laden von Speicherorten. Überprüfen Sie Ihre Azure-Verbindung, und versuchen Sie es noch mal.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.select.service.select.migration.target">
+        <source xml:lang="en">Select a target server.</source>
+        <target state="translated">Wählen Sie einen Zielserver aus.</target>
       </trans-unit>
       <trans-unit id="sql.migration.select.service.select.resource.group.error">
         <source xml:lang="en">An error occurred while loading available resource groups. Please check your Azure connection and try again.</source>
@@ -1506,9 +1666,13 @@ Dies kann einige Zeit dauern.</target>
         <source xml:lang="en">{0} TB</source>
         <target state="translated">{0} TB</target>
       </trans-unit>
-      <trans-unit id="sql.migration.sku.available.recommendations">
+      <trans-unit id="sql.migration.sku.available.recommendations.many">
         <source xml:lang="en">{0} recommendations available</source>
         <target state="translated">{0} Empfehlungen verfügbar</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.available.recommendations.one">
+        <source xml:lang="en">{0} recommendation available</source>
+        <target state="translated">{0} Empfehlung verfügbar</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.azureConfiguration">
         <source xml:lang="en">Azure configuration</source>
@@ -1518,10 +1682,6 @@ Dies kann einige Zeit dauern.</target>
         <source xml:lang="en">Business critical</source>
         <target state="translated">Unternehmenskritisch</target>
       </trans-unit>
-      <trans-unit id="sql.migration.sku.azureConfiguration.db">
-        <source xml:lang="en">{0} - {1} vCore</source>
-        <target state="translated">{0} – {1} virtueller Kern</target>
-      </trans-unit>
       <trans-unit id="sql.migration.sku.azureConfiguration.gen5">
         <source xml:lang="en">Gen5</source>
         <target state="translated">Gen5</target>
@@ -1529,6 +1689,10 @@ Dies kann einige Zeit dauern.</target>
       <trans-unit id="sql.migration.sku.azureConfiguration.generalPurpose">
         <source xml:lang="en">General purpose</source>
         <target state="translated">Allgemein</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureConfiguration.hyperscale">
+        <source xml:lang="en">Hyperscale</source>
+        <target state="translated">Hyperscale</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.azureConfiguration.mi">
         <source xml:lang="en">{0} - {1} - {2} vCore</source>
@@ -1545,6 +1709,14 @@ Dies kann einige Zeit dauern.</target>
       <trans-unit id="sql.migration.sku.azureConfiguration.premiumSeriesMemoryOptimized">
         <source xml:lang="en">Memory optimized premium-series</source>
         <target state="translated">Speicheroptimierte Premium-Serie</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureConfiguration.sqldb">
+        <source xml:lang="en">{0} - {1} vCore</source>
+        <target state="translated">{0} – {1} virtueller Kern</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureConfiguration.sqldbPreview">
+        <source xml:lang="en">{0} - {1} - {2} vCore - {3} GB</source>
+        <target state="translated">{0} – {1} – {2} virtueller Kern – {3} GB</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.azureConfiguration.storage">
         <source xml:lang="en">{0} x {1}</source>
@@ -1582,10 +1754,6 @@ Dies kann einige Zeit dauern.</target>
         <source xml:lang="en">I already have the performance data</source>
         <target state="translated">Ich habe bereits die Leistungsdaten.</target>
       </trans-unit>
-      <trans-unit id="sql.migration.sku.azureRecommendation.openExisting.popup">
-        <source xml:lang="en">Generating Azure recommendations using provided performance data...</source>
-        <target state="translated">Azure-Empfehlungen werden mithilfe der bereitgestellten Leistungsdaten generiert...</target>
-      </trans-unit>
       <trans-unit id="sql.migration.sku.azureRecommendation.openExistingSelectFolder.instructions">
         <source xml:lang="en">Select a folder on your local drive where previously collected performance data was saved</source>
         <target state="translated">Wählen Sie einen Ordner auf dem lokalen Laufwerk aus, in dem zuvor gesammelte Leistungsdaten gespeichert wurden.</target>
@@ -1615,8 +1783,8 @@ Dies kann einige Zeit dauern.</target>
         <target state="translated">Kehren Sie regelmäßig zurück, um aktualisierte Empfehlungen zu erhalten, indem Sie auf die Schaltfläche \"Empfehlung aktualisieren\" klicken.</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.azureRecommendation.status.notEnabled">
-        <source xml:lang="en">Azure recommendation collects and analyzes performance data and then recommends an appropriate sized database in Azure for your workload.</source>
-        <target state="translated">Die Azure-Empfehlung erfasst und analysiert Leistungsdaten und empfiehlt dann eine Datenbank der geeigneten Größe in Azure für Ihren Workload.</target>
+        <source xml:lang="en">Azure recommendation collects and analyzes performance data and then recommends an appropriate sized target in Azure for your workload.</source>
+        <target state="translated">Die Azure-Empfehlung erfasst und analysiert Leistungsdaten und empfiehlt dann ein Ziel der geeigneten Größe in Azure für Ihren Workload.</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.azureRecommendation.status.refining">
         <source xml:lang="en">Data collection still in progress. Refining existing recommendations...</source>
@@ -1662,10 +1830,6 @@ Dies kann einige Zeit dauern.</target>
         <source xml:lang="en">Data storage requirement</source>
         <target state="translated">Datenspeicheranforderung</target>
       </trans-unit>
-      <trans-unit id="sql.migration.sku.db.card.title">
-        <source xml:lang="en">Azure SQL Database</source>
-        <target state="translated">Azure SQL-Datenbank</target>
-      </trans-unit>
       <trans-unit id="sql.migration.sku.gb">
         <source xml:lang="en">{0} GB</source>
         <target state="translated">{0} GB</target>
@@ -1702,6 +1866,10 @@ Dies kann einige Zeit dauern.</target>
         <source xml:lang="en">Azure SQL Managed Instance</source>
         <target state="translated">Azure SQL Managed Instance</target>
       </trans-unit>
+      <trans-unit id="sql.migration.sku.mi.target.title">
+        <source xml:lang="en">Azure SQL Managed Instance</source>
+        <target state="translated">Azure SQL Managed Instance</target>
+      </trans-unit>
       <trans-unit id="sql.migration.sku.ms">
         <source xml:lang="en">{0} ms</source>
         <target state="translated">{0} ms</target>
@@ -1717,6 +1885,14 @@ Dies kann einige Zeit dauern.</target>
       <trans-unit id="sql.migration.sku.parameters.edit.title">
         <source xml:lang="en">Edit recommendation parameters</source>
         <target state="translated">Empfehlungsparameter bearbeiten</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.parameters.enable.elastic">
+        <source xml:lang="en">Enable elastic recommendation</source>
+        <target state="translated">Elastische Empfehlung aktivieren</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.parameters.enable.elastic.info">
+        <source xml:lang="en">Elastic recommendation uses an alternate recommendation model which utilizes personalized price-performance profiling against existing on-cloud customers.</source>
+        <target state="translated">Für die elastische Empfehlung wird ein alternatives Empfehlungsmodell verwendet, das eine personalisierte Preis-Leistungs-Profilerstellung für vorhandene Kunden in der Cloud verwendet.</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.parameters.enable.preview">
         <source xml:lang="en">Enable preview features</source>
@@ -1763,12 +1939,16 @@ Dies kann einige Zeit dauern.</target>
         <target state="translated">{0}. Perzentil</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.recommendation">
-        <source xml:lang="en">Azure recommendation</source>
+        <source xml:lang="en">Azure recommendation (PREVIEW)</source>
         <target state="translated">Azure-Empfehlung</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.recommendation.view.assessment.mi">
         <source xml:lang="en">To migrate to Azure SQL Managed Instance, view assessment results and select one or more databases.</source>
         <target state="translated">Um zu Azure SQL Managed Instance zu migrieren, zeigen Sie die Bewertungsergebnisse an, und wählen Sie eine oder mehrere Datenbanken aus.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.recommendation.view.assessment.sqldb">
+        <source xml:lang="en">To migrate to Azure SQL Database (PREVIEW), view assessment results and select one or more databases.</source>
+        <target state="translated">Um zu Azure SQL-Datenbank (VORSCHAU) zu migrieren, zeigen Sie die Bewertungsergebnisse an, und wählen Sie eine oder mehrere Datenbanken aus.</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.recommendation.view.assessment.vm">
         <source xml:lang="en">To migrate to SQL Server on Azure Virtual Machine, view assessment results and select one or more databases.</source>
@@ -1842,6 +2022,14 @@ Dies kann einige Zeit dauern.</target>
         <source xml:lang="en">SQL tempdb</source>
         <target state="translated">SQL tempdb</target>
       </trans-unit>
+      <trans-unit id="sql.migration.sku.sqldb.card.title">
+        <source xml:lang="en">Azure SQL Database (PREVIEW)</source>
+        <target state="translated">Azure SQL-Datenbank (VORSCHAU)</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.sqldb.target.title">
+        <source xml:lang="en">Azure SQL Database</source>
+        <target state="translated">Azure SQL-Datenbank</target>
+      </trans-unit>
       <trans-unit id="sql.migration.sku.stop.performance.collection">
         <source xml:lang="en">Stop data collection</source>
         <target state="translated">Datensammlung beenden</target>
@@ -1911,6 +2099,10 @@ Dies kann einige Zeit dauern.</target>
         <target state="translated">Details anzeigen</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.vm.card.title">
+        <source xml:lang="en">SQL Server on Azure Virtual Machine</source>
+        <target state="translated">SQL Server auf Azure-VM</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.vm.target.title">
         <source xml:lang="en">SQL Server on Azure Virtual Machine</source>
         <target state="translated">SQL Server auf Azure-VM</target>
       </trans-unit>
@@ -2006,6 +2198,10 @@ Dies kann einige Zeit dauern.</target>
         <source xml:lang="en">Used parallel copies</source>
         <target state="translated">Verwendete parallele Kopien</target>
       </trans-unit>
+      <trans-unit id="sql.migration.sqldb.not.ready">
+        <source xml:lang="en">The SQL database server '{0}' is unavailable for migration because it is currently in the '{1}' state. To continue, select an available SQL database server.</source>
+        <target state="translated">Der SQL-Datenbank-Server „{0}“ ist für die Migration nicht verfügbar, da er sich derzeit im Zustand „{1}“ befindet. Wählen Sie einen verfügbaren SQL-Datenbank-Server aus, um fortzufahren.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.src.database">
         <source xml:lang="en">Source database</source>
         <target state="translated">Quelldatenbank</target>
@@ -2075,20 +2271,12 @@ Dies kann einige Zeit dauern.</target>
         <target state="translated">Status: Erfolgreich</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.error.count.multiple">
-        <source xml:lang="en">{0} Errors)</source>
-        <target state="translated">{0} Fehler)</target>
-      </trans-unit>
-      <trans-unit id="sql.migration.status.error.count.none">
-        <source xml:lang="en">{0}</source>
-        <target state="translated">{0}</target>
+        <source xml:lang="en"> ({0} errors)</source>
+        <target state="translated"> ({0} Fehler)</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.error.count.single">
-        <source xml:lang="en">{0} Error)</source>
-        <target state="translated">{0} Fehler)</target>
-      </trans-unit>
-      <trans-unit id="sql.migration.status.error.count.some">
-        <source xml:lang="en">{0} (</source>
-        <target state="translated">{0} (</target>
+        <source xml:lang="en"> ({0} error)</source>
+        <target state="translated"> ({0} Fehler)</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.failed">
         <source xml:lang="en">Failed</source>
@@ -2098,9 +2286,17 @@ Dies kann einige Zeit dauern.</target>
         <source xml:lang="en">In progress</source>
         <target state="translated">In Bearbeitung</target>
       </trans-unit>
+      <trans-unit id="sql.migration.status.readyforcutover">
+        <source xml:lang="en">Ready for cutover</source>
+        <target state="translated">Bereit für Cutover</target>
+      </trans-unit>
       <trans-unit id="sql.migration.status.refresh.label">
         <source xml:lang="en">Refresh</source>
         <target state="translated">Aktualisieren</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.restoring">
+        <source xml:lang="en">Restoring</source>
+        <target state="translated">Wird wiederhergestellt</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.retriable">
         <source xml:lang="en">Retriable</source>
@@ -2118,13 +2314,25 @@ Dies kann einige Zeit dauern.</target>
         <source xml:lang="en">Succeeded</source>
         <target state="translated">Erfolgreich</target>
       </trans-unit>
+      <trans-unit id="sql.migration.status.uploadingfullbackup">
+        <source xml:lang="en">Uploading full backup</source>
+        <target state="translated">Vollständige Sicherung wird hochgeladen</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.uploadinglogbackup">
+        <source xml:lang="en">Uploading log backup(s)</source>
+        <target state="translated">Protokollsicherung/en wird/werden hochgeladen.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.value">
+        <source xml:lang="en">{0}</source>
+        <target state="translated">{0}</target>
+      </trans-unit>
       <trans-unit id="sql.migration.status.warning.count.multiple">
-        <source xml:lang="en">{0} Warnings)</source>
-        <target state="translated">{0} Warnungen)</target>
+        <source xml:lang="en"> ({0} warnings)</source>
+        <target state="translated"> ({0} Warnungen)</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.warning.count.single">
-        <source xml:lang="en">{0} Warning)</source>
-        <target state="translated">{0} Warnung)</target>
+        <source xml:lang="en"> ({0} warning)</source>
+        <target state="translated"> ({0} Warnung)</target>
       </trans-unit>
       <trans-unit id="sql.migration.storage.account">
         <source xml:lang="en">Storage account</source>
@@ -2153,6 +2361,10 @@ Dies kann einige Zeit dauern.</target>
       <trans-unit id="sql.migration.summary.page.title">
         <source xml:lang="en">Summary</source>
         <target state="translated">Zusammenfassung</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.summary.sqldb.type">
+        <source xml:lang="en">Azure SQL Database</source>
+        <target state="translated">Azure SQL-Datenbank</target>
       </trans-unit>
       <trans-unit id="sql.migration.summary.vm.type">
         <source xml:lang="en">SQL Server on Azure Virtual Machine</source>
@@ -2198,6 +2410,26 @@ Dies kann einige Zeit dauern.</target>
         <source xml:lang="en">Table migration status: {0}</source>
         <target state="translated">Tabellenmigrationsstatus: {0}</target>
       </trans-unit>
+      <trans-unit id="sql.migration.table.missing.count">
+        <source xml:lang="en">Missing target tables excluded from list: {0}</source>
+        <target state="translated">Fehlende Zieltabellen, die aus der Liste ausgeschlossen sind: {0}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.table.select.label">
+        <source xml:lang="en">Select tables for {0}</source>
+        <target state="translated">Tabellen für {0} auswählen</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.table.selected.count">
+        <source xml:lang="en">{0} of {1} tables selected</source>
+        <target state="translated">{0} von {1} Tabellen ausgewählt</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.table.selection.count">
+        <source xml:lang="en">{0} of {1}</source>
+        <target state="translated">{0} von {1}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.table.selection.edit">
+        <source xml:lang="en">Edit</source>
+        <target state="translated">Bearbeiten</target>
+      </trans-unit>
       <trans-unit id="sql.migration.target">
         <source xml:lang="en">Target</source>
         <target state="translated">Ziel</target>
@@ -2226,6 +2458,18 @@ Dies kann einige Zeit dauern.</target>
         <source xml:lang="en">Target server</source>
         <target state="translated">Zielserver</target>
       </trans-unit>
+      <trans-unit id="sql.migration.target.table.count.name">
+        <source xml:lang="en">Tables selected</source>
+        <target state="translated">Tabellen ausgewählt</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.target.table.missing">
+        <source xml:lang="en">Target table does not exist</source>
+        <target state="translated">Die Zieltabelle ist nicht vorhanden.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.target.table.not.empty">
+        <source xml:lang="en">Target table is not empty.</source>
+        <target state="translated">Die Zieltabelle ist nicht leer.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.target.version">
         <source xml:lang="en">Target version</source>
         <target state="translated">Zielversion</target>
@@ -2251,8 +2495,16 @@ Dies kann einige Zeit dauern.</target>
         <target state="translated">Wählen Sie einen eindeutigen Namen für diese Zieldatenbank aus</target>
       </trans-unit>
       <trans-unit id="sql.migration.username">
-        <source xml:lang="en">Username</source>
+        <source xml:lang="en">User name</source>
         <target state="translated">Benutzername</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.username.label">
+        <source xml:lang="en">Target user name</source>
+        <target state="translated">Zielbenutzername</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.username.placeholder">
+        <source xml:lang="en">Enter the target user name</source>
+        <target state="translated">Geben Sie den Zielbenutzernamen ein</target>
       </trans-unit>
       <trans-unit id="sql.migration.view.all">
         <source xml:lang="en">All database migrations</source>
@@ -2306,6 +2558,10 @@ Dies kann einige Zeit dauern.</target>
         <source xml:lang="en">Azure account</source>
         <target state="translated">Azure-Konto</target>
       </trans-unit>
+      <trans-unit id="sql.migration.wizard.connection.error.title">
+        <source xml:lang="en">An error occurred while conneting to the target server.</source>
+        <target state="translated">Fehler beim Herstellen einer Verbindung mit dem Zielserver.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.wizard.perfCollection.error">
         <source xml:lang="en">Error(s) occurred while collecting performance data for the server '{0}'. If these issues persist, try restarting the data collection process:
 
@@ -2347,12 +2603,36 @@ Dies kann einige Zeit dauern.</target>
         <target state="translated">Keine Empfehlung verfügbar</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.sku.error.noRecommendation.reason">
-        <source xml:lang="en">No SKU recommendations were generated, as there were no SKUs which could satisfy the performance characteristics of your source. Try selecting a different target platform, adjusting recommendation parameters, or selecting a different set of databases to assess.</source>
-        <target state="translated">Es wurden keine SKU-Empfehlungen generiert, da keine SKUs vorhanden waren, die die Leistungseigenschaften Ihrer Quelle erfüllen konnten. Wählen Sie eine andere Zielplattform aus, passen Sie die Empfehlungsparameter an, oder wählen Sie eine andere Gruppe zu bewertender Datenbanken aus.</target>
+        <source xml:lang="en">No SKU recommendations were generated, as there were no SKUs which could satisfy the performance characteristics of your source. Try selecting a different target platform, adjusting recommendation parameters, selecting a different set of databases to assess, or changing the recommendation model.</source>
+        <target state="translated">Es wurden keine SKU-Empfehlungen generiert, da keine SKUs vorhanden waren, die die Leistungseigenschaften Ihrer Quelle erfüllen konnten. Wählen Sie eine andere Zielplattform aus, passen Sie die Empfehlungsparameter an, wählen Sie eine andere Gruppe zu bewertender Datenbanken aus, oder ändern Sie das Empfehlungsmodell.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.source.missing">
+        <source xml:lang="en">Connection was successful but did not find any target databases.</source>
+        <target state="translated">Die Verbindung war erfolgreich, aber es wurden keine Zieldatenbanken gefunden.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.target.connection.error">
+        <source xml:lang="en">Connection error: {0}</source>
+        <target state="translated">Verbindungsfehler: {0}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.target.connection.success">
+        <source xml:lang="en">Connection was successful. Target databases found: {0}</source>
+        <target state="translated">Die Verbindung war erfolgreich. Gefundene Zieldatenbanken: {0}</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.target.description">
         <source xml:lang="en">Select an Azure account and your target {0}.</source>
         <target state="translated">Wählen Sie ein Azure-Konto und Ihre Ziel-{0} aus.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.target.mapping.error.duplicate">
+        <source xml:lang="en">Database mapping error.  Target database '{0}' cannot be selected to as a migration target for database '{1}'.  Target database '${targetDatabaseName}' is already selected as a migration target for database '{2}'.  Please select a different target database.</source>
+        <target state="translated">Datenbankzuordnungsfehler.  Die Zieldatenbank „{0}“ kann nicht als Migrationsziel für die Datenbank „{1}“ ausgewählt werden.  Die Zieldatenbank „${targetDatabaseName}“ ist bereits als Migrationsziel für die Datenbank „{2}“ ausgewählt.  Bitte wählen Sie eine andere Zieldatenbank aus.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.target.missing">
+        <source xml:lang="en">Database mapping error. Missing target databases to migrate.  Please configure the target server connection and click connect to collect the list of available database migration targets.</source>
+        <target state="translated">Datenbankzuordnungsfehler. Zieldatenbanken für die Migration fehlen.  Bitte konfigurieren Sie die Zielserververbindung, und klicken Sie auf „Verbinden“, um die Liste der verfügbaren Datenbankmigrationsziele zu sammeln.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.target.source.mapping.error">
+        <source xml:lang="en">Database mapping error.  Source database '{0}' is not mapped to a target database.  Please select a target database to migrate to.</source>
+        <target state="translated">Datenbankzuordnungsfehler.  Die Quelldatenbank „{0}“ ist keiner Zieldatenbank zugeordnet.  Bitte wählen Sie eine Zieldatenbank für die Migration aus.</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.target.title">
         <source xml:lang="en">Azure SQL target</source>
@@ -2365,6 +2645,10 @@ Dies kann einige Zeit dauern.</target>
       <trans-unit id="total.databases.selected">
         <source xml:lang="en">{0} of {1} databases selected</source>
         <target state="translated">{0} von {1} Datenbanken ausgewählt</target>
+      </trans-unit>
+      <trans-unit id="total.tables.selected.of.total">
+        <source xml:lang="en">{0} of {1}</source>
+        <target state="translated">{0} von {1}</target>
       </trans-unit>
     </body>
   </file>
