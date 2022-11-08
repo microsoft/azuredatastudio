@@ -2,6 +2,7 @@
 All notable changes to the "ads-language-pack-ru" language pack will be documented in this file.
 
 ## [Released]
+* November 9, 2022 - Release for Azure Data Studio 1.40
 * August 12, 2022 - Release for Azure Data Studio 1.39
 * July 20, 2022 - Release for Azure Data Studio 1.38
 * June 3, 2022 - Release for Azure Data Studio 1.37
