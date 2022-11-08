@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Application } from '../../../../../automation';
+import { Application } from '../../../../../automation/src';
 import * as minimist from 'minimist';
 import { afterSuite, beforeSuite } from '../../../utils';
 
