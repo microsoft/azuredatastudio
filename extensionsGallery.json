@@ -4757,6 +4757,67 @@
 					"flags": "preview"
 				},
 				{
+					"extensionId": "93",
+					"extensionName": "azuredatastudio-mysql",
+					"displayName": "MySQL",
+					"shortDescription": "MySQL extension for Azure Data Studio",
+					"publisher": {
+						"displayName": "Microsoft",
+						"publisherId": "Microsoft",
+						"publisherName": "Microsoft"
+					},
+					"versions": [
+						{
+							"version": "0.2.3",
+							"lastUpdated": "11/08/2022",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/mysql/azuredatastudio-mysql-0.2.3.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio-mysql/main/images/extension-icon.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio-mysql/main/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio-mysql/main/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio-mysql/main/LICENSE"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": ">=1.40.0"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/Microsoft/azuredatastudio-mysql/"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
+				},
+				{
 					"extensionId": "94",
 					"extensionName": "column-aligner-ads",
 					"displayName": "Column Aligner",
@@ -4828,7 +4889,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 79
+							"count": 80
 						}
 					]
 				}
