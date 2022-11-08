@@ -18,6 +18,7 @@
 			"azure.microsoftCorpAccount": "Корпорация Майкрософт",
 			"azure.noBaseToken": "Произошла ошибка при проверке подлинности, или ваши токены были удалены из системы. Попробуйте добавить учетную запись в Azure Data Studio еще раз.",
 			"azure.noUniqueIdentifier": "У пользователя нет уникального идентификатора в AAD",
+			"azure.owningTenantNotFound": "Для учетной записи не найдены сведения о владении клиентом.",
 			"azure.responseError": "Не удалось получить токен из-за ошибки. [Откройте инструменты разработчика]({0}), чтобы узнать подробности.",
 			"azure.tenantNotFound": "Указанный клиент с идентификатором \"{0}\" не найден.",
 			"azureAuth.unidentifiedError": "Неизвестная ошибка при проверке подлинности Azure",
@@ -25,7 +26,8 @@
 			"azurecore.consentDialog.body": "Клиент \"{0} ({1})\" требует повторной проверки подлинности для доступа к ресурсам {2}. Нажмите кнопку \"Открыть\", чтобы начать процесс проверки подлинности.",
 			"azurecore.consentDialog.cancel": "Отмена",
 			"azurecore.consentDialog.ignore": "Игнорировать клиента",
-			"azurecore.consentDialog.open": "Открыть"
+			"azurecore.consentDialog.open": "Открыть",
+			"noMicrosoftResource": "Для поставщика {0} не определена конечная точка ресурса Майкрософт."
 		},
 		"dist/account-provider/auths/azureAuthCodeGrant": {
 			"azure.azureAuthCodeGrantName": "Предоставление кода проверки подлинности Azure",
@@ -83,6 +85,9 @@
 		"dist/azureResource/providers/kusto/kustoTreeDataProvider": {
 			"azure.resource.providers.KustoContainerLabel": "Кластер Azure Data Explorer"
 		},
+		"dist/azureResource/providers/mysqlFlexibleServer/mysqlFlexibleServerTreeDataProvider": {
+			"azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel": "Гибкий сервер Базы данных Azure для MySQL"
+		},
 		"dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider": {
 			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "Гипермасштабирование PostgreSQL — Azure Arc"
 		},
@@ -99,7 +104,8 @@
 			"azure.resource.resourceTreeNode.noResourcesLabel": "Ресурсы не найдены"
 		},
 		"dist/azureResource/services/subscriptionService": {
-			"azure.resource.tenantSubscriptionsError": "Не удалось получить подписки для учетной записи {0} (клиент \"{1}\"). {2}"
+			"azure.resource.tenantSubscriptionsError": "Не удалось получить подписки для учетной записи {0} (клиент \"{1}\"). {2}",
+			"azure.resource.tenantTokenError": "Не удалось получить маркер доступа для учетной записи \"{0}\" (клиент \"{1}\")."
 		},
 		"dist/azureResource/services/terminalService": {
 			"azure.cloudShell": "Azure Cloud Shell (предварительная версия) {0} ({1})",
