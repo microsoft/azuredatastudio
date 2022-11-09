@@ -28,7 +28,7 @@ export class CmsConnectionController extends ConnectionController {
 	) {
 		super(connectionProperties, callback, providerName, _connectionManagementService, _instantiationService, _serverGroupController, _logService);
 		let specialOptions = this._providerOptions.filter(
-			(property) => (property.specialValueType !== null && property.specialValueType !== undefined));
+			(property) => (property.specialValueType !== null && property.specialValueType !== undefined || property.showOnConnectionDialog));
 		this._connectionWidget = this._instantiationService.createInstance(CmsConnectionWidget, specialOptions, {
 			onSetConnectButton: (enable: boolean) => this._callback.onSetConnectButton(enable),
 			onCreateNewServerGroup: () => this.onCreateNewServerGroup(),
