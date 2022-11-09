@@ -410,7 +410,7 @@ export class ZoomOutAction extends Action {
 
 export class ZoomToFitAction extends Action {
 	public static ID = 'ep.FitGraph';
-	public static LABEL = localize('executionPlanFitGraphLabel', "Zoom to fit");
+	public static LABEL = localize('executionPlanFitGraphLabel', "Zoom to Fit");
 
 	constructor(private source: ExecutionPlanActionSource,
 		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService
@@ -562,7 +562,7 @@ export class ContextMenuTooltipToggle extends Action {
 
 export class CompareExecutionPlanAction extends Action {
 	public static ID = 'ep.tooltipToggleContextMenu';
-	public static COMPARE_PLAN = localize('executionPlanCompareExecutionPlanAction', "Compare execution plan");
+	public static COMPARE_PLAN = localize('executionPlanCompareExecutionPlanAction', "Compare Execution Plan");
 
 	constructor(private source: ExecutionPlanActionSource,
 		@IAdsTelemetryService private readonly telemetryService: IAdsTelemetryService
