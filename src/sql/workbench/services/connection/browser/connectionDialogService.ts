@@ -279,6 +279,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			} else {
 				this._connectionDialog.resetConnection();
 				this._connectionManagementService.changePasswordAndConnectWithSave(connection, connectionResult.uriForPasswordChange, options, params && params.input);
+				// TODO: if successful with password change, change the password of the connection profile, then connect again.
 				//this.showPasswordResetDialog(connection);
 			}
 		} catch (err) {
