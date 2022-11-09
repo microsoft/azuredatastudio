@@ -172,7 +172,7 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 
 		this._progressContainer = this._view.modelBuilder.flexContainer()
 			.withLayout({ height: '100%', flexFlow: 'column' })
-			.withProps({ CSSStyles: { 'margin-bottom': '30px' } })
+			.withProps({ CSSStyles: { 'margin-bottom': '10px' } })
 			.component();
 
 		this._progressContainer.addItem(this.createMigrationProgressLoader(), { flex: '0 0 auto' });

@@ -325,7 +325,13 @@ export const LOGIN_MIGRATE_BUTTON_TEXT = localize('sql.migration.start.login.mig
 export function LOGIN_MIGRATIONS_GET_CONNECTION_STRING(dataSource: string, id: string, pass: string): string {
 	return localize('sql.migration.login.get.connection.string', "data source={0};initial catalog=master;user id={1};password={2};TrustServerCertificate=True;Integrated Security=false;", dataSource, id, pass);
 }
-export const LOGIN_MIGRATION_IN_PROGRESS = localize('sql.migration.login..in.progress', "Login migration in progress");
+export const LOGIN_MIGRATION_IN_PROGRESS = localize('sql.migration.login.in.progress', "Login migration in progress");
+export const LOGIN_MIGRATION_REFRESHING_LOGIN_DATA = localize('sql.migration.login.select.in.progress', "Refreshing login list from source and target");
+export function LOGIN_MIGRATION_REFRESH_LOGIN_DATA_SUCCESSFUL(numSourceLogins: number, numTargetLogins: number): string {
+	return localize('sql.migration.login.refresh.login.data.successful', "Refreshing login list was successful. Source logins found {0}, Target logins found {1}", numSourceLogins, numTargetLogins);
+}
+export const LOGIN_MIGRATION_REFRESH_SOURCE_LOGIN_DATA_FAILED = localize('sql.migration.login.refresh.source.login.data.failed', "Refreshing login list from source failed");
+export const LOGIN_MIGRATION_REFRESH_TARGET_LOGIN_DATA_FAILED = localize('sql.migration.login.refresh.target.login.data.failed', "Refreshing login list from target failed");
 
 // Azure SQL Target
 export const AZURE_SQL_TARGET_PAGE_TITLE = localize('sql.migration.wizard.target.title', "Azure SQL target");

@@ -13,6 +13,7 @@ import * as styles from '../constants/styles';
 import { collectSourceLogins, collectTargetLogins, LoginTableInfo } from '../api/sqlUtils';
 import { AzureSqlDatabaseServer } from '../api/azure';
 import { IconPathHelper } from '../constants/iconPathHelper';
+import * as utils from '../api/utils';
 
 export class LoginSelectorPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -22,6 +23,7 @@ export class LoginSelectorPage extends MigrationWizardPage {
 	private _loginTableValues!: any[];
 	private _disposables: vscode.Disposable[] = [];
 	private _isCurrentPage: boolean;
+	private _refreshResultsInfoBox!: azdata.InfoBoxComponent;
 	private _refreshButton!: azdata.ButtonComponent;
 	private _refreshLoading!: azdata.LoadingComponent;
 
@@ -140,7 +142,6 @@ export class LoginSelectorPage extends MigrationWizardPage {
 
 
 	public async createRootContainer(view: azdata.ModelView): Promise<azdata.FlexContainer> {
-		await this._loadLoginList();
 
 		this._refreshButton = this._view.modelBuilder.button()
 			.withProps({
@@ -160,9 +161,34 @@ export class LoginSelectorPage extends MigrationWizardPage {
 
 		this._refreshLoading = this._view.modelBuilder.loadingComponent()
 			.withItem(this._refreshButton)
-			.withProps({ loading: false })
+			.withProps({
+				loading: false,
+				CSSStyles: { 'margin-right': '20px', 'margin-top': '15px' }
+			})
 			.component();
 
+		this._refreshResultsInfoBox = this._view.modelBuilder.infoBox()
+			.withProps({
+				style: 'success',
+				text: '',
+				announceText: true,
+				CSSStyles: { 'display': 'none', 'margin-left': '5px' },
+			})
+			.component();
+
+		const refreshContainer = this._view.modelBuilder.flexContainer()
+			.withItems([
+				this._refreshLoading,
+				this._refreshResultsInfoBox],
+				{ flex: '0 0 auto' })
+			.withLayout({
+				flexFlow: 'row',
+				alignContent: 'center',
+				alignItems: 'center',
+			})
+			.component();
+
+		await this._loadLoginList();
 		this._loginCount = this._view.modelBuilder.text().withProps({
 			value: constants.LOGINS_SELECTED(
 				this.selectedLogins().length,
@@ -251,7 +277,8 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				'margin': '0px 28px 0px 28px'
 			}
 		}).component();
-		flex.addItem(this._refreshLoading);
+		// flex.addItem(this._refreshLoading);
+		flex.addItem(refreshContainer);
 		flex.addItem(this.createSearchComponent(), { flex: '0 0 auto' });
 		flex.addItem(this._loginCount, { flex: '0 0 auto' });
 		flex.addItem(this._loginSelectorTable);
@@ -259,6 +286,12 @@ export class LoginSelectorPage extends MigrationWizardPage {
 	}
 
 	private async _loadLoginList(): Promise<void> {
+		this._refreshLoading.loading = true;
+		this.wizard.nextButton.enabled = false;
+		await utils.updateControlDisplay(this._refreshResultsInfoBox, true);
+		this._refreshResultsInfoBox.text = constants.LOGIN_MIGRATION_REFRESHING_LOGIN_DATA;
+		this._refreshResultsInfoBox.style = 'information';
+
 		const stateMachine: MigrationStateModel = this.migrationStateModel;
 		const selectedLogins: LoginTableInfo[] = stateMachine._loginsForMigration || [];
 		const sourceLogins: LoginTableInfo[] = [];
@@ -269,6 +302,9 @@ export class LoginSelectorPage extends MigrationWizardPage {
 			sourceLogins.push(...await collectSourceLogins(stateMachine.sourceConnectionId));
 			console.log('AKMA DEBUG LOG: ', sourceLogins);
 		} catch (error) {
+			this._refreshLoading.loading = false;
+			this._refreshResultsInfoBox.style = 'error';
+			this._refreshResultsInfoBox.text = constants.LOGIN_MIGRATION_REFRESH_SOURCE_LOGIN_DATA_FAILED;
 			this.wizard.message = {
 				level: azdata.window.MessageLevel.Error,
 				text: constants.LOGIN_MIGRATIONS_GET_LOGINS_ERROR_TITLE('source'),
@@ -287,6 +323,9 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				console.log('AKMA DEBUG LOG: Target info is empty.');
 			}
 		} catch (error) {
+			this._refreshLoading.loading = false;
+			this._refreshResultsInfoBox.style = 'error';
+			this._refreshResultsInfoBox.text = constants.LOGIN_MIGRATION_REFRESH_TARGET_LOGIN_DATA_FAILED;
 			this.wizard.message = {
 				level: azdata.window.MessageLevel.Error,
 				text: constants.LOGIN_MIGRATIONS_GET_LOGINS_ERROR_TITLE('target'),
@@ -312,6 +351,11 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				},
 			];
 		}) || [];
+
+		this._refreshLoading.loading = false;
+		this._refreshResultsInfoBox.text = constants.LOGIN_MIGRATION_REFRESH_LOGIN_DATA_SUCCESSFUL(sourceLogins.length, targetLogins.length);
+		this._refreshResultsInfoBox.style = 'success';
+		this.updateNextButton();
 	}
 
 	public selectedLogins(): LoginTableInfo[] {
@@ -338,7 +382,6 @@ export class LoginSelectorPage extends MigrationWizardPage {
 				this._loginSelectorTable.data?.length || 0)
 		});
 
-		// TODO AKMA: change to logins for migration
 		this.migrationStateModel._loginsForMigration = selectedLogins;
 		this.migrationStateModel._aadDomainName = "";
 		this.updateNextButton();
