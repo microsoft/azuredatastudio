@@ -591,6 +591,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 					try {
 						connectionButtonLoadingContainer.loading = true;
 						await utils.updateControlDisplay(this._connectionResultsInfoBox, false);
+						this.wizard.nextButton.enabled = false;
 						targetDatabases.push(
 							...await collectTargetDatabaseInfo(
 								targetDatabaseServer,
@@ -653,7 +654,10 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 			? constants.SQL_TARGET_CONNECTION_ERROR(errorMessage)
 			: constants.SQL_TARGET_CONNECTION_SUCCESS_LOGINS(databases.length.toLocaleString());
 		await utils.updateControlDisplay(this._connectionResultsInfoBox, true);
-		this.wizard.nextButton.enabled = !hasError;
+
+		if (!hasError) {
+			this.wizard.nextButton.enabled = true;
+		}
 	}
 
 	private _createResourceDropdowns(): azdata.FlexContainer {
