@@ -12,7 +12,7 @@ import { azureResource, Tenant } from 'azurecore';
 import * as constants from '../constants/strings';
 import { logError, TelemetryViews } from '../telemtery';
 import { AdsMigrationStatus } from '../dashboard/tabBase';
-import { getMigrationMode, getMigrationStatus, getMigrationTargetType, PipelineStatusCodes } from '../constants/helper';
+import { getMigrationMode, getMigrationStatus, getMigrationTargetType, hasRestoreBlockingReason, PipelineStatusCodes } from '../constants/helper';
 
 export type TargetServerType = azure.SqlVMServer | azureResource.AzureSqlManagedInstance | azure.AzureSqlDatabaseServer;
 
@@ -286,7 +286,7 @@ export function getMigrationStatusWithErrors(migration: azure.DatabaseMigration)
 	warningCount += properties.migrationStatusWarnings?.fileUploadBlockingErrorCount ?? 0;
 
 	// restore blocking reason
-	warningCount += (properties.migrationStatusWarnings?.restoreBlockingReason ?? '').length > 0 ? 1 : 0;
+	warningCount += hasRestoreBlockingReason(migration) ? 1 : 0;
 
 	// complete restore error message
 	warningCount += (properties.migrationStatusWarnings?.completeRestoreErrorMessage ?? '').length > 0 ? 1 : 0;
