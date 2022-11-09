@@ -2510,7 +2510,7 @@ Default Skipped Commands:
       <source xml:lang="en">Reset Zoom</source>
     </trans-unit>
     <trans-unit id="epCompare.zoomToFit">
-      <source xml:lang="en">Zoom to fit</source>
+      <source xml:lang="en">Zoom to Fit</source>
     </trans-unit>
     <trans-unit id="executionPlanComparison.bottomPlanDiagram.name">
       <source xml:lang="en">Bottom execution Plan {0}</source>
@@ -2577,10 +2577,10 @@ Default Skipped Commands:
       <source xml:lang="en">When true, enables tooltips on hover for execution plan. When false, tooltips are shown on node click or F3 key press.</source>
     </trans-unit>
     <trans-unit id="executionPlanCompareCommandOriginalValue">
-      <source xml:lang="en">Compare execution plans</source>
+      <source xml:lang="en">Compare Execution Plans</source>
     </trans-unit>
     <trans-unit id="executionPlanCompareCommandValue">
-      <source xml:lang="en">Compare execution plans</source>
+      <source xml:lang="en">Compare Execution Plans</source>
     </trans-unit>
     <trans-unit id="executionPlanConfigurationTitle">
       <source xml:lang="en">Execution Plan</source>
@@ -2669,7 +2669,7 @@ Default Skipped Commands:
       <source xml:lang="en">Execution Plan {0}</source>
     </trans-unit>
     <trans-unit id="executionPlanCompareExecutionPlanAction">
-      <source xml:lang="en">Compare execution plan</source>
+      <source xml:lang="en">Compare Execution Plan</source>
     </trans-unit>
     <trans-unit id="executionPlanContextMenuDisableTooltip">
       <source xml:lang="en">Disable Tooltips</source>
@@ -2687,7 +2687,7 @@ Default Skipped Commands:
       <source xml:lang="en">Tooltips enabled</source>
     </trans-unit>
     <trans-unit id="executionPlanFitGraphLabel">
-      <source xml:lang="en">Zoom to fit</source>
+      <source xml:lang="en">Zoom to Fit</source>
     </trans-unit>
     <trans-unit id="executionPlanHighlightExpensiveOperationAction">
       <source xml:lang="en">Highlight Expensive Operation</source>
