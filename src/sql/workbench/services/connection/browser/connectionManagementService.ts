@@ -429,24 +429,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	/**
 	 * Changes password, opens the connection and saves the profile in the settings.
 	 */
-	public changePasswordAndConnectWithSave(connection: interfaces.IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks):
-		Promise<IConnectionResult> {
-		if (!options) {
-			options = {
-				saveTheConnection: true,
-				showDashboard: false,
-				params: undefined,
-				showConnectionDialogOnError: false,
-				showFirewallRuleOnError: true
-			};
-		}
-
-		this.sendChangePasswordRequest(connection, uri);
-
-		// Do not override options.saveTheConnection as this is for saving to the server groups, not the MRU.
-		// MRU save always happens through a different path using tryAddActiveConnection
-		//return this.connectWithOptions(connection, uri, options, callbacks);
-		return null;
+	public sendChangePassword(connection: interfaces.IConnectionProfile, uri: string):
+		Promise<boolean> {
+		return this.sendChangePasswordRequest(connection, uri);
 	}
 
 	/**
@@ -1045,27 +1030,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 		let testPassword = 'T3$TPa$$word1';
 
-		// TODO - need to fix connectHandler callback, may have to move this code to another place.
-		let oldPassword = connection.options['password'];
-		connection.options['password'] = testPassword;
-		this._connectionStatusManager.deleteConnection(uri);
-		uri = Utils.generateUri(connection);
-		this._connectionStatusManager.addConnection(connection, uri);
-		//required to make actual connection change.
-		connection.options['password'] = oldPassword;
-
-		await this._extensionService.activateByEvent(`onConnect:${connection.providerName}`);
-
 		return this._providers.get(connection.providerName).onReady.then((provider) => {
-			provider.changePassword(uri, connectionInfo, testPassword);
-			this._onConnectRequestSent.fire();
-			// Connections are made per URI so while there may possibly be multiple editors with
-			// that URI they all share the same state
-			const editor = this._editorService.findEditors(URI.parse(uri))[0]?.editor;
-			// TODO make this generic enough to handle non-SQL languages too
-			const language = editor instanceof QueryEditorInput && editor.state.isSqlCmdMode ? 'sqlcmd' : 'sql';
-			this.doChangeLanguageFlavor(uri, language, connection.providerName);
-			return true;
+			return provider.changePassword(uri, connectionInfo, testPassword).then(result => {
+				return result;
+			});
 		});
 	}
 

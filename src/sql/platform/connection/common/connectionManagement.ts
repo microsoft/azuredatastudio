@@ -121,9 +121,9 @@ export interface IConnectionManagementService {
 	connectAndSaveProfile(connection: IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult>;
 
 	/**
-	 * Changes password for username then opens a new connection and save the profile in settings
+	 * Changes password for username
 	 */
-	changePasswordAndConnectWithSave(connection: IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult>;
+	sendChangePassword(connection: IConnectionProfile, uri: string): Promise<boolean>;
 
 	/**
 	 * Replaces a connectioninfo's associated uri with a new uri.
