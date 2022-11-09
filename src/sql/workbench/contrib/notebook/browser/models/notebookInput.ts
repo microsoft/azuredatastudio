@@ -338,23 +338,23 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 
 	override async save(groupId: number, options?: ITextFileSaveOptions): Promise<EditorInput | undefined> {
 		await this.updateModel();
-		let input: any = await this.textInput.save(groupId, options);
-		input = await this.createFileEditorInput(input, groupId, false);
-		await this.setTrustForNewEditor(input);
+		let untypedInput = await this.textInput.save(groupId, options);
+		let editorInput = await this.createEditorInput(untypedInput, groupId, false);
+		await this.setTrustForNewEditor(editorInput);
 		const langAssociation = languageAssociationRegistry.getAssociationForLanguage(NotebookLanguage.Ipynb);
-		return langAssociation.convertInput(input);
+		return langAssociation.convertInput(editorInput);
 	}
 
 	override async saveAs(group: number, options?: ITextFileSaveOptions): Promise<EditorInput | undefined> {
 		await this.updateModel();
-		let input: any = await this.textInput.saveAs(group, options);
-		input = await this.createFileEditorInput(input, group, true);
-		await this.setTrustForNewEditor(input);
+		let untypedInput = await this.textInput.saveAs(group, options);
+		let editorInput = await this.createEditorInput(untypedInput, group, true);
+		await this.setTrustForNewEditor(editorInput);
 		const langAssociation = languageAssociationRegistry.getAssociationForLanguage(NotebookLanguage.Ipynb);
-		return langAssociation.convertInput(input);
+		return langAssociation.convertInput(editorInput);
 	}
 
-	private async createFileEditorInput(untypedEditor: IUntypedEditorInput, group: GroupIdentifier, saveAs: boolean): Promise<IUntypedEditorInput | undefined> {
+	private async createEditorInput(untypedEditor: IUntypedEditorInput, group: GroupIdentifier, saveAs: boolean): Promise<EditorInput | undefined> {
 		// If this save operation results in a new editor, either
 		// because it was saved to disk (e.g. from untitled) or
 		// through an explicit "Save As", make sure to replace it.
