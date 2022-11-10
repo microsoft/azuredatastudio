@@ -14,7 +14,7 @@ export class IdGenerator {
 	}
 
 	public nextId(): string {
-		return this._prefix + (++this._lastId);
+		return this._prefix + (++this._lastId) + '-id';
 	}
 }
 
