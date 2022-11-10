@@ -9,7 +9,6 @@
 		"types": [
 			"keytar",
 			"mocha",
-			"semver",
 			"sinon",
 			"winreg",
 			"trusted-types",
