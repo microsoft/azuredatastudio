@@ -145,13 +145,13 @@ jobs:
       - name: Run Extension Unit Tests (Continue on Error) # {{SQL CARBON EDIT}} Run extension unit tests (continue on error)
         id: electron-extension-unit-tests-continue-on-error
         run: DISPLAY=:10 ./scripts/test-extensions-unit.sh
-        continueOnError: true
-        condition: and(succeeded(), eq(variables['EXTENSION_UNIT_TESTS_FAIL_ON_ERROR'], 'false'))
+        continue-on-error: true
+        if: ${{ success() && env.EXTENSION_UNIT_TESTS_FAIL_ON_ERROR == 'false' }}
 
       - name: Run Extension Unit Tests (Fail on Error) # {{SQL CARBON EDIT}} Run extension unit tests (fail on error)
         id: electron-extension-unit-tests-fail-on-error
         run: DISPLAY=:10 ./scripts/test-extensions-unit.sh
-        condition: and(succeeded(), ne(variables['EXTENSION_UNIT_TESTS_FAIL_ON_ERROR'], 'false'))
+        if: ${{ success() && env.EXTENSION_UNIT_TESTS_FAIL_ON_ERROR != 'false' }}
 
       # {{SQL CARBON EDIT}} Add coveralls. We merge first to get around issue where parallel builds weren't being combined correctly
       - name: Combine code coverage files
