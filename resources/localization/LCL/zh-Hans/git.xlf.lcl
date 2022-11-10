@@ -4300,18 +4300,27 @@
       <Item ItemId=";extensions/git/package.view.workbench.scm.missing.guide.linux" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Source control depends on Git being installed.]D;]A;[Download Git for Linux]5D;(https://git-scm.com/download/linux)]D;]A;After installing, please [reload]5D;(command:workbench.action.reloadWindow) (or [troubleshoot]5D;(command:git.showOutput)). Additional source control providers can be installed [from the Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[源代码管理取决于将安装的 Git。]D;]A;[下载适用于 Linux 的 Git]5D;(https://git-scm.com/download/linux)]D;]A;安装后，请 [重新加载]5D;(command:workbench.action.reloadWindow) (或 [执行故障排除]5D;(command:git.showOutput))。可以 [从市场]5D; 安装其他源代码管理提供程序(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22)。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/package.view.workbench.scm.missing.guide.mac" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[[Download Git for macOS]5D;(https://git-scm.com/download/mac)]D;]A;After installing, please [reload]5D;(command:workbench.action.reloadWindow) (or [troubleshoot]5D;(command:git.showOutput)). Additional source control providers can be installed [from the Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[[下载适用于 macOS 的 Git]5D;(https://git-scm.com/download/mac)]D;]A;安装后，请[重新加载]5D;(command:workbench.action.reloadWindow) (或[执行故障排除]5D;(command:git.showOutput))。可以[从商城]5D;安装其他源代码管理提供程序(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22)。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/package.view.workbench.scm.missing.guide.windows" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[[Download Git for Windows]5D;(https://git-scm.com/download/win)]D;]A;After installing, please [reload]5D;(command:workbench.action.reloadWindow) (or [troubleshoot]5D;(command:git.showOutput)). Additional source control providers can be installed [from the Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[[下载适用于 Windows 的 Git]5D;(https://git-scm.com/download/win)]D;]A;安装后，请[重新加载]5D;(command:workbench.action.reloadWindow) (或[执行故障排除]5D;(command:git.showOutput))。可以[从商城]5D;安装其他源代码管理提供程序(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22)。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
