@@ -61,7 +61,7 @@ export async function resolveElectronConfiguration(options: LaunchOptions): Prom
 			// running against a build: copy the test resolver extension into remote extensions dir
 			const remoteExtensionsDir = join(remoteDataDir, 'extensions');
 			mkdirp.sync(remoteExtensionsDir);
-			await measureAndLog(copyExtension(root, remoteExtensionsDir, 'vscode-notebook-tests'), 'copyExtension(vscode-notebook-tests)', logger);
+			// await measureAndLog(copyExtension(root, remoteExtensionsDir, 'vscode-notebook-tests'), 'copyExtension(vscode-notebook-tests)', logger); // {{SQL CARBON EDIT}} - this is testing vscode notebooks and not SQL notebooks
 		}
 
 		env['TESTRESOLVER_DATA_FOLDER'] = remoteDataDir;
@@ -71,7 +71,7 @@ export async function resolveElectronConfiguration(options: LaunchOptions): Prom
 		}
 	}
 
-	args.push('--enable-proposed-api=vscode.vscode-notebook-tests');
+	// args.push('--enable-proposed-api=vscode.vscode-notebook-tests'); // {{SQL CARBON EDIT}} - This tests vscode notebooks and not SQL notebooks
 
 	if (!codePath) {
 		args.unshift(root);

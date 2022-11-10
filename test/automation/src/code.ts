@@ -3,19 +3,19 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { join } from 'path';
+// import { join } from 'path'; // {SQL CARBON EDIT} - This import is longer needed because we're not needing to copy the vscode-notebook-test extension
 import * as os from 'os';
 import * as cp from 'child_process';
 import { IElement, ILocalizedStrings, ILocaleInfo } from './driver';
 import { launch as launchPlaywrightBrowser } from './playwrightBrowser';
 import { launch as launchPlaywrightElectron } from './playwrightElectron';
 import { Logger, measureAndLog } from './logger';
-import { copyExtension } from './extensions';
+// import { copyExtension } from './extensions'; // {{SQL CARBON EDIT}} - This isn't needed since we're not needing to copy the vscode-notebook-test extension
 import * as treekill from 'tree-kill';
 import { teardown } from './processes';
 import { PlaywrightDriver } from './playwrightDriver';
 
-const rootPath = join(__dirname, '../../..');
+// const rootPath = join(__dirname, '../../..'); // {{SQL CARBON EDIT}} - This path was being used when copying the vscode-notebook-test extension and that's no longer being used
 
 export interface LaunchOptions {
 	codePath?: string;
@@ -75,7 +75,7 @@ export async function launch(options: LaunchOptions): Promise<Code> {
 		throw new Error('Smoke test process has terminated, refusing to spawn Code');
 	}
 
-	await measureAndLog(copyExtension(rootPath, options.extensionsPath, 'vscode-notebook-tests'), 'copyExtension(vscode-notebook-tests)', options.logger);
+	// await measureAndLog(copyExtension(rootPath, options.extensionsPath, 'vscode-notebook-tests'), 'copyExtension(vscode-notebook-tests)', options.logger); // {{SQL CARBON EDIT}} - This isn't testing SQL notebooks
 
 	// Browser smoke tests
 	if (options.web) {
