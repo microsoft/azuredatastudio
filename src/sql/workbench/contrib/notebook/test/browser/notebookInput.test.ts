@@ -22,6 +22,7 @@ import { TestInstantiationService } from 'vs/platform/instantiation/test/common/
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { EditorInputCapabilities } from 'vs/workbench/common/editor';
 import { LocalContentManager } from 'sql/workbench/services/notebook/common/localContentManager';
+import { IEditorResolverService } from 'vs/workbench/services/editor/common/editorResolverService';
 
 suite('Notebook Input', function (): void {
 	const instantiationService = workbenchInstantiationService();
@@ -55,20 +56,22 @@ suite('Notebook Input', function (): void {
 	let untitledTextInput: UntitledTextEditorInput;
 	let untitledNotebookInput: UntitledNotebookInput;
 
+	const editorResolverService = instantiationService.get(IEditorResolverService);
+
 	setup(() => {
 		const accessor = instantiationService.createInstance(ServiceAccessor);
 		const service = accessor.untitledTextEditorService;
 		untitledTextInput = instantiationService.createInstance(UntitledTextEditorInput, service.create({ associatedResource: untitledUri }));
 		untitledNotebookInput = new UntitledNotebookInput(
 			testTitle, untitledUri, untitledTextInput,
-			undefined, instantiationService, mockNotebookService.object, mockExtensionService.object);
+			undefined, instantiationService, mockNotebookService.object, mockExtensionService.object, editorResolverService);
 	});
 
 	test('File Notebook Input', async function (): Promise<void> {
 		let fileUri = URI.from({ scheme: Schemas.file, path: 'TestPath' });
 		let fileNotebookInput = new FileNotebookInput(
 			testTitle, fileUri, undefined, true,
-			undefined, instantiationService, mockNotebookService.object, mockExtensionService.object);
+			undefined, instantiationService, mockNotebookService.object, mockExtensionService.object, editorResolverService);
 
 		let inputId = fileNotebookInput.typeId;
 		assert.strictEqual(inputId, FileNotebookInput.ID);
