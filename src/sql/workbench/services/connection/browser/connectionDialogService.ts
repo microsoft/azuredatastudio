@@ -182,18 +182,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				}
 				profile = result.connection;
 				profile.serverName = trim(profile.serverName);
-
-				// append the port to the server name for SQL Server connections
-				if (this._currentProviderType === Constants.mssqlProviderName ||
-					this._currentProviderType === Constants.cmsProviderName) {
-					let portPropertyName: string = 'port';
-					let portOption: string = profile.options[portPropertyName];
-					if (portOption && portOption.indexOf(',') === -1) {
-						profile.serverName = profile.serverName + ',' + portOption;
-					}
-					profile.options[portPropertyName] = undefined;
-					profile.providerName = Constants.mssqlProviderName;
-				}
+				this.updatePortAndProvider(profile);
 
 				// Disable password prompt during reconnect if connected with an empty password
 				if (profile.password === '' && profile.savePassword === false) {
@@ -203,10 +192,25 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				this.handleDefaultOnConnect(params, profile).catch(err => onUnexpectedError(err));
 			} else {
 				profile.serverName = trim(profile.serverName);
+				this.updatePortAndProvider(profile);
 				this._connectionManagementService.addSavedPassword(profile).then(async (connectionWithPassword) => {
 					await this.handleDefaultOnConnect(params, connectionWithPassword);
 				}).catch(err => onUnexpectedError(err));
 			}
+		}
+	}
+
+	private updatePortAndProvider(profile: IConnectionProfile): void {
+		// append the port to the server name for SQL Server connections
+		if (this._currentProviderType === Constants.mssqlProviderName ||
+			this._currentProviderType === Constants.cmsProviderName) {
+			let portPropertyName: string = 'port';
+			let portOption: string = profile.options[portPropertyName];
+			if (portOption && portOption.indexOf(',') === -1) {
+				profile.serverName = profile.serverName + ',' + portOption;
+			}
+			profile.options[portPropertyName] = undefined;
+			profile.providerName = Constants.mssqlProviderName;
 		}
 	}
 
