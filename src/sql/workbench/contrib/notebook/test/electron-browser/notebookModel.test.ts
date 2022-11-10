@@ -1085,7 +1085,7 @@ suite('notebook model', function (): void {
 			supportedFileExtensions: [DEFAULT_NOTEBOOK_FILETYPE]
 		};
 		let kernelsAddedPromise = new Promise<void>(resolve => {
-			model.kernelsChanged(kernel => {
+			model.kernelsAdded(kernel => {
 				resolve();
 			});
 		});
@@ -1110,7 +1110,7 @@ suite('notebook model', function (): void {
 			supportedFileExtensions: ['.html']
 		};
 		kernelsAddedPromise = new Promise<void>((resolve, reject) => {
-			model.kernelsChanged(kernel => {
+			model.kernelsAdded(kernel => {
 				reject('Should not have added a new kernel');
 			});
 		});
