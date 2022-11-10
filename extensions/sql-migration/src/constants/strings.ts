@@ -417,7 +417,6 @@ export const SELECT_SERVICE_PLACEHOLDER = localize('sql.migration.select.service
 // database backup page
 export const DATA_SOURCE_CONFIGURATION_PAGE_TITLE = localize('sql.migration.data.source.configuration.page.title', "Data source configuration");
 export const DATABASE_BACKUP_PAGE_DESCRIPTION = localize('sql.migration.database.page.description', "Select the location of the database backups to use during migration.");
-export const DATABASE_BACKUP_CHECKSUM_INFO_TEXT = localize('sql.migration.database.checksum.info.text', "Ensure that your backups were taken with the WITH CHECKSUM option.");
 export const DATABASE_BACKUP_NC_NETWORK_SHARE_RADIO_LABEL = localize('sql.migration.nc.network.share.radio.label', "My database backups are on a network share");
 export const DATABASE_BACKUP_NC_BLOB_STORAGE_RADIO_LABEL = localize('sql.migration.nc.blob.storage.radio.label', "My database backups are in an Azure Storage Blob Container");
 export const DATABASE_BACKUP_NETWORK_SHARE_HEADER_TEXT = localize('sql.migration.network.share.header.text', "Network share details");
@@ -807,11 +806,8 @@ export const MIGRATION_MODE = localize('sql.migration.cutover.type', "Mode");
 export const START_TIME = localize('sql.migration.start.time', "Start time");
 export const FINISH_TIME = localize('sql.migration.finish.time', "Finish time");
 
-export function STATUS_VALUE(status: string, count: number): string {
-	if (count > 0) {
-		return localize('sql.migration.status.error.count.some', "{0} (", StatusLookup[status] ?? status);
-	}
-	return localize('sql.migration.status.error.count.none', "{0}", StatusLookup[status] ?? status);
+export function STATUS_VALUE(status: string): string {
+	return localize('sql.migration.status.value', "{0}", StatusLookup[status] ?? status);
 }
 
 export const MIGRATION_ERROR_DETAILS_TITLE = localize('sql.migration.error.details.title', "Migration error details");
@@ -869,18 +865,18 @@ export function STATUS_WARNING_COUNT(status: string, count: number): string | un
 			case 0:
 				return undefined;
 			case 1:
-				return localize('sql.migration.status.warning.count.single', "{0} Warning)", count);
+				return localize('sql.migration.status.warning.count.single', " ({0} warning)", count);
 			default:
-				return localize('sql.migration.status.warning.count.multiple', "{0} Warnings)", count);
+				return localize('sql.migration.status.warning.count.multiple', " ({0} warnings)", count);
 		}
 	} else {
 		switch (count) {
 			case 0:
 				return undefined;
 			case 1:
-				return localize('sql.migration.status.error.count.single', "{0} Error)", count);
+				return localize('sql.migration.status.error.count.single', " ({0} error)", count);
 			default:
-				return localize('sql.migration.status.error.count.multiple', "{0} Errors)", count);
+				return localize('sql.migration.status.error.count.multiple', " ({0} errors)", count);
 		}
 	}
 }

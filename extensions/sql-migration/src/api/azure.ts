@@ -657,6 +657,7 @@ export interface DatabaseMigrationProperties {
 	provisioningError: string;
 	migrationStatus: 'InProgress' | 'Failed' | 'Succeeded' | 'Creating' | 'Completing' | 'Canceling';
 	migrationStatusDetails?: MigrationStatusDetails;
+	migrationStatusWarnings?: MigrationStatusWarnings;
 	startedOn: string;
 	endedOn: string;
 	sourceDatabaseName: string;
@@ -687,6 +688,12 @@ export interface MigrationStatusDetails {
 	invalidFiles: string[];
 	listOfCopyProgressDetails: CopyProgressDetail[];
 	sqlDataCopyErrors: string[];
+}
+
+export interface MigrationStatusWarnings {
+	restoreBlockingReason?: string;
+	completeRestoreErrorMessage?: string;
+	fileUploadBlockingErrorCount?: number;
 }
 
 export interface CopyProgressDetail {
