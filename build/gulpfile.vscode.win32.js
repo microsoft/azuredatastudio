@@ -104,7 +104,7 @@ function buildWin32Setup(arch, target) {
 			IncompatibleTargetAppId: { 'ia32': product.win32AppId, 'x64': product.win32x64AppId, 'arm64': product.win32arm64AppId }[arch],
 			IncompatibleArchAppId: { 'ia32': x64AppId, 'x64': ia32AppId, 'arm64': ia32AppId }[arch],
 			AppUserId: product.win32AppUserModelId,
-			ArchitecturesAllowed: { 'ia32': '', 'x64': 'x64', 'arm64': 'ARM64' }[arch],
+			ArchitecturesAllowed: { 'ia32': '', 'x64': 'x64', 'arm64': 'arm64 x64' }[arch], //{{SQL CARBON EDIT}} - add x64 to arm64 arch so the the installer can run on arm64
 			ArchitecturesInstallIn64BitMode: { 'ia32': '', 'x64': 'x64', 'arm64': 'arm64' }[arch],
 			SourceDir: sourcePath,
 			RepoDir: repoPath,
