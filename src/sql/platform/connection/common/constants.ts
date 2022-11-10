@@ -24,6 +24,9 @@ export const passwordChars = '***************';
 /* default authentication type setting name*/
 export const defaultAuthenticationType = 'defaultAuthenticationType';
 
+/* Connection Properties */
+export const trustServerCertificate = 'trustServerCertificate';
+
 /**
  * Well-known Authentication types commonly supported by connection providers.
  */
