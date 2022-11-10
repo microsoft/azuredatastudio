@@ -58,8 +58,6 @@ const query_databases_with_size = `
 	WHERE sys.databases.state = 0
 	`;
 
-export const excludeDatabases: string[] = [
-
 const query_login_tables_sql = `
 	SELECT
 		sp.name as login,
@@ -71,7 +69,7 @@ const query_login_tables_sql = `
 	WHERE sp.type NOT IN ('G', 'R') AND sp.type_desc IN ('SQL_LOGIN', 'WINDOWS_LOGIN')
 	ORDER BY sp.name;`;
 
-export const excludeDatabses: string[] = [
+export const excludeDatabases: string[] = [
 	'master',
 	'tempdb',
 	'msdb',
@@ -313,7 +311,6 @@ export function getSqlBoolean(value: azdata.DbCellValue): boolean {
 	return value.isNull ? false : value.displayValue === '1';
 }
 
-<<<<<<< HEAD
 export async function getDatabasesList(connectionProfile: azdata.connection.ConnectionProfile): Promise<azdata.DatabaseInfo[]> {
 	const ownerUri = await azdata.connection.getUriForConnection(connectionProfile.connectionId);
 	const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(
@@ -339,7 +336,8 @@ export async function getDatabasesList(connectionProfile: azdata.connection.Conn
 
 		return [];
 	}
-=======
+}
+
 export async function collectSourceLogins(sourceConnectionId: string): Promise<LoginTableInfo[]> {
 	const ownerUri = await azdata.connection.getUriForConnection(sourceConnectionId);
 	const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(
@@ -386,5 +384,4 @@ export async function collectTargetLogins(
 	}
 
 	throw new Error(result.errorMessage);
->>>>>>> 309021d1a82... Migrate source logins query and add target logins
 }
