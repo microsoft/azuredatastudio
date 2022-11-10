@@ -170,6 +170,7 @@ export const defaultQuickPickItem = localize('defaultQuickPickItem', "Default - 
 export function dockerImagesPlaceHolder(name: string) { return localize('dockerImagesPlaceHolder', 'Use {0} on local arm64/Apple Silicon', name); }
 export function publishToExistingServer(name: string) { return localize('publishToExistingServer', "Publish to an existing {0}", name); }
 export function publishToDockerContainer(name: string) { return localize('publishToDockerContainer', "Publish to new {0} local development container", name); }
+export function publishToDockerContainerPreview(name: string) { return localize('publishToDockerContainerPreview', "Publish to new {0} local development container (Preview)", name); }
 export const publishToAzureEmulator = localize('publishToAzureEmulator', "Publish to new Azure SQL Database emulator");
 export const publishToNewAzureServer = localize('publishToNewAzureServer', "Publish to new Azure SQL logical server");
 export const azureServerName = localize('azureServerName', "Azure SQL server name");
