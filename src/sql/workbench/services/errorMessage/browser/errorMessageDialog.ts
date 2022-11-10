@@ -106,9 +106,13 @@ export class ErrorMessageDialog extends Modal {
 		// Nothing to re-layout
 	}
 
-	private updateDialogBody(): void {
+	protected updateDialogBody(): void {
 		DOM.clearNode(this._body!);
 		DOM.append(this._body!, DOM.$('div.error-message')).innerText = this._message!;
+	}
+
+	protected getBody(): HTMLElement {
+		return this._body;
 	}
 
 	private updateIconTitle(): void {
