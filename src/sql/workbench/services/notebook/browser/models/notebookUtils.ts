@@ -7,7 +7,7 @@ import * as path from 'vs/base/common/path';
 import { nb, ServerInfo } from 'azdata';
 import { DEFAULT_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_FILETYPE, INotebookService, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
 import { URI } from 'vs/base/common/uri';
-import { DEFAULT_NB_LANGUAGE_MODE } from 'sql/workbench/common/constants';
+import { NotebookLanguage } from 'sql/workbench/common/constants';
 
 export const clusterEndpointsProperty = 'clusterEndpoints';
 export const hadoopEndpointNameGateway = 'gateway';
@@ -18,10 +18,10 @@ export function isStream(output: nb.ICellOutput): output is nb.IStreamResult {
 	return output.output_type === 'stream';
 }
 
-export function getProvidersForFileName(fileName: string, notebookService: INotebookService, languageMode?: string): string[] {
+export function getProvidersForFileName(fileName: string, notebookService: INotebookService, languageId?: string): string[] {
 	let fileExt = path.extname(fileName);
-	if (!fileExt && languageMode && languageMode !== DEFAULT_NB_LANGUAGE_MODE) {
-		fileExt = `.${languageMode}`;
+	if (!fileExt && languageId && languageId !== NotebookLanguage.Notebook) {
+		fileExt = `.${languageId}`;
 	}
 	let providers: string[];
 	// First try to get provider for actual file type
