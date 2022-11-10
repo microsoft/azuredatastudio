@@ -657,7 +657,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				}
 				else {
 					// This should ideally never ever happen!
-					this._logService.error(`Could not find tenant with ID ${this._azureTenantId} for account ${selectedAccount.displayInfo.displayName}`);
+					this._logService.error(`onAzureAccountSelected : Could not find tenant with ID ${this._azureTenantId} for account ${selectedAccount.displayInfo.displayName}`);
 					this.onAzureTenantSelected(0);
 				}
 			}
@@ -686,7 +686,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			}
 			else {
 				// This should ideally never ever happen!
-				this._logService.error(`Could not find tenant with ID ${this._azureTenantId} for account ${account.displayInfo.displayName}`);
+				this._logService.error(`onAzureTenantSelected : Could not find tenant with ID ${this._azureTenantId} for account ${account.displayInfo.displayName}`);
 			}
 		}
 	}
@@ -828,7 +828,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 						}
 						else {
 							// This should ideally never ever happen!
-							this._logService.error(`Could not find tenant with ID ${this._azureTenantId} for account ${accountName}`);
+							this._logService.error(`fillInConnectionInputs : Could not find tenant with ID ${this._azureTenantId} for account ${accountName}`);
 						}
 						this.onAzureTenantSelected(this._azureTenantDropdown.values.indexOf(this._azureTenantDropdown.value));
 					}
