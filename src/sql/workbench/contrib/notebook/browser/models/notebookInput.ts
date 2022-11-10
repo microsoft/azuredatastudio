@@ -354,7 +354,7 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 		return langAssociation.convertInput(editorInput);
 	}
 
-	private async createEditorInput(untypedEditor: IUntypedEditorInput, group: GroupIdentifier, saveAs: boolean): Promise<EditorInput | undefined> {
+	private async createEditorInput(untypedEditor: IUntypedEditorInput | undefined, group: GroupIdentifier, saveAs: boolean): Promise<EditorInput | undefined> {
 		// If this save operation results in a new editor, either
 		// because it was saved to disk (e.g. from untitled) or
 		// through an explicit "Save As", make sure to replace it.
@@ -362,12 +362,14 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 			return undefined; // if we have an undefined input, then the save was cancelled, so do nothing here
 		}
 
-		let target = (<any>untypedEditor).resource;
-		if (target.scheme !== this.textInput.resource.scheme || (saveAs && !isEqual(target, this.textInput.preferredResource))
-		) {
-			const editor = await this.editorResolverService.resolveEditor({ resource: target, options: { override: DEFAULT_EDITOR_ASSOCIATION.id } }, group);
-			if (isEditorInputWithOptionsAndGroup(editor)) {
-				return editor.editor;
+		if ('resource' in untypedEditor) {
+			let target = untypedEditor.resource;
+			if (target.scheme !== this.textInput.resource.scheme || (saveAs && !isEqual(target, this.textInput.preferredResource))
+			) {
+				const editor = await this.editorResolverService.resolveEditor({ resource: target, options: { override: DEFAULT_EDITOR_ASSOCIATION.id } }, group);
+				if (isEditorInputWithOptionsAndGroup(editor)) {
+					return editor.editor;
+				}
 			}
 		}
 
