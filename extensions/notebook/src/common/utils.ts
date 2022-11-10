@@ -10,7 +10,7 @@ import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as crypto from 'crypto';
-import { notebookLanguages, notebookConfigKey, pinnedBooksConfigKey, AUTHTYPE, INTEGRATED_AUTH, KNOX_ENDPOINT_PORT, KNOX_ENDPOINT_SERVER } from './constants';
+import { notebookConfigKey, pinnedBooksConfigKey, AUTHTYPE, INTEGRATED_AUTH, KNOX_ENDPOINT_PORT, KNOX_ENDPOINT_SERVER } from './constants';
 import { IPrompter, IQuestion, QuestionTypes } from '../prompts/question';
 import { BookTreeItemFormat } from '../book/bookTreeItem';
 import * as loc from './localizedConstants';
@@ -266,13 +266,6 @@ export function isPackageSupported(pythonVersion: string, packageVersionConstrai
 		}
 	}
 	return supportedVersionFound;
-}
-
-export function isEditorTitleFree(title: string): boolean {
-
-	let hasTextDoc = vscode.workspace.textDocuments.findIndex(doc => doc.isUntitled && doc.fileName === title && !notebookLanguages.find(lang => lang === doc.languageId)) > -1;
-	let hasNotebookDoc = azdata.nb.notebookDocuments.findIndex(doc => doc.isUntitled && doc.fileName === title) > -1;
-	return !hasTextDoc && !hasNotebookDoc;
 }
 
 export function getClusterEndpoints(serverInfo: azdata.ServerInfo): bdc.IEndpointModel[] {

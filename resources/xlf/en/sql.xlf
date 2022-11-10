@@ -124,6 +124,17 @@
       <source xml:lang="en">Loading Error...</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/base/browser/ui/table/table" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="table.resizeColumn">
+      <source xml:lang="en">Provide new column width</source>
+    </trans-unit>
+    <trans-unit id="table.resizeColumn.invalid">
+      <source xml:lang="en">Invalid column width</source>
+    </trans-unit>
+    <trans-unit id="table.resizeColumn.negativeSize">
+      <source xml:lang="en">Size cannot be 0 or negative</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/base/browser/ui/taskbar/overflowActionbar" source-language="en" datatype="plaintext"><body>
     <trans-unit id="toggleMore">
       <source xml:lang="en">Toggle More</source>
@@ -2499,7 +2510,7 @@ Default Skipped Commands:
       <source xml:lang="en">Reset Zoom</source>
     </trans-unit>
     <trans-unit id="epCompare.zoomToFit">
-      <source xml:lang="en">Zoom to fit</source>
+      <source xml:lang="en">Zoom to Fit</source>
     </trans-unit>
     <trans-unit id="executionPlanComparison.bottomPlanDiagram.name">
       <source xml:lang="en">Bottom execution Plan {0}</source>
@@ -2566,10 +2577,10 @@ Default Skipped Commands:
       <source xml:lang="en">When true, enables tooltips on hover for execution plan. When false, tooltips are shown on node click or F3 key press.</source>
     </trans-unit>
     <trans-unit id="executionPlanCompareCommandOriginalValue">
-      <source xml:lang="en">Compare execution plans</source>
+      <source xml:lang="en">Compare Execution Plans</source>
     </trans-unit>
     <trans-unit id="executionPlanCompareCommandValue">
-      <source xml:lang="en">Compare execution plans</source>
+      <source xml:lang="en">Compare Execution Plans</source>
     </trans-unit>
     <trans-unit id="executionPlanConfigurationTitle">
       <source xml:lang="en">Execution Plan</source>
@@ -2658,7 +2669,7 @@ Default Skipped Commands:
       <source xml:lang="en">Execution Plan {0}</source>
     </trans-unit>
     <trans-unit id="executionPlanCompareExecutionPlanAction">
-      <source xml:lang="en">Compare execution plan</source>
+      <source xml:lang="en">Compare Execution Plan</source>
     </trans-unit>
     <trans-unit id="executionPlanContextMenuDisableTooltip">
       <source xml:lang="en">Disable Tooltips</source>
@@ -2676,7 +2687,7 @@ Default Skipped Commands:
       <source xml:lang="en">Tooltips enabled</source>
     </trans-unit>
     <trans-unit id="executionPlanFitGraphLabel">
-      <source xml:lang="en">Zoom to fit</source>
+      <source xml:lang="en">Zoom to Fit</source>
     </trans-unit>
     <trans-unit id="executionPlanHighlightExpensiveOperationAction">
       <source xml:lang="en">Highlight Expensive Operation</source>
@@ -3628,6 +3639,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="notebook.maxRichTextUndoHistory">
       <source xml:lang="en">The maximum number of changes stored in the undo history for the notebook Rich Text editor.</source>
+    </trans-unit>
+    <trans-unit id="notebook.renderTablesInHtml">
+      <source xml:lang="en">Display and save tables in HTML format in text cells instead of converting to markdown tables.</source>
     </trans-unit>
     <trans-unit id="notebook.richTextModeDescription">
       <source xml:lang="en">Text is displayed as Rich Text (also known as WYSIWYG).</source>
@@ -4860,7 +4874,7 @@ Error: {1}</source>
 </body></file>
   <file original="src/sql/workbench/contrib/welcome/notifyEncryption/notifyEncryptionDialog" source-language="en" datatype="plaintext"><body>
     <trans-unit id="notifyEncryption.message">
-      <source xml:lang="en">Azure Data Studio now has encryption enabled by default for all SQL Server connections. This may result in your existing connections no longer working.{0}We recommend you review the link below for more details.</source>
+      <source xml:lang="en">Azure Data Studio now has encryption enabled by default for all SQL Server connections. This may result in your existing connections no longer working unless certain Encryption related connection properties are changed.{0}We recommend you review the link below for more details.</source>
     </trans-unit>
     <trans-unit id="notifyEncryption.moreInfoLink">
       <source xml:lang="en">More information</source>

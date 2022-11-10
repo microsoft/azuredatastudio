@@ -149,6 +149,7 @@
 		},
 		"dist/extension": {
 			"bdc.dashboard.title": "빅 데이터 클러스터 대시보드 -",
+			"bdc.deprecationWarning": "빅 데이터 클러스터 추가 기능은 사용 중지되며 이에 대한 Azure Data Studio 기능은 향후 릴리스에서 제거될 예정입니다. [여기](https://go.microsoft.com/fwlink/?linkid=2207340)에서 이에 대한 자세한 내용과 향후 지원을 확인하세요.",
 			"mount.error.endpointNotFound": "컨트롤러 엔드포인트 정보를 찾을 수 없음",
 			"textConfirmRemoveController": "'{0}'을(를) 제거하시겠습니까?",
 			"textNo": "아니요",

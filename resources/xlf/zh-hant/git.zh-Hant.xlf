@@ -1,5 +1,33 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/git/dist/actionButton" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="scm button publish branch">
+        <source xml:lang="en">Publish Branch</source>
+        <target state="translated">發佈分支</target>
+      </trans-unit>
+      <trans-unit id="scm button publish branch running">
+        <source xml:lang="en">Publishing Branch...</source>
+        <target state="translated">正在發布 Branch...</target>
+      </trans-unit>
+      <trans-unit id="scm button publish title">
+        <source xml:lang="en">$(cloud-upload) Publish Branch</source>
+        <target state="translated">$(cloud-upload) 發布分支</target>
+      </trans-unit>
+      <trans-unit id="scm button sync description">
+        <source xml:lang="en">{0} Sync Changes {1}{2}</source>
+        <target state="translated">{0} 同步變更 {1}{2}</target>
+      </trans-unit>
+      <trans-unit id="scm button sync title">
+        <source xml:lang="en">{0} {1}{2}</source>
+        <target state="translated">{0} {1}{2}</target>
+      </trans-unit>
+      <trans-unit id="syncing changes">
+        <source xml:lang="en">Synchronizing Changes...</source>
+        <target state="translated">正在同步處理變更...</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/git/dist/askpass-main" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="missOrInvalid">
@@ -91,8 +119,8 @@
         <target state="translated">無法將參考推送到遠端。請先嘗試執行 '提取' 以整合您的變更。</target>
       </trans-unit>
       <trans-unit id="changed">
-        <source xml:lang="en">Log level changed to: {0}</source>
-        <target state="translated">記錄層級已變更為: {0}</target>
+        <source xml:lang="en">{0} Log level changed to: {1}</source>
+        <target state="translated">{0} 記錄層級已變更為: {1}</target>
       </trans-unit>
       <trans-unit id="checkout detached">
         <source xml:lang="en">Checkout detached...</source>
@@ -203,8 +231,8 @@ Are you sure to continue?</source>
 確定要繼續嗎?</target>
       </trans-unit>
       <trans-unit id="confirm publish branch">
-        <source xml:lang="en">The branch '{0}' has no upstream branch. Would you like to publish this branch?</source>
-        <target state="translated">分支 '{0}' 沒有任何上游分支。 您仍想發布這個分支嗎？</target>
+        <source xml:lang="en">The branch '{0}' has no remote branch. Would you like to publish this branch?</source>
+        <target state="translated">分支 '{0}' 沒有任何遠端分支。您仍想發布這個分支嗎?</target>
       </trans-unit>
       <trans-unit id="confirm restore">
         <source xml:lang="en">Are you sure you want to restore {0}?</source>
@@ -282,6 +310,14 @@ What would you like to do?</source>
         <source xml:lang="en">Discard 1 File</source>
         <target state="translated">捨棄1個檔案</target>
       </trans-unit>
+      <trans-unit id="drop all stashes">
+        <source xml:lang="en">Are you sure you want to drop ALL stashes? There are {0} stashes that will be subject to pruning, and MAY BE IMPOSSIBLE TO RECOVER.</source>
+        <target state="translated">確定要卸除所有隱藏項目嗎? 有 {0} 個隱藏項目將需要剪除，可能無法復原。</target>
+      </trans-unit>
+      <trans-unit id="drop one stash">
+        <source xml:lang="en">Are you sure you want to drop ALL stashes? There is 1 stash that will be subject to pruning, and MAY BE IMPOSSIBLE TO RECOVER.</source>
+        <target state="translated">確定要卸除所有隱藏項目嗎? 有 1 個隱藏項目將需要剪除，可能無法復原。</target>
+      </trans-unit>
       <trans-unit id="force">
         <source xml:lang="en">Force Checkout</source>
         <target state="translated">強制簽出</target>
@@ -298,13 +334,17 @@ What would you like to do?</source>
         <source xml:lang="en">Git: {0}</source>
         <target state="translated">Git: {0}</target>
       </trans-unit>
+      <trans-unit id="git.timeline.openDiffCommand">
+        <source xml:lang="en">Open Comparison</source>
+        <target state="translated">開啟比較</target>
+      </trans-unit>
       <trans-unit id="git.title.diff">
-        <source xml:lang="en">{0} ⟷ {1}</source>
-        <target state="translated">{0} ⟷ {1}</target>
+        <source xml:lang="en">{0} ↔ {1}</source>
+        <target state="translated">{0} ↔ {1}</target>
       </trans-unit>
       <trans-unit id="git.title.diffRefs">
-        <source xml:lang="en">{0} ({1}) ⟷ {0} ({2})</source>
-        <target state="translated">{0} ({1}) ⟷ {0} ({2})</target>
+        <source xml:lang="en">{0} ({1}) ↔ {0} ({2})</source>
+        <target state="translated">{0} ({1}) ↔ {0} ({2})</target>
       </trans-unit>
       <trans-unit id="git.title.index">
         <source xml:lang="en">{0} (Index)</source>
@@ -627,8 +667,8 @@ Would you like to stage all your changes and commit them directly?</source>
         <target state="translated">確定要卸除隱藏項目 {0} 嗎?</target>
       </trans-unit>
       <trans-unit id="sync is unpredictable">
-        <source xml:lang="en">This action will push and pull commits to and from '{0}/{1}'.</source>
-        <target state="translated">此動作會將認可推送到 '{0}/{1}' 或從中提取認可。</target>
+        <source xml:lang="en">This action will pull and push commits from and to '{0}/{1}'.</source>
+        <target state="translated">此動作會從 '{0}/{1}' 提取和推送提交。</target>
       </trans-unit>
       <trans-unit id="tag at">
         <source xml:lang="en">Tag at {0}</source>
@@ -715,16 +755,16 @@ These files will be FOREVER LOST.</source>
   <file original="extensions/git/dist/main" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="skipped">
-        <source xml:lang="en">Skipped found git in: {0}</source>
-        <target state="translated">已略過在下列位置找到的 git: {0}</target>
+        <source xml:lang="en">{0} Skipped found git in: {1}</source>
+        <target state="translated">{0} 已略過在下列位置找到的 git: {1}</target>
       </trans-unit>
       <trans-unit id="using git">
-        <source xml:lang="en">Using git {0} from {1}</source>
-        <target state="translated">正在使用來自 {1} 的 git {0}</target>
+        <source xml:lang="en">{0} Using git {1} from {2}</source>
+        <target state="translated">{0} 使用來自 {2} 的 git {1}</target>
       </trans-unit>
       <trans-unit id="validating">
-        <source xml:lang="en">Validating found git in: {0}</source>
-        <target state="translated">正在驗證在下列位置找到的 git: {0}</target>
+        <source xml:lang="en">{0} Validating found git in: {1}</source>
+        <target state="translated">{0} 正在驗證在下列位置找到的 git: {1}</target>
       </trans-unit>
     </body>
   </file>
@@ -742,49 +782,13 @@ These files will be FOREVER LOST.</source>
         <source xml:lang="en">Choose a repository</source>
         <target state="translated">請選擇儲存庫 </target>
       </trans-unit>
+      <trans-unit id="repoOnHomeDriveRootWarning">
+        <source xml:lang="en">Unable to automatically open the git repository at '{0}'. To open that git repository, open it directly as a folder in VS Code.</source>
+        <target state="translated">無法在'{0}'自動開啟 Git 存放庫。若要開啟該 Git 存放庫，請直接在 VS Code 中將它開啟為資料夾。</target>
+      </trans-unit>
       <trans-unit id="too many submodules">
         <source xml:lang="en">The '{0}' repository has {1} submodules which won't be opened automatically. You can still open each one individually by opening a file within.</source>
         <target state="translated">'{0}' 儲存庫有 {1} 個無法自動開啟的子模組。您仍可在其中開啟檔案來個別開啟子模組</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/git/dist/remoteSource" source-language="en" datatype="plaintext" target-language="zh-Hant">
-    <body>
-      <trans-unit id="branch name">
-        <source xml:lang="en">Branch name</source>
-        <target state="translated">分支名稱</target>
-      </trans-unit>
-      <trans-unit id="error">
-        <source xml:lang="en">$(error) Error: {0}</source>
-        <target state="translated">$(error) 錯誤: {0}</target>
-      </trans-unit>
-      <trans-unit id="none found">
-        <source xml:lang="en">No remote repositories found.</source>
-        <target state="translated">找不到遠端存放庫。</target>
-      </trans-unit>
-      <trans-unit id="pick url">
-        <source xml:lang="en">Choose a URL to clone from.</source>
-        <target state="translated">選擇複製的來源 URL。</target>
-      </trans-unit>
-      <trans-unit id="provide url">
-        <source xml:lang="en">Provide repository URL</source>
-        <target state="translated">提供存放庫 URL</target>
-      </trans-unit>
-      <trans-unit id="provide url or pick">
-        <source xml:lang="en">Provide repository URL or pick a repository source.</source>
-        <target state="translated">提供存放庫 URL 或挑選存放庫來源。</target>
-      </trans-unit>
-      <trans-unit id="type to filter">
-        <source xml:lang="en">Repository name</source>
-        <target state="translated">存放庫名稱</target>
-      </trans-unit>
-      <trans-unit id="type to search">
-        <source xml:lang="en">Repository name (type to search)</source>
-        <target state="translated">存放庫名稱 (要搜尋的類型)</target>
-      </trans-unit>
-      <trans-unit id="url">
-        <source xml:lang="en">URL</source>
-        <target state="translated">URL</target>
       </trans-unit>
     </body>
   </file>
@@ -974,18 +978,6 @@ These files will be FOREVER LOST.</source>
         <source xml:lang="en">Successfully pushed.</source>
         <target state="translated">推送成功。</target>
       </trans-unit>
-      <trans-unit id="scm button publish title">
-        <source xml:lang="en">$(cloud-upload) Publish Changes</source>
-        <target state="translated">$(cloud-upload) 發佈變更</target>
-      </trans-unit>
-      <trans-unit id="scm button publish tooltip">
-        <source xml:lang="en">Publish Changes</source>
-        <target state="translated">發佈變更</target>
-      </trans-unit>
-      <trans-unit id="scm button sync title">
-        <source xml:lang="en"> Sync Changes $(sync){0}{1}</source>
-        <target state="translated"> 同步變更 $(sync){0}{1}</target>
-      </trans-unit>
       <trans-unit id="staged changes">
         <source xml:lang="en">Staged Changes</source>
         <target state="translated">暫存的變更</target>
@@ -1022,9 +1014,9 @@ These files will be FOREVER LOST.</source>
         <source xml:lang="en">Checkout branch/tag...</source>
         <target state="translated">簽出分支/標籤...</target>
       </trans-unit>
-      <trans-unit id="publish changes">
-        <source xml:lang="en">Publish Changes</source>
-        <target state="translated">發行變更</target>
+      <trans-unit id="publish branch">
+        <source xml:lang="en">Publish Branch</source>
+        <target state="translated">發佈分支</target>
       </trans-unit>
       <trans-unit id="publish to">
         <source xml:lang="en">Publish to {0}</source>
@@ -1046,19 +1038,13 @@ These files will be FOREVER LOST.</source>
   </file>
   <file original="extensions/git/dist/timelineProvider" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
-      <trans-unit id="git.index">
-        <source xml:lang="en">Index</source>
-        <target state="translated">索引</target>
+      <trans-unit id="git.timeline.email">
+        <source xml:lang="en">Email</source>
+        <target state="translated">電子郵件</target>
       </trans-unit>
-      <trans-unit id="git.timeline.detail">
-        <source xml:lang="en">{0}  — {1}
-{2}
-
-{3}</source>
-        <target state="translated">{0}  — {1}
-{2}
-
-{3}</target>
+      <trans-unit id="git.timeline.openComparison">
+        <source xml:lang="en">Open Comparison</source>
+        <target state="translated">開啟比較</target>
       </trans-unit>
       <trans-unit id="git.timeline.source">
         <source xml:lang="en">Git History</source>
@@ -1075,10 +1061,6 @@ These files will be FOREVER LOST.</source>
       <trans-unit id="git.timeline.you">
         <source xml:lang="en">You</source>
         <target state="translated">您</target>
-      </trans-unit>
-      <trans-unit id="git.workingTree">
-        <source xml:lang="en">Working Tree</source>
-        <target state="translated">工作樹狀</target>
       </trans-unit>
     </body>
   </file>
@@ -1128,6 +1110,18 @@ These files will be FOREVER LOST.</source>
         <source xml:lang="en">Add Remote...</source>
         <target state="translated">新增遠端存放庫...</target>
       </trans-unit>
+      <trans-unit id="command.api.getRemoteSources">
+        <source xml:lang="en">Get Remote Sources</source>
+        <target state="translated">取得遠端來源</target>
+      </trans-unit>
+      <trans-unit id="command.api.getRepositories">
+        <source xml:lang="en">Get Repositories</source>
+        <target state="translated">取得存放庫</target>
+      </trans-unit>
+      <trans-unit id="command.api.getRepositoryState">
+        <source xml:lang="en">Get Repository State</source>
+        <target state="translated">取得存放庫狀態</target>
+      </trans-unit>
       <trans-unit id="command.branch">
         <source xml:lang="en">Create Branch...</source>
         <target state="translated">建立分支...</target>
@@ -1175,6 +1169,10 @@ These files will be FOREVER LOST.</source>
       <trans-unit id="command.close">
         <source xml:lang="en">Close Repository</source>
         <target state="translated">關閉儲存庫</target>
+      </trans-unit>
+      <trans-unit id="command.closeAllDiffEditors">
+        <source xml:lang="en">Close All Diff Editors</source>
+        <target state="translated">關閉所有 Diff 編輯器</target>
       </trans-unit>
       <trans-unit id="command.commit">
         <source xml:lang="en">Commit</source>
@@ -1369,8 +1367,8 @@ These files will be FOREVER LOST.</source>
         <target state="translated">還原認可範本</target>
       </trans-unit>
       <trans-unit id="command.revealInExplorer">
-        <source xml:lang="en">Reveal in Side Bar</source>
-        <target state="translated">在提要欄位中顯示</target>
+        <source xml:lang="en">Reveal in Explorer View</source>
+        <target state="translated">在 [總管檢視] 中顯示</target>
       </trans-unit>
       <trans-unit id="command.revertChange">
         <source xml:lang="en">Revert Change</source>
@@ -1431,6 +1429,10 @@ These files will be FOREVER LOST.</source>
       <trans-unit id="command.stashDrop">
         <source xml:lang="en">Drop Stash...</source>
         <target state="translated">卸除隱藏項目...</target>
+      </trans-unit>
+      <trans-unit id="command.stashDropAll">
+        <source xml:lang="en">Drop All Stashes...</source>
+        <target state="translated">卸除所有隱藏項目...</target>
       </trans-unit>
       <trans-unit id="command.stashIncludeUntracked">
         <source xml:lang="en">Stash (Include Untracked)</source>
@@ -1568,6 +1570,14 @@ These files will be FOREVER LOST.</source>
         <source xml:lang="en">Tags</source>
         <target state="translated">標籤</target>
       </trans-unit>
+      <trans-unit id="config.closeDiffOnOperation">
+        <source xml:lang="en">Controls whether the diff editor should be automatically closed when changes are stashed, committed, discarded, staged, or unstaged.</source>
+        <target state="translated">控制在隱藏、提交、捨棄、暫存或取消暫存變更時，是否應自動關閉 Diff 編輯器。</target>
+      </trans-unit>
+      <trans-unit id="config.commandsToLog">
+        <source xml:lang="en">List of git commands (ex: commit, push) that would have their `stdout` logged to the [git output](command:git.showOutput). If the git command has a client-side hook configured, the client-side hook's `stdout` will also be logged to the [git output](command:git.showOutput).</source>
+        <target state="translated">GIT 命令列表 (例如: commit、push)，這些命令的 `stdout` 將被記錄到 [git 輸出](command:git.showOutput)。如果 GIT 命令設定了用戶端勾點，那麼用戶端勾點的 `stdout` 也將被記錄到 [git 輸出](command:git.showOutput)。</target>
+      </trans-unit>
       <trans-unit id="config.confirmEmptyCommits">
         <source xml:lang="en">Always confirm the creation of empty commits for the 'Git: Commit Empty' command.</source>
         <target state="translated">一律確認 'Git: Commit Empty' 命令的空白認可建立。</target>
@@ -1635,6 +1645,10 @@ These files will be FOREVER LOST.</source>
       <trans-unit id="config.enabled">
         <source xml:lang="en">Whether git is enabled.</source>
         <target state="translated">是否啟用 Git。</target>
+      </trans-unit>
+      <trans-unit id="config.experimental.installGuide">
+        <source xml:lang="en">Experimental improvements for the git setup flow.</source>
+        <target state="translated">Git 安裝流程的實驗性改進。</target>
       </trans-unit>
       <trans-unit id="config.fetchOnPull">
         <source xml:lang="en">When enabled, fetch all branches when pulling. Otherwise, fetch just the current one.</source>
@@ -1772,6 +1786,14 @@ These files will be FOREVER LOST.</source>
         <source xml:lang="en">Force git to use rebase when running the sync command.</source>
         <target state="translated">當執行同步命令時強制 git 使用 rebase。</target>
       </trans-unit>
+      <trans-unit id="config.repositoryScanIgnoredFolders">
+        <source xml:lang="en">List of folders that are ignored while scanning for Git repositories when `#git.autoRepositoryDetection#` is set to `true` or `subFolders`.</source>
+        <target state="translated">若 `#git.autoRepositoryDetection#` 設為 `true` 或 `subFolders`，掃描 Git 儲存機制時忽略的資料夾清單。</target>
+      </trans-unit>
+      <trans-unit id="config.repositoryScanMaxDepth">
+        <source xml:lang="en">Controls the depth used when scanning workspace folders for Git repositories when `#git.autoRepositoryDetection#` is set to `true` or `subFolders`. Can be set to `-1` for no limit.</source>
+        <target state="translated">控制當 '#git.autoRepositoryDetection#' 設定為 'true' 或 'subFolders' 時，掃描 Git 存放庫的工作區資料夾時所使用的深度。可以設為 '-1'，表示沒有限制。</target>
+      </trans-unit>
       <trans-unit id="config.requireGitUserConfig">
         <source xml:lang="en">Controls whether to require explicit Git user configuration or allow Git to guess if missing.</source>
         <target state="translated">控制要在沒有組態時要求明確的 Git 使用者組態，還是允許 Git 進行猜測。</target>
@@ -1856,6 +1878,10 @@ These files will be FOREVER LOST.</source>
         <source xml:lang="en">Controls whether to show the commit author in the Timeline view.</source>
         <target state="translated">控制是否要在 [時間軸] 檢視中顯示認可作者。</target>
       </trans-unit>
+      <trans-unit id="config.timeline.showUncommitted">
+        <source xml:lang="en">Controls whether to show uncommitted changes in the Timeline view.</source>
+        <target state="translated">控制是否要在 [時間表] 檢視中顯示未提交的變更。</target>
+      </trans-unit>
       <trans-unit id="config.untrackedChanges">
         <source xml:lang="en">Controls how untracked changes behave.</source>
         <target state="translated">控制未追蹤修訂的運作方式。</target>
@@ -1879,6 +1905,10 @@ These files will be FOREVER LOST.</source>
       <trans-unit id="config.useForcePushWithLease">
         <source xml:lang="en">Controls whether force pushing uses the safer force-with-lease variant.</source>
         <target state="translated">控制強制推送是否使用較安全的 force-with-lease 方法。</target>
+      </trans-unit>
+      <trans-unit id="config.useIntegratedAskPass">
+        <source xml:lang="en">Controls whether GIT_ASKPASS should be overwritten to use the integrated version.</source>
+        <target state="translated">控制是否應覆寫 GIT_ASKPASS 以使用整合式版本。</target>
       </trans-unit>
       <trans-unit id="description">
         <source xml:lang="en">Git SCM Integration</source>
@@ -1940,9 +1970,9 @@ These files will be FOREVER LOST.</source>
       </trans-unit>
       <trans-unit id="view.workbench.scm.disabled">
         <source xml:lang="en">If you would like to use git features, please enable git in your [settings](command:workbench.action.openSettings?%5B%22git.enabled%22%5D).
-To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
+To learn more about how to use git and source control in VS Code [read our docs](https://aka.ms/vscode-scm).</source>
         <target state="translated">如果您想要使用 git 功能，請在[設定](command:workbench.action.openSettings?%5B%22git.enabled%22%5D)中啟用 git。
-若要深入了解如何在 Azure Data Studio 中使用 git 和原始檔控制，[請參閱我們的文件](https://aka.ms/vscode-scm)。</target>
+若要深入了解如何在 VS Code 中使用 git 和原始檔控制，[請參閱我們的文件](https://aka.ms/vscode-scm)。</target>
       </trans-unit>
       <trans-unit id="view.workbench.scm.empty">
         <source xml:lang="en">In order to use git features, you can open a folder containing a git repository or clone from a URL.
@@ -1977,6 +2007,30 @@ If you're using a different version control system, you can [search the Marketpl
         <target state="translated">未偵測到有效的 git 安裝，您可以在 [git 輸出](command:git.showOutput)中找到更多詳細資料。
 請[安裝 git](https://git-scm.com/)，或在 [我們的文件](https://aka.ms/vscode-scm) 深入了解如何在 Azure Data Studio 中使用 git 和原始檔控制。
 如果您使用的是其他版本的控制系統，可以[搜尋市集](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22) 尋找其他延伸模組。</target>
+      </trans-unit>
+      <trans-unit id="view.workbench.scm.missing.guide">
+        <source xml:lang="en">Install Git, a popular source control system, to track code changes and collaborate with others. Learn more in our [Git guides](https://aka.ms/vscode-scm).</source>
+        <target state="translated">安裝 Git，這是熱門的原始檔控制系統，以追蹤程式碼變更並與其他人共同作業。在我們的[Git指南](https://aka.ms/vscode-scm)中深入了解。</target>
+      </trans-unit>
+      <trans-unit id="view.workbench.scm.missing.guide.linux">
+        <source xml:lang="en">Source control depends on Git being installed.
+[Download Git for Linux](https://git-scm.com/download/linux)
+After installing, please [reload](command:workbench.action.reloadWindow) (or [troubleshoot](command:git.showOutput)). Additional source control providers can be installed [from the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).</source>
+        <target state="translated">原始檔控制必須安裝 Git。
+[下載適用於 Linux 的 Git](https://git-scm.com/download/linux)
+安裝之後，請 [重新載入](command:workbench.action.reloadWindow) (或 [疑難排解](command:git.showOutput))。可 [從 Marketplace] 安裝其他原始檔控制提供者 (command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22)。</target>
+      </trans-unit>
+      <trans-unit id="view.workbench.scm.missing.guide.mac">
+        <source xml:lang="en">[Download Git for macOS](https://git-scm.com/download/mac)
+After installing, please [reload](command:workbench.action.reloadWindow) (or [troubleshoot](command:git.showOutput)). Additional source control providers can be installed [from the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).</source>
+        <target state="translated">[下載適用於 macOS 的 Git](https://git-scm.com/download/mac)
+安裝之後，請 [重新載入](command:workbench.action.reloadWindow) (或 [疑難排解](command:git.showOutput))。可 [從 Marketplace] 安裝其他原始檔控制提供者(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22)。</target>
+      </trans-unit>
+      <trans-unit id="view.workbench.scm.missing.guide.windows">
+        <source xml:lang="en">[Download Git for Windows](https://git-scm.com/download/win)
+After installing, please [reload](command:workbench.action.reloadWindow) (or [troubleshoot](command:git.showOutput)). Additional source control providers can be installed [from the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).</source>
+        <target state="translated">[下載適用於 Windows 的 Git](https://git-scm.com/download/win)
+安裝之後，請 [重新載入](command:workbench.action.reloadWindow) (或[疑難排解](command:git.showOutput))。可 [從 Marketplace] 安裝其他原始檔控制提供者(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22)。</target>
       </trans-unit>
       <trans-unit id="view.workbench.scm.workspace">
         <source xml:lang="en">The workspace currently open doesn't have any folders containing git repositories. You can initialize a repository on a folder which will enable source control features powered by git.
