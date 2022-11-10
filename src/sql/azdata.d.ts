@@ -559,7 +559,7 @@ declare module 'azdata' {
 
 		disconnect(connectionUri: string): Thenable<boolean>;
 
-		changePassword(connectionUri: string, connectionInfo: ConnectionInfo, newPassword: string): Thenable<boolean>;
+		changePassword(connectionUri: string, connectionInfo: ConnectionInfo, newPassword: string): Thenable<PasswordChangeResult>;
 
 		cancelConnect(connectionUri: string): Thenable<boolean>;
 
@@ -683,6 +683,21 @@ declare module 'azdata' {
 	export interface ListDatabasesResult {
 		databaseNames: Array<string>;
 		databases?: Array<DatabaseInfo> | undefined;
+	}
+	// Password Change Request ----------------------------------------------------------------------
+	export interface PasswordChangeResult {
+		/**
+		 * Whether the password change was successful
+		 */
+		result: boolean;
+		/**
+		 * The error message if the password change was unsuccessful
+		 */
+		messages?: string | undefined;
+		/**
+		 * More details for the error for a failed password change
+		 */
+		errorMessage?: string | undefined;
 	}
 
 	/**

@@ -283,8 +283,11 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			} else {
 				this._connectionDialog.resetConnection();
 				let passwordChangeResult = await this._connectionManagementService.sendChangePassword(connection, connectionResult.uriForPasswordChange);
-				if (passwordChangeResult) {
+				if (passwordChangeResult.result) {
 					//console.log('password change was successful for ' + connection.userName);
+				}
+				else {
+					//console.log('error message 1 is ' + passwordChangeResult.errorMessage + ' error message 2 is ' + passwordChangeResult.messages);
 				}
 				// TODO: if successful with password change, change the password of the connection profile, then connect again.
 				//this.showPasswordResetDialog(connection);

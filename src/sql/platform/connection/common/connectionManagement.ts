@@ -123,7 +123,7 @@ export interface IConnectionManagementService {
 	/**
 	 * Changes password for username
 	 */
-	sendChangePassword(connection: IConnectionProfile, uri: string): Promise<boolean>;
+	sendChangePassword(connection: IConnectionProfile, uri: string): Promise<azdata.PasswordChangeResult>;
 
 	/**
 	 * Replaces a connectioninfo's associated uri with a new uri.
