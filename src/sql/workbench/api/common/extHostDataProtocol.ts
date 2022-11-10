@@ -225,7 +225,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<azdata.ConnectionProvider>(handle).disconnect(connectionUri);
 	}
 
-	override $changePassword(handle: number, connectionUri: string, connection: azdata.ConnectionInfo, newPassword: string): Thenable<boolean> {
+	override $changePassword(handle: number, connectionUri: string, connection: azdata.ConnectionInfo, newPassword: string): Thenable<azdata.PasswordChangeResult> {
 		if (this.uriTransformer) {
 			connectionUri = this._getTransformedUri(connectionUri, this.uriTransformer.transformIncoming);
 		}

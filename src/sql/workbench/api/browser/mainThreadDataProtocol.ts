@@ -83,7 +83,7 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 			disconnect(connectionUri: string): Thenable<boolean> {
 				return self._proxy.$disconnect(handle, connectionUri);
 			},
-			changePassword(connectionUri, connectionInfo, newPassword): Thenable<boolean> {
+			changePassword(connectionUri, connectionInfo, newPassword): Thenable<azdata.PasswordChangeResult> {
 				return self._proxy.$changePassword(handle, connectionUri, connectionInfo, newPassword);
 			},
 			changeDatabase(connectionUri: string, newDatabase: string): Thenable<boolean> {
