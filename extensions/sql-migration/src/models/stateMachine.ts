@@ -14,7 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../telemtery';
 import { hashString, deepClone } from '../api/utils';
 import { SKURecommendationPage } from '../wizard/skuRecommendationPage';
-import { excludeDatabses, TargetDatabaseInfo } from '../api/sqlUtils';
+import { excludeDatabases, TargetDatabaseInfo } from '../api/sqlUtils';
 const localize = nls.loadMessageBundle();
 
 export enum State {
@@ -294,7 +294,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	}
 	public async getDatabases(): Promise<string[]> {
 		const temp = await azdata.connection.listDatabases(this.sourceConnectionId);
-		const finalResult = temp.filter((name) => !excludeDatabses.includes(name));
+		const finalResult = temp.filter((name) => !excludeDatabases.includes(name));
 		return finalResult;
 	}
 	public hasRecommendedDatabaseListChanged(): boolean {
