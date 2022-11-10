@@ -83,7 +83,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _contextsChangedEmitter = new Emitter<void>();
 	private _contextsLoadingEmitter = new Emitter<void>();
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
-	private _kernelsChangedEmitter = new Emitter<nb.IKernel>();
 	private _kernelsAddedEmitter = new Emitter<nb.IKernel>();
 	private _kernelChangedEmitter = new Emitter<nb.IKernelChangedArgs>();
 	private _viewModeChangedEmitter = new Emitter<ViewMode>();
@@ -262,10 +261,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	 */
 	public get kernelChanged(): Event<nb.IKernelChangedArgs> {
 		return this._kernelChangedEmitter.event;
-	}
-
-	public get kernelsChanged(): Event<nb.IKernel> {
-		return this._kernelsChangedEmitter.event;
 	}
 
 	/**
@@ -1030,9 +1025,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 			clientSession.onKernelChanging(async (e) => {
 				await this.loadActiveContexts(e);
-			});
-			clientSession.statusChanged(async (session) => {
-				this._kernelsChangedEmitter.fire(session.kernel);
 			});
 			await clientSession.initialize().then(() => {
 				this._sessionLoadFinished.resolve();
