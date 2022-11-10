@@ -246,7 +246,9 @@ export class ExecutionPlanView extends Disposable implements IHorizontalSashLayo
 	}
 
 	private createPlanDiagram(container: HTMLElement) {
-		this.executionPlanDiagram = this._register(this._instantiationService.createInstance(AzdataGraphView, container, this._model));
+		const diagramName = localize('executionPlan.diagram.ariaLabel', 'Execution Plan {0}', this._graphIndex);
+
+		this.executionPlanDiagram = this._register(this._instantiationService.createInstance(AzdataGraphView, container, this._model, diagramName));
 
 		this._register(this.executionPlanDiagram.onElementSelected(e => {
 			container.focus();
