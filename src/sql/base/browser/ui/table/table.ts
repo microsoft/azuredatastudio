@@ -23,7 +23,7 @@ import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { IAccessibilityProvider } from 'sql/base/browser/ui/accessibility/accessibilityProvider';
-import { IQuickInputProvider } from 'sql/base/browser/ui/qucikInput/quickInputProvider';
+import { IQuickInputProvider } from 'sql/base/browser/ui/quickInput/quickInputProvider';
 import { localize } from 'vs/nls';
 
 function getDefaultOptions<T>(): Slick.GridOptions<T> {
