@@ -5367,6 +5367,12 @@ Error: {1}</source>
     <trans-unit id="serverGroup">
       <source xml:lang="en">Server group</source>
     </trans-unit>
+    <trans-unit id="boolean.true">
+      <source xml:lang="en">True</source>
+    </trans-unit>
+    <trans-unit id="boolean.false">
+      <source xml:lang="en">False</source>
+    </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/connection/browser/localizedConstants" source-language="en" datatype="plaintext"><body>
     <trans-unit id="onDidConnectMessage">
