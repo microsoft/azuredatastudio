@@ -56,7 +56,7 @@ export class ErrorMessageDialog extends Modal {
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
-		@IOpenerService private readonly _openerService: IOpenerService
+		@IOpenerService private readonly _openerService?: IOpenerService
 	) {
 		super('', TelemetryKeys.ModalDialogName.ErrorMessage, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'normal', hasTitleIcon: true });
 		this._okLabel = localize('errorMessageDialog.ok', "OK");
