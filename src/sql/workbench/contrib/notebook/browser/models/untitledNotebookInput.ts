@@ -12,6 +12,7 @@ import { INotebookService } from 'sql/workbench/services/notebook/browser/notebo
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { EditorInputCapabilities } from 'vs/workbench/common/editor';
 import { UNTITLED_NOTEBOOK_TYPEID } from 'sql/workbench/common/constants';
+import { IEditorResolverService } from 'vs/workbench/services/editor/common/editorResolverService';
 
 export class UntitledNotebookInput extends NotebookInput {
 	public static ID: string = UNTITLED_NOTEBOOK_TYPEID;
@@ -23,9 +24,10 @@ export class UntitledNotebookInput extends NotebookInput {
 		@ITextModelService textModelService: ITextModelService,
 		@IInstantiationService instantiationService: IInstantiationService,
 		@INotebookService notebookService: INotebookService,
-		@IExtensionService extensionService: IExtensionService
+		@IExtensionService extensionService: IExtensionService,
+		@IEditorResolverService editorResolverService: IEditorResolverService,
 	) {
-		super(title, resource, textInput, true, textModelService, instantiationService, notebookService, extensionService);
+		super(title, resource, textInput, true, textModelService, instantiationService, notebookService, extensionService, editorResolverService);
 		// Set the mode explicitly so that the auto language detection doesn't run and mark the model as being JSON
 		this.textInput.resolve().then(() => this.setMode(textInput.model.getLanguageId()));
 	}
