@@ -23,6 +23,8 @@ import { InstantiationService } from 'vs/platform/instantiation/common/instantia
 import { URI } from 'vs/base/common/uri';
 import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
 import { createandLoadNotebookModel } from 'sql/workbench/contrib/notebook/test/browser/cellToolbarActions.test';
+import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
+import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 
 export class TestSerializationProvider implements azdata.SerializationProvider {
 	providerId: string;
@@ -31,11 +33,11 @@ export class TestSerializationProvider implements azdata.SerializationProvider {
 	// Write data to file
 	async startSerialization(requestParams: azdata.SerializeDataStartRequestParams): Promise<azdata.SerializeDataResult> {
 		let data: string = '';
+		if (requestParams.includeHeaders) {
+			data = requestParams.columns.map(c => c.name).join(' ') + '\n';
+		}
 		requestParams.rows.forEach((row) => {
-			row.forEach((element) => {
-				data += element.displayValue + ' ';
-			});
-			data += '\n';
+			data += row.map(c => c.displayValue).join(' ') + '\n';
 		});
 		await fs.promises.writeFile(requestParams.filePath, data);
 		return Promise.resolve({ succeeded: true, messages: undefined });
@@ -53,6 +55,7 @@ suite('Data Resource Data Provider', function () {
 	let serializationService: SerializationService;
 	let instantiationService: TypeMoq.Mock<InstantiationService>;
 	let cellModel = TypeMoq.Mock.ofType(CellModel);
+	let configurationService = new TestConfigurationService();
 
 	// Create test data with two rows and two columns
 	let source: IDataResource = {
@@ -82,7 +85,7 @@ suite('Data Resource Data Provider', function () {
 		serializationService.registerProvider('MSSQL', new TestSerializationProvider());
 		serializer = new ResultSerializer(
 			undefined, // IQueryManagementService
-			undefined, // IConfigurationService
+			configurationService,
 			editorService.object,
 			contextService,
 			fileDialogService,
@@ -108,24 +111,34 @@ suite('Data Resource Data Provider', function () {
 			serializationService,
 			instantiationService.object
 		);
+		configurationService.updateValue('queryEditor', {
+			results: {
+				saveAsCsv: {
+					includeHeaders: false
+				}
+			}
+		}, ConfigurationTarget.USER);
 		let noHeadersFile = URI.file(path.join(tempFolderPath, 'result_noHeaders.csv'));
 		let fileDialogServiceStub = sinon.stub(fileDialogService, 'showSaveDialog').returns(Promise.resolve(noHeadersFile));
-		let serializerStub = sinon.stub(serializer, 'getBasicSaveParameters').returns(<azdata.SaveResultsRequestParams>{ resultFormat: SaveFormat.CSV as string, includeHeaders: false });
 		await dataResourceDataProvider.serializeResults(SaveFormat.CSV, undefined);
 		fileDialogServiceStub.restore();
-		serializerStub.restore();
 
+		configurationService.updateValue('queryEditor', {
+			results: {
+				saveAsCsv: {
+					includeHeaders: true
+				}
+			}
+		}, ConfigurationTarget.USER);
 		let withHeadersFile = URI.file(path.join(tempFolderPath, 'result_withHeaders.csv'));
 		fileDialogServiceStub = sinon.stub(fileDialogService, 'showSaveDialog').returns(Promise.resolve(withHeadersFile));
-		serializerStub = sinon.stub(serializer, 'getBasicSaveParameters').returns(<azdata.SaveResultsRequestParams>{ resultFormat: SaveFormat.CSV as string, includeHeaders: true });
 		await dataResourceDataProvider.serializeResults(SaveFormat.CSV, undefined);
 		fileDialogServiceStub.restore();
-		serializerStub.restore();
 
 		const noHeadersResult = await fs.readFile(noHeadersFile.fsPath);
-		assert.strictEqual(noHeadersResult.toString(), '1 2 \n3 4 \n', 'result data should not include headers');
+		assert.strictEqual(noHeadersResult.toString(), '1 2\n3 4\n', 'result data should not include headers');
 
 		const withHeadersResult = await fs.readFile(withHeadersFile.fsPath);
-		assert.strictEqual(withHeadersResult.toString(), 'col1 col2 \n1 2 \n3 4 \n', 'result data should include headers');
+		assert.strictEqual(withHeadersResult.toString(), 'col1 col2\n1 2\n3 4\n', 'result data should include headers');
 	});
 });
