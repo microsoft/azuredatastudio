@@ -648,7 +648,23 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			let options = selectedAccount.properties.tenants.map(tenant => tenant.displayName);
 			this._azureTenantDropdown.setOptions(options);
 			this._tableContainer.classList.remove(hideTenantsClassName);
-			this.onAzureTenantSelected(0);
+
+			// If we have a tenant ID available, select that instead of the first one
+			if (this._azureTenantId) {
+				let tenant = selectedAccount.properties.tenants.find(tenant => tenant.id === this._azureTenantId);
+				if (tenant) {
+					this.onAzureTenantSelected(options.indexOf(tenant.displayName));
+				}
+				else {
+					// This should ideally never ever happen!
+					this._logService.error(`onAzureAccountSelected : Could not find tenant with ID ${this._azureTenantId} for account ${selectedAccount.displayInfo.displayName}`);
+					this.onAzureTenantSelected(0);
+				}
+			}
+			else {
+				this.onAzureTenantSelected(0);
+			}
+
 		} else {
 			if (selectedAccount && selectedAccount.properties.tenants && selectedAccount.properties.tenants.length === 1) {
 				this._azureTenantId = selectedAccount.properties.tenants[0].id;
@@ -667,6 +683,10 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			if (tenant) {
 				this._azureTenantId = tenant.id;
 				this._callbacks.onAzureTenantSelection(tenant.id);
+			}
+			else {
+				// This should ideally never ever happen!
+				this._logService.error(`onAzureTenantSelected : Could not find tenant with ID ${this._azureTenantId} for account ${account.displayInfo.displayName}`);
 			}
 		}
 	}
@@ -801,10 +821,14 @@ export class ConnectionWidget extends lifecycle.Disposable {
 					this._azureAccountDropdown.selectWithOptionName(this.getModelValue(accountName));
 					await this.onAzureAccountSelected();
 					let account = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
-					if (account && account.properties.tenants.length > 1) {
+					if (account && account.properties.tenants && account.properties.tenants.length > 1) {
 						let tenant = account.properties.tenants.find(tenant => tenant.id === tenantId);
 						if (tenant) {
 							this._azureTenantDropdown.selectWithOptionName(tenant.displayName);
+						}
+						else {
+							// This should ideally never ever happen!
+							this._logService.error(`fillInConnectionInputs : Could not find tenant with ID ${this._azureTenantId} for account ${accountName}`);
 						}
 						this.onAzureTenantSelected(this._azureTenantDropdown.values.indexOf(this._azureTenantDropdown.value));
 					}
