@@ -648,7 +648,18 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			let options = selectedAccount.properties.tenants.map(tenant => tenant.displayName);
 			this._azureTenantDropdown.setOptions(options);
 			this._tableContainer.classList.remove(hideTenantsClassName);
-			this.onAzureTenantSelected(0);
+
+			// If we have a tenant ID available, select that instead of the first one
+			if (this._azureTenantId) {
+				let tenant = selectedAccount.properties.tenants.find(tenant => tenant.id === this._azureTenantId);
+				if (tenant) {
+					this.onAzureTenantSelected(options.indexOf(tenant.displayName));
+				}
+			}
+			else {
+				this.onAzureTenantSelected(0);
+			}
+
 		} else {
 			if (selectedAccount && selectedAccount.properties.tenants && selectedAccount.properties.tenants.length === 1) {
 				this._azureTenantId = selectedAccount.properties.tenants[0].id;
