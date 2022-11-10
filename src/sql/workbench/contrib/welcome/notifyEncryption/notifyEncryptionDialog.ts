@@ -17,6 +17,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ErrorMessageDialog } from 'sql/workbench/services/errorMessage/browser/errorMessageDialog';
 import { Link } from 'vs/platform/opener/browser/link';
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
+import { IOpenerService } from 'vs/platform/opener/common/opener';
 
 export class NotifyEncryptionDialog extends ErrorMessageDialog {
 	private static NOTIFY_ENCRYPT_SHOWN = 'workbench.notifyEncryptionShown';
@@ -30,10 +31,11 @@ export class NotifyEncryptionDialog extends ErrorMessageDialog {
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
+		@IOpenerService openerService: IOpenerService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IStorageService private _storageService: IStorageService
 	) {
-		super(themeService, clipboardService, layoutService, telemetryService, contextKeyService, logService, textResourcePropertiesService);
+		super(themeService, clipboardService, layoutService, telemetryService, contextKeyService, logService, textResourcePropertiesService, openerService);
 	}
 
 	public override open(): void {
@@ -43,9 +45,7 @@ export class NotifyEncryptionDialog extends ErrorMessageDialog {
 
 		super.open(Severity.Info,
 			localize('notifyEncryption.title', 'Important Update'),
-			localize('notifyEncryption.message', 'Azure Data Studio now has encryption enabled by default for all SQL Server connections. This may result in your existing connections no longer working.{0}We recommend you review the link below for more details.', '\n\n'),
-			null,
-			null);
+			localize('notifyEncryption.message', 'Azure Data Studio now has encryption enabled by default for all SQL Server connections. This may result in your existing connections no longer working.{0}We recommend you review the link below for more details.', '\n\n'));
 		this._storageService.store(NotifyEncryptionDialog.NOTIFY_ENCRYPT_SHOWN, true, StorageScope.GLOBAL, StorageTarget.MACHINE);
 	}
 
