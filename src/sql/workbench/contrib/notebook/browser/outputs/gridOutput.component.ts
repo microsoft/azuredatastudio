@@ -467,17 +467,6 @@ export class DataResourceDataProvider implements IGridDataProvider {
 				endIndex = maxRow;
 			}
 			let result: ICellValue[][] = [];
-			if (includeHeaders) {
-				result.push(columns.map(col => {
-					let headerData: azdata.DbCellValue;
-					headerData = {
-						displayValue: col.columnName,
-						isNull: false,
-						invariantCultureDisplayValue: col.columnName
-					};
-					return headerData;
-				}));
-			}
 			result = result.concat(this._rows.slice(index, endIndex).map(row => {
 				if (this.isSelected(singleSelection)) {
 					return row.slice(singleSelection.fromCell, singleSelection.toCell + 1);
