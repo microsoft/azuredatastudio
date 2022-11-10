@@ -49,6 +49,7 @@ import { IBackupRestoreUrlBrowserDialogService } from 'sql/workbench/services/ba
 import { MediaDeviceType } from 'sql/workbench/contrib/backup/common/constants';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 
 interface FileListElement {
 	logicalFileName: string;
@@ -159,7 +160,8 @@ export class RestoreDialog extends Modal {
 		@IClipboardService clipboardService: IClipboardService,
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
-		@IAccessibilityService private _accessibilityService: IAccessibilityService
+		@IAccessibilityService private _accessibilityService: IAccessibilityService,
+		@IQuickInputService private _quickInputService: IQuickInputService
 	) {
 		super(localize('RestoreDialogTitle', "Restore database"), TelemetryKeys.ModalDialogName.Restore, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { hasErrors: true, width: 'wide', hasSpinner: true });
 		// view model
@@ -310,7 +312,7 @@ export class RestoreDialog extends Modal {
 		this._restorePlanTableContainer = DOM.append(restorePlanElement, DOM.$('.dialog-input-section.restore-list'));
 		DOM.hide(this._restorePlanTableContainer);
 		this._restorePlanData = new TableDataView<Slick.SlickData>();
-		this._restorePlanTable = this._register(new Table<Slick.SlickData>(this._restorePlanTableContainer, this._accessibilityService,
+		this._restorePlanTable = this._register(new Table<Slick.SlickData>(this._restorePlanTableContainer, this._accessibilityService, this._quickInputService,
 			{ dataProvider: this._restorePlanData, columns: this._restorePlanColumn }, { enableColumnReorder: false }));
 		this._restorePlanTable.setTableTitle(localize('restorePlan', "Restore plan"));
 		this._restorePlanTable.setSelectionModel(new RowSelectionModel({ selectActiveRow: false }));
@@ -361,7 +363,7 @@ export class RestoreDialog extends Modal {
 			field: 'restoreAs'
 		}];
 		this._fileListData = new TableDataView<FileListElement>();
-		this._fileListTable = this._register(new Table<FileListElement>(this._fileListTableContainer, this._accessibilityService,
+		this._fileListTable = this._register(new Table<FileListElement>(this._fileListTableContainer, this._accessibilityService, this._quickInputService,
 			{ dataProvider: this._fileListData, columns }, { enableColumnReorder: false }));
 		this._fileListTable.setSelectionModel(new RowSelectionModel());
 
