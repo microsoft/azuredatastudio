@@ -678,7 +678,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	private onAzureTenantSelected(tenantIndex: number): void {
 		this._azureTenantId = undefined;
 		let account: azdata.Account = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
-		if (account && account.properties.tenants && account.properties.tenants.length > 1) {
+		if (account && account.properties.tenants) {
 			let tenant = account.properties.tenants[tenantIndex];
 			if (tenant) {
 				this._azureTenantId = tenant.id;
