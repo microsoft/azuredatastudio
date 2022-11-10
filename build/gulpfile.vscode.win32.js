@@ -82,7 +82,6 @@ function buildWin32Setup(arch, target) {
 		const outputPath = setupDir(arch, target);
 		mkdirp.sync(outputPath);
 
-		arch = 'x64';
 		const originalProductJsonPath = path.join(sourcePath, 'resources/app/product.json');
 		const productJsonPath = path.join(outputPath, 'product.json');
 		const productJson = JSON.parse(fs.readFileSync(originalProductJsonPath, 'utf8'));
@@ -105,7 +104,7 @@ function buildWin32Setup(arch, target) {
 			IncompatibleTargetAppId: { 'ia32': product.win32AppId, 'x64': product.win32x64AppId, 'arm64': product.win32arm64AppId }[arch],
 			IncompatibleArchAppId: { 'ia32': x64AppId, 'x64': ia32AppId, 'arm64': ia32AppId }[arch],
 			AppUserId: product.win32AppUserModelId,
-			ArchitecturesAllowed: { 'ia32': '', 'x64': 'x64', 'arm64': 'arm64' }[arch],
+			ArchitecturesAllowed: { 'ia32': '', 'x64': 'x64', 'arm64': ['arm64', 'x64'] }[arch],
 			ArchitecturesInstallIn64BitMode: { 'ia32': '', 'x64': 'x64', 'arm64': 'arm64' }[arch],
 			SourceDir: sourcePath,
 			RepoDir: repoPath,
