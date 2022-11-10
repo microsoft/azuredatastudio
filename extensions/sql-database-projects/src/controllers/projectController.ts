@@ -1502,6 +1502,8 @@ export class ProjectsController {
 
 	/**
 	 * Generate a flat list of all files and folder under a folder.
+	 * @param absolutePath absolute path to folder to generate the list of files from
+	 * @returns array of uris of files and folders under the provided folder
 	 */
 	public async generateList(absolutePath: string): Promise<vscode.Uri[]> {
 		let fileFolderList: vscode.Uri[] = [];
