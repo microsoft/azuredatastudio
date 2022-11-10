@@ -133,12 +133,6 @@ export abstract class AzureAuth implements vscode.Disposable {
 		}
 	}
 
-	private getHomeTenant(account: AzureAccount): Tenant {
-		// Home is defined by the API
-		// Lets pick the home tenant - and fall back to commonTenant if they don't exist
-		return account.properties.tenants.find(t => t.tenantCategory === 'Home') ?? account.properties.tenants[0] ?? this.commonTenant;
-	}
-
 	public async refreshAccess(account: AzureAccount): Promise<AzureAccount> {
 		// Deprecated account - delete it.
 		if (account.key.accountVersion !== AzureAuth.ACCOUNT_VERSION) {
@@ -146,7 +140,10 @@ export abstract class AzureAuth implements vscode.Disposable {
 			return account;
 		}
 		try {
-			const tenant = this.getHomeTenant(account);
+			// There can be multiple home tenants
+			// We want to return the one that owns the Azure account.
+			// Not doing so can result in token being issued for the wrong tenant
+			const tenant = account.properties.owningTenant;
 			const tokenResult = await this.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.MicrosoftResourceManagement);
 			if (!tokenResult) {
 				account.isStale = true;
@@ -186,7 +183,14 @@ export abstract class AzureAuth implements vscode.Disposable {
 			return undefined;
 		}
 
-		const tenant = account.properties.tenants.find(t => t.id === tenantId);
+		if (!account.properties.owningTenant) {
+			// Should never happen
+			throw new AzureAuthError(localize('azure.owningTenantNotFound', "Owning Tenant information not found for account."), 'Owning tenant not found.', undefined);
+		}
+
+		const tenant = account.properties.owningTenant?.id === tenantId
+			? account.properties.owningTenant
+			: account.properties.tenants.find(t => t.id === tenantId);
 
 		if (!tenant) {
 			throw new AzureAuthError(localize('azure.tenantNotFound', "Specified tenant with ID '{0}' not found.", tenantId), `Tenant ${tenantId} not found.`, undefined);
@@ -557,6 +561,10 @@ export abstract class AzureAuth implements vscode.Disposable {
 		const name = tokenClaims.name ?? tokenClaims.email ?? tokenClaims.unique_name;
 		const email = tokenClaims.email ?? tokenClaims.unique_name;
 
+		// Read more about tid > https://learn.microsoft.com/azure/active-directory/develop/id-tokens
+		const owningTenant = tenants.find(t => t.id === tokenClaims.tid)
+			?? { 'id': tokenClaims.tid, 'displayName': 'Microsoft Account' };
+
 		let displayName = name;
 		if (email) {
 			displayName = `${displayName} - ${email}`;
@@ -596,6 +604,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			properties: {
 				providerSettings: this.metadata,
 				isMsAccount: accountIssuer === 'msft',
+				owningTenant: owningTenant,
 				tenants,
 				azureAuthType: this.authType
 			},
