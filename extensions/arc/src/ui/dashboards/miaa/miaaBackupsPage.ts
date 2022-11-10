@@ -278,7 +278,7 @@ export class MiaaBackupsPage extends DashboardPage {
 		} else {
 			// If we don't have an endpoint then there's no point in showing the connect button - but the logic
 			// to display text informing the user of this is already handled by the handleMiaaConfigUpdated
-			if (this._miaaModel?.config?.status.primaryEndpoint) {
+			if (this._miaaModel?.config?.status.endpoints.primaryEndpoint) {
 				this._connectToServerLoading.loading = false;
 				this._connectToServerButton.enabled = true;
 			}
