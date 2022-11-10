@@ -17,7 +17,7 @@
   ],
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/extensionIcon.png",
-  "aiKey": "AIF-37eefaf0-8022-4671-a3fb-64752724682e",
+  "aiKey": "29a207bb14f84905966a8f22524cb730-25407f35-11b6-4d4e-8114-ab9e843cb52f-7380",
   "main": "./out/main",
   "repository": {
     "type": "git",
