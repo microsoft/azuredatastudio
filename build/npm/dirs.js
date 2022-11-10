@@ -32,7 +32,6 @@ exports.dirs = [
 	'extensions/json-language-features',
 	'extensions/json-language-features/server',
 	'extensions/kusto',
-	'extensions/liveshare',
 	'extensions/machine-learning',
 	'extensions/markdown-language-features',
 	'extensions/markdown-math',
