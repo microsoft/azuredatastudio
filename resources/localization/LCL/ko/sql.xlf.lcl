@@ -909,6 +909,18 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
+      <Item ItemId=";@src/sql/workbench/contrib/executionPlan/browser/azdataGraphView.executionPlanComparison.bottomPlanDiagram.ariaLab" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) el" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[{0}, use arrow keys to navigate between nodes]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[{0}, 화살표 키를 사용하여 노드 간 탐색]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
       <Item ItemId=";@src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView.epComapre.LoadingPlanCompleteMe" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) ssage" ItemType="0" PsrId="308" Leaf="true">
@@ -945,6 +957,30 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
+      <Item ItemId=";@src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView.executionPlanComparison.bottomP" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) lanDiagram.name" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Bottom execution Plan {0}]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[최하위 실행 계획 {0}]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView.executionPlanComparison.topPlan" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) Diagram.name" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Top execution Plan {0}]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[최상위 실행 계획 {0}]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
       <Item ItemId=";@src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView.executionPlanPropertiesEdge" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) OperationName" ItemType="0" PsrId="308" Leaf="true">
@@ -952,18 +988,6 @@
             <Val><![CDATA[Edge]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[Edge]]></Val>
-            </Tgt>
-          </Str>
-          <Disp Icon="Str" />
-        </Item>
-      </Item>
-      <Item ItemId=";@src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView.executionPlanSummaryForExpe" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) nsiveOperators" ItemType="0" PsrId="308" Leaf="true">
-          <Str Cat="Text">
-            <Val><![CDATA[Summary: {0}{1}]]></Val>
-            <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[요약: {0}{1}]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -981,18 +1005,6 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView.nodePropertyViewBottomPlanG" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) reaterThanTopPlan" ItemType="0" PsrId="308" Leaf="true">
-          <Str Cat="Text">
-            <Val><![CDATA[{0} is greater for the bottom plan than it is for the top plan.]]></Val>
-            <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[{0}은(는) 아래쪽 계획의 경우가 위쪽 계획의 경우보다 더 큽니다.]]></Val>
-            </Tgt>
-          </Str>
-          <Disp Icon="Str" />
-        </Item>
-      </Item>
       <Item ItemId=";@src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView.nodePropertyViewLeftOperati" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) on" ItemType="0" PsrId="308" Leaf="true">
@@ -1000,18 +1012,6 @@
             <Val><![CDATA[Left operation: {0}]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[왼쪽 작업: {0}]]></Val>
-            </Tgt>
-          </Str>
-          <Disp Icon="Str" />
-        </Item>
-      </Item>
-      <Item ItemId=";@src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView.nodePropertyViewLeftPlanGre" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) aterThanRightPlan" ItemType="0" PsrId="308" Leaf="true">
-          <Str Cat="Text">
-            <Val><![CDATA[{0} is greater for the left plan than it is for the right plan.]]></Val>
-            <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[{0}은(는) 왼쪽 계획의 경우가 오른쪽 계획의 경우보다 큽니다.]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -1128,25 +1128,13 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView.nodePropertyViewRightPlanGr" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@src/sql/workbench/contrib/executionPlan/browser/executionPlanContribution.executionPlan.tooltips.enableOnHoverToo" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) eaterThanLeftPlan" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) ltips" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[{0} is greater for the right plan than it is for the left plan.]]></Val>
+            <Val><![CDATA[When true, enables tooltips on hover for execution plan. When false, tooltips are shown on node click or F3 key press.]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[{0}은(는) 오른쪽 계획의 경우가 왼쪽 계획의 경우보다 큽니다.]]></Val>
-            </Tgt>
-          </Str>
-          <Disp Icon="Str" />
-        </Item>
-      </Item>
-      <Item ItemId=";@src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView.nodePropertyViewTopPlanGrea" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) terThanBottomPlan" ItemType="0" PsrId="308" Leaf="true">
-          <Str Cat="Text">
-            <Val><![CDATA[{0} is greater for the top plan than it is for the bottom plan.]]></Val>
-            <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[{0}은(는) 위쪽 계획의 경우가 아래쪽 계획의 경우보다 더 큽니다.]]></Val>
+              <Val><![CDATA[true인 경우 실행 계획에 대한 마우스 오버 시 도구 설명을 활성화합니다. false인 경우 노드 클릭 또는 F3 키 누름 시 도구 설명이 표시됩니다.]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -1251,6 +1239,18 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
+      <Item ItemId=";@src/sql/workbench/contrib/executionPlan/browser/widgets/highlightExpensiveNodeWidget.executionPlanSelectExpenseMe" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) tricTitle" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Select expense metric]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[경비 메트릭 선택]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
       <Item ItemId=";@src/sql/workbench/contrib/executionPlan/browser/widgets/highlightExpensiveNodeWidget.highlightExpensiveOperationA" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) ction" ItemType="0" PsrId="308" Leaf="true">
@@ -1279,18 +1279,6 @@
             <Val><![CDATA[Highlight Expensive Operation]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[비용이 많이 드는 작업 강조 표시]]></Val>
-            </Tgt>
-          </Str>
-          <Disp Icon="Str" />
-        </Item>
-      </Item>
-      <Item ItemId=";@src/sql/workbench/contrib/executionPlan/browser/widgets/highlightExpensiveNodeWidget.invalidPropertyExecutionPlan" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) Metric" ItemType="0" PsrId="308" Leaf="true">
-          <Str Cat="Text">
-            <Val><![CDATA[No nodes found with the {0} metric.]]></Val>
-            <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[{0} 메트릭을 가진 노드를 찾을 수 없습니다.]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -1477,6 +1465,30 @@
             <Val><![CDATA[Preview features enhance your experience in Azure Data Studio by giving you full access to new features and improvements. You can learn more about preview features [here]5D;({0}). Would you like to enable preview features?]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
               <Val><![CDATA[미리 보기 기능을 사용하면 새로운 기능 및 개선 사항에 대한 모든 권한을 제공함으로써 Azure Data Studio에서 환경이 개선됩니다. [여기]5D;({0})에서 미리 보기 기능에 관해 자세히 알아볼 수 있습니다. 미리 보기 기능을 사용하시겠습니까?]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@src/sql/workbench/contrib/welcome/page/browser/welcomePage.contribution.workbench.startupEditor.welcomePageInEmpt" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) yWorkbench" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Open the Welcome page when opening an empty workbench.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[빈 워크벤치를 열 때 시작 페이지를 엽니다.]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";@src/sql/workbench/contrib/welcome/page/browser/welcomePage.contribution.workbench.startupEditor.welcomePageWithTo" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) ur" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Open the welcome page with Getting Started Tour (default)]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[시작하기 둘러보기로 시작 페이지 열기(기본값)]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -2319,6 +2331,33 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/base/browser/ui/table/table.table.resizeColumn" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Provide new column width]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[새 열 너비 제공]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/base/browser/ui/table/table.table.resizeColumn.invalid" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Invalid column width]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[잘못된 열 너비]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/base/browser/ui/table/table.table.resizeColumn.negativeSize" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Size cannot be 0 or negative]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[크기는 0 또는 음수일 수 없음]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/base/browser/ui/taskbar/overflowActionbar.toggleMore" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Toggle More]]></Val>
@@ -2360,6 +2399,15 @@
           <Val><![CDATA[In order to use Azure Data Studio in {0}, Azure Data Studio needs to restart.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[{0}에서 Azure Data Studio를 사용하려면 Azure Data Studio를 다시 시작해야 합니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/base/common/locConstants.appName" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[`${appName}`: e.g. Azure Data Studio.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[`${appName}`: 예 - Azure Data Studio.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2583,6 +2631,24 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/base/common/locConstants.openDefaultSettingsJson" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[open the default settings JSON]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[기본 설정 JSON 열기]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/base/common/locConstants.openDefaultSettingsJson.capitalized" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Open Default Settings (JSON)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[기본 설정 열기(JSON)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/base/common/locConstants.postDisableTooltip" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Please reload Azure Data Studio to disable this extension.]]></Val>
@@ -2646,6 +2712,33 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/base/common/locConstants.sql.versionMismatch" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Extension is not compatible with Azure Data Studio {0}. Extension requires: {1}.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[확장이 Azure Data Studio {0}과(와) 호환되지 않습니다. 확장에 {1}이(가) 필요합니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/base/common/locConstants.sql.versionMismatchVsCode" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Extension is not compatible with Azure Data Studio {0}. Extension requires a newer VS Code Engine Version {1}, which is newer than what is currently supported ({2}).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[확장은 Azure Data Studio {0}과(와) 호환되지 않습니다. 확장에는 현재 지원되는 버전({2})보다 최신 버전인 최신 VS Code Engine 버전 {1}이(가) 필요합니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/base/common/locConstants.sql.versionSyntax" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Could not parse `{0}` value {1}. Please use, for example: ^1.22.0, ^1.22.x, etc.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[`{0}` 값 {1}을(를) 구문 분석할 수 없습니다. 예를 들어 ^1.22.0, ^1.22.x 등을 사용하세요.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/base/common/locConstants.sql.watcherExclude" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Configure glob patterns of file paths to exclude from file watching. Patterns must match on absolute paths, i.e. prefix with `**/` or the full path to match properly and suffix with `/**` to match files within a path (for example `**/build/output/**` or `/Users/name/workspaces/project/build/output/**`). Changing this setting requires a restart. When you experience Azure Data Studio consuming lots of CPU time on startup, you can exclude large folders to reduce the initial load.]]></Val>
@@ -2655,6 +2748,78 @@
           <Prev Cat="Text">
             <Val><![CDATA[Configure glob patterns of file paths to exclude from file watching. Patterns must match on absolute paths (i.e. prefix with ** or the full path to match properly). Changing this setting requires a restart. When you experience Azure Data Studio consuming lots of CPU time on startup, you can exclude large folders to reduce the initial load.]]></Val>
           </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/base/common/locConstants.terminal.integrated.allowChords" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Whether or not to allow chord keybindings in the terminal. Note that when this is true and the keystroke results in a chord it will bypass `#terminal.integrated.commandsToSkipShell#`, setting this to false is particularly useful when you want ctrl+k to go to your shell (not Azure Data Studio).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[터미널에서 동시 키 바인딩을 허용할지 여부입니다. 이 설정이 true이고 키 입력이 동시에 발생하는 경우 `#terminal.integrated.commandsToSkipShell#`가 무시되고, 이 설정을 false로 설정하면 <ctrl+k>를 눌러 셸(Azure Data Studio 아님)로 이동하려는 경우에 특히 유용합니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/base/common/locConstants.terminal.integrated.autoReplies" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[A set of messages that when encountered in the terminal will be automatically responded to. Provided the message is specific enough, this can help automate away common responses.]D;]A;]D;]A;Remarks:]D;]A;]D;]A;- Use {0} to automatically respond to the terminate batch job prompt on Windows.]D;]A;- The message includes escape sequences so the reply might not happen with styled text.]D;]A;- Each reply can only happen once every second.]D;]A;- Use {1} in the reply to mean the enter key.]D;]A;- To unset a default key, set the value to null.]D;]A;- Restart Azured Data Studio if new don't apply.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[터미널에서 발견되면 자동으로 응답되는 메시지 집합입니다. 메시지가 충분히 구체적인 경우 일반적인 응답을 자동화하는 데 도움이 될 수 있습니다.]D;]A;]D;]A;비고:]D;]A;]D;]A;- {0}을(를) 사용하여 Windows에서 일괄 작업 종료 프롬프트에 자동으로 응답합니다.]D;]A;- 메시지에는 이스케이프 시퀀스가 포함되어 있어 스타일이 지정된 텍스트에서는 응답이 발생하지 않을 수 있습니다.]D;]A;- 각 회신은 1초에 한 번만 발생할 수 있습니다.]D;]A;- Enter 키를 의미하려면 회신에 {1}을(를) 사용하세요.]D;]A;- 기본 키를 설정 해제하려면 값을 null로 설정하세요.]D;]A;- 새 항목이 적용되지 않으면 VS Code를 다시 시작합니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/base/common/locConstants.terminal.integrated.commandsToSkipShell" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[A set of command IDs whose keybindings will not be sent to the shell but instead always be handled by Azure Data Studio. This allows keybindings that would normally be consumed by the shell to act instead the same as when the terminal is not focused, for example `Ctrl+P` to launch Quick Open.]D;]A;]D;]A;&nbsp;]D;]A;]D;]A;Many commands are skipped by default. To override a default and pass that command's keybinding to the shell instead, add the command prefixed with the `-` character. For example add `-workbench.action.quickOpen` to allow `Ctrl+P` to reach the shell.]D;]A;]D;]A;&nbsp;]D;]A;]D;]A;The following list of default skipped commands is truncated when viewed in Settings Editor. To see the full list, {1} and search for the first command from the list below.]D;]A;]D;]A;&nbsp;]D;]A;]D;]A;Default Skipped Commands:]D;]A;]D;]A;{0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[키 바인딩이 셸에 전송되지 않고 항상 Azure Data Studio에서 처리되는 명령 ID 세트입니다. 따라서 보통은 셸에서 사용되어 터미널에 포커스가 없을 때와 동일하게 작동하는 키 바인딩을 사용할 수 있습니다(예: 'Ctrl+P'를 사용하여 Quick Open 시작).]D;]A;]D;]A;&nbsp;]D;]A;]D;]A;기본적으로 많은 명령을 건너뜁니다. 기본값을 무시하고 대신 해당 명령의 키 바인딩을 셸에 전달하려면 `-` 문자가 접두사로 붙은 명령을 추가하세요. 예를 들어 `Ctrl+P`가 쉘에 도달할 수 있도록 `-workbench.action.quickOpen`을 추가합니다.]D;]A;]D;]A;&nbsp;]D;]A;]D;]A;다음과 같은 기본 건너뛰는 명령 목록은 설정 편집기에서 볼 때 잘립니다. 전체 목록을 보려면 아래 목록에서 첫 번째 명령을 {1} 및 검색하세요.]D;]A;]D;]A;&nbsp;]D;]A;]D;]A;기본 건너뛴 명령:]D;]A;]D;]A;{0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/base/common/locConstants.terminal.integrated.detectLocale" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Controls whether to detect and set the `$LANG` environment variable to a UTF-8 compliant option since Azure Data Studio's terminal only supports UTF-8 encoded data coming from the shell.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Data Studio 터미널은 셸에서 들어오는, UTF-8로 인코딩된 데이터만 지원하므로 '$LANG' 환경 변수를 검색하고 UTF-8 규격 옵션으로 설정할지 여부를 제어합니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/base/common/locConstants.terminal.integrated.env.linux" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Object with environment variables that will be added to the Azure Data Studio process to be used by the terminal on Linux. Set to `null` to delete the environment variable.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Linux의 터미널에서 사용할 Azure Data Studio 프로세스에 추가될 환경 변수가 있는 개체입니다. 환경 변수를 삭제하려면 'null'로 설정하세요.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/base/common/locConstants.terminal.integrated.env.osx" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Object with environment variables that will be added to the Azure Data Studio process to be used by the terminal on macOS. Set to `null` to delete the environment variable.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[macOS의 터미널에서 사용할 Azure Data Studio 프로세스에 추가될 환경 변수가 있는 개체입니다. 환경 변수를 삭제하려면 'null'로 설정하세요.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/base/common/locConstants.terminal.integrated.env.windows" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Object with environment variables that will be added to the Azure Data Studio process to be used by the terminal on Windows. Set to `null` to delete the environment variable.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Windows 터미널에서 사용할 Azure Data Studio 프로세스에 추가되는 환경 변수를 포함하는 개체입니다. 환경 변수를 삭제하려면 'null'로 설정합니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/base/common/locConstants.terminal.integrated.inheritEnv" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Whether new shells should inherit their environment from Azure Data Studio, which may source a login shell to ensure $PATH and other development variables are initialized. This has no effect on Windows.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[새 셸에서 $PATH 및 기타 개발 변수가 초기화되도록 로그인 셸을 제공할 수 있는 Azure Data Studio에서 환경을 상속해야 하는지 여부입니다. 이는 Windows에는 영향을 주지 않습니다.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2922,6 +3087,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/platform/serialization/common/serializationService.missingSerializationProviderError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Could not find a serialization provider with the specified ID '{0}']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[지정된 ID가 '{0}'인 직렬화 공급자를 찾을 수 없습니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/platform/serialization/common/serializationService.noSerializationProvider" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cannot serialize data as no provider has been registered]]></Val>
@@ -2949,20 +3123,20 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/platform/theme/common/colorRegistry.buttonDropdo0wnBoxShadow" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The button dropdown box shadow color]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[단추 드롭다운 상자 그림자 색]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/platform/theme/common/colorRegistry.buttonDropdownBackgroundHover" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The button dropdown background hover color]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[단추 드롭다운 배경 가리키기 색]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/platform/theme/common/colorRegistry.buttonDropdownBoxShadow" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[The button dropdown box shadow color]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[단추 드롭다운 상자 그림자 색]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4263,6 +4437,24 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/browser/modal/optionsDialogHelper.boolean.false" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[False]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[False]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/browser/modal/optionsDialogHelper.boolean.true" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[True]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[True]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/browser/modal/optionsDialogHelper.optionsDialog.defaultGroupName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[General]]></Val>
@@ -4524,15 +4716,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/browser/scriptingUtils.scriptSelectNotFound" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[No script was returned when calling select script on object ]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[개체에 대해 스크립트 선택을 호출할 때 스크립트가 반환되지 않았습니다. ]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";src/sql/workbench/browser/scriptingUtils.scriptingFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Scripting Failed]]></Val>
@@ -4547,6 +4730,24 @@
           <Val><![CDATA[Select]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[선택]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/browser/scriptingUtils.selectScriptForEditNotGeneratedError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Failed to generate script for Edit Data editor.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[데이터 편집 편집기에 대한 스크립트를 생성하지 못했습니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/browser/scriptingUtils.selectScriptNotGeneratedError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Failed to generate select script for the selected object.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[선택한 개체에 대한 선택 스크립트를 생성하지 못했습니다.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -7386,6 +7587,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/dataExplorer/browser/dataExplorerViewlet.ads-connections" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Icon represent a server.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[아이콘은 서버를 나타냅니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/dataExplorer/browser/dataExplorerViewlet.dataExplorer.servers" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Servers]]></Val>
@@ -7557,6 +7767,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/editData/browser/gridActions.saveAsMarkdown" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Save As Markdown]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Markdown으로 저장]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/editData/browser/gridActions.saveAsXml" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Save As XML]]></Val>
@@ -7586,10 +7805,13 @@
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/compareExecutionPlanInput.epCompare.editorName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Compare Execution Plans]]></Val>
+          <Val><![CDATA[CompareExecutionPlans]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[실행 계획 비교]]></Val>
+            <Val><![CDATA[CompareExecutionPlans]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Compare Execution Plans]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7647,20 +7869,20 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView.epComapre.placeholderInfoboxText" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Add execution plans to compare]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[비교할 실행 계획 추가]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView.epCompare.FileFilterDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Execution Plan Files]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[실행 계획 파일]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView.epCompare.addExecutionPlanLabel" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Add execution plan]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[실행 계획 추가]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -7728,6 +7950,24 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView.executionPlanDisableTooltip" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Tooltips disabled]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[도구 설명 사용 안 함]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView.executionPlanEnableTooltip" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Tooltips enabled]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[도구 설명 활성화함]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView.queryDropdownPrefix" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Query {0} of {1}: {2}]]></Val>
@@ -7760,6 +8000,15 @@
           <Val><![CDATA[Compare execution plans]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[실행 계획 비교]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanContribution.executionPlanConfigurationTitle" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Execution Plan]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[실행 계획]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -7827,6 +8076,24 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase.executionPlanCollapseAllProperties" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Collapse All]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[모두 축소]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase.executionPlanExpandAllProperties" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Expand All]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[모두 확장]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase.executionPlanPropertyViewClose" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Close]]></Val>
@@ -7847,10 +8114,13 @@
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanTab.executionPlanTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Query Plan (Preview)]]></Val>
+          <Val><![CDATA[Query Plan]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[쿼리 계획(미리 보기)]]></Val>
+            <Val><![CDATA[쿼리 계획]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Query Plan (Preview)]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7883,10 +8153,13 @@
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanTreeTab.planTreeTab.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Plan Tree (Preview)]]></Val>
+          <Val><![CDATA[Plan Tree]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[계획 트리(미리 보기)]]></Val>
+            <Val><![CDATA[플랜 트리]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Plan Tree (Preview)]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7904,6 +8177,15 @@
           <Val><![CDATA[Execution Plan Files]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[실행 계획 파일]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanView.executionPlan.diagram.ariaLabel" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Execution Plan {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[실행 계획 {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -8090,10 +8372,13 @@
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/topOperationsTab.topOperationsTabTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Top Operations  (Preview)]]></Val>
+          <Val><![CDATA[Top Operations]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[상위 작업(미리 보기)]]></Val>
+            <Val><![CDATA[주요 작업]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Top Operations  (Preview)]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -8226,6 +8511,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/widgets/nodeSearchWidget.executionPlanEnterValueTitle" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Enter search value]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[검색 값 입력]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/widgets/nodeSearchWidget.executionPlanSearchTypeContains" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Contains]]></Val>
@@ -8240,6 +8534,24 @@
           <Val><![CDATA[Equals]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[같음]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/widgets/nodeSearchWidget.executionPlanSelectPropertyTitle" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Select property]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[속성 선택]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/widgets/nodeSearchWidget.executionPlanSelectSearchTypeTitle" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Select search type]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[검색 유형 선택]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -10443,6 +10755,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebook.contribution.notebook.renderTablesInHtml" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Display and save tables in HTML format in text cells instead of converting to markdown tables.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Markdown 표로 변환하는 대신 텍스트 셀에 표를 HTML 형식으로 표시하고 저장합니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebook.contribution.notebook.richTextModeDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Text is displayed as Rich Text (also known as WYSIWYG).]]></Val>
@@ -11124,6 +11445,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet.ads-notebook" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Icon represent a notebook.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[아이콘은 전자 필기장을 나타냅니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet.notebookExplorer.name" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Notebooks]]></Val>
@@ -11718,6 +12048,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/preferences/browser/sqlSettingsLayout.executionPlan" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Execution Plan]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[실행 계획]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/preferences/browser/sqlSettingsLayout.notebook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Notebook]]></Val>
@@ -12213,6 +12552,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/query/browser/actions.saveAsMarkdown" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Save As Markdown]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Markdown으로 저장]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/query/browser/actions.saveAsXml" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Save As XML]]></Val>
@@ -12668,6 +13016,42 @@
           <Val><![CDATA[Character used for enclosing text fields when saving results as CSV]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[결과를 CSV로 저장할 때 텍스트 필드를 묶는 데 사용하는 문자]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/query/browser/query.contribution.queryEditor.results.saveAsExcel.includeHeaders" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[When true, column headers are included when saving results as an Excel file]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[true이면 결과를 Excel 파일로 저장할 때 열 머리글이 포함됩니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/query/browser/query.contribution.queryEditor.results.saveAsMarkdown.encoding" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[File encoding used when saving results as Markdown]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[결과를 Markdown으로 저장할 때 사용되는 파일 인코딩]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/query/browser/query.contribution.queryEditor.results.saveAsMarkdown.includeHeaders" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[When true, column headers are included when saving results as a Markdown file]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[true이면 결과를 Markdown 파일로 저장할 때 열 머리글이 포함됩니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/query/browser/query.contribution.queryEditor.results.saveAsMarkdown.lineSeparator" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Character(s) to use to separate lines when exporting to Markdown, defaults to system line endings]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Markdown으로 내보낼 때 줄을 구분하는 데 사용할 문자입니다. 기본값은 시스템 줄 끝입니다.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -13142,6 +13526,15 @@
           <Val><![CDATA[Resource Viewer]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[리소스 뷰어]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/resourceViewer/browser/resourceViewer.contribution.resourceViewerIcon" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Icon for resource viewer.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[리소스 뷰어의 아이콘입니다.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -13662,6 +14055,36 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/contrib/welcome/notifyEncryption/notifyEncryptionDialog.notifyEncryption.message" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Azure Data Studio now has encryption enabled by default for all SQL Server connections. This may result in your existing connections no longer working unless certain Encryption related connection properties are changed.{0}We recommend you review the link below for more details.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[이제 Azure Data Studio에서 모든 SQL Server 연결에 대해 기본적으로 암호화를 사용합니다. 이로 인해 특정 암호화 관련 연결 속성이 변경되지 않는 한 기존 연결이 더 이상 작동하지 않을 수 있습니다.{0}아래 링크에서 자세한 내용을 검토하는 것이 좋습니다.]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure Data Studio now has encryption enabled by default for all SQL Server connections. This may result in your existing connections no longer working.{0}We recommend you review the link below for more details.]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/welcome/notifyEncryption/notifyEncryptionDialog.notifyEncryption.moreInfoLink" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[More information]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[추가 정보]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/welcome/notifyEncryption/notifyEncryptionDialog.notifyEncryption.title" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Important Update]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[중요 업데이트]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/az_data_welcome_page.welcomePage.createConnection" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create a connection]]></Val>
@@ -14105,6 +14528,60 @@
           <Val><![CDATA[Close quick tour bar]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[빠른 둘러보기 표시줄 닫기]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/welcomePage.contribution.miWelcome" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[&&Welcome]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[시작(&&W)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/welcomePage.contribution.workbench.startupEditor" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Controls which editor is shown at startup, if none are restored from the previous session.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[이전 세션에서 복원된 편집기가 없는 경우 시작 시 편집기의 표시 여부를 제어합니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/welcomePage.contribution.workbench.startupEditor.newUntitledFile" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Open a new untitled file (only applies when opening an empty window).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[새로운 제목 없는 파일을 엽니다(빈 창을 여는 경우에만 적용됨).]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/welcomePage.contribution.workbench.startupEditor.none" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Start without an editor.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[편집기를 사용하지 않고 시작합니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/welcomePage.contribution.workbench.startupEditor.readme" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Open the README when opening a folder that contains one, fallback to 'welcomePage' otherwise. Note: This is only observed as a global configuration, it will be ignored if set in a workspace or folder configuration.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[폴더가 포함된 폴더를 열 때 README를 열고, 그렇지 않으면 'welcomePage'로 대체합니다. 참고: 이 항목은 전역 ccnfiguration으로만 관찰되며, 작업 영역 또는 폴더 구성에 설정된 경우 무시됩니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/welcome/page/browser/welcomePage.contribution.workbench.startupEditor.welcomePage" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Open the Welcome page, with content to aid in getting started with Azure Data Studio and extensions.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Data Studio 및 확장을 시작하는 데 도움이 되는 콘텐츠가 포함된 시작 페이지를 엽니다.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -14940,6 +15417,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/services/connection/browser/connectionDialogService.enableTrustServerCertificate" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Enable Trust server certificate]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[신뢰 서버 인증서 활성화]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/services/connection/browser/connectionDialogService.kerberosErrorStart" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Connection failed due to Kerberos error.]]></Val>
@@ -14963,6 +15449,24 @@
           <Val><![CDATA[If you have previously connected you may need to re-run kinit.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[이전에 연결된 경우 kinit을 다시 실행해야 할 수 있습니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/connection/browser/connectionDialogService.runKinit" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Run Kinit]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Kinit 실행]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/connection/browser/connectionDialogService.trustServerCertInstructionText" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Encryption was enabled on this connection, review your SSL and certificate configuration for the target SQL Server, or enable 'Trust server certificate' in the connection dialog.]D;]A;]D;]A;			Note: A self-signed certificate offers only limited protection and is not a recommended practice for production environments. Do you want to enable 'Trust server certificate' on this connection and retry? ]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[이 연결에서 암호화가 사용 설정되었습니다. 대상 SQL Server의 SSL 및 인증서 구성을 검토하거나 연결 대화 상자에서 '신뢰할 수 있는 서버 인증서'를 사용 설정하세요.]D;]A;]D;]A; 참고: 자체 서명된 인증서 제한된 보호만 제공하며 프로덕션 환경에서는 권장되지 않습니다. 이 연결에서 '신뢰할 수 있는 서버 인증서'를 활성화하고 다시 시도하시겠습니까? ]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -15137,6 +15641,24 @@
           <Val><![CDATA[Advanced...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[고급...]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/connection/browser/connectionWidget.boolean.false" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[False]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[False]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/connection/browser/connectionWidget.boolean.true" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[True]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[True]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -15416,6 +15938,15 @@
           <Val><![CDATA[OK]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[확인]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/errorMessage/browser/errorMessageDialog.errorMessageDialog.readMore" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Read More]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[더 읽기]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -16967,6 +17498,15 @@
           <Val><![CDATA[JSON]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[JSON]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/query/common/resultSerializer.resultsSerializer.saveAsFileExtensionMarkdownTitle" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Markdown]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Markdown]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

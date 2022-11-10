@@ -3,13 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { SqlMainContext, MainThreadWorkspaceShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
-import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
+import { MainThreadWorkspaceShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { URI } from 'vs/base/common/uri';
 import { IWorkspaceEditingService } from 'vs/workbench/services/workspaces/common/workspaceEditing';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
+import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
+import { SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadWorkspace)
 export class MainThreadWorkspace extends Disposable implements MainThreadWorkspaceShape {

@@ -4,17 +4,16 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { URI, UriComponents } from 'vs/base/common/uri';
 import { Event, Emitter } from 'vs/base/common/event';
-import { IExtHostContext, IUndoStopOptions } from 'vs/workbench/api/common/extHost.protocol';
+import { IUndoStopOptions } from 'vs/workbench/api/common/extHost.protocol';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Schemas } from 'vs/base/common/network';
 import * as types from 'vs/base/common/types';
 import {
-	SqlMainContext, MainThreadNotebookDocumentsAndEditorsShape, SqlExtHostContext, ExtHostNotebookDocumentsAndEditorsShape,
+	MainThreadNotebookDocumentsAndEditorsShape, ExtHostNotebookDocumentsAndEditorsShape,
 	INotebookDocumentsAndEditorsDelta, INotebookEditorAddData, INotebookShowOptions, INotebookModelAddedData, INotebookModelChangedData
 } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
@@ -27,6 +26,9 @@ import { localize } from 'vs/nls';
 import { IFileService } from 'vs/platform/files/common/files';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookEditor';
+import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
+import { SqlExtHostContext, SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
+import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -320,7 +322,8 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@INotebookService private readonly _notebookService: INotebookService,
 		@IFileService private readonly _fileService: IFileService,
-		@ITextFileService private readonly _textFileService: ITextFileService
+		@ITextFileService private readonly _textFileService: ITextFileService,
+		@IUntitledTextEditorService private readonly _untitledEditorService: IUntitledTextEditorService,
 	) {
 		super();
 		if (extHostContext) {
@@ -342,13 +345,45 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		}
 	}
 
+	/**
+	 * Attempts to create a new notebook with the specified provider and contents. Used for VS Code extension compatibility.
+	 */
 	async $tryCreateNotebookDocument(providerId: string, contents?: azdata.nb.INotebookContents): Promise<UriComponents> {
 		let input = await this._notebookService.createNotebookInputFromContents(providerId, contents);
 		return input.resource;
 	}
 
 	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): Promise<string> {
+		// Append a numbered suffix if an untitled notebook is already open with the same path
+		if (resource.scheme === Schemas.untitled) {
+			if (!resource.path || this.untitledEditorTitleExists(resource.path)) {
+				resource.path = this.createPrefixedNotebookFilePath(resource.path);
+			}
+		}
 		return Promise.resolve(this.doOpenEditor(resource, options));
+	}
+
+	private untitledEditorTitleExists(filePath: string): boolean {
+		return !!this._untitledEditorService.get(URI.from({ scheme: Schemas.untitled, path: filePath }));
+	}
+
+	private createPrefixedNotebookFilePath(prefix?: string): string {
+		if (!prefix) {
+			prefix = 'Notebook';
+		}
+		let prefixFileName = (counter: number): string => {
+			return `${prefix}-${counter}`;
+		};
+
+		let counter = 1;
+		// Get document name and check if it exists
+		let filePath = prefixFileName(counter);
+		while (this.untitledEditorTitleExists(filePath)) {
+			counter++;
+			filePath = prefixFileName(counter);
+		}
+
+		return filePath;
 	}
 
 	$trySetTrusted(uriComponent: UriComponents, isTrusted: boolean): Promise<boolean> {

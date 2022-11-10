@@ -288,9 +288,30 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.assessment.migration.warning" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines.]]></Val>
+          <Val><![CDATA[Databases that are not ready for migration to Azure SQL Managed Instance or Azure SQL Database can be migrated to SQL Server on Azure Virtual Machines.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Os bancos de dados que não estão prontos para migração para a Instância Gerenciada de SQL do Azure podem ser migrados para o SQL Server em Máquinas Virtuais do Azure.]]></Val>
+            <Val><![CDATA[Os bancos de dados que não estão prontos para migração para a Instância Gerenciada de SQL do Azure ou para o Banco de Dados SQL podem ser migrados para o SQL Server em Máquinas Virtuais do Azure.]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines.]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.assessment.migration.warning.sqldb" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Databases that are not ready for migration to Azure SQL Database can be migrated to SQL Server on Azure Virtual Machines. Alternatively, review assessment results for Azure SQL Managed Instance migration readiness.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Bancos de dados que não estão prontos para migração para o Banco de Dados SQL do Azure podem ser migrados para o SQL Server nas Máquinas Virtuais do Azure. Como alternativa, examine os resultados da avaliação para a preparação da migração da Instância Gerenciada de SQL do Azure.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.assessment.migration.warning.sqlmi" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines. Alternatively, review assessment results for Azure SQL Database migration readiness.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Bancos de dados que não estão prontos para migração para a Instância Gerenciada de SQL do Azure podem ser migrados para o SQL Server nas Máquinas Virtuais do Azure. Como alternativa, examine os resultados da avaliação para a preparação da migração do Banco de Dados SQL.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -636,12 +657,12 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.can.be.migrated" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[{0}/{1} databases can be migrated]]></Val>
+          <Val><![CDATA[{0}/{1} databases can be migrated without issues]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0}/{1} bancos de dados podem ser migrados]]></Val>
+            <Val><![CDATA[{0}/{1} bancos de dados podem ser migrados sem problemas]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[{0} out of {1} databases can be migrated]]></Val>
+            <Val><![CDATA[{0}/{1} databases can be migrated]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1359,15 +1380,6 @@
           <Val><![CDATA[An error occurred while accessing database details.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Erro ao acessar detalhes do banco de dados.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.database.checksum.info.text" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Ensure that your backups were taken with the WITH CHECKSUM option.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Verifique se os backups foram feitos com a opção WITH CHECKSUM.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2472,15 +2484,6 @@
           <Val><![CDATA[Last applied LSN]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Último LSN aplicado]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.last.backup" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Last backup]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Último backup]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4204,6 +4207,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.azureConfiguration.hyperscale" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Hyperscale]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Hiperescala]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.azureConfiguration.mi" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} - {1} - {2} vCore]]></Val>
@@ -5529,43 +5541,25 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.error.count.multiple" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[{0} Errors)]]></Val>
+          <Val><![CDATA[ ({0} errors)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0}Erros)]]></Val>
+            <Val><![CDATA[ ({0} erros)]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[{0} ({1} Errors)]]></Val>
+            <Val><![CDATA[{0} Errors)]]></Val>
           </Prev>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.error.count.none" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[{0}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0}]]></Val>
-          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.error.count.single" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[{0} Error)]]></Val>
+          <Val><![CDATA[ ({0} error)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} Erro)]]></Val>
+            <Val><![CDATA[ ({0} erro)]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[{0} ({1} Error)]]></Val>
+            <Val><![CDATA[{0} Error)]]></Val>
           </Prev>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.error.count.some" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[{0} (]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} (]]></Val>
-          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -5587,11 +5581,29 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.readyforcutover" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Ready for cutover]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Pronto para substituição]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.refresh.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Refresh]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Atualizar]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.restoring" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Restoring]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Restaurando]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -5632,26 +5644,53 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.uploadingfullbackup" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Uploading full backup]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Carregando backup completo]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.uploadinglogbackup" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Uploading log backup(s)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Carregando backups de log]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.value" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[{0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.warning.count.multiple" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[{0} Warnings)]]></Val>
+          <Val><![CDATA[ ({0} warnings)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} Avisos)]]></Val>
+            <Val><![CDATA[ ({0} avisos)]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[{0} ({1} Warnings)]]></Val>
+            <Val><![CDATA[{0} Warnings)]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.warning.count.single" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[{0} Warning)]]></Val>
+          <Val><![CDATA[ ({0} warning)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} Aviso)]]></Val>
+            <Val><![CDATA[ ({0} aviso)]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[{0} ({1} Warning)]]></Val>
+            <Val><![CDATA[{0} Warning)]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />

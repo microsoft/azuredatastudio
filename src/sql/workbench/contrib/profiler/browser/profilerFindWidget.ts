@@ -18,13 +18,13 @@ import { Widget } from 'vs/base/browser/ui/widget';
 import { Sash, ISashEvent, Orientation, IVerticalSashLayoutProvider } from 'vs/base/browser/ui/sash/sash';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IOverlayWidget, IOverlayWidgetPosition, OverlayWidgetPositionPreference } from 'vs/editor/browser/editorBrowser';
-import { FIND_IDS, CONTEXT_FIND_INPUT_FOCUSED } from 'vs/editor/contrib/find/findModel';
-import { FindReplaceState, FindReplaceStateChangedEvent } from 'vs/editor/contrib/find/findState';
 import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { IColorTheme, IThemeService } from 'vs/platform/theme/common/themeService';
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import { IEditorAction } from 'vs/editor/common/editorCommon';
 import { IDisposable } from 'vs/base/common/lifecycle';
+import { FindReplaceState, FindReplaceStateChangedEvent } from 'vs/editor/contrib/find/browser/findState';
+import { CONTEXT_FIND_INPUT_FOCUSED, FIND_IDS } from 'vs/editor/contrib/find/browser/findModel';
 
 const NLS_FIND_INPUT_LABEL = nls.localize('label.find', "Find");
 const NLS_FIND_INPUT_PLACEHOLDER = nls.localize('placeholder.find', "Find");

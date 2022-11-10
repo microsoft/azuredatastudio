@@ -5,7 +5,6 @@
 
 import * as should from 'should';
 import * as path from 'path';
-import * as os from 'os';
 import * as vscode from 'vscode';
 import * as TypeMoq from 'typemoq';
 import * as sinon from 'sinon';
@@ -49,11 +48,15 @@ describe('ProjectsController', function (): void {
 		sinon.restore();
 	});
 
+	after(async function (): Promise<void> {
+		await testUtils.deleteGeneratedTestFolder();
+	});
+
 	describe('project controller operations', function (): void {
 		describe('Project file operations and prompting', function (): void {
 			it('Should create new sqlproj file with correct values', async function (): Promise<void> {
 				const projController = new ProjectsController(testContext.outputChannel);
-				const projFileDir = path.join(os.tmpdir(), `TestProject_${new Date().getTime()}`);
+				const projFileDir = path.join(testUtils.generateBaseFolderName(), `TestProject_${new Date().getTime()}`);
 
 				const projFilePath = await projController.createNewProject({
 					newProjName: 'TestProjectName',
@@ -70,8 +73,8 @@ describe('ProjectsController', function (): void {
 
 			it('Should create new sqlproj file with correct specified target platform', async function (): Promise<void> {
 				const projController = new ProjectsController(testContext.outputChannel);
-				const projFileDir = path.join(os.tmpdir(), `TestProject_${new Date().getTime()}`);
-				const projTargetPlatform = SqlTargetPlatform.sqlAzure; // default is SQL Server 2019
+				const projFileDir = path.join(testUtils.generateBaseFolderName(), `TestProject_${new Date().getTime()}`);
+				const projTargetPlatform = SqlTargetPlatform.sqlAzure; // default is SQL Server 2022
 
 				const projFilePath = await projController.createNewProject({
 					newProjName: 'TestProjectName',
@@ -87,6 +90,21 @@ describe('ProjectsController', function (): void {
 				should(constants.getTargetPlatformFromVersion(projTargetVersion)).equal(projTargetPlatform);
 			});
 
+			it('Should create new edge project with expected template files', async function (): Promise<void> {
+				const projController = new ProjectsController(testContext.outputChannel);
+				const projFileDir = path.join(testUtils.generateBaseFolderName(), `TestProject_${new Date().getTime()}`);
+
+				const projFilePath = await projController.createNewProject({
+					newProjName: 'TestProjectName',
+					folderUri: vscode.Uri.file(projFileDir),
+					projectTypeId: constants.edgeSqlDatabaseProjectTypeId,
+					projectGuid: 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575',
+					sdkStyle: true
+				});
+
+				const project = await Project.openProject(projFilePath);
+				should(project.files.length).equal(7, `The 7 template files for an edge project should be present. Actual: ${project.files.length}`);
+			});
 
 			it('Should return silently when no SQL object name provided in prompts', async function (): Promise<void> {
 				for (const name of ['', '    ', undefined]) {
@@ -118,6 +136,41 @@ describe('ProjectsController', function (): void {
 				const msg = constants.fileAlreadyExists(tableName);
 				should(spy.calledOnce).be.true('showErrorMessage should have been called exactly once');
 				should(spy.calledWith(msg)).be.true(`showErrorMessage not called with expected message '${msg}' Actual '${spy.getCall(0).args[0]}'`);
+			});
+
+			it('Should not create file if no itemTypeName is selected', async function (): Promise<void> {
+				sinon.stub(vscode.window, 'showQuickPick').resolves(undefined);
+				const spy = sinon.spy(vscode.window, 'showErrorMessage');
+				const projController = new ProjectsController(testContext.outputChannel);
+				const project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
+
+				should(project.files.length).equal(0, 'There should be no files');
+				await projController.addItemPrompt(project, '');
+				should(project.files.length).equal(0, 'File should not have been added');
+				should(spy.called).be.false(`showErrorMessage should not have been called called. Actual '${spy.getCall(0)?.args[0]}'`);
+			});
+
+			it('Should add existing item', async function (): Promise<void> {
+				const tableName = 'table1';
+				sinon.stub(vscode.window, 'showInputBox').resolves(tableName);
+				const spy = sinon.spy(vscode.window, 'showErrorMessage');
+				const projController = new ProjectsController(testContext.outputChannel);
+				const project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
+
+				should(project.files.length).equal(0, 'There should be no files');
+				await projController.addItemPrompt(project, '', { itemType: ItemType.script });
+				should(project.files.length).equal(1, 'File should be successfully added');
+
+				// exclude item
+				const projTreeRoot = new ProjectRootTreeItem(project);
+				await projController.exclude(createWorkspaceTreeItem(<FileNode>projTreeRoot.children.find(x => x.friendlyName === 'table1.sql')!));
+				should(project.files.length).equal(0, 'File should be successfully excluded');
+				should(spy.called).be.false(`showErrorMessage not called with expected message. Actual '${spy.getCall(0)?.args[0]}'`);
+
+				// add item back
+				sinon.stub(vscode.window, 'showOpenDialog').resolves([vscode.Uri.file(path.join(project.projectFolderPath, 'table1.sql'))]);
+				await projController.addExistingItemPrompt(createWorkspaceTreeItem(projTreeRoot));
+				should(project.files.length).equal(1, 'File should be successfully re-added');
 			});
 
 			it('Should show error if trying to add a folder that already exists', async function (): Promise<void> {
@@ -447,6 +500,7 @@ describe('ProjectsController', function (): void {
 				should(publishedDacpacPath).not.equal('', 'published dacpac path should be set');
 				should(builtDacpacPath).not.equal(publishedDacpacPath, 'built and published dacpac paths should be different');
 				should(postCopyContents).equal(fakeDacpacContents, 'contents of built and published dacpacs should match');
+				await fs.rm(publishedDacpacPath);
 			});
 		});
 	});

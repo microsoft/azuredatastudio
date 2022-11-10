@@ -8,7 +8,7 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { ILogService } from 'vs/platform/log/common/log';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { DialogModal } from 'sql/workbench/services/dialog/browser/dialogModal';

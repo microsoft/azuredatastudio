@@ -32,7 +32,6 @@ import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/file
 import { URI } from 'vs/base/common/uri';
 import { IFileService, FileChangesEvent } from 'vs/platform/files/common/files';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { IModeService } from 'vs/editor/common/services/modeService';
 import { QueryEditorInput, IQueryEditorStateChange } from 'sql/workbench/common/editor/query/queryEditorInput';
 import * as queryContext from 'sql/workbench/contrib/query/common/queryContext';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
@@ -41,7 +40,6 @@ import { IRange } from 'vs/editor/common/core/range';
 import { UntitledQueryEditorInput } from 'sql/base/query/browser/untitledQueryEditorInput';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IEditorOptions } from 'vs/platform/editor/common/editor';
-import { ITextResourceConfigurationService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionOptionSpecialType } from 'sql/platform/connection/common/interfaces';
 import { TabbedPanel, IPanelTab, IPanelView } from 'sql/base/browser/ui/panel/panel';
@@ -65,6 +63,9 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ICodeEditorViewState } from 'vs/editor/common/editorCommon';
+import { CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES } from 'sql/workbench/common/constants';
+import { ITextResourceConfigurationService } from 'vs/editor/common/services/textResourceConfiguration';
+import { ILanguageService } from 'vs/editor/common/languages/language';
 
 const QUERY_EDITOR_VIEW_STATE_PREFERENCE_KEY = 'queryEditorViewState';
 
@@ -369,7 +370,7 @@ export class QueryEditor extends EditorPane {
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@INotificationService private notificationService: INotificationService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
-		@IModeService private readonly modeService: IModeService,
+		@ILanguageService private readonly languageService: ILanguageService,
 		@ITextResourceConfigurationService textResourceConfigurationService: ITextResourceConfigurationService,
 		@ICapabilitiesService private readonly capabilitiesService: ICapabilitiesService,
 		@IQueryModelService private queryModelService: IQueryModelService,
@@ -544,7 +545,8 @@ export class QueryEditor extends EditorPane {
 			return;
 		}
 		const changes = [];
-		for (const [, change] of deleted) {
+		for (let i = 0; i < deleted.length; ++i) {
+			let change = deleted[i];
 			changes.push(change);
 		}
 		if (changes.length) {
@@ -747,7 +749,7 @@ export class QueryEditor extends EditorPane {
 		this._exportAsNotebookAction = this.instantiationService.createInstance(actions.ExportAsNotebookAction, this);
 		this.setTaskbarContent();
 		this._register(this.configurationService.onDidChangeConfiguration(e => {
-			if (e.affectsConfiguration('workbench.enablePreviewFeatures')) {
+			if (e.affectsConfiguration(CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES)) {
 				this.setTaskbarContent();
 			}
 		}));
@@ -833,7 +835,7 @@ export class QueryEditor extends EditorPane {
 	}
 
 	private setTaskbarContent(): void {
-		const previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
+		const previewFeaturesEnabled = this.configurationService.getValue(CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES);
 		const fileExtension = path.extname(this.input?.uri || '');
 		const providerId = this.currentProvider;
 		const content: ITaskbarContent[] = [
@@ -846,10 +848,10 @@ export class QueryEditor extends EditorPane {
 
 		// TODO: Allow query provider to provide the language mode.
 		if (this.input instanceof UntitledQueryEditorInput) {
-			if ((providerId === 'KUSTO') || this.modeService.getExtensions('Kusto').indexOf(fileExtension) > -1) {
+			if ((providerId === 'KUSTO') || this.languageService.getExtensions('kusto').indexOf(fileExtension) > -1) {
 				this.input.setMode('kusto');
 			}
-			else if (providerId === 'LOGANALYTICS' || this.modeService.getExtensions('LogAnalytics').indexOf(fileExtension) > -1) {
+			else if (providerId === 'LOGANALYTICS' || this.languageService.getExtensions('loganalytics').indexOf(fileExtension) > -1) {
 				this.input.setMode('loganalytics');
 			}
 		}
@@ -861,14 +863,18 @@ export class QueryEditor extends EditorPane {
 		}
 
 		// TODO: Allow extensions to contribute toolbar actions.
-		if (previewFeaturesEnabled && providerId === 'MSSQL') {
+		if (providerId === 'MSSQL') {
 			content.push(
 				{ element: Taskbar.createTaskbarSeparator() },
 				{ action: this._estimatedQueryPlanAction },
 				{ action: this._toggleActualExecutionPlanMode },
-				{ action: this._toggleSqlcmdMode },
-				{ action: this._exportAsNotebookAction }
 			);
+			if (previewFeaturesEnabled) {
+				content.push(
+					{ action: this._toggleSqlcmdMode },
+					{ action: this._exportAsNotebookAction }
+				);
+			}
 		}
 
 		this.taskbar.setContent(content);

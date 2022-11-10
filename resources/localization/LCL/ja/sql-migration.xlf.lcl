@@ -288,9 +288,30 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.assessment.migration.warning" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines.]]></Val>
+          <Val><![CDATA[Databases that are not ready for migration to Azure SQL Managed Instance or Azure SQL Database can be migrated to SQL Server on Azure Virtual Machines.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure SQL Managed Instance への移行準備が整っていないデータベースは、Azure Virtual Machines の SQL Server に移行させることができます。]]></Val>
+            <Val><![CDATA[Azure SQL Managed Instance または Azure SQL Database への移行準備が整っていないデータベースは、Azure Virtual Machines の SQL Server に移行させることができます。]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines.]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.assessment.migration.warning.sqldb" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Databases that are not ready for migration to Azure SQL Database can be migrated to SQL Server on Azure Virtual Machines. Alternatively, review assessment results for Azure SQL Managed Instance migration readiness.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure SQL Database への移行準備が整っていないデータベースは、Azure Virtual Machines の SQL Server に移行できます。または、Azure SQL Managed Instance 移行の準備度に関する評価結果を確認します。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.assessment.migration.warning.sqlmi" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines. Alternatively, review assessment results for Azure SQL Database migration readiness.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure SQL Managed Instance への移行準備が整っていないデータベースは、Azure Virtual Machines の SQL Serverに移行できます。または、Azure SQL Managed Instance 移行の準備度に関する評価結果を確認します。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -636,12 +657,12 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.can.be.migrated" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[{0}/{1} databases can be migrated]]></Val>
+          <Val><![CDATA[{0}/{1} databases can be migrated without issues]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0}/{1} 個のデータベースを移行できます]]></Val>
+            <Val><![CDATA[{0}/{1} 個のデータベースはイシューなく移行可能]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[{0} out of {1} databases can be migrated]]></Val>
+            <Val><![CDATA[{0}/{1} databases can be migrated]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1144,8 +1165,8 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dashboard.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Determine the migration readiness of your SQL Server instances, identify a recommended Azure SQL target, and complete the migration of your SQL Server instance to Azure SQL Managed Instance, SQL Server on Azure Virtual Machines or Azure SQL Database.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[SQL Server インスタンスの移行準備を判断し、推奨されるAzure SQLターゲットを特定し、Azure SQL Managed Instance、Azure Virtual Machines上のSQL Server、またはAzure SQL Database (プレビュー) へのSQL Serverインスタンスの移行を完了します。]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL Server インスタンスの移行準備状況を判断し、推奨されるAzure SQLターゲットを特定し、SQL Server インスタンスの Azure SQL Managed Instance への移行、Azure Virtual Machines または Azure SQL Database でのSQL Serverを完了します。]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Determine the migration readiness of your SQL Server instances, identify a recommended Azure SQL target, and complete the migration of your SQL Server instance to Azure SQL Managed Instance, SQL Server on Azure Virtual Machines or Azure SQL Database (PREVIEW).]]></Val>
@@ -1359,15 +1380,6 @@
           <Val><![CDATA[An error occurred while accessing database details.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[データベースの詳細へのアクセス中にエラーが発生しました。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.database.checksum.info.text" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Ensure that your backups were taken with the WITH CHECKSUM option.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[WITH CHECKSUM オプションを使用してバックアップが作成されていることを確認してください。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2476,15 +2488,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.last.backup" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Last backup]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[前回のバックアップ]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.last.scan.completed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Last scan completed: {0}]]></Val>
@@ -3280,8 +3283,8 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.pre.req.3" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[An Azure SQL Managed Instance, SQL Server on Azure Virtual Machine, or Azure SQL Database to migrate your database(s) to.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[データベースの移行先となる Azure Virtual Machine 上のAzure SQL Managed Instance、SQL Server、または Azure SQL Database (プレビュー)。]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[データベースの移行先となる Azure SQL Managed Instance、Azure Virtual Machine 上のSQL Server、または Azure SQL Database。]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[An Azure SQL Managed Instance, SQL Server on Azure Virtual Machine, or Azure SQL Database (PREVIEW) to migrate your database(s) to.]]></Val>
@@ -4204,6 +4207,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.azureConfiguration.hyperscale" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Hyperscale]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ハイパースケール]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.azureConfiguration.mi" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} - {1} - {2} vCore]]></Val>
@@ -4747,8 +4759,8 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.recommendation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure recommendation (PREVIEW)]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Azure のレコメンデーション]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure のレコメンデーション (プレビュー)]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Azure recommendation]]></Val>
@@ -5529,43 +5541,25 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.error.count.multiple" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[{0} Errors)]]></Val>
+          <Val><![CDATA[ ({0} errors)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[エラー: {0} 個)]]></Val>
+            <Val><![CDATA[ ({0} エラー)]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[{0} ({1} Errors)]]></Val>
+            <Val><![CDATA[{0} Errors)]]></Val>
           </Prev>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.error.count.none" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[{0}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0}]]></Val>
-          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.error.count.single" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[{0} Error)]]></Val>
+          <Val><![CDATA[ ({0} error)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[エラー: {0} 個)]]></Val>
+            <Val><![CDATA[ ({0} エラー)]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[{0} ({1} Error)]]></Val>
+            <Val><![CDATA[{0} Error)]]></Val>
           </Prev>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.error.count.some" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[{0} (]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} (]]></Val>
-          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -5587,11 +5581,29 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.readyforcutover" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Ready for cutover]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[一括移行の準備完了]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.refresh.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Refresh]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[最新の情報に更新]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.restoring" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Restoring]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[復元しています]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -5632,26 +5644,53 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.uploadingfullbackup" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Uploading full backup]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[完全バックアップをアップロードしています]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.uploadinglogbackup" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Uploading log backup(s)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ログ バックアップをアップロードしています]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.value" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[{0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.warning.count.multiple" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[{0} Warnings)]]></Val>
+          <Val><![CDATA[ ({0} warnings)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[警告: {0} 個)]]></Val>
+            <Val><![CDATA[ ({0} 警告)]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[{0} ({1} Warnings)]]></Val>
+            <Val><![CDATA[{0} Warnings)]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.warning.count.single" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[{0} Warning)]]></Val>
+          <Val><![CDATA[ ({0} warning)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[警告: {0} 個)]]></Val>
+            <Val><![CDATA[ ({0} 警告)]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[{0} ({1} Warning)]]></Val>
+            <Val><![CDATA[{0} Warning)]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -5836,6 +5875,9 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.table.missing.count" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Missing target tables excluded from list: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[リストから除外されたターゲット テーブルがありません: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

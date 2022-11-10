@@ -32,12 +32,13 @@ import { IViewsService, IView, ViewContainerLocation, ViewContainer, IViewPaneCo
 import { IProgressIndicator } from 'vs/platform/progress/common/progress';
 import { IPaneComposite } from 'vs/workbench/common/panecomposite';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
-import { TestAccessibilityService, TestListService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { TestListService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 import { ServerTreeDataSource } from 'sql/workbench/services/objectExplorer/browser/serverTreeDataSource';
 import { Tree } from 'sql/base/parts/tree/browser/treeImpl';
 import { AsyncServerTree } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { ConsoleLogger, LogService } from 'vs/platform/log/common/log';
+import { TestAccessibilityService } from 'vs/platform/accessibility/test/common/testAccessibilityService';
 
 suite('SQL Connection Tree Action tests', () => {
 	let errorMessageService: TypeMoq.Mock<TestErrorMessageService>;
@@ -449,7 +450,7 @@ suite('SQL Connection Tree Action tests', () => {
 		return refreshAction.run().then((value) => {
 			connectionManagementService.verify(x => x.isConnected(undefined, TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
 			objectExplorerService.verify(x => x.getObjectExplorerNode(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
-			objectExplorerService.verify(x => x.refreshTreeNode(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
+			objectExplorerService.verify(x => x.refreshTreeNode(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.exactly(0));
 			tree.verify(x => x.refresh(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
 		});
 	});

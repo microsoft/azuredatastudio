@@ -288,9 +288,30 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.assessment.migration.warning" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines.]]></Val>
+          <Val><![CDATA[Databases that are not ready for migration to Azure SQL Managed Instance or Azure SQL Database can be migrated to SQL Server on Azure Virtual Machines.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[尚未准备好迁移到 Azure SQL 托管实例的数据库可以迁移到 Azure 虚拟机上的SQL Server。]]></Val>
+            <Val><![CDATA[可将尚未准备好迁移到 Azure SQL 托管实例或 Azure SQL 数据库的数据库迁移到 Azure 虚拟机上的 SQL Server。]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines.]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.assessment.migration.warning.sqldb" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Databases that are not ready for migration to Azure SQL Database can be migrated to SQL Server on Azure Virtual Machines. Alternatively, review assessment results for Azure SQL Managed Instance migration readiness.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[可将尚未准备好迁移到 Azure SQL 数据库的数据库迁移到 Azure 虚拟机上的 SQL Server。或查看 Azure SQL 托管实例迁移就绪情况的评估结果。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.assessment.migration.warning.sqlmi" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines. Alternatively, review assessment results for Azure SQL Database migration readiness.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[可将尚未准备好迁移到 Azure SQL 托管实例的数据库迁移到 Azure 虚拟机上的 SQL Server。或查看 Azure SQL 数据库迁移就绪情况的评估结果。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -636,12 +657,12 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.can.be.migrated" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[{0}/{1} databases can be migrated]]></Val>
+          <Val><![CDATA[{0}/{1} databases can be migrated without issues]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[可以迁移 {0} 个数据库(共 {1} 个)]]></Val>
+            <Val><![CDATA[可迁移 {0} 个数据库(共 {1} 个)，而不会出现问题]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[{0} out of {1} databases can be migrated]]></Val>
+            <Val><![CDATA[{0}/{1} databases can be migrated]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1144,8 +1165,8 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dashboard.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Determine the migration readiness of your SQL Server instances, identify a recommended Azure SQL target, and complete the migration of your SQL Server instance to Azure SQL Managed Instance, SQL Server on Azure Virtual Machines or Azure SQL Database.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[确定 SQL Server 实例的迁移准备情况，确定建议的 Azure SQL 目标，并完成 SQL Server 实例向 Azure SQL 托管实例、Azure 虚拟机上的 SQL Server 或 Azure SQL 数据库(预览)的迁移。]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[确定 SQL Server 实例的迁移准备情况，确定建议的 Azure SQL 目标，并完成 SQL Server 实例向 Azure SQL 托管实例、Azure 虚拟机上的 SQL Server 或 Azure SQL 数据库的迁移。]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Determine the migration readiness of your SQL Server instances, identify a recommended Azure SQL target, and complete the migration of your SQL Server instance to Azure SQL Managed Instance, SQL Server on Azure Virtual Machines or Azure SQL Database (PREVIEW).]]></Val>
@@ -1359,15 +1380,6 @@
           <Val><![CDATA[An error occurred while accessing database details.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[访问数据库详细信息时出错。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.database.checksum.info.text" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Ensure that your backups were taken with the WITH CHECKSUM option.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[确保已使用 WITH CHECKSUM 选项获取备份。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2476,15 +2488,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.last.backup" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Last backup]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[上次备份时间]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.last.scan.completed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Last scan completed: {0}]]></Val>
@@ -3280,8 +3283,8 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.pre.req.3" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[An Azure SQL Managed Instance, SQL Server on Azure Virtual Machine, or Azure SQL Database to migrate your database(s) to.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[要将你的数据库迁移到的 Azure SQL 托管实例、Azure 虚拟机上的 SQL Server 或 Azure SQL 数据库(预览)。]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[要将你的数据库迁移到的 Azure SQL 托管实例、Azure 虚拟机上的 SQL Server 或 Azure SQL 数据库。]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[An Azure SQL Managed Instance, SQL Server on Azure Virtual Machine, or Azure SQL Database (PREVIEW) to migrate your database(s) to.]]></Val>
@@ -4204,6 +4207,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.azureConfiguration.hyperscale" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Hyperscale]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[超大规模]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.azureConfiguration.mi" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} - {1} - {2} vCore]]></Val>
@@ -4747,8 +4759,8 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.recommendation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure recommendation (PREVIEW)]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Azure 建议]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure 建议(预览版)]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Azure recommendation]]></Val>
@@ -5529,43 +5541,25 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.error.count.multiple" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[{0} Errors)]]></Val>
+          <Val><![CDATA[ ({0} errors)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} 个错误)]]></Val>
+            <Val><![CDATA[ ({0} 个错误)]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[{0} ({1} Errors)]]></Val>
+            <Val><![CDATA[{0} Errors)]]></Val>
           </Prev>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.error.count.none" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[{0}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0}]]></Val>
-          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.error.count.single" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[{0} Error)]]></Val>
+          <Val><![CDATA[ ({0} error)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} 个错误)]]></Val>
+            <Val><![CDATA[ ({0} 错误)]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[{0} ({1} Error)]]></Val>
+            <Val><![CDATA[{0} Error)]]></Val>
           </Prev>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.error.count.some" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[{0} (]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} (]]></Val>
-          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -5587,11 +5581,29 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.readyforcutover" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Ready for cutover]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[已准备好进行直接转换]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.refresh.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Refresh]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[刷新]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.restoring" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Restoring]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[正在还原]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -5632,26 +5644,53 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.uploadingfullbackup" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Uploading full backup]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[正在上传完整备份]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.uploadinglogbackup" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Uploading log backup(s)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[上传日志备份]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.value" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[{0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.warning.count.multiple" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[{0} Warnings)]]></Val>
+          <Val><![CDATA[ ({0} warnings)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} 条警告)]]></Val>
+            <Val><![CDATA[ ({0} 个警告)]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[{0} ({1} Warnings)]]></Val>
+            <Val><![CDATA[{0} Warnings)]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.warning.count.single" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[{0} Warning)]]></Val>
+          <Val><![CDATA[ ({0} warning)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} 个警告)]]></Val>
+            <Val><![CDATA[ ({0} 个警告)]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[{0} ({1} Warning)]]></Val>
+            <Val><![CDATA[{0} Warning)]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -5836,6 +5875,9 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.table.missing.count" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Missing target tables excluded from list: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[缺少的目标表已从列表中排除: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

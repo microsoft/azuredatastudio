@@ -238,7 +238,7 @@
 			"usernameAndPasswordRequired": "Le nom d'utilisateur et le mot de passe sont obligatoires"
 		},
 		"dist/sqlToolsServer": {
-			"downloadServiceDoneChannelMsg": "Installation de {0} effectuée",
+			"downloadServiceDoneChannelMsg": "Téléchargement {0}",
 			"downloadingServiceChannelMsg": "Téléchargement de {0}",
 			"downloadingServiceSizeChannelMsg": "({0} Ko)",
 			"downloadingServiceStatusMsg": "Téléchargement de {0}",
@@ -251,7 +251,10 @@
 			"startingServiceStatusMsg": "Démarrage de {0}"
 		},
 		"dist/tableDesigner/tableDesigner": {
-			"tableDesigner.NewTable": "Nouvelle table"
+			"tableDesigner.NewTable": "Nouvelle table",
+			"tableDesigner.no": "Non",
+			"tableDesigner.turnOnPreloadingMessage": "Voulez-vous réduire le temps de chargement du concepteur de tables en activant le préchargement du modèle de base de données ? Le modèle de base de données est préchargé lorsque vous développez le nœud de base de données dans l’Explorateur d’objets.",
+			"tableDesigner.yes": "Oui"
 		},
 		"dist/telemetry": {
 			"serviceCrashMessage": "Le composant {0} a quitté de manière inattendue. Redémarrez Azure Data Studio.",
@@ -279,8 +282,6 @@
 			"mssql.connectionOptions.applicationIntent.displayName": "Intention d'application",
 			"mssql.connectionOptions.applicationName.description": "Nom de l'application",
 			"mssql.connectionOptions.applicationName.displayName": "Nom de l'application",
-			"mssql.connectionOptions.asynchronousProcessing.description": "Quand la valeur est true, permet d'utiliser la fonctionnalité asynchrone dans le fournisseur de données .Net Framework",
-			"mssql.connectionOptions.asynchronousProcessing.displayName": "Traitement asynchrone",
 			"mssql.connectionOptions.attachDbFilename.displayName": "Attacher le nom de fichier de base de données",
 			"mssql.connectionOptions.attachedDBFileName.description": "Nom de fichier principal, y compris le nom de chemin complet, d'une base de données pouvant être attachée",
 			"mssql.connectionOptions.attachedDBFileName.displayName": "Nom du fichier de base de données attaché",
@@ -355,6 +356,14 @@
 			"mssql.connectionOptions.workstationId.displayName": "ID de station de travail",
 			"mssql.disabled": "Désactivé",
 			"mssql.enabled": "Activé",
+			"mssql.executionPlan.actualNumberOfRowsForAllExecutions": "Met en évidence l’opération de plan d’exécution avec le plus grand nombre réel de lignes pour toutes les exécutions.",
+			"mssql.executionPlan.cost": "Met en surbrillance l’opération de plan d’exécution avec le coût le plus élevé.",
+			"mssql.executionPlan.expensiveOperationMetric": "Métrique par défaut à utiliser pour mettre en évidence une opération coûteuse dans les plans d’exécution de requêtes",
+			"mssql.executionPlan.expensiveOperationMetric.actualElapsedCpuTime": "Met en surbrillance l’opération de plan d’exécution qui a utilisé le plus de temps processeur.",
+			"mssql.executionPlan.expensiveOperationMetric.actualElapsedTime": "Met en évidence l’opération de plan d’exécution qui a pris le plus de temps.",
+			"mssql.executionPlan.expensiveOperationMetric.off": "La mise en surbrillance des opérations coûteuses sera désactivée pour les plans d’exécution.",
+			"mssql.executionPlan.numberOfRowsRead": "Met en surbrillance l’opération de plan d’exécution avec le plus grand nombre de lignes lues.",
+			"mssql.executionPlan.subtreeCost": "Met en surbrillance l’opération de plan d’exécution avec le coût de sous-arborescence le plus élevé.",
 			"mssql.exportNotebookToSql": "Exporter le notebook au format SQL",
 			"mssql.exportSqlAsNotebook": "Exporter SQL au format Notebook",
 			"mssql.format.alignColumnDefinitionsInColumns": "Spécifie si les définitions de colonne doivent être alignées",
@@ -386,7 +395,8 @@
 			"mssql.query.executionTimeout": "Un délai d'expiration de 0 indique une attente illimitée (aucun délai d'expiration)",
 			"mssql.query.implicitTransactions": "Activer SET IMPLICIT_TRANSACTIONS",
 			"mssql.query.lockTimeout": "Activer l'option SET LOCK TIMEOUT (en millisecondes)",
-			"mssql.query.maxXmlCharsToStore": "Nombre de caractères XML à stocker après l'exécution d'une requête",
+			"mssql.query.maxCharsToStore": "Nombre maximal de caractères/octets à stocker pour chaque valeur dans les colonnes de caractères/binaires après l’exécution d’une requête. Valeur par défaut : 65 535. Plage de valeurs valides : 1 à 2 147 483 647.",
+			"mssql.query.maxXmlCharsToStore": "Nombre maximal de caractères à stocker pour chaque valeur dans les colonnes XML après l’exécution d’une requête. Valeur par défaut : 2 097 152. Plage de valeurs valide : 1 à 2 147 483 647.",
 			"mssql.query.noCount": "Activer l'option SET NOCOUNT",
 			"mssql.query.noExec": "Activer l'option SET NOEXEC",
 			"mssql.query.parseOnly": "Activer l'option SET PARSEONLY",
@@ -398,6 +408,7 @@
 			"mssql.query.textSize": "Taille maximale des données text et ntext retournées par une instruction SELECT",
 			"mssql.query.transactionIsolationLevel": "Activer l'option SET TRANSACTION ISOLATION LEVEL",
 			"mssql.query.xactAbortOn": "Activer l'option SET XACT-ABORT ON",
+			"mssql.tableDesigner.preloadDatabaseModel": "Indique s’il faut précharger le modèle de base de données lorsque le nœud de base de données dans l’Explorateur d’objets est développé. Lorsque cette option est activée, la durée de chargement du Concepteur de tables peut être réduite. Remarque : l’utilisation de la mémoire peut être supérieure à la normale si vous devez développer un grand nombre de nœuds de base de données.",
 			"mssql.tracingLevel": "[Facultatif] Niveau de journalisation des services de back-end. Azure Data Studio génère un nom de fichier à chaque démarrage et, si le fichier existe déjà, ajoute les entrées de journal à ce fichier. Pour nettoyer les anciens fichiers journaux, consultez les paramètres logRetentionMinutes et logFilesRemovalLimit. Le niveau de suivi par défaut correspond à une faible journalisation. Si vous changez le niveau de détail, vous pouvez obtenir une journalisation massive nécessitant de l'espace disque pour les journaux. Le niveau Erreur inclut le niveau Critique, le niveau Avertissement inclut le niveau Erreur, le niveau Informations inclut le niveau Avertissement et le niveau Détail inclut le niveau Informations",
 			"mssqlCluster.copyPath": "Copier le chemin",
 			"mssqlCluster.deleteFiles": "Supprimer",

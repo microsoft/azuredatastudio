@@ -288,9 +288,30 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.assessment.migration.warning" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines.]]></Val>
+          <Val><![CDATA[Databases that are not ready for migration to Azure SQL Managed Instance or Azure SQL Database can be migrated to SQL Server on Azure Virtual Machines.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure SQL Managed Instance로의 마이그레이션이 준비가 되지 않은 데이터베이스는 Azure Virtual Machines SQL Server에서 마이그레이션할 수 있습니다.]]></Val>
+            <Val><![CDATA[Azure SQL Managed Instance 또는 Azure SQL Database로의 마이그레이션이 준비가 되지 않은 데이터베이스는 Azure Virtual Machines SQL Server에서 마이그레이션할 수 있습니다.]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines.]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.assessment.migration.warning.sqldb" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Databases that are not ready for migration to Azure SQL Database can be migrated to SQL Server on Azure Virtual Machines. Alternatively, review assessment results for Azure SQL Managed Instance migration readiness.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure SQL Database로 마이그레이션할 준비가 되지 않은 데이터베이스는 Azure Virtual Machines의 SQL Server로 마이그레이션할 수 있습니다. 또는 Azure SQL Managed Instance 마이그레이션 준비에 대한 평가 결과를 검토하세요.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.assessment.migration.warning.sqlmi" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines. Alternatively, review assessment results for Azure SQL Database migration readiness.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure SQL Managed Instance로 마이그레이션할 준비가 되지 않은 데이터베이스는 Azure Virtual Machines의 SQL Server로 마이그레이션할 수 있습니다. 또는 Azure SQL Database 마이그레이션 준비에 대한 평가 결과를 검토하세요.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -636,12 +657,12 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.can.be.migrated" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[{0}/{1} databases can be migrated]]></Val>
+          <Val><![CDATA[{0}/{1} databases can be migrated without issues]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0}/{1}개 데이터베이스를 마이그레이션할 수 있음]]></Val>
+            <Val><![CDATA[{0}/{1} 데이터베이스는 문제 없이 마이그레이션할 수 있습니다.]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[{0} out of {1} databases can be migrated]]></Val>
+            <Val><![CDATA[{0}/{1} databases can be migrated]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1359,15 +1380,6 @@
           <Val><![CDATA[An error occurred while accessing database details.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[데이터베이스 세부 정보에 액세스하는 동안 오류가 발생했습니다.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.database.checksum.info.text" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Ensure that your backups were taken with the WITH CHECKSUM option.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[WITH CHECKSUM 옵션을 사용하여 백업을 수행했는지 확인합니다.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2472,15 +2484,6 @@
           <Val><![CDATA[Last applied LSN]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[마지막으로 적용된 LSN]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.last.backup" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Last backup]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[마지막 백업]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4204,6 +4207,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.azureConfiguration.hyperscale" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Hyperscale]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[하이퍼스케일]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.azureConfiguration.mi" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} - {1} - {2} vCore]]></Val>
@@ -5529,43 +5541,25 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.error.count.multiple" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[{0} Errors)]]></Val>
+          <Val><![CDATA[ ({0} errors)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[오류 {0}개)]]></Val>
+            <Val><![CDATA[ ({0}개의 오류)]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[{0} ({1} Errors)]]></Val>
+            <Val><![CDATA[{0} Errors)]]></Val>
           </Prev>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.error.count.none" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[{0}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0}]]></Val>
-          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.error.count.single" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[{0} Error)]]></Val>
+          <Val><![CDATA[ ({0} error)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[오류 {0}개)]]></Val>
+            <Val><![CDATA[ ({0}개의 오류)]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[{0} ({1} Error)]]></Val>
+            <Val><![CDATA[{0} Error)]]></Val>
           </Prev>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.error.count.some" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[{0} (]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0}(]]></Val>
-          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -5587,11 +5581,29 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.readyforcutover" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Ready for cutover]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[전환 준비]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.refresh.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Refresh]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[새로 고침]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.restoring" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Restoring]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[복원]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -5632,26 +5644,53 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.uploadingfullbackup" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Uploading full backup]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[전체 백업 업로드]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.uploadinglogbackup" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Uploading log backup(s)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[로그 백업 업로드]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.value" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[{0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.warning.count.multiple" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[{0} Warnings)]]></Val>
+          <Val><![CDATA[ ({0} warnings)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[경고 {0}개)]]></Val>
+            <Val><![CDATA[ ({0}개의 경고)]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[{0} ({1} Warnings)]]></Val>
+            <Val><![CDATA[{0} Warnings)]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.warning.count.single" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[{0} Warning)]]></Val>
+          <Val><![CDATA[ ({0} warning)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[경고 {0}개)]]></Val>
+            <Val><![CDATA[ ({0}개의 경고)]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[{0} ({1} Warning)]]></Val>
+            <Val><![CDATA[{0} Warning)]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />

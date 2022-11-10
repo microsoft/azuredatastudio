@@ -10,6 +10,60 @@
     <Disp Icon="Expand" Expand="true" Disp="true" LocTbl="false" />
     <Item ItemId=";Xliff Resources" ItemType="0" PsrId="308" Leaf="false">
       <Disp Icon="Str" Disp="true" LocTbl="false" />
+      <Item ItemId=";extensions/git/dist/actionButton.scm button publish branch" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Publish Branch]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Branch を発行]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/dist/actionButton.scm button publish branch running" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Publishing Branch...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Branch を公開しています...]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/dist/actionButton.scm button publish title" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[$(cloud-upload) Publish Branch]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[$(cloud-upload) ブランチの発行]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/dist/actionButton.scm button sync description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[{0} Sync Changes {1}{2}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0} 変更の同期 {1}{2}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/dist/actionButton.scm button sync title" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[{0} {1}{2}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0} {1}{2}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/dist/actionButton.syncing changes" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Synchronizing Changes...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[変更を同期しています...]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/git/dist/askpass-main.missOrInvalid" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Missing or invalid credentials.]]></Val>
@@ -183,10 +237,13 @@
       </Item>
       <Item ItemId=";extensions/git/dist/commands.changed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Log level changed to: {0}]]></Val>
+          <Val><![CDATA[{0} Log level changed to: {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[変更後のログ レベル: {0}]]></Val>
+            <Val><![CDATA[{0} 変更後のログ レベル: {1}]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Log level changed to: {0}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -381,10 +438,13 @@
       </Item>
       <Item ItemId=";extensions/git/dist/commands.confirm publish branch" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[The branch '{0}' has no upstream branch. Would you like to publish this branch?]]></Val>
+          <Val><![CDATA[The branch '{0}' has no remote branch. Would you like to publish this branch?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA['{0}' ブランチに上流ブランチはありません。このブランチを公開しますか?]]></Val>
+            <Val><![CDATA['{0}' ブランチにリモート ブランチはありません。このブランチを公開しますか?]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[The branch '{0}' has no upstream branch. Would you like to publish this branch?]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -541,6 +601,24 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/git/dist/commands.drop all stashes" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Are you sure you want to drop ALL stashes? There are {0} stashes that will be subject to pruning, and MAY BE IMPOSSIBLE TO RECOVER.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[すべてのスタッシュを削除しますか? 削除の対象となる可能性のある {0} 個のスタッシュがあり、それらは回復できない可能性があります。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/dist/commands.drop one stash" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Are you sure you want to drop ALL stashes? There is 1 stash that will be subject to pruning, and MAY BE IMPOSSIBLE TO RECOVER.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[すべてのスタッシュを削除しますか? 削除の対象となる可能性のある 1 個のスタッシュがあり、それらは回復できない可能性があります。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/git/dist/commands.force" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Force Checkout]]></Val>
@@ -577,21 +655,36 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/git/dist/commands.git.timeline.openDiffCommand" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Open Comparison]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[比較を開く]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/git/dist/commands.git.title.diff" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[{0} ⟷ {1}]]></Val>
+          <Val><![CDATA[{0} ↔ {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} ⟷ {1}]]></Val>
+            <Val><![CDATA[{0} ↔ {1}]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[{0} ⟷ {1}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/dist/commands.git.title.diffRefs" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[{0} ({1}) ⟷ {0} ({2})]]></Val>
+          <Val><![CDATA[{0} ({1}) ↔ {0} ({2})]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} ({1}) ⟷ {0} ({2})]]></Val>
+            <Val><![CDATA[{0} ({1}) ↔ {0} ({2})]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[{0} ({1}) ⟷ {0} ({2})]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1308,10 +1401,13 @@
       </Item>
       <Item ItemId=";extensions/git/dist/commands.sync is unpredictable" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[This action will push and pull commits to and from '{0}/{1}'.]]></Val>
+          <Val><![CDATA[This action will pull and push commits from and to '{0}/{1}'.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[このアクションでは、'{0}/{1}' との間でコミットをプッシュおよびプルします。]]></Val>
+            <Val><![CDATA[このアクションは、'{0}/{1}' との間でコミットをプルおよびプッシュします。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[This action will push and pull commits to and from '{0}/{1}'.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1452,28 +1548,37 @@
       </Item>
       <Item ItemId=";extensions/git/dist/main.skipped" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Skipped found git in: {0}]]></Val>
+          <Val><![CDATA[{0} Skipped found git in: {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Git のスキップが検出されました: {0}]]></Val>
+            <Val><![CDATA[{0} Git のスキップが検出されました: {1}]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Skipped found git in: {0}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/dist/main.using git" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Using git {0} from {1}]]></Val>
+          <Val><![CDATA[{0} Using git {1} from {2}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{1} から Git {0} を使用しています]]></Val>
+            <Val><![CDATA[{0} {2} から Git {1} を使用しています]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Using git {0} from {1}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/dist/main.validating" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Validating found git in: {0}]]></Val>
+          <Val><![CDATA[{0} Validating found git in: {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Git の検証が検出されました: {0}]]></Val>
+            <Val><![CDATA[{0} Git の検証が検出されました: {1}]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Validating found git in: {0}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1504,92 +1609,20 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/git/dist/model.repoOnHomeDriveRootWarning" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Unable to automatically open the git repository at '{0}'. To open that git repository, open it directly as a folder in VS Code.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA['{0}' で Git リポジトリを自動的に開くことができません。その Git リポジトリを開くには、VS Code のフォルダーとして直接開きます。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/git/dist/model.too many submodules" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The '{0}' repository has {1} submodules which won't be opened automatically. You can still open each one individually by opening a file within.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA['{0}' リポジトリに {1} 個のサブモジュールがあり、自動では開かれません。 ファイルを開くことで、それぞれを個別に開くことができます。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/git/dist/remoteSource.branch name" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Branch name]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[ブランチ名]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/git/dist/remoteSource.error" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[$(error) Error: {0}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[$(error) エラー: {0}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/git/dist/remoteSource.none found" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[No remote repositories found.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[リモート リポジトリが見つかりません。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/git/dist/remoteSource.pick url" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Choose a URL to clone from.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[複製元の URL を選択します。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/git/dist/remoteSource.provide url" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Provide repository URL]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[リポジトリ URL を指定する]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/git/dist/remoteSource.provide url or pick" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Provide repository URL or pick a repository source.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[リポジトリ URL を指定するか、リポジトリ ソースを選択します。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/git/dist/remoteSource.type to filter" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Repository name]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[リポジトリ名]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/git/dist/remoteSource.type to search" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Repository name (type to search)]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[リポジトリ名 (検索するテキストを入力)]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/git/dist/remoteSource.url" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[URL]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[URL]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2008,33 +2041,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/git/dist/repository.scm button publish title" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[$(cloud-upload) Publish Changes]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[$(cloud-upload) 変更の発行]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/git/dist/repository.scm button publish tooltip" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Publish Changes]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[変更の発行]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/git/dist/repository.scm button sync title" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[ Sync Changes $(sync){0}{1}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[ 変更 $(sync) の同期{0}{1}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/git/dist/repository.staged changes" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Staged Changes]]></Val>
@@ -2107,11 +2113,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/git/dist/statusbar.publish changes" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/git/dist/statusbar.publish branch" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Publish Changes]]></Val>
+          <Val><![CDATA[Publish Branch]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[変更の発行]]></Val>
+            <Val><![CDATA[ブランチを発行...]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2152,20 +2158,20 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/git/dist/timelineProvider.git.index" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/git/dist/timelineProvider.git.timeline.email" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Index]]></Val>
+          <Val><![CDATA[Email]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[インデックス]]></Val>
+            <Val><![CDATA[メール]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/git/dist/timelineProvider.git.timeline.detail" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/git/dist/timelineProvider.git.timeline.openComparison" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[{0}  — {1}]D;]A;{2}]D;]A;]D;]A;{3}]]></Val>
+          <Val><![CDATA[Open Comparison]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0}  — {1}]D;]A;{2}]D;]A;]D;]A;{3}]]></Val>
+            <Val><![CDATA[比較を開く]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2202,15 +2208,6 @@
           <Val><![CDATA[You]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[自分]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/git/dist/timelineProvider.git.workingTree" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Working Tree]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[作業ツリー]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2310,6 +2307,33 @@
           <Val><![CDATA[Add Remote...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[リモートの追加...]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.command.api.getRemoteSources" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Get Remote Sources]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[リモート ソースの取得]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.command.api.getRepositories" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Get Repositories]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[リポジトリの取得]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.command.api.getRepositoryState" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Get Repository State]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[リポジトリ状態の取得]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2418,6 +2442,15 @@
           <Val><![CDATA[Close Repository]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[リポジトリを閉じる]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.command.closeAllDiffEditors" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Close All Diff Editors]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[すべての差分エディターを閉じる]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2856,10 +2889,13 @@
       </Item>
       <Item ItemId=";extensions/git/package.command.revealInExplorer" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Reveal in Side Bar]]></Val>
+          <Val><![CDATA[Reveal in Explorer View]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[サイド バーに表示]]></Val>
+            <Val><![CDATA[エクスプローラー ビューで表示]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Reveal in Side Bar]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2994,6 +3030,15 @@
           <Val><![CDATA[Drop Stash...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[スタッシュを削除する...]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.command.stashDropAll" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Drop All Stashes...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[すべてのスタッシュを削除...]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3304,6 +3349,24 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/git/package.config.closeDiffOnOperation" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Controls whether the diff editor should be automatically closed when changes are stashed, committed, discarded, staged, or unstaged.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[変更をスタッシュ、コミット、破棄、ステージング、またはステージング解除する場合に差分エディターを自動的に閉じるかどうかを制御します。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.config.commandsToLog" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[List of git commands (ex: commit, push) that would have their `stdout` logged to the [git output]5D;(command:git.showOutput). If the git command has a client-side hook configured, the client-side hook's `stdout` will also be logged to the [git output]5D;(command:git.showOutput).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA['stdout' のログが[git output]5D;(command:git.showOutput) に記録される Git コマンドの一覧 (commit、push など)。Git コマンドでクライアント側フックが構成されている場合、クライアント側フックの 'stdout' のログも[git output]5D;(command:git.showOutput) に記録されます。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/git/package.config.confirmEmptyCommits" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Always confirm the creation of empty commits for the 'Git: Commit Empty' command.]]></Val>
@@ -3453,6 +3516,15 @@
           <Val><![CDATA[Whether git is enabled.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Git が有効になっているかどうか。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.config.experimental.installGuide" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Experimental improvements for the git setup flow.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Git のセットアップ フローの試験的な改善。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3763,6 +3835,24 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/git/package.config.repositoryScanIgnoredFolders" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[List of folders that are ignored while scanning for Git repositories when `#git.autoRepositoryDetection#` is set to `true` or `subFolders`.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[`#git.autoRepositoryDetection#` が `true` または `subFolders` に設定されている場合に Git リポジトリのスキャン中に無視されるフォルダーのリスト。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.config.repositoryScanMaxDepth" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Controls the depth used when scanning workspace folders for Git repositories when `#git.autoRepositoryDetection#` is set to `true` or `subFolders`. Can be set to `-1` for no limit.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA['#git.autoRepositoryDetection#' が 'true' もしくは 'subFolders' であるとき、Git リポジトリのワークスペース フォルダーをスキャンする際に使用される深さを制御します。制限なしとするためには、'-1' として設定可能です。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/git/package.config.requireGitUserConfig" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Controls whether to require explicit Git user configuration or allow Git to guess if missing.]]></Val>
@@ -3952,6 +4042,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/git/package.config.timeline.showUncommitted" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Controls whether to show uncommitted changes in the Timeline view.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[コミットされていない変更をタイムライン ビューに表示するかどうかを制御します。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/git/package.config.untrackedChanges" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Controls how untracked changes behave.]]></Val>
@@ -4002,6 +4101,15 @@
           <Val><![CDATA[Controls whether force pushing uses the safer force-with-lease variant.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[force プッシュより安全な force-with-lease 方式を使用するかどうかを制御します。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.config.useIntegratedAskPass" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Controls whether GIT_ASKPASS should be overwritten to use the integrated version.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[統合バージョンを使用するために GIT_ASKPASS を上書きするかどうかを制御します。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4134,10 +4242,13 @@
       </Item>
       <Item ItemId=";extensions/git/package.view.workbench.scm.disabled" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[If you would like to use git features, please enable git in your [settings]5D;(command:workbench.action.openSettings?%5B%22git.enabled%22%5D).]D;]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
+          <Val><![CDATA[If you would like to use git features, please enable git in your [settings]5D;(command:workbench.action.openSettings?%5B%22git.enabled%22%5D).]D;]A;To learn more about how to use git and source control in VS Code [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[git 機能を使用する場合、[設定]5D;(command:workbench.action.openSettings?%5B%22git.enabled%22%5D)で Git を有効にしてください。]D;]A;Git とソース コントロールを Azure Data Studio で使用する方法の詳細については、[ドキュメントをご覧ください]5D;(https://aka.ms/vscode-scm)。]]></Val>
+            <Val><![CDATA[Git 機能を使用する場合は、[設定]5D;(command:workbench.action.openSettings?%5B%22git.enabled%22%5D) で Git を有効にしてください。]D;]A;VS Code で Git とソース管理を使用する方法の詳細については、[ドキュメントをご覧ください]5D;(https://aka.ms/vscode-scm)。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[If you would like to use git features, please enable git in your [settings]5D;(command:workbench.action.openSettings?%5B%22git.enabled%22%5D).]D;]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4173,6 +4284,42 @@
           <Val><![CDATA[A valid git installation was not detected, more details can be found in the [git output]5D;(command:git.showOutput).]D;]A;Please [install git]5D;(https://git-scm.com/), or learn more about how to use git and source control in Azure Data Studio in [our docs]5D;(https://aka.ms/vscode-scm).]D;]A;If you're using a different version control system, you can [search the Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22) for additional extensions.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[有効な git インストールが検出されませんでした。詳細については、[git 出力]5D;(command:git.showOutput)をご確認ください。]D;]A;[git をインストール]5D;(https://git-scm.com/)するか、Git およびソース コントロールを Azure Data Studio で使用する方法の詳細について[ドキュメント]5D;(https://aka.ms/vscode-scm)を参照してください。]D;]A;別のバージョン管理システムを使用している場合は、追加の拡張機能を [マーケットプレイスで検索]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22) できます。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.view.workbench.scm.missing.guide" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Install Git, a popular source control system, to track code changes and collaborate with others. Learn more in our [Git guides]5D;(https://aka.ms/vscode-scm).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[一般的なソース管理システムである Git をインストールして、コードの変更を追跡し、他のユーザーと共同作業を行います。詳細については、[Git ガイド]5D;(https://aka.ms/vscode-scm) を参照してください。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.view.workbench.scm.missing.guide.linux" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Source control depends on Git being installed.]D;]A;[Download Git for Linux]5D;(https://git-scm.com/download/linux)]D;]A;After installing, please [reload]5D;(command:workbench.action.reloadWindow) (or [troubleshoot]5D;(command:git.showOutput)). Additional source control providers can be installed [from the Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ソース管理は、インストールされている Git によって異なります。]D;]A;[Linux 用 Git のダウンロード]5D;(https://git-scm.com/download/linux)]D;]A;インストール後、[再読み込み]5D;(command:workbench.action.reloadWindow) (または [トラブルシューティング]5D;(command:git.showOutput)) してください。追加のソース管理プロバイダーを [Marketplace から]5D; インストールできます(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22)。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.view.workbench.scm.missing.guide.mac" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[[Download Git for macOS]5D;(https://git-scm.com/download/mac)]D;]A;After installing, please [reload]5D;(command:workbench.action.reloadWindow) (or [troubleshoot]5D;(command:git.showOutput)). Additional source control providers can be installed [from the Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[[macOS 用 Git のダウンロード]5D;(https://git-scm.com/download/mac)]D;]A;インストール後、[再読み込み]5D;(command:workbench.action.reloadWindow) (または [トラブルシューティング]5D;(command:git.showOutput)) してください。追加のソース管理プロバイダーを [Marketplace から]5D; インストールできます(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22)。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.view.workbench.scm.missing.guide.windows" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[[Download Git for Windows]5D;(https://git-scm.com/download/win)]D;]A;After installing, please [reload]5D;(command:workbench.action.reloadWindow) (or [troubleshoot]5D;(command:git.showOutput)). Additional source control providers can be installed [from the Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[[Windows 用 Git のダウンロード]5D;(https://git-scm.com/download/win)]D;]A;インストール後、[再読み込み]5D;(command:workbench.action.reloadWindow) (または [トラブルシューティング]5D;(command:git.showOutput)) してください。追加のソース管理プロバイダーを [Marketplace から]5D; インストールできます(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22)。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

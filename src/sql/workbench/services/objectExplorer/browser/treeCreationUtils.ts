@@ -25,6 +25,7 @@ import { AsyncRecentConnectionTreeDataSource } from 'sql/workbench/services/obje
 import { AsyncServerTreeDataSource } from 'sql/workbench/services/objectExplorer/browser/asyncServerTreeDataSource';
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES } from 'sql/workbench/common/constants';
 
 export class TreeCreationUtils {
 	/**
@@ -133,7 +134,8 @@ export class TreeCreationUtils {
 					indentPixels: 10,
 					twistiePixels: 20,
 					ariaLabel: nls.localize('treeCreation.regTreeAriaLabel', "Servers"),
-					horizontalScrollMode: horizontalScrollMode ? ScrollbarVisibility.Auto : ScrollbarVisibility.Hidden
+					horizontalScrollMode: horizontalScrollMode ? ScrollbarVisibility.Auto : ScrollbarVisibility.Hidden,
+					showLoading: true
 				});
 		}
 
@@ -141,5 +143,5 @@ export class TreeCreationUtils {
 }
 
 function useAsyncServerTree(configurationService: IConfigurationService): boolean {
-	return configurationService.getValue<boolean>('workbench.enablePreviewFeatures') && configurationService.getValue<boolean>('serverTree.useAsyncServerTree');
+	return configurationService.getValue<boolean>(CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES) && configurationService.getValue<boolean>('serverTree.useAsyncServerTree');
 }

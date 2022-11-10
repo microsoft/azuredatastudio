@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { SqlExtHostContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { SqlExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { ExtHostAccountManagement } from 'sql/workbench/api/common/extHostAccountManagement';
 import { ExtHostCredentialManagement } from 'sql/workbench/api/common/extHostCredentialManagement';
 import { ExtHostDataProtocol } from 'sql/workbench/api/common/extHostDataProtocol';

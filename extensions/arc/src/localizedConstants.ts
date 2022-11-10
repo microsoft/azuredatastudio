@@ -226,6 +226,7 @@ export const connectToPostgresDescription = localize('arc.connectToPostgresDescr
 export const postgresExtension = localize('arc.postgresExtension', "microsoft.azuredatastudio-postgresql");
 export const podInitialized = localize('arc.podInitialized', "Pod is initialized.");
 export const podReady = localize('arc.podReady', "Pod is ready.");
+// allow-any-unicode-next-line
 export const noPodIssuesDetected = localize('arc.noPodIssuesDetected', "There aren’t any known issues affecting this PostgreSQL instance.");
 export const podIssuesDetected = localize('arc.podIssuesDetected', "The pods listed below are experiencing issues that may affect performance or availability.");
 export const containerReady = localize('arc.containerReady', "Pod containers are ready.");

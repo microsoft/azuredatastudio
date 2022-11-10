@@ -18,6 +18,8 @@ import { IContextMenuService, IContextViewService } from 'vs/platform/contextvie
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Codicon } from 'vs/base/common/codicons';
 import { deepClone } from 'vs/base/common/objects';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 
 export enum ExecutionPlanCompareOrientation {
 	Horizontal = 'horizontal',
@@ -62,9 +64,11 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		@IThemeService themeService: IThemeService,
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IContextMenuService contextMenuService: IContextMenuService,
-		@IContextViewService contextViewService: IContextViewService
+		@IContextViewService contextViewService: IContextViewService,
+		@IAccessibilityService accessibilityService: IAccessibilityService,
+		@IQuickInputService quickInputService: IQuickInputService
 	) {
-		super(parentContainer, themeService, instantiationService, contextMenuService, contextViewService);
+		super(parentContainer, themeService, instantiationService, contextMenuService, contextViewService, accessibilityService, quickInputService);
 		this._model = <ExecutionPlanComparisonPropertiesViewModel>{};
 		this._parentContainer.style.display = 'none';
 		const header = DOM.$('.compare-operation-name');
@@ -135,10 +139,11 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		const columns: Slick.Column<Slick.SlickData>[] = this.getPropertyTableColumns();
 
 		let primaryProps = [];
-		let secondaryProps = [];
 		if (this._model.primaryElement?.properties) {
 			primaryProps = this._model.primaryElement.properties;
 		}
+
+		let secondaryProps = [];
 		if (this._model.secondaryElement?.properties) {
 			secondaryProps = this._model.secondaryElement.properties;
 		}
@@ -265,17 +270,23 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 			const treeGridChildren = row.treeGridChildren;
 
 			if (treeGridChildren?.length > 0) {
-				let [unequalSubRows, equalSubRows] = this.splitEqualFromUnequalProperties(treeGridChildren);
+				const [unequalSubRows, equalSubRows] = this.splitEqualFromUnequalProperties(treeGridChildren);
 
 				if (unequalSubRows.length > 0) {
-					let currentRow = deepClone(row);
+					const currentRow = deepClone(row);
 					currentRow.treeGridChildren = unequalSubRows;
+					currentRow.expanded = true;
+
+					currentRow.icon = {
+						iconCssClass: executionPlanComparisonPropertiesDifferent,
+						title: notEqualTitle
+					};
 
 					unequalRows.push(currentRow);
 				}
 
 				if (equalSubRows.length > 0) {
-					let currentRow = deepClone(row);
+					const currentRow = deepClone(row);
 					currentRow.treeGridChildren = equalSubRows;
 
 					equalRows.push(currentRow);
@@ -373,10 +384,14 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 							diffIcon.title = notEqualTitle;
 							break;
 						case sqlExtHostType.executionPlan.ExecutionPlanGraphElementPropertyDataType.Number:
-							diffIcon = (parseFloat(v.primaryProp.displayValue) > parseFloat(v.secondaryProp.displayValue))
-								? { iconClass: Codicon.chevronRight.classNames, title: greaterThanTitle }
-								: { iconClass: Codicon.chevronLeft.classNames, title: lessThanTitle };
-
+							if (v.primaryProp.betterValue === sqlExtHostType.executionPlan.ExecutionPlanGraphElementPropertyBetterValue.None) {
+								diffIcon.title = notEqualTitle;
+								diffIcon.iconClass = executionPlanComparisonPropertiesDifferent;
+							} else {
+								diffIcon = (parseFloat(v.primaryProp.displayValue) > parseFloat(v.secondaryProp.displayValue))
+									? { iconClass: Codicon.chevronRight.classNames, title: greaterThanTitle }
+									: { iconClass: Codicon.chevronLeft.classNames, title: lessThanTitle };
+							}
 							break;
 						case sqlExtHostType.executionPlan.ExecutionPlanGraphElementPropertyDataType.String:
 							diffIcon.iconClass = executionPlanComparisonPropertiesDifferent;
@@ -430,6 +445,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 				};
 
 				rows.push(row);
+
 				if (!isString(primaryProp.value)) {
 					row.name.iconCssClass += ` parent-row-styling`;
 					row.primary.iconCssClass += ` parent-row-styling`;
@@ -449,6 +465,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 				};
 
 				rows.push(row);
+
 				if (!isString(secondaryProp.value)) {
 					row.name.iconCssClass += ` parent-row-styling`;
 					row.secondary.iconCssClass += ` parent-row-styling`;
@@ -465,6 +482,7 @@ export class ExecutionPlanComparisonPropertiesView extends ExecutionPlanProperti
 		if (this._orientation === value) {
 			return;
 		}
+
 		this._orientation = value;
 		this.updatePropertyContainerTitles();
 	}

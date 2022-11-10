@@ -7,7 +7,6 @@ import 'vs/css!./notebook';
 import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
 import { SIDE_BAR_BACKGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND } from 'vs/workbench/common/theme';
 import { activeContrastBorder, contrastBorder, buttonBackground, textLinkForeground, textLinkActiveForeground, textPreformatForeground, textBlockQuoteBackground, textBlockQuoteBorder, buttonForeground, foreground } from 'vs/platform/theme/common/colorRegistry';
-import { editorLineHighlight, editorLineHighlightBorder } from 'vs/editor/common/view/editorColorRegistry';
 import { cellBorder, notebookToolbarIcon, notebookToolbarLines, buttonMenuArrow, dropdownArrow, markdownEditorBackground, codeEditorBackground, codeEditorBackgroundActive, codeEditorLineNumber, codeEditorToolbarIcon, codeEditorToolbarBackground, codeEditorToolbarBorder, toolbarBackground, toolbarIcon, toolbarBottomBorder, notebookToolbarSelectBackground, splitBorder, notebookCellTagBackground, notebookCellTagForeground, notebookFindMatchHighlight, notebookFindRangeHighlight } from 'sql/platform/theme/common/colorRegistry';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -15,6 +14,8 @@ import { BareResultsGridInfo, getBareResultsGridInfoStyles } from 'sql/workbench
 import { getZoomLevel } from 'vs/base/browser/browser';
 import * as types from 'vs/base/common/types';
 import { cellStatusBarItemHover } from 'vs/workbench/contrib/notebook/browser/notebookEditorWidget';
+import { editorLineHighlight, editorLineHighlightBorder } from 'vs/editor/common/core/editorColorRegistry';
+import { ColorScheme } from 'vs/platform/theme/common/theme';
 
 export function registerNotebookThemes(overrideEditorThemeSetting: boolean, configurationService: IConfigurationService): IDisposable {
 	return registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
@@ -49,7 +50,7 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 				}
 			} // else do nothing as current theme's line highlight will work
 
-			if (theme.defines(editorLineHighlightBorder) && theme.type !== 'hc') {
+			if (theme.defines(editorLineHighlightBorder) && theme.type !== ColorScheme.HIGH_CONTRAST_DARK) {
 				// We need to clear out the border because we do not want to show it for notebooks
 				// Override values only for the children of code-component so regular editors aren't affected
 				collector.addRule(`code-component .monaco-editor .view-overlays .current-line { border: 0px; }`);

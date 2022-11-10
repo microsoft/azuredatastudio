@@ -310,7 +310,7 @@ export class SqlDatabaseTree {
 
 
 		this._disposables.push(this._instanceTable.onRowSelected(async (e) => {
-			this._activeIssues = this._model._assessmentResults?.issues;
+			this._activeIssues = this._model._assessmentResults?.issues.filter(issue => issue.appliesToMigrationTargetPlatform === this._targetType);
 			this._dbName.value = this._serverName;
 			await this._resultComponent.updateCssStyles({
 				'display': 'block'
@@ -835,13 +835,10 @@ export class SqlDatabaseTree {
 		let instanceTableValues: azdata.DeclarativeTableCellValue[][] = [];
 		this._databaseTableValues = [];
 		this._dbNames = this._model._databasesForAssessment;
-		const selectedDbs = (this._targetType === MigrationTargetType.SQLVM)
-			? this._model._vmDbs
-			: (this._targetType === MigrationTargetType.SQLMI)
-				? this._model._miDbs
-				: this._model._sqldbDbs;
-
 		this._serverName = (await this._model.getSourceConnectionProfile()).serverName;
+
+		// pre-select the entire list
+		const selectedDbs = this._dbNames.filter(db => this._model._databasesForAssessment.includes(db));
 
 		if (this._targetType === MigrationTargetType.SQLVM || !this._model._assessmentResults) {
 			instanceTableValues = [[
@@ -877,7 +874,7 @@ export class SqlDatabaseTree {
 					style: styleLeft
 				},
 				{
-					value: this._model._assessmentResults?.issues?.length,
+					value: this._model._assessmentResults?.issues?.filter(issue => issue.appliesToMigrationTargetPlatform === this._targetType).length,
 					style: styleRight
 				}
 			]];
@@ -893,7 +890,7 @@ export class SqlDatabaseTree {
 				}
 				this._databaseTableValues.push([
 					{
-						value: selectedDbs.includes(db.name),
+						value: selectedDbs.includes(db.name) && selectable,
 						style: styleLeft,
 						enabled: selectable
 					},

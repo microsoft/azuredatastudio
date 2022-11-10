@@ -28,6 +28,7 @@ export const allowRoot = 'allowRoot';
 
 export const winPlatform = 'win32';
 export const macPlatform = 'darwin';
+export const linuxPlatform = 'linux';
 
 export const jupyterNotebookProviderId = 'jupyter';
 export const jupyterConfigRootFolder = 'jupyter_config';
@@ -82,8 +83,6 @@ export const showPinnedBooksContextKey = 'showPinnedbooks';
 export const pythonWindowsInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2163338';
 export const pythonMacInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2163337';
 export const pythonLinuxInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2163336';
-
-export const notebookLanguages = ['notebook', 'ipynb'];
 
 export const KNOX_ENDPOINT_SERVER = 'host';
 export const KNOX_ENDPOINT_PORT = 'knoxport';

@@ -47,8 +47,6 @@
 			"cms.connectionOptions.applicationIntent.displayName": "Anwendungszweck",
 			"cms.connectionOptions.applicationName.description": "Der Name der Anwendung",
 			"cms.connectionOptions.applicationName.displayName": "Anwendungsname",
-			"cms.connectionOptions.asynchronousProcessing.description": "Bei Festlegung auf TRUE wird die Verwendung der asynchronen Verarbeitung im .NET Framework-Datenanbieter ermöglicht.",
-			"cms.connectionOptions.asynchronousProcessing.displayName": "Asynchrone Verarbeitung",
 			"cms.connectionOptions.attachDbFilename.displayName": "Dateiname der anzufügenden Datenbank",
 			"cms.connectionOptions.attachedDBFileName.description": "Der Name der primären Datei einer anfügbaren Datenbank, einschließlich des vollständigen Pfadnamens.",
 			"cms.connectionOptions.attachedDBFileName.displayName": "Dateiname der angefügten Datenbank",

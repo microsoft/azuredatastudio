@@ -38,6 +38,10 @@
         <source xml:lang="en">The user had no unique identifier within AAD</source>
         <target state="translated">해당 사용자는 AAD 내에 고유 식별자가 없습니다.</target>
       </trans-unit>
+      <trans-unit id="azure.owningTenantNotFound">
+        <source xml:lang="en">Owning Tenant information not found for account.</source>
+        <target state="translated">계정에 대한 소유 테넌트 정보를 찾을 수 없습니다.</target>
+      </trans-unit>
       <trans-unit id="azure.responseError">
         <source xml:lang="en">Token retrieval failed with an error. [Open developer tools]({0}) for more details.</source>
         <target state="translated">오류로 인해 토큰 검색에 실패했습니다. 자세한 내용은 [개발자 도구 열기]({0})를 참조하세요.</target>
@@ -69,6 +73,10 @@
       <trans-unit id="azurecore.consentDialog.open">
         <source xml:lang="en">Open</source>
         <target state="translated">열기</target>
+      </trans-unit>
+      <trans-unit id="noMicrosoftResource">
+        <source xml:lang="en">Provider '{0}' does not have a Microsoft resource endpoint defined.</source>
+        <target state="translated">'{0}' 공급자에 정의된 Microsoft 리소스 엔드포인트가 없습니다.</target>
       </trans-unit>
     </body>
   </file>
@@ -248,6 +256,14 @@
       </trans-unit>
     </body>
   </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/mysqlFlexibleServer/mysqlFlexibleServerTreeDataProvider" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel">
+        <source xml:lang="en">Azure Database for MySQL Flexible server</source>
+        <target state="translated">Azure Database for MySQL 유연한 서버</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/azurecore/dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel">
@@ -293,6 +309,10 @@
       <trans-unit id="azure.resource.tenantSubscriptionsError">
         <source xml:lang="en">Failed to get subscriptions for account {0} (tenant '{1}'). {2}</source>
         <target state="translated">계정 {0}(테넌트 '{1}')에 대한 구독을 가져오지 못했습니다. {2}</target>
+      </trans-unit>
+      <trans-unit id="azure.resource.tenantTokenError">
+        <source xml:lang="en">Failed to acquire Access Token for account '{0}' (tenant '{1}').</source>
+        <target state="translated">계정 '{0}'(테넌트 '{1}')에 대한 액세스 토큰을 가져오지 못했습니다.</target>
       </trans-unit>
     </body>
   </file>

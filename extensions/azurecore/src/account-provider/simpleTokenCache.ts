@@ -20,6 +20,7 @@ function getSystemKeytar(): Keytar | undefined {
 
 export type MultipleAccountsResponse = { account: string, password: string }[];
 
+// allow-any-unicode-next-line
 const separator = '§';
 
 async function getFileKeytar(filePath: string, credentialService: azdata.CredentialProvider): Promise<Keytar | undefined> {

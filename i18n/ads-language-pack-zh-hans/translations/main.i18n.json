@@ -10242,6 +10242,7 @@
 			"InstallVSIXAction.successReload": "已完成从 VSIX 安装 {0} 扩展的过程。请重新加载 Azure Data Studio 以启用它。",
 			"ReinstallAction.successReload": "请重新加载 Azure Data Studio 以完成扩展 {0} 的重新安装。",
 			"activateLanguagePack": "若要在 {0} 中使用 Azure Data Studio，Azure Data Studio需要重启。",
+			"appName": "“${appName}”: 例如 Azure Data Studio。",
 			"azuredatastudio": "Azure Data Studio",
 			"connectionDialogBrowseTree.context": "连接对话框的浏览树上下文菜单",
 			"dashboard.toolbar": "仪表板工具栏操作菜单",
@@ -10266,6 +10267,8 @@
 			"notebook.title": "笔记本标题菜单",
 			"notebook.toolbar": "笔记本工具栏菜单",
 			"objectExplorer.context": "对象资源管理器项上下文菜单",
+			"openDefaultSettingsJson": "打开默认设置 JSON",
+			"openDefaultSettingsJson.capitalized": "打开默认设置(JSON)",
 			"postDisableTooltip": "请重新加载 Azure Data Studio 以禁用此扩展。",
 			"postEnableTooltip": "请重新加载 Azure Data Studio 以启用此扩展。",
 			"postUninstallTooltip": "请重新加载 Azure Data Studio 以完成此扩展的卸载。",
@@ -10273,7 +10276,18 @@
 			"recommendedExtensions": "市场",
 			"scenarioTypeUndefined": "必须提供扩展建议的方案类型。",
 			"showReleaseNotes": "更新后显示发行说明。发行说明会在新的 Web 浏览器窗口中打开。",
+			"sql.versionMismatch": "扩展与 Azure Data Studio {0} 不兼容。扩展要求: {1}。",
+			"sql.versionMismatchVsCode": "扩展与 Azure Data Studio {0} 不兼容。扩展需要更新的 VS Code 引擎版本 {1}，该版本比当前支持的版本({2})更新。",
+			"sql.versionSyntax": "无法解析“{0}”值 {1}。请改为如: ^1.22.0, ^1.22.x 等。",
 			"sql.watcherExclude": "配置文件路径的 glob 模式以从文件监视排除。模式必须在绝对路径上匹配(例如 ** 前缀或完整路径需正确匹配，以及路径内以“/**”前缀开头，例如“**/build/output/**”或“/Users/name/workspaces/project/build/output/**”)。更改此设置需要重启。如果在启动时遇到 Azure Data Studio 消耗大量 CPU 时间，则可以排除大型文件夹以减少初始加载。",
+			"terminal.integrated.allowChords": "是否允许在终端中同时按下键绑定。请注意，如果设置为 true 且击键导致同时按键，则将绕过 `#terminal.integrated.commandsToSkipShell#`；如果想要按 Ctrl+K 转到 shell (而不是 Azure Data Studio)，则将此项设置为 false 尤其有用。",
+			"terminal.integrated.autoReplies": "在终端中遇到一组消息时，将自动响应这组消息。如果消息足够具体，这可能有助于自动执行常见响应。\r\n\r\n备注:\r\n\r\n- 使用 {0} 自动响应 Windows 上的终止批处理作业提示。\r\n- 消息包括转义序列，因此可能无法使用带样式的文本进行回复。\r\n- 每秒只能进行一次回复。\r\n- 在回复中使用 {1} 来表示 Enter 键。\r\n- 要取消设置默认键，请将该值设置为 null。\r\n- 如果新的不适用，请重启 Azure Data Studio。",
+			"terminal.integrated.commandsToSkipShell": "一组命令 ID，其键绑定将不发送至 shell，而是始终由 Azure Data Studio 进行处理。这样的话，通常由 shell 使用的键绑定的行为可如同焦点未在终端上时的行为一样，例如按 “Ctrl+P” 来启动“快速打开”。\r\n\r\n&nbsp;\r\n\r\n默认跳过多项命令。要替代默认值并转而将相关命令的键绑定传递给 shell，请添加以 “-” 字符为前缀的命令。例如，添加“-workbench.action.quickOpen” 可使 “Ctrl+P”到达 shell。\r\n\r\n&nbsp;\r\n\r\n在设置编辑器中查看时，下面的默认跳过命令列表会被截断。要查看完整列表，请执行 {1}，然后从下面的列表中搜索第一个命令。\r\n\r\n&nbsp;\r\n\r\n默认跳过的命令:\r\n\r\n{0}",
+			"terminal.integrated.detectLocale": "控制是否检测 \"$LANG\" 环境变量并将其设置为符合 UTF-8 的选项，因为 Azure Data Studio 的终端仅支持来自 shell 的 UTF-8 编码数据。",
+			"terminal.integrated.env.linux": "具有环境变量的对象，这些变量将添加到 Linux 中的终端要使用的 Azure Data Studio 进程。如果设置为 \"null\"，则删除环境变量。",
+			"terminal.integrated.env.osx": "具有环境变量的对象，这些变量将添加到 macOS 中的终端要使用的 Azure Data Studio 进程。如果设置为 \"null\"，则删除环境变量。",
+			"terminal.integrated.env.windows": "具有环境变量的对象，这些变量将添加到 Windows 中的终端要使用的 Azure Data Studio 进程。如果设置为 \"null\"，则删除环境变量。",
+			"terminal.integrated.inheritEnv": "新 shell 是否应从 Azure Data Studio 继承其环境，这可能会生成登录 shell，以确保初始化 $PATH 和其他开发变量。这不会对 Windows 造成影响。",
 			"uninstallExtensionComplete": "请重新加载 Azure Data Studio 以完成扩展 {0} 的卸载。",
 			"updateLocale": "是否要将 Azure Data Studio 的 UI 语言更改为 {0} 并重启?",
 			"vscodeDocCreationFailedError": "未能创建笔记本文档。",
@@ -10314,13 +10328,14 @@
 			"schema.dashboardWidgets.server": "仪表板中使用的小组件"
 		},
 		"sql/platform/serialization/common/serializationService": {
+			"missingSerializationProviderError": "找不到具有指定 ID“{0}”的序列化提供程序",
 			"noSerializationProvider": "无法序列化数据，因为尚未注册任何提供程序",
 			"saveAsNotSupported": "已禁止此数据提供程序将结果保存为其他格式。",
 			"unknownSerializationError": "出现未知错误，序列化失败"
 		},
 		"sql/platform/theme/common/colorRegistry": {
+			"buttonDropdo0wnBoxShadow": "按钮下拉框阴影颜色",
 			"buttonDropdownBackgroundHover": "按钮下拉背景悬停颜色",
-			"buttonDropdownBoxShadow": "按钮下拉框阴影颜色",
 			"calloutDialogBodyBackground": "标注对话框正文背景。",
 			"calloutDialogExteriorBorder": "标注对话框外部边框，与笔记本 UI 形成对比。",
 			"calloutDialogForeground": "标注对话框前景。",
@@ -10510,6 +10525,8 @@
 			"optionsDialog.ok": "确定"
 		},
 		"sql/workbench/browser/modal/optionsDialogHelper": {
+			"boolean.false": "False",
+			"boolean.true": "True",
 			"optionsDialog.defaultGroupName": "常规",
 			"optionsDialog.invalidInput": "输入无效。预期值为数值。",
 			"optionsDialog.missingRequireField": "是必需的。"
@@ -10559,9 +10576,10 @@
 			"insertOperationName": "插入",
 			"scriptNotFound": "执行 {0} 脚本时未返回脚本",
 			"scriptNotFoundForObject": "在对象 {1} 上执行 {0} 脚本时未返回脚本",
-			"scriptSelectNotFound": "在对象上调用 select 脚本时没有返回脚本",
 			"scriptingFailed": "执行脚本失败",
 			"selectOperationName": "选择",
+			"selectScriptForEditNotGeneratedError": "无法为编辑数据编辑器生成脚本。",
+			"selectScriptNotGeneratedError": "无法为所选对象生成选择脚本。",
 			"updateOperationName": "更新"
 		},
 		"sql/workbench/common/editor/query/queryEditorInput": {
@@ -11088,6 +11106,7 @@
 			"vscode.extension.contributes.view.when": "为真时才显示此视图的条件"
 		},
 		"sql/workbench/contrib/dataExplorer/browser/dataExplorerViewlet": {
+			"ads-connections": "图标表示服务器。",
 			"dataExplorer.servers": "服务器",
 			"dataexplorer.name": "连接",
 			"showDataExplorer": "显示连接"
@@ -11119,14 +11138,16 @@
 			"saveAsCsv": "另存为 CSV",
 			"saveAsExcel": "另存为 Excel",
 			"saveAsJson": "另存为 JSON",
+			"saveAsMarkdown": "另存为 Markdown",
 			"saveAsXml": "另存为 XML",
 			"selectAll": "全选"
 		},
 		"sql/workbench/contrib/executionPlan/browser/azdataGraphView": {
+			"executionPlanComparison.bottomPlanDiagram.ariaLabel": "{0}，请使用箭头键在节点之间导航",
 			"invalidExecutionPlanZoomError": "缩放级别不能为 0 或负数"
 		},
 		"sql/workbench/contrib/executionPlan/browser/compareExecutionPlanInput": {
-			"epCompare.editorName": "比较执行计划"
+			"epCompare.editorName": "CompareExecutionPlans"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditor": {
 			"compareExecutionPlanEditor": "比较执行计划编辑器"
@@ -11135,8 +11156,8 @@
 			"addExecutionPlanLabel": "添加执行计划",
 			"epComapre.LoadingPlanCompleteMessage": "已成功加载执行计划",
 			"epComapre.LoadingPlanMessage": "正在加载执行计划",
-			"epComapre.placeholderInfoboxText": "添加要比较的执行计划",
 			"epCompare.FileFilterDescription": "执行计划文件",
+			"epCompare.addExecutionPlanLabel": "添加执行计划",
 			"epCompare.comparePropertiesAction": "属性",
 			"epCompare.comparisonProgess": "在比较的计划中加载类似区域",
 			"epCompare.searchNodeAction": "查找节点",
@@ -11146,23 +11167,33 @@
 			"epCompare.zoomOutAction": "缩小",
 			"epCompare.zoomReset": "重置缩放",
 			"epCompare.zoomToFit": "缩放到合适大小",
+			"executionPlanComparison.bottomPlanDiagram.name": "底部执行计划 {0}",
+			"executionPlanComparison.topPlanDiagram.name": "最高执行计划 {0}",
+			"executionPlanDisableTooltip": "已禁用工具提示",
+			"executionPlanEnableTooltip": "已启用工具提示",
 			"queryDropdownPrefix": "查询 {1}: {2} 的 {0}"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView": {
-			"executionPlanComparisonPropertiesBottomOperation": "底部操作: {0}",
-			"executionPlanComparisonPropertiesLeftOperation": "左侧操作: {0}",
-			"executionPlanComparisonPropertiesRightOperation": "右侧操作: {0}",
-			"executionPlanComparisonPropertiesTopOperation": "热门操作: {0}",
 			"executionPlanPropertiesEdgeOperationName": "边缘",
+			"nodePropertyViewBottomOperation": "底部操作: {0}",
+			"nodePropertyViewLeftOperation": "左侧操作: {0}",
+			"nodePropertyViewNameEquivalentPropertiesRowHeader": "等效属性",
+			"nodePropertyViewNameGreaterThanTitle": "大于",
+			"nodePropertyViewNameLessThanTitle": "小于",
 			"nodePropertyViewNameNameColumnHeader": "名称",
+			"nodePropertyViewNameNotEqualTitle": "不等于",
 			"nodePropertyViewNameValueColumnBottomHeader": "值(底部计划)",
 			"nodePropertyViewNameValueColumnLeftHeader": "值(左侧计划)",
 			"nodePropertyViewNameValueColumnRightHeader": "值(右侧计划)",
-			"nodePropertyViewNameValueColumnTopHeader": "值(顶级计划)"
+			"nodePropertyViewNameValueColumnTopHeader": "值(顶级计划)",
+			"nodePropertyViewRightOperation": "右侧操作: {0}",
+			"nodePropertyViewTopOperation": "热门操作: {0}"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanContribution": {
+			"executionPlan.tooltips.enableOnHoverTooltips": "如果为 true，则为执行计划启用悬停时工具提示。如果为 false，则在节点单击或按 F3 键时显示工具提示。",
 			"executionPlanCompareCommandOriginalValue": "比较执行计划",
-			"executionPlanCompareCommandValue": "比较执行计划"
+			"executionPlanCompareCommandValue": "比较执行计划",
+			"executionPlanConfigurationTitle": "执行计划"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanEditor": {
 			"executionPlanEditor": "查询执行计划编辑器"
@@ -11179,6 +11210,8 @@
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase": {
 			"ep.topOperationsCopyTableData": "复制",
+			"executionPlanCollapseAllProperties": "全部折叠",
+			"executionPlanExpandAllProperties": "全部展开",
 			"executionPlanPropertyViewClose": "关闭",
 			"executionPlanPropertyViewSortAlphabetically": "按字母顺序",
 			"executionPlanPropertyViewSortByDisplayOrder": "重要性",
@@ -11186,10 +11219,11 @@
 			"nodePropertyViewTitle": "属性"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanTab": {
-			"executionPlanTitle": "查询计划(预览)"
+			"executionPlanTitle": "查询计划"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanView": {
 			"executionPlan.SaveFileDescription": "执行计划文件",
+			"executionPlan.diagram.ariaLabel": "执行计划 {0}",
 			"executionPlanCompareExecutionPlanAction": "比较执行计划",
 			"executionPlanContextMenuDisableTooltip": "禁用工具提示",
 			"executionPlanContextMenuEnableTooltip": "启用工具提示",
@@ -11197,6 +11231,7 @@
 			"executionPlanDisableTooltip": "已禁用工具提示",
 			"executionPlanEnableTooltip": "已启用工具提示",
 			"executionPlanFitGraphLabel": "缩放到合适大小",
+			"executionPlanHighlightExpensiveOperationAction": "突出显示高开销操作",
 			"executionPlanOpenGraphFile": "显示查询计划 XML",
 			"executionPlanPropertiesActionLabel": "属性",
 			"executionPlanSavePlanXML": "保存计划文件",
@@ -11210,19 +11245,22 @@
 			"planHeaderIndexAndCost": "查询 {0}: 查询成本(相对于脚本): {1}%"
 		},
 		"sql/workbench/contrib/executionPlan/browser/widgets/customZoomWidget": {
-			"cancelCustomZoomAction": "关闭(转义)",
+			"cancelCustomZoomAction": "关闭",
 			"customZoomApplyButton": "应用",
-			"customZoomApplyButtonTitle": "应用缩放(Enter)",
+			"customZoomApplyButtonTitle": "应用缩放",
 			"invalidCustomZoomError": "选择介于 1 到 200 之间的缩放值",
 			"qpZoomValueLabel": "缩放(%)",
-			"zoomAction": "缩放(Enter)"
+			"zoomAction": "缩放"
 		},
 		"sql/workbench/contrib/executionPlan/browser/widgets/nodeSearchWidget": {
-			"cancelSearchAction": "关闭(转义)",
+			"cancelSearchAction": "关闭",
+			"executionPlanEnterValueTitle": "输入搜索值",
 			"executionPlanSearchTypeContains": "包含",
 			"executionPlanSearchTypeEquals": "等于",
-			"nextSearchItemAction": "下一个匹配项(Enter)",
-			"previousSearchItemAction": "上一个匹配项(Shift+Enter)"
+			"executionPlanSelectPropertyTitle": "选择属性",
+			"executionPlanSelectSearchTypeTitle": "选择搜索类型",
+			"nextSearchItemAction": "下一个匹配项",
+			"previousSearchItemAction": "上一个匹配项"
 		},
 		"sql/workbench/contrib/extensions/browser/contributionRenders": {
 			"insight condition": "时间",
@@ -11608,6 +11646,7 @@
 			"loadingNotebookMessage": "正在加载笔记本 {0}"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet": {
+			"ads-notebook": "图标表示笔记本。",
 			"notebookExplorer.name": "笔记本",
 			"notebookExplorer.searchResults": "搜索结果",
 			"searchPathNotFoundError": "找不到搜索路径: {0}"
@@ -11704,6 +11743,7 @@
 			"connection": "连接",
 			"dashboard": "仪表板",
 			"data": "数据",
+			"executionPlan": "执行计划",
 			"notebook": "笔记本",
 			"profiler": "探查器",
 			"queryEditor": "查询编辑器",
@@ -11773,6 +11813,7 @@
 			"saveAsCsv": "另存为 CSV",
 			"saveAsExcel": "另存为 Excel",
 			"saveAsJson": "另存为 JSON",
+			"saveAsMarkdown": "另存为 Markdown",
 			"saveAsXml": "另存为 XML",
 			"saveToFileNotSupported": "备份数据源不支持保存到文件",
 			"selectAll": "全选",
@@ -11833,6 +11874,10 @@
 			"queryEditor.results.saveAsCsv.includeHeaders": "为 true 时，将在将结果保存为 CSV 时包含列标题",
 			"queryEditor.results.saveAsCsv.lineSeperator": "将结果保存为 CSV 时用于分隔行的字符",
 			"queryEditor.results.saveAsCsv.textIdentifier": "将结果保存为 CSV 时用于封装文本字段的字符",
+			"queryEditor.results.saveAsExcel.includeHeaders": "如果为 true，则在将结果另存为 Excel 文件时包含列标题",
+			"queryEditor.results.saveAsMarkdown.encoding": "将结果保存为 Markdown 时使用的文件编码",
+			"queryEditor.results.saveAsMarkdown.includeHeaders": "如果为 true，则在将结果另存为 Markdown 文件时包含列标题",
+			"queryEditor.results.saveAsMarkdown.lineSeparator": "导出到 Markdown 时用于分隔行的字符，默认为系统行尾",
 			"queryEditor.results.saveAsXml.encoding": "将结果保存为 XML 时使用的文件编码",
 			"queryEditor.results.saveAsXml.formatted": "为 true 时，将在将结果保存为 XML 时设置 XML 输出的格式",
 			"queryEditor.results.streaming": "启用结果流式处理；包含极少轻微的可视化问题",
@@ -11897,7 +11942,8 @@
 			"deployment.title": "新建部署..."
 		},
 		"sql/workbench/contrib/resourceViewer/browser/resourceViewer.contribution": {
-			"resourceViewer": "资源查看器"
+			"resourceViewer": "资源查看器",
+			"resourceViewerIcon": "资源查看器的图标。"
 		},
 		"sql/workbench/contrib/resourceViewer/browser/resourceViewerActions": {
 			"resourceViewer.refresh": "刷新"
@@ -11948,9 +11994,6 @@
 		"sql/workbench/contrib/tableDesigner/browser/actions": {
 			"tableDesigner.publishTableChanges": "发布更改...",
 			"tableDesigner.saveTableChanges": "保存"
-		},
-		"sql/workbench/contrib/tableDesigner/browser/tableDesignerEditor": {
-			"tableDesigner.PreviewFeature": "预览功能"
 		},
 		"sql/workbench/contrib/tasks/browser/tasks.contribution": {
 			"inProgressTasksChangesBadge": "{0} 个正在执行的任务",
@@ -12185,9 +12228,12 @@
 		},
 		"sql/workbench/services/connection/browser/connectionDialogService": {
 			"connectionError": "连接错误",
+			"enableTrustServerCertificate": "启用信任服务器证书",
 			"kerberosErrorStart": "由于 Kerberos 错误，连接失败。",
 			"kerberosHelpLink": "可在 {0} 处获取有关配置 Kerberos 的帮助",
-			"kerberosKinit": "如果之前已连接，可能需要重新运行 kinit。"
+			"kerberosKinit": "如果之前已连接，可能需要重新运行 kinit。",
+			"runKinit": "运行 Kinit",
+			"trustServerCertInstructionText": "已在此连接上启用加密、查看目标 SQL Server 的 SSL 和证书配置，或在连接对话框中启用“信任服务器证书”。\r\n\r\n\t\t\t注意: 自签名证书仅提供有限的保护，不建议用于生产环境。是否要在此连接上启用“信任服务器证书”，然后重试?"
 		},
 		"sql/workbench/services/connection/browser/connectionDialogWidget": {
 			"connectType": "连接类型",
@@ -12196,21 +12242,19 @@
 			"connectionDetailsTitle": "连接详细信息",
 			"connectionDialog.cancel": "取消",
 			"connectionDialog.connect": "连接",
-			"connectionDialog.connectionProviderNotSupported": "当前未安装支持提供程序类型 \\\"{0}\\\" 的扩展。请安装它，然后重试。",
-			"connectionDialog.extensionNotInstalled": "若要连接到此资源，需要扩展 \\\"{0}\\\"。请安装它，然后重试。",
 			"connectionDialog.recentConnections": "最近的连接",
-			"connectionDialog.viewExtension": "查看扩展",
-			"connectionDialog.viewExtensions": "查看扩展",
 			"noRecentConnections": "没有最近的连接",
 			"recentConnectionTitle": "最近"
 		},
 		"sql/workbench/services/connection/browser/connectionManagementService": {
 			"cancelConnectionConfirmation": "确定要取消此连接吗?",
+			"connection.extensionNotInstalled": "若要连接到此资源，需要扩展 \"{0}\"。是否要安装它?",
 			"connection.invalidConnectionResult": "连接结果无效",
 			"connection.neverShowUnsupportedVersionWarning": "不再显示",
 			"connection.noAzureAccount": "未能获取 Azure 帐户令牌用于连接",
 			"connection.refreshAzureTokenFailure": "未能刷新用于连接的 Azure 帐户令牌",
 			"connection.unsupportedServerVersionWarning": "Azure Data Studio 不支持此服务器版本，你仍然可以连接到它，但 Azure Data Studio 中的某些功能可能无法按预期工作。",
+			"connectionDialog.connectionProviderNotSupported": "当前未安装支持提供程序类型 \"{0}\" 的扩展。是否要查看扩展?",
 			"connectionManagementService.noProviderForUri": "找不到此 URI 的提供程序: {0}",
 			"connectionNotAcceptedError": "连接未被接受",
 			"connectionService.no": "否",
@@ -12219,6 +12263,8 @@
 		"sql/workbench/services/connection/browser/connectionWidget": {
 			"addNewServerGroup": "添加新组…",
 			"advanced": "高级…",
+			"boolean.false": "False",
+			"boolean.true": "True",
 			"connection.azureAccountDropdownLabel": "帐户",
 			"connection.azureTenantDropdownLabel": "Azure AD 租户",
 			"connectionName": "名称(可选)",
@@ -12261,7 +12307,8 @@
 			"copyDetails": "复制详细信息",
 			"errorMessageDialog.action": "操作",
 			"errorMessageDialog.close": "关闭",
-			"errorMessageDialog.ok": "确定"
+			"errorMessageDialog.ok": "确定",
+			"errorMessageDialog.readMore": "阅读详细信息"
 		},
 		"sql/workbench/services/errorMessage/browser/errorMessageService": {
 			"error": "错误",
@@ -12426,9 +12473,6 @@
 			"vscode.extension.contributes.notebook.languagemagics": "提供笔记本语言。",
 			"vscode.extension.contributes.notebook.providersDescriptions": "提供笔记本提供程序说明。"
 		},
-		"sql/workbench/services/objectExplorer/browser/asyncServerTreeRenderer": {
-			"loading": "正在加载..."
-		},
 		"sql/workbench/services/objectExplorer/browser/connectionTreeAction": {
 			"DisconnectAction": "断开连接",
 			"activeConnections": "显示活动连接",
@@ -12449,9 +12493,6 @@
 			"firewallCanceled": "防火墙对话已取消",
 			"loginCanceled": "用户已取消",
 			"noProviderFound": "无法展开，因为未找到所需的连接提供程序“{0}”"
-		},
-		"sql/workbench/services/objectExplorer/browser/serverTreeRenderer": {
-			"loading": "正在加载..."
 		},
 		"sql/workbench/services/objectExplorer/browser/treeCreationUtils": {
 			"serversAriaLabel": "服务器",
@@ -12513,6 +12554,7 @@
 			"resultsSerializer.saveAsFileExtensionCSVTitle": "CSV (以逗号分隔)",
 			"resultsSerializer.saveAsFileExtensionExcelTitle": "Excel 工作簿",
 			"resultsSerializer.saveAsFileExtensionJSONTitle": "JSON",
+			"resultsSerializer.saveAsFileExtensionMarkdownTitle": "Markdown",
 			"resultsSerializer.saveAsFileExtensionTXTTitle": "纯文本",
 			"resultsSerializer.saveAsFileExtensionXMLTitle": "XML",
 			"resultsSerializer.saveAsFileTitle": "选择结果文件",
@@ -12584,7 +12626,6 @@
 			"groupColor": "组颜色",
 			"groupDescription": "组描述",
 			"serverGroup.cancel": "取消",
-			"serverGroup.colorValue": "组颜色: {0}",
 			"serverGroup.ok": "确定"
 		},
 		"sql/workbench/services/serverGroup/common/serverGroupViewModel": {
@@ -12710,18 +12751,73 @@
 			"ept.topOperationsCopyTableData": "复制",
 			"ept.topOperationsCopyWithHeader": "使用标头复制",
 			"ept.topOperationsSelectAll": "全选",
-			"planTreeTab.title": "计划树(预览版)",
+			"planTreeTab.title": "计划树",
 			"topOperationsTableTitle": "执行计划树"
 		},
 		"sql/workbench/contrib/executionPlan/browser/topOperationsTab": {
 			"ep.topOperationsCopyTableData": "复制",
 			"ep.topOperationsCopyWithHeader": "使用标头复制",
 			"ep.topOperationsSelectAll": "全选",
-			"topOperationsTabTitle": "热门操作(预览)",
+			"topOperationsTabTitle": "热门操作",
 			"topOperationsTableTitle": "热门操作"
 		},
 		"sql/workbench/contrib/notebook/browser/models/outputProcessor": {
 			"notebookInvalidOutputTypeError": "无法识别输出类型 '{0}'。"
+		},
+		"sql/base/browser/ui/table/table": {
+			"table.resizeColumn": "提供新的列宽",
+			"table.resizeColumn.invalid": "列宽无效",
+			"table.resizeColumn.negativeSize": "大小不能为 0 或负"
+		},
+		"sql/base/parts/tree/browser/treeDefaults": {
+			"collapse all": "全部折叠"
+		},
+		"sql/platform/connection/common/providerConnectionInfo": {
+			"connection.unsupported": "不支持的连接",
+			"loading": "正在加载..."
+		},
+		"sql/workbench/contrib/executionPlan/browser/constants": {
+			"ep.propertiesSearchDescription": "搜索属性表",
+			"ep.searchPlaceholder": "筛选任何字段...",
+			"ep.topOperationsSearchDescription": "搜索热门操作"
+		},
+		"sql/workbench/contrib/executionPlan/browser/widgets/highlightExpensiveNodeWidget": {
+			"actualNumberOfRowsForAllExecutionsAction": "所有执行的实际行数",
+			"cancelExpensiveOperationAction": "关闭",
+			"executionPlanActualElapsedCpuTime": "实际占用的 CPU 时间",
+			"executionPlanActualElapsedTime": "实际占用的时间",
+			"executionPlanCost": "成本",
+			"executionPlanNumberOfRowsRead": "读取的行数",
+			"executionPlanOff": "关闭",
+			"executionPlanSelectExpenseMetricTitle": "选择费用指标",
+			"executionPlanSubtreeCost": "子树成本",
+			"expensiveOperationLabel": "指标:",
+			"highlightExpensiveOperationAction": "应用",
+			"highlightExpensiveOperationApplyButton": "应用",
+			"highlightExpensiveOperationButtonTitle": "突出显示高开销操作",
+			"qp.expensiveOperationMetric.dontShowAgain": "不再显示",
+			"qp.expensiveOperationMetric.no": "否",
+			"qp.expensiveOperationMetric.yes": "是",
+			"queryExecutionPlan.showUpdateDefaultMetricInfo": "将所选指标设置为查询执行计划的默认项?",
+			"turnOffExpensiveHighlightingOperationAction": "关闭"
+		},
+		"sql/workbench/contrib/executionPlan/common/executionPlanInput": {
+			"epCompare.executionPlanEditorName": "ExecutionPlan"
+		},
+		"sql/workbench/contrib/welcome/notifyEncryption/notifyEncryptionDialog": {
+			"notifyEncryption.message": "现在，Azure Data Studio 已默认为所有 SQL Server 连接启用加密。除非已更改某些与加密相关的连接属性，否则这可能会导致现有连接不再工作。{0}建议查看下面的链接以了解更多详细信息。",
+			"notifyEncryption.moreInfoLink": "详细信息",
+			"notifyEncryption.title": "重要更新"
+		},
+		"sql/workbench/contrib/welcome/page/browser/welcomePage.contribution": {
+			"miWelcome": "欢迎使用(&&W)",
+			"workbench.startupEditor": "在没有从上一会话中恢复出信息的情况下，控制启动时显示的编辑器。",
+			"workbench.startupEditor.newUntitledFile": "打开一个新的无标题文件(仅在打开一个空窗口时适用)。",
+			"workbench.startupEditor.none": "在启动时不打开编辑器。",
+			"workbench.startupEditor.readme": "当打开包含自述文件的文件夹时，请打开自述文件，否则会回退到 'welcomePage'。请注意: 仅在作为全局 配置时才遵守此操作，如果在工作区或文件夹配置中进行设置，则此将被忽略。",
+			"workbench.startupEditor.welcomePage": "打开包含帮助开始使用 Azure Data Studio 和扩展内容的欢迎页面。",
+			"workbench.startupEditor.welcomePageInEmptyWorkbench": "在打开空工作区时打开欢迎页面。",
+			"workbench.startupEditor.welcomePageWithTour": "使用入门教程(默认)打开欢迎页面"
 		}
 	}
 }
