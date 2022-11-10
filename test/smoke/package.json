@@ -16,6 +16,7 @@
     "ncp": "^2.0.0",
     "node-fetch": "^2.6.7",
     "rimraf": "3.0.2",
+    "tmp": "^0.2.1",
     "vscode-test": "^1.6.1"
   },
   "devDependencies": {
