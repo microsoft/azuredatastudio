@@ -53,6 +53,7 @@ import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectio
 import { listFocusAndSelectionBackground } from 'sql/platform/theme/common/colors';
 import { timeout } from 'vs/base/common/async';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 
 export interface IDesignerStyle {
 	tabbedPanelStyles?: ITabbedPanelStyles;
@@ -113,7 +114,8 @@ export class Designer extends Disposable implements IThemable {
 		@INotificationService private readonly _notificationService: INotificationService,
 		@IDialogService private readonly _dialogService: IDialogService,
 		@IThemeService private readonly _themeService: IThemeService,
-		@IContextMenuService private readonly _contextMenuService: IContextMenuService,) {
+		@IContextMenuService private readonly _contextMenuService: IContextMenuService,
+		@IAccessibilityService private readonly _accessibilityService: IAccessibilityService) {
 		super();
 		this._tableCellEditorFactory = new TableCellEditorFactory(
 			{
@@ -843,7 +845,7 @@ export class Designer extends Disposable implements IThemable {
 				const tableProperties = componentDefinition.componentProperties as DesignerTableProperties;
 				const taskbar = this.addTableTaskbar(container, tableProperties);
 				const tableContainer = container.appendChild(DOM.$('.full-row'));
-				const table = new Table(tableContainer, {
+				const table = new Table(tableContainer, this._accessibilityService, {
 					dataProvider: new TableDataView()
 				}, {
 					editable: true,

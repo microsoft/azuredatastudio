@@ -25,6 +25,7 @@ import { Emitter } from 'vs/base/common/event';
 import { ContextMenuAnchor } from 'sql/workbench/contrib/resourceViewer/browser/resourceViewerEditor';
 import { LoadingSpinnerPlugin } from 'sql/base/browser/ui/table/plugins/loadingSpinner.plugin';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 
 export class ResourceViewerTable extends Disposable {
 
@@ -39,14 +40,15 @@ export class ResourceViewerTable extends Disposable {
 		@IOpenerService private _openerService: IOpenerService,
 		@ICommandService private _commandService: ICommandService,
 		@INotificationService private _notificationService: INotificationService,
-		@IContextViewService private _contextViewService: IContextViewService) {
+		@IContextViewService private _contextViewService: IContextViewService,
+		@IAccessibilityService private _accessibilityService: IAccessibilityService) {
 		super();
 		let filterFn = (data: Array<azdata.DataGridItem>): Array<azdata.DataGridItem> => {
 			return data.filter(item => this.filter(item));
 		};
 
 		this._dataView = new TableDataView<azdata.DataGridItem>(undefined, undefined, undefined, filterFn);
-		this._resourceViewerTable = this._register(new Table(parent, {
+		this._resourceViewerTable = this._register(new Table(parent, this._accessibilityService, {
 			sorter: (args) => {
 				this._dataView.sort(args);
 			}

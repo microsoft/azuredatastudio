@@ -35,6 +35,7 @@ import { Event } from 'vs/base/common/event';
 import { equals } from 'vs/base/common/arrays';
 import * as DOM from 'vs/base/browser/dom';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 
 export class EditDataGridPanel extends GridParentComponent {
 	// The time(in milliseconds) we wait before refreshing the grid.
@@ -105,7 +106,8 @@ export class EditDataGridPanel extends GridParentComponent {
 		@IConfigurationService configurationService: IConfigurationService,
 		@IClipboardService clipboardService: IClipboardService,
 		@IQueryEditorService queryEditorService: IQueryEditorService,
-		@ILogService logService: ILogService
+		@ILogService logService: ILogService,
+		@IAccessibilityService private accessibilityService: IAccessibilityService
 	) {
 		super(contextMenuService, keybindingService, contextKeyService, configurationService, clipboardService, queryEditorService, logService);
 		this.nativeElement = document.createElement('div');
@@ -893,7 +895,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			};
 
 			if (dataSet.columnDefinitions) {
-				this.table = new Table(this.nativeElement.appendChild(newGridContainer), { dataProvider: this.gridDataProvider, columns: dataSet.columnDefinitions }, options);
+				this.table = new Table(this.nativeElement.appendChild(newGridContainer), this.accessibilityService, { dataProvider: this.gridDataProvider, columns: dataSet.columnDefinitions }, options);
 				for (let plugin of this.plugins) {
 					this.table.registerPlugin(plugin);
 				}
@@ -903,7 +905,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			}
 		}
 		else {
-			this.table = new Table(this.nativeElement.appendChild(newGridContainer));
+			this.table = new Table(this.nativeElement.appendChild(newGridContainer), this.accessibilityService);
 		}
 	}
 

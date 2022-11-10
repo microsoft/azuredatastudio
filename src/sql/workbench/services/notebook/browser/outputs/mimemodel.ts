@@ -5,6 +5,7 @@
 
 import { IRenderMime } from 'sql/workbench/services/notebook/browser/outputs/renderMimeInterfaces';
 import { ReadonlyJSONObject } from 'sql/workbench/services/notebook/common/jsonext';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 
 /**
@@ -20,6 +21,7 @@ export class MimeModel implements IRenderMime.IMimeModel {
 		this._metadata = options.metadata || {};
 		this._callback = options.callback;
 		this._themeService = options.themeService;
+		this._accessibilityService = options.accessibilityService;
 	}
 
 	/**
@@ -45,6 +47,10 @@ export class MimeModel implements IRenderMime.IMimeModel {
 		return this._themeService;
 	}
 
+	get accessibilityService(): IAccessibilityService {
+		return this._accessibilityService;
+	}
+
 	/**
 	 * Set the data associated with the model.
 	 *
@@ -62,6 +68,7 @@ export class MimeModel implements IRenderMime.IMimeModel {
 	private _data: ReadonlyJSONObject;
 	private _metadata: ReadonlyJSONObject;
 	private _themeService: IThemeService;
+	private _accessibilityService: IAccessibilityService;
 }
 
 /**
@@ -96,5 +103,7 @@ export namespace MimeModel {
 		 * Theme service used to react to theme change events
 		 */
 		themeService?: IThemeService;
+
+		accessibilityService?: IAccessibilityService;
 	}
 }
