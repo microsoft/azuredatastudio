@@ -466,15 +466,14 @@ export class DataResourceDataProvider implements IGridDataProvider {
 			if (endIndex > maxRow) {
 				endIndex = maxRow;
 			}
-			let result: ICellValue[][] = [];
-			result = result.concat(this._rows.slice(index, endIndex).map(row => {
+
+			return [].concat(this._rows.slice(index, endIndex).map(row => {
 				if (this.isSelected(singleSelection)) {
 					return row.slice(singleSelection.fromCell, singleSelection.toCell + 1);
 				} else {
 					return row;
 				}
 			}));
-			return result;
 		};
 
 		// This code path uses the serialization service which uses a different request parameter
