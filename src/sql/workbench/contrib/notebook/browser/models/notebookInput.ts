@@ -358,6 +358,10 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 		// If this save operation results in a new editor, either
 		// because it was saved to disk (e.g. from untitled) or
 		// through an explicit "Save As", make sure to replace it.
+		if (!untypedEditor) {
+			return undefined; // if we have an undefined input, then the save was cancelled, so do nothing here
+		}
+
 		let target = (<any>untypedEditor).resource;
 		if (target.scheme !== this.textInput.resource.scheme || (saveAs && !isEqual(target, this.textInput.preferredResource))
 		) {
@@ -366,6 +370,7 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 				return editor.editor;
 			}
 		}
+
 		return this.textInput;
 	}
 
