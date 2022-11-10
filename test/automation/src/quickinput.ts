@@ -16,6 +16,13 @@ export class QuickInput {
 
 	constructor(private code: Code) { }
 
+	// {{ SQL CARBON EDIT }} defined submit
+	async submit(text: string): Promise<void> {
+		await this.code.waitForSetValue(QuickInput.QUICK_INPUT_INPUT, text);
+		await this.code.dispatchKeybinding('enter');
+		await this.waitForQuickInputClosed();
+	}
+
 	async waitForQuickInputOpened(retryCount?: number): Promise<void> {
 		await this.code.waitForActiveElement(QuickInput.QUICK_INPUT_INPUT, retryCount);
 	}

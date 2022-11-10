@@ -184,8 +184,9 @@ export function setup(opts: minimist.ParsedArgs) {
 			const app = this.app as Application;
 			// If the test failed, take a screenshot before closing the active editor.
 			if (this.currentTest!.state === 'failed') {
-				const name = this.currentTest!.fullTitle().replace(/[^a-z0-9\-]/ig, '_');
-				await app.captureScreenshot(`${name} (screenshot before revertAndCloseActiveEditor action)`);
+				// {{SQL CARBON EDIT}} - No clear way to take a screenshot
+				// const name = this.currentTest!.fullTitle().replace(/[^a-z0-9\-]/ig, '_');
+				// await app.captureScreenshot(`${name} (screenshot before revertAndCloseActiveEditor action)`);
 			}
 
 			await app.workbench.quickaccess.runCommand('workbench.action.revertAndCloseActiveEditor');

@@ -184,18 +184,23 @@ export class Code {
 		accept = accept || (result => textContent !== undefined ? textContent === result : !!result);
 
 		// {{SQL CARBON EDIT}} Print out found element
-		return await poll(
-			() => this.driver.getElements(windowId, selector).then(els => els.length > 0 ? Promise.resolve(els[0].textContent) : Promise.reject(new Error('Element not found for textContent'))),
-			s => accept!(typeof s.textContent === 'string' ? s.textContent : ''),
+		return await this.poll(
+			() => this.driver.getElements(selector).then(els => els.length > 0 ? Promise.resolve(els[0].textContent) : Promise.reject(new Error('Element not found for textContent'))),
+			s => accept!(typeof s === 'string' ? s : ''),
 			`get text content '${selector}'`,
 			retryCount
 		);
-		this.logger.log(`got text content element ${JSON.stringify(element)}`);
-		return element.textContent;
+		// lewissanchez todo - Get rid of this commented out code because it's unreachable
+		// this.logger.log(`got text content element ${JSON.stringify(element)}`);
+		// return element.textContent;
 	}
 
 	async waitAndClick(selector: string, xoffset?: number, yoffset?: number, retryCount: number = 200): Promise<void> {
 		await this.poll(() => this.driver.click(selector, xoffset, yoffset), () => true, `click '${selector}'`, retryCount);
+	}
+
+	async waitAndDoubleClick(selector: string): Promise<void> { // {{SQL CARBON EDIT}} - defined waitAndDoubleClick
+		await this.poll(() => this.driver.doubleClick(selector), () => true, `double click '${selector}'`);
 	}
 
 	async waitForSetValue(selector: string, value: string): Promise<void> {
@@ -204,9 +209,10 @@ export class Code {
 
 	async waitForElements(selector: string, recursive: boolean, accept: (result: IElement[]) => boolean = result => result.length > 0): Promise<IElement[]> {
 		// {{SQL CARBON EDIT}} Print out found element
-		return await poll(() => this.driver.getElements(windowId, selector, recursive), accept, this.logger, `get elements '${selector}'`);
-		this.logger.log(`got elements ${elements.map(element => JSON.stringify(element)).join('\n')}`);
-		return elements;
+		return await this.poll(() => this.driver.getElements(selector, recursive), accept, `get elements '${selector}'`);
+		// lewissanchez todo - Get rid of this commented out code below because it's unreachable
+		// this.logger.log(`got elements ${elements.map(element => JSON.stringify(element)).join('\n')}`);
+		// return elements;
 	}
 
 	async waitForElement(selector: string, accept: (result: IElement | undefined) => boolean = result => !!result, retryCount: number = 200): Promise<IElement> {
@@ -214,6 +220,11 @@ export class Code {
 		const element = await this.poll<IElement>(() => this.driver.getElements(selector).then(els => els[0]), accept, `get element '${selector}'`, retryCount);
 		this.logger.log(`got element ${JSON.stringify(element)}`);
 		return element;
+	}
+
+	// {{SQL CARBON EDIT}} - Wait for element gone
+	async waitForElementGone(selector: string, accept: (result: IElement | undefined) => boolean = result => !result, retryCount: number = 200): Promise<IElement> {
+		return await this.poll<IElement>(() => this.driver.getElements(selector).then(els => els[0]), accept, `get element gone '${selector}'`, retryCount);
 	}
 
 	async waitForActiveElement(selector: string, retryCount: number = 200): Promise<void> {
