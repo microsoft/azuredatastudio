@@ -14,6 +14,8 @@ import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 import { IInsightsView, IInsightData } from 'sql/platform/dashboard/browser/insightRegistry';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 
 @Component({
 	template: ''
@@ -25,7 +27,9 @@ export default class TableInsight extends Disposable implements IInsightsView, O
 
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) private _elementRef: ElementRef,
-		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService
+		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
+		@Inject(IAccessibilityService) private accessibilityService: IAccessibilityService,
+		@Inject(IQuickInputService) private quickInputService: IQuickInputService
 	) {
 		super();
 	}
@@ -61,7 +65,7 @@ export default class TableInsight extends Disposable implements IInsightsView, O
 
 	private createTable() {
 		if (!this.table) {
-			this.table = new Table(this._elementRef.nativeElement, { dataProvider: this.dataView, columns: this.columns }, { showRowNumber: true });
+			this.table = new Table(this._elementRef.nativeElement, this.accessibilityService, this.quickInputService, { dataProvider: this.dataView, columns: this.columns }, { showRowNumber: true });
 			this.table.setSelectionModel(new CellSelectionModel());
 			this._register(attachTableStyler(this.table, this.themeService));
 		}

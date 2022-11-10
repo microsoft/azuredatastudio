@@ -401,7 +401,9 @@ export class RenderedDataResource extends RenderedCommon {
 		return tableRenderers.renderDataResource({
 			host: this.node,
 			source: JSON.stringify(model.data[this.mimeType]),
-			themeService: model.themeService
+			themeService: model.themeService,
+			accessibilityService: model.accessibilityService,
+			quickInputService: model.quickInputService
 		});
 	}
 }

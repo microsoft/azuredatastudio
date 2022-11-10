@@ -9,6 +9,7 @@ import { URI } from 'vs/base/common/uri';
 import * as nls from 'vs/nls';
 import * as semver from 'vs/base/common/semver/semver';
 import { IExtensionManifest } from 'vs/platform/extensions/common/extensions';
+import * as loc from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}} ADS-specific error messages
 
 export interface IParsedVersion {
 	hasCaret: boolean;
@@ -239,7 +240,7 @@ export function isValidVersion(_inputVersion: string | INormalizedVersion, _inpu
 
 type ProductDate = string | Date | undefined;
 
-export function validateExtensionManifest(productVersion: string, productDate: ProductDate, extensionLocation: URI, extensionManifest: IExtensionManifest, extensionIsBuiltin: boolean): readonly [Severity, string][] {
+export function validateExtensionManifest(productVersion: string, vsCodeProductVersion: string, productDate: ProductDate, extensionLocation: URI, extensionManifest: IExtensionManifest, extensionIsBuiltin: boolean): readonly [Severity, string][] { // {{SQL CARBON EDIT}} Add vs code version so we can compare both engines
 	const validations: [Severity, string][] = [];
 	if (typeof extensionManifest.publisher !== 'undefined' && typeof extensionManifest.publisher !== 'string') {
 		validations.push([Severity.Error, nls.localize('extensionDescription.publisher', "property publisher must be of type `string`.")]);
@@ -322,7 +323,7 @@ export function validateExtensionManifest(productVersion: string, productDate: P
 	}
 
 	const notices: string[] = [];
-	const isValid = isValidExtensionVersion(productVersion, productDate, extensionManifest, extensionIsBuiltin, notices);
+	const isValid = isValidExtensionVersion(productVersion, vsCodeProductVersion, productDate, extensionManifest, extensionIsBuiltin, notices); // {{SQL CARBON EDIT}} Add vs code version so we can compare both engines
 	if (!isValid) {
 		for (const notice of notices) {
 			validations.push([Severity.Error, notice]);
@@ -331,50 +332,57 @@ export function validateExtensionManifest(productVersion: string, productDate: P
 	return validations;
 }
 
-export function isValidExtensionVersion(productVersion: string, productDate: ProductDate, extensionManifest: IExtensionManifest, extensionIsBuiltin: boolean, notices: string[]): boolean {
+// {{SQL CARBON EDIT}} Add vs code version so we can compare both engines
+export function isValidExtensionVersion(productVersion: string, vsCodeProductVersion: string, productDate: ProductDate, extensionManifest: IExtensionManifest, extensionIsBuiltin: boolean, notices: string[]): boolean {
 
 	if (extensionIsBuiltin || (typeof extensionManifest.main === 'undefined' && typeof extensionManifest.browser === 'undefined')) {
 		// No version check for builtin or declarative extensions
 		return true;
 	}
 
-	// {{SQL CARBON EDIT}}
-	return extensionManifest.engines.azdata ? extensionManifest.engines.azdata === '*' || isVersionValid(productVersion, productDate, extensionManifest.engines.vscode, notices) : true;
+	const azdataEngineVersion = extensionManifest.engines.azdata;
+	const vscodeEngineVersion = extensionManifest.engines.vscode;
+	const isAzdataEngineVersionValid = azdataEngineVersion ? azdataEngineVersion === '*' || isVersionValid(productVersion, productDate, azdataEngineVersion, loc.versionSyntax('engines.azdata', azdataEngineVersion), loc.versionMismatch(productVersion, azdataEngineVersion), notices) : true;
+	const isVsCodeEngineVersionValid = vscodeEngineVersion ? vscodeEngineVersion === '*' || isVersionValid(vsCodeProductVersion, productDate, vscodeEngineVersion, loc.versionSyntax('engines.vscode', vscodeEngineVersion), loc.versionMismatchVsCode(productVersion, vscodeEngineVersion, vsCodeProductVersion), notices) : true;
+	return isAzdataEngineVersionValid && isVsCodeEngineVersionValid;
 }
 
 // {{SQL CARBON EDIT}}
 export function isEngineValid(engine: string, version: string, date: ProductDate): boolean {
 	// TODO@joao: discuss with alex '*' doesn't seem to be a valid engine version
-	return engine === '*' || isVersionValid(version, date, engine);
+	// {{SQL CARBON EDIT}} We don't use the returned notices so just send in empty strings
+	return engine === '*' || isVersionValid(version, date, engine, '', '');
 }
 
-function isVersionValid(currentVersion: string, date: ProductDate, requestedVersion: string, notices: string[] = []): boolean {
+// {{SQL CARBON EDIT}} Add vs code version so we can compare both engines
+function isVersionValid(currentVersion: string, date: ProductDate, requestedVersion: string, parseError: string, notCompatibleError: string, notices: string[] = []): boolean {
 
 	let desiredVersion = normalizeVersion(parseVersion(requestedVersion));
 	if (!desiredVersion) {
-		notices.push(nls.localize('versionSyntax', "Could not parse `engines.vscode` value {0}. Please use, for example: ^1.22.0, ^1.22.x, etc.", requestedVersion));
+		notices.push(parseError); // {{SQL CARBON EDIT}} ADS-specific error messages
 		return false;
 	}
 
 	// enforce that a breaking API version is specified.
 	// for 0.X.Y, that means up to 0.X must be specified
 	// otherwise for Z.X.Y, that means Z must be specified
-	if (desiredVersion.majorBase === 0) {
-		// force that major and minor must be specific
-		if (!desiredVersion.majorMustEqual || !desiredVersion.minorMustEqual) {
-			notices.push(nls.localize('versionSpecificity1', "Version specified in `engines.vscode` ({0}) is not specific enough. For vscode versions before 1.0.0, please define at a minimum the major and minor desired version. E.g. ^0.10.0, 0.10.x, 0.11.0, etc.", requestedVersion));
-			return false;
-		}
-	} else {
-		// force that major must be specific
-		if (!desiredVersion.majorMustEqual) {
-			notices.push(nls.localize('versionSpecificity2', "Version specified in `engines.vscode` ({0}) is not specific enough. For vscode versions after 1.0.0, please define at a minimum the major desired version. E.g. ^1.10.0, 1.10.x, 1.x.x, 2.x.x, etc.", requestedVersion));
-			return false;
-		}
-	}
+	// {{SQL CARBON EDIT}} - turn off this more specific check, which we don't currently use or need (i.e. ADS allows '*' for vscode)
+	// if (desiredVersion.majorBase === 0) {
+	// 	// force that major and minor must be specific
+	// 	if (!desiredVersion.majorMustEqual || !desiredVersion.minorMustEqual) {
+	// 		notices.push(nls.localize('versionSpecificity1', "Version specified in `engines.vscode` ({0}) is not specific enough. For vscode versions before 1.0.0, please define at a minimum the major and minor desired version. E.g. ^0.10.0, 0.10.x, 0.11.0, etc.", requestedVersion));
+	// 		return false;
+	// 	}
+	// } else {
+	// 	// force that major must be specific
+	// 	if (!desiredVersion.majorMustEqual) {
+	// 		notices.push(nls.localize('versionSpecificity2', "Version specified in `engines.vscode` ({0}) is not specific enough. For vscode versions after 1.0.0, please define at a minimum the major desired version. E.g. ^1.10.0, 1.10.x, 1.x.x, 2.x.x, etc.", requestedVersion));
+	// 		return false;
+	// 	}
+	// }
 
 	if (!isValidVersion(currentVersion, date, desiredVersion)) {
-		notices.push(nls.localize('versionMismatch', "Extension is not compatible with Code {0}. Extension requires: {1}.", currentVersion, requestedVersion));
+		notices.push(notCompatibleError); // {{SQL CARBON EDIT}} ADS-specific error messages
 		return false;
 	}
 

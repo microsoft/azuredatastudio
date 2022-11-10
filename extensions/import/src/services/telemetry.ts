@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ErrorAction, CloseAction } from 'vscode-languageclient';
-import TelemetryReporter from 'vscode-extension-telemetry';
+import TelemetryReporter from '@microsoft/ads-extension-telemetry';
 import * as vscode from 'vscode';
 
 import * as constants from '../common/constants';

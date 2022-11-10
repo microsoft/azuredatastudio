@@ -47,8 +47,6 @@
 			"cms.connectionOptions.applicationIntent.displayName": "애플리케이션 의도",
 			"cms.connectionOptions.applicationName.description": "애플리케이션의 이름",
 			"cms.connectionOptions.applicationName.displayName": "애플리케이션 이름",
-			"cms.connectionOptions.asynchronousProcessing.description": "true인 경우 .NET Framework 데이터 공급자에서 비동기 기능의 사용을 활성화합니다.",
-			"cms.connectionOptions.asynchronousProcessing.displayName": "비동기 처리",
 			"cms.connectionOptions.attachDbFilename.displayName": "DB 파일 이름 연결",
 			"cms.connectionOptions.attachedDBFileName.description": "연결할 수 있는 데이터베이스의 기본 파일 이름(전체 경로 이름 포함)",
 			"cms.connectionOptions.attachedDBFileName.displayName": "연결된 DB 파일 이름",

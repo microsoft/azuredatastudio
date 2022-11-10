@@ -18,6 +18,7 @@
 			"azure.microsoftCorpAccount": "Microsoft Corp",
 			"azure.noBaseToken": "인증 관련 오류가 발생했거나 토큰이 시스템에서 삭제되었습니다. 계정을 다시 Azure Data Studio에 추가해 보세요.",
 			"azure.noUniqueIdentifier": "해당 사용자는 AAD 내에 고유 식별자가 없습니다.",
+			"azure.owningTenantNotFound": "계정에 대한 소유 테넌트 정보를 찾을 수 없습니다.",
 			"azure.responseError": "오류로 인해 토큰 검색에 실패했습니다. 자세한 내용은 [개발자 도구 열기]({0})를 참조하세요.",
 			"azure.tenantNotFound": "ID가 '{0}'인 지정된 테넌트를 찾을 수 없습니다.",
 			"azureAuth.unidentifiedError": "Azure 인증에서 식별되지 않은 오류 발생",
@@ -25,7 +26,8 @@
 			"azurecore.consentDialog.body": "'{0}({1})' 테넌트에서는 {2} 리소스에 액세스하려면 다시 재인증해야 합니다. [열기]를 눌러 인증 프로세스를 시작합니다.",
 			"azurecore.consentDialog.cancel": "취소",
 			"azurecore.consentDialog.ignore": "테넌트 무시",
-			"azurecore.consentDialog.open": "열기"
+			"azurecore.consentDialog.open": "열기",
+			"noMicrosoftResource": "'{0}' 공급자에 정의된 Microsoft 리소스 엔드포인트가 없습니다."
 		},
 		"dist/account-provider/auths/azureAuthCodeGrant": {
 			"azure.azureAuthCodeGrantName": "Azure 인증 코드 부여",
@@ -83,6 +85,9 @@
 		"dist/azureResource/providers/kusto/kustoTreeDataProvider": {
 			"azure.resource.providers.KustoContainerLabel": "Azure 데이터 탐색기 클러스터"
 		},
+		"dist/azureResource/providers/mysqlFlexibleServer/mysqlFlexibleServerTreeDataProvider": {
+			"azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel": "Azure Database for MySQL 유연한 서버"
+		},
 		"dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider": {
 			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "PostgreSQL 하이퍼스케일 - Azure Arc"
 		},
@@ -99,7 +104,8 @@
 			"azure.resource.resourceTreeNode.noResourcesLabel": "리소스를 찾을 수 없음"
 		},
 		"dist/azureResource/services/subscriptionService": {
-			"azure.resource.tenantSubscriptionsError": "계정 {0}(테넌트 '{1}')에 대한 구독을 가져오지 못했습니다. {2}"
+			"azure.resource.tenantSubscriptionsError": "계정 {0}(테넌트 '{1}')에 대한 구독을 가져오지 못했습니다. {2}",
+			"azure.resource.tenantTokenError": "계정 '{0}'(테넌트 '{1}')에 대한 액세스 토큰을 가져오지 못했습니다."
 		},
 		"dist/azureResource/services/terminalService": {
 			"azure.cloudShell": "Azure Cloud Shell(미리 보기) {0}({1})",

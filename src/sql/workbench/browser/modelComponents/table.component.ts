@@ -39,6 +39,8 @@ import { ContextMenuColumn, ContextMenuCellValue } from 'sql/base/browser/ui/tab
 import { IAction, Separator } from 'vs/base/common/actions';
 import { MenuItemAction, MenuRegistry } from 'vs/platform/actions/common/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 
 export enum ColumnSizingMode {
 	ForceFit = 0,	// all columns will be sized to fit in viewable space, no horiz scroll bar
@@ -70,7 +72,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 	private _table: Table<Slick.SlickData>;
 	private _tableData: TableDataView<Slick.SlickData>;
 	private _tableColumns;
-	private _checkboxColumns: CheckboxSelectColumn<{}>[] = [];
+	private _checkboxColumns: Map<string, CheckboxSelectColumn<Slick.SlickData>> = new Map();
 	private _buttonColumns: ButtonColumn<{}>[] = [];
 	private _hyperlinkColumns: HyperlinkColumn<{}>[] = [];
 	private _contextMenuColumns: ContextMenuColumn<{}>[] = [];
@@ -90,7 +92,9 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		@Inject(ILogService) logService: ILogService,
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
 		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
-		@Inject(IInstantiationService) private instantiationService: IInstantiationService
+		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
+		@Inject(IAccessibilityService) private accessibilityService: IAccessibilityService,
+		@Inject(IQuickInputService) private quickInputService: IQuickInputService
 	) {
 		super(changeRef, el, logService);
 	}
@@ -275,7 +279,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 				dataItemColumnValueExtractor: slickGridDataItemColumnValueWithNoData // must change formatter if you are changing explicit column value extractor
 			};
 
-			this._table = new Table<Slick.SlickData>(this._inputContainer.nativeElement, { dataProvider: this._tableData, columns: this._tableColumns }, options);
+			this._table = new Table<Slick.SlickData>(this._inputContainer.nativeElement, this.accessibilityService, this.quickInputService, { dataProvider: this._tableData, columns: this._tableColumns }, options);
 			this._table.setData(this._tableData);
 			this._table.setSelectionModel(new RowSelectionModel({ selectActiveRow: true }));
 
@@ -373,7 +377,9 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 			this._table.setSelectedRows(this.selectedRows);
 		}
 
-		Object.keys(this._checkboxColumns).forEach(col => this.registerPlugins(col, this._checkboxColumns[col]));
+		this._checkboxColumns.forEach((column, columnName) => {
+			this.registerPlugins(columnName, column);
+		})
 		Object.keys(this._buttonColumns).forEach(col => this.registerPlugins(col, this._buttonColumns[col]));
 		Object.keys(this._hyperlinkColumns).forEach(col => this.registerPlugins(col, this._hyperlinkColumns[col]));
 		Object.keys(this._contextMenuColumns).forEach(col => this.registerPlugins(col, this._contextMenuColumns[col]));
@@ -420,25 +426,25 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 
 			const checkInfo: azdata.CheckBoxCell = cellInfo as azdata.CheckBoxCell;
 			if (checkInfo) {
-				this._checkboxColumns[checkInfo.columnName].reactiveCheckboxCheck(checkInfo.row, checkInfo.checked);
+				this._checkboxColumns.get(checkInfo.columnName).reactiveCheckboxCheck(checkInfo.row, checkInfo.checked);
 			}
 		});
 	}
 
 	private createCheckBoxPlugin(col: azdata.CheckboxColumn, index: number) {
 		let name = col.value;
-		if (!this._checkboxColumns[col.value]) {
+		if (!this._checkboxColumns.has(col.value)) {
 			const checkboxAction = <ActionOnCheck>(col.options ? (<any>col.options).actionOnCheckbox : col.action);
-			this._checkboxColumns[col.value] = new CheckboxSelectColumn({
+			this._checkboxColumns.set(col.value, new CheckboxSelectColumn({
 				title: col.value,
 				toolTip: col.toolTip,
 				width: col.width,
 				cssClass: col.cssClass,
 				headerCssClass: col.headerCssClass,
 				actionOnCheck: checkboxAction
-			}, index);
+			}, index));
 
-			this._register(this._checkboxColumns[col.value].onChange((state) => {
+			this._register(this._checkboxColumns.get(col.value).onChange((state) => {
 				this.fireEvent({
 					eventType: ComponentEventType.onCellAction,
 					args: {

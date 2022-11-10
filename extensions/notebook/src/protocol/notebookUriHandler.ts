@@ -12,7 +12,7 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 import { IQuestion, QuestionTypes } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
-import { getErrorMessage, isEditorTitleFree } from '../common/utils';
+import { getErrorMessage } from '../common/utils';
 import * as constants from '../common/constants';
 import { readJson } from 'fs-extra';
 
@@ -101,14 +101,25 @@ export class NotebookUriHandler implements vscode.UriHandler {
 				}
 				contents = await this.download(url);
 			}
-			let untitledUriPath = this.getUntitledUriPath(path.basename(uri.fsPath));
-			let untitledUri = uri.with({ authority: '', scheme: 'untitled', path: untitledUriPath });
+			let untitledUri = uri.with({ authority: '', scheme: 'untitled', path: path.basename(uri.fsPath) });
 			if (path.extname(uri.fsPath) === '.ipynb') {
 				await azdata.nb.showNotebookDocument(untitledUri, {
 					initialContent: contents,
 					preserveFocus: true
 				});
 			} else {
+				// Append a numbered suffix to the path if an untitled text document already has the same title.
+				// The UntitledTextEditorService won't create automatically incremented titles if we provide a filePath like here.
+				// Duplicates should be formatted as 'Readme-1.txt', not 'Readme.txt-1'
+				let updatedPath: string;
+				let fileExt = path.extname(untitledUri.fsPath);
+				let baseFileName = untitledUri.fsPath.slice(0, untitledUri.fsPath.length - fileExt.length);
+				for (let titleCounter = 1; vscode.workspace.textDocuments.some(doc => doc.isUntitled && doc.fileName === untitledUri.fsPath); titleCounter++) {
+					updatedPath = `${baseFileName}-${titleCounter}${fileExt}`;
+				}
+				if (updatedPath) {
+					untitledUri = untitledUri.with({ path: updatedPath });
+				}
 				let doc = await vscode.workspace.openTextDocument(untitledUri);
 				let editor = await vscode.window.showTextDocument(doc, vscode.ViewColumn.Active, true);
 				await editor.edit(builder => {
@@ -142,22 +153,5 @@ export class NotebookUriHandler implements vscode.UriHandler {
 				resolve(body);
 			});
 		});
-	}
-
-	private getUntitledUriPath(originalTitle: string): string {
-		let title = originalTitle;
-		let nextVal = 0;
-		let ext = path.extname(title);
-		while (!isEditorTitleFree(title)) {
-			if (ext) {
-				// Need it to be `Readme-0.txt` not `Readme.txt-0`
-				let titleStart = originalTitle.slice(0, originalTitle.length - ext.length);
-				title = `${titleStart}-${nextVal}${ext}`;
-			} else {
-				title = `${originalTitle}-${nextVal}`;
-			}
-			nextVal++;
-		}
-		return title;
 	}
 }

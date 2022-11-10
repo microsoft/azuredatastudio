@@ -390,6 +390,10 @@
         <source xml:lang="en">SQL Server Schema Compare</source>
         <target state="translated">Сравнение схем SQL Server</target>
       </trans-unit>
+      <trans-unit id="schemaCompare.openInScmp">
+        <source xml:lang="en">Open in Schema Compare</source>
+        <target state="translated">Открыть в Сравнении схем</target>
+      </trans-unit>
       <trans-unit id="schemaCompare.runComparison">
         <source xml:lang="en">Run Schema Comparison</source>
         <target state="translated">Запустить сравнение схем...</target>

@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IRevertOptions, GroupIdentifier, EditorInputCapabilities, IUntypedEditorInput } from 'vs/workbench/common/editor';
+import { IRevertOptions, GroupIdentifier, EditorInputCapabilities, IUntypedEditorInput, isEditorInputWithOptionsAndGroup, DEFAULT_EDITOR_ASSOCIATION } from 'vs/workbench/common/editor';
 import { Emitter, Event } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import * as resources from 'vs/base/common/resources';
@@ -40,6 +40,8 @@ import { Extensions as LanguageAssociationExtensions, ILanguageAssociationRegist
 import { NotebookLanguage } from 'sql/workbench/common/constants';
 import { convertToInternalInteractiveKernelMetadata } from 'sql/workbench/api/common/notebooks/notebookUtils';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
+import { IEditorResolverService } from 'vs/workbench/services/editor/common/editorResolverService';
+import { isEqual } from 'vs/base/common/resources';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
@@ -247,7 +249,8 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 		@ITextModelService private textModelService: ITextModelService,
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@INotebookService private notebookService: INotebookService,
-		@IExtensionService private extensionService: IExtensionService
+		@IExtensionService private extensionService: IExtensionService,
+		@IEditorResolverService private readonly editorResolverService: IEditorResolverService,
 	) {
 		super();
 		this._standardKernels = [];
@@ -335,18 +338,42 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 
 	override async save(groupId: number, options?: ITextFileSaveOptions): Promise<EditorInput | undefined> {
 		await this.updateModel();
-		let input: any = await this.textInput.save(groupId, options);
-		await this.setTrustForNewEditor(input);
+		let untypedInput = await this.textInput.save(groupId, options);
+		let editorInput = await this.createEditorInput(untypedInput, groupId, false);
+		await this.setTrustForNewEditor(editorInput);
 		const langAssociation = languageAssociationRegistry.getAssociationForLanguage(NotebookLanguage.Ipynb);
-		return langAssociation.convertInput(input);
+		return langAssociation.convertInput(editorInput);
 	}
 
 	override async saveAs(group: number, options?: ITextFileSaveOptions): Promise<EditorInput | undefined> {
 		await this.updateModel();
-		let input: any = await this.textInput.saveAs(group, options);
-		await this.setTrustForNewEditor(input);
+		let untypedInput = await this.textInput.saveAs(group, options);
+		let editorInput = await this.createEditorInput(untypedInput, group, true);
+		await this.setTrustForNewEditor(editorInput);
 		const langAssociation = languageAssociationRegistry.getAssociationForLanguage(NotebookLanguage.Ipynb);
-		return langAssociation.convertInput(input);
+		return langAssociation.convertInput(editorInput);
+	}
+
+	private async createEditorInput(untypedEditor: IUntypedEditorInput | undefined, group: GroupIdentifier, saveAs: boolean): Promise<EditorInput | undefined> {
+		// If this save operation results in a new editor, either
+		// because it was saved to disk (e.g. from untitled) or
+		// through an explicit "Save As", make sure to replace it.
+		if (!untypedEditor) {
+			return undefined; // if we have an undefined input, then the save was cancelled, so do nothing here
+		}
+
+		if ('resource' in untypedEditor) {
+			let target = untypedEditor.resource;
+			if (target.scheme !== this.textInput.resource.scheme || (saveAs && !isEqual(target, this.textInput.preferredResource))
+			) {
+				const editor = await this.editorResolverService.resolveEditor({ resource: target, options: { override: DEFAULT_EDITOR_ASSOCIATION.id } }, group);
+				if (isEditorInputWithOptionsAndGroup(editor)) {
+					return editor.editor;
+				}
+			}
+		}
+
+		return this.textInput;
 	}
 
 	private async setTrustForNewEditor(newInput: EditorInput | undefined): Promise<void> {
@@ -458,11 +485,11 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 
 	private async assignProviders(): Promise<void> {
 		await this.extensionService.whenInstalledExtensionsRegistered();
-		let mode: string;
+		let languageId: string | undefined = undefined;
 		if (this._textInput instanceof UntitledTextEditorInput) {
-			mode = this._textInput.model.getLanguageId();
+			languageId = this._textInput.model.getLanguageId();
 		}
-		let providerIds: string[] = getProvidersForFileName(this._title, this.notebookService, mode);
+		let providerIds: string[] = getProvidersForFileName(this._title, this.notebookService, languageId);
 		if (providerIds && providerIds.length > 0) {
 			this._providerId = providerIds.filter(provider => provider !== DEFAULT_NOTEBOOK_PROVIDER)[0];
 			this._providers = providerIds;

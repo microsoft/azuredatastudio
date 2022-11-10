@@ -112,7 +112,7 @@ export class QueryEditor extends EditorPane {
 		@IEditorService private readonly editorService: IEditorService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
-		@ILanguageService private readonly modeService: ILanguageService,
+		@ILanguageService private readonly languageService: ILanguageService,
 		@ITextResourceConfigurationService textResourceConfigurationService: ITextResourceConfigurationService,
 		@ICapabilitiesService private readonly capabilitiesService: ICapabilitiesService
 	) {
@@ -312,10 +312,10 @@ export class QueryEditor extends EditorPane {
 
 		// TODO: Allow query provider to provide the language mode.
 		if (this.input instanceof UntitledQueryEditorInput) {
-			if ((providerId === 'KUSTO') || this.modeService.getExtensions('Kusto').indexOf(fileExtension) > -1) {
+			if ((providerId === 'KUSTO') || this.languageService.getExtensions('kusto').indexOf(fileExtension) > -1) {
 				this.input.setMode('kusto');
 			}
-			else if (providerId === 'LOGANALYTICS' || this.modeService.getExtensions('LogAnalytics').indexOf(fileExtension) > -1) {
+			else if (providerId === 'LOGANALYTICS' || this.languageService.getExtensions('loganalytics').indexOf(fileExtension) > -1) {
 				this.input.setMode('loganalytics');
 			}
 		}
@@ -327,14 +327,18 @@ export class QueryEditor extends EditorPane {
 		}
 
 		// TODO: Allow extensions to contribute toolbar actions.
-		if (previewFeaturesEnabled && providerId === 'MSSQL') {
+		if (providerId === 'MSSQL') {
 			content.push(
 				{ element: Taskbar.createTaskbarSeparator() },
 				{ action: this._estimatedQueryPlanAction },
 				{ action: this._toggleActualExecutionPlanMode },
-				{ action: this._toggleSqlcmdMode },
-				{ action: this._exportAsNotebookAction }
 			);
+			if (previewFeaturesEnabled) {
+				content.push(
+					{ action: this._toggleSqlcmdMode },
+					{ action: this._exportAsNotebookAction }
+				);
+			}
 		}
 
 		this.taskbar.setContent(content);

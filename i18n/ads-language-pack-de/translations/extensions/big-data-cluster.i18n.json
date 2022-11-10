@@ -149,6 +149,7 @@
 		},
 		"dist/extension": {
 			"bdc.dashboard.title": "Big Data-Cluster-Dashboard –",
+			"bdc.deprecationWarning": "Das Big Data-Cluster-Add-On wird eingestellt, und die entsprechende Azure Data Studio-Funktionalität wird in einer zukünftigen Version entfernt. Weitere Informationen hierzu und zum zukünftigen Support finden Sie [hier](https://go.microsoft.com/fwlink/?linkid=2207340).",
 			"mount.error.endpointNotFound": "Es wurden keine Informationen zum Controllerendpunkt gefunden.",
 			"textConfirmRemoveController": "Möchten Sie \"{0}\" entfernen?",
 			"textNo": "Nein",

@@ -54,6 +54,8 @@ import { IEditorOptions } from 'vs/platform/editor/common/editor';
 import { IEditorGroup, IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { IModelService } from 'vs/editor/common/services/model';
 import { CommonFindController, FindStartFocusAction } from 'vs/editor/contrib/find/browser/findController';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 
 class BasicView implements IView {
 	public get element(): HTMLElement {
@@ -171,7 +173,9 @@ export class ProfilerEditor extends EditorPane {
 		@IStorageService storageService: IStorageService,
 		@IClipboardService private _clipboardService: IClipboardService,
 		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService,
-		@IEditorGroupsService editorGroupsService: IEditorGroupsService
+		@IEditorGroupsService editorGroupsService: IEditorGroupsService,
+		@IAccessibilityService private readonly _accessibilityService: IAccessibilityService,
+		@IQuickInputService private readonly _quickInputService: IQuickInputService
 	) {
 		super(ProfilerEditor.ID, telemetryService, themeService, storageService);
 		this._profilerEditorContextKey = CONTEXT_PROFILER_EDITOR.bindTo(this._contextKeyService);
@@ -387,7 +391,7 @@ export class ProfilerEditor extends EditorPane {
 		detailTableContainer.style.width = '100%';
 		detailTableContainer.style.height = '100%';
 		this._detailTableData = new TableDataView<IDetailData>();
-		this._detailTable = new Table(detailTableContainer, {
+		this._detailTable = new Table(detailTableContainer, this._accessibilityService, this._quickInputService, {
 			dataProvider: this._detailTableData, columns: [
 				{
 					id: 'label',

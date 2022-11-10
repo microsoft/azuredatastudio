@@ -60,9 +60,6 @@ export class NotebookModelStub implements INotebookModel {
 	get kernelChanged(): vsEvent.Event<nb.IKernelChangedArgs> {
 		throw new Error('method not implemented.');
 	}
-	get kernelsChanged(): vsEvent.Event<nb.IKernel> {
-		throw new Error('method not implemented.');
-	}
 	get layoutChanged(): vsEvent.Event<void> {
 		throw new Error('method not implemented.');
 	}
@@ -357,19 +354,7 @@ export class ClientSessionStub implements IClientSession {
 	shutdown(): Promise<void> {
 		throw new Error('Method not implemented.');
 	}
-	selectKernel(): Promise<void> {
-		throw new Error('Method not implemented.');
-	}
 	restart(): Promise<void> {
-		throw new Error('Method not implemented.');
-	}
-	setPath(path: string): Promise<void> {
-		throw new Error('Method not implemented.');
-	}
-	setName(name: string): Promise<void> {
-		throw new Error('Method not implemented.');
-	}
-	setType(type: string): Promise<void> {
 		throw new Error('Method not implemented.');
 	}
 	updateConnection(connection: IConnectionProfile): Promise<void> {
@@ -381,34 +366,10 @@ export class ClientSessionStub implements IClientSession {
 	dispose(): void {
 		throw new Error('Method not implemented.');
 	}
-	get terminated(): vsEvent.Event<void> {
-		throw new Error('Method not implemented.');
-	}
-	get kernelChanged(): vsEvent.Event<nb.IKernelChangedArgs> {
-		throw new Error('Method not implemented.');
-	}
-	get statusChanged(): vsEvent.Event<nb.ISession> {
-		throw new Error('Method not implemented.');
-	}
-	get iopubMessage(): vsEvent.Event<nb.IMessage> {
-		throw new Error('Method not implemented.');
-	}
-	get unhandledMessage(): vsEvent.Event<nb.IMessage> {
-		throw new Error('Method not implemented.');
-	}
-	get propertyChanged(): vsEvent.Event<'path' | 'name' | 'type'> {
-		throw new Error('Method not implemented.');
-	}
 	get kernel(): nb.IKernel | null {
 		throw new Error('Method not implemented.');
 	}
 	get notebookUri(): URI {
-		throw new Error('Method not implemented.');
-	}
-	get name(): string {
-		throw new Error('Method not implemented.');
-	}
-	get type(): string {
 		throw new Error('Method not implemented.');
 	}
 	get status(): nb.KernelStatus {
@@ -421,9 +382,6 @@ export class ClientSessionStub implements IClientSession {
 		throw new Error('Method not implemented.');
 	}
 	get kernelChangeCompleted(): Promise<void> {
-		throw new Error('Method not implemented.');
-	}
-	get kernelDisplayName(): string {
 		throw new Error('Method not implemented.');
 	}
 	get errorMessage(): string {

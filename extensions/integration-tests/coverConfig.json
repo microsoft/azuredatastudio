@@ -15,7 +15,6 @@
 		"**/integration-tests/**",
 		"**/json/**",
 		"**/json-language-features/**",
-		"**/liveshare/**",
 		"**/markdown-basics/**",
 		"**/markdown-language-features/**",
 		"**/merge-conflict/**",

@@ -31,6 +31,10 @@ const mockAccount: AzureAccount = {
 	properties: {
 		providerSettings: settings[0].metadata,
 		isMsAccount: true,
+		owningTenant: {
+			id: 'tenantId',
+			displayName: 'tenantDisplayName',
+		},
 		tenants: []
 	},
 	isStale: false

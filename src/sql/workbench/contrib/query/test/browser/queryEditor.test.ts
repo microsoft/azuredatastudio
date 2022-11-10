@@ -314,7 +314,9 @@ suite('SQL QueryEditor Tests', () => {
 				connectionManagementService.object,
 				queryModelService.object,
 				configurationService.object,
-				testinstantiationService
+				testinstantiationService,
+				undefined,
+				undefined
 			);
 		});
 

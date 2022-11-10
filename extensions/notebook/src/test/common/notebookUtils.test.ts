@@ -50,12 +50,12 @@ describe('notebookUtils Tests', function (): void {
 			should(azdata.nb.notebookDocuments.length).equal(0, 'There should be not any open Notebook documents');
 			await notebookUtils.newNotebook(undefined);
 			should(azdata.nb.notebookDocuments.length).equal(1, 'There should be exactly 1 open Notebook document');
-			should(azdata.nb.notebookDocuments[0].fileName).equal('Notebook-0', 'The first Untitled Notebook should have an index of 0');
+			should(azdata.nb.notebookDocuments[0].fileName).equal('Notebook-1', 'The first Untitled Notebook should have an index of 1');
 			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
 			should(azdata.nb.notebookDocuments.length).equal(0, 'There should be not any open Notebook documents');
 			await notebookUtils.newNotebook(undefined);
 			should(azdata.nb.notebookDocuments.length).equal(1, 'There should be exactly 1 open Notebook document after second opening');
-			should(azdata.nb.notebookDocuments[0].fileName).equal('Notebook-0', 'The first Untitled Notebook should have an index of 0 after closing first Untitled Notebook');
+			should(azdata.nb.notebookDocuments[0].fileName).equal('Notebook-1', 'The first Untitled Notebook should have an index of 1 after closing first Untitled Notebook');
 			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
 		});
 
@@ -65,7 +65,7 @@ describe('notebookUtils Tests', function (): void {
 			should(azdata.nb.notebookDocuments.length).equal(1, 'There should be exactly 1 open Notebook document');
 			const secondNotebook = await notebookUtils.newNotebook(undefined);
 			should(azdata.nb.notebookDocuments.length).equal(2, 'There should be exactly 2 open Notebook documents');
-			should(secondNotebook.document.fileName).equal('Notebook-1', 'The second Untitled Notebook should have an index of 1');
+			should(secondNotebook.document.fileName).equal('Notebook-2', 'The second Untitled Notebook should have an index of 2');
 			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
 			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
 			should(azdata.nb.notebookDocuments.length).equal(0, 'There should be not any open Notebook documents');
