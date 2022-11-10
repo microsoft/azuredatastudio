@@ -1,5 +1,33 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/git/dist/actionButton" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="scm button publish branch">
+        <source xml:lang="en">Publish Branch</source>
+        <target state="translated">분기 게시</target>
+      </trans-unit>
+      <trans-unit id="scm button publish branch running">
+        <source xml:lang="en">Publishing Branch...</source>
+        <target state="translated">게시 Branch...</target>
+      </trans-unit>
+      <trans-unit id="scm button publish title">
+        <source xml:lang="en">$(cloud-upload) Publish Branch</source>
+        <target state="translated">$(cloud-upload) 분기 게시</target>
+      </trans-unit>
+      <trans-unit id="scm button sync description">
+        <source xml:lang="en">{0} Sync Changes {1}{2}</source>
+        <target state="translated">{0} 변경 내용 동기화 {1}{2}</target>
+      </trans-unit>
+      <trans-unit id="scm button sync title">
+        <source xml:lang="en">{0} {1}{2}</source>
+        <target state="translated">{0} {1}{2}</target>
+      </trans-unit>
+      <trans-unit id="syncing changes">
+        <source xml:lang="en">Synchronizing Changes...</source>
+        <target state="translated">변경 내용을 동기화하는 중...</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/git/dist/askpass-main" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="missOrInvalid">
@@ -91,8 +119,8 @@
         <target state="translated">참조를 원격에 푸시할 수 없습니다. 먼저 '풀'을 실행하여 변경 내용을 통합하세요.</target>
       </trans-unit>
       <trans-unit id="changed">
-        <source xml:lang="en">Log level changed to: {0}</source>
-        <target state="translated">로그 수준이 {0}(으)로 변경되었습니다.</target>
+        <source xml:lang="en">{0} Log level changed to: {1}</source>
+        <target state="translated">{0} 로그 수준이 다음으로 변경됨: {1}</target>
       </trans-unit>
       <trans-unit id="checkout detached">
         <source xml:lang="en">Checkout detached...</source>
@@ -203,8 +231,8 @@ Are you sure to continue?</source>
 계속하시겠습니까?</target>
       </trans-unit>
       <trans-unit id="confirm publish branch">
-        <source xml:lang="en">The branch '{0}' has no upstream branch. Would you like to publish this branch?</source>
-        <target state="translated">'{0}' 분기에는 상향 분기가 없습니다. 이 분기를 게시하시겠습니까?</target>
+        <source xml:lang="en">The branch '{0}' has no remote branch. Would you like to publish this branch?</source>
+        <target state="translated">'{0}' 분기에 원격 분기가 없습니다. 이 분기를 게시하시겠습니까?</target>
       </trans-unit>
       <trans-unit id="confirm restore">
         <source xml:lang="en">Are you sure you want to restore {0}?</source>
@@ -282,6 +310,14 @@ What would you like to do?</source>
         <source xml:lang="en">Discard 1 File</source>
         <target state="translated">1개 파일 취소</target>
       </trans-unit>
+      <trans-unit id="drop all stashes">
+        <source xml:lang="en">Are you sure you want to drop ALL stashes? There are {0} stashes that will be subject to pruning, and MAY BE IMPOSSIBLE TO RECOVER.</source>
+        <target state="translated">모든 스태시를 삭제하시겠습니까? 정리 대상이 될 스태시가 {0}개 있으며 복구가 불가능할 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="drop one stash">
+        <source xml:lang="en">Are you sure you want to drop ALL stashes? There is 1 stash that will be subject to pruning, and MAY BE IMPOSSIBLE TO RECOVER.</source>
+        <target state="translated">모든 스태시를 삭제하시겠습니까? 정리 대상이 될 스태시가 1개 있으며 복구가 불가능할 수 있습니다.</target>
+      </trans-unit>
       <trans-unit id="force">
         <source xml:lang="en">Force Checkout</source>
         <target state="translated">강제 체크 아웃</target>
@@ -298,13 +334,17 @@ What would you like to do?</source>
         <source xml:lang="en">Git: {0}</source>
         <target state="translated">Git: {0}</target>
       </trans-unit>
+      <trans-unit id="git.timeline.openDiffCommand">
+        <source xml:lang="en">Open Comparison</source>
+        <target state="translated">비교 열기</target>
+      </trans-unit>
       <trans-unit id="git.title.diff">
-        <source xml:lang="en">{0} ⟷ {1}</source>
-        <target state="translated">{0} ⟷ {1}</target>
+        <source xml:lang="en">{0} ↔ {1}</source>
+        <target state="translated">{0} ↔ {1}</target>
       </trans-unit>
       <trans-unit id="git.title.diffRefs">
-        <source xml:lang="en">{0} ({1}) ⟷ {0} ({2})</source>
-        <target state="translated">{0}({1}) ⟷ {0}({2})</target>
+        <source xml:lang="en">{0} ({1}) ↔ {0} ({2})</source>
+        <target state="translated">{0}({1}) ↔ {0} ({2})</target>
       </trans-unit>
       <trans-unit id="git.title.index">
         <source xml:lang="en">{0} (Index)</source>
@@ -627,8 +667,8 @@ Would you like to stage all your changes and commit them directly?</source>
         <target state="translated">스태시 {0}을(를) 삭제하시겠습니까?</target>
       </trans-unit>
       <trans-unit id="sync is unpredictable">
-        <source xml:lang="en">This action will push and pull commits to and from '{0}/{1}'.</source>
-        <target state="translated">이 작업은 '{0}/{1}'(으)로 커밋을 푸시하고 풀합니다.</target>
+        <source xml:lang="en">This action will pull and push commits from and to '{0}/{1}'.</source>
+        <target state="translated">이 작업은 '{0}/{1}'에서 커밋을 가져오고 푸시합니다.</target>
       </trans-unit>
       <trans-unit id="tag at">
         <source xml:lang="en">Tag at {0}</source>
@@ -715,16 +755,16 @@ These files will be FOREVER LOST.</source>
   <file original="extensions/git/dist/main" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="skipped">
-        <source xml:lang="en">Skipped found git in: {0}</source>
-        <target state="translated">다음 위치에서 찾은 git 건너뛰기: {0}</target>
+        <source xml:lang="en">{0} Skipped found git in: {1}</source>
+        <target state="translated">{0} {1}에서 찾은 git 건너뜀</target>
       </trans-unit>
       <trans-unit id="using git">
-        <source xml:lang="en">Using git {0} from {1}</source>
-        <target state="translated">{1}에서 git {0}을(를) 사용하는 중</target>
+        <source xml:lang="en">{0} Using git {1} from {2}</source>
+        <target state="translated">{0} {2}에서 git {1}을(를) 사용하는 중</target>
       </trans-unit>
       <trans-unit id="validating">
-        <source xml:lang="en">Validating found git in: {0}</source>
-        <target state="translated">{0}에서 찾은 git 유효성을 검사하는 중</target>
+        <source xml:lang="en">{0} Validating found git in: {1}</source>
+        <target state="translated">{0} {1}에서 찾은 git 유효성을 검사하는 중</target>
       </trans-unit>
     </body>
   </file>
@@ -742,49 +782,13 @@ These files will be FOREVER LOST.</source>
         <source xml:lang="en">Choose a repository</source>
         <target state="translated">리포지토리 선택</target>
       </trans-unit>
+      <trans-unit id="repoOnHomeDriveRootWarning">
+        <source xml:lang="en">Unable to automatically open the git repository at '{0}'. To open that git repository, open it directly as a folder in VS Code.</source>
+        <target state="translated">'{0}'에서 Git 리포지토리를 자동으로 열 수 없습니다. 해당 Git 리포지토리를 열려면 VS Code 폴더로 직접 여세요.</target>
+      </trans-unit>
       <trans-unit id="too many submodules">
         <source xml:lang="en">The '{0}' repository has {1} submodules which won't be opened automatically. You can still open each one individually by opening a file within.</source>
         <target state="translated">'{0}' 리포지토리에 자동으로 열리지 않는 {1}개의 하위 모듈이 있습니다. 모듈 내의 파일을 열러 각 모듈을 개별적으로 열 수는 있습니다.</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/git/dist/remoteSource" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="branch name">
-        <source xml:lang="en">Branch name</source>
-        <target state="translated">분기 이름</target>
-      </trans-unit>
-      <trans-unit id="error">
-        <source xml:lang="en">$(error) Error: {0}</source>
-        <target state="translated">$(error) 오류: {0}</target>
-      </trans-unit>
-      <trans-unit id="none found">
-        <source xml:lang="en">No remote repositories found.</source>
-        <target state="translated">원격 리포지토리를 찾을 수 없습니다.</target>
-      </trans-unit>
-      <trans-unit id="pick url">
-        <source xml:lang="en">Choose a URL to clone from.</source>
-        <target state="translated">복제할 URL을 선택하세요.</target>
-      </trans-unit>
-      <trans-unit id="provide url">
-        <source xml:lang="en">Provide repository URL</source>
-        <target state="translated">리포지토리 URL 제공</target>
-      </trans-unit>
-      <trans-unit id="provide url or pick">
-        <source xml:lang="en">Provide repository URL or pick a repository source.</source>
-        <target state="translated">리포지토리 URL을 입력하거나 리포지토리 소스를 선택하세요.</target>
-      </trans-unit>
-      <trans-unit id="type to filter">
-        <source xml:lang="en">Repository name</source>
-        <target state="translated">리포지토리 이름</target>
-      </trans-unit>
-      <trans-unit id="type to search">
-        <source xml:lang="en">Repository name (type to search)</source>
-        <target state="translated">리포지토리 이름(입력하여 검색)</target>
-      </trans-unit>
-      <trans-unit id="url">
-        <source xml:lang="en">URL</source>
-        <target state="translated">URL</target>
       </trans-unit>
     </body>
   </file>
@@ -974,18 +978,6 @@ These files will be FOREVER LOST.</source>
         <source xml:lang="en">Successfully pushed.</source>
         <target state="translated">성공적으로 푸시 되었습니다.</target>
       </trans-unit>
-      <trans-unit id="scm button publish title">
-        <source xml:lang="en">$(cloud-upload) Publish Changes</source>
-        <target state="translated">$(cloud-upload) 변경 내용 게시</target>
-      </trans-unit>
-      <trans-unit id="scm button publish tooltip">
-        <source xml:lang="en">Publish Changes</source>
-        <target state="translated">변경 내용 게시</target>
-      </trans-unit>
-      <trans-unit id="scm button sync title">
-        <source xml:lang="en"> Sync Changes $(sync){0}{1}</source>
-        <target state="translated"> 변경 내용 동기화 $(sync){0}{1}</target>
-      </trans-unit>
       <trans-unit id="staged changes">
         <source xml:lang="en">Staged Changes</source>
         <target state="translated">스테이징된 변경 사항</target>
@@ -1022,9 +1014,9 @@ These files will be FOREVER LOST.</source>
         <source xml:lang="en">Checkout branch/tag...</source>
         <target state="translated">분기/태그 체크 아웃...</target>
       </trans-unit>
-      <trans-unit id="publish changes">
-        <source xml:lang="en">Publish Changes</source>
-        <target state="translated">변경 내용 게시</target>
+      <trans-unit id="publish branch">
+        <source xml:lang="en">Publish Branch</source>
+        <target state="translated">분기 게시</target>
       </trans-unit>
       <trans-unit id="publish to">
         <source xml:lang="en">Publish to {0}</source>
@@ -1046,19 +1038,13 @@ These files will be FOREVER LOST.</source>
   </file>
   <file original="extensions/git/dist/timelineProvider" source-language="en" datatype="plaintext" target-language="ko">
     <body>
-      <trans-unit id="git.index">
-        <source xml:lang="en">Index</source>
-        <target state="translated">인덱스</target>
+      <trans-unit id="git.timeline.email">
+        <source xml:lang="en">Email</source>
+        <target state="translated">전자 메일</target>
       </trans-unit>
-      <trans-unit id="git.timeline.detail">
-        <source xml:lang="en">{0}  — {1}
-{2}
-
-{3}</source>
-        <target state="translated">{0}  — {1}
-{2}
-
-{3}</target>
+      <trans-unit id="git.timeline.openComparison">
+        <source xml:lang="en">Open Comparison</source>
+        <target state="translated">비교 열기</target>
       </trans-unit>
       <trans-unit id="git.timeline.source">
         <source xml:lang="en">Git History</source>
@@ -1075,10 +1061,6 @@ These files will be FOREVER LOST.</source>
       <trans-unit id="git.timeline.you">
         <source xml:lang="en">You</source>
         <target state="translated">사용자</target>
-      </trans-unit>
-      <trans-unit id="git.workingTree">
-        <source xml:lang="en">Working Tree</source>
-        <target state="translated">작업 트리</target>
       </trans-unit>
     </body>
   </file>
@@ -1128,6 +1110,18 @@ These files will be FOREVER LOST.</source>
         <source xml:lang="en">Add Remote...</source>
         <target state="translated">원격 추가...</target>
       </trans-unit>
+      <trans-unit id="command.api.getRemoteSources">
+        <source xml:lang="en">Get Remote Sources</source>
+        <target state="translated">원격 원본 가져오기</target>
+      </trans-unit>
+      <trans-unit id="command.api.getRepositories">
+        <source xml:lang="en">Get Repositories</source>
+        <target state="translated">Git 리포지토리</target>
+      </trans-unit>
+      <trans-unit id="command.api.getRepositoryState">
+        <source xml:lang="en">Get Repository State</source>
+        <target state="translated">리포지토리 상태 가져오기</target>
+      </trans-unit>
       <trans-unit id="command.branch">
         <source xml:lang="en">Create Branch...</source>
         <target state="translated">분기 만들기...</target>
@@ -1175,6 +1169,10 @@ These files will be FOREVER LOST.</source>
       <trans-unit id="command.close">
         <source xml:lang="en">Close Repository</source>
         <target state="translated">리포지토리 닫기</target>
+      </trans-unit>
+      <trans-unit id="command.closeAllDiffEditors">
+        <source xml:lang="en">Close All Diff Editors</source>
+        <target state="translated">모든 diff 편집기 닫기</target>
       </trans-unit>
       <trans-unit id="command.commit">
         <source xml:lang="en">Commit</source>
@@ -1369,8 +1367,8 @@ These files will be FOREVER LOST.</source>
         <target state="translated">커밋 템플릿 복원</target>
       </trans-unit>
       <trans-unit id="command.revealInExplorer">
-        <source xml:lang="en">Reveal in Side Bar</source>
-        <target state="translated">사이드바에 표시</target>
+        <source xml:lang="en">Reveal in Explorer View</source>
+        <target state="translated">탐색기 보기에 표시</target>
       </trans-unit>
       <trans-unit id="command.revertChange">
         <source xml:lang="en">Revert Change</source>
@@ -1431,6 +1429,10 @@ These files will be FOREVER LOST.</source>
       <trans-unit id="command.stashDrop">
         <source xml:lang="en">Drop Stash...</source>
         <target state="translated">스태시 삭제...</target>
+      </trans-unit>
+      <trans-unit id="command.stashDropAll">
+        <source xml:lang="en">Drop All Stashes...</source>
+        <target state="translated">모든 스태시 삭제...</target>
       </trans-unit>
       <trans-unit id="command.stashIncludeUntracked">
         <source xml:lang="en">Stash (Include Untracked)</source>
@@ -1568,6 +1570,14 @@ These files will be FOREVER LOST.</source>
         <source xml:lang="en">Tags</source>
         <target state="translated">태그</target>
       </trans-unit>
+      <trans-unit id="config.closeDiffOnOperation">
+        <source xml:lang="en">Controls whether the diff editor should be automatically closed when changes are stashed, committed, discarded, staged, or unstaged.</source>
+        <target state="translated">변경 내용을 스태시, 커밋, 삭제, 스테이징 또는 스테이징 해제할 때 diff 편집기를 자동으로 닫을지 여부를 제어합니다.</target>
+      </trans-unit>
+      <trans-unit id="config.commandsToLog">
+        <source xml:lang="en">List of git commands (ex: commit, push) that would have their `stdout` logged to the [git output](command:git.showOutput). If the git command has a client-side hook configured, the client-side hook's `stdout` will also be logged to the [git output](command:git.showOutput).</source>
+        <target state="translated">`stdout`를 [git output](command:git.showOutput)에 기록하는 git 명령(예: 커밋, 푸시) 목록입니다. git 명령에 클라이언트 측 후크가 구성된 경우 클라이언트 측 후크의 `stdout`도 [git output](command:git.showOutput)에 기록됩니다.</target>
+      </trans-unit>
       <trans-unit id="config.confirmEmptyCommits">
         <source xml:lang="en">Always confirm the creation of empty commits for the 'Git: Commit Empty' command.</source>
         <target state="translated">'Git: Commit Empty' 명령에 대한 빈 항목 생성 커밋을 항상 확인합니다.</target>
@@ -1635,6 +1645,10 @@ These files will be FOREVER LOST.</source>
       <trans-unit id="config.enabled">
         <source xml:lang="en">Whether git is enabled.</source>
         <target state="translated">Git을 사용하도록 설정했는지 여부입니다.</target>
+      </trans-unit>
+      <trans-unit id="config.experimental.installGuide">
+        <source xml:lang="en">Experimental improvements for the git setup flow.</source>
+        <target state="translated">Git 설정 흐름에 대한 실험적 개선 사항입니다.</target>
       </trans-unit>
       <trans-unit id="config.fetchOnPull">
         <source xml:lang="en">When enabled, fetch all branches when pulling. Otherwise, fetch just the current one.</source>
@@ -1772,6 +1786,14 @@ These files will be FOREVER LOST.</source>
         <source xml:lang="en">Force git to use rebase when running the sync command.</source>
         <target state="translated">동기화 명령을 실행할 때 Git에서 다시 지정을 사용하게 합니다.</target>
       </trans-unit>
+      <trans-unit id="config.repositoryScanIgnoredFolders">
+        <source xml:lang="en">List of folders that are ignored while scanning for Git repositories when `#git.autoRepositoryDetection#` is set to `true` or `subFolders`.</source>
+        <target state="translated">`#git.autoRepositoryDetection#`이 `true` 또는 `subFolders`로 설정된 경우 Git 리포지토리를 검색하는 동안 무시되는 폴더 목록입니다.</target>
+      </trans-unit>
+      <trans-unit id="config.repositoryScanMaxDepth">
+        <source xml:lang="en">Controls the depth used when scanning workspace folders for Git repositories when `#git.autoRepositoryDetection#` is set to `true` or `subFolders`. Can be set to `-1` for no limit.</source>
+        <target state="translated">`#git.autoRepositoryDetection#`이 `true` 또는 `subFolders`로 설정된 경우 Git 리포지토리에 대한 작업 영역 간 폴더를 스캔할 때 사용되는 깊이를 제어합니다. 제한 없이 '-1'로 설정할 수 있습니다.</target>
+      </trans-unit>
       <trans-unit id="config.requireGitUserConfig">
         <source xml:lang="en">Controls whether to require explicit Git user configuration or allow Git to guess if missing.</source>
         <target state="translated">명시적 Git 사용자 구성을 요구할지 또는 누락된 경우 Git에서 추측하도록 허용할지를 제어합니다.</target>
@@ -1856,6 +1878,10 @@ These files will be FOREVER LOST.</source>
         <source xml:lang="en">Controls whether to show the commit author in the Timeline view.</source>
         <target state="translated">타임라인 보기에 커밋 작성자를 표시할지를 제어합니다.</target>
       </trans-unit>
+      <trans-unit id="config.timeline.showUncommitted">
+        <source xml:lang="en">Controls whether to show uncommitted changes in the Timeline view.</source>
+        <target state="translated">타임라인 보기에서 커밋되지 않은 변경 내용을 표시할지 여부를 제어합니다.</target>
+      </trans-unit>
       <trans-unit id="config.untrackedChanges">
         <source xml:lang="en">Controls how untracked changes behave.</source>
         <target state="translated">추적되지 않은 변경 내용의 작동 방식을 제어합니다.</target>
@@ -1879,6 +1905,10 @@ These files will be FOREVER LOST.</source>
       <trans-unit id="config.useForcePushWithLease">
         <source xml:lang="en">Controls whether force pushing uses the safer force-with-lease variant.</source>
         <target state="translated">강제 푸시가 좀 더 안전한 force-with-lease 변형을 사용하는지 여부를 제어합니다.</target>
+      </trans-unit>
+      <trans-unit id="config.useIntegratedAskPass">
+        <source xml:lang="en">Controls whether GIT_ASKPASS should be overwritten to use the integrated version.</source>
+        <target state="translated">통합 버전을 사용하기 위해 GIT_ASKPASS를 덮어써야 하는지 여부를 제어합니다.</target>
       </trans-unit>
       <trans-unit id="description">
         <source xml:lang="en">Git SCM Integration</source>
@@ -1940,9 +1970,9 @@ These files will be FOREVER LOST.</source>
       </trans-unit>
       <trans-unit id="view.workbench.scm.disabled">
         <source xml:lang="en">If you would like to use git features, please enable git in your [settings](command:workbench.action.openSettings?%5B%22git.enabled%22%5D).
-To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
-        <target state="translated">git 기능을 사용하려면 [설정]에서 git을 사용하도록 설정하세요(command:workbench.action.openSettings?%5B%22git.enabled%22%5D).
-Azure Data Studio에서 Git 및 소스 제어를 사용하는 방법에 대해 자세히 알아보려면 [Microsoft Docs](https://aka.ms/vscode-scm)를 참조하세요.</target>
+To learn more about how to use git and source control in VS Code [read our docs](https://aka.ms/vscode-scm).</source>
+        <target state="translated">Git 기능을 사용하려면 [설정]에서 Git을 사용하도록 설정하세요(command:workbench.action.openSettings?%5B%22git.enabled%22%5D).
+VS Code에서 Git 및 소스 제어를 사용하는 방법에 대해 자세히 알아보려면 [Microsoft Docs](https://aka.ms/vscode-scm)를 참조하세요.</target>
       </trans-unit>
       <trans-unit id="view.workbench.scm.empty">
         <source xml:lang="en">In order to use git features, you can open a folder containing a git repository or clone from a URL.
@@ -1977,6 +2007,30 @@ If you're using a different version control system, you can [search the Marketpl
         <target state="translated">유효한 git 설치가 검색되지 않았습니다. [git 출력](command:git.showOutput)에서 자세한 내용을 확인할 수 있습니다.
 [git을 설치하거나](https://git-scm.com/) [Microsoft Docs](https://aka.ms/vscode-scm)에서 Azure Data Studio에서 Git 및 소스 제어를 사용하는 방법에 대해 자세히 알아보세요.
 다른 버전의 제어 시스템을 사용하는 경우 추가 확장에 대해 [Marketplace를 검색](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22)할 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="view.workbench.scm.missing.guide">
+        <source xml:lang="en">Install Git, a popular source control system, to track code changes and collaborate with others. Learn more in our [Git guides](https://aka.ms/vscode-scm).</source>
+        <target state="translated">인기 있는 소스 제어 시스템인 Git을 설치하여 코드 변경 내용을 추적하고 다른 사용자와 공동 작업합니다. [Git 가이드](https://aka.ms/vscode-scm)에서 자세히 알아보세요.</target>
+      </trans-unit>
+      <trans-unit id="view.workbench.scm.missing.guide.linux">
+        <source xml:lang="en">Source control depends on Git being installed.
+[Download Git for Linux](https://git-scm.com/download/linux)
+After installing, please [reload](command:workbench.action.reloadWindow) (or [troubleshoot](command:git.showOutput)). Additional source control providers can be installed [from the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).</source>
+        <target state="translated">소스 제어는 설치 중인 Git에 따라 달라집니다.
+[Linux용 Git 다운로드](https://git-scm.com/download/linux)
+치 후에는 [다시 로드하세요](command:workbench.action.reloadWindow)(또는 [문제를 해결하세요](command:git.showOutput)). 추가 원본 제어 공급자는 [Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22)에서 설치할 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="view.workbench.scm.missing.guide.mac">
+        <source xml:lang="en">[Download Git for macOS](https://git-scm.com/download/mac)
+After installing, please [reload](command:workbench.action.reloadWindow) (or [troubleshoot](command:git.showOutput)). Additional source control providers can be installed [from the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).</source>
+        <target state="translated">[macOS용 GIT 다운로드](https://git-scm.com/download/mac)
+설치 후에는 [다시 로드하세요](command:workbench.action.reloadWindow)(또는 [문제를 해결하세요](command:git.showOutput)). 추가 원본 제어 공급자는 [Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22)에서 설치할 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="view.workbench.scm.missing.guide.windows">
+        <source xml:lang="en">[Download Git for Windows](https://git-scm.com/download/win)
+After installing, please [reload](command:workbench.action.reloadWindow) (or [troubleshoot](command:git.showOutput)). Additional source control providers can be installed [from the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).</source>
+        <target state="translated">[Windows용 GIT 다운로드](https://git-scm.com/download/win)
+설치 후에는 [다시 로드하세요](command:workbench.action.reloadWindow)(또는 [문제를 해결하세요](command:git.showOutput)). 추가 원본 제어 공급자는 [Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22)에서 설치할 수 있습니다.</target>
       </trans-unit>
       <trans-unit id="view.workbench.scm.workspace">
         <source xml:lang="en">The workspace currently open doesn't have any folders containing git repositories. You can initialize a repository on a folder which will enable source control features powered by git.

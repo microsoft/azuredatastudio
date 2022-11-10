@@ -18,6 +18,7 @@
 			"azure.microsoftCorpAccount": "Microsoft Corp",
 			"azure.noBaseToken": "認証で何かが失敗したか、またはトークンがシステムから削除されています。アカウントを Azure Data Studio にもう一度追加してください。",
 			"azure.noUniqueIdentifier": "ユーザーの AAD 内に一意識別子がありませんでした",
+			"azure.owningTenantNotFound": "アカウントの所有テナント情報が見つかりません。",
 			"azure.responseError": "トークンの取得がエラーで失敗しました。詳細は、[開発者ツールを開く]({0})。",
 			"azure.tenantNotFound": "ID '{0}' の指定されたテナントが見つかりません。",
 			"azureAuth.unidentifiedError": "Azure 認証で不明なエラーが発生しました",
@@ -25,7 +26,8 @@
 			"azurecore.consentDialog.body": "テナント '{0} ({1})' では、{2} リソースにアクセスするために、もう一度再認証する必要があります。[開く] をクリックして、認証プロセスを開始してください。",
 			"azurecore.consentDialog.cancel": "キャンセル",
 			"azurecore.consentDialog.ignore": "テナントの無視",
-			"azurecore.consentDialog.open": "開く"
+			"azurecore.consentDialog.open": "開く",
+			"noMicrosoftResource": "プロバイダー '{0}' には、Microsoft リソース エンドポイントが定義されていません。"
 		},
 		"dist/account-provider/auths/azureAuthCodeGrant": {
 			"azure.azureAuthCodeGrantName": "Azure Auth Code Grant",
@@ -83,6 +85,9 @@
 		"dist/azureResource/providers/kusto/kustoTreeDataProvider": {
 			"azure.resource.providers.KustoContainerLabel": "Azure Data Explorer クラスター"
 		},
+		"dist/azureResource/providers/mysqlFlexibleServer/mysqlFlexibleServerTreeDataProvider": {
+			"azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel": "Azure Database for MySQL のフレキシブル サーバー"
+		},
 		"dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider": {
 			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "PostgreSQL Hyperscale – Azure Arc"
 		},
@@ -99,7 +104,8 @@
 			"azure.resource.resourceTreeNode.noResourcesLabel": "リソースは見つかりませんでした"
 		},
 		"dist/azureResource/services/subscriptionService": {
-			"azure.resource.tenantSubscriptionsError": "アカウント {0} (テナント '{1}') のサブスクリプションを取得できませんでした。{2}"
+			"azure.resource.tenantSubscriptionsError": "アカウント {0} (テナント '{1}') のサブスクリプションを取得できませんでした。{2}",
+			"azure.resource.tenantTokenError": "アカウント '{0}' (テナント '{1}') のアクセス トークンの取得に失敗しました。"
 		},
 		"dist/azureResource/services/terminalService": {
 			"azure.cloudShell": "Azure Cloud Shell (プレビュー) {0} ({1})",

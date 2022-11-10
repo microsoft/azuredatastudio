@@ -238,7 +238,7 @@
 			"usernameAndPasswordRequired": "Es necesario especificar el nombre de usuario y la contraseña."
 		},
 		"dist/sqlToolsServer": {
-			"downloadServiceDoneChannelMsg": "Instalación terminada {0}",
+			"downloadServiceDoneChannelMsg": "{0} descargado",
 			"downloadingServiceChannelMsg": "Descargando {0}",
 			"downloadingServiceSizeChannelMsg": "({0} KB)",
 			"downloadingServiceStatusMsg": "Descargando {0}",
@@ -251,7 +251,10 @@
 			"startingServiceStatusMsg": "Iniciando {0}"
 		},
 		"dist/tableDesigner/tableDesigner": {
-			"tableDesigner.NewTable": "Nueva tabla"
+			"tableDesigner.NewTable": "Nueva tabla",
+			"tableDesigner.no": "No",
+			"tableDesigner.turnOnPreloadingMessage": "¿Desea reducir el tiempo de carga del diseñador de tablas habilitando la carga previa del modelo de base de datos? El modelo de base de datos se cargará previamente al expandir el nodo de base de datos en el explorador de objetos.",
+			"tableDesigner.yes": "Sí"
 		},
 		"dist/telemetry": {
 			"serviceCrashMessage": "El componente {0} se cerró de forma inesperada. Reinicie Azure Data Studio.",
@@ -279,8 +282,6 @@
 			"mssql.connectionOptions.applicationIntent.displayName": "Intención de la aplicación",
 			"mssql.connectionOptions.applicationName.description": "El nombre de la aplicación",
 			"mssql.connectionOptions.applicationName.displayName": "Nombre de la aplicación",
-			"mssql.connectionOptions.asynchronousProcessing.description": "Cuando es true, habilita el uso de la funcionalidad asincrónica en el proveedor de datos de .NET Framework",
-			"mssql.connectionOptions.asynchronousProcessing.displayName": "Procesamiento asincrónico",
 			"mssql.connectionOptions.attachDbFilename.displayName": "Adjuntar nombre de archivo de base de datos",
 			"mssql.connectionOptions.attachedDBFileName.description": "Nombre del archivo principal, incluido el nombre completo de ruta, de una base de datos que se puede adjuntar",
 			"mssql.connectionOptions.attachedDBFileName.displayName": "Nombre del archivo de base de datos adjunto",
@@ -355,6 +356,14 @@
 			"mssql.connectionOptions.workstationId.displayName": "Id. de estación de trabajo",
 			"mssql.disabled": "Deshabilitado",
 			"mssql.enabled": "Habilitado",
+			"mssql.executionPlan.actualNumberOfRowsForAllExecutions": "Resalta la operación del plan de ejecución con el mayor número real de filas para todas las ejecuciones.",
+			"mssql.executionPlan.cost": "Resalta la operación del plan de ejecución con el costo más alto.",
+			"mssql.executionPlan.expensiveOperationMetric": "Métrica predeterminada que se va a usar para resaltar una operación costosa en los planes de ejecución de consultas",
+			"mssql.executionPlan.expensiveOperationMetric.actualElapsedCpuTime": "Resalta la operación del plan de ejecución que usó más tiempo de CPU.",
+			"mssql.executionPlan.expensiveOperationMetric.actualElapsedTime": "Resalta la operación del plan de ejecución que tardó más tiempo.",
+			"mssql.executionPlan.expensiveOperationMetric.off": "El resaltado de operaciones costosas se desactivará para los planes de ejecución.",
+			"mssql.executionPlan.numberOfRowsRead": "Resalta la operación del plan de ejecución con el mayor número de filas leídas.",
+			"mssql.executionPlan.subtreeCost": "Resalta la operación del plan de ejecución con el costo de subárbol más alto.",
 			"mssql.exportNotebookToSql": "Exportar cuaderno como SQL",
 			"mssql.exportSqlAsNotebook": "Exportar SQL como cuaderno",
 			"mssql.format.alignColumnDefinitionsInColumns": "Indica si las definiciones de columna deben alinearse.",
@@ -386,7 +395,8 @@
 			"mssql.query.executionTimeout": "Un tiempo de espera de ejecución de 0 indica una espera ilimitada (sin tiempo de espera)",
 			"mssql.query.implicitTransactions": "Habilitar SET IMPLICIT_TRANSACTIONS",
 			"mssql.query.lockTimeout": "Habilitar la opción SET LOCK TIMEOUT (en milisegundos)",
-			"mssql.query.maxXmlCharsToStore": "Número de caracteres XML que se almacenarán después de ejecutar una consulta.",
+			"mssql.query.maxCharsToStore": "Número máximo de caracteres/bytes que se almacenarán para cada valor en columnas de caracteres o binarios después de ejecutar una consulta. Valor predeterminado: 65 535. Intervalo de valores válido: de 1 a 2 147 483 647.",
+			"mssql.query.maxXmlCharsToStore": "Número máximo de caracteres que se almacenarán para cada valor en columnas XML después de ejecutar una consulta. Valor predeterminado: 2 097 152. Intervalo de valores válido: de 1 a 2 147 483 647.",
 			"mssql.query.noCount": "Habilitar la opción SET NOCOUNT",
 			"mssql.query.noExec": "Habilitar la opción SET NOEXEC",
 			"mssql.query.parseOnly": "Habilitar la opción SET PARSEONLY",
@@ -398,6 +408,7 @@
 			"mssql.query.textSize": "Tamaño máximo del texto y datos de ntext devueltos por una instrucción SELECT",
 			"mssql.query.transactionIsolationLevel": "Habilitar la opción SET TRANSACTION ISOLATION LEVEL",
 			"mssql.query.xactAbortOn": "Habilitar la opción SET XACT_ABORT ON",
+			"mssql.tableDesigner.preloadDatabaseModel": "Indica si se debe cargar previamente el modelo de base de datos cuando se expande el nodo de base de datos en el explorador de objetos. Cuando se habilita, se puede reducir el tiempo de carga del diseñador de tablas. Nota: Es posible que vea un uso de memoria mayor que el normal si necesita expandir una gran cantidad de nodos de base de datos.",
 			"mssql.tracingLevel": "[Opcional] El nivel de registro para servicios back-end. Azure Data Studio genera un nombre de archivo cada vez que se inicia y, si el archivo ya existe, las entradas de registros se anexan a ese archivo. Para la limpieza de archivos de registro antiguos, consulte la configuración de logRetentionMinutes y logFilesRemovalLimit. El valor predeterminado tracingLevel no registra mucho. El cambio de detalle podría dar lugar a amplios requisitos de registro y espacio en disco para los registros. Error incluye Crítico, Advertencia incluye Error, Información incluye Advertencia y Detallado incluye Información.",
 			"mssqlCluster.copyPath": "Copiar ruta de acceso",
 			"mssqlCluster.deleteFiles": "Eliminar",

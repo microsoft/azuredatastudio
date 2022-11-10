@@ -149,6 +149,7 @@
 		},
 		"dist/extension": {
 			"bdc.dashboard.title": "Panel del clúster de macrodatos:",
+			"bdc.deprecationWarning": "El complemento clúster de macrodatos se va a retirar y su funcionalidad de Azure Data Studio se quitará en una próxima versión. Obtenga más información sobre esto y soporte técnico en el futuro [aquí](https://go.microsoft.com/fwlink/?linkid=2207340).",
 			"mount.error.endpointNotFound": "No se encontró información del punto de conexión del controlador",
 			"textConfirmRemoveController": "¿Seguro que quiere quitar \"{0}\"?",
 			"textNo": "No",
