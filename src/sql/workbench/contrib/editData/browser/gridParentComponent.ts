@@ -140,6 +140,9 @@ export abstract class GridParentComponent extends Disposable {
 				case GridContentEvents.SaveAsJSON:
 					self.sendSaveRequest(SaveFormat.JSON);
 					break;
+				case GridContentEvents.SaveAsMarkdown:
+					self.sendSaveRequest(SaveFormat.MARKDOWN);
+					break;
 				case GridContentEvents.SaveAsExcel:
 					self.sendSaveRequest(SaveFormat.EXCEL);
 					break;
@@ -319,6 +322,9 @@ export abstract class GridParentComponent extends Disposable {
 			'SaveAsJSON': () => {
 				this.sendSaveRequest(SaveFormat.JSON);
 			},
+			'SaveAsMarkdown': () => {
+				this.sendSaveRequest(SaveFormat.MARKDOWN);
+			},
 			'SaveAsExcel': () => {
 				this.sendSaveRequest(SaveFormat.EXCEL);
 			},
@@ -346,6 +352,9 @@ export abstract class GridParentComponent extends Disposable {
 				break;
 			case 'savejson':
 				this.dataService.sendSaveRequest({ batchIndex: event.batchId, resultSetNumber: event.resultId, format: SaveFormat.JSON, selection: event.selection });
+				break;
+			case 'saveMarkdown':
+				this.dataService.sendSaveRequest({ batchIndex: event.batchId, resultSetNumber: event.resultId, format: SaveFormat.MARKDOWN, selection: event.selection });
 				break;
 			case 'saveexcel':
 				this.dataService.sendSaveRequest({ batchIndex: event.batchId, resultSetNumber: event.resultId, format: SaveFormat.EXCEL, selection: event.selection });

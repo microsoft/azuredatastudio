@@ -10,7 +10,7 @@ const packageJson = require('../../package.json');
 
 let packageInfo = utils.getPackageInfo(packageJson)!;
 
-export const TelemetryReporter = new AdsTelemetryReporter(packageInfo.name, packageInfo.version, packageInfo.aiKey);
+export const TelemetryReporter = new AdsTelemetryReporter<TelemetryViews, TelemetryActions>(packageInfo.name, packageInfo.version, packageInfo.aiKey);
 
 
 export enum TelemetryViews {

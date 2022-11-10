@@ -22,6 +22,34 @@
         <source xml:lang="en">Select the databases that you want to migrate to Azure SQL.</source>
         <target state="translated">選取要遷移至 Azure SQL 的資料庫。</target>
       </trans-unit>
+      <trans-unit id="sql.migratino.database.loading.tables">
+        <source xml:lang="en">Loading tables list...</source>
+        <target state="translated">正在載入資料表清單...</target>
+      </trans-unit>
+      <trans-unit id="sql.migratino.database.missing.tables">
+        <source xml:lang="en">0 tables found.</source>
+        <target state="translated">找到 0 個資料表。</target>
+      </trans-unit>
+      <trans-unit id="sql.migratino.table.selection.filter">
+        <source xml:lang="en">Filter tables</source>
+        <target state="translated">篩選資料表</target>
+      </trans-unit>
+      <trans-unit id="sql.migratino.table.selection.status.column">
+        <source xml:lang="en">Has rows</source>
+        <target state="translated">有資料列</target>
+      </trans-unit>
+      <trans-unit id="sql.migratino.table.selection.tablename.column">
+        <source xml:lang="en">Table name</source>
+        <target state="translated">資料表名稱</target>
+      </trans-unit>
+      <trans-unit id="sql.migratino.table.selection.update.button">
+        <source xml:lang="en">Update</source>
+        <target state="translated">更新</target>
+      </trans-unit>
+      <trans-unit id="sql.migratino.table.selection.update.cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">取消</target>
+      </trans-unit>
       <trans-unit id="sql.migration.account.credentials.refresh.required">
         <source xml:lang="en">{0} (requires credentials refresh)</source>
         <target state="translated">{0} (需要重新整理認證)</target>
@@ -75,8 +103,16 @@ This may take some time.</source>
 這可能需要一些時間。</target>
       </trans-unit>
       <trans-unit id="sql.migration.assessment.migration.warning">
-        <source xml:lang="en">Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines.</source>
-        <target state="translated">尚未準備好移轉到 Azure SQL 受控執行個體的資料庫，可以在 Azure 虛擬機器上移轉到 SQL Server。</target>
+        <source xml:lang="en">Databases that are not ready for migration to Azure SQL Managed Instance or Azure SQL Database can be migrated to SQL Server on Azure Virtual Machines.</source>
+        <target state="translated">尚未準備好移轉到 Azure SQL 受控執行個體或 Azure SQL Database 的資料庫，可以在 Azure 虛擬機器上移轉到 SQL Server。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.assessment.migration.warning.sqldb">
+        <source xml:lang="en">Databases that are not ready for migration to Azure SQL Database can be migrated to SQL Server on Azure Virtual Machines. Alternatively, review assessment results for Azure SQL Managed Instance migration readiness.</source>
+        <target state="translated">尚未準備好移轉至 Azure SQL Database 的資料庫可以移轉至 Azure 虛擬機器上的 SQL Server。或者，檢閱 Azure SQL 受控執行個體移轉整備程度的評定結果。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.assessment.migration.warning.sqlmi">
+        <source xml:lang="en">Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines. Alternatively, review assessment results for Azure SQL Database migration readiness.</source>
+        <target state="translated">尚未準備好移轉至 Azure SQL 受控執行個體的資料庫可以移轉至 Azure 虛擬機器上的 SQL Server。或者，檢閱 Azure SQL Database 移轉整備程度的評定結果。</target>
       </trans-unit>
       <trans-unit id="sql.migration.assessment.results">
         <source xml:lang="en">Assessment results</source>
@@ -111,8 +147,8 @@ This may take some time.</source>
         <target state="translated">Azure SQL</target>
       </trans-unit>
       <trans-unit id="sql.migration.azure.sql.database">
-        <source xml:lang="en">Azure SQL Database</source>
-        <target state="translated">Azure SQL Database</target>
+        <source xml:lang="en">Azure SQL Database Server</source>
+        <target state="translated">Azure SQL Database 伺服器</target>
       </trans-unit>
       <trans-unit id="sql.migration.azure.sql.database.managed.instance">
         <source xml:lang="en">Azure SQL Managed Instance</source>
@@ -211,8 +247,8 @@ This may take some time.</source>
         <target state="translated">請先選取儲存體帳戶值。</target>
       </trans-unit>
       <trans-unit id="sql.migration.can.be.migrated">
-        <source xml:lang="en">{0}/{1} databases can be migrated</source>
-        <target state="translated">{0}/{1} 個資料庫可以移轉</target>
+        <source xml:lang="en">{0}/{1} databases can be migrated without issues</source>
+        <target state="translated">{0}/{1} 個資料庫可以移轉而無問題</target>
       </trans-unit>
       <trans-unit id="sql.migration.cancel">
         <source xml:lang="en">Cancel</source>
@@ -257,6 +293,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.confirm.checkbox.message">
         <source xml:lang="en">I confirm there are no additional log backups to provide and want to complete cutover.</source>
         <target state="translated">我確認沒有其他記錄備份可提供並想要完成完全移轉。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.connection.label">
+        <source xml:lang="en">Connect</source>
+        <target state="translated">連線</target>
       </trans-unit>
       <trans-unit id="sql.migration.connection.status">
         <source xml:lang="en">Connection status</source>
@@ -411,8 +451,8 @@ This may take some time.</source>
         <target state="translated">模式</target>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.description">
-        <source xml:lang="en">Determine the migration readiness of your SQL Server instances, identify a recommended Azure SQL target, and complete the migration of your SQL Server instance to Azure SQL Managed Instance or SQL Server on Azure Virtual Machines.</source>
-        <target state="translated">判斷您 SQL Server 執行個體的移轉準備情況、識別建議的 Azure SQL 目標，以及將您的 SQL Server 執行個體移轉到 Azure SQL 受控執行個體或 Azure 虛擬機器上的 SQL Server。</target>
+        <source xml:lang="en">Determine the migration readiness of your SQL Server instances, identify a recommended Azure SQL target, and complete the migration of your SQL Server instance to Azure SQL Managed Instance, SQL Server on Azure Virtual Machines or Azure SQL Database.</source>
+        <target state="translated">判斷您 SQL Server 執行個體的移轉整備度、識別建議的 Azure SQL 目標，並完成將您的 SQL Server 執行個體移轉到 Azure SQL 受控執行個體、Azure 虛擬機器上的 SQL Server 或 Azure SQL Database。</target>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.help.description.dmsGuide">
         <source xml:lang="en">A hub of migration articles that provides step-by-step guidance for migrating and modernizing your data assets in Azure.</source>
@@ -425,6 +465,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.dashboard.help.description.migrateUsingADS">
         <source xml:lang="en">The Azure SQL Migration extension for Azure Data Studio provides capabilities to assess, get right-sized Azure recommendations and migrate SQL Server databases to Azure.</source>
         <target state="translated">Azure Data Studio 的 Azure SQL 移轉擴充功能提供評估、取得正確大小的 Azure 建議，以及將 SQL Server 資料庫移轉至 Azure 的功能。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.dashboard.help.description.sqldb">
+        <source xml:lang="en">A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Database (PREVIEW).</source>
+        <target state="translated">將資料庫從 SQL Server 執行個體 (內部部署或 Azure 虛擬機器) 移轉至 Azure SQL 資料庫 (預覽) 的逐步教學課程。</target>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.help.description.vm">
         <source xml:lang="en">A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises) to SQL Server on Azure Virtual Machines with minimal downtime.</source>
@@ -441,6 +485,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.dashboard.help.link.migrateUsingADS">
         <source xml:lang="en">Migrate databases using Azure Data Studio</source>
         <target state="translated">使用 Azure Data Studio 來移轉資料庫</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.dashboard.help.link.sqldb">
+        <source xml:lang="en">Tutorial:  Migrate to SQL Server on Azure SQL Database (offline) - (PREVIEW)</source>
+        <target state="translated">教學課程: 移轉至 Azure SQL Database 上的 SQL Server (離線) - (預覽)</target>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.help.link.vm">
         <source xml:lang="en">Tutorial:  Migrate to SQL Server on Azure Virtual Machines (online)</source>
@@ -461,6 +509,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.dashboard.title">
         <source xml:lang="en">Azure SQL Migration</source>
         <target state="translated">Azure SQL 移轉</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.data.source.configuration.page.title">
+        <source xml:lang="en">Data source configuration</source>
+        <target state="translated">資料來源設定</target>
       </trans-unit>
       <trans-unit id="sql.migration.data.uploaded.info">
         <source xml:lang="en">Comparison of the actual amount of data read from the source and the actual amount of data uploaded to the target.</source>
@@ -490,9 +542,17 @@ This may take some time.</source>
         <source xml:lang="en">An error occurred while accessing database details.</source>
         <target state="translated">存取資料庫詳細資料時發生錯誤。</target>
       </trans-unit>
-      <trans-unit id="sql.migration.database.checksum.info.text">
-        <source xml:lang="en">Ensure that your backups were taken with the WITH CHECKSUM option.</source>
-        <target state="translated">請確認已使用 WITH CHECKSUM 選項來進行備份。</target>
+      <trans-unit id="sql.migration.database.connection.error">
+        <source xml:lang="en">An error occurred while connecting to target migration database.</source>
+        <target state="translated">連接到目標移轉資料庫時發生錯誤。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.database.connection.error.message">
+        <source xml:lang="en">Connection error:{0} {1}</source>
+        <target state="translated">連線錯誤:{0} {1}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.database.loading">
+        <source xml:lang="en">Loading database table list..</source>
+        <target state="translated">正在載入資料庫資料表清單..</target>
       </trans-unit>
       <trans-unit id="sql.migration.database.migration.mode.description">
         <source xml:lang="en">To migrate to the Azure SQL target, choose a migration mode based on your downtime requirements.</source>
@@ -542,21 +602,41 @@ This may take some time.</source>
         <source xml:lang="en">Select the location of the database backups to use during migration.</source>
         <target state="translated">選取要於移轉期間使用的資料庫備份位置。</target>
       </trans-unit>
-      <trans-unit id="sql.migration.database.page.title">
-        <source xml:lang="en">Database backup</source>
-        <target state="translated">資料庫備份</target>
-      </trans-unit>
-      <trans-unit id="sql.migration.database.private.endpoint.info.text">
-        <source xml:lang="en">Ensure that the Azure Storage account does not use a private endpoint.</source>
-        <target state="translated">請確認 Azure 儲存體帳戶未使用私人端點。</target>
-      </trans-unit>
       <trans-unit id="sql.migration.database.status.column">
         <source xml:lang="en">Migration status</source>
         <target state="translated">移轉狀態</target>
       </trans-unit>
+      <trans-unit id="sql.migration.database.table.refresh.label">
+        <source xml:lang="en">Refresh</source>
+        <target state="translated">重新整理</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.database.table.selection.description">
+        <source xml:lang="en">To migrate to the Azure SQL target, select tables in each database for migration.</source>
+        <target state="translated">若要移轉至 Azure SQL 目標，請在每個資料庫中選取資料表以進行移轉。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.database.table.selection.label">
+        <source xml:lang="en">Migration table selection</source>
+        <target state="translated">移轉資料表選取範圍</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.database.table.source.column.label">
+        <source xml:lang="en">Source database</source>
+        <target state="translated">來源資料庫</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.database.table.tables.column.label">
+        <source xml:lang="en">Select tables</source>
+        <target state="translated">選取資料表</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.database.table.target.column.label">
+        <source xml:lang="en">Target database</source>
+        <target state="translated">目標資料庫</target>
+      </trans-unit>
       <trans-unit id="sql.migration.database.to.be.migrated">
         <source xml:lang="en">Database to be migrated</source>
         <target state="translated">要移轉的資料庫</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.database.validate.selection">
+        <source xml:lang="en">Please select target database tables to migrate to.  At least one database with one table is required.</source>
+        <target state="translated">請選取要移轉至的目標資料庫資料表。至少需要一個具有一個資料表的資料庫。</target>
       </trans-unit>
       <trans-unit id="sql.migration.databases">
         <source xml:lang="en">Databases ({0}/{1})</source>
@@ -669,6 +749,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.error">
         <source xml:lang="en">Error</source>
         <target state="translated">錯誤</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.error.aria.view.details">
+        <source xml:lang="en">Click to view error details</source>
+        <target state="translated">按一下以檢視錯誤詳細資料</target>
       </trans-unit>
       <trans-unit id="sql.migration.error.details.label">
         <source xml:lang="en">Migration error(s))</source>
@@ -810,6 +894,10 @@ This may take some time.</source>
         <source xml:lang="en">Enter a valid name for the Migration Service.</source>
         <target state="translated">為此移轉服務輸入有效的名稱。</target>
       </trans-unit>
+      <trans-unit id="sql.migration.invalid.sqldatabase.error">
+        <source xml:lang="en">To continue, select a valid Azure SQL Database server.</source>
+        <target state="translated">若要繼續，請選取有效的 Azure SQL Database 伺服器。</target>
+      </trans-unit>
       <trans-unit id="sql.migration.invalid.storageAccount.error">
         <source xml:lang="en">To continue, select a valid storage account.</source>
         <target state="translated">若要繼續，請選取有效的儲存體帳戶。</target>
@@ -831,8 +919,8 @@ This may take some time.</source>
         <target state="translated">若要繼續，請選取有效的虛擬機器。</target>
       </trans-unit>
       <trans-unit id="sql.migration.ir.page.description">
-        <source xml:lang="en">Azure Database Migration Service orchestrates database migration activities and tracks their progress. You can select an existing Database Migration Service as an Azure SQL target if you have created one previously, or create a new one below.</source>
-        <target state="translated">Azure 資料庫移轉服務可協調資料庫移轉活動並追蹤其進度。如果您之前已建立資料庫移轉服務，可選取現有的資料庫移轉服務做為 Azure SQL 目標，或是在下方建立一個新的。</target>
+        <source xml:lang="en">Azure Database Migration Service orchestrates database migration activities and tracks their progress. You can select an existing Database Migration Service if you have created one previously, or create a new one below.</source>
+        <target state="translated">Azure 資料庫移轉服務可協調資料庫移轉活動並追蹤其進度。如果您之前已建立資料庫移轉服務，可選取現有的資料庫移轉服務，或是在下方建立一個新的。</target>
       </trans-unit>
       <trans-unit id="sql.migration.ir.page.sql.migration.service.not.found">
         <source xml:lang="en">No Database Migration Service found. Create a new one.</source>
@@ -853,6 +941,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.ir.setup.step3">
         <source xml:lang="en">Step 3: Click on 'Test connection' button to check the connection between Azure Database Migration Service and integration runtime</source>
         <target state="translated">步驟 3: 按一下 [測試連接] 按鈕，檢查 Azure 資料庫移轉服務與整合執行階段之間的連線</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.issue.aria.label">
+        <source xml:lang="en">Blocking Issue: {0}</source>
+        <target state="translated">執行問題: {0}</target>
       </trans-unit>
       <trans-unit id="sql.migration.issues">
         <source xml:lang="en">Issues</source>
@@ -898,10 +990,6 @@ This may take some time.</source>
         <source xml:lang="en">Last applied LSN</source>
         <target state="translated">上次套用的 LSN</target>
       </trans-unit>
-      <trans-unit id="sql.migration.last.backup">
-        <source xml:lang="en">Last backup</source>
-        <target state="translated">上次備份</target>
-      </trans-unit>
       <trans-unit id="sql.migration.last.scan.completed">
         <source xml:lang="en">Last scan completed: {0}</source>
         <target state="translated">上次完成的掃描: {0}</target>
@@ -921,6 +1009,26 @@ This may take some time.</source>
       <trans-unit id="sql.migration.location">
         <source xml:lang="en">Location</source>
         <target state="translated">位置</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.map.source.column">
+        <source xml:lang="en">Source database</source>
+        <target state="translated">來源資料庫</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.map.target.column">
+        <source xml:lang="en">Target database</source>
+        <target state="translated">目標資料庫</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.map.target.description">
+        <source xml:lang="en">Select the target database where you would like to migrate your source database to.  You can choose a target database for only one source database.</source>
+        <target state="translated">選取您要將來源資料庫移轉至的目標資料庫位置。您只能為一個來源資料庫選擇目標資料庫。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.map.target.heading">
+        <source xml:lang="en">Map selected source databases to target databases for migration</source>
+        <target state="translated">將選取的來源資料庫對應到目標資料庫以進行移轉</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.map.target.placeholder">
+        <source xml:lang="en">Select a target database</source>
+        <target state="translated">請選取目標資料庫</target>
       </trans-unit>
       <trans-unit id="sql.migration.mi.not.ready">
         <source xml:lang="en">The managed instance '{0}' is unavailable for migration because it is currently in the '{1}' state. To continue, select an available managed instance.</source>
@@ -957,6 +1065,14 @@ This may take some time.</source>
       <trans-unit id="sql.migration.mins">
         <source xml:lang="en">{0} mins</source>
         <target state="translated">{0} 分鐘</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.missing.targetPassword.error">
+        <source xml:lang="en">To continue, enter a valid target password.</source>
+        <target state="translated">若要繼續，請輸入有效的目標密碼。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.missing.targetUserName.error">
+        <source xml:lang="en">To continue, enter a valid target user name.</source>
+        <target state="translated">若要繼續，請輸入有效的使用者名稱。</target>
       </trans-unit>
       <trans-unit id="sql.migration.mode">
         <source xml:lang="en">Mode</source>
@@ -1071,8 +1187,12 @@ This may take some time.</source>
         <target state="translated">找不到任何檔案共用。</target>
       </trans-unit>
       <trans-unit id="sql.migration.no.issues.mi">
-        <source xml:lang="en">No issues found for migrating to SQL Server on Azure SQL Managed Instance.</source>
-        <target state="translated">找不到在 Azure SQL 受控執行個體上移轉到 SQL Server 的問題。</target>
+        <source xml:lang="en">No issues found for migrating to Azure SQL Managed Instance.</source>
+        <target state="translated">找不到移轉到 Azure SQL 受控執行個體的問題。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.no.issues.sqldb">
+        <source xml:lang="en">No issues found for migrating to Azure SQL Database.</source>
+        <target state="translated">找不到移轉到 Azure SQL Database 的問題。</target>
       </trans-unit>
       <trans-unit id="sql.migration.no.issues.vm">
         <source xml:lang="en">No issues found for migrating to SQL Server on Azure Virtual Machine.</source>
@@ -1093,6 +1213,14 @@ This may take some time.</source>
       <trans-unit id="sql.migration.no.results">
         <source xml:lang="en">Assessment results are unavailable.</source>
         <target state="translated">評定結果無法使用。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.no.sqldatabase.found">
+        <source xml:lang="en">No Azure SQL databases found.</source>
+        <target state="translated">找不到 Azure SQL 資料庫。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.no.sqldatabaseserver.found">
+        <source xml:lang="en">No Azure SQL database servers found.</source>
+        <target state="translated">找不到 Azure SQL Database 伺服器。</target>
       </trans-unit>
       <trans-unit id="sql.migration.no.storageAccount.found">
         <source xml:lang="en">No storage accounts found.</source>
@@ -1158,25 +1286,37 @@ This may take some time.</source>
         <source xml:lang="en">Physical partitions</source>
         <target state="translated">實體分割區</target>
       </trans-unit>
+      <trans-unit id="sql.migration.password.label">
+        <source xml:lang="en">Target password</source>
+        <target state="translated">目標密碼</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.password.placeholder">
+        <source xml:lang="en">Enter the target password</source>
+        <target state="translated">輸入目標密碼</target>
+      </trans-unit>
       <trans-unit id="sql.migration.path.user.account">
         <source xml:lang="en">User account</source>
         <target state="translated">使用者帳戶</target>
       </trans-unit>
       <trans-unit id="sql.migration.pre.req.1">
-        <source xml:lang="en">Azure account details</source>
-        <target state="translated">Azure 帳戶詳細資料</target>
+        <source xml:lang="en">An Azure account (not required for assessment or SKU recommendation functionality)</source>
+        <target state="translated">Azure 帳戶 (評定或 SKU 建議功能不需要)</target>
       </trans-unit>
       <trans-unit id="sql.migration.pre.req.2">
-        <source xml:lang="en">Azure SQL Managed Instance or SQL Server on Azure Virtual Machine</source>
-        <target state="translated">Azure 虛擬機器上的 Azure SQL 受控執行個體或 SQL Server</target>
+        <source xml:lang="en">A source SQL Server database(s) running on on-premises, or on SQL Server on Azure Virtual Machine or any virtual machine running in the cloud (private, public).</source>
+        <target state="translated">在內部部署或 Azure 虛擬機器上的 SQL Server 上執行的來源 SQL Server 資料庫，或雲端中執行的任何虛擬機器 (私人、公用)。</target>
       </trans-unit>
       <trans-unit id="sql.migration.pre.req.3">
-        <source xml:lang="en">Backup location details</source>
-        <target state="translated">備份位置詳細資料</target>
+        <source xml:lang="en">An Azure SQL Managed Instance, SQL Server on Azure Virtual Machine, or Azure SQL Database to migrate your database(s) to.</source>
+        <target state="translated">要移轉資料庫的目標 Azure SQL 受控執行個體、Azure 虛擬機器上的 SQL Server 或 Azure SQL 資料庫。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.pre.req.4">
+        <source xml:lang="en">Your database backup location details, either a network file share or an Azure Blob Storage container (not required for Azure SQL Database targets).</source>
+        <target state="translated">您的資料庫備份位置詳細資料，網路檔案共用或 Azure Blob 儲存體容器 (Azure SQL Database 目標不需要)。</target>
       </trans-unit>
       <trans-unit id="sql.migration.pre.req.title">
-        <source xml:lang="en">Things you need before starting a migration:</source>
-        <target state="translated">開始移轉前需具備的事項:</target>
+        <source xml:lang="en">Things you need before starting your Azure SQL migration:</source>
+        <target state="translated">開始 Azure SQL 移轉之前所需的項目:</target>
       </trans-unit>
       <trans-unit id="sql.migration.provide.unique.containers">
         <source xml:lang="en">Provide a unique container for each target database. Databases affected: </source>
@@ -1246,6 +1386,14 @@ This may take some time.</source>
         <source xml:lang="en">Resource group created</source>
         <target state="translated">已建立資源群組</target>
       </trans-unit>
+      <trans-unit id="sql.migration.save.assessment.report">
+        <source xml:lang="en">Save assessment report</source>
+        <target state="translated">儲存評定報表</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.save.assessment.report.success">
+        <source xml:lang="en">Successfully saved assessment report to {0}.</source>
+        <target state="translated">已成功將評定報告儲存至 {0}。</target>
+      </trans-unit>
       <trans-unit id="sql.migration.save.close">
         <source xml:lang="en">Save and close</source>
         <target state="translated">儲存後關閉</target>
@@ -1253,6 +1401,14 @@ This may take some time.</source>
       <trans-unit id="sql.migration.save.close.popup">
         <source xml:lang="en">Configuration saved. Performance data collection will remain running in the background. You can stop the collection when you want to.</source>
         <target state="translated">已儲存設定。效能資料收集仍會在背景執行。您可以在想要時停止集合。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.save.recommendation.report">
+        <source xml:lang="en">Save recommendation report</source>
+        <target state="translated">儲存建議報告</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.save.recommendation.report.success">
+        <source xml:lang="en">Successfully saved recommendation report to {0}.</source>
+        <target state="translated">已成功將建議報告儲存至 {0}。</target>
       </trans-unit>
       <trans-unit id="sql.migration.saved.assessment.cancel">
         <source xml:lang="en">Cancel</source>
@@ -1349,6 +1505,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.select.service.select.location.error">
         <source xml:lang="en">An error occurred while loading locations. Please check your Azure connection and try again.</source>
         <target state="translated">載入位置時發生錯誤。請檢查您的 Azure 連線，然後再試一次。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.select.service.select.migration.target">
+        <source xml:lang="en">Select a target server.</source>
+        <target state="translated">選取目標伺服器。</target>
       </trans-unit>
       <trans-unit id="sql.migration.select.service.select.resource.group.error">
         <source xml:lang="en">An error occurred while loading available resource groups. Please check your Azure connection and try again.</source>
@@ -1506,8 +1666,12 @@ This may take some time.</source>
         <source xml:lang="en">{0} TB</source>
         <target state="translated">{0} TB</target>
       </trans-unit>
-      <trans-unit id="sql.migration.sku.available.recommendations">
+      <trans-unit id="sql.migration.sku.available.recommendations.many">
         <source xml:lang="en">{0} recommendations available</source>
+        <target state="translated">{0} 個可用的建議</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.available.recommendations.one">
+        <source xml:lang="en">{0} recommendation available</source>
         <target state="translated">{0} 個可用的建議</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.azureConfiguration">
@@ -1518,10 +1682,6 @@ This may take some time.</source>
         <source xml:lang="en">Business critical</source>
         <target state="translated">業務關鍵</target>
       </trans-unit>
-      <trans-unit id="sql.migration.sku.azureConfiguration.db">
-        <source xml:lang="en">{0} - {1} vCore</source>
-        <target state="translated">{0} - {1} V 核心</target>
-      </trans-unit>
       <trans-unit id="sql.migration.sku.azureConfiguration.gen5">
         <source xml:lang="en">Gen5</source>
         <target state="translated">Gen5</target>
@@ -1529,6 +1689,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.sku.azureConfiguration.generalPurpose">
         <source xml:lang="en">General purpose</source>
         <target state="translated">一般目的</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureConfiguration.hyperscale">
+        <source xml:lang="en">Hyperscale</source>
+        <target state="translated">超大規模資料庫</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.azureConfiguration.mi">
         <source xml:lang="en">{0} - {1} - {2} vCore</source>
@@ -1545,6 +1709,14 @@ This may take some time.</source>
       <trans-unit id="sql.migration.sku.azureConfiguration.premiumSeriesMemoryOptimized">
         <source xml:lang="en">Memory optimized premium-series</source>
         <target state="translated">記憶體最佳化進階系列</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureConfiguration.sqldb">
+        <source xml:lang="en">{0} - {1} vCore</source>
+        <target state="translated">{0} - {1} V 核心</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureConfiguration.sqldbPreview">
+        <source xml:lang="en">{0} - {1} - {2} vCore - {3} GB</source>
+        <target state="translated">{0} - {1} - {2} V 核心 - {3} GB</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.azureConfiguration.storage">
         <source xml:lang="en">{0} x {1}</source>
@@ -1582,10 +1754,6 @@ This may take some time.</source>
         <source xml:lang="en">I already have the performance data</source>
         <target state="translated">我已經擁有效能資料</target>
       </trans-unit>
-      <trans-unit id="sql.migration.sku.azureRecommendation.openExisting.popup">
-        <source xml:lang="en">Generating Azure recommendations using provided performance data...</source>
-        <target state="translated">正在使用提供的效能資料產生 Azure 建議...</target>
-      </trans-unit>
       <trans-unit id="sql.migration.sku.azureRecommendation.openExistingSelectFolder.instructions">
         <source xml:lang="en">Select a folder on your local drive where previously collected performance data was saved</source>
         <target state="translated">選取本機磁碟機上儲存先前收集效能資料的資料夾</target>
@@ -1615,8 +1783,8 @@ This may take some time.</source>
         <target state="translated">按下 [重新整理建議] 按鈕，定期回來查看更新的建議。</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.azureRecommendation.status.notEnabled">
-        <source xml:lang="en">Azure recommendation collects and analyzes performance data and then recommends an appropriate sized database in Azure for your workload.</source>
-        <target state="translated">Azure 建議會收集及分析效能資料，然後為您的工作負載建議 Azure 中適當大小的資料庫。</target>
+        <source xml:lang="en">Azure recommendation collects and analyzes performance data and then recommends an appropriate sized target in Azure for your workload.</source>
+        <target state="translated">Azure 建議會收集及分析效能資料，然後為您的工作負載建議 Azure 中適當大小的目標。</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.azureRecommendation.status.refining">
         <source xml:lang="en">Data collection still in progress. Refining existing recommendations...</source>
@@ -1662,10 +1830,6 @@ This may take some time.</source>
         <source xml:lang="en">Data storage requirement</source>
         <target state="translated">資料儲存需求</target>
       </trans-unit>
-      <trans-unit id="sql.migration.sku.db.card.title">
-        <source xml:lang="en">Azure SQL Database</source>
-        <target state="translated">Azure SQL Database</target>
-      </trans-unit>
       <trans-unit id="sql.migration.sku.gb">
         <source xml:lang="en">{0} GB</source>
         <target state="translated">{0}GB</target>
@@ -1702,6 +1866,10 @@ This may take some time.</source>
         <source xml:lang="en">Azure SQL Managed Instance</source>
         <target state="translated">Azure SQL 受控執行個體</target>
       </trans-unit>
+      <trans-unit id="sql.migration.sku.mi.target.title">
+        <source xml:lang="en">Azure SQL Managed Instance</source>
+        <target state="translated">Azure SQL 受控執行個體</target>
+      </trans-unit>
       <trans-unit id="sql.migration.sku.ms">
         <source xml:lang="en">{0} ms</source>
         <target state="translated">{0} 毫秒</target>
@@ -1717,6 +1885,14 @@ This may take some time.</source>
       <trans-unit id="sql.migration.sku.parameters.edit.title">
         <source xml:lang="en">Edit recommendation parameters</source>
         <target state="translated">編輯建議參數</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.parameters.enable.elastic">
+        <source xml:lang="en">Enable elastic recommendation</source>
+        <target state="translated">啟用彈性建議</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.parameters.enable.elastic.info">
+        <source xml:lang="en">Elastic recommendation uses an alternate recommendation model which utilizes personalized price-performance profiling against existing on-cloud customers.</source>
+        <target state="translated">彈性建議使用替代建議模型，其針對現有的雲端客戶使用個人化的價格效能分析。</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.parameters.enable.preview">
         <source xml:lang="en">Enable preview features</source>
@@ -1763,12 +1939,16 @@ This may take some time.</source>
         <target state="translated">第 {0} 個百分位數</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.recommendation">
-        <source xml:lang="en">Azure recommendation</source>
-        <target state="translated">Azure 建議</target>
+        <source xml:lang="en">Azure recommendation (PREVIEW)</source>
+        <target state="translated">Azure 建議 (預覽)</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.recommendation.view.assessment.mi">
         <source xml:lang="en">To migrate to Azure SQL Managed Instance, view assessment results and select one or more databases.</source>
         <target state="translated">若要移轉至 Azure SQL 受控執行個體，請檢視評定結果並選取一或多個資料庫。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.recommendation.view.assessment.sqldb">
+        <source xml:lang="en">To migrate to Azure SQL Database (PREVIEW), view assessment results and select one or more databases.</source>
+        <target state="translated">若要移轉至 Azure SQL Database (預覽)，請檢視評定結果並選取一或多個資料庫。</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.recommendation.view.assessment.vm">
         <source xml:lang="en">To migrate to SQL Server on Azure Virtual Machine, view assessment results and select one or more databases.</source>
@@ -1842,6 +2022,14 @@ This may take some time.</source>
         <source xml:lang="en">SQL tempdb</source>
         <target state="translated">SQL tempdb</target>
       </trans-unit>
+      <trans-unit id="sql.migration.sku.sqldb.card.title">
+        <source xml:lang="en">Azure SQL Database (PREVIEW)</source>
+        <target state="translated">Azure SQL Database (預覽)</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.sqldb.target.title">
+        <source xml:lang="en">Azure SQL Database</source>
+        <target state="translated">Azure SQL Database</target>
+      </trans-unit>
       <trans-unit id="sql.migration.sku.stop.performance.collection">
         <source xml:lang="en">Stop data collection</source>
         <target state="translated">停止資料收集</target>
@@ -1911,6 +2099,10 @@ This may take some time.</source>
         <target state="translated">檢視詳細資料</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.vm.card.title">
+        <source xml:lang="en">SQL Server on Azure Virtual Machine</source>
+        <target state="translated">Azure 虛擬機器上的 SQL Server</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.vm.target.title">
         <source xml:lang="en">SQL Server on Azure Virtual Machine</source>
         <target state="translated">Azure 虛擬機器上的 SQL Server</target>
       </trans-unit>
@@ -2006,6 +2198,10 @@ This may take some time.</source>
         <source xml:lang="en">Used parallel copies</source>
         <target state="translated">使用的平行複本數</target>
       </trans-unit>
+      <trans-unit id="sql.migration.sqldb.not.ready">
+        <source xml:lang="en">The SQL database server '{0}' is unavailable for migration because it is currently in the '{1}' state. To continue, select an available SQL database server.</source>
+        <target state="translated">SQL Database 伺服器 '{0}' 無法用於移轉，因為它目前處於'{1}'狀態。若要繼續，請選取可用的 SQL Database 伺服器。</target>
+      </trans-unit>
       <trans-unit id="sql.migration.src.database">
         <source xml:lang="en">Source database</source>
         <target state="translated">來源資料庫</target>
@@ -2075,20 +2271,12 @@ This may take some time.</source>
         <target state="translated">狀態: 成功</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.error.count.multiple">
-        <source xml:lang="en">{0} Errors)</source>
-        <target state="translated">{0} 個錯誤)</target>
-      </trans-unit>
-      <trans-unit id="sql.migration.status.error.count.none">
-        <source xml:lang="en">{0}</source>
-        <target state="translated">{0}</target>
+        <source xml:lang="en"> ({0} errors)</source>
+        <target state="translated"> ({0} 個錯誤)</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.error.count.single">
-        <source xml:lang="en">{0} Error)</source>
-        <target state="translated">{0} 個錯誤)</target>
-      </trans-unit>
-      <trans-unit id="sql.migration.status.error.count.some">
-        <source xml:lang="en">{0} (</source>
-        <target state="translated">{0} (</target>
+        <source xml:lang="en"> ({0} error)</source>
+        <target state="translated"> ({0} 個錯誤)</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.failed">
         <source xml:lang="en">Failed</source>
@@ -2098,9 +2286,17 @@ This may take some time.</source>
         <source xml:lang="en">In progress</source>
         <target state="translated">進行中</target>
       </trans-unit>
+      <trans-unit id="sql.migration.status.readyforcutover">
+        <source xml:lang="en">Ready for cutover</source>
+        <target state="translated">移轉已就緒</target>
+      </trans-unit>
       <trans-unit id="sql.migration.status.refresh.label">
         <source xml:lang="en">Refresh</source>
         <target state="translated">重新整理</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.restoring">
+        <source xml:lang="en">Restoring</source>
+        <target state="translated">正在還原</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.retriable">
         <source xml:lang="en">Retriable</source>
@@ -2118,13 +2314,25 @@ This may take some time.</source>
         <source xml:lang="en">Succeeded</source>
         <target state="translated">已成功</target>
       </trans-unit>
+      <trans-unit id="sql.migration.status.uploadingfullbackup">
+        <source xml:lang="en">Uploading full backup</source>
+        <target state="translated">正在上傳完整備份</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.uploadinglogbackup">
+        <source xml:lang="en">Uploading log backup(s)</source>
+        <target state="translated">正在上傳記錄備份</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.value">
+        <source xml:lang="en">{0}</source>
+        <target state="translated">{0}</target>
+      </trans-unit>
       <trans-unit id="sql.migration.status.warning.count.multiple">
-        <source xml:lang="en">{0} Warnings)</source>
-        <target state="translated">{0} 個警告)</target>
+        <source xml:lang="en"> ({0} warnings)</source>
+        <target state="translated"> ({0} 個警告)</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.warning.count.single">
-        <source xml:lang="en">{0} Warning)</source>
-        <target state="translated">{0} 個警告)</target>
+        <source xml:lang="en"> ({0} warning)</source>
+        <target state="translated"> ({0} 個警告)</target>
       </trans-unit>
       <trans-unit id="sql.migration.storage.account">
         <source xml:lang="en">Storage account</source>
@@ -2153,6 +2361,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.summary.page.title">
         <source xml:lang="en">Summary</source>
         <target state="translated">摘要</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.summary.sqldb.type">
+        <source xml:lang="en">Azure SQL Database</source>
+        <target state="translated">Azure SQL Database</target>
       </trans-unit>
       <trans-unit id="sql.migration.summary.vm.type">
         <source xml:lang="en">SQL Server on Azure Virtual Machine</source>
@@ -2198,6 +2410,26 @@ This may take some time.</source>
         <source xml:lang="en">Table migration status: {0}</source>
         <target state="translated">資料表移轉狀態: {0}</target>
       </trans-unit>
+      <trans-unit id="sql.migration.table.missing.count">
+        <source xml:lang="en">Missing target tables excluded from list: {0}</source>
+        <target state="translated">清單中排除的遺失目標資料表: {0}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.table.select.label">
+        <source xml:lang="en">Select tables for {0}</source>
+        <target state="translated">選取 {0} 的資料表</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.table.selected.count">
+        <source xml:lang="en">{0} of {1} tables selected</source>
+        <target state="translated">已選取 {0} 個資料表 (共 {1} 個資料表)</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.table.selection.count">
+        <source xml:lang="en">{0} of {1}</source>
+        <target state="translated">{0}/{1}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.table.selection.edit">
+        <source xml:lang="en">Edit</source>
+        <target state="translated">編輯</target>
+      </trans-unit>
       <trans-unit id="sql.migration.target">
         <source xml:lang="en">Target</source>
         <target state="translated">目標</target>
@@ -2226,6 +2458,18 @@ This may take some time.</source>
         <source xml:lang="en">Target server</source>
         <target state="translated">目標伺服器</target>
       </trans-unit>
+      <trans-unit id="sql.migration.target.table.count.name">
+        <source xml:lang="en">Tables selected</source>
+        <target state="translated">選取的資料表</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.target.table.missing">
+        <source xml:lang="en">Target table does not exist</source>
+        <target state="translated">目標資料表不存在</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.target.table.not.empty">
+        <source xml:lang="en">Target table is not empty.</source>
+        <target state="translated">目標資料表不是空的。</target>
+      </trans-unit>
       <trans-unit id="sql.migration.target.version">
         <source xml:lang="en">Target version</source>
         <target state="translated">目標版本</target>
@@ -2251,8 +2495,16 @@ This may take some time.</source>
         <target state="translated">為此目標資料庫選取唯一的名稱</target>
       </trans-unit>
       <trans-unit id="sql.migration.username">
-        <source xml:lang="en">Username</source>
+        <source xml:lang="en">User name</source>
         <target state="translated">使用者名稱</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.username.label">
+        <source xml:lang="en">Target user name</source>
+        <target state="translated">目標使用者名稱</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.username.placeholder">
+        <source xml:lang="en">Enter the target user name</source>
+        <target state="translated">輸入目標使用者名稱</target>
       </trans-unit>
       <trans-unit id="sql.migration.view.all">
         <source xml:lang="en">All database migrations</source>
@@ -2306,6 +2558,10 @@ This may take some time.</source>
         <source xml:lang="en">Azure account</source>
         <target state="translated">Azure 帳戶</target>
       </trans-unit>
+      <trans-unit id="sql.migration.wizard.connection.error.title">
+        <source xml:lang="en">An error occurred while conneting to the target server.</source>
+        <target state="translated">連線到目標伺服器時發生錯誤。</target>
+      </trans-unit>
       <trans-unit id="sql.migration.wizard.perfCollection.error">
         <source xml:lang="en">Error(s) occurred while collecting performance data for the server '{0}'. If these issues persist, try restarting the data collection process:
 
@@ -2347,12 +2603,36 @@ This may take some time.</source>
         <target state="translated">沒有可用的建議</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.sku.error.noRecommendation.reason">
-        <source xml:lang="en">No SKU recommendations were generated, as there were no SKUs which could satisfy the performance characteristics of your source. Try selecting a different target platform, adjusting recommendation parameters, or selecting a different set of databases to assess.</source>
-        <target state="translated">未產生 SKU 建議，因為沒有可滿足您來源效能特性的 SKU。請嘗試選取不同的目標平台、調整建議參數，或選取不同的資料庫集進行評定。</target>
+        <source xml:lang="en">No SKU recommendations were generated, as there were no SKUs which could satisfy the performance characteristics of your source. Try selecting a different target platform, adjusting recommendation parameters, selecting a different set of databases to assess, or changing the recommendation model.</source>
+        <target state="translated">未產生 SKU 建議，因為沒有可滿足您來源效能特性的 SKU。請嘗試選取不同的目標平台、調整建議參數、選取不同的資料庫集進行評估或變更建議模型。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.source.missing">
+        <source xml:lang="en">Connection was successful but did not find any target databases.</source>
+        <target state="translated">連線成功，但找不到任何目標資料庫。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.target.connection.error">
+        <source xml:lang="en">Connection error: {0}</source>
+        <target state="translated">連線錯誤: {0}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.target.connection.success">
+        <source xml:lang="en">Connection was successful. Target databases found: {0}</source>
+        <target state="translated">連線成功。找到目標資料庫: {0}</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.target.description">
         <source xml:lang="en">Select an Azure account and your target {0}.</source>
         <target state="translated">選取 Azure 帳戶和您的目標 {0}。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.target.mapping.error.duplicate">
+        <source xml:lang="en">Database mapping error.  Target database '{0}' cannot be selected to as a migration target for database '{1}'.  Target database '${targetDatabaseName}' is already selected as a migration target for database '{2}'.  Please select a different target database.</source>
+        <target state="translated">資料庫對應錯誤。無法選取目標資料庫 '{0}' 以做為資料庫' {1}' 的移轉目標。已選取目標資料庫 '${targetDatabaseName}' 做為資料庫 '{2}' 的移轉目標。 請選取其他目標資料庫。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.target.missing">
+        <source xml:lang="en">Database mapping error. Missing target databases to migrate.  Please configure the target server connection and click connect to collect the list of available database migration targets.</source>
+        <target state="translated">資料庫對應錯誤。缺少要移轉的目標資料庫。 請設定目標伺服器連線，然後按一下 [連線] 以收集可用的資料庫移轉目標清單。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.target.source.mapping.error">
+        <source xml:lang="en">Database mapping error.  Source database '{0}' is not mapped to a target database.  Please select a target database to migrate to.</source>
+        <target state="translated">資料庫對應錯誤。來源資料庫 '{0}' 未對應到目標資料庫。 請選取要移轉至的目標資料庫。</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.target.title">
         <source xml:lang="en">Azure SQL target</source>
@@ -2365,6 +2645,10 @@ This may take some time.</source>
       <trans-unit id="total.databases.selected">
         <source xml:lang="en">{0} of {1} databases selected</source>
         <target state="translated">已選取 {0} 個資料庫 (共 {1} 個)</target>
+      </trans-unit>
+      <trans-unit id="total.tables.selected.of.total">
+        <source xml:lang="en">{0} of {1}</source>
+        <target state="translated">{0}/{1}</target>
       </trans-unit>
     </body>
   </file>

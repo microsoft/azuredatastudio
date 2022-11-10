@@ -1058,3 +1058,14 @@ export namespace executionPlan {
 		None = 4
 	}
 }
+
+export namespace env {
+	/**
+	 * Well-known app quality values
+	 */
+	export enum AppQuality {
+		stable = 'stable',
+		insider = 'insider',
+		dev = 'dev'
+	}
+}

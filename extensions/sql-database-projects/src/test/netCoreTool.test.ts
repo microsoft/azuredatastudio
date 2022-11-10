@@ -11,7 +11,7 @@ import * as vscode from 'vscode';
 import * as sinon from 'sinon';
 import { NetCoreTool, DBProjectConfigurationKey, DotnetInstallLocationKey } from '../tools/netcoreTool';
 import { getQuotedPath } from '../common/utils';
-import { generateTestFolderPath } from './testUtils';
+import { deleteGeneratedTestFolder, generateTestFolderPath } from './testUtils';
 import { createContext, TestContext } from './testContext';
 
 let testContext: TestContext;
@@ -23,6 +23,10 @@ describe('NetCoreTool: Net core tests', function (): void {
 
 	beforeEach(function (): void {
 		testContext = createContext();
+	});
+
+	after(async function(): Promise<void> {
+		await deleteGeneratedTestFolder();
 	});
 
 	it('Should override dotnet default value with settings', async function (): Promise<void> {

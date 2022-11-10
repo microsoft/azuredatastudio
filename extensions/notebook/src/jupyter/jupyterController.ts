@@ -29,8 +29,6 @@ import { ManagePackagesDialogModel, ManagePackageDialogOptions } from '../dialog
 import { PyPiClient } from './pypiClient';
 import { JupyterExecuteProvider } from './jupyterExecuteProvider';
 
-let untitledCounter = 0;
-
 export class JupyterController {
 	private _jupyterInstallation: JupyterServerInstallation;
 	private _serverInstanceFactory: ServerInstanceFactory = new ServerInstanceFactory();
@@ -133,10 +131,7 @@ export class JupyterController {
 	}
 
 	private async handleNewNotebookTask(oeContext?: azdata.ObjectExplorerContext, profile?: azdata.IConnectionProfile): Promise<void> {
-		// Ensure we get a unique ID for the notebook. For now we're using a different prefix to the built-in untitled files
-		// to handle this. We should look into improving this in the future
-		let untitledUri = vscode.Uri.parse(`untitled:Notebook-${untitledCounter++}`);
-		let editor = await azdata.nb.showNotebookDocument(untitledUri, {
+		let editor = await azdata.nb.showNotebookDocument(vscode.Uri.from({ scheme: 'untitled' }), {
 			connectionProfile: profile,
 			providerId: constants.jupyterNotebookProviderId,
 			preview: false,

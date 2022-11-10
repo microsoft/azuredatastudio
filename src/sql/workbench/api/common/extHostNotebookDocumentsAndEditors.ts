@@ -16,7 +16,7 @@ import { ok } from 'vs/base/common/assert';
 import { localize } from 'vs/nls';
 
 import {
-	SqlMainContext, INotebookDocumentsAndEditorsDelta, ExtHostNotebookDocumentsAndEditorsShape,
+	INotebookDocumentsAndEditorsDelta, ExtHostNotebookDocumentsAndEditorsShape,
 	MainThreadNotebookDocumentsAndEditorsShape, INotebookShowOptions, INotebookModelChangedData
 } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { ExtHostNotebookDocumentData } from 'sql/workbench/api/common/extHostNotebookDocumentData';
@@ -24,6 +24,7 @@ import { ExtHostNotebookEditor } from 'sql/workbench/api/common/extHostNotebookE
 import { VSCodeNotebookDocument } from 'sql/workbench/api/common/notebooks/vscodeNotebookDocument';
 import { VSCodeNotebookEditor } from 'sql/workbench/api/common/notebooks/vscodeNotebookEditor';
 import { docNotFoundForUriError } from 'sql/base/common/locConstants';
+import { SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 type Adapter = azdata.nb.NavigationProvider;
 
@@ -56,26 +57,20 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 	private readonly _onDidOpenVSCodeNotebook = new Emitter<vscode.NotebookDocument>();
 	private readonly _onDidCloseVSCodeNotebook = new Emitter<vscode.NotebookDocument>();
 	private readonly _onDidSaveVSCodeNotebook = new Emitter<vscode.NotebookDocument>();
-	private readonly _onDidChangeVSCodeCellMetadata = new Emitter<vscode.NotebookCellMetadataChangeEvent>();
-	private readonly _onDidChangeVSCodeDocumentMetadata = new Emitter<vscode.NotebookDocumentMetadataChangeEvent>();
-	private readonly _onDidChangeVSCodeCellOutputs = new Emitter<vscode.NotebookCellOutputsChangeEvent>();
-	private readonly _onDidChangeVSCodeNotebookCells = new Emitter<vscode.NotebookCellsChangeEvent>();
 	private readonly _onDidChangeVSCodeExecutionState = new Emitter<vscode.NotebookCellExecutionStateChangeEvent>();
 	private readonly _onDidChangeVSCodeEditorSelection = new Emitter<vscode.NotebookEditorSelectionChangeEvent>();
 	private readonly _onDidChangeVSCodeEditorRanges = new Emitter<vscode.NotebookEditorVisibleRangesChangeEvent>();
+	private readonly _onDidChangeVSCodeNotebookDocument = new Emitter<vscode.NotebookDocumentChangeEvent>();
 
 	readonly onDidChangeVisibleVSCodeEditors: Event<vscode.NotebookEditor[]> = this._onDidChangeVisibleVSCodeEditors.event;
 	readonly onDidChangeActiveVSCodeEditor: Event<vscode.NotebookEditor> = this._onDidChangeActiveVSCodeEditor.event;
 	readonly onDidOpenVSCodeNotebookDocument: Event<vscode.NotebookDocument> = this._onDidOpenVSCodeNotebook.event;
 	readonly onDidCloseVSCodeNotebookDocument: Event<vscode.NotebookDocument> = this._onDidCloseVSCodeNotebook.event;
 	readonly onDidSaveVSCodeNotebookDocument: Event<vscode.NotebookDocument> = this._onDidSaveVSCodeNotebook.event;
-	readonly onDidChangeVSCodeCellMetadata: Event<vscode.NotebookCellMetadataChangeEvent> = this._onDidChangeVSCodeCellMetadata.event;
-	readonly onDidChangeVSCodeDocumentMetadata: Event<vscode.NotebookDocumentMetadataChangeEvent> = this._onDidChangeVSCodeDocumentMetadata.event;
-	readonly onDidChangeVSCodeCellOutputs: Event<vscode.NotebookCellOutputsChangeEvent> = this._onDidChangeVSCodeCellOutputs.event;
-	readonly onDidChangeVSCodeNotebookCells: Event<vscode.NotebookCellsChangeEvent> = this._onDidChangeVSCodeNotebookCells.event;
 	readonly onDidChangeVSCodeExecutionState: Event<vscode.NotebookCellExecutionStateChangeEvent> = this._onDidChangeVSCodeExecutionState.event;
 	readonly onDidChangeVSCodeEditorSelection: Event<vscode.NotebookEditorSelectionChangeEvent> = this._onDidChangeVSCodeEditorSelection.event;
 	readonly onDidChangeVSCodeEditorRanges: Event<vscode.NotebookEditorVisibleRangesChangeEvent> = this._onDidChangeVSCodeEditorRanges.event;
+	readonly onDidChangeVSCodeNotebookDocument: Event<vscode.NotebookDocumentChangeEvent> = this._onDidChangeVSCodeNotebookDocument.event;
 
 	constructor(
 		private readonly _mainContext: IMainContext,
@@ -223,6 +218,9 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 	//#endregion
 
 	//#region Extension accessible methods
+	/**
+	 * Attempts to create a new notebook with the specified provider and contents. Used for VS Code extension compatibility.
+	 */
 	async createNotebookDocument(providerId: string, contents?: azdata.nb.INotebookContents): Promise<URI> {
 		let uriComps = await this._proxy.$tryCreateNotebookDocument(providerId, contents);
 		let uri = URI.revive(uriComps);
@@ -246,6 +244,9 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 		return uri;
 	}
 
+	/**
+	 * Attempts to open an existing notebook. Used for VS Code extension compatibility.
+	 */
 	async openNotebookDocument(uri: vscode.Uri): Promise<azdata.nb.NotebookDocument> {
 		let docData = this._documents.get(uri.toString());
 		if (!docData) {

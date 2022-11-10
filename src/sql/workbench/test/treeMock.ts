@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 import { Event } from 'vs/base/common/event';
 import { INavigator } from 'sql/base/common/navigator';
-import { ITree, IHighlightEvent, ISelectionEvent, IFocusEvent, ITreeStyles } from 'vs/base/parts/tree/browser/tree';
-import { IItemExpandEvent, IItemCollapseEvent } from 'vs/base/parts/tree/browser/treeModel';
+import { ITree, IHighlightEvent, ISelectionEvent, IFocusEvent, ITreeStyles } from 'sql/base/parts/tree/browser/tree';
+import { IItemExpandEvent, IItemCollapseEvent } from 'sql/base/parts/tree/browser/treeModel';
 
 /**
  * A basic implementation of ITree to use for testing

@@ -20,6 +20,11 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { range } from 'vs/base/common/arrays';
 import { AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
 import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
+import { IAccessibilityProvider } from 'sql/base/browser/ui/accessibility/accessibilityProvider';
+import { IQuickInputProvider } from 'sql/base/browser/ui/quickInput/quickInputProvider';
+import { localize } from 'vs/nls';
 
 function getDefaultOptions<T>(): Slick.GridOptions<T> {
 	return <Slick.GridOptions<T>>{
@@ -30,8 +35,8 @@ function getDefaultOptions<T>(): Slick.GridOptions<T> {
 }
 
 export class Table<T extends Slick.SlickData> extends Widget implements IDisposable {
-	private styleElement: HTMLStyleElement;
-	private idPrefix: string;
+	protected styleElement: HTMLStyleElement;
+	protected idPrefix: string;
 
 	protected _grid: Slick.Grid<T>;
 	protected _columns: Slick.Column<T>[];
@@ -65,7 +70,12 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 	private _onBlur = new Emitter<void>();
 	public readonly onBlur = this._onBlur.event;
 
-	constructor(parent: HTMLElement, configuration?: ITableConfiguration<T>, options?: Slick.GridOptions<T>) {
+	constructor(
+		parent: HTMLElement,
+		accessibilityProvider: IAccessibilityProvider,
+		private _quickInputProvider: IQuickInputProvider,
+		configuration?: ITableConfiguration<T>,
+		options?: Slick.GridOptions<T>) {
 		super();
 		if (!configuration || !configuration.dataProvider || isArray(configuration.dataProvider)) {
 			this._data = new TableDataView<T>(configuration && configuration.dataProvider as Array<T>);
@@ -76,6 +86,10 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this._register(this._data);
 
 		let newOptions = mixin(options || {}, getDefaultOptions<T>(), false);
+
+		if (accessibilityProvider?.isScreenReaderOptimized()) {
+			newOptions.disableColumnBasedCellVirtualization = true;
+		}
 
 		this._container = document.createElement('div');
 		this._container.className = 'monaco-table';
@@ -130,8 +144,16 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this.mapMouseEvent(this._grid.onDblClick, this._onDoubleClick);
 		this._grid.onColumnsResized.subscribe(() => this._onColumnResize.fire());
 
-		this._grid.onKeyDown.subscribe((e, args: Slick.OnKeyDownEventArgs<T>) => {
-			const evt = (e as JQuery.Event).originalEvent as KeyboardEvent;
+		this._grid.onKeyDown.subscribe(async (e, args: Slick.OnKeyDownEventArgs<T>) => {
+			const evt = (e as JQuery.TriggeredEvent).originalEvent as KeyboardEvent;
+			const stdEvt = new StandardKeyboardEvent(evt);
+			if (stdEvt.altKey && stdEvt.shiftKey && stdEvt.keyCode === KeyCode.KeyS) {
+				const newWidth = this.resizeActiveCellColumnByQuickInput();
+				if (newWidth) {
+					stdEvt.stopPropagation();
+					stdEvt.preventDefault();
+				}
+			}
 			this._onKeyDown.fire({
 				event: evt,
 				cell: {
@@ -140,6 +162,35 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 				}
 			});
 		});
+	}
+
+	private async resizeActiveCellColumnByQuickInput(): Promise<number | undefined> {
+		const activeCell = this._grid.getActiveCell();
+		if (activeCell) {
+			const columns = this._grid.getColumns();
+			if (columns[activeCell.cell].resizable) {
+				const newColumnWidth = await this._quickInputProvider.input({
+					placeHolder: localize('table.resizeColumn', "Provide new column width"),
+					prompt: localize('table.resizeColumn', "Provide new column width"),
+					value: columns[activeCell.cell].width.toString(),
+					validateInput: async (value: string) => {
+						if (!Number(value)) {
+							return localize('table.resizeColumn.invalid', "Invalid column width");
+						} else if (parseInt(value) <= 0) {
+							return localize('table.resizeColumn.negativeSize', "Size cannot be 0 or negative");
+						}
+						return undefined;
+					}
+				});
+				if (newColumnWidth) {
+					columns[activeCell.cell].width = parseInt(newColumnWidth);
+					this._grid.setColumns(columns);
+					this.grid.setActiveCell(activeCell.row, activeCell.cell);
+				}
+				return parseInt(newColumnWidth);
+			}
+		}
+		return undefined;
 	}
 
 	public rerenderGrid() {
@@ -151,7 +202,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 
 	private mapMouseEvent(slickEvent: Slick.Event<any>, emitter: Emitter<ITableMouseEvent>) {
 		slickEvent.subscribe((e: Slick.EventData) => {
-			const originalEvent = (e as JQuery.Event).originalEvent;
+			const originalEvent = (e as JQuery.TriggeredEvent).originalEvent;
 			const cell = this._grid.getCellFromEvent(originalEvent);
 			const anchor = originalEvent instanceof MouseEvent ? { x: originalEvent.x, y: originalEvent.y } : originalEvent.srcElement as HTMLElement;
 			emitter.fire({ anchor, cell });
@@ -174,6 +225,8 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		if (this._autoscroll) {
 			this._grid.scrollRowIntoView(this._data.getLength() - 1, false);
 		}
+		this.ariaRowCount = this.grid.getDataLength();
+		this.ariaColumnCount = this.grid.getColumns().length;
 	}
 
 	set columns(columns: Slick.Column<T>[]) {
@@ -194,6 +247,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 			this._data = new TableDataView<T>(data);
 		}
 		this._grid.setData(this._data, true);
+		this.updateRowCount();
 	}
 
 	getData(): IDisposableDataProvider<T> {

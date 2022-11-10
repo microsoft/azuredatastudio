@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ExtensionNodeType, TreeItem } from 'azdata';
+import { ExtensionNodeType, TreeItem, connection } from 'azdata';
 import { TreeItemCollapsibleState, ExtensionContext } from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
@@ -16,6 +16,7 @@ import { AzureAccount, azureResource } from 'azurecore';
 
 export class PostgresServerArcTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabaseServer> {
 	private static readonly containerId = 'azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainer';
+	// allow-any-unicode-next-line
 	private static readonly containerLabel = localize('azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel', "PostgreSQL Hyperscale – Azure Arc");
 
 	public constructor(
@@ -43,7 +44,7 @@ export class PostgresServerArcTreeDataProvider extends ResourceTreeDataProviderB
 				databaseName: databaseServer.defaultDatabaseName,
 				userName: `${databaseServer.loginName}@${databaseServer.fullName}`,
 				password: '',
-				authenticationType: 'SqlLogin',
+				authenticationType: connection.AuthenticationType.SqlLogin,
 				savePassword: true,
 				groupFullName: '',
 				groupId: '',

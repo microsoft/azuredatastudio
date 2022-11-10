@@ -5,10 +5,13 @@
 
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { safeStringify } from 'vs/base/common/objects';
+import { staticObservableValue } from 'vs/base/common/observableValue';
 import { isObject } from 'vs/base/common/types';
+import { URI } from 'vs/base/common/uri';
 import { ConfigurationTarget, ConfigurationTargetToString, IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { IProductService } from 'vs/platform/product/common/productService';
+import { verifyMicrosoftInternalDomain } from 'vs/platform/telemetry/common/commonProperties';
 import { ClassifiedEvent, GDPRClassification, StrictPropertyCheck } from 'vs/platform/telemetry/common/gdprTypings';
 import { ICustomEndpointTelemetryService, ITelemetryData, ITelemetryEndpoint, ITelemetryInfo, ITelemetryService, TelemetryConfiguration, TelemetryLevel, TELEMETRY_OLD_SETTING_ID, TELEMETRY_SETTING_ID } from 'vs/platform/telemetry/common/telemetry';
 
@@ -30,7 +33,7 @@ export class NullTelemetryServiceShape implements ITelemetryService {
 	}
 
 	setExperimentProperty() { }
-	telemetryLevel = TelemetryLevel.NONE;
+	telemetryLevel = staticObservableValue(TelemetryLevel.NONE);
 	getTelemetryInfo(): Promise<ITelemetryInfo> {
 		return Promise.resolve({
 			instanceId: 'someValue.instanceId',
@@ -82,8 +85,8 @@ export function configurationTelemetry(telemetryService: ITelemetryService, conf
 	return configurationService.onDidChangeConfiguration(event => {
 		if (event.source !== ConfigurationTarget.DEFAULT) {
 			type UpdateConfigurationClassification = {
-				configurationSource: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
-				configurationKeys: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
+				configurationSource: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
+				configurationKeys: { classification: 'SystemMetaData'; purpose: 'FeatureInsight' };
 			};
 			type UpdateConfigurationEvent = {
 				configurationSource: string;
@@ -98,17 +101,17 @@ export function configurationTelemetry(telemetryService: ITelemetryService, conf
 }
 
 /**
- * Determines how telemetry is handled based on the current running configuration.
- * To log telemetry locally, the client must not disable telemetry via the CLI
- * If client is a built product and telemetry is enabled via the product.json, telemetry is supported
- * This function is only used to determine if telemetry contructs should occur, but is not impacted by user configuration
- *
+ * Determines whether or not we support logging telemetry.
+ * This checks if the product is capable of collecting telemetry but not whether or not it can send it
+ * For checking the user setting and what telemetry you can send please check `getTelemetryLevel`.
+ * This returns true if `--disable-telemetry` wasn't used, the product.json allows for telemetry, and we're not testing an extension
+ * If false telemetry is disabled throughout the product
  * @param productService
  * @param environmentService
  * @returns false - telemetry is completely disabled, true - telemetry is logged locally, but may not be sent
  */
 export function supportsTelemetry(productService: IProductService, environmentService: IEnvironmentService): boolean {
-	return !(environmentService.disableTelemetry || !productService.enableTelemetry);
+	return !(environmentService.disableTelemetry || !productService.enableTelemetry || environmentService.extensionTestsLocationURI);
 }
 
 /**
@@ -148,7 +151,7 @@ export interface Measurements {
 	[key: string]: number;
 }
 
-export function validateTelemetryData(data?: any): { properties: Properties, measurements: Measurements } {
+export function validateTelemetryData(data?: any): { properties: Properties; measurements: Measurements } {
 
 	const properties: Properties = Object.create(null);
 	const measurements: Measurements = Object.create(null);
@@ -168,8 +171,12 @@ export function validateTelemetryData(data?: any): { properties: Properties, mea
 			measurements[prop] = value ? 1 : 0;
 
 		} else if (typeof value === 'string') {
-			//enforce property value to be less than 1024 char, take the first 1024 char
-			properties[prop] = value.substring(0, 1023);
+			if (value.length > 8192) {
+				console.warn(`Telemetry property: ${prop} has been trimmed to 8192, the original length is ${value.length}`);
+			}
+			//enforce property value to be less than 8192 char, take the first 8192 char
+			// https://docs.microsoft.com/en-us/azure/azure-monitor/app/api-custom-events-metrics#limits
+			properties[prop] = value.substring(0, 8191);
 
 		} else if (typeof value !== 'undefined' && value !== null) {
 			properties[prop] = value;
@@ -242,4 +249,28 @@ function flatKeys(result: string[], prefix: string, value: { [key: string]: any 
 	} else {
 		result.push(prefix);
 	}
+}
+
+/**
+ * Whether or not this is an internal user
+ * @param productService The product service
+ * @param configService The config servivce
+ * @returns true if internal, false otherwise
+ */
+export function isInternalTelemetry(productService: IProductService, configService: IConfigurationService) {
+	const msftInternalDomains = productService.msftInternalDomains || [];
+	const internalTesting = configService.getValue<boolean>('telemetry.internalTesting');
+	return verifyMicrosoftInternalDomain(msftInternalDomains) || internalTesting;
+}
+
+interface IPathEnvironment {
+	appRoot: string;
+	extensionsPath: string;
+	userDataPath: string;
+	userHome: URI;
+	tmpDir: URI;
+}
+
+export function getPiiPathsFromEnvironment(paths: IPathEnvironment): string[] {
+	return [paths.appRoot, paths.extensionsPath, paths.userHome.fsPath, paths.tmpDir.fsPath, paths.userDataPath];
 }

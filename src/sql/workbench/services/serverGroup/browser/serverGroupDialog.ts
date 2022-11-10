@@ -11,7 +11,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { attachInputBoxStyler, attachCheckboxStyler, attachButtonStyler } from 'vs/platform/theme/common/styler';
+import { attachInputBoxStyler, attachToggleStyler, attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { localize } from 'vs/nls';
@@ -25,11 +25,11 @@ import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { Color } from 'vs/base/common/color';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { assertIsDefined, isUndefinedOrNull } from 'vs/base/common/types';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 
 interface IRenderedServerGroupDialog {
 	groupNameInputBox: InputBox;
@@ -206,7 +206,7 @@ export class ServerGroupDialog extends Modal {
 			});
 
 			// Theme styler
-			this._register(attachCheckboxStyler(colorBox, this._themeService));
+			this._register(attachToggleStyler(colorBox, this._themeService));
 
 			// add the new colorbox to the color map
 			this._colorColorBoxesMap[i] = { color, colorbox: colorBox };

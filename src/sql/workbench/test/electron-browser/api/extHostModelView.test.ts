@@ -45,7 +45,11 @@ suite('ExtHostModelView Validation Tests', () => {
 			$validate: (handle: number, componentId: string) => undefined
 		}, MockBehavior.Loose);
 		mainContext = <IMainContext>{
-			getProxy: proxyType => mockProxy.object
+			getProxy: proxyType => <any>mockProxy.object,
+			set: () => { return; },
+			assertRegistered: () => { return; },
+			drain: () => { return undefined; },
+			dispose: () => { return; }
 		};
 		mockProxy.setup(x => x.$initializeModel(It.isAny(), It.isAny())).returns(() => Promise.resolve());
 		mockProxy.setup(x => x.$registerEvent(It.isAny(), It.isAny())).returns(() => Promise.resolve());

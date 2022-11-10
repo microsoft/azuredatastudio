@@ -10,6 +10,60 @@
     <Disp Icon="Expand" Expand="true" Disp="true" LocTbl="false" />
     <Item ItemId=";Xliff Resources" ItemType="0" PsrId="308" Leaf="false">
       <Disp Icon="Str" Disp="true" LocTbl="false" />
+      <Item ItemId=";extensions/git/dist/actionButton.scm button publish branch" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Publish Branch]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[發佈分支]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/dist/actionButton.scm button publish branch running" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Publishing Branch...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[正在發布 Branch...]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/dist/actionButton.scm button publish title" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[$(cloud-upload) Publish Branch]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[$(cloud-upload) 發布分支]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/dist/actionButton.scm button sync description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[{0} Sync Changes {1}{2}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0} 同步變更 {1}{2}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/dist/actionButton.scm button sync title" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[{0} {1}{2}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0} {1}{2}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/dist/actionButton.syncing changes" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Synchronizing Changes...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[正在同步處理變更...]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/git/dist/askpass-main.missOrInvalid" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Missing or invalid credentials.]]></Val>
@@ -183,10 +237,13 @@
       </Item>
       <Item ItemId=";extensions/git/dist/commands.changed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Log level changed to: {0}]]></Val>
+          <Val><![CDATA[{0} Log level changed to: {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[記錄層級已變更為: {0}]]></Val>
+            <Val><![CDATA[{0} 記錄層級已變更為: {1}]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Log level changed to: {0}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -381,10 +438,13 @@
       </Item>
       <Item ItemId=";extensions/git/dist/commands.confirm publish branch" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[The branch '{0}' has no upstream branch. Would you like to publish this branch?]]></Val>
+          <Val><![CDATA[The branch '{0}' has no remote branch. Would you like to publish this branch?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[分支 '{0}' 沒有任何上游分支。 您仍想發布這個分支嗎？]]></Val>
+            <Val><![CDATA[分支 '{0}' 沒有任何遠端分支。您仍想發布這個分支嗎?]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[The branch '{0}' has no upstream branch. Would you like to publish this branch?]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -541,6 +601,24 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/git/dist/commands.drop all stashes" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Are you sure you want to drop ALL stashes? There are {0} stashes that will be subject to pruning, and MAY BE IMPOSSIBLE TO RECOVER.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[確定要卸除所有隱藏項目嗎? 有 {0} 個隱藏項目將需要剪除，可能無法復原。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/dist/commands.drop one stash" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Are you sure you want to drop ALL stashes? There is 1 stash that will be subject to pruning, and MAY BE IMPOSSIBLE TO RECOVER.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[確定要卸除所有隱藏項目嗎? 有 1 個隱藏項目將需要剪除，可能無法復原。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/git/dist/commands.force" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Force Checkout]]></Val>
@@ -577,21 +655,36 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/git/dist/commands.git.timeline.openDiffCommand" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Open Comparison]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[開啟比較]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/git/dist/commands.git.title.diff" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[{0} ⟷ {1}]]></Val>
+          <Val><![CDATA[{0} ↔ {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} ⟷ {1}]]></Val>
+            <Val><![CDATA[{0} ↔ {1}]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[{0} ⟷ {1}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/dist/commands.git.title.diffRefs" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[{0} ({1}) ⟷ {0} ({2})]]></Val>
+          <Val><![CDATA[{0} ({1}) ↔ {0} ({2})]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} ({1}) ⟷ {0} ({2})]]></Val>
+            <Val><![CDATA[{0} ({1}) ↔ {0} ({2})]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[{0} ({1}) ⟷ {0} ({2})]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1308,10 +1401,13 @@
       </Item>
       <Item ItemId=";extensions/git/dist/commands.sync is unpredictable" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[This action will push and pull commits to and from '{0}/{1}'.]]></Val>
+          <Val><![CDATA[This action will pull and push commits from and to '{0}/{1}'.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[此動作會將認可推送到 '{0}/{1}' 或從中提取認可。]]></Val>
+            <Val><![CDATA[此動作會從 '{0}/{1}' 提取和推送提交。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[This action will push and pull commits to and from '{0}/{1}'.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1452,28 +1548,37 @@
       </Item>
       <Item ItemId=";extensions/git/dist/main.skipped" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Skipped found git in: {0}]]></Val>
+          <Val><![CDATA[{0} Skipped found git in: {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[已略過在下列位置找到的 git: {0}]]></Val>
+            <Val><![CDATA[{0} 已略過在下列位置找到的 git: {1}]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Skipped found git in: {0}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/dist/main.using git" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Using git {0} from {1}]]></Val>
+          <Val><![CDATA[{0} Using git {1} from {2}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[正在使用來自 {1} 的 git {0}]]></Val>
+            <Val><![CDATA[{0} 使用來自 {2} 的 git {1}]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Using git {0} from {1}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/git/dist/main.validating" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Validating found git in: {0}]]></Val>
+          <Val><![CDATA[{0} Validating found git in: {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[正在驗證在下列位置找到的 git: {0}]]></Val>
+            <Val><![CDATA[{0} 正在驗證在下列位置找到的 git: {1}]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Validating found git in: {0}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1504,92 +1609,20 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/git/dist/model.repoOnHomeDriveRootWarning" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Unable to automatically open the git repository at '{0}'. To open that git repository, open it directly as a folder in VS Code.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[無法在'{0}'自動開啟 Git 存放庫。若要開啟該 Git 存放庫，請直接在 VS Code 中將它開啟為資料夾。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/git/dist/model.too many submodules" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The '{0}' repository has {1} submodules which won't be opened automatically. You can still open each one individually by opening a file within.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA['{0}' 儲存庫有 {1} 個無法自動開啟的子模組。您仍可在其中開啟檔案來個別開啟子模組]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/git/dist/remoteSource.branch name" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Branch name]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[分支名稱]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/git/dist/remoteSource.error" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[$(error) Error: {0}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[$(error) 錯誤: {0}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/git/dist/remoteSource.none found" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[No remote repositories found.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[找不到遠端存放庫。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/git/dist/remoteSource.pick url" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Choose a URL to clone from.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[選擇複製的來源 URL。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/git/dist/remoteSource.provide url" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Provide repository URL]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[提供存放庫 URL]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/git/dist/remoteSource.provide url or pick" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Provide repository URL or pick a repository source.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[提供存放庫 URL 或挑選存放庫來源。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/git/dist/remoteSource.type to filter" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Repository name]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[存放庫名稱]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/git/dist/remoteSource.type to search" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Repository name (type to search)]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[存放庫名稱 (要搜尋的類型)]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/git/dist/remoteSource.url" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[URL]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[URL]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2008,33 +2041,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/git/dist/repository.scm button publish title" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[$(cloud-upload) Publish Changes]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[$(cloud-upload) 發佈變更]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/git/dist/repository.scm button publish tooltip" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Publish Changes]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[發佈變更]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/git/dist/repository.scm button sync title" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[ Sync Changes $(sync){0}{1}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[ 同步變更 $(sync){0}{1}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/git/dist/repository.staged changes" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Staged Changes]]></Val>
@@ -2107,11 +2113,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/git/dist/statusbar.publish changes" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/git/dist/statusbar.publish branch" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Publish Changes]]></Val>
+          <Val><![CDATA[Publish Branch]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[發行變更]]></Val>
+            <Val><![CDATA[發佈分支]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2152,20 +2158,20 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/git/dist/timelineProvider.git.index" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/git/dist/timelineProvider.git.timeline.email" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Index]]></Val>
+          <Val><![CDATA[Email]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[索引]]></Val>
+            <Val><![CDATA[電子郵件]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/git/dist/timelineProvider.git.timeline.detail" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/git/dist/timelineProvider.git.timeline.openComparison" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[{0}  — {1}]D;]A;{2}]D;]A;]D;]A;{3}]]></Val>
+          <Val><![CDATA[Open Comparison]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0}  — {1}]D;]A;{2}]D;]A;]D;]A;{3}]]></Val>
+            <Val><![CDATA[開啟比較]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2202,15 +2208,6 @@
           <Val><![CDATA[You]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[您]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/git/dist/timelineProvider.git.workingTree" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Working Tree]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[工作樹狀]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2310,6 +2307,33 @@
           <Val><![CDATA[Add Remote...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[新增遠端存放庫...]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.command.api.getRemoteSources" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Get Remote Sources]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[取得遠端來源]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.command.api.getRepositories" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Get Repositories]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[取得存放庫]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.command.api.getRepositoryState" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Get Repository State]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[取得存放庫狀態]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2418,6 +2442,15 @@
           <Val><![CDATA[Close Repository]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[關閉儲存庫]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.command.closeAllDiffEditors" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Close All Diff Editors]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[關閉所有 Diff 編輯器]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2856,10 +2889,13 @@
       </Item>
       <Item ItemId=";extensions/git/package.command.revealInExplorer" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Reveal in Side Bar]]></Val>
+          <Val><![CDATA[Reveal in Explorer View]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[在提要欄位中顯示]]></Val>
+            <Val><![CDATA[在 [總管檢視]5D; 中顯示]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Reveal in Side Bar]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2994,6 +3030,15 @@
           <Val><![CDATA[Drop Stash...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[卸除隱藏項目...]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.command.stashDropAll" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Drop All Stashes...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[卸除所有隱藏項目...]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3304,6 +3349,24 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/git/package.config.closeDiffOnOperation" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Controls whether the diff editor should be automatically closed when changes are stashed, committed, discarded, staged, or unstaged.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[控制在隱藏、提交、捨棄、暫存或取消暫存變更時，是否應自動關閉 Diff 編輯器。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.config.commandsToLog" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[List of git commands (ex: commit, push) that would have their `stdout` logged to the [git output]5D;(command:git.showOutput). If the git command has a client-side hook configured, the client-side hook's `stdout` will also be logged to the [git output]5D;(command:git.showOutput).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[GIT 命令列表 (例如: commit、push)，這些命令的 `stdout` 將被記錄到 [git 輸出]5D;(command:git.showOutput)。如果 GIT 命令設定了用戶端勾點，那麼用戶端勾點的 `stdout` 也將被記錄到 [git 輸出]5D;(command:git.showOutput)。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/git/package.config.confirmEmptyCommits" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Always confirm the creation of empty commits for the 'Git: Commit Empty' command.]]></Val>
@@ -3453,6 +3516,15 @@
           <Val><![CDATA[Whether git is enabled.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[是否啟用 Git。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.config.experimental.installGuide" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Experimental improvements for the git setup flow.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Git 安裝流程的實驗性改進。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3763,6 +3835,24 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/git/package.config.repositoryScanIgnoredFolders" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[List of folders that are ignored while scanning for Git repositories when `#git.autoRepositoryDetection#` is set to `true` or `subFolders`.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[若 `#git.autoRepositoryDetection#` 設為 `true` 或 `subFolders`，掃描 Git 儲存機制時忽略的資料夾清單。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.config.repositoryScanMaxDepth" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Controls the depth used when scanning workspace folders for Git repositories when `#git.autoRepositoryDetection#` is set to `true` or `subFolders`. Can be set to `-1` for no limit.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[控制當 '#git.autoRepositoryDetection#' 設定為 'true' 或 'subFolders' 時，掃描 Git 存放庫的工作區資料夾時所使用的深度。可以設為 '-1'，表示沒有限制。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/git/package.config.requireGitUserConfig" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Controls whether to require explicit Git user configuration or allow Git to guess if missing.]]></Val>
@@ -3952,6 +4042,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/git/package.config.timeline.showUncommitted" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Controls whether to show uncommitted changes in the Timeline view.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[控制是否要在 [時間表]5D; 檢視中顯示未提交的變更。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/git/package.config.untrackedChanges" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Controls how untracked changes behave.]]></Val>
@@ -4002,6 +4101,15 @@
           <Val><![CDATA[Controls whether force pushing uses the safer force-with-lease variant.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[控制強制推送是否使用較安全的 force-with-lease 方法。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.config.useIntegratedAskPass" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Controls whether GIT_ASKPASS should be overwritten to use the integrated version.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[控制是否應覆寫 GIT_ASKPASS 以使用整合式版本。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4134,10 +4242,13 @@
       </Item>
       <Item ItemId=";extensions/git/package.view.workbench.scm.disabled" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[If you would like to use git features, please enable git in your [settings]5D;(command:workbench.action.openSettings?%5B%22git.enabled%22%5D).]D;]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
+          <Val><![CDATA[If you would like to use git features, please enable git in your [settings]5D;(command:workbench.action.openSettings?%5B%22git.enabled%22%5D).]D;]A;To learn more about how to use git and source control in VS Code [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[如果您想要使用 git 功能，請在[設定]5D;(command:workbench.action.openSettings?%5B%22git.enabled%22%5D)中啟用 git。]D;]A;若要深入了解如何在 Azure Data Studio 中使用 git 和原始檔控制，[請參閱我們的文件]5D;(https://aka.ms/vscode-scm)。]]></Val>
+            <Val><![CDATA[如果您想要使用 git 功能，請在[設定]5D;(command:workbench.action.openSettings?%5B%22git.enabled%22%5D)中啟用 git。]D;]A;若要深入了解如何在 VS Code 中使用 git 和原始檔控制，[請參閱我們的文件]5D;(https://aka.ms/vscode-scm)。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[If you would like to use git features, please enable git in your [settings]5D;(command:workbench.action.openSettings?%5B%22git.enabled%22%5D).]D;]A;To learn more about how to use git and source control in Azure Data Studio [read our docs]5D;(https://aka.ms/vscode-scm).]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4173,6 +4284,42 @@
           <Val><![CDATA[A valid git installation was not detected, more details can be found in the [git output]5D;(command:git.showOutput).]D;]A;Please [install git]5D;(https://git-scm.com/), or learn more about how to use git and source control in Azure Data Studio in [our docs]5D;(https://aka.ms/vscode-scm).]D;]A;If you're using a different version control system, you can [search the Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22) for additional extensions.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[未偵測到有效的 git 安裝，您可以在 [git 輸出]5D;(command:git.showOutput)中找到更多詳細資料。]D;]A;請[安裝 git]5D;(https://git-scm.com/)，或在 [我們的文件]5D;(https://aka.ms/vscode-scm) 深入了解如何在 Azure Data Studio 中使用 git 和原始檔控制。]D;]A;如果您使用的是其他版本的控制系統，可以[搜尋市集]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22) 尋找其他延伸模組。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.view.workbench.scm.missing.guide" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Install Git, a popular source control system, to track code changes and collaborate with others. Learn more in our [Git guides]5D;(https://aka.ms/vscode-scm).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[安裝 Git，這是熱門的原始檔控制系統，以追蹤程式碼變更並與其他人共同作業。在我們的[Git指南]5D;(https://aka.ms/vscode-scm)中深入了解。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.view.workbench.scm.missing.guide.linux" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Source control depends on Git being installed.]D;]A;[Download Git for Linux]5D;(https://git-scm.com/download/linux)]D;]A;After installing, please [reload]5D;(command:workbench.action.reloadWindow) (or [troubleshoot]5D;(command:git.showOutput)). Additional source control providers can be installed [from the Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[原始檔控制必須安裝 Git。]D;]A;[下載適用於 Linux 的 Git]5D;(https://git-scm.com/download/linux)]D;]A;安裝之後，請 [重新載入]5D;(command:workbench.action.reloadWindow) (或 [疑難排解]5D;(command:git.showOutput))。可 [從 Marketplace]5D; 安裝其他原始檔控制提供者 (command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22)。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.view.workbench.scm.missing.guide.mac" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[[Download Git for macOS]5D;(https://git-scm.com/download/mac)]D;]A;After installing, please [reload]5D;(command:workbench.action.reloadWindow) (or [troubleshoot]5D;(command:git.showOutput)). Additional source control providers can be installed [from the Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[[下載適用於 macOS 的 Git]5D;(https://git-scm.com/download/mac)]D;]A;安裝之後，請 [重新載入]5D;(command:workbench.action.reloadWindow) (或 [疑難排解]5D;(command:git.showOutput))。可 [從 Marketplace]5D; 安裝其他原始檔控制提供者(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22)。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/git/package.view.workbench.scm.missing.guide.windows" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[[Download Git for Windows]5D;(https://git-scm.com/download/win)]D;]A;After installing, please [reload]5D;(command:workbench.action.reloadWindow) (or [troubleshoot]5D;(command:git.showOutput)). Additional source control providers can be installed [from the Marketplace]5D;(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[[下載適用於 Windows 的 Git]5D;(https://git-scm.com/download/win)]D;]A;安裝之後，請 [重新載入]5D;(command:workbench.action.reloadWindow) (或[疑難排解]5D;(command:git.showOutput))。可 [從 Marketplace]5D; 安裝其他原始檔控制提供者(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22)。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

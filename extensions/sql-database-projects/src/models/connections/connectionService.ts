@@ -3,11 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import type * as azdataType from 'azdata';
 import * as constants from '../../common/constants';
 import * as utils from '../../common/utils';
 import * as vscode from 'vscode';
-import { ConnectionResult } from 'azdata';
-import { IFireWallRuleError } from 'vscode-mssql';
+import { IFireWallRuleError, AuthenticationType } from 'vscode-mssql';
 import { ISqlConnectionProperties } from 'sqldbproj';
 
 /**
@@ -28,10 +28,11 @@ export class ConnectionService {
 	 * @param database database name
 	 * @returns
 	 */
-	private async connectToDatabase(profile: ISqlConnectionProperties, saveConnectionAndPassword: boolean, database: string): Promise<ConnectionResult | string | undefined> {
+	private async connectToDatabase(profile: ISqlConnectionProperties, saveConnectionAndPassword: boolean, database: string): Promise<azdataType.ConnectionResult | string | undefined> {
 		const azdataApi = utils.getAzdataApi();
 		const vscodeMssqlApi = azdataApi ? undefined : await utils.getVscodeMssqlApi();
 		if (azdataApi) {
+			// TODO receive encrypt/trustservercertificate from profile.
 			const connectionProfile = {
 				password: profile.password,
 				serverName: `${profile.serverName},${profile.port}`,
@@ -42,8 +43,11 @@ export class ConnectionService {
 				saveProfile: false,
 				id: '',
 				connectionName: profile.profileName,
-				options: [],
-				authenticationType: 'SqlLogin'
+				options: {
+					'encrypt': true,
+					'trustServerCertificate': true
+				},
+				authenticationType: azdataApi.connection.AuthenticationType.SqlLogin
 			};
 			return await azdataApi.connection.connect(connectionProfile, saveConnectionAndPassword, false);
 		} else if (vscodeMssqlApi) {
@@ -54,7 +58,7 @@ export class ConnectionService {
 				database: database,
 				savePassword: saveConnectionAndPassword,
 				user: profile.userName,
-				authenticationType: 'SqlLogin',
+				authenticationType: AuthenticationType.SqlLogin,
 				encrypt: false,
 				connectTimeout: 30,
 				applicationName: 'SQL Database Project',
@@ -112,12 +116,12 @@ export class ConnectionService {
 	 * @param connection connection result or connection Id
 	 * @returns validation result
 	 */
-	private async validateConnection(connection: ConnectionResult | string | undefined): Promise<utils.ValidationResult> {
+	private async validateConnection(connection: azdataType.ConnectionResult | string | undefined): Promise<utils.ValidationResult> {
 		const azdataApi = utils.getAzdataApi();
 		if (!connection) {
 			return { validated: false, errorMessage: constants.connectionFailedError('No result returned') };
 		} else if (azdataApi) {
-			const connectionResult = <ConnectionResult>connection;
+			const connectionResult = <azdataType.ConnectionResult>connection;
 			if (connectionResult) {
 				const connected = connectionResult !== undefined && connectionResult.connected && connectionResult.connectionId !== undefined;
 				return { validated: connected, errorMessage: connected ? '' : constants.connectionFailedError(connectionResult?.errorMessage!) };
@@ -134,9 +138,9 @@ export class ConnectionService {
 	 * @param connection connection result or connection Id
 	 * @returns formatted connection result
 	 */
-	private async formatConnectionResult(connection: ConnectionResult | string | undefined): Promise<string> {
+	private async formatConnectionResult(connection: azdataType.ConnectionResult | string | undefined): Promise<string> {
 		const azdataApi = utils.getAzdataApi();
-		const connectionResult = connection !== undefined && azdataApi ? <ConnectionResult>connection : undefined;
+		const connectionResult = connection !== undefined && azdataApi ? <azdataType.ConnectionResult>connection : undefined;
 		return connectionResult?.connected ? connectionResult.connectionId! : <string>connection;
 	}
 
@@ -160,7 +164,7 @@ export class ConnectionService {
 			this.defaultSqlNumberOfRetries, profile.connectionRetryTimeout || this.defaultSqlRetryTimeoutInSec);
 
 		if (connection) {
-			const connectionResult = <ConnectionResult>connection;
+			const connectionResult = <azdataType.ConnectionResult>connection;
 			if (azdataApi) {
 				utils.throwIfNotConnected(connectionResult);
 				return azdataApi.connection.getUriForConnection(connectionResult.connectionId!);

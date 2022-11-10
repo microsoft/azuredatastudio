@@ -1,5 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/query-history/dist/localizedConstants" source-language="en" datatype="plaintext" target-language="ru">
+    <body>
+      <trans-unit id="errorLoading">
+        <source xml:lang="en">Error loading saved query history items. {0}</source>
+        <target state="translated">Ошибка при загрузке сохраненных элементов журнала запросов. {0}</target>
+      </trans-unit>
+      <trans-unit id="failed">
+        <source xml:lang="en">Failed</source>
+        <target state="translated">Сбой</target>
+      </trans-unit>
+      <trans-unit id="succeeded">
+        <source xml:lang="en">Succeeded</source>
+        <target state="translated">Выполнено</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/query-history/package" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="queryHistory.captureEnabledDesc">
@@ -42,6 +58,14 @@
         <source xml:lang="en">Start Query History Capture</source>
         <target state="translated">Начать ведение Журнала запросов</target>
       </trans-unit>
+      <trans-unit id="queryHistory.loading">
+        <source xml:lang="en">Loading saved entries...</source>
+        <target state="translated">Загрузка сохраненных записей...</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.maxEntries">
+        <source xml:lang="en">Maximum number of entries to store. 0 means unlimited entries are stored. Increasing this limit may impact performance, especially if persistence is enabled.</source>
+        <target state="translated">Максимальное число записей для хранения. 0 означает, что хранится неограниченное число записей. Увеличение этого ограничения может повлиять на производительность, особенно если включена сохраняемость.</target>
+      </trans-unit>
       <trans-unit id="queryHistory.noEntries">
         <source xml:lang="en">No queries to display</source>
         <target state="translated">Нет запросов для отображения</target>
@@ -50,9 +74,17 @@
         <source xml:lang="en">Open Query</source>
         <target state="translated">Открыть запрос</target>
       </trans-unit>
+      <trans-unit id="queryHistory.openStorageFolder">
+        <source xml:lang="en">Open storage folder</source>
+        <target state="translated">Открыть папку хранилища</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.persistHistory">
+        <source xml:lang="en">Whether query history is persisted across restarts. If false then the history will be cleared when the application exits.</source>
+        <target state="translated">Сохраняется ли история запросов при перезапусках. Если ЛОЖЬ, то журнал будет очищен при выходе из приложения.</target>
+      </trans-unit>
       <trans-unit id="queryHistory.run">
         <source xml:lang="en">Run Query</source>
-        <target state="translated">Выполнить запрос</target>
+        <target state="translated">Запуск запроса</target>
       </trans-unit>
     </body>
   </file>

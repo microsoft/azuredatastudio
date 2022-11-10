@@ -24,12 +24,38 @@ export const passwordChars = '***************';
 /* default authentication type setting name*/
 export const defaultAuthenticationType = 'defaultAuthenticationType';
 
-/* authentication types */
-export const sqlLogin = 'SqlLogin';
-export const integrated = 'Integrated';
-export const azureMFA = 'AzureMFA';
-export const azureMFAAndUser = 'AzureMFAAndUser';
-export const dstsAuth = 'dstsAuth';
+/* Connection Properties */
+export const trustServerCertificate = 'trustServerCertificate';
+
+/**
+ * Well-known Authentication types commonly supported by connection providers.
+ */
+export enum AuthenticationType {
+	/**
+	 * Username and password
+	 */
+	SqlLogin = 'SqlLogin',
+	/**
+	 * Windows Authentication
+	 */
+	Integrated = 'Integrated',
+	/**
+	 * Azure Active Directory - Universal with MFA support
+	 */
+	AzureMFA = 'AzureMFA',
+	/**
+	 * Azure Active Directory - Password
+	 */
+	AzureMFAAndUser = 'AzureMFAAndUser',
+	/**
+	 * Datacenter Security Token Service Authentication
+	 */
+	DSTSAuth = 'dstsAuth',
+	/**
+	 * No authentication required
+	 */
+	None = 'None'
+}
 
 /* CMS constants */
 export const cmsProviderName = 'MSSQL-CMS';

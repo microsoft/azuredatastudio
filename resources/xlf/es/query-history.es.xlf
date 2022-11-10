@@ -1,5 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/query-history/dist/localizedConstants" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="errorLoading">
+        <source xml:lang="en">Error loading saved query history items. {0}</source>
+        <target state="translated">Error al cargar los elementos del historial de consultas guardadas. {0}</target>
+      </trans-unit>
+      <trans-unit id="failed">
+        <source xml:lang="en">Failed</source>
+        <target state="translated">Erróneo</target>
+      </trans-unit>
+      <trans-unit id="succeeded">
+        <source xml:lang="en">Succeeded</source>
+        <target state="translated">Correcto</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/query-history/package" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="queryHistory.captureEnabledDesc">
@@ -42,6 +58,14 @@
         <source xml:lang="en">Start Query History Capture</source>
         <target state="translated">Iniciar la captura del historial de consultas</target>
       </trans-unit>
+      <trans-unit id="queryHistory.loading">
+        <source xml:lang="en">Loading saved entries...</source>
+        <target state="translated">Cargando entradas guardadas...</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.maxEntries">
+        <source xml:lang="en">Maximum number of entries to store. 0 means unlimited entries are stored. Increasing this limit may impact performance, especially if persistence is enabled.</source>
+        <target state="translated">Número máximo de entradas que se van a almacenar. 0 significa que se almacenan entradas ilimitadas. Aumentar este límite puede afectar al rendimiento, especialmente si la persistencia está habilitada.</target>
+      </trans-unit>
       <trans-unit id="queryHistory.noEntries">
         <source xml:lang="en">No queries to display</source>
         <target state="translated">No hay consultas que mostrar</target>
@@ -49,6 +73,14 @@
       <trans-unit id="queryHistory.open">
         <source xml:lang="en">Open Query</source>
         <target state="translated">Abrir consulta</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.openStorageFolder">
+        <source xml:lang="en">Open storage folder</source>
+        <target state="translated">Abrir carpeta de almacenamiento</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.persistHistory">
+        <source xml:lang="en">Whether query history is persisted across restarts. If false then the history will be cleared when the application exits.</source>
+        <target state="translated">Si el historial de consultas se conserva entre reinicios. Si es false, el historial se borrará cuando se cierre la aplicación.</target>
       </trans-unit>
       <trans-unit id="queryHistory.run">
         <source xml:lang="en">Run Query</source>

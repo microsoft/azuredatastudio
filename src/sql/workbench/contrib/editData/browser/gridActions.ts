@@ -14,6 +14,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 
 export const GRID_SAVECSV_ID = 'grid.saveAsCsv';
 export const GRID_SAVEJSON_ID = 'grid.saveAsJson';
+export const GRID_SAVEMARKDOWN_ID = 'grid.saveAsMarkdown';
 export const GRID_SAVEEXCEL_ID = 'grid.saveAsExcel';
 export const GRID_SAVEXML_ID = 'grid.saveAsXml';
 export const GRID_COPY_ID = 'grid.copySelection';
@@ -46,6 +47,7 @@ export class GridActionProvider {
 		const actions: IAction[] = [];
 		actions.push(this._instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveFormat.CSV, this._dataService));
 		actions.push(this._instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveFormat.JSON, this._dataService));
+		actions.push(this._instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEMARKDOWN_ID, SaveResultAction.SAVEMARKDOWN_LABEL, SaveFormat.MARKDOWN, this._dataService));
 		actions.push(this._instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveFormat.EXCEL, this._dataService));
 		actions.push(this._instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveFormat.XML, this._dataService));
 		actions.push(this._instantiationService.createInstance(SelectAllGridAction, SelectAllGridAction.ID, SelectAllGridAction.LABEL, this._selectAllCallback));
@@ -62,6 +64,9 @@ class SaveResultAction extends Action {
 
 	public static SAVEJSON_ID = GRID_SAVEJSON_ID;
 	public static SAVEJSON_LABEL = localize('saveAsJson', "Save As JSON");
+
+	public static SAVEMARKDOWN_ID = GRID_SAVEMARKDOWN_ID;
+	public static SAVEMARKDOWN_LABEL = localize('saveAsMarkdown', "Save As Markdown");
 
 	public static SAVEEXCEL_ID = GRID_SAVEEXCEL_ID;
 	public static SAVEEXCEL_LABEL = localize('saveAsExcel', "Save As Excel");

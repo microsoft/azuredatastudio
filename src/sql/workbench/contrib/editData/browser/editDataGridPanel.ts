@@ -35,6 +35,8 @@ import { Event } from 'vs/base/common/event';
 import { equals } from 'vs/base/common/arrays';
 import * as DOM from 'vs/base/browser/dom';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 
 export class EditDataGridPanel extends GridParentComponent {
 	// The time(in milliseconds) we wait before refreshing the grid.
@@ -76,6 +78,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	// List of column names with their indexes stored.
 	private columnNameToIndex: { [columnNumber: number]: string } = {};
 
+  // Prevent the cell submission function from being called multiple times.
 	private cellSubmitInProgress: boolean;
 
 	private saveViewStateCalled: boolean;
@@ -123,7 +126,9 @@ export class EditDataGridPanel extends GridParentComponent {
 		@IConfigurationService configurationService: IConfigurationService,
 		@IClipboardService clipboardService: IClipboardService,
 		@IQueryEditorService queryEditorService: IQueryEditorService,
-		@ILogService logService: ILogService
+		@ILogService logService: ILogService,
+		@IAccessibilityService private accessibilityService: IAccessibilityService,
+		@IQuickInputService private quickInputService: IQuickInputService
 	) {
 		super(contextMenuService, keybindingService, contextKeyService, configurationService, clipboardService, queryEditorService, logService);
 		this.nativeElement = document.createElement('div');
@@ -542,7 +547,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		let maxHeight = this.getMaxHeight(resultSet.rowCount);
 		let minHeight = this.getMinHeight(resultSet.rowCount);
 
-		let rowNumberColumn = new RowNumberColumn({ numberOfRows: resultSet.rowCount });
+		let rowNumberColumn = new RowNumberColumn();
 
 		// Store the result set from the event
 		let dataSet: IGridDataSet = {
@@ -1052,8 +1057,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			};
 
 			if (dataSet.columnDefinitions) {
-				this.table = new Table(this.nativeElement.appendChild(newGridContainer), { dataProvider: this.gridDataProvider, columns: dataSet.columnDefinitions }, options);
-				this.table.autoScroll = true;
+				this.table = new Table(this.nativeElement.appendChild(newGridContainer), this.accessibilityService, this.quickInputService, { dataProvider: this.gridDataProvider, columns: dataSet.columnDefinitions }, options);
 				for (let plugin of this.plugins) {
 					this.table.registerPlugin(plugin);
 				}
@@ -1063,8 +1067,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			}
 		}
 		else {
-			this.table = new Table(this.nativeElement.appendChild(newGridContainer));
-			this.table.autoScroll = true;
+			this.table = new Table(this.nativeElement.appendChild(newGridContainer), this.accessibilityService, this.quickInputService);
 		}
 	}
 
