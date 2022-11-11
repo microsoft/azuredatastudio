@@ -392,7 +392,13 @@ function reactionEquals(one: _.IDragOverReaction, other: _.IDragOverReaction | n
 export class TreeView extends HeightMap {
 
 	static readonly BINDING = 'monaco-tree-row';
-	static readonly LOADING_DECORATION_DELAY = 800;
+
+	/**
+	 * The delay here is used here to display the loading status after a certain number of milliseconds.
+	 * It was changed from 800 as it turns out that refreshes happen instantly before the status
+	 * can be notified to the user. With 100 ms, the refresh indicator will now be visible in most instances.
+	 * */
+	static readonly LOADING_DECORATION_DELAY = 100;
 
 	private static counter: number = 0;
 	private instance: number;

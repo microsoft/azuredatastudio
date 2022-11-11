@@ -118,7 +118,9 @@ export class SkuRecommendationResultsDialog {
 				if (recommendation.targetSku) {
 					const serviceTier = recommendation.targetSku.category?.sqlServiceTier === mssql.AzureSqlPaaSServiceTier.GeneralPurpose
 						? constants.GENERAL_PURPOSE
-						: constants.BUSINESS_CRITICAL;
+						: recommendation.targetSku.category?.sqlServiceTier === mssql.AzureSqlPaaSServiceTier.HyperScale
+							? constants.HYPERSCALE
+							: constants.BUSINESS_CRITICAL;
 
 					const hardwareType = recommendation.targetSku.category?.hardwareType === mssql.AzureSqlPaaSHardwareType.Gen5
 						? constants.GEN5

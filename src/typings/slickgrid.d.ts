@@ -673,6 +673,13 @@ declare namespace Slick {
 		 *
 		 */
 		minRowBuffer?: number;
+
+		/**
+		 * Disable dom virtualization based on visible columns. When true, the grid will render all columns, even if they are not visible.
+		 * This is a mitigation for screen reader issues not announcing column number of visible cells properly.
+		 * Link to the accessibility issue: https://github.com/microsoft/azuredatastudio/issues/20784
+		 */
+		disableColumnBasedCellVirtualization?: boolean;
 	}
 
 	export interface DataProvider<T extends SlickData> {

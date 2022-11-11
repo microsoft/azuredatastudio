@@ -8,6 +8,11 @@
 	],
 	"version": "1.0.0",
 	"contents": {
+		"dist/localizedConstants": {
+			"errorLoading": "保存されたクエリ履歴項目の読み込み中にエラーが発生しました。{0}",
+			"failed": "失敗",
+			"succeeded": "成功"
+		},
 		"package": {
 			"queryHistory.captureEnabledDesc": "Query History キャプチャが有効かどうか。false の場合、実行されたクエリはキャプチャされません。",
 			"queryHistory.clear": "すべての履歴をクリア",
@@ -19,8 +24,12 @@
 			"queryHistory.doubleClickAction.open": "選択した履歴項目のクエリを使用して、切断された新しいエディターを開きます",
 			"queryHistory.doubleClickAction.run": "クエリーと選択した履歴項目からの接続を使用して新しい接続されたエディターを開き、クエリを自動的に実行します",
 			"queryHistory.enableCapture": "Query History キャプチャの開始",
+			"queryHistory.loading": "保存されたエントリを読み込んでいます...",
+			"queryHistory.maxEntries": "格納するエントリの最大数。0 は、無制限のエントリが格納されていることを意味します。この制限を大きくすると、特に永続化が有効になっている場合、パフォーマンスに影響を与える可能性があります。",
 			"queryHistory.noEntries": "表示するクエリはありません",
 			"queryHistory.open": "クエリを開く",
+			"queryHistory.openStorageFolder": "ストレージ フォルダーを開く",
+			"queryHistory.persistHistory": "クエリ履歴が再起動間で保持されるかどうか。false の場合、アプリケーションの終了時に履歴がクリアされます。",
 			"queryHistory.run": "クエリの実行"
 		}
 	}

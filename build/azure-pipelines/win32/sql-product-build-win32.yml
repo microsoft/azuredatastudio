@@ -48,7 +48,7 @@ steps:
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
-      exec { node build/azure-pipelines/common/sql-computeNodeModulesCacheKey.js > .build/yarnlockhash }
+      exec { node build/azure-pipelines/common/sql-computeNodeModulesCacheKey.js $(VSCODE_ARCH) > .build/yarnlockhash }
     displayName: Prepare yarn cache key
 
   - task: Cache@2
@@ -69,6 +69,7 @@ steps:
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
+      $env:npm_config_arch="$(VSCODE_ARCH)"
       $env:CHILD_CONCURRENCY="1"
       exec { yarn --frozen-lockfile }
     env:
@@ -102,8 +103,8 @@ steps:
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
       exec { yarn gulp "package-rebuild-extensions" }
-      exec { yarn gulp "vscode-win32-x64-min-ci" }
-      exec { yarn gulp "vscode-win32-x64-inno-updater" }
+      exec { yarn gulp "vscode-win32-$(VSCODE_ARCH)-min-ci" }
+      exec { yarn gulp "vscode-win32-$(VSCODE_ARCH)-inno-updater" }
     displayName: Build
     env:
       VSCODE_MIXIN_PASSWORD: $(github-distro-mixin-password)
@@ -117,7 +118,7 @@ steps:
       vstsFeed: '2191dd5f-4aec-491b-ac50-568bbc331c8a'
       vstsFeedPackage: '2e355f03-a97e-499a-949b-f02d62b6160c'
       vstsPackageVersion: '*'
-    condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'saw'))
+    condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'saw'), ne(variables['VSCODE_ARCH'], 'arm64'))
 
   - powershell: |
       # Install TSGOps specific extensions
@@ -130,7 +131,7 @@ steps:
       Move-Item $tempFilePath $zipFilePath
       Expand-Archive $zipFilePath -DestinationPath $adsExtensionPath
     displayName: Install SAW Extensions
-    condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'saw'))
+    condition: and(succeeded(), eq(variables['VSCODE_QUALITY'], 'saw'), ne(variables['VSCODE_ARCH'], 'arm64'))
 
   # - powershell: | @anthonydresser unit tests timeout never existing the node process
   #     . build/azure-pipelines/win32/exec.ps1
@@ -158,7 +159,7 @@ steps:
     displayName: 'Sign out code'
     inputs:
       ConnectedServiceName: 'Code Signing'
-      FolderPath: '$(agent.builddirectory)/azuredatastudio-win32-x64'
+      FolderPath: '$(agent.builddirectory)/azuredatastudio-win32-$(VSCODE_ARCH)'
       Pattern: '*.exe,*.node,resources/app/node_modules.asar.unpacked/*.dll,swiftshader/*.dll,d3dcompiler_47.dll,vulkan-1.dll,libGLESv2.dll,ffmpeg.dll,libEGL.dll,Microsoft.SqlTools.Hosting.dll,Microsoft.SqlTools.ResourceProvider.Core.dll,Microsoft.SqlTools.ResourceProvider.DefaultImpl.dll,MicrosoftSqlToolsCredentials.dll,MicrosoftSqlToolsServiceLayer.dll,Newtonsoft.Json.dll,SqlSerializationService.dll,SqlToolsResourceProviderService.dll,Microsoft.SqlServer.*.dll,Microsoft.Data.Tools.Sql.BatchParser.dll'
       signConfigType: inlineSignParams
       inlineOperation: |
@@ -212,9 +213,9 @@ steps:
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
-      exec { yarn gulp "vscode-win32-x64-user-setup" }
-      exec { yarn gulp "vscode-win32-x64-system-setup" }
-      exec { yarn gulp "vscode-win32-x64-archive" }
+      exec { yarn gulp "vscode-win32-$(VSCODE_ARCH)-user-setup" }
+      exec { yarn gulp "vscode-win32-$(VSCODE_ARCH)-system-setup" }
+      exec { yarn gulp "vscode-win32-$(VSCODE_ARCH)-archive" }
     displayName: Archive & User & System setup
 
   - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1

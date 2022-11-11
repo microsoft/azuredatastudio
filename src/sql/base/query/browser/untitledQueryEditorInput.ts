@@ -13,12 +13,15 @@ import { IResolvedTextEditorModel } from 'vs/editor/common/services/resolverServ
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { IUntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 import { EncodingMode } from 'vs/workbench/services/textfile/common/textfiles';
-import { GroupIdentifier, ISaveOptions, EditorInputCapabilities, IUntypedEditorInput } from 'vs/workbench/common/editor';
+import { GroupIdentifier, ISaveOptions, EditorInputCapabilities, IUntypedEditorInput, DEFAULT_EDITOR_ASSOCIATION, isEditorInputWithOptionsAndGroup } from 'vs/workbench/common/editor';
 import { FileQueryEditorInput } from 'sql/workbench/contrib/query/browser/fileQueryEditorInput';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
 import { UNTITLED_QUERY_EDITOR_TYPEID } from 'sql/workbench/common/constants';
 import { IUntitledQueryEditorInput } from 'sql/base/query/common/untitledQueryEditorInput';
+import { IEditorResolverService } from 'vs/workbench/services/editor/common/editorResolverService';
+import { Uri } from 'vscode';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export class UntitledQueryEditorInput extends QueryEditorInput implements IUntitledQueryEditorInput {
 
@@ -32,6 +35,8 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IUntit
 		@IQueryModelService queryModelService: IQueryModelService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IInstantiationService instantiationService: IInstantiationService,
+		@ILogService private readonly logService: ILogService,
+		@IEditorResolverService private readonly editorResolverService: IEditorResolverService
 	) {
 		super(description, text, results, connectionManagementService, queryModelService, configurationService, instantiationService);
 		// Set the mode explicitely to stop the auto language detection service from changing the mode unexpectedly.
@@ -54,23 +59,31 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IUntit
 
 	override async save(group: GroupIdentifier, options?: ISaveOptions): Promise<IUntypedEditorInput | undefined> {
 		let fileEditorInput = await this.text.save(group, options);
-		return this.createFileQueryEditorInput(fileEditorInput);
+		return this.createFileQueryEditorInput(fileEditorInput, group);
 	}
 
 	override async saveAs(group: GroupIdentifier, options?: ISaveOptions): Promise<IUntypedEditorInput | undefined> {
 		let fileEditorInput = await this.text.saveAs(group, options);
-		return this.createFileQueryEditorInput(fileEditorInput);
+		return this.createFileQueryEditorInput(fileEditorInput, group);
 	}
 
-	private async createFileQueryEditorInput(fileEditorInput: IUntypedEditorInput): Promise<IUntypedEditorInput> {
+	private async createFileQueryEditorInput(untypedEditor: IUntypedEditorInput, group: GroupIdentifier): Promise<IUntypedEditorInput> {
 		// Create our own FileQueryEditorInput wrapper here so that the existing state (connection, results, etc) can be transferred from this input to the new file input.
 		try {
-			let newUri = (<any>fileEditorInput).resource.toString(true);
-			await this.changeConnectionUri(newUri);
-			this._results.uri = newUri;
-			let newInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (fileEditorInput as FileEditorInput), this.results);
-			newInput.state.setState(this.state);
-			return newInput;
+			let newUri: Uri = (<any>untypedEditor).resource;
+			let newUriString = newUri.toString(true);
+			await this.changeConnectionUri(newUriString);
+
+			// create a FileQueryEditorInput from the untyped editor input
+			this._results.uri = newUriString;
+			const editor = await this.editorResolverService.resolveEditor({ resource: (<any>untypedEditor).resource, options: { override: DEFAULT_EDITOR_ASSOCIATION.id } }, group);
+			if (isEditorInputWithOptionsAndGroup(editor)) {
+				let newInput = this.instantiationService.createInstance(FileQueryEditorInput, '', <FileEditorInput>(editor.editor), this.results);
+				newInput.state.setState(this.state);
+				return newInput;
+			} else {
+				throw new Error(`Could not resolved editor for resource '${newUriString}'`);
+			}
 		}
 		catch (error) {
 			/**
@@ -79,7 +92,8 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IUntit
 			 * the connection will be undefined and the file appears to be disconnected even if its not, change the connection to fix this.
 			 * also the results shown will be the old results, until run is clicked again.
 			 */
-			return fileEditorInput;
+			this.logService.warn(error.message);
+			return untypedEditor;
 		}
 	}
 

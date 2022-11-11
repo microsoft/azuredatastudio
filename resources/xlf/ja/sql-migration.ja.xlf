@@ -22,6 +22,34 @@
         <source xml:lang="en">Select the databases that you want to migrate to Azure SQL.</source>
         <target state="translated">Azure SQL に移行するデータベースを選択します。</target>
       </trans-unit>
+      <trans-unit id="sql.migratino.database.loading.tables">
+        <source xml:lang="en">Loading tables list...</source>
+        <target state="translated">テーブルの一覧を読み込んでいます...</target>
+      </trans-unit>
+      <trans-unit id="sql.migratino.database.missing.tables">
+        <source xml:lang="en">0 tables found.</source>
+        <target state="translated">0 個のテーブルが見つかりました。</target>
+      </trans-unit>
+      <trans-unit id="sql.migratino.table.selection.filter">
+        <source xml:lang="en">Filter tables</source>
+        <target state="translated">フィルター テーブル</target>
+      </trans-unit>
+      <trans-unit id="sql.migratino.table.selection.status.column">
+        <source xml:lang="en">Has rows</source>
+        <target state="translated">行を含む</target>
+      </trans-unit>
+      <trans-unit id="sql.migratino.table.selection.tablename.column">
+        <source xml:lang="en">Table name</source>
+        <target state="translated">テーブル名</target>
+      </trans-unit>
+      <trans-unit id="sql.migratino.table.selection.update.button">
+        <source xml:lang="en">Update</source>
+        <target state="translated">更新</target>
+      </trans-unit>
+      <trans-unit id="sql.migratino.table.selection.update.cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">キャンセル</target>
+      </trans-unit>
       <trans-unit id="sql.migration.account.credentials.refresh.required">
         <source xml:lang="en">{0} (requires credentials refresh)</source>
         <target state="translated">{0} (資格情報の更新が必要)</target>
@@ -75,8 +103,16 @@ This may take some time.</source>
 これには時間がかかることがあります。</target>
       </trans-unit>
       <trans-unit id="sql.migration.assessment.migration.warning">
-        <source xml:lang="en">Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines.</source>
-        <target state="translated">Azure SQL Managed Instance への移行準備が整っていないデータベースは、Azure Virtual Machines の SQL Server に移行させることができます。</target>
+        <source xml:lang="en">Databases that are not ready for migration to Azure SQL Managed Instance or Azure SQL Database can be migrated to SQL Server on Azure Virtual Machines.</source>
+        <target state="translated">Azure SQL Managed Instance または Azure SQL Database への移行準備が整っていないデータベースは、Azure Virtual Machines の SQL Server に移行させることができます。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.assessment.migration.warning.sqldb">
+        <source xml:lang="en">Databases that are not ready for migration to Azure SQL Database can be migrated to SQL Server on Azure Virtual Machines. Alternatively, review assessment results for Azure SQL Managed Instance migration readiness.</source>
+        <target state="translated">Azure SQL Database への移行準備が整っていないデータベースは、Azure Virtual Machines の SQL Server に移行できます。または、Azure SQL Managed Instance 移行の準備度に関する評価結果を確認します。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.assessment.migration.warning.sqlmi">
+        <source xml:lang="en">Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines. Alternatively, review assessment results for Azure SQL Database migration readiness.</source>
+        <target state="translated">Azure SQL Managed Instance への移行準備が整っていないデータベースは、Azure Virtual Machines の SQL Serverに移行できます。または、Azure SQL Managed Instance 移行の準備度に関する評価結果を確認します。</target>
       </trans-unit>
       <trans-unit id="sql.migration.assessment.results">
         <source xml:lang="en">Assessment results</source>
@@ -111,8 +147,8 @@ This may take some time.</source>
         <target state="translated">Azure SQL</target>
       </trans-unit>
       <trans-unit id="sql.migration.azure.sql.database">
-        <source xml:lang="en">Azure SQL Database</source>
-        <target state="translated">Azure SQL Database</target>
+        <source xml:lang="en">Azure SQL Database Server</source>
+        <target state="translated">Azure SQL Database サーバー</target>
       </trans-unit>
       <trans-unit id="sql.migration.azure.sql.database.managed.instance">
         <source xml:lang="en">Azure SQL Managed Instance</source>
@@ -211,8 +247,8 @@ This may take some time.</source>
         <target state="translated">最初にストレージ アカウントの値を選択します。</target>
       </trans-unit>
       <trans-unit id="sql.migration.can.be.migrated">
-        <source xml:lang="en">{0}/{1} databases can be migrated</source>
-        <target state="translated">{0}/{1} 個のデータベースを移行できます</target>
+        <source xml:lang="en">{0}/{1} databases can be migrated without issues</source>
+        <target state="translated">{0}/{1} 個のデータベースはイシューなく移行可能</target>
       </trans-unit>
       <trans-unit id="sql.migration.cancel">
         <source xml:lang="en">Cancel</source>
@@ -257,6 +293,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.confirm.checkbox.message">
         <source xml:lang="en">I confirm there are no additional log backups to provide and want to complete cutover.</source>
         <target state="translated">提供する追加のログ バックアップがないことを確認し、一括移行の完了を希望します。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.connection.label">
+        <source xml:lang="en">Connect</source>
+        <target state="translated">接続</target>
       </trans-unit>
       <trans-unit id="sql.migration.connection.status">
         <source xml:lang="en">Connection status</source>
@@ -411,8 +451,8 @@ This may take some time.</source>
         <target state="translated">モード</target>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.description">
-        <source xml:lang="en">Determine the migration readiness of your SQL Server instances, identify a recommended Azure SQL target, and complete the migration of your SQL Server instance to Azure SQL Managed Instance or SQL Server on Azure Virtual Machines.</source>
-        <target state="translated">SQL Server インスタンスの移行の準備状況を判断し、推奨される Azure SQL ターゲットを特定し、Azure SQL Managed Instance または SQL Server on Azure Virtual Machines 上の SQL Server インスタンスの移行を完了します。</target>
+        <source xml:lang="en">Determine the migration readiness of your SQL Server instances, identify a recommended Azure SQL target, and complete the migration of your SQL Server instance to Azure SQL Managed Instance, SQL Server on Azure Virtual Machines or Azure SQL Database.</source>
+        <target state="translated">SQL Server インスタンスの移行準備状況を判断し、推奨されるAzure SQLターゲットを特定し、SQL Server インスタンスの Azure SQL Managed Instance への移行、Azure Virtual Machines または Azure SQL Database でのSQL Serverを完了します。</target>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.help.description.dmsGuide">
         <source xml:lang="en">A hub of migration articles that provides step-by-step guidance for migrating and modernizing your data assets in Azure.</source>
@@ -425,6 +465,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.dashboard.help.description.migrateUsingADS">
         <source xml:lang="en">The Azure SQL Migration extension for Azure Data Studio provides capabilities to assess, get right-sized Azure recommendations and migrate SQL Server databases to Azure.</source>
         <target state="translated">Azure Data Studio の Azure SQL 移行拡張機能では、アセスメントを実行し、適切なサイズの Azure 推奨事項を取得し、SQL Server データベースを Azure に移行する機能が提供されます。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.dashboard.help.description.sqldb">
+        <source xml:lang="en">A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises or Azure Virtual Machines) to Azure SQL Database (PREVIEW).</source>
+        <target state="translated">SQL Server インスタンス (オンプレミスまたは Azure Virtual Machines) から Azure SQL Database (プレビュー) にデータベースを移行するためのステップ バイ ステップ チュートリアル。</target>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.help.description.vm">
         <source xml:lang="en">A step-by-step tutorial to migrate databases from a SQL Server instance (on-premises) to SQL Server on Azure Virtual Machines with minimal downtime.</source>
@@ -441,6 +485,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.dashboard.help.link.migrateUsingADS">
         <source xml:lang="en">Migrate databases using Azure Data Studio</source>
         <target state="translated">Azure Data Studio を使用してデータベースを移行する</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.dashboard.help.link.sqldb">
+        <source xml:lang="en">Tutorial:  Migrate to SQL Server on Azure SQL Database (offline) - (PREVIEW)</source>
+        <target state="translated">チュートリアル: Azure SQL Database でSQL Serverに移行する(オフライン) - (プレビュー)</target>
       </trans-unit>
       <trans-unit id="sql.migration.dashboard.help.link.vm">
         <source xml:lang="en">Tutorial:  Migrate to SQL Server on Azure Virtual Machines (online)</source>
@@ -461,6 +509,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.dashboard.title">
         <source xml:lang="en">Azure SQL Migration</source>
         <target state="translated">Azure SQL の移行</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.data.source.configuration.page.title">
+        <source xml:lang="en">Data source configuration</source>
+        <target state="translated">データ ソースの構成</target>
       </trans-unit>
       <trans-unit id="sql.migration.data.uploaded.info">
         <source xml:lang="en">Comparison of the actual amount of data read from the source and the actual amount of data uploaded to the target.</source>
@@ -490,9 +542,17 @@ This may take some time.</source>
         <source xml:lang="en">An error occurred while accessing database details.</source>
         <target state="translated">データベースの詳細へのアクセス中にエラーが発生しました。</target>
       </trans-unit>
-      <trans-unit id="sql.migration.database.checksum.info.text">
-        <source xml:lang="en">Ensure that your backups were taken with the WITH CHECKSUM option.</source>
-        <target state="translated">WITH CHECKSUM オプションを使用してバックアップが作成されていることを確認してください。</target>
+      <trans-unit id="sql.migration.database.connection.error">
+        <source xml:lang="en">An error occurred while connecting to target migration database.</source>
+        <target state="translated">ターゲット移行データベースへの接続中にエラーが発生しました。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.database.connection.error.message">
+        <source xml:lang="en">Connection error:{0} {1}</source>
+        <target state="translated">接続エラー:{0} {1}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.database.loading">
+        <source xml:lang="en">Loading database table list..</source>
+        <target state="translated">データベース テーブルの一覧を読み込んでいます...</target>
       </trans-unit>
       <trans-unit id="sql.migration.database.migration.mode.description">
         <source xml:lang="en">To migrate to the Azure SQL target, choose a migration mode based on your downtime requirements.</source>
@@ -542,21 +602,41 @@ This may take some time.</source>
         <source xml:lang="en">Select the location of the database backups to use during migration.</source>
         <target state="translated">移行中に使用するデータベース バックアップの場所を選択します。</target>
       </trans-unit>
-      <trans-unit id="sql.migration.database.page.title">
-        <source xml:lang="en">Database backup</source>
-        <target state="translated">データベース バックアップ</target>
-      </trans-unit>
-      <trans-unit id="sql.migration.database.private.endpoint.info.text">
-        <source xml:lang="en">Ensure that the Azure Storage account does not use a private endpoint.</source>
-        <target state="translated">Azure Storage アカウントでプライベート エンドポイントが使用されていないことを確認してください。</target>
-      </trans-unit>
       <trans-unit id="sql.migration.database.status.column">
         <source xml:lang="en">Migration status</source>
         <target state="translated">移行の状態</target>
       </trans-unit>
+      <trans-unit id="sql.migration.database.table.refresh.label">
+        <source xml:lang="en">Refresh</source>
+        <target state="translated">更新</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.database.table.selection.description">
+        <source xml:lang="en">To migrate to the Azure SQL target, select tables in each database for migration.</source>
+        <target state="translated">Azure SQL ターゲットに移行するには、移行する各データベースのテーブルを選択します。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.database.table.selection.label">
+        <source xml:lang="en">Migration table selection</source>
+        <target state="translated">移行テーブルの選択</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.database.table.source.column.label">
+        <source xml:lang="en">Source database</source>
+        <target state="translated">ソース データベース</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.database.table.tables.column.label">
+        <source xml:lang="en">Select tables</source>
+        <target state="translated">テーブルの選択</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.database.table.target.column.label">
+        <source xml:lang="en">Target database</source>
+        <target state="translated">ターゲット データベース</target>
+      </trans-unit>
       <trans-unit id="sql.migration.database.to.be.migrated">
         <source xml:lang="en">Database to be migrated</source>
         <target state="translated">移行されるデータベース</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.database.validate.selection">
+        <source xml:lang="en">Please select target database tables to migrate to.  At least one database with one table is required.</source>
+        <target state="translated">移行先のターゲット データベース テーブルを選択してください。 1 つのテーブルを持つ少なくとも 1 つのデータベースが必要です。</target>
       </trans-unit>
       <trans-unit id="sql.migration.databases">
         <source xml:lang="en">Databases ({0}/{1})</source>
@@ -669,6 +749,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.error">
         <source xml:lang="en">Error</source>
         <target state="translated">エラー</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.error.aria.view.details">
+        <source xml:lang="en">Click to view error details</source>
+        <target state="translated">クリックするとエラー詳細が表示されます。</target>
       </trans-unit>
       <trans-unit id="sql.migration.error.details.label">
         <source xml:lang="en">Migration error(s))</source>
@@ -810,6 +894,10 @@ This may take some time.</source>
         <source xml:lang="en">Enter a valid name for the Migration Service.</source>
         <target state="translated">移行サービスに有効な名前を入力してください。</target>
       </trans-unit>
+      <trans-unit id="sql.migration.invalid.sqldatabase.error">
+        <source xml:lang="en">To continue, select a valid Azure SQL Database server.</source>
+        <target state="translated">続行するには、有効なAzure SQL Database サーバーを選択します。</target>
+      </trans-unit>
       <trans-unit id="sql.migration.invalid.storageAccount.error">
         <source xml:lang="en">To continue, select a valid storage account.</source>
         <target state="translated">先に進むには、有効なストレージ アカウントを選択してください。</target>
@@ -831,8 +919,8 @@ This may take some time.</source>
         <target state="translated">続行するには、有効な仮想マシンを選択してください。</target>
       </trans-unit>
       <trans-unit id="sql.migration.ir.page.description">
-        <source xml:lang="en">Azure Database Migration Service orchestrates database migration activities and tracks their progress. You can select an existing Database Migration Service as an Azure SQL target if you have created one previously, or create a new one below.</source>
-        <target state="translated">Azure Database Migration Service は、データベースの移行アクティビティを調整し、その進行状況を追跡します。Azure SQL ターゲットの既存の Database Migration Service を以前に作成している場合は、それを選択するか、以下で新しい DMS を作成することができます。</target>
+        <source xml:lang="en">Azure Database Migration Service orchestrates database migration activities and tracks their progress. You can select an existing Database Migration Service if you have created one previously, or create a new one below.</source>
+        <target state="translated">Azure Database Migration Service は、データベース移行アクティビティを調整し、その進行状況を追跡します。以前に作成した場合は既存のDatabase Migration Serviceを選択するか、以下で新しいDatabase Migration Serviceを作成できます。</target>
       </trans-unit>
       <trans-unit id="sql.migration.ir.page.sql.migration.service.not.found">
         <source xml:lang="en">No Database Migration Service found. Create a new one.</source>
@@ -853,6 +941,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.ir.setup.step3">
         <source xml:lang="en">Step 3: Click on 'Test connection' button to check the connection between Azure Database Migration Service and integration runtime</source>
         <target state="translated">手順 3: [テスト接続] ボタンをクリックして、Azure Database Migration Service と統合ランタイム間の接続を確認します</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.issue.aria.label">
+        <source xml:lang="en">Blocking Issue: {0}</source>
+        <target state="translated">障害となっている問題: {0}</target>
       </trans-unit>
       <trans-unit id="sql.migration.issues">
         <source xml:lang="en">Issues</source>
@@ -898,10 +990,6 @@ This may take some time.</source>
         <source xml:lang="en">Last applied LSN</source>
         <target state="translated">最後に適用された LSN</target>
       </trans-unit>
-      <trans-unit id="sql.migration.last.backup">
-        <source xml:lang="en">Last backup</source>
-        <target state="translated">前回のバックアップ</target>
-      </trans-unit>
       <trans-unit id="sql.migration.last.scan.completed">
         <source xml:lang="en">Last scan completed: {0}</source>
         <target state="translated">完了した最後のスキャン: {0}</target>
@@ -921,6 +1009,26 @@ This may take some time.</source>
       <trans-unit id="sql.migration.location">
         <source xml:lang="en">Location</source>
         <target state="translated">場所</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.map.source.column">
+        <source xml:lang="en">Source database</source>
+        <target state="translated">ソース データベース</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.map.target.column">
+        <source xml:lang="en">Target database</source>
+        <target state="translated">ターゲット データベース</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.map.target.description">
+        <source xml:lang="en">Select the target database where you would like to migrate your source database to.  You can choose a target database for only one source database.</source>
+        <target state="translated">ソース データベースの移行先となるターゲット データベースを選択します。 1 つのソース データベースに対してのみターゲット データベースを選択できます。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.map.target.heading">
+        <source xml:lang="en">Map selected source databases to target databases for migration</source>
+        <target state="translated">選択したソース データベースを移行先データベースにマップする</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.map.target.placeholder">
+        <source xml:lang="en">Select a target database</source>
+        <target state="translated">ターゲット データベースを選択する</target>
       </trans-unit>
       <trans-unit id="sql.migration.mi.not.ready">
         <source xml:lang="en">The managed instance '{0}' is unavailable for migration because it is currently in the '{1}' state. To continue, select an available managed instance.</source>
@@ -957,6 +1065,14 @@ This may take some time.</source>
       <trans-unit id="sql.migration.mins">
         <source xml:lang="en">{0} mins</source>
         <target state="translated">{0} 分</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.missing.targetPassword.error">
+        <source xml:lang="en">To continue, enter a valid target password.</source>
+        <target state="translated">続行するには、有効なターゲット パスワードを入力します。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.missing.targetUserName.error">
+        <source xml:lang="en">To continue, enter a valid target user name.</source>
+        <target state="translated">続行するには、有効なターゲット ユーザー名を入力します。</target>
       </trans-unit>
       <trans-unit id="sql.migration.mode">
         <source xml:lang="en">Mode</source>
@@ -1071,8 +1187,12 @@ This may take some time.</source>
         <target state="translated">ファイル共有が見つかりません。</target>
       </trans-unit>
       <trans-unit id="sql.migration.no.issues.mi">
-        <source xml:lang="en">No issues found for migrating to SQL Server on Azure SQL Managed Instance.</source>
-        <target state="translated">Azure SQL Managed Instance で SQL Server への移行に関する問題は見つかりませんでした。</target>
+        <source xml:lang="en">No issues found for migrating to Azure SQL Managed Instance.</source>
+        <target state="translated">Azure SQL Managed Instance への移行に関する問題は見つかりませんでした。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.no.issues.sqldb">
+        <source xml:lang="en">No issues found for migrating to Azure SQL Database.</source>
+        <target state="translated">Azure SQL Database への移行に関する問題は見つかりませんでした。</target>
       </trans-unit>
       <trans-unit id="sql.migration.no.issues.vm">
         <source xml:lang="en">No issues found for migrating to SQL Server on Azure Virtual Machine.</source>
@@ -1093,6 +1213,14 @@ This may take some time.</source>
       <trans-unit id="sql.migration.no.results">
         <source xml:lang="en">Assessment results are unavailable.</source>
         <target state="translated">評価結果を使用できません。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.no.sqldatabase.found">
+        <source xml:lang="en">No Azure SQL databases found.</source>
+        <target state="translated">Azure SQL データベースが見つかりません。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.no.sqldatabaseserver.found">
+        <source xml:lang="en">No Azure SQL database servers found.</source>
+        <target state="translated">Azure SQL データベース サーバーが見つかりません。</target>
       </trans-unit>
       <trans-unit id="sql.migration.no.storageAccount.found">
         <source xml:lang="en">No storage accounts found.</source>
@@ -1158,25 +1286,37 @@ This may take some time.</source>
         <source xml:lang="en">Physical partitions</source>
         <target state="translated">物理パーティション</target>
       </trans-unit>
+      <trans-unit id="sql.migration.password.label">
+        <source xml:lang="en">Target password</source>
+        <target state="translated">ターゲット パスワード</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.password.placeholder">
+        <source xml:lang="en">Enter the target password</source>
+        <target state="translated">ターゲット パスワードを入力してください</target>
+      </trans-unit>
       <trans-unit id="sql.migration.path.user.account">
         <source xml:lang="en">User account</source>
         <target state="translated">ユーザー アカウント</target>
       </trans-unit>
       <trans-unit id="sql.migration.pre.req.1">
-        <source xml:lang="en">Azure account details</source>
-        <target state="translated">Azure アカウントの詳細</target>
+        <source xml:lang="en">An Azure account (not required for assessment or SKU recommendation functionality)</source>
+        <target state="translated">Azure アカウント (評価または SKU のレコメンデーション 機能には必要ありません)</target>
       </trans-unit>
       <trans-unit id="sql.migration.pre.req.2">
-        <source xml:lang="en">Azure SQL Managed Instance or SQL Server on Azure Virtual Machine</source>
-        <target state="translated">Azure SQL Managed Instance または Azure Virtual Machine 上の SQL Server</target>
+        <source xml:lang="en">A source SQL Server database(s) running on on-premises, or on SQL Server on Azure Virtual Machine or any virtual machine running in the cloud (private, public).</source>
+        <target state="translated">オンプレミス、Azure 仮想マシン上のSQL Server、またはクラウドで実行されている任意の仮想マシン (プライベート、パブリック) で実行されているソース SQL Server データベース。</target>
       </trans-unit>
       <trans-unit id="sql.migration.pre.req.3">
-        <source xml:lang="en">Backup location details</source>
-        <target state="translated">場所の詳細のバックアップ</target>
+        <source xml:lang="en">An Azure SQL Managed Instance, SQL Server on Azure Virtual Machine, or Azure SQL Database to migrate your database(s) to.</source>
+        <target state="translated">データベースの移行先となる Azure SQL Managed Instance、Azure Virtual Machine 上のSQL Server、または Azure SQL Database。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.pre.req.4">
+        <source xml:lang="en">Your database backup location details, either a network file share or an Azure Blob Storage container (not required for Azure SQL Database targets).</source>
+        <target state="translated">データベースバックアップの場所の詳細、ネットワーク ファイル共有またはAzure Blob Storageコンテナー (Azure SQL データベース ターゲットには必要ありません)。</target>
       </trans-unit>
       <trans-unit id="sql.migration.pre.req.title">
-        <source xml:lang="en">Things you need before starting a migration:</source>
-        <target state="translated">移行開始前に必要な事項:</target>
+        <source xml:lang="en">Things you need before starting your Azure SQL migration:</source>
+        <target state="translated">Azure SQL 移行を開始する前に必要なもの:</target>
       </trans-unit>
       <trans-unit id="sql.migration.provide.unique.containers">
         <source xml:lang="en">Provide a unique container for each target database. Databases affected: </source>
@@ -1246,6 +1386,14 @@ This may take some time.</source>
         <source xml:lang="en">Resource group created</source>
         <target state="translated">リソース グループが作成されました</target>
       </trans-unit>
+      <trans-unit id="sql.migration.save.assessment.report">
+        <source xml:lang="en">Save assessment report</source>
+        <target state="translated">評価レポートを保存する</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.save.assessment.report.success">
+        <source xml:lang="en">Successfully saved assessment report to {0}.</source>
+        <target state="translated">評価レポートが {0} に正常に保存されました。</target>
+      </trans-unit>
       <trans-unit id="sql.migration.save.close">
         <source xml:lang="en">Save and close</source>
         <target state="translated">保存して閉じる</target>
@@ -1253,6 +1401,14 @@ This may take some time.</source>
       <trans-unit id="sql.migration.save.close.popup">
         <source xml:lang="en">Configuration saved. Performance data collection will remain running in the background. You can stop the collection when you want to.</source>
         <target state="translated">構成が保存されました。パフォーマンス データの収集はバックグラウンドで実行されたままになります。必要に応じて、コレクションを停止できます。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.save.recommendation.report">
+        <source xml:lang="en">Save recommendation report</source>
+        <target state="translated">推奨事項レポートを保存する</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.save.recommendation.report.success">
+        <source xml:lang="en">Successfully saved recommendation report to {0}.</source>
+        <target state="translated">推奨事項レポートが {0} に正常に保存されました。</target>
       </trans-unit>
       <trans-unit id="sql.migration.saved.assessment.cancel">
         <source xml:lang="en">Cancel</source>
@@ -1349,6 +1505,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.select.service.select.location.error">
         <source xml:lang="en">An error occurred while loading locations. Please check your Azure connection and try again.</source>
         <target state="translated">場所の読み込み中にエラーが発生しました。Azure 接続を確認して、もう一度お試しください。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.select.service.select.migration.target">
+        <source xml:lang="en">Select a target server.</source>
+        <target state="translated">ターゲット サーバーを選択します。</target>
       </trans-unit>
       <trans-unit id="sql.migration.select.service.select.resource.group.error">
         <source xml:lang="en">An error occurred while loading available resource groups. Please check your Azure connection and try again.</source>
@@ -1506,9 +1666,13 @@ This may take some time.</source>
         <source xml:lang="en">{0} TB</source>
         <target state="translated">{0} TB</target>
       </trans-unit>
-      <trans-unit id="sql.migration.sku.available.recommendations">
+      <trans-unit id="sql.migration.sku.available.recommendations.many">
         <source xml:lang="en">{0} recommendations available</source>
         <target state="translated">{0} 件の利用可能なレコメンデーション</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.available.recommendations.one">
+        <source xml:lang="en">{0} recommendation available</source>
+        <target state="translated">{0}件のレコメンデーションがあります</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.azureConfiguration">
         <source xml:lang="en">Azure configuration</source>
@@ -1518,10 +1682,6 @@ This may take some time.</source>
         <source xml:lang="en">Business critical</source>
         <target state="translated">Business Critical</target>
       </trans-unit>
-      <trans-unit id="sql.migration.sku.azureConfiguration.db">
-        <source xml:lang="en">{0} - {1} vCore</source>
-        <target state="translated">{0} - {1} 仮想コア</target>
-      </trans-unit>
       <trans-unit id="sql.migration.sku.azureConfiguration.gen5">
         <source xml:lang="en">Gen5</source>
         <target state="translated">第 5 世代</target>
@@ -1529,6 +1689,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.sku.azureConfiguration.generalPurpose">
         <source xml:lang="en">General purpose</source>
         <target state="translated">汎用</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureConfiguration.hyperscale">
+        <source xml:lang="en">Hyperscale</source>
+        <target state="translated">ハイパースケール</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.azureConfiguration.mi">
         <source xml:lang="en">{0} - {1} - {2} vCore</source>
@@ -1545,6 +1709,14 @@ This may take some time.</source>
       <trans-unit id="sql.migration.sku.azureConfiguration.premiumSeriesMemoryOptimized">
         <source xml:lang="en">Memory optimized premium-series</source>
         <target state="translated">メモリ最適化 Premium シリーズ</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureConfiguration.sqldb">
+        <source xml:lang="en">{0} - {1} vCore</source>
+        <target state="translated">{0} - {1} 仮想コア</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.azureConfiguration.sqldbPreview">
+        <source xml:lang="en">{0} - {1} - {2} vCore - {3} GB</source>
+        <target state="translated">{0} - {1} - {2} 仮想コア - {3} GB</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.azureConfiguration.storage">
         <source xml:lang="en">{0} x {1}</source>
@@ -1582,10 +1754,6 @@ This may take some time.</source>
         <source xml:lang="en">I already have the performance data</source>
         <target state="translated">パフォーマンス データが既にあります</target>
       </trans-unit>
-      <trans-unit id="sql.migration.sku.azureRecommendation.openExisting.popup">
-        <source xml:lang="en">Generating Azure recommendations using provided performance data...</source>
-        <target state="translated">提供されたパフォーマンス データを使用して Azure のレコメンデーションを生成しています...</target>
-      </trans-unit>
       <trans-unit id="sql.migration.sku.azureRecommendation.openExistingSelectFolder.instructions">
         <source xml:lang="en">Select a folder on your local drive where previously collected performance data was saved</source>
         <target state="translated">以前に収集したパフォーマンス データが保存されているローカル ドライブ上のフォルダーを選択します</target>
@@ -1615,8 +1783,8 @@ This may take some time.</source>
         <target state="translated">[レコメンデーションの更新] ボタンを押して、更新されたレコメンデーションを定期的に確認します。</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.azureRecommendation.status.notEnabled">
-        <source xml:lang="en">Azure recommendation collects and analyzes performance data and then recommends an appropriate sized database in Azure for your workload.</source>
-        <target state="translated">Azure のレコメンデーションでは、パフォーマンス データを収集して分析し、ワークロードに適したサイズのデータベースを Azure に推奨します。</target>
+        <source xml:lang="en">Azure recommendation collects and analyzes performance data and then recommends an appropriate sized target in Azure for your workload.</source>
+        <target state="translated">Azure のレコメンデーションでは、パフォーマンス データを収集して分析し、ワークロードに適したサイズのターゲットを Azure で推奨します。</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.azureRecommendation.status.refining">
         <source xml:lang="en">Data collection still in progress. Refining existing recommendations...</source>
@@ -1662,10 +1830,6 @@ This may take some time.</source>
         <source xml:lang="en">Data storage requirement</source>
         <target state="translated">データ ストレージの要件</target>
       </trans-unit>
-      <trans-unit id="sql.migration.sku.db.card.title">
-        <source xml:lang="en">Azure SQL Database</source>
-        <target state="translated">Azure SQL Database</target>
-      </trans-unit>
       <trans-unit id="sql.migration.sku.gb">
         <source xml:lang="en">{0} GB</source>
         <target state="translated">{0} GB</target>
@@ -1702,6 +1866,10 @@ This may take some time.</source>
         <source xml:lang="en">Azure SQL Managed Instance</source>
         <target state="translated">Azure SQL Managed Instance</target>
       </trans-unit>
+      <trans-unit id="sql.migration.sku.mi.target.title">
+        <source xml:lang="en">Azure SQL Managed Instance</source>
+        <target state="translated">Azure SQL Managed Instance</target>
+      </trans-unit>
       <trans-unit id="sql.migration.sku.ms">
         <source xml:lang="en">{0} ms</source>
         <target state="translated">{0} ミリ秒</target>
@@ -1717,6 +1885,14 @@ This may take some time.</source>
       <trans-unit id="sql.migration.sku.parameters.edit.title">
         <source xml:lang="en">Edit recommendation parameters</source>
         <target state="translated">レコメンデーション パラメーターの編集</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.parameters.enable.elastic">
+        <source xml:lang="en">Enable elastic recommendation</source>
+        <target state="translated">エラスティック レコメンデーションを有効にする</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.parameters.enable.elastic.info">
+        <source xml:lang="en">Elastic recommendation uses an alternate recommendation model which utilizes personalized price-performance profiling against existing on-cloud customers.</source>
+        <target state="translated">エラスティック レコメンデーションでは、既存のクラウド顧客に対してパーソナライズされた価格パフォーマンス プロファイリングを利用する代替の推奨モデルが使用されます。</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.parameters.enable.preview">
         <source xml:lang="en">Enable preview features</source>
@@ -1763,12 +1939,16 @@ This may take some time.</source>
         <target state="translated">{0} パーセンタイル</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.recommendation">
-        <source xml:lang="en">Azure recommendation</source>
-        <target state="translated">Azure のレコメンデーション</target>
+        <source xml:lang="en">Azure recommendation (PREVIEW)</source>
+        <target state="translated">Azure のレコメンデーション (プレビュー)</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.recommendation.view.assessment.mi">
         <source xml:lang="en">To migrate to Azure SQL Managed Instance, view assessment results and select one or more databases.</source>
         <target state="translated">Azure SQL Managed Instance に移行するには、評価結果を表示し、1 つ以上のデータベースを選択します。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.recommendation.view.assessment.sqldb">
+        <source xml:lang="en">To migrate to Azure SQL Database (PREVIEW), view assessment results and select one or more databases.</source>
+        <target state="translated">Azure SQL Database (プレビュー) に移行するには、評価結果を表示し、1 つ以上のデータベースを選択します。</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.recommendation.view.assessment.vm">
         <source xml:lang="en">To migrate to SQL Server on Azure Virtual Machine, view assessment results and select one or more databases.</source>
@@ -1842,6 +2022,14 @@ This may take some time.</source>
         <source xml:lang="en">SQL tempdb</source>
         <target state="translated">SQL tempdb</target>
       </trans-unit>
+      <trans-unit id="sql.migration.sku.sqldb.card.title">
+        <source xml:lang="en">Azure SQL Database (PREVIEW)</source>
+        <target state="translated">Azure SQL Database (プレビュー)</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.sqldb.target.title">
+        <source xml:lang="en">Azure SQL Database</source>
+        <target state="translated">Azure SQL Database</target>
+      </trans-unit>
       <trans-unit id="sql.migration.sku.stop.performance.collection">
         <source xml:lang="en">Stop data collection</source>
         <target state="translated">データ収集の停止</target>
@@ -1911,6 +2099,10 @@ This may take some time.</source>
         <target state="translated">詳細の表示</target>
       </trans-unit>
       <trans-unit id="sql.migration.sku.vm.card.title">
+        <source xml:lang="en">SQL Server on Azure Virtual Machine</source>
+        <target state="translated">Azure Virtual Machine 上の SQL Server</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sku.vm.target.title">
         <source xml:lang="en">SQL Server on Azure Virtual Machine</source>
         <target state="translated">Azure Virtual Machine 上の SQL Server</target>
       </trans-unit>
@@ -2006,6 +2198,10 @@ This may take some time.</source>
         <source xml:lang="en">Used parallel copies</source>
         <target state="translated">並列コピーが使用されました</target>
       </trans-unit>
+      <trans-unit id="sql.migration.sqldb.not.ready">
+        <source xml:lang="en">The SQL database server '{0}' is unavailable for migration because it is currently in the '{1}' state. To continue, select an available SQL database server.</source>
+        <target state="translated">SQL データベース サーバー '{0}' は現在 '{1}' 状態であるため、移行できません。続行するには、使用可能な SQL データベース サーバーを選択します。</target>
+      </trans-unit>
       <trans-unit id="sql.migration.src.database">
         <source xml:lang="en">Source database</source>
         <target state="translated">ソース データベース</target>
@@ -2075,20 +2271,12 @@ This may take some time.</source>
         <target state="translated">状態: 成功</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.error.count.multiple">
-        <source xml:lang="en">{0} Errors)</source>
-        <target state="translated">エラー: {0} 個)</target>
-      </trans-unit>
-      <trans-unit id="sql.migration.status.error.count.none">
-        <source xml:lang="en">{0}</source>
-        <target state="translated">{0}</target>
+        <source xml:lang="en"> ({0} errors)</source>
+        <target state="translated"> ({0} エラー)</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.error.count.single">
-        <source xml:lang="en">{0} Error)</source>
-        <target state="translated">エラー: {0} 個)</target>
-      </trans-unit>
-      <trans-unit id="sql.migration.status.error.count.some">
-        <source xml:lang="en">{0} (</source>
-        <target state="translated">{0} (</target>
+        <source xml:lang="en"> ({0} error)</source>
+        <target state="translated"> ({0} エラー)</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.failed">
         <source xml:lang="en">Failed</source>
@@ -2098,9 +2286,17 @@ This may take some time.</source>
         <source xml:lang="en">In progress</source>
         <target state="translated">進行中</target>
       </trans-unit>
+      <trans-unit id="sql.migration.status.readyforcutover">
+        <source xml:lang="en">Ready for cutover</source>
+        <target state="translated">一括移行の準備完了</target>
+      </trans-unit>
       <trans-unit id="sql.migration.status.refresh.label">
         <source xml:lang="en">Refresh</source>
         <target state="translated">最新の情報に更新</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.restoring">
+        <source xml:lang="en">Restoring</source>
+        <target state="translated">復元しています</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.retriable">
         <source xml:lang="en">Retriable</source>
@@ -2118,13 +2314,25 @@ This may take some time.</source>
         <source xml:lang="en">Succeeded</source>
         <target state="translated">成功</target>
       </trans-unit>
+      <trans-unit id="sql.migration.status.uploadingfullbackup">
+        <source xml:lang="en">Uploading full backup</source>
+        <target state="translated">完全バックアップをアップロードしています</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.uploadinglogbackup">
+        <source xml:lang="en">Uploading log backup(s)</source>
+        <target state="translated">ログ バックアップをアップロードしています</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.value">
+        <source xml:lang="en">{0}</source>
+        <target state="translated">{0}</target>
+      </trans-unit>
       <trans-unit id="sql.migration.status.warning.count.multiple">
-        <source xml:lang="en">{0} Warnings)</source>
-        <target state="translated">警告: {0} 個)</target>
+        <source xml:lang="en"> ({0} warnings)</source>
+        <target state="translated"> ({0} 警告)</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.warning.count.single">
-        <source xml:lang="en">{0} Warning)</source>
-        <target state="translated">警告: {0} 個)</target>
+        <source xml:lang="en"> ({0} warning)</source>
+        <target state="translated"> ({0} 警告)</target>
       </trans-unit>
       <trans-unit id="sql.migration.storage.account">
         <source xml:lang="en">Storage account</source>
@@ -2153,6 +2361,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.summary.page.title">
         <source xml:lang="en">Summary</source>
         <target state="translated">概要</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.summary.sqldb.type">
+        <source xml:lang="en">Azure SQL Database</source>
+        <target state="translated">Azure SQL Database</target>
       </trans-unit>
       <trans-unit id="sql.migration.summary.vm.type">
         <source xml:lang="en">SQL Server on Azure Virtual Machine</source>
@@ -2198,6 +2410,26 @@ This may take some time.</source>
         <source xml:lang="en">Table migration status: {0}</source>
         <target state="translated">テーブル移行の状態: {0}</target>
       </trans-unit>
+      <trans-unit id="sql.migration.table.missing.count">
+        <source xml:lang="en">Missing target tables excluded from list: {0}</source>
+        <target state="translated">リストから除外されたターゲット テーブルがありません: {0}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.table.select.label">
+        <source xml:lang="en">Select tables for {0}</source>
+        <target state="translated">{0}のテーブルを選択する</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.table.selected.count">
+        <source xml:lang="en">{0} of {1} tables selected</source>
+        <target state="translated">{1} テーブルの{0} が選択されています</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.table.selection.count">
+        <source xml:lang="en">{0} of {1}</source>
+        <target state="translated">{1}のうち {0}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.table.selection.edit">
+        <source xml:lang="en">Edit</source>
+        <target state="translated">編集</target>
+      </trans-unit>
       <trans-unit id="sql.migration.target">
         <source xml:lang="en">Target</source>
         <target state="translated">ターゲット</target>
@@ -2226,6 +2458,18 @@ This may take some time.</source>
         <source xml:lang="en">Target server</source>
         <target state="translated">ターゲット サーバー</target>
       </trans-unit>
+      <trans-unit id="sql.migration.target.table.count.name">
+        <source xml:lang="en">Tables selected</source>
+        <target state="translated">選択されたテーブル</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.target.table.missing">
+        <source xml:lang="en">Target table does not exist</source>
+        <target state="translated">ターゲット テーブルが存在しません</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.target.table.not.empty">
+        <source xml:lang="en">Target table is not empty.</source>
+        <target state="translated">ターゲット テーブルが空ではありません。</target>
+      </trans-unit>
       <trans-unit id="sql.migration.target.version">
         <source xml:lang="en">Target version</source>
         <target state="translated">ターゲット バージョン</target>
@@ -2251,8 +2495,16 @@ This may take some time.</source>
         <target state="translated">対象データベースに一意の名前を選択する</target>
       </trans-unit>
       <trans-unit id="sql.migration.username">
-        <source xml:lang="en">Username</source>
+        <source xml:lang="en">User name</source>
         <target state="translated">ユーザー名</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.username.label">
+        <source xml:lang="en">Target user name</source>
+        <target state="translated">ターゲット ユーザー名</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.username.placeholder">
+        <source xml:lang="en">Enter the target user name</source>
+        <target state="translated">ターゲット ユーザー名を入力してください</target>
       </trans-unit>
       <trans-unit id="sql.migration.view.all">
         <source xml:lang="en">All database migrations</source>
@@ -2306,6 +2558,10 @@ This may take some time.</source>
         <source xml:lang="en">Azure account</source>
         <target state="translated">Azure アカウント</target>
       </trans-unit>
+      <trans-unit id="sql.migration.wizard.connection.error.title">
+        <source xml:lang="en">An error occurred while conneting to the target server.</source>
+        <target state="translated">ターゲット サーバーへの接続中にエラーが発生しました。</target>
+      </trans-unit>
       <trans-unit id="sql.migration.wizard.perfCollection.error">
         <source xml:lang="en">Error(s) occurred while collecting performance data for the server '{0}'. If these issues persist, try restarting the data collection process:
 
@@ -2347,12 +2603,36 @@ This may take some time.</source>
         <target state="translated">利用可能なレコメンデーションはありません</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.sku.error.noRecommendation.reason">
-        <source xml:lang="en">No SKU recommendations were generated, as there were no SKUs which could satisfy the performance characteristics of your source. Try selecting a different target platform, adjusting recommendation parameters, or selecting a different set of databases to assess.</source>
-        <target state="translated">ソースのパフォーマンス特性を満たす SKU がないため、SKU のレコメンデーションは生成されませんでした。別のターゲット プラットフォームを選択するか、レコメンデーション パラメーターを調整するか、評価する別のデータベースのセットを選択してみてください。</target>
+        <source xml:lang="en">No SKU recommendations were generated, as there were no SKUs which could satisfy the performance characteristics of your source. Try selecting a different target platform, adjusting recommendation parameters, selecting a different set of databases to assess, or changing the recommendation model.</source>
+        <target state="translated">ソースのパフォーマンス特性を満たす SKU がないため、SKU のレコメンデーションは生成されませんでした。別のターゲット プラットフォームの選択、推奨事項パラメーターの調整、評価するデータベースの別のセットの選択、または推奨事項モデルの変更を試してください。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.source.missing">
+        <source xml:lang="en">Connection was successful but did not find any target databases.</source>
+        <target state="translated">接続は成功しましたが、ターゲット データベースが見つかりませんでした。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.target.connection.error">
+        <source xml:lang="en">Connection error: {0}</source>
+        <target state="translated">接続エラー: {0}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.target.connection.success">
+        <source xml:lang="en">Connection was successful. Target databases found: {0}</source>
+        <target state="translated">接続に成功しました。ターゲット データベースが見つかりました: {0}</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.target.description">
         <source xml:lang="en">Select an Azure account and your target {0}.</source>
         <target state="translated">Azure アカウントとターゲット {0}を選択します。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.target.mapping.error.duplicate">
+        <source xml:lang="en">Database mapping error.  Target database '{0}' cannot be selected to as a migration target for database '{1}'.  Target database '${targetDatabaseName}' is already selected as a migration target for database '{2}'.  Please select a different target database.</source>
+        <target state="translated">データベース マッピング エラーです。 ターゲット データベース '{0}' をデータベース '{1}' の移行ターゲットとして選択することはできません。 ターゲット データベース '${targetDatabaseName}' は、データベース '{2}' の移行ターゲットとして既に選択されています。 別のターゲット データベースを選択してください。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.target.missing">
+        <source xml:lang="en">Database mapping error. Missing target databases to migrate.  Please configure the target server connection and click connect to collect the list of available database migration targets.</source>
+        <target state="translated">データベース マッピング エラーです。移行するターゲット データベースがありません。 ターゲット サーバー接続を構成し、[接続] をクリックして、使用可能なデータベース移行ターゲットの一覧を収集してください。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.target.source.mapping.error">
+        <source xml:lang="en">Database mapping error.  Source database '{0}' is not mapped to a target database.  Please select a target database to migrate to.</source>
+        <target state="translated">データベース マッピング エラーです。 ソース データベース '{0}' はターゲット データベースにマップされていません。 移行先のターゲット データベースを選択してください。</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.target.title">
         <source xml:lang="en">Azure SQL target</source>
@@ -2365,6 +2645,10 @@ This may take some time.</source>
       <trans-unit id="total.databases.selected">
         <source xml:lang="en">{0} of {1} databases selected</source>
         <target state="translated">{1} 個中の {0} 個のデータベースが選択されています</target>
+      </trans-unit>
+      <trans-unit id="total.tables.selected.of.total">
+        <source xml:lang="en">{0} of {1}</source>
+        <target state="translated">{1}のうち {0}</target>
       </trans-unit>
     </body>
   </file>

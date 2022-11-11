@@ -39,6 +39,8 @@ import { ContextMenuColumn, ContextMenuCellValue } from 'sql/base/browser/ui/tab
 import { IAction, Separator } from 'vs/base/common/actions';
 import { MenuItemAction, MenuRegistry } from 'vs/platform/actions/common/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 
 export enum ColumnSizingMode {
 	ForceFit = 0,	// all columns will be sized to fit in viewable space, no horiz scroll bar
@@ -90,7 +92,9 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		@Inject(ILogService) logService: ILogService,
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
 		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
-		@Inject(IInstantiationService) private instantiationService: IInstantiationService
+		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
+		@Inject(IAccessibilityService) private accessibilityService: IAccessibilityService,
+		@Inject(IQuickInputService) private quickInputService: IQuickInputService
 	) {
 		super(changeRef, el, logService);
 	}
@@ -275,7 +279,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 				dataItemColumnValueExtractor: slickGridDataItemColumnValueWithNoData // must change formatter if you are changing explicit column value extractor
 			};
 
-			this._table = new Table<Slick.SlickData>(this._inputContainer.nativeElement, { dataProvider: this._tableData, columns: this._tableColumns }, options);
+			this._table = new Table<Slick.SlickData>(this._inputContainer.nativeElement, this.accessibilityService, this.quickInputService, { dataProvider: this._tableData, columns: this._tableColumns }, options);
 			this._table.setData(this._tableData);
 			this._table.setSelectionModel(new RowSelectionModel({ selectActiveRow: true }));
 

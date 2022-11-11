@@ -58,6 +58,7 @@ import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
 import { IEditorOptions } from 'vs/platform/editor/common/editor';
 import { ITextResourceConfigurationService } from 'vs/editor/common/services/textResourceConfiguration';
 import { FindReplaceStateChangedEvent, INewFindReplaceState } from 'vs/editor/contrib/find/browser/findState';
+import { IEditorResolverService } from 'vs/workbench/services/editor/common/editorResolverService';
 
 class NotebookModelStub extends stubs.NotebookModelStub {
 	public contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -103,10 +104,11 @@ suite('Test class NotebookEditor:', () => {
 	let queryTextEditor: QueryTextEditor;
 	let untitledNotebookInput: UntitledNotebookInput;
 	let notebookEditorStub: NotebookEditorStub;
+	let editorResolverService: IEditorResolverService;
 
 	setup(async () => {
 		// setup services
-		({ instantiationService, workbenchThemeService, notebookService, testTitle, extensionService, cellTextEditorGuid, queryTextEditor, untitledNotebookInput, notebookEditorStub } = setupServices({ instantiationService, workbenchThemeService }));
+		({ instantiationService, workbenchThemeService, notebookService, testTitle, extensionService, cellTextEditorGuid, queryTextEditor, untitledNotebookInput, notebookEditorStub, editorResolverService } = setupServices({ instantiationService, workbenchThemeService }));
 		// Create notebookEditor
 		notebookEditor = createNotebookEditor(instantiationService, workbenchThemeService, notebookService);
 	});
@@ -127,7 +129,7 @@ suite('Test class NotebookEditor:', () => {
 			const untitledTextInput = instantiationService.createInstance(UntitledTextEditorInput, untitledTextEditorService.create({ associatedResource: untitledUri }));
 			const untitledNotebookInput = new UntitledNotebookInput(
 				testTitle, untitledUri, untitledTextInput,
-				undefined, instantiationService, notebookService, extensionService
+				undefined, instantiationService, notebookService, extensionService, editorResolverService
 			);
 			const testNotebookEditor = new NotebookEditorStub({ cellGuid: cellTextEditorGuid, editor: queryTextEditor, model: notebookModel, notebookParams: <INotebookParams>{ notebookUri: untitledNotebookInput.notebookUri } });
 			notebookService.addNotebookEditor(testNotebookEditor);
@@ -714,9 +716,10 @@ function setupServices(arg: { workbenchThemeService?: WorkbenchThemeService, ins
 	const untitledUri = URI.from({ scheme: Schemas.untitled, path: 'NotebookEditor.Test-TestPath' });
 	const untitledTextEditorService = instantiationService.get(IUntitledTextEditorService);
 	const untitledTextInput = instantiationService.createInstance(UntitledTextEditorInput, untitledTextEditorService.create({ associatedResource: untitledUri }));
+	let editorResolverService = instantiationService.get(IEditorResolverService);
 	const untitledNotebookInput = new UntitledNotebookInput(
 		testTitle, untitledUri, untitledTextInput,
-		undefined, instantiationService, notebookService, extensionService
+		undefined, instantiationService, notebookService, extensionService, editorResolverService
 	);
 
 	const cellTextEditorGuid = generateUuid();
@@ -731,7 +734,7 @@ function setupServices(arg: { workbenchThemeService?: WorkbenchThemeService, ins
 	);
 	const notebookEditorStub = new NotebookEditorStub({ cellGuid: cellTextEditorGuid, editor: queryTextEditor, model: new NotebookModelStub(), notebookParams: <INotebookParams>{ notebookUri: untitledNotebookInput.notebookUri } });
 	notebookService.addNotebookEditor(notebookEditorStub);
-	return { instantiationService, workbenchThemeService, notebookService, testTitle, extensionService, cellTextEditorGuid, queryTextEditor, untitledNotebookInput, notebookEditorStub };
+	return { instantiationService, workbenchThemeService, notebookService, testTitle, extensionService, cellTextEditorGuid, queryTextEditor, untitledNotebookInput, notebookEditorStub, editorResolverService };
 }
 
 function createNotebookEditor(instantiationService: TestInstantiationService, workbenchThemeService: WorkbenchThemeService, notebookService: NotebookService) {

@@ -60,16 +60,17 @@ export class RefreshAction extends Action {
 
 		if (treeNode) {
 			try {
-				try {
-					const session = treeNode.getSession();
-					if (session) {
-						await this._objectExplorerService.refreshTreeNode(session, treeNode);
-					}
-				} catch (error) {
-					this.showError(error);
-					return;
-				}
 				if (this._tree instanceof AsyncServerTree) {
+					// Code moved here as non async tree already does it in it's refresh function (required to show loading spinner)
+					try {
+						const session = treeNode.getSession();
+						if (session) {
+							await this._objectExplorerService.refreshTreeNode(session, treeNode);
+						}
+					} catch (error) {
+						this.showError(error);
+						return;
+					}
 					await this._tree.updateChildren(this.element);
 				} else {
 					await this._tree.refresh(this.element);

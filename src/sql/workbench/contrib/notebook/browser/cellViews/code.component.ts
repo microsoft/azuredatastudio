@@ -99,7 +99,6 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 	private _editorModel: ITextModel;
 	private _activeCellId: string;
 	private _layoutEmitter = new Emitter<void>();
-
 	constructor(
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
@@ -138,6 +137,10 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 				break;
 			}
 		}
+	}
+
+	public refreshCell(): void {
+		this.updateModel();
 	}
 
 	public override getEditor(): QueryTextEditor {

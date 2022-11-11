@@ -18,6 +18,7 @@
 			"azure.microsoftCorpAccount": "Microsoft Corp",
 			"azure.noBaseToken": "Si è verificato un errore durante l'autenticazione oppure i token sono stati eliminati dal sistema. Provare ad aggiungere di nuovo l'account ad Azure Data Studio.",
 			"azure.noUniqueIdentifier": "L'utente non ha un identificatore univoco in AAD",
+			"azure.owningTenantNotFound": "Informazioni sul tenant proprietario non trovate per l'account.",
 			"azure.responseError": "Il recupero del token non è riuscito generando un errore. [Aprire gli strumenti di sviluppo] ({0}) per ulteriori dettagli.",
 			"azure.tenantNotFound": "Il tenant specificato con ID '{0}' non è stato trovato.",
 			"azureAuth.unidentifiedError": "Errore non identificato con l'autenticazione di Azure",
@@ -25,7 +26,8 @@
 			"azurecore.consentDialog.body": "Il tenant '{0} ({1})' richiede una nuova autenticazione per accedere alle risorse {2}. Premere Apri per avviare il processo di autenticazione.",
 			"azurecore.consentDialog.cancel": "Annulla",
 			"azurecore.consentDialog.ignore": "Ignora tenant",
-			"azurecore.consentDialog.open": "Apri"
+			"azurecore.consentDialog.open": "Apri",
+			"noMicrosoftResource": "Per il provider '{0}' non è definito un endpoint di risorsa Microsoft."
 		},
 		"dist/account-provider/auths/azureAuthCodeGrant": {
 			"azure.azureAuthCodeGrantName": "Concessione codice di autenticazione di Azure",
@@ -83,6 +85,9 @@
 		"dist/azureResource/providers/kusto/kustoTreeDataProvider": {
 			"azure.resource.providers.KustoContainerLabel": "Cluster di Esplora dati di Azure"
 		},
+		"dist/azureResource/providers/mysqlFlexibleServer/mysqlFlexibleServerTreeDataProvider": {
+			"azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel": "Server flessibile di Database di Azure per MySQL"
+		},
 		"dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider": {
 			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "PostgreSQL Hyperscale – Azure Arc"
 		},
@@ -99,7 +104,8 @@
 			"azure.resource.resourceTreeNode.noResourcesLabel": "Non sono state trovate risorse"
 		},
 		"dist/azureResource/services/subscriptionService": {
-			"azure.resource.tenantSubscriptionsError": "Non è stato possibile recuperare le sottoscrizioni per l'account {0} (tenant '{1}'). {2}"
+			"azure.resource.tenantSubscriptionsError": "Non è stato possibile recuperare le sottoscrizioni per l'account {0} (tenant '{1}'). {2}",
+			"azure.resource.tenantTokenError": "Non è stato possibile acquisire il token di accesso per l'account '{0}' ('{1}' tenant)."
 		},
 		"dist/azureResource/services/terminalService": {
 			"azure.cloudShell": "Azure Cloud Shell (anteprima) {0} ({1})",

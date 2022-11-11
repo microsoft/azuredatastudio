@@ -134,14 +134,6 @@
         <source xml:lang="en">Application name</source>
         <target state="translated">應用程式名稱</target>
       </trans-unit>
-      <trans-unit id="cms.connectionOptions.asynchronousProcessing.description">
-        <source xml:lang="en">When true, enables usage of the Asynchronous functionality in the .Net Framework Data Provider</source>
-        <target state="translated">若為 True，則允許使用 .Net Framework Data Provider 中的非同步功能</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.asynchronousProcessing.displayName">
-        <source xml:lang="en">Asynchronous processing</source>
-        <target state="translated">非同步處理</target>
-      </trans-unit>
       <trans-unit id="cms.connectionOptions.attachDbFilename.displayName">
         <source xml:lang="en">Attach DB filename</source>
         <target state="translated">附加 DB 檔案名稱</target>

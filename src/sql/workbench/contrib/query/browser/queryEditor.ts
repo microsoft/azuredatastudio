@@ -312,10 +312,10 @@ export class QueryEditor extends EditorPane {
 
 		// TODO: Allow query provider to provide the language mode.
 		if (this.input instanceof UntitledQueryEditorInput) {
-			if ((providerId === 'KUSTO') || this.languageService.getExtensions('Kusto').indexOf(fileExtension) > -1) {
+			if ((providerId === 'KUSTO') || this.languageService.getExtensions('kusto').indexOf(fileExtension) > -1) {
 				this.input.setMode('kusto');
 			}
-			else if (providerId === 'LOGANALYTICS' || this.languageService.getExtensions('LogAnalytics').indexOf(fileExtension) > -1) {
+			else if (providerId === 'LOGANALYTICS' || this.languageService.getExtensions('loganalytics').indexOf(fileExtension) > -1) {
 				this.input.setMode('loganalytics');
 			}
 		}

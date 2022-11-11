@@ -47,8 +47,6 @@
 			"cms.connectionOptions.applicationIntent.displayName": "应用意图",
 			"cms.connectionOptions.applicationName.description": "应用程序的名称",
 			"cms.connectionOptions.applicationName.displayName": "应用程序名称",
-			"cms.connectionOptions.asynchronousProcessing.description": "如果为 true，则允许在 .Net Framework 数据提供程序中使用异步功能",
-			"cms.connectionOptions.asynchronousProcessing.displayName": "异步处理",
 			"cms.connectionOptions.attachDbFilename.displayName": "附加 DB 文件名",
 			"cms.connectionOptions.attachedDBFileName.description": "可附加数据库的主文件的名称(包括完整路径名称)",
 			"cms.connectionOptions.attachedDBFileName.displayName": "附加的 DB 文件名",

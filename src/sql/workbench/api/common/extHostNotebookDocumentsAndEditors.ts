@@ -218,6 +218,9 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 	//#endregion
 
 	//#region Extension accessible methods
+	/**
+	 * Attempts to create a new notebook with the specified provider and contents. Used for VS Code extension compatibility.
+	 */
 	async createNotebookDocument(providerId: string, contents?: azdata.nb.INotebookContents): Promise<URI> {
 		let uriComps = await this._proxy.$tryCreateNotebookDocument(providerId, contents);
 		let uri = URI.revive(uriComps);
@@ -241,6 +244,9 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 		return uri;
 	}
 
+	/**
+	 * Attempts to open an existing notebook. Used for VS Code extension compatibility.
+	 */
 	async openNotebookDocument(uri: vscode.Uri): Promise<azdata.nb.NotebookDocument> {
 		let docData = this._documents.get(uri.toString());
 		if (!docData) {

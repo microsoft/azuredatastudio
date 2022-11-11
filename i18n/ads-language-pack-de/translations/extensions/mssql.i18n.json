@@ -238,7 +238,7 @@
 			"usernameAndPasswordRequired": "Benutzername und Kennwort sind erforderlich."
 		},
 		"dist/sqlToolsServer": {
-			"downloadServiceDoneChannelMsg": "Die Installation von {0} wurde abgeschlossen.",
+			"downloadServiceDoneChannelMsg": "{0} wurde heruntergeladen",
 			"downloadingServiceChannelMsg": "\"{0}\" wird heruntergeladen.",
 			"downloadingServiceSizeChannelMsg": "({0} KB)",
 			"downloadingServiceStatusMsg": "\"{0}\" wird heruntergeladen.",
@@ -251,7 +251,10 @@
 			"startingServiceStatusMsg": "\"{0}\" wird gestartet."
 		},
 		"dist/tableDesigner/tableDesigner": {
-			"tableDesigner.NewTable": "Neue Tabelle"
+			"tableDesigner.NewTable": "Neue Tabelle",
+			"tableDesigner.no": "Nein",
+			"tableDesigner.turnOnPreloadingMessage": "Möchten Sie die Ladezeit des Tabellen-Designers reduzieren, indem Sie das Vorabladen des Datenbankmodells aktivieren? Das Datenbankmodell wird vorab geladen, wenn Sie den Datenbankknoten im Objekt-Explorer erweitern.",
+			"tableDesigner.yes": "Ja"
 		},
 		"dist/telemetry": {
 			"serviceCrashMessage": "Die Komponente \"{0}\" wurde unerwartet beendet. Starten Sie Azure Data Studio neu.",
@@ -279,8 +282,6 @@
 			"mssql.connectionOptions.applicationIntent.displayName": "Anwendungszweck",
 			"mssql.connectionOptions.applicationName.description": "Der Name der Anwendung",
 			"mssql.connectionOptions.applicationName.displayName": "Anwendungsname",
-			"mssql.connectionOptions.asynchronousProcessing.description": "Bei Festlegung auf TRUE wird die Verwendung der asynchronen Verarbeitung im .NET Framework-Datenanbieter ermöglicht.",
-			"mssql.connectionOptions.asynchronousProcessing.displayName": "Asynchrone Verarbeitung",
 			"mssql.connectionOptions.attachDbFilename.displayName": "Dateiname der anzufügenden Datenbank",
 			"mssql.connectionOptions.attachedDBFileName.description": "Der Name der primären Datei einer anfügbaren Datenbank, einschließlich des vollständigen Pfadnamens.",
 			"mssql.connectionOptions.attachedDBFileName.displayName": "Dateiname der angefügten Datenbank",
@@ -355,6 +356,14 @@
 			"mssql.connectionOptions.workstationId.displayName": "Arbeitsstations-ID",
 			"mssql.disabled": "Deaktiviert",
 			"mssql.enabled": "Aktiviert",
+			"mssql.executionPlan.actualNumberOfRowsForAllExecutions": "Hebt den Ausführungsplanvorgang mit der größten tatsächlichen Anzahl von Zeilen für alle Ausführungen hervor.",
+			"mssql.executionPlan.cost": "Hebt den Ausführungsplanvorgang mit den höchsten Kosten hervor.",
+			"mssql.executionPlan.expensiveOperationMetric": "Die Standardmetrik, die verwendet werden soll, um einen teuren Vorgang in Abfrageausführungsplänen hervorzuheben.",
+			"mssql.executionPlan.expensiveOperationMetric.actualElapsedCpuTime": "Hebt den Ausführungsplanvorgang hervor, der die meiste CPU-Zeit beansprucht hat.",
+			"mssql.executionPlan.expensiveOperationMetric.actualElapsedTime": "Hebt den Ausführungsplanvorgang hervor, der am längsten gedauert hat.",
+			"mssql.executionPlan.expensiveOperationMetric.off": "Die Hervorhebung aufwendiger Vorgänge wird für Ausführungspläne deaktiviert.",
+			"mssql.executionPlan.numberOfRowsRead": "Hebt den Ausführungsplanvorgang mit der größten Anzahl gelesener Zeilen hervor.",
+			"mssql.executionPlan.subtreeCost": "Hebt den Ausführungsplanvorgang mit den höchsten Unterstrukturkosten hervor.",
 			"mssql.exportNotebookToSql": "Notebook als SQL exportieren",
 			"mssql.exportSqlAsNotebook": "SQL als Notebook exportieren",
 			"mssql.format.alignColumnDefinitionsInColumns": "Sollen Spaltendefinitionen ausgerichtet werden?",
@@ -386,7 +395,8 @@
 			"mssql.query.executionTimeout": "Ein Timeoutwert von 0 für die Ausführung kennzeichnet einen unbegrenzten Wartevorgang (kein Timeout).",
 			"mssql.query.implicitTransactions": "SET IMPLICIT_TRANSACTIONS aktivieren",
 			"mssql.query.lockTimeout": "SET LOCK TIMEOUT-Option aktivieren (in Millisekunden)",
-			"mssql.query.maxXmlCharsToStore": "Anzahl von XML-Zeichen, die nach dem Ausführen einer Abfrage gespeichert werden sollen",
+			"mssql.query.maxCharsToStore": "Die maximale Anzahl von Zeichen/Bytes, die nach dem Ausführen einer Abfrage für jeden Wert in Zeichenspalten/binären Spalten gespeichert werden sollen. Standardwert: 65.535. Gültiger Wertebereich: 1 bis 2.147.483.647.",
+			"mssql.query.maxXmlCharsToStore": "Die maximale Anzahl von Zeichen, die nach dem Ausführen einer Abfrage für jeden Wert in XML-Spalten gespeichert werden sollen. Standardwert: 2.097.152. Gültiger Wertebereich: 1 bis 2.147.483.647.",
 			"mssql.query.noCount": "SET NOCOUNT-Option aktivieren",
 			"mssql.query.noExec": "SET NOEXEC-Option aktivieren",
 			"mssql.query.parseOnly": "SET PARSEONLY-Option aktivieren",
@@ -398,6 +408,7 @@
 			"mssql.query.textSize": "Maximale Größe von text- und ntext-Daten, die von einer SELECT-Anweisung zurückgegeben werden",
 			"mssql.query.transactionIsolationLevel": "SET TRANSACTION ISOLATION LEVEL-Option aktivieren",
 			"mssql.query.xactAbortOn": "SET XACT_ABORT ON-Option aktivieren",
+			"mssql.tableDesigner.preloadDatabaseModel": "Gibt an, ob das Datenbankmodell vorab geladen werden soll, wenn der Datenbankknoten im Objekt-Explorer erweitert wird. Wenn diese Option aktiviert ist, kann die Ladezeit des Tabellen-Designers reduziert werden. Hinweis: Wenn Sie viele Datenbankknoten erweitern müssen, wird möglicherweise eine höhere Speicherauslastung als normal angezeigt.",
 			"mssql.tracingLevel": "[Optional] Protokolliergrad für Back-End-Dienste. Azure Data Studio generiert bei jedem Start einen Dateinamen, und falls die Datei bereits vorhanden ist, werden die Protokolleinträge an diese Datei angehängt. Zur Bereinigung alter Protokolldateien können die Einstellungen \"logRetentionMinutes\" und \"logFilesRemovalLimit\" verwendet werden. Bei Verwendung des Standardwerts für \"tracingLevel\" werden nur wenige Informationen protokolliert. Eine Änderung der Ausführlichkeit kann zu einem umfangreichen Protokollierungsaufkommen und einem hohen Speicherplatzbedarf für die Protokolle führen. \"Error\" umfasst kritische Meldungen, \"Warning\" umfasst alle Daten aus \"Error\" sowie Warnmeldungen, \"Information\" umfasst alle Daten aus \"Warning\" sowie Informationsmeldungen, \"Verbose\" umfasst ausführliche Informationen.",
 			"mssqlCluster.copyPath": "Pfad kopieren",
 			"mssqlCluster.deleteFiles": "Löschen",

@@ -238,7 +238,7 @@
 			"usernameAndPasswordRequired": "ユーザー名とパスワードが必要です"
 		},
 		"dist/sqlToolsServer": {
-			"downloadServiceDoneChannelMsg": "{0} のインストールが完了しました",
+			"downloadServiceDoneChannelMsg": "ダウンロード済み {0}",
 			"downloadingServiceChannelMsg": "{0} のダウンロード中",
 			"downloadingServiceSizeChannelMsg": "({0} KB)",
 			"downloadingServiceStatusMsg": "{0} のダウンロード中",
@@ -251,7 +251,10 @@
 			"startingServiceStatusMsg": "{0} の開始中"
 		},
 		"dist/tableDesigner/tableDesigner": {
-			"tableDesigner.NewTable": "新しいテーブル"
+			"tableDesigner.NewTable": "新しいテーブル",
+			"tableDesigner.no": "いいえ",
+			"tableDesigner.turnOnPreloadingMessage": "データベース モデルの事前読み込みを有効にして、テーブル デザイナーの読み込み時間を短縮しますか? オブジェクト エクスプローラーでデータベース ノードを展開すると、データベース モデルが事前に読み込まれます。",
+			"tableDesigner.yes": "はい"
 		},
 		"dist/telemetry": {
 			"serviceCrashMessage": "{0} コンポーネントが予期せず終了しました。Azure Data Studio を再起動してください。",
@@ -279,8 +282,6 @@
 			"mssql.connectionOptions.applicationIntent.displayName": "アプリケーションの意図",
 			"mssql.connectionOptions.applicationName.description": "アプリケーションの名前",
 			"mssql.connectionOptions.applicationName.displayName": "アプリケーション名",
-			"mssql.connectionOptions.asynchronousProcessing.description": "True の場合は、.Net Framework Data Provider の非同期機能を使用できるようになります",
-			"mssql.connectionOptions.asynchronousProcessing.displayName": "非同期処理",
 			"mssql.connectionOptions.attachDbFilename.displayName": "添付 DB ファイル名",
 			"mssql.connectionOptions.attachedDBFileName.description": "完全なパス名を含む、接続可能なデータベースのプライマリ ファイル名",
 			"mssql.connectionOptions.attachedDBFileName.displayName": "添付された DB ファイルの名前",
@@ -355,6 +356,14 @@
 			"mssql.connectionOptions.workstationId.displayName": "ワークステーション ID",
 			"mssql.disabled": "無効",
 			"mssql.enabled": "有効",
+			"mssql.executionPlan.actualNumberOfRowsForAllExecutions": "すべての実行の実際の行数が最も多い実行プランの操作を強調表示します。",
+			"mssql.executionPlan.cost": "コストが最も高い実行プラン操作を強調表示します。",
+			"mssql.executionPlan.expensiveOperationMetric": "クエリ実行プランで負荷の高い操作を強調表示するために使用する既定のメトリック",
+			"mssql.executionPlan.expensiveOperationMetric.actualElapsedCpuTime": "CPU 時間が最も多く使用された実行プラン操作を強調表示します。",
+			"mssql.executionPlan.expensiveOperationMetric.actualElapsedTime": "最も時間がかかった実行プランの操作を強調表示します。",
+			"mssql.executionPlan.expensiveOperationMetric.off": "実行プランでは、負荷の高い操作の強調表示がオフになります。",
+			"mssql.executionPlan.numberOfRowsRead": "読み取られた行数が最も多い実行プラン操作を強調表示します。",
+			"mssql.executionPlan.subtreeCost": "サブツリー コストが最も高い実行プラン操作を強調表示します。",
 			"mssql.exportNotebookToSql": "ノートブックを SQL としてエクスポート",
 			"mssql.exportSqlAsNotebook": "SQL をノートブックとしてエクスポート",
 			"mssql.format.alignColumnDefinitionsInColumns": "列定義を揃えるかどうか",
@@ -386,7 +395,8 @@
 			"mssql.query.executionTimeout": "実行タイムアウトが 0 の場合は、無制限の待機 (タイムアウトなし) を示します",
 			"mssql.query.implicitTransactions": "SET IMPLICIT_TRANSACTIONS を有効にする",
 			"mssql.query.lockTimeout": "SET LOCK TIMEOUT オプションを有効にする (ミリ秒単位)",
-			"mssql.query.maxXmlCharsToStore": "クエリの実行後に格納する XML 文字の数",
+			"mssql.query.maxCharsToStore": "クエリの実行後に、文字/バイナリ列の各値に格納する最大文字数/バイト数。既定値: 65,535。有効な値の範囲: 1 から 2,147,483,647。",
+			"mssql.query.maxXmlCharsToStore": "クエリの実行後に XML 列の各値に格納する最大文字数。既定値: 2,097,152。有効な値の範囲: 1 から 2,147,483,647。",
 			"mssql.query.noCount": "SET NOCOUNT オプションを有効にする",
 			"mssql.query.noExec": "SET NOEXEC オプションを有効にする",
 			"mssql.query.parseOnly": "SET PARSEONLY オプションを有効にする",
@@ -398,6 +408,7 @@
 			"mssql.query.textSize": "SELECT ステートメントから返されるテキストおよび ntext データの最大サイズ",
 			"mssql.query.transactionIsolationLevel": "SET TRANSACTION ISOLATION LEVEL オプションを有効にする",
 			"mssql.query.xactAbortOn": "SET XACT_ABORT ON オプションを有効にする",
+			"mssql.tableDesigner.preloadDatabaseModel": "オブジェクト エクスプローラーのデータベース ノードが展開されたときに、データベース モデルを事前に読み込むかどうか。有効にすると、テーブル デザイナーの読み込み時間を短縮できます。注: 多数のデータベース ノードの展開が必要な場合、通常よりも多くのメモリが使用される可能性があります。",
 			"mssql.tracingLevel": "[省略可能] バックエンド サービスのログ レベル。Azure Data Studio は開始のたびにファイル名を生成し、そのファイルが既に存在する場合にはログ エントリが対象ファイルに追加されます。古いログ ファイルのクリーンアップについては、logRetentionMinutes と logFilesRemovalLimit の設定を参照してください。既定の tracingLevel では、ログに記録される数は多くありません。詳細レベルを変更すると、詳細なログが記録され、ログのためのディスク容量が必要になる場合があります。エラーには重大が含まれ、警告にはエラーが含まれ、情報には警告が含まれ、詳細には情報が含まれます",
 			"mssqlCluster.copyPath": "パスのコピー",
 			"mssqlCluster.deleteFiles": "削除",

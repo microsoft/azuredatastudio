@@ -47,8 +47,6 @@
 			"cms.connectionOptions.applicationIntent.displayName": "アプリケーションの意図",
 			"cms.connectionOptions.applicationName.description": "アプリケーションの名前",
 			"cms.connectionOptions.applicationName.displayName": "アプリケーション名",
-			"cms.connectionOptions.asynchronousProcessing.description": "True の場合は、.Net Framework Data Provider の非同期機能を使用できるようになります",
-			"cms.connectionOptions.asynchronousProcessing.displayName": "非同期処理",
 			"cms.connectionOptions.attachDbFilename.displayName": "添付 DB ファイル名",
 			"cms.connectionOptions.attachedDBFileName.description": "完全なパス名を含む、接続可能なデータベースのプライマリ ファイル名",
 			"cms.connectionOptions.attachedDBFileName.displayName": "添付された DB ファイルの名前",

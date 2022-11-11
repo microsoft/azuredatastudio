@@ -107,12 +107,15 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(ICapabilitiesService) private capabilitiesService: ICapabilitiesService,
 		@Inject(ITextFileService) private textFileService: ITextFileService,
 		@Inject(ILogService) private readonly logService: ILogService,
-		@Inject(IConfigurationService) private _configurationService: IConfigurationService
+		@Inject(IConfigurationService) private _configurationService: IConfigurationService,
 	) {
 		super();
 		this.doubleClickEditEnabled = this._configurationService.getValue('notebook.enableDoubleClickEdit');
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
 			this.doubleClickEditEnabled = this._configurationService.getValue('notebook.enableDoubleClickEdit');
+			if (e.affectsConfiguration('notebook.renderTablesInHtml')) {
+				this.textCells.forEach(cell => cell.reloadTables());
+			}
 		}));
 		this._register(RedoCommand.addImplementation(PRIORITY, 'notebook-cells-undo-redo', () => {
 			// Prevent the undo/redo from happening in other notebooks and to prevent the execution of undo/redo in the cell.
