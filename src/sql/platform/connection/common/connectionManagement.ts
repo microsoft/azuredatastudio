@@ -176,7 +176,7 @@ export interface IConnectionManagementService {
 
 	isConnected(fileUri: string): boolean;
 
-	refreshAzureAccountTokenIfNecessary(uri: string): Promise<boolean>;
+	refreshAzureAccountTokenIfNecessary(uri: string, connectionProfile?: ConnectionProfile): Promise<boolean>;
 	/**
 	 * Returns true if the connection profile is connected
 	 */
