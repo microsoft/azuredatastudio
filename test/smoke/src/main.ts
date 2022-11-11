@@ -8,7 +8,7 @@ import * as cp from 'child_process';
 import * as path from 'path';
 import * as os from 'os';
 import * as minimist from 'minimist';
-import * as tmp from 'tmp';
+import * as tmp from 'tmp'; // {{SQL CARBON EDIT}} - Needed to tmp to create the temporary test directory
 import * as rimraf from 'rimraf';
 import * as mkdirp from 'mkdirp';
 import { ncp } from 'ncp';
