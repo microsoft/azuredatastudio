@@ -28,7 +28,7 @@ Azure Data Studio is a data management tool that enables you to work with SQL Se
 
 Go to our [download page](https://aka.ms/getazuredatastudio) for more specific instructions.
 
-## Try out the latest insiders build from `main`:
+## Try out the latest insiders build from `main` branch:
 
 |Platform |Type             |Download - Insiders Build |
 | --------|-----------------|----------------------- |
