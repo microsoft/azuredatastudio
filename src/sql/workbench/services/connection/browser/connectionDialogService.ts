@@ -282,12 +282,14 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				this._logService.debug(`ConnectionDialogService: Connection error: ${connectionResult.errorMessage}`);
 			} else {
 				this._connectionDialog.resetConnection();
-				let passwordChangeResult = await this._connectionManagementService.sendChangePassword(connection, connectionResult.uriForPasswordChange);
+				let testPassword = 'T3$TPa$$word1';
+				let passwordChangeResult = await this._connectionManagementService.sendChangePassword(connection, connectionResult.uriForPasswordChange, testPassword);
 				if (!passwordChangeResult.result) {
 					let errorString = passwordChangeResult.errorMessage + '\n\nDetails:\n' + passwordChangeResult.messages;
 					throw Error(errorString);
 				}
-				// TODO: if successful with password change, change the password of the connection profile, then connect again.
+				connection.options['password'] = testPassword;
+				this.handleDefaultOnConnect(params, connection);
 				//this.showPasswordResetDialog(connection);
 			}
 		} catch (err) {

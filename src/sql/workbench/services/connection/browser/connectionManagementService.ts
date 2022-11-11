@@ -429,9 +429,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	/**
 	 * Changes password, opens the connection and saves the profile in the settings.
 	 */
-	public sendChangePassword(connection: interfaces.IConnectionProfile, uri: string):
+	public sendChangePassword(connection: interfaces.IConnectionProfile, uri: string, newPassword: string):
 		Promise<azdata.PasswordChangeResult> {
-		return this.sendChangePasswordRequest(connection, uri);
+		return this.sendChangePasswordRequest(connection, uri, newPassword);
 	}
 
 	/**
@@ -1023,15 +1023,13 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	private async sendChangePasswordRequest(connection: interfaces.IConnectionProfile, uri: string): Promise<azdata.PasswordChangeResult> {
+	private async sendChangePasswordRequest(connection: interfaces.IConnectionProfile, uri: string, newPassword: string): Promise<azdata.PasswordChangeResult> {
 		let connectionInfo = Object.assign({}, {
 			options: connection.options
 		});
 
-		let testPassword = 'T3$TPa$$word1';
-
 		return this._providers.get(connection.providerName).onReady.then((provider) => {
-			return provider.changePassword(uri, connectionInfo, testPassword).then(result => {
+			return provider.changePassword(uri, connectionInfo, newPassword).then(result => {
 				return result;
 			})
 		});
