@@ -14,6 +14,7 @@ import { ExecutionPlanPropertiesViewBase, PropertiesSortType } from 'sql/workben
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 
 export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase {
 	// Div that holds the name of the element selected
@@ -26,9 +27,10 @@ export class ExecutionPlanPropertiesView extends ExecutionPlanPropertiesViewBase
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IContextViewService contextViewService: IContextViewService,
-		@IAccessibilityService accessibilityService: IAccessibilityService
+		@IAccessibilityService accessibilityService: IAccessibilityService,
+		@IQuickInputService quickInputService: IQuickInputService
 	) {
-		super(parentContainer, themeService, instantiationService, contextMenuService, contextViewService, accessibilityService);
+		super(parentContainer, themeService, instantiationService, contextMenuService, contextViewService, accessibilityService, quickInputService);
 		this._model = <ExecutionPlanPropertiesView>{};
 		this._operationName = DOM.$('h3');
 		this._operationName.classList.add('operation-name');

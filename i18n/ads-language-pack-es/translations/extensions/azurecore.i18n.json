@@ -18,6 +18,7 @@
 			"azure.microsoftCorpAccount": "Microsoft Corp",
 			"azure.noBaseToken": "Ha habido algún error problema con la autenticación, o bien los tokens se han eliminado del sistema. Pruebe a volver a agregar la cuenta de Azure Data Studio.",
 			"azure.noUniqueIdentifier": "El usuario no tenía ningún identificador único en AAD.",
+			"azure.owningTenantNotFound": "No se encontró la información del inquilino propietario para la cuenta.",
 			"azure.responseError": "Error al recuperar el token. [Abra las herramientas de desarrollo]({0}) para obtener más detalles.",
 			"azure.tenantNotFound": "No se encuentra el inquilino especificado con el id. \"{0}\".",
 			"azureAuth.unidentifiedError": "Error no identificado con la autenticación de Azure.",
@@ -25,7 +26,8 @@
 			"azurecore.consentDialog.body": "El inquilino \"{0} ({1})\" requiere que vuelva a autenticarse para acceder a {2} recursos. Presione Abrir para iniciar el proceso de autenticación.",
 			"azurecore.consentDialog.cancel": "Cancelar",
 			"azurecore.consentDialog.ignore": "Omitir inquilino",
-			"azurecore.consentDialog.open": "Abrir"
+			"azurecore.consentDialog.open": "Abrir",
+			"noMicrosoftResource": "El proveedor “{0}” no tiene definido un punto de conexión de recursos de Microsoft."
 		},
 		"dist/account-provider/auths/azureAuthCodeGrant": {
 			"azure.azureAuthCodeGrantName": "Concesión de código de autenticación de Azure",
@@ -83,6 +85,9 @@
 		"dist/azureResource/providers/kusto/kustoTreeDataProvider": {
 			"azure.resource.providers.KustoContainerLabel": "Clúster de Azure Data Explorer"
 		},
+		"dist/azureResource/providers/mysqlFlexibleServer/mysqlFlexibleServerTreeDataProvider": {
+			"azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel": "Servidor flexible de Azure Database for MySQL"
+		},
 		"dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider": {
 			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "Hiperescala de PostgreSQL: Azure Arc"
 		},
@@ -99,7 +104,8 @@
 			"azure.resource.resourceTreeNode.noResourcesLabel": "No se han encontrado recursos"
 		},
 		"dist/azureResource/services/subscriptionService": {
-			"azure.resource.tenantSubscriptionsError": "No se pudieron obtener las suscripciones para la cuenta {0}(inquilino \"{1}\"). {2}"
+			"azure.resource.tenantSubscriptionsError": "No se pudieron obtener las suscripciones para la cuenta {0}(inquilino \"{1}\"). {2}",
+			"azure.resource.tenantTokenError": "No se pudo adquirir el token de acceso para la cuenta '{0}' (inquilino '{1}')."
 		},
 		"dist/azureResource/services/terminalService": {
 			"azure.cloudShell": "Azure Cloud Shell (versión preliminar) {0} ({1})",

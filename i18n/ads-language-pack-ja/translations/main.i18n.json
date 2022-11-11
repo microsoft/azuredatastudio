@@ -10242,6 +10242,7 @@
 			"InstallVSIXAction.successReload": "VSIX からの {0} 拡張機能のインストールが完了しました。有効にするには、Azure Data Studio を再度読み込んでください。",
 			"ReinstallAction.successReload": "拡張機能 {0}の再インストールを完了するには、Azure Data Studio を再度読み込んでください。",
 			"activateLanguagePack": "{0}で Azure Data Studio を使用するには、Azure Data Studio を再起動する必要があります。",
+			"appName": "'${appName}': 例: Azure Data Studio。",
 			"azuredatastudio": "Azure Data Studio",
 			"connectionDialogBrowseTree.context": "接続ダイアログの閲覧ツリーのコンテキスト メニュー",
 			"dashboard.toolbar": "ダッシュボード ツールバーのアクション メニュー",
@@ -10266,6 +10267,8 @@
 			"notebook.title": "ノートブックのタイトル メニュー",
 			"notebook.toolbar": "ノートブックのツール バー メニュー",
 			"objectExplorer.context": "オブジェクト エクスプローラー項目のコンテキスト メニュー",
+			"openDefaultSettingsJson": "既定の設定の JSON を開く",
+			"openDefaultSettingsJson.capitalized": "既定の設定 (JSON) を開く",
 			"postDisableTooltip": "更新された拡張機能を無効にするには、Azure Data Studio を再度読み込んでください。",
 			"postEnableTooltip": "この拡張機能を有効にするには、Azure Data Studio を再度読み込んでください。",
 			"postUninstallTooltip": "この拡張機能のアンインストールを完了するには、Azure Data Studio を再度読み込んでください。",
@@ -10273,7 +10276,18 @@
 			"recommendedExtensions": "マーケット プレース",
 			"scenarioTypeUndefined": "拡張機能の推奨事項のシナリオの種類を指定する必要があります。",
 			"showReleaseNotes": "更新後にリリース ノートを表示します。リリース ノートが新しい Web ブラウザー ウィンドウで開きます。",
+			"sql.versionMismatch": "拡張機能は、Azure Data Studio {0} と互換性がありません。拡張機能には以下が必要です: {1}。",
+			"sql.versionMismatchVsCode": "拡張機能は Azure Data Studio {0}と互換性がありません。拡張機能には、現在サポートされているバージョン ({2}) よりも新しい VS Code エンジン バージョン{1}が必要です。",
+			"sql.versionSyntax": "'{0}' の値 {1} を解析できませんでした。例: ^1.22.0、^1.22.x などを使用してください。",
 			"sql.watcherExclude": "ファイル監視から除外するファイル パスの glob パターンを構成します。パターンは絶対パスで一致する必要があります。つまり、パス内のファイル (`**/build/output/**` や `/Users/name/workspaces/project/build/output/**` など) と一致するには、プレフィックスに `**/` または完全なパスが正しく一致し、サフィックスが `/**` である必要があります。この設定を変更するには、再起動が必要です。起動時に Azure Data Stuidio が多くの CPU 時間を消費する場合は、大きなフォルダーを除外して初期負荷を減らすことができます。",
+			"terminal.integrated.allowChords": "ターミナルでキー バインドを許可するかどうか。これが true で、キーストロークによって \"#terminal.integrated.commandsToSkipShell#\" がバイパスされる場合、これを false に設定するとCtrl + k キーを (Azure Data Studio ではなく) シェルに移動する場合に特に便利です。",
+			"terminal.integrated.autoReplies": "ターミナルで発生したときに自動的に応答されるメッセージのセット。メッセージが十分に具体的である場合、これは一般的な応答を自動化するのに役立ちます。\r\n\r\n注釈:\r\n\r\n- {0} を使用して、Windows 上のバッチ ジョブの終了プロンプトに自動的に応答します。\r\n- メッセージにはエスケープ シーケンスが含まれているため、スタイル設定されたテキストでは応答が発生しない可能性があります。\r\n- 各返信は 1 秒に 1 回しか行われません。\r\n- 返信で {1} を使用して、Enter キーを意味します。\r\n- 既定のキーの設定を解除するには、値を null に設定します。\r\n- 新しく適用されない場合は、Azured Data Studio を再起動します。",
+			"terminal.integrated.commandsToSkipShell": "キー バインドがシェルに送信されず、常にAzure Data Studioによって処理されるコマンド ID のセット。これにより、シェルで通常使用されるキー バインドは、ターミナルにフォーカスがない場合と同じように動作できます。たとえば、'Ctrl + P' キーを押してQuick Openを起動できます。\r\n\r\n&nbsp;\r\n\r\n既定では、多くのコマンドはスキップされます。既定値をオーバーライドし、代わりにコマンドのキー バインドをシェルに渡すには、'-' 文字のプレフィックスが付いたコマンドを追加します。たとえば、'-workbench.action.quickOpen' を追加して、'Ctrl + P' がシェルに到達できるようにします。\r\n\r\n&nbsp;\r\n\r\n次に示す既定のスキップされたコマンドの一覧は、設定エディターで表示すると切り捨てられます。完全な一覧を表示するには、次の一覧から最初のコマンドを {1} して検索します。\r\n\r\n&nbsp;\r\n\r\n既定スキップされたコマンド:\r\n\r\n{0}",
+			"terminal.integrated.detectLocale": "Azure Data Studio のターミナルではシェルからの UTF-8 エンコード データのみがサポートされるため、'$LANG' 環境変数を検出して UTF-8 準拠オプションに設定するかどうかを制御します。",
+			"terminal.integrated.env.linux": "Linux 上のターミナルで使用される Azure Data Studio プロセスに追加される環境変数を持つオブジェクト。環境変数を削除するには、'null' に設定します。",
+			"terminal.integrated.env.osx": "macOS 上のターミナルで使用される Azure Data Studio プロセスに追加される環境変数を持つオブジェクト。環境変数を削除するには、'null' に設定します。",
+			"terminal.integrated.env.windows": "Windows 上のターミナルで使用される Azure Data Studio プロセスに追加される環境変数を持つオブジェクト。環境変数を削除するには、'null' に設定します。",
+			"terminal.integrated.inheritEnv": "新しいシェルが$PATHやその他の開発変数が確実に初期化されるようにログインシェルをソースとする可能性のある Azure Data Studio から環境を継承するかどうか。これは Windows には影響しません。",
 			"uninstallExtensionComplete": "拡張機能 {0}のアンインストールを完了するには、Azure Data Studio を再度読み込んでください。",
 			"updateLocale": "Azure Data Studio の UI 言語を {0} に変更して再起動しますか?",
 			"vscodeDocCreationFailedError": "ノートブック ドキュメントを作成できませんでした。",
@@ -10314,13 +10328,14 @@
 			"schema.dashboardWidgets.server": "ダッシュ ボードで使用されているウィジェット"
 		},
 		"sql/platform/serialization/common/serializationService": {
+			"missingSerializationProviderError": "指定された ID '{0}' のシリアル化プロバイダーが見つかりませんでした",
 			"noSerializationProvider": "プロバイダーが登録されていないため、データをシリアル化できません",
 			"saveAsNotSupported": "このデータ プロバイダーに対して無効になっている別の形式で結果を保存しています。",
 			"unknownSerializationError": "不明なエラーにより、シリアル化に失敗しました"
 		},
 		"sql/platform/theme/common/colorRegistry": {
+			"buttonDropdo0wnBoxShadow": "ボタン ドロップダウン ボックスの影の色",
 			"buttonDropdownBackgroundHover": "ボタン ドロップダウンの背景のポイント時の色",
-			"buttonDropdownBoxShadow": "ボタン ドロップダウン ボックスの影の色",
 			"calloutDialogBodyBackground": "吹き出しダイアログの本文の背景。",
 			"calloutDialogExteriorBorder": "ノートブック UI に対してコントラストを提供する吹き出しダイアログの外側の境界線。",
 			"calloutDialogForeground": "吹き出しダイアログの前景。",
@@ -10510,6 +10525,8 @@
 			"optionsDialog.ok": "OK"
 		},
 		"sql/workbench/browser/modal/optionsDialogHelper": {
+			"boolean.false": "False",
+			"boolean.true": "True",
 			"optionsDialog.defaultGroupName": "全般",
 			"optionsDialog.invalidInput": "無効な入力です。数値が必要です。",
 			"optionsDialog.missingRequireField": " が必須です。"
@@ -10559,9 +10576,10 @@
 			"insertOperationName": "挿入",
 			"scriptNotFound": "{0} としてスクリプトを作成したときに返されたスクリプトはありません",
 			"scriptNotFoundForObject": "オブジェクト {1} に対する {0} としてスクリプトを作成したときに返されたスクリプトはありません",
-			"scriptSelectNotFound": "オブジェクトに対するスクリプトの選択を呼び出したときに返されたスクリプトはありません ",
 			"scriptingFailed": "スクリプト作成に失敗しました",
 			"selectOperationName": "選択",
+			"selectScriptForEditNotGeneratedError": "データ編集エディターのスクリプトを生成に失敗しました。",
+			"selectScriptNotGeneratedError": "選択したオブジェクトのスクリプトの選択を生成できませんでした。",
 			"updateOperationName": "更新"
 		},
 		"sql/workbench/common/editor/query/queryEditorInput": {
@@ -11088,6 +11106,7 @@
 			"vscode.extension.contributes.view.when": "このビューを表示するために満たす必要がある条件"
 		},
 		"sql/workbench/contrib/dataExplorer/browser/dataExplorerViewlet": {
+			"ads-connections": "アイコンはサーバーを表します。",
 			"dataExplorer.servers": "サーバー",
 			"dataexplorer.name": "接続",
 			"showDataExplorer": "接続の表示"
@@ -11119,14 +11138,16 @@
 			"saveAsCsv": "CSV として保存",
 			"saveAsExcel": "Excel として保存",
 			"saveAsJson": "JSON として保存",
+			"saveAsMarkdown": "Markdown に名前を付けて保存",
 			"saveAsXml": "XML として保存",
 			"selectAll": "すべて選択"
 		},
 		"sql/workbench/contrib/executionPlan/browser/azdataGraphView": {
+			"executionPlanComparison.bottomPlanDiagram.ariaLabel": "{0} では、方向キーを使用してノード間を移動します",
 			"invalidExecutionPlanZoomError": "ズーム レベルを 0 または負の値にすることはできません"
 		},
 		"sql/workbench/contrib/executionPlan/browser/compareExecutionPlanInput": {
-			"epCompare.editorName": "比較実行プラン"
+			"epCompare.editorName": "CompareExecutionPlans"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditor": {
 			"compareExecutionPlanEditor": "比較実行プラン エディター"
@@ -11135,8 +11156,8 @@
 			"addExecutionPlanLabel": "実行プランの追加",
 			"epComapre.LoadingPlanCompleteMessage": "実行プランが正常に読み込まれました",
 			"epComapre.LoadingPlanMessage": "実行プランを読み込んでいます",
-			"epComapre.placeholderInfoboxText": "比較する実行プランの追加",
 			"epCompare.FileFilterDescription": "実行プラン ファイル",
+			"epCompare.addExecutionPlanLabel": "実行プランの追加",
 			"epCompare.comparePropertiesAction": "プロパティ",
 			"epCompare.comparisonProgess": "比較したプランの類似点を読み込んでいます",
 			"epCompare.searchNodeAction": "ノードの検索",
@@ -11146,23 +11167,33 @@
 			"epCompare.zoomOutAction": "縮小",
 			"epCompare.zoomReset": "ズームのリセット",
 			"epCompare.zoomToFit": "ウィンドウのサイズに合わせて拡大",
+			"executionPlanComparison.bottomPlanDiagram.name": "下位実行プラン {0}",
+			"executionPlanComparison.topPlanDiagram.name": "上位実行プラン {0}",
+			"executionPlanDisableTooltip": "ヒントが無効",
+			"executionPlanEnableTooltip": "ヒントが有効",
 			"queryDropdownPrefix": "{1} のクエリ {0}: {2}"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView": {
-			"executionPlanComparisonPropertiesBottomOperation": "下位の操作: {0}",
-			"executionPlanComparisonPropertiesLeftOperation": "左操作: {0}",
-			"executionPlanComparisonPropertiesRightOperation": "右の操作: {0}",
-			"executionPlanComparisonPropertiesTopOperation": "上位の操作: {0}",
 			"executionPlanPropertiesEdgeOperationName": "Edge",
+			"nodePropertyViewBottomOperation": "下部の操作: {0}",
+			"nodePropertyViewLeftOperation": "左操作: {0}",
+			"nodePropertyViewNameEquivalentPropertiesRowHeader": "同等のプロパティ",
+			"nodePropertyViewNameGreaterThanTitle": "より大きい",
+			"nodePropertyViewNameLessThanTitle": "未満",
 			"nodePropertyViewNameNameColumnHeader": "名前",
+			"nodePropertyViewNameNotEqualTitle": "等しくない",
 			"nodePropertyViewNameValueColumnBottomHeader": "値 (下位プラン)",
 			"nodePropertyViewNameValueColumnLeftHeader": "値 (左プラン)",
 			"nodePropertyViewNameValueColumnRightHeader": "値 (右プラン)",
-			"nodePropertyViewNameValueColumnTopHeader": "値 (上位プラン)"
+			"nodePropertyViewNameValueColumnTopHeader": "値 (上位プラン)",
+			"nodePropertyViewRightOperation": "右の操作: {0}",
+			"nodePropertyViewTopOperation": "上部の操作: {0}"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanContribution": {
+			"executionPlan.tooltips.enableOnHoverTooltips": "true の場合、実行プランのホバー時にヒントを有効にします。false の場合、ノードのクリックまたは F3 キーを押すとヒントが表示されます。",
 			"executionPlanCompareCommandOriginalValue": "比較実行プラン",
-			"executionPlanCompareCommandValue": "比較実行プラン"
+			"executionPlanCompareCommandValue": "比較実行プラン",
+			"executionPlanConfigurationTitle": "実行プラン"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanEditor": {
 			"executionPlanEditor": "クエリ実行プラン エディター"
@@ -11179,6 +11210,8 @@
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase": {
 			"ep.topOperationsCopyTableData": "コピー",
+			"executionPlanCollapseAllProperties": "すべて折りたたむ",
+			"executionPlanExpandAllProperties": "すべて展開",
 			"executionPlanPropertyViewClose": "閉じる",
 			"executionPlanPropertyViewSortAlphabetically": "アルファベット順",
 			"executionPlanPropertyViewSortByDisplayOrder": "重要度",
@@ -11186,10 +11219,11 @@
 			"nodePropertyViewTitle": "プロパティ"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanTab": {
-			"executionPlanTitle": "クエリ プラン (プレビュー)"
+			"executionPlanTitle": "クエリ プラン"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanView": {
 			"executionPlan.SaveFileDescription": "実行プラン ファイル",
+			"executionPlan.diagram.ariaLabel": "実行プラン {0}",
 			"executionPlanCompareExecutionPlanAction": "比較実行プラン",
 			"executionPlanContextMenuDisableTooltip": "ヒントを無効にする",
 			"executionPlanContextMenuEnableTooltip": "ツールヒントを有効にする",
@@ -11197,6 +11231,7 @@
 			"executionPlanDisableTooltip": "ヒントが無効になっています",
 			"executionPlanEnableTooltip": "ツールヒントが有効",
 			"executionPlanFitGraphLabel": "ウィンドウのサイズに合わせて拡大",
+			"executionPlanHighlightExpensiveOperationAction": "負荷の高い操作を強調表示する",
 			"executionPlanOpenGraphFile": "クエリ プラン XML の表示",
 			"executionPlanPropertiesActionLabel": "プロパティ",
 			"executionPlanSavePlanXML": "プラン ファイルの保存",
@@ -11210,19 +11245,22 @@
 			"planHeaderIndexAndCost": "クエリ {0}: クエリ コスト (スクリプトに対する相対): {1}%"
 		},
 		"sql/workbench/contrib/executionPlan/browser/widgets/customZoomWidget": {
-			"cancelCustomZoomAction": "閉じる (Esc)",
+			"cancelCustomZoomAction": "閉じる",
 			"customZoomApplyButton": "適用",
-			"customZoomApplyButtonTitle": "ズームの適用 (Enter)",
+			"customZoomApplyButtonTitle": "ズームの適用",
 			"invalidCustomZoomError": "1 〜 200 の間のズーム値を選択します",
 			"qpZoomValueLabel": "ズーム (%)",
-			"zoomAction": "ズーム (Enter)"
+			"zoomAction": "ズーム"
 		},
 		"sql/workbench/contrib/executionPlan/browser/widgets/nodeSearchWidget": {
-			"cancelSearchAction": "閉じる (Esc)",
+			"cancelSearchAction": "閉じる",
+			"executionPlanEnterValueTitle": "検索値を入力してください",
 			"executionPlanSearchTypeContains": "含む",
 			"executionPlanSearchTypeEquals": "等しい",
-			"nextSearchItemAction": "次の一致 (Enter)",
-			"previousSearchItemAction": "前の一致 (Shift + Enter)"
+			"executionPlanSelectPropertyTitle": "プロパティの選択",
+			"executionPlanSelectSearchTypeTitle": "検索の種類の選択",
+			"nextSearchItemAction": "次の一致",
+			"previousSearchItemAction": "前の一致"
 		},
 		"sql/workbench/contrib/extensions/browser/contributionRenders": {
 			"insight condition": "タイミング",
@@ -11608,6 +11646,7 @@
 			"loadingNotebookMessage": "ノートブック {0}を読み込んでいます"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet": {
+			"ads-notebook": "アイコンはノートブックを表します。",
 			"notebookExplorer.name": "ノートブック",
 			"notebookExplorer.searchResults": "検索結果",
 			"searchPathNotFoundError": "検索パスが見つかりません: {0}"
@@ -11704,6 +11743,7 @@
 			"connection": "接続",
 			"dashboard": "ダッシュボード",
 			"data": "データ",
+			"executionPlan": "実行プラン",
 			"notebook": "ノートブック",
 			"profiler": "Profiler",
 			"queryEditor": "クエリ エディター",
@@ -11773,6 +11813,7 @@
 			"saveAsCsv": "CSV として保存",
 			"saveAsExcel": "Excel として保存",
 			"saveAsJson": "JSON として保存",
+			"saveAsMarkdown": "Markdown に名前を付けて保存",
 			"saveAsXml": "XML として保存",
 			"saveToFileNotSupported": "バッキング データ ソースでファイルへの保存はサポートされていません",
 			"selectAll": "すべて選択",
@@ -11833,6 +11874,10 @@
 			"queryEditor.results.saveAsCsv.includeHeaders": "true の場合、CSV として結果を保存する際に列ヘッダーが組み込まれます",
 			"queryEditor.results.saveAsCsv.lineSeperator": "結果を CSV として保存するときに行を区切るために使用する文字",
 			"queryEditor.results.saveAsCsv.textIdentifier": "結果を CSV として保存するときにテキスト フィールドを囲むために使用する文字",
+			"queryEditor.results.saveAsExcel.includeHeaders": "true の場合、Excel ファイルとして結果を保存する際に列ヘッダーが組み込まれます",
+			"queryEditor.results.saveAsMarkdown.encoding": "結果を Markdown として保存するときに使用するファイル エンコード",
+			"queryEditor.results.saveAsMarkdown.includeHeaders": "true の場合、Markdown ファイルとして結果を保存する際に列ヘッダーが組み込まれます",
+			"queryEditor.results.saveAsMarkdown.lineSeparator": "Markdown にエクスポートするときに行を区切るために使用する文字。既定では、システム行の末尾が使用されます",
 			"queryEditor.results.saveAsXml.encoding": "結果を XML として保存するときに使用されるファイル エンコード",
 			"queryEditor.results.saveAsXml.formatted": "true の場合、XML として結果を保存すると XML 出力がフォーマットされます",
 			"queryEditor.results.streaming": "結果のストリーミングを有効にします。視覚上の小さな問題がいくつかあります",
@@ -11897,7 +11942,8 @@
 			"deployment.title": "新しい展開..."
 		},
 		"sql/workbench/contrib/resourceViewer/browser/resourceViewer.contribution": {
-			"resourceViewer": "リソース ビューアー"
+			"resourceViewer": "リソース ビューアー",
+			"resourceViewerIcon": "リソース ビューアーのアイコン。"
 		},
 		"sql/workbench/contrib/resourceViewer/browser/resourceViewerActions": {
 			"resourceViewer.refresh": "最新の情報に更新"
@@ -11948,9 +11994,6 @@
 		"sql/workbench/contrib/tableDesigner/browser/actions": {
 			"tableDesigner.publishTableChanges": "変更の発行...",
 			"tableDesigner.saveTableChanges": "保存"
-		},
-		"sql/workbench/contrib/tableDesigner/browser/tableDesignerEditor": {
-			"tableDesigner.PreviewFeature": "プレビュー機能"
 		},
 		"sql/workbench/contrib/tasks/browser/tasks.contribution": {
 			"inProgressTasksChangesBadge": "{0} 個のタスクが進行中です",
@@ -12185,9 +12228,12 @@
 		},
 		"sql/workbench/services/connection/browser/connectionDialogService": {
 			"connectionError": "接続エラー",
+			"enableTrustServerCertificate": "信頼サーバー証明書を有効にする",
 			"kerberosErrorStart": "接続は、Kerberos エラーのため失敗しました。",
 			"kerberosHelpLink": "Kerberos を構成するためのヘルプを {0} で確認できます",
-			"kerberosKinit": "以前に接続した場合は、kinit を再実行しなければならない場合があります。"
+			"kerberosKinit": "以前に接続した場合は、kinit を再実行しなければならない場合があります。",
+			"runKinit": "Kinit の実行",
+			"trustServerCertInstructionText": "この接続で暗号化が有効になっているか、ターゲット SQL Serverの SSL と証明書の構成を確認するか、接続ダイアログで [サーバー証明書の信頼] を有効にします。\r\n\r\n注意: 自己署名証明書では保護が制限されるだけで、運用環境では推奨されません。この接続で 'サーバー証明書の信頼' を有効にして再試行しますか?"
 		},
 		"sql/workbench/services/connection/browser/connectionDialogWidget": {
 			"connectType": "接続の種類",
@@ -12196,21 +12242,19 @@
 			"connectionDetailsTitle": "接続の詳細",
 			"connectionDialog.cancel": "キャンセル",
 			"connectionDialog.connect": "接続",
-			"connectionDialog.connectionProviderNotSupported": "プロバイダー タイプ '{0}' をサポートする拡張機能は現在インストールされていません。それをインストールしてもう一度お試しください。",
-			"connectionDialog.extensionNotInstalled": "このリソースに接続するには、拡張機能 '{0}' が必要です。インストールしてから、もう一度お試しください。",
 			"connectionDialog.recentConnections": "最近の接続",
-			"connectionDialog.viewExtension": "拡張機能の表示",
-			"connectionDialog.viewExtensions": "拡張機能の表示",
 			"noRecentConnections": "最近の接続はありません",
 			"recentConnectionTitle": "最近"
 		},
 		"sql/workbench/services/connection/browser/connectionManagementService": {
 			"cancelConnectionConfirmation": "この接続をキャンセルしてもよろしいですか?",
+			"connection.extensionNotInstalled": "このリソースに接続するには、拡張機能 '{0}' が必要です。インストールしますか?",
 			"connection.invalidConnectionResult": "接続結果が無効です",
 			"connection.neverShowUnsupportedVersionWarning": "今後は表示しない",
 			"connection.noAzureAccount": "接続用の Azure アカウント トークンの取得に失敗しました",
 			"connection.refreshAzureTokenFailure": "接続用の Azure アカウント トークンの更新に失敗しました",
 			"connection.unsupportedServerVersionWarning": "サーバー バージョンが Azure Data Studio でサポートされていません。接続できますが、Azure Data Studio の一部の機能が適切に機能しない可能性があります。",
+			"connectionDialog.connectionProviderNotSupported": "プロバイダーの種類 '{0}' をサポートする拡張機能は現在インストールされていません。拡張機能を表示しますか?",
 			"connectionManagementService.noProviderForUri": "URI のプロバイダーが見つかりませんでした:{0}",
 			"connectionNotAcceptedError": "接続が承認されていません",
 			"connectionService.no": "いいえ",
@@ -12219,6 +12263,8 @@
 		"sql/workbench/services/connection/browser/connectionWidget": {
 			"addNewServerGroup": "新しいグループを追加する...",
 			"advanced": "詳細設定...",
+			"boolean.false": "False",
+			"boolean.true": "True",
 			"connection.azureAccountDropdownLabel": "アカウント",
 			"connection.azureTenantDropdownLabel": "Azure AD テナント",
 			"connectionName": "名前 (省略可能)",
@@ -12261,7 +12307,8 @@
 			"copyDetails": "コピーの詳細",
 			"errorMessageDialog.action": "アクション",
 			"errorMessageDialog.close": "閉じる",
-			"errorMessageDialog.ok": "OK"
+			"errorMessageDialog.ok": "OK",
+			"errorMessageDialog.readMore": "さらに読む"
 		},
 		"sql/workbench/services/errorMessage/browser/errorMessageService": {
 			"error": "エラー",
@@ -12426,9 +12473,6 @@
 			"vscode.extension.contributes.notebook.languagemagics": "ノートブックの言語を提供します。",
 			"vscode.extension.contributes.notebook.providersDescriptions": "ノートブック プロバイダーの説明を提供します。"
 		},
-		"sql/workbench/services/objectExplorer/browser/asyncServerTreeRenderer": {
-			"loading": "読み込んでいます..."
-		},
 		"sql/workbench/services/objectExplorer/browser/connectionTreeAction": {
 			"DisconnectAction": "切断",
 			"activeConnections": "アクティブな接続を表示",
@@ -12449,9 +12493,6 @@
 			"firewallCanceled": "ファイアウォール ダイアログが取り消されました",
 			"loginCanceled": "ユーザーによる取り消し",
 			"noProviderFound": "必要な接続プロバイダー '{0}' が見つからないため、展開できません"
-		},
-		"sql/workbench/services/objectExplorer/browser/serverTreeRenderer": {
-			"loading": "読み込んでいます..."
 		},
 		"sql/workbench/services/objectExplorer/browser/treeCreationUtils": {
 			"serversAriaLabel": "サーバー",
@@ -12513,6 +12554,7 @@
 			"resultsSerializer.saveAsFileExtensionCSVTitle": "CSV (コンマ区切り)",
 			"resultsSerializer.saveAsFileExtensionExcelTitle": "Excel ブック",
 			"resultsSerializer.saveAsFileExtensionJSONTitle": "JSON",
+			"resultsSerializer.saveAsFileExtensionMarkdownTitle": "Markdown",
 			"resultsSerializer.saveAsFileExtensionTXTTitle": "プレーン テキスト",
 			"resultsSerializer.saveAsFileExtensionXMLTitle": "XML",
 			"resultsSerializer.saveAsFileTitle": "結果ファイルの選択",
@@ -12584,7 +12626,6 @@
 			"groupColor": "グループの色",
 			"groupDescription": "グループの説明",
 			"serverGroup.cancel": "キャンセル",
-			"serverGroup.colorValue": "グループの色: {0}",
 			"serverGroup.ok": "OK"
 		},
 		"sql/workbench/services/serverGroup/common/serverGroupViewModel": {
@@ -12710,18 +12751,73 @@
 			"ept.topOperationsCopyTableData": "コピー",
 			"ept.topOperationsCopyWithHeader": "ヘッダー付きのコピー",
 			"ept.topOperationsSelectAll": "すべて選択する",
-			"planTreeTab.title": "計画ツリー (プレビュー)",
+			"planTreeTab.title": "プラン ツリー",
 			"topOperationsTableTitle": "実行計画ツリー"
 		},
 		"sql/workbench/contrib/executionPlan/browser/topOperationsTab": {
 			"ep.topOperationsCopyTableData": "コピー",
 			"ep.topOperationsCopyWithHeader": "ヘッダー付きのコピー",
 			"ep.topOperationsSelectAll": "すべて選択",
-			"topOperationsTabTitle": "上位の操作 (プレビュー)",
+			"topOperationsTabTitle": "上位操作",
 			"topOperationsTableTitle": "上位操作"
 		},
 		"sql/workbench/contrib/notebook/browser/models/outputProcessor": {
 			"notebookInvalidOutputTypeError": "出力の種類 '{0}' を認識できません。"
+		},
+		"sql/base/browser/ui/table/table": {
+			"table.resizeColumn": "Provide new column width",
+			"table.resizeColumn.invalid": "Invalid column width",
+			"table.resizeColumn.negativeSize": "Size cannot be 0 or negative"
+		},
+		"sql/base/parts/tree/browser/treeDefaults": {
+			"collapse all": "すべて折りたたむ"
+		},
+		"sql/platform/connection/common/providerConnectionInfo": {
+			"connection.unsupported": "サポートされていない接続",
+			"loading": "読み込んでいます..."
+		},
+		"sql/workbench/contrib/executionPlan/browser/constants": {
+			"ep.propertiesSearchDescription": "検索プロパティ テーブル",
+			"ep.searchPlaceholder": "任意のフィールドのフィルター...",
+			"ep.topOperationsSearchDescription": "上位の操作の検索"
+		},
+		"sql/workbench/contrib/executionPlan/browser/widgets/highlightExpensiveNodeWidget": {
+			"actualNumberOfRowsForAllExecutionsAction": "すべての実行の実際の行数",
+			"cancelExpensiveOperationAction": "閉じる",
+			"executionPlanActualElapsedCpuTime": "実際の経過時間 CPU 時間",
+			"executionPlanActualElapsedTime": "実際の経過時間",
+			"executionPlanCost": "コスト",
+			"executionPlanNumberOfRowsRead": "読み取った行数",
+			"executionPlanOff": "オフ",
+			"executionPlanSelectExpenseMetricTitle": "経費メトリックの選択",
+			"executionPlanSubtreeCost": "サブ ツリーの推定コスト",
+			"expensiveOperationLabel": "メトリック:",
+			"highlightExpensiveOperationAction": "適用",
+			"highlightExpensiveOperationApplyButton": "適用",
+			"highlightExpensiveOperationButtonTitle": "負荷の高い操作を強調表示する",
+			"qp.expensiveOperationMetric.dontShowAgain": "今後表示しない",
+			"qp.expensiveOperationMetric.no": "いいえ",
+			"qp.expensiveOperationMetric.yes": "はい",
+			"queryExecutionPlan.showUpdateDefaultMetricInfo": "選択したメトリックをクエリ実行プランの既定値として設定しますか?",
+			"turnOffExpensiveHighlightingOperationAction": "オフ"
+		},
+		"sql/workbench/contrib/executionPlan/common/executionPlanInput": {
+			"epCompare.executionPlanEditorName": "ExecutionPlan"
+		},
+		"sql/workbench/contrib/welcome/notifyEncryption/notifyEncryptionDialog": {
+			"notifyEncryption.message": "Azure Data Studio now has encryption enabled by default for all SQL Server connections. This may result in your existing connections no longer working unless certain Encryption related connection properties are changed.{0}We recommend you review the link below for more details.",
+			"notifyEncryption.moreInfoLink": "詳細情報",
+			"notifyEncryption.title": "重要な更新プログラム"
+		},
+		"sql/workbench/contrib/welcome/page/browser/welcomePage.contribution": {
+			"miWelcome": "ようこそ(&&W)",
+			"workbench.startupEditor": "起動時にどのエディターを表示するかを制御します。無い場合、前のセッションを復元します。",
+			"workbench.startupEditor.newUntitledFile": "無題の新規ファイルを開きます (空のウィンドウが開かれているときのみ)。",
+			"workbench.startupEditor.none": "エディターなしで開始",
+			"workbench.startupEditor.readme": "README を含むフォルダーを開くときに README を開き、それ以外の場合は 'welcomePage' にフォールバックします。注意: これはグローバル構成として確認されました。これは、ワークスペースまたはフォルダー構成で設定されている場合は無視されます。",
+			"workbench.startupEditor.welcomePage": "[ようこそ] ページを開き、Azure Data Studio と拡張機能の使用を開始するのに役立つコンテンツを表示します。",
+			"workbench.startupEditor.welcomePageInEmptyWorkbench": "空のワークベンチを開くとき、ウェルカム ページを開きます。",
+			"workbench.startupEditor.welcomePageWithTour": "はじめに ツアーでウェルカム ページを開く (既定)"
 		}
 	}
 }

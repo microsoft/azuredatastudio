@@ -76,6 +76,9 @@ export class CmsConnectionWidget extends ConnectionWidget {
 		// Login Options
 		this.addLoginOptions();
 
+		// Add Custom connection options
+		this.addCustomConnectionOptions();
+
 		// Connection Name
 		this.addConnectionNameOptions();
 

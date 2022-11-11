@@ -238,7 +238,7 @@
 			"usernameAndPasswordRequired": "Il nome utente e la password sono obbligatori"
 		},
 		"dist/sqlToolsServer": {
-			"downloadServiceDoneChannelMsg": "Installazione di {0} completata",
+			"downloadServiceDoneChannelMsg": "Scaricato {0}",
 			"downloadingServiceChannelMsg": "Download di {0}",
 			"downloadingServiceSizeChannelMsg": "({0} KB)",
 			"downloadingServiceStatusMsg": "Download di {0}",
@@ -251,7 +251,10 @@
 			"startingServiceStatusMsg": "Avvio di {0}"
 		},
 		"dist/tableDesigner/tableDesigner": {
-			"tableDesigner.NewTable": "Nuova tabella"
+			"tableDesigner.NewTable": "Nuova tabella",
+			"tableDesigner.no": "No",
+			"tableDesigner.turnOnPreloadingMessage": "Ridurre il tempo di caricamento di Progettazione tabelle abilitando il precaricamento del modello di database? Il modello di database viene precaricato quando si espande il nodo del database in Esplora oggetti.",
+			"tableDesigner.yes": "Sì"
 		},
 		"dist/telemetry": {
 			"serviceCrashMessage": "Il componente {0} è stato chiuso in modo imprevisto. Riavviare Azure Data Studio.",
@@ -279,8 +282,6 @@
 			"mssql.connectionOptions.applicationIntent.displayName": "Finalità dell'applicazione",
 			"mssql.connectionOptions.applicationName.description": "Nome dell'applicazione",
 			"mssql.connectionOptions.applicationName.displayName": "Nome dell'applicazione",
-			"mssql.connectionOptions.asynchronousProcessing.description": "Se è true, consente l'utilizzo della funzionalità asincrona nel provider di dati .NET Framework.",
-			"mssql.connectionOptions.asynchronousProcessing.displayName": "Elaborazione asincrona",
 			"mssql.connectionOptions.attachDbFilename.displayName": "Collega nome file del database",
 			"mssql.connectionOptions.attachedDBFileName.description": "Nome del file primario, incluso il nome del percorso completo, di un database collegabile",
 			"mssql.connectionOptions.attachedDBFileName.displayName": "Nome file del database collegato",
@@ -355,6 +356,14 @@
 			"mssql.connectionOptions.workstationId.displayName": "ID workstation",
 			"mssql.disabled": "Disabilitato",
 			"mssql.enabled": "Abilitato",
+			"mssql.executionPlan.actualNumberOfRowsForAllExecutions": "Evidenzia l'operazione del piano di esecuzione con il maggior numero effettivo di righe per tutte le esecuzioni.",
+			"mssql.executionPlan.cost": "Evidenzia l'operazione del piano di esecuzione con il costo più elevato.",
+			"mssql.executionPlan.expensiveOperationMetric": "Metrica predefinita da usare per evidenziare un'operazione costosa nei piani di esecuzione delle query",
+			"mssql.executionPlan.expensiveOperationMetric.actualElapsedCpuTime": "Evidenzia l'operazione del piano di esecuzione che ha usato la maggior parte del tempo della CPU.",
+			"mssql.executionPlan.expensiveOperationMetric.actualElapsedTime": "Evidenzia l'operazione del piano di esecuzione che ha richiesto più tempo.",
+			"mssql.executionPlan.expensiveOperationMetric.off": "L'evidenziazione delle operazioni dispendiose verrà disattivata per i piani di esecuzione.",
+			"mssql.executionPlan.numberOfRowsRead": "Evidenzia l'operazione del piano di esecuzione con il maggior numero di righe lette.",
+			"mssql.executionPlan.subtreeCost": "Evidenzia l'operazione del piano di esecuzione con il costo del sottoalbero più elevato.",
 			"mssql.exportNotebookToSql": "Esporta notebook come SQL",
 			"mssql.exportSqlAsNotebook": "Esporta SQL come notebook",
 			"mssql.format.alignColumnDefinitionsInColumns": "Consente di indicare se le definizioni di colonna devono essere allineate",
@@ -386,7 +395,8 @@
 			"mssql.query.executionTimeout": "L'impostazione del valore 0 per il timeout di esecuzione indica un'attesa illimitata (nessun timeout)",
 			"mssql.query.implicitTransactions": "Abilita SET IMPLICIT_TRANSACTIONS",
 			"mssql.query.lockTimeout": "Abilita l'opzione SET LOCK TIMEOUT (in millisecondi)",
-			"mssql.query.maxXmlCharsToStore": "Numero di caratteri XML da archiviare dopo l'esecuzione di una query",
+			"mssql.query.maxCharsToStore": "Numero massimo di caratteri/byte da archiviare per ogni valore in colonne di tipo carattere/binario dopo l'esecuzione di una query. Valore predefinito: 65.535. Intervallo di valori valido: da 1 a 2.147.483.647.",
+			"mssql.query.maxXmlCharsToStore": "Numero massimo di caratteri da archiviare per ogni valore nelle colonne XML dopo l'esecuzione di una query. Valore predefinito: 2.097.152. Intervallo di valori valido: da 1 a 2.147.483.647.",
 			"mssql.query.noCount": "Abilita l'opzione SET NOCOUNT",
 			"mssql.query.noExec": "Abilita l'opzione SET NOEXEC",
 			"mssql.query.parseOnly": "Abilita l'opzione SET PARSEONLY",
@@ -398,6 +408,7 @@
 			"mssql.query.textSize": "Dimensioni massime dei dati di tipo text e ntext restituiti da un'istruzione SELECT",
 			"mssql.query.transactionIsolationLevel": "Abilita l'opzione SET TRANSACTION ISOLATION LEVEL",
 			"mssql.query.xactAbortOn": "Abilita l'opzione SET XACT_ABORT ON",
+			"mssql.tableDesigner.preloadDatabaseModel": "Indica se precaricare il modello di database quando si espande il nodo del database in Esplora oggetti. Se l’opzione è abilitata, è possibile ridurre il tempo di caricamento di Progettazione tabelle. Nota: l'utilizzo della memoria potrebbe essere superiore al normale quando si espandono molti nodi del database.",
 			"mssql.tracingLevel": "[Facoltativa] Livello di registrazione per i servizi back-end. Azure Data Studio genera un nome file a ogni avvio e, se il file esiste già, le voci del log vengono accodate a tale file. Per la pulizia dei file di log meno recenti, vedere le impostazioni logRetentionMinutes e logFilesRemovalLimit. Con l'impostazione predefinita di tracingLevel, la quantità di dati registrata non è eccessiva. Se si cambia il livello di dettaglio, la registrazione potrebbe diventare eccessiva e richiedere un notevole spazio su disco per i log. Il livello Error include quello Critical, il livello Warning include quello Error, il livello Information include quello Warning e il livello Verbose include quello Information",
 			"mssqlCluster.copyPath": "Copia percorso",
 			"mssqlCluster.deleteFiles": "Elimina",

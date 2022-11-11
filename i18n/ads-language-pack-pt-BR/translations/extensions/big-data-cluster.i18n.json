@@ -149,6 +149,7 @@
 		},
 		"dist/extension": {
 			"bdc.dashboard.title": "Painel do Cluster de Big Data –",
+			"bdc.deprecationWarning": "O complemento Cluster de Big Data está sendo desativado e a funcionalidade do Azure Data Studio para ele será removida em uma versão futura. Leia mais sobre isso e o suporte no futuro [here](https://go.microsoft.com/fwlink/?linkid=2207340).",
 			"mount.error.endpointNotFound": "As informações do ponto de extremidade do controlador não foram encontradas",
 			"textConfirmRemoveController": "Tem certeza de que deseja remover '{0}'?",
 			"textNo": "Não",

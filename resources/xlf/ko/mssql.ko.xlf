@@ -835,8 +835,8 @@
   <file original="extensions/mssql/dist/sqlToolsServer" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="downloadServiceDoneChannelMsg">
-        <source xml:lang="en">Done installing {0}</source>
-        <target state="translated">{0} 설치 완료</target>
+        <source xml:lang="en">Downloaded {0}</source>
+        <target state="translated">{0}을(를) 다운로드함</target>
       </trans-unit>
       <trans-unit id="downloadingServiceChannelMsg">
         <source xml:lang="en">Downloading {0}</source>
@@ -885,6 +885,18 @@
       <trans-unit id="tableDesigner.NewTable">
         <source xml:lang="en">New Table</source>
         <target state="translated">새 테이블</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.no">
+        <source xml:lang="en">No</source>
+        <target state="translated">아니요</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.turnOnPreloadingMessage">
+        <source xml:lang="en">Do you want to reduce the table designer load time by enabling the database model preloading? The database model will be preloaded when you expand the database node in object explorer.</source>
+        <target state="translated">데이터베이스 모델 사전 로드를 활성화하여 테이블 디자이너 로드 시간을 줄이시겠습니까? 개체 탐색기에서 데이터베이스 노드를 확장하면 데이터베이스 모델이 미리 로드됩니다.</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.yes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">예</target>
       </trans-unit>
     </body>
   </file>
@@ -985,14 +997,6 @@
       <trans-unit id="mssql.connectionOptions.applicationName.displayName">
         <source xml:lang="en">Application name</source>
         <target state="translated">애플리케이션 이름</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.asynchronousProcessing.description">
-        <source xml:lang="en">When true, enables usage of the Asynchronous functionality in the .Net Framework Data Provider</source>
-        <target state="translated">true인 경우 .NET Framework 데이터 공급자에서 비동기 기능의 사용을 활성화합니다.</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.asynchronousProcessing.displayName">
-        <source xml:lang="en">Asynchronous processing</source>
-        <target state="translated">비동기 처리</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.attachDbFilename.displayName">
         <source xml:lang="en">Attach DB filename</source>
@@ -1290,6 +1294,38 @@
         <source xml:lang="en">Enabled</source>
         <target state="translated">사용</target>
       </trans-unit>
+      <trans-unit id="mssql.executionPlan.actualNumberOfRowsForAllExecutions">
+        <source xml:lang="en">Highlights the execution plan operation with the greatest actual number of rows for all executions.</source>
+        <target state="translated">모든 실행에 대한 실제 행 수가 가장 많은 실행 계획 작업을 강조 표시합니다.</target>
+      </trans-unit>
+      <trans-unit id="mssql.executionPlan.cost">
+        <source xml:lang="en">Highlights the execution plan operation with the highest cost.</source>
+        <target state="translated">가장 높은 비용으로 실행 계획 작업을 강조 표시합니다.</target>
+      </trans-unit>
+      <trans-unit id="mssql.executionPlan.expensiveOperationMetric">
+        <source xml:lang="en">The default metric to use to highlight an expensive operation in query execution plans</source>
+        <target state="translated">쿼리 실행 계획에서 비용이 많이 드는 작업을 강조 표시하는 데 사용할 기본 메트릭</target>
+      </trans-unit>
+      <trans-unit id="mssql.executionPlan.expensiveOperationMetric.actualElapsedCpuTime">
+        <source xml:lang="en">Highlights the execution plan operation that used the most CPU time.</source>
+        <target state="translated">CPU 시간을 가장 많이 사용한 실행 계획 작업을 강조 표시합니다.</target>
+      </trans-unit>
+      <trans-unit id="mssql.executionPlan.expensiveOperationMetric.actualElapsedTime">
+        <source xml:lang="en">Highlights the execution plan operation that took the most time.</source>
+        <target state="translated">가장 많은 시간이 걸린 실행 계획 작업을 강조 표시합니다.</target>
+      </trans-unit>
+      <trans-unit id="mssql.executionPlan.expensiveOperationMetric.off">
+        <source xml:lang="en">Expensive operation highlighting will be turned off for execution plans.</source>
+        <target state="translated">실행 계획에 대해 비용이 많이 드는 작업 강조 표시가 꺼집니다.</target>
+      </trans-unit>
+      <trans-unit id="mssql.executionPlan.numberOfRowsRead">
+        <source xml:lang="en">Highlights the execution plan operation with the greatest number of rows read.</source>
+        <target state="translated">읽은 행 수가 가장 많은 실행 계획 작업을 강조 표시합니다.</target>
+      </trans-unit>
+      <trans-unit id="mssql.executionPlan.subtreeCost">
+        <source xml:lang="en">Highlights the execution plan operation with the highest subtree cost.</source>
+        <target state="translated">하위 트리 비용이 가장 높은 실행 계획 작업을 강조 표시합니다.</target>
+      </trans-unit>
       <trans-unit id="mssql.exportNotebookToSql">
         <source xml:lang="en">Export Notebook as SQL</source>
         <target state="translated">Notebook을 SQL로 내보내기</target>
@@ -1414,9 +1450,13 @@
         <source xml:lang="en">Enable SET LOCK TIMEOUT option (in milliseconds)</source>
         <target state="translated">SET LOCK TIMEOUT 옵션 사용(밀리초)</target>
       </trans-unit>
+      <trans-unit id="mssql.query.maxCharsToStore">
+        <source xml:lang="en">Maximum number of characters/bytes to store for each value in character/binary columns after running a query. Default value: 65,535. Valid value range: 1 to 2,147,483,647.</source>
+        <target state="translated">쿼리를 실행한 후 문자/이진 열의 각 값에 대해 저장할 최대 문자/바이트 수입니다. 기본값: 65,535. 유효한 값 범위: 1 ~ 2,147,483,647.</target>
+      </trans-unit>
       <trans-unit id="mssql.query.maxXmlCharsToStore">
-        <source xml:lang="en">Number of XML characters to store after running a query</source>
-        <target state="translated">쿼리를 실행한 후 저장할 XML 문자 수</target>
+        <source xml:lang="en">Maximum number of characters to store for each value in XML columns after running a query. Default value: 2,097,152. Valid value range: 1 to 2,147,483,647.</source>
+        <target state="translated">쿼리를 실행한 후 XML 열의 각 값에 대해 저장할 최대 문자 수입니다. 기본값: 2,097,152. 유효한 값 범위: 1 ~ 2,147,483,647.</target>
       </trans-unit>
       <trans-unit id="mssql.query.noCount">
         <source xml:lang="en">Enable SET NOCOUNT option</source>
@@ -1461,6 +1501,10 @@
       <trans-unit id="mssql.query.xactAbortOn">
         <source xml:lang="en">Enable SET XACT_ABORT ON option</source>
         <target state="translated">SET XACT_ABORT ON 옵션 사용</target>
+      </trans-unit>
+      <trans-unit id="mssql.tableDesigner.preloadDatabaseModel">
+        <source xml:lang="en">Whether to preload the database model when the database node in the object explorer is expanded. When enabled, the loading time of table designer can be reduced. Note: You might see higher than normal memory usage if you need to expand a lot of database nodes.</source>
+        <target state="translated">개체 탐색기에서 데이터베이스 노드를 확장할 때 데이터베이스 모델을 미리 로드할지 여부입니다. 활성화하면 테이블 디자이너의 로딩 시간을 줄일 수 있습니다. 참고: 많은 데이터베이스 노드를 확장해야 하는 경우 일반 메모리 사용량보다 높을 수 있습니다.</target>
       </trans-unit>
       <trans-unit id="mssql.tracingLevel">
         <source xml:lang="en">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</source>

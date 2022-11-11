@@ -84,8 +84,6 @@ export const pythonWindowsInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=
 export const pythonMacInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2163337';
 export const pythonLinuxInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2163336';
 
-export const notebookLanguages = ['notebook', 'ipynb'];
-
 export const KNOX_ENDPOINT_SERVER = 'host';
 export const KNOX_ENDPOINT_PORT = 'knoxport';
 export const KNOX_ENDPOINT_GATEWAY = 'gateway';

@@ -706,7 +706,7 @@ class ZoomOutAction extends Action {
 
 class ZoomToFitAction extends Action {
 	public static ID = 'ep.zoomToFit';
-	public static LABEL = localize('epCompare.zoomToFit', "Zoom to fit");
+	public static LABEL = localize('epCompare.zoomToFit', "Zoom to Fit");
 
 	constructor() {
 		super(ZoomToFitAction.ID, ZoomToFitAction.LABEL, zoomToFitIconClassNames);

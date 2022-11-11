@@ -34,6 +34,7 @@ import { handleCopyRequest } from 'sql/workbench/contrib/profiler/browser/profil
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { FindReplaceState, FindReplaceStateChangedEvent } from 'vs/editor/contrib/find/browser/findState';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 
 export interface ProfilerTableViewState {
 	scrollTop: number;
@@ -70,7 +71,8 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 		@IStatusbarService private _statusbarService: IStatusbarService,
 		@IClipboardService private _clipboardService: IClipboardService,
 		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService,
-		@IAccessibilityService private readonly _accessibilityService: IAccessibilityService
+		@IAccessibilityService private readonly _accessibilityService: IAccessibilityService,
+		@IQuickInputService private readonly _quickInputService: IQuickInputService
 	) {
 		super(ProfilerTableEditor.ID, telemetryService, _themeService, storageService);
 		this._actionMap[ACTION_IDS.FIND_NEXT] = this._instantiationService.createInstance(ProfilerFindNext, this);
@@ -86,7 +88,7 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 		this._overlay.style.zIndex = '4';
 		parent.appendChild(this._overlay);
 
-		this._profilerTable = new Table(parent, this._accessibilityService, {
+		this._profilerTable = new Table(parent, this._accessibilityService, this._quickInputService, {
 			sorter: (args) => {
 				let input = this.input as ProfilerInput;
 				if (input && input.data) {

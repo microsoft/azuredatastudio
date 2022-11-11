@@ -178,3 +178,11 @@ export function gfm(turndownService) {
 		taskListItems
 	]);
 }
+
+export function gfmHtmlTables(turndownService) {
+	turndownService.use([
+		highlightedCodeBlock,
+		strikethrough,
+		taskListItems
+	]);
+}

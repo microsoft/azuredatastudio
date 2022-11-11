@@ -301,9 +301,10 @@ export class HighlightExpensiveOperationAction extends Action {
 		const expensiveOperationDelegate: (cell: AzDataGraphCell) => number | undefined = context.getExpensiveOperationDelegate();
 
 		context.executionPlanDiagram.clearExpensiveOperatorHighlighting();
-		context.executionPlanDiagram.highlightExpensiveOperator(expensiveOperationDelegate);
-		// lewissanchez TODO: Add focus logic to center the highlighted node. Removed the error message logic since the expensive operation widget
-		// is only populated with plan metrics that are contained in a plan.
+		const elementId = context.executionPlanDiagram.highlightExpensiveOperator(expensiveOperationDelegate);
+		if (elementId) {
+			context.executionPlanDiagram.centerElement(context.executionPlanDiagram.getElementById(elementId));
+		}
 	}
 }
 

@@ -402,7 +402,8 @@ export class RenderedDataResource extends RenderedCommon {
 			host: this.node,
 			source: JSON.stringify(model.data[this.mimeType]),
 			themeService: model.themeService,
-			accessibilityService: model.accessibilityService
+			accessibilityService: model.accessibilityService,
+			quickInputService: model.quickInputService
 		});
 	}
 }

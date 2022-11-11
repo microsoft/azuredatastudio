@@ -426,6 +426,26 @@
         <source xml:lang="en">Don't use profile</source>
         <target state="translated">プロファイルを使用しません</target>
       </trans-unit>
+      <trans-unit id="downloadError">
+        <source xml:lang="en">Download error</source>
+        <target state="translated">ダウンロード エラー</target>
+      </trans-unit>
+      <trans-unit id="downloadProgress">
+        <source xml:lang="en">Download progress</source>
+        <target state="translated">ダウンロードの進行状況</target>
+      </trans-unit>
+      <trans-unit id="downloading">
+        <source xml:lang="en">Downloading</source>
+        <target state="translated">ダウンロード中</target>
+      </trans-unit>
+      <trans-unit id="downloadingDacFxDlls">
+        <source xml:lang="en">Downloading Microsoft.Build.Sql nuget to get build DLLs</source>
+        <target state="translated">ビルド DLL を取得するための Microsoft.Build.Sql nuget のダウンロード</target>
+      </trans-unit>
+      <trans-unit id="downloadingFromTo">
+        <source xml:lang="en">Downloading from {0} to {1}</source>
+        <target state="translated">{0} から {1} にダウンロードしています</target>
+      </trans-unit>
       <trans-unit id="edgeEulaAgreementTitle">
         <source xml:lang="en">Microsoft Azure SQL Edge License Agreement</source>
         <target state="translated">Microsoft Azure SQL Edge License Agreement</target>
@@ -506,6 +526,14 @@
         <source xml:lang="en">The project is already up to date with the database.</source>
         <target state="translated">プロジェクトはデータベースと既に最新の状態にあります。</target>
       </trans-unit>
+      <trans-unit id="errorDownloading">
+        <source xml:lang="en">Error downloading {0}. Error: {1}</source>
+        <target state="translated">{0} のダウンロード中にエラーが発生しました。エラー: {1}</target>
+      </trans-unit>
+      <trans-unit id="errorExtracting">
+        <source xml:lang="en">Error extracting files from {0}. Error: {1}</source>
+        <target state="translated">{0} からファイルを抽出中にエラーが発生しました。エラー: {1}</target>
+      </trans-unit>
       <trans-unit id="errorFindingBuildFilesLocation">
         <source xml:lang="en">Error finding build files location: {0}</source>
         <target state="translated">ビルド ファイルの場所の検索中にエラーが発生しました: {0}</target>
@@ -513,6 +541,10 @@
       <trans-unit id="errorReadingProjectGuid">
         <source xml:lang="en">Error trying to read {0} of project '{1}'</source>
         <target state="translated">プロジェクト '{0}' の {1} を読み込もうとしてエラーが発生しました</target>
+      </trans-unit>
+      <trans-unit id="errorRetrievingBuildFiles">
+        <source xml:lang="en">Could not build project. Error retrieving files needed to build.</source>
+        <target state="translated">プロジェクトをビルドできませんでした。ビルドに必要なファイルの取得中にエラーが発生しました。</target>
       </trans-unit>
       <trans-unit id="eulaAgreementTemplate">
         <source xml:lang="en">I accept the {0}.</source>
@@ -555,6 +587,10 @@
       <trans-unit id="extractTargetRequired">
         <source xml:lang="en">Target information for extract is required to create database project.</source>
         <target state="translated">データベース プロジェクトを作成するには、抽出対象の情報が必要です。</target>
+      </trans-unit>
+      <trans-unit id="extractingDacFxDlls">
+        <source xml:lang="en">Extracting DacFx build DLLs to {0}</source>
+        <target state="translated">DacFx ビルド DLL を {0} に抽出しています</target>
       </trans-unit>
       <trans-unit id="file">
         <source xml:lang="en">File</source>
@@ -620,6 +656,10 @@
         <source xml:lang="en">hr</source>
         <target state="translated">時間</target>
       </trans-unit>
+      <trans-unit id="imageTag">
+        <source xml:lang="en">Image tag</source>
+        <target state="translated">イメージ タグ</target>
+      </trans-unit>
       <trans-unit id="importElements">
         <source xml:lang="en">Import Elements</source>
         <target state="translated">要素のインポート</target>
@@ -627,6 +667,14 @@
       <trans-unit id="include">
         <source xml:lang="en">Include</source>
         <target state="translated">包含</target>
+      </trans-unit>
+      <trans-unit id="includePermissionsInProject">
+        <source xml:lang="en">Include permissions in project</source>
+        <target state="translated">プロジェクトにアクセス許可を含める</target>
+      </trans-unit>
+      <trans-unit id="includePermissionsLabel">
+        <source xml:lang="en">Include permissions</source>
+        <target state="translated">権限を含める</target>
       </trans-unit>
       <trans-unit id="installGlobally">
         <source xml:lang="en">Install globally</source>
@@ -1391,6 +1439,10 @@
       <trans-unit id="sqlDatabaseProjects.generateProjectFromOpenApiSpec">
         <source xml:lang="en">Generate SQL Project from OpenAPI/Swagger spec</source>
         <target state="translated">OpenAPI または Swagger 仕様から SQL プロジェクトを生成する</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.microsoftBuildSqlVersion">
+        <source xml:lang="en">Which version of Microsoft.Build.Sql SDK to use for building legacy sql projects. Example: 0.1.3-preview</source>
+        <target state="translated">従来の SQL プロジェクトのビルドに使用する Microsoft.Build.Sql SDK のバージョン。例: 0.1.3-preview</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.netCoreDoNotAsk">
         <source xml:lang="en">Whether to prompt the user to install .NET Core when not detected.</source>

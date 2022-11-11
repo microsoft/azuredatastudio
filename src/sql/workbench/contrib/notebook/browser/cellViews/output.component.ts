@@ -216,7 +216,7 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 						className: findRangeSpecificClass,
 						each: function (node, range) {
 							// node is the marked DOM element
-							node.scrollIntoView({ behavior: 'smooth', block: 'center' });
+							node.scrollIntoView({ block: 'center' });
 						}
 					});
 				} else if (elements?.length >= range.startLineNumber) {
@@ -228,7 +228,7 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 							className: findRangeSpecificClass,
 							each: function (node) {
 								// node is the marked DOM element
-								node.scrollIntoView({ behavior: 'smooth', block: 'center' });
+								node.scrollIntoView({ block: 'center' });
 							}
 						});
 					}

@@ -149,6 +149,7 @@
 		},
 		"dist/extension": {
 			"bdc.dashboard.title": "ビッグ データ クラスター ダッシュボード -",
+			"bdc.deprecationWarning": "ビッグ データ クラスター アドオンは廃止され、そのための Azure Data Studio 機能は今後のリリースで削除されます。詳細と今後のサポートについては、[こちら](https://go.microsoft.com/fwlink/?linkid=2207340) を参照してください。",
 			"mount.error.endpointNotFound": "コントローラー エンドポイント情報が見つかりませんでした",
 			"textConfirmRemoveController": "'{0}' を削除してよろしいですか?",
 			"textNo": "いいえ",

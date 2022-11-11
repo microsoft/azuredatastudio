@@ -219,7 +219,7 @@
         },
         {
           "command": "sqlDatabaseProjects.generateProjectFromOpenApiSpec",
-          "when": "view == dataworkspace.views.main",
+          "when": "view == dataworkspace.views.main && config.workbench.enablePreviewFeatures",
           "group": "1_currentWorkspace@3"
         }
       ],
@@ -322,6 +322,10 @@
         {
           "command": "sqlDatabaseProjects.openInDesigner",
           "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.generateProjectFromOpenApiSpec",
+          "when": "config.workbench.enablePreviewFeatures"
         }
       ],
       "view/item/context": [

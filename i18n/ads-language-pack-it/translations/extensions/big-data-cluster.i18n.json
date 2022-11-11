@@ -149,6 +149,7 @@
 		},
 		"dist/extension": {
 			"bdc.dashboard.title": "Dashboard di Cluster Big Data -",
+			"bdc.deprecationWarning": "Il componente aggiuntivo Cluster Big Data verrà ritirato e Azure Data Studio funzionalità per il cluster verrà rimossa in una versione futura. Altre informazioni su questo aspetto e supporto in futuro [qui](https://go.microsoft.com/fwlink/?linkid=2207340).",
 			"mount.error.endpointNotFound": "Le informazioni sull'endpoint del controller non sono state trovate",
 			"textConfirmRemoveController": "Rimuovere '{0}'?",
 			"textNo": "No",

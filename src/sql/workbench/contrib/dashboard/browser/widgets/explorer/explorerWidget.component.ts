@@ -32,6 +32,7 @@ import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/work
 import { getFlavor } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
 import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 
 @Component({
 	selector: 'explorer-widget',
@@ -62,6 +63,7 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 		@Inject(ICapabilitiesService) private readonly capabilitiesService: ICapabilitiesService,
 		@Inject(IDashboardService) private readonly dashboardService: IDashboardService,
 		@Inject(IAccessibilityService) private readonly accessibilityService: IAccessibilityService,
+		@Inject(IQuickInputService) private readonly quickInputService: IQuickInputService,
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef
 	) {
 		super(changeRef);
@@ -95,7 +97,8 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 			this.progressService,
 			this.logService,
 			this.dashboardService,
-			this.accessibilityService);
+			this.accessibilityService,
+			this.quickInputService);
 		this._register(this._input);
 		this._register(attachInputBoxStyler(this._input, this.themeService));
 		this._register(this._table);

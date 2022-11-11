@@ -6,10 +6,6 @@
         <source xml:lang="en">USD</source>
         <target state="translated">米国ドル</target>
       </trans-unit>
-      <trans-unit id="arc.addingWorkerNodes">
-        <source xml:lang="en">adding worker nodes</source>
-        <target state="translated">ワーカー ノードを追加しています</target>
-      </trans-unit>
       <trans-unit id="arc.apply">
         <source xml:lang="en">Apply</source>
         <target state="translated">適用</target>
@@ -90,17 +86,17 @@
         <source xml:lang="en">without downtime and by</source>
         <target state="translated">ダウンタイムなしで</target>
       </trans-unit>
+      <trans-unit id="arc.computeConfiguration">
+        <source xml:lang="en">Compute Configuration</source>
+        <target state="translated">計算の構成</target>
+      </trans-unit>
       <trans-unit id="arc.condition">
         <source xml:lang="en">Condition</source>
         <target state="translated">条件</target>
       </trans-unit>
-      <trans-unit id="arc.configurationCoordinatorNode">
+      <trans-unit id="arc.configurationPerNode">
         <source xml:lang="en">Configuration</source>
         <target state="translated">構成</target>
-      </trans-unit>
-      <trans-unit id="arc.configurationPerNode">
-        <source xml:lang="en">Configuration (per node)</source>
-        <target state="translated">構成 (ノードあたり)</target>
       </trans-unit>
       <trans-unit id="arc.configureRP">
         <source xml:lang="en">Configure retention policy</source>
@@ -135,12 +131,12 @@
         <target state="translated">SQL マネージド インスタンス - Azure Arc インスタンス {0} に接続できませんでした。{1}</target>
       </trans-unit>
       <trans-unit id="arc.connectToPGSql">
-        <source xml:lang="en">Connect to PostgreSQL Hyperscale - Azure Arc ({0})</source>
-        <target state="translated">PostgreSQL Hyperscale への接続 – Azure Arc ({0})</target>
+        <source xml:lang="en">Connect to PostgreSQL server - Azure Arc ({0})</source>
+        <target state="translated">PostgreSQL サーバーに接続する - Azure Arc ({0})</target>
       </trans-unit>
       <trans-unit id="arc.connectToPGSqlFailed">
-        <source xml:lang="en">Could not connect to PostgreSQL Hyperscale - Azure Arc Instance {0}. {1}</source>
-        <target state="translated">PostgreSQL Hyperscale - Azure Arc インスタンス {0} に接続できませんでした。{1}</target>
+        <source xml:lang="en">Could not connect to PostgreSQL server - Azure Arc Instance {0}. {1}</source>
+        <target state="translated">PostgreSQL サーバーに接続できませんでした - Azure Arc インスタンス {0}。{1}</target>
       </trans-unit>
       <trans-unit id="arc.connectToPostgresDescription">
         <source xml:lang="en">A connection to the server is required to show and set database engine settings, which will require the PostgreSQL Extension to be installed.</source>
@@ -211,33 +207,9 @@
         <source xml:lang="en">Coordinator</source>
         <target state="translated">コーディネーター</target>
       </trans-unit>
-      <trans-unit id="arc.coordinatorCoresLimit">
-        <source xml:lang="en">Coordinator Node CPU limit</source>
-        <target state="translated">コーディネーター ノード CPU の制限</target>
-      </trans-unit>
-      <trans-unit id="arc.coordinatorCoresRequest">
-        <source xml:lang="en">Coordinator Node CPU request</source>
-        <target state="translated">コーディネーター ノード CPU 要求</target>
-      </trans-unit>
       <trans-unit id="arc.coordinatorEndpoint">
         <source xml:lang="en">Coordinator endpoint</source>
         <target state="translated">コーディネーターのエンドポイント</target>
-      </trans-unit>
-      <trans-unit id="arc.coordinatorMemoryLimit">
-        <source xml:lang="en">Coordinator Node Memory limit (in GB)</source>
-        <target state="translated">コーディネーター ノードのメモリ制限 (GB)</target>
-      </trans-unit>
-      <trans-unit id="arc.coordinatorMemoryRequest">
-        <source xml:lang="en">Coordinator Node Memory request (in GB)</source>
-        <target state="translated">コーディネーター ノードのメモリ要求 (GB)</target>
-      </trans-unit>
-      <trans-unit id="arc.coordinatorNode">
-        <source xml:lang="en">Coordinator Node</source>
-        <target state="translated">コーディネーター ノード</target>
-      </trans-unit>
-      <trans-unit id="arc.coordinatorNodeConfigurationInformation">
-        <source xml:lang="en">You can configure the number of CPU cores and storage size that will apply to the coordinator node. Adjust the number of CPU cores and memory settings for your server group. To reset the requests and/or limits, pass in empty value.</source>
-        <target state="translated">すべてのコーディネーター ノードに適用される CPU コアの数とストレージ サイズを構成できます。サーバー グループの CPU コアの数とメモリの設定を調整します。要求または制限をリセットするには、空の値を渡してください。</target>
       </trans-unit>
       <trans-unit id="arc.coordinatorNodeParameters">
         <source xml:lang="en">Coordinator Node Parameters</source>
@@ -570,12 +542,12 @@
         <target state="translated">最新の特定の時点</target>
       </trans-unit>
       <trans-unit id="arc.learnAboutNodeParameters">
-        <source xml:lang="en">Learn more about database engine settings for Azure Arc-enabled PostgreSQL Hyperscale</source>
-        <target state="translated">Azure Arc を有効にした PostgreSQL Hyperscale のデータベース エンジンの設定に関する詳細情報</target>
+        <source xml:lang="en">Learn more about database engine settings for Azure Arc-enabled PostgreSQL</source>
+        <target state="translated">Azure Arc 対応 PostgreSQL のデータベース エンジン設定の詳細</target>
       </trans-unit>
       <trans-unit id="arc.learnAboutPostgresClients">
-        <source xml:lang="en">Learn more about Azure PostgreSQL Hyperscale client interfaces</source>
-        <target state="translated">PostgreSQL Hyperscale クライアント インターフェースに関する詳細情報</target>
+        <source xml:lang="en">Learn more about Azure PostgreSQL client interfaces</source>
+        <target state="translated">Azure PostgreSQL クライアント インターフェイスの詳細</target>
       </trans-unit>
       <trans-unit id="arc.learnMore">
         <source xml:lang="en">Learn More.</source>
@@ -698,8 +670,8 @@
         <target state="translated">ワーカー サーバー パラメーターが見つかりません...</target>
       </trans-unit>
       <trans-unit id="arc.noPodIssuesDetected">
-        <source xml:lang="en">There aren’t any known issues affecting this PostgreSQL Hyperscale instance.</source>
-        <target state="translated">この PostgreSQL Hyperscale インスタンスに影響する既知の問題はありません。</target>
+        <source xml:lang="en">There aren’t any known issues affecting this PostgreSQL instance.</source>
+        <target state="translated">この PostgreSQL インスタンスに影響を与える既知の問題はありません。</target>
       </trans-unit>
       <trans-unit id="arc.noUpgrades">
         <source xml:lang="en">The current version is the latest version. No upgrades available.</source>
@@ -712,10 +684,6 @@
       <trans-unit id="arc.node">
         <source xml:lang="en">node</source>
         <target state="translated">ノード</target>
-      </trans-unit>
-      <trans-unit id="arc.nodeConfiguration">
-        <source xml:lang="en">Node configuration</source>
-        <target state="translated">ノード構成</target>
       </trans-unit>
       <trans-unit id="arc.nodes">
         <source xml:lang="en">nodes</source>
@@ -818,8 +786,8 @@
         <target state="translated">データベース エンジンの設定を表示および設定するには接続する必要があります。</target>
       </trans-unit>
       <trans-unit id="arc.pgSqlType">
-        <source xml:lang="en">PostgreSQL Hyperscale - Azure Arc</source>
-        <target state="translated">PostgreSQL Hyperscale – Azure Arc</target>
+        <source xml:lang="en">PostgreSQL server - Azure Arc</source>
+        <target state="translated">PostgreSQL サーバー - Azure Arc</target>
       </trans-unit>
       <trans-unit id="arc.pitr">
         <source xml:lang="en">Point in time restore</source>
@@ -866,8 +834,8 @@
         <target state="translated">正常性情報の詳細を参照するには、下のドロップダウンリストからポッドを選択してください</target>
       </trans-unit>
       <trans-unit id="arc.postgres.computeAndStorageDescriptionPartTwo">
-        <source xml:lang="en">PostgreSQL Hyperscale server group by</source>
-        <target state="translated">PostgreSQL Hyperscale サーバー グループで</target>
+        <source xml:lang="en">PostgreSQL by</source>
+        <target state="translated">PostgreSQL by</target>
       </trans-unit>
       <trans-unit id="arc.postgresAdminUsername">
         <source xml:lang="en">Admin username</source>
@@ -882,8 +850,8 @@
         <target state="translated">Azure Arc に対応した拡張ができます</target>
       </trans-unit>
       <trans-unit id="arc.postgresDashboard">
-        <source xml:lang="en">PostgreSQL Hyperscale - Azure Arc Dashboard - {0}</source>
-        <target state="translated">PostgreSQL Hyperscale - Azure Arc ダッシュボード - {0}</target>
+        <source xml:lang="en">PostgreSQL server - Azure Arc Dashboard (Preview) - {0}</source>
+        <target state="translated">PostgreSQL サーバー - Azure Arc ダッシュボード (プレビュー) - {0}</target>
       </trans-unit>
       <trans-unit id="arc.postgresExtension">
         <source xml:lang="en">microsoft.azuredatastudio-postgresql</source>
@@ -1065,13 +1033,13 @@
         <source xml:lang="en">Select from available client connection strings below.</source>
         <target state="translated">使用可能なクライアント接続文字列を以下から選択します。</target>
       </trans-unit>
+      <trans-unit id="arc.server">
+        <source xml:lang="en">Server</source>
+        <target state="translated">サーバー</target>
+      </trans-unit>
       <trans-unit id="arc.serverEndpoint">
         <source xml:lang="en">Server Endpoint</source>
         <target state="translated">サーバー エンドポイント</target>
-      </trans-unit>
-      <trans-unit id="arc.serverGroupNodes">
-        <source xml:lang="en">Server group nodes</source>
-        <target state="translated">サーバー グループ ノード</target>
       </trans-unit>
       <trans-unit id="arc.serverGroupType">
         <source xml:lang="en">Server group type</source>
@@ -1249,29 +1217,9 @@
         <source xml:lang="en">Worker</source>
         <target state="translated">ワーカー</target>
       </trans-unit>
-      <trans-unit id="arc.workerCoresLimit">
-        <source xml:lang="en">Worker Nodes CPU limit</source>
-        <target state="translated">ワーカー ノードの CPU 制限</target>
-      </trans-unit>
-      <trans-unit id="arc.workerCoresRequest">
-        <source xml:lang="en">Worker Nodes CPU request</source>
-        <target state="translated">ワーカーノードの CPU 要求</target>
-      </trans-unit>
-      <trans-unit id="arc.workerMemoryLimit">
-        <source xml:lang="en">Worker Nodes Memory limit (in GB)</source>
-        <target state="translated">ワーカー ノードのメモリ制限 (GB)</target>
-      </trans-unit>
-      <trans-unit id="arc.workerMemoryRequest">
-        <source xml:lang="en">Worker Nodes Memory request (in GB)</source>
-        <target state="translated">ワーカー ノードのメモリ要求 (GB)</target>
-      </trans-unit>
       <trans-unit id="arc.workerNodeCount">
         <source xml:lang="en">Worker node count</source>
         <target state="translated">ワーカー ノードの数</target>
-      </trans-unit>
-      <trans-unit id="arc.workerNodeInformation">
-        <source xml:lang="en">It is possible to scale in and out your server group by reducing or increasing the number of worker nodes. The value must be 0 or greater than 1.</source>
-        <target state="translated">ワーカー ノードの数を減らしたり増やしたりすることで、サーバー グループをスケールインまたはスケールアウトすることができます。値は 0 または 1 より大きい値でなければなりません。</target>
       </trans-unit>
       <trans-unit id="arc.workerNodeParameters">
         <source xml:lang="en">Worker Node Parameters</source>
@@ -1281,21 +1229,9 @@
         <source xml:lang="en">Worker Nodes</source>
         <target state="translated">ワーカー ノード</target>
       </trans-unit>
-      <trans-unit id="arc.workerNodesConfigurationInformation">
-        <source xml:lang="en">You can configure the number of CPU cores and storage size that will apply to all worker nodes. Adjust the number of CPU cores and memory settings for your server group. To reset the requests and/or limits, pass in empty value.</source>
-        <target state="translated">すべてのワーカー ノードに適用される CPU コア数とストレージ サイズを構成することができます。サーバー グループに CPU コア数とメモリ設定を調整します。要求や制限をリセットするには、空の値を渡します。</target>
-      </trans-unit>
-      <trans-unit id="arc.workerNodesDescription">
-        <source xml:lang="en">Expand your server group and scale your database by adding worker nodes.</source>
-        <target state="translated">サーバー グループを拡張し、ワーカー ノードを追加してデータベースを拡張します。</target>
-      </trans-unit>
       <trans-unit id="arc.workerNodesParametersDescription">
         <source xml:lang="en"> These server parameters of the Worker nodes can be set to custom (non-default) values. Search to find parameters.</source>
         <target state="translated"> ワーカー ノードのこれらのサーバー パラメーターは、カスタム (既定値以外) の値に設定することができます。検索してパラメーターを検出します。</target>
-      </trans-unit>
-      <trans-unit id="arc.workerOneNodeValidationMessage">
-        <source xml:lang="en">Value of 1 is not supported.</source>
-        <target state="translated">1 の値はサポートされていません。</target>
       </trans-unit>
       <trans-unit id="arc.yes">
         <source xml:lang="en">Yes</source>
@@ -1365,37 +1301,49 @@
         <source xml:lang="en">I accept {0} and {1}.</source>
         <target state="translated">{0} および {1} に同意します。</target>
       </trans-unit>
+      <trans-unit id="arc.agreement.help.text.azure.marketplace.terms">
+        <source xml:lang="en">Azure Marketplace Terms</source>
+        <target state="translated">Azure Marketplace の使用条件</target>
+      </trans-unit>
+      <trans-unit id="arc.agreement.help.text.learn.more">
+        <source xml:lang="en">Learn more</source>
+        <target state="translated">詳細情報</target>
+      </trans-unit>
+      <trans-unit id="arc.agreement.help.text.privacy.policy">
+        <source xml:lang="en">Privacy policy</source>
+        <target state="translated">プライバシー ポリシー</target>
+      </trans-unit>
+      <trans-unit id="arc.agreement.help.text.terms.of.use">
+        <source xml:lang="en">Terms of use</source>
+        <target state="translated">利用規約</target>
+      </trans-unit>
+      <trans-unit id="arc.agreement.postgres.help.text">
+        <source xml:lang="en">PostgreSQL Server - Azure Arc is one of the database engines available as part of Azure Arc-enabled data services and it can be deployed on the infrastructure of your choice. {0}. 
+ 
+ By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.</source>
+        <target state="translated">PostgreSQL Server - Azure Arc は、Azure Arc対応データ サービスの一部として使用できるデータベース エンジンの 1 つであり、任意のインフラストラクチャにデプロイできます。 {0}。 
+ 
+ [ノートブックへのスクリプト]または [配置]をクリックすると、以下に示す Marketplace オファリングに関連する法律条項とプライバシーに関する声明に同意します。(b) Microsoft が、Azure サブスクリプションと同じ請求頻度で、オファリングに関連する料金に対して現在の支払い方法を請求することを承認します。および (c) サポート、課金、およびその他のトランザクション アクティビティのために、Microsoft がサービスのプロバイダーと連絡先、使用状況、およびトランザクション情報を共有することに同意します。Microsoft は、サード パーティのオファリングに対する権利を提供しません。詳細については、{1}、 {2}、および {3}を参照してください。</target>
+      </trans-unit>
+      <trans-unit id="arc.agreement.postgres.help.text.learn.more.ariaLabel">
+        <source xml:lang="en">Learn more about PostgreSQL Server - Azure Arc</source>
+        <target state="translated">PostgreSQL Server の詳細 - Azure Arc</target>
+      </trans-unit>
       <trans-unit id="arc.agreement.postgres.terms.conditions">
-        <source xml:lang="en">Azure Arc-enabled PostgreSQL Hyperscale terms and conditions</source>
-        <target state="translated">Azure Arc 対応 PostgreSQL Hyperscale のご契約条件</target>
+        <source xml:lang="en">PostgreSQL Server - Azure Arc terms and conditions</source>
+        <target state="translated">PostgreSQL Server - Azure Arc の利用規約</target>
       </trans-unit>
       <trans-unit id="arc.agreement.sql.help.text">
-        <source xml:lang="en">Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}. 
+        <source xml:lang="en">Azure Arc-enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}. 
  
  By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.</source>
         <target state="translated">Azure Arc 対応のManaged Instanceでは、選択したインフラストラクチャにデプロイできるSQL Serverアクセスと機能の互換性が提供されます。 {0}。 
  
- [ノートブックへのスクリプト] または [配置] をクリックすると、以下に記載されている Marketplace オファリングに関連する法律条項およびプライバシーに関する声明に同意します。(b) Microsoft が、Azure サブスクリプションと同じ請求頻度で、オファリングに関連する料金に対して現在の支払い方法を請求することを承認します。(c) Microsoft は、サポート、課金、およびその他のトランザクション アクティビティのために、Microsoft がサービスのプロバイダーと連絡先、使用状況、およびトランザクション情報を共有することに同意します。Microsoft は、サード パーティのオファリングに対する権利を提供しません。詳細については、 {1}、 {2}、および {3}を参照してください。</target>
-      </trans-unit>
-      <trans-unit id="arc.agreement.sql.help.text.azure.marketplace.terms">
-        <source xml:lang="en">Azure Marketplace Terms</source>
-        <target state="translated">Azure Marketplace の使用条件</target>
-      </trans-unit>
-      <trans-unit id="arc.agreement.sql.help.text.learn.more">
-        <source xml:lang="en">Learn more</source>
-        <target state="translated">詳細情報</target>
+ [ノートブックへのスクリプト] または [配置] をクリックすると、以下に記載されている Marketplace オファリングに関連する法律条項およびプライバシーに関する声明に同意します。(b) Microsoft が、Azure サブスクリプションと同じ請求頻度で、オファリングに関連する料金に対して現在の支払い方法を請求することを承認します。(c) サポート、課金、およびその他のトランザクション アクティビティのために、Microsoft がサービスのプロバイダーと連絡先、使用状況、およびトランザクション情報を共有することに同意します。Microsoft は、サード パーティのオファリングに対する権利を提供しません。詳細については、 {1}、 {2}、および {3}を参照してください。</target>
       </trans-unit>
       <trans-unit id="arc.agreement.sql.help.text.learn.more.ariaLabel">
-        <source xml:lang="en">Learn more about Azure Arc enabled Managed Instance</source>
-        <target state="translated">Azure Arc 対応マネージド インスタンスに関する詳細情報</target>
-      </trans-unit>
-      <trans-unit id="arc.agreement.sql.help.text.privacy.policy">
-        <source xml:lang="en">Privacy policy</source>
-        <target state="translated">プライバシー ポリシー</target>
-      </trans-unit>
-      <trans-unit id="arc.agreement.sql.help.text.terms.of.use">
-        <source xml:lang="en">Terms of use</source>
-        <target state="translated">使用条件</target>
+        <source xml:lang="en">Learn more about Azure Arc-enabled Managed Instance</source>
+        <target state="translated">Azure Arc 対応Managed Instanceの詳細</target>
       </trans-unit>
       <trans-unit id="arc.agreement.sql.terms.conditions">
         <source xml:lang="en">Azure SQL managed instance - Azure Arc terms and conditions</source>
@@ -1753,133 +1701,117 @@
         <source xml:lang="en">Password</source>
         <target state="translated">パスワード</target>
       </trans-unit>
-      <trans-unit id="arc.postgres.server.group.coordinator.cores.limit.description">
+      <trans-unit id="arc.postgres.server.cores.limit.description">
         <source xml:lang="en">The maximum number of CPU cores for the Postgres instance that can be used on the coordinator node. Fractional cores are supported.</source>
         <target state="translated">ノードごとに使用できる Postgres インスタンスの CPU コアの最大数。分数のコアがサポートされています。</target>
       </trans-unit>
-      <trans-unit id="arc.postgres.server.group.coordinator.cores.limit.label">
+      <trans-unit id="arc.postgres.server.cores.limit.label">
         <source xml:lang="en">CPU limit</source>
         <target state="translated">CPU の制限</target>
       </trans-unit>
-      <trans-unit id="arc.postgres.server.group.coordinator.cores.request.description">
+      <trans-unit id="arc.postgres.server.cores.request.description">
         <source xml:lang="en">The minimum number of CPU cores that must be available on the coordinator node to schedule the service. Fractional cores are supported.</source>
         <target state="translated">サービスをスケジュールするために、コーディネーター ノードにて使用可能でなければならない CPU コアの最小数です。分数のコアがサポートされています。</target>
       </trans-unit>
-      <trans-unit id="arc.postgres.server.group.coordinator.cores.request.label">
+      <trans-unit id="arc.postgres.server.cores.request.label">
         <source xml:lang="en">CPU request</source>
         <target state="translated">CPU 要求</target>
       </trans-unit>
-      <trans-unit id="arc.postgres.server.group.coordinator.memory.limit.description">
-        <source xml:lang="en">The memory limit of the Postgres instance on the coordinator node in GB.</source>
-        <target state="translated">コーディネーター ノードの Postgres インスタンスのメモリ制限 (GB)。</target>
+      <trans-unit id="arc.postgres.server.dev.use.description">
+        <source xml:lang="en">Check the box to indicate this instance will be used for development or testing purposes only. This instance will not be billed.</source>
+        <target state="translated">このインスタンスが開発またはテスト目的でのみ使用されることを示すチェックボックスをオンにします。このインスタンスには請求されません。</target>
       </trans-unit>
-      <trans-unit id="arc.postgres.server.group.coordinator.memory.limit.label">
-        <source xml:lang="en">Memory limit (GB)</source>
-        <target state="translated">メモリの制限 (GB)</target>
+      <trans-unit id="arc.postgres.server.dev.use.label">
+        <source xml:lang="en">For development use only</source>
+        <target state="translated">開発用途のみ</target>
       </trans-unit>
-      <trans-unit id="arc.postgres.server.group.coordinator.memory.request.description">
-        <source xml:lang="en">The memory request of the Postgres instance on the coordinator node in GB.</source>
-        <target state="translated">コーディネーター ノードの Postgres インスタンスのメモリ要求 (GB)。</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.coordinator.memory.request.label">
-        <source xml:lang="en">Memory request (GB)</source>
-        <target state="translated">メモリ要求 (GB)</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.engine.version">
+      <trans-unit id="arc.postgres.server.engine.version">
         <source xml:lang="en">Engine Version</source>
         <target state="translated">エンジンのバージョン</target>
       </trans-unit>
-      <trans-unit id="arc.postgres.server.group.extensions.description">
+      <trans-unit id="arc.postgres.server.extensions.description">
         <source xml:lang="en">A comma-separated list of the Postgres extensions that should be loaded on startup. Please refer to the postgres documentation for supported values.</source>
         <target state="translated">スタートアップ時に読み込まれる Postgres 拡張のコンマ区切りリストです。サポートされている値については postgres のドキュメントを参照してください。</target>
       </trans-unit>
-      <trans-unit id="arc.postgres.server.group.extensions.label">
+      <trans-unit id="arc.postgres.server.extensions.label">
         <source xml:lang="en">Extensions</source>
         <target state="translated">拡張</target>
       </trans-unit>
-      <trans-unit id="arc.postgres.server.group.name">
-        <source xml:lang="en">Server group name</source>
-        <target state="translated">サーバー グループ名</target>
+      <trans-unit id="arc.postgres.server.invalid.username">
+        <source xml:lang="en">That username is disabled; please choose another username.</source>
+        <target state="translated">そのユーザー名は無効です。別のユーザー名を選択してください。</target>
       </trans-unit>
-      <trans-unit id="arc.postgres.server.group.name.validation.description">
-        <source xml:lang="en">Server group name must consist of lower case alphanumeric characters or '-', start with a letter, end with an alphanumeric character, and be 11 characters or fewer in length.</source>
-        <target state="translated">サーバー グループ名は、小文字の英数字または '-' で構成され、先頭に文字を使用し、末尾に英数字を使用して、11 文字以下にする必要があります。</target>
+      <trans-unit id="arc.postgres.server.memory.limit.description">
+        <source xml:lang="en">The memory limit of the Postgres instance on the coordinator node in GB.</source>
+        <target state="translated">コーディネーター ノードの Postgres インスタンスのメモリ制限 (GB)。</target>
       </trans-unit>
-      <trans-unit id="arc.postgres.server.group.port">
+      <trans-unit id="arc.postgres.server.memory.limit.label">
+        <source xml:lang="en">Memory limit (GB)</source>
+        <target state="translated">メモリの制限 (GB)</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.memory.request.description">
+        <source xml:lang="en">The memory request of the Postgres instance on the coordinator node in GB.</source>
+        <target state="translated">コーディネーター ノードの Postgres インスタンスのメモリ要求 (GB)。</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.memory.request.label">
+        <source xml:lang="en">Memory request (GB)</source>
+        <target state="translated">メモリ要求 (GB)</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.name">
+        <source xml:lang="en">Server name</source>
+        <target state="translated">サーバー名</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.name.placeholder">
+        <source xml:lang="en">Enter server name</source>
+        <target state="translated">サーバー名を入力</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.name.validation.description">
+        <source xml:lang="en">Server name must consist of lower case alphanumeric characters or '-', start with a letter, end with an alphanumeric character, and be 11 characters or fewer in length.</source>
+        <target state="translated">サーバー名は、小文字の英数字または '-' で構成され、文字で始まり、末尾が英数字で、長さが 11 文字以下である必要があります。</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.port">
         <source xml:lang="en">Port</source>
         <target state="translated">ポート</target>
       </trans-unit>
-      <trans-unit id="arc.postgres.server.group.volume.size.backups.description">
+      <trans-unit id="arc.postgres.server.service.type">
+        <source xml:lang="en">Service type</source>
+        <target state="translated">サービスの種類</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.username">
+        <source xml:lang="en">Admin username</source>
+        <target state="translated">管理者ユーザー名</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.username.placeholder">
+        <source xml:lang="en">Enter server admin login name</source>
+        <target state="translated">サーバー管理者のログイン名を入力</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.volume.size.backups.description">
         <source xml:lang="en">The size of the storage volume to be used for backups in GB.</source>
         <target state="translated">バックアップに使用するストレージ ボリュームのサイズ (GB)。</target>
       </trans-unit>
-      <trans-unit id="arc.postgres.server.group.volume.size.backups.label">
+      <trans-unit id="arc.postgres.server.volume.size.backups.label">
         <source xml:lang="en">Volume Size GB (Backups)</source>
         <target state="translated">ボリュームサイズ GB (バックアップ)</target>
       </trans-unit>
-      <trans-unit id="arc.postgres.server.group.volume.size.data.description">
+      <trans-unit id="arc.postgres.server.volume.size.data.description">
         <source xml:lang="en">The size of the storage volume to be used for data in GB.</source>
         <target state="translated">データに使用するストレージ ボリュームのサイズ (GB)。</target>
       </trans-unit>
-      <trans-unit id="arc.postgres.server.group.volume.size.data.label">
+      <trans-unit id="arc.postgres.server.volume.size.data.label">
         <source xml:lang="en">Volume Size GB (Data)</source>
         <target state="translated">ボリューム サイズ GB (データ)</target>
       </trans-unit>
-      <trans-unit id="arc.postgres.server.group.volume.size.logs.description">
+      <trans-unit id="arc.postgres.server.volume.size.logs.description">
         <source xml:lang="en">The size of the storage volume to be used for logs in GB.</source>
         <target state="translated">ログに使用するストレージ ボリュームのサイズ (GB)。</target>
       </trans-unit>
-      <trans-unit id="arc.postgres.server.group.volume.size.logs.label">
+      <trans-unit id="arc.postgres.server.volume.size.logs.label">
         <source xml:lang="en">Volume Size GB (Logs)</source>
         <target state="translated">ボリュームサイズ GB (ログ)</target>
       </trans-unit>
-      <trans-unit id="arc.postgres.server.group.workers.cores.limit.description">
-        <source xml:lang="en">The maximum number of CPU cores for the Postgres instance that can be used per node. Fractional cores are supported.</source>
-        <target state="translated">ノードごとに使用できる Postgres インスタンスの CPU コアの最大数。分数のコアがサポートされています。</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.workers.cores.limit.label">
-        <source xml:lang="en">CPU limit (cores per node)</source>
-        <target state="translated">CPU の制限 (ノードあたりのコア数)</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.workers.cores.request.description">
-        <source xml:lang="en">The minimum number of CPU cores that must be available per node to schedule the service. Fractional cores are supported.</source>
-        <target state="translated">サービスをスケジュールするために、ノードごとに使用可能でなければならない CPU コアの最小数です。分数のコアがサポートされています。</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.workers.cores.request.label">
-        <source xml:lang="en">CPU request (cores per node)</source>
-        <target state="translated">CPU 要求 (ノードあたりのコア数)</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.workers.description">
-        <source xml:lang="en">The number of worker nodes to provision in a sharded cluster, or zero (the default) for single-node Postgres.</source>
-        <target state="translated">シャード化されたクラスターでプロビジョニングするワーカー ノードの数、または単一ノード Postgres では 0 (既定値)。</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.workers.label">
-        <source xml:lang="en">Number of workers</source>
-        <target state="translated">ワーカーの数</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.workers.memory.limit.description">
-        <source xml:lang="en">The memory limit of the Postgres instance per node in GB.</source>
-        <target state="translated">ノードごとの Postgres インスタンスのメモリ制限 (GB) 。</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.workers.memory.limit.label">
-        <source xml:lang="en">Memory limit (GB per node)</source>
-        <target state="translated">メモリの制限 (ノードあたりの GB)</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.workers.memory.request.description">
-        <source xml:lang="en">The memory request of the Postgres instance per node in GB.</source>
-        <target state="translated">ノードごとの Postgres インスタンスのメモリ要求 (GB)。</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.workers.memory.request.label">
-        <source xml:lang="en">Memory request (GB per node)</source>
-        <target state="translated">メモリ要求 (ノードあたりの GB)</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.settings.resource.coordinator.title">
-        <source xml:lang="en">Coordinator Node Compute Configuration</source>
-        <target state="translated">コーディネーター ノード コンピューティングの構成</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.settings.resource.worker.title">
-        <source xml:lang="en">Worker Nodes Compute Configuration</source>
-        <target state="translated">ワーカー ノード コンピューティングの構成</target>
+      <trans-unit id="arc.postgres.settings.resource.compute.config.title">
+        <source xml:lang="en">Compute Configuration</source>
+        <target state="translated">計算の構成</target>
       </trans-unit>
       <trans-unit id="arc.postgres.settings.section.title">
         <source xml:lang="en">General settings</source>
@@ -1902,12 +1834,12 @@
         <target state="translated">ログの継続的ボリュームに使用されるストレージ クラス</target>
       </trans-unit>
       <trans-unit id="arc.postgres.wizard.page1.title">
-        <source xml:lang="en">Provide Azure enabled PostgreSQL Hyperscale server group parameters</source>
-        <target state="translated">Azure enabled PostgreSQL Hyperscale サーバー グループのパラメーターを指定する</target>
+        <source xml:lang="en">Provide PostgreSQL server parameters</source>
+        <target state="translated">PostgreSQL サーバー パラメーターを提供する</target>
       </trans-unit>
       <trans-unit id="arc.postgres.wizard.title">
-        <source xml:lang="en">Deploy an Azure Arc-enabled PostgreSQL Hyperscale server group</source>
-        <target state="translated">Azure Arc 対応 PostgreSQL Hyperscale サーバー グループを展開する</target>
+        <source xml:lang="en">Deploy a PostgreSQL Server - Azure Arc (Preview)</source>
+        <target state="translated">PostgreSQL サーバーのデプロイ - Azure Arc (プレビュー)</target>
       </trans-unit>
       <trans-unit id="arc.sql.connection.settings.section.title">
         <source xml:lang="en">SQL Connection information</source>
@@ -2037,6 +1969,10 @@
         <source xml:lang="en">Instance name</source>
         <target state="translated">インスタンス名</target>
       </trans-unit>
+      <trans-unit id="arc.sql.instance.name.placeholder">
+        <source xml:lang="en">Enter instance name</source>
+        <target state="translated">インスタンス名を入力</target>
+      </trans-unit>
       <trans-unit id="arc.sql.instance.retention.policy.title">
         <source xml:lang="en">SQL Instance Backup Retention Policy</source>
         <target state="translated">SQL インスタンス バックアップ保持ポリシー</target>
@@ -2050,8 +1986,8 @@
         <target state="translated">インスタンス名は、小文字の英数字または '-' で構成され、先頭に文字を使用し、末尾に英数字を使用して、13 文字以下にする必要があります。</target>
       </trans-unit>
       <trans-unit id="arc.sql.invalid.username">
-        <source xml:lang="en">sa username is disabled, please choose another username</source>
-        <target state="translated">sa ユーザー名が無効です。別のユーザー名を選択してください</target>
+        <source xml:lang="en">That username is disabled; please choose another username.</source>
+        <target state="translated">そのユーザー名は無効です。別のユーザー名を選択してください。</target>
       </trans-unit>
       <trans-unit id="arc.sql.license.type.description">
         <source xml:lang="en">Apply the Azure Hybrid Benefit if you already own a SQL Server License</source>
@@ -2154,8 +2090,12 @@
         <target state="translated">2 個のレプリカ</target>
       </trans-unit>
       <trans-unit id="arc.sql.username">
-        <source xml:lang="en">Username</source>
-        <target state="translated">ユーザー名</target>
+        <source xml:lang="en">Managed Instance admin login</source>
+        <target state="translated">Managed Instance の管理者ログイン</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.username.placeholder">
+        <source xml:lang="en">Enter admin name</source>
+        <target state="translated">管理者名を入力</target>
       </trans-unit>
       <trans-unit id="arc.sql.volume.size.backups.description">
         <source xml:lang="en">The size of the storage volume to be used for backups in gibibytes.</source>
@@ -2292,12 +2232,12 @@
         <target state="translated">要求されたメモリはメモリ制限以下でなければなりません</target>
       </trans-unit>
       <trans-unit id="resource.type.arc.postgres.description">
-        <source xml:lang="en">Deploy PostgreSQL Hyperscale server groups into an Azure Arc environment</source>
-        <target state="translated">Azure Arc 環境に PostgreSQL Hyperscale サーバー グループを展開する</target>
+        <source xml:lang="en">Deploy a PostgreSQL server into an Azure Arc environment</source>
+        <target state="translated">PostgreSQL サーバーをAzure Arc 環境に配置する</target>
       </trans-unit>
       <trans-unit id="resource.type.arc.postgres.display.name">
-        <source xml:lang="en">PostgreSQL Hyperscale server groups - Azure Arc</source>
-        <target state="translated">PostgreSQL Hyperscale サーバー グループ - Azure Arc</target>
+        <source xml:lang="en">PostgreSQL Server - Azure Arc (Preview)</source>
+        <target state="translated">PostgreSQL Server - Azure Arc (プレビュー)</target>
       </trans-unit>
       <trans-unit id="resource.type.arc.sql.description">
         <source xml:lang="en">Managed SQL Instance service for app developers in a customer-managed environment</source>

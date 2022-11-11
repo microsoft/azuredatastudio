@@ -6,6 +6,7 @@
 import { IRenderMime } from 'sql/workbench/services/notebook/browser/outputs/renderMimeInterfaces';
 import { ReadonlyJSONObject } from 'sql/workbench/services/notebook/common/jsonext';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 
 /**
@@ -22,6 +23,7 @@ export class MimeModel implements IRenderMime.IMimeModel {
 		this._callback = options.callback;
 		this._themeService = options.themeService;
 		this._accessibilityService = options.accessibilityService;
+		this._quickInputService = options.quickInputService;
 	}
 
 	/**
@@ -51,6 +53,10 @@ export class MimeModel implements IRenderMime.IMimeModel {
 		return this._accessibilityService;
 	}
 
+	get quickInputService(): IQuickInputService {
+		return this._quickInputService;
+	}
+
 	/**
 	 * Set the data associated with the model.
 	 *
@@ -69,6 +75,7 @@ export class MimeModel implements IRenderMime.IMimeModel {
 	private _metadata: ReadonlyJSONObject;
 	private _themeService: IThemeService;
 	private _accessibilityService: IAccessibilityService;
+	private _quickInputService: IQuickInputService;
 }
 
 /**
@@ -105,5 +112,7 @@ export namespace MimeModel {
 		themeService?: IThemeService;
 
 		accessibilityService?: IAccessibilityService;
+
+		quickInputService?: IQuickInputService;
 	}
 }

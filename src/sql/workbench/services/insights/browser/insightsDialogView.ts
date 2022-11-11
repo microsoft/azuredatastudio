@@ -52,6 +52,7 @@ import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 
 const labelDisplay = nls.localize("insights.item", "Item");
 const valueDisplay = nls.localize("insights.value", "Value");
@@ -88,13 +89,14 @@ class InsightTableView extends ViewPane {
 		@IOpenerService openerService: IOpenerService,
 		@IThemeService themeService: IThemeService,
 		@ITelemetryService telemetryService: ITelemetryService,
-		@IAccessibilityService private _accessibilityService: IAccessibilityService
+		@IAccessibilityService private _accessibilityService: IAccessibilityService,
+		@IQuickInputService private _quickInputService: IQuickInputService
 	) {
 		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService, telemetryService);
 	}
 
 	protected override renderBody(container: HTMLElement): void {
-		this._table = new Table(container, this._accessibilityService, {
+		this._table = new Table(container, this._accessibilityService, this._quickInputService, {
 			columns: this.columns,
 			dataProvider: this.data
 		}, this.tableOptions);
