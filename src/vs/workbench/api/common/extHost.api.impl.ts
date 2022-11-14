@@ -94,9 +94,7 @@ import { combinedDisposable } from 'vs/base/common/lifecycle';
 import { checkProposedApiEnabled, ExtensionIdentifierSet, isProposedApiEnabled } from 'vs/workbench/services/extensions/common/extensions';
 import { DebugConfigurationProviderTriggerKind } from 'vs/workbench/contrib/debug/common/debug';
 
-import { ExtHostNotebook } from 'sql/workbench/api/common/extHostNotebook'; // {{SQL CARBON EDIT}}
 import { functionalityNotSupportedError } from 'sql/base/common/locConstants';
-import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/common/extHostNotebookDocumentsAndEditors';
 
 export interface IExtensionRegistries {
 	mine: ExtensionDescriptionRegistry;
@@ -110,7 +108,7 @@ export interface IExtensionApiFactory {
 /**
  * This method instantiates and returns the extension API surface
  */
-export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, extHostNotebook: ExtHostNotebook, extHostNotebookDocumentsAndEditors: ExtHostNotebookDocumentsAndEditors): IExtensionApiFactory { // {{SQL CARBON EDIT}} Add ExtHostNotebook
+export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): IExtensionApiFactory {
 
 	// services
 	const initData = accessor.get(IExtHostInitDataService);
