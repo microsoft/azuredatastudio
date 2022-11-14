@@ -50,7 +50,7 @@ import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editor
 import { IEditorPane, IUntypedFileEditorInput } from 'vs/workbench/common/editor';
 import { isINotebookInput } from 'sql/workbench/services/notebook/browser/interface';
 import { INotebookShowOptions } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { DEFAULT_NB_LANGUAGE_MODE, NotebookLanguage } from 'sql/workbench/common/constants';
+import { DEFAULT_NOTEBOOK_FILETYPE, NotebookLanguage } from 'sql/workbench/common/constants';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { SqlSerializationProvider } from 'sql/workbench/services/notebook/browser/sql/sqlSerializationProvider';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
@@ -276,7 +276,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		let isUntitled: boolean = uri.scheme === Schemas.untitled;
 
 		let fileInput: EditorInput;
-		let languageId = DEFAULT_NB_LANGUAGE_MODE;
+		let languageId = NotebookLanguage.Notebook;
 		let initialStringContents: string;
 		if (options.initialContent) {
 			if (typeof options.initialContent === 'string') {
