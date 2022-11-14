@@ -215,6 +215,7 @@ suite('SQL Object Explorer Service tests', () => {
 					defaultValue: undefined,
 					isIdentity: false,
 					isRequired: false,
+					showOnConnectionDialog: true,
 					specialValueType: undefined,
 					valueType: ServiceOptionType.string
 				}

@@ -38,11 +38,17 @@ declare module 'azurecore' {
 		azureAuthType?: AzureAuthType
 
 		providerSettings: AzureAccountProviderMetadata;
+
 		/**
 		 * Whether or not the account is a Microsoft account
 		 */
 		isMsAccount: boolean;
 
+		/**
+		 * Represents the tenant that the user would be signing in to. For work and school accounts, the GUID is the immutable tenant ID of the organization that the user is signing in to.
+		 * For sign-ins to the personal Microsoft account tenant (services like Xbox, Teams for Life, or Outlook), the value is 9188040d-6c67-4c5b-b112-36a304b66dad.
+		 */
+		owningTenant: Tenant;
 		/**
 		 * A list of tenants (aka directories) that the account belongs to
 		 */
@@ -356,10 +362,10 @@ declare module 'azurecore' {
 		}
 
 		export interface IAzureResourceTreeDataProvider {
-			 /**
-			  * Gets the root tree item nodes for this provider - these will be used as
-			  * direct children of the Account node in the Azure tree view.
-			  */
+			/**
+			 * Gets the root tree item nodes for this provider - these will be used as
+			 * direct children of the Account node in the Azure tree view.
+			 */
 			getRootChildren(): Promise<azdata.TreeItem[]>;
 			/**
 			 * Gets the children for a given {@link IAzureResourceNode}

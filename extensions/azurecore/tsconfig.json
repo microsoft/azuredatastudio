@@ -3,6 +3,7 @@
 	"compilerOptions": {
 		"outDir": "./out",
 		"noUnusedParameters": false,
+		"sourceMap": true,
 		"typeRoots": [
 			"./node_modules/@types"
 		],

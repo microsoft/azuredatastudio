@@ -8,9 +8,9 @@ else
 	ROOT=$(dirname $(dirname $(readlink -f $0)))
 	# {{SQL CARBON EDIT}} Completed disable sandboxing via --no-sandbox since we still see failures on our test runs
 	# --disable-setuid-sandbox: setuid sandboxes requires root and is used in containers so we disable this
-	# --disable-dev-shm-usage: when run on docker containers where size of /dev/shm
+	# --disable-dev-shm-usage --use-gl=swiftshader: when run on docker containers where size of /dev/shm
 	# partition < 64MB which causes OOM failure for chromium compositor that uses the partition for shared memory
-	LINUX_EXTRA_ARGS="--disable-dev-shm-usage --use-gl=swiftshader"
+	LINUX_EXTRA_ARGS="--no-sandbox --disable-dev-shm-usage --use-gl=swiftshader"
 fi
 
 VSCODEUSERDATADIR=`mktemp -d 2>/dev/null`
@@ -51,6 +51,7 @@ else
 
 	# Configuration for more verbose output
 	export VSCODE_CLI=1
+	export ELECTRON_ENABLE_STACK_DUMPING=1
 	export ELECTRON_ENABLE_LOGGING=1
 
 	echo "Storing crash reports into '$VSCODECRASHDIR'."
@@ -58,6 +59,11 @@ else
 	echo "Running integration tests with '$INTEGRATION_TEST_ELECTRON_PATH' as build."
 fi
 
+if [ -z "$INTEGRATION_TEST_APP_NAME" ]; then
+	after_suite() { true; }
+else
+	after_suite() { killall $INTEGRATION_TEST_APP_NAME || true; }
+fi
 
 print_subprocesses() {
 	echo "Subprocesses:"
@@ -71,6 +77,7 @@ echo "### node.js integration tests"
 echo
 print_subprocesses
 ./scripts/test.sh --runGlob **/*.integrationTest.js "$@"
+after_suite
 print_subprocesses
 
 # Tests in the extension host
@@ -96,14 +103,15 @@ ALL_PLATFORMS_API_TESTS_EXTRA_ARGS="--disable-telemetry --skip-welcome --skip-re
 # "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS $ROOT/extensions/emmet/test-workspace --extensionDevelopmentPath=$ROOT/extensions/emmet --extensionTestsPath=$ROOT/extensions/emmet/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
 # after_suite
 
-echo
-echo "### Git tests"
-echo
-print_subprocesses
-"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS $(mktemp -d 2>/dev/null) --enable-proposed-api=vscode.git --extensionDevelopmentPath=$ROOT/extensions/git --extensionTestsPath=$ROOT/extensions/git/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
-print_subprocesses
-kill_app
-print_subprocesses
+# {{SQL CARBON TODO}} - reenable
+# echo
+# echo "### Git tests"
+# echo
+# print_subprocesses
+# "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS $(mktemp -d 2>/dev/null) --enable-proposed-api=vscode.git --extensionDevelopmentPath=$ROOT/extensions/git --extensionTestsPath=$ROOT/extensions/git/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
+# print_subprocesses
+# after_suite
+# print_subprocesses
 
 
 echo
@@ -112,7 +120,7 @@ echo
 print_subprocesses
 "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS $ROOT/extensions/azurecore/test-fixtures --extensionDevelopmentPath=$ROOT/extensions/azurecore --extensionTestsPath=$ROOT/extensions/azurecore/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
 print_subprocesses
-kill_app
+after_suite
 print_subprocesses
 
 

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import TelemetryReporter from 'vscode-extension-telemetry';
+import TelemetryReporter from '@microsoft/ads-extension-telemetry';
 import { ErrorAction, ErrorHandler, Message, CloseAction } from 'vscode-languageclient';
 
 import * as Utils from './utils';

@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as os from 'os';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { getErrorMessage, isEditorTitleFree } from '../common/utils';
+import { getErrorMessage } from '../common/utils';
 
 const localize = nls.loadMessageBundle();
 
@@ -20,21 +20,7 @@ export class NotebookUtils {
 	constructor() { }
 
 	public async newNotebook(options?: azdata.nb.NotebookShowOptions): Promise<azdata.nb.NotebookEditor> {
-		const title = this.findNextUntitledEditorName();
-		const untitledUri = vscode.Uri.parse(`untitled:${title}`);
-		return azdata.nb.showNotebookDocument(untitledUri, options);
-	}
-
-	private findNextUntitledEditorName(): string {
-		let nextVal = 0;
-		// Note: this will go forever if it's coded wrong, or you have infinite Untitled notebooks!
-		while (true) {
-			let title = `Notebook-${nextVal}`;
-			if (isEditorTitleFree(title)) {
-				return title;
-			}
-			nextVal++;
-		}
+		return azdata.nb.showNotebookDocument(vscode.Uri.from({ scheme: 'untitled' }), options);
 	}
 
 	public async openNotebook(): Promise<void> {
@@ -116,12 +102,7 @@ export class NotebookUtils {
 	}
 
 	public async analyzeNotebook(oeContext?: azdata.ObjectExplorerContext): Promise<void> {
-		// Ensure we get a unique ID for the notebook. For now we're using a different prefix to the built-in untitled files
-		// to handle this. We should look into improving this in the future
-		let title = this.findNextUntitledEditorName();
-		let untitledUri = vscode.Uri.parse(`untitled:${title}`);
-
-		let editor = await azdata.nb.showNotebookDocument(untitledUri, {
+		let editor = await azdata.nb.showNotebookDocument(vscode.Uri.from({ scheme: 'untitled' }), {
 			connectionProfile: oeContext ? oeContext.connectionProfile : undefined,
 			providerId: JUPYTER_NOTEBOOK_PROVIDER,
 			preview: false,

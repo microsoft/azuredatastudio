@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { OnInit, Component, Inject, forwardRef, ElementRef, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
@@ -31,6 +31,7 @@ export class DashboardComponent extends AngularDisposable implements OnInit {
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrapService: CommonServiceInterface,
 		@Inject(forwardRef(() => Router)) private _router: Router,
+		@Inject(forwardRef(() => ActivatedRoute)) private _activeRoute: ActivatedRoute,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService
 	) {
 		super();
@@ -42,7 +43,10 @@ export class DashboardComponent extends AngularDisposable implements OnInit {
 		const profile: IConnectionProfile = this._bootstrapService.getOriginalConnectionProfile();
 		if (profile && (!profile.databaseName || Utils.isServerConnection(profile))) {
 			// Route to the server page as this is the default database
-			this._router.navigate(['server-dashboard']).catch(onUnexpectedError);
+			this._router.navigate(['server-dashboard'], { relativeTo: this._activeRoute, skipLocationChange: true }).catch(onUnexpectedError);
+		}
+		else {
+			this._router.navigate(['database-dashboard'], { relativeTo: this._activeRoute, skipLocationChange: true }).catch(onUnexpectedError);
 		}
 	}
 

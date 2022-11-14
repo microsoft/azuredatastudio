@@ -24,11 +24,11 @@ export class ErrorMessageService implements IErrorMessageService {
 		@IInstantiationService private _instantiationService: IInstantiationService
 	) { }
 
-	public showDialog(severity: Severity, headerTitle: string, message: string, messageDetails?: string, actions?: IAction[]): void {
-		this.doShowDialog(severity, headerTitle, message, messageDetails, actions);
+	public showDialog(severity: Severity, headerTitle: string, message: string, messageDetails?: string, actions?: IAction[], instructionText?: string, readMoreLink?: string): void {
+		this.doShowDialog(severity, headerTitle, message, messageDetails, actions, instructionText, readMoreLink);
 	}
 
-	private doShowDialog(severity: Severity, headerTitle: string, message: string, messageDetails?: string, actions?: IAction[]): void {
+	private doShowDialog(severity: Severity, headerTitle: string, message: string, messageDetails?: string, actions?: IAction[], instructionText?: string, readMoreLink?: string): void {
 		if (!this._errorDialog) {
 			this._errorDialog = this._instantiationService.createInstance(ErrorMessageDialog);
 			this._errorDialog.onOk(() => this.handleOnOk());
@@ -36,7 +36,7 @@ export class ErrorMessageService implements IErrorMessageService {
 		}
 
 		let title = headerTitle ? headerTitle : this.getDefaultTitle(severity);
-		return this._errorDialog.open(severity, title, message, messageDetails, actions);
+		return this._errorDialog.open(severity, title, message, messageDetails, actions, instructionText, readMoreLink);
 	}
 
 	private getDefaultTitle(severity: Severity) {

@@ -11,6 +11,7 @@ import { ConfigurationScope, Extensions, IConfigurationNode, IConfigurationRegis
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IExtensionTerminalProfile, ITerminalProfile, TerminalSettingId } from 'vs/platform/terminal/common/terminal';
 import { createProfileSchemaEnums } from 'vs/platform/terminal/common/terminalProfiles';
+import * as loc from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}} For strings we need to change
 
 const terminalProfileBaseProperties: IJSONSchemaMap = {
 	args: {
@@ -431,7 +432,7 @@ const terminalPlatformConfiguration: IConfigurationNode = {
 		},
 		[TerminalSettingId.InheritEnv]: {
 			scope: ConfigurationScope.APPLICATION,
-			description: localize('terminal.integrated.inheritEnv', "Whether new shells should inherit their environment from VS Code, which may source a login shell to ensure $PATH and other development variables are initialized. This has no effect on Windows."),
+			description: loc.terminalIntegratedInheritEnvDescription, // {{SQL CARBON EDIT}} VS Code -> ADS
 			type: 'boolean',
 			default: true
 		},

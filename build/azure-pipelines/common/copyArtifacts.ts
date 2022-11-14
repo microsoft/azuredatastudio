@@ -13,7 +13,8 @@ import * as fs from 'fs';
 const files = [
 	'.build/langpacks/**/*.vsix', // langpacks
 	'.build/extensions/**/*.vsix', // external extensions
-	'.build/win32-x64/**/*.{exe,zip}', // windows binaries
+	'.build/win32-x64/**/*.{exe,zip}', // windows x64 binaries
+	'.build/win32-arm64/**/*.{exe,zip}', // windows arm64 binaries
 	'.build/linux/sha256hashes.txt', // linux hashes
 	'.build/linux/deb/amd64/deb/*.deb', // linux debs
 	'.build/linux/rpm/x86_64/*.rpm', // linux rpms

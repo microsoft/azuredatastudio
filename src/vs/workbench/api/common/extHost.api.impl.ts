@@ -82,6 +82,7 @@ import { ExtHostUriOpeners } from 'vs/workbench/api/common/extHostUriOpener';
 import { IExtHostSecretState } from 'vs/workbench/api/common/exHostSecretState';
 import { IExtHostEditorTabs } from 'vs/workbench/api/common/extHostEditorTabs';
 import { IExtHostTelemetry } from 'vs/workbench/api/common/extHostTelemetry';
+// import { ExtHostNotebookKernels } from 'vs/workbench/api/common/extHostNotebookKernels'; {{SQL CARBON EDIT}} Disable VS Code notebooks
 import { TextSearchCompleteMessageType } from 'vs/workbench/services/search/common/searchExtTypes';
 // import { ExtHostNotebookRenderers } from 'vs/workbench/api/common/extHostNotebookRenderers'; {{SQL CARBON EDIT}} Disable VS Code notebooks
 import { Schemas } from 'vs/base/common/network';
@@ -163,9 +164,9 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 	const extHostNotebook = rpcProtocol.set(ExtHostContext.ExtHostNotebook, new ExtHostNotebookController(rpcProtocol, extHostCommands, extHostDocumentsAndEditors, extHostDocuments, extensionStoragePaths));
 	const extHostNotebookDocuments = rpcProtocol.set(ExtHostContext.ExtHostNotebookDocuments, new ExtHostNotebookDocuments(extHostNotebook));
 	const extHostNotebookEditors = rpcProtocol.set(ExtHostContext.ExtHostNotebookEditors, new ExtHostNotebookEditors(extHostLogService, rpcProtocol, extHostNotebook));
-	const extHostNotebookKernels = rpcProtocol.set(ExtHostContext.ExtHostNotebookKernels, new ExtHostNotebookKernels(rpcProtocol, initData, extHostNotebook, extHostCommands, extHostLogService));
-	const extHostNotebookProxyKernels = rpcProtocol.set(ExtHostContext.ExtHostNotebookProxyKernels, new ExtHostNotebookProxyKernels(rpcProtocol, extHostNotebookKernels, extHostLogService));
 	const extHostNotebookRenderers = rpcProtocol.set(ExtHostContext.ExtHostNotebookRenderers, new ExtHostNotebookRenderers(rpcProtocol, extHostNotebook));
+	const extHostNotebookKernels = rpcProtocol.set(ExtHostContext.ExtHostNotebookKernels, new ExtHostNotebookKernels(rpcProtocol, initData, <any>extHostNotebook, extHostCommands, extHostLogService));
+	const extHostNotebookProxyKernels = rpcProtocol.set(ExtHostContext.ExtHostNotebookProxyKernels, new ExtHostNotebookProxyKernels(rpcProtocol, extHostNotebookKernels, extHostLogService));
 	*/
 
 	const extHostEditors = rpcProtocol.set(ExtHostContext.ExtHostEditors, new ExtHostEditors(rpcProtocol, extHostDocumentsAndEditors));
@@ -202,6 +203,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 		ExtHostContext.ExtHostNotebookKernels,
 		ExtHostContext.ExtHostNotebookProxyKernels,
 		ExtHostContext.ExtHostNotebookRenderers,
+		ExtHostContext.ExtHostNotebookProxyKernels,
 		ExtHostContext.ExtHostInteractive
 	]);
 	const expected: ProxyIdentifier<any>[] = values(ExtHostContext).filter(v => !filteredProxies.has(v));

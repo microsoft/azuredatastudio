@@ -367,9 +367,7 @@ class DropOverlay extends Themable {
 
 			// {{SQL CARBON EDIT}}
 			let untitledOrFileResources: any = undefined;
-			await this.instantiationService.invokeFunction(accessor => {
-				untitledOrFileResources = extractEditorsDropData(accessor, event);
-			});
+			untitledOrFileResources = await this.instantiationService.invokeFunction(extractEditorsDropData, event);
 			if (untitledOrFileResources && !untitledOrFileResources.length) {
 				return;
 			}

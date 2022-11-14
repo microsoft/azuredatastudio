@@ -157,6 +157,16 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		}));
 	}
 
+	public reloadTables(): void {
+		this._htmlMarkdownConverter = this._instantiationService.createInstance(HTMLMarkdownConverter, this.notebookUri);
+		if (this.previewMode) {
+			this.updateCellSource();
+		} else {
+			this.updateMarkdownCellSource();
+		}
+		this.markdowncodeCell.forEach(code => code.refreshCell());
+	}
+
 	public get cellEditors(): ICellEditorProvider[] {
 		let editors: ICellEditorProvider[] = [];
 		if (this.markdowncodeCell) {
@@ -356,7 +366,13 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	private updateCellSource(): void {
 		let textOutputElement = <HTMLElement>this.output.nativeElement;
-		let newCellSource: string = this._htmlMarkdownConverter.convert(textOutputElement.innerHTML);
+		let newCellSource = this._htmlMarkdownConverter.convert(textOutputElement.innerHTML);
+		this.cellModel.source = newCellSource;
+		this._changeRef.detectChanges();
+	}
+
+	private updateMarkdownCellSource(): void {
+		let newCellSource = this._htmlMarkdownConverter.convert(this.markdownResult.element.innerHTML);
 		this.cellModel.source = newCellSource;
 		this._changeRef.detectChanges();
 	}

@@ -242,6 +242,9 @@ export class QueryHistoryProvider implements vscode.TreeDataProvider<QueryHistor
 		treeItem.tooltip = item.queryText;
 		treeItem.description = item.connectionProfile ? `${item.connectionProfile.serverName}|${item.connectionProfile.databaseName} ${item.timestamp}` : item.timestamp;
 		treeItem.command = { title: '', command: ITEM_SELECTED_COMMAND_ID, arguments: [item] };
+		treeItem.accessibilityInformation = {
+			label: `${item.isSuccess ? loc.succeeded : loc.failed} ${treeItem.description} ${item.queryText}`
+		}
 		return treeItem;
 	}
 

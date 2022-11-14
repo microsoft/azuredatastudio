@@ -10,7 +10,6 @@ import * as os from 'os';
 import * as path from 'path';
 import * as utils from '../../common/utils';
 import { MockOutputChannel } from './stubs';
-import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { sleep } from './testUtils';
 
@@ -271,37 +270,6 @@ describe('Utils Tests', function () {
 
 		it('errors correctly with invalid command', async () => {
 			await should(utils.executeStreamedCommand('invalidcommand', {}, new MockOutputChannel())).be.rejected();
-		});
-	});
-
-	describe('isEditorTitleFree', () => {
-		afterEach(async () => {
-			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
-		});
-
-		it('title is free', () => {
-			should(utils.isEditorTitleFree('MyTitle')).be.true();
-		});
-
-		it('title is not free with text document sharing name', async () => {
-			const editorTitle = 'Untitled-1';
-			should(utils.isEditorTitleFree(editorTitle)).be.true('Title should be free before opening text document');
-			await vscode.workspace.openTextDocument();
-			should(utils.isEditorTitleFree(editorTitle)).be.false('Title should not be free after opening text document');
-		});
-
-		it('title is not free with notebook document sharing name', async () => {
-			const editorTitle = 'MyUntitledNotebook';
-			should(utils.isEditorTitleFree(editorTitle)).be.true('Title should be free before opening notebook');
-			await azdata.nb.showNotebookDocument(vscode.Uri.parse(`untitled:${editorTitle}`));
-			should(utils.isEditorTitleFree('MyUntitledNotebook')).be.false('Title should not be free after opening notebook');
-		});
-
-		it('title is not free with notebook document sharing name created through command', async () => {
-			const editorTitle = 'Notebook-0';
-			should(utils.isEditorTitleFree(editorTitle)).be.true('Title should be free before opening notebook');
-			await vscode.commands.executeCommand('_notebook.command.new');
-			should(utils.isEditorTitleFree(editorTitle)).be.false('Title should not be free after opening notebook');
 		});
 	});
 

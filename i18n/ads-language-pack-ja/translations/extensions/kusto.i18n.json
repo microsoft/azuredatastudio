@@ -14,7 +14,7 @@
 			"kusto.missingLinkedAzureAccount": "Azure Data Studio では、Always Encrypted の列マスター キーにアクセスするために Azure Key Vault に接続する必要がありますが、リンクされた Azure アカウントがありません。リンクされた Azure アカウントを追加して、クエリを再試行してください。"
 		},
 		"dist/kustoServer": {
-			"downloadServiceDoneChannelMsg": "{0} のインストールが完了しました",
+			"downloadServiceDoneChannelMsg": "ダウンロード済み {0}",
 			"downloadingServiceChannelMsg": "{0} をダウンロードしています",
 			"downloadingServiceSizeChannelMsg": "({0} KB)",
 			"downloadingServiceStatusMsg": "{0} をダウンロードしています",

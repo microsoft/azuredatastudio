@@ -9,7 +9,7 @@ import * as TypeMoq from 'typemoq';
 import * as sinon from 'sinon';
 import * as dataworkspace from 'dataworkspace';
 import * as newProjectTool from '../tools/newProjectTool';
-import { generateTestFolderPath, createTestFile } from './testUtils';
+import { generateTestFolderPath, createTestFile, deleteGeneratedTestFolder } from './testUtils';
 
 let previousSetting : string;
 let testFolderPath : string;
@@ -27,6 +27,10 @@ describe('NewProjectTool: New project tool tests', function (): void {
 		const dataWorkspaceMock = TypeMoq.Mock.ofType<dataworkspace.IExtension>();
 		dataWorkspaceMock.setup(x => x.defaultProjectSaveLocation).returns(() => vscode.Uri.file(testFolderPath));
 		sinon.stub(vscode.extensions, 'getExtension').returns(<any>{ exports: dataWorkspaceMock.object});
+	});
+
+	after(async function(): Promise<void> {
+		await deleteGeneratedTestFolder();
 	});
 
 	afterEach(async function () {

@@ -16,7 +16,7 @@ import { QueryResultsView } from 'sql/workbench/contrib/query/browser/queryResul
 import { Disposable, dispose } from 'vs/base/common/lifecycle';
 
 export class ExecutionPlanTab implements IPanelTab {
-	public readonly title = localize('executionPlanTitle', "Query Plan (Preview)");
+	public readonly title = localize('executionPlanTitle', "Query Plan");
 	public readonly identifier = 'ExecutionPlan2Tab';
 	public readonly view: ExecutionPlanTabView;
 

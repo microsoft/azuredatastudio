@@ -18,6 +18,7 @@ import { createTestCredentials, createTestUtils, TestUtils } from '../testUtils'
 
 const rootFolderPath = 'test';
 const localSettingsPath: string = path.join(rootFolderPath, 'local.settings.json');
+const tempFolderPath = path.sep + 'temp' + path.sep;
 let testUtils: TestUtils;
 
 describe('AzureFunctionUtils', function (): void {
@@ -234,12 +235,15 @@ describe('AzureFunctionUtils', function (): void {
 	});
 
 	describe('Get Azure Function Project', function (): void {
+
+
+
 		it('Should return undefined if no azure function projects are found', async () => {
 			// set workspace folder for testing
 			sinon.replaceGetter(vscode.workspace, 'workspaceFolders', () => {
 				return <vscode.WorkspaceFolder[]>[{
 					uri: {
-						fsPath: '/temp/'
+						fsPath: tempFolderPath
 					},
 				}];
 			});
@@ -255,17 +259,18 @@ describe('AzureFunctionUtils', function (): void {
 			sinon.replaceGetter(vscode.workspace, 'workspaceFolders', () => {
 				return <vscode.WorkspaceFolder[]>[{
 					uri: {
-						fsPath: '/temp/'
+						fsPath: tempFolderPath
 					},
 				}];
 			});
+
 			// only one azure function project found - hostFiles and csproj files stubs
 			let findFilesStub = sinon.stub(vscode.workspace, 'findFiles');
-			findFilesStub.onFirstCall().resolves([vscode.Uri.file('/temp/host.json')]);
-			findFilesStub.onSecondCall().resolves(([vscode.Uri.file('/temp/test.csproj')]) as any);
+			findFilesStub.onFirstCall().resolves([vscode.Uri.file(path.join(tempFolderPath, 'host.json'))]);
+			findFilesStub.onSecondCall().resolves(([vscode.Uri.file(path.join(tempFolderPath, 'test.csproj'))]) as any);
 
 			let result = await azureFunctionsUtils.getAzureFunctionProject();
-			should(result).be.equal('/temp/test.csproj', 'Should return test.csproj since only one Azure function project is found');
+			should(result).be.equal(path.join(tempFolderPath, 'test.csproj'), 'Should return test.csproj since only one Azure function project is found');
 		});
 
 		it('Should return prompt to choose azure function project if multiple azure function projects are found', async () => {
@@ -273,22 +278,23 @@ describe('AzureFunctionUtils', function (): void {
 			sinon.replaceGetter(vscode.workspace, 'workspaceFolders', () => {
 				return <vscode.WorkspaceFolder[]>[{
 					uri: {
-						fsPath: '/temp/'
+						fsPath: tempFolderPath
 					},
 				}];
 			});
 			// multiple azure function projects found in workspace - hostFiles and project find files stubs
 			let findFilesStub = sinon.stub(vscode.workspace, 'findFiles');
-			findFilesStub.onFirstCall().resolves(([vscode.Uri.file('/temp/host.json'), vscode.Uri.file('/temp2/host.json')]) as any);
+			const temp2FolderPath = path.delimiter + 'temp2' + path.delimiter;
+			findFilesStub.onFirstCall().resolves(([vscode.Uri.file(path.join(tempFolderPath, 'host.json')), vscode.Uri.file(path.join(temp2FolderPath, 'host.json'))]) as any);
 			// we loop through the hostFiles to find the csproj in same directory
 			// first loop we use host of /temp/host.json
-			findFilesStub.onSecondCall().resolves(([vscode.Uri.file('/temp/test.csproj')]) as any);
+			findFilesStub.onSecondCall().resolves(([vscode.Uri.file(path.join(tempFolderPath, 'test.csproj'))]) as any);
 			// second loop we use host of /temp2/host.json
-			findFilesStub.onThirdCall().resolves(([vscode.Uri.file('/temp2/test.csproj')]) as any);
-			let quickPickStub = sinon.stub(vscode.window, 'showQuickPick').resolves(('/temp/test.csproj') as any);
+			findFilesStub.onThirdCall().resolves(([vscode.Uri.file(path.join(temp2FolderPath, 'test.csproj'))]) as any);
+			let quickPickStub = sinon.stub(vscode.window, 'showQuickPick').resolves((path.join(tempFolderPath, 'test.csproj')) as any);
 
 			let result = await azureFunctionsUtils.getAzureFunctionProject();
-			should(result).be.equal('/temp/test.csproj', 'Should return test.csproj since user choose Azure function project');
+			should(result).be.equal(path.join(tempFolderPath, 'test.csproj'), 'Should return test.csproj since user choose Azure function project');
 			should(quickPickStub.calledOnce).be.true('showQuickPick should have been called to choose between azure function projects');
 		});
 	});

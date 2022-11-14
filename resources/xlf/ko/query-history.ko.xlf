@@ -1,5 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/query-history/dist/localizedConstants" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="errorLoading">
+        <source xml:lang="en">Error loading saved query history items. {0}</source>
+        <target state="translated">저장된 쿼리 기록 항목을 로드하는 동안 오류가 발생했습니다. {0}</target>
+      </trans-unit>
+      <trans-unit id="failed">
+        <source xml:lang="en">Failed</source>
+        <target state="translated">실패</target>
+      </trans-unit>
+      <trans-unit id="succeeded">
+        <source xml:lang="en">Succeeded</source>
+        <target state="translated">성공</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/query-history/package" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="queryHistory.captureEnabledDesc">
@@ -42,6 +58,14 @@
         <source xml:lang="en">Start Query History Capture</source>
         <target state="translated">쿼리 기록 캡처 시작</target>
       </trans-unit>
+      <trans-unit id="queryHistory.loading">
+        <source xml:lang="en">Loading saved entries...</source>
+        <target state="translated">저장된 항목을 로드하는 중...</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.maxEntries">
+        <source xml:lang="en">Maximum number of entries to store. 0 means unlimited entries are stored. Increasing this limit may impact performance, especially if persistence is enabled.</source>
+        <target state="translated">저장할 최대 항목 수입니다. 0은 무제한 항목이 저장됨을 의미합니다. 이 제한을 늘리면 성능에 영향을 미칠 수 있습니다. 특히 지속성을 사용하는 경우 그렇습니다.</target>
+      </trans-unit>
       <trans-unit id="queryHistory.noEntries">
         <source xml:lang="en">No queries to display</source>
         <target state="translated">표시할 쿼리 없음</target>
@@ -49,6 +73,14 @@
       <trans-unit id="queryHistory.open">
         <source xml:lang="en">Open Query</source>
         <target state="translated">쿼리 열기</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.openStorageFolder">
+        <source xml:lang="en">Open storage folder</source>
+        <target state="translated">저장소 폴더 열기</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.persistHistory">
+        <source xml:lang="en">Whether query history is persisted across restarts. If false then the history will be cleared when the application exits.</source>
+        <target state="translated">다시 시작할 때 쿼리 기록이 유지되는지 여부입니다. false이면 애플리케이션이 종료될 때 기록이 지워집니다.</target>
       </trans-unit>
       <trans-unit id="queryHistory.run">
         <source xml:lang="en">Run Query</source>

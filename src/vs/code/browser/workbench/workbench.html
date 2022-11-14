@@ -33,6 +33,18 @@
 	</body>
 
 	<!-- Startup (do not modify order of script tags!) -->
+	<!-- {{SQL CARBON EDIT}} - preload modules that don't work with vscode module loader -->
+	<script src="{{WORKBENCH_WEB_BASE_URL}}/node_modules/jquery/dist/jquery.min.js"></script>
+	<script src="{{WORKBENCH_WEB_BASE_URL}}/node_modules/slickgrid/lib/jquery.event.drag-2.3.0.js"></script>
+	<script src="{{WORKBENCH_WEB_BASE_URL}}/node_modules/slickgrid/lib/jquery-ui-1.9.2.js"></script>
+	<script src="{{WORKBENCH_WEB_BASE_URL}}/node_modules/reflect-metadata/Reflect.js"></script>
+	<script src="{{WORKBENCH_WEB_BASE_URL}}/node_modules/slickgrid/slick.core.js"></script>
+	<script src="{{WORKBENCH_WEB_BASE_URL}}/node_modules/slickgrid/slick.grid.js"></script>
+	<script src="{{WORKBENCH_WEB_BASE_URL}}/node_modules/slickgrid/slick.dataview.js"></script>
+	<script src="{{WORKBENCH_WEB_BASE_URL}}/node_modules/slickgrid/slick.editors.js"></script>
+	<script src="{{WORKBENCH_WEB_BASE_URL}}/node_modules/slickgrid/plugins/slick.cellrangedecorator.js"></script>
+	<script src="{{WORKBENCH_WEB_BASE_URL}}/node_modules/zone.js/dist/zone.min.js"></script>
+
 	<script src="{{WORKBENCH_WEB_BASE_URL}}/out/vs/loader.js"></script>
 	<script src="{{WORKBENCH_WEB_BASE_URL}}/out/vs/webPackagePaths.js"></script>
 	<script>
@@ -95,17 +107,8 @@
 			}
 		};
 	</script>
-	<script src="./static/node_modules/jquery/dist/jquery.min.js"></script>
-	<script src="./static/node_modules/slickgrid/lib/jquery.event.drag-2.3.0.js"></script>
-	<script src="./static/node_modules/slickgrid/lib/jquery-ui-1.9.2.js"></script>
-	<script src="./static/node_modules/slickgrid/slick.core.js"></script>
-	<script src="./static/node_modules/slickgrid/slick.grid.js"></script>
-	<script src="./static/node_modules/slickgrid/slick.dataview.js"></script>
-	<script src="./static/node_modules/slickgrid/slick.editors.js"></script>
-	<script src="./static/node_modules/slickgrid/plugins/slick.cellrangedecorator.js"></script>
-	<script src="./static/node_modules/zone.js/dist/zone.min.js"></script>
-	<script src="./static/node_modules/reflect-metadata/Reflect.js"></script>
-	<script src="./static/out/vs/loader.js"></script>
+
+
 	<script>
 		performance.mark('code/willLoadWorkbenchMain');
 	</script>

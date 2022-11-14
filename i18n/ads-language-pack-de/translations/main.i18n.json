@@ -10242,6 +10242,7 @@
 			"InstallVSIXAction.successReload": "Die Installation der Erweiterung \"{0}\" aus VSIX wurde abgeschlossen. Laden Sie Azure Data Studio neu, um sie zu aktivieren.",
 			"ReinstallAction.successReload": "Laden Sie Azure Data Studio neu, um die Neuinstallation der Erweiterung {0} abzuschließen.",
 			"activateLanguagePack": "Um Azure Data Studio in {0} zu verwenden, muss Azure Data Studio neu gestartet werden.",
+			"appName": "\"${appName}\": z. B. Azure Data Studio.",
 			"azuredatastudio": "Azure Data Studio",
 			"connectionDialogBrowseTree.context": "Kontextmenü zum Durchsuchen der Struktur des Verbindungsdialogfelds",
 			"dashboard.toolbar": "Das Aktionsmenü für die Dashboard-Symbolleiste",
@@ -10266,6 +10267,8 @@
 			"notebook.title": "Titelmenü des Notizbuchs",
 			"notebook.toolbar": "Symbolleistenmenü des Notizbuchs",
 			"objectExplorer.context": "Kontextmenü des Objekt-Explorer-Elements",
+			"openDefaultSettingsJson": "JSON-Standardeinstellungen öffnen",
+			"openDefaultSettingsJson.capitalized": "Standardeinstellungen öffnen (JSON)",
 			"postDisableTooltip": "Laden Sie Azure Data Studio erneut, um diese Erweiterung zu deaktivieren.",
 			"postEnableTooltip": "Laden Sie Azure Data Studio erneut, um diese Erweiterung zu aktivieren.",
 			"postUninstallTooltip": "Laden Sie Azure Data Studio erneut, um die Deinstallation dieser Erweiterung abzuschließen.",
@@ -10273,7 +10276,18 @@
 			"recommendedExtensions": "Marketplace",
 			"scenarioTypeUndefined": "Der Szenariotyp für Erweiterungsempfehlungen muss angegeben werden.",
 			"showReleaseNotes": "Versionshinweise nach einem Update anzeigen. Die Versionshinweise werden in einem neuen Webbrowserfenster geöffnet.",
+			"sql.versionMismatch": "Die Erweiterung ist nicht mit Azure Data Studio {0} kompatibel. Die Erweiterung erfordert: {1}.",
+			"sql.versionMismatchVsCode": "Die Erweiterung ist nicht mit Azure Data Studio {0} kompatibel. Für die Erweiterung ist eine neuere VS Code-Engine-Version {1} erforderlich, die neuer ist als die derzeit unterstützte Version ({2}).",
+			"sql.versionSyntax": "Der Wert \"{0}\" konnte {1} nicht analysiert werden. Verwenden Sie z. B. ^1.22.0, ^1.22.x usw.",
 			"sql.watcherExclude": "Konfigurieren Sie Globmuster von Dateipfaden, die von der Dateiüberwachung ausgeschlossen werden sollen. Muster müssen in absoluten Pfaden übereinstimmen, d. h. für eine ordnungsgemäße Überstimmung muss das Präfix `**/` oder der vollständige Pfad und für eine Übereinstimmung in einem Pfad muss das Suffix `/**` verwendet werden (z. B. `**/build/output/**` oder `/Users/name/workspaces/project/build/output/**`). Das Ändern dieser Einstellung erfordert einen Neustart. Wenn Azure Data Studio beim Start viel CPU-Zeit beansprucht, können Sie große Ordner ausschließen, um die anfängliche Auslastung zu verringern.",
+			"terminal.integrated.allowChords": "Gibt an, ob Tastenzuordnungen im Terminal zugelassen werden sollen. Beachten Sie Folgendes: Wenn dies wahr ist und der Tastaturanschlag zu einer Sperre führt, wird \"#terminal.integrated.commandsToSkipShell#\" umgangen. Das Festlegen auf FALSE ist besonders nützlich, wenn Sie STRG+K zur Shell wechseln möchten (nicht Azure Data Studio).",
+			"terminal.integrated.autoReplies": "Eine Gruppe von Nachrichten, auf die im Terminal automatisch geantwortet wird. Sofern die Nachricht spezifisch genug ist, kann dies dazu beitragen, häufige Antworten zu automatisieren.\r\n\r\nHinweise:\r\n\r\n: Verwenden Sie {0}, um automatisch auf die Aufforderung zum Beenden des Batchauftrags unter Windows zu reagieren.\r\n: Die Nachricht enthält Escapesequenzen, sodass die Antwort möglicherweise nicht mit formatiertem Text erfolgt.\r\n: Jede Antwort kann nur einmal pro Sekunde erfolgen.\r\n: Verwenden Sie {1} in der Antwort, was die EINGABETASTE bedeutet.\r\n– Legen Sie den Wert auf NULL fest, um die Festlegung eines Standardschlüssels zu aufheben.\r\n: Starten Sie Azure Data Studio neu, wenn keine neuen Einstellungen gelten.",
+			"terminal.integrated.commandsToSkipShell": "Ein Satz von Befehls-IDs, deren Tastenzuordnungen nicht an die Shell gesendet werden, sondern immer von Azure Data Studio verarbeitet werden. Dadurch können Tastenzuordnungen, die normalerweise von der Shell verwendet werden, stattdessen genauso funktionieren wie bei nicht fokussiertem Terminal, z. B. STRG+P, um Quick Open zu starten.\r\n\r\n&nbsp;\r\n\r\nViele Befehle werden standardmäßig übersprungen. Um einen Standardwert zu überschreiben und stattdessen die Schlüsselbindung dieses Befehls an die Shell zu übergeben, fügen Sie den Befehl mit dem Präfix \"-\" hinzu. Fügen Sie beispielsweise \"-workbench.action.quickOpen\" hinzu, damit \"STRG+P\" die Shell erreichen kann.\r\n\r\n&nbsp;\r\n\r\nDie folgende Liste der übersprungenen Standardbefehle wird abgeschnitten, wenn sie in Einstellungs-Editor angezeigt wird. Um die vollständige Liste anzuzeigen, {1} und suchen Sie in der Liste unten nach dem ersten Befehl.\r\n\r\n&nbsp;\r\n\r\nÜbersprungene Standardbefehle:\r\n\r\n{0}",
+			"terminal.integrated.detectLocale": "Steuert, ob die Umgebungsvariable \"$LANG\" erkannt und auf eine UTF-8-kompatible Option festgelegt wird, da das Terminal von Azure Data Studio nur UTF-8-codierte Daten unterstützt, die von der Shell stammen.",
+			"terminal.integrated.env.linux": "Objekt mit Umgebungsvariablen, die dem Azure Data Studio Prozess hinzugefügt werden, der vom Terminal unter Linux verwendet werden soll. Legen Sie diesen Wert auf \"null\" fest, um die Umgebungsvariable zu löschen.",
+			"terminal.integrated.env.osx": "Objekt mit Umgebungsvariablen, die dem Azure Data Studio Prozess hinzugefügt werden, der vom Terminal unter macOS verwendet werden soll. Legen Sie diesen Wert auf \"null\" fest, um die Umgebungsvariable zu löschen.",
+			"terminal.integrated.env.windows": "Objekt mit Umgebungsvariablen, die dem Azure Data Studio Prozess hinzugefügt werden, der vom Terminal unter Windows verwendet werden soll. Legen Sie diesen Wert auf \"null\" fest, um die Umgebungsvariable zu löschen.",
+			"terminal.integrated.inheritEnv": "Gibt an, ob neue Shells ihre Umgebung von Azure Data Studio erben sollen, die möglicherweise eine Anmeldeshell erstellen, um sicherzustellen, dass $PATH und andere Entwicklungsvariablen initialisiert werden. Dies hat keine Auswirkungen auf Windows.",
 			"uninstallExtensionComplete": "Laden Sie Azure Data Studio erneut, um die Deinstallation der Erweiterung {0} abzuschließen.",
 			"updateLocale": "Möchten Sie die Sprache der Benutzeroberfläche von Azure Data Studio in {0} ändern und einen Neustart durchführen?",
 			"vscodeDocCreationFailedError": "Fehler beim Erstellen des Notebookdokuments.",
@@ -10314,13 +10328,14 @@
 			"schema.dashboardWidgets.server": "In den Dashboards verwendetes Widget"
 		},
 		"sql/platform/serialization/common/serializationService": {
+			"missingSerializationProviderError": "Es wurde kein Serialisierungsanbieter mit der angegebenen ID \"{0}\" gefunden.",
 			"noSerializationProvider": "Daten können nicht serialisiert werden, weil kein Anbieter registriert wurde.",
 			"saveAsNotSupported": "Das Speichern von Ergebnissen in einem anderen Format ist für diesen Datenanbieter deaktiviert.",
 			"unknownSerializationError": "Unbekannter Fehler bei der Serialisierung."
 		},
 		"sql/platform/theme/common/colorRegistry": {
+			"buttonDropdo0wnBoxShadow": "Die Schattenfarbe des Schaltflächen-Dropdownfelds",
 			"buttonDropdownBackgroundHover": "Die Hoverfarbe für den Hintergrund des Schaltflächen-Dropdownfelds",
-			"buttonDropdownBoxShadow": "Die Schattenfarbe des Schaltflächen-Dropdownfelds",
 			"calloutDialogBodyBackground": "Texthintergrund des Legendendialogfelds.",
 			"calloutDialogExteriorBorder": "Die Außenränder des Legendendialogfelds stellen einen Kontrast zur Notebook-Benutzeroberfläche dar.",
 			"calloutDialogForeground": "Vordergrund des Legendendialogfelds.",
@@ -10510,6 +10525,8 @@
 			"optionsDialog.ok": "OK"
 		},
 		"sql/workbench/browser/modal/optionsDialogHelper": {
+			"boolean.false": "FALSE",
+			"boolean.true": "TRUE",
 			"optionsDialog.defaultGroupName": "Allgemein",
 			"optionsDialog.invalidInput": "Ungültige Eingabe. Es wird ein numerischer Wert erwartet.",
 			"optionsDialog.missingRequireField": " ist erforderlich."
@@ -10559,9 +10576,10 @@
 			"insertOperationName": "Einfügen",
 			"scriptNotFound": "Bei der Skripterstellung als \"{0}\" wurde kein Skript zurückgegeben.",
 			"scriptNotFoundForObject": "Bei der Skripterstellung als \"{0}\" für Objekt \"{1}\" wurde kein Skript zurückgegeben.",
-			"scriptSelectNotFound": "Beim Aufruf des ausgewählten Skripts für das Objekt wurde kein Skript zurückgegeben. ",
 			"scriptingFailed": "Fehler bei Skripterstellung.",
 			"selectOperationName": "Auswählen",
+			"selectScriptForEditNotGeneratedError": "Fehler beim Generieren des Skripts für den Editor zum Bearbeiten von Daten.",
+			"selectScriptNotGeneratedError": "Fehler beim Generieren des Auswahlskripts für das ausgewählte Objekt.",
 			"updateOperationName": "Aktualisieren"
 		},
 		"sql/workbench/common/editor/query/queryEditorInput": {
@@ -11088,6 +11106,7 @@
 			"vscode.extension.contributes.view.when": "Eine Bedingung, die TRUE lauten muss, damit diese Sicht angezeigt wird."
 		},
 		"sql/workbench/contrib/dataExplorer/browser/dataExplorerViewlet": {
+			"ads-connections": "Symbol, das einen Server darstellt.",
 			"dataExplorer.servers": "Server",
 			"dataexplorer.name": "Verbindungen",
 			"showDataExplorer": "Verbindungen anzeigen"
@@ -11119,14 +11138,16 @@
 			"saveAsCsv": "Als CSV speichern",
 			"saveAsExcel": "Als Excel speichern",
 			"saveAsJson": "Als JSON speichern",
+			"saveAsMarkdown": "Als Markdown speichern",
 			"saveAsXml": "Als XML speichern",
 			"selectAll": "Alle auswählen"
 		},
 		"sql/workbench/contrib/executionPlan/browser/azdataGraphView": {
+			"executionPlanComparison.bottomPlanDiagram.ariaLabel": "{0} verwenden Sie die Pfeiltasten, um zwischen Knoten zu navigieren.",
 			"invalidExecutionPlanZoomError": "Der Zoomfaktor darf nicht 0 oder negativ sein."
 		},
 		"sql/workbench/contrib/executionPlan/browser/compareExecutionPlanInput": {
-			"epCompare.editorName": "Ausführungspläne vergleichen"
+			"epCompare.editorName": "CompareExecutionPlans"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditor": {
 			"compareExecutionPlanEditor": "Ausführungsplan-Vergleichseditor"
@@ -11135,8 +11156,8 @@
 			"addExecutionPlanLabel": "Ausführungsplan hinzufügen",
 			"epComapre.LoadingPlanCompleteMessage": "Ausführungsplan erfolgreich geladen",
 			"epComapre.LoadingPlanMessage": "Ausführungsplan wird geladen",
-			"epComapre.placeholderInfoboxText": "Zu vergleichende Ausführungspläne hinzufügen",
 			"epCompare.FileFilterDescription": "Ausführungsplandateien",
+			"epCompare.addExecutionPlanLabel": "Ausführungsplan hinzufügen",
 			"epCompare.comparePropertiesAction": "Eigenschaften",
 			"epCompare.comparisonProgess": "Ähnliche Bereiche in verglichenen Plänen werden geladen",
 			"epCompare.searchNodeAction": "Knoten suchen",
@@ -11146,23 +11167,33 @@
 			"epCompare.zoomOutAction": "Verkleinern",
 			"epCompare.zoomReset": "Zoom zurücksetzen",
 			"epCompare.zoomToFit": "An Fenstergröße anpassen",
+			"executionPlanComparison.bottomPlanDiagram.name": "Unterer Ausführungsplan {0}",
+			"executionPlanComparison.topPlanDiagram.name": "Top-Ausführungsplan {0}",
+			"executionPlanDisableTooltip": "QuickInfos deaktiviert",
+			"executionPlanEnableTooltip": "QuickInfos aktiviert",
 			"queryDropdownPrefix": "Abfrage {0} von {1}: {2}"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView": {
-			"executionPlanComparisonPropertiesBottomOperation": "Unterer Vorgang: {0}",
-			"executionPlanComparisonPropertiesLeftOperation": "Linker Vorgang: {0}",
-			"executionPlanComparisonPropertiesRightOperation": "Rechter Vorgang: {0}",
-			"executionPlanComparisonPropertiesTopOperation": "Oberer Vorgang: {0}",
 			"executionPlanPropertiesEdgeOperationName": "Edge",
+			"nodePropertyViewBottomOperation": "Unterer Vorgang: {0}",
+			"nodePropertyViewLeftOperation": "Linker Vorgang: {0}",
+			"nodePropertyViewNameEquivalentPropertiesRowHeader": "Äquivalente Eigenschaften",
+			"nodePropertyViewNameGreaterThanTitle": "Größer als",
+			"nodePropertyViewNameLessThanTitle": "Kleiner als",
 			"nodePropertyViewNameNameColumnHeader": "Name",
+			"nodePropertyViewNameNotEqualTitle": "Ungleich zu",
 			"nodePropertyViewNameValueColumnBottomHeader": "Wert (unterer Plan)",
 			"nodePropertyViewNameValueColumnLeftHeader": "Wert (linker Plan)",
 			"nodePropertyViewNameValueColumnRightHeader": "Wert (rechter Plan)",
-			"nodePropertyViewNameValueColumnTopHeader": "Wert (oberer Plan)"
+			"nodePropertyViewNameValueColumnTopHeader": "Wert (oberer Plan)",
+			"nodePropertyViewRightOperation": "Rechter Vorgang: {0}",
+			"nodePropertyViewTopOperation": "Oberer Vorgang: {0}"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanContribution": {
+			"executionPlan.tooltips.enableOnHoverTooltips": "Bei \"true\" werden QuickInfos beim Daraufzeigen für den Ausführungsplan aktiviert. Bei \"false\" werden QuickInfos beim Klicken auf den Knoten oder Drücken der F3-Taste angezeigt.",
 			"executionPlanCompareCommandOriginalValue": "Ausführungspläne vergleichen",
-			"executionPlanCompareCommandValue": "Ausführungspläne vergleichen"
+			"executionPlanCompareCommandValue": "Ausführungspläne vergleichen",
+			"executionPlanConfigurationTitle": "Ausführungsplan"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanEditor": {
 			"executionPlanEditor": "Abfrageausführungsplan-Editor"
@@ -11179,6 +11210,8 @@
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase": {
 			"ep.topOperationsCopyTableData": "Kopieren",
+			"executionPlanCollapseAllProperties": "Alle reduzieren",
+			"executionPlanExpandAllProperties": "Alle erweitern",
 			"executionPlanPropertyViewClose": "Schließen",
 			"executionPlanPropertyViewSortAlphabetically": "Alphabetisch",
 			"executionPlanPropertyViewSortByDisplayOrder": "Wichtigkeit",
@@ -11186,10 +11219,11 @@
 			"nodePropertyViewTitle": "Eigenschaften"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanTab": {
-			"executionPlanTitle": "Abfrageplan (Vorschau)"
+			"executionPlanTitle": "Abfrageplan"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanView": {
 			"executionPlan.SaveFileDescription": "Ausführungsplandateien",
+			"executionPlan.diagram.ariaLabel": "Ausführungsplan {0}",
 			"executionPlanCompareExecutionPlanAction": "Ausführungsplan vergleichen",
 			"executionPlanContextMenuDisableTooltip": "Tooltips deaktivieren",
 			"executionPlanContextMenuEnableTooltip": "QuickInfos aktivieren",
@@ -11197,6 +11231,7 @@
 			"executionPlanDisableTooltip": "QuickInfos deaktiviert",
 			"executionPlanEnableTooltip": "QuickInfos aktiviert",
 			"executionPlanFitGraphLabel": "Mit Zoom anpassen",
+			"executionPlanHighlightExpensiveOperationAction": "Teuren Vorgang hervorheben",
 			"executionPlanOpenGraphFile": "Abfrageplan-XML anzeigen",
 			"executionPlanPropertiesActionLabel": "Eigenschaften",
 			"executionPlanSavePlanXML": "Plandatei speichern",
@@ -11210,19 +11245,22 @@
 			"planHeaderIndexAndCost": "Abfrage {0}: Abfragekosten (in Relation zum Skript): {1} %"
 		},
 		"sql/workbench/contrib/executionPlan/browser/widgets/customZoomWidget": {
-			"cancelCustomZoomAction": "Schließen (Esc)",
+			"cancelCustomZoomAction": "Schließen",
 			"customZoomApplyButton": "Anwenden",
-			"customZoomApplyButtonTitle": "Zoom anwenden (EINGABETASTE)",
+			"customZoomApplyButtonTitle": "Zoom anwenden",
 			"invalidCustomZoomError": "Zoomwert zwischen 1 und 200 auswählen",
 			"qpZoomValueLabel": "Zoomen (Prozent)",
-			"zoomAction": "Zoom (EINGABETASTE)"
+			"zoomAction": "Zoomen"
 		},
 		"sql/workbench/contrib/executionPlan/browser/widgets/nodeSearchWidget": {
-			"cancelSearchAction": "Schließen (Esc)",
+			"cancelSearchAction": "Schließen",
+			"executionPlanEnterValueTitle": "Suchwert eingeben",
 			"executionPlanSearchTypeContains": "Enthält",
 			"executionPlanSearchTypeEquals": "Ist gleich",
-			"nextSearchItemAction": "Nächste Übereinstimmung (EinGABETASTE)",
-			"previousSearchItemAction": "Vorherige Übereinstimmung (UMSCHALT+EINGABETASTE)"
+			"executionPlanSelectPropertyTitle": "Eigenschaft auswählen",
+			"executionPlanSelectSearchTypeTitle": "Suchtyp auswählen",
+			"nextSearchItemAction": "Nächste Übereinstimmung",
+			"previousSearchItemAction": "Vorherige Übereinstimmung"
 		},
 		"sql/workbench/contrib/extensions/browser/contributionRenders": {
 			"insight condition": "Zeitpunkt",
@@ -11608,6 +11646,7 @@
 			"loadingNotebookMessage": "Notizbuch {0} wird geladen"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet": {
+			"ads-notebook": "Symbol, das ein Notizbuch darstellt.",
 			"notebookExplorer.name": "Notebooks",
 			"notebookExplorer.searchResults": "Suchergebnisse",
 			"searchPathNotFoundError": "Der Suchpfad wurde nicht gefunden: {0}."
@@ -11704,6 +11743,7 @@
 			"connection": "Verbindung",
 			"dashboard": "Dashboard",
 			"data": "Daten",
+			"executionPlan": "Ausführungsplan",
 			"notebook": "Notebook",
 			"profiler": "Profiler",
 			"queryEditor": "Abfrage-Editor",
@@ -11773,6 +11813,7 @@
 			"saveAsCsv": "Als CSV speichern",
 			"saveAsExcel": "Als Excel speichern",
 			"saveAsJson": "Als JSON speichern",
+			"saveAsMarkdown": "Als Markdown speichern",
 			"saveAsXml": "Als XML speichern",
 			"saveToFileNotSupported": "Das Speichern in einer Datei wird von der zugrunde liegenden Datenquelle nicht unterstützt.",
 			"selectAll": "Alle auswählen",
@@ -11833,6 +11874,10 @@
 			"queryEditor.results.saveAsCsv.includeHeaders": "Bei Festlegung auf TRUE werden beim Speichern der Ergebnisse als CSV auch die Spaltenüberschriften einbezogen.",
 			"queryEditor.results.saveAsCsv.lineSeperator": "Zeichen für die Trennung von Zeilen, das beim Speichern der Ergebnisse als CSV verwendet wird",
 			"queryEditor.results.saveAsCsv.textIdentifier": "Zeichen für das Umschließen von Textfeldern, das beim Speichern der Ergebnisse als CSV verwendet wird",
+			"queryEditor.results.saveAsExcel.includeHeaders": "Bei Festlegung auf WAHR werden beim Speichern der Ergebnisse als eine Excel-Datei auch die Spaltenüberschriften einbezogen.",
+			"queryEditor.results.saveAsMarkdown.encoding": "Dateicodierung, die beim Speichern der Ergebnisse als Markdown verwendet wird",
+			"queryEditor.results.saveAsMarkdown.includeHeaders": "Bei Festlegung auf WAHR werden beim Speichern der Ergebnisse als eine Markdowndatei auch die Spaltenüberschriften einbezogen.",
+			"queryEditor.results.saveAsMarkdown.lineSeparator": "Zeichen, die zum Trennen von Zeilen beim Exportieren in Markdown verwendet werden sollen. Standardmäßig werden Systemzeilenenden verwendet.",
 			"queryEditor.results.saveAsXml.encoding": "Beim Speichern der Ergebnisse im XML-Format verwendete Dateicodierung",
 			"queryEditor.results.saveAsXml.formatted": "Bei Festlegung auf TRUE wird die XML-Ausgabe formatiert, wenn die Ergebnisse im XML-Format gespeichert werden.",
 			"queryEditor.results.streaming": "Hiermit wird das Streamen der Ergebnisse aktiviert. Diese Option weist einige geringfügige Darstellungsprobleme auf.",
@@ -11897,7 +11942,8 @@
 			"deployment.title": "Neue Bereitstellung…"
 		},
 		"sql/workbench/contrib/resourceViewer/browser/resourceViewer.contribution": {
-			"resourceViewer": "Ressourcen-Viewer"
+			"resourceViewer": "Ressourcen-Viewer",
+			"resourceViewerIcon": "Symbol für Ressourcenanzeige."
 		},
 		"sql/workbench/contrib/resourceViewer/browser/resourceViewerActions": {
 			"resourceViewer.refresh": "Aktualisieren"
@@ -11948,9 +11994,6 @@
 		"sql/workbench/contrib/tableDesigner/browser/actions": {
 			"tableDesigner.publishTableChanges": "Änderungen veröffentlichen...",
 			"tableDesigner.saveTableChanges": "Speichern"
-		},
-		"sql/workbench/contrib/tableDesigner/browser/tableDesignerEditor": {
-			"tableDesigner.PreviewFeature": "Previewfunktion"
 		},
 		"sql/workbench/contrib/tasks/browser/tasks.contribution": {
 			"inProgressTasksChangesBadge": "{0} Aufgaben werden ausgeführt",
@@ -12185,9 +12228,12 @@
 		},
 		"sql/workbench/services/connection/browser/connectionDialogService": {
 			"connectionError": "Verbindungsfehler",
+			"enableTrustServerCertificate": "Vertrauensserverzertifikat aktivieren",
 			"kerberosErrorStart": "Fehler bei Verbindung aufgrund eines Kerberos-Fehlers.",
 			"kerberosHelpLink": "Hilfe zum Konfigurieren von Kerberos finden Sie hier: {0}",
-			"kerberosKinit": "Wenn Sie zuvor eine Verbindung hergestellt haben, müssen Sie \"kinit\" möglicherweise erneut ausführen."
+			"kerberosKinit": "Wenn Sie zuvor eine Verbindung hergestellt haben, müssen Sie \"kinit\" möglicherweise erneut ausführen.",
+			"runKinit": "Kinit ausführen",
+			"trustServerCertInstructionText": "Die Verschlüsselung wurde für diese Verbindung aktiviert, überprüfen Sie Ihre SSL- und Zertifikatkonfiguration für die Ziel-SQL Server, oder aktivieren Sie \"Serverzertifikat vertrauen\" im Verbindungsdialogfeld.\r\n\r\nHinweis: Ein selbstsigniertes Zertifikat bietet nur eingeschränkten Schutz und ist keine empfohlene Vorgehensweise für Produktionsumgebungen. Möchten Sie \"Serverzertifikat vertrauen\" für diese Verbindung aktivieren und es erneut versuchen? "
 		},
 		"sql/workbench/services/connection/browser/connectionDialogWidget": {
 			"connectType": "Verbindungstyp",
@@ -12196,21 +12242,19 @@
 			"connectionDetailsTitle": "Verbindungsdetails",
 			"connectionDialog.cancel": "Abbrechen",
 			"connectionDialog.connect": "Verbinden",
-			"connectionDialog.connectionProviderNotSupported": "Die Erweiterung, die den Anbietertyp „{0}“ unterstützt, ist derzeit nicht installiert. Installieren Sie sie, und versuchen Sie es noch einmal.",
-			"connectionDialog.extensionNotInstalled": "Die Erweiterung „{0}“ ist erforderlich, um eine Verbindung mit dieser Ressource herzustellen. Installieren Sie sie, und versuchen Sie es noch einmal.",
 			"connectionDialog.recentConnections": "Letzte Verbindungen",
-			"connectionDialog.viewExtension": "Erweiterung anzeigen",
-			"connectionDialog.viewExtensions": "Erweiterungen anzeigen",
 			"noRecentConnections": "Keine aktuelle Verbindung",
 			"recentConnectionTitle": "Zuletzt verwendet"
 		},
 		"sql/workbench/services/connection/browser/connectionManagementService": {
 			"cancelConnectionConfirmation": "Möchten Sie diese Verbindung abbrechen?",
+			"connection.extensionNotInstalled": "Die Erweiterung „{0}“ ist erforderlich, um eine Verbindung mit dieser Ressource herzustellen. Möchten Sie diese installieren?",
 			"connection.invalidConnectionResult": "Das Verbindungsergebnis ist ungültig.",
 			"connection.neverShowUnsupportedVersionWarning": "Nicht mehr anzeigen",
 			"connection.noAzureAccount": "Fehler beim Abrufen des Azure-Kontotokens für die Verbindung.",
 			"connection.refreshAzureTokenFailure": "Fehler beim Aktualisieren des Azure-Kontotokens für die Verbindung.",
 			"connection.unsupportedServerVersionWarning": "Die Serverversion wird von Azure Data Studio nicht unterstützt. Sie können dennoch eine Verbindung damit herstellen, aber einige Features in Azure Data Studio funktionieren möglicherweise nicht wie erwartet.",
+			"connectionDialog.connectionProviderNotSupported": "Die Erweiterung, die den Anbietertyp „{0}“ unterstützt, ist derzeit nicht installiert. Möchten Sie die Erweiterungen anzeigen?",
 			"connectionManagementService.noProviderForUri": "Der Anbieter für URI konnte nicht gefunden werden: {0}",
 			"connectionNotAcceptedError": "Verbindung nicht akzeptiert.",
 			"connectionService.no": "Nein",
@@ -12219,6 +12263,8 @@
 		"sql/workbench/services/connection/browser/connectionWidget": {
 			"addNewServerGroup": "Neue Gruppe hinzufügen...",
 			"advanced": "Erweitert...",
+			"boolean.false": "FALSE",
+			"boolean.true": "TRUE",
 			"connection.azureAccountDropdownLabel": "Konto",
 			"connection.azureTenantDropdownLabel": "Azure AD-Mandant",
 			"connectionName": "Name (optional)",
@@ -12261,7 +12307,8 @@
 			"copyDetails": "Details kopieren",
 			"errorMessageDialog.action": "Aktion",
 			"errorMessageDialog.close": "Schließen",
-			"errorMessageDialog.ok": "OK"
+			"errorMessageDialog.ok": "OK",
+			"errorMessageDialog.readMore": "Weitere Informationen"
 		},
 		"sql/workbench/services/errorMessage/browser/errorMessageService": {
 			"error": "Fehler",
@@ -12426,9 +12473,6 @@
 			"vscode.extension.contributes.notebook.languagemagics": "Stellt die Notebook-Sprache zur Verfügung.",
 			"vscode.extension.contributes.notebook.providersDescriptions": "Steuert Beschreibungen des Notebookanbieters bei."
 		},
-		"sql/workbench/services/objectExplorer/browser/asyncServerTreeRenderer": {
-			"loading": "Wird geladen..."
-		},
 		"sql/workbench/services/objectExplorer/browser/connectionTreeAction": {
 			"DisconnectAction": "Trennen",
 			"activeConnections": "Aktive Verbindungen anzeigen",
@@ -12449,9 +12493,6 @@
 			"firewallCanceled": "Firewalldialogfeld abgebrochen",
 			"loginCanceled": "Vom Benutzer abgebrochen",
 			"noProviderFound": "Erweiterung nicht möglich, weil der erforderliche Verbindungsanbieter \"{0}\" nicht gefunden wurde."
-		},
-		"sql/workbench/services/objectExplorer/browser/serverTreeRenderer": {
-			"loading": "Wird geladen..."
 		},
 		"sql/workbench/services/objectExplorer/browser/treeCreationUtils": {
 			"serversAriaLabel": "Server",
@@ -12513,6 +12554,7 @@
 			"resultsSerializer.saveAsFileExtensionCSVTitle": "CSV (durch Trennzeichen getrennte Datei)",
 			"resultsSerializer.saveAsFileExtensionExcelTitle": "Excel-Arbeitsmappe",
 			"resultsSerializer.saveAsFileExtensionJSONTitle": "JSON",
+			"resultsSerializer.saveAsFileExtensionMarkdownTitle": "Markdown",
 			"resultsSerializer.saveAsFileExtensionTXTTitle": "Nur-Text",
 			"resultsSerializer.saveAsFileExtensionXMLTitle": "XML",
 			"resultsSerializer.saveAsFileTitle": "Ergebnisdatei auswählen",
@@ -12584,7 +12626,6 @@
 			"groupColor": "Gruppenfarbe",
 			"groupDescription": "Gruppenbeschreibung",
 			"serverGroup.cancel": "Abbrechen",
-			"serverGroup.colorValue": "Gruppenfarbe: {0}",
 			"serverGroup.ok": "OK"
 		},
 		"sql/workbench/services/serverGroup/common/serverGroupViewModel": {
@@ -12710,18 +12751,73 @@
 			"ept.topOperationsCopyTableData": "Kopieren",
 			"ept.topOperationsCopyWithHeader": "Mit Header kopieren",
 			"ept.topOperationsSelectAll": "Alle auswählen",
-			"planTreeTab.title": "Planstruktur (Vorschau)",
+			"planTreeTab.title": "Planstruktur",
 			"topOperationsTableTitle": "Ausführungsplanstruktur"
 		},
 		"sql/workbench/contrib/executionPlan/browser/topOperationsTab": {
 			"ep.topOperationsCopyTableData": "Kopieren",
 			"ep.topOperationsCopyWithHeader": "Mit Header kopieren",
 			"ep.topOperationsSelectAll": "Alle auswählen",
-			"topOperationsTabTitle": "Top-Vorgänge  (Vorschau)",
+			"topOperationsTabTitle": "Wichtigste Vorgänge",
 			"topOperationsTableTitle": "Top-Vorgänge"
 		},
 		"sql/workbench/contrib/notebook/browser/models/outputProcessor": {
 			"notebookInvalidOutputTypeError": "Der Ausgabetyp \"{0}\" wurde nicht erkannt."
+		},
+		"sql/base/browser/ui/table/table": {
+			"table.resizeColumn": "Neue Spaltenbreite angeben",
+			"table.resizeColumn.invalid": "Ungültige Spaltenbreite",
+			"table.resizeColumn.negativeSize": "Die Größe darf nicht 0 oder negativ sein"
+		},
+		"sql/base/parts/tree/browser/treeDefaults": {
+			"collapse all": "Alle reduzieren"
+		},
+		"sql/platform/connection/common/providerConnectionInfo": {
+			"connection.unsupported": "Nicht unterstützte Verbindung",
+			"loading": "Wird geladen..."
+		},
+		"sql/workbench/contrib/executionPlan/browser/constants": {
+			"ep.propertiesSearchDescription": "Sucheigenschaftstabelle",
+			"ep.searchPlaceholder": "Nach einem beliebigen Feld filtern...",
+			"ep.topOperationsSearchDescription": "Top-Vorgänge suchen"
+		},
+		"sql/workbench/contrib/executionPlan/browser/widgets/highlightExpensiveNodeWidget": {
+			"actualNumberOfRowsForAllExecutionsAction": "Tatsächliche Anzahl von Zeilen für alle Ausführungen",
+			"cancelExpensiveOperationAction": "Schließen",
+			"executionPlanActualElapsedCpuTime": "Tatsächlich verstrichene CPU-Zeit",
+			"executionPlanActualElapsedTime": "Tatsächlich verstrichene Zeit",
+			"executionPlanCost": "Kosten",
+			"executionPlanNumberOfRowsRead": "Anzahl von gelesenen Zeilen",
+			"executionPlanOff": "Deaktiviert",
+			"executionPlanSelectExpenseMetricTitle": "Ausgabenmetrik auswählen",
+			"executionPlanSubtreeCost": "Unterstrukturkosten",
+			"expensiveOperationLabel": "Metrik:",
+			"highlightExpensiveOperationAction": "Anwenden",
+			"highlightExpensiveOperationApplyButton": "Anwenden",
+			"highlightExpensiveOperationButtonTitle": "Teuren Vorgang hervorheben",
+			"qp.expensiveOperationMetric.dontShowAgain": "Nicht mehr anzeigen",
+			"qp.expensiveOperationMetric.no": "Nein",
+			"qp.expensiveOperationMetric.yes": "Ja",
+			"queryExecutionPlan.showUpdateDefaultMetricInfo": "Ausgewählte Metrik als Standard für Abfrageausführungspläne festlegen?",
+			"turnOffExpensiveHighlightingOperationAction": "Deaktiviert"
+		},
+		"sql/workbench/contrib/executionPlan/common/executionPlanInput": {
+			"epCompare.executionPlanEditorName": "ExecutionPlan"
+		},
+		"sql/workbench/contrib/welcome/notifyEncryption/notifyEncryptionDialog": {
+			"notifyEncryption.message": "Für Azure Data Studio ist jetzt die Verschlüsselung für alle SQL Server-Verbindungen standardmäßig aktiviert. Dies kann dazu führen, dass Ihre vorhandenen Verbindungen nicht mehr funktionieren, es sei denn, bestimmte Verbindungseigenschaften im Zusammenhang mit der Verschlüsselung werden geändert.{0}Wir empfehlen Ihnen, die weiteren Informationen unter folgendem Link zu überprüfen.",
+			"notifyEncryption.moreInfoLink": "Weitere Informationen",
+			"notifyEncryption.title": "Wichtiges Update"
+		},
+		"sql/workbench/contrib/welcome/page/browser/welcomePage.contribution": {
+			"miWelcome": "&&Willkommen",
+			"workbench.startupEditor": "Steuert, welcher Editor beim Start angezeigt wird, wenn keiner aus der vorherigen Sitzung wiederhergestellt wird.",
+			"workbench.startupEditor.newUntitledFile": "Öffnen Sie eine neue unbenannte Datei (gilt nur beim Öffnen eines neuen Fensters).",
+			"workbench.startupEditor.none": "Ohne Editor starten.",
+			"workbench.startupEditor.readme": "Öffnen Sie die Infodatei, sofern eine im geöffneten Ordner enthalten ist. Andernfalls erfolgt ein Fallback auf „welcomePage“. Hinweis: Dies wird nur als globale Konfiguration betrachtet. Sie wird ignoriert, wenn sie in einer Arbeitsbereichs-oder Ordnerkonfiguration festgelegt wird.",
+			"workbench.startupEditor.welcomePage": "Öffnen Sie die Willkommensseite mit Inhalten, die Ihnen bei den ersten Schritten mit Azure Data Studio und Erweiterungen helfen.",
+			"workbench.startupEditor.welcomePageInEmptyWorkbench": "Willkommensseite öffnen, wenn eine leere Workbench geöffnet wird.",
+			"workbench.startupEditor.welcomePageWithTour": "Öffnen Sie die Willkommensseite mit der Erste Schritte-Tour (Standard)"
 		}
 	}
 }

@@ -405,9 +405,6 @@ This may take some time.</source>
     <trans-unit id="sql.migration.database.backup.load.error">
       <source xml:lang="en">An error occurred while accessing database details.</source>
     </trans-unit>
-    <trans-unit id="sql.migration.database.checksum.info.text">
-      <source xml:lang="en">Ensure that your backups were taken with the WITH CHECKSUM option.</source>
-    </trans-unit>
     <trans-unit id="sql.migration.database.connection.error">
       <source xml:lang="en">An error occurred while connecting to target migration database.</source>
     </trans-unit>
@@ -743,9 +740,6 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.last.applied.lsn">
       <source xml:lang="en">Last applied LSN</source>
-    </trans-unit>
-    <trans-unit id="sql.migration.last.backup">
-      <source xml:lang="en">Last backup</source>
     </trans-unit>
     <trans-unit id="sql.migration.last.scan.completed">
       <source xml:lang="en">Last scan completed: {0}</source>
@@ -1272,6 +1266,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.sku.azureConfiguration.generalPurpose">
       <source xml:lang="en">General purpose</source>
     </trans-unit>
+    <trans-unit id="sql.migration.sku.azureConfiguration.hyperscale">
+      <source xml:lang="en">Hyperscale</source>
+    </trans-unit>
     <trans-unit id="sql.migration.sku.azureConfiguration.mi">
       <source xml:lang="en">{0} - {1} - {2} vCore</source>
     </trans-unit>
@@ -1705,16 +1702,10 @@ This may take some time.</source>
       <source xml:lang="en">Status: Succeeded</source>
     </trans-unit>
     <trans-unit id="sql.migration.status.error.count.multiple">
-      <source xml:lang="en">{0} Errors)</source>
-    </trans-unit>
-    <trans-unit id="sql.migration.status.error.count.none">
-      <source xml:lang="en">{0}</source>
+      <source xml:lang="en"> ({0} errors)</source>
     </trans-unit>
     <trans-unit id="sql.migration.status.error.count.single">
-      <source xml:lang="en">{0} Error)</source>
-    </trans-unit>
-    <trans-unit id="sql.migration.status.error.count.some">
-      <source xml:lang="en">{0} (</source>
+      <source xml:lang="en"> ({0} error)</source>
     </trans-unit>
     <trans-unit id="sql.migration.status.failed">
       <source xml:lang="en">Failed</source>
@@ -1722,8 +1713,14 @@ This may take some time.</source>
     <trans-unit id="sql.migration.status.inprogress">
       <source xml:lang="en">In progress</source>
     </trans-unit>
+    <trans-unit id="sql.migration.status.readyforcutover">
+      <source xml:lang="en">Ready for cutover</source>
+    </trans-unit>
     <trans-unit id="sql.migration.status.refresh.label">
       <source xml:lang="en">Refresh</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.status.restoring">
+      <source xml:lang="en">Restoring</source>
     </trans-unit>
     <trans-unit id="sql.migration.status.retriable">
       <source xml:lang="en">Retriable</source>
@@ -1737,11 +1734,20 @@ This may take some time.</source>
     <trans-unit id="sql.migration.status.succeeded">
       <source xml:lang="en">Succeeded</source>
     </trans-unit>
+    <trans-unit id="sql.migration.status.uploadingfullbackup">
+      <source xml:lang="en">Uploading full backup</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.status.uploadinglogbackup">
+      <source xml:lang="en">Uploading log backup(s)</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.status.value">
+      <source xml:lang="en">{0}</source>
+    </trans-unit>
     <trans-unit id="sql.migration.status.warning.count.multiple">
-      <source xml:lang="en">{0} Warnings)</source>
+      <source xml:lang="en"> ({0} warnings)</source>
     </trans-unit>
     <trans-unit id="sql.migration.status.warning.count.single">
-      <source xml:lang="en">{0} Warning)</source>
+      <source xml:lang="en"> ({0} warning)</source>
     </trans-unit>
     <trans-unit id="sql.migration.storage.account">
       <source xml:lang="en">Storage account</source>

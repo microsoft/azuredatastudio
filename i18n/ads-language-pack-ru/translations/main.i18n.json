@@ -10242,6 +10242,7 @@
 			"InstallVSIXAction.successReload": "Установка расширения {0} из VSIX завершена. Перезагрузите Azure Data Studio, чтобы включить это расширение.",
 			"ReinstallAction.successReload": "Перезагрузите Azure Data Studio, чтобы завершить переустановку расширения {0}.",
 			"activateLanguagePack": "Чтобы использовать Azure Data Studio в {0}, необходимо перезапустить Azure Data Studio.",
+			"appName": "\"${appName}\": например, Azure Data Studio.",
 			"azuredatastudio": "Azure Data Studio",
 			"connectionDialogBrowseTree.context": "Контекстное меню дерева просмотра диалогового окна подключения",
 			"dashboard.toolbar": "Меню действий инструментов панели мониторинга",
@@ -10266,6 +10267,8 @@
 			"notebook.title": "Меню раздела записной книжки",
 			"notebook.toolbar": "Меню панели инструментов записной книжки",
 			"objectExplorer.context": "Контекстное меню элемента обозревателя объектов",
+			"openDefaultSettingsJson": "открыть файл JSON параметров по умолчанию",
+			"openDefaultSettingsJson.capitalized": "Открыть параметры по умолчанию (JSON)",
 			"postDisableTooltip": "Перезапустите Azure Data Studio, чтобы отключить это расширение.",
 			"postEnableTooltip": "Перезапустите Azure Data Studio, чтобы включить это расширение.",
 			"postUninstallTooltip": "Перезапустите Azure Data Studio, чтобы завершить удаление этого расширения.",
@@ -10273,7 +10276,18 @@
 			"recommendedExtensions": "Marketplace",
 			"scenarioTypeUndefined": "Необходимо указать тип сценария для рекомендаций по расширениям.",
 			"showReleaseNotes": "Отображение заметок о выпуске после обновления. Заметки о выпуске будут открыты в новом окне веб-браузера.",
+			"sql.versionMismatch": "Расширение несовместимо с Azure Data Studio {0}. Расширению требуется: {1}.",
+			"sql.versionMismatchVsCode": "Расширение несовместимо с Azure Data Studio {0}. Для расширения требуется версия модуля VS Code {1}, более новая, чем поддерживаемая в настоящее время ({2}).",
+			"sql.versionSyntax": "Не удалось проанализировать значение \"{0}\" {1}. Используйте такие значения как ^1.22.0, ^1.22.x и т.д.",
 			"sql.watcherExclude": "Настройте стандартные маски путей файлов, которые следует исключить из списка отслеживаемых файлов. Шаблоны должны соответствовать абсолютным путям, т. е. необходимо указывать префикс \"**/\" или полный путь для правильного сопоставления и суффикс \"/**\" для сопоставления файлов в пути (например, \"**/build/output/**\" или \"/Users/name/workspaces/project/build/output/**\"). После изменения этого параметра потребуется перезагрузка. Если отображается сообщение \"Azure Data Studio потребляет большое количество времени ЦП при запуске\", можно исключить большие папки, чтобы уменьшить начальную нагрузку.",
+			"terminal.integrated.allowChords": "Указывает, разрешены ли настраиваемые сочетания клавиш в виде аккорда в терминале. Обратите внимание, что если задано значение true и нажатие клавиши приводит к аккорду, то оно будет обходить #terminal.integrated.commandsToSkipShell#, а задание значения false особенно удобно, когда требуется, чтобы сочетание клавиш CTRL+K перехватывалось вашей оболочкой (а не Azure Data Studio).",
+			"terminal.integrated.autoReplies": "Набор сообщений, при обнаружении которых в терминале будет отправляться автоматический ответ. Если сообщение достаточно конкретное, это поможет автоматизировать обработку типичных ответов.\r\n\r\nПримечания:\r\n\r\n–Используйте {0} для автоматического ответа на запрос завершения пакетного задания в Windows.\r\n–Сообщение содержит escape-последовательности, поэтому ответ может не работать для стилизованного текста.\r\n–Каждый ответ отправляется не более одного раза в секунду.\r\n–Используйте {1} в ответе для обозначения клавиши ВВОД.\r\n–Чтобы удалить клавишу по умолчанию, задайте значение NULL.\r\n–Перезапустите Azure Data Studio, если новые параметры не применены.",
+			"terminal.integrated.commandsToSkipShell": "Набор идентификаторов команд, настраиваемые сочетания клавиш которых не будут передаваться в оболочку, а вместо этого будут всегда обрабатываться Azure Data Studio. Это позволяет использовать настраиваемые сочетания клавиш, которые при обычных условиях были бы использованы оболочкой и работали бы также, как если бы терминал не имел фокуса, например, клавиши \"CTRL+P\" запускали бы Quick Open.\r\n\r\n&nbsp;\r\n\r\nМногие команды по умолчанию пропускаются. Чтобы переопределить значение по умолчанию и передать настраиваемое сочетание клавиш этой команды в оболочку, добавьте команду с префиксом \"-\". Например, добавьте \"-workbench.action.quickOpen\", чтобы сочетание клавиш \"CTRL+P\" было направлено в оболочку.\r\n\r\n&nbsp;\r\n\r\nСледующий список команд, пропускаемых по умолчанию, обрезается при просмотре в Редакторе параметров. Чтобы просмотреть полный список, {1} и выполните поиск первой команды из списка ниже.\r\n\r\n&nbsp;\r\n\r\nКоманды, пропускаемые по умолчанию:\r\n\r\n{0}",
+			"terminal.integrated.detectLocale": "Определяет, следует ли обнаруживать и задавать переменную среды $LANG в соответствии с параметром, совместимым с UTF-8, так как терминал Azure Data Studio поддерживает поступающие из оболочки данные только в кодировке UTF-8.",
+			"terminal.integrated.env.linux": "Объект с переменными окружения, которые будут добавлены в процесс Azure Data Studio для использования терминалом в Linux. Задайте значение null, чтобы удалить переменную среды.",
+			"terminal.integrated.env.osx": "Объект с переменными окружения, которые будут добавлены в процесс Azure Data Studio для использования терминалом в macOS. Задайте значение null, чтобы удалить переменную среды.",
+			"terminal.integrated.env.windows": "Объект с переменными окружения, которые будут добавлены в процесс Azure Data Studio для использования терминалом в Windows. Задайте значение null, чтобы удалить переменную среды.",
+			"terminal.integrated.inheritEnv": "Должны ли новые оболочки наследовать свою среду от Azure Data Studio, который может попытаться получить оболочку входа для обеспечения инициализации $PATH и других переменных разработки. Это не влияет на Windows.",
 			"uninstallExtensionComplete": "Перезапустите Azure Data Studio, чтобы завершить удаление расширения {0}.",
 			"updateLocale": "Хотите изменить язык пользовательского интерфейса Azure Data Studio на {0} и выполнить перезапуск?",
 			"vscodeDocCreationFailedError": "Не удалось создать документ записной книжки.",
@@ -10314,13 +10328,14 @@
 			"schema.dashboardWidgets.server": "Мини-приложение, используемое на панелях мониторинга"
 		},
 		"sql/platform/serialization/common/serializationService": {
+			"missingSerializationProviderError": "Не удалось найти поставщика сериализации с указанным идентификатором \"{0}\"",
 			"noSerializationProvider": "Не удается сериализировать данные, так как ни один поставщик не зарегистрирован",
 			"saveAsNotSupported": "Сохранение результатов в другом формате отключено для этого поставщика данных.",
 			"unknownSerializationError": "Не удалось выполнить сериализацию. Произошла неизвестная ошибка"
 		},
 		"sql/platform/theme/common/colorRegistry": {
+			"buttonDropdo0wnBoxShadow": "Цвет тени поля для раскрывающегося списка кнопки",
 			"buttonDropdownBackgroundHover": "Цвет фона для раскрывающегося списка кнопки при наведении курсора мыши",
-			"buttonDropdownBoxShadow": "Цвет тени поля для раскрывающегося списка кнопки",
 			"calloutDialogBodyBackground": "Цвет фона основной части диалогового окна выноски.",
 			"calloutDialogExteriorBorder": "Внешние границы диалогового окна выноски для обеспечения контрастности с пользовательским интерфейсом записной книжки.",
 			"calloutDialogForeground": "Цвет переднего плана диалогового окна выноски.",
@@ -10510,6 +10525,8 @@
 			"optionsDialog.ok": "ОК"
 		},
 		"sql/workbench/browser/modal/optionsDialogHelper": {
+			"boolean.false": "ЛОЖЬ",
+			"boolean.true": "ИСТИНА",
 			"optionsDialog.defaultGroupName": "Общие",
 			"optionsDialog.invalidInput": "Введены недопустимые данные. Ожидается числовое значение.",
 			"optionsDialog.missingRequireField": " требуется."
@@ -10559,9 +10576,10 @@
 			"insertOperationName": "Insert",
 			"scriptNotFound": "При выполнении сценария в режиме {0} не было возвращено ни одного сценария",
 			"scriptNotFoundForObject": "При выполнении сценария в режиме {0} для объекта {1} не было возвращено ни одного сценария.",
-			"scriptSelectNotFound": "Не было получено ни одного сценария при вызове метода выбора сценария для объекта ",
 			"scriptingFailed": "Не удалось создать сценарий",
 			"selectOperationName": "Выбрать",
+			"selectScriptForEditNotGeneratedError": "Не удалось создать скрипт для электронного обмена данными.",
+			"selectScriptNotGeneratedError": "Не удалось создать сценарий выбора для выбранного объекта.",
 			"updateOperationName": "Обновить"
 		},
 		"sql/workbench/common/editor/query/queryEditorInput": {
@@ -11088,6 +11106,7 @@
 			"vscode.extension.contributes.view.when": "Условие, которое должно иметь значение TRUE, чтобы отображалось это представление"
 		},
 		"sql/workbench/contrib/dataExplorer/browser/dataExplorerViewlet": {
+			"ads-connections": "Значок обозначает сервер.",
 			"dataExplorer.servers": "Серверы",
 			"dataexplorer.name": "Подключения",
 			"showDataExplorer": "Показать подключения"
@@ -11119,14 +11138,16 @@
 			"saveAsCsv": "Сохранить в формате CSV",
 			"saveAsExcel": "Сохранить в формате Excel",
 			"saveAsJson": "Сохранить в формате JSON",
+			"saveAsMarkdown": "Сохранить как Markdown",
 			"saveAsXml": "Сохранить в формате XML",
 			"selectAll": "Выбрать все"
 		},
 		"sql/workbench/contrib/executionPlan/browser/azdataGraphView": {
+			"executionPlanComparison.bottomPlanDiagram.ariaLabel": "{0}, используйте клавиши со стрелками для перехода между узлами",
 			"invalidExecutionPlanZoomError": "Масштаб не может быть отрицательным или равен нулю"
 		},
 		"sql/workbench/contrib/executionPlan/browser/compareExecutionPlanInput": {
-			"epCompare.editorName": "Сравнение планов выполнения"
+			"epCompare.editorName": "CompareExecutionPlans"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditor": {
 			"compareExecutionPlanEditor": "Сравнение редактора плана выполнения"
@@ -11135,8 +11156,8 @@
 			"addExecutionPlanLabel": "Добавить план выполнения",
 			"epComapre.LoadingPlanCompleteMessage": "План выполнения успешно загружен",
 			"epComapre.LoadingPlanMessage": "Загрузка плана выполнения",
-			"epComapre.placeholderInfoboxText": "Добавьте планы выполнения для сравнения",
 			"epCompare.FileFilterDescription": "Файлы плана выполнения",
+			"epCompare.addExecutionPlanLabel": "Добавить план выполнения",
 			"epCompare.comparePropertiesAction": "Свойства",
 			"epCompare.comparisonProgess": "Загрузка похожих областей в сравниваемых планах",
 			"epCompare.searchNodeAction": "Найти узел",
@@ -11146,23 +11167,33 @@
 			"epCompare.zoomOutAction": "Уменьшить масштаб",
 			"epCompare.zoomReset": "Сбросить масштаб",
 			"epCompare.zoomToFit": "Масштаб по размеру экрана",
+			"executionPlanComparison.bottomPlanDiagram.name": "Последний план выполнения {0}",
+			"executionPlanComparison.topPlanDiagram.name": "Основной план выполнения {0}",
+			"executionPlanDisableTooltip": "Подсказки отключены",
+			"executionPlanEnableTooltip": "Подсказки включены",
 			"queryDropdownPrefix": "Запрос {0} из {1}: {2}"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanComparisonPropertiesView": {
-			"executionPlanComparisonPropertiesBottomOperation": "Нижняя операция: {0}",
-			"executionPlanComparisonPropertiesLeftOperation": "Операция слева: {0}",
-			"executionPlanComparisonPropertiesRightOperation": "Операция справа: {0}",
-			"executionPlanComparisonPropertiesTopOperation": "Верхняя операция: {0}",
 			"executionPlanPropertiesEdgeOperationName": "Edge",
+			"nodePropertyViewBottomOperation": "Нижняя операция: {0}",
+			"nodePropertyViewLeftOperation": "Операция слева: {0}",
+			"nodePropertyViewNameEquivalentPropertiesRowHeader": "Эквивалентные свойства",
+			"nodePropertyViewNameGreaterThanTitle": "Больше",
+			"nodePropertyViewNameLessThanTitle": "Меньше",
 			"nodePropertyViewNameNameColumnHeader": "Имя",
+			"nodePropertyViewNameNotEqualTitle": "Не равно",
 			"nodePropertyViewNameValueColumnBottomHeader": "Значение (нижний план)",
 			"nodePropertyViewNameValueColumnLeftHeader": "Значение (левый план)",
 			"nodePropertyViewNameValueColumnRightHeader": "Значение (правый план)",
-			"nodePropertyViewNameValueColumnTopHeader": "Значение (верхний план)"
+			"nodePropertyViewNameValueColumnTopHeader": "Значение (верхний план)",
+			"nodePropertyViewRightOperation": "Операция справа: {0}",
+			"nodePropertyViewTopOperation": "Верхняя операция: {0}"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanContribution": {
+			"executionPlan.tooltips.enableOnHoverTooltips": "Если значение равно true, при наведении указателя на план выполнения включает всплывающие подсказки. Если значение равно false, подсказки отображаются при щелчке по узлу или при нажатии клавиши F3.",
 			"executionPlanCompareCommandOriginalValue": "Сравнение планов выполнения",
-			"executionPlanCompareCommandValue": "Сравнение планов выполнения"
+			"executionPlanCompareCommandValue": "Сравнение планов выполнения",
+			"executionPlanConfigurationTitle": "План выполнения"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanEditor": {
 			"executionPlanEditor": "Редактор планов выполнения запросов"
@@ -11179,6 +11210,8 @@
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanPropertiesViewBase": {
 			"ep.topOperationsCopyTableData": "Копировать",
+			"executionPlanCollapseAllProperties": "Свернуть все",
+			"executionPlanExpandAllProperties": "Развернуть все",
 			"executionPlanPropertyViewClose": "Закрыть",
 			"executionPlanPropertyViewSortAlphabetically": "В алфавитном порядке",
 			"executionPlanPropertyViewSortByDisplayOrder": "Важность",
@@ -11186,10 +11219,11 @@
 			"nodePropertyViewTitle": "Свойства"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanTab": {
-			"executionPlanTitle": "План запроса (предварительная версия)"
+			"executionPlanTitle": "План запроса"
 		},
 		"sql/workbench/contrib/executionPlan/browser/executionPlanView": {
 			"executionPlan.SaveFileDescription": "Файлы плана выполнения",
+			"executionPlan.diagram.ariaLabel": "План выполнения {0}",
 			"executionPlanCompareExecutionPlanAction": "Сравнение плана выполнения",
 			"executionPlanContextMenuDisableTooltip": "Отключить подсказки",
 			"executionPlanContextMenuEnableTooltip": "Включить подсказки",
@@ -11197,6 +11231,7 @@
 			"executionPlanDisableTooltip": "Подсказки отключены",
 			"executionPlanEnableTooltip": "Подсказки включены",
 			"executionPlanFitGraphLabel": "Масштаб по размеру экрана",
+			"executionPlanHighlightExpensiveOperationAction": "Выделить ресурсоемкую операцию",
 			"executionPlanOpenGraphFile": "Показать XML-файл плана запроса",
 			"executionPlanPropertiesActionLabel": "Свойства",
 			"executionPlanSavePlanXML": "Сохранить файл плана",
@@ -11210,19 +11245,22 @@
 			"planHeaderIndexAndCost": "Запрос {0}: стоимость запроса (по отношению к сценарию): {1}%"
 		},
 		"sql/workbench/contrib/executionPlan/browser/widgets/customZoomWidget": {
-			"cancelCustomZoomAction": "Закрыть (ESC)",
+			"cancelCustomZoomAction": "Закрыть",
 			"customZoomApplyButton": "Применить",
-			"customZoomApplyButtonTitle": "Применить масштабирование (ВВОД)",
+			"customZoomApplyButtonTitle": "Применить масштаб",
 			"invalidCustomZoomError": "Выберите значение масштаба от 1 до 200",
 			"qpZoomValueLabel": "Увеличить (в процентах)",
-			"zoomAction": "Увеличить (ВВОД)"
+			"zoomAction": "Zoom"
 		},
 		"sql/workbench/contrib/executionPlan/browser/widgets/nodeSearchWidget": {
-			"cancelSearchAction": "Закрыть (ESC)",
+			"cancelSearchAction": "Закрыть",
+			"executionPlanEnterValueTitle": "Введите значение поиска",
 			"executionPlanSearchTypeContains": "Содержит",
 			"executionPlanSearchTypeEquals": "Равно",
-			"nextSearchItemAction": "Следующее совпадение (ВВОД)",
-			"previousSearchItemAction": "Предыдущее совпадение (SHIFT+ВВОД)"
+			"executionPlanSelectPropertyTitle": "Выберите свойство",
+			"executionPlanSelectSearchTypeTitle": "Выберите тип поиска",
+			"nextSearchItemAction": "Следующее совпадение",
+			"previousSearchItemAction": "Предыдущее совпадение"
 		},
 		"sql/workbench/contrib/extensions/browser/contributionRenders": {
 			"insight condition": "Когда",
@@ -11608,6 +11646,7 @@
 			"loadingNotebookMessage": "Загрузка записной книжки {0}"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet": {
+			"ads-notebook": "Значок обозначает записную книжку.",
 			"notebookExplorer.name": "Записные книжки",
 			"notebookExplorer.searchResults": "Результаты поиска",
 			"searchPathNotFoundError": "Путь поиска не найден: {0}"
@@ -11704,6 +11743,7 @@
 			"connection": "Подключение",
 			"dashboard": "Панель мониторинга",
 			"data": "Данные",
+			"executionPlan": "План выполнения",
 			"notebook": "Записная книжка",
 			"profiler": "Профилировщик",
 			"queryEditor": "Редактор запросов",
@@ -11773,6 +11813,7 @@
 			"saveAsCsv": "Сохранить в формате CSV",
 			"saveAsExcel": "Сохранить в формате Excel",
 			"saveAsJson": "Сохранить в формате JSON",
+			"saveAsMarkdown": "Сохранить как Markdown",
 			"saveAsXml": "Сохранить в формате XML",
 			"saveToFileNotSupported": "Сохранение в файл не поддерживается резервным источником данных",
 			"selectAll": "Выбрать все",
@@ -11833,6 +11874,10 @@
 			"queryEditor.results.saveAsCsv.includeHeaders": "Если этот параметр имеет значение true, то при сохранении результата в формате CSV в файл будут включены заголовки столбцов",
 			"queryEditor.results.saveAsCsv.lineSeperator": "Символы, используемые для разделения строк при сохранении результатов в файле CSV",
 			"queryEditor.results.saveAsCsv.textIdentifier": "Символ, используемый для обрамления текстовых полей при сохранении результатов в файле CSV",
+			"queryEditor.results.saveAsExcel.includeHeaders": "Если установлено значение true, то заголовки столбцов будут включены при сохранении результатов в файле Excel.",
+			"queryEditor.results.saveAsMarkdown.encoding": "Кодирование файла, используемое при сохранении результатов в формате Markdown",
+			"queryEditor.results.saveAsMarkdown.includeHeaders": "Если задано значение ИСТИНА, заголовки столбцов включаются при сохранении результатов в виде файла Markdown.",
+			"queryEditor.results.saveAsMarkdown.lineSeparator": "Символы для разделения строк при экспорте в Markdown, по умолчанию используются системные окончания строк",
 			"queryEditor.results.saveAsXml.encoding": "Кодировка файла, которая используется при сохранении результатов в формате XML",
 			"queryEditor.results.saveAsXml.formatted": "Если этот параметр имеет значение true, выходные данные XML будут отформатированы при сохранении результатов в формате XML",
 			"queryEditor.results.streaming": "Включить потоковую передачу результатов; имеется несколько небольших проблем с отображением",
@@ -11897,7 +11942,8 @@
 			"deployment.title": "Новое развертывание..."
 		},
 		"sql/workbench/contrib/resourceViewer/browser/resourceViewer.contribution": {
-			"resourceViewer": "Средство просмотра ресурсов"
+			"resourceViewer": "Средство просмотра ресурсов",
+			"resourceViewerIcon": "Значок для средства просмотра ресурсов."
 		},
 		"sql/workbench/contrib/resourceViewer/browser/resourceViewerActions": {
 			"resourceViewer.refresh": "Обновить"
@@ -11948,9 +11994,6 @@
 		"sql/workbench/contrib/tableDesigner/browser/actions": {
 			"tableDesigner.publishTableChanges": "Опубликовать изменения…",
 			"tableDesigner.saveTableChanges": "Сохранить"
-		},
-		"sql/workbench/contrib/tableDesigner/browser/tableDesignerEditor": {
-			"tableDesigner.PreviewFeature": "Предварительная версия функции"
 		},
 		"sql/workbench/contrib/tasks/browser/tasks.contribution": {
 			"inProgressTasksChangesBadge": "Выполняющихся задач: {0}",
@@ -12185,9 +12228,12 @@
 		},
 		"sql/workbench/services/connection/browser/connectionDialogService": {
 			"connectionError": "Ошибка подключения",
+			"enableTrustServerCertificate": "Доверять сертификату сервера",
 			"kerberosErrorStart": "Сбой подключения из-за ошибки Kerberos.",
 			"kerberosHelpLink": "Справка по настройке Kerberos доступна на странице {0}",
-			"kerberosKinit": "Если вы подключались ранее, может потребоваться запустить kinit повторно."
+			"kerberosKinit": "Если вы подключались ранее, может потребоваться запустить kinit повторно.",
+			"runKinit": "Запуск Kinit",
+			"trustServerCertInstructionText": "Для этого подключения включено шифрование. Проверьте конфигурацию SSL и сертификата для целевого SQL Server или включите \"Доверять сертификату сервера\" в диалоговом окне подключения.\r\n\r\n\t\t\tПримечание. Самозаверяющий сертификат обеспечивает только ограниченную защиту и не рекомендуется для рабочих сред. Вы хотите включить \"Доверять сертификату сервера\" для этого подключения и повторить попытку? "
 		},
 		"sql/workbench/services/connection/browser/connectionDialogWidget": {
 			"connectType": "Тип подключения",
@@ -12196,21 +12242,19 @@
 			"connectionDetailsTitle": "Сведения о подключении",
 			"connectionDialog.cancel": "Отмена",
 			"connectionDialog.connect": "Подключиться",
-			"connectionDialog.connectionProviderNotSupported": "Расширение, поддерживающее тип “{0}” поставщика, в настоящее время не установлено. Установите его и повторите попытку.",
-			"connectionDialog.extensionNotInstalled": "Для подключения к этому ресурсу требуется расширение“{0}”. Установите его и повторите попытку.",
 			"connectionDialog.recentConnections": "Последние подключения",
-			"connectionDialog.viewExtension": "Просмотреть расширение",
-			"connectionDialog.viewExtensions": "Просмотреть расширения",
 			"noRecentConnections": "Недавние подключения отсутствуют",
 			"recentConnectionTitle": "Недавние"
 		},
 		"sql/workbench/services/connection/browser/connectionManagementService": {
 			"cancelConnectionConfirmation": "Вы действительно хотите отменить это подключение?",
+			"connection.extensionNotInstalled": "Для подключения к этому ресурсу требуется расширение \"{0}\". Вы хотите установить его?",
 			"connection.invalidConnectionResult": "Недопустимый результат подключения",
 			"connection.neverShowUnsupportedVersionWarning": "Больше не показывать",
 			"connection.noAzureAccount": "Не удалось получить маркер учетной записи Azure для подключения",
 			"connection.refreshAzureTokenFailure": "Не удалось обновить маркер учетной записи Azure для подключения",
 			"connection.unsupportedServerVersionWarning": "Azure Data Studio не поддерживает эту версию сервера; возможно, вы можете подключиться к ней, но некоторые функции Azure Data Studio могут работать не так, как ожидалось.",
+			"connectionDialog.connectionProviderNotSupported": "Расширение, которое поддерживает тип поставщика \"{0}\", сейчас не установлено. Вы хотите просмотреть расширения?",
 			"connectionManagementService.noProviderForUri": "Не найден поставщик для URI: {0}",
 			"connectionNotAcceptedError": "Подключение не принято",
 			"connectionService.no": "Нет",
@@ -12219,6 +12263,8 @@
 		"sql/workbench/services/connection/browser/connectionWidget": {
 			"addNewServerGroup": "Добавить группу…",
 			"advanced": "Дополнительно…",
+			"boolean.false": "ЛОЖЬ",
+			"boolean.true": "ИСТИНА",
 			"connection.azureAccountDropdownLabel": "Учетная запись",
 			"connection.azureTenantDropdownLabel": "Клиент Azure AD",
 			"connectionName": "Имя (необязательно)",
@@ -12261,7 +12307,8 @@
 			"copyDetails": "Скопировать сведения",
 			"errorMessageDialog.action": "Действие",
 			"errorMessageDialog.close": "Закрыть",
-			"errorMessageDialog.ok": "ОК"
+			"errorMessageDialog.ok": "ОК",
+			"errorMessageDialog.readMore": "Подробнее"
 		},
 		"sql/workbench/services/errorMessage/browser/errorMessageService": {
 			"error": "Ошибка",
@@ -12426,9 +12473,6 @@
 			"vscode.extension.contributes.notebook.languagemagics": "Определяет язык записной книжки.",
 			"vscode.extension.contributes.notebook.providersDescriptions": "Добавляет описания поставщиков записных книжек."
 		},
-		"sql/workbench/services/objectExplorer/browser/asyncServerTreeRenderer": {
-			"loading": "Загрузка…"
-		},
 		"sql/workbench/services/objectExplorer/browser/connectionTreeAction": {
 			"DisconnectAction": "Отключить",
 			"activeConnections": "Показать активные подключения",
@@ -12449,9 +12493,6 @@
 			"firewallCanceled": "Диалоговое окно брандмауэра отменено",
 			"loginCanceled": "Действие отменено пользователем",
 			"noProviderFound": "Не удается выполнить расширение, так как требуемый поставщик подключения \"{0}\" не найден"
-		},
-		"sql/workbench/services/objectExplorer/browser/serverTreeRenderer": {
-			"loading": "Загрузка…"
 		},
 		"sql/workbench/services/objectExplorer/browser/treeCreationUtils": {
 			"serversAriaLabel": "Серверы",
@@ -12513,6 +12554,7 @@
 			"resultsSerializer.saveAsFileExtensionCSVTitle": "CSV (с разделением запятыми)",
 			"resultsSerializer.saveAsFileExtensionExcelTitle": "Книга Excel",
 			"resultsSerializer.saveAsFileExtensionJSONTitle": "JSON",
+			"resultsSerializer.saveAsFileExtensionMarkdownTitle": "Markdown",
 			"resultsSerializer.saveAsFileExtensionTXTTitle": "Простой текст",
 			"resultsSerializer.saveAsFileExtensionXMLTitle": "XML",
 			"resultsSerializer.saveAsFileTitle": "Выберите файл результатов",
@@ -12584,7 +12626,6 @@
 			"groupColor": "Цвет группы",
 			"groupDescription": "Описание группы",
 			"serverGroup.cancel": "Отмена",
-			"serverGroup.colorValue": "Цвет группы: {0}",
 			"serverGroup.ok": "OK"
 		},
 		"sql/workbench/services/serverGroup/common/serverGroupViewModel": {
@@ -12710,18 +12751,73 @@
 			"ept.topOperationsCopyTableData": "Копировать",
 			"ept.topOperationsCopyWithHeader": "Копировать с заголовками",
 			"ept.topOperationsSelectAll": "Выбрать все",
-			"planTreeTab.title": "Дерево планов (предварительная версия)",
+			"planTreeTab.title": "Дерево плана",
 			"topOperationsTableTitle": "Дерево плана выполнения"
 		},
 		"sql/workbench/contrib/executionPlan/browser/topOperationsTab": {
 			"ep.topOperationsCopyTableData": "Копировать",
 			"ep.topOperationsCopyWithHeader": "Копировать с заголовками",
 			"ep.topOperationsSelectAll": "Выделить все",
-			"topOperationsTabTitle": "Основные операции (предварительный просмотр)",
+			"topOperationsTabTitle": "Основные операции",
 			"topOperationsTableTitle": "Основные операции"
 		},
 		"sql/workbench/contrib/notebook/browser/models/outputProcessor": {
 			"notebookInvalidOutputTypeError": "Тип выходных данных {0} не распознан"
+		},
+		"sql/base/browser/ui/table/table": {
+			"table.resizeColumn": "Укажите ширину нового столбца",
+			"table.resizeColumn.invalid": "Недопустимая ширина столбца",
+			"table.resizeColumn.negativeSize": "Размер не может быть 0 или отрицательным"
+		},
+		"sql/base/parts/tree/browser/treeDefaults": {
+			"collapse all": "Свернуть все"
+		},
+		"sql/platform/connection/common/providerConnectionInfo": {
+			"connection.unsupported": "Неподдерживаемое подключение",
+			"loading": "Загрузка…"
+		},
+		"sql/workbench/contrib/executionPlan/browser/constants": {
+			"ep.propertiesSearchDescription": "Поиск таблицы свойств",
+			"ep.searchPlaceholder": "Фильтрация всех полей...",
+			"ep.topOperationsSearchDescription": "Поиск основных операций"
+		},
+		"sql/workbench/contrib/executionPlan/browser/widgets/highlightExpensiveNodeWidget": {
+			"actualNumberOfRowsForAllExecutionsAction": "Фактическое число строк для всех выполнений",
+			"cancelExpensiveOperationAction": "Закрыть",
+			"executionPlanActualElapsedCpuTime": "Фактически затраченное время ЦП",
+			"executionPlanActualElapsedTime": "Фактически затраченное время",
+			"executionPlanCost": "Затраты",
+			"executionPlanNumberOfRowsRead": "Количество прочитанных строк",
+			"executionPlanOff": "Выкл.",
+			"executionPlanSelectExpenseMetricTitle": "Выберите метрику расходов",
+			"executionPlanSubtreeCost": "Ресурсоемкость поддерева",
+			"expensiveOperationLabel": "Метрика:",
+			"highlightExpensiveOperationAction": "Применить",
+			"highlightExpensiveOperationApplyButton": "Применить",
+			"highlightExpensiveOperationButtonTitle": "Выделить ресурсоемкую операцию",
+			"qp.expensiveOperationMetric.dontShowAgain": "Больше не показывать",
+			"qp.expensiveOperationMetric.no": "Нет",
+			"qp.expensiveOperationMetric.yes": "Да",
+			"queryExecutionPlan.showUpdateDefaultMetricInfo": "Установить выбранную метрику по умолчанию для планов выполнения запросов?",
+			"turnOffExpensiveHighlightingOperationAction": "Выкл."
+		},
+		"sql/workbench/contrib/executionPlan/common/executionPlanInput": {
+			"epCompare.executionPlanEditorName": "План_выполнения"
+		},
+		"sql/workbench/contrib/welcome/notifyEncryption/notifyEncryptionDialog": {
+			"notifyEncryption.message": "В среде Azure Data Studio теперь включено шифрование по умолчанию для всех подключений SQL Server. Это может привести к тому, что существующие подключения больше не будут работать, если не будут изменены определенные свойства соединения, связанные с шифрованием.{0}Мы рекомендуем вам ознакомиться со ссылкой ниже для получения более подробной информации.",
+			"notifyEncryption.moreInfoLink": "Дополнительные сведения",
+			"notifyEncryption.title": "Важное обновление"
+		},
+		"sql/workbench/contrib/welcome/page/browser/welcomePage.contribution": {
+			"miWelcome": "&&Приветствие",
+			"workbench.startupEditor": "Управляет тем, какой редактор отображается при запуске, если содержимое редактора не было восстановлено из предыдущего сеанса.",
+			"workbench.startupEditor.newUntitledFile": "Открыть новый файл без названия (применяется только при открытии пустого окна).",
+			"workbench.startupEditor.none": "Запустить без редактора.",
+			"workbench.startupEditor.readme": "Открыть файл сведений при открытии папки, содержащей этот файл, в противном случае вернуться к \\\"welcomePage\\\". Примечание: этот параметр применяется только в качестве глобальной конфигурации. Он будет проигнорирован, если задан в рабочей области или конфигурации папки.",
+			"workbench.startupEditor.welcomePage": "Откройте домашнюю страницу с содержимым, которое поможет начать работу с Azure Data Studio и расширениями.",
+			"workbench.startupEditor.welcomePageInEmptyWorkbench": "Открывать страницу приветствия при открытии пустой рабочей области.",
+			"workbench.startupEditor.welcomePageWithTour": "Открытие страницы приветствия с туром \"Приступая к работе\" (по умолчанию)"
 		}
 	}
 }

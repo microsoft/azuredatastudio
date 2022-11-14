@@ -24,6 +24,8 @@ import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
+import { Link } from 'vs/platform/opener/browser/link';
+import { IOpenerService } from 'vs/platform/opener/common/opener';
 
 const maxActions = 1;
 
@@ -36,9 +38,12 @@ export class ErrorMessageDialog extends Modal {
 	private _actions: IAction[] = [];
 	private _severity?: Severity;
 	private _message?: string;
+	private _instructionText?: string;
+	private _readMoreLink?: string;
 	private _messageDetails?: string;
 	private _okLabel: string;
 	private _closeLabel: string;
+	private _readMoreLabel: string;
 
 	private _onOk = new Emitter<void>();
 	public onOk: Event<void> = this._onOk.event;
@@ -50,11 +55,13 @@ export class ErrorMessageDialog extends Modal {
 		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@ILogService logService: ILogService,
-		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
+		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
+		@IOpenerService private readonly _openerService: IOpenerService
 	) {
 		super('', TelemetryKeys.ModalDialogName.ErrorMessage, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'normal', hasTitleIcon: true });
 		this._okLabel = localize('errorMessageDialog.ok', "OK");
 		this._closeLabel = localize('errorMessageDialog.close', "Close");
+		this._readMoreLabel = localize('errorMessageDialog.readMore', "Read More");
 	}
 
 	protected renderBody(container: HTMLElement) {
@@ -88,7 +95,7 @@ export class ErrorMessageDialog extends Modal {
 	}
 
 	private createStandardButton(label: string, onSelect: () => void): Button {
-		let button = this.addFooterButton(label, onSelect, 'right', true);
+		let button = this.addFooterButton(label, onSelect, 'right', false);
 		this._register(attachButtonStyler(button, this._themeService));
 		return button;
 	}
@@ -106,9 +113,24 @@ export class ErrorMessageDialog extends Modal {
 		// Nothing to re-layout
 	}
 
-	private updateDialogBody(): void {
+	protected updateDialogBody(): void {
 		DOM.clearNode(this._body!);
 		DOM.append(this._body!, DOM.$('div.error-message')).innerText = this._message!;
+		if (this._instructionText) {
+			let childElement = DOM.$('div.error-instruction-text');
+			childElement.innerText = this._instructionText!;
+			if (this._readMoreLink) {
+				new Link(childElement, {
+					label: this._readMoreLabel,
+					href: this._readMoreLink
+				}, undefined, this._openerService);
+			}
+			DOM.append(this._body!, childElement);
+		}
+	}
+
+	protected getBody(): HTMLElement {
+		return this._body;
 	}
 
 	private updateIconTitle(): void {
@@ -144,9 +166,11 @@ export class ErrorMessageDialog extends Modal {
 		this.hide(hideReason);
 	}
 
-	public open(severity: Severity, headerTitle: string, message: string, messageDetails?: string, actions?: IAction[]) {
+	public open(severity: Severity, headerTitle: string, message: string, messageDetails?: string, actions?: IAction[], instructionText?: string, readMoreLink?: string): void {
 		this._severity = severity;
 		this._message = message;
+		this._instructionText = instructionText;
+		this._readMoreLink = readMoreLink;
 		this.title = headerTitle;
 		this._messageDetails = messageDetails;
 		if (this._messageDetails) {
@@ -158,21 +182,31 @@ export class ErrorMessageDialog extends Modal {
 			this._bodyContainer.setAttribute('aria-description', this._message);
 		}
 		this.resetActions();
-		if (actions && actions.length > 0) {
+		if (actions?.length > 0) {
 			for (let i = 0; i < maxActions && i < actions.length; i++) {
 				this._actions.push(actions[i]);
 				let button = this._actionButtons[i];
 				button.label = actions[i].label;
 				button.element.style.visibility = 'visible';
 			}
-			this._okButton!.label = this._closeLabel;
+			//Remove and add button again to update style.
+			this.removeFooterButton(this._okLabel);
+			this.removeFooterButton(this._closeLabel);
+			this._okButton = this.addFooterButton(this._closeLabel, () => this.ok(), undefined, true);
 		} else {
-			this._okButton!.label = this._okLabel;
+			//Remove and add button again to update style
+			this.removeFooterButton(this._okLabel);
+			this.removeFooterButton(this._closeLabel);
+			this._okButton = this.addFooterButton(this._okLabel, () => this.ok());
 		}
 		this.updateIconTitle();
 		this.updateDialogBody();
 		this.show();
-		this._okButton!.focus();
+		if (actions?.length > 0) {
+			this._actionButtons[0].focus();
+		} else {
+			this._okButton!.focus();
+		}
 	}
 
 	private resetActions(): void {

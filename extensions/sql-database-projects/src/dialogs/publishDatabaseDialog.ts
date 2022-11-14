@@ -7,17 +7,18 @@ import type * as azdataType from 'azdata';
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
+import * as uiUtils from './utils';
 
 import { Project } from '../models/project';
 import { SqlConnectionDataSource } from '../models/dataSources/sqlConnectionStringSource';
 import { DeploymentOptions } from 'mssql';
 import { IconPathHelper } from '../common/iconHelper';
 import { cssStyles } from '../common/uiConstants';
-import { getAgreementDisplayText, getConnectionName, getDefaultDockerImageWithTag, getDockerBaseImages, getPublishServerName } from './utils';
+import { getAgreementDisplayText, getConnectionName, getDockerBaseImages, getPublishServerName } from './utils';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { Deferred } from '../common/promise';
 import { PublishOptionsDialog } from './publishOptionsDialog';
-import { ISqlProjectPublishSettings, IPublishToDockerSettings, SqlTargetPlatform } from 'sqldbproj';
+import { ISqlProjectPublishSettings, IPublishToDockerSettings } from 'sqldbproj';
 
 interface DataSourceDropdownValue extends azdataType.CategoryValue {
 	dataSource: SqlConnectionDataSource;
@@ -46,6 +47,7 @@ export class PublishDatabaseDialog {
 	private databaseRow: azdataType.FlexContainer | undefined;
 	private localDbSection: azdataType.FlexContainer | undefined;
 	private baseDockerImageDropDown: azdataType.DropDownComponent | undefined;
+	private imageTagDropDown: azdataType.DropDownComponent | undefined;
 	private serverAdminPasswordTextBox: azdataType.InputBoxComponent | undefined;
 	private serverConfigAdminPasswordTextBox: azdataType.InputBoxComponent | undefined;
 	private serverPortTextBox: azdataType.InputBoxComponent | undefined;
@@ -116,7 +118,7 @@ export class PublishDatabaseDialog {
 			const flexRadioButtonsModel = this.createPublishTypeRadioButtons(view);
 			// TODO : enable using this when data source creation is enabled
 			this.createRadioButtons(view);
-			this.createLocalDbInfoRow(view);
+			await this.createLocalDbInfoRow(view);
 
 			this.dataSourcesFormComponent = this.createDataSourcesFormComponent(view);
 
@@ -244,10 +246,13 @@ export class PublishDatabaseDialog {
 			let dockerBaseImage = this.getBaseDockerImageName();
 			const baseImages = getDockerBaseImages(this.project.getProjectTargetVersion());
 			const imageInfo = baseImages.find(x => x.name === dockerBaseImage);
+			const imageName = imageInfo?.name;
+			const imageTag = this.imageTagDropDown?.value;
 
-			// selecting the image tag isn't currently exposed in the publish dialog, so this adds the tag matching the target platform
-			// to make sure the correct image is used for the project's target platform when the docker base image is SQL Server
-			dockerBaseImage = getDefaultDockerImageWithTag(this.project.getProjectTargetVersion(), dockerBaseImage, imageInfo);
+			// Add the image tag if it's not the latest
+			if (imageTag && imageTag !== constants.dockerImageDefaultTag) {
+				dockerBaseImage = `${imageName}:${imageTag}`;
+			}
 
 			const settings: IPublishToDockerSettings = {
 				dockerSettings: {
@@ -400,7 +405,7 @@ export class PublishDatabaseDialog {
 		this.dockerServerRadioButton = view.modelBuilder.radioButton()
 			.withProps({
 				name: 'publishType',
-				label: constants.publishToDockerContainer(name)
+				label: name === constants.AzureSqlServerName ? constants.publishToDockerContainerPreview(name) : constants.publishToDockerContainer(name)
 			}).component();
 
 		this.dockerServerRadioButton.onDidChangeCheckedState((checked) => {
@@ -554,7 +559,7 @@ export class PublishDatabaseDialog {
 		return connectionRow;
 	}
 
-	private createLocalDbInfoRow(view: azdataType.ModelView): azdataType.FlexContainer {
+	private async createLocalDbInfoRow(view: azdataType.ModelView): Promise<azdataType.FlexContainer> {
 		const name = getPublishServerName(this.project.getProjectTargetVersion());
 		this.serverPortTextBox = view.modelBuilder.inputBox().withProps({
 			value: constants.defaultPortNumber,
@@ -604,15 +609,6 @@ export class PublishDatabaseDialog {
 		const baseImages = getDockerBaseImages(this.project.getProjectTargetVersion());
 		const baseImagesValues: azdataType.CategoryValue[] = baseImages.map(x => { return { name: x.name, displayName: x.displayName }; });
 
-		// add preview string for 2022
-		// TODO: remove after 2022 is GA
-		if (this.project.getProjectTargetVersion() === constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlServer2022)) {
-			const sqlServerImageIndex = baseImagesValues.findIndex(image => image.displayName === constants.SqlServerDockerImageName);
-			if (sqlServerImageIndex >= 0) {
-				baseImagesValues[sqlServerImageIndex].displayName = constants.SqlServerDocker2022ImageName;
-			}
-		}
-
 		this.baseDockerImageDropDown = view.modelBuilder.dropDown().withProps({
 			values: baseImagesValues,
 			ariaLabel: constants.baseDockerImage(name),
@@ -620,8 +616,28 @@ export class PublishDatabaseDialog {
 			enabled: true
 		}).component();
 
+		const imageInfo = baseImages.find(x => x.displayName === (<azdataType.CategoryValue>this.baseDockerImageDropDown?.value)?.displayName);
+		const imageTags = await uiUtils.getImageTags(imageInfo!, this.project.getProjectTargetVersion(), true);
+
+		this.imageTagDropDown = view.modelBuilder.dropDown().withProps({
+			values: imageTags,
+			value: imageTags[0],
+			ariaLabel: constants.imageTag,
+			width: cssStyles.publishDialogTextboxWidth,
+			enabled: true,
+			editable: true,
+			required: true,
+			fireOnTextChange: true
+		}).component();
+
+		this.imageTagDropDown.onValueChanged(() => {
+			this.tryEnableGenerateScriptAndOkButtons();
+		});
+
 		const agreementInfo = baseImages[0].agreementInfo;
-		const dropDownRow = this.createFormRow(view, constants.baseDockerImage(name), this.baseDockerImageDropDown);
+		const baseImageDropDownRow = this.createFormRow(view, constants.baseDockerImage(name), this.baseDockerImageDropDown);
+		const imageTagDropDownRow = this.createFormRow(view, constants.imageTag, this.imageTagDropDown);
+
 		this.eulaCheckBox = view.modelBuilder.checkBox().withProps({
 			ariaLabel: getAgreementDisplayText(agreementInfo),
 			required: true
@@ -633,8 +649,8 @@ export class PublishDatabaseDialog {
 		const eulaRow = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		this.localDbSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
-		this.localDbSection.addItems([serverPortRow, serverPasswordRow, serverConfirmPasswordRow, dropDownRow, eulaRow]);
-		this.baseDockerImageDropDown.onValueChanged(() => {
+		this.localDbSection.addItems([serverPortRow, serverPasswordRow, serverConfirmPasswordRow, baseImageDropDownRow, imageTagDropDownRow, eulaRow]);
+		this.baseDockerImageDropDown.onValueChanged(async () => {
 			if (this.eulaCheckBox) {
 				this.eulaCheckBox.checked = false;
 			}
@@ -651,6 +667,12 @@ export class PublishDatabaseDialog {
 					eulaRow?.addItems([this.eulaCheckBox, text], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } });
 				}
 			}
+
+			// update image tag dropdown with the image tags for the selected base image
+			const imageInfo = baseImages.find(x => x.displayName === baseImage?.displayName);
+			const imageTags = await uiUtils.getImageTags(imageInfo!, this.project.getProjectTargetVersion(), true);
+			this.imageTagDropDown!.values = imageTags;
+			this.imageTagDropDown!.value = imageTags[0];
 		});
 		return this.localDbSection;
 	}
@@ -906,7 +928,7 @@ export class PublishDatabaseDialog {
 			!utils.isEmptyString(this.serverAdminPasswordTextBox?.value) &&
 			utils.isValidSQLPassword(this.serverAdminPasswordTextBox?.value || '', constants.defaultLocalServerAdminName) &&
 			this.serverAdminPasswordTextBox?.value === this.serverConfigAdminPasswordTextBox?.value
-			&& this.eulaCheckBox?.checked) {
+			&& this.imageTagDropDown!.value && this.eulaCheckBox?.checked) {
 			publishEnabled = true; // only publish is supported for container
 		}
 

@@ -9,6 +9,7 @@ import { IConfigurationRegistry, Extensions as ConfigurationExtensions, Configur
 import { isMacintosh, isWindows, isLinux, isWeb, isNative } from 'vs/base/common/platform';
 import { workbenchConfigurationNodeBase } from 'vs/workbench/common/configuration';
 import { isStandalone } from 'vs/base/browser/browser';
+import * as loc from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}} For strings we need to change
 
 const registry = Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration);
 
@@ -500,7 +501,7 @@ const registry = Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Con
 		localize('folderPath', "`${folderPath}`: file path of the workspace folder the file is contained in (e.g. /Users/Development/myFolder)."),
 		localize('rootName', "`${rootName}`: name of the opened workspace or folder (e.g. myFolder or myWorkspace)."),
 		localize('rootPath', "`${rootPath}`: file path of the opened workspace or folder (e.g. /Users/Development/myWorkspace)."),
-		localize('appName', "`${appName}`: e.g. VS Code."),
+		loc.windowTitleAppNameDescription, // {{SQL CARBON EDIT}} VS Code -> ADS
 		localize('remoteName', "`${remoteName}`: e.g. SSH"),
 		localize('dirty', "`${dirty}`: an indicator for when the active editor has unsaved changes."),
 		localize('separator', "`${separator}`: a conditional separator (\" - \") that only shows when surrounded by variables with values or static text.")

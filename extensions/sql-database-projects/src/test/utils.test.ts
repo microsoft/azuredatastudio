@@ -6,7 +6,7 @@
 import * as should from 'should';
 import * as path from 'path';
 import * as os from 'os';
-import { createDummyFileStructure } from './testUtils';
+import { createDummyFileStructure, deleteGeneratedTestFolder } from './testUtils';
 import { exists, trimUri, removeSqlCmdVariableFormatting, formatSqlCmdVariable, isValidSqlCmdVariableName, timeConversion, validateSqlServerPortNumber, isEmptyString, detectCommandInstallation, isValidSQLPassword, findSqlVersionInImageName, findSqlVersionInTargetPlatform } from '../common/utils';
 import { Uri } from 'vscode';
 
@@ -20,6 +20,8 @@ describe('Tests to verify utils functions', function (): void {
 		should(await exists(path.join(testFolderPath, 'folder4'))).equal(false);
 		should(await exists(path.join(testFolderPath, 'folder2', 'file4.sql'))).equal(true);
 		should(await exists(path.join(testFolderPath, 'folder4', 'file2.sql'))).equal(false);
+
+		await deleteGeneratedTestFolder();
 	});
 
 	it('Should get correct relative paths of files/folders', async () => {

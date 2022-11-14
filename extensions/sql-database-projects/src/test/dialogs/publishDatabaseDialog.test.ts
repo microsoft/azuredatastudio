@@ -5,7 +5,6 @@
 
 import * as should from 'should';
 import * as path from 'path';
-import * as os from 'os';
 import * as vscode from 'vscode';
 import * as baselines from '../baselines/baselines';
 import * as templates from '../../templates/templates';
@@ -27,9 +26,13 @@ describe('Publish Database Dialog', () => {
 		testContext = createContext();
 	});
 
+	after(async function(): Promise<void> {
+		await testUtils.deleteGeneratedTestFolder();
+	});
+
 	it('Should open dialog successfully ', async function (): Promise<void> {
 		const projController = new ProjectsController(testContext.outputChannel);
-		const projFileDir = path.join(os.tmpdir(), `TestProject_${new Date().getTime()}`);
+		const projFileDir = path.join(testUtils.generateBaseFolderName(), `TestProject_${new Date().getTime()}`);
 
 		const projFilePath = await projController.createNewProject({
 			newProjName: 'TestProjectName',
@@ -48,7 +51,7 @@ describe('Publish Database Dialog', () => {
 	it('Should create default database name correctly ', async function (): Promise<void> {
 		const projController = new ProjectsController(testContext.outputChannel);
 		const projFolder = `TestProject_${new Date().getTime()}`;
-		const projFileDir = path.join(os.tmpdir(), projFolder);
+		const projFileDir = path.join(testUtils.generateBaseFolderName(), projFolder);
 
 		const projFilePath = await projController.createNewProject({
 			newProjName: 'TestProjectName',

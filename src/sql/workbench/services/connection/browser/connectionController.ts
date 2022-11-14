@@ -40,7 +40,7 @@ export class ConnectionController implements IConnectionComponentController {
 		this._callback = callback;
 		this._providerOptions = connectionProperties.connectionOptions;
 		let specialOptions = this._providerOptions.filter(
-			(property) => (property.specialValueType !== null && property.specialValueType !== undefined));
+			(property) => (property.specialValueType !== null && property.specialValueType !== undefined || property.showOnConnectionDialog));
 		this._connectionWidget = this._instantiationService.createInstance(ConnectionWidget, specialOptions, {
 			onSetConnectButton: (enable: boolean) => this._callback.onSetConnectButton(enable),
 			onCreateNewServerGroup: () => this.onCreateNewServerGroup(),
@@ -123,7 +123,7 @@ export class ConnectionController implements IConnectionComponentController {
 			this._advancedController = this._instantiationService.createInstance(AdvancedPropertiesController, () => this._connectionWidget.focusOnAdvancedButton());
 		}
 		let advancedOption = this._providerOptions.filter(
-			(property) => (property.specialValueType === undefined || property.specialValueType === null));
+			(property) => (property.specialValueType === undefined || property.specialValueType === null && !property.showOnConnectionDialog));
 		this._advancedController.showDialog(advancedOption, this._model.options);
 	}
 

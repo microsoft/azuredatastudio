@@ -70,6 +70,7 @@ export class ServerTreeActionProvider {
 	 */
 	private getConnectionActions(tree: AsyncServerTree | ITree, profile: ConnectionProfile): IAction[] {
 		let node = new TreeNode(NodeType.Server, NodeType.Server, '', false, '', '', '', undefined, undefined, undefined, undefined);
+		this._connectionManagementService.addSavedPassword(profile);
 		node.connection = profile;
 		return this.getAllActions({
 			tree: tree,

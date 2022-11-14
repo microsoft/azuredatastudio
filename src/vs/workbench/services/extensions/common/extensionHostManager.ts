@@ -319,6 +319,7 @@ class ExtensionHostManager extends Disposable implements IExtensionHostManager {
 			MainContext.MainThreadNotebookKernels,
 			MainContext.MainThreadNotebookProxyKernels,
 			MainContext.MainThreadNotebookRenderers,
+			MainContext.MainThreadNotebookProxyKernels,
 			MainContext.MainThreadInteractive
 		];
 		const expected: ProxyIdentifier<any>[] = Object.keys(MainContext).map((key) => (<any>MainContext)[key]).filter(v => !filtered.some(x => x === v));

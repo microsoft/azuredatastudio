@@ -48,7 +48,7 @@ export default class EditorComponent extends ComponentBase<azdata.EditorProperti
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IModelService) private _modelService: IModelService,
-		@Inject(ILanguageService) private _modeService: ILanguageService,
+		@Inject(ILanguageService) private _languageService: ILanguageService,
 		@Inject(ILogService) private _logService: ILogService,
 		@Inject(IEditorService) private readonly editorService: IEditorService,
 		@Inject(ILogService) logService: ILogService
@@ -141,7 +141,7 @@ export default class EditorComponent extends ComponentBase<azdata.EditorProperti
 	private updateLanguageMode() {
 		if (this._editorModel && this._editor) {
 			this._languageMode = this.languageMode;
-			let languageSelection = this._modeService.createById(this._languageMode);
+			let languageSelection = this._languageService.createById(this._languageMode);
 			this._modelService.setMode(this._editorModel, languageSelection);
 		}
 	}

@@ -70,6 +70,10 @@ describe('deploy service', function (): void {
 		sandbox = sinon.createSandbox();
 	});
 
+	after(async function(): Promise<void> {
+		await testUtils.deleteGeneratedTestFolder();
+	});
+
 	it('Should deploy a database to docker container successfully', async function (): Promise<void> {
 		const testContext = createContext();
 		const deployProfile: IPublishToDockerSettings = {

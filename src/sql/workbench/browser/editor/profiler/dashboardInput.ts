@@ -35,7 +35,7 @@ export class DashboardInput extends EditorInput {
 	constructor(
 		_connectionProfile: IConnectionProfile,
 		@IConnectionManagementService private _connectionService: IConnectionManagementService,
-		@ILanguageService modeService: ILanguageService,
+		@ILanguageService languageService: ILanguageService,
 		@IModelService model: IModelService
 	) {
 		super();
@@ -47,7 +47,7 @@ export class DashboardInput extends EditorInput {
 		// vscode has a comment that Mode's will eventually be removed (not sure the state of this comment)
 		// so this might be able to be undone when that happens
 		if (!model.getModel(this.resource)) {
-			model.createModel('', modeService.createById('dashboard'), this.resource);
+			model.createModel('', languageService.createById('dashboard'), this.resource);
 		}
 		this._initializedPromise = _connectionService.connectIfNotConnected(_connectionProfile, 'dashboard').then(
 			u => {

@@ -117,14 +117,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				CSSStyles: { ...styles.BODY_CSS }
 			}).component();
 
-		const backupChecksumInfoBox = this._view.modelBuilder.infoBox()
-			.withProps({
-				text: constants.DATABASE_BACKUP_CHECKSUM_INFO_TEXT,
-				style: 'information',
-				width: WIZARD_INPUT_COMPONENT_WIDTH,
-				CSSStyles: { ...styles.BODY_CSS }
-			}).component();
-
 		this._networkShareButton = this._view.modelBuilder.radioButton()
 			.withProps({
 				name: buttonGroup,
@@ -158,7 +150,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		const flexContainer = this._view.modelBuilder.flexContainer()
 			.withItems([
 				selectLocationText,
-				backupChecksumInfoBox,
 				this._networkShareButton,
 				this._blobContainerButton])
 			.withLayout({ flexFlow: 'column' })

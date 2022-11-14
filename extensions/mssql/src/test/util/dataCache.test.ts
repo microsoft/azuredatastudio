@@ -22,7 +22,7 @@ describe('DataItemCache', function (): void {
 	});
 
 	it('Should be initialized empty', function (): void {
-		should(dataItemCache).not.have.property('cachedItem').and.be.undefined();
+		should(dataItemCache).property('cachedItem').be.undefined();
 	});
 
 	it('Should be initialized as expired', function (): void {
@@ -52,7 +52,7 @@ describe('DataItemCache', function (): void {
 		await dataItemCache.getData();
 		await dataItemCache.getData();
 
-		fetchFunctionMock.verify(fx => fx() ,TypeMoq.Times.once());
+		fetchFunctionMock.verify(fx => fx(), TypeMoq.Times.once());
 	});
 
 	it('Should call fetch function twice for consecutive getValue() calls if TTL expires in between', async function (): Promise<void> {

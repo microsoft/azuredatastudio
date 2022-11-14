@@ -47,8 +47,6 @@
 			"cms.connectionOptions.applicationIntent.displayName": "Намерение приложения",
 			"cms.connectionOptions.applicationName.description": "Имя приложения",
 			"cms.connectionOptions.applicationName.displayName": "Имя приложения",
-			"cms.connectionOptions.asynchronousProcessing.description": "Когда задано значение TRUE, разрешено использовать асинхронные функции в поставщике данных .NET Framework",
-			"cms.connectionOptions.asynchronousProcessing.displayName": "Асинхронная обработка",
 			"cms.connectionOptions.attachDbFilename.displayName": "Имя вложенного файла базы данных",
 			"cms.connectionOptions.attachedDBFileName.description": "Имя первичного файла прикрепляемой базы данных, включая полный путь",
 			"cms.connectionOptions.attachedDBFileName.displayName": "Имя вложенного файла базы данных",
