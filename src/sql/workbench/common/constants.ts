@@ -53,7 +53,6 @@ export const NBFORMAT_MINOR = 2;
 export const enum NotebookLanguage {
 	Notebook = 'notebook',
 	Ipynb = 'ipynb',
-	Interactive = 'dib'
 }
 export interface INotebookSearchConfigurationProperties {
 	exclude: glob.IExpression;
