@@ -41,7 +41,6 @@ export const RESOURCE_VIEWER_TYPEID = 'workbench.editorInput.resourceViewerInput
 export const JUPYTER_PROVIDER_ID = 'jupyter';
 export const VSCODE_JUPYTER_PROVIDER_ID = 'jupyter-notebook';
 export const IPYKERNEL_DISPLAY_NAME = 'Python 3 (ipykernel)';
-export const DEFAULT_NB_LANGUAGE_MODE = 'notebook';
 export const TSGOPS_WEB_QUALITY = 'tsgops-image';
 export const CELL_URI_PATH_PREFIX = 'notebook-editor-';
 
