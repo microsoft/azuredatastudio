@@ -20,4 +20,9 @@ export interface IConnectionDialogService {
 	 * or dialog is closed
 	 */
 	openDialogAndWait(connectionManagementService: IConnectionManagementService, params?: INewConnectionParams, model?: IConnectionProfile, connectionResult?: IConnectionResult, doConnect?: boolean): Promise<IConnectionProfile>;
+
+	/**
+	 * changes the password then connects using the new credentials.
+	 */
+	changePasswordFunction(connection: IConnectionProfile, params: INewConnectionParams, uri: string, password: string): Promise<void>;
 }

@@ -282,15 +282,19 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				this._logService.debug(`ConnectionDialogService: Connection error: ${connectionResult.errorMessage}`);
 			} else {
 				this._connectionDialog.resetConnection();
-				let testPassword = 'T3$TPa$$word1';
-				let passwordChangeResult = await this._connectionManagementService.sendChangePassword(connection, connectionResult.uriForPasswordChange, testPassword);
-				if (!passwordChangeResult.result) {
-					let errorString = passwordChangeResult.errorMessage + '\n\nDetails:\n' + passwordChangeResult.messages;
-					throw Error(errorString);
-				}
-				connection.options['password'] = testPassword;
-				this.handleDefaultOnConnect(params, connection);
-				//this.showPasswordResetDialog(connection);
+
+				this.showPasswordResetDialog(connection);
+
+
+				// WORKING CODE BELOW, DO NOT ALTER UNTIL PASSWORD DIALOG IS COMPLETE.
+				// let testPassword = 'T3$TPa$$word1';
+				// let passwordChangeResult = await this._connectionManagementService.sendChangePassword(connection, connectionResult.uriForPasswordChange, testPassword);
+				// if (!passwordChangeResult.result) {
+				// 	let errorString = passwordChangeResult.errorMessage + '\n\nDetails:\n' + passwordChangeResult.messages;
+				// 	throw Error(errorString);
+				// }
+				// connection.options['password'] = testPassword;
+				// this.handleDefaultOnConnect(params, connection);
 			}
 		} catch (err) {
 			this._connecting = false;
@@ -298,6 +302,16 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			this.showErrorDialog(Severity.Error, this._connectionErrorTitle, err);
 			this._logService.debug(`ConnectionDialogService: Error encountered while connecting ${err}`);
 		}
+	}
+
+	public async changePasswordFunction(connection: IConnectionProfile, params: INewConnectionParams, uri: string, password: string): Promise<void> {
+		let passwordChangeResult = await this._connectionManagementService.sendChangePassword(connection, uri, password);
+		if (!passwordChangeResult.result) {
+			let errorString = passwordChangeResult.errorMessage + '\n\nDetails:\n' + passwordChangeResult.messages;
+			throw Error(errorString);
+		}
+		connection.options['password'] = password;
+		this.handleDefaultOnConnect(params, connection);
 	}
 
 	private get uiController(): IConnectionComponentController {
