@@ -242,28 +242,6 @@ export class WizardController {
 					},
 					{});
 			}));
-
-		// this._wizardObject.doneButton.label = loc.START_MIGRATION_TEXT;
-
-		this._disposables.push(
-			this._wizardObject.doneButton.onClick(async (e) => {
-				try {
-					// await stateModel.startLoginMigration();
-					// await this.updateServiceContext(stateModel, this._serviceContextChangedEvent);
-				} catch (e) {
-					logError(TelemetryViews.MigrationWizardController, 'StartLoginMigrationFailed', e);
-				} finally {
-					sendSqlMigrationActionEvent(
-						TelemetryViews.SqlMigrationWizard,
-						TelemetryAction.PageButtonClick,
-						{
-							...this.getTelemetryProps(),
-							'buttonPressed': TelemetryAction.Done,
-							'pageTitle': this._wizardObject.pages[this._wizardObject.currentPage].title
-						},
-						{});
-				}
-			}));
 	}
 
 	private async updateServiceContext(
