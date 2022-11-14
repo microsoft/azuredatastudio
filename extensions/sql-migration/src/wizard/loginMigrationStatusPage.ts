@@ -24,6 +24,7 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 	private _progressLoader!: azdata.LoadingComponent;
 	private _progressContainer!: azdata.FlexContainer;
 	private _migrationProgressDetails!: azdata.TextComponent;
+	private _isLoginMigrationDone!: boolean;
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.LOGIN_MIGRATIONS_STATUS_PAGE_TITLE), migrationStateModel);
@@ -58,6 +59,11 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 			}
 			return true;
 		});
+
+		this.wizard.backButton.enabled = false;
+		this.wizard.backButton.hidden = true;
+		this._isLoginMigrationDone = false;
+		this.wizard.doneButton.enabled = this._isLoginMigrationDone;
 
 		await this._loadMigratingLoginsList(this.migrationStateModel);
 
