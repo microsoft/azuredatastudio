@@ -1,29 +1,81 @@
 # Change Log
 
+## Version 1.40.0
+* Release date: November 16, 2022
+* Release status: General Availability
+## What's new in 1.40.0
+| New Item | Details |
+|----------|---------|
+| Connections | Connections for SQL now default to Encrypt = 'True'. |
+| ARM64 Support for macOS | ARM64 build for macOS is now available.  |
+| Table Designer | Announcing the General Availability of the Table Designer. |
+| Table Designer | Period columns now added by default when System-Versioning table option is selected. |
+| Table Designer | Added support for hash indexes for In-Memory tables, and added support for columnstore indexes. |
+| Table Designer | New checkbox added, "Preview Database Updates", when making database changes to ensure that users are aware of potential risks prior to updating the database.|
+| Table Designer | "Move Up" and "Move Down" buttons added to support column reordering for Primary Keys. |
+| Query Plan Viewer | Announcing the General Availability of the Query Plan Viewer in Azure Data Studio. |
+| Query Plan Viewer | Added support for identification of most expensive operator(s) in a plan. |
+| Query Plan Viewer | Updates were made to the properties window to allow for full display of text upon hovering over a cell. Full text can also be copied. |
+| Query Plan Viewer | Implemented filter functionality in the Properties pane for an execution plan. |
+| Query Plan Viewer | Added support for collapsing and expanding all subcategories within the Plan Comparison Properties window. |
+| Query History Extension | Announcing the General Availability of the SQL History Extension. |
+| Query History Extension | Now includes ability to persist history across multiple user sessions. |
+| Query History Extension | Added the ability to limit the number of entries stored in the history. |
+| Schema Compare | Users can now open .scmp files directly from the context menu for existing files in the file explorer. |
+| Query Editor | Now allows full display for text strings larger than 65,535 characters. |
+| Query Editor | Added support for the SHIFT key when making multiple cell selections.  |
+| MySQL Extension | Support for MySQL extension is now available in preview. |
+| Azure SQL Migration Extension | Azure SQL Database Offline Migrations is now available in preview. Customers can use this new capability to save and share reports as needed. |
+| Azure SQL Migration Extension | Addition of elastic Azure recommendations model. |
+| Database Migration Assessment for Oracle | Assessment tooling for Oracle database migrations to Azure Database for PostgreSQL and Azure SQL available in preview. |
+| VS Code merge | VS Code merges to version 1.67. Read [their release notes](https://code.visualstudio.com/updates/v1_67) to learn more. |
+| SQL Database Projects | Adds SQL projects support for syntax introduced in SQL Server 2022.|
+
+## Bug fixes in 1.39.0
+| New Item | Details |
+|----------|---------|
+| Connections | Fixed bug that occurred when trying to connect to the Dedicated Admin Connection (DAC) on SQL Server. |
+| Connections | Fixed issue with wrong tenant showing up while trying to connect to a database with Azure Active Directory login. |
+| Connections | Fixed zoom reset behavior when adding a new connection. |
+| Connections | Fixed loading bug what occurred when attempting to sign in to Azure via proxy. |
+| Connections | Fixed issue encountered while attempting to connect to a "sleeping" Azure SQL Database. |
+| Object Explorer | Fixed the SELECT script generation issue for Synapse Databases. |
+| Schema Compare | Fixed error that caused duplication of comment headers when applying schema changes on stored procedure objects. |
+| Schema Compare | Fixed issue that prevented schema compare issues when creating a new empty schema with a "DOMAIN\User" pattern. |
+| Query Editor | Fixed bug that caused results to be lost upon saving query files. |
+| Table Designer | Fixed a bug that caused creation of a new table when renaming an existing table. |
+| Query Plan Viewer | Fixed missing index recommendation T-SQL syntax. |
+| SQL Projects | Fixed bug in SQL Projects that led to extension not using output path when publishing a project. |
+| SQL Projects | Fixed bug that caused .NET install to not be found when using the SQL Projects extension on Linux platforms. |
+
+| Platform																|
+| ---------------------------------------	|
+| [Windows User Installer][win-user]	|
+| [Windows System Installer][win-system]	|
+| [Windows ZIP][win-zip]		|
+| [macOS Universal][osx-universal]	|
+| [macOS ZIP][osx-zip]	|
+| [macOS ZIP][osx-arm64]	|
+| [Linux TAR.GZ][linux-zip]	|
+| [Linux RPM][linux-rpm]		|
+| [Linux DEB][linux-deb]		|
+
+[win-user]: https://go.microsoft.com/fwlink/?linkid=2215273
+[win-system]: https://go.microsoft.com/fwlink/?linkid=2215525
+[win-zip]: https://go.microsoft.com/fwlink/?linkid=2215526
+[osx-universal]: https://go.microsoft.com/fwlink/?linkid=2215527
+[osx-zip]: https://go.microsoft.com/fwlink/?linkid=2215420
+[osx-arm64]: https://go.microsoft.com/fwlink/?linkid=2215346
+[linux-zip]: https://go.microsoft.com/fwlink/?linkid=2215421
+[linux-rpm]: https://go.microsoft.com/fwlink/?linkid=2215347
+[linux-deb]: https://go.microsoft.com/fwlink/?linkid=2215528
+
 ## Version 1.39.1
 * Release date: August 30, 2022
 * Release status: General Availability
 ## What's new in 1.39.1
 * Bug fixes in 1.39.1
     * Fixed bug that caused Database Trees in server connections to not expand in the Object Explorer.
-
-| Platform																|
-| ---------------------------------------	|
-| [Windows User Installer][win-user]			|
-| [Windows System Installer][win-system]	|
-| [Windows ZIP][win-zip]									|
-| [macOS ZIP][osx-zip]										|
-| [Linux TAR.GZ][linux-zip]								|
-| [Linux RPM][linux-rpm]									|
-| [Linux DEB][linux-deb]									|
-
-[win-user]: https://go.microsoft.com/fwlink/?linkid=2204567
-[win-system]: https://go.microsoft.com/fwlink/?linkid=2204568
-[win-zip]: https://go.microsoft.com/fwlink/?linkid=2204772
-[osx-zip]: https://go.microsoft.com/fwlink/?linkid=2204569
-[linux-zip]: https://go.microsoft.com/fwlink/?linkid=2204773
-[linux-rpm]: https://go.microsoft.com/fwlink/?linkid=2204774
-[linux-deb]: https://go.microsoft.com/fwlink/?linkid=2204570
 
 ## Version 1.39.0
 * Release date: August 24, 2022
