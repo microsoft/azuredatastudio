@@ -9,7 +9,7 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"description": "Bietet Ausschnitte, Syntaxhervorhebung, Klammernabgleich und Falten in Windows-Batch-Dateien.",
+			"description": "Bietet Schnipsel, Syntaxhervorhebung, Klammernabgleich und Falten in Windows-Batch-Dateien.",
 			"displayName": "Windows-Bat-Sprachgrundlagen"
 		}
 	}

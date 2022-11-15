@@ -8,14 +8,16 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"dist/common/keychain": {
-			"keychainWriteError": "Das Schreiben von Anmeldeinformationen in den Schlüsselbund ist mit dem Fehler \"{0}\" fehlgeschlagen.",
-			"troubleshooting": "Leitfaden zur Fehlerbehebung"
-		},
 		"dist/githubServer": {
-			"signingIn": "$(mark-github) Anmeldung bei github.com...",
-			"status.git.signIn.name": "GitHub-Anmeldung",
-			"validUri": "Geben Sie einen gültigen URI von der GitHub-Anmeldeseite ein."
+			"code.detail": "Um die Authentifizierung abzuschließen, navigieren Sie zu GitHub, und fügen Sie den obigen Einmalcode ein.",
+			"code.title": "Ihr Code: {0}",
+			"no": "Nein",
+			"otherReasonMessage": "Sie haben die Autorisierung dieser Erweiterung für die Verwendung von GitHub noch nicht abgeschlossen. Möchten Sie es weiter versuchen?",
+			"progress": "Öffnen Sie [{0}]({0}) auf einer neuen Registerkarte, und fügen Sie Ihren einmaligen Code ein: {1}",
+			"signingIn": "Bei github.com anmelden...",
+			"signingInAnotherWay": "Bei github.com anmelden...",
+			"userCancelledMessage": "Haben Sie Probleme bei der Anmeldung? Möchten Sie eine andere Methode ausprobieren?",
+			"yes": "Ja"
 		},
 		"package": {
 			"description": "GitHub-Authentifizierungsanbieter",

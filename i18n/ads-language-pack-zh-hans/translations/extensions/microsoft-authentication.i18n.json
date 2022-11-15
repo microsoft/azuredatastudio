@@ -11,10 +11,6 @@
 		"dist/AADHelper": {
 			"signOut": "你已被注销，因为未能读取存储的身份验证信息。"
 		},
-		"dist/keychain": {
-			"keychainWriteError": "将登录信息写入密钥链失败，出现错误“{0}”。",
-			"troubleshooting": "故障排除指南"
-		},
 		"package": {
 			"description": "Microsoft 身份验证提供程序",
 			"displayName": "Microsoft 帐户",

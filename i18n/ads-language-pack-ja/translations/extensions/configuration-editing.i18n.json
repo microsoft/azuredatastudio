@@ -11,6 +11,7 @@
 		"dist/configurationEditingMain": {
 			"cwd": "タスク ランナー起動時の作業ディレクトリ",
 			"defaultBuildTask": "既定のビルド タスクの名前。既定のビルド タスクが 1 つもない場合は、ビルド タスクを選択するためのクイック ピックが表示されます。",
+			"extensionInstallFolder": "拡張機能がインストールされているパス。",
 			"file": "現在開いているファイル",
 			"fileBasename": "現在開いているファイルのベース名",
 			"fileBasenameNoExtension": "現在開いているファイルの拡張子を含まないベース名",
@@ -52,8 +53,6 @@
 			"folderLabel": "特定の名前のフォルダー (任意の場所)",
 			"folderName": "ファイルが含まれているワークスペース フォルダーの名前 (例: myFolder)",
 			"folderPath": "ファイルが含まれているワークスペース フォルダーのファイル パス (例: /Users/Development/myFolder)",
-			"languageSpecificEditorSettings": "言語固有のエディター設定",
-			"languageSpecificEditorSettingsDescription": "言語に対するエディター設定を上書きします",
 			"remoteName": "例: SSH",
 			"rootName": "ワークスペースの名前 (例: myFolder または myWorkspace)",
 			"rootPath": "ワークスペースのファイル パス (例: /Users/Development/myWorkspace)",

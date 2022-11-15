@@ -11,6 +11,7 @@
 		"dist/configurationEditingMain": {
 			"cwd": "啟用時工作執行器目前工作目錄",
 			"defaultBuildTask": "預設建置工作的名稱。如果沒有任何預設建置工作，則會顯示快選以選擇建置工作。",
+			"extensionInstallFolder": "安裝延伸模組的路徑。",
 			"file": "目前已開啟的檔案",
 			"fileBasename": "目前已開啟檔案的 basename",
 			"fileBasenameNoExtension": "目前已開啟檔案的 basename，不包含副檔名",
@@ -52,8 +53,6 @@
 			"folderLabel": "依名稱排列的資料夾 (任何位置)",
 			"folderName": "包含在工作區內的檔案名稱 (例如 myFolder)",
 			"folderPath": "包含在工作區內的檔案路徑 (例如 /Users/Development/myFolder)",
-			"languageSpecificEditorSettings": "語言專用編輯器設定",
-			"languageSpecificEditorSettingsDescription": "針對語言覆寫編輯器設定",
 			"remoteName": "例如 SSH",
 			"rootName": "工作區名稱 (例如 myFolder or myWorkspace)",
 			"rootPath": "工作區檔案路徑 (例如 /Users/Development/myWorkspace)",
