@@ -1711,7 +1711,7 @@ declare module 'azdata' {
 		objectType?: string;
 	}
 
-	export namespace Window {
+	export namespace window {
 		export interface Wizard {
 			/**
 			 * When true, the wizard will show a loading spinner at the bottom left of the footer.
