@@ -1710,4 +1710,30 @@ declare module 'azdata' {
 		 */
 		objectType?: string;
 	}
+
+	export namespace Window {
+		export interface Wizard {
+			/**
+			 * When true, the wizard will show a loading spinner at the bottom left of the footer.
+			 */
+			loading: boolean;
+
+			/**
+			 * This sets the alert text which gets announced when the loading spinner is shown.
+			 */
+			loadingMessage: string;
+		}
+
+		export interface Dialog {
+			/**
+			 * When true, the wizard will show a loading spinner at the bottom left of the footer.
+			 */
+			loading: boolean;
+
+			/**
+			 * This sets the alert text which gets announced when the loading spinner is shown.
+			 */
+			loadingMessage: string;
+		}
+	}
 }
