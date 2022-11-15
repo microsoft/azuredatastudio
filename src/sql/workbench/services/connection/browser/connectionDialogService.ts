@@ -30,6 +30,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { CmsConnectionController } from 'sql/workbench/services/connection/browser/cmsConnectionController';
+import { PasswordChangeDialog } from 'sql/workbench/services/connection/browser/passwordChangeDialog'
 import { entries } from 'sql/base/common/collections';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -524,6 +525,12 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	private async showPasswordResetDialog(connection: IConnectionProfile): Promise<void> {
 		(this._connectionControllerMap[connection.providerName] as ConnectionController).showConnectionChange();
 	}
+
+	public launchChangePasswordDialog(profile: IConnectionProfile, params: INewConnectionParams, uri: string): void {
+		let dialog = this._instantiationService.createInstance(PasswordChangeDialog);
+		dialog.open(profile, params, uri);
+	}
+
 
 	private showErrorDialog(severity: Severity, headerTitle: string, message: string, messageDetails?: string, errorCode?: number): void {
 		// Kerberos errors are currently very hard to understand, so adding handling of these to solve the common scenario
