@@ -929,6 +929,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * @returns true if no need to refresh or successfully refreshed token
 	 */
 	public async refreshAzureAccountTokenIfNecessary(uriOrConnectionProfile: string | ConnectionProfile): Promise<boolean> {
+		if (!uriOrConnectionProfile) {
+			this._logService.warn(`refreshAzureAccountTokenIfNecessary: Neither Connection uri nor connection profile received.`);
+			return false;
+		}
+
 		let uri: string;
 		let connectionProfile: ConnectionProfile;
 
@@ -944,7 +949,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			uri = this.getConnectionUri(connectionProfile);
 		}
 
-		//wait for the pending reconnction promise if any
+		// Wait for the pending reconnction promise if any
+		// We expect uri to be defined
 		const previousReconnectPromise = this._uriToReconnectPromiseMap[uri];
 		if (previousReconnectPromise) {
 			this._logService.debug(`Found pending reconnect promise for uri ${uri}, waiting.`);
@@ -960,7 +966,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			}
 		}
 
-		if (connectionProfile.authenticationType === Constants.AuthenticationType.AzureMFA) {
+		// We expect connectionProfile to be defined
+		if (connectionProfile && connectionProfile.authenticationType === Constants.AuthenticationType.AzureMFA) {
 			const expiry = connectionProfile.options.expiresOn;
 			if (typeof expiry === 'number' && !Number.isNaN(expiry)) {
 				const currentTime = new Date().getTime() / 1000;
