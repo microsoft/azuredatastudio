@@ -78,8 +78,8 @@ export class NetCoreTool extends ShellExecutionHelper {
 			await vscode.commands.executeCommand('workbench.action.openGlobalSettings');
 		} else if (result === Install) {
 			//open install link
-			const dotnetcoreURL = 'https://dotnet.microsoft.com/download/dotnet-core/3.1';
-			await vscode.env.openExternal(vscode.Uri.parse(dotnetcoreURL));
+			const dotnetSdkUrl = 'https://dotnet.microsoft.com/download/dotnet/6.0';
+			await vscode.env.openExternal(vscode.Uri.parse(dotnetSdkUrl));
 		} else if (result === DoNotAskAgain) {
 			const config = vscode.workspace.getConfiguration(DBProjectConfigurationKey);
 			await config.update(NetCoreDoNotAskAgainKey, true, vscode.ConfigurationTarget.Global);
