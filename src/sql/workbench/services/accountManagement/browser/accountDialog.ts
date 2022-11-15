@@ -384,7 +384,7 @@ export class AccountDialog extends Modal {
 		}
 		providerView.updateAccounts(updatedAccounts);
 
-		if (newProvider.initialAccounts.length > 0 && this._splitViewContainer!.hidden) {
+		if (updatedAccounts.length > 0 && this._splitViewContainer!.hidden) {
 			this.showSplitView();
 		}
 
