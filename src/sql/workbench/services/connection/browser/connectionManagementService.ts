@@ -907,7 +907,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				const tenantId = connection.azureTenantId;
 				const token = await this._accountManagementService.getAccountSecurityToken(account, tenantId, azureResource);
 				if (!token) {
-					this._logService.info(`No security tokens found for account`);
+					this._logService.warn(`No security tokens found for account`);
 				} else {
 					this._logService.debug(`Got access token for tenant ${tenantId} that expires in ${(token.expiresOn - new Date().getTime()) / 1000} seconds`);
 					connection.options['azureAccountToken'] = token.token;
@@ -942,7 +942,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			uri = uriOrConnectionProfile;
 			connectionProfile = this._connectionStatusManager.getConnectionProfile(uri);
 			if (!connectionProfile) {
-				this._logService.warn(`Connection not found for uri ${uri}`);
+				this._logService.warn(`Connection not found for uri ${uri} when refreshing token`);
 				return false;
 			}
 		} else {
