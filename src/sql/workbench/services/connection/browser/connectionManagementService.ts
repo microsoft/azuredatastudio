@@ -925,33 +925,38 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	/**
 	 * Refresh Azure access token if it's expired.
-	 * @param uri connection uri
+	 * @param uriOrConnectionProfile connection uri or connection profile
 	 * @returns true if no need to refresh or successfully refreshed token
 	 */
-	public async refreshAzureAccountTokenIfNecessary(uri: string, connectionProfile?: ConnectionProfile): Promise<boolean> {
-		if (!connectionProfile) {
+	public async refreshAzureAccountTokenIfNecessary(uriOrConnectionProfile: string | ConnectionProfile): Promise<boolean> {
+		let uri: string;
+		let connectionProfile: ConnectionProfile;
+
+		if (typeof uriOrConnectionProfile === 'string') {
+			uri = uriOrConnectionProfile;
 			connectionProfile = this._connectionStatusManager.getConnectionProfile(uri);
 			if (!connectionProfile) {
 				this._logService.warn(`Connection not found for uri ${uri}`);
 				return false;
 			}
-		} else if (!uri) {
+		} else {
+			connectionProfile = uriOrConnectionProfile;
 			uri = this.getConnectionUri(connectionProfile);
 		}
 
 		//wait for the pending reconnction promise if any
 		const previousReconnectPromise = this._uriToReconnectPromiseMap[uri];
 		if (previousReconnectPromise) {
-			this._logService.info(`Found pending reconnect promise for uri ${uri}, waiting.`);
+			this._logService.debug(`Found pending reconnect promise for uri ${uri}, waiting.`);
 			try {
 				const previousConnectionResult = await previousReconnectPromise;
 				if (previousConnectionResult && previousConnectionResult.connected) {
-					this._logService.info(`Previous pending reconnection for uri ${uri} succeeded.`);
+					this._logService.debug(`Previous pending reconnection for uri ${uri} succeeded.`);
 					return true;
 				}
-				this._logService.info(`Previous pending reconnection for uri ${uri} failed.`);
+				this._logService.debug(`Previous pending reconnection for uri ${uri} failed.`);
 			} catch (err) {
-				this._logService.info(`Previous pending reconnect promise for uri ${uri} is rejected with error ${err}, will attempt to reconnect if necessary.`);
+				this._logService.debug(`Previous pending reconnect promise for uri ${uri} is rejected with error ${err}, will attempt to reconnect if necessary.`);
 			}
 		}
 
@@ -961,7 +966,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				const currentTime = new Date().getTime() / 1000;
 				const maxTolerance = 2 * 60; // two minutes
 				if (expiry - currentTime < maxTolerance) {
-					this._logService.info(`Access token expired for connection ${connectionProfile.id} with uri ${uri}`);
+					this._logService.debug(`Access token expired for connection ${connectionProfile.id} with uri ${uri}`);
 					try {
 						const connectionResultPromise = this.connect(connectionProfile, uri);
 						this._uriToReconnectPromiseMap[uri] = connectionResultPromise;
@@ -973,14 +978,14 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 							this._logService.error(`Failed to refresh connection ${connectionProfile.id} with uri ${uri}, error code: ${connectionResult.errorCode}, error message: ${connectionResult.errorMessage}`);
 							throw new Error(nls.localize('connection.refreshAzureTokenFailure', "Failed to refresh Azure account token for connection"));
 						}
-						this._logService.info(`Successfully refreshed token for connection ${connectionProfile.id} with uri ${uri}, result: ${connectionResult.connected} ${connectionResult.connectionProfile}, ${this._connectionStatusManager.getConnectionProfile(uri)}`);
+						this._logService.debug(`Successfully refreshed token for connection ${connectionProfile.id} with uri ${uri}, result: ${connectionResult.connected} ${connectionResult.connectionProfile}, ${this._connectionStatusManager.getConnectionProfile(uri)}`);
 						return true;
 					} finally {
 						delete this._uriToReconnectPromiseMap[uri];
 					}
 				}
 				else {
-					this._logService.info(`No need to refresh Azure acccount token for connection ${connectionProfile.id} with uri ${uri}`);
+					this._logService.debug(`No need to refresh Azure acccount token for connection ${connectionProfile.id} with uri ${uri}`);
 				}
 			}
 		}
