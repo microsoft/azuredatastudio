@@ -995,6 +995,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				else {
 					this._logService.debug(`No need to refresh Azure acccount token for connection ${connectionProfile.id} with uri ${uri}`);
 				}
+			} else {
+				this._logService.info(`Invalid expiry time ${expiry} for connection ${connectionProfile.id} with uri ${uri}`);
 			}
 		}
 		return true;
