@@ -906,14 +906,15 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				}
 				const tenantId = connection.azureTenantId;
 				const token = await this._accountManagementService.getAccountSecurityToken(account, tenantId, azureResource);
-				this._logService.debug(`Got access token for tenant ${token} that expires in ${(token.expiresOn - new Date().getTime()) / 1000} seconds`);
 				if (!token) {
 					this._logService.info(`No security tokens found for account`);
+				} else {
+					this._logService.debug(`Got access token for tenant ${tenantId} that expires in ${(token.expiresOn - new Date().getTime()) / 1000} seconds`);
+					connection.options['azureAccountToken'] = token.token;
+					connection.options['expiresOn'] = token.expiresOn;
+					connection.options['password'] = '';
+					return true;
 				}
-				connection.options['azureAccountToken'] = token.token;
-				connection.options['expiresOn'] = token.expiresOn;
-				connection.options['password'] = '';
-				return true;
 			} else {
 				this._logService.info(`Could not find Azure account with name ${accountId}`);
 			}
