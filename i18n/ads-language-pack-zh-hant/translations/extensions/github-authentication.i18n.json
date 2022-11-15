@@ -8,14 +8,16 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"dist/common/keychain": {
-			"keychainWriteError": "將登入資訊寫入 Keychain 失敗，錯誤為 '{0}'。",
-			"troubleshooting": "疑難排解指南"
-		},
 		"dist/githubServer": {
-			"signingIn": "$(mark-github) 正在登入 github.com...",
-			"status.git.signIn.name": "GitHub 登入",
-			"validUri": "請從 GitHub 登入頁面輸入有效的 URI。"
+			"code.detail": "若要完成驗證，請瀏覽至 GitHub 並貼上上述的一次性程式碼。",
+			"code.title": "您的代碼: {0}",
+			"no": "否",
+			"otherReasonMessage": "您尚未完成授權此延伸模組使用 GitHub。要繼續嘗試嗎?",
+			"progress": "在新索引標籤中開啟 [{0}]({0}) 並貼上您的一次性代碼: {1}",
+			"signingIn": "正在登入 github.com...",
+			"signingInAnotherWay": "正在登入 github.com...",
+			"userCancelledMessage": "登入時遇到問題嗎? 要嘗試其他方式嗎?",
+			"yes": "是"
 		},
 		"package": {
 			"description": "GitHub 驗證提供者",

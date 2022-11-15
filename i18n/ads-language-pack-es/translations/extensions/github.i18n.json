@@ -29,11 +29,14 @@
 			"forking_done": "La bifurcación \"{0}\" se creó correctamente en GitHub.",
 			"forking_pushing": "Insertando cambios...",
 			"no": "No",
+			"no pr template": "Ninguna plantilla",
 			"openingithub": "Abrir en GitHub",
-			"openpr": "Abrir PR"
+			"openpr": "Abrir PR",
+			"select pr template": "Seleccionar la plantilla de solicitud de incorporación de cambios"
 		},
 		"package": {
 			"config.gitAuthentication": "Controla si se debe habilitar la autenticación automática de GitHub para los comandos GIT dentro de VS Code.",
+			"config.gitProtocol": "Controla qué protocolo se usa para clonar un repositorio de GitHub",
 			"description": "Características de GitHub para VS Code",
 			"displayName": "GitHub",
 			"welcome.publishFolder": "También puede publicar directamente esta carpeta en un repositorio de GitHub. Una vez publicada, tendrá acceso a las características de control de código fuente con tecnología de git y GitHub.\r\n[$(github) Publicar en GitHub](command:github.publish)",

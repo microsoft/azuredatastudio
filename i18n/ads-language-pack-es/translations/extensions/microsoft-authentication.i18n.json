@@ -11,10 +11,6 @@
 		"dist/AADHelper": {
 			"signOut": "Se ha cerrado la sesión porque se ha producido un error al leer la información de autenticación almacenada."
 		},
-		"dist/keychain": {
-			"keychainWriteError": "Error al escribir la información de inicio de sesión en la cadena de claves: \"{0}\".",
-			"troubleshooting": "Guía de solución de problemas"
-		},
 		"package": {
 			"description": "Proveedor de autenticación de Microsoft",
 			"displayName": "Cuenta Microsoft",

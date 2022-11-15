@@ -8,14 +8,16 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"dist/common/keychain": {
-			"keychainWriteError": "Falha ao gravar informações de logon no conjunto de chaves com o erro '{0}'.",
-			"troubleshooting": "Guia de Solução de Problemas"
-		},
 		"dist/githubServer": {
-			"signingIn": "$(mark-github) Entrando no github.com...",
-			"status.git.signIn.name": "Entrada do GitHub",
-			"validUri": "Inserir um Uri válido na página de login do GitHub."
+			"code.detail": "Para concluir a autenticação, navegue até o GitHub e cole o código único acima.",
+			"code.title": "Seu Código: {0}",
+			"no": "Não",
+			"otherReasonMessage": "Você ainda não terminou de autorizar esta extensão para usar o GitHub. Deseja continuar tentando?",
+			"progress": "Abra [{0}] ({0}) em uma nova guia e cole seu código avulso: {1}",
+			"signingIn": "Entrando no github.com...",
+			"signingInAnotherWay": "Entrando no github.com...",
+			"userCancelledMessage": "Está com problemas para fazer logon? Gostaria de tentar uma maneira diferente?",
+			"yes": "Sim"
 		},
 		"package": {
 			"description": "Provedor de Autenticação do GitHub",
