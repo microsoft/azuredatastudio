@@ -370,11 +370,13 @@ export class Wizard {
 	}
 
 	public set loading(value: boolean) {
-		this._loading = value;
-		this._onLoadingChange.fire({
-			loadingState: this._loading,
-			loadingMessage: this._loadingMessage
-		});
+		if (this.loading !== value) {
+			this._loading = value;
+			this._onLoadingChange.fire({
+				loadingState: this._loading,
+				loadingMessage: this._loadingMessage
+			});
+		}
 	}
 
 	public get loadingMessage(): string | undefined {
