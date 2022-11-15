@@ -4,5 +4,38 @@
 	"extensionDependencies": [
 		"ms-mssql.mssql",
 		"ms-mssql.data-workspace-vscode"
-	]
+	],
+	"contributes": {
+		"configuration": [
+			{
+				"title": "%sqlDatabaseProjects.Settings%",
+				"properties": {
+					"sqlDatabaseProjects.dotnetSDK Location": {
+						"type": "string",
+						"description": "%sqlDatabaseProjects.dotnetInstallLocation%"
+					},
+					"sqlDatabaseProjects.netCoreDoNotAsk": {
+						"type": "boolean",
+						"description": "%sqlDatabaseProjects.netCoreDoNotAsk%"
+					},
+					"sqlDatabaseProjects.nodejsDoNotAsk": {
+						"type": "boolean",
+						"description": "%sqlDatabaseProjects.nodejsDoNotAsk%"
+					},
+					"sqlDatabaseProjects.autorestSqlVersion": {
+						"type": "string",
+						"description": "%sqlDatabaseProjects.autorestSqlVersion%"
+					},
+					"sqlDatabaseProjects.collapseProjectNodes": {
+						"type": "boolean",
+						"description": "%sqlDatabaseProjects.collapseProjectNodes%"
+					},
+					"sqlDatabaseProjects.microsoftBuildSqlVersion": {
+						"type": "string",
+						"description": "%sqlDatabaseProjects.microsoftBuildSqlVersion%"
+					}
+				}
+			}
+		]
+	}
 }
