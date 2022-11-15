@@ -53,6 +53,14 @@ export class Dialog extends ModelViewPane {
 	public customButtons: DialogButton[] = [];
 	private _onMessageChange = new Emitter<DialogMessage | undefined>();
 	public readonly onMessageChange = this._onMessageChange.event;
+	private _loading: boolean = false;
+	private _loadingMessage: string;
+	private _onLoadingChange = new Emitter<{
+		loadingState: boolean,
+		loadingMessage: string
+	}>();
+	public readonly onLoadingChange = this._onLoadingChange.event;
+
 	private _message: DialogMessage | undefined;
 	private _closeValidator: CloseValidator | undefined;
 
@@ -85,6 +93,26 @@ export class Dialog extends ModelViewPane {
 	public set message(value: DialogMessage | undefined) {
 		this._message = value;
 		this._onMessageChange.fire(this._message);
+	}
+
+	public get loading(): boolean {
+		return this._loading;
+	}
+
+	public set loading(value: boolean) {
+		this._loading = value;
+		this._onLoadingChange.fire({
+			loadingState: this._loading,
+			loadingMessage: this._loadingMessage
+		});
+	}
+
+	public get loadingMessage(): string | undefined {
+		return this._loadingMessage;
+	}
+
+	public set loadingMessage(value: string | undefined) {
+		this._loadingMessage = value;
 	}
 
 	public registerCloseValidator(validator: CloseValidator): void {
@@ -247,6 +275,13 @@ export class Wizard {
 	private _message: DialogMessage | undefined;
 	public displayPageTitles: boolean = false;
 	public width: DialogWidth | undefined;
+	private _loading: boolean = false;
+	private _loadingMessage: string;
+	private _onLoadingChange = new Emitter<{
+		loadingState: boolean,
+		loadingMessage: string
+	}>();
+	public readonly onLoadingChange = this._onLoadingChange.event;
 
 	constructor(public title: string,
 		public readonly name: string,
@@ -328,5 +363,25 @@ export class Wizard {
 	public set message(value: DialogMessage | undefined) {
 		this._message = value;
 		this._onMessageChange.fire(this._message);
+	}
+
+	public get loading(): boolean {
+		return this._loading;
+	}
+
+	public set loading(value: boolean) {
+		this._loading = value;
+		this._onLoadingChange.fire({
+			loadingState: this._loading,
+			loadingMessage: this._loadingMessage
+		});
+	}
+
+	public get loadingMessage(): string | undefined {
+		return this._loadingMessage;
+	}
+
+	public set loadingMessage(value: string | undefined) {
+		this._loadingMessage = value;
 	}
 }

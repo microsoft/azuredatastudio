@@ -4931,6 +4931,16 @@ declare module 'azdata' {
 			 * Fired when the dialog is closed for any reason. The value indicates the reason it was closed (such as 'ok' or 'cancel')
 			 */
 			onClosed: vscode.Event<CloseReason>;
+
+			/**
+			 * When true, the wizard will show a loading spinner at the bottom right of the footer.
+			 */
+			loading: boolean;
+
+			/**
+			 * This sets the alert text which gets announced when the loading spinner is shown.
+			 */
+			loadingMessage: string;
 		}
 
 		export interface DialogTab extends ModelViewPanel {
@@ -5153,6 +5163,16 @@ declare module 'azdata' {
 			 * @param operationInfo Operation Information
 			 */
 			registerOperation(operationInfo: BackgroundOperationInfo): void;
+
+			/**
+			 * When true, the wizard will show a loading spinner at the bottom right of the footer.
+			 */
+			loading: boolean;
+
+			/**
+			 * This sets the alert text which gets announced when the loading spinner is shown.
+			 */
+			loadingMessage: string;
 		}
 	}
 

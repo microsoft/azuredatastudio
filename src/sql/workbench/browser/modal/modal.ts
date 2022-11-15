@@ -94,7 +94,7 @@ const defaultOptions: IModalOptions = {
 	hasBackButton: false,
 	hasTitleIcon: false,
 	hasErrors: false,
-	hasSpinner: false,
+	hasSpinner: true,
 	renderHeader: true,
 	renderFooter: true,
 	dialogProperties: undefined

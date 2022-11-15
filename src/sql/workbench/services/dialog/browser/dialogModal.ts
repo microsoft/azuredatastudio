@@ -94,6 +94,10 @@ export class DialogModal extends Modal {
 
 		messageChangeHandler(this._dialog.message);
 		this._dialog.onMessageChange(message => messageChangeHandler(message));
+		this._dialog.onLoadingChange((loading) => {
+			this.spinner = loading.loadingState;
+			this._modalOptions.spinnerTitle = loading.loadingMessage;
+		});
 	}
 
 	private addDialogButton(button: DialogButton, onSelect: () => void = () => undefined, registerClickEvent: boolean = true, requireDialogValid: boolean = false): Button {

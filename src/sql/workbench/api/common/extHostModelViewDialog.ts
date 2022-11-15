@@ -133,6 +133,8 @@ class DialogImpl extends ModelViewPanelImpl implements azdata.window.Dialog {
 	private _renderHeader: boolean;
 	private _renderFooter: boolean;
 	private _dialogProperties: IDialogProperties;
+	private _loading: boolean;
+	private _loadingMessage: string;
 
 	private _onClosed = new Emitter<azdata.window.CloseReason>();
 	public onClosed = this._onClosed.event;
@@ -213,6 +215,24 @@ class DialogImpl extends ModelViewPanelImpl implements azdata.window.Dialog {
 
 	public set message(value: azdata.window.DialogMessage) {
 		this._message = value;
+		this._extHostModelViewDialog.updateDialogContent(this);
+	}
+
+	public get loading(): boolean {
+		return this._loading;
+	}
+
+	public set loading(value: boolean) {
+		this._loading = value;
+		this._extHostModelViewDialog.updateDialogContent(this);
+	}
+
+	public get loadingMessage(): string {
+		return this._loadingMessage;
+	}
+
+	public set loadingMessage(value: string) {
+		this._loadingMessage = value;
 		this._extHostModelViewDialog.updateDialogContent(this);
 	}
 
@@ -443,6 +463,8 @@ class WizardImpl implements azdata.window.Wizard {
 	public readonly onPageChanged = this._pageChangedEmitter.event;
 	private _navigationValidator: (info: azdata.window.WizardPageChangeInfo) => boolean | Thenable<boolean>;
 	private _message: azdata.window.DialogMessage;
+	private _loading: boolean;
+	private _loadingMessage: string;
 	private _displayPageTitles: boolean = true;
 	private _operationHandler: BackgroundOperationHandler;
 	private _width: DialogWidth;
@@ -484,6 +506,24 @@ class WizardImpl implements azdata.window.Wizard {
 
 	public set message(value: azdata.window.DialogMessage) {
 		this._message = value;
+		this._extHostModelViewDialog.updateWizard(this);
+	}
+
+	public get loading(): boolean {
+		return this._loading;
+	}
+
+	public set loading(value: boolean) {
+		this._loading = value;
+		this._extHostModelViewDialog.updateWizard(this);
+	}
+
+	public get loadingMessage(): string {
+		return this._loadingMessage
+	}
+
+	public set loadingMessage(value: string) {
+		this._loadingMessage = value;
 		this._extHostModelViewDialog.updateWizard(this);
 	}
 
@@ -797,7 +837,9 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 			cancelButton: this.getHandle(dialog.cancelButton),
 			content: dialog.content && typeof dialog.content !== 'string' ? dialog.content.map(tab => this.getHandle(tab)) : dialog.content as string,
 			customButtons: dialog.customButtons ? dialog.customButtons.map(button => this.getHandle(button)) : undefined,
-			message: dialog.message
+			message: dialog.message,
+			loading: dialog.loading,
+			loadingMessage: dialog.loadingMessage
 		});
 	}
 
@@ -944,7 +986,9 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 			nextButton: this.getHandle(wizard.nextButton),
 			customButtons: wizard.customButtons ? wizard.customButtons.map(button => this.getHandle(button)) : undefined,
 			message: wizard.message,
-			displayPageTitles: wizard.displayPageTitles
+			displayPageTitles: wizard.displayPageTitles,
+			loading: wizard.loading,
+			loadingMessage: wizard.loadingMessage
 		});
 	}
 

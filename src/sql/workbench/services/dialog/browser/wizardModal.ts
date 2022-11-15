@@ -97,6 +97,11 @@ export class WizardModal extends Modal {
 
 		messageChangeHandler(this._wizard.message);
 		this._wizard.onMessageChange(message => messageChangeHandler(message));
+
+		this._wizard.onLoadingChange((loading) => {
+			this.spinner = loading.loadingState;
+			this._modalOptions.spinnerTitle = loading.loadingMessage;
+		});
 	}
 
 	private addDialogButton(button: DialogButton, onSelect: () => void = () => undefined, registerClickEvent: boolean = true, requirePageValid: boolean = false, index?: number): Button {

@@ -268,6 +268,8 @@ export interface IModelViewDialogDetails {
 	renderHeader: boolean;
 	renderFooter: boolean;
 	dialogProperties: IDialogProperties;
+	loading: boolean;
+	loadingMessage: string;
 }
 
 export interface IModelViewTabDetails {
@@ -307,6 +309,8 @@ export interface IModelViewWizardDetails {
 	message: DialogMessage;
 	displayPageTitles: boolean;
 	width: DialogWidth;
+	loading: boolean;
+	loadingMessage: string;
 }
 
 export type DialogWidth = 'narrow' | 'medium' | 'wide' | number | string;
