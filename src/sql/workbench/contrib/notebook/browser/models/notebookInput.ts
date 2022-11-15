@@ -38,7 +38,6 @@ import { LocalContentManager } from 'sql/workbench/services/notebook/common/loca
 import { Registry } from 'vs/platform/registry/common/platform';
 import { Extensions as LanguageAssociationExtensions, ILanguageAssociationRegistry } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { NotebookLanguage } from 'sql/workbench/common/constants';
-import { convertToInternalInteractiveKernelMetadata } from 'sql/workbench/api/common/notebooks/notebookUtils';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { IEditorResolverService } from 'vs/workbench/services/editor/common/editorResolverService';
 import { isEqual } from 'vs/base/common/resources';
@@ -591,9 +590,6 @@ export class NotebookEditorContentLoader implements IContentLoader {
 			let notebookEditorModel = await this.notebookInput.resolve();
 			notebookContents = await this.contentManager.deserializeNotebook(notebookEditorModel.contentString);
 		}
-
-		// Special case .NET Interactive kernel spec to handle inconsistencies between notebook providers and jupyter kernel specs
-		convertToInternalInteractiveKernelMetadata(notebookContents.metadata);
 
 		return notebookContents;
 	}
