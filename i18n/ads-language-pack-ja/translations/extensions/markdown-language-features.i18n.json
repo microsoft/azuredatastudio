@@ -8,22 +8,29 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"dist/features/documentLinkProvider": {
+		"dist/languageFeatures/documentLinkProvider": {
 			"documentLink.tooltip": "リンク先を表示"
 		},
-		"dist/features/preview": {
+		"dist/languageFeatures/fileReferences": {
+			"error.noResource": "ファイル参照の検索に失敗しました。リソースが指定されていません。",
+			"progress.title": "ファイル参照の検索中"
+		},
+		"dist/languageFeatures/rename": {
+			"invalidRenameLocation": "場所で名前の変更はサポートされていません"
+		},
+		"dist/preview/preview": {
 			"lockedPreviewTitle": "[プレビュー] {0}",
 			"onPreviewStyleLoadError": "'markdown.styles' を読み込むことができません: {0}",
 			"preview.clickOpenFailed": "{0} を開くことができません。",
 			"previewTitle": "プレビュー {0}"
 		},
-		"dist/features/previewContentProvider": {
+		"dist/preview/previewContentProvider": {
 			"preview.notFound": "{0} が見つかりません",
 			"preview.securityMessage.label": "セキュリティが無効なコンテンツの警告",
 			"preview.securityMessage.text": "このドキュメントで一部のコンテンツが無効になっています",
 			"preview.securityMessage.title": "安全でない可能性があるか保護されていないコンテンツは、Markdown プレビューで無効化されています。保護されていないコンテンツを許可するかスクリプトを有効にするには、Markdown プレビューのセキュリティ設定を変更してください"
 		},
-		"dist/security": {
+		"dist/preview/security": {
 			"disable.description": "すべてのコンテンツとスクリプトの実行を許可します。推奨されません。",
 			"disable.title": "無効にする",
 			"disableSecurityWarning.title": "このワークスペースでプレビューのセキュリティ警告を有効にする",
@@ -39,14 +46,17 @@
 			"toggleSecurityWarning.description": "コンテンツのセキュリティ レベルに影響しません"
 		},
 		"package": {
+			"configuration.markdown.editor.drop.enabled": "シフトを挿入するには、マークダウン エディターへのドロップを有効または無効にします。`#workbenck.experimental.editor.dropIntoEditor.enabled#`' を有効にする必要があります。",
 			"configuration.markdown.links.openLocation.beside": "アクティブなエディターの横にあるリンクを開きます。",
 			"configuration.markdown.links.openLocation.currentGroup": "アクティブなエディター グループ内にリンクを開きます。",
 			"configuration.markdown.links.openLocation.description": "マークダウン ファイル内のリンクを開く場所を制御します。",
 			"configuration.markdown.preview.openMarkdownLinks.description": "Markdown プレビューで他のマークダウン ファイルへのリンクを開く方法を制御します。",
 			"configuration.markdown.preview.openMarkdownLinks.inEditor": "エディターでリンクを開こうとします。",
 			"configuration.markdown.preview.openMarkdownLinks.inPreview": "Markdown プレビューでリンクを開こうとします。",
+			"configuration.markdown.suggest.paths.enabled.description": "Markdown リンクのパス候補を有効または無効にします",
 			"description": "Markdown に豊富な言語サポートを提供。",
 			"displayName": "Markdown 言語機能",
+			"markdown.findAllFileReferences": "ファイル参照の検索",
 			"markdown.preview.breaks.desc": "Markdown プレビューで改行を表現する方法を設定します。'true' に設定すると、段落内の改行に対して <br> が作成されます。",
 			"markdown.preview.doubleClickToSwitchToEditor.desc": "Markdown プレビューでダブルクリックすると、エディターに切り替わります。",
 			"markdown.preview.fontFamily.desc": "Markdown プレビューで使用されるフォント ファミリを制御します。",

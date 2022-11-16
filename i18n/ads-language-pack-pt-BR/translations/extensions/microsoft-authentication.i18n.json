@@ -11,10 +11,6 @@
 		"dist/AADHelper": {
 			"signOut": "Você foi desconectado porque houve uma falha na leitura das informações de autenticação armazenadas."
 		},
-		"dist/keychain": {
-			"keychainWriteError": "Falha ao gravar informações de logon no conjunto de chaves com o erro '{0}'.",
-			"troubleshooting": "Guia de Solução de Problemas"
-		},
 		"package": {
 			"description": "Provedor de autenticação da Microsoft",
 			"displayName": "Conta Microsoft",

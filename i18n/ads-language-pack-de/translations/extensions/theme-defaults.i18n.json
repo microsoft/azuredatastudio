@@ -13,8 +13,9 @@
 			"darkPlusColorThemeLabel": "Dunkel+ (dunkles Standarddesign)",
 			"description": "Die hellen und dunklen Visual Studio-Standarddesigns",
 			"displayName": "Standarddesigns",
-			"hcColorThemeLabel": "Hoher Kontrast",
+			"hcColorThemeLabel": "Dunkle hoher Kontrast",
 			"lightColorThemeLabel": "Hell (Visual Studio)",
+			"lightHcColorThemeLabel": "Hell hoher Kontrast",
 			"lightPlusColorThemeLabel": "Hell+ (helles Standarddesign)",
 			"minimalIconThemeLabel": "Minimal (Visual Studio Code)"
 		}

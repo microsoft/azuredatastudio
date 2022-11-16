@@ -35,7 +35,6 @@ import { ILanguageService } from 'vs/editor/common/languages/language';
 import { ICellMetadata } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { alert } from 'vs/base/browser/ui/aria/aria';
 import { CELL_URI_PATH_PREFIX } from 'sql/workbench/common/constants';
-import { DotnetInteractiveLanguagePrefix } from 'sql/workbench/api/common/notebooks/notebookUtils';
 import { IModelContentChangedEvent } from 'vs/editor/common/textModelEvents';
 
 let modelId = 0;
@@ -659,10 +658,7 @@ export class CellModel extends Disposable implements ICellModel {
 					if (tryMatchCellMagic(this.source[0]) !== ads_execute_command || !this._isCommandExecutionSettingEnabled) {
 						const future = kernel.requestExecute({
 							code: content,
-							cellIndex: this.notebookModel.findCellIndex(this),
 							stop_on_error: true,
-							notebookUri: this.notebookModel.notebookUri,
-							cellUri: this.cellUri,
 							language: this.language
 						}, false);
 						this.setFuture(future as FutureInternal);
@@ -1020,10 +1016,6 @@ export class CellModel extends Disposable implements ICellModel {
 			if (this._configurationService?.getValue('notebook.saveConnectionName')) {
 				metadata.connection_name = this._savedConnectionName;
 			}
-			// Set .NET Interactive language field for vscode compatibility
-			if (this._language?.startsWith(DotnetInteractiveLanguagePrefix)) {
-				(cellJson.metadata as ICellMetadata).dotnet_interactive = { language: this._language.replace(DotnetInteractiveLanguagePrefix, '') };
-			}
 		} else if (this._cellType === CellTypes.Markdown && this._attachments) {
 			cellJson.attachments = this._attachments;
 		}
@@ -1110,8 +1102,6 @@ export class CellModel extends Disposable implements ICellModel {
 			this._language = 'markdown';
 		} else if (metadata?.language) {
 			this._language = metadata.language;
-		} else if (metadata?.dotnet_interactive?.language) {
-			this._language = `dotnet-interactive.${metadata.dotnet_interactive.language}`;
 		} else {
 			this._language = this._options?.notebook?.language;
 		}

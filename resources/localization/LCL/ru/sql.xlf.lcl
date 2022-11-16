@@ -7943,10 +7943,13 @@
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView.epCompare.zoomToFit" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Zoom to fit]]></Val>
+          <Val><![CDATA[Zoom to Fit]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Масштаб по размеру экрана]]></Val>
+            <Val><![CDATA[Масштабировать по размеру]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Zoom to fit]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7988,19 +7991,25 @@
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanContribution.executionPlanCompareCommandOriginalValue" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Compare execution plans]]></Val>
+          <Val><![CDATA[Compare Execution Plans]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Сравнение планов выполнения]]></Val>
+            <Val><![CDATA[Сравнить планы выполнения]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Compare execution plans]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanContribution.executionPlanCompareCommandValue" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Compare execution plans]]></Val>
+          <Val><![CDATA[Compare Execution Plans]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Сравнение планов выполнения]]></Val>
+            <Val><![CDATA[Сравнить планы выполнения]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Compare execution plans]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -8192,10 +8201,13 @@
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanView.executionPlanCompareExecutionPlanAction" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Compare execution plan]]></Val>
+          <Val><![CDATA[Compare Execution Plan]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Сравнение плана выполнения]]></Val>
+            <Val><![CDATA[Сравнение планов выполнения]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Compare execution plan]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -8246,10 +8258,13 @@
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanView.executionPlanFitGraphLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Zoom to fit]]></Val>
+          <Val><![CDATA[Zoom to Fit]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Масштаб по размеру экрана]]></Val>
+            <Val><![CDATA[Масштабировать по размеру]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Zoom to fit]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
