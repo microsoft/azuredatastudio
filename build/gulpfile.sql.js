@@ -149,10 +149,12 @@ gulp.task('package-external-extensions', task.series(
 						}
 
 						console.info('Before checking configuration');
-						if (updateData.contributes?.configuration) {
-							console.info('replacing configuration for ' + packageDir);
-							data.contributes.configuration = updateData.contributes.configuration;
+						// add any configuration properties only in the package.vscode.json
+						if (updateData.contributes?.configuration?.properties) {
+							console.info('adding configuration for to ' + packageDir + ' for ' + updateData.contributes.configuration.properties);
+							data.contributes.configuration.properties += updateData.contributes.configuration.properties;
 						}
+
 						return data;
 					}, { beautify: false }))
 					.pipe(gulp.dest(packageDir));
