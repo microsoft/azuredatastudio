@@ -251,22 +251,6 @@ suite('Notebook Actions', function (): void {
 		});
 	});
 
-	test('New Notebook Action', async function (): Promise<void> {
-		let actualCmdId: string;
-
-		let mockCommandService = TypeMoq.Mock.ofType<ICommandService>(TestCommandService);
-		mockCommandService.setup(s => s.executeCommand(TypeMoq.It.isAny(), TypeMoq.It.isAny()))
-			.returns((commandId) => {
-				actualCmdId = commandId;
-				return Promise.resolve(true);
-			});
-
-		let action = new NewNotebookAction('TestId', 'TestLabel', mockCommandService.object, undefined, new NullAdsTelemetryService());
-		await action.run(undefined);
-
-		assert.strictEqual(actualCmdId, NewNotebookAction.INTERNAL_NEW_NOTEBOOK_CMD_ID);
-	});
-
 	test('Should Run with Parameters Action', async function (): Promise<void> {
 		const testContents: azdata.nb.INotebookContents = {
 			cells: [{
