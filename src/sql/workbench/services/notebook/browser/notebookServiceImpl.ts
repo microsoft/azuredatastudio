@@ -351,11 +351,7 @@ export class NotebookService extends Disposable implements INotebookService {
 			pinned: !options.preview
 		};
 		let input = await this.createNotebookInput(options, resource);
-		let editor = await this._editorService.openEditor(input, editorOptions, viewColumnToEditorGroup(this._editorGroupService, options.position));
-		if (!editor) {
-			return undefined;
-		}
-		return editor;
+		return await this._editorService.openEditor(input, editorOptions, viewColumnToEditorGroup(this._editorGroupService, options.position));
 	}
 
 	private untitledEditorTitleExists(filePath: string): boolean {

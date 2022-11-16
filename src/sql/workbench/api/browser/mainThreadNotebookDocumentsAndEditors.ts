@@ -343,8 +343,8 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		}
 	}
 
-	async $tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): Promise<string> {
-		return this.doOpenEditor(resource, options);
+	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): Promise<string> {
+		return Promise.resolve(this.doOpenEditor(resource, options));
 	}
 
 	$trySetTrusted(uriComponent: UriComponents, isTrusted: boolean): Promise<boolean> {
