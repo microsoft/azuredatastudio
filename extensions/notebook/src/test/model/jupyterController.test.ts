@@ -83,7 +83,7 @@ describe('Jupyter Controller', function () {
 
 	it('Returns execute manager for real notebook editor', async () => {
 		await controller.activate();
-		await vscode.commands.executeCommand('notebook.command.new');
+		await azdata.nb.showNotebookDocument(vscode.Uri.from({ scheme: 'untitled' }));
 		const notebookEditor = azdata.nb.activeNotebookEditor;
 		let notebookManager = await controller.executeProvider.getExecuteManager(notebookEditor.document.uri);
 		should(controller.executeProvider.executeManagerCount).equal(1);
