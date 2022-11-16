@@ -2345,7 +2345,7 @@ declare module 'azdata' {
 			/**
 			 * Access token expiry timestamp
 			 */
-			expiresOn?: number | undefined
+			expiresOn?: number | undefined;
 		}
 
 		/**
