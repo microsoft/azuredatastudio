@@ -18,10 +18,8 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { Schemas } from 'vs/base/common/network';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
-import { optional } from 'vs/platform/instantiation/common/instantiation';
 import { getErrorMessage, onUnexpectedError } from 'vs/base/common/errors';
 import { generateUuid } from 'vs/base/common/uuid';
-import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
 import { HideInputTag, ParametersTag, InjectedParametersTag } from 'sql/platform/notebooks/common/outputRegistry';
 import { FutureInternal, notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 import { ICommandService } from 'vs/platform/commands/common/commands';
@@ -33,11 +31,11 @@ import { IInsightOptions } from 'sql/workbench/common/editor/query/chartState';
 import { IPosition } from 'vs/editor/common/core/position';
 import { CellOutputEdit, CellOutputDataEdit } from 'sql/workbench/services/notebook/browser/models/cellEdit';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IModeService } from 'vs/editor/common/services/modeService';
+import { ILanguageService } from 'vs/editor/common/languages/language';
 import { ICellMetadata } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { alert } from 'vs/base/browser/ui/aria/aria';
 import { CELL_URI_PATH_PREFIX } from 'sql/workbench/common/constants';
-import { DotnetInteractiveLanguagePrefix } from 'sql/workbench/api/common/notebooks/notebookUtils';
+import { IModelContentChangedEvent } from 'vs/editor/common/textModelEvents';
 
 let modelId = 0;
 const ads_execute_command = 'ads_execute_command';
@@ -99,11 +97,11 @@ export class CellModel extends Disposable implements ICellModel {
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
-		@optional(INotebookService) private _notebookService?: INotebookService,
-		@optional(ICommandService) private _commandService?: ICommandService,
-		@optional(IConfigurationService) private _configurationService?: IConfigurationService,
-		@optional(ILogService) private _logService?: ILogService,
-		@optional(IModeService) private _modeService?: IModeService
+		@INotebookService private _notebookService?: INotebookService,
+		@ICommandService private _commandService?: ICommandService,
+		@IConfigurationService private _configurationService?: IConfigurationService,
+		@ILogService private _logService?: ILogService,
+		@ILanguageService private _languageService?: ILanguageService
 	) {
 		super();
 		this.id = `${modelId++}`;
@@ -415,8 +413,8 @@ export class CellModel extends Disposable implements ICellModel {
 		let result: string;
 		if (this._cellType === CellTypes.Markdown) {
 			result = 'Markdown';
-		} else if (this._modeService) {
-			let language = this._modeService.getLanguageName(this.language);
+		} else if (this._languageService) {
+			let language = this._languageService.getLanguageName(this.language);
 			result = language ?? this.language;
 		} else {
 			result = this.language;
@@ -660,10 +658,7 @@ export class CellModel extends Disposable implements ICellModel {
 					if (tryMatchCellMagic(this.source[0]) !== ads_execute_command || !this._isCommandExecutionSettingEnabled) {
 						const future = kernel.requestExecute({
 							code: content,
-							cellIndex: this.notebookModel.findCellIndex(this),
 							stop_on_error: true,
-							notebookUri: this.notebookModel.notebookUri,
-							cellUri: this.cellUri,
 							language: this.language
 						}, false);
 						this.setFuture(future as FutureInternal);
@@ -1021,10 +1016,6 @@ export class CellModel extends Disposable implements ICellModel {
 			if (this._configurationService?.getValue('notebook.saveConnectionName')) {
 				metadata.connection_name = this._savedConnectionName;
 			}
-			// Set .NET Interactive language field for vscode compatibility
-			if (this._language?.startsWith(DotnetInteractiveLanguagePrefix)) {
-				(cellJson.metadata as ICellMetadata).dotnet_interactive = { language: this._language.replace(DotnetInteractiveLanguagePrefix, '') };
-			}
 		} else if (this._cellType === CellTypes.Markdown && this._attachments) {
 			cellJson.attachments = this._attachments;
 		}
@@ -1111,8 +1102,6 @@ export class CellModel extends Disposable implements ICellModel {
 			this._language = 'markdown';
 		} else if (metadata?.language) {
 			this._language = metadata.language;
-		} else if (metadata?.dotnet_interactive?.language) {
-			this._language = `dotnet-interactive.${metadata.dotnet_interactive.language}`;
 		} else {
 			this._language = this._options?.notebook?.language;
 		}

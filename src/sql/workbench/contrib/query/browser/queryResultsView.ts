@@ -27,7 +27,6 @@ import { ExecutionPlanTab } from 'sql/workbench/contrib/executionPlan/browser/ex
 import { ExecutionPlanFileViewCache } from 'sql/workbench/contrib/executionPlan/browser/executionPlanFileViewCache';
 import { TopOperationsTab } from 'sql/workbench/contrib/executionPlan/browser/topOperationsTab';
 import { ExecutionPlanTreeTab } from 'sql/workbench/contrib/executionPlan/browser/executionPlanTreeTab';
-import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 
 class MessagesView extends Disposable implements IPanelView {
 	private messagePanel: MessagePanel;
@@ -180,7 +179,6 @@ export class QueryResultsView extends Disposable {
 		@IQueryModelService private queryModelService: IQueryModelService,
 		@INotificationService private notificationService: INotificationService,
 		@ILogService private logService: ILogService,
-		@IAccessibilityService private accessibilityService: IAccessibilityService
 	) {
 		super();
 		this.resultsTab = this._register(new ResultsTab(instantiationService));
@@ -465,11 +463,6 @@ export class QueryResultsView extends Disposable {
 			this.input?.state.visibleTabs.add(this.planTreeTab.identifier);
 			if (!this._panelView.contains(this.planTreeTab.identifier)) {
 				this._panelView.pushTab(this.planTreeTab);
-			}
-
-			// Switching to plan tree as default view when screen reader mode is on.
-			if (this.accessibilityService.isScreenReaderOptimized()) {
-				this._panelView.showTab(this.planTreeTab.identifier);
 			}
 		}
 	}

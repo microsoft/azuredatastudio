@@ -45,11 +45,13 @@
 	async function load(modulePaths, resultCallback, options) {
 		const isDev = !!safeProcess.env['VSCODE_DEV'];
 
-		// Error handler (TODO@sandbox non-sandboxed only)
+		// Error handler (node.js enabled renderers only)
 		let showDevtoolsOnError = isDev;
-		safeProcess.on('uncaughtException', function (/** @type {string | Error} */ error) {
-			onUnexpectedError(error, showDevtoolsOnError);
-		});
+		if (!safeProcess.sandboxed) {
+			safeProcess.on('uncaughtException', function (/** @type {string | Error} */ error) {
+				onUnexpectedError(error, showDevtoolsOnError);
+			});
+		}
 
 		// Await window configuration from preload
 		const timeout = setTimeout(() => { console.error(`[resolve window config] Could not resolve window configuration within 10 seconds, but will continue to wait...`); }, 10000);
@@ -83,7 +85,7 @@
 			developerDeveloperKeybindingsDisposable = registerDeveloperKeybindings(disallowReloadKeybinding);
 		}
 
-		// Enable ASAR support (TODO@sandbox non-sandboxed only)
+		// Enable ASAR support (node.js enabled renderers only)
 		if (!safeProcess.sandboxed) {
 			globalThis.MonacoBootstrap.enableASARSupport(configuration.appRoot);
 		}
@@ -100,9 +102,12 @@
 
 		window.document.documentElement.setAttribute('lang', locale);
 
-		// Replace the patched electron fs with the original node fs for all AMD code (TODO@sandbox non-sandboxed only)
+		// Define `fs` as `original-fs` to disable ASAR support
+		// in fs-operations  (node.js enabled renderers only)
 		if (!safeProcess.sandboxed) {
-			require.define('fs', [], function () { return require.__$__nodeRequire('original-fs'); });
+			require.define('fs', [], function () {
+				return require.__$__nodeRequire('original-fs');
+			});
 		}
 
 		window['MonacoEnvironment'] = {};
@@ -135,14 +140,17 @@
 			'xterm-addon-unicode11': `${baseNodeModulesPath}/xterm-addon-unicode11/lib/xterm-addon-unicode11.js`,
 			'xterm-addon-webgl': `${baseNodeModulesPath}/xterm-addon-webgl/lib/xterm-addon-webgl.js`,
 			'iconv-lite-umd': `${baseNodeModulesPath}/iconv-lite-umd/lib/iconv-lite-umd.js`,
+			'@vscode/iconv-lite-umd': `${baseNodeModulesPath}/@vscode/iconv-lite-umd/lib/iconv-lite-umd.js`,
 			'jschardet': `${baseNodeModulesPath}/jschardet/dist/jschardet.min.js`,
 			'@vscode/vscode-languagedetection': `${baseNodeModulesPath}/@vscode/vscode-languagedetection/dist/lib/index.js`,
+			'vscode-regexp-languagedetection': `${baseNodeModulesPath}/vscode-regexp-languagedetection/dist/index.js`,
 			'tas-client-umd': `${baseNodeModulesPath}/tas-client-umd/lib/tas-client-umd.js`,
 			'ansi_up': `${baseNodeModulesPath}/ansi_up/ansi_up.js`,
 			'azdataGraph': `${baseNodeModulesPath}/azdataGraph/dist/build.js`
 		};
-		// For priviledged renderers, allow to load built-in and other node.js
-		// Cached data config (node.js loading only)
+		// Allow to load built-in and other node.js modules via AMD
+		// modules via AMD which has a fallback to using node.js `require`
+		// (node.js enabled renderers only)
 		if (!safeProcess.sandboxed) {
 			// VS Code uses an AMD loader for its own files (and ours) but Node.JS normally uses commonjs. For modules that
 			// support UMD this may cause some issues since it will appear to them that AMD exists and so depending on the order

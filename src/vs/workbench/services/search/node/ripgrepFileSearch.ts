@@ -12,9 +12,9 @@ import { isMacintosh as isMac } from 'vs/base/common/platform';
 import * as strings from 'vs/base/common/strings';
 import { IFileQuery, IFolderQuery } from 'vs/workbench/services/search/common/search';
 import { anchorGlob } from 'vs/workbench/services/search/node/ripgrepSearchUtils';
-import { rgPath } from 'vscode-ripgrep';
+import { rgPath } from '@vscode/ripgrep';
 
-// If vscode-ripgrep is in an .asar file, then the binary is unpacked.
+// If @vscode/ripgrep is in an .asar file, then the binary is unpacked.
 const rgDiskPath = rgPath.replace(/\bnode_modules\.asar\b/, 'node_modules.asar.unpacked');
 
 export function spawnRipgrepCmd(config: IFileQuery, folderQuery: IFolderQuery, includePattern?: glob.IExpression, excludePattern?: glob.IExpression) {
@@ -58,7 +58,7 @@ function getRgArgs(config: IFileQuery, folderQuery: IFolderQuery, includePattern
 	if (folderQuery.disregardIgnoreFiles !== false) {
 		// Don't use .gitignore or .ignore
 		args.push('--no-ignore');
-	} else {
+	} else if (folderQuery.disregardParentIgnoreFiles !== false) {
 		args.push('--no-ignore-parent');
 	}
 
@@ -145,7 +145,7 @@ function globExprsToRgGlobs(patterns: glob.IExpression, folder?: string, exclude
 
 				globArgs.push(fixDriveC(key));
 				// {{SQL CARBON EDIT}} @todo anthonydresser 4/12/19 cast value because we aren't using strict-null-checks
-			} else if (value && (<glob.SiblingClause>value).when) {
+			} else if (value && (<any>value).when) {
 				siblingClauses[key] = value;
 			}
 		});

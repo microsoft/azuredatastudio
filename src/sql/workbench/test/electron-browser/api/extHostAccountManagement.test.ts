@@ -10,12 +10,12 @@ import { AccountProviderStub, TestAccountManagementService } from 'sql/platform/
 import { ExtHostAccountManagement } from 'sql/workbench/api/common/extHostAccountManagement';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { IRPCProtocol } from 'vs/workbench/services/extensions/common/proxyIdentifier';
-import { SqlMainContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { MainThreadAccountManagement } from 'sql/workbench/api/browser/mainThreadAccountManagement';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import { TestRPCProtocol } from 'vs/workbench/test/browser/api/testRPCProtocol';
 import { AzureResource } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { TestRPCProtocol } from 'vs/workbench/api/test/common/testRPCProtocol';
+import { SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 const IRPCProtocol = createDecorator<IRPCProtocol>('rpcProtocol');
 

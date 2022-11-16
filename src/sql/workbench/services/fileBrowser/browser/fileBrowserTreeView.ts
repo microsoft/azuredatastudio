@@ -10,12 +10,12 @@ import { IFileBrowserService } from 'sql/workbench/services/fileBrowser/common/i
 import { FileNode } from 'sql/workbench/services/fileBrowser/common/fileNode';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import nls = require('vs/nls');
-import { DefaultFilter, DefaultAccessibilityProvider, DefaultDragAndDrop } from 'vs/base/parts/tree/browser/treeDefaults';
-import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
+import { DefaultFilter, DefaultAccessibilityProvider, DefaultDragAndDrop } from 'sql/base/parts/tree/browser/treeDefaults';
+import { Tree } from 'sql/base/parts/tree/browser/treeImpl';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { ITree } from 'vs/base/parts/tree/browser/tree';
+import { ITree } from 'sql/base/parts/tree/browser/tree';
 import { IExpandableTree } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 
 /**
@@ -123,7 +123,7 @@ export class FileBrowserTreeView extends Disposable implements IDisposable {
 			if (isSingleClick) {
 				this.onClickedCallback(event.selection[0]);
 			} else if (isDoubleClick) {
-				this.onDoublieClickedCallback(event.selection[0]);
+				this.onDoubleClickedCallback(event.selection[0]);
 			}
 		}
 	}
@@ -133,9 +133,9 @@ export class FileBrowserTreeView extends Disposable implements IDisposable {
 		this.onClickedCallback = fn;
 	}
 
-	public onDoublieClickedCallback: any;
+	public onDoubleClickedCallback: any;
 	public setOnDoubleClickedCallback(fn: any) {
-		this.onDoublieClickedCallback = fn;
+		this.onDoubleClickedCallback = fn;
 	}
 
 	/**

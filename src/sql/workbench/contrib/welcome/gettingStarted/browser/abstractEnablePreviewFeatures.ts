@@ -10,6 +10,7 @@ import { localize } from 'vs/nls';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
+import { CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES } from 'sql/workbench/common/constants';
 
 export abstract class AbstractEnablePreviewFeatures implements IWorkbenchContribution {
 
@@ -23,7 +24,7 @@ export abstract class AbstractEnablePreviewFeatures implements IWorkbenchContrib
 	) { }
 
 	protected handlePreviewFeatures(): void {
-		let previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
+		let previewFeaturesEnabled = this.configurationService.getValue(CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES);
 		if (previewFeaturesEnabled || this.storageService.get(AbstractEnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, StorageScope.GLOBAL)) {
 			return;
 		}
@@ -34,7 +35,7 @@ export abstract class AbstractEnablePreviewFeatures implements IWorkbenchContrib
 			if (!focused && count > 1) {
 				return null;
 			}
-			await this.configurationService.updateValue('workbench.enablePreviewFeatures', false);
+			await this.configurationService.updateValue(CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES, false);
 
 			const enablePreviewFeaturesNotice = localize('enablePreviewFeatures.notice', "Preview features enhance your experience in Azure Data Studio by giving you full access to new features and improvements. You can learn more about preview features [here]({0}). Would you like to enable preview features?", 'https://aka.ms/ads-preview-features');
 			this.notificationService.prompt(
@@ -43,18 +44,18 @@ export abstract class AbstractEnablePreviewFeatures implements IWorkbenchContrib
 				[{
 					label: localize('enablePreviewFeatures.yes', "Yes (recommended)"),
 					run: () => {
-						this.configurationService.updateValue('workbench.enablePreviewFeatures', true).catch(e => onUnexpectedError(e));
+						this.configurationService.updateValue(CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES, true).catch(e => onUnexpectedError(e));
 						this.storageService.store(AbstractEnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, true, StorageScope.GLOBAL, StorageTarget.MACHINE);
 					}
 				}, {
 					label: localize('enablePreviewFeatures.no', "No"),
 					run: () => {
-						this.configurationService.updateValue('workbench.enablePreviewFeatures', false).catch(e => onUnexpectedError(e));
+						this.configurationService.updateValue(CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES, false).catch(e => onUnexpectedError(e));
 					}
 				}, {
 					label: localize('enablePreviewFeatures.never', "No, don't show again"),
 					run: () => {
-						this.configurationService.updateValue('workbench.enablePreviewFeatures', false).catch(e => onUnexpectedError(e));
+						this.configurationService.updateValue(CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES, false).catch(e => onUnexpectedError(e));
 						this.storageService.store(AbstractEnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, true, StorageScope.GLOBAL, StorageTarget.MACHINE);
 					},
 					isSecondary: true

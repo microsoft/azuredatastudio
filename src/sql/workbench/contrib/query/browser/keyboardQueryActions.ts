@@ -222,7 +222,8 @@ export class EstimatedExecutionPlanKeyboardAction extends Action {
 	public override async run(): Promise<void> {
 		const editor = this._editorService.activeEditorPane;
 		if (editor instanceof QueryEditor) {
-			editor.input.runQuery(editor.getSelection(), { displayEstimatedQueryPlan: true });
+			let queryEditor = <QueryEditor>editor;
+			editor.input.runQuery(queryEditor.getSelection(), { displayEstimatedQueryPlan: true });
 		}
 	}
 }

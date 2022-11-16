@@ -30,22 +30,15 @@ export class AzureAccountProviderService implements vscode.Disposable {
 
 	// MEMBER VARIABLES ////////////////////////////////////////////////////////
 	private _disposables: vscode.Disposable[] = [];
-	private _accountDisposals: { [accountProviderId: string]: vscode.Disposable };
-	private _accountProviders: { [accountProviderId: string]: azdata.AccountProvider };
-	private _credentialProvider: azdata.CredentialProvider;
-	private _configChangePromiseChain: Thenable<void>;
-	private _currentConfig: vscode.WorkspaceConfiguration;
-	private _event: events.EventEmitter;
-	private readonly _uriEventHandler: UriEventHandler;
+	private _accountDisposals: { [accountProviderId: string]: vscode.Disposable } = {};
+	private _accountProviders: { [accountProviderId: string]: azdata.AccountProvider } = {};
+	private _credentialProvider: azdata.CredentialProvider | undefined = undefined;
+	private _configChangePromiseChain: Thenable<void> = Promise.resolve();
+	private _currentConfig: vscode.WorkspaceConfiguration | undefined = undefined;
+	private _event: events.EventEmitter = new events.EventEmitter();
+	private readonly _uriEventHandler: UriEventHandler = new UriEventHandler();
 
 	constructor(private _context: vscode.ExtensionContext, private _userStoragePath: string) {
-		this._accountDisposals = {};
-		this._accountProviders = {};
-		this._configChangePromiseChain = Promise.resolve();
-		this._currentConfig = null;
-		this._event = new events.EventEmitter();
-
-		this._uriEventHandler = new UriEventHandler();
 		this._disposables.push(vscode.window.registerUriHandler(this._uriEventHandler));
 	}
 
@@ -148,6 +141,9 @@ export class AzureAccountProviderService implements vscode.Disposable {
 		try {
 			const noSystemKeychain = vscode.workspace.getConfiguration('azure').get<boolean>('noSystemKeychain');
 			let tokenCacheKey = `azureTokenCache-${provider.metadata.id}`;
+			if (!this._credentialProvider) {
+				throw new Error('Credential provider not registered');
+			}
 			let simpleTokenCache = new SimpleTokenCache(tokenCacheKey, this._userStoragePath, noSystemKeychain, this._credentialProvider);
 			await simpleTokenCache.init();
 

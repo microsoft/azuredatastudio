@@ -7,14 +7,12 @@ import type * as mssql from 'mssql';
 import { Disposable } from 'vs/base/common/lifecycle';
 import {
 	ExtHostAzureBlobShape,
-	MainThreadAzureBlobShape,
-	SqlExtHostContext,
-	SqlMainContext
+	MainThreadAzureBlobShape
 } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
-import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { IAzureBlobService } from 'sql/platform/azureBlob/common/azureBlobService';
 import { AzureBlobService } from 'sql/workbench/services/azureBlob/browser/azureBlobService';
+import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
+import { SqlExtHostContext, SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadAzureBlob)
 export class MainThreadAzureBlob extends Disposable implements MainThreadAzureBlobShape {

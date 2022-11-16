@@ -108,7 +108,7 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 	 * Returns true if all connections in the tree have valid options using the correct capabilities
 	 */
 	public get hasValidConnections(): boolean {
-		let invalidConnections = this._childConnections.find(c => !c.isConnectionOptionsValid);
+		let invalidConnections = this._childConnections.find(c => c.serverCapabilities === undefined);
 		if (invalidConnections !== undefined) {
 			return false;
 		} else {

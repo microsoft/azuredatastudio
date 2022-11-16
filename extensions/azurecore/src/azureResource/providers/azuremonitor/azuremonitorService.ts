@@ -32,7 +32,7 @@ export class AzureMonitorResourceService extends ResourceServiceBase<AzureMonito
 			defaultDatabaseName: '',
 			subscription: {
 				id: resource.subscriptionId,
-				name: resource.subscriptionName
+				name: resource.subscriptionName || ''
 			},
 			tenant: resource.tenantId,
 			resourceGroup: resource.resourceGroup

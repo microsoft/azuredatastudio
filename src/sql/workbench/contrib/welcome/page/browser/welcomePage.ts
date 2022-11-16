@@ -8,12 +8,10 @@ import 'sql/workbench/contrib/welcome/page/browser/az_data_welcome_page';
 import { URI } from 'vs/base/common/uri';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import * as arrays from 'vs/base/common/arrays';
-import { WalkThroughInput } from 'vs/workbench/contrib/welcome/walkThrough/browser/walkThroughInput';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { onUnexpectedError, isPromiseCanceledError } from 'vs/base/common/errors';
-import { IWindowOpenable } from 'vs/platform/windows/common/windows';
+import { isCancellationError, onUnexpectedError } from 'vs/base/common/errors';
 import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
 import { IConfigurationService, ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import { localize } from 'vs/nls';
@@ -49,12 +47,15 @@ import { IWorkbenchLayoutService, Parts } from 'vs/workbench/services/layout/bro
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { ICommandAction, MenuItemAction } from 'vs/platform/actions/common/actions';
+import { MenuItemAction } from 'vs/platform/actions/common/actions';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IExtensionRecommendationsService } from 'vs/workbench/services/extensionRecommendations/common/extensionRecommendations';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { AddServerAction } from 'sql/workbench/services/objectExplorer/browser/connectionTreeAction';
 import { IWorkingCopyBackupService } from 'vs/workbench/services/workingCopy/common/workingCopyBackup';
+import { WalkThroughInput } from 'vs/workbench/contrib/welcomeWalkthrough/browser/walkThroughInput';
+import { IWindowOpenable } from 'vs/platform/window/common/window';
+import { ICommandAction } from 'vs/platform/action/common/action';
 const configurationKey = 'workbench.startupEditor';
 const oldConfigurationKey = 'workbench.welcome.enabled';
 const telemetryFrom = 'welcomePage';
@@ -756,7 +757,7 @@ class WelcomePage extends Disposable {
 								this.telemetryService.publicLog(extensionPackStrings.installedEvent, {
 									from: telemetryFrom,
 									extensionId: extensionSuggestion.id,
-									outcome: isPromiseCanceledError(err) ? 'canceled' : 'error',
+									outcome: isCancellationError(err) ? 'canceled' : 'error',
 								});
 								this.notificationService.error(err);
 							});
@@ -791,7 +792,7 @@ class WelcomePage extends Disposable {
 			this.telemetryService.publicLog(extensionPackStrings.installedEvent, {
 				from: telemetryFrom,
 				extensionId: extensionSuggestion.id,
-				outcome: isPromiseCanceledError(err) ? 'canceled' : 'error',
+				outcome: isCancellationError(err) ? 'canceled' : 'error',
 			});
 			this.notificationService.error(err);
 		});
@@ -838,7 +839,7 @@ export class WelcomeInputSerializer implements IEditorSerializer {
 }
 
 // theming
-export const welcomePageBackground = registerColor('welcomePage.background', { light: null, dark: null, hc: null }, localize('welcomePage.background', 'Background color for the Welcome page.'));
+export const welcomePageBackground = registerColor('welcomePage.background', { light: null, dark: null, hcLight: null, hcDark: null }, localize('welcomePage.background', 'Background color for the Welcome page.'));
 
 registerThemingParticipant((theme, collector) => {
 	const backgroundColor = theme.getColor(welcomePageBackground);

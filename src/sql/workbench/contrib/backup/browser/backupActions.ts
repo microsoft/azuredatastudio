@@ -17,6 +17,7 @@ import { IBackupUiService } from 'sql/workbench/contrib/backup/common/backupUiSe
 import { Task } from 'sql/workbench/services/tasks/browser/tasksRegistry';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES } from 'sql/workbench/common/constants';
 
 export const BackupFeatureName = 'backup';
 export const backupIsPreviewFeature = localize('backup.isPreviewFeature', "You must enable preview features in order to use backup");
@@ -44,7 +45,7 @@ export class BackupAction extends Task {
 
 	runTask(accessor: ServicesAccessor, profile?: IConnectionProfile): void | Promise<void> {
 		const configurationService = accessor.get<IConfigurationService>(IConfigurationService);
-		const previewFeaturesEnabled = configurationService.getValue<{ enablePreviewFeatures: boolean }>('workbench').enablePreviewFeatures;
+		const previewFeaturesEnabled = configurationService.getValue(CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES);
 		if (!previewFeaturesEnabled) {
 			return accessor.get<INotificationService>(INotificationService).info(backupIsPreviewFeature);
 		}

@@ -26,7 +26,7 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { entries } from 'sql/base/common/collections';
 import { attachTabbedPanelStyler, attachModalDialogStyler } from 'sql/workbench/common/styler';
@@ -35,20 +35,16 @@ import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { IConnectionProfile } from 'azdata';
 import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { ICancelableEvent } from 'vs/base/parts/tree/browser/treeDefaults';
+import { ICancelableEvent } from 'sql/base/parts/tree/browser/treeDefaults';
 import { RecentConnectionActionsProvider, RecentConnectionTreeController } from 'sql/workbench/services/connection/browser/recentConnectionTreeController';
 import { ClearRecentConnectionsAction } from 'sql/workbench/services/connection/browser/connectionActions';
-import { ITree } from 'vs/base/parts/tree/browser/tree';
+import { ITree } from 'sql/base/parts/tree/browser/tree';
 import { AsyncServerTree } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ConnectionBrowseTab } from 'sql/workbench/services/connection/browser/connectionBrowseTab';
 import { ElementSizeObserver } from 'vs/editor/browser/config/elementSizeObserver';
-import { ConnectionProviderAndExtensionMap, ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
-import { VIEWLET_ID as ExtensionsViewletID } from 'vs/workbench/contrib/extensions/common/extensions';
-import { ICommandService } from 'vs/platform/commands/common/commands';
-import { IPaneCompositePartService } from 'vs/workbench/services/panecomposite/browser/panecomposite';
-import { ViewContainerLocation } from 'vs/workbench/common/views';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 export interface OnShowUIResponse {
 	selectedProviderDisplayName: string;
@@ -129,10 +125,7 @@ export class ConnectionDialogWidget extends Modal {
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
 		@IConfigurationService private _configurationService: IConfigurationService,
-		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
-		@INotificationService private _notificationService: INotificationService,
-		@IPaneCompositePartService private _paneCompositeService: IPaneCompositePartService,
-		@ICommandService private _commandService: ICommandService
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
 	) {
 		super(
 			localize('connection', "Connection"),
@@ -227,7 +220,7 @@ export class ConnectionDialogWidget extends Modal {
 
 		this._register(this.browsePanel.view.onSelectedConnectionChanged(e => {
 			this._connectionSource = e.source;
-			this.onConnectionClick(e.connectionProfile, e.connect);
+			this.onConnectionClick(e.connectionProfile, e.connect).catch(onUnexpectedError);
 		}));
 
 		this._panel.pushTab(this.browsePanel);
@@ -246,10 +239,10 @@ export class ConnectionDialogWidget extends Modal {
 
 		this._register(this._themeService.onDidColorThemeChange(e => this.updateTheme(e)));
 		this.updateTheme(this._themeService.getColorTheme());
-		this._panelSizeObserver = new ElementSizeObserver(this._panel.element, undefined, () => {
+		this._panelSizeObserver = this._register(new ElementSizeObserver(this._panel.element, undefined));
+		this._register(this._panelSizeObserver.onDidChange(() => {
 			this._panel.layout(new DOM.Dimension(this._panel.element.clientWidth, this._panel.element.clientHeight));
-		});
-		this._register(this._panelSizeObserver);
+		}));
 		this._panelSizeObserver.startObserving();
 	}
 
@@ -355,7 +348,7 @@ export class ConnectionDialogWidget extends Modal {
 			if (element instanceof ConnectionProfile) {
 				const isDoubleClick = origin === 'mouse' && (eventish as MouseEvent).detail === 2;
 				this._connectionSource = 'recent';
-				this.onConnectionClick(element, isDoubleClick);
+				this.onConnectionClick(element, isDoubleClick).catch(onUnexpectedError);
 			}
 		};
 		const actionProvider = this.instantiationService.createInstance(RecentConnectionActionsProvider);
@@ -377,13 +370,13 @@ export class ConnectionDialogWidget extends Modal {
 			this._recentConnectionTree.onMouseClick(e => {
 				if (e.element instanceof ConnectionProfile) {
 					this._connectionSource = 'recent';
-					this.onConnectionClick(e.element, false);
+					this.onConnectionClick(e.element, false).catch(onUnexpectedError);
 				}
 			});
 			this._recentConnectionTree.onMouseDblClick(e => {
 				if (e.element instanceof ConnectionProfile) {
 					this._connectionSource = 'recent';
-					this.onConnectionClick(e.element, true);
+					this.onConnectionClick(e.element, true).catch(onUnexpectedError);
 				}
 			});
 		}
@@ -399,9 +392,8 @@ export class ConnectionDialogWidget extends Modal {
 		DOM.append(noRecentConnectionContainer, DOM.$('.no-recent-connections')).innerText = noRecentHistoryLabel;
 	}
 
-	private onConnectionClick(element: IConnectionProfile, connect: boolean = false): void {
-		const isProviderAvailable = this._capabilitiesService.providers[element.providerName] !== undefined;
-		if (isProviderAvailable) {
+	private async onConnectionClick(element: IConnectionProfile, connect: boolean = false): Promise<void> {
+		if (this._capabilitiesService.providers[element.providerName] !== undefined) {
 			if (connect) {
 				this.connect(element);
 			} else {
@@ -409,27 +401,8 @@ export class ConnectionDialogWidget extends Modal {
 			}
 		}
 		else {
-			const extensionId = ConnectionProviderAndExtensionMap.get(element.providerName);
-			if (extensionId) {
-				this._notificationService.prompt(Severity.Error,
-					localize('connectionDialog.extensionNotInstalled', "The extension '{0}' is required in order to connect to this resource. Please install it and try again.", extensionId),
-					[{
-						label: localize('connectionDialog.viewExtension', "View Extension"),
-						run: async () => {
-							this.close();
-							await this._commandService.executeCommand('extension.open', extensionId);
-						}
-					}]);
-			} else {
-				this._notificationService.prompt(Severity.Error,
-					localize('connectionDialog.connectionProviderNotSupported', "The extension that supports provider type '{0}' is not currently installed. Please install it and try again.", element.providerName),
-					[{
-						label: localize('connectionDialog.viewExtensions', "View Extensions"),
-						run: async () => {
-							this.close();
-							await this._paneCompositeService.openPaneComposite(ExtensionsViewletID, ViewContainerLocation.Sidebar);
-						}
-					}]);
+			if (await this.connectionManagementService.handleUnsupportedProvider(element.providerName)) {
+				this.close();
 			}
 		}
 	}

@@ -19,10 +19,10 @@ import { IAccessibilityService } from 'vs/platform/accessibility/common/accessib
 import * as Constants from 'sql/workbench/common/constants';
 import { IMessage } from 'vs/base/browser/ui/inputbox/inputBox';
 import { appendKeyBindingLabel } from 'vs/workbench/contrib/search/browser/searchActions';
-import { ContextScopedFindInput } from 'vs/platform/browser/contextScopedHistoryWidget';
 import { attachFindReplaceInputBoxStyler } from 'vs/platform/theme/common/styler';
 import { isMacintosh } from 'vs/base/common/platform';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
+import { ContextScopedFindInput } from 'vs/platform/history/browser/contextScopedHistoryWidget';
 
 export interface INotebookExplorerSearchOptions {
 	value?: string;

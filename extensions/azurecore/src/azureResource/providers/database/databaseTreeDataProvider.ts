@@ -59,21 +59,16 @@ export class AzureResourceDatabaseTreeDataProvider extends ResourceTreeDataProvi
 		};
 	}
 
-	protected createContainerNode(): azureResource.IAzureResourceNode {
-		return {
-			account: undefined,
-			subscription: undefined,
-			tenantId: undefined,
-			treeItem: {
-				id: AzureResourceDatabaseTreeDataProvider.containerId,
-				label: AzureResourceDatabaseTreeDataProvider.containerLabel,
-				iconPath: {
-					dark: this._extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
-					light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')
-				},
-				collapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
-				contextValue: AzureResourceItemType.databaseContainer
-			}
-		};
+	public async getRootChildren(): Promise<TreeItem[]> {
+		return [{
+			id: AzureResourceDatabaseTreeDataProvider.containerId,
+			label: AzureResourceDatabaseTreeDataProvider.containerLabel,
+			iconPath: {
+				dark: this._extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
+				light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')
+			},
+			collapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
+			contextValue: AzureResourceItemType.databaseContainer
+		}];
 	}
 }

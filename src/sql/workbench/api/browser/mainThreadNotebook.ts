@@ -4,10 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { SqlExtHostContext, SqlMainContext, ExtHostNotebookShape, MainThreadNotebookShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
+import { ExtHostNotebookShape, MainThreadNotebookShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { Event, Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 
@@ -17,10 +15,8 @@ import { LocalContentManager } from 'sql/workbench/services/notebook/common/loca
 import { Deferred } from 'sql/base/common/promise';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import type { FutureInternal } from 'sql/workbench/services/notebook/browser/interfaces';
-import { Registry } from 'vs/platform/registry/common/platform';
-import { INotebookProviderRegistry, NotebookProviderRegistryId } from 'sql/workbench/services/notebook/common/notebookRegistry';
-
-const notebookRegistry = Registry.as<INotebookProviderRegistry>(NotebookProviderRegistryId);
+import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
+import { SqlExtHostContext, SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadNotebook)
 export class MainThreadNotebook extends Disposable implements MainThreadNotebookShape {
@@ -100,14 +96,6 @@ export class MainThreadNotebook extends Disposable implements MainThreadNotebook
 		if (future) {
 			future.onDone(done);
 		}
-	}
-
-	public $updateProviderKernels(providerId: string, languages: azdata.nb.IStandardKernel[]): void {
-		notebookRegistry.updateProviderKernels(providerId, languages);
-	}
-
-	public $updateKernelLanguages(providerId: string, kernelName: string, languages: string[]): void {
-		notebookRegistry.updateKernelLanguages(providerId, kernelName, languages);
 	}
 	//#endregion
 }

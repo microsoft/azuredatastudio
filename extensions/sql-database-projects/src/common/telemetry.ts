@@ -9,7 +9,7 @@ import { getPackageInfo } from './utils';
 
 const packageInfo = getPackageInfo()!;
 
-export const TelemetryReporter = new AdsTelemetryReporter(packageInfo.name, packageInfo.version, packageInfo.aiKey);
+export const TelemetryReporter = new AdsTelemetryReporter<TelemetryViews, TelemetryActions>(packageInfo.name, packageInfo.version, packageInfo.aiKey);
 
 
 export enum TelemetryViews {
@@ -45,5 +45,7 @@ export enum TelemetryActions {
 	publishOptionsOpened = 'publishOptionsOpened',
 	resetOptions = 'resetOptions',
 	optionsChanged = 'optionsChanged',
-	profileLoaded = 'profileLoaded'
+	profileLoaded = 'profileLoaded',
+	SchemaComparisonFinished = 'SchemaComparisonFinished',
+	SchemaComparisonStarted = 'SchemaComparisonStarted'
 }

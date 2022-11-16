@@ -46,6 +46,11 @@ let sqlTocItems: ITOCEntry<string>[] = [{
 			id: 'data/tableDesigner',
 			label: localize('tableDesigner', "Table Designer"),
 			settings: ['tableDesigner.*']
+		},
+		{
+			id: 'data/executionPlan',
+			label: localize('executionPlan', "Execution Plan"),
+			settings: ['executionPlan.*']
 		}
 	]
 }];

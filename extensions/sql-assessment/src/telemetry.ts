@@ -6,7 +6,7 @@
 import AdsTelemetryReporter from '@microsoft/ads-extension-telemetry';
 
 const packageJson = require('../package.json');
-export const TelemetryReporter = new AdsTelemetryReporter(packageJson.name, packageJson.version, packageJson.aiKey);
+export const TelemetryReporter = new AdsTelemetryReporter<string, SqlTelemetryActions>(packageJson.name, packageJson.version, packageJson.aiKey);
 
 export const SqlAssessmentTelemetryView = 'SqlAssessmentTab';
 

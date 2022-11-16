@@ -26,7 +26,7 @@ describe('WizardPage', () => {
 		const mockWizardPage = TypeMoq.Mock.ofType<azdata.window.WizardPage>();
 		stubCheckbox = new azdataTest.stubs.modelView.StubCheckbox();
 		stubInputBox = new azdataTest.stubs.modelView.StubInputBox();
-		const mockModelView = azdataTest.mocks.modelView.createModelViewMock({
+		const mockModelView = azdataTest.mocks.azdata.modelView.createModelViewMock({
 			checkBox: () => stubCheckbox,
 			inputBox: () => stubInputBox
 		});

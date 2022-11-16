@@ -15,6 +15,8 @@ export class MoveCellEdit implements IResourceUndoRedoElement {
 	type: UndoRedoElementType.Resource = UndoRedoElementType.Resource;
 	label: string = localize('moveCellEdit', "Move Cell");
 	resource = this.model.notebookUri;
+	readonly code: string;
+
 	private readonly cellOperation = { cell_operation: 'move_cell' };
 
 	constructor(private model: NotebookModel, private cell: ICellModel, private moveDirection: MoveDirection) {
@@ -38,6 +40,7 @@ export class SplitCellEdit implements IResourceUndoRedoElement {
 	resource = this.model.notebookUri;
 	private readonly cellOperation = { cell_operation: 'split_cell' };
 	private firstCellOriginalSource: string[] | string;
+	readonly code: string;
 
 	constructor(private model: NotebookModel, private cells: SplitCell[]) {
 		this.firstCellOriginalSource = deepClone(cells[0].cell.source);
@@ -58,6 +61,8 @@ export class DeleteCellEdit implements IResourceUndoRedoElement {
 	type: UndoRedoElementType.Resource = UndoRedoElementType.Resource;
 	label: string = localize('deleteCellEdit', "Delete Cell");
 	resource = this.model.notebookUri;
+	readonly code: string;
+
 	private readonly cellOperation = { cell_operation: 'delete_cell' };
 
 	constructor(private model: NotebookModel, private cell: ICellModel, private index: number) {
@@ -78,6 +83,8 @@ export class AddCellEdit implements IResourceUndoRedoElement {
 	type: UndoRedoElementType.Resource = UndoRedoElementType.Resource;
 	label: string = localize('addCellEdit', "Add Cell");
 	resource = this.model.notebookUri;
+	readonly code: string;
+
 	private readonly cellOperation = { cell_operation: 'add_cell' };
 
 	constructor(private model: NotebookModel, private cell: ICellModel, private index: number) {
@@ -98,6 +105,8 @@ export class ConvertCellTypeEdit implements IResourceUndoRedoElement {
 	type: UndoRedoElementType.Resource = UndoRedoElementType.Resource;
 	label: string = localize('convertCellTypeEdit', "Convert Cell Type");
 	resource = this.model.notebookUri;
+	readonly code: string;
+
 	private readonly cellOperation = { cell_operation: 'convert_cell_type' };
 
 	constructor(private model: NotebookModel, private cell: ICellModel) {

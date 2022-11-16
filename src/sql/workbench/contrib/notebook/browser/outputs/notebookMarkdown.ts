@@ -7,7 +7,6 @@ import * as path from 'vs/base/common/path';
 import { nb } from 'azdata';
 import { URI } from 'vs/base/common/uri';
 import { IMarkdownString, removeMarkdownEscapes } from 'vs/base/common/htmlContent';
-import { IMarkdownRenderResult } from 'vs/editor/browser/core/markdownRenderer';
 import * as sqlMarked from 'sql/base/common/marked/marked';
 import * as vsMarked from 'vs/base/common/marked/marked';
 import { defaultGenerator } from 'vs/base/common/idGenerator';
@@ -18,6 +17,7 @@ import { replaceInvalidLinkPath } from 'sql/workbench/contrib/notebook/common/ut
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { useNewMarkdownRendererKey } from 'sql/workbench/contrib/notebook/common/notebookCommon';
 import { FileAccess, Schemas } from 'vs/base/common/network';
+import { IMarkdownRenderResult } from 'vs/editor/contrib/markdownRenderer/browser/markdownRenderer';
 
 // Based off of HtmlContentRenderer
 export class NotebookMarkdownRenderer {
@@ -70,7 +70,8 @@ export class NotebookMarkdownRenderer {
 			this._baseUrls.push(notebookFolder);
 		}
 		const useNewRenderer = this._configurationService.getValue(useNewMarkdownRendererKey);
-		const renderer = useNewRenderer ? new vsMarked.Renderer({ baseUrl: notebookFolder }) : new sqlMarked.Renderer({ baseUrl: notebookFolder });
+		// {{SQL CARBON TODO}} - two render types are not compatible
+		const renderer: any = useNewRenderer ? new vsMarked.marked.Renderer({ baseUrl: notebookFolder }) : new sqlMarked.Renderer({ baseUrl: notebookFolder });
 		renderer.image = (href: string, title: string, text: string) => {
 			const attachment = findAttachmentIfExists(href, options.cellAttachments);
 			// Attachments are already properly formed, so do not need cleaning. Cleaning only takes into account relative/absolute
@@ -196,12 +197,12 @@ export class NotebookMarkdownRenderer {
 		}
 
 		if (useNewRenderer) {
-			const markedOptions: vsMarked.MarkedOptions = {
+			const markedOptions: vsMarked.marked.MarkedOptions = {
 				sanitize: !markdown.isTrusted,
 				renderer,
 				baseUrl: notebookFolder
 			};
-			element.innerHTML = vsMarked.parse(markdown.value, markedOptions);
+			element.innerHTML = vsMarked.marked.parse(markdown.value, markedOptions);
 		} else {
 			const markedOptions: sqlMarked.MarkedOptions = {
 				sanitize: !markdown.isTrusted,

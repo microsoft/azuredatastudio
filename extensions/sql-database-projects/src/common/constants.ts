@@ -161,7 +161,7 @@ export function OptionNotFoundWarningMessage(label: string) { return localize('o
 export const SqlServerName = 'SQL server';
 export const AzureSqlServerName = 'Azure SQL server';
 export const SqlServerDockerImageName = 'Microsoft SQL Server';
-export const SqlServerDocker2022ImageName = 'Microsoft SQL Server 2022 (preview)';
+export const SqlServerDocker2022ImageName = 'Microsoft SQL Server 2022';
 export const AzureSqlDbFullDockerImageName = 'Azure SQL Database emulator Full';
 export const AzureSqlDbLiteDockerImageName = 'Azure SQL Database emulator Lite';
 export const AzureSqlLogicalServerName = 'Azure SQL logical server';
@@ -170,6 +170,7 @@ export const defaultQuickPickItem = localize('defaultQuickPickItem', "Default - 
 export function dockerImagesPlaceHolder(name: string) { return localize('dockerImagesPlaceHolder', 'Use {0} on local arm64/Apple Silicon', name); }
 export function publishToExistingServer(name: string) { return localize('publishToExistingServer', "Publish to an existing {0}", name); }
 export function publishToDockerContainer(name: string) { return localize('publishToDockerContainer', "Publish to new {0} local development container", name); }
+export function publishToDockerContainerPreview(name: string) { return localize('publishToDockerContainerPreview', "Publish to new {0} local development container (Preview)", name); }
 export const publishToAzureEmulator = localize('publishToAzureEmulator', "Publish to new Azure SQL Database emulator");
 export const publishToNewAzureServer = localize('publishToNewAzureServer', "Publish to new Azure SQL logical server");
 export const azureServerName = localize('azureServerName', "Azure SQL server name");
@@ -194,6 +195,7 @@ export function invalidSQLPasswordMessage(name: string) { return localize('inval
 export function passwordNotMatch(name: string) { return localize('passwordNotMatch', "{0} password doesn't match the confirmation password", name); }
 export const portMustBeNumber = localize('portMustNotBeNumber', "Port must a be number");
 export const valueCannotBeEmpty = localize('valueCannotBeEmpty', "Value cannot be empty");
+export const imageTag = localize('imageTag', "Image tag");
 export const dockerImageLabelPrefix = 'source=sqldbproject';
 export const dockerImageNamePrefix = 'sqldbproject';
 export const dockerImageDefaultTag = 'latest';
@@ -296,6 +298,8 @@ export const projectLocationPlaceholderText = localize('projectLocationPlacehold
 export const browseButtonText = localize('browseButtonText', "Browse folder");
 export const selectFolderStructure = localize('selectFolderStructure', "Select folder structure");
 export const folderStructureLabel = localize('folderStructureLabel', "Folder structure");
+export const includePermissionsLabel = localize('includePermissionsLabel', "Include permissions");
+export const includePermissionsInProject = localize('includePermissionsInProject', "Include permissions in project");
 export const WorkspaceFileExtension = '.code-workspace';
 export const browseEllipsisWithIcon = `$(folder) ${localize('browseEllipsis', "Browse...")}`;
 export const selectProjectLocation = localize('selectProjectLocation', "Select project location");
@@ -354,6 +358,7 @@ export const parentTreeItemUnknown = localize('parentTreeItemUnknown', "Cannot a
 export const prePostDeployCount = localize('prePostDeployCount', "To successfully build, update the project to have one pre-deployment script and/or one post-deployment script");
 export const invalidProjectReload = localize('invalidProjectReload', "Cannot access provided database project. Only valid, open database projects can be reloaded.");
 export const externalStreamingJobValidationPassed = localize('externalStreamingJobValidationPassed', "Validation of external streaming job passed.");
+export const errorRetrievingBuildFiles = localize('errorRetrievingBuildFiles', "Could not build project. Error retrieving files needed to build.");
 export function projectAlreadyOpened(path: string) { return localize('projectAlreadyOpened', "Project '{0}' is already opened.", path); }
 export function projectAlreadyExists(name: string, path: string) { return localize('projectAlreadyExists', "A project named {0} already exists in {1}.", name, path); }
 export function noFileExist(fileName: string) { return localize('noFileExist', "File {0} doesn't exist", fileName); }
@@ -534,11 +539,6 @@ export const activeDirectoryInteractive = 'active directory interactive';
 export const userIdSetting = 'User ID';
 export const passwordSetting = 'Password';
 
-// Authentication types
-export const integratedAuth = 'Integrated';
-export const azureMfaAuth = 'AzureMFA';
-export const sqlAuth = 'SqlAuth';
-
 export const azureAddAccount = localize('azureAddAccount', "Add an Account...");
 
 // Tree item types
@@ -593,10 +593,19 @@ export const targetPlatformToVersion: Map<string, string> = new Map<string, stri
 	[SqlTargetPlatform.sqlDW, 'Dw']
 ]);
 
+export const onPremServerVersionToTargetPlatform: Map<number, SqlTargetPlatform> = new Map<number, SqlTargetPlatform>([
+	[11, SqlTargetPlatform.sqlServer2012],
+	[12, SqlTargetPlatform.sqlServer2014],
+	[13, SqlTargetPlatform.sqlServer2016],
+	[14, SqlTargetPlatform.sqlServer2017],
+	[15, SqlTargetPlatform.sqlServer2019],
+	[16, SqlTargetPlatform.sqlServer2022]
+]);
+
 // DW is special since the system dacpac folder has a different name from the target platform
 export const AzureDwFolder = 'AzureDw';
 
-export const defaultTargetPlatform = SqlTargetPlatform.sqlServer2019; // TODO: update to 2022 when it's GA
+export const defaultTargetPlatform = SqlTargetPlatform.sqlServer2022;
 export const defaultDSP = targetPlatformToVersion.get(defaultTargetPlatform)!;
 
 /**
@@ -614,7 +623,9 @@ export enum PublishTargetType {
 	newAzureServer = 'newAzureServer'
 }
 
+// Configuration keys
 export const CollapseProjectNodesKey = 'collapseProjectNodes';
+export const microsoftBuildSqlVersionKey = 'microsoftBuildSqlVersion';
 
 // httpClient
 export const downloadError = localize('downloadError', "Download error");
@@ -623,6 +634,7 @@ export const downloading = localize('downloading', "Downloading");
 
 // buildHelper
 export const downloadingDacFxDlls = localize('downloadingDacFxDlls', "Downloading Microsoft.Build.Sql nuget to get build DLLs");
-export const extractingDacFxDlls = localize('extractingDacFxDlls', "Extracting DacFx build DLLs");
+export function downloadingFromTo(from: string, to: string) { return localize('downloadingFromTo', "Downloading from {0} to {1}", from, to); }
+export function extractingDacFxDlls(location: string) { return localize('extractingDacFxDlls', "Extracting DacFx build DLLs to {0}", location); }
 export function errorDownloading(url: string, error: string) { return localize('errorDownloading', "Error downloading {0}. Error: {1}", url, error); }
 export function errorExtracting(path: string, error: string) { return localize('errorExtracting', "Error extracting files from {0}. Error: {1}", path, error); }

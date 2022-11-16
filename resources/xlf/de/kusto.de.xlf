@@ -19,8 +19,8 @@
   <file original="extensions/kusto/dist/kustoServer" source-language="en" datatype="plaintext" target-language="de">
     <body>
       <trans-unit id="downloadServiceDoneChannelMsg">
-        <source xml:lang="en">Done installing {0}</source>
-        <target state="translated">Die Installation von {0} wurde abgeschlossen</target>
+        <source xml:lang="en">Downloaded {0}</source>
+        <target state="translated">{0} wurde heruntergeladen</target>
       </trans-unit>
       <trans-unit id="downloadingServiceChannelMsg">
         <source xml:lang="en">Downloading {0}</source>

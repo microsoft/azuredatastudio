@@ -15,7 +15,7 @@ import * as vscodeMssql from 'vscode-mssql';
 import * as fse from 'fs-extra';
 import * as which from 'which';
 import { promises as fs } from 'fs';
-import { ISqlProject } from 'sqldbproj';
+import { ISqlProject, SqlTargetPlatform } from 'sqldbproj';
 
 export interface ValidationResult {
 	errorMessage: string;
@@ -710,4 +710,24 @@ export async function fileContainsCreateTableStatement(fullPath: string, project
 	}
 
 	return containsCreateTableStatement;
+}
+
+/**
+ * Gets target platform based on the server edition/version
+ * @param serverInfo server information
+ * @returns target platform for the database project
+ */
+export async function getTargetPlatformFromServerVersion(serverInfo: azdataType.ServerInfo | vscodeMssql.ServerInfo): Promise<SqlTargetPlatform | undefined> {
+	const isCloud = serverInfo.isCloud;
+
+	let targetPlatform;
+	if (isCloud) {
+		const engineEdition = serverInfo.engineEditionId;
+		targetPlatform = engineEdition === vscodeMssql.DatabaseEngineEdition.SqlDataWarehouse ? SqlTargetPlatform.sqlDW : SqlTargetPlatform.sqlAzure;
+	} else {
+		const serverMajorVersion = serverInfo.serverMajorVersion;
+		targetPlatform = serverMajorVersion ? constants.onPremServerVersionToTargetPlatform.get(serverMajorVersion) : undefined;
+	}
+
+	return targetPlatform;
 }

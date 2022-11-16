@@ -6,7 +6,7 @@
 import AdsTelemetryReporter, { TelemetryEventMeasures, TelemetryEventProperties } from '@microsoft/ads-extension-telemetry';
 
 const packageJson = require('../package.json');
-export const TelemetryReporter = new AdsTelemetryReporter(packageJson.name, packageJson.version, packageJson.aiKey);
+export const TelemetryReporter = new AdsTelemetryReporter<NbTelemetryView, NbTelemetryAction>(packageJson.name, packageJson.version, packageJson.aiKey);
 
 export enum NbTelemetryView {
 	Book = 'Book',

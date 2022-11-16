@@ -15,7 +15,7 @@ import { CommonServiceInterface } from 'sql/workbench/services/bootstrap/browser
 import { IDashboardWebview, IDashboardViewService } from 'sql/platform/dashboard/browser/dashboardViewService';
 
 import * as azdata from 'azdata';
-import { WebviewElement, IWebviewService } from 'vs/workbench/contrib/webview/browser/webview';
+import { IWebviewElement, IWebviewService } from 'vs/workbench/contrib/webview/browser/webview';
 
 interface IWebviewWidgetConfig {
 	id: string;
@@ -30,7 +30,7 @@ const selector = 'webview-widget';
 export class WebviewWidget extends DashboardWidget implements IDashboardWidget, OnInit, IDashboardWebview {
 
 	private _id: string;
-	private _webview: WebviewElement;
+	private _webview: IWebviewElement;
 	private _html: string;
 	private _onMessage = new Emitter<string>();
 	public readonly onMessage: Event<string> = this._onMessage.event;

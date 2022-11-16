@@ -11,7 +11,6 @@ import * as types from 'vs/base/common/types';
 import { NotebookFindMatch, NotebookFindDecorations } from 'sql/workbench/contrib/notebook/browser/find/notebookFindDecorations';
 import * as model from 'vs/editor/common/model';
 import { ModelDecorationOptions, DidChangeDecorationsEmitter, createTextBuffer, TextModel } from 'vs/editor/common/model/textModel';
-import { IModelDecorationsChangedEvent } from 'vs/editor/common/model/textModelEvents';
 import { IntervalNode } from 'vs/editor/common/model/intervalTree';
 import { Range, IRange } from 'vs/editor/common/core/range';
 import { onUnexpectedError } from 'vs/base/common/errors';
@@ -22,9 +21,10 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { NOTEBOOK_COMMAND_SEARCH } from 'sql/workbench/services/notebook/common/notebookContext';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
-import { ActiveEditorContext } from 'vs/workbench/common/editor';
 import { NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
 import { nb } from 'azdata';
+import { IModelDecorationsChangedEvent } from 'vs/editor/common/textModelEvents';
+import { ActiveEditorContext } from 'vs/workbench/common/contextkeys';
 
 function _normalizeOptions(options: model.IModelDecorationOptions): ModelDecorationOptions {
 	if (options instanceof ModelDecorationOptions) {

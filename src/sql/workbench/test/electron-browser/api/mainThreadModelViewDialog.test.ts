@@ -6,7 +6,6 @@
 import * as assert from 'assert';
 import { Mock, It, Times } from 'typemoq';
 import { MainThreadModelViewDialog } from 'sql/workbench/api/browser/mainThreadModelViewDialog';
-import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { IModelViewButtonDetails, IModelViewTabDetails, IModelViewDialogDetails, IModelViewWizardPageDetails, IModelViewWizardDetails, DialogMessage, MessageLevel } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { CustomDialogService } from 'sql/workbench/services/dialog/browser/customDialogService';
 import { Dialog, DialogTab, Wizard } from 'sql/workbench/services/dialog/common/dialogTypes';
@@ -16,7 +15,7 @@ import { TestInstantiationService } from 'vs/platform/instantiation/test/common/
 import { TestDialogModal } from 'sql/workbench/services/dialog/test/browser/testDialogModal';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
-
+import { IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
 
 suite('MainThreadModelViewDialog Tests', () => {
 	let mainThreadModelViewDialog: MainThreadModelViewDialog;
@@ -68,7 +67,13 @@ suite('MainThreadModelViewDialog Tests', () => {
 			$validateDialogClose: handle => undefined
 		});
 		let extHostContext = <IExtHostContext>{
-			getProxy: proxyType => mockExtHostModelViewDialog.object
+			getProxy: proxyType => <any>mockExtHostModelViewDialog.object,
+			set: () => { return; },
+			assertRegistered: () => { return; },
+			drain: () => { return undefined; },
+			dispose: () => { return; },
+			remoteAuthority: null,
+			extensionHostKind: null
 		};
 		mainThreadModelViewDialog = new MainThreadModelViewDialog(extHostContext, undefined, undefined, undefined);
 

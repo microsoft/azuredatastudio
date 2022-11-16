@@ -217,8 +217,8 @@ export class DeployPlanPage extends DacFxConfigPage {
 		let dataIssueAlert = false;
 		let currentReportSection: deployPlanXml;
 		let currentTableObj: TableObject;
-		let p = new parser.Parser({
-			onopentagname(name) {
+		let p = new parser.Parser(<any>{
+			onopentagname(name: any) {
 				if (name === deployPlanXml.AlertElement) {
 					currentReportSection = deployPlanXml.AlertElement;
 				} else if (name === deployPlanXml.OperationElement) {
@@ -227,7 +227,7 @@ export class DeployPlanPage extends DacFxConfigPage {
 					currentTableObj = new TableObject();
 				}
 			},
-			onattribute: function (name, value) {
+			onattribute: function (name: any, value: any) {
 				if (currentReportSection === deployPlanXml.AlertElement) {
 					switch (name) {
 						case deployPlanXml.NameAttribute: {
@@ -267,7 +267,7 @@ export class DeployPlanPage extends DacFxConfigPage {
 					}
 				}
 			},
-			onclosetag: function (name) {
+			onclosetag: <any>function (name: any) {
 				if (name === deployPlanXml.ItemElement) {
 					currentTableObj.operation = currentOperation;
 					operations.push(currentTableObj);

@@ -14,8 +14,9 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { contrastBorder, editorWidgetBackground, foreground, listHoverBackground, textLinkForeground, widgetShadow } from 'vs/platform/theme/common/colorRegistry';
 import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { QueryResultsView } from 'sql/workbench/contrib/query/browser/queryResultsView';
+import { Disposable } from 'vs/base/common/lifecycle';
 
-export class ExecutionPlanFileView {
+export class ExecutionPlanFileView extends Disposable {
 	private _parent: HTMLElement;
 	private _loadingSpinner: LoadingSpinner;
 	private _loadingErrorInfoBox: InfoBox;
@@ -30,6 +31,7 @@ export class ExecutionPlanFileView {
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@IExecutionPlanService private executionPlanService: IExecutionPlanService
 	) {
+		super();
 	}
 
 	public render(parent: HTMLElement): void {
@@ -48,9 +50,6 @@ export class ExecutionPlanFileView {
 		}
 	}
 
-	dispose() {
-	}
-
 	/**
 	 * Adds executionPlanGraph to the graph controller.
 	 * @param newGraphs ExecutionPlanGraphs to be added.
@@ -58,7 +57,7 @@ export class ExecutionPlanFileView {
 	public addGraphs(newGraphs: azdata.executionPlan.ExecutionPlanGraph[] | undefined) {
 		if (newGraphs) {
 			newGraphs.forEach(g => {
-				const ep = this.instantiationService.createInstance(ExecutionPlanView, this._container, this._executionPlanViews.length + 1, this, this._queryResultsView);
+				const ep = this._register(this.instantiationService.createInstance(ExecutionPlanView, this._container, this._executionPlanViews.length + 1, this, this._queryResultsView));
 				ep.model = g;
 				this._executionPlanViews.push(ep);
 				this.graphs.push(g);
@@ -76,10 +75,11 @@ export class ExecutionPlanFileView {
 	 * @returns
 	 */
 	public async loadGraphFile(graphFile: azdata.executionPlan.ExecutionPlanGraphInfo) {
-		this._loadingSpinner = new LoadingSpinner(this._container, { showText: true, fullSize: true });
+		this._loadingSpinner = this._register(new LoadingSpinner(this._container, { showText: true, fullSize: true }));
 		this._loadingSpinner.loadingMessage = localize('loadingExecutionPlanFile', "Generating execution plans");
 		try {
 			this._loadingSpinner.loading = true;
+
 			if (this._planCache.has(graphFile.graphFileContent)) {
 				this.addGraphs(this._planCache.get(graphFile.graphFileContent));
 				return;
@@ -91,13 +91,15 @@ export class ExecutionPlanFileView {
 				this.addGraphs(graphs);
 				this._planCache.set(graphFile.graphFileContent, graphs);
 			}
+
 			this._loadingSpinner.loadingCompletedMessage = localize('executionPlanFileLoadingComplete', "Execution plans are generated");
 		} catch (e) {
-			this._loadingErrorInfoBox = this.instantiationService.createInstance(InfoBox, this._container, {
+			this._loadingErrorInfoBox = this._register(this.instantiationService.createInstance(InfoBox, this._container, {
 				text: e.toString(),
 				style: 'error',
 				isClickable: false
-			});
+			}));
+
 			this._loadingErrorInfoBox.isClickable = false;
 			this._loadingSpinner.loadingCompletedMessage = localize('executionPlanFileLoadingFailed', "Failed to load execution plan");
 		} finally {

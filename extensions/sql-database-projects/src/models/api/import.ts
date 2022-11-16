@@ -19,4 +19,5 @@ export interface ImportDataModel {
 	version: string;
 	extractTarget: ExtractTarget;
 	sdkStyle: boolean;
+	includePermissions?: boolean;
 }

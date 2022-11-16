@@ -8,6 +8,11 @@
 	],
 	"version": "1.0.0",
 	"contents": {
+		"dist/localizedConstants": {
+			"errorLoading": "저장된 쿼리 기록 항목을 로드하는 동안 오류가 발생했습니다. {0}",
+			"failed": "실패",
+			"succeeded": "성공"
+		},
 		"package": {
 			"queryHistory.captureEnabledDesc": "쿼리 기록 캡처가 사용하도록 설정되어 있는지 여부입니다. false이면 실행된 쿼리가 캡처되지 않습니다.",
 			"queryHistory.clear": "모든 기록 지우기",
@@ -19,8 +24,12 @@
 			"queryHistory.doubleClickAction.open": "선택한 기록 항목의 쿼리로 연결이 끊긴 새 편집기 열기",
 			"queryHistory.doubleClickAction.run": "선택한 기록 항목에서 쿼리 및 연결을 사용하여 연결된 새 편집기를 열고 쿼리를 자동으로 실행",
 			"queryHistory.enableCapture": "쿼리 기록 캡처 시작",
+			"queryHistory.loading": "저장된 항목을 로드하는 중...",
+			"queryHistory.maxEntries": "저장할 최대 항목 수입니다. 0은 무제한 항목이 저장됨을 의미합니다. 이 제한을 늘리면 성능에 영향을 미칠 수 있습니다. 특히 지속성을 사용하는 경우 그렇습니다.",
 			"queryHistory.noEntries": "표시할 쿼리 없음",
 			"queryHistory.open": "쿼리 열기",
+			"queryHistory.openStorageFolder": "저장소 폴더 열기",
+			"queryHistory.persistHistory": "다시 시작할 때 쿼리 기록이 유지되는지 여부입니다. false이면 애플리케이션이 종료될 때 기록이 지워집니다.",
 			"queryHistory.run": "쿼리 실행"
 		}
 	}

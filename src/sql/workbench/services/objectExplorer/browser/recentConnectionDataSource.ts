@@ -5,7 +5,7 @@
 
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { ITree, IDataSource } from 'vs/base/parts/tree/browser/tree';
+import { ITree, IDataSource } from 'sql/base/parts/tree/browser/tree';
 
 /**
  * Implements the DataSource(that returns a parent/children of an element) for the recent connection tree

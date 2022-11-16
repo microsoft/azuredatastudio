@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ITree, IRenderer } from 'vs/base/parts/tree/browser/tree';
+import { ITree, IRenderer } from 'sql/base/parts/tree/browser/tree';
 import { TaskNode, TaskStatus } from 'sql/workbench/services/tasks/common/tasksNode';
 import * as dom from 'vs/base/browser/dom';
 import { localize } from 'vs/nls';

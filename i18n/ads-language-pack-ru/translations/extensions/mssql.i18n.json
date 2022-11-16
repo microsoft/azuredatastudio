@@ -238,7 +238,7 @@
 			"usernameAndPasswordRequired": "Необходимо указать имя пользователя и пароль"
 		},
 		"dist/sqlToolsServer": {
-			"downloadServiceDoneChannelMsg": "Выполнена установка {0}",
+			"downloadServiceDoneChannelMsg": "Скачано {0}",
 			"downloadingServiceChannelMsg": "Идет загрузка {0}",
 			"downloadingServiceSizeChannelMsg": "({0} КБ)",
 			"downloadingServiceStatusMsg": "Идет загрузка {0}",
@@ -251,7 +251,10 @@
 			"startingServiceStatusMsg": "Запуск (0)"
 		},
 		"dist/tableDesigner/tableDesigner": {
-			"tableDesigner.NewTable": "Создать таблицу"
+			"tableDesigner.NewTable": "Создать таблицу",
+			"tableDesigner.no": "Нет",
+			"tableDesigner.turnOnPreloadingMessage": "Хотите сократить время загрузки конструктора таблиц, включив предварительную загрузку модели базы данных? Модель базы данных будет предварительно загружена при развертывании узла базы данных в обозревателе объектов.",
+			"tableDesigner.yes": "Да"
 		},
 		"dist/telemetry": {
 			"serviceCrashMessage": "Компонент {0} неожиданно завершил работу. Перезапустите Azure Data Studio.",
@@ -279,8 +282,6 @@
 			"mssql.connectionOptions.applicationIntent.displayName": "Намерение приложения",
 			"mssql.connectionOptions.applicationName.description": "Имя приложения",
 			"mssql.connectionOptions.applicationName.displayName": "Имя приложения",
-			"mssql.connectionOptions.asynchronousProcessing.description": "Когда задано значение TRUE, разрешено использовать асинхронные функции в поставщике данных .NET Framework",
-			"mssql.connectionOptions.asynchronousProcessing.displayName": "Асинхронная обработка",
 			"mssql.connectionOptions.attachDbFilename.displayName": "Имя вложенного файла базы данных",
 			"mssql.connectionOptions.attachedDBFileName.description": "Имя первичного файла прикрепляемой базы данных, включая полный путь",
 			"mssql.connectionOptions.attachedDBFileName.displayName": "Имя вложенного файла базы данных",
@@ -355,6 +356,14 @@
 			"mssql.connectionOptions.workstationId.displayName": "Идентификатор рабочей станции",
 			"mssql.disabled": "Отключено",
 			"mssql.enabled": "Включено",
+			"mssql.executionPlan.actualNumberOfRowsForAllExecutions": "Выделяет операцию плана выполнения с наибольшим фактическим числом строк для всех выполнений.",
+			"mssql.executionPlan.cost": "Выделяет операцию плана выполнения с наибольшей ресурсоемкостью.",
+			"mssql.executionPlan.expensiveOperationMetric": "Метрика по умолчанию, используемая для выделения ресурсоемкой операции в планах выполнения запросов.",
+			"mssql.executionPlan.expensiveOperationMetric.actualElapsedCpuTime": "Выделяет операцию плана выполнения, использовавшую больше всего процессорного времени.",
+			"mssql.executionPlan.expensiveOperationMetric.actualElapsedTime": "Выделяет операцию плана выполнения, занявшую больше всего времени.",
+			"mssql.executionPlan.expensiveOperationMetric.off": "Выделение ресурсоемких операций будет отключено для планов выполнения.",
+			"mssql.executionPlan.numberOfRowsRead": "Выделяет операцию плана выполнения с наибольшим количеством прочитанных строк.",
+			"mssql.executionPlan.subtreeCost": "Выделяет операцию плана выполнения с наибольшей ресурсоемкостью поддерева.",
 			"mssql.exportNotebookToSql": "Экспорт записной книжки в виде SQL",
 			"mssql.exportSqlAsNotebook": "Экспорт SQL в виде записной книжки",
 			"mssql.format.alignColumnDefinitionsInColumns": "Должны ли определения столбцов быть выровнены?",
@@ -386,7 +395,8 @@
 			"mssql.query.executionTimeout": "Время ожидания выполнения, равное 0, указывает на неограниченное время ожидания",
 			"mssql.query.implicitTransactions": "Установить параметр SET IMPLICIT_TRANSACTIONS",
 			"mssql.query.lockTimeout": "Установить параметр SET LOCK TIMEOUT (в миллисекундах)",
-			"mssql.query.maxXmlCharsToStore": "Число XML-символов для хранения после выполнения запроса",
+			"mssql.query.maxCharsToStore": "Максимальное сохраняемое количество символов/байт для каждого значения в символьных/двоичных столбцах после выполнения запроса. Значение по умолчанию: 65 535. Допустимый диапазон значений: от 1 до 2 147 483 647.",
+			"mssql.query.maxXmlCharsToStore": "Максимальное сохраняемое количество символов для каждого значения в столбцах XML после выполнения запроса. Значение по умолчанию: 2 097 152. Допустимый диапазон значений: от 1 до 2 147 483 647.",
 			"mssql.query.noCount": "Установить параметр SET NOCOUNT",
 			"mssql.query.noExec": "Установить параметр SET NOEXEC",
 			"mssql.query.parseOnly": "Установить параметр SET PARSEONLY",
@@ -398,6 +408,7 @@
 			"mssql.query.textSize": "Максимальный размер текста и данных ntext, возвращаемых инструкцией SELECT",
 			"mssql.query.transactionIsolationLevel": "Установить параметр SET TRANSACTION ISOLATION LEVEL",
 			"mssql.query.xactAbortOn": "Установить параметр SET XACT_ABORT ON",
+			"mssql.tableDesigner.preloadDatabaseModel": "Следует ли предварительно загружать модель базы данных при расширении узла базы данных в проводнике объектов. При включении время загрузки конструктора таблиц может быть уменьшено. Примечание. Если вам нужно расширить множество узлов базы данных, использование памяти может быть выше обычного.",
 			"mssql.tracingLevel": "[Необязательно] Уровень ведения журнала для серверных служб. Azure Data Studio создает имя файла при каждом запуске, а если такой файл уже существует, записи журналов добавляются в него. Для очистки старых файлов журналов см. описание параметров logRetentionMinutes и logFilesRemovalLimit. Параметр tracingLevel по умолчанию регистрирует не слишком многое. Изменение детализации может привести к тому, что журналы будут занимать слишком много места. Ошибка включает критический уровень, предупреждение включает ошибку, информационный уровень включает предупреждение, а подробный уровень включает информационный уровень.",
 			"mssqlCluster.copyPath": "Скопировать путь",
 			"mssqlCluster.deleteFiles": "Удалить",

@@ -95,6 +95,10 @@ export class TargetSelectionPage extends MigrationWizardPage {
 				this._azureResourceDropdownLabel.value = constants.AZURE_SQL_DATABASE;
 				this._azureResourceDropdown.ariaLabel = constants.AZURE_SQL_DATABASE;
 				this._updateConnectionButtonState();
+				if (this.migrationStateModel._didUpdateDatabasesForMigration) {
+					await this._resetTargetMapping();
+					this.migrationStateModel._didUpdateDatabasesForMigration = false;
+				}
 				break;
 		}
 
@@ -115,11 +119,6 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			this.migrationStateModel._resourceGroup = undefined!;
 			this.migrationStateModel._location = undefined!;
 			await this.populateLocationDropdown();
-		}
-
-		if (this.migrationStateModel._didUpdateDatabasesForMigration) {
-			this._initializeSourceTargetDatabaseMap();
-			this._updateConnectionButtonState();
 		}
 
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
@@ -153,7 +152,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 					if (!targetMi || resourceDropdownValue === constants.NO_MANAGED_INSTANCE_FOUND) {
 						errors.push(constants.INVALID_MANAGED_INSTANCE_ERROR);
 					}
-					if (targetMi.properties.state !== 'Ready') {
+					if (targetMi?.properties?.state !== 'Ready') {
 						errors.push(constants.MI_NOT_READY_ERROR(targetMi.name, targetMi.properties.state));
 					}
 					break;
@@ -169,7 +168,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 						errors.push(constants.INVALID_SQL_DATABASE_ERROR);
 					}
 					// TODO: verify what state check is needed/possible?
-					if (targetSqlDB.properties.state !== 'Ready') {
+					if (targetSqlDB?.properties?.state !== 'Ready') {
 						errors.push(constants.SQLDB_NOT_READY_ERROR(targetSqlDB.name, targetSqlDB.properties.state));
 					}
 
@@ -402,11 +401,10 @@ export class TargetSelectionPage extends MigrationWizardPage {
 
 		this._disposables.push(
 			this._targetUserNameInputBox.onTextChanged(
-				(value: string) => this.migrationStateModel._targetUserName = value ?? ''));
-
-		this._disposables.push(
-			this._targetUserNameInputBox.onValidityChanged(
-				valid => this._updateConnectionButtonState()));
+				async (value: string) => {
+					this.migrationStateModel._targetUserName = value ?? '';
+					await this._resetTargetMapping();
+				}));
 
 		// target password
 		const targetPasswordLabel = this._view.modelBuilder.text()
@@ -426,11 +424,10 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			}).component();
 		this._disposables.push(
 			this._targetPasswordInputBox.onTextChanged(
-				(value: string) => { this.migrationStateModel._targetPassword = value ?? ''; }));
-
-		this._disposables.push(
-			this._targetPasswordInputBox.onValidityChanged(
-				valid => this._updateConnectionButtonState()));
+				async (value: string) => {
+					this.migrationStateModel._targetPassword = value ?? '';
+					await this._resetTargetMapping();
+				}));
 
 		// test connection button
 		this._testConectionButton = this._view.modelBuilder.button()
@@ -538,6 +535,13 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			.withLayout({ flexFlow: 'column' })
 			.withProps({ CSSStyles: { 'margin': '15px 0 0 0' } })
 			.component();
+	}
+
+	private async _resetTargetMapping(): Promise<void> {
+		this._initializeSourceTargetDatabaseMap();
+		this._updateConnectionButtonState();
+		await this._azureResourceTable.setDataValues([]);
+		await utils.updateControlDisplay(this._connectionResultsInfoBox, false);
 	}
 
 	private async _showConnectionResults(
@@ -662,6 +666,8 @@ export class TargetSelectionPage extends MigrationWizardPage {
 							}
 							break;
 					}
+
+					await this._validateFields();
 				} else {
 					this.migrationStateModel._targetServerInstance = undefined!;
 					if (isSqlDbTarget) {
@@ -671,10 +677,8 @@ export class TargetSelectionPage extends MigrationWizardPage {
 
 				this.migrationStateModel._sqlMigrationServices = undefined!;
 				if (isSqlDbTarget) {
-					await this._azureResourceTable.setDataValues([]);
+					await this._resetTargetMapping();
 					this._targetPasswordInputBox.value = '';
-					this._initializeSourceTargetDatabaseMap();
-					this._updateConnectionButtonState();
 				}
 			}));
 
@@ -749,7 +753,10 @@ export class TargetSelectionPage extends MigrationWizardPage {
 					},
 				],
 			})
-			.withValidation(table => table.dataValues !== undefined && table.dataValues.length > 0)
+			.withValidation(
+				table =>
+					this.migrationStateModel._targetType !== MigrationTargetType.SQLDB
+					|| (table.dataValues !== undefined && table.dataValues.length > 0))
 			.component();
 	}
 
@@ -942,6 +949,7 @@ export class TargetSelectionPage extends MigrationWizardPage {
 						this.migrationStateModel._sourceTargetMapping.set(
 							sourceDatabase,
 							targetDatabaseInfo);
+						this.migrationStateModel.refreshDatabaseBackupPage = true;
 						this.migrationStateModel._didDatabaseMappingChange = true;
 					}));
 
@@ -1008,5 +1016,17 @@ export class TargetSelectionPage extends MigrationWizardPage {
 			}
 		}
 		return errors;
+	}
+
+	private async _validateFields(): Promise<void> {
+		await this._azureAccountsDropdown.validate();
+		await this._accountTenantDropdown.validate();
+		await this._azureSubscriptionDropdown.validate();
+		await this._azureLocationDropdown.validate();
+		await this._azureResourceGroupDropdown.validate();
+		await this._azureResourceDropdown.validate();
+		await this._targetPasswordInputBox.validate();
+		await this._targetUserNameInputBox.validate();
+		await this._azureResourceTable.validate();
 	}
 }

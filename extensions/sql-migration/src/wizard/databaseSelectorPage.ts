@@ -11,6 +11,7 @@ import * as constants from '../constants/strings';
 import { debounce } from '../api/utils';
 import * as styles from '../constants/styles';
 import { IconPathHelper } from '../constants/iconPathHelper';
+import { getDatabasesList, excludeDatabases } from '../api/sqlUtils';
 
 export class DatabaseSelectorPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -119,8 +120,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 					const searchText = value?.toLowerCase();
 					return row[2]?.toLowerCase()?.indexOf(searchText) > -1	// database name
 						|| row[3]?.toLowerCase()?.indexOf(searchText) > -1	// state
-						|| row[4]?.toLowerCase()?.indexOf(searchText) > -1  // size
-						|| row[5]?.toLowerCase()?.indexOf(searchText) > -1;	// last backup date
+						|| row[4]?.toLowerCase()?.indexOf(searchText) > -1; // size
 				});
 		}
 
@@ -208,14 +208,6 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 						cssClass: cssClass,
 						headerCssClass: cssClass,
 					},
-					{
-						name: constants.LAST_BACKUP,
-						value: 'lastBackup',
-						type: azdata.ColumnType.text,
-						width: 130,
-						cssClass: cssClass,
-						headerCssClass: cssClass,
-					},
 				]
 			}).component();
 
@@ -242,21 +234,10 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 	}
 
 	private async _loadDatabaseList(stateMachine: MigrationStateModel, selectedDatabases: string[]): Promise<void> {
-		const providerId = (await stateMachine.getSourceConnectionProfile()).providerId;
-		const metaDataService = azdata.dataprotocol.getProvider<azdata.MetadataProvider>(
-			providerId,
-			azdata.DataProviderType.MetadataProvider);
-		const ownerUri = await azdata.connection.getUriForConnection(
-			stateMachine.sourceConnectionId);
-		const excludeDbs: string[] = [
-			'master',
-			'tempdb',
-			'msdb',
-			'model'
-		];
-		const databaseList = (<azdata.DatabaseInfo[]>await metaDataService
-			.getDatabases(ownerUri))
-			.filter(database => !excludeDbs.includes(database.options.name))
+		const allDatabases = (<azdata.DatabaseInfo[]>await getDatabasesList(await stateMachine.getSourceConnectionProfile()));
+
+		const databaseList = allDatabases
+			.filter(database => !excludeDatabases.includes(database.options.name))
 			|| [];
 
 		databaseList.sort((a, b) => a.options.name.localeCompare(b.options.name));
@@ -274,7 +255,6 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 				databaseName,
 				database.options.state,
 				database.options.sizeInMB,
-				database.options.lastBackup,
 			];
 		}) || [];
 	}

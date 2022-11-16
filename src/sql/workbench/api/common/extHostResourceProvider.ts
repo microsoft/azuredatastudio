@@ -9,9 +9,9 @@ import { Disposable } from 'vs/workbench/api/common/extHostTypes';
 import {
 	ExtHostResourceProviderShape,
 	MainThreadResourceProviderShape,
-	SqlMainContext,
 } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { values } from 'vs/base/common/collections';
+import { SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 export class ExtHostResourceProvider extends ExtHostResourceProviderShape {
 	private _handlePool: number = 0;

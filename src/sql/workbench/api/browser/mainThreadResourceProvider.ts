@@ -8,13 +8,10 @@ import { IResourceProviderService } from 'sql/workbench/services/resourceProvide
 import { Disposable } from 'vs/base/common/lifecycle';
 import {
 	ExtHostResourceProviderShape,
-	MainThreadResourceProviderShape,
-	SqlExtHostContext,
-	SqlMainContext
+	MainThreadResourceProviderShape
 } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
-import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
-
+import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
+import { SqlExtHostContext, SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadResourceProvider)
 export class MainThreadResourceProvider extends Disposable implements MainThreadResourceProviderShape {

@@ -325,9 +325,8 @@ suite('ConnectionConfig', () => {
 		connectionProfile.options['databaseDisplayName'] = existingConnection.options['databaseName'];
 
 		let config = new ConnectionConfig(configurationService, capabilitiesService.object);
-		let savedConnectionProfile = await config.addConnection(connectionProfile);
+		await config.addConnection(connectionProfile);
 
-		assert.strictEqual(savedConnectionProfile.id, existingConnection.id);
 		assert.strictEqual(configurationService.inspect<IConnectionProfileStore[]>('datasource.connections').userValue!.length, testConnections.length);
 	});
 

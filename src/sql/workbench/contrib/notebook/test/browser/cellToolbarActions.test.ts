@@ -22,19 +22,26 @@ import { ContextMenuService } from 'vs/platform/contextview/browser/contextMenuS
 import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { Separator } from 'vs/base/common/actions';
-import { INotebookModelOptions } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { ICellModel, INotebookModelOptions } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { NotebookEditorContentLoader } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { URI } from 'vs/base/common/uri';
 import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
-import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
+import { CellTypes, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { nb } from 'azdata';
-import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
-import { ExecuteManagerStub, SerializationManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
+import { ExecuteManagerStub, NotebookServiceStub, SerializationManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { UndoRedoService } from 'vs/platform/undoRedo/common/undoRedoService';
 import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
+import { Emitter } from 'vs/base/common/event';
+import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
+import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
+import { ICommandService, NullCommandService } from 'vs/platform/commands/common/commands';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { ILanguageService } from 'vs/editor/common/languages/language';
+import { ILogService, NullLogService } from 'vs/platform/log/common/log';
+import { mock } from 'vs/base/test/common/mock';
 
 suite('CellToolbarActions', function (): void {
 	suite('removeDuplicatedAndStartingSeparators', function (): void {
@@ -100,7 +107,18 @@ suite('CellToolbarActions', function (): void {
 	});
 
 	suite('CellToggleMoreActions', function (): void {
-		const instantiationService: TestInstantiationService = new TestInstantiationService();
+		let configurationService = new TestConfigurationService();
+		let serviceCollection = new ServiceCollection();
+		serviceCollection.set(ICommandService, NullCommandService);
+		serviceCollection.set(IConfigurationService, configurationService);
+		serviceCollection.set(ILogService, new NullLogService());
+		let instantiationService: TestInstantiationService = new TestInstantiationService(serviceCollection, true);
+		instantiationService.stub(INotebookService, new class extends mock<INotebookService>() {
+			override async serializeNotebookStateChange(notebookUri: URI, changeType: NotebookChangeType, cell?: ICellModel, isTrusted?: boolean): Promise<void> { }
+			override notifyCellExecutionStarted(): void { }
+		});
+		instantiationService.stub(ILanguageService, new class extends mock<ILanguageService>() { });
+
 		const contextMock = TypeMoq.Mock.ofType(CellContext);
 		const cellModelMock = TypeMoq.Mock.ofType(CellModel);
 
@@ -216,8 +234,18 @@ export async function createandLoadNotebookModel(codeContent?: nb.INotebookConte
 		nbformat_minor: NBFORMAT_MINOR
 	};
 
+	let configurationService = new TestConfigurationService();
 	let serviceCollection = new ServiceCollection();
-	let instantiationService = new InstantiationService(serviceCollection, true);
+	serviceCollection.set(ICommandService, NullCommandService);
+	serviceCollection.set(IConfigurationService, configurationService);
+	serviceCollection.set(ILogService, new NullLogService());
+	let instantiationService: TestInstantiationService = new TestInstantiationService(serviceCollection, true);
+	instantiationService.stub(INotebookService, new class extends mock<INotebookService>() {
+		override async serializeNotebookStateChange(notebookUri: URI, changeType: NotebookChangeType, cell?: ICellModel, isTrusted?: boolean): Promise<void> { }
+		override notifyCellExecutionStarted(): void { }
+	});
+	instantiationService.stub(ILanguageService, new class extends mock<ILanguageService>() { });
+
 	let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
 	let dialogService = TypeMoq.Mock.ofType<IDialogService>(TestDialogService, TypeMoq.MockBehavior.Loose);
 	let notificationService = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService, TypeMoq.MockBehavior.Loose);
@@ -236,7 +264,11 @@ export async function createandLoadNotebookModel(codeContent?: nb.INotebookConte
 		cellMagicMapper: undefined,
 		defaultKernel: undefined,
 		layoutChanged: undefined,
-		capabilitiesService: undefined
+		capabilitiesService: undefined,
+		getInputLanguageMode: () => undefined
 	};
-	return new NotebookModel(defaultModelOptions, undefined, undefined, undefined, new NullAdsTelemetryService(), undefined, undefined, undoRedoService);
+	let mockNotebookService = TypeMoq.Mock.ofType(NotebookServiceStub);
+	mockNotebookService.setup(s => s.onNotebookKernelsAdded).returns(() => new Emitter<IStandardKernelWithProvider[]>().event);
+
+	return new NotebookModel(defaultModelOptions, undefined, undefined, undefined, new NullAdsTelemetryService(), undefined, undefined, undoRedoService, mockNotebookService.object, undefined, undefined);
 }

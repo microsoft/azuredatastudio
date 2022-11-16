@@ -8,6 +8,11 @@
 	],
 	"version": "1.0.0",
 	"contents": {
+		"dist/localizedConstants": {
+			"errorLoading": "Erreur lors du chargement des éléments d’historique des requêtes enregistrées. {0}",
+			"failed": "Échec",
+			"succeeded": "Réussite"
+		},
 		"package": {
 			"queryHistory.captureEnabledDesc": "Indique si la capture de l'historique des requêtes est activée. Si la valeur est false, les requêtes exécutées ne sont pas capturées.",
 			"queryHistory.clear": "Effacer tout l'historique",
@@ -19,8 +24,12 @@
 			"queryHistory.doubleClickAction.open": "Ouvrir un nouvel éditeur déconnecté avec la requête de l'élément d'historique sélectionné",
 			"queryHistory.doubleClickAction.run": "Ouvrir un nouvel éditeur connecté avec la requête et la connexion de l'élément d'historique sélectionné et exécuter automatiquement la requête",
 			"queryHistory.enableCapture": "Démarrer la capture de l'historique des requêtes",
+			"queryHistory.loading": "Chargement des entrées enregistrées...",
+			"queryHistory.maxEntries": "Nombre maximal d’entrées à stocker. 0 signifie que des entrées illimitées sont stockées. L’augmentation de cette limite peut avoir un impact sur les performances, en particulier si la persistance est activée.",
 			"queryHistory.noEntries": "Aucune requête à afficher",
 			"queryHistory.open": "Ouvrir la requête",
+			"queryHistory.openStorageFolder": "Ouvrir le dossier de stockage",
+			"queryHistory.persistHistory": "Indique si l’historique des requêtes est conservé lors des redémarrages. Si la valeur est false, l’historique est effacé à la fermeture de l’application.",
 			"queryHistory.run": "Exécuter la requête"
 		}
 	}

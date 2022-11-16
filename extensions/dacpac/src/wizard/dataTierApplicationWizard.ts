@@ -115,7 +115,7 @@ export class DataTierApplicationWizard {
 			// don't open the wizard if connection dialog is cancelled
 			if (!this.connection) {
 				//Reporting Dacpac wizard cancelled event to Telemetry
-				TelemetryReporter.sendActionEvent(TelemetryViews.DataTierApplicationWizard, 'ConnectionDialogCancelled');
+				TelemetryReporter.sendActionEvent(TelemetryViews.DataTierApplicationWizard, TelemetryAction.ConnectionDialogCancelled);
 				return false;
 			}
 		}
@@ -305,7 +305,7 @@ export class DataTierApplicationWizard {
 
 	// Cancel button on click event is using to send the data loss information to telemetry
 	private cancelDataTierApplicationWizard(): void {
-		TelemetryReporter.createActionEvent(TelemetryViews.DataTierApplicationWizard, 'WizardCanceled')
+		TelemetryReporter.createActionEvent(TelemetryViews.DataTierApplicationWizard, TelemetryAction.WizardCanceled)
 			.withAdditionalProperties({
 				isPotentialDataLoss: this.model.potentialDataLoss?.toString(),
 				page: this.wizard.currentPage.toString(),
@@ -477,7 +477,7 @@ export class DataTierApplicationWizard {
 		return this.dacfxService;
 	}
 
-	private sendDacFxOperationTelemetryEvent(result: azdata.ResultStatus, telemetryAction: string, additionalProps: TelemetryEventProperties, additionalMeasurements: TelemetryEventMeasures): void {
+	private sendDacFxOperationTelemetryEvent(result: azdata.ResultStatus, telemetryAction: TelemetryAction, additionalProps: TelemetryEventProperties, additionalMeasurements: TelemetryEventMeasures): void {
 		if (result?.success) {
 			TelemetryReporter.createActionEvent(TelemetryViews.DataTierApplicationWizard, telemetryAction)
 				.withAdditionalProperties(additionalProps)

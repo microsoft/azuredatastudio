@@ -19,6 +19,10 @@ describe('Publish Database Options Dialog', () => {
 		await baselines.loadBaselines();
 	});
 
+	after(async function(): Promise<void> {
+		await testUtils.deleteGeneratedTestFolder();
+	});
+
 	it('Should open dialog successfully ', async function (): Promise<void> {
 		const proj = new Project('');
 		sinon.stub(proj, 'getProjectTargetVersion').returns('150');

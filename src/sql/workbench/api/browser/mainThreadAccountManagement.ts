@@ -8,14 +8,12 @@ import { IAccountManagementService } from 'sql/platform/accounts/common/interfac
 import { Disposable } from 'vs/base/common/lifecycle';
 import {
 	ExtHostAccountManagementShape,
-	MainThreadAccountManagementShape,
-	SqlExtHostContext,
-	SqlMainContext
+	MainThreadAccountManagementShape
 } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
-import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { UpdateAccountListEventParams } from 'sql/platform/accounts/common/eventTypes';
 import { values } from 'vs/base/common/collections';
+import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
+import { SqlExtHostContext, SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadAccountManagement)
 export class MainThreadAccountManagement extends Disposable implements MainThreadAccountManagementShape {

@@ -518,7 +518,8 @@ suite.skip('NotebookService:', function (): void {
 					isUnderDevelopment: true,
 					extensionLocation: URI.parse('extLocation1'),
 					enableProposedApi: false,
-					forceReload: true
+					forceReload: true,
+					targetPlatform: undefined
 				}
 			]);
 		});

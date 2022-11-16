@@ -442,6 +442,8 @@
 	display: inline-block;
 	width: 11px;
 	height: 6px;
+	/*
+	// allow-any-unicode-next-line */
 	content: "";
 	top: 1px;
 	bottom: 5px;

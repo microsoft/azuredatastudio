@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ChangeDetectorRef, Component, ElementRef, forwardRef, Inject, OnInit, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DatabaseInfo } from 'azdata';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
@@ -30,6 +30,9 @@ import { IEditorProgressService } from 'vs/platform/progress/common/progress';
 import { attachInputBoxStyler } from 'vs/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { getFlavor } from 'sql/workbench/contrib/dashboard/browser/dashboardRegistry';
+import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 
 @Component({
 	selector: 'explorer-widget',
@@ -45,6 +48,7 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private readonly _bootstrap: CommonServiceInterface,
+		@Inject(forwardRef(() => ActivatedRoute)) private _activeRoute: ActivatedRoute,
 		@Inject(forwardRef(() => Router)) private readonly _router: Router,
 		@Inject(WIDGET_CONFIG) _config: WidgetConfig,
 		@Inject(forwardRef(() => ElementRef)) private readonly _el: ElementRef,
@@ -57,6 +61,9 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 		@Inject(IEditorProgressService) private readonly progressService: IEditorProgressService,
 		@Inject(IConnectionManagementService) private readonly connectionManagementService: IConnectionManagementService,
 		@Inject(ICapabilitiesService) private readonly capabilitiesService: ICapabilitiesService,
+		@Inject(IDashboardService) private readonly dashboardService: IDashboardService,
+		@Inject(IAccessibilityService) private readonly accessibilityService: IAccessibilityService,
+		@Inject(IQuickInputService) private readonly quickInputService: IQuickInputService,
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef
 	) {
 		super(changeRef);
@@ -79,6 +86,7 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 		};
 		this._input = new InputBox(this._inputContainer.nativeElement, this.contextViewService, inputOptions);
 		this._table = new ExplorerTable(this._tableContainer.nativeElement,
+			this._activeRoute,
 			this._router,
 			this._config.context,
 			this._bootstrap,
@@ -87,7 +95,10 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 			this.menuService,
 			this.contextKeyService,
 			this.progressService,
-			this.logService);
+			this.logService,
+			this.dashboardService,
+			this.accessibilityService,
+			this.quickInputService);
 		this._register(this._input);
 		this._register(attachInputBoxStyler(this._input, this.themeService));
 		this._register(this._table);

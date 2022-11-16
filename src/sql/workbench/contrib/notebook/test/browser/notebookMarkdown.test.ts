@@ -15,7 +15,7 @@ suite('NotebookMarkdownRenderer', () => {
 		const markdown = { value: `![image](someimageurl 'caption')` };
 		const result: HTMLElement = notebookMarkdownRenderer.renderMarkdown(markdown);
 		const renderer = new marked.Renderer();
-		const imageFromMarked = marked(markdown.value, {
+		const imageFromMarked = marked.marked(markdown.value, {
 			sanitize: true,
 			renderer
 		}).trim().replace('someimageurl', 'vscode-file://vscode-app/someimageurl');
@@ -26,7 +26,7 @@ suite('NotebookMarkdownRenderer', () => {
 		const markdown = { value: `![image](someimageurl)` };
 		const result: HTMLElement = notebookMarkdownRenderer.renderMarkdown(markdown);
 		const renderer = new marked.Renderer();
-		let imageFromMarked = marked(markdown.value, {
+		let imageFromMarked = marked.marked(markdown.value, {
 			sanitize: true,
 			renderer
 		}).trim().replace('someimageurl', 'vscode-file://vscode-app/someimageurl');
@@ -66,7 +66,7 @@ suite('NotebookMarkdownRenderer', () => {
 	// marked js test that alters the relative path requiring regex replace to resolve path properly
 	// Issue tracked here: https://github.com/markedjs/marked/issues/2135
 	test('marked js compiles relative link incorrectly', () => {
-		const markedPath = marked.parse('..\\..\\test.ipynb');
+		const markedPath = marked.marked.parse('..\\..\\test.ipynb');
 		assert.strict(markedPath, '<p>....\test.ipynb</p>');
 	});
 

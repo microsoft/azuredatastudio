@@ -7,10 +7,10 @@ import * as azdata from 'azdata';
 import { Mock, It, Times } from 'typemoq';
 import { MainThreadBackgroundTaskManagement, TaskStatus } from 'sql/workbench/api/browser/mainThreadBackgroundTaskManagement';
 import { ITaskService } from 'sql/workbench/services/tasks/common/tasksService';
-import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { TaskNode } from 'sql/workbench/services/tasks/common/tasksNode';
 import { Emitter } from 'vs/base/common/event';
 import { ExtHostBackgroundTaskManagementShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
 
 suite('MainThreadBackgroundTaskManagement Tests', () => {
 	let mainThreadBackgroundTaskManagement: MainThreadBackgroundTaskManagement;
@@ -42,7 +42,13 @@ suite('MainThreadBackgroundTaskManagement Tests', () => {
 			registerProvider: undefined
 		});
 		let mainContext = <IExtHostContext>{
-			getProxy: proxyType => mockProxy.object
+			getProxy: proxyType => <any>mockProxy.object,
+			set: () => { return; },
+			assertRegistered: () => { return; },
+			drain: () => { return undefined; },
+			dispose: () => { return; },
+			remoteAuthority: null,
+			extensionHostKind: null
 		};
 
 		taskService.setup(x => x.onTaskComplete).returns(() => onTaskComplete.event);

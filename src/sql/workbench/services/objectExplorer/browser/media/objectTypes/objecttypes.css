@@ -579,9 +579,15 @@
 	background: url("TableValuedFunctionParameter_Return.svg") center center no-repeat;
 }
 
-.vs .icon.table_ledger,
-.vs-dark .icon.table_ledger,
-.hc-black .icon.table_ledger {
+.vs .icon.table_ledgerappendonly,
+.vs-dark .icon.table_ledgerappendonly,
+.hc-black .icon.table_ledgerappendonly,
+.vs .icon.table_ledgerupdatable,
+.vs-dark .icon.table_ledgerupdatable,
+.hc-black .icon.table_ledgerupdatable,
+.vs .icon.table_ledgerdropped,
+.vs-dark .icon.table_ledgerdropped,
+.hc-black .icon.table_ledgerdropped  {
 	background: url("Table_Ledger.svg") center center no-repeat;
 }
 
@@ -608,7 +614,6 @@
 .hc-black .icon.historytable_ledgerhistory {
 	background: url("Table_LedgerHistory.svg") center center no-repeat;
 }
-
 
 .vs .icon.trigger,
 .vs-dark .icon.trigger,

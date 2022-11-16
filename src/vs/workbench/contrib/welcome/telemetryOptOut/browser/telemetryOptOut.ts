@@ -56,7 +56,7 @@ export abstract class AbstractTelemetryOptOut implements IWorkbenchContribution 
 
 			this.privacyUrl = this.productService.privacyStatementUrl || this.productService.telemetryOptOutUrl;
 
-			if (experimentState && experimentState.state === ExperimentState.Run && this.telemetryService.telemetryLevel !== TelemetryLevel.NONE) {
+			if (experimentState && experimentState.state === ExperimentState.Run && this.telemetryService.telemetryLevel.value !== TelemetryLevel.NONE) {
 				this.runExperiment(experimentId);
 				return;
 			}
@@ -74,7 +74,7 @@ export abstract class AbstractTelemetryOptOut implements IWorkbenchContribution 
 
 		this.notificationService.prompt(
 			Severity.Info,
-			this.telemetryService.telemetryLevel !== TelemetryLevel.NONE ? optOutNotice : optInNotice,
+			this.telemetryService.telemetryLevel.value !== TelemetryLevel.NONE ? optOutNotice : optInNotice,
 			[{
 				label: localize('telemetryOptOut.readMore', "Read More"),
 				run: () => this.openerService.open(URI.parse(telemetryOptOutUrl))

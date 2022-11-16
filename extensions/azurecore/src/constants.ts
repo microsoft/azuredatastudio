@@ -8,6 +8,8 @@ export const ViewType = 'view';
 
 export const dataGridProviderId = 'azure-resources';
 
+export const AzureTokenFolderName = 'Azure Accounts';
+
 export enum BuiltInCommands {
 	SetContext = 'setContext'
 }

@@ -29,7 +29,7 @@ interface BookSearchResults {
 	bookPaths: string[];
 }
 
-export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeItem>, azdata.nb.NavigationProvider, vscode.DragAndDropController<BookTreeItem> {
+export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeItem>, azdata.nb.NavigationProvider, vscode.TreeDragAndDropController<BookTreeItem> {
 	private _onDidChangeTreeData: vscode.EventEmitter<BookTreeItem | undefined> = new vscode.EventEmitter<BookTreeItem | undefined>();
 	readonly onDidChangeTreeData: vscode.Event<BookTreeItem | undefined> = this._onDidChangeTreeData.event;
 	private _extensionContext: vscode.ExtensionContext;
@@ -44,7 +44,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	public viewId: string;
 	public books: BookModel[] = [];
 	public currentBook: BookModel | undefined;
-	supportedTypes = ['text/treeitems'];
+	dropMimeTypes = ['application/vnd.code.tree.BookTreeViewProvider'];
+	dragMimeTypes = ['text/uri-list'];
 
 	constructor(workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext, openAsUntitled: boolean, view: string, public providerId: string) {
 		this._openAsUntitled = openAsUntitled;
@@ -762,11 +763,19 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		return sourcesByBook;
 	}
 
-	async onDrop(sources: vscode.TreeDataTransfer, target: BookTreeItem): Promise<void> {
+	handleDrag(treeItems: readonly BookTreeItem[], dataTransfer: vscode.DataTransfer, token: vscode.CancellationToken): Thenable<void> | void {
+		dataTransfer.set('application/vnd.code.tree.BookTreeViewProvider', new vscode.DataTransferItem(treeItems));
+	}
+
+	async handleDrop(target: BookTreeItem | undefined, sources: vscode.DataTransfer, token: vscode.CancellationToken): Promise<void> {
+		const transferItem = sources.get('application/vnd.code.tree.BookTreeViewProvider');
+		if (!transferItem) {
+			return;
+		}
 		if (target.contextValue === BookTreeItemType.savedBook || target.contextValue === BookTreeItemType.section) {
 			sendNotebookActionEvent(NbTelemetryView.Book, NbTelemetryAction.DragAndDrop);
 			// gets the tree items that are dragged and dropped
-			let treeItems = JSON.parse(await sources.items.get(this.supportedTypes[0])!.asString()) as BookTreeItem[];
+			const treeItems: BookTreeItem[] = transferItem.value;
 			let rootItems = this.getLocalRoots(treeItems);
 			rootItems = rootItems.filter(item => item.resourceUri !== target.resourceUri);
 			if (rootItems && target) {

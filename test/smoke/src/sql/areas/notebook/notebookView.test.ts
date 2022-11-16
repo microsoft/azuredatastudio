@@ -14,7 +14,7 @@ export function setup(opts: minimist.ParsedArgs) {
 		afterSuite(opts);
 		// Name of the SQL notebook from azuredatastudio-smoke-test-repo
 		const SQL_NOTEBOOK = 'collapsed';
-		it('Pin notebook', async function () {
+		it('Pin notebook @UNSTABLE@', async function () {
 			const app = this.app as Application;
 			await app.workbench.sqlNotebook.view.focusNotebooksView();
 			const sqlNotebook = (await app.workbench.sqlNotebook.view.getNotebookTreeItems()).filter(n => n.textContent === SQL_NOTEBOOK);
@@ -23,7 +23,7 @@ export function setup(opts: minimist.ParsedArgs) {
 			await app.workbench.sqlNotebook.view.waitForPinnedNotebookTreeView();
 		});
 
-		it('Unpin Notebook', async function () {
+		it('Unpin Notebook @UNSTABLE@', async function () {
 			const app = this.app as Application;
 			await app.workbench.sqlNotebook.view.focusPinnedNotebooksView();
 			let pinnedNotebooks = await app.workbench.sqlNotebook.view.getPinnedNotebookTreeItems();

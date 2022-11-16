@@ -6,5 +6,5 @@
 /// <reference path='../../../../src/sql/azdata.proposed.d.ts'/>
 /// <reference path='../../../../src/sql/azdata.test.d.ts'/>
 /// <reference path='../../../mssql/src/mssql.d.ts'/>
-/// <reference path='../../../../src/vs/vscode.d.ts'/>
+/// <reference path='../../../../src/vscode-dts/vscode.d.ts'/>
 /// <reference types='@types/node'/>

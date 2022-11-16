@@ -1,6 +1,7 @@
 {
 	"parserOptions": {
-		"project": "./extensions/data-workspace/tsconfig.json"
+		"project": "./extensions/data-workspace/tsconfig.json",
+		"createDefaultProgram": true
 	},
 	"rules": {
 		"@typescript-eslint/no-floating-promises": [

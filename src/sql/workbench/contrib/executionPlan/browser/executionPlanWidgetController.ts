@@ -15,6 +15,7 @@ export class ExecutionPlanWidgetController {
 	private addWidget(widget: ExecutionPlanWidgetBase) {
 		if (widget.identifier && !this._executionPlanWidgetMap.has(widget.identifier)) {
 			this._executionPlanWidgetMap.set(widget.identifier, widget);
+
 			if (widget.container) {
 				widget.container.classList.add('child');
 				this._parentContainer.appendChild(widget.container);
@@ -26,6 +27,7 @@ export class ExecutionPlanWidgetController {
 	public removeWidget(widget: ExecutionPlanWidgetBase) {
 		if (widget.identifier) {
 			if (this._executionPlanWidgetMap.has(widget.identifier)) {
+				widget.dispose();
 				this._parentContainer.removeChild(this._executionPlanWidgetMap.get(widget.identifier).container);
 				this._executionPlanWidgetMap.delete(widget.identifier);
 			} else {

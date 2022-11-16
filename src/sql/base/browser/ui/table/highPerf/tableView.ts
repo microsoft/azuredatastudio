@@ -636,30 +636,31 @@ export class TableView<T> implements IDisposable {
 		delete this.visibleRows[index];
 	}
 
-	@memoize get onMouseClick(): Event<ITableMouseEvent<T>> { return Event.map(this.createAndRegisterDomEmitter(this.domNode, 'click').event, e => this.toMouseEvent(e)); }
+	// {{SQL CARBON TODO}} - casting to PointerEvent?
+	@memoize get onMouseClick(): Event<ITableMouseEvent<T>> { return Event.map(this.createAndRegisterDomEmitter(this.domNode, 'click').event, e => this.toMouseEvent(e as PointerEvent)); }
 	@memoize get onMouseDblClick(): Event<ITableMouseEvent<T>> {
-		return Event.map(this.createAndRegisterDomEmitter(this.domNode, 'dblclick').event, e => this.toMouseEvent(e));
+		return Event.map(this.createAndRegisterDomEmitter(this.domNode, 'dblclick').event, e => this.toMouseEvent(e as PointerEvent));
 	}
 	@memoize get onMouseMiddleClick(): Event<ITableMouseEvent<T>> {
-		return Event.filter(Event.map(this.createAndRegisterDomEmitter(this.domNode, 'auxclick').event, e => this.toMouseEvent(e as MouseEvent)), e => e.browserEvent.button === 1);
+		return Event.filter(Event.map(this.createAndRegisterDomEmitter(this.domNode, 'auxclick').event, e => this.toMouseEvent(e as PointerEvent)), e => e.browserEvent.button === 1);
 	}
 	@memoize get onMouseUp(): Event<ITableMouseEvent<T>> {
-		return Event.map(this.createAndRegisterDomEmitter(this.domNode, 'mouseup').event, e => this.toMouseEvent(e));
+		return Event.map(this.createAndRegisterDomEmitter(this.domNode, 'mouseup').event, e => this.toMouseEvent(e as PointerEvent));
 	}
 	@memoize get onMouseDown(): Event<ITableMouseEvent<T>> {
-		return Event.map(this.createAndRegisterDomEmitter(this.domNode, 'mousedown').event, e => this.toMouseEvent(e));
+		return Event.map(this.createAndRegisterDomEmitter(this.domNode, 'mousedown').event, e => this.toMouseEvent(e as PointerEvent));
 	}
 	@memoize get onMouseOver(): Event<ITableMouseEvent<T>> {
-		return Event.map(this.createAndRegisterDomEmitter(this.domNode, 'mouseover').event, e => this.toMouseEvent(e));
+		return Event.map(this.createAndRegisterDomEmitter(this.domNode, 'mouseover').event, e => this.toMouseEvent(e as PointerEvent));
 	}
 	@memoize get onMouseMove(): Event<ITableMouseEvent<T>> {
-		return Event.map(this.createAndRegisterDomEmitter(this.domNode, 'mousemove').event, e => this.toMouseEvent(e));
+		return Event.map(this.createAndRegisterDomEmitter(this.domNode, 'mousemove').event, e => this.toMouseEvent(e as PointerEvent));
 	}
 	@memoize get onMouseOut(): Event<ITableMouseEvent<T>> {
-		return Event.map(this.createAndRegisterDomEmitter(this.domNode, 'mouseout').event, e => this.toMouseEvent(e));
+		return Event.map(this.createAndRegisterDomEmitter(this.domNode, 'mouseout').event, e => this.toMouseEvent(e as PointerEvent));
 	}
 	@memoize get onContextMenu(): Event<ITableMouseEvent<T>> {
-		return Event.map(this.createAndRegisterDomEmitter(this.domNode, 'contextmenu').event, e => this.toMouseEvent(e));
+		return Event.map(this.createAndRegisterDomEmitter(this.domNode, 'contextmenu').event, e => this.toMouseEvent(e as PointerEvent));
 	}
 
 	private createAndRegisterDomEmitter<K extends keyof DOMEventMap>(eventHandler: EventHandler, type: K): DomEmitter<K> {
@@ -668,7 +669,7 @@ export class TableView<T> implements IDisposable {
 		return emitter;
 	}
 
-	public toMouseEvent(browserEvent: MouseEvent): ITableMouseEvent<T> {
+	public toMouseEvent(browserEvent: PointerEvent): ITableMouseEvent<T> {
 		const index = this.getItemIndexFromEventTarget(browserEvent.target || null);
 		const item = typeof index === 'undefined' ? undefined : this.visibleRows[index.row];
 		const element = item && item.element;

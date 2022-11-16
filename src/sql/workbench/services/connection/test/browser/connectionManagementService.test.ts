@@ -61,7 +61,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		databaseName: 'database',
 		userName: 'user',
 		password: 'password',
-		authenticationType: 'integrated',
+		authenticationType: Constants.AuthenticationType.Integrated,
 		savePassword: true,
 		groupFullName: 'g2/g2-2',
 		groupId: 'group id',
@@ -121,7 +121,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			c => c.serverName === connectionProfileWithEmptyUnsavedPassword.serverName))).returns(
 				() => Promise.resolve({ profile: connectionProfileWithEmptyUnsavedPassword, savedCred: false }));
 		connectionStore.setup(x => x.isPasswordRequired(TypeMoq.It.isAny())).returns((profile) => {
-			if (profile.authenticationType === Constants.azureMFA) {
+			if (profile.authenticationType === Constants.AuthenticationType.AzureMFA) {
 				return false;
 			}
 			return true;
@@ -185,7 +185,10 @@ suite('SQL ConnectionManagementService tests', () => {
 			accountManagementService.object,
 			testLogService, // ILogService
 			undefined, // IStorageService
-			getBasicExtensionService()
+			getBasicExtensionService(),
+			undefined,
+			undefined,
+			undefined
 		);
 		return connectionManagementService;
 	}
@@ -1571,7 +1574,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		const testInstantiationService = new TestInstantiationService();
 		testInstantiationService.stub(IStorageService, new TestStorageService());
 		testInstantiationService.stubCreateInstance(ConnectionStore, connectionStoreMock.object);
-		const connectionManagementService = new ConnectionManagementService(undefined, testInstantiationService, undefined, undefined, undefined, new TestCapabilitiesService(), undefined, undefined, undefined, undefined, undefined, undefined, undefined, getBasicExtensionService());
+		const connectionManagementService = new ConnectionManagementService(undefined, testInstantiationService, undefined, undefined, undefined, new TestCapabilitiesService(), undefined, undefined, undefined, undefined, undefined, undefined, undefined, getBasicExtensionService(), undefined, undefined, undefined);
 		assert.strictEqual(profile.password, '', 'Profile should not have password initially');
 		assert.strictEqual(profile.options['password'], '', 'Profile options should not have password initially');
 		// Check for invalid profile id
@@ -1601,7 +1604,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		testInstantiationService.stub(IStorageService, new TestStorageService());
 		testInstantiationService.stubCreateInstance(ConnectionStore, connectionStoreMock.object);
 
-		const connectionManagementService = new ConnectionManagementService(undefined, testInstantiationService, undefined, undefined, undefined, new TestCapabilitiesService(), undefined, undefined, undefined, undefined, undefined, undefined, undefined, getBasicExtensionService());
+		const connectionManagementService = new ConnectionManagementService(undefined, testInstantiationService, undefined, undefined, undefined, new TestCapabilitiesService(), undefined, undefined, undefined, undefined, undefined, undefined, undefined, getBasicExtensionService(), undefined, undefined, undefined);
 		assert.strictEqual(profile.password, '', 'Profile should not have password initially');
 		assert.strictEqual(profile.options['password'], '', 'Profile options should not have password initially');
 		let credentials = await connectionManagementService.getConnectionCredentials(profile.id);
@@ -1644,7 +1647,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	test('addSavedPassword fills in Azure access tokens for Azure accounts', async () => {
 		// Set up a connection profile that uses Azure
 		let azureConnectionProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, connectionProfile);
-		azureConnectionProfile.authenticationType = 'AzureMFA';
+		azureConnectionProfile.authenticationType = Constants.AuthenticationType.AzureMFA;
 		let username = 'testuser@microsoft.com';
 		azureConnectionProfile.azureAccount = username;
 		let servername = 'test-database.database.windows.net';
@@ -1683,7 +1686,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			token: testToken,
 			tokenType: 'Bearer'
 		}));
-		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is(profile => profile.authenticationType === 'AzureMFA'))).returns(profile => Promise.resolve({
+		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is(profile => profile.authenticationType === Constants.AuthenticationType.AzureMFA))).returns(profile => Promise.resolve({
 			profile: profile,
 			savedCred: false
 		}));
@@ -1700,7 +1703,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		const uri: string = 'Editor Uri';
 		// Set up a connection profile that uses Azure
 		const azureConnectionProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, connectionProfile);
-		azureConnectionProfile.authenticationType = 'AzureMFA';
+		azureConnectionProfile.authenticationType = Constants.AuthenticationType.AzureMFA;
 		const username = 'testuser@microsoft.com';
 		azureConnectionProfile.azureAccount = username;
 		const servername = 'test-database.database.windows.net';
@@ -1742,7 +1745,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			]);
 		});
 
-		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is(profile => profile.authenticationType === 'AzureMFA'))).returns(profile => Promise.resolve({
+		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is(profile => profile.authenticationType === Constants.AuthenticationType.AzureMFA))).returns(profile => Promise.resolve({
 			profile: profile,
 			savedCred: false
 		}));
@@ -1771,7 +1774,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	test('addSavedPassword fills in Azure access token for selected tenant', async () => {
 		// Set up a connection profile that uses Azure
 		let azureConnectionProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, connectionProfile);
-		azureConnectionProfile.authenticationType = 'AzureMFA';
+		azureConnectionProfile.authenticationType = Constants.AuthenticationType.AzureMFA;
 		let username = 'testuser@microsoft.com';
 		azureConnectionProfile.azureAccount = username;
 		let servername = 'test-database.database.windows.net';
@@ -1809,7 +1812,7 @@ suite('SQL ConnectionManagementService tests', () => {
 
 		let returnedToken = { token: 'testToken', tokenType: 'Bearer' };
 		accountManagementService.setup(x => x.getAccountSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(returnedToken));
-		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is(profile => profile.authenticationType === 'AzureMFA'))).returns(profile => Promise.resolve({
+		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is(profile => profile.authenticationType === Constants.AuthenticationType.AzureMFA))).returns(profile => Promise.resolve({
 			profile: profile,
 			savedCred: false
 		}));
@@ -1846,7 +1849,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		createInstanceStub.withArgs(ConnectionStore).returns(connectionStoreMock.object);
 		createInstanceStub.withArgs(ConnectionStatusManager).returns(connectionStatusManagerMock.object);
 
-		const connectionManagementService = new ConnectionManagementService(undefined, testInstantiationService, undefined, undefined, undefined, new TestCapabilitiesService(), undefined, undefined, undefined, undefined, undefined, undefined, undefined, getBasicExtensionService());
+		const connectionManagementService = new ConnectionManagementService(undefined, testInstantiationService, undefined, undefined, undefined, new TestCapabilitiesService(), undefined, undefined, undefined, undefined, undefined, undefined, undefined, getBasicExtensionService(), undefined, undefined, undefined);
 
 		// dupe connections have been seeded the numbers below already reflected the de-duped results
 
@@ -1879,7 +1882,7 @@ test('isRecent should evaluate whether a profile was recently connected or not',
 	});
 	let profile1 = createConnectionProfile('1');
 	let profile2 = createConnectionProfile('2');
-	const connectionManagementService = new ConnectionManagementService(undefined, testInstantiationService, undefined, undefined, undefined, new TestCapabilitiesService(), undefined, undefined, undefined, undefined, undefined, undefined, undefined, getBasicExtensionService());
+	const connectionManagementService = new ConnectionManagementService(undefined, testInstantiationService, undefined, undefined, undefined, new TestCapabilitiesService(), undefined, undefined, undefined, undefined, undefined, undefined, undefined, getBasicExtensionService(), undefined, undefined, undefined);
 	assert(connectionManagementService.isRecent(profile1));
 	assert(!connectionManagementService.isRecent(profile2));
 });
@@ -1897,7 +1900,7 @@ test('clearRecentConnection and ConnectionsList should call connectionStore func
 	testInstantiationService.stub(IStorageService, new TestStorageService());
 	sinon.stub(testInstantiationService, 'createInstance').withArgs(ConnectionStore).returns(connectionStoreMock.object);
 	let profile1 = createConnectionProfile('1');
-	const connectionManagementService = new ConnectionManagementService(undefined, testInstantiationService, undefined, undefined, undefined, new TestCapabilitiesService(), undefined, undefined, undefined, undefined, undefined, undefined, undefined, getBasicExtensionService());
+	const connectionManagementService = new ConnectionManagementService(undefined, testInstantiationService, undefined, undefined, undefined, new TestCapabilitiesService(), undefined, undefined, undefined, undefined, undefined, undefined, undefined, getBasicExtensionService(), undefined, undefined, undefined);
 	connectionManagementService.clearRecentConnection(profile1);
 	assert(called);
 	called = false;
@@ -1913,7 +1916,7 @@ export function createConnectionProfile(id: string, password?: string): Connecti
 		groupFullName: 'testGroup',
 		serverName: 'testServerName',
 		databaseName: 'testDatabaseName',
-		authenticationType: Constants.integrated,
+		authenticationType: Constants.AuthenticationType.Integrated,
 		password: password ?? 'test',
 		userName: 'testUsername',
 		groupId: undefined,

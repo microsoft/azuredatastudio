@@ -14,7 +14,7 @@
 			"kusto.missingLinkedAzureAccount": "Azure Data Studio 需要连接 Azure Key Vault 才能访问 Always Encrypted 的列主密钥，但没有可用的链接 Azure 帐户。请添加链接的 Azure 帐户，然后重试查询。"
 		},
 		"dist/kustoServer": {
-			"downloadServiceDoneChannelMsg": "已安装 {0}",
+			"downloadServiceDoneChannelMsg": "已下载 {0}",
 			"downloadingServiceChannelMsg": "正在下载 {0}",
 			"downloadingServiceSizeChannelMsg": "({0} KB)",
 			"downloadingServiceStatusMsg": "正在下载 {0}",

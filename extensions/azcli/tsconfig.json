@@ -3,12 +3,13 @@
 	"compileOnSave": true,
 	"compilerOptions": {
 		"outDir": "./out",
-		"lib": [
-			"es6",
-			"es2015.promise"
+		"downlevelIteration": true,
+		"types": [
+			"node"
 		]
 	},
 	"include": [
-		"src/**/*"
+		"src/**/*",
+		"../../src/vscode-dts/vscode.d.ts"
 	]
 }

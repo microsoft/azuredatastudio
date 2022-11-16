@@ -11,6 +11,7 @@
 		"dist/configurationEditingMain": {
 			"cwd": "O diretório de trabalho atual do executor de tarefas na inicialização",
 			"defaultBuildTask": "O nome da tarefa de build padrão. Se não houver uma tarefa de build única padrão, uma seleção rápida será mostrada para escolher a tarefa de build.",
+			"extensionInstallFolder": "O caminho em que uma extensão está instalada.",
 			"file": "O arquivo aberto no momento",
 			"fileBasename": "O nome base do arquivo aberto no momento",
 			"fileBasenameNoExtension": "O nome base do arquivo aberto no momento sem nenhuma extensão de arquivo",
@@ -52,8 +53,6 @@
 			"folderLabel": "Pasta por Nome (Qualquer Localização)",
 			"folderName": "nome da pasta do workspace na qual o arquivo está contido (por exemplo, myFolder)",
 			"folderPath": "caminho do arquivo da pasta do workspace na qual o arquivo está contido (por exemplo, /Users/Development/myFolder)",
-			"languageSpecificEditorSettings": "Configurações de editor específicas do idioma",
-			"languageSpecificEditorSettingsDescription": "Substituir as configurações do editor para o idioma",
 			"remoteName": "por exemplo, SSH",
 			"rootName": "nome do workspace (por exemplo, myFolder ou myWorkspace)",
 			"rootPath": "caminho do arquivo do workspace (por exemplo, /Users/Development/myWorkspace)",

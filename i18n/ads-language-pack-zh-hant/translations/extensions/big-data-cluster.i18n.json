@@ -149,6 +149,7 @@
 		},
 		"dist/extension": {
 			"bdc.dashboard.title": "巨量資料叢集儀表板 -",
+			"bdc.deprecationWarning": "即將淘汰 Big Data Cluster 附加元件，而其 Azure Data Studio 功能將在即將推出的版本中移除。在[這裡](https://go.microsoft.com/fwlink/?linkid=2207340)閱讀更多有關此資訊以及往後的支援。",
 			"mount.error.endpointNotFound": "找不到控制器端點資訊",
 			"textConfirmRemoveController": "您確定要移除 '{0}' 嗎?",
 			"textNo": "否",

@@ -60,8 +60,6 @@
 	"cms.connectionOptions.password.description": "Indicates the password to be used when connecting to the data source",
 	"cms.connectionOptions.applicationIntent.displayName": "Application intent",
 	"cms.connectionOptions.applicationIntent.description": "Declares the application workload type when connecting to a server",
-	"cms.connectionOptions.asynchronousProcessing.displayName": "Asynchronous processing",
-	"cms.connectionOptions.asynchronousProcessing.description": "When true, enables usage of the Asynchronous functionality in the .Net Framework Data Provider",
 	"cms.connectionOptions.connectTimeout.displayName": "Connect timeout",
 	"cms.connectionOptions.connectTimeout.description": "The length of time (in seconds) to wait for a connection to the server before terminating the attempt and generating an error",
 	"cms.connectionOptions.currentLanguage.displayName": "Current language",

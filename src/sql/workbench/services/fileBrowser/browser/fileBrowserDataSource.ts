@@ -5,7 +5,7 @@
 
 import { IFileBrowserService } from 'sql/workbench/services/fileBrowser/common/interfaces';
 import { FileNode } from 'sql/workbench/services/fileBrowser/common/fileNode';
-import { ITree, IDataSource } from 'vs/base/parts/tree/browser/tree';
+import { ITree, IDataSource } from 'sql/base/parts/tree/browser/tree';
 
 /**
  * Implements the DataSource(that returns a parent/children of an element) for the file browser

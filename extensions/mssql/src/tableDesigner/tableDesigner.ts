@@ -10,11 +10,15 @@ import { sqlProviderName } from '../constants';
 import { generateUuid } from 'vscode-languageclient/lib/utils/uuid';
 import { ITelemetryEventProperties, Telemetry } from '../telemetry';
 import * as nls from 'vscode-nls';
+import { getConfigPreloadDatabaseModel, setConfigPreloadDatabaseModel } from '../utils';
 const localize = nls.loadMessageBundle();
 
 const NewTableText = localize('tableDesigner.NewTable', "New Table");
+const DidInformUserKey: string = 'tableDesigner.DidInformUser';
+
 export function registerTableDesignerCommands(appContext: AppContext) {
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.newTable', async (context: azdata.ObjectExplorerContext) => {
+		void showPreloadDbModelSettingPrompt(appContext);
 		const connectionString = await azdata.connection.getConnectionString(context.connectionProfile.id, true);
 		const tableIcon = context.nodeInfo.nodeSubType as azdata.designers.TableIcon;
 		const telemetryInfo = await getTelemetryInfo(context, tableIcon);
@@ -32,6 +36,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 	}));
 
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.designTable', async (context: azdata.ObjectExplorerContext) => {
+		void showPreloadDbModelSettingPrompt(appContext);
 		const server = context.connectionProfile.serverName;
 		const database = context.connectionProfile.databaseName;
 		const schema = context.nodeInfo.metadata.schema;
@@ -61,4 +66,26 @@ async function getTelemetryInfo(context: azdata.ObjectExplorerContext, tableType
 	Telemetry.fillServerInfo(telemetryInfo, serverInfo);
 	telemetryInfo['tableType'] = tableType;
 	return telemetryInfo;
+}
+
+async function showPreloadDbModelSettingPrompt(appContext: AppContext): Promise<void> {
+	// skip if the setting is already enabled.
+	if (getConfigPreloadDatabaseModel()) {
+		return;
+	}
+
+	// only show the prompt once.
+	const didInformUser = appContext.extensionContext.globalState.get<boolean>(DidInformUserKey);
+	if (!didInformUser) {
+		void appContext.extensionContext.globalState.update(DidInformUserKey, true);
+	} else {
+		return;
+	}
+	const yesOption = localize('tableDesigner.yes', "Yes");
+	const noOption = localize('tableDesigner.no', "No");
+
+	const result = await vscode.window.showInformationMessage(localize('tableDesigner.turnOnPreloadingMessage', "Do you want to reduce the table designer load time by enabling the database model preloading? The database model will be preloaded when you expand the database node in object explorer."), yesOption, noOption);
+	if (result === yesOption) {
+		setConfigPreloadDatabaseModel(true);
+	}
 }

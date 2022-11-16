@@ -11,7 +11,7 @@ let packageInfo = {
 	aiKey: packageJson.aiKey
 };
 
-export const TelemetryReporter = new AdsTelemetryReporter(packageInfo.name, packageInfo.version, packageInfo.aiKey);
+export const TelemetryReporter = new AdsTelemetryReporter<TelemetryViews, TelemetryAction>(packageInfo.name, packageInfo.version, packageInfo.aiKey);
 
 export enum TelemetryViews {
 	SqlServerDashboard = 'SqlServerDashboard',
@@ -60,7 +60,8 @@ export enum TelemetryAction {
 	GetDBSkuRecommendation = 'GetDBSkuRecommendation',
 	GetInstanceRequirements = 'GetInstanceRequirements',
 	StartDataCollection = 'StartDataCollection',
-	StopDataCollection = 'StopDataCollection'
+	StopDataCollection = 'StopDataCollection',
+	GetDatabasesListFailed = 'GetDatabasesListFailed'
 }
 
 export function logError(telemetryView: TelemetryViews, err: string, error: any): void {

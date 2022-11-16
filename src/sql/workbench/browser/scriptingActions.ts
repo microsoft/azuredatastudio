@@ -21,7 +21,8 @@ export class ScriptSelectAction extends Action {
 		id: string, label: string,
 		@IQueryEditorService protected _queryEditorService: IQueryEditorService,
 		@IConnectionManagementService protected _connectionManagementService: IConnectionManagementService,
-		@IScriptingService protected _scriptingService: IScriptingService
+		@IScriptingService protected _scriptingService: IScriptingService,
+		@IErrorMessageService protected _errorMessageService: IErrorMessageService
 	) {
 		super(id, label);
 	}
@@ -32,7 +33,8 @@ export class ScriptSelectAction extends Action {
 			actionContext.object!,
 			this._connectionManagementService,
 			this._queryEditorService,
-			this._scriptingService
+			this._scriptingService,
+			this._errorMessageService
 		);
 	}
 }
@@ -97,9 +99,10 @@ export class EditDataAction extends Action {
 
 	constructor(
 		id: string, label: string,
-		@IQueryEditorService protected _queryEditorService: IQueryEditorService,
-		@IConnectionManagementService protected _connectionManagementService: IConnectionManagementService,
-		@IScriptingService protected _scriptingService: IScriptingService
+		@IQueryEditorService private _queryEditorService: IQueryEditorService,
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@IScriptingService private _scriptingService: IScriptingService,
+		@IErrorMessageService private _errorMessageService: IErrorMessageService
 	) {
 		super(id, label);
 	}
@@ -110,7 +113,8 @@ export class EditDataAction extends Action {
 			actionContext.object!,
 			this._connectionManagementService,
 			this._queryEditorService,
-			this._scriptingService
+			this._scriptingService,
+			this._errorMessageService
 		);
 	}
 }

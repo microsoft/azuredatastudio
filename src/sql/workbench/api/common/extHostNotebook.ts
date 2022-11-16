@@ -11,13 +11,9 @@ import { Disposable } from 'vs/workbench/api/common/extHostTypes';
 import { localize } from 'vs/nls';
 import { URI, UriComponents } from 'vs/base/common/uri';
 
-import { ExtHostNotebookShape, MainThreadNotebookShape, SqlMainContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { ExtHostNotebookShape, MainThreadNotebookShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IExecuteManagerDetails, INotebookSessionDetails, INotebookKernelDetails, INotebookFutureDetails, FutureMessageType, ISerializationManagerDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { VSCodeSerializationProvider } from 'sql/workbench/api/common/notebooks/vscodeSerializationProvider';
-import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
-import { ADSNotebookController } from 'sql/workbench/api/common/notebooks/adsNotebookController';
-import { VSCodeExecuteProvider } from 'sql/workbench/api/common/notebooks/vscodeExecuteProvider';
-import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/common/extHostNotebookDocumentsAndEditors';
+import { SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 type Adapter = azdata.nb.NotebookSerializationProvider | azdata.nb.SerializationManager | azdata.nb.NotebookExecuteProvider | azdata.nb.ExecuteManager | azdata.nb.ISession | azdata.nb.IKernel | azdata.nb.IFuture;
 
@@ -28,7 +24,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	private _adapters = new Map<number, Adapter>();
 
 	// Notebook URI to manager lookup.
-	constructor(_mainContext: IMainContext, private _extHostNotebookDocumentsAndEditors: ExtHostNotebookDocumentsAndEditors) {
+	constructor(_mainContext: IMainContext) {
 		this._proxy = _mainContext.getProxy(SqlMainContext.MainThreadNotebook);
 	}
 
@@ -173,10 +169,6 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	}
 
 	$requestExecute(kernelId: number, content: azdata.nb.IExecuteRequest, disposeOnDone?: boolean): Thenable<INotebookFutureDetails> {
-		// Revive request's URIs to restore functions
-		content.notebookUri = URI.revive(content.notebookUri);
-		content.cellUri = URI.revive(content.cellUri);
-
 		let kernel = this._getAdapter<azdata.nb.IKernel>(kernelId);
 		let future = kernel.requestExecute(content, disposeOnDone);
 		let futureId = this._addNewAdapter(future);
@@ -256,35 +248,6 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		const handle = this._addNewAdapter(provider);
 		this._proxy.$registerSerializationProvider(provider.providerId, handle);
 		return this._createDisposable(handle);
-	}
-
-	registerNotebookSerializer(notebookType: string, serializer: vscode.NotebookSerializer, options?: vscode.NotebookDocumentContentOptions, registration?: vscode.NotebookRegistrationData): vscode.Disposable {
-		let serializationProvider = new VSCodeSerializationProvider(notebookType, serializer);
-		return this.registerSerializationProvider(serializationProvider);
-	}
-
-	createNotebookController(
-		extension: IExtensionDescription,
-		id: string,
-		viewType: string,
-		label: string,
-		getDocHandler: (notebookUri: URI) => azdata.nb.NotebookDocument,
-		execHandler?: (cells: vscode.NotebookCell[], notebook: vscode.NotebookDocument, controller: vscode.NotebookController) => void | Thenable<void>,
-		rendererScripts?: vscode.NotebookRendererScript[]
-	): vscode.NotebookController {
-		let languagesHandler = (languages: string[]) => this._proxy.$updateKernelLanguages(viewType, viewType, languages);
-		let controller = new ADSNotebookController(extension, id, viewType, label, this._extHostNotebookDocumentsAndEditors, languagesHandler, getDocHandler, execHandler, extension.enableProposedApi ? rendererScripts : undefined);
-		let newKernel: azdata.nb.IStandardKernel = {
-			name: viewType,
-			displayName: controller.label,
-			connectionProviderIds: [],
-			supportedLanguages: [] // These will get set later from the controller
-		};
-		this._proxy.$updateProviderKernels(viewType, [newKernel]);
-
-		let executeProvider = new VSCodeExecuteProvider(controller);
-		this.registerExecuteProvider(executeProvider);
-		return controller;
 	}
 	//#endregion
 

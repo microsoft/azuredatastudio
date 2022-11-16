@@ -77,7 +77,7 @@ export class SelectBox extends vsSelectBox {
 		this.populateOptionsDictionary(optionItems);
 		this._dialogOptions = optionItems;
 		const option = this._optionsDictionary.get(selectedOption);
-		if (option) {
+		if (option !== undefined) {
 			super.select(option);
 		}
 
@@ -195,10 +195,10 @@ export class SelectBox extends vsSelectBox {
 
 	public selectWithOptionName(optionName?: string): void {
 		let option: number | undefined;
-		if (optionName) {
+		if (optionName !== undefined) {
 			option = this._optionsDictionary.get(optionName);
 		}
-		if (option) {
+		if (option !== undefined) {
 			this.select(option);
 		} else {
 			this.select(0);

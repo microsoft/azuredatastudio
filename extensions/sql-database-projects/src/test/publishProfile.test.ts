@@ -29,6 +29,10 @@ describe('Publish profile tests', function (): void {
 		sinon.restore();
 	});
 
+	after(async function(): Promise<void> {
+		await testUtils.deleteGeneratedTestFolder();
+	});
+
 	it('Should read database name, integrated security connection string, and SQLCMD variables from publish profile', async function (): Promise<void> {
 		await baselines.loadBaselines();
 		const profilePath = await testUtils.createTestFile(baselines.publishProfileIntegratedSecurityBaseline, 'publishProfile.publish.xml');

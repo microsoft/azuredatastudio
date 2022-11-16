@@ -250,7 +250,8 @@ suite('Assessment Actions', () => {
 				name: '',
 				resource: fileUri,
 				size: 42,
-				readonly: false
+				readonly: false,
+				children: []
 			});
 		});
 

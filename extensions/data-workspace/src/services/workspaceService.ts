@@ -27,22 +27,22 @@ export class WorkspaceService implements IWorkspaceService {
 	private excludedProjects: string[] | undefined;
 
 	constructor() {
-		this.getProjectsInWorkspace(undefined, true).catch(err => console.error('Error initializing projects in workspace ', err));
-
-		TelemetryReporter.createActionEvent(TelemetryViews.WorkspaceTreePane, TelemetryActions.ProjectsLoaded)
-			.withAdditionalProperties({
-				openProjectCount: this.openedProjects?.length.toString() ?? '0',
-				exludedProjectCount: this.excludedProjects?.length.toString() ?? '0'
-			}).send();
+		Logger.log(`Calling getProjectsInWorkspace() from WorkspaceService constructor`);
+		this.getProjectsInWorkspace(undefined, true).catch(err => Logger.error(`Error initializing projects in workspace ${err}`));
 	}
 
 	get isProjectProviderAvailable(): boolean {
+		Logger.log(`Checking ${vscode.extensions.all.length} extensions to see if there is a project provider is available`);
+		const startTime = new Date().getTime();
 		for (const extension of vscode.extensions.all) {
 			const projectTypes = extension.packageJSON.contributes && extension.packageJSON.contributes.projects as string[];
 			if (projectTypes && projectTypes.length > 0) {
+				Logger.log(`Project provider found. Total time = ${new Date().getTime() - startTime}ms`);
 				return true;
 			}
 		}
+
+		Logger.log(`No project providers found. Total time = ${new Date().getTime() - startTime}ms`);
 		return false;
 	}
 
@@ -134,6 +134,8 @@ export class WorkspaceService implements IWorkspaceService {
 	 * @returns array of file URIs for projects
 	 */
 	public async getProjectsInWorkspace(ext?: string, refreshFromDisk: boolean = false): Promise<vscode.Uri[]> {
+		Logger.log(`Getting projects in workspace`);
+		const startTime = new Date().getTime();
 
 		if (refreshFromDisk || this.openedProjects === undefined) { // always check if nothing cached
 			await this.refreshProjectsFromDisk();
@@ -146,6 +148,8 @@ export class WorkspaceService implements IWorkspaceService {
 		// remove excluded projects specified in workspace file
 		this.excludedProjects = this.getWorkspaceConfigurationValue<string[]>(ExcludedProjectsConfigurationName);
 		this.openedProjects = this.openedProjects.filter(project => !this.excludedProjects?.find(excludedProject => excludedProject === vscode.workspace.asRelativePath(project)));
+
+		Logger.log(`Finished looking for projects in workspace. Opened: ${this.openedProjects.length}. Excluded: ${this.excludedProjects.length}. Total time = ${new Date().getTime() - startTime}ms`);
 
 		// filter by specified extension
 		if (ext) {

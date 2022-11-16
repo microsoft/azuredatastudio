@@ -4,8 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { DisposableStore } from 'vs/base/common/lifecycle';
-import { ExtHostContext, ExtHostInteractiveShape, IExtHostContext, MainThreadInteractiveShape } from 'vs/workbench/api/common/extHost.protocol'; // {{SQL CARBON EDIT}} Disable unused
-// import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers'; {{SQL CARBON EDIT}} Disable unused
+import { PLAINTEXT_LANGUAGE_ID } from 'vs/editor/common/languages/modesRegistry';
+import { ExtHostContext, ExtHostInteractiveShape, MainThreadInteractiveShape } from 'vs/workbench/api/common/extHost.protocol';
+import { IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
 import { IInteractiveDocumentService } from 'vs/workbench/contrib/interactive/browser/interactiveDocumentService';
 
 // @extHostNamedCustomer(MainContext.MainThreadInteractive)
@@ -21,7 +22,7 @@ export class MainThreadInteractive implements MainThreadInteractiveShape {
 		this._proxy = extHostContext.getProxy(ExtHostContext.ExtHostInteractive);
 
 		this._disposables.add(interactiveDocumentService.onWillAddInteractiveDocument((e) => {
-			this._proxy.$willAddInteractiveDocument(e.inputUri, '\n', 'plaintext', e.notebookUri);
+			this._proxy.$willAddInteractiveDocument(e.inputUri, '\n', PLAINTEXT_LANGUAGE_ID, e.notebookUri);
 		}));
 
 		this._disposables.add(interactiveDocumentService.onWillRemoveInteractiveDocument((e) => {

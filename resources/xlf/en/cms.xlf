@@ -95,12 +95,6 @@
     <trans-unit id="cms.connectionOptions.applicationName.displayName">
       <source xml:lang="en">Application name</source>
     </trans-unit>
-    <trans-unit id="cms.connectionOptions.asynchronousProcessing.description">
-      <source xml:lang="en">When true, enables usage of the Asynchronous functionality in the .Net Framework Data Provider</source>
-    </trans-unit>
-    <trans-unit id="cms.connectionOptions.asynchronousProcessing.displayName">
-      <source xml:lang="en">Asynchronous processing</source>
-    </trans-unit>
     <trans-unit id="cms.connectionOptions.attachDbFilename.displayName">
       <source xml:lang="en">Attach DB filename</source>
     </trans-unit>

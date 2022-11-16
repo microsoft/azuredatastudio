@@ -1,6 +1,7 @@
 {
 	"parserOptions": {
-		"project": "./extensions/mssql/tsconfig.json"
+		"project": "./extensions/mssql/tsconfig.json",
+		"createDefaultProgram": true
 	},
 	"rules": {
 		"@typescript-eslint/no-floating-promises": [

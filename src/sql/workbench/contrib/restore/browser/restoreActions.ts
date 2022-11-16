@@ -17,6 +17,7 @@ import { Task } from 'sql/workbench/services/tasks/browser/tasksRegistry';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES } from 'sql/workbench/common/constants';
 
 export function showRestore(accessor: ServicesAccessor, connection: IConnectionProfile): Promise<void> {
 	const restoreDialogService = accessor.get(IRestoreDialogController);
@@ -46,7 +47,7 @@ export class RestoreAction extends Task {
 	runTask(accessor: ServicesAccessor, withProfile?: IConnectionProfile): void | Promise<void> {
 		let profile = withProfile;
 		const configurationService = accessor.get<IConfigurationService>(IConfigurationService);
-		const previewFeaturesEnabled: boolean = configurationService.getValue<{ enablePreviewFeatures: boolean }>('workbench').enablePreviewFeatures;
+		const previewFeaturesEnabled: boolean = configurationService.getValue(CONFIG_WORKBENCH_ENABLEPREVIEWFEATURES);
 		if (!previewFeaturesEnabled) {
 			return accessor.get<INotificationService>(INotificationService).info(restoreIsPreviewFeature);
 		}

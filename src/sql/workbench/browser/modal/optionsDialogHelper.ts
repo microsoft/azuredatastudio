@@ -147,8 +147,8 @@ export function updateOptions(options: { [optionName: string]: any }, optionsMap
 	}
 }
 
-export let trueInputValue: string = 'True';
-export let falseInputValue: string = 'False';
+export let trueInputValue: string = localize('boolean.true', 'True');
+export let falseInputValue: string = localize('boolean.false', 'False');
 
 export function findElement(container: HTMLElement, className: string): HTMLElement {
 	let elementBuilder = container;

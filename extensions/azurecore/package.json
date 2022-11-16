@@ -351,6 +351,7 @@
     "axios": "^0.27.2",
     "node-fetch": "^2.6.7",
     "qs": "^6.9.1",
+    "universalify": "^0.1.2",
     "vscode-nls": "^4.0.0",
     "ws": "^7.4.6"
   },
@@ -363,11 +364,10 @@
     "@types/sinon": "^9.0.4",
     "@types/ws": "^6.0.4",
     "mocha": "^7.1.1",
-    "mocha-junit-reporter": "^1.17.0",
-    "mocha-multi-reporters": "^1.1.7",
     "should": "^13.2.1",
     "sinon": "^9.0.2",
     "typemoq": "^2.1.0",
-    "@microsoft/vscodetestcover": "^1.2.1"
+    "@microsoft/vscodetestcover": "^1.2.1",
+    "@microsoft/azdata-test": "^2.0.3"
   }
 }

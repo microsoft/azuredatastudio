@@ -9,7 +9,7 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { ITree } from 'vs/base/parts/tree/browser/tree';
+import { ITree } from 'sql/base/parts/tree/browser/tree';
 import { IObjectExplorerService, ServerTreeViewView } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import Severity from 'vs/base/common/severity';
@@ -60,16 +60,17 @@ export class RefreshAction extends Action {
 
 		if (treeNode) {
 			try {
-				try {
-					const session = treeNode.getSession();
-					if (session) {
-						await this._objectExplorerService.refreshTreeNode(session, treeNode);
-					}
-				} catch (error) {
-					this.showError(error);
-					return;
-				}
 				if (this._tree instanceof AsyncServerTree) {
+					// Code moved here as non async tree already does it in it's refresh function (required to show loading spinner)
+					try {
+						const session = treeNode.getSession();
+						if (session) {
+							await this._objectExplorerService.refreshTreeNode(session, treeNode);
+						}
+					} catch (error) {
+						this.showError(error);
+						return;
+					}
 					await this._tree.updateChildren(this.element);
 				} else {
 					await this._tree.refresh(this.element);

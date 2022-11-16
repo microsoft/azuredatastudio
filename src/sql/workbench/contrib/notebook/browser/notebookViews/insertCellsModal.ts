@@ -8,7 +8,6 @@ import { IClipboardService } from 'sql/platform/clipboard/common/clipboardServic
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { Modal } from 'sql/workbench/browser/modal/modal';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -30,6 +29,7 @@ import { truncate } from 'vs/base/common/strings';
 import { toJpeg } from 'html-to-image';
 import { IComponentEventArgs } from 'sql/platform/dashboard/browser/interfaces';
 import { Thumbnail } from 'sql/workbench/contrib/notebook/browser/notebookViews/insertCellsScreenshots.component';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 
 type CellOption = {
 	optionMetadata: ServiceOption,

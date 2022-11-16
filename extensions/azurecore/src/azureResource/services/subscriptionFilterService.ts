@@ -11,11 +11,11 @@ interface AzureResourceSelectedSubscriptionsCache {
 }
 
 export class AzureResourceSubscriptionFilterService implements IAzureResourceSubscriptionFilterService {
-	public constructor(
-		cacheService: IAzureResourceCacheService
-	) {
-		this._cacheService = cacheService;
+	private _cacheKey: string;
 
+	public constructor(
+		private _cacheService: IAzureResourceCacheService
+	) {
 		this._cacheKey = this._cacheService.generateKey('selectedSubscriptions');
 	}
 
@@ -51,7 +51,4 @@ export class AzureResourceSubscriptionFilterService implements IAzureResourceSub
 			filters.push(...selectedSubscriptionsCache[accountId].map((subscription) => `${accountId}/${subscription.id}/${subscription.name}`));
 		}
 	}
-
-	private _cacheService: IAzureResourceCacheService = undefined;
-	private _cacheKey: string = undefined;
 }

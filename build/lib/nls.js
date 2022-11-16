@@ -107,12 +107,14 @@ var _nls;
             this.file = ts.ScriptSnapshot.fromString(contents);
             this.lib = ts.ScriptSnapshot.fromString('');
         }
-        // {{SQL CARBON EDIT}} - provide missing methods
-        readFile() {
+        readFile(path, _encoding) {
+            if (path === this.filename) {
+                return this.file.getText(0, this.file.getLength());
+            }
             return undefined;
         }
-        fileExists() {
-            return false;
+        fileExists(path) {
+            return path === this.filename;
         }
     }
     function isCallExpressionWithinTextSpanCollectStep(ts, textSpan, node) {

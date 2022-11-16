@@ -4,10 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
-import { SqlMainContext, MainThreadCredentialManagementShape, ExtHostCredentialManagementShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { MainThreadCredentialManagementShape, ExtHostCredentialManagementShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { Disposable } from 'vs/workbench/api/common/extHostTypes';
+import { SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 class CredentialAdapter {
 	public provider: azdata.CredentialProvider;

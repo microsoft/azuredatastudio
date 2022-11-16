@@ -66,7 +66,8 @@ export class ExecutionPlanComparisonEditor extends EditorPane {
 
 		// creating a new comparison view if the new input does not already have a cached one.
 		if (!input._executionPlanComparisonView) {
-			input._executionPlanComparisonView = this._instantiationService.createInstance(ExecutionPlanComparisonEditorView, this._editorContainer);
+			input._executionPlanComparisonView = this._register(this._instantiationService.createInstance(ExecutionPlanComparisonEditorView, this._editorContainer));
+
 			if (this.input.preloadModel) {
 				if (this.input.preloadModel.topExecutionPlan) {
 					input._executionPlanComparisonView.addExecutionPlanGraph(this.input.preloadModel.topExecutionPlan, this.input.preloadModel.topPlanIndex);

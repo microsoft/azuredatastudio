@@ -5,14 +5,7 @@
 		"Windows_86": "win-x86-net5.0.zip",
 		"Windows_64": "win-x64-net5.0.zip",
 		"OSX": "osx-x64-net5.0.tar.gz",
-		"CentOS_7": "rhel-x64-net5.0.tar.gz",
-		"Debian_8": "rhel-x64-net5.0.tar.gz",
-		"Fedora_23": "rhel-x64-net5.0.tar.gz",
-		"OpenSUSE_13_2": "rhel-x64-net5.0.tar.gz",
-		"RHEL_7": "rhel-x64-net5.0.tar.gz",
-		"SLES_12_2": "rhel-x64-net5.0.tar.gz",
-		"Ubuntu_14": "rhel-x64-net5.0.tar.gz",
-		"Ubuntu_16": "rhel-x64-net5.0.tar.gz"
+		"Linux": "rhel-x64-net5.0.tar.gz"
 	},
 	"installDirectory": "../sqltoolsservice/{#platform#}/{#version#}",
 	"executableFiles": [

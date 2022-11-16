@@ -82,7 +82,7 @@ export class SqlFlavorStatusbarItem extends Disposable implements IWorkbenchCont
 				SqlFlavorStatusbarItem.ID,
 				StatusbarAlignment.RIGHT, 100)
 		);
-
+		this.hide();
 		this._register(this.connectionManagementService.onLanguageFlavorChanged((changeParams: DidChangeLanguageFlavorParams) => this._onFlavorChanged(changeParams)));
 		this._register(this.editorService.onDidVisibleEditorsChange(() => this._onEditorsChanged()));
 		this._register(this.editorService.onDidCloseEditor(event => this._onEditorClosed(event)));

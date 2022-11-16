@@ -37,7 +37,7 @@ if (process.argv.length === 3 && process.argv[2]) {
 			}
 			let bashPath = LAUNCH_GIT_BASH_WINDOWS;
 			// quote the path with double quote if it contains spaces
-			if (bashPath.indexOf(' ') != -1) {
+			if (bashPath.indexOf(' ') !== -1) {
 				bashPath = '"' + bashPath + '"';
 			}
 

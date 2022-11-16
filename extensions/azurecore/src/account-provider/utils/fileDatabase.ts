@@ -15,11 +15,11 @@ export class AlreadyInitializedError extends Error {
 }
 
 export class FileDatabase {
-	private db: { [key: string]: string };
+	private db: { [key: string]: string } = {};
 	private isDirty = false;
 	private isSaving = false;
 	private isInitialized = false;
-	private saveInterval: NodeJS.Timer;
+	private saveInterval: NodeJS.Timer | undefined;
 
 	constructor(
 		private readonly dbPath: string,
@@ -91,7 +91,7 @@ export class FileDatabase {
 
 	public async initialize(): Promise<void> {
 		this.isInitialized = true;
-		this.setupSaveTask();
+		this.saveInterval = setInterval(() => this.save(), 20 * 1000);
 		let fileContents: string;
 		try {
 			await fs.access(this.dbPath, fsConstants.R_OK | fsConstants.R_OK);
@@ -114,13 +114,11 @@ export class FileDatabase {
 		}
 	}
 
-	private setupSaveTask(): NodeJS.Timer {
-		return setInterval(() => this.save(), 20 * 1000);
-	}
-
 	public async shutdown(): Promise<void> {
 		await this.waitForFileSave();
-		clearInterval((this.saveInterval));
+		if (this.saveInterval) {
+			clearInterval(this.saveInterval);
+		}
 		await this.save();
 	}
 

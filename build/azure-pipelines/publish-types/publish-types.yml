@@ -12,7 +12,7 @@ pool:
 steps:
   - task: NodeTool@0
     inputs:
-      versionSpec: "14.x"
+      versionSpec: "16.x"
 
   - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
     inputs:
@@ -20,7 +20,7 @@ steps:
 
   # - bash: |
   #     TAG_VERSION=$(git describe --tags `git rev-list --tags --max-count=1`)
-  #     CHANNEL="G1C14HJ2F"
+  #    CHANNEL="G1C14HJ2F"
 
   #     if [ "$TAG_VERSION" == "1.999.0" ]; then
   #       MESSAGE="<!here>. Someone pushed 1.999.0 tag. Please delete it ASAP from remote and local."

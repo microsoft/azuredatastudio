@@ -44,6 +44,7 @@ export class RunAutomaticTasks extends Disposable implements IWorkbenchContribut
 
 		this.logService.trace('RunAutomaticTasks: Checking if automatic tasks should run.');
 		const isFolderAutomaticAllowed = this.storageService.getBoolean(ARE_AUTOMATIC_TASKS_ALLOWED_IN_WORKSPACE, StorageScope.WORKSPACE, undefined);
+		await this.workspaceTrustManagementService.workspaceTrustInitialized;
 		const isWorkspaceTrusted = this.workspaceTrustManagementService.isWorkspaceTrusted();
 		// Only run if allowed. Prompting for permission occurs when a user first tries to run a task.
 		if (isFolderAutomaticAllowed && isWorkspaceTrusted) {
@@ -85,7 +86,7 @@ export class RunAutomaticTasks extends Disposable implements IWorkbenchContribut
 		return undefined;
 	}
 
-	private static findAutoTasks(taskService: ITaskService, workspaceTaskResult: Map<string, WorkspaceFolderTaskResult>): { tasks: Array<Task | Promise<Task | undefined>>, taskNames: Array<string>, locations: Map<string, URI> } {
+	private static findAutoTasks(taskService: ITaskService, workspaceTaskResult: Map<string, WorkspaceFolderTaskResult>): { tasks: Array<Task | Promise<Task | undefined>>; taskNames: Array<string>; locations: Map<string, URI> } {
 		const tasks = new Array<Task | Promise<Task | undefined>>();
 		const taskNames = new Array<string>();
 		const locations = new Map<string, URI>();

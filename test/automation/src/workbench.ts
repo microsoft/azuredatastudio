@@ -78,7 +78,7 @@ export class Workbench {
 		this.editors = new Editors(code);
 		this.quickinput = new QuickInput(code);
 		this.quickaccess = new QuickAccess(code, this.editors, this.quickinput);
-		this.explorer = new Explorer(code, this.editors);
+		this.explorer = new Explorer(code);
 		this.activitybar = new ActivityBar(code);
 		this.search = new Search(code);
 		this.extensions = new Extensions(code);
@@ -89,7 +89,7 @@ export class Workbench {
 		this.problems = new Problems(code, this.quickaccess);
 		this.settingsEditor = new SettingsEditor(code, userDataPath, this.editors, this.editor, this.quickaccess);
 		this.keybindingsEditor = new KeybindingsEditor(code);
-		this.terminal = new Terminal(code, this.quickaccess);
+		this.terminal = new Terminal(code, this.quickaccess, this.quickinput);
 		// {{SQL CARBON EDIT}}
 		this.notificationToast = new NotificationToast(code);
 		this.connectionDialog = new ConnectionDialog(code);

@@ -7,13 +7,13 @@ import * as azdata from 'azdata';
 import { Disposable } from 'vs/workbench/api/common/extHostTypes';
 import {
 	ExtHostAccountManagementShape,
-	MainThreadAccountManagementShape,
-	SqlMainContext,
+	MainThreadAccountManagementShape
 } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { AzureResource } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { Event, Emitter } from 'vs/base/common/event';
 import { values } from 'vs/base/common/collections';
+import { SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 type ProviderAndAccount = { provider: azdata.AccountProvider, account: azdata.Account };
 

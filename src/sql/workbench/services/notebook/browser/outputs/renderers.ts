@@ -548,6 +548,7 @@ namespace Private {
 				header.id = encodeURIComponent(header.innerHTML.replace(/ /g, '-'));
 				let anchor = document.createElement('a');
 				anchor.target = '_self';
+				// allow-any-unicode-next-line
 				anchor.textContent = '¶';
 				anchor.href = '#' + header.id;
 				anchor.classList.add('jp-InternalAnchorLink');

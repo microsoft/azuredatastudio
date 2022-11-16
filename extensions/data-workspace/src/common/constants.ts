@@ -33,6 +33,7 @@ export const Select = localize('dataworkspace.select', "Select");
 export const WorkspaceFileExtension = '.code-workspace';
 export const DefaultInputWidth = '400px';
 export const DefaultButtonWidth = '80px';
+export const DataWorkspaceOutputChannel = 'Data Workspace';
 
 // New Project Dialog
 export const NewProjectDialogTitle = localize('dataworkspace.NewProjectDialogTitle', "Create new database project");

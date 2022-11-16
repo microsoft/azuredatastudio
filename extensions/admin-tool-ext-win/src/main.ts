@@ -129,7 +129,7 @@ async function launchSsmsDialog(action: string, connectionContext: azdata.Object
 		server: connectionContext.connectionProfile.serverName,
 		database: connectionContext.connectionProfile.databaseName,
 		user: connectionContext.connectionProfile.userName,
-		useAad: connectionContext.connectionProfile.authenticationType === 'AzureMFA',
+		useAad: connectionContext.connectionProfile.authenticationType === azdata.connection.AuthenticationType.AzureMFA,
 		urn: urn
 	};
 

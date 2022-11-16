@@ -32,7 +32,7 @@ export class AzureResourceService {
 		this._areResourceProvidersLoaded = false;
 	}
 
-	public async getRootChildren(resourceProviderId: string, account: AzureAccount, subscription: azureResource.AzureResourceSubscription, tenatId: string): Promise<IAzureResourceNodeWithProviderId[]> {
+	public async getRootChildren(resourceProviderId: string, account: AzureAccount, subscription: azureResource.AzureResourceSubscription, tenantId: string): Promise<IAzureResourceNodeWithProviderId[]> {
 		await this.ensureResourceProvidersRegistered();
 
 		if (!(resourceProviderId in this._resourceProviders)) {
@@ -40,16 +40,18 @@ export class AzureResourceService {
 		}
 
 		const treeDataProvider = this._treeDataProviders[resourceProviderId];
-		const children = await treeDataProvider.getChildren();
+		const rootChildren = await treeDataProvider.getRootChildren();
 
-		return children.map((child) => <IAzureResourceNodeWithProviderId>{
-			resourceProviderId: resourceProviderId,
-			resourceNode: <azureResource.IAzureResourceNode>{
-				account: account,
-				subscription: subscription,
-				tenantId: tenatId,
-				treeItem: child.treeItem
-			}
+		return rootChildren.map(rootChild => {
+			return {
+				resourceProviderId,
+				resourceNode: {
+					account,
+					subscription,
+					tenantId,
+					treeItem: rootChild
+				}
+			};
 		});
 	}
 
@@ -70,7 +72,7 @@ export class AzureResourceService {
 		});
 	}
 
-	public async getTreeItem(resourceProviderId: string, element?: azureResource.IAzureResourceNode): Promise<TreeItem> {
+	public async getTreeItem(resourceProviderId: string, element: azureResource.IAzureResourceNode): Promise<TreeItem> {
 		await this.ensureResourceProvidersRegistered();
 
 		if (!(resourceProviderId in this._resourceProviders)) {
@@ -78,7 +80,7 @@ export class AzureResourceService {
 		}
 
 		const treeDataProvider = this._treeDataProviders[resourceProviderId];
-		return treeDataProvider.getTreeItem(element);
+		return treeDataProvider.getResourceTreeItem(element);
 	}
 
 	public get areResourceProvidersLoaded(): boolean {

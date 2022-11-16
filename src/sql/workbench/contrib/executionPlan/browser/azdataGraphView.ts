@@ -6,7 +6,7 @@
 import * as azdataGraphModule from 'azdataGraph';
 import * as azdata from 'azdata';
 import * as sqlExtHostType from 'sql/workbench/api/common/sqlExtHostTypes';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 import { isString } from 'vs/base/common/types';
 import { badgeIconPaths, collapseExpandNodeIconPaths, executionPlanNodeIconPaths } from 'sql/workbench/contrib/executionPlan/browser/constants';
 import { localize } from 'vs/nls';
@@ -14,17 +14,21 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { foreground } from 'vs/platform/theme/common/colorRegistry';
 import { generateUuid } from 'vs/base/common/uuid';
+import { Disposable } from 'vs/base/common/lifecycle';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { status } from 'vs/base/browser/ui/aria/aria';
 const azdataGraph = azdataGraphModule();
 
 /**
  * This view holds the azdataGraph diagram and provides different
  * methods to manipulate the azdataGraph
  */
-export class AzdataGraphView {
+export class AzdataGraphView extends Disposable {
 
 	private _diagram: any;
 	private _diagramModel: AzDataGraphCell;
 	private _cellInFocus: AzDataGraphCell;
+	public expensiveMetricTypes: Set<ExpensiveMetricType> = new Set();
 
 	private _graphElementPropertiesSet: Set<string> = new Set();
 
@@ -34,8 +38,12 @@ export class AzdataGraphView {
 	constructor(
 		private _parentContainer: HTMLElement,
 		private _executionPlan: azdata.executionPlan.ExecutionPlanGraph,
+		executionPlanDiagramName: string,
 		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService,
+		@IConfigurationService readonly configurationService: IConfigurationService
 	) {
+		super();
+
 		this._diagramModel = this.populate(this._executionPlan.root);
 
 		let queryPlanConfiguration = {
@@ -43,13 +51,25 @@ export class AzdataGraphView {
 			queryPlanGraph: this._diagramModel,
 			iconPaths: executionPlanNodeIconPaths,
 			badgeIconPaths: badgeIconPaths,
-			expandCollapsePaths: collapseExpandNodeIconPaths
+			expandCollapsePaths: collapseExpandNodeIconPaths,
+			showTooltipOnClick: configurationService.getValue<boolean>('executionPlan.tooltips.enableOnHoverTooltips') ? false : true,
 		};
 		this._diagram = new azdataGraph.azdataQueryPlan(queryPlanConfiguration);
+		(<any>this._parentContainer.firstChild).ariaLabel = localize('executionPlanComparison.bottomPlanDiagram.ariaLabel', '{0}, use arrow keys to navigate between nodes', executionPlanDiagramName);
 
 		this.setGraphProperties();
 		this._cellInFocus = this._diagram.graph.getSelectionCell();
 		this.initializeGraphEvents();
+
+		configurationService.onDidChangeConfiguration(e => {
+			if (e.affectedKeys.includes('executionPlan.tooltips.enableOnHoverTooltips')) {
+				const enableHoverOnTooltip = configurationService.getValue<boolean>('executionPlan.tooltips.enableOnHoverTooltips');
+				if (this._diagram) {
+					this._diagram.setShowTooltipOnClick(!enableHoverOnTooltip);
+					this._diagram.showTooltip(this._diagram.graph.showTooltip);
+				}
+			}
+		});
 	}
 
 	private setGraphProperties(): void {
@@ -57,25 +77,29 @@ export class AzdataGraphView {
 		this._diagram.graph.setCellsDisconnectable(false); // preventing graph edges to be disconnected from source and target nodes.
 		this._diagram.graph.tooltipHandler.delay = 700; // increasing delay for tooltips
 
-		registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
+		this._register(registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
 			const iconLabelColor = theme.getColor(foreground);
 			if (iconLabelColor) {
 				this._diagram.setTextFontColor(iconLabelColor);
 				this._diagram.setEdgeColor(iconLabelColor);
 			}
-		});
+		}));
 	}
 
 	private initializeGraphEvents(): void {
 		this.onElementSelected = this._onElementSelectedEmitter.event;
 		this._diagram.graph.getSelectionModel().addListener('change', (sender, evt) => {
 			if (evt.properties?.removed) {
-				if (this._cellInFocus?.id === evt.properties.removed[0].id) {
+				if (this._cellInFocus?.id === evt.properties.removed[0]?.id) {
 					return;
 				}
+
 				const newSelection = evt.properties.removed[0];
+				if (!newSelection) {
+					return;
+				}
+
 				this._onElementSelectedEmitter.fire(this.getElementById(newSelection.id));
-				this.centerElement(this.getElementById(newSelection.id));
 				this._cellInFocus = evt.properties.removed[0];
 			} else {
 				if (evt.properties?.added) {
@@ -83,6 +107,10 @@ export class AzdataGraphView {
 					this.selectElement(this.getElementById(getPreviousSelection.id));
 				}
 			}
+		});
+
+		this._diagram.graph.addListener('tooltipShown', (sender, evt) => {
+			status(evt.properties.tooltip.textContent);
 		});
 	}
 
@@ -98,7 +126,9 @@ export class AzdataGraphView {
 		} else {
 			cell = this._diagram.graph.model.getCell((<azdata.executionPlan.ExecutionPlanNode>this._executionPlan.root).id);
 		}
+
 		this._diagram.graph.getSelectionModel().setCell(cell);
+
 		if (bringToCenter) {
 			this.centerElement(element);
 		}
@@ -112,6 +142,7 @@ export class AzdataGraphView {
 		if (cell?.id) {
 			return this.getElementById(cell.id);
 		}
+
 		return undefined;
 	}
 
@@ -134,6 +165,9 @@ export class AzdataGraphView {
 	 */
 	public zoomToFit(): void {
 		this._diagram.zoomToFit();
+		if (this.getZoomLevel() > 200) {
+			this.setZoomLevel(200);
+		}
 	}
 
 	/**
@@ -151,6 +185,7 @@ export class AzdataGraphView {
 		if (level < 1) {
 			throw new Error(localize('invalidExecutionPlanZoomError', "Zoom level cannot be 0 or negative"));
 		}
+
 		this._diagram.zoomTo(level);
 	}
 
@@ -161,11 +196,13 @@ export class AzdataGraphView {
 	public getElementById(id: string): InternalExecutionPlanElement | undefined {
 		const nodeStack: azdata.executionPlan.ExecutionPlanNode[] = [];
 		nodeStack.push(this._executionPlan.root);
+
 		while (nodeStack.length !== 0) {
 			const currentNode = nodeStack.pop();
 			if (currentNode.id === id) {
 				return currentNode;
 			}
+
 			if (currentNode.edges) {
 				for (let i = 0; i < currentNode.edges.length; i++) {
 					if ((<InternalExecutionPlanEdge>currentNode.edges[i]).id === id) {
@@ -173,8 +210,10 @@ export class AzdataGraphView {
 					}
 				}
 			}
+
 			nodeStack.push(...currentNode.children);
 		}
+
 		return undefined;
 	}
 
@@ -218,15 +257,25 @@ export class AzdataGraphView {
 						matchFound = matchingProp.value < searchQuery.value || matchingProp.value > searchQuery.value;
 						break;
 				}
+
 				if (matchFound) {
 					resultNodes.push(currentNode);
 				}
 			}
+
 			nodeStack.push(...currentNode.children);
 		}
+
 		return resultNodes;
 	}
 
+	public clearExpensiveOperatorHighlighting(): void {
+		this._diagram.clearExpensiveOperatorHighlighting();
+	}
+
+	public highlightExpensiveOperator(predicate: (cell: AzDataGraphCell) => number): string {
+		return this._diagram.highlightExpensiveOperator(predicate);
+	}
 
 	/**
 	 * Brings a graph element to the center of the parent view.
@@ -289,41 +338,67 @@ export class AzdataGraphView {
 		diagramNode.tooltipTitle = node.name;
 		diagramNode.rowCountDisplayString = node.rowCountDisplayString;
 		diagramNode.costDisplayString = node.costDisplayString;
+
+		this.expensiveMetricTypes.add(ExpensiveMetricType.Off);
+
 		if (!node.id.toString().startsWith(`element-`)) {
 			node.id = `element-${node.id}`;
 		}
 		diagramNode.id = node.id;
 
-		if (node.type) {
-			diagramNode.icon = node.type;
+		diagramNode.icon = node.type;
+		diagramNode.metrics = this.populateProperties(node.properties);
+
+		diagramNode.badges = [];
+		for (let i = 0; node.badges && i < node.badges.length; i++) {
+			diagramNode.badges.push(this.getBadgeTypeString(node.badges[i].type));
 		}
 
-		if (node.properties) {
-			diagramNode.metrics = this.populateProperties(node.properties);
+		diagramNode.edges = this.populateEdges(node.edges);
+
+		diagramNode.children = [];
+		for (let i = 0; node.children && i < node.children.length; ++i) {
+			diagramNode.children.push(this.populate(node.children[i]));
 		}
 
-		if (node.badges) {
-			diagramNode.badges = [];
-			for (let i = 0; i < node.badges.length; i++) {
-				diagramNode.badges.push(this.getBadgeTypeString(node.badges[i].type));
-			}
+		diagramNode.description = node.description;
+		diagramNode.cost = node.cost;
+		if (node.cost) {
+			this.expensiveMetricTypes.add(ExpensiveMetricType.Cost);
 		}
 
-		if (node.edges) {
-			diagramNode.edges = this.populateEdges(node.edges);
+		diagramNode.subTreeCost = node.subTreeCost;
+		if (node.subTreeCost) {
+			this.expensiveMetricTypes.add(ExpensiveMetricType.SubtreeCost);
 		}
 
-		if (node.children) {
-			diagramNode.children = [];
-			for (let i = 0; i < node.children.length; ++i) {
-				diagramNode.children.push(this.populate(node.children[i]));
-			}
+		diagramNode.relativeCost = node.relativeCost;
+		diagramNode.elapsedTimeInMs = node.elapsedTimeInMs;
+		if (node.elapsedTimeInMs) {
+			this.expensiveMetricTypes.add(ExpensiveMetricType.ActualElapsedTime);
 		}
 
-		if (node.description) {
-			diagramNode.description = node.description;
+		let costMetrics = [];
+		for (let i = 0; node.costMetrics && i < node.costMetrics.length; ++i) {
+			costMetrics.push(node.costMetrics[i]);
+
+			this.loadMetricTypesFromCostMetrics(node.costMetrics[i].name);
 		}
+		diagramNode.costMetrics = costMetrics;
+
 		return diagramNode;
+	}
+
+	private loadMetricTypesFromCostMetrics(costMetricName: string): void {
+		if (costMetricName === 'ElapsedCpuTime') {
+			this.expensiveMetricTypes.add(ExpensiveMetricType.ActualElapsedCpuTime);
+		}
+		else if (costMetricName === 'EstimateRowsAllExecs' || costMetricName === 'ActualRows') {
+			this.expensiveMetricTypes.add(ExpensiveMetricType.ActualNumberOfRowsForAllExecutions);
+		}
+		else if (costMetricName === 'EstimatedRowsRead' || costMetricName === 'ActualRowsRead') {
+			this.expensiveMetricTypes.add(ExpensiveMetricType.NumberOfRowsRead);
+		}
 	}
 
 	private getBadgeTypeString(badgeType: sqlExtHostType.executionPlan.BadgeType): {
@@ -354,10 +429,15 @@ export class AzdataGraphView {
 		}
 	}
 
-	private populateProperties(props: azdata.executionPlan.ExecutionPlanGraphElementProperty[]): AzDataGraphCellMetric[] {
+	private populateProperties(props: azdata.executionPlan.ExecutionPlanGraphElementProperty[] | undefined): AzDataGraphCellMetric[] {
+		if (!props) {
+			return [];
+		}
+
 		props.forEach(p => {
 			this._graphElementPropertiesSet.add(p.name);
 		});
+
 		return props.filter(e => isString(e.displayValue) && e.showInTooltip)
 			.sort((a, b) => a.displayOrder - b.displayOrder)
 			.map(e => {
@@ -369,7 +449,11 @@ export class AzdataGraphView {
 			});
 	}
 
-	private populateEdges(edges: InternalExecutionPlanEdge[]): AzDataGraphCellEdge[] {
+	private populateEdges(edges: InternalExecutionPlanEdge[] | undefined): AzDataGraphCellEdge[] {
+		if (!edges) {
+			return [];
+		}
+
 		return edges.map(e => {
 			e.id = this.createGraphElementId();
 			return {
@@ -397,12 +481,8 @@ export class AzdataGraphView {
 	 * @returns state of the tooltip after toggling
 	 */
 	public toggleTooltip(): boolean {
-		if (this._diagram.graph.tooltipHandler.enabled) {
-			this._diagram.graph.tooltipHandler.setEnabled(false);
-		} else {
-			this._diagram.graph.tooltipHandler.setEnabled(true);
-		}
-		return this._diagram.graph.tooltipHandler.enabled;
+		this._diagram.showTooltip(!this._diagram.graph.showTooltip);
+		return this._diagram.graph.showTooltip;
 	}
 
 	public drawSubtreePolygon(subtreeRoot: string, fillColor: string, borderColor: string): void {
@@ -470,6 +550,37 @@ export interface AzDataGraphCell {
 	 */
 	description: string;
 	badges: AzDataGraphNodeBadge[];
+	/**
+	 * Cost associated with the node
+	 */
+	cost: number;
+	/**
+	 * Cost of the node subtree
+	 */
+	subTreeCost: number;
+	/**
+	 * Relative cost of the node compared to its siblings.
+	 */
+	relativeCost: number;
+	/**
+	 * Time taken by the node operation in milliseconds
+	 */
+	elapsedTimeInMs: number;
+	/**
+	 * cost metrics for the node
+	 */
+	costMetrics: CostMetric[];
+}
+
+export interface CostMetric {
+	/**
+	 * Name of the cost metric.
+	 */
+	name: string;
+	/**
+	 * The value of the cost metric
+	 */
+	value: number | undefined;
 }
 
 export interface AzDataGraphNodeBadge {
@@ -526,6 +637,17 @@ export enum SearchType {
 	LesserThanEqualTo,
 	LesserAndGreaterThan
 }
+
+export enum ExpensiveMetricType {
+	Off = 'off',
+	ActualElapsedTime = 'actualElapsedTime',
+	ActualElapsedCpuTime = 'actualElapsedCpuTime',
+	Cost = 'cost',
+	SubtreeCost = 'subtreeCost',
+	ActualNumberOfRowsForAllExecutions = 'actualNumberOfRowsForAllExecutions',
+	NumberOfRowsRead = 'numberOfRowsRead'
+}
+
 export interface SearchQuery {
 	/**
 	 * property name to be searched

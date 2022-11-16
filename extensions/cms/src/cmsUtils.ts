@@ -14,7 +14,6 @@ const localize = nls.loadMessageBundle();
 const cmsProvider: string = 'MSSQL-CMS';
 const mssqlProvider: string = 'MSSQL';
 const CredentialNamespace = 'cmsCredentials';
-const sqlLoginAuthType: string = 'SqlLogin';
 
 interface CreateCmsResult {
 	listRegisteredServersResult: mssql.ListRegisteredServersResult;
@@ -121,7 +120,7 @@ export class CmsUtils {
 				return cachedServer.name !== cmsServerName;
 			});
 		}
-		if (connection.options.authenticationType === sqlLoginAuthType && connection.options.savePassword) {
+		if (connection.options.authenticationType === azdata.connection.AuthenticationType.SqlLogin && connection.options.savePassword) {
 			this._credentialProvider.deleteCredential(connection.options.user);
 		}
 	}

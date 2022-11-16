@@ -37,7 +37,7 @@ const darwinCreditsTemplate = product.darwinCredits && _.template(fs.readFileSyn
  * If you call `darwinBundleDocumentType(..., 'bat', 'Windows command script')`, the file type is `"Windows command script"`,
  * and the `'bat'` darwin icon is used.
  */
-function darwinBundleDocumentType(extensions, icon, nameOrSuffix) {
+function darwinBundleDocumentType(extensions, icon, nameOrSuffix, utis) {
     // If given a suffix, generate a name from it. If not given anything, default to 'document'
     if (isDocumentSuffix(nameOrSuffix) || !nameOrSuffix) {
         nameOrSuffix = icon.charAt(0).toUpperCase() + icon.slice(1) + ' ' + (nameOrSuffix !== null && nameOrSuffix !== void 0 ? nameOrSuffix : 'document');
@@ -46,8 +46,9 @@ function darwinBundleDocumentType(extensions, icon, nameOrSuffix) {
         name: nameOrSuffix,
         role: 'Editor',
         ostypes: ['TEXT', 'utxt', 'TUTX', '****'],
-        extensions: extensions,
-        iconFile: 'resources/darwin/' + icon + '.icns'
+        extensions,
+        iconFile: 'resources/darwin/' + icon + '.icns',
+        utis
     };
 }
 /**
@@ -66,11 +67,11 @@ function darwinBundleDocumentType(extensions, icon, nameOrSuffix) {
 // 	return Object.keys(types).map((name: string): DarwinDocumentType => {
 // 		const extensions = types[name];
 // 		return {
-// 			name: name,
+//			name: name,
 // 			role: 'Editor',
 // 			ostypes: ['TEXT', 'utxt', 'TUTX', '****'],
 // 			extensions: Array.isArray(extensions) ? extensions : [extensions],
-// 			iconFile: 'resources/darwin/' + icon + '.icns',
+//			iconFile: 'resources/darwin/' + icon + '.icns',
 // 		} as DarwinDocumentType;
 // 	});
 // }
@@ -78,7 +79,7 @@ exports.config = {
     version: util.getElectronVersion(),
     productAppName: product.nameLong,
     companyName: 'Microsoft Corporation',
-    copyright: 'Copyright (C) 2021 Microsoft. All rights reserved',
+    copyright: 'Copyright (C) 2022 Microsoft. All rights reserved',
     darwinIcon: 'resources/darwin/code.icns',
     darwinBundleIdentifier: product.darwinBundleIdentifier,
     darwinApplicationCategoryType: 'public.app-category.developer-tools',

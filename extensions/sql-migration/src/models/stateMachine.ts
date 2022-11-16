@@ -14,7 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../telemtery';
 import { hashString, deepClone } from '../api/utils';
 import { SKURecommendationPage } from '../wizard/skuRecommendationPage';
-import { excludeDatabses, TargetDatabaseInfo } from '../api/sqlUtils';
+import { excludeDatabases, TargetDatabaseInfo } from '../api/sqlUtils';
 const localize = nls.loadMessageBundle();
 
 export enum State {
@@ -294,7 +294,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	}
 	public async getDatabases(): Promise<string[]> {
 		const temp = await azdata.connection.listDatabases(this.sourceConnectionId);
-		const finalResult = temp.filter((name) => !excludeDatabses.includes(name));
+		const finalResult = temp.filter((name) => !excludeDatabases.includes(name));
 		return finalResult;
 	}
 	public hasRecommendedDatabaseListChanged(): boolean {
@@ -380,7 +380,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			const connectionProfile = await this.getSourceConnectionProfile();
 			const connectionUri = await azdata.connection.getUriForConnection(this._sourceConnectionId);
 			const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(connectionProfile.providerId, azdata.DataProviderType.QueryProvider);
-			const queryString = 'select @@servername;';
+			const queryString = 'SELECT SERVERPROPERTY(\'ServerName\');';
 			const queryResult = await queryProvider.runQueryAndReturn(connectionUri, queryString);
 
 			if (queryResult.rowCount > 0) {
@@ -889,7 +889,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					dataSource: currentConnection?.serverName!,
 					authentication: this._authenticationType,
 					userName: this._sqlServerUsername,
-					password: this._sqlServerPassword
+					password: this._sqlServerPassword,
+					trustServerCertificate: currentConnection?.options.trustServerCertificate ?? false
 				},
 				scope: this._targetServerInstance.id,
 				offlineConfiguration: {
@@ -969,7 +970,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 								userName: this._sqlServerUsername,
 								password: this._sqlServerPassword,
 								encryptConnection: true,
-								trustServerCertificate: false,
+								trustServerCertificate: currentConnection?.options.trustServerCertificate ?? false,
 							};
 							requestBody.properties.targetSqlConnection = {
 								dataSource: sqlDbTarget.properties.fullyQualifiedDomainName,

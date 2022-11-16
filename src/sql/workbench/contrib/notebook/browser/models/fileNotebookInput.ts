@@ -11,6 +11,7 @@ import { IExtensionService } from 'vs/workbench/services/extensions/common/exten
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IResourceEditorInput } from 'vs/platform/editor/common/editor';
+import { IEditorResolverService } from 'vs/workbench/services/editor/common/editorResolverService';
 
 export class FileNotebookInput extends NotebookInput {
 	public static ID: string = 'workbench.editorinputs.fileNotebookInput';
@@ -23,9 +24,10 @@ export class FileNotebookInput extends NotebookInput {
 		@ITextModelService textModelService: ITextModelService,
 		@IInstantiationService instantiationService: IInstantiationService,
 		@INotebookService notebookService: INotebookService,
-		@IExtensionService extensionService: IExtensionService
+		@IExtensionService extensionService: IExtensionService,
+		@IEditorResolverService editorResolverService: IEditorResolverService,
 	) {
-		super(title, resource, textInput, showActions, textModelService, instantiationService, notebookService, extensionService);
+		super(title, resource, textInput, showActions, textModelService, instantiationService, notebookService, extensionService, editorResolverService);
 	}
 
 	public override get textInput(): FileEditorInput {
@@ -33,15 +35,15 @@ export class FileNotebookInput extends NotebookInput {
 	}
 
 	public getPreferredMode(): string {
-		return this.textInput.getPreferredMode();
+		return this.textInput.getPreferredLanguageId();
 	}
 
 	public setMode(mode: string): void {
-		this.textInput.setMode(mode);
+		this.textInput.setLanguageId(mode);
 	}
 
 	public setPreferredMode(mode: string): void {
-		this.textInput.setPreferredMode(mode);
+		this.textInput.setPreferredLanguageId(mode);
 	}
 
 	override get typeId(): string {

@@ -24,7 +24,7 @@ const editorFactoryRegistry = Registry.as<IEditorFactoryRegistry>(EditorExtensio
 export class NotebookEditorLanguageAssociation implements ILanguageAssociation {
 	/**
 	 * The language IDs that are associated with Notebooks. These are case sensitive for comparing with what's
-	 * registered in the ModeService registry.
+	 * registered in the LanguageService registry.
 	 */
 	static readonly languages = [NotebookLanguage.Notebook, NotebookLanguage.Ipynb];
 

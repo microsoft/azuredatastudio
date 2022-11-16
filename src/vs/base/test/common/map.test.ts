@@ -5,6 +5,7 @@
 
 import * as assert from 'assert';
 import { shuffle } from 'vs/base/common/arrays';
+import { randomPath } from 'vs/base/common/extpath';
 import { ConfigKeysIterator, LinkedMap, LRUCache, PathIterator, ResourceMap, StringIterator, TernarySearchTree, Touch, UriIterator } from 'vs/base/common/map';
 import { extUriIgnorePathCase } from 'vs/base/common/resources';
 import { StopWatch } from 'vs/base/common/stopwatch';
@@ -370,7 +371,7 @@ suite('Map', () => {
 	});
 
 	test('URIIterator', function () {
-		const iter = new UriIterator(() => false);
+		const iter = new UriIterator(() => false, () => false);
 		iter.reset(URI.parse('file:///usr/bin/file.txt'));
 
 		assert.strictEqual(iter.value(), 'file');
@@ -425,6 +426,58 @@ suite('Map', () => {
 		assert.strictEqual(iter.value(), 'foo');
 		assert.strictEqual(iter.cmp('z') > 0, true);
 		assert.strictEqual(iter.cmp('a') < 0, true);
+		assert.strictEqual(iter.hasNext(), false);
+	});
+
+	test('URIIterator - ignore query/fragment', function () {
+		const iter = new UriIterator(() => false, () => true);
+		iter.reset(URI.parse('file:///usr/bin/file.txt'));
+
+		assert.strictEqual(iter.value(), 'file');
+		// assert.strictEqual(iter.cmp('FILE'), 0);
+		assert.strictEqual(iter.cmp('file'), 0);
+		assert.strictEqual(iter.hasNext(), true);
+		iter.next();
+
+		assert.strictEqual(iter.value(), 'usr');
+		assert.strictEqual(iter.hasNext(), true);
+		iter.next();
+
+		assert.strictEqual(iter.value(), 'bin');
+		assert.strictEqual(iter.hasNext(), true);
+		iter.next();
+
+		assert.strictEqual(iter.value(), 'file.txt');
+		assert.strictEqual(iter.hasNext(), false);
+
+
+		iter.reset(URI.parse('file://share/usr/bin/file.txt?foo'));
+
+		// scheme
+		assert.strictEqual(iter.value(), 'file');
+		// assert.strictEqual(iter.cmp('FILE'), 0);
+		assert.strictEqual(iter.cmp('file'), 0);
+		assert.strictEqual(iter.hasNext(), true);
+		iter.next();
+
+		// authority
+		assert.strictEqual(iter.value(), 'share');
+		assert.strictEqual(iter.cmp('SHARe'), 0);
+		assert.strictEqual(iter.hasNext(), true);
+		iter.next();
+
+		// path
+		assert.strictEqual(iter.value(), 'usr');
+		assert.strictEqual(iter.hasNext(), true);
+		iter.next();
+
+		// path
+		assert.strictEqual(iter.value(), 'bin');
+		assert.strictEqual(iter.hasNext(), true);
+		iter.next();
+
+		// path
+		assert.strictEqual(iter.value(), 'file.txt');
 		assert.strictEqual(iter.hasNext(), false);
 	});
 
@@ -747,6 +800,68 @@ suite('Map', () => {
 		assertTstDfs(trie, ['ad', 1], ['ae', 1], ['af', 1], ['az', 1]);
 	});
 
+	test('TernarySearchTree: Cannot read property \'1\' of undefined #138284', function () {
+
+		const keys = [
+			URI.parse('fake-fs:/C'),
+			URI.parse('fake-fs:/A'),
+			URI.parse('fake-fs:/D'),
+			URI.parse('fake-fs:/B'),
+		];
+
+		const tst = TernarySearchTree.forUris<boolean>();
+
+		for (let item of keys) {
+			tst.set(item, true);
+		}
+
+		assert.ok(tst._isBalanced());
+		tst.delete(keys[0]);
+		assert.ok(tst._isBalanced());
+	});
+
+	test('TernarySearchTree: Cannot read property \'1\' of undefined #138284 (simple)', function () {
+
+		const keys = ['C', 'A', 'D', 'B',];
+		const tst = TernarySearchTree.forStrings<boolean>();
+		for (let item of keys) {
+			tst.set(item, true);
+		}
+		assertTstDfs(tst, ['A', true], ['B', true], ['C', true], ['D', true]);
+
+		tst.delete(keys[0]);
+		assertTstDfs(tst, ['A', true], ['B', true], ['D', true]);
+
+		{
+			const tst = TernarySearchTree.forStrings<boolean>();
+			tst.set('C', true);
+			tst.set('A', true);
+			tst.set('B', true);
+			assertTstDfs(tst, ['A', true], ['B', true], ['C', true]);
+		}
+
+	});
+
+	test('TernarySearchTree: Cannot read property \'1\' of undefined #138284 (random)', function () {
+		for (let round = 10; round >= 0; round--) {
+			const keys: URI[] = [];
+			for (let i = 0; i < 100; i++) {
+				keys.push(URI.from({ scheme: 'fake-fs', path: randomPath(undefined, undefined, 10) }));
+			}
+			const tst = TernarySearchTree.forUris<boolean>();
+
+			for (let item of keys) {
+				tst.set(item, true);
+				assert.ok(tst._isBalanced());
+			}
+
+			for (let item of keys) {
+				tst.delete(item);
+				assert.ok(tst._isBalanced());
+			}
+		}
+	});
+
 	test('TernarySearchTree (PathSegments) - lookup', function () {
 
 		const map = new TernarySearchTree<string, number>(new PathIterator());
@@ -838,7 +953,7 @@ suite('Map', () => {
 	});
 
 	test('TernarySearchTree (URI) - basics', function () {
-		let trie = new TernarySearchTree<URI, number>(new UriIterator(() => false));
+		let trie = new TernarySearchTree<URI, number>(new UriIterator(() => false, () => false));
 
 		trie.set(URI.file('/user/foo/bar'), 1);
 		trie.set(URI.file('/user/foo'), 2);
@@ -856,9 +971,20 @@ suite('Map', () => {
 		assert.strictEqual(trie.findSubstr(URI.file('/user/foo/bar/far/boo')), 1);
 	});
 
+	test('TernarySearchTree (URI) - query parameters', function () {
+		let trie = new TernarySearchTree<URI, number>(new UriIterator(() => false, () => true));
+		const root = URI.parse('memfs:/?param=1');
+		trie.set(root, 1);
+
+		assert.strictEqual(trie.get(URI.parse('memfs:/?param=1')), 1);
+
+		assert.strictEqual(trie.findSubstr(URI.parse('memfs:/?param=1')), 1);
+		assert.strictEqual(trie.findSubstr(URI.parse('memfs:/aaa?param=1')), 1);
+	});
+
 	test('TernarySearchTree (URI) - lookup', function () {
 
-		const map = new TernarySearchTree<URI, number>(new UriIterator(() => false));
+		const map = new TernarySearchTree<URI, number>(new UriIterator(() => false, () => false));
 		map.set(URI.parse('http://foo.bar/user/foo/bar'), 1);
 		map.set(URI.parse('http://foo.bar/user/foo?query'), 2);
 		map.set(URI.parse('http://foo.bar/user/foo?QUERY'), 3);
@@ -875,7 +1001,7 @@ suite('Map', () => {
 
 	test('TernarySearchTree (URI) - lookup, casing', function () {
 
-		const map = new TernarySearchTree<URI, number>(new UriIterator(uri => /^https?$/.test(uri.scheme)));
+		const map = new TernarySearchTree<URI, number>(new UriIterator(uri => /^https?$/.test(uri.scheme), () => false));
 		map.set(URI.parse('http://foo.bar/user/foo/bar'), 1);
 		assert.strictEqual(map.get(URI.parse('http://foo.bar/USER/foo/bar')), 1);
 
@@ -885,7 +1011,7 @@ suite('Map', () => {
 
 	test('TernarySearchTree (URI) - superstr', function () {
 
-		const map = new TernarySearchTree<URI, number>(new UriIterator(() => false));
+		const map = new TernarySearchTree<URI, number>(new UriIterator(() => false, () => false));
 		map.set(URI.file('/user/foo/bar'), 1);
 		map.set(URI.file('/user/foo'), 2);
 		map.set(URI.file('/user/foo/flip/flop'), 3);

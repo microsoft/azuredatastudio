@@ -12,8 +12,6 @@ import * as DOM from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { TextResourceEditorInput } from 'vs/workbench/common/editor/textResourceEditorInput';
 import { URI } from 'vs/base/common/uri';
-import { IModeService } from 'vs/editor/common/services/modeService';
-import { IModelService } from 'vs/editor/common/services/modelService';
 
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { TextDiffEditor } from 'vs/workbench/browser/parts/editor/textDiffEditor';
@@ -30,6 +28,8 @@ import { convertSizeToNumber } from 'sql/base/browser/dom';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IModelService } from 'vs/editor/common/services/model';
+import { ILanguageService } from 'vs/editor/common/languages/language';
 
 @Component({
 	template: `
@@ -58,7 +58,7 @@ export default class DiffEditorComponent extends ComponentBase<azdata.DiffEditor
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IModelService) private _modelService: IModelService,
-		@Inject(IModeService) private _modeService: IModeService,
+		@Inject(ILanguageService) private _modeService: ILanguageService,
 		@Inject(ITextModelService) private _textModelService: ITextModelService,
 		@Inject(ILogService) logService: ILogService,
 		@Inject(IEditorService) private _editorService: IEditorService,
@@ -89,7 +89,7 @@ export default class DiffEditorComponent extends ComponentBase<azdata.DiffEditor
 		let textModelContentProvider = this._textModelService.registerTextModelContentProvider('sqlDiffEditor', {
 			provideTextContent: (resource: URI): Promise<ITextModel> => {
 				let modelContent = '';
-				let languageSelection = this._modeService.create('plaintext');
+				let languageSelection = this._modeService.createById('plaintext');
 				return Promise.resolve(this._modelService.createModel(modelContent, languageSelection, resource));
 			}
 		});
@@ -153,7 +153,7 @@ export default class DiffEditorComponent extends ComponentBase<azdata.DiffEditor
 	private updateLanguageMode() {
 		if (this._editorModel && this._editor) {
 			this._languageMode = this.languageMode;
-			let languageSelection = this._modeService.create(this._languageMode);
+			let languageSelection = this._modeService.createById(this._languageMode);
 			this._modelService.setMode(this._editorModel.originalModel.textEditorModel, languageSelection);
 			this._modelService.setMode(this._editorModel.modifiedModel.textEditorModel, languageSelection);
 		}

@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ExtensionType, IExtensionIdentifier, IExtensionManifest } from 'vs/platform/extensions/common/extensions';
-import { IExtensionManagementService, ILocalExtension, IGalleryExtension, IGalleryMetadata, InstallOperation, IExtensionGalleryService, InstallOptions, TargetPlatform } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { ExtensionType, IExtension, IExtensionIdentifier, IExtensionManifest, TargetPlatform } from 'vs/platform/extensions/common/extensions';
+import { IExtensionManagementService, ILocalExtension, IGalleryExtension, IGalleryMetadata, InstallOperation, IExtensionGalleryService, InstallOptions, Metadata } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { URI } from 'vs/base/common/uri';
 import { areSameExtensions, getGalleryExtensionId } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { IScannedExtension, IWebExtensionsScannerService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
@@ -14,8 +14,7 @@ import { AbstractExtensionManagementService, AbstractExtensionTask, IInstallExte
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IExtensionManifestPropertiesService } from 'vs/workbench/services/extensions/common/extensionManifestPropertiesService';
 import { IProductService } from 'vs/platform/product/common/productService';
-
-type Metadata = Partial<IGalleryMetadata & { isMachineScoped: boolean; }>;
+import { isBoolean, isUndefined } from 'vs/base/common/types';
 
 export class WebExtensionManagementService extends AbstractExtensionManagementService implements IExtensionManagementService {
 
@@ -46,14 +45,14 @@ export class WebExtensionManagementService extends AbstractExtensionManagementSe
 		return false;
 	}
 
-	async getInstalled(type?: ExtensionType, donotIgnoreInvalidExtensions?: boolean): Promise<ILocalExtension[]> {
+	async getInstalled(type?: ExtensionType): Promise<ILocalExtension[]> {
 		const extensions = [];
 		if (type === undefined || type === ExtensionType.System) {
 			const systemExtensions = await this.webExtensionsScannerService.scanSystemExtensions();
 			extensions.push(...systemExtensions);
 		}
 		if (type === undefined || type === ExtensionType.User) {
-			const userExtensions = await this.webExtensionsScannerService.scanUserExtensions(donotIgnoreInvalidExtensions);
+			const userExtensions = await this.webExtensionsScannerService.scanUserExtensions();
 			extensions.push(...userExtensions);
 		}
 		return Promise.all(extensions.map(e => toLocalExtension(e)));
@@ -68,8 +67,8 @@ export class WebExtensionManagementService extends AbstractExtensionManagementSe
 		return this.installExtension(manifest, location, options);
 	}
 
-	protected override async getCompatibleVersion(extension: IGalleryExtension, fetchCompatibleVersion: boolean): Promise<IGalleryExtension | null> {
-		const compatibleExtension = await super.getCompatibleVersion(extension, fetchCompatibleVersion);
+	protected override async getCompatibleVersion(extension: IGalleryExtension, fetchCompatibleVersion: boolean, includePreRelease: boolean): Promise<IGalleryExtension | null> {
+		const compatibleExtension = await super.getCompatibleVersion(extension, fetchCompatibleVersion, includePreRelease);
 		if (compatibleExtension) {
 			return compatibleExtension;
 		}
@@ -102,7 +101,7 @@ export class WebExtensionManagementService extends AbstractExtensionManagementSe
 	updateExtensionScope(): Promise<ILocalExtension> { throw new Error('unsupported'); }
 }
 
-function toLocalExtension(extension: IScannedExtension): ILocalExtension {
+function toLocalExtension(extension: IExtension): ILocalExtension {
 	const metadata = getMetadata(undefined, extension);
 	return {
 		...extension,
@@ -110,11 +109,16 @@ function toLocalExtension(extension: IScannedExtension): ILocalExtension {
 		isMachineScoped: !!metadata.isMachineScoped,
 		publisherId: metadata.publisherId || null,
 		publisherDisplayName: metadata.publisherDisplayName || null,
+		installedTimestamp: metadata.installedTimestamp,
+		isPreReleaseVersion: !!metadata.isPreReleaseVersion,
+		preRelease: !!metadata.preRelease,
+		targetPlatform: TargetPlatform.WEB,
+		updated: !!metadata.updated
 	};
 }
 
-function getMetadata(options?: InstallOptions, existingExtension?: IScannedExtension): Metadata {
-	const metadata: Metadata = { ...(existingExtension?.metadata || {}) };
+function getMetadata(options?: InstallOptions, existingExtension?: IExtension): Metadata {
+	const metadata: Metadata = { ...((<IScannedExtension>existingExtension)?.metadata || {}) };
 	metadata.isMachineScoped = options?.isMachineScoped || metadata.isMachineScoped;
 	return metadata;
 }
@@ -123,8 +127,9 @@ class InstallExtensionTask extends AbstractExtensionTask<ILocalExtension> implem
 
 	readonly identifier: IExtensionIdentifier;
 	readonly source: URI | IGalleryExtension;
+
 	private _operation = InstallOperation.Install;
-	get operation() { return this._operation; }
+	get operation() { return isUndefined(this.options.operation) ? this._operation : this.options.operation; }
 
 	constructor(
 		manifest: IExtensionManifest,
@@ -149,6 +154,15 @@ class InstallExtensionTask extends AbstractExtensionTask<ILocalExtension> implem
 			metadata.id = this.extension.identifier.uuid;
 			metadata.publisherDisplayName = this.extension.publisherDisplayName;
 			metadata.publisherId = this.extension.publisherId;
+			metadata.installedTimestamp = Date.now();
+			metadata.isPreReleaseVersion = this.extension.properties.isPreReleaseVersion;
+			metadata.isBuiltin = this.options.isBuiltin || existingExtension?.isBuiltin;
+			metadata.isSystem = existingExtension?.type === ExtensionType.System ? true : undefined;
+			metadata.updated = !!existingExtension;
+			metadata.preRelease = this.extension.properties.isPreReleaseVersion ||
+				(isBoolean(this.options.installPreReleaseVersion)
+					? this.options.installPreReleaseVersion /* Respect the passed flag */
+					: metadata?.preRelease /* Respect the existing pre-release flag if it was set */);
 		}
 
 		const scannedExtension = URI.isUri(this.extension) ? await this.webExtensionsScannerService.addExtension(this.extension, metadata)

@@ -9,7 +9,6 @@
 		"types": [
 			"keytar",
 			"mocha",
-			"semver",
 			"sinon",
 			"winreg",
 			"trusted-types",
@@ -25,6 +24,8 @@
 	"include": [
 		"./typings",
 		"./vs",
-		"./sql"
+		"./sql",
+		"vscode-dts/vscode.proposed.*.d.ts",
+		"vscode-dts/vscode.d.ts"
 	]
 }

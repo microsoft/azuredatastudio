@@ -10,7 +10,7 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
-import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { AuthenticationType, mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 suite('Notebook Contexts', function (): void {
 	const defaultContext = NotebookContexts.DefaultContext;
@@ -23,7 +23,7 @@ suite('Notebook Contexts', function (): void {
 			groupFullName: 'testGroup',
 			serverName: 'testServerName',
 			databaseName: 'testDatabaseName',
-			authenticationType: 'integrated',
+			authenticationType: AuthenticationType.Integrated,
 			password: 'test',
 			userName: 'testUsername',
 			groupId: undefined,

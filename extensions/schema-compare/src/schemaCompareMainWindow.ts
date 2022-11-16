@@ -283,6 +283,7 @@ export class SchemaCompareMainWindow {
 				}).component();
 
 				let arrowLabel = this.view.modelBuilder.text().withProps({
+					// allow-any-unicode-next-line
 					value: '➔'
 				}).component();
 

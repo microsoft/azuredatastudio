@@ -14,7 +14,7 @@
 			"kusto.missingLinkedAzureAccount": "Azure Data Studio необходимо связаться с Azure Key Vault для доступа к главному ключу столбца для Always Encrypted, но связанная учетная запись Azure недоступна. Добавьте связанную учетную запись Azure и повторите запрос."
 		},
 		"dist/kustoServer": {
-			"downloadServiceDoneChannelMsg": "Выполнена установка {0}",
+			"downloadServiceDoneChannelMsg": "Скачано {0}",
 			"downloadingServiceChannelMsg": "Скачивание {0}",
 			"downloadingServiceSizeChannelMsg": "({0} КБ)",
 			"downloadingServiceStatusMsg": "Скачивание {0}",

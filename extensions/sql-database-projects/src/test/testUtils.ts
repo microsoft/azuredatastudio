@@ -13,6 +13,7 @@ import should = require('should');
 import { AssertionError } from 'assert';
 import { Project } from '../models/project';
 import { Uri } from 'vscode';
+import { exists } from '../common/utils';
 
 export async function shouldThrowSpecificError(block: Function, expectedMessage: string, details?: string) {
 	let succeeded = false;
@@ -47,9 +48,14 @@ export async function createTestDataSources(contents: string, folderPath?: strin
 }
 
 export async function generateTestFolderPath(): Promise<string> {
-	const folderPath = path.join(os.tmpdir(), 'ADS_Tests', `TestRun_${new Date().getTime()}`);
+	const folderPath = path.join(generateBaseFolderName(), `TestRun_${new Date().getTime()}`);
 	await fs.mkdir(folderPath, { recursive: true });
 
+	return folderPath;
+}
+
+export function generateBaseFolderName(): string {
+	const folderPath = path.join(os.tmpdir(), 'ADS_Tests');
 	return folderPath;
 }
 
@@ -248,4 +254,15 @@ export async function createOtherDummyFiles(testFolderPath: string): Promise<Uri
 	filesList.push(Uri.file(postDeploymentScript2));
 
 	return filesList;
+}
+
+/**
+ * Deletes folder generated for testing
+ */
+export async function deleteGeneratedTestFolder(): Promise<void> {
+	const testFolderPath: string = generateBaseFolderName();
+	if (await exists(testFolderPath)) {
+		// cleanup folder
+		await fs.rm(testFolderPath, { recursive: true });
+	}
 }

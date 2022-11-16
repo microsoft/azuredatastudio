@@ -295,7 +295,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		}
 
 		return [
-			this.createCoresMemorySection(loc.configuration),
 			this.createConfigurationSectionContainer(loc.coresRequest, this.coresRequestBox),
 			this.createConfigurationSectionContainer(loc.coresLimit, this.coresLimitBox),
 			this.createConfigurationSectionContainer(loc.memoryRequest, this.memoryRequestBox),
@@ -348,30 +347,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			return true;
 		}
 
-	}
-
-	private createCoresMemorySection(title: string): azdata.DivContainer {
-		const titleFlex = { flex: `0 1 250px` };
-
-		const flexContainer = this.modelView.modelBuilder.flexContainer().withLayout({
-			flexWrap: 'wrap',
-			alignItems: 'center'
-		}).component();
-
-		const titleComponent = this.modelView.modelBuilder.text().withProps({
-			value: title,
-			CSSStyles: { ...cssStyles.title, 'font-weight': 'bold', 'margin-block-start': '0px', 'margin-block-end': '0px' }
-		}).component();
-
-		const titleContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
-		titleContainer.addItem(titleComponent, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '15px', 'margin-top': '15px' } });
-
-		flexContainer.addItem(titleContainer, titleFlex);
-
-		let configurationSection = this.modelView.modelBuilder.divContainer().component();
-		configurationSection.addItem(flexContainer);
-
-		return configurationSection;
 	}
 
 	private editCores(): void {

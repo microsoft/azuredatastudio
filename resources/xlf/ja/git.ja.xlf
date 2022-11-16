@@ -1,5 +1,33 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/git/dist/actionButton" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="scm button publish branch">
+        <source xml:lang="en">Publish Branch</source>
+        <target state="translated">Branch を発行</target>
+      </trans-unit>
+      <trans-unit id="scm button publish branch running">
+        <source xml:lang="en">Publishing Branch...</source>
+        <target state="translated">Branch を公開しています...</target>
+      </trans-unit>
+      <trans-unit id="scm button publish title">
+        <source xml:lang="en">$(cloud-upload) Publish Branch</source>
+        <target state="translated">$(cloud-upload) ブランチの発行</target>
+      </trans-unit>
+      <trans-unit id="scm button sync description">
+        <source xml:lang="en">{0} Sync Changes {1}{2}</source>
+        <target state="translated">{0} 変更の同期 {1}{2}</target>
+      </trans-unit>
+      <trans-unit id="scm button sync title">
+        <source xml:lang="en">{0} {1}{2}</source>
+        <target state="translated">{0} {1}{2}</target>
+      </trans-unit>
+      <trans-unit id="syncing changes">
+        <source xml:lang="en">Synchronizing Changes...</source>
+        <target state="translated">変更を同期しています...</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/git/dist/askpass-main" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="missOrInvalid">
@@ -91,8 +119,8 @@
         <target state="translated">参照仕様をリモートにプッシュできません。最初に 'Pull' を実行して変更を統合してください。</target>
       </trans-unit>
       <trans-unit id="changed">
-        <source xml:lang="en">Log level changed to: {0}</source>
-        <target state="translated">変更後のログ レベル: {0}</target>
+        <source xml:lang="en">{0} Log level changed to: {1}</source>
+        <target state="translated">{0} 変更後のログ レベル: {1}</target>
       </trans-unit>
       <trans-unit id="checkout detached">
         <source xml:lang="en">Checkout detached...</source>
@@ -203,8 +231,8 @@ Are you sure to continue?</source>
 続行しますか?</target>
       </trans-unit>
       <trans-unit id="confirm publish branch">
-        <source xml:lang="en">The branch '{0}' has no upstream branch. Would you like to publish this branch?</source>
-        <target state="translated">'{0}' ブランチに上流ブランチはありません。このブランチを公開しますか?</target>
+        <source xml:lang="en">The branch '{0}' has no remote branch. Would you like to publish this branch?</source>
+        <target state="translated">'{0}' ブランチにリモート ブランチはありません。このブランチを公開しますか?</target>
       </trans-unit>
       <trans-unit id="confirm restore">
         <source xml:lang="en">Are you sure you want to restore {0}?</source>
@@ -282,6 +310,14 @@ What would you like to do?</source>
         <source xml:lang="en">Discard 1 File</source>
         <target state="translated">1 つのファイルを破棄</target>
       </trans-unit>
+      <trans-unit id="drop all stashes">
+        <source xml:lang="en">Are you sure you want to drop ALL stashes? There are {0} stashes that will be subject to pruning, and MAY BE IMPOSSIBLE TO RECOVER.</source>
+        <target state="translated">すべてのスタッシュを削除しますか? 削除の対象となる可能性のある {0} 個のスタッシュがあり、それらは回復できない可能性があります。</target>
+      </trans-unit>
+      <trans-unit id="drop one stash">
+        <source xml:lang="en">Are you sure you want to drop ALL stashes? There is 1 stash that will be subject to pruning, and MAY BE IMPOSSIBLE TO RECOVER.</source>
+        <target state="translated">すべてのスタッシュを削除しますか? 削除の対象となる可能性のある 1 個のスタッシュがあり、それらは回復できない可能性があります。</target>
+      </trans-unit>
       <trans-unit id="force">
         <source xml:lang="en">Force Checkout</source>
         <target state="translated">チェックアウトの強制</target>
@@ -298,13 +334,17 @@ What would you like to do?</source>
         <source xml:lang="en">Git: {0}</source>
         <target state="translated">Git: {0}</target>
       </trans-unit>
+      <trans-unit id="git.timeline.openDiffCommand">
+        <source xml:lang="en">Open Comparison</source>
+        <target state="translated">比較を開く</target>
+      </trans-unit>
       <trans-unit id="git.title.diff">
-        <source xml:lang="en">{0} ⟷ {1}</source>
-        <target state="translated">{0} ⟷ {1}</target>
+        <source xml:lang="en">{0} ↔ {1}</source>
+        <target state="translated">{0} ↔ {1}</target>
       </trans-unit>
       <trans-unit id="git.title.diffRefs">
-        <source xml:lang="en">{0} ({1}) ⟷ {0} ({2})</source>
-        <target state="translated">{0} ({1}) ⟷ {0} ({2})</target>
+        <source xml:lang="en">{0} ({1}) ↔ {0} ({2})</source>
+        <target state="translated">{0} ({1}) ↔ {0} ({2})</target>
       </trans-unit>
       <trans-unit id="git.title.index">
         <source xml:lang="en">{0} (Index)</source>
@@ -376,7 +416,7 @@ What would you like to do?</source>
       </trans-unit>
       <trans-unit id="no changes stash">
         <source xml:lang="en">There are no changes to stash.</source>
-        <target state="translated">一時退避する変更がありません。</target>
+        <target state="translated">スタッシュする変更がありません。</target>
       </trans-unit>
       <trans-unit id="no more">
         <source xml:lang="en">Can't undo because HEAD doesn't point to any commit.</source>
@@ -416,7 +456,7 @@ Would you like to stage all your changes and commit them directly?</source>
       </trans-unit>
       <trans-unit id="no stashes">
         <source xml:lang="en">There are no stashes in the repository.</source>
-        <target state="translated">リポジトリ内に一時退避内容はありません。</target>
+        <target state="translated">リポジトリ内にスタッシュはありません。</target>
       </trans-unit>
       <trans-unit id="no tags">
         <source xml:lang="en">This repository has no tags.</source>
@@ -468,15 +508,15 @@ Would you like to stage all your changes and commit them directly?</source>
       </trans-unit>
       <trans-unit id="pick stash to apply">
         <source xml:lang="en">Pick a stash to apply</source>
-        <target state="translated">適用する一時退避内容を選択してください</target>
+        <target state="translated">適用するスタッシュを選択してください</target>
       </trans-unit>
       <trans-unit id="pick stash to drop">
         <source xml:lang="en">Pick a stash to drop</source>
-        <target state="translated">ドロップする一時退避を削除する</target>
+        <target state="translated">ドロップするスタッシュを選択する</target>
       </trans-unit>
       <trans-unit id="pick stash to pop">
         <source xml:lang="en">Pick a stash to pop</source>
-        <target state="translated">適用して削除する一時退避内容を選択してください</target>
+        <target state="translated">ポップするスタッシュを選択する</target>
       </trans-unit>
       <trans-unit id="proposeopen">
         <source xml:lang="en">Would you like to open the cloned repository?</source>
@@ -512,7 +552,7 @@ Would you like to stage all your changes and commit them directly?</source>
       </trans-unit>
       <trans-unit id="provide stash message">
         <source xml:lang="en">Optionally provide a stash message</source>
-        <target state="translated">必要に応じて一時退避メッセージを入力してください</target>
+        <target state="translated">必要に応じてスタッシュ メッセージを提示する</target>
       </trans-unit>
       <trans-unit id="provide tag message">
         <source xml:lang="en">Please provide a message to annotate the tag</source>
@@ -564,7 +604,7 @@ Would you like to stage all your changes and commit them directly?</source>
       </trans-unit>
       <trans-unit id="save and stash">
         <source xml:lang="en">Save All &amp; Stash</source>
-        <target state="translated">すべてを保存して一時退避する</target>
+        <target state="translated">すべてを保存してスタッシュする</target>
       </trans-unit>
       <trans-unit id="select a branch to merge from">
         <source xml:lang="en">Select a branch to merge from</source>
@@ -608,27 +648,27 @@ Would you like to stage all your changes and commit them directly?</source>
       </trans-unit>
       <trans-unit id="stash">
         <source xml:lang="en">Stash Anyway</source>
-        <target state="translated">このまま一時退避</target>
+        <target state="translated">このままスタッシュ</target>
       </trans-unit>
       <trans-unit id="stash merge conflicts">
         <source xml:lang="en">There were merge conflicts while applying the stash.</source>
-        <target state="translated">一時退避内容を適用している間に、マージの競合がありました。</target>
+        <target state="translated">スタッシュを適用している間に、マージの競合がありました。</target>
       </trans-unit>
       <trans-unit id="stash message">
         <source xml:lang="en">Stash message</source>
-        <target state="translated">一時退避メッセージ</target>
+        <target state="translated">スタッシュ メッセージ</target>
       </trans-unit>
       <trans-unit id="stashcheckout">
         <source xml:lang="en">Stash &amp; Checkout</source>
-        <target state="translated">一時退避してチェックアウト</target>
+        <target state="translated">スタッシュしてチェックアウト</target>
       </trans-unit>
       <trans-unit id="sure drop">
         <source xml:lang="en">Are you sure you want to drop the stash: {0}?</source>
-        <target state="translated">一時退避内容 {0} を削除しますか?</target>
+        <target state="translated">スタッシュ {0} を削除しますか?</target>
       </trans-unit>
       <trans-unit id="sync is unpredictable">
-        <source xml:lang="en">This action will push and pull commits to and from '{0}/{1}'.</source>
-        <target state="translated">このアクションでは、'{0}/{1}' との間でコミットをプッシュおよびプルします。</target>
+        <source xml:lang="en">This action will pull and push commits from and to '{0}/{1}'.</source>
+        <target state="translated">このアクションは、'{0}/{1}' との間でコミットをプルおよびプッシュします。</target>
       </trans-unit>
       <trans-unit id="tag at">
         <source xml:lang="en">Tag at {0}</source>
@@ -676,15 +716,15 @@ Would you like to save it before committing?</source>
 Would you like to save them before stashing?</source>
         <target state="translated">{0} 個の保存されていないファイルがあります。
 
-一時退避する前に保存しますか?</target>
+スタッシュする前に保存しますか?</target>
       </trans-unit>
       <trans-unit id="unsaved stash files single">
         <source xml:lang="en">The following file has unsaved changes which won't be included in the stash if you proceed: {0}.
 
 Would you like to save it before stashing?</source>
-        <target state="translated">次のファイルには保存されていない変更があり、続行すると stash に含められません: {0}。
+        <target state="translated">次のファイルには保存されていない変更があり、続行するとスタッシュに含められません: {0}。
 
-一時退避する前に保存しますか?</target>
+スタッシュする前に保存しますか?</target>
       </trans-unit>
       <trans-unit id="warn untracked">
         <source xml:lang="en">This will DELETE {0} untracked files!
@@ -715,16 +755,16 @@ These files will be FOREVER LOST.</source>
   <file original="extensions/git/dist/main" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="skipped">
-        <source xml:lang="en">Skipped found git in: {0}</source>
-        <target state="translated">Git のスキップが検出されました: {0}</target>
+        <source xml:lang="en">{0} Skipped found git in: {1}</source>
+        <target state="translated">{0} Git のスキップが検出されました: {1}</target>
       </trans-unit>
       <trans-unit id="using git">
-        <source xml:lang="en">Using git {0} from {1}</source>
-        <target state="translated">{1} から Git {0} を使用しています</target>
+        <source xml:lang="en">{0} Using git {1} from {2}</source>
+        <target state="translated">{0} {2} から Git {1} を使用しています</target>
       </trans-unit>
       <trans-unit id="validating">
-        <source xml:lang="en">Validating found git in: {0}</source>
-        <target state="translated">Git の検証が検出されました: {0}</target>
+        <source xml:lang="en">{0} Validating found git in: {1}</source>
+        <target state="translated">{0} Git の検証が検出されました: {1}</target>
       </trans-unit>
     </body>
   </file>
@@ -742,49 +782,13 @@ These files will be FOREVER LOST.</source>
         <source xml:lang="en">Choose a repository</source>
         <target state="translated">リポジトリの選択</target>
       </trans-unit>
+      <trans-unit id="repoOnHomeDriveRootWarning">
+        <source xml:lang="en">Unable to automatically open the git repository at '{0}'. To open that git repository, open it directly as a folder in VS Code.</source>
+        <target state="translated">'{0}' で Git リポジトリを自動的に開くことができません。その Git リポジトリを開くには、VS Code のフォルダーとして直接開きます。</target>
+      </trans-unit>
       <trans-unit id="too many submodules">
         <source xml:lang="en">The '{0}' repository has {1} submodules which won't be opened automatically. You can still open each one individually by opening a file within.</source>
         <target state="translated">'{0}' リポジトリに {1} 個のサブモジュールがあり、自動では開かれません。 ファイルを開くことで、それぞれを個別に開くことができます。</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/git/dist/remoteSource" source-language="en" datatype="plaintext" target-language="ja">
-    <body>
-      <trans-unit id="branch name">
-        <source xml:lang="en">Branch name</source>
-        <target state="translated">ブランチ名</target>
-      </trans-unit>
-      <trans-unit id="error">
-        <source xml:lang="en">$(error) Error: {0}</source>
-        <target state="translated">$(error) エラー: {0}</target>
-      </trans-unit>
-      <trans-unit id="none found">
-        <source xml:lang="en">No remote repositories found.</source>
-        <target state="translated">リモート リポジトリが見つかりません。</target>
-      </trans-unit>
-      <trans-unit id="pick url">
-        <source xml:lang="en">Choose a URL to clone from.</source>
-        <target state="translated">複製元の URL を選択します。</target>
-      </trans-unit>
-      <trans-unit id="provide url">
-        <source xml:lang="en">Provide repository URL</source>
-        <target state="translated">リポジトリ URL を指定する</target>
-      </trans-unit>
-      <trans-unit id="provide url or pick">
-        <source xml:lang="en">Provide repository URL or pick a repository source.</source>
-        <target state="translated">リポジトリ URL を指定するか、リポジトリ ソースを選択します。</target>
-      </trans-unit>
-      <trans-unit id="type to filter">
-        <source xml:lang="en">Repository name</source>
-        <target state="translated">リポジトリ名</target>
-      </trans-unit>
-      <trans-unit id="type to search">
-        <source xml:lang="en">Repository name (type to search)</source>
-        <target state="translated">リポジトリ名 (検索するテキストを入力)</target>
-      </trans-unit>
-      <trans-unit id="url">
-        <source xml:lang="en">URL</source>
-        <target state="translated">URL</target>
       </trans-unit>
     </body>
   </file>
@@ -974,18 +978,6 @@ These files will be FOREVER LOST.</source>
         <source xml:lang="en">Successfully pushed.</source>
         <target state="translated">正常にプッシュされました。</target>
       </trans-unit>
-      <trans-unit id="scm button publish title">
-        <source xml:lang="en">$(cloud-upload) Publish Changes</source>
-        <target state="translated">$(cloud-upload) 変更の発行</target>
-      </trans-unit>
-      <trans-unit id="scm button publish tooltip">
-        <source xml:lang="en">Publish Changes</source>
-        <target state="translated">変更の発行</target>
-      </trans-unit>
-      <trans-unit id="scm button sync title">
-        <source xml:lang="en"> Sync Changes $(sync){0}{1}</source>
-        <target state="translated"> 変更 $(sync) の同期{0}{1}</target>
-      </trans-unit>
       <trans-unit id="staged changes">
         <source xml:lang="en">Staged Changes</source>
         <target state="translated">ステージされている変更</target>
@@ -1022,9 +1014,9 @@ These files will be FOREVER LOST.</source>
         <source xml:lang="en">Checkout branch/tag...</source>
         <target state="translated">ブランチまたはタグのチェックアウト...</target>
       </trans-unit>
-      <trans-unit id="publish changes">
-        <source xml:lang="en">Publish Changes</source>
-        <target state="translated">変更の発行</target>
+      <trans-unit id="publish branch">
+        <source xml:lang="en">Publish Branch</source>
+        <target state="translated">ブランチを発行...</target>
       </trans-unit>
       <trans-unit id="publish to">
         <source xml:lang="en">Publish to {0}</source>
@@ -1046,19 +1038,13 @@ These files will be FOREVER LOST.</source>
   </file>
   <file original="extensions/git/dist/timelineProvider" source-language="en" datatype="plaintext" target-language="ja">
     <body>
-      <trans-unit id="git.index">
-        <source xml:lang="en">Index</source>
-        <target state="translated">インデックス</target>
+      <trans-unit id="git.timeline.email">
+        <source xml:lang="en">Email</source>
+        <target state="translated">メール</target>
       </trans-unit>
-      <trans-unit id="git.timeline.detail">
-        <source xml:lang="en">{0}  — {1}
-{2}
-
-{3}</source>
-        <target state="translated">{0}  — {1}
-{2}
-
-{3}</target>
+      <trans-unit id="git.timeline.openComparison">
+        <source xml:lang="en">Open Comparison</source>
+        <target state="translated">比較を開く</target>
       </trans-unit>
       <trans-unit id="git.timeline.source">
         <source xml:lang="en">Git History</source>
@@ -1075,10 +1061,6 @@ These files will be FOREVER LOST.</source>
       <trans-unit id="git.timeline.you">
         <source xml:lang="en">You</source>
         <target state="translated">自分</target>
-      </trans-unit>
-      <trans-unit id="git.workingTree">
-        <source xml:lang="en">Working Tree</source>
-        <target state="translated">作業ツリー</target>
       </trans-unit>
     </body>
   </file>
@@ -1128,6 +1110,18 @@ These files will be FOREVER LOST.</source>
         <source xml:lang="en">Add Remote...</source>
         <target state="translated">リモートの追加...</target>
       </trans-unit>
+      <trans-unit id="command.api.getRemoteSources">
+        <source xml:lang="en">Get Remote Sources</source>
+        <target state="translated">リモート ソースの取得</target>
+      </trans-unit>
+      <trans-unit id="command.api.getRepositories">
+        <source xml:lang="en">Get Repositories</source>
+        <target state="translated">リポジトリの取得</target>
+      </trans-unit>
+      <trans-unit id="command.api.getRepositoryState">
+        <source xml:lang="en">Get Repository State</source>
+        <target state="translated">リポジトリ状態の取得</target>
+      </trans-unit>
       <trans-unit id="command.branch">
         <source xml:lang="en">Create Branch...</source>
         <target state="translated">分岐の作成...</target>
@@ -1175,6 +1169,10 @@ These files will be FOREVER LOST.</source>
       <trans-unit id="command.close">
         <source xml:lang="en">Close Repository</source>
         <target state="translated">リポジトリを閉じる</target>
+      </trans-unit>
+      <trans-unit id="command.closeAllDiffEditors">
+        <source xml:lang="en">Close All Diff Editors</source>
+        <target state="translated">すべての差分エディターを閉じる</target>
       </trans-unit>
       <trans-unit id="command.commit">
         <source xml:lang="en">Commit</source>
@@ -1369,8 +1367,8 @@ These files will be FOREVER LOST.</source>
         <target state="translated">コミット テンプレートを復元する</target>
       </trans-unit>
       <trans-unit id="command.revealInExplorer">
-        <source xml:lang="en">Reveal in Side Bar</source>
-        <target state="translated">サイド バーに表示</target>
+        <source xml:lang="en">Reveal in Explorer View</source>
+        <target state="translated">エクスプローラー ビューで表示</target>
       </trans-unit>
       <trans-unit id="command.revertChange">
         <source xml:lang="en">Revert Change</source>
@@ -1418,31 +1416,35 @@ These files will be FOREVER LOST.</source>
       </trans-unit>
       <trans-unit id="command.stash">
         <source xml:lang="en">Stash</source>
-        <target state="translated">一時退避</target>
+        <target state="translated">スタッシュ</target>
       </trans-unit>
       <trans-unit id="command.stashApply">
         <source xml:lang="en">Apply Stash...</source>
-        <target state="translated">一時退避内容を適用...</target>
+        <target state="translated">スタッシュを適用...</target>
       </trans-unit>
       <trans-unit id="command.stashApplyLatest">
         <source xml:lang="en">Apply Latest Stash</source>
-        <target state="translated">最新の一時退避内容を適用</target>
+        <target state="translated">最新のスタッシュを適用</target>
       </trans-unit>
       <trans-unit id="command.stashDrop">
         <source xml:lang="en">Drop Stash...</source>
-        <target state="translated">一時退避を削除する...</target>
+        <target state="translated">スタッシュを削除する...</target>
+      </trans-unit>
+      <trans-unit id="command.stashDropAll">
+        <source xml:lang="en">Drop All Stashes...</source>
+        <target state="translated">すべてのスタッシュを削除...</target>
       </trans-unit>
       <trans-unit id="command.stashIncludeUntracked">
         <source xml:lang="en">Stash (Include Untracked)</source>
-        <target state="translated">一時退避 (未追跡ファイルを含む)</target>
+        <target state="translated">スタッシュ (未追跡ファイルを含む)</target>
       </trans-unit>
       <trans-unit id="command.stashPop">
         <source xml:lang="en">Pop Stash...</source>
-        <target state="translated">一時退避内容を適用して削除...</target>
+        <target state="translated">スタッシュをポップする...</target>
       </trans-unit>
       <trans-unit id="command.stashPopLatest">
         <source xml:lang="en">Pop Latest Stash</source>
-        <target state="translated">最新の一時退避内容を適用して削除</target>
+        <target state="translated">最新のスタッシュをポップ</target>
       </trans-unit>
       <trans-unit id="command.sync">
         <source xml:lang="en">Sync</source>
@@ -1526,7 +1528,7 @@ These files will be FOREVER LOST.</source>
       </trans-unit>
       <trans-unit id="config.autoStash">
         <source xml:lang="en">Stash any changes before pulling and restore them after successful pull.</source>
-        <target state="translated">プルする前にすべての変更を一時退避し、プル成功後に復元します。</target>
+        <target state="translated">プルする前にすべての変更をスタッシュし、プル成功後に復元します。</target>
       </trans-unit>
       <trans-unit id="config.autofetch">
         <source xml:lang="en">When set to true, commits will automatically be fetched from the default remote of the current Git repository. Setting to `all` will fetch from all remotes.</source>
@@ -1567,6 +1569,14 @@ These files will be FOREVER LOST.</source>
       <trans-unit id="config.checkoutType.tags">
         <source xml:lang="en">Tags</source>
         <target state="translated">タグ</target>
+      </trans-unit>
+      <trans-unit id="config.closeDiffOnOperation">
+        <source xml:lang="en">Controls whether the diff editor should be automatically closed when changes are stashed, committed, discarded, staged, or unstaged.</source>
+        <target state="translated">変更をスタッシュ、コミット、破棄、ステージング、またはステージング解除する場合に差分エディターを自動的に閉じるかどうかを制御します。</target>
+      </trans-unit>
+      <trans-unit id="config.commandsToLog">
+        <source xml:lang="en">List of git commands (ex: commit, push) that would have their `stdout` logged to the [git output](command:git.showOutput). If the git command has a client-side hook configured, the client-side hook's `stdout` will also be logged to the [git output](command:git.showOutput).</source>
+        <target state="translated">'stdout' のログが[git output](command:git.showOutput) に記録される Git コマンドの一覧 (commit、push など)。Git コマンドでクライアント側フックが構成されている場合、クライアント側フックの 'stdout' のログも[git output](command:git.showOutput) に記録されます。</target>
       </trans-unit>
       <trans-unit id="config.confirmEmptyCommits">
         <source xml:lang="en">Always confirm the creation of empty commits for the 'Git: Commit Empty' command.</source>
@@ -1635,6 +1645,10 @@ These files will be FOREVER LOST.</source>
       <trans-unit id="config.enabled">
         <source xml:lang="en">Whether git is enabled.</source>
         <target state="translated">Git が有効になっているかどうか。</target>
+      </trans-unit>
+      <trans-unit id="config.experimental.installGuide">
+        <source xml:lang="en">Experimental improvements for the git setup flow.</source>
+        <target state="translated">Git のセットアップ フローの試験的な改善。</target>
       </trans-unit>
       <trans-unit id="config.fetchOnPull">
         <source xml:lang="en">When enabled, fetch all branches when pulling. Otherwise, fetch just the current one.</source>
@@ -1746,7 +1760,7 @@ These files will be FOREVER LOST.</source>
       </trans-unit>
       <trans-unit id="config.promptToSaveFilesBeforeStash">
         <source xml:lang="en">Controls whether Git should check for unsaved files before stashing changes.</source>
-        <target state="translated">変更を一時退避する前に Git で保存していないファイルを確認すべきかどうかを制御します。</target>
+        <target state="translated">変更をスタッシュする前に Git で保存していないファイルを確認すべきかどうかを制御します。</target>
       </trans-unit>
       <trans-unit id="config.promptToSaveFilesBeforeStash.always">
         <source xml:lang="en">Check for any unsaved files.</source>
@@ -1771,6 +1785,14 @@ These files will be FOREVER LOST.</source>
       <trans-unit id="config.rebaseWhenSync">
         <source xml:lang="en">Force git to use rebase when running the sync command.</source>
         <target state="translated">同期コマンドを実行するときに、Git リベースを強制します。</target>
+      </trans-unit>
+      <trans-unit id="config.repositoryScanIgnoredFolders">
+        <source xml:lang="en">List of folders that are ignored while scanning for Git repositories when `#git.autoRepositoryDetection#` is set to `true` or `subFolders`.</source>
+        <target state="translated">`#git.autoRepositoryDetection#` が `true` または `subFolders` に設定されている場合に Git リポジトリのスキャン中に無視されるフォルダーのリスト。</target>
+      </trans-unit>
+      <trans-unit id="config.repositoryScanMaxDepth">
+        <source xml:lang="en">Controls the depth used when scanning workspace folders for Git repositories when `#git.autoRepositoryDetection#` is set to `true` or `subFolders`. Can be set to `-1` for no limit.</source>
+        <target state="translated">'#git.autoRepositoryDetection#' が 'true' もしくは 'subFolders' であるとき、Git リポジトリのワークスペース フォルダーをスキャンする際に使用される深さを制御します。制限なしとするためには、'-1' として設定可能です。</target>
       </trans-unit>
       <trans-unit id="config.requireGitUserConfig">
         <source xml:lang="en">Controls whether to require explicit Git user configuration or allow Git to guess if missing.</source>
@@ -1856,6 +1878,10 @@ These files will be FOREVER LOST.</source>
         <source xml:lang="en">Controls whether to show the commit author in the Timeline view.</source>
         <target state="translated">タイムライン ビューにコミット作成者を表示するかどうかを制御します。</target>
       </trans-unit>
+      <trans-unit id="config.timeline.showUncommitted">
+        <source xml:lang="en">Controls whether to show uncommitted changes in the Timeline view.</source>
+        <target state="translated">コミットされていない変更をタイムライン ビューに表示するかどうかを制御します。</target>
+      </trans-unit>
       <trans-unit id="config.untrackedChanges">
         <source xml:lang="en">Controls how untracked changes behave.</source>
         <target state="translated">追跡対象外の変更の動作を制御します。</target>
@@ -1874,11 +1900,15 @@ These files will be FOREVER LOST.</source>
       </trans-unit>
       <trans-unit id="config.useCommitInputAsStashMessage">
         <source xml:lang="en">Controls whether to use the message from the commit input box as the default stash message.</source>
-        <target state="translated">コミット入力ボックスからのメッセージを既定の stash メッセージとして使用するかどうかを制御します。</target>
+        <target state="translated">コミット入力ボックスからのメッセージを既定のスタッシュ メッセージとして使用するかどうかを制御します。</target>
       </trans-unit>
       <trans-unit id="config.useForcePushWithLease">
         <source xml:lang="en">Controls whether force pushing uses the safer force-with-lease variant.</source>
         <target state="translated">force プッシュより安全な force-with-lease 方式を使用するかどうかを制御します。</target>
+      </trans-unit>
+      <trans-unit id="config.useIntegratedAskPass">
+        <source xml:lang="en">Controls whether GIT_ASKPASS should be overwritten to use the integrated version.</source>
+        <target state="translated">統合バージョンを使用するために GIT_ASKPASS を上書きするかどうかを制御します。</target>
       </trans-unit>
       <trans-unit id="description">
         <source xml:lang="en">Git SCM Integration</source>
@@ -1922,7 +1952,7 @@ These files will be FOREVER LOST.</source>
       </trans-unit>
       <trans-unit id="submenu.stash">
         <source xml:lang="en">Stash</source>
-        <target state="translated">一時退避</target>
+        <target state="translated">スタッシュ</target>
       </trans-unit>
       <trans-unit id="submenu.tags">
         <source xml:lang="en">Tags</source>
@@ -1940,9 +1970,9 @@ These files will be FOREVER LOST.</source>
       </trans-unit>
       <trans-unit id="view.workbench.scm.disabled">
         <source xml:lang="en">If you would like to use git features, please enable git in your [settings](command:workbench.action.openSettings?%5B%22git.enabled%22%5D).
-To learn more about how to use git and source control in Azure Data Studio [read our docs](https://aka.ms/vscode-scm).</source>
-        <target state="translated">git 機能を使用する場合、[設定](command:workbench.action.openSettings?%5B%22git.enabled%22%5D)で Git を有効にしてください。
-Git とソース コントロールを Azure Data Studio で使用する方法の詳細については、[ドキュメントをご覧ください](https://aka.ms/vscode-scm)。</target>
+To learn more about how to use git and source control in VS Code [read our docs](https://aka.ms/vscode-scm).</source>
+        <target state="translated">Git 機能を使用する場合は、[設定](command:workbench.action.openSettings?%5B%22git.enabled%22%5D) で Git を有効にしてください。
+VS Code で Git とソース管理を使用する方法の詳細については、[ドキュメントをご覧ください](https://aka.ms/vscode-scm)。</target>
       </trans-unit>
       <trans-unit id="view.workbench.scm.empty">
         <source xml:lang="en">In order to use git features, you can open a folder containing a git repository or clone from a URL.
@@ -1977,6 +2007,30 @@ If you're using a different version control system, you can [search the Marketpl
         <target state="translated">有効な git インストールが検出されませんでした。詳細については、[git 出力](command:git.showOutput)をご確認ください。
 [git をインストール](https://git-scm.com/)するか、Git およびソース コントロールを Azure Data Studio で使用する方法の詳細について[ドキュメント](https://aka.ms/vscode-scm)を参照してください。
 別のバージョン管理システムを使用している場合は、追加の拡張機能を [マーケットプレイスで検索](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22) できます。</target>
+      </trans-unit>
+      <trans-unit id="view.workbench.scm.missing.guide">
+        <source xml:lang="en">Install Git, a popular source control system, to track code changes and collaborate with others. Learn more in our [Git guides](https://aka.ms/vscode-scm).</source>
+        <target state="translated">一般的なソース管理システムである Git をインストールして、コードの変更を追跡し、他のユーザーと共同作業を行います。詳細については、[Git ガイド](https://aka.ms/vscode-scm) を参照してください。</target>
+      </trans-unit>
+      <trans-unit id="view.workbench.scm.missing.guide.linux">
+        <source xml:lang="en">Source control depends on Git being installed.
+[Download Git for Linux](https://git-scm.com/download/linux)
+After installing, please [reload](command:workbench.action.reloadWindow) (or [troubleshoot](command:git.showOutput)). Additional source control providers can be installed [from the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).</source>
+        <target state="translated">ソース管理は、インストールされている Git によって異なります。
+[Linux 用 Git のダウンロード](https://git-scm.com/download/linux)
+インストール後、[再読み込み](command:workbench.action.reloadWindow) (または [トラブルシューティング](command:git.showOutput)) してください。追加のソース管理プロバイダーを [Marketplace から] インストールできます(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22)。</target>
+      </trans-unit>
+      <trans-unit id="view.workbench.scm.missing.guide.mac">
+        <source xml:lang="en">[Download Git for macOS](https://git-scm.com/download/mac)
+After installing, please [reload](command:workbench.action.reloadWindow) (or [troubleshoot](command:git.showOutput)). Additional source control providers can be installed [from the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).</source>
+        <target state="translated">[macOS 用 Git のダウンロード](https://git-scm.com/download/mac)
+インストール後、[再読み込み](command:workbench.action.reloadWindow) (または [トラブルシューティング](command:git.showOutput)) してください。追加のソース管理プロバイダーを [Marketplace から] インストールできます(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22)。</target>
+      </trans-unit>
+      <trans-unit id="view.workbench.scm.missing.guide.windows">
+        <source xml:lang="en">[Download Git for Windows](https://git-scm.com/download/win)
+After installing, please [reload](command:workbench.action.reloadWindow) (or [troubleshoot](command:git.showOutput)). Additional source control providers can be installed [from the Marketplace](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22).</source>
+        <target state="translated">[Windows 用 Git のダウンロード](https://git-scm.com/download/win)
+インストール後、[再読み込み](command:workbench.action.reloadWindow) (または [トラブルシューティング](command:git.showOutput)) してください。追加のソース管理プロバイダーを [Marketplace から] インストールできます(command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22)。</target>
       </trans-unit>
       <trans-unit id="view.workbench.scm.workspace">
         <source xml:lang="en">The workspace currently open doesn't have any folders containing git repositories. You can initialize a repository on a folder which will enable source control features powered by git.

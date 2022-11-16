@@ -390,6 +390,10 @@
         <source xml:lang="en">SQL Server Schema Compare</source>
         <target state="translated">SQL Server 結構描述比較</target>
       </trans-unit>
+      <trans-unit id="schemaCompare.openInScmp">
+        <source xml:lang="en">Open in Schema Compare</source>
+        <target state="translated">在 [結構描述比較] 中開啟</target>
+      </trans-unit>
       <trans-unit id="schemaCompare.runComparison">
         <source xml:lang="en">Run Schema Comparison</source>
         <target state="translated">執行結構描述比較</target>

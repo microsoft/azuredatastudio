@@ -12,8 +12,8 @@ import { IMimeComponent } from 'sql/workbench/contrib/notebook/browser/outputs/m
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { MimeModel } from 'sql/workbench/services/notebook/browser/outputs/mimemodel';
 import { getErrorMessage } from 'vs/base/common/errors';
-import { getResizesObserver } from 'vs/workbench/contrib/notebook/browser/view/renderers/cellWidgets';
 import * as Plotly from 'plotly.js';
+import { getResizesObserver } from 'vs/workbench/contrib/notebook/browser/view/cellParts/cellWidgets';
 type ObjectType = object;
 
 interface FigureLayout extends ObjectType {

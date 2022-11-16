@@ -14,6 +14,7 @@ export const SelectAll = 'SelectAll';
 export const SelectAllMessages = 'SelectAllMessages';
 export const SaveAsCsv = 'SaveAsCSV';
 export const SaveAsJSON = 'SaveAsJSON';
+export const SaveAsMarkdown = 'SaveAsMarkdown';
 export const SaveAsExcel = 'SaveAsExcel';
 export const SaveAsXML = 'SaveAsXML';
 export const ViewAsChart = 'ViewAsChart';

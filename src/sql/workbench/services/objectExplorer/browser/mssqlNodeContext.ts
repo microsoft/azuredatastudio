@@ -20,6 +20,12 @@ export interface INodeContextValue {
 	viewId: string;
 }
 
+/**
+ * This context key is for Data Explorer nodes only - it is not used for Object Explorer nodes. For that use
+ * [treeNodeContextKey](https://github.com/Microsoft/azuredatastudio/blob/main/src/sql/workbench/services/objectExplorer/common/treeNodeContextKey.ts),
+ * [connectionContextKey](https://github.com/Microsoft/azuredatastudio/blob/main/src/sql/workbench/services/connection/common/connectionContextKey.ts) or
+ * [serverInfoContextKey](https://github.com/Microsoft/azuredatastudio/blob/main/src/sql/workbench/services/connection/common/serverInfoContextKey.ts)
+ */
 export class MssqlNodeContext extends Disposable {
 
 	static readonly canSelect = new Set([NodeType.Table, NodeType.View]);

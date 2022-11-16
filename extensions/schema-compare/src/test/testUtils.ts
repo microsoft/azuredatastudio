@@ -15,7 +15,7 @@ export const mockIConnectionProfile: azdata.IConnectionProfile = {
 	databaseName: 'My Database',
 	userName: 'My User',
 	password: 'My Pwd',
-	authenticationType: 'SqlLogin',
+	authenticationType: azdata.connection.AuthenticationType.SqlLogin,
 	savePassword: false,
 	groupFullName: 'My groupName',
 	groupId: 'My GroupId',
@@ -38,7 +38,7 @@ export const mockConnectionInfo = {
 	databaseName: 'My Database',
 	userName: 'My User',
 	password: 'My Pwd',
-	authenticationType: 'SqlLogin'
+	authenticationType: azdata.connection.AuthenticationType.SqlLogin
 };
 
 export const mockFilePath: string = 'test.dacpac';

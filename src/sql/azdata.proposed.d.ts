@@ -8,6 +8,23 @@
 import * as vscode from 'vscode';
 
 declare module 'azdata' {
+
+	export namespace env {
+		/**
+		 * Well-known app quality values
+		 */
+		export enum AppQuality {
+			stable = 'stable',
+			insider = 'insider',
+			dev = 'dev'
+		}
+
+		/**
+		 * The version of Azure Data Studio this is currently running as - such as `stable`, or `insider`
+		 */
+		export const quality: AppQuality | string | undefined;
+	}
+
 	export namespace nb {
 		export interface NotebookDocument {
 			/**
@@ -28,25 +45,6 @@ declare module 'azdata' {
 			 * The list of languages that are supported for this kernel.
 			 */
 			supportedLanguages?: string[];
-			/**
-			 * The original name for this kernel.
-			 */
-			oldName?: string;
-			/**
-			 * The original display name for this kernel.
-			 */
-			oldDisplayName?: string;
-			/**
-			 * The original language name for this kernel.
-			 */
-			oldLanguage?: string;
-		}
-
-		export interface ILanguageInfo {
-			/**
-			 * The original name for this language.
-			 */
-			oldName?: string;
 		}
 
 		export interface IStandardKernel {
@@ -80,21 +78,9 @@ declare module 'azdata' {
 
 		export interface IExecuteRequest {
 			/**
-			 * URI of the notebook document that is sending this execute request.
-			 */
-			notebookUri: vscode.Uri;
-			/**
-			 * URI of the notebook cell that is sending this execute request.
-			 */
-			cellUri: vscode.Uri;
-			/**
 			 * The language of the notebook document that is executing this request.
 			 */
 			language: string;
-			/**
-			 * The index of the cell which the code being executed is from.
-			 */
-			cellIndex: number;
 		}
 
 		export interface INotebookMetadata {
@@ -125,7 +111,7 @@ declare module 'azdata' {
 		}
 
 		/**
-		 * An event that is emitted when a [notebook document](#NotebookDocument) is closed.
+		 * An event that is emitted when a {@link NotebookDocument} is closed.
 		 */
 		export const onDidCloseNotebookDocument: vscode.Event<NotebookDocument>;
 
@@ -399,13 +385,46 @@ declare module 'azdata' {
 		title: string;
 	}
 
-	/*
-	 * Add optional azureAccount for connectionWidget.
-	 */
 	export interface IConnectionProfile extends ConnectionInfo {
+		/**
+		 * The type of authentication to use when connecting
+		 */
+		authenticationType: string | connection.AuthenticationType;
 		azureAccount?: string;
 		azureResourceId?: string;
 		azurePortalEndpoint?: string;
+	}
+
+	export namespace connection {
+		/**
+		 * Well-known Authentication types commonly supported by connection providers.
+		 */
+		export enum AuthenticationType {
+			/**
+			 * Username and password
+			 */
+			SqlLogin = 'SqlLogin',
+			/**
+			 * Windows Authentication
+			 */
+			Integrated = 'Integrated',
+			/**
+			 * Azure Active Directory - Universal with MFA support
+			 */
+			AzureMFA = 'AzureMFA',
+			/**
+			 * Azure Active Directory - Password
+			 */
+			AzureMFAAndUser = 'AzureMFAAndUser',
+			/**
+			 * Datacenter Security Token Service Authentication
+			 */
+			DSTSAuth = 'dstsAuth',
+			/**
+			 * No authentication required
+			 */
+			None = 'None'
+		}
 	}
 
 	/*
@@ -419,6 +438,12 @@ declare module 'azdata' {
 
 	export interface ConnectionOption {
 		defaultValueOsOverrides?: DefaultValueOsOverride[];
+
+		/**
+		 * When set to true, the respective connection option will be rendered on the main connection dialog
+		 * and not the Advanced Options window.
+		 */
+		showOnConnectionDialog?: boolean;
 	}
 
 	export interface TaskInfo {
@@ -475,35 +500,6 @@ declare module 'azdata' {
 		payload?: IConnectionProfile;
 		childProvider?: string;
 		type?: ExtensionNodeType;
-	}
-
-	export interface AccountDisplayInfo {
-		email?: string;
-		name?: string;
-	}
-
-	export interface AccountProvider {
-		/**
-		 * Generates a security token for the provided account and tenant
-		 * @param account The account to generate a security token for
-		 * @param resource The resource to get the token for
-		 * @return Promise to return a security token object
-		 */
-		getAccountSecurityToken(account: Account, tenant: string, resource: AzureResource): Thenable<accounts.AccountSecurityToken | undefined>;
-	}
-
-	export interface AccountKey {
-		/**
-		 * A version string for an account
-		 */
-		accountVersion?: string;
-	}
-
-	export interface Account {
-		/**
-		 * Specifies if an account should be deleted
-		 */
-		delete?: boolean;
 	}
 
 	export namespace workspace {
@@ -671,15 +667,6 @@ declare module 'azdata' {
 		connectionUriChanged(newUri: string, oldUri: string): Thenable<void>;
 	}
 
-	export namespace accounts {
-		export interface AccountSecurityToken {
-			/**
-			 * Access token expiry timestamp
-			 */
-			expiresOn?: number
-		}
-	}
-
 	export enum DataProviderType {
 		TableDesignerProvider = 'TableDesignerProvider',
 		ExecutionPlanProvider = 'ExecutionPlanProvider'
@@ -817,6 +804,7 @@ declare module 'azdata' {
 			ForeignKeys = 'foreignKeys',
 			CheckConstraints = 'checkConstraints',
 			Indexes = 'indexes',
+			PrimaryKey = 'primaryKey',
 			PrimaryKeyName = 'primaryKeyName',
 			PrimaryKeyDescription = 'primaryKeyDescription',
 			PrimaryKeyColumns = 'primaryKeyColumns'
@@ -945,6 +933,10 @@ declare module 'azdata' {
 			 */
 			additionalPrimaryKeyProperties?: DesignerDataPropertyInfo[];
 			/**
+			 * Components to be placed under the pre-defined tabs.
+			 */
+			additionalComponents?: DesignerDataPropertyWithTabInfo[];
+			/**
 			 * Whether to use advanced save mode. for advanced save mode, a publish changes dialog will be opened with preview of changes.
 			 */
 			useAdvancedSaveMode: boolean;
@@ -1014,6 +1006,16 @@ declare module 'azdata' {
 			 * The properties of the component.
 			 */
 			componentProperties: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties;
+		}
+
+		/**
+		 * The definition of the property in the designer with tab info.
+		 */
+		export interface DesignerDataPropertyWithTabInfo extends DesignerDataPropertyInfo {
+			/**
+			 * The tab info where this property belongs to.
+			 */
+			tab: TableProperty.Columns | TableProperty.PrimaryKey | TableProperty.ForeignKeys | TableProperty.CheckConstraints | TableProperty.Indexes;
 		}
 
 		/**
@@ -1238,6 +1240,14 @@ declare module 'azdata' {
 			 */
 			mimeType: string;
 			/**
+			 * Whether user confirmation is required, the default value is false.
+			 */
+			requireConfirmation?: boolean;
+			/**
+			 * The confirmation text.
+			 */
+			confirmationText?: string;
+			/**
 			 * The table schema validation error.
 			 */
 			schemaValidationError?: string;
@@ -1294,6 +1304,10 @@ declare module 'azdata' {
 			 */
 			elapsedTimeInMs: number;
 			/**
+			 * CPU time taken by the node operation in milliseconds
+			 */
+			elapsedCpuTimeInMs: number;
+			/**
 			 * Node properties to be shown in the tooltip
 			 */
 			properties: ExecutionPlanGraphElementProperty[];
@@ -1333,6 +1347,21 @@ declare module 'azdata' {
 			 * Cost string for the node
 			 */
 			costDisplayString: string;
+			/**
+			 * Cost metrics for the node
+			 */
+			costMetrics: CostMetric[];
+		}
+
+		export interface CostMetric {
+			/**
+			 * Name of the cost metric.
+			 */
+			name: string;
+			/**
+			 * The value of the cost metric
+			 */
+			value: number | undefined;
 		}
 
 		export interface ExecutionPlanBadge {

@@ -32,7 +32,8 @@ export class MenubarMainService implements IMenubarMainService {
 	private async installMenuBarAfterWindowOpen(): Promise<Menubar> {
 		await this.lifecycleMainService.when(LifecycleMainPhase.AfterWindowOpen);
 
-		return this.instantiationService.createInstance(Menubar);
+		// {{SQL CARBON TODO}} - why cast to any?
+		return this.instantiationService.createInstance(<any>Menubar);
 	}
 
 	async updateMenubar(windowId: number, menus: IMenubarData): Promise<void> {

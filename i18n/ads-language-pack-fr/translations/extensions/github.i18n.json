@@ -29,11 +29,14 @@
 			"forking_done": "La duplication (fork) '{0}' a été correctement créée sur GitHub.",
 			"forking_pushing": "Envoi (push) des changements...",
 			"no": "Non",
+			"no pr template": "Aucun modèle",
 			"openingithub": "Ouvrir dans GitHub",
-			"openpr": "Ouvrir la demande de tirage (PR)"
+			"openpr": "Ouvrir la demande de tirage (PR)",
+			"select pr template": "Sélectionner le modèle de demande de tirage (pull request)"
 		},
 		"package": {
 			"config.gitAuthentication": "Détermine si l'authentification GitHub automatique doit être activée pour les commandes Git dans VS Code.",
+			"config.gitProtocol": "Contrôle le protocole utilisé pour cloner un référentiel GitHub",
 			"description": "Fonctionnalités GitHub pour VS Code",
 			"displayName": "GitHub",
 			"welcome.publishFolder": "Vous pouvez également publier directement ce dossier sur un dépôt GitHub. Une fois la publication effectuée, vous avez accès aux fonctionnalités de contrôle de code source gérées par git et GitHub.\r\n[$(github) Publier sur GitHub](command:github.publish)",

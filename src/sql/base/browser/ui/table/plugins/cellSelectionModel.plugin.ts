@@ -3,16 +3,20 @@
 
 import { mixin } from 'vs/base/common/objects';
 import { isUndefinedOrNull } from 'vs/base/common/types';
+import * as platform from 'vs/base/common/platform';
 
 import { CellRangeSelector, ICellRangeSelector } from 'sql/base/browser/ui/table/plugins/cellRangeSelector';
 
 export interface ICellSelectionModelOptions {
 	cellRangeSelector?: any;
-	selectActiveCell?: boolean;
+	/**
+	 * Whether the grid has a row selection column. Needs to take this into account to decide the cell click's selection range.
+	 */
+	hasRowSelector?: boolean,
 }
 
 const defaults: ICellSelectionModelOptions = {
-	selectActiveCell: true
+	hasRowSelector: false
 };
 
 interface EventTargetWithClassName extends EventTarget {
@@ -40,9 +44,8 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 
 	public init(grid: Slick.Grid<T>) {
 		this.grid = grid;
-		this._handler.subscribe(this.grid.onClick, (e: DOMEvent, args: Slick.OnActiveCellChangedEventArgs<T>) => this.handleActiveCellChange(e as MouseEvent, args));
 		this._handler.subscribe(this.grid.onKeyDown, (e: DOMEvent) => this.handleKeyDown(e as KeyboardEvent));
-		this._handler.subscribe(this.grid.onClick, (e: DOMEvent, args: Slick.OnClickEventArgs<T>) => this.handleIndividualCellSelection(e as MouseEvent, args));
+		this._handler.subscribe(this.grid.onClick, (e: DOMEvent, args: Slick.OnClickEventArgs<T>) => this.handleCellClick(e as MouseEvent, args));
 		this._handler.subscribe(this.grid.onHeaderClick, (e: DOMEvent, args: Slick.OnHeaderClickEventArgs<T>) => this.handleHeaderClick(e as MouseEvent, args));
 		this.grid.registerPlugin(this.selector);
 		this._handler.subscribe(this.selector.onCellRangeSelected, (e: Event, range: Slick.Range) => this.handleCellRangeSelected(e, range, false));
@@ -104,13 +107,8 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 		}
 	}
 
-	private handleActiveCellChange(e: MouseEvent, args: Slick.OnActiveCellChangedEventArgs<T>) {
-		if (this.options.selectActiveCell && !isUndefinedOrNull(args.row) && !isUndefinedOrNull(args.cell) && !e.ctrlKey) {
-			this.setSelectedRanges([new Slick.Range(args.row, args.cell)]);
-		} else if (!this.options.selectActiveCell) {
-			// clear the previous selection once the cell changes
-			this.setSelectedRanges([]);
-		}
+	private isMultiSelection(e: MouseEvent): boolean {
+		return platform.isMacintosh ? e.metaKey : e.ctrlKey;
 	}
 
 	private handleHeaderClick(e: MouseEvent, args: Slick.OnHeaderClickEventArgs<T>) {
@@ -118,17 +116,32 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 			return;
 		}
 		if (!isUndefinedOrNull(args.column)) {
-			let columnIndex = this.grid.getColumnIndex(args.column.id!);
-			if (this.grid.canCellBeSelected(0, columnIndex)) {
-				let ranges: Array<Slick.Range>;
-				if (e.ctrlKey) {
-					ranges = this.getSelectedRanges();
-					ranges.push(new Slick.Range(0, columnIndex, this.grid.getDataLength() - 1, columnIndex));
-				} else {
-					ranges = [new Slick.Range(0, columnIndex, this.grid.getDataLength() - 1, columnIndex)];
-				}
-				this.grid.setActiveCell(this.grid.getViewport()?.top ?? 0, columnIndex);
-				this.setSelectedRanges(ranges);
+			const columnIndex = this.grid.getColumnIndex(args.column.id!);
+			const rowCount = this.grid.getDataLength();
+			const columnCount = this.grid.getColumns().length;
+			const currentActiveCell = this.grid.getActiveCell();
+			let newActiveCell: Slick.Cell;
+			if (this.options.hasRowSelector && columnIndex === 0) {
+				// When the row selector's header is clicked, all cells should be selected
+				this.setSelectedRanges([new Slick.Range(0, 1, rowCount - 1, columnCount - 1)]);
+				// The first data cell in the view should be selected.
+				newActiveCell = { row: this.grid.getViewport()?.top ?? 0, cell: 1 };
+			}
+			else if (this.grid.canCellBeSelected(0, columnIndex)) {
+				// When SHIFT is pressed, all the columns between active cell's column and target column should be selected
+				const newlySelectedRange = (e.shiftKey && currentActiveCell) ? new Slick.Range(0, currentActiveCell.cell, rowCount - 1, columnIndex)
+					: new Slick.Range(0, columnIndex, rowCount - 1, columnIndex);
+
+				// When CTRL is pressed, we need to merge the new selection with existing selections
+				const rangesToBeMerged: Slick.Range[] = this.isMultiSelection(e) ? this.getSelectedRanges() : [];
+				const result = this.insertIntoSelections(rangesToBeMerged, newlySelectedRange);
+				this.setSelectedRanges(result);
+				// The first data cell of the target column in the view should be selected.
+				newActiveCell = { row: this.grid.getViewport()?.top ?? 0, cell: columnIndex };
+			}
+
+			if (newActiveCell) {
+				this.grid.setActiveCell(newActiveCell.row, newActiveCell.cell);
 			}
 		}
 	}
@@ -228,34 +241,40 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 		return newRanges;
 	}
 
-	private handleIndividualCellSelection(e: MouseEvent, args: Slick.OnClickEventArgs<T>) {
-		if (!e.ctrlKey) {
-			return;
-		}
+	private handleCellClick(e: MouseEvent, args: Slick.OnClickEventArgs<T>) {
+		const activeCell = this.grid.getActiveCell();
+		const columns = this.grid.getColumns();
+		const isRowSelectorClicked: boolean = this.options.hasRowSelector && args.cell === 0;
 
-		let ranges: Array<Slick.Range>;
-
-		ranges = this.getSelectedRanges();
-
-		let selectedRange: Slick.Range;
-		if (args.cell === 0) {
-			selectedRange = new Slick.Range(args.row, 1, args.row, args.grid.getColumns().length - 1);
+		let newlySelectedRange: Slick.Range;
+		// The selection is a range when there is an active cell and the SHIFT key is pressed.
+		if (activeCell !== undefined && e.shiftKey) {
+			// When the row selector cell is clicked, the new selection is all rows from current active row to target row.
+			// Otherwise, the new selection is the cells in the rectangle between current active cell and target cell.
+			newlySelectedRange = isRowSelectorClicked ? new Slick.Range(activeCell.row, columns.length - 1, args.row, 1)
+				: new Slick.Range(activeCell.row, activeCell.cell, args.row, args.cell);
 		} else {
-			selectedRange = new Slick.Range(args.row, args.cell);
-
+			// If the row selector cell is clicked, the new selection is all the cells in the target row.
+			// Otherwise, the new selection is the target cell
+			newlySelectedRange = isRowSelectorClicked ? new Slick.Range(args.row, 1, args.row, columns.length - 1)
+				: new Slick.Range(args.row, args.cell, args.row, args.cell);
 		}
-		ranges = this.insertIntoSelections(ranges, selectedRange);
 
-		this.grid.setActiveCell(selectedRange.toRow, selectedRange.toCell);
-		this.setSelectedRanges(ranges);
+		// When the CTRL key is pressed, we need to merge the new selection with the existing selections.
+		const rangesToBeMerged: Slick.Range[] = this.isMultiSelection(e) ? this.getSelectedRanges() : [];
+		const result = this.insertIntoSelections(rangesToBeMerged, newlySelectedRange);
+		this.setSelectedRanges(result);
 
-		e.preventDefault();
-		e.stopImmediatePropagation();
+		// Find out the new active cell
+		// If the row selector is clicked, the first data cell in the row should be the new active cell,
+		// otherwise, the target cell should be the new active cell.
+		const newActiveCell: Slick.Cell = isRowSelectorClicked ? { cell: 1, row: args.row } : { cell: args.cell, row: args.row };
+		this.grid.setActiveCell(newActiveCell.row, newActiveCell.cell);
 	}
 
 	private handleKeyDown(e: KeyboardEvent) {
-		/***
-		 * Кey codes
+		/*
+		 * Key codes
 		 * 37 left
 		 * 38 up
 		 * 39 right

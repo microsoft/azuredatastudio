@@ -50,11 +50,13 @@ export class ExecutionPlanEditor extends EditorPane {
 
 	override clearInput(): void {
 		const currentInput = this.input as ExecutionPlanInput;
+
 		// clearing old input view if present in the editor
 		if (currentInput?._executionPlanFileViewUUID) {
 			const oldView = this._viewCache.executionPlanFileViewMap.get(currentInput._executionPlanFileViewUUID);
 			oldView.onHide(this._parentContainer);
 		}
+
 		super.clearInput();
 	}
 

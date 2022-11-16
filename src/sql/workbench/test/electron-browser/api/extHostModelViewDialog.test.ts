@@ -30,7 +30,11 @@ suite('ExtHostModelViewDialog Tests', () => {
 			$setWizardDetails: (handle, details) => undefined
 		});
 		let mainContext = <IMainContext>{
-			getProxy: proxyType => mockProxy.object
+			getProxy: proxyType => <any>mockProxy.object,
+			set: () => { return; },
+			assertRegistered: () => { return; },
+			drain: () => { return undefined; },
+			dispose: () => { return; },
 		};
 
 		extHostModelView = Mock.ofInstance(<ExtHostModelViewShape>{

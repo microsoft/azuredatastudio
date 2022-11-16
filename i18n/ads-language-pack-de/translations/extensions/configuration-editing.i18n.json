@@ -11,6 +11,7 @@
 		"dist/configurationEditingMain": {
 			"cwd": "Das aktuelle Arbeitsverzeichnis der Aufgabenausführung beim Start",
 			"defaultBuildTask": "Der Name des Standardbuildtasks. Wenn es keinen Standardbuildtask gibt, wird eine Schnellauswahl angezeigt, um den Buildtask auszuwählen.",
+			"extensionInstallFolder": "Der Pfad, in dem eine Erweiterung installiert ist.",
 			"file": "Die aktuell geöffnete Datei",
 			"fileBasename": "Der Basisname der aktuellen geöffneten Datei",
 			"fileBasenameNoExtension": "Der Basisname der aktuellen geöffneten Datei ohne Erweiterung",
@@ -52,8 +53,6 @@
 			"folderLabel": "Ordner nach Name (beliebiger Speicherort)",
 			"folderName": "Name des Arbeitsbereichsordners, der die Datei enthält (z.B. MeinOrdner)",
 			"folderPath": "Dateipfad des Arbeitsbereichsordners, der die Datei enthält (z.B. /Benutzer/Entwicklung/MeinOrdner)",
-			"languageSpecificEditorSettings": "Sprachspezifische Editor-Einstellungen",
-			"languageSpecificEditorSettingsDescription": "Editor-Einstellungen für Sprache überschreiben",
 			"remoteName": "z.B. SSH",
 			"rootName": "Name des Arbeitsbereichs (z.B. meinOrdner oder meinArbeitsberech)",
 			"rootPath": "Dateipfad des Arbeitsbereichs (z.B. /Benutzer/Entwicklung/meinArbeitsbereich)",

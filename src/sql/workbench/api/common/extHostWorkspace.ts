@@ -5,9 +5,9 @@
 
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
-import { ExtHostWorkspaceShape, MainThreadWorkspaceShape, SqlMainContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { ExtHostWorkspaceShape, MainThreadWorkspaceShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { URI } from 'vs/base/common/uri';
-
 
 export class ExtHostWorkspace implements ExtHostWorkspaceShape {
 

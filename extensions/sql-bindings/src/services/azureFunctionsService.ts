@@ -21,7 +21,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 	// telemetry properties for create azure function
 	let sessionId: string = uuid.v4();
 	let propertyBag: { [key: string]: string } = { sessionId: sessionId };
-	let telemetryStep: string = '';
+	let telemetryStep: CreateAzureFunctionStep | undefined = undefined;
 	let exitReason: string = ExitReason.cancelled;
 	TelemetryReporter.sendActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.startCreateAzureFunctionWithSqlBinding);
 	let connectionInfo: IConnectionInfo | undefined;
@@ -239,7 +239,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 		let connectionStringExecuteStep = createAddConnectionStringStep(projectFolder, connectionInfo, connectionStringInfo.connectionStringSettingName);
 
 		// create C# Azure Function with SQL Binding
-		telemetryStep = 'createFunctionAPI';
+		telemetryStep = CreateAzureFunctionStep.createFunctionAPI;
 		await azureFunctionApi.createFunction({
 			language: 'C#',
 			targetFramework: 'netcoreapp3.1',
@@ -263,7 +263,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			.withAdditionalProperties(propertyBag)
 			.withConnectionInfo(connectionInfo).send();
 
-		telemetryStep = 'finishCreateFunction';
+		telemetryStep = CreateAzureFunctionStep.finishCreateFunction;
 		propertyBag.telemetryStep = telemetryStep;
 		exitReason = ExitReason.finishCreate;
 		TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.finishCreateAzureFunctionWithSqlBinding)
@@ -271,7 +271,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			.withConnectionInfo(connectionInfo).send();
 	} catch (error) {
 		let errorType = utils.getErrorType(error);
-		propertyBag.telemetryStep = telemetryStep;
+		propertyBag.telemetryStep = telemetryStep ?? '';
 		// an error occurred during createFunction
 		exitReason = ExitReason.error;
 		void vscode.window.showErrorMessage(constants.errorNewAzureFunction(error));
@@ -279,7 +279,7 @@ export async function createAzureFunction(node?: ITreeNodeInfo): Promise<void> {
 			.withAdditionalProperties(propertyBag).send();
 		return;
 	} finally {
-		propertyBag.telemetryStep = telemetryStep;
+		propertyBag.telemetryStep = telemetryStep ?? '';
 		propertyBag.exitReason = exitReason;
 		TelemetryReporter.createActionEvent(TelemetryViews.CreateAzureFunctionWithSqlBinding, TelemetryActions.exitCreateAzureFunctionQuickpick)
 			.withAdditionalProperties(propertyBag).send();

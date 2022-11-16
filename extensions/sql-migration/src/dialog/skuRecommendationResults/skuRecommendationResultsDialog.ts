@@ -35,13 +35,13 @@ export class SkuRecommendationResultsDialog {
 	constructor(public model: MigrationStateModel, public _targetType: MigrationTargetType) {
 		switch (this._targetType) {
 			case MigrationTargetType.SQLMI:
-				this.targetName = constants.SKU_RECOMMENDATION_MI_CARD_TEXT;
+				this.targetName = constants.SKU_RECOMMENDATION_MI_TARGET_TEXT;
 				break;
 			case MigrationTargetType.SQLVM:
-				this.targetName = constants.SKU_RECOMMENDATION_VM_CARD_TEXT;
+				this.targetName = constants.SKU_RECOMMENDATION_VM_TARGET_TEXT;
 				break;
 			case MigrationTargetType.SQLDB:
-				this.targetName = constants.SKU_RECOMMENDATION_SQLDB_CARD_TEXT;
+				this.targetName = constants.SKU_RECOMMENDATION_SQLDB_TARGET_TEXT;
 				break;
 		}
 
@@ -118,7 +118,9 @@ export class SkuRecommendationResultsDialog {
 				if (recommendation.targetSku) {
 					const serviceTier = recommendation.targetSku.category?.sqlServiceTier === mssql.AzureSqlPaaSServiceTier.GeneralPurpose
 						? constants.GENERAL_PURPOSE
-						: constants.BUSINESS_CRITICAL;
+						: recommendation.targetSku.category?.sqlServiceTier === mssql.AzureSqlPaaSServiceTier.HyperScale
+							? constants.HYPERSCALE
+							: constants.BUSINESS_CRITICAL;
 
 					const hardwareType = recommendation.targetSku.category?.hardwareType === mssql.AzureSqlPaaSHardwareType.Gen5
 						? constants.GEN5

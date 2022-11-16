@@ -3,6 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { localize } from 'vs/nls';
+
 let imageBasePath = require.toUrl('./images/icons/');
 export let executionPlanNodeIconPaths =
 {
@@ -81,6 +83,10 @@ export let executionPlanNodeIconPaths =
 	nestedLoops: imageBasePath + 'nested_loops.png',
 
 	parallelism: imageBasePath + 'parallelism.png',
+
+	parallelismDistribute: imageBasePath + 'parallelism_distribute.png',
+
+	parallelismRepartition: imageBasePath + 'parallelism_repartition.png',
 
 	parameterTableScan: imageBasePath + 'parameter_table_scan.png',
 
@@ -263,11 +269,13 @@ export const collapseExpandNodeIconPaths = {
 };
 
 export const savePlanIconClassNames = 'ep-save-plan-icon';
+export const highlightExpensiveOperationClassNames = 'ep-highlight-expensive-operation-icon';
 export const openPropertiesIconClassNames = 'ep-open-properties-icon';
 export const openQueryIconClassNames = 'ep-open-query-icon';
 export const openPlanFileIconClassNames = 'ep-open-plan-file-icon';
 export const saveIconClassNames = 'ep-save-icon';
 export const searchIconClassNames = 'ep-search-icon';
+export const filterIconClassNames = 'ep-filter-icon';
 export const sortAlphabeticallyIconClassNames = 'ep-sort-alphabetically-icon';
 export const sortReverseAlphabeticallyIconClassNames = 'ep-sort-reverse-alphabetically-icon';
 export const sortByDisplayOrderIconClassNames = 'ep-sort-display-order-icon';
@@ -366,3 +374,8 @@ export const polygonFillColor: string[] = [
 	`rgba(70, 104, 197, 0.1)`,   // "f2 blue purple"
 	`rgba(226, 229, 132, 0.1)`,  // "j2 khaki"
 ];
+
+//constant strings
+export const propertiesSearchDescription = localize('ep.propertiesSearchDescription', 'Search properties table');
+export const topOperationsSearchDescription = localize('ep.topOperationsSearchDescription', 'Search top operations');
+export const searchPlaceholder = localize('ep.searchPlaceholder', 'Filter for any field...');

@@ -5,7 +5,7 @@
 
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { ITree, IDataSource } from 'vs/base/parts/tree/browser/tree';
+import { ITree, IDataSource } from 'sql/base/parts/tree/browser/tree';
 import { TreeNode, TreeItemCollapsibleState } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
@@ -62,21 +62,20 @@ export class ServerTreeDataSource implements IDataSource {
 			return (element as ConnectionProfileGroup).getChildren();
 		} else if (element instanceof TreeNode) {
 			let node = element;
-			if (node.children) {
+			try {
+				// Grab the latest data from the server of the node's children.
+				await this._objectExplorerService.refreshTreeNode(node.getSession()!, node);
 				return node.children;
-			} else {
-				try {
-					return this._objectExplorerService.resolveTreeNodeChildren(node.getSession()!, node);
-				} catch (expandError) {
-					await node.setExpandedState(TreeItemCollapsibleState.Collapsed);
-					node.errorStateMessage = expandError;
-					this.showError(expandError);
-					// collapse node and refresh in case of error so remove tree cache
-					setTimeout(() => {
-						tree.collapse(element).then(() => tree.refresh(element));
-					});
-					return [];
-				}
+			}
+			catch (expandRefreshError) {
+				await node.setExpandedState(TreeItemCollapsibleState.Collapsed);
+				node.errorStateMessage = expandRefreshError;
+				this.showError(expandRefreshError);
+				// collapse node and refresh in case of error so remove tree cache
+				setTimeout(() => {
+					tree.collapse(element).then(() => tree.refresh(element));
+				});
+				return [];
 			}
 		}
 		return [];

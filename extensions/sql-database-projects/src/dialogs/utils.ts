@@ -53,9 +53,10 @@ export function getDockerImagePlaceHolder(target: string): string {
  * Returns the list of image tags for given target
  * @param imageInfo docker image info
  * @param target project target version
+ * @param defaultTagFirst whether the default tag should be the first entry in the array
  * @returns image tags
  */
-export async function getImageTags(imageInfo: DockerImageInfo, target: string): Promise<string[]> {
+export async function getImageTags(imageInfo: DockerImageInfo, target: string, defaultTagFirst?: boolean): Promise<string[]> {
 	let imageTags: string[] | undefined = [];
 	const versionToImageTags: Map<number, string[]> = new Map<number, string[]>();
 
@@ -87,6 +88,14 @@ export async function getImageTags(imageInfo: DockerImageInfo, target: string): 
 
 			imageTags = imageTags ?? [];
 			imageTags = imageTags.sort((a, b) => a.indexOf(constants.dockerImageDefaultTag) > 0 ? -1 : a.localeCompare(b));
+
+			if (defaultTagFirst) {
+				const defaultIndex = imageTags.findIndex(i => i === imageInfo.defaultTag);
+				if (defaultIndex > -1) {
+					imageTags.splice(defaultIndex, 1);
+					imageTags.unshift(imageInfo.defaultTag);
+				}
+			}
 		}
 	} catch (err) {
 		// Ignore the error. If http request fails, we just use the default tag

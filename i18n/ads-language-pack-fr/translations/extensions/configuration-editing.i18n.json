@@ -11,6 +11,7 @@
 		"dist/configurationEditingMain": {
 			"cwd": "Répertoire de travail actif de l'exécuteur de tâches au démarrage",
 			"defaultBuildTask": "Nom de la tâche de build par défaut. S'il y en a plusieurs, une recherche rapide s'affiche pour choisir la tâche de build.",
+			"extensionInstallFolder": "Chemin d’accès où une extension est installée.",
 			"file": "Fichier ouvert actif",
 			"fileBasename": "Nom de base du fichier ouvert actif",
 			"fileBasenameNoExtension": "Nom de base du fichier ouvert actif, sans extension de fichier",
@@ -52,8 +53,6 @@
 			"folderLabel": "Dossier par nom (tous les emplacements)",
 			"folderName": "nom du dossier de l'espace de travail auquel le fichier appartient (ex: monDossier)",
 			"folderPath": "chemin d’accès du dossier de l'espace de travail auquel le fichier appartient (ex: /Users/Development/myFolder)",
-			"languageSpecificEditorSettings": "Paramètres d'éditeur spécifiques au langage",
-			"languageSpecificEditorSettingsDescription": "Remplacer les paramètres de l'éditeur pour le langage",
 			"remoteName": "par ex., SSH",
 			"rootName": "nom de l’espace de travail (ex: monDossier ou monEspaceDeTravail)",
 			"rootPath": "chemin d’accès de l’espace de travail (ex: /Users/Development/myWorkspace)",

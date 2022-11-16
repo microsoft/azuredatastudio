@@ -18,6 +18,7 @@
 			"azure.microsoftCorpAccount": "Microsoft Corp.",
 			"azure.noBaseToken": "驗證失敗，或您的權杖已從系統中刪除。請嘗試再次將帳戶新增至 Azure Data Studio。",
 			"azure.noUniqueIdentifier": "使用者在 AAD 中沒有唯一的識別碼",
+			"azure.owningTenantNotFound": "找不到帳戶的擁有租用戶資訊。",
 			"azure.responseError": "權杖擷取失敗，發生錯誤。[開啟開發人員工具]({0}) 以了解更多詳細資料。",
 			"azure.tenantNotFound": "找不到識別碼為 '{0}' 的指定租用戶。",
 			"azureAuth.unidentifiedError": "Azure 驗證發生無法辨識的錯誤",
@@ -25,7 +26,8 @@
 			"azurecore.consentDialog.body": "您的租用戶 '{0} ({1})' 需要再次重新驗證，才能存取 {2} 資源。請按 [開啟] 啟動驗證程序。",
 			"azurecore.consentDialog.cancel": "取消",
 			"azurecore.consentDialog.ignore": "忽略租用戶",
-			"azurecore.consentDialog.open": "開啟"
+			"azurecore.consentDialog.open": "開啟",
+			"noMicrosoftResource": "提供者 '{0}' 未定義 Microsoft 資源端點。"
 		},
 		"dist/account-provider/auths/azureAuthCodeGrant": {
 			"azure.azureAuthCodeGrantName": "Azure 驗證碼授與",
@@ -83,6 +85,9 @@
 		"dist/azureResource/providers/kusto/kustoTreeDataProvider": {
 			"azure.resource.providers.KustoContainerLabel": "Azure 資料總管叢集"
 		},
+		"dist/azureResource/providers/mysqlFlexibleServer/mysqlFlexibleServerTreeDataProvider": {
+			"azure.resource.providers.databaseServer.treeDataProvider.mysqlFlexibleServerContainerLabel": "適用於 MySQL 的 Azure 資料庫彈性伺服器"
+		},
 		"dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider": {
 			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "PostgreSQL 超大規模資料庫 - Azure Arc"
 		},
@@ -99,7 +104,8 @@
 			"azure.resource.resourceTreeNode.noResourcesLabel": "找不到任何資源"
 		},
 		"dist/azureResource/services/subscriptionService": {
-			"azure.resource.tenantSubscriptionsError": "無法取得帳戶 {0} (租用戶 '{1}') 的訂用帳戶。{2}"
+			"azure.resource.tenantSubscriptionsError": "無法取得帳戶 {0} (租用戶 '{1}') 的訂用帳戶。{2}",
+			"azure.resource.tenantTokenError": "無法取得租用戶 '{0}' 的存取權杖 (租用戶 '{1}')。"
 		},
 		"dist/azureResource/services/terminalService": {
 			"azure.cloudShell": "Azure Cloud Shell (預覽) {0} ({1})",

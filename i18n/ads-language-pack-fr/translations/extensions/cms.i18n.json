@@ -47,8 +47,6 @@
 			"cms.connectionOptions.applicationIntent.displayName": "Intention d'application",
 			"cms.connectionOptions.applicationName.description": "Nom de l'application",
 			"cms.connectionOptions.applicationName.displayName": "Nom de l'application",
-			"cms.connectionOptions.asynchronousProcessing.description": "Quand la valeur est true, permet d'utiliser la fonctionnalité asynchrone dans le fournisseur de données .Net Framework",
-			"cms.connectionOptions.asynchronousProcessing.displayName": "Traitement asynchrone",
 			"cms.connectionOptions.attachDbFilename.displayName": "Attacher le nom de fichier de base de données",
 			"cms.connectionOptions.attachedDBFileName.description": "Nom de fichier principal, y compris le nom de chemin complet, d'une base de données pouvant être attachée",
 			"cms.connectionOptions.attachedDBFileName.displayName": "Nom du fichier de base de données attaché",

@@ -6,7 +6,6 @@
 import 'vs/css!./media/objectTypes/objecttypes';
 
 import * as dom from 'vs/base/browser/dom';
-import { localize } from 'vs/nls';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionProfile, IconPath } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -121,10 +120,6 @@ class ConnectionProfileTemplate extends Disposable {
 		const iconPath: IconPath | undefined = getIconPath(element, this._connectionManagementService);
 		renderServerIcon(this._icon, iconPath);
 		let label = element.title;
-		if (!element.isConnectionOptionsValid) {
-			label = localize('loading', "Loading...");
-		}
-
 		this._label.textContent = label;
 		this._root.title = element.serverInfo;
 	}

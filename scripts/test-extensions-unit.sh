@@ -15,13 +15,6 @@ VSCODEEXTDIR=`mktemp -d -t adsext_XXXXXXXXXX 2>/dev/null`
 VSCODECRASHDIR=$ROOT/.build/crashes
 cd $ROOT
 
-# Default to only running stable tests if test grep isn't set
-if [[ "$ADS_TEST_GREP" == "" ]]; then
-	echo Running stable tests only
-	export ADS_TEST_GREP=@UNSTABLE@
-	export ADS_TEST_INVERT_GREP=1
-fi
-
 # Figure out which Electron to use for running tests
 if [ -z "$INTEGRATION_TEST_ELECTRON_PATH" ]
 then
@@ -126,10 +119,11 @@ echo *** starting dacpac tests ***
 echo *****************************
 "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/dacpac --extensionTestsPath=$ROOT/extensions/dacpac/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
 
-echo ********************************************
-echo *** starting data-workspace tests ***
-echo ********************************************
-"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/data-workspace --extensionTestsPath=$ROOT/extensions/data-workspace/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
+# {{SQL CARBON TODO}} - disable tests for this extension
+# echo ********************************************
+# echo *** starting data-workspace tests ***
+# echo ********************************************
+# "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/data-workspace --extensionTestsPath=$ROOT/extensions/data-workspace/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
 
 echo *****************************
 echo *** starting import tests ***

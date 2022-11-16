@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
 import { nb } from 'azdata';
 import { Kernel, KernelMessage } from '@jupyterlab/services';
 
@@ -91,7 +90,7 @@ export class JupyterKernel implements nb.IKernel {
 	requestExecute(content: nb.IExecuteRequest, disposeOnDone?: boolean): nb.IFuture {
 		content.code = Array.isArray(content.code) ? content.code.join('') : content.code;
 		content.code = content.code.replace(/\r+\n/gm, '\n'); // Remove \r (if it exists) from newlines
-		let futureImpl = this.kernelImpl.requestExecute(content as KernelMessage.IExecuteRequest & { notebookUri: vscode.Uri, cellUri: vscode.Uri, language: string, cellIndex: number }, disposeOnDone);
+		let futureImpl = this.kernelImpl.requestExecute(content as KernelMessage.IExecuteRequest & { language: string }, disposeOnDone);
 		return new JupyterFuture(futureImpl);
 	}
 

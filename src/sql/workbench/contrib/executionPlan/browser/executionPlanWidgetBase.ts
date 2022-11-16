@@ -3,13 +3,17 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-export abstract class ExecutionPlanWidgetBase {
+import { Disposable } from 'vs/base/common/lifecycle';
+
+export abstract class ExecutionPlanWidgetBase extends Disposable {
 	/**
 	 *
 	 * @param container HTML Element that contains the UI for the plan action view.
 	 * @param identifier Uniquely identify the view to be added or removed. Note: Only 1 view with the same id can be added to the controller
 	 */
 	constructor(public container: HTMLElement, public identifier: string) {
+		super();
+
 		this.container = container;
 		this.identifier = identifier;
 	}

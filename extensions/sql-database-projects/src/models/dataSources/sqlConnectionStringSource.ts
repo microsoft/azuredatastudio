@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import type * as azdataType from 'azdata';
+import * as vscodeMssql from 'vscode-mssql';
 import { DataSource } from './dataSources';
 import * as constants from '../../common/constants';
 
@@ -44,11 +45,11 @@ export class SqlConnectionDataSource extends DataSource {
 
 	public get authType(): string {
 		if (this.azureMFA) {
-			return constants.azureMfaAuth;
+			return vscodeMssql.AuthenticationType.AzureMFA;
 		} else if (this.integratedSecurity) {
-			return constants.integratedAuth;
+			return vscodeMssql.AuthenticationType.Integrated;
 		} else {
-			return constants.sqlAuth;
+			return 'SqlAuth';
 		}
 	}
 
