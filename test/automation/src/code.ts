@@ -24,6 +24,9 @@ export interface LaunchOptions {
 	readonly extensionsPath: string;
 	readonly logger: Logger;
 	logsPath: string;
+	waitTime: number; // {{SQL CARBON EDIT}} - Adding back waitTime to launchOptions interface
+	readonly log?: string; // {{SQL CARBON EDIT}} - Adding back log to launchOptions interface
+	readonly screenshotsPath: string | null; // {{SQL CARBON EDIT}} - Adding back screenshotsPath to launchOptions interface
 	readonly verbose?: boolean;
 	readonly extraArgs?: string[];
 	readonly remote?: boolean;
