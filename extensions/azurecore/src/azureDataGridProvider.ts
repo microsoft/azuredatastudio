@@ -13,6 +13,7 @@ import * as azureResourceUtils from './azureResource/utils';
 import * as constants from './constants';
 import * as loc from './localizedConstants';
 import * as utils from './utils';
+import { AuthLibrary } from './account-provider/auths/azureAuth';
 
 const typesClause = [
 	azureResource.AzureResourceType.sqlDatabase,
@@ -31,22 +32,9 @@ export class AzureDataGridProvider implements azdata.DataGridProvider {
 	public title = loc.azureResourcesGridTitle;
 
 	public async getDataGridItems() {
-		const authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
-		const accounts = (await azdata.accounts.getAllAccounts()).filter(account => {
-			if (account.key.authLibrary) {
-				if (account.key.authLibrary === authLibrary) {
-					return true;
-				} else {
-					return false;
-				}
-			} else {
-				if (authLibrary === 'ADAL') {
-					return true;
-				} else {
-					return false;
-				}
-			}
-		});
+		let accounts: azdata.Account[];
+		const authLibrary: AuthLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
+		accounts = azureResourceUtils.filterAccounts(await azdata.accounts.getAllAccounts(), authLibrary);
 		const items: any[] = [];
 		await Promise.all(accounts.map(async (account) => {
 			await Promise.all(account.properties.tenants.map(async (tenant: { id: string; }) => {

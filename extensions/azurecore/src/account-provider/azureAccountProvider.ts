@@ -19,6 +19,7 @@ import { Logger } from '../utils/Logger';
 import { MultiTenantTokenResponse, Token, AzureAuth, AuthLibrary } from './auths/azureAuth';
 import { AzureAuthCodeGrant } from './auths/azureAuthCodeGrant';
 import { AzureDeviceCode } from './auths/azureDeviceCode';
+import { filterAccounts } from '../azureResource/utils';
 
 const localize = nls.loadMessageBundle();
 
@@ -104,22 +105,8 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 	private async _initialize(storedAccounts: AzureAccount[]): Promise<AzureAccount[]> {
 		const accounts: AzureAccount[] = [];
 		console.log(`Initializing stored accounts ${JSON.stringify(accounts)}`);
-		const authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
-		const updatedAccounts = storedAccounts.filter(account => {
-			if (account.key.authLibrary) {
-				if (account.key.authLibrary === authLibrary) {
-					return true;
-				} else {
-					return false;
-				}
-			} else {
-				if (authLibrary === 'ADAL') {
-					return true;
-				} else {
-					return false;
-				}
-			}
-		});
+		const authLibrary: AuthLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
+		const updatedAccounts = filterAccounts(storedAccounts, authLibrary);
 		for (let account of updatedAccounts) {
 			if (this.authLibrary === 'ADAL') {
 				const azureAuth = this.getAuthMethod(account);

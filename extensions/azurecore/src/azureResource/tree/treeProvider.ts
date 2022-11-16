@@ -14,9 +14,10 @@ import { AzureResourceAccountTreeNode } from './accountTreeNode';
 import { AzureResourceAccountNotSignedInTreeNode } from './accountNotSignedInTreeNode';
 import { AzureResourceMessageTreeNode } from '../messageTreeNode';
 import { AzureResourceContainerTreeNodeBase } from './baseTreeNodes';
-import { AzureResourceErrorMessageUtil, equals } from '../utils';
+import { AzureResourceErrorMessageUtil, equals, filterAccounts } from '../utils';
 import { IAzureResourceTreeChangeHandler } from './treeChangeHandler';
 import { AzureAccount } from 'azurecore';
+import { AuthLibrary } from '../../account-provider/auths/azureAuth';
 
 
 export class AzureResourceTreeProvider implements vscode.TreeDataProvider<TreeNode>, IAzureResourceTreeChangeHandler {
@@ -29,22 +30,8 @@ export class AzureResourceTreeProvider implements vscode.TreeDataProvider<TreeNo
 	public constructor(private readonly appContext: AppContext) {
 		azdata.accounts.onDidChangeAccounts(async (e: azdata.DidChangeAccountsParams) => {
 			// This event sends it per provider, we need to make sure we get all the azure related accounts
-			const authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
-			let accounts = (await azdata.accounts.getAllAccounts()).filter(account => {
-				if (account.key.authLibrary) {
-					if (account.key.authLibrary === authLibrary) {
-						return true;
-					} else {
-						return false;
-					}
-				} else {
-					if (authLibrary === 'ADAL') {
-						return true;
-					} else {
-						return false;
-					}
-				}
-			});
+			const authLibrary: AuthLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
+			let accounts = filterAccounts(await azdata.accounts.getAllAccounts(), authLibrary);
 			accounts = accounts.filter(a => a.key.providerId.startsWith('azure'));
 			// the onDidChangeAccounts event will trigger in many cases where the accounts didn't actually change
 			// the notifyNodeChanged event triggers a refresh which triggers a getChildren which can trigger this callback
@@ -71,22 +58,8 @@ export class AzureResourceTreeProvider implements vscode.TreeDataProvider<TreeNo
 
 		try {
 			if (this.accounts && this.accounts.length > 0) {
-				const authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
-				this.accounts = this.accounts.filter(account => {
-					if (account.key.authLibrary) {
-						if (account.key.authLibrary === authLibrary) {
-							return true;
-						} else {
-							return false;
-						}
-					} else {
-						if (authLibrary === 'ADAL') {
-							return true;
-						} else {
-							return false;
-						}
-					}
-				});
+				const authLibrary: AuthLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
+				this.accounts = filterAccounts(this.accounts, authLibrary);
 				return this.accounts.map((account) => new AzureResourceAccountTreeNode(account, this.appContext, this));
 			} else {
 				return [new AzureResourceAccountNotSignedInTreeNode()];
@@ -98,22 +71,8 @@ export class AzureResourceTreeProvider implements vscode.TreeDataProvider<TreeNo
 
 	private async loadAccounts(): Promise<void> {
 		try {
-			const authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
-			this.accounts = (await azdata.accounts.getAllAccounts()).filter(account => {
-				if (account.key.authLibrary) {
-					if (account.key.authLibrary === authLibrary) {
-						return true;
-					} else {
-						return false;
-					}
-				} else {
-					if (authLibrary === 'ADAL') {
-						return true;
-					} else {
-						return false;
-					}
-				}
-			});
+			const authLibrary: AuthLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
+			this.accounts = filterAccounts(await azdata.accounts.getAllAccounts(), authLibrary);
 			// System has been initialized
 			this.setSystemInitialized();
 			this._onDidChangeTreeData.fire(undefined);

@@ -12,11 +12,12 @@ const localize = nls.loadMessageBundle();
 import { TreeNode } from '../treeNode';
 import { AzureResourceMessageTreeNode } from '../messageTreeNode';
 import { AzureResourceContainerTreeNodeBase } from './baseTreeNodes';
-import { AzureResourceErrorMessageUtil } from '../utils';
+import { AzureResourceErrorMessageUtil, filterAccounts } from '../utils';
 import { IAzureResourceTreeChangeHandler } from './treeChangeHandler';
 import { IAzureResourceNodeWithProviderId, IAzureResourceSubscriptionService } from '../interfaces';
 import { AzureResourceServiceNames } from '../constants';
 import { AzureResourceService } from '../resourceService';
+import { AuthLibrary } from '../../account-provider/auths/azureAuth';
 
 
 export class FlatAzureResourceTreeProvider implements vscode.TreeDataProvider<TreeNode>, IAzureResourceTreeChangeHandler {
@@ -118,22 +119,8 @@ class ResourceLoader {
 
 		this._state = LoaderState.Loading;
 
-		const authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
-		const accounts = (await azdata.accounts.getAllAccounts()).filter(account => {
-			if (account.key.authLibrary) {
-				if (account.key.authLibrary === authLibrary) {
-					return true;
-				} else {
-					return false;
-				}
-			} else {
-				if (authLibrary === 'ADAL') {
-					return true;
-				} else {
-					return false;
-				}
-			}
-		});
+		const authLibrary: AuthLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
+		const accounts = filterAccounts(await azdata.accounts.getAllAccounts(), authLibrary);
 
 		for (const account of accounts) {
 			for (const tenant of account.properties.tenants) {
