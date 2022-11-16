@@ -36,7 +36,7 @@
 	"sqlDatabaseProjects.openInDesigner": "Open in Designer",
 
 	"sqlDatabaseProjects.Settings": "Database Projects",
-	"sqlDatabaseProjects.dotnetInstallLocation": "Full path to .NET SDK on the machine.",
+	"sqlDatabaseProjects.dotnetInstallLocation": "Full path to .NET SDK on the machine. For example, if dotnet.exe is located at C:\\folder1\\dotnet\\dotnet.exe, set the path for this setting to C:\\folder1\\dotnet",
 	"sqlDatabaseProjects.netCoreDoNotAsk": "Whether to prompt the user to install .NET Core when not detected.",
 	"sqlDatabaseProjects.nodejsDoNotAsk": "Whether to prompt the user to install Node.js when not detected.",
 	"sqlDatabaseProjects.autorestSqlVersion": "Which version of Autorest.Sql to use from NPM.  Latest will be used if not set.",
