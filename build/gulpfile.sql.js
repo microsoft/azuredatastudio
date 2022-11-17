@@ -133,10 +133,7 @@ gulp.task('package-external-extensions', task.series(
 						// And now use gulp-json-editor to modify the contents
 						const updateData = JSON.parse(fs.readFileSync(vscodeManifestFullPath)); // Read in the set of values to replace from package.vscode.json
 						Object.keys(updateData).forEach(key => {
-							console.info('current key is ' + key);
-
 							if (key !== 'contributes') {
-								console.info('replacing' + key + ' for ' + packageDir);
 								data[key] = updateData[key];
 							}
 						});
@@ -148,11 +145,11 @@ gulp.task('package-external-extensions', task.series(
 							});
 						}
 
-						console.info('Before checking configuration');
-						// add any configuration properties only in the package.vscode.json
-						if (updateData.contributes?.configuration?.properties) {
-							console.info('adding configuration for to ' + packageDir + ' for ' + updateData.contributes.configuration.properties);
-							data.contributes.configuration.properties += updateData.contributes.configuration.properties;
+						// add any configuration properties from the package.vscode.json
+						if (updateData.contributes?.configuration[0]?.properties) {
+							Object.keys(updateData.contributes.configuration[0].properties).forEach(key => {
+								data.contributes.configuration[0].properties[key] = updateData.contributes.configuration[0].properties[key];
+							});
 						}
 
 						return data;
