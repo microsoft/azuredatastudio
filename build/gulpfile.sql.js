@@ -145,7 +145,8 @@ gulp.task('package-external-extensions', task.series(
 							});
 						}
 
-						// add any configuration properties from the package.vscode.json
+						// Add any configuration properties from the package.vscode.json
+						// Currently only supports bringing over properties in the first config object found and doesn't support modifying the title
 						if (updateData.contributes?.configuration[0]?.properties) {
 							Object.keys(updateData.contributes.configuration[0].properties).forEach(key => {
 								data.contributes.configuration[0].properties[key] = updateData.contributes.configuration[0].properties[key];
