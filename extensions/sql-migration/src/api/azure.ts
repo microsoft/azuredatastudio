@@ -438,7 +438,7 @@ export async function getMigrationDetails(account: azdata.Account, subscription:
 
 	const api = await getAzureCoreAPI();
 	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
-	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, host, undefined);
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, host);
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
 	}
@@ -487,7 +487,7 @@ export async function startMigrationCutover(account: azdata.Account, subscriptio
 	const path = encodeURI(`${migration.id}/cutover?api-version=${DMSV2_API_VERSION}`);
 	const requestBody = { migrationOperationId: migration.properties.migrationOperationId };
 	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
-	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.POST, requestBody, true, host, undefined);
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.POST, requestBody, true, host);
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
 	}
@@ -499,7 +499,7 @@ export async function stopMigration(account: azdata.Account, subscription: Subsc
 	const path = encodeURI(`${migration.id}/cancel?api-version=${DMSV2_API_VERSION}`);
 	const requestBody = { migrationOperationId: migration.properties.migrationOperationId };
 	const host = api.getProviderMetadataForAccount(account).settings.armResource?.endpoint;
-	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.POST, requestBody, true, host, undefined);
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.POST, requestBody, true, host);
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
 	}
