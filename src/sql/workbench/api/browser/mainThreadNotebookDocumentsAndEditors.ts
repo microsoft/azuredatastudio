@@ -345,14 +345,6 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		}
 	}
 
-	/**
-	 * Attempts to create a new notebook with the specified provider and contents. Used for VS Code extension compatibility.
-	 */
-	async $tryCreateNotebookDocument(providerId: string, contents?: azdata.nb.INotebookContents): Promise<UriComponents> {
-		let input = await this._notebookService.createNotebookInputFromContents(providerId, contents);
-		return input.resource;
-	}
-
 	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): Promise<string> {
 		// Append a numbered suffix if an untitled notebook is already open with the same path
 		if (resource.scheme === Schemas.untitled) {

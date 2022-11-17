@@ -8,22 +8,29 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"dist/features/documentLinkProvider": {
+		"dist/languageFeatures/documentLinkProvider": {
 			"documentLink.tooltip": "Seguir o link"
 		},
-		"dist/features/preview": {
+		"dist/languageFeatures/fileReferences": {
+			"error.noResource": "Falha ao localizar as referências de arquivo. Nenhum recurso fornecido.",
+			"progress.title": "Encontrando as Referências do Arquivo"
+		},
+		"dist/languageFeatures/rename": {
+			"invalidRenameLocation": "Renomeação não suportada no local"
+		},
+		"dist/preview/preview": {
 			"lockedPreviewTitle": "[Versão Prévia] {0}",
 			"onPreviewStyleLoadError": "Não foi possível carregar 'markdown.styles': {0}",
 			"preview.clickOpenFailed": "Não foi possível abrir {0}",
 			"previewTitle": "Visualizar {0}"
 		},
-		"dist/features/previewContentProvider": {
+		"dist/preview/previewContentProvider": {
 			"preview.notFound": "{0} não encontrado",
 			"preview.securityMessage.label": "Aviso de Segurança Desabilitado para Conteúdo",
 			"preview.securityMessage.text": "Algum conteúdo foi desabilitado neste documento",
 			"preview.securityMessage.title": "Um conteúdo potencialmente não seguro foi desabilitado na visualização de Markdown. Altere a configuração de segurança da visualização de Markdown para permitir o conteúdo não seguro ou habilitar os scripts"
 		},
-		"dist/security": {
+		"dist/preview/security": {
 			"disable.description": "Permitir a execução de todo o conteúdo e script. Não recomendado",
 			"disable.title": "Desabilitar",
 			"disableSecurityWarning.title": "Desabilitar aviso de segurança de visualização neste workspace",
@@ -39,14 +46,17 @@
 			"toggleSecurityWarning.description": "Não afeta o nível de segurança do conteúdo"
 		},
 		"package": {
+			"configuration.markdown.editor.drop.enabled": "Habilite/desabilite soltar no editor de markdown para inserir shift. Requer habilitar `#workbenck.experimental.editor.dropIntoEditor.enabled#`.",
 			"configuration.markdown.links.openLocation.beside": "Abrir links ao lado do editor ativo.",
 			"configuration.markdown.links.openLocation.currentGroup": "Abrir links no grupo do editor ativo.",
 			"configuration.markdown.links.openLocation.description": "Controla se os links nos arquivos Markdown devem ser abertos.",
 			"configuration.markdown.preview.openMarkdownLinks.description": "Controla como os links para outros arquivos Markdown na visualização de Markdown devem ser abertos.",
 			"configuration.markdown.preview.openMarkdownLinks.inEditor": "Tentar abrir links no editor.",
 			"configuration.markdown.preview.openMarkdownLinks.inPreview": "Tentar abrir links na visualização de Markdown.",
+			"configuration.markdown.suggest.paths.enabled.description": "Habilitar/desabilitar sugestões de caminho para links de markdown",
 			"description": "Fornece suporte de linguagem avançada para Markdown.",
 			"displayName": "Recursos da Linguagem Markdown",
+			"markdown.findAllFileReferences": "Encontrar as Referências do Arquivo",
 			"markdown.preview.breaks.desc": "Define como as quebras de linha são renderizadas na visualização de Markdown. A definição desta opção como 'true' cria um <br> para novas linhas dentro de parágrafos.",
 			"markdown.preview.doubleClickToSwitchToEditor.desc": "Clicar duas vezes na visualização de Markdown para mudar para o editor.",
 			"markdown.preview.fontFamily.desc": "Controla a família de fontes usada na visualização de Markdown.",
@@ -59,7 +69,7 @@
 			"markdown.preview.scrollPreviewWithEditor.desc": "Quando um Markdown editor for rolado, atualizar a exibição da visualização.",
 			"markdown.preview.title": "Abrir Visualização",
 			"markdown.preview.toggleLock.title": "Ativar/Desativar Bloqueio de Visualização",
-			"markdown.preview.typographer": "Habilitar ou desabilitar algumas substituições com neutralidade de idioma e o aperfeiçoamento de citações na visualização de Markdown.",
+			"markdown.preview.typographer": "Habilitar ou desabilitar algumas substituições com neutralidade de linguagem e o aperfeiçoamento de citações na visualização de Markdown.",
 			"markdown.previewSide.title": "Abrir Visualização ao Lado",
 			"markdown.showLockedPreviewToSide.title": "Abrir Visualização Bloqueada ao Lado",
 			"markdown.showPreviewSecuritySelector.title": "Alterar Configurações de Segurança da Visualização",

@@ -405,7 +405,7 @@ export class PublishDatabaseDialog {
 		this.dockerServerRadioButton = view.modelBuilder.radioButton()
 			.withProps({
 				name: 'publishType',
-				label: constants.publishToDockerContainer(name)
+				label: name === constants.AzureSqlServerName ? constants.publishToDockerContainerPreview(name) : constants.publishToDockerContainer(name)
 			}).component();
 
 		this.dockerServerRadioButton.onDidChangeCheckedState((checked) => {
