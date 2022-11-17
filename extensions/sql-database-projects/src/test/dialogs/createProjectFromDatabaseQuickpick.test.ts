@@ -9,9 +9,12 @@ import * as sinon from 'sinon';
 import * as vscode from 'vscode';
 import * as constants from '../../common/constants';
 import * as utils from '../../common/utils'
-import { createTestUtils, mockConnectionInfo, TestUtils, MockQuickPick, createQuickPickContext } from './testUtils';
+import { createTestUtils, mockConnectionInfo, TestUtils } from './testUtils';
 import * as createProjectFromDatabaseQuickpick from '../../dialogs/createProjectFromDatabaseQuickpick';
 import { promises as fs } from 'fs';
+import * as quickpickHelper from '../../dialogs/quickpickHelper'
+import { ImportDataModel } from '../../models/api/import';
+import * as mssql from 'mssql';
 
 let testUtils: TestUtils;
 const projectFilePath = 'test';
@@ -48,6 +51,7 @@ describe('Create Project From Database Quickpick', () => {
 		//promptForConnection spy to verify test
 		const promptForConnectionSpy = sinon.stub(testUtils.vscodeMssqlIExtension.object, 'promptForConnection').withArgs(sinon.match.any).resolves(undefined);
 
+		//user chooses connection
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'connect').resolves('testConnectionURI');
 		let dbList: string[] = constants.systemDbs;
 		dbList.push('OtherDatabase');
@@ -73,6 +77,7 @@ describe('Create Project From Database Quickpick', () => {
 		dbList.push('Database');
 		dbList.push('OtherDatabase2');
 
+		//user chooses connection and database
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'connect').resolves('testConnectionURI');
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'listDatabases').withArgs(sinon.match.any).resolves(dbList);
 		sinon.stub(vscode.window, 'showQuickPick').resolves('Database' as any);
@@ -95,9 +100,11 @@ describe('Create Project From Database Quickpick', () => {
 		dbList.push('Database');
 		dbList.push('OtherDatabase2');
 
+		//user chooses connection and database
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'connect').resolves('testConnectionURI');
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'listDatabases').withArgs(sinon.match.any).resolves(dbList);
 		let quickPickStub = sinon.stub(vscode.window, 'showQuickPick').resolves('Database' as any);
+		//user chooses project name
 		sinon.stub(vscode.window, 'showInputBox').resolves('TestProject');
 		//user chooses to exit
 		quickPickStub.onSecondCall().resolves(undefined);
@@ -116,9 +123,11 @@ describe('Create Project From Database Quickpick', () => {
 		dbList.push('Database');
 		dbList.push('OtherDatabase2');
 
+		//user chooses connection and database
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'connect').resolves('testConnectionURI');
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'listDatabases').withArgs(sinon.match.any).resolves(dbList);
 		let quickPickStub = sinon.stub(vscode.window, 'showQuickPick').resolves('Database' as any);
+		//user chooses project name
 		sinon.stub(vscode.window, 'showInputBox').resolves('TestProject');
 		// user chooses to browse for folder
 		quickPickStub.onSecondCall().resolves((constants.browseEllipsisWithIcon) as any);
@@ -149,9 +158,11 @@ describe('Create Project From Database Quickpick', () => {
 		dbList.push('Database');
 		dbList.push('OtherDatabase2');
 
+		//user chooses connection and database
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'connect').resolves('testConnectionURI');
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'listDatabases').withArgs(sinon.match.any).resolves(dbList);
 		let quickPickStub = sinon.stub(vscode.window, 'showQuickPick').resolves('Database' as any);
+		//user chooses project name
 		sinon.stub(vscode.window, 'showInputBox').resolves('TestProject');
 		// user chooses to browse for folder
 		quickPickStub.onSecondCall().resolves((constants.browseEllipsisWithIcon) as any);
@@ -186,9 +197,11 @@ describe('Create Project From Database Quickpick', () => {
 		dbList.push('Database');
 		dbList.push('OtherDatabase2');
 
+		//user chooses connection and database
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'connect').resolves('testConnectionURI');
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'listDatabases').withArgs(sinon.match.any).resolves(dbList);
 		let quickPickStub = sinon.stub(vscode.window, 'showQuickPick').resolves('Database' as any);
+		//user chooses project name
 		sinon.stub(vscode.window, 'showInputBox').resolves(projectFileName);
 		// user chooses a folder/file combination that already exists
 		quickPickStub.onSecondCall().resolves(testProjectFilePath as any);
@@ -213,9 +226,11 @@ describe('Create Project From Database Quickpick', () => {
 		dbList.push('Database');
 		dbList.push('OtherDatabase2');
 
+		//user chooses connection and database
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'connect').resolves('testConnectionURI');
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'listDatabases').withArgs(sinon.match.any).resolves(dbList);
 		let quickPickStub = sinon.stub(vscode.window, 'showQuickPick').resolves('Database' as any);
+		//user chooses project name
 		sinon.stub(vscode.window, 'showInputBox').resolves('TestProject');
 		// user chooses a folder
 		quickPickStub.onSecondCall().resolves(projectFilePath as any);
@@ -233,17 +248,16 @@ describe('Create Project From Database Quickpick', () => {
 	it('Should exit when sdk style project is not selected', async function (): Promise<void> {
 		sinon.stub(utils, 'getVscodeMssqlApi').resolves(testUtils.vscodeMssqlIExtension.object);	//set vscode mssql extension api
 
-		let dbList: string[] = [];//
+		let dbList: string[] = constants.systemDbs;
 		dbList.push('OtherDatabase');
 		dbList.push('Database');
 		dbList.push('OtherDatabase2');
-		dbList = dbList.concat(constants.systemDbs);
-		console.log('dbList', dbList);
 
+		//user chooses connection and database
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'connect').resolves('testConnectionURI');
-		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'listDatabases').resolves(dbList);
-		//sinon.stub(testUtils.vscodeMssqlIExtension.object, 'listDatabases').withArgs(sinon.match.any).resolves(dbList);
+		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'listDatabases').withArgs(sinon.match.any).resolves(dbList);
 		let quickPickStub = sinon.stub(vscode.window, 'showQuickPick').resolves('Database' as any);
+		//user chooses project name
 		sinon.stub(vscode.window, 'showInputBox').resolves('TestProject');
 		// user chooses a folder
 		quickPickStub.onSecondCall().resolves(projectFilePath as any);
@@ -252,15 +266,7 @@ describe('Create Project From Database Quickpick', () => {
 		//user chooses No when prompted for include permissions
 		quickPickStub.onCall(3).resolves(constants.noStringDefault as any);
 		//user chooses to exit when prompted for sdk style project
-		//sinon.stub(vscode.window, 'createQuickPick').resolves(testUtils.quickPick.object);
-		//sinon.stub(testUtils.quickPick.object, 'connect').resolves(undefined);
-		//testUtils.quickPick.object.onDidHide();
-		//const quickPickContext = createQuickPickContext();
-		//quickPickContext.onDidHide.fire(undefined);
-		//sinon.stub(createNewProjectFromDatabaseWithQuickpick, 'getSDKStyleProjectInfo').resolves(undefined);
-		//sinon.stub(createProjectFromDatabaseQuickpick, 'getSDKStyleProjectInfo').resolves(<any>Promise.resolve(undefined));//resolves(undefined);
-		sinon.stub(createProjectFromDatabaseQuickpick, 'getSDKStyleProjectInfo').returns(Promise.resolve(undefined));//resolves(undefined);
-		//sinon.stub(vscode.window, 'showQuickPick').resolves(Promise.resolve(loc.msgYes) as any);
+		sinon.stub(quickpickHelper, 'getSDKStyleProjectInfo').resolves(undefined);
 
 		const model = await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick(mockConnectionInfo);
 
@@ -268,111 +274,43 @@ describe('Create Project From Database Quickpick', () => {
 		should.equal(model, undefined);
 	});
 
+	it('Should create correct import data model when all the information is provided', async function (): Promise<void> {
+		sinon.stub(utils, 'getVscodeMssqlApi').resolves(testUtils.vscodeMssqlIExtension.object);	//set vscode mssql extension api
 
+		let dbList: string[] = constants.systemDbs;
+		dbList.push('OtherDatabase');
+		dbList.push('Database');
+		dbList.push('OtherDatabase2');
 
+		//user chooses connection and database
+		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'connect').resolves('testConnectionURI');
+		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'listDatabases').withArgs(sinon.match.any).resolves(dbList);
+		let quickPickStub = sinon.stub(vscode.window, 'showQuickPick').resolves('Database' as any);
+		//user chooses project name
+		sinon.stub(vscode.window, 'showInputBox').resolves('TestProject');
+		// user chooses a folder
+		quickPickStub.onSecondCall().resolves(projectFilePath as any);
+		//user chooses Object type when prompted for folder structure
+		quickPickStub.onThirdCall().resolves(constants.objectType as any);
+		//user chooses No when prompted for include permissions
+		quickPickStub.onCall(3).resolves(constants.noStringDefault as any);
+		//user chooses sdk style project to be true
+		sinon.stub(quickpickHelper, 'getSDKStyleProjectInfo').resolves(true);
 
-	/*it('Should select connection from profile', async function (): Promise<void> {
-		sinon.stub(utils, 'getVscodeMssqlApi').resolves(testUtils.vscodeMssqlIExtension.object);
-		let connectionInfo: IConnectionInfo = createTestCredentials();// create test connectionInfo
-
-		sinon.stub(azdata.connection, 'getConnections').resolves([]);
-		sinon.stub(azdata.connection, 'connect').resolves({ connected: true, connectionId: '0', errorMessage: '', errorCode: 0 });
-		sinon.stub(azdata.connection, 'listDatabases').resolves([]);
-		const dialog = new CreateProjectFromDatabaseDialog(mockConnectionProfile);
-		await dialog.openDialog();
-		should.notEqual(dialog.createProjectFromDatabaseTab, undefined);
-	});
-	it('Should enable ok button correctly with a connection profile', async function (): Promise<void> {
-		sinon.stub(azdata.connection, 'getConnections').resolves([]);
-		sinon.stub(azdata.connection, 'connect').resolves({ connected: true, connectionId: '0', errorMessage: '', errorCode: 0 });
-		sinon.stub(azdata.connection, 'listDatabases').resolves([]);
-		const dialog = new CreateProjectFromDatabaseDialog(mockConnectionProfile);
-		await dialog.openDialog();		// should set connection details
-
-		should(dialog.dialog.okButton.enabled).equal(false);
-
-		// fill in project name and ok button should not be enabled
-		dialog.projectNameTextBox!.value = 'testProject';
-		dialog.tryEnableCreateButton();
-		should(dialog.dialog.okButton.enabled).equal(false, 'Ok button should not be enabled because project location is not filled');
-
-		// fill in project location and ok button should be enabled
-		dialog.projectLocationTextBox!.value = 'testLocation';
-		dialog.tryEnableCreateButton();
-		should(dialog.dialog.okButton.enabled).equal(true, 'Ok button should be enabled since all the required fields are filled');
-	});
-
-	it('Should enable ok button correctly without a connection profile', async function (): Promise<void> {
-		const dialog = new CreateProjectFromDatabaseDialog(undefined);
-		await dialog.openDialog();
-
-		should(dialog.dialog.okButton.enabled).equal(false, 'Ok button should not be enabled because all the required details are not filled');
-
-		// fill in project name and ok button should not be enabled
-		dialog.projectNameTextBox!.value = 'testProject';
-		dialog.tryEnableCreateButton();
-		should(dialog.dialog.okButton.enabled).equal(false, 'Ok button should not be enabled because source database details and project location are not filled');
-
-		// fill in project location and ok button not should be enabled
-		dialog.projectLocationTextBox!.value = 'testLocation';
-		dialog.tryEnableCreateButton();
-		should(dialog.dialog.okButton.enabled).equal(false, 'Ok button should not be enabled because source database details are not filled');
-
-		// fill in server name and ok button not should be enabled
-		dialog.sourceConnectionTextBox!.value = 'testServer';
-		dialog.tryEnableCreateButton();
-		should(dialog.dialog.okButton.enabled).equal(false, 'Ok button should not be enabled because source database is not filled');
-
-		// fill in database name and ok button should be enabled
-		dialog.sourceDatabaseDropDown!.value = 'testDatabase';
-		dialog.tryEnableCreateButton();
-		should(dialog.dialog.okButton.enabled).equal(true, 'Ok button should be enabled since all the required fields are filled');
-
-		// update folder structure information and ok button should still be enabled
-		dialog.folderStructureDropDown!.value = 'Object Type';
-		dialog.tryEnableCreateButton();
-		should(dialog.dialog.okButton.enabled).equal(true, 'Ok button should be enabled since all the required fields are filled');
-	});
-
-	it('Should create default project name correctly when database information is populated', async function (): Promise<void> {
-		sinon.stub(azdata.connection, 'getConnections').resolves([]);
-		sinon.stub(azdata.connection, 'connect').resolves({ connected: true, connectionId: '0', errorMessage: '', errorCode: 0 });
-		sinon.stub(azdata.connection, 'listDatabases').resolves(['My Database']);
-		const dialog = new CreateProjectFromDatabaseDialog(mockConnectionProfile);
-		await dialog.openDialog();
-		dialog.setProjectName();
-
-		should.equal(dialog.projectNameTextBox!.value, 'DatabaseProjectMy Database');
-	});
-
-	it('Should include all info in import data model and connect to appropriate call back properties', async function (): Promise<void> {
-		const stubUri = 'My URI';
-		const dialog = new CreateProjectFromDatabaseDialog(mockConnectionProfile);
-		sinon.stub(azdata.connection, 'getConnections').resolves([]);
-		sinon.stub(azdata.connection, 'connect').resolves({ connected: true, connectionId: '0', errorMessage: '', errorCode: 0 });
-		sinon.stub(azdata.connection, 'listDatabases').resolves(['My Database']);
-		sinon.stub(azdata.connection, 'getUriForConnection').resolves(stubUri);
-		await dialog.openDialog();
-
-		dialog.projectNameTextBox!.value = 'testProject';
-		dialog.projectLocationTextBox!.value = 'testLocation';
-
-		let model: ImportDataModel;
+		const model = await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick(mockConnectionInfo);
 
 		const expectedImportDataModel: ImportDataModel = {
-			connectionUri: stubUri,
-			database: 'My Database',
-			projName: 'testProject',
-			filePath: 'testLocation',
+			connectionUri: 'testConnectionURI',
+			database: 'Database',
+			projName: 'TestProject',
+			filePath: projectFilePath,
 			version: '1.0.0.0',
-			extractTarget: mssql.ExtractTarget.schemaObjectType,
+			extractTarget: mssql.ExtractTarget.objectType,
 			sdkStyle: true,
-			includePermissions: undefined
+			includePermissions: false
 		};
 
-		dialog.createProjectFromDatabaseCallback = (m) => { model = m; };
-		await dialog.handleCreateButtonClick();
-
+		//verify the model is correctly generated
 		should(model!).deepEqual(expectedImportDataModel);
-	});*/
+	});
 });

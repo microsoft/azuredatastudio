@@ -12,37 +12,30 @@ import { defaultProjectNameFromDb, defaultProjectSaveLocation } from '../tools/n
 import { ImportDataModel } from '../models/api/import';
 import { mapExtractTargetEnum } from './createProjectFromDatabaseDialog';
 
+import { getSDKStyleProjectInfo } from './quickpickHelper';
+
 /**
  * Create flow for a New Project using only VS Code-native APIs such as QuickPick
  * @param connectionInfo Optional connection info to use instead of prompting the user for a connection
  */
 export async function createNewProjectFromDatabaseWithQuickpick(connectionInfo?: IConnectionInfo): Promise<ImportDataModel | undefined> {
-	console.log('In createNewProjectFromDatabaseWithQuickpick');
 	const vscodeMssqlApi = await getVscodeMssqlApi();
-	console.log('In createNewProjectFromDatabaseWithQuickpick, after vscodeMssqlApi');
+
 	// 1. Select connection
 	// Use passed in profile if we have one - otherwise prompt user to select one
 	let connectionProfile: IConnectionInfo | undefined = connectionInfo ?? await vscodeMssqlApi.promptForConnection(true);
-	console.log('In createNewProjectFromDatabaseWithQuickpick, connectionProfile:', connectionProfile);
 	if (!connectionProfile) {
 		// User cancelled
 		return undefined;
 	}
-	console.log('In createNewProjectFromDatabaseWithQuickpick, after if');
 	let connectionUri: string = '';
 	let dbs: string[] | undefined = undefined;
 	while (!dbs) {
 		// Get the list of databases now to validate that the connection is valid and re-prompt them if it isn't
 		try {
-			console.log('In createNewProjectFromDatabaseWithQuickpick, in while>try');
 			connectionUri = await vscodeMssqlApi.connect(connectionProfile);
-			console.log('connectionUri:', connectionUri);
-			let db2 = await vscodeMssqlApi.listDatabases(connectionUri);
-			console.log('db2:', db2);
-			dbs = (db2)
+			dbs = (await vscodeMssqlApi.listDatabases(connectionUri))
 				.filter(db => !constants.systemDbs.includes(db)); // Filter out system dbs
-			console.log('dbs:', dbs);
-
 		} catch (err) {
 			// The mssql extension handles showing the error to the user. Prompt the user
 			// for a new connection and then go and try getting the DBs again
@@ -54,11 +47,10 @@ export async function createNewProjectFromDatabaseWithQuickpick(connectionInfo?:
 
 		}
 	}
-	console.log('Dbs:', dbs);
+
 	// Move the database for the given connection up to the top
 	if (connectionProfile.database && connectionProfile.database !== constants.master) {
 		const index = dbs.indexOf(connectionProfile.database);
-		console.log('In createNewProjectFromDatabaseWithQuickpick, index:', index);
 		if (index >= 0) {
 			dbs.splice(index, 1);
 		}
@@ -157,7 +149,7 @@ export async function createNewProjectFromDatabaseWithQuickpick(connectionInfo?:
 
 	// 7. SDK-style project or not
 	let sdkStyle = await getSDKStyleProjectInfo();
-	console.log('sdkStyle:', sdkStyle);
+
 	if (sdkStyle === undefined) {
 		// User cancelled
 		return;
@@ -173,44 +165,4 @@ export async function createNewProjectFromDatabaseWithQuickpick(connectionInfo?:
 		sdkStyle: sdkStyle,
 		includePermissions: includePermissions
 	};
-}
-
-export async function getSDKStyleProjectInfo(): Promise<boolean | undefined> {
-	let sdkStyle;
-	const sdkLearnMoreButton: vscode.QuickInputButton = {
-		iconPath: new vscode.ThemeIcon('link-external'),
-		tooltip: constants.learnMore
-	};
-	const quickPick = vscode.window.createQuickPick();
-	quickPick.items = [{ label: constants.YesRecommended }, { label: constants.noString }];
-	quickPick.title = constants.sdkStyleProject;
-	quickPick.ignoreFocusOut = true;
-	const disposables: vscode.Disposable[] = [];
-
-	try {
-		quickPick.buttons = [sdkLearnMoreButton];
-		quickPick.placeholder = constants.SdkLearnMorePlaceholder;
-
-		const sdkStylePromise = new Promise<boolean | undefined>((resolve) => {
-			disposables.push(
-				quickPick.onDidHide(() => {
-					resolve(undefined);
-				}),
-				quickPick.onDidChangeSelection((item) => {
-					resolve(item[0].label === constants.YesRecommended);
-				}));
-
-			disposables.push(quickPick.onDidTriggerButton(async () => {
-				await vscode.env.openExternal(vscode.Uri.parse(constants.sdkLearnMoreUrl!));
-			}));
-		});
-
-		quickPick.show();
-		sdkStyle = await sdkStylePromise;
-		quickPick.hide();
-	} finally {
-		disposables.forEach(d => d.dispose());
-	}
-
-	return sdkStyle;
 }
