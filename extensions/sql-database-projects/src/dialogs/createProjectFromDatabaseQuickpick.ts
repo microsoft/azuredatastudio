@@ -17,24 +17,32 @@ import { mapExtractTargetEnum } from './createProjectFromDatabaseDialog';
  * @param connectionInfo Optional connection info to use instead of prompting the user for a connection
  */
 export async function createNewProjectFromDatabaseWithQuickpick(connectionInfo?: IConnectionInfo): Promise<ImportDataModel | undefined> {
-
+	console.log('In createNewProjectFromDatabaseWithQuickpick');
 	const vscodeMssqlApi = await getVscodeMssqlApi();
-
+	console.log('In createNewProjectFromDatabaseWithQuickpick, after vscodeMssqlApi');
 	// 1. Select connection
 	// Use passed in profile if we have one - otherwise prompt user to select one
 	let connectionProfile: IConnectionInfo | undefined = connectionInfo ?? await vscodeMssqlApi.promptForConnection(true);
+	console.log('In createNewProjectFromDatabaseWithQuickpick, connectionProfile:', connectionProfile);
 	if (!connectionProfile) {
 		// User cancelled
 		return undefined;
 	}
+	console.log('In createNewProjectFromDatabaseWithQuickpick, after if');
 	let connectionUri: string = '';
 	let dbs: string[] | undefined = undefined;
 	while (!dbs) {
 		// Get the list of databases now to validate that the connection is valid and re-prompt them if it isn't
 		try {
+			console.log('In createNewProjectFromDatabaseWithQuickpick, in while>try');
 			connectionUri = await vscodeMssqlApi.connect(connectionProfile);
-			dbs = (await vscodeMssqlApi.listDatabases(connectionUri))
+			console.log('connectionUri:', connectionUri);
+			let db2 = await vscodeMssqlApi.listDatabases(connectionUri);
+			console.log('db2:', db2);
+			dbs = (db2)
 				.filter(db => !constants.systemDbs.includes(db)); // Filter out system dbs
+			console.log('dbs:', dbs);
+
 		} catch (err) {
 			// The mssql extension handles showing the error to the user. Prompt the user
 			// for a new connection and then go and try getting the DBs again
@@ -46,10 +54,11 @@ export async function createNewProjectFromDatabaseWithQuickpick(connectionInfo?:
 
 		}
 	}
-
+	console.log('Dbs:', dbs);
 	// Move the database for the given connection up to the top
 	if (connectionProfile.database && connectionProfile.database !== constants.master) {
 		const index = dbs.indexOf(connectionProfile.database);
+		console.log('In createNewProjectFromDatabaseWithQuickpick, index:', index);
 		if (index >= 0) {
 			dbs.splice(index, 1);
 		}
@@ -147,6 +156,26 @@ export async function createNewProjectFromDatabaseWithQuickpick(connectionInfo?:
 	const includePermissions = includePermissionsResult === constants.yesString;
 
 	// 7. SDK-style project or not
+	let sdkStyle = await getSDKStyleProjectInfo();
+	console.log('sdkStyle:', sdkStyle);
+	if (sdkStyle === undefined) {
+		// User cancelled
+		return;
+	}
+
+	return {
+		connectionUri: connectionUri,
+		database: selectedDatabase,
+		projName: projectName,
+		filePath: projectLocation,
+		version: '1.0.0.0',
+		extractTarget: mapExtractTargetEnum(folderStructure),
+		sdkStyle: sdkStyle,
+		includePermissions: includePermissions
+	};
+}
+
+export async function getSDKStyleProjectInfo(): Promise<boolean | undefined> {
 	let sdkStyle;
 	const sdkLearnMoreButton: vscode.QuickInputButton = {
 		iconPath: new vscode.ThemeIcon('link-external'),
@@ -183,19 +212,5 @@ export async function createNewProjectFromDatabaseWithQuickpick(connectionInfo?:
 		disposables.forEach(d => d.dispose());
 	}
 
-	if (sdkStyle === undefined) {
-		// User cancelled
-		return;
-	}
-
-	return {
-		connectionUri: connectionUri,
-		database: selectedDatabase,
-		projName: projectName,
-		filePath: projectLocation,
-		version: '1.0.0.0',
-		extractTarget: mapExtractTargetEnum(folderStructure),
-		sdkStyle: sdkStyle,
-		includePermissions: includePermissions
-	};
+	return sdkStyle;
 }
