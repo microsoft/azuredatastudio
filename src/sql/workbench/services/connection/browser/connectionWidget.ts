@@ -65,11 +65,16 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	private _serverGroupDisplayString: string = localize('serverGroup', "Server group");
 	private _trueInputValue: string = localize('boolean.true', 'True');
 	private _falseInputValue: string = localize('boolean.false', 'False');
+	private _encryptStrictValue: string = localize('encrypt.strict.value', 'strict');
+	private _encryptSelectBoxLabel: string = localize('encryptSelectBox.label', 'Encrypt');
+	private _trustServerCertSelectBoxLabel: string = localize('trustServerCertSelectBox.label', 'Trust server certificate');
 	private _token: string;
 	private _connectionStringOptions: ConnectionStringOptions;
 	protected _container: HTMLElement;
 	protected _serverGroupSelectBox: SelectBox;
 	protected _authTypeSelectBox: SelectBox;
+	protected _encryptSelectBox: SelectBox | undefined;
+	protected _trustServerCertSelectBox: SelectBox | undefined;
 	protected _customOptions: azdata.ConnectionOption[];
 	protected _optionsMaps: { [optionType: number]: azdata.ConnectionOption };
 	protected _tableContainer: HTMLElement;
@@ -259,7 +264,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		if (this._customOptions.length > 0) {
 			this._customOptionWidgets = [];
 			this._customOptions.forEach((option, i) => {
-				let customOptionsContainer = DialogHelper.appendRow(this._tableContainer, option.displayName, 'connection-label', 'connection-input', 'custom-connection-options', false, option.description, 100);
+				let customOptionsContainer = DialogHelper.appendRow(this._tableContainer, option.displayName, 'connection-label', 'connection-input', ['custom-connection-options', `option-${option.name}`], false, option.description, 100);
 				switch (option.valueType) {
 					case ServiceOptionType.boolean:
 						// Convert 'defaultValue' to string for comparison as it can be boolean here.
@@ -269,7 +274,11 @@ export class ConnectionWidget extends lifecycle.Disposable {
 						this._register(styler.attachSelectBoxStyler(this._customOptionWidgets[i] as SelectBox, this._themeService));
 						break;
 					case ServiceOptionType.category:
-						this._customOptionWidgets[i] = new SelectBox(option.categoryValues.map(c => c.displayName), option.defaultValue, this._contextViewService, customOptionsContainer, { ariaLabel: option.displayName });
+						let selectedValue = option.defaultValue;
+						let options = option.categoryValues.map<SelectOptionItemSQL>(v => {
+							return { text: v.displayName, value: v.name } as SelectOptionItemSQL;
+						})
+						this._customOptionWidgets[i] = new SelectBox(options, selectedValue, this._contextViewService, customOptionsContainer, { ariaLabel: option.displayName });
 						DialogHelper.appendInputSelectBox(customOptionsContainer, this._customOptionWidgets[i] as SelectBox);
 						this._register(styler.attachSelectBoxStyler(this._customOptionWidgets[i] as SelectBox, this._themeService));
 						break;
@@ -280,7 +289,41 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				}
 				this._register(this._customOptionWidgets[i]);
 			});
+			this._initializeCustomSelectBoxes();
 		}
+	}
+
+	private _initializeCustomSelectBoxes() {
+		// Store encryptSelectBox and trustServerCertSelectBox widgets for event registration
+		this._encryptSelectBox = this._findCustomSelectBox(this._encryptSelectBoxLabel);
+		this._trustServerCertSelectBox = this._findCustomSelectBox(this._trustServerCertSelectBoxLabel);
+
+		// Custom widget registration for Encrypt=Strict behavior
+		if (this._encryptSelectBox && this._trustServerCertSelectBox) {
+			this._register(this._encryptSelectBox.onDidSelect(selectedEncrypt => {
+				this._onEncryptSelectionChange(selectedEncrypt.selected, this._trustServerCertSelectBox);
+			}));
+		}
+	}
+
+	private _onEncryptSelectionChange(selectedEncrypt: string, trustServerCertSelectBox: SelectBox | undefined): void {
+		if (selectedEncrypt.toLocaleLowerCase() === this._encryptStrictValue) {
+			trustServerCertSelectBox.selectWithOptionName(this._falseInputValue);
+			trustServerCertSelectBox.hideMessage();
+			this._tableContainer.classList.add('hide-trustServerCertificate');
+		} else {
+			trustServerCertSelectBox._showMessage();
+			this._tableContainer.classList.remove('hide-trustServerCertificate');
+		}
+	}
+
+	private _findCustomSelectBox(_customSelectBoxLabel: string): SelectBox | undefined {
+		let _customSelectBoxes: SelectBox[] = this._customOptionWidgets.filter(widget => widget instanceof SelectBox) as SelectBox[];
+		let foundWidget = _customSelectBoxes.find(widget => widget.selectElem.ariaLabel === _customSelectBoxLabel);
+		if (foundWidget && foundWidget instanceof SelectBox) {
+			return foundWidget as SelectBox;
+		}
+		return undefined;
 	}
 
 	protected addServerNameOption(): void {

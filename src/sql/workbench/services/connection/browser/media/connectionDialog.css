@@ -137,6 +137,10 @@
 	display: none;
 }
 
+.hide-trustServerCertificate .option-trustServerCertificate {
+	display: none;
+}
+
 .hide-refresh-link .azure-account-row.refresh-credentials-link {
 	display: none;
 }
