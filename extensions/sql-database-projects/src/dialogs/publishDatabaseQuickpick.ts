@@ -228,7 +228,6 @@ export async function launchPublishTargetOption(project: Project): Promise<const
 	// Options list based on target
 	let options;
 
-
 	if (target === constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlAzure)) {
 		options = [constants.publishToAzureEmulator, constants.publishToExistingServer(logicalServerName)]
 
