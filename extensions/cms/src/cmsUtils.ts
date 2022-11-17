@@ -56,7 +56,9 @@ export class CmsUtils {
 		let ownerUri = await azdata.connection.getUriForConnection(connection.connectionId);
 		if (!ownerUri) {
 			// Make a connection if it's not already connected
-			let result = await azdata.connection.connect(Utils.toConnectionProfile(connection), false, false);
+			let profile = Utils.toConnectionProfile(connection);
+			profile.password = await this.getPassword(profile.userName);
+			let result = await azdata.connection.connect(profile, false, false);
 			if (result) {
 				ownerUri = await azdata.connection.getUriForConnection(result.connectionId);
 			}
@@ -89,6 +91,10 @@ export class CmsUtils {
 		if (!ownerUri) {
 			// Make a connection if it's not already connected
 			let initialConnectionProfile = this.getConnectionProfile(connection);
+			// Populate password if it's a SQL Login mode.
+			if (connection.options.authenticationType === azdata.connection.AuthenticationType.SqlLogin && connection.options.savePassword) {
+				initialConnectionProfile.password = await this.getPassword(initialConnectionProfile.userName);
+			}
 			let result = await azdata.connection.connect(initialConnectionProfile, false, false);
 			ownerUri = await azdata.connection.getUriForConnection(result.connectionId);
 			// If the ownerUri is still undefined, then open a connection dialog with the connection
@@ -143,8 +149,6 @@ export class CmsUtils {
 		let toSaveCmsServers: ICmsResourceNodeInfo[] = this._registeredCmsServers.map(server => Object.assign({}, server));
 		toSaveCmsServers.forEach(server => {
 			server.ownerUri = undefined;
-			// don't save password in config
-			server.connection.options.password = '';
 		});
 		await this.saveServers(toSaveCmsServers);
 	}
@@ -207,6 +211,11 @@ export class CmsUtils {
 
 	// Getters
 	public get registeredCmsServers(): ICmsResourceNodeInfo[] {
+		this._registeredCmsServers.forEach(server => {
+			if (server.connection.options.authenticationType === azdata.connection.AuthenticationType.SqlLogin) {
+				server.connection.options.password = this.getPassword(server.connection.options.user);
+			}
+		});
 		return this._registeredCmsServers;
 	}
 
