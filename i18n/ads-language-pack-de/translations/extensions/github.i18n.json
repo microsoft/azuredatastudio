@@ -29,11 +29,14 @@
 			"forking_done": "Die Verzweigung \"{0}\" wurde erfolgreich in GitHub erstellt.",
 			"forking_pushing": "Änderungen pushen...",
 			"no": "Nein",
+			"no pr template": "Keine Vorlage",
 			"openingithub": "In GitHub öffnen",
-			"openpr": "PR öffnen"
+			"openpr": "PR öffnen",
+			"select pr template": "Pull Requestvorlage auswählen"
 		},
 		"package": {
 			"config.gitAuthentication": "Steuert, ob die automatische GitHub-Authentifizierung für Git-Befehle innerhalb von VS Code aktiviert werden soll.",
+			"config.gitProtocol": "Steuert, welches Protokoll zum Klonen eines GitHub-Repositorys verwendet wird",
 			"description": "GitHub-Features für VS Code",
 			"displayName": "GitHub",
 			"welcome.publishFolder": "Sie können diesen Ordner auch direkt in einem GitHub-Repository veröffentlichen. Nach der Veröffentlichung haben Sie Zugriff auf die Funktionen zur Quellcodeverwaltung von Git und GitHub.\r\n[$(github): Veröffentlichung in GitHub](command:github.publish)",

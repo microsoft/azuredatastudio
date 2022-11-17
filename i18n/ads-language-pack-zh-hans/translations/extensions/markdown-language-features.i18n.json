@@ -8,22 +8,29 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"dist/features/documentLinkProvider": {
+		"dist/languageFeatures/documentLinkProvider": {
 			"documentLink.tooltip": "转到链接"
 		},
-		"dist/features/preview": {
+		"dist/languageFeatures/fileReferences": {
+			"error.noResource": "查找文件引用失败。未提供资源。",
+			"progress.title": "正在查找文件引用"
+		},
+		"dist/languageFeatures/rename": {
+			"invalidRenameLocation": "位置不支持重命名"
+		},
+		"dist/preview/preview": {
 			"lockedPreviewTitle": "[预览] {0}",
-			"onPreviewStyleLoadError": "无法加载 \"markdown.styles\": {0}",
+			"onPreviewStyleLoadError": "无法加载 \\\"markdown.styles\\\": {0}",
 			"preview.clickOpenFailed": "无法打开 {0}",
 			"previewTitle": "预览 {0}"
 		},
-		"dist/features/previewContentProvider": {
+		"dist/preview/previewContentProvider": {
 			"preview.notFound": "找不到 {0}",
 			"preview.securityMessage.label": "已禁用内容安全警告",
 			"preview.securityMessage.text": "已禁用此文档中的部分内容",
 			"preview.securityMessage.title": "已禁用此 Markdown 预览中的可能不安全的内容。更改 Markdown 预览安全设置以允许不安全内容或启用脚本"
 		},
-		"dist/security": {
+		"dist/preview/security": {
 			"disable.description": "允许所有内容，执行所有脚本。不推荐",
 			"disable.title": "禁用",
 			"disableSecurityWarning.title": "在此工作区中取消预览安全警告",
@@ -39,14 +46,17 @@
 			"toggleSecurityWarning.description": "不影响内容安全级别"
 		},
 		"package": {
+			"configuration.markdown.editor.drop.enabled": "启用/禁用放置到 Markdown editor 中以插入排班。需要启用 `#workbenck.experimental.editor.dropIntoEditor.enabled#`。",
 			"configuration.markdown.links.openLocation.beside": "打开活动编辑器旁边的链接。",
 			"configuration.markdown.links.openLocation.currentGroup": "打开活动编辑器组中的链接。",
 			"configuration.markdown.links.openLocation.description": "控制应在哪里打开 Markdown 文件中的链接。",
 			"configuration.markdown.preview.openMarkdownLinks.description": "控制如何打开 Markdown 预览中其他 Markdown 文件的链接。",
 			"configuration.markdown.preview.openMarkdownLinks.inEditor": "尝试在编辑器中打开链接。",
 			"configuration.markdown.preview.openMarkdownLinks.inPreview": "尝试在 Markdown 预览中打开链接。",
+			"configuration.markdown.suggest.paths.enabled.description": "启用/禁用 Markdown 链接的路径建议",
 			"description": "为 Markdown 提供丰富的语言支持。",
 			"displayName": "Markdown 语言功能",
+			"markdown.findAllFileReferences": "查找文件引用",
 			"markdown.preview.breaks.desc": "设置换行符在 Markdown 预览中的呈现方式。如果将其设置为 \"true\"，则将为段落内的新行创建一个 <br>。",
 			"markdown.preview.doubleClickToSwitchToEditor.desc": "在 Markdown 预览中双击切换到编辑器。",
 			"markdown.preview.fontFamily.desc": "控制 Markdown 预览中使用的字体系列。",

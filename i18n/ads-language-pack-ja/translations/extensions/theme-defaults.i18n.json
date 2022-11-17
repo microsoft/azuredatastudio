@@ -13,8 +13,9 @@
 			"darkPlusColorThemeLabel": "Dark+ (既定の Dark)",
 			"description": "既定の VIsual Studio の明るいテーマと濃いテーマ",
 			"displayName": "既定のテーマ",
-			"hcColorThemeLabel": "ハイ コントラスト",
+			"hcColorThemeLabel": "ハイ コントラスト ダーク テーマ",
 			"lightColorThemeLabel": "Light (Visual Studio)",
+			"lightHcColorThemeLabel": "ライト ハイ コントラスト",
 			"lightPlusColorThemeLabel": "Light+ (既定の Light)",
 			"minimalIconThemeLabel": "最小 (Visual Studio Code)"
 		}

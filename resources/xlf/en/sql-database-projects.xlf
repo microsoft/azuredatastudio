@@ -732,6 +732,9 @@
     <trans-unit id="publishToDockerContainer">
       <source xml:lang="en">Publish to new {0} local development container</source>
     </trans-unit>
+    <trans-unit id="publishToDockerContainerPreview">
+      <source xml:lang="en">Publish to new {0} local development container (Preview)</source>
+    </trans-unit>
     <trans-unit id="publishToExistingServer">
       <source xml:lang="en">Publish to an existing {0}</source>
     </trans-unit>
@@ -1066,7 +1069,7 @@
       <source xml:lang="en">Database Projects</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.dotnetInstallLocation">
-      <source xml:lang="en">Full path to .NET SDK on the machine.</source>
+      <source xml:lang="en">Full path to .NET SDK on the machine. For example, if dotnet.exe is located at C:\folder1\dotnet\dotnet.exe, set the path for this setting to C:\folder1\dotnet</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.editProjectFile">
       <source xml:lang="en">Edit .sqlproj File</source>

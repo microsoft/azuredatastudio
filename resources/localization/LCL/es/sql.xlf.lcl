@@ -7943,10 +7943,13 @@
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView.epCompare.zoomToFit" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Zoom to fit]]></Val>
+          <Val><![CDATA[Zoom to Fit]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Ajustar al tamaño]]></Val>
+            <Val><![CDATA[Zoom para ajustar]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Zoom to fit]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7988,19 +7991,25 @@
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanContribution.executionPlanCompareCommandOriginalValue" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Compare execution plans]]></Val>
+          <Val><![CDATA[Compare Execution Plans]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Comparar planes de ejecución]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Compare execution plans]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanContribution.executionPlanCompareCommandValue" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Compare execution plans]]></Val>
+          <Val><![CDATA[Compare Execution Plans]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Comparar planes de ejecución]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Compare execution plans]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -8192,10 +8201,13 @@
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanView.executionPlanCompareExecutionPlanAction" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Compare execution plan]]></Val>
+          <Val><![CDATA[Compare Execution Plan]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Comparar plan de ejecución]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Compare execution plan]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -8246,10 +8258,13 @@
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanView.executionPlanFitGraphLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Zoom to fit]]></Val>
+          <Val><![CDATA[Zoom to Fit]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Ajustar al tamaño]]></Val>
+            <Val><![CDATA[Zoom para ajustar]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Zoom to fit]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -10751,6 +10766,15 @@
           <Val><![CDATA[The maximum number of changes stored in the undo history for the notebook Rich Text editor.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Número máximo de cambios almacenados en el historial de deshacer del editor de texto enriquecido del cuaderno]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebook.contribution.notebook.renderTablesInHtml" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Display and save tables in HTML format in text cells instead of converting to markdown tables.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Muestre y guarde tablas en formato HTML en celdas de texto en lugar de convertirlas en tablas de Markdown.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
