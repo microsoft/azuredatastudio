@@ -339,7 +339,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		widget: AdsWidget, defaultValue: string, action: OptionVisibility): void {
 		if ((acceptedValues.includes(selectedValue.toLocaleLowerCase()) && action === OptionVisibility.Show)
 			|| (!acceptedValues.includes(selectedValue.toLocaleLowerCase()) && action === OptionVisibility.Hide)) {
-			widget.enable();
+			this._tableContainer.classList.remove(`hide-${widget.getId()}`);
 		} else {
 			// Support more Widget classes here as needed.
 			if (widget instanceof SelectBox) {
@@ -347,7 +347,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			} else if (widget instanceof InputBox) {
 				widget.value = defaultValue;
 			}
-			widget.disable();
+			this._tableContainer.classList.add(`hide-${widget.getId()}`);
 			widget.hideMessage();
 		}
 	}
