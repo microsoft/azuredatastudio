@@ -5,8 +5,8 @@
 		"downloadFileNames": {
 			"Windows_86": "StreamJsonRpc.Sample.Server.zip",
 			"Windows_64": "StreamJsonRpc.Sample.Server.zip",
-			"OSX": "StreamJsonRpc.Sample.Server.tar.gz",
-			"Linux": "StreamJsonRpc.Sample.Server.tar.gz"
+			"OSX": "StreamJsonRpc.Sample.Server.zip",
+			"Linux": "StreamJsonRpc.Sample.Server.zip"
 		},
 		"installDirectory": "services/demoService/{#platform#}/{#version#}",
 		"executableFiles": [
