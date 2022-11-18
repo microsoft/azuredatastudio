@@ -1,0 +1,24 @@
+{
+	"demoService": {
+		"downloadUrl": "https://github.com/junierch/StreamJsonRpc.Sample/releases/download/v{#version#}/{#fileName#}",
+		"version": "1.0.0.0",
+		"downloadFileNames": {
+			"Windows_86": "StreamJsonRpc.Sample.Server.zip",
+			"Windows_64": "StreamJsonRpc.Sample.Server.zip",
+			"OSX": "StreamJsonRpc.Sample.Server.zip",
+			"Linux": "StreamJsonRpc.Sample.Server.zip"
+		},
+		"installDirectory": "services/demoService/{#platform#}/{#version#}",
+		"executableFiles": [
+			"StreamJsonRpc.Sample.Server",
+			"StreamJsonRpc.Sample.Server.exe"
+		],
+		"retry": {
+			"retries": 15,
+			"factor": 2,
+			"minTimeout": 1000,
+			"maxTimeout": 300000,
+			"randomize": false
+		}
+	}
+}

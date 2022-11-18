@@ -160,7 +160,8 @@ module.exports.indentationFilter = [
 	'!resources/xlf/LocProject.json',
 	'!build/**/*',
 	'!test/coverage/**',
-	'!extensions/**/coverage/**'
+	'!extensions/**/coverage/**',
+	'!extensions/sql-migration/services/**'
 ];
 
 module.exports.copyrightFilter = [

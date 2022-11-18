@@ -1171,7 +1171,8 @@
 				"src/sql/workbench/contrib/notebook/browser/turndownPluginGfm.ts",
 				"src/sql/workbench/services/notebook/common/nbformat.ts",
 				"src/sql/workbench/services/notebook/browser/outputs/renderers.ts",
-				"src/sql/workbench/services/notebook/browser/outputs/tableRenderers.ts"
+				"src/sql/workbench/services/notebook/browser/outputs/tableRenderers.ts",
+				"extensions/sql-migration/src/typings/findRemove.d.ts"
 			],
 			"rules": {
 				"header/header": [

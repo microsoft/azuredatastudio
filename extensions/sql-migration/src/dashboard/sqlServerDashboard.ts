@@ -26,6 +26,7 @@ import { DashboardStatusBar, ErrorEvent } from './DashboardStatusBar';
 import { DashboardTab } from './dashboardTab';
 import { MigrationsTab, MigrationsTabId } from './migrationsTab';
 import { AdsMigrationStatus, MigrationDetailsEvent, ServiceContextChangeEvent } from './tabBase';
+import { IBackendServices } from '../api/services/IBackendServices';
 
 export interface MenuCommandArgs {
 	connectionId: string,
@@ -39,9 +40,11 @@ export class DashboardWidget {
 	private readonly _onServiceContextChanged: vscode.EventEmitter<ServiceContextChangeEvent>;
 	private readonly _migrationDetailsEvent: vscode.EventEmitter<MigrationDetailsEvent>;
 	private readonly _errorEvent: vscode.EventEmitter<ErrorEvent>;
+	private readonly _backendServices: IBackendServices;
 
-	constructor(context: vscode.ExtensionContext) {
+	constructor(context: vscode.ExtensionContext, backendServices: IBackendServices) {
 		this._context = context;
+		this._backendServices = backendServices;
 		NotebookPathHelper.setExtensionContext(context);
 		IconPathHelper.setExtensionContext(context);
 		MigrationLocalStorage.setExtensionContext(context);
@@ -57,6 +60,9 @@ export class DashboardWidget {
 
 	public async register(): Promise<void> {
 		await this._registerCommands();
+
+		const sumResult = await this._backendServices.DemoService.testCall(2, 6);
+		console.log('Operation result ' + sumResult);
 
 		azdata.ui.registerModelViewProvider('migration-dashboard', async (view) => {
 			const disposables: vscode.Disposable[] = [];
