@@ -300,7 +300,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	 * TODO extend this to include collection of other main and advanced option widgets here.
 	 */
 	protected registerOnSelectionChangeEvents(): void {
-		//Register on change event for custom options
+		//Register on selection change event for custom options
 		this._customOptionWidgets.forEach((widget, i) => {
 			if (widget instanceof SelectBox) {
 				this._registerSelectionChangeEvents([this._customOptionWidgets], this._customOptions[i], widget);
@@ -315,7 +315,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 					let selectedValue = widget.values.at(value.index);
 					event?.dependentOptionActions?.forEach((optionAction) => {
 						let defaultValue: string | undefined = this._customOptions.find(o => o.name === optionAction.optionName)?.defaultValue;
-						let widget: AdsWidget | undefined = this._findWidget<AdsWidget>(collections, optionAction.optionName);
+						let widget: AdsWidget | undefined = this._findWidget(collections, optionAction.optionName);
 						if (widget) {
 							this._onValueChangeEvent(selectedValue, event.onSelectedValues, widget, defaultValue, optionAction.action);
 						}
@@ -325,7 +325,13 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		}
 	}
 
-	private _findWidget<T extends AdsWidget>(collections: AdsWidget[][], id: string): AdsWidget | undefined {
+	/**
+	 * Finds Widget from provided collection of widgets using option name.
+	 * @param collections collections of widgets to search for the widget with the widget Id
+	 * @param id Widget Id
+	 * @returns Widget if found, undefined otherwise
+	 */
+	private _findWidget(collections: AdsWidget[][], id: string): AdsWidget | undefined {
 		let foundWidget: AdsWidget | undefined;
 		collections.forEach((collection) => {
 			if (!foundWidget) {
