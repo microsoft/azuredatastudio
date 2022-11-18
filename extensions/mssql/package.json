@@ -1060,7 +1060,18 @@
           ],
           "isRequired": false,
           "isArray": false,
-          "showOnConnectionDialog": true
+          "showOnConnectionDialog": true,
+          "onSelectionChange": [
+            {
+              "onSelectedValues": ["strict"],
+              "dependentOptionActions": [
+                {
+                  "optionName": "trustServerCertificate",
+                  "action": "hide"
+                }
+              ]
+            }
+          ]
         },
         {
           "specialValueType": null,

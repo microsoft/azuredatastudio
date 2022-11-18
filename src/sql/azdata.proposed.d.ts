@@ -425,6 +425,20 @@ declare module 'azdata' {
 			 */
 			None = 'None'
 		}
+
+		/*
+		 * Connection option visibility
+		*/
+		export enum OptionVisibility {
+			/**
+			 * Shows a connection option
+			 */
+			Show = 1,
+			/**
+			 * Hides a connection option
+			 */
+			Hide = 2
+		}
 	}
 
 	/*
@@ -444,6 +458,21 @@ declare module 'azdata' {
 		 * and not the Advanced Options window.
 		 */
 		showOnConnectionDialog?: boolean;
+
+		/**
+		 * Used to define list of options and their values based on which this option is rendered visible.
+		 */
+		onSelectionChange?: SelectionChangeEvent[];
+	}
+
+	export interface SelectionChangeEvent {
+		onSelectedValues: string[];
+		dependentOptionActions: DependentOptionAction[];
+	}
+
+	export interface DependentOptionAction {
+		optionName: string,
+		action: connection.OptionVisibility;
 	}
 
 	export interface TaskInfo {

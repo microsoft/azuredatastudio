@@ -57,6 +57,20 @@ export enum AuthenticationType {
 	None = 'None'
 }
 
+/*
+	* Connection option visibility
+*/
+export enum OptionVisibility {
+	/**
+	 * Shows a connection option
+	 */
+	Show = 'show',
+	/**
+	 * Hides a connection option
+	 */
+	Hide = 'hide'
+}
+
 /* CMS constants */
 export const cmsProviderName = 'MSSQL-CMS';
 

@@ -35,7 +35,8 @@ import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMess
 import Severity from 'vs/base/common/severity';
 import { ConnectionStringOptions } from 'sql/platform/capabilities/common/capabilitiesService';
 import { isFalsyOrWhitespace } from 'vs/base/common/strings';
-import { AuthenticationType } from 'sql/platform/connection/common/constants';
+import { AuthenticationType, OptionVisibility } from 'sql/platform/connection/common/constants';
+import { AdsWidget } from 'sql/base/browser/ui/adsWidget';
 
 const ConnectionStringText = localize('connectionWidget.connectionString', "Connection string");
 
@@ -65,23 +66,18 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	private _serverGroupDisplayString: string = localize('serverGroup', "Server group");
 	private _trueInputValue: string = localize('boolean.true', 'True');
 	private _falseInputValue: string = localize('boolean.false', 'False');
-	private _encryptStrictValue: string = localize('encrypt.strict.value', 'strict');
-	private _encryptSelectBoxLabel: string = localize('encryptSelectBox.label', 'Encrypt');
-	private _trustServerCertSelectBoxLabel: string = localize('trustServerCertSelectBox.label', 'Trust server certificate');
 	private _token: string;
 	private _connectionStringOptions: ConnectionStringOptions;
 	protected _container: HTMLElement;
 	protected _serverGroupSelectBox: SelectBox;
 	protected _authTypeSelectBox: SelectBox;
-	protected _encryptSelectBox: SelectBox | undefined;
-	protected _trustServerCertSelectBox: SelectBox | undefined;
 	protected _customOptions: azdata.ConnectionOption[];
 	protected _optionsMaps: { [optionType: number]: azdata.ConnectionOption };
 	protected _tableContainer: HTMLElement;
 	protected _providerName: string;
 	protected _connectionNameInputBox: InputBox;
 	protected _databaseNameInputBox: Dropdown;
-	protected _customOptionWidgets: (InputBox | SelectBox)[];
+	protected _customOptionWidgets: AdsWidget[];
 	protected _advancedButton: Button;
 	private static readonly _authTypes: AuthenticationType[] =
 		[AuthenticationType.AzureMFA, AuthenticationType.AzureMFAAndUser, AuthenticationType.Integrated, AuthenticationType.SqlLogin, AuthenticationType.DSTSAuth, AuthenticationType.None];
@@ -192,6 +188,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		this.addConnectionNameOptions();
 		this.addAdvancedOptions();
 		this.updateRequiredStateForOptions();
+		this.registerOnSelectionChangeEvents();
 		if (this._connectionStringOptions.isEnabled) {
 			// update the UI based on connection string setting after initialization
 			this.handleConnectionStringOptionChange();
@@ -255,7 +252,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 
 	protected addAuthenticationTypeOption(authTypeChanged: boolean = false): void {
 		if (this._optionsMaps[ConnectionOptionSpecialType.authType]) {
-			let authType = DialogHelper.appendRow(this._tableContainer, this._optionsMaps[ConnectionOptionSpecialType.authType].displayName, 'connection-label', 'connection-input', 'auth-type-row');
+			let authType = DialogHelper.appendRow(this._tableContainer, this._optionsMaps[ConnectionOptionSpecialType.authType].displayName,
+				'connection-label', 'connection-input', 'auth-type-row');
 			DialogHelper.appendInputSelectBox(authType, this._authTypeSelectBox);
 		}
 	}
@@ -264,21 +262,26 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		if (this._customOptions.length > 0) {
 			this._customOptionWidgets = [];
 			this._customOptions.forEach((option, i) => {
-				let customOptionsContainer = DialogHelper.appendRow(this._tableContainer, option.displayName, 'connection-label', 'connection-input', ['custom-connection-options', `option-${option.name}`], false, option.description, 100);
+				let customOptionsContainer = DialogHelper.appendRow(this._tableContainer, option.displayName, 'connection-label', 'connection-input',
+					['custom-connection-options', `option-${option.name}`], false, option.description, 100);
 				switch (option.valueType) {
 					case ServiceOptionType.boolean:
-						// Convert 'defaultValue' to string for comparison as it can be boolean here.
-						let optionValue = (option.defaultValue.toString() === true.toString()) ? this._trueInputValue : this._falseInputValue;
-						this._customOptionWidgets[i] = new SelectBox([this._trueInputValue, this._falseInputValue], optionValue, this._contextViewService, customOptionsContainer, { ariaLabel: option.displayName });
-						DialogHelper.appendInputSelectBox(customOptionsContainer, this._customOptionWidgets[i] as SelectBox);
-						this._register(styler.attachSelectBoxStyler(this._customOptionWidgets[i] as SelectBox, this._themeService));
-						break;
 					case ServiceOptionType.category:
+
 						let selectedValue = option.defaultValue;
-						let options = option.categoryValues.map<SelectOptionItemSQL>(v => {
-							return { text: v.displayName, value: v.name } as SelectOptionItemSQL;
-						})
-						this._customOptionWidgets[i] = new SelectBox(options, selectedValue, this._contextViewService, customOptionsContainer, { ariaLabel: option.displayName });
+
+						let options = option.valueType === ServiceOptionType.category
+							? option.categoryValues.map<SelectOptionItemSQL>(v => {
+								return { text: v.displayName, value: v.name } as SelectOptionItemSQL;
+							})
+							: // Handle boolean options so we can map displaynames to values.
+							[{ displayName: this._trueInputValue, value: 'true' },
+							{ displayName: this._falseInputValue, value: 'false' }
+							].map<SelectOptionItemSQL>(v => {
+								return { text: v.displayName, value: v.value } as SelectOptionItemSQL;
+							});
+
+						this._customOptionWidgets[i] = new SelectBox(options, selectedValue, this._contextViewService, customOptionsContainer, { ariaLabel: option.displayName }, option.name);
 						DialogHelper.appendInputSelectBox(customOptionsContainer, this._customOptionWidgets[i] as SelectBox);
 						this._register(styler.attachSelectBoxStyler(this._customOptionWidgets[i] as SelectBox, this._themeService));
 						break;
@@ -289,41 +292,64 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				}
 				this._register(this._customOptionWidgets[i]);
 			});
-			this._initializeCustomSelectBoxes();
 		}
 	}
 
-	private _initializeCustomSelectBoxes() {
-		// Store encryptSelectBox and trustServerCertSelectBox widgets for event registration
-		this._encryptSelectBox = this._findCustomSelectBox(this._encryptSelectBoxLabel);
-		this._trustServerCertSelectBox = this._findCustomSelectBox(this._trustServerCertSelectBoxLabel);
+	/**
+	 * Registers on selection change event for connection options configured with 'onSelectionChange' property.
+	 * TODO extend this to include collection of other main and advanced option widgets here.
+	 */
+	protected registerOnSelectionChangeEvents(): void {
+		//Register on change event for custom options
+		this._customOptionWidgets.forEach((widget, i) => {
+			if (widget instanceof SelectBox) {
+				this._registerSelectionChangeEvents([this._customOptionWidgets], this._customOptions[i], widget);
+			}
+		});
+	}
 
-		// Custom widget registration for Encrypt=Strict behavior
-		if (this._encryptSelectBox && this._trustServerCertSelectBox) {
-			this._register(this._encryptSelectBox.onDidSelect(selectedEncrypt => {
-				this._onEncryptSelectionChange(selectedEncrypt.selected, this._trustServerCertSelectBox);
-			}));
+	private _registerSelectionChangeEvents(collections: AdsWidget[][], option: azdata.ConnectionOption, widget: SelectBox) {
+		if (option.onSelectionChange) {
+			option.onSelectionChange.forEach((event) => {
+				this._register(widget.onDidSelect(value => {
+					let selectedValue = widget.values.at(value.index);
+					event?.dependentOptionActions?.forEach((optionAction) => {
+						let defaultValue: string | undefined = this._customOptions.find(o => o.name === optionAction.optionName)?.defaultValue;
+						let widget: AdsWidget | undefined = this._findWidget<AdsWidget>(collections, optionAction.optionName);
+						if (widget) {
+							this._onValueChangeEvent(selectedValue, event.onSelectedValues, widget, defaultValue, optionAction.action);
+						}
+					});
+				}));
+			});
 		}
 	}
 
-	private _onEncryptSelectionChange(selectedEncrypt: string, trustServerCertSelectBox: SelectBox | undefined): void {
-		if (selectedEncrypt.toLocaleLowerCase() === this._encryptStrictValue) {
-			trustServerCertSelectBox.selectWithOptionName(this._falseInputValue);
-			trustServerCertSelectBox.hideMessage();
-			this._tableContainer.classList.add('hide-trustServerCertificate');
+	private _findWidget<T extends AdsWidget>(collections: AdsWidget[][], id: string): AdsWidget | undefined {
+		let foundWidget: AdsWidget | undefined;
+		collections.forEach((collection) => {
+			if (!foundWidget) {
+				foundWidget = collection.find(widget => widget.getId() === id);
+			}
+		});
+		return foundWidget;
+	}
+
+	private _onValueChangeEvent(selectedValue: string, acceptedValues: string[],
+		widget: AdsWidget, defaultValue: string, action: OptionVisibility): void {
+		if ((acceptedValues.includes(selectedValue.toLocaleLowerCase()) && action === OptionVisibility.Show)
+			|| (!acceptedValues.includes(selectedValue.toLocaleLowerCase()) && action === OptionVisibility.Hide)) {
+			widget.enable();
 		} else {
-			trustServerCertSelectBox._showMessage();
-			this._tableContainer.classList.remove('hide-trustServerCertificate');
+			// Support more Widget classes here as needed.
+			if (widget instanceof SelectBox) {
+				widget.select(widget.values.indexOf(defaultValue));
+			} else if (widget instanceof InputBox) {
+				widget.value = defaultValue;
+			}
+			widget.disable();
+			widget.hideMessage();
 		}
-	}
-
-	private _findCustomSelectBox(_customSelectBoxLabel: string): SelectBox | undefined {
-		let _customSelectBoxes: SelectBox[] = this._customOptionWidgets.filter(widget => widget instanceof SelectBox) as SelectBox[];
-		let foundWidget = _customSelectBoxes.find(widget => widget.selectElem.ariaLabel === _customSelectBoxLabel);
-		if (foundWidget && foundWidget instanceof SelectBox) {
-			return foundWidget as SelectBox;
-		}
-		return undefined;
 	}
 
 	protected addServerNameOption(): void {
@@ -849,7 +875,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 					if (value !== '') {
 						if (widget instanceof SelectBox) {
 							widget.selectWithOptionName(value);
-						} else {
+						} else if (widget instanceof InputBox) {
 							widget.value = value;
 						}
 					}
