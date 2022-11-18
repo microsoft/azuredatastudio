@@ -178,13 +178,25 @@ class FlatAccountTreeNodeLoader {
 			}
 		}, 500);
 		try {
+
+			// Authenticate to tenants to filter out subscriptions that are not accessible.
+
+			let tenants = this._account.properties.tenants;
+			if (tenants.length !== 0) {
+				// Filter out tenants that we can't authenticate to.
+				tenants = tenants.filter(async tenant => {
+					const token = await azdata.accounts.getAccountSecurityToken(this._account, tenant.id, azdata.AzureResource.ResourceManagement);
+					return token !== undefined;
+				});
+			}
+
 			let subscriptions: azureResource.AzureResourceSubscription[] = (await getSubscriptionInfo(this._account, this._subscriptionService, this._subscriptionFilterService)).subscriptions;
 
 			if (subscriptions.length !== 0) {
-				// Filter out everything that we can't authenticate to.
+				// Filter out sybscriptions that don't belong to the tenants we filtered above.
 				subscriptions = subscriptions.filter(async s => {
-					const token = await azdata.accounts.getAccountSecurityToken(this._account, s.tenant!, azdata.AzureResource.ResourceManagement);
-					if (!token) {
+					const tenant = tenants.find(t => t.id === s.tenant);
+					if (!tenant) {
 						console.info(`Account does not have permissions to view subscription ${JSON.stringify(s)}.`);
 						return false;
 					}

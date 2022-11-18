@@ -42,7 +42,7 @@ export class AzureResourceDatabaseTreeDataProvider extends ResourceTreeDataProvi
 				databaseName: database.name,
 				userName: database.loginName,
 				password: '',
-				authenticationType: '',
+				authenticationType: 'AzureMFA',
 				savePassword: true,
 				groupFullName: '',
 				groupId: '',
