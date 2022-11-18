@@ -16,15 +16,17 @@ Azure Data Studio is a data management tool that enables you to work with SQL Se
 |Linux    |.tar.gz          |[64 bit][linux-zip] |
 |         |.deb             |[64 bit][linux-deb] |
 |         |.rpm             |[64 bit][linux-rpm] |
-|Mac      |.zip             |[Intel Chip][osx-zip] |
+|Mac      |.zip             |[Universal][osx-universal]&emsp;[Intel Chip][osx-zip]&emsp;[Apple Silicon][osx-arm64]|
 
-[win-user]: https://go.microsoft.com/fwlink/?linkid=2204567
-[win-system]: https://go.microsoft.com/fwlink/?linkid=2204568
-[win-zip]: https://go.microsoft.com/fwlink/?linkid=2204772
-[osx-zip]: https://go.microsoft.com/fwlink/?linkid=2204569
-[linux-zip]: https://go.microsoft.com/fwlink/?linkid=2204773
-[linux-rpm]: https://go.microsoft.com/fwlink/?linkid=2204774
-[linux-deb]: https://go.microsoft.com/fwlink/?linkid=2204570
+[win-user]: https://go.microsoft.com/fwlink/?linkid=2215273
+[win-system]: https://go.microsoft.com/fwlink/?linkid=2215525
+[win-zip]: https://go.microsoft.com/fwlink/?linkid=2215526
+[osx-universal]: https://go.microsoft.com/fwlink/?linkid=2215527
+[osx-zip]: https://go.microsoft.com/fwlink/?linkid=2215420
+[osx-arm64]: https://go.microsoft.com/fwlink/?linkid=2215346
+[linux-zip]: https://go.microsoft.com/fwlink/?linkid=2215421
+[linux-rpm]: https://go.microsoft.com/fwlink/?linkid=2215347
+[linux-deb]: https://go.microsoft.com/fwlink/?linkid=2215528
 
 Go to our [download page](https://aka.ms/getazuredatastudio) for more specific instructions.
 

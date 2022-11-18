@@ -11,10 +11,6 @@
 		"dist/AADHelper": {
 			"signOut": "Sie wurden abgemeldet, weil beim Lesen der gespeicherten Authentifizierungsinformationen ein Fehler aufgetreten ist."
 		},
-		"dist/keychain": {
-			"keychainWriteError": "Fehler beim Schreiben von Anmeldeinformationen in Keychain: \"{0}\".",
-			"troubleshooting": "Leitfaden zur Problembehandlung"
-		},
 		"package": {
 			"description": "Microsoft-Authentifizierungsanbieter",
 			"displayName": "Microsoft-Konto",

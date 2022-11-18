@@ -23,7 +23,7 @@ export const msdbDacpac = 'msdb.dacpac';
 export const MicrosoftDatatoolsSchemaSqlSql = 'Microsoft.Data.Tools.Schema.Sql.Sql';
 export const databaseSchemaProvider = 'DatabaseSchemaProvider';
 export const sqlProjectSdk = 'Microsoft.Build.Sql';
-export const sqlProjectSdkVersion = '0.1.3-preview';
+export const sqlProjectSdkVersion = '0.1.7-preview';
 
 // Project Provider
 export const emptySqlDatabaseProjectTypeId = 'EmptySqlDbProj';
@@ -172,7 +172,7 @@ export function publishToExistingServer(name: string) { return localize('publish
 export function publishToDockerContainer(name: string) { return localize('publishToDockerContainer', "Publish to new {0} local development container", name); }
 export function publishToDockerContainerPreview(name: string) { return localize('publishToDockerContainerPreview', "Publish to new {0} local development container (Preview)", name); }
 export const publishToAzureEmulator = localize('publishToAzureEmulator', "Publish to new Azure SQL Database emulator");
-export const publishToNewAzureServer = localize('publishToNewAzureServer', "Publish to new Azure SQL logical server");
+export const publishToNewAzureServer = localize('publishToNewAzureServer', "Publish to new Azure SQL logical server (Preview)");
 export const azureServerName = localize('azureServerName', "Azure SQL server name");
 export const azureSubscription = localize('azureSubscription', "Azure subscription");
 export const resourceGroup = localize('resourceGroup', "Resource group");
@@ -626,6 +626,7 @@ export enum PublishTargetType {
 // Configuration keys
 export const CollapseProjectNodesKey = 'collapseProjectNodes';
 export const microsoftBuildSqlVersionKey = 'microsoftBuildSqlVersion';
+export const enablePreviewFeaturesKey = 'enablePreviewFeatures';
 
 // httpClient
 export const downloadError = localize('downloadError', "Download error");
