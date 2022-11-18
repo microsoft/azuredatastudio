@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!./media/profilerFilterDialog';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/workbench/browser/modal/modal';
 //import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
@@ -26,9 +25,9 @@ import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 
 
-const OkText: string = localize('profilerFilterDialog.ok', "OK");
-const CancelText: string = localize('profilerFilterDialog.cancel', "Cancel");
-const DialogTitle: string = localize('profilerFilterDialog.title', "Change Password");
+const OkText: string = localize('passwordChangeDialog.ok', "OK");
+const CancelText: string = localize('passwordChangeDialog.cancel', "Cancel");
+const DialogTitle: string = localize('passwordChangeDialog.title', "Change Password");
 const TitleIconClass: string = 'icon filterLabel';
 
 export class PasswordChangeDialog extends Modal {
