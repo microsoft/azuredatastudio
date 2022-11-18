@@ -284,7 +284,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			} else {
 				this._connectionDialog.resetConnection();
 
-				this.showPasswordResetDialog(connection);
+				this.launchChangePasswordDialog(connection, params, connectionResult.uriForPasswordChange);
 
 
 				// WORKING CODE BELOW, DO NOT ALTER UNTIL PASSWORD DIALOG IS COMPLETE.
@@ -520,10 +520,6 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		await this._connectionDialog.open(recentConnections.length > 0);
 		this.uiController.focusOnOpen();
 		recentConnections.forEach(conn => conn.dispose());
-	}
-
-	private async showPasswordResetDialog(connection: IConnectionProfile): Promise<void> {
-		(this._connectionControllerMap[connection.providerName] as ConnectionController).showConnectionChange();
 	}
 
 	public launchChangePasswordDialog(profile: IConnectionProfile, params: INewConnectionParams, uri: string): void {

@@ -22,6 +22,8 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
+import Severity from 'vs/base/common/severity';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 
 
@@ -37,6 +39,8 @@ export class PasswordChangeDialog extends Modal {
 	private _profile: IConnectionProfile;
 	private _params: INewConnectionParams;
 	private _uri: string;
+	private _passwordValueText: InputBox;
+	private _confirmValueText: InputBox;
 
 
 	constructor(
@@ -46,6 +50,7 @@ export class PasswordChangeDialog extends Modal {
 		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@ILogService logService: ILogService,
+		@IErrorMessageService private errorMessageService: IErrorMessageService,
 		@IContextViewService private readonly contextViewService: IContextViewService,
 		@IConnectionDialogService private connectionDialogService: IConnectionDialogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
@@ -81,15 +86,15 @@ export class PasswordChangeDialog extends Modal {
 		const body = DOM.append(container, DOM.$('.change-password-dialog'));
 		const passwordRow = DOM.append(body, DOM.$('tr'));
 		DOM.append(passwordRow, DOM.$('td')).innerText = 'new password:';
-		let passwordValueText = new InputBox(DOM.append(passwordRow, DOM.$('td')), this.contextViewService, {});
-		passwordValueText.inputElement.type = 'password';
-		this._register(attachInputBoxStyler(passwordValueText, this._themeService));
+		this._passwordValueText = new InputBox(DOM.append(passwordRow, DOM.$('td')), this.contextViewService, {});
+		this._passwordValueText.inputElement.type = 'password';
+		this._register(attachInputBoxStyler(this._passwordValueText, this._themeService));
 
 		const confirmPasswordRow = DOM.append(body, DOM.$('tr'));
 		DOM.append(confirmPasswordRow, DOM.$('td')).innerText = 'confirm password:';
-		let confirmValueText = new InputBox(DOM.append(passwordRow, DOM.$('td')), this.contextViewService, {});
-		confirmValueText.inputElement.type = 'password';
-		this._register(attachInputBoxStyler(confirmValueText, this._themeService));
+		this._confirmValueText = new InputBox(DOM.append(confirmPasswordRow, DOM.$('td')), this.contextViewService, {});
+		this._confirmValueText.inputElement.type = 'password';
+		this._register(attachInputBoxStyler(this._confirmValueText, this._themeService));
 	}
 
 	protected layout(height?: number): void {
@@ -108,7 +113,12 @@ export class PasswordChangeDialog extends Modal {
 
 	private handleOkButtonClick(): void {
 		//TODO - verify password here before continuing.
-		this.connectionDialogService.changePasswordFunction(this._profile, this._params, this._uri, '');
-		this.hide('ok');
+		if (this._passwordValueText.value === this._confirmValueText.value) {
+			this.connectionDialogService.changePasswordFunction(this._profile, this._params, this._uri, this._passwordValueText.value);
+			this.hide('ok');
+		}
+		else {
+			this.errorMessageService.showDialog(Severity.Warning, 'Password Mismatch', `Mismatching password for ${this._profile.options['user']}, please try again`);
+		}
 	}
 }
