@@ -4,26 +4,27 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as should from 'should';
+import * as mssql from 'mssql';
 import * as path from 'path';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
 import * as constants from '../../common/constants';
 import * as utils from '../../common/utils'
-import { createTestUtils, mockConnectionInfo, TestUtils } from './testUtils';
-import * as createProjectFromDatabaseQuickpick from '../../dialogs/createProjectFromDatabaseQuickpick';
-import { promises as fs } from 'fs';
 import * as quickpickHelper from '../../dialogs/quickpickHelper'
+import * as createProjectFromDatabaseQuickpick from '../../dialogs/createProjectFromDatabaseQuickpick';
+import { createTestUtils, mockConnectionInfo, TestUtils } from './testUtils';
+import { promises as fs } from 'fs';
 import { ImportDataModel } from '../../models/api/import';
-import * as mssql from 'mssql';
+import { createTestFile, deleteGeneratedTestFolder } from '../testUtils';
 
 let testUtils: TestUtils;
 const projectFilePath = 'test';
-
-//const projectFilePath: string = path.join(rootFolderPath, 'test.csproj');
+const dbList: string[] = constants.systemDbs.concat(['OtherDatabase', 'Database', 'OtherDatabase2']);
 
 describe('Create Project From Database Quickpick', () => {
 	beforeEach(function (): void {
 		testUtils = createTestUtils();
+		sinon.stub(utils, 'getVscodeMssqlApi').resolves(testUtils.vscodeMssqlIExtension.object);	//set vscode mssql extension api
 	});
 
 	afterEach(function (): void {
@@ -31,8 +32,6 @@ describe('Create Project From Database Quickpick', () => {
 	});
 
 	it('Should prompt for connection and exit when connection is not selected', async function (): Promise<void> {
-		sinon.stub(utils, 'getVscodeMssqlApi').resolves(testUtils.vscodeMssqlIExtension.object);	//set vscode mssql extension api
-
 		//promptForConnection spy to verify test
 		const promptForConnectionSpy = sinon.stub(testUtils.vscodeMssqlIExtension.object, 'promptForConnection').withArgs(sinon.match.any).resolves(undefined);
 
@@ -46,16 +45,11 @@ describe('Create Project From Database Quickpick', () => {
 	});
 
 	it('Should not prompt for connection when connectionInfo is provided and exit when db is not selected', async function (): Promise<void> {
-		sinon.stub(utils, 'getVscodeMssqlApi').resolves(testUtils.vscodeMssqlIExtension.object);	//set vscode mssql extension api
-
 		//promptForConnection spy to verify test
 		const promptForConnectionSpy = sinon.stub(testUtils.vscodeMssqlIExtension.object, 'promptForConnection').withArgs(sinon.match.any).resolves(undefined);
 
 		//user chooses connection
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'connect').resolves('testConnectionURI');
-		let dbList: string[] = constants.systemDbs;
-		dbList.push('OtherDatabase');
-		dbList.push('Database');
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'listDatabases').withArgs(sinon.match.any).resolves(dbList);
 		// user chooses to cancel when prompted for database
 		sinon.stub(vscode.window, 'showQuickPick').resolves(undefined);
@@ -70,13 +64,6 @@ describe('Create Project From Database Quickpick', () => {
 	});
 
 	it('Should exit when project name is not selected', async function (): Promise<void> {
-		sinon.stub(utils, 'getVscodeMssqlApi').resolves(testUtils.vscodeMssqlIExtension.object);	//set vscode mssql extension api
-
-		let dbList: string[] = constants.systemDbs;
-		dbList.push('OtherDatabase');
-		dbList.push('Database');
-		dbList.push('OtherDatabase2');
-
 		//user chooses connection and database
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'connect').resolves('testConnectionURI');
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'listDatabases').withArgs(sinon.match.any).resolves(dbList);
@@ -93,13 +80,6 @@ describe('Create Project From Database Quickpick', () => {
 	});
 
 	it('Should exit when project location is not selected', async function (): Promise<void> {
-		sinon.stub(utils, 'getVscodeMssqlApi').resolves(testUtils.vscodeMssqlIExtension.object);	//set vscode mssql extension api
-
-		let dbList: string[] = constants.systemDbs;
-		dbList.push('OtherDatabase');
-		dbList.push('Database');
-		dbList.push('OtherDatabase2');
-
 		//user chooses connection and database
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'connect').resolves('testConnectionURI');
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'listDatabases').withArgs(sinon.match.any).resolves(dbList);
@@ -116,13 +96,6 @@ describe('Create Project From Database Quickpick', () => {
 	});
 
 	it('Should exit when project location is not selected (test repeatedness for project location)', async function (): Promise<void> {
-		sinon.stub(utils, 'getVscodeMssqlApi').resolves(testUtils.vscodeMssqlIExtension.object);	//set vscode mssql extension api
-
-		let dbList: string[] = constants.systemDbs;
-		dbList.push('OtherDatabase');
-		dbList.push('Database');
-		dbList.push('OtherDatabase2');
-
 		//user chooses connection and database
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'connect').resolves('testConnectionURI');
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'listDatabases').withArgs(sinon.match.any).resolves(dbList);
@@ -151,13 +124,6 @@ describe('Create Project From Database Quickpick', () => {
 	});
 
 	it('Should exit when folder structure is not selected and folder is selected through browsing (test repeatedness for project location)', async function (): Promise<void> {
-		sinon.stub(utils, 'getVscodeMssqlApi').resolves(testUtils.vscodeMssqlIExtension.object);	//set vscode mssql extension api
-
-		let dbList: string[] = constants.systemDbs;
-		dbList.push('OtherDatabase');
-		dbList.push('Database');
-		dbList.push('OtherDatabase2');
-
 		//user chooses connection and database
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'connect').resolves('testConnectionURI');
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'listDatabases').withArgs(sinon.match.any).resolves(dbList);
@@ -182,20 +148,11 @@ describe('Create Project From Database Quickpick', () => {
 	});
 
 	it('Should exit when folder structure is not selected and existing folder/file location is selected', async function (): Promise<void> {
-		sinon.stub(utils, 'getVscodeMssqlApi').resolves(testUtils.vscodeMssqlIExtension.object);	//set vscode mssql extension api
-
 		//create folder and project file
 		const projectFileName = 'TestProject';
 		const testProjectFilePath = 'TestProjectPath'
 		await fs.rm(testProjectFilePath, { force: true, recursive: true });	//clean up if it already exists
-		await fs.mkdir(testProjectFilePath);
-		let filePath = path.join(testProjectFilePath, projectFileName);
-		await fs.writeFile(filePath, '');
-
-		let dbList: string[] = constants.systemDbs;
-		dbList.push('OtherDatabase');
-		dbList.push('Database');
-		dbList.push('OtherDatabase2');
+		await createTestFile('', projectFileName, testProjectFilePath);
 
 		//user chooses connection and database
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'connect').resolves('testConnectionURI');
@@ -212,20 +169,13 @@ describe('Create Project From Database Quickpick', () => {
 
 		const model = await createProjectFromDatabaseQuickpick.createNewProjectFromDatabaseWithQuickpick(mockConnectionInfo);
 
-		await fs.rm(testProjectFilePath, { recursive: true });
+		await deleteGeneratedTestFolder();
 
 		//verify showQuickPick exited with undefined, since folder structure wasn't selected (resolved to undefined)
 		should.equal(model, undefined);
 	});
 
 	it('Should exit when include permissions is not selected', async function (): Promise<void> {
-		sinon.stub(utils, 'getVscodeMssqlApi').resolves(testUtils.vscodeMssqlIExtension.object);	//set vscode mssql extension api
-
-		let dbList: string[] = constants.systemDbs;
-		dbList.push('OtherDatabase');
-		dbList.push('Database');
-		dbList.push('OtherDatabase2');
-
 		//user chooses connection and database
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'connect').resolves('testConnectionURI');
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'listDatabases').withArgs(sinon.match.any).resolves(dbList);
@@ -246,13 +196,6 @@ describe('Create Project From Database Quickpick', () => {
 	});
 
 	it('Should exit when sdk style project is not selected', async function (): Promise<void> {
-		sinon.stub(utils, 'getVscodeMssqlApi').resolves(testUtils.vscodeMssqlIExtension.object);	//set vscode mssql extension api
-
-		let dbList: string[] = constants.systemDbs;
-		dbList.push('OtherDatabase');
-		dbList.push('Database');
-		dbList.push('OtherDatabase2');
-
 		//user chooses connection and database
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'connect').resolves('testConnectionURI');
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'listDatabases').withArgs(sinon.match.any).resolves(dbList);
@@ -275,13 +218,6 @@ describe('Create Project From Database Quickpick', () => {
 	});
 
 	it('Should create correct import data model when all the information is provided', async function (): Promise<void> {
-		sinon.stub(utils, 'getVscodeMssqlApi').resolves(testUtils.vscodeMssqlIExtension.object);	//set vscode mssql extension api
-
-		let dbList: string[] = constants.systemDbs;
-		dbList.push('OtherDatabase');
-		dbList.push('Database');
-		dbList.push('OtherDatabase2');
-
 		//user chooses connection and database
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'connect').resolves('testConnectionURI');
 		sinon.stub(testUtils.vscodeMssqlIExtension.object, 'listDatabases').withArgs(sinon.match.any).resolves(dbList);
