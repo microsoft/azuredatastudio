@@ -33,6 +33,8 @@ export class AzureAccountProviderService implements vscode.Disposable {
 	private static CommandClearTokenCache = 'accounts.clearTokenCache';
 	private static ConfigurationSection = 'accounts.azure.cloud';
 	private static CredentialNamespace = 'azureAccountProviderCredentials';
+	private static ServiceName = 'azuredatastudio';
+	public static Account = 'account';
 
 	// MEMBER VARIABLES ////////////////////////////////////////////////////////
 	private _disposables: vscode.Disposable[] = [];
@@ -45,6 +47,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 	private readonly _uriEventHandler: UriEventHandler = new UriEventHandler();
 	public clientApplication!: PublicClientApplication;
 	public authLibrary: AuthLibrary;
+	public persistence: FilePersistenceWithDataProtection | KeychainPersistence | LibSecretPersistence | undefined;
 
 	constructor(private _context: vscode.ExtensionContext, private _userStoragePath: string) {
 		this.authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
@@ -164,32 +167,29 @@ export class AzureAccountProviderService implements vscode.Disposable {
 			await simpleTokenCache.init();
 			const cachePath = path.join(this._userStoragePath, './cache.json');
 			let platform = os.platform();
-			let persistence;
-			const serviceName = 'azuredatastudio';
-			const accountName = 'account';
 			let persistenceCachePlugin: PersistenceCachePlugin;
 			switch (platform) {
 				case 'win32':
 					const dataProtectionScope = DataProtectionScope.CurrentUser;
 					const optionalEntropy = "";
-					persistence = await FilePersistenceWithDataProtection.create(cachePath, dataProtectionScope, optionalEntropy);
+					this.persistence = await FilePersistenceWithDataProtection.create(cachePath, dataProtectionScope, optionalEntropy);
 					break;
 				case 'darwin':
-					persistence = await KeychainPersistence.create(cachePath, serviceName, accountName);
+					this.persistence = await KeychainPersistence.create(cachePath, AzureAccountProviderService.ServiceName, AzureAccountProviderService.Account);
 					break;
 				case 'linux':
-					persistence = await LibSecretPersistence.create(cachePath, serviceName, accountName);
+					this.persistence = await LibSecretPersistence.create(cachePath, AzureAccountProviderService.ServiceName, AzureAccountProviderService.Account);
 					break;
 			}
 			const lockOptions = {
 				retryNumber: 100,
 				retryDelay: 50
 			}
-			if (!persistence) {
+			if (!this.persistence) {
 				Logger.error('unable to create persistence');
 				throw new Error('unable to creat persistence');
 			}
-			persistenceCachePlugin = new PersistenceCachePlugin(persistence, lockOptions); // or any of the other ones.
+			persistenceCachePlugin = new PersistenceCachePlugin(this.persistence, lockOptions); // or any of the other ones.
 			const MSAL_CONFIG = {
 				auth: {
 					clientId: provider.metadata.settings.clientId,
