@@ -5,8 +5,15 @@
 		"downloadFileNames": {
 			"Windows_86": "StreamJsonRpc.Sample.Server.zip",
 			"Windows_64": "StreamJsonRpc.Sample.Server.zip",
-			"OSX": "StreamJsonRpc.Sample.Server.zip",
-			"Linux": "StreamJsonRpc.Sample.Server.zip"
+			"OSX": "StreamJsonRpc.Sample.Server.tar.gz",
+			"CentOS_7": "StreamJsonRpc.Sample.Server.tar.gz",
+			"Debian_8": "StreamJsonRpc.Sample.Server.tar.gz",
+			"Fedora_23": "StreamJsonRpc.Sample.Server.tar.gz",
+			"OpenSUSE_13_2": "StreamJsonRpc.Sample.Server.tar.gz",
+			"RHEL_7": "StreamJsonRpc.Sample.Server.tar.gz",
+			"SLES_12_2": "StreamJsonRpc.Sample.Server.tar.gz",
+			"Ubuntu_14": "StreamJsonRpc.Sample.Server.tar.gz",
+			"Ubuntu_16": "StreamJsonRpc.Sample.Server.tar.gz"
 		},
 		"installDirectory": "services/demoService/{#platform#}/{#version#}",
 		"executableFiles": [
