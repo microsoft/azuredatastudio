@@ -906,7 +906,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			nbformat_minor: constants.NBFORMAT_MINOR
 		};
 
-		await vscode.commands.executeCommand('_notebook.command.new', {
+		await vscode.commands.executeCommand('notebook.command.new', {
 			initialContent: JSON.stringify(initialContent),
 			defaultKernel: 'Python 3'
 		});

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build">
-  <Sdk Name="Microsoft.Build.Sql" Version="0.1.3-preview" />
+  <Sdk Name="Microsoft.Build.Sql" Version="0.1.7-preview" />
   <PropertyGroup>
     <Name>TestProjectName</Name>
     <DSP>Microsoft.Data.Tools.Schema.Sql.Sql150DatabaseSchemaProvider</DSP>
