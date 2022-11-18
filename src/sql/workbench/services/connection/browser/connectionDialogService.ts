@@ -44,7 +44,6 @@ export interface IConnectionComponentCallbacks {
 	onSetConnectButton: (enable: boolean) => void;
 	onCreateNewServerGroup?: () => void;
 	onAdvancedProperties?: () => void;
-	onPasswordChange?: () => void;
 	onSetAzureTimeOut?: () => void;
 	onFetchDatabases?: (serverName: string, authenticationType: string, userName?: string, password?: string, token?: string) => Promise<string[]>;
 	onAzureTenantSelection?: (azureTenantId?: string) => void;

@@ -6,7 +6,6 @@
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionComponentCallbacks, IConnectionComponentController, IConnectionValidateResult } from 'sql/workbench/services/connection/browser/connectionDialogService';
 import { AdvancedPropertiesController } from 'sql/workbench/services/connection/browser/advancedPropertiesController';
-import { ChangePasswordController } from 'sql/workbench/services/connection/browser/changePasswordController';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import * as Constants from 'sql/platform/connection/common/constants';
@@ -15,19 +14,16 @@ import * as Utils from 'sql/platform/connection/common/utils';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ConnectionWidget } from 'sql/workbench/services/connection/browser/connectionWidget';
-import { PasswordResetWidget } from 'sql/workbench/services/connection/browser/passwordResetWidget';
 import { IServerGroupController } from 'sql/platform/serverGroup/common/serverGroupController';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ConnectionProviderProperties } from 'sql/platform/capabilities/common/capabilitiesService';
 
 export class ConnectionController implements IConnectionComponentController {
 	private _advancedController: AdvancedPropertiesController;
-	private _changePasswordController: ChangePasswordController;
 	private _model: IConnectionProfile;
 	private _providerName: string;
 	protected _callback: IConnectionComponentCallbacks;
 	protected _connectionWidget: ConnectionWidget;
-	protected _passwordResetWidget: PasswordResetWidget;
 	protected _providerOptions: azdata.ConnectionOption[];
 	/* key: uri, value : list of databases */
 	protected _databaseCache = new Map<string, string[]>();
@@ -49,7 +45,6 @@ export class ConnectionController implements IConnectionComponentController {
 			onSetConnectButton: (enable: boolean) => this._callback.onSetConnectButton(enable),
 			onCreateNewServerGroup: () => this.onCreateNewServerGroup(),
 			onAdvancedProperties: () => this.handleOnAdvancedProperties(),
-			onPasswordChange: () => this.handleConnectionChangeProperties(),
 			onSetAzureTimeOut: () => this.handleonSetAzureTimeOut(),
 			onFetchDatabases: (serverName: string, authenticationType: string, userName?: string, password?: string, authToken?: string) => this.onFetchDatabases(
 				serverName, authenticationType, userName, password, authToken).then(result => {
@@ -57,19 +52,6 @@ export class ConnectionController implements IConnectionComponentController {
 				}),
 			onAzureTenantSelection: (azureTenantId?: string) => this.onAzureTenantSelection(azureTenantId),
 		}, providerName);
-
-		this._passwordResetWidget = this._instantiationService.createInstance(PasswordResetWidget, specialOptions, {
-			onSetConnectButton: (enable: boolean) => this._callback.onSetConnectButton(enable),
-			onCreateNewServerGroup: () => this.onCreateNewServerGroup(),
-			onAdvancedProperties: () => this.handleOnAdvancedProperties(),
-			onPasswordChange: () => this.handleConnectionChangeProperties(),
-			onSetAzureTimeOut: () => this.handleonSetAzureTimeOut(),
-			onFetchDatabases: (serverName: string, authenticationType: string, userName?: string, password?: string, authToken?: string) => this.onFetchDatabases(
-				serverName, authenticationType, userName, password, authToken).then(result => {
-					return result;
-				}),
-			onAzureTenantSelection: (azureTenantId?: string) => this.onAzureTenantSelection(azureTenantId),
-		});
 
 		this._providerName = providerName;
 	}
@@ -137,15 +119,6 @@ export class ConnectionController implements IConnectionComponentController {
 		}
 	}
 
-	protected handleConnectionChangeProperties(): void {
-		if (!this._changePasswordController) {
-			this._changePasswordController = this._instantiationService.createInstance(ChangePasswordController, () => { });
-		}
-		let passwordChangeOption = this._providerOptions.filter(
-			(property) => (property.specialValueType === ConnectionOptionSpecialType.password || property.specialValueType === ConnectionOptionSpecialType.userName));
-		this._changePasswordController.showDialog(passwordChangeOption, this._model.options);
-	}
-
 	protected handleOnAdvancedProperties(): void {
 		if (!this._advancedController) {
 			this._advancedController = this._instantiationService.createInstance(AdvancedPropertiesController, () => this._connectionWidget.focusOnAdvancedButton());
@@ -158,10 +131,6 @@ export class ConnectionController implements IConnectionComponentController {
 	public showUiComponent(container: HTMLElement): void {
 		this._databaseCache = new Map<string, string[]>();
 		this._connectionWidget.createConnectionWidget(container);
-	}
-
-	public showConnectionChange(): void {
-		this._passwordResetWidget.activatePasswordResetDialog();
 	}
 
 	private flattenGroups(group: ConnectionProfileGroup, allGroups: IConnectionProfileGroup[]): void {

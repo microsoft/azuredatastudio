@@ -13,7 +13,6 @@ export const enum EventName {
 export const enum ModalDialogName {
 	ErrorMessage = 'ErrorMessage',
 	WebView = 'WebView',
-	PasswordChangeProperties = 'PasswordChangePropertes',
 	ConnectionAdvancedProperties = 'ConnectionAdvancedProperties',
 	Connection = 'Connection',
 	Backup = 'Backup',
