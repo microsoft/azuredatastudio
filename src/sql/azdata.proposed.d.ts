@@ -433,11 +433,11 @@ declare module 'azdata' {
 			/**
 			 * Shows a connection option
 			 */
-			Show = 1,
+			Show = 'show',
 			/**
 			 * Hides a connection option
 			 */
-			Hide = 2
+			Hide = 'hide'
 		}
 	}
 

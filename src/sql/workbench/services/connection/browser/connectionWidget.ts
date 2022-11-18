@@ -312,7 +312,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		if (option.onSelectionChange) {
 			option.onSelectionChange.forEach((event) => {
 				this._register(widget.onDidSelect(value => {
-					let selectedValue = widget.values.at(value.index);
+					let selectedValue = value.selected;
 					event?.dependentOptionActions?.forEach((optionAction) => {
 						let defaultValue: string | undefined = this._customOptions.find(o => o.name === optionAction.optionName)?.defaultValue;
 						let widget: AdsWidget | undefined = this._findWidget(collections, optionAction.optionName);
