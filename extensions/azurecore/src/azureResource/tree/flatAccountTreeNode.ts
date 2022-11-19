@@ -193,7 +193,7 @@ class FlatAccountTreeNodeLoader {
 			let subscriptions: azureResource.AzureResourceSubscription[] = (await getSubscriptionInfo(this._account, this._subscriptionService, this._subscriptionFilterService)).subscriptions;
 
 			if (subscriptions.length !== 0) {
-				// Filter out sybscriptions that don't belong to the tenants we filtered above.
+				// Filter out subscriptions that don't belong to the tenants we filtered above.
 				subscriptions = subscriptions.filter(async s => {
 					const tenant = tenants.find(t => t.id === s.tenant);
 					if (!tenant) {
