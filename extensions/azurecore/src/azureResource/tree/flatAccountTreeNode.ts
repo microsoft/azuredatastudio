@@ -20,6 +20,7 @@ import { AzureAccount, azureResource } from 'azurecore';
 import { AzureResourceService } from '../resourceService';
 import { AzureResourceResourceTreeNode } from '../resourceTreeNode';
 import { AzureResourceErrorMessageUtil } from '../utils';
+import { Logger } from '../../utils/Logger';
 
 export class FlatAccountTreeNode extends AzureResourceContainerTreeNodeBase {
 	public constructor(
@@ -182,13 +183,11 @@ class FlatAccountTreeNodeLoader {
 			// Authenticate to tenants to filter out subscriptions that are not accessible.
 
 			let tenants = this._account.properties.tenants;
-			if (tenants.length !== 0) {
-				// Filter out tenants that we can't authenticate to.
-				tenants = tenants.filter(async tenant => {
-					const token = await azdata.accounts.getAccountSecurityToken(this._account, tenant.id, azdata.AzureResource.ResourceManagement);
-					return token !== undefined;
-				});
-			}
+			// Filter out tenants that we can't authenticate to.
+			tenants = tenants.filter(async tenant => {
+				const token = await azdata.accounts.getAccountSecurityToken(this._account, tenant.id, azdata.AzureResource.ResourceManagement);
+				return token !== undefined;
+			});
 
 			let subscriptions: azureResource.AzureResourceSubscription[] = (await getSubscriptionInfo(this._account, this._subscriptionService, this._subscriptionFilterService)).subscriptions;
 
@@ -197,7 +196,7 @@ class FlatAccountTreeNodeLoader {
 				subscriptions = subscriptions.filter(async s => {
 					const tenant = tenants.find(t => t.id === s.tenant);
 					if (!tenant) {
-						console.info(`Account does not have permissions to view subscription ${JSON.stringify(s)}.`);
+						Logger.info(`Account does not have permissions to view subscription ${JSON.stringify(s)}.`);
 						return false;
 					}
 					return true;
