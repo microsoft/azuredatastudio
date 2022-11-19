@@ -3291,10 +3291,13 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/package.sqlDatabaseProjects.dotnetInstallLocation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Full path to .NET SDK on the machine.]]></Val>
+          <Val><![CDATA[Full path to .NET SDK on the machine. For example, if dotnet.exe is located at C:\folder1\dotnet\dotnet.exe, set the path for this setting to C:\folder1\dotnet]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[電腦上 .NET SDK 的完整路徑。]]></Val>
+            <Val><![CDATA[電腦上 .NET SDK 的完整路徑。例如，如果 dotnet.exe 位於 C:\folder1\dotnet\dotnet.exe，請將此設定的路徑設定為 C:\folder1\dotnet]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Full path to .NET SDK on the machine.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
