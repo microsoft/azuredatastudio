@@ -25,10 +25,9 @@ import { NotebookChangeType, CellTypes } from 'sql/workbench/services/notebook/c
 import { localize } from 'vs/nls';
 import { IFileService } from 'vs/platform/files/common/files';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
-import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookEditor';
 import { extHostNamedCustomer, IExtHostContext } from 'vs/workbench/services/extensions/common/extHostCustomers';
 import { SqlExtHostContext, SqlMainContext } from 'vs/workbench/api/common/extHost.protocol';
-import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
+import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookEditor';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -323,7 +322,6 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		@INotebookService private readonly _notebookService: INotebookService,
 		@IFileService private readonly _fileService: IFileService,
 		@ITextFileService private readonly _textFileService: ITextFileService,
-		@IUntitledTextEditorService private readonly _untitledEditorService: IUntitledTextEditorService,
 	) {
 		super();
 		if (extHostContext) {
@@ -346,36 +344,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 	}
 
 	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): Promise<string> {
-		// Append a numbered suffix if an untitled notebook is already open with the same path
-		if (resource.scheme === Schemas.untitled) {
-			if (!resource.path || this.untitledEditorTitleExists(resource.path)) {
-				resource.path = this.createPrefixedNotebookFilePath(resource.path);
-			}
-		}
 		return Promise.resolve(this.doOpenEditor(resource, options));
-	}
-
-	private untitledEditorTitleExists(filePath: string): boolean {
-		return !!this._untitledEditorService.get(URI.from({ scheme: Schemas.untitled, path: filePath }));
-	}
-
-	private createPrefixedNotebookFilePath(prefix?: string): string {
-		if (!prefix) {
-			prefix = 'Notebook';
-		}
-		let prefixFileName = (counter: number): string => {
-			return `${prefix}-${counter}`;
-		};
-
-		let counter = 1;
-		// Get document name and check if it exists
-		let filePath = prefixFileName(counter);
-		while (this.untitledEditorTitleExists(filePath)) {
-			counter++;
-			filePath = prefixFileName(counter);
-		}
-
-		return filePath;
 	}
 
 	$trySetTrusted(uriComponent: UriComponents, isTrusted: boolean): Promise<boolean> {

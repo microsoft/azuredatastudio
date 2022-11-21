@@ -2319,10 +2319,13 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.publishToNewAzureServer" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Publish to new Azure SQL logical server]]></Val>
+          <Val><![CDATA[Publish to new Azure SQL logical server (Preview)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Публикация на новом логическом сервере Azure SQL]]></Val>
+            <Val><![CDATA[Публикация на новом логическом сервере Azure SQL (предварительная версия)]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Publish to new Azure SQL logical server]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3291,10 +3294,13 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/package.sqlDatabaseProjects.dotnetInstallLocation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Full path to .NET SDK on the machine.]]></Val>
+          <Val><![CDATA[Full path to .NET SDK on the machine. For example, if dotnet.exe is located at C:\folder1\dotnet\dotnet.exe, set the path for this setting to C:\folder1\dotnet]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Полный путь к пакету SDK для .NET на компьютере.]]></Val>
+            <Val><![CDATA[Полный путь к пакету SDK для .NET на компьютере. Например, если dotnet.exe находится в расположении C:\folder1\dotnet\dotnet.exe, задайте следующий путь для этого параметра: C:\folder1\dotnet]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Full path to .NET SDK on the machine.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3303,6 +3309,15 @@
           <Val><![CDATA[Edit .sqlproj File]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Изменить файл .sqlproj]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-database-projects/package.sqlDatabaseProjects.enablePreviewFeatures" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Enable preview SQL Database Projects features]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Включить предварительные версии функций SQL Database Projects]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3327,10 +3342,13 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/package.sqlDatabaseProjects.microsoftBuildSqlVersion" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Which version of Microsoft.Build.Sql SDK to use for building legacy sql projects. Example: 0.1.3-preview]]></Val>
+          <Val><![CDATA[Which version of Microsoft.Build.Sql SDK to use for building legacy sql projects. Example: 0.1.7-preview]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Какую версию Microsoft.Build.Sql SDK использовать для создания устаревших проектов SQL. Пример: 0.1.3-предварительная версия]]></Val>
+            <Val><![CDATA[Какую версию Microsoft.Build.Sql SDK использовать для создания устаревших проектов SQL. Пример: 0.1.7-предварительная версия]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Which version of Microsoft.Build.Sql SDK to use for building legacy sql projects. Example: 0.1.3-preview]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
