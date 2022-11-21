@@ -54,7 +54,7 @@ export class PasswordChangeDialog extends Modal {
 		@IConnectionDialogService private connectionDialogService: IConnectionDialogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super('', '', telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'normal', hasTitleIcon: true });
+		super('', '', telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'normal', hasTitleIcon: true, hasErrors: true });
 	}
 
 	public open(profile: IConnectionProfile, params: INewConnectionParams, uri: string) {
@@ -117,12 +117,17 @@ export class PasswordChangeDialog extends Modal {
 
 	private handleOkButtonClick(): void {
 		//TODO - verify password here before continuing.
-		if (this._passwordValueText.value === this._confirmValueText.value) {
-			this.connectionDialogService.changePasswordFunction(this._profile, this._params, this._uri, this._passwordValueText.value, this._connectOnClose.checked);
-			this.hide('ok');
+		try {
+			if (this._passwordValueText.value === this._confirmValueText.value) {
+				this.connectionDialogService.changePasswordFunction(this._profile, this._params, this._uri, this._passwordValueText.value, this._connectOnClose.checked);
+				this.hide('ok');
+			}
+			else {
+				this.setError('Password Mismatch', MessageLevel.Warning, `Mismatching password for ${this._profile.options['user']}, please try again`);
+			}
 		}
-		else {
-			this.setError('Password Mismatch', MessageLevel.Warning, `Mismatching password for ${this._profile.options['user']}, please try again`);
+		catch (err) {
+			this.setError('Error when changing password', MessageLevel.Error, err.message);
 		}
 	}
 }
