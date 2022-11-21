@@ -29,7 +29,7 @@ const buildFiles: string[] = [
 	'System.ComponentModel.Composition.dll',
 	'System.IO.Packaging.dll',
 	'Microsoft.Data.Tools.Schema.SqlTasks.targets',
-	'Microsoft.SqlServer.Server'
+	'Microsoft.SqlServer.Server.dll'
 ];
 
 export class BuildHelper {
