@@ -78,7 +78,7 @@ export class NetCoreTool extends ShellExecutionHelper {
 			await vscode.commands.executeCommand('workbench.action.openGlobalSettings');
 		} else if (result === Install) {
 			//open install link
-			const dotnetSdkUrl = 'https://dotnet.microsoft.com/download/dotnet/6.0';
+			const dotnetSdkUrl = 'https://aka.ms/sqlprojects-dotnet';
 			await vscode.env.openExternal(vscode.Uri.parse(dotnetSdkUrl));
 		} else if (result === DoNotAskAgain) {
 			const config = vscode.workspace.getConfiguration(DBProjectConfigurationKey);
