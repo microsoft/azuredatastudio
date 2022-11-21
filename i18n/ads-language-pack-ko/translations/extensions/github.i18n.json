@@ -29,11 +29,14 @@
 			"forking_done": "GitHub에 '{0}' 포크를 만들었습니다.",
 			"forking_pushing": "변경 내용을 푸시하는 중...",
 			"no": "아니요",
+			"no pr template": "템플릿 없음",
 			"openingithub": "GitHub에서 열기",
-			"openpr": "PR 열기"
+			"openpr": "PR 열기",
+			"select pr template": "끌어오기 요청 템플릿 선택"
 		},
 		"package": {
 			"config.gitAuthentication": "VS Code 내에서 Git 명령에 대해 자동 GitHub 인증을 사용하도록 설정할지 여부를 제어합니다.",
+			"config.gitProtocol": "GitHub 리포지토리를 복제하는 데 사용되는 프로토콜 제어",
 			"description": "VS Code용 GitHub 기능",
 			"displayName": "GitHub",
 			"welcome.publishFolder": "이 폴더를 GitHub 리포지토리에 직접 게시할 수도 있습니다. 게시된 후에는 Git 및 GitHub에서 제공하는 소스 제어 기능에 액세스할 수 있습니다.\r\n[$(github) GitHub에 게시](command:github.publish)",

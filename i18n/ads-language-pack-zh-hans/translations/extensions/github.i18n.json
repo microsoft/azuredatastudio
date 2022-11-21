@@ -29,11 +29,14 @@
 			"forking_done": "已在 GitHub 上成功创建分支“{0}”。",
 			"forking_pushing": "正在推送更改…",
 			"no": "否",
+			"no pr template": "无模板",
 			"openingithub": "在 GitHub 上打开",
-			"openpr": "打开 PR"
+			"openpr": "打开 PR",
+			"select pr template": "选择拉取请求模板"
 		},
 		"package": {
 			"config.gitAuthentication": "控制是否在 VS Code 中为 git 命令启用自动 GitHub 身份验证。",
+			"config.gitProtocol": "控制用于克隆 GitHub 存储库的协议",
 			"description": "适用于 VS Code 的 GitHub 功能",
 			"displayName": "GitHub",
 			"welcome.publishFolder": "你还可直接将此文件夹发布到 GitHub 存储库。发布后，你将有权访问由 Git 和 GitHub 提供支持的源代码管理功能。\r\n[$(github) 发布到 GitHub](command:github.publish)",
