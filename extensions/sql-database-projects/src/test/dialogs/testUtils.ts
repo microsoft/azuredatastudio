@@ -65,7 +65,7 @@ export const mockConnectionInfo: vscodeMssql.IConnectionInfo = {
 	server: 'Server',
 	database: 'Database',
 	user: 'User',
-	password: 'Pwd',
+	password: 'Placeholder',
 	email: 'test-email',
 	accountId: 'test-account-id',
 	tenantId: 'test-tenant-id',
