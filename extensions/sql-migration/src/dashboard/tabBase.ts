@@ -221,6 +221,7 @@ export abstract class TabBase<T> implements azdata.Tab, vscode.Disposable {
 		dialog.okButton.hidden = true;
 		dialog.cancelButton.focused = true;
 		dialog.cancelButton.label = loc.CLOSE;
+		dialog.cancelButton.position = 'left';
 
 		azdata.window.openDialog(dialog);
 	}

@@ -47,8 +47,25 @@ export class WizardController {
 
 		this._wizardObject.generateScriptButton.enabled = false;
 		this._wizardObject.generateScriptButton.hidden = true;
-		const saveAndCloseButton = azdata.window.createButton(loc.SAVE_AND_CLOSE);
-		this._wizardObject.customButtons = [saveAndCloseButton];
+		this._wizardObject.nextButton.position = 'left';
+		this._wizardObject.nextButton.secondary = false;
+		this._wizardObject.backButton.position = 'left';
+		this._wizardObject.backButton.secondary = true;
+		this._wizardObject.cancelButton.position = 'left';
+		this._wizardObject.cancelButton.secondary = true;
+
+		const saveAndCloseButton = azdata.window.createButton(
+			loc.SAVE_AND_CLOSE,
+			'right');
+		saveAndCloseButton.secondary = true;
+
+		const validateButton = azdata.window.createButton(
+			'Run validation', // todo: loc string
+			'right');
+		validateButton.secondary = false;
+		validateButton.hidden = true;
+
+		this._wizardObject.customButtons = [validateButton, saveAndCloseButton];
 		const databaseSelectorPage = new DatabaseSelectorPage(this._wizardObject, stateModel);
 		const skuRecommendationPage = new SKURecommendationPage(this._wizardObject, stateModel);
 		const targetSelectionPage = new TargetSelectionPage(this._wizardObject, stateModel);

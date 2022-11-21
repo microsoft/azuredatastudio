@@ -140,14 +140,6 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				CSSStyles: { ...styles.BODY_CSS }
 			}).component();
 
-		const backupChecksumInfoBox = this._view.modelBuilder.infoBox()
-			.withProps({
-				text: constants.DATABASE_BACKUP_CHECKSUM_INFO_TEXT,
-				style: 'information',
-				width: WIZARD_INPUT_COMPONENT_WIDTH,
-				CSSStyles: { ...styles.BODY_CSS }
-			}).component();
-
 		this._networkShareButton = this._view.modelBuilder.radioButton()
 			.withProps({
 				name: buttonGroup,
@@ -183,7 +175,6 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		const flexContainer = this._view.modelBuilder.flexContainer()
 			.withItems([
 				selectLocationText,
-				backupChecksumInfoBox,
 				this._networkShareButton,
 				this._blobContainerButton])
 			.withLayout({ flexFlow: 'column' })
@@ -227,6 +218,14 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			this.wizard.message = { text: '' };
 			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
 				return true;
+			}
+			const isSqlDbTarget = this.migrationStateModel._targetType === MigrationTargetType.SQLDB;
+			if (!isSqlDbTarget && !this._networkShareButton.checked && !this._blobContainerButton.checked) {
+				this.wizard.message = {
+					level: azdata.window.MessageLevel.Error,
+					text: 'Please select the location of your database backup files before continuing.',
+				};
+				return false;
 			}
 
 			const state = this.migrationStateModel._sqlMigrationService?.properties?.integrationRuntimeState;
@@ -545,7 +544,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			this._dmsDropdown.values = utils.getAzureResourceDropdownValues(
 				this.migrationStateModel._sqlMigrationServices,
 				this.migrationStateModel._location,
-				this.migrationStateModel._sqlMigrationServiceResourceGroup.name,
+				this.migrationStateModel._sqlMigrationServiceResourceGroup?.name,
 				constants.SQL_MIGRATION_SERVICE_NOT_FOUND_ERROR);
 
 			utils.selectDefaultDropdownValue(

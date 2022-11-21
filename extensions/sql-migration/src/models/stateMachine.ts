@@ -15,6 +15,7 @@ import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError 
 import { hashString, deepClone } from '../api/utils';
 import { SKURecommendationPage } from '../wizard/skuRecommendationPage';
 import { excludeDatabases, TargetDatabaseInfo } from '../api/sqlUtils';
+import { ValidationResult } from '../dialog/validationResults/valideIRDialog';
 const localize = nls.loadMessageBundle();
 
 export enum State {
@@ -210,6 +211,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _miDbs: string[] = [];
 	public _sqldbDbs: string[] = [];
 	public _targetType!: MigrationTargetType;
+
+	public _validateIrSqlDb: ValidationResult[] = [];
+	public _validateIrSqlMi: ValidationResult[] = [];
+	public _validateIrSqlVm: ValidationResult[] = [];
 
 	public _skuRecommendationResults!: SkuRecommendation;
 	public _skuRecommendationPerformanceDataSource!: PerformanceDataSourceOptions;
