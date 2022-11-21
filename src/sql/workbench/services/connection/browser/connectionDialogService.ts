@@ -304,14 +304,16 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		}
 	}
 
-	public async changePasswordFunction(connection: IConnectionProfile, params: INewConnectionParams, uri: string, password: string): Promise<void> {
+	public async changePasswordFunction(connection: IConnectionProfile, params: INewConnectionParams, uri: string, password: string, connectOnClose: boolean): Promise<void> {
 		let passwordChangeResult = await this._connectionManagementService.sendChangePassword(connection, uri, password);
 		if (!passwordChangeResult.result) {
 			let errorString = passwordChangeResult.errorMessage + '\n\nDetails:\n' + passwordChangeResult.messages;
 			throw Error(errorString);
 		}
-		connection.options['password'] = password;
-		this.handleDefaultOnConnect(params, connection);
+		if (connectOnClose) {
+			connection.options['password'] = password;
+			this.handleDefaultOnConnect(params, connection);
+		}
 	}
 
 	private get uiController(): IConnectionComponentController {

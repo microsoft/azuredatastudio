@@ -4,16 +4,17 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Button } from 'sql/base/browser/ui/button/button';
-import { Modal } from 'sql/workbench/browser/modal/modal';
+import { MessageLevel, Modal } from 'sql/workbench/browser/modal/modal';
 //import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { attachInputBoxStyler } from 'sql/platform/theme/common/styler';
+import { attachInputBoxStyler, attachCheckboxStyler } from 'sql/platform/theme/common/styler';
 import { INewConnectionParams } from 'sql/platform/connection/common/connectionManagement';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { localize } from 'vs/nls';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
+import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import * as DOM from 'vs/base/browser/dom';
@@ -22,8 +23,6 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
-import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
-import Severity from 'vs/base/common/severity';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfiguration';
 
 
@@ -41,6 +40,7 @@ export class PasswordChangeDialog extends Modal {
 	private _uri: string;
 	private _passwordValueText: InputBox;
 	private _confirmValueText: InputBox;
+	private _connectOnClose: Checkbox;
 
 
 	constructor(
@@ -50,7 +50,6 @@ export class PasswordChangeDialog extends Modal {
 		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@ILogService logService: ILogService,
-		@IErrorMessageService private errorMessageService: IErrorMessageService,
 		@IContextViewService private readonly contextViewService: IContextViewService,
 		@IConnectionDialogService private connectionDialogService: IConnectionDialogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
@@ -95,6 +94,11 @@ export class PasswordChangeDialog extends Modal {
 		this._confirmValueText = new InputBox(DOM.append(confirmPasswordRow, DOM.$('td')), this.contextViewService, {});
 		this._confirmValueText.inputElement.type = 'password';
 		this._register(attachInputBoxStyler(this._confirmValueText, this._themeService));
+
+		const saveAndCloseCheckboxRow = DOM.append(body, DOM.$('tr'));
+		DOM.append(saveAndCloseCheckboxRow, DOM.$('td')).innerText = 'Connect?';
+		this._connectOnClose = new Checkbox(DOM.append(saveAndCloseCheckboxRow, DOM.$('td')), { label: 'Connect upon close and save if needed' });
+		this._register(attachCheckboxStyler(this._connectOnClose, this._themeService));
 	}
 
 	protected layout(height?: number): void {
@@ -114,11 +118,11 @@ export class PasswordChangeDialog extends Modal {
 	private handleOkButtonClick(): void {
 		//TODO - verify password here before continuing.
 		if (this._passwordValueText.value === this._confirmValueText.value) {
-			this.connectionDialogService.changePasswordFunction(this._profile, this._params, this._uri, this._passwordValueText.value);
+			this.connectionDialogService.changePasswordFunction(this._profile, this._params, this._uri, this._passwordValueText.value, this._connectOnClose.checked);
 			this.hide('ok');
 		}
 		else {
-			this.errorMessageService.showDialog(Severity.Warning, 'Password Mismatch', `Mismatching password for ${this._profile.options['user']}, please try again`);
+			this.setError('Password Mismatch', MessageLevel.Warning, `Mismatching password for ${this._profile.options['user']}, please try again`);
 		}
 	}
 }
