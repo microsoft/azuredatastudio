@@ -323,7 +323,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return undefined!;
 	}
 
-	refreshAzureAccountTokenIfNecessary(uri: string): Promise<boolean> {
+	refreshAzureAccountTokenIfNecessary(uriOrConnectionProfile: string | ConnectionProfile): Promise<boolean> {
 		return undefined;
 	}
 
