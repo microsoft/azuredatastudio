@@ -117,17 +117,13 @@ export class PasswordChangeDialog extends Modal {
 
 	private handleOkButtonClick(): void {
 		//TODO - verify password here before continuing.
-		try {
-			if (this._passwordValueText.value === this._confirmValueText.value) {
-				this.connectionDialogService.changePasswordFunction(this._profile, this._params, this._uri, this._passwordValueText.value, this._connectOnClose.checked);
+		if (this._passwordValueText.value === this._confirmValueText.value) {
+			this.connectionDialogService.changePasswordFunction(this._profile, this._params, this._uri, this._passwordValueText.value, this._connectOnClose.checked).then(() => {
 				this.hide('ok');
-			}
-			else {
-				this.setError('Password Mismatch', MessageLevel.Warning, `Mismatching password for ${this._profile.options['user']}, please try again`);
-			}
+			});
 		}
-		catch (err) {
-			this.setError('Error when changing password', MessageLevel.Error, err.message);
+		else {
+			this.setError(`Mismatching password entered`, MessageLevel.Warning, 'The passwords entered do not match, please enter the same password for both input boxes.');
 		}
 	}
 }

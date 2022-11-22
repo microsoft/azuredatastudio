@@ -295,8 +295,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	public async changePasswordFunction(connection: IConnectionProfile, params: INewConnectionParams, uri: string, password: string, connectOnClose: boolean): Promise<void> {
 		let passwordChangeResult = await this._connectionManagementService.sendChangePassword(connection, uri, password);
 		if (!passwordChangeResult.result) {
-			let errorString = passwordChangeResult.errorMessage + '\n\nDetails:\n' + passwordChangeResult.messages;
-			throw Error(errorString);
+			this.showErrorDialog(Severity.Error, passwordChangeResult.errorMessage, passwordChangeResult.messages);
 		}
 		if (connectOnClose) {
 			connection.options['password'] = password;
