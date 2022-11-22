@@ -129,6 +129,9 @@ export class PasswordChangeDialog extends Modal {
 	private handleOkButtonClick(): void {
 		//TODO - verify password here before continuing.
 		if (this._passwordValueText.value === this._confirmValueText.value) {
+			if (this._verifyBox.style.display === 'block') {
+				this._verifyBox.style.display = 'none';
+			}
 			this.connectionDialogService.changePasswordFunction(this._profile, this._params, this._uri, this._passwordValueText.value, this._connectOnClose.checked).then(() => {
 				this.hide('ok');
 			});
