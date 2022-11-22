@@ -3,9 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import 'vs/css!./media/passwordDialog';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/workbench/browser/modal/modal';
-//import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { attachInputBoxStyler, attachCheckboxStyler } from 'sql/platform/theme/common/styler';
 import { INewConnectionParams } from 'sql/platform/connection/common/connectionManagement';
@@ -30,6 +30,12 @@ const OkText: string = localize('passwordChangeDialog.ok', "OK");
 const CancelText: string = localize('passwordChangeDialog.cancel', "Cancel");
 const DialogTitle: string = localize('passwordChangeDialog.title', "Change Password");
 const TitleIconClass: string = 'icon filterLabel';
+const newPasswordText: string = localize('passwordChangeDialog.newPassword', 'New password:');
+const confirmPasswordText: string = localize('passwordChangeDialog.confirmPassword', 'Confirm password:');
+const connectCheckboxText: string = localize('passwordChangeDialog.connectText', 'Connect?:');
+const connectCheckboxLabel: string = localize('passwordChangeDialog.connectLabel', 'Connect upon close and save if needed');
+const passwordMismatchText: string = localize('passwordChangeDialog.passwordMismatch', 'Passwords do not match')
+
 
 export class PasswordChangeDialog extends Modal {
 
@@ -85,24 +91,24 @@ export class PasswordChangeDialog extends Modal {
 	protected renderBody(container: HTMLElement) {
 		const body = DOM.append(container, DOM.$('.change-password-dialog'));
 		const passwordRow = DOM.append(body, DOM.$('tr'));
-		DOM.append(passwordRow, DOM.$('td')).innerText = 'New password:';
+		DOM.append(passwordRow, DOM.$('td')).innerText = newPasswordText;
 		this._passwordValueText = new InputBox(DOM.append(passwordRow, DOM.$('.password-text')), this.contextViewService, {});
 		this._passwordValueText.inputElement.type = 'password';
 		this._register(attachInputBoxStyler(this._passwordValueText, this._themeService));
 
 		const confirmPasswordRow = DOM.append(body, DOM.$('tr'));
-		DOM.append(confirmPasswordRow, DOM.$('td')).innerText = 'Confirm password:';
+		DOM.append(confirmPasswordRow, DOM.$('td')).innerText = confirmPasswordText;
 		this._confirmValueText = new InputBox(DOM.append(confirmPasswordRow, DOM.$('.confirm-text')), this.contextViewService, {});
 		this._confirmValueText.inputElement.type = 'password';
 		this._register(attachInputBoxStyler(this._confirmValueText, this._themeService));
 
 		const saveAndCloseCheckboxRow = DOM.append(body, DOM.$('tr'));
-		DOM.append(saveAndCloseCheckboxRow, DOM.$('td')).innerText = 'Connect?';
-		this._connectOnClose = new Checkbox(DOM.append(saveAndCloseCheckboxRow, DOM.$('.connect-check')), { label: 'Connect upon close and save if needed' });
+		DOM.append(saveAndCloseCheckboxRow, DOM.$('td')).innerText = connectCheckboxText;
+		this._connectOnClose = new Checkbox(DOM.append(saveAndCloseCheckboxRow, DOM.$('.connect-check')), { label: connectCheckboxLabel });
 		this._register(attachCheckboxStyler(this._connectOnClose, this._themeService));
 
 		this._verifyBox = DOM.append(body, DOM.$('.verify-status'));
-		this._verifyBox.innerText = 'Passwords do not match!';
+		this._verifyBox.innerText = passwordMismatchText;
 		this._verifyBox.style.display = 'none';
 	}
 
