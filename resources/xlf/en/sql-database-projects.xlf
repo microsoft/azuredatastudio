@@ -898,13 +898,13 @@
       <source xml:lang="en">SQL connection string</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.DotnetInstallationConfirmation">
-      <source xml:lang="en">The .NET SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK location in settings if already installed.</source>
+      <source xml:lang="en">The .NET SDK cannot be located. Project build will not work. Please install .NET 6 SDK or higher or update the .NET SDK location in settings if already installed.</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.Install">
       <source xml:lang="en">Install</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.NetCoreSupportedVersionInstallationConfirmation">
-      <source xml:lang="en">Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK supported version location in settings if already installed.</source>
+      <source xml:lang="en">Currently installed .NET SDK version is {0}, which is not supported. Project build will not work. Please install .NET 6 SDK or higher or update the .NET SDK supported version location in settings if already installed.</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.UpdateDotnetLocation">
       <source xml:lang="en">Update Location</source>
@@ -1081,13 +1081,13 @@
       <source xml:lang="en">Exclude from project</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.generateProjectFromOpenApiSpec">
-      <source xml:lang="en">Generate SQL Project from OpenAPI/Swagger spec</source>
+      <source xml:lang="en">Generate SQL Project from OpenAPI/Swagger spec (Preview)</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.microsoftBuildSqlVersion">
       <source xml:lang="en">Which version of Microsoft.Build.Sql SDK to use for building legacy sql projects. Example: 0.1.7-preview</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.netCoreDoNotAsk">
-      <source xml:lang="en">Whether to prompt the user to install .NET Core when not detected.</source>
+      <source xml:lang="en">Whether to prompt the user to install .NET SDK when not detected.</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.new">
       <source xml:lang="en">New Database Project</source>
