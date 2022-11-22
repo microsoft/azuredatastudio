@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Button } from 'sql/base/browser/ui/button/button';
-import { MessageLevel, Modal } from 'sql/workbench/browser/modal/modal';
+import { Modal } from 'sql/workbench/browser/modal/modal';
 //import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { attachInputBoxStyler, attachCheckboxStyler } from 'sql/platform/theme/common/styler';
@@ -41,6 +41,7 @@ export class PasswordChangeDialog extends Modal {
 	private _passwordValueText: InputBox;
 	private _confirmValueText: InputBox;
 	private _connectOnClose: Checkbox;
+	private _verifyBox: HTMLElement;
 
 
 	constructor(
@@ -54,7 +55,7 @@ export class PasswordChangeDialog extends Modal {
 		@IConnectionDialogService private connectionDialogService: IConnectionDialogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super('', '', telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'normal', hasTitleIcon: true, hasErrors: true });
+		super('', '', telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'normal', hasTitleIcon: true });
 	}
 
 	public open(profile: IConnectionProfile, params: INewConnectionParams, uri: string) {
@@ -84,21 +85,25 @@ export class PasswordChangeDialog extends Modal {
 	protected renderBody(container: HTMLElement) {
 		const body = DOM.append(container, DOM.$('.change-password-dialog'));
 		const passwordRow = DOM.append(body, DOM.$('tr'));
-		DOM.append(passwordRow, DOM.$('td')).innerText = 'new password:';
-		this._passwordValueText = new InputBox(DOM.append(passwordRow, DOM.$('td')), this.contextViewService, {});
+		DOM.append(passwordRow, DOM.$('td')).innerText = 'New password:';
+		this._passwordValueText = new InputBox(DOM.append(passwordRow, DOM.$('.password-text')), this.contextViewService, {});
 		this._passwordValueText.inputElement.type = 'password';
 		this._register(attachInputBoxStyler(this._passwordValueText, this._themeService));
 
 		const confirmPasswordRow = DOM.append(body, DOM.$('tr'));
-		DOM.append(confirmPasswordRow, DOM.$('td')).innerText = 'confirm password:';
-		this._confirmValueText = new InputBox(DOM.append(confirmPasswordRow, DOM.$('td')), this.contextViewService, {});
+		DOM.append(confirmPasswordRow, DOM.$('td')).innerText = 'Confirm password:';
+		this._confirmValueText = new InputBox(DOM.append(confirmPasswordRow, DOM.$('.confirm-text')), this.contextViewService, {});
 		this._confirmValueText.inputElement.type = 'password';
 		this._register(attachInputBoxStyler(this._confirmValueText, this._themeService));
 
 		const saveAndCloseCheckboxRow = DOM.append(body, DOM.$('tr'));
 		DOM.append(saveAndCloseCheckboxRow, DOM.$('td')).innerText = 'Connect?';
-		this._connectOnClose = new Checkbox(DOM.append(saveAndCloseCheckboxRow, DOM.$('td')), { label: 'Connect upon close and save if needed' });
+		this._connectOnClose = new Checkbox(DOM.append(saveAndCloseCheckboxRow, DOM.$('.connect-check')), { label: 'Connect upon close and save if needed' });
 		this._register(attachCheckboxStyler(this._connectOnClose, this._themeService));
+
+		this._verifyBox = DOM.append(body, DOM.$('.verify-status'));
+		this._verifyBox.innerText = 'Passwords do not match!';
+		this._verifyBox.style.display = 'none';
 	}
 
 	protected layout(height?: number): void {
@@ -123,7 +128,7 @@ export class PasswordChangeDialog extends Modal {
 			});
 		}
 		else {
-			this.setError(`Mismatching password entered`, MessageLevel.Warning, 'The passwords entered do not match, please enter the same password for both input boxes.');
+			this._verifyBox.style.display = 'block';
 		}
 	}
 }
