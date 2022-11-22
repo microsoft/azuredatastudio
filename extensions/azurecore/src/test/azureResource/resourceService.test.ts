@@ -106,7 +106,7 @@ describe('AzureResourceService.getRootChildren', function (): void {
 	});
 
 	it('Should be correct when provider id is correct.', async function (): Promise<void> {
-		const children = await resourceService.getRootChildren(mockResourceProvider1.object.providerId, mockAccount, mockSubscription, mockTenantId);
+		const children = await resourceService.getRootChildren(mockResourceProvider1.object.providerId, mockAccount, mockSubscription);
 
 		should(children).Array();
 	});
@@ -114,7 +114,7 @@ describe('AzureResourceService.getRootChildren', function (): void {
 	it('Should throw exceptions when provider id is incorrect.', async function (): Promise<void> {
 		const providerId = 'non_existent_provider_id';
 		try {
-			await resourceService.getRootChildren(providerId, mockAccount, mockSubscription, mockTenantId);
+			await resourceService.getRootChildren(providerId, mockAccount, mockSubscription);
 		} catch (error) {
 			should(error.message).equal(`Azure resource provider doesn't exist. Id: ${providerId}`);
 			return;
@@ -147,7 +147,7 @@ describe('AzureResourceService.getChildren', function (): void {
 	it('Should throw exceptions when provider id is incorrect.', async function (): Promise<void> {
 		const providerId = 'non_existent_provider_id';
 		try {
-			await resourceService.getRootChildren(providerId, mockAccount, mockSubscription, mockTenantId);
+			await resourceService.getRootChildren(providerId, mockAccount, mockSubscription);
 		} catch (error) {
 			should(error.message).equal(`Azure resource provider doesn't exist. Id: ${providerId}`);
 			return;
@@ -180,7 +180,7 @@ describe('AzureResourceService.getTreeItem', function (): void {
 	it('Should throw exceptions when provider id is incorrect.', async function (): Promise<void> {
 		const providerId = 'non_existent_provider_id';
 		try {
-			await resourceService.getRootChildren(providerId, mockAccount, mockSubscription, mockTenantId);
+			await resourceService.getRootChildren(providerId, mockAccount, mockSubscription);
 		} catch (error) {
 			should(error.message).equal(`Azure resource provider doesn't exist. Id: ${providerId}`);
 			return;

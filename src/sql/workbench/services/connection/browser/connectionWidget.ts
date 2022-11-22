@@ -676,17 +676,15 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	}
 
 	private onAzureTenantSelected(tenantIndex: number): void {
-		this._azureTenantId = undefined;
 		let account = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
 		if (account && account.properties.tenants) {
 			let tenant = account.properties.tenants[tenantIndex];
 			if (tenant) {
-				this._azureTenantId = tenant.id;
 				this._callbacks.onAzureTenantSelection(tenant.id);
 			}
 			else {
 				// This should ideally never ever happen!
-				this._logService.error(`onAzureTenantSelected : Could not find tenant with ID ${this._azureTenantId} for account ${account.displayInfo.displayName}`);
+				this._logService.error(`onAzureTenantSelected : Tenant list not found as expected, missing tenant on index ${tenantIndex}`);
 			}
 		}
 	}
