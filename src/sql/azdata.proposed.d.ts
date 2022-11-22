@@ -425,20 +425,6 @@ declare module 'azdata' {
 			 */
 			None = 'None'
 		}
-
-		/*
-		 * Connection option visibility
-		*/
-		export enum OptionVisibility {
-			/**
-			 * Shows a connection option
-			 */
-			Show = 'show',
-			/**
-			 * Hides a connection option
-			 */
-			Hide = 'hide'
-		}
 	}
 
 	/*
@@ -466,13 +452,13 @@ declare module 'azdata' {
 	}
 
 	export interface SelectionChangeEvent {
-		onSelectedValues: string[];
+		values: string[];
 		dependentOptionActions: DependentOptionAction[];
 	}
 
 	export interface DependentOptionAction {
 		optionName: string,
-		action: connection.OptionVisibility;
+		action: string;
 	}
 
 	export interface TaskInfo {

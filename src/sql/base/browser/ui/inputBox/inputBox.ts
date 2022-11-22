@@ -200,7 +200,7 @@ export class InputBox extends vsInputBox implements AdsWidget {
 		super.value = newValue;
 	}
 
-	public getId(): string {
+	public get id(): string {
 		return this.input.id;
 	}
 }

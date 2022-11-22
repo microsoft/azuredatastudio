@@ -13,7 +13,7 @@ export interface AdsWidget extends Widget {
 
 	get value(): string;
 
-	getId(): string;
+	get id(): string;
 
 	getAriaLabel(): string;
 

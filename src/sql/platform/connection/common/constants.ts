@@ -58,9 +58,9 @@ export enum AuthenticationType {
 }
 
 /*
-	* Connection option visibility
+* Actions for the connection dialog to show/hide connection options.
 */
-export enum OptionVisibility {
+export enum Actions {
 	/**
 	 * Shows a connection option
 	 */

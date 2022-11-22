@@ -35,8 +35,9 @@ import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMess
 import Severity from 'vs/base/common/severity';
 import { ConnectionStringOptions } from 'sql/platform/capabilities/common/capabilitiesService';
 import { isFalsyOrWhitespace } from 'vs/base/common/strings';
-import { AuthenticationType, OptionVisibility } from 'sql/platform/connection/common/constants';
+import { AuthenticationType, Actions } from 'sql/platform/connection/common/constants';
 import { AdsWidget } from 'sql/base/browser/ui/adsWidget';
+import { createCSSRule } from 'vs/base/browser/dom';
 
 const ConnectionStringText = localize('connectionWidget.connectionString', "Connection string");
 
@@ -317,7 +318,8 @@ export class ConnectionWidget extends lifecycle.Disposable {
 						let defaultValue: string | undefined = this._customOptions.find(o => o.name === optionAction.optionName)?.defaultValue;
 						let widget: AdsWidget | undefined = this._findWidget(collections, optionAction.optionName);
 						if (widget) {
-							this._onValueChangeEvent(selectedValue, event.onSelectedValues, widget, defaultValue, optionAction.action);
+							createCSSRule(`.hide-${widget.id} .option-${widget.id}`, `display: none;`);
+							this._onValueChangeEvent(selectedValue, event.values, widget, defaultValue, optionAction.action);
 						}
 					});
 				}));
@@ -335,17 +337,17 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		let foundWidget: AdsWidget | undefined;
 		collections.forEach((collection) => {
 			if (!foundWidget) {
-				foundWidget = collection.find(widget => widget.getId() === id);
+				foundWidget = collection.find(widget => widget.id === id);
 			}
 		});
 		return foundWidget;
 	}
 
 	private _onValueChangeEvent(selectedValue: string, acceptedValues: string[],
-		widget: AdsWidget, defaultValue: string, action: OptionVisibility): void {
-		if ((acceptedValues.includes(selectedValue.toLocaleLowerCase()) && action === OptionVisibility.Show)
-			|| (!acceptedValues.includes(selectedValue.toLocaleLowerCase()) && action === OptionVisibility.Hide)) {
-			this._tableContainer.classList.remove(`hide-${widget.getId()}`);
+		widget: AdsWidget, defaultValue: string, action: string): void {
+		if ((acceptedValues.includes(selectedValue.toLocaleLowerCase()) && action === Actions.Show)
+			|| (!acceptedValues.includes(selectedValue.toLocaleLowerCase()) && action === Actions.Hide)) {
+			this._tableContainer.classList.remove(`hide-${widget.id}`);
 		} else {
 			// Support more Widget classes here as needed.
 			if (widget instanceof SelectBox) {
@@ -353,7 +355,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			} else if (widget instanceof InputBox) {
 				widget.value = defaultValue;
 			}
-			this._tableContainer.classList.add(`hide-${widget.getId()}`);
+			this._tableContainer.classList.add(`hide-${widget.id}`);
 			widget.hideMessage();
 		}
 	}

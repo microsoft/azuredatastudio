@@ -260,7 +260,7 @@ export class SelectBox extends vsSelectBox implements AdsWidget {
 		return this.selectElem.ariaLabel;
 	}
 
-	public getId(): string {
+	public get id(): string {
 		return this.selectElem.id;
 	}
 
