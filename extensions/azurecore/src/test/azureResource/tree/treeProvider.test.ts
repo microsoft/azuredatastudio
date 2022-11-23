@@ -68,14 +68,14 @@ describe('AzureResourceTreeProvider.getChildren', function (): void {
 		mockCacheService.setup((o) => o.generateKey(TypeMoq.It.isAnyString())).returns(() => generateGuid());
 	});
 
-	afterEach(function(): void {
+	afterEach(function (): void {
 		sinon.restore();
 	});
 
-	it('Should load accounts.', async function (): Promise<void> {
+	it('Should load accounts for ADAL', async function (): Promise<void> {
 		const getAllAccountsStub = sinon.stub(azdata.accounts, 'getAllAccounts').returns(Promise.resolve(mockAccounts));
 
-		const treeProvider = new AzureResourceTreeProvider(mockAppContext);
+		const treeProvider = new AzureResourceTreeProvider(mockAppContext, 'ADAL');
 
 		await treeProvider.getChildren(undefined); // Load account promise
 		const children = await treeProvider.getChildren(undefined); // Actual accounts
@@ -93,10 +93,44 @@ describe('AzureResourceTreeProvider.getChildren', function (): void {
 		}
 	});
 
-	it('Should handle when there is no accounts.', async function (): Promise<void> {
+	it('Should load accounts for MSAL', async function (): Promise<void> {
+		const getAllAccountsStub = sinon.stub(azdata.accounts, 'getAllAccounts').returns(Promise.resolve(mockAccounts));
+
+		const treeProvider = new AzureResourceTreeProvider(mockAppContext, 'MSAL');
+
+		await treeProvider.getChildren(undefined); // Load account promise
+		const children = await treeProvider.getChildren(undefined); // Actual accounts
+
+		should(getAllAccountsStub.calledOnce).be.true('getAllAccounts should have been called exactly once');
+		should(children).Array();
+		should(children.length).equal(mockAccounts.length);
+
+		for (let ix = 0; ix < mockAccounts.length; ix++) {
+			const child = children[ix];
+			const account = mockAccounts[ix];
+
+			should(child).instanceof(AzureResourceAccountTreeNode);
+			should(child.nodePathValue).equal(`account_${account.key.accountId}`);
+		}
+	});
+
+	it('Should handle when there is no accounts for ADAL', async function (): Promise<void> {
 		sinon.stub(azdata.accounts, 'getAllAccounts').returns(Promise.resolve([]));
 
-		const treeProvider = new AzureResourceTreeProvider(mockAppContext);
+		const treeProvider = new AzureResourceTreeProvider(mockAppContext, 'ADAL');
+		treeProvider.isSystemInitialized = true;
+
+		const children = await treeProvider.getChildren(undefined);
+
+		should(children).Array();
+		should(children.length).equal(1);
+		should(children[0]).instanceof(AzureResourceAccountNotSignedInTreeNode);
+	});
+
+	it('Should handle when there is no accounts for MSAL', async function (): Promise<void> {
+		sinon.stub(azdata.accounts, 'getAllAccounts').returns(Promise.resolve([]));
+
+		const treeProvider = new AzureResourceTreeProvider(mockAppContext, 'MSAL');
 		treeProvider.isSystemInitialized = true;
 
 		const children = await treeProvider.getChildren(undefined);

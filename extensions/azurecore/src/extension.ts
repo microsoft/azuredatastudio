@@ -45,7 +45,7 @@ import * as azurecore from 'azurecore';
 import * as azureResourceUtils from './azureResource/utils';
 import * as utils from './utils';
 import * as loc from './localizedConstants';
-import * as constants from './constants';
+import * as Constants from './constants';
 import { AzureResourceGroupService } from './azureResource/providers/resourceGroup/resourceGroupService';
 import { Logger } from './utils/Logger';
 import { ConnectionDialogTreeProvider } from './azureResource/tree/connectionDialogTreeProvider';
@@ -90,19 +90,22 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 		await config.update('deviceCode', true, vscode.ConfigurationTarget.Global);
 	}
 
+	const authLibrary: string = vscode.workspace.getConfiguration(Constants.AzureSection).get(Constants.AuthenticationLibrarySection)
+		?? Constants.DefaultAuthLibrary;
+
 	updatePiiLoggingLevel();
 
 	// Create the provider service and activate
-	initAzureAccountProvider(extensionContext, storagePath).catch((err) => console.log(err));
+	initAzureAccountProvider(extensionContext, storagePath, authLibrary!).catch((err) => console.log(err));
 
 	registerAzureServices(appContext);
-	const azureResourceTree = new AzureResourceTreeProvider(appContext);
-	const connectionDialogTree = new ConnectionDialogTreeProvider(appContext);
+	const azureResourceTree = new AzureResourceTreeProvider(appContext, authLibrary);
+	const connectionDialogTree = new ConnectionDialogTreeProvider(appContext, authLibrary);
 	pushDisposable(vscode.window.registerTreeDataProvider('azureResourceExplorer', azureResourceTree));
 	pushDisposable(vscode.window.registerTreeDataProvider('connectionDialog/azureResourceExplorer', connectionDialogTree));
 	pushDisposable(vscode.workspace.onDidChangeConfiguration(e => onDidChangeConfiguration(e)));
-	registerAzureResourceCommands(appContext, azureResourceTree, connectionDialogTree);
-	azdata.dataprotocol.registerDataGridProvider(new AzureDataGridProvider(appContext));
+	registerAzureResourceCommands(appContext, azureResourceTree, connectionDialogTree, authLibrary);
+	azdata.dataprotocol.registerDataGridProvider(new AzureDataGridProvider(appContext, authLibrary));
 	vscode.commands.registerCommand('azure.dataGrid.openInAzurePortal', async (item: azdata.DataGridItem) => {
 		const portalEndpoint = item.portalEndpoint;
 		const subscriptionId = item.subscriptionId;
@@ -130,7 +133,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			return azureResourceUtils.getLocations(appContext, account, subscription, ignoreErrors);
 		},
 		provideResources(): azurecore.azureResource.IAzureResourceProvider[] {
-			const arcFeaturedEnabled = vscode.workspace.getConfiguration(constants.extensionConfigSectionName).get('enableArcFeatures');
+			const arcFeaturedEnabled = vscode.workspace.getConfiguration(Constants.AzureSection).get(Constants.EnableArcFeaturesSection);
 			const providers: azurecore.azureResource.IAzureResourceProvider[] = [
 				new KustoProvider(new KustoResourceService(), extensionContext),
 				new AzureMonitorProvider(new AzureMonitorResourceService(), extensionContext),
@@ -233,7 +236,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 // Create the folder for storing the token caches
 async function findOrMakeStoragePath() {
 	let defaultLogLocation = getDefaultLogLocation();
-	let storagePath = path.join(defaultLogLocation, constants.AzureTokenFolderName);
+	let storagePath = path.join(defaultLogLocation, Constants.AzureTokenFolderName);
 
 	try {
 		await fs.mkdir(defaultLogLocation, { recursive: true });
@@ -258,9 +261,9 @@ async function findOrMakeStoragePath() {
 	return storagePath;
 }
 
-async function initAzureAccountProvider(extensionContext: vscode.ExtensionContext, storagePath: string): Promise<void> {
+async function initAzureAccountProvider(extensionContext: vscode.ExtensionContext, storagePath: string, authLibrary: string): Promise<void> {
 	try {
-		const accountProviderService = new AzureAccountProviderService(extensionContext, storagePath);
+		const accountProviderService = new AzureAccountProviderService(extensionContext, storagePath, authLibrary);
 		extensionContext.subscriptions.push(accountProviderService);
 		await accountProviderService.activate();
 	} catch (err) {
@@ -287,7 +290,7 @@ async function onDidChangeConfiguration(e: vscode.ConfigurationChangeEvent): Pro
 }
 
 function updatePiiLoggingLevel(): void {
-	const piiLogging: boolean = vscode.workspace.getConfiguration(constants.extensionConfigSectionName).get('piiLogging', false);
+	const piiLogging: boolean = vscode.workspace.getConfiguration(Constants.AzureSection).get('piiLogging', false);
 	Logger.piiLogging = piiLogging;
 }
 

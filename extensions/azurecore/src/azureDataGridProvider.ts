@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as vscode from 'vscode';
 import { AppContext } from './appContext';
 import { AzureResourceServiceNames } from './azureResource/constants';
 import { IAzureResourceSubscriptionService } from './azureResource/interfaces';
@@ -13,7 +12,6 @@ import * as azureResourceUtils from './azureResource/utils';
 import * as constants from './constants';
 import * as loc from './localizedConstants';
 import * as utils from './utils';
-import { AuthLibrary } from './account-provider/auths/azureAuth';
 
 const typesClause = [
 	azureResource.AzureResourceType.sqlDatabase,
@@ -26,15 +24,15 @@ const typesClause = [
 ].map(type => `type == "${type}"`).join(' or ');
 
 export class AzureDataGridProvider implements azdata.DataGridProvider {
-	constructor(private _appContext: AppContext) { }
+	constructor(private _appContext: AppContext,
+		private readonly authLibrary: string) { }
 
 	public providerId = constants.dataGridProviderId;
 	public title = loc.azureResourcesGridTitle;
 
 	public async getDataGridItems() {
 		let accounts: azdata.Account[];
-		const authLibrary: AuthLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
-		accounts = azureResourceUtils.filterAccounts(await azdata.accounts.getAllAccounts(), authLibrary);
+		accounts = azureResourceUtils.filterAccounts(await azdata.accounts.getAllAccounts(), this.authLibrary);
 		const items: any[] = [];
 		await Promise.all(accounts.map(async (account) => {
 			await Promise.all(account.properties.tenants.map(async (tenant: { id: string; }) => {

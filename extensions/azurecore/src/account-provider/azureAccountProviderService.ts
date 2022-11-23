@@ -18,7 +18,7 @@ import { PublicClientApplication } from '@azure/msal-node';
 import { DataProtectionScope, PersistenceCachePlugin, FilePersistenceWithDataProtection, KeychainPersistence, LibSecretPersistence } from '@azure/msal-node-extensions';
 import * as path from 'path';
 import { Logger } from '../utils/Logger';
-import { AuthLibrary } from './auths/azureAuth';
+import * as Constants from '../constants';
 
 let localize = nls.loadMessageBundle();
 
@@ -29,13 +29,6 @@ class UriEventHandler extends vscode.EventEmitter<vscode.Uri> implements vscode.
 }
 
 export class AzureAccountProviderService implements vscode.Disposable {
-	// CONSTANTS ///////////////////////////////////////////////////////////////
-	private static CommandClearTokenCache = 'accounts.clearTokenCache';
-	private static ConfigurationSection = 'accounts.azure.cloud';
-	private static CredentialNamespace = 'azureAccountProviderCredentials';
-	private static ServiceName = 'azuredatastudio';
-	public static Account = 'account';
-
 	// MEMBER VARIABLES ////////////////////////////////////////////////////////
 	private _disposables: vscode.Disposable[] = [];
 	private _accountDisposals: { [accountProviderId: string]: vscode.Disposable } = {};
@@ -46,18 +39,19 @@ export class AzureAccountProviderService implements vscode.Disposable {
 	private _event: events.EventEmitter = new events.EventEmitter();
 	private readonly _uriEventHandler: UriEventHandler = new UriEventHandler();
 	public clientApplication!: PublicClientApplication;
-	public authLibrary: AuthLibrary;
 	public persistence: FilePersistenceWithDataProtection | KeychainPersistence | LibSecretPersistence | undefined;
 
-	constructor(private _context: vscode.ExtensionContext, private _userStoragePath: string) {
-		this.authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
-		vscode.workspace.onDidChangeConfiguration((changeEvent) => {
-			const impactLibrary = changeEvent.affectsConfiguration('azure.authenticationLibrary');
-			if (impactLibrary === true) {
-				this.authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
-				Logger.info(`Using Auth Library: ${this.authLibrary}`);
-			}
-		});
+	constructor(private _context: vscode.ExtensionContext,
+		private _userStoragePath: string,
+		private _authLibrary: string) {
+
+		// vscode.workspace.onDidChangeConfiguration((changeEvent) => {
+		// 	const impactLibrary = changeEvent.affectsConfiguration(Constants.AzureAuthenticationLibrarySection);
+		// 	if (impactLibrary === true) {
+		// 		this.authLibrary = vscode.workspace.getConfiguration(Constants.AzureSection).get(Constants.AuthenticationLibrarySection);
+		// 		Logger.info(`AzureAccountProviderService: Registered Auth Library for use: ${this.authLibrary}`);
+		// 	}
+		// });
 		this._disposables.push(vscode.window.registerUriHandler(this._uriEventHandler));
 	}
 
@@ -66,17 +60,16 @@ export class AzureAccountProviderService implements vscode.Disposable {
 		let self = this;
 
 		// Register commands
-		this._context.subscriptions.push(vscode.commands.registerCommand(
-			AzureAccountProviderService.CommandClearTokenCache,
-			() => { self._event.emit(AzureAccountProviderService.CommandClearTokenCache); }
+		this._context.subscriptions.push(vscode.commands.registerCommand(Constants.ClearTokenCacheCommand,
+			() => { self._event.emit(Constants.ClearTokenCacheCommand); }
 		));
-		this._event.on(AzureAccountProviderService.CommandClearTokenCache, () => { void self.onClearTokenCache(); });
+		this._event.on(Constants.ClearTokenCacheCommand, () => { void self.onClearTokenCache(); });
 
 		// 1) Get a credential provider
 		// 2a) Store the credential provider for use later
 		// 2b) Register the configuration change handler
 		// 2c) Perform an initial config change handling
-		return azdata.credentials.getProvider(AzureAccountProviderService.CredentialNamespace)
+		return azdata.credentials.getProvider(Constants.AzureAccountProviderCredentials)
 			.then(credProvider => {
 				this._credentialProvider = credProvider;
 
@@ -122,7 +115,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 		// Add a new change processing onto the existing promise change
 		await this._configChangePromiseChain;
 		// Grab the stored config and the latest config
-		let newConfig = vscode.workspace.getConfiguration(AzureAccountProviderService.ConfigurationSection);
+		let newConfig = vscode.workspace.getConfiguration(Constants.AccountsAzureCloudSection);
 		let oldConfig = this._currentConfig;
 		this._currentConfig = newConfig;
 
@@ -157,33 +150,35 @@ export class AzureAccountProviderService implements vscode.Disposable {
 	}
 
 	private async registerAccountProvider(provider: ProviderSettings): Promise<void> {
+		const isSaw: boolean = vscode.env.appName.toLowerCase().indexOf(Constants.Saw) > 0;
+		const noSystemKeychain = vscode.workspace.getConfiguration(Constants.AzureSection).get<boolean>(Constants.NoSystemKeyChainSection);
+		const lockOptions = {
+			retryNumber: 100,
+			retryDelay: 50
+		}
+
 		try {
-			const noSystemKeychain = vscode.workspace.getConfiguration('azure').get<boolean>('noSystemKeychain');
 			let tokenCacheKey = `azureTokenCache-${provider.metadata.id}`;
 			if (!this._credentialProvider) {
 				throw new Error('Credential provider not registered');
 			}
+
 			let simpleTokenCache = new SimpleTokenCache(tokenCacheKey, this._userStoragePath, noSystemKeychain, this._credentialProvider);
 			await simpleTokenCache.init();
-			const cachePath = path.join(this._userStoragePath, './cache.json');
+			const cachePath = path.join(this._userStoragePath, Constants.ConfigFilePath);
+
 			let platform = os.platform();
 			let persistenceCachePlugin: PersistenceCachePlugin;
 			switch (platform) {
-				case 'win32':
+				case Constants.Platform.Windows:
 					const dataProtectionScope = DataProtectionScope.CurrentUser;
 					const optionalEntropy = "";
 					this.persistence = await FilePersistenceWithDataProtection.create(cachePath, dataProtectionScope, optionalEntropy);
 					break;
-				case 'darwin':
-					this.persistence = await KeychainPersistence.create(cachePath, AzureAccountProviderService.ServiceName, AzureAccountProviderService.Account);
+				case Constants.Platform.Mac:
+				case Constants.Platform.Linux:
+					this.persistence = await KeychainPersistence.create(cachePath, Constants.ServiceName, Constants.Account);
 					break;
-				case 'linux':
-					this.persistence = await LibSecretPersistence.create(cachePath, AzureAccountProviderService.ServiceName, AzureAccountProviderService.Account);
-					break;
-			}
-			const lockOptions = {
-				retryNumber: 100,
-				retryDelay: 50
 			}
 			if (!this.persistence) {
 				Logger.error('unable to create persistence');
@@ -201,13 +196,12 @@ export class AzureAccountProviderService implements vscode.Disposable {
 			}
 			this.clientApplication = new PublicClientApplication(MSAL_CONFIG);
 
-			const isSaw: boolean = vscode.env.appName.toLowerCase().indexOf('saw') > 0;
-			let accountProvider = new AzureAccountProvider(provider.metadata as AzureAccountProviderMetadata, simpleTokenCache, this._context, this.clientApplication, this._uriEventHandler, isSaw);
-
+			let accountProvider = new AzureAccountProvider(provider.metadata as AzureAccountProviderMetadata,
+				simpleTokenCache, this._context, this.clientApplication, this._uriEventHandler, this._authLibrary, isSaw);
 			this._accountProviders[provider.metadata.id] = accountProvider;
 			this._accountDisposals[provider.metadata.id] = azdata.accounts.registerAccountProvider(provider.metadata, accountProvider);
 		} catch (e) {
-			console.error(`Failed to register account provider: ${e}`);
+			console.error(`Failed to register account provider, isSaw: ${isSaw}: ${e}`);
 		}
 	}
 

@@ -23,6 +23,7 @@ import { Deferred } from '../interfaces';
 import { AuthenticationResult, DeviceCodeRequest, PublicClientApplication } from '@azure/msal-node';
 import { SimpleTokenCache } from '../simpleTokenCache';
 import { Logger } from '../../utils/Logger';
+import * as Constants from '../../constants';
 const localize = nls.loadMessageBundle();
 
 interface DeviceCodeLogin { // https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code
@@ -50,11 +51,11 @@ export class AzureDeviceCode extends AzureAuth {
 		tokenCache: SimpleTokenCache,
 		context: vscode.ExtensionContext,
 		uriEventEmitter: vscode.EventEmitter<vscode.Uri>,
-		clientApplication: PublicClientApplication
+		clientApplication: PublicClientApplication,
+		authLibrary: string
 	) {
-		super(metadata, tokenCache, context, clientApplication, uriEventEmitter, AzureAuthType.DeviceCode, AzureDeviceCode.USER_FRIENDLY_NAME);
+		super(metadata, tokenCache, context, clientApplication, uriEventEmitter, AzureAuthType.DeviceCode, AzureDeviceCode.USER_FRIENDLY_NAME, authLibrary);
 		this.pageTitle = localize('addAccount', "Add {0} account", this.metadata.displayName);
-
 	}
 
 	protected async loginMsal(tenant: Tenant, resource: Resource): Promise<{ response: AuthenticationResult | null, authComplete: Deferred<void, Error> }> {
@@ -144,20 +145,18 @@ export class AzureDeviceCode extends AzureAuth {
 		try {
 			const uri = `${this.loginEndpointUrl}/${this.commonTenant}/oauth2/token`;
 			const postData: DeviceCodeCheckPostData = {
-				grant_type: 'urn:ietf:params:oauth:grant-type:device_code',
+				grant_type: Constants.DeviceCodeGrantType,
 				client_id: this.clientId,
 				tenant: this.commonTenant.id,
 				code: info.device_code
 			};
 
 			const postResult = await this.makePostRequest(uri, postData);
-
 			const result: DeviceCodeLoginResult = postResult.data;
 
 			return result;
 		} catch (ex) {
-			console.log(ex);
-			console.log('Unexpected error making Azure auth request', 'azureCore.checkForResult', JSON.stringify(ex?.response?.data, undefined, 2));
+			Logger.error('Unexpected error making Azure auth request', 'azureCore.checkForResult', JSON.stringify(ex?.response?.data, undefined, 2));
 			throw new Error(msg);
 		}
 	}

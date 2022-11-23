@@ -41,6 +41,7 @@ export class AzureResourceSubscriptionService implements IAzureResourceSubscript
 							tenant: tenantId
 						};
 					}));
+					Logger.verbose(`AzureResourceSubscriptionService.getSubscriptions: Retrieved ${newSubs.length} subscriptions for tenant ${tenantId} / account ${account.displayInfo.displayName}`);
 					gotSubscriptions = true;
 				}
 				else if (!account.isStale) {

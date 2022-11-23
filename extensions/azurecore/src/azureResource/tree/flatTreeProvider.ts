@@ -17,8 +17,7 @@ import { IAzureResourceTreeChangeHandler } from './treeChangeHandler';
 import { IAzureResourceNodeWithProviderId, IAzureResourceSubscriptionService } from '../interfaces';
 import { AzureResourceServiceNames } from '../constants';
 import { AzureResourceService } from '../resourceService';
-import { AuthLibrary } from '../../account-provider/auths/azureAuth';
-
+import { Logger } from '../../utils/Logger';
 
 export class FlatAzureResourceTreeProvider implements vscode.TreeDataProvider<TreeNode>, IAzureResourceTreeChangeHandler {
 	public isSystemInitialized: boolean = false;
@@ -27,7 +26,8 @@ export class FlatAzureResourceTreeProvider implements vscode.TreeDataProvider<Tr
 
 	private resourceLoader: ResourceLoader | undefined;
 
-	public constructor(private readonly appContext: AppContext) {
+	public constructor(private readonly appContext: AppContext,
+		private readonly authLibrary: string) {
 	}
 
 	public async getChildren(element?: TreeNode): Promise<TreeNode[]> {
@@ -36,7 +36,7 @@ export class FlatAzureResourceTreeProvider implements vscode.TreeDataProvider<Tr
 		}
 
 		if (!this.resourceLoader) {
-			this.resourceLoader = new ResourceLoader(this.appContext);
+			this.resourceLoader = new ResourceLoader(this.appContext, this.authLibrary);
 			this.resourceLoader.onDidAddNewResource(e => this._onDidChangeTreeData.fire(e));
 		}
 
@@ -88,7 +88,8 @@ class ResourceLoader {
 	private readonly _onDidAddNewResource = new vscode.EventEmitter<TreeNode | undefined>();
 	public readonly onDidAddNewResource = this._onDidAddNewResource.event;
 
-	constructor(private readonly appContext: AppContext) {
+	constructor(private readonly appContext: AppContext,
+		private readonly authLibrary: string) {
 		this.subscriptionService = appContext.getService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService);
 		this.resourceService = appContext.getService<AzureResourceService>(AzureResourceServiceNames.resourceService);
 	}
@@ -119,8 +120,7 @@ class ResourceLoader {
 
 		this._state = LoaderState.Loading;
 
-		const authLibrary: AuthLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
-		const accounts = filterAccounts(await azdata.accounts.getAllAccounts(), authLibrary);
+		const accounts = filterAccounts(await azdata.accounts.getAllAccounts(), this.authLibrary);
 
 		for (const account of accounts) {
 			for (const tenant of account.properties.tenants) {
@@ -143,7 +143,7 @@ class ResourceLoader {
 			}
 		}
 
-		console.log('finished loading');
+		Logger.verbose('finished loading all accounts and subscriptions');
 
 		clearInterval(interval);
 
@@ -210,5 +210,4 @@ class AzureResourceResourceTreeNode extends TreeNode {
 	public get nodePathValue(): string {
 		return this.resourceNodeWithProviderId.resourceNode.treeItem.id || '';
 	}
-
 }

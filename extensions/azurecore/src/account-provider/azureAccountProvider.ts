@@ -16,20 +16,19 @@ import { Deferred } from './interfaces';
 import { PublicClientApplication } from '@azure/msal-node';
 import { SimpleTokenCache } from './simpleTokenCache';
 import { Logger } from '../utils/Logger';
-import { MultiTenantTokenResponse, Token, AzureAuth, AuthLibrary } from './auths/azureAuth';
+import { MultiTenantTokenResponse, Token, AzureAuth } from './auths/azureAuth';
 import { AzureAuthCodeGrant } from './auths/azureAuthCodeGrant';
 import { AzureDeviceCode } from './auths/azureDeviceCode';
 import { filterAccounts } from '../azureResource/utils';
+import * as Constants from '../constants';
 
 const localize = nls.loadMessageBundle();
 
 export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disposable {
-	private static readonly CONFIGURATION_SECTION = 'accounts.azure.auth';
 	private readonly authMappings = new Map<AzureAuthType, AzureAuth>();
 	private initComplete!: Deferred<void, Error>;
 	private initCompletePromise: Promise<void> = new Promise<void>((resolve, reject) => this.initComplete = { resolve, reject });
 	public clientApplication: PublicClientApplication;
-	public authLibrary: AuthLibrary;
 
 	constructor(
 		metadata: AzureAccountProviderMetadata,
@@ -37,18 +36,15 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		context: vscode.ExtensionContext,
 		clientApplication: PublicClientApplication,
 		uriEventHandler: vscode.EventEmitter<vscode.Uri>,
+		private readonly authLibrary: string,
 		private readonly forceDeviceCode: boolean = false
 	) {
 		this.clientApplication = clientApplication;
-		this.authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
+
 		vscode.workspace.onDidChangeConfiguration((changeEvent) => {
-			const impactProvider = changeEvent.affectsConfiguration(AzureAccountProvider.CONFIGURATION_SECTION);
+			const impactProvider = changeEvent.affectsConfiguration(Constants.AccountsAzureAuthSection);
 			if (impactProvider === true) {
 				this.handleAuthMapping(metadata, tokenCache, context, uriEventHandler);
-			}
-			const library = changeEvent.affectsConfiguration('azure.authenticationLibrary');
-			if (library === true) {
-				this.authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
 			}
 		});
 
@@ -66,15 +62,15 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 	private handleAuthMapping(metadata: AzureAccountProviderMetadata, tokenCache: SimpleTokenCache, context: vscode.ExtensionContext, uriEventHandler: vscode.EventEmitter<vscode.Uri>) {
 		this.authMappings.forEach(m => m.dispose());
 		this.authMappings.clear();
-		const configuration = vscode.workspace.getConfiguration(AzureAccountProvider.CONFIGURATION_SECTION);
 
-		const codeGrantMethod: boolean = configuration.get<boolean>('codeGrant', false);
-		const deviceCodeMethod: boolean = configuration.get<boolean>('deviceCode', false);
+		const configuration = vscode.workspace.getConfiguration(Constants.AccountsAzureAuthSection);
+		const codeGrantMethod: boolean = configuration.get<boolean>(Constants.AuthType.CodeGrant, false);
+		const deviceCodeMethod: boolean = configuration.get<boolean>(Constants.AuthType.DeviceCode, false);
 
 		if (codeGrantMethod === true && !this.forceDeviceCode) {
-			this.authMappings.set(AzureAuthType.AuthCodeGrant, new AzureAuthCodeGrant(metadata, tokenCache, context, uriEventHandler, this.clientApplication));
+			this.authMappings.set(AzureAuthType.AuthCodeGrant, new AzureAuthCodeGrant(metadata, tokenCache, context, uriEventHandler, this.clientApplication, this.authLibrary));
 		} else if (deviceCodeMethod === true || this.forceDeviceCode) {
-			this.authMappings.set(AzureAuthType.DeviceCode, new AzureDeviceCode(metadata, tokenCache, context, uriEventHandler, this.clientApplication));
+			this.authMappings.set(AzureAuthType.DeviceCode, new AzureDeviceCode(metadata, tokenCache, context, uriEventHandler, this.clientApplication, this.authLibrary));
 		} else {
 			console.error('No authentication methods selected');
 		}
@@ -105,10 +101,12 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 	private async _initialize(storedAccounts: AzureAccount[]): Promise<AzureAccount[]> {
 		const accounts: AzureAccount[] = [];
 		console.log(`Initializing stored accounts ${JSON.stringify(accounts)}`);
-		const authLibrary: AuthLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
-		const updatedAccounts = filterAccounts(storedAccounts, authLibrary);
+		const updatedAccounts = filterAccounts(storedAccounts, this.authLibrary);
 		for (let account of updatedAccounts) {
-			if (this.authLibrary === 'ADAL') {
+			if (this.authLibrary === Constants.AuthLibrary.MSAL) {
+				account.isStale = false;
+				accounts.push(account);
+			} else { // fallback to ADAL as default
 				const azureAuth = this.getAuthMethod(account);
 				if (!azureAuth) {
 					account.isStale = true;
@@ -116,10 +114,6 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 				} else {
 					accounts.push(await azureAuth.refreshAccess(account));
 				}
-			}
-			else {
-				account.isStale = false;
-				accounts.push(account);
 			}
 		}
 		this.initComplete.resolve();
@@ -139,9 +133,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		await this.initCompletePromise;
 		const azureAuth = this.getAuthMethod(account);
 		Logger.pii(`Getting account security token for ${JSON.stringify(account.key)} (tenant ${tenantId}). Auth Method = ${azureAuth.userFriendlyName}`, [], []);
-		if (this.authLibrary === 'ADAL') {
-			return azureAuth?.getAccountSecurityToken(account, tenantId, resource);
-		} else {
+		if (this.authLibrary === Constants.AuthLibrary.MSAL) {
 			let authResult = await azureAuth?.getTokenMsal(account.key.accountId, resource, tenantId);
 			if (!authResult || !authResult.account || !authResult.account.idTokenClaims) {
 				Logger.error(`MSAL: getToken call failed`);
@@ -155,6 +147,8 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 				};
 				return token;
 			}
+		} else { // fallback to ADAL as default
+			return azureAuth?.getAccountSecurityToken(account, tenantId, resource);
 		}
 	}
 

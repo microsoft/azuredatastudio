@@ -17,8 +17,6 @@ import { AzureResourceContainerTreeNodeBase } from './baseTreeNodes';
 import { AzureResourceErrorMessageUtil, equals, filterAccounts } from '../utils';
 import { IAzureResourceTreeChangeHandler } from './treeChangeHandler';
 import { AzureAccount } from 'azurecore';
-import { AuthLibrary } from '../../account-provider/auths/azureAuth';
-
 
 export class AzureResourceTreeProvider implements vscode.TreeDataProvider<TreeNode>, IAzureResourceTreeChangeHandler {
 	public isSystemInitialized: boolean = false;
@@ -27,10 +25,10 @@ export class AzureResourceTreeProvider implements vscode.TreeDataProvider<TreeNo
 	private _onDidChangeTreeData = new vscode.EventEmitter<TreeNode | undefined>();
 	private loadingAccountsPromise: Promise<void> | undefined;
 
-	public constructor(private readonly appContext: AppContext) {
+	public constructor(private readonly appContext: AppContext,
+		private readonly authLibrary: string) {
 		azdata.accounts.onDidChangeAccounts(async (e: azdata.DidChangeAccountsParams) => {
 			// This event sends it per provider, we need to make sure we get all the azure related accounts
-			const authLibrary: AuthLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
 			let accounts = filterAccounts(await azdata.accounts.getAllAccounts(), authLibrary);
 			accounts = accounts.filter(a => a.key.providerId.startsWith('azure'));
 			// the onDidChangeAccounts event will trigger in many cases where the accounts didn't actually change
@@ -58,8 +56,7 @@ export class AzureResourceTreeProvider implements vscode.TreeDataProvider<TreeNo
 
 		try {
 			if (this.accounts && this.accounts.length > 0) {
-				const authLibrary: AuthLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
-				this.accounts = filterAccounts(this.accounts, authLibrary);
+				this.accounts = filterAccounts(this.accounts, this.authLibrary);
 				return this.accounts.map((account) => new AzureResourceAccountTreeNode(account, this.appContext, this));
 			} else {
 				return [new AzureResourceAccountNotSignedInTreeNode()];
@@ -71,8 +68,7 @@ export class AzureResourceTreeProvider implements vscode.TreeDataProvider<TreeNo
 
 	private async loadAccounts(): Promise<void> {
 		try {
-			const authLibrary: AuthLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
-			this.accounts = filterAccounts(await azdata.accounts.getAllAccounts(), authLibrary);
+			this.accounts = filterAccounts(await azdata.accounts.getAllAccounts(), this.authLibrary);
 			// System has been initialized
 			this.setSystemInitialized();
 			this._onDidChangeTreeData.fire(undefined);
@@ -101,7 +97,6 @@ export class AzureResourceTreeProvider implements vscode.TreeDataProvider<TreeNo
 				node.clearCache();
 			}
 		}
-
 		this._onDidChangeTreeData.fire(node);
 	}
 

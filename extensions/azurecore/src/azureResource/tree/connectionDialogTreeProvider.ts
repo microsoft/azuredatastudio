@@ -18,7 +18,6 @@ import { IAzureResourceTreeChangeHandler } from './treeChangeHandler';
 import { FlatAccountTreeNode } from './flatAccountTreeNode';
 import { Logger } from '../../utils/Logger';
 import { AzureAccount } from 'azurecore';
-import { AuthLibrary } from '../../account-provider/auths/azureAuth';
 
 export class ConnectionDialogTreeProvider implements vscode.TreeDataProvider<TreeNode>, IAzureResourceTreeChangeHandler {
 	public isSystemInitialized: boolean = false;
@@ -27,10 +26,10 @@ export class ConnectionDialogTreeProvider implements vscode.TreeDataProvider<Tre
 	private _onDidChangeTreeData = new vscode.EventEmitter<TreeNode | undefined>();
 	private loadingAccountsPromise: Promise<void> | undefined;
 
-	public constructor(private readonly appContext: AppContext) {
+	public constructor(private readonly appContext: AppContext,
+		private readonly authLibrary: string) {
 		azdata.accounts.onDidChangeAccounts(async (e: azdata.DidChangeAccountsParams) => {
 			// This event sends it per provider, we need to make sure we get all the azure related accounts
-			const authLibrary: AuthLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
 			let accounts = filterAccounts(await azdata.accounts.getAllAccounts(), authLibrary);
 			accounts = accounts.filter(a => a.key.providerId.startsWith('azure'));
 			// the onDidChangeAccounts event will trigger in many cases where the accounts didn't actually change
@@ -57,8 +56,7 @@ export class ConnectionDialogTreeProvider implements vscode.TreeDataProvider<Tre
 		}
 
 		if (this.accounts && this.accounts.length > 0) {
-			const authLibrary: AuthLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
-			let accounts = filterAccounts(this.accounts, authLibrary);
+			let accounts = filterAccounts(this.accounts, this.authLibrary);
 			const accountNodes: FlatAccountTreeNode[] = [];
 			const errorMessages: string[] = [];
 			// We are doing sequential account loading to avoid the Azure request throttling
@@ -89,8 +87,7 @@ export class ConnectionDialogTreeProvider implements vscode.TreeDataProvider<Tre
 
 	private async loadAccounts(): Promise<void> {
 		try {
-			const authLibrary: AuthLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
-			this.accounts = filterAccounts(await azdata.accounts.getAllAccounts(), authLibrary);
+			this.accounts = filterAccounts(await azdata.accounts.getAllAccounts(), this.authLibrary);
 			// System has been initialized
 			this.setSystemInitialized();
 			this._onDidChangeTreeData.fire(undefined);

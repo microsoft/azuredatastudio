@@ -12,13 +12,13 @@ import { SimpleTokenCache } from '../simpleTokenCache';
 import { SimpleWebServer } from '../utils/simpleWebServer';
 import { AzureAuthError } from './azureAuthError';
 import { Logger } from '../../utils/Logger';
+import * as Constants from '../../constants';
 import * as nls from 'vscode-nls';
 import * as path from 'path';
 import * as http from 'http';
 import * as qs from 'qs';
 import { promises as fs } from 'fs';
 import { PublicClientApplication, CryptoProvider, AuthorizationUrlRequest, AuthorizationCodeRequest, AuthenticationResult } from '@azure/msal-node';
-
 
 const localize = nls.loadMessageBundle();
 
@@ -35,7 +35,6 @@ interface CryptoValues {
 	codeChallenge: string;
 }
 
-
 export class AzureAuthCodeGrant extends AzureAuth {
 	private static readonly USER_FRIENDLY_NAME: string = localize('azure.azureAuthCodeGrantName', 'Azure Auth Code Grant');
 	private cryptoProvider: CryptoProvider;
@@ -46,13 +45,14 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		tokenCache: SimpleTokenCache,
 		context: vscode.ExtensionContext,
 		uriEventEmitter: vscode.EventEmitter<vscode.Uri>,
-		clientApplication: PublicClientApplication
+		clientApplication: PublicClientApplication,
+		authLibrary: string
 	) {
-		super(metadata, tokenCache, context, clientApplication, uriEventEmitter, AzureAuthType.AuthCodeGrant, AzureAuthCodeGrant.USER_FRIENDLY_NAME);
+		super(metadata, tokenCache, context, clientApplication, uriEventEmitter, AzureAuthType.AuthCodeGrant, AzureAuthCodeGrant.USER_FRIENDLY_NAME, authLibrary);
 		this.cryptoProvider = new CryptoProvider();
 		this.pkceCodes = {
 			nonce: '',
-			challengeMethod: 'S256', // Use SHA256 Algorithm
+			challengeMethod: Constants.S256_CODE_CHALLENGE_METHOD, // Use SHA256 as the challenge method
 			codeVerifier: '', // Generate a code verifier for the Auth Code Request first
 			codeChallenge: '', // Generate a code challenge from the previously generated code verifier
 		};
@@ -107,7 +107,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 	 */
 	private async getTokenWithAuthorizationCode(tenant: Tenant, resource: Resource, { authCode, redirectUri, codeVerifier }: AuthCodeResponse): Promise<OAuthTokenResponse | undefined> {
 		const postData: AuthorizationCodePostData = {
-			grant_type: 'authorization_code',
+			grant_type: Constants.AUTHORIZATION_CODE_GRANT_TYPE,
 			code: authCode,
 			client_id: this.clientId,
 			code_verifier: codeVerifier,
@@ -131,7 +131,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 				redirectUri: this.redirectUri,
 				codeChallenge: this.pkceCodes.codeChallenge,
 				codeChallengeMethod: this.pkceCodes.challengeMethod,
-				prompt: 'select_account',
+				prompt: Constants.SELECT_ACCOUNT,
 				state: state
 			};
 			let authCodeRequest: AuthorizationCodeRequest;
@@ -165,8 +165,8 @@ export class AzureAuthCodeGrant extends AzureAuth {
 			client_id: this.clientId,
 			redirect_uri: this.redirectUri,
 			state,
-			prompt: 'select_account',
-			code_challenge_method: 'S256',
+			prompt: Constants.SELECT_ACCOUNT,
+			code_challenge_method: Constants.S256_CODE_CHALLENGE_METHOD,
 			code_challenge: codeChallenge,
 			resource: resource.id
 		};
@@ -232,7 +232,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 				redirectUri: `${this.redirectUri}:${serverPort}/redirect`,
 				codeChallenge: this.pkceCodes.codeChallenge,
 				codeChallengeMethod: this.pkceCodes.challengeMethod,
-				prompt: 'select_account',
+				prompt: Constants.SELECT_ACCOUNT,
 				authority: `https://login.microsoftonline.com/${tenant.id}`,
 				state: state
 			};
@@ -281,8 +281,8 @@ export class AzureAuthCodeGrant extends AzureAuth {
 			client_id: this.clientId,
 			redirect_uri: `${this.redirectUri}:${serverPort}/redirect`,
 			state,
-			prompt: 'select_account',
-			code_challenge_method: 'S256',
+			prompt: Constants.SELECT_ACCOUNT,
+			code_challenge_method: Constants.S256_CODE_CHALLENGE_METHOD,
 			code_challenge: codeChallenge,
 			resource: resource.endpoint
 		};

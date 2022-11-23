@@ -5,7 +5,6 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-
 import * as nls from 'vscode-nls';
 
 import {
@@ -15,9 +14,10 @@ import {
 	Resource,
 	Tenant
 } from 'azurecore';
+
 import { Deferred } from '../interfaces';
 import * as url from 'url';
-
+import * as Constants from '../../constants';
 import { SimpleTokenCache } from '../simpleTokenCache';
 import { MemoryDatabase } from '../utils/memoryDatabase';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
@@ -28,15 +28,8 @@ import { AccountInfo, AuthenticationResult, InteractionRequiredAuthError, Public
 
 const localize = nls.loadMessageBundle();
 
-export type AuthLibrary = 'ADAL' | 'MSAL' | undefined;
-
 export abstract class AzureAuth implements vscode.Disposable {
-	public static ACCOUNT_VERSION = '2.0';
 	protected readonly memdb = new MemoryDatabase<string>();
-
-	protected readonly WorkSchoolAccountType: string = 'work_school';
-	protected readonly MicrosoftAccountType: string = 'microsoft';
-
 	protected readonly loginEndpointUrl: string;
 	public readonly commonTenant: Tenant;
 	public readonly organizationTenant: Tenant;
@@ -45,11 +38,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	protected readonly scopesString: string;
 	protected readonly clientId: string;
 	protected readonly resources: Resource[];
-	private _authLibrary: AuthLibrary;
-	public get authLibrary() {
-		return this._authLibrary;
-	}
-
+	private _authLibrary: string | undefined;
 
 	constructor(
 		protected readonly metadata: AzureAccountProviderMetadata,
@@ -58,19 +47,11 @@ export abstract class AzureAuth implements vscode.Disposable {
 		protected clientApplication: PublicClientApplication,
 		protected readonly uriEventEmitter: vscode.EventEmitter<vscode.Uri>,
 		protected readonly authType: AzureAuthType,
-		public readonly userFriendlyName: string
+		public readonly userFriendlyName: string,
+		public readonly authLibrary: string
 	) {
-		this._authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
-		if (!this._authLibrary) {
-			this._authLibrary = 'ADAL';
-		}
-		vscode.workspace.onDidChangeConfiguration((changeEvent) => {
-			const impactLibrary = changeEvent.affectsConfiguration('azure.authenticationLibrary');
-			if (impactLibrary === true) {
-				this._authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
-				Logger.info(`Using Auth Library: ${this._authLibrary}`);
-			}
-		});
+		this._authLibrary = authLibrary;
+
 		this.loginEndpointUrl = this.metadata.settings.host;
 		this.commonTenant = {
 			id: 'common',
@@ -122,19 +103,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			if (!this.metadata.settings.microsoftResource) {
 				throw new Error(localize('noMicrosoftResource', "Provider '{0}' does not have a Microsoft resource endpoint defined.", this.metadata.displayName));
 			}
-			if (this._authLibrary === 'ADAL') {
-				const result = await this.login(this.commonTenant, this.metadata.settings.microsoftResource);
-				loginComplete = result.authComplete;
-				if (!result?.response) {
-					Logger.error('Authentication failed');
-					return {
-						canceled: false
-					};
-				}
-				const account = await this.hydrateAccount(result.response.accessToken, result.response.tokenClaims);
-				loginComplete?.resolve();
-				return account;
-			} else {
+			if (this._authLibrary === Constants.AuthLibrary.MSAL) {
 				const result = await this.loginMsal(this.organizationTenant, this.metadata.settings.microsoftResource);
 				loginComplete = result.authComplete;
 				if (!result?.response || !result.response?.account) {
@@ -152,9 +121,21 @@ export abstract class AzureAuth implements vscode.Disposable {
 				const account = await this.hydrateAccount(token, tokenClaims);
 				loginComplete?.resolve();
 				return account;
+			} else {// fallback to ADAL as default
+				const result = await this.login(this.commonTenant, this.metadata.settings.microsoftResource);
+				loginComplete = result.authComplete;
+				if (!result?.response) {
+					Logger.error('Authentication failed');
+					return {
+						canceled: false
+					};
+				}
+				const account = await this.hydrateAccount(result.response.accessToken, result.response.tokenClaims);
+				loginComplete?.resolve();
+				return account;
 			}
 		} catch (ex) {
-			Logger.error('Login failed');
+			Logger.error(`Login failed: ${ex}`);
 			if (ex instanceof AzureAuthError) {
 				if (loginComplete) {
 					loginComplete.reject(ex);
@@ -177,7 +158,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 	public async refreshAccess(account: AzureAccount): Promise<AzureAccount> {
 		// Deprecated account - delete it.
-		if (account.key.accountVersion !== AzureAuth.ACCOUNT_VERSION) {
+		if (account.key.accountVersion !== Constants.AccountVersion) {
 			account.delete = true;
 			return account;
 		}
@@ -207,11 +188,11 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 	public async hydrateAccount(token: Token | AccessToken, tokenClaims: TokenClaims): Promise<AzureAccount> {
 		let account: azdata.Account;
-		if (this._authLibrary === 'ADAL') {
-			const tenants = await this.getTenants({ ...token });
-			account = this.createAccount(tokenClaims, token.key, tenants);
-		} else {
+		if (this._authLibrary === Constants.AuthLibrary.MSAL) {
 			const tenants = await this.getTenantsMsal(token.token);
+			account = this.createAccount(tokenClaims, token.key, tenants);
+		} else { // fallback to ADAL as default
+			const tenants = await this.getTenants({ ...token });
 			account = this.createAccount(tokenClaims, token.key, tenants);
 		}
 		return account;
@@ -270,7 +251,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 				return {
 					...accessToken,
 					expiresOn: expiresOn,
-					tokenType: 'Bearer'
+					tokenType: Constants.Bearer
 				};
 			}
 		}
@@ -293,7 +274,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			return {
 				...result.accessToken,
 				expiresOn: Number(result.expiresOn),
-				tokenType: 'Bearer'
+				tokenType: Constants.Bearer
 			};
 		}
 		return undefined;
@@ -378,7 +359,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			return await this.clientApplication.acquireTokenSilent(tokenRequest);
 		} catch (e) {
 			Logger.error('Failed to acquireTokenSilent', e);
-			if (e instanceof InteractionRequiredAuthError) {
+			if (e instanceof InteractionRequiredAuthError && e.errorCode !== 'invalid_grant') {
 				// build refresh token request
 				const tenant: Tenant = {
 					id: account.tenantId,
@@ -486,7 +467,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 				} as Tenant;
 			});
 			Logger.verbose(`Tenants: ${tenantList}`);
-			const homeTenantIndex = tenants.findIndex(tenant => tenant.tenantCategory === 'Home');
+			const homeTenantIndex = tenants.findIndex(tenant => tenant.tenantCategory === Constants.HomeCategory);
 			// remove home tenant from list of tenants
 			if (homeTenantIndex >= 0) {
 				const homeTenant = tenants.splice(homeTenantIndex, 1);
@@ -524,7 +505,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 				} as Tenant;
 			});
 			Logger.verbose(`Tenants: ${tenantList}`);
-			const homeTenantIndex = tenants.findIndex(tenant => tenant.tenantCategory === 'Home');
+			const homeTenantIndex = tenants.findIndex(tenant => tenant.tenantCategory === Constants.HomeCategory);
 			// remove home tenant from list of tenants
 			if (homeTenantIndex >= 0) {
 				const homeTenant = tenants.splice(homeTenantIndex, 1);
@@ -635,7 +616,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		}
 
 		const getTenantConfigurationSet = (): Set<string> => {
-			const configuration = vscode.workspace.getConfiguration('azure.tenant.config');
+			const configuration = vscode.workspace.getConfiguration(Constants.AzureTenantConfigSection);
 			let values: string[] = configuration.get('filter') ?? [];
 			return new Set<string>(values);
 		};
@@ -701,10 +682,10 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		if (tokenClaims.iss === 'https://sts.windows.net/72f988bf-86f1-41af-91ab-2d7cd011db47/' ||
 			tokenClaims.iss === 'https://login.microsoftonline.com/72f988bf-86f1-41af-91ab-2d7cd011db47/v2.0') {
-			accountIssuer = 'corp';
+			accountIssuer = Constants.AccountIssuer.Corp;
 		}
 		if (tokenClaims?.idp === 'live.com') {
-			accountIssuer = 'msft';
+			accountIssuer = Constants.AccountIssuer.Msft;
 		}
 
 		const name = tokenClaims.name ?? tokenClaims.email ?? tokenClaims.unique_name ?? tokenClaims.preferred_username;
@@ -721,25 +702,25 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		let contextualDisplayName: string;
 		switch (accountIssuer) {
-			case 'corp':
+			case Constants.AccountIssuer.Corp:
 				contextualDisplayName = localize('azure.microsoftCorpAccount', "Microsoft Corp");
 				break;
-			case 'msft':
+			case Constants.AccountIssuer.Msft:
 				contextualDisplayName = localize('azure.microsoftAccountDisplayName', 'Microsoft Account');
 				break;
 			default:
 				contextualDisplayName = displayName;
 		}
 
-		let accountType = accountIssuer === 'msft'
-			? this.MicrosoftAccountType
-			: this.WorkSchoolAccountType;
+		let accountType = accountIssuer === Constants.AccountIssuer.Msft
+			? Constants.AccountType.Microsoft
+			: Constants.AccountType.WorkSchool;
 
 		const account = {
 			key: {
 				providerId: this.metadata.id,
 				accountId: key,
-				accountVersion: AzureAuth.ACCOUNT_VERSION,
+				accountVersion: Constants.AccountVersion,
 				authLibrary: this._authLibrary
 			},
 			name: displayName,
@@ -753,7 +734,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			},
 			properties: {
 				providerSettings: this.metadata,
-				isMsAccount: accountIssuer === 'msft',
+				isMsAccount: accountIssuer === Constants.AccountIssuer.Msft,
 				owningTenant: owningTenant,
 				tenants,
 				azureAuthType: this.authType
@@ -825,9 +806,9 @@ export abstract class AzureAuth implements vscode.Disposable {
 		try {
 			// remove account based on authLibrary field, accounts added before this field was present will default to
 			// ADAL method of account removal
-			if (account.authLibrary === 'MSAL') {
+			if (account.authLibrary === Constants.AuthLibrary.MSAL) {
 				return this.deleteAccountCacheMsal(account);
-			} else {
+			} else { // fallback to ADAL by default
 				return this.deleteAccountCache(account);
 			}
 		} catch (ex) {
