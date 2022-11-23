@@ -276,7 +276,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			} else if (connectionResult && connectionResult.errorHandled) {
 				this._connectionDialog.resetConnection();
 				this._logService.debug(`ConnectionDialogService: Error handled and connection reset - Error: ${connectionResult.errorMessage}`);
-			} else if (connectionResult.errorCode !== Constants.passwordErrorCode) {
+			} else if (connectionResult.errorCode !== Constants.sqlPasswordErrorCode) {
 				this._connectionDialog.resetConnection();
 				this.showErrorDialog(Severity.Error, this._connectionErrorTitle, connectionResult.errorMessage, connectionResult.callStack, connectionResult.errorCode);
 				this._logService.debug(`ConnectionDialogService: Connection error: ${connectionResult.errorMessage}`);

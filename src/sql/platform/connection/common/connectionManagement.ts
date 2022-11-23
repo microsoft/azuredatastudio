@@ -121,7 +121,7 @@ export interface IConnectionManagementService {
 	connectAndSaveProfile(connection: IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult>;
 
 	/**
-	 * Changes password for username
+	 * Changes password for a SQL Server connection profile.
 	 */
 	sendChangePassword(connection: IConnectionProfile, uri: string, newPassword: string): Promise<azdata.PasswordChangeResult>;
 

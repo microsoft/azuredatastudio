@@ -30,7 +30,7 @@ const OkText: string = localize('passwordChangeDialog.ok', "OK");
 const CancelText: string = localize('passwordChangeDialog.cancel', "Cancel");
 const DialogTitle: string = localize('passwordChangeDialog.title', "Change Password");
 const TitleIconClass: string = 'icon filterLabel';
-const newPasswordText: string = localize('passwordChangeDialog.newPassword', 'New password:');
+const newPasswordText: string = localize('passwordChangeDialog.newPassword', 'New password for SQL Server Login:');
 const confirmPasswordText: string = localize('passwordChangeDialog.confirmPassword', 'Confirm password:');
 const connectCheckboxText: string = localize('passwordChangeDialog.connectText', 'Connect?:');
 const connectCheckboxLabel: string = localize('passwordChangeDialog.connectLabel', 'Connect upon close and save if needed');
@@ -127,7 +127,7 @@ export class PasswordChangeDialog extends Modal {
 	}
 
 	private handleOkButtonClick(): void {
-		//TODO - verify password here before continuing.
+		// Verify passwords match before changing the password.
 		if (this._passwordValueText.value === this._confirmValueText.value) {
 			if (this._verifyBox.style.display === 'block') {
 				this._verifyBox.style.display = 'none';

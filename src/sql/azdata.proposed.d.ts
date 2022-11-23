@@ -385,6 +385,29 @@ declare module 'azdata' {
 		title: string;
 	}
 
+	export interface ConnectionProvider extends DataProvider {
+		/**
+		 * Changes the password for a SQL Server connection profile.
+		 */
+		changePassword(connectionUri: string, connectionInfo: ConnectionInfo, newPassword: string): Thenable<PasswordChangeResult>;
+	}
+
+	// Password Change Request ----------------------------------------------------------------------
+	export interface PasswordChangeResult {
+		/**
+		 * Whether the password change was successful
+		 */
+		result: boolean;
+		/**
+		 * The error message if the password change was unsuccessful
+		 */
+		messages?: string | undefined;
+		/**
+		 * More details for the error for a failed password change
+		 */
+		errorMessage?: string | undefined;
+	}
+
 	export interface IConnectionProfile extends ConnectionInfo {
 		/**
 		 * The type of authentication to use when connecting
