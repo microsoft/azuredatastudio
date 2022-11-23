@@ -296,19 +296,20 @@ export function TIME_IN_MINUTES(val: number): number {
 
 // Login
 export function LOGIN_WIZARD_TITLE(instanceName: string): string {
-	return localize('sql-migration.login.wizard.title', "Migrate logins from '{0}' to Azure SQL", instanceName);
+	return localize('sql-migration.login.wizard.title', "Migrate logins from '{0}' to Azure SQL (PREVIEW)", instanceName);
 }
 export const LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_DESCRIPTION = localize('sql.migration.login.wizard.target.description', "Select the target Azure SQL Managed Instance, Azure SQL VM, or Azure SQL database(s) where you want to migrate your logins.");
 export const LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_DATA_MIGRATION_WARNING = localize('sql.migration.login.wizard.target.data.migration.warning', "You must successfully migrate all your database(s) to the target before starting the login migration else the migration will fail. Also if the source and target database names are not same then some permissions may not be applied properly. Learn more");
 export function LOGIN_MIGRATIONS_TARGET_SELECTION_PAGE_PERMISSIONS_WARNING(userName: string, instanceName: string): string {
 	return localize('sql.migration.login.wizard.target.permission.warning', "Please ensure that the current user ({0}) has enough permissions to get all login information for the current instance ({1}).", userName, instanceName);
 }
-export const LOGIN_MIGRATIONS_TARGET_TYPE_SELECTION_TITLE = localize('sql.migration.login.wizard.taget.type.title', "Azure SQL target type");
+export const LOGIN_MIGRATIONS_TARGET_TYPE_SELECTION_TITLE = localize('sql.migration.login.wizard.target.type.title', "Azure SQL target type");
 export const LOGIN_MIGRATIONS_MI_TEXT = localize('sql.migration.login.mi.title', "Azure SQL Managed Instance");
 export const LOGIN_MIGRATIONS_DB_TEXT = localize('sql.migration.login.db.title', "Azure SQL Database");
 export const LOGIN_MIGRATIONS_VM_TEXT = localize('sql.migration.login.vm.title', "SQL Server on Azure Virtual Machine");
-export const LOGIN_MIGRATIONS_SELECT_LOGINS_PAGE_TITLE = localize('sql.migration.login.select.page.title', "Select login(s) to migrate");
-export const LOGIN_MIGRATIONS_STATUS_PAGE_TITLE = localize('sql.migration.login.status.page.title', "Migration Status");
+export const LOGIN_MIGRATIONS_AZURE_SQL_TARGET_PAGE_TITLE = localize('sql.migration.login.target.title', "Azure SQL target (PREVIEW)");
+export const LOGIN_MIGRATIONS_SELECT_LOGINS_PAGE_TITLE = localize('sql.migration.login.select.page.title', "Select login(s) to migrate (PREVIEW)");
+export const LOGIN_MIGRATIONS_STATUS_PAGE_TITLE = localize('sql.migration.login.status.page.title', "Migration Status (PREVIEW)");
 export function LOGIN_MIGRATIONS_STATUS_PAGE_DESCRIPTION(numLogins: number, targetType: string, targetName: string): string {
 	return localize('sql.migration.login.status.page.description', "Migrating {0} logins to target {1} '{2}'", numLogins, targetType, targetName);
 }
@@ -1092,7 +1093,7 @@ export const MIGRATION_SERVICE_DESCRIPTION = localize('sql.migration.select.serv
 // Desktop tabs
 export const DESKTOP_MIGRATION_BUTTON_LABEL = localize('sql.migration.tab.button.migration.label', 'New migration');
 export const DESKTOP_MIGRATION_BUTTON_DESCRIPTION = localize('sql.migration.tab.button.migration.description', 'Migrate to Azure SQL');
-export const DESKTOP_LOGIN_MIGRATION_BUTTON_LABEL = localize('sql.migration.tab.button.login.migration.label', 'New login migration');
+export const DESKTOP_LOGIN_MIGRATION_BUTTON_LABEL = localize('sql.migration.tab.button.login.migration.label', 'New login migration (PREVIEW)');
 export const DESKTOP_LOGIN_MIGRATION_BUTTON_DESCRIPTION = localize('sql.migration.tab.button.login.migration.description', 'Migrate logins to Azure SQL');
 export const DESKTOP_SUPPORT_BUTTON_LABEL = localize('sql.migration.tab.button.support.label', 'New support request');
 export const DESKTOP_SUPPORT_BUTTON_DESCRIPTION = localize('sql.migration.tab.button.support.description', 'New support request');

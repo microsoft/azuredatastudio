@@ -44,7 +44,7 @@ export class LoginMigrationTargetSelectionPage extends MigrationWizardPage {
 		migrationStateModel: MigrationStateModel) {
 		super(
 			wizard,
-			azdata.window.createWizardPage(constants.AZURE_SQL_TARGET_PAGE_TITLE),
+			azdata.window.createWizardPage(constants.LOGIN_MIGRATIONS_AZURE_SQL_TARGET_PAGE_TITLE),
 			migrationStateModel);
 	}
 
