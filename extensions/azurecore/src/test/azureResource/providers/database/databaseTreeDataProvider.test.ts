@@ -113,9 +113,6 @@ describe('AzureResourceDatabaseTreeDataProvider.info', function (): void {
 		should(treeItem.label).equal(mockResourceRootNode.treeItem.label);
 		should(treeItem.collapsibleState).equal(mockResourceRootNode.treeItem.collapsibleState);
 		should(treeItem.contextValue).equal(mockResourceRootNode.treeItem.contextValue);
-
-		// Authentication type should be empty string by default to support setting 'Sql: Default Authentication Type'.
-		should(treeItem.payload!.authenticationType).equal('');
 	});
 });
 
