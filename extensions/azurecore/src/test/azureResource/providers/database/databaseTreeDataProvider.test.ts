@@ -113,6 +113,9 @@ describe('AzureResourceDatabaseTreeDataProvider.info', function (): void {
 		should(treeItem.label).equal(mockResourceRootNode.treeItem.label);
 		should(treeItem.collapsibleState).equal(mockResourceRootNode.treeItem.collapsibleState);
 		should(treeItem.contextValue).equal(mockResourceRootNode.treeItem.contextValue);
+
+		// Authentication type should be empty string by default to support setting 'Sql: Default Authentication Type'.
+		should(treeItem.payload!.authenticationType).equal('');
 	});
 });
 
@@ -164,6 +167,9 @@ describe('AzureResourceDatabaseTreeDataProvider.getChildren', function (): void 
 			should(child.treeItem.label).equal(`${database.name} (${database.serverName})`);
 			should(child.treeItem.collapsibleState).equal(vscode.TreeItemCollapsibleState.Collapsed);
 			should(child.treeItem.contextValue).equal(AzureResourceItemType.database);
+
+			// Authentication type should be empty string by default to support setting 'Sql: Default Authentication Type'.
+			should(child.treeItem.payload!.authenticationType).equal('');
 		}
 	});
 });
