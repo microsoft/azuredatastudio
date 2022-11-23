@@ -10,7 +10,7 @@
 ## Version 1.40.0
 * Release date: November 16, 2022
 * Release status: General Availability
-#### What's new in 1.40.0
+### What's new in 1.40.0
 | New Item | Details |
 |----------|---------|
 | Connections | Connections for SQL now default to Encrypt = 'True'. |
