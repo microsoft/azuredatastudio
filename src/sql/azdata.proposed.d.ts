@@ -509,13 +509,6 @@ declare module 'azdata' {
 		authLibrary?: string;
 	}
 
-	export interface Account {
-		/**
-		 * Specifies if an account should be deleted
-		 */
-		delete?: boolean;
-	}
-
 	export namespace workspace {
 		/**
 		 * Creates and enters a workspace at the specified location

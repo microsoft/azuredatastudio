@@ -59,7 +59,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		return this.authLibrary === Constants.AuthLibrary.MSAL
 			? this.getAuthMethod().deleteAllCacheMsal()
 			// fallback to ADAL as default
-			: this.getAuthMethod().deleteAllCache();
+			: this.getAuthMethod().deleteAllCacheAdal();
 	}
 
 	private handleAuthMapping(metadata: AzureAccountProviderMetadata, tokenCache: SimpleTokenCache, context: vscode.ExtensionContext, uriEventHandler: vscode.EventEmitter<vscode.Uri>) {
@@ -108,16 +108,16 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		console.log(`Initializing stored accounts ${JSON.stringify(accounts)}`);
 		const updatedAccounts = filterAccounts(storedAccounts, this.authLibrary);
 		for (let account of updatedAccounts) {
-			if (this.authLibrary === Constants.AuthLibrary.MSAL) {
-				account.isStale = false;
+			const azureAuth = this.getAuthMethod(account);
+			if (!azureAuth) {
+				account.isStale = true;
 				accounts.push(account);
-			} else { // fallback to ADAL as default
-				const azureAuth = this.getAuthMethod(account);
-				if (!azureAuth) {
-					account.isStale = true;
+			} else {
+				account.isStale = false;
+				if (this.authLibrary === Constants.AuthLibrary.MSAL) {
 					accounts.push(account);
-				} else {
-					accounts.push(await azureAuth.refreshAccess(account));
+				} else { // fallback to ADAL as default
+					accounts.push(await azureAuth.refreshAccessAdal(account));
 				}
 			}
 		}
@@ -153,7 +153,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 				return token;
 			}
 		} else { // fallback to ADAL as default
-			return azureAuth?.getAccountSecurityToken(account, tenantId, resource);
+			return azureAuth?.getAccountSecurityTokenAdal(account, tenantId, resource);
 		}
 	}
 

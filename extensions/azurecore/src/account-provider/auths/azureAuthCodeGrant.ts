@@ -58,15 +58,15 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		};
 	}
 
-	protected async login(tenant: Tenant, resource: Resource): Promise<{ response: OAuthTokenResponse | undefined, authComplete: Deferred<void, Error> }> {
+	protected async loginAdal(tenant: Tenant, resource: Resource): Promise<{ response: OAuthTokenResponse | undefined, authComplete: Deferred<void, Error> }> {
 		let authCompleteDeferred: Deferred<void, Error>;
 		let authCompletePromise = new Promise<void>((resolve, reject) => authCompleteDeferred = { resolve, reject });
 		let authResponse: AuthCodeResponse;
 
 		if (vscode.env.uiKind === vscode.UIKind.Web) {
-			authResponse = await this.loginWeb(tenant, resource);
+			authResponse = await this.loginWebAdal(tenant, resource);
 		} else {
-			authResponse = await this.loginDesktop(tenant, resource, authCompletePromise);
+			authResponse = await this.loginDesktopAdal(tenant, resource, authCompletePromise);
 		}
 
 		return {
@@ -83,7 +83,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		if (vscode.env.uiKind === vscode.UIKind.Web) {
 			authCodeRequest = await this.loginWebMsal(tenant, resource);
 		} else {
-			authCodeRequest = await this.loginDesktopMsal(tenant, authCompletePromise);
+			authCodeRequest = await this.loginDesktopMsal(tenant, resource, authCompletePromise);
 		}
 
 		let result = await this.clientApplication.acquireTokenByCode(authCodeRequest);
@@ -115,7 +115,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 			resource: resource.endpoint
 		};
 
-		return this.getToken(tenant, resource, postData);
+		return this.getTokenAdal(tenant, resource, postData);
 	}
 
 	private async loginWebMsal(tenant: Tenant, resource: Resource): Promise<AuthorizationCodeRequest> {
@@ -153,9 +153,9 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		}
 	}
 
-	private async loginWeb(tenant: Tenant, resource: Resource): Promise<AuthCodeResponse> {
+	private async loginWebAdal(tenant: Tenant, resource: Resource): Promise<AuthCodeResponse> {
 		const callbackUri = await vscode.env.asExternalUri(vscode.Uri.parse(`${vscode.env.uriScheme}://microsoft.azurecore`));
-		const { nonce, codeVerifier, codeChallenge } = this.createCryptoValues();
+		const { nonce, codeVerifier, codeChallenge } = this.createCryptoValuesAdal();
 		const port = (callbackUri.authority.match(/:([0-9]*)$/) || [])[1] || (callbackUri.scheme === 'https' ? 443 : 80);
 		const state = `${port},${encodeURIComponent(nonce)},${encodeURIComponent(callbackUri.query)}`;
 
@@ -212,7 +212,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		}, {});
 	}
 
-	private async loginDesktopMsal(tenant: Tenant, authCompletePromise: Promise<void>): Promise<AuthorizationCodeRequest> {
+	private async loginDesktopMsal(tenant: Tenant, resource: Resource, authCompletePromise: Promise<void>): Promise<AuthorizationCodeRequest> {
 		const server = new SimpleWebServer();
 		let serverPort: string;
 
@@ -259,11 +259,9 @@ export class AzureAuthCodeGrant extends AzureAuth {
 			Logger.error('MSAL: Error requesting auth code', e);
 			throw new AzureAuthError('error', 'Error requesting auth code', e);
 		}
-
-
 	}
 
-	private async loginDesktop(tenant: Tenant, resource: Resource, authCompletePromise: Promise<void>): Promise<AuthCodeResponse> {
+	private async loginDesktopAdal(tenant: Tenant, resource: Resource, authCompletePromise: Promise<void>): Promise<AuthCodeResponse> {
 		const server = new SimpleWebServer();
 		let serverPort: string;
 
@@ -273,7 +271,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 			const msg = localize('azure.serverCouldNotStart', 'Server could not start. This could be a permissions error or an incompatibility on your system. You can try enabling device code authentication from settings.');
 			throw new AzureAuthError(msg, 'Server could not start', ex);
 		}
-		const { nonce, codeVerifier, codeChallenge } = this.createCryptoValues();
+		const { nonce, codeVerifier, codeChallenge } = this.createCryptoValuesAdal();
 		const state = `${serverPort},${encodeURIComponent(nonce)}`;
 		const loginQuery = {
 			response_type: 'code',
@@ -394,7 +392,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 	}
 
 
-	private createCryptoValues(): CryptoValues {
+	private createCryptoValuesAdal(): CryptoValues {
 		const nonce = crypto.randomBytes(16).toString('base64');
 		const codeVerifier = this.toBase64UrlEncoding(crypto.randomBytes(32).toString('base64'));
 		const codeChallenge = this.toBase64UrlEncoding(crypto.createHash('sha256').update(codeVerifier).digest('base64'));

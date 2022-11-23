@@ -78,7 +78,7 @@ export class AzureDeviceCode extends AzureAuth {
 		};
 	}
 
-	protected async login(tenant: Tenant, resource: Resource): Promise<{ response: OAuthTokenResponse, authComplete: Deferred<void, Error> }> {
+	protected async loginAdal(tenant: Tenant, resource: Resource): Promise<{ response: OAuthTokenResponse, authComplete: Deferred<void, Error> }> {
 		let authCompleteDeferred: Deferred<void, Error>;
 		let authCompletePromise = new Promise<void>((resolve, reject) => authCompleteDeferred = { resolve, reject });
 
@@ -102,7 +102,7 @@ export class AzureDeviceCode extends AzureAuth {
 		const currentTime = new Date().getTime() / 1000;
 		const expiresOn = `${currentTime + finalDeviceLogin.expires_in}`;
 
-		const result = await this.getTokenHelper(tenant, resource, accessTokenString, refreshTokenString, expiresOn);
+		const result = await this.getTokenHelperAdal(tenant, resource, accessTokenString, refreshTokenString, expiresOn);
 		this.closeOnceComplete(authCompletePromise).catch(Logger.error);
 
 		return {

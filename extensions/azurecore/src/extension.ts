@@ -58,15 +58,15 @@ let extensionContext: vscode.ExtensionContext;
 function getAppDataPath() {
 	let platform = process.platform;
 	switch (platform) {
-		case 'win32': return process.env['APPDATA'] || path.join(process.env['USERPROFILE']!, 'AppData', 'Roaming');
-		case 'darwin': return path.join(os.homedir(), 'Library', 'Application Support');
-		case 'linux': return process.env['XDG_CONFIG_HOME'] || path.join(os.homedir(), '.config');
+		case Constants.Platform.Windows: return process.env['APPDATA'] || path.join(process.env['USERPROFILE']!, 'AppData', 'Roaming');
+		case Constants.Platform.Mac: return path.join(os.homedir(), 'Library', 'Application Support');
+		case Constants.Platform.Linux: return process.env['XDG_CONFIG_HOME'] || path.join(os.homedir(), '.config');
 		default: throw new Error('Platform not supported');
 	}
 }
 
 function getDefaultLogLocation() {
-	return path.join(getAppDataPath(), 'azuredatastudio');
+	return path.join(getAppDataPath(), Constants.ServiceName);
 }
 
 function pushDisposable(disposable: vscode.Disposable): void {
@@ -85,7 +85,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 	}
 
 	// TODO: Since Code Grant auth doesnt work in web mode, enabling Device code auth by default for web mode. We can remove this once we have that working in web mode.
-	const config = vscode.workspace.getConfiguration('accounts.azure.auth');
+	const config = vscode.workspace.getConfiguration(Constants.AccountsAzureAuthSection);
 	if (vscode.env.uiKind === vscode.UIKind.Web) {
 		await config.update('deviceCode', true, vscode.ConfigurationTarget.Global);
 	}

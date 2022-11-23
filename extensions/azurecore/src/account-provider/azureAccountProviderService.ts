@@ -144,13 +144,14 @@ export class AzureAccountProviderService implements vscode.Disposable {
 	private async registerAccountProvider(provider: ProviderSettings): Promise<void> {
 		const isSaw: boolean = vscode.env.appName.toLowerCase().indexOf(Constants.Saw) > 0;
 		const noSystemKeychain = vscode.workspace.getConfiguration(Constants.AzureSection).get<boolean>(Constants.NoSystemKeyChainSection);
+		const platform = os.platform();
+		const tokenCacheKey = `azureTokenCache-${provider.metadata.id}`;
 		const lockOptions = {
 			retryNumber: 100,
 			retryDelay: 50
 		}
 
 		try {
-			let tokenCacheKey = `azureTokenCache-${provider.metadata.id}`;
 			if (!this._credentialProvider) {
 				throw new Error('Credential provider not registered');
 			}
@@ -159,8 +160,6 @@ export class AzureAccountProviderService implements vscode.Disposable {
 			await simpleTokenCache.init();
 			const cachePath = path.join(this._userStoragePath, Constants.ConfigFilePath);
 
-			let platform = os.platform();
-			let persistenceCachePlugin: PersistenceCachePlugin;
 			switch (platform) {
 				case Constants.Platform.Windows:
 					const dataProtectionScope = DataProtectionScope.CurrentUser;
@@ -173,10 +172,11 @@ export class AzureAccountProviderService implements vscode.Disposable {
 					break;
 			}
 			if (!this.persistence) {
-				Logger.error('unable to create persistence');
-				throw new Error('unable to creat persistence');
+				Logger.error('Unable to intialize persistence for access token cache. Tokens will not persist in system memory for future use.');
+				throw new Error('Unable to intialize persistence for access token cache. Tokens will not persist in system memory for future use.');
 			}
-			persistenceCachePlugin = new PersistenceCachePlugin(this.persistence, lockOptions); // or any of the other ones.
+
+			let persistenceCachePlugin: PersistenceCachePlugin = new PersistenceCachePlugin(this.persistence, lockOptions); // or any of the other ones.
 			const MSAL_CONFIG = {
 				auth: {
 					clientId: provider.metadata.settings.clientId,
@@ -186,8 +186,8 @@ export class AzureAccountProviderService implements vscode.Disposable {
 					cachePlugin: persistenceCachePlugin
 				}
 			}
-			this.clientApplication = new PublicClientApplication(MSAL_CONFIG);
 
+			this.clientApplication = new PublicClientApplication(MSAL_CONFIG);
 			let accountProvider = new AzureAccountProvider(provider.metadata as AzureAccountProviderMetadata,
 				simpleTokenCache, this._context, this.clientApplication, this._uriEventHandler, this._authLibrary, isSaw);
 			this._accountProviders[provider.metadata.id] = accountProvider;
