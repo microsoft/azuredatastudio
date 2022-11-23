@@ -14,17 +14,15 @@ import { IconPathHelper } from '../constants/iconPathHelper';
 
 export class LoginMigrationStatusPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
-	private _textBox!: azdata.TextComponent;
 	private _migratingLoginsTable!: azdata.TableComponent;
 	private _loginCount!: azdata.TextComponent;
 	private _loginsTableValues!: any[];
 	private _disposables: vscode.Disposable[] = [];
 	private _progressLoaderContainer!: azdata.FlexContainer;
-	private _migrationProgress!: azdata.TextComponent;
+	private _migrationProgress!: azdata.InfoBoxComponent;
 	private _progressLoader!: azdata.LoadingComponent;
 	private _progressContainer!: azdata.FlexContainer;
 	private _migrationProgressDetails!: azdata.TextComponent;
-	private _isLoginMigrationDone!: boolean;
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.LOGIN_MIGRATIONS_STATUS_PAGE_TITLE), migrationStateModel);
@@ -60,24 +58,17 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 			return true;
 		});
 
+		this.wizard.backButton.label = "Test"
 		this.wizard.backButton.enabled = false;
 		this.wizard.backButton.hidden = true;
-		this._isLoginMigrationDone = false;
-		this.wizard.doneButton.enabled = this._isLoginMigrationDone;
+		this.wizard.doneButton.enabled = false;
 
 		await this._loadMigratingLoginsList(this.migrationStateModel);
 
 		// load unfiltered table list
 		await this._filterTableList('');
 
-		if (this.migrationStateModel._targetServerInstance) {
-			// TODO AKMA : remove debug below and pretty-ify this.migrationStateModel._targetType with proper spacing
-			await this._textBox.updateProperties({
-				'value': constants.LOGIN_MIGRATIONS_STATUS_PAGE_DESCRIPTION(this._getNumberOfDisplayedLogins(), this.migrationStateModel._targetType, this.migrationStateModel._targetServerInstance.name)
-			});
-		}
-
-		// await this.migrationStateModel.startLoginMigration();
+		await this._runLoginMigrations();
 		await this._loadMigratingLoginsList(this.migrationStateModel);
 		await this._filterTableList('');
 	}
@@ -98,14 +89,23 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 
 	private createMigrationProgressLoader(): azdata.FlexContainer {
 		this._progressLoader = this._view.modelBuilder.loadingComponent()
+			.withProps({
+				loadingText: constants.LOGIN_MIGRATION_IN_PROGRESS,
+				loadingCompletedText: constants.LOGIN_MIGRATIONS_COMPLETE,
+				loading: true,
+				CSSStyles: { 'margin-right': '20px' }
+			})
 			.component();
 
-		this._migrationProgress = this._view.modelBuilder.text()
+		this._migrationProgress = this._view.modelBuilder.infoBox()
 			.withProps({
-				value: constants.LOGIN_MIGRATION_IN_PROGRESS,
+				style: 'information',
+				text: constants.LOGIN_MIGRATION_IN_PROGRESS,
 				CSSStyles: {
 					...styles.PAGE_TITLE_CSS,
-					'margin-right': '20px'
+					'margin-right': '20px',
+					'font-size': '14px',
+					'line-height': '17px'
 				}
 			}).component();
 
@@ -125,7 +125,7 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 	private async createMigrationProgressDetails(): Promise<azdata.TextComponent> {
 		this._migrationProgressDetails = this._view.modelBuilder.text()
 			.withProps({
-				value: constants.ASSESSMENT_IN_PROGRESS_CONTENT("servername"),
+				value: constants.STARTING_LOGIN_MIGRATION,
 				CSSStyles: {
 					...styles.BODY_CSS,
 					'width': '660px'
@@ -170,7 +170,6 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 
 		await this._migratingLoginsTable.updateProperty('data', tableRows);
 		await this.updateDisplayedLoginCount();
-		await this.updateTotalLoginCount();
 	}
 
 	public async createRootContainer(view: azdata.ModelView): Promise<azdata.FlexContainer> {
@@ -183,13 +182,6 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 
 		this._progressContainer.addItem(this.createMigrationProgressLoader(), { flex: '0 0 auto' });
 		this._progressContainer.addItem(await this.createMigrationProgressDetails(), { flex: '0 0 auto' });
-
-		this._textBox = this._view.modelBuilder.text().withProps({
-			value: constants.LOGIN_MIGRATIONS_STATUS_PAGE_DESCRIPTION(0, '', ''),
-			CSSStyles: {
-				...styles.BODY_CSS
-			}
-		}).component();
 
 		this._loginCount = this._view.modelBuilder.text().withProps({
 			value: constants.NUMBER_LOGINS_MIGRATING(this._loginsTableValues.length, this._loginsTableValues.length),
@@ -282,7 +274,6 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 			}
 		}).component();
 		flex.addItem(this._progressContainer, { flex: '0 0 auto' });
-		flex.addItem(this._textBox, { flex: '0 0 auto' });
 		flex.addItem(this.createSearchComponent(), { flex: '0 0 auto' });
 		flex.addItem(this._loginCount, { flex: '0 0 auto' });
 		flex.addItem(this._migratingLoginsTable);
@@ -320,13 +311,6 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 		}) || [];
 	}
 
-
-	private async updateTotalLoginCount() {
-		await this._textBox.updateProperties({
-			'value': constants.LOGIN_MIGRATIONS_STATUS_PAGE_DESCRIPTION(this._getTotalNumberOfLogins(), this.migrationStateModel._targetType, this.migrationStateModel._targetServerInstance.name)
-		});
-	}
-
 	private _getTotalNumberOfLogins(): number {
 		return this._loginsTableValues?.length || 0;
 	}
@@ -340,5 +324,56 @@ export class LoginMigrationStatusPage extends MigrationWizardPage {
 
 	private _getNumberOfDisplayedLogins(): number {
 		return this._migratingLoginsTable?.data?.length || 0;
+	}
+
+	private async _runLoginMigrations(): Promise<Boolean> {
+		this._progressLoader.loading = true;
+
+		if (this.migrationStateModel._targetServerInstance) {
+			// TODO AKMA : remove debug below and pretty-ify this.migrationStateModel._targetType with proper spacing
+			await this._migrationProgress.updateProperties({
+				'text': constants.LOGIN_MIGRATIONS_STATUS_PAGE_DESCRIPTION(this._getTotalNumberOfLogins(), this.migrationStateModel._targetType, this.migrationStateModel._targetServerInstance.name)
+			});
+		}
+
+		await this._migrationProgressDetails.updateProperties({
+			'value': constants.STARTING_LOGIN_MIGRATION
+		});
+
+		var result = await this.migrationStateModel.migrateLogins();
+
+		await this._migrationProgressDetails.updateProperties({
+			'value': constants.ESTABLISHING_USER_MAPPINGS
+		});
+
+		result = await this.migrationStateModel.establishUserMappings();
+
+		await this._migrationProgressDetails.updateProperties({
+			'value': constants.ESTABLISHING_USER_MAPPINGS
+		});
+
+		result = await this.migrationStateModel.migrateServerRolesAndSetPermissions();
+
+		await this._migrationProgressDetails.updateProperties({
+			'CSSStyles': { 'display': 'none' },
+		});
+
+		if (this.migrationStateModel._targetServerInstance) {
+			// TODO AKMA : remove debug below and pretty-ify this.migrationStateModel._targetType with proper spacing
+			await this._migrationProgress.updateProperties({
+				'text': constants.LOGIN_MIGRATIONS_COMPLETED_STATUS_PAGE_DESCRIPTION(this._getTotalNumberOfLogins(), this.migrationStateModel._targetType, this.migrationStateModel._targetServerInstance.name),
+				'style': 'success',
+			});
+		} else {
+			await this._migrationProgress.updateProperties({
+				'text': constants.LOGIN_MIGRATIONS_COMPLETE,
+				'style': 'success',
+			});
+		}
+
+		this._progressLoader.loading = false;
+
+		this.wizard.doneButton.enabled = false;
+		return result;
 	}
 }
