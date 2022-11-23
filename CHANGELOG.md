@@ -58,8 +58,8 @@
 ## Version 1.39.1
 * Release date: August 30, 2022
 * Release status: General Availability
-### What's new in 1.39.1
-* Bug fixes in 1.39.1
+
+### Bug fixes in 1.39.1
     * Fixed bug that caused Database Trees in server connections to not expand in the Object Explorer.
 
 ## Version 1.39.0
