@@ -300,7 +300,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		}
 		if (connectOnClose) {
 			connection.options['password'] = password;
-			this.handleDefaultOnConnect(params, connection);
+			await this.handleDefaultOnConnect(params, connection);
 		}
 	}
 
