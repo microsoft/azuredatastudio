@@ -132,9 +132,10 @@ export class PasswordChangeDialog extends Modal {
 			if (this._verifyBox.style.display === 'block') {
 				this._verifyBox.style.display = 'none';
 			}
-			this.connectionDialogService.changePasswordFunction(this._profile, this._params, this._uri, this._passwordValueText.value, this._connectOnClose.checked).then(() => {
-				this.hide('ok');
-			});
+			this.connectionDialogService.changePasswordFunction(this._profile, this._params, this._uri, this._passwordValueText.value, this._connectOnClose.checked).then(
+				() => { this.hide('ok'); /* password changed successfully */ },
+				() => { undefined /* ignore, user must try again */ }
+			);
 		}
 		else {
 			this._verifyBox.style.display = 'block';

@@ -296,6 +296,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		let passwordChangeResult = await this._connectionManagementService.sendChangePassword(connection, uri, password);
 		if (!passwordChangeResult.result) {
 			this.showErrorDialog(Severity.Error, passwordChangeResult.errorMessage, passwordChangeResult.messages);
+			return Promise.reject(new Error(passwordChangeResult.errorMessage));
 		}
 		if (connectOnClose) {
 			connection.options['password'] = password;
