@@ -5,7 +5,7 @@
 * Release status: General Availability
 
 ### Bug fixes in 1.40.1
-    * Fixed bug that caused folders in the servers tree to display incorrect contents [#21245](https://github.com/microsoft/azuredatastudio/issues/21245)
+  * Fixed bug that caused folders in the servers tree to display incorrect contents [#21245](https://github.com/microsoft/azuredatastudio/issues/21245)
 
 ## Version 1.40.0
 * Release date: November 16, 2022
