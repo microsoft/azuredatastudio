@@ -502,6 +502,13 @@ declare module 'azdata' {
 		type?: ExtensionNodeType;
 	}
 
+	export interface AccountKey {
+		/**
+		 * Auth Library used to add the account
+		 */
+		authLibrary?: string;
+	}
+
 	export namespace workspace {
 		/**
 		 * Creates and enters a workspace at the specified location
