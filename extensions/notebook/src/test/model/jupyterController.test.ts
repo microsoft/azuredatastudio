@@ -13,7 +13,6 @@ import { AppContext } from '../../common/appContext';
 import { JupyterController } from '../../jupyter/jupyterController';
 import { LocalPipPackageManageProvider } from '../../jupyter/localPipPackageManageProvider';
 import { MockExtensionContext } from '../common/stubs';
-import { NotebookUtils } from '../../common/notebookUtils';
 
 describe('Jupyter Controller', function () {
 	let mockExtensionContext: vscode.ExtensionContext = new MockExtensionContext();
@@ -74,7 +73,7 @@ describe('Jupyter Controller', function () {
 		should(showErrorMessageSpy.notCalled).be.true('showErrorMessage should not be called');
 	});
 
-	it('Returns expected values from notebook provider', async () =>  {
+	it('Returns expected values from notebook provider', async () => {
 		await controller.activate();
 		should(controller.executeProvider.providerId).equal('jupyter', 'Notebook provider should be jupyter');
 		await should(controller.executeProvider.getExecuteManager(undefined)).be.rejected();
@@ -82,10 +81,10 @@ describe('Jupyter Controller', function () {
 		controller.executeProvider.handleNotebookClosed(undefined);
 	});
 
-	it('Returns execute manager for real notebook editor', async () =>  {
+	it('Returns execute manager for real notebook editor', async () => {
 		await controller.activate();
-		let notebookUtils = new NotebookUtils();
-		const notebookEditor = await notebookUtils.newNotebook(undefined);
+		await azdata.nb.showNotebookDocument(vscode.Uri.from({ scheme: 'untitled' }));
+		const notebookEditor = azdata.nb.activeNotebookEditor;
 		let notebookManager = await controller.executeProvider.getExecuteManager(notebookEditor.document.uri);
 		should(controller.executeProvider.executeManagerCount).equal(1);
 

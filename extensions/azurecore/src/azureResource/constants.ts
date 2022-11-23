@@ -29,3 +29,5 @@ export enum AzureResourceServiceNames {
 	tenantService = 'AzureResourceTenantService',
 	terminalService = 'AzureTerminalService',
 }
+
+export const mssqlProvider = 'MSSQL';

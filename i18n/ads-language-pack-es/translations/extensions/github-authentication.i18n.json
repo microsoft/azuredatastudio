@@ -8,14 +8,16 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"dist/common/keychain": {
-			"keychainWriteError": "Error al escribir la información de inicio de sesión en la cadena de claves: \"{0}\".",
-			"troubleshooting": "Guía para la solución de problemas"
-		},
 		"dist/githubServer": {
-			"signingIn": "$(mark-github) Iniciando sesión en github.com...",
-			"status.git.signIn.name": "Inicio de sesión en GitHub",
-			"validUri": "Escriba un URI válido de la página de inicio de sesión de GitHub."
+			"code.detail": "Para finalizar la autenticación, vaya a GitHub y pegue el código de un solo uso anterior.",
+			"code.title": "Su código: {0}",
+			"no": "No",
+			"otherReasonMessage": "Aún no ha terminado de autorizar esta extensión para usar GitHub. ¿Desea seguir intentándolo?",
+			"progress": "Abra [{0}]({0}) en una pestaña nueva y pegue el código de un solo uso: {1}",
+			"signingIn": "Iniciando sesión en github.com...",
+			"signingInAnotherWay": "Iniciando sesión en github.com...",
+			"userCancelledMessage": "¿Tiene problemas para iniciar sesión? ¿Desea probar de otra forma?",
+			"yes": "Sí"
 		},
 		"package": {
 			"description": "Proveedor de autenticación de GitHub",

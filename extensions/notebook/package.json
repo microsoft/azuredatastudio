@@ -99,14 +99,6 @@
         "title": "%notebook.analyzeJupyterNotebook%"
       },
       {
-        "command": "_notebook.command.new",
-        "title": "%notebook.command.new%",
-        "icon": {
-          "dark": "resources/dark/new_notebook_inverse.svg",
-          "light": "resources/light/new_notebook.svg"
-        }
-      },
-      {
         "command": "notebook.command.open",
         "title": "%notebook.command.open%"
       },
@@ -344,10 +336,6 @@
       "commandPalette": [
         {
           "command": "notebook.command.analyzeNotebook",
-          "when": "false"
-        },
-        {
-          "command": "_notebook.command.new",
           "when": "false"
         },
         {

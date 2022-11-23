@@ -177,9 +177,6 @@
     <trans-unit id="default">
       <source xml:lang="en">Enable automatic update checks. Azure Data Studio will check for updates automatically and periodically.</source>
     </trans-unit>
-    <trans-unit id="docNotFoundForUriError">
-      <source xml:lang="en">Could not open a notebook document for the specified URI.</source>
-    </trans-unit>
     <trans-unit id="enable locally">
       <source xml:lang="en">Please reload Azure Data Studio to enable this extension locally.</source>
     </trans-unit>
@@ -218,9 +215,6 @@
     </trans-unit>
     <trans-unit id="notebook.cellTitle">
       <source xml:lang="en">The notebook cell title menu</source>
-    </trans-unit>
-    <trans-unit id="notebook.cellToolbarLocation.compatibilityDescription">
-      <source xml:lang="en">Where the cell toolbar should be shown, or whether it should be hidden. Note: This setting is only enabled for extension compatibility purposes, and so does not affect anything.</source>
     </trans-unit>
     <trans-unit id="notebook.title">
       <source xml:lang="en">The notebook title menu</source>
@@ -323,14 +317,8 @@ Default Skipped Commands:
     <trans-unit id="updateLocale">
       <source xml:lang="en">Would you like to change Azure Data Studio's UI language to {0} and restart?</source>
     </trans-unit>
-    <trans-unit id="vscodeDocCreationFailedError">
-      <source xml:lang="en">Failed to create notebook document.</source>
-    </trans-unit>
-    <trans-unit id="vscodeFunctionalityNotSupportedError">
-      <source xml:lang="en">This VS Code functionality is not supported in Azure Data Studio.</source>
-    </trans-unit>
-    <trans-unit id="vscodeInvalidArgumentsError">
-      <source xml:lang="en">Invalid arguments.</source>
+    <trans-unit id="vscodeNotebooksNotSupportedError">
+      <source xml:lang="en">VS Code notebook extensions are not supported in Azure Data Studio.</source>
     </trans-unit>
     <trans-unit id="watermark.newNotebook">
       <source xml:lang="en">New Notebook</source>
@@ -709,11 +697,6 @@ Default Skipped Commands:
   <file original="src/sql/workbench/api/common/extHostNotebookDocumentsAndEditors" source-language="en" datatype="plaintext"><body>
     <trans-unit id="navigationProviderRequired">
       <source xml:lang="en">A NavigationProvider with valid providerId must be passed to this method</source>
-    </trans-unit>
-</body></file>
-  <file original="src/sql/workbench/api/common/notebooks/vscodeExecuteProvider" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="errorStartBeforeReady">
-      <source xml:lang="en">Cannot start a session, the manager is not yet initialized</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/browser/actions" source-language="en" datatype="plaintext"><body>
@@ -5984,9 +5967,6 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="carbon.extension.contributes.notebook.standardKernels">
       <source xml:lang="en">What kernels should be standard with this notebook provider</source>
-    </trans-unit>
-    <trans-unit id="providerNotInRegistryError">
-      <source xml:lang="en">The specified provider '{0}' is not present in the notebook registry.</source>
     </trans-unit>
     <trans-unit id="vscode.extension.contributes.notebook.languagemagics">
       <source xml:lang="en">Contributes notebook language.</source>

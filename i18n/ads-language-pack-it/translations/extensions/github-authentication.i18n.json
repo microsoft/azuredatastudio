@@ -8,14 +8,16 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"dist/common/keychain": {
-			"keychainWriteError": "La scrittura delle informazioni di accesso al keychain non è riuscita. Errore: '{0}'.",
-			"troubleshooting": "Guida alla risoluzione dei problemi"
-		},
 		"dist/githubServer": {
-			"signingIn": "$(mark-github) Accesso a github.com...",
-			"status.git.signIn.name": "Accesso a GitHub",
-			"validUri": "Immettere un URI valido dalla pagina di accesso di GitHub."
+			"code.detail": "Per completare l'autenticazione, passare a GitHub e incollare il time code precedente.",
+			"code.title": "Codice: {0}",
+			"no": "No",
+			"otherReasonMessage": "L'autorizzazione di questa estensione per l'uso di GitHub non è stata ancora completata. Continuare a provare?",
+			"progress": "Aprire [{0}]({0}) in una nuova scheda e incollare il time code: {1}",
+			"signingIn": "Accesso a github.com in corso...",
+			"signingInAnotherWay": "Accesso a github.com in corso...",
+			"userCancelledMessage": "Si sono verificati problemi durante l'accesso? Vuoi provare in un modo diverso?",
+			"yes": "Sì"
 		},
 		"package": {
 			"description": "Provider di autenticazione GitHub",

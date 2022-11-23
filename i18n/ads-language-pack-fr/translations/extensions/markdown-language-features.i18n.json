@@ -8,22 +8,29 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"dist/features/documentLinkProvider": {
+		"dist/languageFeatures/documentLinkProvider": {
 			"documentLink.tooltip": "suivre le lien"
 		},
-		"dist/features/preview": {
+		"dist/languageFeatures/fileReferences": {
+			"error.noResource": "Échec de la recherche des références de fichiers. Aucune ressource fournie.",
+			"progress.title": "Recherche des références de fichiers"
+		},
+		"dist/languageFeatures/rename": {
+			"invalidRenameLocation": "Renommage non pris en charge à l’emplacement"
+		},
+		"dist/preview/preview": {
 			"lockedPreviewTitle": "[Aperçu] {0}",
 			"onPreviewStyleLoadError": "Impossible de charger 'markdown.styles' : {0}",
 			"preview.clickOpenFailed": "Impossible d'ouvrir {0}",
 			"previewTitle": "Prévisualiser {0}"
 		},
-		"dist/features/previewContentProvider": {
+		"dist/preview/previewContentProvider": {
 			"preview.notFound": "{0} est introuvable",
 			"preview.securityMessage.label": "Avertissement de sécurité de contenu désactivé",
 			"preview.securityMessage.text": "Du contenu a été désactivé dans ce document",
 			"preview.securityMessage.title": "Le contenu potentiellement dangereux ou non sécurisé a été désactivé dans l'aperçu Markdown. Changez les paramètres de sécurité de l'aperçu Markdown pour autoriser le contenu non sécurisé ou activer les scripts"
 		},
-		"dist/security": {
+		"dist/preview/security": {
 			"disable.description": "Autorisez tout le contenu et l’exécution des scripts. Non recommandé",
 			"disable.title": "Désactiver",
 			"disableSecurityWarning.title": "Désactiver l'aperçu d'avertissements de sécurité pour cet espace de travail",
@@ -39,14 +46,17 @@
 			"toggleSecurityWarning.description": "N'affecte pas le niveau de sécurité de contenu"
 		},
 		"package": {
+			"configuration.markdown.editor.drop.enabled": "Activez/désactivez la suppression dans l’éditeur Markdown pour insérer un shift. Nécessite l’activation de « #workbench.experimental.editor.dropIntoEditor.enabled# ».",
 			"configuration.markdown.links.openLocation.beside": "Ouvrez les liens à côté de l'éditeur actif.",
 			"configuration.markdown.links.openLocation.currentGroup": "Ouvrez les liens dans le groupe d'éditeurs actif.",
 			"configuration.markdown.links.openLocation.description": "Contrôle l'emplacement où doivent s'ouvrir les liens dans les fichiers Markdown.",
 			"configuration.markdown.preview.openMarkdownLinks.description": "Contrôle la façon dont les liens vers d'autres fichiers Markdown doivent s'ouvrir dans l'aperçu Markdown.",
 			"configuration.markdown.preview.openMarkdownLinks.inEditor": "Tente d'ouvrir les liens dans l'éditeur.",
 			"configuration.markdown.preview.openMarkdownLinks.inPreview": "Tente d'ouvrir les liens dans l'aperçu Markdown.",
+			"configuration.markdown.suggest.paths.enabled.description": "Activer/désactiver les suggestions de chemin d’accès pour les liens Markdown",
 			"description": "Fournit une prise en charge riche de langage pour Markdown",
 			"displayName": "Fonctionnalités de langage Markdown",
+			"markdown.findAllFileReferences": "Rechercher les références de fichiers",
 			"markdown.preview.breaks.desc": "Définit la façon dont les sauts de ligne sont affichés dans l'aperçu Markdown. Si vous affectez la valeur 'true', un <br> est créé pour les nouvelles lignes à l'intérieur des paragraphes.",
 			"markdown.preview.doubleClickToSwitchToEditor.desc": "Double-cliquez dans l'aperçu Markdown pour passer à l'éditeur.",
 			"markdown.preview.fontFamily.desc": "Contrôle la famille de polices utilisée dans l'aperçu Markdown.",

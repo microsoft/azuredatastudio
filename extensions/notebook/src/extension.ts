@@ -85,9 +85,6 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 		return dialog.createDialog();
 	}));
 
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('_notebook.command.new', async (options?: azdata.nb.NotebookShowOptions) => {
-		return appContext.notebookUtils.newNotebook(options);
-	}));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.open', async () => {
 		await appContext.notebookUtils.openNotebook();
 	}));

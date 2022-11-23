@@ -2475,15 +2475,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/base/common/locConstants.docNotFoundForUriError" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Could not open a notebook document for the specified URI.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Für den angegebenen URI konnte kein Notebookdokument geöffnet werden.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";src/sql/base/common/locConstants.enable locally" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Please reload Azure Data Studio to enable this extension locally.]]></Val>
@@ -2591,15 +2582,6 @@
           <Val><![CDATA[The notebook cell title menu]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Titelmenü der Notizbuchzelle]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/base/common/locConstants.notebook.cellToolbarLocation.compatibilityDescription" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Where the cell toolbar should be shown, or whether it should be hidden. Note: This setting is only enabled for extension compatibility purposes, and so does not affect anything.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Gibt an, wo die Zellensymbolleiste angezeigt werden soll oder ob sie ausgeblendet werden soll. Hinweis: Diese Einstellung ist nur zu Erweiterungskompatibilitätszwecken aktiviert und hat keine Auswirkungen.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2841,33 +2823,12 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";src/sql/base/common/locConstants.vscodeDocCreationFailedError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";src/sql/base/common/locConstants.vscodeNotebooksNotSupportedError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Failed to create notebook document.]]></Val>
+          <Val><![CDATA[VS Code notebook extensions are not supported in Azure Data Studio.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Fehler beim Erstellen des Notebookdokuments.]]></Val>
+            <Val><![CDATA[VS Code-Notebookerweiterungen werden in Azure Data Studio nicht unterstützt.]]></Val>
           </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/base/common/locConstants.vscodeFunctionalityNotSupportedError" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[This VS Code functionality is not supported in Azure Data Studio.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Diese VS Code-Funktionalität wird in Azure Data Studio nicht unterstützt.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/base/common/locConstants.vscodeInvalidArgumentsError" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Invalid arguments.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Ungültige Argumente.]]></Val>
-          </Tgt>
-          <Prev Cat="Text">
-            <Val><![CDATA[Invalid arguments]]></Val>
-          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3893,15 +3854,6 @@
           <Val><![CDATA[A NavigationProvider with valid providerId must be passed to this method]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Ein NavigationProvider mit gültiger Provider-ID muss an diese Methode übergeben werden]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/api/common/notebooks/vscodeExecuteProvider.errorStartBeforeReady" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Cannot start a session, the manager is not yet initialized]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Eine Sitzung kann nicht gestartet werden, der Manager wurde noch nicht initialisiert.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -7943,10 +7895,13 @@
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanComparisonEditorView.epCompare.zoomToFit" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Zoom to fit]]></Val>
+          <Val><![CDATA[Zoom to Fit]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[An Fenstergröße anpassen]]></Val>
+            <Val><![CDATA[Zoom anpassen]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Zoom to fit]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7988,19 +7943,25 @@
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanContribution.executionPlanCompareCommandOriginalValue" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Compare execution plans]]></Val>
+          <Val><![CDATA[Compare Execution Plans]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Ausführungspläne vergleichen]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Compare execution plans]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanContribution.executionPlanCompareCommandValue" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Compare execution plans]]></Val>
+          <Val><![CDATA[Compare Execution Plans]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Ausführungspläne vergleichen]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Compare execution plans]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -8192,10 +8153,13 @@
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanView.executionPlanCompareExecutionPlanAction" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Compare execution plan]]></Val>
+          <Val><![CDATA[Compare Execution Plan]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Ausführungsplan vergleichen]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Compare execution plan]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -8246,10 +8210,13 @@
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/executionPlan/browser/executionPlanView.executionPlanFitGraphLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Zoom to fit]]></Val>
+          <Val><![CDATA[Zoom to Fit]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Mit Zoom anpassen]]></Val>
+            <Val><![CDATA[Zoom anpassen]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Zoom to fit]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -16922,15 +16889,6 @@
           <Val><![CDATA[What kernels should be standard with this notebook provider]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Gibt an, welche Kernel für diesen Notebook-Anbieter als Standard festgelegt werden sollen.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";src/sql/workbench/services/notebook/common/notebookRegistry.providerNotInRegistryError" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[The specified provider '{0}' is not present in the notebook registry.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Der angegebene Anbieter '{0}' ist in der Notebookregistrierung nicht vorhanden.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

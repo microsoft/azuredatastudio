@@ -12,6 +12,7 @@ const files = [
     '.build/langpacks/**/*.vsix',
     '.build/extensions/**/*.vsix',
     '.build/win32-x64/**/*.{exe,zip}',
+    '.build/win32-arm64/**/*.{exe,zip}',
     '.build/linux/sha256hashes.txt',
     '.build/linux/deb/amd64/deb/*.deb',
     '.build/linux/rpm/x86_64/*.rpm',

@@ -2296,6 +2296,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.publishToDockerContainerPreview" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Publish to new {0} local development container (Preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[새 {0} 로컬 개발 컨테이너에 게시(미리 보기)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.publishToExistingServer" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Publish to an existing {0}]]></Val>
@@ -2310,10 +2319,13 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.publishToNewAzureServer" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Publish to new Azure SQL logical server]]></Val>
+          <Val><![CDATA[Publish to new Azure SQL logical server (Preview)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[새 Azure SQL 논리 서버에 게시]]></Val>
+            <Val><![CDATA[새 Azure SQL 논리 서버에 게시(미리 보기)]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Publish to new Azure SQL logical server]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3282,10 +3294,13 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/package.sqlDatabaseProjects.dotnetInstallLocation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Full path to .NET SDK on the machine.]]></Val>
+          <Val><![CDATA[Full path to .NET SDK on the machine. For example, if dotnet.exe is located at C:\folder1\dotnet\dotnet.exe, set the path for this setting to C:\folder1\dotnet]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[컴퓨터의 .NET SDK에 대한 전체 경로입니다.]]></Val>
+            <Val><![CDATA[컴퓨터의 .NET SDK 전체 경로입니다. 예를 들어 dotnet.exe가 C:\folder1\dotnet\dotnet.exe에 있다면 이 설정의 경로를 C:\folder1\dotnet으로 설정합니다.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Full path to .NET SDK on the machine.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3294,6 +3309,15 @@
           <Val><![CDATA[Edit .sqlproj File]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[.sqlproj 파일 편집]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-database-projects/package.sqlDatabaseProjects.enablePreviewFeatures" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Enable preview SQL Database Projects features]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL Database Projects 미리보기 기능 사용]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3318,10 +3342,13 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/package.sqlDatabaseProjects.microsoftBuildSqlVersion" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Which version of Microsoft.Build.Sql SDK to use for building legacy sql projects. Example: 0.1.3-preview]]></Val>
+          <Val><![CDATA[Which version of Microsoft.Build.Sql SDK to use for building legacy sql projects. Example: 0.1.7-preview]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[레거시 SQL 프로젝트를 빌드하는 데 사용할 Microsoft.Build.Sql SDK 버전입니다. 예: 0.1.3-preview]]></Val>
+            <Val><![CDATA[레거시 SQL 프로젝트를 빌드하는 데 사용할 Microsoft.Build.Sql SDK 버전입니다. 예: 0.1.7-preview]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Which version of Microsoft.Build.Sql SDK to use for building legacy sql projects. Example: 0.1.3-preview]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>

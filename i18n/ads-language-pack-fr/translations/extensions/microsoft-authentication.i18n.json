@@ -11,10 +11,6 @@
 		"dist/AADHelper": {
 			"signOut": "Vous avez été déconnecté en raison de l'échec de la lecture des informations d'authentification stockées."
 		},
-		"dist/keychain": {
-			"keychainWriteError": "Échec de l'écriture des informations de connexion dans le trousseau. Erreur '{0}'.",
-			"troubleshooting": "Guide de résolution des problèmes"
-		},
 		"package": {
 			"description": "Fournisseur d'authentification Microsoft",
 			"displayName": "Compte Microsoft",
